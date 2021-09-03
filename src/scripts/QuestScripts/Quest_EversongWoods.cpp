@@ -38,11 +38,9 @@ enum
 //////////////////////////////////////////////////////////////////////////////////////////
 //Quest: The Drwarfen Spy
 //ID: 8486
-
 class ProspectorAnvilwardGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* Plr) override;
     void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* EnteredCode, uint32_t gossipId) override;
     void destroy() override { delete this; }

@@ -12,11 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 class ShadowLabyrinthInstanceScript : public InstanceScript
 {
 public:
-
-    explicit ShadowLabyrinthInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit ShadowLabyrinthInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ShadowLabyrinthInstanceScript(pMapMgr); }
 };
 
@@ -200,7 +196,6 @@ class FelOverseerAI : public CreatureAIScript
     }
 
 protected:
-
     int HealCooldown;
     CreatureAISpells* heal;
 };
@@ -262,7 +257,6 @@ class AmbassadorHellmawAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* aoeFear;
     uint32_t aoeFearTimerId;
 };
@@ -314,7 +308,6 @@ class BlackheartTheInciterAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t chaosTimerId;
     CreatureAISpells* chaos;
 };
@@ -410,7 +403,6 @@ class MurmurAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t SonicBoomTimerId;
     uint32_t resonanceTimerId;
     CreatureAISpells* resonance;

@@ -65,9 +65,7 @@ class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 class ShadowFiendAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ShadowFiendAI)
-    explicit ShadowFiendAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
+    explicit ShadowFiendAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -99,9 +97,7 @@ class ShadowFiendAI : public CreatureAIScript
 class MirrorImageAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MirrorImageAI)
-    explicit MirrorImageAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
+    explicit MirrorImageAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -168,7 +164,6 @@ class MirrorImageAI : public CreatureAIScript
         }
     }
 };
-
 
 class DancingRuneWeaponAI : public CreatureAIScript
 {
@@ -306,7 +301,6 @@ class DancingRuneWeaponAI : public CreatureAIScript
         }
     }
 private:
-
     int dpsCycle;
     int dpsSpell;
     int procSpell[5];
@@ -315,9 +309,7 @@ private:
 class FrostBroodVanquisherAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(FrostBroodVanquisherAI)
-    explicit FrostBroodVanquisherAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
+    explicit FrostBroodVanquisherAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {

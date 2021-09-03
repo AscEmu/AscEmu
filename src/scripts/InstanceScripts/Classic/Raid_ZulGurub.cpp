@@ -9,11 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 class ZulGurubInstanceScript : public InstanceScript
 {
 public:
-
-    explicit ZulGurubInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit ZulGurubInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ZulGurubInstanceScript(pMapMgr); }
 };
 

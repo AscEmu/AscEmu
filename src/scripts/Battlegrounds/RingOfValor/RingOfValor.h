@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 class RingOfValor : public Arena
 {
 public:
-
     RingOfValor(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side);
     ~RingOfValor();
 

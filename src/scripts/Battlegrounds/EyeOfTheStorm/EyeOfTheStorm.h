@@ -8,11 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Battleground/Battleground.h"
 #include "EyeOfTheStormDefinitions.h"
 
-
 class EyeOfTheStorm : public CBattleground
 {
 public:
-
     EyeOfTheStorm(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
     ~EyeOfTheStorm();
 
@@ -56,7 +54,6 @@ public:
     void SetIsWeekend(bool isweekend) override;
 
 protected:
-
     int32_t m_CPStatus[EOTS_TOWER_COUNT];
     uint32_t m_flagHolder;
 

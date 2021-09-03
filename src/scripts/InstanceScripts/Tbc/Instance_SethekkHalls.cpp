@@ -12,11 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 class SethekkHallsInstanceScript : public InstanceScript
 {
 public:
-
-    explicit SethekkHallsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit SethekkHallsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new SethekkHallsInstanceScript(pMapMgr); }
 };
 
@@ -352,7 +348,6 @@ class DarkweaverSythAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t Summons;
     CreatureAISpells* summonFireEle;
     CreatureAISpells* summonFrostEle;
@@ -429,7 +424,6 @@ class TalonKingIkissAI : public CreatureAIScript
     }
 
 protected:
-
     bool Blink;
     CreatureAISpells* arcaneVolley;
     CreatureAISpells* arcaneExplosion;
@@ -499,9 +493,7 @@ class ANZUAI : public CreatureAIScript
     }
 
 protected:
-
     bool Banished;
-
     CreatureAISpells* banish;
     CreatureAISpells* ravenGod;
 };

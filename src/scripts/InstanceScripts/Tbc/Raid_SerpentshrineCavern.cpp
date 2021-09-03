@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/CreatureAIScript.h"
 #include "Macros/ScriptMacros.hpp"
 
-
 class HydrossTheUnstableAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HydrossTheUnstableAI)
@@ -288,7 +287,6 @@ class HydrossTheUnstableAI : public CreatureAIScript
         }
     }
 
-   
 private:
     int minspell;
     int maxspell;
@@ -962,7 +960,6 @@ class FathomGuardTidalvessAI : public CreatureAIScript
 class FathomGuardCaribdisAI : public CreatureAIScript
 {
 public:
-
     ADD_CREATURE_FACTORY_FUNCTION(FathomGuardCaribdisAI)
     explicit FathomGuardCaribdisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -991,7 +988,6 @@ public:
 
 private:
     uint32_t HealingWaveTimer;
-
 };
 
 class MorogrimAI : public CreatureAIScript
@@ -1519,10 +1515,7 @@ private:
 class TaintedCoreGO : public GameObjectAIScript
 {
 public:
-
-    explicit TaintedCoreGO(GameObject* pGameObject) : GameObjectAIScript(pGameObject)
-    { }
-
+    explicit TaintedCoreGO(GameObject* pGameObject) : GameObjectAIScript(pGameObject) {}
     void OnActivate(Player* pPlayer) override
     {
         Creature* Vashj = NULL;
@@ -1968,7 +1961,6 @@ class CoilfangStriderAI : public CreatureAIScript
 class SerpentshrineCavern : public InstanceScript
 {
 public:
-
     // Console & Bridge parts
     uint32_t mBridgePart[3];
 

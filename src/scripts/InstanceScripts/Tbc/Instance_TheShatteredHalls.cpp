@@ -14,10 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 class InstanceTheShatteredHallsScript : public InstanceScript
 {
 public:
-
-    explicit InstanceTheShatteredHallsScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {}
-
+    explicit InstanceTheShatteredHallsScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceTheShatteredHallsScript(pMapMgr); }
 };
 
@@ -51,7 +48,6 @@ class ShatteredHandHeathenAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* enrage;
 };
 
@@ -77,7 +73,6 @@ class ShatteredHandLegionnaireAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* auraOfDiscipline;
 };
 
@@ -103,7 +98,6 @@ class ShatteredHandSavageAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* enrage;
 };
 
@@ -149,7 +143,6 @@ class ShatteredHandAssassinAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* stealth;
 };
 

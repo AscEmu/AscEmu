@@ -12,11 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 class TheMechanarInstanceScript : public InstanceScript
 {
 public:
-
-    explicit TheMechanarInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit TheMechanarInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new TheMechanarInstanceScript(pMapMgr); }
 };
 
@@ -60,7 +56,6 @@ class BloodwarderCenturionAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* etherealTeleport;
 };
 
@@ -88,7 +83,6 @@ class BloodwarderPhysicianAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* etherealTeleport;
 };
 
@@ -167,7 +161,6 @@ class MechanarTinkererAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* netherExplosion;
 };
 
@@ -224,7 +217,6 @@ class SunseekerAstromageAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* etherealTeleport;
 };
 
@@ -252,7 +244,6 @@ class SunseekerEngineerAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* etherealTeleport;
 };
 
@@ -436,7 +427,6 @@ class NethermancerSepethreaAI : public CreatureAIScript
     }
 
 protected:
-
     int SummonTimer;
     CreatureAISpells* summonRaginFlames;
 };
@@ -510,7 +500,6 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t SummonTimer;
     CreatureAISpells* summonNetherWraith1;
     CreatureAISpells* summonNetherWraith2;

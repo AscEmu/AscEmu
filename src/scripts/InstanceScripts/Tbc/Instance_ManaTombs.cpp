@@ -11,11 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 class ManaTombsInstanceScript : public InstanceScript
 {
 public:
-
-    explicit ManaTombsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit ManaTombsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ManaTombsInstanceScript(pMapMgr); }
 };
 
@@ -31,7 +27,6 @@ class EtherealDarkcasterAI : public CreatureAIScript
         shadowWordPain->setAttackStopTimer(1000);
     }
 };
-
 
 class EtherealPriestAI : public CreatureAIScript
 {
@@ -58,7 +53,6 @@ class EtherealTheurgistAI : public CreatureAIScript
         blastWave->setAttackStopTimer(1000);
     }
 };
-
 
 class EtherealSorcererAI : public CreatureAIScript
 {
@@ -96,7 +90,6 @@ class NexusTerrorAI : public CreatureAIScript
     }
 };
 
-
 class ManaLeechAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ManaLeechAI)
@@ -112,7 +105,6 @@ class ManaLeechAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* arcaneExplosion;
 };
 
@@ -134,7 +126,6 @@ class EtherealSpellbinderAI : public CreatureAIScript
         summonEtherealWraith->setAttackStopTimer(1000);
     }
 };
-
 
 class EtherealWraithAI : public CreatureAIScript
 {
@@ -184,7 +175,6 @@ class TavarokAI : public CreatureAIScript
         arcingSmash->setAttackStopTimer(2000);
     }
 };
-
 
 // \todo Work on beacons and find out if my current way of spawning them is correct
 class NexusPrinceShaffarAI : public CreatureAIScript

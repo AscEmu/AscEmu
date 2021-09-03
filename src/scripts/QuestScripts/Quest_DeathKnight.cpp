@@ -44,7 +44,6 @@ enum
 class GossipScourgeGryphon : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (plr->hasQuestInQuestLog(12670) || plr->HasFinishedQuest(12670))
@@ -58,7 +57,6 @@ public:
 class AcherusSoulPrison : GameObjectAIScript
 {
 public:
-
     explicit AcherusSoulPrison(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO)
     {
@@ -100,7 +98,6 @@ public:
 class QuestInServiceOfLichKing : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         // Play first sound
@@ -132,7 +129,6 @@ bool PreparationForBattleEffect(uint8_t /*effectIndex*/, Spell* pSpell)
 class EyeofAcherusControl : public GameObjectAIScript
 {
 public:
-
     explicit EyeofAcherusControl(GameObject* gameobject) : GameObjectAIScript(gameobject) {}
     static GameObjectAIScript* Create(GameObject* gameobject_ai) { return new EyeofAcherusControl(gameobject_ai); }
 

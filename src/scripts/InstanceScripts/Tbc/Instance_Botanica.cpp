@@ -12,11 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 class BotanicaInstanceScript : public InstanceScript
 {
 public:
-
-    explicit BotanicaInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit BotanicaInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new BotanicaInstanceScript(pMapMgr); }
 };
 
@@ -29,7 +25,6 @@ class BloodProtectorAI : public CreatureAIScript
         crystalStrike->setAttackStopTimer(1000);
     }
 };
-
 
 // Bloodwarder Mender AI
 // \todo Script me!
@@ -85,10 +80,8 @@ class SunResearcherAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* poisonShield;
 };
-
 
 class CommanderSarannisAI : public CreatureAIScript
 {
@@ -141,11 +134,9 @@ class CommanderSarannisAI : public CreatureAIScript
     }
 
 protected:
-
     bool GuardAdds;
     CreatureAISpells* summonReinforcements;
 };
-
 
 class HighBotanistFreywinnAI : public CreatureAIScript
 {
@@ -237,7 +228,6 @@ class HighBotanistFreywinnAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t PlantTimer;
 
     CreatureAISpells* plantRedSeedling;
@@ -245,7 +235,6 @@ protected:
     CreatureAISpells* plantWhiteSeedling;
     CreatureAISpells* plantBlueSeedling;
 };
-
 
 class ThorngrinTheTenderAI : public CreatureAIScript
 {
@@ -298,11 +287,9 @@ class ThorngrinTheTenderAI : public CreatureAIScript
     }
 
 protected:
-
     bool Enraged;
     CreatureAISpells* enrage;
 };
-
 
 class LajAI : public CreatureAIScript
 {
@@ -352,11 +339,9 @@ class LajAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t TeleportTimer;
     CreatureAISpells* teleportSelf;
 };
-
 
 class WarpSplinterAI : public CreatureAIScript
 {
@@ -409,7 +394,6 @@ class WarpSplinterAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t SummonTimer;
     CreatureAISpells* summonSaplings;
 };

@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 class GundrakScript : public InstanceScript
 {
 public:
-
     uint32_t mSladranAltarGUID;
     uint32_t mSladranStatueGUID;
     uint32_t mColossusAltarGUID;

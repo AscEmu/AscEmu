@@ -11,11 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 class CullingOfStratholmeInstanceScript : public InstanceScript
 {
 public:
-
-    explicit CullingOfStratholmeInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit CullingOfStratholmeInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new CullingOfStratholmeInstanceScript(pMapMgr); }
 };
 
@@ -161,7 +157,6 @@ class InfiniteCorruptorAI : public CreatureAIScript
     }
 };
 
-
 class MalganisAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MalganisAI)
@@ -228,11 +223,9 @@ class MalganisAI : public CreatureAIScript
     }
 };
 
-
 class Quest_Dispelling_Illusions : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         for (uint8_t i = 0; i < 5; i++)
@@ -295,7 +288,6 @@ public:
         go->PushToWorld(pMapMgr);
     }
 };
-
 
 static LocationVector walk[] =
 {
@@ -372,7 +364,6 @@ class UtherAI : public CreatureAIScript
     }
 
 private:
-
     bool check;
 };
 
@@ -387,7 +378,6 @@ static LocationVector ArthasWalk[] =
     { 2028.9012f, 1285.9205f, 143.6552f, 0.0661f },
     { 2078.9479f, 1287.9812f, 141.4830f, 0.0308f }
 };
-
 
 class ArthasAI : public CreatureAIScript
 {
@@ -515,15 +505,12 @@ class ArthasAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t phase;
 };
-
 
 class ArthasGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* Plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1, 0);

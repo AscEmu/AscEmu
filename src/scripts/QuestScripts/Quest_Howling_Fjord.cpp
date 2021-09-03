@@ -35,6 +35,7 @@ class NorthFleet : public CreatureAIScript
         }
     }
 };
+
 class ChillmereScourge : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ChillmereScourge)
@@ -48,6 +49,7 @@ class ChillmereScourge : public CreatureAIScript
         }
     }
 };
+
 class Baleheim : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Baleheim)
@@ -65,7 +67,6 @@ class Baleheim : public CreatureAIScript
 class Plaguethis_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 40002, plr->GetSession()->language);

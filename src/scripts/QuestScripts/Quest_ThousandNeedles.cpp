@@ -53,7 +53,6 @@ class Paoka_Swiftmountain : public CreatureAIScript
 class RumorsforKravel : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();

@@ -11,11 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 class BlackwingLairInstanceScript : public InstanceScript
 {
 public:
-
-    explicit BlackwingLairInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit BlackwingLairInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) { }
     static InstanceScript* Create(MapMgr* pMapMgr) { return new BlackwingLairInstanceScript(pMapMgr); }
 };
 
@@ -23,7 +19,6 @@ class VaelastraszAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new VaelastraszAI(c); }
-
     explicit VaelastraszAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setHealth((uint32_t)(getCreature()->getMaxHealth() * 0.3f));
@@ -38,7 +33,6 @@ public:
 class VaelastraszGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* Plr) override
     {
         GossipMenu menu(pObject->getGuid(), 9903, 0);

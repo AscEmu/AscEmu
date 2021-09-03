@@ -19,12 +19,10 @@ This file is released under the MIT license. See README-MIT for more information
 class OldHilsbradInstance : public InstanceScript
 {
 private:
-
     int32_t m_numBarrel;
     uint32_t m_phaseData[OHF_END];
 
 public:
-
     explicit OldHilsbradInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         m_numBarrel = 0;
@@ -103,7 +101,6 @@ public:
 class ErozionGossip : public Script
 {
 public:
-
     void OnHello(Object* pObject, Player* Plr)
     {
         OldHilsbradInstance* pInstance = dynamic_cast<OldHilsbradInstance*>(pObject->GetMapMgr()->GetScript());
@@ -135,7 +132,6 @@ public:
 class BrazenGossip : public Script
 {
 public:
-
     void OnHello(Object* pObject, Player* Plr)
     {
         Menu menu(pObject->getGuid(), BRAZAN_ON_HELLO, 0);
@@ -163,7 +159,6 @@ public:
             break;
         }
     }
-
 };
 
 class LieutenantDrakeAI : public CreatureAIScript
@@ -228,7 +223,6 @@ class ThrallAI : public CreatureAIScript // this will be replaced with escortAI
 class ThrallGossip : public Script
 {
 public:
-
     void OnHello(Object* pObject, Player* Plr)
     {
         Menu menu(pObject->getGuid(), THRALL_ON_HELLO, 0);

@@ -10,11 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 class GruulsLairInstanceScript : public InstanceScript
 {
 public:
-
-    explicit GruulsLairInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit GruulsLairInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new GruulsLairInstanceScript(pMapMgr); }
 };
 
@@ -48,7 +44,6 @@ class LairBruteAI : public CreatureAIScript
         }
     }
 };
-
 
 const uint32_t CN_GRONN_PRIEST = 21350;
 const uint32_t GRONN_PRIEST_PSYCHICSCREAM = 22884;
@@ -215,7 +210,6 @@ class HighKingMaulgarAI : public CreatureAIScript
     int32_t mLastYell;
     CreatureAISpells* mEnrage;
 };
-
 
 const uint32_t CN_KIGGLER_THE_CRAZED = 18835;
 const uint32_t KIGGLER_THE_CRAZED_LIGHTNING_BOLT = 36152;
@@ -568,4 +562,3 @@ void SetupGruulsLair(ScriptMgr* mgr)
     mgr->register_creature_script(CN_HIGH_KING_MAULGAR,    &HighKingMaulgarAI::Create);
     mgr->register_creature_script(CN_GRUUL_THE_DRAGONKILLER, &GruulTheDragonkillerAI::Create);
 }
-

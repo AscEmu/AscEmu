@@ -12,11 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 class HellfireRampartsInstanceScript : public InstanceScript
 {
 public:
-
-    explicit HellfireRampartsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit HellfireRampartsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new HellfireRampartsInstanceScript(pMapMgr); }
 };
 

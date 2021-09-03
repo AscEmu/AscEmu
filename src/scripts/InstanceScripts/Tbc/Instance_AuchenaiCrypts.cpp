@@ -11,11 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 class AuchenaiCryptsInstanceScript : public InstanceScript
 {
 public:
-
-    explicit AuchenaiCryptsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit AuchenaiCryptsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new AuchenaiCryptsInstanceScript(pMapMgr); }
 };
 
@@ -73,10 +69,9 @@ class AvatarOfTheMartyredAI : public CreatureAIScript
         }
     }
 
-    protected:
-
-        bool Appear;
-        CreatureAISpells* phaseIn;
+protected:
+    bool Appear;
+    CreatureAISpells* phaseIn;
 };
 
 // Exarch MaladaarAI
@@ -138,10 +133,9 @@ class EXARCH_MALADAAR_AI : public CreatureAIScript
         }
     }
 
-    protected:
-
-        bool Avatar;
-        CreatureAISpells* summonAvatar;
+protected:
+    bool Avatar;
+    CreatureAISpells* summonAvatar;
 };
 
 void SetupAuchenaiCrypts(ScriptMgr* mgr)

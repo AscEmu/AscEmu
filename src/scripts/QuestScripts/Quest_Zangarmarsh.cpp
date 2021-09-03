@@ -24,7 +24,6 @@
 class AncientMarks : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         uint32_t entry = pObject->getEntry();
@@ -90,7 +89,6 @@ public:
 class ElderKuruti : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (!plr->getItemInterface()->GetItemCount(24573, true))

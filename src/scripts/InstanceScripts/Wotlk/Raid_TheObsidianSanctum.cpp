@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 class ObsidianSanctumScript : public InstanceScript
 {
 public:
-
     uint32_t m_creatureGuid[OS_DATA_END];
 
     explicit ObsidianSanctumScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
@@ -322,8 +321,7 @@ class TsunamiAI : public CreatureAIScript
 class CyclonAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CyclonAI)
-    explicit CyclonAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {}
+    explicit CyclonAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -338,8 +336,7 @@ class CyclonAI : public CreatureAIScript
 class LavaBlazeAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LavaBlazeAI)
-    explicit LavaBlazeAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {}
+    explicit LavaBlazeAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStop(Unit* /*pTarget*/) override
     {

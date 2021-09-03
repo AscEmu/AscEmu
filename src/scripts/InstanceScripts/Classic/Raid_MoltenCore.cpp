@@ -10,11 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 class MoltenCoreInstanceScript : public InstanceScript
 {
 public:
-
-    explicit MoltenCoreInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit MoltenCoreInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) { }
     static InstanceScript* Create(MapMgr* pMapMgr) { return new MoltenCoreInstanceScript(pMapMgr); }
 };
 
@@ -22,7 +18,6 @@ class CoreRagerAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new CoreRagerAI(c); }
-
     explicit CoreRagerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_mangle = true;
@@ -62,7 +57,6 @@ public:
     }
 
 protected:
-
     bool m_mangle;
     SpellInfo const* info_mangle;
 };
@@ -71,7 +65,6 @@ class SulfuronAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new SulfuronAI(c); }
-
     explicit SulfuronAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_demoralizingshout = m_inspire = m_flamespear = true;
@@ -140,7 +133,6 @@ public:
     }
 
 protected:
-
     bool m_demoralizingshout, m_inspire, m_flamespear;
     SpellInfo const* info_demoralizingshout, *info_inspire, *info_flamespear;
 };
@@ -149,7 +141,6 @@ class RagnarosAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new RagnarosAI(c); }
-
     explicit RagnarosAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_elementalfire = m_wrath = m_hammer = m_meltweapon = m_summonsons = true;
@@ -240,7 +231,6 @@ public:
     }
 
 protected:
-
     bool m_elementalfire, m_wrath, m_hammer, m_meltweapon, m_summonsons;
     SpellInfo const* info_elementalfire, *info_wrath, *info_hammer, *info_meltweapon, *info_summonsons;
 };
@@ -249,7 +239,6 @@ class AncientCoreHoundAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new AncientCoreHoundAI(c); }
-
     explicit AncientCoreHoundAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Each Ancient Core Hound have only one of the following spell
@@ -281,7 +270,6 @@ class FireswornAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new FireswornAI(c); }
-
     explicit FireswornAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mGarr = nullptr;
@@ -306,12 +294,10 @@ public:
     CreatureAIScript* mGarr;
 };
 
-
 class ShazzrahAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new ShazzrahAI(c); }
-
     explicit ShazzrahAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mArcaneExplosion = addAISpell(MoltenCore::SHAZZRAH_ARCANE_EXPLOSION, 8.0f, TARGET_SELF, 0, 0);

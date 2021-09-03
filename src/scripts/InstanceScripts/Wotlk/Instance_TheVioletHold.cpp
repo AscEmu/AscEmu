@@ -25,9 +25,7 @@ enum DataIndex
 // TheVioletHold Instance
 class TheVioletHoldScript : public InstanceScript
 {
-    friend class SinclariGossip; // Friendship forever ;-)
-
-
+friend class SinclariGossip; // Friendship forever ;-)
     uint32_t m_phaseData[TVH_END];
     uint32_t m_lastState = InvalidState;
 
@@ -38,7 +36,6 @@ class TheVioletHoldScript : public InstanceScript
     int32_t S1_GuardFleeTimer = -1;       // Delay guards fleeing room for 2.5s (arbitrary)
 
 public:
-
     explicit TheVioletHoldScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         for (uint8_t i = 0; i < TVH_END; ++i)
@@ -233,11 +230,7 @@ public:
 class SinclariAI : public CreatureAIScript
 {
 public:
-
-    explicit SinclariAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
-
+    explicit SinclariAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
     static CreatureAIScript* Create(Creature* creature) { return new SinclariAI(creature); }
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override
@@ -321,21 +314,21 @@ public:
         Creature* sinclari = static_cast<Creature*>(pObject);
         switch (Id)
         {
-        case 1:
-        {
-            GossipMenu menu(pObject->getGuid(), 13854, 0);
-            menu.addItem(GOSSIP_ICON_CHAT, (601), 2);
-            menu.sendGossipPacket(pPlayer);
-        } break;
-        case 2:
-        {
-            static_cast<Creature*>(pObject)->setNpcFlags(UNIT_NPC_FLAG_NONE);
-        } break;
-        case 3:
-        {
-            GossipMenu::senGossipComplete(pPlayer);
-            pPlayer->SafeTeleport(pPlayer->GetInstanceID(), 608, 1830.531006f, 803.939758f, 44.340508f, 6.281611f);
-        } break;
+            case 1:
+            {
+                GossipMenu menu(pObject->getGuid(), 13854, 0);
+                menu.addItem(GOSSIP_ICON_CHAT, (601), 2);
+                menu.sendGossipPacket(pPlayer);
+            } break;
+            case 2:
+            {
+                static_cast<Creature*>(pObject)->setNpcFlags(UNIT_NPC_FLAG_NONE);
+            } break;
+            case 3:
+            {
+                GossipMenu::senGossipComplete(pPlayer);
+                pPlayer->SafeTeleport(pPlayer->GetInstanceID(), 608, 1830.531006f, 803.939758f, 44.340508f, 6.281611f);
+            } break;
         }
     }
 };
@@ -343,10 +336,7 @@ public:
 class VHGuardsAI : public CreatureAIScript
 {
 public:
-    explicit VHGuardsAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
-
+    explicit VHGuardsAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
     static CreatureAIScript* Create(Creature* creature) { return new VHGuardsAI(creature); }
 };
 
@@ -392,7 +382,6 @@ class VHCreatureAI : public CreatureAIScript
             }break;
         }
     }
-
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
@@ -475,7 +464,6 @@ class VHCreatureAI : public CreatureAIScript
             }
         }*/
 protected:
-
     bool m_isIntroMob = false;
     int m_spellCount = 0;
 
@@ -487,21 +475,19 @@ protected:
      * TODO: Write a proper spell manager to handle this stuff */
     std::vector<bool> m_spellsEnabled;
     //std::vector<SP_AI_Spell> m_spells;
-
 };
 
 class VHIntroAzureBinder : VHCreatureAI
 {
     ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureBinder)
-
-    const int SPELL_ARCANE_BARRAGE = 58456;
-    const int SPELL_ARCANE_EXPLOSION = 58455;
-
     explicit VHIntroAzureBinder(Creature* pCreature) : VHCreatureAI(pCreature)
     {
+        /*const int SPELL_ARCANE_BARRAGE = 58456;
+        const int SPELL_ARCANE_EXPLOSION = 58455;
+
         m_isIntroMob = true;
         //m_spellCount = 2;
-        /*for (int i = 0; i < m_spellCount; i++)
+        for (int i = 0; i < m_spellCount; i++)
         {
             m_spellsEnabled.push_back(false);
         }*/
@@ -530,16 +516,14 @@ class VHIntroAzureBinder : VHCreatureAI
 
 class VHIntroAzureInvader : VHCreatureAI
 {
-
     ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureInvader)
-
-    const int SPELL_CLEAVE = 15496;
-    const int SPELL_IMPALE = 58459;
-
     explicit VHIntroAzureInvader(Creature* pCreature) : VHCreatureAI(pCreature)
-    {
+    { 
+        /* const int SPELL_CLEAVE = 15496;
+        const int SPELL_IMPALE = 58459;
+
         m_isIntroMob = true;
-       /* m_spellCount = 2;
+        m_spellCount = 2;
         for (int i = 0; i < m_spellCount; i++)
         {
             m_spellsEnabled.push_back(false);
@@ -570,11 +554,10 @@ class VHIntroAzureInvader : VHCreatureAI
 class VHIntroAzureMageSlayer : VHCreatureAI
 {
     ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureMageSlayer)
-
-    const int SPELL_ARCANE_EMPOWERMENT = 58469;
-
     explicit VHIntroAzureMageSlayer(Creature* pCreature) : VHCreatureAI(pCreature)
     {
+        /*const int SPELL_ARCANE_EMPOWERMENT = 58469;
+
         m_isIntroMob = true;
         /*m_spellCount = 1;
         for (int i = 0; i < m_spellCount; i++)
@@ -597,14 +580,13 @@ class VHIntroAzureMageSlayer : VHCreatureAI
 class VHIntroAzureSpellBreaker : VHCreatureAI
 {
     ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureSpellBreaker)
-
-    const int SPELL_ARCANE_BLAST = 58462;
-    const int SPELL_SLOW = 25603;
-
     explicit VHIntroAzureSpellBreaker(Creature* pCreature) : VHCreatureAI(pCreature)
     {
+        /*const int SPELL_ARCANE_BLAST = 58462;
+        const int SPELL_SLOW = 25603;
+
         m_isIntroMob = true;
-        /*m_spellCount = 2;
+        m_spellCount = 2;
         for (int i = 0; i < m_spellCount; i++)
         {
             m_spellsEnabled.push_back(false);
@@ -629,7 +611,7 @@ class VHIntroAzureSpellBreaker : VHCreatureAI
         spellSlow.perctrigger = 40.0f;
         spellSlow.attackstoptimer = 1000;
         m_spells.push_back(spellSlow);
-        m_spellsEnabled[0] = true;        */
+        m_spellsEnabled[0] = true; */
     }
 };
 
@@ -643,7 +625,7 @@ class VHIntroAzureSpellBreaker : VHCreatureAI
 
 class MoraggAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MoraggAI);
+    ADD_CREATURE_FACTORY_FUNCTION(MoraggAI)
     explicit MoraggAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //// Spells

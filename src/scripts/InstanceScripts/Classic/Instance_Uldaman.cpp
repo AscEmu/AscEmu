@@ -10,11 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 class UldamanInstanceScript : public InstanceScript
 {
 public:
-
-    explicit UldamanInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit UldamanInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) { }
     static InstanceScript* Create(MapMgr* pMapMgr) { return new UldamanInstanceScript(pMapMgr); }
 };
 

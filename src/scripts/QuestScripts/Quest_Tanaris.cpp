@@ -25,7 +25,6 @@
 class SpiritScreeches : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (plr->hasQuestInQuestLog(3520))
@@ -69,7 +68,6 @@ class ScreecherSpirit : public CreatureAIScript
 class StewardOfTime : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (plr->hasQuestInQuestLog(10279) || plr->HasFinishedQuest(10279))

@@ -12,11 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 class TheSteamvaultInstanceScript : public InstanceScript
 {
 public:
-
-    explicit TheSteamvaultInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit TheSteamvaultInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new TheSteamvaultInstanceScript(pMapMgr); }
 };
 
@@ -211,10 +207,8 @@ class MekgineerSteamriggerAI : public CreatureAIScript
     }
 
 protected:
-
     uint8_t GnomeCounter;
 };
-
 
 static LocationVector Distiller[] =
 {
@@ -437,7 +431,6 @@ class WarlordKalitreshAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t DistillerNumber;
     uint32_t RagePhaseTimer;
     uint32_t EnrageTimer;

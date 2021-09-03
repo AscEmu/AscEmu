@@ -103,7 +103,6 @@ class SamAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
 
@@ -160,7 +159,6 @@ class BerAI : public CreatureAIScript
 
 protected:
     uint32_t timer;
-
 };
 
 class SigAI : public CreatureAIScript
@@ -218,7 +216,6 @@ class SigAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
 
@@ -275,10 +272,8 @@ class MaiAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
-
 
 class ThuAI : public CreatureAIScript
 {
@@ -346,7 +341,6 @@ class ThuAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
 
@@ -391,7 +385,6 @@ class UndeadAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
 
@@ -437,7 +430,6 @@ class Undead2AI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
 
@@ -476,7 +468,6 @@ class Undead3AI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
 
@@ -567,7 +558,6 @@ class TriggerAI : public CreatureAIScript
         timer++;
     }
 protected:
-
     uint32_t timer;
 };
 
@@ -652,7 +642,6 @@ class Trigger2AI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
 
@@ -768,7 +757,6 @@ class Effectsground : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
 
@@ -832,8 +820,8 @@ class Effectsair : public CreatureAIScript
         }
         timer++;
     }
-protected:
 
+protected:
     uint32_t timer;
 };
 

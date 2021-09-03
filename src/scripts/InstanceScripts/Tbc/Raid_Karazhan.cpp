@@ -14,11 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 class KarazhanInstanceScript : public InstanceScript
 {
 public:
-
-    explicit KarazhanInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit KarazhanInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new KarazhanInstanceScript(pMapMgr); }
 };
 
@@ -26,7 +22,6 @@ public:
 class Berthold : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* Plr) override
     {
         GossipMenu menu(pObject->getGuid(), 11224);
@@ -52,7 +47,6 @@ public:
         }
         GossipMenu::senGossipComplete(Plr);
     }
-
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -179,7 +173,6 @@ class MidnightAI : public CreatureAIScript
                     moveToUnit(attumen->getCreature());
             }
         }
-        
     }
 };
 
@@ -374,12 +367,10 @@ class BigBadWolfAI : public CreatureAIScript
     }
 
 protected:
-
     int m_threattimer;
     bool ThreatAdd;
     Unit* RTarget;
 };
-
 
 const uint32_t THEBIGBADWOLF_TERRIFYING_HOWL = 30752;
 const uint32_t MORPH_LITTLE_RED_RIDING_HOOD = 30768;
@@ -441,12 +432,10 @@ class THEBIGBADWOLFAI : public CreatureAIScript
     }
 };
 
-
 uint32_t WayStartBBW[1000000];
 class BarnesGS : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* Plr) override
     {
         if (WayStartBBW[pObject->GetInstanceID()] == 5)
@@ -494,7 +483,6 @@ public:
 class GrandMother : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* Plr) override
     {
         GossipMenu menu(pObject->getGuid(), 7245, 0);         // Don't get too close, $N. I'm liable to fumble and bash your brains open with the face of my hammer.
@@ -723,7 +711,7 @@ class BarnesAI : public CreatureAIScript
     void BarnesSpeakRJ()
     {
         // Start text
-        sendDBChatMessage(2011);                 // Good evening, ladies and gentleman. Welcome to this evening's presentation!
+        sendDBChatMessage(2011);                                        // Good evening, ladies and gentleman. Welcome to this evening's presentation!
         // Timed text 1
         getCreature()->SendTimedScriptTextChatMessage(2016, 6000);      // Tonight we explore a tale of forbidden love!
         // Timed text 2
@@ -750,13 +738,13 @@ class BarnesAI : public CreatureAIScript
             Curtain->setState(GO_STATE_OPEN);
 
         getCreature()->setDisplayId(16616);
-        spawnCreature(17534, -10891.582f, -1755.5177f, 90.476f, 4.61f); //Spawn Julianne
+        spawnCreature(17534, -10891.582f, -1755.5177f, 90.476f, 4.61f); // Spawn Julianne
     }
 
     void BarnesSpeakRed()
     {
         // Start text
-        sendDBChatMessage(2011);                 // Good evening, ladies and gentleman. Welcome to this evening's presentation!
+        sendDBChatMessage(2011);                                        // Good evening, ladies and gentleman. Welcome to this evening's presentation!
         // Timed text 1
         getCreature()->SendTimedScriptTextChatMessage(2012, 7000);      // Tonight things are not what they seems for tonight your eyes may not be trusted.
         // Timed text 2
@@ -784,13 +772,11 @@ class BarnesAI : public CreatureAIScript
 
         getCreature()->setDisplayId(16616);
         spawnCreature(17603, -10891.582f, -1755.5177f, 90.476f, 4.61f);
-
     }
 
 protected:
     int eventRand;
 };
-
 
 class StageLight : public CreatureAIScript
 {
@@ -803,7 +789,6 @@ class StageLight : public CreatureAIScript
         getCreature()->m_noRespawn = true;
         getCreature()->castSpell(getCreature(), 34126, true);
     }
-
 };
 
 // The Curator + Astral Flare
@@ -1677,7 +1662,6 @@ class IllhoofAI : public CreatureAIScript
     }
 
 protected:
-
     bool ReSummon;
     uint32_t ImpTimer;
     uint32_t ReKilrek;
@@ -1820,7 +1804,6 @@ class FiendPortal : public CreatureAIScript
     {
         spawnCreature(CN_FIENDISH_IMP, getCreature()->GetPosition());
     }
-
 };
 
 // Prince Malchezaar
@@ -3003,7 +2986,6 @@ const uint32_t CN_ROAR = 17546;
 class RoarAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(RoarAI)
-
     explicit RoarAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* /*mTarget*/) override

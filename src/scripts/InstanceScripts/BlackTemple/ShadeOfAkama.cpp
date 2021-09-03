@@ -262,7 +262,6 @@ class ShadeofakamaAI : public CreatureAIScript
     }
 
 protected:
-
     int nrspells;
     int hm;
 };
@@ -365,7 +364,6 @@ class AshtonguedefenderAI : public CreatureAIScript
     }
 
 protected:
-
     int nrspells;
 };
 
@@ -470,7 +468,6 @@ class AshtongueelementalistAI : public CreatureAIScript
     }
 
 protected:
-
     int nrspells;
 };
 
@@ -573,7 +570,6 @@ class AshtonguerogueAI : public CreatureAIScript
     }
 
 protected:
-
     int nrspells;
 };
 
@@ -684,7 +680,6 @@ class AshtonguespiritbinderAI : public CreatureAIScript
     }
 
 protected:
-
     int nrspells;
 };
 
@@ -692,9 +687,6 @@ protected:
 class AshtongueChannelerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AshtongueChannelerAI)
-    SP_AI_Spell spells[1];
-    bool m_spellcheck[1];
-
     explicit AshtongueChannelerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         _unit->m_canMove = false;
@@ -734,9 +726,6 @@ class AshtongueChannelerAI : public CreatureAIScript
     {
         _unit->setAttackTimer(2000, false);
     }
-
-protected:
-
 };
 
 void SetupShadeOfAkama(ScriptMgr* mgr)

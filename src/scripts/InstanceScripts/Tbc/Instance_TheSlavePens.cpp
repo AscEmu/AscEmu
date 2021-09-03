@@ -12,11 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 class TheSlavePensInstanceScript : public InstanceScript
 {
 public:
-
-    explicit TheSlavePensInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit TheSlavePensInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new TheSlavePensInstanceScript(pMapMgr); }
 };
 
@@ -74,7 +70,6 @@ class TotemsAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t SpellID;
 };
 
@@ -197,7 +192,6 @@ class MennuTheBetrayerAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t TotemCounter;
     CreatureAISpells* earthgrabTotem;
     CreatureAISpells* stoneskinTotem;
@@ -241,7 +235,6 @@ class RokmarTheCracklerAI : public CreatureAIScript
     }
 
 protected:
-
     bool Enraged;
     CreatureAISpells* enrage;
 };

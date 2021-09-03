@@ -13,14 +13,8 @@ This file is released under the MIT license. See README-MIT for more information
 class TheEyeInstanceScript : public InstanceScript
 {
 public:
-
-    explicit TheEyeInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit TheEyeInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new TheEyeInstanceScript(pMapMgr); }
-
-
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +99,6 @@ class VoidReaverAI : public CreatureAIScript
 class AlarAuxClass: public Object
 {
 public:
-
     AlarAuxClass(CreatureAIScript*);
     ~AlarAuxClass();
     void Rebirth();
@@ -297,9 +290,7 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint32_t /*pEffectIndex*/, Spell* pSpe
 class SolariumAgentAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SolariumAgentAI)
-    explicit SolariumAgentAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
+    explicit SolariumAgentAI(Creature* pCreature) : CreatureAIScript(pCreature){}
 };
 
 class SolariumPriestAI : public CreatureAIScript

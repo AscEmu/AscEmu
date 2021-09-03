@@ -13,7 +13,6 @@ This file is released under the MIT license. See README-MIT for more information
 class ProtectKaya : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();

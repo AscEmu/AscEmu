@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 class DeadminesInstanceScript : public InstanceScript
 {
 public:
-
     explicit DeadminesInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         mFactoryDoor_GUID = 0;
@@ -30,7 +29,6 @@ public:
         {
             setGameObjectStateForEntry(Deadmines::GO_IRONCLAD_DOOR, GO_STATE_OPEN);
         }
-
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new DeadminesInstanceScript(pMapMgr); }
@@ -126,7 +124,6 @@ public:
     }
 
 protected:
-
     uint32_t mFactoryDoor_GUID;
     uint32_t mDefiasCannon_GUID;
     uint32_t mDoorLever_GUID;
@@ -135,12 +132,10 @@ protected:
     uint32_t InstanceEncounter;
 };
 
-
 class MrSmiteAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new MrSmiteAI(c); }
-
     explicit MrSmiteAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto smiteSlam = addAISpell(Deadmines::SMITE_SLAM, 25.0f, TARGET_ATTACKING, 0, 15, false, true);
@@ -263,7 +258,6 @@ public:
     }
 
 protected:
-
     CreatureAISpells* mStomp;
     uint32_t mWaitAtChest;
 };
@@ -272,10 +266,7 @@ class VanCleefAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new VanCleefAI(c); }
-
-    explicit VanCleefAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
+    explicit VanCleefAI(Creature* pCreature) : CreatureAIScript(pCreature){}
 
     void OnTargetDied(Unit* pTarget) override
     {

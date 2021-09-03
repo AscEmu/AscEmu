@@ -27,7 +27,6 @@
 class TheKesselRun : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         if (!mTarget)
@@ -40,7 +39,6 @@ public:
 class TheKesselRun1 : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1);
@@ -59,7 +57,6 @@ public:
 class TheKesselRun2 : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1);
@@ -78,7 +75,6 @@ public:
 class TheKesselRun3 : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1);
@@ -97,7 +93,6 @@ public:
 class SavingPrincessStillpine : public GameObjectAIScript
 {
 public:
-
     explicit SavingPrincessStillpine(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new SavingPrincessStillpine(GO); }
 
@@ -136,15 +131,13 @@ class HighChiefBristlelimb : public CreatureAIScript
     }
 
 private:
-
     int fulborgskilled;
 };
 
 class WebbedCreature : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(WebbedCreature)
-    explicit WebbedCreature(Creature* pCreature) : CreatureAIScript(pCreature)
-    {}
+    explicit WebbedCreature(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {

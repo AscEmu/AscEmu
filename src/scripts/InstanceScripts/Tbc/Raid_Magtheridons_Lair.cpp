@@ -13,18 +13,14 @@ This file is released under the MIT license. See README-MIT for more information
 class MagtheridonsLairInstanceScript : public InstanceScript
 {
 public:
-
-    explicit MagtheridonsLairInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit MagtheridonsLairInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new MagtheridonsLairInstanceScript(pMapMgr); }
 };
 
 class MagtheridonTriggerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MagtheridonTriggerAI)
-    std::vector<Unit*> ChannelersTable;    // Vector "list" of Channelers
+    std::vector<Unit*> ChannelersTable; // Vector "list" of Channelers
     bool KilledChanneler[5];            // Bool that says if channeler died or not
 
     explicit MagtheridonTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
@@ -337,7 +333,6 @@ class MagtheridonTriggerAI : public CreatureAIScript
     }
 
 protected:
-
     bool EventStarted;
 
     uint32_t PhaseOneTimer;
@@ -348,7 +343,6 @@ protected:
 class ManticronCubeGO : public GameObjectAIScript
 {
 public:
-
     explicit ManticronCubeGO(GameObject* pGameObject) : GameObjectAIScript(pGameObject)
     {
         CubeTrigger = NULL;
@@ -526,13 +520,11 @@ public:
 
             MagYell = true;
         }
-
     }
 
     static GameObjectAIScript* Create(GameObject* GO) { return new ManticronCubeGO(GO); }
 
 protected:
-
     bool MagYell;
     float x, y, z;
     Creature* Magtheridon;
@@ -889,7 +881,6 @@ class MagtheridonAI : public CreatureAIScript
     }
 
 protected:
-
     int timer_quake;
     int timer_enrage;
     int timer_caveIn;

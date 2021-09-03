@@ -57,7 +57,6 @@ class Dreadtusk : public CreatureAIScript
 class ZethGorMustBurnAlliance : public GameObjectAIScript
 {
 public:
-
     explicit ZethGorMustBurnAlliance(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new ZethGorMustBurnAlliance(GO); }
 
@@ -153,7 +152,6 @@ public:
 class PrisonerGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* pPlayer) override
     {
         int32_t i = -1;
@@ -258,7 +256,6 @@ class HellfireDeadNPC : public CreatureAIScript
 class DarkTidingsAlliance : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17479);
@@ -274,7 +271,6 @@ public:
 class DarkTidingsHorde : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17558);

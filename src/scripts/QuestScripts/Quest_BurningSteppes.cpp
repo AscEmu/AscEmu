@@ -21,7 +21,6 @@
 class TabletOfTheSeven : public QuestScript
 {
 public:
-
     void OnGameObjectActivate(uint32_t entry, Player* mTarget, QuestLogEntry* qLogEntry) override
     {
         if (mTarget == nullptr || qLogEntry == nullptr || entry != 169294)

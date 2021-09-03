@@ -157,7 +157,6 @@ class DeathbringerJovaanAI : public CreatureAIScript
                 break;
             }
         }
-        
     }
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override
@@ -183,8 +182,8 @@ class DeathbringerJovaanAI : public CreatureAIScript
         }
     }
 
-    uint32_t    mJovaanTimer;
-    int32_t    mJovaanPhase;
+    uint32_t mJovaanTimer;
+    int32_t mJovaanPhase;
 };
 
 class WarbringerRazuunAI : public CreatureAIScript
@@ -244,7 +243,6 @@ class WarbringerRazuunAI : public CreatureAIScript
                 break;
             }
         }
-        
     }
 
     uint32_t mRazuunTimer;
@@ -254,7 +252,6 @@ class WarbringerRazuunAI : public CreatureAIScript
 class NeltharakusTale_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (plr->hasQuestInQuestLog(10814))
@@ -323,7 +320,6 @@ class EnslavedNetherwingDrakeAI : public CreatureAIScript
 class KarynakuChains : public GameObjectAIScript
 {
 public:
-
     explicit KarynakuChains(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new KarynakuChains(GO); }
 
@@ -343,7 +339,6 @@ public:
 class FlanisSwiftwing_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* Plr) override;
     void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* Code, uint32_t gossipId) override;
 };

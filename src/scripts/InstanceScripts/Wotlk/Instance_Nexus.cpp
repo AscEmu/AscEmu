@@ -98,7 +98,6 @@ class AnomalusAI : public CreatureAIScript
     }
 
 private:
-
     int32_t mSummonTimer;
     uint8_t mSummon;
     bool mRift;
@@ -279,7 +278,6 @@ class TelestraBossAI : public CreatureAIScript
     }
 
 private:
-
     Creature* mAddArray[3];
 
     int32_t mPhaseRepeat;
@@ -386,7 +384,6 @@ class OrmorokAI : public CreatureAIScript
     }
 
 private:
-
     bool mEnraged;
     InstanceScript* mInstance;
 };
@@ -431,7 +428,6 @@ class CrystalSpikeAI : public CreatureAIScript
     }
 
 private:
-
     int m_part;
 };
 
@@ -483,7 +479,6 @@ class KeristraszaAI : public CreatureAIScript
     }
 
 private:
-
     bool mEnraged;
 };
 
@@ -491,7 +486,6 @@ private:
 class NexusScript : public InstanceScript
 {
 public:
-
     uint32_t mAnomalusGUID;
     uint32_t mTelestraGUID;
     uint32_t mOrmorokGUID;

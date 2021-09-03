@@ -72,7 +72,6 @@ void OnEmote(Player* pPlayer, uint32_t Emote, Unit* pUnit)
 class JeanPierrePoulain : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 14500);
@@ -97,7 +96,6 @@ public:
 class Wormhole : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (plr->_GetSkillLineCurrent(202, false) >= 415)

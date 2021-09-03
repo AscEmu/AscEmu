@@ -8,17 +8,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Battleground/Battleground.h"
 #include "ArathiBasinDefinitions.h"
 
-
 class ArathiBasin : public CBattleground
 {
 public:
-
     GameObject* m_buffs[AB_NUM_BUFFS];
     GameObject* m_controlPoints[AB_NUM_CONTROL_POINTS];
     GameObject* m_controlPointAuras[AB_NUM_CONTROL_POINTS];
 
 protected:
-
     std::list<GameObject*> m_gates;
 
     uint32_t m_resources[2];
@@ -34,7 +31,6 @@ protected:
     bool DefFlag[AB_NUM_CONTROL_POINTS][2];
 
 public:
-
     ArathiBasin(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
     ~ArathiBasin();
 

@@ -32,7 +32,6 @@ enum
 class StrFever : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
@@ -150,7 +149,6 @@ class Beka2 : public CreatureAIScript
 class BloodscalpClanHeads : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
@@ -180,13 +178,11 @@ public:
         msg += ". You may now speak to the Bloodscalp chief and his witchdoctor.";
         Kin_weelay->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 500);
     }
-
 };
 
 class BacktoBootyBay : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float X = mTarget->GetPositionX();
@@ -207,7 +203,6 @@ public:
 class VoodooDues : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float X = mTarget->GetPositionX();
@@ -290,7 +285,7 @@ class FacingNegolash : public QuestScript
 class NegolashAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(NegolashAI)
-    explicit NegolashAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
+    explicit NegolashAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* /*mKiller*/) override
     {

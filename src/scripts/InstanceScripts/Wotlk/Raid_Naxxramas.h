@@ -618,7 +618,6 @@ const uint32_t GO_PLAGUE_FISSURE = 181533;
 class PlagueFissureGO : public GameObjectAIScript
 {
 public:
-
     static GameObjectAIScript* Create(GameObject* pGameObject);
     PlagueFissureGO(GameObject* pGameObject);
 
@@ -1352,7 +1351,6 @@ class GrobbulusAI : public CreatureAIScript
     }
 
 private:
-
     CreatureAISpells* poisonCloudGrob;
 };
 
@@ -1550,8 +1548,7 @@ class KorthazzAI : public CreatureAIScript
         }
     }
 
-    protected:
-
+protected:
     uint32_t tountcooldown, tountcont;
     CreatureAISpells* meteor;
 };
@@ -1577,7 +1574,6 @@ class KorthazzAI : public CreatureAIScript
 // Baron Rivendare AI
 const uint32_t CN_Baron_Rivendare_4H = 30549; //4H not to confuse with Strat UD Side..
 //Gief new Strat boss blizz or you make Stab a sad panda
-
 
 // Lady Blaumeux AI
 const uint32_t CN_LADY_BLAUMEUX = 16065;
@@ -1646,7 +1642,6 @@ class BlaumeuxAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t tountcooldown, tountcont;
     CreatureAISpells* voidZone;
 };
@@ -1737,7 +1732,6 @@ class ZeliekAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t tountcooldown, tountcont;
     CreatureAISpells* holyWrath;
 };
@@ -1828,7 +1822,6 @@ class FrostBreathTriggerAI : public CreatureAIScript
     }
 
 protected:
-
     int AICounter;
 };
 
@@ -1860,7 +1853,6 @@ class FrostBreathTrigger2AI : public CreatureAIScript
 class FrostBreathTrigger3AI : public CreatureAIScript
 {
 public:
-
     ADD_CREATURE_FACTORY_FUNCTION(FrostBreathTrigger3AI)
     explicit FrostBreathTrigger3AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -1888,7 +1880,6 @@ public:
 class ChillTriggerAI : public CreatureAIScript
 {
 public:
-
     ADD_CREATURE_FACTORY_FUNCTION(ChillTriggerAI)
     explicit ChillTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -1945,8 +1936,6 @@ class SapphironAI : public CreatureAIScript
     {
         stopMovement();
         addWaypoint(1, createWaypoint(1, 3000, WAYPOINT_MOVE_TYPE_RUN, PhaseTwoWP[1]));
-
-        
 
         auto lifeDrain = addAISpell(LIFE_DRAIN, 8.0f, TARGET_VARIOUS, 0, 20, false, true);
         lifeDrain->setAttackStopTimer(2000);
@@ -2267,8 +2256,7 @@ class SapphironAI : public CreatureAIScript
         }
     }
 
-    protected:
-
+protected:
     Unit* ChillTarget;    // I don't like it >_>
 
     uint32_t FlightActions;
@@ -2848,8 +2836,7 @@ class KelthuzadAI : public CreatureAIScript
         return DespawnTrash;
     }
 
-    protected:
-
+protected:
     bool DespawnTrash, EventStart;
     uint32_t SpawnCounter;
     uint32_t HelpDialog;
@@ -2963,8 +2950,7 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
         }
     }
 
-    protected:
-
+protected:
     float LastPosX, LastPosY, LastPosZ;
     float newposx;
     float newposy;
@@ -2980,8 +2966,6 @@ class UnstoppableAbominationAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(UnstoppableAbominationAI)
     explicit UnstoppableAbominationAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        
-
         auto mortalWound = addAISpell(UA_MORTAL_WOUND, 15.0f, TARGET_VARIOUS, 0, 10, false, true);
         mortalWound->setAttackStopTimer(1000);
 
@@ -3060,8 +3044,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
         }
     }
 
-    protected:
-
+protected:
     float LastPosX, LastPosY, LastPosZ;
     float newposx;
     float newposy;
@@ -3153,8 +3136,7 @@ class SoulWeaverAI : public CreatureAIScript
         }
     }
 
-    protected:
-
+protected:
     float LastPosX, LastPosY, LastPosZ;
     float newposx;
     float newposy;
@@ -3257,8 +3239,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
         }
     }
 
-    protected:
-
+protected:
     float LastPosX, LastPosY, LastPosZ;
     Unit* LastTarget;
     float newposx;

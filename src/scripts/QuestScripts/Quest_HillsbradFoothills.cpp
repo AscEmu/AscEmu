@@ -27,7 +27,6 @@ bool BaronVardusAllowSpawn = true;
 class WantedBaronVardus : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         if (BaronVardusAllowSpawn == true)

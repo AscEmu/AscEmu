@@ -72,10 +72,7 @@ LocationVector WaypointGoldshire[] =
 class HeadlessHorsemanAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HeadlessHorsemanAI)
-    explicit HeadlessHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        //Scarlet Monastery Boss
-    }
+    explicit HeadlessHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 };
 
 // Headless Horseman - Fire
@@ -211,7 +208,6 @@ class HeadlessHorsemanWispInvisAI : public CreatureAIScript
 class WaterBarrel : public GameObjectAIScript
 {
 public:
-
     explicit WaterBarrel(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new WaterBarrel(GO); }
 

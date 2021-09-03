@@ -12,11 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 class ArcatrazInstanceScript : public InstanceScript
 {
 public:
-
-    explicit ArcatrazInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit ArcatrazInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ArcatrazInstanceScript(pMapMgr); }
 };
 
@@ -136,7 +132,6 @@ class ZerekethAI : public CreatureAIScript
     }
 
 protected:
-
     int32_t SpeechTimer;
     int32_t VoidTimer;
 };
@@ -163,7 +158,6 @@ class VoidZoneARC : public CreatureAIScript
         RemoveAIUpdateEvent();
     }
 };
-
 
 // Dalliah the DoomsayerAI
 // sounds missing related to Wrath... (look on script below this one)
@@ -283,7 +277,6 @@ class HarbringerSkyrissAI : public CreatureAIScript
     }
 
 protected:
-
     uint8_t IllusionCount;
     CreatureAISpells* Illusion66;
     CreatureAISpells* Illusion33;
@@ -602,7 +595,6 @@ class WardenMellicharAI : public CreatureAIScript
     }
 
 protected:
-
     uint8_t Phasepart;
     uint32_t NPC_ID_Spawn;
     uint32_t Spawncounter;

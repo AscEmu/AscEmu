@@ -10,11 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 class MaraudonInstanceScript : public InstanceScript
 {
 public:
-
-    explicit MaraudonInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit MaraudonInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new MaraudonInstanceScript(pMapMgr); }
 };
 

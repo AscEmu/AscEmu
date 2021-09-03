@@ -33,7 +33,6 @@ std::size_t const pathSize = std::extent<decltype(WaypointTheSummoning)>::value;
 class TheSummoning : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* windwatcher = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 6176);

@@ -39,7 +39,6 @@ class PaladinDeadNPC : public CreatureAIScript
 class GildedBrazier : public GameObjectAIScript
 {
 public:
-
     explicit GildedBrazier(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new GildedBrazier(GO); }
 
@@ -66,12 +65,10 @@ public:
     }
 };
 
-class stillbladeQAI : public CreatureAIScript
+class StillbladeQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(stillbladeQAI)
-    explicit stillbladeQAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
+    ADD_CREATURE_FACTORY_FUNCTION(StillbladeQAI)
+    explicit StillbladeQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
     {
@@ -94,5 +91,5 @@ void SetupPaladin(ScriptMgr* mgr)
     mgr->register_creature_script(6177, &PaladinDeadNPC::Create);
     mgr->register_creature_script(6172, &PaladinDeadNPC::Create);
     mgr->register_gameobject_script(181956, &GildedBrazier::Create);
-    mgr->register_creature_script(17716, &stillbladeQAI::Create);
+    mgr->register_creature_script(17716, &StillbladeQAI::Create);
 }

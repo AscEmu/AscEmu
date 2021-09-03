@@ -25,7 +25,6 @@
 class Prisoner12 : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
@@ -49,7 +48,6 @@ public:
 class Prisoner22 : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
@@ -74,7 +72,6 @@ public:
 class Prisoner32 : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
@@ -111,7 +108,6 @@ class PrisonersatDeatholme : public CreatureAIScript
 class VanquishingAquantion : public GameObjectAIScript
 {
 public:
-
     explicit VanquishingAquantion(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new VanquishingAquantion(GO); }
 

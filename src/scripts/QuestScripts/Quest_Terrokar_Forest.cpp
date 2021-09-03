@@ -85,7 +85,6 @@ class TheInfestedProtectorsQAI : public CreatureAIScript
     }
 
 private:
-
     uint32_t min;
     uint32_t max;
     uint32_t finall;
@@ -167,7 +166,6 @@ class AnImproperBurial : public CreatureAIScript
 class TheMomentofTruth : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);

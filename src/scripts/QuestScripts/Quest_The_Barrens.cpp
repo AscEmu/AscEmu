@@ -26,7 +26,6 @@
 class BeatenCorpse : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (plr->hasQuestInQuestLog(4921))
@@ -127,7 +126,6 @@ class VerogtheDervish : public CreatureAIScript
             }
         }
     }
-
 };
 
 void SetupBarrens(ScriptMgr* mgr)

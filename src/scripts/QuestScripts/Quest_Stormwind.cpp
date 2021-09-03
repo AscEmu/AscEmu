@@ -67,7 +67,6 @@ class DashelStonefist : public CreatureAIScript
 class TheMissingDiplomat : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();

@@ -12,11 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 class TheBlackMorassInstanceScript : public InstanceScript
 {
 public:
-
-    explicit TheBlackMorassInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit TheBlackMorassInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new TheBlackMorassInstanceScript(pMapMgr); }
 };
 
@@ -39,7 +35,6 @@ class ChronoLordAI : public CreatureAIScript
     }
 };
 
-
 // TemporusAI
 class TemporusAI : public CreatureAIScript
 {
@@ -59,8 +54,7 @@ class TemporusAI : public CreatureAIScript
     }
 };
 
-
-//AenusAI
+// AenusAI
 class AenusAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AenusAI)

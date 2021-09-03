@@ -11,11 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 class DrakTharonKeepInstanceScript : public InstanceScript
 {
 public:
-
-    explicit DrakTharonKeepInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit DrakTharonKeepInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new DrakTharonKeepInstanceScript(pMapMgr); }
 };
 
@@ -84,7 +80,6 @@ class TrollgoreAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t invastion_timer;
 };
 
@@ -343,11 +338,9 @@ class NovosTheSummonerAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t invasion_timer;
     uint32_t handler_timer;
 };
-
 
 class CrystalHandlerAI : public CreatureAIScript
 {
@@ -380,7 +373,6 @@ class CrystalHandlerAI : public CreatureAIScript
         }
     }
 };
-
 
 // \todo King Dred Call nearby friends
 class KingDreadAI : public CreatureAIScript

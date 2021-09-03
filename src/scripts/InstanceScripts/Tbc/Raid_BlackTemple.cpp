@@ -11,11 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Illidan Encounter Event Options
-
 #define USE_SHADOW_PRISON // aggroes a lot of mobs/NPCs if they are not friendly to Illidan
-
-// 
-//////////////////////////////////////////////////////////////////////////////////////////
 
 enum
 {
@@ -296,7 +292,6 @@ enum
 class BlackTempleScript : public InstanceScript
 {
 public:
-
     explicit BlackTempleScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         if (getData(CN_SUPREMUS) == Finished)
@@ -393,7 +388,6 @@ class SisterOfPainAI : public CreatureAIScript
         addAISpell(SISTER_OF_PAIN_SHELL_OF_PAIN, 7.0f, TARGET_SELF, 1, 45);
     }
 };
-
 
 class PriestessOfDementiaAI : public CreatureAIScript
 {
@@ -1447,9 +1441,7 @@ class WrathboneFlayerAI : public CreatureAIScript
     }
 };
 
-
 // Bosses
-
 
 // There are also other sounds, but Idk where they should go (mostly specials and enrage - which erange spell is that O_O)
 class NajentusAI : public CreatureAIScript
@@ -1697,7 +1689,6 @@ class GurtoggAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t PhaseTimerId;
 };
 
@@ -2291,7 +2282,6 @@ class ShadeofakamaAI : public CreatureAIScript
                     break;
                 default:
                     break;
-
             }
         }
     }
@@ -2398,10 +2388,8 @@ class ShadeofakamaAI : public CreatureAIScript
     }
 
 protected:
-
     int hm;
 };
-
 
 // Illidan Stormrage Encounter
 // Percent done: 85% - 90+%
@@ -2448,7 +2436,6 @@ protected:
  */
 
 // Structures
-
 struct Transformation
 {
     uint32_t mTimer;
@@ -2651,7 +2638,6 @@ class UnselectableTriggerAI : public CreatureAIScript
 };
 
 // Generic Trigger AI
-
 class GenericTriggerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GenericTriggerAI)
@@ -2852,7 +2838,6 @@ class ParasiticShadowfiendAI : public CreatureAIScript
 class SCRIPT_DECL AkamaGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* pPlayer) override
     {
         Creature* pAIOwner = static_cast<Creature*>(pObject);
@@ -5146,7 +5131,6 @@ class CageTrapTriggerAI : public CreatureAIScript
 class CageTrapGO : public GameObjectAIScript
 {
 public:
-
     explicit CageTrapGO(GameObject* pGameObject) : GameObjectAIScript(pGameObject)
     {
         _gameobject->setScale(3.0f);

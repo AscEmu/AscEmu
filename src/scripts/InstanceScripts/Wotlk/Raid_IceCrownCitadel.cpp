@@ -1896,10 +1896,6 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Boss: Valithria Dreamwalker
 // ...
-//
-//
-//
-//
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Boss: Gunship Battle Alliance
@@ -2090,7 +2086,7 @@ public:
 class SaurfangAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SaurfangAI)
-        explicit SaurfangAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    explicit SaurfangAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
         mInstance = (IceCrownCitadelScript*)getInstanceScript();

@@ -36,11 +36,9 @@ class RingoDeadNPC : public CreatureAIScript
     }
 };
 
-
 class NorthernPylon : public GameObjectAIScript
 {
 public:
-
     explicit NorthernPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new NorthernPylon(GO); }
 
@@ -57,11 +55,9 @@ public:
     }
 };
 
-
 class EasternPylon : public GameObjectAIScript
 {
 public:
-
     explicit EasternPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new EasternPylon(GO); }
 
@@ -78,11 +74,9 @@ public:
     }
 };
 
-
 class WesternPylon : public GameObjectAIScript
 {
 public:
-
     explicit WesternPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new WesternPylon(GO); }
 
@@ -98,7 +92,6 @@ public:
         }
     }
 };
-
 
 class A_Me01 : public CreatureAIScript
 {

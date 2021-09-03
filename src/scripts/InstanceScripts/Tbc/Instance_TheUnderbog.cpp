@@ -12,17 +12,12 @@ This file is released under the MIT license. See README-MIT for more information
 class TheUnderbogInstanceScript : public InstanceScript
 {
 public:
-
-    explicit TheUnderbogInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit TheUnderbogInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new TheUnderbogInstanceScript(pMapMgr); }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Boss AIs
-
 class HungarfenAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(HungarfenAI)
@@ -66,7 +61,6 @@ class HungarfenAI : public CreatureAIScript
     }
 
 protected:
-
     bool FourSpores;
     CreatureAISpells* spores;
 };
@@ -107,7 +101,6 @@ class GhazanAI : public CreatureAIScript
     }
 
 protected:
-
     bool Enraged;
     CreatureAISpells* enrage;
 };

@@ -11,10 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 class InstancePitOfSaronScript : public InstanceScript
 {
 public:
-
-    explicit InstancePitOfSaronScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {}
-
+    explicit InstancePitOfSaronScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new InstancePitOfSaronScript(pMapMgr); }
 
     void OnPlayerEnter(Player* player) override

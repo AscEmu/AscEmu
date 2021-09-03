@@ -12,7 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 class MountHyjalScript : public InstanceScript
 {
 public:
-
     explicit MountHyjalScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         InstanceData[HYJAL_TYPE_BASIC][0] = HYJAL_PHASE_NOT_STARTED;
@@ -54,7 +53,6 @@ class JainaProudmooreAI : public CreatureAIScript
 class JainaProudmooreGS : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
@@ -106,7 +104,6 @@ class ThrallAI : public CreatureAIScript
 class ThrallGS : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
@@ -393,7 +390,6 @@ class DoomfireAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t DespawnTimer;
     uint32_t DirChange;
 };

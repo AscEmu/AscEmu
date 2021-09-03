@@ -11,14 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 class HallsOfStoneInstanceScript : public InstanceScript
 {
 public:
-
-    explicit HallsOfStoneInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit HallsOfStoneInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new HallsOfStoneInstanceScript(pMapMgr); }
-
-
 };
 
 class DarkRuneStormcallerAI : public CreatureAIScript
@@ -172,9 +166,8 @@ class MaidenOfGriefAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, 4372);            // I hope you all rot! I never... wanted... this.
     }
 
-    protected:
-
-        CreatureAISpells* mShock;
+protected:
+    CreatureAISpells* mShock;
 };
 
 class KrystallusAI : public CreatureAIScript
@@ -218,13 +211,12 @@ class KrystallusAI : public CreatureAIScript
         }
     }
 
-    protected:
+protected:
+    CreatureAISpells* mStomp;
+    CreatureAISpells* mShatter;
 
-        CreatureAISpells* mStomp;
-        CreatureAISpells* mShatter;
-
-        uint32_t mStompTimerId;
-        uint32_t mShatterTimerId;
+    uint32_t mStompTimerId;
+    uint32_t mShatterTimerId;
 };
 
 void SetupHallsOfStone(ScriptMgr* mgr)

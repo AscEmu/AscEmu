@@ -91,7 +91,6 @@ enum BannerStatus
 class HellfirePeninsulaBannerAI : public GameObjectAIScript
 {
 public:
-
     GameObjectPointer  pBanner;
     map<uint32_t, uint32_t> StoredPlayers;
     uint32_t Status;
@@ -368,7 +367,6 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Save Data To DB
-
     void UpdateInDB()
     {
         static const char* fieldnames[TOWER_COUNT] = { "hellfire-stadium-status", "hellfire-overlook-status", "hellfire-brokenhill-status" };
@@ -384,7 +382,6 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Zone Hook
-
 void ZoneHook(PlayerPointer plr, uint32_t Zone, uint32_t OldZone)
 {
     static uint32_t spellids[2] = { HELLFIRE_SUPERORITY_ALLIANCE, HELLFIRE_SUPERORITY_HORDE };
@@ -402,7 +399,6 @@ void ZoneHook(PlayerPointer plr, uint32_t Zone, uint32_t OldZone)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Object Spawn Data
-
 struct sgodata
 {
     uint32_t entry;

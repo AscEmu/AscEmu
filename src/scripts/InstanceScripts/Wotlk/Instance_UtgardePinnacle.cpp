@@ -11,20 +11,14 @@ This file is released under the MIT license. See README-MIT for more information
 class UtgardePinnacleInstanceScript : public InstanceScript
 {
 public:
-
-    explicit UtgardePinnacleInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit UtgardePinnacleInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new UtgardePinnacleInstanceScript(pMapMgr); }
 };
 
 class SvalaSorrowgraveAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SvalaSorrowgraveAI)
-    explicit SvalaSorrowgraveAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
+    explicit SvalaSorrowgraveAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 };
 
 class GortokPalehoofAI : public CreatureAIScript

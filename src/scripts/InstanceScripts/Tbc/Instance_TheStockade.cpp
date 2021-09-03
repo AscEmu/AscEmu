@@ -12,10 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 class InstanceStormwindStockadeScript : public InstanceScript
 {
 public:
-
-    explicit InstanceStormwindStockadeScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {}
-
+    explicit InstanceStormwindStockadeScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceStormwindStockadeScript(pMapMgr); }
 };
 

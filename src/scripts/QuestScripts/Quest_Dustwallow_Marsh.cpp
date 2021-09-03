@@ -87,6 +87,7 @@ class BalosJackenQAI : public CreatureAIScript
     {
         RemoveAIUpdateEvent();
     }
+
 protected:
     short friendlyTimer;
 };
@@ -138,7 +139,6 @@ class OverlordMokMorokk : public CreatureAIScript
 class ChallengeOverlordMokMorokk : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
@@ -204,7 +204,6 @@ class PrivateHendel : public CreatureAIScript
 class TheMissingDiplomat2 : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();

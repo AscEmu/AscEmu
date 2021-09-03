@@ -14,7 +14,6 @@ This file is released under the MIT license. See README-MIT for more information
 class PX238WinterWondervolt : public GameObjectAIScript
 {
 public:
-
     explicit PX238WinterWondervolt(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new PX238WinterWondervolt(GO); }
 

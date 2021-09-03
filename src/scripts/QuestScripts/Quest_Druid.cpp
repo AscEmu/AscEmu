@@ -51,7 +51,6 @@ class Lunaclaw : public CreatureAIScript
 class MoonkinGhost_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 4714, plr->GetSession()->language);
@@ -114,7 +113,6 @@ public:
 class SCRIPT_DECL BearGhost_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 4719, plr->GetSession()->language);
@@ -209,7 +207,6 @@ public:
 class MoongladeQuest : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         if (!mTarget->HasSpell(19027))

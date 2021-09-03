@@ -12,11 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 class BloodFurnaceInstanceScript : public InstanceScript
 {
 public:
-
-    explicit BloodFurnaceInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit BloodFurnaceInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new BloodFurnaceInstanceScript(pMapMgr); }
 };
 

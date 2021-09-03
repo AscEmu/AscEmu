@@ -10,11 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 class WailingCavernsInstanceScript : public InstanceScript
 {
 public:
-
-    explicit WailingCavernsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit WailingCavernsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) { }
     static InstanceScript* Create(MapMgr* pMapMgr) { return new WailingCavernsInstanceScript(pMapMgr); }
 };
 
@@ -22,10 +18,7 @@ class SkumAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new SkumAI(c); }
-
-    explicit SkumAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
+    explicit SkumAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
     void AIUpdate() override
     {
@@ -89,7 +82,6 @@ static LocationVector ToNaralex[] =
 class DofNaralexGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         Unit* Fanglord1 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-151.139008f, 414.367004f, -72.629402f, WailingCaverns::CN_LORD_COBRAHN);
@@ -145,7 +137,6 @@ class DofNaralexAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new DofNaralexAI(c); }
-
     explicit DofNaralexAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Mutanus = nullptr;
@@ -269,7 +260,6 @@ class Naralex : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new Naralex(c); }
-
     explicit Naralex(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);

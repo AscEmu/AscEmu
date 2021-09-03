@@ -26,7 +26,6 @@
 class Quest_The_Ring_of_Blood_The_Final_Challenge : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* pMogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
@@ -66,7 +65,6 @@ public:
 class Quest_The_Ring_of_Blood_The_Warmaul_Champion : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* pQgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
@@ -97,13 +95,11 @@ public:
         if (pWarmaulChamp != NULL)
             pWarmaulChamp->Despawn(1000, 0);
     };
-
 };
 
 class Quest_The_Ring_of_Blood_Skragath : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
@@ -141,7 +137,6 @@ public:
 class Quest_The_Ring_of_Blood_Rokdar_the_Sundered_Lord : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
@@ -174,7 +169,6 @@ public:
 class Quest_The_Ring_of_Blood_The_Blue_Brothers : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* pBrokentoe = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18398);
@@ -218,7 +212,6 @@ public:
 class Quest_The_Ring_of_Blood_Brokentoe : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
@@ -259,7 +252,6 @@ class mogorQAI : public CreatureAIScript
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
     };
-
 };
 
 class NotOnMyWatch : public CreatureAIScript
@@ -308,13 +300,11 @@ class NotOnMyWatch : public CreatureAIScript
             RemoveAIUpdateEvent();
         };
     };
-
 };
 
 class LumpGossipScript : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 2, plr->GetSession()->language);

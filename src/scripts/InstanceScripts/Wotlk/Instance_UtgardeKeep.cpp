@@ -12,7 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 class UtgardeKeepScript : public InstanceScript
 {
 public:
- 
     uint32_t mKelesethGUID;
     uint32_t mSkarvaldGUID;
     uint32_t mDalronnGUID;

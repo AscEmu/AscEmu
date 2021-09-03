@@ -25,7 +25,6 @@
 class ProtectingtheShipment : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
@@ -44,7 +43,6 @@ public:
         creat->GetAIInterface()->setAllowedToEnterCombat(false);
         creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do!");
         creat->setNpcFlags(UNIT_NPC_FLAG_NONE);
-
     }
 };
 

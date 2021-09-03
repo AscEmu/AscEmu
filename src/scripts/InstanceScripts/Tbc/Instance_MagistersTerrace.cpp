@@ -15,10 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 class InstanceMagistersTerraceScript : public InstanceScript
 {
 public:
-
-    explicit InstanceMagistersTerraceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {}
-
+    explicit InstanceMagistersTerraceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceMagistersTerraceScript(pMapMgr); }
 };
 
@@ -255,7 +252,6 @@ class Priestess_DelrissaAI : public CreatureAIScript
     }
 
 protected:
-
     uint8_t mKilledPlayers;
     int32_t mClearHateList;
 };

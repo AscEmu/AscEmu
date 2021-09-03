@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 class HallsOfLightningScript : public InstanceScript
 {
 public:
-
     uint32_t mGeneralDoorsGUID;
     uint32_t mVolkhanDoorsGUID;
     uint32_t mLokenDoorsGUID;
@@ -185,7 +184,6 @@ class GeneralBjarngrimAI : public CreatureAIScript
     }
 
 private:
-
     int32_t mStanceTimer;
 };
 
@@ -352,7 +350,6 @@ class VolkhansAnvil : public CreatureAIScript
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         setRooted(true);
     }
-
 };
 
 //\todo missing spark phase

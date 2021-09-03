@@ -10,18 +10,13 @@ This file is released under the MIT license. See README-MIT for more information
 class BlackfathomDeepsInstanceScript : public InstanceScript
 {
 public:
-
-    explicit BlackfathomDeepsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit BlackfathomDeepsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new BlackfathomDeepsInstanceScript(pMapMgr); }
 };
 
 class FathomStone : public GameObjectAIScript
 {
 public:
-
     explicit FathomStone(GameObject* goinstance) : GameObjectAIScript(goinstance)
     {
         SpawnBaronAquanis = true;
@@ -40,7 +35,6 @@ public:
     }
 
 protected:
-
     bool SpawnBaronAquanis;
 };
 

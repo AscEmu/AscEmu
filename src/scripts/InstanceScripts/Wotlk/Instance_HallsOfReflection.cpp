@@ -13,10 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 class HallsOfReflectionScript : public InstanceScript
 {
 public:
-
-    explicit HallsOfReflectionScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {}
-
+    explicit HallsOfReflectionScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new HallsOfReflectionScript(pMapMgr); }
 
     void OnPlayerEnter(Player* pPlayer) override
@@ -131,7 +128,6 @@ class JainaAI : public CreatureAIScript
 class Jaina_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu::sendQuickMenu(pObject->getGuid(), 1, plr, 1, GOSSIP_ICON_CHAT, "Can you remove the sword?");

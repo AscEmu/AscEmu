@@ -9,8 +9,8 @@ namespace Deadmines
 {
     static LocationVector Doors[] =
     {
-        { -168.514f, -579.861f, 19.3159f, 0 },    //Gilnid doors
-        { -290.294f, -536.96f, 49.4353f, 0 }        //Sneed doors
+        { -168.514f, -579.861f, 19.3159f, 0 },  // Gilnid doors
+        { -290.294f, -536.96f, 49.4353f, 0 }    // Sneed doors
     };
 
     //it will useful for cannon event

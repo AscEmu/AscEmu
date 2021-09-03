@@ -11,13 +11,12 @@ This file is released under the MIT license. See README-MIT for more information
 class AlteracValley : public CBattleground
 {
 protected:
-
     std::list<GameObject*> m_gates;
     uint32_t m_reinforcements[2];
     bool m_nearingVictory[2];
     std::map<Creature*, std::set<uint32_t> > Get_m_resurrectMap() const { return m_resurrectMap; }
-public:
 
+public:
     AlteracValley(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
     ~AlteracValley();
 
@@ -97,8 +96,7 @@ public:
         // spirit guides
         Creature* m_spiritGuide;
 
-public:
-
+    public:
         friend class AlteracValley;
 
         // constructor
@@ -125,6 +123,5 @@ public:
     };
 
 protected:
-
     AVNode* m_nodes[AV_NUM_CONTROL_POINTS];
 };

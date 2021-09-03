@@ -65,7 +65,6 @@ class Corrupt_Minor_Manifestation_Water_Dead : public CreatureAIScript
 class SavannahProwler : public CreatureAIScript
 {
 public:
-
     explicit SavannahProwler(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -121,7 +120,6 @@ class KirithAI : public CreatureAIScript
 class AllianceGryphon : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(AllianceGryphon)
-
     explicit AllianceGryphon(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* mTarget) override
@@ -357,8 +355,7 @@ class SilithidCreeperEgg : public CreatureAIScript
 class DraeneiSurvivor : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DraeneiSurvivor)
-    explicit DraeneiSurvivor(Creature* pCreature) : CreatureAIScript(pCreature)
-    { }
+    explicit DraeneiSurvivor(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -369,8 +366,7 @@ class DraeneiSurvivor : public CreatureAIScript
 class GuardRoberts : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GuardRoberts)
-    explicit GuardRoberts(Creature* pCreature) : CreatureAIScript(pCreature)
-    { }
+    explicit GuardRoberts(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -386,8 +382,7 @@ class GuardRoberts : public CreatureAIScript
 class SotaAntiPersonnalCannon : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SotaAntiPersonnalCannon)
-    explicit SotaAntiPersonnalCannon(Creature* pCreature) : CreatureAIScript(pCreature)
-    { }
+    explicit SotaAntiPersonnalCannon(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
     {
@@ -458,7 +453,6 @@ class NestlewoodOwlkin : public CreatureAIScript
     }
 
 private:
-
     bool reset;
     bool respawn;
 };
