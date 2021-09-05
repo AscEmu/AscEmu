@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Spell/Definitions/PowerType.hpp>
 
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Magister's Terrace
@@ -31,7 +30,8 @@ static LocationExtra FelCrystals[] =
 
 class SelinFireheartAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SelinFireheartAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SelinFireheartAI(c); }
     explicit SelinFireheartAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SF_DRAINLIFE, 8.0f, TARGET_RANDOM_SINGLE, 0, 35);
@@ -147,7 +147,8 @@ class SelinFireheartAI : public CreatureAIScript
 
 class VexallusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VexallusAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VexallusAI(c); }
     explicit VexallusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto chainLighning = addAISpell(VEXALLUS_CHAIN_LIGHTNING, 19.0f, TARGET_ATTACKING, 0, 8);
@@ -192,7 +193,8 @@ class VexallusAI : public CreatureAIScript
 
 class Priestess_DelrissaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Priestess_DelrissaAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Priestess_DelrissaAI(c); }
     explicit Priestess_DelrissaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto dispelMagic = addAISpell(PRIESTESS_DELRISSA_DISPEL_MAGIC, 35.0f, TARGET_RANDOM_FRIEND, 0, 5);
@@ -258,7 +260,8 @@ protected:
 
 class KaganiNightstrikeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KaganiNightstrikeAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KaganiNightstrikeAI(c); }
     explicit KaganiNightstrikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto kidneyShot = addAISpell(KAGANI_KIDNEY_SHOT, 80.0f, TARGET_ATTACKING, 0, 25);
@@ -274,7 +277,8 @@ class KaganiNightstrikeAI : public CreatureAIScript
 
 class EllrysDuskhallowAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EllrysDuskhallowAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EllrysDuskhallowAI(c); }
     explicit EllrysDuskhallowAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ELLRYS_IMMOLATE, 75.0f, TARGET_ATTACKING, 2, 15);
@@ -292,7 +296,8 @@ class EllrysDuskhallowAI : public CreatureAIScript
 
 class EramasBrightblazeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EramasBrightblazeAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EramasBrightblazeAI(c); }
     explicit EramasBrightblazeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ERAMAS_KNOCKDOWN, 25.0f, TARGET_ATTACKING, 0, 5);
@@ -302,7 +307,8 @@ class EramasBrightblazeAI : public CreatureAIScript
 
 class YazzaiAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(YazzaiAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new YazzaiAI(c); }
     explicit YazzaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto polymorph = addAISpell(YAZZAI_POLYMORPH, 30.0f, TARGET_RANDOM_SINGLE, 2, 16);
@@ -320,7 +326,8 @@ class YazzaiAI : public CreatureAIScript
 
 class WarlordSalarisAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WarlordSalarisAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WarlordSalarisAI(c); }
     explicit WarlordSalarisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto intercept = addAISpell(SALARIS_INTERCEPT, 25.0f, TARGET_RANDOM_SINGLE, 0, 8);
@@ -340,7 +347,8 @@ class WarlordSalarisAI : public CreatureAIScript
 
 class GaraxxasAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GaraxxasAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GaraxxasAI(c); }
     explicit GaraxxasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto aimedShot = addAISpell(GARAXXAS_AIMED_SHOT, 90.0f, TARGET_RANDOM_SINGLE, 3, 6);
@@ -361,7 +369,8 @@ class GaraxxasAI : public CreatureAIScript
 
 class ApokoAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ApokoAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ApokoAI(c); }
     explicit ApokoAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto frostShock = addAISpell(APOKO_FROST_SHOCK, 40.0f, TARGET_RANDOM_SINGLE, 0, 8);
@@ -377,7 +386,8 @@ class ApokoAI : public CreatureAIScript
 
 class ZelfanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ZelfanAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ZelfanAI(c); }
     explicit ZelfanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ZELFAN_GOBLIN_DRAGON_GUN, 90.0f, TARGET_ATTACKING, 0, 15);
@@ -392,7 +402,8 @@ class ZelfanAI : public CreatureAIScript
 
 class CoilskarWitchAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilskarWitchAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CoilskarWitchAI(c); }
     explicit CoilskarWitchAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(COILSKAR_WITCH_FORKED_LIGHTNING, 60.0f, TARGET_ATTACKING, 2, 12);
@@ -409,7 +420,8 @@ class CoilskarWitchAI : public CreatureAIScript
 
 class SisterOfTormentAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SisterOfTormentAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SisterOfTormentAI(c); }
     explicit SisterOfTormentAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SISTER_OF_TORMENT_LASH_OF_PAIN, 60.0f, TARGET_ATTACKING, 0, 8);
@@ -421,7 +433,8 @@ class SisterOfTormentAI : public CreatureAIScript
 
 class SunbladeBloodKnightAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SunbladeBloodKnightAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SunbladeBloodKnightAI(c); }
     explicit SunbladeBloodKnightAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BLOOD_KNIGHT_JUDGEMENT_OF_WRATH, 20.0f, TARGET_ATTACKING, 0, 30);
@@ -434,7 +447,8 @@ class SunbladeBloodKnightAI : public CreatureAIScript
 
 class SunbladeImpAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SunbladeImpAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SunbladeImpAI(c); }
     explicit SunbladeImpAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(IMP_FIREBOLT, 100.0f, TARGET_ATTACKING, 2, 3);
@@ -443,7 +457,8 @@ class SunbladeImpAI : public CreatureAIScript
 
 class SunbladeMageGuardAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SunbladeMageGuardAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SunbladeMageGuardAI(c); }
     explicit SunbladeMageGuardAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(MAGE_GUARD_GLAVE_THROW, 60.0f, TARGET_ATTACKING, 0, 25);
@@ -455,7 +470,8 @@ class SunbladeMageGuardAI : public CreatureAIScript
 
 class SunbladeMagisterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SunbladeMagisterAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SunbladeMagisterAI(c); }
     explicit SunbladeMagisterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(MAGISTER_FROSTBOLT, 65.0f, TARGET_ATTACKING, 2, 4);

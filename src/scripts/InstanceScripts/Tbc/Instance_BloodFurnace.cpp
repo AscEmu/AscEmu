@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_BloodFurnace.h"
 
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class BloodFurnaceInstanceScript : public InstanceScript
 {
@@ -18,7 +17,8 @@ public:
 
 class KelidanTheBreakerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KelidanTheBreakerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KelidanTheBreakerAI(c); }
     explicit KelidanTheBreakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -77,7 +77,8 @@ class KelidanTheBreakerAI : public CreatureAIScript
 
 class BroggokAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BroggokAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BroggokAI(c); }
     explicit BroggokAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(POISON_BOLT, 12.0f, TARGET_SELF, 0, 15);
@@ -97,7 +98,8 @@ class BroggokAI : public CreatureAIScript
 
 class TheMakerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TheMakerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TheMakerAI(c); }
     explicit TheMakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DOMINATION, 8.0f, TARGET_RANDOM_SINGLE);

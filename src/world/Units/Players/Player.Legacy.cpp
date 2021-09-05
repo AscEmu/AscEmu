@@ -19,8 +19,6 @@
  *
  */
 
-
-
 #include <iostream>
 #include <sstream>
 
@@ -68,7 +66,6 @@
 #include <zlib.h>
 
 #include "Chat/ChatHandler.hpp"
-#include "Macros/ScriptMacros.hpp"
 #include "Server/Packets/SmsgNewWorld.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Server/Packets/SmsgDeathReleaseLoc.h"

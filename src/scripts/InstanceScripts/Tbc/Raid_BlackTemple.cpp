@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_BlackTemple.h"
 #include "Objects/Faction.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Illidan Encounter Event Options
@@ -319,7 +318,8 @@ public:
 
 class DragonTurtleAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DragonTurtleAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DragonTurtleAI(c); }
     explicit DragonTurtleAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DRAGON_TRUTLE_SHELL_SHIELD, 10.0f, TARGET_SELF, 0, 25);
@@ -329,7 +329,8 @@ class DragonTurtleAI : public CreatureAIScript
 
 class LeviathanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LeviathanAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new LeviathanAI(c); }
     explicit LeviathanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(LEVIATHAN_DEBILITATING_SPRAY, 8.0f, TARGET_RANDOM_SINGLE, 3, 20);
@@ -340,7 +341,8 @@ class LeviathanAI : public CreatureAIScript
 
 class MutantWarHoundAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MutantWarHoundAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MutantWarHoundAI(c); }
     explicit MutantWarHoundAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* /*pKiller*/) override
@@ -352,7 +354,8 @@ class MutantWarHoundAI : public CreatureAIScript
 
 class ShadowmoonRidingHoundAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonRidingHoundAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadowmoonRidingHoundAI(c); }
     explicit ShadowmoonRidingHoundAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWMOON_RIDING_HOUND_CARNIVOROUS_BITE, 10.0f, TARGET_ATTACKING, 0, 20);
@@ -366,7 +369,8 @@ class ShadowmoonRidingHoundAI : public CreatureAIScript
 
 class SisterOfPleasureAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SisterOfPleasureAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SisterOfPleasureAI(c); }
     explicit SisterOfPleasureAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SISTER_OF_PLEASURE_GREATER_HEAL, 10.0f, TARGET_RANDOM_FRIEND, 2, 45);
@@ -378,7 +382,8 @@ class SisterOfPleasureAI : public CreatureAIScript
 
 class SisterOfPainAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SisterOfPainAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SisterOfPainAI(c); }
     explicit SisterOfPainAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SISTER_OF_PAIN_LASH_OF_PAIN, 10.0f, TARGET_ATTACKING, 0, 25);
@@ -391,7 +396,8 @@ class SisterOfPainAI : public CreatureAIScript
 
 class PriestessOfDementiaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PriestessOfDementiaAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PriestessOfDementiaAI(c); }
     explicit PriestessOfDementiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(PRIESTESS_OF_DEMENTIA_CONFUSION, 8.0f, TARGET_SELF, 0, 30);
@@ -401,7 +407,8 @@ class PriestessOfDementiaAI : public CreatureAIScript
 
 class PriestessOfDelightAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PriestessOfDelightAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PriestessOfDelightAI(c); }
     explicit PriestessOfDelightAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(PRIESTESS_OF_DELIGHT_CURSE_OF_VITALITY, 10.0f, TARGET_RANDOM_SINGLE, 0, 30);
@@ -410,7 +417,8 @@ class PriestessOfDelightAI : public CreatureAIScript
 
 class IllidariNightlordAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariNightlordAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new IllidariNightlordAI(c); }
     explicit IllidariNightlordAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ILLIDARI_NIGHTLORD_SUMMON_SHADOWFIENDS, 7.0f, TARGET_SELF, 0, 45);            // does it work?
@@ -422,7 +430,8 @@ class IllidariNightlordAI : public CreatureAIScript
 
 class IllidariHeartseekerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariHeartseekerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new IllidariHeartseekerAI(c); }
     explicit IllidariHeartseekerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto bleakheart = addAISpell(ILLIDARI_HEARTSEEKER_CURSE_OF_THE_BLEAKHEART, 8.0f, TARGET_RANDOM_SINGLE, 0, 40);
@@ -464,7 +473,8 @@ class IllidariHeartseekerAI : public CreatureAIScript
 
 class IllidariFearbringerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariFearbringerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new IllidariFearbringerAI(c); }
     explicit IllidariFearbringerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ILLIDARI_FEARBRINGER_ILLIDARI_FLAMES, 8.0f, TARGET_ATTACKING, 2, 25);
@@ -475,7 +485,8 @@ class IllidariFearbringerAI : public CreatureAIScript
 
 class IllidariDefilerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariDefilerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new IllidariDefilerAI(c); }
     explicit IllidariDefilerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ILLIDARI_DEFILER_BANISH, 8.0f, TARGET_RANDOM_SINGLE, 1, 30);
@@ -487,7 +498,8 @@ class IllidariDefilerAI : public CreatureAIScript
 
 class IllidariCenturionAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariCenturionAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new IllidariCenturionAI(c); }
     explicit IllidariCenturionAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ILLIDARI_CENTURION_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 20);
@@ -497,7 +509,8 @@ class IllidariCenturionAI : public CreatureAIScript
 
 class IllidariBoneslicerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariBoneslicerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new IllidariBoneslicerAI(c); }
     explicit IllidariBoneslicerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ILLIDARI_BONESLICER_CLOAK_OF_SHADOWS, 8.0f, TARGET_SELF, 0, 25);
@@ -510,7 +523,8 @@ class IllidariBoneslicerAI : public CreatureAIScript
 // Humanoid AIs
 class AshtongueBattlelordAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueBattlelordAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AshtongueBattlelordAI(c); }
     explicit AshtongueBattlelordAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_BATTLELORD_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 15);
@@ -522,7 +536,8 @@ class AshtongueBattlelordAI : public CreatureAIScript
 
 class AshtongueDefenderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueDefenderAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AshtongueDefenderAI(c); }
     explicit AshtongueDefenderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_DEFENDER_DEBILITATING_STRIKE, 10.0f, TARGET_ATTACKING, 0, 20);
@@ -532,7 +547,8 @@ class AshtongueDefenderAI : public CreatureAIScript
 
 class AshtongueElementalistAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueElementalistAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AshtongueElementalistAI(c); }
     explicit AshtongueElementalistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_ELEMENTALIST_LIGHTNING_BOLT, 8.0f, TARGET_ATTACKING, 1, 20);
@@ -543,7 +559,8 @@ class AshtongueElementalistAI : public CreatureAIScript
 //\ todo Add Totem AIs
 class AshtongueMysticAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueMysticAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AshtongueMysticAI(c); }
     explicit AshtongueMysticAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_MYSTIC_BLOODLUST, 5.0f, TARGET_SELF, 0, 45);
@@ -558,7 +575,8 @@ class AshtongueMysticAI : public CreatureAIScript
 
 class AshtonguePrimalistAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtonguePrimalistAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AshtonguePrimalistAI(c); }
     explicit AshtonguePrimalistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_PRIMALIST_MULTISHOT, 8.0f, TARGET_ATTACKING, 0, 40);
@@ -592,7 +610,8 @@ class AshtonguePrimalistAI : public CreatureAIScript
 
 class AshtongueRogueAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueRogueAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AshtongueRogueAI(c); }
     explicit AshtongueRogueAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_ROGUE_DEBILITATING_POISON, 7.0f, TARGET_ATTACKING, 0, 30);
@@ -602,7 +621,8 @@ class AshtongueRogueAI : public CreatureAIScript
 
 class AshtongueSpiritbinderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueSpiritbinderAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AshtongueSpiritbinderAI(c); }
     explicit AshtongueSpiritbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_SPIRITBINDER_CHAIN_HEAL, 7.0f, TARGET_RANDOM_FRIEND, 1, 25);
@@ -619,7 +639,8 @@ class AshtongueSpiritbinderAI : public CreatureAIScript
 //\brief Completely guessed mechanics
 class AshtongueStalkerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueStalkerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AshtongueStalkerAI(c); }
     explicit AshtongueStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_STALKER_BLIND, 7.0f, TARGET_RANDOM_SINGLE, 1, 25);
@@ -639,7 +660,8 @@ class AshtongueStalkerAI : public CreatureAIScript
 
 class AshtongueStormcallerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueStormcallerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AshtongueStormcallerAI(c); }
     explicit AshtongueStormcallerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASHTONGUE_STORMCALLER_CHAIN_LIGHTNING, 7.0f, TARGET_ATTACKING, 3, 35);
@@ -650,7 +672,8 @@ class AshtongueStormcallerAI : public CreatureAIScript
 
 class BonechewerBehemothAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerBehemothAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BonechewerBehemothAI(c); }
     explicit BonechewerBehemothAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pCharge = addAISpell(BONECHEWER_BEHEMOTH_BEHEMOTH_CHARGE, 0.0f, TARGET_ATTACKING, 0, 20);
@@ -673,7 +696,8 @@ class BonechewerBehemothAI : public CreatureAIScript
 
 class BonechewerBladeFuryAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerBladeFuryAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BonechewerBladeFuryAI(c); }
     explicit BonechewerBladeFuryAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BONECHEWER_BLADE_FURY_WHIRLWIND, 7.0f, TARGET_ATTACKING, 8, 40);
@@ -682,7 +706,8 @@ class BonechewerBladeFuryAI : public CreatureAIScript
 
 class BonechewerBloodProphetAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerBloodProphetAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BonechewerBloodProphetAI(c); }
     explicit BonechewerBloodProphetAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BONECHEWER_BLOOD_PROPHET_BLOOD_DRAIN, 6.0f, TARGET_ATTACKING, 5, 30);
@@ -698,7 +723,8 @@ class BonechewerBloodProphetAI : public CreatureAIScript
 
 class BonechewerBrawlerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerBrawlerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BonechewerBrawlerAI(c); }
     explicit BonechewerBrawlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BONECHEWER_BRAWLER_FRENZY, 7.0f, TARGET_SELF, 0, 30);
@@ -707,7 +733,8 @@ class BonechewerBrawlerAI : public CreatureAIScript
 
 class BonechewerCombatantAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerCombatantAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BonechewerCombatantAI(c); }
     explicit BonechewerCombatantAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BONECHEWER_COMBATANT_FRENZY, 7.0f, TARGET_SELF, 0, 45);
@@ -716,7 +743,8 @@ class BonechewerCombatantAI : public CreatureAIScript
 
 class BonechewerShieldDiscipleAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerShieldDiscipleAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BonechewerShieldDiscipleAI(c); }
     explicit BonechewerShieldDiscipleAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pIntervene = addAISpell(BONECHEWER_SHIELD_DISCIPLE_INTERVENE, 0.0f, TARGET_ATTACKING, 0, 20);
@@ -738,7 +766,8 @@ class BonechewerShieldDiscipleAI : public CreatureAIScript
 
 class BonechewerSpectatorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerSpectatorAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BonechewerSpectatorAI(c); }
     explicit BonechewerSpectatorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pCharge = addAISpell(BONECHEWER_SPECTATOR_CHARGE, 0.0f, TARGET_ATTACKING, 0, 20);
@@ -761,7 +790,8 @@ class BonechewerSpectatorAI : public CreatureAIScript
 
 class BonechewerTaskmasterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerTaskmasterAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BonechewerTaskmasterAI(c); }
     explicit BonechewerTaskmasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BONECHEWER_TASKMASTER_DISGRUNTLED, 5.0f, TARGET_SELF, 0, 45);
@@ -771,7 +801,8 @@ class BonechewerTaskmasterAI : public CreatureAIScript
 
 class BonechewerWorkerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonechewerWorkerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BonechewerWorkerAI(c); }
     explicit BonechewerWorkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BONECHEWER_WORKER_THROW_PICK, 8.0f, TARGET_RANDOM_SINGLE, 0, 15);
@@ -780,7 +811,8 @@ class BonechewerWorkerAI : public CreatureAIScript
 
 class CharmingCourtesanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CharmingCourtesanAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CharmingCourtesanAI(c); }
     explicit CharmingCourtesanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(CHARMING_COURTESAN_INFATUATION, 7.0f, TARGET_RANDOM_SINGLE, 20, 40);
@@ -790,7 +822,8 @@ class CharmingCourtesanAI : public CreatureAIScript
 
 class CoilskarGeneralAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilskarGeneralAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CoilskarGeneralAI(c); }
     explicit CoilskarGeneralAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(COILSKAR_GENERAL_BOOMING_VOICE, 7.0f, TARGET_SELF, 0, 35);
@@ -801,7 +834,8 @@ class CoilskarGeneralAI : public CreatureAIScript
 //\todo Is it Ranged unit throwing spears all the time?
 class CoilskarHarpoonerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilskarHarpoonerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CoilskarHarpoonerAI(c); }
     explicit CoilskarHarpoonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pMark = addAISpell(COILSKAR_HARPOONER_HARPOONERS_MARK, 7.0f, TARGET_RANDOM_SINGLE, 0, 35);
@@ -822,7 +856,8 @@ class CoilskarHarpoonerAI : public CreatureAIScript
 
 class CoilskarSeacallerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilskarSeacallerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CoilskarSeacallerAI(c); }
     explicit CoilskarSeacallerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(COILSKAR_SEACALLER_FORKED_LIGHTNING, 8.0f, TARGET_SELF, 2, 20);
@@ -833,7 +868,8 @@ class CoilskarSeacallerAI : public CreatureAIScript
 
 class CoilskarSoothsayerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilskarSoothsayerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CoilskarSoothsayerAI(c); }
     explicit CoilskarSoothsayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(COILSKAR_SOOTHSAYER_HOLY_NOVA, 10.0f, TARGET_SELF, 0, 20);
@@ -843,7 +879,8 @@ class CoilskarSoothsayerAI : public CreatureAIScript
 
 class CoilskarWranglerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CoilskarWranglerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CoilskarWranglerAI(c); }
     explicit CoilskarWranglerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(COILSKAR_WRANGLER_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 20);
@@ -854,7 +891,8 @@ class CoilskarWranglerAI : public CreatureAIScript
 
 class DragonmawSkyStalkerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DragonmawSkyStalkerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DragonmawSkyStalkerAI(c); }
     explicit DragonmawSkyStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DRAGONMAW_SKY_STALKER_IMMOLATION_ARROW, 8.0f, TARGET_ATTACKING, 2, 15);
@@ -887,7 +925,8 @@ class DragonmawSkyStalkerAI : public CreatureAIScript
 //\todo Should it run away from tank when he's close?
 class DragonmawWindReaverAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DragonmawWindReaverAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DragonmawWindReaverAI(c); }
     explicit DragonmawWindReaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DRAGONMAW_WIND_REAVER_DOOM_BOLT, 10.0f, TARGET_ATTACKING, 2, 15);
@@ -920,7 +959,8 @@ class DragonmawWindReaverAI : public CreatureAIScript
 
 class DragonmawWyrmcallerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DragonmawWyrmcallerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DragonmawWyrmcallerAI(c); }
     explicit DragonmawWyrmcallerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DRAGONMAW_WYRMCALLER_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 15);
@@ -931,7 +971,8 @@ class DragonmawWyrmcallerAI : public CreatureAIScript
 
 class EnslavedServantAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EnslavedServantAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EnslavedServantAI(c); }
     explicit EnslavedServantAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ENSLAVED_SERVANT_KIDNEY_SHOT, 7.0f, TARGET_ATTACKING, 0, 25);
@@ -959,7 +1000,8 @@ class EnslavedServantAI : public CreatureAIScript
 
 class HandOfGorefiendAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HandOfGorefiendAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HandOfGorefiendAI(c); }
     explicit HandOfGorefiendAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(HAND_OF_GOREFIEND_FRENZY, 6.0f, TARGET_SELF, 0, 45);
@@ -969,7 +1011,8 @@ class HandOfGorefiendAI : public CreatureAIScript
 //\todo Mechanics are guessed. I'm also not sure if it's not typical caster unit
 class IllidariArchonAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariArchonAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new IllidariArchonAI(c); }
     explicit IllidariArchonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         switch (Util::getRandomUInt(1))
@@ -990,7 +1033,8 @@ class IllidariArchonAI : public CreatureAIScript
 //\todo Couldn't find mechanics nowhere around the net, so kept it simple
 class IllidariAssassinAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariAssassinAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new IllidariAssassinAI(c); }
     explicit IllidariAssassinAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ILLIDARI_ASSASSIN_PARALYZING_POISON, 8.0f, TARGET_ATTACKING, 0, 25);
@@ -1009,7 +1053,8 @@ class IllidariAssassinAI : public CreatureAIScript
 //\todo I've parted it on frost and fire mage - correct me if it's wrong (also slap me if it's typical caster)
 class IllidariBattlemageAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariBattlemageAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new IllidariBattlemageAI(c); }
     explicit IllidariBattlemageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         switch (Util::getRandomUInt(1))
@@ -1028,7 +1073,8 @@ class IllidariBattlemageAI : public CreatureAIScript
 
 class IllidariBloodLordAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidariBloodLordAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new IllidariBloodLordAI(c); }
     explicit IllidariBloodLordAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ILLIDARI_BLOOD_LORD_DIVINE_SHIELD, 8.0f, TARGET_SELF, 0, 30);
@@ -1040,7 +1086,8 @@ class IllidariBloodLordAI : public CreatureAIScript
 //\todo Should be summoned by Priestess of Dementia
 class ImageOfDementiaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ImageOfDementiaAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ImageOfDementiaAI(c); }
     explicit ImageOfDementiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(IMAGE_OF_DEMENTIA_WHRILWIND, 15.0f, TARGET_SELF, 15, 30);
@@ -1055,7 +1102,8 @@ class ImageOfDementiaAI : public CreatureAIScript
 
 class ShadowmoonBloodMageAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonBloodMageAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadowmoonBloodMageAI(c); }
     explicit ShadowmoonBloodMageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWMOON_BLOOD_MAGE_BLOOD_SIPHON, 8.0f, TARGET_SELF, 0, 35);
@@ -1065,7 +1113,8 @@ class ShadowmoonBloodMageAI : public CreatureAIScript
 
 class ShadowmoonChampionAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonChampionAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadowmoonChampionAI(c); }
     explicit ShadowmoonChampionAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWMOON_CHAMPION_CHAOTIC_LIGHT, 8.0f, TARGET_ATTACKING, 0, 25);
@@ -1075,7 +1124,8 @@ class ShadowmoonChampionAI : public CreatureAIScript
 
 class ShadowmoonDeathshaperAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonDeathshaperAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadowmoonDeathshaperAI(c); }
     explicit ShadowmoonDeathshaperAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWMOON_DEATHSHAPER_DEATH_COIL, 7.0f, TARGET_RANDOM_SINGLE, 0, 30);
@@ -1127,14 +1177,15 @@ class ShadowmoonDeathshaperAI : public CreatureAIScript
 //\todo No entry in my DB, but AI may stay :)?
 class ShadowmoonFallenAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonFallenAI)
-    explicit ShadowmoonFallenAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    { }
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadowmoonFallenAI(c); }
+    explicit ShadowmoonFallenAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 };
 
 class ShadowmoonHoundmasterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonHoundmasterAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadowmoonHoundmasterAI(c); }
     explicit ShadowmoonHoundmasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWMOON_HOUNDMASTER_FLARE, 5.0f, TARGET_RANDOM_DESTINATION, 0, 30);
@@ -1171,7 +1222,8 @@ class ShadowmoonHoundmasterAI : public CreatureAIScript
 
 class ShadowmoonReaverAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonReaverAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadowmoonReaverAI(c); }
     explicit ShadowmoonReaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWMOON_REAVER_SPELL_ABSORPTION, 8.0f, TARGET_SELF, 0, 35);
@@ -1180,7 +1232,8 @@ class ShadowmoonReaverAI : public CreatureAIScript
 
 class ShadowmoonSoldierAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonSoldierAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadowmoonSoldierAI(c); }
     explicit ShadowmoonSoldierAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWMOON_SOLDIER_STRIKE, 10.0f, TARGET_ATTACKING, 0, 15);
@@ -1190,7 +1243,8 @@ class ShadowmoonSoldierAI : public CreatureAIScript
 //\todo Haven't found informations about Shield Wall ability
 class ShadowmoonWeaponMasterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonWeaponMasterAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadowmoonWeaponMasterAI(c); }
     explicit ShadowmoonWeaponMasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto knockAway = addAISpell(SHADOWMOON_WEAPON_MASTER_KNOCK_AWAY, 9.0f, TARGET_ATTACKING, 0, 25);
@@ -1260,7 +1314,8 @@ class ShadowmoonWeaponMasterAI : public CreatureAIScript
 
 class SpellboundAttendantAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SpellboundAttendantAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SpellboundAttendantAI(c); }
     explicit SpellboundAttendantAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SPELLBOUND_ATTENDANT_KICK, 9.0f, TARGET_ATTACKING, 0, 25);
@@ -1270,7 +1325,8 @@ class SpellboundAttendantAI : public CreatureAIScript
 
 class TempleConcubineAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TempleConcubineAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TempleConcubineAI(c); }
     explicit TempleConcubineAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(TEMPLE_CONCUBINE_LOVE_TAP, 9.0f, TARGET_ATTACKING, 0, 25);
@@ -1282,7 +1338,8 @@ class TempleConcubineAI : public CreatureAIScript
 // Elemental AIs
 class StormFuryAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(StormFuryAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new StormFuryAI(c); }
     explicit StormFuryAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mStormBlink = addAISpell(STORM_FURY_STORM_BLINK, 8.0f, TARGET_SELF, 1, 0);    // Mechanics was guessed
@@ -1302,7 +1359,8 @@ class StormFuryAI : public CreatureAIScript
 
 class AqueousSurgerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AqueousSurgerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AqueousSurgerAI(c); }
     explicit AqueousSurgerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(AQUEOUS_SURGER_POISON_BOLT_VOLLEY, 7.0f, TARGET_SELF, 0, 20);
@@ -1311,7 +1369,8 @@ class AqueousSurgerAI : public CreatureAIScript
 
 class AqueousSpawnAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AqueousSpawnAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AqueousSpawnAI(c); }
     explicit AqueousSpawnAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(AQUEOUS_SPAWN_MERGE, 7.0f, TARGET_SELF, 11, 45);
@@ -1321,7 +1380,8 @@ class AqueousSpawnAI : public CreatureAIScript
 
 class AqueousLordAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AqueousLordAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AqueousLordAI(c); }
     explicit AqueousLordAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(AQUEOUS_LORD_CRASHING_WAVE, 8.0f, TARGET_SELF, 0, 35);
@@ -1350,7 +1410,8 @@ class AqueousLordAI : public CreatureAIScript
 // Mechanical AIs
 class PromenadeSentinelAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PromenadeSentinelAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PromenadeSentinelAI(c); }
     explicit PromenadeSentinelAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(PROMENADE_SENTINEL_L5_ARCANE_CHARGE, 8.0f, TARGET_RANDOM_SINGLE, 3, 35);
@@ -1361,7 +1422,8 @@ class PromenadeSentinelAI : public CreatureAIScript
 // Uncategorized AIs
 class AngeredSoulFragmentAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AngeredSoulFragmentAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AngeredSoulFragmentAI(c); }
     explicit AngeredSoulFragmentAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ANGERED_SOUL_FRAGMENT_ANGER, 10.0f, TARGET_SELF, 3, 25);
@@ -1372,7 +1434,8 @@ class AngeredSoulFragmentAI : public CreatureAIScript
 // Undead AIs
 class EnslavedSoulAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EnslavedSoulAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EnslavedSoulAI(c); }
     explicit EnslavedSoulAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* /*mKiller*/) override
@@ -1384,7 +1447,8 @@ class EnslavedSoulAI : public CreatureAIScript
 
 class HungeringSoulFragmentAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HungeringSoulFragmentAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HungeringSoulFragmentAI(c); }
     explicit HungeringSoulFragmentAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         _applyAura(HUNGERING_SOUL_FRAGMENT_CONSUMING_STRIKES);
@@ -1401,7 +1465,8 @@ class HungeringSoulFragmentAI : public CreatureAIScript
 
 class ShadowyConstructAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowyConstructAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadowyConstructAI(c); }
     explicit ShadowyConstructAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWY_CONSTRUCT_ATROPHY, 10.0f, TARGET_ATTACKING, 0, 45);
@@ -1410,7 +1475,8 @@ class ShadowyConstructAI : public CreatureAIScript
 
 class SufferingSoulFragmentAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SufferingSoulFragmentAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SufferingSoulFragmentAI(c); }
     explicit SufferingSoulFragmentAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SUFFERING_SOUL_FRAGMENT_SOUL_BLAST, 8.0f, TARGET_SELF, 2, 30);
@@ -1420,7 +1486,8 @@ class SufferingSoulFragmentAI : public CreatureAIScript
 //\todo Teron Gorefiend transforms random player into it with those abilities, but AI might be handy too (too overpowered?) - cannot check (no npc in DB)
 class VangefulSpiritAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VangefulSpiritAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VangefulSpiritAI(c); }
     explicit VangefulSpiritAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(VANGEFUL_SPIRIT_SPIRIT_CHAINS, 8.0f, TARGET_SELF, 0, 25);
@@ -1433,7 +1500,8 @@ class VangefulSpiritAI : public CreatureAIScript
 
 class WrathboneFlayerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WrathboneFlayerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WrathboneFlayerAI(c); }
     explicit WrathboneFlayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(WRATHBONE_FLAYER_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 15);
@@ -1446,7 +1514,8 @@ class WrathboneFlayerAI : public CreatureAIScript
 // There are also other sounds, but Idk where they should go (mostly specials and enrage - which erange spell is that O_O)
 class NajentusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NajentusAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NajentusAI(c); }
     explicit NajentusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto crashingWave = addAISpell(CRASHING_WAVE, 10.0f, TARGET_VARIOUS, 0, 15);
@@ -1474,7 +1543,8 @@ class NajentusAI : public CreatureAIScript
 
 class SupremusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SupremusAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SupremusAI(c); }
     explicit SupremusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_MoltenFlame = m_HurtfulStrike = m_MoltenPunch = m_VolcanicGazer = true;
@@ -1618,7 +1688,8 @@ protected:
 
 class GurtoggAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GurtoggAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GurtoggAI(c); }
     explicit GurtoggAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto arcingSmash = addAISpell(ARCING_SMASH, 5.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -1694,7 +1765,8 @@ protected:
 
 class EssenceOfSufferingAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EssenceOfSufferingAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EssenceOfSufferingAI(c); }
     explicit EssenceOfSufferingAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(EOS_FIXATE, 10.0f, TARGET_ATTACKING, 0, 5);
@@ -1738,7 +1810,8 @@ class EssenceOfSufferingAI : public CreatureAIScript
 
 class EssenceOfDesireAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EssenceOfDesireAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EssenceOfDesireAI(c); }
     explicit EssenceOfDesireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(EOD_RUNE_SHIELD, 6.0f, TARGET_SELF, 0, 15);
@@ -1783,7 +1856,8 @@ class EssenceOfDesireAI : public CreatureAIScript
 
 class EssenceOfAngerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EssenceOfAngerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EssenceOfAngerAI(c); }
     explicit EssenceOfAngerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mTaunt = addAISpell(EOA_SEETHE, 0.0f, TARGET_ATTACKING); // on Taunt
@@ -1829,7 +1903,8 @@ class EssenceOfAngerAI : public CreatureAIScript
 
 class ReliquaryOfSoulsAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ReliquaryOfSoulsAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ReliquaryOfSoulsAI(c); }
     explicit ReliquaryOfSoulsAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mSummonSuffering = addAISpell(ROS_SUMMON_SUFFERING, 0.0f, TARGET_SELF, 0, 0);
@@ -1989,7 +2064,8 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
 // Dunno where "spell" sounds/texts should go
 class ShahrazAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShahrazAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShahrazAI(c); }
     explicit ShahrazAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto saberLash = addAISpell(SABER_LASH, 8.0f, TARGET_ATTACKING, 0, 15, false, true);
@@ -2091,7 +2167,8 @@ typedef std::vector<Creature*> EncounterVector;
 
 class GathiosAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GathiosAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GathiosAI(c); }
     explicit GathiosAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(HAMMER_OF_JUSTICE, 15.0f, TARGET_RANDOM_SINGLE, 0, 14);
@@ -2147,7 +2224,8 @@ private:
 
 class VerasAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VerasAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VerasAI(c); }
     explicit VerasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DEADLY_POISON, 15.0f, TARGET_RANDOM_SINGLE, 0, 20);
@@ -2172,7 +2250,8 @@ class VerasAI : public CreatureAIScript
 
 class ZerevorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ZerevorAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ZerevorAI(c); }
     explicit ZerevorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ARCANE_BOLT, 65.0f, TARGET_ATTACKING, 2, 6);
@@ -2199,7 +2278,8 @@ class ZerevorAI : public CreatureAIScript
 
 class MalandeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MalandeAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MalandeAI(c); }
     explicit MalandeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DIVINE_WRATH, 15.0f, TARGET_RANDOM_SINGLE, 0, 14);
@@ -2228,7 +2308,8 @@ class MalandeAI : public CreatureAIScript
 // Dunno where other sounds should go
 class TeronGorefiendAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TeronGorefiendAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TeronGorefiendAI(c); }
     explicit TeronGorefiendAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto doomBlossom = addAISpell(DOOM_BLOSSOM, 8.0f, TARGET_SELF, 0, 25, false, true);
@@ -2254,7 +2335,8 @@ class TeronGorefiendAI : public CreatureAIScript
 
 class ShadeofakamaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadeofakamaAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadeofakamaAI(c); }
     explicit ShadeofakamaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         hm = 0;
@@ -2630,7 +2712,8 @@ uint32_t DeathSceneTimers[] =
 
 class UnselectableTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(UnselectableTriggerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new UnselectableTriggerAI(c); }
     explicit UnselectableTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -2640,7 +2723,8 @@ class UnselectableTriggerAI : public CreatureAIScript
 // Generic Trigger AI
 class GenericTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GenericTriggerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GenericTriggerAI(c); }
     explicit GenericTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setRooted(true);
@@ -2708,7 +2792,8 @@ class GenericTriggerAI : public CreatureAIScript
 
 class EyeBeamTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EyeBeamTriggerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EyeBeamTriggerAI(c); }
     explicit EyeBeamTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
@@ -2747,7 +2832,8 @@ class EyeBeamTriggerAI : public CreatureAIScript
 
 class ShadowDemonAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowDemonAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadowDemonAI(c); }
     explicit ShadowDemonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mParalyze = addAISpell(SHADOW_DEMON_PARALYZE, 0.0f, TARGET_ATTACKING);
@@ -2812,7 +2898,8 @@ class ShadowDemonAI : public CreatureAIScript
 
 class ParasiticShadowfiendAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ParasiticShadowfiendAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ParasiticShadowfiendAI(c); }
     explicit ParasiticShadowfiendAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(PARASITIC_SHADOWFIEND_WITH_DAMAGE, 0.0f, TARGET_ATTACKING);
@@ -2885,7 +2972,8 @@ public:
 
 class AkamaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AkamaAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AkamaAI(c); }
     explicit AkamaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto blessingOfKings = addAISpell(AKAMA_BLESSING_OF_KINGS, 15.0f, TARGET_SELF, 0, 60);
@@ -3435,7 +3523,8 @@ class AkamaAI : public CreatureAIScript
 
 class MaievAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MaievAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MaievAI(c); }
     explicit MaievAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto strike = addAISpell(MAIEV_SHADOW_STRIKE, 10.0f, TARGET_ATTACKING, 0, 30);
@@ -3763,7 +3852,8 @@ class MaievAI : public CreatureAIScript
 
 class IllidanStormrageAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllidanStormrageAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new IllidanStormrageAI(c); }
     explicit IllidanStormrageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Phase 1 spells
@@ -4992,7 +5082,8 @@ float PositionAdds[8][2] =
 
 class CageTrapTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CageTrapTriggerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CageTrapTriggerAI(c); }
     explicit CageTrapTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -5152,7 +5243,8 @@ public:
 
 class DranaeiSpiritAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DranaeiSpiritAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DranaeiSpiritAI(c); }
     explicit DranaeiSpiritAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         despawn(45000);
@@ -5181,7 +5273,8 @@ class DranaeiSpiritAI : public CreatureAIScript
 
 class FlameOfAzzinothAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FlameOfAzzinothAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new FlameOfAzzinothAI(c); }
     explicit FlameOfAzzinothAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mFlameBlast = addAISpell(FLAME_OF_AZZINOTH_FLAME_BLAST, 15.0f, TARGET_ATTACKING, 0, 25);

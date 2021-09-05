@@ -21,7 +21,6 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class Quest_The_Ring_of_Blood_The_Final_Challenge : public QuestScript
 {
@@ -246,7 +245,8 @@ public:
 
 class mogorQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(mogorQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new mogorQAI(c); }
     explicit mogorQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
@@ -256,7 +256,8 @@ class mogorQAI : public CreatureAIScript
 
 class NotOnMyWatch : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NotOnMyWatch)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NotOnMyWatch(c); }
     explicit NotOnMyWatch(Creature* pCreature) : CreatureAIScript(pCreature) {};
 
     void OnCombatStart(Unit* /*mTarget*/) override

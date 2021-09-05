@@ -20,7 +20,6 @@
 #include "Server/Script/CreatureAIScript.h"
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
-#include "Macros/ScriptMacros.hpp"
 
 enum 
 {
@@ -102,7 +101,8 @@ public:
 
 class PurifyingTotemAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PurifyingTotemAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PurifyingTotemAI(c); }
     explicit PurifyingTotemAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
@@ -133,7 +133,8 @@ public:
 // Bury Those Cockroaches!
 class SeaforiumDepthCharge : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SeaforiumDepthCharge)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SeaforiumDepthCharge(c); }
     explicit SeaforiumDepthCharge(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setRooted(true);
@@ -477,7 +478,8 @@ public:
 ///\todo: Change to spellevent (target player), npc say is not ready yet. Add Visual Aura on Spawn.
 class GearmasterMechazodAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GearmasterMechazodAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GearmasterMechazodAI(c); }
     explicit GearmasterMechazodAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setVirtualItemSlotId(MELEE, 28487);
@@ -636,7 +638,8 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
 
 class Worm : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Worm)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Worm(c); }
     explicit Worm(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

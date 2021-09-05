@@ -12,8 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "../world/Objects/Transporter.h"
 #include "Movement/MovementGenerators/PointMovementGenerator.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //ICC zone: 4812
@@ -24,7 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 //CN_ROTFACE                  36627
 //CN_PROFESSOR_PUTRICIDE      36678
 //CN_PRINCE_VALANAR           37970
-//N_BLOOD_QUEEN_LANATHEL     37955
+//N_BLOOD_QUEEN_LANATHEL      37955
 //CN_SINDRAGOSA               36853
 //CN_THE_LICHKING             36597
 //
@@ -661,7 +659,8 @@ public:
 /// Boss: Lord Marrowgar
 class LordMarrowgarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LordMarrowgarAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new LordMarrowgarAI(c); }
     explicit LordMarrowgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -920,7 +919,8 @@ protected:
 /// Misc: Cold Flame
 class ColdflameAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ColdflameAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ColdflameAI(c); }
     explicit ColdflameAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -1013,7 +1013,8 @@ protected:
 /// Misc: Bone Spike
 class BoneSpikeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BoneSpikeAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BoneSpikeAI(c); }
     explicit BoneSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -1359,7 +1360,8 @@ public:
 /// Boss: Lady Deathwhisper
 class LadyDeathwhisperAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LadyDeathwhisperAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new LadyDeathwhisperAI(c); }
     explicit LadyDeathwhisperAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -1800,7 +1802,8 @@ class ManaBarrier : public SpellScript
 /// Misc: Cult Adherent
 class CultAdherentAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CultAdherentAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CultAdherentAI(c); }
     explicit CultAdherentAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -1842,7 +1845,8 @@ protected:
 /// Misc: Cult Fanatic
 class CultFanaticAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CultFanaticAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CultFanaticAI(c); }
     explicit CultFanaticAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -1938,7 +1942,8 @@ public:
 
 class MuradinAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MuradinAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MuradinAI(c); }
     explicit MuradinAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -2085,7 +2090,8 @@ public:
 
 class SaurfangAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SaurfangAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SaurfangAI(c); }
     explicit SaurfangAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -2212,7 +2218,8 @@ protected:
 
 class ZafodBoomboxAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ZafodBoomboxAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ZafodBoomboxAI(c); }
     explicit ZafodBoomboxAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -2227,7 +2234,8 @@ protected:
 
 class GunshipAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GunshipAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GunshipAI(c); }
     explicit GunshipAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -2330,7 +2338,8 @@ protected:
 
 class GunshipHullAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GunshipHullAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GunshipHullAI(c); }
     explicit GunshipHullAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -2366,7 +2375,8 @@ protected:
 
 class GunshipCanonAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GunshipCanonAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GunshipCanonAI(c); }
     explicit GunshipCanonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -2435,7 +2445,8 @@ protected:
 
 class MuradinSaurfangEvent : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MuradinSaurfangEvent)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MuradinSaurfangEvent(c); }
     explicit MuradinSaurfangEvent(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -2578,7 +2589,8 @@ public:
 
 class OverlordSaurfangEvent : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(OverlordSaurfangEvent)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new OverlordSaurfangEvent(c); }
     explicit OverlordSaurfangEvent(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -2717,7 +2729,8 @@ protected:
 
 class DeathbringerSaurfangAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DeathbringerSaurfangAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DeathbringerSaurfangAI(c); }
     explicit DeathbringerSaurfangAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -2837,7 +2850,8 @@ protected:
 
 class NpcSaurfangEventAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NpcSaurfangEventAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NpcSaurfangEventAI(c); }
     explicit NpcSaurfangEventAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script

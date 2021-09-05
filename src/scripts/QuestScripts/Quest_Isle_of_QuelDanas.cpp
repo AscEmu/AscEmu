@@ -20,7 +20,6 @@
 #include "Setup.h"
 #include "Management/TaxiMgr.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class ScryingOrb : public GameObjectAIScript
 {
@@ -115,7 +114,8 @@ public:
 // The Battle for the Sun's Reach Armory
 class TheBattleForTheSunReachArmory : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TheBattleForTheSunReachArmory)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TheBattleForTheSunReachArmory(c); }
     explicit TheBattleForTheSunReachArmory(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* pKiller) override

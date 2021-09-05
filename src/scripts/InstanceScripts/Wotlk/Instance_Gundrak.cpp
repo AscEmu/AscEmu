@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_Gundrak.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class GundrakScript : public InstanceScript
 {
@@ -227,7 +226,8 @@ public:
 // Status: 50% done, missing add related stuff and maybe correct timers
 class SladranAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SladranAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SladranAI(c); }
     explicit SladranAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         CreatureAISpells* sdPoisonNova = nullptr;
@@ -249,18 +249,19 @@ class SladranAI : public CreatureAIScript
         if (sdPoisonNova != nullptr)
             sdPoisonNova->setAnnouncement("Slad'ran begins to cast Poison Nova!");
 
-        addEmoteForEvent(Event_OnCombatStart, 8754);     // Drakkari gonna kill anybody who trespass on these lands!
+        addEmoteForEvent(Event_OnCombatStart, 8754);    // Drakkari gonna kill anybody who trespass on these lands!
         addEmoteForEvent(Event_OnTargetDied, 4217);     // You not breathin'? Good.
         addEmoteForEvent(Event_OnTargetDied, 4218);     // Ssscared now?
         addEmoteForEvent(Event_OnTargetDied, 4219);     // I eat you next, mon.
-        addEmoteForEvent(Event_OnDied, 4220);     // I sssee now... Ssscourge wasss not... our greatessst enemy....
+        addEmoteForEvent(Event_OnDied, 4220);           // I sssee now... Ssscourge wasss not... our greatessst enemy....
     }
 };
 
 // Status: 20% done, missing rihno part, need vehicle support for that, missing stampade script
 class GalDarahAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GalDarahAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GalDarahAI(c); }
     explicit GalDarahAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())

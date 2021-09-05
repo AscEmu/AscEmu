@@ -19,7 +19,6 @@
  *
  */
 
-
 #include "Management/GameEvent.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
@@ -31,7 +30,6 @@
 #include "Spell/Definitions/SpellEffectTarget.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Data/WoWGameObject.hpp"
-#include "Macros/ScriptMacros.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Server/Packets/SmsgGameobjectCustomAnim.h"
 #include "Server/Packets/SmsgGameobjectPagetext.h"

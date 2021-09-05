@@ -20,7 +20,6 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class TheDormantShade : public QuestScript
 {
@@ -35,7 +34,8 @@ public:
 
 class CalvinMontague : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CalvinMontague)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CalvinMontague(c); }
     explicit CalvinMontague(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -102,7 +102,8 @@ public:
 
 class Zealot : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Zealot)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Zealot(c); }
     explicit Zealot(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override

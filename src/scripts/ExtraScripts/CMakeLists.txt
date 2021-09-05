@@ -49,7 +49,6 @@ if(USE_PCH)
   PRIVATE
   <Server/Script/CreatureAIScript.h>
   <Units/Creatures/Creature.h>
-  <Macros/ScriptMacros.hpp>  
   Setup.h
 )
 endif()

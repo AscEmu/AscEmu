@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_TheSlavePens.h"
 #include "Objects/Faction.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class TheSlavePensInstanceScript : public InstanceScript
 {
@@ -21,7 +20,8 @@ public:
 
 class TotemsAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TotemsAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TotemsAI(c); }
     explicit TotemsAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         uint32_t Despawn = 30000;
@@ -77,7 +77,8 @@ uint32_t Totems[4] = { 20208, 18176, 18177, 14662 };
 
 class MennuTheBetrayerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MennuTheBetrayerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MennuTheBetrayerAI(c); }
 
     bool SummonedTotems[4];
 
@@ -193,6 +194,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
 
 protected:
     uint32_t TotemCounter;
+
     CreatureAISpells* earthgrabTotem;
     CreatureAISpells* stoneskinTotem;
     CreatureAISpells* novaTotem;
@@ -200,7 +202,8 @@ protected:
 
 class RokmarTheCracklerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RokmarTheCracklerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new RokmarTheCracklerAI(c); }
     explicit RokmarTheCracklerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto grievousWound = addAISpell(GRIEVOUS_WOUND, 8.0f, TARGET_ATTACKING, 0, 20, false, true);
@@ -241,7 +244,8 @@ protected:
 
 class QuagmirranAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(QuagmirranAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new QuagmirranAI(c); }
     explicit QuagmirranAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto acidGeyser = addAISpell(ACID_GEYSER, 10.0f, TARGET_RANDOM_SINGLE, 0, 20, false, true);

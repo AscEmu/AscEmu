@@ -22,7 +22,6 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 //enum 
 //{
@@ -32,7 +31,8 @@
 
 class Lunaclaw : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Lunaclaw)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Lunaclaw(c); }
     explicit Lunaclaw(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override

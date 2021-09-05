@@ -21,7 +21,6 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class Flayer : public CreatureAIScript
 {
@@ -58,7 +57,8 @@ public:
 
 class ArajTheSummoner : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArajTheSummoner)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ArajTheSummoner(c); }
     explicit ArajTheSummoner(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override

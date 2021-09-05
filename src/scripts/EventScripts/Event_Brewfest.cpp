@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //\details <b>Brewfest</b>\n
@@ -67,7 +66,8 @@ void CorenDirebrewGossip::onSelectOption(Object* pObject, Player* Plr, uint32_t 
 
 class CorenDirebrew : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CorenDirebrew)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CorenDirebrew(c); }
     explicit CorenDirebrew(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // whats the correct waypoint ?

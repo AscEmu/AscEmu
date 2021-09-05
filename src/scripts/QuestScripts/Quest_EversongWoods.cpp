@@ -26,7 +26,6 @@
 #include <Management/QuestLogEntry.hpp>
 #include "Map/MapScriptInterface.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 enum
 {
@@ -80,7 +79,8 @@ void ProspectorAnvilwardGossip::onSelectOption(Object* pObject, Player* Plr, uin
 
 class ProspectorAnvilward : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ProspectorAnvilward)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ProspectorAnvilward(c); }
     explicit ProspectorAnvilward(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         stopMovement();

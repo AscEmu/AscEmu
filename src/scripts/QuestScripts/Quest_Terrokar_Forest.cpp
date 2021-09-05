@@ -21,11 +21,11 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class ThreatFromAboveQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ThreatFromAboveQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ThreatFromAboveQAI(c); }
     explicit ThreatFromAboveQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -39,7 +39,8 @@ class ThreatFromAboveQAI : public CreatureAIScript
 
 class TheInfestedProtectorsQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TheInfestedProtectorsQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TheInfestedProtectorsQAI(c); }
     explicit TheInfestedProtectorsQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         min = 0;
@@ -92,7 +93,8 @@ private:
 
 class TakenInTheNight : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TakenInTheNight)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TakenInTheNight(c); }
     explicit TakenInTheNight(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -152,7 +154,8 @@ class TakenInTheNight : public CreatureAIScript
 
 class AnImproperBurial : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AnImproperBurial)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AnImproperBurial(c); }
     explicit AnImproperBurial(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

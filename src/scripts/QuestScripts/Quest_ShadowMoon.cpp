@@ -21,7 +21,6 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 enum
 {
@@ -40,7 +39,8 @@ enum
 
 class InfiltratingDragonmawFortressQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InfiltratingDragonmawFortressQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new InfiltratingDragonmawFortressQAI(c); }
     explicit InfiltratingDragonmawFortressQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -54,7 +54,8 @@ class InfiltratingDragonmawFortressQAI : public CreatureAIScript
 
 class KneepadsQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KneepadsQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KneepadsQAI(c); }
     explicit KneepadsQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -85,7 +86,8 @@ const WPWaitTimes DeathbringerJovaanWP[] =
 
 class DeathbringerJovaanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DeathbringerJovaanAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DeathbringerJovaanAI(c); }
     explicit DeathbringerJovaanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mJovaanTimer = 0;
@@ -188,7 +190,8 @@ class DeathbringerJovaanAI : public CreatureAIScript
 
 class WarbringerRazuunAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WarbringerRazuunAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WarbringerRazuunAI(c); }
     explicit WarbringerRazuunAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -296,7 +299,8 @@ public:
 
 class EnslavedNetherwingDrakeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EnslavedNetherwingDrakeAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EnslavedNetherwingDrakeAI(c); }
     explicit EnslavedNetherwingDrakeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         LocationVector WayPoint = { getCreature()->GetPositionX(), getCreature()->GetPositionY() + 30, getCreature()->GetPositionZ() + 100, getCreature()->GetOrientation()};

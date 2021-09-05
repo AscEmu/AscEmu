@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //\details <b>At: Worlds End Tavern</b>\n
@@ -50,7 +49,8 @@ enum L80Spells
 
 class SamAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SamAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SamAI(c); }
     explicit SamAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -108,7 +108,8 @@ protected:
 
 class BerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BerAI(c); }
     explicit BerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -163,7 +164,8 @@ protected:
 
 class SigAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SigAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SigAI(c); }
     explicit SigAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -221,7 +223,8 @@ protected:
 
 class MaiAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MaiAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MaiAI(c); }
     explicit MaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -277,7 +280,8 @@ protected:
 
 class ThuAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ThuAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ThuAI(c); }
     explicit ThuAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -300,7 +304,7 @@ class ThuAI : public CreatureAIScript
 
     void OnDespawn() override
     {
-    RemoveAIUpdateEvent();
+        RemoveAIUpdateEvent();
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true);
     }
 
@@ -346,7 +350,8 @@ protected:
 
 class UndeadAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(UndeadAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new UndeadAI(c); }
     explicit UndeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -390,7 +395,8 @@ protected:
 
 class Undead2AI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Undead2AI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Undead2AI(c); }
     explicit Undead2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -435,7 +441,8 @@ protected:
 
 class Undead3AI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Undead3AI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Undead3AI(c); }
     explicit Undead3AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -473,7 +480,8 @@ protected:
 
 class TriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TriggerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TriggerAI(c); }
     explicit TriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -563,7 +571,8 @@ protected:
 
 class Trigger2AI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Trigger2AI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Trigger2AI(c); }
     explicit Trigger2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -647,7 +656,8 @@ protected:
 
 class Effectsground : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Effectsground)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Effectsground(c); }
     explicit Effectsground(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -762,7 +772,8 @@ protected:
 
 class Effectsair : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Effectsair)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Effectsair(c); }
     explicit Effectsair(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);

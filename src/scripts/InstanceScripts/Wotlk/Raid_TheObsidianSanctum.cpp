@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Raid_TheObsidianSanctum.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class ObsidianSanctumScript : public InstanceScript
 {
@@ -145,7 +144,8 @@ public:
 
 class SartharionAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SartharionAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SartharionAI(c); }
     explicit SartharionAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mInstance = dynamic_cast<ObsidianSanctumScript*>(getInstanceScript());
@@ -298,7 +298,8 @@ private:
 
 class TsunamiAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TsunamiAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TsunamiAI(c); }
     explicit TsunamiAI(Creature* pCreature) : CreatureAIScript(pCreature) {};
 
     void OnLoad() override
@@ -320,7 +321,8 @@ class TsunamiAI : public CreatureAIScript
 
 class CyclonAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CyclonAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CyclonAI(c); }
     explicit CyclonAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -335,7 +337,8 @@ class CyclonAI : public CreatureAIScript
 
 class LavaBlazeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LavaBlazeAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new LavaBlazeAI(c); }
     explicit LavaBlazeAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStop(Unit* /*pTarget*/) override

@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_SethekkHalls.h"
 #include "Objects/Faction.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class SethekkHallsInstanceScript : public InstanceScript
 {
@@ -18,7 +17,8 @@ public:
 
 class AvianDarkhawkAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AvianDarkhawkAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AvianDarkhawkAI(c); }
     explicit AvianDarkhawkAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto charge = addAISpell(SP_AVIAN_DARKHAWK_CHARGE, 5.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -28,7 +28,8 @@ class AvianDarkhawkAI : public CreatureAIScript
 
 class AvianRipperAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AvianRipperAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AvianRipperAI(c); }
     explicit AvianRipperAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto fleshRip = addAISpell(SP_AVIAN_RIPPER_FLESH_RIP, 15.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -38,7 +39,8 @@ class AvianRipperAI : public CreatureAIScript
 
 class AvianWarhawkAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AvianWarhawkAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AvianWarhawkAI(c); }
     explicit AvianWarhawkAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(SP_AVIAN_WARHAWK_CLEAVE, 12.0f, TARGET_VARIOUS, 0, 0, false, true);
@@ -54,7 +56,8 @@ class AvianWarhawkAI : public CreatureAIScript
 
 class CobaltSerpentAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CobaltSerpentAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CobaltSerpentAI(c); }
     explicit CobaltSerpentAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto wingBuffet = addAISpell(SP_COBALT_SERPENT_WING_BUFFET, 7.0f, TARGET_VARIOUS);
@@ -70,7 +73,8 @@ class CobaltSerpentAI : public CreatureAIScript
 
 class TimeLostControllerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TimeLostControllerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TimeLostControllerAI(c); }
     explicit TimeLostControllerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shrink = addAISpell(SP_TL_CONTROLLER_SHIRNK, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -80,7 +84,8 @@ class TimeLostControllerAI : public CreatureAIScript
 
 class TimeLostScryerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TimeLostScryerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TimeLostScryerAI(c); }
     explicit TimeLostScryerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto flashHeal = addAISpell(SP_TL_SCRYER_FLASH_HEAL, 5.0f, TARGET_SELF, 0, 0, false, true);
@@ -93,7 +98,8 @@ class TimeLostScryerAI : public CreatureAIScript
 
 class TimeLostShadowmageAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TimeLostShadowmageAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TimeLostShadowmageAI(c); }
     explicit TimeLostShadowmageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto curseOfDarkTalon = addAISpell(SP_TL_CURSE_OF_THE_DARK_TALON, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -103,7 +109,8 @@ class TimeLostShadowmageAI : public CreatureAIScript
 
 class SethekkGuardAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SethekkGuardAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SethekkGuardAI(c); }
     explicit SethekkGuardAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto thunderclap = addAISpell(SP_SETHEKK_GUARD_THUNDERCLAP, 12.0f, TARGET_VARIOUS, 0, 0, false, true);
@@ -116,7 +123,8 @@ class SethekkGuardAI : public CreatureAIScript
 
 class SethekkInitiateAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SethekkInitiateAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SethekkInitiateAI(c); }
     explicit SethekkInitiateAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto magicReflection = addAISpell(SP_SETHEKK_INIT_MAGIC_REFLECTION, 10.0f, TARGET_SELF, 0, 0, false, true);
@@ -126,7 +134,8 @@ class SethekkInitiateAI : public CreatureAIScript
 
 class SethekkOracleAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SethekkOracleAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SethekkOracleAI(c); }
     explicit SethekkOracleAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto faeriFire = addAISpell(SP_SETHEKK_ORACLE_FAERIE_FIRE, 8.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -139,7 +148,8 @@ class SethekkOracleAI : public CreatureAIScript
 
 class SethekkProphetAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SethekkProphetAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SethekkProphetAI(c); }
     explicit SethekkProphetAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto prophetFear = addAISpell(SP_SETHEKK_PROPHET_FEAR, 8.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -149,7 +159,8 @@ class SethekkProphetAI : public CreatureAIScript
 
 class SethekkRavenguardAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SethekkRavenguardAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SethekkRavenguardAI(c); }
     explicit SethekkRavenguardAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto bloodthirst = addAISpell(SP_SETHEKK_RAVENG_BLOODTHIRST, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -162,7 +173,8 @@ class SethekkRavenguardAI : public CreatureAIScript
 
 class SethekkShamanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SethekkShamanAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SethekkShamanAI(c); }
     explicit SethekkShamanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto summonDarkVortex = addAISpell(SP_SETHEKK_SHAMAN_SUM_DARK_VORTEX, 8.0f, TARGET_SELF, 0, 0, false, true);
@@ -172,7 +184,8 @@ class SethekkShamanAI : public CreatureAIScript
 
 class SethekkTalonLordAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SethekkTalonLordAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SethekkTalonLordAI(c); }
     explicit SethekkTalonLordAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto ofJustice = addAISpell(SP_SETHEKK_TALON_OF_JUSTICE, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -195,7 +208,8 @@ static LocationVector LakkaWaypoint[] =
 
 class LakkaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LakkaAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new LakkaAI(c); }
     explicit LakkaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         stopMovement();
@@ -254,7 +268,8 @@ class LakkaAI : public CreatureAIScript
 
 class DarkweaverSythAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DarkweaverSythAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DarkweaverSythAI(c); }
     explicit DarkweaverSythAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto frostShock = addAISpell(SP_DARKW_SYNTH_FROST_SHOCK, 8.0f, TARGET_ATTACKING, 0, 15, false, true);
@@ -357,7 +372,8 @@ protected:
 
 class TalonKingIkissAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TalonKingIkissAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TalonKingIkissAI(c); }
     explicit TalonKingIkissAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         arcaneVolley = addAISpell(SP_TALRON_K_IKISS_ARCANE_VOLLEY, 12.0f, TARGET_VARIOUS, 0, 10);
@@ -431,7 +447,8 @@ protected:
 
 class ANZUAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ANZUAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ANZUAI(c); }
     explicit ANZUAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto bomb = addAISpell(SP_ANZU_SPELL_BOMB, 10.0f, TARGET_ATTACKING, 0, 0, false, true);

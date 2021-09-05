@@ -20,11 +20,11 @@
 #include "Setup.h"
 #include "Management/TaxiMgr.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class NorthFleet : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NorthFleet)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NorthFleet(c); }
     explicit NorthFleet(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -38,7 +38,8 @@ class NorthFleet : public CreatureAIScript
 
 class ChillmereScourge : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ChillmereScourge)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ChillmereScourge(c); }
     explicit ChillmereScourge(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -52,7 +53,8 @@ class ChillmereScourge : public CreatureAIScript
 
 class Baleheim : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Baleheim)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Baleheim(c); }
     explicit Baleheim(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override

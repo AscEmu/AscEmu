@@ -19,7 +19,6 @@
  *
  */
 
-
 #include "Creature.h"
 #include "Units/Unit.h"
 #include "Objects/DynamicObject.h"
@@ -35,7 +34,6 @@
 #include "Spell/Definitions/SpellEffectTarget.hpp"
 #include "Pet.h"
 
-#include "Macros/ScriptMacros.hpp"
 #include "Server/Packets/SmsgPetActionFeedback.h"
 #include "Server/Packets/SmsgPetLearnedSpell.h"
 #include "Server/Packets/SmsgPetUnlearnedSpell.h"

@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_PitOfSaron.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class InstancePitOfSaronScript : public InstanceScript
 {
@@ -39,7 +38,8 @@ public:
 // BOSSES
 class ForgemasterGarfrostAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ForgemasterGarfrostAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ForgemasterGarfrostAI(c); }
     explicit ForgemasterGarfrostAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -122,7 +122,8 @@ class ForgemasterGarfrostAI : public CreatureAIScript
 //\todo replace manual spellcast as much as possible
 class IckAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IckAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new IckAI(c); }
     explicit IckAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Instance Script
@@ -332,7 +333,8 @@ class IckAI : public CreatureAIScript
 
 class KrickAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KrickAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KrickAI(c); }
     explicit KrickAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Get Instance Script
@@ -512,7 +514,8 @@ class KrickAI : public CreatureAIScript
 // Barrage Spell Creature
 class BarrageAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BarrageAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BarrageAI(c); }
     explicit BarrageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);

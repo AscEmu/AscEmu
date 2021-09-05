@@ -20,7 +20,6 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 enum
 {
@@ -29,7 +28,8 @@ enum
 
 class BalosJackenQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BalosJackenQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BalosJackenQAI(c); }
     explicit BalosJackenQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         friendlyTimer = BALOS_FRIENDLY_TIMER;
@@ -94,7 +94,8 @@ protected:
 
 class OverlordMokMorokk : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(OverlordMokMorokk)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new OverlordMokMorokk(c); }
     explicit OverlordMokMorokk(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -162,7 +163,8 @@ public:
 
 class PrivateHendel : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PrivateHendel)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PrivateHendel(c); }
     explicit PrivateHendel(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

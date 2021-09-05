@@ -20,7 +20,6 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 enum
 {
@@ -61,7 +60,8 @@ public:
 
 class Beka : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Beka)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Beka(c); }
     explicit Beka(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -96,7 +96,8 @@ class Beka : public CreatureAIScript
 
 class Beka1 : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Beka1)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Beka1(c); }
     explicit Beka1(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -131,7 +132,8 @@ class Beka1 : public CreatureAIScript
 
 class Beka2 : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Beka2)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Beka2(c); }
     explicit Beka2(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -284,7 +286,8 @@ class FacingNegolash : public QuestScript
 
 class NegolashAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NegolashAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NegolashAI(c); }
     explicit NegolashAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* /*mKiller*/) override

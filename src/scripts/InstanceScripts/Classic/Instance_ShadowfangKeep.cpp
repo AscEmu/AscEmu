@@ -620,7 +620,6 @@ class AshcrombeAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new AshcrombeAI(c); }
-
     AshcrombeAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0), argued(false), eventStarted(false)
     {
         SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->GetMapMgr()->GetScript());
@@ -843,11 +842,9 @@ class RethilgoreAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new RethilgoreAI(c); }
-
-    const uint32_t SPELL_SOUL_DRAIN = 7295;
-
     explicit RethilgoreAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
+        const uint32_t SPELL_SOUL_DRAIN = 7295;
         addAISpell(SPELL_SOUL_DRAIN, 8.0f, TARGET_RANDOM_SINGLE, 2, 10);
     }
 };

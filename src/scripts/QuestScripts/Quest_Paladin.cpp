@@ -21,11 +21,11 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class PaladinDeadNPC : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PaladinDeadNPC)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PaladinDeadNPC(c); }
     explicit PaladinDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -67,7 +67,8 @@ public:
 
 class StillbladeQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(StillbladeQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new StillbladeQAI(c); }
     explicit StillbladeQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override

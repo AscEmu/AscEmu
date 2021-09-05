@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_TheSteamvault.h"
 #include "Objects/Faction.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class TheSteamvaultInstanceScript : public InstanceScript
 {
@@ -21,7 +20,8 @@ public:
 
 class HydromancerThespiaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HydromancerThespiaAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HydromancerThespiaAI(c); }
     explicit HydromancerThespiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto envelopingWinds = addAISpell(ENVELOPING_WINDS, 9.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);
@@ -55,7 +55,8 @@ static LocationVector SpawnCoords[] =
 // Should they really fight?
 class SteamriggerMechanicAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SteamriggerMechanicAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SteamriggerMechanicAI(c); }
     explicit SteamriggerMechanicAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -92,7 +93,8 @@ class SteamriggerMechanicAI : public CreatureAIScript
 // Must spawn 3 Steamrigger Mechanics when his health is on 75%, 50% and 25%
 class MekgineerSteamriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MekgineerSteamriggerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MekgineerSteamriggerAI(c); }
     std::vector <Unit*> Gnomes;
 
     explicit MekgineerSteamriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
@@ -230,7 +232,8 @@ static LocationVector DistillerMoveTo[] =
 
 class NagaDistillerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NagaDistillerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NagaDistillerAI(c); }
     explicit NagaDistillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
@@ -248,7 +251,8 @@ class NagaDistillerAI : public CreatureAIScript
 
 class WarlordKalitreshAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WarlordKalitreshAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WarlordKalitreshAI(c); }
     explicit WarlordKalitreshAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto impale = addAISpell(IMPALE, 8.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);

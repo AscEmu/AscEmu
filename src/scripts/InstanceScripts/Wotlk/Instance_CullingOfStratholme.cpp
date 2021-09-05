@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_CullingOfStratholme.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class CullingOfStratholmeInstanceScript : public InstanceScript
 {
@@ -17,7 +16,8 @@ public:
 
 class MeathookAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MeathookAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MeathookAI(c); }
     explicit MeathookAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -55,7 +55,8 @@ class MeathookAI : public CreatureAIScript
 
 class SalramTheFleshcrafterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SalramTheFleshcrafterAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SalramTheFleshcrafterAI(c); }
     explicit SalramTheFleshcrafterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -102,7 +103,8 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
 
 class ChronoLordEpochAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ChronoLordEpochAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ChronoLordEpochAI(c); }
     explicit ChronoLordEpochAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -138,7 +140,8 @@ class ChronoLordEpochAI : public CreatureAIScript
 
 class InfiniteCorruptorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InfiniteCorruptorAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new InfiniteCorruptorAI(c); }
     explicit InfiniteCorruptorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // VoidStrike
@@ -159,7 +162,8 @@ class InfiniteCorruptorAI : public CreatureAIScript
 
 class MalganisAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MalganisAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MalganisAI(c); }
     explicit MalganisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -299,7 +303,8 @@ static LocationVector walk[] =
 
 class UtherAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(UtherAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new UtherAI(c); }
     explicit UtherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addWaypoint(1, createWaypoint(1, 0, WAYPOINT_MOVE_TYPE_RUN, walk[1]));
@@ -381,7 +386,8 @@ static LocationVector ArthasWalk[] =
 
 class ArthasAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArthasAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ArthasAI(c); }
     explicit ArthasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addWaypoint(1, createWaypoint(1, 10500, WAYPOINT_MOVE_TYPE_RUN, ArthasWalk[1]));

@@ -3,7 +3,6 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
 #include "Management/WordFilter.h"
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
@@ -14,7 +13,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.h"
 #include "Chat/ChatHandler.hpp"
 
-#include "Macros/ScriptMacros.hpp"
 #include "Units/Players/Player.h"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/CmsgMessageChat.h"

@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_HallsOfReflection.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Halls of Reflection
@@ -40,9 +39,9 @@ public:
 // JainaAI
 class JainaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(JainaAI)
-    explicit JainaAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {}
+public:
+    static CreatureAIScript* Create(Creature* c) { return new JainaAI(c); }
+    explicit JainaAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void StartInstance()
     {
@@ -145,7 +144,8 @@ public:
 
 class Marwyn : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Marwyn)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Marwyn(c); }
     explicit Marwyn(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         CreatureAISpells* spellWell = nullptr;
@@ -190,7 +190,8 @@ class Marwyn : public CreatureAIScript
 
 class Falric : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Falric)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Falric(c); }
     explicit Falric(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic() == false)

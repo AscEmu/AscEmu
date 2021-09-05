@@ -20,7 +20,6 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 //#define SAY_DOC1 "I'm saved! Thank you, doctor!"
 //#define SAY_DOC2 "HOORAY! I AM SAVED!"
@@ -42,7 +41,8 @@ const uint32_t hordeSoldierId[3] =
 
 class InjuredSoldier : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InjuredSoldier)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new InjuredSoldier(c); }
     explicit InjuredSoldier(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

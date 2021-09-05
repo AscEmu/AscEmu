@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_AzjolNerub.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class AzjolNerubInstanceScript : public InstanceScript
 {
@@ -20,7 +19,8 @@ public:
 // Krikthir The Gatewatcher
 class KrikthirAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KrikthirAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KrikthirAI(c); }
     explicit KrikthirAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (!_isHeroic())
@@ -68,7 +68,8 @@ class KrikthirAI : public CreatureAIScript
 // Hadronox
 class HadronoxAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HadronoxAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HadronoxAI(c); }
     explicit HadronoxAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (!_isHeroic())
@@ -99,7 +100,8 @@ class HadronoxAI : public CreatureAIScript
 // Watcher Gashra
 class GashraAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GashraAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GashraAI(c); }
     explicit GashraAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(GASHRA_WEBWRAP, 22.0f, TARGET_RANDOM_SINGLE, 0, 35);
@@ -110,7 +112,8 @@ class GashraAI : public CreatureAIScript
 // Watcher Narjil
 class NarjilAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NarjilAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NarjilAI(c); }
     explicit NarjilAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(NARJIL_WEBWRAP, 22.0f, TARGET_RANDOM_SINGLE, 0, 35);
@@ -122,7 +125,8 @@ class NarjilAI : public CreatureAIScript
 // Watcher Silthik
 class SilthikAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SilthikAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SilthikAI(c); }
     explicit SilthikAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(NARJIL_WEBWRAP, 22.0f, TARGET_RANDOM_SINGLE, 0, 35);
@@ -134,7 +138,8 @@ class SilthikAI : public CreatureAIScript
 // Anub'ar Shadowcaster (anub shadowcaster)
 class AnubShadowcasterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AnubShadowcasterAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AnubShadowcasterAI(c); }
     explicit AnubShadowcasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWCASTER_SHADOWBOLT, 36.0f, TARGET_RANDOM_SINGLE, 0, 8);

@@ -20,7 +20,6 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class SpiritScreeches : public GossipScript
 {
@@ -46,7 +45,8 @@ public:
 
 class ScreecherSpirit : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ScreecherSpirit)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ScreecherSpirit(c); }
     explicit ScreecherSpirit(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

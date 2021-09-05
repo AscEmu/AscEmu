@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_UtgardePinnacle.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class UtgardePinnacleInstanceScript : public InstanceScript
 {
@@ -17,13 +16,15 @@ public:
 
 class SvalaSorrowgraveAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SvalaSorrowgraveAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SvalaSorrowgraveAI(c); }
     explicit SvalaSorrowgraveAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 };
 
 class GortokPalehoofAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GortokPalehoofAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GortokPalehoofAI(c); }
     explicit GortokPalehoofAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addEmoteForEvent(Event_OnCombatStart, SAY_GROTOK_PALEHOOF_01);
@@ -34,7 +35,8 @@ class GortokPalehoofAI : public CreatureAIScript
 
 class SkadiTheRuthlessAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SkadiTheRuthlessAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SkadiTheRuthlessAI(c); }
     explicit SkadiTheRuthlessAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addEmoteForEvent(Event_OnCombatStart, SAY_SKADI_RUTHLESS_START);
@@ -46,7 +48,8 @@ class SkadiTheRuthlessAI : public CreatureAIScript
 
 class KingYmironAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KingYmironAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KingYmironAI(c); }
     explicit KingYmironAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addEmoteForEvent(Event_OnCombatStart, SAY_KING_YMIRON_START);

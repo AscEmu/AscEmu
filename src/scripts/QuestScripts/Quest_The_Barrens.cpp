@@ -21,7 +21,6 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class BeatenCorpse : public GossipScript
 {
@@ -54,7 +53,8 @@ public:
 
 class Wizzlecranks_Shredder : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Wizzlecranks_Shredder)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Wizzlecranks_Shredder(c); }
     explicit Wizzlecranks_Shredder(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override
@@ -81,7 +81,8 @@ class Wizzlecranks_Shredder : public CreatureAIScript
 
 class Gilthares_Firebough : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Gilthares_Firebough)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Gilthares_Firebough(c); }
     explicit Gilthares_Firebough(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override
@@ -109,7 +110,8 @@ class Gilthares_Firebough : public CreatureAIScript
 int kolkarskilled = 0;
 class VerogtheDervish : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VerogtheDervish)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VerogtheDervish(c); }
     explicit VerogtheDervish(Creature* pCreature) : CreatureAIScript(pCreature) {}
     void OnDied(Unit* mKiller) override
     {

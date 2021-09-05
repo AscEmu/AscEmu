@@ -3,7 +3,6 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
 #include "Management/Item.h"
 #include "Management/WeatherMgr.h"
 #include "Management/ItemInterface.h"
@@ -13,7 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "zlib.h"
-#include "Macros/ScriptMacros.hpp"
 #include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.hpp"

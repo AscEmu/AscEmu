@@ -12,7 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Management/QuestLogEntry.hpp>
 #include "Map/MapScriptInterface.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Quest: Rite of Vision
@@ -49,7 +48,8 @@ static LocationVector WaypointPlainVision[] =
 
 class The_Plains_Vision : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(The_Plains_Vision)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new The_Plains_Vision(c); }
     explicit The_Plains_Vision(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         WPCount = 22;

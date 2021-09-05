@@ -20,7 +20,6 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class Prisoner12 : public GossipScript
 {
@@ -95,7 +94,8 @@ public:
 
 class PrisonersatDeatholme : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PrisonersatDeatholme)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PrisonersatDeatholme(c); }
     explicit PrisonersatDeatholme(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

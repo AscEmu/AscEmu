@@ -19,7 +19,6 @@
  *
  */
 
-
 #include "Objects/DynamicObject.h"
 #include "Management/AuctionMgr.h"
 #include "Management/QuestMgr.h"
@@ -35,7 +34,6 @@
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Pet.h"
-#include "Macros/ScriptMacros.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Objects/ObjectMgr.h"

@@ -6,11 +6,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Units/Creatures/Creature.h"
-#include "Macros/ScriptMacros.hpp"
 
 class ShatteredSunSpawner : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShatteredSunSpawner)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShatteredSunSpawner(c); }
     explicit ShatteredSunSpawner(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* mTarget) override

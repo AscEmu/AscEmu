@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Event_Darkmoon_Faire.h"
 
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
  //\details <b>Darkmoon Faire (Elwynn Forest)</b>\n
@@ -200,7 +199,8 @@ public:
 
 class Flik_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Flik_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Flik_Bark(c); }
     explicit Flik_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -241,7 +241,8 @@ public:
 
 class GelvasGrimegate_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GelvasGrimegate_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GelvasGrimegate_Bark(c); }
     explicit GelvasGrimegate_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -258,7 +259,8 @@ class GelvasGrimegate_Bark : public CreatureAIScript
 
 class Lhara_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Lhara_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Lhara_Bark(c); }
     explicit Lhara_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -292,7 +294,8 @@ public:
 
 class Morja_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Morja_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Morja_Bark(c); }
     explicit Morja_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -372,7 +375,8 @@ public:
 
 class ProfessorThaddeusPaleo_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ProfessorThaddeusPaleo_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ProfessorThaddeusPaleo_Bark(c); }
     explicit ProfessorThaddeusPaleo_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -584,7 +588,8 @@ public:
 
 class Sayge_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Sayge_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Sayge_Bark(c); }
     explicit Sayge_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -672,7 +677,8 @@ public:
 
 class SilasDarkmoon_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SilasDarkmoon_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SilasDarkmoon_Bark(c); }
     explicit SilasDarkmoon_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -691,7 +697,8 @@ class SilasDarkmoon_Bark : public CreatureAIScript
 
 class StampThunderhorn_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(StampThunderhorn_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new StampThunderhorn_Bark(c); }
     explicit StampThunderhorn_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -709,7 +716,8 @@ class StampThunderhorn_Bark : public CreatureAIScript
 
 class Sylannia_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Sylannia_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Sylannia_Bark(c); }
     explicit Sylannia_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);

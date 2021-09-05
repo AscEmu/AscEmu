@@ -19,11 +19,11 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class WoodlandWalker : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WoodlandWalker)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WoodlandWalker(c); }
     explicit WoodlandWalker(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pCreature->SetFaction(35);

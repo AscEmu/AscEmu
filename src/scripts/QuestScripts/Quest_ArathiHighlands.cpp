@@ -20,11 +20,11 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class Professor_Phizzlethorpe : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Professor_Phizzlethorpe)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Professor_Phizzlethorpe(c); }
     explicit Professor_Phizzlethorpe(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override

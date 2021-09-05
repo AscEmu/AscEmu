@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_DrakTharonKeep.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class DrakTharonKeepInstanceScript : public InstanceScript
 {
@@ -23,7 +22,8 @@ const uint32_t INVADERS_PER_INVASION = 1;
 
 class TrollgoreAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TrollgoreAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TrollgoreAI(c); }
     explicit TrollgoreAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         invastion_timer = 0;
@@ -98,7 +98,8 @@ const uint32_t ELITE_CHANCE = 20; //how much chance for elite we've got each inv
 
 class NovosTheSummonerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NovosTheSummonerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NovosTheSummonerAI(c); }
     explicit NovosTheSummonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         invasion_timer = 0;
@@ -344,7 +345,8 @@ protected:
 
 class CrystalHandlerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CrystalHandlerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CrystalHandlerAI(c); }
     explicit CrystalHandlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -377,7 +379,8 @@ class CrystalHandlerAI : public CreatureAIScript
 // \todo King Dred Call nearby friends
 class KingDreadAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KingDreadAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KingDreadAI(c); }
     explicit KingDreadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -409,7 +412,8 @@ const uint32_t PHASES_COUNT = 2;
 
 class TheProphetTaronjaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TheProphetTaronjaAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TheProphetTaronjaAI(c); }
     explicit TheProphetTaronjaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         phase_timer = 0;

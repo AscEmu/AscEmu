@@ -28,11 +28,11 @@
 #include <Spell/Definitions/PowerType.hpp>
 
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArmyOfTheDeadGhoulAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ArmyOfTheDeadGhoulAI(c); }
     explicit ArmyOfTheDeadGhoulAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
@@ -64,7 +64,8 @@ class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 
 class ShadowFiendAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowFiendAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadowFiendAI(c); }
     explicit ShadowFiendAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -96,7 +97,8 @@ class ShadowFiendAI : public CreatureAIScript
 
 class MirrorImageAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MirrorImageAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MirrorImageAI(c); }
     explicit MirrorImageAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -167,7 +169,8 @@ class MirrorImageAI : public CreatureAIScript
 
 class DancingRuneWeaponAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DancingRuneWeaponAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DancingRuneWeaponAI(c); }
     explicit DancingRuneWeaponAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         dpsCycle = 0;
@@ -308,7 +311,8 @@ private:
 
 class FrostBroodVanquisherAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FrostBroodVanquisherAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new FrostBroodVanquisherAI(c); }
     explicit FrostBroodVanquisherAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

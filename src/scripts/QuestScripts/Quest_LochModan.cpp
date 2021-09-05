@@ -20,7 +20,6 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class ProtectingtheShipment : public QuestScript
 {
@@ -60,7 +59,8 @@ static LocationVector WaypointsMiran[] =
 
 class Miran : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Miran)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Miran(c); }
     explicit Miran(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         WPCount = 7;

@@ -20,7 +20,6 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 LocationVector const WaypointTheSummoning[] =
 {
@@ -76,7 +75,8 @@ public:
 
 class Bartleby : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Bartleby)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Bartleby(c); }
     explicit Bartleby(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

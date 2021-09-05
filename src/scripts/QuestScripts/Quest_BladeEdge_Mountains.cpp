@@ -22,11 +22,11 @@
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Spell/SpellAuras.h"
-#include "Macros/ScriptMacros.hpp"
 
 class WyrmcultBlackwhelp : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WyrmcultBlackwhelp)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WyrmcultBlackwhelp(c); }
     explicit WyrmcultBlackwhelp(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -59,7 +59,8 @@ class WyrmcultBlackwhelp : public CreatureAIScript
 // The Bladespire Threat Quest
 class BladespireQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BladespireQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BladespireQAI(c); }
     explicit BladespireQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -86,7 +87,8 @@ public:
 
 class MagnetoAura : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MagnetoAura)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MagnetoAura(c); }
     explicit MagnetoAura(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -139,7 +141,8 @@ public:
 
 class FunnyDragon : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FunnyDragon)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new FunnyDragon(c); }
     explicit FunnyDragon(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         i = 0;      // rename this....
@@ -222,7 +225,8 @@ public:
 
 class BloodmaulQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BloodmaulQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BloodmaulQAI(c); }
     explicit BloodmaulQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -241,7 +245,8 @@ class BloodmaulQAI : public CreatureAIScript
 
 class Thuk_the_DefiantAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Thuk_the_DefiantAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Thuk_the_DefiantAI(c); }
     explicit Thuk_the_DefiantAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -304,7 +309,8 @@ enum CreatureEntry
 // Bloodmaul Brutebane Stout Trigger
 class BrutebaneStoutTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BrutebaneStoutTriggerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BrutebaneStoutTriggerAI(c); }
     explicit BrutebaneStoutTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->SetFaction(35);

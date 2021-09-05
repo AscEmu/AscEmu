@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_CoT_BattleOfMountHyjal.h"
 #include "Objects/Faction.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class MountHyjalScript : public InstanceScript
 {
@@ -43,7 +42,8 @@ private:
 
 class JainaProudmooreAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(JainaProudmooreAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new JainaProudmooreAI(c); }
     explicit JainaProudmooreAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
@@ -94,7 +94,8 @@ public:
 
 class ThrallAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ThrallAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ThrallAI(c); }
     explicit ThrallAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
@@ -141,7 +142,8 @@ public:
 
 class RageWinterchillAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RageWinterchillAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new RageWinterchillAI(c); }
     explicit RageWinterchillAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto frostbold = addAISpell(FROSTBOLT, 8.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);
@@ -171,7 +173,8 @@ class RageWinterchillAI : public CreatureAIScript
 
 class AnetheronAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AnetheronAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AnetheronAI(c); }
     explicit AnetheronAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto vampiricAura = addAISpell(VAMPIRIC_AURA, 8.0f, TARGET_SELF, 0, 8, false, true);
@@ -200,7 +203,8 @@ class AnetheronAI : public CreatureAIScript
 
 class KazrogalAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KazrogalAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KazrogalAI(c); }
     explicit KazrogalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(K_CLEAVE, 8.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -232,7 +236,8 @@ class KazrogalAI : public CreatureAIScript
 
 class AzgalorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AzgalorAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AzgalorAI(c); }
     explicit AzgalorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(CLEAVE, 8.0f, TARGET_ATTACKING, 0, 10, false, true);
@@ -259,7 +264,8 @@ class AzgalorAI : public CreatureAIScript
 
 class ArchimondeTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArchimondeTriggerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ArchimondeTriggerAI(c); }
     explicit ArchimondeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -277,7 +283,8 @@ class ArchimondeTriggerAI : public CreatureAIScript
 
 class DoomfireAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DoomfireAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DoomfireAI(c); }
     explicit DoomfireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -399,7 +406,8 @@ protected:
 
 class ArchimondeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArchimondeAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ArchimondeAI(c); }
     explicit ArchimondeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto airBurst = addAISpell(AIR_BURST, 5.0f, TARGET_ATTACKING, 0, 25, false, true);

@@ -20,11 +20,11 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class Corporal_Keeshan : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Corporal_Keeshan)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Corporal_Keeshan(c); }
     explicit Corporal_Keeshan(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override

@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_TheVioletHold.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 enum DataIndex
 {
@@ -343,7 +342,8 @@ public:
 //\TODO: Replace spell casting logic for all instances, this is temp
 class VHCreatureAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VHCreatureAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VHCreatureAI(c); }
     explicit VHCreatureAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //this->createWaypoint(1, 0, 0, VH_DOOR_ATTACK_POSITION);
@@ -479,7 +479,8 @@ protected:
 
 class VHIntroAzureBinder : VHCreatureAI
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureBinder)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VHIntroAzureBinder(c); }
     explicit VHIntroAzureBinder(Creature* pCreature) : VHCreatureAI(pCreature)
     {
         /*const int SPELL_ARCANE_BARRAGE = 58456;
@@ -516,7 +517,8 @@ class VHIntroAzureBinder : VHCreatureAI
 
 class VHIntroAzureInvader : VHCreatureAI
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureInvader)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VHIntroAzureInvader(c); }
     explicit VHIntroAzureInvader(Creature* pCreature) : VHCreatureAI(pCreature)
     { 
         /* const int SPELL_CLEAVE = 15496;
@@ -553,7 +555,8 @@ class VHIntroAzureInvader : VHCreatureAI
 
 class VHIntroAzureMageSlayer : VHCreatureAI
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureMageSlayer)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VHIntroAzureMageSlayer(c); }
     explicit VHIntroAzureMageSlayer(Creature* pCreature) : VHCreatureAI(pCreature)
     {
         /*const int SPELL_ARCANE_EMPOWERMENT = 58469;
@@ -579,7 +582,8 @@ class VHIntroAzureMageSlayer : VHCreatureAI
 
 class VHIntroAzureSpellBreaker : VHCreatureAI
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureSpellBreaker)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VHIntroAzureSpellBreaker(c); }
     explicit VHIntroAzureSpellBreaker(Creature* pCreature) : VHCreatureAI(pCreature)
     {
         /*const int SPELL_ARCANE_BLAST = 58462;
@@ -625,7 +629,8 @@ class VHIntroAzureSpellBreaker : VHCreatureAI
 
 class MoraggAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MoraggAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MoraggAI(c); }
     explicit MoraggAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //// Spells

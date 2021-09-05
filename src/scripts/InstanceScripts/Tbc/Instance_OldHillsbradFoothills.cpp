@@ -163,7 +163,8 @@ public:
 
 class LieutenantDrakeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LieutenantDrakeAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new LieutenantDrakeAI(c); }
 
     OldHilsbradInstance* pInstance;
 
@@ -187,7 +188,8 @@ class LieutenantDrakeAI : public CreatureAIScript
 
 class ThrallAI : public CreatureAIScript // this will be replaced with escortAI
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ThrallAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ThrallAI(c); }
     explicit ThrallAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         stopMovement();

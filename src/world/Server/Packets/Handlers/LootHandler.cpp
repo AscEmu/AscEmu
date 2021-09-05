@@ -15,7 +15,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Map/MapMgr.h"
 #include "WoWGuid.h"
-#include "Macros/ScriptMacros.hpp"
 #include "Units/Creatures/Creature.h"
 #include "Management/ItemInterface.h"
 #include "Objects/ObjectMgr.h"

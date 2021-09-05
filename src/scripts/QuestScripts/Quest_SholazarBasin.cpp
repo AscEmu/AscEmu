@@ -22,7 +22,6 @@
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Spell/SpellAuras.h"
-#include "Macros/ScriptMacros.hpp"
 
 enum
 {
@@ -37,7 +36,8 @@ enum
 
 class ChickenEscapee : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ChickenEscapee)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ChickenEscapee(c); }
     explicit ChickenEscapee(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

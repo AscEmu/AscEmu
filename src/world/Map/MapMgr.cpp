@@ -19,8 +19,6 @@
  *
  */
 
-
-
 #include "TLSObject.h"
 #include "Objects/DynamicObject.h"
 #include "CellHandler.h"
@@ -42,7 +40,6 @@
 #include "MapMgr.h"
 #include "MapScriptInterface.h"
 #include "WorldCreator.h"
-#include "Macros/ScriptMacros.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgUpdateWorldState.h"
 #include "Server/Packets/SmsgDefenseMessage.h"

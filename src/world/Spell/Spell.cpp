@@ -47,7 +47,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/UnitDefines.hpp"
 #include "Util.hpp"
 #include "Definitions/SpellEffects.hpp"
-#include "Macros/ScriptMacros.hpp"
 #include "Server/Script/CreatureAIScript.h"
 
 using namespace AscEmu::Packets;

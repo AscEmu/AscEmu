@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_BlackMorass.h"
 
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class TheBlackMorassInstanceScript : public InstanceScript
 {
@@ -19,7 +18,8 @@ public:
 // ChronoLordAI
 class ChronoLordAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ChronoLordAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ChronoLordAI(c); }
     explicit ChronoLordAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto arcaneBlast = addAISpell(ARCANE_BLAST, 0.0f, TARGET_ATTACKING, 0, 10);
@@ -38,7 +38,8 @@ class ChronoLordAI : public CreatureAIScript
 // TemporusAI
 class TemporusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TemporusAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TemporusAI(c); }
     explicit TemporusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto haste = addAISpell(HASTEN, 0.0f, TARGET_SELF, 0, 10);
@@ -57,7 +58,8 @@ class TemporusAI : public CreatureAIScript
 // AenusAI
 class AenusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AenusAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AenusAI(c); }
     explicit AenusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto sandBreath = addAISpell(SAND_BREATH, 0.0f, TARGET_DESTINATION, 0, 15, false, true);

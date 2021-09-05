@@ -52,7 +52,6 @@ if(USE_PCH)
   target_precompile_headers(${PROJECT_NAME}
   PRIVATE
   Setup.h
-  <Macros/ScriptMacros.hpp>
   <Server/Script/CreatureAIScript.h>
 )
 endif()

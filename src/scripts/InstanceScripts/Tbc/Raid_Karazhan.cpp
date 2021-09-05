@@ -4,12 +4,10 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Raid_Karazhan.h"
 #include "Objects/Faction.h"
 #include <Spell/Definitions/PowerType.hpp>
-#include "Raid_Karazhan.h"
-
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class KarazhanInstanceScript : public InstanceScript
 {
@@ -59,7 +57,8 @@ const uint32_t ATTUMEN_INTANGIBLE_PRESENCE = 29833;
 
 class AttumenTheHuntsmanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AttumenTheHuntsmanAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AttumenTheHuntsmanAI(c); }
     explicit AttumenTheHuntsmanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //All phase spells
@@ -109,7 +108,8 @@ class AttumenTheHuntsmanAI : public CreatureAIScript
 
 class MidnightAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MidnightAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MidnightAI(c); }
     explicit MidnightAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
@@ -187,7 +187,8 @@ const uint32_t MOROES_GARROTE = 37066;
 
 class MoroesAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MoroesAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MoroesAI(c); }
     explicit MoroesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Initialize timers
@@ -288,7 +289,8 @@ const uint32_t MAIDENOFVIRTUE_HOLY_WRATH = 32445;
 
 class MaidenOfVirtueAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MaidenOfVirtueAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MaidenOfVirtueAI(c); }
     explicit MaidenOfVirtueAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Spells
@@ -327,7 +329,8 @@ const uint32_t PBS_TAUNT = 30755;    // Picnic Basket Smell (taunt)
 
 class BigBadWolfAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BigBadWolfAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BigBadWolfAI(c); }
     explicit BigBadWolfAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_threattimer = 0;
@@ -378,10 +381,9 @@ const uint32_t DEBUFF_LITTLE_RED_RIDING_HOOD = 30756;
 
 class THEBIGBADWOLFAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(THEBIGBADWOLFAI)
-    explicit THEBIGBADWOLFAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
+public:
+    static CreatureAIScript* Create(Creature* c) { return new THEBIGBADWOLFAI(c); }
+    explicit THEBIGBADWOLFAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
@@ -517,7 +519,8 @@ static LocationVector Barnes[] =
 
 class BarnesAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BarnesAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BarnesAI(c); }
     explicit BarnesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         stopMovement();
@@ -780,7 +783,8 @@ protected:
 
 class StageLight : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(StageLight)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new StageLight(c); }
     explicit StageLight(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -802,7 +806,8 @@ const uint32_t BERSERK = 26662;
 
 class CuratorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CuratorAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CuratorAI(c); }
     explicit CuratorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         evocation = false;
@@ -925,7 +930,8 @@ const uint32_t ARCING_SEAR = 30235;
 
 class AstralFlareAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AstralFlareAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AstralFlareAI(c); }
     explicit AstralFlareAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ASTRAL_FLARE_PASSIVE, 100.0f, TARGET_SELF, 0, 3);
@@ -975,7 +981,8 @@ enum SUPERSPELL
 
 class ShadeofAranAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadeofAranAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadeofAranAI(c); }
     explicit ShadeofAranAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(FROSTBOLT);
@@ -1404,7 +1411,8 @@ protected:
 
 class WaterEleAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WaterEleAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WaterEleAI(c); }
     explicit WaterEleAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         WaterBolt = 0;
@@ -1439,7 +1447,8 @@ protected:
 
 class ShadowofAranAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowofAranAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadowofAranAI(c); }
     explicit ShadowofAranAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         ShadowPyro = 0;
@@ -1504,7 +1513,8 @@ const uint32_t CN_FPORTAL = 17265;
 
 class IllhoofAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IllhoofAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new IllhoofAI(c); }
     explicit IllhoofAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SHADOW_BOLT);
@@ -1671,7 +1681,8 @@ protected:
 // Kil'Rek
 class KilrekAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KilrekAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KilrekAI(c); }
     explicit KilrekAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(AMPLIFY_FLAMES);
@@ -1704,7 +1715,8 @@ class KilrekAI : public CreatureAIScript
 // Fiendish Imp
 class FiendishImpAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FiendishImpAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new FiendishImpAI(c); }
     explicit FiendishImpAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(FIREBALL_IMP);
@@ -1760,7 +1772,8 @@ class FiendishImpAI : public CreatureAIScript
 
 class DemonChains : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DemonChains)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DemonChains(c); }
     explicit DemonChains(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(CHAINS_VISUAL), true);
@@ -1787,7 +1800,8 @@ class DemonChains : public CreatureAIScript
 
 class FiendPortal : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FiendPortal)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new FiendPortal(c); }
     explicit FiendPortal(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setMoveRoot(true);
@@ -1837,7 +1851,8 @@ AXETOSS2? - 9317
 
 class MalchezaarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MalchezaarAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MalchezaarAI(c); }
     explicit MalchezaarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_phase = 1;
@@ -2214,7 +2229,8 @@ protected:
 
 class NetherInfernalAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NetherInfernalAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NetherInfernalAI(c); }
     explicit NetherInfernalAI(Creature* pCreature) : CreatureAIScript(pCreature) {};
 
     void OnLoad() override
@@ -2237,7 +2253,8 @@ class NetherInfernalAI : public CreatureAIScript
 
 class InfernalDummyAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InfernalDummyAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new InfernalDummyAI(c); }
     explicit InfernalDummyAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         stopMovement();
@@ -2254,7 +2271,8 @@ class InfernalDummyAI : public CreatureAIScript
 
 class MAxesAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MAxesAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MAxesAI(c); }
     explicit MAxesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
@@ -2317,7 +2335,8 @@ const uint32_t NETHERBURN = 30522;
 
 class NetherspiteAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NetherspiteAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NetherspiteAI(c); }
     explicit NetherspiteAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(NETHERBREATH);
@@ -2409,7 +2428,8 @@ class NetherspiteAI : public CreatureAIScript
 
 class VoidZoneAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VoidZoneAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VoidZoneAI(c); }
     explicit VoidZoneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setMoveRoot(true);
@@ -2480,7 +2500,8 @@ static LocationVector coords[] =
 
 class NightbaneAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NightbaneAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NightbaneAI(c); }
     explicit NightbaneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         ////ground phase spells
@@ -2736,9 +2757,8 @@ const uint32_t SP_SUMMON_TITO = 31014;
 
 class DorotheeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DorotheeAI)
-    uint32_t summontito;
-
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DorotheeAI(c); }
     explicit DorotheeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //spells[0].info = sSpellMgr.getSpellInfo(SP_AOE_FEAR);
@@ -2828,6 +2848,8 @@ class DorotheeAI : public CreatureAIScript
     }
 
 protected:
+    uint32_t summontito;
+
     Unit* tito;
     bool titoSpawned;
     bool titoDeadSpeech;
@@ -2841,7 +2863,8 @@ const uint32_t SP_ANNOYING_YIPPING = 31015;
 
 class TitoAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TitoAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TitoAI(c); }
     explicit TitoAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SP_ANNOYING_YIPPING);
@@ -2871,7 +2894,8 @@ const uint32_t SP_BRAIN_BASH = 31046;
 
 class StrawmanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(StrawmanAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new StrawmanAI(c); }
     explicit StrawmanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //spells[0].info = sSpellMgr.getSpellInfo(SP_BURNING_STRAW);//  NEEDS TO BE SO IT ONLY AFFECTS HIM WHEN HE IS HIT BY FIRE DMG!
@@ -2930,7 +2954,8 @@ const uint32_t SP_RUST = 31086;
 
 class TinheadAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TinheadAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TinheadAI(c); }
     explicit TinheadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SP_CLEAVE);
@@ -2985,7 +3010,8 @@ const uint32_t CN_ROAR = 17546;
 
 class RoarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RoarAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new RoarAI(c); }
     explicit RoarAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -3022,7 +3048,8 @@ const uint32_t SP_CHAIN_LIGHTNING = 32337;
 
 class CroneAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CroneAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CroneAI(c); }
     explicit CroneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SP_SUMMON_CYCLONE);
@@ -3097,7 +3124,8 @@ const uint32_t CYCLONE_KNOCK = 38517;
 
 class CycloneOZ : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CycloneOZ)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CycloneOZ(c); }
     explicit CycloneOZ(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(CYCLONE_VISUAL), true);
@@ -3131,7 +3159,8 @@ const uint32_t SP_DARING = 30841;
 
 class RomuloAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RomuloAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new RomuloAI(c); }
     explicit RomuloAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SP_BACKWARD_LUNGE);
@@ -3237,7 +3266,8 @@ const uint32_t SP_DEVOTION = 30887;
 
 class JulianneAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(JulianneAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new JulianneAI(c); }
     explicit JulianneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         /*spells[0].info = sSpellMgr.getSpellInfo(SP_ETERNAL_AFFECTION);

@@ -22,7 +22,6 @@
 #include <Units/Creatures/Pet.h>
 
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class TheKesselRun : public QuestScript
 {
@@ -108,7 +107,8 @@ public:
 
 class HighChiefBristlelimb : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HighChiefBristlelimb)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HighChiefBristlelimb(c); }
     explicit HighChiefBristlelimb(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         fulborgskilled = 0;
@@ -136,7 +136,8 @@ private:
 
 class WebbedCreature : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WebbedCreature)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WebbedCreature(c); }
     explicit WebbedCreature(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* /*pTarget*/) override

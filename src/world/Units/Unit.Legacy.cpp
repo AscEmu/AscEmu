@@ -18,7 +18,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "Units/Summons/SummonHandler.h"
 #include "Management/LootMgr.h"
 #include "Units/Creatures/Vehicle.h"
@@ -41,7 +40,6 @@
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/SpellDidHitResult.hpp"
 #include "Creatures/Pet.h"
-#include "Macros/ScriptMacros.hpp"
 #include "Management/ItemInterface.h"
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
 #include "Server/Packets/SmsgAttackStart.h"
