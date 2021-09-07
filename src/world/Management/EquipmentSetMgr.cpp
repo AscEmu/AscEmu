@@ -110,7 +110,7 @@ namespace Arcemu
             for (uint32 i = 0; i < set->ItemGUID.size(); ++i)
                 set->ItemGUID[i] = fields[5 + i].GetUInt32();
 
-            EquipmentSets.insert(std::pair< uint32, EquipmentSet* >(set->SetGUID, set));
+            EquipmentSets.emplace(std::pair< uint32, EquipmentSet* >(set->SetGUID, set));
             set = NULL;
             setcount++;
 
