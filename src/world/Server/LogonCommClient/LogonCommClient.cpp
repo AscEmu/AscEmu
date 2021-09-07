@@ -584,7 +584,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
                     session_name->SystemMessage("Account permissions has been updated to '%s' for account '%s' (%u). The change will be effective immediately.", gmlevel.c_str(), account_string, accountId);
 
                 //Update forcedpermission map
-                sLogonCommHandler.setAccountPermission(accountId, gmlevel.c_str());
+                sLogonCommHandler.setAccountPermission(accountId, gmlevel);
 
                 //Write info to gmlog
                 if (request_name.compare("none") != 0)
