@@ -3022,7 +3022,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         sCheatLog.writefromsession(m_session, dmgLog.str().c_str());
 
         if (worldConfig.limit.broadcastMessageToGmOnExceeding)
-            sendReportToGmMessage(getName().c_str(), dmgLog.str());
+            sendReportToGmMessage(getName(), dmgLog.str());
 
         if (worldConfig.limit.disconnectPlayerForExceedingLimits)
             m_session->Disconnect();
