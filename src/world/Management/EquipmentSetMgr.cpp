@@ -54,7 +54,7 @@ namespace Arcemu
     {
         std::pair< EquipmentSetStorage::iterator, bool > retval;
 
-        retval = EquipmentSets.insert(std::pair< uint32, EquipmentSet* >(setGUID, set));
+        retval = EquipmentSets.emplace(std::pair< uint32, EquipmentSet* >(setGUID, set));
 
         return retval.second;
     }
