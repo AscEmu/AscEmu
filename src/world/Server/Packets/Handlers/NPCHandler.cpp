@@ -429,7 +429,6 @@ void WorldSession::sendTrainerList(Creature* creature)
     {
         WorldPacket data(SMSG_TRAINER_LIST, 5000);
         uint32_t Spacer = 0;
-        std::string Text;
 
         data << creature->getGuid();
         data << trainer->TrainerType;
