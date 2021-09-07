@@ -4601,7 +4601,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t o
                 data >> byte_parameter;
                 break;
             default:
-                ARCEMU_ASSERT(false && "Wrong movement status element");
+                sLogger.failure("Wrong movement status element");
                 break;
         }
     }
@@ -4849,7 +4849,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t 
                 data << float(custom_speed);
                 break;
             default:
-                ARCEMU_ASSERT(false && "Wrong movement status element");
+                sLogger.failure("Wrong movement status element");
                 break;
         }
     }

@@ -273,18 +273,19 @@ float World::getRAMUsage()
 // Session functions
 void World::addSession(WorldSession* worldSession)
 {
-    ARCEMU_ASSERT(worldSession != NULL);
+    if (worldSession)
+    {
+        std::lock_guard<std::mutex> guard(mSessionLock);
 
-    std::lock_guard<std::mutex> guard(mSessionLock);
+        mActiveSessionMapStore[worldSession->GetAccountId()] = worldSession;
 
-    mActiveSessionMapStore[worldSession->GetAccountId()] = worldSession;
-
-    if (static_cast<uint32_t>(mActiveSessionMapStore.size()) > getPeakSessionCount())
-        setNewPeakSessionCount(static_cast<uint32_t>(mActiveSessionMapStore.size()));
+        if (static_cast<uint32_t>(mActiveSessionMapStore.size()) > getPeakSessionCount())
+            setNewPeakSessionCount(static_cast<uint32_t>(mActiveSessionMapStore.size()));
 
 #ifndef AE_TBC
-    worldSession->sendAccountDataTimes(GLOBAL_CACHE_MASK);
+        worldSession->sendAccountDataTimes(GLOBAL_CACHE_MASK);
 #endif
+    }
 }
 
 WorldSession* World::getSessionByAccountId(uint32_t accountId)
@@ -448,11 +449,12 @@ void World::disconnectSessionByPlayerName(const std::string& playerName, WorldSe
 // GlobalSession functions - not used?
 void World::addGlobalSession(WorldSession* worldSession)
 {
-    ARCEMU_ASSERT(worldSession != NULL);
-
-    globalSessionMutex.Acquire();
-    globalSessionSet.insert(worldSession);
-    globalSessionMutex.Release();
+    if (worldSession)
+    {
+        globalSessionMutex.Acquire();
+        globalSessionSet.insert(worldSession);
+        globalSessionMutex.Release();
+    }
 }
 
 void World::updateGlobalSession(uint32_t /*diff*/)

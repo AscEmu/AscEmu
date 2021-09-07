@@ -58,11 +58,6 @@ void EventableObject::event_AddEvent(TimedEvent* ptr)
 
         if (m_holder == NULL)
         {
-
-            ///////////////////////////////////////// this is for me for debugging purposes - dfighter ////////////////////////////
-            // ARCEMU_ASSERT(false);
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
             // We still couldn't find an eventholder for us so let's run in WorldRunnable
             m_event_Instanceid = WORLD_INSTANCE;
             m_holder = sEventMgr.GetEventHolder(m_event_Instanceid);
@@ -79,9 +74,6 @@ void EventableObject::event_AddEvent(TimedEvent* ptr)
         delete ptr->cb;
         delete ptr;
 
-        ///////////////////////////////////////// this is for me for debugging purposes - dfighter ////////////////////////////
-        // ARCEMU_ASSERT(false);
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         m_lock.Release();
         return;
     }

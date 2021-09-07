@@ -1385,8 +1385,10 @@ void InstanceScript::setGameObjectStateForEntry(uint32_t entry, uint8_t state)
 /* Hook Stuff */
 void ScriptMgr::register_hook(ServerHookEvents event, void* function_pointer)
 {
-    ARCEMU_ASSERT(event < NUM_SERVER_HOOKS);
-    _hooks[event].insert(function_pointer);
+    if (event < NUM_SERVER_HOOKS)
+        _hooks[event].insert(function_pointer);
+    else
+        sLogger.failure("ScriptMgr::register_hook tried to register invalid event %u", event);
 }
 
 bool ScriptMgr::has_creature_script(uint32 entry) const

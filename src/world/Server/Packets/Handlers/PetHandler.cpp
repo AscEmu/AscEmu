@@ -383,22 +383,23 @@ void WorldSession::handlePetRename(WorldPacket& recvPacket)
     pet->setSheathType(SHEATH_STATE_MELEE);
     pet->setPetFlags(PET_RENAME_NOT_ALLOWED);
 
-    ARCEMU_ASSERT(pet->getPlayerOwner() != nullptr);
+    if (pet->getPlayerOwner() != nullptr)
+    {
+        if (pet->getPlayerOwner()->isPvpFlagSet())
+            pet->setPvpFlag();
+        else
+            pet->removePvpFlag();
 
-    if (pet->getPlayerOwner()->isPvpFlagSet())
-        pet->setPvpFlag();
-    else
-        pet->removePvpFlag();
+        if (pet->getPlayerOwner()->isFfaPvpFlagSet())
+            pet->setFfaPvpFlag();
+        else
+            pet->removeFfaPvpFlag();
 
-    if (pet->getPlayerOwner()->isFfaPvpFlagSet())
-        pet->setFfaPvpFlag();
-    else
-        pet->removeFfaPvpFlag();
-
-    if (pet->getPlayerOwner()->isSanctuaryFlagSet())
-        pet->setSanctuaryFlag();
-    else
-        pet->removeSanctuaryFlag();
+        if (pet->getPlayerOwner()->isSanctuaryFlagSet())
+            pet->setSanctuaryFlag();
+        else
+            pet->removeSanctuaryFlag();
+    }
 }
 
 void WorldSession::handlePetAbandon(WorldPacket& /*recvPacket*/)

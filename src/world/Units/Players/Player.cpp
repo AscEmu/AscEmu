@@ -401,16 +401,15 @@ void Player::setShieldBlockCritPercentage(float value) { write(playerData()->shi
 
 uint32_t Player::getExploredZone(uint32_t idx) const
 {
-    ARCEMU_ASSERT(idx < WOWPLAYER_EXPLORED_ZONES_COUNT)
-
-    return playerData()->explored_zones[idx];
+    if (idx < WOWPLAYER_EXPLORED_ZONES_COUNT)
+        return playerData()->explored_zones[idx];
+    return 0;
 }
 
 void Player::setExploredZone(uint32_t idx, uint32_t data)
 {
-    ARCEMU_ASSERT(idx < WOWPLAYER_EXPLORED_ZONES_COUNT)
-
-    write(playerData()->explored_zones[idx], data);
+    if (idx < WOWPLAYER_EXPLORED_ZONES_COUNT)
+        write(playerData()->explored_zones[idx], data);
 }
 
 uint32_t Player::getSelfResurrectSpell() const { return playerData()->self_resurrection_spell; }
@@ -1310,23 +1309,25 @@ bool Player::isTeamAlliance() const { return getTeam() == TEAM_ALLIANCE; }
 // Stats
 void Player::setInitialPlayerData()
 {
-    ARCEMU_ASSERT(lvlinfo != nullptr);
-
-    //\ TODO: LevelInfo base health and mana stats already have stamina and intellect calculated into them
-    const auto levelone = sObjectMgr.GetLevelInfo(getRace(), getClass(), 1);
-    if (levelone != nullptr)
+    if (lvlinfo != nullptr)
     {
-        setBaseHealth(lvlinfo->HP - ((lvlinfo->Stat[STAT_STAMINA] - levelone->Stat[STAT_STAMINA]) * 10));
-        setBaseMana(lvlinfo->Mana - ((lvlinfo->Stat[STAT_INTELLECT] - levelone->Stat[STAT_INTELLECT]) * 15));
-    }
-    else
-    {
-        setBaseHealth(lvlinfo->HP);
-        setBaseMana(lvlinfo->Mana);
+        //\ TODO: LevelInfo base health and mana stats already have stamina and intellect calculated into them
+        const auto levelone = sObjectMgr.GetLevelInfo(getRace(), getClass(), 1);
+        if (levelone != nullptr)
+        {
+            setBaseHealth(lvlinfo->HP - ((lvlinfo->Stat[STAT_STAMINA] - levelone->Stat[STAT_STAMINA]) * 10));
+            setBaseMana(lvlinfo->Mana - ((lvlinfo->Stat[STAT_INTELLECT] - levelone->Stat[STAT_INTELLECT]) * 15));
+        }
+        else
+        {
+            setBaseHealth(lvlinfo->HP);
+            setBaseMana(lvlinfo->Mana);
+        }
+
+        // Set max health and powers
+        setMaxHealth(lvlinfo->HP);
     }
 
-    // Set max health and powers
-    setMaxHealth(lvlinfo->HP);
     // First initialize all power fields to 0
     for (uint8_t power = POWER_TYPE_MANA; power < TOTAL_PLAYER_POWER_TYPES; ++power)
         setMaxPower(static_cast<PowerType>(power), 0);
@@ -2521,15 +2522,18 @@ void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
 // Tutorials
 uint32_t Player::getTutorialValueById(uint8_t id)
 {
-    ARCEMU_ASSERT(id < 8)
-    return m_Tutorials[id];
+    if (id < 8)
+        return m_Tutorials[id];
+    return 0;
 }
 
 void Player::setTutorialValueForId(uint8_t id, uint32_t value)
 {
-    ARCEMU_ASSERT(id < 8)
-    m_Tutorials[id] = value;
-    tutorialsDirty = true;
+    if (id < 8)
+    {
+        m_Tutorials[id] = value;
+        tutorialsDirty = true;
+    }
 }
 
 void Player::loadTutorials()

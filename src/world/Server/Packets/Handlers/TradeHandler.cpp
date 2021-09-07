@@ -713,27 +713,27 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
         }
 
         ++itemCount;
-        const auto itemProperties = item->getItemProperties();
-        ARCEMU_ASSERT(itemProperties != nullptr);
+        if (const auto itemProperties = item->getItemProperties())
+        {
+            data << uint32_t(itemProperties->ItemId);
+            data << uint32_t(itemProperties->DisplayInfoID);
+            data << uint32_t(item->getStackCount());
+            data << uint32_t(item->hasFlags(ITEM_FLAG_WRAPPED) ? 1 : 0);
 
-        data << uint32_t(itemProperties->ItemId);
-        data << uint32_t(itemProperties->DisplayInfoID);
-        data << uint32_t(item->getStackCount());
-        data << uint32_t(item->hasFlags(ITEM_FLAG_WRAPPED) ? 1 : 0);
+            // Enchantment stuff
+            data << uint64_t(item->getGiftCreatorGuid());
+            data << uint32_t(item->getEnchantmentId(PERM_ENCHANTMENT_SLOT));
+            for (uint8_t ench = SOCK_ENCHANTMENT_SLOT1; ench < BONUS_ENCHANTMENT_SLOT; ++ench)
+                data << uint32_t(item->getEnchantmentId(ench));
 
-        // Enchantment stuff
-        data << uint64_t(item->getGiftCreatorGuid());
-        data << uint32_t(item->getEnchantmentId(PERM_ENCHANTMENT_SLOT));
-        for (uint8_t ench = SOCK_ENCHANTMENT_SLOT1; ench < BONUS_ENCHANTMENT_SLOT; ++ench)
-            data << uint32_t(item->getEnchantmentId(ench));
-
-        data << uint64_t(item->getCreatorGuid()); // Item creator
-        data << uint32_t(item->getSpellCharges(0)); // Spell charges
-        data << uint32_t(item->getPropertySeed());
-        data << uint32_t(item->getRandomPropertiesId());
-        data << uint32_t(itemProperties->LockId);
-        data << uint32_t(item->getMaxDurability());
-        data << uint32_t(item->getDurability());
+            data << uint64_t(item->getCreatorGuid()); // Item creator
+            data << uint32_t(item->getSpellCharges(0)); // Spell charges
+            data << uint32_t(item->getPropertySeed());
+            data << uint32_t(item->getRandomPropertiesId());
+            data << uint32_t(itemProperties->LockId);
+            data << uint32_t(item->getMaxDurability());
+            data << uint32_t(item->getDurability());
+        }
     }
 #else
     data << uint32_t(0);                  // unk

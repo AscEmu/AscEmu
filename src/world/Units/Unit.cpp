@@ -2427,9 +2427,10 @@ void Unit::castSpellLoc(const LocationVector location, SpellInfo const* spellInf
 
 void Unit::eventCastSpell(Unit* target, SpellInfo const* spellInfo)
 {
-    ARCEMU_ASSERT(spellInfo != nullptr);
-
-    castSpell(target, spellInfo, 0, true);
+    if (spellInfo != nullptr)
+        castSpell(target, spellInfo, 0, true);
+    else
+        sLogger.failure("Unit::eventCastSpell tried to cast invalid spell with no spellInfo (nullptr)");
 }
 
 void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, uint32_t forcedBasepoints, bool triggered)
@@ -5519,34 +5520,39 @@ void Unit::addSimpleHealingBatchEvent(uint32_t heal, Unit* healer/* = nullptr*/,
 
 void Unit::addHealthBatchEvent(HealthBatchEvent* batch)
 {
-    ARCEMU_ASSERT(batch != nullptr);
-
-    // Do some checks before adding the health event into batch list
-    if (!isAlive() || !IsInWorld() || bInvincible)
+    if (batch != nullptr)
     {
-        delete batch;
-        return;
-    }
-
-    if (isPlayer())
-    {
-        const auto plr = static_cast<Player*>(this);
-        if (!batch->isHeal && plr->m_cheats.hasGodModeCheat)
+        // Do some checks before adding the health event into batch list
+        if (!isAlive() || !IsInWorld() || bInvincible)
         {
             delete batch;
             return;
         }
-    }
-    else if (isCreature())
-    {
-        if (static_cast<Creature*>(this)->isSpiritHealer())
-        {
-            delete batch;
-            return;
-        }
-    }
 
-    m_healthBatch.push_back(batch);
+        if (isPlayer())
+        {
+            const auto plr = static_cast<Player*>(this);
+            if (!batch->isHeal && plr->m_cheats.hasGodModeCheat)
+            {
+                delete batch;
+                return;
+            }
+        }
+        else if (isCreature())
+        {
+            if (static_cast<Creature*>(this)->isSpiritHealer())
+            {
+                delete batch;
+                return;
+            }
+        }
+
+        m_healthBatch.push_back(batch);
+    }
+    else
+    {
+        sLogger.failure("Unit::addHealthBatchEvent tried to add batch for nullptr!");
+    }
 }
 
 uint32_t Unit::calculateEstimatedOverKillForCombatLog(uint32_t damage) const

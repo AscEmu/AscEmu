@@ -491,10 +491,6 @@ Player::~Player()
         DuelingWith->DuelingWith = nullptr;
     DuelingWith = nullptr;
 
-    ARCEMU_ASSERT(!IsInWorld())
-
-    // delete m_talenttree
-
     for (uint8 i = 0; i < MAX_QUEST_SLOT; ++i)
     {
         if (m_questlog[i] != nullptr)
@@ -3777,10 +3773,8 @@ void Player::RemoveFromWorld()
         else
         {
             if (m_SummonedObject->IsInWorld())
-            {
                 m_SummonedObject->RemoveFromWorld(true);
-            }
-            ARCEMU_ASSERT(m_SummonedObject->isGameObject())
+
             delete m_SummonedObject;
         }
         m_SummonedObject = nullptr;
@@ -3805,7 +3799,9 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     if (slot >= INVENTORY_SLOT_BAG_END)
         return;
 
-    ARCEMU_ASSERT(item != NULL)
+    if (item == nullptr)
+        return;
+
     ItemProperties const* proto = item->getItemProperties();
 
     //fast check to skip mod applying if the item doesnt meat the requirements.
@@ -5554,83 +5550,85 @@ void Player::AreaExploredOrEventHappens(uint32 questId)
 
 void Player::Reset_Spells()
 {
-    PlayerCreateInfo const* playerCreateInfo = sMySQLStore.getPlayerCreateInfo(getRace(), getClass());
-    ARCEMU_ASSERT(playerCreateInfo != NULL)
-
-    std::list<uint32> spelllist;
-
-    for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
-        spelllist.push_back((*itr));
-
-    for (std::list<uint32>::iterator itr = spelllist.begin(); itr != spelllist.end(); ++itr)
-        removeSpell((*itr), false, false, 0);
-
-    for (std::set<uint32>::iterator sp = playerCreateInfo->spell_list.begin(); sp != playerCreateInfo->spell_list.end(); ++sp)
+    if (PlayerCreateInfo const* playerCreateInfo = sMySQLStore.getPlayerCreateInfo(getRace(), getClass()))
     {
-        if (*sp)
-            addSpell(*sp);
-    }
+        std::list<uint32> spelllist;
 
-    // cebernic ResetAll ? don't forget DeletedSpells
-    mDeletedSpells.clear();
+        for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+            spelllist.push_back((*itr));
+
+        for (std::list<uint32>::iterator itr = spelllist.begin(); itr != spelllist.end(); ++itr)
+            removeSpell((*itr), false, false, 0);
+
+        for (std::set<uint32>::iterator sp = playerCreateInfo->spell_list.begin(); sp != playerCreateInfo->spell_list.end(); ++sp)
+        {
+            if (*sp)
+                addSpell(*sp);
+        }
+
+        // cebernic ResetAll ? don't forget DeletedSpells
+        mDeletedSpells.clear();
+    }
 }
 
 void Player::CalcResistance(uint8_t type)
 {
-    ARCEMU_ASSERT(type < 7)
-    int32 pos = (BaseResistance[type] * BaseResistanceModPctPos[type]) / 100;
-    int32 neg = (BaseResistance[type] * BaseResistanceModPctNeg[type]) / 100;
-
-    pos += FlatResistanceModifierPos[type];
-    neg += FlatResistanceModifierNeg[type];
-    int32 res = BaseResistance[type] + pos - neg;
-    if (type == 0)
-        res += getStat(STAT_AGILITY) * 2; //fix armor from agi
-    if (res < 0)
-        res = 0;
-    pos += (res * ResistanceModPctPos[type]) / 100;
-    neg += (res * ResistanceModPctNeg[type]) / 100;
-    res = pos - neg + BaseResistance[type];
-    if (type == 0)
-        res += getStat(STAT_AGILITY) * 2; //fix armor from agi
-
-    // Dynamic aura 285 application, removing bonus
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
+    if (type < 7)
     {
-        if (m_auras[x] != nullptr)
+        int32 pos = (BaseResistance[type] * BaseResistanceModPctPos[type]) / 100;
+        int32 neg = (BaseResistance[type] * BaseResistanceModPctNeg[type]) / 100;
+
+        pos += FlatResistanceModifierPos[type];
+        neg += FlatResistanceModifierNeg[type];
+        int32 res = BaseResistance[type] + pos - neg;
+        if (type == 0)
+            res += getStat(STAT_AGILITY) * 2; //fix armor from agi
+        if (res < 0)
+            res = 0;
+        pos += (res * ResistanceModPctPos[type]) / 100;
+        neg += (res * ResistanceModPctNeg[type]) / 100;
+        res = pos - neg + BaseResistance[type];
+        if (type == 0)
+            res += getStat(STAT_AGILITY) * 2; //fix armor from agi
+
+        // Dynamic aura 285 application, removing bonus
+        for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
         {
-            for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+            if (m_auras[x] != nullptr)
             {
-                auto aurEff = m_auras[x]->getAuraEffect(i);
-                if (aurEff.getAuraEffectType() == SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR)
-                    m_auras[x]->SpellAuraModAttackPowerOfArmor(&aurEff, false);
+                for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                {
+                    auto aurEff = m_auras[x]->getAuraEffect(i);
+                    if (aurEff.getAuraEffectType() == SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR)
+                        m_auras[x]->SpellAuraModAttackPowerOfArmor(&aurEff, false);
+                }
             }
         }
-    }
 
-    if (res < 0)
-        res = 1;
+        if (res < 0)
+            res = 1;
 
 #if VERSION_STRING > Classic
-    setResistanceBuffModPositive(type, pos);
-    setResistanceBuffModNegative(type, -neg);
+        setResistanceBuffModPositive(type, pos);
+        setResistanceBuffModNegative(type, -neg);
 #endif
-    setResistance(type, res > 0 ? res : 0);
+        setResistance(type, res > 0 ? res : 0);
 
-    std::list<Pet*> summons = GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-        (*itr)->CalcResistance(type);  //Re-calculate pet's too.
+        std::list<Pet*> summons = GetSummons();
+        for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+            (*itr)->CalcResistance(type);  //Re-calculate pet's too.
 
-    // Dynamic aura 285 application, adding bonus
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        if (m_auras[x] != nullptr)
+        // Dynamic aura 285 application, adding bonus
+        for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
         {
-            for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+            if (m_auras[x] != nullptr)
             {
-                auto aurEff = m_auras[x]->getAuraEffect(i);
-                if (aurEff.getAuraEffectType() == SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR)
-                    m_auras[x]->SpellAuraModAttackPowerOfArmor(&aurEff, true);
+                for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                {
+                    auto aurEff = m_auras[x]->getAuraEffect(i);
+                    if (aurEff.getAuraEffectType() == SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR)
+                        m_auras[x]->SpellAuraModAttackPowerOfArmor(&aurEff, true);
+                }
             }
         }
     }
@@ -5967,38 +5965,39 @@ void Player::RemoveSpellsFromLine(uint32 skill_line)
 
 void Player::CalcStat(uint8_t type)
 {
-    ARCEMU_ASSERT(type < 5)
+    if (type < 5)
+    {
+        int32 pos = (int32)BaseStats[type] * (int32)StatModPctPos[type] / 100 + (int32)FlatStatModPos[type];
+        int32 neg = (int32)BaseStats[type] * (int32)StatModPctNeg[type] / 100 + (int32)FlatStatModNeg[type];
+        int32 res = pos + (int32)BaseStats[type] - neg;
+        if (res <= 0)
+            res = 1;
 
-    int32 pos = (int32)BaseStats[type] * (int32)StatModPctPos[type] / 100 + (int32)FlatStatModPos[type];
-    int32 neg = (int32)BaseStats[type] * (int32)StatModPctNeg[type] / 100 + (int32)FlatStatModNeg[type];
-    int32 res = pos + (int32)BaseStats[type] - neg;
-    if (res <= 0)
-        res = 1;
-
-    pos += (res * (int32)this->TotalStatModPctPos[type]) / 100;
-    neg += (res * (int32)this->TotalStatModPctNeg[type]) / 100;
-    res = pos + BaseStats[type] - neg;
-    if (res <= 0)
-        res = 1;
+        pos += (res * (int32)this->TotalStatModPctPos[type]) / 100;
+        neg += (res * (int32)this->TotalStatModPctNeg[type]) / 100;
+        res = pos + BaseStats[type] - neg;
+        if (res <= 0)
+            res = 1;
 
 #if VERSION_STRING != Classic
-    setPosStat(type, pos);
+        setPosStat(type, pos);
 
-    if (neg < 0)
-        setNegStat(type, -neg);
-    else
-        setNegStat(type, neg);
+        if (neg < 0)
+            setNegStat(type, -neg);
+        else
+            setNegStat(type, neg);
 #endif
 
-    setStat(type, res);
-    if (type == STAT_AGILITY)
-        CalcResistance(0);
+        setStat(type, res);
+        if (type == STAT_AGILITY)
+            CalcResistance(0);
 
-    if (type == STAT_STAMINA || type == STAT_INTELLECT)
-    {
-        std::list<Pet*> summons = GetSummons();
-        for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-            (*itr)->CalcStat(type);  //Re-calculate pet's too
+        if (type == STAT_STAMINA || type == STAT_INTELLECT)
+        {
+            std::list<Pet*> summons = GetSummons();
+            for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+                (*itr)->CalcStat(type);  //Re-calculate pet's too
+        }
     }
 }
 
@@ -9231,24 +9230,24 @@ uint32 Player::GetMaxPersonalRating()
 {
     uint32 maxrating = 0;
 
-    ARCEMU_ASSERT(m_playerInfo != NULL)
-
-    for (int i = 0; i < NUM_ARENA_TEAM_TYPES; i++)
+    if (m_playerInfo != nullptr)
     {
-        if (m_arenaTeams[i] != nullptr)
+        for (int i = 0; i < NUM_ARENA_TEAM_TYPES; i++)
         {
-            if (ArenaTeamMember* m = m_arenaTeams[i]->GetMemberByGuid(m_playerInfo->guid))
+            if (m_arenaTeams[i] != nullptr)
             {
-                if (m->PersonalRating > maxrating)
-                    maxrating = m->PersonalRating;
-            }
-            else
-            {
-                sLogger.failure("%s: GetMemberByGuid returned NULL for player guid = %u", __FUNCTION__, m_playerInfo->guid);
+                if (ArenaTeamMember* m = m_arenaTeams[i]->GetMemberByGuid(m_playerInfo->guid))
+                {
+                    if (m->PersonalRating > maxrating)
+                        maxrating = m->PersonalRating;
+                }
+                else
+                {
+                    sLogger.failure("%s: GetMemberByGuid returned NULL for player guid = %u", __FUNCTION__, m_playerInfo->guid);
+                }
             }
         }
     }
-
     return maxrating;
 }
 /***********************************
@@ -9539,14 +9538,14 @@ void Player::AddGarbageItem(Item* it)
 
 void Player::OutPacket(uint16 opcode, uint16 len, const void* data)
 {
-    ARCEMU_ASSERT(m_session != NULL)
-    m_session->OutPacket(opcode, len, data);
+    if (m_session != nullptr)
+        m_session->OutPacket(opcode, len, data);
 }
 
 void Player::SendPacket(WorldPacket* packet)
 {
-    ARCEMU_ASSERT(m_session != NULL)
-    m_session->SendPacket(packet);
+    if (m_session != nullptr)
+        m_session->SendPacket(packet);
 }
 
 void Player::OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool self)

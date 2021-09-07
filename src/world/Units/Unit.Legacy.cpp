@@ -9278,8 +9278,8 @@ void CombatStatusHandler::AddAttackTarget(const uint64 & guid)
     if (guid == m_Unit->getGuid())
        return;
 
-    //we MUST be in world
-    ARCEMU_ASSERT(m_Unit->IsInWorld());
+    if (!m_Unit->IsInWorld())
+        return;
 
     m_attackTargets.insert(guid);
     //printf("Adding attack target " I64FMT " to " I64FMT "\n", guid, m_Unit->getGuid());
@@ -9387,8 +9387,9 @@ void CombatStatusHandler::OnDamageDealt(Unit* pTarget)
 
 void CombatStatusHandler::AddAttacker(const uint64 & guid)
 {
-    //we MUST be in world
-    ARCEMU_ASSERT(m_Unit->IsInWorld());
+    if (!m_Unit->IsInWorld())
+        return;
+
     m_attackers.insert(guid);
     UpdateFlag();
 }
@@ -9958,8 +9959,8 @@ void Unit::AddGarbageAura(Aura* aur)
 
 void Unit::AddGarbagePet(Pet* pet)
 {
-    ARCEMU_ASSERT(pet->getPlayerOwner()->getGuid() == getGuid() && !pet->IsInWorld());
-    m_GarbagePets.push_back(pet);
+    if (pet->getPlayerOwner()->getGuid() == getGuid() && !pet->IsInWorld())
+        m_GarbagePets.push_back(pet);
 }
 
 void Unit::RemoveGarbage()
