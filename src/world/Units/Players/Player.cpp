@@ -2731,7 +2731,7 @@ void Player::sendReportToGmMessage(std::string playerName, std::string damageLog
     gm_ann += MSG_COLOR_YELLOW;
     gm_ann += damageLog;
 
-    sWorld.sendMessageToOnlineGms(gm_ann.c_str());
+    sWorld.sendMessageToOnlineGms(gm_ann);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
