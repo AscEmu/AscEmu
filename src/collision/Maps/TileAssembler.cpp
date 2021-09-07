@@ -308,7 +308,7 @@ namespace VMAP
                 current = (*map_iter).second;
             }
 
-            current->UniqueEntries.insert(pair<uint32, ModelSpawn>(spawn.ID, spawn));
+            current->UniqueEntries.emplace(pair<uint32, ModelSpawn>(spawn.ID, spawn));
             current->TileEntries.emplace(pair<uint32, uint32>(StaticMapTree::packTileID(tileX, tileY), spawn.ID));
         }
         bool success = (ferror(dirf) == 0);
