@@ -1876,8 +1876,6 @@ bool ChatHandler::HandleCharListStandingCommand(const char* args, WorldSession* 
 //.character list items
 bool ChatHandler::HandleCharListItemsCommand(const char* /*args*/, WorldSession* m_session)
 {
-    std::string q;
-
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
         return true;
