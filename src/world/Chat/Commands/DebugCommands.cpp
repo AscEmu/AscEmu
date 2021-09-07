@@ -87,58 +87,59 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
         creature_spawn->CanFly = 0;
         creature_spawn->phase = session->GetPlayer()->GetPhase();
 
-        auto creature = session->GetPlayer()->GetMapMgr()->CreateCreature(entry);
-        ARCEMU_ASSERT(creature != nullptr);
-        creature->Load(creature_spawn, 0, nullptr);
-        creature->m_loadedFromDB = true;
-        creature->PushToWorld(session->GetPlayer()->GetMapMgr());
-
-        // Add to map
-        uint32 x = session->GetPlayer()->GetMapMgr()->GetPosX(session->GetPlayer()->GetPositionX());
-        uint32 y = session->GetPlayer()->GetMapMgr()->GetPosY(session->GetPlayer()->GetPositionY());
-        session->GetPlayer()->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(x, y)->CreatureSpawns.push_back(creature_spawn);
-        MapCell* map_cell = session->GetPlayer()->GetMapMgr()->GetCell(x, y);
-        if (map_cell != nullptr)
-            map_cell->SetLoaded();
-
-        for (auto aiSpells : creature->GetAIInterface()->mCreatureAISpells)
+        if (auto creature = session->GetPlayer()->GetMapMgr()->CreateCreature(entry))
         {
-            if (aiSpells->fromDB)
-                continue;
+            creature->Load(creature_spawn, 0, nullptr);
+            creature->m_loadedFromDB = true;
+            creature->PushToWorld(session->GetPlayer()->GetMapMgr());
 
-            uint32_t chance = aiSpells->mCastChance;
-            uint32_t spell = aiSpells->mSpellInfo->getId();
-            uint32_t spelltype = aiSpells->spell_type;
-            uint32_t target = aiSpells->mTargetType;
-            uint32_t cooldown = aiSpells->mCooldown;
-            if (cooldown == 0xFFFFFFFF) //4294967295
-                cooldown = 10000;
+            // Add to map
+            uint32 x = session->GetPlayer()->GetMapMgr()->GetPosX(session->GetPlayer()->GetPositionX());
+            uint32 y = session->GetPlayer()->GetMapMgr()->GetPosY(session->GetPlayer()->GetPositionY());
+            session->GetPlayer()->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(x, y)->CreatureSpawns.push_back(creature_spawn);
+            MapCell* map_cell = session->GetPlayer()->GetMapMgr()->GetCell(x, y);
+            if (map_cell != nullptr)
+                map_cell->SetLoaded();
 
-            std::string remove = "'";
-            std::string name = sMySQLStore.getCreatureProperties(entry)->Name;
-            name.erase(std::remove_if(name.begin(), name.end(),
-                                   [&remove](const char& c) {
-                                       return remove.find(c) != std::string::npos;
-                                   }),
-                name.end());
+            for (auto aiSpells : creature->GetAIInterface()->mCreatureAISpells)
+            {
+                if (aiSpells->fromDB)
+                    continue;
 
-            std::string spellname = aiSpells->mSpellInfo->getName();
-            spellname.erase(std::remove_if(spellname.begin(), spellname.end(),
-                                   [&remove](const char& c) {
-                                       return remove.find(c) != std::string::npos;
-                                   }),
-                spellname.end());
+                uint32_t chance = aiSpells->mCastChance;
+                uint32_t spell = aiSpells->mSpellInfo->getId();
+                uint32_t spelltype = aiSpells->spell_type;
+                uint32_t target = aiSpells->mTargetType;
+                uint32_t cooldown = aiSpells->mCooldown;
+                if (cooldown == 0xFFFFFFFF) //4294967295
+                    cooldown = 10000;
 
-            std::string comment = name + " - " + spellname;
+                std::string remove = "'";
+                std::string name = sMySQLStore.getCreatureProperties(entry)->Name;
+                name.erase(std::remove_if(name.begin(), name.end(),
+                    [&remove](const char& c) {
+                        return remove.find(c) != std::string::npos;
+                    }),
+                    name.end());
 
-            char my_insert1[700];
-            sprintf(my_insert1, "INSERT INTO creature_ai_scripts_%s VALUES (5875,12340,%u,4,0,5,1,0,%u,%u,%u,0,%u,%u,%u,0,100,0,0,'%s')", args, entry, chance, spell, spelltype, target, cooldown, cooldown, comment.c_str());
+                std::string spellname = aiSpells->mSpellInfo->getName();
+                spellname.erase(std::remove_if(spellname.begin(), spellname.end(),
+                    [&remove](const char& c) {
+                        return remove.find(c) != std::string::npos;
+                    }),
+                    spellname.end());
 
-            WorldDatabase.Execute(my_insert1);
-            ++count;
+                std::string comment = name + " - " + spellname;
+
+                char my_insert1[700];
+                sprintf(my_insert1, "INSERT INTO creature_ai_scripts_%s VALUES (5875,12340,%u,4,0,5,1,0,%u,%u,%u,0,%u,%u,%u,0,100,0,0,'%s')", args, entry, chance, spell, spelltype, target, cooldown, cooldown, comment.c_str());
+
+                WorldDatabase.Execute(my_insert1);
+                ++count;
+            }
+
+            creature->RemoveFromWorld(false, true);
         }
-
-        creature->RemoveFromWorld(false, true);
     }
 
     SystemMessage(session, "Dumped: %u hardcoded scripts to creature_ai_scripts_dump", count);

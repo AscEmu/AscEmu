@@ -183,8 +183,8 @@ void AuctionHouse::updateDeletionQueue()
 
     for (auto auction : removalList)
     {
-        ARCEMU_ASSERT(auction->isRemoved);
-        removeAuction(auction);
+        if (!auction->isRemoved);
+            removeAuction(auction);
     }
 
     removalList.clear();

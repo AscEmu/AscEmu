@@ -49,8 +49,11 @@ void Item::create(uint32_t itemId, Player* owner)
     setStackCount(1);
 
     m_itemProperties = sMySQLStore.getItemProperties(itemId);
-
-    ARCEMU_ASSERT(m_itemProperties != nullptr);
+    if (!m_itemProperties)
+    {
+        sLogger.failure("Item::create: Can't create item %u missing properties!", itemId);
+        return;
+    }
 
     for (uint8_t i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
         setSpellCharges(i, m_itemProperties->Spells[i].Charges);
@@ -107,22 +110,22 @@ void Item::setDuration(uint32_t seconds) { write(itemData()->duration, seconds);
 int32_t Item::getSpellCharges(uint8_t index) const { return itemData()->spell_charges[index]; }
 void Item::setSpellCharges(uint8_t index, int32_t count)
 {
-    ARCEMU_ASSERT(index < WOWITEM_SPELL_CHARGES_COUNT)
-
-    write(itemData()->spell_charges[index], count);
+    if (index < WOWITEM_SPELL_CHARGES_COUNT)
+        write(itemData()->spell_charges[index], count);
 }
 
 void Item::modSpellCharges(uint8_t index, int32_t mod)
 {
-    ARCEMU_ASSERT(index < WOWITEM_SPELL_CHARGES_COUNT)
+    if (index < WOWITEM_SPELL_CHARGES_COUNT)
+    {
+        int32_t newSpellCharges = getSpellCharges(index);
+        newSpellCharges += mod;
 
-    int32_t newSpellCharges = getSpellCharges(index);
-    newSpellCharges += mod;
+        if (newSpellCharges < 0)
+            newSpellCharges = 0;
 
-    if (newSpellCharges < 0)
-        newSpellCharges = 0;
-
-    setSpellCharges(index, newSpellCharges);
+        setSpellCharges(index, newSpellCharges);
+    }
 }
 
 uint32_t Item::getFlags() const { return itemData()->flags; }

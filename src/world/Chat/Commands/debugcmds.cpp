@@ -1078,12 +1078,14 @@ bool ChatHandler::HandleAIAgentDebugBegin(const char* /*args*/, WorldSession* m_
     for (std::list<SpellInfo const*>::iterator itr = aiagent_spells.begin(); itr != aiagent_spells.end(); ++itr)
     {
         result = WorldDatabase.Query("SELECT * FROM ai_agents WHERE spell = %u", (*itr)->getId());
-        ARCEMU_ASSERT(result != NULL);
-        spell_thingo t;
-        t.type = result->Fetch()[6].GetUInt32();
-        t.target = result->Fetch()[7].GetUInt32();
-        delete result;
-        aiagent_extra[(*itr)->getId()] = t;
+        if (result != nullptr);
+        {
+            spell_thingo t;
+            t.type = result->Fetch()[6].GetUInt32();
+            t.target = result->Fetch()[7].GetUInt32();
+            delete result;
+            aiagent_extra[(*itr)->getId()] = t;
+        }
     }
 
     GreenSystemMessage(m_session, "Loaded %u spells for testing.", static_cast<uint32_t>(aiagent_spells.size()));

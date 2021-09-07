@@ -937,9 +937,8 @@ void CommandTableStorage::Init()
         if (p->ChildCommands != 0)
         {
             // Set the correct pointer.
-            ChatCommand* np = GetSubCommandTable(p->Name);
-            ARCEMU_ASSERT(np != NULL);
-            p->ChildCommands = np;
+            if (ChatCommand* np = GetSubCommandTable(p->Name))
+                p->ChildCommands = np;
         }
         ++p;
     }
@@ -951,9 +950,8 @@ void CommandTableStorage::Init()
         if (p_char->ChildCommands != 0)
         {
             // Set the correct pointer.
-            ChatCommand* np_char = GetCharSubCommandTable(p_char->Name);
-            ARCEMU_ASSERT(np_char != NULL);
-            p_char->ChildCommands = np_char;
+            if (ChatCommand* np_char = GetCharSubCommandTable(p_char->Name))
+                p_char->ChildCommands = np_char;
         }
         ++p_char;
     }
@@ -965,9 +963,8 @@ void CommandTableStorage::Init()
         if (p_npc->ChildCommands != 0)
         {
             // Set the correct pointer.
-            ChatCommand* np_npc = GetNPCSubCommandTable(p_npc->Name);
-            ARCEMU_ASSERT(np_npc != NULL);
-            p_npc->ChildCommands = np_npc;
+            if (ChatCommand* np_npc = GetNPCSubCommandTable(p_npc->Name))
+                p_npc->ChildCommands = np_npc;
         }
         ++p_npc;
     }
@@ -979,9 +976,8 @@ void CommandTableStorage::Init()
         if (p_gobject->ChildCommands != 0)
         {
             // Set the correct pointer.
-            ChatCommand* np_gobject = GetGOSubCommandTable(p_gobject->Name);
-            ARCEMU_ASSERT(np_gobject != NULL);
-            p_gobject->ChildCommands = np_gobject;
+            if (ChatCommand* np_gobject = GetGOSubCommandTable(p_gobject->Name))
+                p_gobject->ChildCommands = np_gobject;
         }
         ++p_gobject;
     }
@@ -993,9 +989,8 @@ void CommandTableStorage::Init()
         if (p_reloadtable->ChildCommands != 0)
         {
             // Set the correct pointer.
-            ChatCommand* np_reloadtable = GetReloadCommandTable(p_reloadtable->Name);
-            ARCEMU_ASSERT(np_reloadtable != NULL);
-            p_reloadtable->ChildCommands = np_reloadtable;
+            if (ChatCommand* np_reloadtable = GetReloadCommandTable(p_reloadtable->Name))
+                p_reloadtable->ChildCommands = np_reloadtable;
         }
         ++p_reloadtable;
     }

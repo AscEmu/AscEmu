@@ -2175,8 +2175,6 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
         if (sQuestMgr.CalcStatus(qst_giver, plr) < QuestStatus::AvailableChat)
             return false;
 
-        ARCEMU_ASSERT(itr != q_end);
-
         uint32 status = sQuestMgr.CalcStatus(qst_giver, plr);
 
         if ((status == QuestStatus::Available) || (status == QuestStatus::Repeatable) || (status == QuestStatus::AvailableChat))

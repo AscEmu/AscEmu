@@ -778,27 +778,27 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
     creature_spawn->CanFly = 0;
     creature_spawn->phase = m_session->GetPlayer()->GetPhase();
 
-    auto creature = m_session->GetPlayer()->GetMapMgr()->CreateCreature(entry);
-    ARCEMU_ASSERT(creature != nullptr);
-    creature->Load(creature_spawn, 0, nullptr);
-    creature->m_loadedFromDB = true;
-    creature->PushToWorld(m_session->GetPlayer()->GetMapMgr());
+    if (auto creature = m_session->GetPlayer()->GetMapMgr()->CreateCreature(entry))
+    {
+        creature->Load(creature_spawn, 0, nullptr);
+        creature->m_loadedFromDB = true;
+        creature->PushToWorld(m_session->GetPlayer()->GetMapMgr());
 
-    // Add to map
-    uint32 x = m_session->GetPlayer()->GetMapMgr()->GetPosX(m_session->GetPlayer()->GetPositionX());
-    uint32 y = m_session->GetPlayer()->GetMapMgr()->GetPosY(m_session->GetPlayer()->GetPositionY());
-    m_session->GetPlayer()->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(x, y)->CreatureSpawns.push_back(creature_spawn);
-    MapCell* map_cell = m_session->GetPlayer()->GetMapMgr()->GetCell(x, y);
-    if (map_cell != nullptr)
-        map_cell->SetLoaded();
+        // Add to map
+        uint32 x = m_session->GetPlayer()->GetMapMgr()->GetPosX(m_session->GetPlayer()->GetPositionX());
+        uint32 y = m_session->GetPlayer()->GetMapMgr()->GetPosY(m_session->GetPlayer()->GetPositionY());
+        m_session->GetPlayer()->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(x, y)->CreatureSpawns.push_back(creature_spawn);
+        MapCell* map_cell = m_session->GetPlayer()->GetMapMgr()->GetCell(x, y);
+        if (map_cell != nullptr)
+            map_cell->SetLoaded();
 
-    creature->SaveToDB();
+        creature->SaveToDB();
 
-    BlueSystemMessage(m_session, "Spawned a creature `%s` with entry %u at %f %f %f on map %u", creature_properties->Name.c_str(),
-        entry, creature_spawn->x, creature_spawn->y, creature_spawn->z, m_session->GetPlayer()->GetMapId());
-    sGMLog.writefromsession(m_session, "spawned a %s at %u %f %f %f", creature_properties->Name.c_str(), m_session->GetPlayer()->GetMapId(),
-        creature_spawn->x, creature_spawn->y, creature_spawn->z);
-
+        BlueSystemMessage(m_session, "Spawned a creature `%s` with entry %u at %f %f %f on map %u", creature_properties->Name.c_str(),
+            entry, creature_spawn->x, creature_spawn->y, creature_spawn->z, m_session->GetPlayer()->GetMapId());
+        sGMLog.writefromsession(m_session, "spawned a %s at %u %f %f %f", creature_properties->Name.c_str(), m_session->GetPlayer()->GetMapId(),
+            creature_spawn->x, creature_spawn->y, creature_spawn->z);
+    }
     return true;
 }
 

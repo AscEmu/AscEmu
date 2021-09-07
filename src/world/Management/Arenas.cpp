@@ -283,16 +283,21 @@ void Arena::HookOnHK(Player* plr)
 
 void Arena::HookOnPlayerDeath(Player* plr)
 {
-    ARCEMU_ASSERT(plr != NULL);
-
-    if (plr->m_isGmInvisible == true)
-        return;
-
-    if (m_playersAlive.find(plr->getGuidLow()) != m_playersAlive.end())
+    if (plr)
     {
-        m_playersCount[plr->getTeam()]--;
-        UpdatePlayerCounts();
-        m_playersAlive.erase(plr->getGuidLow());
+        if (plr->m_isGmInvisible == true)
+            return;
+
+        if (m_playersAlive.find(plr->getGuidLow()) != m_playersAlive.end())
+        {
+            m_playersCount[plr->getTeam()]--;
+            UpdatePlayerCounts();
+            m_playersAlive.erase(plr->getGuidLow());
+        }
+    }
+    else
+    {
+        sLogger.failure("Tried to call Arena::HookOnPlayerDeath with nullptr player pointer");
     }
 }
 
@@ -417,10 +422,10 @@ void Arena::HookOnAreaTrigger(Player* plr, uint32 id)
 {
     int32 buffslot = -1;
 
-    ARCEMU_ASSERT(plr != NULL);
-
-    switch (id)
+    if (plr)
     {
+        switch (id)
+        {
         case 4536:
         case 4538:
         case 4696:
@@ -433,23 +438,31 @@ void Arena::HookOnAreaTrigger(Player* plr, uint32 id)
             break;
         default:
             break;
-    }
-
-    if (buffslot >= 0)
-    {
-        if (m_buffs[buffslot] != NULL && m_buffs[buffslot]->IsInWorld())
-        {
-            // apply the buff
-            SpellInfo const* sp = sSpellMgr.getSpellInfo(m_buffs[buffslot]->GetGameObjectProperties()->raw.parameter_3);
-            ARCEMU_ASSERT(sp != NULL);
-
-            Spell* s = sSpellMgr.newSpell(plr, sp, true, 0);
-            SpellCastTargets targets(plr->getGuid());
-            s->prepare(&targets);
-
-            // despawn the gameobject (not delete!)
-            m_buffs[buffslot]->Despawn(0, 30 * 1000 /*BUFF_RESPAWN_TIME*/);
         }
+
+        if (buffslot >= 0)
+        {
+            if (m_buffs[buffslot] != NULL && m_buffs[buffslot]->IsInWorld())
+            {
+                // apply the buff
+                SpellInfo const* sp = sSpellMgr.getSpellInfo(m_buffs[buffslot]->GetGameObjectProperties()->raw.parameter_3);
+                if (sp == nullptr)
+                {
+                    sLogger.failure("Arena::HookOnAreaTrigger: tried to use invalid spell %u for gameobject %u", m_buffs[buffslot]->GetGameObjectProperties()->raw.parameter_3, m_buffs[buffslot]->GetGameObjectProperties()->entry);
+                }
+
+                Spell* s = sSpellMgr.newSpell(plr, sp, true, 0);
+                SpellCastTargets targets(plr->getGuid());
+                s->prepare(&targets);
+
+                // despawn the gameobject (not delete!)
+                m_buffs[buffslot]->Despawn(0, 30 * 1000 /*BUFF_RESPAWN_TIME*/);
+            }
+        }
+    }
+    else
+    {
+        sLogger.failure("Tried to call Arena::HookOnAreaTrigger with nullptr player pointer");
     }
 }
 

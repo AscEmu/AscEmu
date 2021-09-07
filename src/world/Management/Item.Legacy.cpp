@@ -118,8 +118,11 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     uint32 itemid = fields[2].GetUInt32();
 
     m_itemProperties = sMySQLStore.getItemProperties(itemid);
-
-    ARCEMU_ASSERT(m_itemProperties != nullptr);
+    if (!m_itemProperties)
+    {
+        sLogger.failure("Item::LoadFromDB: Can't load item %u missing properties!", itemid);
+        return;
+    }
 
     if (m_itemProperties->LockId > 1)
         locked = true;
@@ -1155,9 +1158,8 @@ uint32 Item::CountGemsWithLimitId(uint32 LimitId)
 
 void Item::EventRemoveItem()
 {
-    ARCEMU_ASSERT(this->getOwner() != nullptr);
-
-    m_owner->getItemInterface()->SafeFullRemoveItemByGuid(this->getGuid());
+    if (this->getOwner())
+        m_owner->getItemInterface()->SafeFullRemoveItemByGuid(this->getGuid());
 }
 
 void Item::SendDurationUpdate()

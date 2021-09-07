@@ -45,8 +45,6 @@ void Charter::AddSignature(uint32_t PlayerGuid)
             break;
         }
     }
-
-    ARCEMU_ASSERT(i != Slots);
 }
 
 void Charter::RemoveSignature(uint32_t PlayerGuid)
