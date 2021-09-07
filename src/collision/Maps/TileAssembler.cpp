@@ -409,7 +409,7 @@ namespace VMAP
             for (uint32 g = 0; g < groups; ++g)
             {
                 GroupModel_Raw& raw_group = raw_model.groupsArray[g];
-                groupsArray.push_back(GroupModel(raw_group.mogpflags, raw_group.GroupWMOID, raw_group.bounds ));
+                groupsArray.emplace_back(GroupModel(raw_group.mogpflags, raw_group.GroupWMOID, raw_group.bounds ));
                 groupsArray.back().setMeshData(raw_group.vertexArray, raw_group.triangles);
                 groupsArray.back().setLiquidData(raw_group.liquid);
             }
