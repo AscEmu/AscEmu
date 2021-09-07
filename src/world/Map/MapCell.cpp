@@ -111,7 +111,7 @@ void MapCell::SetActivity(bool state)
             if (m_celltilesLoaded[mapId][tileX][tileY] == 0)
             {
                 mgr->loadMap(vmapPath.c_str(), mapId, tileX, tileY);
-                mmgr->loadMap(mmapPath.c_str(), mapId, tileX, tileY);
+                mmgr->loadMap(mmapPath, mapId, tileX, tileY);
             }
             ++m_celltilesLoaded[mapId][tileX][tileY];
             m_cellloadLock.Release();
