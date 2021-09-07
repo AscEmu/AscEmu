@@ -5089,7 +5089,7 @@ void Player::UpdateStats()
             sCheatLog.writefromsession(GetSession(), logmsg);
 
             if (worldConfig.limit.broadcastMessageToGmOnExceeding) // send info to online GM
-                sendReportToGmMessage(getName().c_str(), logmsg);
+                sendReportToGmMessage(getName(), logmsg);
 
             if (worldConfig.limit.disconnectPlayerForExceedingLimits)
                 GetSession()->Disconnect();
