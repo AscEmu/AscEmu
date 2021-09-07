@@ -594,7 +594,6 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
     QueryResult* loot_result = WorldDatabase.Query("SELECT itemid, normal10percentchance, heroic10percentchance, normal25percentchance, heroic25percentchance, mincount, maxcount FROM loot_creatures WHERE entryid=%u;", creature_target->getEntry());
     if (loot_result != nullptr)
     {
-        std::string color;
         uint8 numFound = 0;
 
         uint32 minQuality = 0;
