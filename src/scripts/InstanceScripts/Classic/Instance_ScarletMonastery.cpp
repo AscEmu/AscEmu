@@ -10,11 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 class ScarletMonasteryInstanceScript : public InstanceScript
 {
 public:
-
-    explicit ScarletMonasteryInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit ScarletMonasteryInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ScarletMonasteryInstanceScript(pMapMgr); }
 };
 
@@ -22,7 +18,6 @@ class VishasAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new VishasAI(c); }
-
     explicit VishasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_uiSay = 0;
@@ -49,7 +44,6 @@ public:
     }
 
 private:
-
     uint8_t m_uiSay;
 };
 
@@ -57,7 +51,6 @@ class ThalnosAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new ThalnosAI(c); }
-
     explicit ThalnosAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(ScarletMonastery::SP_THALNOS_SHADOW_BOLT, 20.0f, TARGET_RANDOM_SINGLE, 3, 2);
@@ -65,7 +58,7 @@ public:
 
         m_bEmoted = false;
 
-        addEmoteForEvent(Event_OnCombatStart, 2107);     // We hunger for vengeance.
+        addEmoteForEvent(Event_OnCombatStart, 2107);    // We hunger for vengeance.
         addEmoteForEvent(Event_OnTargetDied, 2109);     // More... More souls!
     }
 
@@ -84,7 +77,6 @@ public:
     }
 
 private:
-
     bool m_bEmoted;
 };
 
@@ -92,7 +84,6 @@ class DoanAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new DoanAI(c); }
-
     explicit DoanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_bShielded = false;
@@ -120,7 +111,6 @@ public:
     }
 
 private:
-
     bool m_bShielded;
 };
 
@@ -130,7 +120,6 @@ class HerodAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new HerodAI(c); }
-
     explicit HerodAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_bEnraged = false;
@@ -158,12 +147,10 @@ public:
 };
 
 // Cathedral
-
 class MograineAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new MograineAI(c); }
-
     explicit MograineAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addEmoteForEvent(Event_OnCombatStart, ScarletMonastery::SAY_MORGRAINE_01);
@@ -183,7 +170,6 @@ class WhitemaneAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new WhitemaneAI(c); }
-
     explicit WhitemaneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         sleep = addAISpell(ScarletMonastery::SP_WHITEMANE_SLEEP, 0.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -229,7 +215,6 @@ public:
     }
 
 protected:
-
     CreatureAISpells* sleep;
     CreatureAISpells* resurrection;
 };
@@ -237,7 +222,6 @@ protected:
 class ScarletTorch : public GameObjectAIScript
 {
 public:
-
     explicit ScarletTorch(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new ScarletTorch(GO); }
 
@@ -257,7 +241,6 @@ public:
 class ArmoryLever : public GameObjectAIScript
 {
 public:
-
     explicit ArmoryLever(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new ArmoryLever(GO); }
 
@@ -277,7 +260,6 @@ public:
 class CathedralLever : public GameObjectAIScript
 {
 public:
-
     explicit CathedralLever(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new CathedralLever(GO); }
 

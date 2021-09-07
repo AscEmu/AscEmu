@@ -21,7 +21,6 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 enum
 {
@@ -40,7 +39,8 @@ enum
 
 class InfiltratingDragonmawFortressQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InfiltratingDragonmawFortressQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new InfiltratingDragonmawFortressQAI(c); }
     explicit InfiltratingDragonmawFortressQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -54,7 +54,8 @@ class InfiltratingDragonmawFortressQAI : public CreatureAIScript
 
 class KneepadsQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KneepadsQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KneepadsQAI(c); }
     explicit KneepadsQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -85,7 +86,8 @@ const WPWaitTimes DeathbringerJovaanWP[] =
 
 class DeathbringerJovaanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DeathbringerJovaanAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DeathbringerJovaanAI(c); }
     explicit DeathbringerJovaanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mJovaanTimer = 0;
@@ -157,7 +159,6 @@ class DeathbringerJovaanAI : public CreatureAIScript
                 break;
             }
         }
-        
     }
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override
@@ -183,13 +184,14 @@ class DeathbringerJovaanAI : public CreatureAIScript
         }
     }
 
-    uint32_t    mJovaanTimer;
-    int32_t    mJovaanPhase;
+    uint32_t mJovaanTimer;
+    int32_t mJovaanPhase;
 };
 
 class WarbringerRazuunAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WarbringerRazuunAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WarbringerRazuunAI(c); }
     explicit WarbringerRazuunAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -244,7 +246,6 @@ class WarbringerRazuunAI : public CreatureAIScript
                 break;
             }
         }
-        
     }
 
     uint32_t mRazuunTimer;
@@ -254,7 +255,6 @@ class WarbringerRazuunAI : public CreatureAIScript
 class NeltharakusTale_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (plr->hasQuestInQuestLog(10814))
@@ -299,7 +299,8 @@ public:
 
 class EnslavedNetherwingDrakeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EnslavedNetherwingDrakeAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EnslavedNetherwingDrakeAI(c); }
     explicit EnslavedNetherwingDrakeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         LocationVector WayPoint = { getCreature()->GetPositionX(), getCreature()->GetPositionY() + 30, getCreature()->GetPositionZ() + 100, getCreature()->GetOrientation()};
@@ -323,7 +324,6 @@ class EnslavedNetherwingDrakeAI : public CreatureAIScript
 class KarynakuChains : public GameObjectAIScript
 {
 public:
-
     explicit KarynakuChains(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new KarynakuChains(GO); }
 
@@ -343,7 +343,6 @@ public:
 class FlanisSwiftwing_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* Plr) override;
     void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* Code, uint32_t gossipId) override;
 };

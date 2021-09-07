@@ -20,7 +20,6 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 LocationVector const WaypointTheSummoning[] =
 {
@@ -33,7 +32,6 @@ std::size_t const pathSize = std::extent<decltype(WaypointTheSummoning)>::value;
 class TheSummoning : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* windwatcher = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 6176);
@@ -77,7 +75,8 @@ public:
 
 class Bartleby : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Bartleby)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Bartleby(c); }
     explicit Bartleby(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

@@ -8,19 +8,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_TheEye.h"
 
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class TheEyeInstanceScript : public InstanceScript
 {
 public:
-
-    explicit TheEyeInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit TheEyeInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new TheEyeInstanceScript(pMapMgr); }
-
-
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -28,7 +21,8 @@ public:
 
 class VoidReaverAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VoidReaverAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VoidReaverAI(c); }
     explicit VoidReaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto pPounding = addAISpell(VOID_REAVER_POUNDING, 100.0f, TARGET_SELF, 0, 12);
@@ -105,7 +99,6 @@ class VoidReaverAI : public CreatureAIScript
 class AlarAuxClass: public Object
 {
 public:
-
     AlarAuxClass(CreatureAIScript*);
     ~AlarAuxClass();
     void Rebirth();
@@ -116,7 +109,8 @@ protected:
 
 class HighAstromancerSolarianAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HighAstromancerSolarianAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HighAstromancerSolarianAI(c); }
     explicit HighAstromancerSolarianAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Initialize timers
@@ -296,15 +290,15 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint32_t /*pEffectIndex*/, Spell* pSpe
 
 class SolariumAgentAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SolariumAgentAI)
-    explicit SolariumAgentAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SolariumAgentAI(c); }
+    explicit SolariumAgentAI(Creature* pCreature) : CreatureAIScript(pCreature){}
 };
 
 class SolariumPriestAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SolariumPriestAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SolariumPriestAI(c); }
     explicit SolariumPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto greaterHeal = addAISpell(SOLARIUMPRIEST_GREATER_HEAL, 20.0f, TARGET_RANDOM_FRIEND, 2, 0);
@@ -316,7 +310,8 @@ class SolariumPriestAI : public CreatureAIScript
 
 class SolariumSpotLight : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SolariumSpotLight)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SolariumSpotLight(c); }
     explicit SolariumSpotLight(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
@@ -325,7 +320,8 @@ class SolariumSpotLight : public CreatureAIScript
 
 class DarkenerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DarkenerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DarkenerAI(c); }
     explicit DarkenerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DARKENER_PSYCHIC_BLOW, 10.0f, TARGET_ATTACKING, 0, 20);
@@ -397,7 +393,8 @@ class DarkenerAI : public CreatureAIScript
 
 class SanguinarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SanguinarAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SanguinarAI(c); }
     explicit SanguinarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SANGUINAR_BELLOWING, 100.0f, TARGET_SELF, 0, 30);
@@ -423,7 +420,8 @@ class SanguinarAI : public CreatureAIScript
 
 class CapernianAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CapernianAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CapernianAI(c); }
     explicit CapernianAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto conflagration = addAISpell(CAPERNIAN_CONFLAGRATION, 7.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);
@@ -483,7 +481,8 @@ class CapernianAI : public CreatureAIScript
 
 class TelonicusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TelonicusAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TelonicusAI(c); }
     explicit TelonicusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto bomb = addAISpell(TELONICUS_BOMB, 10.0f, TARGET_RANDOM_DESTINATION, 2, 15);
@@ -513,7 +512,8 @@ class TelonicusAI : public CreatureAIScript
 
 class FlameStrikeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FlameStrikeAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new FlameStrikeAI(c); }
     explicit FlameStrikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         _applyAura(FLAME_STRIKE_TRIGGER_FLAME_STRIKE_EFFECT);
@@ -541,7 +541,8 @@ class FlameStrikeAI : public CreatureAIScript
 
 class PhoenixAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PhoenixAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PhoenixAI(c); }
     explicit PhoenixAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -598,7 +599,8 @@ class PhoenixAI : public CreatureAIScript
 
 class PhoenixEggAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PhoenixEggAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PhoenixEggAI(c); }
     explicit PhoenixEggAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(15000);
@@ -621,7 +623,8 @@ class PhoenixEggAI : public CreatureAIScript
 
 class WeaponsAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WeaponsAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WeaponsAI(c); }
     explicit WeaponsAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->m_noRespawn = true;
@@ -700,7 +703,8 @@ enum AdvisorPhase
 
 class KaelThasAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KaelThasAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KaelThasAI(c); }
     explicit KaelThasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         for (uint8_t i = 1; i < 4; ++i)

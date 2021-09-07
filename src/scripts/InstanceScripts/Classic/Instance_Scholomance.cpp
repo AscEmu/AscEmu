@@ -10,14 +10,9 @@ This file is released under the MIT license. See README-MIT for more information
 class ScholomanceInstanceScript : public InstanceScript
 {
 public:
-
-    explicit ScholomanceInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit ScholomanceInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) { }
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ScholomanceInstanceScript(pMapMgr); }
 };
-
 
 void SetupScholomance(ScriptMgr* mgr)
 {

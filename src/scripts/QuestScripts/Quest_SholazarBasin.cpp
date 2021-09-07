@@ -22,7 +22,6 @@
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Spell/SpellAuras.h"
-#include "Macros/ScriptMacros.hpp"
 
 enum
 {
@@ -37,7 +36,8 @@ enum
 
 class ChickenEscapee : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ChickenEscapee)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ChickenEscapee(c); }
     explicit ChickenEscapee(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -74,7 +74,6 @@ class ChickenEscapee : public CreatureAIScript
 class SCRIPT_DECL HemetTasteTest : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (plr->hasQuestInQuestLog(12645))
@@ -111,7 +110,6 @@ public:
 class SCRIPT_DECL HadriusTasteTest : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (plr->hasQuestInQuestLog(12645))
@@ -148,7 +146,6 @@ public:
 class SCRIPT_DECL TamaraTasteTest : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (plr->hasQuestInQuestLog(12645))

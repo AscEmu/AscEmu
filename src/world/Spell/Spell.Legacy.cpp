@@ -49,7 +49,6 @@
 #include "SpellMgr.hpp"
 #include "SpellAuras.h"
 #include "Definitions/SpellEffects.hpp"
-#include "Macros/ScriptMacros.hpp"
 #include "Server/Packets/SmsgSpellFailure.h"
 #include "Server/Packets/SmsgSpellFailedOther.h"
 #include "Server/Packets/SmsgResurrectRequest.h"

@@ -1,5 +1,8 @@
 # Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
+
 project(Ascemu)
+
+# cmake >= 3.2
 cmake_minimum_required(VERSION 3.2)
 
 # set runtime binary where all compiled (before install) binary will compiled in

@@ -10,11 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 class BlackrockSpireInstanceScript : public InstanceScript
 {
 public:
-
-    explicit BlackrockSpireInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit BlackrockSpireInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new BlackrockSpireInstanceScript(pMapMgr); }
 };
 
@@ -51,7 +47,6 @@ public:
     }
 
 protected:
-
     bool HasSummoned;
 };
 
@@ -59,7 +54,6 @@ class HalyconAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new HalyconAI(c); }
-
     explicit HalyconAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         HasSummoned = false;
@@ -88,16 +82,13 @@ public:
     }
 
 protected:
-
     bool HasSummoned;
 };
-
 
 class OverlordWyrmthalakAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new OverlordWyrmthalakAI(c); }
-
     explicit OverlordWyrmthalakAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         HasSummoned = false;
@@ -131,7 +122,6 @@ public:
     }
 
 protected:
-
     bool HasSummoned;
 };
 

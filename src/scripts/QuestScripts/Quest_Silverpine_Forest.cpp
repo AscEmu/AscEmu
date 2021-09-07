@@ -21,11 +21,11 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class Deathstalker_Erland : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Deathstalker_Erland)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Deathstalker_Erland(c); }
     explicit Deathstalker_Erland(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override
@@ -52,7 +52,8 @@ class Deathstalker_Erland : public CreatureAIScript
 
 class Nightlash : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Nightlash)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Nightlash(c); }
     explicit Nightlash(Creature* pCreature) : CreatureAIScript(pCreature) {}
     void OnDied(Unit* mKiller) override
     {

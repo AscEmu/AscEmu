@@ -20,7 +20,6 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 enum
 {
@@ -32,7 +31,6 @@ enum
 class StrFever : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
@@ -62,7 +60,8 @@ public:
 
 class Beka : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Beka)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Beka(c); }
     explicit Beka(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -97,7 +96,8 @@ class Beka : public CreatureAIScript
 
 class Beka1 : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Beka1)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Beka1(c); }
     explicit Beka1(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -132,7 +132,8 @@ class Beka1 : public CreatureAIScript
 
 class Beka2 : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Beka2)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Beka2(c); }
     explicit Beka2(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -150,7 +151,6 @@ class Beka2 : public CreatureAIScript
 class BloodscalpClanHeads : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
@@ -180,13 +180,11 @@ public:
         msg += ". You may now speak to the Bloodscalp chief and his witchdoctor.";
         Kin_weelay->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 500);
     }
-
 };
 
 class BacktoBootyBay : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float X = mTarget->GetPositionX();
@@ -207,7 +205,6 @@ public:
 class VoodooDues : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float X = mTarget->GetPositionX();
@@ -289,8 +286,9 @@ class FacingNegolash : public QuestScript
 
 class NegolashAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NegolashAI)
-    explicit NegolashAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NegolashAI(c); }
+    explicit NegolashAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* /*mKiller*/) override
     {

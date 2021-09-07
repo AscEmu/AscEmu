@@ -22,11 +22,11 @@
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Spell/SpellAuras.h"
-#include "Macros/ScriptMacros.hpp"
 
 class WyrmcultBlackwhelp : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WyrmcultBlackwhelp)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WyrmcultBlackwhelp(c); }
     explicit WyrmcultBlackwhelp(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -59,7 +59,8 @@ class WyrmcultBlackwhelp : public CreatureAIScript
 // The Bladespire Threat Quest
 class BladespireQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BladespireQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BladespireQAI(c); }
     explicit BladespireQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -74,7 +75,6 @@ class BladespireQAI : public CreatureAIScript
 class IntotheSoulgrinder : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* qg = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 22941);
@@ -87,7 +87,8 @@ public:
 
 class MagnetoAura : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MagnetoAura)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MagnetoAura(c); }
     explicit MagnetoAura(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -96,12 +97,11 @@ class MagnetoAura : public CreatureAIScript
     }
 };
 
-class powerconv : public GameObjectAIScript
+class Powerconv : public GameObjectAIScript
 {
 public:
-
-    explicit powerconv(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
-    static GameObjectAIScript* Create(GameObject* GO) { return new powerconv(GO); }
+    explicit Powerconv(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    static GameObjectAIScript* Create(GameObject* GO) { return new Powerconv(GO); }
 
     void OnActivate(Player* pPlayer) override
     {
@@ -121,7 +121,6 @@ public:
 class NetherEgg : public GameObjectAIScript
 {
 public:
-
     explicit NetherEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new NetherEgg(GO); }
 
@@ -142,7 +141,8 @@ public:
 
 class FunnyDragon : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FunnyDragon)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new FunnyDragon(c); }
     explicit FunnyDragon(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         i = 0;      // rename this....
@@ -188,7 +188,6 @@ class FunnyDragon : public CreatureAIScript
 class LegionObelisk : public GameObjectAIScript
 {
 public:
-
     explicit LegionObelisk(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new LegionObelisk(GO); }
 
@@ -226,7 +225,8 @@ public:
 
 class BloodmaulQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BloodmaulQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BloodmaulQAI(c); }
     explicit BloodmaulQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -245,7 +245,8 @@ class BloodmaulQAI : public CreatureAIScript
 
 class Thuk_the_DefiantAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Thuk_the_DefiantAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Thuk_the_DefiantAI(c); }
     explicit Thuk_the_DefiantAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -268,7 +269,6 @@ class Thuk_the_DefiantAI : public CreatureAIScript
 class Stasis_Chamber_Alpha : public GameObjectAIScript
 {
 public:
-
     explicit Stasis_Chamber_Alpha(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO)
     {
@@ -309,7 +309,8 @@ enum CreatureEntry
 // Bloodmaul Brutebane Stout Trigger
 class BrutebaneStoutTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BrutebaneStoutTriggerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BrutebaneStoutTriggerAI(c); }
     explicit BrutebaneStoutTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->SetFaction(35);
@@ -397,7 +398,7 @@ void SetupBladeEdgeMountains(ScriptMgr* mgr)
     mgr->register_quest_script(11000, new IntotheSoulgrinder());
 
     mgr->register_gameobject_script(184867, &NetherEgg::Create);
-    mgr->register_gameobject_script(184906, &powerconv::Create);
+    mgr->register_gameobject_script(184906, &Powerconv::Create);
     mgr->register_gameobject_script(185198, &LegionObelisk::Create);
     mgr->register_gameobject_script(185197, &LegionObelisk::Create);
     mgr->register_gameobject_script(185196, &LegionObelisk::Create);

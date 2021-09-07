@@ -10,14 +10,9 @@ This file is released under the MIT license. See README-MIT for more information
 class BlackrockDepthsInstanceScript : public InstanceScript
 {
 public:
-
-    explicit BlackrockDepthsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit BlackrockDepthsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new BlackrockDepthsInstanceScript(pMapMgr); }
 };
-
 
 void SetupBlackrockDepths(ScriptMgr* mgr)
 {

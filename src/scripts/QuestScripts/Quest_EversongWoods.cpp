@@ -26,7 +26,6 @@
 #include <Management/QuestLogEntry.hpp>
 #include "Map/MapScriptInterface.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 enum
 {
@@ -38,11 +37,9 @@ enum
 //////////////////////////////////////////////////////////////////////////////////////////
 //Quest: The Drwarfen Spy
 //ID: 8486
-
 class ProspectorAnvilwardGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* Plr) override;
     void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* EnteredCode, uint32_t gossipId) override;
     void destroy() override { delete this; }
@@ -82,7 +79,8 @@ void ProspectorAnvilwardGossip::onSelectOption(Object* pObject, Player* Plr, uin
 
 class ProspectorAnvilward : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ProspectorAnvilward)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ProspectorAnvilward(c); }
     explicit ProspectorAnvilward(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         stopMovement();

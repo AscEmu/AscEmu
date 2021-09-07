@@ -6,24 +6,20 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_TheShatteredHalls.h"
 #include "Objects/Faction.h"
-#include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Hellfire Citadel: The Shattered Halls
 class InstanceTheShatteredHallsScript : public InstanceScript
 {
 public:
-
-    explicit InstanceTheShatteredHallsScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {}
-
+    explicit InstanceTheShatteredHallsScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceTheShatteredHallsScript(pMapMgr); }
 };
 
 class FelOrcConvertAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FelOrcConvertAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new FelOrcConvertAI(c); }
     explicit FelOrcConvertAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // not casted
@@ -34,7 +30,8 @@ class FelOrcConvertAI : public CreatureAIScript
 
 class ShatteredHandHeathenAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandHeathenAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShatteredHandHeathenAI(c); }
     explicit ShatteredHandHeathenAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // not casted
@@ -51,13 +48,13 @@ class ShatteredHandHeathenAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* enrage;
 };
 
 class ShatteredHandLegionnaireAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandLegionnaireAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShatteredHandLegionnaireAI(c); }
     explicit ShatteredHandLegionnaireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // not casted
@@ -77,13 +74,13 @@ class ShatteredHandLegionnaireAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* auraOfDiscipline;
 };
 
 class ShatteredHandSavageAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandSavageAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShatteredHandSavageAI(c); }
     explicit ShatteredHandSavageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // not casted
@@ -103,13 +100,13 @@ class ShatteredHandSavageAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* enrage;
 };
 
 class ShadowmoonAcolyteAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonAcolyteAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadowmoonAcolyteAI(c); }
     explicit ShadowmoonAcolyteAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto heal = addAISpell(SP_SHADOWMOON_ACOLYTE_HEAL, 5.0f, TARGET_SELF, 0, 35, false, true);
@@ -128,7 +125,8 @@ class ShadowmoonAcolyteAI : public CreatureAIScript
 
 class ShatteredHandAssassinAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandAssassinAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShatteredHandAssassinAI(c); }
     explicit ShatteredHandAssassinAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto sap = addAISpell(SP_SHATT_HAND_ASSASSIN_SAP, 5.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -149,13 +147,13 @@ class ShatteredHandAssassinAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* stealth;
 };
 
 class ShatteredHandGladiatorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandGladiatorAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShatteredHandGladiatorAI(c); }
     explicit ShatteredHandGladiatorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // not casted
@@ -167,7 +165,8 @@ class ShatteredHandGladiatorAI : public CreatureAIScript
 // he patrols with Rabid Warhounds
 class ShatteredHandHoundmasterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandHoundmasterAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShatteredHandHoundmasterAI(c); }
     explicit ShatteredHandHoundmasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // not casted
@@ -178,7 +177,8 @@ class ShatteredHandHoundmasterAI : public CreatureAIScript
 
 class ShatteredHandReaverAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandReaverAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShatteredHandReaverAI(c); }
     explicit ShatteredHandReaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(SP_SHATT_HAND_REAVER_CLEAVE, 7.0f, TARGET_VARIOUS, 0, 10, false, true);
@@ -194,7 +194,8 @@ class ShatteredHandReaverAI : public CreatureAIScript
 
 class ShatteredHandSentryAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandSentryAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShatteredHandSentryAI(c); }
     explicit ShatteredHandSentryAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto hamstering = addAISpell(SP_SHATT_HAND_SENTRY_HAMSTERING, 7.0f, TARGET_ATTACKING, 0, 20, false, true);
@@ -207,7 +208,8 @@ class ShatteredHandSentryAI : public CreatureAIScript
 
 class ShatteredHandSharpshooterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandSharpshooterAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShatteredHandSharpshooterAI(c); }
     explicit ShatteredHandSharpshooterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto scatterShot = addAISpell(SP_SHATT_HAND_SHARP_SCATTER_SHOT, 7.0f, TARGET_ATTACKING, 0, 20, false, true);
@@ -227,7 +229,8 @@ class ShatteredHandSharpshooterAI : public CreatureAIScript
 // Self Visual - Sleep Until Cancelled (DND) 16093 ?
 class ShatteredHandBrawlerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandBrawlerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShatteredHandBrawlerAI(c); }
     explicit ShatteredHandBrawlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shatteredHand = addAISpell(SP_CURSE_OF_THE_SHATTERED_HAND, 7.0f, TARGET_ATTACKING, 0, 35, false, true);
@@ -251,7 +254,8 @@ static LocationVector Darkcasters[] =
 
 class ShadowmoonDarkcasterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonDarkcasterAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadowmoonDarkcasterAI(c); }
     explicit ShadowmoonDarkcasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Unit* GrandWarlock = NULL;
@@ -329,7 +333,8 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
 // \todo It has much more sounds (like for servant dies etc.). For future makes researches on them.
 class GrandWarlockNethekurseAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GrandWarlockNethekurseAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GrandWarlockNethekurseAI(c); }
     explicit GrandWarlockNethekurseAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto deathCoil = addAISpell(SP_GRAND_WARLOCK_NETH_DEATH_COIL, 10.0f, TARGET_ATTACKING, 0, 15, false, true);
@@ -348,7 +353,8 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
 // Note: This boss appears only in Heroic mode and I don't have much infos about it =/
 class BloodGuardPorungAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BloodGuardPorungAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BloodGuardPorungAI(c); }
     explicit BloodGuardPorungAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(SP_BLOOD_GUARD_PORUNG_CLEAVE, 10.0f, TARGET_VARIOUS, 0, 15, false, true);
@@ -358,7 +364,8 @@ class BloodGuardPorungAI : public CreatureAIScript
 
 class WarbringerOmroggAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WarbringerOmroggAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WarbringerOmroggAI(c); }
     explicit WarbringerOmroggAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SP_WARBRINGER_OMROGG_THUNDERCLAP, 25.0f, TARGET_SELF, 1, 12);
@@ -570,7 +577,8 @@ class WarbringerOmroggAI : public CreatureAIScript
 
 class HeadAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HeadAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HeadAI(c); }
     explicit HeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         _setScale(4.0f);
@@ -604,7 +612,8 @@ class HeadAI : public CreatureAIScript
 // Should call for support? does he use only one ability?
 class WarchiefKargathBladefistAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WarchiefKargathBladefistAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WarchiefKargathBladefistAI(c); }
     explicit WarchiefKargathBladefistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto bladeDance = addAISpell(SP_WARCHIEF_LARAGATH_BLADE_DANCE, 10.0f, TARGET_VARIOUS, 0, 30, false, true);

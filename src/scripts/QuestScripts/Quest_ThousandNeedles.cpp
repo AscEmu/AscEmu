@@ -20,11 +20,11 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class Paoka_Swiftmountain : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Paoka_Swiftmountain)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Paoka_Swiftmountain(c); }
     explicit Paoka_Swiftmountain(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     // makes no sense... why do we check on wp 72 if player has this quest.... too late?
@@ -53,7 +53,6 @@ class Paoka_Swiftmountain : public CreatureAIScript
 class RumorsforKravel : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();

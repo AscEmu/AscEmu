@@ -22,7 +22,6 @@
 class Zenn_Foulhoof : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         if (Creature* creature = mTarget->GetMapMgr()->GetSqlIdCreature(43727))

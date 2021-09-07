@@ -9,11 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 class GnomereganInstanceScript : public InstanceScript
 {
 public:
-
-    explicit GnomereganInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit GnomereganInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new GnomereganInstanceScript(pMapMgr); }
 };
 

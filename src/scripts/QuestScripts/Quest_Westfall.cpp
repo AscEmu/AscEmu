@@ -20,11 +20,11 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class The_Defias_Traitor : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(The_Defias_Traitor)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new The_Defias_Traitor(c); }
     explicit The_Defias_Traitor(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override

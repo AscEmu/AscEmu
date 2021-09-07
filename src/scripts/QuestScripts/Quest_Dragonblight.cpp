@@ -19,11 +19,11 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class WoodlandWalker : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WoodlandWalker)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WoodlandWalker(c); }
     explicit WoodlandWalker(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pCreature->SetFaction(35);
@@ -33,7 +33,6 @@ class WoodlandWalker : public CreatureAIScript
 class WoodlandWalkerGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         Creature* pCreature = (pObject->isCreature()) ? (static_cast<Creature*>(pObject)) : nullptr;
@@ -57,7 +56,6 @@ public:
 class WrathGateQuestCinema : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
 #if VERSION_STRING > TBC

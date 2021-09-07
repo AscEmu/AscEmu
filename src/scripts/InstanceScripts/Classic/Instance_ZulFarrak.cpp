@@ -10,14 +10,9 @@ This file is released under the MIT license. See README-MIT for more information
 class ZulFarrakInstanceScript : public InstanceScript
 {
 public:
-
-    explicit ZulFarrakInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit ZulFarrakInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) { }
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ZulFarrakInstanceScript(pMapMgr); }
 };
-
 
 //Theka the Martyr
 // casts the spell Theka Transform 11089 at %30  hp
@@ -26,12 +21,10 @@ public:
 Fevered Plague 8600 = Inflicts 250 Nature damage to an enemy, then an additional 11 damage every 5 sec. for 3 min.
 Fevered Plague 16186 =  Inflicts 72 to 78 Nature damage to an enemy, then an additional 10 damage every 3 sec. for 30 sec. */
 
-
 class ThekaAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new ThekaAI(c); }
-
     explicit ThekaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         morph = sSpellMgr.getSpellInfo(ZulFarrak::SP_THEKA_TRANSFORM);
@@ -86,7 +79,6 @@ protected:
     SpellInfo const* plague;
 };
 
-
 // Antu'sul
 /** \note
 needs a aggro trigger outside cave
@@ -112,7 +104,6 @@ class AntusulTriggerAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new AntusulTriggerAI(c); }
-
     explicit AntusulTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* mTarget) override
@@ -133,13 +124,11 @@ public:
     }
 };
 
-
 /// \note healing ward and earthgrab ward commented out since they need time and work wich i dont have right now
 class AntusulAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new AntusulAI(c); }
-
     explicit AntusulAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         add1 = add2 = add3 = add4 = add5 = add6 = trigger = nullptr;
@@ -240,7 +229,6 @@ public:
             spawnadds();
             spawns2 = true;
         }
-
     }
 
     void spawnadds()

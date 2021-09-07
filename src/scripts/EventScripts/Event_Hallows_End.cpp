@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 enum
 {
@@ -25,7 +24,8 @@ enum
 // Black Cat
 class BlackCat : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BlackCat)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BlackCat(c); }
     explicit BlackCat(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* pKiller) override
@@ -71,18 +71,17 @@ LocationVector WaypointGoldshire[] =
 
 class HeadlessHorsemanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HeadlessHorsemanAI)
-    explicit HeadlessHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        //Scarlet Monastery Boss
-    }
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HeadlessHorsemanAI(c); }
+    explicit HeadlessHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 };
 
 // Headless Horseman - Fire
 const uint32_t CN_HEADLESS_HORSEMAN_FIRE = 23537;
 class HeadlessHorsemanFireAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HeadlessHorsemanFireAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HeadlessHorsemanFireAI(c); }
     explicit HeadlessHorsemanFireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->castSpell(getCreature(), 42971, true);
@@ -99,7 +98,8 @@ class HeadlessHorsemanFireAI : public CreatureAIScript
 */
 class ShadeOfTheHorsemanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadeOfTheHorsemanAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadeOfTheHorsemanAI(c); }
     explicit ShadeOfTheHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
@@ -183,7 +183,8 @@ class ShadeOfTheHorsemanAI : public CreatureAIScript
 
 class HeadlessHorsemanWispInvisAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HeadlessHorsemanWispInvisAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HeadlessHorsemanWispInvisAI(c); }
     explicit HeadlessHorsemanWispInvisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mHeadlessHorseman = nullptr;
@@ -211,7 +212,6 @@ class HeadlessHorsemanWispInvisAI : public CreatureAIScript
 class WaterBarrel : public GameObjectAIScript
 {
 public:
-
     explicit WaterBarrel(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new WaterBarrel(GO); }
 

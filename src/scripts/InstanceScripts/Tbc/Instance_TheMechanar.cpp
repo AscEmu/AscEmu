@@ -5,24 +5,19 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_TheMechanar.h"
-
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class TheMechanarInstanceScript : public InstanceScript
 {
 public:
-
-    explicit TheMechanarInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit TheMechanarInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new TheMechanarInstanceScript(pMapMgr); }
 };
 
 class ArcaneServantAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArcaneServantAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ArcaneServantAI(c); }
     explicit ArcaneServantAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto arcaneVolley = addAISpell(SP_ARCANE_VOLLEY, 10.0f, TARGET_ATTACKING);
@@ -35,7 +30,8 @@ class ArcaneServantAI : public CreatureAIScript
 
 class BloodwarderCenturionAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BloodwarderCenturionAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BloodwarderCenturionAI(c); }
     explicit BloodwarderCenturionAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shieldBash = addAISpell(SP_CENTURION_SHIELD_BASH, 5.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -60,13 +56,13 @@ class BloodwarderCenturionAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* etherealTeleport;
 };
 
 class BloodwarderPhysicianAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BloodwarderPhysicianAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BloodwarderPhysicianAI(c); }
     explicit BloodwarderPhysicianAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto holyShock = addAISpell(SP_PHYSICIAN_HOLY_SHOCK, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -88,13 +84,13 @@ class BloodwarderPhysicianAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* etherealTeleport;
 };
 
 class BloodwarderSlayerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BloodwarderSlayerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BloodwarderSlayerAI(c); }
     explicit BloodwarderSlayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto whirlwind = addAISpell(SP_SLAYER_WHIRLWIND, 15.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -116,7 +112,8 @@ class BloodwarderSlayerAI : public CreatureAIScript
 
 class MechanarCrusherAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MechanarCrusherAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MechanarCrusherAI(c); }
     explicit MechanarCrusherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto disarm = addAISpell(SP_MECH_CRUSHER_DISARM, 8.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -126,7 +123,8 @@ class MechanarCrusherAI : public CreatureAIScript
 
 class MechanarDrillerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MechanarDrillerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MechanarDrillerAI(c); }
     explicit MechanarDrillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto fluid = addAISpell(SP_MECH_DRILLER_GLOB_OF_MACHINE_FLUID, 5.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -145,7 +143,8 @@ class MechanarDrillerAI : public CreatureAIScript
 
 class MechanarTinkererAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MechanarTinkererAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MechanarTinkererAI(c); }
     explicit MechanarTinkererAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto netherbomb = addAISpell(SP_MECH_TINKERER_NETHERBOMB, 5.0f, TARGET_DESTINATION);
@@ -167,13 +166,13 @@ class MechanarTinkererAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* netherExplosion;
 };
 
 class MechanarWreckerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MechanarWreckerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MechanarWreckerAI(c); }
     explicit MechanarWreckerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto wreckerPound = addAISpell(SP_MECH_WRECKER_POUND, 12.0f, TARGET_ATTACKING);
@@ -189,7 +188,8 @@ class MechanarWreckerAI : public CreatureAIScript
 
 class RagingFlamesAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RagingFlamesAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new RagingFlamesAI(c); }
     explicit RagingFlamesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // disabled to prevent crashes
@@ -202,7 +202,8 @@ class RagingFlamesAI : public CreatureAIScript
 
 class SunseekerAstromageAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SunseekerAstromageAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SunseekerAstromageAI(c); }
     explicit SunseekerAstromageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto scorch = addAISpell(SP_SS_ASTROMAGE_SCORCH, 12.0f, TARGET_ATTACKING);
@@ -224,13 +225,13 @@ class SunseekerAstromageAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* etherealTeleport;
 };
 
 class SunseekerEngineerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SunseekerEngineerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SunseekerEngineerAI(c); }
     explicit SunseekerEngineerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shrinkRay = addAISpell(SP_SS_ENGINEER_SUPER_SHRINK_RAY, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -252,13 +253,13 @@ class SunseekerEngineerAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* etherealTeleport;
 };
 
 class SunseekerNetherbinderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SunseekerNetherbinderAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SunseekerNetherbinderAI(c); }
     explicit SunseekerNetherbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto arcaneNova = addAISpell(SP_SS_NETHERBINDER_ARCANE_NOVA, 10.0f, TARGET_VARIOUS, 0, 0, false, true);
@@ -280,7 +281,8 @@ class SunseekerNetherbinderAI : public CreatureAIScript
 
 class TempestForgeDestroyerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TempestForgeDestroyerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TempestForgeDestroyerAI(c); }
     explicit TempestForgeDestroyerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto knockdown = addAISpell(SP_TEMPEST_DESTROYER_KNOCKDOWN, 8.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -293,7 +295,8 @@ class TempestForgeDestroyerAI : public CreatureAIScript
 
 class TempestForgePatrollerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TempestForgePatrollerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TempestForgePatrollerAI(c); }
     explicit TempestForgePatrollerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto arcaneMissile = addAISpell(SP_TEMPEST_PAT_CHARGED_ARCANE_MISSILE, 12.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -309,7 +312,8 @@ class TempestForgePatrollerAI : public CreatureAIScript
 
 class GatewatcherGyroKillAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GatewatcherGyroKillAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GatewatcherGyroKillAI(c); }
     explicit GatewatcherGyroKillAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto sawBlade = addAISpell(SP_GW_GYRO_KILL_SAW_BLADE, 13.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -332,7 +336,8 @@ class GatewatcherGyroKillAI : public CreatureAIScript
 
 class GatewatcherIronHandAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GatewatcherIronHandAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GatewatcherIronHandAI(c); }
     explicit GatewatcherIronHandAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto hammer = addAISpell(SP_GW_IRON_HAND_JACK_HAMMER, 7.0f, TARGET_VARIOUS);
@@ -358,7 +363,8 @@ class GatewatcherIronHandAI : public CreatureAIScript
 
 class MechanoLordCapacitusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MechanoLordCapacitusAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MechanoLordCapacitusAI(c); }
     explicit MechanoLordCapacitusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto headCrack = addAISpell(SP_MECH_LORD_HEAD_CRACK, 8.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -384,7 +390,8 @@ class MechanoLordCapacitusAI : public CreatureAIScript
 
 class NethermancerSepethreaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NethermancerSepethreaAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NethermancerSepethreaAI(c); }
     explicit NethermancerSepethreaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         summonRaginFlames = addAISpell(SP_NETH_SEPETHREA_SUMMON_RAGIN_FLAMES, 0.0f, TARGET_SELF, 0, 0, false, true);
@@ -436,7 +443,6 @@ class NethermancerSepethreaAI : public CreatureAIScript
     }
 
 protected:
-
     int SummonTimer;
     CreatureAISpells* summonRaginFlames;
 };
@@ -445,7 +451,8 @@ protected:
 // before adding weapon switching =/    (Sound: 11199; speech: "I prefer to be hands-on...";)
 class PathaleonTheCalculatorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PathaleonTheCalculatorAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PathaleonTheCalculatorAI(c); }
     explicit PathaleonTheCalculatorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto manaTrap = addAISpell(SP_PATHALEON_MANA_TRAP, 8.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -510,7 +517,6 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t SummonTimer;
     CreatureAISpells* summonNetherWraith1;
     CreatureAISpells* summonNetherWraith2;

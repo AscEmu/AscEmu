@@ -60,7 +60,6 @@
 #include "Definitions/Spec.hpp"
 #include "Spell.h"
 #include "Definitions/SpellEffects.hpp"
-#include "Macros/ScriptMacros.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgTaxinodeStatus.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"

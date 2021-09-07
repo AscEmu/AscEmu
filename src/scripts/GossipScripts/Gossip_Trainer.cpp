@@ -13,7 +13,6 @@ This file is released under the MIT license. See README-MIT for more information
 class MasterHammersmith : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 7245);
@@ -81,7 +80,6 @@ public:
 class MasterSwordsmith : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 7247);
@@ -145,7 +143,6 @@ public:
 class MasterAxesmith : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 7243);

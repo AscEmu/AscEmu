@@ -14,7 +14,6 @@ This file is released under the MIT license. See README-MIT for more information
 class SilvaFilnaveth_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 0);
@@ -40,13 +39,11 @@ public:
     }
 
     void destroy() override { delete this; }
-
 };
 
 class BunthenPlainswind_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 0);
@@ -72,7 +69,6 @@ public:
     }
 
     void destroy() override { delete this; }
-
 };
 
 void SetupMoongladeGossip(ScriptMgr* mgr)

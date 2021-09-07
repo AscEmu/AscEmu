@@ -21,13 +21,13 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Fel Orc Scavengers
 class FelOrcScavengersQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FelOrcScavengersQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new FelOrcScavengersQAI(c); }
     explicit FelOrcScavengersQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -41,7 +41,8 @@ class FelOrcScavengersQAI : public CreatureAIScript
 
 class Dreadtusk : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Dreadtusk)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Dreadtusk(c); }
     explicit Dreadtusk(Creature* pCreature) : CreatureAIScript(pCreature) { }
     void OnDied(Unit* mKiller) override
     {
@@ -57,7 +58,6 @@ class Dreadtusk : public CreatureAIScript
 class ZethGorMustBurnAlliance : public GameObjectAIScript
 {
 public:
-
     explicit ZethGorMustBurnAlliance(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new ZethGorMustBurnAlliance(GO); }
 
@@ -153,7 +153,6 @@ public:
 class PrisonerGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* pPlayer) override
     {
         int32_t i = -1;
@@ -190,7 +189,6 @@ public:
 
     void onSelectOption(Object* pObject, Player* pPlayer, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
-
         uint8_t i = 66;
         Creature* pPrisoner = static_cast<Creature*>(pObject);
         switch (pPrisoner->getEntry())
@@ -217,10 +215,10 @@ public:
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////
 class PrisonersDreghoodElders : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PrisonersDreghoodElders)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PrisonersDreghoodElders(c); }
     explicit PrisonersDreghoodElders(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -231,10 +229,10 @@ class PrisonersDreghoodElders : public CreatureAIScript
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////
 class AncestralSpiritWolf : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AncestralSpiritWolf)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AncestralSpiritWolf(c); }
     explicit AncestralSpiritWolf(Creature* pCreature) : CreatureAIScript(pCreature) {}
     void OnLoad() override
     {
@@ -244,7 +242,8 @@ class AncestralSpiritWolf : public CreatureAIScript
 
 class HellfireDeadNPC : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HellfireDeadNPC)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HellfireDeadNPC(c); }
     explicit HellfireDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -258,7 +257,6 @@ class HellfireDeadNPC : public CreatureAIScript
 class DarkTidingsAlliance : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17479);
@@ -274,7 +272,6 @@ public:
 class DarkTidingsHorde : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17558);
@@ -316,7 +313,6 @@ void SetupHellfirePeninsula(ScriptMgr* mgr)
     mgr->register_quest_script(9588, new DarkTidingsHorde());
 
     mgr->register_creature_script(17077, &AncestralSpiritWolf::Create);
-
 
     //\todo mgr->register_dummy_spell(35460, &FuryOfTheDreghoodElders);
 }

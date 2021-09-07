@@ -98,7 +98,6 @@ if(USE_PCH)
   target_precompile_headers(${PROJECT_NAME}
   PRIVATE
   Setup.h
-  <Macros/ScriptMacros.hpp>
   <Management/TaxiMgr.h>
   <Server/Script/CreatureAIScript.h>
   <Units/Creatures/AIInterface.h>

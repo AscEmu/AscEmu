@@ -35,7 +35,6 @@ class ShadowfangKeepInstance : public InstanceScript
     uint32_t m_encounterData[ShadowfangKeep::INDEX_MAX];
 
 public:
-
     explicit ShadowfangKeepInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr),
 
     // Gameobjects low guids
@@ -383,7 +382,6 @@ class ArugalAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new ArugalAI(c); }
-
     ArugalAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0)
     {
         SFK_Instance = static_cast<ShadowfangKeepInstance*>(pCreature->GetMapMgr()->GetScript());
@@ -464,7 +462,6 @@ public:
     }
 
 protected:
-
     uint32_t stage;
     ShadowfangKeepInstance* SFK_Instance;
 };
@@ -475,7 +472,6 @@ class AdamantAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new AdamantAI(c); }
-
     AdamantAI(Creature* pCreature) : CreatureAIScript(pCreature), eventStarted(false)
     {
         SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->GetMapMgr()->GetScript());
@@ -574,11 +570,9 @@ public:
     }
 
 protected:
-
     ShadowfangKeepInstance* SFK_instance;
 
 public:
-
     // This variable will be set to true on OnSelectOption gossip event
     bool eventStarted;
 };
@@ -586,7 +580,6 @@ public:
 class AdamantGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         //TODO: correct text id
@@ -627,7 +620,6 @@ class AshcrombeAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new AshcrombeAI(c); }
-
     AshcrombeAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0), argued(false), eventStarted(false)
     {
         SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->GetMapMgr()->GetScript());
@@ -741,7 +733,6 @@ public:
     }
 
 protected:
-
     uint32_t stage;
     ShadowfangKeepInstance* SFK_instance;
 
@@ -749,7 +740,6 @@ protected:
     bool argued;
 
 public:
-
     // This variable will be set to true on OnSelectOption gossip event
     bool eventStarted;
 };
@@ -757,7 +747,6 @@ public:
 class AshcrombeGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), sMySQLStore.getGossipTextIdForNpc(pObject->getEntry()));
@@ -810,8 +799,6 @@ public:
 
     explicit SpringvaleAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        
-
         addAISpell(SPELL_HOLY_LIGHT, 10.0f, TARGET_RANDOM_FRIEND, 3, 0);
 
         DevoAura = addAISpell(SPELL_DEVO_AURA, 0.0f, TARGET_SELF, 0, 0);
@@ -845,7 +832,6 @@ public:
     }
 
 protected:
-
     CreatureAISpells* DevoAura;
     CreatureAISpells* DivineProt;
     bool mEnableDivineProt;
@@ -856,11 +842,9 @@ class RethilgoreAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new RethilgoreAI(c); }
-
-    const uint32_t SPELL_SOUL_DRAIN = 7295;
-
     explicit RethilgoreAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
+        const uint32_t SPELL_SOUL_DRAIN = 7295;
         addAISpell(SPELL_SOUL_DRAIN, 8.0f, TARGET_RANDOM_SINGLE, 2, 10);
     }
 };
@@ -946,7 +930,6 @@ public:
     }
 
 protected:
-
     ShadowfangKeepInstance* SFK_instance;
     uint32_t sCallBleakWorg_Timer;
     uint32_t sCallSlaveringWorg_Timer;
@@ -1028,7 +1011,6 @@ public:
     }
 
 protected:
-
     CreatureAISpells* HowlingRage1;
     CreatureAISpells* HowlingRage2;
     CreatureAISpells* HowlingRage3;
@@ -1058,7 +1040,7 @@ public:
     {
         SPELL_VOID_BOLT                 = 7588,
         SPELL_SHADOW_PORT_UPPER_LEDGE   = 7587,
-        SPELL_SHADOW_PORT_SPAWN_LEDGE   = 7586,
+        //SPELL_SHADOW_PORT_SPAWN_LEDGE   = 7586,
         SPELL_SHADOW_PORT_STAIRS        = 7136,
         SPELL_THUNDER_SHOCK             = 7803,
         SPELL_ARUGALS_CURSE             = 7621
@@ -1209,7 +1191,6 @@ public:
     }
 
 protected:
-
     uint8_t stage;
     uint8_t arugalPosition;
     ShadowfangKeepInstance* SFK_instance;
@@ -1224,17 +1205,12 @@ class RazorclawTheButcherAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new RazorclawTheButcherAI(c); }
-
-    const uint32_t SPELL_BUTCHER_DRAIN = 7485;
-
     explicit RazorclawTheButcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
+        const uint32_t SPELL_BUTCHER_DRAIN = 7485;
         addAISpell(SPELL_BUTCHER_DRAIN, 5.0f, TARGET_RANDOM_SINGLE);
     }
 };
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Trash npcs
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spells used by creatures in Shadowfang keep dungeon
@@ -1272,7 +1248,6 @@ bool ashrombeTeleportDummyAura(uint8_t /*effectIndex*/, Aura* pAura, bool /*appl
         return true;
     }
 }
-
 
 void SetupShadowfangKeep(ScriptMgr* mgr)
 {

@@ -57,7 +57,6 @@ install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIB
 if(USE_PCH)
   target_precompile_headers(${PROJECT_NAME}
   PRIVATE
-  <Macros/ScriptMacros.hpp>
   <Server/Script/CreatureAIScript.h>
   Setup.h
 )

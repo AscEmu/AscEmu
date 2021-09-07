@@ -29,7 +29,6 @@ enum
 class Lady_Jaina : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (plr->hasQuestInQuestLog(558))
@@ -50,7 +49,6 @@ public:
 class Cairne : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (plr->hasQuestInQuestLog(925))
@@ -71,7 +69,6 @@ public:
 class TeleportQ_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         uint32_t Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->getEntry());

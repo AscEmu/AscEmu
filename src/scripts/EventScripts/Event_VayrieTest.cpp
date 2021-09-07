@@ -14,7 +14,6 @@ This file is released under the MIT license. See README-MIT for more information
 class VayrieTest : public EventScript
 {
 public:
-
     bool OnBeforeEventStart(GameEvent* pEvent, GameEventState /*pOldState*/) override
     {
         ARCEMU_ASSERT(pEvent != nullptr);

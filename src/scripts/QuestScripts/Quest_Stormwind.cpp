@@ -20,11 +20,11 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class DashelStonefist : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DashelStonefist)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DashelStonefist(c); }
     explicit DashelStonefist(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -67,7 +67,6 @@ class DashelStonefist : public CreatureAIScript
 class TheMissingDiplomat : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();

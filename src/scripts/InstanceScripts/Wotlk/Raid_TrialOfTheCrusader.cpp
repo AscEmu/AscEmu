@@ -10,11 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 class TrialOfTheCrusaderInstanceScript : public InstanceScript
 {
 public:
-
-    explicit TrialOfTheCrusaderInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit TrialOfTheCrusaderInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new TrialOfTheCrusaderInstanceScript(pMapMgr); }
 };
 

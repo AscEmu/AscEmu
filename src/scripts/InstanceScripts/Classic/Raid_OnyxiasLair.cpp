@@ -7,16 +7,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_OnyxiasLair.h"
 
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class OnyxiasLairInstanceScript : public InstanceScript
 {
 public:
-
-    explicit OnyxiasLairInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit OnyxiasLairInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) { }
     static InstanceScript* Create(MapMgr* pMapMgr) { return new OnyxiasLairInstanceScript(pMapMgr); }
 };
 
@@ -24,7 +19,6 @@ class OnyxiaAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new OnyxiaAI(c); }
-
     explicit OnyxiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_phase = 1;
@@ -416,7 +410,6 @@ public:
     inline bool HasEntry() { return (m_entry != 0) ? true : false; }
 
 protected:
-
     bool m_fBreath;
     bool m_kAway;
     bool m_wBuffet;

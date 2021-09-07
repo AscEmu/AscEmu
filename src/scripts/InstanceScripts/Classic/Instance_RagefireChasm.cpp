@@ -10,18 +10,13 @@ This file is released under the MIT license. See README-MIT for more information
 class RagefireChasmInstanceScript : public InstanceScript
 {
 public:
-
-    explicit RagefireChasmInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit RagefireChasmInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new RagefireChasmInstanceScript(pMapMgr); }
 };
 
 class BloodFilledOrb : public GameObjectAIScript
 {
 public:
-
     explicit BloodFilledOrb(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new BloodFilledOrb(GO); }
 

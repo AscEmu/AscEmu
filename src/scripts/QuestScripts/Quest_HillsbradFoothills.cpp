@@ -20,14 +20,12 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 bool BaronVardusAllowSpawn = true;
 
 class WantedBaronVardus : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         if (BaronVardusAllowSpawn == true)
@@ -55,7 +53,8 @@ public:
 
 class Baron_Vardus : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Baron_Vardus)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Baron_Vardus(c); }
     explicit Baron_Vardus(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* /*mKiller*/) override

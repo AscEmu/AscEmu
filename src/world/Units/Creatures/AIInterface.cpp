@@ -3,7 +3,6 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
 #include "VMapFactory.h"
 #include "MMapManager.h"
 #include "MMapFactory.h"
@@ -21,7 +20,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellIsFlags.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Pet.h"
-#include "Macros/ScriptMacros.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/Movement/CreatureMovement.h"

@@ -21,11 +21,11 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class RingoDeadNPC : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RingoDeadNPC)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new RingoDeadNPC(c); }
     explicit RingoDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -36,11 +36,9 @@ class RingoDeadNPC : public CreatureAIScript
     }
 };
 
-
 class NorthernPylon : public GameObjectAIScript
 {
 public:
-
     explicit NorthernPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new NorthernPylon(GO); }
 
@@ -57,11 +55,9 @@ public:
     }
 };
 
-
 class EasternPylon : public GameObjectAIScript
 {
 public:
-
     explicit EasternPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new EasternPylon(GO); }
 
@@ -78,11 +74,9 @@ public:
     }
 };
 
-
 class WesternPylon : public GameObjectAIScript
 {
 public:
-
     explicit WesternPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new WesternPylon(GO); }
 
@@ -99,10 +93,10 @@ public:
     }
 };
 
-
 class A_Me01 : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(A_Me01)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new A_Me01(c); }
     explicit A_Me01(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override

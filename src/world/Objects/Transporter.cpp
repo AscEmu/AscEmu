@@ -3,13 +3,11 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
 #include <G3D/Vector3.h>
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include "Server/Packets/SmsgTransferPending.h"
 #include "../Movement/Spline/Spline.h"
-#include "Macros/ScriptMacros.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Server/Definitions.h"
 

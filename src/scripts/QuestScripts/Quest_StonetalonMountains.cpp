@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Quest: "Protect Kaya" (Entry: 6523)
@@ -13,7 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 class ProtectKaya : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
@@ -38,7 +36,8 @@ public:
 
 class KayaFlathoof : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KayaFlathoof)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KayaFlathoof(c); }
     explicit KayaFlathoof(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         stopMovement();

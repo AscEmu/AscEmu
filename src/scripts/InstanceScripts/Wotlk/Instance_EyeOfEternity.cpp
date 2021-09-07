@@ -11,11 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 class EyeOfEternityInstanceScript : public InstanceScript
 {
 public:
-
-    explicit EyeOfEternityInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit EyeOfEternityInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new EyeOfEternityInstanceScript(pMapMgr); }
 };
 

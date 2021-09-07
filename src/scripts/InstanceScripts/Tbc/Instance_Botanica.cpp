@@ -7,29 +7,24 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_Botanica.h"
 
 #include "Server/Script/CreatureAIScript.h"
-#include "Macros/ScriptMacros.hpp"
 
 class BotanicaInstanceScript : public InstanceScript
 {
 public:
-
-    explicit BotanicaInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit BotanicaInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new BotanicaInstanceScript(pMapMgr); }
 };
 
 class BloodProtectorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BloodProtectorAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BloodProtectorAI(c); }
     explicit BloodProtectorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto crystalStrike = addAISpell(CRYSTAL_STRIKE, 10.0f, TARGET_ATTACKING);
         crystalStrike->setAttackStopTimer(1000);
     }
 };
-
 
 // Bloodwarder Mender AI
 // \todo Script me!
@@ -40,7 +35,8 @@ class BloodProtectorAI : public CreatureAIScript
 
 class BloodGreenkeeperAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BloodGreenkeeperAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BloodGreenkeeperAI(c); }
     explicit BloodGreenkeeperAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto greenkeeperFury = addAISpell(GREENKEEPER_FURY, 10.0f, TARGET_ATTACKING);
@@ -50,7 +46,8 @@ class BloodGreenkeeperAI : public CreatureAIScript
 
 class SunchemistAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SunchemistAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SunchemistAI(c); }
     explicit SunchemistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto flameBreath = addAISpell(FLAME_BREATH, 10.0f, TARGET_VARIOUS);
@@ -63,7 +60,8 @@ class SunchemistAI : public CreatureAIScript
 
 class SunResearcherAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SunResearcherAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SunResearcherAI(c); }
     explicit SunResearcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         poisonShield = addAISpell(POISON_SHIELD, 0.0f, TARGET_SELF);
@@ -85,14 +83,13 @@ class SunResearcherAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* poisonShield;
 };
 
-
 class CommanderSarannisAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CommanderSarannisAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CommanderSarannisAI(c); }
     explicit CommanderSarannisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         GuardAdds = false;
@@ -141,15 +138,14 @@ class CommanderSarannisAI : public CreatureAIScript
     }
 
 protected:
-
     bool GuardAdds;
     CreatureAISpells* summonReinforcements;
 };
 
-
 class HighBotanistFreywinnAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HighBotanistFreywinnAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HighBotanistFreywinnAI(c); }
     explicit HighBotanistFreywinnAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         PlantTimer = 10;
@@ -237,7 +233,6 @@ class HighBotanistFreywinnAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t PlantTimer;
 
     CreatureAISpells* plantRedSeedling;
@@ -246,10 +241,10 @@ protected:
     CreatureAISpells* plantBlueSeedling;
 };
 
-
 class ThorngrinTheTenderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ThorngrinTheTenderAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ThorngrinTheTenderAI(c); }
     explicit ThorngrinTheTenderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Enraged = false;
@@ -298,15 +293,14 @@ class ThorngrinTheTenderAI : public CreatureAIScript
     }
 
 protected:
-
     bool Enraged;
     CreatureAISpells* enrage;
 };
 
-
 class LajAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LajAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new LajAI(c); }
     explicit LajAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         TeleportTimer = 20;    // It's sth about that
@@ -352,15 +346,14 @@ class LajAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t TeleportTimer;
     CreatureAISpells* teleportSelf;
 };
 
-
 class WarpSplinterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WarpSplinterAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WarpSplinterAI(c); }
     explicit WarpSplinterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         SummonTimer = 20;    // It's sth about that
@@ -409,7 +402,6 @@ class WarpSplinterAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t SummonTimer;
     CreatureAISpells* summonSaplings;
 };
