@@ -324,11 +324,13 @@ void MapMgr::PushObject(Object* obj)
             case HIGHGUID_TYPE_UNIT:
             case HIGHGUID_TYPE_VEHICLE:
             {
-                ARCEMU_ASSERT(obj->GetUIdFromGUID() <= m_CreatureHighGuid);
-                CreatureStorage[obj->GetUIdFromGUID()] = static_cast<Creature*>(obj);
-                if (static_cast<Creature*>(obj)->m_spawn != nullptr)
+                if (obj->GetUIdFromGUID() <= m_CreatureHighGuid)
                 {
-                    _sqlids_creatures.insert(std::make_pair(static_cast<Creature*>(obj)->m_spawn->id, static_cast<Creature*>(obj)));
+                    CreatureStorage[obj->GetUIdFromGUID()] = static_cast<Creature*>(obj);
+                    if (static_cast<Creature*>(obj)->m_spawn != nullptr)
+                    {
+                        _sqlids_creatures.insert(std::make_pair(static_cast<Creature*>(obj)->m_spawn->id, static_cast<Creature*>(obj)));
+                    }
                 }
             }
             break;
@@ -420,9 +422,23 @@ void MapMgr::PushStaticObject(Object* obj)
 void MapMgr::RemoveObject(Object* obj, bool free_guid)
 {
     // Assertions
-    ARCEMU_ASSERT(obj != nullptr);
-    ARCEMU_ASSERT(obj->GetMapId() == _mapId);
-    ARCEMU_ASSERT(_cells != nullptr);
+    if (obj == nullptr)
+    {
+        sLogger.failure("MapMgr::RemoveObject tried to remove invalid object (nullptr)");
+        return;
+    }
+
+    if (obj->GetMapId() != _mapId)
+    {
+        sLogger.failure("MapMgr::RemoveObject tried to remove object with map %u but mapMgr is for map %u!", obj->GetMapId(), _mapId);
+        return;
+    }
+
+    if (_cells == nullptr)
+    {
+        sLogger.failure("MapMgr::RemoveObject tried to remove invalid cells (nullptr)");
+        return;
+    }
 
     if (obj->IsActive())
         obj->Deactivate(this);
@@ -442,15 +458,16 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         case HIGHGUID_TYPE_UNIT:
         case HIGHGUID_TYPE_VEHICLE:
         {
-            ARCEMU_ASSERT(obj->GetUIdFromGUID() <= m_CreatureHighGuid);
-            CreatureStorage[obj->GetUIdFromGUID()] = nullptr;
+            if (obj->GetUIdFromGUID() <= m_CreatureHighGuid)
+            {
+                CreatureStorage[obj->GetUIdFromGUID()] = nullptr;
 
-            if (static_cast<Creature*>(obj)->m_spawn != nullptr)
-                _sqlids_creatures.erase(static_cast<Creature*>(obj)->m_spawn->id);
+                if (static_cast<Creature*>(obj)->m_spawn != nullptr)
+                    _sqlids_creatures.erase(static_cast<Creature*>(obj)->m_spawn->id);
 
-            if (free_guid)
-                _reusable_guids_creature.push_back(obj->GetUIdFromGUID());
-
+                if (free_guid)
+                    _reusable_guids_creature.push_back(obj->GetUIdFromGUID());
+            }
             break;
         }
         case HIGHGUID_TYPE_PET:
@@ -469,14 +486,15 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         }
         case HIGHGUID_TYPE_GAMEOBJECT:
         {
-            ARCEMU_ASSERT(obj->GetUIdFromGUID() <= m_GOHighGuid);
-            GOStorage[obj->GetUIdFromGUID()] = nullptr;
-            if (static_cast<GameObject*>(obj)->m_spawn != nullptr)
-                _sqlids_gameobjects.erase(static_cast<GameObject*>(obj)->m_spawn->id);
+            if (obj->GetUIdFromGUID() <= m_GOHighGuid)
+            {
+                GOStorage[obj->GetUIdFromGUID()] = nullptr;
+                if (static_cast<GameObject*>(obj)->m_spawn != nullptr)
+                    _sqlids_gameobjects.erase(static_cast<GameObject*>(obj)->m_spawn->id);
 
-            if (free_guid)
-                _reusable_guids_gameobject.push_back(obj->GetUIdFromGUID());
-
+                if (free_guid)
+                    _reusable_guids_gameobject.push_back(obj->GetUIdFromGUID());
+            }
             break;
         }
         case HIGHGUID_TYPE_TRANSPORTER:
@@ -591,13 +609,12 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
 
 void MapMgr::ChangeObjectLocation(Object* obj)
 {
-    ARCEMU_ASSERT(obj != nullptr);
+    if (obj == nullptr)
+        return;
 
     // Items and containers are of no interest for us
     if (obj->isItem() || obj->isContainer() || obj->GetMapMgr() != this)
-    {
         return;
-    }
 
     Player* plObj = nullptr;
     ByteBuffer* buf = nullptr;
@@ -666,11 +683,16 @@ void MapMgr::ChangeObjectLocation(Object* obj)
     if (objCell == nullptr)
     {
         objCell = Create(cellX, cellY);
-        objCell->Init(cellX, cellY, this);
+        if (objCell != nullptr)
+        {
+            objCell->Init(cellX, cellY, this);
+        }
+        else
+        {
+            sLogger.failure("MapMgr::ChangeObjectLocation not able to create object cell (nullptr), return!");
+            return;
+        }
     }
-
-    ARCEMU_ASSERT(objCell != nullptr);
-
     uint8 cellNumber = worldConfig.server.mapCellNumber;
 
     // If object moved cell
@@ -1057,13 +1079,14 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
 
                     _terrain->LoadTile((int32)posX / 8, (int32)posY / 8);
 
-                    ARCEMU_ASSERT(!objCell->IsLoaded());
+                    if (!objCell->IsLoaded())
+                    {
+                        sLogger.debug("MapMgr : Loading objects for Cell [%u][%u] on map %u (instance %u)...", posX, posY, this->_mapId, m_instanceID);
 
-                    sLogger.debug("MapMgr : Loading objects for Cell [%u][%u] on map %u (instance %u)...", posX, posY, this->_mapId, m_instanceID);
-
-                    sp = _map->GetSpawnsList(posX, posY);
-                    if (sp)
-                        objCell->LoadObjects(sp);
+                        sp = _map->GetSpawnsList(posX, posY);
+                        if (sp)
+                            objCell->LoadObjects(sp);
+                    }
                 }
             }
             else
@@ -2268,9 +2291,15 @@ void MapMgr::LoadInstanceScript()
 
 void MapMgr::CallScriptUpdate()
 {
-    ARCEMU_ASSERT(mInstanceScript != NULL);
-    mInstanceScript->UpdateEvent();
-    mInstanceScript->updateTimers();
+    if (mInstanceScript != nullptr)
+    {
+        mInstanceScript->UpdateEvent();
+        mInstanceScript->updateTimers();
+    }
+    else
+    {
+        sLogger.failure("MapMgr::CallScriptUpdate tries to call without valid instance script (nullptr)");
+    }
 };
 
 uint32 MapMgr::GetAreaFlag(float x, float y, float z, bool * /*isOutdoors*/) const

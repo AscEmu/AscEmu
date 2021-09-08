@@ -640,22 +640,27 @@ MapMgr* InstanceMgr::GetInstance(Object* obj)
 
 MapMgr* InstanceMgr::_CreateInstance(uint32_t mapid, uint32_t instanceid)
 {
-    const auto mapInfo = sMySQLStore.getWorldMapInfo(mapid);
+    if (const auto mapInfo = sMySQLStore.getWorldMapInfo(mapid))
+    {
+        if (!mapInfo->isNonInstanceMap())
+            return nullptr;
 
-    ARCEMU_ASSERT(mapInfo != nullptr && mapInfo->isNonInstanceMap());
-    ARCEMU_ASSERT(mapid < MAX_NUM_MAPS && m_maps[mapid] != nullptr);
+        if (mapid < MAX_NUM_MAPS && m_maps[mapid] != nullptr)
+        {
+            sLogger.info("InstanceMgr : Creating continent %s.", m_maps[mapid]->GetMapName().c_str());
 
-    sLogger.info("InstanceMgr : Creating continent %s.", m_maps[mapid]->GetMapName().c_str());
+            if (const auto newMap = new MapMgr(m_maps[mapid], mapid, instanceid))
+            {
+                // Scheduling the new map for running
+                ThreadPool.ExecuteTask(newMap);
+                m_singleMaps[mapid] = newMap;
 
-    const auto newMap = new MapMgr(m_maps[mapid], mapid, instanceid);
+                return newMap;
+            }
+        }
+    }
 
-    ARCEMU_ASSERT(newMap != nullptr);
-
-    // Scheduling the new map for running
-    ThreadPool.ExecuteTask(newMap);
-    m_singleMaps[mapid] = newMap;
-
-    return newMap;
+    return nullptr;
 }
 
 MapMgr* InstanceMgr::_CreateInstance(Instance* in)
@@ -664,7 +669,12 @@ MapMgr* InstanceMgr::_CreateInstance(Instance* in)
         return nullptr;
 
     sLogger.info("InstanceMgr : Creating saved instance %u (%s)", in->m_instanceId, m_maps[in->m_mapId]->GetMapName().c_str());
-    ARCEMU_ASSERT(in->m_mapMgr == NULL);
+
+    if (in->m_mapMgr)
+    {
+        sLogger.failure("InstanceMgr::_CreateInstance instance already exist!");
+        return in->m_mapMgr;
+    }
 
     // we don't have to check for world map info here, since the instance wouldn't have been saved if it didn't have any.
     in->m_mapMgr = new MapMgr(m_maps[in->m_mapId], in->m_mapId, in->m_instanceId);

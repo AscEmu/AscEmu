@@ -352,6 +352,9 @@ void Object::updateObject()
 
 uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
+    if (m_wowGuid.GetNewGuidLen() <= 0)
+        return 0;
+
     if (target == nullptr)
         return 0;
 
@@ -444,9 +447,6 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
             updateFlags |= UPDATEFLAG_HAS_TARGET;
     }
 
-    // we shouldn't be here, under any circumstances, unless we have a wowguid..
-    ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
-
     // build our actual update
     *data << uint8_t(updateType);
     *data << m_wowGuid;
@@ -528,36 +528,36 @@ Spell* Object::getCurrentSpellById(uint32_t spellId) const
 
 void Object::setCurrentSpell(Spell* curSpell)
 {
-    ARCEMU_ASSERT(curSpell != nullptr); // curSpell cannot be nullptr
-
-    // Get current spell type
-    CurrentSpellType spellType = CURRENT_GENERIC_SPELL;
-    if (curSpell->getSpellInfo()->isOnNextMeleeAttack())
+    if (curSpell != nullptr) // curSpell cannot be nullptr
     {
-        // Melee spell
-        spellType = CURRENT_MELEE_SPELL;
-    }
-    else if (curSpell->getSpellInfo()->isRangedAutoRepeat())
-    {
-        // Autorepeat spells (Auto shot / Shoot (wand))
-        spellType = CURRENT_AUTOREPEAT_SPELL;
-    }
-    else if (curSpell->getSpellInfo()->isChanneled())
-    {
-        // Channeled spells
-        spellType = CURRENT_CHANNELED_SPELL;
-    }
+        // Get current spell type
+        CurrentSpellType spellType = CURRENT_GENERIC_SPELL;
+        if (curSpell->getSpellInfo()->isOnNextMeleeAttack())
+        {
+            // Melee spell
+            spellType = CURRENT_MELEE_SPELL;
+        }
+        else if (curSpell->getSpellInfo()->isRangedAutoRepeat())
+        {
+            // Autorepeat spells (Auto shot / Shoot (wand))
+            spellType = CURRENT_AUTOREPEAT_SPELL;
+        }
+        else if (curSpell->getSpellInfo()->isChanneled())
+        {
+            // Channeled spells
+            spellType = CURRENT_CHANNELED_SPELL;
+        }
 
-    // We've already set this spell to current spell, ignore
-    if (curSpell == m_currentSpell[spellType])
-        return;
+        // We've already set this spell to current spell, ignore
+        if (curSpell == m_currentSpell[spellType])
+            return;
 
-    // Interrupt spell with same spell type
-    interruptSpellWithSpellType(spellType);
+        // Interrupt spell with same spell type
+        interruptSpellWithSpellType(spellType);
 
-    // Handle spelltype specific cases
-    switch (spellType)
-    {
+        // Handle spelltype specific cases
+        switch (spellType)
+        {
         case CURRENT_GENERIC_SPELL:
         {
             // Generic spells break channeled spells
@@ -595,14 +595,19 @@ void Object::setCurrentSpell(Spell* curSpell)
         } break;
         default:
             break;
+        }
+
+        // If spell is not yet cancelled, force it
+        if (m_currentSpell[spellType] != nullptr)
+            m_currentSpell[spellType]->finish(false);
+
+        // Set new current spell
+        m_currentSpell[spellType] = curSpell;
     }
-
-    // If spell is not yet cancelled, force it
-    if (m_currentSpell[spellType] != nullptr)
-        m_currentSpell[spellType]->finish(false);
-
-    // Set new current spell
-    m_currentSpell[spellType] = curSpell;
+    else
+    {
+        sLogger.failure("Object::setCurrentSpell tried to set invalid current spell (nullptr)");
+    }
 }
 
 void Object::interruptSpell(uint32_t spellId, bool checkMeleeSpell)
@@ -1615,41 +1620,42 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
 Object::~Object()
 {
     if (!isItem())
-        ARCEMU_ASSERT(!m_inQueue);
-
-    ARCEMU_ASSERT(!IsInWorld());
-
-    // for linux
-    m_instanceId = INSTANCEID_NOT_IN_WORLD;
-
-    //todo zyres: this is the wrong place to remove a passenger....
-    /*if (GetTransport() != nullptr)
-        GetTransport()->RemovePassenger(this);*/
-
-    for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
     {
-        if (m_currentSpell[i] != nullptr)
+        if (!m_inQueue && !IsInWorld())
         {
-            interruptSpellWithSpellType(CurrentSpellType(i));
+            // for linux
+            m_instanceId = INSTANCEID_NOT_IN_WORLD;
+
+            //todo zyres: this is the wrong place to remove a passenger....
+            /*if (GetTransport() != nullptr)
+                GetTransport()->RemovePassenger(this);*/
+
+            for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+            {
+                if (m_currentSpell[i] != nullptr)
+                {
+                    interruptSpellWithSpellType(CurrentSpellType(i));
+                }
+            }
+
+            for (auto travelingSpellItr = m_travelingSpells.begin(); travelingSpellItr != m_travelingSpells.end();)
+            {
+                delete (*travelingSpellItr).first;
+                travelingSpellItr = m_travelingSpells.erase(travelingSpellItr);
+            }
+
+            removeGarbageSpells();
+
+            for (auto pendingSpellItr = m_pendingSpells.begin(); pendingSpellItr != m_pendingSpells.end();)
+            {
+                delete (*pendingSpellItr);
+                pendingSpellItr = m_pendingSpells.erase(pendingSpellItr);
+            }
+
+            //avoid leaving traces in eventmanager. Have to work on the speed. Not all objects ever had events so list iteration can be skipped
+            sEventMgr.RemoveEvents(this);
         }
     }
-
-    for (auto travelingSpellItr = m_travelingSpells.begin(); travelingSpellItr != m_travelingSpells.end();)
-    {
-        delete (*travelingSpellItr).first;
-        travelingSpellItr = m_travelingSpells.erase(travelingSpellItr);
-    }
-
-    removeGarbageSpells();
-
-    for (auto pendingSpellItr = m_pendingSpells.begin(); pendingSpellItr != m_pendingSpells.end();)
-    {
-        delete (*pendingSpellItr);
-        pendingSpellItr = m_pendingSpells.erase(pendingSpellItr);
-    }
-
-    //avoid leaving traces in eventmanager. Have to work on the speed. Not all objects ever had events so list iteration can be skipped
-    sEventMgr.RemoveEvents(this);
 }
 
 ::DBC::Structures::AreaTableEntry const* Object::GetArea()
@@ -3175,48 +3181,52 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
 {
     bool updateMap = false, result = true;
 
-    ARCEMU_ASSERT(!std::isnan(newX) && !std::isnan(newY) && !std::isnan(newOrientation));
+    if (!std::isnan(newX) && !std::isnan(newY) && !std::isnan(newOrientation))
+    {
+        //It's a good idea to push through EVERY transport position change, no matter how small they are. By: VLack aka. VLsoft
+        if (isGameObject() && static_cast<GameObject*>(this)->GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT)
+            updateMap = true;
 
-    //It's a good idea to push through EVERY transport position change, no matter how small they are. By: VLack aka. VLsoft
-    if (isGameObject() && static_cast<GameObject*>(this)->GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT)
-        updateMap = true;
+        //if (m_position.x != newX || m_position.y != newY)
+        //updateMap = true;
+        if (m_lastMapUpdatePosition.Distance2DSq({ newX, newY }) > 4.0f) /* 2.0f */
+            updateMap = true;
 
-    //if (m_position.x != newX || m_position.y != newY)
-    //updateMap = true;
-    if (m_lastMapUpdatePosition.Distance2DSq({ newX, newY }) > 4.0f) /* 2.0f */
-        updateMap = true;
-
-    m_position.ChangeCoords({ newX, newY, newZ, newOrientation });
+        m_position.ChangeCoords({ newX, newY, newZ, newOrientation });
 
 #if VERSION_STRING < Cata
-    if (!allowPorting && newZ < -500)
-    {
-        m_position.z = 500;
-        sLogger.failure("setPosition: fell through map; height ported");
+        if (!allowPorting && newZ < -500)
+        {
+            m_position.z = 500;
+            sLogger.failure("setPosition: fell through map; height ported");
 
-        result = false;
-    }
+            result = false;
+        }
 #endif
 
-    if (IsInWorld() && updateMap)
-    {
-        m_lastMapUpdatePosition.ChangeCoords({ newX, newY, newZ, newOrientation });
-        m_mapMgr->ChangeObjectLocation(this);
-
-        if (isPlayer() && static_cast<Player*>(this)->getGroup() && static_cast<Player*>(this)->m_last_group_position.Distance2DSq(m_position) > 25.0f)       // distance of 5.0
+        if (IsInWorld() && updateMap)
         {
-            static_cast<Player*>(this)->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_POSITION);
+            m_lastMapUpdatePosition.ChangeCoords({ newX, newY, newZ, newOrientation });
+            m_mapMgr->ChangeObjectLocation(this);
+
+            if (isPlayer() && static_cast<Player*>(this)->getGroup() && static_cast<Player*>(this)->m_last_group_position.Distance2DSq(m_position) > 25.0f)       // distance of 5.0
+            {
+                static_cast<Player*>(this)->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_POSITION);
+            }
         }
+
+        if (isCreatureOrPlayer())
+        {
+            Unit* u = static_cast<Unit*>(this);
+            if (u->getVehicleComponent() != nullptr)
+                u->getVehicleComponent()->MovePassengers(newX, newY, newZ, newOrientation);
+        }
+
+        return result;
     }
 
-    if (isCreatureOrPlayer())
-    {
-        Unit* u = static_cast<Unit*>(this);
-        if (u->getVehicleComponent() != nullptr)
-            u->getVehicleComponent()->MovePassengers(newX, newY, newZ, newOrientation);
-    }
-
-    return result;
+    sLogger.failure("Object::SetPosition one of the position values in NaN, returning false!");
+    return false;
 }
 
 void Object::_SetUpdateBits(UpdateMask* updateMask, Player* /*target*/) const
@@ -3304,30 +3314,31 @@ void Object::AddToWorld(MapMgr* pMapMgr)
 //////////////////////////////////////////////////////////////////////////////////////////
 void Object::PushToWorld(MapMgr* mgr)
 {
-    ARCEMU_ASSERT(t_currentMapContext.get() == mgr);
-
-    if (mgr == nullptr)
+    if (t_currentMapContext.get() == mgr)
     {
-        sLogger.failure("Invalid push to world of Object " I64FMT, getGuid());
-        return; //instance add failed
+        if (mgr == nullptr)
+        {
+            sLogger.failure("Invalid push to world of Object " I64FMT, getGuid());
+            return; //instance add failed
+        }
+
+        m_mapId = mgr->GetMapId();
+        //there's no need to set the InstanceId before calling PushToWorld() because it's already set here.
+        m_instanceId = mgr->GetInstanceID();
+
+        m_mapMgr = mgr;
+        OnPrePushToWorld();
+
+        mgr->PushObject(this);
+
+        // correct incorrect instance id's
+        m_inQueue = false;
+
+        event_Relocate();
+
+        // call virtual function to handle stuff.. :P
+        OnPushToWorld();
     }
-
-    m_mapId = mgr->GetMapId();
-    //there's no need to set the InstanceId before calling PushToWorld() because it's already set here.
-    m_instanceId = mgr->GetInstanceID();
-
-    m_mapMgr = mgr;
-    OnPrePushToWorld();
-
-    mgr->PushObject(this);
-
-    // correct incorrect instance id's
-    m_inQueue = false;
-
-    event_Relocate();
-
-    // call virtual function to handle stuff.. :P
-    OnPushToWorld();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -3335,34 +3346,41 @@ void Object::PushToWorld(MapMgr* mgr)
 //////////////////////////////////////////////////////////////////////////////////////////
 void Object::RemoveFromWorld(bool free_guid)
 {
-    ARCEMU_ASSERT(m_mapMgr != NULL);
+    if (m_mapMgr != nullptr)
+    {
+        OnPreRemoveFromWorld();
 
-    OnPreRemoveFromWorld();
+        MapMgr* m = m_mapMgr;
+        m_mapMgr = nullptr;
 
-    MapMgr* m = m_mapMgr;
-    m_mapMgr = nullptr;
+        m->RemoveObject(this, free_guid);
 
-    m->RemoveObject(this, free_guid);
+        OnRemoveFromWorld();
 
-    OnRemoveFromWorld();
+        //shouldnt need to clear, spell destructor will erase
+        //m_pendingSpells.clear();
 
-    //shouldnt need to clear, spell destructor will erase
-    //m_pendingSpells.clear();
+        m_instanceId = INSTANCEID_NOT_IN_WORLD;
+        m_mapId = MAPID_NOT_IN_WORLD;
+        //m_inQueue is set to true when AddToWorld() is called. AddToWorld() queues the Object to be pushed, but if it's not pushed and RemoveFromWorld()
+        //is called, m_inQueue will still be true even if the Object is no more inworld, nor queued.
+        m_inQueue = false;
 
-    m_instanceId = INSTANCEID_NOT_IN_WORLD;
-    m_mapId = MAPID_NOT_IN_WORLD;
-    //m_inQueue is set to true when AddToWorld() is called. AddToWorld() queues the Object to be pushed, but if it's not pushed and RemoveFromWorld()
-    //is called, m_inQueue will still be true even if the Object is no more inworld, nor queued.
-    m_inQueue = false;
-
-    // update our event holder
-    event_Relocate();
+        // update our event holder
+        event_Relocate();
+    }
+    else
+    {
+        sLogger.failure("Object::RemoveFromWorld tried to remove object without a valid mapMgr (nullptr)");
+    }
 }
 
 float Object::CalcDistance(Object* Ob)
 {
-    ARCEMU_ASSERT(Ob != NULL);
-    return CalcDistance(this->GetPositionX(), this->GetPositionY(), this->GetPositionZ(), Ob->GetPositionX(), Ob->GetPositionY(), Ob->GetPositionZ());
+    if (Ob != nullptr)
+        return CalcDistance(this->GetPositionX(), this->GetPositionY(), this->GetPositionZ(), Ob->GetPositionX(), Ob->GetPositionY(), Ob->GetPositionZ());
+
+    return 0xFFFF;
 }
 
 float Object::CalcDistance(float ObX, float ObY, float ObZ)
@@ -3372,15 +3390,18 @@ float Object::CalcDistance(float ObX, float ObY, float ObZ)
 
 float Object::CalcDistance(Object* Oa, Object* Ob)
 {
-    ARCEMU_ASSERT(Oa != NULL);
-    ARCEMU_ASSERT(Ob != NULL);
-    return CalcDistance(Oa->GetPositionX(), Oa->GetPositionY(), Oa->GetPositionZ(), Ob->GetPositionX(), Ob->GetPositionY(), Ob->GetPositionZ());
+    if (Oa != nullptr && Ob != nullptr)
+        return CalcDistance(Oa->GetPositionX(), Oa->GetPositionY(), Oa->GetPositionZ(), Ob->GetPositionX(), Ob->GetPositionY(), Ob->GetPositionZ());
+
+    return 0xFFFF;
 }
 
 float Object::CalcDistance(Object* Oa, float ObX, float ObY, float ObZ)
 {
-    ARCEMU_ASSERT(Oa != NULL);
-    return CalcDistance(Oa->GetPositionX(), Oa->GetPositionY(), Oa->GetPositionZ(), ObX, ObY, ObZ);
+    if (Oa != nullptr)
+        return CalcDistance(Oa->GetPositionX(), Oa->GetPositionY(), Oa->GetPositionZ(), ObX, ObY, ObZ);
+
+    return 0xFFFF;
 }
 
 float Object::CalcDistance(float OaX, float OaY, float OaZ, float ObX, float ObY, float ObZ)
@@ -3393,19 +3414,25 @@ float Object::CalcDistance(float OaX, float OaY, float OaZ, float ObX, float ObY
 
 bool Object::IsWithinDistInMap(Object* obj, const float dist2compare) const
 {
-    ARCEMU_ASSERT(obj != NULL);
-    float xdest = this->GetPositionX() - obj->GetPositionX();
-    float ydest = this->GetPositionY() - obj->GetPositionY();
-    float zdest = this->GetPositionZ() - obj->GetPositionZ();
-    return sqrtf(zdest * zdest + ydest * ydest + xdest * xdest) <= dist2compare;
+    if (obj != nullptr)
+    {
+        float xdest = this->GetPositionX() - obj->GetPositionX();
+        float ydest = this->GetPositionY() - obj->GetPositionY();
+        float zdest = this->GetPositionZ() - obj->GetPositionZ();
+        return sqrtf(zdest * zdest + ydest * ydest + xdest * xdest) <= dist2compare;
+    }
+    return false;
 }
 
 bool Object::IsWithinLOSInMap(Object* obj)
 {
-    ARCEMU_ASSERT(obj != NULL);
-    if (!IsInMap(obj)) return false;
-    LocationVector location;
-    location = obj->GetPosition();
+    if (obj == nullptr)
+        return false;
+
+    if (!IsInMap(obj))
+        return false;
+
+    LocationVector location = obj->GetPosition();
     return IsWithinLOS(location);
 }
 
@@ -3812,10 +3839,9 @@ void Object::Phase(uint8 command, uint32 newphase)
         m_phase = 1;
         break;
     default:
-        ARCEMU_ASSERT(false);
+        sLogger.failure("Object::Phase called with invalid command %u", command);
+        break;
     }
-
-    return;
 }
 
 void Object::OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool /*self*/)
@@ -3957,8 +3983,9 @@ DynamicObject* Object::GetMapMgrDynamicObject(const uint64 & guid)
 
 MapCell* Object::GetMapCell() const
 {
-    ARCEMU_ASSERT(m_mapMgr != NULL);
-    return m_mapMgr->GetCell(m_mapCell_x, m_mapCell_y);
+    if (m_mapMgr)
+        return m_mapMgr->GetCell(m_mapCell_x, m_mapCell_y);
+    return nullptr;
 }
 
 void Object::SetMapCell(MapCell* cell)

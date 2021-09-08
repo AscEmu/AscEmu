@@ -145,7 +145,8 @@ Aura::Aura(SpellInfo const* proto, int32 duration, Object* caster, Unit* target,
 
     // APGL End
     // MIT Start
-    ARCEMU_ASSERT(target != nullptr && proto != nullptr);
+    //\todo Zyres: We should create Auras in a function to check these pointers. To assert in a constructor after using at least on of the pointers before is bad codestyle ;)
+    ASSERT(target != nullptr && proto != nullptr);
 
     m_spellInfo = proto;
     m_casterGuid = caster->getGuid();

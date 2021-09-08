@@ -160,16 +160,17 @@ Class* CellHandler<Class>::GetCellByCoords(float x, float y)
 template <class Class>
 uint32 CellHandler<Class>::GetPosX(float x)
 {
-    ARCEMU_ASSERT((x >= _minX) && (x <= _maxX))
-    return (uint32)((_maxX - x) / _cellSize);
+    if ((x >= _minX) && (x <= _maxX))
+        return (uint32)((_maxX - x) / _cellSize);
+    return 0;
 }
 
 template <class Class>
 uint32 CellHandler<Class>::GetPosY(float y)
 {
-    ARCEMU_ASSERT((y >= _minY) && (y <= _maxY))
-    return (uint32)((_maxY - y) / _cellSize);
-
+    if ((y >= _minY) && (y <= _maxY))
+        return (uint32)((_maxY - y) / _cellSize);
+    return 0;
 }
 
 #endif // CELLHANDLER_H

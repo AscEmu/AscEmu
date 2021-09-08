@@ -475,8 +475,9 @@ public:
 
         bool HasUpdateField(uint32 index)
         {
-            ARCEMU_ASSERT(index < m_valuesCount)
-            return m_updateMask.GetBit(index);
+            if (index < m_valuesCount)
+                return m_updateMask.GetBit(index);
+            return false;
         }
 
         // Use this to check if a object is in range of another

@@ -768,21 +768,23 @@ uint32 ObjectMgr::GenerateMailID()
 
 uint32 ObjectMgr::GenerateLowGuid(uint32 guidhigh)
 {
-    ARCEMU_ASSERT(guidhigh == HIGHGUID_TYPE_ITEM || guidhigh == HIGHGUID_TYPE_CONTAINER || guidhigh == HIGHGUID_TYPE_PLAYER);
-
     uint32 ret;
-    if (guidhigh == HIGHGUID_TYPE_ITEM)
+
+    switch (guidhigh)
     {
-        ret = ++m_hiItemGuid;
-    }
-    else if (guidhigh == HIGHGUID_TYPE_PLAYER)
-    {
+    case HIGHGUID_TYPE_PLAYER:
         ret = ++m_hiPlayerGuid;
-    }
-    else
-    {
+        break;
+    case HIGHGUID_TYPE_ITEM:
+    case HIGHGUID_TYPE_CONTAINER:
         ret = ++m_hiItemGuid;
+        break;
+    default:
+        sLogger.failure("ObjectMgr::GenerateLowGuid tried to generate low guid gor non player/item, return 0!");
+        ret = 0;
+        break;
     }
+
     return ret;
 }
 
@@ -1876,11 +1878,6 @@ void ObjectMgr::LoadPetSpellCooldowns()
                 {
                     if (Cooldown)
                         mPetSpellCooldowns.insert(std::make_pair(SpellId, Cooldown));
-                }
-                else
-                {
-                    uint32 SP2 = mPetSpellCooldowns[SpellId];
-                    ARCEMU_ASSERT(Cooldown == SP2);
                 }
             }
         }

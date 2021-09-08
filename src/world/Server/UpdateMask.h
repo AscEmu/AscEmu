@@ -44,20 +44,21 @@ class UpdateMask
 
         void SetBit(const uint32 index)
         {
-            ARCEMU_ASSERT(index < mCount)
-            ((uint8*)mUpdateMask)[ index >> 3 ] |= 1 << (index & 0x7);
+            if (index < mCount)
+                ((uint8*)mUpdateMask)[ index >> 3 ] |= 1 << (index & 0x7);
         }
 
         void UnsetBit(const uint32 index)
         {
-            ARCEMU_ASSERT(index < mCount)
-            ((uint8*)mUpdateMask)[ index >> 3 ] &= (0xff ^ (1 << (index & 0x7)));
+            if (index < mCount)
+                ((uint8*)mUpdateMask)[ index >> 3 ] &= (0xff ^ (1 << (index & 0x7)));
         }
 
         bool GetBit(const uint32 index) const
         {
-            ARCEMU_ASSERT(index < mCount)
-            return (((uint8*)mUpdateMask)[ index >> 3 ] & (1 << (index & 0x7))) != 0;
+            if (index < mCount)
+                return (((uint8*)mUpdateMask)[index >> 3] & (1 << (index & 0x7))) != 0;
+            return false;
         }
 
         uint32 GetUpdateBlockCount() const
@@ -105,38 +106,42 @@ class UpdateMask
 
         void operator &= (const UpdateMask & mask)
         {
-            ARCEMU_ASSERT(mask.mCount <= mCount)
-            for (uint32 i = 0; i < mBlocks; i++)
-                mUpdateMask[i] &= mask.mUpdateMask[i];
+            if (mask.mCount <= mCount)
+                for (uint32 i = 0; i < mBlocks; i++)
+                    mUpdateMask[i] &= mask.mUpdateMask[i];
         }
 
         void operator |= (const UpdateMask & mask)
         {
-            ARCEMU_ASSERT(mask.mCount <= mCount)
-            for (uint32 i = 0; i < mBlocks; i++)
-                mUpdateMask[i] |= mask.mUpdateMask[i];
+            if (mask.mCount <= mCount)
+                for (uint32 i = 0; i < mBlocks; i++)
+                    mUpdateMask[i] |= mask.mUpdateMask[i];
         }
 
         UpdateMask operator & (const UpdateMask & mask) const
         {
-            ARCEMU_ASSERT(mask.mCount <= mCount)
+            if (mask.mCount <= mCount)
+            {
+                UpdateMask newmask;
+                newmask = *this;
+                newmask &= mask;
 
-            UpdateMask newmask;
-            newmask = *this;
-            newmask &= mask;
-
-            return newmask;
+                return newmask;
+            }
+            return mask;
         }
 
         UpdateMask operator | (const UpdateMask & mask) const
         {
-            ARCEMU_ASSERT(mask.mCount <= mCount)
+            if (mask.mCount <= mCount)
+            {
+                UpdateMask newmask;
+                newmask = *this;
+                newmask |= mask;
 
-            UpdateMask newmask;
-            newmask = *this;
-            newmask |= mask;
-
-            return newmask;
+                return newmask;
+            }
+            return mask;
         }
 };
 

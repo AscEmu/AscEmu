@@ -155,46 +155,47 @@ uint8 WorldSession::Update(uint32 InstanceID)
 
     while ((packet = _recvQueue.Pop()) != nullptr)
     {
-        ARCEMU_ASSERT(packet != NULL);
-
-        if (sOpcodeTables.getInternalIdForHex(packet->GetOpcode()) >= NUM_OPCODES)
+        if (packet != nullptr)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received out of range packet with opcode 0x%.4X", packet->GetOpcode());
-        }
-        else
-        {
-            OpcodeHandler* handler = &WorldPacketHandlers[sOpcodeTables.getInternalIdForHex(packet->GetOpcode())];
-            if (handler->status == STATUS_LOGGEDIN && !_player && handler->handler != 0)
+            if (sOpcodeTables.getInternalIdForHex(packet->GetOpcode()) >= NUM_OPCODES)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)",
-                    sOpcodeTables.getNameForOpcode(packet->GetOpcode()).c_str(), packet->GetOpcode());
+                sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received out of range packet with opcode 0x%.4X", packet->GetOpcode());
             }
             else
             {
-                // Valid Packet :>
-                if (handler->handler == 0)
+                OpcodeHandler* handler = &WorldPacketHandlers[sOpcodeTables.getInternalIdForHex(packet->GetOpcode())];
+                if (handler->status == STATUS_LOGGEDIN && !_player && handler->handler != 0)
                 {
-                    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received unhandled packet with opcode %s (0x%.4X)",
+                    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)",
                         sOpcodeTables.getNameForOpcode(packet->GetOpcode()).c_str(), packet->GetOpcode());
                 }
                 else
                 {
-                    (this->*handler->handler)(*packet);
+                    // Valid Packet :>
+                    if (handler->handler == 0)
+                    {
+                        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received unhandled packet with opcode %s (0x%.4X)",
+                            sOpcodeTables.getNameForOpcode(packet->GetOpcode()).c_str(), packet->GetOpcode());
+                    }
+                    else
+                    {
+                        (this->*handler->handler)(*packet);
+                    }
                 }
             }
-        }
 
-        delete packet;
+            delete packet;
 
-        if (InstanceID != instanceId)
-        {
-            // If we hit this -> means a packet has changed our map.
-            return 2;
-        }
+            if (InstanceID != instanceId)
+            {
+                // If we hit this -> means a packet has changed our map.
+                return 2;
+            }
 
-        if (bDeleted)
-        {
-            return 1;
+            if (bDeleted)
+            {
+                return 1;
+            }
         }
     }
 

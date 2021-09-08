@@ -219,8 +219,13 @@ class SERVER_DECL WorldSession
 
         AccountDataEntry* GetAccountData(uint32 index)
         {
-            ARCEMU_ASSERT(index < 8)
-            return &sAccountData[index];
+            if (index < 8)
+            {
+                return &sAccountData[index];
+            }
+
+            sLogger.failure("GetAccountData tried to get invalid index %u", index);
+            return nullptr;
         }
 
         void SetLogoutTimer(uint32 ms)
