@@ -3086,33 +3086,37 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
         float m_fallowAngle = -((float(M_PI) / 2) * j);
         float tempx = x + (GetRadius(effectIndex) * (cosf(m_fallowAngle + m_caster->GetOrientation())));
         float tempy = y + (GetRadius(effectIndex) * (sinf(m_fallowAngle + m_caster->GetOrientation())));
-        Creature* p = m_caster->GetMapMgr()->CreateCreature(cr_entry);
 
-        ASSERT(p != NULL);
-
-        p->Load(properties, tempx, tempy, z);
-        p->SetZoneId(m_caster->GetZoneId());
-
-        if (p->GetCreatureProperties()->Faction == 35)
+        if (Creature* p = m_caster->GetMapMgr()->CreateCreature(cr_entry))
         {
-            p->setSummonedByGuid(m_caster->getGuid());
-            p->setCreatedByGuid(m_caster->getGuid());
+            p->Load(properties, tempx, tempy, z);
+            p->SetZoneId(m_caster->GetZoneId());
 
-            if (m_caster->isGameObject())
-                p->SetFaction(static_cast<GameObject*>(m_caster)->getFactionTemplate());
+            if (p->GetCreatureProperties()->Faction == 35)
+            {
+                p->setSummonedByGuid(m_caster->getGuid());
+                p->setCreatedByGuid(m_caster->getGuid());
+
+                if (m_caster->isGameObject())
+                    p->SetFaction(static_cast<GameObject*>(m_caster)->getFactionTemplate());
+                else
+                    p->SetFaction(static_cast<Unit*>(m_caster)->getFactionTemplate());
+            }
             else
-                p->SetFaction(static_cast<Unit*>(m_caster)->getFactionTemplate());
+            {
+                p->SetFaction(properties->Faction);
+            }
+            p->PushToWorld(m_caster->GetMapMgr());
+
+            if (p->GetScript() != nullptr)
+                p->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
+            //make sure they will be desummoned (roxor)
+            sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
         else
         {
-            p->SetFaction(properties->Faction);
+            sLogger.failure("Spell::SpellEffectSummonWild tried to summon invalid creature %u", cr_entry);
         }
-        p->PushToWorld(m_caster->GetMapMgr());
-
-        if (p->GetScript() != nullptr)
-            p->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
-        //make sure they will be desummoned (roxor)
-        sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
 

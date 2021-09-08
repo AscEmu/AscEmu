@@ -284,14 +284,24 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
         }
     }
 
-    ASSERT(!keyFrames.empty());
+    if (keyFrames.empty())
+    {
+        sLogger.failure("TransportHandler::generatePath no keyFrames available for Transport %u", goInfo->entry);
+        return;
+    }
 
     if (transport->mapsUsed.size() > 1)
     {
         for (std::set<uint32_t>::const_iterator itr = transport->mapsUsed.begin(); itr != transport->mapsUsed.end(); ++itr)
         {
             if (const auto map = sMapStore.LookupEntry(*itr))
-                ASSERT(!map->instanceable());
+            {
+                if (map->instanceable())
+                {
+                    sLogger.failure("TransportHandler::generatePath not allowed to create a path to a instance map!");
+                    return;
+                }
+            }
         }
 
         transport->inInstance = false;
