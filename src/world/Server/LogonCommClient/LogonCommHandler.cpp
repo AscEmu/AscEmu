@@ -451,31 +451,31 @@ void LogonCommHandler::loadRealmsConfiguration()
             realmString << "Realm" << i;
 
             RealmStructure* realmStructure = new RealmStructure;
-            ARCEMU_ASSERT(Config.MainConfig.tryGetInt(realmString.str(), "Id", &realmStructure->id));
-            ARCEMU_ASSERT(Config.MainConfig.tryGetString(realmString.str(), "Name", &realmStructure->name));
-            ARCEMU_ASSERT(Config.MainConfig.tryGetString(realmString.str(), "Address", &realmStructure->address));
-            ARCEMU_ASSERT(Config.MainConfig.tryGetInt(realmString.str(), "TimeZone", &realmStructure->timeZone));
+            Config.MainConfig.tryGetInt(realmString.str(), "Id", &realmStructure->id);
+            Config.MainConfig.tryGetString(realmString.str(), "Name", &realmStructure->name);
+            Config.MainConfig.tryGetString(realmString.str(), "Address", &realmStructure->address);
+            Config.MainConfig.tryGetInt(realmString.str(), "TimeZone", &realmStructure->timeZone);
             ///\ todo: not handled in core
-            ARCEMU_ASSERT(Config.MainConfig.tryGetInt(realmString.str(), "Lock", &realmStructure->lock));
+            Config.MainConfig.tryGetInt(realmString.str(), "Lock", &realmStructure->lock);
 
             realmStructure->population = 0.0f;
             realmStructure->flags = 0;
             realmStructure->gameBuild = VERSION_STRING;
 
             std::string realmType = "Normal";
-            ARCEMU_ASSERT(Config.MainConfig.tryGetString(realmString.str(), "Icon", &realmType));
+            Config.MainConfig.tryGetString(realmString.str(), "Icon", &realmType);
             AscEmu::Util::Strings::toLowerCase(realmType);
 
             // process realm type
-            if (realmType.compare("pvp") == 0)
+            if (realmType == "pvp")
             {
                 _realmType = REALMTYPE_PVP;
             }
-            else if (realmType.compare("rp") == 0)
+            else if (realmType == "rp")
             {
                 _realmType = REALMTYPE_RP;
             }
-            else if (realmType.compare("rppvp") == 0)
+            else if (realmType == "rppvp")
             {
                 _realmType = REALMTYPE_RPPVP;
             }

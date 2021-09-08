@@ -73,7 +73,17 @@ enum SpellTargetSpecification
 
 Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
 {
-    ARCEMU_ASSERT(Caster != NULL && info != NULL);
+    if (Caster == nullptr)
+    {
+        sLogger.failure("Spell::Spell cant initialize without caster!");
+        return;
+    }
+
+    if (Caster == nullptr)
+    {
+        sLogger.failure("Spell::Spell cant initialize without valid spell info!");
+        return;
+    }
 
     Caster->m_pendingSpells.insert(this);
     chaindamage = 0;

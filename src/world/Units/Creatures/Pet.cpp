@@ -831,7 +831,11 @@ void Pet::InitializeSpells()
 
 AI_Spell* Pet::CreateAISpell(SpellInfo const* info)
 {
-    ARCEMU_ASSERT(info != NULL);
+    if (info == nullptr)
+    {
+        sLogger.failure("Pet::CreateAISpell tried to create AISpell without spell info!");
+        return nullptr;
+    }
 
     // Create an AI_Spell
     std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.find(info->getId());
@@ -1023,12 +1027,17 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
 
 void Pet::OnPushToWorld()
 {
-    //Pets MUST always have an owner
-    ARCEMU_ASSERT(m_Owner != NULL);
-    //before we initialize pet spells so we can apply spell mods on them
-    m_Owner->EventSummonPet(this);
+    if (m_Owner)
+    {
+        //before we initialize pet spells so we can apply spell mods on them
+        m_Owner->EventSummonPet(this);
 
-    Creature::OnPushToWorld();
+        Creature::OnPushToWorld();
+    }
+    else
+    {
+        sLogger.failure("Pet::OnPushToWorld tried to push pet without an owner!");
+    }
 }
 
 void Pet::InitializeMe(bool first)
@@ -1094,7 +1103,11 @@ void Pet::InitializeMe(bool first)
     }
 
     PushToWorld(m_Owner->GetMapMgr());
-    ARCEMU_ASSERT(IsInWorld());     //we MUST be sure Pet was pushed to world.
+    if (!this->IsInWorld())
+    {
+        sLogger.failure("Pet::InitializeMe was pushed to world but not in World, return.");
+        return;
+    }
 
     InitializeSpells();
 
@@ -1202,7 +1215,10 @@ void Pet::OnRemoveFromWorld()
     for (std::list<Pet*>::iterator itr = ownerSummons.begin(); itr != ownerSummons.end(); ++itr)
     {
         //m_Owner MUST NOT have a reference to us anymore
-        ARCEMU_ASSERT((*itr)->getGuid() != getGuid());
+        if ((*itr)->getGuid() == getGuid())
+        {
+            sLogger.failure("Pet::OnRemoveFromWorld has still a reference to removed pet!");
+        }
     }
 }
 
@@ -2065,8 +2081,11 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
 
 void Pet::SetAutoCast(AI_Spell* sp, bool on)
 {
-    ARCEMU_ASSERT(sp != NULL);
-    ARCEMU_ASSERT(sp->spell != NULL);
+    if (sp == nullptr || sp->spell == nullptr)
+    {
+        sLogger.failure("Pet::SetAutoCast tried to use nullptr AI_Spell!");
+        return;
+    }
 
     if (sp->autocast_type > 0)
     {

@@ -178,23 +178,33 @@ AIInterface::~AIInterface()
 
 void AIInterface::Init(Unit* un, AiScriptTypes at)
 {
-    ARCEMU_ASSERT(at != AI_SCRIPT_PET);
+    if (at != AI_SCRIPT_PET)
+    {
+        setAiScriptType(at);
+        setAiState(AI_STATE_IDLE);
 
-    setAiScriptType(at);
-    setAiState(AI_STATE_IDLE);
-
-    m_Unit = un;
+        m_Unit = un;
+    }
+    else
+    {
+        sLogger.failure("AIInterface::Init something tried to initialise with type AI_SCRIPT_PET, return!");
+    }
 }
 
 void AIInterface::Init(Unit* un, AiScriptTypes at, Unit* owner)
 {
-    ARCEMU_ASSERT(at == AI_SCRIPT_PET || at == AI_SCRIPT_TOTEM);
+    if (at == AI_SCRIPT_PET || at == AI_SCRIPT_TOTEM)
+    {
+        setAiScriptType(at);
+        setAiState(AI_STATE_IDLE);
 
-    setAiScriptType(at);
-    setAiState(AI_STATE_IDLE);
-
-    m_Unit = un;
-    m_PetOwner = owner;
+        m_Unit = un;
+        m_PetOwner = owner;
+    }
+    else
+    {
+        sLogger.failure("AIInterface::Init something tried to initialise with owner but type has to be AI_SCRIPT_PET or AI_SCRIPT_TOTEM, return!");
+    }
 }
 
 void AIInterface::initialiseScripts(uint32_t entry)
@@ -1560,18 +1570,22 @@ void AIInterface::removeNextSpell(uint32_t spellId)
 
 void AIInterface::castSpell(Unit* caster, SpellInfo const* spellInfo, SpellCastTargets targets)
 {
-    ARCEMU_ASSERT(spellInfo != NULL);
-    if (!isAiScriptType(AI_SCRIPT_PET) && isCastDisabled())
-        return;
+    if (spellInfo != nullptr)
+    {
+        if (!isAiScriptType(AI_SCRIPT_PET) && isCastDisabled())
+            return;
 
-#ifdef _AI_DEBUG
-    LOG_DEBUG("AI DEBUG: Unit %u casting spell %s on target " I64FMT " ", caster->getEntry(),
-        sSpellStore.LookupString(spellInfo->Name), targets.getUnitTarget());
-#endif
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "AI DEBUG: Unit %u casting spell %u on target " I64FMT " ", caster->getEntry(),
+            spellInfo->getId(), targets.getUnitTarget());
 
-    //i wonder if this will lead to a memory leak :S
-    Spell* nspell = sSpellMgr.newSpell(caster, spellInfo, false, NULL);
-    nspell->prepare(&targets);
+        //i wonder if this will lead to a memory leak :S
+        Spell* nspell = sSpellMgr.newSpell(caster, spellInfo, false, nullptr);
+        nspell->prepare(&targets);
+    }
+    else
+    {
+        sLogger.failure("AIInterface::castSpell tried to cast invalid spell!");
+    }
 }
 
 SpellInfo const* AIInterface::getSpellEntry(uint32_t spellId)
@@ -1938,44 +1952,50 @@ float AIInterface::calcAggroRange(Unit* target)
 
 void AIInterface::updateTotem(uint32_t p_time)
 {
-    ARCEMU_ASSERT(totemspell != 0);
-    if (p_time >= m_totemspelltimer)
+    if (totemspell != nullptr)
     {
-        Spell* pSpell = sSpellMgr.newSpell(m_Unit, totemspell, true, 0);
-        Unit* nextTarget = getCurrentTarget();
-        if (nextTarget == NULL ||
-            (!m_Unit->GetMapMgr()->GetUnit(nextTarget->getGuid()) ||
-                !nextTarget->isAlive() ||
-                !(m_Unit->isInRange(nextTarget->GetPosition(), pSpell->getSpellInfo()->custom_base_range_or_radius_sqr)) ||
-                !isAttackable(m_Unit, nextTarget, !(pSpell->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED))
+        if (p_time >= m_totemspelltimer)
+        {
+            Spell* pSpell = sSpellMgr.newSpell(m_Unit, totemspell, true, 0);
+            Unit* nextTarget = getCurrentTarget();
+            if (nextTarget == NULL ||
+                (!m_Unit->GetMapMgr()->GetUnit(nextTarget->getGuid()) ||
+                    !nextTarget->isAlive() ||
+                    !(m_Unit->isInRange(nextTarget->GetPosition(), pSpell->getSpellInfo()->custom_base_range_or_radius_sqr)) ||
+                    !isAttackable(m_Unit, nextTarget, !(pSpell->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED))
+                    )
                 )
-            )
-        {
-            //we set no target and see if we managed to fid a new one
-            m_target = nullptr;
-            //something happened to our target, pick another one
-            SpellCastTargets targets(0);
-            pSpell->GenerateTargets(&targets);
-            if (targets.getTargetMask() & TARGET_FLAG_UNIT)
-                m_target = getUnit()->GetMapMgrUnit(targets.getUnitTarget());
-        }
-        nextTarget = getCurrentTarget();
-        if (nextTarget)
-        {
-            SpellCastTargets targets(nextTarget->getGuid());
-            pSpell->prepare(&targets);
-            // need proper cooldown time!
-            m_totemspelltimer = m_totemspelltime;
+            {
+                //we set no target and see if we managed to fid a new one
+                m_target = nullptr;
+                //something happened to our target, pick another one
+                SpellCastTargets targets(0);
+                pSpell->GenerateTargets(&targets);
+                if (targets.getTargetMask() & TARGET_FLAG_UNIT)
+                    m_target = getUnit()->GetMapMgrUnit(targets.getUnitTarget());
+            }
+            nextTarget = getCurrentTarget();
+            if (nextTarget)
+            {
+                SpellCastTargets targets(nextTarget->getGuid());
+                pSpell->prepare(&targets);
+                // need proper cooldown time!
+                m_totemspelltimer = m_totemspelltime;
+            }
+            else
+            {
+                delete pSpell;
+                pSpell = nullptr;
+            }
         }
         else
         {
-            delete pSpell;
-            pSpell = nullptr;
+            m_totemspelltimer -= p_time;
         }
     }
     else
     {
-        m_totemspelltimer -= p_time;
+        sLogger.failure("AIInterface::updateTotem tried to update invalid totemspell");
     }
 }
 
@@ -3389,8 +3409,6 @@ CreatureAISpells* AIInterface::addAISpell(uint32_t spellId, float castChance, ui
 
     sLogger.failure("tried to add invalid spell with id %u", spellId);
 
-    // assert spellInfo can not be nullptr!
-    //ARCEMU_ASSERT(spellInfo != nullptr);
     return nullptr;
 }
 

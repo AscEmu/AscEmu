@@ -184,31 +184,37 @@ uint8_t SpellInfo::getFirstSchoolFromSchoolMask() const
 
 bool SpellInfo::isDamagingEffect(uint8_t effIndex) const
 {
-    ARCEMU_ASSERT(effIndex < MAX_SPELL_EFFECTS);
-
-    if (getEffect(effIndex) == SPELL_EFFECT_SCHOOL_DAMAGE ||
-        getEffect(effIndex) == SPELL_EFFECT_ENVIRONMENTAL_DAMAGE ||
-        getEffect(effIndex) == SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL ||
-        getEffect(effIndex) == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE ||
-        getEffect(effIndex) == SPELL_EFFECT_WEAPON_DAMAGE ||
-        getEffect(effIndex) == SPELL_EFFECT_POWER_BURN)
-        return true;
-    return false;
+    if (effIndex < MAX_SPELL_EFFECTS)
+    {
+        if (getEffect(effIndex) == SPELL_EFFECT_SCHOOL_DAMAGE ||
+            getEffect(effIndex) == SPELL_EFFECT_ENVIRONMENTAL_DAMAGE ||
+            getEffect(effIndex) == SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL ||
+            getEffect(effIndex) == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE ||
+            getEffect(effIndex) == SPELL_EFFECT_WEAPON_DAMAGE ||
+            getEffect(effIndex) == SPELL_EFFECT_POWER_BURN)
+            return true;
+        return false;
+    }
+    else
+    {
+        sLogger.failure("SpellInfo::isDamagingEffect called with invalid effIndex %u", static_cast<uint32_t>(effIndex));
+        return false;
+    }
 }
 
 bool SpellInfo::isHealingEffect(uint8_t effIndex) const
 {
-    ARCEMU_ASSERT(effIndex < MAX_SPELL_EFFECTS);
-
-    if (getEffect(effIndex) == SPELL_EFFECT_HEAL ||
-        getEffect(effIndex) == SPELL_EFFECT_HEAL_MAX_HEALTH ||
-        getEffect(effIndex) == SPELL_EFFECT_HEAL_MECHANICAL)
-        return true;
+    if (effIndex < MAX_SPELL_EFFECTS)
+    {
+        if (getEffect(effIndex) == SPELL_EFFECT_HEAL ||
+            getEffect(effIndex) == SPELL_EFFECT_HEAL_MAX_HEALTH ||
+            getEffect(effIndex) == SPELL_EFFECT_HEAL_MECHANICAL)
+            return true;
 
 #if VERSION_STRING == Classic
-    // In classic these spells have SPELL_EFFECT_SCRIPT_EFFECT instead of heal effect
-    switch (Id)
-    {
+        // In classic these spells have SPELL_EFFECT_SCRIPT_EFFECT instead of heal effect
+        switch (Id)
+        {
         case 635:   // Holy Light Rank 1
         case 639:   // Holy Light Rank 2
         case 647:   // Holy Light Rank 3
@@ -227,9 +233,15 @@ bool SpellInfo::isHealingEffect(uint8_t effIndex) const
             return true;
         default:
             break;
-    }
+        }
 #endif
-    return false;
+        return false;
+    }
+    else
+    {
+        sLogger.failure("SpellInfo::isHealingEffect called with invalid effIndex %u", static_cast<uint32_t>(effIndex));
+        return false;
+    }
 }
 
 bool SpellInfo::hasDamagingEffect() const

@@ -648,11 +648,6 @@ void Aura::EventUpdateAreaAura(uint8_t effIndex, float r)
     }
 
     uint32 AreaAuraEffectId = m_spellInfo->getAreaAuraEffect();
-    if (AreaAuraEffectId == 0)
-    {
-        sLogger.failure("Spell %u (%s) has tried to update Area Aura targets but Spell has no Area Aura effect.", m_spellInfo->getId(), m_spellInfo->getName().c_str());
-        ARCEMU_ASSERT(false);
-    }
 
     switch (AreaAuraEffectId)
     {
@@ -682,8 +677,8 @@ void Aura::EventUpdateAreaAura(uint8_t effIndex, float r)
             break;
 
         default:
-            ARCEMU_ASSERT(false);
-            break;
+            sLogger.failure("Spell %u (%s) has tried to update Area Aura targets but Spell has no valid Area Aura effect %u.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), AreaAuraEffectId);
+            return;
     }
 
 
@@ -1698,17 +1693,19 @@ void Aura::SpellAuraModInvisibilityDetection(AuraEffectModifier* aurEff, bool ap
 {
     //Always Positive
 
-    ARCEMU_ASSERT(aurEff->getEffectMiscValue() < INVIS_FLAG_TOTAL);
-    if (apply)
+    if (aurEff->getEffectMiscValue() < INVIS_FLAG_TOTAL)
     {
-        m_target->modInvisibilityDetection(InvisibilityFlag(aurEff->getEffectMiscValue()), aurEff->getEffectDamage());
-        mPositive = true;
-    }
-    else
-        m_target->modInvisibilityDetection(InvisibilityFlag(aurEff->getEffectMiscValue()), -aurEff->getEffectDamage());
+        if (apply)
+        {
+            m_target->modInvisibilityDetection(InvisibilityFlag(aurEff->getEffectMiscValue()), aurEff->getEffectDamage());
+            mPositive = true;
+        }
+        else
+            m_target->modInvisibilityDetection(InvisibilityFlag(aurEff->getEffectMiscValue()), -aurEff->getEffectDamage());
 
-    if (m_target->isPlayer())
-        m_target->UpdateVisibility();
+        if (m_target->isPlayer())
+            m_target->UpdateVisibility();
+    }
 }
 
 void Aura::SpellAuraModResistance(AuraEffectModifier* aurEff, bool apply)
@@ -1978,25 +1975,26 @@ void Aura::SpellAuraModStat(AuraEffectModifier* aurEff, bool apply)
     }
     else if (stat >= 0)
     {
-        ARCEMU_ASSERT(aurEff->getEffectMiscValue() < 5);
-
-        uint8_t modValue = static_cast<uint8_t>(aurEff->getEffectMiscValue());
-        if (m_target->isPlayer())
+        if (aurEff->getEffectMiscValue() < 5)
         {
-            if (aurEff->getEffectDamage() > 0)
-                static_cast< Player* >(m_target)->FlatStatModPos[modValue] += val;
-            else
-                static_cast< Player* >(m_target)->FlatStatModNeg[modValue] -= val;
+            uint8_t modValue = static_cast<uint8_t>(aurEff->getEffectMiscValue());
+            if (m_target->isPlayer())
+            {
+                if (aurEff->getEffectDamage() > 0)
+                    static_cast<Player*>(m_target)->FlatStatModPos[modValue] += val;
+                else
+                    static_cast<Player*>(m_target)->FlatStatModNeg[modValue] -= val;
 
-            static_cast< Player* >(m_target)->CalcStat(modValue);
+                static_cast<Player*>(m_target)->CalcStat(modValue);
 
-            static_cast< Player* >(m_target)->UpdateStats();
-            static_cast< Player* >(m_target)->UpdateChances();
-        }
-        else if (m_target->isCreature())
-        {
-            static_cast< Creature* >(m_target)->FlatStatMod[modValue] += val;
-            static_cast< Creature* >(m_target)->CalcStat(modValue);
+                static_cast<Player*>(m_target)->UpdateStats();
+                static_cast<Player*>(m_target)->UpdateChances();
+            }
+            else if (m_target->isCreature())
+            {
+                static_cast<Creature*>(m_target)->FlatStatMod[modValue] += val;
+                static_cast<Creature*>(m_target)->CalcStat(modValue);
+            }
         }
     }
 }
@@ -2408,20 +2406,22 @@ void Aura::SpellAuraModDmgImmunity(AuraEffectModifier* /*aurEff*/, bool apply)
 
 void Aura::SpellAuraModDispelImmunity(AuraEffectModifier* aurEff, bool apply)
 {
-    ARCEMU_ASSERT(aurEff->getEffectMiscValue() < 10);
-    if (apply)
-        m_target->dispels[aurEff->getEffectMiscValue()]++;
-    else
-        m_target->dispels[aurEff->getEffectMiscValue()]--;
-
-    if (apply)
+    if (aurEff->getEffectMiscValue() < 10)
     {
-        for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
+        if (apply)
+            m_target->dispels[aurEff->getEffectMiscValue()]++;
+        else
+            m_target->dispels[aurEff->getEffectMiscValue()]--;
+
+        if (apply)
         {
-            // HACK FIX FOR: 41425 and 25771
-            if (m_target->m_auras[x] && m_target->m_auras[x]->getSpellId() != 41425 && m_target->m_auras[x]->getSpellId() != 25771)
-                if (m_target->m_auras[x]->getSpellInfo()->getDispelType() == (uint32)aurEff->getEffectMiscValue())
-                    m_target->m_auras[x]->removeAura();
+            for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
+            {
+                // HACK FIX FOR: 41425 and 25771
+                if (m_target->m_auras[x] && m_target->m_auras[x]->getSpellId() != 41425 && m_target->m_auras[x]->getSpellId() != 25771)
+                    if (m_target->m_auras[x]->getSpellInfo()->getDispelType() == (uint32)aurEff->getEffectMiscValue())
+                        m_target->m_auras[x]->removeAura();
+            }
         }
     }
 }
@@ -3080,7 +3080,8 @@ void Aura::SpellAuraMechanicImmunity(AuraEffectModifier* aurEff, bool apply)
 {
     if (apply)
     {
-        ARCEMU_ASSERT(aurEff->getEffectMiscValue() < TOTAL_SPELL_MECHANICS);
+        if (aurEff->getEffectMiscValue() < TOTAL_SPELL_MECHANICS)
+        {
         m_target->MechanicsDispels[aurEff->getEffectMiscValue()]++;
 
         if (aurEff->getEffectMiscValue() != 16 && aurEff->getEffectMiscValue() != 25 && aurEff->getEffectMiscValue() != 19) // don't remove bandages, Power Word and protection effect
@@ -3099,23 +3100,24 @@ void Aura::SpellAuraMechanicImmunity(AuraEffectModifier* aurEff, bool apply)
                         {
                             switch (m_target->m_auras[x]->getSpellInfo()->getEffectApplyAuraName(y))
                             {
-                                case SPELL_AURA_MOD_STUN:
-                                case SPELL_AURA_MOD_CONFUSE:
-                                case SPELL_AURA_MOD_ROOT:
-                                case SPELL_AURA_MOD_FEAR:
-                                case SPELL_AURA_MOD_DECREASE_SPEED:
-                                    m_target->m_auras[x]->removeAura();
-                                    goto out;
-                                    break;
+                            case SPELL_AURA_MOD_STUN:
+                            case SPELL_AURA_MOD_CONFUSE:
+                            case SPELL_AURA_MOD_ROOT:
+                            case SPELL_AURA_MOD_FEAR:
+                            case SPELL_AURA_MOD_DECREASE_SPEED:
+                                m_target->m_auras[x]->removeAura();
+                                goto out;
+                                break;
                             }
                             continue;
 
-                            out:
+                        out:
                             break;
                         }
                     }
                 }
             }
+        }
         }
         else
             mPositive = false;
@@ -3337,24 +3339,26 @@ void Aura::SpellAuraModPercStat(AuraEffectModifier* aurEff, bool apply)
     }
     else
     {
-        ARCEMU_ASSERT(aurEff->getEffectMiscValue() < 5);
-        uint8_t modValue = static_cast<uint8_t>(aurEff->getEffectMiscValue());
-        if (p_target != nullptr)
+        if (aurEff->getEffectMiscValue() < 5)
         {
-            if (aurEff->getEffectDamage() > 0)
-                p_target->StatModPctPos[modValue] += val;
-            else
-                p_target->StatModPctNeg[modValue] -= val;
+            uint8_t modValue = static_cast<uint8_t>(aurEff->getEffectMiscValue());
+            if (p_target != nullptr)
+            {
+                if (aurEff->getEffectDamage() > 0)
+                    p_target->StatModPctPos[modValue] += val;
+                else
+                    p_target->StatModPctNeg[modValue] -= val;
 
-            p_target->CalcStat(modValue);
+                p_target->CalcStat(modValue);
 
-            p_target->UpdateStats();
-            p_target->UpdateChances();
-        }
-        else if (m_target->isCreature())
-        {
-            static_cast< Creature* >(m_target)->StatModPct[modValue] += val;
-            static_cast< Creature* >(m_target)->CalcStat(modValue);
+                p_target->UpdateStats();
+                p_target->UpdateChances();
+            }
+            else if (m_target->isCreature())
+            {
+                static_cast<Creature*>(m_target)->StatModPct[modValue] += val;
+                static_cast<Creature*>(m_target)->CalcStat(modValue);
+            }
         }
     }
 }
@@ -4102,16 +4106,18 @@ void Aura::SpellAuraModMechanicResistance(AuraEffectModifier* aurEff, bool apply
     //mecanics=9 ?
     if (apply)
     {
-        ARCEMU_ASSERT(aurEff->getEffectMiscValue() < TOTAL_SPELL_MECHANICS);
-        m_target->MechanicsResistancesPCT[aurEff->getEffectMiscValue()] += aurEff->getEffectDamage();
+        if (aurEff->getEffectMiscValue() < TOTAL_SPELL_MECHANICS)
+        {
+            m_target->MechanicsResistancesPCT[aurEff->getEffectMiscValue()] += aurEff->getEffectDamage();
 
-        if (aurEff->getEffectMiscValue() != MECHANIC_HEALING && aurEff->getEffectMiscValue() != MECHANIC_INVULNARABLE && aurEff->getEffectMiscValue() != MECHANIC_SHIELDED)  // don't remove bandages, Power Word and protection effect
-        {
-            mPositive = true;
-        }
-        else
-        {
-            mPositive = false;
+            if (aurEff->getEffectMiscValue() != MECHANIC_HEALING && aurEff->getEffectMiscValue() != MECHANIC_INVULNARABLE && aurEff->getEffectMiscValue() != MECHANIC_SHIELDED)  // don't remove bandages, Power Word and protection effect
+            {
+                mPositive = true;
+            }
+            else
+            {
+                mPositive = false;
+            }
         }
     }
     else
@@ -4309,13 +4315,14 @@ void Aura::SpellAuraModTotalStatPerc(AuraEffectModifier* aurEff, bool apply)
     }
     else
     {
-        ARCEMU_ASSERT(aurEff->getEffectMiscValue() < 5);
-        if (p_target != nullptr)
+        if (aurEff->getEffectMiscValue() < 5)
         {
-            //druid hearth of the wild should add more features based on form
-            switch (m_spellInfo->getId())
+            if (p_target != nullptr)
             {
-                //SPELL_HASH_HEART_OF_THE_WILD
+                //druid hearth of the wild should add more features based on form
+                switch (m_spellInfo->getId())
+                {
+                    //SPELL_HASH_HEART_OF_THE_WILD
                 case 17003:
                 case 17004:
                 case 17005:
@@ -4332,25 +4339,26 @@ void Aura::SpellAuraModTotalStatPerc(AuraEffectModifier* aurEff, bool apply)
                                                                  //reapply
                     p_target->EventTalentHearthOfWildChange(true);
                 } break;
+                }
+
+                uint8_t modValue = static_cast<uint8_t>(aurEff->getEffectMiscValue());
+
+                if (aurEff->getEffectDamage() > 0)
+                    p_target->TotalStatModPctPos[modValue] += val;
+                else
+                    p_target->TotalStatModPctNeg[modValue] -= val;
+
+                p_target->CalcStat(modValue);
+                p_target->UpdateStats();
+                p_target->UpdateChances();
             }
+            else if (m_target->isCreature())
+            {
+                uint8_t modValue = static_cast<uint8_t>(aurEff->getEffectMiscValue());
 
-            uint8_t modValue = static_cast<uint8_t>(aurEff->getEffectMiscValue());
-
-            if (aurEff->getEffectDamage() > 0)
-                p_target->TotalStatModPctPos[modValue] += val;
-            else
-                p_target->TotalStatModPctNeg[modValue] -= val;
-
-            p_target->CalcStat(modValue);
-            p_target->UpdateStats();
-            p_target->UpdateChances();
-        }
-        else if (m_target->isCreature())
-        {
-            uint8_t modValue = static_cast<uint8_t>(aurEff->getEffectMiscValue());
-
-            static_cast< Creature* >(m_target)->TotalStatModPct[modValue] += val;
-            static_cast< Creature* >(m_target)->CalcStat(modValue);
+                static_cast<Creature*>(m_target)->TotalStatModPct[modValue] += val;
+                static_cast<Creature*>(m_target)->CalcStat(modValue);
+            }
         }
     }
 }

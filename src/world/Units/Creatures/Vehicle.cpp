@@ -51,14 +51,14 @@ void Vehicle::Load(Unit* vehicleOwner, uint32 creatureEntry, uint32 vehicleid)
     if (vehicleOwner == nullptr)
     {
         sLogger.failure("Can't load vehicle without an owner.");
-        ARCEMU_ASSERT(false);
+        return;
     }
 
     vehicle_info = sVehicleStore.LookupEntry(vehicleid);
     if (vehicle_info == nullptr)
     {
         sLogger.failure("Can't load a vehicle without vehicle id or data belonging to it.");
-        ARCEMU_ASSERT(false);
+        return;
     }
     else
     {

@@ -82,26 +82,35 @@ std::string Map::GetMapName()
 
 CellSpawns* Map::GetSpawnsList(uint32 cellx, uint32 celly)
 {
-    ARCEMU_ASSERT(cellx < _sizeX);
-    ARCEMU_ASSERT(celly < _sizeY);
-    if (spawns[cellx] == NULL)
-        return NULL;
-    return spawns[cellx][celly];
+    if (cellx < _sizeX && celly < _sizeY)
+    {
+        if (spawns[cellx] == nullptr)
+            return nullptr;
+
+        return spawns[cellx][celly];
+    }
+
+    sLogger.failure("Map::GetSpawnsList invalid cell count! x: %u (max: %u) y:%u (max: %u)", cellx, _sizeX, celly, _sizeY);
+    return nullptr;
 }
 
 CellSpawns* Map::GetSpawnsListAndCreate(uint32 cellx, uint32 celly)
 {
-    ARCEMU_ASSERT(cellx < _sizeX);
-    ARCEMU_ASSERT(celly < _sizeY);
-    if (spawns[cellx] == NULL)
+    if (cellx < _sizeX && celly < _sizeY)
     {
-        spawns[cellx] = new CellSpawns*[_sizeY];
-        memset(spawns[cellx], 0, sizeof(CellSpawns*)*_sizeY);
+        if (spawns[cellx] == nullptr)
+        {
+            spawns[cellx] = new CellSpawns * [_sizeY];
+            memset(spawns[cellx], 0, sizeof(CellSpawns*) * _sizeY);
+        }
+
+        if (spawns[cellx][celly] == nullptr)
+            spawns[cellx][celly] = new CellSpawns;
+        return spawns[cellx][celly];
     }
 
-    if (spawns[cellx][celly] == 0)
-        spawns[cellx][celly] = new CellSpawns;
-    return spawns[cellx][celly];
+    sLogger.failure("Map::GetSpawnsListAndCreate invalid cell count! x: %u (max: %u) y:%u (max: %u)", cellx, _sizeX, celly, _sizeY);
+    return nullptr;
 }
 
 void Map::LoadSpawns(bool reload)

@@ -318,26 +318,35 @@ void MapCell::CancelPendingUnload()
 
 void MapCell::Unload()
 {
-    sLogger.debug("Unloading cell %u %u", _x, _y);
-    ARCEMU_ASSERT(_unloadpending);
-    if (_active)
+    if (_unloadpending)
     {
+        sLogger.debug("Unloading cell %u %u", _x, _y);
+
+        if (_active)
+        {
+            sLogger.failure("MapCell::Unload tried to unload an active MapCell, return!");
+            return;
+        }
+
         _unloadpending = false;
-        return;
+
+        /*in ~MapCell RemoveObjects() can delete an Object without removing it from the MapCell.cpp
+        Example:
+        Creature A has guardian B. MapCell is unloaded, _mapmgr->Remove(_x, _y) is called, nullifying the reference to the cell
+        in CellHandler. ~MapCell is called, RemoveObjects() is called and despawns A which despawns B, calling Object::RemoveFromWorld()
+        which calls MapMgr::RemoveObject(B) which calls cell->RemoveObject(obj) ONLY if cell is not NULL, but in this case is NULL, leaving
+        a reference to a deleted Object in MapCell::_objects, iterated in RemoveObjects(). Calling it here fixes this issue.
+        Note: RemoveObjects() is still called in ~MapCell, due to fancy ArcEmu behaviors, like the in-game command ".mapcell delete <x> <y>*/
+
+        sLogger.debug("Unloading cell %u %u", _x, _y);
+
+        RemoveObjects();
+        _mapmgr->Remove(_x, _y);
     }
-
-    _unloadpending = false;
-
-    /*in ~MapCell RemoveObjects() can delete an Object without removing it from the MapCell.cpp
-    Example:
-    Creature A has guardian B. MapCell is unloaded, _mapmgr->Remove(_x, _y) is called, nullifying the reference to the cell
-    in CellHandler. ~MapCell is called, RemoveObjects() is called and despawns A which despawns B, calling Object::RemoveFromWorld()
-    which calls MapMgr::RemoveObject(B) which calls cell->RemoveObject(obj) ONLY if cell is not NULL, but in this case is NULL, leaving
-    a reference to a deleted Object in MapCell::_objects, iterated in RemoveObjects(). Calling it here fixes this issue.
-    Note: RemoveObjects() is still called in ~MapCell, due to fancy ArcEmu behaviors, like the in-game command ".mapcell delete <x> <y>*/
-
-    RemoveObjects();
-    _mapmgr->Remove(_x, _y);
+    else
+    {
+        sLogger.failure("MapCell::Unload tried to unload MapCell which is not marked for unload");
+    }
 }
 
 void MapCell::CorpseGoneIdle(Object* corpse)

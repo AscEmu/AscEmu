@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Config.h"
 #include "Logging/Logger.hpp"
 #include "Util.hpp"
+#include <stdexcept>
 
 
 ConfigFile::ConfigFile() {}
@@ -381,8 +382,9 @@ ConfigFile::ConfigValueSetting* ConfigFile::getSavedSetting(std::string sectionN
             return &(it2->second);
     }
 
-    sLogger.failure("Could not load config value: [%s].[%s]", sectionName.c_str(), confName.c_str());
-    return nullptr;
+    std::string error = "Could not load config value: [" + sectionName + "].[" + confName + "]";
+
+    throw std::invalid_argument(error);
 }
 
 std::string ConfigFile::getStringDefault(std::string sectionName, std::string confName, std::string defaultString)
@@ -423,72 +425,108 @@ float ConfigFile::getFloatDefault(std::string sectionName, std::string confName,
 
 bool ConfigFile::tryGetBool(std::string sectionName, std::string confName, bool * b)
 {
-    const auto setting = getSavedSetting(sectionName, confName);
-    if (!setting)
+    try
     {
-        return false;
+        if (const auto setting = getSavedSetting(sectionName, confName))
+        {
+            *b = setting->asBool;
+            return true;
+        }
     }
 
-    *b = setting->asBool;
-    return true;
+    catch (std::invalid_argument& e)
+    {
+        sLogger.failure("%s", e.what());
+        ASSERT(false)
+    }
 }
 
 bool ConfigFile::tryGetFloat(std::string sectionName, std::string confName, float* f)
 {
-    const auto setting = getSavedSetting(sectionName, confName);
-    if (!setting)
+    try
     {
-        return false;
+        if (const auto setting = getSavedSetting(sectionName, confName))
+        {
+            *f = setting->asFloat;
+            return true;
+        }
     }
 
-    *f = setting->asFloat;
-    return true;
+    catch (std::invalid_argument& e)
+    {
+        sLogger.failure("%s", e.what());
+        ASSERT(false)
+    }
 }
 
 bool ConfigFile::tryGetInt(std::string sectionName, std::string confName, int* i)
 {
-    const auto setting = getSavedSetting(sectionName, confName);
-    if (!setting)
+    try
     {
-        return false;
+        if (const auto setting = getSavedSetting(sectionName, confName))
+        {
+            *i = setting->asInt;
+            return true;
+        }
     }
 
-    *i = setting->asInt;
-    return true;
+    catch (std::invalid_argument& e)
+    {
+        sLogger.failure("%s", e.what());
+        ASSERT(false)
+    }
 }
 
 bool ConfigFile::tryGetInt(std::string sectionName, std::string confName, uint8_t* i)
 {
-    const auto setting = getSavedSetting(sectionName, confName);
-    if (!setting)
+    try
     {
-        return false;
+        if (const auto setting = getSavedSetting(sectionName, confName))
+        {
+            *i = setting->asInt;
+            return true;
+        }
     }
 
-    *i = setting->asInt;
-    return true;
+    catch (std::invalid_argument& e)
+    {
+        sLogger.failure("%s", e.what());
+        ASSERT(false)
+    }
 }
 
 bool ConfigFile::tryGetInt(std::string sectionName, std::string confName, uint32_t* i)
 {
-    const auto setting = getSavedSetting(sectionName, confName);
-    if (!setting)
+    try
     {
-        return false;
+        if (const auto setting = getSavedSetting(sectionName, confName))
+        {
+            *i = setting->asInt;
+            return true;
+        }
     }
 
-    *i = setting->asInt;
-    return true;
+    catch (std::invalid_argument& e)
+    {
+        sLogger.failure("%s", e.what());
+        ASSERT(false)
+    }
 }
 
 bool ConfigFile::tryGetString(std::string sectionName, std::string confName, std::string* s)
 {
-    const auto setting = getSavedSetting(sectionName, confName);
-    if (!setting)
+    try
     {
-        return false;
+        if (const auto setting = getSavedSetting(sectionName, confName))
+        {
+            *s = setting->asString;
+            return true;
+        }
     }
 
-    *s = setting->asString;
-    return true;
+    catch (std::invalid_argument& e)
+    {
+        sLogger.failure("%s", e.what());
+        ASSERT(false)
+    }
 }

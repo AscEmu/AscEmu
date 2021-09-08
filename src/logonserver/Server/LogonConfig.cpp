@@ -39,27 +39,27 @@ void LogonConfig::loadConfigValues(bool reload /*false*/)
     }
 
     // logon.conf - LogonDatabase
-    ASSERT(Config.MainConfig.tryGetString("LogonDatabase", "Hostname", &logonDb.host));
-    ASSERT(Config.MainConfig.tryGetString("LogonDatabase", "Username", &logonDb.user));
-    ASSERT(Config.MainConfig.tryGetString("LogonDatabase", "Name", &logonDb.db));
-    ASSERT(Config.MainConfig.tryGetString("LogonDatabase", "Password", &logonDb.password));
-    ASSERT(Config.MainConfig.tryGetInt("LogonDatabase", "Port", &logonDb.port));
-    ASSERT(Config.MainConfig.tryGetInt("LogonDatabase", "Connections", &logonDb.connections));
+    Config.MainConfig.tryGetString("LogonDatabase", "Hostname", &logonDb.host);
+    Config.MainConfig.tryGetString("LogonDatabase", "Username", &logonDb.user);
+    Config.MainConfig.tryGetString("LogonDatabase", "Name", &logonDb.db);
+    Config.MainConfig.tryGetString("LogonDatabase", "Password", &logonDb.password);
+    Config.MainConfig.tryGetInt("LogonDatabase", "Port", &logonDb.port);
+    Config.MainConfig.tryGetInt("LogonDatabase", "Connections", &logonDb.connections);
 
     // logon.conf - Listen
-    ASSERT(Config.MainConfig.tryGetString("Listen", "Host", &listen.host));
-    ASSERT(Config.MainConfig.tryGetString("Listen", "ISHost", &listen.interServerHost));
-    ASSERT(Config.MainConfig.tryGetInt("Listen", "RealmListPort", &listen.realmListPort));
-    ASSERT(Config.MainConfig.tryGetInt("Listen", "ServerPort", &listen.port));
+    Config.MainConfig.tryGetString("Listen", "Host", &listen.host);
+    Config.MainConfig.tryGetString("Listen", "ISHost", &listen.interServerHost);
+    Config.MainConfig.tryGetInt("Listen", "RealmListPort", &listen.realmListPort);
+    Config.MainConfig.tryGetInt("Listen", "ServerPort", &listen.port);
 
     // logon.conf - Logger Settings
-    ASSERT(Config.MainConfig.tryGetInt("Logger", "MinimumMessageType", &logger.minimumMessageType));
+    Config.MainConfig.tryGetInt("Logger", "MinimumMessageType", &logger.minimumMessageType);
 
     // logon.conf - Rates
-    ASSERT(Config.MainConfig.tryGetInt("Rates", "AccountRefresh", &rates.accountRefreshTime));
+    Config.MainConfig.tryGetInt("Rates", "AccountRefresh", &rates.accountRefreshTime);
 
     // logon.conf - LogonServer
-    ASSERT(Config.MainConfig.tryGetBool("LogonServer", "DisablePings", &logonServer.disablePings));
-    ASSERT(Config.MainConfig.tryGetString("LogonServer", "AllowedIPs", &logonServer.allowedIps));
-    ASSERT(Config.MainConfig.tryGetString("LogonServer", "AllowedModIPs", &logonServer.allowedModIps));
+    Config.MainConfig.tryGetBool("LogonServer", "DisablePings", &logonServer.disablePings);
+    Config.MainConfig.tryGetString("LogonServer", "AllowedIPs", &logonServer.allowedIps);
+    Config.MainConfig.tryGetString("LogonServer", "AllowedModIPs", &logonServer.allowedModIps);
 }

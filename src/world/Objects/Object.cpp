@@ -1375,7 +1375,8 @@ void Object::clearInRangeSets()
 
 void Object::addToInRangeObjects(Object* pObj)
 {
-    ARCEMU_ASSERT(pObj != nullptr);
+    if (pObj == nullptr)
+        sLogger.failure("Invalid object pointers can't be added!");
 
     if (pObj == this)
         sLogger.failure("We are in range of ourselves!");
@@ -1427,14 +1428,19 @@ bool Object::isObjectInInRangeObjectsSet(Object* pObj)
 
 void Object::removeObjectFromInRangeObjectsSet(Object* pObj)
 {
-    ARCEMU_ASSERT(pObj != nullptr);
+    if (pObj != nullptr)
+    {
+        if (pObj->isPlayer())
+            mInRangePlayersSet.erase(std::remove(mInRangePlayersSet.begin(), mInRangePlayersSet.end(), pObj), mInRangePlayersSet.end());
 
-    if (pObj->isPlayer())
-        mInRangePlayersSet.erase(std::remove(mInRangePlayersSet.begin(), mInRangePlayersSet.end(), pObj), mInRangePlayersSet.end());
+        mInRangeObjectsSet.erase(std::remove(mInRangeObjectsSet.begin(), mInRangeObjectsSet.end(), pObj), mInRangeObjectsSet.end());
 
-    mInRangeObjectsSet.erase(std::remove(mInRangeObjectsSet.begin(), mInRangeObjectsSet.end(), pObj), mInRangeObjectsSet.end());
-
-    onRemoveInRangeObject(pObj);
+        onRemoveInRangeObject(pObj);
+    }
+    else
+    {
+        sLogger.failure("Object::removeObjectFromInRangeObjectsSet something tried to remove invalid object pointer!");
+    }
 }
 
 // Players
@@ -1719,15 +1725,20 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     {
         if (updateMask.GetBit(x))
         {
-            *data << uint8(UPDATETYPE_VALUES);              // update type == update
-            ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
-            *data << m_wowGuid;
+            if (m_wowGuid.GetNewGuidLen() > 0)
+            {
+                *data << uint8(UPDATETYPE_VALUES);              // update type == update
+                *data << m_wowGuid;
 
-            buildValuesUpdate(data, &updateMask, target);
+                buildValuesUpdate(data, &updateMask, target);
 #if VERSION_STRING == Mop
-            * data << uint8_t(0);
+                * data << uint8_t(0);
 #endif
-            return 1;
+                return 1;
+            }
+
+            sLogger.failure("Object::BuildValuesUpdateBlockForPlayer tried to add data for invalid guid!");
+            return 0;
         }
     }
 
@@ -1738,17 +1749,21 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
 {
     // returns: update count
     // update type == update
-    *buf << uint8(UPDATETYPE_VALUES);
+    if (m_wowGuid.GetNewGuidLen() > 0)
+    {
+        *buf << uint8(UPDATETYPE_VALUES);
+        *buf << m_wowGuid;
 
-    ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
-    *buf << m_wowGuid;
-
-    buildValuesUpdate(buf, mask, nullptr);
+        buildValuesUpdate(buf, mask, nullptr);
 #if VERSION_STRING == Mop
-    *buf << uint8_t(0);
+        * buf << uint8_t(0);
 #endif
-    // 1 update.
-    return 1;
+        // 1 update.
+        return 1;
+    }
+
+    sLogger.failure("Object::BuildValuesUpdateBlockForPlayer tried to add data for invalid guid!");
+    return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2959,6 +2974,18 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
 void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player* target)
 {
+    if (!updateMask)
+    {
+        sLogger.failure("Object::buildValuesUpdate invalid updateMask (nullptr)");
+        return;
+    }
+
+    if (updateMask->GetCount() != m_valuesCount)
+    {
+        sLogger.failure("Object::buildValuesUpdate values count in update mask is not equal to object values count!");
+        return;
+    }
+
     auto activate_quest_object = false, reset = false;
     uint32_t old_flags = 0;
 
@@ -3084,8 +3111,6 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
         this_go->setDynamic(1 | 8);
         reset = true;
     }
-
-    ARCEMU_ASSERT(updateMask && updateMask->GetCount() == m_valuesCount);
 
     uint32_t block_count, values_count;
     if (m_valuesCount > 2 * 0x20)

@@ -200,118 +200,132 @@ MapMgr::~MapMgr()
 
 void MapMgr::PushObject(Object* obj)
 {
-    // Assertions
-    ARCEMU_ASSERT(obj != nullptr);
-
-    //\todo That object types are not map objects. TODO: add AI groups here?
-    if (obj->isItem() || obj->isContainer())
+    if (obj != nullptr)
     {
-        // mark object as updatable and exit
-        return;
-    }
-
-    if (obj->isCorpse())
-    {
-        m_corpses.insert(static_cast< Corpse* >(obj));
-    }
-
-    obj->clearInRangeSets();
-
-    // Check valid cell x/y values
-    ARCEMU_ASSERT(obj->GetMapId() == _mapId);
-    if (!(obj->GetPositionX() < _maxX && obj->GetPositionX() > _minX) || !(obj->GetPositionY() < _maxY && obj->GetPositionY() > _minY))
-    {
-        OutOfMapBoundariesTeleport(obj);
-    }
-
-    ARCEMU_ASSERT(obj->GetPositionY() < _maxY && obj->GetPositionY() > _minY);
-    ARCEMU_ASSERT(_cells != nullptr);
-
-    // Get cell coordinates
-    uint32 x = GetPosX(obj->GetPositionX());
-    uint32 y = GetPosY(obj->GetPositionY());
-
-    if (x >= _sizeX || y >= _sizeY)
-    {
-        OutOfMapBoundariesTeleport(obj);
-
-        x = GetPosX(obj->GetPositionX());
-        y = GetPosY(obj->GetPositionY());
-    }
-
-    MapCell* objCell = GetCell(x, y);
-    if (objCell == nullptr)
-    {
-        objCell = Create(x, y);
-        if (objCell != nullptr)
+        //\todo That object types are not map objects. TODO: add AI groups here?
+        if (obj->isItem() || obj->isContainer())
         {
-            objCell->Init(x, y, this);
+            // mark object as updatable and exit
+            return;
+        }
+
+        //Zyres: this was an old ASSERT MapMgr for map x is not allowed to push objects for mapId z
+        if (obj->GetMapId() != _mapId)
+        {
+            sLogger.failure("MapMgr::PushObject manager for mapId %u tried to push object for mapId %u, return!", _mapId, obj->GetMapId());
+            return;
+        }
+
+        if (obj->GetPositionY() > _maxY || obj->GetPositionY() < _minY)
+        {
+            sLogger.failure("MapMgr::PushObject not allowed to push object to y: %f (max %f/min %f), return!", obj->GetPositionY(), _maxY, _minY);
+            return;
+        }
+
+        if (_cells == nullptr)
+        {
+            sLogger.failure("MapMgr::PushObject not allowed to push object to invalid cell (nullptr), return!");
+            return;
+        }
+
+        if (obj->isCorpse())
+        {
+            m_corpses.insert(static_cast<Corpse*>(obj));
+        }
+
+        obj->clearInRangeSets();
+
+        // Check valid cell x/y values
+        if (!(obj->GetPositionX() < _maxX && obj->GetPositionX() > _minX) || !(obj->GetPositionY() < _maxY && obj->GetPositionY() > _minY))
+        {
+            OutOfMapBoundariesTeleport(obj);
+        }
+
+        // Get cell coordinates
+        uint32 x = GetPosX(obj->GetPositionX());
+        uint32 y = GetPosY(obj->GetPositionY());
+
+        if (x >= _sizeX || y >= _sizeY)
+        {
+            OutOfMapBoundariesTeleport(obj);
+
+            x = GetPosX(obj->GetPositionX());
+            y = GetPosY(obj->GetPositionY());
+        }
+
+        MapCell* objCell = GetCell(x, y);
+        if (objCell == nullptr)
+        {
+            objCell = Create(x, y);
+            if (objCell != nullptr)
+            {
+                objCell->Init(x, y, this);
+            }
+            else
+            {
+                sLogger.fatal("MapCell for x f% and y f% seems to be invalid!", x, y);
+                return;
+            }
+        }
+
+        // Build update-block for player
+        ByteBuffer* buf = 0;
+        uint32 count;
+        Player* plObj = nullptr;
+
+        if (obj->isPlayer())
+        {
+            plObj = static_cast<Player*>(obj);
+
+            sLogger.debug("Creating player " I64FMT " for himself.", obj->getGuid());
+            ByteBuffer pbuf(10000);
+            count = plObj->buildCreateUpdateBlockForPlayer(&pbuf, plObj);
+            plObj->getUpdateMgr().pushCreationData(&pbuf, count);
+        }
+
+        // Build in-range data
+        uint8 cellNumber = worldConfig.server.mapCellNumber;
+
+        uint32 endX = (x <= _sizeX) ? x + cellNumber : (_sizeX - cellNumber);
+        uint32 endY = (y <= _sizeY) ? y + cellNumber : (_sizeY - cellNumber);
+        uint32 startX = x > 0 ? x - cellNumber : 0;
+        uint32 startY = y > 0 ? y - cellNumber : 0;
+
+        for (uint32 posX = startX; posX <= endX; posX++)
+        {
+            for (uint32 posY = startY; posY <= endY; posY++)
+            {
+                MapCell* cell = GetCell(posX, posY);
+                if (cell)
+                {
+                    UpdateInRangeSet(obj, plObj, cell, &buf);
+                }
+            }
+        }
+
+        //Add to the cell's object list
+        objCell->AddObject(obj);
+
+        obj->SetMapCell(objCell);
+        //Add to the mapmanager's object list
+        if (plObj != nullptr)
+        {
+            m_PlayerStorage[plObj->getGuidLow()] = plObj;
+            UpdateCellActivity(x, y, 2 + cellNumber);
         }
         else
         {
-            sLogger.fatal("MapCell for x f% and y f% seems to be invalid!", x, y);
-            return;
-        }
-    }
-
-    // Build update-block for player
-    ByteBuffer* buf = 0;
-    uint32 count;
-    Player* plObj = nullptr;
-
-    if (obj->isPlayer())
-    {
-        plObj = static_cast<Player*>(obj);
-
-        sLogger.debug("Creating player " I64FMT " for himself.", obj->getGuid());
-        ByteBuffer pbuf(10000);
-        count = plObj->buildCreateUpdateBlockForPlayer(&pbuf, plObj);
-        plObj->getUpdateMgr().pushCreationData(&pbuf, count);
-    }
-
-    // Build in-range data
-    uint8 cellNumber = worldConfig.server.mapCellNumber;
-
-    uint32 endX = (x <= _sizeX) ? x + cellNumber : (_sizeX - cellNumber);
-    uint32 endY = (y <= _sizeY) ? y + cellNumber : (_sizeY - cellNumber);
-    uint32 startX = x > 0 ? x - cellNumber : 0;
-    uint32 startY = y > 0 ? y - cellNumber : 0;
-
-    for (uint32 posX = startX; posX <= endX; posX++)
-    {
-        for (uint32 posY = startY; posY <= endY; posY++)
-        {
-            MapCell* cell = GetCell(posX, posY);
-            if (cell)
+            switch (obj->GetTypeFromGUID())
             {
-                UpdateInRangeSet(obj, plObj, cell, &buf);
-            }
-        }
-    }
-
-    //Add to the cell's object list
-    objCell->AddObject(obj);
-
-    obj->SetMapCell(objCell);
-    //Add to the mapmanager's object list
-    if (plObj != nullptr)
-    {
-        m_PlayerStorage[plObj->getGuidLow()] = plObj;
-        UpdateCellActivity(x, y, 2 + cellNumber);
-    }
-    else
-    {
-        switch (obj->GetTypeFromGUID())
-        {
             case HIGHGUID_TYPE_PET:
-                m_PetStorage[obj->GetUIdFromGUID()] = static_cast< Pet* >(obj);
+                m_PetStorage[obj->GetUIdFromGUID()] = static_cast<Pet*>(obj);
                 break;
 
             case HIGHGUID_TYPE_UNIT:
             case HIGHGUID_TYPE_VEHICLE:
             {
                 ARCEMU_ASSERT(obj->GetUIdFromGUID() <= m_CreatureHighGuid);
-                CreatureStorage[obj->GetUIdFromGUID()] = static_cast< Creature* >(obj);
+                CreatureStorage[obj->GetUIdFromGUID()] = static_cast<Creature*>(obj);
                 if (static_cast<Creature*>(obj)->m_spawn != nullptr)
                 {
                     _sqlids_creatures.insert(std::make_pair(static_cast<Creature*>(obj)->m_spawn->id, static_cast<Creature*>(obj)));
@@ -321,7 +335,7 @@ void MapMgr::PushObject(Object* obj)
 
             case HIGHGUID_TYPE_GAMEOBJECT:
             {
-                GOStorage[obj->GetUIdFromGUID()] = static_cast< GameObject* >(obj);
+                GOStorage[obj->GetUIdFromGUID()] = static_cast<GameObject*>(obj);
                 if (static_cast<GameObject*>(obj)->m_spawn != nullptr)
                 {
                     _sqlids_gameobjects.insert(std::make_pair(static_cast<GameObject*>(obj)->m_spawn->id, static_cast<GameObject*>(obj)));
@@ -332,46 +346,51 @@ void MapMgr::PushObject(Object* obj)
             case HIGHGUID_TYPE_DYNAMICOBJECT:
                 m_DynamicObjectStorage[obj->getGuidLow()] = (DynamicObject*)obj;
                 break;
-        }
-    }
-
-    // Handle activation of that object.
-    if (objCell->IsActive() && obj->CanActivate())
-        obj->Activate(this);
-
-    // Add the session to our set if it is a player.
-    if (plObj)
-    {
-        Sessions.insert(plObj->GetSession());
-
-        // Change the instance ID, this will cause it to be removed from the world thread (return value 1)
-        plObj->GetSession()->SetInstance(GetInstanceID());
-
-        // Add the map wide objects
-        if (_mapWideStaticObjects.size())
-        {
-            uint32 globalcount = 0;
-            if (!buf)
-                buf = new ByteBuffer(300);
-
-            for (auto _mapWideStaticObject : _mapWideStaticObjects)
-            {
-                count = _mapWideStaticObject->buildCreateUpdateBlockForPlayer(buf, plObj);
-                globalcount += count;
             }
-            /*VLack: It seems if we use the same buffer then it is a BAD idea to try and push created data one by one, add them at once!
-                   If you try to add them one by one, then as the buffer already contains data, they'll end up repeating some object.
-                   Like 6 object updates for Deeprun Tram, but the built package will contain these entries: 2AFD0, 2AFD0, 2AFD1, 2AFD0, 2AFD1, 2AFD2*/
-            if (globalcount > 0)
-                plObj->getUpdateMgr().pushCreationData(buf, globalcount);
         }
+
+        // Handle activation of that object.
+        if (objCell->IsActive() && obj->CanActivate())
+            obj->Activate(this);
+
+        // Add the session to our set if it is a player.
+        if (plObj)
+        {
+            Sessions.insert(plObj->GetSession());
+
+            // Change the instance ID, this will cause it to be removed from the world thread (return value 1)
+            plObj->GetSession()->SetInstance(GetInstanceID());
+
+            // Add the map wide objects
+            if (_mapWideStaticObjects.size())
+            {
+                uint32 globalcount = 0;
+                if (!buf)
+                    buf = new ByteBuffer(300);
+
+                for (auto _mapWideStaticObject : _mapWideStaticObjects)
+                {
+                    count = _mapWideStaticObject->buildCreateUpdateBlockForPlayer(buf, plObj);
+                    globalcount += count;
+                }
+                /*VLack: It seems if we use the same buffer then it is a BAD idea to try and push created data one by one, add them at once!
+                       If you try to add them one by one, then as the buffer already contains data, they'll end up repeating some object.
+                       Like 6 object updates for Deeprun Tram, but the built package will contain these entries: 2AFD0, 2AFD0, 2AFD1, 2AFD0, 2AFD1, 2AFD2*/
+                if (globalcount > 0)
+                    plObj->getUpdateMgr().pushCreationData(buf, globalcount);
+            }
+        }
+
+
+        delete buf;
+
+        if (plObj != nullptr && InactiveMoveTime && !forced_expire)
+            InactiveMoveTime = 0;
     }
-
-
-    delete buf;
-
-    if (plObj != nullptr && InactiveMoveTime && !forced_expire)
-        InactiveMoveTime = 0;
+    else
+    {
+        sLogger.failure("MapMgr::PushObject tried to push invalid object (nullptr)!");
+    }
 }
 
 void MapMgr::PushStaticObject(Object* obj)
