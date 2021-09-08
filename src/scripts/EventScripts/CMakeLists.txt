@@ -37,7 +37,6 @@ set(sources
     Event_WinterVeil.cpp
     Event_World_PvP.cpp
     Event_Worlds_End_Tavern.cpp
-    Event_VayrieTest.cpp
     Event_Zalzanes_Fall.cpp
     Setup.cpp
     # Required for linker

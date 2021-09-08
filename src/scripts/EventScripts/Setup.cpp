@@ -24,8 +24,6 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupL70ETC(mgr);
     SetupWinterVeil(mgr);
     SetupHallowsEnd(mgr);
-
-    SetupVayrieTest(mgr);
 }
 
 #ifdef WIN32
