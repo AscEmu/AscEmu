@@ -158,11 +158,11 @@ public:
         float SSZ = mTarget->GetPositionZ();
 
         GameObject* skull1 = mTarget->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 2551);
-        if (skull1 == NULL)
+        if (skull1 == nullptr)
             return;
 
         Creature* Kin_weelay = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 2519);
-        if (Kin_weelay == NULL)
+        if (Kin_weelay == nullptr)
             return;
 
         std::string msg1 = "Ah. Good ";

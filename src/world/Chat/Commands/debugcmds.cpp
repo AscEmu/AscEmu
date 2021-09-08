@@ -1078,7 +1078,7 @@ bool ChatHandler::HandleAIAgentDebugBegin(const char* /*args*/, WorldSession* m_
     for (std::list<SpellInfo const*>::iterator itr = aiagent_spells.begin(); itr != aiagent_spells.end(); ++itr)
     {
         result = WorldDatabase.Query("SELECT * FROM ai_agents WHERE spell = %u", (*itr)->getId());
-        if (result != nullptr);
+        if (result != nullptr)
         {
             spell_thingo t;
             t.type = result->Fetch()[6].GetUInt32();

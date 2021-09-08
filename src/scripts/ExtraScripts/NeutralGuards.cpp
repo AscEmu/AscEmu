@@ -15,7 +15,7 @@ public:
 
     void OnCombatStart(Unit* mTarget) override
     {
-        if (mTarget != NULL && mTarget->isPlayer())
+        if (mTarget != nullptr && mTarget->isPlayer())
         {
             for (uint8_t i = 0; i < 3; ++i)
             {
@@ -24,7 +24,7 @@ public:
                 float z = mTarget->GetPositionZ();
                 Creature* guard = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(26253, x, y, z, 0, true, false, getCreature()->getFactionTemplate(), 50);
 
-                if (guard != NULL)
+                if (guard != nullptr)
                 {
                     setGuardWaypoints();
                     guard->GetAIInterface()->onHostileAction(mTarget);

@@ -28,11 +28,11 @@ public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* pMogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
-        if (pMogor != NULL)
+        if (pMogor != nullptr)
         {
             pMogor->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Prepare yourselves!");
             Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
-            if (Qgiver != NULL)
+            if (Qgiver != nullptr)
             {
                 char msg[256];
                 snprintf((char*)msg, 256, "Mogor has challenged you. You have to accept! Get in the right of blood if you are ready to fight.");
@@ -54,7 +54,7 @@ public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
-        if (mogor != NULL)
+        if (mogor != nullptr)
             mogor->Despawn(1000, 0);
 
         mTarget->GetMapMgr()->GetInterface()->SpawnCreature(18069, -712.443115f, 7932.182129f, 59.430191f, 4.515952f, true, false, 0, 0);
@@ -67,7 +67,7 @@ public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* pQgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
-        if (pQgiver != NULL)
+        if (pQgiver != nullptr)
         {
             char msg[256];
             snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->getName().c_str());
@@ -83,7 +83,7 @@ public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* pMogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
-        if (pMogor != NULL)
+        if (pMogor != nullptr)
         {
             char msg[256];
             snprintf((char*)msg, 256, "WUT!? UNPOSSIBLE!! You fight Mogor now! Mogor destroy!");
@@ -91,7 +91,7 @@ public:
         };
 
         Creature* pWarmaulChamp = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18402);
-        if (pWarmaulChamp != NULL)
+        if (pWarmaulChamp != nullptr)
             pWarmaulChamp->Despawn(1000, 0);
     };
 };
@@ -102,7 +102,7 @@ public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
-        if (Qgiver != NULL)
+        if (Qgiver != nullptr)
         {
             char msg[256];
             snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->getName().c_str());
@@ -120,7 +120,7 @@ public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
-        if (mogor != NULL)
+        if (mogor != nullptr)
         {
             char msg[256];
             snprintf((char*)msg, 256, "Mogor not impressed! Skra'gat wuz made of da air and shadow! Soft like da squishy orcies!");
@@ -128,7 +128,7 @@ public:
         };
 
         Creature* pSkragath = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18401);
-        if (pSkragath != NULL)
+        if (pSkragath != nullptr)
             pSkragath->Despawn(1000, 0);
     };
 };
@@ -139,7 +139,7 @@ public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
-        if (Qgiver != NULL)
+        if (Qgiver != nullptr)
         {
             char msg[256];
             snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->getName().c_str());
@@ -156,11 +156,11 @@ public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
-        if (mogor != NULL)
+        if (mogor != nullptr)
             mogor->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "WUT!? UNPOSSIBLE!!");
 
         Creature* pRokdar = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18400);
-        if (pRokdar != NULL)
+        if (pRokdar != nullptr)
             pRokdar->Despawn(1000, 0);
     };
 };
@@ -171,11 +171,11 @@ public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* pBrokentoe = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18398);
-        if (pBrokentoe != NULL)
+        if (pBrokentoe != nullptr)
             pBrokentoe->Despawn(1000, 0);
 
         Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
-        if (Qgiver != NULL)
+        if (Qgiver != nullptr)
         {
             char msg[256];
             snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->getName().c_str());
@@ -191,7 +191,7 @@ public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
-        if (mogor != NULL)
+        if (mogor != nullptr)
         {
             char msg[256];
             snprintf((char*)msg, 256, "...");
@@ -199,11 +199,11 @@ public:
         };
 
         Creature* pBrother1 = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18399);
-        if (pBrother1 != NULL)
+        if (pBrother1 != nullptr)
             pBrother1->Despawn(1000, 0);
 
         Creature* pBrother2 = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18399);
-        if (pBrother2 != NULL)
+        if (pBrother2 != nullptr)
             pBrother2->Despawn(1000, 0);
     };
 };
@@ -214,7 +214,7 @@ public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
-        if (Qgiver != NULL)
+        if (Qgiver != nullptr)
         {
             char msg[256];
             snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->getName().c_str());
@@ -226,7 +226,7 @@ public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
-        if (Qgiver != NULL)
+        if (Qgiver != nullptr)
         {
             char msg[256];
             snprintf((char*)msg, 256, "%s is victorious!", mTarget->getName().c_str());
@@ -234,7 +234,7 @@ public:
         };
 
         Unit* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
-        if (mogor != NULL)
+        if (mogor != nullptr)
         {
             char msg[256];
             snprintf((char*)msg, 256, "...");

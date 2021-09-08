@@ -149,7 +149,7 @@ public:
 
         Unit* summoner = static_cast<Summon*>(getCreature())->getUnitOwner();
 
-        if (summoner != NULL)
+        if (summoner != nullptr)
         {
             if (summoner->isPlayer())
             {
@@ -157,7 +157,7 @@ public:
                 if (p->hasQuestInQuestLog(11608))
                 {
                     GameObject* pSinkhole = p->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), 300171);
-                    if (pSinkhole != NULL)
+                    if (pSinkhole != nullptr)
                     {
                         getCreature()->castSpell(getCreature(), 45502, true);
 
@@ -308,7 +308,7 @@ class SurristraszGossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* pPlayer) override
     {
-        uint32_t Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->getEntry());
+        uint32_t Text = sMySQLStore.getGossipTextIdForNpc(pObject->getEntry());
 
         // check if there is a entry in the db
         if (sMySQLStore.getNpcGossipText(Text) == nullptr)

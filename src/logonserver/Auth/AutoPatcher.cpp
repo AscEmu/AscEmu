@@ -203,7 +203,7 @@ Patch* PatchMgr::FindPatchForClient(uint32 Version, const char* Locality)
     uint32 ulocality;
     uint32 i;
     std::vector<Patch*>::iterator itr;
-    Patch* fallbackPatch = NULL;
+    Patch* fallbackPatch = nullptr;
     for (i = 0; i < 4; ++i)
         tmplocality[i] = static_cast<char>(tolower(Locality[i]));
     tmplocality[4] = 0;
@@ -215,7 +215,7 @@ Patch* PatchMgr::FindPatchForClient(uint32 Version, const char* Locality)
         // saving a string compare ;)
         if ((*itr)->uLocality == ulocality)
         {
-            if (fallbackPatch == NULL && (*itr)->Version == 0)
+            if (fallbackPatch == nullptr && (*itr)->Version == 0)
                 fallbackPatch = (*itr);
 
             if ((*itr)->Version == Version)
@@ -248,7 +248,7 @@ void PatchMgr::UpdateJobs()
 
         if (!(*itr2)->Update())
         {
-            (*itr2)->GetClient()->m_patchJob = NULL;
+            (*itr2)->GetClient()->m_patchJob = nullptr;
             delete(*itr2);
             m_patchJobs.erase(itr2);
         }

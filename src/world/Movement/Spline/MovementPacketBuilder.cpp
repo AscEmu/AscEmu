@@ -86,7 +86,10 @@ void PacketBuilder::WriteStopMovement(G3D::Vector3 const& pos, uint32_t splineId
 
 void WriteLinearPath(Spline<int32_t> const& spline, ByteBuffer& data)
 {
-    uint32_t last_idx = spline.getPointCount() - 3;
+    if (spline.getPointCount() < 3)
+        sLogger.failure("WriteLinearPath: size of points is < 3, this will lead to issues!");
+
+    uint32_t last_idx = static_cast<uint32_t>(spline.getPointCount() - 3);
     G3D::Vector3 const* real_path = &spline.getPoint(1);
 
     data << last_idx;
@@ -106,14 +109,20 @@ void WriteLinearPath(Spline<int32_t> const& spline, ByteBuffer& data)
 
 void WriteCatmullRomPath(Spline<int32_t> const& spline, ByteBuffer& data)
 {
-    uint32_t count = spline.getPointCount() - 3;
+    if (spline.getPointCount() < 3)
+        sLogger.failure("WriteCatmullRomPath: size of points is < 3, this will lead to issues!");
+
+    uint32_t count = static_cast<uint32_t>(spline.getPointCount() - 3);
     data << count;
     data.append<G3D::Vector3>(&spline.getPoint(2), count);
 }
 
 void WriteCatmullRomCyclicPath(Spline<int32_t> const& spline, ByteBuffer& data)
 {
-    uint32_t count = spline.getPointCount() - 4;
+    if (spline.getPointCount() < 4)
+        sLogger.failure("WriteCatmullRomCyclicPath: size of points is < 3, this will lead to issues!");
+
+    uint32_t count = static_cast<uint32_t>(spline.getPointCount() - 4);
     data << count;
     data.append<Vector3>(&spline.getPoint(2), count);
 }

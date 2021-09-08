@@ -148,7 +148,7 @@ public:
 
         Creature* Overlord = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 4500);
 
-        if (Overlord == NULL)
+        if (Overlord == nullptr)
             return;
 
         std::string say = "Puny ";

@@ -260,11 +260,11 @@ public:
 
     // if it is not a random target type it sets the hp range when the creature can cast this spell
     // if it is a random target it controles when the spell can be cast based on the target hp
-    int mMinHpRangeToCast;
-    int mMaxHpRangeToCast;
+    float mMinHpRangeToCast;
+    float mMaxHpRangeToCast;
 
-    const bool isHpInPercentRange(int targetHp);
-    void setMinMaxPercentHp(int minHp, int maxHp);
+    const bool isHpInPercentRange(float targetHp);
+    void setMinMaxPercentHp(float minHp, float maxHp);
 
     typedef std::vector<uint32_t> ScriptPhaseList;
     ScriptPhaseList mPhaseList;

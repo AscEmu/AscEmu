@@ -3313,7 +3313,7 @@ void CreatureAISpells::setMinMaxDistance(float minDistance, float maxDistance)
     mMaxPositionRangeToCast = maxDistance;
 }
 
-const bool CreatureAISpells::isHpInPercentRange(int targetHp)
+const bool CreatureAISpells::isHpInPercentRange(float targetHp)
 {
     if (targetHp >= mMinHpRangeToCast && targetHp <= mMaxHpRangeToCast)
         return true;
@@ -3321,7 +3321,7 @@ const bool CreatureAISpells::isHpInPercentRange(int targetHp)
     return false;
 }
 
-void CreatureAISpells::setMinMaxPercentHp(int minHp, int maxHp)
+void CreatureAISpells::setMinMaxPercentHp(float minHp, float maxHp)
 {
     mMinHpRangeToCast = minHp;
     mMaxHpRangeToCast = maxHp;

@@ -439,6 +439,7 @@ bool ConfigFile::tryGetBool(std::string sectionName, std::string confName, bool 
         sLogger.failure("%s", e.what());
         ASSERT(false)
     }
+    return false;
 }
 
 bool ConfigFile::tryGetFloat(std::string sectionName, std::string confName, float* f)
@@ -457,6 +458,7 @@ bool ConfigFile::tryGetFloat(std::string sectionName, std::string confName, floa
         sLogger.failure("%s", e.what());
         ASSERT(false)
     }
+    return false;
 }
 
 bool ConfigFile::tryGetInt(std::string sectionName, std::string confName, int* i)
@@ -475,6 +477,7 @@ bool ConfigFile::tryGetInt(std::string sectionName, std::string confName, int* i
         sLogger.failure("%s", e.what());
         ASSERT(false)
     }
+    return false;
 }
 
 bool ConfigFile::tryGetInt(std::string sectionName, std::string confName, uint8_t* i)
@@ -493,6 +496,7 @@ bool ConfigFile::tryGetInt(std::string sectionName, std::string confName, uint8_
         sLogger.failure("%s", e.what());
         ASSERT(false)
     }
+    return false;
 }
 
 bool ConfigFile::tryGetInt(std::string sectionName, std::string confName, uint32_t* i)
@@ -511,6 +515,7 @@ bool ConfigFile::tryGetInt(std::string sectionName, std::string confName, uint32
         sLogger.failure("%s", e.what());
         ASSERT(false)
     }
+    return false;
 }
 
 bool ConfigFile::tryGetString(std::string sectionName, std::string confName, std::string* s)
@@ -529,4 +534,5 @@ bool ConfigFile::tryGetString(std::string sectionName, std::string confName, std
         sLogger.failure("%s", e.what());
         ASSERT(false)
     }
+    return false;
 }

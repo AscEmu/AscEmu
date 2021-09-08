@@ -75,7 +75,7 @@ public:
 
         Creature* Dashel = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 4961);
 
-        if (Dashel == NULL)
+        if (Dashel == nullptr)
             return;
 
         Dashel->SetFaction(72);
@@ -86,7 +86,7 @@ public:
         if (chance < 15)
         {
             std::string say = "Now you're gonna get it good, ";
-            say += (static_cast<Player*>(mTarget))->getName();
+            say += mTarget->getName();
             say += "!";
             Dashel->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }

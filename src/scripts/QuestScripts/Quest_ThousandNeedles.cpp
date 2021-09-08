@@ -60,7 +60,7 @@ public:
         float SSZ = mTarget->GetPositionZ();
 
         Creature* creat = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 4452);
-        if (creat == NULL)
+        if (creat == nullptr)
             return;
 
         std::string msg = "Hahah! ";

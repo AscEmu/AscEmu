@@ -106,7 +106,7 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
                 if (aiSpells->fromDB)
                     continue;
 
-                uint32_t chance = aiSpells->mCastChance;
+                float chance = aiSpells->mCastChance;
                 uint32_t spell = aiSpells->mSpellInfo->getId();
                 uint32_t spelltype = aiSpells->spell_type;
                 uint32_t target = aiSpells->mTargetType;
@@ -132,7 +132,7 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
                 std::string comment = name + " - " + spellname;
 
                 char my_insert1[700];
-                sprintf(my_insert1, "INSERT INTO creature_ai_scripts_%s VALUES (5875,12340,%u,4,0,5,1,0,%u,%u,%u,0,%u,%u,%u,0,100,0,0,'%s')", args, entry, chance, spell, spelltype, target, cooldown, cooldown, comment.c_str());
+                sprintf(my_insert1, "INSERT INTO creature_ai_scripts_%s VALUES (5875,12340,%u,4,0,5,1,0,%f,%u,%u,0,%u,%u,%u,0,100,0,0,'%s')", args, entry, chance, spell, spelltype, target, cooldown, cooldown, comment.c_str());
 
                 WorldDatabase.Execute(my_insert1);
                 ++count;

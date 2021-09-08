@@ -93,7 +93,7 @@ public:
             if (questLog->getMobCountByIndex(1) < questLog->getQuestProperties()->required_mob_or_go_count[1])
             {
                 GameObject* pSouthern = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-1150.0f, 2110.0f, 84.0f, 300150);
-                if (pSouthern != NULL && pPlayer->CalcDistance(pPlayer, pSouthern) < 40)
+                if (pSouthern != nullptr && pPlayer->CalcDistance(pPlayer, pSouthern) < 40)
                 {
                     pPlayer->AddQuestKill(10895, 1, 0);
 
@@ -109,7 +109,7 @@ public:
             if (questLog->getMobCountByIndex(2) < questLog->getQuestProperties()->required_mob_or_go_count[2])
             {
                 GameObject* pForge = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-893.0f, 1919.0f, 82.0f, 300150);
-                if (pForge != NULL && pPlayer->CalcDistance(pPlayer, pForge) < 40)
+                if (pForge != nullptr && pPlayer->CalcDistance(pPlayer, pForge) < 40)
                 {
                     pPlayer->AddQuestKill(10895, 2, 0);
 
@@ -125,7 +125,7 @@ public:
             if (questLog->getMobCountByIndex(3) < questLog->getQuestProperties()->required_mob_or_go_count[3])
             {
                 GameObject* pFoothill = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-978.0f, 1879.0f, 111.0f, 300150);
-                if (pFoothill != NULL && pPlayer->CalcDistance(pPlayer, pFoothill) < 40)
+                if (pFoothill != nullptr && pPlayer->CalcDistance(pPlayer, pFoothill) < 40)
                 {
                     pPlayer->AddQuestKill(10895, 3, 0);
 

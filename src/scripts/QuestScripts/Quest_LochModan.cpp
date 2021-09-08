@@ -32,7 +32,7 @@ public:
 
 
         Creature* creat = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 1379);
-        if (creat == NULL)
+        if (creat == nullptr)
             return;
         creat->m_escorter = mTarget;
 
@@ -80,11 +80,11 @@ public:
             getCreature()->Despawn(5000, 1000);
             //getCreature()->StopMoving();
 
-            if (getCreature()->m_escorter == NULL)
+            if (getCreature()->m_escorter == nullptr)
                 return;
 
             auto* player = getCreature()->m_escorter;
-            getCreature()->m_escorter = NULL;
+            getCreature()->m_escorter = nullptr;
 
             if (auto* questLog = player->getQuestLogByQuestId(309))
                 questLog->sendQuestComplete();

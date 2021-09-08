@@ -46,11 +46,11 @@ AuthSocket::AuthSocket(SOCKET fd) : Socket(fd, 32768, 4096)
     g.SetDword(7);
     s.SetRand(256);
     m_authenticated = false;
-    m_account = NULL;
-    last_recv = time(NULL);
+    m_account = nullptr;
+    last_recv = time(nullptr);
     removedFromSet = false;
-    m_patch = NULL;
-    m_patchJob = NULL;
+    m_patch = nullptr;
+    m_patchJob = nullptr;
     _authSocketLock.Acquire();
     _authSockets.insert(this);
     _authSocketLock.Release();
@@ -83,7 +83,7 @@ void AuthSocket::OnDisconnect()
     if (m_patchJob)
     {
         PatchMgr::getInstance().AbortPatchJob(m_patchJob);
-        m_patchJob = NULL;
+        m_patchJob = nullptr;
     }
 }
 
@@ -217,7 +217,7 @@ void AuthSocket::HandleChallenge()
     sLogger.debug("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
 
     m_account = sAccountMgr.getAccountByName(AccountName);
-    if (m_account == 0)
+    if (m_account == nullptr)
     {
         sLogger.debug("[AuthChallenge] Invalid account.");
 
@@ -658,7 +658,7 @@ void AuthSocket::HandleReconnectChallenge()
     sLogger.debug("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
 
     m_account = sAccountMgr.getAccountByName(AccountName);
-    if (m_account == 0)
+    if (m_account == nullptr)
     {
         sLogger.debug("[AuthChallenge] Invalid account.");
 

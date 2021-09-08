@@ -13,7 +13,7 @@ Summon::~Summon() {}
 
 void Summon::Load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t spellId, int32_t summonSlot)
 {
-    if (unitOwner != nullptr);
+    if (unitOwner != nullptr)
     {
         Creature::Load(creatureProperties, position.x, position.y, position.z, position.o);
 

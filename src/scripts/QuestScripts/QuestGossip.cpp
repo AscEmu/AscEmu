@@ -71,7 +71,7 @@ class TeleportQ_Gossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        uint32_t Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->getEntry());
+        uint32_t Text = sMySQLStore.getGossipTextIdForNpc(pObject->getEntry());
         if (sMySQLStore.getNpcGossipText(Text) == nullptr)
             Text = DefaultGossipTextId;
 

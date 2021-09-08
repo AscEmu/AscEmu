@@ -133,7 +133,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
                 sRealmManager.timeoutSockets();
                 sSocketGarbageCollector.Update();
                 CheckForDeadSockets();              // Flood Protection
-                UNIXTIME = time(NULL);
+                UNIXTIME = time(nullptr);
                 g_localTime = *localtime(&UNIXTIME);
             }
 
@@ -336,7 +336,7 @@ bool MasterLogon::CheckDBVersion()
     }
 
     QueryResult* cqr = sLogonSQL->QueryNA("SELECT LastUpdate FROM logon_db_version;");
-    if (cqr == NULL)
+    if (cqr == nullptr)
     {
         sLogger.failure("Database : logon database is missing the table `logon_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
         sLogger.failure("Database : You may need to update your database");

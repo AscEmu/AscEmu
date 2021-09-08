@@ -183,7 +183,7 @@ void AuctionHouse::updateDeletionQueue()
 
     for (auto auction : removalList)
     {
-        if (!auction->isRemoved);
+        if (!auction->isRemoved)
             removeAuction(auction);
     }
 

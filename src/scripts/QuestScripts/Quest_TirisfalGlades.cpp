@@ -91,7 +91,7 @@ public:
 
         Creature* Dashel = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 6784);
 
-        if (Dashel == NULL)
+        if (Dashel == nullptr)
             return;
 
         Dashel->SetFaction(28);

@@ -2262,7 +2262,7 @@ public:
         if (getCreature()->GetTransport()->getEntry() != uint32_t(_teamInInstance == TEAM_HORDE ? GO_THE_SKYBREAKER_HORDE_ICC : GO_ORGRIM_S_HAMMER_ALLIANCE_ICC))
             return;
 
-        if (!getCreature()->getHealthPct() > 90)
+        if (getCreature()->getHealthPct() > 90)
             return;
 
         _summonedFirstMage = true;
