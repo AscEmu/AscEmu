@@ -130,10 +130,6 @@ void Corpse::setCorpseDataFromDbString(std::string dbString)
             case 27: setFlags(std::stoul(stringValue)); break;
             case 28: setDynamicFlags(std::stoul(stringValue)); break;
         }
-        std::stoi(stringValue);     // signed long int32_t case
-        std::stoull(stringValue);   // unsigned long long uint64_t (depending where not always 64 bit)
-        std::stoul(stringValue);    // unsigned long uint32_t cast
-        std::stof(stringValue);     // floating
         ++countPosition;
     }
 }
