@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellAuras.h"
 #include "SpellTarget.h"
 
-#include "Management/Skill.h"
+#include "Management/Skill.hpp"
 #include "Units/Creatures/AIInterface.h"
 #include "Units/Players/Player.h"
 

@@ -54,7 +54,7 @@ set(SRC_MANAGEMENT_FILES
    ${PATH_PREFIX}/QuestLogEntry.hpp
    ${PATH_PREFIX}/QuestMgr.cpp
    ${PATH_PREFIX}/QuestMgr.h
-   ${PATH_PREFIX}/Skill.h
+   ${PATH_PREFIX}/Skill.hpp
    ${PATH_PREFIX}/SkillNameMgr.h
    ${PATH_PREFIX}/TaxiMgr.cpp
    ${PATH_PREFIX}/TaxiMgr.h
