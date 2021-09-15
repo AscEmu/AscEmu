@@ -289,7 +289,6 @@ class SERVER_DECL WorldSession
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // ArenaTeamHandler.cpp
-#if VERSION_STRING >= TBC
         void handleArenaTeamQueryOpcode(WorldPacket& recvPacket);
         void handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket);
         void handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket);
@@ -300,7 +299,6 @@ class SERVER_DECL WorldSession
         void handleArenaTeamPromoteOpcode(WorldPacket& recvPacket);
         void handleArenaTeamRosterOpcode(WorldPacket& recvPacket);
         void handleInspectArenaStatsOpcode(WorldPacket& recvPacket);
-#endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // AuctionHandler.cpp
