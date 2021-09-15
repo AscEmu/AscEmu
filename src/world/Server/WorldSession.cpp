@@ -750,7 +750,7 @@ void WorldSession::Disconnect()
 
 //MIT
 #if VERSION_STRING == Classic
-void WorldSession::loadHandlers()
+void WorldSession::loadHandlers() // Classic
 {
     // Login
     WorldPacketHandlers[CMSG_CHAR_ENUM].handler = &WorldSession::handleCharEnumOpcode;
@@ -1205,16 +1205,16 @@ void WorldSession::loadHandlers()
     WorldPacketHandlers[CMSG_SET_CHANNEL_WATCH].handler = &WorldSession::handleChatChannelWatchOpcode;
 
     // Arenas
-    WorldPacketHandlers[CMSG_ARENA_TEAM_QUERY].handler = &WorldSession::handleArenaTeamQueryOpcode;
-    WorldPacketHandlers[CMSG_ARENA_TEAM_ROSTER].handler = &WorldSession::handleArenaTeamRosterOpcode;
-    WorldPacketHandlers[CMSG_ARENA_TEAM_INVITE].handler = &WorldSession::handleArenaTeamAddMemberOpcode;
-    WorldPacketHandlers[CMSG_ARENA_TEAM_ACCEPT].handler = &WorldSession::handleArenaTeamInviteAcceptOpcode;
-    WorldPacketHandlers[CMSG_ARENA_TEAM_DECLINE].handler = &WorldSession::handleArenaTeamInviteDenyOpcode;
-    WorldPacketHandlers[CMSG_ARENA_TEAM_LEAVE].handler = &WorldSession::handleArenaTeamLeaveOpcode;
-    WorldPacketHandlers[CMSG_ARENA_TEAM_REMOVE].handler = &WorldSession::handleArenaTeamRemoveMemberOpcode;
-    WorldPacketHandlers[CMSG_ARENA_TEAM_DISBAND].handler = &WorldSession::handleArenaTeamDisbandOpcode;
-    WorldPacketHandlers[CMSG_ARENA_TEAM_LEADER].handler = &WorldSession::handleArenaTeamPromoteOpcode;
-    WorldPacketHandlers[MSG_INSPECT_ARENA_TEAMS].handler = &WorldSession::handleInspectArenaStatsOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_QUERY].handler = &WorldSession::handleArenaTeamQueryOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_ROSTER].handler = &WorldSession::handleArenaTeamRosterOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_INVITE].handler = &WorldSession::handleArenaTeamAddMemberOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_ACCEPT].handler = &WorldSession::handleArenaTeamInviteAcceptOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_DECLINE].handler = &WorldSession::handleArenaTeamInviteDenyOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_LEAVE].handler = &WorldSession::handleArenaTeamLeaveOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_REMOVE].handler = &WorldSession::handleArenaTeamRemoveMemberOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_DISBAND].handler = &WorldSession::handleArenaTeamDisbandOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_LEADER].handler = &WorldSession::handleArenaTeamPromoteOpcode;
+    // WorldPacketHandlers[MSG_INSPECT_ARENA_TEAMS].handler = &WorldSession::handleInspectArenaStatsOpcode;
 
     // cheat/gm commands?
     WorldPacketHandlers[CMSG_WORLD_TELEPORT].handler = &WorldSession::handleWorldTeleportOpcode;
@@ -1286,7 +1286,7 @@ void WorldSession::loadHandlers()
     WorldPacketHandlers[CMSG_SET_ACTIVE_VOICE_CHANNEL].handler = &WorldSession::Unhandled;
 }
 #elif VERSION_STRING == TBC
-void WorldSession::loadHandlers()
+void WorldSession::loadHandlers() // TBC
 {
     // Login
     WorldPacketHandlers[CMSG_CHAR_ENUM].handler = &WorldSession::handleCharEnumOpcode;
@@ -1738,16 +1738,16 @@ void WorldSession::loadHandlers()
     //WorldPacketHandlers[CMSG_SET_CHANNEL_WATCH].handler = &WorldSession::HandleChatChannelWatchOpcode;
 
     // Arenas
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_QUERY].handler = &WorldSession::handleArenaTeamQueryOpcode;
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_ROSTER].handler = &WorldSession::handleArenaTeamRosterOpcode;
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_INVITE].handler = &WorldSession::handleArenaTeamAddMemberOpcode;
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_ACCEPT].handler = &WorldSession::handleArenaTeamInviteAcceptOpcode;
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_DECLINE].handler = &WorldSession::handleArenaTeamInviteDenyOpcode;
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_LEAVE].handler = &WorldSession::handleArenaTeamLeaveOpcode;
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_REMOVE].handler = &WorldSession::handleArenaTeamRemoveMemberOpcode;
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_DISBAND].handler = &WorldSession::handleArenaTeamDisbandOpcode;
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_LEADER].handler = &WorldSession::handleArenaTeamPromoteOpcode;
-    //WorldPacketHandlers[MSG_INSPECT_ARENA_TEAMS].handler = &WorldSession::HandleInspectArenaStatsOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_QUERY].handler = &WorldSession::handleArenaTeamQueryOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_ROSTER].handler = &WorldSession::handleArenaTeamRosterOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_INVITE].handler = &WorldSession::handleArenaTeamAddMemberOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_ACCEPT].handler = &WorldSession::handleArenaTeamInviteAcceptOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_DECLINE].handler = &WorldSession::handleArenaTeamInviteDenyOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_LEAVE].handler = &WorldSession::handleArenaTeamLeaveOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_REMOVE].handler = &WorldSession::handleArenaTeamRemoveMemberOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_DISBAND].handler = &WorldSession::handleArenaTeamDisbandOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_LEADER].handler = &WorldSession::handleArenaTeamPromoteOpcode;
+    WorldPacketHandlers[MSG_INSPECT_ARENA_TEAMS].handler = &WorldSession::handleInspectArenaStatsOpcode;
 
     // cheat/gm commands?
     WorldPacketHandlers[CMSG_WORLD_TELEPORT].handler = &WorldSession::handleWorldTeleportOpcode;
@@ -1818,7 +1818,7 @@ void WorldSession::loadHandlers()
     //WorldPacketHandlers[CMSG_SET_ACTIVE_VOICE_CHANNEL].handler = &WorldSession::Unhandled;
 }
 #elif VERSION_STRING == WotLK
-void WorldSession::loadHandlers()
+void WorldSession::loadHandlers() // WotLK
 {
     // Login
     WorldPacketHandlers[CMSG_CHAR_ENUM].handler = &WorldSession::handleCharEnumOpcode;
@@ -2354,7 +2354,7 @@ void WorldSession::loadHandlers()
     WorldPacketHandlers[CMSG_SET_ACTIVE_VOICE_CHANNEL].handler = &WorldSession::Unhandled;
 }
 #elif VERSION_STRING == Cata
-void WorldSession::loadHandlers()
+void WorldSession::loadHandlers() // Cata
 {
     // Login
     WorldPacketHandlers[CMSG_CHAR_ENUM].handler = &WorldSession::handleCharEnumOpcode;
@@ -2962,7 +2962,7 @@ void WorldSession::loadHandlers()
     WorldPacketHandlers[CMSG_UNREGISTER_ALL_ADDON_PREFIXES].handler = &WorldSession::handleUnregisterAddonPrefixesOpcode;
 }
 #elif VERSION_STRING == Mop
-void WorldSession::loadHandlers()
+void WorldSession::loadHandlers() // Mop
 {
     // Login
     WorldPacketHandlers[CMSG_CHAR_ENUM].handler = &WorldSession::handleCharEnumOpcode;
@@ -3387,7 +3387,6 @@ void WorldSession::loadHandlers()
     WorldPacketHandlers[CMSG_LF_GUILD_POST_REQUEST].handler = &WorldSession::handleGuildFinderPostRequest;
     WorldPacketHandlers[CMSG_LF_GUILD_REMOVE_RECRUIT].handler = &WorldSession::handleGuildFinderRemoveRecruit;
     WorldPacketHandlers[CMSG_LF_GUILD_SET_GUILD_POST].handler = &WorldSession::handleGuildFinderSetGuildPost;
-
 
     // Tutorials
     WorldPacketHandlers[CMSG_TUTORIAL_FLAG].handler = &WorldSession::handleTutorialFlag;
