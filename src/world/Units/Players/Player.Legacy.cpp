@@ -2731,6 +2731,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     load_mana = field[20].GetUInt32();
     setHealth(load_health);
 
+    sLogger.debug("Player level %u, health %u, mana %u loaded from db!", getLevel(), load_health, load_mana);
+
     setPvpRank(field[21].GetUInt8());
 
     setPlayerBytes(field[22].GetUInt32());

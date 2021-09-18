@@ -1327,6 +1327,10 @@ void Player::setInitialPlayerData()
         // Set max health and powers
         setMaxHealth(lvlinfo->HP);
     }
+    else
+    {
+        sLogger.failure("No Levelinfo for Player!");
+    }
 
     // First initialize all power fields to 0
     for (uint8_t power = POWER_TYPE_MANA; power < TOTAL_PLAYER_POWER_TYPES; ++power)

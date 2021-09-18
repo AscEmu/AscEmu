@@ -2748,7 +2748,10 @@ CreateInfo_ClassLevelStats const* MySQLDataStore::getPlayerClassLevelStats(uint3
     DBC::Structures::GtOCTBaseMPByClassEntry const* mp = sGtOCTBaseMPByClassStore.LookupEntry((player_class - 1) * 100 + level - 1);
 
     if (!hp || !mp)
+    {
+        sLogger.failure("Base HP/MP not found for class %u and level %u. Check out your dbc files!",static_cast<uint32_t>(player_class), level);
         return nullptr;
+    }
 
     CreateInfo_ClassLevelStats cls;
     cls.health = uint32_t(hp->ratio);
