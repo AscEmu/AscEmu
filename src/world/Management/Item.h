@@ -21,7 +21,7 @@
 #ifndef WOWSERVER_ITEM_H
 #define WOWSERVER_ITEM_H
 
-#include "Skill.h"
+#include "Skill.hpp"
 #include "Management/ItemPrototype.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Objects/Object.h"

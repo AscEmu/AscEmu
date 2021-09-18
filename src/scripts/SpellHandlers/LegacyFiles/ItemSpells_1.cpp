@@ -17,7 +17,7 @@
 
 #include "Setup.h"
 #include "Management/QuestLogEntry.hpp"
-#include "Management/Skill.h"
+#include "Management/Skill.hpp"
 #include "Management/ItemInterface.h"
 #include "../EventScripts/Setup.h"
 #include "Objects/Faction.h"

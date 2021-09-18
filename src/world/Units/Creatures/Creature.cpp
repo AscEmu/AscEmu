@@ -24,7 +24,7 @@
 #include "Management/QuestMgr.h"
 #include "Management/Quest.h"
 #include "Management/GameEvent.h"
-#include "Management/Skill.h"
+#include "Management/Skill.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"

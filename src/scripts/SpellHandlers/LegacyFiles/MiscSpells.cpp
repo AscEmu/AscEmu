@@ -19,7 +19,7 @@
 
 #include "Setup.h"
 #include "Management/QuestLogEntry.hpp"
-#include "Management/Skill.h"
+#include "Management/Skill.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"
