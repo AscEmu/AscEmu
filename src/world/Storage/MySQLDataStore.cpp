@@ -2677,35 +2677,71 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
     //                                                                         0      1        2          3
     QueryResult* player_classlevelstats_result = WorldDatabase.Query("SELECT class, level, BaseHealth, BaseMana FROM player_classlevelstats WHERE build = %u", VERSION_STRING);
 
-    if (player_classlevelstats_result == nullptr)
+    if (player_classlevelstats_result)
     {
-        sLogger.info("MySQLDataLoads : Table `player_classlevelstats` is empty!");
-        return;
+        sLogger.info("MySQLDataLoads : Table `player_classlevelstats` has %u columns", player_classlevelstats_result->GetFieldCount());
+
+        uint32_t player_classlevelstats_count = 0;
+        do
+        {
+            Field* fields = player_classlevelstats_result->Fetch();
+
+            uint32_t _class = fields[0].GetUInt32();
+            uint32_t level = fields[1].GetUInt32();
+
+            CreateInfo_ClassLevelStats lvl;
+            lvl.health = fields[2].GetUInt32();
+            lvl.mana = fields[3].GetUInt32();
+
+            _playerClassLevelStatsStore[_class].insert(std::make_pair(level, lvl));
+
+            ++player_classlevelstats_count;
+
+        } while (player_classlevelstats_result->NextRow());
+
+        delete player_classlevelstats_result;
+
+        sLogger.info("MySQLDataLoads : Loaded %u rows from `player_classlevelstats` table in %u ms!", player_classlevelstats_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     }
-
-    sLogger.info("MySQLDataLoads : Table `player_classlevelstats` has %u columns", player_classlevelstats_result->GetFieldCount());
-
-    uint32_t player_classlevelstats_count = 0;
-    do
+    else
     {
-        Field* fields = player_classlevelstats_result->Fetch();
-
-        uint32_t _class = fields[0].GetUInt32();
-        uint32_t level = fields[1].GetUInt32();
-
-        CreateInfo_ClassLevelStats lvl;
-        lvl.health = fields[2].GetUInt32();
-        lvl.mana = fields[3].GetUInt32();
-
-        _playerClassLevelStatsStore[_class].insert(std::make_pair(level, lvl));
-
-        ++player_classlevelstats_count;
-
-    } while (player_classlevelstats_result->NextRow());
+#if VERSION_STRING < Cata
+        sLogger.info("MySQLDataLoads : Table `player_classlevelstats` is empty!");
+#endif
+    }
 
     delete player_classlevelstats_result;
 
-    sLogger.info("MySQLDataLoads : Loaded %u rows from `player_classlevelstats` table in %u ms!", player_classlevelstats_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+#if VERSION_STRING > WotLK
+    //Zyres: load missing and rewuired data from dbc!
+    int32_t player_classlevelstats_count = 0;
+
+    for (uint8_t player_class = 1; player_class < MAX_PLAYER_CLASSES - 1; ++player_class)
+    {
+        for (uint8_t level = 1; level < DBC_STAT_LEVEL_CAP; ++level)
+        {
+            // check if we already loaded data for level/class from db
+            if (getPlayerClassLevelStats(level, player_class))
+                continue;
+
+            DBC::Structures::GtOCTBaseHPByClassEntry const* hp = sGtOCTBaseHPByClassStore.LookupEntry((player_class - 1) * DBC_STAT_LEVEL_CAP + level - 1);
+            DBC::Structures::GtOCTBaseMPByClassEntry const* mp = sGtOCTBaseMPByClassStore.LookupEntry((player_class - 1) * DBC_STAT_LEVEL_CAP + level - 1);
+
+            if (hp && mp)
+            {
+                CreateInfo_ClassLevelStats lvl;
+                lvl.health = static_cast<uint32_t>(hp->ratio);
+                lvl.mana = static_cast<uint32_t>(mp->ratio);
+
+                _playerClassLevelStatsStore[player_class].insert(std::make_pair(level, lvl));
+                ++player_classlevelstats_count;
+            }
+        }
+    }
+
+    sLogger.info("MySQLDataLoads : Loaded %u missing classlevelstats from dbc!", player_classlevelstats_count);
+
+#endif
 }
 
 
@@ -2730,35 +2766,11 @@ CreateInfo_Levelstats const* MySQLDataStore::getPlayerLevelstats(uint32_t level,
 
 CreateInfo_ClassLevelStats const* MySQLDataStore::getPlayerClassLevelStats(uint32_t level, uint8_t player_class)
 {
-#if VERSION_STRING < Cata
     CreateInfo_ClassLevelStatsVector::const_iterator itr = _playerClassLevelStatsStore[player_class].find(level);
     if (itr != _playerClassLevelStatsStore[player_class].end())
         return &(itr->second);
 
     return nullptr;
-#else
-
-    if (level < 1 || player_class >= MAX_PLAYER_CLASSES)
-        return nullptr;
-
-    if (level > worldConfig.player.playerLevelCap)
-        level = worldConfig.player.playerLevelCap;
-
-    DBC::Structures::GtOCTBaseHPByClassEntry const* hp = sGtOCTBaseHPByClassStore.LookupEntry((player_class - 1) * 100 + level - 1);
-    DBC::Structures::GtOCTBaseMPByClassEntry const* mp = sGtOCTBaseMPByClassStore.LookupEntry((player_class - 1) * 100 + level - 1);
-
-    if (!hp || !mp)
-    {
-        sLogger.failure("Base HP/MP not found for class %u and level %u. Check out your dbc files!",static_cast<uint32_t>(player_class), level);
-        return nullptr;
-    }
-
-    CreateInfo_ClassLevelStats cls;
-    cls.health = uint32_t(hp->ratio);
-    cls.mana = uint32_t(mp->ratio);
-
-    return &cls;
-#endif
 }
 
 
