@@ -49,7 +49,7 @@ pause
 GOTO menu
 
 :error
-ECHO	Please enter a correct character.
+ECHO Please enter a correct character.
 ECHO.
 GOTO menu
 pause

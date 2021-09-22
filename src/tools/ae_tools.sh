@@ -1,6 +1,6 @@
 #!/bin/sh
 
-logo() {
+ae_logo() {
     GREEN="\e[32m"
     ENDCOLOR="\e[0m"
 
@@ -13,7 +13,7 @@ logo() {
     echo -e "${GREEN}                    A never ending place to work. ${ENDCOLOR}"
 }
 until [ "${option}" = "x" ]; do
-	logo
+    ae_logo
     echo ""
     echo "  1 - Import Maps."
     echo "  2 - Import Vmaps."
@@ -23,20 +23,20 @@ until [ "${option}" = "x" ]; do
     echo ""
     read -p "Enter a char:  " option
 
-	if [ "${option}" = "1" ]; then
+    if [ "${option}" = "1" ]; then
         ./map_extractor
-	elif [ "${option}" = "2" ]; then
+    elif [ "${option}" = "2" ]; then
         mkdir -p vmaps
         ./vmap4_extractor
         ./vmap4_assembler Buildings vmaps
-	elif [ "${option}" = "3" ]; then
+    elif [ "${option}" = "3" ]; then
         mkdir -p ./mmaps
         ./mmaps_generator
-	fi
-	if [ "${option}" != "X" ]; then
-		read -p "Press enter to continue..." dummy
+    fi
+    if [ "${option}" != "X" ]; then
+        read -p "Press enter to continue..." dummy
     elif [ "${option}" != "x" ]; then
-		read -p "Press enter to continue..." dummy
-	fi
+        read -p "Press enter to continue..." dummy
+    fi
 done
 echo "Closing.."
