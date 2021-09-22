@@ -2710,8 +2710,6 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
 #endif
     }
 
-    delete player_classlevelstats_result;
-
 #if VERSION_STRING > WotLK
     //Zyres: load missing and rewuired data from dbc!
     int32_t player_classlevelstats_count = 0;
