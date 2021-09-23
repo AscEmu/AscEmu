@@ -5,56 +5,55 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "CommonTypes.hpp"
-
 #include <string>
 #include <cstdint>
 
+#include "CommonTypes.hpp"
+
 class SERVER_DECL LogonConfig
 {
-    public:
+public:
+    LogonConfig();
 
-        LogonConfig();
+    void loadConfigValues(bool reload = false);
 
-        void loadConfigValues(bool reload = false);
+    // logon.conf - LogonDatabase
+    struct LogonDatabase
+    {
+        std::string host;
+        std::string user;
+        std::string db;
+        std::string password;
+        uint32_t port;
+        int connections;
+    } logonDb;
 
-        // logon.conf - LogonDatabase
-        struct LogonDatabase
-        {
-            std::string host;
-            std::string user;
-            std::string db;
-            std::string password;
-            uint32_t port;
-            int connections;
-        } logonDb;
+    // logon.conf - Listen
+    struct Listen
+    {
+        std::string host;
+        std::string interServerHost;
+        uint32_t realmListPort;
+        uint32_t port;
+    } listen;
 
-        // logon.conf - Listen
-        struct Listen
-        {
-            std::string host;
-            std::string interServerHost;
-            uint32_t realmListPort;
-            uint32_t port;
-        } listen;
+    // logon.conf - Logger Settings
+    struct LoggerSettings
+    {
+        uint8_t minimumMessageType;
+    } logger;
 
-        // logon.conf - Logger Settings
-        struct LoggerSettings
-        {
-            uint8_t minimumMessageType;
-        } logger;
+    // logon.conf - Rates
+    struct Rates
+    {
+        uint32_t accountRefreshTime;
+    } rates;
 
-        // logon.conf - Rates
-        struct Rates
-        {
-            uint32_t accountRefreshTime;
-        } rates;
-
-        // logon.conf - LogonServer
-        struct LogonServer
-        {
-            bool disablePings;
-            std::string allowedIps;
-            std::string allowedModIps;
-        } logonServer;
+    // logon.conf - LogonServer
+    struct LogonServer
+    {
+        bool disablePings;
+        std::string allowedIps;
+        std::string allowedModIps;
+    } logonServer;
 };
