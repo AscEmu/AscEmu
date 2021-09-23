@@ -873,7 +873,7 @@ namespace DBC::Structures
         uint32_t spellfamily;                                       // 7
         //uint32_t unk4;                                            // 8
         uint32_t cinematic_id;                                      // 9 CinematicSequences.dbc
-        //uint32_t expansion;                                         // 10
+        //uint32_t expansion;                                       // 10
         uint32_t apPerStr;                                          // 11
         uint32_t apPerAgi;                                          // 12
         uint32_t rapPerAgi;                                         // 13
@@ -897,7 +897,7 @@ namespace DBC::Structures
         //char* name_neutral;                                       // 16
         //uint32_t unk5[2]                                          // 17-18
         //uint32_t unk19                                            // 19
-        //uint32_t expansion;                                         // 20
+        //uint32_t expansion;                                       // 20
         //uint32_t unk21                                            // 21
         //uint32_t unk22                                            // 22
         //uint32_t unk23                                            // 23
@@ -915,7 +915,7 @@ namespace DBC::Structures
         uint32_t Displayid;                                         // 0
         uint32_t ModelId;                                           // 1
         //uint32_t sound_id;                                        // 2
-        //uint32_t ExtendedDisplayInfoID;                             // 3
+        //uint32_t ExtendedDisplayInfoID;                           // 3
         float scale;                                                // 4
         //uint32_t unk01;                                           // 5
         //uint32_t unk02[2];                                        // 6-8
@@ -1235,18 +1235,18 @@ namespace DBC::Structures
         uint32_t recmaxlevel;                                       // 6
         int32_t map;                                                // 7
         uint32_t difficulty;                                        // 8
-        //uint32_t unk;                                               // 9
+        //uint32_t unk;                                             // 9
         uint32_t flags;                                             // 10
         int32_t type;                                               // 11
-        //char* iconname;                                             // 12
+        //char* iconname;                                           // 12
         uint32_t expansion;                                         // 13
-        //uint32_t unk4;                                              // 14
-        //uint32_t unk5;                                              // 15
-        //char* unk_text;                                             // 16
+        //uint32_t unk4;                                            // 14
+        //uint32_t unk5;                                            // 15
+        //char* unk_text;                                           // 16
         uint32_t grouptype;                                         // 17
-        //uint32_t unkflags1;                                         // 18
-        //uint32_t unkflags2;                                         // 19
-        //uint32_t unk7;                                              // 20
+        //uint32_t unkflags1;                                       // 18
+        //uint32_t unkflags2;                                       // 19
+        //uint32_t unk7;                                            // 20
         uint32_t randomDungeonId;
 
         // Helpers
@@ -1309,24 +1309,24 @@ namespace DBC::Structures
     struct MapEntry
     {
         uint32_t id;                                                // 0
-        //char* name_internal;                                        // 1
+        //char* name_internal;                                      // 1
         uint32_t map_type;                                          // 2
-        //uint32_t map_flags;                                         // 3
-        //uint32_t unk4;                                              // 4
-        //uint32_t is_pvp_zone;                                       // 5
+        //uint32_t map_flags;                                       // 3
+        //uint32_t unk4;                                            // 4
+        //uint32_t is_pvp_zone;                                     // 5
         char* map_name;                                             // 6
         uint32_t linked_zone;                                       // 7 common zone for instance and continent map
-        //char* horde_intro;                                          // 8 horde text for PvP Zones
-        //char* alliance_intro;                                       // 9 alliance text for PvP Zones
+        //char* horde_intro;                                        // 8 horde text for PvP Zones
+        //char* alliance_intro;                                     // 9 alliance text for PvP Zones
         uint32_t multimap_id;                                       // 10
-        //float battlefield_map_icon;                                 // 11
+        //float battlefield_map_icon;                               // 11
         int32_t parent_map;                                         // 12 ghost map_id of parent map
         float start_x;                                              // 13 ghost enter x coordinate (if exist single entry)
         float start_y;                                              // 14 ghost enter y coordinate (if exist single entry)
-        //uint32_t dayTime_override;                                  // 15
+        //uint32_t dayTime_override;                                // 15
         uint32_t addon;                                             // 16 0-original maps, 1-tbc addon, 2-wotlk addon
         uint32_t unk_time;                                          // 17
-        //uint32_t max_players;                                       // 18
+        //uint32_t max_players;                                     // 18
         uint32_t next_phase_map;                                    // 19
 
         bool isDungeon() const { return map_type == MAP_INSTANCE || map_type == MAP_RAID; }
@@ -1686,7 +1686,7 @@ namespace DBC::Structures
     {
         //uint32_t Id;                                              // 0
         int32_t Reagent[MAX_SPELL_REAGENTS];                        // 54-61
-        uint32_t ReagentCount[MAX_SPELL_REAGENTS+2];                  // 62-69
+        uint32_t ReagentCount[MAX_SPELL_REAGENTS+2];                // 62-69
     };
 
     // SpellRuneCost.dbc
@@ -1710,7 +1710,7 @@ namespace DBC::Structures
         uint32_t playerClass;                                       // 4
 
         float coefBase;                                             // 14
-        int32_t coefLevelBase;                                     // 15
+        int32_t coefLevelBase;                                      // 15
 
         bool IsScalableEffect(uint8_t i) const { return coefBase != 0.0f; };
     };
@@ -1729,7 +1729,7 @@ namespace DBC::Structures
     // SpellTargetRestrictions.dbc
     struct SpellTargetRestrictionsEntry
     {
-        uint32_t Id;                                              // 0
+        uint32_t Id;                                                // 0
         float MaxTargetRadius;                                      // 1
         uint32_t MaxAffectedTargets;                                // 2
         uint32_t MaxTargetLevel;                                    // 3
@@ -1765,7 +1765,7 @@ namespace DBC::Structures
         uint32_t AttributesExM;
         uint32_t CastingTimeIndex;                                  // 12
         uint32_t DurationIndex;                                     // 13
-        //int32_t powerType;                                          // 14
+        //int32_t powerType;                                        // 14
         uint32_t rangeIndex;                                        // 15
         float speed;                                                // 16
         uint32_t SpellVisual;                                       // 17
@@ -1902,15 +1902,15 @@ namespace DBC::Structures
     struct TalentEntry
     {
         uint32_t TalentID;                                          // 0
-        //uint32_t TalentTree;                                        // 1
+        //uint32_t TalentTree;                                      // 1
         uint32_t Row;                                               // 2
         uint32_t Col;                                               // 3
-        //uint32_t RankID[5];                                         // 4-8
+        //uint32_t RankID[5];                                       // 4-8
         uint32_t SpellId;
         //uint32_t unk[4];                                          // 9-12
-        //uint32_t DependsOn;                                         // 13
+        //uint32_t DependsOn;                                       // 13
         //uint32_t unk1[2];                                         // 14-15
-        //uint32_t DependsOnRank;                                     // 16
+        //uint32_t DependsOnRank;                                   // 16
         //uint32_t unk2[2];                                         // 17-18
         //uint32_t unk3;                                            // 19
         //uint32_t unk4;                                            // 20
