@@ -59,7 +59,7 @@ public:
         float SSY = mTarget->GetPositionY();
         float SSZ = mTarget->GetPositionZ();
 
-        Creature* creat = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 4452);
+        Creature* creat = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 4452);
         if (creat == nullptr)
             return;
 
@@ -67,6 +67,7 @@ public:
         msg += mTarget->getName();
         msg += ", you make quite a partner!";
         creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
+        //sch: need a test. creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Hahah! $N, you make quite a partner!");
         creat->emote(EMOTE_ONESHOT_LAUGH);
     }
 };

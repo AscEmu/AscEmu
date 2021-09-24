@@ -142,7 +142,7 @@ public:
         float SSY = mKiller->GetPositionY();
         float SSZ = mKiller->GetPositionZ();
 
-        Creature* doctor = mKiller->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 1449);
+        Creature* doctor = mKiller->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 1449);
         if (doctor)
             doctor->emote(EMOTE_ONESHOT_CHEER);
     }
@@ -157,11 +157,11 @@ public:
         float SSY = mTarget->GetPositionY();
         float SSZ = mTarget->GetPositionZ();
 
-        GameObject* skull1 = mTarget->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 2551);
+        GameObject* skull1 = mTarget->MAP_GAMEOBJECT_NEAREST_COORDS(SSX, SSY, SSZ, 2551);
         if (skull1 == nullptr)
             return;
 
-        Creature* Kin_weelay = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 2519);
+        Creature* Kin_weelay = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 2519);
         if (Kin_weelay == nullptr)
             return;
 
@@ -171,7 +171,7 @@ public:
         Kin_weelay->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg1.c_str());
         Kin_weelay->castSpell(Kin_weelay, sSpellMgr.getSpellInfo(3644), false);
         skull1->Despawn(5000, 0);
-        GameObject* skull2 = mTarget->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 2551);
+        GameObject* skull2 = mTarget->MAP_GAMEOBJECT_NEAREST_COORDS(SSX, SSY, SSZ, 2551);
         if (skull2)
             skull2->Despawn(5000, 0);
 
@@ -191,7 +191,7 @@ public:
         float Y = mTarget->GetPositionY();
         float Z = mTarget->GetPositionZ();
 
-        Creature* Crank = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(X, Y, Z, 2498);
+        Creature* Crank = mTarget->MAP_CREATURE_NEAREST_COORDS(X, Y, Z, 2498);
         if (Crank)
         {
             std::string say = "Hm... if you're looking to adle wits. ";
@@ -211,7 +211,7 @@ public:
         float Y = mTarget->GetPositionY();
         float Z = mTarget->GetPositionZ();
 
-        Creature* MacKinley = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(X, Y, Z, 2501);
+        Creature* MacKinley = mTarget->MAP_CREATURE_NEAREST_COORDS(X, Y, Z, 2501);
         if (MacKinley)
         {
             std::string say = "Bah! ";

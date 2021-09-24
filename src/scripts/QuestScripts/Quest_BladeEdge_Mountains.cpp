@@ -77,7 +77,7 @@ class IntotheSoulgrinder : public QuestScript
 public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* qg = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 22941);
+        Creature* qg = mTarget->MAP_CREATURE_NEAREST_COORDS(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 22941);
         if (qg == nullptr)
             return;
 
@@ -193,11 +193,11 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        GameObject* obelisk1 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2898.92f, 4759.29f, 277.408f, 185198);
-        GameObject* obelisk2 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2942.3f, 4752.28f, 285.553f, 185197);
-        GameObject* obelisk3 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2834.39f, 4856.67f, 277.632f, 185196);
-        GameObject* obelisk4 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2923.37f, 4840.36f, 278.45f, 185195);
-        GameObject* obelisk5 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2965.75f, 4835.25f, 277.949f, 185193);
+        GameObject* obelisk1 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2898.92f, 4759.29f, 277.408f, 185198);
+        GameObject* obelisk2 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2942.3f, 4752.28f, 285.553f, 185197);
+        GameObject* obelisk3 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2834.39f, 4856.67f, 277.632f, 185196);
+        GameObject* obelisk4 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2923.37f, 4840.36f, 278.45f, 185195);
+        GameObject* obelisk5 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2965.75f, 4835.25f, 277.949f, 185193);
 
         if (obelisk1 && obelisk2 && obelisk3 && obelisk4 && obelisk5)
         {
@@ -279,7 +279,7 @@ public:
     {
         if (pPlayer->hasQuestInQuestLog(10974))
         {
-            Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(3989.094482f, 6071.562500f, 266.416656f, 22920);
+            Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(3989.094482f, 6071.562500f, 266.416656f, 22920);
             if (pCreature != nullptr)
             {
                 pCreature->SetFaction(14);

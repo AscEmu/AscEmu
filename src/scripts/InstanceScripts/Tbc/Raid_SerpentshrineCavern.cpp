@@ -1528,12 +1528,12 @@ public:
     void OnActivate(Player* pPlayer) override
     {
         Creature* Vashj = NULL;
-        Vashj = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(29.798161f, -923.358276f, 42.900517f, CN_LADY_VASHJ);
+        Vashj = pPlayer->MAP_CREATURE_NEAREST_COORDS(29.798161f, -923.358276f, 42.900517f, CN_LADY_VASHJ);
         if (Vashj != NULL && static_cast< VashjAI* >(Vashj->GetScript())->Phase == 2)
         {
             Vashj->modHealth(static_cast<int32_t>((Vashj->getMaxHealth() / 100) * 5));
             Creature* channel = NULL;
-            channel = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), CN_SHIELD_GENERATOR_CHANNEL);
+            channel = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), CN_SHIELD_GENERATOR_CHANNEL);
             if (channel != NULL && channel->IsInWorld())
                 channel->Despawn(0, 0);
         }

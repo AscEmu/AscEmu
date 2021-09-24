@@ -146,7 +146,7 @@ public:
         float SSY = mTarget->GetPositionY();
         float SSZ = mTarget->GetPositionZ();
 
-        Creature* Overlord = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 4500);
+        Creature* Overlord = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 4500);
 
         if (Overlord == nullptr)
             return;
@@ -212,7 +212,7 @@ public:
         float SSY = mTarget->GetPositionY();
         float SSZ = mTarget->GetPositionZ();
 
-        Creature* Dashel = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 4966);
+        Creature* Dashel = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 4966);
 
         if (Dashel == nullptr)
             return;

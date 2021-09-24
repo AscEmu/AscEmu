@@ -29,7 +29,7 @@ public:
             return;
         }
 
-        Creature* Zelemar = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-370.133f, 162.519f, -21.1299f, RagefireChasm::CN_ZELMAR);
+        Creature* Zelemar = _gameobject->MAP_CREATURE_NEAREST_COORDS(-370.133f, 162.519f, -21.1299f, RagefireChasm::CN_ZELMAR);
         if (Zelemar)
             return;
 

@@ -25,7 +25,7 @@ class HeroesofOld : public QuestScript
 public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* spawncheckcr = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ(), 7750);
+        Creature* spawncheckcr = mTarget->MAP_CREATURE_NEAREST_COORDS(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ(), 7750);
 
         if (!spawncheckcr)
         {
@@ -33,7 +33,7 @@ public:
             general->Despawn(3 * 60 * 1000, 0);
         }
 
-        GameObject* spawncheckgobj = mTarget->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ(), 141980);
+        GameObject* spawncheckgobj = mTarget->MAP_GAMEOBJECT_NEAREST_COORDS(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ(), 141980);
 
         if (!spawncheckgobj)
         {
@@ -43,7 +43,6 @@ public:
         }
     }
 };
-
 
 class HeroesofOld1 : public GossipScript
 {
@@ -77,14 +76,14 @@ public:
         {
             case 1:
             {
-                Creature* spawncheckcr = plr->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 7750);
+                Creature* spawncheckcr = plr->MAP_CREATURE_NEAREST_COORDS(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 7750);
                 if (!spawncheckcr)
                 {
                     general = plr->GetMapMgr()->CreateAndSpawnCreature(7750, -10619, -2997, 28.8f, 4);
                     general->Despawn(3 * 60 * 1000, 0);
                 }
 
-                GameObject* spawncheckgobj = plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 141980);
+                GameObject* spawncheckgobj = plr->MAP_GAMEOBJECT_NEAREST_COORDS(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 141980);
                 if (!spawncheckgobj)
                 {
                     GameObject* generalsbox = plr->GetMapMgr()->CreateAndSpawnGameObject(141980, -10622, -2994, 28.6f, 4, 4);

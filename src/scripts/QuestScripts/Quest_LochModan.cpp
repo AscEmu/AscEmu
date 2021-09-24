@@ -31,7 +31,7 @@ public:
         float SSZ = mTarget->GetPositionZ();
 
 
-        Creature* creat = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 1379);
+        Creature* creat = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 1379);
         if (creat == nullptr)
             return;
         creat->m_escorter = mTarget;

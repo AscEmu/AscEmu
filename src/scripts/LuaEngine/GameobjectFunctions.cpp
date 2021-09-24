@@ -185,7 +185,7 @@ int LuaGameObject::GetCreatureNearestCoords(lua_State* L, GameObject* ptr)
     float y = CHECK_FLOAT(L, 2);
     float z = CHECK_FLOAT(L, 3);
     uint32_t entryid = CHECK_ULONG(L, 4);
-    Creature* crc = ptr->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(x, y, z, entryid);
+    Creature* crc = ptr->MAP_CREATURE_NEAREST_COORDS(x, y, z, entryid);
     if (crc && crc->isCreatureOrPlayer())
     {
         PUSH_UNIT(L, crc);
@@ -204,7 +204,7 @@ int LuaGameObject::GetGameObjectNearestCoords(lua_State* L, GameObject* ptr)
     float y = CHECK_FLOAT(L, 2);
     float z = CHECK_FLOAT(L, 3);
     uint32_t entryid = CHECK_ULONG(L, 4);
-    GameObject* go = ptr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(x, y, z, entryid);
+    GameObject* go = ptr->MAP_GAMEOBJECT_NEAREST_COORDS(x, y, z, entryid);
     if (go != NULL)
     PUSH_GO(L, go);
     else

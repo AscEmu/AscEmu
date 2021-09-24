@@ -340,17 +340,17 @@ bool EatenRecently(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (unit_caster == nullptr || unit_caster->isPlayer())
         return true;
 
-    Creature* NetherDrake = static_cast<Creature*>(unit_caster);
+    Creature* pCreature = static_cast<Creature*>(unit_caster);
 
     if (apply)
     {
-        NetherDrake->GetAIInterface()->setAllowedToEnterCombat(false);
-        NetherDrake->emote(EMOTE_ONESHOT_EAT);
+        pCreature->GetAIInterface()->setAllowedToEnterCombat(false);
+        pCreature->emote(EMOTE_ONESHOT_EAT);
     }
     else
     {
-        NetherDrake->GetAIInterface()->setAllowedToEnterCombat(true);
-        NetherDrake->getMovementManager()->moveTakeoff(0, NetherDrake->GetSpawnPosition());
+        pCreature->GetAIInterface()->setAllowedToEnterCombat(true);
+        pCreature->getMovementManager()->moveTakeoff(0, pCreature->GetSpawnPosition());
     }
     return true;
 }

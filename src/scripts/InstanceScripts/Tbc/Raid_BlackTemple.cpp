@@ -5230,7 +5230,7 @@ public:
     void OnActivate(Player* /*pPlayer*/) override
     {
         _gameobject->setFlags(GO_FLAG_NONSELECTABLE);
-        Creature* pTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), CN_CAGE_TRAP_DISTURB_TRIGGER);
+        Creature* pTrigger = _gameobject->MAP_CREATURE_NEAREST_COORDS(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), CN_CAGE_TRAP_DISTURB_TRIGGER);
         if (pTrigger != NULL && pTrigger->GetScript() != NULL)
         {
             CageTrapTriggerAI* pTriggerAI = static_cast< CageTrapTriggerAI* >(pTrigger->GetScript());

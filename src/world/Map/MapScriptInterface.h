@@ -22,6 +22,7 @@
 #ifndef MAP_SCRIPT_INTERFACE_H
 #define MAP_SCRIPT_INTERFACE_H
 
+#include <Macros/ScriptMacros.hpp>
 #include "Objects/ObjectDefines.h"
 #include "Objects/Object.h"
 #include "Units/Creatures/Creature.h"

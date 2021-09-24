@@ -89,7 +89,7 @@ public:
         float SSY = mTarget->GetPositionY();
         float SSZ = mTarget->GetPositionZ();
 
-        Creature* Dashel = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 6784);
+        Creature* Dashel = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 6784);
 
         if (Dashel == nullptr)
             return;

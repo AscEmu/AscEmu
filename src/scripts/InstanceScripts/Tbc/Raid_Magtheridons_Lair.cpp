@@ -368,7 +368,7 @@ public:
                 if (Magtheridon)
                     continue;
 
-                Magtheridon = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z, 17257);
+                Magtheridon = _gameobject->MAP_CREATURE_NEAREST_COORDS(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z, 17257);
             }
         }
 
@@ -382,7 +382,7 @@ public:
 
         // If we haven't "filled" pointer already we do that now
         if (!CubeTrigger)
-                CubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 17376);
+                CubeTrigger = _gameobject->MAP_CREATURE_NEAREST_COORDS(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 17376);
 
         // We check if Cube Trigger we want to use exists and if is alive
         if (!CubeTrigger || (CubeTrigger && !CubeTrigger->isAlive()))
@@ -448,7 +448,7 @@ public:
             for (uint8_t i = 0; i < 5; i++)
             {
                 Unit* GlobalCubeTrigger = NULL;
-                GlobalCubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
+                GlobalCubeTrigger = _gameobject->MAP_CREATURE_NEAREST_COORDS(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
                 if (Magtheridon != nullptr)
                     if (GlobalCubeTrigger && GlobalCubeTrigger->getChannelSpellId() == SHADOW_GRASP && CubeTrigger->getChannelObjectGuid() == Magtheridon->getGuid())
                         Counter++;
@@ -477,7 +477,7 @@ public:
         for (uint8_t i = 0; i < 5; i++)
         {
             Unit* GlobalCubeTrigger = NULL;
-            GlobalCubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
+            GlobalCubeTrigger = _gameobject->MAP_CREATURE_NEAREST_COORDS(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
             if (Magtheridon != nullptr)
                 if (GlobalCubeTrigger && GlobalCubeTrigger->getChannelSpellId() == SHADOW_GRASP && CubeTrigger->getChannelObjectGuid() == Magtheridon->getGuid())
                     Counter++;

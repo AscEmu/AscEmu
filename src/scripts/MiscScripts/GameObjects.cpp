@@ -339,8 +339,8 @@ public:
 
     void OnActivate(Player* player) override
     {
-        Creature* Ulag = player->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(2390.101807f, 336.676788f, 40.015614f, 6390);
-        GameObject* pDoor = player->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2388.480029f, 338.3901f, 40.092899f, 176594);
+        Creature* Ulag = player->MAP_CREATURE_NEAREST_COORDS(2390.101807f, 336.676788f, 40.015614f, 6390);
+        GameObject* pDoor = player->MAP_GAMEOBJECT_NEAREST_COORDS(2388.480029f, 338.3901f, 40.092899f, 176594);
         QuestLogEntry* en = player->getQuestLogByQuestId(1819);
         if (en == nullptr || pDoor == nullptr || Ulag == nullptr)
             return;
@@ -404,7 +404,7 @@ public:
     void OnActivate(Player* player) override
     {
         LocationVector pos = player->GetPosition();
-        Creature* commander = player->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 20482);
+        Creature* commander = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 20482);
         if (commander)
             return;
 
@@ -448,7 +448,7 @@ public:
         player->AddQuestKill(10111, 0, 0);
 
         LocationVector pos = player->GetPosition();
-        Creature* bird = player->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 19055);
+        Creature* bird = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 19055);
         if (bird != nullptr)
             return;
 
@@ -495,7 +495,7 @@ public:
         if (player->hasQuestInQuestLog(5902) || player->hasQuestInQuestLog(5904))
         {
             LocationVector pos = player->GetPosition();
-            GameObject* go = player->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 177491);
+            GameObject* go = player->MAP_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 177491);
             if (go == nullptr)
             {
                 GameObject* barel = player->GetMapMgr()->CreateAndSpawnGameObject(177491, 2449.51f, -1662.32f, 104.38f, 1.0f, 1);
@@ -578,7 +578,7 @@ public:
 
         LocationVector pos = player->GetPosition();
 
-        Creature* shaghost = player->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 9136);
+        Creature* shaghost = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 9136);
         if (shaghost)
             return;
 
@@ -630,7 +630,7 @@ public:
 
         LocationVector pos = player->GetPosition();
 
-        Creature* prisoner = player->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 17375);
+        Creature* prisoner = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 17375);
         if (prisoner != nullptr)
             prisoner->Despawn(1, 6 * 60 * 1000);
     }
@@ -685,7 +685,7 @@ public:
 
         LocationVector pos = player->GetPosition();
 
-        Creature* grenka = player->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 4490);
+        Creature* grenka = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 4490);
         if (grenka != nullptr)
         {
             if (!grenka->isAlive())
@@ -764,7 +764,7 @@ public:
         LocationVector pos = player->GetPosition();
 
         // Wth is that ? To remove ?
-        GameObject* gobj = player->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 184729);
+        GameObject* gobj = player->MAP_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 184729);
         if (gobj != nullptr)
             gobj->Despawn(6 * 60 * 1000, 0);
 
@@ -789,7 +789,7 @@ public:
         LocationVector pos = player->GetPosition();
 
         // What is this ? :O To remove ?
-        Creature* reaver = player->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 17556);
+        Creature* reaver = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 17556);
         if (reaver)
         {
             LocationVector pos2 = reaver->GetPosition();
