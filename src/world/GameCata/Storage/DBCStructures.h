@@ -755,24 +755,24 @@ namespace DBC::Structures
         uint32_t zone;                                              // 2 if 0 then it's zone, else it's zone id of this area
         uint32_t explore_flag;                                      // 3, main index
         uint32_t flags;                                             // 4, unknown value but 312 for all cities
-        uint32 SoundProviderPref;                               // 5
-        uint32 SoundProviderPrefUnderwater;                     // 6
-        uint32 AmbienceID;                                      // 7
-        uint32 ZoneMusic;                                       // 8
-        uint32 IntroSound;                                      // 9                                                           // 5-9 unused
+        uint32 SoundProviderPref;                                   // 5
+        uint32 SoundProviderPrefUnderwater;                         // 6
+        uint32 AmbienceID;                                          // 7
+        uint32 ZoneMusic;                                           // 8
+        uint32 IntroSound;                                          // 9 // 5-9 unused
         int32_t area_level;                                         // 10
         char* area_name;                                            // 11
         uint32_t team;                                              // 12
         uint32_t liquid_type_override[4];                           // 13-16 liquid override by type
-        float MinElevation;                                     // 17
-        float AmbientMultiplier;                                // 18 client only?
-        uint32 LightID;                                         // 19
-        uint32 MountFlags;                                      // 20
-        uint32 UwIntroSound;                                    // 21 4.0.0
-        uint32 UwZoneMusic;                                     // 22 4.0.0
-        uint32 UwAmbience;                                      // 23 4.0.0
-        uint32 World_pvp_ID;                                    // 24
-        int32 PvpCombatWorldStateID;                            // 25- worldStateId4
+        float MinElevation;                                         // 17
+        float AmbientMultiplier;                                    // 18 client only?
+        uint32 LightID;                                             // 19
+        uint32 MountFlags;                                          // 20
+        uint32 UwIntroSound;                                        // 21 4.0.0
+        uint32 UwZoneMusic;                                         // 22 4.0.0
+        uint32 UwAmbience;                                          // 23 4.0.0
+        uint32 World_pvp_ID;                                        // 24
+        int32 PvpCombatWorldStateID;                                // 25- worldStateId4
     };
 
     struct AreaTriggerEntry
@@ -2128,22 +2128,22 @@ namespace DBC::Structures
 
     struct MountCapabilityEntry
     {
-        uint32_t  id;                                             // 0 index
-        uint32_t  flag;                                           // 1 some flag
-        uint32_t  reqRidingSkill;                                  // 2 skill level of riding required
-        uint32_t  reqArea;                                        // 3 required Area
-        uint32_t  reqAura;                                        // 4 required Aura
-        uint32_t  reqSpell;                                       // 5 spell that has to be known to you
-        uint32_t  speedModSpell;                                  // 6 spell to cast to apply mount speed effects
-        uint32_t  reqMap;                                         // 7 map where this is applicable
+        uint32_t  id;                                               // 0 index
+        uint32_t  flag;                                             // 1 some flag
+        uint32_t  reqRidingSkill;                                   // 2 skill level of riding required
+        uint32_t  reqArea;                                          // 3 required Area
+        uint32_t  reqAura;                                          // 4 required Aura
+        uint32_t  reqSpell;                                         // 5 spell that has to be known to you
+        uint32_t  speedModSpell;                                    // 6 spell to cast to apply mount speed effects
+        uint32_t  reqMap;                                           // 7 map where this is applicable
     };
 
     #define MAX_MOUNT_CAPABILITIES 24
     struct MountTypeEntry
     {
-        uint32_t id;                                             // 0 index
-        uint32_t capabilities[MAX_MOUNT_CAPABILITIES];           // 1-17 capability ids from MountCapability.dbc
-        //uint32_t  empty[7];                                    // 18-24 empty. maybe continues capabilities
+        uint32_t id;                                                // 0 index
+        uint32_t capabilities[MAX_MOUNT_CAPABILITIES];              // 1-17 capability ids from MountCapability.dbc
+        //uint32_t  empty[7];                                       // 18-24 empty. maybe continues capabilities
     };
 
     struct WMOAreaTableEntry

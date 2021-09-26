@@ -3318,8 +3318,8 @@ void Object::PushToWorld(MapMgr* mgr)
     {
         if (mgr == nullptr)
         {
-            sLogger.failure("Invalid push to world of Object " I64FMT, getGuid());
-            return; //instance add failed
+            sLogger.failure("Invalid push to world of Object " I64FMT " ", getGuid());
+            return; // instance add failed
         }
 
         m_mapId = mgr->GetMapId();

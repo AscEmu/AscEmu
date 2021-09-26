@@ -8,10 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 /// -
 #define CALL_SCRIPT_EVENT(obj, func) if (obj->IsInWorld() && obj->isCreature() && static_cast<Creature*>(obj)->GetScript() != nullptr) static_cast<Creature*>(obj)->GetScript()->func
 
-#define CALL_INSTANCE_SCRIPT_EVENT(Mgr, Func) if (Mgr != nullptr && Mgr->GetScript() != nullptr) Mgr->GetScript()->Func
-
 /// -
-//#define CALL_EVENTSCRIPT_EVENT(obj, func) if (static_cast<GameEvent*>(obj)->mEventScript != nullptr) static_cast<GameEvent*>(obj)->mEventScript->func
+#define CALL_INSTANCE_SCRIPT_EVENT(Mgr, Func) if (Mgr != nullptr && Mgr->GetScript() != nullptr) Mgr->GetScript()->Func
 
 /// -
 #define CALL_GO_SCRIPT_EVENT(obj, func) if (obj->isGameObject() && static_cast<GameObject*>(obj)->GetScript() != nullptr) static_cast< GameObject* >(obj)->GetScript()->func

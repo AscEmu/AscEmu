@@ -122,10 +122,10 @@ namespace DBC::Structures
         uint32_t flags;                                             // 4, unknown value but 312 for all cities
                                                                     // 5-9 unused
         int32_t area_level;                                         // 10
-        char* area_name[8];                                        // 11-26
+        char* area_name[8];                                         // 11-26
                                                                     // 27, string flags, unused
         uint32_t team;                                              // 28
-        uint32_t liquid_type_override;                           // 29-32 liquid override by type
+        uint32_t liquid_type_override;                              // 29-32 liquid override by type
     };
 
     struct AreaTriggerEntry
@@ -188,7 +188,7 @@ namespace DBC::Structures
     {
         uint32_t id;                                                // 0
         uint32_t flags;                                             // 1
-        char* name_pattern[8];                                     // 3-18
+        char* name_pattern[8];                                      // 3-18
         //uint32_t name_pattern_flags;                              // 19
         //char* channel_name[16];                                   // 20-35
         //uint32_t channel_name_flags;                              // 36
@@ -250,7 +250,7 @@ namespace DBC::Structures
         uint32_t skilline;                                          // 5
         uint32_t tameable;                                          // 6 second skill line - 270 Generic
         uint32_t petdietflags;                                      // 7
-        char* name[8];                                             // 8-23
+        char* name[8];                                              // 8-23
         //uint32_t nameflags;                                       // 24
         //uint32_t iconFile;                                        // 25
     };
@@ -308,7 +308,7 @@ namespace DBC::Structures
         int32_t baseRepValue[4];                                    // 10-13
         uint32_t repFlags[4];                                       // 14-17
         uint32_t parentFaction;                                     // 18
-        char* Name[8];                                             // 19-34
+        char* Name[8];                                              // 19-34
         //uint32_t name_flags;                                      // 35
         //uint32_t Description[16];                                 // 36-51
         //uint32_t description_flags;                               // 52
@@ -412,7 +412,7 @@ namespace DBC::Structures
         uint32_t spells[3];                                         // 2-4
         //uint32_t unk1;                                            // 5
         //uint32_t unk2;                                            // 6
-        //char* name_suffix[16];                                      // 7-22
+        //char* name_suffix[16];                                    // 7-22
         //uint32_t name_suffix_flags;                               // 23
     };
 
@@ -430,10 +430,10 @@ namespace DBC::Structures
 
     struct ItemSetEntry
     {
-        //uint32_t id;                                                // 1
-        char* name[8];                                             // 1-16 name (lang)
+        //uint32_t id;                                              // 1
+        char* name[8];                                              // 1-16 name (lang)
         //uint32_t localeflag;                                      // 17 constant
-        //uint32_t itemid[10];                                        // 18-27 item set items
+        //uint32_t itemid[10];                                      // 18-27 item set items
         //uint32_t unk[7];                                          // 28-34 all 0
         uint32_t SpellID[8];                                        // 35-42
         uint32_t itemscount[8];                                     // 43-50
@@ -487,10 +487,10 @@ namespace DBC::Structures
     struct MailTemplateEntry
     {
         uint32_t ID;                                                // 0
-        //char* subject;                                              // 1
+        //char* subject;                                            // 1
         //float unused1[15]                                         // 2-16
         //uint32_t flags1                                           // 17 name flags, unused
-        //char* content;                                              // 18
+        //char* content;                                            // 18
         //float unused2[15]                                         // 19-34
         //uint32_t flags2                                           // 35 name flags, unused
     };
@@ -501,7 +501,7 @@ namespace DBC::Structures
         //char* name_internal;                                      // 1
         uint32_t map_type;                                          // 2
         //uint32_t is_pvp_zone;                                     // 3 -0 false -1 true
-        char* map_name[8];                                         // 4-19
+        char* map_name[8];                                          // 4-19
         //uint32_t name_flags;                                      // 20
         uint32_t linked_zone;                                       // 22 common zone for instance and continent map
         //char* horde_intro[16];                                    // 23-38 horde text for PvP Zones
@@ -538,7 +538,7 @@ namespace DBC::Structures
         uint32_t id;                                                // 0
         uint32_t type;                                              // 1
         //uint32_t skillCostsID;                                    // 2
-        char* Name[8];                                             // 3-18
+        char* Name[8];                                              // 3-18
         //uint32_t NameFlags;                                       // 19
         //char* Description[16];                                    // 20-35
         //uint32_t DescriptionFlags;                                // 36
@@ -690,9 +690,9 @@ namespace DBC::Structures
         uint32_t Id;                                                // 0
         uint32_t type[3];                                           // 1-3
         uint32_t min[3];                                            // 4-6 for combat, in practice min==max
-        //uint32_t max[3];                                            // 7-9
+        //uint32_t max[3];                                          // 7-9
         uint32_t spell[3];                                          // 10-12
-        char* Name[8];                                             // 13-28
+        char* Name[8];                                              // 13-28
         //uint32_t NameFlags;                                       // 29
         uint32_t visual;                                            // 30 aura
         uint32_t EnchantGroups;                                     // 31 slot
@@ -774,7 +774,7 @@ namespace DBC::Structures
         float x;                                                    // 2
         float y;                                                    // 3
         float z;                                                    // 4
-        char* name[8];                                             // 5-21
+        char* name[8];                                              // 5-21
         //uint32_t nameflags;                                       // 22
         uint32_t horde_mount;                                       // 23
         uint32_t alliance_mount;                                    // 24
@@ -790,7 +790,7 @@ namespace DBC::Structures
 
     struct TaxiPathNodeEntry
     {
-        //uint32_t id;                                                // 0
+        //uint32_t id;                                              // 0
         uint32_t path;                                              // 1
         uint32_t seq;                                               // 2 nodeIndex
         uint32_t mapid;                                             // 3
@@ -799,8 +799,8 @@ namespace DBC::Structures
         float z;                                                    // 6
         uint32_t flags;                                             // 7
         uint32_t waittime;                                          // 8
-        //uint32_t arivalEventID;                                     // 9
-        //uint32_t departureEventID;                                  // 10
+        //uint32_t arivalEventID;                                   // 9
+        //uint32_t departureEventID;                                // 10
     };
 
     struct TransportAnimationEntry

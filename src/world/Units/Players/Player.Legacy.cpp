@@ -21,6 +21,8 @@
 
 #include <iostream>
 #include <sstream>
+#include <limits>
+#include <zlib.h>
 
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Item.h"
@@ -62,9 +64,6 @@
 #include "Data/WoWPlayer.hpp"
 #include "Data/WoWGameObject.hpp"
 #include "Data/WoWDynamicObject.hpp"
-#include <limits>
-#include <zlib.h>
-
 #include "Chat/ChatHandler.hpp"
 #include "Server/Packets/SmsgNewWorld.h"
 #include "Management/Guild/GuildMgr.hpp"
@@ -155,7 +154,6 @@ Player::Player(uint32 guid)
     SpellHasteRatingBonus(1.0f),
     m_nextSave(Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
     m_lifetapbonus(0),
-
     // Battleground
     m_bg(nullptr),
     m_bgHasFlag(false),
@@ -171,8 +169,7 @@ Player::Player(uint32 guid)
     bReincarnation(false),
     m_MountSpellId(0),
     TrackingSpell(0),
-    // gm stuff
-    //m_invincible(false),
+    // GM stuff
     m_Autojoin(false),
     m_AutoAddMem(false),
     m_UnderwaterLastDmg(Util::getMSTime()),
@@ -182,19 +179,18 @@ Player::Player(uint32 guid)
     m_resurrectMapId(0),
     m_mailBox(guid),
     m_finishingmovesdodge(false),
-    //Trade
+    // Trade
     info(nullptr), // Playercreate info
     m_AttackMsgTimer(0),
-    //PVP
-    //PvPTimeoutEnabled(false),
+    // PVP
     m_Summons(),
     m_PetNumberMax(0),
-    //DK
+    // DK
     m_invitersGuid(0),
-    //Duel
+    // Duel
     m_duelCountdownTimer(0),
     m_duelStatus(0),
-    m_duelState(DUEL_STATE_FINISHED),        // finished
+    m_duelState(DUEL_STATE_FINISHED), // finished
     // Rest
     m_timeLogoff(0),
     m_isResting(0),
@@ -209,9 +205,9 @@ Player::Player(uint32 guid)
     m_manafromspell(0),
     m_healthfromitems(0),
     m_manafromitems(0),
-    //FIX for shit like shirt etc
+    // FIX for shit like shirt etc
     armor_proficiency(1),
-    //FIX for professions
+    // FIX for professions
     weapon_proficiency(0x4000), //2^14
     m_talentresettimes(0),
     m_targetIcon(0),
@@ -369,10 +365,12 @@ Player::Player(uint32 guid)
     m_IncreaseDmgSnaredSlowed = 0;
     m_ModInterrMRegenPCT = 0;
     m_ModInterrMRegen = 0;
+
     for (uint8_t x = 0; x < STAT_COUNT; ++x)
         m_modManaRegenFromStat[x] = 0;
+
     m_RegenManaOnSpellResist = 0;
-    m_rap_mod_pct = 0;//only initialized to 0: why?
+    m_rap_mod_pct = 0; // only initialized to 0: why?
     m_modblockabsorbvalue = 0;
     m_modblockvaluefromspells = 0;
     m_summoner = m_summonInstanceId = m_summonMapId = 0;
@@ -436,8 +434,6 @@ Player::Player(uint32 guid)
     m_lastPotionId = 0;
     for (i = 0; i < NUM_COOLDOWN_TYPES; i++)
         m_cooldownMap[i].clear();
-
-    //    m_achievement_points = 0;
 
     ChampioningFactionID = 0;
     mountvehicleid = 0;
@@ -514,15 +510,10 @@ Player::~Player()
     delete SDetector;
     SDetector = nullptr;
 
-    /*std::map<uint32,AchievementVal*>::iterator itr;
-    for (itr=m_achievements.begin();itr!=m_achievements.end();itr++)
-    delete itr->second;*/
-
     for (std::map< uint32, PlayerPet* >::iterator itr = m_Pets.begin(); itr != m_Pets.end(); ++itr)
         delete itr->second;
 
     m_Pets.clear();
-
     RemoveGarbageItems();
 }
 
@@ -586,7 +577,7 @@ void Player::CharChange_Looks(uint64 GUID, uint8 gender, uint8 skin, uint8 face,
     delete result;
 }
 
-//Begining of code for phase two of character customization (Race/Faction) Change.
+// Begining of code for phase two of character customization (Race/Faction) Change.
 void Player::CharChange_Language(uint64 GUID, uint8 race)
 {
 #if VERSION_STRING < Cata
@@ -747,7 +738,6 @@ bool Player::Create(CharCreate& charCreateContent)
     setGender(charCreateContent.gender);
 
     initialiseNoseLevel();
-
     setInitialDisplayIds(charCreateContent.gender, charCreateContent._race);
 
     EventModelChange();
@@ -1199,7 +1189,7 @@ void Player::_EventCharmAttack()
 #if VERSION_STRING < Mop
                 SendPacket(SmsgAttackSwingBadFacing().serialise().get());
 #endif
-                m_AttackMsgTimer = 2000;        // 2 sec till next msg.
+                m_AttackMsgTimer = 2000; // 2 sec till next msg.
             }
             // Shorten, so there isnt a delay when the client IS in the right position.
             sEventMgr.ModifyEventTimeLeft(this, EVENT_PLAYER_CHARM_ATTACK, 100);
@@ -1925,7 +1915,6 @@ void Player::InitVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_4));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_5));
 
-
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_health));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_1));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_2));
@@ -1960,7 +1949,6 @@ void Player::InitVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, dynamic_flags));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, npc_flags));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, hover_height));
-
 
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_flags));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes));
@@ -2102,7 +2090,6 @@ void Player::InitVisibleUpdateBits()
 #else
         uint32 offset = i * 16;
 #endif
-
         // item entry
         Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + offset);
         // enchant
@@ -2420,7 +2407,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     else
         buf->AddQueryNA(ss.str().c_str());
 
-    //Save Other related player stuff
+    // Save Other related player stuff
 
     // Inventory
     getItemInterface()->mSaveItemsToDatabase(bNewCharacter, buf);
@@ -2547,7 +2534,6 @@ bool Player::LoadFromDB(uint32 guid)
     setGuidLow(guid);
     CharacterDatabase.QueueAsyncQuery(q);
     return true;
-
 }
 
 void Player::LoadFromDBProc(QueryResultVector & results)
@@ -2678,7 +2664,6 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     // Process exploration data.
     LoadFieldsFromString(field[10].GetString(), getOffsetForStructuredField(WoWPlayer, explored_zones), WOWPLAYER_EXPLORED_ZONES_COUNT); //10
 
-    
 
     // new format
     const ItemProf* prof1;
@@ -3181,16 +3166,16 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     switch (getClass())
     {
         case PALADIN:
-            armor_proficiency |= (1 << 7);  //LIBRAM
+            armor_proficiency |= (1 << 7);  // Libram
             break;
         case DRUID:
-            armor_proficiency |= (1 << 8);  //IDOL
+            armor_proficiency |= (1 << 8);  // Idol
             break;
         case SHAMAN:
-            armor_proficiency |= (1 << 9);  //TOTEM
+            armor_proficiency |= (1 << 9);  // Totem
             break;
         case DEATHKNIGHT:
-            armor_proficiency |= (1 << 10);  //SIGIL
+            armor_proficiency |= (1 << 10); // Sigil
             break;
         case WARLOCK:
         case HUNTER:
@@ -3224,7 +3209,6 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     loadFriendList();
     loadFriendedByOthersList();
     loadIgnoreList();
-
     // END SOCIAL
 
     // Check skills that player shouldn't have
@@ -3294,7 +3278,6 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     auto timeToNow = Util::GetTimeDifferenceToNow(startTime);
     sLogger.info("Time for playerloading: %u ms", static_cast<uint32_t>(timeToNow));
 }
-
 
 void Player::SetPersistentInstanceId(Instance* pInstance)
 {
@@ -3831,7 +3814,6 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     {
         setid = proto_setid;
     }
-
 
     //\todo make a config for server so they can configure which season is active season
 
@@ -5174,7 +5156,6 @@ void Player::AddCalculatedRestXP(uint32 seconds)
     // Players who log out anywhere else in the world will earn rest credit four times slower.
     // http://www.worldofwarcraft.com/info/basics/resting.html
 
-
     // Define xp for a full bar (= 20 bubbles)
     uint32 xp_to_lvl = getNextLevelXp();
 
@@ -5222,12 +5203,12 @@ void Player::ApplyPlayerRestState(bool apply)
     {
         m_restState = RESTSTATE_RESTED;
         m_isResting = true;
-        addPlayerFlags(PLAYER_FLAG_RESTING);    //put zZz icon
+        addPlayerFlags(PLAYER_FLAG_RESTING); // put zZz icon
     }
     else
     {
         m_isResting = false;
-        removePlayerFlags(PLAYER_FLAG_RESTING);    //remove zZz icon
+        removePlayerFlags(PLAYER_FLAG_RESTING); // remove zZz icon
     }
     UpdateRestState();
 }
@@ -7588,11 +7569,11 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
             m_healthfromitems += val;
         }
         break;
-        case AGILITY:    //modify agility
-        case STRENGTH:    //modify strength
-        case INTELLECT:    //modify intellect
-        case SPIRIT:    //modify spirit
-        case STAMINA:    //modify stamina
+        case AGILITY:       // modify agility
+        case STRENGTH:      // modify strength
+        case INTELLECT:     // modify intellect
+        case SPIRIT:        // modify spirit
+        case STAMINA:       // modify stamina
         {
             uint8 convert[] = { 1, 0, 3, 4, 2 };
             if (_val > 0)
@@ -7605,8 +7586,8 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
         case WEAPON_SKILL_RATING:
         {
             modCombatRating(PCR_RANGED_SKILL, val);
-            modCombatRating(PCR_MELEE_MAIN_HAND_SKILL, val);   // melee main hand
-            modCombatRating(PCR_MELEE_OFF_HAND_SKILL, val);   // melee off hand
+            modCombatRating(PCR_MELEE_MAIN_HAND_SKILL, val); // melee main hand
+            modCombatRating(PCR_MELEE_OFF_HAND_SKILL, val); // melee off hand
         }
         break;
         case DEFENSE_RATING:
@@ -7688,38 +7669,38 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
         } break;
         case MELEE_HASTE_RATING:
         {
-            modCombatRating(PCR_MELEE_HASTE, val);  //melee
+            modCombatRating(PCR_MELEE_HASTE, val); // melee
         }
         break;
         case RANGED_HASTE_RATING:
         {
-            modCombatRating(PCR_RANGED_HASTE, val);  //ranged
+            modCombatRating(PCR_RANGED_HASTE, val); // ranged
         }
         break;
         case SPELL_HASTE_RATING:
         {
-            modCombatRating(PCR_SPELL_HASTE, val);  //spell
+            modCombatRating(PCR_SPELL_HASTE, val); // spell
         }
         break;
         case HIT_RATING:
         {
-            modCombatRating(PCR_MELEE_HIT, val);  //melee
-            modCombatRating(PCR_RANGED_HIT, val);  //ranged
-            modCombatRating(PCR_SPELL_HIT, val);   //Spell
+            modCombatRating(PCR_MELEE_HIT, val); // melee
+            modCombatRating(PCR_RANGED_HIT, val); // ranged
+            modCombatRating(PCR_SPELL_HIT, val); // spell
         }
         break;
         case CRITICAL_STRIKE_RATING:
         {
-            modCombatRating(PCR_MELEE_CRIT, val);  //melee
-            modCombatRating(PCR_RANGED_CRIT, val);  //ranged
-            modCombatRating(PCR_SPELL_CRIT, val);   //spell
+            modCombatRating(PCR_MELEE_CRIT, val);  // melee
+            modCombatRating(PCR_RANGED_CRIT, val);  // ranged
+            modCombatRating(PCR_SPELL_CRIT, val);   // spell
         }
         break;
-        case HIT_AVOIDANCE_RATING:// this is guessed based on layout of other fields
+        case HIT_AVOIDANCE_RATING: // this is guessed based on layout of other fields
         {
-            modCombatRating(PCR_MELEE_HIT_AVOIDANCE, val);  //melee
-            modCombatRating(PCR_RANGED_HIT_AVOIDANCE, val);  //ranged
-            modCombatRating(PCR_SPELL_HIT_AVOIDANCE, val);  //spell
+            modCombatRating(PCR_MELEE_HIT_AVOIDANCE, val); // melee
+            modCombatRating(PCR_RANGED_HIT_AVOIDANCE, val); // ranged
+            modCombatRating(PCR_SPELL_HIT_AVOIDANCE, val); // spell
         }
         break;
         case CRITICAL_AVOIDANCE_RATING:
@@ -7733,16 +7714,16 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
         break;
         case RESILIENCE_RATING:
         {
-            modCombatRating(PCR_MELEE_CRIT_RESILIENCE, val);  //melee
-            modCombatRating(PCR_RANGED_CRIT_RESILIENCE, val);  //ranged
-            modCombatRating(PCR_SPELL_CRIT_RESILIENCE, val);  //spell
+            modCombatRating(PCR_MELEE_CRIT_RESILIENCE, val); // melee
+            modCombatRating(PCR_RANGED_CRIT_RESILIENCE, val); // ranged
+            modCombatRating(PCR_SPELL_CRIT_RESILIENCE, val); // spell
         }
         break;
         case HASTE_RATING:
         {
-            modCombatRating(PCR_MELEE_HASTE, val);  //melee
-            modCombatRating(PCR_RANGED_HASTE, val);  //ranged
-            modCombatRating(PCR_SPELL_HASTE, val);   // Spell
+            modCombatRating(PCR_MELEE_HASTE, val); // melee
+            modCombatRating(PCR_RANGED_HASTE, val); // ranged
+            modCombatRating(PCR_SPELL_HASTE, val); // spell
         }
         break;
         case ATTACK_POWER:
@@ -9254,10 +9235,10 @@ uint32 Player::GetMaxPersonalRating()
     }
     return maxrating;
 }
+
 /***********************************
 * Give player full hp/mana
 ***********************************/
-
 void Player::FullHPMP()
 {
     if (isDead())
@@ -9471,7 +9452,6 @@ void Player::SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* sh
 void Player::HandleSpellLoot(uint32 itemid)
 {
     Loot loot1;
-
     sLootMgr.FillItemLoot(&loot1, itemid);
 
     for (std::vector<__LootItem>::iterator itr = loot1.items.begin(); itr != loot1.items.end(); ++itr)
@@ -10493,7 +10473,6 @@ void Player::SendTeleportPacket(float x, float y, float z, float o)
         data2.writeBit(guid[7]);
         data2.writeBit(guid[5]);
         data2.flushBits();
-
 
         data2 << uint32_t(0); // unk
         data2.WriteByteSeq(guid[1]);
@@ -11592,7 +11571,6 @@ void Player::UpdateInrangeSetsBasedOnReputation()
 
 void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
 {
-
     // add rep for on kill
     if (!pUnit->isCreature() || pUnit->isPet() || pUnit->isCritter())
         return;
