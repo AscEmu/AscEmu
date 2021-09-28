@@ -127,17 +127,16 @@ void OnActivate(Player* pPlayer)
     pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(19405, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), true, false, 0, 0)->Despawn(310000, 0);;
 
     // Store the tonk just spawned
-    Creature* pTonk = NULL;
-    pTonk = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 19405);
+    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 19405);
 
     // Cast the tonk control spell on the tonk
-    pPlayer->castSpell(pTonk, 33849, false);
+    pPlayer->castSpell(pCreature, 33849, false);
 
     // Start checks to see if player still has aura
     RegisterAIUpdateEvent(1000);
 
     Plr = pPlayer;
-    Tonk = pTonk;
+    Tonk = pCreature;
     Console = tonkConsole;
 }
 

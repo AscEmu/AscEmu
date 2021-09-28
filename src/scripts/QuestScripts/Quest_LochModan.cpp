@@ -30,18 +30,20 @@ public:
         float SSY = mTarget->GetPositionY();
         float SSZ = mTarget->GetPositionZ();
 
-
-        Creature* creat = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 1379);
-        if (creat == nullptr)
+        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 1379);
+        if (pCreature == nullptr)
+        {
             return;
-        creat->m_escorter = mTarget;
+        }
 
-        auto path = creat->GetScript()->getCustomPath(1);
-        creat->getMovementManager()->movePath(*path, false);
-        creat->pauseMovement(3000);
-        creat->GetAIInterface()->setAllowedToEnterCombat(false);
-        creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do!");
-        creat->setNpcFlags(UNIT_NPC_FLAG_NONE);
+        pCreature->m_escorter = mTarget;
+
+        auto path = pCreature->GetScript()->getCustomPath(1);
+        pCreature->getMovementManager()->movePath(*path, false);
+        pCreature->pauseMovement(3000);
+        pCreature->GetAIInterface()->setAllowedToEnterCombat(false);
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do!");
+        pCreature->setNpcFlags(UNIT_NPC_FLAG_NONE);
     }
 };
 

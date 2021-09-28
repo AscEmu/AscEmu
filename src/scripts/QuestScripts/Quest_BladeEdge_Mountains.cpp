@@ -77,11 +77,13 @@ class IntotheSoulgrinder : public QuestScript
 public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* qg = mTarget->MAP_CREATURE_NEAREST_COORDS(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 22941);
-        if (qg == nullptr)
+        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 22941);
+        if (pCreature == nullptr)
+        {
             return;
+        }
 
-        qg->GetMapMgr()->GetInterface()->SpawnCreature(23053, 2794.978271f, 5842.185547f, 35.911819f, 0, true, false, 0, 0);
+        pCreature->GetMapMgr()->GetInterface()->SpawnCreature(23053, 2794.978271f, 5842.185547f, 35.911819f, 0, true, false, 0, 0);
     }
 };
 
@@ -128,10 +130,10 @@ public:
     {
         if (!pPlayer->hasQuestInQuestLog(10609))
         {
-            Creature* whelp = pPlayer->GetMapMgr()->CreateAndSpawnCreature(20021, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0);
-            if (whelp != nullptr)
+            Creature* pCreature = pPlayer->GetMapMgr()->CreateAndSpawnCreature(20021, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0);
+            if (pCreature != nullptr)
             {
-                whelp->Despawn(5 * 60 * 1000, 0);
+                pCreature->Despawn(5 * 60 * 1000, 0);
             }
 
             _gameobject->Despawn(300000, 0);

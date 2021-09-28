@@ -146,18 +146,19 @@ public:
         float SSY = mTarget->GetPositionY();
         float SSZ = mTarget->GetPositionZ();
 
-        Creature* Overlord = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 4500);
-
-        if (Overlord == nullptr)
+        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 4500);
+        if (pCreature == nullptr)
+        {
             return;
+        }
 
         std::string say = "Puny ";
         say += mTarget->getName();
         say += " wanna fight Overlord Mok'Morokk? Me beat you! Me boss here!";
-        Overlord->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
-        Overlord->SetFaction(72);
-        Overlord->GetAIInterface()->setMeleeDisabled(false);
-        Overlord->GetAIInterface()->setAllowedToEnterCombat(true);
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+        pCreature->SetFaction(72);
+        pCreature->GetAIInterface()->setMeleeDisabled(false);
+        pCreature->GetAIInterface()->setAllowedToEnterCombat(true);
     }
 };
 
@@ -212,14 +213,15 @@ public:
         float SSY = mTarget->GetPositionY();
         float SSZ = mTarget->GetPositionZ();
 
-        Creature* Dashel = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 4966);
-
-        if (Dashel == nullptr)
+        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 4966);
+        if (pCreature == nullptr)
+        {
             return;
+        }
 
-        Dashel->SetFaction(72);
-        Dashel->GetAIInterface()->setMeleeDisabled(false);
-        Dashel->GetAIInterface()->setAllowedToEnterCombat(true);
+        pCreature->SetFaction(72);
+        pCreature->GetAIInterface()->setMeleeDisabled(false);
+        pCreature->GetAIInterface()->setAllowedToEnterCombat(true);
     }
 };
 

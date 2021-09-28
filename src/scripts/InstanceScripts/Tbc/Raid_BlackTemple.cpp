@@ -3975,10 +3975,10 @@ public:
             mFoA2 = NULL;
         }
 
-        Creature* pTrigger = getNearestCreature(677.399963f, 305.545044f, 353.192169f, CN_FACE_TRIGGER);
-        if (pTrigger != NULL)
+        Creature* pCreature = getNearestCreature(677.399963f, 305.545044f, 353.192169f, CN_FACE_TRIGGER);
+        if (pCreature != NULL)
         {
-            pTrigger->Despawn(0, 0);
+            pCreature->Despawn(0, 0);
         }
         for (uint8_t i = 0; i < 2; ++i)
         {
@@ -4298,10 +4298,10 @@ public:
                     break;
                 case 8:
                     {
-                        Creature* pTrigger = getNearestCreature(677.399963f, 305.545044f, 353.192169f, CN_FACE_TRIGGER);
-                        if (pTrigger != NULL)
+                        Creature* pCreature = getNearestCreature(677.399963f, 305.545044f, 353.192169f, CN_FACE_TRIGGER);
+                        if (pCreature != NULL)
                         {
-                            pTrigger->Despawn(0, 0);
+                            pCreature->Despawn(0, 0);
                         }
 
                         getCreature()->GetAIInterface()->setCurrentTarget(getBestPlayerTarget(TargetFilter_Closest));
@@ -4413,17 +4413,17 @@ public:
                         FireWall = Util::getRandomUInt(7);
                     }
 
-                    Creature* pTrigger = spawnCreature(CN_EYE_BEAM_TRIGGER, EyeBeamPaths[FireWall].x, EyeBeamPaths[FireWall].y, EyeBeamPaths[FireWall].z, EyeBeamPaths[FireWall].o);
-                    if (pTrigger != NULL && pTrigger->GetScript() != NULL)
+                    Creature* pCreature = spawnCreature(CN_EYE_BEAM_TRIGGER, EyeBeamPaths[FireWall].x, EyeBeamPaths[FireWall].y, EyeBeamPaths[FireWall].z, EyeBeamPaths[FireWall].o);
+                    if (pCreature != NULL && pCreature->GetScript() != NULL)
                     {
                         sendChatMessage(CHAT_MSG_MONSTER_YELL, 11481, "Stare into the eyes of the Betrayer!");
-                        _setTargetToChannel(pTrigger, ILLIDAN_EYE_BLAST1);
-                        getCreature()->castSpell(pTrigger, ILLIDAN_EYE_BLAST1, true);
-                        getCreature()->GetAIInterface()->setCurrentTarget(pTrigger);
+                        _setTargetToChannel(pCreature, ILLIDAN_EYE_BLAST1);
+                        getCreature()->castSpell(pCreature, ILLIDAN_EYE_BLAST1, true);
+                        getCreature()->GetAIInterface()->setCurrentTarget(pCreature);
 
-                        float Distance = pTrigger->CalcDistance(EyeBeamPaths[7 - FireWall].x, EyeBeamPaths[7 - FireWall].y, EyeBeamPaths[7 - FireWall].z);
-                        uint32_t TimeToReach = (uint32_t)(Distance * 1000 / pTrigger->getSpeedRate(TYPE_WALK, true));
-                        EyeBeamTriggerAI* pEyeBeamTriggerAI = static_cast< EyeBeamTriggerAI* >(pTrigger->GetScript());
+                        float Distance = pCreature->CalcDistance(EyeBeamPaths[7 - FireWall].x, EyeBeamPaths[7 - FireWall].y, EyeBeamPaths[7 - FireWall].z);
+                        uint32_t TimeToReach = (uint32_t)(Distance * 1000 / pCreature->getSpeedRate(TYPE_WALK, true));
+                        EyeBeamTriggerAI* pEyeBeamTriggerAI = static_cast< EyeBeamTriggerAI* >(pCreature->GetScript());
                         pEyeBeamTriggerAI->mPosition = FireWall;
                         pEyeBeamTriggerAI->despawn(TimeToReach + 1500, 0);
                         mFireWallTimer = TimeToReach + 1000;
@@ -4740,7 +4740,6 @@ public:
             stopMovement();
             //CastSpellNowNoScheduling(mShadowPrison);
 #endif
-
             setCanEnterCombat(false);
             setAIAgent(AGENT_NULL);
             _setMeleeDisabled(false);
@@ -4953,10 +4952,10 @@ public:
             Unit* pTarget = getCreature()->getThreatManager().getCurrentVictim();
             if (pTarget != NULL && (!pTarget->isCreature() || pTarget->getEntry() != CN_FACE_TRIGGER))
             {
-                Creature* pTrigger = getNearestCreature(677.399963f, 305.545044f, 353.192169f, CN_FACE_TRIGGER);
-                if (pTrigger != NULL)
+                Creature* pCreature = getNearestCreature(677.399963f, 305.545044f, 353.192169f, CN_FACE_TRIGGER);
+                if (pCreature != NULL)
                 {
-                    getCreature()->GetAIInterface()->setCurrentTarget(pTrigger);
+                    getCreature()->GetAIInterface()->setCurrentTarget(pCreature);
                 }
             }
         }
@@ -5230,10 +5229,10 @@ public:
     void OnActivate(Player* /*pPlayer*/) override
     {
         _gameobject->setFlags(GO_FLAG_NONSELECTABLE);
-        Creature* pTrigger = _gameobject->MAP_CREATURE_NEAREST_COORDS(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), CN_CAGE_TRAP_DISTURB_TRIGGER);
-        if (pTrigger != NULL && pTrigger->GetScript() != NULL)
+        Creature* pCreature = _gameobject->MAP_CREATURE_NEAREST_COORDS(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), CN_CAGE_TRAP_DISTURB_TRIGGER);
+        if (pCreature != NULL && pCreature->GetScript() != NULL)
         {
-            CageTrapTriggerAI* pTriggerAI = static_cast< CageTrapTriggerAI* >(pTrigger->GetScript());
+            CageTrapTriggerAI* pTriggerAI = static_cast< CageTrapTriggerAI* >(pCreature->GetScript());
             pTriggerAI->mIsActivated = true;
         }
     }

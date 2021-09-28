@@ -113,7 +113,7 @@ public:
                 MarkTimer--;
                 if (!MarkTimer)
                 {
-//                    uint32_t spellid = 0; UNUSED???
+                    // uint32_t spellid = 0; UNUSED???
                     switch (MarkCount)
                     {
                         case 0:
@@ -1132,12 +1132,12 @@ public:
                 Vashj = getNearestCreature(29.798161f, -923.358276f, 42.900517f, CN_LADY_VASHJ);
                 if (Vashj)
                 {
-                    //Increase Lady Vashj attack by 5%
+                    // Increase Lady Vashj attack by 5%
                     Vashj->setMinDamage(Vashj->getMinDamage() + (Vashj->getMinDamage() / 100) * 5);
                     Vashj->setMaxDamage(Vashj->getMaxDamage() + (Vashj->getMaxDamage() / 100) * 5);
                 }
 
-                //despawn
+                // despawn
                 getCreature()->Despawn(1, 0);
                 break;
         }
@@ -1424,17 +1424,15 @@ public:
                 getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                 getCreature()->setControlled(true, UNIT_STATE_ROOTED);
 
-                //setup shield
-                Creature* channel = NULL;
                 for (uint8_t i = 0; i < 4; i++)
                 {
-                    channel = spawnCreature(CN_SHIELD_GENERATOR_CHANNEL, ShieldGeneratorCoords[i][0],  ShieldGeneratorCoords[i][1],  ShieldGeneratorCoords[i][2], 0);
-                    if (channel)
+                    Creature* pCreature = spawnCreature(CN_SHIELD_GENERATOR_CHANNEL, ShieldGeneratorCoords[i][0],  ShieldGeneratorCoords[i][1],  ShieldGeneratorCoords[i][2], 0);
+                    if (pCreature)
                     {
-                        channel->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-                        channel->setControlled(true, UNIT_STATE_ROOTED);
-                        channel->setChannelObjectGuid(getCreature()->getGuid());
-                        channel->setChannelSpellId(VASHJ_SHIELD);
+                        pCreature->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
+                        pCreature->setControlled(true, UNIT_STATE_ROOTED);
+                        pCreature->setChannelObjectGuid(getCreature()->getGuid());
+                        pCreature->setChannelSpellId(VASHJ_SHIELD);
                     }
                 }
                 break;
@@ -1527,15 +1525,14 @@ public:
     explicit TaintedCoreGO(GameObject* pGameObject) : GameObjectAIScript(pGameObject) {}
     void OnActivate(Player* pPlayer) override
     {
-        Creature* Vashj = NULL;
-        Vashj = pPlayer->MAP_CREATURE_NEAREST_COORDS(29.798161f, -923.358276f, 42.900517f, CN_LADY_VASHJ);
-        if (Vashj != NULL && static_cast< VashjAI* >(Vashj->GetScript())->Phase == 2)
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(29.798161f, -923.358276f, 42.900517f, CN_LADY_VASHJ);
+        if (pCreature != NULL && static_cast< VashjAI* >(pCreature->GetScript())->Phase == 2)
         {
-            Vashj->modHealth(static_cast<int32_t>((Vashj->getMaxHealth() / 100) * 5));
-            Creature* channel = NULL;
-            channel = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), CN_SHIELD_GENERATOR_CHANNEL);
-            if (channel != NULL && channel->IsInWorld())
-                channel->Despawn(0, 0);
+            pCreature->modHealth(static_cast<int32_t>((pCreature->getMaxHealth() / 100) * 5));
+
+            Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), CN_SHIELD_GENERATOR_CHANNEL);
+            if (pCreature != NULL && pCreature->IsInWorld())
+                pCreature->Despawn(0, 0);
         }
     }
 

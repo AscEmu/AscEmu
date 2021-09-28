@@ -27,10 +27,10 @@ class Quest_The_Ring_of_Blood_The_Final_Challenge : public QuestScript
 public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* pMogor = mTarget->MAP_CREATURE_NEAREST_COORDS(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
-        if (pMogor != nullptr)
+        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+        if (pCreature != nullptr)
         {
-            pMogor->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Prepare yourselves!");
+            pCreature->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Prepare yourselves!");
             Unit* Qgiver = mTarget->MAP_CREATURE_NEAREST_COORDS(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
             if (Qgiver != nullptr)
             {
@@ -43,19 +43,19 @@ public:
                 Qgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 32000);
             }
 
-            pMogor->GetAIInterface()->setAllowedToEnterCombat(true);
-            pMogor->GetAIInterface()->moveTo(-704.669f, 7871.08f, 45.0387f);
-            pMogor->SetOrientation(1.59531f);
-            pMogor->SetFacing(1.908516f);
-            pMogor->SetFaction(14);
+            pCreature->GetAIInterface()->setAllowedToEnterCombat(true);
+            pCreature->GetAIInterface()->moveTo(-704.669f, 7871.08f, 45.0387f);
+            pCreature->SetOrientation(1.59531f);
+            pCreature->SetFacing(1.908516f);
+            pCreature->SetFaction(14);
         }
     }
 
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* mogor = mTarget->MAP_CREATURE_NEAREST_COORDS(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
-        if (mogor != nullptr)
-            mogor->Despawn(1000, 0);
+        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+        if (pCreature != nullptr)
+            pCreature->Despawn(1000, 0);
 
         mTarget->GetMapMgr()->GetInterface()->SpawnCreature(18069, -712.443115f, 7932.182129f, 59.430191f, 4.515952f, true, false, 0, 0);
     }

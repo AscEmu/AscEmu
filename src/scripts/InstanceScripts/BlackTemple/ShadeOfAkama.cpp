@@ -697,8 +697,7 @@ public:
         _unit->setAttackTimer(2000, false);
         _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
-        Unit* SoAkama = NULL;
-        SoAkama = _unit->MAP_CREATURE_NEAREST_COORDS(442.804f, 401.362f , 118.538f , CN_SHADE_OF_AKAMA);
+        Unit* SoAkama = _unit->MAP_CREATURE_NEAREST_COORDS(442.804f, 401.362f , 118.538f , CN_SHADE_OF_AKAMA);
         if(SoAkama)
         {
             _unit->SetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT, SoAkama->GetGUID());

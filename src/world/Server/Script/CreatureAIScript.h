@@ -88,9 +88,12 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // creature
-    CreatureAIScript* getNearestCreatureAI(uint32_t entry);
 
+    // add a description
+    CreatureAIScript* getNearestCreatureAI(uint32_t entry);
+    // add a description
     Creature* getNearestCreature(uint32_t entry);
+    // add a description
     Creature* getNearestCreature(float posX, float posY, float posZ, uint32_t entry);
 
     void GetCreatureListWithEntryInGrid(std::list<Creature*>& container, uint32 entry, float maxSearchRange /*= 250.0f*/);

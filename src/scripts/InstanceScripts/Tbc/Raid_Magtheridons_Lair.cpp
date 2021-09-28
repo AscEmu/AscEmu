@@ -447,8 +447,7 @@ public:
             uint32_t Counter = 0;
             for (uint8_t i = 0; i < 5; i++)
             {
-                Unit* GlobalCubeTrigger = NULL;
-                GlobalCubeTrigger = _gameobject->MAP_CREATURE_NEAREST_COORDS(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
+                Unit* GlobalCubeTrigger = _gameobject->MAP_CREATURE_NEAREST_COORDS(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
                 if (Magtheridon != nullptr)
                     if (GlobalCubeTrigger && GlobalCubeTrigger->getChannelSpellId() == SHADOW_GRASP && CubeTrigger->getChannelObjectGuid() == Magtheridon->getGuid())
                         Counter++;
@@ -476,8 +475,7 @@ public:
         uint32_t Counter = 0;
         for (uint8_t i = 0; i < 5; i++)
         {
-            Unit* GlobalCubeTrigger = NULL;
-            GlobalCubeTrigger = _gameobject->MAP_CREATURE_NEAREST_COORDS(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
+            Unit* GlobalCubeTrigger = _gameobject->MAP_CREATURE_NEAREST_COORDS(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
             if (Magtheridon != nullptr)
                 if (GlobalCubeTrigger && GlobalCubeTrigger->getChannelSpellId() == SHADOW_GRASP && CubeTrigger->getChannelObjectGuid() == Magtheridon->getGuid())
                     Counter++;

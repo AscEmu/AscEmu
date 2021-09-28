@@ -37,7 +37,9 @@ public:
     {
         Creature* pCreature = (pObject->isCreature()) ? (static_cast<Creature*>(pObject)) : nullptr;
         if (pCreature == nullptr)
+        {
             return;
+        }
 
         uint32_t chance = Util::getRandomUInt(1);
         if (chance == 0)

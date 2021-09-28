@@ -18,19 +18,22 @@ public:
         float SSY = mTarget->GetPositionY();
         float SSZ = mTarget->GetPositionZ();
 
-        Creature* creat = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 11856);
-        if (creat == nullptr)
+        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 11856);
+        if (pCreature == nullptr)
+        {
             return;
-        creat->m_escorter = mTarget;
+        }
 
-        creat->getMovementManager()->movePath(creat->getWaypointPath(), false);
-        creat->pauseMovement(10);
+        pCreature->m_escorter = mTarget;
 
-        creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Lets go");
-        creat->setNpcFlags(UNIT_NPC_FLAG_NONE);
+        pCreature->getMovementManager()->movePath(pCreature->getWaypointPath(), false);
+        pCreature->pauseMovement(10);
+
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Lets go");
+        pCreature->setNpcFlags(UNIT_NPC_FLAG_NONE);
         // Prevention "not starting from spawn after attacking"
-        creat->GetAIInterface()->setAllowedToEnterCombat(true);
-        creat->SetFaction(1801);
+        pCreature->GetAIInterface()->setAllowedToEnterCombat(true);
+        pCreature->SetFaction(1801);
     }
 };
 

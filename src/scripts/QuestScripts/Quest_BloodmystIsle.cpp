@@ -99,9 +99,9 @@ public:
     {
         pPlayer->AddQuestKill(9667, 0, 0);
 
-        Creature* princess = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17682);
-        if (princess != nullptr)
-            princess->Despawn(1000, 6 * 60 * 1000);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17682);
+        if (pCreature != nullptr)
+            pCreature->Despawn(1000, 6 * 60 * 1000);
     }
 };
 

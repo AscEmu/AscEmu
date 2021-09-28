@@ -261,7 +261,9 @@ public:
     {
         Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17479);
         if (pCreature == nullptr)
+        {
             return;
+        }
 
         char msg[100];
         sprintf(msg, "Psst, %s, get over here.", pPlayer->getName().c_str());
@@ -276,7 +278,9 @@ public:
     {
         Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17558);
         if (pCreature == nullptr)
+        {
             return;
+        }
 
         char msg[100];
         sprintf(msg, "Psst, %s, get over here.", pPlayer->getName().c_str());

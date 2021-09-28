@@ -59,16 +59,18 @@ public:
         float SSY = mTarget->GetPositionY();
         float SSZ = mTarget->GetPositionZ();
 
-        Creature* creat = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 4452);
-        if (creat == nullptr)
+        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 4452);
+        if (pCreature == nullptr)
+        {
             return;
+        }
 
         std::string msg = "Hahah! ";
         msg += mTarget->getName();
         msg += ", you make quite a partner!";
-        creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
-        //sch: need a test. creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Hahah! $N, you make quite a partner!");
-        creat->emote(EMOTE_ONESHOT_LAUGH);
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
+        // sch: need a test. pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Hahah! $N, you make quite a partner!");
+        pCreature->emote(EMOTE_ONESHOT_LAUGH);
     }
 };
 

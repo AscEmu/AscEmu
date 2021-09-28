@@ -73,14 +73,15 @@ public:
         float SSY = mTarget->GetPositionY();
         float SSZ = mTarget->GetPositionZ();
 
-        Creature* Dashel = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 4961);
-
-        if (Dashel == nullptr)
+        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 4961);
+        if (pCreature == nullptr)
+        {
             return;
+        }
 
-        Dashel->SetFaction(72);
-        Dashel->GetAIInterface()->setMeleeDisabled(false);
-        Dashel->GetAIInterface()->setAllowedToEnterCombat(true);
+        pCreature->SetFaction(72);
+        pCreature->GetAIInterface()->setMeleeDisabled(false);
+        pCreature->GetAIInterface()->setAllowedToEnterCombat(true);
 
         uint32_t chance = Util::getRandomUInt(100);
         if (chance < 15)
@@ -88,7 +89,7 @@ public:
             std::string say = "Now you're gonna get it good, ";
             say += mTarget->getName();
             say += "!";
-            Dashel->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+            pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }
         Creature* ct1 = mTarget->GetMapMgr()->CreateAndSpawnCreature(4969, -8686.803711f, 445.267792f, 99.789223f, 5.461184f);
         if (ct1 != nullptr)

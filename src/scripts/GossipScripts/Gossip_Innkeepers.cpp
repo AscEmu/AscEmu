@@ -69,9 +69,10 @@ void InnkeeperGossip::onHello(Object* pObject, Player* Plr)
 void InnkeeperGossip::onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/)
 {
     Creature* pCreature = pObject->isCreature() ? static_cast<Creature*>(pObject) : nullptr;
-
     if (pCreature == nullptr)
+    {
         return;
+    }
 
     switch (Id)
     {

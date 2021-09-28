@@ -142,9 +142,11 @@ public:
         float SSY = mKiller->GetPositionY();
         float SSZ = mKiller->GetPositionZ();
 
-        Creature* doctor = mKiller->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 1449);
-        if (doctor)
-            doctor->emote(EMOTE_ONESHOT_CHEER);
+        Creature* pCreature = mKiller->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 1449);
+        if (pCreature)
+        {
+            pCreature->emote(EMOTE_ONESHOT_CHEER);
+        }
     }
 };
 
@@ -161,15 +163,17 @@ public:
         if (skull1 == nullptr)
             return;
 
-        Creature* Kin_weelay = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 2519);
-        if (Kin_weelay == nullptr)
+        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 2519);
+        if (pCreature == nullptr)
+        {
             return;
+        }
 
         std::string msg1 = "Ah. Good ";
         msg1 += mTarget->getName();
         msg1 += ". Now let us see what tale these heads tell...";
-        Kin_weelay->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg1.c_str());
-        Kin_weelay->castSpell(Kin_weelay, sSpellMgr.getSpellInfo(3644), false);
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg1.c_str());
+        pCreature->castSpell(pCreature, sSpellMgr.getSpellInfo(3644), false);
         skull1->Despawn(5000, 0);
         GameObject* skull2 = mTarget->MAP_GAMEOBJECT_NEAREST_COORDS(SSX, SSY, SSZ, 2551);
         if (skull2)
@@ -178,7 +182,7 @@ public:
         std::string msg = "There, ";
         msg += mTarget->getName();
         msg += ". You may now speak to the Bloodscalp chief and his witchdoctor.";
-        Kin_weelay->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 500);
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 500);
     }
 };
 
@@ -191,13 +195,13 @@ public:
         float Y = mTarget->GetPositionY();
         float Z = mTarget->GetPositionZ();
 
-        Creature* Crank = mTarget->MAP_CREATURE_NEAREST_COORDS(X, Y, Z, 2498);
-        if (Crank)
+        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(X, Y, Z, 2498);
+        if (pCreature)
         {
             std::string say = "Hm... if you're looking to adle wits. ";
             say += mTarget->getName();
             say += ", then the secret behind Zanzil's zombies might just fo the trick!";
-            Crank->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+            pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }
     }
 };
@@ -211,13 +215,13 @@ public:
         float Y = mTarget->GetPositionY();
         float Z = mTarget->GetPositionZ();
 
-        Creature* MacKinley = mTarget->MAP_CREATURE_NEAREST_COORDS(X, Y, Z, 2501);
-        if (MacKinley)
+        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(X, Y, Z, 2501);
+        if (pCreature)
         {
             std::string say = "Bah! ";
             say += mTarget->getName();
             say += ", this foot won't budge!";
-            MacKinley->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+            pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }
     }
 };

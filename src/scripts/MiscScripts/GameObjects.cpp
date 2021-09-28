@@ -339,10 +339,10 @@ public:
 
     void OnActivate(Player* player) override
     {
-        Creature* Ulag = player->MAP_CREATURE_NEAREST_COORDS(2390.101807f, 336.676788f, 40.015614f, 6390);
+        Creature* pCreature = player->MAP_CREATURE_NEAREST_COORDS(2390.101807f, 336.676788f, 40.015614f, 6390);
         GameObject* pDoor = player->MAP_GAMEOBJECT_NEAREST_COORDS(2388.480029f, 338.3901f, 40.092899f, 176594);
         QuestLogEntry* en = player->getQuestLogByQuestId(1819);
-        if (en == nullptr || pDoor == nullptr || Ulag == nullptr)
+        if (en == nullptr || pDoor == nullptr || pCreature == nullptr)
             return;
 
         Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(6390, 2390.101807f, 336.676788f, 40.015614f, 2.259590f, true, false, 0, 0);
@@ -404,8 +404,8 @@ public:
     void OnActivate(Player* player) override
     {
         LocationVector pos = player->GetPosition();
-        Creature* commander = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 20482);
-        if (commander)
+        Creature* pCreature = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 20482);
+        if (pCreature)
             return;
 
         if (player->hasQuestInQuestLog(10339))
@@ -448,13 +448,13 @@ public:
         player->AddQuestKill(10111, 0, 0);
 
         LocationVector pos = player->GetPosition();
-        Creature* bird = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 19055);
-        if (bird != nullptr)
+        Creature* pCreature = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 19055);
+        if (pCreature != nullptr)
             return;
 
-        bird = player->GetMapMgr()->CreateAndSpawnCreature(19055, pos.x, pos.y, pos.z, pos.o);
-        if (bird != nullptr)
-            bird->Despawn(5 * 60 * 1000, 0);
+        pCreature = player->GetMapMgr()->CreateAndSpawnCreature(19055, pos.x, pos.y, pos.z, pos.o);
+        if (pCreature != nullptr)
+            pCreature->Despawn(5 * 60 * 1000, 0);
     }
 };
 
@@ -578,8 +578,8 @@ public:
 
         LocationVector pos = player->GetPosition();
 
-        Creature* shaghost = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 9136);
-        if (shaghost)
+        Creature* pCreature = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 9136);
+        if (pCreature)
             return;
 
         Creature* shaghostspawn = player->GetMapMgr()->CreateAndSpawnCreature(9136, pos.x, pos.y, pos.z, pos.o);
@@ -630,9 +630,9 @@ public:
 
         LocationVector pos = player->GetPosition();
 
-        Creature* prisoner = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 17375);
-        if (prisoner != nullptr)
-            prisoner->Despawn(1, 6 * 60 * 1000);
+        Creature* pCreature = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 17375);
+        if (pCreature != nullptr)
+            pCreature->Despawn(1, 6 * 60 * 1000);
     }
 };
 
@@ -685,11 +685,11 @@ public:
 
         LocationVector pos = player->GetPosition();
 
-        Creature* grenka = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 4490);
-        if (grenka != nullptr)
+        Creature* pCreature = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 4490);
+        if (pCreature != nullptr)
         {
-            if (!grenka->isAlive())
-                grenka->Despawn(5000, 120000);
+            if (!pCreature->isAlive())
+                pCreature->Despawn(5000, 120000);
             else
                 return;
         }
@@ -789,11 +789,11 @@ public:
         LocationVector pos = player->GetPosition();
 
         // What is this ? :O To remove ?
-        Creature* reaver = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 17556);
-        if (reaver)
+        Creature* pCreature = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 17556);
+        if (pCreature)
         {
-            LocationVector pos2 = reaver->GetPosition();
-            reaver->Despawn(1, 5 * 60 * 1000);
+            LocationVector pos2 = pCreature->GetPosition();
+            pCreature->Despawn(1, 5 * 60 * 1000);
 
             Creature* reaver2 = player->GetMapMgr()->GetInterface()->SpawnCreature(17556, pos2.x, pos2.y, pos2.z, pos2.o, true, false, 0, 0);
             if (reaver2 != nullptr)

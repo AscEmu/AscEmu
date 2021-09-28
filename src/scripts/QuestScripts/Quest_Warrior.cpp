@@ -34,14 +34,16 @@ class TheSummoning : public QuestScript
 public:
     void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* windwatcher = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 6176);
-        if (windwatcher == nullptr)
-            return;
-
-        // questgiver will walk to the place where Cyclonian is spawned only walk when we are at home
-        if (windwatcher->CalcDistance(250.839996f, -1470.579956f, 55.4491f) > 1) return;
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 6176);
+        if (pCreature == nullptr)
         {
-            windwatcher->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Follow me");
+            return;
+        }
+
+        // questgiver will walk to the place where cyclonian is spawned only walk when we are at home
+        if (pCreature->CalcDistance(250.839996f, -1470.579956f, 55.4491f) > 1) return;
+        {
+            pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Follow me");
 
             MovementNew::PointsArray path;
             path.reserve(pathSize);
@@ -49,27 +51,26 @@ public:
             {
                 return G3D::Vector3(pos.x, pos.y, pos.z);
             });
-            MovementNew::MoveSplineInit init(windwatcher);
+            MovementNew::MoveSplineInit init(pCreature);
             init.SetWalk(true);
             init.MovebyPath(path);
-            windwatcher->getMovementManager()->launchMoveSpline(std::move(init), 0, MOTION_PRIORITY_NORMAL, POINT_MOTION_TYPE);
-
+            pCreature->getMovementManager()->launchMoveSpline(std::move(init), 0, MOTION_PRIORITY_NORMAL, POINT_MOTION_TYPE);
         }
-        windwatcher->Despawn(15 * 60 * 1000, 0);
+        pCreature->Despawn(15 * 60 * 1000, 0);
 
         // spawn cyclonian if not spawned already
-        Creature* cyclonian = pPlayer->MAP_CREATURE_NEAREST_COORDS(323.947f, -1483.68f, 43.1363f, 6239);
-        if (cyclonian == nullptr)
+        Creature* _creature = pPlayer->MAP_CREATURE_NEAREST_COORDS(323.947f, -1483.68f, 43.1363f, 6239);
+        if (_creature == nullptr)
         {
-            cyclonian = pPlayer->GetMapMgr()->CreateAndSpawnCreature(6239, 323.947f, -1483.68f, 43.1363f, 0.682991f);
+            _creature = pPlayer->GetMapMgr()->CreateAndSpawnCreature(6239, 323.947f, -1483.68f, 43.1363f, 0.682991f);
 
             // if spawning cyclonian failed, we have to return.
-            if (cyclonian == nullptr)
+            if (_creature == nullptr)
                 return;
         }
 
         // queue cyclonian for despawn
-        cyclonian->Despawn(15 * 60 * 1000, 0);
+        pCreature->Despawn(15 * 60 * 1000, 0);
     }
 };
 
@@ -128,14 +129,15 @@ public:
         float SSY = mTarget->GetPositionY();
         float SSZ = mTarget->GetPositionZ();
 
-        Creature* Bartleby = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 6090);
-
-        if (Bartleby == nullptr)
+        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 6090);
+        if (pCreature == nullptr)
+        {
             return;
+        }
 
-        Bartleby->SetFaction(168);
-        Bartleby->GetAIInterface()->setMeleeDisabled(false);
-        Bartleby->GetAIInterface()->setAllowedToEnterCombat(true);
+        pCreature->SetFaction(168);
+        pCreature->GetAIInterface()->setMeleeDisabled(false);
+        pCreature->GetAIInterface()->setAllowedToEnterCombat(true);
     }
 };
 

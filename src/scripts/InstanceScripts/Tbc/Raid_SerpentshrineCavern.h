@@ -52,13 +52,11 @@ enum
     BLESSING_OF_THE_TIDES = 38449,
     KARATHRESS_ENRAGE = 39249,
 
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // Fathom-Guard Sharkkis (Hunter)
     MULTI_SHOT = 29576,
     LEECHING_THROW = 29436,
     THE_BEAST_WITHIN = 38373,
-
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Fathom-Guard Tidalvess (Shaman)
@@ -68,19 +66,16 @@ enum
     FROST_SHOCK = 38234,
     WINDFURY = 38229,
 
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // Fathom-Guard Caribdis (Priest)
     HEAL = 33144,
     TIDAL_SURGE = 38358,
     FATHOM_GUARD_CARIBDIS_AI_SUMMON_CYCLONE = 38337,
 
-
     //TIDAL_WAVE = 37730,
     //WATERY_GRAVE = 38049,
     //EARTHQUAKE = 37764,
     //SUMMON_WATER_GLOBULE = 37854,
-
 
     VASHJ_AI_SHOOT = 37770,
     //ENTANGLE = 38316,
@@ -93,17 +88,13 @@ enum
     //TOXIC_SPORES = 38575,
     //SHOCK_BLAST = 38509,
 
-
     CA_MULTI_SHOT = 27021,
 
-
     COILFANG_GUARDIAN_AI_CLEAVE = 38260,
-
 
     COILFANG_PRIESTESS_AI_HOLY_NOVA = 38589,
     SMITE = 25364,
     SPIRIT_OF_REDEMPTION = 35618,
-
 
     UNDER_BOG_COLOSSUS_AI_ACID_GEYSER = 37959,
     //ATROPIC_BLOW = 39015,
@@ -113,11 +104,9 @@ enum
     RAMPANT_INFECTION = 39042,
     PARASITE = 39044,
 
-
     TW_CLEAVE = 38260,
     TW_BLOODTHIRST = 30335, // Instant
     TW_FRENZY = 37605,
-
 
     CSERP_CLEAVE = 38260,
     CSERP_REFLECTION = 36096,
@@ -125,12 +114,10 @@ enum
 
     CSHATT_ARMOR = 38591,
 
-
     CSTRID_SCREAM = 10890,
 
     COILFANGFATHOM_WITCH_AI_SHADOW_BOLT = 27209,
     WHIRLWIND_KNOCKBACK = 34109,
-
 };
 
 enum CreatureEntry
@@ -176,10 +163,6 @@ enum CreatureEntry
     CN_UNDERBOG_COLOSSUS        = 21251
 };
 
-enum CreatureSpells
-{
-};
-
 LocationVector movePoints[] =
 {
     {},
@@ -187,7 +170,6 @@ LocationVector movePoints[] =
     { 29.79f, -923.35f, 42.90f, 0.0f },
     { 29.798161f, -923.358276f, 42.900517f, 0.0f}
 };
-
 
 static LocationVector ElementalSpawnPoints[] =
 {

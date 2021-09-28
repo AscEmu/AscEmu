@@ -20,25 +20,25 @@ public:
     explicit BloodFilledOrb(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new BloodFilledOrb(GO); }
 
-    void OnActivate(Player* pPlayer) override
+    void OnActivate(Player* plr) override
     {
         // Make sure player has the quest and Zelemar isn't spawned yet
-        if (!pPlayer->hasQuestInQuestLog(9692)) // The Path of the Adept
+        if (!plr->hasQuestInQuestLog(9692)) // The Path of the Adept
         {
-            pPlayer->GetSession()->SendNotification("Request quest `The Path of the Adept`.");
+            plr->GetSession()->SendNotification("Request quest `The Path of the Adept`.");
             return;
         }
 
-        Creature* Zelemar = _gameobject->MAP_CREATURE_NEAREST_COORDS(-370.133f, 162.519f, -21.1299f, RagefireChasm::CN_ZELMAR);
-        if (Zelemar)
+        Creature* pCreature = plr->MAP_CREATURE_NEAREST_COORDS(-370.133f, 162.519f, -21.1299f, RagefireChasm::CN_ZELMAR);
+        if (pCreature)
             return;
 
         // Spawn Zelemar the Wrathful
-        Zelemar = _gameobject->GetMapMgr()->GetInterface()->SpawnCreature(17830, -370.133f, 162.519f, -21.1299f, -1.29154f, true, false, 0, 0);
-        if (Zelemar)
+        pCreature = plr->GetMapMgr()->GetInterface()->SpawnCreature(17830, -370.133f, 162.519f, -21.1299f, -1.29154f, true, false, 0, 0);
+        if (pCreature)
         {
-            Zelemar->m_noRespawn = true;
-            Zelemar = nullptr;
+            pCreature->m_noRespawn = true;
+            pCreature = nullptr;
         }
     }
 };

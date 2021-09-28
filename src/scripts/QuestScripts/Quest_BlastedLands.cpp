@@ -25,9 +25,8 @@ class HeroesofOld : public QuestScript
 public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* spawncheckcr = mTarget->MAP_CREATURE_NEAREST_COORDS(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ(), 7750);
-
-        if (!spawncheckcr)
+        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ(), 7750);
+        if (!pCreature)
         {
             Creature* general = mTarget->GetMapMgr()->CreateAndSpawnCreature(7750, -10619, -2997, 28.8f, 4);
             general->Despawn(3 * 60 * 1000, 0);
@@ -76,8 +75,8 @@ public:
         {
             case 1:
             {
-                Creature* spawncheckcr = plr->MAP_CREATURE_NEAREST_COORDS(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 7750);
-                if (!spawncheckcr)
+                Creature* pCreature = plr->MAP_CREATURE_NEAREST_COORDS(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 7750);
+                if (!pCreature)
                 {
                     general = plr->GetMapMgr()->CreateAndSpawnCreature(7750, -10619, -2997, 28.8f, 4);
                     general->Despawn(3 * 60 * 1000, 0);
