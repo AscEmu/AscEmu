@@ -4565,8 +4565,10 @@ std::vector<Creature*> const MySQLDataStore::getSpawnGroupDataByBoss(uint32_t bo
     std::vector<Creature*> data;
 
     for (auto spawnData : _spawnGroupMapStore)
+    {
         if (spawnData.second->bossId == bossId)
             data.push_back(spawnData.second->spawns[spawnData.first]);
+    }
 
     return data;
 }

@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 enum SpawnFlags
 {
-    SPAWFLAG_FLAG_NONE                      = 0x00,             // Creatures always Respawns
+    SPAWFLAG_FLAG_NONE                      = 0x00,             // Creatures always Respawns if no BossId is set
     SPAWFLAG_FLAG_FULLPACK                  = 0x01,             // Creatures are only available in the Full group example: Shattred Halls
     SPAWFLAG_FLAG_BOUNDTOBOSS               = 0x02,             // Creatures are required to Start the Encounter
     SPAWFLAG_FLAG_SCRIPT                    = 0x04,             // currently not used

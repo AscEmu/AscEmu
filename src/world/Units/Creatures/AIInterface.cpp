@@ -2548,7 +2548,6 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
         auto encounters = sObjectMgr.GetDungeonEncounterList(m_Unit->GetMapMgr()->GetMapId(), pInstance->m_difficulty);
 
         Creature* pCreature = static_cast<Creature*>(m_Unit);
-
         bool found = false;
 
         if (encounters != NULL)
@@ -2614,7 +2613,6 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
             }
         }
     }
-
 }
 
 void AIInterface::eventOnLoad()
