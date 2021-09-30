@@ -117,7 +117,7 @@ void RotateMovementGenerator::finalize(Unit* owner, bool/* active*/, bool moveme
 {
     addFlag(MOVEMENTGENERATOR_FLAG_FINALIZED);
 
-    if (movementInform && owner->GetTypeFromGUID() == TYPEID_UNIT)
+    if (movementInform && owner->getObjectTypeId() == TYPEID_UNIT)
         owner->ToCreature()->GetAIInterface()->movementInform(ROTATE_MOTION_TYPE, _id);
 }
 
@@ -186,7 +186,7 @@ void DistractMovementGenerator::finalize(Unit* owner, bool/* active*/, bool move
 
     // TODO: This code should be handled somewhere else
     // If this is a creature, then return orientation to original position (for idle movement creatures)
-    if (movementInform && hasFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED) && owner->GetTypeFromGUID() == TYPEID_UNIT)
+    if (movementInform && hasFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED) && owner->getObjectTypeId() == TYPEID_UNIT)
     {
         float angle = owner->ToCreature()->GetSpawnPosition().getOrientation();
         owner->setFacingTo(angle);
@@ -209,7 +209,7 @@ void AssistanceDistractMovementGenerator::finalize(Unit* owner, bool/* active*/,
 {
     addFlag(MOVEMENTGENERATOR_FLAG_FINALIZED);
 
-    if (movementInform && hasFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED) && owner->GetTypeFromGUID() == TYPEID_UNIT)
+    if (movementInform && hasFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED) && owner->getObjectTypeId() == TYPEID_UNIT)
         owner->ToCreature()->GetAIInterface()->setReactState(REACT_AGGRESSIVE);
 }
 

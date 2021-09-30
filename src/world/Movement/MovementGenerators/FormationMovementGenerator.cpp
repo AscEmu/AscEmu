@@ -84,7 +84,7 @@ bool FormationMovementGenerator::doUpdate(Creature* owner, uint32_t diff)
     if (!target->movespline->Finalized() && target->movespline->GetId() != _lastLeaderSplineID)
     {
         // Update formation angle
-        if (_point1 && target->GetTypeFromGUID() == TYPEID_UNIT)
+        if (_point1 && target->getObjectTypeId() == TYPEID_UNIT)
         {
             if (CreatureGroup* formation = target->ToCreature()->getFormation())
             {

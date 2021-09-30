@@ -146,8 +146,18 @@ void PathGenerator::buildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 con
     // make shortcut path and mark it as NOPATH ( with flying and swimming exception )
     // its up to caller how he will use this info
 
-    bool waterPath = _source->ToCreature()->canSwim();
-    bool path =  _source->ToCreature()->canFly();
+    bool waterPath = false;
+    bool path = false;
+
+    if (_source->isCreature())
+    {
+        waterPath = _source->ToCreature()->canSwim();
+        path = _source->ToCreature()->canFly();
+    }
+    else
+    {
+        waterPath = _source->ToPlayer()->canSwim();
+    }
 
     if (startPoly == INVALID_POLYREF || endPoly == INVALID_POLYREF || waterPath && _source->ToCreature()->isInWater() || path && _source->ToCreature()->IsFlying())
     {
@@ -607,7 +617,7 @@ void PathGenerator::createFilter()
     uint16_t includeFlags = 0;
     uint16_t excludeFlags = 0;
 
-    if (_source->GetTypeFromGUID() == TYPEID_UNIT)
+    if (_source->getObjectTypeId() == TYPEID_UNIT)
     {
         Creature* creature = (Creature*)_source;
         if (creature->canWalk())
