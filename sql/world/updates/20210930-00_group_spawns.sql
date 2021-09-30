@@ -34,7 +34,7 @@ CREATE TABLE `creature_group_spawn` (
 -- ----------------------------
 -- Records of creature_group_spawn
 -- ----------------------------
-INSERT INTO `creature_group_spawn` VALUES ('4', '160105');
-INSERT INTO `creature_group_spawn` VALUES ('4', '160106');
-INSERT INTO `creature_group_spawn` VALUES ('6', '160044');
-INSERT INTO `creature_group_spawn` VALUES ('6', '160045');
+INSERT INTO `creature_group_spawn` VALUES ('1', '160105');
+INSERT INTO `creature_group_spawn` VALUES ('1', '160106');
+INSERT INTO `creature_group_spawn` VALUES ('2', '160044');
+INSERT INTO `creature_group_spawn` VALUES ('2', '160045');
