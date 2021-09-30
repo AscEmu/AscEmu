@@ -3873,5 +3873,4 @@ void AIInterface::sendStoredText(definedEmoteVector store, Unit* target)
             }
         }
     }
-
 }

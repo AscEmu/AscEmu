@@ -4530,8 +4530,7 @@ void MySQLDataStore::loadCreatureGroupSpawns()
         {
             sLogger.failure("Spawn data with ID (%u) not found, but is listed as a member of spawn group %u!", spawnId, groupId);
             continue;
-        }
-        
+        } 
     } while (result->NextRow());
 
     delete result;
