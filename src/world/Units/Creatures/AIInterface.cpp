@@ -1410,7 +1410,7 @@ bool AIInterface::canAssistTo(Unit* u, Unit* enemy, bool checkfaction /*= true*/
         return false;
 
     // or if enemy is in evade mode
-    if (enemy->GetTypeFromGUID() == TYPEID_UNIT && enemy->ToCreature()->isInEvadeMode())
+    if (enemy->getObjectTypeId() == TYPEID_UNIT && enemy->ToCreature()->isInEvadeMode())
         return false;
 
     if (getUnit()->hasUnitFlags(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE) || isImmuneToNPC())
@@ -2025,6 +2025,18 @@ void AIInterface::justEnteredCombat(Unit* pUnit)
 
     m_isEngaged = true;
 
+    // make AI group attack
+    auto group = sMySQLStore.getSpawnGroupDataBySpawn(getUnit()->ToCreature()->getSpawnId());
+
+    if (group)
+    {
+        for (auto members : group->spawns)
+        {
+            if (members.second && members.second->isAlive())
+                members.second->GetAIInterface()->onHostileAction(pUnit, nullptr, false);
+        }
+    }
+
     // find assistance
     findAssistance();
 
@@ -2439,11 +2451,22 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
     CALL_SCRIPT_EVENT(m_Unit, _internalOnCombatStop)();
     CALL_SCRIPT_EVENT(m_Unit, OnCombatStop)(getUnit());
 
-    if (m_Unit->isCreature())
+    if (m_Unit->isCreature() && m_Unit->isAlive())
     {
         // Reset Instance Data
         // set encounter state back to NotStarted
         CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(m_Unit->getEntry(), NotStarted);
+
+        // Respawn all Npcs from Current Group if needed
+        auto data = sMySQLStore.getSpawnGroupDataBySpawn(getUnit()->ToCreature()->getSpawnId());
+        if (data && data->spawnFlags & SPAWFLAG_FLAG_FULLPACK)
+        {
+            for (auto spawns : data->spawns)
+            {
+                if (spawns.second && spawns.second->m_spawn && !spawns.second->isAlive())
+                    spawns.second->Despawn(0, 1000);
+            }
+        }
 
         // Remount if mounted
         Creature* creature = static_cast<Creature*>(m_Unit);
@@ -2525,9 +2548,10 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
         auto encounters = sObjectMgr.GetDungeonEncounterList(m_Unit->GetMapMgr()->GetMapId(), pInstance->m_difficulty);
 
         Creature* pCreature = static_cast<Creature*>(m_Unit);
+
         bool found = false;
 
-        if (pInstance->isPersistent() && encounters != NULL)
+        if (encounters != NULL)
         {
             uint32_t npcGuid = pCreature->GetCreatureProperties()->Id;
 
@@ -2537,11 +2561,12 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
                 if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == npcGuid)
                 {
                     found = true;
-                    m_Unit->GetMapMgr()->pInstance->m_killedNpcs.insert(npcGuid);
 
+                    // Bosses get added via entry and not by spawnid
+                    m_Unit->GetMapMgr()->pInstance->m_killedNpcs.insert(npcGuid);
                     sInstanceMgr.SaveInstanceToDB(m_Unit->GetMapMgr()->pInstance);
 
-                    if (!pInstance->m_persistent)
+                    if (!pInstance->m_persistent && !pInstance->isResetable())
                     {
                         pInstance->m_persistent = true;
                         sInstanceMgr.SaveInstanceToDB(pInstance);
@@ -2561,6 +2586,23 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
             m_Unit->GetMapMgr()->pInstance->m_killedNpcs.insert(npcGuid);
             sInstanceMgr.SaveInstanceToDB(m_Unit->GetMapMgr()->pInstance);
         }
+
+        // Killed Group checks
+        auto spawnGroupData = sMySQLStore.getSpawnGroupDataBySpawn(pCreature->spawnid);
+
+        // Spawn Group Handling
+        if (spawnGroupData && spawnGroupData->groupId)
+        {
+            bool killed = true;
+            for (auto spawns : spawnGroupData->spawns)
+            {
+                if (m_Unit->GetMapMgr()->pInstance->m_killedNpcs.find(spawns.first) == m_Unit->GetMapMgr()->pInstance->m_killedNpcs.end())
+                    killed = false;
+            }
+
+            if (killed)
+                CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), OnSpawnGroupKilled)(spawnGroupData->groupId);
+        }
     }
     if (m_Unit->GetMapMgr() && m_Unit->GetMapMgr()->GetMapInfo() && m_Unit->GetMapMgr()->GetMapInfo()->isRaid())
     {
@@ -2572,6 +2614,7 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
             }
         }
     }
+
 }
 
 void AIInterface::eventOnLoad()

@@ -51,6 +51,9 @@ public:
     typedef std::unordered_map<uint32_t, GameObjectProperties> GameObjectPropertiesContainer;
     typedef std::unordered_map<uint32_t, QuestProperties> QuestPropertiesContainer;
 
+    typedef std::unordered_map<uint32, SpawnGroupTemplateData> SpawnGroupDataContainer;
+    typedef std::multimap<uint32, SpawnGroupTemplateData*> SpawnGroupLinkContainer;
+
     typedef std::unordered_map<uint32_t, MySQLStructure::CreatureDifficulty> CreatureDifficultyContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::DisplayBoundingBoxes> DisplayBoundingBoxesContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::VendorRestrictions> VendorRestrictionContainer;
@@ -204,6 +207,10 @@ public:
 
     std::vector<MySQLStructure::CreatureAIScripts>* getCreatureAiScripts(uint32_t entry);
 
+    SpawnGroupTemplateData* getSpawnGroupDataBySpawn(uint32_t spawnId);
+    SpawnGroupTemplateData* getSpawnGroupDataByGroup(uint32_t groupId);
+    std::vector<Creature*> const getSpawnGroupDataByBoss(uint32_t bossId);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // locales
     MySQLStructure::LocalesCreature const* getLocalizedCreature(uint32_t entry, uint32_t sessionLocale);
@@ -258,6 +265,9 @@ public:
     void loadCreatureDifficultyTable();
     void loadDisplayBoundingBoxesTable();
     void loadVendorRestrictionsTable();
+
+    void loadSpawnGroupIds();
+    void loadCreatureGroupSpawns();
 
     void loadNpcTextTable();
     void loadNpcScriptTextTable();
@@ -336,6 +346,10 @@ public:
     CreaturePropertiesMovementContainer _creaturePropertiesMovementStore;
     GameObjectPropertiesContainer _gameobjectPropertiesStore;
     QuestPropertiesContainer _questPropertiesStore;
+
+    // Spawn Groups
+    SpawnGroupDataContainer _spawnGroupDataStore;
+    SpawnGroupLinkContainer _spawnGroupMapStore;
 
     AIScriptsMap _creatureAIScriptStore;
     CreatureDifficultyContainer _creatureDifficultyStore;
