@@ -4439,18 +4439,18 @@ void MySQLDataStore::loadSpawnGroupIds()
     do
     {
         Field* fields = result->Fetch();
-        uint32 groupId = fields[0].GetUInt8();
+        uint32_t groupId = fields[0].GetUInt8();
 
         SpawnGroupTemplateData& spawnGroup = _spawnGroupDataStore[groupId];
 
         spawnGroup.groupId = groupId;
         spawnGroup.name = fields[1].GetString();
         spawnGroup.mapId = 0xFFFFFFFF;
-        uint32 flags = fields[2].GetUInt8();
+        uint32_t flags = fields[2].GetUInt8();
         if (flags & ~SPAWNGROUP_FLAGS_ALL)
         {
             flags &= SPAWNGROUP_FLAGS_ALL;
-            sLogger.failure("Invalid spawn group flag %u on group ID %u (%s), reduced to valid flag %u.", flags, groupId, spawnGroup.name.c_str(), uint32(spawnGroup.groupFlags));
+            sLogger.failure("Invalid spawn group flag %u on group ID %u (%s), reduced to valid flag %u.", flags, groupId, spawnGroup.name.c_str(), uint32_t(spawnGroup.groupFlags));
         }
         if (flags & SPAWNGROUP_FLAG_SYSTEM && flags & SPAWNGROUP_FLAG_MANUAL_SPAWN)
         {
