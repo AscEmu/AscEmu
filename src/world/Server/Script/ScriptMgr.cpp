@@ -853,7 +853,7 @@ void InstanceScript::setData(uint32_t data, uint32_t state)
         Iter->second = state;
         OnEncounterStateChange(data, state);
 
-        if(state == NotStarted)
+        if (state == NotStarted)
             GetInstance()->RespawnBossLinkedGroups(data);
     }
     else
