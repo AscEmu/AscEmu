@@ -125,10 +125,31 @@ public:
     }
 };
 
+class FreshOutOfTheGrave : public QuestScript
+{
+public:
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    {
+        uint32_t rigorMortisSpell = 73523;
+        uint32_t ressurrectSpell = 73524;
+
+        // Ressurect our Player
+        mTarget->castSpell(mTarget, sSpellMgr.getSpellInfo(ressurrectSpell), true);
+
+        // Remove death Aura
+        if (mTarget->HasAura(rigorMortisSpell))
+        {
+            mTarget->removeAllAurasById(rigorMortisSpell);
+            mTarget->removeSpell(rigorMortisSpell, false, false, 0);
+        }
+    }
+};
+
 void SetupTirisfalGlades(ScriptMgr* mgr)
 {
     mgr->register_quest_script(410, new TheDormantShade());
     mgr->register_creature_script(6784, &CalvinMontague::Create);
     mgr->register_quest_script(590, new ARoguesDeal());
     mgr->register_creature_script(1931, &Zealot::Create);
+    mgr->register_quest_script(24959, new FreshOutOfTheGrave());
 }
