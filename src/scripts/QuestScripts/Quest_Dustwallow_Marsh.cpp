@@ -140,22 +140,15 @@ public:
 class ChallengeOverlordMokMorokk : public QuestScript
 {
 public:
-    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        float SSX = mTarget->GetPositionX();
-        float SSY = mTarget->GetPositionY();
-        float SSZ = mTarget->GetPositionZ();
-
-        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 4500);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 4500);
         if (pCreature == nullptr)
         {
             return;
         }
 
-        std::string say = "Puny ";
-        say += mTarget->getName();
-        say += " wanna fight Overlord Mok'Morokk? Me beat you! Me boss here!";
-        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Puny $N wanna fight Overlord Mok'Morokk? Me beat you! Me boss here!");
         pCreature->SetFaction(72);
         pCreature->GetAIInterface()->setMeleeDisabled(false);
         pCreature->GetAIInterface()->setAllowedToEnterCombat(true);
@@ -207,13 +200,9 @@ public:
 class TheMissingDiplomat2 : public QuestScript
 {
 public:
-    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        float SSX = mTarget->GetPositionX();
-        float SSY = mTarget->GetPositionY();
-        float SSZ = mTarget->GetPositionZ();
-
-        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 4966);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 4966);
         if (pCreature == nullptr)
         {
             return;

@@ -36,7 +36,6 @@
      same variable names and formatting style in your new spell handler.
  */
 
-
 bool BreathOfFire(uint8_t /*effectIndex*/, Spell* /*pSpell*/)
 {
     /* No handler required */
@@ -211,12 +210,7 @@ bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
     c_target->RemoveAllAuras();
 
     pSpell->getPlayerCaster()->sendPlayObjectSoundPacket(c_target->getGuid(), 6197);
-
-    // send chat message
-    char msg[100];
-    sprintf(msg, "Ow! Ok, I'll get back to work, %s", pSpell->getPlayerCaster()->getName().c_str());
-    target->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);
-
+    target->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Ow! Ok, I'll get back to work, $N.");
     c_target->emote(EMOTE_STATE_WORK_CHOPWOOD);
 
     // Add timed event to return lazy peon to Zzz after 5-10 minutes (spell 17743)

@@ -53,23 +53,15 @@ public:
 class RumorsforKravel : public QuestScript
 {
 public:
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        float SSX = mTarget->GetPositionX();
-        float SSY = mTarget->GetPositionY();
-        float SSZ = mTarget->GetPositionZ();
-
-        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 4452);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 4452);
         if (pCreature == nullptr)
         {
             return;
         }
 
-        std::string msg = "Hahah! ";
-        msg += mTarget->getName();
-        msg += ", you make quite a partner!";
-        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
-        // sch: need a test. pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Hahah! $N, you make quite a partner!");
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Hahah! $N, you make quite a partner!");
         pCreature->emote(EMOTE_ONESHOT_LAUGH);
     }
 };

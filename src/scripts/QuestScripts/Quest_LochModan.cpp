@@ -24,19 +24,15 @@
 class ProtectingtheShipment : public QuestScript
 {
 public:
-    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        float SSX = mTarget->GetPositionX();
-        float SSY = mTarget->GetPositionY();
-        float SSZ = mTarget->GetPositionZ();
-
-        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 1379);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 1379);
         if (pCreature == nullptr)
         {
             return;
         }
 
-        pCreature->m_escorter = mTarget;
+        pCreature->m_escorter = pPlayer;
 
         auto path = pCreature->GetScript()->getCustomPath(1);
         pCreature->getMovementManager()->movePath(*path, false);

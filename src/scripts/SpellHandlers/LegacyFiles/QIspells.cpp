@@ -211,17 +211,13 @@ bool FuryoftheDreghoodElders(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pPlayer->hasQuestInQuestLog(10369) == false)
         return true;
 
-    LocationVector pos = pPlayer->GetPosition();
-
-    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 19354);
+    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 19354);
     if (pCreature == nullptr)
     {
         return true;
     }
 
-    LocationVector arzethPos = pCreature->GetPosition();
-
-    Creature* arzethless = pPlayer->GetMapMgr()->CreateAndSpawnCreature(20680, arzethPos.x, arzethPos.y, arzethPos.z, arzethPos.o);
+    Creature* arzethless = pPlayer->GetMapMgr()->CreateAndSpawnCreature(20680, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0);
     if (arzethless != nullptr)
         arzethless->Despawn(5 * 60 * 1000, 0);
 
@@ -472,9 +468,7 @@ bool ScrollOfMyzrael(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pPlayer->hasQuestInQuestLog(656))
         return true;
 
-    const float MyzraelPos[] = { -940.7374f, -3111.1953f, 48.9566f, 3.327f };
-
-    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(MyzraelPos[0], MyzraelPos[1], MyzraelPos[2], 2755);
+    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(-940.7374f, -3111.1953f, 48.9566f, 2755);
     if (pCreature != nullptr)
     {
         if (!pCreature->isAlive())
@@ -483,7 +477,7 @@ bool ScrollOfMyzrael(uint8_t /*effectIndex*/, Spell* pSpell)
             return true;
     }
 
-    pCreature = pPlayer->GetMapMgr()->CreateAndSpawnCreature(2755, MyzraelPos[0], MyzraelPos[1], MyzraelPos[2], MyzraelPos[3]);
+    pCreature = pPlayer->GetMapMgr()->CreateAndSpawnCreature(2755, -940.7374f, -3111.1953f, 48.9566f, 3.327f);
     return true;
 }
 
@@ -839,13 +833,11 @@ bool AnUnusualPatron(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pPlayer->hasQuestInQuestLog(9457) == false)
         return true;
 
-    LocationVector pos = pPlayer->GetPosition();
-
-    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 17207);
+    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17207);
     if (pCreature != nullptr)
         return true;
 
-    pCreature = pPlayer->GetMapMgr()->CreateAndSpawnCreature(17207, pos.x, pos.y, pos.z, pos.o);
+    pCreature = pPlayer->GetMapMgr()->CreateAndSpawnCreature(17207, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0);
     pCreature->Despawn(10 * 60 * 1000, 0);
     return true;
 }
@@ -880,76 +872,70 @@ bool TemporalPhaseModulator(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pPlayer == nullptr)
         return true;
 
-    LocationVector pos = pPlayer->GetPosition();
-
     if (pPlayer->hasQuestInQuestLog(10609) == false)
         return true;
 
-    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 20021);
+    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 20021);
     if (pCreature != nullptr)
     {
-        LocationVector whelpPos = pCreature->GetPosition();
         if (Util::getRandomUInt(1) == 0)
         {
-            Creature* adolescent = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21817, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
+            Creature* adolescent = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21817, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0);
             adolescent->Despawn(5 * 60 * 1000, 0);
         }
         else
         {
-            Creature* proto = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21821, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
+            Creature* proto = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21821, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0);
             proto->Despawn(5 * 60 * 1000, 0);
         }
         pCreature->Despawn(1, 0);
         return true;
     }
 
-    pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 21817);
+    pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21817);
     if (pCreature != nullptr)
     {
-        LocationVector whelpPos = pCreature->GetPosition();
         if (Util::getRandomUInt(10) < 8)
         {
-            Creature* mature = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21820, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
+            Creature* mature = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21820, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0);
             mature->Despawn(5 * 60 * 1000, 0);
         }
         else
         {
-            Creature* funnyd = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21823, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
+            Creature* funnyd = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21823, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0);
             funnyd->Despawn(5 * 60 * 1000, 0);
         }
         pCreature->Despawn(1, 0);
         return true;
     }
 
-    pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 21821);
+    pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21821);
     if (pCreature != nullptr)
     {
-        LocationVector whelpPos = pCreature->GetPosition();
         if (Util::getRandomUInt(10) < 8)
         {
-            Creature* mature = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21820, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
+            Creature* mature = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21820, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0);
             mature->Despawn(5 * 60 * 1000, 0);
         }
         else
         {
-            Creature* funnyd = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21823, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
+            Creature* funnyd = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21823, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0);
             funnyd->Despawn(5 * 60 * 1000, 0);
         }
         pCreature->Despawn(1, 0);
         return true;
     }
-    pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 21823);
+    pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21823);
     if (pCreature != nullptr)
     {
-        LocationVector whelpPos = pCreature->GetPosition();
         if (Util::getRandomUInt(1) == 0)
         {
-            Creature* adolescent = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21817, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
+            Creature* adolescent = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21817, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0);
             adolescent->Despawn(5 * 60 * 1000, 0);
         }
         else
         {
-            Creature* proto = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21821, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
+            Creature* proto = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21821, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0);
             proto->Despawn(5 * 60 * 1000, 0);
         }
         pCreature->Despawn(1, 0);
@@ -1725,21 +1711,19 @@ bool DouseEternalFlame(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->getPlayerCaster();
+    Player* pPlayer = pSpell->getPlayerCaster();
 
-    if (!plr->hasQuestInQuestLog(9737))
+    if (!pPlayer->hasQuestInQuestLog(9737))
         return true;
 
-    const LocationVector pos = plr->GetPosition();
-
-    GameObject* Flame = plr->MAP_GAMEOBJECT_NEAREST_COORDS(3678, -3640, 139, 182068);
+    GameObject* Flame = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(3678, -3640, 139, 182068);
     if (Flame != nullptr)
     {
-        if (plr->CalcDistance(plr, Flame) < 30)
+        if (pPlayer->CalcDistance(pPlayer, Flame) < 30)
         {
-            plr->AddQuestKill(9737, 0, 0);
+            pPlayer->AddQuestKill(9737, 0, 0);
 
-            Creature* pCreature = plr->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 10917);
+            Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 10917);
             if (pCreature != nullptr)
                 pCreature->SetFaction(11);
         }
@@ -2244,29 +2228,24 @@ bool WarIsHell(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->getPlayerCaster();
-
-    LocationVector pos = plr->GetPosition();
-
-    Creature* pCreature = plr->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 24008);
+    Player* pPlayer = pSpell->getPlayerCaster();
+    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 24008);
     if (pCreature == nullptr)
     {
         return true;
     }
 
-    if (!plr->hasQuestInQuestLog(11270))
+    if (!pPlayer->hasQuestInQuestLog(11270))
         return true;
 
-    plr->AddQuestKill(11270, 0, 0);
+    pPlayer->AddQuestKill(11270, 0, 0);
 
-    LocationVector targetPos = pCreature->GetPosition();
-
-    GameObject* obj = plr->GetMapMgr()->CreateAndSpawnGameObject(183816, targetPos.x, targetPos.y, targetPos.z, targetPos.o, 1);
+    GameObject* obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0, 1);
     if (obj != nullptr)
         obj->Despawn(1 * 60 * 1000, 0);
 
     pCreature->Despawn(2000, 60 * 1000);
-    plr->UpdateNearbyGameObjects();
+    pPlayer->UpdateNearbyGameObjects();
 
     return true;
 }
@@ -2473,8 +2452,6 @@ bool ImpaleEmissary(uint8_t /*effectIndex*/, Spell* pSpell)
 
     Player* pPlayer = pSpell->getPlayerCaster();
 
-    const LocationVector pos = pPlayer->GetPosition();
-
     QuestLogEntry* questLog = pPlayer->getQuestLogByQuestId(11537);
     if (questLog == nullptr)
     {
@@ -2483,7 +2460,7 @@ bool ImpaleEmissary(uint8_t /*effectIndex*/, Spell* pSpell)
             return true;
     }
 
-    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 25003);
+    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 25003);
     if (pCreature == nullptr)
     {
         return true;
@@ -2507,15 +2484,13 @@ bool LeyLine(uint8_t /*effectIndex*/, Spell* pSpell)
 
     Player* pPlayer = pSpell->getPlayerCaster();
 
-    const LocationVector pos = pPlayer->GetPosition();
-
     if (QuestLogEntry* questLog = pPlayer->getQuestLogByQuestId(11547))
     {
         uint32_t portals[] = { 25156, 25154, 25157 };
 
         for (uint8_t i = 0; i < 3; i++)
         {
-            Object* portal = pPlayer->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, portals[i]);
+            Object* portal = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), portals[i]);
             if (portal != nullptr && questLog->getMobCountByIndex(i) < questLog->getQuestProperties()->required_mob_or_go_count[i])
             {
                 pPlayer->AddQuestKill(11547, i, 0);
@@ -2533,9 +2508,7 @@ bool ManaRemnants(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pPlayer == nullptr)
         return false;
 
-    const LocationVector pos = pPlayer->GetPosition();
-
-    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 40404);
+    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 40404);
     if (pCreature == nullptr)
     {
         return false;
@@ -2566,32 +2539,27 @@ bool StoppingTheSpread(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->getPlayerCaster();
-
-    const LocationVector pos = plr->GetPosition();
-
-    Creature* pCreature = plr->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 18240);
+    Player* pPlayer = pSpell->getPlayerCaster();
+    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18240);
     if (pCreature == nullptr)
     {
         return true;
     }
 
-    const LocationVector targetPos = plr->GetPosition();
-
-    if (auto* questLog = plr->getQuestLogByQuestId(9874))
+    if (auto* questLog = pPlayer->getQuestLogByQuestId(9874))
     {
         if (questLog->getMobCountByIndex(0) < questLog->getQuestProperties()->required_mob_or_go_count[0])
         {
             questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
             questLog->SendUpdateAddKill(0);
 
-            GameObject* obj = plr->GetMapMgr()->CreateAndSpawnGameObject(183816, targetPos.x, targetPos.y, targetPos.z, targetPos.o, 1);
+            GameObject* obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0, 1);
             if (obj != nullptr)
                 obj->Despawn(1 * 30 * 1000, 0);
         }
 
         pCreature->Despawn(2000, 60 * 1000);
-        plr->UpdateNearbyGameObjects();
+        pPlayer->UpdateNearbyGameObjects();
         questLog->updatePlayerFields();
     }
 
@@ -2605,19 +2573,16 @@ bool RuthlessCunning(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->getPlayerCaster();
-
-    const LocationVector pos = plr->GetPosition();
-
-    Creature* pCreature = plr->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z);
+    Player* pPlayer = pSpell->getPlayerCaster();
+    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ());
     if (pCreature == nullptr || pCreature->isAlive())
         return true;
 
-    QuestLogEntry* questLog = plr->getQuestLogByQuestId(9927);
+    QuestLogEntry* questLog = pPlayer->getQuestLogByQuestId(9927);
     if (questLog && questLog->getMobCountByIndex(0) < questLog->getQuestProperties()->required_mob_or_go_count[0])
     {
         pCreature->Despawn(0, 60000);
-        plr->AddQuestKill(9927, 0, 0);
+        pPlayer->AddQuestKill(9927, 0, 0);
     }
 
     return true;
@@ -2639,11 +2604,8 @@ bool TheFleshLies(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pSpell->getPlayerCaster();
-
-    const LocationVector pos = plr->GetPosition();
-
-    Creature* pCreature = plr->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 20561);
+    Player* pPlayer = pSpell->getPlayerCaster();
+    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 20561);
     if (pCreature == nullptr)
     {
         return true;
@@ -2651,18 +2613,18 @@ bool TheFleshLies(uint8_t /*effectIndex*/, Spell* pSpell)
 
     const LocationVector tyrgetPos = pCreature->GetPosition();
 
-    if (auto* questLog = plr->getQuestLogByQuestId(10345))
+    if (auto* questLog = pPlayer->getQuestLogByQuestId(10345))
     {
         if (questLog->getMobCountByIndex(0) < questLog->getQuestProperties()->required_mob_or_go_count[0])
         {
-            plr->AddQuestKill(10345, 0, 0);
+            pPlayer->AddQuestKill(10345, 0, 0);
 
-            GameObject* obj = plr->GetMapMgr()->CreateAndSpawnGameObject(183816, tyrgetPos.x, tyrgetPos.y, tyrgetPos.z, tyrgetPos.o, 1);
+            GameObject* obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, tyrgetPos.x, tyrgetPos.y, tyrgetPos.z, tyrgetPos.o, 1);
             if (obj != nullptr)
                 obj->Despawn(1 * 30 * 1000, 0);
         }
         pCreature->Despawn(2000, 60 * 1000);
-        plr->UpdateNearbyGameObjects();
+        pPlayer->UpdateNearbyGameObjects();
     }
 
     return true;
@@ -2743,16 +2705,13 @@ bool Carcass(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a Shadoweave Ta
         return true;
 
     Player* pPlayer = pSpell->getPlayerCaster();
-
-    LocationVector pos = pPlayer->GetPosition();
-
     QuestLogEntry* pQuest = pPlayer->getQuestLogByQuestId(10804);
-    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 21648);
-    GameObject* FlayerCarcass = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 185155);
+    Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21648);
+    GameObject* FlayerCarcass = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 185155);
 
     if (FlayerCarcass == nullptr)
     {
-        FlayerCarcass = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(185155, pos.x, pos.y, pos.z, 0, 1);
+        FlayerCarcass = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(185155, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0, 1);
         FlayerCarcass->Despawn(60000, 0);
     }
     if (pCreature == nullptr)
@@ -2766,7 +2725,7 @@ bool Carcass(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a Shadoweave Ta
     if (pQuest != nullptr && pQuest->getMobCountByIndex(0) < pQuest->getQuestProperties()->required_mob_or_go_count[0])
     {
         pCreature->castSpell(pCreature, sSpellMgr.getSpellInfo(38502), true);
-        pCreature->getMovementManager()->moveTakeoff(0, pos);
+        pCreature->getMovementManager()->moveTakeoff(0, pPlayer->GetPosition());
         pPlayer->AddQuestKill(10804, 0, 0);
     }
     return true;

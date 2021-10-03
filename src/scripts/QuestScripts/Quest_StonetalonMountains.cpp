@@ -12,19 +12,15 @@ This file is released under the MIT license. See README-MIT for more information
 class ProtectKaya : public QuestScript
 {
 public:
-    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        float SSX = mTarget->GetPositionX();
-        float SSY = mTarget->GetPositionY();
-        float SSZ = mTarget->GetPositionZ();
-
-        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 11856);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 11856);
         if (pCreature == nullptr)
         {
             return;
         }
 
-        pCreature->m_escorter = mTarget;
+        pCreature->m_escorter = pPlayer;
 
         pCreature->getMovementManager()->movePath(pCreature->getWaypointPath(), false);
         pCreature->pauseMovement(10);

@@ -67,13 +67,9 @@ public:
 class TheMissingDiplomat : public QuestScript
 {
 public:
-    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        float SSX = mTarget->GetPositionX();
-        float SSY = mTarget->GetPositionY();
-        float SSZ = mTarget->GetPositionZ();
-
-        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 4961);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 4961);
         if (pCreature == nullptr)
         {
             return;
@@ -86,16 +82,13 @@ public:
         uint32_t chance = Util::getRandomUInt(100);
         if (chance < 15)
         {
-            std::string say = "Now you're gonna get it good, ";
-            say += mTarget->getName();
-            say += "!";
-            pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+            pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Now you're gonna get it good, $N!");
         }
-        Creature* ct1 = mTarget->GetMapMgr()->CreateAndSpawnCreature(4969, -8686.803711f, 445.267792f, 99.789223f, 5.461184f);
+        Creature* ct1 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(4969, -8686.803711f, 445.267792f, 99.789223f, 5.461184f);
         if (ct1 != nullptr)
             ct1->Despawn(300000, 0);
 
-        Creature* ct2 = mTarget->GetMapMgr()->CreateAndSpawnCreature(4969, -8675.571289f, 444.162262f, 99.644737f, 3.834103f);
+        Creature* ct2 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(4969, -8675.571289f, 444.162262f, 99.644737f, 3.834103f);
         if (ct2 != nullptr)
             ct2->Despawn(300000, 0);
     }

@@ -136,13 +136,9 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new Beka2(c); }
     explicit Beka2(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller) override
+    void OnDied(Unit* pPlayer) override
     {
-        float SSX = mKiller->GetPositionX();
-        float SSY = mKiller->GetPositionY();
-        float SSZ = mKiller->GetPositionZ();
-
-        Creature* pCreature = mKiller->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 1449);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 1449);
         if (pCreature)
         {
             pCreature->emote(EMOTE_ONESHOT_CHEER);
@@ -153,55 +149,38 @@ public:
 class BloodscalpClanHeads : public QuestScript
 {
 public:
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        float SSX = mTarget->GetPositionX();
-        float SSY = mTarget->GetPositionY();
-        float SSZ = mTarget->GetPositionZ();
-
-        GameObject* skull1 = mTarget->MAP_GAMEOBJECT_NEAREST_COORDS(SSX, SSY, SSZ, 2551);
+        GameObject* skull1 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 2551);
         if (skull1 == nullptr)
             return;
 
-        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 2519);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 2519);
         if (pCreature == nullptr)
         {
             return;
         }
 
-        std::string msg1 = "Ah. Good ";
-        msg1 += mTarget->getName();
-        msg1 += ". Now let us see what tale these heads tell...";
-        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg1.c_str());
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Ah. Good $N. Now let us see what tale these heads tell...");
         pCreature->castSpell(pCreature, sSpellMgr.getSpellInfo(3644), false);
         skull1->Despawn(5000, 0);
-        GameObject* skull2 = mTarget->MAP_GAMEOBJECT_NEAREST_COORDS(SSX, SSY, SSZ, 2551);
+        GameObject* skull2 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 2551);
         if (skull2)
             skull2->Despawn(5000, 0);
 
-        std::string msg = "There, ";
-        msg += mTarget->getName();
-        msg += ". You may now speak to the Bloodscalp chief and his witchdoctor.";
-        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 500);
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "There, $N. You may now speak to the Bloodscalp chief and his witchdoctor.", 500);
     }
 };
 
 class BacktoBootyBay : public QuestScript
 {
 public:
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        float X = mTarget->GetPositionX();
-        float Y = mTarget->GetPositionY();
-        float Z = mTarget->GetPositionZ();
-
-        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(X, Y, Z, 2498);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 2498);
         if (pCreature)
         {
-            std::string say = "Hm... if you're looking to adle wits. ";
-            say += mTarget->getName();
-            say += ", then the secret behind Zanzil's zombies might just fo the trick!";
-            pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+            pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Hm... if you're looking to adle wits. $N, then the secret behind Zanzil's zombies might just do the trick!");
         }
     }
 };
@@ -209,19 +188,12 @@ public:
 class VoodooDues : public QuestScript
 {
 public:
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        float X = mTarget->GetPositionX();
-        float Y = mTarget->GetPositionY();
-        float Z = mTarget->GetPositionZ();
-
-        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(X, Y, Z, 2501);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 2501);
         if (pCreature)
         {
-            std::string say = "Bah! ";
-            say += mTarget->getName();
-            say += ", this foot won't budge!";
-            pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+            pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Bah! $N, this foot won't budge!");
         }
     }
 };

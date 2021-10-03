@@ -67,13 +67,12 @@ public:
     {
         if (auto* questLog = pPlayer->getQuestLogByQuestId(12848))
         {
-            float SSX = pPlayer->GetPositionX();
-            float SSY = pPlayer->GetPositionY();
-            float SSZ = pPlayer->GetPositionZ();
-
-            Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ);
+            Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ());
             if (!pCreature || !pCreature->isAlive())
+            {
                 return;
+            }
+
 
             if (pCreature->getEntry() == CN_INITIATE_1 || pCreature->getEntry() == CN_INITIATE_2 || pCreature->getEntry() == CN_INITIATE_3 || pCreature->getEntry() == CN_INITIATE_4)
             {

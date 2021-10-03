@@ -23,20 +23,19 @@
 class HeroesofOld : public QuestScript
 {
 public:
-    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ(), 7750);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 7750);
         if (!pCreature)
         {
-            Creature* general = mTarget->GetMapMgr()->CreateAndSpawnCreature(7750, -10619, -2997, 28.8f, 4);
+            Creature* general = pPlayer->GetMapMgr()->CreateAndSpawnCreature(7750, -10619, -2997, 28.8f, 4);
             general->Despawn(3 * 60 * 1000, 0);
         }
 
-        GameObject* spawncheckgobj = mTarget->MAP_GAMEOBJECT_NEAREST_COORDS(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ(), 141980);
-
+        GameObject* spawncheckgobj = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 141980);
         if (!spawncheckgobj)
         {
-            GameObject* generalsbox = mTarget->GetMapMgr()->CreateAndSpawnGameObject(141980, -10622, -2994, 28.6f, 4, 4);
+            GameObject* generalsbox = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(141980, -10622, -2994, 28.6f, 4, 4);
             if (generalsbox != nullptr)
                 generalsbox->Despawn(3 * 60 * 1000, 0);
         }
@@ -46,9 +45,9 @@ public:
 class HeroesofOld1 : public GossipScript
 {
 public:
-    void onHello(Object* pObject, Player* plr) override
+    void onHello(Object* pObject, Player* pPlayer) override
     {
-        if (!plr)
+        if (!pPlayer)
             return;
 
         Creature* general = static_cast<Creature*>(pObject);
@@ -56,15 +55,15 @@ public:
             return;
 
         GossipMenu menu(pObject->getGuid(), 1);
-        if (plr->hasQuestInQuestLog(2702) || plr->HasFinishedQuest(2702))
-            menu.addItem(GOSSIP_ICON_CHAT, 453, 1);     // I need to speak with Corporal.
+        if (pPlayer->hasQuestInQuestLog(2702) || pPlayer->HasFinishedQuest(2702))
+            menu.addItem(GOSSIP_ICON_CHAT, 453, 1); // I need to speak with Corporal.
 
-        menu.sendGossipPacket(plr);
+        menu.sendGossipPacket(pPlayer);
     }
 
-    void onSelectOption(Object* pObject, Player* plr, uint32_t Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
+    void onSelectOption(Object* pObject, Player* pPlayer, uint32_t Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
-        if (!plr)
+        if (!pPlayer)
             return;
 
         Creature* general = static_cast<Creature*>(pObject);
@@ -75,17 +74,17 @@ public:
         {
             case 1:
             {
-                Creature* pCreature = plr->MAP_CREATURE_NEAREST_COORDS(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 7750);
+                Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 7750);
                 if (!pCreature)
                 {
-                    general = plr->GetMapMgr()->CreateAndSpawnCreature(7750, -10619, -2997, 28.8f, 4);
+                    general = pPlayer->GetMapMgr()->CreateAndSpawnCreature(7750, -10619, -2997, 28.8f, 4);
                     general->Despawn(3 * 60 * 1000, 0);
                 }
 
-                GameObject* spawncheckgobj = plr->MAP_GAMEOBJECT_NEAREST_COORDS(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 141980);
+                GameObject* spawncheckgobj = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 141980);
                 if (!spawncheckgobj)
                 {
-                    GameObject* generalsbox = plr->GetMapMgr()->CreateAndSpawnGameObject(141980, -10622, -2994, 28.6f, 4, 4);
+                    GameObject* generalsbox = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(141980, -10622, -2994, 28.6f, 4, 4);
                     if (generalsbox != nullptr)
                         generalsbox->Despawn(3 * 60 * 1000, 0);
                 }

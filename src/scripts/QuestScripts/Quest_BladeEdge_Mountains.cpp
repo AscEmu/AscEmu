@@ -75,9 +75,9 @@ public:
 class IntotheSoulgrinder : public QuestScript
 {
 public:
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* pCreature = mTarget->MAP_CREATURE_NEAREST_COORDS(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 22941);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 22941);
         if (pCreature == nullptr)
         {
             return;

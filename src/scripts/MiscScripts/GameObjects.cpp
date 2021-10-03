@@ -401,19 +401,18 @@ public:
     explicit EthereumTransponderZeta(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new EthereumTransponderZeta(GO); }
 
-    void OnActivate(Player* player) override
+    void OnActivate(Player* pPlayer) override
     {
-        LocationVector pos = player->GetPosition();
-        Creature* pCreature = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 20482);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 20482);
         if (pCreature)
             return;
 
-        if (player->hasQuestInQuestLog(10339))
+        if (pPlayer->hasQuestInQuestLog(10339))
         {
             float x = 4017.96f;
             float y = 2315.91f;
             float z = 116.418f;
-            Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(20482, x, y, z, pos.o, true, false, 0, 0);
+            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(20482, x, y, z, 0, true, false, 0, 0);
             if (NewCreature != nullptr)
                 NewCreature->Despawn(1 * 60 * 1000, 0);
         }
@@ -443,16 +442,15 @@ public:
     explicit MysteriousEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new MysteriousEgg(GO); }
 
-    void OnActivate(Player* player) override
+    void OnActivate(Player* pPlayer) override
     {
-        player->AddQuestKill(10111, 0, 0);
+        pPlayer->AddQuestKill(10111, 0, 0);
 
-        LocationVector pos = player->GetPosition();
-        Creature* pCreature = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 19055);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 19055);
         if (pCreature != nullptr)
             return;
 
-        pCreature = player->GetMapMgr()->CreateAndSpawnCreature(19055, pos.x, pos.y, pos.z, pos.o);
+        pCreature = pPlayer->GetMapMgr()->CreateAndSpawnCreature(19055, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0);
         if (pCreature != nullptr)
             pCreature->Despawn(5 * 60 * 1000, 0);
     }
@@ -570,19 +568,17 @@ public:
     explicit DreadmaulRock(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new DreadmaulRock(GO); }
 
-    void OnActivate(Player* player) override
+    void OnActivate(Player* pPlayer) override
     {
-        QuestLogEntry* qle = player->getQuestLogByQuestId(3821);
+        QuestLogEntry* qle = pPlayer->getQuestLogByQuestId(3821);
         if (qle == nullptr)
             return;
 
-        LocationVector pos = player->GetPosition();
-
-        Creature* pCreature = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 9136);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 9136);
         if (pCreature)
             return;
 
-        Creature* shaghostspawn = player->GetMapMgr()->CreateAndSpawnCreature(9136, pos.x, pos.y, pos.z, pos.o);
+        Creature* shaghostspawn = pPlayer->GetMapMgr()->CreateAndSpawnCreature(9136, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0);
         if (shaghostspawn != nullptr)
             shaghostspawn->Despawn(2 * 60 * 1000, 0);
     }
@@ -624,13 +620,13 @@ public:
     explicit ProphecyofAkida(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new ProphecyofAkida(GO); }
 
-    void OnActivate(Player* player) override
+    void OnActivate(Player* pPlayer) override
     {
-        player->AddQuestKill(9544, 0, 0);
+        pPlayer->AddQuestKill(9544, 0, 0);
 
-        LocationVector pos = player->GetPosition();
+        LocationVector pos = pPlayer->GetPosition();
 
-        Creature* pCreature = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 17375);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17375);
         if (pCreature != nullptr)
             pCreature->Despawn(1, 6 * 60 * 1000);
     }
@@ -677,15 +673,13 @@ public:
     explicit TestofEndurance(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TestofEndurance(GO); }
 
-    void OnActivate(Player* player) override
+    void OnActivate(Player* pPlayer) override
     {
-        QuestLogEntry* qle = player->getQuestLogByQuestId(1150);
+        QuestLogEntry* qle = pPlayer->getQuestLogByQuestId(1150);
         if (qle == nullptr)
             return;
 
-        LocationVector pos = player->GetPosition();
-
-        Creature* pCreature = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 4490);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 4490);
         if (pCreature != nullptr)
         {
             if (!pCreature->isAlive())
@@ -694,7 +688,7 @@ public:
                 return;
         }
 
-        Creature* grenkaspawn = player->GetMapMgr()->CreateAndSpawnCreature(4490, pos.x, pos.y, pos.z, pos.o);
+        Creature* grenkaspawn = pPlayer->GetMapMgr()->CreateAndSpawnCreature(4490, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0);
         if (grenkaspawn != nullptr)
             grenkaspawn->Despawn(6 * 60 * 1000, 0);
     }
@@ -780,22 +774,19 @@ public:
     explicit StrengthofOne(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new StrengthofOne(GO); }
 
-    void OnActivate(Player* player) override
+    void OnActivate(Player* pPlayer) override
     {
-        QuestLogEntry* qle = player->getQuestLogByQuestId(9582);
+        QuestLogEntry* qle = pPlayer->getQuestLogByQuestId(9582);
         if (qle == nullptr)
             return;
 
-        LocationVector pos = player->GetPosition();
-
         // What is this ? :O To remove ?
-        Creature* pCreature = player->MAP_CREATURE_NEAREST_COORDS(pos.x, pos.y, pos.z, 17556);
+        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17556);
         if (pCreature)
         {
-            LocationVector pos2 = pCreature->GetPosition();
             pCreature->Despawn(1, 5 * 60 * 1000);
 
-            Creature* reaver2 = player->GetMapMgr()->GetInterface()->SpawnCreature(17556, pos2.x, pos2.y, pos2.z, pos2.o, true, false, 0, 0);
+            Creature* reaver2 = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(17556, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0, true, false, 0, 0);
             if (reaver2 != nullptr)
                 reaver2->Despawn(5 * 60 * 1000, 0);
         }

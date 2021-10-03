@@ -25,11 +25,7 @@
 
 void Hanazua(Player* pPlayer, Object* pObject)
 {
-    std::string say;
-    say = "Go swiftly, ";
-    say += pPlayer->getName();
-    say += ", my fate is in your hands.";
-    (static_cast<Creature*>(pObject))->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+    (static_cast<Creature*>(pObject))->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Go swiftly, $N, my fate is in your hands.");
 }
 
 void AHumbleTask(Player* /*pPlayer*/, Object* pObject)
@@ -72,9 +68,7 @@ void Rest_n_Relaxation(Player* /*pPlayer*/, Object* pObject)
 
 void OntoGoldshireComplete(Player* pPlayer, Object* pObject)
 {
-    char msg[256];
-    snprintf((char*)msg, 256, "You are dismissed %s . ", pPlayer->getName().c_str());
-    (static_cast<Creature*>(pObject))->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
+    (static_cast<Creature*>(pObject))->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You are dismissed $N.");
     (static_cast<Creature*>(pObject))->emote(EMOTE_ONESHOT_BOW);
 }
 
@@ -147,10 +141,7 @@ void Wishock(Player* pPlayer, Object* pObject)
 
 void CapturedMountaineer(Player* pPlayer, Object* pObject)
 {
-    std::string say = "I raise my brew and hope to be rid of the likes of you!  Cheers, you no good scoundrel, ";
-    say += pPlayer->getName();
-    say += "!";
-    (static_cast<Creature*>(pObject))->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+    (static_cast<Creature*>(pObject))->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I raise my brew and hope to be rid of the likes of you! Cheers, you no good scoundrel, $N!");
 }
 
 void PlaguedLands(Player* /*pPlayer*/, Object* pObject)

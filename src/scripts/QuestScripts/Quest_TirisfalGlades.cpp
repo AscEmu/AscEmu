@@ -83,16 +83,13 @@ public:
 class ARoguesDeal : public QuestScript
 {
 public:
-    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        float SSX = mTarget->GetPositionX();
-        float SSY = mTarget->GetPositionY();
-        float SSZ = mTarget->GetPositionZ();
-
-        Creature* Dashel = mTarget->MAP_CREATURE_NEAREST_COORDS(SSX, SSY, SSZ, 6784);
-
+        Creature* Dashel = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 6784);
         if (Dashel == nullptr)
+        {
             return;
+        }
 
         Dashel->SetFaction(28);
         Dashel->GetAIInterface()->setMeleeDisabled(false);
