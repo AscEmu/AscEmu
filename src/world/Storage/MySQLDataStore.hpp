@@ -51,8 +51,8 @@ public:
     typedef std::unordered_map<uint32_t, GameObjectProperties> GameObjectPropertiesContainer;
     typedef std::unordered_map<uint32_t, QuestProperties> QuestPropertiesContainer;
 
-    typedef std::unordered_map<uint32, SpawnGroupTemplateData> SpawnGroupDataContainer;
-    typedef std::multimap<uint32, SpawnGroupTemplateData*> SpawnGroupLinkContainer;
+    typedef std::unordered_map<uint32_t, SpawnGroupTemplateData> SpawnGroupDataContainer;
+    typedef std::multimap<uint32_t, SpawnGroupTemplateData*> SpawnGroupLinkContainer;
 
     typedef std::unordered_map<uint32_t, MySQLStructure::CreatureDifficulty> CreatureDifficultyContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::DisplayBoundingBoxes> DisplayBoundingBoxesContainer;

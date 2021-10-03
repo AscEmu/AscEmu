@@ -1054,7 +1054,7 @@ uint32 MapMgr::GetPlayerCount()
     return static_cast<uint32>(m_PlayerStorage.size());
 }
 
-void MapMgr::RespawnBossLinkedGroups(uint32_t bossId)
+void MapMgr::respawnBossLinkedGroups(uint32_t bossId)
 {
     // Get all Killed npcs out of Killed npc Store
     for (Creature* spawn : sMySQLStore.getSpawnGroupDataByBoss(bossId))
@@ -1100,7 +1100,7 @@ void MapMgr::RespawnBossLinkedGroups(uint32_t bossId)
     sInstanceMgr.SaveInstanceToDB(pInstance);
 }
 
-void MapMgr::SpawnManualGroup(uint32_t groupId)
+void MapMgr::spawnManualGroup(uint32_t groupId)
 {
     auto data = sMySQLStore.getSpawnGroupDataByGroup(groupId);
 

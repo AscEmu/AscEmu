@@ -854,7 +854,7 @@ void InstanceScript::setData(uint32_t data, uint32_t state)
         OnEncounterStateChange(data, state);
 
         if (state == NotStarted)
-            GetInstance()->RespawnBossLinkedGroups(data);
+            GetInstance()->respawnBossLinkedGroups(data);
     }
     else
         sLogger.debug("InstanceScript::setData - tried to set state for entry %u on map %u. The entry is not defined in table instance_bosses or manually to handle states!", data, mInstance->GetMapId());

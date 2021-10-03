@@ -157,8 +157,8 @@ public:
     // Mark object as updated
     void ObjectUpdated(Object* obj);
     void UpdateCellActivity(uint32 x, uint32 y, uint32 radius);
-    void RespawnBossLinkedGroups(uint32_t bossId);
-    void SpawnManualGroup(uint32_t groupId);
+    void respawnBossLinkedGroups(uint32_t bossId);
+    void spawnManualGroup(uint32_t groupId);
 
     // Terrain Functions
     float GetLandHeight(float x, float y, float z);
