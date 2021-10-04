@@ -138,10 +138,7 @@ public:
 
         // Remove death Aura
         if (mTarget->HasAura(rigorMortisSpell))
-        {
             mTarget->removeAllAurasById(rigorMortisSpell);
-            mTarget->removeSpell(rigorMortisSpell, false, false, 0);
-        }
     }
 };
 
