@@ -340,7 +340,7 @@ public:
     void OnActivate(Player* player) override
     {
         Creature* pCreature = player->MAP_GET_CREATURE_NEAREST_COORDS(2390.101807f, 336.676788f, 40.015614f, 6390);
-        GameObject* pDoor = player->MAP_GAMEOBJECT_NEAREST_COORDS(2388.480029f, 338.3901f, 40.092899f, 176594);
+        GameObject* pDoor = player->MAP_GET_GAMEOBJECT_NEAREST_COORDS(2388.480029f, 338.3901f, 40.092899f, 176594);
         QuestLogEntry* en = player->getQuestLogByQuestId(1819);
         if (en == nullptr || pDoor == nullptr || pCreature == nullptr)
             return;
@@ -493,7 +493,7 @@ public:
         if (player->hasQuestInQuestLog(5902) || player->hasQuestInQuestLog(5904))
         {
             LocationVector pos = player->GetPosition();
-            GameObject* go = player->MAP_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 177491);
+            GameObject* go = player->MAP_GET_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 177491);
             if (go == nullptr)
             {
                 GameObject* barel = player->GetMapMgr()->CreateAndSpawnGameObject(177491, 2449.51f, -1662.32f, 104.38f, 1.0f, 1);
@@ -758,7 +758,7 @@ public:
         LocationVector pos = player->GetPosition();
 
         // Wth is that ? To remove ?
-        GameObject* gobj = player->MAP_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 184729);
+        GameObject* gobj = player->MAP_GET_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 184729);
         if (gobj != nullptr)
             gobj->Despawn(6 * 60 * 1000, 0);
 

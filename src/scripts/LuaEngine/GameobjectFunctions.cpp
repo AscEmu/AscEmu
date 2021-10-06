@@ -204,7 +204,7 @@ int LuaGameObject::GetGameObjectNearestCoords(lua_State* L, GameObject* ptr)
     float y = CHECK_FLOAT(L, 2);
     float z = CHECK_FLOAT(L, 3);
     uint32_t entryid = CHECK_ULONG(L, 4);
-    GameObject* go = ptr->MAP_GAMEOBJECT_NEAREST_COORDS(x, y, z, entryid);
+    GameObject* go = ptr->MAP_GET_GAMEOBJECT_NEAREST_COORDS(x, y, z, entryid);
     if (go != NULL)
     PUSH_GO(L, go);
     else

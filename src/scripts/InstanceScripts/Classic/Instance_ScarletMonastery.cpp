@@ -227,7 +227,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        GameObject* SecretDoor = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(1167.79f, 1347.26f, 31.5494f, ScarletMonastery::GO_SCARLET_SECRET_DOOR);
+        GameObject* SecretDoor = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(1167.79f, 1347.26f, 31.5494f, ScarletMonastery::GO_SCARLET_SECRET_DOOR);
         if (SecretDoor != nullptr)
         {
             if (SecretDoor->getState() == GO_STATE_CLOSED)
@@ -246,7 +246,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        GameObject* ArmoryDoor = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2886.31f, -827.261f, 160.336f, ScarletMonastery::GO_ARMORY_DOOR);
+        GameObject* ArmoryDoor = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(2886.31f, -827.261f, 160.336f, ScarletMonastery::GO_ARMORY_DOOR);
         if (ArmoryDoor != nullptr)
         {
             if (ArmoryDoor->getState() == GO_STATE_CLOSED)
@@ -265,7 +265,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        GameObject* CathedralDoor = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2908.18f, -818.203f, 160.332f, ScarletMonastery::GO_CATHEDRAL_DOOR);
+        GameObject* CathedralDoor = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(2908.18f, -818.203f, 160.332f, ScarletMonastery::GO_CATHEDRAL_DOOR);
         if (CathedralDoor != nullptr)
         {
             if (CathedralDoor->getState() == GO_STATE_CLOSED)

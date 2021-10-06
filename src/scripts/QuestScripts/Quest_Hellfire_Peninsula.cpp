@@ -67,7 +67,7 @@ public:
         {
             LocationVector pos = pPlayer->GetPosition();
 
-            GameObject* pBeacon = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 184661);
+            GameObject* pBeacon = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 184661);
             if (pBeacon != nullptr && pBeacon->getFlags() > 0)
             {
                 pBeacon->removeFlags(GO_FLAG_NONSELECTABLE);
@@ -76,7 +76,7 @@ public:
             // Northern Zeth'Gor Tower
             if (questLog->getMobCountByIndex(0) < questLog->getQuestProperties()->required_mob_or_go_count[0])
             {
-                GameObject* pNorthern = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-820.0f, 2029.0f, 55.0f, 300150);
+                GameObject* pNorthern = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-820.0f, 2029.0f, 55.0f, 300150);
                 if (pNorthern != nullptr && pPlayer->CalcDistance(pPlayer, pNorthern) < 40)      // if reduced the server will crash when out of range
                 {
                     pPlayer->AddQuestKill(10895, 0, 0);
@@ -92,7 +92,7 @@ public:
             // Southern Zeth'Gor Tower
             if (questLog->getMobCountByIndex(1) < questLog->getQuestProperties()->required_mob_or_go_count[1])
             {
-                GameObject* pSouthern = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-1150.0f, 2110.0f, 84.0f, 300150);
+                GameObject* pSouthern = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-1150.0f, 2110.0f, 84.0f, 300150);
                 if (pSouthern != nullptr && pPlayer->CalcDistance(pPlayer, pSouthern) < 40)
                 {
                     pPlayer->AddQuestKill(10895, 1, 0);
@@ -108,7 +108,7 @@ public:
             // Forge Zeth'Gor Tower
             if (questLog->getMobCountByIndex(2) < questLog->getQuestProperties()->required_mob_or_go_count[2])
             {
-                GameObject* pForge = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-893.0f, 1919.0f, 82.0f, 300150);
+                GameObject* pForge = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-893.0f, 1919.0f, 82.0f, 300150);
                 if (pForge != nullptr && pPlayer->CalcDistance(pPlayer, pForge) < 40)
                 {
                     pPlayer->AddQuestKill(10895, 2, 0);
@@ -124,7 +124,7 @@ public:
             // Foothill Zeth'Gor Tower
             if (questLog->getMobCountByIndex(3) < questLog->getQuestProperties()->required_mob_or_go_count[3])
             {
-                GameObject* pFoothill = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-978.0f, 1879.0f, 111.0f, 300150);
+                GameObject* pFoothill = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-978.0f, 1879.0f, 111.0f, 300150);
                 if (pFoothill != nullptr && pPlayer->CalcDistance(pPlayer, pFoothill) < 40)
                 {
                     pPlayer->AddQuestKill(10895, 3, 0);

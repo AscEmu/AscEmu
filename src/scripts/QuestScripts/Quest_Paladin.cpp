@@ -51,7 +51,7 @@ public:
             float SSZ = pPlayer->GetPositionZ();
             float SSO = pPlayer->GetOrientation();
 
-            GameObject* Brazier = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(SSX, SSY, SSZ, 181956);
+            GameObject* Brazier = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(SSX, SSY, SSZ, 181956);
             if (Brazier)
             {
                 Brazier->setState(GO_STATE_OPEN);
@@ -77,7 +77,7 @@ public:
         float SSY = mKiller->GetPositionY();
         float SSZ = mKiller->GetPositionZ();
 
-        GameObject* Brazier = mKiller->MAP_GAMEOBJECT_NEAREST_COORDS(SSX, SSY, SSZ, 181956);
+        GameObject* Brazier = mKiller->MAP_GET_GAMEOBJECT_NEAREST_COORDS(SSX, SSY, SSZ, 181956);
         if (Brazier)
         {
             Brazier->setState(GO_STATE_CLOSED);

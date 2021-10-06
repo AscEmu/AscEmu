@@ -35,7 +35,7 @@ public:
             float SSY = pPlayer->GetPositionY();
             float SSZ = pPlayer->GetPositionZ();
 
-            GameObject* pOrb = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(SSX, SSY, SSZ, 187578);
+            GameObject* pOrb = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(SSX, SSY, SSZ, 187578);
             if (pOrb)
             {
                 pOrb->setState(GO_STATE_OPEN);

@@ -117,7 +117,7 @@ void OnActivate(Player* pPlayer)
 {
     // Pre-flight checks
     GameObject* tonkConsole = NULL;
-    tonkConsole = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 180524);
+    tonkConsole = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 180524);
 
     // Open and disable the Tonk Console
     tonkConsole->SetFlags(GO_FLAG_NONSELECTABLE);

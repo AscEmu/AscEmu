@@ -1224,7 +1224,7 @@ bool ashrombeUnlockDummySpell(uint8_t /*effectIndex*/, Spell* pSpell)
         return false;
     }
 
-    if (GameObject* pGameObject = target->MAP_GAMEOBJECT_NEAREST_COORDS(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), ShadowfangKeep::GO_COURTYARD_DOOR))
+    if (GameObject* pGameObject = target->MAP_GET_GAMEOBJECT_NEAREST_COORDS(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), ShadowfangKeep::GO_COURTYARD_DOOR))
     {
         pGameObject->setState(GO_STATE_OPEN);
         return true;

@@ -1819,7 +1819,7 @@ public:
         float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
-        PUSH_GO(L, ptr->MAP_GAMEOBJECT_NEAREST_COORDS(x, y, z, entryid));
+        PUSH_GO(L, ptr->MAP_GET_GAMEOBJECT_NEAREST_COORDS(x, y, z, entryid));
         return 1;
     }
 

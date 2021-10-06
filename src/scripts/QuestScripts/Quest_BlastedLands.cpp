@@ -32,7 +32,7 @@ public:
             general->Despawn(3 * 60 * 1000, 0);
         }
 
-        GameObject* spawncheckgobj = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 141980);
+        GameObject* spawncheckgobj = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 141980);
         if (!spawncheckgobj)
         {
             GameObject* generalsbox = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(141980, -10622, -2994, 28.6f, 4, 4);
@@ -81,7 +81,7 @@ public:
                     general->Despawn(3 * 60 * 1000, 0);
                 }
 
-                GameObject* spawncheckgobj = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 141980);
+                GameObject* spawncheckgobj = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 141980);
                 if (!spawncheckgobj)
                 {
                     GameObject* generalsbox = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(141980, -10622, -2994, 28.6f, 4, 4);

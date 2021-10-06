@@ -145,7 +145,7 @@ public:
 
     void OnDied(Unit* mKiller) override
     {
-        GameObject* pDoor = mKiller->MAP_GAMEOBJECT_NEAREST_COORDS(95.26f, 251.836f, 0.47f, 183817);
+        GameObject* pDoor = mKiller->MAP_GET_GAMEOBJECT_NEAREST_COORDS(95.26f, 251.836f, 0.47f, 183817);
         if (pDoor != NULL)
         {
             pDoor->setState(GO_STATE_OPEN);

@@ -299,12 +299,12 @@ bool ScryingCrystal(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* player = pSpell->getPlayerCaster();
     LocationVector pos = player->GetPosition();
-    if (player->MAP_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 300078))
+    if (player->MAP_GET_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 300078))
     {
         player->AddQuestKill(9824, 0, 0);
         return false;
     }
-    else if (player->MAP_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 300142))
+    else if (player->MAP_GET_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 300142))
     {
         player->AddQuestKill(9824, 1, 0);
         return false;

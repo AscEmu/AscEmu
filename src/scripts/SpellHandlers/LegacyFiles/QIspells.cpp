@@ -257,10 +257,10 @@ bool BalanceMustBePreserved(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (!pPlayer->hasQuestInQuestLog(9720))
         return true;
 
-    GameObject* lake1 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-756, 5926, 19, 300076);
-    GameObject* lake2 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-213, 6302, 21, 300076);
-    GameObject* lake3 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(498, 8197, 21, 300076);
-    GameObject* lake4 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(566, 6358, 23, 300076);
+    GameObject* lake1 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-756, 5926, 19, 300076);
+    GameObject* lake2 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-213, 6302, 21, 300076);
+    GameObject* lake3 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(498, 8197, 21, 300076);
+    GameObject* lake4 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(566, 6358, 23, 300076);
 
     if (lake1 != nullptr)
         pPlayer->AddQuestKill(9720, 0, 0);
@@ -286,10 +286,10 @@ bool BlessingofIncineratus(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pPlayer->hasQuestInQuestLog(9805))
         return true;
 
-    GameObject* big = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-1972, 6276, 56, 300077);
-    GameObject* east = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-1841, 6387, 52, 400050);
-    GameObject* west = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-1920, 6361, 56, 400051);
-    GameObject* south = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-1808, 6293, 59, 400052);
+    GameObject* big = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-1972, 6276, 56, 300077);
+    GameObject* east = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-1841, 6387, 52, 400050);
+    GameObject* west = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-1920, 6361, 56, 400051);
+    GameObject* south = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-1808, 6293, 59, 400052);
 
     if (big != nullptr)
     {
@@ -405,10 +405,10 @@ bool MeasuringWarpEnergies(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pPlayer->hasQuestInQuestLog(10313))
         return true;
 
-    GameObject* north = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(3216, 4045, 145, 300094);
-    GameObject* east = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2766, 3865, 145, 300094);
-    GameObject* west = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2958, 4318, 145, 300094);
-    GameObject* south = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2817, 4337, 145, 300094);
+    GameObject* north = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(3216, 4045, 145, 300094);
+    GameObject* east = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(2766, 3865, 145, 300094);
+    GameObject* west = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(2958, 4318, 145, 300094);
+    GameObject* south = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(2817, 4337, 145, 300094);
 
     if (north != nullptr)
     {
@@ -781,21 +781,21 @@ bool BuildingAPerimeter(uint8_t /*effectIndex*/, Spell* pSpell)
 
     Player* pPlayer = pSpell->getPlayerCaster();
 
-    GameObject* pEast = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2257.0f, 2465.0f, 101.0f, 183947);
+    GameObject* pEast = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(2257.0f, 2465.0f, 101.0f, 183947);
     if (pEast != nullptr && pPlayer->CalcDistance(pPlayer, pEast) < 30)
     {
         pPlayer->AddQuestKill(10313, 0, 0);
         return true;
     }
 
-    GameObject* pNorth = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2375.0f, 2285.0f, 141.0f, 183947);
+    GameObject* pNorth = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(2375.0f, 2285.0f, 141.0f, 183947);
     if (pNorth != nullptr && pPlayer->CalcDistance(pPlayer, pNorth) < 30)
     {
         pPlayer->AddQuestKill(10313, 1, 0);
         return true;
     }
 
-    GameObject* pWest = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2283.0f, 2181.0f, 95.0f, 183947);
+    GameObject* pWest = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(2283.0f, 2181.0f, 95.0f, 183947);
     if (pWest != nullptr && pPlayer->CalcDistance(pPlayer, pWest) < 30)
     {
         pPlayer->AddQuestKill(10313, 2, 0);
@@ -813,7 +813,7 @@ bool RodofPurification(uint8_t /*effectIndex*/, Spell* pSpell)
 
     if (auto* questLog = pPlayer->getQuestLogByQuestId(10839))
     {
-        GameObject* Darkstone = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-2512, 5418, 0, 185191);
+        GameObject* Darkstone = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-2512, 5418, 0, 185191);
         if (Darkstone != nullptr)
         {
             if (pPlayer->CalcDistance(pPlayer, Darkstone) < 15)
@@ -1392,7 +1392,7 @@ bool ArcaneDisruption(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
     if (auto* questLog = plr->getQuestLogByQuestId(13149))
     {
-        GameObject* crate = plr->MAP_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 190094);
+        GameObject* crate = plr->MAP_GET_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 190094);
         if (crate != nullptr)
         {
             GameObject* go = plr->GetMapMgr()->CreateGameObject(190095);
@@ -1452,7 +1452,7 @@ bool ToLegionHold(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
                 pJovaan->GetAIInterface()->setAllowedToEnterCombat(false);
             }
         }
-        GameObject* pGameObject = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 184834);
+        GameObject* pGameObject = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 184834);
         if (pGameObject != nullptr)
         {
             pGameObject->Despawn(60000, 0);
@@ -1716,7 +1716,7 @@ bool DouseEternalFlame(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pPlayer->hasQuestInQuestLog(9737))
         return true;
 
-    GameObject* Flame = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(3678, -3640, 139, 182068);
+    GameObject* Flame = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(3678, -3640, 139, 182068);
     if (Flame != nullptr)
     {
         if (pPlayer->CalcDistance(pPlayer, Flame) < 30)
@@ -1755,7 +1755,7 @@ bool NeutralizingTheCauldrons(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pPlayer->hasQuestInQuestLog(11647))
         return true;
 
-    GameObject* pCauldron = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 187690);
+    GameObject* pCauldron = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 187690);
     if (pCauldron == nullptr)
         return true;
 
@@ -1813,15 +1813,15 @@ bool CompleteAncestorRitual(uint8_t /*effectIndex*/, Spell* pSpell)
 
     const LocationVector pos = pPlayer->GetPosition();
 
-    GameObject* pElderObj = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 191088);
+    GameObject* pElderObj = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 191088);
     if (pElderObj != nullptr && pPlayer->GetDistance2dSq(pElderObj) < 8.0f)
         pPlayer->AddQuestKill(11610, 0, 0);
 
-    pElderObj = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 191089);
+    pElderObj = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 191089);
     if (pElderObj != nullptr && pPlayer->GetDistance2dSq(pElderObj) < 8.0f)
         pPlayer->AddQuestKill(11610, 1, 0);
 
-    pElderObj = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 191090);
+    pElderObj = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(pos.x, pos.y, pos.z, 191090);
     if (pElderObj != nullptr && pPlayer->GetDistance2dSq(pElderObj) < 8.0f)
         pPlayer->AddQuestKill(11610, 2, 0);
 
@@ -1877,7 +1877,7 @@ bool ZethGorMustBurnHorde(uint8_t /*effectIndex*/, Spell* pSpell)
         // Barracks
         if (questLog->getMobCountByIndex(0) < questLog->getQuestProperties()->required_mob_or_go_count[0])
         {
-            GameObject* pBarracks = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-1137.0f, 1970.0f, 74.0f, 300151);
+            GameObject* pBarracks = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-1137.0f, 1970.0f, 74.0f, 300151);
             if (pBarracks != nullptr && pPlayer->CalcDistance(pPlayer, pBarracks) < 30)
             {
                 pPlayer->AddQuestKill(10792, 0, 0);
@@ -1913,7 +1913,7 @@ bool ZethGorMustBurnHorde(uint8_t /*effectIndex*/, Spell* pSpell)
         // Eastern Hovel
         if (questLog->getMobCountByIndex(1) < questLog->getQuestProperties()->required_mob_or_go_count[1])
         {
-            GameObject* pEasternHovel = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-940.0f, 1920.0f, 69.0f, 300151);
+            GameObject* pEasternHovel = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-940.0f, 1920.0f, 69.0f, 300151);
             if (pEasternHovel != nullptr && pPlayer->CalcDistance(pPlayer, pEasternHovel) < 30)
             {
                 pPlayer->AddQuestKill(10792, 1, 0);
@@ -1929,7 +1929,7 @@ bool ZethGorMustBurnHorde(uint8_t /*effectIndex*/, Spell* pSpell)
         // Western Hovel
         if (questLog->getMobCountByIndex(2) < questLog->getQuestProperties()->required_mob_or_go_count[2])
         {
-            GameObject* pWesternHovel = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-1155.0f, 2061.0f, 68.0f, 300151);
+            GameObject* pWesternHovel = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-1155.0f, 2061.0f, 68.0f, 300151);
             if (pWesternHovel != nullptr && pPlayer->CalcDistance(pPlayer, pWesternHovel) < 30)
             {
                 pPlayer->AddQuestKill(10792, 2, 0);
@@ -1945,7 +1945,7 @@ bool ZethGorMustBurnHorde(uint8_t /*effectIndex*/, Spell* pSpell)
         // Stable
         if (questLog->getMobCountByIndex(3) < questLog->getQuestProperties()->required_mob_or_go_count[3])
         {
-            GameObject* pStable = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-1052.0f, 2007.0f, 66.0f, 300151);
+            GameObject* pStable = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-1052.0f, 2007.0f, 66.0f, 300151);
             if (pStable != nullptr && pPlayer->CalcDistance(pPlayer, pStable) < 30)
             {
                 pPlayer->AddQuestKill(10792, 3, 0);
@@ -1979,7 +1979,7 @@ bool LayingWasteToTheUnwantedAlliance(uint8_t /*effectIndex*/, Spell* pSpell)
         // Eastern Thrower
         if (questLog->getMobCountByIndex(0) < questLog->getQuestProperties()->required_mob_or_go_count[0])
         {
-            GameObject* pEasternTower = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-155.0f, 2517.0f, 43.0f, 300152);
+            GameObject* pEasternTower = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-155.0f, 2517.0f, 43.0f, 300152);
             if (pEasternTower != nullptr && pPlayer->CalcDistance(pPlayer, pEasternTower) < 30)
             {
                 pPlayer->AddQuestKill(10078, 0, 0);
@@ -1995,7 +1995,7 @@ bool LayingWasteToTheUnwantedAlliance(uint8_t /*effectIndex*/, Spell* pSpell)
         // Central Eastern Thrower
         if (questLog->getMobCountByIndex(1) < questLog->getQuestProperties()->required_mob_or_go_count[1])
         {
-            GameObject* pCentralEasternTower = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-152.0f, 2661.0f, 44.0f, 300152);
+            GameObject* pCentralEasternTower = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-152.0f, 2661.0f, 44.0f, 300152);
             if (pCentralEasternTower != nullptr && pPlayer->CalcDistance(pPlayer, pCentralEasternTower) < 30)
             {
                 pPlayer->AddQuestKill(10078, 1, 0);
@@ -2011,7 +2011,7 @@ bool LayingWasteToTheUnwantedAlliance(uint8_t /*effectIndex*/, Spell* pSpell)
         // Central Western Thrower
         if (questLog->getMobCountByIndex(2) < questLog->getQuestProperties()->required_mob_or_go_count[2])
         {
-            GameObject* pCentralWesternTower = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-174.0f, 2772.0f, 32.0f, 300152);
+            GameObject* pCentralWesternTower = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-174.0f, 2772.0f, 32.0f, 300152);
             if (pCentralWesternTower != nullptr && pPlayer->CalcDistance(pPlayer, pCentralWesternTower) < 30)
             {
                 pPlayer->AddQuestKill(10078, 2, 0);
@@ -2027,7 +2027,7 @@ bool LayingWasteToTheUnwantedAlliance(uint8_t /*effectIndex*/, Spell* pSpell)
         // Western Thrower
         if (questLog->getMobCountByIndex(3) < questLog->getQuestProperties()->required_mob_or_go_count[3])
         {
-            GameObject* pWesternTower = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-166.0f, 2818.0f, 29.0f, 300152);
+            GameObject* pWesternTower = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-166.0f, 2818.0f, 29.0f, 300152);
             if (pWesternTower != nullptr && pPlayer->CalcDistance(pPlayer, pWesternTower) < 30)
             {
                 pPlayer->AddQuestKill(10078, 3, 0);
@@ -2062,9 +2062,9 @@ bool BurnItUp(uint8_t /*effectIndex*/, Spell* pSpell)
     {
         if (questLog->getMobCountByIndex(0) < questLog->getQuestProperties()->required_mob_or_go_count[0])
         {
-            GameObject* pEastern = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-300.0f, 2407.0f, 50.0f, 183122);
+            GameObject* pEastern = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-300.0f, 2407.0f, 50.0f, 183122);
             if (pEastern == nullptr)
-                pEastern = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-300.0f, 2407.0f, 50.0f, 185122);
+                pEastern = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-300.0f, 2407.0f, 50.0f, 185122);
 
             if (pEastern != nullptr && pPlayer->CalcDistance(pPlayer, pEastern) < 30)
             {
@@ -2080,9 +2080,9 @@ bool BurnItUp(uint8_t /*effectIndex*/, Spell* pSpell)
 
         if (questLog->getMobCountByIndex(1) < questLog->getQuestProperties()->required_mob_or_go_count[1])
         {
-            GameObject* pWestern = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-350.0f, 2708.0f, 35.0f, 183122);
+            GameObject* pWestern = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-350.0f, 2708.0f, 35.0f, 183122);
             if (pWestern == nullptr)
-                pWestern = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-350.0f, 2708.0f, 35.0f, 185122);
+                pWestern = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-350.0f, 2708.0f, 35.0f, 185122);
 
             if (pWestern != nullptr && pPlayer->CalcDistance(pPlayer, pWestern) < 30)
             {
@@ -2148,7 +2148,7 @@ bool DisruptTheirReinforcements(uint8_t /*effectIndex*/, Spell* pSpell)
         bool SendMsg = false;
         if (questLogAliance->getMobCountByIndex(0) < questLogAliance->getQuestProperties()->required_mob_or_go_count[0])
         {
-            GameObject* pGrimh = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-419.0f, 1847.0f, 80.0f, 184414);
+            GameObject* pGrimh = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-419.0f, 1847.0f, 80.0f, 184414);
             if (pGrimh != nullptr && pPlayer->CalcDistance(pPlayer, pGrimh) < 10)
                 pPlayer->AddQuestKill(10144, 0, 0);
             else
@@ -2157,7 +2157,7 @@ bool DisruptTheirReinforcements(uint8_t /*effectIndex*/, Spell* pSpell)
 
         if (questLogAliance->getMobCountByIndex(1) < questLogAliance->getQuestProperties()->required_mob_or_go_count[1])
         {
-            GameObject* pKaalez = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-548.0f, 1782.0f, 58.0f, 184415);
+            GameObject* pKaalez = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-548.0f, 1782.0f, 58.0f, 184415);
             if (pKaalez != nullptr && pPlayer->CalcDistance(pPlayer, pKaalez) < 10)
                 pPlayer->AddQuestKill(10144, 1, 0);
             else
@@ -2172,7 +2172,7 @@ bool DisruptTheirReinforcements(uint8_t /*effectIndex*/, Spell* pSpell)
         bool SendMsg = false;
         if (questLogHorde->getMobCountByIndex(0) < questLogHorde->getQuestProperties()->required_mob_or_go_count[0])
         {
-            GameObject* pXilus = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-85.0f, 1880.0f, 74.0f, 184290);
+            GameObject* pXilus = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-85.0f, 1880.0f, 74.0f, 184290);
             if (pXilus != nullptr && pPlayer->CalcDistance(pPlayer, pXilus) < 10)
                 pPlayer->AddQuestKill(10208, 0, 0);
             else
@@ -2180,7 +2180,7 @@ bool DisruptTheirReinforcements(uint8_t /*effectIndex*/, Spell* pSpell)
         }
         if (questLogHorde->getMobCountByIndex(1) < questLogHorde->getQuestProperties()->required_mob_or_go_count[1])
         {
-            GameObject* pKruul = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(147.0f, 1717.0f, 38.0f, 184289);
+            GameObject* pKruul = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(147.0f, 1717.0f, 38.0f, 184289);
             if (pKruul != nullptr && pPlayer->CalcDistance(pPlayer, pKruul) < 10)
                 pPlayer->AddQuestKill(10208, 1, 0);
             else
@@ -2376,9 +2376,9 @@ bool ShipBombing(uint8_t /*effectIndex*/, Spell* pSpell)
             return true;
     }
 
-    GameObject* pSinloren = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(13200.232422f, -7049.176270f, 3.838517f, 550000);
-    GameObject* pBloodoath = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(13319.419922f, -6988.779785f, 4.002993f, 550000);
-    GameObject* pDawnchaser = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(13274.51625f, -7145.434570f, 4.770292f, 550000);
+    GameObject* pSinloren = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(13200.232422f, -7049.176270f, 3.838517f, 550000);
+    GameObject* pBloodoath = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(13319.419922f, -6988.779785f, 4.002993f, 550000);
+    GameObject* pDawnchaser = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(13274.51625f, -7145.434570f, 4.770292f, 550000);
 
     GameObject* obj;
 
@@ -2641,9 +2641,9 @@ bool SurveyingtheRuins(uint8_t /*effectIndex*/, Spell* pSpell)
     {
         if (questLog->getMobCountByIndex(0) < questLog->getQuestProperties()->required_mob_or_go_count[0])
         {
-            GameObject* mark1 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(4695.2f, 2603.39f, 209.878f, 184612);
+            GameObject* mark1 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(4695.2f, 2603.39f, 209.878f, 184612);
             if (mark1 == nullptr)
-                mark1 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(4695.28f, 2602.73f, 209.84f, 300095);
+                mark1 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(4695.28f, 2602.73f, 209.84f, 300095);
 
             if (mark1 != nullptr && pPlayer->CalcDistance(pPlayer, mark1) < 15)
             {
@@ -2654,9 +2654,9 @@ bool SurveyingtheRuins(uint8_t /*effectIndex*/, Spell* pSpell)
 
         if (questLog->getMobCountByIndex(1) < questLog->getQuestProperties()->required_mob_or_go_count[1])
         {
-            GameObject* mark2 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(4608.08f, 2442.02f, 195.71f, 184612);
+            GameObject* mark2 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(4608.08f, 2442.02f, 195.71f, 184612);
             if (mark2 == nullptr)
-                mark2 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(4607.71f, 2440.72f, 195.65f, 300095);
+                mark2 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(4607.71f, 2440.72f, 195.65f, 300095);
 
             if (mark2 != nullptr && pPlayer->CalcDistance(pPlayer, mark2) < 15)
             {
@@ -2667,9 +2667,9 @@ bool SurveyingtheRuins(uint8_t /*effectIndex*/, Spell* pSpell)
 
         if (questLog->getMobCountByIndex(2) < questLog->getQuestProperties()->required_mob_or_go_count[2])
         {
-            GameObject* mark3 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(4716.37f, 2371.59f, 198.168f, 184612);
+            GameObject* mark3 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(4716.37f, 2371.59f, 198.168f, 184612);
             if (mark3 == nullptr)
-                mark3 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(4716.77f, 2371.6f, 198.19f, 300095);
+                mark3 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(4716.77f, 2371.6f, 198.19f, 300095);
 
             if (mark3 != nullptr && pPlayer->CalcDistance(pPlayer, mark3) < 15)
             {
@@ -2707,7 +2707,7 @@ bool Carcass(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a Shadoweave Ta
     Player* pPlayer = pSpell->getPlayerCaster();
     QuestLogEntry* pQuest = pPlayer->getQuestLogByQuestId(10804);
     Creature* pCreature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21648);
-    GameObject* FlayerCarcass = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 185155);
+    GameObject* FlayerCarcass = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 185155);
 
     if (FlayerCarcass == nullptr)
     {
@@ -2880,11 +2880,11 @@ bool FindingTheSource(uint8_t /*effectIndex*/, Spell* pSpell)
     if (qle == nullptr)
         return true;
 
-    GameObject* place1 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-7163, -1149, -264, 148503);
-    GameObject* place2 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-7281, -1244, -248, 148503);
-    GameObject* place3 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-7140, -1465, -242, 148503);
-    GameObject* place4 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-7328, -1461, -242, 148503);
-    GameObject* place5 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(-7092, -1305, -187, 148503);
+    GameObject* place1 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-7163, -1149, -264, 148503);
+    GameObject* place2 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-7281, -1244, -248, 148503);
+    GameObject* place3 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-7140, -1465, -242, 148503);
+    GameObject* place4 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-7328, -1461, -242, 148503);
+    GameObject* place5 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(-7092, -1305, -187, 148503);
 
     if (place1 != nullptr)
     {

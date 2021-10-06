@@ -151,7 +151,7 @@ class BloodscalpClanHeads : public QuestScript
 public:
     void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        GameObject* skull1 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 2551);
+        GameObject* skull1 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 2551);
         if (skull1 == nullptr)
             return;
 
@@ -164,7 +164,7 @@ public:
         pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Ah. Good $N. Now let us see what tale these heads tell...");
         pCreature->castSpell(pCreature, sSpellMgr.getSpellInfo(3644), false);
         skull1->Despawn(5000, 0);
-        GameObject* skull2 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 2551);
+        GameObject* skull2 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 2551);
         if (skull2)
             skull2->Despawn(5000, 0);
 

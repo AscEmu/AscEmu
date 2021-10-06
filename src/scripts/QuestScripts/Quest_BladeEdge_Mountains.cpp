@@ -195,11 +195,11 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        GameObject* obelisk1 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2898.92f, 4759.29f, 277.408f, 185198);
-        GameObject* obelisk2 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2942.3f, 4752.28f, 285.553f, 185197);
-        GameObject* obelisk3 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2834.39f, 4856.67f, 277.632f, 185196);
-        GameObject* obelisk4 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2923.37f, 4840.36f, 278.45f, 185195);
-        GameObject* obelisk5 = pPlayer->MAP_GAMEOBJECT_NEAREST_COORDS(2965.75f, 4835.25f, 277.949f, 185193);
+        GameObject* obelisk1 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(2898.92f, 4759.29f, 277.408f, 185198);
+        GameObject* obelisk2 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(2942.3f, 4752.28f, 285.553f, 185197);
+        GameObject* obelisk3 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(2834.39f, 4856.67f, 277.632f, 185196);
+        GameObject* obelisk4 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(2923.37f, 4840.36f, 278.45f, 185195);
+        GameObject* obelisk5 = pPlayer->MAP_GET_GAMEOBJECT_NEAREST_COORDS(2965.75f, 4835.25f, 277.949f, 185193);
 
         if (obelisk1 && obelisk2 && obelisk3 && obelisk4 && obelisk5)
         {
