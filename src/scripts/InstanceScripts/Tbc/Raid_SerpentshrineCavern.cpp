@@ -1525,12 +1525,12 @@ public:
     explicit TaintedCoreGO(GameObject* pGameObject) : GameObjectAIScript(pGameObject) {}
     void OnActivate(Player* pPlayer) override
     {
-        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(29.798161f, -923.358276f, 42.900517f, CN_LADY_VASHJ);
+        Creature* pCreature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(29.798161f, -923.358276f, 42.900517f, CN_LADY_VASHJ);
         if (pCreature != NULL && static_cast< VashjAI* >(pCreature->GetScript())->Phase == 2)
         {
             pCreature->modHealth(static_cast<int32_t>((pCreature->getMaxHealth() / 100) * 5));
 
-            Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), CN_SHIELD_GENERATOR_CHANNEL);
+            Creature* pCreature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), CN_SHIELD_GENERATOR_CHANNEL);
             if (pCreature != NULL && pCreature->IsInWorld())
                 pCreature->Despawn(0, 0);
         }

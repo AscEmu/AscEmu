@@ -29,7 +29,7 @@ public:
             return;
         }
 
-        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(-370.133f, 162.519f, -21.1299f, RagefireChasm::CN_ZELMAR);
+        Creature* pCreature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(-370.133f, 162.519f, -21.1299f, RagefireChasm::CN_ZELMAR);
         if (pCreature)
             return;
 

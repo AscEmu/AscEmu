@@ -67,7 +67,7 @@ public:
     {
         if (auto* questLog = pPlayer->getQuestLogByQuestId(12848))
         {
-            Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ());
+            Creature* pCreature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ());
             if (!pCreature || !pCreature->isAlive())
             {
                 return;

@@ -1807,7 +1807,7 @@ public:
         float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
-        PUSH_UNIT(L, ptr->MAP_CREATURE_NEAREST_COORDS(x, y, z, entryid));
+        PUSH_UNIT(L, ptr->MAP_GET_CREATURE_NEAREST_COORDS(x, y, z, entryid));
         return 1;
     }
 

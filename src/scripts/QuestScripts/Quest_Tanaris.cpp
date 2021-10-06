@@ -54,7 +54,7 @@ public:
         if (!getCreature())
             return;
 
-        Creature* cialo = getCreature()->MAP_CREATURE_NEAREST_COORDS(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 5307);
+        Creature* cialo = getCreature()->MAP_GET_CREATURE_NEAREST_COORDS(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 5307);
         if (!cialo)
             return;
 

@@ -435,7 +435,7 @@ public:
                 }break;
                 case 7:
                 {
-                    if (Creature* pVincent = getCreature()->MAP_CREATURE_NEAREST_COORDS(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), ShadowfangKeep::CN_DEATHSTALKER_VINCENT))
+                    if (Creature* pVincent = getCreature()->MAP_GET_CREATURE_NEAREST_COORDS(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), ShadowfangKeep::CN_DEATHSTALKER_VINCENT))
                     {
                         // Make him look like dead
                         pVincent->SendScriptTextChatMessage(ShadowfangKeep::SAY_VINCENT_DEATH);

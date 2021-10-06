@@ -77,7 +77,7 @@ class IntotheSoulgrinder : public QuestScript
 public:
     void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 22941);
+        Creature* pCreature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 22941);
         if (pCreature == nullptr)
         {
             return;
@@ -281,7 +281,7 @@ public:
     {
         if (pPlayer->hasQuestInQuestLog(10974))
         {
-            Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(3989.094482f, 6071.562500f, 266.416656f, 22920);
+            Creature* pCreature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(3989.094482f, 6071.562500f, 266.416656f, 22920);
             if (pCreature != nullptr)
             {
                 pCreature->SetFaction(14);

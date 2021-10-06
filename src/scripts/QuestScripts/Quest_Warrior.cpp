@@ -34,7 +34,7 @@ class TheSummoning : public QuestScript
 public:
     void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 6176);
+        Creature* pCreature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 6176);
         if (pCreature == nullptr)
         {
             return;
@@ -59,7 +59,7 @@ public:
         pCreature->Despawn(15 * 60 * 1000, 0);
 
         // spawn cyclonian if not spawned already
-        Creature* _creature = pPlayer->MAP_CREATURE_NEAREST_COORDS(323.947f, -1483.68f, 43.1363f, 6239);
+        Creature* _creature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(323.947f, -1483.68f, 43.1363f, 6239);
         if (_creature == nullptr)
         {
             _creature = pPlayer->GetMapMgr()->CreateAndSpawnCreature(6239, 323.947f, -1483.68f, 43.1363f, 0.682991f);
@@ -125,7 +125,7 @@ class BeatBartleby : public QuestScript
 public:
     void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 6090);
+        Creature* pCreature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 6090);
         if (pCreature == nullptr)
         {
             return;

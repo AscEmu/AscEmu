@@ -49,10 +49,9 @@ public:
     void QueueUnloadPending();
     void CancelPendingUnload();
     void Unload();
-    /// xyz 
+
     inline uint16_t GetPositionX() { return _x; }
     inline uint16_t GetPositionY() { return _y; }
-    // inline uint16_t GetPositionZ() { return _z; }
 
     ObjectSet _respawnObjects;
     ObjectSet::iterator objects_iterator; /// required by MapCell::RemoveObjects() removing Creatures which will remove their guardians and corrupt itr.

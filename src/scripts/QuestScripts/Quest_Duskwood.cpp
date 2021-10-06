@@ -60,7 +60,7 @@ public:
         }
         if (_getHealthPercent() >= 10 && _getHealthPercent() <= 98 && !_isCasting())
         {
-            mElizaGuard = getCreature()->MAP_CREATURE_NEAREST_COORDS(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 1871);
+            mElizaGuard = getCreature()->MAP_GET_CREATURE_NEAREST_COORDS(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 1871);
             if (mElizaGuard == nullptr)
             {
                 _castAISpell(mSummonGuard);

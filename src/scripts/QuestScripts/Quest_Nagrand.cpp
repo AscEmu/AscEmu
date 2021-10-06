@@ -27,11 +27,11 @@ class Quest_The_Ring_of_Blood_The_Final_Challenge : public QuestScript
 public:
     void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18069);
+        Creature* pCreature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18069);
         if (pCreature != nullptr)
         {
             pCreature->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Prepare yourselves!");
-            Unit* Qgiver = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18471);
+            Unit* Qgiver = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18471);
             if (Qgiver != nullptr)
             {
                 Qgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Mogor has challenged you. You have to accept! Get in the right of blood if you are ready to fight.");
@@ -48,7 +48,7 @@ public:
 
     void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18069);
+        Creature* pCreature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18069);
         if (pCreature != nullptr)
             pCreature->Despawn(1000, 0);
 
@@ -61,7 +61,7 @@ class Quest_The_Ring_of_Blood_The_Warmaul_Champion : public QuestScript
 public:
     void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* pQgiver = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18471);
+        Unit* pQgiver = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18471);
         if (pQgiver != nullptr)
         {
             pQgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Get in the Ring of Blood, $N. The fight is about to start!");
@@ -72,13 +72,13 @@ public:
 
     void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* pMogor = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18069);
+        Unit* pMogor = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18069);
         if (pMogor != nullptr)
         {
             pMogor->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "WUT!? UNPOSSIBLE!! You fight Mogor now! Mogor destroy!");
         };
 
-        Creature* pWarmaulChamp = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), 0, 18402);
+        Creature* pWarmaulChamp = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), 0, 18402);
         if (pWarmaulChamp != nullptr)
             pWarmaulChamp->Despawn(1000, 0);
     };
@@ -89,7 +89,7 @@ class Quest_The_Ring_of_Blood_Skragath : public QuestScript
 public:
     void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* Qgiver = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18471);
+        Unit* Qgiver = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18471);
         if (Qgiver != nullptr)
         {
             Qgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Get in the Ring of Blood, $N. The fight is about to start!");
@@ -100,13 +100,13 @@ public:
 
     void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* mogor = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18069);
+        Unit* mogor = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18069);
         if (mogor != nullptr)
         {
             mogor->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Mogor not impressed! Skra'gat wuz made of da air and shadow! Soft like da squishy orcies!");
         };
 
-        Creature* pSkragath = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), 0, 18401);
+        Creature* pSkragath = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), 0, 18401);
         if (pSkragath != nullptr)
             pSkragath->Despawn(1000, 0);
     };
@@ -117,7 +117,7 @@ class Quest_The_Ring_of_Blood_Rokdar_the_Sundered_Lord : public QuestScript
 public:
     void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* Qgiver = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18471);
+        Unit* Qgiver = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18471);
         if (Qgiver != nullptr)
         {
             Qgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Get in the Ring of Blood, $N. The fight is about to start!");
@@ -128,11 +128,11 @@ public:
 
     void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* mogor = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18069);
+        Unit* mogor = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18069);
         if (mogor != nullptr)
             mogor->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "WUT!? UNPOSSIBLE!!");
 
-        Creature* pRokdar = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18400);
+        Creature* pRokdar = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18400);
         if (pRokdar != nullptr)
             pRokdar->Despawn(1000, 0);
     };
@@ -143,11 +143,11 @@ class Quest_The_Ring_of_Blood_The_Blue_Brothers : public QuestScript
 public:
     void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* pBrokentoe = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18398);
+        Creature* pBrokentoe = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18398);
         if (pBrokentoe != nullptr)
             pBrokentoe->Despawn(1000, 0);
 
-        Unit* Qgiver = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18471);
+        Unit* Qgiver = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18471);
         if (Qgiver != nullptr)
         {
             Qgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Get in the Ring of Blood, $N. The fight is about to start!");
@@ -159,17 +159,17 @@ public:
 
     void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* mogor = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18069);
+        Unit* mogor = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18069);
         if (mogor != nullptr)
         {
             mogor->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "...");
         };
 
-        Creature* pBrother1 = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), 0, 18399);
+        Creature* pBrother1 = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), 0, 18399);
         if (pBrother1 != nullptr)
             pBrother1->Despawn(1000, 0);
 
-        Creature* pBrother2 = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18399);
+        Creature* pBrother2 = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18399);
         if (pBrother2 != nullptr)
             pBrother2->Despawn(1000, 0);
     };
@@ -180,7 +180,7 @@ class Quest_The_Ring_of_Blood_Brokentoe : public QuestScript
 public:
     void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* Qgiver = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18471);
+        Unit* Qgiver = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18471);
         if (Qgiver != nullptr)
         {
             Qgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Get in the Ring of Blood, $N. The fight is about to start!");
@@ -190,13 +190,13 @@ public:
 
     void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* Qgiver = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18471);
+        Unit* Qgiver = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18471);
         if (Qgiver != nullptr)
         {
             Qgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "$N is victorious!");
         };
 
-        Unit* mogor = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18069);
+        Unit* mogor = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 18069);
         if (mogor != nullptr)
         {
             mogor->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "...");

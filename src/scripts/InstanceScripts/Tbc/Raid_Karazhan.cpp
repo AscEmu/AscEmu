@@ -28,7 +28,7 @@ public:
         menu.addItem(GOSSIP_ICON_CHAT, 430, 3);     // How do you navigate the tower?
 
         //Killing the Shade of Aran makes a teleport to medivh's available from Berthold the Doorman.
-        Unit* soa = pObject->MAP_CREATURE_NEAREST_COORDS(-11165.2f, -1912.13f, 232.009f, 16524);
+        Unit* soa = pObject->MAP_GET_CREATURE_NEAREST_COORDS(-11165.2f, -1912.13f, 232.009f, 16524);
         if (!soa || !soa->isAlive())
             menu.addItem(GOSSIP_ICON_CHAT, 431, 4); // Please teleport me to the Guardian's Library.
 

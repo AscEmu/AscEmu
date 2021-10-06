@@ -339,7 +339,7 @@ public:
 
     void OnActivate(Player* player) override
     {
-        Creature* pCreature = player->MAP_CREATURE_NEAREST_COORDS(2390.101807f, 336.676788f, 40.015614f, 6390);
+        Creature* pCreature = player->MAP_GET_CREATURE_NEAREST_COORDS(2390.101807f, 336.676788f, 40.015614f, 6390);
         GameObject* pDoor = player->MAP_GAMEOBJECT_NEAREST_COORDS(2388.480029f, 338.3901f, 40.092899f, 176594);
         QuestLogEntry* en = player->getQuestLogByQuestId(1819);
         if (en == nullptr || pDoor == nullptr || pCreature == nullptr)
@@ -403,7 +403,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 20482);
+        Creature* pCreature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 20482);
         if (pCreature)
             return;
 
@@ -446,7 +446,7 @@ public:
     {
         pPlayer->AddQuestKill(10111, 0, 0);
 
-        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 19055);
+        Creature* pCreature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 19055);
         if (pCreature != nullptr)
             return;
 
@@ -574,7 +574,7 @@ public:
         if (qle == nullptr)
             return;
 
-        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 9136);
+        Creature* pCreature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 9136);
         if (pCreature)
             return;
 
@@ -626,7 +626,7 @@ public:
 
         LocationVector pos = pPlayer->GetPosition();
 
-        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17375);
+        Creature* pCreature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17375);
         if (pCreature != nullptr)
             pCreature->Despawn(1, 6 * 60 * 1000);
     }
@@ -679,7 +679,7 @@ public:
         if (qle == nullptr)
             return;
 
-        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 4490);
+        Creature* pCreature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 4490);
         if (pCreature != nullptr)
         {
             if (!pCreature->isAlive())
@@ -781,7 +781,7 @@ public:
             return;
 
         // What is this ? :O To remove ?
-        Creature* pCreature = pPlayer->MAP_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17556);
+        Creature* pCreature = pPlayer->MAP_GET_CREATURE_NEAREST_COORDS(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17556);
         if (pCreature)
         {
             pCreature->Despawn(1, 5 * 60 * 1000);

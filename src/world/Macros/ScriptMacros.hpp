@@ -6,10 +6,10 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 /// Coords Creature
-#define MAP_CREATURE_NEAREST_COORDS GetMapMgr()->GetInterface()->GetCreatureNearestCoords
+#define MAP_GET_CREATURE_NEAREST_COORDS GetMapMgr()->GetInterface()->GetCreatureNearestCoords
 
 /// Coords GameObject
-#define MAP_GAMEOBJECT_NEAREST_COORDS GetMapMgr()->GetInterface()->GetGameObjectNearestCoords
+#define MAP_GET_GAMEOBJECT_NEAREST_COORDS GetMapMgr()->GetInterface()->GetGameObjectNearestCoords
 
 /// -
 #define CALL_SCRIPT_EVENT(obj, func) if (obj->IsInWorld() && obj->isCreature() && static_cast<Creature*>(obj)->GetScript() != nullptr) static_cast<Creature*>(obj)->GetScript()->func
