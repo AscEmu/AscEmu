@@ -63,7 +63,6 @@ public:
 private:
     uint16_t _x;
     uint16_t _y;
-    // uint16_t _z;
     ObjectSet _objects;
     bool _active;
     bool _loaded;
