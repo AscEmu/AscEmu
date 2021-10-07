@@ -40,7 +40,7 @@
 #include "ThreatHandler.h"
 #include "Movement/AbstractFollower.h"
 
-#if COMPILER == 0
+#if COMPILER == 0 || 1 || 2
 #include <optional>
 
 template <class T>

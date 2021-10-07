@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#if COMPILER == 0
+#if COMPILER == 0 || 1 || 2
 #include <optional>
 
 //! Optional helper class to wrap optional values within.

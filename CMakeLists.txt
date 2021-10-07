@@ -1,6 +1,7 @@
 # Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 project(Ascemu)
 cmake_minimum_required(VERSION 3.2)
+cmake_policy(SET CMP0057 NEW)
 
 # set runtime binary where all compiled (before install) binary will compiled in
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -14,7 +15,7 @@ if(UNIX)
         message(STATUS "Detected ${CMAKE_BUILD_TYPE} configuration")
     endif()
 
-    if(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    if(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD")
         set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -lc++experimental")
     else()
         # Link atomic library
