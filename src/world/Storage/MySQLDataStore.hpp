@@ -45,13 +45,16 @@ public:
     typedef std::unordered_map<uint32_t, ItemProperties> ItemPropertiesContainer;
     typedef std::unordered_map<uint32_t, CreatureProperties> CreaturePropertiesContainer;
     typedef std::unordered_map<uint32_t, CreaturePropertiesMovement> CreaturePropertiesMovementContainer;
+
+    typedef std::multimap<uint32_t, MySQLStructure::CreatureAIScripts*> AIScriptsMap;
+
     typedef std::unordered_map<uint32_t, GameObjectProperties> GameObjectPropertiesContainer;
     typedef std::unordered_map<uint32_t, QuestProperties> QuestPropertiesContainer;
 
     typedef std::unordered_map<uint32_t, MySQLStructure::CreatureDifficulty> CreatureDifficultyContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::DisplayBoundingBoxes> DisplayBoundingBoxesContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::VendorRestrictions> VendorRestrictionContainer;
-    typedef std::unordered_map<uint32_t, MySQLStructure::NpcText> NpcTextContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::NpcGossipText> NpcGossipTextContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::NpcScriptText> NpcScriptTextContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::GossipMenuOption> GossipMenuOptionContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::Graveyards> GraveyardsContainer;
@@ -67,7 +70,6 @@ public:
 
     typedef std::unordered_map<int32_t, MySQLStructure::ItemSetLinkedItemSetBonus> ItemSetDefinedSetBonusContainer;
 
-    typedef std::unordered_map<uint32_t, PlayerCreateInfo> PlayerCreateInfoContainer;
     typedef std::vector<uint32_t> PlayerXPperLevel;
 
     typedef std::map<uint32_t, std::list<SpellInfo const*>*> SpellOverrideIdMap;
@@ -90,15 +92,14 @@ public:
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesGossipMenuOption> LocalesGossipMenuOptionContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesItem> LocalesItemContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesItemPages> LocalesItemPagesContainer;
-    typedef std::unordered_map<uint32_t, MySQLStructure::LocalesNPCMonstersay> LocalesNPCMonstersayContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesNpcScriptText> LocalesNpcScriptTextContainer;
-    typedef std::unordered_map<uint32_t, MySQLStructure::LocalesNpcText> LocalesNpcTextContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::LocalesNpcGossipText> LocalesNpcGossipTextContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesQuest> LocalesQuestContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesWorldbroadcast> LocalesWorldbroadcastContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesWorldmapInfo> LocalesWorldmapInfoContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesWorldStringTable> LocalesWorldStringTableContainer;
 
-    typedef std::unordered_map<uint32_t, MySQLStructure::NpcMonsterSay*> NpcMonstersayContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::CreatureAITexts*> CreatureAiTextContainer;
 
     //typedef std::map<uint32_t, std::set<SpellInfo const*>> PetDefaultSpellsMap;     Zyres 2017/07/16 not used
 
@@ -143,8 +144,8 @@ public:
     MySQLStructure::VendorRestrictions const* getVendorRestriction(uint32_t entry);
     VendorRestrictionContainer const* getVendorRestrictionsStore() { return &_vendorRestrictionsStore; }
 
-    MySQLStructure::NpcText const* getNpcText(uint32_t entry);
-    NpcTextContainer const* getNpcTextStore() { return &_npcTextStore; }
+    MySQLStructure::NpcGossipText const* getNpcGossipText(uint32_t entry) const;
+    NpcGossipTextContainer const* getNpcGossipTextStore() { return &_npcGossipTextStore; }
 
     MySQLStructure::NpcScriptText const* getNpcScriptText(uint32_t entry);
     NpcScriptTextContainer const* getNpcScriptTextStore() { return &_npcScriptTextStore; }
@@ -185,6 +186,8 @@ public:
     uint32_t getItemSetLinkedBonus(int32_t itemset);
 
     PlayerCreateInfo const* getPlayerCreateInfo(uint8_t player_race, uint8_t player_class);
+    CreateInfo_Levelstats const* getPlayerLevelstats(uint32_t level, uint8_t player_race, uint8_t player_class);
+    CreateInfo_ClassLevelStats const* getPlayerClassLevelStats(uint32_t level, uint8_t player_class);
     uint32_t getPlayerXPForLevel(uint32_t level);
 
     uint32_t getGossipTextIdForNpc(uint32_t entry);
@@ -199,6 +202,8 @@ public:
     AreaTriggerContainer const* getAreaTriggersStore() { return &_areaTriggerStore; }
     MySQLStructure::AreaTrigger const* getMapEntranceTrigger(uint32_t mapId);
 
+    std::vector<MySQLStructure::CreatureAIScripts>* getCreatureAiScripts(uint32_t entry);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // locales
     MySQLStructure::LocalesCreature const* getLocalizedCreature(uint32_t entry, uint32_t sessionLocale);
@@ -206,9 +211,8 @@ public:
     MySQLStructure::LocalesGossipMenuOption const* getLocalizedGossipMenuOption(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesItem const* getLocalizedItem(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesItemPages const* getLocalizedItemPages(uint32_t entry, uint32_t sessionLocale);
-    MySQLStructure::LocalesNPCMonstersay const* getLocalizedMonsterSay(uint32_t entry, uint32_t sessionLocale, uint32_t event);
     MySQLStructure::LocalesNpcScriptText const* getLocalizedNpcScriptText(uint32_t entry, uint32_t sessionLocale);
-    MySQLStructure::LocalesNpcText const* getLocalizedNpcText(uint32_t entry, uint32_t sessionLocale);
+    MySQLStructure::LocalesNpcGossipText const* getLocalizedNpcGossipText(uint32_t entry, uint32_t sessionLocale) const;
     MySQLStructure::LocalesQuest const* getLocalizedQuest(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesWorldbroadcast const* getLocalizedWorldbroadcast(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesWorldmapInfo const* getLocalizedWorldmapInfo(uint32_t entry, uint32_t sessionLocale);
@@ -218,7 +222,6 @@ public:
     std::string getLocaleGossipMenuOptionOrElse(uint32_t entry, uint32_t sessionLocale);
     std::string getLocaleGossipTitleOrElse(uint32_t entry, uint32_t sessionLocale);
 
-    MySQLStructure::NpcMonsterSay* getMonstersayEventForCreature(uint32_t entry, MONSTER_SAY_EVENTS Event);
     //std::set<SpellInfo const*>* getDefaultPetSpellsByEntry(uint32_t entry);     Zyres 2017/07/16 not used
     
     GossipMenuInitMap const* getGossipMenuInitTextId() { return &_gossipMenuInitStore; }
@@ -251,6 +254,7 @@ public:
     void loadGameObjectQuestItemBindingTable();
     void loadGameObjectQuestPickupBindingTable();
 
+    void loadCreatureAIScriptsTable();
     void loadCreatureDifficultyTable();
     void loadDisplayBoundingBoxesTable();
     void loadVendorRestrictionsTable();
@@ -276,10 +280,13 @@ public:
 
     //player create info
     void loadPlayerCreateInfoTable();
-    void loadPlayerCreateInfoSkillsTable();
-    void loadPlayerCreateInfoSpellsTable();
-    void loadPlayerCreateInfoItemsTable();
-    void loadPlayerCreateInfoBarsTable(uint32_t player_info_index);
+    void loadPlayerCreateInfoBars();
+    void loadPlayerCreateInfoItems();
+    void loadPlayerCreateInfoSkills();
+    void loadPlayerCreateInfoSpellLearn();
+    void loadPlayerCreateInfoSpellCast();
+    void loadPlayerCreateInfoLevelstats();
+    void loadPlayerCreateInfoClassLevelstats();
     void loadPlayerXpToLevelTable();
 
     void loadSpellOverrideTable();
@@ -301,7 +308,6 @@ public:
     void loadLocalesGossipMenuOption();
     void loadLocalesItem();
     void loadLocalesItemPages();
-    void loadLocalesNPCMonstersay();
     void loadLocalesNpcScriptText();
     void loadLocalesNpcText();
     void loadLocalesQuest();
@@ -309,7 +315,6 @@ public:
     void loadLocalesWorldmapInfo();
     void loadLocalesWorldStringTable();
 
-    void loadNpcMonstersayTable();
     //void loadDefaultPetSpellsTable();   Zyres 2017 / 07 / 16 not used
 
     void loadProfessionDiscoveriesTable();
@@ -332,10 +337,11 @@ public:
     GameObjectPropertiesContainer _gameobjectPropertiesStore;
     QuestPropertiesContainer _questPropertiesStore;
 
+    AIScriptsMap _creatureAIScriptStore;
     CreatureDifficultyContainer _creatureDifficultyStore;
     DisplayBoundingBoxesContainer _displayBoundingBoxesStore;
     VendorRestrictionContainer _vendorRestrictionsStore;
-    NpcTextContainer _npcTextStore;
+    NpcGossipTextContainer _npcGossipTextStore;
     NpcScriptTextContainer _npcScriptTextStore;
     GossipMenuOptionContainer _gossipMenuOptionStore;
     GraveyardsContainer _graveyardsStore;
@@ -353,7 +359,8 @@ public:
 
     ItemSetDefinedSetBonusContainer _definedItemSetBonusStore;
 
-    PlayerCreateInfoContainer _playerCreateInfoStore;
+    PlayerCreateInfo* _playerCreateInfoStoreNew[DBC_NUM_RACES][MAX_PLAYER_CLASSES];
+    CreateInfo_ClassLevelStatsVector _playerClassLevelStatsStore[MAX_PLAYER_CLASSES];
     PlayerXPperLevel _playerXPperLevelStore;
 
     SpellOverrideIdMap _spellOverrideIdStore;
@@ -376,15 +383,13 @@ public:
     LocalesGossipMenuOptionContainer _localesGossipMenuOptionStore;
     LocalesItemContainer _localesItemStore;
     LocalesItemPagesContainer _localesItemPagesStore;
-    LocalesNPCMonstersayContainer _localesNPCMonstersayStore;
     LocalesNpcScriptTextContainer _localesNpcScriptTextStore;
-    LocalesNpcTextContainer _localesNpcTextStore;
+    LocalesNpcGossipTextContainer _localesNpcGossipTextStore;
     LocalesQuestContainer _localesQuestStore;
     LocalesWorldbroadcastContainer _localesWorldbroadcastStore;
     LocalesWorldmapInfoContainer _localesWorldmapInfoStore;
     LocalesWorldStringTableContainer _localesWorldStringTableStore;
 
-    NpcMonstersayContainer _npcMonstersayContainer[NUM_MONSTER_SAY_EVENTS];
     //PetDefaultSpellsMap _defaultPetSpellsStore;   Zyres 2017/07/16 not used
 
     ProfessionDiscoverySet _professionDiscoveryStore;

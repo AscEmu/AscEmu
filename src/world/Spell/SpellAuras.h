@@ -22,7 +22,6 @@
 
 #include "Definitions/AuraEffects.hpp"
 #include "Definitions/AuraRemoveMode.hpp"
-#include "Definitions/SpellEffects.hpp"
 #include "Management/Item.h"
 #include "Objects/Object.h"
 #include "Server/EventableObject.h"
@@ -533,7 +532,6 @@ class SERVER_DECL Aura : public EventableObject
         // Legacy Aura Handlers
         void SpellAuraBindSight(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModPossess(AuraEffectModifier* aurEff, bool apply);
-        void SpellAuraDummy(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModConfuse(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModFear(AuraEffectModifier* aurEff, bool apply);
@@ -690,7 +688,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraIncreaseRating(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraRegenManaStatPCT(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraSpellHealingStatPCT(AuraEffectModifier* aurEff, bool apply);
-        void SpellAuraDetectStealth(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraReduceAOEDamageTaken(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraIncreaseMaxHealth(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraSpiritOfRedemption(AuraEffectModifier* aurEff, bool apply);
@@ -720,7 +717,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraIncreaseAPbyStatPct(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModSpellDamageDOTPct(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraConsumeNoAmmo(AuraEffectModifier* aurEff, bool apply);
-        void SpellAuraIgnoreShapeshift(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraPhase(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraMirrorImage2(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModIgnoreArmorPct(AuraEffectModifier* aurEff, bool apply);

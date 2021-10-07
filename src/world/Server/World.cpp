@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 
 #include "WorldConf.h"
 #include "Management/AddonMgr.h"
@@ -33,8 +33,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Packets/SmsgAreaTriggerMessage.h"
 #include "Packets/SmsgZoneUnderAttack.h"
 #include "OpcodeTable.hpp"
+#include "Chat/ChatHandler.hpp"
+#include "Management/GameEventMgr.h"
 #include "Units/Creatures/CreatureGroups.h"
 #include "Movement/WaypointManager.h"
+#include "Packets/SmsgMessageChat.h"
 
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildFinderMgr.h"
@@ -197,7 +200,7 @@ uint32_t World::getWorldUptime()
 
 std::string World::getWorldUptimeString()
 {
-    time_t pTime = static_cast<time_t>(UNIXTIME) - mStartTime;
+    time_t pTime = UNIXTIME - mStartTime;
     tm* tmv = gmtime(&pTime);
 
     std::stringstream uptimeStream;
@@ -270,18 +273,19 @@ float World::getRAMUsage()
 // Session functions
 void World::addSession(WorldSession* worldSession)
 {
-    ARCEMU_ASSERT(worldSession != NULL);
+    if (worldSession)
+    {
+        std::lock_guard<std::mutex> guard(mSessionLock);
 
-    std::lock_guard<std::mutex> guard(mSessionLock);
+        mActiveSessionMapStore[worldSession->GetAccountId()] = worldSession;
 
-    mActiveSessionMapStore[worldSession->GetAccountId()] = worldSession;
-
-    if (static_cast<uint32_t>(mActiveSessionMapStore.size()) > getPeakSessionCount())
-        setNewPeakSessionCount(static_cast<uint32_t>(mActiveSessionMapStore.size()));
+        if (static_cast<uint32_t>(mActiveSessionMapStore.size()) > getPeakSessionCount())
+            setNewPeakSessionCount(static_cast<uint32_t>(mActiveSessionMapStore.size()));
 
 #ifndef AE_TBC
-    worldSession->sendAccountDataTimes(GLOBAL_CACHE_MASK);
+        worldSession->sendAccountDataTimes(GLOBAL_CACHE_MASK);
 #endif
+    }
 }
 
 WorldSession* World::getSessionByAccountId(uint32_t accountId)
@@ -445,11 +449,12 @@ void World::disconnectSessionByPlayerName(const std::string& playerName, WorldSe
 // GlobalSession functions - not used?
 void World::addGlobalSession(WorldSession* worldSession)
 {
-    ARCEMU_ASSERT(worldSession != NULL);
-
-    globalSessionMutex.Acquire();
-    globalSessionSet.insert(worldSession);
-    globalSessionMutex.Release();
+    if (worldSession)
+    {
+        globalSessionMutex.Acquire();
+        globalSessionSet.insert(worldSession);
+        globalSessionMutex.Release();
+    }
 }
 
 void World::updateGlobalSession(uint32_t /*diff*/)
@@ -822,9 +827,13 @@ void World::loadMySQLStores()
     sMySQLStore.loadCreatureInitialEquipmentTable();
 
     sMySQLStore.loadPlayerCreateInfoTable();
-    sMySQLStore.loadPlayerCreateInfoSkillsTable();
-    sMySQLStore.loadPlayerCreateInfoSpellsTable();
-    sMySQLStore.loadPlayerCreateInfoItemsTable();
+    sMySQLStore.loadPlayerCreateInfoBars();
+    sMySQLStore.loadPlayerCreateInfoItems();
+    sMySQLStore.loadPlayerCreateInfoSkills();
+    sMySQLStore.loadPlayerCreateInfoSpellLearn();
+    sMySQLStore.loadPlayerCreateInfoSpellCast();
+    sMySQLStore.loadPlayerCreateInfoLevelstats();
+    sMySQLStore.loadPlayerCreateInfoClassLevelstats();
     sMySQLStore.loadPlayerXpToLevelTable();
 
     sMySQLStore.loadSpellOverrideTable();
@@ -842,7 +851,6 @@ void World::loadMySQLStores()
     sMySQLStore.loadLocalesGossipMenuOption();
     sMySQLStore.loadLocalesItem();
     sMySQLStore.loadLocalesItemPages();
-    sMySQLStore.loadLocalesNPCMonstersay();
     sMySQLStore.loadLocalesNpcScriptText();
     sMySQLStore.loadLocalesNpcText();
     sMySQLStore.loadLocalesQuest();
@@ -850,7 +858,6 @@ void World::loadMySQLStores()
     sMySQLStore.loadLocalesWorldmapInfo();
     sMySQLStore.loadLocalesWorldStringTable();
 
-    sMySQLStore.loadNpcMonstersayTable();
     //sMySQLStore.loadDefaultPetSpellsTable();      Zyres 2017/07/16 not used
     sMySQLStore.loadProfessionDiscoveriesTable();
 
@@ -858,6 +865,7 @@ void World::loadMySQLStores()
     sMySQLStore.loadTransportEntrys();
     sMySQLStore.loadGossipMenuItemsTable();
     sMySQLStore.loadRecallTable();
+    sMySQLStore.loadCreatureAIScriptsTable();
 
     sFormationMgr->loadCreatureFormations();
     sWaypointMgr->load();
@@ -908,7 +916,6 @@ void World::loadMySQLTablesByTask()
     MAKE_TASK(ObjectMgr, SetHighestGuids);
     MAKE_TASK(ObjectMgr, LoadReputationModifiers);
     MAKE_TASK(ObjectMgr, LoadGroups);
-    MAKE_TASK(ObjectMgr, LoadCreatureAIAgents);
     MAKE_TASK(ObjectMgr, LoadArenaTeams);
     MAKE_TASK(ObjectMgr, LoadVehicleAccessories);
     MAKE_TASK(ObjectMgr, LoadWorldStateTemplates);

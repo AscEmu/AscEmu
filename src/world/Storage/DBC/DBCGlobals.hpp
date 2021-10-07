@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "DBCStorage.hpp"
 #include "DBCLoader.hpp"
-#include "DBCStructures.hpp"
 #include "Log.hpp"
 #include <iostream>
 
@@ -120,13 +119,13 @@ namespace DBC
                 std::string buf = stream.str();
                 errors.push_back(buf);
 
-                std::cout << stream.str() << std::endl;
+                std::cout << stream.str() << "\n";
 
                 fclose(file);
             }
             else
             {
-                std::cout << dbc_file_path << " does not exist" << std::endl;
+                std::cout << dbc_file_path << " does not exist" << "\n";
 
                 errors.push_back(dbc_file_path);
             }

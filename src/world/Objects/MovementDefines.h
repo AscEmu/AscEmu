@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "WorldConf.h"
-#include <cstdint>
 
 #if VERSION_STRING <= TBC
 enum MovementFlags
@@ -220,7 +219,7 @@ enum MovementFlags
     MOVEFLAG_FULL_FALLING_MASK      = 0xE000
 };
 
-enum MovementFlags2
+enum MovementFlags2 : uint16_t
 {
     MOVEFLAG2_NONE                  = 0x0000,
     MOVEFLAG2_NO_STRAFING           = 0x0001,
@@ -4256,7 +4255,7 @@ static MovementStatusElements MoveUpdateTeleport[] =
     MSEEnd,
 };
 
-static MovementStatusElements* GetMovementStatusElementsSequence(uint16_t opcode)
+static inline MovementStatusElements* GetMovementStatusElementsSequence(uint16_t opcode)
 {
     switch (opcode)
     {

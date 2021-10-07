@@ -24,7 +24,6 @@
 #include "Management/CRitual.h"
 #include "Management/QuestMgr.h"
 #include "Management/TransporterHandler.h"
-#include "Macros/ScriptMacros.hpp"
 #include "Data/WoWGameObject.hpp"
 #include "Map/Map.h"
 
@@ -393,6 +392,7 @@ enum GameObjectTypes
 };
 
 struct WoWGameObject;
+class GameEvent;
 class SERVER_DECL GameObject : public Object
 {
     // MIT Start

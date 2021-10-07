@@ -3,13 +3,12 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Storage/MySQLDataStore.hpp"
-#include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
-#include "Server/Packets/SmsgTransferPending.h"
 #include "../Movement/Spline/Spline.h"
 #include "../Movement/Spline/MoveSplineInitArgs.h"
+#include "Server/Definitions.h"
 
 using namespace AscEmu::Packets;
 
@@ -26,7 +25,7 @@ void TransportHandler::unload()
 
 void TransportHandler::loadTransportTemplates()
 {
-    sLogger.info("TransportHandler : Start Loading TransportTemplates...");
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "TransportHandler : Start Loading TransportTemplates...");
 
     uint32_t createCount = 0;
 
@@ -53,7 +52,7 @@ void TransportHandler::loadTransportTemplates()
         ++createCount;
     }
 
-    sLogger.info("Transporter Handler : Loaded %u transport templates", createCount);
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Transporter Handler : Loaded %u transport templates", createCount);
 }
 
 void TransportHandler::spawnContinentTransports()
@@ -61,7 +60,7 @@ void TransportHandler::spawnContinentTransports()
     if (_transportTemplates.empty())
         return;
 
-    sLogger.info("TransportHandler : Start Spawning Continent Transports...");
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "TransportHandler : Start Spawning Continent Transports...");
 
     uint32_t createCount = 0;
 
@@ -74,7 +73,7 @@ void TransportHandler::spawnContinentTransports()
                     ++createCount;
     }
 
-    sLogger.info("Transporter Handler : Spawned %u Continent Transports", createCount);
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Transporter Handler : Spawned %u Continent Transports", createCount);
 }
 
 Transporter* TransportHandler::createTransport(uint32_t entry, MapMgr* map /*= nullptr*/)
@@ -90,6 +89,11 @@ Transporter* TransportHandler::createTransport(uint32_t entry, MapMgr* map /*= n
     Transporter* trans = new Transporter((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | entry);
 
     // ...at first waypoint
+#if VERSION_STRING == Classic
+    if (tInfo->keyFrames.size() == 0)
+        return nullptr;
+
+#endif
     PathNode startNode = tInfo->keyFrames.begin()->Node;
     uint32_t mapId = startNode.mapid;
     float x = startNode.x;
@@ -154,6 +158,13 @@ void TransportHandler::loadTransportForPlayers(Player* player)
     player->getUpdateMgr().pushCreationData(&transData, count);
 }
 
+void TransportHandler::removeInstancedTransport(Transporter* transport, uint32_t instanceID)
+{
+    auto itr = _TransportersByInstanceIdMap[instanceID].find(transport);
+    if (itr != _TransportersByInstanceIdMap[instanceID].end())
+        _TransportersByInstanceIdMap[instanceID].erase(transport);
+}
+
 bool FillTransporterPathVector(uint32_t PathID, TransportPath & Path)
 {
     // Store dbc values into current Path array
@@ -174,8 +185,10 @@ bool FillTransporterPathVector(uint32_t PathID, TransportPath & Path)
             Path[i].z = pathnode->z;
             Path[i].flags = pathnode->flags;
             Path[i].delay = pathnode->waittime;
+#if VERSION_STRING > Classic
             Path[i].ArrivalEventID = pathnode->arivalEventID;
             Path[i].DepartureEventID = pathnode->departureEventID;
+#endif
             ++i;
         }
     }
@@ -271,14 +284,24 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
         }
     }
 
-    ASSERT(!keyFrames.empty());
+    if (keyFrames.empty())
+    {
+        sLogger.failure("TransportHandler::generatePath no keyFrames available for Transport %u", goInfo->entry);
+        return;
+    }
 
     if (transport->mapsUsed.size() > 1)
     {
         for (std::set<uint32_t>::const_iterator itr = transport->mapsUsed.begin(); itr != transport->mapsUsed.end(); ++itr)
         {
             if (const auto map = sMapStore.LookupEntry(*itr))
-                ASSERT(!map->instanceable());
+            {
+                if (map->instanceable())
+                {
+                    sLogger.failure("TransportHandler::generatePath not allowed to create a path to a instance map!");
+                    return;
+                }
+            }
         }
 
         transport->inInstance = false;
@@ -455,7 +478,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     keyFrames.back().NextArriveTime = keyFrames.back().DepartureTime;
 
     transport->pathTime = keyFrames.back().DepartureTime;
-    sLogger.debug("TransportHandler: total time %u at transport %u \n", transport->pathTime, transport->entry);
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "TransportHandler: total time %u at transport %u \n", transport->pathTime, transport->entry);
 }
 
 float TransportHandler::normalizeOrientation(float o)

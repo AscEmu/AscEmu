@@ -21,9 +21,6 @@
 // Class WorldSocket - Main network code functions, handles
 // reading/writing of all packets.
 
-#include "StdAfx.h"
-//#include "Server/CharacterErrors.h"
-//#include "Management/AddonMgr.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/MainServerDefines.h"
 #include "Auth/Sha1.h"
@@ -33,7 +30,6 @@
 #include "Packets/SmsgAuthChallenge.h"
 #include "Packets/SmsgAuthResponse.h"
 #include "OpcodeTable.hpp"
-//#include "World.Legacy.h"
 
 using namespace AscEmu::Packets;
 
@@ -732,109 +728,122 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     }
 
     // Allocate session
-    WorldSession* pSession = new WorldSession(AccountID, AccountName, this);
-    mSession = pSession;
-    ARCEMU_ASSERT(mSession != nullptr);
-    // aquire delete mutex
-    pSession->deleteMutex.Acquire();
+    if (WorldSession* pSession = new WorldSession(AccountID, AccountName, this))
+    {
+        mSession = pSession;
 
-    // Set session properties
-    pSession->SetClientBuild(mClientBuild);
+        // aquire delete mutex
+        pSession->deleteMutex.Acquire();
+
+        // Set session properties
+        pSession->SetClientBuild(mClientBuild);
 
 #if VERSION_STRING >= Cata
-    pSession->readAddonInfoPacket(mAddonInfoBuffer);
+        pSession->readAddonInfoPacket(mAddonInfoBuffer);
 #endif
 
-    pSession->LoadSecurity(GMFlags);
-    pSession->SetAccountFlags(AccountFlags);
-    pSession->m_lastPing = static_cast<uint32>(UNIXTIME);
-    pSession->language = Util::getLanguagesIdFromString(lang);
+        pSession->LoadSecurity(GMFlags);
+        pSession->SetAccountFlags(AccountFlags);
+        pSession->m_lastPing = static_cast<uint32>(UNIXTIME);
+        pSession->language = Util::getLanguagesIdFromString(lang);
 
 #if VERSION_STRING != Mop
-    recvData >> pSession->m_muted;
-#else
-    if (recvData.rpos() != recvData.wpos())
         recvData >> pSession->m_muted;
+#else
+        if (recvData.rpos() != recvData.wpos())
+            recvData >> pSession->m_muted;
 #endif
 
-    for (uint8_t i = 0; i < 8; ++i)
-        pSession->SetAccountData(i, nullptr, true, 0);
+        for (uint8_t i = 0; i < 8; ++i)
+            pSession->SetAccountData(i, nullptr, true, 0);
 
-    if (worldConfig.server.useAccountData)
-    {
-        QueryResult* pResult = CharacterDatabase.Query("SELECT * FROM account_data WHERE acct = %u", AccountID);
-        if (pResult == nullptr)
-            CharacterDatabase.Execute("INSERT INTO account_data VALUES(%u, '', '', '', '', '', '', '', '', '')", AccountID);
+        if (worldConfig.server.useAccountData)
+        {
+            QueryResult* pResult = CharacterDatabase.Query("SELECT * FROM account_data WHERE acct = %u", AccountID);
+            if (pResult == nullptr)
+                CharacterDatabase.Execute("INSERT INTO account_data VALUES(%u, '', '', '', '', '', '', '', '', '')", AccountID);
+            else
+            {
+                for (uint8_t i = 0; i < 8; ++i)
+                {
+                    const char* data = pResult->Fetch()[1 + i].GetString();
+                    size_t len = data ? strlen(data) : 0;
+                    if (len > 1)
+                    {
+                        char* d = new char[len + 1];
+                        memcpy(d, data, len + 1);
+                        pSession->SetAccountData(i, d, true, static_cast<uint32>(len));
+                    }
+                }
+
+                delete pResult;
+            }
+        }
+
+        sLogger.debug("%s from %s:%u [%ums]", AccountName.c_str(), GetRemoteIP().c_str(), GetRemotePort(), _latency);
+
+        // Check for queue.
+        uint32 playerLimit = worldConfig.getPlayerLimit();
+        if ((sWorld.getSessionCount() < playerLimit) || pSession->HasGMPermissions())
+        {
+            Authenticate();
+        }
+        else if (playerLimit > 0)
+        {
+            // Queued, sucker.
+            uint32 Position = sWorld.addQueuedSocket(this);
+            mQueued = true;
+            sLogger.debug("%s added to queue in position %u", AccountName.c_str(), Position);
+
+            // Send packet so we know what we're doing
+            UpdateQueuePosition(Position);
+        }
         else
         {
-            for (uint8_t i = 0; i < 8; ++i)
-            {
-                const char* data = pResult->Fetch()[1 + i].GetString();
-                size_t len = data ? strlen(data) : 0;
-                if (len > 1)
-                {
-                    char* d = new char[len + 1];
-                    memcpy(d, data, len + 1);
-                    pSession->SetAccountData(i, d, true, static_cast<uint32>(len));
-                }
-            }
-
-            delete pResult;
+            SendPacket(SmsgAuthResponse(AuthRejected, ARST_ONLY_ERROR).serialise().get());
+            Disconnect();
         }
-    }
 
-    sLogger.debug("%s from %s:%u [%ums]", AccountName.c_str(), GetRemoteIP().c_str(), GetRemotePort(), _latency);
-
-    // Check for queue.
-    uint32 playerLimit = worldConfig.getPlayerLimit();
-    if ((sWorld.getSessionCount() < playerLimit) || pSession->HasGMPermissions())
-    {
-        Authenticate();
-    }
-    else if (playerLimit > 0)
-    {
-        // Queued, sucker.
-        uint32 Position = sWorld.addQueuedSocket(this);
-        mQueued = true;
-        sLogger.debug("%s added to queue in position %u", AccountName.c_str(), Position);
-
-        // Send packet so we know what we're doing
-        UpdateQueuePosition(Position);
+        // release delete mutex
+        pSession->deleteMutex.Release();
     }
     else
     {
-        SendPacket(SmsgAuthResponse(AuthRejected, ARST_ONLY_ERROR).serialise().get());
+        sLogger.failure("WorldSocket::InformationRetreiveCallback invalid session (nullptr)");
         Disconnect();
     }
-
-    // release delete mutex
-    pSession->deleteMutex.Release();
 }
 
 void WorldSocket::Authenticate()
 {
-    ARCEMU_ASSERT(pAuthenticationPacket != NULL);
-    mQueued = false;
+    if (pAuthenticationPacket != nullptr)
+    {
+        mQueued = false;
 
-    if (mSession == nullptr)
-        return;
+        if (mSession == nullptr)
+            return;
 
-    SendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
+        SendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
 #if VERSION_STRING < Cata
-    sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket, static_cast<uint32>(pAuthenticationPacket->rpos()), mSession);
+        sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket, static_cast<uint32>(pAuthenticationPacket->rpos()), mSession);
 #else
-    mSession->sendAddonInfo();
+        mSession->sendAddonInfo();
 #endif
 #if VERSION_STRING > TBC
-    mSession->sendClientCacheVersion(BUILD_VERSION);
+        mSession->sendClientCacheVersion(BUILD_VERSION);
 #endif
-    mSession->_latency = _latency;
+        mSession->_latency = _latency;
 
-    delete pAuthenticationPacket;
-    pAuthenticationPacket = nullptr;
+        delete pAuthenticationPacket;
+        pAuthenticationPacket = nullptr;
 
-    sWorld.addSession(mSession);
-    sWorld.addGlobalSession(mSession);
+        sWorld.addSession(mSession);
+        sWorld.addGlobalSession(mSession);
+    }
+    else
+    {
+        sLogger.failure("WorldSocket::Authenticate something tried to Authenticate but packet is invalid (nullptr)");
+    }
 }
 
 void WorldSocket::UpdateQueuePosition(uint32 Position)
@@ -912,7 +921,7 @@ void WorldSocket::OnRead()
 
             // Copy from packet buffer into header local var
             ClientPktHeader Header;
-            readBuffer.Read(reinterpret_cast<uint8*>(&Header), 6);
+            readBuffer.Read(&Header, 6);
 
             // Decrypt the header
 #if VERSION_STRING < WotLK
@@ -974,7 +983,7 @@ void WorldSocket::OnRead()
         {
             // Copy from packet buffer into our actual buffer.
             ///Read(mRemaining, (uint8*)Packet->contents());
-            readBuffer.Read(static_cast<uint8*>(packet->contents()), mRemaining);
+            readBuffer.Read(packet->contents(), mRemaining);
         }
 
         sWorldPacketLog.logPacket(mSize, mOpcode, mSize ? packet->contents() : nullptr, 0, (mSession ? mSession->GetAccountId() : 0));
@@ -1030,11 +1039,15 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
         //stop spaming opcodes here
         case SMSG_MONSTER_MOVE:
         case MSG_MOVE_HEARTBEAT:
+        case SMSG_ATTACKERSTATEUPDATE:
+        case SMSG_EMOTE:
+        case SMSG_TIME_SYNC_REQ:
+        case CMSG_TIME_SYNC_RESP:
         {
         } break;
         default:
         {
-            sLogger.debug("[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
+            sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
                 sOpcodeTables.getNameForInternalId(opcode).c_str(), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode), len);
         } break;
     }

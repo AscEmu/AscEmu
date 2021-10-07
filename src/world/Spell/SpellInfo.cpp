@@ -6,11 +6,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/School.hpp"
 #include "Definitions/SpellEffects.hpp"
 #include "Definitions/SpellEffectTarget.hpp"
+#include "Definitions/SpellFamily.hpp"
 #include "Definitions/SpellIsFlags.hpp"
 #include "SpellAuras.h"
 #include "SpellTarget.h"
 
-#include "Management/Skill.h"
+#include "Management/Skill.hpp"
 #include "Units/Creatures/AIInterface.h"
 #include "Units/Players/Player.h"
 
@@ -183,31 +184,37 @@ uint8_t SpellInfo::getFirstSchoolFromSchoolMask() const
 
 bool SpellInfo::isDamagingEffect(uint8_t effIndex) const
 {
-    ARCEMU_ASSERT(effIndex < MAX_SPELL_EFFECTS);
-
-    if (getEffect(effIndex) == SPELL_EFFECT_SCHOOL_DAMAGE ||
-        getEffect(effIndex) == SPELL_EFFECT_ENVIRONMENTAL_DAMAGE ||
-        getEffect(effIndex) == SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL ||
-        getEffect(effIndex) == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE ||
-        getEffect(effIndex) == SPELL_EFFECT_WEAPON_DAMAGE ||
-        getEffect(effIndex) == SPELL_EFFECT_POWER_BURN)
-        return true;
-    return false;
+    if (effIndex < MAX_SPELL_EFFECTS)
+    {
+        if (getEffect(effIndex) == SPELL_EFFECT_SCHOOL_DAMAGE ||
+            getEffect(effIndex) == SPELL_EFFECT_ENVIRONMENTAL_DAMAGE ||
+            getEffect(effIndex) == SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL ||
+            getEffect(effIndex) == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE ||
+            getEffect(effIndex) == SPELL_EFFECT_WEAPON_DAMAGE ||
+            getEffect(effIndex) == SPELL_EFFECT_POWER_BURN)
+            return true;
+        return false;
+    }
+    else
+    {
+        sLogger.failure("SpellInfo::isDamagingEffect called with invalid effIndex %u", static_cast<uint32_t>(effIndex));
+        return false;
+    }
 }
 
 bool SpellInfo::isHealingEffect(uint8_t effIndex) const
 {
-    ARCEMU_ASSERT(effIndex < MAX_SPELL_EFFECTS);
-
-    if (getEffect(effIndex) == SPELL_EFFECT_HEAL ||
-        getEffect(effIndex) == SPELL_EFFECT_HEAL_MAX_HEALTH ||
-        getEffect(effIndex) == SPELL_EFFECT_HEAL_MECHANICAL)
-        return true;
+    if (effIndex < MAX_SPELL_EFFECTS)
+    {
+        if (getEffect(effIndex) == SPELL_EFFECT_HEAL ||
+            getEffect(effIndex) == SPELL_EFFECT_HEAL_MAX_HEALTH ||
+            getEffect(effIndex) == SPELL_EFFECT_HEAL_MECHANICAL)
+            return true;
 
 #if VERSION_STRING == Classic
-    // In classic these spells have SPELL_EFFECT_SCRIPT_EFFECT instead of heal effect
-    switch (Id)
-    {
+        // In classic these spells have SPELL_EFFECT_SCRIPT_EFFECT instead of heal effect
+        switch (Id)
+        {
         case 635:   // Holy Light Rank 1
         case 639:   // Holy Light Rank 2
         case 647:   // Holy Light Rank 3
@@ -226,9 +233,15 @@ bool SpellInfo::isHealingEffect(uint8_t effIndex) const
             return true;
         default:
             break;
-    }
+        }
 #endif
-    return false;
+        return false;
+    }
+    else
+    {
+        sLogger.failure("SpellInfo::isHealingEffect called with invalid effIndex %u", static_cast<uint32_t>(effIndex));
+        return false;
+    }
 }
 
 bool SpellInfo::hasDamagingEffect() const
@@ -377,23 +390,134 @@ bool SpellInfo::isNegativeAura() const
     if (getAttributes() & ATTRIBUTES_NEGATIVE)
         return true;
 
+    // Custom checks to override default result from below
+    switch (getSpellFamilyName())
+    {
+        case SPELLFAMILY_WARRIOR:
+        {
+#if VERSION_STRING >= TBC
+            // Death Wish was made positive in late TBC
+            if (getSpellFamilyFlags(0) == 0x100000)
+                return false;
+#endif
+            // Recklessness should be positive
+            if (getSpellFamilyFlags(0) == 0x10)
+                return false;
+        } break;
+        case SPELLFAMILY_PALADIN:
+        {
+            // Divine Shield should be positive
+            if (getSpellFamilyFlags(0) == 0x400000)
+                return false;
+
+            // Judgement effects should be negative
+            if (getSpellFamilyFlags(0) == 0x80000)
+                return true;
+        } break;
+        default:
+            break;
+    }
+
     // Check each effect
-    // If any effect contain one of the following aura effects, the aura is negative
+    // TODO: missing cata and mop effects
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (getEffectApplyAuraName(i) == SPELL_AURA_NONE)
             continue;
 
+        // Using just spell base points could give false results
+        const auto effValue = calculateEffectValue(i);
         switch (getEffectApplyAuraName(i))
         {
-            //\ todo: add more checks later
+            case SPELL_AURA_MOD_POSSESS:
             case SPELL_AURA_PERIODIC_DAMAGE:
+            case SPELL_AURA_MOD_CONFUSE:
+            case SPELL_AURA_MOD_CHARM:
+            case SPELL_AURA_MOD_FEAR:
+            case SPELL_AURA_MOD_STUN:
+            case SPELL_AURA_MOD_PACIFY:
+            case SPELL_AURA_MOD_ROOT:
+            case SPELL_AURA_MOD_SILENCE:
             case SPELL_AURA_PERIODIC_LEECH:
+            case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
             case SPELL_AURA_PERIODIC_MANA_LEECH:
+            case SPELL_AURA_MOD_DISARM:
+            case SPELL_AURA_MOD_STALKED:
+            case SPELL_AURA_CHANNEL_DEATH_ITEM:
             case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
+            case SPELL_AURA_PREVENTS_FLEEING:
+            case SPELL_AURA_GHOST:
             case SPELL_AURA_PERIODIC_POWER_BURN:
+            case SPELL_AURA_AREA_CHARM:
+            case SPELL_AURA_MOD_DISARM_OFFHAND:
+            case SPELL_AURA_MOD_DISARM_RANGED:
+            case SPELL_AURA_298:
+            case SPELL_AURA_301:
+            case SPELL_AURA_PREVENT_RESURRECTION:
                 // No need to do other checks, definitely negative
                 return true;
+            case SPELL_AURA_MOD_ATTACKSPEED:
+            case SPELL_AURA_MOD_DAMAGE_DONE:
+            case SPELL_AURA_MOD_RESISTANCE:
+            case SPELL_AURA_MOD_STAT:
+            case SPELL_AURA_MOD_SKILL:
+            case SPELL_AURA_MOD_INCREASE_SPEED:
+            case SPELL_AURA_MOD_DECREASE_SPEED:
+            case SPELL_AURA_MOD_INCREASE_HEALTH:
+            case SPELL_AURA_MOD_INCREASE_ENERGY:
+            case SPELL_AURA_MOD_PARRY_PERCENT:
+            case SPELL_AURA_MOD_DODGE_PERCENT:
+            case SPELL_AURA_MOD_BLOCK_PERCENT:
+            case SPELL_AURA_MOD_CRIT_PERCENT:
+            case SPELL_AURA_MOD_HIT_CHANCE:
+            case SPELL_AURA_MOD_SPELL_HIT_CHANCE:
+            case SPELL_AURA_MOD_SPELL_CRIT_CHANCE:
+            case SPELL_AURA_MOD_PACIFY_SILENCE:
+            case SPELL_AURA_MOD_CASTING_SPEED:
+            case SPELL_AURA_MOD_DAMAGE_PERCENT_DONE:
+            case SPELL_AURA_MOD_PERCENT_STAT:
+            case SPELL_AURA_MOD_ATTACK_POWER:
+            case SPELL_AURA_MOD_RESISTANCE_PCT:
+            case SPELL_AURA_MOD_HEALING:
+            case SPELL_AURA_MOD_HEALING_PCT:
+            case SPELL_AURA_MOD_RANGED_ATTACK_POWER:
+            case SPELL_AURA_MOD_INCREASE_HEALTH_PERCENT:
+            case SPELL_AURA_MOD_HEALING_DONE_PERCENT:
+            case SPELL_AURA_MOD_TOTAL_STAT_PERCENTAGE:
+            case SPELL_AURA_MOD_HASTE:
+            case SPELL_AURA_MOD_RANGED_HASTE:
+            case SPELL_AURA_MOD_ATTACK_POWER_PCT:
+            case SPELL_AURA_MELEE_SLOW_PCT:
+            case SPELL_AURA_INCREASE_TIME_BETWEEN_ATTACKS:
+            case SPELL_AURA_INCREASE_CASTING_TIME_PCT:
+            case SPELL_AURA_252:
+            case SPELL_AURA_259:
+                // Negative if effect value is negative
+                if (effValue < 0)
+                    return true;
+                break;
+            case SPELL_AURA_MOD_DAMAGE_TAKEN:
+            case SPELL_AURA_MOD_POWER_COST:
+            case SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN:
+            case SPELL_AURA_MOD_MECHANIC_DAMAGE_TAKEN_PERCENT:
+            case SPELL_AURA_INCREASE_SPELL_DOT_DAMAGE_PCT:
+                // Negative if effect value is positive
+                if (effValue > 0)
+                    return true;
+                break;
+            case SPELL_AURA_MOD_STEALTH:
+            case SPELL_AURA_MOD_INVISIBILITY:
+            case SPELL_AURA_EFFECT_IMMUNITY:
+            case SPELL_AURA_STATE_IMMUNITY:
+            case SPELL_AURA_SCHOOL_IMMUNITY:
+            case SPELL_AURA_DAMAGE_IMMUNITY:
+            case SPELL_AURA_DISPEL_IMMUNITY:
+            case SPELL_AURA_SCHOOL_ABSORB:
+            case SPELL_AURA_FAR_SIGHT:
+            case SPELL_AURA_MECHANIC_IMMUNITY:
+            case SPELL_AURA_MOUNTED:
+                // No need to do other checks, definitely positive
+                return false;
             default:
                 break;
         }

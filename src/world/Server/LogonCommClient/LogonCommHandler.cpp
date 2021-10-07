@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/MainServerDefines.h"
 #include "Server/Master.h"
@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Auth/Sha1.h"
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
+#include "Util/Strings.hpp"
 
 LogonCommHandler& LogonCommHandler::getInstance()
 {
@@ -330,7 +331,7 @@ void LogonCommHandler::updateLogonServerConnection()
             if (logonCommSocket->last_pong < time && ((time - logonCommSocket->last_pong) > 60))
             {
                 // no pong for 60 seconds -> remove the socket
-                sLogger.info("Logonserver %u connection dropped due to pong timeout!", (unsigned int)itr.first->id);
+                sLogger.info("Logonserver %u connection dropped due to pong timeout!", itr.first->id);
                 logonCommSocket->_id = 0;
                 logonCommSocket->Disconnect();
                 itr.second = nullptr;
@@ -450,31 +451,31 @@ void LogonCommHandler::loadRealmsConfiguration()
             realmString << "Realm" << i;
 
             RealmStructure* realmStructure = new RealmStructure;
-            ARCEMU_ASSERT(Config.MainConfig.tryGetInt(realmString.str(), "Id", &realmStructure->id));
-            ARCEMU_ASSERT(Config.MainConfig.tryGetString(realmString.str(), "Name", &realmStructure->name));
-            ARCEMU_ASSERT(Config.MainConfig.tryGetString(realmString.str(), "Address", &realmStructure->address));
-            ARCEMU_ASSERT(Config.MainConfig.tryGetInt(realmString.str(), "TimeZone", &realmStructure->timeZone));
+            Config.MainConfig.tryGetInt(realmString.str(), "Id", &realmStructure->id);
+            Config.MainConfig.tryGetString(realmString.str(), "Name", &realmStructure->name);
+            Config.MainConfig.tryGetString(realmString.str(), "Address", &realmStructure->address);
+            Config.MainConfig.tryGetInt(realmString.str(), "TimeZone", &realmStructure->timeZone);
             ///\ todo: not handled in core
-            ARCEMU_ASSERT(Config.MainConfig.tryGetInt(realmString.str(), "Lock", &realmStructure->lock));
+            Config.MainConfig.tryGetInt(realmString.str(), "Lock", &realmStructure->lock);
 
             realmStructure->population = 0.0f;
             realmStructure->flags = 0;
             realmStructure->gameBuild = VERSION_STRING;
 
             std::string realmType = "Normal";
-            ARCEMU_ASSERT(Config.MainConfig.tryGetString(realmString.str(), "Icon", &realmType));
+            Config.MainConfig.tryGetString(realmString.str(), "Icon", &realmType);
             AscEmu::Util::Strings::toLowerCase(realmType);
 
             // process realm type
-            if (realmType.compare("pvp") == 0)
+            if (realmType == "pvp")
             {
                 _realmType = REALMTYPE_PVP;
             }
-            else if (realmType.compare("rp") == 0)
+            else if (realmType == "rp")
             {
                 _realmType = REALMTYPE_RP;
             }
-            else if (realmType.compare("rppvp") == 0)
+            else if (realmType == "rppvp")
             {
                 _realmType = REALMTYPE_RPPVP;
             }

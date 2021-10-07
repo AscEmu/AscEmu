@@ -5,16 +5,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_HallsOfReflection.h"
+#include "Server/Script/CreatureAIScript.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Halls of Reflection
 class HallsOfReflectionScript : public InstanceScript
 {
 public:
-
-    explicit HallsOfReflectionScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {}
-
+    explicit HallsOfReflectionScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new HallsOfReflectionScript(pMapMgr); }
 
     void OnPlayerEnter(Player* pPlayer) override
@@ -41,9 +39,9 @@ public:
 // JainaAI
 class JainaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(JainaAI)
-    explicit JainaAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {}
+public:
+    static CreatureAIScript* Create(Creature* c) { return new JainaAI(c); }
+    explicit JainaAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void StartInstance()
     {
@@ -94,7 +92,7 @@ class JainaAI : public CreatureAIScript
             // Jaina with a 7 sec delay.
             getCreature()->SendTimedScriptTextChatMessage(SAY_JAINA_10, 146500);
             // Uther with a 4 sec delay.
-            Uther->SendChatMessage(CHAT_MSG_EMOTE, LANG_UNIVERSAL, "shakes his head.", 150500); // WHAT
+            Uther->sendChatMessage(CHAT_MSG_EMOTE, LANG_UNIVERSAL, "shakes his head.", 150500); // WHAT
             // Uther with a 4 sec delay
             Uther->SendTimedScriptTextChatMessage(SAY_UTHER_08, 154500);
             // Jaina wuith a 14 sec delay.
@@ -129,7 +127,6 @@ class JainaAI : public CreatureAIScript
 class Jaina_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu::sendQuickMenu(pObject->getGuid(), 1, plr, 1, GOSSIP_ICON_CHAT, "Can you remove the sword?");
@@ -147,7 +144,8 @@ public:
 
 class Marwyn : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Marwyn)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Marwyn(c); }
     explicit Marwyn(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         CreatureAISpells* spellWell = nullptr;
@@ -192,7 +190,8 @@ class Marwyn : public CreatureAIScript
 
 class Falric : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Falric)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Falric(c); }
     explicit Falric(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic() == false)

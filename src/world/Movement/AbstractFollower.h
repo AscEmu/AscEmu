@@ -9,13 +9,13 @@ class Unit;
 
 struct AbstractFollower
 {
-    public:
-        AbstractFollower(Unit* target = nullptr) { setTarget(target); }
-        ~AbstractFollower() { setTarget(nullptr); }
+public:
+    AbstractFollower(Unit* target = nullptr) { setTarget(target); }
+    ~AbstractFollower() { setTarget(nullptr); }
 
-        void setTarget(Unit* unit);
-        Unit* getTarget() const { return _target; }
+    void setTarget(Unit* unit);
+    Unit* getTarget() const { return _target; }
 
-    private:
-        Unit* _target = nullptr;
+private:
+    Unit* _target = nullptr;
 };

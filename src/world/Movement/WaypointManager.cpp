@@ -4,6 +4,12 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "WaypointManager.h"
+#include "Util.hpp"
+#include "Database/Database.h"
+#include "Logging/Logger.hpp"
+#include "Server/MainServerDefines.h"
+#include "Objects/MovementInfo.h"
+
 
 void WaypointMgr::load()
 {
@@ -49,7 +55,7 @@ void WaypointMgr::load()
 
         waypoint.delay = fields[7].GetUInt32();
         waypoint.eventId = fields[8].GetUInt32();
-        waypoint.eventChance = fields[9].GetInt16(); // todo: why int16 to uint8? -Appled
+        waypoint.eventChance = fields[9].GetInt8();
 
         WaypointPath& path = _waypointStore[pathId];
         path.id = pathId;
@@ -104,7 +110,7 @@ void WaypointMgr::loadCustomWaypoints()
 
         waypoint.delay = fields[7].GetUInt32();
         waypoint.eventId = fields[8].GetUInt32();
-        waypoint.eventChance = fields[9].GetInt16(); // todo: why int16 to uint8? -Appled
+        waypoint.eventChance = fields[9].GetInt8();
 
         WaypointPath& path = _waypointStore[pathId];
         path.id = pathId;

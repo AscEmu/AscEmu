@@ -18,7 +18,6 @@ class GameObject;
 class LuaGameObject
 {
 public:
-
     static int GossipCreateMenu              (lua_State* L, GameObject* ptr);
     static int GossipMenuAddItem             (lua_State* L, GameObject* ptr);
     static int GossipSendMenu                (lua_State* L, GameObject* ptr);

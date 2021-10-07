@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <string>
 #include "Common.hpp"
-#include "DBCLoader.hpp" // Used in constructor
 
 namespace DBC::SQL
 {

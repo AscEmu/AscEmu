@@ -19,7 +19,7 @@
 
 #include "Setup.h"
 #include "Management/QuestLogEntry.hpp"
-#include "Management/Skill.h"
+#include "Management/Skill.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -27,6 +27,7 @@
 #include "Map/MapScriptInterface.h"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellAuras.h"
+#include "Spell/Definitions/SpellEffects.hpp"
 
 enum
 {

@@ -3,7 +3,6 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "../../StdAfx.h"
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 #include "Units/Summons/TotemSummon.h"
@@ -14,42 +13,43 @@ Summon::~Summon() {}
 
 void Summon::Load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t spellId, int32_t summonSlot)
 {
-    ARCEMU_ASSERT(unitOwner != nullptr);
+    if (unitOwner != nullptr)
+    {
+        Creature::Load(creatureProperties, position.x, position.y, position.z, position.o);
 
-    Creature::Load(creatureProperties, position.x, position.y, position.z, position.o);
+        SetFaction(unitOwner->getFactionTemplate());
+        Phase(PHASE_SET, unitOwner->GetPhase());
+        SetZoneId(unitOwner->GetZoneId());
+        setCreatedBySpellId(spellId);
+        this->m_summonSlot = summonSlot;
 
-    SetFaction(unitOwner->getFactionTemplate());
-    Phase(PHASE_SET, unitOwner->GetPhase());
-    SetZoneId(unitOwner->GetZoneId());
-    setCreatedBySpellId(spellId);
-    this->m_summonSlot = summonSlot;
+        if (unitOwner->isPvpFlagSet())
+            setPvpFlag();
+        else
+            removePvpFlag();
 
-    if (unitOwner->isPvpFlagSet())
-        setPvpFlag();
-    else
-        removePvpFlag();
+        if (unitOwner->isFfaPvpFlagSet())
+            setFfaPvpFlag();
+        else
+            removeFfaPvpFlag();
 
-    if (unitOwner->isFfaPvpFlagSet())
-        setFfaPvpFlag();
-    else
-        removeFfaPvpFlag();
+        if (unitOwner->isSanctuaryFlagSet())
+            setSanctuaryFlag();
+        else
+            removeSanctuaryFlag();
 
-    if (unitOwner->isSanctuaryFlagSet())
-        setSanctuaryFlag();
-    else
-        removeSanctuaryFlag();
+        setCreatedByGuid(unitOwner->getGuid());
 
-    setCreatedByGuid(unitOwner->getGuid());
+        if (unitOwner->getSummonedByGuid() == 0)
+            setSummonedByGuid(unitOwner->getGuid());
+        else
+            setSummonedByGuid(unitOwner->getSummonedByGuid());
 
-    if (unitOwner->getSummonedByGuid() == 0)
-        setSummonedByGuid(unitOwner->getGuid());
-    else
-        setSummonedByGuid(unitOwner->getSummonedByGuid());
+        this->m_unitOwner = unitOwner;
 
-    this->m_unitOwner = unitOwner;
-
-    if (unitOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
-        addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
+        if (unitOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+            addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
+    }
 }
 
 void Summon::unSummon()

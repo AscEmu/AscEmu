@@ -6,24 +6,22 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_Arcatraz.h"
 #include "Objects/Faction.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class ArcatrazInstanceScript : public InstanceScript
 {
 public:
-
-    explicit ArcatrazInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit ArcatrazInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ArcatrazInstanceScript(pMapMgr); }
 };
 
-// VOID_ZONE 36119    // DBC: 36119; it's not fully functionl without additional core support (for dmg and random place targeting).
+// VOID_ZONE 36119 // DBC: 36119; it's not fully functionl without additional core support (for dmg and random place targeting).
 
 // Zereketh the UnboundAI
 class ZerekethAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ZerekethAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ZerekethAI(c); }
     explicit ZerekethAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto seedOfC = addAISpell(SEED_OF_C, 6.0f, TARGET_RANDOM_SINGLE, 2, 20);
@@ -134,14 +132,14 @@ class ZerekethAI : public CreatureAIScript
     }
 
 protected:
-
     int32_t SpeechTimer;
     int32_t VoidTimer;
 };
 
 class VoidZoneARC : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VoidZoneARC)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VoidZoneARC(c); }
     explicit VoidZoneARC(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         stopMovement();
@@ -162,12 +160,12 @@ class VoidZoneARC : public CreatureAIScript
     }
 };
 
-
 // Dalliah the DoomsayerAI
 // sounds missing related to Wrath... (look on script below this one)
 class DalliahTheDoomsayerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DalliahTheDoomsayerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DalliahTheDoomsayerAI(c); }
     explicit DalliahTheDoomsayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(GIFT_OF_THE_DOOMSAYER, 8.0f, TARGET_ATTACKING);
@@ -204,7 +202,8 @@ class DalliahTheDoomsayerAI : public CreatureAIScript
 // so haven't added them.
 class WrathScryerSoccothratesAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WrathScryerSoccothratesAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WrathScryerSoccothratesAI(c); }
     explicit WrathScryerSoccothratesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(IMMOLATION, 10.0f, TARGET_SELF);
@@ -234,7 +233,8 @@ class WrathScryerSoccothratesAI : public CreatureAIScript
 // Add sounds related to his dialog with mind controlled guy
 class HarbringerSkyrissAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HarbringerSkyrissAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HarbringerSkyrissAI(c); }
     explicit HarbringerSkyrissAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(MIND_REND, 15.0f, TARGET_ATTACKING);
@@ -281,7 +281,6 @@ class HarbringerSkyrissAI : public CreatureAIScript
     }
 
 protected:
-
     uint8_t IllusionCount;
     CreatureAISpells* Illusion66;
     CreatureAISpells* Illusion33;
@@ -290,7 +289,8 @@ protected:
 // Warden MellicharAI
 class WardenMellicharAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WardenMellicharAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WardenMellicharAI(c); }
     explicit WardenMellicharAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setRooted(true);
@@ -460,7 +460,7 @@ class WardenMellicharAI : public CreatureAIScript
                 if (!NPC_orb3 && NPC_ID_Spawn != 0 && Spawncounter == 0)
                 {
                     /// \todo investigate.... saying "1"... really?
-                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "1");
+                    getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "1");
                     ++Spawncounter;
                     NPC_orb3 = spawnCreature(NPC_ID_Spawn, 420.050f, -173.500f, 42.580f, 6.110f);
                     return;
@@ -469,7 +469,7 @@ class WardenMellicharAI : public CreatureAIScript
                 if (!NPC_orb3)
                 {
                     /// \todo investigate.... saying "2"... really?
-                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "2");
+                    getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "2");
                     NPC_orb3 = getNearestCreature(NPC_ID_Spawn);
                 }
                 else if (NPC_orb3 && !NPC_orb3->isAlive())
@@ -600,7 +600,6 @@ class WardenMellicharAI : public CreatureAIScript
     }
 
 protected:
-
     uint8_t Phasepart;
     uint32_t NPC_ID_Spawn;
     uint32_t Spawncounter;

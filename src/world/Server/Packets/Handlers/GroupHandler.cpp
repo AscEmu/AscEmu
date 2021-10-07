@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Server/Packets/CmsgGroupInvite.h"
 #include "Server/Packets/SmsgGroupInvite.h"
 #include "Server/Packets/SmsgPartyCommandResult.h"
@@ -19,11 +19,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Objects/ObjectMgr.h"
 #include "Map/MapMgr.h"
+#include "Map/WorldCreator.h"
 #include "Server/Packets/CmsgGroupChangeSubGroup.h"
 #include "Server/Packets/CmsgGroupAssistantLeader.h"
 #include "Server/Packets/MsgPartyAssign.h"
 #include "Server/Packets/MsgRaidReadyCheck.h"
+
+#if VERSION_STRING >= Cata
 #include "Server/Packets/SmsgGroupList.h"
+#endif
 
 using namespace AscEmu::Packets;
 
@@ -553,7 +557,7 @@ void WorldSession::handleGroupUninviteOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_GROUP_UNINVITE: %s (name)", srlPacket.name.c_str());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GROUP_UNINVITE: %s (name)", srlPacket.name.c_str());
 
     const auto uninvitePlayer = sObjectMgr.GetPlayer(srlPacket.name.c_str(), false);
     if (uninvitePlayer == nullptr)
@@ -588,7 +592,7 @@ void WorldSession::handleGroupUninviteGuidOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_GROUP_UNINVITE_GUID: %u (guidLow)", srlPacket.guid.getGuidLow());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GROUP_UNINVITE_GUID: %u (guidLow)", srlPacket.guid.getGuidLow());
 
     const auto uninvitePlayer = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow());
     if (uninvitePlayer == nullptr)
@@ -637,7 +641,7 @@ void WorldSession::handleMinimapPingOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received MSG_MINIMAP_PING: %f (x), %f (y)", srlPacket.posX, srlPacket.posY);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_MINIMAP_PING: %f (x), %f (y)", srlPacket.posX, srlPacket.posY);
 
     if (!_player->isInGroup())
         return;
@@ -655,7 +659,7 @@ void WorldSession::handleGroupSetLeaderOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_GROUP_SET_LEADER: %u (guidLow)", srlPacket.guid.getGuidLow());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GROUP_SET_LEADER: %u (guidLow)", srlPacket.guid.getGuidLow());
 
     const auto targetPlayer = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow());
     if (targetPlayer == nullptr)
@@ -687,7 +691,7 @@ void WorldSession::handleLootMethodOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_LOOT_METHOD: %u (method), %u (guidLow), %u (theshold)", srlPacket.method, srlPacket.guid.getGuidLow(), srlPacket.threshold);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LOOT_METHOD: %u (method), %u (guidLow), %u (theshold)", srlPacket.method, srlPacket.guid.getGuidLow(), srlPacket.threshold);
 
     if (!_player->isGroupLeader())
     {
@@ -713,7 +717,7 @@ void WorldSession::handleSetPlayerIconOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received MSG_RAID_TARGET_UPDATE: %u (icon)", srlPacket.icon);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_RAID_TARGET_UPDATE: %u (icon)", srlPacket.icon);
 
     const auto group = _player->getGroup();
     if (group == nullptr)
@@ -749,11 +753,11 @@ void WorldSession::handlePartyMemberStatsOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_REQUEST_PARTY_MEMBER_STATS: %u (guidLow)", srlPacket.guid.getGuidLow());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_PARTY_MEMBER_STATS: %u (guidLow)", srlPacket.guid.getGuidLow());
 
     if (_player->GetMapMgr() == nullptr)
     {
-        sLogger.debug("Received CMSG_REQUEST_PARTY_MEMBER_STATS: But MapMgr is not ready!");
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_PARTY_MEMBER_STATS: But MapMgr is not ready!");
         return;
     }
 

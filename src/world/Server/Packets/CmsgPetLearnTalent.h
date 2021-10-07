@@ -13,7 +13,6 @@ namespace AscEmu::Packets
 {
     class CmsgPetLearnTalent : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         WoWGuid guid;
         uint32_t talentId;
@@ -44,6 +43,5 @@ namespace AscEmu::Packets
             guid.Init(unpacked_guid);
             return true;
         }
-#endif
     };
 }

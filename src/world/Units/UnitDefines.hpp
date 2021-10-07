@@ -117,6 +117,7 @@ enum class VisualState : uint8_t
     DEFLECT
 };
 
+#if VERSION_STRING > TBC
 enum HitStatus : uint32_t
 {
     HITSTATUS_NORMALSWING       = 0x00000000,
@@ -149,6 +150,25 @@ enum HitStatus : uint32_t
     HITSTATUS_ABSORBED          = HITSTATUS_ABSORB_FULL | HITSTATUS_ABSORB_PARTIAL,
     HITSTATUS_RESIST            = HITSTATUS_RESIST_FULL | HITSTATUS_RESIST_PARTIAL
 };
+#else
+enum HitStatus : uint32_t
+{
+    HITSTATUS_NORMALSWING       = 0x00000000,
+    HITSTATUS_UNK_00            = 0x00000001,
+    HITSTATUS_HITANIMATION      = 0x00000002,
+    HITSTATUS_DUALWIELD         = 0x00000004,
+    HITSTATUS_UNK_01            = 0x00000008,
+    HITSTATUS_MISS              = 0x00000010,
+    HITSTATUS_ABSORBED          = 0x00000020,
+    HITSTATUS_RESIST            = 0x00000040,
+    HITSTATUS_CRICTICAL         = 0x00000080,
+    HITSTATUS_BLOCK             = 0x00000800,
+    HITSTATUS_GLANCING          = 0x00004000,
+    HITSTATUS_CRUSHINGBLOW      = 0x00008000,
+    HITSTATUS_NOACTION          = 0x00010000,
+    HITSTATUS_SWINGNOHITSOUND   = 0x00080000,
+};
+#endif
 
 enum EnviromentalDamage : uint8_t
 {

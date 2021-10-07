@@ -19,10 +19,12 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class Corporal_Keeshan : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Corporal_Keeshan)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Corporal_Keeshan(c); }
     explicit Corporal_Keeshan(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override
@@ -32,7 +34,7 @@ class Corporal_Keeshan : public CreatureAIScript
 
         if (iWaypointId == 19)
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tell Marshal Marris. I'm outta here!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tell Marshal Marris. I'm outta here!");
             getCreature()->Despawn(5000, 1000);
             getCreature()->stopMoving();
             if (getCreature()->m_escorter == nullptr)

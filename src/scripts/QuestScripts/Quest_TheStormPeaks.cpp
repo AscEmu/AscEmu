@@ -23,11 +23,10 @@
 class LokensFury : public GameObjectAIScript
 {
 public:
-
     explicit LokensFury(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new LokensFury(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(12965, 0, 0);
     }
@@ -36,11 +35,10 @@ public:
 class LokensPower : public GameObjectAIScript
 {
 public:
-
     explicit LokensPower(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new LokensPower(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(12965, 1, 0);
     }
@@ -49,11 +47,10 @@ public:
 class LokensFavor : public GameObjectAIScript
 {
 public:
-
     explicit LokensFavor(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new LokensFavor(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(12965, 2, 0);
     }
@@ -62,13 +59,12 @@ public:
 class MissingScout_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (plr->hasQuestInQuestLog(12864))
         {
             GossipMenu menu(pObject->getGuid(), 13612, plr->GetSession()->language);
-            menu.addItem(GOSSIP_ICON_CHAT, 499, 1);     // Are you okay? I've come to take you back to Frosthold if you can stand.
+            menu.addItem(GOSSIP_ICON_CHAT, 499, 1); // Are you okay? I've come to take you back to Frosthold if you can stand.
             menu.sendGossipPacket(plr);
         }
     }
@@ -80,13 +76,13 @@ public:
             case 1:
             {
                 GossipMenu menu(pObject->getGuid(), 13612, plr->GetSession()->language);
-                menu.addItem(GOSSIP_ICON_CHAT, 500, 2);     // I'm sorry that I didn't get here sooner. What happened?
+                menu.addItem(GOSSIP_ICON_CHAT, 500, 2); // I'm sorry that I didn't get here sooner. What happened?
                 menu.sendGossipPacket(plr);
             } break;
             case 2:
             {
                 GossipMenu menu(pObject->getGuid(), 13613, plr->GetSession()->language);
-                menu.addItem(GOSSIP_ICON_CHAT, 501, 3);     // I'll go get some help. Hang in there.
+                menu.addItem(GOSSIP_ICON_CHAT, 501, 3); // I'll go get some help. Hang in there.
                 menu.sendGossipPacket(plr);
             } break;
             case 3:
@@ -97,7 +93,6 @@ public:
             } break;
         }
     }
-
 };
 
 void SetupTheStormPeaks(ScriptMgr* mgr)

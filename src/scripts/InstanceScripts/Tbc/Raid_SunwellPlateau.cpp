@@ -6,14 +6,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Raid_SunwellPlateau.h"
 
+#include "Server/Script/CreatureAIScript.h"
+
 class SunwellPlateauInstanceScript : public InstanceScript
 {
 public:
-
-    explicit SunwellPlateauInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit SunwellPlateauInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new SunwellPlateauInstanceScript(pMapMgr); }
 };
 
@@ -34,7 +32,8 @@ public:
 
 class SunbladeProtectorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SunbladeProtectorAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SunbladeProtectorAI(c); }
     explicit SunbladeProtectorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto felLightning = addAISpell(SUNBLADE_PROTECTOR_FEL_LIGHTNING, 100.0f, TARGET_RANDOM_SINGLE, 0, 15);
@@ -44,7 +43,8 @@ class SunbladeProtectorAI : public CreatureAIScript
 
 class ShadowswordAssassinAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowswordAssassinAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadowswordAssassinAI(c); }
     explicit ShadowswordAssassinAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto assaMark = addAISpell(SHADOWSWORD_ASSASSIN_ASSASSINS_MARK, 100.0f, TARGET_RANDOM_SINGLE, 0, 15);
@@ -62,7 +62,8 @@ class ShadowswordAssassinAI : public CreatureAIScript
 
 class ShadowswordCommanderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadowswordCommanderAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadowswordCommanderAI(c); }
     explicit ShadowswordCommanderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHADOWSWORD_COMMANDER_SHIELD_SLAM, 10.0f, TARGET_ATTACKING, 0, 10);
@@ -72,7 +73,8 @@ class ShadowswordCommanderAI : public CreatureAIScript
 
 class BrutallusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BrutallusAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BrutallusAI(c); }
     explicit BrutallusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BRUTALLUS_METEOR_SLASH, 100.0f, TARGET_SELF, 1, 12);
@@ -121,7 +123,8 @@ class BrutallusAI : public CreatureAIScript
 
 class FelmystAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FelmystAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new FelmystAI(c); }
     explicit FelmystAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Phase 1 spells
@@ -187,7 +190,8 @@ class FelmystAI : public CreatureAIScript
 
 class LadySacrolashAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LadySacrolashAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new LadySacrolashAI(c); }
     explicit LadySacrolashAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto darkTouch = addAISpell(LADY_SACROLASH_DARK_TOUCHED, 50.0f, TARGET_RANDOM_SINGLE, 0, 10);
@@ -247,7 +251,8 @@ class LadySacrolashAI : public CreatureAIScript
 
 class GrandWarlockAlythessAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GrandWarlockAlythessAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GrandWarlockAlythessAI(c); }
     explicit GrandWarlockAlythessAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto pyrogenetics = addAISpell(GRAND_WARLOCK_ALYTHESS_PYROGENICS, 100.0f, TARGET_SELF, 0, 10);
@@ -311,7 +316,8 @@ class GrandWarlockAlythessAI : public CreatureAIScript
 
 class MuruAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MuruAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MuruAI(c); }
     explicit MuruAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(MURU_NEGATIVE_ENERGY, 25.0f, TARGET_SELF);

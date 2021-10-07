@@ -6,24 +6,21 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_TheUnderbog.h"
 #include "Objects/Faction.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class TheUnderbogInstanceScript : public InstanceScript
 {
 public:
-
-    explicit TheUnderbogInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit TheUnderbogInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new TheUnderbogInstanceScript(pMapMgr); }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Boss AIs
-
 class HungarfenAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HungarfenAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HungarfenAI(c); }
     explicit HungarfenAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto mushroom = addAISpell(UNDERBOG_MUSHROOM, 0.0f, TARGET_RANDOM_DESTINATION, 0, 15, false, true);
@@ -64,14 +61,14 @@ class HungarfenAI : public CreatureAIScript
     }
 
 protected:
-
     bool FourSpores;
     CreatureAISpells* spores;
 };
 
 class GhazanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GhazanAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GhazanAI(c); }
     explicit GhazanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto acidSpit = addAISpell(ACID_SPIT, 8.0f, TARGET_VARIOUS, 0, 20, false, true);
@@ -105,14 +102,14 @@ class GhazanAI : public CreatureAIScript
     }
 
 protected:
-
     bool Enraged;
     CreatureAISpells* enrage;
 };
 
 class ClawAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ClawAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ClawAI(c); }
     explicit ClawAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto maul = addAISpell(MAUL, 15.0f, TARGET_ATTACKING, 0, 15, false, true);
@@ -132,7 +129,8 @@ class ClawAI : public CreatureAIScript
 
 class SwamplordMuselekAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SwamplordMuselekAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SwamplordMuselekAI(c); }
     explicit SwamplordMuselekAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto freezingTrap = addAISpell(THROW_FREEZING_TRAP, 8.0f, TARGET_RANDOM_SINGLE, 0, 30, false, true);
@@ -177,26 +175,26 @@ class SwamplordMuselekAI : public CreatureAIScript
                 if (!getCreature()->isCastingSpell())
                 {
                     uint32_t RangedSpell = Util::getRandomUInt(100);
-                    if (RangedSpell <= 20 && _isTimerFinished(aimedShot->mCooldownTimerId))
+                    if (RangedSpell <= 20 && _isTimerFinished(aimedShot->mCooldownTimer.isTimePassed()))
                     {
                         getCreature()->castSpell(target, aimedShot->mSpellInfo, true);
                         getCreature()->setAttackTimer(MELEE, aimedShot->getAttackStopTimer());
-                        _resetTimer(aimedShot->mCooldownTimerId, aimedShot->mCooldown);
+                        aimedShot->mCooldownTimer.resetInterval(aimedShot->mCooldown);
                     }
 
-                    if (RangedSpell > 20 && RangedSpell <= 40 && _isTimerFinished(multiShot->mCooldownTimerId))
+                    if (RangedSpell > 20 && RangedSpell <= 40 && _isTimerFinished(multiShot->mCooldownTimer.isTimePassed()))
                     {
                         getCreature()->castSpell(target, multiShot->mSpellInfo, true);
                         getCreature()->setAttackTimer(MELEE, multiShot->getAttackStopTimer());
-                        _resetTimer(multiShot->mCooldownTimerId, multiShot->mCooldown);
+                        multiShot->mCooldownTimer.resetInterval(multiShot->mCooldown);
                     }
                     else
                     {
-                        if (_isTimerFinished(shot->mCooldownTimerId))
+                        if (_isTimerFinished(shot->mCooldownTimer.isTimePassed()))
                         {
                             getCreature()->castSpell(target, shot->mSpellInfo, true);
                             getCreature()->setAttackTimer(MELEE, shot->getAttackStopTimer());
-                            _resetTimer(shot->mCooldownTimerId, shot->mCooldown);
+                            shot->mCooldownTimer.resetInterval(shot->mCooldown);
                         }
                     }
                 }
@@ -212,7 +210,8 @@ private:
 
 class TheBlackStalkerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TheBlackStalkerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TheBlackStalkerAI(c); }
     explicit TheBlackStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto chainLighning = addAISpell(CHAIN_LIGHTNING, 12.0f, TARGET_RANDOM_SINGLE, 0, 15);

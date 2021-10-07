@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Management/Item.h"
 #include "QuestLogEntry.hpp"
 #include "Management/ItemInterface.h"
@@ -38,6 +38,7 @@
 #include "Server/Packets/SmsgQuestupdateFailed.h"
 #include "Server/Packets/SmsgQuestgiverQuestFailed.h"
 #include "Storage/WorldStrings.h"
+#include "Util/Strings.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -356,7 +357,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
         *data << qst->completionemotedelay[i];
     }
 
-    *data << qst->count_reward_choiceitem;
+    *data << uint32_t(qst->count_reward_choiceitem);
     if (qst->count_reward_choiceitem)
     {
         for (uint8 i = 0; i < 6; ++i)
@@ -371,7 +372,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
         }
     }
 
-    *data << qst->count_reward_item;
+    *data << uint32_t(qst->count_reward_item);
     if (qst->count_reward_item)
     {
         for (uint8 i = 0; i < 4; ++i)
@@ -588,7 +589,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
 
     ItemProperties const* ip;
 
-    *data << qst->count_reward_choiceitem;
+    *data << uint32_t(qst->count_reward_choiceitem);
 
     for (uint8 i = 0; i < 6; ++i)
     {
@@ -603,7 +604,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
 
     }
 
-    *data << qst->count_reward_item;
+    *data << uint32_t(qst->count_reward_item);
 
     for (uint8 i = 0; i < 4; ++i)
     {
@@ -849,7 +850,7 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
     *data << uint32(qst->reward_money < 0 ? -qst->reward_money : 0); // Required Money
 #endif
     // item count
-    *data << qst->count_required_item;
+    *data << uint32_t(qst->count_required_item);
 
     // (loop for each item)
     for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
@@ -1432,8 +1433,8 @@ void QuestMgr::GiveQuestRewardReputation(Player* plr, QuestProperties const* qst
 
             // Let's do this properly. Determine the faction of the creature, and give reputation to his faction.
             if (qst_giver->isCreature())
-                if (static_cast< Creature* >(qst_giver)->m_factionEntry != NULL)
-                    fact = static_cast< Creature* >(qst_giver)->m_factionEntry->ID;
+                if (qst_giver->m_factionEntry != NULL)
+                    fact = qst_giver->m_factionEntry->ID;
             if (qst_giver->isGameObject())
                 fact = static_cast< GameObject* >(qst_giver)->getFactionTemplate();
         }
@@ -1802,8 +1803,9 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                     pItem->DeleteMe();
                 }
             }
-
+#if VERSION_STRING > Classic
             sMailSystem.SendCreatureGameobjectMail(mailType, qst_giver->getEntry(), plr->getGuid(), mail_template->subject, mail_template->content, 0, 0, itemGuid, MAIL_STATIONERY_TEST1, MAIL_CHECK_MASK_HAS_BODY, qst->MailDelaySecs);
+#endif
         }
     }
 }
@@ -1882,8 +1884,8 @@ template <class T> void QuestMgr::_AddQuest(uint32 entryid, QuestProperties cons
 
 void QuestMgr::_CleanLine(std::string* str)
 {
-    _RemoveChar((char*)"\r", str);
-    _RemoveChar((char*)"\n", str);
+    _RemoveChar("\r", str);
+    _RemoveChar("\n", str);
 
     while (str->c_str()[0] == 32)
     {
@@ -2173,8 +2175,6 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
         if (sQuestMgr.CalcStatus(qst_giver, plr) < QuestStatus::AvailableChat)
             return false;
 
-        ARCEMU_ASSERT(itr != q_end);
-
         uint32 status = sQuestMgr.CalcStatus(qst_giver, plr);
 
         if ((status == QuestStatus::Available) || (status == QuestStatus::Repeatable) || (status == QuestStatus::AvailableChat))
@@ -2383,7 +2383,7 @@ void QuestMgr::LoadExtraQuestStuff()
                     else
                     {
                         // if quest has neither valid gameobject, log it.
-                        sLogger.debug("Quest %lu has required_mobtype[%d]==%lu, it's not a valid GameObject.", qst->id, i, qst->required_mob_or_go[i]);
+                        sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Quest %lu has required_mobtype[%d]==%lu, it's not a valid GameObject.", qst->id, i, qst->required_mob_or_go[i]);
                     }
                 }
                 else
@@ -2394,7 +2394,7 @@ void QuestMgr::LoadExtraQuestStuff()
                     else
                     {
                         // if quest has neither valid creature, log it.
-                        sLogger.debug("Quest %lu has required_mobtype[%d]==%lu, it's not a valid Creature.", qst->id, i, qst->required_mob_or_go[i]);
+                        sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Quest %lu has required_mobtype[%d]==%lu, it's not a valid Creature.", qst->id, i, qst->required_mob_or_go[i]);
                     }
                 }
 

@@ -18,7 +18,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "WorldStatesHandler.h"
 #include "Server/World.h"
 #include "Server/World.Legacy.h"

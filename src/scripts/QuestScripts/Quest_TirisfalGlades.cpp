@@ -19,22 +19,23 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class TheDormantShade : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* creat = mTarget->GetMapMgr()->GetInterface()->SpawnCreature(1946, 2467.314f, 14.8471f, 23.5950f, 0, true, false, 0, 0);
         creat->Despawn(60000, 0);
-        creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have disturbed my rest. Now face my wrath!");
+        creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have disturbed my rest. Now face my wrath!");
     }
 };
 
 class CalvinMontague : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CalvinMontague)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CalvinMontague(c); }
     explicit CalvinMontague(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -63,7 +64,7 @@ class CalvinMontague : public CreatureAIScript
     {
         if (phase == 2)
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting.");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting.");
             getCreature()->RemoveNegativeAuras();
             getCreature()->SetFaction(68);
             getCreature()->setStandState(STANDSTATE_SIT);
@@ -82,7 +83,6 @@ class CalvinMontague : public CreatureAIScript
 class ARoguesDeal : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
@@ -91,7 +91,7 @@ public:
 
         Creature* Dashel = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 6784);
 
-        if (Dashel == NULL)
+        if (Dashel == nullptr)
             return;
 
         Dashel->SetFaction(28);
@@ -102,7 +102,8 @@ public:
 
 class Zealot : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Zealot)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Zealot(c); }
     explicit Zealot(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override
@@ -114,7 +115,7 @@ class Zealot : public CreatureAIScript
             return;
         if (iWaypointId == 2)
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "My mind. . .me flesh. . .I'm. . .rotting. . . .!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "My mind. . .me flesh. . .I'm. . .rotting. . . .!");
         }
 
         if (iWaypointId == 7)

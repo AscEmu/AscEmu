@@ -22,7 +22,6 @@
 
 #include "Units/Players/PlayerDefines.hpp"
 #include "Units/Stats.h"
-#include "Server/Definitions.h"
 #include "Management/QuestDefines.hpp"
 #include "Management/Battleground/BattlegroundMgr.h"
 #include "Management/MailMgr.h"
@@ -42,6 +41,8 @@
 #include "Management/ObjectUpdates/UpdateManager.h"
 #include "Data/WoWPlayer.hpp"
 #include <mutex>
+
+#include "TradeData.hpp"
 
 struct CharCreate;
 class QuestLogEntry;
@@ -107,39 +108,46 @@ struct CreateInfo_ActionBarStruct
     uint8_t type;
     uint8_t misc;
 };
-// MIT End
-// APGL Start
+
+struct CreateInfo_Levelstats
+{
+    uint32_t strength;
+    uint32_t agility;
+    uint32_t stamina;
+    uint32_t intellect;
+    uint32_t spirit;
+};
+
+typedef std::unordered_map<uint32_t, CreateInfo_Levelstats> CreateInfo_LevelstatsVector;
+
+struct CreateInfo_ClassLevelStats
+{
+    uint32_t health;
+    uint32_t mana;
+};
+
+typedef std::unordered_map<uint32_t, CreateInfo_ClassLevelStats> CreateInfo_ClassLevelStatsVector;
 
 struct PlayerCreateInfo
 {
-    uint8 index;
-    uint8 race;
-    uint8 class_;
-    uint32 mapId;
-    uint32 zoneId;
+    uint32_t mapId;
+    uint32_t zoneId;
     float positionX;
     float positionY;
     float positionZ;
     float orientation;
-    uint8 strength;
-    uint8 ability;
-    uint8 stamina;
-    uint8 intellect;
-    uint8 spirit;
-    uint32 health;
-    uint32 mana;
-    uint32 rage;
-    uint32 focus;
-    uint32 energy;
-    uint32 attackpower;
-    float mindmg;
-    float maxdmg;
-    uint32_t taximask[DBC_TAXI_MASK_SIZE];
+
     std::list<CreateInfo_ItemStruct> items;
     std::list<CreateInfo_SkillStruct> skills;
     std::list<CreateInfo_ActionBarStruct> actionbars;
     std::set<uint32> spell_list;
+    std::set<uint32> spell_cast_list;
+
+    CreateInfo_LevelstatsVector level_stats;
 };
+
+// MIT End
+// APGL Start
 
 struct DamageSplit
 {
@@ -332,40 +340,7 @@ typedef std::map<uint32, PlayerCooldown>            PlayerCooldownMap;
 // AGPL End
 
 // MIT Start
-class TradeData
-{
-private:
-    Player* m_player;
-    Player* m_tradeTarget;
-    bool m_accepted;
-    uint64_t m_money;
-    uint32_t m_spell;
-    uint64_t m_spellCastItem;
-    uint64_t m_items[TRADE_SLOT_COUNT];
 
- public:
-    TradeData(Player* player, Player* trader);
-
-    Player* getTradeTarget() const;
-    TradeData* getTargetTradeData() const;
-
-    Item* getTradeItem(TradeSlots slot) const;
-    bool hasTradeItem(uint64_t itemGuid) const;
-    bool hasPlayerOrTraderItemInTrade(uint64_t itemGuid) const;
-
-    uint32_t getSpell() const;
-    Item* getSpellCastItem() const;
-    bool hasSpellCastItem() const;
-
-    uint64_t getTradeMoney() const;
-    void setTradeMoney(uint64_t money);
-
-    void setTradeAccepted(bool state, bool sendBoth = false);
-    bool isTradeAccepted() const;
-
-    void setTradeItem(TradeSlots slot, Item* item);
-    void setTradeSpell(uint32_t spell_id, Item* cast_item = nullptr);
-};
 
 struct PlayerCheat
 {
@@ -534,11 +509,11 @@ public:
     uint32_t getVisibleItemEntry(uint32_t slot) const;
     void setVisibleItemEntry(uint32_t slot, uint32_t entry);
 #if VERSION_STRING > TBC
-    uint32_t getVisibleItemEnchantment(uint32_t slot) const;
-    void setVisibleItemEnchantment(uint32_t slot, uint32_t enchantment);
+    uint16_t getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const;
+    void setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint16_t enchantment);
 #else
-    uint32_t getVisibleItemEnchantment(uint32_t slot, uint32_t pos) const;
-    void setVisibleItemEnchantment(uint32_t slot, uint32_t pos, uint32_t enchantment);
+    uint32_t getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const;
+    void setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint32_t enchantment);
 #endif
 //VisibleItem end
 
@@ -569,8 +544,29 @@ public:
     uint32_t getNextLevelXp() const;
     void setNextLevelXp(uint32_t xp);
 
-    uint32_t getValueFromSkillInfoIndex(uint32_t index) const;
-    void setValueBySkillInfoIndex(uint32_t index, uint32_t value);
+#if VERSION_STRING < Cata
+    uint16_t getSkillInfoId(uint32_t index) const;
+    uint16_t getSkillInfoStep(uint32_t index) const;
+    uint16_t getSkillInfoCurrentValue(uint32_t index) const;
+    uint16_t getSkillInfoMaxValue(uint32_t index) const;
+    int16_t getSkillInfoBonusTemporary(uint32_t index) const;
+    int16_t getSkillInfoBonusPermanent(uint32_t index) const;
+    void setSkillInfoId(uint32_t index, uint16_t id);
+    void setSkillInfoStep(uint32_t index, uint16_t step);
+    void setSkillInfoCurrentValue(uint32_t index, uint16_t current);
+    void setSkillInfoMaxValue(uint32_t index, uint16_t max);
+    void setSkillInfoBonusTemporary(uint32_t index, int16_t bonus);
+    void setSkillInfoBonusPermanent(uint32_t index, int16_t bonus);
+#else
+    uint16_t getSkillLineId(uint32_t index, uint8_t offset) const;
+    uint16_t getSkillStep(uint32_t index, uint8_t offset) const;
+    uint16_t getSkillCurrentValue(uint32_t index, uint8_t offset) const;
+    uint16_t getSkillMaximumValue(uint32_t index, uint8_t offset) const;
+    void setSkillLineId(uint32_t index, uint32_t value);
+    void setSkillStep(uint32_t index, uint32_t value);
+    void setSkillCurrentValue(uint32_t index, uint32_t value);
+    void setSkillMaximumValue(uint32_t index, uint32_t value);
+#endif
 
     uint32_t getFreeTalentPoints() const;
 #if VERSION_STRING < Cata
@@ -1318,7 +1314,11 @@ public:
     void sendPlaySoundPacket(uint32_t soundId);
     void sendExploreExperiencePacket(uint32_t areaId, uint32_t experience);
     void sendSpellCooldownEventPacket(uint32_t spellId);
+#if VERSION_STRING < Cata
     void sendSpellModifierPacket(uint8_t spellGroup, uint8_t spellType, int32_t modifier, bool isPct);
+#else
+    void sendSpellModifierPacket(uint8_t spellType, std::vector<std::pair<uint8_t, float>> modValues, bool isPct);
+#endif
     void sendLoginVerifyWorldPacket(uint32_t mapId, float posX, float posY, float posZ, float orientation);
     void sendMountResultPacket(uint32_t result);
     void sendDismountResultPacket(uint32_t result);
@@ -1401,11 +1401,7 @@ public:
         void FillRandomBattlegroundReward(bool wonBattleground, uint32 &honorPoints, uint32 &arenaPoints);
         void ApplyRandomBattlegroundReward(bool wonBattleground);
 
-        // Scripting
-        void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0) override;
-        void SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr) override;
     protected:
-
         void _UpdateSkillFields();
 
         SkillMap m_skills;

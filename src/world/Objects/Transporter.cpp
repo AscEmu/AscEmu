@@ -3,13 +3,13 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
 #include <G3D/Vector3.h>
 #include "Storage/MySQLDataStore.hpp"
-#include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Server/Packets/SmsgTransferPending.h"
 #include "../Movement/Spline/Spline.h"
+#include "Server/Script/ScriptMgr.h"
+#include "Server/Definitions.h"
 
 using namespace AscEmu::Packets;
 
@@ -62,6 +62,8 @@ bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float
     // Set Pathtime
     setLevel(tInfo->pathTime);
     setAnimationProgress(animprogress);
+
+    setDynamicPathProgress();
 
     _transportInfo = tInfo;
 
@@ -144,6 +146,8 @@ void Transporter::Update(unsigned long time_passed)
         _positionChangeTimer = positionUpdateDelay;
         if (IsMoving())
         {
+            setDynamicPathProgress();
+
             // Return a Value between 0 and 1 which represents the time from 0 to 1 between current and next node.
             float t = !justStopped ? CalculateSegmentPos(float(timer) * 0.001f) : 1.0f;
             G3D::Vector3 pos, dir;
@@ -152,7 +156,10 @@ void Transporter::Update(unsigned long time_passed)
             UpdatePosition(pos.x, pos.y, pos.z, std::atan2(dir.y, dir.x) + float(M_PI));
         }
         else if (justStopped)
+        {
+            setDynamicPathProgress();
             UpdatePosition(_currentFrame->Node.x, _currentFrame->Node.y, _currentFrame->Node.z, _currentFrame->InitialOrientation);
+        }
         else // When Transport Stopped keep updating players position
             UpdatePlayerPositions(_passengers);
     }
@@ -305,7 +312,7 @@ void Transporter::LoadStaticPassengers()
     if (GetGameObjectProperties()->mo_transport.map_id == 0)
         return;
 
-    sLogger.info("TransportHandler : Start populating transport %u ", getEntry());
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "TransportHandler : Start populating transport %u ", getEntry());
     {
         for (auto creature_spawn : sMySQLStore._creatureSpawnsStore[GetGameObjectProperties()->mo_transport.map_id])
         {
@@ -400,13 +407,13 @@ void Transporter::UpdatePlayerPositions(PassengerSet& passengers)
     }
 }
 
-void Transporter::EnableMovement(bool enabled, MapMgr* instance)
+void Transporter::EnableMovement(bool enabled, MapMgr* /*instance*/)
 {
     if (!GetGameObjectProperties()->mo_transport.can_be_stopped)
         return;
 
     _pendingStop = !enabled;
-    UpdateForMap(instance);
+    //UpdateForMap(instance);
 }
 
 void Transporter::MoveToNextWaypoint()
@@ -588,7 +595,7 @@ void Transporter::DoEventIfAny(KeyFrame const& node, bool departure)
 {
     if (uint32_t eventid = departure ? node.Node.DepartureEventID : node.Node.ArrivalEventID)
     {
-        sLogger.info("Taxi %s event %u", departure ? "departure" : "arrival", eventid);
+        sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Taxi %s event %u", departure ? "departure" : "arrival", eventid);
 
         // Use MapScript Interface to Handle these if not handle it here
         CALL_INSTANCE_SCRIPT_EVENT(GetMapMgr(), TransporterEvents)(this, eventid);
@@ -615,4 +622,23 @@ void Transporter::DoEventIfAny(KeyFrame const& node, bool departure)
             break;
         }
     }
+}
+
+void Transporter::setDynamicPathProgress()
+{
+    uint32_t dynamicValue = 0;
+
+    uint16_t dynamicFlags = 0; // seems to always be 0
+    int16_t pathProgress = -1; // dynamic Path Progress
+
+    if (uint32_t transportPeriod = getTransportPeriod())
+    {
+        float timer = float(GetTransValues()->PathProgress % transportPeriod);
+        pathProgress = int16_t(timer / float(transportPeriod) * 65535.0f);
+    }
+
+    dynamicValue = (pathProgress << 16) + dynamicFlags;
+
+    // Set Updatemask
+    setDynamic(dynamicValue);
 }

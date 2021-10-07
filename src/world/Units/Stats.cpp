@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Management/Item.h"
 #include "Units/Stats.h"
 #include "Creatures/Creature.h"
@@ -28,6 +28,7 @@
 #include "Server/World.Legacy.h"
 #include "../../scripts/Battlegrounds/AlteracValley/AlteracValley.h"
 #include "WorldConf.h"
+#include "Management/ItemInterface.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 
 // APGL End
@@ -739,7 +740,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         {
             if (static_cast< Player* >(pAttacker)->IsInFeralForm())
             {
-                uint8 ss = static_cast< Player* >(pAttacker)->getShapeShiftForm();
+                uint8 ss = pAttacker->getShapeShiftForm();
 
                 if (ss == FORM_CAT)
                     wspeed = 1000.0;
@@ -816,7 +817,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         {
             if (static_cast< Player* >(pAttacker)->IsInFeralForm())
             {
-                uint8 ss = static_cast< Player* >(pAttacker)->getShapeShiftForm();
+                uint8 ss = pAttacker->getShapeShiftForm();
 
                 if (ss == FORM_CAT)
                     wspeed = 1000.0;

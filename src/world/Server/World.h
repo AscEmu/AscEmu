@@ -7,15 +7,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "EventableObject.h"
 #include "IUpdatable.h"
-//#include "Definitions.h"
-//#include "Storage/DBC/DBCStores.h"
 #include "WorldSession.h"
 #include "WorldConfig.h"
 #include "World.Legacy.h"
 
 #include <set>
 #include <string>
-#include <vector>
+
+class SpellInfo;
 
 class SERVER_DECL World : public EventableObject, public IUpdatable
 {

@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Server/MainServerDefines.h"
 #include "ChatCommand.hpp"
 #include "CommandTableStorage.hpp"
@@ -111,7 +111,7 @@ ChatCommand* CommandTableStorage::GetReloadCommandTable(const char* name)
 #define dupe_command_table(ct, dt) this->dt = (ChatCommand*)allocate_and_copy(sizeof(ct)/* / sizeof(ct[0])*/, ct)
 inline void* allocate_and_copy(uint32 len, void* pointer)
 {
-    void* data = (void*)malloc(len);
+    void* data = malloc(len);
     memcpy(data, pointer, len);
     return data;
 }
@@ -351,6 +351,7 @@ void CommandTableStorage::Init()
 
     static ChatCommand debugCommandTable[] =
     {
+        { "dumpscripts",      'd', &ChatHandler::HandleMoveHardcodedScriptsToDBCommand, "Dumps hardcoded aispells to cmdline for creatures on map X",nullptr },
         { "sendcreaturemove", 'd', &ChatHandler::HandleDebugSendCreatureMove, "Requests the target creature moves to you using movement manager.", nullptr },
         { "dopctdamage",        'z', &ChatHandler::HandleDoPercentDamageCommand,    "Do percent damage to creature target",                     nullptr },
         { "setscriptphase",     'z', &ChatHandler::HandleSetScriptPhaseCommand,     "ScriptPhase test",                                         nullptr },
@@ -663,7 +664,7 @@ void CommandTableStorage::Init()
         { "items",              'z', &ChatHandler::HandleReloadItemsCommand,                "Reload items table",                           nullptr },
         { "itempages",          'z', &ChatHandler::HandleReloadItempagesCommand,            "Reload itempages table",                       nullptr },
         { "npc_script_text",    'z', &ChatHandler::HandleReloadNpcScriptTextCommand,        "Reload npc_script_text table",                 nullptr },
-        { "npc_text",           'z', &ChatHandler::HandleReloadNpcTextCommand,              "Reload npc_text table",                        nullptr },
+        { "npc_gossip_text",    'z', &ChatHandler::HandleReloadNpcTextCommand,              "Reload npc_gossip_text table",                 nullptr },
         { "pet_level_abilities",'z', &ChatHandler::HandleReloadPetLevelAbilitiesCommand,    "Reload pet_level_abilities table",             nullptr },
         { "player_xp_for_level",'z', &ChatHandler::HandleReloadPlayerXpForLevelCommand,     "Reload player_xp_for_level table",             nullptr },
         { "points_of_interest", 'z', &ChatHandler::HandleReloadPointsOfInterestCommand,     "Reload points_of_interest table",              nullptr },
@@ -936,9 +937,8 @@ void CommandTableStorage::Init()
         if (p->ChildCommands != 0)
         {
             // Set the correct pointer.
-            ChatCommand* np = GetSubCommandTable(p->Name);
-            ARCEMU_ASSERT(np != NULL);
-            p->ChildCommands = np;
+            if (ChatCommand* np = GetSubCommandTable(p->Name))
+                p->ChildCommands = np;
         }
         ++p;
     }
@@ -950,9 +950,8 @@ void CommandTableStorage::Init()
         if (p_char->ChildCommands != 0)
         {
             // Set the correct pointer.
-            ChatCommand* np_char = GetCharSubCommandTable(p_char->Name);
-            ARCEMU_ASSERT(np_char != NULL);
-            p_char->ChildCommands = np_char;
+            if (ChatCommand* np_char = GetCharSubCommandTable(p_char->Name))
+                p_char->ChildCommands = np_char;
         }
         ++p_char;
     }
@@ -964,9 +963,8 @@ void CommandTableStorage::Init()
         if (p_npc->ChildCommands != 0)
         {
             // Set the correct pointer.
-            ChatCommand* np_npc = GetNPCSubCommandTable(p_npc->Name);
-            ARCEMU_ASSERT(np_npc != NULL);
-            p_npc->ChildCommands = np_npc;
+            if (ChatCommand* np_npc = GetNPCSubCommandTable(p_npc->Name))
+                p_npc->ChildCommands = np_npc;
         }
         ++p_npc;
     }
@@ -978,9 +976,8 @@ void CommandTableStorage::Init()
         if (p_gobject->ChildCommands != 0)
         {
             // Set the correct pointer.
-            ChatCommand* np_gobject = GetGOSubCommandTable(p_gobject->Name);
-            ARCEMU_ASSERT(np_gobject != NULL);
-            p_gobject->ChildCommands = np_gobject;
+            if (ChatCommand* np_gobject = GetGOSubCommandTable(p_gobject->Name))
+                p_gobject->ChildCommands = np_gobject;
         }
         ++p_gobject;
     }
@@ -992,9 +989,8 @@ void CommandTableStorage::Init()
         if (p_reloadtable->ChildCommands != 0)
         {
             // Set the correct pointer.
-            ChatCommand* np_reloadtable = GetReloadCommandTable(p_reloadtable->Name);
-            ARCEMU_ASSERT(np_reloadtable != NULL);
-            p_reloadtable->ChildCommands = np_reloadtable;
+            if (ChatCommand* np_reloadtable = GetReloadCommandTable(p_reloadtable->Name))
+                p_reloadtable->ChildCommands = np_reloadtable;
         }
         ++p_reloadtable;
     }

@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
 #include "SpellProc.hpp"

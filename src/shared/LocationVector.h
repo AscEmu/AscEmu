@@ -36,7 +36,7 @@ class SERVER_DECL LocationVector
         LocationVector(float X, float Y, float Z = 0, float O = 0) : x(X), y(Y), z(Z), o(O) {}
         LocationVector() {}
 
-    // MIT Start
+        // MIT Start
         float getPositionX() const;
         float getPositionY() const;
         float getPositionZ() const;
@@ -103,7 +103,7 @@ class SERVER_DECL LocationVector
 
         // constrain arbitrary radian orientation to interval [0,2*PI)
         static float normalizeOrientation(float o);
-    // MIT End
+        // MIT End
 
         // std::sqrt(dx * dx + dy * dy + dz * dz)
         float Distance(const LocationVector & comp)

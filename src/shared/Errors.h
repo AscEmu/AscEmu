@@ -49,7 +49,4 @@ static void arcAssertFailed(const char* fname, int line, const char* expr)
 
 #define ASSERT WPAssert
 
-
-#define ARCEMU_ASSERT WPAssert
-
 #endif      //_ERRORS_H

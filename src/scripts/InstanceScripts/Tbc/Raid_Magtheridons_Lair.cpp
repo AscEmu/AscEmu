@@ -4,24 +4,22 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
-#include "Objects/Faction.h"
 #include "Raid_Magtheridons_Lair.h"
+#include "Objects/Faction.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class MagtheridonsLairInstanceScript : public InstanceScript
 {
 public:
-
-    explicit MagtheridonsLairInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit MagtheridonsLairInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new MagtheridonsLairInstanceScript(pMapMgr); }
 };
 
 class MagtheridonTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MagtheridonTriggerAI)
-    std::vector<Unit*> ChannelersTable;    // Vector "list" of Channelers
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MagtheridonTriggerAI(c); }
+    std::vector<Unit*> ChannelersTable; // Vector "list" of Channelers
     bool KilledChanneler[5];            // Bool that says if channeler died or not
 
     explicit MagtheridonTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
@@ -334,7 +332,6 @@ class MagtheridonTriggerAI : public CreatureAIScript
     }
 
 protected:
-
     bool EventStarted;
 
     uint32_t PhaseOneTimer;
@@ -345,7 +342,6 @@ protected:
 class ManticronCubeGO : public GameObjectAIScript
 {
 public:
-
     explicit ManticronCubeGO(GameObject* pGameObject) : GameObjectAIScript(pGameObject)
     {
         CubeTrigger = NULL;
@@ -523,13 +519,11 @@ public:
 
             MagYell = true;
         }
-
     }
 
     static GameObjectAIScript* Create(GameObject* GO) { return new ManticronCubeGO(GO); }
 
 protected:
-
     bool MagYell;
     float x, y, z;
     Creature* Magtheridon;
@@ -539,7 +533,8 @@ protected:
 
 class CubeTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CubeTriggerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CubeTriggerAI(c); }
     explicit CubeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -549,7 +544,8 @@ class CubeTriggerAI : public CreatureAIScript
 
 class HellfireWarderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HellfireWarderAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HellfireWarderAI(c); }
     explicit HellfireWarderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowBoltVolley = addAISpell(HW_SHADOW_BOLT_VOLLEY, 15.0f, TARGET_VARIOUS, 0, 5, false, true);
@@ -583,7 +579,8 @@ class HellfireWarderAI : public CreatureAIScript
 
 class HellfireChannelerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HellfireChannelerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HellfireChannelerAI(c); }
     explicit HellfireChannelerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowBoltVolley = addAISpell(SHADOW_BOLT_VOLLEY, 10.0f, TARGET_VARIOUS, 0, 5);
@@ -647,7 +644,8 @@ class HellfireChannelerAI : public CreatureAIScript
 
 class BurningAbyssalAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BurningAbyssalAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BurningAbyssalAI(c); }
     explicit BurningAbyssalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto fireBlast = addAISpell(FIRE_BLAST, 8.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);
@@ -660,7 +658,8 @@ class BurningAbyssalAI : public CreatureAIScript
 
 class MagtheridonAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MagtheridonAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MagtheridonAI(c); }
     explicit MagtheridonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto cleave = addAISpell(CLEAVE, 6.0f, TARGET_ATTACKING, 0, 15, false, true);
@@ -886,7 +885,6 @@ class MagtheridonAI : public CreatureAIScript
     }
 
 protected:
-
     int timer_quake;
     int timer_enrage;
     int timer_caveIn;

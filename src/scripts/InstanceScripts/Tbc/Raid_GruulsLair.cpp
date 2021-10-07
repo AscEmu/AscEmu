@@ -4,15 +4,12 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class GruulsLairInstanceScript : public InstanceScript
 {
 public:
-
-    explicit GruulsLairInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit GruulsLairInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new GruulsLairInstanceScript(pMapMgr); }
 };
 
@@ -23,7 +20,8 @@ const uint32_t LAIR_BRUTE_CHARGE = 24193;
 
 class LairBruteAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LairBruteAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new LairBruteAI(c); }
     explicit LairBruteAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(LAIR_BRUTE_CLEAVE, 20.0f, TARGET_ATTACKING, 0, 15);
@@ -47,7 +45,6 @@ class LairBruteAI : public CreatureAIScript
     }
 };
 
-
 const uint32_t CN_GRONN_PRIEST = 21350;
 const uint32_t GRONN_PRIEST_PSYCHICSCREAM = 22884;
 const uint32_t GRONN_PRIEST_RENEW = 36679;
@@ -55,7 +52,8 @@ const uint32_t GRONN_PRIEST_HEAL = 36678;
 
 class GronnPriestAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GronnPriestAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GronnPriestAI(c); }
     explicit GronnPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(GRONN_PRIEST_PSYCHICSCREAM, 8.0f, TARGET_SELF, 0, 20);
@@ -83,7 +81,8 @@ uint32_t Adds[4] = { 18832, 18834, 18836, 18835 };
 
 class HighKingMaulgarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HighKingMaulgarAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HighKingMaulgarAI(c); }
     explicit HighKingMaulgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto charge = addAISpell(HIGH_KING_MAULGAR_BERSERKER_CHARGE, 10.0f, TARGET_RANDOM_SINGLE, 0, 25);
@@ -214,7 +213,6 @@ class HighKingMaulgarAI : public CreatureAIScript
     CreatureAISpells* mEnrage;
 };
 
-
 const uint32_t CN_KIGGLER_THE_CRAZED = 18835;
 const uint32_t KIGGLER_THE_CRAZED_LIGHTNING_BOLT = 36152;
 const uint32_t KIGGLER_THE_CRAZED_GREATER_POLYMORPH = 33173;
@@ -223,7 +221,8 @@ const uint32_t KIGGLER_THE_CRAZED_ARCANE_SHOCK = 33175;
 
 class KigglerTheCrazedAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KigglerTheCrazedAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KigglerTheCrazedAI(c); }
     explicit KigglerTheCrazedAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(KIGGLER_THE_CRAZED_LIGHTNING_BOLT, 70.0f, TARGET_ATTACKING, 2, 0);
@@ -272,7 +271,8 @@ const uint32_t BLINDEYE_THE_SEER_HEAL = 33144;
 
 class BlindeyeTheSeerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BlindeyeTheSeerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BlindeyeTheSeerAI(c); }
     explicit BlindeyeTheSeerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BLINDEYE_THE_SEER_PRAYER_OF_HEALING, 5.0f, TARGET_SELF, 4, 30);
@@ -298,7 +298,8 @@ const uint32_t OLM_THE_SUMMONER_DARK_DECAY = 33129;
 
 class OlmTheSummonerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(OlmTheSummonerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new OlmTheSummonerAI(c); }
     explicit OlmTheSummonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(OLM_THE_SUMMONER_DEATH_COIL, 7.0f, TARGET_RANDOM_SINGLE, 0, 10);
@@ -322,7 +323,8 @@ const uint32_t WILD_FEL_STALKER_WILD_BITE = 33086;
 
 class WildFelStalkerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WildFelStalkerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WildFelStalkerAI(c); }
     explicit WildFelStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(WILD_FEL_STALKER_WILD_BITE, 10.0f, TARGET_ATTACKING, 0, 10);
@@ -342,7 +344,8 @@ const uint32_t SPELLSHIELD = 33054;
 
 class KroshFirehandAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KroshFirehandAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KroshFirehandAI(c); }
     explicit KroshFirehandAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //spells
@@ -420,7 +423,8 @@ const uint32_t GRUUL_THE_DRAGONKILLER_GRONN_LORDS_GRASP = 33572;    // Should be
 
 class GruulTheDragonkillerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GruulTheDragonkillerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GruulTheDragonkillerAI(c); }
     explicit GruulTheDragonkillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mHurtfulStrike = addAISpell(GRUUL_THE_DRAGONKILLER_HURTFUL_STRIKE, 0.0f, TARGET_ATTACKING, 0, 8);
@@ -566,4 +570,3 @@ void SetupGruulsLair(ScriptMgr* mgr)
     mgr->register_creature_script(CN_HIGH_KING_MAULGAR,    &HighKingMaulgarAI::Create);
     mgr->register_creature_script(CN_GRUUL_THE_DRAGONKILLER, &GruulTheDragonkillerAI::Create);
 }
-

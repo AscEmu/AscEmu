@@ -15,7 +15,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Map/WorldCreatorDefines.hpp>
 #include <Spell/SpellMgr.hpp>
 #include <Server/MainServerDefines.h>
-#include <StdAfx.h>
 #include "LuaHelpers.h"
 #include <Map/WorldCreator.h>
 #include "Management/WeatherMgr.h"

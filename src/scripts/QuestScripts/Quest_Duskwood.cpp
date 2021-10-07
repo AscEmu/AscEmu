@@ -18,6 +18,7 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 enum
 {
@@ -29,7 +30,8 @@ enum
 
 class ElizaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ElizaAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ElizaAI(c); }
     explicit ElizaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mElizaCombatTimer = 0;
@@ -74,7 +76,6 @@ class ElizaAI : public CreatureAIScript
 class SummonElizaQuest : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* Eliza = mTarget->GetMapMgr()->CreateAndSpawnCreature(314, -10271.127f, 53.784f, 42.711f, 1.72f);

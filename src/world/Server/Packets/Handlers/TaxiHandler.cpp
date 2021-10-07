@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Management/TaxiMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/CmsgTaxiQueryAvailableNodes.h"
@@ -140,7 +140,7 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_ACTIVATETAXI");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ACTIVATETAXI");
 
     if (_player->hasUnitFlags(UNIT_FLAG_LOCK_PLAYER))
         return;
@@ -193,7 +193,7 @@ void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_ACTIVATETAXIEXPRESS");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ACTIVATETAXIEXPRESS");
 
     if (_player->hasUnitFlags(UNIT_FLAG_LOCK_PLAYER))
         return;

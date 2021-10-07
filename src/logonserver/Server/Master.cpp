@@ -3,13 +3,21 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "LogonStdAfx.h"
 #include <Threading/AEThreadPool.h>
 #include "Util.hpp"
 #include "Database/DatabaseUpdater.hpp"
 #include "Logon.h"
 #include "IpBanMgr.h"
 #include "Realm/RealmManager.hpp"
+#include "Auth/AuthSocket.h"
+#include "Server/LogonServerDefines.hpp"
+#include "Server/Master.hpp"
+#include <Logging/Logger.hpp>
+#include "Auth/AutoPatcher.h"
+#include <Network/Network.h>
+#include "Console/LogonConsole.h"
+#include "LogonConf.h"
+#include <Util/Strings.hpp>
 
 using std::chrono::milliseconds;
 
@@ -125,7 +133,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
                 sRealmManager.timeoutSockets();
                 sSocketGarbageCollector.Update();
                 CheckForDeadSockets();              // Flood Protection
-                UNIXTIME = time(NULL);
+                UNIXTIME = time(nullptr);
                 g_localTime = *localtime(&UNIXTIME);
             }
 
@@ -328,7 +336,7 @@ bool MasterLogon::CheckDBVersion()
     }
 
     QueryResult* cqr = sLogonSQL->QueryNA("SELECT LastUpdate FROM logon_db_version;");
-    if (cqr == NULL)
+    if (cqr == nullptr)
     {
         sLogger.failure("Database : logon database is missing the table `logon_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
         sLogger.failure("Database : You may need to update your database");

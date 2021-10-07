@@ -21,9 +21,10 @@
 #include "../WorldConf.h"
 #include "VMapFactory.h"
 #include "IVMapManager.h"
-#include "StdAfx.h"
+
 #include "TerrainMgr.h"
-#include "Log.hpp"
+
+#include "Logging/Logger.hpp"
 
 TerrainHolder::TerrainHolder(uint32 mapid)
 {
@@ -204,7 +205,7 @@ float TileMap::GetHeightB(float x, float y, int x_int, int y_int)
     }
 
     // Calculate height
-    return (float)((a * x) + (b * y) + c) * m_heightMapMult + m_tileHeight;
+    return (a * x + b * y + c) * m_heightMapMult + m_tileHeight;
 }
 
 float TileMap::GetHeightS(float x, float y, int x_int, int y_int)
@@ -259,7 +260,7 @@ float TileMap::GetHeightS(float x, float y, int x_int, int y_int)
     }
 
     // Calculate height
-    return (float)((a * x) + (b * y) + c) * m_heightMapMult + m_tileHeight;
+    return (a * x + b * y + c) * m_heightMapMult + m_tileHeight;
 }
 
 float TileMap::GetHeightF(float x, float y, int x_int, int y_int)

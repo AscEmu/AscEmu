@@ -3,8 +3,6 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include <StdAfx.h>
-
 #ifdef __APPLE__
 #undef check
 #endif
@@ -28,6 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/WorldCreator.h"
 #include "LuaMacros.h"
 #include "LuaHelpers.h"
+#include "Server/Script/CreatureAIScript.h"
 
 ScriptMgr* m_scriptMgr = nullptr;
 
@@ -1392,7 +1391,6 @@ bool LuaOnDummySpell(uint8_t effectIndex, Spell* pSpell)
 class LuaCreature : public CreatureAIScript
 {
 public:
-
     LuaCreature(Creature* creature) : CreatureAIScript(creature), m_binding(nullptr) {}
     ~LuaCreature()
     {}
@@ -1820,7 +1818,6 @@ public:
 class LuaGameObjectScript : public GameObjectAIScript
 {
 public:
-
     explicit LuaGameObjectScript(GameObject* go) : GameObjectAIScript(go), m_binding(nullptr) {}
     ~LuaGameObjectScript() {}
 
@@ -1957,7 +1954,6 @@ public:
 class LuaGossip : public GossipScript
 {
 public:
-
     LuaGossip() : GossipScript(), m_unit_gossip_binding(nullptr), m_item_gossip_binding(nullptr), m_go_gossip_binding(nullptr) {}
     ~LuaGossip()
     {
@@ -2163,7 +2159,6 @@ public:
 class LuaQuest : public QuestScript
 {
 public:
-
     LuaQuest() : QuestScript()
     {
         m_binding = nullptr;
@@ -2276,7 +2271,6 @@ public:
 class LuaInstance : public InstanceScript
 {
 public:
-
     explicit LuaInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr), m_instanceId(pMapMgr->GetInstanceID()), m_binding(nullptr) {}
     ~LuaInstance() {}
 

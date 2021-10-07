@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Container.h"
 #include "Exceptions/Exceptions.hpp"
@@ -29,18 +29,16 @@
 #include "Storage/MySQLStructures.h"
 #include "Units/Players/PlayerClasses.hpp"
 #include "Server/MainServerDefines.h"
-#include "Config/Config.h"
 #include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
-#include "Map/WorldCreatorDefines.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Spell/Definitions/SpellEffects.hpp"
-#include "Management/Guild/GuildMgr.hpp"
 #include "Management/TaxiMgr.h"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Movement/MovementManager.h"
+#include "Util/Strings.hpp"
 #if VERSION_STRING < Cata
 #include "Management/Guild/Guild.hpp"
 #endif
@@ -562,7 +560,7 @@ void ObjectMgr::LoadAchievementRewards()
 
         if (!sAchievementStore.LookupEntry(entry))
         {
-            sLogger.debug("ObjectMgr : Achievement reward entry %u has wrong achievement, ignore", entry);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : Achievement reward entry %u has wrong achievement, ignore", entry);
             continue;
         }
 
@@ -585,7 +583,7 @@ void ObjectMgr::LoadAchievementRewards()
             if (iter->second.gender == 2 || reward.gender == 2)
             {
                 dup = true;
-                sLogger.debug("ObjectMgr : Achievement reward %u must have single GENDER_NONE (%u), ignore duplicate case", 2, entry);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : Achievement reward %u must have single GENDER_NONE (%u), ignore duplicate case", 2, entry);
                 break;
             }
         }
@@ -596,7 +594,7 @@ void ObjectMgr::LoadAchievementRewards()
         // must be title or mail at least
         if (!reward.titel_A && !reward.titel_H && !reward.sender)
         {
-            sLogger.debug("ObjectMgr : achievement_reward %u not have title or item reward data, ignore.", entry);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have title or item reward data, ignore.", entry);
             continue;
         }
 
@@ -605,7 +603,7 @@ void ObjectMgr::LoadAchievementRewards()
             auto const* char_title_entry = sCharTitlesStore.LookupEntry(reward.titel_A);
             if (!char_title_entry)
             {
-                sLogger.debug("ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_A);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_A);
                 reward.titel_A = 0;
             }
         }
@@ -615,7 +613,7 @@ void ObjectMgr::LoadAchievementRewards()
             auto const* char_title_entry = sCharTitlesStore.LookupEntry(reward.titel_H);
             if (!char_title_entry)
             {
-                sLogger.debug("ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_H);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_H);
                 reward.titel_H = 0;
             }
         }
@@ -625,25 +623,25 @@ void ObjectMgr::LoadAchievementRewards()
         {
             if (!sMySQLStore.getCreatureProperties(reward.sender))
             {
-                sLogger.debug("ObjectMgr : achievement_reward %u has invalid creature entry %u as sender, mail reward skipped.", entry, reward.sender);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid creature entry %u as sender, mail reward skipped.", entry, reward.sender);
                 reward.sender = 0;
             }
         }
         else
         {
             if (reward.itemId)
-                sLogger.debug("ObjectMgr : achievement_reward %u not have sender data but have item reward, item will not rewarded", entry);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have item reward, item will not rewarded", entry);
 
             if (!reward.subject.empty())
-                sLogger.debug("ObjectMgr : achievement_reward %u not have sender data but have mail subject.", entry);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have mail subject.", entry);
 
             if (!reward.text.empty())
-                sLogger.debug("ObjectMgr : achievement_reward %u not have sender data but have mail text.", entry);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have mail text.", entry);
         }
 
         if (reward.itemId == 0)
         {
-            sLogger.debug("ObjectMgr : achievement_reward %u has invalid item id %u, reward mail will be without item.", entry, reward.itemId);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid item id %u, reward mail will be without item.", entry, reward.itemId);
         }
 
         AchievementRewards.insert(AchievementRewardsMap::value_type(entry, reward));
@@ -670,7 +668,7 @@ void ObjectMgr::SetHighestGuids()
     result = CharacterDatabase.Query("SELECT MAX(guid) FROM playeritems");
     if (result)
     {
-        m_hiItemGuid = (uint32)result->Fetch()[0].GetUInt32();
+        m_hiItemGuid = result->Fetch()[0].GetUInt32();
         delete result;
     }
 
@@ -770,21 +768,23 @@ uint32 ObjectMgr::GenerateMailID()
 
 uint32 ObjectMgr::GenerateLowGuid(uint32 guidhigh)
 {
-    ARCEMU_ASSERT(guidhigh == HIGHGUID_TYPE_ITEM || guidhigh == HIGHGUID_TYPE_CONTAINER || guidhigh == HIGHGUID_TYPE_PLAYER);
-
     uint32 ret;
-    if (guidhigh == HIGHGUID_TYPE_ITEM)
+
+    switch (guidhigh)
     {
-        ret = ++m_hiItemGuid;
-    }
-    else if (guidhigh == HIGHGUID_TYPE_PLAYER)
-    {
+    case HIGHGUID_TYPE_PLAYER:
         ret = ++m_hiPlayerGuid;
-    }
-    else
-    {
+        break;
+    case HIGHGUID_TYPE_ITEM:
+    case HIGHGUID_TYPE_CONTAINER:
         ret = ++m_hiItemGuid;
+        break;
+    default:
+        sLogger.failure("ObjectMgr::GenerateLowGuid tried to generate low guid gor non player/item, return 0!");
+        ret = 0;
+        break;
     }
+
     return ret;
 }
 
@@ -1580,12 +1580,13 @@ void ObjectMgr::LoadTrainers()
                 if (ts.RequiredSkillLine == 0 && ts.pCastRealSpell != NULL && ts.pCastRealSpell->getEffect(1) == SPELL_EFFECT_SKILL)
                 {
                     uint32 skill = ts.pCastRealSpell->getEffectMiscValue(1);
-                    auto skill_line = sSkillLineStore.LookupEntry(skill);
-                    ARCEMU_ASSERT(skill_line != NULL);
-                    if (skill_line->type == SKILL_TYPE_PROFESSION)
-                        ts.IsProfession = true;
-                    else
-                        ts.IsProfession = false;
+                    if (auto skill_line = sSkillLineStore.LookupEntry(skill))
+                    {
+                        if (skill_line->type == SKILL_TYPE_PROFESSION)
+                            ts.IsProfession = true;
+                        else
+                            ts.IsProfession = false;
+                    }
                 }
                 else
                     ts.IsProfession = false;
@@ -1628,234 +1629,205 @@ Trainer* ObjectMgr::GetTrainer(uint32 Entry)
 
 void ObjectMgr::GenerateLevelUpInfo()
 {
-    // Generate levelup information for each class.
-    for (uint8 Class = WARRIOR; Class <= DRUID; ++Class)
+    struct MissingLevelData
     {
-        // These are empty.
-        if (Class == 10)
-            continue;
+        uint32_t _level;
+        uint8_t _race;
+        uint8_t _class;
+    };
 
-        // Search for a playercreateinfo.
-        for (uint8 Race = RACE_HUMAN; Race <= DBC_NUM_RACES - 1; ++Race)
+    std::vector<MissingLevelData> _missingHealthLevelData;
+    std::vector<MissingLevelData> _missingStatLevelData;
+
+    // Copy existing level stats
+
+    uint32_t levelstat_counter = 0;
+    uint32_t class_levelstat_counter = 0;
+    for (uint8 Class = WARRIOR; Class < MAX_PLAYER_CLASSES; ++Class)
+    {
+        for (uint8 Race = RACE_HUMAN; Race < DBC_NUM_RACES; ++Race)
         {
-            PlayerCreateInfo const* PCI = sMySQLStore.getPlayerCreateInfo(static_cast<uint8>(Race), static_cast<uint8>(Class));
-
-            if (PCI == nullptr)
-                continue;   // Class not valid for this race.
-
-            // Generate each level's information
-            uint32 MaxLevel = worldConfig.player.playerLevelCap + 1;
-            LevelInfo* lvl = nullptr, lastlvl;
-            lastlvl.HP = PCI->health;
-            lastlvl.Mana = PCI->mana;
-            lastlvl.Stat[0] = PCI->strength;
-            lastlvl.Stat[1] = PCI->ability;
-            lastlvl.Stat[2] = PCI->stamina;
-            lastlvl.Stat[3] = PCI->intellect;
-            lastlvl.Stat[4] = PCI->spirit;
-            LevelMap* lMap = new LevelMap;
-
-            // Create first level.
-            lvl = new LevelInfo;
-            *lvl = lastlvl;
-
-            // Insert into map
-            lMap->insert(LevelMap::value_type(1, lvl));
-
-            uint32 val;
-            for (uint32 Level = 2; Level < MaxLevel; ++Level)
+            if (!isClassRaceCombinationPossible(Class, Race))
             {
-                lvl = new LevelInfo;
-
-                // Calculate Stats
-                for (uint32 s = 0; s < 5; ++s)
+                if (auto* playerLevelstats = sMySQLStore.getPlayerLevelstats(1, Race, Class))
                 {
-                    val = GainStat(static_cast<uint16>(Level), static_cast<uint8>(Class), static_cast<uint8>(s));
-                    lvl->Stat[s] = lastlvl.Stat[s] + val;
+                    sLogger.info("ObjectMgr : Invalid class/race combination! %u class and %u race.", uint32_t(Class), uint32_t(Race));
+                    sLogger.info("ObjectMgr : But class/race values for level 1 in db!");
                 }
-
-                // Calculate HP/Mana
-                uint32 TotalHealthGain = 0;
-                uint32 TotalManaGain = 0;
-
-                switch (Class)
-                {
-                    case WARRIOR:
-                        if (Level < 13)
-                            TotalHealthGain += 19;
-                        else if (Level < 36)
-                            TotalHealthGain += Level + 6;
-                        //                    else if (Level >60) TotalHealthGain+=Level+100;
-                        else if (Level > 60)
-                            TotalHealthGain += Level + 206;
-                        else
-                            TotalHealthGain += 2 * Level - 30;
-                        break;
-                    case HUNTER:
-                        if (Level < 13)
-                            TotalHealthGain += 17;
-                        //                    else if (Level >60) TotalHealthGain+=Level+45;
-                        else if (Level > 60)
-                            TotalHealthGain += Level + 161;
-                        else
-                            TotalHealthGain += Level + 4;
-
-                        if (Level < 11)
-                            TotalManaGain += 29;
-                        else if (Level < 27)
-                            TotalManaGain += Level + 18;
-                        //                    else if (Level>60)TotalManaGain+=Level+20;
-                        else if (Level > 60)
-                            TotalManaGain += Level + 150;
-                        else
-                            TotalManaGain += 45;
-                        break;
-                    case ROGUE:
-                        if (Level < 15)
-                            TotalHealthGain += 17;
-                        //                    else if (Level >60) TotalHealthGain+=Level+110;
-                        else if (Level > 60)
-                            TotalHealthGain += Level + 191;
-                        else
-                            TotalHealthGain += Level + 2;
-                        break;
-                    case DRUID:
-                        if (Level < 17)
-                            TotalHealthGain += 17;
-                        //                    else if (Level >60) TotalHealthGain+=Level+55;
-                        else if (Level > 60)
-                            TotalHealthGain += Level + 176;
-                        else
-                            TotalHealthGain += Level;
-
-                        if (Level < 26)
-                            TotalManaGain += Level + 20;
-                        //                    else if (Level>60)TotalManaGain+=Level+25;
-                        else if (Level > 60)
-                            TotalManaGain += Level + 150;
-                        else
-                            TotalManaGain += 45;
-                        break;
-                    case MAGE:
-                        if (Level < 23)
-                            TotalHealthGain += 15;
-                        //                    else if (Level >60) TotalHealthGain+=Level+40;
-                        else if (Level > 60)
-                            TotalHealthGain += Level + 190;
-                        else
-                            TotalHealthGain += Level - 8;
-
-                        if (Level < 28)
-                            TotalManaGain += Level + 23;
-                        //                    else if (Level>60)TotalManaGain+=Level+26;
-                        else if (Level > 60)
-                            TotalManaGain += Level + 115;
-                        else
-                            TotalManaGain += 51;
-                        break;
-                    case SHAMAN:
-                        if (Level < 16)
-                            TotalHealthGain += 17;
-                        //                    else if (Level >60) TotalHealthGain+=Level+75;
-                        else if (Level > 60)
-                            TotalHealthGain += Level + 157;
-                        else
-                            TotalHealthGain += Level + 1;
-
-                        if (Level < 22)
-                            TotalManaGain += Level + 19;
-                        //                    else if (Level>60)TotalManaGain+=Level+70;
-                        else if (Level > 60)
-                            TotalManaGain += Level + 175;
-                        else
-                            TotalManaGain += 49;
-                        break;
-                    case WARLOCK:
-                        if (Level < 17)
-                            TotalHealthGain += 17;
-                        //                    else if (Level >60) TotalHealthGain+=Level+50;
-                        else if (Level > 60)
-                            TotalHealthGain += Level + 192;
-                        else
-                            TotalHealthGain += Level - 2;
-
-                        if (Level < 30)
-                            TotalManaGain += Level + 21;
-                        //                    else if (Level>60)TotalManaGain+=Level+25;
-                        else if (Level > 60)
-                            TotalManaGain += Level + 121;
-                        else
-                            TotalManaGain += 51;
-                        break;
-                    case PALADIN:
-                        if (Level < 14)
-                            TotalHealthGain += 18;
-                        //                    else if (Level >60) TotalHealthGain+=Level+55;
-                        else if (Level > 60)
-                            TotalHealthGain += Level + 167;
-                        else
-                            TotalHealthGain += Level + 4;
-
-                        if (Level < 30)
-                            TotalManaGain += Level + 17;
-                        //                    else if (Level>60)TotalManaGain+=Level+100;
-                        else if (Level > 60)
-                            TotalManaGain += Level + 131;
-                        else
-                            TotalManaGain += 42;
-                        break;
-                    case PRIEST:
-                        if (Level < 21)
-                            TotalHealthGain += 15;
-                        //                    else if (Level >60) TotalHealthGain+=Level+40;
-                        else if (Level > 60)
-                            TotalHealthGain += Level + 157;
-                        else
-                            TotalHealthGain += Level - 6;
-
-                        if (Level < 22)
-                            TotalManaGain += Level + 22;
-                        else if (Level < 32)
-                            TotalManaGain += Level + 37;
-                        //                    else if (Level>60)TotalManaGain+=Level+35;
-                        else if (Level > 60)
-                            TotalManaGain += Level + 207;
-                        else
-                            TotalManaGain += 54;
-                        break;
-#if VERSION_STRING > TBC
-                    case DEATHKNIGHT: // Based on 55-56 more testing will be done.
-                        //if (Level < 60)
-                            TotalHealthGain += 92;
-                        /*else if (Level <60) TotalHealthGain+=??;
-                        else if (Level <70) TotalHealthGain+=??;*/
-                        /*else
-                            TotalHealthGain += 92;*/
-                        break;
-#endif
-                }
-
-                // Apply HP/Mana
-                lvl->HP = lastlvl.HP + TotalHealthGain;
-                lvl->Mana = lastlvl.Mana + TotalManaGain;
-
-                lastlvl = *lvl;
-
-                // Apply to map.
-                lMap->insert(LevelMap::value_type(Level, lvl));
+                continue;
             }
 
-            // Now that our level map is full, let's create the class/race pair
-            std::pair<uint32, uint32> p;
-            p.first = Race;
-            p.second = Class;
+            LevelMap* levelMap = new LevelMap;
+
+            for (uint32_t level = 1; level <= worldConfig.player.playerLevelCap; ++level)
+            {
+                LevelInfo* levelInfo = new LevelInfo;
+
+                if (auto* playerClassLevelstats = sMySQLStore.getPlayerClassLevelStats(level, Class))
+                {
+                    levelInfo->HP = playerClassLevelstats->health;
+                    levelInfo->Mana = playerClassLevelstats->mana;
+                    ++class_levelstat_counter;
+                }
+                else  //calculate missing stats based on last level
+                {
+                    levelInfo->HP = 0;
+                    levelInfo->Mana = 0;
+
+                    _missingHealthLevelData.push_back({ level, Race, Class });
+                }
+
+                if (auto* playerLevelstats = sMySQLStore.getPlayerLevelstats(level, Race, Class))
+                {
+                    levelInfo->Stat[0] = playerLevelstats->strength;
+                    levelInfo->Stat[1] = playerLevelstats->agility;
+                    levelInfo->Stat[2] = playerLevelstats->stamina;
+                    levelInfo->Stat[3] = playerLevelstats->intellect;
+                    levelInfo->Stat[4] = playerLevelstats->spirit;
+                    ++levelstat_counter;
+                }
+                else //calculate missing stats based on last level
+                {
+                    for (uint8_t id = 0; id < 5; ++id)
+                        levelInfo->Stat[id] = 0;
+
+                    _missingStatLevelData.push_back({ level, Race, Class });
+                }
+
+                // Insert into map
+                levelMap->insert(LevelMap::value_type(level, levelInfo));
+            }
 
             // Insert back into the main map.
-            mLevelInfo.insert(LevelInfoMap::value_type(p, lMap));
+            mLevelInfo.insert(LevelInfoMap::value_type(std::make_pair(Race, Class), levelMap));
         }
     }
-    sLogger.info("ObjectMgr : %u level up information generated.", static_cast<uint32_t>(mLevelInfo.size()));
+
+    sLogger.info("ObjectMgr : %u levelstats and %u classlevelstats applied from db.", levelstat_counter, class_levelstat_counter);
+
+    // generate missing data
+    uint32_t hp_counter = 0;
+    for (auto missingHP : _missingHealthLevelData)
+    {
+        uint32 TotalHealthGain = 0;
+        uint32 TotalManaGain = 0;
+
+        // use legacy gaining
+        switch (missingHP._class)
+        {
+        case WARRIOR:
+            if (missingHP._level < 13) TotalHealthGain += 19;
+            else if (missingHP._level < 36) TotalHealthGain += missingHP._level + 6;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 206;
+            else TotalHealthGain += 2 * missingHP._level - 30;
+            break;
+        case HUNTER:
+            if (missingHP._level < 13) TotalHealthGain += 17;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 161;
+            else TotalHealthGain += missingHP._level + 4;
+
+            if (missingHP._level < 11) TotalManaGain += 29;
+            else if (missingHP._level < 27) TotalManaGain += missingHP._level + 18;
+            else if (missingHP._level > 60) TotalManaGain += missingHP._level + 150;
+            else TotalManaGain += 45;
+            break;
+        case ROGUE:
+            if (missingHP._level < 15) TotalHealthGain += 17;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 191;
+            else TotalHealthGain += missingHP._level + 2;
+            break;
+        case DRUID:
+            if (missingHP._level < 17) TotalHealthGain += 17;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 176;
+            else TotalHealthGain += missingHP._level;
+
+            if (missingHP._level < 26) TotalManaGain += missingHP._level + 20;
+            else if (missingHP._level > 60) TotalManaGain += missingHP._level + 150;
+            else TotalManaGain += 45;
+            break;
+        case MAGE:
+            if (missingHP._level < 23) TotalHealthGain += 15;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 190;
+            else TotalHealthGain += missingHP._level - 8;
+
+            if (missingHP._level < 28) TotalManaGain += missingHP._level + 23;
+            else if (missingHP._level > 60) TotalManaGain += missingHP._level + 115;
+            else TotalManaGain += 51;
+            break;
+        case SHAMAN:
+            if (missingHP._level < 16) TotalHealthGain += 17;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 157;
+            else TotalHealthGain += missingHP._level + 1;
+
+            if (missingHP._level < 22) TotalManaGain += missingHP._level + 19;
+            else if (missingHP._level > 60) TotalManaGain += missingHP._level + 175;
+            else TotalManaGain += 49;
+            break;
+        case WARLOCK:
+            if (missingHP._level < 17) TotalHealthGain += 17;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 192;
+            else TotalHealthGain += missingHP._level - 2;
+
+            if (missingHP._level < 30) TotalManaGain += missingHP._level + 21;
+            else if (missingHP._level > 60) TotalManaGain += missingHP._level + 121;
+            else TotalManaGain += 51;
+            break;
+        case PALADIN:
+            if (missingHP._level < 14) TotalHealthGain += 18;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 167;
+            else TotalHealthGain += missingHP._level + 4;
+
+            if (missingHP._level < 30) TotalManaGain += missingHP._level + 17;
+            else if (missingHP._level > 60) TotalManaGain += missingHP._level + 131;
+            else TotalManaGain += 42;
+            break;
+        case PRIEST:
+            if (missingHP._level < 21) TotalHealthGain += 15;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 157;
+            else TotalHealthGain += missingHP._level - 6;
+
+            if (missingHP._level < 22) TotalManaGain += missingHP._level + 22;
+            else if (missingHP._level < 32) TotalManaGain += missingHP._level + 37;
+            else if (missingHP._level > 60) TotalManaGain += missingHP._level + 207;
+            else TotalManaGain += 54;
+            break;
+        case DEATHKNIGHT:
+            TotalHealthGain += 92;
+            break;
+        default:
+            TotalHealthGain += 15;
+            TotalManaGain += 45;
+            break;
+        }
+
+        if (auto level_info = sObjectMgr.GetLevelInfo(missingHP._race, missingHP._class, missingHP._level))
+        {
+            level_info->HP = level_info->HP + TotalHealthGain;
+            level_info->Mana = level_info->Mana + TotalManaGain;
+            ++hp_counter;
+        }
+    }
+
+    uint32_t stat_counter = 0;
+    for (auto missingStat : _missingStatLevelData)
+    {
+        if (auto level_info = sObjectMgr.GetLevelInfo(missingStat._race, missingStat._class, missingStat._level))
+        {
+            uint32 val;
+            for (uint8_t id = 0; id < 5; ++id)
+            {
+                val = GainStat(static_cast<uint16>(missingStat._level), missingStat._class, id);
+                level_info->Stat[id] = level_info->Stat[id] + val;
+            }
+
+            ++stat_counter;
+        }
+    }
+
+    sLogger.info("ObjectMgr : %u level up information generated.", (stat_counter + hp_counter));
+
 }
+
 
 LevelInfo* ObjectMgr::GetLevelInfo(uint32 Race, uint32 Class, uint32 Level)
 {
@@ -1874,7 +1846,7 @@ LevelInfo* ObjectMgr::GetLevelInfo(uint32 Race, uint32 Class, uint32 Level)
             LevelMap::iterator it2 = itr->second->find(Level);
             if (it2 == itr->second->end())
             {
-                sLogger.debug("GetLevelInfo : No level information found for level %u!", Level);
+                sLogger.info("GetLevelInfo : No level information found for level %u!", Level);
                 return nullptr;
             }
 
@@ -1906,11 +1878,6 @@ void ObjectMgr::LoadPetSpellCooldowns()
                 {
                     if (Cooldown)
                         mPetSpellCooldowns.insert(std::make_pair(SpellId, Cooldown));
-                }
-                else
-                {
-                    uint32 SP2 = mPetSpellCooldowns[SpellId];
-                    ARCEMU_ASSERT(Cooldown == SP2);
                 }
             }
         }
@@ -2967,126 +2934,6 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
     }
 }
 
-
-
-void ObjectMgr::LoadCreatureAIAgents()
-{
-    // Load AI Agents
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM ai_agents");
-    if (result != nullptr)
-    {
-        do
-        {
-            Field* fields = result->Fetch();
-            uint32 entry = fields[0].GetUInt32();
-            CreatureProperties const* cn = sMySQLStore.getCreatureProperties(entry);
-            SpellInfo const* spe = sSpellMgr.getSpellInfo(fields[6].GetUInt32());
-
-            if (spe == nullptr)
-            {
-                sLogger.debug("AIAgent : For %u has nonexistent spell %u.", fields[0].GetUInt32(), fields[6].GetUInt32());
-                continue;
-            }
-
-            if (!cn)
-                continue;
-
-            AI_Spell* sp = new AI_Spell;
-            sp->entryId = fields[0].GetUInt32();
-            sp->instance_mode = fields[1].GetUInt8();
-            sp->agent = fields[2].GetUInt16();
-            sp->procChance = fields[4].GetUInt32();
-            sp->procCount = fields[5].GetUInt32();
-            sp->spell = spe;
-            sp->spellType = static_cast<uint8>(fields[7].GetUInt32());
-
-            int32  targettype = fields[8].GetInt32();
-            if (targettype == -1)
-                sp->spelltargetType = static_cast<uint8>(spe->aiTargetType());
-            else
-                sp->spelltargetType = static_cast<uint8>(targettype);
-
-            sp->cooldown = fields[9].GetInt32();
-            sp->floatMisc1 = fields[10].GetFloat();
-            sp->autocast_type = (uint32)-1;
-            sp->cooldowntime = Util::getMSTime();
-            sp->procCounter = 0;
-            sp->Misc2 = fields[11].GetUInt32();
-            if (sp->agent == AGENT_SPELL)
-            {
-                if (sp->spell->getEffect(0) == SPELL_EFFECT_LEARN_SPELL || sp->spell->getEffect(1) == SPELL_EFFECT_LEARN_SPELL ||
-                    sp->spell->getEffect(2) == SPELL_EFFECT_LEARN_SPELL)
-                {
-                    sLogger.debug("Teaching spell %u in ai_agent for %u", (unsigned int)fields[6].GetUInt32(), (unsigned int)sp->entryId);
-                    delete sp;
-                    sp = nullptr;
-                    continue;
-                }
-
-                sp->minrange = GetMinRange(sSpellRangeStore.LookupEntry(sp->spell->getRangeIndex()));
-                sp->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(sp->spell->getRangeIndex()));
-
-                //omg the poor darling has no clue about making ai_agents
-                if (sp->cooldown == (uint32)-1)
-                {
-                    //now this will not be exact cooldown but maybe a bigger one to not make him spam spells to often
-                    int cooldown;
-                    auto spell_duration = sSpellDurationStore.LookupEntry(sp->spell->getDurationIndex());
-                    int Dur = 0;
-                    int Casttime = 0; //most of the time 0
-                    int RecoveryTime = sp->spell->getRecoveryTime();
-                    if (sp->spell->getDurationIndex())
-                        Dur = ::GetDuration(spell_duration);
-                    Casttime = GetCastTime(sSpellCastTimesStore.LookupEntry(sp->spell->getCastingTimeIndex()));
-                    cooldown = Dur + Casttime + RecoveryTime;
-                    if (cooldown < 0)
-                        sp->cooldown = 2000; //huge value that should not loop while adding some timestamp to it
-                    else sp->cooldown = cooldown;
-                }
-            }
-
-            if (sp->agent == AGENT_RANGED)
-            {
-                const_cast<CreatureProperties*>(cn)->m_canRangedAttack = true;
-                delete sp;
-                sp = nullptr;
-            }
-            else if (sp->agent == AGENT_FLEE)
-            {
-                const_cast<CreatureProperties*>(cn)->m_canFlee = true;
-                if (sp->floatMisc1)
-                    const_cast<CreatureProperties*>(cn)->m_canFlee = (sp->floatMisc1 > 0.0f ? true : false);
-                else
-                    const_cast<CreatureProperties*>(cn)->m_fleeHealth = 0.2f;
-
-                if (sp->Misc2)
-                    const_cast<CreatureProperties*>(cn)->m_fleeDuration = sp->Misc2;
-                else
-                    const_cast<CreatureProperties*>(cn)->m_fleeDuration = 10000;
-
-                delete sp;
-                sp = nullptr;
-            }
-            else if (sp->agent == AGENT_CALLFORHELP)
-            {
-                const_cast<CreatureProperties*>(cn)->m_canCallForHelp = true;
-                if (sp->floatMisc1)
-                    const_cast<CreatureProperties*>(cn)->m_callForHelpHealth = 0.2f;
-
-                delete sp;
-                sp = nullptr;
-            }
-            else
-            {
-                const_cast<CreatureProperties*>(cn)->spells.push_back(sp);
-            }
-
-        } while (result->NextRow());
-
-        delete result;
-    }
-}
-
 void ObjectMgr::LoadInstanceEncounters()
 {
     const auto startTime = Util::TimeNow();
@@ -3119,7 +2966,7 @@ void ObjectMgr::LoadInstanceEncounters()
         const auto dungeonEncounter = sDungeonEncounterStore.LookupEntry(entry);
         if (dungeonEncounter == nullptr)
         {
-            sLogger.debug("Table `instance_encounters` has an invalid encounter id %u, skipped!", entry);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `instance_encounters` has an invalid encounter id %u, skipped!", entry);
             continue;
         }
 
@@ -3132,7 +2979,7 @@ void ObjectMgr::LoadInstanceEncounters()
 
         if (lastEncounterDungeon && sLfgMgr.GetLFGDungeon(lastEncounterDungeon) == 0)
         {
-            sLogger.debug("Table `instance_encounters` has an encounter %u (%s) marked as final for invalid dungeon id %u, skipped!", entry, dungeonEncounterName, lastEncounterDungeon);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `instance_encounters` has an encounter %u (%s) marked as final for invalid dungeon id %u, skipped!", entry, dungeonEncounterName, lastEncounterDungeon);
             continue;
         }
 
@@ -3147,7 +2994,7 @@ void ObjectMgr::LoadInstanceEncounters()
 #else
                 const auto itrEncounterName = itr->second->encounterName;
 #endif
-                sLogger.debug("Table `instance_encounters` specified encounter %u (%s) as last encounter but %u (%s) is already marked as one, skipped!", entry, dungeonEncounterName, itr->second->id, itrEncounterName);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `instance_encounters` specified encounter %u (%s) as last encounter but %u (%s) is already marked as one, skipped!", entry, dungeonEncounterName, itr->second->id, itrEncounterName);
                 continue;
             }
 
@@ -3162,7 +3009,7 @@ void ObjectMgr::LoadInstanceEncounters()
                 auto creatureprop = sMySQLStore.getCreatureProperties(creditEntry);
                 if (creatureprop == nullptr)
                 {
-                    sLogger.debug("Table `instance_encounters` has an invalid creature (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounterName);
+                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `instance_encounters` has an invalid creature (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounterName);
                     continue;
                 }
                 const_cast<CreatureProperties*>(creatureprop)->extra_a9_flags |= 0x10000000; // Flagged Dungeon Boss
@@ -3172,14 +3019,14 @@ void ObjectMgr::LoadInstanceEncounters()
             {
                 if (sSpellMgr.getSpellInfo(creditEntry) == nullptr)
                 {
-                    sLogger.debug("Table `instance_encounters` has an invalid spell (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounterName);
+                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `instance_encounters` has an invalid spell (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounterName);
                     continue;
                 }
                 break;
             }
             default:
             {
-                sLogger.debug("Table `instance_encounters` has an invalid credit type (%u) for encounter %u (%s), skipped!", creditType, entry, dungeonEncounterName);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `instance_encounters` has an invalid credit type (%u) for encounter %u (%s), skipped!", creditType, entry, dungeonEncounterName);
                 continue;
             }
         }

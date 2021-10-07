@@ -23,8 +23,6 @@
 #define STATS_H
 
 #include "Units/Unit.h"
-#include "Server/UpdateMask.h"
-#include "Management/ItemInterface.h"
 
 enum Stats
 {

@@ -6,15 +6,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_VaultOfArchavon.h"
 #include <Units/Creatures/Pet.h>
+#include "Server/Script/CreatureAIScript.h"
 
 class VaultOfArchavonInstanceScript : public InstanceScript
 {
 public:
-
-    explicit VaultOfArchavonInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit VaultOfArchavonInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new VaultOfArchavonInstanceScript(pMapMgr); }
 };
 

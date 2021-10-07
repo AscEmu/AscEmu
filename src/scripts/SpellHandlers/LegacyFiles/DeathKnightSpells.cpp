@@ -26,6 +26,8 @@
 #include "Spell/Definitions/ProcFlags.hpp"
 #include <Spell/Definitions/DispelType.hpp>
 
+#include "Spell/SpellMgr.hpp"
+
 enum
 {
     BLOOD_PLAGUE = 55078,

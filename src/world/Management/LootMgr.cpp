@@ -19,7 +19,7 @@
 *
 */
 
-#include "StdAfx.h"
+
 #include "Storage/DBC/DBCStores.h"
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
@@ -308,7 +308,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
                 if (!proto)
                 {
                     list.items[ind].item.itemproto = nullptr;
-                    sLogger.debug("Loot for %u contains non-existant item %u . (%s)", entry_id, itemid, szTableName);
+                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Loot for %u contains non-existant item %u . (%s)", entry_id, itemid, szTableName);
                 }
                 else
                 {
@@ -376,7 +376,7 @@ void LootMgr::PushLoot(StoreLootList* list, Loot* loot, uint8 type)
                 continue;
 
             ItemProperties const* itemproto = list->items[x].item.itemproto;
-            if (Util::checkChance(chance * worldConfig.getFloatRate((WorldConfigRates)(RATE_DROP0 + itemproto->Quality)))) //|| itemproto->Class == ITEM_CLASS_QUEST)
+            if (Util::checkChance(chance * worldConfig.getFloatRate(RATE_DROP0 + itemproto->Quality))) //|| itemproto->Class == ITEM_CLASS_QUEST)
             {
                 if (list->items[x].mincount == list->items[x].maxcount)
                     count = list->items[x].maxcount;

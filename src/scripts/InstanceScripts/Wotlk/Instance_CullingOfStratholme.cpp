@@ -5,21 +5,19 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_CullingOfStratholme.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class CullingOfStratholmeInstanceScript : public InstanceScript
 {
 public:
-
-    explicit CullingOfStratholmeInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit CullingOfStratholmeInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new CullingOfStratholmeInstanceScript(pMapMgr); }
 };
 
 class MeathookAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MeathookAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MeathookAI(c); }
     explicit MeathookAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -57,7 +55,8 @@ class MeathookAI : public CreatureAIScript
 
 class SalramTheFleshcrafterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SalramTheFleshcrafterAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SalramTheFleshcrafterAI(c); }
     explicit SalramTheFleshcrafterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -104,7 +103,8 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
 
 class ChronoLordEpochAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ChronoLordEpochAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ChronoLordEpochAI(c); }
     explicit ChronoLordEpochAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -140,7 +140,8 @@ class ChronoLordEpochAI : public CreatureAIScript
 
 class InfiniteCorruptorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InfiniteCorruptorAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new InfiniteCorruptorAI(c); }
     explicit InfiniteCorruptorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // VoidStrike
@@ -159,10 +160,10 @@ class InfiniteCorruptorAI : public CreatureAIScript
     }
 };
 
-
 class MalganisAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MalganisAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MalganisAI(c); }
     explicit MalganisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -226,11 +227,9 @@ class MalganisAI : public CreatureAIScript
     }
 };
 
-
 class Quest_Dispelling_Illusions : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         for (uint8_t i = 0; i < 5; i++)
@@ -294,7 +293,6 @@ public:
     }
 };
 
-
 static LocationVector walk[] =
 {
     { 0, 0, 0, 0 },
@@ -305,7 +303,8 @@ static LocationVector walk[] =
 
 class UtherAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(UtherAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new UtherAI(c); }
     explicit UtherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addWaypoint(1, createWaypoint(1, 0, WAYPOINT_MOVE_TYPE_RUN, walk[1]));
@@ -370,7 +369,6 @@ class UtherAI : public CreatureAIScript
     }
 
 private:
-
     bool check;
 };
 
@@ -386,10 +384,10 @@ static LocationVector ArthasWalk[] =
     { 2078.9479f, 1287.9812f, 141.4830f, 0.0308f }
 };
 
-
 class ArthasAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ArthasAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ArthasAI(c); }
     explicit ArthasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addWaypoint(1, createWaypoint(1, 10500, WAYPOINT_MOVE_TYPE_RUN, ArthasWalk[1]));
@@ -513,15 +511,12 @@ class ArthasAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t phase;
 };
-
 
 class ArthasGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* Plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1, 0);
@@ -549,7 +544,7 @@ public:
 // \todo check the unregistered scripts (broeken? outdated?)
 void SetupCullingOfStratholme(ScriptMgr* mgr)
 {
-    mgr->register_instance_script(MAP_GNOMEREGAN, &CullingOfStratholmeInstanceScript::Create);
+    mgr->register_instance_script(MAP_CULLING_OF_STRATHOLME, &CullingOfStratholmeInstanceScript::Create);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // TRASH MOBS

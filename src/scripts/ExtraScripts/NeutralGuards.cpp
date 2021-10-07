@@ -4,16 +4,18 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 #include "Units/Creatures/Creature.h"
 
 class ShatteredSunSpawner : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShatteredSunSpawner)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShatteredSunSpawner(c); }
     explicit ShatteredSunSpawner(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
-        if (mTarget != NULL && mTarget->isPlayer())
+        if (mTarget != nullptr && mTarget->isPlayer())
         {
             for (uint8_t i = 0; i < 3; ++i)
             {
@@ -22,7 +24,7 @@ class ShatteredSunSpawner : public CreatureAIScript
                 float z = mTarget->GetPositionZ();
                 Creature* guard = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(26253, x, y, z, 0, true, false, getCreature()->getFactionTemplate(), 50);
 
-                if (guard != NULL)
+                if (guard != nullptr)
                 {
                     setGuardWaypoints();
                     guard->GetAIInterface()->onHostileAction(mTarget);

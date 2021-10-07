@@ -6,23 +6,19 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Raid_OnyxiasLair.h"
 
+#include "Server/Script/CreatureAIScript.h"
+
 class OnyxiasLairInstanceScript : public InstanceScript
 {
 public:
-
-    explicit OnyxiasLairInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit OnyxiasLairInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) { }
     static InstanceScript* Create(MapMgr* pMapMgr) { return new OnyxiasLairInstanceScript(pMapMgr); }
-
-
 };
 
-// This script covers Onyxia's mind
 class OnyxiaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(OnyxiaAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new OnyxiaAI(c); }
     explicit OnyxiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_phase = 1;
@@ -34,22 +30,22 @@ class OnyxiaAI : public CreatureAIScript
         m_fCastCount = 5;
 
         stopMovement();
-        addWaypoint(1, createWaypoint(1, 2000, WAYPOINT_MOVE_TYPE_RUN, coords[1]));
-        addWaypoint(1, createWaypoint(2, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, coords[2]));
-        addWaypoint(1, createWaypoint(3, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, coords[3]));
-        addWaypoint(1, createWaypoint(4, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, coords[4]));
-        addWaypoint(1, createWaypoint(5, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, coords[5]));
-        addWaypoint(1, createWaypoint(6, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, coords[6]));
-        addWaypoint(1, createWaypoint(7, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, coords[7]));
-        addWaypoint(1, createWaypoint(8, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, coords[8]));
+        addWaypoint(1, createWaypoint(1, 2000, WAYPOINT_MOVE_TYPE_RUN, OnyxiasLair::coords[1]));
+        addWaypoint(1, createWaypoint(2, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, OnyxiasLair::coords[2]));
+        addWaypoint(1, createWaypoint(3, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, OnyxiasLair::coords[3]));
+        addWaypoint(1, createWaypoint(4, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, OnyxiasLair::coords[4]));
+        addWaypoint(1, createWaypoint(5, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, OnyxiasLair::coords[5]));
+        addWaypoint(1, createWaypoint(6, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, OnyxiasLair::coords[6]));
+        addWaypoint(1, createWaypoint(7, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, OnyxiasLair::coords[7]));
+        addWaypoint(1, createWaypoint(8, 0, WAYPOINT_MOVE_TYPE_TAKEOFF, OnyxiasLair::coords[8]));
 
-        infoFear = sSpellMgr.getSpellInfo(AOE_FEAR);
-        infoCleave = sSpellMgr.getSpellInfo(CLEAVE);
-        infoFBreath = sSpellMgr.getSpellInfo(FLAME_BREATH);
-        infoKAway = sSpellMgr.getSpellInfo(KNOCK_AWAY);
-        infoSFireball = sSpellMgr.getSpellInfo(SCRIPTABLE_FIREBALL);
-        infoWBuffet = sSpellMgr.getSpellInfo(WING_BUFFET);
-        infoDeepBreath = sSpellMgr.getSpellInfo(DEEP_BREATH);
+        infoFear = sSpellMgr.getSpellInfo(OnyxiasLair::AOE_FEAR);
+        infoCleave = sSpellMgr.getSpellInfo(OnyxiasLair::CLEAVE);
+        infoFBreath = sSpellMgr.getSpellInfo(OnyxiasLair::FLAME_BREATH);
+        infoKAway = sSpellMgr.getSpellInfo(OnyxiasLair::KNOCK_AWAY);
+        infoSFireball = sSpellMgr.getSpellInfo(OnyxiasLair::SCRIPTABLE_FIREBALL);
+        infoWBuffet = sSpellMgr.getSpellInfo(OnyxiasLair::WING_BUFFET);
+        infoDeepBreath = sSpellMgr.getSpellInfo(OnyxiasLair::DEEP_BREATH);
 
         if (!infoFear || !infoCleave || !infoFBreath
                 || !infoKAway || !infoSFireball || !infoWBuffet || !infoDeepBreath)
@@ -280,7 +276,7 @@ class OnyxiaAI : public CreatureAIScript
             Creature* cre = NULL;
             for (uint8_t i = 0; i < 6; i++)
             {
-                cre = spawnCreature(11262, whelpCoords[i].x, whelpCoords[i].y, whelpCoords[i].z, whelpCoords[i].o);
+                cre = spawnCreature(11262, OnyxiasLair::whelpCoords[i].x, OnyxiasLair::whelpCoords[i].y, OnyxiasLair::whelpCoords[i].z, OnyxiasLair::whelpCoords[i].o);
                 if (cre)
                 {
                     cre->GetAIInterface()->moveTo(14.161f, -177.874f, -85.649f);
@@ -288,7 +284,7 @@ class OnyxiaAI : public CreatureAIScript
                     // todo: add boundary
                     //cre->GetAIInterface()->setOutOfCombatRange(100000);
                 }
-                cre = spawnCreature(11262, whelpCoords[5 - i].x, whelpCoords[5 - i].y, whelpCoords[5 - i].z, whelpCoords[5 - i].o);
+                cre = spawnCreature(11262, OnyxiasLair::whelpCoords[5 - i].x, OnyxiasLair::whelpCoords[5 - i].y, OnyxiasLair::whelpCoords[5 - i].z, OnyxiasLair::whelpCoords[5 - i].o);
                 if (cre)
                 {
                     cre->GetAIInterface()->moveTo(27.133f, -232.030f, -84.188f);
@@ -318,7 +314,7 @@ class OnyxiaAI : public CreatureAIScript
             Creature* cre = NULL;
             for (uint8_t i = 0; i < 6; i++)
             {
-                cre = spawnCreature(11262, whelpCoords[i].x, whelpCoords[i].y, whelpCoords[i].z, whelpCoords[i].o);
+                cre = spawnCreature(11262, OnyxiasLair::whelpCoords[i].x, OnyxiasLair::whelpCoords[i].y, OnyxiasLair::whelpCoords[i].z, OnyxiasLair::whelpCoords[i].o);
                 if (cre)
                 {
                     cre->GetAIInterface()->moveTo(14.161f, -177.874f, -85.649f);
@@ -326,7 +322,7 @@ class OnyxiaAI : public CreatureAIScript
                     // todo: add boundary
                     //cre->GetAIInterface()->setOutOfCombatRange(100000);
                 }
-                cre = spawnCreature(11262, whelpCoords[5 - i].x, whelpCoords[5 - i].y, whelpCoords[5 - i].z, whelpCoords[5 - i].o);
+                cre = spawnCreature(11262, OnyxiasLair::whelpCoords[5 - i].x, OnyxiasLair::whelpCoords[5 - i].y, OnyxiasLair::whelpCoords[5 - i].z, OnyxiasLair::whelpCoords[5 - i].o);
                 if (cre)
                 {
                     cre->GetAIInterface()->moveTo(27.133f, -232.030f, -84.188f);
@@ -414,7 +410,6 @@ class OnyxiaAI : public CreatureAIScript
     inline bool HasEntry() { return (m_entry != 0) ? true : false; }
 
 protected:
-
     bool m_fBreath;
     bool m_kAway;
     bool m_wBuffet;
@@ -435,5 +430,5 @@ void SetupOnyxiasLair(ScriptMgr* mgr)
     mgr->register_instance_script(MAP_ONYXIAS_LAIR, &OnyxiasLairInstanceScript::Create);
 
     // Onyxia
-    mgr->register_creature_script(CN_ONYXIA, &OnyxiaAI::Create);
+    mgr->register_creature_script(OnyxiasLair::CN_ONYXIA, &OnyxiaAI::Create);
 }

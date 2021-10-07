@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Server/Packets/CmsgAttackSwing.h"
 #include "Server/WorldSession.h"
 #include "Units/Players/Player.h"
@@ -18,7 +18,7 @@ void WorldSession::handleAttackSwingOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_ATTACKSWING: %u (guidLow)", srlPacket.guid.getGuidLow());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ATTACKSWING: %u (guidLow)", srlPacket.guid.getGuidLow());
 
     if (_player->IsFeared() || _player->IsStunned() || _player->IsPacified() || _player->isDead())
         return;

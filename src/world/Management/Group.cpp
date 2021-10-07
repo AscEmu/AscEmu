@@ -18,7 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+
+#include "Chat/ChatHandler.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
@@ -30,6 +31,7 @@
 #include "Server/Packets/SmsgGroupSetLeader.h"
 #include "Server/Packets/SmsgGroupDestroyed.h"
 #include "Server/Packets/SmsgGroupList.h"
+#include "Server/Packets/SmsgMessageChat.h"
 
 using namespace AscEmu::Packets;
 
@@ -991,7 +993,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_PET_GUID)
     {
         if (pet)
-            *data << (uint64)pet->getGuid();
+            *data << pet->getGuid();
         else
             *data << (uint64)0;
     }

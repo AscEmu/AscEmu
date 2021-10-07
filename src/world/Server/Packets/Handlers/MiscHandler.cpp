@@ -3,7 +3,6 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
 #include "Management/Item.h"
 #include "Management/WeatherMgr.h"
 #include "Management/ItemInterface.h"
@@ -11,7 +10,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Battleground/Battleground.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
 #include "zlib.h"
 #include "Map/InstanceDefines.hpp"
@@ -58,6 +56,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAccountDataTimes.h"
 #include "Server/Packets/SmsgLogoutCancelAck.h"
 #include "Server/Packets/SmsgMotd.h"
+#include "Server/Script/ScriptMgr.h"
 
 using namespace AscEmu::Packets;
 
@@ -85,7 +84,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
     if (srlPacket.guild_name.length() > 0)
         gname = true;
 
-    sLogger.debug("Received CMSG_WHO with %u zones and %u names", srlPacket.zone_count, srlPacket.name_count);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_WHO with %u zones and %u names", srlPacket.zone_count, srlPacket.name_count);
 
     uint32_t team = _player->getTeam();
 
@@ -323,7 +322,7 @@ void WorldSession::handlePlayedTimeOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_PLAYED_TIME: displayinui: %u", srlPacket.displayInUi);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_PLAYED_TIME: displayinui: %u", srlPacket.displayInUi);
 
     const uint32_t playedTime = static_cast<uint32_t>(UNIXTIME) - _player->m_playedtime[2];
     if (playedTime > 0)
@@ -389,7 +388,7 @@ void WorldSession::handleRandomRollOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received MSG_RANDOM_ROLL: %u (min), %u (max)", srlPacket.min, srlPacket.max);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_RANDOM_ROLL: %u (min), %u (max)", srlPacket.min, srlPacket.max);
 
     uint32_t maxValue = srlPacket.max;
     uint32_t minValue = srlPacket.min;
@@ -414,7 +413,7 @@ void WorldSession::handleRealmSplitOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_REALM_SPLIT: %u (unk)", srlPacket.unknown);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REALM_SPLIT: %u (unk)", srlPacket.unknown);
 
     const std::string dateFormat = "01/01/01";
 
@@ -427,7 +426,7 @@ void WorldSession::handleSetTaxiBenchmarkOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_SET_TAXI_BENCHMARK_MODE: %d (mode)", srlPacket.mode);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SET_TAXI_BENCHMARK_MODE: %d (mode)", srlPacket.mode);
 }
 
 void WorldSession::handleWorldStateUITimerUpdate(WorldPacket& /*recvPacket*/)
@@ -444,7 +443,7 @@ void WorldSession::handleGameobjReportUseOpCode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_GAMEOBJ_REPORT_USE: %u (guid.low)", srlPacket.guid.getGuidLow());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GAMEOBJ_REPORT_USE: %u (guid.low)", srlPacket.guid.getGuidLow());
 
     const auto gameobject = _player->GetMapMgr()->GetGameObject(srlPacket.guid.getGuidLow());
     if (gameobject == nullptr)
@@ -465,7 +464,7 @@ void WorldSession::handleDungeonDifficultyOpcode(WorldPacket& recvPacket)
     if (srlPacket.difficulty >= InstanceDifficulty::MAX_DUNGEON_DIFFICULTY)
         return;
 
-    sLogger.debug("Received MSG_SET_DUNGEON_DIFFICULTY: %d (difficulty)", srlPacket.difficulty);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SET_DUNGEON_DIFFICULTY: %d (difficulty)", srlPacket.difficulty);
 
     _player->setDungeonDifficulty(srlPacket.difficulty);
     sInstanceMgr.ResetSavedInstances(_player);
@@ -485,7 +484,7 @@ void WorldSession::handleRaidDifficultyOpcode(WorldPacket& recvPacket)
     if (srlPacket.difficulty >= InstanceDifficulty::MAX_RAID_DIFFICULTY)
         return;
 
-    sLogger.debug("Received MSG_SET_RAID_DIFFICULTY: %d (difficulty)", srlPacket.difficulty);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SET_RAID_DIFFICULTY: %d (difficulty)", srlPacket.difficulty);
 
     _player->setRaidDifficulty(InstanceDifficulty::Difficulties(srlPacket.difficulty));
     sInstanceMgr.ResetSavedInstances(_player);
@@ -502,7 +501,7 @@ void WorldSession::handleSetAutoLootPassOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_OPT_OUT_OF_LOOT: %u (turnedOn)", srlPacket.turnedOn);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_OPT_OUT_OF_LOOT: %u (turnedOn)", srlPacket.turnedOn);
 
     _player->m_passOnLoot = srlPacket.turnedOn > 0 ? true : false;
 }
@@ -513,7 +512,7 @@ void WorldSession::handleSetActionBarTogglesOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_SET_ACTIONBAR_TOGGLES: %d (actionbarId)", srlPacket.actionbarId);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SET_ACTIONBAR_TOGGLES: %d (actionbarId)", srlPacket.actionbarId);
 
     _player->setActionBarId(srlPacket.actionbarId);
 }
@@ -524,7 +523,7 @@ void WorldSession::handleLootRollOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_LOOT_ROLL: %u (objectGuid) %u (slot) %d (choice)", srlPacket.objectGuid.getGuidLow(), srlPacket.slot, srlPacket.choice);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LOOT_ROLL: %u (objectGuid) %u (slot) %d (choice)", srlPacket.objectGuid.getGuidLow(), srlPacket.slot, srlPacket.choice);
 
     LootRoll* lootRoll = nullptr;
 
@@ -575,7 +574,7 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_OPEN_ITEM: %u (containerSlot), %u (slot)", srlPacket.containerSlot, srlPacket.slot);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_OPEN_ITEM: %u (containerSlot), %u (slot)", srlPacket.containerSlot, srlPacket.slot);
 
     auto item = _player->getItemInterface()->GetInventoryItem(srlPacket.containerSlot, srlPacket.slot);
     if (item == nullptr)
@@ -834,7 +833,7 @@ void WorldSession::handleRequestAccountData(WorldPacket& recvPacket)
     uint32_t accountDataId;
     recvPacket >> accountDataId;
 
-    sLogger.debug("Received CMSG_REQUEST_ACCOUNT_DATA id %u.", accountDataId);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_ACCOUNT_DATA id %u.", accountDataId);
 
     if (accountDataId > 8)
     {
@@ -860,7 +859,7 @@ void WorldSession::handleRequestAccountData(WorldPacket& recvPacket)
             data.resize(accountDataEntry->sz + 800);
 
             uLongf destSize;
-            if (compress(const_cast<uint8_t*>(data.contents()) + (sizeof(uint32_t) * 2), &destSize, reinterpret_cast<const uint8_t*>(accountDataEntry->data), accountDataEntry->sz) != Z_OK)
+            if (compress(data.contents() + (sizeof(uint32_t) * 2), &destSize, reinterpret_cast<const uint8_t*>(accountDataEntry->data), accountDataEntry->sz) != Z_OK)
             {
                 sLogger.debug("CMSG_REQUEST_ACCOUNT_DATA: Error while compressing data");
                 return;
@@ -887,9 +886,9 @@ void WorldSession::handleBugOpcode(WorldPacket& recv_data)
         return;
 
     if (srlPacket.suggestion == 0)
-        sLogger.debug("Received CMSG_BUG [Bug Report]");
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BUG [Bug Report]");
     else
-        sLogger.debug("Received CMSG_BUG [Suggestion]");
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BUG [Suggestion]");
 
     uint64_t accountId = GetAccountId();
     uint32_t timeStamp = uint32(UNIXTIME);
@@ -923,7 +922,7 @@ void WorldSession::handleBugOpcode(WorldPacket& recv_data)
     std::string bugMessage;
     bugMessage = recv_data.ReadString(lenght);
 
-    sLogger.debug("Received CMSG_BUG [Bug Report] lenght: %u message: %s", lenght, bugMessage.c_str());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BUG [Bug Report] lenght: %u message: %s", lenght, bugMessage.c_str());
 
     uint64_t accountId = GetAccountId();
     uint32_t timeStamp = uint32_t(UNIXTIME);
@@ -959,7 +958,7 @@ void WorldSession::handleSuggestionOpcode(WorldPacket& recvPacket)
     std::string suggestionMessage;
     suggestionMessage = recvPacket.ReadString(lenght);
 
-    sLogger.debug("Received CMSG_SUGGESTIONS [Suggestion] lenght: %u message: %s", lenght, suggestionMessage.c_str());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SUGGESTIONS [Suggestion] lenght: %u message: %s", lenght, suggestionMessage.c_str());
 
     uint64_t accountId = GetAccountId();
     uint32_t timeStamp = uint32_t(UNIXTIME);
@@ -1002,7 +1001,7 @@ void WorldSession::handleLogDisconnectOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleCompleteCinematic(WorldPacket& /*recvPacket*/)
 {
-    sLogger.debug("Received CMSG_COMPLETE_CINEMATIC");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_COMPLETE_CINEMATIC");
 
     _player->setStandState(STANDSTATE_STAND);
 }
@@ -1010,7 +1009,7 @@ void WorldSession::handleCompleteCinematic(WorldPacket& /*recvPacket*/)
 void WorldSession::handleNextCinematic(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
-    sLogger.debug("Received CMSG_NEXT_CINEMATIC_CAMERA");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_NEXT_CINEMATIC_CAMERA");
 
     _player->SetPosition(float(_player->GetPositionX() + 0.01), float(_player->GetPositionY() + 0.01),
         float(_player->GetPositionZ() + 0.01), _player->GetOrientation());
@@ -1018,7 +1017,7 @@ void WorldSession::handleNextCinematic(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleReadyForAccountDataTimes(WorldPacket& /*recvPacket*/)
 {
-    sLogger.debug("Received CMSG_READY_FOR_ACCOUNT_DATA_TIMES");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_READY_FOR_ACCOUNT_DATA_TIMES");
 
     sendAccountDataTimes(GLOBAL_CACHE_MASK);
 }
@@ -1052,7 +1051,7 @@ void WorldSession::handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
 
-    sLogger.debug("Received CMSG_LOGOUT_CANCEL");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LOGOUT_CANCEL");
 
     if (!LoggingOut)
         return;
@@ -1076,7 +1075,7 @@ void WorldSession::handlePlayerLogoutOpcode(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
 
-    sLogger.debug("Received CMSG_PLAYER_LOGOUT");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_PLAYER_LOGOUT");
     if (!HasGMPermissions())
         SendNotification("You do not have permission to perform that function.");
     else
@@ -1091,7 +1090,7 @@ void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_RECLAIM_CORPSE");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_RECLAIM_CORPSE");
 
     if (srlPacket.guid.getRawGuid() == 0)
         return;
@@ -1484,7 +1483,7 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
 
 void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
 {
-    sLogger.debug("Received CMSG_REQUEST_CEMETERY_LIST");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_CEMETERY_LIST");
 
     QueryResult* result = WorldDatabase.Query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->getTeam());
     if (result)
@@ -1554,7 +1553,7 @@ void WorldSession::handleBarberShopResult(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_ALTER_APPEARANCE");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ALTER_APPEARANCE");
 
     const uint32_t oldHair = _player->getHairStyle();
     const uint32_t oldHairColor = _player->getHairColor();
@@ -1622,7 +1621,7 @@ void WorldSession::handleRepopRequestOpcode(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
 
-    sLogger.debug("Received CMSG_REPOP_REQUEST");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REPOP_REQUEST");
 
     if (_player->getDeathState() != JUST_DIED)
         return;
@@ -1803,7 +1802,7 @@ void WorldSession::handleGameObjectUse(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_GAMEOBJ_USE: %u (gobj guidLow)", srlPacket.guid.getGuidLowPart());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GAMEOBJ_USE: %u (gobj guidLow)", srlPacket.guid.getGuidLowPart());
 
     auto gameObject = _player->GetMapMgr()->GetGameObject(srlPacket.guid.getGuidLowPart());
     if (!gameObject)
@@ -1842,20 +1841,21 @@ void WorldSession::handleGameObjectUse(WorldPacket& recvPacket)
             gameObject->onUse(_player);
             break;
         default:
-            sLogger.debug("Received CMSG_GAMEOBJ_USE for unhandled type %u.", gameObject->getGoType());
+            sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GAMEOBJ_USE for unhandled type %u.", gameObject->getGoType());
             break;
     }
 }
 
 void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING < Mop
     CHECK_INWORLD_RETURN;
 
     CmsgInspect srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_INSPECT: %u (player guid)", static_cast<uint32_t>(srlPacket.guid));
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_INSPECT: %u (player guid)", static_cast<uint32_t>(srlPacket.guid));
 
     auto inspectedPlayer = _player->GetMapMgr()->GetPlayer(static_cast<uint32_t>(srlPacket.guid));
     if (inspectedPlayer == nullptr)
@@ -1979,6 +1979,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
 #endif
 
     SendPacket(&data);
+#endif
 }
 
 #if VERSION_STRING >= Cata
@@ -2171,7 +2172,7 @@ bool WorldSession::isAddonRegistered(const std::string& addon_name) const
 
 void WorldSession::handleUnregisterAddonPrefixesOpcode(WorldPacket& /*recvPacket*/)
 {
-    sLogger.debug("Received CMSG_UNREGISTER_ALL_ADDON_PREFIXES");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_UNREGISTER_ALL_ADDON_PREFIXES");
 
     mRegisteredAddonPrefixesVector.clear();
 }
@@ -2205,7 +2206,7 @@ void WorldSession::handleAddonRegisteredPrefixesOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleReportOpcode(WorldPacket& recvPacket)
 {
-    sLogger.debug("Received CMSG_REPORT");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REPORT");
 
     uint8_t spam_type;                                        // 0 - mail, 1 - chat
     uint64_t spammer_guid;
@@ -2252,7 +2253,7 @@ void WorldSession::handleReportOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleReportPlayerOpcode(WorldPacket& recvPacket)
 {
-    sLogger.debug("Received CMSG_REPORT_PLAYER %u", static_cast<uint32_t>(recvPacket.size()));
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REPORT_PLAYER %u", static_cast<uint32_t>(recvPacket.size()));
 
     uint8_t unk3 = 0;   // type
     uint8_t unk4 = 0;   // guid - 1
@@ -2437,6 +2438,6 @@ void WorldSession::sendMOTD()
     SendPacket(SmsgMotd(motdLines).serialise().get());
 #else
     for (const auto& line : motdLines)
-        GetPlayer()->SendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, line.c_str());
+        GetPlayer()->sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, line.c_str());
 #endif
 }

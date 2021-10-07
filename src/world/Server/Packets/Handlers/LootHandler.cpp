@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Server/Packets/CmsgLoot.h"
 #include "Server/Packets/SmsgLootMoneyNotify.h"
 #include "Server/Packets/SmsgLootMasterList.h"
@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/SmsgLootRemoved.h"
+#include "Server/Script/CreatureAIScript.h"
 #include "Spell/Definitions/LockTypes.hpp"
 #include "Spell/Spell.Legacy.h"
 
@@ -707,7 +708,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
         loot = &gameObjectLootable->loot;
     }
 
-    if (srlPacket.slot >= loot->items.size())
+    if (loot && srlPacket.slot >= loot->items.size())
     {
         sLogger.debug("AutoLootItem: Player %s might be using a hack! (slot %u, size %u)", _player->getName().c_str(), srlPacket.slot, static_cast<uint32_t>(loot->items.size()));
         return;

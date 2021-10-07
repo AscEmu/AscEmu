@@ -8,11 +8,10 @@ This file is released under the MIT license. See README-MIT for more information
 class TyraliusPrison : public GameObjectAIScript
 {
 public:
-
     explicit TyraliusPrison(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TyraliusPrison(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         LocationVector pos = player->GetPosition();
         Creature* creature = player->GetMapMgr()->CreateAndSpawnCreature(20787, pos.x, pos.y, pos.z, pos.o);
@@ -24,11 +23,10 @@ public:
 class AndorhalTower1 : public GameObjectAIScript
 {
 public:
-
     explicit AndorhalTower1(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new AndorhalTower1(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (player->isTeamHorde())
             player->AddQuestKill(5098, 0, 0);
@@ -40,11 +38,10 @@ public:
 class AndorhalTower2 : public GameObjectAIScript
 {
 public:
-
     explicit AndorhalTower2(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new AndorhalTower2(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (player->isTeamHorde())
             player->AddQuestKill(5098, 1, 0);
@@ -56,11 +53,10 @@ public:
 class AndorhalTower3 : public GameObjectAIScript
 {
 public:
-
     explicit AndorhalTower3(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new AndorhalTower3(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (player->isTeamHorde())
             player->AddQuestKill(5098, 2, 0);
@@ -72,11 +68,10 @@ public:
 class AndorhalTower4 : public GameObjectAIScript
 {
 public:
-
     explicit AndorhalTower4(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new AndorhalTower4(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (player->isTeamHorde())
             player->AddQuestKill(5098, 3, 0);
@@ -88,11 +83,10 @@ public:
 class OrbOfCommand : public GameObjectAIScript
 {
 public:
-
     explicit OrbOfCommand(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new OrbOfCommand(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (player->HasFinishedQuest(7761) && player->getLevel() >= 58 && player->isInGroup())
         {
@@ -112,11 +106,10 @@ public:
 class Blacksmithing_Plans_Use : public GameObjectAIScript
 {
 public:
-
     explicit Blacksmithing_Plans_Use(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new Blacksmithing_Plans_Use(GO); }
 
-    void OnLootTaken(Player* player, ItemProperties const* /*itemProperties*/)
+    void OnLootTaken(Player* player, ItemProperties const* /*itemProperties*/) override
     {
         LocationVector pos = player->GetPosition();
         Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(11120, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
@@ -128,11 +121,10 @@ public:
 class GongOfBethekk : public GameObjectAIScript
 {
 public:
-
     explicit GongOfBethekk(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new GongOfBethekk(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(14515, -11556.3f, -1628.32f, 41.299f, 4.1f, true, false, 0, 0);
         if (NewCreature != nullptr)
@@ -143,11 +135,10 @@ public:
 class TerokksDownfall : public GameObjectAIScript
 {
 public:
-
     explicit TerokksDownfall(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TerokksDownfall(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (player->hasQuestInQuestLog(11073) && player->getItemInterface()->GetItemCount(32720, 1))
         {
@@ -166,11 +157,10 @@ public:
 class VilebranchKidnapper : public GameObjectAIScript
 {
 public:
-
     explicit VilebranchKidnapper(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new VilebranchKidnapper(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         LocationVector pos = player->GetPosition();
         Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(14748, pos.x, pos.y + 1, pos.z, pos.o, true, false, 0, 0);
@@ -190,11 +180,10 @@ public:
 class GongOfZulFarrak : public GameObjectAIScript
 {
 public:
-
     explicit GongOfZulFarrak(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new GongOfZulFarrak(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (player->getItemInterface()->GetItemCount(9240, 1))
         {
@@ -213,11 +202,10 @@ public:
 class Obsidias_Egg : public GameObjectAIScript
 {
 public:
-
     explicit Obsidias_Egg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new Obsidias_Egg(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (player->hasQuestInQuestLog(11078))
         {
@@ -236,11 +224,10 @@ public:
 class Rivendarks_Egg : public GameObjectAIScript
 {
 public:
-
     explicit Rivendarks_Egg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new Rivendarks_Egg(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (player->hasQuestInQuestLog(11078))
         {
@@ -259,11 +246,10 @@ public:
 class Furywings_Egg : public GameObjectAIScript
 {
 public:
-
     explicit Furywings_Egg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new Furywings_Egg(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (player->hasQuestInQuestLog(11078))
         {
@@ -282,11 +268,10 @@ public:
 class Insidions_Egg : public GameObjectAIScript
 {
 public:
-
     explicit Insidions_Egg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new Insidions_Egg(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (player->hasQuestInQuestLog(11078))
         {
@@ -305,11 +290,10 @@ public:
 class Corrupt_Minor_Manifestation_Water_Object : public GameObjectAIScript
 {
 public:
-
     explicit Corrupt_Minor_Manifestation_Water_Object(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new Corrupt_Minor_Manifestation_Water_Object(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (player->hasQuestInQuestLog(63))
         {
@@ -328,11 +312,10 @@ public:
 class Telathion_the_Impure_Object : public GameObjectAIScript
 {
 public:
-
     explicit Telathion_the_Impure_Object(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new Telathion_the_Impure_Object(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (player->hasQuestInQuestLog(9508))
         {
@@ -351,11 +334,10 @@ public:
 class UlagTheCleaver : public GameObjectAIScript
 {
 public:
-
     explicit UlagTheCleaver(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new UlagTheCleaver(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         Creature* Ulag = player->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(2390.101807f, 336.676788f, 40.015614f, 6390);
         GameObject* pDoor = player->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2388.480029f, 338.3901f, 40.092899f, 176594);
@@ -378,11 +360,10 @@ public:
 class DustySpellbooks : public GameObjectAIScript
 {
 public:
-
     explicit DustySpellbooks(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new DustySpellbooks(GO); }
 
-    void OnLootTaken(Player* player, ItemProperties const* /*itemProperties*/)
+    void OnLootTaken(Player* player, ItemProperties const* /*itemProperties*/) override
     {
         QuestLogEntry* en = player->getQuestLogByQuestId(422);
         if (en == nullptr)
@@ -391,18 +372,17 @@ public:
         LocationVector pos = player->GetPosition();
         Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(1770, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
         if (NewCreature != nullptr)
-            NewCreature->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The Sons of Arugal will rise against all who challenge the power of the Moonrage!");
+            NewCreature->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The Sons of Arugal will rise against all who challenge the power of the Moonrage!");
     }
 };
 
 class CatFigurine : public GameObjectAIScript
 {
 public:
-
     explicit CatFigurine(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new CatFigurine(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         uint32_t Chance = Util::getRandomUInt(100);
         if (Chance <= 10)
@@ -418,11 +398,10 @@ public:
 class EthereumTransponderZeta : public GameObjectAIScript
 {
 public:
-
     explicit EthereumTransponderZeta(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new EthereumTransponderZeta(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         LocationVector pos = player->GetPosition();
         Creature* commander = player->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 20482);
@@ -444,11 +423,10 @@ public:
 class BringMetheEgg : public GameObjectAIScript
 {
 public:
-
     explicit BringMetheEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new BringMetheEgg(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         QuestLogEntry* qle = player->getQuestLogByQuestId(10111);
         if (qle == nullptr)
@@ -462,11 +440,10 @@ public:
 class MysteriousEgg : public GameObjectAIScript
 {
 public:
-
     explicit MysteriousEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new MysteriousEgg(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         player->AddQuestKill(10111, 0, 0);
 
@@ -484,11 +461,10 @@ public:
 class AlterofTidalMastery : public GameObjectAIScript
 {
 public:
-
     explicit AlterofTidalMastery(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new AlterofTidalMastery(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         player->GetMapMgr()->GetInterface()->SpawnCreature(16292, 7934.343750f, -7637.020996f, 112.694130f, 3.098388f, true, false, 0, 0);
     }
@@ -497,11 +473,10 @@ public:
 class ShrineOfDathRemar : public GameObjectAIScript
 {
 public:
-
     explicit ShrineOfDathRemar(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new ShrineOfDathRemar(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         QuestLogEntry* qle = player->getQuestLogByQuestId(8345);
         if (qle != nullptr)
@@ -512,11 +487,10 @@ public:
 class APlagueUponThee : public GameObjectAIScript
 {
 public:
-
     explicit APlagueUponThee(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new APlagueUponThee(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (player->hasQuestInQuestLog(5902) || player->hasQuestInQuestLog(5904))
         {
@@ -535,11 +509,10 @@ public:
 class SerpentStatue : public GameObjectAIScript
 {
 public:
-
     explicit SerpentStatue(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new SerpentStatue(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         QuestLogEntry* qle = player->getQuestLogByQuestId(6027);
         if (qle == nullptr)
@@ -554,11 +527,10 @@ public:
 class CuregosGold : public GameObjectAIScript
 {
 public:
-
     explicit CuregosGold(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new CuregosGold(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         QuestLogEntry* qle = player->getQuestLogByQuestId(2882);
         if (qle == nullptr)
@@ -595,11 +567,10 @@ public:
 class DreadmaulRock : public GameObjectAIScript
 {
 public:
-
     explicit DreadmaulRock(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new DreadmaulRock(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         QuestLogEntry* qle = player->getQuestLogByQuestId(3821);
         if (qle == nullptr)
@@ -620,11 +591,10 @@ public:
 class HandofIruxos : public GameObjectAIScript
 {
 public:
-
     explicit HandofIruxos(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new HandofIruxos(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         QuestLogEntry* qle = player->getQuestLogByQuestId(5381);
         if (qle == nullptr)
@@ -639,11 +609,10 @@ public:
 class LegionPortals : public GameObjectAIScript
 {
 public:
-
     explicit LegionPortals(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new LegionPortals(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         player->AddQuestKill(5581, 0, 0);
     }
@@ -652,11 +621,10 @@ public:
 class ProphecyofAkida : public GameObjectAIScript
 {
 public:
-
     explicit ProphecyofAkida(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new ProphecyofAkida(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         player->AddQuestKill(9544, 0, 0);
 
@@ -671,11 +639,10 @@ public:
 class Razormaw : public GameObjectAIScript
 {
 public:
-
     explicit Razormaw(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new Razormaw(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         QuestLogEntry* qle = player->getQuestLogByQuestId(9689);
         if (qle == nullptr)
@@ -690,11 +657,10 @@ public:
 class TabletoftheSeven : public GameObjectAIScript
 {
 public:
-
     explicit TabletoftheSeven(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TabletoftheSeven(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         QuestLogEntry* qle = player->getQuestLogByQuestId(4296);
         if (qle == nullptr)
@@ -708,11 +674,10 @@ public:
 class TestofEndurance : public GameObjectAIScript
 {
 public:
-
     explicit TestofEndurance(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TestofEndurance(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         QuestLogEntry* qle = player->getQuestLogByQuestId(1150);
         if (qle == nullptr)
@@ -738,11 +703,10 @@ public:
 class TheFallenExarch : public GameObjectAIScript
 {
 public:
-
     explicit TheFallenExarch(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TheFallenExarch(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         QuestLogEntry* qle = player->getQuestLogByQuestId(10915);
         if (qle == nullptr)
@@ -757,11 +721,10 @@ public:
 class TheFinalCode : public GameObjectAIScript
 {
 public:
-
     explicit TheFinalCode(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TheFinalCode(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         player->AddQuestKill(10447, 1, 0);
     }
@@ -770,11 +733,10 @@ public:
 class TheRootofAllEvil : public GameObjectAIScript
 {
 public:
-
     explicit TheRootofAllEvil(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TheRootofAllEvil(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         QuestLogEntry* qle = player->getQuestLogByQuestId(8481);
         if (qle == nullptr)
@@ -791,11 +753,10 @@ public:
 class TheThunderspike : public GameObjectAIScript
 {
 public:
-
     explicit TheThunderspike(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TheThunderspike(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (!player->hasQuestInQuestLog(10526))
             return;
@@ -816,11 +777,10 @@ public:
 class StrengthofOne : public GameObjectAIScript
 {
 public:
-
     explicit StrengthofOne(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new StrengthofOne(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         QuestLogEntry* qle = player->getQuestLogByQuestId(9582);
         if (qle == nullptr)
@@ -845,11 +805,10 @@ public:
 class HealingTheLake : public GameObjectAIScript
 {
 public:
-
     explicit HealingTheLake(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new HealingTheLake(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         player->AddQuestKill(181433, 0, 0);
     }
@@ -858,11 +817,10 @@ public:
 class TheRavensClaw : public GameObjectAIScript
 {
 public:
-
     explicit TheRavensClaw(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new TheRavensClaw(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (player->GetMapMgr()->iInstanceMode == InstanceDifficulty::DUNGEON_HEROIC)
             player->GetMapMgr()->CreateAndSpawnCreature(23035, -87.3546f, 288.006f, 26.4832f, 0);
@@ -872,16 +830,15 @@ public:
 class DeathGate1 : public GameObjectAIScript
 {
 public:
-
     explicit DeathGate1(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new DeathGate1(GO); }
 
-    void OnSpawn()
+    void OnSpawn() override
     {
         RegisterAIUpdateEvent(500);
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         LocationVector pos = _gameobject->GetPosition();
         Player* player = _gameobject->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(pos.x, pos.y, pos.z);
@@ -898,16 +855,15 @@ public:
 class DeathGate2 : public GameObjectAIScript
 {
 public:
-
     explicit DeathGate2(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new DeathGate2(GO); }
 
-    void OnSpawn()
+    void OnSpawn() override
     {
         RegisterAIUpdateEvent(500);
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         LocationVector pos = _gameobject->GetPosition();
         Player* player = _gameobject->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(pos.x, pos.y, pos.z);
@@ -924,11 +880,10 @@ public:
 class DeathGate3 : public GameObjectAIScript
 {
 public:
-
     explicit DeathGate3(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new DeathGate3(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (player->getClass() == 6)
         {
@@ -943,11 +898,10 @@ public:
 class SacredFireofLife : public GameObjectAIScript
 {
 public:
-
     explicit SacredFireofLife(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new SacredFireofLife(GO); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         LocationVector pos = player->GetPosition();
         Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(10882, pos.x, pos.y, pos.y, pos.o, true, false, 0, 0);

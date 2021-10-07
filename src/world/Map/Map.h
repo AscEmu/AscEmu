@@ -23,7 +23,6 @@
 
 #include "TerrainMgr.h"
 #include "CellHandlerDefines.hpp"
-#include "Storage/DBC/DBCStructures.hpp"
 #include "Storage/MySQLStructures.h"
 
 class MapMgr;

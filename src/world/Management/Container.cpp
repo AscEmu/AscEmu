@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Management/Container.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Data/WoWContainer.hpp"
@@ -74,9 +74,13 @@ void Container::LoadFromDB(Field* fields)
     uint32 itemid = fields[2].GetUInt32();
     m_itemProperties = sMySQLStore.getItemProperties(itemid);
 
-    ARCEMU_ASSERT(m_itemProperties != nullptr);
-    setEntry(itemid);
+    if (!m_itemProperties)
+    {
+        sLogger.failure("Container::LoadFromDB: Can't load item %u missing properties!", itemid);
+        return;
+    }
 
+    setEntry(itemid);
 
     setCreatorGuid(fields[5].GetUInt32());
     setStackCount(1);
@@ -98,7 +102,11 @@ void Container::LoadFromDB(Field* fields)
 void Container::Create(uint32 itemid, Player* owner)
 {
     m_itemProperties = sMySQLStore.getItemProperties(itemid);
-    ARCEMU_ASSERT(m_itemProperties != nullptr);
+    if (!m_itemProperties)
+    {
+        sLogger.failure("Container::Create: Can't create item %u missing properties!", itemid);
+        return;
+    }
 
     setEntry(itemid);
 
@@ -149,7 +157,6 @@ bool Container::AddItem(int16 slot, Item* item)
     if (slot < 0 || (uint32)slot >= getItemProperties()->ContainerSlots)
         return false;
 
-    //ARCEMU_ASSERT(  m_Slot[slot] == NULL);
     if (m_Slot[slot] != NULL)
     {
         sLogger.failure("Bad container item %u slot %d", item->getGuidLow(), slot);

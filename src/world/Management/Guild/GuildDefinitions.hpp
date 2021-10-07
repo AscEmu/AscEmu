@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 #include "WorldConf.h"
-#include "Macros/GuildMacros.hpp"
 
 namespace CharterEntry
 {

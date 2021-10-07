@@ -5,13 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "SpellAuras.h"
 
-#include "Definitions/AuraInterruptFlags.hpp"
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellFamily.hpp"
 #include "Definitions/SpellIsFlags.hpp"
 #include "Definitions/SpellMechanics.hpp"
 #include "Definitions/SpellTypes.hpp"
 #include "SpellMgr.hpp"
+#include "Definitions/SpellEffects.hpp"
 
 #include "Server/Script/ScriptMgr.h"
 
@@ -222,7 +222,7 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
         {
             const auto charm = caster->GetMapMgrUnit(caster->getCharmGuid());
             if (charm != nullptr && charm->getCreatedBySpellId() == getSpellInfo()->getId())
-                static_cast<Player*>(caster)->UnPossess();
+                caster->UnPossess();
         }
     }
     else
@@ -330,7 +330,7 @@ void Aura::applyModifiers(bool apply)
             removeAuraEffect(i);
         }
 
-        sLogger.debug("Aura::applyModifiers : Spell Id %u, Aura Effect %u (%s), Target GUID %u, EffectIndex %u, Duration %u, Damage %d, MiscValue %d",
+        sLogger.debugFlag(AscEmu::Logging::LF_AURA, "Aura::applyModifiers : Spell Id %u, Aura Effect %u (%s), Target GUID %u, EffectIndex %u, Duration %u, Damage %d, MiscValue %d",
             getSpellInfo()->getId(), m_auraEffects[i].getAuraEffectType(), SpellAuraNames[m_auraEffects[i].getAuraEffectType()], getOwner()->getGuid(), i, getTimeLeft(), m_auraEffects[i].getEffectDamage(), m_auraEffects[i].getEffectMiscValue());
     }
 
@@ -953,7 +953,14 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
         } // no break here
         case SPELL_AURA_PERIODIC_TRIGGER_SPELL:
         {
-            const auto triggerInfo = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(aurEff->getEffectIndex()));
+            const auto triggerId = getSpellInfo()->getEffectTriggerSpell(aurEff->getEffectIndex());
+            const auto triggerInfo = sSpellMgr.getSpellInfo(triggerId);
+            if (triggerInfo == nullptr)
+            {
+                sLogger.failure("Aura::periodicTick : Periodic trigger aura effect has invalid spell id (%u) in aura id %u", triggerId, getSpellId());
+                return;
+            }
+
             const auto casterUnit = GetUnitCaster();
             if (casterUnit != nullptr)
             {
@@ -1125,7 +1132,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             if (sScriptMgr.CallScriptedDummyAura(getSpellId(), aurEff->getEffectIndex(), this, true))
                 break;
 
-            sLogger.debug("Spell aura %u has a periodic trigger dummy effect but no handler for it", getSpellId());
+            sLogger.debugFlag(AscEmu::Logging::LF_AURA_EFF, "Spell aura %u has a periodic trigger dummy effect but no handler for it", getSpellId());
         } break;
         default:
             break;

@@ -18,13 +18,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+
 #include "Units/Unit.h"
 #include "Units/Summons/Summon.h"
 #include "Storage/DBC/DBCStores.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Server/EventableObject.h"
-#include "Server/IUpdatable.h"
 #include "VMapFactory.h"
 #include "MMapFactory.h"
 #include "TLSObject.h"
@@ -32,7 +31,6 @@
 #include "Management/ItemInterface.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Map/MapMgrDefines.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/MapMgr.h"
 #include "Faction.h"
@@ -42,19 +40,17 @@
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/Definitions/SpellState.hpp"
 #include <Spell/Definitions/AuraInterruptFlags.hpp>
-#include "Spell/Definitions/SpellSchoolConversionTable.hpp"
+
+#include "Chat/ChatHandler.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Data/WoWObject.hpp"
-#include "Data/WoWPlayer.hpp"
-#include "Data/WoWGameObject.hpp"
 #include "Server/Packets/SmsgDestoyObject.h"
 #include "Server/Packets/SmsgPlaySound.h"
 #include "Server/Packets/SmsgGameobjectDespawnAnim.h"
 #include "Server/Packets/SmsgSpellLogMiss.h"
 #include "Server/Packets/SmsgAiReaction.h"
-#include "Server/OpcodeTable.hpp"
 #include "Movement/PathGenerator.h"
 #include "Movement/Spline/MovementPacketBuilder.h"
 
@@ -356,6 +352,9 @@ void Object::updateObject()
 
 uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
+    if (m_wowGuid.GetNewGuidLen() <= 0)
+        return 0;
+
     if (target == nullptr)
         return 0;
 
@@ -448,9 +447,6 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
             updateFlags |= UPDATEFLAG_HAS_TARGET;
     }
 
-    // we shouldn't be here, under any circumstances, unless we have a wowguid..
-    ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
-
     // build our actual update
     *data << uint8_t(updateType);
     *data << m_wowGuid;
@@ -532,36 +528,36 @@ Spell* Object::getCurrentSpellById(uint32_t spellId) const
 
 void Object::setCurrentSpell(Spell* curSpell)
 {
-    ARCEMU_ASSERT(curSpell != nullptr); // curSpell cannot be nullptr
-
-    // Get current spell type
-    CurrentSpellType spellType = CURRENT_GENERIC_SPELL;
-    if (curSpell->getSpellInfo()->isOnNextMeleeAttack())
+    if (curSpell != nullptr) // curSpell cannot be nullptr
     {
-        // Melee spell
-        spellType = CURRENT_MELEE_SPELL;
-    }
-    else if (curSpell->getSpellInfo()->isRangedAutoRepeat())
-    {
-        // Autorepeat spells (Auto shot / Shoot (wand))
-        spellType = CURRENT_AUTOREPEAT_SPELL;
-    }
-    else if (curSpell->getSpellInfo()->isChanneled())
-    {
-        // Channeled spells
-        spellType = CURRENT_CHANNELED_SPELL;
-    }
+        // Get current spell type
+        CurrentSpellType spellType = CURRENT_GENERIC_SPELL;
+        if (curSpell->getSpellInfo()->isOnNextMeleeAttack())
+        {
+            // Melee spell
+            spellType = CURRENT_MELEE_SPELL;
+        }
+        else if (curSpell->getSpellInfo()->isRangedAutoRepeat())
+        {
+            // Autorepeat spells (Auto shot / Shoot (wand))
+            spellType = CURRENT_AUTOREPEAT_SPELL;
+        }
+        else if (curSpell->getSpellInfo()->isChanneled())
+        {
+            // Channeled spells
+            spellType = CURRENT_CHANNELED_SPELL;
+        }
 
-    // We've already set this spell to current spell, ignore
-    if (curSpell == m_currentSpell[spellType])
-        return;
+        // We've already set this spell to current spell, ignore
+        if (curSpell == m_currentSpell[spellType])
+            return;
 
-    // Interrupt spell with same spell type
-    interruptSpellWithSpellType(spellType);
+        // Interrupt spell with same spell type
+        interruptSpellWithSpellType(spellType);
 
-    // Handle spelltype specific cases
-    switch (spellType)
-    {
+        // Handle spelltype specific cases
+        switch (spellType)
+        {
         case CURRENT_GENERIC_SPELL:
         {
             // Generic spells break channeled spells
@@ -599,14 +595,19 @@ void Object::setCurrentSpell(Spell* curSpell)
         } break;
         default:
             break;
+        }
+
+        // If spell is not yet cancelled, force it
+        if (m_currentSpell[spellType] != nullptr)
+            m_currentSpell[spellType]->finish(false);
+
+        // Set new current spell
+        m_currentSpell[spellType] = curSpell;
     }
-
-    // If spell is not yet cancelled, force it
-    if (m_currentSpell[spellType] != nullptr)
-        m_currentSpell[spellType]->finish(false);
-
-    // Set new current spell
-    m_currentSpell[spellType] = curSpell;
+    else
+    {
+        sLogger.failure("Object::setCurrentSpell tried to set invalid current spell (nullptr)");
+    }
 }
 
 void Object::interruptSpell(uint32_t spellId, bool checkMeleeSpell)
@@ -807,7 +808,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     float_t damageReductionPct = 1.0f;
     if (victim->isPlayer())
     {
-        auto resilienceValue = static_cast<float_t>(static_cast<Player*>(victim)->CalcRating(PCR_SPELL_CRIT_RESILIENCE) / 100.0f);
+        auto resilienceValue = static_cast<Player*>(victim)->CalcRating(PCR_SPELL_CRIT_RESILIENCE) / 100.0f;
         if (resilienceValue > 1.0f)
             resilienceValue = 1.0f;
         damageReductionPct -= resilienceValue;
@@ -1181,7 +1182,7 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
     }
 
     // Get target's heal taken mod
-    heal += static_cast<float_t>(heal * victim->HealTakenPctMod[school]);
+    heal += heal * victim->HealTakenPctMod[school];
     if (isPeriodic)
     {
         if (aur != nullptr && aurEff != nullptr)
@@ -1379,7 +1380,8 @@ void Object::clearInRangeSets()
 
 void Object::addToInRangeObjects(Object* pObj)
 {
-    ARCEMU_ASSERT(pObj != nullptr);
+    if (pObj == nullptr)
+        sLogger.failure("Invalid object pointers can't be added!");
 
     if (pObj == this)
         sLogger.failure("We are in range of ourselves!");
@@ -1431,14 +1433,19 @@ bool Object::isObjectInInRangeObjectsSet(Object* pObj)
 
 void Object::removeObjectFromInRangeObjectsSet(Object* pObj)
 {
-    ARCEMU_ASSERT(pObj != nullptr);
+    if (pObj != nullptr)
+    {
+        if (pObj->isPlayer())
+            mInRangePlayersSet.erase(std::remove(mInRangePlayersSet.begin(), mInRangePlayersSet.end(), pObj), mInRangePlayersSet.end());
 
-    if (pObj->isPlayer())
-        mInRangePlayersSet.erase(std::remove(mInRangePlayersSet.begin(), mInRangePlayersSet.end(), pObj), mInRangePlayersSet.end());
+        mInRangeObjectsSet.erase(std::remove(mInRangeObjectsSet.begin(), mInRangeObjectsSet.end(), pObj), mInRangeObjectsSet.end());
 
-    mInRangeObjectsSet.erase(std::remove(mInRangeObjectsSet.begin(), mInRangeObjectsSet.end(), pObj), mInRangeObjectsSet.end());
-
-    onRemoveInRangeObject(pObj);
+        onRemoveInRangeObject(pObj);
+    }
+    else
+    {
+        sLogger.failure("Object::removeObjectFromInRangeObjectsSet something tried to remove invalid object pointer!");
+    }
 }
 
 // Players
@@ -1613,40 +1620,42 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
 Object::~Object()
 {
     if (!isItem())
-        ARCEMU_ASSERT(!m_inQueue);
-
-    ARCEMU_ASSERT(!IsInWorld());
-
-    // for linux
-    m_instanceId = INSTANCEID_NOT_IN_WORLD;
-
-    if (GetTransport() != nullptr)
-        GetTransport()->RemovePassenger(this);
-
-    for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
     {
-        if (m_currentSpell[i] != nullptr)
+        if (!m_inQueue && !IsInWorld())
         {
-            interruptSpellWithSpellType(CurrentSpellType(i));
+            // for linux
+            m_instanceId = INSTANCEID_NOT_IN_WORLD;
+
+            //todo zyres: this is the wrong place to remove a passenger....
+            /*if (GetTransport() != nullptr)
+                GetTransport()->RemovePassenger(this);*/
+
+            for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+            {
+                if (m_currentSpell[i] != nullptr)
+                {
+                    interruptSpellWithSpellType(CurrentSpellType(i));
+                }
+            }
+
+            for (auto travelingSpellItr = m_travelingSpells.begin(); travelingSpellItr != m_travelingSpells.end();)
+            {
+                delete (*travelingSpellItr).first;
+                travelingSpellItr = m_travelingSpells.erase(travelingSpellItr);
+            }
+
+            removeGarbageSpells();
+
+            for (auto pendingSpellItr = m_pendingSpells.begin(); pendingSpellItr != m_pendingSpells.end();)
+            {
+                delete (*pendingSpellItr);
+                pendingSpellItr = m_pendingSpells.erase(pendingSpellItr);
+            }
+
+            //avoid leaving traces in eventmanager. Have to work on the speed. Not all objects ever had events so list iteration can be skipped
+            sEventMgr.RemoveEvents(this);
         }
     }
-
-    for (auto travelingSpellItr = m_travelingSpells.begin(); travelingSpellItr != m_travelingSpells.end();)
-    {
-        delete (*travelingSpellItr).first;
-        travelingSpellItr = m_travelingSpells.erase(travelingSpellItr);
-    }
-
-    removeGarbageSpells();
-
-    for (auto pendingSpellItr = m_pendingSpells.begin(); pendingSpellItr != m_pendingSpells.end();)
-    {
-        delete (*pendingSpellItr);
-        pendingSpellItr = m_pendingSpells.erase(pendingSpellItr);
-    }
-
-    //avoid leaving traces in eventmanager. Have to work on the speed. Not all objects ever had events so list iteration can be skipped
-    sEventMgr.RemoveEvents(this);
 }
 
 ::DBC::Structures::AreaTableEntry const* Object::GetArea()
@@ -1722,15 +1731,20 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     {
         if (updateMask.GetBit(x))
         {
-            *data << uint8(UPDATETYPE_VALUES);              // update type == update
-            ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
-            *data << m_wowGuid;
+            if (m_wowGuid.GetNewGuidLen() > 0)
+            {
+                *data << uint8(UPDATETYPE_VALUES);              // update type == update
+                *data << m_wowGuid;
 
-            buildValuesUpdate(data, &updateMask, target);
+                buildValuesUpdate(data, &updateMask, target);
 #if VERSION_STRING == Mop
-            * data << uint8_t(0);
+                * data << uint8_t(0);
 #endif
-            return 1;
+                return 1;
+            }
+
+            sLogger.failure("Object::BuildValuesUpdateBlockForPlayer tried to add data for invalid guid!");
+            return 0;
         }
     }
 
@@ -1741,17 +1755,21 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
 {
     // returns: update count
     // update type == update
-    *buf << uint8(UPDATETYPE_VALUES);
+    if (m_wowGuid.GetNewGuidLen() > 0)
+    {
+        *buf << uint8(UPDATETYPE_VALUES);
+        *buf << m_wowGuid;
 
-    ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
-    *buf << m_wowGuid;
-
-    buildValuesUpdate(buf, mask, nullptr);
+        buildValuesUpdate(buf, mask, nullptr);
 #if VERSION_STRING == Mop
-    *buf << uint8_t(0);
+        * buf << uint8_t(0);
 #endif
-    // 1 update.
-    return 1;
+        // 1 update.
+        return 1;
+    }
+
+    sLogger.failure("Object::BuildValuesUpdateBlockForPlayer tried to add data for invalid guid!");
+    return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2233,7 +2251,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 #endif
 
 #if VERSION_STRING == Cata
-void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* target)
+void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* /*target*/)
 {
     ObjectGuid Guid = getGuid();
     uint32_t movementFlags = 0;
@@ -2962,6 +2980,18 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
 void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player* target)
 {
+    if (!updateMask)
+    {
+        sLogger.failure("Object::buildValuesUpdate invalid updateMask (nullptr)");
+        return;
+    }
+
+    if (updateMask->GetCount() != m_valuesCount)
+    {
+        sLogger.failure("Object::buildValuesUpdate values count in update mask is not equal to object values count!");
+        return;
+    }
+
     auto activate_quest_object = false, reset = false;
     uint32_t old_flags = 0;
 
@@ -3088,8 +3118,6 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
         reset = true;
     }
 
-    ARCEMU_ASSERT(updateMask && updateMask->GetCount() == m_valuesCount);
-
     uint32_t block_count, values_count;
     if (m_valuesCount > 2 * 0x20)
     {
@@ -3129,7 +3157,7 @@ bool Object::SetPosition(const LocationVector & v, [[maybe_unused]]bool allowPor
     if (m_position.x != v.x || m_position.y != v.y)
         updateMap = true;
 
-    m_position = const_cast<LocationVector &>(v);
+    m_position = v;
 
 #if VERSION_STRING < Cata
     if (!allowPorting && v.z < -500)
@@ -3153,48 +3181,52 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
 {
     bool updateMap = false, result = true;
 
-    ARCEMU_ASSERT(!std::isnan(newX) && !std::isnan(newY) && !std::isnan(newOrientation));
+    if (!std::isnan(newX) && !std::isnan(newY) && !std::isnan(newOrientation))
+    {
+        //It's a good idea to push through EVERY transport position change, no matter how small they are. By: VLack aka. VLsoft
+        if (isGameObject() && static_cast<GameObject*>(this)->GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT)
+            updateMap = true;
 
-    //It's a good idea to push through EVERY transport position change, no matter how small they are. By: VLack aka. VLsoft
-    if (isGameObject() && static_cast<GameObject*>(this)->GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT)
-        updateMap = true;
+        //if (m_position.x != newX || m_position.y != newY)
+        //updateMap = true;
+        if (m_lastMapUpdatePosition.Distance2DSq({ newX, newY }) > 4.0f) /* 2.0f */
+            updateMap = true;
 
-    //if (m_position.x != newX || m_position.y != newY)
-    //updateMap = true;
-    if (m_lastMapUpdatePosition.Distance2DSq({ newX, newY }) > 4.0f) /* 2.0f */
-        updateMap = true;
-
-    m_position.ChangeCoords({ newX, newY, newZ, newOrientation });
+        m_position.ChangeCoords({ newX, newY, newZ, newOrientation });
 
 #if VERSION_STRING < Cata
-    if (!allowPorting && newZ < -500)
-    {
-        m_position.z = 500;
-        sLogger.failure("setPosition: fell through map; height ported");
+        if (!allowPorting && newZ < -500)
+        {
+            m_position.z = 500;
+            sLogger.failure("setPosition: fell through map; height ported");
 
-        result = false;
-    }
+            result = false;
+        }
 #endif
 
-    if (IsInWorld() && updateMap)
-    {
-        m_lastMapUpdatePosition.ChangeCoords({ newX, newY, newZ, newOrientation });
-        m_mapMgr->ChangeObjectLocation(this);
-
-        if (isPlayer() && static_cast<Player*>(this)->getGroup() && static_cast<Player*>(this)->m_last_group_position.Distance2DSq(m_position) > 25.0f)       // distance of 5.0
+        if (IsInWorld() && updateMap)
         {
-            static_cast<Player*>(this)->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_POSITION);
+            m_lastMapUpdatePosition.ChangeCoords({ newX, newY, newZ, newOrientation });
+            m_mapMgr->ChangeObjectLocation(this);
+
+            if (isPlayer() && static_cast<Player*>(this)->getGroup() && static_cast<Player*>(this)->m_last_group_position.Distance2DSq(m_position) > 25.0f)       // distance of 5.0
+            {
+                static_cast<Player*>(this)->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_POSITION);
+            }
         }
+
+        if (isCreatureOrPlayer())
+        {
+            Unit* u = static_cast<Unit*>(this);
+            if (u->getVehicleComponent() != nullptr)
+                u->getVehicleComponent()->MovePassengers(newX, newY, newZ, newOrientation);
+        }
+
+        return result;
     }
 
-    if (isCreatureOrPlayer())
-    {
-        Unit* u = static_cast<Unit*>(this);
-        if (u->getVehicleComponent() != nullptr)
-            u->getVehicleComponent()->MovePassengers(newX, newY, newZ, newOrientation);
-    }
-
-    return result;
+    sLogger.failure("Object::SetPosition one of the position values in NaN, returning false!");
+    return false;
 }
 
 void Object::_SetUpdateBits(UpdateMask* updateMask, Player* /*target*/) const
@@ -3282,30 +3314,31 @@ void Object::AddToWorld(MapMgr* pMapMgr)
 //////////////////////////////////////////////////////////////////////////////////////////
 void Object::PushToWorld(MapMgr* mgr)
 {
-    ARCEMU_ASSERT(t_currentMapContext.get() == mgr);
-
-    if (mgr == nullptr)
+    if (t_currentMapContext.get() == mgr)
     {
-        sLogger.failure("Invalid push to world of Object " I64FMT, getGuid());
-        return; //instance add failed
+        if (mgr == nullptr)
+        {
+            sLogger.failure("Invalid push to world of Object " I64FMT " ", getGuid());
+            return; // instance add failed
+        }
+
+        m_mapId = mgr->GetMapId();
+        //there's no need to set the InstanceId before calling PushToWorld() because it's already set here.
+        m_instanceId = mgr->GetInstanceID();
+
+        m_mapMgr = mgr;
+        OnPrePushToWorld();
+
+        mgr->PushObject(this);
+
+        // correct incorrect instance id's
+        m_inQueue = false;
+
+        event_Relocate();
+
+        // call virtual function to handle stuff.. :P
+        OnPushToWorld();
     }
-
-    m_mapId = mgr->GetMapId();
-    //there's no need to set the InstanceId before calling PushToWorld() because it's already set here.
-    m_instanceId = mgr->GetInstanceID();
-
-    m_mapMgr = mgr;
-    OnPrePushToWorld();
-
-    mgr->PushObject(this);
-
-    // correct incorrect instance id's
-    m_inQueue = false;
-
-    event_Relocate();
-
-    // call virtual function to handle stuff.. :P
-    OnPushToWorld();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -3313,34 +3346,41 @@ void Object::PushToWorld(MapMgr* mgr)
 //////////////////////////////////////////////////////////////////////////////////////////
 void Object::RemoveFromWorld(bool free_guid)
 {
-    ARCEMU_ASSERT(m_mapMgr != NULL);
+    if (m_mapMgr != nullptr)
+    {
+        OnPreRemoveFromWorld();
 
-    OnPreRemoveFromWorld();
+        MapMgr* m = m_mapMgr;
+        m_mapMgr = nullptr;
 
-    MapMgr* m = m_mapMgr;
-    m_mapMgr = nullptr;
+        m->RemoveObject(this, free_guid);
 
-    m->RemoveObject(this, free_guid);
+        OnRemoveFromWorld();
 
-    OnRemoveFromWorld();
+        //shouldnt need to clear, spell destructor will erase
+        //m_pendingSpells.clear();
 
-    //shouldnt need to clear, spell destructor will erase
-    //m_pendingSpells.clear();
+        m_instanceId = INSTANCEID_NOT_IN_WORLD;
+        m_mapId = MAPID_NOT_IN_WORLD;
+        //m_inQueue is set to true when AddToWorld() is called. AddToWorld() queues the Object to be pushed, but if it's not pushed and RemoveFromWorld()
+        //is called, m_inQueue will still be true even if the Object is no more inworld, nor queued.
+        m_inQueue = false;
 
-    m_instanceId = INSTANCEID_NOT_IN_WORLD;
-    m_mapId = MAPID_NOT_IN_WORLD;
-    //m_inQueue is set to true when AddToWorld() is called. AddToWorld() queues the Object to be pushed, but if it's not pushed and RemoveFromWorld()
-    //is called, m_inQueue will still be true even if the Object is no more inworld, nor queued.
-    m_inQueue = false;
-
-    // update our event holder
-    event_Relocate();
+        // update our event holder
+        event_Relocate();
+    }
+    else
+    {
+        sLogger.failure("Object::RemoveFromWorld tried to remove object without a valid mapMgr (nullptr)");
+    }
 }
 
 float Object::CalcDistance(Object* Ob)
 {
-    ARCEMU_ASSERT(Ob != NULL);
-    return CalcDistance(this->GetPositionX(), this->GetPositionY(), this->GetPositionZ(), Ob->GetPositionX(), Ob->GetPositionY(), Ob->GetPositionZ());
+    if (Ob != nullptr)
+        return CalcDistance(this->GetPositionX(), this->GetPositionY(), this->GetPositionZ(), Ob->GetPositionX(), Ob->GetPositionY(), Ob->GetPositionZ());
+
+    return 0xFFFF;
 }
 
 float Object::CalcDistance(float ObX, float ObY, float ObZ)
@@ -3350,15 +3390,18 @@ float Object::CalcDistance(float ObX, float ObY, float ObZ)
 
 float Object::CalcDistance(Object* Oa, Object* Ob)
 {
-    ARCEMU_ASSERT(Oa != NULL);
-    ARCEMU_ASSERT(Ob != NULL);
-    return CalcDistance(Oa->GetPositionX(), Oa->GetPositionY(), Oa->GetPositionZ(), Ob->GetPositionX(), Ob->GetPositionY(), Ob->GetPositionZ());
+    if (Oa != nullptr && Ob != nullptr)
+        return CalcDistance(Oa->GetPositionX(), Oa->GetPositionY(), Oa->GetPositionZ(), Ob->GetPositionX(), Ob->GetPositionY(), Ob->GetPositionZ());
+
+    return 0xFFFF;
 }
 
 float Object::CalcDistance(Object* Oa, float ObX, float ObY, float ObZ)
 {
-    ARCEMU_ASSERT(Oa != NULL);
-    return CalcDistance(Oa->GetPositionX(), Oa->GetPositionY(), Oa->GetPositionZ(), ObX, ObY, ObZ);
+    if (Oa != nullptr)
+        return CalcDistance(Oa->GetPositionX(), Oa->GetPositionY(), Oa->GetPositionZ(), ObX, ObY, ObZ);
+
+    return 0xFFFF;
 }
 
 float Object::CalcDistance(float OaX, float OaY, float OaZ, float ObX, float ObY, float ObZ)
@@ -3371,19 +3414,25 @@ float Object::CalcDistance(float OaX, float OaY, float OaZ, float ObX, float ObY
 
 bool Object::IsWithinDistInMap(Object* obj, const float dist2compare) const
 {
-    ARCEMU_ASSERT(obj != NULL);
-    float xdest = this->GetPositionX() - obj->GetPositionX();
-    float ydest = this->GetPositionY() - obj->GetPositionY();
-    float zdest = this->GetPositionZ() - obj->GetPositionZ();
-    return sqrtf(zdest * zdest + ydest * ydest + xdest * xdest) <= dist2compare;
+    if (obj != nullptr)
+    {
+        float xdest = this->GetPositionX() - obj->GetPositionX();
+        float ydest = this->GetPositionY() - obj->GetPositionY();
+        float zdest = this->GetPositionZ() - obj->GetPositionZ();
+        return sqrtf(zdest * zdest + ydest * ydest + xdest * xdest) <= dist2compare;
+    }
+    return false;
 }
 
 bool Object::IsWithinLOSInMap(Object* obj)
 {
-    ARCEMU_ASSERT(obj != NULL);
-    if (!IsInMap(obj)) return false;
-    LocationVector location;
-    location = obj->GetPosition();
+    if (obj == nullptr)
+        return false;
+
+    if (!IsInMap(obj))
+        return false;
+
+    LocationVector location = obj->GetPosition();
     return IsWithinLOS(location);
 }
 
@@ -3790,10 +3839,9 @@ void Object::Phase(uint8 command, uint32 newphase)
         m_phase = 1;
         break;
     default:
-        ARCEMU_ASSERT(false);
+        sLogger.failure("Object::Phase called with invalid command %u", command);
+        break;
     }
-
-    return;
 }
 
 void Object::OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool /*self*/)
@@ -3822,7 +3870,7 @@ void Object::SendMessageToSet(WorldPacket* data, bool /*bToSelf*/, bool /*myteam
     }
 }
 
-void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
+void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId, Unit* target/* = nullptr*/)
 {
     uint32 myphase = GetPhase();
     for (const auto& itr : mInRangePlayersSet)
@@ -3849,173 +3897,13 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
                 else
                     message = npcScriptText->text;
 
-                std::string creatureName;
-
-                MySQLStructure::LocalesCreature const* lcn = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->getEntry(), sessionLanguage) : nullptr;
-                if (lcn != nullptr)
-                    creatureName = lcn->name;
-                else
-                    creatureName = creature->GetCreatureProperties()->Name;
-
                 if (npcScriptText->emote != 0)
                     creature->eventAddEmote((EmoteType)npcScriptText->emote, npcScriptText->duration);
 
                 if (npcScriptText->sound != 0)
                     creature->PlaySoundToSet(npcScriptText->sound);
 
-                const auto data = SmsgMessageChat(npcScriptText->type, npcScriptText->language, 0, message, getGuid(), creatureName).serialise();
-                player->SendPacket(data.get());
-            }
-        }
-    }
-}
-
-void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::NpcMonsterSay* npcMonsterSay, int randChoice, uint32_t event)
-{
-    uint32 myphase = GetPhase();
-    for (const auto& itr : mInRangePlayersSet)
-    {
-        Object* object = itr;
-        if (object && (object->GetPhase() & myphase) != 0)
-        {
-            if (object->isPlayer())
-            {
-                Player* player = static_cast<Player*>(object);
-                uint32_t sessionLanguage = player->GetSession()->language;
-
-                //////////////////////////////////////////////////////////////////////////////////////////////
-                // get text (normal or localized)
-                const char* text = npcMonsterSay->texts[randChoice];
-                MySQLStructure::LocalesNPCMonstersay const* lmsay = (sessionLanguage > 0) ? sMySQLStore.getLocalizedMonsterSay(getEntry(), sessionLanguage, event) : nullptr;
-                if (lmsay != nullptr)
-                {
-                    switch (randChoice)
-                    {
-                    case 0:
-                        if (lmsay->text0 != nullptr)
-                            text = lmsay->text0;
-                        break;
-                    case 1:
-                        if (lmsay->text1 != nullptr)
-                            text = lmsay->text1;
-                        break;
-                    case 2:
-                        if (lmsay->text2 != nullptr)
-                            text = lmsay->text2;
-                        break;
-                    case 3:
-                        if (lmsay->text3 != nullptr)
-                            text = lmsay->text3;
-                        break;
-                    case 4:
-                        if (lmsay->text4 != nullptr)
-                            text = lmsay->text4;
-                        break;
-                    default:
-                        text = npcMonsterSay->texts[randChoice];
-                    }
-                }
-                else
-                {
-                    text = npcMonsterSay->texts[randChoice];
-                }
-
-                // replace text with content
-                std::string newText = text;
-#if VERSION_STRING < Cata
-#if VERSION_STRING > Classic
-                static const char* races[DBC_NUM_RACES] = { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "None", "Blood Elf", "Draenei" };
-#else
-                static const char* races[DBC_NUM_RACES] = { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll" };
-
-#endif
-#else
-                static const char* races[DBC_NUM_RACES] = { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "Goblin", "Blood Elf", "Draenei", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "Worgen" };
-#endif
-                static const char* classes[MAX_PLAYER_CLASSES] = { "None", "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "Death Knight", "Shaman", "Mage", "Warlock", "Monk", "Druid" };
-                char* test = strstr((char*)text, "$R");
-                if (test == nullptr)
-                    test = strstr((char*)text, "$r");
-
-                if (test != nullptr)
-                {
-                    uint64 targetGUID = creature->getTargetGuid();
-                    Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
-                    if (CurrentTarget)
-                    {
-                        ptrdiff_t testOfs = test - text;
-                        newText.replace(testOfs, 2, races[CurrentTarget->getRace()]);
-                    }
-                }
-                test = strstr((char*)text, "$N");
-                if (test == nullptr)
-                    test = strstr((char*)text, "$n");
-
-                if (test != nullptr)
-                {
-                    uint64 targetGUID = creature->getTargetGuid();
-                    Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
-                    if (CurrentTarget && CurrentTarget->isPlayer())
-                    {
-                        ptrdiff_t testOfs = test - text;
-                        newText.replace(testOfs, 2, static_cast<Player*>(CurrentTarget)->getName().c_str());
-                    }
-                }
-                test = strstr((char*)text, "$C");
-                if (test == nullptr)
-                    test = strstr((char*)text, "$c");
-
-                if (test != nullptr)
-                {
-                    uint64 targetGUID = creature->getTargetGuid();
-                    Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
-                    if (CurrentTarget)
-                    {
-                        ptrdiff_t testOfs = test - text;
-                        newText.replace(testOfs, 2, classes[CurrentTarget->getClass()]);
-                    }
-                }
-                test = strstr((char*)text, "$G");
-                if (test == nullptr)
-                    test = strstr((char*)text, "$g");
-
-                if (test != nullptr)
-                {
-                    uint64 targetGUID = creature->getTargetGuid();
-                    Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
-                    if (CurrentTarget)
-                    {
-                        char* g0 = test + 2;
-                        char* g1 = strchr(g0, ':');
-                        if (g1)
-                        {
-                            char* gEnd = strchr(g1, ';');
-                            if (gEnd)
-                            {
-                                *g1 = 0x00;
-                                ++g1;
-                                *gEnd = 0x00;
-                                ++gEnd;
-                                *test = 0x00;
-                                newText = text;
-                                newText += (CurrentTarget->getGender() == 0) ? g0 : g1;
-                                newText += gEnd;
-                            }
-                        }
-                    }
-                }
-
-                ////////////////////////////////////////////////////////////////////////////////////////////
-
-                std::string creatureName;
-
-                MySQLStructure::LocalesCreature const* lcn = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->getEntry(), sessionLanguage) : nullptr;
-                if (lcn != nullptr)
-                    creatureName = lcn->name;
-                else
-                    creatureName = creature->GetCreatureProperties()->Name;
-
-                const auto data = SmsgMessageChat(static_cast<uint8_t>(npcMonsterSay->type), npcMonsterSay->language, 0, newText, getGuid(), creatureName).serialise();
+                const auto data = creature->createChatPacket(npcScriptText->type, npcScriptText->language, message, target, sessionLanguage);
                 player->SendPacket(data.get());
             }
         }
@@ -4095,8 +3983,9 @@ DynamicObject* Object::GetMapMgrDynamicObject(const uint64 & guid)
 
 MapCell* Object::GetMapCell() const
 {
-    ARCEMU_ASSERT(m_mapMgr != NULL);
-    return m_mapMgr->GetCell(m_mapCell_x, m_mapCell_y);
+    if (m_mapMgr)
+        return m_mapMgr->GetCell(m_mapCell_x, m_mapCell_y);
+    return nullptr;
 }
 
 void Object::SetMapCell(MapCell* cell)
@@ -4764,7 +4653,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t o
                 data >> byte_parameter;
                 break;
             default:
-                ARCEMU_ASSERT(false && "Wrong movement status element");
+                sLogger.failure("Wrong movement status element");
                 break;
         }
     }
@@ -5012,7 +4901,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t 
                 data << float(custom_speed);
                 break;
             default:
-                ARCEMU_ASSERT(false && "Wrong movement status element");
+                sLogger.failure("Wrong movement status element");
                 break;
         }
     }

@@ -6,9 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CreatureGroups.h"
 #include "Creature.h"
 #include "AIInterface.h"
+#include "Map/MapMgr.h"
 
 #include "Movement/MovementManager.h"
-#include "Movement/MovementGenerator.h"
 #include "Objects/ObjectMgr.h"
 
 #define MAX_DESYNC 5.0f

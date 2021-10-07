@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+
 #include "Management/ItemInterface.h"
 #include "Management/Arenas.h"
 #include "Management/ArenaTeam.h"
@@ -27,6 +27,7 @@
 #include "Spell/SpellAuras.h"
 #include "Objects/GameObject.h"
 #include "Objects/ObjectMgr.h"
+#include "Server/Script/ScriptMgr.h"
 #include "Spell/SpellMgr.hpp"
 
 const uint32 ARENA_PREPARATION = 32727;
@@ -179,7 +180,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
         std::set<Player*>::iterator itr = m_players[i].begin();
         for (; itr != m_players[i].end(); ++itr)
         {
-            Player* plr = (Player*)(*itr);
+            Player* plr = *itr;
             if (plr != NULL)
             {
                 sHookInterface.OnArenaFinish(plr, plr->getArenaTeam(m_arenateamtype), victorious, rated_match);
@@ -282,16 +283,21 @@ void Arena::HookOnHK(Player* plr)
 
 void Arena::HookOnPlayerDeath(Player* plr)
 {
-    ARCEMU_ASSERT(plr != NULL);
-
-    if (plr->m_isGmInvisible == true)
-        return;
-
-    if (m_playersAlive.find(plr->getGuidLow()) != m_playersAlive.end())
+    if (plr)
     {
-        m_playersCount[plr->getTeam()]--;
-        UpdatePlayerCounts();
-        m_playersAlive.erase(plr->getGuidLow());
+        if (plr->m_isGmInvisible == true)
+            return;
+
+        if (m_playersAlive.find(plr->getGuidLow()) != m_playersAlive.end())
+        {
+            m_playersCount[plr->getTeam()]--;
+            UpdatePlayerCounts();
+            m_playersAlive.erase(plr->getGuidLow());
+        }
+    }
+    else
+    {
+        sLogger.failure("Tried to call Arena::HookOnPlayerDeath with nullptr player pointer");
     }
 }
 
@@ -381,7 +387,7 @@ void Arena::UpdatePlayerCounts()
 uint32 Arena::CalcDeltaRating(uint32 oldRating, uint32 opponentRating, bool outcome)
 {
     double power = (int)(opponentRating - oldRating) / 400.0f;
-    double divisor = pow(((double)(10.0)), power);
+    double divisor = pow(10.0, power);
     divisor += 1.0;
 
     double winChance = 1.0 / divisor;
@@ -416,10 +422,10 @@ void Arena::HookOnAreaTrigger(Player* plr, uint32 id)
 {
     int32 buffslot = -1;
 
-    ARCEMU_ASSERT(plr != NULL);
-
-    switch (id)
+    if (plr)
     {
+        switch (id)
+        {
         case 4536:
         case 4538:
         case 4696:
@@ -432,23 +438,31 @@ void Arena::HookOnAreaTrigger(Player* plr, uint32 id)
             break;
         default:
             break;
-    }
-
-    if (buffslot >= 0)
-    {
-        if (m_buffs[buffslot] != NULL && m_buffs[buffslot]->IsInWorld())
-        {
-            // apply the buff
-            SpellInfo const* sp = sSpellMgr.getSpellInfo(m_buffs[buffslot]->GetGameObjectProperties()->raw.parameter_3);
-            ARCEMU_ASSERT(sp != NULL);
-
-            Spell* s = sSpellMgr.newSpell(plr, sp, true, 0);
-            SpellCastTargets targets(plr->getGuid());
-            s->prepare(&targets);
-
-            // despawn the gameobject (not delete!)
-            m_buffs[buffslot]->Despawn(0, 30 * 1000 /*BUFF_RESPAWN_TIME*/);
         }
+
+        if (buffslot >= 0)
+        {
+            if (m_buffs[buffslot] != NULL && m_buffs[buffslot]->IsInWorld())
+            {
+                // apply the buff
+                SpellInfo const* sp = sSpellMgr.getSpellInfo(m_buffs[buffslot]->GetGameObjectProperties()->raw.parameter_3);
+                if (sp == nullptr)
+                {
+                    sLogger.failure("Arena::HookOnAreaTrigger: tried to use invalid spell %u for gameobject %u", m_buffs[buffslot]->GetGameObjectProperties()->raw.parameter_3, m_buffs[buffslot]->GetGameObjectProperties()->entry);
+                }
+
+                Spell* s = sSpellMgr.newSpell(plr, sp, true, 0);
+                SpellCastTargets targets(plr->getGuid());
+                s->prepare(&targets);
+
+                // despawn the gameobject (not delete!)
+                m_buffs[buffslot]->Despawn(0, 30 * 1000 /*BUFF_RESPAWN_TIME*/);
+            }
+        }
+    }
+    else
+    {
+        sLogger.failure("Tried to call Arena::HookOnAreaTrigger with nullptr player pointer");
     }
 }
 

@@ -19,15 +19,15 @@
 
 #include "Setup.h"
 #include "Management/TaxiMgr.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class ScryingOrb : public GameObjectAIScript
 {
 public:
-
     explicit ScryingOrb(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new ScryingOrb(GO); }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (auto* questLog = pPlayer->getQuestLogByQuestId(11490))
         {
@@ -56,7 +56,6 @@ public:
 class AyrenCloudbreaker_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* pPlayer) override
     {
         GossipMenu menu(pObject->getGuid(), 12252, pPlayer->GetSession()->language);
@@ -94,7 +93,6 @@ public:
 class SCRIPT_DECL UnrestrainedDragonhawk_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* pPlayer) override
     {
         GossipMenu menu(pObject->getGuid(), 12371, pPlayer->GetSession()->language);
@@ -116,7 +114,8 @@ public:
 // The Battle for the Sun's Reach Armory
 class TheBattleForTheSunReachArmory : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TheBattleForTheSunReachArmory)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TheBattleForTheSunReachArmory(c); }
     explicit TheBattleForTheSunReachArmory(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* pKiller) override

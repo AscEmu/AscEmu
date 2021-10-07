@@ -24,7 +24,6 @@
 class Quest_JourneytoUndercity : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         if (Creature* creat = mTarget->GetMapMgr()->GetSqlIdCreature(19175))

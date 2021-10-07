@@ -60,9 +60,26 @@ add_library(${PROJECT_NAME} SHARED ${SRC_BGS})
 target_link_libraries(${PROJECT_NAME} world)
 
 if(USE_PCH)
-    gen_cxx_pch(${PROJECT_NAME} Setup.h ${CMAKE_CURRENT_SOURCE_DIR}/Setup.cpp)
+    ##gen_cxx_pch(${PROJECT_NAME} Setup.h ${CMAKE_CURRENT_SOURCE_DIR}/Setup.cpp)
 endif()
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
+
+if(USE_PCH)
+  target_precompile_headers(${PROJECT_NAME}
+  PRIVATE 
+  <Chat/ChatDefines.hpp>
+  <Management/HonorHandler.h>
+  <Management/QuestLogEntry.hpp>
+  <Management/WorldStates.h>
+  <Map/MapMgr.h>
+  <Objects/GameObject.h>
+  <Server/MainServerDefines.h>
+  <Server/Packets/SmsgMessageChat.h>
+  <Spell/SpellMgr.hpp>
+  <Storage/MySQLDataStore.hpp>
+)
+endif()
+
 unset(sources)
 unset(headers)

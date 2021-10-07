@@ -18,7 +18,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "VMapFactory.h"
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
@@ -26,10 +26,8 @@
 #include "Spell.h"
 #include "Objects/GameObject.h"
 #include "Server/World.h"
-#include "Server/World.Legacy.h"
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellDidHitResult.hpp"
-#include "Definitions/SpellEffectTarget.hpp"
 #include "Units/Creatures/Pet.h"
 
  // APGL End
@@ -53,7 +51,8 @@ void Spell::safeAddMissedTarget(uint64_t targetGuid, SpellDidHitResult hitResult
 void Spell::FillTargetMap(uint32 i)
 {
     //Spell::prepare() has already a m_caster->IsInWorld() check so if now the caster is no more in world something bad happened.
-    ARCEMU_ASSERT(m_caster->IsInWorld());
+    if (!m_caster->IsInWorld())
+        return;
 
     uint32 TargetType = 0;
     TargetType |= getSpellInfo()->getRequiredTargetMaskForEffect(static_cast<uint8_t>(i));

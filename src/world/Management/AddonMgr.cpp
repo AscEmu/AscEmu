@@ -3,8 +3,11 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "AddonMgr.h"
+
+#include <zlib.h>
+
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/MainServerDefines.h"
 #include "Auth/MD5.h"
@@ -126,7 +129,7 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 /*pos*/, WorldSes
         return;
     }
 
-    int32 result = uncompress((uint8*)unpacked.contents(), &rsize, (uint8*)(*source).contents() + position, (uLong)((*source).size() - position));
+    int32 result = uncompress(unpacked.contents(), &rsize, (*source).contents() + position, (uLong)((*source).size() - position));
 
     if (result != Z_OK)
     {
@@ -224,7 +227,7 @@ bool AddonMgr::AppendPublicKey(WorldPacket & data, std::string & AddonName, uint
                 uint32 length = 264/*ftell(f)*/;
                 fseek(f, 0, SEEK_SET);
                 buf.resize(length);
-                if (fread((void*)buf.contents(), length, 1, f) != 1)
+                if (fread(buf.contents(), length, 1, f) != 1)
                 {
                     fclose(f);
                     return false;

@@ -21,6 +21,7 @@
 
 #include "Objects/Faction.h"
 #include <Units/Creatures/Pet.h>
+#include "Server/Script/CreatureAIScript.h"
 
 class GrandWidowFaerlinaAI;
 class AnubRekhanAI;
@@ -32,7 +33,6 @@ class PlagueFissureGO;
 class SporeAI;
 class PortalOfShadowsAI;
 class DeathKnightUnderstudyAI;
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // The Arachnid Quarter
@@ -46,7 +46,8 @@ const uint32_t CARRION_SPINNER_WEB_WRAP = 28618; //\todo  PULL EFFECT *FUN*
 
 class CarrionSpinnerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CarrionSpinnerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CarrionSpinnerAI(c); }
     CarrionSpinnerAI(Creature* pCreature);
 };
 
@@ -58,7 +59,8 @@ const uint32_t DREAD_CREEPER_VEIL_OF_SHADOW_HEROIC = 28440;
 
 class DreadCreeperAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DreadCreeperAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DreadCreeperAI(c); }
     DreadCreeperAI(Creature* pCreature);
 };
 
@@ -70,7 +72,8 @@ const uint32_t NAXXRAMAS_CULTIST_KNOCKBACK_HEROIC = 53851;
 
 class NaxxramasCultistAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NaxxramasCultistAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NaxxramasCultistAI(c); }
     NaxxramasCultistAI(Creature* pCreature);
 };
 
@@ -84,7 +87,8 @@ const uint32_t VENOM_STALKER_POISON_CHARGE_HEROIC = 53809;
 
 class VenomStalkerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VenomStalkerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VenomStalkerAI(c); }
     VenomStalkerAI(Creature* pCreature);
 };
 
@@ -99,7 +103,8 @@ const uint32_t TOMB_HORROR_CRYPT_SCARABS_HEROIC = 54316;
 
 class TombHorrorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TombHorrorAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TombHorrorAI(c); }
     TombHorrorAI(Creature* pCreature);
 };
 
@@ -113,7 +118,8 @@ const uint32_t NAXXRAMAS_ACOLYTE_ARCANE_EXPLOSION_HEROIC = 56067;
 // To check: "total caster" + Explosion only when players are close ?
 class NaxxramasAcolyteAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NaxxramasAcolyteAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NaxxramasAcolyteAI(c); }
     NaxxramasAcolyteAI(Creature* pCreature);
 };
 
@@ -126,7 +132,8 @@ const uint32_t VIGILANT_SHADE_SHADOW_BOLT_VOLLEY_HEROIC = 55851;
 // Invisiblity should be removed OnCombatStart ?
 class VigilantShadeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VigilantShadeAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VigilantShadeAI(c); }
     VigilantShadeAI(Creature* pCreature);
 
     void OnCombatStart(Unit* pTarget) override;
@@ -141,7 +148,8 @@ const uint32_t CRYPT_REAVER_FRENZY = 56625;
 
 class CryptReaverAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CryptReaverAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CryptReaverAI(c); }
     CryptReaverAI(Creature* pCreature);
 };
 
@@ -151,7 +159,8 @@ const uint32_t CN_WEB_WRAP = 16486;
 
 class WebWrapAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WebWrapAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WebWrapAI(c); }
     WebWrapAI(Creature* pCreature);
 
     void OnCombatStart(Unit* /*pTarget*/) override;
@@ -160,7 +169,7 @@ class WebWrapAI : public CreatureAIScript
     void AIUpdate() override;
     void Destroy() override;
 
-    uint64_t    mPlayerGuid;
+    uint64_t mPlayerGuid;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -171,7 +180,8 @@ const uint32_t MAEXXNA_SPIDERLING_NECROTIC_POISON_HEROIC = 28776;
 
 class MaexxnaSpiderlingAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MaexxnaSpiderlingAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MaexxnaSpiderlingAI(c); }
     MaexxnaSpiderlingAI(Creature* pCreature);
 };
 
@@ -204,7 +214,8 @@ static LocationVector WebWrapPos[] =
 
 class MaexxnaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MaexxnaAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MaexxnaAI(c); }
     MaexxnaAI(Creature* pCreature);
 
     void OnCombatStart(Unit* /*pTarget*/) override;
@@ -228,7 +239,8 @@ const uint32_t NAXXRAMAS_WORSHIPPER_MIND_EXHAUSTION = 28727;
 
 class NaxxramasWorshipperAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NaxxramasWorshipperAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NaxxramasWorshipperAI(c); }
     NaxxramasWorshipperAI(Creature* pCreature);
     friend class GrandWidowFaerlinaAI;
 
@@ -251,7 +263,8 @@ const uint32_t NAXXRAMAS_FOLLOWER_SILENCE_HEROIC = 54093;
 
 class NaxxramasFollowerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NaxxramasFollowerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NaxxramasFollowerAI(c); }
     NaxxramasFollowerAI(Creature* pCreature);
     friend class GrandWidowFaerlinaAI;
 
@@ -286,7 +299,8 @@ static LocationVector Followers[2] =
 
 class GrandWidowFaerlinaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GrandWidowFaerlinaAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GrandWidowFaerlinaAI(c); }
     GrandWidowFaerlinaAI(Creature* pCreature);
 
     void OnCombatStart(Unit* /*pTarget*/) override;
@@ -312,7 +326,8 @@ const uint32_t CRYPT_GUARD_FRENZY = 8269;
 
 class CryptGuardAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CryptGuardAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CryptGuardAI(c); }
     CryptGuardAI(Creature* pCreature);
     friend class AnubRekhanAI;
 
@@ -330,7 +345,8 @@ const uint32_t CN_CORPSE_SCARAB = 16698;
 
 class CorpseScarabAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CorpseScarabAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CorpseScarabAI(c); }
     CorpseScarabAI(Creature* pCreature);
     friend class AnubRekhanAI;
 
@@ -362,7 +378,8 @@ static LocationVector CryptGuards[] =
 
 class AnubRekhanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AnubRekhanAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AnubRekhanAI(c); }
     AnubRekhanAI(Creature* pCreature);
 
     void OnCombatStart(Unit* /*pTarget*/) override;
@@ -395,7 +412,8 @@ const uint32_t INFECTIOUS_GHOUL_FRENZY_HEROIC = 24318;
 
 class InfectiousGhoulAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InfectiousGhoulAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new InfectiousGhoulAI(c); }
     InfectiousGhoulAI(Creature* pCreature);
 
     void OnCombatStart(Unit* /*pTarget*/) override;
@@ -414,7 +432,8 @@ const uint32_t STONESKIN_GARGOYLE_STONESKIN_HEROIC = 54722;
 
 class StoneskinGargoyleAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(StoneskinGargoyleAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new StoneskinGargoyleAI(c); }
     StoneskinGargoyleAI(Creature* pCreature);
 
     bool HasStoneskin();
@@ -430,7 +449,8 @@ const uint32_t FRENZIED_BAT_FRENZIED_DIVE = 54781;
 
 class FrenziedBatAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FrenziedBatAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new FrenziedBatAI(c); }
     FrenziedBatAI(Creature* pCreature);
 };
 
@@ -444,7 +464,8 @@ const uint32_t PLAGUE_BEAST_TRAMPLE = 5568;
 
 class PlagueBeastAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PlagueBeastAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PlagueBeastAI(c); }
     PlagueBeastAI(Creature* pCreature);
 
     void OnCombatStart(Unit* /*pTarget*/) override;
@@ -459,7 +480,8 @@ const uint32_t EYE_STALKER_MIND_FLAY_HEROIC = 54805;
 
 class EyeStalkerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EyeStalkerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EyeStalkerAI(c); }
     EyeStalkerAI(Creature* pCreature);
 
     void OnCombatStart(Unit* /*pTarget*/) override;
@@ -497,7 +519,8 @@ static LocationVector SkelPosPhase2[] =
 
 class NothThePlaguebringerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NothThePlaguebringerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NothThePlaguebringerAI(c); }
     NothThePlaguebringerAI(Creature* pCreature);
     friend class PlaguedWarriorAI;
     friend class PlaguedChampionAI;
@@ -527,7 +550,8 @@ const uint32_t PLAGUED_WARRIOR_CLEAVE = 15496;
 
 class PlaguedWarriorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PlaguedWarriorAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PlaguedWarriorAI(c); }
     PlaguedWarriorAI(Creature* pCreature);
 
     void Destroy() override;
@@ -545,7 +569,8 @@ const uint32_t PLAGUED_CHAMPION_SHADOW_SHOCK_HEROIC = 54889;
 
 class PlaguedChampionAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PlaguedChampionAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PlaguedChampionAI(c); }
     PlaguedChampionAI(Creature* pCreature);
 
     void Destroy() override;
@@ -562,7 +587,8 @@ const uint32_t PLAGUED_GUARDIAN_BLINK = 29208;
 
 class PlaguedGuardianAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PlaguedGuardianAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PlaguedGuardianAI(c); }
     PlaguedGuardianAI(Creature* pCreature);
 
     void Destroy() override;
@@ -591,7 +617,8 @@ const float HeiganEruptionSlope[3] =
 
 class HeiganTheUncleanAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HeiganTheUncleanAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HeiganTheUncleanAI(c); }
     HeiganTheUncleanAI(Creature* pCreature);
     friend class PlagueFissureGO;
 
@@ -616,7 +643,6 @@ const uint32_t GO_PLAGUE_FISSURE = 181533;
 class PlagueFissureGO : public GameObjectAIScript
 {
 public:
-
     static GameObjectAIScript* Create(GameObject* pGameObject);
     PlagueFissureGO(GameObject* pGameObject);
 
@@ -652,7 +678,8 @@ static LocationVector Spores[] =
 
 class LoathebAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LoathebAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new LoathebAI(c); }
     LoathebAI(Creature* pCreature);
     friend class SporeAI;
 
@@ -676,7 +703,8 @@ const uint32_t SPORE_FUNGAL_CREEP = 29232;
 
 class SporeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SporeAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SporeAI(c); }
     SporeAI(Creature* pCreature);
 
     void OnDied(Unit* pKiller) override;
@@ -699,7 +727,8 @@ const uint32_t DEATH_KNIGHT_HYSTERIA = 55213;
 
 class DeathKnightAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DeathKnightAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DeathKnightAI(c); }
     DeathKnightAI(Creature* pCreature);
 
     void OnCombatStart(Unit* /*pTarget*/) override;
@@ -716,7 +745,8 @@ const uint32_t DEATH_KNIGHT_CAPTAIN_WHIRLWIND = 28335;
 
 class DeathKnightCaptainAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DeathKnightCaptainAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DeathKnightCaptainAI(c); }
     DeathKnightCaptainAI(Creature* pCreature);
 
     void OnCombatStart(Unit* /*pTarget*/) override;
@@ -731,7 +761,8 @@ const uint32_t CN_GHOST_OF_NAXXRAMAS = 16419;
 
 class GhostOfNaxxramasAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GhostOfNaxxramasAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GhostOfNaxxramasAI(c); }
     GhostOfNaxxramasAI(Creature* pCreature);
 };
 
@@ -744,7 +775,8 @@ const uint32_t SHADE_OF_NAXXRAMAS_SHADOW_BOLT_VOLLEY_HEROIC = 55323;
 
 class ShadeOfNaxxramasAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadeOfNaxxramasAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadeOfNaxxramasAI(c); }
     ShadeOfNaxxramasAI(Creature* pCreature);
     friend class PortalOfShadowsAI;
 
@@ -760,7 +792,8 @@ const uint32_t CN_PORTAL_OF_SHADOWS = 16420;
 
 class PortalOfShadowsAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PortalOfShadowsAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PortalOfShadowsAI(c); }
     PortalOfShadowsAI(Creature* pCreature);
 
     void OnCombatStart(Unit* /*pTarget*/) override;
@@ -786,7 +819,8 @@ const uint32_t NECRO_KNIGHT_FROST_NOVA = 30094;
 
 class NecroKnightAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NecroKnightAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NecroKnightAI(c); }
     NecroKnightAI(Creature* pCreature);
 };
 
@@ -800,7 +834,8 @@ const uint32_t SKELETAL_SMITH_THUNDERCLAP = 23931;
 
 class SkeletalSmithAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SkeletalSmithAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SkeletalSmithAI(c); }
     SkeletalSmithAI(Creature* pCreature);
 };
 
@@ -820,7 +855,8 @@ const uint32_t DEATH_KNIGHT_CAVALIER_DEATH_COIL = 28412;
 
 class DeathKnightCavalierAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DeathKnightCavalierAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DeathKnightCavalierAI(c); }
     DeathKnightCavalierAI(Creature* pCreature);
     friend class DeathchargerSteedAI;
 
@@ -841,7 +877,8 @@ const uint32_t DEATHCHARGER_STEED_CHARGE = 55317;
 
 class DeathchargerSteedAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DeathchargerSteedAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DeathchargerSteedAI(c); }
     DeathchargerSteedAI(Creature* pCreature);
     friend class DeathKnightCavalierAI;
 
@@ -860,7 +897,8 @@ const uint32_t DARK_TOUCHED_WARRIOR_WHIRLWIND = 55267;
 
 class DarkTouchedWarriorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DarkTouchedWarriorAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DarkTouchedWarriorAI(c); }
     DarkTouchedWarriorAI(Creature* pCreature);
 
     void OnCombatStart(Unit* /*pTarget*/) override;
@@ -876,7 +914,8 @@ const uint32_t RISEN_SQUIRE_PIERCE_ARMOR = 55318;
 
 class RisenSquireAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RisenSquireAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new RisenSquireAI(c); }
     RisenSquireAI(Creature* pCreature);
 };
 
@@ -890,7 +929,8 @@ const uint32_t UNHOLY_AXE_WHIRLWIND_HEROIC = 24236;
 
 class UnholyAxeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(UnholyAxeAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new UnholyAxeAI(c); }
     UnholyAxeAI(Creature* pCreature);
 };
 
@@ -902,7 +942,8 @@ const uint32_t UNHOLY_SWORD_CLEAVE_HEROIC = 19632;
 
 class UnholySwordAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(UnholySwordAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new UnholySwordAI(c); }
     UnholySwordAI(Creature* pCreature);
 };
 
@@ -916,7 +957,8 @@ const uint32_t UNHOLY_STAFF_POLYMORPH = 29848;
 
 class UnholyStaffAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(UnholyStaffAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new UnholyStaffAI(c); }
     UnholyStaffAI(Creature* pCreature);
 };
 
@@ -931,11 +973,12 @@ const uint32_t INSTRUCTOR_RAZUVIOUS_HOPELESS = 29125;
 
 class InstructorRazuviousAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InstructorRazuviousAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new InstructorRazuviousAI(c); }
     InstructorRazuviousAI(Creature* pCreature);
     friend class DeathKnightUnderstudyAI;
 
-    std::set< DeathKnightUnderstudyAI* >    mStudents;
+    std::set< DeathKnightUnderstudyAI* > mStudents;
 };
 
 InstructorRazuviousAI::InstructorRazuviousAI(Creature* pCreature) : CreatureAIScript(pCreature)
@@ -951,7 +994,8 @@ const uint32_t DEATH_KNIGHT_UNDERSTUDY_TAUNT = 29060;
 
 class DeathKnightUnderstudyAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DeathKnightUnderstudyAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DeathKnightUnderstudyAI(c); }
     DeathKnightUnderstudyAI(Creature* pCreature);
 
     void Destroy() override;
@@ -1061,7 +1105,8 @@ const uint32_t PATCHWORK_GOLEM_WAR_STOMP_HEROIC = 56427;
 
 class PatchworkGolemAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PatchworkGolemAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PatchworkGolemAI(c); }
     PatchworkGolemAI(Creature* pCreature);
 
     void OnCombatStart(Unit* /*pTarget*/) override;
@@ -1077,7 +1122,8 @@ const uint32_t BILE_RETCHER_BILE_RETCHER_SLAM = 27862;
 
 class BileRetcherAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BileRetcherAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BileRetcherAI(c); }
     BileRetcherAI(Creature* pCreature);
 };
 
@@ -1088,7 +1134,8 @@ const uint32_t SEWAGE_SLIME_DISEASE_CLOUD = 28156;
 
 class SewageSlimeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SewageSlimeAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SewageSlimeAI(c); }
     SewageSlimeAI(Creature* pCreature);
 
     void OnCombatStart(Unit* /*pTarget*/) override;
@@ -1102,7 +1149,8 @@ const uint32_t EMBALMING_SLIME_EMBALMING_CLOUD = 28322;
 
 class EmbalmingSlimeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EmbalmingSlimeAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EmbalmingSlimeAI(c); }
     EmbalmingSlimeAI(Creature* pCreature);
 
     void OnCombatStart(Unit* /*pTarget*/) override;
@@ -1119,7 +1167,8 @@ const uint32_t MAD_SCIENTIST_MANA_BURN_HEROIC = 54338;
 
 class MadScientistAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MadScientistAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MadScientistAI(c); }
     MadScientistAI(Creature* pCreature);
 };
 
@@ -1133,7 +1182,8 @@ const uint32_t LIVING_MONSTROSITY_CHAIN_LIGHTNING_HEROIC = 54334;
 
 class LivingMonstrosityAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LivingMonstrosityAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new LivingMonstrosityAI(c); }
     LivingMonstrosityAI(Creature* pCreature);
 };
 
@@ -1145,7 +1195,8 @@ const uint32_t LIGHTNING_TOTEM_SHOCK_HEROIC = 54333;
 
 class LightningTotemAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LightningTotemAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new LightningTotemAI(c); }
     LightningTotemAI(Creature* pCreature);
 
     void OnCombatStart(Unit* /*pTarget*/) override;
@@ -1161,13 +1212,14 @@ const uint32_t STITCHED_COLOSSUS_UNSTOPPABLE_ENRAGE = 54356;
 
 class StitchedColossusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(StitchedColossusAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new StitchedColossusAI(c); }
     StitchedColossusAI(Creature* pCreature);
 
     void OnCombatStart(Unit* /*pTarget*/) override;
     void AIUpdate() override;
 
-    bool    mEnraged;
+    bool mEnraged;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1177,7 +1229,8 @@ const uint32_t MARAUDING_GEIST_FRENZIED_LEAP = 56729;
 
 class MaraudingGeistAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MaraudingGeistAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MaraudingGeistAI(c); }
     MaraudingGeistAI(Creature* pCreature);
 };
 
@@ -1194,7 +1247,8 @@ const uint32_t PATCHWERK_HATEFUL_STRIKE_25 = 59192;
 
 class PatchwerkAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PatchwerkAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PatchwerkAI(c); }
     PatchwerkAI(Creature* pCreature);
 
     void AIUpdate() override;
@@ -1224,7 +1278,8 @@ const uint32_t CN_UPPERCUT = 26007;
 
 class StickedSpewerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(StickedSpewerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new StickedSpewerAI(c); }
     explicit StickedSpewerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
@@ -1256,7 +1311,8 @@ const uint32_t SURGICALASSISTANT_AI_MIND_FLAY = 28310;
 
 class SurgicalAssistantAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SurgicalAssistantAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SurgicalAssistantAI(c); }
     explicit SurgicalAssistantAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
@@ -1286,7 +1342,8 @@ const uint32_t SUMMON_BILE_SLIMES = 27889; //\todo  GAWD :P
 
 class SludgeBelcherAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SludgeBelcherAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SludgeBelcherAI(c); }
     explicit SludgeBelcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
@@ -1325,7 +1382,8 @@ const uint32_t MUTATING_INJECTION = 28169; //\todo  DUMMY AURA
 
 class GrobbulusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GrobbulusAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GrobbulusAI(c); }
     explicit GrobbulusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
@@ -1350,7 +1408,6 @@ class GrobbulusAI : public CreatureAIScript
     }
 
 private:
-
     CreatureAISpells* poisonCloudGrob;
 };
 
@@ -1365,7 +1422,8 @@ const uint32_t FRENZY = 38664; // self
 
 class GluthAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GluthAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GluthAI(c); }
     explicit GluthAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto mortalWound = addAISpell(MORTAL_WOUND, 15.0f, TARGET_ATTACKING);
@@ -1397,7 +1455,8 @@ const uint32_t SWEEPING_SLAM = 25322;
 
 class BonyConstructAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BonyConstructAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BonyConstructAI(c); }
     explicit BonyConstructAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto sweepingSlam = addAISpell(SWEEPING_SLAM, 15.0f, TARGET_VARIOUS);
@@ -1419,7 +1478,8 @@ const uint32_t AURA_OF_AGONY = 28413;
 
 class DeathLordAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DeathLordAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DeathLordAI(c); }
     explicit DeathLordAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto auraOfAgony = addAISpell(AURA_OF_AGONY, 15.0f, TARGET_VARIOUS);
@@ -1442,7 +1502,8 @@ const uint32_t DISRUPTING_SHOUT = 29107;
 
 class RazuviousAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(RazuviousAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new RazuviousAI(c); }
     explicit RazuviousAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto disruptingShout = addAISpell(DISRUPTING_SHOUT, 15.0f, TARGET_VARIOUS);
@@ -1462,19 +1523,19 @@ class RazuviousAI : public CreatureAIScript
     {
         if (Util::checkChance(50.0f))
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You should've stayed home!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You should've stayed home!");
             getCreature()->PlaySoundToSet(8862);
         }
         else
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You disappoint me, students!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You disappoint me, students!");
             getCreature()->PlaySoundToSet(8863);
         }
     }
 
     void OnDied(Unit* /*mKiller*/) override
     {
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "An honorable... death...");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "An honorable... death...");
         getCreature()->PlaySoundToSet(8860);
     }
 };
@@ -1490,7 +1551,8 @@ const uint32_t METEOR = 35181; // 1 target
 
 class KorthazzAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KorthazzAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KorthazzAI(c); }
     explicit KorthazzAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         tountcooldown = 6;
@@ -1548,8 +1610,7 @@ class KorthazzAI : public CreatureAIScript
         }
     }
 
-    protected:
-
+protected:
     uint32_t tountcooldown, tountcont;
     CreatureAISpells* meteor;
 };
@@ -1576,7 +1637,6 @@ class KorthazzAI : public CreatureAIScript
 const uint32_t CN_Baron_Rivendare_4H = 30549; //4H not to confuse with Strat UD Side..
 //Gief new Strat boss blizz or you make Stab a sad panda
 
-
 // Lady Blaumeux AI
 const uint32_t CN_LADY_BLAUMEUX = 16065;
 
@@ -1585,7 +1645,8 @@ const uint32_t VOID_ZONE = 28863; //\todo  DUMMY PART
 
 class BlaumeuxAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BlaumeuxAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BlaumeuxAI(c); }
     explicit BlaumeuxAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         tountcooldown = 16;
@@ -1644,7 +1705,6 @@ class BlaumeuxAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t tountcooldown, tountcont;
     CreatureAISpells* voidZone;
 };
@@ -1675,7 +1735,8 @@ const uint32_t HOLY_WRATH = 32445; // 1target
 
 class ZeliekAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ZeliekAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ZeliekAI(c); }
     explicit ZeliekAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         tountcooldown = 13;
@@ -1735,7 +1796,6 @@ class ZeliekAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t tountcooldown, tountcont;
     CreatureAISpells* holyWrath;
 };
@@ -1794,7 +1854,8 @@ LocationVector IceBlocks[] =    // Those are not blizzlike pos, because those bl
 
 class FrostBreathTriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FrostBreathTriggerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new FrostBreathTriggerAI(c); }
     explicit FrostBreathTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->moveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + 10.5f);
@@ -1826,13 +1887,13 @@ class FrostBreathTriggerAI : public CreatureAIScript
     }
 
 protected:
-
     int AICounter;
 };
 
 class FrostBreathTrigger2AI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FrostBreathTrigger2AI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new FrostBreathTrigger2AI(c); }
     explicit FrostBreathTrigger2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 #ifdef DISABLE_FROST_BREATH
@@ -1858,8 +1919,7 @@ class FrostBreathTrigger2AI : public CreatureAIScript
 class FrostBreathTrigger3AI : public CreatureAIScript
 {
 public:
-
-    ADD_CREATURE_FACTORY_FUNCTION(FrostBreathTrigger3AI)
+    static CreatureAIScript* Create(Creature* c) { return new FrostBreathTrigger3AI(c); }
     explicit FrostBreathTrigger3AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
@@ -1886,8 +1946,7 @@ public:
 class ChillTriggerAI : public CreatureAIScript
 {
 public:
-
-    ADD_CREATURE_FACTORY_FUNCTION(ChillTriggerAI)
+    static CreatureAIScript* Create(Creature* c) { return new ChillTriggerAI(c); }
     explicit ChillTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->castSpellLoc(getCreature()->GetPosition(), sSpellMgr.getSpellInfo(28547), true);
@@ -1938,13 +1997,12 @@ const uint32_t IMMUNITY_PHYSICAL = 34310;
 
 class SapphironAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SapphironAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SapphironAI(c); }
     explicit SapphironAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         stopMovement();
         addWaypoint(1, createWaypoint(1, 3000, WAYPOINT_MOVE_TYPE_RUN, PhaseTwoWP[1]));
-
-        
 
         auto lifeDrain = addAISpell(LIFE_DRAIN, 8.0f, TARGET_VARIOUS, 0, 20, false, true);
         lifeDrain->setAttackStopTimer(2000);
@@ -2265,8 +2323,7 @@ class SapphironAI : public CreatureAIScript
         }
     }
 
-    protected:
-
+protected:
     Unit* ChillTarget;    // I don't like it >_>
 
     uint32_t FlightActions;
@@ -2298,7 +2355,7 @@ const uint32_t CN_GUARDIAN_OF_ICECROWN = 16441;
 
   */
 
-static LocationVector SFrozenWastes[] =    // Soldier of the Frozen Wastes (no idea about those :|)
+static LocationVector SFrozenWastes[] = // Soldier of the Frozen Wastes (no idea about those :|)
 {
     { 3759.149902f, -5074.879883f, 143.175003f, 1.203640f },    // 1
     { 3762.959961f, -5067.399902f, 143.453003f, 0.893413f },
@@ -2372,7 +2429,7 @@ static LocationVector SFrozenWastes[] =    // Soldier of the Frozen Wastes (no i
     { 3646.360107f, -5101.200195f, 143.681000f, 2.909540f }
 };
 
-static LocationVector Abomination[] =    // Unstoppable Abomination
+static LocationVector Abomination[] =   // Unstoppable Abomination
 {
     { 3776.229980f, -5081.439941f, 143.779999f, 4.043730f },    // 1
     { 3774.419922f, -5071.490234f, 143.423996f, 4.214940f },
@@ -2408,7 +2465,7 @@ static LocationVector SoulWeaver[] =    // Soul Weaver
     { 3656.365234f, -5094.724121f, 143.306641f, 6.203571f }
 };
 
-static LocationVector Guardians[] =        // Guardians of Icecrown
+static LocationVector Guardians[] =     // Guardians of Icecrown
 {
     { 3778.371582f, -5065.141113f, 143.614639f, 3.700061f },
     { 3731.733398f, -5032.681152f, 143.775040f, 4.485459f },
@@ -2416,7 +2473,7 @@ static LocationVector Guardians[] =        // Guardians of Icecrown
     { 3700.936279f, -5183.230469f, 143.858582f, 1.314648f }
 };
 
-static LocationVector Waves[] =            // Spawn positions of units that attack circle
+static LocationVector Waves[] =         // Spawn positions of units that attack circle
 {
     { 3756.380615f, -5080.560059f, 142.906921f, 3.762599f },
     { 3726.448242f, -5058.546387f, 142.467331f, 4.262112f },
@@ -2443,12 +2500,8 @@ const uint32_t KELTHUZAD_CHANNEL = 29423;
 
 class KelthuzadAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KelthuzadAI)
-
-    bool FrozenWastes[7];
-    bool Abominations[7];
-    bool SoulWeavers[7];
-
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KelthuzadAI(c); }
     explicit KelthuzadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         for (uint8_t i = 0; i < 7; i++)
@@ -2502,7 +2555,7 @@ class KelthuzadAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Minions, servants, soldiers of the cold dark, obey the call of Kel'Thuzad!");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Minions, servants, soldiers of the cold dark, obey the call of Kel'Thuzad!");
         getCreature()->PlaySoundToSet(8819);
 
         Unit* TheLichKing = NULL;
@@ -2571,11 +2624,11 @@ class KelthuzadAI : public CreatureAIScript
         switch (Util::getRandomUInt(1))
         {
             case 0:
-                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The dark void awaits you!");
+                getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The dark void awaits you!");
                 getCreature()->PlaySoundToSet(8817);
                 break;
             case 1:
-                //_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "");    // no text?
+                //_unit->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "");    // no text?
                 getCreature()->PlaySoundToSet(8818);
                 break;
         }
@@ -2594,7 +2647,7 @@ class KelthuzadAI : public CreatureAIScript
                 WindowGate->setState(GO_STATE_CLOSED);
         }
 
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Do not rejoice... your victory is a hollow one... for I shall return with powers beyond your imagining!");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Do not rejoice... your victory is a hollow one... for I shall return with powers beyond your imagining!");
         getCreature()->PlaySoundToSet(8814);
 
         _setMeleeDisabled(false);
@@ -2709,15 +2762,15 @@ class KelthuzadAI : public CreatureAIScript
                 switch (Util::getRandomUInt(2))
                 {
                     case 0:
-                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Pray for mercy!");
+                        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Pray for mercy!");
                         getCreature()->PlaySoundToSet(8809);
                         break;
                     case 1:
-                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Scream your dying breath!");
+                        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Scream your dying breath!");
                         getCreature()->PlaySoundToSet(8810);
                         break;
                     case 2:
-                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The end is upon you!");
+                        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The end is upon you!");
                         getCreature()->PlaySoundToSet(8811);
                         break;
                 }
@@ -2788,7 +2841,7 @@ class KelthuzadAI : public CreatureAIScript
             HelpDialog++;
             if (HelpDialog == 1)
             {
-                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Master! I require aid!");
+                getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Master! I require aid!");
                 getCreature()->PlaySoundToSet(8816);
             }
 
@@ -2798,13 +2851,13 @@ class KelthuzadAI : public CreatureAIScript
                 TheLichKing = getNearestCreature(3767.58f, -5117.15f, 174.49f, CN_THE_LICH_KING);
                 if (TheLichKing != NULL)
                 {
-                    TheLichKing->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Very well... warriors of the frozen wastes, rise up, I command you to fight, kill, and die for your master. Let none survive...");
+                    TheLichKing->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Very well... warriors of the frozen wastes, rise up, I command you to fight, kill, and die for your master. Let none survive...");
                     TheLichKing->PlaySoundToSet(8824);
                 }
 
                 else
                 {
-                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Very well... warriors of the frozen wastes, rise up, I command you to fight, kill, and die for your master. Let none survive...");
+                    getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Very well... warriors of the frozen wastes, rise up, I command you to fight, kill, and die for your master. Let none survive...");
                     getCreature()->PlaySoundToSet(8824);
                 }
 
@@ -2846,7 +2899,10 @@ class KelthuzadAI : public CreatureAIScript
         return DespawnTrash;
     }
 
-    protected:
+protected:
+    bool FrozenWastes[7];
+    bool Abominations[7];
+    bool SoulWeavers[7];
 
     bool DespawnTrash, EventStart;
     uint32_t SpawnCounter;
@@ -2859,10 +2915,10 @@ class KelthuzadAI : public CreatureAIScript
 };
 
 // The Lich KingAI
-
 class TheLichKingAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TheLichKingAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TheLichKingAI(c); }
     explicit TheLichKingAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -2875,7 +2931,8 @@ const uint32_t DARK_BLAST = 28457; // 28458
 
 class SoldierOfTheFrozenWastesAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SoldierOfTheFrozenWastesAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SoldierOfTheFrozenWastesAI(c); }
     explicit SoldierOfTheFrozenWastesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->m_noRespawn = true;
@@ -2961,8 +3018,7 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
         }
     }
 
-    protected:
-
+protected:
     float LastPosX, LastPosY, LastPosZ;
     float newposx;
     float newposy;
@@ -2975,11 +3031,10 @@ const uint32_t UA_MORTAL_WOUND = 25646;    // 36814
 
 class UnstoppableAbominationAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(UnstoppableAbominationAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new UnstoppableAbominationAI(c); }
     explicit UnstoppableAbominationAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        
-
         auto mortalWound = addAISpell(UA_MORTAL_WOUND, 15.0f, TARGET_VARIOUS, 0, 10, false, true);
         mortalWound->setAttackStopTimer(1000);
 
@@ -3058,8 +3113,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
         }
     }
 
-    protected:
-
+protected:
     float LastPosX, LastPosY, LastPosZ;
     float newposx;
     float newposy;
@@ -3072,7 +3126,8 @@ const uint32_t WAIL_OF_SOULS = 28459;
 
 class SoulWeaverAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SoulWeaverAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SoulWeaverAI(c); }
     explicit SoulWeaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto wailOfSouls = addAISpell(WAIL_OF_SOULS, 15.0f, TARGET_VARIOUS, 0, 10, false, true);
@@ -3151,8 +3206,7 @@ class SoulWeaverAI : public CreatureAIScript
         }
     }
 
-    protected:
-
+protected:
     float LastPosX, LastPosY, LastPosZ;
     float newposx;
     float newposy;
@@ -3165,7 +3219,8 @@ const uint32_t BLOOD_TAP = 28459;
 
 class GuardianOfIcecrownAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GuardianOfIcecrownAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GuardianOfIcecrownAI(c); }
     explicit GuardianOfIcecrownAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         bloodTrap = addAISpell(BLOOD_TAP, 0.0f, TARGET_SELF, 0, 10, false, true);
@@ -3255,8 +3310,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
         }
     }
 
-    protected:
-
+protected:
     float LastPosX, LastPosY, LastPosZ;
     Unit* LastTarget;
     float newposx;

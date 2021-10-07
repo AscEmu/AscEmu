@@ -22,7 +22,7 @@
 #ifndef FACTION_H
 #define FACTION_H
 
-#include "Units/Unit.h"
+#include "Objects/Object.h"
 
 SERVER_DECL bool isHostile(Object* objA, Object* objB);                                 /// B is hostile for A?
 SERVER_DECL bool isAttackable(Object* objA, Object* objB, bool CheckStealth = true);    /// A can attack B?

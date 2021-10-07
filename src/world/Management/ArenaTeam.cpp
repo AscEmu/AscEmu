@@ -18,13 +18,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+
 #include "Management/ArenaTeam.h"
 #include "Server/MainServerDefines.h"
 #include "Server/WorldSession.h"
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/SmsgArenaTeamStats.h"
+#include "Server/Packets/SmsgMessageChat.h"
 
 using namespace AscEmu::Packets;
 

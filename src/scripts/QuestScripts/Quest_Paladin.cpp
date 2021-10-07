@@ -20,13 +20,15 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class PaladinDeadNPC : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PaladinDeadNPC)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PaladinDeadNPC(c); }
     explicit PaladinDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->setStandState(STANDSTATE_DEAD);
         getCreature()->setDeathState(CORPSE);
@@ -37,11 +39,10 @@ class PaladinDeadNPC : public CreatureAIScript
 class GildedBrazier : public GameObjectAIScript
 {
 public:
-
     explicit GildedBrazier(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new GildedBrazier(GO); }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (pPlayer->hasQuestInQuestLog(9678))
         {
@@ -64,14 +65,13 @@ public:
     }
 };
 
-class stillbladeQAI : public CreatureAIScript
+class StillbladeQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(stillbladeQAI)
-    explicit stillbladeQAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
+public:
+    static CreatureAIScript* Create(Creature* c) { return new StillbladeQAI(c); }
+    explicit StillbladeQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         float SSX = mKiller->GetPositionX();
         float SSY = mKiller->GetPositionY();
@@ -92,5 +92,5 @@ void SetupPaladin(ScriptMgr* mgr)
     mgr->register_creature_script(6177, &PaladinDeadNPC::Create);
     mgr->register_creature_script(6172, &PaladinDeadNPC::Create);
     mgr->register_gameobject_script(181956, &GildedBrazier::Create);
-    mgr->register_creature_script(17716, &stillbladeQAI::Create);
+    mgr->register_creature_script(17716, &StillbladeQAI::Create);
 }

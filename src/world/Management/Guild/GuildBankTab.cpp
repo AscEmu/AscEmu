@@ -8,8 +8,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Management/Item.h"
 #include "Objects/ObjectMgr.h"
+
+#if VERSION_STRING < Cata
 #include "Server/Packets/MsgQueryGuildBankText.h"
+#else
 #include "Server/Packets/SmsgGuildBankQueryTextResult.h"
+#endif
 
 using namespace AscEmu::Packets;
 
@@ -148,9 +152,9 @@ void GuildBankTab::setText(std::string const& text)
 void GuildBankTab::sendText(Guild const* guild, WorldSession* session) const
 {
     if (session)
-        sLogger.debug("sendText %s: Tabid: %u, Text: %s", session->GetPlayer()->getName().c_str(), static_cast<uint32_t>(mTabId), mText.c_str());
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "sendText % s: Tabid: % u, Text : % s", session->GetPlayer()->getName().c_str(), static_cast<uint32_t>(mTabId), mText.c_str());
     else
-        sLogger.debug("sendText (Broadcast): Tabid: %u, Text: %s", static_cast<uint32_t>(mTabId), mText.c_str());
+            sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "sendText (Broadcast): Tabid: %u, Text: %s", static_cast<uint32_t>(mTabId), mText.c_str());
 
 #if VERSION_STRING < Cata
     if (session)

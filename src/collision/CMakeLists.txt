@@ -30,3 +30,20 @@ include_directories(
 add_library(collision STATIC ${collision_STAT_SRCS})
 target_link_libraries(collision g3dlite shared)
 
+if(USE_PCH)
+  target_precompile_headers(collision
+  PRIVATE
+  <set>
+  <sstream>
+  <iomanip>
+  <Common.hpp>
+  <Util.hpp>
+  <Logging/Logger.hpp>
+  Models/ModelInstance.h
+  Models/GameObjectModel.h
+  Models/WorldModel.h
+  Maps/MapTree.h
+  BoundingIntervalHierarchy.h
+  VMapDefinitions.h
+)
+endif()

@@ -145,7 +145,6 @@ class ZangarmarshBannerAI : public GameObjectAIScript
     uint32_t m_bannerStatus;
 
 public:
-
     explicit ZangarmarshBannerAI(GameObjectPointer go) : GameObjectAIScript(go)
     {
         m_bannerStatus = BANNER_STATUS_NEUTRAL;
@@ -430,7 +429,6 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Save Data To DB
-
     void UpdateInDB()
     {
         static const char* fieldnames[TOWER_COUNT] = { "Zangarmarsh-TowerWest-status", "Zangarmarsh-TowerEast-status" };
@@ -446,11 +444,9 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Scouts AI
-
 class SCRIPT_DECL ZMScouts : public GossipScript
 {
 public:
-
     void GossipHello(ObjectPointer pObject, PlayerPointer  plr, bool AutoSend)
     {
         uint32_t Team = plr->GetTeam();
@@ -500,7 +496,6 @@ public:
 class ZMCityBannerAI : public GameObjectAIScript
 {
 public:
-
     ZMCityBannerAI(GameObjectPointer goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObjectPointer  GO) { return new ZMCityBannerAI(GO); }
 

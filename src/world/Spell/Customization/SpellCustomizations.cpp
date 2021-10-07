@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/AuraEffects.hpp"
 #include "Spell/Definitions/DiminishingGroup.hpp"
-#include "Spell/Definitions/SpellDamageType.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Spell/Definitions/SpellIsFlags.hpp"
 

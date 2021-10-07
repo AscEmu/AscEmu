@@ -9,8 +9,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellIsFlags.hpp"
 #include "Definitions/SpellTypes.hpp"
 #include "SpellMgr.hpp"
+#include "Management/ItemInterface.h"
 
 #include "Objects/ObjectMgr.h"
+#include "Server/Script/ScriptMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
 
@@ -900,7 +902,7 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
 
 void Aura::spellAuraEffectNotImplemented(AuraEffectModifier* aurEff, bool /*apply*/)
 {
-    sLogger.debug("Aura::applyModifiers : Unknown aura id %u for spell id %u", aurEff->getAuraEffectType(), getSpellId());
+    sLogger.debugFlag(AscEmu::Logging::LF_AURA_EFF, "Aura::applyModifiers : Unknown aura id %u for spell id %u", aurEff->getAuraEffectType(), getSpellId());
 }
 
 void Aura::spellAuraEffectNotUsed(AuraEffectModifier* /*aurEff*/, bool /*apply*/)
@@ -1033,7 +1035,7 @@ void Aura::spellAuraEffectDummy(AuraEffectModifier* aurEff, bool apply)
     if (sScriptMgr.CallScriptedDummyAura(getSpellId(), aurEff->getEffectIndex(), this, apply))
         return;
 
-    sLogger.debug("Aura::spellAuraEffectDummy : Spell %u (%s) has a dummy aura effect, but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str());
+    sLogger.debugFlag(AscEmu::Logging::LF_AURA_EFF, "Aura::spellAuraEffectDummy : Spell %u (%s) has a dummy aura effect, but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str());
 }
 
 void Aura::spellAuraEffectPeriodicHeal(AuraEffectModifier* aurEff, bool apply)
@@ -1154,10 +1156,6 @@ void Aura::spellAuraEffectPeriodicTriggerSpell(AuraEffectModifier* aurEff, bool 
         }
     }
 
-    const auto triggerSpellId = getSpellInfo()->getEffectTriggerSpell(aurEff->getEffectIndex());
-    if (triggerSpellId == 0 || sSpellMgr.getSpellInfo(triggerSpellId) == nullptr)
-        return;
-
     if (apply)
     {
         // Set periodic timer only if timer was resetted
@@ -1223,7 +1221,11 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
 
     // Some forms have two additional hidden passive aura
     uint32_t passiveSpellId = 0, secondaryPassiveSpell = 0;
+#if VERSION_STRING > Classic
     auto modelId = shapeshiftForm->modelId;
+#else
+    uint32_t modelId = 0;
+#endif
     auto freeMovements = false, removePolymorph = false;
 
     switch (shapeshiftForm->id)
@@ -1636,7 +1638,7 @@ void Aura::spellAuraEffectTransform(AuraEffectModifier* aurEff, bool apply)
         const auto properties = sMySQLStore.getCreatureProperties(aurEff->getEffectMiscValue());
         if (properties == nullptr)
         {
-            sLogger.debug("Aura::spellAuraEffectTransform : Unknown creature entry %u in misc value for spell %u", aurEff->getEffectMiscValue(), getSpellId());
+            sLogger.debugFlag(AscEmu::Logging::LF_AURA_EFF, "Aura::spellAuraEffectTransform : Unknown creature entry %u in misc value for spell %u", aurEff->getEffectMiscValue(), getSpellId());
             return;
         }
 
@@ -1655,7 +1657,7 @@ void Aura::spellAuraEffectTransform(AuraEffectModifier* aurEff, bool apply)
 
         if (displayId == 0)
         {
-            sLogger.debug("Aura::spellAuraEffectTransform : Creature entry %u has no display id for spell %u", properties->Id, getSpellId());
+            sLogger.debugFlag(AscEmu::Logging::LF_AURA_EFF, "Aura::spellAuraEffectTransform : Creature entry %u has no display id for spell %u", properties->Id, getSpellId());
             return;
         }
 
@@ -1915,7 +1917,7 @@ void Aura::spellAuraEffectPeriodicTriggerDummy(AuraEffectModifier* aurEff, bool 
     else
     {
         if (!sScriptMgr.CallScriptedDummyAura(getSpellId(), aurEff->getEffectIndex(), this, false))
-            sLogger.debug("Spell aura %u has a periodic trigger dummy effect but no handler for it", getSpellId());
+            sLogger.debugFlag(AscEmu::Logging::LF_AURA_EFF, "Spell aura %u has a periodic trigger dummy effect but no handler for it", getSpellId());
 
 #if VERSION_STRING < Cata
         // Prior to cata periodic timer was resetted on refresh

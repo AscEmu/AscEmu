@@ -236,21 +236,25 @@ class ItemIterator
         void BeginSearch()
         {
             // iteminterface doesn't use mutexes, maybe it should :P
-            ARCEMU_ASSERT(!m_searchInProgress)
-            m_atEnd = false;
-            m_searchInProgress = true;
-            m_container = nullptr;
-            m_currentItem = nullptr;
-            m_slot = 0;
-            Increment();
+            if (!m_searchInProgress)
+            {
+                m_atEnd = false;
+                m_searchInProgress = true;
+                m_container = nullptr;
+                m_currentItem = nullptr;
+                m_slot = 0;
+                Increment();
+            }
         }
 
         void EndSearch()
         {
             // nothing here either
-            ARCEMU_ASSERT(m_searchInProgress)
-            m_atEnd = true;
-            m_searchInProgress = false;
+            if (m_searchInProgress)
+            {
+                m_atEnd = true;
+                m_searchInProgress = false;
+            }
         }
 
         Item* operator*() const

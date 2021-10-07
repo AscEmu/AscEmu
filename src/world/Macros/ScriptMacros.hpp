@@ -6,22 +6,13 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 /// -
-#define ADD_CREATURE_FACTORY_FUNCTION(cl) public:\
-static CreatureAIScript* Create(Creature* c) { return new cl(c); }
-
-/// -
 #define CALL_SCRIPT_EVENT(obj, func) if (obj->IsInWorld() && obj->isCreature() && static_cast<Creature*>(obj)->GetScript() != nullptr) static_cast<Creature*>(obj)->GetScript()->func
 
+/// -
 #define CALL_INSTANCE_SCRIPT_EVENT(Mgr, Func) if (Mgr != nullptr && Mgr->GetScript() != nullptr) Mgr->GetScript()->Func
 
 /// -
-//#define CALL_EVENTSCRIPT_EVENT(obj, func) if (static_cast<GameEvent*>(obj)->mEventScript != nullptr) static_cast<GameEvent*>(obj)->mEventScript->func
-
-/// -
 #define CALL_GO_SCRIPT_EVENT(obj, func) if (obj->isGameObject() && static_cast<GameObject*>(obj)->GetScript() != nullptr) static_cast< GameObject* >(obj)->GetScript()->func
-
-/// -
-// #define ADD_INSTANCE_FACTORY_FUNCTION(ClassName) static InstanceScript* Create(MapMgr* pMapMgr) { return new ClassName(pMapMgr); };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pre-made TargetTypes

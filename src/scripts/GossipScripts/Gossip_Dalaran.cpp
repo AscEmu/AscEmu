@@ -4,7 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Management/Gossip/GossipScript.hpp"
 #include "Objects/GameObject.h"
+#include "Server/Script/ScriptMgr.h"
 
 enum UnorderedEntrys
 {
@@ -16,7 +18,6 @@ enum UnorderedEntrys
 class DedicationOfHonorGossip : public GossipScript
 {
 public:
-
     void onHello(Object* object, Player* player) override
     {
         GossipMenu::sendQuickMenu(object->getGuid(), GT_DEDICATION_OF_HONOR, player, 1, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(GI_SEE_FALL_LICH_KING));
@@ -32,11 +33,10 @@ public:
 class DedicationOfHonorAI : public GameObjectAIScript
 {
 public:
-
     explicit DedicationOfHonorAI(GameObject* go) : GameObjectAIScript(go) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new DedicationOfHonorAI(GO); };
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         DedicationOfHonorGossip gossip;
         gossip.onHello(_gameobject, player);

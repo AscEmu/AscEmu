@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
 #include "Units/Players/PlayerClasses.hpp"
@@ -27,8 +27,6 @@
 #include "SpellMgr.hpp"
 #include "SpellAuras.h"
 #include "Definitions/ProcFlags.hpp"
-#include "Definitions/SpellIsFlags.hpp"
-#include "Definitions/SpellEffectTarget.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Warrior ProcScripts
@@ -301,7 +299,7 @@ public:
             return;
         }
 
-        mItemGUID = static_cast<Item*>(obj)->getGuid();
+        mItemGUID = obj->getGuid();
         if (mProcPerMinute)
             setProcChance(static_cast<Item*>(obj)->getItemProperties()->Delay * mProcPerMinute / 600);
     }

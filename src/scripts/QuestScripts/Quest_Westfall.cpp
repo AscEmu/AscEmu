@@ -19,10 +19,12 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class The_Defias_Traitor : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(The_Defias_Traitor)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new The_Defias_Traitor(c); }
     explicit The_Defias_Traitor(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override
@@ -32,7 +34,7 @@ class The_Defias_Traitor : public CreatureAIScript
 
         if (iWaypointId == 19)
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tell your master that this is where Van Cleef is hiding. I'm outta here!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tell your master that this is where Van Cleef is hiding. I'm outta here!");
             getCreature()->Despawn(5000, 1000);
             getCreature()->stopMoving();
 

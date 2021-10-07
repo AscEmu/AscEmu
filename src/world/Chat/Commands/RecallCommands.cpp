@@ -3,12 +3,13 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Server/MainServerDefines.h"
 #include "Chat/ChatHandler.hpp"
 #include "Server/WorldSession.h"
 #include "Objects/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Util/Strings.hpp"
 
 
 //.recall port

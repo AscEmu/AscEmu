@@ -3,14 +3,14 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
-#include "Server/World.Legacy.h"
 #include "Units/Players/Player.h"
 #include "Server/Packets/SmsgChannelNotify.h"
+#include "Util/Strings.hpp"
 
 using namespace AscEmu::Packets;
 

@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Server/Packets/CmsgNameQuery.h"
 #include "Server/Packets/CmsgGameobjectQuery.h"
 #include "Server/Packets/SmsgNameQueryResponse.h"
@@ -37,7 +37,7 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
     if (!info)
         return;
 
-    sLogger.debug("Received CMSG_NAME_QUERY for: %s", info->name);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_NAME_QUERY for: %s", info->name);
     SendPacket(SmsgNameQueryResponse(srlPacket.guid, info->name, info->race, info->gender, info->cl).serialise().get());
 }
 
@@ -58,7 +58,7 @@ void WorldSession::handleGameObjectQueryOpcode(WorldPacket& recvData)
     const auto name = loc ? loc->name : gameobject_info->name.c_str();
 
 
-    sLogger.debug("Received CMSG_GAMEOBJECT_QUERY for entry: %u", srlPacket.entry);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GAMEOBJECT_QUERY for entry: %u", srlPacket.entry);
     SendPacket(SmsgGameobjectQueryResponse(*gameobject_info, name).serialise().get());
 }
 
@@ -118,7 +118,11 @@ void WorldSession::handleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/)
             if (creature->isQuestGiver())
             {
                 temp.rawGuid = creature->getGuid();
-                temp.status = uint8_t(sQuestMgr.CalcStatus(creature, _player));
+#if VERSION_STRING < Cata
+                temp.status = static_cast<uint8_t>(sQuestMgr.CalcStatus(creature, _player));
+#else
+                temp.status = sQuestMgr.CalcStatus(creature, _player);
+#endif
                 questgiverSet.push_back(temp);
             }
         }
@@ -133,7 +137,7 @@ void WorldSession::handlePageTextQueryOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_PAGE_TEXT_QUERY: %u (pageId)", srlPacket.pageId);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_PAGE_TEXT_QUERY: %u (pageId)", srlPacket.pageId);
 
     uint32_t pageId = srlPacket.pageId;
     while (pageId)
@@ -157,7 +161,7 @@ void WorldSession::handleItemNameQueryOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_ITEM_NAME_QUERY: %u (itemEntry)", srlPacket.itemEntry);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ITEM_NAME_QUERY: %u (itemEntry)", srlPacket.itemEntry);
 
     const auto itemProperties = sMySQLStore.getItemProperties(srlPacket.itemEntry);
     if (itemProperties == nullptr)

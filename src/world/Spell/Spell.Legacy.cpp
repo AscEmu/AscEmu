@@ -19,27 +19,21 @@
  *
  */
 
-#include "SpellTarget.h"
 #include "Units/Creatures/Pet.h"
-#include "Server/Packets/SmsgClearExtraAuraInfo.h"
 #include "Spell.Legacy.h"
 #include "Definitions/SpellInFrontStatus.hpp"
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellDamageType.hpp"
-#include "Definitions/ProcFlags.hpp"
 #include "Definitions/CastInterruptFlags.hpp"
-#include "Definitions/AuraInterruptFlags.hpp"
 #include "Definitions/SpellTargetType.hpp"
-#include "Definitions/SpellRanged.hpp"
 #include "Definitions/SpellIsFlags.hpp"
-#include "Definitions/DiminishingGroup.hpp"
 #include "Definitions/SpellState.hpp"
 #include "Definitions/SpellMechanics.hpp"
 #include "Definitions/SpellEffectTarget.hpp"
 #include "Definitions/PowerType.hpp"
 #include "Definitions/SpellDidHitResult.hpp"
 #include "SpellHelpers.h"
-#include "StdAfx.h"
+
 #include "VMapFactory.h"
 #include "Management/Item.h"
 #include "Objects/DynamicObject.h"
@@ -54,13 +48,12 @@
 #include "Objects/Faction.h"
 #include "SpellMgr.hpp"
 #include "SpellAuras.h"
-#include "Map/WorldCreatorDefines.hpp"
+#include "Definitions/SpellEffects.hpp"
 #include "Server/Packets/SmsgSpellFailure.h"
 #include "Server/Packets/SmsgSpellFailedOther.h"
-#include "Server/Packets/SmsgSpellHealLog.h"
 #include "Server/Packets/SmsgResurrectRequest.h"
 #include "Server/Packets/SmsgSpellDelayed.h"
-#include "Server/Packets/SmsgCancelCombat.h"
+#include "Server/Script/CreatureAIScript.h"
 
 using namespace AscEmu::Packets;
 
@@ -80,7 +73,17 @@ enum SpellTargetSpecification
 
 Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
 {
-    ARCEMU_ASSERT(Caster != NULL && info != NULL);
+    if (Caster == nullptr)
+    {
+        sLogger.failure("Spell::Spell cant initialize without caster!");
+        return;
+    }
+
+    if (Caster == nullptr)
+    {
+        sLogger.failure("Spell::Spell cant initialize without valid spell info!");
+        return;
+    }
 
     Caster->m_pendingSpells.insert(this);
     chaindamage = 0;
@@ -466,7 +469,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
 
                 if (u_caster != nullptr)
                 {
-                    if (isFriendly(u_caster, static_cast<Unit*>(itr)))
+                    if (isFriendly(u_caster, itr))
                     {
                         did_hit_result = static_cast<SpellDidHitResult>(DidHit(i, static_cast<Unit*>(itr)));
                         if (did_hit_result == SPELL_DID_HIT_SUCCESS)
@@ -480,7 +483,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
                     if (g_caster != nullptr && g_caster->getCreatedByGuid() && g_caster->m_summoner != nullptr)
                     {
                         //trap, check not to attack owner and friendly
-                        if (isFriendly(g_caster->m_summoner, static_cast<Unit*>(itr)))
+                        if (isFriendly(g_caster->m_summoner, itr))
                             SafeAddTarget(tmpMap, itr->getGuid());
                     }
                     else
@@ -580,7 +583,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
         {
             if (u_caster != nullptr)
             {
-                if (isFriendly(u_caster, static_cast<Unit*>(itr)) && DidHit(i, static_cast<Unit*>(itr)) == SPELL_DID_HIT_SUCCESS)
+                if (isFriendly(u_caster, itr) && DidHit(i, static_cast<Unit*>(itr)) == SPELL_DID_HIT_SUCCESS)
                 {
                     return itr->getGuid();
                 }
@@ -590,7 +593,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
                 if (g_caster && g_caster->getCreatedByGuid() && g_caster->m_summoner)
                 {
                     //trap, check not to attack owner and friendly
-                    if (isFriendly(g_caster->m_summoner, static_cast<Unit*>(itr)))
+                    if (isFriendly(g_caster->m_summoner, itr))
                     {
                         return itr->getGuid();
                     }
@@ -1289,7 +1292,7 @@ void Spell::HandleAddAura(uint64 guid)
         if (static_cast<Player*>(Target)->isPvpFlagSet())
         {
             if (p_caster->isPlayer() && !p_caster->isPvpFlagSet())
-                static_cast<Player*>(p_caster)->PvPToggle();
+                p_caster->PvPToggle();
             else
                 p_caster->setPvpFlag();
         }
@@ -1826,7 +1829,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
         else if (getSpellInfo()->getId() == 32307)
         {
             Creature* kilsorrow = p_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ());
-            if (kilsorrow == nullptr || kilsorrow->isAlive() || p_caster->CalcDistance(p_caster, kilsorrow) > 1)
+            if (kilsorrow == nullptr || kilsorrow->isAlive() || p_caster && p_caster->CalcDistance(p_caster, kilsorrow) > 1)
                 return SPELL_FAILED_NOT_HERE;
             if (kilsorrow->getEntry() != 17147 && kilsorrow->getEntry() != 17148 && kilsorrow->getEntry() != 18397 && kilsorrow->getEntry() != 18658 && kilsorrow->getEntry() != 17146)
                 return SPELL_FAILED_NOT_HERE;

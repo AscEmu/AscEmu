@@ -5,11 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_HallsOfLightning.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class HallsOfLightningScript : public InstanceScript
 {
 public:
-
     uint32_t mGeneralDoorsGUID;
     uint32_t mVolkhanDoorsGUID;
     uint32_t mLokenDoorsGUID;
@@ -92,7 +92,8 @@ public:
 
 class GeneralBjarngrimAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GeneralBjarngrimAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GeneralBjarngrimAI(c); }
     explicit GeneralBjarngrimAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Battle Stance
@@ -118,10 +119,10 @@ class GeneralBjarngrimAI : public CreatureAIScript
 
         mStanceTimer = INVALIDATE_TIMER;
 
-        addEmoteForEvent(Event_OnCombatStart, 758);      // I am the greatest of my father's sons! Your end has come!
-        addEmoteForEvent(Event_OnTargetDied, 762);        // So ends your curse.
-        addEmoteForEvent(Event_OnTargetDied, 763);        // Flesh... is... weak!
-        addEmoteForEvent(Event_OnDied, 765);      // How can it be...? Flesh is not... stronger!
+        addEmoteForEvent(Event_OnCombatStart, 758);     // I am the greatest of my father's sons! Your end has come!
+        addEmoteForEvent(Event_OnTargetDied, 762);      // So ends your curse.
+        addEmoteForEvent(Event_OnTargetDied, 763);      // Flesh... is... weak!
+        addEmoteForEvent(Event_OnDied, 765);            // How can it be...? Flesh is not... stronger!
     }
 
     void OnCombatStart(Unit* /*pTarget*/) override
@@ -183,13 +184,13 @@ class GeneralBjarngrimAI : public CreatureAIScript
     }
 
 private:
-
     int32_t mStanceTimer;
 };
 
 class Volkhan : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Volkhan)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Volkhan(c); }
     explicit Volkhan(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -218,11 +219,11 @@ class Volkhan : public CreatureAIScript
         mPhase = 0;
         m_bStomp = false;
 
-        addEmoteForEvent(Event_OnCombatStart, 769);      // It is you who have destroyed my children? You... shall... pay!
+        addEmoteForEvent(Event_OnCombatStart, 769);     // It is you who have destroyed my children? You... shall... pay!
         addEmoteForEvent(Event_OnTargetDied, 774);      // The armies of iron will conquer all!
         addEmoteForEvent(Event_OnTargetDied, 775);      // Feh! Pathetic!
         addEmoteForEvent(Event_OnTargetDied, 776);      // You have cost me too much work!
-        addEmoteForEvent(Event_OnDied, 777);      // The master was right... to be concerned.
+        addEmoteForEvent(Event_OnDied, 777);            // The master was right... to be concerned.
     }
 
     void OnCombatStart(Unit* /*pTarget*/) override
@@ -313,7 +314,8 @@ class Volkhan : public CreatureAIScript
 
 class MoltenGolem : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MoltenGolem)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MoltenGolem(c); }
     explicit MoltenGolem(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SPELL_BLAST_WAVE, 25.0f, TARGET_SELF, 0, 20);
@@ -333,7 +335,8 @@ class MoltenGolem : public CreatureAIScript
 
 class BrittleGolem : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BrittleGolem)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BrittleGolem(c); }
     explicit BrittleGolem(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
@@ -343,20 +346,21 @@ class BrittleGolem : public CreatureAIScript
 
 class VolkhansAnvil : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VolkhansAnvil)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VolkhansAnvil(c); }
     explicit VolkhansAnvil(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         setRooted(true);
     }
-
 };
 
 //\todo missing spark phase
 class IonarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(IonarAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new IonarAI(c); }
     explicit IonarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -380,7 +384,8 @@ class IonarAI : public CreatureAIScript
 
 class LokenAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LokenAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new LokenAI(c); }
     explicit LokenAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -401,11 +406,11 @@ class LokenAI : public CreatureAIScript
         RegisterAIUpdateEvent(1000);
         mSpeech = 1;
 
-        addEmoteForEvent(Event_OnCombatStart, 801);      // What hope is there for you? None!
-        addEmoteForEvent(Event_OnTargetDied, 805);      // Only mortal...
-        addEmoteForEvent(Event_OnTargetDied, 806);      // I... am... FOREVER!
-        addEmoteForEvent(Event_OnTargetDied, 807);      // What little time you had, you wasted!
-        addEmoteForEvent(Event_OnDied, 811);      // My death... heralds the end of this world.
+        addEmoteForEvent(Event_OnCombatStart, 801); // What hope is there for you? None!
+        addEmoteForEvent(Event_OnTargetDied, 805);  // Only mortal...
+        addEmoteForEvent(Event_OnTargetDied, 806);  // I... am... FOREVER!
+        addEmoteForEvent(Event_OnTargetDied, 807);  // What little time you had, you wasted!
+        addEmoteForEvent(Event_OnDied, 811);        // My death... heralds the end of this world.
     }
 
     void OnCombatStart(Unit* /*pTarget*/) override

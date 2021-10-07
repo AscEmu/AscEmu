@@ -39,11 +39,13 @@ uint32_t TicketMgr::generateNextTicketId()
 
 void TicketMgr::addGMTicket(GM_Ticket* ticket, bool startup)
 {
-    ARCEMU_ASSERT(ticket != NULL);
-    m_ticketList.push_back(ticket);
+    if (ticket)
+    {
+        m_ticketList.push_back(ticket);
 
-    if (!startup)
-        saveGMTicket(ticket, nullptr);
+        if (!startup)
+            saveGMTicket(ticket, nullptr);
+    }
 }
 
 void TicketMgr::loadGMTickets()

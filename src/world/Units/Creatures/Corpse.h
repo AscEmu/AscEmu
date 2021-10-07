@@ -24,6 +24,7 @@
 #include "Objects/Object.h"
 #include "Management/LootMgr.h"
 #include "Data/WoWCorpse.hpp"
+#include "Server/UpdateFieldInclude.h"
 
 enum CORPSE_STATE
 {

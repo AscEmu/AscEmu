@@ -6,19 +6,19 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_TheStockade.h"
 
+#include "Server/Script/CreatureAIScript.h"
+
 class InstanceStormwindStockadeScript : public InstanceScript
 {
 public:
-
-    explicit InstanceStormwindStockadeScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {}
-
+    explicit InstanceStormwindStockadeScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceStormwindStockadeScript(pMapMgr); }
 };
 
 class DeepfuryAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DeepfuryAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DeepfuryAI(c); }
     explicit DeepfuryAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SHIELD_SLAM, 100.0f, TARGET_ATTACKING, 0, 8);
@@ -45,7 +45,8 @@ class DeepfuryAI : public CreatureAIScript
 
 class HamhockAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HamhockAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HamhockAI(c); }
     explicit HamhockAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BLOODLUST, 100.0f, TARGET_RANDOM_FRIEND, 0, 60);
@@ -57,7 +58,8 @@ class HamhockAI : public CreatureAIScript
 
 class BazilAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BazilAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BazilAI(c); }
     explicit BazilAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(SMOKE_BOMB, 100.0f, TARGET_ATTACKING, 9, 15);
@@ -74,7 +76,8 @@ class BazilAI : public CreatureAIScript
 
 class DextrenAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DextrenAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DextrenAI(c); }
     explicit DextrenAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(FRIGHTENING_SHOUT, 33.0f, TARGET_ATTACKING, 8, 30);
@@ -89,11 +92,8 @@ class DextrenAI : public CreatureAIScript
 
 class TargorrTheDreadAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TargorrTheDreadAI)
-
-    bool Enrage;
-    CreatureAISpells *Enraged;
-
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TargorrTheDreadAI(c); }
     explicit TargorrTheDreadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Enraged = addAISpell(ENRAGE, 0.0f, TARGET_SELF);
@@ -109,11 +109,16 @@ class TargorrTheDreadAI : public CreatureAIScript
             _castAISpell(Enraged);
         }
     }
+
+    bool Enrage;
+    CreatureAISpells* Enraged;
+
 };
 
 class InmateAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InmateAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new InmateAI(c); }
     explicit InmateAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(REND, 100.0f, TARGET_ATTACKING, 5, 16);
@@ -127,7 +132,8 @@ class InmateAI : public CreatureAIScript
 
 class InsurgentAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(InsurgentAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new InsurgentAI(c); }
     explicit InsurgentAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(DEMORALIZING_SHOUT, 100.0f, TARGET_SELF, 7, 25);
@@ -141,7 +147,8 @@ class InsurgentAI : public CreatureAIScript
 
 class PrisonerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PrisonerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PrisonerAI(c); }
     explicit PrisonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(KICK, 100.0f, TARGET_ATTACKING, 5, 16);
@@ -156,7 +163,8 @@ class PrisonerAI : public CreatureAIScript
 
 class ConvictAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ConvictAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ConvictAI(c); }
     explicit ConvictAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(BACKHAND, 100.0f, TARGET_ATTACKING, 5, 12);

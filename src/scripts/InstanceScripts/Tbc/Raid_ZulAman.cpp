@@ -6,21 +6,20 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Raid_ZulAman.h"
 
+#include "Server/Script/CreatureAIScript.h"
+
 class ZulAmanInstanceScript : public InstanceScript
 {
 public:
-
-    explicit ZulAmanInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit ZulAmanInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ZulAmanInstanceScript(pMapMgr); }
 };
 
 //\todo move AddEmote to database
 class NalorakkAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NalorakkAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NalorakkAI(c); }
     explicit NalorakkAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto brutalSwipe = addAISpell(NALORAKK_BRUTAL_SWIPE, 2.0f, TARGET_ATTACKING, 0, 35);
@@ -118,7 +117,8 @@ class NalorakkAI : public CreatureAIScript
 
 class AkilzonAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AkilzonAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AkilzonAI(c); }
     explicit AkilzonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(AKILZON_STATIC_DISRUPTION, 2.0f, TARGET_SELF, 0, 60);
@@ -161,7 +161,8 @@ class AkilzonAI : public CreatureAIScript
 
 class SoaringEagleAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SoaringEagleAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SoaringEagleAI(c); }
     explicit SoaringEagleAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(EAGLE_SWOOP, 5.0f, TARGET_DESTINATION, 0, 0);
@@ -171,7 +172,8 @@ class SoaringEagleAI : public CreatureAIScript
 
 class HalazziAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HalazziAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HalazziAI(c); }
     explicit HalazziAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto saberLash = addAISpell(HALAZZI_SABER_LASH, 0.5f, TARGET_DESTINATION, 0, 0);
@@ -315,7 +317,8 @@ class HalazziAI : public CreatureAIScript
 
 class LynxSpiritAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LynxSpiritAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new LynxSpiritAI(c); }
     explicit LynxSpiritAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // Lynx Flurry

@@ -5,19 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_Gnomeregan.h"
-#include <Units/Creatures/Pet.h>
 
 class GnomereganInstanceScript : public InstanceScript
 {
 public:
-
-    explicit GnomereganInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit GnomereganInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new GnomereganInstanceScript(pMapMgr); }
-
-
 };
 
 void SetupGnomeregan(ScriptMgr* mgr)

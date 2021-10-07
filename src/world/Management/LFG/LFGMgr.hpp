@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Definitions.h"
 #include <list>
 #include "Server/EventableObject.h"
-#include "Macros/LFGMacros.hpp"
 
 class LfgGroupData;
 class LfgPlayerData;

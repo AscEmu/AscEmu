@@ -5,11 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Map/MapManagementGlobals.hpp"
 #include "MapCell.h"
 #include "CellHandler.h"
 #include "Management/WorldStatesHandler.h"
-#include "MapMgrDefines.hpp"
 #include "MapDefines.h"
 #include "CThreads.h"
 #include "Units/Summons/SummonDefines.hpp"

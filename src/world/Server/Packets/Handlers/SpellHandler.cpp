@@ -3,16 +3,13 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
+#include "Chat/ChatHandler.hpp"
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
 #include "Map/MapMgr.h"
 #include "Server/MainServerDefines.h"
-#include "Spell/Definitions/AuraInterruptFlags.hpp"
-#include "Spell/Definitions/SpellCastTargetFlags.hpp"
-#include "Spell/Definitions/SpellRanged.hpp"
-#include "Spell/Definitions/SpellState.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -20,7 +17,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Summons/TotemSummon.h"
 #include "Units/UnitDefines.hpp"
 #include "Objects/Faction.h"
-#include "Data/WoWItem.hpp"
 #include "Server/Packets/CmsgCastSpell.h"
 #include "Server/Packets/CmsgPetCastSpell.h"
 

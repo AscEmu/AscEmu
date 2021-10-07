@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //\details <b>At: Worlds End Tavern</b>\n
@@ -48,7 +49,8 @@ enum L80Spells
 
 class SamAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SamAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SamAI(c); }
     explicit SamAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -101,13 +103,13 @@ class SamAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
 
 class BerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(BerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BerAI(c); }
     explicit BerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -158,12 +160,12 @@ class BerAI : public CreatureAIScript
 
 protected:
     uint32_t timer;
-
 };
 
 class SigAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SigAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SigAI(c); }
     explicit SigAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -216,13 +218,13 @@ class SigAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
 
 class MaiAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MaiAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MaiAI(c); }
     explicit MaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -273,14 +275,13 @@ class MaiAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
 
-
 class ThuAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ThuAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ThuAI(c); }
     explicit ThuAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -303,7 +304,7 @@ class ThuAI : public CreatureAIScript
 
     void OnDespawn() override
     {
-    RemoveAIUpdateEvent();
+        RemoveAIUpdateEvent();
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true);
     }
 
@@ -313,7 +314,7 @@ class ThuAI : public CreatureAIScript
         {
             case 2: getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true); break;
             case 3:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 14:  getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "ARE YOU READY TO ROCK?!?!"); break;
+            case 14:  getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "ARE YOU READY TO ROCK?!?!"); break;
             case 17:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
             case 42:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
             case 55:  getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
@@ -328,7 +329,7 @@ class ThuAI : public CreatureAIScript
             case 110: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
             case 137: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
             case 140: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-            case 142: getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "WERE GANA ROCK YOU CRAAAAAAZY!!!"); break;
+            case 142: getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "WERE GANA ROCK YOU CRAAAAAAZY!!!"); break;
             case 313: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
             case 194: getCreature()->emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
             case 200:
@@ -344,13 +345,13 @@ class ThuAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
 
 class UndeadAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(UndeadAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new UndeadAI(c); }
     explicit UndeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -389,13 +390,13 @@ class UndeadAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
 
 class Undead2AI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Undead2AI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Undead2AI(c); }
     explicit Undead2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -418,7 +419,7 @@ class Undead2AI : public CreatureAIScript
 
     void OnDespawn() override
     {
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
         RemoveAIUpdateEvent();
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true);
     }
@@ -435,13 +436,13 @@ class Undead2AI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
 
 class Undead3AI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Undead3AI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Undead3AI(c); }
     explicit Undead3AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -474,13 +475,13 @@ class Undead3AI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
 
 class TriggerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TriggerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TriggerAI(c); }
     explicit TriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -503,7 +504,7 @@ class TriggerAI : public CreatureAIScript
 
     void OnDespawn() override
     {
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
         RemoveAIUpdateEvent();
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true);
     }
@@ -565,13 +566,13 @@ class TriggerAI : public CreatureAIScript
         timer++;
     }
 protected:
-
     uint32_t timer;
 };
 
 class Trigger2AI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Trigger2AI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Trigger2AI(c); }
     explicit Trigger2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -594,7 +595,7 @@ class Trigger2AI : public CreatureAIScript
 
     void OnDespawn() override
     {
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
         RemoveAIUpdateEvent();
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELLFLARE), true);
     }
@@ -650,13 +651,13 @@ class Trigger2AI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
 
 class Effectsground : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Effectsground)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Effectsground(c); }
     explicit Effectsground(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -766,13 +767,13 @@ class Effectsground : public CreatureAIScript
     }
 
 protected:
-
     uint32_t timer;
 };
 
 class Effectsair : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Effectsair)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Effectsair(c); }
     explicit Effectsair(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -830,8 +831,8 @@ class Effectsair : public CreatureAIScript
         }
         timer++;
     }
-protected:
 
+protected:
     uint32_t timer;
 };
 

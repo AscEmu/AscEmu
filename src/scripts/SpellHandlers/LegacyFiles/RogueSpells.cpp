@@ -27,6 +27,8 @@
 #include <Spell/Definitions/SpellIsFlags.hpp>
 #include <Spell/Definitions/SpellMechanics.hpp>
 
+#include "Spell/SpellMgr.hpp"
+
 //Alice : Correct formula for Rogue - Preparation
 
 bool Preparation(uint8_t /*effectIndex*/, Spell* pSpell)

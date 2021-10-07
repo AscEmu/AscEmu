@@ -5,15 +5,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Raid_Naxxramas.h"
+#include "Server/Script/CreatureAIScript.h"
 
 //const uint32_t CN_THADDIUS = 15928;
 
 class NaxxramasScript : public InstanceScript
 {
 public:
-
     explicit NaxxramasScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
-
     static InstanceScript* Create(MapMgr* pMapMgr) { return new NaxxramasScript(pMapMgr); }
 
     void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
@@ -26,7 +25,7 @@ public:
                     /* getCreatureBySpawnId not entry!
                     KelThuzad = getCreatureBySpawnId(CN_KELTHUZAD);
                     if (KelThuzad && KelThuzad->isAlive())
-                        KelThuzad->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "No!!! A curse upon you, interlopers! The armies of the Lich King will hunt you down. You will not escape your fate...");
+                        KelThuzad->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "No!!! A curse upon you, interlopers! The armies of the Lich King will hunt you down. You will not escape your fate...");
                     KelThuzad = NULL;*/
 
                 } break;
@@ -50,7 +49,6 @@ public:
 
 /////////////////////////////////////////////////////////////////////////////////
 // The Arachnid Quarter
-
 CarrionSpinnerAI::CarrionSpinnerAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     if (_isHeroic())
@@ -86,7 +84,6 @@ NaxxramasCultistAI::NaxxramasCultistAI(Creature* pCreature) : CreatureAIScript(p
     }
 }
 
-
 VenomStalkerAI::VenomStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     // Do those really work ?
@@ -101,7 +98,6 @@ VenomStalkerAI::VenomStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature
         charge->setMinMaxDistance(0.0f, 40.0f);
     }
 }
-
 
 TombHorrorAI::TombHorrorAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
@@ -123,7 +119,6 @@ TombHorrorAI::TombHorrorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     addAISpell(TOMB_HORROR_SPIKE_VOLLEY, 10.0f, TARGET_SELF, 1, 15);
 }
 
-
 NaxxramasAcolyteAI::NaxxramasAcolyteAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     if (_isHeroic())
@@ -141,7 +136,6 @@ NaxxramasAcolyteAI::NaxxramasAcolyteAI(Creature* pCreature) : CreatureAIScript(p
         addAISpell(NAXXRAMAS_ACOLYTE_ARCANE_EXPLOSION_NORMAL, 10.0f, TARGET_SELF, 2, 15);
     }
 }
-
 
 VigilantShadeAI::VigilantShadeAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
@@ -170,13 +164,11 @@ void VigilantShadeAI::OnCombatStop(Unit* /*pTarget*/)
     _applyAura(VIGILANT_SHADE_INVISIBILITY);
 }
 
-
 CryptReaverAI::CryptReaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     addAISpell(CRYPT_REAVER_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 5);
     addAISpell(CRYPT_REAVER_FRENZY, 7.0f, TARGET_SELF, 0, 40);
 }
-
 
 WebWrapAI::WebWrapAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
@@ -243,7 +235,6 @@ void WebWrapAI::Destroy()
     delete this;
 }
 
-
 MaexxnaSpiderlingAI::MaexxnaSpiderlingAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     if (_isHeroic())
@@ -257,7 +248,6 @@ MaexxnaSpiderlingAI::MaexxnaSpiderlingAI(Creature* pCreature) : CreatureAIScript
         poison->setMinMaxDistance(0.0f, 8.0f);
     }
 }
-
 
 MaexxnaAI::MaexxnaAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
@@ -2595,7 +2585,7 @@ void PatchwerkAI::AIUpdate()
     if (mEnraged == false && _getHealthPercent() <= 5)
     {
         _applyAura(PATCHWERK_FRENZY);
-        getCreature()->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, "Patchwerk goes into a frenzy!");
+        getCreature()->sendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, "Patchwerk goes into a frenzy!");
         mEnraged = true;
     }
 }

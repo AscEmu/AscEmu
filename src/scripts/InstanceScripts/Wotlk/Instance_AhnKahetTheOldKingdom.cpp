@@ -10,11 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 class AhnKahetTheOldKingdomInstanceScript : public InstanceScript
 {
 public:
-
-    explicit AhnKahetTheOldKingdomInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit AhnKahetTheOldKingdomInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new AhnKahetTheOldKingdomInstanceScript(pMapMgr); }
 };
 

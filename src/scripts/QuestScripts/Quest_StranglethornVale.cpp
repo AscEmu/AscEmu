@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 enum
 {
@@ -30,7 +31,6 @@ enum
 class StrFever : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
@@ -60,7 +60,8 @@ public:
 
 class Beka : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Beka)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Beka(c); }
     explicit Beka(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -95,7 +96,8 @@ class Beka : public CreatureAIScript
 
 class Beka1 : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Beka1)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Beka1(c); }
     explicit Beka1(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -130,7 +132,8 @@ class Beka1 : public CreatureAIScript
 
 class Beka2 : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Beka2)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Beka2(c); }
     explicit Beka2(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* mKiller) override
@@ -148,7 +151,6 @@ class Beka2 : public CreatureAIScript
 class BloodscalpClanHeads : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
@@ -156,17 +158,17 @@ public:
         float SSZ = mTarget->GetPositionZ();
 
         GameObject* skull1 = mTarget->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 2551);
-        if (skull1 == NULL)
+        if (skull1 == nullptr)
             return;
 
         Creature* Kin_weelay = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 2519);
-        if (Kin_weelay == NULL)
+        if (Kin_weelay == nullptr)
             return;
 
         std::string msg1 = "Ah. Good ";
         msg1 += mTarget->getName();
         msg1 += ". Now let us see what tale these heads tell...";
-        Kin_weelay->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg1.c_str());
+        Kin_weelay->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg1.c_str());
         Kin_weelay->castSpell(Kin_weelay, sSpellMgr.getSpellInfo(3644), false);
         skull1->Despawn(5000, 0);
         GameObject* skull2 = mTarget->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 2551);
@@ -176,15 +178,13 @@ public:
         std::string msg = "There, ";
         msg += mTarget->getName();
         msg += ". You may now speak to the Bloodscalp chief and his witchdoctor.";
-        Kin_weelay->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 500);
+        Kin_weelay->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 500);
     }
-
 };
 
 class BacktoBootyBay : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float X = mTarget->GetPositionX();
@@ -197,7 +197,7 @@ public:
             std::string say = "Hm... if you're looking to adle wits. ";
             say += mTarget->getName();
             say += ", then the secret behind Zanzil's zombies might just fo the trick!";
-            Crank->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+            Crank->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }
     }
 };
@@ -205,7 +205,6 @@ public:
 class VoodooDues : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float X = mTarget->GetPositionX();
@@ -218,7 +217,7 @@ public:
             std::string say = "Bah! ";
             say += mTarget->getName();
             say += ", this foot won't budge!";
-            MacKinley->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+            MacKinley->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }
     }
 };
@@ -287,8 +286,9 @@ class FacingNegolash : public QuestScript
 
 class NegolashAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NegolashAI)
-    explicit NegolashAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NegolashAI(c); }
+    explicit NegolashAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* /*mKiller*/) override
     {

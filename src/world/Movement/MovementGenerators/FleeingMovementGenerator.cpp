@@ -223,8 +223,8 @@ template void FleeingMovementGenerator<Creature>::setTargetLocation(Creature*);
 template void FleeingMovementGenerator<Player>::getPoint(Player*, LocationVector &);
 template void FleeingMovementGenerator<Creature>::getPoint(Creature*, LocationVector &);
 
-//---- TimedFleeingMovementGenerator
-
+//////////////////////////////////////////////////////////////////////////////////////////
+// TimedFleeingMovementGenerator
 bool TimedFleeingMovementGenerator::update(Unit* owner, uint32_t diff)
 {
     if (!owner || !owner->isAlive())

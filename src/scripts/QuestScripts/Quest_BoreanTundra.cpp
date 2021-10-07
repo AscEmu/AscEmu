@@ -17,12 +17,12 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 
 enum 
 {
-    //////////////////////////////////////////////////////////////////////////////////////////
     // Hunt Is On (Quest: 11794)
     QUEST_HUNT_IS_ON = 11794,
 
@@ -31,7 +31,6 @@ enum
 
     //SPELL_ABMER_TO_COLDARRA = 46064
 
-    //////////////////////////////////////////////////////////////////////////////////////////
     // Neutralizing the Cauldrons
     CN_PURIFYING_TOTEM = 25494
 };
@@ -41,11 +40,10 @@ enum
 class BellRope : public GameObjectAIScript
 {
 public:
-
     explicit BellRope(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new BellRope(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(11965, 0, 0);
     }
@@ -56,11 +54,10 @@ public:
 class ColdarraGeoMonitorNexus : public GameObjectAIScript
 {
 public:
-
     explicit ColdarraGeoMonitorNexus(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new ColdarraGeoMonitorNexus(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(11900, 0, 0);
     }
@@ -69,11 +66,10 @@ public:
 class ColdarraGeoMonitorSouth : public GameObjectAIScript
 {
 public:
-
     explicit ColdarraGeoMonitorSouth(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new ColdarraGeoMonitorSouth(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(11900, 1, 0);
     }
@@ -82,11 +78,10 @@ public:
 class ColdarraGeoMonitorNorth : public GameObjectAIScript
 {
 public:
-
     explicit ColdarraGeoMonitorNorth(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new ColdarraGeoMonitorNorth(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(11900, 2, 0);
     }
@@ -95,11 +90,10 @@ public:
 class ColdarraGeoMonitorWest : public GameObjectAIScript
 {
 public:
-
     explicit ColdarraGeoMonitorWest(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new ColdarraGeoMonitorWest(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(11900, 3, 0);
     }
@@ -107,7 +101,8 @@ public:
 
 class PurifyingTotemAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PurifyingTotemAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PurifyingTotemAI(c); }
     explicit PurifyingTotemAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
@@ -121,11 +116,10 @@ class PurifyingTotemAI : public CreatureAIScript
 class NerubarEggSac : public GameObjectAIScript
 {
 public:
-
     explicit NerubarEggSac(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new NerubarEggSac(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(11602, 0, 0);
 
@@ -139,7 +133,8 @@ public:
 // Bury Those Cockroaches!
 class SeaforiumDepthCharge : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SeaforiumDepthCharge)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SeaforiumDepthCharge(c); }
     explicit SeaforiumDepthCharge(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setRooted(true);
@@ -147,14 +142,14 @@ class SeaforiumDepthCharge : public CreatureAIScript
         getCreature()->SetFaction(21);
     }
 
-    void OnLoad()
+    void OnLoad() override
     {
         if (!getCreature()->isSummon())
             return;
 
         Unit* summoner = static_cast<Summon*>(getCreature())->getUnitOwner();
 
-        if (summoner != NULL)
+        if (summoner != nullptr)
         {
             if (summoner->isPlayer())
             {
@@ -162,7 +157,7 @@ class SeaforiumDepthCharge : public CreatureAIScript
                 if (p->hasQuestInQuestLog(11608))
                 {
                     GameObject* pSinkhole = p->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), 300171);
-                    if (pSinkhole != NULL)
+                    if (pSinkhole != nullptr)
                     {
                         getCreature()->castSpell(getCreature(), 45502, true);
 
@@ -199,11 +194,10 @@ class SeaforiumDepthCharge : public CreatureAIScript
 class BlueDragonEgg : public GameObjectAIScript
 {
 public:
-
     explicit BlueDragonEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new BlueDragonEgg(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(11936, 0, 0);
 
@@ -239,7 +233,6 @@ enum eFizzcrank
 class FizzcrankGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* pPlayer) override
     {
         GossipMenu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
@@ -313,13 +306,12 @@ public:
 class SurristraszGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* pPlayer) override
     {
-        uint32_t Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->getEntry());
+        uint32_t Text = sMySQLStore.getGossipTextIdForNpc(pObject->getEntry());
 
         // check if there is a entry in the db
-        if (sMySQLStore.getNpcText(Text) == nullptr)
+        if (sMySQLStore.getNpcGossipText(Text) == nullptr)
             Text = DefaultGossipTextId;
 
         GossipMenu menu(pObject->getGuid(), Text, pPlayer->GetSession()->language);
@@ -342,11 +334,10 @@ public:
 class WestPointStationValve : public GameObjectAIScript
 {
 public:
-
     explicit WestPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new WestPointStationValve(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (!pPlayer->hasQuestInQuestLog(11788) || pPlayer->HasFinishedQuest(11788))
             return;
@@ -371,11 +362,10 @@ public:
 class NorthPointStationValve : public GameObjectAIScript
 {
 public:
-
     explicit NorthPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new NorthPointStationValve(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (!pPlayer->hasQuestInQuestLog(11788) || pPlayer->HasFinishedQuest(11788))
             return;
@@ -400,11 +390,10 @@ public:
 class FizzcrankPumpingStationValve : public GameObjectAIScript
 {
 public:
-
     explicit FizzcrankPumpingStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new FizzcrankPumpingStationValve(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (!pPlayer->hasQuestInQuestLog(11788) || pPlayer->HasFinishedQuest(11788))
             return;
@@ -429,11 +418,10 @@ public:
 class SouthPointStationValve : public GameObjectAIScript
 {
 public:
-
     explicit SouthPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new SouthPointStationValve(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (!pPlayer->hasQuestInQuestLog(11788) || pPlayer->HasFinishedQuest(11788))
             return;
@@ -459,11 +447,10 @@ public:
 class TheGearmastersManual : public GameObjectAIScript
 {
 public:
-
     explicit TheGearmastersManual(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
     static GameObjectAIScript* Create(GameObject* GO) { return new TheGearmastersManual(GO); };
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (!pPlayer->hasQuestInQuestLog(11798) || pPlayer->HasFinishedQuest(11798))
             return;
@@ -491,7 +478,8 @@ public:
 ///\todo: Change to spellevent (target player), npc say is not ready yet. Add Visual Aura on Spawn.
 class GearmasterMechazodAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GearmasterMechazodAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GearmasterMechazodAI(c); }
     explicit GearmasterMechazodAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setVirtualItemSlotId(MELEE, 28487);
@@ -501,7 +489,7 @@ class GearmasterMechazodAI : public CreatureAIScript
         phase = 0;
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         switch (phase)
         {
@@ -542,7 +530,6 @@ class GearmasterMechazodAI : public CreatureAIScript
     }
 
 protected:
-
     uint32_t phase;
 };
 
@@ -551,7 +538,6 @@ protected:
 class SaltyJohnGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* pPlayer) override
     {
         if (pPlayer->hasQuestInQuestLog(QUEST_HUNT_IS_ON) && pPlayer->HasAura(46078))
@@ -566,14 +552,13 @@ public:
     {
         Creature* SaltyJohn = static_cast<Creature*>(pObject);
         SaltyJohn->SetFaction(14);
-        SaltyJohn->SendChatMessage(12, 0, "I suppose this is it.. then? I won't go down quietly!");
+        SaltyJohn->sendChatMessage(12, 0, "I suppose this is it.. then? I won't go down quietly!");
     }
 };
 
 class TomHeggerGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* pPlayer) override
     {
         if (pPlayer->hasQuestInQuestLog(QUEST_HUNT_IS_ON) && pPlayer->HasAura(46078))
@@ -588,14 +573,13 @@ public:
     {
         Creature* TomHegger = static_cast<Creature*>(pObject);
         TomHegger->SetFaction(14);
-        TomHegger->SendChatMessage(12, 0, "You don't know who you're messing with, ! Death beckons!");
+        TomHegger->sendChatMessage(12, 0, "You don't know who you're messing with, ! Death beckons!");
     }
 };
 
 class GuardMitchGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* pPlayer) override
     {
         if (pPlayer->hasQuestInQuestLog(QUEST_HUNT_IS_ON) && pPlayer->HasAura(46078))
@@ -610,7 +594,7 @@ public:
     {
         Creature* GuardMitch = static_cast<Creature*>(pObject);
         GuardMitch->SetFaction(14);
-        GuardMitch->SendChatMessage(12, 0, "Finally! This charade is over... Arthas give me strength!");
+        GuardMitch->sendChatMessage(12, 0, "Finally! This charade is over... Arthas give me strength!");
     }
 };
 
@@ -654,7 +638,8 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
 
 class Worm : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Worm)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Worm(c); }
     explicit Worm(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

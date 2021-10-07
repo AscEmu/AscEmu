@@ -32,7 +32,7 @@ class SocketMgr
 
         // fd -> pointer binding.
         Socket* fds[SOCKET_HOLDER_SIZE];
-        ListenSocketBase* listenfds[SOCKET_HOLDER_SIZE];        // shouldnt be more than 1024
+        ListenSocketBase* listenfds[SOCKET_HOLDER_SIZE]; // shouldnt be more than 1024
 
         /// socket counter
         std::atomic<unsigned long> socket_count;
@@ -91,9 +91,7 @@ class SocketMgr
         /// returns kqueue fd
         inline int GetKq() { return kq; }
 
-        /// returns number of sockets in array
-        //inline int Count() { return socket_count; } WE NEED THIS ?
-        uint32 GetSocketCount(); //used in linux socket and pass then to server commands
+        uint32_t GetSocketCount(); // used in linux socket and pass then to server commands
 
         /// closes all sockets
         void CloseAll();

@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Server/WorldSession.h"
 #include "Server/Packets/CmsgSetFactionAtWar.h"
 #include "Server/Packets/CmsgSetFactionInactive.h"
@@ -25,7 +25,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgCharCustomize.h"
 #include "Server/Packets/SmsgCharCustomize.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
-#include "Spell/Definitions/PowerType.hpp"
 #include "Server/Packets/SmsgLearnedDanceMoves.h"
 #include "Server/Packets/SmsgFeatureSystemStatus.h"
 #include "Server/Packets/CmsgSetPlayerDeclinedNames.h"
@@ -34,6 +33,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/GuildMgr.hpp"
 #include "Server/CharacterErrors.h"
 #include "AuthCodes.h"
+#include "Server/Script/ScriptMgr.h"
+#include "Util/Strings.hpp"
 
 
 using namespace AscEmu::Packets;
@@ -183,7 +184,7 @@ void WorldSession::handlePlayerLoginOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_PLAYER_LOGIN %u (guidLow)", srlPacket.guid.getGuidLow());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_PLAYER_LOGIN %u (guidLow)", srlPacket.guid.getGuidLow());
 
     if (sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow()) != nullptr || m_loggingInPlayer || _player)
     {
@@ -938,7 +939,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
                         if (item_slot == EQUIPMENT_SLOT_MAINHAND || item_slot == EQUIPMENT_SLOT_OFFHAND)
                         {
                             const char* enchant_field = item_db_result->Fetch()[2].GetString();
-                            if (sscanf(enchant_field, "%u,0,0;", (unsigned int*)&enchantid) == 1 && enchantid > 0)
+                            if (sscanf(enchant_field, "%u,0,0;", &enchantid) == 1 && enchantid > 0)
                             {
                                 const auto spellItemEnchantmentEntry = sSpellItemEnchantmentStore.LookupEntry(enchantid);
                                 if (spellItemEnchantmentEntry != nullptr)

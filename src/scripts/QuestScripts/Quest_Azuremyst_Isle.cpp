@@ -20,14 +20,16 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
- // Chieftain Oomooroo
+// Chieftain Oomooroo
 class ChieftainOomoorooQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ChieftainOomoorooQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ChieftainOomoorooQAI(c); }
     explicit ChieftainOomoorooQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (mKiller->isPlayer())
         {

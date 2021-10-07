@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Server/Packets/CmsgDismissCritter.h"
 #include "Server/Packets/CmsgPetLearnTalent.h"
 #include "Server/Packets/CmsgPetCancelAura.h"
@@ -21,11 +21,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Units/Creatures/Pet.h"
 #include "Map/MapMgr.h"
+#include "Movement/MovementDefines.h"
+#include "Movement/MovementManager.h"
 #include "Server/MainServerDefines.h"
 #include "Units/Creatures/Vehicle.h"
 #include "Objects/Faction.h"
 #include "Spell/Definitions/SpellFailure.hpp"
 #include "Server/Packets/SmsgPetLearnedSpell.h"
+#include "Units/ThreatHandler.h"
 
 using namespace AscEmu::Packets;
 
@@ -380,22 +383,23 @@ void WorldSession::handlePetRename(WorldPacket& recvPacket)
     pet->setSheathType(SHEATH_STATE_MELEE);
     pet->setPetFlags(PET_RENAME_NOT_ALLOWED);
 
-    ARCEMU_ASSERT(pet->getPlayerOwner() != nullptr);
+    if (pet->getPlayerOwner() != nullptr)
+    {
+        if (pet->getPlayerOwner()->isPvpFlagSet())
+            pet->setPvpFlag();
+        else
+            pet->removePvpFlag();
 
-    if (pet->getPlayerOwner()->isPvpFlagSet())
-        pet->setPvpFlag();
-    else
-        pet->removePvpFlag();
+        if (pet->getPlayerOwner()->isFfaPvpFlagSet())
+            pet->setFfaPvpFlag();
+        else
+            pet->removeFfaPvpFlag();
 
-    if (pet->getPlayerOwner()->isFfaPvpFlagSet())
-        pet->setFfaPvpFlag();
-    else
-        pet->removeFfaPvpFlag();
-
-    if (pet->getPlayerOwner()->isSanctuaryFlagSet())
-        pet->setSanctuaryFlag();
-    else
-        pet->removeSanctuaryFlag();
+        if (pet->getPlayerOwner()->isSanctuaryFlagSet())
+            pet->setSanctuaryFlag();
+        else
+            pet->removeSanctuaryFlag();
+    }
 }
 
 void WorldSession::handlePetAbandon(WorldPacket& /*recvPacket*/)
@@ -527,6 +531,7 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
 #else
 void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
 {
+#if VERSION_STRING < Mop
     CmsgPetLearnTalent srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -581,6 +586,7 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
     }
 
     pet->SendTalentsToOwner();
+#endif
 }
 #endif
 

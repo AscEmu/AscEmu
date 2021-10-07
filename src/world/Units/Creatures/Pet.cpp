@@ -19,7 +19,6 @@
  *
  */
 
-#include "StdAfx.h"
 #include "Creature.h"
 #include "Units/Unit.h"
 #include "Objects/DynamicObject.h"
@@ -31,14 +30,15 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
-#include "Spell/Definitions/ProcFlags.hpp"
-#include <Spell/Definitions/AuraInterruptFlags.hpp>
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/SpellEffectTarget.hpp"
 #include "Pet.h"
+
 #include "Server/Packets/SmsgPetActionFeedback.h"
 #include "Server/Packets/SmsgPetLearnedSpell.h"
 #include "Server/Packets/SmsgPetUnlearnedSpell.h"
+#include "Server/Script/CreatureAIScript.h"
+#include "Spell/Definitions/SpellEffects.hpp"
 
 //MIT START
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -724,6 +724,7 @@ void Pet::SendSpellsToOwner()
 
 void Pet::SendTalentsToOwner()
 {
+#if VERSION_STRING < Mop
 #if VERSION_STRING > TBC
     if (m_Owner == NULL)
         return;
@@ -781,6 +782,7 @@ void Pet::SendTalentsToOwner()
     if (m_Owner->GetSession() != NULL)
         m_Owner->GetSession()->SendPacket(&data);
 #endif
+#endif
 }
 
 void Pet::SendCastFailed(uint32 spellid, uint8 fail)
@@ -829,7 +831,11 @@ void Pet::InitializeSpells()
 
 AI_Spell* Pet::CreateAISpell(SpellInfo const* info)
 {
-    ARCEMU_ASSERT(info != NULL);
+    if (info == nullptr)
+    {
+        sLogger.failure("Pet::CreateAISpell tried to create AISpell without spell info!");
+        return nullptr;
+    }
 
     // Create an AI_Spell
     std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.find(info->getId());
@@ -1021,12 +1027,17 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
 
 void Pet::OnPushToWorld()
 {
-    //Pets MUST always have an owner
-    ARCEMU_ASSERT(m_Owner != NULL);
-    //before we initialize pet spells so we can apply spell mods on them
-    m_Owner->EventSummonPet(this);
+    if (m_Owner)
+    {
+        //before we initialize pet spells so we can apply spell mods on them
+        m_Owner->EventSummonPet(this);
 
-    Creature::OnPushToWorld();
+        Creature::OnPushToWorld();
+    }
+    else
+    {
+        sLogger.failure("Pet::OnPushToWorld tried to push pet without an owner!");
+    }
 }
 
 void Pet::InitializeMe(bool first)
@@ -1058,7 +1069,7 @@ void Pet::InitializeMe(bool first)
         {
             // According to WoWWiki and ElitistJerks, Water Elemental should inherit 33% of owner's frost spell power.
             // And don't freak out about Waterbolt damage, it is supposed to do 601-673 base damage.
-            float parentfrost = static_cast<float>(m_Owner->GetDamageDoneMod(SCHOOL_FROST) * 0.33f);
+            float parentfrost = m_Owner->GetDamageDoneMod(SCHOOL_FROST) * 0.33f;
             ModDamageDone[SCHOOL_FROST] = (uint32)parentfrost;
         }
         else if (getEntry() == PET_IMP)
@@ -1092,7 +1103,11 @@ void Pet::InitializeMe(bool first)
     }
 
     PushToWorld(m_Owner->GetMapMgr());
-    ARCEMU_ASSERT(IsInWorld());     //we MUST be sure Pet was pushed to world.
+    if (!this->IsInWorld())
+    {
+        sLogger.failure("Pet::InitializeMe was pushed to world but not in World, return.");
+        return;
+    }
 
     InitializeSpells();
 
@@ -1200,7 +1215,10 @@ void Pet::OnRemoveFromWorld()
     for (std::list<Pet*>::iterator itr = ownerSummons.begin(); itr != ownerSummons.end(); ++itr)
     {
         //m_Owner MUST NOT have a reference to us anymore
-        ARCEMU_ASSERT((*itr)->getGuid() != getGuid());
+        if ((*itr)->getGuid() == getGuid())
+        {
+            sLogger.failure("Pet::OnRemoveFromWorld has still a reference to removed pet!");
+        }
     }
 }
 
@@ -1567,6 +1585,7 @@ void Pet::SetDefaultActionbar()
 
 void Pet::WipeTalents()
 {
+#if VERSION_STRING < Mop
     for (uint32 i = 0; i < sTalentStore.GetNumRows(); i++)
     {
         auto talent = sTalentStore.LookupEntry(i);
@@ -1582,6 +1601,7 @@ void Pet::WipeTalents()
     }
 
     SendSpellsToOwner();
+#endif
 }
 
 void Pet::RemoveSpell(SpellInfo const* sp, [[maybe_unused]]bool showUnlearnSpell)
@@ -1664,7 +1684,7 @@ void Pet::Rename(std::string NewName)
 void Pet::ApplySummonLevelAbilities()
 {
     uint32 level = getLevel();
-    double pet_level = (double)level;
+    double pet_level = level;
 
     int stat_index = -1;        // Determine our stat index.
     //float scale = 1;
@@ -2061,8 +2081,11 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
 
 void Pet::SetAutoCast(AI_Spell* sp, bool on)
 {
-    ARCEMU_ASSERT(sp != NULL);
-    ARCEMU_ASSERT(sp->spell != NULL);
+    if (sp == nullptr || sp->spell == nullptr)
+    {
+        sLogger.failure("Pet::SetAutoCast tried to use nullptr AI_Spell!");
+        return;
+    }
 
     if (sp->autocast_type > 0)
     {

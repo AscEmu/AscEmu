@@ -6,21 +6,20 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_HellfireRamparts.h"
 
+#include "Server/Script/CreatureAIScript.h"
+
 class HellfireRampartsInstanceScript : public InstanceScript
 {
 public:
-
-    explicit HellfireRampartsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit HellfireRampartsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new HellfireRampartsInstanceScript(pMapMgr); }
 };
 
 // \todo "Do you smell that? Fresh meat has somehow breached our citadel. Be wary of any intruders." should be on some areatrigger
 class WatchkeeperGargolmarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WatchkeeperGargolmarAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WatchkeeperGargolmarAI(c); }
     explicit WatchkeeperGargolmarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto surge = addAISpell(WATCHKEEPER_SURGE, 20.0f, TARGET_RANDOM_SINGLE, 0, 15);
@@ -68,10 +67,10 @@ class WatchkeeperGargolmarAI : public CreatureAIScript
     CreatureAISpells* mRetaliation;
 };
 
-
 class OmorTheUnscarredAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(OmorTheUnscarredAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new OmorTheUnscarredAI(c); }
     explicit OmorTheUnscarredAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pShield = addAISpell(OMOR_DEMONIC_SHIELD, 30.0f, TARGET_SELF, 0, 25);

@@ -17,19 +17,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LogonStdAfx.h"
+
 #include <openssl/md5.h>
+#include "Auth/AuthSocket.h"
+#include <Logging/Logger.hpp>
+#include "Server/IpBanMgr.h"
+#include <Auth/AutoPatcher.h>
+#include "Server/Master.hpp"
+#include <Realm/RealmManager.hpp>
 
 enum _errors
 {
     CE_SUCCESS = 0x00,
-    CE_IPBAN = 0x01,                                     //2bd -- unable to connect (some internal problem)
+    CE_IPBAN = 0x01,                                      // 2bd -- unable to connect (some internal problem)
     CE_ACCOUNT_CLOSED = 0x03,                             // "This account has been closed and is no longer in service -- Please check the registered email address of this account for further information.";
-    CE_NO_ACCOUNT = 0x04,                                 //(5)The information you have entered is not valid.  Please check the spelling of the account name and password.  If you need help in retrieving a lost or stolen password and account
-    CE_ACCOUNT_IN_USE = 0x06,                             //This account is already logged in.  Please check the spelling and try again.
+    CE_NO_ACCOUNT = 0x04,                                 // (5)The information you have entered is not valid.  Please check the spelling of the account name and password.  If you need help in retrieving a lost or stolen password and account
+    CE_ACCOUNT_IN_USE = 0x06,                             // This account is already logged in.  Please check the spelling and try again.
     CE_PREORDER_TIME_LIMIT = 0x07,
-    CE_SERVER_FULL = 0x08,                                //Could not log in at this time.  Please try again later.
-    CE_WRONG_BUILD_NUMBER = 0x09,                         //Unable to validate game version.  This may be caused by file corruption or the interference of another program.
+    CE_SERVER_FULL = 0x08,                                // Could not log in at this time.  Please try again later.
+    CE_WRONG_BUILD_NUMBER = 0x09,                         // Unable to validate game version.  This may be caused by file corruption or the interference of another program.
     CE_UPDATE_CLIENT = 0x0a,
     CE_ACCOUNT_FREEZED = 0x0c
 };
@@ -40,11 +46,11 @@ AuthSocket::AuthSocket(SOCKET fd) : Socket(fd, 32768, 4096)
     g.SetDword(7);
     s.SetRand(256);
     m_authenticated = false;
-    m_account = NULL;
-    last_recv = time(NULL);
+    m_account = nullptr;
+    last_recv = time(nullptr);
     removedFromSet = false;
-    m_patch = NULL;
-    m_patchJob = NULL;
+    m_patch = nullptr;
+    m_patchJob = nullptr;
     _authSocketLock.Acquire();
     _authSockets.insert(this);
     _authSocketLock.Release();
@@ -77,7 +83,7 @@ void AuthSocket::OnDisconnect()
     if (m_patchJob)
     {
         PatchMgr::getInstance().AbortPatchJob(m_patchJob);
-        m_patchJob = NULL;
+        m_patchJob = nullptr;
     }
 }
 
@@ -94,7 +100,6 @@ void AuthSocket::HandleChallenge()
     uint8* ReceiveBuffer = (uint8*)readBuffer.GetBufferStart();
 
     uint16 full_size = *(uint16*)&ReceiveBuffer[2];
-
 
     sLogger.info("[AuthChallenge] got header, body is %u bytes", full_size);
 
@@ -157,7 +162,6 @@ void AuthSocket::HandleChallenge()
 
         LogDebug("Patch : elected patch %u%s for client.", m_patch->Version, m_patch->Locality);
 
-
         uint8 response[119] =
         {
             0x00, 0x00, 0x00, 0x72, 0x50, 0xa7, 0xc9, 0x27, 0x4a, 0xfa, 0xb8, 0x77, 0x80, 0x70, 0x22,
@@ -211,7 +215,7 @@ void AuthSocket::HandleChallenge()
     sLogger.debug("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
 
     m_account = sAccountMgr.getAccountByName(AccountName);
-    if (m_account == 0)
+    if (m_account == nullptr)
     {
         sLogger.debug("[AuthChallenge] Invalid account.");
 
@@ -246,8 +250,8 @@ void AuthSocket::HandleChallenge()
         //m_account->forcedLanguage = temp;
     }
 
-    //////////////////////////////////////////////// SRP6 Challenge ////////////////////////////////////////////////
-    //
+    // SRP6 //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Challenge
     //
     // First we will generate the Verifier value using the following formulas
     //
@@ -286,7 +290,6 @@ void AuthSocket::HandleChallenge()
 
     BigNumber unk;
     unk.SetRand(128);
-
 
     // Now we send B, g, N and s to the client as a challenge, asking the client for the proof
     sAuthLogonChallenge_S challenge;
@@ -334,10 +337,10 @@ void AuthSocket::HandleProof()
     //Read(sizeof(sAuthLogonProof_C), (uint8*)&lp);
     readBuffer.Read(&lp, sizeof(sAuthLogonProof_C));
 
-
-    ////////////////////////////////////////////////////// SRP6 ///////////////////////////////////////////////
-    //Now comes the famous secret Xi Chi fraternity handshake ( http://www.youtube.com/watch?v=jJSYBoI2si0 ),
-    //generating a session key
+    // SRP6 //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // 
+    // Now comes the famous secret Xi Chi fraternity handshake ( http://www.youtube.com/watch?v=jJSYBoI2si0 ),
+    // generating a session key
     //
     // A = g^a % N
     // u = SHA1( A | B )
@@ -356,7 +359,6 @@ void AuthSocket::HandleProof()
 
     // S session key key, S = ( A * v^u ) ^ b
     BigNumber S = (A * (v.ModExp(u, N))).ModExp(b, N);
-
 
     // Generate M
     // M = H(H(N) xor H(g), H(I), s, A, B, K) according to http://srp.stanford.edu/design.html
@@ -485,10 +487,10 @@ void AuthSocket::SendProofError(uint8 Error, uint8* M2)
 #define AUTH_REPROOF 3
 #define REALM_LIST 16
 #define INITIATE_TRANSFER 48        // 0x30
-#define TRANSFER_DATA 49        // 0x31
-#define ACCEPT_TRANSFER 50        // 0x32
-#define RESUME_TRANSFER 51        // 0x33
-#define CANCEL_TRANSFER 52        // 0x34
+#define TRANSFER_DATA 49            // 0x31
+#define ACCEPT_TRANSFER 50          // 0x32
+#define RESUME_TRANSFER 51          // 0x33
+#define CANCEL_TRANSFER 52          // 0x34
 #define MAX_AUTH_CMD 53
 
 typedef void (AuthSocket::*AuthHandler)();
@@ -496,8 +498,8 @@ static AuthHandler Handlers[MAX_AUTH_CMD] =
 {
     &AuthSocket::HandleChallenge,            // 0
     &AuthSocket::HandleProof,                // 1
-    &AuthSocket::HandleReconnectChallenge,    // 2
-    &AuthSocket::HandleReconnectProof,        // 3
+    &AuthSocket::HandleReconnectChallenge,   // 2
+    &AuthSocket::HandleReconnectProof,       // 3
     NULL,                                    // 4
     NULL,                                    // 5
     NULL,                                    // 6
@@ -544,9 +546,9 @@ static AuthHandler Handlers[MAX_AUTH_CMD] =
     NULL,                                    // 47
     NULL,                                    // 48
     NULL,                                    // 49
-    &AuthSocket::HandleTransferAccept,        // 50
-    &AuthSocket::HandleTransferResume,        // 51
-    &AuthSocket::HandleTransferCancel,        // 52
+    &AuthSocket::HandleTransferAccept,       // 50
+    &AuthSocket::HandleTransferResume,       // 51
+    &AuthSocket::HandleTransferCancel,       // 52
 };
 
 void AuthSocket::OnRead()
@@ -647,12 +649,12 @@ void AuthSocket::HandleReconnectChallenge()
             }
         }*/
 
-        // Look up the account information
+    // Look up the account information
     std::string AccountName = (char*)&m_challenge.I;
     sLogger.debug("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
 
     m_account = sAccountMgr.getAccountByName(AccountName);
-    if (m_account == 0)
+    if (m_account == nullptr)
     {
         sLogger.debug("[AuthChallenge] Invalid account.");
 

@@ -3,13 +3,13 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
+#include "Chat/ChatHandler.hpp"
 #include "Server/Packets/CmsgGuildQuery.h"
 #include "Server/Packets/SmsgGuildCommandResult.h"
 #include "Server/Packets/CmsgGuildInvite.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Objects/ObjectMgr.h"
-#include "Server/Packets/SmsgGuildInfo.h"
 #include "Server/Packets/MsgSaveGuildEmblem.h"
 #include "Server/Packets/CmsgGuildBankBuyTab.h"
 #include "Server/Packets/MsgGuildBankLogQuery.h"
@@ -21,16 +21,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGuildRemove.h"
 #include "Server/Packets/CmsgGuildPromote.h"
 #include "Server/Packets/CmsgGuildDemote.h"
-#include "Server/Packets/CmsgGuildSetPublicNote.h"
-#include "Server/Packets/CmsgGuildSetOfficerNote.h"
-#include "Server/Packets/CmsgGuildSetNote.h"
-#include "Server/Packets/CmsgGuildDelRank.h"
 #include "Server/Packets/CmsgGuildBankWithdrawMoney.h"
 #include "Server/Packets/CmsgGuildBankDepositMoney.h"
 #include "Server/Packets/CmsgGuildBankUpdateTab.h"
 #include "Server/Packets/CmsgGuildBankSwapItems.h"
-#include "Server/Packets/MsgQueryGuildBankText.h"
-#include "Server/Packets/CmsgGuildBankQueryText.h"
 #include "Server/Packets/CmsgGuildBankQueryTab.h"
 #include "Server/Packets/CmsgGuildBankerActivate.h"
 #include "Server/Packets/CmsgGuildSetRank.h"
@@ -49,6 +43,17 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "scripts/InstanceScripts/Setup.h"
 #include "Storage/WorldStrings.h"
+
+#if VERSION_STRING < Cata
+#include "Server/Packets/SmsgGuildInfo.h"
+#include "Server/Packets/CmsgGuildSetPublicNote.h"
+#include "Server/Packets/CmsgGuildSetOfficerNote.h"
+#include "Server/Packets/MsgQueryGuildBankText.h"
+#else
+#include "Server/Packets/CmsgGuildBankQueryText.h"
+#include "Server/Packets/CmsgGuildDelRank.h"
+#include "Server/Packets/CmsgGuildSetNote.h"
+#endif
 
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildFinderMgr.h"
@@ -193,7 +198,7 @@ void WorldSession::handleSetGuildBankText(WorldPacket& recvPacket)
         return;
 
     if (Guild* guild = _player->getGuild())
-        guild->setBankTabText(static_cast<uint8_t>(srlPacket.tabId), srlPacket.text);
+        guild->setBankTabText(srlPacket.tabId, srlPacket.text);
 }
 
 void WorldSession::handleGuildLeader(WorldPacket& recvPacket)

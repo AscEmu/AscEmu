@@ -6,7 +6,6 @@
 
 #include <chrono>
 #include <atomic>
-#include <memory>
 
 class ServerState
 {

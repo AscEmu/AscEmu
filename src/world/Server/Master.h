@@ -6,10 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Common.hpp"
-#include "Config/Config.h"
-#include "Database/DatabaseCommon.hpp"
 #include "MainServerDefines.h"
-#include "../shared/AscemuServerDefines.hpp"
 #include <iostream>
 
 class SERVER_DECL Master
@@ -55,7 +52,7 @@ class SERVER_DECL Master
             vsnprintf(message_buffer, 32768, format, ap);
             va_end(ap);
 
-            std::cout << message_buffer << std::endl;
+            std::cout << message_buffer << "\n";
         }
 
     private:

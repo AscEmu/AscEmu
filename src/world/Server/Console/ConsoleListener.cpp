@@ -19,20 +19,20 @@
  *
  */
 
-#include "StdAfx.h"
+
 
 #include <cstdint>
 #include <Network/Network.h>
 #include <Config/Config.h>
-#include <git_version.h>
 
 #include "BaseConsole.h"
 #include "ConsoleCommands.h"
 #include "Server/World.h"
-#include "Server/World.Legacy.h"
 
 #include "ConsoleSocket.h"
 #include "ConsoleAuthMgr.h"
+
+#include "Threading/LegacyThreadBase.h"
 
 ListenSocket<ConsoleSocket>* g_pListenSocket = nullptr;
 
@@ -92,10 +92,12 @@ bool StartConsoleListener()
     return true;
 }
 
+#ifdef WIN32
 ThreadBase* GetConsoleListener()
 {
-    return (ThreadBase*)g_pListenSocket;
+    return static_cast<ThreadBase*>(g_pListenSocket);
 }
+#endif
 
 RemoteConsole::RemoteConsole(ConsoleSocket* pSocket)
 {

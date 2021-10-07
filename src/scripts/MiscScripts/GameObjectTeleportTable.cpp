@@ -3,12 +3,12 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
- //////////////////////////////////////////////////////////////////////////////////////////
- ///\brief This script will add support for an SQL table called gameobject_teleports.
- /// This table can be used to teleport players when they use a game object such
- /// as a door or portal. Any object used in this table should exist in the
- /// gameobject_properties table, and be of type 10. Custom portal can use the generic
- /// display id of 6831. Portals also have the Sound2 field set to '1'.
+//////////////////////////////////////////////////////////////////////////////////////////
+//\brief This script will add support for an SQL table called gameobject_teleports.
+// This table can be used to teleport players when they use a game object such
+// as a door or portal. Any object used in this table should exist in the
+// gameobject_properties table, and be of type 10. Custom portal can use the generic
+// display id of 6831. Portals also have the Sound2 field set to '1'.
 //////////////////////////////////////////////////////////////////////////////////////////
 
 #include "Setup.h"
@@ -28,14 +28,12 @@ std::map<uint32_t, GameobjectTeleport*> m_teleStorage;
 class CustomTeleport : public GameObjectAIScript // Custom Portals
 {
 public:
+    explicit CustomTeleport(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
 
-    explicit CustomTeleport(GameObject* goinstance) : GameObjectAIScript(goinstance)
-    { }
+    ~CustomTeleport() override
+    {}
 
-    ~CustomTeleport()
-    { }
-
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         float x, y, z, orientation;
         uint32_t mapid;
@@ -79,7 +77,6 @@ public:
     }
     static GameObjectAIScript* Create(GameObject* GO) { return new CustomTeleport(GO); }
 };
-
 
 void InitializeGameObjectTeleportTable(ScriptMgr* mgr)
 {

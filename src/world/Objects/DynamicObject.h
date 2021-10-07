@@ -24,6 +24,7 @@
 #include "Object.h"
 #include "Units/Unit.h"
 #include "Data/WoWDynamicObject.hpp"
+#include "Server/UpdateFieldInclude.h"
 
 class SpellInfo;
 

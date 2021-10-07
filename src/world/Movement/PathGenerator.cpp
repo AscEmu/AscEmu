@@ -12,7 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "DetourCommon.h"
 #include "DetourNavMeshQuery.h"
 
-////////////////// PathGenerator //////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+// PathGenerator
 PathGenerator::PathGenerator(Object* owner) :
     _polyLength(0), _type(PATHFIND_BLANK), _useStraightPath(false),
     _forceDestination(false), _pointPathLimit(MAX_POINT_PATH_LENGTH), _useRaycast(false),
@@ -130,8 +131,8 @@ dtPolyRef PathGenerator::getPolyByLocation(float const* point, float* distance) 
 
 void PathGenerator::buildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 const& endPos)
 {
-    // *** getting start/end poly logic ***
-
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // getting start/end poly logic
     float distToStartPoly, distToEndPoly;
     float startPoint[VERTEX_SIZE] = {startPos.y, startPos.z, startPos.x};
     float endPoint[VERTEX_SIZE] = {endPos.y, endPos.z, endPos.x};
@@ -357,14 +358,14 @@ void PathGenerator::buildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 con
         else
         {
             dtResult = _navMeshQuery->findPath(
-                            suffixStartPoly,    // start polygon
-                            endPoly,            // end polygon
-                            suffixEndPoint,     // start position
-                            endPoint,           // end position
-                            &_filter,            // polygon search filter
-                            _pathPolyRefs + prefixPolyLength - 1,    // [out] path
+                            suffixStartPoly,                        // start polygon
+                            endPoly,                                // end polygon
+                            suffixEndPoint,                         // start position
+                            endPoint,                               // end position
+                            &_filter,                               // polygon search filter
+                            _pathPolyRefs + prefixPolyLength - 1,   // [out] path
                             (int*)&suffixPolyLength,
-                MAX_POINT_PATH_LENGTH - prefixPolyLength);   // max number of polygons in output path
+                MAX_POINT_PATH_LENGTH - prefixPolyLength);          // max number of polygons in output path
         }
 
         if (!suffixPolyLength || dtStatusFailed(dtResult))
@@ -464,9 +465,9 @@ void PathGenerator::buildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 con
                             startPoint,         // start position
                             endPoint,           // end position
                             &_filter,           // polygon search filter
-                            _pathPolyRefs,     // [out] path
+                            _pathPolyRefs,      // [out] path
                             (int*)&_polyLength,
-                MAX_POINT_PATH_LENGTH);   // max number of polygons in output path
+                MAX_POINT_PATH_LENGTH);         // max number of polygons in output path
         }
 
         if (!_polyLength || dtStatusFailed(dtResult))
@@ -507,11 +508,11 @@ void PathGenerator::buildPointPath(const float *startPoint, const float *endPoin
         dtResult = _navMeshQuery->findStraightPath(
                 startPoint,         // start position
                 endPoint,           // end position
-                _pathPolyRefs,     // current path
-                _polyLength,       // lenth of current path
+                _pathPolyRefs,      // current path
+                _polyLength,        // lenth of current path
                 pathPoints,         // [out] path corner points
-                nullptr,               // [out] flags
-                nullptr,               // [out] shortened path
+                nullptr,            // [out] flags
+                nullptr,            // [out] shortened path
                 (int*)&pointCount,
                 _pointPathLimit);   // maximum number of points/polygons to use
     }
@@ -520,11 +521,11 @@ void PathGenerator::buildPointPath(const float *startPoint, const float *endPoin
         dtResult = findSmoothPath(
                 startPoint,         // start position
                 endPoint,           // end position
-                _pathPolyRefs,     // current path
-                _polyLength,       // length of current path
+                _pathPolyRefs,      // current path
+                _polyLength,        // length of current path
                 pathPoints,         // [out] path corner points
                 (int*)&pointCount,
-                _pointPathLimit);    // maximum number of points
+                _pointPathLimit);   // maximum number of points
     }
 
     // Special case with start and end positions very close to each other
@@ -610,11 +611,11 @@ void PathGenerator::createFilter()
     {
         Creature* creature = (Creature*)_source;
         if (creature->canWalk())
-            includeFlags |= NAV_GROUND;          // walk
+            includeFlags |= NAV_GROUND; // walk
 
         // creatures don't take environmental damage
         if (creature->canSwim())
-            includeFlags |= (NAV_WATER | NAV_MAGMA_SLIME);                 // swim
+            includeFlags |= (NAV_WATER | NAV_MAGMA_SLIME); // swim
     }
     else // assume Player
     {

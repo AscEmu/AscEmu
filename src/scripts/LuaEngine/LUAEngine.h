@@ -217,7 +217,6 @@ class LuaEngine
     LuaObjectBindingMap m_go_gossipBinding;
 
 public:
-
     LuaEngine();
     ~LuaEngine(){}
     void Startup();
@@ -527,292 +526,287 @@ public:
         }
     } LuaEventMgr;
 
-protected:
+    protected:
+        //Hidden methods
+        void Unload();
+        void ScriptLoadDir(std::string Dirname, LUALoadScripts* pak);
 
-    //Hidden methods
-    void Unload();
-    void ScriptLoadDir(std::string Dirname, LUALoadScripts* pak);
-
-template <typename T>
-class ArcLuna
-{
-public:
-
-    typedef int(*mfp)(lua_State* L, T* ptr);
-    typedef struct { const char* name; mfp mfunc; } RegType;
-
-    static void Register(lua_State* L)
+    template <typename T>
+    class ArcLuna
     {
-        lua_newtable(L);
-        int methods = lua_gettop(L);
+    public:
+        typedef int(*mfp)(lua_State* L, T* ptr);
+        typedef struct { const char* name; mfp mfunc; } RegType;
 
-        luaL_newmetatable(L, GetTClassName<T>());
-        int metatable = lua_gettop(L);
-
-        luaL_newmetatable(L, "DO NOT TRASH");
-        lua_pop(L, 1);
-
-        // store method table in globals so that
-        // scripts can add functions written in Lua.
-        lua_pushvalue(L, methods);
-        lua_setglobal(L, GetTClassName<T>());
-
-        // hide metatable from Lua getmetatable()
-        lua_pushvalue(L, methods);
-        lua_setfield(L, metatable, "__metatable");
-
-        lua_pushcfunction(L, index);
-        lua_setfield(L, metatable, "__index");
-
-        lua_pushcfunction(L, tostring_T);
-        lua_setfield(L, metatable, "__tostring");
-
-        lua_pushcfunction(L, gc_T);
-        lua_setfield(L, metatable, "__gc");
-
-        lua_newtable(L);                // mt for method table
-        lua_setmetatable(L, methods);
-
-        // fill method table with methods from class T
-        for (RegType* l = ((RegType*)GetMethodTable<T>()); l->name; l++)
+        static void Register(lua_State* L)
         {
-            lua_pushstring(L, l->name);
-            lua_pushlightuserdata(L, (void*)l);
-            lua_pushcclosure(L, thunk, 1);
-            lua_settable(L, methods);
-        }
-        lua_pop(L, 2);  // drop metatable and method table
-    }
+            lua_newtable(L);
+            int methods = lua_gettop(L);
 
-    // push onto the Lua stack a userdata containing a pointer to T object
-    static int push(lua_State* L, T* obj, bool gc = false)
-    {
-        if (!obj)
-        {
-            lua_pushnil(L); return lua_gettop(L);
-        }
+            luaL_newmetatable(L, GetTClassName<T>());
+            int metatable = lua_gettop(L);
 
-        luaL_getmetatable(L, GetTClassName<T>());  // lookup metatable in Lua registry
-        if (lua_isnil(L, -1))
-            luaL_error(L, "%s missing metatable", GetTClassName<T>());
+            luaL_newmetatable(L, "DO NOT TRASH");
+            lua_pop(L, 1);
 
-        int mt = lua_gettop(L);
-        T** ptrHold = (T**)lua_newuserdata(L, sizeof(T**));
-        int ud = lua_gettop(L);
-        if (ptrHold != nullptr)
-        {
-            *ptrHold = obj;
-            lua_pushvalue(L, mt);
-            lua_setmetatable(L, -2);
-            char name[32];
-            tostring(name, obj);
-            lua_getfield(L, LUA_REGISTRYINDEX, "DO NOT TRASH");
-            if (lua_isnil(L, -1))
+            // store method table in globals so that
+            // scripts can add functions written in Lua.
+            lua_pushvalue(L, methods);
+            lua_setglobal(L, GetTClassName<T>());
+
+            // hide metatable from Lua getmetatable()
+            lua_pushvalue(L, methods);
+            lua_setfield(L, metatable, "__metatable");
+
+            lua_pushcfunction(L, index);
+            lua_setfield(L, metatable, "__index");
+
+            lua_pushcfunction(L, tostring_T);
+            lua_setfield(L, metatable, "__tostring");
+
+            lua_pushcfunction(L, gc_T);
+            lua_setfield(L, metatable, "__gc");
+
+            lua_newtable(L);                // mt for method table
+            lua_setmetatable(L, methods);
+
+            // fill method table with methods from class T
+            for (RegType* l = ((RegType*)GetMethodTable<T>()); l->name; l++)
             {
-                luaL_newmetatable(L, "DO NOT TRASH");
+                lua_pushstring(L, l->name);
+                lua_pushlightuserdata(L, (void*)l);
+                lua_pushcclosure(L, thunk, 1);
+                lua_settable(L, methods);
+            }
+            lua_pop(L, 2);  // drop metatable and method table
+        }
+
+        // push onto the Lua stack a userdata containing a pointer to T object
+        static int push(lua_State* L, T* obj, bool gc = false)
+        {
+            if (!obj)
+            {
+                lua_pushnil(L); return lua_gettop(L);
+            }
+
+            luaL_getmetatable(L, GetTClassName<T>());  // lookup metatable in Lua registry
+            if (lua_isnil(L, -1))
+                luaL_error(L, "%s missing metatable", GetTClassName<T>());
+
+            int mt = lua_gettop(L);
+            T** ptrHold = (T**)lua_newuserdata(L, sizeof(T**));
+            int ud = lua_gettop(L);
+            if (ptrHold != nullptr)
+            {
+                *ptrHold = obj;
+                lua_pushvalue(L, mt);
+                lua_setmetatable(L, -2);
+                char name[32];
+                tostring(name, obj);
+                lua_getfield(L, LUA_REGISTRYINDEX, "DO NOT TRASH");
+                if (lua_isnil(L, -1))
+                {
+                    luaL_newmetatable(L, "DO NOT TRASH");
+                    lua_pop(L, 1);
+                }
+                lua_getfield(L, LUA_REGISTRYINDEX, "DO NOT TRASH");
+                if (gc == false)
+                {
+                    lua_pushboolean(L, 1);
+                    lua_setfield(L, -2, name);
+                }
                 lua_pop(L, 1);
             }
+            lua_settop(L, ud);
+            lua_replace(L, mt);
+            lua_settop(L, mt);
+            return mt; // index of userdata containing pointer to T object
+        }
+
+        // get userdata from Lua stack and return pointer to T object
+        static T* check(lua_State* L, int narg)
+        {
+            T** ptrHold = static_cast<T**>(lua_touserdata(L, narg));
+            if (ptrHold == nullptr)
+                return nullptr;
+            return *ptrHold;
+        }
+
+    private:
+        ArcLuna();  // hide default constructor
+
+        // member function dispatcher
+        static int thunk(lua_State* L)
+        {
+            // stack has userdata, followed by method args
+            T* obj = check(L, 1);  // get 'self', or if you prefer, 'this'
+            lua_remove(L, 1);  // remove self so member function args start at index 1
+            // get member function from upvalue
+            RegType* l = static_cast<RegType*>(lua_touserdata(L, lua_upvalueindex(1)));
+            //return (obj->*(l->mfunc))(L);  // call member function
+            return l->mfunc(L, obj);
+        }
+
+        // garbage collection metamethod
+        static int gc_T(lua_State* L)
+        {
+            T* obj = check(L, 1);
+            if (obj == nullptr)
+                return 0;
+
             lua_getfield(L, LUA_REGISTRYINDEX, "DO NOT TRASH");
-            if (gc == false)
+            if (lua_istable(L, -1))
             {
-                lua_pushboolean(L, 1);
-                lua_setfield(L, -2, name);
-            }
-            lua_pop(L, 1);
-        }
-        lua_settop(L, ud);
-        lua_replace(L, mt);
-        lua_settop(L, mt);
-        return mt; // index of userdata containing pointer to T object
-    }
-
-    // get userdata from Lua stack and return pointer to T object
-    static T* check(lua_State* L, int narg)
-    {
-        T** ptrHold = static_cast<T**>(lua_touserdata(L, narg));
-        if (ptrHold == nullptr)
-            return nullptr;
-        return *ptrHold;
-    }
-
-private:
-
-    ArcLuna();  // hide default constructor
-
-    // member function dispatcher
-    static int thunk(lua_State* L)
-    {
-        // stack has userdata, followed by method args
-        T* obj = check(L, 1);  // get 'self', or if you prefer, 'this'
-        lua_remove(L, 1);  // remove self so member function args start at index 1
-        // get member function from upvalue
-        RegType* l = static_cast<RegType*>(lua_touserdata(L, lua_upvalueindex(1)));
-        //return (obj->*(l->mfunc))(L);  // call member function
-        return l->mfunc(L, obj);
-    }
-
-    // garbage collection metamethod
-    static int gc_T(lua_State* L)
-    {
-        T* obj = check(L, 1);
-        if (obj == nullptr)
-            return 0;
-
-        lua_getfield(L, LUA_REGISTRYINDEX, "DO NOT TRASH");
-        if (lua_istable(L, -1))
-        {
-            char name[32];
-            tostring(name, obj);
-            lua_getfield(L, -1, std::string(name).c_str());
-            if (lua_isnil(L, -1))
-            {
-                delete obj;
-                obj = nullptr;
-            }
-        }
-        lua_pop(L, 3);
-        return 0;
-    }
-    static int tostring_T(lua_State* L)
-    {
-        char buff[32];
-        T** ptrHold = (T**)lua_touserdata(L, 1);
-        T* obj = *ptrHold;
-        sprintf(buff, "%p", obj);
-        lua_pushfstring(L, "%s (%s)", GetTClassName<T>(), buff);
-        return 1;
-    }
-
-    static void tostring(char* buff, void* obj)
-    {
-        sprintf(buff, "%p", obj);
-    }
-    static int index(lua_State* L)
-    {
-        /*Paroxysm : the table obj and the missing key are currently on the stack(index 1 & 2) */
-        lua_getglobal(L, GetTClassName<T>());
-        // string form of the key.
-        const char* key = lua_tostring(L, 2);
-        if (lua_istable(L, -1))
-        {
-            lua_pushvalue(L, 2);
-            lua_rawget(L, -2);
-            // If the key were looking for is not in the table, retrieve its' metatables' index value.
-            if (lua_isnil(L, -1))
-            {
-                lua_getmetatable(L, -2);
-                if (lua_istable(L, -1))
+                char name[32];
+                tostring(name, obj);
+                lua_getfield(L, -1, std::string(name).c_str());
+                if (lua_isnil(L, -1))
                 {
-                    lua_getfield(L, -1, "__index");
-                    if (lua_isfunction(L, -1))
-                    {
-                        lua_pushvalue(L, 1);
-                        lua_pushvalue(L, 2);
-                        lua_pcall(L, 2, 1, 0);
-                    }
-                    else if (lua_istable(L, -1))
-                        lua_getfield(L, -1, key);
-                    else
-                        lua_pushnil(L);
+                    delete obj;
+                    obj = nullptr;
                 }
-                else
-                    lua_pushnil(L);
             }
-            else if (lua_istable(L, -1))
+            lua_pop(L, 3);
+            return 0;
+        }
+        static int tostring_T(lua_State* L)
+        {
+            char buff[32];
+            T** ptrHold = (T**)lua_touserdata(L, 1);
+            T* obj = *ptrHold;
+            sprintf(buff, "%p", obj);
+            lua_pushfstring(L, "%s (%s)", GetTClassName<T>(), buff);
+            return 1;
+        }
+
+        static void tostring(char* buff, void* obj)
+        {
+            sprintf(buff, "%p", obj);
+        }
+        static int index(lua_State* L)
+        {
+            /*Paroxysm : the table obj and the missing key are currently on the stack(index 1 & 2) */
+            lua_getglobal(L, GetTClassName<T>());
+            // string form of the key.
+            const char* key = lua_tostring(L, 2);
+            if (lua_istable(L, -1))
             {
                 lua_pushvalue(L, 2);
                 lua_rawget(L, -2);
+                // If the key were looking for is not in the table, retrieve its' metatables' index value.
+                if (lua_isnil(L, -1))
+                {
+                    lua_getmetatable(L, -2);
+                    if (lua_istable(L, -1))
+                    {
+                        lua_getfield(L, -1, "__index");
+                        if (lua_isfunction(L, -1))
+                        {
+                            lua_pushvalue(L, 1);
+                            lua_pushvalue(L, 2);
+                            lua_pcall(L, 2, 1, 0);
+                        }
+                        else if (lua_istable(L, -1))
+                            lua_getfield(L, -1, key);
+                        else
+                            lua_pushnil(L);
+                    }
+                    else
+                        lua_pushnil(L);
+                }
+                else if (lua_istable(L, -1))
+                {
+                    lua_pushvalue(L, 2);
+                    lua_rawget(L, -2);
+                }
             }
+            else
+                lua_pushnil(L);
+        
+            lua_insert(L, 1);
+            lua_settop(L, 1);
+            return 1;
         }
-        else
-            lua_pushnil(L);
-    
-        lua_insert(L, 1);
-        lua_settop(L, 1);
-        return 1;
-    }
-};
+    };
 
 
-class GUID_MGR
-{
-    static const char* GetName() { return "WoWGUID"; }
-
-public:
-
-    static void Register(lua_State* L)
+    class GUID_MGR
     {
-        luaL_newmetatable(L, GetName());
-        int mt = lua_gettop(L);
-        //Hide metatable.
-        lua_pushnil(L);
-        lua_setfield(L, mt, "__metatable");
-        //nil gc method
-        lua_pushnil(L);
-        lua_setfield(L, mt, "__gc");
-        //set our tostring method
-        lua_pushcfunction(L, _tostring);
-        lua_setfield(L, mt, "__tostring");
-        //nil __index field
-        lua_pushnil(L);
-        lua_setfield(L, mt, "__index");
-        //set __newindex method
-        lua_pushcfunction(L, _newindex);
-        lua_setfield(L, mt, "__newindex");
-        //no call method
-        lua_pushnil(L);
-        lua_setfield(L, mt, "__call");
-        // pop metatable
-        lua_pop(L, 1);
-    }
-    static uint64_t check(lua_State* L, int narg)
-    {
-        uint64_t GUID = 0;
-        uint64_t* ptrHold = (uint64_t*)lua_touserdata(L, narg);
-        if (ptrHold != nullptr)
-            GUID = *ptrHold;
-        return GUID;
-    }
-    static int push(lua_State* L, uint64_t guid)
-    {
-        int index = 0;
-        if (guid == 0)
+        static const char* GetName() { return "WoWGUID"; }
+
+    public:
+        static void Register(lua_State* L)
         {
+            luaL_newmetatable(L, GetName());
+            int mt = lua_gettop(L);
+            //Hide metatable.
             lua_pushnil(L);
-            index = lua_gettop(L);
+            lua_setfield(L, mt, "__metatable");
+            //nil gc method
+            lua_pushnil(L);
+            lua_setfield(L, mt, "__gc");
+            //set our tostring method
+            lua_pushcfunction(L, _tostring);
+            lua_setfield(L, mt, "__tostring");
+            //nil __index field
+            lua_pushnil(L);
+            lua_setfield(L, mt, "__index");
+            //set __newindex method
+            lua_pushcfunction(L, _newindex);
+            lua_setfield(L, mt, "__newindex");
+            //no call method
+            lua_pushnil(L);
+            lua_setfield(L, mt, "__call");
+            // pop metatable
+            lua_pop(L, 1);
         }
-        else
+        static uint64_t check(lua_State* L, int narg)
         {
-            luaL_getmetatable(L, GetName());
-            if (lua_isnoneornil(L, -1))
+            uint64_t GUID = 0;
+            uint64_t* ptrHold = (uint64_t*)lua_touserdata(L, narg);
+            if (ptrHold != nullptr)
+                GUID = *ptrHold;
+            return GUID;
+        }
+        static int push(lua_State* L, uint64_t guid)
+        {
+            int index = 0;
+            if (guid == 0)
             {
-                luaL_error(L, "%s metatable not found!. \n", GetName());
+                lua_pushnil(L);
+                index = lua_gettop(L);
             }
             else
             {
-                int mt = lua_gettop(L);
-                uint64_t* guidHold = (uint64_t*)lua_newuserdata(L, sizeof(uint64_t));
-                int ud = lua_gettop(L);
-                if (guidHold == nullptr)
+                luaL_getmetatable(L, GetName());
+                if (lua_isnoneornil(L, -1))
                 {
-                    luaL_error(L, "Lua tried to allocate size %d of memory and failed! \n", sizeof(uint64_t*));
+                    luaL_error(L, "%s metatable not found!. \n", GetName());
                 }
                 else
                 {
-                    (*guidHold) = guid;
-                    lua_pushvalue(L, mt);
-                    lua_setmetatable(L, ud);
-                    lua_replace(L, mt);
-                    lua_settop(L, mt);
-                    index = mt;
+                    int mt = lua_gettop(L);
+                    uint64_t* guidHold = (uint64_t*)lua_newuserdata(L, sizeof(uint64_t));
+                    int ud = lua_gettop(L);
+                    if (guidHold == nullptr)
+                    {
+                        luaL_error(L, "Lua tried to allocate size %d of memory and failed! \n", sizeof(uint64_t*));
+                    }
+                    else
+                    {
+                        (*guidHold) = guid;
+                        lua_pushvalue(L, mt);
+                        lua_setmetatable(L, ud);
+                        lua_replace(L, mt);
+                        lua_settop(L, mt);
+                        index = mt;
+                    }
                 }
             }
+            return index;
         }
-        return index;
-    }
 
     private:
-
         GUID_MGR() {}
         //This method prints formats the GUID in hexform and pushes to the stack.
         static int _tostring(lua_State* L)

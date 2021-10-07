@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+
 #include "FastQueue.h"
 #include "Threading/Mutex.h"
 #include "WorldPacket.h"
@@ -31,12 +31,12 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/Definitions/PowerType.hpp"
-#include "CharacterErrors.h"
 #include "WorldSocket.h"
-#include "Auth/MD5.h"
 #include "Packets/SmsgNotification.h"
 #include "Packets/SmsgLogoutComplete.h"
 #include "OpcodeTable.hpp"
+#include "Packets/SmsgMessageChat.h"
+#include "Script/ScriptMgr.h"
 
 using namespace AscEmu::Packets;
 
@@ -155,46 +155,47 @@ uint8 WorldSession::Update(uint32 InstanceID)
 
     while ((packet = _recvQueue.Pop()) != nullptr)
     {
-        ARCEMU_ASSERT(packet != NULL);
-
-        if (sOpcodeTables.getInternalIdForHex(packet->GetOpcode()) >= NUM_OPCODES)
+        if (packet != nullptr)
         {
-            sLogger.debug("[Session] Received out of range packet with opcode 0x%.4X", packet->GetOpcode());
-        }
-        else
-        {
-            OpcodeHandler* handler = &WorldPacketHandlers[sOpcodeTables.getInternalIdForHex(packet->GetOpcode())];
-            if (handler->status == STATUS_LOGGEDIN && !_player && handler->handler != 0)
+            if (sOpcodeTables.getInternalIdForHex(packet->GetOpcode()) >= NUM_OPCODES)
             {
-                sLogger.debug("[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)", 
-                    sOpcodeTables.getNameForOpcode(packet->GetOpcode()).c_str(), packet->GetOpcode());
+                sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received out of range packet with opcode 0x%.4X", packet->GetOpcode());
             }
             else
             {
-                // Valid Packet :>
-                if (handler->handler == 0)
+                OpcodeHandler* handler = &WorldPacketHandlers[sOpcodeTables.getInternalIdForHex(packet->GetOpcode())];
+                if (handler->status == STATUS_LOGGEDIN && !_player && handler->handler != 0)
                 {
-                    sLogger.debug("[Session] Received unhandled packet with opcode %s (0x%.4X)",
+                    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)",
                         sOpcodeTables.getNameForOpcode(packet->GetOpcode()).c_str(), packet->GetOpcode());
                 }
                 else
                 {
-                    (this->*handler->handler)(*packet);
+                    // Valid Packet :>
+                    if (handler->handler == 0)
+                    {
+                        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received unhandled packet with opcode %s (0x%.4X)",
+                            sOpcodeTables.getNameForOpcode(packet->GetOpcode()).c_str(), packet->GetOpcode());
+                    }
+                    else
+                    {
+                        (this->*handler->handler)(*packet);
+                    }
                 }
             }
-        }
 
-        delete packet;
+            delete packet;
 
-        if (InstanceID != instanceId)
-        {
-            // If we hit this -> means a packet has changed our map.
-            return 2;
-        }
+            if (InstanceID != instanceId)
+            {
+                // If we hit this -> means a packet has changed our map.
+                return 2;
+            }
 
-        if (bDeleted)
-        {
-            return 1;
+            if (bDeleted)
+            {
+                return 1;
+            }
         }
     }
 
@@ -547,7 +548,7 @@ void SessionLog::writefromsession(WorldSession* session, const char* format, ...
         size_t lenght = strlen(out);
 
         snprintf(&out[lenght], 32768 - lenght, "Account %u [%s], IP %s, Player %s :: ",
-            static_cast<unsigned int>(session->GetAccountId()),
+            session->GetAccountId(),
             session->GetAccountName().c_str(),
             session->GetSocket() ? session->GetSocket()->GetRemoteIP().c_str() : "NOIP",
             session->GetPlayer() ? session->GetPlayer()->getName().c_str() : "nologin");
@@ -698,7 +699,7 @@ void WorldSession::nothingToHandle(WorldPacket& recv_data)
 {
     if (!recv_data.isEmpty())
     {
-        sLogger.debug("Opcode %s [%s] (0x%.4X) received. Apply nothingToHandle handler but size is %lu!",
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Opcode %s [%s] (0x%.4X) received. Apply nothingToHandle handler but size is %lu!",
             sOpcodeTables.getNameForOpcode(recv_data.GetOpcode()).c_str(), sOpcodeTables.getNameForAEVersion().c_str(), recv_data.GetOpcode(), recv_data.size());
     }
 }
@@ -749,7 +750,7 @@ void WorldSession::Disconnect()
 
 //MIT
 #if VERSION_STRING == Classic
-void WorldSession::loadHandlers()
+void WorldSession::loadHandlers() // Classic
 {
     // Login
     WorldPacketHandlers[CMSG_CHAR_ENUM].handler = &WorldSession::handleCharEnumOpcode;
@@ -1204,16 +1205,16 @@ void WorldSession::loadHandlers()
     WorldPacketHandlers[CMSG_SET_CHANNEL_WATCH].handler = &WorldSession::handleChatChannelWatchOpcode;
 
     // Arenas
-    WorldPacketHandlers[CMSG_ARENA_TEAM_QUERY].handler = &WorldSession::handleArenaTeamQueryOpcode;
-    WorldPacketHandlers[CMSG_ARENA_TEAM_ROSTER].handler = &WorldSession::handleArenaTeamRosterOpcode;
-    WorldPacketHandlers[CMSG_ARENA_TEAM_INVITE].handler = &WorldSession::handleArenaTeamAddMemberOpcode;
-    WorldPacketHandlers[CMSG_ARENA_TEAM_ACCEPT].handler = &WorldSession::handleArenaTeamInviteAcceptOpcode;
-    WorldPacketHandlers[CMSG_ARENA_TEAM_DECLINE].handler = &WorldSession::handleArenaTeamInviteDenyOpcode;
-    WorldPacketHandlers[CMSG_ARENA_TEAM_LEAVE].handler = &WorldSession::handleArenaTeamLeaveOpcode;
-    WorldPacketHandlers[CMSG_ARENA_TEAM_REMOVE].handler = &WorldSession::handleArenaTeamRemoveMemberOpcode;
-    WorldPacketHandlers[CMSG_ARENA_TEAM_DISBAND].handler = &WorldSession::handleArenaTeamDisbandOpcode;
-    WorldPacketHandlers[CMSG_ARENA_TEAM_LEADER].handler = &WorldSession::handleArenaTeamPromoteOpcode;
-    WorldPacketHandlers[MSG_INSPECT_ARENA_TEAMS].handler = &WorldSession::handleInspectArenaStatsOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_QUERY].handler = &WorldSession::handleArenaTeamQueryOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_ROSTER].handler = &WorldSession::handleArenaTeamRosterOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_INVITE].handler = &WorldSession::handleArenaTeamAddMemberOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_ACCEPT].handler = &WorldSession::handleArenaTeamInviteAcceptOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_DECLINE].handler = &WorldSession::handleArenaTeamInviteDenyOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_LEAVE].handler = &WorldSession::handleArenaTeamLeaveOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_REMOVE].handler = &WorldSession::handleArenaTeamRemoveMemberOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_DISBAND].handler = &WorldSession::handleArenaTeamDisbandOpcode;
+    // WorldPacketHandlers[CMSG_ARENA_TEAM_LEADER].handler = &WorldSession::handleArenaTeamPromoteOpcode;
+    // WorldPacketHandlers[MSG_INSPECT_ARENA_TEAMS].handler = &WorldSession::handleInspectArenaStatsOpcode;
 
     // cheat/gm commands?
     WorldPacketHandlers[CMSG_WORLD_TELEPORT].handler = &WorldSession::handleWorldTeleportOpcode;
@@ -1285,7 +1286,7 @@ void WorldSession::loadHandlers()
     WorldPacketHandlers[CMSG_SET_ACTIVE_VOICE_CHANNEL].handler = &WorldSession::Unhandled;
 }
 #elif VERSION_STRING == TBC
-void WorldSession::loadHandlers()
+void WorldSession::loadHandlers() // TBC
 {
     // Login
     WorldPacketHandlers[CMSG_CHAR_ENUM].handler = &WorldSession::handleCharEnumOpcode;
@@ -1737,16 +1738,16 @@ void WorldSession::loadHandlers()
     //WorldPacketHandlers[CMSG_SET_CHANNEL_WATCH].handler = &WorldSession::HandleChatChannelWatchOpcode;
 
     // Arenas
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_QUERY].handler = &WorldSession::handleArenaTeamQueryOpcode;
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_ROSTER].handler = &WorldSession::handleArenaTeamRosterOpcode;
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_INVITE].handler = &WorldSession::handleArenaTeamAddMemberOpcode;
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_ACCEPT].handler = &WorldSession::handleArenaTeamInviteAcceptOpcode;
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_DECLINE].handler = &WorldSession::handleArenaTeamInviteDenyOpcode;
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_LEAVE].handler = &WorldSession::handleArenaTeamLeaveOpcode;
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_REMOVE].handler = &WorldSession::handleArenaTeamRemoveMemberOpcode;
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_DISBAND].handler = &WorldSession::handleArenaTeamDisbandOpcode;
-    //WorldPacketHandlers[CMSG_ARENA_TEAM_LEADER].handler = &WorldSession::handleArenaTeamPromoteOpcode;
-    //WorldPacketHandlers[MSG_INSPECT_ARENA_TEAMS].handler = &WorldSession::HandleInspectArenaStatsOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_QUERY].handler = &WorldSession::handleArenaTeamQueryOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_ROSTER].handler = &WorldSession::handleArenaTeamRosterOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_INVITE].handler = &WorldSession::handleArenaTeamAddMemberOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_ACCEPT].handler = &WorldSession::handleArenaTeamInviteAcceptOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_DECLINE].handler = &WorldSession::handleArenaTeamInviteDenyOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_LEAVE].handler = &WorldSession::handleArenaTeamLeaveOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_REMOVE].handler = &WorldSession::handleArenaTeamRemoveMemberOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_DISBAND].handler = &WorldSession::handleArenaTeamDisbandOpcode;
+    WorldPacketHandlers[CMSG_ARENA_TEAM_LEADER].handler = &WorldSession::handleArenaTeamPromoteOpcode;
+    WorldPacketHandlers[MSG_INSPECT_ARENA_TEAMS].handler = &WorldSession::handleInspectArenaStatsOpcode;
 
     // cheat/gm commands?
     WorldPacketHandlers[CMSG_WORLD_TELEPORT].handler = &WorldSession::handleWorldTeleportOpcode;
@@ -1817,7 +1818,7 @@ void WorldSession::loadHandlers()
     //WorldPacketHandlers[CMSG_SET_ACTIVE_VOICE_CHANNEL].handler = &WorldSession::Unhandled;
 }
 #elif VERSION_STRING == WotLK
-void WorldSession::loadHandlers()
+void WorldSession::loadHandlers() // WotLK
 {
     // Login
     WorldPacketHandlers[CMSG_CHAR_ENUM].handler = &WorldSession::handleCharEnumOpcode;
@@ -2353,7 +2354,7 @@ void WorldSession::loadHandlers()
     WorldPacketHandlers[CMSG_SET_ACTIVE_VOICE_CHANNEL].handler = &WorldSession::Unhandled;
 }
 #elif VERSION_STRING == Cata
-void WorldSession::loadHandlers()
+void WorldSession::loadHandlers() // Cata
 {
     // Login
     WorldPacketHandlers[CMSG_CHAR_ENUM].handler = &WorldSession::handleCharEnumOpcode;
@@ -2961,7 +2962,7 @@ void WorldSession::loadHandlers()
     WorldPacketHandlers[CMSG_UNREGISTER_ALL_ADDON_PREFIXES].handler = &WorldSession::handleUnregisterAddonPrefixesOpcode;
 }
 #elif VERSION_STRING == Mop
-void WorldSession::loadHandlers()
+void WorldSession::loadHandlers() // Mop
 {
     // Login
     WorldPacketHandlers[CMSG_CHAR_ENUM].handler = &WorldSession::handleCharEnumOpcode;
@@ -3386,7 +3387,6 @@ void WorldSession::loadHandlers()
     WorldPacketHandlers[CMSG_LF_GUILD_POST_REQUEST].handler = &WorldSession::handleGuildFinderPostRequest;
     WorldPacketHandlers[CMSG_LF_GUILD_REMOVE_RECRUIT].handler = &WorldSession::handleGuildFinderRemoveRecruit;
     WorldPacketHandlers[CMSG_LF_GUILD_SET_GUILD_POST].handler = &WorldSession::handleGuildFinderSetGuildPost;
-
 
     // Tutorials
     WorldPacketHandlers[CMSG_TUTORIAL_FLAG].handler = &WorldSession::handleTutorialFlag;

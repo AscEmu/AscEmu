@@ -3,13 +3,15 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
+#include "Chat/ChatHandler.hpp"
 #include "Management/Item.h"
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
+#include "Server/Script/CreatureAIScript.h"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 
@@ -170,7 +172,7 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
     SystemMessage(m_session, "Added spell %s (%u) to trainer %s (%u).", learn_spell->getName().c_str(), learn_spell->getId(), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
     sGMLog.writefromsession(m_session, "added spell  %s (%u) to trainer %s (%u)", learn_spell->getName().c_str(), learn_spell->getId(), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
     WorldDatabase.Execute("REPLACE INTO trainer_spells VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)",
-        creature_target->getEntry(), (int)0, learn_spell->getId(), cost, reqspell, (int)0, (int)0, reqlevel, delspell, (int)0);
+        creature_target->getEntry(), 0, learn_spell->getId(), cost, reqspell, 0, 0, reqlevel, delspell, 0);
 #else
     sp.spellCost = cost;
     sp.spell = learn_spell->getId();
@@ -548,6 +550,9 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     else
         SystemMessage(m_session, "Creature doesn't have C++/LUA gossip script");
 
+    RedSystemMessage(m_session, "EntryID: %d", creature_target->getEntry());
+    RedSystemMessage(m_session, "SpawnID: %d", creature_target->GetSQL_id());
+
     return true;
 }
 
@@ -589,8 +594,6 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
     QueryResult* loot_result = WorldDatabase.Query("SELECT itemid, normal10percentchance, heroic10percentchance, normal25percentchance, heroic25percentchance, mincount, maxcount FROM loot_creatures WHERE entryid=%u;", creature_target->getEntry());
     if (loot_result != nullptr)
     {
-        std::stringstream ss;
-        std::string color;
         uint8 numFound = 0;
 
         uint32 minQuality = 0;
@@ -698,7 +701,7 @@ bool ChatHandler::HandleNpcSayCommand(const char* args, WorldSession* m_session)
         return true;
     }
 
-    creature_target->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, args);
+    creature_target->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, args);
 
     return true;
 }
@@ -775,27 +778,27 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
     creature_spawn->CanFly = 0;
     creature_spawn->phase = m_session->GetPlayer()->GetPhase();
 
-    auto creature = m_session->GetPlayer()->GetMapMgr()->CreateCreature(entry);
-    ARCEMU_ASSERT(creature != nullptr);
-    creature->Load(creature_spawn, 0, nullptr);
-    creature->m_loadedFromDB = true;
-    creature->PushToWorld(m_session->GetPlayer()->GetMapMgr());
+    if (auto creature = m_session->GetPlayer()->GetMapMgr()->CreateCreature(entry))
+    {
+        creature->Load(creature_spawn, 0, nullptr);
+        creature->m_loadedFromDB = true;
+        creature->PushToWorld(m_session->GetPlayer()->GetMapMgr());
 
-    // Add to map
-    uint32 x = m_session->GetPlayer()->GetMapMgr()->GetPosX(m_session->GetPlayer()->GetPositionX());
-    uint32 y = m_session->GetPlayer()->GetMapMgr()->GetPosY(m_session->GetPlayer()->GetPositionY());
-    m_session->GetPlayer()->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(x, y)->CreatureSpawns.push_back(creature_spawn);
-    MapCell* map_cell = m_session->GetPlayer()->GetMapMgr()->GetCell(x, y);
-    if (map_cell != nullptr)
-        map_cell->SetLoaded();
+        // Add to map
+        uint32 x = m_session->GetPlayer()->GetMapMgr()->GetPosX(m_session->GetPlayer()->GetPositionX());
+        uint32 y = m_session->GetPlayer()->GetMapMgr()->GetPosY(m_session->GetPlayer()->GetPositionY());
+        m_session->GetPlayer()->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(x, y)->CreatureSpawns.push_back(creature_spawn);
+        MapCell* map_cell = m_session->GetPlayer()->GetMapMgr()->GetCell(x, y);
+        if (map_cell != nullptr)
+            map_cell->SetLoaded();
 
-    creature->SaveToDB();
+        creature->SaveToDB();
 
-    BlueSystemMessage(m_session, "Spawned a creature `%s` with entry %u at %f %f %f on map %u", creature_properties->Name.c_str(),
-        entry, creature_spawn->x, creature_spawn->y, creature_spawn->z, m_session->GetPlayer()->GetMapId());
-    sGMLog.writefromsession(m_session, "spawned a %s at %u %f %f %f", creature_properties->Name.c_str(), m_session->GetPlayer()->GetMapId(),
-        creature_spawn->x, creature_spawn->y, creature_spawn->z);
-
+        BlueSystemMessage(m_session, "Spawned a creature `%s` with entry %u at %f %f %f on map %u", creature_properties->Name.c_str(),
+            entry, creature_spawn->x, creature_spawn->y, creature_spawn->z, m_session->GetPlayer()->GetMapId());
+        sGMLog.writefromsession(m_session, "spawned a %s at %u %f %f %f", creature_properties->Name.c_str(), m_session->GetPlayer()->GetMapId(),
+            creature_spawn->x, creature_spawn->y, creature_spawn->z);
+    }
     return true;
 }
 
@@ -812,7 +815,7 @@ bool ChatHandler::HandleNpcYellCommand(const char* args, WorldSession* m_session
         return true;
     }
 
-    creature_target->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, args);
+    creature_target->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, args);
 
     return true;
 }
@@ -1138,9 +1141,9 @@ bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_ses
     uint32 emote;
     uint32 save = 0;
 
-    if (sscanf(args, "%u %u", (unsigned int*)&emote, (unsigned int*)&save) != 2)
+    if (sscanf(args, "%u %u", &emote, &save) != 2)
     {
-        if (sscanf(args, "%u", (unsigned int*)&emote) != 1)
+        if (sscanf(args, "%u", &emote) != 1)
         {
             RedSystemMessage(m_session, "Command must be at least in format: .npc set emote <emote>.");
             RedSystemMessage(m_session, "Use the following format to save the emote: .npc set emote <emote> 1.");

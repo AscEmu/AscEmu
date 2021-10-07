@@ -14,7 +14,6 @@ namespace AscEmu::Packets
 {
     class CmsgQuestPoiQuery : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         uint32_t questCount;
         std::vector<uint32_t> questIds;
@@ -48,6 +47,5 @@ namespace AscEmu::Packets
             }
             return true;
         }
-#endif
     };
 }

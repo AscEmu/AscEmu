@@ -19,12 +19,13 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Server/MainServerDefines.h"
 #include "Map/MapCell.h"
 #include "Corpse.h"
 #include "Objects/ObjectMgr.h"
 #include "Data/WoWCorpse.hpp"
+#include "Util/Strings.hpp"
 
 // MIT Start
  //////////////////////////////////////////////////////////////////////////////////////////
@@ -129,10 +130,6 @@ void Corpse::setCorpseDataFromDbString(std::string dbString)
             case 27: setFlags(std::stoul(stringValue)); break;
             case 28: setDynamicFlags(std::stoul(stringValue)); break;
         }
-        std::stoi(stringValue);     // signed long int32_t case
-        std::stoull(stringValue);   // unsigned long long uint64_t (depending where not always 64 bit)
-        std::stoul(stringValue);    // unsigned long uint32_t cast
-        std::stof(stringValue);     // floating
         ++countPosition;
     }
 }
@@ -233,7 +230,7 @@ void Corpse::DeleteFromDB()
     //delete corpse from db when its not needed anymore
     char sql[256];
 
-    snprintf(sql, 256, "DELETE FROM corpses WHERE guid=%u", (unsigned int)getGuidLow());
+    snprintf(sql, 256, "DELETE FROM corpses WHERE guid=%u", getGuidLow());
     CharacterDatabase.Execute(sql);
 }
 

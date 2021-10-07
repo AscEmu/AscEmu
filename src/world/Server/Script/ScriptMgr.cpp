@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 
 #include "WorldConf.h"
 #include "Management/GameEvent.h"
@@ -28,17 +28,17 @@
 #include <git_version.h>
 
 #include <fstream>
-#include <mutex>
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
 #include "Objects/ObjectMgr.h"
 #include "ScriptMgr.h"
 #include "Map/MapScriptInterface.h"
-#include "Objects/Faction.h"
 #include "Common.hpp"
+#include "CreatureAIScript.h"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Server/Packets/SmsgUpdateInstanceEncounterUnit.h"
+#include "Spell/Definitions/SpellEffects.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -439,8 +439,9 @@ void ScriptMgr::UnloadScripts()
         delete *itr;
     _questscripts.clear();
 
-    for (auto& itr : _spellscripts)
-        delete itr.second;
+    //todo zyres: this is the wrong way to delete spellscripts
+    /*for (auto& itr : _spellscripts)
+        delete itr.second;*/
     _spellscripts.clear();
 
     UnloadScriptEngines();
@@ -479,7 +480,7 @@ void ScriptMgr::DumpUnimplementedSpells()
 
         std::stringstream ss;
         ss << sp->getId();
-        ss << std::endl;
+        ss << "\n";
 
         of.write(ss.str().c_str(), ss.str().length());
 
@@ -512,7 +513,7 @@ void ScriptMgr::DumpUnimplementedSpells()
 
         std::stringstream ss;
         ss << sp->getId();
-        ss << std::endl;
+        ss << "\n";
 
         of2.write(ss.str().c_str(), ss.str().length());
 
@@ -577,12 +578,12 @@ void ScriptMgr::register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback
     SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
     if (sp == NULL)
     {
-        sLogger.debug("ScriptMgr tried to register a dummy aura handler for invalid Spell ID: %u.", entry);
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr tried to register a dummy aura handler for invalid Spell ID: %u.", entry);
         return;
     }
 
     if (!sp->hasEffectApplyAuraName(SPELL_AURA_DUMMY) && !sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_DUMMY))
-        sLogger.debug("ScriptMgr registered a dummy aura handler for Spell ID: %u (%s), but spell has no dummy aura!", entry, sp->getName().c_str());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr registered a dummy aura handler for Spell ID: %u (%s), but spell has no dummy aura!", entry, sp->getName().c_str());
 
     _auras.insert(HandleDummyAuraMap::value_type(entry, callback));
 }
@@ -591,19 +592,19 @@ void ScriptMgr::register_dummy_spell(uint32 entry, exp_handle_dummy_spell callba
 {
     if (_spells.find(entry) != _spells.end())
     {
-        sLogger.debug("ScriptMgr tried to register a script for Spell ID: %u but this spell has already one", entry);
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr tried to register a script for Spell ID: %u but this spell has already one", entry);
         return;
     }
 
     SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
     if (sp == NULL)
     {
-        sLogger.debug("ScriptMgr tried to register a dummy handler for invalid Spell ID: %u.", entry);
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr tried to register a dummy handler for invalid Spell ID: %u.", entry);
         return;
     }
 
     if (!sp->hasEffect(SPELL_EFFECT_DUMMY) && !sp->hasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->hasEffect(SPELL_EFFECT_SEND_EVENT))
-        sLogger.debug("ScriptMgr registered a dummy handler for Spell ID: %u (%s), but spell has no dummy/script/send event effect!", entry, sp->getName().c_str());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr registered a dummy handler for Spell ID: %u (%s), but spell has no dummy/script/send event effect!", entry, sp->getName().c_str());
 
     _spells.insert(HandleDummySpellMap::value_type(entry, callback));
 }
@@ -693,19 +694,19 @@ void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect ca
 
     if (itr != SpellScriptEffects.end())
     {
-        sLogger.debug("ScriptMgr tried to register more than 1 script effect handlers for Spell %u", entry);
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr tried to register more than 1 script effect handlers for Spell %u", entry);
         return;
     }
 
     SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
     if (sp == NULL)
     {
-        sLogger.debug("ScriptMgr tried to register a script effect handler for invalid Spell %u.", entry);
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr tried to register a script effect handler for invalid Spell %u.", entry);
         return;
     }
 
     if (!sp->hasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->hasEffect(SPELL_EFFECT_SEND_EVENT))
-        sLogger.debug("ScriptMgr registered a script effect handler for Spell ID: %u (%s), but spell has no scripted effect!", entry, sp->getName().c_str());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr registered a script effect handler for Spell ID: %u (%s), but spell has no scripted effect!", entry, sp->getName().c_str());
 
     SpellScriptEffects.insert(std::pair< uint32, exp_handle_script_effect >(entry, callback));
 }
@@ -1384,8 +1385,10 @@ void InstanceScript::setGameObjectStateForEntry(uint32_t entry, uint8_t state)
 /* Hook Stuff */
 void ScriptMgr::register_hook(ServerHookEvents event, void* function_pointer)
 {
-    ARCEMU_ASSERT(event < NUM_SERVER_HOOKS);
-    _hooks[event].insert(function_pointer);
+    if (event < NUM_SERVER_HOOKS)
+        _hooks[event].insert(function_pointer);
+    else
+        sLogger.failure("ScriptMgr::register_hook tried to register invalid event %u", event);
 }
 
 bool ScriptMgr::has_creature_script(uint32 entry) const

@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "DBCStructures.h"
 #include "WorldConf.h"
 
 #if VERSION_STRING == Classic

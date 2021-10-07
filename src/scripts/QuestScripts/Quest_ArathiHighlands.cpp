@@ -19,10 +19,12 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class Professor_Phizzlethorpe : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Professor_Phizzlethorpe)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Professor_Phizzlethorpe(c); }
     explicit Professor_Phizzlethorpe(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override
@@ -32,7 +34,7 @@ class Professor_Phizzlethorpe : public CreatureAIScript
 
         if (iWaypointId == 15)
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I found the fact that, it searched");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I found the fact that, it searched");
             getCreature()->Despawn(5000, 1000);
             getCreature()->stopMoving();
 

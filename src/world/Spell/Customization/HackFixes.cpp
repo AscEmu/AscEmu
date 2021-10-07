@@ -19,16 +19,13 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "crc32.h"
 #include "Units/Players/PlayerClasses.hpp"
-#include "Server/MainServerDefines.h"
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
 #include "Spell/Definitions/SpellModifierType.hpp"
-#include "Spell/Definitions/SpellInFrontStatus.hpp"
 #include "Spell/Definitions/SpellDamageType.hpp"
-#include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/CastInterruptFlags.hpp"
 #include <Spell/Definitions/AuraInterruptFlags.hpp>
 #include "Spell/Definitions/SpellRanged.hpp"
@@ -38,6 +35,7 @@
 #include "Spell/SpellHelpers.h"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellTarget.h"
+#include "Spell/Definitions/SpellEffects.hpp"
 
 using AscEmu::World::Spell::Helpers::decimalToMask;
 
@@ -1136,11 +1134,11 @@ void SpellMgr::applyHackFixes()
             case 71160: // Plague Stench (Stinky)
             case 71161: // Plague Stench (Stinky)
             case 71123: // Decimate (Stinky & Precious)
-                sp->setEffectRadiusIndex(sSpellRadiusStore.LookupEntry(12)->ID, 0); // 100yd
+                sp->setEffectRadiusIndex(sSpellRadiusStore.LookupEntry(12) ? sSpellRadiusStore.LookupEntry(12)->ID : 0, 0); // 100yd
                 break;
             case 69055: // Saber Lash (Lord Marrowgar)
             case 70814: // Saber Lash (Lord Marrowgar)
-                sp->setEffectRadiusIndex(sSpellRadiusStore.LookupEntry(14)->ID, 0); // 8yd
+                sp->setEffectRadiusIndex(sSpellRadiusStore.LookupEntry(14) ? sSpellRadiusStore.LookupEntry(14)->ID : 0, 0); // 8yd
                 break;
             default:
                 break;

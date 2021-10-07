@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Server/Packets/ManagedPacket.h"
 #include "Server/WorldSession.h"
 #include "Server/Packets/MsgTabardvendorActivate.h"
@@ -15,7 +15,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgTrainerBuySucceeded.h"
 #include "Server/Packets/SmsgPetitionShowlist.h"
 #include "Server/Packets/CmsgPetitionShowlist.h"
-#include "Units/Players/PlayerClasses.hpp"
 #include "Units/Creatures/Creature.h"
 #include "Map/MapMgr.h"
 #include "Management/AuctionMgr.h"
@@ -24,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGossipSelectOption.h"
 #include "Server/Packets/CmsgGossipHello.h"
 #include "Management/ItemInterface.h"
+#include "Management/Gossip/GossipScript.hpp"
 #include "Server/Packets/SmsgBinderConfirm.h"
 #include "Server/Packets/CmsgTrainerList.h"
 #include "Server/Packets/CmsgBinderActivate.h"
@@ -45,7 +45,7 @@ void WorldSession::handleTabardVendorActivateOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received MSG_TABARDVENDOR_ACTIVATE: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_TABARDVENDOR_ACTIVATE: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
@@ -69,7 +69,7 @@ void WorldSession::handleBankerActivateOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_BANKER_ACTIVATE: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BANKER_ACTIVATE: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
@@ -93,7 +93,7 @@ void WorldSession::handleAuctionHelloOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received MSG_AUCTION_HELLO: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUCTION_HELLO: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
@@ -127,7 +127,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise((recvPacket)))
         return;
 
-    sLogger.debug("Received CMSG_TRAINER_BUY_SPELL: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_TRAINER_BUY_SPELL: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
@@ -198,7 +198,8 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
         creature->playSpellVisual(179, 0);
         _player->playSpellVisual(362, 1);
 
-        _player->addSpell(trainerSpell->pLearnSpell->getId());
+        if (trainerSpell->pLearnSpell)
+            _player->addSpell(trainerSpell->pLearnSpell->getId());
     }
 
     if (trainerSpell->DeleteSpell)
@@ -222,7 +223,7 @@ void WorldSession::handleCharterShowListOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_CHARTER_SHOW_LIST: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_CHARTER_SHOW_LIST: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
@@ -246,7 +247,7 @@ void WorldSession::handleGossipHelloOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_GOSSIP_HELLO: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GOSSIP_HELLO: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
     if (creature != nullptr)
@@ -272,7 +273,7 @@ void WorldSession::handleGossipSelectOptionOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_GOSSIP_SELECT_OPTION: %u (gossipId), %i (option), %u (guidLow)",
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GOSSIP_SELECT_OPTION: %u (gossipId), %i (option), %u (guidLow)",
         srlPacket.gossip_id, srlPacket.option, srlPacket.guid.getGuidLow());
 
 
@@ -324,7 +325,7 @@ void WorldSession::handleBinderActivateOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_BINDER_ACTIVATE: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BINDER_ACTIVATE: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
@@ -428,7 +429,6 @@ void WorldSession::sendTrainerList(Creature* creature)
     {
         WorldPacket data(SMSG_TRAINER_LIST, 5000);
         uint32_t Spacer = 0;
-        std::string Text;
 
         data << creature->getGuid();
         data << trainer->TrainerType;
@@ -692,13 +692,13 @@ void WorldSession::handleNpcTextQueryOpcode(WorldPacket& recvPacket)
 
     _player->setTargetGuid(srlPacket.guid);
 
-    const auto localesNpcText = (language > 0) ? sMySQLStore.getLocalizedNpcText(srlPacket.text_id, language) : nullptr;
+    const auto localesNpcText = (language > 0) ? sMySQLStore.getLocalizedNpcGossipText(srlPacket.text_id, language) : nullptr;
 
     WorldPacket data;
     data.Initialize(SMSG_NPC_TEXT_UPDATE);
     data << srlPacket.text_id;
 
-    if (const auto pGossip = sMySQLStore.getNpcText(srlPacket.text_id))
+    if (const auto pGossip = sMySQLStore.getNpcGossipText(srlPacket.text_id))
     {
         for (uint8_t i = 0; i < 8; ++i)
         {
@@ -774,7 +774,7 @@ void WorldSession::handleBuyBankSlotOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_BUY_BANK_SLOT: %u (guidLow)", srlPacket.guid.getGuidLow());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BUY_BANK_SLOT: %u (guidLow)", srlPacket.guid.getGuidLow());
 
     const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLow());
     if (creature == nullptr || !creature->isBanker())

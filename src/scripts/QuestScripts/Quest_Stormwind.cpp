@@ -19,10 +19,12 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class DashelStonefist : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(DashelStonefist)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new DashelStonefist(c); }
     explicit DashelStonefist(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -48,7 +50,7 @@ class DashelStonefist : public CreatureAIScript
 
     void AIUpdate() override
     {
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting. No one else needs to get hurt.");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting. No one else needs to get hurt.");
         getCreature()->RemoveNegativeAuras();
         getCreature()->SetFaction(12);
         getCreature()->SetHealthPct(100);
@@ -65,7 +67,6 @@ class DashelStonefist : public CreatureAIScript
 class TheMissingDiplomat : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
@@ -74,7 +75,7 @@ public:
 
         Creature* Dashel = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 4961);
 
-        if (Dashel == NULL)
+        if (Dashel == nullptr)
             return;
 
         Dashel->SetFaction(72);
@@ -85,9 +86,9 @@ public:
         if (chance < 15)
         {
             std::string say = "Now you're gonna get it good, ";
-            say += (static_cast<Player*>(mTarget))->getName();
+            say += mTarget->getName();
             say += "!";
-            Dashel->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+            Dashel->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }
         Creature* ct1 = mTarget->GetMapMgr()->CreateAndSpawnCreature(4969, -8686.803711f, 445.267792f, 99.789223f, 5.461184f);
         if (ct1 != nullptr)

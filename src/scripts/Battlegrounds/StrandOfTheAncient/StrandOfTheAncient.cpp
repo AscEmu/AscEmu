@@ -63,7 +63,6 @@
  unique numbering, instead of a shared pool.
 */
 
-#include <StdAfx.h>
 #include "StrandOfTheAncient.h"
 #include "Management/WorldStates.h"
 #include "Map/MapMgr.h"

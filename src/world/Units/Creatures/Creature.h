@@ -27,6 +27,7 @@
 #include "Units/Unit.h"
 #include "Objects/Object.h"
 #include "Management/Group.h"
+#include "Server/UpdateFieldInclude.h"
 
 class CreatureAIScript;
 class GossipScript;
@@ -37,7 +38,7 @@ struct QuestRelation;
 struct QuestProperties;
 class CreatureGroup;
 
-enum MovementGeneratorType : uint8;
+enum MovementGeneratorType : uint8_t;
 
 uint8 get_byte(uint32 buffer, uint32 index);
 
@@ -224,10 +225,8 @@ public:
 
         virtual void setDeathState(DeathState s);
 
-        void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0);
-        void SendScriptTextChatMessage(uint32 textid);
-        void SendTimedScriptTextChatMessage(uint32 textid, uint32 delay = 0);
-        void SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr);
+        void SendScriptTextChatMessage(uint32 textid, Unit* target = nullptr);
+        void SendTimedScriptTextChatMessage(uint32 textid, uint32 delay = 0, Unit* target = nullptr);
 
         // Serialization
         void SaveToDB();
@@ -353,8 +352,6 @@ public:
 
         void Die(Unit* pAttacker, uint32 damage, uint32 spellid) override;
 
-        void HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event);
-
         uint32 GetType();
 
         void SetType(uint32 t);
@@ -396,8 +393,6 @@ public:
         CreatureGroup* m_formation;
 
         float_t m_wanderDistance = 0.0f;
-
-        // old EasyFunctions.h
 };
 
 #endif // _WOWSERVER_CREATURE_H

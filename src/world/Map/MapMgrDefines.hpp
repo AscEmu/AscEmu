@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Macros/MapsMacros.hpp"
-
 enum MapMgrTimers
 {
     MMUPDATE_OBJECTS        = 0,

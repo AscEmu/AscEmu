@@ -3,12 +3,14 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 
 #include "Management/ArenaTeam.h"
 #include "Server/MainServerDefines.h"
 #include "Objects/ObjectMgr.h"
 #include "DayWatcherThread.h"
+
+#include "Chat/ChatHandler.hpp"
 
 using AscEmu::Threading::AEThread;
 using std::chrono::milliseconds;
@@ -215,7 +217,7 @@ void DayWatcherThread::update_arena()
                     if (arenaTeamMember == nullptr || team->m_stats.played_week < 10 || arenaTeamMember->Played_ThisWeek * 100 / team->m_stats.played_week < 30)
                         continue;
 
-                    const double arenaStatsRating = static_cast<double>(team->m_stats.rating);
+                    const double arenaStatsRating = team->m_stats.rating;
                     double anrenaPoints;
 
                     if (arenaStatsRating <= 510.0)
@@ -228,7 +230,7 @@ void DayWatcherThread::update_arena()
                     else
                     {
                         const double power = -0.00412 * arenaStatsRating;
-                        double divisor = pow(static_cast<double>(2.71828), power);
+                        double divisor = pow(2.71828, power);
                         divisor *= 1639.28;
                         divisor += 1.0;
 

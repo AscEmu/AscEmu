@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+
 #include "Management/Battleground/Battleground.h"
 #include "Management/Battleground/BattlegroundMgr.h"
 #include "Management/Arenas.h"
@@ -959,7 +959,11 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
 
 void CBattlegroundManager::RemovePlayerFromQueues(Player* plr)
 {
-    ARCEMU_ASSERT(plr->m_bgQueueType < BATTLEGROUND_NUM_TYPES);
+    if (plr->m_bgQueueType >= BATTLEGROUND_NUM_TYPES)
+    {
+        sLogger.failure("CBattlegroundManager::RemovePlayerFromQueues queueType %u is not valid!", BATTLEGROUND_NUM_TYPES);
+        return;
+    }
 
     m_queueLock.Acquire();
 

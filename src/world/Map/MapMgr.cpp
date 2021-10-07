@@ -19,8 +19,6 @@
  *
  */
 
-#include "StdAfx.h"
-
 #include "TLSObject.h"
 #include "Objects/DynamicObject.h"
 #include "CellHandler.h"
@@ -41,11 +39,11 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "MapMgr.h"
 #include "MapScriptInterface.h"
-#include "WorldCreatorDefines.hpp"
 #include "WorldCreator.h"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgUpdateWorldState.h"
 #include "Server/Packets/SmsgDefenseMessage.h"
+#include "Server/Script/ScriptMgr.h"
 
 #include "shared/WoWGuid.h"
 
@@ -202,127 +200,144 @@ MapMgr::~MapMgr()
 
 void MapMgr::PushObject(Object* obj)
 {
-    // Assertions
-    ARCEMU_ASSERT(obj != nullptr);
-
-    //\todo That object types are not map objects. TODO: add AI groups here?
-    if (obj->isItem() || obj->isContainer())
+    if (obj != nullptr)
     {
-        // mark object as updatable and exit
-        return;
-    }
-
-    if (obj->isCorpse())
-    {
-        m_corpses.insert(static_cast< Corpse* >(obj));
-    }
-
-    obj->clearInRangeSets();
-
-    // Check valid cell x/y values
-    ARCEMU_ASSERT(obj->GetMapId() == _mapId);
-    if (!(obj->GetPositionX() < _maxX && obj->GetPositionX() > _minX) || !(obj->GetPositionY() < _maxY && obj->GetPositionY() > _minY))
-    {
-        OutOfMapBoundariesTeleport(obj);
-    }
-
-    ARCEMU_ASSERT(obj->GetPositionY() < _maxY && obj->GetPositionY() > _minY);
-    ARCEMU_ASSERT(_cells != nullptr);
-
-    // Get cell coordinates
-    uint32 x = GetPosX(obj->GetPositionX());
-    uint32 y = GetPosY(obj->GetPositionY());
-
-    if (x >= _sizeX || y >= _sizeY)
-    {
-        OutOfMapBoundariesTeleport(obj);
-
-        x = GetPosX(obj->GetPositionX());
-        y = GetPosY(obj->GetPositionY());
-    }
-
-    MapCell* objCell = GetCell(x, y);
-    if (objCell == nullptr)
-    {
-        if (objCell = Create(x, y))
+        //\todo That object types are not map objects. TODO: add AI groups here?
+        if (obj->isItem() || obj->isContainer())
         {
-            objCell->Init(x, y, this);
+            // mark object as updatable and exit
+            return;
+        }
+
+        //Zyres: this was an old ASSERT MapMgr for map x is not allowed to push objects for mapId z
+        if (obj->GetMapId() != _mapId)
+        {
+            sLogger.failure("MapMgr::PushObject manager for mapId %u tried to push object for mapId %u, return!", _mapId, obj->GetMapId());
+            return;
+        }
+
+        if (obj->GetPositionY() > _maxY || obj->GetPositionY() < _minY)
+        {
+            sLogger.failure("MapMgr::PushObject not allowed to push object to y: %f (max %f/min %f), return!", obj->GetPositionY(), _maxY, _minY);
+            return;
+        }
+
+        if (_cells == nullptr)
+        {
+            sLogger.failure("MapMgr::PushObject not allowed to push object to invalid cell (nullptr), return!");
+            return;
+        }
+
+        if (obj->isCorpse())
+        {
+            m_corpses.insert(static_cast<Corpse*>(obj));
+        }
+
+        obj->clearInRangeSets();
+
+        // Check valid cell x/y values
+        if (!(obj->GetPositionX() < _maxX && obj->GetPositionX() > _minX) || !(obj->GetPositionY() < _maxY && obj->GetPositionY() > _minY))
+        {
+            OutOfMapBoundariesTeleport(obj);
+        }
+
+        // Get cell coordinates
+        uint32 x = GetPosX(obj->GetPositionX());
+        uint32 y = GetPosY(obj->GetPositionY());
+
+        if (x >= _sizeX || y >= _sizeY)
+        {
+            OutOfMapBoundariesTeleport(obj);
+
+            x = GetPosX(obj->GetPositionX());
+            y = GetPosY(obj->GetPositionY());
+        }
+
+        MapCell* objCell = GetCell(x, y);
+        if (objCell == nullptr)
+        {
+            objCell = Create(x, y);
+            if (objCell != nullptr)
+            {
+                objCell->Init(x, y, this);
+            }
+            else
+            {
+                sLogger.fatal("MapCell for x f% and y f% seems to be invalid!", x, y);
+                return;
+            }
+        }
+
+        // Build update-block for player
+        ByteBuffer* buf = 0;
+        uint32 count;
+        Player* plObj = nullptr;
+
+        if (obj->isPlayer())
+        {
+            plObj = static_cast<Player*>(obj);
+
+            sLogger.debug("Creating player " I64FMT " for himself.", obj->getGuid());
+            ByteBuffer pbuf(10000);
+            count = plObj->buildCreateUpdateBlockForPlayer(&pbuf, plObj);
+            plObj->getUpdateMgr().pushCreationData(&pbuf, count);
+        }
+
+        // Build in-range data
+        uint8 cellNumber = worldConfig.server.mapCellNumber;
+
+        uint32 endX = (x <= _sizeX) ? x + cellNumber : (_sizeX - cellNumber);
+        uint32 endY = (y <= _sizeY) ? y + cellNumber : (_sizeY - cellNumber);
+        uint32 startX = x > 0 ? x - cellNumber : 0;
+        uint32 startY = y > 0 ? y - cellNumber : 0;
+
+        for (uint32 posX = startX; posX <= endX; posX++)
+        {
+            for (uint32 posY = startY; posY <= endY; posY++)
+            {
+                MapCell* cell = GetCell(posX, posY);
+                if (cell)
+                {
+                    UpdateInRangeSet(obj, plObj, cell, &buf);
+                }
+            }
+        }
+
+        //Add to the cell's object list
+        objCell->AddObject(obj);
+
+        obj->SetMapCell(objCell);
+        //Add to the mapmanager's object list
+        if (plObj != nullptr)
+        {
+            m_PlayerStorage[plObj->getGuidLow()] = plObj;
+            UpdateCellActivity(x, y, 2 + cellNumber);
         }
         else
         {
-            sLogger.fatal("MapCell for x f% and y f% seems to be invalid!", x, y);
-            return;
-        }
-    }
-
-    // Build update-block for player
-    ByteBuffer* buf = 0;
-    uint32 count;
-    Player* plObj = nullptr;
-
-    if (obj->isPlayer())
-    {
-        plObj = static_cast<Player*>(obj);
-
-        sLogger.debug("Creating player " I64FMT " for himself.", obj->getGuid());
-        ByteBuffer pbuf(10000);
-        count = plObj->buildCreateUpdateBlockForPlayer(&pbuf, plObj);
-        plObj->getUpdateMgr().pushCreationData(&pbuf, count);
-    }
-
-    // Build in-range data
-    uint8 cellNumber = worldConfig.server.mapCellNumber;
-
-    uint32 endX = (x <= _sizeX) ? x + cellNumber : (_sizeX - cellNumber);
-    uint32 endY = (y <= _sizeY) ? y + cellNumber : (_sizeY - cellNumber);
-    uint32 startX = x > 0 ? x - cellNumber : 0;
-    uint32 startY = y > 0 ? y - cellNumber : 0;
-
-    for (uint32 posX = startX; posX <= endX; posX++)
-    {
-        for (uint32 posY = startY; posY <= endY; posY++)
-        {
-            MapCell* cell = GetCell(posX, posY);
-            if (cell)
+            switch (obj->GetTypeFromGUID())
             {
-                UpdateInRangeSet(obj, plObj, cell, &buf);
-            }
-        }
-    }
-
-    //Add to the cell's object list
-    objCell->AddObject(obj);
-
-    obj->SetMapCell(objCell);
-    //Add to the mapmanager's object list
-    if (plObj != nullptr)
-    {
-        m_PlayerStorage[plObj->getGuidLow()] = plObj;
-        UpdateCellActivity(x, y, 2 + cellNumber);
-    }
-    else
-    {
-        switch (obj->GetTypeFromGUID())
-        {
             case HIGHGUID_TYPE_PET:
-                m_PetStorage[obj->GetUIdFromGUID()] = static_cast< Pet* >(obj);
+                m_PetStorage[obj->GetUIdFromGUID()] = static_cast<Pet*>(obj);
                 break;
 
             case HIGHGUID_TYPE_UNIT:
             case HIGHGUID_TYPE_VEHICLE:
             {
-                ARCEMU_ASSERT(obj->GetUIdFromGUID() <= m_CreatureHighGuid);
-                CreatureStorage[obj->GetUIdFromGUID()] = static_cast< Creature* >(obj);
-                if (static_cast<Creature*>(obj)->m_spawn != nullptr)
+                if (obj->GetUIdFromGUID() <= m_CreatureHighGuid)
                 {
-                    _sqlids_creatures.insert(std::make_pair(static_cast<Creature*>(obj)->m_spawn->id, static_cast<Creature*>(obj)));
+                    CreatureStorage[obj->GetUIdFromGUID()] = static_cast<Creature*>(obj);
+                    if (static_cast<Creature*>(obj)->m_spawn != nullptr)
+                    {
+                        _sqlids_creatures.insert(std::make_pair(static_cast<Creature*>(obj)->m_spawn->id, static_cast<Creature*>(obj)));
+                    }
                 }
             }
             break;
 
             case HIGHGUID_TYPE_GAMEOBJECT:
             {
-                GOStorage[obj->GetUIdFromGUID()] = static_cast< GameObject* >(obj);
+                GOStorage[obj->GetUIdFromGUID()] = static_cast<GameObject*>(obj);
                 if (static_cast<GameObject*>(obj)->m_spawn != nullptr)
                 {
                     _sqlids_gameobjects.insert(std::make_pair(static_cast<GameObject*>(obj)->m_spawn->id, static_cast<GameObject*>(obj)));
@@ -333,46 +348,51 @@ void MapMgr::PushObject(Object* obj)
             case HIGHGUID_TYPE_DYNAMICOBJECT:
                 m_DynamicObjectStorage[obj->getGuidLow()] = (DynamicObject*)obj;
                 break;
-        }
-    }
-
-    // Handle activation of that object.
-    if (objCell->IsActive() && obj->CanActivate())
-        obj->Activate(this);
-
-    // Add the session to our set if it is a player.
-    if (plObj)
-    {
-        Sessions.insert(plObj->GetSession());
-
-        // Change the instance ID, this will cause it to be removed from the world thread (return value 1)
-        plObj->GetSession()->SetInstance(GetInstanceID());
-
-        // Add the map wide objects
-        if (_mapWideStaticObjects.size())
-        {
-            uint32 globalcount = 0;
-            if (!buf)
-                buf = new ByteBuffer(300);
-
-            for (auto _mapWideStaticObject : _mapWideStaticObjects)
-            {
-                count = _mapWideStaticObject->buildCreateUpdateBlockForPlayer(buf, plObj);
-                globalcount += count;
             }
-            /*VLack: It seems if we use the same buffer then it is a BAD idea to try and push created data one by one, add them at once!
-                   If you try to add them one by one, then as the buffer already contains data, they'll end up repeating some object.
-                   Like 6 object updates for Deeprun Tram, but the built package will contain these entries: 2AFD0, 2AFD0, 2AFD1, 2AFD0, 2AFD1, 2AFD2*/
-            if (globalcount > 0)
-                plObj->getUpdateMgr().pushCreationData(buf, globalcount);
         }
+
+        // Handle activation of that object.
+        if (objCell->IsActive() && obj->CanActivate())
+            obj->Activate(this);
+
+        // Add the session to our set if it is a player.
+        if (plObj)
+        {
+            Sessions.insert(plObj->GetSession());
+
+            // Change the instance ID, this will cause it to be removed from the world thread (return value 1)
+            plObj->GetSession()->SetInstance(GetInstanceID());
+
+            // Add the map wide objects
+            if (_mapWideStaticObjects.size())
+            {
+                uint32 globalcount = 0;
+                if (!buf)
+                    buf = new ByteBuffer(300);
+
+                for (auto _mapWideStaticObject : _mapWideStaticObjects)
+                {
+                    count = _mapWideStaticObject->buildCreateUpdateBlockForPlayer(buf, plObj);
+                    globalcount += count;
+                }
+                /*VLack: It seems if we use the same buffer then it is a BAD idea to try and push created data one by one, add them at once!
+                       If you try to add them one by one, then as the buffer already contains data, they'll end up repeating some object.
+                       Like 6 object updates for Deeprun Tram, but the built package will contain these entries: 2AFD0, 2AFD0, 2AFD1, 2AFD0, 2AFD1, 2AFD2*/
+                if (globalcount > 0)
+                    plObj->getUpdateMgr().pushCreationData(buf, globalcount);
+            }
+        }
+
+
+        delete buf;
+
+        if (plObj != nullptr && InactiveMoveTime && !forced_expire)
+            InactiveMoveTime = 0;
     }
-
-
-    delete buf;
-
-    if (plObj != nullptr && InactiveMoveTime && !forced_expire)
-        InactiveMoveTime = 0;
+    else
+    {
+        sLogger.failure("MapMgr::PushObject tried to push invalid object (nullptr)!");
+    }
 }
 
 void MapMgr::PushStaticObject(Object* obj)
@@ -402,9 +422,23 @@ void MapMgr::PushStaticObject(Object* obj)
 void MapMgr::RemoveObject(Object* obj, bool free_guid)
 {
     // Assertions
-    ARCEMU_ASSERT(obj != nullptr);
-    ARCEMU_ASSERT(obj->GetMapId() == _mapId);
-    ARCEMU_ASSERT(_cells != nullptr);
+    if (obj == nullptr)
+    {
+        sLogger.failure("MapMgr::RemoveObject tried to remove invalid object (nullptr)");
+        return;
+    }
+
+    if (obj->GetMapId() != _mapId)
+    {
+        sLogger.failure("MapMgr::RemoveObject tried to remove object with map %u but mapMgr is for map %u!", obj->GetMapId(), _mapId);
+        return;
+    }
+
+    if (_cells == nullptr)
+    {
+        sLogger.failure("MapMgr::RemoveObject tried to remove invalid cells (nullptr)");
+        return;
+    }
 
     if (obj->IsActive())
         obj->Deactivate(this);
@@ -424,15 +458,16 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         case HIGHGUID_TYPE_UNIT:
         case HIGHGUID_TYPE_VEHICLE:
         {
-            ARCEMU_ASSERT(obj->GetUIdFromGUID() <= m_CreatureHighGuid);
-            CreatureStorage[obj->GetUIdFromGUID()] = nullptr;
+            if (obj->GetUIdFromGUID() <= m_CreatureHighGuid)
+            {
+                CreatureStorage[obj->GetUIdFromGUID()] = nullptr;
 
-            if (static_cast<Creature*>(obj)->m_spawn != nullptr)
-                _sqlids_creatures.erase(static_cast<Creature*>(obj)->m_spawn->id);
+                if (static_cast<Creature*>(obj)->m_spawn != nullptr)
+                    _sqlids_creatures.erase(static_cast<Creature*>(obj)->m_spawn->id);
 
-            if (free_guid)
-                _reusable_guids_creature.push_back(obj->GetUIdFromGUID());
-
+                if (free_guid)
+                    _reusable_guids_creature.push_back(obj->GetUIdFromGUID());
+            }
             break;
         }
         case HIGHGUID_TYPE_PET:
@@ -451,14 +486,15 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         }
         case HIGHGUID_TYPE_GAMEOBJECT:
         {
-            ARCEMU_ASSERT(obj->GetUIdFromGUID() <= m_GOHighGuid);
-            GOStorage[obj->GetUIdFromGUID()] = nullptr;
-            if (static_cast<GameObject*>(obj)->m_spawn != nullptr)
-                _sqlids_gameobjects.erase(static_cast<GameObject*>(obj)->m_spawn->id);
+            if (obj->GetUIdFromGUID() <= m_GOHighGuid)
+            {
+                GOStorage[obj->GetUIdFromGUID()] = nullptr;
+                if (static_cast<GameObject*>(obj)->m_spawn != nullptr)
+                    _sqlids_gameobjects.erase(static_cast<GameObject*>(obj)->m_spawn->id);
 
-            if (free_guid)
-                _reusable_guids_gameobject.push_back(obj->GetUIdFromGUID());
-
+                if (free_guid)
+                    _reusable_guids_gameobject.push_back(obj->GetUIdFromGUID());
+            }
             break;
         }
         case HIGHGUID_TYPE_TRANSPORTER:
@@ -525,7 +561,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
                 uint32 y = GetPosY(obj->GetPositionY());
                 UpdateCellActivity(x, y, 2 + cellNumber);
             }
-            m_PlayerStorage.erase(static_cast<Player*>(obj)->getGuidLow());
+            m_PlayerStorage.erase(obj->getGuidLow());
         }
         else if (obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->mPlayerControler != nullptr)
         {
@@ -573,13 +609,12 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
 
 void MapMgr::ChangeObjectLocation(Object* obj)
 {
-    ARCEMU_ASSERT(obj != nullptr);
+    if (obj == nullptr)
+        return;
 
     // Items and containers are of no interest for us
     if (obj->isItem() || obj->isContainer() || obj->GetMapMgr() != this)
-    {
         return;
-    }
 
     Player* plObj = nullptr;
     ByteBuffer* buf = nullptr;
@@ -648,11 +683,16 @@ void MapMgr::ChangeObjectLocation(Object* obj)
     if (objCell == nullptr)
     {
         objCell = Create(cellX, cellY);
-        objCell->Init(cellX, cellY, this);
+        if (objCell != nullptr)
+        {
+            objCell->Init(cellX, cellY, this);
+        }
+        else
+        {
+            sLogger.failure("MapMgr::ChangeObjectLocation not able to create object cell (nullptr), return!");
+            return;
+        }
     }
-
-    ARCEMU_ASSERT(objCell != nullptr);
-
     uint8 cellNumber = worldConfig.server.mapCellNumber;
 
     // If object moved cell
@@ -899,7 +939,7 @@ float MapMgr::GetUpdateDistance(Object* curObj, Object* obj, Player* plObj)
         return m_UpdateDistance;
 
     // unlimited distance for people on same boat
-    if (curObj->isPlayer() && obj->isPlayer() && plObj != nullptr && plObj->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT) && plObj->obj_movement_info.transport_guid == static_cast< Player* >(curObj)->obj_movement_info.transport_guid)
+    if (curObj->isPlayer() && obj->isPlayer() && plObj != nullptr && plObj->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT) && plObj->obj_movement_info.transport_guid == curObj->obj_movement_info.transport_guid)
         return no_distance;
     // unlimited distance for transporters (only up to 2 cells +/- anyway.)
     if (curObj->GetTypeFromGUID() == HIGHGUID_TYPE_TRANSPORTER)
@@ -938,7 +978,7 @@ void MapMgr::_UpdateObjects()
             Player* pOwner = static_cast<Item*>(pObj)->getOwner();
             if (pOwner != nullptr)
             {
-                count = static_cast<Item*>(pObj)->BuildValuesUpdateBlockForPlayer(&update, pOwner);
+                count = pObj->BuildValuesUpdateBlockForPlayer(&update, pOwner);
                 // send update to owner
                 if (count)
                 {
@@ -1039,13 +1079,14 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
 
                     _terrain->LoadTile((int32)posX / 8, (int32)posY / 8);
 
-                    ARCEMU_ASSERT(!objCell->IsLoaded());
+                    if (!objCell->IsLoaded())
+                    {
+                        sLogger.debug("MapMgr : Loading objects for Cell [%u][%u] on map %u (instance %u)...", posX, posY, this->_mapId, m_instanceID);
 
-                    sLogger.debug("MapMgr : Loading objects for Cell [%u][%u] on map %u (instance %u)...", posX, posY, this->_mapId, m_instanceID);
-
-                    sp = _map->GetSpawnsList(posX, posY);
-                    if (sp)
-                        objCell->LoadObjects(sp);
+                        sp = _map->GetSpawnsList(posX, posY);
+                        if (sp)
+                            objCell->LoadObjects(sp);
+                    }
                 }
             }
             else
@@ -1226,6 +1267,7 @@ ZLiquidStatus MapMgr::getLiquidStatus(uint32 /*phaseMask*/, float x, float y, fl
                 {
                     if (auto const* area = GetArea(x, y, z))
                     {
+#if VERSION_STRING > Classic
                         uint32 overrideLiquid = area->liquid_type_override[liquidFlagType];
                         if (!overrideLiquid && area->zone)
                         {
@@ -1233,6 +1275,15 @@ ZLiquidStatus MapMgr::getLiquidStatus(uint32 /*phaseMask*/, float x, float y, fl
                             if (area)
                                 overrideLiquid = area->liquid_type_override[liquidFlagType];
                         }
+#else
+                        uint32 overrideLiquid = area->liquid_type_override;
+                        if (!overrideLiquid && area->zone)
+                        {
+                            area = MapManagement::AreaManagement::AreaStorage::GetAreaById(area->zone);
+                            if (area)
+                                overrideLiquid = area->liquid_type_override;
+                        }
+#endif
 
                         if (::DBC::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.LookupEntry(overrideLiquid))
                         {
@@ -1252,11 +1303,11 @@ ZLiquidStatus MapMgr::getLiquidStatus(uint32 /*phaseMask*/, float x, float y, fl
             float delta = liquid_level - z;
 
             // Get position delta
-            if (delta > collisionHeight)                   // Under water
+            if (delta > collisionHeight)        // Under water
                 return LIQUID_MAP_UNDER_WATER;
             if (delta > 0.0f)                   // In water
                 return LIQUID_MAP_IN_WATER;
-            if (delta > -0.1f)                   // Walk on water
+            if (delta > -0.1f)                  // Walk on water
                 return LIQUID_MAP_WATER_WALK;
             result = LIQUID_MAP_ABOVE_WATER;
         }
@@ -1647,7 +1698,7 @@ void MapMgr::_PerformObjectDuties()
             Transporter* trans = *itr;
             ++itr;
 
-            if (!trans->IsInWorld())
+            if (!trans || !trans->IsInWorld())
                 continue;
 
             trans->Update(difftime);
@@ -1877,7 +1928,7 @@ void MapMgr::SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint
                     if ((*iter)->isPlayer())
                     {
                         //TO< Player* >(*iter)->GetSession()->SendPacket(packet);
-                        if (static_cast< Player* >(*iter)->GetPhase() & obj->GetPhase())
+                        if ((*iter)->GetPhase() & obj->GetPhase())
                             static_cast< Player* >(*iter)->GetSession()->SendChatPacket(packet, langpos, lang, originator);
                     }
                 }
@@ -2240,9 +2291,15 @@ void MapMgr::LoadInstanceScript()
 
 void MapMgr::CallScriptUpdate()
 {
-    ARCEMU_ASSERT(mInstanceScript != NULL);
-    mInstanceScript->UpdateEvent();
-    mInstanceScript->updateTimers();
+    if (mInstanceScript != nullptr)
+    {
+        mInstanceScript->UpdateEvent();
+        mInstanceScript->updateTimers();
+    }
+    else
+    {
+        sLogger.failure("MapMgr::CallScriptUpdate tries to call without valid instance script (nullptr)");
+    }
 };
 
 uint32 MapMgr::GetAreaFlag(float x, float y, float z, bool * /*isOutdoors*/) const
@@ -2270,50 +2327,18 @@ void MapMgr::onWorldStateUpdate(uint32 zone, uint32 field, uint32 value)
 
 bool MapMgr::AddToMapMgr(Transporter* obj)
 {
-    //if (obj->IsInWorld())
-    //    return true;
-
     m_TransportStorage.insert(obj);
-
-    // Broadcast creation to players
-    if (HasPlayers())
-    {
-        for (auto itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
-        {
-            if (static_cast<Object*>(itr->second)->GetTransport() != obj)
-            {
-                ByteBuffer buf(500);
-                uint32_t cnt = obj->Object::buildCreateUpdateBlockForPlayer(&buf, itr->second);
-                itr->second->getUpdateMgr().pushUpdateData(&buf, cnt);
-            }
-        }
-    }
 
     return true;
 }
 
 void MapMgr::RemoveFromMapMgr(Transporter* obj, bool remove)
 {
-    RemoveObject(obj, true);
-
-    if (HasPlayers())
-    {
-        for (auto itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
-        {
-            if (static_cast<Object*>(itr->second)->GetTransport() != obj)
-            {
-                ByteBuffer buf(500);
-                uint32_t cnt = obj->Object::buildCreateUpdateBlockForPlayer(&buf, itr->second);
-                itr->second->getUpdateMgr().pushUpdateData(&buf, cnt);
-            }
-        }
-    }
-
     m_TransportStorage.erase(obj);
+    sTransportHandler.removeInstancedTransport(obj, this->GetInstanceID());
+
+    RemoveObject(obj, false);
 
     if (remove)
-    {
         obj->RemoveFromWorld(true);
-        obj->ExpireAndDelete();
-    }
 }

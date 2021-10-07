@@ -21,15 +21,10 @@
 #pragma once
 
 #include "EventableObject.h"
-#include "IUpdatable.h"
-#include "Definitions.h"
 #include "Storage/DBC/DBCStores.h"
-#include "WorldSession.h"
 #include "WorldConfig.h"
 
 #include <set>
-#include <string>
-#include <vector>
 
 class Object;
 class WorldPacket;

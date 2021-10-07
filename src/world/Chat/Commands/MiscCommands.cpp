@@ -3,14 +3,14 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
+#include "Chat/ChatHandler.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.hpp"
-#include "Spell/Definitions/PowerType.hpp"
 
 //.mount
 bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
@@ -72,7 +72,7 @@ bool ChatHandler::HandleDismountCommand(const char* /*args*/, WorldSession* m_se
 bool ChatHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSession* m_session)
 {
     uint32 spawn_id;
-    if (sscanf(args, "%u", (unsigned int*)&spawn_id) != 1)
+    if (sscanf(args, "%u", &spawn_id) != 1)
     {
         RedSystemMessage(m_session, "Command must be in format: .gocreature <creature_spawnid>.");
         return true;
@@ -98,7 +98,7 @@ bool ChatHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSession* m
 bool ChatHandler::HandleGoGameObjectSpawnCommand(const char* args, WorldSession* m_session)
 {
     uint32 spawn_id;
-    if (sscanf(args, "%u", (unsigned int*)&spawn_id) != 1)
+    if (sscanf(args, "%u", &spawn_id) != 1)
     {
         RedSystemMessage(m_session, "Command must be in format: .gogameobject <gameobject_spawnid>.");
         return true;
@@ -207,7 +207,7 @@ bool ChatHandler::HandleGoTriggerCommand(const char* args, WorldSession* m_sessi
     uint32 trigger_id;
     int32 instance_id = 0;
 
-    if (sscanf(args, "%u %d", (unsigned int*)&trigger_id, (int*)&instance_id) < 1)
+    if (sscanf(args, "%u %d", &trigger_id, &instance_id) < 1)
     {
         RedSystemMessage(m_session, "Command must be at least in format: .gotrig <trigger_id>.");
         RedSystemMessage(m_session, "You can use: .gotrig <trigger_id> <instance_id>");
@@ -419,7 +419,7 @@ bool ChatHandler::HandleKickByNameCommand(const char* args, WorldSession* m_sess
     }
 
     char* player_name = strtok((char*)args, " ");
-    auto player_target = sObjectMgr.GetPlayer((const char*)player_name, false);
+    auto player_target = sObjectMgr.GetPlayer(player_name, false);
     if (player_target != nullptr)
     {
         char* reason = strtok(NULL, "\n");
@@ -467,7 +467,7 @@ bool ChatHandler::HandleKKickBySessionCommand(const char* args, WorldSession* m_
     }
 
     char* player_name = strtok((char*)args, " ");
-    auto player_target = sObjectMgr.GetPlayer((const char*)player_name, false);
+    auto player_target = sObjectMgr.GetPlayer(player_name, false);
     if (player_target != nullptr)
     {
         if (!m_session->CanUseCommand('z') && player_target->GetSession()->CanUseCommand('z'))
@@ -509,7 +509,7 @@ bool ChatHandler::HandleWorldPortCommand(const char* args, WorldSession* m_sessi
     float x, y, z, o = 0.0f;
     uint32 mapid;
 
-    if (sscanf(args, "%u %f %f %f %f", (unsigned int*)&mapid, &x, &y, &z, &o) < 4)
+    if (sscanf(args, "%u %f %f %f %f", &mapid, &x, &y, &z, &o) < 4)
     {
         RedSystemMessage(m_session, "You have to use at least .worldport <mapid> <x> <y> <z>");
         return true;
@@ -548,7 +548,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
     if (!at)
     {
         snprintf((char*)buf, 400, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f|r",
-            (unsigned int)obj->GetMapId(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
+            obj->GetMapId(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
         SystemMessage(m_session, buf);
         return true;
     }
@@ -1178,7 +1178,7 @@ bool ChatHandler::HandleIPBanCommand(const char* args, WorldSession* m_session)
     }
 
     uint32 o1, o2, o3, o4;
-    if (sscanf(pIp, "%3u.%3u.%3u.%3u", (unsigned int*)&o1, (unsigned int*)&o2, (unsigned int*)&o3, (unsigned int*)&o4) != 4
+    if (sscanf(pIp, "%3u.%3u.%3u.%3u", &o1, &o2, &o3, &o4) != 4
         || o1 > 255 || o2 > 255 || o3 > 255 || o4 > 255)
     {
         RedSystemMessage(m_session, "Invalid IPv4 address [%s]", pIp);
@@ -1337,7 +1337,7 @@ bool ChatHandler::HandleBanAllCommand(const char* args, WorldSession* m_session)
     HandleIPBanCommand(pIPCmd, m_session);
     char pAccCmd[256];
     snprintf(pAccCmd, 254, "%s %s %s", pAcc.c_str(), pDuration, pReason);
-    HandleAccountBannedCommand((const char*)pAccCmd, m_session);
+    HandleAccountBannedCommand(pAccCmd, m_session);
 
     return true;
 }

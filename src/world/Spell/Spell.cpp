@@ -25,7 +25,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellState.hpp"
 #include "Definitions/SpellRanged.hpp"
 
-#include "Data/Flags.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Management/ItemInterface.h"
 #include "Map/Area/AreaManagementGlobals.hpp"
@@ -33,7 +32,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
-#include "Map/WorldCreatorDefines.hpp"
 #include "Objects/DynamicObject.h"
 #include "Objects/Faction.h"
 #include "Objects/GameObject.h"
@@ -48,6 +46,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Players/PlayerClasses.hpp"
 #include "Units/UnitDefines.hpp"
 #include "Util.hpp"
+#include "Definitions/SpellEffects.hpp"
+#include "Server/Script/CreatureAIScript.h"
 
 using namespace AscEmu::Packets;
 
@@ -59,7 +59,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
 {
     if (!m_caster->IsInWorld())
     {
-        sLogger.debug("Object " I64FMT " is casting spell ID %u while not in world", m_caster->getGuid(), getSpellInfo()->getId());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Object " I64FMT " is casting spell ID %u while not in world", m_caster->getGuid(), getSpellInfo()->getId());
         delete this;
         return SPELL_FAILED_DONT_REPORT;
     }
@@ -174,7 +174,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
                 u_caster->RemoveAura(m_triggeredByAura);
         }
 
-        sLogger.debug("Spell::prepare : canCast result %u for spell id %u (refer to SpellFailure.hpp to work out why)", cancastresult, getSpellInfo()->getId());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::prepare : canCast result %u for spell id %u (refer to SpellFailure.hpp to work out why)", cancastresult, getSpellInfo()->getId());
 
         finish(false);
         return cancastresult;
@@ -241,18 +241,18 @@ void Spell::castMe(const bool doReCheck)
     if (m_caster->isPlayer())
     {
         const auto plr = static_cast<Player*>(m_caster);
-        sLogger.debug("Spell::castMe : Player guid %u casted spell %s (id %u)",
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::castMe : Player guid %u casted spell %s (id %u)",
             plr->getGuidLow(), getSpellInfo()->getName().c_str(), getSpellInfo()->getId());
     }
     else if (m_caster->isCreature())
     {
         const auto creature = static_cast<Creature*>(m_caster);
-        sLogger.debug("Spell::castMe : Creature guid %u (entry %u) casted spell %s (id %u)",
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::castMe : Creature guid %u (entry %u) casted spell %s (id %u)",
             creature->spawnid, creature->getEntry(), getSpellInfo()->getName().c_str(), getSpellInfo()->getId());
     }
     else
     {
-        sLogger.debug("Spell::castMe : Spell id %u casted, caster guid %u", getSpellInfo()->getId(), m_caster->getGuid());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::castMe : Spell id %u casted, caster guid %u", getSpellInfo()->getId(), m_caster->getGuid());
     }
 
     // Check cast again if spell had cast time
@@ -665,7 +665,7 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int3
         return;
     }
 
-    sLogger.debug("Spell::handleHittedEffect : Spell effect %u, spell id %u, damage %d", effectId, getSpellInfo()->getId(), damage);
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::handleHittedEffect : Spell effect %u, spell id %u, damage %d", effectId, getSpellInfo()->getId(), damage);
 
     const auto scriptResult = sScriptMgr.callScriptedSpellBeforeSpellEffect(this, effIndex);
 
@@ -787,7 +787,7 @@ void Spell::handleMissedEffect(const uint64_t targetGuid)
         if (u_caster != nullptr && targetUnit->isCreature() && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
         {
             // Let target creature know that someone tried to cast spell on it
-            static_cast<Creature*>(targetUnit)->GetAIInterface()->onHostileAction(u_caster);
+            targetUnit->GetAIInterface()->onHostileAction(u_caster);
         }
 
         // Call scripted after spell missed hook
@@ -1241,7 +1241,7 @@ int32_t Spell::calculateEffect(uint8_t effIndex)
                 break;
         }
 
-        effectPctModifier[effIndex] = static_cast<float_t>(spellPctMods / 100.0f);
+        effectPctModifier[effIndex] = spellPctMods / 100.0f;
     }
     else if (getItemCaster() != nullptr && GetUnitTarget() != nullptr)
     {
@@ -1904,7 +1904,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 const auto gameObjectInfo = obj->GetGameObjectProperties();
                 if (gameObjectInfo == nullptr)
                 {
-                    sLogger.debug("Spell::canCast : Found gameobject entry %u with invalid gameobject properties, spawn id %u", obj->getEntry(), obj->getGuidLow());
+                    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::canCast : Found gameobject entry %u with invalid gameobject properties, spawn id %u", obj->getEntry(), obj->getGuidLow());
                     continue;
                 }
 
@@ -2347,7 +2347,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (dynamic_cast<Creature*>(target)->IsPickPocketed())
                     return SPELL_FAILED_TARGET_NO_POCKETS;
 
-                const auto itr = sLootMgr.PickpocketingLoot.find(dynamic_cast<Creature*>(target)->getEntry());
+                const auto itr = sLootMgr.PickpocketingLoot.find(target->getEntry());
                 if (itr == sLootMgr.PickpocketingLoot.end())
                     return SPELL_FAILED_TARGET_NO_POCKETS;
             } break;
@@ -2707,6 +2707,11 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             } break;
             case SPELL_AURA_MOUNTED:
             {
+#if VERSION_STRING == Cata
+                if (getSpellInfo()->getEffectMiscValueB(i) && !p_caster->getMountCapability(getSpellInfo()->getEffectMiscValueB(i)))
+                    return SPELL_FAILED_NOT_HERE;
+#endif
+
                 if (worldConfig.terrainCollision.isCollisionEnabled)
                 {
                     if (!MapManagement::AreaManagement::AreaStorage::IsOutdoor(m_caster->GetMapId(), m_caster->GetPositionNC().x, m_caster->GetPositionNC().y, m_caster->GetPositionNC().z))
@@ -4048,6 +4053,7 @@ SpellCastResult Spell::checkRunes(bool takeRunes)
 
 SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_t shapeshiftForm) const
 {
+#if VERSION_STRING < Mop
     // No need to check requirements for talents that learn spells
     uint8_t talentRank = 0;
     const auto talentInfo = sTalentStore.LookupEntry(spellInfo->getId());
@@ -4104,6 +4110,9 @@ SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_
             return SPELL_FAILED_ONLY_SHAPESHIFT;
     }
     return SPELL_CAST_SUCCESS;
+#else
+    return SPELL_FAILED_ONLY_SHAPESHIFT;
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -5408,7 +5417,7 @@ void Spell::_updateCasterPointers(Object* caster)
             g_caster = dynamic_cast<GameObject*>(caster);
             break;
         default:
-            sLogger.debug("Spell::_updateCasterPointers : Incompatible object type (type %u) for spell caster", caster->getObjectTypeId());
+            sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::_updateCasterPointers : Incompatible object type (type %u) for spell caster", caster->getObjectTypeId());
             break;
     }
 }
@@ -5545,7 +5554,7 @@ float_t Spell::_getSpellTravelTimeForTarget(uint64_t guid) const
         return static_cast<float_t>(m_missileTravelTime);
 
     // Calculate time it takes for spell to hit target
-    return static_cast<float_t>((distance * 1000.0f) / getSpellInfo()->getSpeed());
+    return distance * 1000.0f / getSpellInfo()->getSpeed();
 }
 
 void Spell::_prepareProcFlags()

@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+
 #include "Units/Players/PlayerDefines.hpp"
 #include "Management/HonorHandler.h"
 #include "Management/Battleground/Battleground.h"
@@ -26,10 +26,13 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include <Spell/Definitions/AuraInterruptFlags.hpp>
+
+#include "Chat/ChatHandler.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Server/Packets/SmsgPlaySound.h"
 #include "Server/Packets/SmsgBattlegroundPlayerLeft.h"
 #include "Server/Packets/SmsgBattlegroundPlayerJoined.h"
+#include "Server/Packets/SmsgMessageChat.h"
 #include "Storage/WorldStrings.h"
 
 uint32 CBattleground::GetId()
@@ -125,8 +128,6 @@ uint32 CBattleground::GetType()
 
 void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
 {
-    ARCEMU_ASSERT(data != nullptr);
-
     data->Initialize(MSG_PVP_LOG_DATA);
     data->reserve(10 * (m_players[0].size() + m_players[1].size()) + 50);
 
@@ -227,22 +228,24 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
             {
-                ARCEMU_ASSERT(*itr != nullptr);
-                if ((*itr)->m_isGmInvisible)
-                    continue;
-                *data << (*itr)->getGuid();
-                bs = &(*itr)->m_bgScore;
+                if (*itr != nullptr)
+                {
+                    if ((*itr)->m_isGmInvisible)
+                        continue;
+                    *data << (*itr)->getGuid();
+                    bs = &(*itr)->m_bgScore;
 
-                *data << bs->KillingBlows;
-                *data << bs->HonorableKills;
-                *data << bs->Deaths;
-                *data << bs->BonusHonor;
-                *data << bs->DamageDone;
-                *data << bs->HealingDone;
+                    *data << bs->KillingBlows;
+                    *data << bs->HonorableKills;
+                    *data << bs->Deaths;
+                    *data << bs->BonusHonor;
+                    *data << bs->DamageDone;
+                    *data << bs->HealingDone;
 
-                *data << FieldCount;
-                for (uint32 x = 0; x < FieldCount; ++x)
-                    *data << bs->MiscData[x];
+                    *data << FieldCount;
+                    for (uint32 x = 0; x < FieldCount; ++x)
+                        *data << bs->MiscData[x];
+                }
             }
         }
     }
@@ -383,12 +386,7 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
 
 GameObject* CBattleground::SpawnGameObject(uint32 entry, uint32 MapId, float x, float y, float z, float o, uint32 flags, uint32 faction, float scale)
 {
-    GameObject* go = m_mapMgr->CreateGameObject(entry);
-
-    ARCEMU_ASSERT(go != nullptr);
-
-    //Zyres: CID 104108 coverity ignores the assert so double check this
-    if (go != nullptr)
+    if (GameObject* go = m_mapMgr->CreateGameObject(entry))
     {
         go->CreateFromProto(entry, MapId, x, y, z, o);
 
@@ -397,9 +395,11 @@ GameObject* CBattleground::SpawnGameObject(uint32 entry, uint32 MapId, float x, 
         go->setFlags(flags);
         go->SetPosition(x, y, z, o);
         go->SetInstanceID(m_mapMgr->GetInstanceID());
+
+        return go;
     }
 
-    return go;
+    return nullptr;
 }
 
 GameObject* CBattleground::SpawnGameObject(uint32 entry, LocationVector &v, uint32 flags, uint32 faction, float scale)
@@ -416,17 +416,18 @@ Creature* CBattleground::SpawnCreature(uint32 entry, float x, float y, float z, 
         return nullptr;
     }
 
-    Creature* c = m_mapMgr->CreateCreature(entry);
+    if (Creature* c = m_mapMgr->CreateCreature(entry))
+    {
+        c->Load(cp, x, y, z, o);
 
-    ARCEMU_ASSERT(c != nullptr);
+        if (faction != 0)
+            c->SetFaction(faction);
 
-    c->Load(cp, x, y, z, o);
+        c->PushToWorld(m_mapMgr);
+        return c;
+    }
 
-    if (faction != 0)
-        c->SetFaction(faction);
-
-    c->PushToWorld(m_mapMgr);
-    return c;
+    return nullptr;
 }
 
 Creature* CBattleground::SpawnCreature(uint32 entry, LocationVector &v, uint32 faction)

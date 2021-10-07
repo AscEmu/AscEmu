@@ -3,21 +3,19 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
 #include "Server/Packets/CmsgAreatrigger.h"
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgAreaTriggerMessage.h"
 #include "Server/World.Legacy.h"
 #include "Map/InstanceDefines.hpp"
-#include "Map/WorldCreatorDefines.hpp"
 #include "Management/Group.h"
 #include "Management/ItemInterface.h"
 #include "Management/QuestMgr.h"
-#include "Map/MapMgrDefines.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include "Storage/WorldStrings.h"
 #include "Management/Battleground/Battleground.h"
+#include "Server/Script/ScriptMgr.h"
 
 using namespace AscEmu::Packets;
 
@@ -98,7 +96,7 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_AREATRIGGER: %u (triggerId)", srlPacket.triggerId);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AREATRIGGER: %u (triggerId)", srlPacket.triggerId);
 
     if (!_player->IsInWorld())
         return;

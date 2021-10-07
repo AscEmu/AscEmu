@@ -7,12 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Chat/ChatDefines.hpp"
 #include "Chat/CommandTableStorage.hpp"
-#include "Management/ItemPrototype.h"
 #include "Management/SkillNameMgr.h"
 #include "Units/Creatures/Creature.h"
 #include "Units/Players/Player.h"
 #include "Units/Unit.h"
-#include "WorldPacket.h"
 
 class WorldSession;
 class Player;
@@ -200,6 +198,7 @@ public:
 
     // old debugcmds.cpp
     //\todo Rewrite these commands
+    bool HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldSession* session);
     bool HandleDoPercentDamageCommand(const char* args, WorldSession* session);
     bool HandleSetScriptPhaseCommand(const char* args, WorldSession* session);
     bool HandleAiChargeCommand(const char* /*args*/, WorldSession* session);

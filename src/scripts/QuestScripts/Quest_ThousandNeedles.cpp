@@ -19,10 +19,12 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class Paoka_Swiftmountain : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Paoka_Swiftmountain)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Paoka_Swiftmountain(c); }
     explicit Paoka_Swiftmountain(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     // makes no sense... why do we check on wp 72 if player has this quest.... too late?
@@ -33,7 +35,7 @@ class Paoka_Swiftmountain : public CreatureAIScript
 
         if (iWaypointId == 72)
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I appreciate the help you have shown Pao'ka. I hope this covers any misfortunes this deed has cost you.");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I appreciate the help you have shown Pao'ka. I hope this covers any misfortunes this deed has cost you.");
             getCreature()->Despawn(5000, 1000);
             getCreature()->stopMoving();
             if (getCreature()->m_escorter == nullptr)
@@ -51,7 +53,6 @@ class Paoka_Swiftmountain : public CreatureAIScript
 class RumorsforKravel : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
@@ -59,13 +60,13 @@ public:
         float SSZ = mTarget->GetPositionZ();
 
         Creature* creat = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 4452);
-        if (creat == NULL)
+        if (creat == nullptr)
             return;
 
         std::string msg = "Hahah! ";
         msg += mTarget->getName();
         msg += ", you make quite a partner!";
-        creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
+        creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
         creat->emote(EMOTE_ONESHOT_LAUGH);
     }
 };

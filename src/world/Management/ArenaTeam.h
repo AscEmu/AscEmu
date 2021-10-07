@@ -141,7 +141,13 @@ class SERVER_DECL ArenaTeam
                 Slots = 6;
             else if (Type == ARENA_TEAM_TYPE_5V5)
                 Slots = 10;
-            ARCEMU_ASSERT(Slots > 0)
+
+            if (Slots == 0)
+            {
+                sLogger.failure("Tried to allocate Slot 0 in ArenaTeam::AllocateSlots");
+                return;
+            }
+
             m_members = new ArenaTeamMember[Slots];
             memset(m_members, 0, sizeof(ArenaTeamMember)*Slots);
             m_slots = Slots;

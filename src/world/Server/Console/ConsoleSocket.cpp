@@ -3,14 +3,12 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 
 #include "ConsoleSocket.h"
 #include "ConsoleAuthMgr.h"
-#include "ConsoleCommands.h"
 #include "BaseConsole.h"
 
-#include "Log.hpp"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Network/Network.h"
 
@@ -87,7 +85,7 @@ void ConsoleSocket::handleConsoleInput()
         return;
     }
 
-    readBuffer.Read((uint8_t*)&mInputBuffer[mInputBufferPosition], readLength);
+    readBuffer.Read(&mInputBuffer[mInputBufferPosition], readLength);
     mInputBufferPosition += readLength;
 
     char* inputChar = strchr(mInputBuffer, '\n');

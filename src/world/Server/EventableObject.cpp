@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "EventableObject.h"
 
 EventableObject::~EventableObject()
@@ -51,18 +51,13 @@ void EventableObject::event_AddEvent(TimedEvent* ptr)
 {
     m_lock.Acquire();
 
-    if (m_holder == NULL)
+    if (m_holder == nullptr)
     {
         m_event_Instanceid = event_GetInstanceID();
         m_holder = sEventMgr.GetEventHolder(m_event_Instanceid);
 
-        if (m_holder == NULL)
+        if (m_holder == nullptr)
         {
-
-            ///////////////////////////////////////// this is for me for debugging purposes - dfighter ////////////////////////////
-            // ARCEMU_ASSERT(false);
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
             // We still couldn't find an eventholder for us so let's run in WorldRunnable
             m_event_Instanceid = WORLD_INSTANCE;
             m_holder = sEventMgr.GetEventHolder(m_event_Instanceid);
@@ -70,7 +65,11 @@ void EventableObject::event_AddEvent(TimedEvent* ptr)
     }
 
     // We still couldn't find an event holder for ourselves :(
-    ARCEMU_ASSERT(m_holder != NULL);
+    if (m_holder == nullptr)
+    {
+        sLogger.failure("EventableObject::event_AddEvent not able to find a event holder, return!");
+        return;
+    }
 
     // If we are flagged not to run in WorldRunnable then we won't!
     // This is much better than adding us to the eventholder and removing on an update
@@ -79,9 +78,6 @@ void EventableObject::event_AddEvent(TimedEvent* ptr)
         delete ptr->cb;
         delete ptr;
 
-        ///////////////////////////////////////// this is for me for debugging purposes - dfighter ////////////////////////////
-        // ARCEMU_ASSERT(false);
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         m_lock.Release();
         return;
     }

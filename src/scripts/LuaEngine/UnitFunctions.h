@@ -28,8 +28,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Spell/Definitions/PowerType.hpp>
 #include <Map/MapScriptInterface.h>
 #include <Units/Creatures/Pet.h>
+
+#include "Management/ItemInterface.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/WeatherMgr.h"
+#include "Server/Packets/SmsgMessageChat.h"
 
 class LuaUnit
 {
@@ -371,7 +374,7 @@ public:
         if (message == nullptr)
             return 0;
 
-        ptr->SendChatMessage(typ, lang, message);
+        ptr->sendChatMessage(typ, lang, message);
         return 0;
     }
 
@@ -2404,7 +2407,7 @@ public:
         Player* plr = CHECK_PLAYER(L, 4);
         if (!plr || !msg || !ptr)
             return 0;
-        ptr->SendChatMessageToPlayer(type, lang, msg, plr);
+        ptr->sendChatMessageToPlayer(type, lang, msg, plr);
         return 0;
     }
 
@@ -5233,7 +5236,7 @@ public:
         const char* message = luaL_checkstring(L, 3);
         uint32_t delay = static_cast<uint32_t>(luaL_checkinteger(L, 4));
         if (message != nullptr && delay)
-            ptr->SendChatMessage(typ, lang, message, delay);
+            ptr->sendChatMessage(typ, lang, message, delay);
         return 0;
     }
 

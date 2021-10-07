@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Macros/CreatureMacros.hpp"
 #include "Map/InstanceDefines.hpp"
 #include "Map/WorldCreatorDefines.hpp"
 #include <cstdint>
@@ -51,7 +52,6 @@ namespace MySQLStructure
 
     //achievement_reward
 
-    //ai_agents
     //ai_threattospellid
 
     //areatriggers
@@ -78,6 +78,37 @@ namespace MySQLStructure
     {
         uint32_t creatureEntry;
         uint32_t battlegroundId;
+    };
+
+    //creature_ai_scripts
+    struct CreatureAIScripts
+    {
+        uint32_t entry;
+        uint8_t difficulty;
+        uint8_t phase;
+        uint8_t event;
+        uint8_t action;
+        uint8_t maxCount;
+        float chance;
+        uint32_t spellId;
+        uint8_t spell_type;
+        bool triggered;
+        uint8_t target;
+        uint32_t cooldownMin;
+        uint32_t cooldownMax;
+        float minHealth;
+        float maxHealth;
+        uint32_t textId;
+        uint32_t misc1;
+        std::string comment;
+    };
+
+    //creature_ai_texts
+    struct CreatureAITexts
+    {
+        float chance;
+        uint32_t textIds[CREATURE_AI_TEXT_COUNT];
+        uint8_t textCount;
     };
 
     //creature_difficulty
@@ -337,20 +368,6 @@ namespace MySQLStructure
         char* text;
     };
 
-    //locales_npc_monstersay
-    struct LocalesNPCMonstersay
-    {
-        uint32_t entry;
-        uint32_t type;
-        uint32_t languageCode;
-        char* monstername;
-        char* text0;
-        char* text1;
-        char* text2;
-        char* text3;
-        char* text4;
-    };
-
     //locales_npc_script_text
     struct LocalesNpcScriptText
     {
@@ -359,8 +376,8 @@ namespace MySQLStructure
         char* text;
     };
 
-    //locales_npc_text
-    struct LocalesNpcText
+    //locales_npc_gossip_texts
+    struct LocalesNpcGossipText
     {
         uint32_t entry;
         uint32_t languageCode;
@@ -413,18 +430,27 @@ namespace MySQLStructure
     //loot_skinning
 
     //\brief No structure!
-    //npc_gossip_textid
+    //npc_gossip_properties
 
-    //npc_monstersay
-    struct NpcMonsterSay
+    //npc_gossip_texts
+    struct NpcGossipText_Emote
     {
-        float chance;
-        uint32_t language;
-        uint32_t type;
-        const char* monsterName;
+        uint32_t delay;
+        uint32_t emote;
+    };
 
-        uint32_t textCount;
-        const char** texts;
+    struct NpcGossipText_Texts
+    {
+        float probability;
+        std::string texts[2];
+        uint32_t language;
+        NpcGossipText_Emote gossipEmotes[GOSSIP_EMOTE_COUNT];
+    };
+
+    struct NpcGossipText
+    {
+        uint32_t entry;
+        NpcGossipText_Texts textHolder[8];
     };
 
     //npc_script_text
@@ -441,28 +467,6 @@ namespace MySQLStructure
         uint32_t duration;
         uint32_t sound;             // the sound on say
         uint32_t broadcast_id;
-    };
-
-    //npc_text
-    struct NpcText_Emote
-    {
-        uint32_t delay;
-        uint32_t emote;
-    };
-
-    #define GOSSIP_EMOTE_COUNT 3
-    struct NpcText_Texts
-    {
-        float probability;
-        std::string texts[2];
-        uint32_t language;
-        NpcText_Emote gossipEmotes[GOSSIP_EMOTE_COUNT];
-    };
-
-    struct NpcText
-    {
-        uint32_t entry;
-        NpcText_Texts textHolder[8];
     };
 
     //pet_level_abilities

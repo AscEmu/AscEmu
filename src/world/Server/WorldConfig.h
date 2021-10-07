@@ -104,6 +104,7 @@ class SERVER_DECL WorldConfig
         struct LoggerSettings
         {
             uint8_t minimumMessageType;
+            uint32_t debugFlags;
             bool enableWorldPacketLog;
             std::string extendedLogsDir;
             bool enableCheaterLog;

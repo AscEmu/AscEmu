@@ -41,24 +41,24 @@ namespace DBC::Structures
 {
     namespace
     {
-        char const area_table_entry_format[] = "iiinixxxxxissssssssssssssssxiiiiixx";
+        char const area_table_entry_format[] = "niiiixxxxxissssssssxixxxi";
         char const area_trigger_entry_format[] = "niffffffff";
-        char const auction_house_format[] = "niiixxxxxxxxxxxxxxxxx";
+        char const auction_house_format[] = "niiixxxxxxxxx";
         char const bank_bag_slot_prices_format[] = "ni";
         char const char_start_outfit_format[] = "dbbbXiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxx"; //1.12.1
         char const char_titles_format[] = "nxssssssssssssssssxssssssssssssssssxi";
-        char const chat_channels_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxx";
+        char const chat_channels_format[] = "iixssssssssxxxxxxxxxx";
         char const chr_classes_format[] = "nxxixssssssssxxix"; // 1.12.1
         char const chr_races_format[] = "nxixiixxixxxxxixissssssssxxxx"; //1.12.1
-        char const creature_display_info_format[] = "nxxxxxxxxxxxxx";
-        char const creature_family_format[] = "nfifiiiissssssssssssssssxx";
+        char const creature_display_info_format[] = "nxxxxxxxxxxx";
+        char const creature_family_format[] = "nfifiiiissssssssxx";
         char const creature_spell_data_format[] = "niiiiiiii";
         char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
         char const durability_quality_format[] = "nf";
         char const emotes_text_format[] = "nxiiiixixixxxxxxxxx";
-        char const faction_format[] = "niiiiiiiiiiiiiiiiiissssssssssssssssxxxxxxxxxxxxxxxxxx";
+        char const faction_format[] = "niiiiiiiiiiiiiiiiiissssssssxxxxxxxxxx";
         char const faction_template_format[] = "niiiiiiiiiiiii";
-        char const game_object_display_info_format[] = "nsxxxxxxxxxxffffff";
+        char const game_object_display_info_format[] = "nsxxxxxxxxxx";
         char const gem_properties_format[] = "nixxi";
         char const gt_chance_to_melee_crit_format[] = "f";
         char const gt_chance_to_melee_crit_base_format[] = "f";
@@ -71,35 +71,35 @@ namespace DBC::Structures
         char const gt_regen_mp_per_spt_format[] = "f";
         char const item_entry_format[] = "niii";
         char const item_extended_cost_format[] = "niiiiiiiiiiiii";
-        char const item_random_properties_format[] = "nxiiixxssssssssssssssssx";
+        char const item_random_properties_format[] = "nxiiixxxxxxxxxxx";
         char const item_random_suffix_format[] = "nssssssssssssssssxxiiiiii";
-        char const item_set_format[] = "nssssssssssssssssxiiiiiiiiiixxxxxxxiiiiiiiiiiiiiiiiii";
+        char const item_set_format[] = "dssssssssxxxxxxxxxxxxxxxxxxiiiiiiiiiiiiiiiiii";
         char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
         char const liquid_type_entry_format[] = "niii";
         char const lock_format[] = "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx";
-        char const mail_template_format[] = "nsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxx";
-        char const map_format[] = "nxixssssssssssssssssxxxxxxxixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiffiixxi";
+        char const mail_template_format[] = "nxxxxxxxxx";
+        char const map_format[] = "nxixssssssssxxxxxxxixxxxxxxxxxxxxxxxxxixxx";
         char const name_gen_format[] = "nsii";
-        char const skill_line_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxxi";
+        char const skill_line_format[] = "nixssssssssxxxxxxxxxxi";
         char const skill_line_ability_format[] = "niiiixxiiiiixxi";
         char const stable_slot_prices_format[] = "ni";
         char const spell_cast_times_format[] = "nixx";
         char const spell_duration_format[] = "niii";
         char const spell_entry_format[] = "niixiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiifxiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiffffffiiiiiiiiiiiiiiiiiiiiifffiiiiiiiiiiiifffiiiiissssssssxssssssssxxxxxxxxxxxxxxxxxxxiiiiiiiiiixfffxxx";
-        char const spell_item_enchantment_format[] = "nxiiiiiiiiiiiissssssssssssssssxiiii";
+        char const spell_item_enchantment_format[] = "niiiiiixxxiiissssssssxii";
         char const spell_radius_format[] = "nfff";
-        char const spell_range_format[] = "nffixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-        char const spell_shapeshift_form_format[] = "nxxxxxxxxxxxxxxxxxxiixiiixxiiiiiiii";
+        char const spell_range_format[] = "nffixxxxxxxxxxxxxxxxxx";
+        char const spell_shapeshift_form_format[] = "nxxxxxxxxxxiix";
         char const summon_properties_format[] = "niiiii";
         char const talent_format[] = "niiiiiiiixxxxixxixxxi";
-        char const talent_tab_format[] = "nxxxxxxxxxxxxxxxxxxxiix";
-        char const taxi_nodes_format[] = "nifffssssssssssssssssxii";
+        char const talent_tab_format[] = "nxxxxxxxxxxxiix";
+        char const taxi_nodes_format[] = "nifffssssssssxii";
         char const taxi_path_format[] = "niii";
-        char const taxi_path_node_format[] = "niiifffiiii";
+        char const taxi_path_node_format[] = "diiifffii";
         char const transport_animation_format[] = "diifffx";
         char const vehicle_format[] = "niffffiiiiiiiifffffffffffffffssssfifiixx";
         char const vehicle_seat_format[] = "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxx";
-        char const wmo_area_table_format[] = "niiixxxxxiixxxxxxxxxxxxxxxxx";
+        char const wmo_area_table_format[] = "niiixxxxxiixxxxxxxxx";
         char const world_map_overlay_format[] = "nxiiiixxxxxxxxxxx";
     }
 
@@ -122,10 +122,10 @@ namespace DBC::Structures
         uint32_t flags;                                             // 4, unknown value but 312 for all cities
                                                                     // 5-9 unused
         int32_t area_level;                                         // 10
-        char* area_name[16];                                        // 11-26
+        char* area_name[8];                                         // 11-26
                                                                     // 27, string flags, unused
         uint32_t team;                                              // 28
-        uint32_t liquid_type_override[4];                           // 29-32 liquid override by type
+        uint32_t liquid_type_override;                              // 29-32 liquid override by type
     };
 
     struct AreaTriggerEntry
@@ -188,7 +188,7 @@ namespace DBC::Structures
     {
         uint32_t id;                                                // 0
         uint32_t flags;                                             // 1
-        char* name_pattern[16];                                     // 3-18
+        char* name_pattern[8];                                      // 3-18
         //uint32_t name_pattern_flags;                              // 19
         //char* channel_name[16];                                   // 20-35
         //uint32_t channel_name_flags;                              // 36
@@ -250,7 +250,7 @@ namespace DBC::Structures
         uint32_t skilline;                                          // 5
         uint32_t tameable;                                          // 6 second skill line - 270 Generic
         uint32_t petdietflags;                                      // 7
-        char* name[16];                                             // 8-23
+        char* name[8];                                              // 8-23
         //uint32_t nameflags;                                       // 24
         //uint32_t iconFile;                                        // 25
     };
@@ -308,7 +308,7 @@ namespace DBC::Structures
         int32_t baseRepValue[4];                                    // 10-13
         uint32_t repFlags[4];                                       // 14-17
         uint32_t parentFaction;                                     // 18
-        char* Name[16];                                             // 19-34
+        char* Name[8];                                              // 19-34
         //uint32_t name_flags;                                      // 35
         //uint32_t Description[16];                                 // 36-51
         //uint32_t description_flags;                               // 52
@@ -331,12 +331,6 @@ namespace DBC::Structures
         uint32_t Displayid;                                         // 0
         char* filename;                                             // 1
         //uint32_t unk1[10];                                        // 2-11
-        float minX;                                                 // 12
-        float minY;                                                 // 13
-        float minZ;                                                 // 14
-        float maxX;                                                 // 15
-        float maxY;                                                 // 16
-        float maxZ;                                                 // 17
     };
 
     struct GemPropertiesEntry
@@ -418,7 +412,7 @@ namespace DBC::Structures
         uint32_t spells[3];                                         // 2-4
         //uint32_t unk1;                                            // 5
         //uint32_t unk2;                                            // 6
-        char* name_suffix[16];                                      // 7-22
+        //char* name_suffix[16];                                    // 7-22
         //uint32_t name_suffix_flags;                               // 23
     };
 
@@ -436,10 +430,10 @@ namespace DBC::Structures
 
     struct ItemSetEntry
     {
-        uint32_t id;                                                // 1
-        char* name[16];                                             // 1-16 name (lang)
+        //uint32_t id;                                              // 1
+        char* name[8];                                              // 1-16 name (lang)
         //uint32_t localeflag;                                      // 17 constant
-        uint32_t itemid[10];                                        // 18-27 item set items
+        //uint32_t itemid[10];                                      // 18-27 item set items
         //uint32_t unk[7];                                          // 28-34 all 0
         uint32_t SpellID[8];                                        // 35-42
         uint32_t itemscount[8];                                     // 43-50
@@ -493,10 +487,10 @@ namespace DBC::Structures
     struct MailTemplateEntry
     {
         uint32_t ID;                                                // 0
-        char* subject;                                              // 1
+        //char* subject;                                            // 1
         //float unused1[15]                                         // 2-16
         //uint32_t flags1                                           // 17 name flags, unused
-        char* content;                                              // 18
+        //char* content;                                            // 18
         //float unused2[15]                                         // 19-34
         //uint32_t flags2                                           // 35 name flags, unused
     };
@@ -507,7 +501,7 @@ namespace DBC::Structures
         //char* name_internal;                                      // 1
         uint32_t map_type;                                          // 2
         //uint32_t is_pvp_zone;                                     // 3 -0 false -1 true
-        char* map_name[16];                                         // 4-19
+        char* map_name[8];                                          // 4-19
         //uint32_t name_flags;                                      // 20
         uint32_t linked_zone;                                       // 22 common zone for instance and continent map
         //char* horde_intro[16];                                    // 23-38 horde text for PvP Zones
@@ -516,13 +510,6 @@ namespace DBC::Structures
         //uint32_t allianceIntro_flags;                             // 56
         uint32_t multimap_id;                                       // 57
         //uint32_t battlefield_map_icon;                            // 58
-        int32_t parent_map;                                         // 59 map_id of parent map
-        float start_x;                                              // 60 enter x coordinate (if exist single entry)
-        float start_y;                                              // 61 enter y coordinate (if exist single entry)
-        //uint32_t dayTime;                                         // 62 
-        uint32_t reset_raid_time;
-        uint32_t reset_heroic_tim;
-        uint32_t addon;                                             // 63 0-original maps, 1-tbc addon, 2-wotlk addon
 
         bool isDungeon() const { return map_type == MAP_INSTANCE || map_type == MAP_RAID; }
         bool isNonRaidDungeon() const { return map_type == MAP_INSTANCE; }
@@ -551,7 +538,7 @@ namespace DBC::Structures
         uint32_t id;                                                // 0
         uint32_t type;                                              // 1
         //uint32_t skillCostsID;                                    // 2
-        char* Name[16];                                             // 3-18
+        char* Name[8];                                              // 3-18
         //uint32_t NameFlags;                                       // 19
         //char* Description[16];                                    // 20-35
         //uint32_t DescriptionFlags;                                // 36
@@ -703,14 +690,12 @@ namespace DBC::Structures
         uint32_t Id;                                                // 0
         uint32_t type[3];                                           // 1-3
         uint32_t min[3];                                            // 4-6 for combat, in practice min==max
-        uint32_t max[3];                                            // 7-9
+        //uint32_t max[3];                                          // 7-9
         uint32_t spell[3];                                          // 10-12
-        char* Name[16];                                             // 13-28
+        char* Name[8];                                              // 13-28
         //uint32_t NameFlags;                                       // 29
         uint32_t visual;                                            // 30 aura
         uint32_t EnchantGroups;                                     // 31 slot
-        uint32_t GemEntry;                                          // 32
-        uint32_t ench_condition;                                    // 33
     };
 
     struct SpellRadiusEntry
@@ -742,12 +727,6 @@ namespace DBC::Structures
         uint32_t Flags;                                             // 19
         uint32_t unit_type;                                         // 20
         //uint32_t unk1                                             // 21
-        uint32_t AttackSpeed;                                       // 22
-        uint32_t modelId;                                           // 23 alliance?
-        uint32_t modelId2;                                          // 24 horde?
-        //uint32_t unk2                                             // 25
-        //uint32_t unk3                                             // 26
-        uint32_t spells[8];                                         // 27-34
     };
 
     struct SummonPropertiesEntry
@@ -795,7 +774,7 @@ namespace DBC::Structures
         float x;                                                    // 2
         float y;                                                    // 3
         float z;                                                    // 4
-        char* name[16];                                             // 5-21
+        char* name[8];                                              // 5-21
         //uint32_t nameflags;                                       // 22
         uint32_t horde_mount;                                       // 23
         uint32_t alliance_mount;                                    // 24
@@ -811,7 +790,7 @@ namespace DBC::Structures
 
     struct TaxiPathNodeEntry
     {
-        uint32_t id;                                                // 0
+        //uint32_t id;                                              // 0
         uint32_t path;                                              // 1
         uint32_t seq;                                               // 2 nodeIndex
         uint32_t mapid;                                             // 3
@@ -820,8 +799,8 @@ namespace DBC::Structures
         float z;                                                    // 6
         uint32_t flags;                                             // 7
         uint32_t waittime;                                          // 8
-        uint32_t arivalEventID;                                     // 9
-        uint32_t departureEventID;                                  // 10
+        //uint32_t arivalEventID;                                   // 9
+        //uint32_t departureEventID;                                // 10
     };
 
     struct TransportAnimationEntry

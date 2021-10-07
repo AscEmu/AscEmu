@@ -6,10 +6,12 @@ This file is released under the MIT license. See README-MIT for more information
 // \todo Last boss needs to be finished
 #include "Setup.h"
 #include "Instance_Nexus.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class AnomalusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AnomalusAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AnomalusAI(c); }
     explicit AnomalusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mInstance = getInstanceScript();
@@ -96,7 +98,6 @@ class AnomalusAI : public CreatureAIScript
     }
 
 private:
-
     int32_t mSummonTimer;
     uint8_t mSummon;
     bool mRift;
@@ -105,7 +106,8 @@ private:
 
 class ChaoticRiftAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ChaoticRiftAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ChaoticRiftAI(c); }
     explicit ChaoticRiftAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
@@ -137,7 +139,8 @@ class ChaoticRiftAI : public CreatureAIScript
 
 class CraziedManaWrathAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CraziedManaWrathAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CraziedManaWrathAI(c); }
     explicit CraziedManaWrathAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStop(Unit* /*pTarget*/) override
@@ -160,7 +163,8 @@ static LocationVector FormSpawns[] =
 
 class TelestraBossAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TelestraBossAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TelestraBossAI(c); }
     explicit TelestraBossAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mInstance = getInstanceScript();
@@ -277,7 +281,6 @@ class TelestraBossAI : public CreatureAIScript
     }
 
 private:
-
     Creature* mAddArray[3];
 
     int32_t mPhaseRepeat;
@@ -288,7 +291,8 @@ private:
 
 class TelestraFireAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TelestraFireAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TelestraFireAI(c); }
     explicit TelestraFireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -306,7 +310,8 @@ class TelestraFireAI : public CreatureAIScript
 
 class TelestraFrostAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TelestraFrostAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TelestraFrostAI(c); }
     explicit TelestraFrostAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -324,7 +329,8 @@ class TelestraFrostAI : public CreatureAIScript
 
 class TelestraArcaneAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TelestraArcaneAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TelestraArcaneAI(c); }
     explicit TelestraArcaneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         addAISpell(TIME_STOP, 30.0f, TARGET_SELF, 2, 30);
@@ -334,7 +340,8 @@ class TelestraArcaneAI : public CreatureAIScript
 
 class OrmorokAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(OrmorokAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new OrmorokAI(c); }
     explicit OrmorokAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mInstance = getInstanceScript();
@@ -384,14 +391,14 @@ class OrmorokAI : public CreatureAIScript
     }
 
 private:
-
     bool mEnraged;
     InstanceScript* mInstance;
 };
 
 class CrystalSpikeAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CrystalSpikeAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CrystalSpikeAI(c); }
     explicit CrystalSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         m_part = 0;
@@ -429,14 +436,14 @@ class CrystalSpikeAI : public CreatureAIScript
     }
 
 private:
-
     int m_part;
 };
 
 // \todo currently unfinished
 class KeristraszaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KeristraszaAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KeristraszaAI(c); }
     explicit KeristraszaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         if (_isHeroic())
@@ -481,7 +488,6 @@ class KeristraszaAI : public CreatureAIScript
     }
 
 private:
-
     bool mEnraged;
 };
 
@@ -489,7 +495,6 @@ private:
 class NexusScript : public InstanceScript
 {
 public:
-
     uint32_t mAnomalusGUID;
     uint32_t mTelestraGUID;
     uint32_t mOrmorokGUID;

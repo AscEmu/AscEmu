@@ -4,21 +4,22 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #pragma once
+
 #include <Units/Unit.h>
 #include <Management/Item.h>
 #include <Management/TaxiMgr.h>
 
 extern "C"
 {
-    #include <lua/lua.h>
-    #include <lua/lauxlib.h>
+#include <lua/lua.h>
+#include <lua/lauxlib.h>
 }
+
 #include <string>
 
 class LuaHelpers
 {
 public:
-
     static int ExtractfRefFromCString(lua_State* L, const char* functionName);
 };
 

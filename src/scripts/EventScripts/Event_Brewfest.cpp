@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //\details <b>Brewfest</b>\n
@@ -29,8 +30,8 @@ enum
 class SCRIPT_DECL CorenDirebrewGossip : public GossipScript
 {
 public:
-    void onHello(Object* pObject, Player* Plr);
-    void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* EnteredCode, uint32_t gossipId);
+    void onHello(Object* pObject, Player* Plr) override;
+    void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* EnteredCode, uint32_t gossipId) override;
 };
 
 void CorenDirebrewGossip::onHello(Object* pObject, Player * Plr)
@@ -55,7 +56,7 @@ void CorenDirebrewGossip::onSelectOption(Object* pObject, Player* Plr, uint32_t 
         }break;
         case 2:
         {
-            pCreature->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You'll pay for this insult, $c!");
+            pCreature->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You'll pay for this insult, $c!");
             GossipMenu::senGossipComplete(Plr);
 
             pCreature->GetScript()->DoAction(0);
@@ -65,7 +66,8 @@ void CorenDirebrewGossip::onSelectOption(Object* pObject, Player* Plr, uint32_t 
 
 class CorenDirebrew : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(CorenDirebrew)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new CorenDirebrew(c); }
     explicit CorenDirebrew(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // whats the correct waypoint ?

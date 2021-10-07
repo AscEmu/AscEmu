@@ -3,15 +3,17 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 
 #include "Player.h"
 
 #include "Chat/ChatDefines.hpp"
+#include "Chat/ChatHandler.hpp"
 #include "Data/WoWPlayer.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/ItemInterface.h"
+#include "Management/QuestLogEntry.hpp"
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/MapMgr.h"
@@ -54,6 +56,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgClearCooldown.h"
 #include "Server/World.h"
 #include "Server/Packets/SmsgContactList.h"
+#include "Server/Packets/SmsgFriendStatus.h"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/Spec.hpp"
@@ -70,148 +73,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgTriggerMovie.h"
 #include "Server/Packets/SmsgTriggerCinematic.h"
 #include "Server/Packets/SmsgSpellCooldown.h"
+#include "Server/Script/ScriptMgr.h"
+#include "Spell/Definitions/SpellEffects.hpp"
 
 using namespace AscEmu::Packets;
 
-TradeData::TradeData(Player* player, Player* trader)
-{
-    m_player = player;
-    m_tradeTarget = trader;
-
-    m_accepted = false;
-
-    m_money = 0;
-    m_spell = 0;
-    m_spellCastItem = 0;
-    for (uint8_t i = 0; i < TRADE_SLOT_COUNT; ++i)
-        m_items[i] = 0;
-}
-
-Player* TradeData::getTradeTarget() const
-{
-    return m_tradeTarget;
-}
-
-TradeData* TradeData::getTargetTradeData() const
-{
-    return m_tradeTarget->getTradeData();
-}
-
-Item* TradeData::getTradeItem(TradeSlots slot) const
-{
-    return m_items[slot] != 0 ? m_player->getItemInterface()->GetItemByGUID(m_items[slot]) : nullptr;
-}
-
-bool TradeData::hasTradeItem(uint64_t itemGuid) const
-{
-    for (uint8_t i = 0; i < TRADE_SLOT_COUNT; ++i)
-    {
-        if (m_items[i] == itemGuid)
-            return true;
-    }
-
-    return false;
-}
-
-bool TradeData::hasPlayerOrTraderItemInTrade(uint64_t itemGuid) const
-{
-    for (uint8_t i = 0; i < TRADE_SLOT_COUNT; ++i)
-    {
-        if (m_items[i] == itemGuid)
-            return true;
-        if (getTargetTradeData()->m_items[i] == itemGuid)
-            return true;
-    }
-
-    return false;
-}
-
-uint32_t TradeData::getSpell() const
-{
-    return m_spell;
-}
-
-Item* TradeData::getSpellCastItem() const
-{
-    return hasSpellCastItem() ? m_player->getItemInterface()->GetItemByGUID(m_spellCastItem) : nullptr;
-}
-
-bool TradeData::hasSpellCastItem() const
-{
-    return m_spellCastItem != 0;
-}
-
-uint64_t TradeData::getTradeMoney() const
-{
-    return m_money;
-}
-
-void TradeData::setTradeMoney(uint64_t money)
-{
-    if (m_money == money)
-        return;
-
-    if (money > m_player->getCoinage())
-        return;
-
-    m_money = money;
-
-    setTradeAccepted(false);
-    getTargetTradeData()->setTradeAccepted(false);
-
-    // Send update packet to trader
-    m_tradeTarget->GetSession()->sendTradeUpdate(true);
-}
-
-void TradeData::setTradeAccepted(bool state, bool sendBoth/* = false*/)
-{
-    m_accepted = state;
-
-    if (!state)
-    {
-        if (sendBoth)
-            m_tradeTarget->GetSession()->sendTradeResult(TRADE_STATUS_STATE_CHANGED);
-        else
-            m_player->GetSession()->sendTradeResult(TRADE_STATUS_STATE_CHANGED);
-    }
-}
-
-bool TradeData::isTradeAccepted() const
-{
-    return m_accepted;
-}
-
-void TradeData::setTradeItem(TradeSlots slot, Item* item)
-{
-    const auto itemGuid = item != nullptr ? item->getGuid() : 0;
-    if (m_items[slot] == itemGuid)
-        return;
-
-    m_items[slot] = itemGuid;
-
-    setTradeAccepted(false);
-    getTargetTradeData()->setTradeAccepted(false);
-
-    // Send update packet to trader
-    m_tradeTarget->GetSession()->sendTradeUpdate(true);
-}
-
-void TradeData::setTradeSpell(uint32_t spell_id, Item* castItem /*= nullptr*/)
-{
-    const auto itemGuid = castItem != nullptr ? castItem->getGuid() : 0;
-    if (m_spell == spell_id && m_spellCastItem == itemGuid)
-        return;
-
-    m_spell = spell_id;
-    m_spellCastItem = itemGuid;
-
-    setTradeAccepted(false);
-    getTargetTradeData()->setTradeAccepted(false);
-
-    // Send update packet to both parties
-    m_player->GetSession()->sendTradeUpdate(false);
-    m_tradeTarget->GetSession()->sendTradeUpdate(true);
-}
 
 void Player::resendSpeed()
 {
@@ -396,11 +262,11 @@ uint32_t Player::getVisibleItemEntry(uint32_t slot) const { return playerData()-
 void Player::setVisibleItemEntry(uint32_t slot, uint32_t entry) { write(playerData()->visible_items[slot].entry, entry); }
 
 #if VERSION_STRING > TBC
-uint32_t Player::getVisibleItemEnchantment(uint32_t slot) const { return playerData()->visible_items[slot].enchantment; }
-void Player::setVisibleItemEnchantment(uint32_t slot, uint32_t enchantment) { write(playerData()->visible_items[slot].enchantment, enchantment); }
+uint16_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const { return playerData()->visible_items[slot].enchantment[pos]; }
+void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint16_t enchantment) { write(playerData()->visible_items[slot].enchantment[pos], enchantment); }
 #else
-uint32_t Player::getVisibleItemEnchantment(uint32_t slot, uint32_t pos) const { return playerData()->visible_items[slot].unk0[pos]; }
-void Player::setVisibleItemEnchantment(uint32_t slot, uint32_t pos, uint32_t enchantment)  { write(playerData()->visible_items[slot].unk0[pos], enchantment); }
+uint32_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const { return playerData()->visible_items[slot].enchantment[pos]; }
+void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint32_t enchantment)  { write(playerData()->visible_items[slot].enchantment[pos], enchantment); }
 #endif
 //VisibleItem end
 
@@ -431,8 +297,29 @@ void Player::setXp(uint32_t xp) { write(playerData()->xp, xp); }
 uint32_t Player::getNextLevelXp() const { return playerData()->next_level_xp; }
 void Player::setNextLevelXp(uint32_t xp) { write(playerData()->next_level_xp, xp); }
 
-uint32_t Player::getValueFromSkillInfoIndex(uint32_t index) const { return playerData()->skill_info[index]; }
-void Player::setValueBySkillInfoIndex(uint32_t index, uint32_t value) { write(playerData()->skill_info[index], value); }
+#if VERSION_STRING < Cata
+uint16_t Player::getSkillInfoId(uint32_t index) const { return playerData()->skill_info[index].id; }
+uint16_t Player::getSkillInfoStep(uint32_t index) const { return playerData()->skill_info[index].step; }
+uint16_t Player::getSkillInfoCurrentValue(uint32_t index) const { return playerData()->skill_info[index].current_value; }
+uint16_t Player::getSkillInfoMaxValue(uint32_t index) const { return playerData()->skill_info[index].max_value; }
+int16_t Player::getSkillInfoBonusTemporary(uint32_t index) const { return playerData()->skill_info[index].bonus_temporary; }
+int16_t Player::getSkillInfoBonusPermanent(uint32_t index) const { return playerData()->skill_info[index].bonus_permanent; }
+void Player::setSkillInfoId(uint32_t index, uint16_t id) { write(playerData()->skill_info[index].id, id); }
+void Player::setSkillInfoStep(uint32_t index, uint16_t step) { write(playerData()->skill_info[index].step, step); }
+void Player::setSkillInfoCurrentValue(uint32_t index, uint16_t current) { write(playerData()->skill_info[index].current_value, current); }
+void Player::setSkillInfoMaxValue(uint32_t index, uint16_t max) { write(playerData()->skill_info[index].max_value, max); }
+void Player::setSkillInfoBonusTemporary(uint32_t index, int16_t bonus) { write(playerData()->skill_info[index].bonus_temporary, bonus); }
+void Player::setSkillInfoBonusPermanent(uint32_t index, int16_t bonus) { write(playerData()->skill_info[index].bonus_permanent, bonus); }
+#else
+void Player::setSkillLineId(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_line[index], value); }
+void Player::setSkillStep(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_step[index], value); }
+void Player::setSkillCurrentValue(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_rank[index], value); }
+void Player::setSkillMaximumValue(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_max_rank[index], value); }
+uint16_t Player::getSkillLineId(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_line[index]) + offset); }
+uint16_t Player::getSkillStep(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_step[index]) + offset); }
+uint16_t Player::getSkillCurrentValue(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_rank[index]) + offset); }
+uint16_t Player::getSkillMaximumValue(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_max_rank[index]) + offset); }
+#endif
 
 uint32_t Player::getFreeTalentPoints() const
 {
@@ -514,16 +401,15 @@ void Player::setShieldBlockCritPercentage(float value) { write(playerData()->shi
 
 uint32_t Player::getExploredZone(uint32_t idx) const
 {
-    ARCEMU_ASSERT(idx < WOWPLAYER_EXPLORED_ZONES_COUNT)
-
-    return playerData()->explored_zones[idx];
+    if (idx < WOWPLAYER_EXPLORED_ZONES_COUNT)
+        return playerData()->explored_zones[idx];
+    return 0;
 }
 
 void Player::setExploredZone(uint32_t idx, uint32_t data)
 {
-    ARCEMU_ASSERT(idx < WOWPLAYER_EXPLORED_ZONES_COUNT)
-
-    write(playerData()->explored_zones[idx], data);
+    if (idx < WOWPLAYER_EXPLORED_ZONES_COUNT)
+        write(playerData()->explored_zones[idx], data);
 }
 
 uint32_t Player::getSelfResurrectSpell() const { return playerData()->self_resurrection_spell; }
@@ -1202,7 +1088,7 @@ void Player::eventKickFromServer()
         else
             m_kickDelay -= 1000;
 
-        sChatHandler.BlueSystemMessage(GetSession(), "You will be removed from the server in %u seconds.", static_cast<uint32>(m_kickDelay / 1000));
+        sChatHandler.BlueSystemMessage(GetSession(), "You will be removed from the server in %u seconds.", m_kickDelay / 1000);
     }
     else
     {
@@ -1423,23 +1309,29 @@ bool Player::isTeamAlliance() const { return getTeam() == TEAM_ALLIANCE; }
 // Stats
 void Player::setInitialPlayerData()
 {
-    ARCEMU_ASSERT(lvlinfo != nullptr);
-
-    //\ TODO: LevelInfo base health and mana stats already have stamina and intellect calculated into them
-    const auto levelone = sObjectMgr.GetLevelInfo(getRace(), getClass(), 1);
-    if (levelone != nullptr)
+    if (lvlinfo != nullptr)
     {
-        setBaseHealth(lvlinfo->HP - ((lvlinfo->Stat[STAT_STAMINA] - levelone->Stat[STAT_STAMINA]) * 10));
-        setBaseMana(lvlinfo->Mana - ((lvlinfo->Stat[STAT_INTELLECT] - levelone->Stat[STAT_INTELLECT]) * 15));
+        //\ TODO: LevelInfo base health and mana stats already have stamina and intellect calculated into them
+        const auto levelone = sObjectMgr.GetLevelInfo(getRace(), getClass(), 1);
+        if (levelone != nullptr)
+        {
+            setBaseHealth(lvlinfo->HP - ((lvlinfo->Stat[STAT_STAMINA] - levelone->Stat[STAT_STAMINA]) * 10));
+            setBaseMana(lvlinfo->Mana - ((lvlinfo->Stat[STAT_INTELLECT] - levelone->Stat[STAT_INTELLECT]) * 15));
+        }
+        else
+        {
+            setBaseHealth(lvlinfo->HP);
+            setBaseMana(lvlinfo->Mana);
+        }
+
+        // Set max health and powers
+        setMaxHealth(lvlinfo->HP);
     }
     else
     {
-        setBaseHealth(lvlinfo->HP);
-        setBaseMana(lvlinfo->Mana);
+        sLogger.failure("No Levelinfo for Player!");
     }
 
-    // Set max health and powers
-    setMaxHealth(lvlinfo->HP);
     // First initialize all power fields to 0
     for (uint8_t power = POWER_TYPE_MANA; power < TOTAL_PLAYER_POWER_TYPES; ++power)
         setMaxPower(static_cast<PowerType>(power), 0);
@@ -1449,17 +1341,17 @@ void Player::setInitialPlayerData()
     {
         case WARRIOR:
         {
-            setMaxPower(POWER_TYPE_RAGE, info->rage);
+            setMaxPower(POWER_TYPE_RAGE, 1000);
         } break;
 #if VERSION_STRING >= Cata
         case HUNTER:
         {
-            setMaxPower(POWER_TYPE_FOCUS, info->focus);
+            setMaxPower(POWER_TYPE_FOCUS, 100);
         } break;
 #endif
         case ROGUE:
         {
-            setMaxPower(POWER_TYPE_ENERGY, info->energy);
+            setMaxPower(POWER_TYPE_ENERGY, 100);
         } break;
 #if VERSION_STRING >= WotLK
         case DEATHKNIGHT:
@@ -1772,7 +1664,7 @@ void Player::updateAutoRepeatSpell()
             if (!isAutoShot)
                 interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
             else if (isPlayer())
-                autoRepeatSpell->sendCastResult(static_cast<SpellCastResult>(canCastAutoRepeatSpell));
+                autoRepeatSpell->sendCastResult(canCastAutoRepeatSpell);
             return;
         }
 
@@ -2091,7 +1983,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     auto talentInfo = sTalentStore.LookupEntry(talentId);
     if (talentInfo == nullptr)
         return;
-
+#if VERSION_STRING < Mop
     if (sObjectMgr.IsSpellDisabled(talentInfo->RankID[talentRank]))
     {
         if (IsInWorld())
@@ -2227,6 +2119,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     // Add the new talent to player talent map
     getActiveSpec().AddTalent(talentId, static_cast<uint8_t>(talentRank));
     setTalentPoints(curTalentPoints - requiredTalentPoints, false);
+#endif
 }
 
 void Player::addTalent(SpellInfo const* sp)
@@ -2290,6 +2183,7 @@ void Player::removeTalent(uint32_t spellId, bool onSpecChange /*= false*/)
 
 void Player::resetTalents()
 {
+#if VERSION_STRING < Mop
     // Loop through player's talents
     for (const auto talent : getActiveSpec().talents)
     {
@@ -2316,6 +2210,7 @@ void Player::resetTalents()
 
     // Reset talent point amount
     setInitialTalentPoints(true);
+#endif
 }
 
 void Player::resetAllTalents()
@@ -2561,6 +2456,7 @@ void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
 
 void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
 {
+#if VERSION_STRING < Mop
 #ifndef FT_DUAL_SPEC
     return;
 #else
@@ -2623,21 +2519,25 @@ void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
     // Send talent points
     setInitialTalentPoints();
 #endif
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Tutorials
 uint32_t Player::getTutorialValueById(uint8_t id)
 {
-    ARCEMU_ASSERT(id < 8)
-    return m_Tutorials[id];
+    if (id < 8)
+        return m_Tutorials[id];
+    return 0;
 }
 
 void Player::setTutorialValueForId(uint8_t id, uint32_t value)
 {
-    ARCEMU_ASSERT(id < 8)
-    m_Tutorials[id] = value;
-    tutorialsDirty = true;
+    if (id < 8)
+    {
+        m_Tutorials[id] = value;
+        tutorialsDirty = true;
+    }
 }
 
 void Player::loadTutorials()
@@ -2839,7 +2739,7 @@ void Player::sendReportToGmMessage(std::string playerName, std::string damageLog
     gm_ann += MSG_COLOR_YELLOW;
     gm_ann += damageLog;
 
-    sWorld.sendMessageToOnlineGms(gm_ann.c_str());
+    sWorld.sendMessageToOnlineGms(gm_ann);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -3788,6 +3688,7 @@ void Player::sendSpellCooldownEventPacket(uint32_t spellId)
     m_session->SendPacket(SmsgCooldownEvent(spellId, getGuid()).serialise().get());
 }
 
+#if VERSION_STRING < Cata
 void Player::sendSpellModifierPacket(uint8_t spellGroup, uint8_t spellType, int32_t modifier, bool isPct)
 {
     if (isPct)
@@ -3795,6 +3696,15 @@ void Player::sendSpellModifierPacket(uint8_t spellGroup, uint8_t spellType, int3
     else
         m_session->SendPacket(SmsgSetFlatSpellModifier(spellGroup, spellType, modifier).serialise().get());
 }
+#else
+void Player::sendSpellModifierPacket(uint8_t spellType, std::vector<std::pair<uint8_t, float>> modValues, bool isPct)
+{
+    if (isPct)
+        m_session->SendPacket(SmsgSetPctSpellModifier(spellType, modValues).serialise().get());
+    else
+        m_session->SendPacket(SmsgSetFlatSpellModifier(spellType, modValues).serialise().get());
+}
+#endif
 
 void Player::sendLoginVerifyWorldPacket(uint32_t mapId, float posX, float posY, float posZ, float orientation)
 {
@@ -3962,25 +3872,21 @@ void Player::setVisibleItemFields(uint32_t slot, Item* item)
     {
         setVisibleItemEntry(slot, item->getEntry());
 #if VERSION_STRING > TBC
-        setVisibleItemEnchantment(slot, item->getEnchantmentId(0));
+        setVisibleItemEnchantment(slot, 0, item->getEnchantmentId(PERM_ENCHANTMENT_SLOT));
+        setVisibleItemEnchantment(slot, 1, item->getEnchantmentId(TEMP_ENCHANTMENT_SLOT));
 #else
-        setVisibleItemEnchantment(slot, 0, item->getEnchantmentId(0));
-        setVisibleItemEnchantment(slot, 1, item->getEnchantmentId(3));
-        setVisibleItemEnchantment(slot, 2, item->getEnchantmentId(6));
-        setVisibleItemEnchantment(slot, 3, item->getEnchantmentId(9));
-        setVisibleItemEnchantment(slot, 4, item->getEnchantmentId(12));
-        setVisibleItemEnchantment(slot, 5, item->getEnchantmentId(15));
-        setVisibleItemEnchantment(slot, 6, item->getEnchantmentId(18));
-        setVisibleItemEnchantment(slot, 7, item->getRandomPropertiesId());
+        for (int i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
+            setVisibleItemEnchantment(slot, i, item->getEnchantmentId(i));
 #endif
     }
     else
     {
         setVisibleItemEntry(slot, 0);
 #if VERSION_STRING > TBC
-        setVisibleItemEnchantment(slot, 0);
+        setVisibleItemEnchantment(slot, 0, 0);
+        setVisibleItemEnchantment(slot, 1, 0);
 #else
-        for (uint8_t i = 0; i < WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT; ++i)
+        for (int i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
             setVisibleItemEnchantment(slot, i, 0);
 #endif
     }

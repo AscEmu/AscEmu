@@ -19,11 +19,11 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class PathoftheAdept : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
@@ -41,7 +41,8 @@ public:
 
 class LordDawnstar : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(LordDawnstar)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new LordDawnstar(c); }
     explicit LordDawnstar(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

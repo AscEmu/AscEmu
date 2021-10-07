@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "LocationVector.h"
 #include <G3D/Vector3.h>
-#include "Errors.h"
 
 inline G3D::Vector3 positionToVector3(LocationVector p) { return { p.x, p.y, p.z }; }
 inline G3D::Vector3 positionToVector3(LocationVector const* p) { return { p->x, p->y, p->z }; }

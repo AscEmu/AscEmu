@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 // QUEST_CLUCK         3861
 // ITEM_CHICKEN_FEED   11109
@@ -67,7 +68,8 @@ public:
 
 /* class Chicken : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Chicken)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Chicken(c); }
     explicit Chicken(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -86,7 +88,8 @@ public:
 
 class Kaliri : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Kaliri)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Kaliri(c); }
     explicit Kaliri(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

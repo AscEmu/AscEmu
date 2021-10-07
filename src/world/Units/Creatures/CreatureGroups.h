@@ -5,8 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "CommonTypes.hpp"
+
 #include <unordered_map>
-#include <map>
 
 enum GroupAIFlags
 {
@@ -33,53 +34,53 @@ struct FormationInfo
 
 class SERVER_DECL FormationMgr
 {
-    private:
-        FormationMgr();
-        ~FormationMgr();
+private:
+    FormationMgr();
+    ~FormationMgr();
 
-        std::unordered_map<uint32_t /*spawnID*/, FormationInfo> _creatureGroupMap;
+    std::unordered_map<uint32_t /*spawnID*/, FormationInfo> _creatureGroupMap;
 
-    public:
-        static FormationMgr* getInstance();
+public:
+    static FormationMgr* getInstance();
 
-        void addCreatureToGroup(uint32_t leaderSpawnId, Creature* creature);
-        void removeCreatureFromGroup(CreatureGroup* group, Creature* creature);
+    void addCreatureToGroup(uint32_t leaderSpawnId, Creature* creature);
+    void removeCreatureFromGroup(CreatureGroup* group, Creature* creature);
 
-        void loadCreatureFormations();
-        FormationInfo* getFormationInfo(uint32_t spawnId);
+    void loadCreatureFormations();
+    FormationInfo* getFormationInfo(uint32_t spawnId);
 
-        void addFormationMember(uint32_t spawnId, float followAng, float followDist, uint32_t leaderSpawnId, uint32_t groupAI);
+    void addFormationMember(uint32_t spawnId, float followAng, float followDist, uint32_t leaderSpawnId, uint32_t groupAI);
 };
 
 class SERVER_DECL CreatureGroup
 {
-    private:
-        Creature* _leader; //Important do not forget sometimes to work with pointers instead synonims :D:D
-        std::unordered_map<Creature*, FormationInfo*> _members;
+private:
+    Creature* _leader; // Important do not forget sometimes to work with pointers instead synonims :D:D
+    std::unordered_map<Creature*, FormationInfo*> _members;
 
-        uint32_t _leaderSpawnId;
-        bool _formed;
-        bool _engaging;
+    uint32_t _leaderSpawnId;
+    bool _formed;
+    bool _engaging;
 
-    public:
-        //Group cannot be created empty
-        explicit CreatureGroup(uint32_t leaderSpawnId);
-        ~CreatureGroup();
+public:
+    // Group cannot be created empty
+    explicit CreatureGroup(uint32_t leaderSpawnId);
+    ~CreatureGroup();
 
-        Creature* getLeader() const { return _leader; }
-        uint32_t getLeaderSpawnId() const { return _leaderSpawnId; }
-        bool isEmpty() const { return _members.empty(); }
-        bool isFormed() const { return _formed; }
-        bool isLeader(Creature const* creature) const { return _leader == creature; }
+    Creature* getLeader() const { return _leader; }
+    uint32_t getLeaderSpawnId() const { return _leaderSpawnId; }
+    bool isEmpty() const { return _members.empty(); }
+    bool isFormed() const { return _formed; }
+    bool isLeader(Creature const* creature) const { return _leader == creature; }
 
-        bool hasMember(Creature* member) const { return _members.count(member) > 0; }
-        void addMember(Creature* member);
-        void removeMember(Creature* member);
-        void formationReset(bool dismiss);
+    bool hasMember(Creature* member) const { return _members.count(member) > 0; }
+    void addMember(Creature* member);
+    void removeMember(Creature* member);
+    void formationReset(bool dismiss);
 
-        void leaderStartedMoving();
-        void memberEngagingTarget(Creature* member, Unit* target);
-        bool canLeaderStartMoving() const;
+    void leaderStartedMoving();
+    void memberEngagingTarget(Creature* member, Unit* target);
+    bool canLeaderStartMoving() const;
 };
 
 #define sFormationMgr FormationMgr::getInstance()

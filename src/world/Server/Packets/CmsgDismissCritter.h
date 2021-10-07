@@ -13,7 +13,6 @@ namespace AscEmu::Packets
 {
     class CmsgDismissCritter : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         WoWGuid guid;
 
@@ -40,6 +39,5 @@ namespace AscEmu::Packets
             guid.Init(unpacked_guid);
             return true;
         }
-#endif
     };
 }

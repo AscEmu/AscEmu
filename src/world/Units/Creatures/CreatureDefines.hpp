@@ -19,12 +19,10 @@
 #pragma once
 
 #include "CommonTypes.hpp"
-#include "Storage/DBC/DBCStores.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #if VERSION_STRING >= Cata
 #include "Storage/DB2/DB2Structures.h"
 #endif
-#include "Units/UnitDefines.hpp"
 
 #include "Spell/Definitions/School.hpp"
 
@@ -269,12 +267,6 @@ struct CreatureProperties
 
     // AI Stuff
     bool m_canRangedAttack;
-    bool m_canFlee;
-    float m_fleeHealth;
-    uint32 m_fleeDuration;
-    bool m_canCallForHelp;
-    float m_callForHelpHealth;
-
     std::set<uint32> start_auras;
     std::vector<uint32> castable_spells;
     std::list<AI_Spell*> spells;

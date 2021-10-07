@@ -3,12 +3,11 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Chat/ChatHandler.hpp"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
-#include "Server/World.Legacy.h"
 #include "Server/MainServerDefines.h"
 
 bool ChatHandler::HandleAccountCreate(const char* args, WorldSession* m_session)

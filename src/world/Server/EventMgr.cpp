@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "EventMgr.h"
 
 EventMgr& EventMgr::getInstance()

@@ -5,22 +5,19 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_ManaTombs.h"
-#include "Objects/Faction.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class ManaTombsInstanceScript : public InstanceScript
 {
 public:
-
-    explicit ManaTombsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit ManaTombsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ManaTombsInstanceScript(pMapMgr); }
 };
 
 class EtherealDarkcasterAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EtherealDarkcasterAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EtherealDarkcasterAI(c); }
     explicit EtherealDarkcasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto manaBurn = addAISpell(MANA_BURN, 10.0f, TARGET_DESTINATION, 0, 0, false, true);
@@ -31,10 +28,10 @@ class EtherealDarkcasterAI : public CreatureAIScript
     }
 };
 
-
 class EtherealPriestAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EtherealPriestAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EtherealPriestAI(c); }
     explicit EtherealPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto heal = addAISpell(HEAL, 7.0f, TARGET_SELF);
@@ -47,7 +44,8 @@ class EtherealPriestAI : public CreatureAIScript
 
 class EtherealTheurgistAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EtherealTheurgistAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EtherealTheurgistAI(c); }
     explicit EtherealTheurgistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto polymorph = addAISpell(POLYMORPH, 7.0f, TARGET_ATTACKING);
@@ -58,10 +56,10 @@ class EtherealTheurgistAI : public CreatureAIScript
     }
 };
 
-
 class EtherealSorcererAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EtherealSorcererAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EtherealSorcererAI(c); }
     explicit EtherealSorcererAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto arcaneMissiles = addAISpell(ARCANE_MISSILES, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -71,7 +69,8 @@ class EtherealSorcererAI : public CreatureAIScript
 
 class NexusStalkerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NexusStalkerAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NexusStalkerAI(c); }
     explicit NexusStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto couge = addAISpell(GOUGE, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -87,7 +86,8 @@ class NexusStalkerAI : public CreatureAIScript
 
 class NexusTerrorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NexusTerrorAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NexusTerrorAI(c); }
     explicit NexusTerrorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto psychicScream = addAISpell(PSYCHIC_SCREAM, 3.0f, TARGET_VARIOUS, 0, 0, false, true);
@@ -95,10 +95,10 @@ class NexusTerrorAI : public CreatureAIScript
     }
 };
 
-
 class ManaLeechAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ManaLeechAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ManaLeechAI(c); }
     explicit ManaLeechAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         arcaneExplosion = addAISpell(ARCANE_EXPLOSION, 0.0f, TARGET_VARIOUS, 0, 0, false, true);
@@ -111,13 +111,13 @@ class ManaLeechAI : public CreatureAIScript
     }
 
 protected:
-
     CreatureAISpells* arcaneExplosion;
 };
 
 class EtherealSpellbinderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EtherealSpellbinderAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EtherealSpellbinderAI(c); }
     explicit EtherealSpellbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto corruption = addAISpell(CORRUPTION, 7.0f, TARGET_ATTACKING, 0, 0, false, true);
@@ -134,10 +134,10 @@ class EtherealSpellbinderAI : public CreatureAIScript
     }
 };
 
-
 class EtherealWraithAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(EtherealWraithAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new EtherealWraithAI(c); }
     explicit EtherealWraithAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto shadowBoltVolley = addAISpell(SHADOW_BOLT_VOLLEY, 15.0f, TARGET_VARIOUS);
@@ -147,7 +147,8 @@ class EtherealWraithAI : public CreatureAIScript
 
 class PandemoniusAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PandemoniusAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PandemoniusAI(c); }
     explicit PandemoniusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto darkShell = addAISpell(DARK_SHELL, 20.0f, TARGET_SELF, 0, 20);
@@ -169,7 +170,8 @@ class PandemoniusAI : public CreatureAIScript
 // \todo Strange... I couldn't find any sounds for this boss in DBC and in extracted from client sounds O_O
 class TavarokAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TavarokAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TavarokAI(c); }
     explicit TavarokAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto earthquake = addAISpell(EARTHQUAKE, 8.0f, TARGET_VARIOUS, 0, 20);
@@ -184,11 +186,11 @@ class TavarokAI : public CreatureAIScript
     }
 };
 
-
 // \todo Work on beacons and find out if my current way of spawning them is correct
 class NexusPrinceShaffarAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(NexusPrinceShaffarAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new NexusPrinceShaffarAI(c); }
     explicit NexusPrinceShaffarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto fireball = addAISpell(FIREBALL, 35.0f, TARGET_RANDOM_SINGLE, 0, 20);
@@ -219,7 +221,8 @@ class NexusPrinceShaffarAI : public CreatureAIScript
 
 class YorAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(YorAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new YorAI(c); }
     explicit YorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         auto doubleBreath = addAISpell(DOUBLE_BREATH, 20.0f, TARGET_VARIOUS, 0, 15, false, true);

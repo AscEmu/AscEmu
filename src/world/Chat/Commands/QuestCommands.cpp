@@ -19,11 +19,11 @@
  *
  */
 
-#include "StdAfx.h"
+
+#include "Chat/ChatHandler.hpp"
 #include "Management/Item.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/ItemInterface.h"
-#include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"

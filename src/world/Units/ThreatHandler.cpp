@@ -3,7 +3,12 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
+#include "ThreatHandler.h"
+
+#include "Creatures/Creature.h"
+#include "Map/MapMgr.h"
+#include "Spell/SpellAuras.h"
 
 void ThreatReference::addThreat(float amount)
 {
@@ -83,7 +88,7 @@ bool ThreatReference::shouldBeSuppressed() const
         return false;
     
     if (_owner->isCreature())
-        if (_victim->SchoolImmunityList[static_cast<Creature*>(_owner)->BaseAttackType] != 0)
+        if (_victim->SchoolImmunityList[_owner->BaseAttackType] != 0)
             return true;
     
     // check if we have any aura that suppresses us
@@ -548,7 +553,7 @@ void ThreatManager::addThreat(Unit* target, float amount, SpellInfo const* spell
     }
 
     // Damage Dealt for Scripts
-    getOwner()->GetAIInterface()->handleEvent(EVENT_DAMAGETAKEN, target, amount);
+    getOwner()->GetAIInterface()->handleEvent(EVENT_DAMAGETAKEN, target, static_cast<uint32_t>(amount));
 
     // ok, now we actually apply threat
     // check if we already have an entry - if we do, just increase threat for that entry and we're done
@@ -596,7 +601,7 @@ std::vector<ThreatReference*> ThreatManager::getModifiableThreatList()
     std::vector<ThreatReference*> list;
     list.reserve(_myThreatListEntries.size());
     for (auto it = _sortedThreatList.begin(), end = _sortedThreatList.end(); it != end; ++it)
-        list.push_back(const_cast<ThreatReference*>(*it));
+        list.push_back(*it);
     return list;
 }
 
@@ -758,7 +763,7 @@ void ThreatManager::sendThreatListToClients(bool newHighest) const
     packedGuidOwner.appendPackGUID(_owner->getGuid());
     packedGuidVictim1.appendPackGUID(_currentVictimRef->getVictim()->getGuid());
 
-    WorldPacket data(static_cast<uint16_t>(newHighest ? SMSG_HIGHEST_THREAT_UPDATE : SMSG_THREAT_UPDATE), (_sortedThreatList.size() + 2) * 8); // guess
+    WorldPacket data((newHighest ? SMSG_HIGHEST_THREAT_UPDATE : SMSG_THREAT_UPDATE), (_sortedThreatList.size() + 2) * 8); // guess
     data.append(packedGuidOwner);
     if (newHighest)
         data.append(packedGuidVictim1);

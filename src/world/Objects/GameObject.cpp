@@ -19,7 +19,6 @@
  *
  */
 
-#include "StdAfx.h"
 #include "Management/GameEvent.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
@@ -39,6 +38,7 @@
 #include "Server/Packets/SmsgFishNotHooked.h"
 #include "Server/Packets/SmsgEnableBarberShop.h"
 #include "Server/Packets/SmsgDestructibleBuildingDamage.h"
+#include "Server/Script/ScriptMgr.h"
 
 // MIT
 
@@ -377,13 +377,18 @@ void GameObject::Despawn(uint32 delay, uint32 respawntime)
     if (respawntime)
     {
         /* Get our originating mapcell */
-        MapCell* pCell = GetMapCell();
-        ARCEMU_ASSERT(pCell != NULL);
-        pCell->_respawnObjects.insert(this);
-        sEventMgr.RemoveEvents(this);
-        sEventMgr.AddEvent(m_mapMgr, &MapMgr::EventRespawnGameObject, this, pCell->GetPositionX(), pCell->GetPositionY(), EVENT_GAMEOBJECT_ITEM_SPAWN, respawntime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        Object::RemoveFromWorld(false);
-        m_respawnCell = pCell;
+        if (MapCell* pCell = GetMapCell())
+        {
+            pCell->_respawnObjects.insert(this);
+            sEventMgr.RemoveEvents(this);
+            sEventMgr.AddEvent(m_mapMgr, &MapMgr::EventRespawnGameObject, this, pCell->GetPositionX(), pCell->GetPositionY(), EVENT_GAMEOBJECT_ITEM_SPAWN, respawntime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            Object::RemoveFromWorld(false);
+            m_respawnCell = pCell;
+        }
+        else
+        {
+            sLogger.failure("GameObject::Despawn tries to respawn go %u without a valid MapCell, return!", this->getEntry());
+        }
     }
     else
     {
@@ -560,8 +565,10 @@ void GameObject::ExpireAndDelete()
 
 void GameObject::CallScriptUpdate()
 {
-    ARCEMU_ASSERT(myScript != NULL);
-    myScript->AIUpdate();
+    if (myScript)
+        myScript->AIUpdate();
+    else
+        sLogger.failure("GameObject::CallScriptUpdate tries to call, but go %u has no valid script (nullptr)", this->getEntry());
 }
 
 void GameObject::OnPushToWorld()
@@ -662,10 +669,16 @@ struct QuaternionCompressed
         double y = (double)(m_raw << 22 >> 43) / (double)PACK_COEFF_YZ;
         double z = (double)(m_raw << 43 >> 43) / (double)PACK_COEFF_YZ;
         double w = 1 - (x * x + y * y + z * z);
-        ARCEMU_ASSERT(w >= 0);
-        w = std::sqrt(w);
+        
+        if (w >= 0)
+        {
+            w = std::sqrt(w);
 
-        return Quat(float(x), float(y), float(z), float(w));
+            return Quat(float(x), float(y), float(z), float(w));
+        }
+
+        sLogger.failure("QuaternionCompressed::Unpack w is negative, this should not happen!");
+        return Quat(0, 0, 0, 0);
     }
 
     int64 m_raw;
@@ -1231,9 +1244,7 @@ GameObject_FishingNode::~GameObject_FishingNode()
 
 void GameObject_FishingNode::OnPushToWorld()
 {
-    uint32 zone = 0; // GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
-    if (zone == 0)
-        zone = GetZoneId();
+    const uint32 zone = GetZoneId();
 
     // Only set a 'splash' if there is any loot in this area / zone
     if (sLootMgr.IsFishable(zone))

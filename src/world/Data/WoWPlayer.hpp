@@ -106,7 +106,7 @@ union
 #define WOWPLAYER_BANK_BAG_SLOT_COUNT 6
 #define WOWPLAYER_VENDOR_BUY_BACK_SLOT_COUNT 12
 #define WOWPLAYER_KEYRING_SLOT_COUNT 20
-#define WOWPLAYER_SKILL_INFO_COUNT 384
+#define WOWPLAYER_SKILL_INFO_COUNT 128
 #define WOWPLAYER_EXPLORED_ZONES_COUNT 64
 #define WOWPLAYER_STAT_COUNT 5
 #define WOWPLAYER_SPELL_SCHOOL_COUNT 7
@@ -123,9 +123,19 @@ struct WoWPlayer_VisibleItem
 {
     uint64_t creator;
     uint32_t entry;
-    uint32_t unk0[WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT];
+    uint32_t enchantment[WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT];
     uint32_t properties;
     uint32_t padding;
+};
+
+struct WoWPlayer_SkillInfo
+{
+    uint16_t id;
+    uint16_t step;
+    uint16_t current_value;
+    uint16_t max_value;
+    int16_t bonus_temporary;
+    int16_t bonus_permanent;
 };
 
 struct WoWPlayer : WoWUnit
@@ -152,7 +162,7 @@ struct WoWPlayer : WoWUnit
     uint64_t field_combo_target;
     uint32_t xp;
     uint32_t next_level_xp;
-    uint32_t skill_info[WOWPLAYER_SKILL_INFO_COUNT];
+    WoWPlayer_SkillInfo skill_info[WOWPLAYER_SKILL_INFO_COUNT];
     uint32_t character_points_1;
     uint32_t character_points_2;
     uint32_t track_creatures;
@@ -203,7 +213,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_VENDOR_BUY_BACK_SLOT_COUNT 12
 #define WOWPLAYER_KEYRING_SLOT_COUNT 32
 #define WOWPLAYER_VANITY_PET_SLOT_COUNT 18
-#define WOWPLAYER_SKILL_INFO_COUNT 384
+#define WOWPLAYER_SKILL_INFO_COUNT 128
 #define WOWPLAYER_SPELL_SCHOOL_COUNT 7
 #define WOWPLAYER_EXPLORED_ZONES_COUNT 128
 #define WOWPLAYER_BUY_BACK_COUNT 12
@@ -224,7 +234,7 @@ struct WoWPlayer_VisibleItem
 {
     uint64_t creator;
     uint32_t entry;
-    uint32_t unk0[WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT];
+    uint32_t enchantment[WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT];
     uint32_t properties;
     uint32_t padding;
 };
@@ -237,6 +247,16 @@ struct WoWPlayer_ArenaTeamInfo
     uint32_t games_season;
     uint32_t wins_season;
     uint32_t personal_rating;
+};
+
+struct WoWPlayer_SkillInfo
+{
+    uint16_t id;
+    uint16_t step;
+    uint16_t current_value;
+    uint16_t max_value;
+    int16_t bonus_temporary;
+    int16_t bonus_permanent;
 };
 
 struct WoWPlayer : WoWUnit
@@ -266,7 +286,7 @@ struct WoWPlayer : WoWUnit
     uint64_t field_known_titles[WOWPLAYER_KNOWN_TITLES_SIZE];
     uint32_t xp;
     uint32_t next_level_xp;
-    uint32_t skill_info[WOWPLAYER_SKILL_INFO_COUNT];
+    WoWPlayer_SkillInfo skill_info[WOWPLAYER_SKILL_INFO_COUNT];
     uint32_t character_points_1;
     uint32_t character_points_2;
     uint32_t track_creatures;
@@ -296,7 +316,15 @@ struct WoWPlayer : WoWUnit
     uint32_t field_pvp_medals;
     uint32_t field_buy_back_price[WOWPLAYER_BUY_BACK_COUNT];
     uint32_t field_buy_back_timestamp[WOWPLAYER_BUY_BACK_COUNT];
-    uint32_t field_kills;
+    union
+    {
+        struct
+        {
+            uint16_t kills_today;
+            uint16_t kills_yesterday;
+        } kills_field_parts;
+        uint32_t field_kills;
+    };
     uint32_t field_contribution_today;
     uint32_t field_contribution_yesterday;
     uint32_t field_lifetime_honorable_kills;
@@ -321,7 +349,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_BANK_BAG_SLOT_COUNT 7
 #define WOWPLAYER_KEYRING_SLOT_COUNT 32
 #define WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT 32
-#define WOWPLAYER_SKILL_INFO_COUNT 384
+#define WOWPLAYER_SKILL_INFO_COUNT 128
 #define WOWPLAYER_SPELL_SCHOOL_COUNT 7
 #define WOWPLAYER_BUY_BACK_COUNT 12
 #define WOWPLAYER_COMBAT_RATING_COUNT 25
@@ -343,7 +371,15 @@ struct WoWPlayer_Quest
 struct WoWPlayer_VisibleItem
 {
     uint32_t entry;
-    uint32_t enchantment;
+    union
+    {
+        struct
+        {
+            uint16_t perm_enchantment;
+            uint16_t temp_enchantment;
+        } enchantment_field_parts;
+        uint16_t enchantment[2];
+    };
 };
 
 struct WoWPlayer_ArenaTeamInfo
@@ -355,6 +391,16 @@ struct WoWPlayer_ArenaTeamInfo
     uint32_t games_season;
     uint32_t wins_season;
     uint32_t personal_rating;
+};
+
+struct WoWPlayer_SkillInfo
+{
+    uint16_t id;
+    uint16_t step;
+    uint16_t current_value;
+    uint16_t max_value;
+    int16_t bonus_temporary;
+    int16_t bonus_permanent;
 };
 
 struct WoWPlayer : WoWUnit
@@ -385,7 +431,7 @@ struct WoWPlayer : WoWUnit
     uint64_t field_known_currencies;
     uint32_t xp;
     uint32_t next_level_xp;
-    uint32_t skill_info[WOWPLAYER_SKILL_INFO_COUNT];
+    WoWPlayer_SkillInfo skill_info[WOWPLAYER_SKILL_INFO_COUNT];
     uint32_t character_points_1;
     uint32_t character_points_2;
     uint32_t track_creatures;
@@ -418,7 +464,15 @@ struct WoWPlayer : WoWUnit
     uint32_t field_pvp_medals;
     uint32_t field_buy_back_price[WOWPLAYER_BUY_BACK_COUNT];
     uint32_t field_buy_back_timestamp[WOWPLAYER_BUY_BACK_COUNT];
-    uint32_t field_kills;
+    union
+    {
+        struct
+        {
+            uint16_t kills_today;
+            uint16_t kills_yesterday;
+        } kills_field_parts;
+        uint32_t field_kills;
+    };
     uint32_t field_contribution_today;
     uint32_t field_contribution_yesterday;
     uint32_t field_lifetime_honorable_kills;
@@ -454,7 +508,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_NO_REAGENT_COST_COUNT 3
 #define WOWPLAYER_GLYPH_SLOT_COUNT 9
 #define WOWPLAYER_KNOWN_TITLES_SIZE 4
-#define WOWPLAYER_SKILL_INFO_COUNT 384
+#define WOWPLAYER_SKILL_INFO_COUNT 128
 
 struct WoWPlayer_Quest
 {
@@ -467,7 +521,15 @@ struct WoWPlayer_Quest
 struct WoWPlayer_VisibleItem
 {
     uint32_t entry;
-    uint32_t enchantment;
+    union
+    {
+        struct
+        {
+            uint16_t perm_enchantment;
+            uint16_t temp_enchantment;
+        } enchantment_field_parts;
+        uint16_t enchantment[2];
+    };
 };
 
 struct WoWPlayer_ArenaTeamInfo
@@ -519,7 +581,6 @@ struct WoWPlayer : WoWUnit
             uint32_t skill_mod[64];
             uint32_t skill_talent[64];
         } skill_info_parts;
-        uint32_t skill_info[WOWPLAYER_SKILL_INFO_COUNT];
     };
 
     uint32_t character_points_1;
@@ -556,7 +617,15 @@ struct WoWPlayer : WoWUnit
     uint32_t field_pvp_medals;
     uint32_t field_buy_back_price[WOWPLAYER_BUY_BACK_COUNT];
     uint32_t field_buy_back_timestamp[WOWPLAYER_BUY_BACK_COUNT];
-    uint32_t field_kills;
+    union
+    {
+        struct
+        {
+            uint16_t kills_today;
+            uint16_t kills_yesterday;
+        } kills_field_parts;
+        uint32_t field_kills;
+    };
     uint32_t field_lifetime_honorable_kills;
     player_field_bytes_2_union player_field_bytes_2;
     uint32_t field_watched_faction_idx;
@@ -611,7 +680,15 @@ struct WoWPlayer_Quest
 struct WoWPlayer_VisibleItem
 {
     uint32_t entry;
-    uint32_t enchantment;
+    union
+    {
+        struct
+        {
+            uint16_t perm_enchantment;
+            uint16_t temp_enchantment;
+        } enchantment_field_parts;
+        uint16_t enchantment[2];
+    };
 };
 
 //\todo: guessed structure
@@ -714,7 +791,15 @@ struct WoWPlayer : WoWUnit
     uint32_t field_pvp_medals;
     uint32_t field_buy_back_price[WOWPLAYER_BUY_BACK_COUNT];
     uint32_t field_buy_back_timestamp[WOWPLAYER_BUY_BACK_COUNT];
-    uint32_t field_kills;
+    union
+    {
+        struct
+        {
+            uint16_t kills_today;
+            uint16_t kills_yesterday;
+        } kills_field_parts;
+        uint32_t field_kills;
+    };
     uint32_t field_lifetime_honorable_kills;
     uint32_t field_watched_faction_idx;
     uint32_t field_combat_rating[27];

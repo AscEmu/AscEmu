@@ -19,12 +19,11 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
 #include "Chat/ChatHandler.hpp"
 #include "Server/World.h"
-#include "Server/World.Legacy.h"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/SmsgGmTicketDeleteTicket.h"
 #include "Server/Packets/SmsgGmTicketStatusUpdate.h"

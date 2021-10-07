@@ -21,28 +21,19 @@
 #ifndef OBJECTMGR_H
 #define OBJECTMGR_H
 
-#include "Chat/ChatHandler.hpp"
 #include "Units/Creatures/Corpse.h"
 #include "Units/Players/Player.h"
 #include "Units/Creatures/Vehicle.h"
-#include "Management/Guild/Guild.hpp"
 #include "Storage/DBC/DBCStructures.hpp"
-#include "Storage/DBC/DBCStores.h"
-#include "Storage/MySQLStructures.h"
 #if VERSION_STRING >= Cata
     #include "Storage/DB2/DB2Stores.h"
     #include "Storage/DB2/DB2Structures.h"
 #endif
 #include "Units/Creatures/CreatureDefines.hpp"
-#include "Management/TransporterHandler.h"
-#include "Management/Gossip/GossipDefines.hpp"
-#include "Objects/GameObject.h"
 #include "Spell/Spell.h"
 #include "Management/Group.h"
 
 #include <string>
-#include "Server/World.h"
-#include "Server/World.Legacy.h"
 #include "Spell/SpellTargetConstraint.hpp"
 #include "Management/Tickets/TicketMgr.hpp"
 #include "Movement/MovementManager.h"
@@ -390,8 +381,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         void LoadTrainers();
         Trainer* GetTrainer(uint32 Entry);
-
-        void LoadCreatureAIAgents();
 
         LevelInfo* GetLevelInfo(uint32 Race, uint32 Class, uint32 Level);
         void GenerateLevelUpInfo();

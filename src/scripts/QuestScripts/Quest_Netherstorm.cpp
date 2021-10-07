@@ -23,7 +23,6 @@
 class Veronia : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (plr->hasQuestInQuestLog(10652))

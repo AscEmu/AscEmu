@@ -25,6 +25,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include <Management/QuestLogEntry.hpp>
 #include "Map/MapScriptInterface.h"
+#include "Server/Script/CreatureAIScript.h"
 
 enum
 {
@@ -36,11 +37,9 @@ enum
 //////////////////////////////////////////////////////////////////////////////////////////
 //Quest: The Drwarfen Spy
 //ID: 8486
-
 class ProspectorAnvilwardGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* Plr) override;
     void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* EnteredCode, uint32_t gossipId) override;
     void destroy() override { delete this; }
@@ -69,7 +68,7 @@ void ProspectorAnvilwardGossip::onSelectOption(Object* pObject, Player* Plr, uin
         {
             Creature* pCreature = static_cast<Creature*>(pObject);
 
-            pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Very well. Let's see what you have to show me.");
+            pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Very well. Let's see what you have to show me.");
             GossipMenu::senGossipComplete(Plr);
 
             pCreature->getMovementManager()->movePath(pCreature->getWaypointPath(), false);
@@ -80,7 +79,8 @@ void ProspectorAnvilwardGossip::onSelectOption(Object* pObject, Player* Plr, uin
 
 class ProspectorAnvilward : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ProspectorAnvilward)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ProspectorAnvilward(c); }
     explicit ProspectorAnvilward(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         stopMovement();
@@ -96,7 +96,7 @@ class ProspectorAnvilward : public CreatureAIScript
             getCreature()->SetFaction(38);
             getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
             getCreature()->Despawn(10 * 60 * 1000, 1000); //if failed allow other players to do quest from beggining
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "What manner of trick is this, blood elf? If you seek to ambush me, I warn you I will not go down quietly!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "What manner of trick is this, blood elf? If you seek to ambush me, I warn you I will not go down quietly!");
             getCreature()->getThreatManager().getCurrentVictim();
         }
         if (iWaypointId == 10)

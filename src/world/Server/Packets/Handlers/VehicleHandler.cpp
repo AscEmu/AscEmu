@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Server/Packets/CmsgRequestVehicleSwitchSeat.h"
 #include "Server/Packets/CmsgChangeSeatsOnControlledVehicle.h"
 #include "Server/Packets/CmsgPlayerVehicleEnter.h"
@@ -77,7 +77,7 @@ void WorldSession::handleRequestVehicleSwitchSeat(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::handleChangeSeatsOnControlledVehicle(WorldPacket& recvPacket)
+void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]]WorldPacket& recvPacket)
 {
     if (_player->getCurrentVehicle() == nullptr)
         return;

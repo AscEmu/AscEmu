@@ -20,10 +20,12 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class Deathstalker_Erland : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Deathstalker_Erland)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Deathstalker_Erland(c); }
     explicit Deathstalker_Erland(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override
@@ -33,7 +35,7 @@ class Deathstalker_Erland : public CreatureAIScript
 
         if (iWaypointId == 9)
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, you helped me to overcome this obstacle");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, you helped me to overcome this obstacle");
             getCreature()->Despawn(5000, 1000);
             getCreature()->stopMoving();
             if (getCreature()->m_escorter == nullptr)
@@ -50,7 +52,8 @@ class Deathstalker_Erland : public CreatureAIScript
 
 class Nightlash : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Nightlash)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Nightlash(c); }
     explicit Nightlash(Creature* pCreature) : CreatureAIScript(pCreature) {}
     void OnDied(Unit* mKiller) override
     {
@@ -61,7 +64,7 @@ class Nightlash : public CreatureAIScript
             if (!getCreature()->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1069.889404f, 1544.777558f, 28.331335f, 1983) && (Util::getRandomUInt(5) > 2) && mPlayer->hasQuestInQuestLog(437)) //random number I picked between 2-8
             {
                 getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(1983, 1069.889404f, 1544.777558f, 28.331335f, 3.99f, true, false, 0, 0)->Despawn(600000, 0);
-                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Nightlash avenge us!!");//not sure this is 100% blizzlike, but looks nice
+                getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Nightlash avenge us!!");//not sure this is 100% blizzlike, but looks nice
             }
         }
     }

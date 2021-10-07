@@ -14,10 +14,8 @@ This file is released under the MIT license. See README-MIT for more information
 class SERVER_DECL GossipMenu
 {
 public:
-
     GossipMenu(uint64_t senderGuid, uint32_t textId, uint32_t sessionLanguage = 0, uint32_t gossipId = 0);
 
-    //MIT starts
     void addItem(uint8_t icon, uint32_t textId, uint32_t id, std::string text = "", uint32_t boxMoney = 0, std::string boxMessage = "", bool isCoded = false);
     void removeItem(uint32_t id);
 

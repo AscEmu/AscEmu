@@ -46,11 +46,6 @@ include(Units/Creatures/CMakeLists.txt)
 include(Units/Players/CMakeLists.txt)
 include(Units/Summons/CMakeLists.txt)
 
-set(SRC_WORLD_PROJECT
-   ${CMAKE_CURRENT_SOURCE_DIR}/StdAfx.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/StdAfx.h
-)
-
 if(WIN32)
    set(SRC_WORLD_PROJECT ${SRC_WORLD_PROJECT} ${CMAKE_CURRENT_SOURCE_DIR}/resources.rc)
 endif()
@@ -155,10 +150,6 @@ include_directories(
 
 add_executable(${PROJECT_NAME} ${sources})
 
-if(USE_PCH)
-    gen_cxx_pch(${PROJECT_NAME} StdAfx.h ${CMAKE_CURRENT_SOURCE_DIR}/StdAfx.cpp)
-endif()
-
 if(WIN32 AND NOT USE_PCH)
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
 endif()
@@ -178,3 +169,44 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h.in ${CMAKE_CURRENT_SOURCE
 
 target_link_libraries(${PROJECT_NAME} shared g3dlite Detour Recast ${PCRE_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
+
+if(USE_PCH)
+  target_precompile_headers(${PROJECT_NAME}
+  PRIVATE
+  <string>
+  <map>
+  <vector>
+  <array>
+  <set>
+  <cstdio>
+  <cstdlib>
+  <cstring>
+  <CommonDefines.hpp>
+  <Common.hpp>
+  <WorldPacket.h>
+  <Log.hpp>
+  <Logging/Logger.hpp>
+  <ByteBuffer.h>
+  <Config/Config.h>
+  <LocationVector.h>
+  <Util/Strings.hpp>
+  <Util.hpp>
+  WorldConf.h
+  Chat/ChatHandler.hpp
+  Macros/ScriptMacros.hpp
+  Management/ItemInterface.h
+  Management/QuestLogEntry.hpp
+  Map/MapMgr.h
+  Objects/GameObject.h
+  Server/Definitions.h
+  Server/Opcodes.hpp
+  Server/Script/ScriptMgr.h
+  Spell/Definitions/SpellEffects.hpp
+  Spell/Spell.h
+  Spell/SpellAuras.h
+  Storage/MySQLDataStore.hpp
+  Units/Players/Player.h
+  Units/Unit.h
+)
+
+endif()

@@ -565,7 +565,7 @@ bool Fumping(uint8_t /*effectIndex*/, Spell* pSpell)
     Creature* creat = pPlayer->GetMapMgr()->CreateAndSpawnCreature(entry, pos.x, pos.y, pos.z, 0);
     if (entry == 22483) //Sand Gnomes ;)
     {
-        creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "YIEEEEEEEAA!");
+        creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "YIEEEEEEEAA!");
     }
     creat->Despawn(5 * 60 * 1000, 0);
 
@@ -963,7 +963,7 @@ bool EmblazonRuneblade(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     Player* pPlayer = pSpell->getPlayerCaster();
-    pPlayer->SendChatMessageToPlayer(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, "Player check", pPlayer);
+    pPlayer->sendChatMessageToPlayer(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, "Player check", pPlayer);
 
     if (!pPlayer->hasQuestInQuestLog(12619))
         return true;

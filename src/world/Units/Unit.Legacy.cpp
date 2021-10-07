@@ -18,7 +18,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
 #include "Units/Summons/SummonHandler.h"
 #include "Management/LootMgr.h"
 #include "Units/Creatures/Vehicle.h"
@@ -32,7 +31,6 @@
 #include "Objects/Faction.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/SpellLog.hpp"
-#include "Spell/Definitions/SpellCastTargetFlags.hpp"
 #include "Spell/Definitions/ProcFlags.hpp"
 #include <Spell/Definitions/AuraInterruptFlags.hpp>
 #include "Spell/Definitions/SpellSchoolConversionTable.hpp"
@@ -41,25 +39,20 @@
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/SpellDidHitResult.hpp"
-#include "Spell/Definitions/SpellEffectTarget.hpp"
-#include "Spell/Definitions/SpellDamageType.hpp"
 #include "Creatures/Pet.h"
-#include "Data/WoWUnit.hpp"
+#include "Management/ItemInterface.h"
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
-#include "Server/Packets/SmsgSetExtraAuraInfo.h"
-#include "Server/Packets/SmsgEmote.h"
 #include "Server/Packets/SmsgAttackStart.h"
 #include "Server/Packets/SmsgAttackStop.h"
-#include "Server/Packets/SmsgPowerUpdate.h"
 #include "Server/Packets/SmsgSpellDamageShield.h"
-#include "Server/Packets/SmsgAuraUpdateAll.h"
-#include "Server/Packets/SmsgAuraUpdate.h"
-#include "Server/Packets/SmsgPeriodicAuraLog.h"
 #include "Server/Packets/SmsgAttackSwingBadFacing.h"
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Movement/Spline/MovementPacketBuilder.h"
+#include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
+#include "Server/Script/CreatureAIScript.h"
+#include "Spell/Definitions/SpellEffects.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -1375,10 +1368,12 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                 uint32_t weaponSpeed = 2000;
                 if (plr->IsInFeralForm())
                 {
+#if VERSION_STRING > Classic
                     // Get shapeshift form's attack speed
                     const auto form = sSpellShapeshiftFormStore.LookupEntry(plr->getShapeShiftForm());
                     if (form != nullptr && form->AttackSpeed != 0)
                         weaponSpeed = form->AttackSpeed;
+#endif
                 }
                 else
                 {
@@ -1681,14 +1676,14 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                 {
                     if (!this->isPlayer())
                         continue;
-                    if (dynamic_cast<Player*>(this)->getShapeShiftForm() != FORM_BEAR &&
-                        dynamic_cast<Player*>(this)->getShapeShiftForm() != FORM_DIREBEAR)
+                    if (this->getShapeShiftForm() != FORM_BEAR &&
+                        this->getShapeShiftForm() != FORM_DIREBEAR)
                         continue;
                 }
                 break;
                 case 37310://Bloodlust
                 {
-                    if (!this->isPlayer() || static_cast<Player*>(this)->getShapeShiftForm() != FORM_CAT)
+                    if (!this->isPlayer() || this->getShapeShiftForm() != FORM_CAT)
                         continue;
                 }
                 break;
@@ -6634,10 +6629,17 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, DamageInfo* dmg, SpellInf
 
     if ((*dmg).schoolMask == SCHOOL_MASK_NORMAL) // physical
     {
+#if VERSION_STRING > TBC
         if (this->isPlayer())
             ArmorReduce = PowerCostPctMod[0] + ((float)pVictim->getResistance(0) * (ArmorPctReduce + static_cast<Player*>(this)->CalcRating(PCR_ARMOR_PENETRATION_RATING)) / 100.0f);
         else
             ArmorReduce = 0.0f;
+#else
+        if (this->isPlayer())
+            ArmorReduce = PowerCostPctMod[0];
+        else
+            ArmorReduce = 0.0f;
+#endif
 
         if (ArmorReduce >= pVictim->getResistance(0)) // fully penetrated :O
             return;
@@ -6809,7 +6811,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
         //chances in feral form don't depend on weapon skill
         if (static_cast<Player*>(this)->IsInFeralForm())
         {
-            uint8 form = static_cast<Player*>(this)->getShapeShiftForm();
+            uint8 form = this->getShapeShiftForm();
             if (form == FORM_CAT || form == FORM_BEAR || form == FORM_DIREBEAR)
             {
                 SubClassSkill = SKILL_FERAL_COMBAT;
@@ -7421,7 +7423,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                     sEventMgr.AddEvent(pVictim, &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_PARRY, EVENT_PARRY_FLAG_EXPIRE, 5000, 1, 0);
                 else
                     sEventMgr.ModifyEventTimeLeft(pVictim, EVENT_PARRY_FLAG_EXPIRE, 5000);
-                if (static_cast<Player*>(pVictim)->getClass() == 1 || static_cast<Player*>(pVictim)->getClass() == 4) // warriors for 'revenge' and rogues for 'riposte'
+                if (pVictim->getClass() == 1 || pVictim->getClass() == 4) // warriors for 'revenge' and rogues for 'riposte'
                 {
                     pVictim->addAuraStateAndAuras(AURASTATE_FLAG_DODGE_BLOCK_PARRY); // SB@L: Enables spells requiring dodge
                     if (!sEventMgr.HasEvent(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE))
@@ -7710,7 +7712,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 //////////////////////////////////////////////////////////////////////////////////////////
                 //absorption
                 uint32 dm = dmg.fullDamage;
-                dmg.absorbedDamage = pVictim->absorbDamage(dmg.schoolMask, (uint32_t*)&dm);
+                dmg.absorbedDamage = pVictim->absorbDamage(dmg.schoolMask, &dm);
 
                 if (dmg.fullDamage > (int32)dmg.blockedDamage)
                 {
@@ -7951,7 +7953,9 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         if (val > 0)
         {
             rageGenerated = static_cast<uint32_t>(std::ceil(val));
+#if VERSION_STRING > TBC
             hit_status |= HITSTATUS_RAGE_GAIN;
+#endif
         }
     }
 
@@ -9274,8 +9278,8 @@ void CombatStatusHandler::AddAttackTarget(const uint64 & guid)
     if (guid == m_Unit->getGuid())
        return;
 
-    //we MUST be in world
-    ARCEMU_ASSERT(m_Unit->IsInWorld());
+    if (!m_Unit->IsInWorld())
+        return;
 
     m_attackTargets.insert(guid);
     //printf("Adding attack target " I64FMT " to " I64FMT "\n", guid, m_Unit->getGuid());
@@ -9383,8 +9387,9 @@ void CombatStatusHandler::OnDamageDealt(Unit* pTarget)
 
 void CombatStatusHandler::AddAttacker(const uint64 & guid)
 {
-    //we MUST be in world
-    ARCEMU_ASSERT(m_Unit->IsInWorld());
+    if (!m_Unit->IsInWorld())
+        return;
+
     m_attackers.insert(guid);
     UpdateFlag();
 }
@@ -9954,8 +9959,8 @@ void Unit::AddGarbageAura(Aura* aur)
 
 void Unit::AddGarbagePet(Pet* pet)
 {
-    ARCEMU_ASSERT(pet->getPlayerOwner()->getGuid() == getGuid() && !pet->IsInWorld());
-    m_GarbagePets.push_back(pet);
+    if (pet->getPlayerOwner()->getGuid() == getGuid() && !pet->IsInWorld())
+        m_GarbagePets.push_back(pet);
 }
 
 void Unit::RemoveGarbage()

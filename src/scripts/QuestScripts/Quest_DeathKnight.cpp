@@ -44,7 +44,6 @@ enum
 class GossipScourgeGryphon : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         if (plr->hasQuestInQuestLog(12670) || plr->HasFinishedQuest(12670))
@@ -58,7 +57,6 @@ public:
 class AcherusSoulPrison : GameObjectAIScript
 {
 public:
-
     explicit AcherusSoulPrison(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO)
     {
@@ -79,12 +77,12 @@ public:
 
             if (pCreature->getEntry() == CN_INITIATE_1 || pCreature->getEntry() == CN_INITIATE_2 || pCreature->getEntry() == CN_INITIATE_3 || pCreature->getEntry() == CN_INITIATE_4)
             {
-                pPlayer->SendChatMessage(CHAT_MSG_SAY, LANG_UNIVERSAL, "I give you the key to your salvation");
+                pPlayer->sendChatMessage(CHAT_MSG_SAY, LANG_UNIVERSAL, "I give you the key to your salvation");
                 //\todo to set flags will override all values from db
                 pCreature->setUnitFlags(UNIT_FLAG_NONE);
                 pCreature->GetAIInterface()->setCurrentTarget(pPlayer);
                 pCreature->GetAIInterface()->onHostileAction(pPlayer);
-                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have committed a big mistake, demon");
+                pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have committed a big mistake, demon");
 
                 if (questLog->getMobCountByIndex(0) != 0)
                     return;
@@ -100,8 +98,7 @@ public:
 class QuestInServiceOfLichKing : public QuestScript
 {
 public:
-
-    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         // Play first sound
         mTarget->sendPlaySoundPacket(14734);
@@ -132,7 +129,6 @@ bool PreparationForBattleEffect(uint8_t /*effectIndex*/, Spell* pSpell)
 class EyeofAcherusControl : public GameObjectAIScript
 {
 public:
-
     explicit EyeofAcherusControl(GameObject* gameobject) : GameObjectAIScript(gameobject) {}
     static GameObjectAIScript* Create(GameObject* gameobject_ai) { return new EyeofAcherusControl(gameobject_ai); }
 

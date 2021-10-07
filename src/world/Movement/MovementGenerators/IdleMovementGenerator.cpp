@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Creatures/AIInterface.h"
 #include "Objects/G3DPosition.hpp"
 #include "Movement/MovementDefines.h"
-#include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Units/Unit.h"
 
@@ -20,10 +19,9 @@ IdleMovementGenerator::IdleMovementGenerator()
     BaseUnitState = 0;
 }
 
-/*
- *  TODO: "if (!owner->IsStopped())" is useless, each generator cleans their own STATE_MOVE, the result is that StopMoving is almost never called
- *  Old comment: "StopMoving is needed to make unit stop if its last movement generator expires but it should not be sent otherwise there are many redundent packets"
- */
+///  TODO: "if (!owner->IsStopped())" is useless, each generator cleans their own STATE_MOVE, the result is that StopMoving is almost never called
+///  Old comment: "StopMoving is needed to make unit stop if its last movement generator expires but it should not be sent otherwise there are many redundent packets"
+
 void IdleMovementGenerator::initialize(Unit* owner)
 {
     owner->stopMoving();
@@ -48,8 +46,8 @@ MovementGeneratorType IdleMovementGenerator::getMovementGeneratorType() const
     return IDLE_MOTION_TYPE;
 }
 
-//----------------------------------------------------//
-
+//////////////////////////////////////////////////////////////////////////////////////////
+// RotateMovementGenerator
 RotateMovementGenerator::RotateMovementGenerator(uint32_t id, uint32_t time, RotateDirection direction) : _id(id), _duration(time), _maxDuration(time), _direction(direction)
 {
     Mode = MOTION_MODE_DEFAULT;
@@ -128,8 +126,8 @@ MovementGeneratorType RotateMovementGenerator::getMovementGeneratorType() const
     return ROTATE_MOTION_TYPE;
 }
 
-//----------------------------------------------------//
-
+//////////////////////////////////////////////////////////////////////////////////////////
+// DistractMovementGenerator
 DistractMovementGenerator::DistractMovementGenerator(uint32_t timer, float orientation) : _timer(timer), _orientation(orientation)
 {
     Mode = MOTION_MODE_DEFAULT;
@@ -200,8 +198,8 @@ MovementGeneratorType DistractMovementGenerator::getMovementGeneratorType() cons
     return DISTRACT_MOTION_TYPE;
 }
 
-//----------------------------------------------------//
-
+//////////////////////////////////////////////////////////////////////////////////////////
+// AssistanceDistractMovementGenerator
 AssistanceDistractMovementGenerator::AssistanceDistractMovementGenerator(uint32_t timer, float orientation) : DistractMovementGenerator(timer, orientation)
 {
     Priority = MOTION_PRIORITY_NORMAL;

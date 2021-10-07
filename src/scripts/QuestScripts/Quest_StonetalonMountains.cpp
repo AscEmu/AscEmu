@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Quest: "Protect Kaya" (Entry: 6523)
@@ -11,7 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 class ProtectKaya : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
@@ -19,14 +19,14 @@ public:
         float SSZ = mTarget->GetPositionZ();
 
         Creature* creat = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 11856);
-        if (creat == NULL)
+        if (creat == nullptr)
             return;
         creat->m_escorter = mTarget;
 
         creat->getMovementManager()->movePath(creat->getWaypointPath(), false);
         creat->pauseMovement(10);
 
-        creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Lets go");
+        creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Lets go");
         creat->setNpcFlags(UNIT_NPC_FLAG_NONE);
         // Prevention "not starting from spawn after attacking"
         creat->GetAIInterface()->setAllowedToEnterCombat(true);
@@ -36,7 +36,8 @@ public:
 
 class KayaFlathoof : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(KayaFlathoof)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new KayaFlathoof(c); }
     explicit KayaFlathoof(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         stopMovement();
@@ -51,7 +52,7 @@ class KayaFlathoof : public CreatureAIScript
         {
             case 15:
             {
-                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks for your help. I'll continue from here!");
+                getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks for your help. I'll continue from here!");
                 if (getCreature()->m_escorter == nullptr)
                     return;
 

@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Player.h"
-#include "PlayerDefines.hpp"
 
 #include "Units/Stats.h"
 

@@ -3,12 +3,14 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
+#include "Chat/ChatHandler.hpp"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Server/Master.h"
 #include "Server/Packets/SmsgServerMessage.h"
+#include "Server/Script/ScriptMgr.h"
 
 //.server info
 bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_session)
@@ -354,12 +356,12 @@ bool ChatHandler::HandleReloadNpcScriptTextCommand(const char* /*args*/, WorldSe
     return true;
 }
 
-//.server reload npc_text
+//.server reload npc_gossip_text
 bool ChatHandler::HandleReloadNpcTextCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadNpcTextTable();
-    GreenSystemMessage(m_session, "WorldDB 'npc_text' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    GreenSystemMessage(m_session, "WorldDB 'npc_gossip_text' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 

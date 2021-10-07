@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 LocationVector const WaypointTheSummoning[] =
 {
@@ -31,7 +32,6 @@ std::size_t const pathSize = std::extent<decltype(WaypointTheSummoning)>::value;
 class TheSummoning : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* windwatcher = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 6176);
@@ -41,7 +41,7 @@ public:
         // questgiver will walk to the place where Cyclonian is spawned only walk when we are at home
         if (windwatcher->CalcDistance(250.839996f, -1470.579956f, 55.4491f) > 1) return;
         {
-            windwatcher->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Follow me");
+            windwatcher->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Follow me");
 
             MovementNew::PointsArray path;
             path.reserve(pathSize);
@@ -75,7 +75,8 @@ public:
 
 class Bartleby : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Bartleby)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Bartleby(c); }
     explicit Bartleby(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override

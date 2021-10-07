@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Server/MainServerDefines.h"
 #include "Chat/ChatHandler.hpp"
 #include "Objects/ObjectMgr.h"
@@ -27,7 +27,7 @@ bool ChatHandler::HandleGuildCreateCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
-    if (strlen((char*)args) > 75)
+    if (strlen(args) > 75)
     {
         // send message to user
         char buf[256];

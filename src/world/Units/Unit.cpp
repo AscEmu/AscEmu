@@ -14,7 +14,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAuraUpdateAll.h"
 #include "Server/Packets/SmsgClearExtraAuraInfo.h"
 #include "Server/Packets/SmsgEmote.h"
-#include "Server/Packets/SmsgSetExtraAuraInfo.h"
 #include "Server/Packets/SmsgSpellEnergizeLog.h"
 #include "Server/Packets/SmsgEnvironmentalDamageLog.h"
 #include "Server/Packets/SmsgMonsterMoveTransport.h"
@@ -24,7 +23,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgSpellHealLog.h"
 #include "Server/Packets/SmsgSpellOrDamageImmune.h"
 #include "Server/Packets/SmsgStandstateUpdate.h"
-#include "Server/Packets/SmsgUpdateAuraDuration.h"
 #include "Server/Opcodes.hpp"
 #include "Server/WorldSession.h"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
@@ -35,7 +33,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellDamageType.hpp"
 #include "Spell/Definitions/SpellIsFlags.hpp"
 #include "Spell/Definitions/SpellMechanics.hpp"
-#include "Spell/Definitions/SpellSchoolConversionTable.hpp"
 #include "Spell/Definitions/SpellTypes.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
@@ -45,6 +42,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Players/Player.h"
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
+#include "Server/Packets/SmsgMessageChat.h"
+#include "Server/Script/ScriptMgr.h"
+
+#if VERSION_STRING <= TBC
+#include "Server/Packets/SmsgUpdateAuraDuration.h"
+#include "Server/Packets/SmsgSetExtraAuraInfo.h"
+#endif
 
 using namespace AscEmu::Packets;
 
@@ -2423,9 +2427,10 @@ void Unit::castSpellLoc(const LocationVector location, SpellInfo const* spellInf
 
 void Unit::eventCastSpell(Unit* target, SpellInfo const* spellInfo)
 {
-    ARCEMU_ASSERT(spellInfo != nullptr);
-
-    castSpell(target, spellInfo, 0, true);
+    if (spellInfo != nullptr)
+        castSpell(target, spellInfo, 0, true);
+    else
+        sLogger.failure("Unit::eventCastSpell tried to cast invalid spell with no spellInfo (nullptr)");
 }
 
 void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, uint32_t forcedBasepoints, bool triggered)
@@ -2563,7 +2568,7 @@ float_t Unit::applySpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHea
     // Check for correct class
     if (isPlayer())
     {
-        switch (static_cast<Player*>(this)->getClass())
+        switch (this->getClass())
         {
             case WARRIOR:
 #if VERSION_STRING != Classic
@@ -2680,7 +2685,7 @@ float_t Unit::applySpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg,
     // Check for correct class
     if (isPlayer())
     {
-        switch (static_cast<Player*>(this)->getClass())
+        switch (this->getClass())
         {
             case WARRIOR:
 #if VERSION_STRING != Classic
@@ -3014,6 +3019,7 @@ void Unit::sendSpellOrDamageImmune(uint64_t casterGuid, Unit* target, uint32_t s
     target->SendMessageToSet(SmsgSpellOrDamageImmune(casterGuid, target->getGuid(), spellId).serialise().get(), true);
 }
 
+#if VERSION_STRING > TBC
 void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& victimGuid, HitStatus hitStatus, uint32_t damage, [[maybe_unused]]uint32_t overKill, DamageInfo damageInfo, uint32_t absorbedDamage, VisualState visualState, uint32_t blockedDamage, [[maybe_unused]]uint32_t rageGain)
 {
 #if VERSION_STRING < WotLK
@@ -3082,6 +3088,62 @@ void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& v
 
     SendMessageToSet(&data, true);
 }
+#else
+void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& victimGuid, HitStatus hitStatus, uint32_t damage, [[maybe_unused]] uint32_t overKill, DamageInfo damageInfo, uint32_t absorbedDamage, VisualState visualState, uint32_t blockedDamage, [[maybe_unused]] uint32_t rageGain)
+{
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Status %u, damage %u", uint32_t(hitStatus), damage);
+
+    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, (4 + 8 + 8 + 4) + 1 + (1 * (4 + 4 + 4 + 4 + 4)) + (4 + 4 + 4 + 4));
+
+    // School type in classic, school mask in tbc+
+    uint32_t school;
+#if VERSION_STRING == Classic
+    school = damageInfo.getSchoolTypeFromMask();
+#else
+    school = damageInfo.schoolMask;
+#endif
+
+    data << uint32_t(hitStatus);
+    data << attackerGuid;
+    data << victimGuid;
+    data << uint32_t(damage);                                   // real damage
+
+    data << uint8_t(1);                                         // damage counter
+
+    data << uint32_t(school);       // damage school
+    data << float(damageInfo.fullDamage);
+    data << uint32_t(damageInfo.fullDamage);
+    data << uint32_t(absorbedDamage);
+    data << int32_t(damageInfo.resistedDamage);
+
+    data << uint32_t(visualState);
+    data << uint32_t(0);
+    data << uint32_t(0);
+
+    data << uint32_t(blockedDamage);
+
+    if (hitStatus & HITSTATUS_UNK_00)
+    {
+        data << uint32_t(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+        data << float(0);
+        for (uint8_t i = 0; i < 5; ++i)
+        {
+            data << float(0);
+            data << float(0);
+        }
+        data << uint32_t(0);
+    }
+
+    SendMessageToSet(&data, true);
+}
+#endif
 
 void Unit::addSpellModifier(AuraEffectModifier const* aurEff, bool apply)
 {
@@ -3091,6 +3153,10 @@ void Unit::addSpellModifier(AuraEffectModifier const* aurEff, bool apply)
     const auto aur = aurEff->getAura();
     if (isPlayer())
     {
+#if VERSION_STRING >= Cata
+        std::vector<std::pair<uint8_t, float>> modValues;
+#endif
+        const auto isPct = aurEff->getAuraEffectType() == SPELL_AURA_ADD_PCT_MODIFIER;
         uint8_t groupNum = 0, intBit = 0;
         for (uint8_t bit = 0; bit < SPELL_GROUPS; ++bit, ++intBit)
         {
@@ -3113,10 +3179,18 @@ void Unit::addSpellModifier(AuraEffectModifier const* aurEff, bool apply)
                 }
                 totalMod += apply ? aurEff->getEffectDamage() : -aurEff->getEffectDamage();
 
-                const auto isPct = aurEff->getAuraEffectType() == SPELL_AURA_ADD_PCT_MODIFIER;
+#if VERSION_STRING < Cata
                 static_cast<Player*>(this)->sendSpellModifierPacket(bit, static_cast<uint8_t>(aurEff->getEffectMiscValue()), totalMod, isPct);
+#else
+                modValues.push_back(std::make_pair(bit, static_cast<float>(totalMod)));
+#endif
             }
         }
+
+#if VERSION_STRING >= Cata
+        static_cast<Player*>(this)->sendSpellModifierPacket(static_cast<uint8_t>(aurEff->getEffectMiscValue()), modValues, isPct);
+        modValues.clear();
+#endif
     }
 
     if (apply)
@@ -4343,7 +4417,7 @@ bool Unit::canSee(Object* const obj)
                 detectionValue -= gobTarget->GetGameObjectProperties()->trap.level * 5;
         }
 
-        auto visibilityRange = static_cast<float_t>(detectionValue * 0.3f + combatReach);
+        auto visibilityRange = detectionValue * 0.3f + combatReach;
         if (visibilityRange <= 0.0f)
             return false;
 
@@ -4488,7 +4562,7 @@ void Unit::regeneratePower(PowerType type)
         if (getPowerType() != type)
             return;
 
-        if (static_cast<Creature*>(this)->m_interruptRegen)
+        if (this->m_interruptRegen)
             return;
     }
 
@@ -4819,6 +4893,95 @@ uint8_t Unit::getPowerIndexFromDBC(PowerType type) const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Chat
+std::unique_ptr<WorldPacket> Unit::createChatPacket(uint8_t type, uint32_t language, std::string msg, Unit* target/* = nullptr*/,  uint32_t sessionLanguage/* = 0*/)
+{
+    // Note: target is not the one who receives the message
+    // it is whom the message should be pointed at
+    // for example in text $N would get replaced by target's name
+    // and $R would get replaced by target's race
+    std::string senderName = "", targetName = "";
+    uint64_t targetGuid = 0;
+
+    // Get sender's name
+    if (isPlayer())
+    {
+        senderName = static_cast<Player*>(this)->getName();
+    }
+    else
+    {
+        const auto creature = static_cast<Creature*>(this);
+        const auto localizedName = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->getEntry(), sessionLanguage) : nullptr;
+        if (localizedName != nullptr)
+            senderName = localizedName->name;
+        else
+            senderName = creature->GetCreatureProperties()->Name;
+    }
+
+    // Get target's name
+    if (target != nullptr)
+    {
+        targetGuid = target->getGuid();
+
+        if (target->isPlayer())
+        {
+            targetName = static_cast<Player*>(target)->getName();
+        }
+        else
+        {
+            const auto creature = static_cast<Creature*>(target);
+            auto* const localizedName = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->getEntry(), sessionLanguage) : nullptr;
+            if (localizedName != nullptr)
+                targetName = localizedName->name;
+            else
+                targetName = creature->GetCreatureProperties()->Name;
+        }
+    }
+
+    return SmsgMessageChat(type, language, 0, msg, getGuid(), senderName, targetGuid, targetName).serialise();
+}
+
+void Unit::sendChatMessage(uint8_t type, uint32_t language, std::string msg, Unit* target/* = nullptr*/, uint32_t sessionLanguage/* = 0*/)
+{
+    const auto data = createChatPacket(type, language, msg, target, sessionLanguage);
+    SendMessageToSet(data.get(), true);
+}
+
+void Unit::sendChatMessage(uint8_t type, uint32_t language, std::string msg, uint32_t delay)
+{
+    if (delay > 0)
+    {
+        sEventMgr.AddEvent(this, &Unit::sendChatMessage, type, language, msg, uint32_t(0), EVENT_UNIT_CHAT_MSG, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        return;
+    }
+
+    sendChatMessage(type, language, msg);
+}
+
+void Unit::sendChatMessage(MySQLStructure::NpcScriptText const* text, uint32_t delay, Unit* target/* = nullptr*/)
+{
+    if (!isCreature() || text == nullptr)
+        return;
+
+    if (delay > 0)
+    {
+        sEventMgr.AddEvent(this, &Unit::sendChatMessage, text, uint32_t(0), target, EVENT_UNIT_CHAT_MSG, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        return;
+    }
+
+    SendCreatureChatMessageInRange(dynamic_cast<Creature*>(this), text->id, target);
+}
+
+void Unit::sendChatMessageToPlayer(uint8_t type, uint32_t language, std::string msg, Player* plr)
+{
+    if (plr == nullptr)
+        return;
+
+    const auto data = createChatPacket(type, language, msg, plr, plr->GetSession()->language);
+    plr->GetSession()->SendPacket(data.get());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 void Unit::setAttackTimer(WeaponDamageType type, int32_t time)
 {
@@ -4843,9 +5006,9 @@ void Unit::resetAttackTimer(WeaponDamageType type)
 void Unit::modAttackSpeedModifier(WeaponDamageType type, int32_t amount)
 {
     if (amount > 0)
-        m_attackSpeed[type] *= 1.0f + static_cast<float>(amount / 100.0f);
+        m_attackSpeed[type] *= 1.0f + amount / 100.0f;
     else
-        m_attackSpeed[type] /= 1.0f + static_cast<float>((-amount) / 100.0f);
+        m_attackSpeed[type] /= 1.0f + -amount / 100.0f;
 }
 
 float Unit::getAttackSpeedModifier(WeaponDamageType type) const
@@ -5357,34 +5520,39 @@ void Unit::addSimpleHealingBatchEvent(uint32_t heal, Unit* healer/* = nullptr*/,
 
 void Unit::addHealthBatchEvent(HealthBatchEvent* batch)
 {
-    ARCEMU_ASSERT(batch != nullptr);
-
-    // Do some checks before adding the health event into batch list
-    if (!isAlive() || !IsInWorld() || bInvincible)
+    if (batch != nullptr)
     {
-        delete batch;
-        return;
-    }
-
-    if (isPlayer())
-    {
-        const auto plr = static_cast<Player*>(this);
-        if (!batch->isHeal && plr->m_cheats.hasGodModeCheat)
+        // Do some checks before adding the health event into batch list
+        if (!isAlive() || !IsInWorld() || bInvincible)
         {
             delete batch;
             return;
         }
-    }
-    else if (isCreature())
-    {
-        if (static_cast<Creature*>(this)->isSpiritHealer())
-        {
-            delete batch;
-            return;
-        }
-    }
 
-    m_healthBatch.push_back(batch);
+        if (isPlayer())
+        {
+            const auto plr = static_cast<Player*>(this);
+            if (!batch->isHeal && plr->m_cheats.hasGodModeCheat)
+            {
+                delete batch;
+                return;
+            }
+        }
+        else if (isCreature())
+        {
+            if (static_cast<Creature*>(this)->isSpiritHealer())
+            {
+                delete batch;
+                return;
+            }
+        }
+
+        m_healthBatch.push_back(batch);
+    }
+    else
+    {
+        sLogger.failure("Unit::addHealthBatchEvent tried to add batch for nullptr!");
+    }
 }
 
 uint32_t Unit::calculateEstimatedOverKillForCombatLog(uint32_t damage) const
@@ -6288,3 +6456,64 @@ void Unit::jumpTo(Object* obj, float speedZ, bool withOrientation)
     float speedXY = getExactDist2d(x, y) * 10.0f / speedZ;
     getMovementManager()->moveJump(x, y, z, getAbsoluteAngle(obj), speedXY, speedZ, EVENT_JUMP, withOrientation);
 }
+
+#if VERSION_STRING == Cata
+DBC::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t mountType)
+{
+    if (!mountType)
+        return nullptr;
+
+    auto const* mountTypeEntry = sMountTypeStore.LookupEntry(mountType);
+    if (!mountTypeEntry)
+        return nullptr;
+
+    uint32_t zoneId = GetZoneId();
+    uint32_t areaId = GetArea()->id;
+
+    uint32_t ridingSkill = 5000;
+    if (GetTypeFromGUID() == TYPEID_PLAYER)
+        ridingSkill = ToPlayer()->_GetSkillLineCurrent(SKILL_RIDING);
+
+    for (uint32_t i = MAX_MOUNT_CAPABILITIES; i > 0; --i)
+    {
+        auto const* mountCapability = sMountCapabilityStore.LookupEntry(mountTypeEntry->capabilities[i - 1]);
+        if (!mountCapability)
+            continue;
+
+        if (ridingSkill < mountCapability->reqRidingSkill)
+            continue;
+
+        if (hasExtraUnitMovementFlag(MOVEFLAG2_FULLSPEED_PITCHING))
+        {
+            if (!(mountCapability->flag & MOUNT_FLAG_CAN_PITCH))
+                continue;
+        }
+        else if (hasUnitMovementFlag(MOVEFLAG_SWIMMING))
+        {
+            if (!(mountCapability->flag & MOUNT_FLAG_CAN_SWIM))
+                continue;
+        }
+        else if (!(mountCapability->flag & 0x1))   // unknown flags, checked in 4.2.2 14545 client
+        {
+            if (!(mountCapability->flag & 0x2))
+                continue;
+        }
+
+        if (mountCapability->reqMap != -1 && int32_t(GetMapId()) != mountCapability->reqMap)
+            continue;
+
+        if (mountCapability->reqArea && (mountCapability->reqArea != zoneId && mountCapability->reqArea != areaId))
+            continue;
+
+        if (mountCapability->reqAura && !HasAura(mountCapability->reqAura))
+            continue;
+
+        if (mountCapability->reqSpell && (GetTypeFromGUID() != TYPEID_PLAYER || !ToPlayer()->HasSpell(mountCapability->reqSpell)))
+            continue;
+
+        return mountCapability;
+    }
+
+    return nullptr;
+}
+#endif

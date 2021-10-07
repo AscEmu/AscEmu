@@ -17,8 +17,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LogonStdAfx.h"
+#include "LogonCommServer.h"
 #include "LogonCommDefines.h"
+#include <Log.hpp>
+#include <Logging/Logger.hpp>
+#include <Realm/RealmManager.hpp>
+#include <Server/Master.hpp>
+#include <Network/Socket.h>
+#include <WorldPacket.h>
+#include <Server/AccountMgr.h>
+#include <Auth/Sha1.h>
+#include <Util/Strings.hpp>
+#include <Server/IpBanMgr.h>
 
 
 LogonCommServerSocket::LogonCommServerSocket(SOCKET fd) : Socket(fd, 65536, 524288)
@@ -222,7 +232,7 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
     // get sessionkey!
     uint32 error = 0;
     std::shared_ptr<Account> acct = sAccountMgr.getAccountByName(account_name);
-    if (acct == NULL || acct->SessionKey == NULL)
+    if (acct == nullptr || acct->SessionKey == NULL)
         error = 1;          // Unauthorized user.
 
     // build response packet
@@ -430,7 +440,7 @@ void LogonCommServerSocket::HandleTestConsoleLogin(WorldPacket & recvData)
     data << request;
 
     std::shared_ptr<Account> pAccount = sAccountMgr.getAccountByName(accountname);
-    if (pAccount == NULL)
+    if (pAccount == nullptr)
     {
         data << uint32(0);
         SendPacket(&data);
@@ -475,7 +485,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             AscEmu::Util::Strings::toUpperCase(account);
 
             std::shared_ptr<Account> pAccount = sAccountMgr.getAccountByName(account);
-            if (pAccount == NULL)
+            if (pAccount == nullptr)
                 return;
 
             pAccount->Banned = duration;
@@ -519,7 +529,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             AscEmu::Util::Strings::toUpperCase(account);
 
             std::shared_ptr<Account> pAccount = sAccountMgr.getAccountByName(account);
-            if (pAccount == NULL)
+            if (pAccount == nullptr)
                 return;
 
             pAccount->Muted = duration;

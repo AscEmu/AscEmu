@@ -17,9 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LogonStdAfx.h"
 #include "LogonConsole.h"
 #include "Server/Logon.h"
+#include <Logging/Logger.hpp>
+#include <Server/Master.hpp>
+#include <iostream>
+#include <Server/AccountMgr.h>
+#include <Server/IpBanMgr.h>
+#include <Network/Network.h>
+#include <LogonConf.h>
+#include <Util/Strings.cpp>
 
 LogonConsole& LogonConsole::getInstance()
 {
@@ -131,7 +138,7 @@ bool LogonConsoleThread::runThread()
         sLogonConsole.ProcessCmd(cmd);
     }
 
-    sLogonConsole._thread = NULL;
+    sLogonConsole._thread = nullptr;
     return true;
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -416,7 +423,7 @@ void LogonConsole::checkAccountName(std::string name, uint8 type)
     {
         case ACC_NAME_DO_EXIST:
         {
-            if (sAccountMgr.getAccountByName(aname) == NULL)
+            if (sAccountMgr.getAccountByName(aname) == nullptr)
             {
                 std::cout << "There's no account with name " << name << std::endl;
             }
@@ -424,7 +431,7 @@ void LogonConsole::checkAccountName(std::string name, uint8 type)
         } break;
         case ACC_NAME_NOT_EXIST:
         {
-            if (sAccountMgr.getAccountByName(aname) != NULL)
+            if (sAccountMgr.getAccountByName(aname) != nullptr)
             {
                 std::cout << "There's already an account with name " << name << std::endl;
             }

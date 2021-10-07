@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Instance.h"
 #include "InstanceDefines.hpp"
-#include "WorldCreatorDefines.hpp"
 
 
 bool Instance::isPersistent() const

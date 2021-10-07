@@ -18,14 +18,14 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Management/EquipmentSetMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Database/Field.hpp"
-#include "Log.hpp"
 #include "Database/Database.h"
 #include "WoWGuid.h"
 #include "WorldPacket.h"
+#include "Logging/Logger.hpp"
 
 namespace Arcemu
 {
@@ -54,7 +54,7 @@ namespace Arcemu
     {
         std::pair< EquipmentSetStorage::iterator, bool > retval;
 
-        retval = EquipmentSets.insert(std::pair< uint32, EquipmentSet* >(setGUID, set));
+        retval = EquipmentSets.emplace(std::pair< uint32, EquipmentSet* >(setGUID, set));
 
         return retval.second;
     }
@@ -110,7 +110,7 @@ namespace Arcemu
             for (uint32 i = 0; i < set->ItemGUID.size(); ++i)
                 set->ItemGUID[i] = fields[5 + i].GetUInt32();
 
-            EquipmentSets.insert(std::pair< uint32, EquipmentSet* >(set->SetGUID, set));
+            EquipmentSets.emplace(std::pair< uint32, EquipmentSet* >(set->SetGUID, set));
             set = NULL;
             setcount++;
 

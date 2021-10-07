@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Management/Battleground/Battleground.h"
 
-
 class WarsongGulch : public CBattleground
 {
     GameObject* m_buffs[6];
@@ -22,7 +21,6 @@ class WarsongGulch : public CBattleground
     void TimeLeft();
 
 public:
-
     WarsongGulch(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
     ~WarsongGulch();
 

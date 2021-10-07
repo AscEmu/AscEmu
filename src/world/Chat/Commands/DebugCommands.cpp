@@ -3,13 +3,149 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Chat/ChatHandler.hpp"
 #include "Server/WorldSession.h"
 #include "Spell/Definitions/SpellFailure.hpp"
 #include "Server/ServerState.h"
 #include "Objects/ObjectMgr.h"
 #include "Management/WeatherMgr.h"
+#include "Server/Script/CreatureAIScript.h"
+#include "Units/ThreatHandler.h"
+
+bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldSession* session)
+{
+    uint32_t map = uint32_t(atoi(args));
+    if (map == 0)
+        return true;
+
+    std::vector<uint32_t> creatureEntries;
+
+    QueryResult* creature_spawn_result = WorldDatabase.Query("SELECT entry FROM creature_spawns WHERE map = %u GROUP BY(entry)", map);
+    if (creature_spawn_result)
+    {
+        {
+            do
+            {
+                Field* fields = creature_spawn_result->Fetch();
+                creatureEntries.push_back(fields[0].GetUInt32());
+
+            } while (creature_spawn_result->NextRow());
+        }
+
+        delete creature_spawn_result;
+    }
+
+    //prepare new table for dump
+    char my_table[1400];
+    sprintf(my_table, "CREATE TABLE `creature_ai_scripts_%s` (`min_build` int NOT NULL DEFAULT '12340',`max_build` int NOT NULL DEFAULT '12340',`entry` int unsigned NOT NULL,\
+            `difficulty` tinyint unsigned NOT NULL DEFAULT '0',`phase` tinyint unsigned NOT NULL DEFAULT '0',`event` tinyint unsigned NOT NULL DEFAULT '0',`action` tinyint unsigned NOT NULL DEFAULT '0',\
+            `maxCount` tinyint unsigned NOT NULL DEFAULT '0',`chance` float unsigned NOT NULL DEFAULT '1',`spell` int unsigned NOT NULL DEFAULT '0',`spell_type` int NOT NULL DEFAULT '0',`triggered` tinyint(1) NOT NULL DEFAULT '0',\
+            `target` tinyint NOT NULL DEFAULT '0',`cooldownMin` int NOT NULL DEFAULT '0',`cooldownMax` int unsigned NOT NULL DEFAULT '0',`minHealth` float NOT NULL DEFAULT '0',\
+            `maxHealth` float NOT NULL DEFAULT '100',`textId` int unsigned NOT NULL DEFAULT '0',`misc1` int NOT NULL DEFAULT '0',`comments` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,\
+            UNIQUE KEY `entry` (`min_build`,`max_build`,`entry`,`difficulty`,`phase`,`spell`,`event`,`action`,`textId`) USING BTREE) ENGINE = MyISAM DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI System'", args);
+
+    WorldDatabase.Execute(my_table);
+
+    uint32_t count = 0;
+    for (auto entry : creatureEntries)
+    {
+        auto creature_properties = sMySQLStore.getCreatureProperties(entry);
+        if (creature_properties == nullptr)
+        {
+            RedSystemMessage(session, "Creature with entry %u is not a valid entry (no properties information in database)", entry);
+            return true;
+        }
+
+        auto creature_spawn = new MySQLStructure::CreatureSpawn;
+        uint8 gender = creature_properties->GetGenderAndCreateRandomDisplayID(&creature_spawn->displayid);
+        creature_spawn->entry = entry;
+        creature_spawn->id = sObjectMgr.GenerateCreatureSpawnID();
+        creature_spawn->movetype = 0;
+        creature_spawn->x = session->GetPlayer()->GetPositionX();
+        creature_spawn->y = session->GetPlayer()->GetPositionY();
+        creature_spawn->z = session->GetPlayer()->GetPositionZ();
+        creature_spawn->o = session->GetPlayer()->GetOrientation();
+        creature_spawn->emote_state = 0;
+        creature_spawn->flags = creature_properties->NPCFLags;
+        creature_spawn->factionid = creature_properties->Faction;
+        creature_spawn->bytes0 = creature_spawn->setbyte(0, 2, gender);
+        creature_spawn->bytes1 = 0;
+        creature_spawn->bytes2 = 0;
+        creature_spawn->stand_state = 0;
+        creature_spawn->death_state = 0;
+        creature_spawn->channel_target_creature = creature_spawn->channel_target_go = creature_spawn->channel_spell = 0;
+        creature_spawn->MountedDisplayID = 0;
+
+        creature_spawn->Item1SlotEntry = creature_properties->itemslot_1;
+        creature_spawn->Item2SlotEntry = creature_properties->itemslot_2;
+        creature_spawn->Item3SlotEntry = creature_properties->itemslot_3;
+
+        creature_spawn->Item1SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_spawn->Item1SlotEntry);
+        creature_spawn->Item2SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_spawn->Item2SlotEntry);
+        creature_spawn->Item3SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_spawn->Item3SlotEntry);
+        creature_spawn->CanFly = 0;
+        creature_spawn->phase = session->GetPlayer()->GetPhase();
+
+        if (auto creature = session->GetPlayer()->GetMapMgr()->CreateCreature(entry))
+        {
+            creature->Load(creature_spawn, 0, nullptr);
+            creature->m_loadedFromDB = true;
+            creature->PushToWorld(session->GetPlayer()->GetMapMgr());
+
+            // Add to map
+            uint32 x = session->GetPlayer()->GetMapMgr()->GetPosX(session->GetPlayer()->GetPositionX());
+            uint32 y = session->GetPlayer()->GetMapMgr()->GetPosY(session->GetPlayer()->GetPositionY());
+            session->GetPlayer()->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(x, y)->CreatureSpawns.push_back(creature_spawn);
+            MapCell* map_cell = session->GetPlayer()->GetMapMgr()->GetCell(x, y);
+            if (map_cell != nullptr)
+                map_cell->SetLoaded();
+
+            for (auto aiSpells : creature->GetAIInterface()->mCreatureAISpells)
+            {
+                if (aiSpells->fromDB)
+                    continue;
+
+                float chance = aiSpells->mCastChance;
+                uint32_t spell = aiSpells->mSpellInfo->getId();
+                uint32_t spelltype = aiSpells->spell_type;
+                uint32_t target = aiSpells->mTargetType;
+                uint32_t cooldown = aiSpells->mCooldown;
+                if (cooldown == 0xFFFFFFFF) //4294967295
+                    cooldown = 10000;
+
+                std::string remove = "'";
+                std::string name = sMySQLStore.getCreatureProperties(entry)->Name;
+                name.erase(std::remove_if(name.begin(), name.end(),
+                    [&remove](const char& c) {
+                        return remove.find(c) != std::string::npos;
+                    }),
+                    name.end());
+
+                std::string spellname = aiSpells->mSpellInfo->getName();
+                spellname.erase(std::remove_if(spellname.begin(), spellname.end(),
+                    [&remove](const char& c) {
+                        return remove.find(c) != std::string::npos;
+                    }),
+                    spellname.end());
+
+                std::string comment = name + " - " + spellname;
+
+                char my_insert1[700];
+                sprintf(my_insert1, "INSERT INTO creature_ai_scripts_%s VALUES (5875,12340,%u,4,0,5,1,0,%f,%u,%u,0,%u,%u,%u,0,100,0,0,'%s')", args, entry, chance, spell, spelltype, target, cooldown, cooldown, comment.c_str());
+
+                WorldDatabase.Execute(my_insert1);
+                ++count;
+            }
+
+            creature->RemoveFromWorld(false, true);
+        }
+    }
+
+    SystemMessage(session, "Dumped: %u hardcoded scripts to creature_ai_scripts_dump", count);
+
+    return true;
+}
 
 bool ChatHandler::HandleDoPercentDamageCommand(const char* args, WorldSession* session)
 {
@@ -23,7 +159,7 @@ bool ChatHandler::HandleDoPercentDamageCommand(const char* args, WorldSession* s
 
     uint32_t health = selected_unit->getHealth();
 
-    uint32_t calculatedDamage = static_cast<uint32_t>((health / 100) * percentDamage);
+    uint32_t calculatedDamage = health / 100 * percentDamage;
 
     selected_unit->takeDamage(session->GetPlayer(), calculatedDamage, 0);
 

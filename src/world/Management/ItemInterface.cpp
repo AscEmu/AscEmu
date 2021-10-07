@@ -18,15 +18,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+
 #include "Item.h"
 #include "Container.h"
 #include "ItemPrototype.h"
 #include "Units/Players/Player.h"
 #include "Management/ItemInterface.h"
+
+#include "Chat/ChatHandler.hpp"
 #include "Storage/MySQLDataStore.hpp"
-#include "Data/WoWItem.hpp"
-#include "Data/WoWPlayer.hpp"
 #include "Server/Packets/SmsgInventoryChangeFailure.h"
 
 using namespace AscEmu::Packets;
@@ -177,67 +177,78 @@ ItemInterface::~ItemInterface()
 
 uint32 ItemInterface::m_CreateForPlayer(ByteBuffer* data)       // 100%
 {
-    ARCEMU_ASSERT(m_pOwner != nullptr);
     uint32 count = 0;
 
-    for (uint8 i = 0; i < MAX_INVENTORY_SLOT; ++i)
+    if (m_pOwner)
     {
-        if (m_pItems[i])
+        for (uint8 i = 0; i < MAX_INVENTORY_SLOT; ++i)
         {
-            if (m_pItems[i]->isContainer())
+            if (m_pItems[i])
             {
-                count += static_cast<Container*>(m_pItems[i])->buildCreateUpdateBlockForPlayer(data, m_pOwner);
-
-                for (uint32 e = 0; e < m_pItems[i]->getItemProperties()->ContainerSlots; ++e)
+                if (m_pItems[i]->isContainer())
                 {
-                    Item* pItem = static_cast<Container*>(m_pItems[i])->GetItem(static_cast<int16>(e));
-                    if (pItem)
+                    count += m_pItems[i]->buildCreateUpdateBlockForPlayer(data, m_pOwner);
+
+                    for (uint32 e = 0; e < m_pItems[i]->getItemProperties()->ContainerSlots; ++e)
                     {
-                        if (pItem->isContainer())
+                        Item* pItem = static_cast<Container*>(m_pItems[i])->GetItem(static_cast<int16>(e));
+                        if (pItem)
                         {
-                            count += static_cast<Container*>(pItem)->buildCreateUpdateBlockForPlayer(data, m_pOwner);
-                        }
-                        else
-                        {
-                            count += pItem->buildCreateUpdateBlockForPlayer(data, m_pOwner);
+                            if (pItem->isContainer())
+                            {
+                                count += pItem->buildCreateUpdateBlockForPlayer(data, m_pOwner);
+                            }
+                            else
+                            {
+                                count += pItem->buildCreateUpdateBlockForPlayer(data, m_pOwner);
+                            }
                         }
                     }
                 }
-            }
-            else
-            {
-                count += m_pItems[i]->buildCreateUpdateBlockForPlayer(data, m_pOwner);
+                else
+                {
+                    count += m_pItems[i]->buildCreateUpdateBlockForPlayer(data, m_pOwner);
+                }
             }
         }
+    }
+    else
+    {
+        sLogger.failure("No Owner for ItemInterface::m_CreateForPlayer");
     }
     return count;
 }
 
 void ItemInterface::m_DestroyForPlayer()        // 100%
 {
-    ARCEMU_ASSERT(m_pOwner != nullptr);
-
-    for (uint8 i = 0; i < MAX_INVENTORY_SLOT; ++i)
+    if (m_pOwner)
     {
-        if (m_pItems[i])
+        for (uint8 i = 0; i < MAX_INVENTORY_SLOT; ++i)
         {
-            if (m_pItems[i]->isContainer())
+            if (m_pItems[i])
             {
-                for (uint32 e = 0; e < m_pItems[i]->getItemProperties()->ContainerSlots; ++e)
+                if (m_pItems[i]->isContainer())
                 {
-                    Item* pItem = static_cast<Container*>(m_pItems[i])->GetItem(static_cast<int16>(e));
-                    if (pItem)
+                    for (uint32 e = 0; e < m_pItems[i]->getItemProperties()->ContainerSlots; ++e)
                     {
-                        m_pOwner->sendDestroyObjectPacket(pItem->getGuid());
+                        Item* pItem = static_cast<Container*>(m_pItems[i])->GetItem(static_cast<int16>(e));
+                        if (pItem)
+                        {
+                            m_pOwner->sendDestroyObjectPacket(pItem->getGuid());
+                        }
                     }
+                    m_pOwner->sendDestroyObjectPacket(m_pItems[i]->getGuid());
                 }
-                m_pOwner->sendDestroyObjectPacket(m_pItems[i]->getGuid());
-            }
-            else
-            {
-                m_pOwner->sendDestroyObjectPacket(m_pItems[i]->getGuid());
+                else
+                {
+                    m_pOwner->sendDestroyObjectPacket(m_pItems[i]->getGuid());
+                }
             }
         }
+    }
+    else
+    {
+        sLogger.failure("Tried to destroy owner item without an owner ItemInterface::m_DestroyForPlayer");
     }
 }
 
@@ -289,8 +300,18 @@ AddItemResult ItemInterface::SafeAddItem(Item* pItem, int8 ContainerSlot, int16 
 // Adds items to player inventory, this includes all types of slots.
 AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slot)
 {
-    ARCEMU_ASSERT(slot < MAX_INVENTORY_SLOT);
-    ARCEMU_ASSERT(ContainerSlot < MAX_INVENTORY_SLOT);
+    if (slot >= MAX_INVENTORY_SLOT)
+    {
+        sLogger.failure("ItemInterface::m_AddItem slot %u is invalid!", slot);
+        return ADD_ITEM_RESULT_ERROR;
+    }
+
+    if (ContainerSlot >= MAX_INVENTORY_SLOT)
+    {
+        sLogger.failure("ItemInterface::m_AddItem containerSlot %u is invalid!", ContainerSlot);
+        return ADD_ITEM_RESULT_ERROR;
+    }
+
     if (item == nullptr || !item->getItemProperties() || slot < 0)
         return ADD_ITEM_RESULT_ERROR;
 
@@ -323,7 +344,6 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
     //case 1, item is from backpack container
     if (ContainerSlot == INVENTORY_SLOT_NOT_SET)
     {
-        //ARCEMU_ASSERT(  m_pItems[slot] == nullptr);
         if (GetInventoryItem(slot) != nullptr /*|| (slot == EQUIPMENT_SLOT_OFFHAND && !m_pOwner->HasSkillLine(118))*/)
         {
             //sLogger.failure("bugged inventory: %u %u", m_pOwner->GetName(), item->getGuid());
@@ -461,8 +481,18 @@ bool ItemInterface::IsBagSlot(int16 slot)
 /// Removes the item safely and returns it back for usage
 Item* ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16 slot, bool destroy)
 {
-    ARCEMU_ASSERT(slot < MAX_INVENTORY_SLOT);
-    ARCEMU_ASSERT(ContainerSlot < MAX_INVENTORY_SLOT);
+    if (slot >= MAX_INVENTORY_SLOT)
+    {
+        sLogger.failure("ItemInterface::SafeRemoveAndRetreiveItemFromSlot slot %u is invalid!", slot);
+        return nullptr;
+    }
+
+    if (ContainerSlot >= MAX_INVENTORY_SLOT)
+    {
+        sLogger.failure("ItemInterface::SafeRemoveAndRetreiveItemFromSlot containerSlot %u is invalid!", ContainerSlot);
+        return nullptr;
+    }
+
     Item* pItem = nullptr;
 
     if (ContainerSlot == INVENTORY_SLOT_NOT_SET)
@@ -623,8 +653,17 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemByGuid(uint64 guid, bool destroy)
 /// \return true if item removal was succefull
 bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot)
 {
-    ARCEMU_ASSERT(slot < MAX_INVENTORY_SLOT);
-    ARCEMU_ASSERT(ContainerSlot < MAX_INVENTORY_SLOT);
+    if (slot >= MAX_INVENTORY_SLOT)
+    {
+        sLogger.failure("ItemInterface::SafeFullRemoveItemFromSlot slot %u is invalid!", slot);
+        return false;
+    }
+
+    if (ContainerSlot >= MAX_INVENTORY_SLOT)
+    {
+        sLogger.failure("ItemInterface::SafeFullRemoveItemFromSlot containerSlot %u is invalid!", ContainerSlot);
+        return false;
+    }
 
     if (ContainerSlot == INVENTORY_SLOT_NOT_SET)
     {
@@ -1996,6 +2035,7 @@ int8 ItemInterface::CanEquipItemInSlot2(int8 DstInvSlot, int8 slot, Item* item, 
     {
         for (uint32 count = 0; count < item->GetSocketsCount(); count++)
         {
+#if VERSION_STRING > Classic
             EnchantmentInstance* ei = item->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + count);
             if (ei && ei->Enchantment->GemEntry)       //huh ? Gem without entry ?
             {
@@ -2027,6 +2067,7 @@ int8 ItemInterface::CanEquipItemInSlot2(int8 DstInvSlot, int8 slot, Item* item, 
 #endif
                 }
             }
+#endif
         }
     }
 
@@ -2818,8 +2859,8 @@ void ItemInterface::EmptyBuyBack()
 
             if (m_pBuyBack[j]->isContainer())
             {
-                if (static_cast<Container*>(m_pBuyBack[j])->IsInWorld())
-                    static_cast<Container*>(m_pBuyBack[j])->RemoveFromWorld();
+                if (m_pBuyBack[j]->IsInWorld())
+                    m_pBuyBack[j]->RemoveFromWorld();
 
                 delete static_cast<Container*>(m_pBuyBack[j]);
             }
@@ -2853,8 +2894,8 @@ void ItemInterface::AddBuyBackItem(Item* it, uint32 price)
 
             if (m_pBuyBack[0]->isContainer())
             {
-                if (static_cast<Container*>(m_pBuyBack[0])->IsInWorld())
-                    static_cast<Container*>(m_pBuyBack[0])->RemoveFromWorld();
+                if (m_pBuyBack[0]->IsInWorld())
+                    m_pBuyBack[0]->RemoveFromWorld();
 
                 delete static_cast<Container*>(m_pBuyBack[0]);
             }
@@ -3586,6 +3627,7 @@ bool ItemInterface::IsEquipped(uint32 itemid)
                 return true;
 
             // check gems as well
+#if VERSION_STRING > Classic
             for (uint32 count = 0; count < it->GetSocketsCount(); count++)
             {
                 EnchantmentInstance* ei = it->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + count);
@@ -3597,6 +3639,7 @@ bool ItemInterface::IsEquipped(uint32 itemid)
                         return true;
                 }
             }
+#endif
         }
     }
     return false;
@@ -3630,6 +3673,7 @@ void ItemInterface::CheckAreaItems()
 uint32 ItemInterface::GetEquippedCountByItemLimit(uint32 LimitId)
 {
     uint32 count = 0;
+#if VERSION_STRING > Classic
     for (uint32 x = EQUIPMENT_SLOT_START; x < EQUIPMENT_SLOT_END; ++x)
     {
         Item* it = m_pItems[x];
@@ -3648,6 +3692,7 @@ uint32 ItemInterface::GetEquippedCountByItemLimit(uint32 LimitId)
             }
         }
     }
+#endif
     return count;
 }
 
@@ -3881,7 +3926,8 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
 
     Player* chr = GetOwner();
 
-    ARCEMU_ASSERT(chr != nullptr);
+    if (!chr)
+        return false;
 
     ItemProperties const* it = sMySQLStore.getItemProperties(itemid);
     if (it == nullptr)

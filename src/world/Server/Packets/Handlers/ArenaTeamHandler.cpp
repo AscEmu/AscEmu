@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Server/WorldSession.h"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/MsgInspectArenaTeams.h"
@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgArenaTeamQueryResponse.h"
 #include "Server/Packets/SmsgArenaTeamInvite.h"
 #include "Server/Packets/SmsgArenaTeamRooster.h"
+#include "Server/Packets/SmsgMessageChat.h"
 
 using namespace AscEmu::Packets;
 
@@ -112,7 +113,7 @@ void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const auto slot = static_cast<uint8_t>(arenaTeam->m_type);
+    const auto slot = arenaTeam->m_type;
 
     if ((arenaTeam = _player->getArenaTeam(slot)) == nullptr)
     {
@@ -299,7 +300,7 @@ void WorldSession::handleArenaTeamPromoteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const auto slot = static_cast<uint8_t>(arenaTeam->m_type);
+    const auto slot = arenaTeam->m_type;
 
     if (slot >= NUM_ARENA_TEAM_TYPES)
         return;
@@ -352,7 +353,7 @@ void WorldSession::handleInspectArenaStatsOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received MSG_INSPECT_ARENA_STATS: %u (guidLow)", srlPacket.guid.getGuidLow());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_INSPECT_ARENA_STATS: %u (guidLow)", srlPacket.guid.getGuidLow());
 
     const auto player = _player->GetMapMgr()->GetPlayer(srlPacket.guid.getGuidLow());
     if (player == nullptr)

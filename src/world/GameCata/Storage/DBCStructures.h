@@ -148,6 +148,12 @@ enum Targets
     TARGET_127                                  = 127,
 };
 
+enum MountFlags
+{
+    MOUNT_FLAG_CAN_PITCH    = 0x4, // client checks MOVEMENTFLAG2_FULL_SPEED_PITCHING
+    MOUNT_FLAG_CAN_SWIM     = 0x8, // client checks MOVEMENTFLAG_SWIMMING
+};
+
 struct DBCPosition3D
 {
     float X;
@@ -171,7 +177,7 @@ namespace DBC::Structures
         char const achievement_format[] = "niiissiiiiisii";
         char const achievement_criteria_format[] = "niiiiiiiixsiiiiixxxxxxx";
         char const area_group_format[] = "niiiiiii";
-        char const area_table_entry_format[] = "iiinixxxxxisiiiiixxxxxxxxx";
+        char const area_table_entry_format[] = "niiiiiiiiiisiiiiiffiiiiiii";
         char const area_trigger_entry_format[] = "nifffxxxfffff";
         //char const armor_location_format[] = "nfffff"; new
         char const auction_house_format[] = "niiix";
@@ -211,8 +217,8 @@ namespace DBC::Structures
         char const gt_chance_to_spell_crit_format[] = "xf";
         char const gt_chance_to_spell_crit_base_format[] = "xf";
         char const gt_combat_ratings_format[] = "xf";
-        //char const gt_oct_base_hp_by_class_format[] = "df"; new
-        //char const gt_oct_base_mp_by_class_format[] = "df"; new
+        char const gt_oct_base_hp_by_class_format[] = "df";
+        char const gt_oct_base_mp_by_class_format[] = "df";
         char const gt_oct_class_combat_rating_scalar_format[] = "df";
         //char const gt_oct_hp_per_stamina_format[] = "df"; new
         //char const gt_oct_regen_hp_format[] = "xf";
@@ -238,8 +244,8 @@ namespace DBC::Structures
         char const mail_template_format[] = "nss";  //nxs
         char const map_format[] = "nsiiiisissififfiiiii";
         //char const map_difficulty_entry_format[] = "niisiis"; new
-        //char const mount_capability_format[] = "niiiiiii"; new
-        //char const mount_type_format[] = "niiiiiiiiiiiiiiiiiiiiiiii"; new
+        char const mount_capability_format[] = "niiiiiii";
+        char const mount_type_format[] = "niiiiiiiiiiiiiiiiiiiiiiii";
         //char const movie_entry_format[] = "nxxx"; new
         char const name_gen_format[] = "nsii";
         char const num_talents_at_level_format[] = "df";
@@ -749,19 +755,24 @@ namespace DBC::Structures
         uint32_t zone;                                              // 2 if 0 then it's zone, else it's zone id of this area
         uint32_t explore_flag;                                      // 3, main index
         uint32_t flags;                                             // 4, unknown value but 312 for all cities
-                                                                    // 5-9 unused
+        uint32 SoundProviderPref;                                   // 5
+        uint32 SoundProviderPrefUnderwater;                         // 6
+        uint32 AmbienceID;                                          // 7
+        uint32 ZoneMusic;                                           // 8
+        uint32 IntroSound;                                          // 9 // 5-9 unused
         int32_t area_level;                                         // 10
         char* area_name;                                            // 11
         uint32_t team;                                              // 12
         uint32_t liquid_type_override[4];                           // 13-16 liquid override by type
-        //uint32_t unk17;                                           // 17
-        //uint32_t unk18;                                           // 18
-        //uint32_t unk19;                                           // 19
-        //uint32_t unk20;                                           // 20
-        //uint32_t unk21;                                           // 21
-        //uint32_t unk22;                                           // 22
-        //uint32_t unk23;                                           // 23
-        //uint32_t unk24;                                           // 24
+        float MinElevation;                                         // 17
+        float AmbientMultiplier;                                    // 18 client only?
+        uint32 LightID;                                             // 19
+        uint32 MountFlags;                                          // 20
+        uint32 UwIntroSound;                                        // 21 4.0.0
+        uint32 UwZoneMusic;                                         // 22 4.0.0
+        uint32 UwAmbience;                                          // 23 4.0.0
+        uint32 World_pvp_ID;                                        // 24
+        int32 PvpCombatWorldStateID;                                // 25- worldStateId4
     };
 
     struct AreaTriggerEntry
@@ -1120,6 +1131,16 @@ namespace DBC::Structures
     struct GtCombatRatingsEntry
     {
         float val;                                                  // 0
+    };
+
+    struct GtOCTBaseHPByClassEntry
+    {
+        float ratio;
+    };
+
+    struct GtOCTBaseMPByClassEntry
+    {
+        float ratio;
     };
 
     struct GtOCTClassCombatRatingScalarEntry
@@ -2103,6 +2124,26 @@ namespace DBC::Structures
             else
                 return false;
         }
+    };
+
+    struct MountCapabilityEntry
+    {
+        uint32_t  id;                                               // 0 index
+        uint32_t  flag;                                             // 1 some flag
+        uint32_t  reqRidingSkill;                                   // 2 skill level of riding required
+        uint32_t  reqArea;                                          // 3 required Area
+        uint32_t  reqAura;                                          // 4 required Aura
+        uint32_t  reqSpell;                                         // 5 spell that has to be known to you
+        uint32_t  speedModSpell;                                    // 6 spell to cast to apply mount speed effects
+        uint32_t  reqMap;                                           // 7 map where this is applicable
+    };
+
+    #define MAX_MOUNT_CAPABILITIES 24
+    struct MountTypeEntry
+    {
+        uint32_t id;                                                // 0 index
+        uint32_t capabilities[MAX_MOUNT_CAPABILITIES];              // 1-17 capability ids from MountCapability.dbc
+        //uint32_t  empty[7];                                       // 18-24 empty. maybe continues capabilities
     };
 
     struct WMOAreaTableEntry

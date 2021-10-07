@@ -25,7 +25,7 @@
    * get players, etc.
    */
 
-#include "StdAfx.h"
+
 #include "Storage/MySQLDataStore.hpp"
 #include "MapScriptInterface.h"
 
@@ -155,19 +155,23 @@ Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, fl
     spawn->phase = phase;
 
     Creature* creature = this->mapMgr.CreateCreature(Entry);
-    ARCEMU_ASSERT(creature != nullptr);
+    if (creature)
+    {
+        creature->Load(spawn, 0, nullptr);
+        creature->setGender(Gender);
+        creature->spawnid = 0;
+        creature->m_spawn = nullptr;
 
-    creature->Load(spawn, 0, nullptr);
-    creature->setGender(Gender);
-    creature->spawnid = 0;
-    creature->m_spawn = nullptr;
+        delete spawn;
 
-    delete spawn;
+        if (AddToWorld)
+            creature->PushToWorld(&mapMgr);
 
-    if (AddToWorld)
-        creature->PushToWorld(&mapMgr);
+        return creature;
+    }
 
-    return creature;
+    sLogger.failure("MapScriptInterface::SpawnCreature tried to spawn invalid creature %u (nullptr), returning nullptr!", Entry);
+    return nullptr;
 }
 
 Creature* MapScriptInterface::SpawnCreature(MySQLStructure::CreatureSpawn* sp, bool AddToWorld)
@@ -183,14 +187,19 @@ Creature* MapScriptInterface::SpawnCreature(MySQLStructure::CreatureSpawn* sp, b
 
     uint8 Gender = creature_properties->GetGenderAndCreateRandomDisplayID(&sp->displayid);
     Creature* p = this->mapMgr.CreateCreature(sp->entry);
-    ARCEMU_ASSERT(p != NULL);
-    p->Load(sp, 0, nullptr);
-    p->setGender(Gender);
-    p->spawnid = 0;
-    p->m_spawn = nullptr;
-    if (AddToWorld)
-        p->PushToWorld(&mapMgr);
-    return p;
+    if (p)
+    {
+        p->Load(sp, 0, nullptr);
+        p->setGender(Gender);
+        p->spawnid = 0;
+        p->m_spawn = nullptr;
+        if (AddToWorld)
+            p->PushToWorld(&mapMgr);
+        return p;
+    }
+
+    sLogger.failure("MapScriptInterface::SpawnCreature tried to spawn invalid creature %u (nullptr), returning nullptr!", sp->entry);
+    return nullptr;
 }
 
 void MapScriptInterface::DeleteCreature(Creature* ptr)

@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #if VERSION_STRING == Classic
 
-#include "StdAfx.h"
 #include "../world/Storage/DBC/DBCGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
 
@@ -241,7 +240,7 @@ bool LoadDBCs()
         _namegenData[nameGenData.type].push_back(nameGenData);
     }
 
-    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sLFGDungeonStore, dbc_path, "LFGDungeons.dbc");
+    //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sLFGDungeonStore, dbc_path, "LFGDungeons.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sLiquidTypeStore, dbc_path, "LiquidType.dbc");
     //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sVehicleStore, dbc_path, "Vehicle.dbc");
     //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sVehicleSeatStore, dbc_path, "VehicleSeat.dbc");

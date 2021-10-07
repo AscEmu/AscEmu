@@ -90,13 +90,6 @@ class SERVER_DECL OpcodeTables
             }
         }
 
-        void sizeOfHexTables()
-        {
-            for (auto versionId = 0; versionId < MAX_VERSION_INDEX; ++versionId)
-                std::cout << "Size of hex store for version [" << getNameForVersionId(versionId) << "]: "
-                        << _versionHexTable[versionId].size() << std::endl;
-        }
-
         uint32_t getInternalIdForHex(uint16_t hex, int versionId = -1)
         {
             if (versionId == -1 || versionId >= MAX_VERSION_INDEX)

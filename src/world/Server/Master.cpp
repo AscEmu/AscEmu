@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+
 #include "WorldConf.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -32,11 +32,13 @@
 #include "Management/ChannelMgr.h"
 #include "Management/AddonMgr.h"
 #include "Management/AuctionMgr.h"
-#include "Spell/SpellTarget.h"
 #include "Util.hpp"
 #include "Database/DatabaseUpdater.hpp"
 #include "Packets/SmsgServerMessage.h"
 #include "OpcodeTable.hpp"
+#include "Chat/ChatHandler.hpp"
+#include "Script/ScriptMgr.h"
+#include "Spell/SpellMgr.hpp"
 
 std::string LogFileName;
 bool bLogChat;
@@ -56,7 +58,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20201216-00_rename_event_properties";
-static const char* REQUIRED_WORLD_DB_VERSION = "20210525-00_creature_spawns";
+static const char* REQUIRED_WORLD_DB_VERSION = "20210908-00_creature_spawns_waypoint";
 
 void Master::_OnSignal(int s)
 {
@@ -107,7 +109,10 @@ struct Addr
 bool bServerShutdown = false;
 bool StartConsoleListener();
 void CloseConsoleListener();
+
+#ifdef WIN32
 ThreadBase* GetConsoleListener();
+#endif
 
 std::unique_ptr<WorldRunnable> worldRunnable = nullptr;
 
@@ -115,7 +120,6 @@ std::unique_ptr<WorldRunnable> worldRunnable = nullptr;
 // Testscript fo experimental filesystem
 
 #include <fstream>
-#include <iostream>
 #include <string>
 
 void createExtendedLogDir()
@@ -213,7 +217,7 @@ void checkRequiredDirs()
 
 bool Master::Run(int /*argc*/, char** /*argv*/)
 {
-    char* config_file = (char*)CONFDIR "/world.conf";
+    char* config_file = CONFDIR "/world.conf";
 
     UNIXTIME = time(NULL);
     g_localTime = *localtime(&UNIXTIME);
@@ -242,6 +246,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     sWorld.loadWorldConfigValues();
 
     sLogger.setMinimumMessageType(static_cast<AscEmu::Logging::MessageType>(worldConfig.logger.minimumMessageType));
+    sLogger.setDebugFlags(static_cast<AscEmu::Logging::DebugFlags>(worldConfig.logger.debugFlags));
 
     OpenCheatLogFiles();
 
@@ -741,7 +746,7 @@ void Master::WritePidFile()
 #else
         pid = getpid();
 #endif
-        fprintf(fPid, "%u", (unsigned int)pid);
+        fprintf(fPid, "%u", pid);
         fclose(fPid);
     }
 }

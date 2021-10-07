@@ -86,5 +86,20 @@ elseif (NOT WIN32)
     target_link_libraries(${PROJECT_NAME} stdc++fs)
 endif()
 
+if(USE_PCH)
+  target_precompile_headers(${PROJECT_NAME}
+  PRIVATE
+  <iostream>
+  <list>
+  <vector>
+  <map>
+  <sstream>
+  <string>
+  <atomic>
+  Common.hpp
+  Util.hpp
+)
+endif()
+
 unset(sources)
 unset(headers)

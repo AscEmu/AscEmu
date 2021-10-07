@@ -6,8 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/ManagedPacket.h"
 #include "Server/Packets/CmsgSetActiveMover.h"
 #include "Server/Packets/MovementPacket.h"
-#include "Server/Packets/SmsgMoveUnsetCanFly.h"
-#include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Server/WorldSession.h"
 #include "Units/Players/Player.h"
 #include "Units/Creatures/Vehicle.h"
@@ -279,7 +277,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
         Transporter* transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(mover->obj_movement_info.transport_guid));
         if (transporter != NULL)
-            transporter->RemovePassenger(static_cast<Player*>(mover));
+            transporter->RemovePassenger(mover);
 
         mover->obj_movement_info.transport_guid = 0;
         _player->SpeedCheatReset();
@@ -523,7 +521,7 @@ void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
     if (_player->IsInWorld())
         return;
 
-    sLogger.debug("Received MSG_MOVE_WORLDPORT_ACK");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_MOVE_WORLDPORT_ACK");
 
     if (_player->GetTransport() && _player->GetMapId() != _player->GetTransport()->GetMapId())
     {
@@ -556,7 +554,7 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received MSG_MOVE_TELEPORT_ACK.");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_MOVE_TELEPORT_ACK.");
 
     if (srlPacket.guid.getRawGuid() == _player->getGuid())
     {

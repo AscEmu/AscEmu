@@ -3,7 +3,6 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
 #include "Management/WordFilter.h"
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
@@ -13,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatDefines.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Chat/ChatHandler.hpp"
+
 #include "Units/Players/Player.h"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/CmsgMessageChat.h"
@@ -27,7 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgChatIgnored.h"
 #include "Server/Packets/CmsgSetChannelWatch.h"
 #include "Management/Guild/GuildMgr.hpp"
-#include "Server/OpcodeTable.hpp"
+#include "Server/Script/CreatureAIScript.h"
 
 #if VERSION_STRING >= Cata
 #include "Spell/SpellAuras.h"
@@ -425,7 +425,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
     auto emoteTextEntry = sEmotesTextStore.LookupEntry(srlPacket.text_emote);
     if (emoteTextEntry)
     {
-        sHookInterface.OnEmote(_player, static_cast<EmoteType>(emoteTextEntry->textid), unit);
+        sHookInterface.OnEmote(_player, emoteTextEntry->textid, unit);
         if (unit)
             CALL_SCRIPT_EVENT(unit, OnEmote)(_player, static_cast<EmoteType>(emoteTextEntry->textid));
 

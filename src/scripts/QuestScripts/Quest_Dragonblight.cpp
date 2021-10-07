@@ -18,10 +18,12 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class WoodlandWalker : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WoodlandWalker)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WoodlandWalker(c); }
     explicit WoodlandWalker(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         pCreature->SetFaction(35);
@@ -31,7 +33,6 @@ class WoodlandWalker : public CreatureAIScript
 class WoodlandWalkerGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         Creature* pCreature = (pObject->isCreature()) ? (static_cast<Creature*>(pObject)) : nullptr;
@@ -42,12 +43,12 @@ public:
         if (chance == 0)
         {
             pCreature->SetFaction(14);
-            pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "The Woodlands Walker is angered by your request and attacks!");
+            pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "The Woodlands Walker is angered by your request and attacks!");
         }
         else
         {
             plr->getItemInterface()->AddItemById(36786, 1, 0);
-            pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Breaking off a piece of its bark, the Woodlands Walker hands it to you before departing.");
+            pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Breaking off a piece of its bark, the Woodlands Walker hands it to you before departing.");
         }
     }
 };
@@ -55,7 +56,6 @@ public:
 class WrathGateQuestCinema : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
 #if VERSION_STRING > TBC

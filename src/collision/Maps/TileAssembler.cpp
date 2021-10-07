@@ -234,13 +234,13 @@ namespace VMAP
         // add an object models, listed in temp_gameobject_models file
         exportGameobjectModels();
         // export objects
-        std::cout << "\nConverting Model Files" << std::endl;
+        std::cout << "\nConverting Model Files" << "\n";
         for (std::set<std::string>::iterator mfile = spawnedModelFiles.begin(); mfile != spawnedModelFiles.end(); ++mfile)
         {
-            std::cout << "Converting " << *mfile << std::endl;
+            std::cout << "Converting " << *mfile << "\n";
             if (!convertRawFile(*mfile))
             {
-                std::cout << "error converting " << *mfile << std::endl;
+                std::cout << "error converting " << *mfile << "\n";
                 success = false;
                 break;
             }
@@ -308,8 +308,8 @@ namespace VMAP
                 current = (*map_iter).second;
             }
 
-            current->UniqueEntries.insert(pair<uint32, ModelSpawn>(spawn.ID, spawn));
-            current->TileEntries.insert(pair<uint32, uint32>(StaticMapTree::packTileID(tileX, tileY), spawn.ID));
+            current->UniqueEntries.emplace(pair<uint32, ModelSpawn>(spawn.ID, spawn));
+            current->TileEntries.emplace(pair<uint32, uint32>(StaticMapTree::packTileID(tileX, tileY), spawn.ID));
         }
         bool success = (ferror(dirf) == 0);
         fclose(dirf);
@@ -348,7 +348,7 @@ namespace VMAP
 
             if (vertices.empty())
             {
-                std::cout << "error: model '" << spawn.name << "' has no geometry!" << std::endl;
+                std::cout << "error: model '" << spawn.name << "' has no geometry!" << "\n";
                 continue;
             }
 
@@ -409,7 +409,7 @@ namespace VMAP
             for (uint32 g = 0; g < groups; ++g)
             {
                 GroupModel_Raw& raw_group = raw_model.groupsArray[g];
-                groupsArray.push_back(GroupModel(raw_group.mogpflags, raw_group.GroupWMOID, raw_group.bounds ));
+                groupsArray.emplace_back(GroupModel(raw_group.mogpflags, raw_group.GroupWMOID, raw_group.bounds ));
                 groupsArray.back().setMeshData(raw_group.vertexArray, raw_group.triangles);
                 groupsArray.back().setLiquidData(raw_group.liquid);
             }
@@ -418,7 +418,7 @@ namespace VMAP
         }
 
         success = model.writeFile(iDestDir + "/" + pModelFilename + ".vmo");
-        //std::cout << "readRawFile2: '" << pModelFilename << "' tris: " << nElements << " nodes: " << nNodes << std::endl;
+        //std::cout << "readRawFile2: '" << pModelFilename << "' tris: " << nElements << " nodes: " << nNodes << "\n";
         return success;
     }
 
@@ -446,7 +446,7 @@ namespace VMAP
                 || name_length >= sizeof(buff)
                 || fread(&buff, sizeof(char), name_length, model_list) != name_length)
             {
-                std::cout << "\nFile 'temp_gameobject_models' seems to be corrupted" << std::endl;
+                std::cout << "\nFile 'temp_gameobject_models' seems to be corrupted" << "\n";
                 break;
             }
 
@@ -482,13 +482,13 @@ namespace VMAP
 
             if (bounds.isEmpty())
             {
-                std::cout << "\nModel " << std::string(buff, name_length) << " has empty bounding box" << std::endl;
+                std::cout << "\nModel " << std::string(buff, name_length) << " has empty bounding box" << "\n";
                 continue;
             }
 
             if (!bounds.isFinite())
             {
-                std::cout << "\nModel " << std::string(buff, name_length) << " has invalid bounding box" << std::endl;
+                std::cout << "\nModel " << std::string(buff, name_length) << " has invalid bounding box" << "\n";
                 continue;
             }
 

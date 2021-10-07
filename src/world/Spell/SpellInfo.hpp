@@ -7,13 +7,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Definitions/AuraEffects.hpp"
 #include "Definitions/PowerType.hpp"
-#include "SpellDefines.hpp"
 #include "SpellScript.hpp"
 
 #include "CommonTypes.hpp"
 #include "WorldConf.h"
 #include <string>
 #include "Logging/Logger.hpp"
+#include "Storage/DBC/DBCStructures.hpp"
 
 class Item;
 class Player;

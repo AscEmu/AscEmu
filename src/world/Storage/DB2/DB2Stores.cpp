@@ -3,8 +3,6 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
-
 #include "DB2Stores.h"
 #include "Log.hpp"
 
@@ -40,7 +38,7 @@ struct LocalDB2Data
 template<class T>
 inline void LoadDB2(LocalDB2Data& localeData, StoreProblemList1& errors, DB2Storage<T>& storage, std::string const& db2Path, std::string const& filename)
 {
-    ARCEMU_ASSERT(DB2::DB2FileLoader::GetFormatRecordSize(storage.GetFormat()) == sizeof(T) || LoadDB2_assert_print(DB2::DB2FileLoader::GetFormatRecordSize(storage.GetFormat()), sizeof(T), filename));
+    ASSERT(DB2::DB2FileLoader::GetFormatRecordSize(storage.GetFormat()) == sizeof(T) || LoadDB2_assert_print(DB2::DB2FileLoader::GetFormatRecordSize(storage.GetFormat()), sizeof(T), filename));
 
     std::string db2Filename = db2Path + filename;
 

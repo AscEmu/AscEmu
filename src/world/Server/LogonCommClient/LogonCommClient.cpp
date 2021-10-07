@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#include "StdAfx.h"
+
 #include "CommonTypes.hpp"
 #include "LogonCommClient.h"
 #include "LogonCommHandler.h"
@@ -27,6 +27,8 @@
 #include "Server/MainServerDefines.h"
 #include <set>
 #include <map>
+#include <zlib.h>
+
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
 #include "LogonCommDefines.h"
@@ -55,8 +57,8 @@ void LogonCommClientSocket::OnRead()
                 return;     // no header
 
             // read header
-            readBuffer.Read((uint8*)&opcode, 2);
-            readBuffer.Read((uint8*)&remaining, 4);
+            readBuffer.Read(&opcode, 2);
+            readBuffer.Read(&remaining, 4);
 
             // decrypt the first two bytes
             if (use_crypto)
@@ -79,12 +81,12 @@ void LogonCommClientSocket::OnRead()
         {
             buff.resize(remaining);
             //Read(remaining, (uint8*)buff.contents());
-            readBuffer.Read((uint8*)buff.contents(), remaining);
+            readBuffer.Read(buff.contents(), remaining);
         }
 
         // decrypt the rest of the packet
         if (use_crypto && remaining)
-            _recvCrypto.Process((unsigned char*)buff.contents(), (unsigned char*)buff.contents(), remaining);
+            _recvCrypto.Process(buff.contents(), buff.contents(), remaining);
 
         // handle the packet
         HandlePacket(buff);
@@ -230,9 +232,9 @@ void LogonCommClientSocket::SendPacket(WorldPacket* data, bool no_crypto)
     if (data->size() > 0 && rv)
     {
         if (use_crypto && !no_crypto)
-            _sendCrypto.Process((unsigned char*)data->contents(), (unsigned char*)data->contents(), (unsigned int)data->size());
+            _sendCrypto.Process(data->contents(), data->contents(), (unsigned int)data->size());
 
-        rv = BurstSend((const uint8*)data->contents(), (uint32)data->size());
+        rv = BurstSend(data->contents(), (uint32)data->size());
     }
 
     if (rv) BurstPush();
@@ -383,9 +385,9 @@ void LogonCommClientSocket::CompressAndSend(ByteBuffer& uncompressed)
     }
 
     // set up stream pointers
-    stream.next_out = (Bytef*)((uint8*)data.contents()) + 4;
+    stream.next_out = data.contents() + 4;
     stream.avail_out = (uInt)destsize;
-    stream.next_in = (Bytef*)uncompressed.contents();
+    stream.next_in = uncompressed.contents();
     stream.avail_in = (uInt)uncompressed.size();
 
     // call the actual process
@@ -582,7 +584,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
                     session_name->SystemMessage("Account permissions has been updated to '%s' for account '%s' (%u). The change will be effective immediately.", gmlevel.c_str(), account_string, accountId);
 
                 //Update forcedpermission map
-                sLogonCommHandler.setAccountPermission(accountId, gmlevel.c_str());
+                sLogonCommHandler.setAccountPermission(accountId, gmlevel);
 
                 //Write info to gmlog
                 if (request_name.compare("none") != 0)

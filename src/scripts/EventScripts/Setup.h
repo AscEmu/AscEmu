@@ -22,4 +22,3 @@ void SetupDayOfTheDead(ScriptMgr* mgr);
 void SetupL70ETC(ScriptMgr* mgr);
 void SetupWinterVeil(ScriptMgr* mgr);
 void SetupHallowsEnd(ScriptMgr* mgr);
-void SetupVayrieTest(ScriptMgr* mgr);

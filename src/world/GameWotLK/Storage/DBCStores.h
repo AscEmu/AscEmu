@@ -5,11 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "DBCStructures.h"
 #include "WorldConf.h"
 
 #if VERSION_STRING == WotLK
 #include "../world/Storage/DBC/DBCGlobals.hpp"
-#include "Server/Definitions.h"
 
 inline float GetRadius(DBC::Structures::SpellRadiusEntry const* radius)
 {

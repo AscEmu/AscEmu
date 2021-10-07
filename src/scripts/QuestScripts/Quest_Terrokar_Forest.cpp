@@ -20,13 +20,15 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class ThreatFromAboveQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ThreatFromAboveQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ThreatFromAboveQAI(c); }
     explicit ThreatFromAboveQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (mKiller->isPlayer())
         {
@@ -37,7 +39,8 @@ class ThreatFromAboveQAI : public CreatureAIScript
 
 class TheInfestedProtectorsQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TheInfestedProtectorsQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TheInfestedProtectorsQAI(c); }
     explicit TheInfestedProtectorsQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         min = 0;
@@ -45,7 +48,7 @@ class TheInfestedProtectorsQAI : public CreatureAIScript
         finall = 0;
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (mKiller->isPlayer())
         {
@@ -74,7 +77,7 @@ class TheInfestedProtectorsQAI : public CreatureAIScript
                     for (uint8_t i = 0; i < finall; i++)
                     {
                         Creature * NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(22419, SSX + Util::getRandomFloat(3.0f), SSY + Util::getRandomFloat(3.0f), SSZ, SSO + Util::getRandomFloat(1.0f), true, false, 0, 0);
-                        if (NewCreature != NULL)
+                        if (NewCreature != nullptr)
                             NewCreature->Despawn(120000, 0);
                     }
                 }
@@ -83,7 +86,6 @@ class TheInfestedProtectorsQAI : public CreatureAIScript
     }
 
 private:
-
     uint32_t min;
     uint32_t max;
     uint32_t finall;
@@ -91,16 +93,17 @@ private:
 
 class TakenInTheNight : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(TakenInTheNight)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TakenInTheNight(c); }
     explicit TakenInTheNight(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         getCreature()->GetAIInterface()->setCombatDisabled(true);
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (!mKiller->isPlayer())
             return;
@@ -143,7 +146,7 @@ class TakenInTheNight : public CreatureAIScript
             return;
 
         creat->setControlled(true, UNIT_STATE_ROOTED);
-        creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Finally! I'm free!");
+        creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Finally! I'm free!");
 
         plr->AddQuestKill(10873, 0, 0);
     }
@@ -151,10 +154,11 @@ class TakenInTheNight : public CreatureAIScript
 
 class AnImproperBurial : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AnImproperBurial)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AnImproperBurial(c); }
     explicit AnImproperBurial(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->setStandState(STANDSTATE_DEAD);
         getCreature()->setDeathState(CORPSE);
@@ -165,7 +169,6 @@ class AnImproperBurial : public CreatureAIScript
 class TheMomentofTruth : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);

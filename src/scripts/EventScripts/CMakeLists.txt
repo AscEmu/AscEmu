@@ -37,7 +37,6 @@ set(sources
     Event_WinterVeil.cpp
     Event_World_PvP.cpp
     Event_Worlds_End_Tavern.cpp
-    Event_VayrieTest.cpp
     Event_Zalzanes_Fall.cpp
     Setup.cpp
     # Required for linker
@@ -72,9 +71,18 @@ add_library(${PROJECT_NAME} SHARED ${sources} ${headers})
 target_link_libraries(${PROJECT_NAME} world)
 
 if(USE_PCH)
-    gen_cxx_pch(${PROJECT_NAME} Setup.h ${CMAKE_CURRENT_SOURCE_DIR}/Setup.cpp)
+    ##gen_cxx_pch(${PROJECT_NAME} Setup.h ${CMAKE_CURRENT_SOURCE_DIR}/Setup.cpp)
 endif()
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
+
+if(USE_PCH)
+  target_precompile_headers(${PROJECT_NAME}
+  PRIVATE
+  <Server/Script/CreatureAIScript.h>
+  Setup.h
+)
+endif()
+
 unset(sources)
 unset(headers)

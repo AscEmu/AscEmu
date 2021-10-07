@@ -19,11 +19,11 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class ProtectingtheShipment : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
@@ -32,7 +32,7 @@ public:
 
 
         Creature* creat = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 1379);
-        if (creat == NULL)
+        if (creat == nullptr)
             return;
         creat->m_escorter = mTarget;
 
@@ -40,9 +40,8 @@ public:
         creat->getMovementManager()->movePath(*path, false);
         creat->pauseMovement(3000);
         creat->GetAIInterface()->setAllowedToEnterCombat(false);
-        creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do!");
+        creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do!");
         creat->setNpcFlags(UNIT_NPC_FLAG_NONE);
-
     }
 };
 
@@ -60,7 +59,8 @@ static LocationVector WaypointsMiran[] =
 
 class Miran : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Miran)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Miran(c); }
     explicit Miran(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         WPCount = 7;
@@ -76,15 +76,15 @@ class Miran : public CreatureAIScript
 
         if (iWaypointId == 7)
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I'm outta here!");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I'm outta here!");
             getCreature()->Despawn(5000, 1000);
             //getCreature()->StopMoving();
 
-            if (getCreature()->m_escorter == NULL)
+            if (getCreature()->m_escorter == nullptr)
                 return;
 
             auto* player = getCreature()->m_escorter;
-            getCreature()->m_escorter = NULL;
+            getCreature()->m_escorter = nullptr;
 
             if (auto* questLog = player->getQuestLogByQuestId(309))
                 questLog->sendQuestComplete();

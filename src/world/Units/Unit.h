@@ -25,7 +25,6 @@
 
 #include "UnitDefines.hpp"
 #include "Management/LootMgr.h"
-#include "Objects/Object.h"
 #include "Macros/UnitMacros.hpp"
 #include "Units/Summons/SummonHandler.h"
 #include "Spell/Definitions/AuraEffects.hpp"
@@ -39,18 +38,10 @@
 #include "Storage/MySQLStructures.h"
 #include "ThreatHandler.h"
 #include "Movement/AbstractFollower.h"
-
-#if COMPILER == 0 || 1 || 2
 #include <optional>
 
 template <class T>
 using Optional = std::optional<T>;
-#else
-#include <experimental/optional>
-
-template <class T>
-using Optional = std::experimental::optional<T>;
-#endif
 
 class AIInterface;
 class Aura;
@@ -72,7 +63,7 @@ namespace MovementNew {
 class MoveSpline;
 }
 
-enum MovementGeneratorType : uint8;
+enum MovementGeneratorType : uint8_t;
 
 enum UnitSpeedType : uint8_t
 {
@@ -269,6 +260,7 @@ protected:
 
 // MIT Start
 struct WoWUnit;
+
 class SERVER_DECL Unit : public Object
 {
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -890,6 +882,16 @@ protected:
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Chat
+    std::unique_ptr<WorldPacket> createChatPacket(uint8_t type, uint32_t language, std::string msg, Unit* receiver = nullptr, uint32_t sessionLanguage = 0);
+    void sendChatMessage(uint8_t type, uint32_t language, std::string msg, Unit* receiver = nullptr, uint32_t sessionLanguage = 0);
+    void sendChatMessage(uint8_t type, uint32_t language, std::string msg, uint32_t delay);
+    void sendChatMessage(MySQLStructure::NpcScriptText const* text, uint32_t delay, Unit* target = nullptr);
+
+    void sendChatMessageToPlayer(uint8_t type, uint32_t language, std::string msg, Player* plr);
+
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     void setAttackTimer(WeaponDamageType type, int32_t time);
     uint32_t getAttackTimer(WeaponDamageType type) const;
@@ -1030,7 +1032,7 @@ public:
     ThreatManager const& getThreatManager() const { return m_threatManager; }
 
     // Do not alter anything below this line
-    // -------------------------------------
+    //////////////////////////////////////////////////////////////////////////////////////////
 
     // MIT End
     // AGPL Start
@@ -1158,7 +1160,9 @@ public:
     // Spell Effect Variables
     int32 m_silenced;
     bool m_damgeShieldsInUse;
-
+#if VERSION_STRING == Cata
+    DBC::Structures::MountCapabilityEntry const* getMountCapability(uint32_t mountType);
+#endif
     std::list<struct DamageProc> m_damageShields;
     std::list<struct ReflectSpellSchool*> m_reflectSpellSchool;
 
@@ -1284,8 +1288,6 @@ public:
         setServersideFaction();
     }
 
-    virtual void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0) = 0;
-    virtual void SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr) = 0;
     void SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, const char* msg);
     void RegisterPeriodicChatMessage(uint32 delay, uint32 msgid, std::string message, bool sendnotify);
 

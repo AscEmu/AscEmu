@@ -25,7 +25,6 @@
 class DearestNatalia1 : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* Plr) override
     {
         if (auto* questLog = Plr->getQuestLogByQuestId(8304))
@@ -96,7 +95,6 @@ public:
 class DearestNatalia2 : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* Plr) override
     {
         if (auto* questLog = Plr->getQuestLogByQuestId(8304))
@@ -168,7 +166,6 @@ public:
 class highlord_demitrianGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* pPlayer) override
     {
         //Send quests and gossip menu.
@@ -236,7 +233,6 @@ public:
 class Thunderan : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         mTarget->GetMapMgr()->CreateAndSpawnCreature(14435, -6241.0f, 1715.0f, 4.8f, 0.605017f);

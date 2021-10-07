@@ -10,11 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 class TrialOfTheChampionInstanceScript : public InstanceScript
 {
 public:
-
-    explicit TrialOfTheChampionInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
-    {
-    }
-
+    explicit TrialOfTheChampionInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new TrialOfTheChampionInstanceScript(pMapMgr); }
 };
 

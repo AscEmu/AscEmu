@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Management/QuestLogEntry.hpp"
 #include "MMapFactory.h"
 #include "Units/Creatures/Creature.h"
@@ -43,7 +43,6 @@
 #include "SpellAuras.h"
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellDamageType.hpp"
-#include "Definitions/ProcFlags.hpp"
 #include "Definitions/CastInterruptFlags.hpp"
 #include "Definitions/AuraInterruptFlags.hpp"
 #include "Definitions/ChannelInterruptFlags.hpp"
@@ -60,6 +59,7 @@
 #include "Definitions/PowerType.hpp"
 #include "Definitions/Spec.hpp"
 #include "Spell.h"
+#include "Definitions/SpellEffects.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgTaxinodeStatus.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
@@ -70,6 +70,8 @@
 #include "Server/Packets/SmsgNewTaxiPath.h"
 #include "Server/Packets/SmsgPlayerBound.h"
 #include "Server/Packets/MsgCorpseQuery.h"
+#include "Server/Packets/SmsgMessageChat.h"
+#include "Server/Script/CreatureAIScript.h"
 
 using namespace AscEmu::Packets;
 
@@ -452,7 +454,7 @@ const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =
 
 void Spell::spellEffectNotImplemented(uint8_t effIndex)
 {
-    sLogger.debug("Spells: Unhandled spell effect %u in spell %u.", getSpellInfo()->getEffect(effIndex), getSpellInfo()->getId());
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Spells: Unhandled spell effect %u in spell %u.", getSpellInfo()->getEffect(effIndex), getSpellInfo()->getId());
 }
 
 void Spell::spellEffectNotUsed(uint8_t /*effIndex*/)
@@ -937,9 +939,9 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                     if (!unitTarget->IsStunned())
                         dmg = dmg >> 1;
                     if (p_caster->HasAura(34258))
-                        p_caster->castSpell(static_cast<Unit*>(p_caster), 34260, true);
+                        p_caster->castSpell(p_caster, 34260, true);
                     if ((p_caster->HasAura(53696) || p_caster->HasAura(53695)))
-                        p_caster->castSpell(static_cast<Unit*>(p_caster), 68055, true);
+                        p_caster->castSpell(p_caster, 68055, true);
                     if (p_caster->HasAura(37186))
                         dmg = 33;
                 }
@@ -1025,7 +1027,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 if (p_caster != nullptr)
                 {
 #if VERSION_STRING != Classic
-                    Item* it = static_cast<Item*>(p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND));
+                    Item* it = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                     if (it && it->getItemProperties() && it->getItemProperties()->InventoryType == INVTYPE_SHIELD)
                         dmg = float2int32(1.3f * p_caster->getShieldBlock());
 #else
@@ -1360,9 +1362,9 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 if (p_caster != nullptr)
                 {
                     if (p_caster->HasAura(34258))
-                        p_caster->castSpell(static_cast<Unit*>(p_caster), 34260, true);
+                        p_caster->castSpell(p_caster, 34260, true);
                     if ((p_caster->HasAura(53696) || p_caster->HasAura(53695)))
-                        p_caster->castSpell(static_cast<Unit*>(p_caster), 68055, true);
+                        p_caster->castSpell(p_caster, 68055, true);
                     if (p_caster->HasAura(37186))
                         dmg = 33;
                 }
@@ -1519,7 +1521,7 @@ void Spell::SpellEffectDummy(uint8_t effectIndex) // Dummy(Scripted events)
     if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), effectIndex, this))
         return;
 
-    sLogger.debug("Spell ID: %u (%s) has a dummy effect index (%hhu) but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), effectIndex);
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Spell ID: %u (%s) has a dummy effect index (%hhu) but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), effectIndex);
 }
 
 void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
@@ -1854,11 +1856,11 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
         {
             if (unitTarget->getEntry() == 15941)
             {
-                unitTarget->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "What? Oh, not this again!");
+                unitTarget->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "What? Oh, not this again!");
             }
             else if (unitTarget->getEntry() == 15945)
             {
-                unitTarget->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You can't do this to me! We had a deal!");
+                unitTarget->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You can't do this to me! We had a deal!");
             }
             else
             {
@@ -1878,7 +1880,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
                 static const char* testo[12] = { "None", "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "Death Knight", "Shaman", "Mage", "Warlock", "None", "Druid" };
                 char msg[150];
                 snprintf(msg, 150, "Many thanks to you %s. I'd best get to the crash site and see how I can help out. Until we meet again...", testo[p_caster->getClass()]);
-                unitTarget->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);
+                unitTarget->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);
                 ((Creature*)unitTarget)->Despawn(900000, 300000);
             }
         }break;
@@ -2414,10 +2416,10 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
                     //\note remove all dynmic flags
                     unitTarget->setDynamicFlags(0);
                     unitTarget->setDeathState(ALIVE);
-                    static_cast< Creature* >(unitTarget)->UnTag();
-                    static_cast< Creature* >(unitTarget)->loot.gold = 0;
-                    static_cast< Creature* >(unitTarget)->loot.looters.clear();
-                    static_cast< Creature* >(unitTarget)->loot.items.clear();
+                    unitTarget->UnTag();
+                    unitTarget->loot.gold = 0;
+                    unitTarget->loot.looters.clear();
+                    unitTarget->loot.items.clear();
                     static_cast< Creature* >(unitTarget)->SetLimboState(false); // we can regenerate health now
                 }
             }
@@ -3084,33 +3086,37 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
         float m_fallowAngle = -((float(M_PI) / 2) * j);
         float tempx = x + (GetRadius(effectIndex) * (cosf(m_fallowAngle + m_caster->GetOrientation())));
         float tempy = y + (GetRadius(effectIndex) * (sinf(m_fallowAngle + m_caster->GetOrientation())));
-        Creature* p = m_caster->GetMapMgr()->CreateCreature(cr_entry);
 
-        ASSERT(p != NULL);
-
-        p->Load(properties, tempx, tempy, z);
-        p->SetZoneId(m_caster->GetZoneId());
-
-        if (p->GetCreatureProperties()->Faction == 35)
+        if (Creature* p = m_caster->GetMapMgr()->CreateCreature(cr_entry))
         {
-            p->setSummonedByGuid(m_caster->getGuid());
-            p->setCreatedByGuid(m_caster->getGuid());
+            p->Load(properties, tempx, tempy, z);
+            p->SetZoneId(m_caster->GetZoneId());
 
-            if (m_caster->isGameObject())
-                p->SetFaction(static_cast<GameObject*>(m_caster)->getFactionTemplate());
+            if (p->GetCreatureProperties()->Faction == 35)
+            {
+                p->setSummonedByGuid(m_caster->getGuid());
+                p->setCreatedByGuid(m_caster->getGuid());
+
+                if (m_caster->isGameObject())
+                    p->SetFaction(static_cast<GameObject*>(m_caster)->getFactionTemplate());
+                else
+                    p->SetFaction(static_cast<Unit*>(m_caster)->getFactionTemplate());
+            }
             else
-                p->SetFaction(static_cast<Unit*>(m_caster)->getFactionTemplate());
+            {
+                p->SetFaction(properties->Faction);
+            }
+            p->PushToWorld(m_caster->GetMapMgr());
+
+            if (p->GetScript() != nullptr)
+                p->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
+            //make sure they will be desummoned (roxor)
+            sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
         else
         {
-            p->SetFaction(properties->Faction);
+            sLogger.failure("Spell::SpellEffectSummonWild tried to summon invalid creature %u", cr_entry);
         }
-        p->PushToWorld(m_caster->GetMapMgr());
-
-        if (p->GetScript() != nullptr)
-            p->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
-        //make sure they will be desummoned (roxor)
-        sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
 
@@ -4566,7 +4572,7 @@ void Spell::SpellEffectSendEvent(uint8_t effectIndex) //Send Event
     if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->getId(), effectIndex, this))
         return;
 
-    sLogger.debug("Spell ID: %u (%s) has a scripted effect index (%u) but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), effectIndex);
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Spell ID: %u (%s) has a scripted effect index (%u) but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), effectIndex);
 
 }
 
@@ -4593,7 +4599,7 @@ void Spell::SpellEffectPowerBurn(uint8_t effectIndex) // power burn
             damage = caster->getMaxPower(POWER_TYPE_MANA) * (mult * 2) / 100;
     }
 
-    int32 mana = (int32)std::min((int32)unitTarget->getPower(POWER_TYPE_MANA), damage);
+    int32 mana = std::min((int32)unitTarget->getPower(POWER_TYPE_MANA), damage);
 
     unitTarget->modPower(POWER_TYPE_MANA, -mana);
 
@@ -4745,7 +4751,7 @@ void Spell::SpellEffectInterruptCast(uint8_t /*effectIndex*/) // Interrupt Cast
                 if (unitTarget->isPlayer())
                 {
                     // Check for interruption reducing talents
-                    int32 DurationModifier = static_cast< Player* >(unitTarget)->MechanicDurationPctMod[MECHANIC_INTERRUPTED];
+                    int32 DurationModifier = unitTarget->MechanicDurationPctMod[MECHANIC_INTERRUPTED];
                     if (DurationModifier >= -100)
                         duration = (duration * (100 + DurationModifier)) / 100;
 
@@ -4801,7 +4807,7 @@ void Spell::SpellEffectPickpocket(uint8_t /*effectIndex*/) // pickpocket
         return;
     }
 
-    sLootMgr.FillPickpocketingLoot(&static_cast< Creature* >(unitTarget)->loot, unitTarget->getEntry());
+    sLootMgr.FillPickpocketingLoot(&unitTarget->loot, unitTarget->getEntry());
 
     uint32 _rank = static_cast< Creature* >(unitTarget)->GetCreatureProperties()->Rank;
     unitTarget->loot.gold = float2int32((_rank + 1) * unitTarget->getLevel() * (Util::getRandomUInt(5) + 1) * worldConfig.getFloatRate(RATE_MONEY));
@@ -5322,7 +5328,7 @@ void Spell::SpellEffectDisenchant(uint8_t /*effectIndex*/)
         sLootMgr.FillItemLoot(it->loot, it->getEntry());
     }
 
-    sLogger.debug("Successfully disenchanted item %d", uint32(it->getEntry()));
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Successfully disenchanted item %d", uint32(it->getEntry()));
     p_caster->SendLoot(it->getGuid(), LOOT_DISENCHANTING, p_caster->GetMapId());
 
     //We can increase Enchanting skill up to 60
@@ -5492,7 +5498,7 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
     {
         //\note remove all dynamic flags
         pPet->setDynamicFlags(0);
-        pPet->setHealth((uint32)((pPet->getMaxHealth() * damage) / 100));
+        pPet->setHealth(pPet->getMaxHealth() * damage / 100);
         pPet->setDeathState(ALIVE);
         pPet->GetAIInterface()->handleEvent(EVENT_FOLLOWOWNER, pPet, 0);
         sEventMgr.RemoveEvents(pPet, EVENT_PET_DELAYED_REMOVE);
@@ -5506,7 +5512,7 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
         if (pPet == nullptr)//no pets to Revive
             return;
 
-        pPet->setHealth((uint32)((pPet->getMaxHealth() * damage) / 100));
+        pPet->setHealth(pPet->getMaxHealth() * damage / 100);
     }
 }
 
@@ -5581,10 +5587,10 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
                     //\note remove all dynamic flags
                     unitTarget->setDynamicFlags(0);
                     unitTarget->setDeathState(ALIVE);
-                    static_cast< Creature* >(unitTarget)->UnTag();
-                    static_cast< Creature* >(unitTarget)->loot.gold = 0;
-                    static_cast< Creature* >(unitTarget)->loot.looters.clear();
-                    static_cast< Creature* >(unitTarget)->loot.items.clear();
+                    unitTarget->UnTag();
+                    unitTarget->loot.gold = 0;
+                    unitTarget->loot.looters.clear();
+                    unitTarget->loot.items.clear();
                 }
             }
 
@@ -6172,12 +6178,12 @@ void Spell::SpellEffectProspecting(uint8_t /*effectIndex*/)
 
     if (itemTarget->loot->items.size() > 0)
     {
-        sLogger.debug("Successfully prospected item %d", uint32(itemTarget->getEntry()));
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Successfully prospected item %d", uint32(itemTarget->getEntry()));
         p_caster->SendLoot(itemTarget->getGuid(), LOOT_PROSPECTING, p_caster->GetMapId());
     }
     else // this should never happen either
     {
-        sLogger.debug("Prospecting failed, item %d has no loot", uint32(itemTarget->getEntry()));
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Prospecting failed, item %d has no loot", uint32(itemTarget->getEntry()));
         sendCastResult(SPELL_FAILED_CANT_BE_PROSPECTED);
     }
 }
@@ -6227,7 +6233,7 @@ void Spell::SpellEffectForgetSpecialization(uint8_t effectIndex)
     uint32 spellid = getSpellInfo()->getEffectTriggerSpell(effectIndex);
     playerTarget->removeSpell(spellid, false, false, 0);
 
-    sLogger.debug("Player %u have forgot spell %u from spell %u (caster: %u)", playerTarget->getGuidLow(), spellid, getSpellInfo()->getId(), m_caster->getGuidLow());
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Player %u have forgot spell %u from spell %u (caster: %u)", playerTarget->getGuidLow(), spellid, getSpellInfo()->getId(), m_caster->getGuidLow());
 }
 
 void Spell::SpellEffectKillCredit(uint8_t effectIndex)
@@ -6396,12 +6402,12 @@ void Spell::SpellEffectMilling(uint8_t /*effectIndex*/)
 
     if (itemTarget->loot->items.size() > 0)
     {
-        sLogger.debug("Successfully milled item %d", uint32(itemTarget->getEntry()));
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Successfully milled item %d", uint32(itemTarget->getEntry()));
         p_caster->SendLoot(itemTarget->getGuid(), LOOT_MILLING, p_caster->GetMapId());
     }
     else // this should never happen either
     {
-        sLogger.debug("Milling failed, item %d has no loot", uint32(itemTarget->getEntry()));
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Milling failed, item %d has no loot", uint32(itemTarget->getEntry()));
         sendCastResult(SPELL_FAILED_CANT_BE_PROSPECTED);
     }
 }

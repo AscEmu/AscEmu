@@ -21,10 +21,11 @@
 #include "Setup.h"
 #include <Units/Creatures/Pet.h>
 
+#include "Server/Script/CreatureAIScript.h"
+
 class TheKesselRun : public QuestScript
 {
 public:
-
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         if (!mTarget)
@@ -37,7 +38,6 @@ public:
 class TheKesselRun1 : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1);
@@ -56,7 +56,6 @@ public:
 class TheKesselRun2 : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1);
@@ -75,7 +74,6 @@ public:
 class TheKesselRun3 : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 1);
@@ -94,7 +92,6 @@ public:
 class SavingPrincessStillpine : public GameObjectAIScript
 {
 public:
-
     explicit SavingPrincessStillpine(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new SavingPrincessStillpine(GO); }
 
@@ -110,7 +107,8 @@ public:
 
 class HighChiefBristlelimb : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HighChiefBristlelimb)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HighChiefBristlelimb(c); }
     explicit HighChiefBristlelimb(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         fulborgskilled = 0;
@@ -127,21 +125,20 @@ class HighChiefBristlelimb : public CreatureAIScript
             {
                 getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(17702, -2419, -12166, 33, 3.45f, true, false, 0, 0)->Despawn(18000000, 0);
                 fulborgskilled = 0;
-                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Chief, we need your help!");
+                getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Chief, we need your help!");
             }
         }
     }
 
 private:
-
     int fulborgskilled;
 };
 
 class WebbedCreature : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(WebbedCreature)
-    explicit WebbedCreature(Creature* pCreature) : CreatureAIScript(pCreature)
-    {}
+public:
+    static CreatureAIScript* Create(Creature* c) { return new WebbedCreature(c); }
+    explicit WebbedCreature(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {

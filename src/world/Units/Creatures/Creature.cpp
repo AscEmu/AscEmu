@@ -19,28 +19,25 @@
  *
  */
 
-#include "StdAfx.h"
 #include "Objects/DynamicObject.h"
 #include "Management/AuctionMgr.h"
 #include "Management/QuestMgr.h"
 #include "Management/Quest.h"
 #include "Management/GameEvent.h"
-#include "Management/Skill.h"
+#include "Management/Skill.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Map/MapCell.h"
 #include "Map/MapMgr.h"
-#include "Map/WorldCreatorDefines.hpp"
 #include "Map/WorldCreator.h"
-#include "Spell/Definitions/ProcFlags.hpp"
-#include <Spell/Definitions/AuraInterruptFlags.hpp>
 #include "Spell/Definitions/PowerType.hpp"
 #include "Pet.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Objects/ObjectMgr.h"
+#include "Server/Script/CreatureAIScript.h"
 #include "Units/Creatures/CreatureGroups.h"
 
 using namespace AscEmu::Packets;
@@ -309,7 +306,6 @@ void Creature::OnRemoveCorpse()
     // time to respawn!
     if (IsInWorld() && (int32)m_mapMgr->GetInstanceID() == m_instanceId)
     {
-
         sLogger.info("Removing corpse of " I64FMT "...", getGuid());
 
         setDeathState(DEAD);
@@ -337,8 +333,7 @@ void Creature::OnRemoveCorpse()
     }
     else
     {
-        // if we got here it's pretty bad
-        ARCEMU_ASSERT(false);
+        sLogger.failure("Creature::OnRemoveCorpse but Creature is not in World or in instance");
     }
 }
 
@@ -491,7 +486,7 @@ void Creature::generateLoot()
                 const char* itemColours[8] = { "9d9d9d", "ffffff", "1eff00", "0070dd", "a335ee", "ff8000", "e6cc80", "e6cc80" };
                 char buffer[256];
                 sprintf(buffer, "\174cff%s\174Hitem:%u:0:0:0:0:0:0:0\174h[%s]\174h\174r", itemColours[itr->item.itemproto->Quality], itr->item.itemproto->ItemId, itr->item.itemproto->Name.c_str());
-                this->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, buffer);
+                this->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, buffer);
             }
         }
     }
@@ -942,7 +937,7 @@ void Creature::EnslaveExpire()
             break;
     };
 
-    GetAIInterface()->Init(((Unit*)this), AI_SCRIPT_AGRO);
+    GetAIInterface()->Init(this, AI_SCRIPT_AGRO);
 
     updateInRangeOppositeFactionSet();
     updateInRangeSameFactionSet();
@@ -1180,11 +1175,13 @@ void Creature::RegenerateHealth()
 
 void Creature::CallScriptUpdate()
 {
-    ARCEMU_ASSERT(_myScriptClass != NULL);
     if (!IsInWorld())
         return;
 
-    _myScriptClass->_internalAIUpdate();
+    if (_myScriptClass)
+        _myScriptClass->_internalAIUpdate();
+    else
+        sLogger.failure("Creature::CallScriptUpdate tried to update script but Creature %u has no script!", this->getEntry());
 }
 
 CreatureProperties const* Creature::GetCreatureProperties()
@@ -1528,20 +1525,8 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     setBytes2(spawn->bytes2);
 
     ////////////AI
-
-    // kek
-    for (std::list<AI_Spell*>::const_iterator itr = creature_properties->spells.begin(); itr != creature_properties->spells.end(); ++itr)
-    {
-        // Load all spells that are not bound to a specific difficulty, OR mathces this maps' difficulty
-        if ((*itr)->instance_mode == mode || (*itr)->instance_mode == AISPELL_ANY_DIFFICULTY)
-            m_aiInterface->addSpellToList(*itr);
-    }
-
-    GetAIInterface()->m_canCallForHelp = creature_properties->m_canCallForHelp;
-    GetAIInterface()->m_CallForHelpHealth = creature_properties->m_callForHelpHealth;
-    GetAIInterface()->m_canFlee = creature_properties->m_canFlee;
-    GetAIInterface()->m_FleeHealth = creature_properties->m_fleeHealth;
-    GetAIInterface()->m_FleeDuration = creature_properties->m_fleeDuration;
+    GetAIInterface()->initialiseScripts(getEntry());
+    GetAIInterface()->eventOnLoad();
 
     if (!creature_properties->isTrainingDummy && !isVehicle())
     {
@@ -1751,20 +1736,8 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setModCastSpeed(1.0f);   // better set this one
 
     ////////////AI
-
-    // kek
-    for (std::list<AI_Spell*>::const_iterator itr = creature_properties->spells.begin(); itr != creature_properties->spells.end(); ++itr)
-    {
-        // Load all spell that are not set for a specific difficulty
-        if ((*itr)->instance_mode == AISPELL_ANY_DIFFICULTY)
-            m_aiInterface->addSpellToList(*itr);
-    }
-
-    GetAIInterface()->m_canCallForHelp = creature_properties->m_canCallForHelp;
-    GetAIInterface()->m_CallForHelpHealth = creature_properties->m_callForHelpHealth;
-    GetAIInterface()->m_canFlee = creature_properties->m_canFlee;
-    GetAIInterface()->m_FleeHealth = creature_properties->m_fleeHealth;
-    GetAIInterface()->m_FleeDuration = creature_properties->m_fleeDuration;
+    GetAIInterface()->initialiseScripts(getEntry());
+    GetAIInterface()->eventOnLoad();
 
     //////////////AI
 
@@ -1899,19 +1872,25 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
         {
             // get the cell with our SPAWN location. if we've moved cell this might break :P
             MapCell* pCell = m_mapMgr->GetCellByCoords(m_spawnLocation.x, m_spawnLocation.y);
-            if (pCell == NULL)
+            if (pCell == nullptr)
                 pCell = GetMapCell();
 
-            ARCEMU_ASSERT(pCell != NULL);
-            pCell->_respawnObjects.insert(this);
+            if (pCell != nullptr)
+            {
+                pCell->_respawnObjects.insert(this);
 
-            sEventMgr.RemoveEvents(this);
-            sEventMgr.AddEvent(m_mapMgr, &MapMgr::EventRespawnCreature, this, pCell->GetPositionX(), pCell->GetPositionY(), EVENT_CREATURE_RESPAWN, respawntime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.RemoveEvents(this);
+                sEventMgr.AddEvent(m_mapMgr, &MapMgr::EventRespawnCreature, this, pCell->GetPositionX(), pCell->GetPositionY(), EVENT_CREATURE_RESPAWN, respawntime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-            Unit::RemoveFromWorld(false);
+                Unit::RemoveFromWorld(false);
 
-            m_position = m_spawnLocation;
-            m_respawnCell = pCell;
+                m_position = m_spawnLocation;
+                m_respawnCell = pCell;
+            }
+            else
+            {
+                sLogger.failure("Creature::Despawn not able to get a valid MapCell (nullptr)");
+            }
         }
         else
         {
@@ -2258,7 +2237,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     RemoveAllNonPersistentAuras();
 
-    CALL_SCRIPT_EVENT(pAttacker, _internalOnTargetDied)();
+    CALL_SCRIPT_EVENT(pAttacker, _internalOnTargetDied)(this);
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
 
     pAttacker->smsg_AttackStop(this);
@@ -2318,80 +2297,25 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         m_mapMgr->m_battleground->HookOnUnitDied(this);
 }
 
-void Creature::SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay)
-{
-    if (delay)
-    {
-        sEventMgr.AddEvent(this, &Creature::SendChatMessage, type, lang, msg, uint32(0), EVENT_UNIT_CHAT_MSG, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        return;
-    }
-
-    const char* name = GetCreatureProperties()->Name.c_str();
-
-    const auto data = SmsgMessageChat(type, lang, 0, msg, getGuid(), name).serialise();
-
-    SendMessageToSet(data.get(), true);
-}
-
 /// \todo implement localization support
 // 1. Chat Areas (Area, Map, World)
 // 2. WorldPacket... support for MONSTER_SAY
 // 3. data resize, map with players (PlayerSession)
 // 4. Sending localizations if available... puh
-void Creature::SendScriptTextChatMessage(uint32 textid)
+void Creature::SendScriptTextChatMessage(uint32 textid, Unit* target/* = target*/)
 {
-    SendCreatureChatMessageInRange(this, textid);
+    SendCreatureChatMessageInRange(this, textid, target);
 }
 
-void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
+void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay, Unit* target/* = nullptr*/)
 {
-    MySQLStructure::NpcScriptText const* ct = sMySQLStore.getNpcScriptText(textid);
-    const char* msg = ct->text.c_str();
-    if (delay)
+    if (delay > 0)
     {
-        sEventMgr.AddEvent(this, &Creature::SendChatMessage, uint8(ct->type), uint32(ct->language), msg, uint32(0), EVENT_UNIT_CHAT_MSG, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        if (ct->sound != 0)
-            sEventMgr.AddEvent(static_cast<Object*>(this), &Object::PlaySoundToSet, ct->sound, EVENT_UNK, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(this, &Creature::SendTimedScriptTextChatMessage, textid, uint32_t(0), target, EVENT_UNIT_CHAT_MSG, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         return;
     }
 
-    if (ct->emote != 0)
-        this->eventAddEmote((EmoteType)ct->emote, ct->duration);
-
-    auto name = GetCreatureProperties()->Name;
-
-    const auto data = AscEmu::Packets::SmsgMessageChat(ct->type, ct->language, 0, ct->text, getGuid(), name).serialise();
-
-    SendMessageToSet(data.get(), true);      // sending this
-}
-
-void Creature::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr)
-{
-    if (plr == NULL)
-        return;
-
-    const auto data = AscEmu::Packets::SmsgMessageChat(type, lang, 0, msg, getGuid(), GetCreatureProperties()->Name).serialise();
-
-    plr->GetSession()->SendPacket(data.get());
-}
-
-void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)
-{
-    MySQLStructure::NpcMonsterSay* npcMonsterSay = sMySQLStore.getMonstersayEventForCreature(getEntry(), Event);
-    if (npcMonsterSay == nullptr)
-    {
-        return;
-    }
-    else
-    {
-        int choice = 0;
-        if (Util::checkChance(npcMonsterSay->chance))
-        {
-            choice = (npcMonsterSay->textCount == 1) ? 0 : Util::getRandomUInt(npcMonsterSay->textCount - 1);
-        }
-
-        SendMonsterSayMessageInRange(this, npcMonsterSay, choice, Event);
-    }
+    SendCreatureChatMessageInRange(this, textid, target);
 }
 
 uint32 Creature::GetType()

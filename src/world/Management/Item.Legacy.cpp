@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Management/Item.h"
@@ -33,6 +33,7 @@
 #include "Server/Packets/SmsgEnchantmentLog.h"
 #include "Server/Packets/SmsgItemEnchantmentTimeUpdate.h"
 #include "Server/Packets/SmsgItemTimeUpdate.h"
+#include "Util/Strings.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -117,8 +118,11 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     uint32 itemid = fields[2].GetUInt32();
 
     m_itemProperties = sMySQLStore.getItemProperties(itemid);
-
-    ARCEMU_ASSERT(m_itemProperties != nullptr);
+    if (!m_itemProperties)
+    {
+        sLogger.failure("Item::LoadFromDB: Can't load item %u missing properties!", itemid);
+        return;
+    }
 
     if (m_itemProperties->LockId > 1)
         locked = true;
@@ -173,7 +177,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
 
         for (auto& enchant : enchants)
         {
-            if (sscanf(enchant.c_str(), "%u,%u,%u", (unsigned int*)&enchant_id, (unsigned int*)&time_left, (unsigned int*)&enchslot) == 3)
+            if (sscanf(enchant.c_str(), "%u,%u,%u", &enchant_id, &time_left, &enchslot) == 3)
             {
                 auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
                 if (spell_item_enchant == nullptr)
@@ -643,14 +647,11 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
     uint32 ItemSlot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid());
     if (ItemSlot < EQUIPMENT_SLOT_END)
     {
-#if VERSION_STRING > TBC
         //On 3.1 we can't add a Slot to the base now, as we no longer have multiple fields for storing them. 
         //This in some cases will try to write for example 3 visuals into one place, but now every item has only one 
         //field for this, and as we can't choose which visual to have, we'll accept the last one.
-        m_owner->setVisibleItemEnchantment(ItemSlot, Apply ? Entry->Id : 0);
-#else
+
         m_owner->setVisibleItemEnchantment(ItemSlot, Slot, Apply ? Entry->Id : 0);
-#endif
     }
     else
     {
@@ -860,19 +861,19 @@ int32 Item::FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const
     {
         for (uint8_t Slot = PROP_ENCHANTMENT_SLOT_2; Slot < MAX_ENCHANTMENT_SLOT; ++Slot)
             if (getEnchantmentId(Slot) == 0)
-                return static_cast<int32>(Slot);
+                return Slot;
     }
     else if (random_type == RANDOMSUFFIX)    // random suffix
     {
         for (uint8_t Slot = PROP_ENCHANTMENT_SLOT_0; Slot < MAX_ENCHANTMENT_SLOT; ++Slot)
             if (getEnchantmentId(Slot) == 0)
-                return static_cast<int32>(Slot);
+                return Slot;
     }
 
     for (uint8_t Slot = static_cast<uint8_t>(GemSlotsReserve + 2); Slot < 11; Slot++)
     {
         if (getEnchantmentId(Slot) == 0)
-            return static_cast<int32>(Slot);
+            return Slot;
     }
 
     return -1;
@@ -883,7 +884,7 @@ int32 Item::HasEnchantment(uint32 Id)
     for (uint8_t Slot = 0; Slot < MAX_ENCHANTMENT_SLOT; Slot++)
     {
         if (getEnchantmentId(Slot) == Id)
-            return static_cast<int32>(Slot);
+            return Slot;
     }
 
     return -1;
@@ -977,10 +978,14 @@ EnchantmentInstance* Item::GetEnchantment(uint32 slot)
 
 bool Item::IsGemRelated(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment)
 {
+#if VERSION_STRING > Classic
     if (getItemProperties()->SocketBonus == Enchantment->Id)
         return true;
 
     return Enchantment->GemEntry != 0;
+#else
+    return 0;
+#endif
 }
 
 uint32 Item::GetSocketsCount()
@@ -1062,7 +1067,7 @@ std::string GetItemLinkByProto(ItemProperties const* iProto, uint32 language = 0
     else
         snprintf(buffer, 256, "|%s|Hitem:%u:0:0:0:0:0:0:0|h[%s]|h|r", colour.c_str(), iProto->ItemId, iProto->Name.c_str());
 
-    const char* ItemLink = static_cast<const char*>(buffer);
+    const char* ItemLink = buffer;
 
     return ItemLink;
 }
@@ -1132,6 +1137,7 @@ int32 GetStatScalingStatValueColumn(ItemProperties const* proto, uint32 type)
 
 uint32 Item::CountGemsWithLimitId(uint32 LimitId)
 {
+#if VERSION_STRING > Classic
     uint32 result = 0;
     for (uint32 count = 0; count < GetSocketsCount(); count++)
     {
@@ -1145,13 +1151,15 @@ uint32 Item::CountGemsWithLimitId(uint32 LimitId)
         }
     }
     return result;
+#else
+    return 0;
+#endif
 }
 
 void Item::EventRemoveItem()
 {
-    ARCEMU_ASSERT(this->getOwner() != nullptr);
-
-    m_owner->getItemInterface()->SafeFullRemoveItemByGuid(this->getGuid());
+    if (this->getOwner())
+        m_owner->getItemInterface()->SafeFullRemoveItemByGuid(this->getGuid());
 }
 
 void Item::SendDurationUpdate()

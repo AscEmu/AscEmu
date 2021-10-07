@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "Server/Packets/MsgQuestPushResult.h"
 #include "Server/Packets/CmsgQuestgiverAcceptQuest.h"
 #include "Server/Packets/CmsgQuestQuery.h"
@@ -21,7 +21,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include "Management/ItemInterface.h"
+#include "Management/QuestLogEntry.hpp"
 #include "Server/Packets/SmsgGossipComplete.h"
+#include "Server/Script/ScriptMgr.h"
 
 using namespace AscEmu::Packets;
 
@@ -327,7 +329,7 @@ void WorldSession::handleQuestPushResultOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received MSG_QUEST_PUSH_RESULT");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_QUEST_PUSH_RESULT");
 
     if (_player->GetQuestSharer())
     {
@@ -379,7 +381,7 @@ void WorldSession::handleQuestPOIQueryOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Received CMSG_QUEST_POI_QUERY");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_QUEST_POI_QUERY");
 
     if (srlPacket.questCount > MAX_QUEST_LOG_SIZE)
     {
@@ -482,7 +484,11 @@ void WorldSession::handleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const uint32_t questStatus = sQuestMgr.CalcStatus(qst_giver, _player);
+#if VERSION_STRING < Cata
+    const auto questStatus = static_cast<uint8_t>(sQuestMgr.CalcStatus(qst_giver, _player));
+#else
+    const auto questStatus = sQuestMgr.CalcStatus(qst_giver, _player);
+#endif
     SendPacket(SmsgQuestgiverStatus(srlPacket.questGiverGuid.getRawGuid(), questStatus).serialise().get());
 }
 

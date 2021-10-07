@@ -115,7 +115,6 @@ void AreatriggerHook(PlayerPointer pPlayer, uint32_t triggerID)
 class SilithystPickup : public GameObjectAIScript
 {
 public:
-
     SilithystPickup(GameObjectPointer goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObjectPointer  GO) { return new SilithystPickup(GO); }
 

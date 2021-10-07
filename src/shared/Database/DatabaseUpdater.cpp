@@ -162,7 +162,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(std::string database, Database& db
         dbUpdateFile.minorVersion = minorVersion;
 
         //\todo Remove me
-        sLogger.info("Available file in updates dir: %s", filePathName.c_str());
+        //sLogger.info("Available file in updates dir: %s", filePathName.c_str());
 
         updateSqlStore.emplace(std::pair<uint32_t, DatabaseUpdateFile>(count, dbUpdateFile));
         ++count;
@@ -176,7 +176,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(std::string database, Database& db
 
     if (!updateSqlStore.empty())
     {
-        sLogger.debug("=========== New %s update files in %s ===========", database.c_str(), sqlUpdateDir.c_str());
+        //sLogger.debug("=========== New %s update files in %s ===========", database.c_str(), sqlUpdateDir.c_str());
         //compare it with latest update in mysql
         for (const auto update : updateSqlStore)
         {

@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_TheVioletHold.h"
+#include "Server/Script/CreatureAIScript.h"
 
 enum DataIndex
 {
@@ -23,9 +24,7 @@ enum DataIndex
 // TheVioletHold Instance
 class TheVioletHoldScript : public InstanceScript
 {
-    friend class SinclariGossip; // Friendship forever ;-)
-
-
+friend class SinclariGossip; // Friendship forever ;-)
     uint32_t m_phaseData[TVH_END];
     uint32_t m_lastState = InvalidState;
 
@@ -36,7 +35,6 @@ class TheVioletHoldScript : public InstanceScript
     int32_t S1_GuardFleeTimer = -1;       // Delay guards fleeing room for 2.5s (arbitrary)
 
 public:
-
     explicit TheVioletHoldScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         for (uint8_t i = 0; i < TVH_END; ++i)
@@ -225,13 +223,127 @@ public:
     }
 };
 
-//#define SINCLARI_SAY_1 "Prison guards, we are leaving! These adventurers are taking over! Go go go!"
-//#define SINCLARY_SAY_2 "I'm locking the door. Good luck, and thank you for doing this."
+#define SINCLARI_SAY_1 "Prison guards, we are leaving! These adventurers are taking over! Go go go!"
+#define SINCLARY_SAY_2 "I'm locking the door. Good luck, and thank you for doing this."
+
+class SinclariAI : public CreatureAIScript
+{
+public:
+    explicit SinclariAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    static CreatureAIScript* Create(Creature* creature) { return new SinclariAI(creature); }
+
+    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
+    {
+        if (type != WAYPOINT_MOTION_TYPE)
+            return;
+
+        switch (iWaypointId)
+        {
+        case 2:
+        {
+            OnRescuePrisonGuards();
+        } break;
+        case 4:
+        {
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARY_SAY_2);
+            getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
+        } break;
+        case 5:
+        {
+            TheVioletHoldScript* pInstance = (TheVioletHoldScript*)getCreature()->GetMapMgr()->GetScript();
+            pInstance->setData(608, InProgress);
+            GameObject* pVioletHoldDoor = pInstance->getClosestGameObjectForPosition(191723, 1822.59f, 803.93f, 44.36f);
+            if (pVioletHoldDoor != nullptr)
+                pVioletHoldDoor->setState(GO_STATE_CLOSED);
+        } break;
+        }
+    }
+
+    void OnRescuePrisonGuards()
+    {
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
+
+        TheVioletHoldScript* pInstance = (TheVioletHoldScript*)getCreature()->GetMapMgr()->GetScript();
+        if (!pInstance)
+            return;
+
+        auto guardSet = pInstance->getCreatureSetForEntry(30659);
+        for (auto guard : guardSet)
+        {
+
+        }
+    }
+};
+
+class SinclariGossip : public GossipScript
+{
+public:
+    void onHello(Object* pObject, Player* pPlayer) override
+    {
+        TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
+        if (!pInstance)
+            return;
+
+        //Page 1: Textid and first menu item
+        if (pInstance->getData(608) == PreProgress)
+        {
+            GossipMenu menu(pObject->getGuid(), 13853, 0);
+            menu.addItem(GOSSIP_ICON_CHAT, (600), 1);
+            menu.sendGossipPacket(pPlayer);
+        }
+
+        //If VioletHold is started, Sinclari has this item for people who aould join.
+        if (pInstance->getData(608) == InProgress)
+        {
+            GossipMenu menu(pObject->getGuid(), 13853, 0);
+            menu.addItem(GOSSIP_ICON_CHAT, (602), 3);
+            menu.sendGossipPacket(pPlayer);
+        }
+    }
+
+    void onSelectOption(Object* pObject, Player* pPlayer, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
+    {
+        TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
+        if (!pInstance)
+            return;
+
+        if (!pObject->isCreature())
+            return;
+
+        Creature* sinclari = static_cast<Creature*>(pObject);
+        switch (Id)
+        {
+            case 1:
+            {
+                GossipMenu menu(pObject->getGuid(), 13854, 0);
+                menu.addItem(GOSSIP_ICON_CHAT, (601), 2);
+                menu.sendGossipPacket(pPlayer);
+            } break;
+            case 2:
+            {
+                static_cast<Creature*>(pObject)->setNpcFlags(UNIT_NPC_FLAG_NONE);
+            } break;
+            case 3:
+            {
+                GossipMenu::senGossipComplete(pPlayer);
+                pPlayer->SafeTeleport(pPlayer->GetInstanceID(), 608, 1830.531006f, 803.939758f, 44.340508f, 6.281611f);
+            } break;
+        }
+    }
+};
+
+class VHGuardsAI : public CreatureAIScript
+{
+public:
+    explicit VHGuardsAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    static CreatureAIScript* Create(Creature* creature) { return new VHGuardsAI(creature); }
+};
 
 //\TODO: Replace spell casting logic for all instances, this is temp
 class VHCreatureAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VHCreatureAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VHCreatureAI(c); }
     explicit VHCreatureAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //this->createWaypoint(1, 0, 0, VH_DOOR_ATTACK_POSITION);
@@ -242,7 +354,7 @@ class VHCreatureAI : public CreatureAIScript
         {
             addWaypoint(1, createWaypoint(i, 0, WAYPOINT_MOVE_TYPE_RUN, AttackerWP[i]));
         }
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I am alive!");
+        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I am alive!");
     }
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override
@@ -253,14 +365,14 @@ class VHCreatureAI : public CreatureAIScript
         switch (iWaypointId)
         {
             case 1:
-                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Reached wp 1!");
+                getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Reached wp 1!");
                 setWaypointToMove(1, 2);
                 break;
             case 2:
             {
                 if (m_isIntroMob)
                 {
-                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Reached wp 2!");
+                    getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Reached wp 2!");
                     getCreature()->Despawn(500, 0);
                 }
                 else
@@ -270,7 +382,6 @@ class VHCreatureAI : public CreatureAIScript
             }break;
         }
     }
-
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
@@ -335,7 +446,7 @@ class VHCreatureAI : public CreatureAIScript
 
                         if (m_spells[i].speech != "")
                         {
-                            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, m_spells[i].speech.c_str());
+                            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, m_spells[i].speech.c_str());
                             getCreature()->PlaySoundToSet(m_spells[i].soundid);
                         }
 
@@ -353,7 +464,6 @@ class VHCreatureAI : public CreatureAIScript
             }
         }*/
 protected:
-
     bool m_isIntroMob = false;
     int m_spellCount = 0;
 
@@ -365,21 +475,20 @@ protected:
      * TODO: Write a proper spell manager to handle this stuff */
     std::vector<bool> m_spellsEnabled;
     //std::vector<SP_AI_Spell> m_spells;
-
 };
 
 class VHIntroAzureBinder : VHCreatureAI
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureBinder)
-
-    const int SPELL_ARCANE_BARRAGE = 58456;
-    const int SPELL_ARCANE_EXPLOSION = 58455;
-
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VHIntroAzureBinder(c); }
     explicit VHIntroAzureBinder(Creature* pCreature) : VHCreatureAI(pCreature)
     {
+        /*const int SPELL_ARCANE_BARRAGE = 58456;
+        const int SPELL_ARCANE_EXPLOSION = 58455;
+
         m_isIntroMob = true;
         //m_spellCount = 2;
-        /*for (int i = 0; i < m_spellCount; i++)
+        for (int i = 0; i < m_spellCount; i++)
         {
             m_spellsEnabled.push_back(false);
         }*/
@@ -408,16 +517,15 @@ class VHIntroAzureBinder : VHCreatureAI
 
 class VHIntroAzureInvader : VHCreatureAI
 {
-
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureInvader)
-
-    const int SPELL_CLEAVE = 15496;
-    const int SPELL_IMPALE = 58459;
-
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VHIntroAzureInvader(c); }
     explicit VHIntroAzureInvader(Creature* pCreature) : VHCreatureAI(pCreature)
-    {
+    { 
+        /* const int SPELL_CLEAVE = 15496;
+        const int SPELL_IMPALE = 58459;
+
         m_isIntroMob = true;
-       /* m_spellCount = 2;
+        m_spellCount = 2;
         for (int i = 0; i < m_spellCount; i++)
         {
             m_spellsEnabled.push_back(false);
@@ -447,12 +555,12 @@ class VHIntroAzureInvader : VHCreatureAI
 
 class VHIntroAzureMageSlayer : VHCreatureAI
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureMageSlayer)
-
-    const int SPELL_ARCANE_EMPOWERMENT = 58469;
-
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VHIntroAzureMageSlayer(c); }
     explicit VHIntroAzureMageSlayer(Creature* pCreature) : VHCreatureAI(pCreature)
     {
+        /*const int SPELL_ARCANE_EMPOWERMENT = 58469;
+
         m_isIntroMob = true;
         /*m_spellCount = 1;
         for (int i = 0; i < m_spellCount; i++)
@@ -474,15 +582,15 @@ class VHIntroAzureMageSlayer : VHCreatureAI
 
 class VHIntroAzureSpellBreaker : VHCreatureAI
 {
-    ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureSpellBreaker)
-
-    const int SPELL_ARCANE_BLAST = 58462;
-    const int SPELL_SLOW = 25603;
-
+public:
+    static CreatureAIScript* Create(Creature* c) { return new VHIntroAzureSpellBreaker(c); }
     explicit VHIntroAzureSpellBreaker(Creature* pCreature) : VHCreatureAI(pCreature)
     {
+        /*const int SPELL_ARCANE_BLAST = 58462;
+        const int SPELL_SLOW = 25603;
+
         m_isIntroMob = true;
-        /*m_spellCount = 2;
+        m_spellCount = 2;
         for (int i = 0; i < m_spellCount; i++)
         {
             m_spellsEnabled.push_back(false);
@@ -507,7 +615,7 @@ class VHIntroAzureSpellBreaker : VHCreatureAI
         spellSlow.perctrigger = 40.0f;
         spellSlow.attackstoptimer = 1000;
         m_spells.push_back(spellSlow);
-        m_spellsEnabled[0] = true;        */
+        m_spellsEnabled[0] = true; */
     }
 };
 
@@ -521,7 +629,8 @@ class VHIntroAzureSpellBreaker : VHCreatureAI
 
 class MoraggAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(MoraggAI);
+public:
+    static CreatureAIScript* Create(Creature* c) { return new MoraggAI(c); }
     explicit MoraggAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //// Spells
@@ -568,8 +677,8 @@ void SetupTheVioletHold(ScriptMgr* mgr)
     mgr->register_instance_script(MAP_VIOLET_HOLD, &TheVioletHoldScript::Create);
 //
 //    //Sinclari and Guards
-//    mgr->register_creature_script(CN_LIEUTNANT_SINCLARI, &SinclariAI::Create);
-//    mgr->register_creature_script(CN_VIOLET_HOLD_GUARD, &VHGuardsAI::Create);
+    mgr->register_creature_script(CN_LIEUTNANT_SINCLARI, &SinclariAI::Create);
+    mgr->register_creature_script(CN_VIOLET_HOLD_GUARD, &VHGuardsAI::Create);
 //
 //    // Intro trash
 //    mgr->register_creature_script(CN_INTRO_AZURE_BINDER_ARCANE, &VHIntroAzureBinder::Create);

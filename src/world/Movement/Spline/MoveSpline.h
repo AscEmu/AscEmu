@@ -9,6 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MoveSplineInitArgs.h"
 #include <G3D/Vector3.h>
 
+#include "LocationVector.h"
+
 namespace MovementNew {
 
 struct Location : public Vector3

@@ -20,15 +20,17 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Fel Orc Scavengers
 class FelOrcScavengersQAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FelOrcScavengersQAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new FelOrcScavengersQAI(c); }
     explicit FelOrcScavengersQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (mKiller->isPlayer())
         {
@@ -39,9 +41,10 @@ class FelOrcScavengersQAI : public CreatureAIScript
 
 class Dreadtusk : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Dreadtusk)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Dreadtusk(c); }
     explicit Dreadtusk(Creature* pCreature) : CreatureAIScript(pCreature) { }
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (!mKiller->isPlayer())
             return;
@@ -55,11 +58,10 @@ class Dreadtusk : public CreatureAIScript
 class ZethGorMustBurnAlliance : public GameObjectAIScript
 {
 public:
-
     explicit ZethGorMustBurnAlliance(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new ZethGorMustBurnAlliance(GO); }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (auto* questLog = pPlayer->getQuestLogByQuestId(10895))
         {
@@ -91,7 +93,7 @@ public:
             if (questLog->getMobCountByIndex(1) < questLog->getQuestProperties()->required_mob_or_go_count[1])
             {
                 GameObject* pSouthern = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-1150.0f, 2110.0f, 84.0f, 300150);
-                if (pSouthern != NULL && pPlayer->CalcDistance(pPlayer, pSouthern) < 40)
+                if (pSouthern != nullptr && pPlayer->CalcDistance(pPlayer, pSouthern) < 40)
                 {
                     pPlayer->AddQuestKill(10895, 1, 0);
 
@@ -107,7 +109,7 @@ public:
             if (questLog->getMobCountByIndex(2) < questLog->getQuestProperties()->required_mob_or_go_count[2])
             {
                 GameObject* pForge = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-893.0f, 1919.0f, 82.0f, 300150);
-                if (pForge != NULL && pPlayer->CalcDistance(pPlayer, pForge) < 40)
+                if (pForge != nullptr && pPlayer->CalcDistance(pPlayer, pForge) < 40)
                 {
                     pPlayer->AddQuestKill(10895, 2, 0);
 
@@ -123,7 +125,7 @@ public:
             if (questLog->getMobCountByIndex(3) < questLog->getQuestProperties()->required_mob_or_go_count[3])
             {
                 GameObject* pFoothill = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-978.0f, 1879.0f, 111.0f, 300150);
-                if (pFoothill != NULL && pPlayer->CalcDistance(pPlayer, pFoothill) < 40)
+                if (pFoothill != nullptr && pPlayer->CalcDistance(pPlayer, pFoothill) < 40)
                 {
                     pPlayer->AddQuestKill(10895, 3, 0);
 
@@ -151,7 +153,6 @@ public:
 class PrisonerGossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* pPlayer) override
     {
         int32_t i = -1;
@@ -188,7 +189,6 @@ public:
 
     void onSelectOption(Object* pObject, Player* pPlayer, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
-
         uint8_t i = 66;
         Creature* pPrisoner = static_cast<Creature*>(pObject);
         switch (pPrisoner->getEntry())
@@ -209,16 +209,16 @@ public:
 
         pPlayer->AddQuestKill(10368, i, 0);
 
-        pPrisoner->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You've freed me! The winds speak to my people one again and grant us their strength. I thank you, stranger.");
+        pPrisoner->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You've freed me! The winds speak to my people one again and grant us their strength. I thank you, stranger.");
         pPrisoner->Despawn(5000, 6 * 60 * 1000);
         pPrisoner->setStandState(STANDSTATE_STAND);
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////
 class PrisonersDreghoodElders : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(PrisonersDreghoodElders)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new PrisonersDreghoodElders(c); }
     explicit PrisonersDreghoodElders(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -229,10 +229,10 @@ class PrisonersDreghoodElders : public CreatureAIScript
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////
 class AncestralSpiritWolf : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AncestralSpiritWolf)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AncestralSpiritWolf(c); }
     explicit AncestralSpiritWolf(Creature* pCreature) : CreatureAIScript(pCreature) {}
     void OnLoad() override
     {
@@ -242,7 +242,8 @@ class AncestralSpiritWolf : public CreatureAIScript
 
 class HellfireDeadNPC : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(HellfireDeadNPC)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HellfireDeadNPC(c); }
     explicit HellfireDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnLoad() override
@@ -256,7 +257,6 @@ class HellfireDeadNPC : public CreatureAIScript
 class DarkTidingsAlliance : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17479);
@@ -265,14 +265,13 @@ public:
 
         char msg[100];
         sprintf(msg, "Psst, %s, get over here.", pPlayer->getName().c_str());
-        pCreature->SendChatMessage(CHAT_MSG_MONSTER_WHISPER, LANG_UNIVERSAL, msg);    // Changed Player to Creature. I wonder if it was blizzlike
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_WHISPER, LANG_UNIVERSAL, msg);    // Changed Player to Creature. I wonder if it was blizzlike
     }
 };
 
 class DarkTidingsHorde : public QuestScript
 {
 public:
-
     void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17558);
@@ -281,7 +280,7 @@ public:
 
         char msg[100];
         sprintf(msg, "Psst, %s, get over here.", pPlayer->getName().c_str());
-        pCreature->SendChatMessage(CHAT_MSG_MONSTER_WHISPER, LANG_UNIVERSAL, msg);
+        pCreature->sendChatMessage(CHAT_MSG_MONSTER_WHISPER, LANG_UNIVERSAL, msg);
     }
 };
 
@@ -314,7 +313,6 @@ void SetupHellfirePeninsula(ScriptMgr* mgr)
     mgr->register_quest_script(9588, new DarkTidingsHorde());
 
     mgr->register_creature_script(17077, &AncestralSpiritWolf::Create);
-
 
     //\todo mgr->register_dummy_spell(35460, &FuryOfTheDreghoodElders);
 }

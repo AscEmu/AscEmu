@@ -4,12 +4,14 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 // Alliance guard
 // Cast spell 54028 on horde player if he is in the alliance area
 class SilverCovenantMageGuard : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SilverCovenantMageGuard)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SilverCovenantMageGuard(c); }
     explicit SilverCovenantMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
@@ -43,7 +45,7 @@ class SilverCovenantMageGuard : public CreatureAIScript
         }
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (getCreature()->getInRangePlayersCount() > 0)
             StartDefense();
@@ -54,7 +56,8 @@ class SilverCovenantMageGuard : public CreatureAIScript
 // Cast spell 54029 on alliance player if he is in the horde area
 class SunreaversMageGuard : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SunreaversMageGuard)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SunreaversMageGuard(c); }
     explicit SunreaversMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
@@ -88,7 +91,7 @@ class SunreaversMageGuard : public CreatureAIScript
         }
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (getCreature()->getInRangePlayersCount() > 0)
             StartDefense();
@@ -97,7 +100,8 @@ class SunreaversMageGuard : public CreatureAIScript
 
 class FactionInvisible : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(FactionInvisible)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new FactionInvisible(c); }
     explicit FactionInvisible(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // 0 = all (default), 1 = horde, 2 = alliance

@@ -6,24 +6,23 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Event_Darkmoon_Faire.h"
 
- //////////////////////////////////////////////////////////////////////////////////////////
+#include "Server/Script/CreatureAIScript.h"
+
+//////////////////////////////////////////////////////////////////////////////////////////
  //\details <b>Darkmoon Faire (Elwynn Forest)</b>\n
  // event_properties entry: 4 \n
  // event_properties holiday: 374 \n
  //\todo Check all Darkmoon Faire events
-
 
  //////////////////////////////////////////////////////////////////////////////////////////
  //\details <b>Darkmoon Faire (Mulgore)</b>\n
  // event_properties entry: 5 \n
  // event_properties holiday: 375 \n
 
-
  //////////////////////////////////////////////////////////////////////////////////////////
  //\details <b>Darkmoon Faire (Terokkar Forest)</b>\n
  // event_properties entry: 3 \n
  // event_properties holiday: 376 \n
-
 
  //////////////////////////////////////////////////////////////////////////////////////////
  //\details <b>Darkmoon Faire Gameobjects</b>\n
@@ -64,28 +63,27 @@ public:
             return;
         }
 
-        if (CurrentPlayer->GetMapId() == 530)           /// Shattrath
+        if (CurrentPlayer->GetMapId() == 530) // Shattrath
         {
             CurrentPlayer->SafeTeleport(530, 0, -1742.640869f, 5454.712402f, -7.928009f, 4.606363f);
         }
-        else if (CurrentPlayer->GetMapId() == 0)        /// Elwynn Forest
+        else if (CurrentPlayer->GetMapId() == 0) // Elwynn Forest
         {
             CurrentPlayer->SafeTeleport(0, 0, -9569.150391f, -14.753426f, 68.051422f, 4.874008f);
         }
-        else if (CurrentPlayer->GetMapId() == 1)        /// Mulgore
+        else if (CurrentPlayer->GetMapId() == 1) // Mulgore
         {
             CurrentPlayer->SafeTeleport(1, 0, -1326.711914f, 86.301125f, 133.093918f, 3.510725f);
         }
 
         CurrentPlayer->setMoveRoot(false);
-        CurrentPlayer->castSpell(CurrentPlayer, 42867, true);   // 24742
+        CurrentPlayer->castSpell(CurrentPlayer, 42867, true); // 24742
         _gameobject->setFlags(GO_FLAG_NONE);
         mPlayerGuid = 0;
         RemoveAIUpdateEvent();
     }
 
 protected:
-
     uint32_t mPlayerGuid;
 };
 
@@ -97,74 +95,73 @@ Mortor - 25003
 Drop Mine - 39685, 25024
 Nitrous Boost - 27746
 
-
-const uint32_t CANNON = 24933            //39692, 34154
-const uint32_t MORTAR = 25003            //33861 -- Triggers Explosion, 39695 --- Summons Mortar
-const uint32_t NITROUS = 27746           //Needs Scripting
-const uint32_t FLAMETHROWER = 39693      //25027
+//const uint32_t CANNON = 24933         // 39692, 34154
+//const uint32_t MORTAR = 25003         // 33861 -- Triggers Explosion, 39695 --- Summons Mortar
+//const uint32_t NITROUS = 27746        // Needs Scripting
+const uint32_t FLAMETHROWER = 39693     // 25027
 const uint32_t MACHINEGUN = 25026
 const uint32_t DROPMINE = 25024
 const uint32_t SHIELD = 27759
 
 static uint32_t TonkSpecials[4] = { FLAMETHROWER, MACHINEGUN, DROPMINE, SHIELD };
 
-/// Tonk Control Consoles
+// Tonk Control Consoles
 class TonkControlConsole : public GameObjectAIScript
 {
 public:
-explicit TonkControlConsole(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
-static GameObjectAIScript *Create(GameObject* GO) { return new TonkControlConsole(GO); }
+    explicit TonkControlConsole(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    static GameObjectAIScript *Create(GameObject* GO) { return new TonkControlConsole(GO); }
 
 // Click the Console
 void OnActivate(Player* pPlayer)
 {
-// Pre-flight checks
-GameObject* tonkConsole = NULL;
-tonkConsole = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 180524);
+    // Pre-flight checks
+    GameObject* tonkConsole = NULL;
+    tonkConsole = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 180524);
 
-// Open and disable the Tonk Console
-tonkConsole->SetFlags(GO_FLAG_NONSELECTABLE);
-tonkConsole->setState(GO_STATE_OPEN);
+    // Open and disable the Tonk Console
+    tonkConsole->SetFlags(GO_FLAG_NONSELECTABLE);
+    tonkConsole->setState(GO_STATE_OPEN);
 
-// Spawn Steam Tonk
-pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(19405, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), true, false, 0, 0)->Despawn(310000, 0);;
+    // Spawn Steam Tonk
+    pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(19405, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), true, false, 0, 0)->Despawn(310000, 0);;
 
-// Store the tonk just spawned
-Creature* pTonk = NULL;
-pTonk = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 19405);
+    // Store the tonk just spawned
+    Creature* pTonk = NULL;
+    pTonk = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 19405);
 
-// Cast the tonk control spell on the tonk
-pPlayer->castSpell(pTonk, 33849, false);
+    // Cast the tonk control spell on the tonk
+    pPlayer->castSpell(pTonk, 33849, false);
 
-// Start checks to see if player still has aura
-RegisterAIUpdateEvent(1000);
+    // Start checks to see if player still has aura
+    RegisterAIUpdateEvent(1000);
 
-Plr = pPlayer;
-Tonk = pTonk;
-Console = tonkConsole;
+    Plr = pPlayer;
+    Tonk = pTonk;
+    Console = tonkConsole;
 }
 
 void AIUpdate()
 {
-if (!Plr->HasAura(33849) || Tonk->isDead())
-{
-// Kill then Despawn Tonk after 10 seconds
-Plr->castSpell(Tonk, 5, false); // Kill spell
-Plr->castSpell(Plr, 2880, false); // Stun Player
-Plr->RemoveAura(33849);
-Tonk->Despawn(10000,0);
+    if (!Plr->HasAura(33849) || Tonk->isDead())
+    {
+        // Kill then Despawn Tonk after 10 seconds
+        Plr->castSpell(Tonk, 5, false); // Kill spell
+        Plr->castSpell(Plr, 2880, false); // Stun Player
+        Plr->RemoveAura(33849);
+        Tonk->Despawn(10000,0);
 
-// Close the console so others can access it
-Console->SetFlags(0);
-Console->setState(GO_STATE_CLOSED);
-RemoveAIUpdateEvent();
-}
+        // Close the console so others can access it
+        Console->SetFlags(0);
+        Console->setState(GO_STATE_CLOSED);
+        RemoveAIUpdateEvent();
+    }
 }
 
 protected:
-Player* Plr;
-Creature* Tonk;
-GameObject* Console;
+    Player* Plr;
+    Creature* Tonk;
+    GameObject* Console;
 };
 */
 
@@ -200,10 +197,10 @@ public:
     }
 };
 
-
 class Flik_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Flik_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Flik_Bark(c); }
     explicit Flik_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -222,7 +219,6 @@ class Flik_Bark : public CreatureAIScript
 class FliksFrog_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         uint32_t textId = 0;
@@ -245,7 +241,8 @@ public:
 
 class GelvasGrimegate_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(GelvasGrimegate_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new GelvasGrimegate_Bark(c); }
     explicit GelvasGrimegate_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -262,7 +259,8 @@ class GelvasGrimegate_Bark : public CreatureAIScript
 
 class Lhara_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Lhara_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Lhara_Bark(c); }
     explicit Lhara_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -280,7 +278,6 @@ class Lhara_Bark : public CreatureAIScript
 class MaximaBlastenheimer_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), BARK_MAXIMA_1, plr->GetSession()->language);
@@ -297,7 +294,8 @@ public:
 
 class Morja_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Morja_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Morja_Bark(c); }
     explicit Morja_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -312,7 +310,6 @@ class Morja_Bark : public CreatureAIScript
 class ProfessorThaddeusPaleo_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 60016, plr->GetSession()->language);
@@ -378,7 +375,8 @@ public:
 
 class ProfessorThaddeusPaleo_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ProfessorThaddeusPaleo_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ProfessorThaddeusPaleo_Bark(c); }
     explicit ProfessorThaddeusPaleo_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -398,7 +396,6 @@ class ProfessorThaddeusPaleo_Bark : public CreatureAIScript
 class Sayge_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         // Check to see if the player already has a buff from Sayge.
@@ -591,7 +588,8 @@ public:
 
 class Sayge_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Sayge_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Sayge_Bark(c); }
     explicit Sayge_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -611,7 +609,6 @@ class Sayge_Bark : public CreatureAIScript
 class SelinaDourman_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 60035, plr->GetSession()->language);
@@ -629,32 +626,32 @@ public:
         switch (IntId)
         {
             case 1:
-                GossipMenu::sendSimpleMenu(pObject->getGuid(), 60036, plr);           // What can I purchase?
+                GossipMenu::sendSimpleMenu(pObject->getGuid(), 60036, plr);                 // What can I purchase?
                 break;
             case 2:
-                GossipMenu::sendSimpleMenu(pObject->getGuid(), 60037, plr);           // What are Darkmoon Faire Prize Tickets and how do I get them?
+                GossipMenu::sendSimpleMenu(pObject->getGuid(), 60037, plr);                 // What are Darkmoon Faire Prize Tickets and how do I get them?
                 break;
             case 3:
             {
-                GossipMenu menu(pObject->getGuid(), 60038, plr->GetSession()->language);          // What are Darkmoon Cards?
+                GossipMenu menu(pObject->getGuid(), 60038, plr->GetSession()->language);    // What are Darkmoon Cards?
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_MORE, 10);
                 menu.sendGossipPacket(plr);
             }break;
             case 4:
             {
-                GossipMenu menu(pObject->getGuid(), 60040, plr->GetSession()->language);          // What other things can I do at the faire?
+                GossipMenu menu(pObject->getGuid(), 60040, plr->GetSession()->language);    // What other things can I do at the faire?
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_TONK_CONTROLS, 20);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ABOUT_CANON, 21);
                 menu.sendGossipPacket(plr);
             }break;
             case 10:
-                GossipMenu::sendSimpleMenu(pObject->getGuid(), 60039, plr);            // What are Darkmoon Cards? <more>
+                GossipMenu::sendSimpleMenu(pObject->getGuid(), 60039, plr);                 // What are Darkmoon Cards? <more>
                 break;
             case 20:
-                GossipMenu::sendSimpleMenu(pObject->getGuid(), 60041, plr);           // What are these Tonk Control Consoles?
+                GossipMenu::sendSimpleMenu(pObject->getGuid(), 60041, plr);                 // What are these Tonk Control Consoles?
                 break;
             case 21:
-                GossipMenu::sendSimpleMenu(pObject->getGuid(), 60042, plr);           // Tell me about the cannon.
+                GossipMenu::sendSimpleMenu(pObject->getGuid(), 60042, plr);                 // Tell me about the cannon.
                 break;
             default:
                 break;
@@ -665,7 +662,6 @@ public:
 class SilasDarkmoon_Gossip : public GossipScript
 {
 public:
-
     void onHello(Object* pObject, Player* plr) override
     {
         GossipMenu menu(pObject->getGuid(), 60013, plr->GetSession()->language);                // \todo find right text
@@ -681,7 +677,8 @@ public:
 
 class SilasDarkmoon_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(SilasDarkmoon_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new SilasDarkmoon_Bark(c); }
     explicit SilasDarkmoon_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -700,7 +697,8 @@ class SilasDarkmoon_Bark : public CreatureAIScript
 
 class StampThunderhorn_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(StampThunderhorn_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new StampThunderhorn_Bark(c); }
     explicit StampThunderhorn_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
@@ -718,7 +716,8 @@ class StampThunderhorn_Bark : public CreatureAIScript
 
 class Sylannia_Bark : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Sylannia_Bark)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Sylannia_Bark(c); }
     explicit Sylannia_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);

@@ -21,8 +21,6 @@
 
 #pragma once
 
-#include <mutex>
-#include "Macros/ScriptMacros.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Management/GameEventMgr.h"
 #include "Units/Unit.h"
@@ -395,30 +393,6 @@ enum TargetGenerator
     TargetGen_RandomPlayerApplyAura         // Random target player to self cast aura
 };
 
-enum TargetFilter
-{
-    // Standard filters
-    TargetFilter_None                   = 0,            // 0
-    TargetFilter_Closest                = 1 << 0,       // 1
-    TargetFilter_Friendly               = 1 << 1,       // 2
-    TargetFilter_NotCurrent             = 1 << 2,       // 4
-    TargetFilter_Wounded                = 1 << 3,       // 8
-    TargetFilter_SecondMostHated        = 1 << 4,       // 16
-    TargetFilter_Aggroed                = 1 << 5,       // 32
-    TargetFilter_Corpse                 = 1 << 6,       // 64
-    TargetFilter_InMeleeRange           = 1 << 7,       // 128
-    TargetFilter_InRangeOnly            = 1 << 8,       // 256
-    TargetFilter_IgnoreSpecialStates    = 1 << 9,       // 512 - not really a TargetFilter, more like requirement for spell
-    TargetFilter_IgnoreLineOfSight      = 1 << 10,      // 1024
-
-    // Predefined filters
-    TargetFilter_ClosestFriendly        = TargetFilter_Closest | TargetFilter_Friendly,         // 3
-    TargetFilter_ClosestNotCurrent      = TargetFilter_Closest | TargetFilter_NotCurrent,       // 5
-    TargetFilter_WoundedFriendly        = TargetFilter_Wounded | TargetFilter_Friendly,         // 10
-    TargetFilter_FriendlyCorpse         = TargetFilter_Corpse | TargetFilter_Friendly,          // 66
-    TargetFilter_ClosestFriendlyCorpse  = TargetFilter_Closest | TargetFilter_FriendlyCorpse    // 67
-};
-
 class TargetType;
 class CreatureAIScript;
 class Unit;
@@ -542,8 +516,6 @@ class SERVER_DECL QuestScript
 //////////////////////////////////////////////////////////////////////////////////////////
 // Instanced class created for each instance of the map, holds all scriptable exports
 #include "Map/WorldCreator.h"
-
-//#define UseNewMapScriptsProject
 
 enum EncounterFrameType
 {

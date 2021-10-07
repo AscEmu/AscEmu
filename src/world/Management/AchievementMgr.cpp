@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "AchievementMgr.h"
 #include "Management/Item.h"
 #include "Units/Stats.h"
@@ -16,12 +16,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
-#include "Server/Definitions.h"
 #include "Guild/Guild.hpp"
 #include "Server/Packets/SmsgServerFirstAchievement.h"
 #include "Server/Packets/SmsgAchievementDeleted.h"
 #include "Server/Packets/SmsgCriteriaDeleted.h"
 #include "Server/Packets/SmsgCriteriaUpdate.h"
+#include "Server/Packets/SmsgMessageChat.h"
 
 using namespace AscEmu::Packets;
 

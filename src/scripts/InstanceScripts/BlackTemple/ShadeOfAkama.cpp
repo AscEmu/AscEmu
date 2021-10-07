@@ -38,7 +38,9 @@ enum
 
 class ShadeofakamaAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(ShadeofakamaAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadeofakamaAI(c); }
+
     SP_AI_Spell spells[1];
     bool m_spellcheck[1];
 
@@ -262,7 +264,6 @@ class ShadeofakamaAI : public CreatureAIScript
     }
 
 protected:
-
     int nrspells;
     int hm;
 };
@@ -270,7 +271,9 @@ protected:
 // Ashtongue Defender AI
 class AshtonguedefenderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtonguedefenderAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AshtonguedefenderAI(c); }
+
     SP_AI_Spell spells[1];
     bool m_spellcheck[1];
 
@@ -365,14 +368,15 @@ class AshtonguedefenderAI : public CreatureAIScript
     }
 
 protected:
-
     int nrspells;
 };
 
 // AshtongueElementalist AI
 class AshtongueelementalistAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueelementalistAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AshtongueelementalistAI(c); }
+
     SP_AI_Spell spells[1];
     bool m_spellcheck[1];
 
@@ -389,15 +393,12 @@ class AshtongueelementalistAI : public CreatureAIScript
         spells[0].instant = false;
         spells[0].perctrigger = 5.0f;
         spells[0].attackstoptimer = 1000;
-
-
     }
 
     void OnCombatStart(Unit* mTarget)
     {
         RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
     }
-
 
     void OnTargetDied(Unit* mTarget)
     {
@@ -412,7 +413,7 @@ class AshtongueelementalistAI : public CreatureAIScript
 
     void OnDied(Unit* mKiller)
     {
-    RemoveAIUpdateEvent();
+        RemoveAIUpdateEvent();
     }
 
     void AIUpdate()
@@ -470,14 +471,15 @@ class AshtongueelementalistAI : public CreatureAIScript
     }
 
 protected:
-
     int nrspells;
 };
 
 // AshtongueRogue AI
 class AshtonguerogueAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtonguerogueAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AshtonguerogueAI(c); }
+
     SP_AI_Spell spells[1];
     bool m_spellcheck[1];
 
@@ -494,7 +496,6 @@ class AshtonguerogueAI : public CreatureAIScript
         spells[0].instant = false;
         spells[0].perctrigger = 5.0f;
         spells[0].attackstoptimer = 1000;
-
     }
 
     void OnCombatStart(Unit* mTarget)
@@ -573,14 +574,15 @@ class AshtonguerogueAI : public CreatureAIScript
     }
 
 protected:
-
     int nrspells;
 };
 
 // AshtongueRogue AI
 class AshtonguespiritbinderAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtonguespiritbinderAI)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AshtonguespiritbinderAI(c); }
+
     SP_AI_Spell spells[2];
     bool m_spellcheck[2];
 
@@ -603,15 +605,12 @@ class AshtonguespiritbinderAI : public CreatureAIScript
         spells[1].instant = false;
         spells[1].perctrigger = 5.0f;
         spells[1].attackstoptimer = 1000;
-
-
     }
 
     void OnCombatStart(Unit* mTarget)
     {
         RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
     }
-
 
     void OnTargetDied(Unit* mTarget)
     {
@@ -684,17 +683,14 @@ class AshtonguespiritbinderAI : public CreatureAIScript
     }
 
 protected:
-
     int nrspells;
 };
 
 // Ashtongue Channeler AI
 class AshtongueChannelerAI : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(AshtongueChannelerAI)
-    SP_AI_Spell spells[1];
-    bool m_spellcheck[1];
-
+public:
+    static CreatureAIScript* Create(Creature* c) { return new AshtongueChannelerAI(c); }
     explicit AshtongueChannelerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         _unit->m_canMove = false;
@@ -734,9 +730,6 @@ class AshtongueChannelerAI : public CreatureAIScript
     {
         _unit->setAttackTimer(2000, false);
     }
-
-protected:
-
 };
 
 void SetupShadeOfAkama(ScriptMgr* mgr)

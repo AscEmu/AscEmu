@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
 #include "Server/WorldSession.h"
@@ -30,6 +30,7 @@
 #include "Units/Players/Player.h"
 #include "Server/Packets/SmsgChannelNotify.h"
 #include "Server/Packets/SmsgChannelList.h"
+#include "Server/Packets/SmsgMessageChat.h"
 
 using namespace AscEmu::Packets;
 

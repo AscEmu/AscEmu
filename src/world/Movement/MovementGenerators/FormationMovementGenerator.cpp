@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 #include "FormationMovementGenerator.h"
 #include "Units/Creatures/Creature.h"
 #include "Units/Creatures/AIInterface.h"
@@ -134,13 +134,14 @@ void FormationMovementGenerator::launchMovement(Creature* owner, Unit* target)
     if (!target->movespline->Finalized())
         relativeAngle = target->getRelativeAngle(vector3ToPosition(target->movespline->CurrentDestination()));
 
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Destination calculation
-    /*
-        According to sniff data, formation members have a periodic move interal of 1,2s.
-        Each of these splines has a exact duration of 1650ms +- 1ms when no pathfinding is involved.
-        To get a representative result like that we have to predict our formation leader's path
-        and apply our formation shape based on that destination.
-    */
+
+    /// According to sniff data, formation members have a periodic move interal of 1,2s.
+    /// Each of these splines has a exact duration of 1650ms +- 1ms when no pathfinding is involved.
+    /// To get a representative result like that we have to predict our formation leader's path
+    /// and apply our formation shape based on that destination.
+
     LocationVector dest = target->GetPosition();
     float velocity = 0.f;
 

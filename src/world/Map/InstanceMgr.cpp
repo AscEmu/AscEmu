@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldCreator.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "MapMgr.h"
+#include "Util/Strings.hpp"
 
 void InstanceMgr::generateInstances()
 {

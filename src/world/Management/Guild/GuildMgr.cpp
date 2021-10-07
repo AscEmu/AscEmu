@@ -3,12 +3,13 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "StdAfx.h"
+
 
 #include "GuildMgr.hpp"
 #include "Guild.hpp"
 #include "Objects/ObjectMgr.h"
 #include "Server/MainServerDefines.h"
+#include "Util/Strings.hpp"
 
 GuildMgr& GuildMgr::getInstance()
 {
@@ -453,7 +454,7 @@ void GuildMgr::loadGuildXpForLevelFromDB()
 
         if (level >= worldConfig.guild.maxLevel)
         {
-            sLogger.debug("Table `guild_xp_for_level` includes invalid xp definitions for level %u which is higher than the defined levelcap in your config file! <skipped>", level);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `guild_xp_for_level` includes invalid xp definitions for level %u which is higher than the defined levelcap in your config file! <skipped>", level);
             continue;
         }
 

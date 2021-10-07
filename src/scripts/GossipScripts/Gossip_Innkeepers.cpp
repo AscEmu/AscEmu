@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Management/Gossip/GossipScript.hpp"
+#include "Server/Script/ScriptMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 
@@ -18,7 +20,7 @@ class InnkeeperGossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* Plr) override;
     void onSelectOption(Object* pObject, Player* Plr, uint32_t Id, const char* Code, uint32_t gossipId) override;
-    void destroy() { delete this; }
+    void destroy() override { delete this; }
 };
 
 void InnkeeperGossip::onHello(Object* pObject, Player* Plr)
@@ -33,7 +35,7 @@ void InnkeeperGossip::onHello(Object* pObject, Player* Plr)
     uint32_t Text = sMySQLStore.getGossipTextIdForNpc(pCreature->getEntry());
     if (Text != 0)
     {
-        MySQLStructure::NpcText const* text = sMySQLStore.getNpcText(Text);
+        MySQLStructure::NpcGossipText const* text = sMySQLStore.getNpcGossipText(Text);
         if (text != nullptr)
         {
             TextID = Text;

@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-//#include "StdAfx.h"
+//
 #include "MovementManager.h"
 #include "Units/Unit.h"
 #include "AbstractFollower.h"
@@ -18,6 +18,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <algorithm>
 #include <iterator>
 
+
+#include "Map/MapMgr.h"
 #include "MovementGenerators/ChaseMovementGenerator.h"
 #include "MovementGenerators/ConfusedMovementGenerator.h"
 #include "MovementGenerators/FleeingMovementGenerator.h"
@@ -986,8 +988,8 @@ void MovementManager::launchMoveSpline(MovementNew::MoveSplineInit&& init, uint3
     add(movement);
 }
 
-/******************** Private methods ********************/
-
+//////////////////////////////////////////////////////////////////////////////////////////
+// Private methods
 void MovementManager::resolveDelayedActions()
 {
     while (!_delayedActions.empty())
@@ -1158,5 +1160,3 @@ void MovementManager::clearBaseUnitStates()
     _owner->removeUnitStateFlag(unitState);
     _baseUnitStatesMap.clear();
 }
-
-

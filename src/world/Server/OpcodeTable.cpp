@@ -18,7 +18,7 @@ OpcodeTables& OpcodeTables::getInstance()
 
 void OpcodeTables::initialize()
 {
-    std::cout << "OpcodeTables preparing version specific tables." << std::endl;
+    std::cout << "OpcodeTables preparing version specific tables." << "\n";
 
     // fill vector
     for (const auto opcodeStore : multiversionOpcodeStore)
@@ -26,8 +26,6 @@ void OpcodeTables::initialize()
         for (auto hexIndex = 0; hexIndex < MAX_VERSION_INDEX; ++hexIndex)
             _versionHexTable[hexIndex].emplace_back(opcodeStore.second.hexValues[hexIndex], opcodeStore.first);
     }
-
-    sizeOfHexTables();
 }
 
 void OpcodeTables::finalize()

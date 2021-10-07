@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+
 #include "VMapFactory.h"
 #include "MMapManager.h"
 #include "MMapFactory.h"
@@ -111,7 +111,7 @@ void MapCell::SetActivity(bool state)
             if (m_celltilesLoaded[mapId][tileX][tileY] == 0)
             {
                 mgr->loadMap(vmapPath.c_str(), mapId, tileX, tileY);
-                mmgr->loadMap(mmapPath.c_str(), mapId, tileX, tileY);
+                mmgr->loadMap(mmapPath, mapId, tileX, tileY);
             }
             ++m_celltilesLoaded[mapId][tileX][tileY];
             m_cellloadLock.Release();
@@ -216,7 +216,6 @@ void MapCell::LoadObjects(CellSpawns* sp)
     {
         for (CreatureSpawnList::iterator i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
         {
-            uint32 respawnTimeOverride = 0;
             if (pInstance)
             {
                 auto encounters = sObjectMgr.GetDungeonEncounterList(_mapmgr->GetMapId(), pInstance->m_difficulty);
@@ -260,8 +259,7 @@ void MapCell::LoadObjects(CellSpawns* sp)
             Creature* c = _mapmgr->CreateCreature((*i)->entry);
 
             c->m_loadedFromDB = true;
-            if (respawnTimeOverride > 0)
-                c->m_respawnTimeOverride = respawnTimeOverride;
+
 
             if (c->Load(*i, _mapmgr->iInstanceMode, _mapmgr->GetMapInfo()) && c->CanAddToWorld())
             {
@@ -320,26 +318,35 @@ void MapCell::CancelPendingUnload()
 
 void MapCell::Unload()
 {
-    sLogger.debug("Unloading cell %u %u", _x, _y);
-    ARCEMU_ASSERT(_unloadpending);
-    if (_active)
+    if (_unloadpending)
     {
+        sLogger.debug("Unloading cell %u %u", _x, _y);
+
+        if (_active)
+        {
+            sLogger.failure("MapCell::Unload tried to unload an active MapCell, return!");
+            return;
+        }
+
         _unloadpending = false;
-        return;
+
+        /*in ~MapCell RemoveObjects() can delete an Object without removing it from the MapCell.cpp
+        Example:
+        Creature A has guardian B. MapCell is unloaded, _mapmgr->Remove(_x, _y) is called, nullifying the reference to the cell
+        in CellHandler. ~MapCell is called, RemoveObjects() is called and despawns A which despawns B, calling Object::RemoveFromWorld()
+        which calls MapMgr::RemoveObject(B) which calls cell->RemoveObject(obj) ONLY if cell is not NULL, but in this case is NULL, leaving
+        a reference to a deleted Object in MapCell::_objects, iterated in RemoveObjects(). Calling it here fixes this issue.
+        Note: RemoveObjects() is still called in ~MapCell, due to fancy ArcEmu behaviors, like the in-game command ".mapcell delete <x> <y>*/
+
+        sLogger.debug("Unloading cell %u %u", _x, _y);
+
+        RemoveObjects();
+        _mapmgr->Remove(_x, _y);
     }
-
-    _unloadpending = false;
-
-    /*in ~MapCell RemoveObjects() can delete an Object without removing it from the MapCell.cpp
-    Example:
-    Creature A has guardian B. MapCell is unloaded, _mapmgr->Remove(_x, _y) is called, nullifying the reference to the cell
-    in CellHandler. ~MapCell is called, RemoveObjects() is called and despawns A which despawns B, calling Object::RemoveFromWorld()
-    which calls MapMgr::RemoveObject(B) which calls cell->RemoveObject(obj) ONLY if cell is not NULL, but in this case is NULL, leaving
-    a reference to a deleted Object in MapCell::_objects, iterated in RemoveObjects(). Calling it here fixes this issue.
-    Note: RemoveObjects() is still called in ~MapCell, due to fancy ArcEmu behaviors, like the in-game command ".mapcell delete <x> <y>*/
-
-    RemoveObjects();
-    _mapmgr->Remove(_x, _y);
+    else
+    {
+        sLogger.failure("MapCell::Unload tried to unload MapCell which is not marked for unload");
+    }
 }
 
 void MapCell::CorpseGoneIdle(Object* corpse)

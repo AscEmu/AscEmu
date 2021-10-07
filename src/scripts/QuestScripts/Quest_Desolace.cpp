@@ -19,10 +19,12 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class Dalinda_Malem : public CreatureAIScript
 {
-    ADD_CREATURE_FACTORY_FUNCTION(Dalinda_Malem)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new Dalinda_Malem(c); }
     explicit Dalinda_Malem(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override
@@ -32,7 +34,7 @@ class Dalinda_Malem : public CreatureAIScript
 
         if (iWaypointId == 13)
         {
-            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, these orcs wanted me to weld in the boiler");
+            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, these orcs wanted me to weld in the boiler");
             getCreature()->Despawn(5000, 1000);
             getCreature()->stopMoving();
             if (getCreature()->m_escorter == nullptr)
