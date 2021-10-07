@@ -18,7 +18,6 @@ add_subdirectory(recastnavigation)
 add_subdirectory(g3dlite)
 add_subdirectory(utf8cpp)
 add_subdirectory(openssl)
-add_subdirectory(stdfs)
 
 if(BUILD_ASCEMUSCRIPTS AND BUILD_LUAENGINE)
 	add_subdirectory(lualib/src)

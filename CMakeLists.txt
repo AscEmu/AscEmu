@@ -4,7 +4,6 @@ project(Ascemu)
 
 # cmake >= 3.2
 cmake_minimum_required(VERSION 3.2)
-cmake_policy(SET CMP0057 NEW)
 
 # set runtime binary where all compiled (before install) binary will compiled in
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
