@@ -28,6 +28,7 @@ set(SRC_MAP_FILES
    ${PATH_PREFIX}/WorldCreatorDefines.hpp
    ${PATH_PREFIX}/AreaBoundary.cpp
    ${PATH_PREFIX}/AreaBoundary.h
+   ${PATH_PREFIX}/SpawnGroups.hpp
 )
 
 source_group(Map FILES ${SRC_MAP_FILES})

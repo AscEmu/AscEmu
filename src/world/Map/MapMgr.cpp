@@ -1054,6 +1054,84 @@ uint32 MapMgr::GetPlayerCount()
     return static_cast<uint32>(m_PlayerStorage.size());
 }
 
+void MapMgr::respawnBossLinkedGroups(uint32_t bossId)
+{
+    // Get all Killed npcs out of Killed npc Store
+    for (Creature* spawn : sMySQLStore.getSpawnGroupDataByBoss(bossId))
+    {
+        if (spawn && spawn->m_spawn && spawn->getSpawnId())
+        {
+            // Get the Group Data and see if we have to Respawn the npcs
+            auto data = sMySQLStore.getSpawnGroupDataBySpawn(spawn->getSpawnId());
+
+            if (data && data->spawnFlags & SPAWFLAG_FLAG_BOUNDTOBOSS)
+            {
+                // Respawn the Npc
+                if (spawn->IsInWorld() && !spawn->isAlive())
+                {
+                    spawn->Despawn(0, 1000);
+                }
+                else if (!spawn->isAlive())
+                {
+                    // get the cell with our SPAWN location. if we've moved cell this might break :P
+                    MapCell* pCell = GetCellByCoords(spawn->GetSpawnX(), spawn->GetSpawnY());
+                    if (pCell == nullptr)
+                        pCell = spawn->GetMapCell();
+
+                    if (pCell != nullptr)
+                    {
+                        pCell->_respawnObjects.insert(spawn);
+
+                        sEventMgr.RemoveEvents(spawn);
+                        EventRespawnCreature(spawn, pCell->GetPositionX(), pCell->GetPositionY());
+
+                        spawn->SetPosition(spawn->GetSpawnPosition(), true);
+                        spawn->m_respawnCell = pCell;
+                    }
+                }
+            }
+
+            // Erease from Killed Npcs
+            pInstance->m_killedNpcs.erase(spawn->getSpawnId());
+        }
+    }
+
+    // Save the Instance
+    sInstanceMgr.SaveInstanceToDB(pInstance);
+}
+
+void MapMgr::spawnManualGroup(uint32_t groupId)
+{
+    auto data = sMySQLStore.getSpawnGroupDataByGroup(groupId);
+
+    if (data)
+    {
+        for (auto spawns : data->spawns)
+        {
+            if (auto creature = spawns.second)
+            {
+                creature->PrepareForRemove();
+
+                // get the cell with our SPAWN location. if we've moved cell this might break :P
+                MapCell* pCell = GetCellByCoords(creature->GetSpawnX(), creature->GetSpawnY());
+                if (pCell == nullptr)
+                    pCell = creature->GetMapCell();
+
+                if (pCell != nullptr)
+                {
+                    pCell->_respawnObjects.insert(creature);
+
+                    sEventMgr.RemoveEvents(creature);
+                    EventRespawnCreature(creature, pCell->GetPositionX(), pCell->GetPositionY());
+
+                    creature->SetPosition(creature->GetSpawnPosition(), true);
+                    creature->m_respawnCell = pCell;
+                }
+            }
+        }
+    }
+}
+
 void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
 {
     CellSpawns* sp;

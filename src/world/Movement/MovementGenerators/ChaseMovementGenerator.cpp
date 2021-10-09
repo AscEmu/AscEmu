@@ -50,7 +50,7 @@ static bool positionOkay(Unit* owner, Unit* target, Optional<float> minDistance,
 
 static void doMovementInform(Unit* owner, Unit* target)
 {
-    if (owner->GetTypeFromGUID() != TYPEID_UNIT)
+    if (owner->getObjectTypeId() != TYPEID_UNIT)
         return;
 
     if (AIInterface* AI = owner->GetAIInterface())

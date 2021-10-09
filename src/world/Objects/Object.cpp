@@ -4357,7 +4357,7 @@ void Object::movePositionToFirstCollision(LocationVector &pos, float dist, float
 
 float Object::getMapWaterOrGroundLevel(float x, float y, float z, float* ground/* = nullptr*/)
 {
-    return GetMapMgr()->getWaterOrGroundLevel(GetPhase(), x, y, z, ground, GetTypeFromGUID() == TYPEID_UNIT ? !static_cast<Unit*>(this)->getAuraWithAuraEffect(SPELL_AURA_WATER_WALK) : false);
+    return GetMapMgr()->getWaterOrGroundLevel(GetPhase(), x, y, z, ground, getObjectTypeId() == TYPEID_UNIT ? !static_cast<Unit*>(this)->getAuraWithAuraEffect(SPELL_AURA_WATER_WALK) : false);
 }
 
 float Object::getDistance(Object const* obj) const

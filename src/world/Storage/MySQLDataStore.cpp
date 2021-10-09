@@ -4432,3 +4432,156 @@ std::vector<MySQLStructure::CreatureAIScripts>* MySQLDataStore::getCreatureAiScr
 
     return result;
 }
+
+void MySQLDataStore::loadSpawnGroupIds()
+{
+    auto startTime = Util::TimeNow();
+
+    _spawnGroupDataStore.clear();
+
+    QueryResult* result = WorldDatabase.Query("SELECT * FROM spawn_group_id ORDER BY groupId");
+    if (result == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `spawn_group_id` is empty!");
+        return;
+    }
+
+    sLogger.info("MySQLDataLoads : Table `spawn_group_id` has %u columns", result->GetFieldCount());
+
+    uint32_t load_count = 0;
+    do
+    {
+        Field* fields = result->Fetch();
+        uint32_t groupId = fields[0].GetUInt8();
+
+        SpawnGroupTemplateData& spawnGroup = _spawnGroupDataStore[groupId];
+
+        spawnGroup.groupId = groupId;
+        spawnGroup.name = fields[1].GetString();
+        spawnGroup.mapId = 0xFFFFFFFF;
+        uint32_t flags = fields[2].GetUInt8();
+        if (flags & ~SPAWNGROUP_FLAGS_ALL)
+        {
+            flags &= SPAWNGROUP_FLAGS_ALL;
+            sLogger.failure("Invalid spawn group flag %u on group ID %u (%s), reduced to valid flag %u.", flags, groupId, spawnGroup.name.c_str(), uint32_t(spawnGroup.groupFlags));
+        }
+        if (flags & SPAWNGROUP_FLAG_SYSTEM && flags & SPAWNGROUP_FLAG_MANUAL_SPAWN)
+        {
+            flags &= ~SPAWNGROUP_FLAG_MANUAL_SPAWN;
+            sLogger.failure("System spawn group %u (%s) has invalid manual spawn flag. Ignored.", groupId, spawnGroup.name.c_str());
+        }
+        spawnGroup.groupFlags = SpawnGroupFlags(flags);
+        spawnGroup.spawnFlags = SpawnFlags(fields[3].GetUInt8());
+        spawnGroup.bossId = fields[4].GetUInt32();
+
+        ++load_count;
+    } while (result->NextRow());
+
+    delete result;
+
+    sLogger.info("MySQLDataLoads : Loaded %u rows from `spawn_group_id` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
+void MySQLDataStore::loadCreatureGroupSpawns()
+{
+    auto startTime = Util::TimeNow();
+
+    _spawnGroupMapStore.clear();
+
+    QueryResult* result = WorldDatabase.Query("SELECT * FROM creature_group_spawn ORDER BY groupId");
+    if (result == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `creature_group_spawn` is empty!");
+        return;
+    }
+
+    sLogger.info("MySQLDataLoads : Table `creature_group_spawn` has %u columns", result->GetFieldCount());
+
+    uint32_t load_count = 0;
+    do
+    {
+        Field* fields = result->Fetch();
+        uint32_t groupId = fields[0].GetUInt8();
+        uint32_t spawnId = fields[1].GetUInt32();
+        MySQLStructure::CreatureSpawn spawn;
+        bool data = false;
+
+        auto it = _spawnGroupDataStore.find(groupId);
+        if (it == _spawnGroupDataStore.end())
+        {
+            sLogger.failure("Spawn group %u assigned to spawn ID (%u), but group does not exist!", groupId, spawnId);
+            continue;
+        }
+
+        for (const auto creatureSpawnMap : sMySQLStore._creatureSpawnsStore)
+        {
+            for (const auto creatureSpawn : creatureSpawnMap)
+            {
+                if (creatureSpawn->id == spawnId)
+                {
+                    data = true;
+
+                    SpawnGroupTemplateData& groupTemplate = it->second;
+                    if (groupTemplate.mapId == 0xFFFFFFFF)
+                        groupTemplate.mapId = creatureSpawn->mapId;
+
+                    else if (groupTemplate.mapId != creatureSpawn->mapId && !(groupTemplate.groupFlags & SPAWNGROUP_FLAG_SYSTEM))
+                    {
+                        sLogger.failure("Spawn group %u has map ID %u, but spawn (%u) has map id %u - spawn NOT added to group!", groupId, groupTemplate.mapId, spawnId, creatureSpawn->mapId);
+                        continue;
+                    }
+
+                    groupTemplate.spawns.insert(std::make_pair(spawnId, nullptr));
+                    _spawnGroupMapStore.emplace(spawnId, &groupTemplate);
+
+                    ++load_count;
+                }
+            }
+        }
+
+        if (!data)
+        {
+            sLogger.failure("Spawn data with ID (%u) not found, but is listed as a member of spawn group %u!", spawnId, groupId);
+            continue;
+        } 
+    } while (result->NextRow());
+
+    delete result;
+
+    sLogger.info("MySQLDataLoads : Loaded %u rows from `creature_group_spawn` table in %u ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
+SpawnGroupTemplateData* MySQLDataStore::getSpawnGroupDataByGroup(uint32_t groupId)
+{
+    for (auto spawnData : _spawnGroupMapStore)
+    {
+        if (spawnData.second->groupId == groupId)
+            return spawnData.second;
+    }
+
+    return nullptr;
+}
+
+SpawnGroupTemplateData* MySQLDataStore::getSpawnGroupDataBySpawn(uint32_t spawnId)
+{
+    for (auto spawnData : _spawnGroupMapStore)
+    {
+        if (spawnData.first == spawnId)
+            return spawnData.second;
+    }
+
+    return nullptr;
+}
+
+std::vector<Creature*> const MySQLDataStore::getSpawnGroupDataByBoss(uint32_t bossId)
+{
+    std::vector<Creature*> data;
+
+    for (auto spawnData : _spawnGroupMapStore)
+    {
+        if (spawnData.second->bossId == bossId)
+            data.push_back(spawnData.second->spawns[spawnData.first]);
+    }
+
+    return data;
+}

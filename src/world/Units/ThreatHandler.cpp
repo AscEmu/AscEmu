@@ -70,7 +70,7 @@ bool ThreatReference::shouldBeOffline() const
         return true;
 
     // or if enemy is in evade mode
-    if (_victim->GetTypeFromGUID() == TYPEID_UNIT && _victim->ToCreature()->isInEvadeMode())
+    if (_victim->getObjectTypeId() == TYPEID_UNIT && _victim->ToCreature()->isInEvadeMode())
         return true;
 
     if (_victim == _owner)

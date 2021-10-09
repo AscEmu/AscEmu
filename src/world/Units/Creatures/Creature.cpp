@@ -356,27 +356,42 @@ void Creature::OnRespawn(MapMgr* m)
         if (encounters != NULL && pInstance != NULL)
         {
             bool skip = false;
-            for (std::set<uint32>::iterator killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
+            for (auto killedNpc : pInstance->m_killedNpcs)
             {
-                // Is killed boss?
-                if ((*killedNpc) == creature_properties->Id)
+                // is Killed add?
+                if (killedNpc == getSpawnId())
                 {
-                    skip = true;
-                    break;
-                }
+                    auto data = sMySQLStore.getSpawnGroupDataBySpawn(killedNpc);
 
-                // Is add from killed boss?
-                for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
-                {
-                    DungeonEncounter const* encounter = *itr;
-                    if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == (*killedNpc))
+                    // When Our Add is bound to a Boss thats not killed Respawn it
+                    if (data && data->bossId)
                     {
-                        skip = true;
-                        break;
+                        if (pInstance->m_killedNpcs.find(data->bossId) != pInstance->m_killedNpcs.end())
+                        {
+                            skip = true;
+                            break;
+                        }
+                        else
+                        {
+                            skip = false;
+                            break;
+                        }
                     }
-
                 }
 
+                // Is killed boss?
+                if (killedNpc == getEntry())
+                {
+                    for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
+                    {
+                        DungeonEncounter const* encounter = *itr;
+                        if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == killedNpc)
+                        {
+                            skip = true;
+                            break;
+                        }
+                    }
+                }
             }
 
             if (skip)
@@ -386,6 +401,10 @@ void Creature::OnRespawn(MapMgr* m)
                 return;
             }
         }
+
+        // Remove from Killed Npcs
+        pInstance->m_killedNpcs.erase(getSpawnId());
+        sInstanceMgr.SaveInstanceToDB(pInstance);
     }
 
     sLogger.info("Respawning " I64FMT "...", getGuid());
@@ -1807,6 +1826,14 @@ void Creature::OnPushToWorld()
     {
         LoadScript();
     }
+
+    // Formations
+    searchFormation();
+    motion_Initialize();
+
+    // Reset Instance Data
+    // set encounter state back to NotStarted
+    CALL_INSTANCE_SCRIPT_EVENT(GetMapMgr(), setData)(getEntry(), NotStarted);
 
     Unit::OnPushToWorld();
 

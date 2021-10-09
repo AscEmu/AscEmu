@@ -866,6 +866,7 @@ void World::loadMySQLStores()
     sMySQLStore.loadGossipMenuItemsTable();
     sMySQLStore.loadRecallTable();
     sMySQLStore.loadCreatureAIScriptsTable();
+    sMySQLStore.loadSpawnGroupIds();
 
     sFormationMgr->loadCreatureFormations();
     sWaypointMgr->load();
@@ -899,6 +900,9 @@ void World::loadMySQLTablesByTask()
 
     MAKE_TASK(MySQLDataStore, loadCreatureSpawns);
     MAKE_TASK(MySQLDataStore, loadGameobjectSpawns);
+
+    tl.wait();
+    MAKE_TASK(MySQLDataStore, loadCreatureGroupSpawns);
 
     MAKE_TASK(ObjectMgr, LoadInstanceEncounters);
     MAKE_TASK(ObjectMgr, LoadCreatureTimedEmotes);

@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/CreatureMacros.hpp"
 #include "Map/InstanceDefines.hpp"
 #include "Map/WorldCreatorDefines.hpp"
+#include "Map/SpawnGroups.hpp"
 #include <cstdint>
 #include <string>
 #include "LocationVector.h"
@@ -296,6 +297,23 @@ namespace MySQLStructure
     };
 
     //instance_bosses
+
+    // spawn_group_id
+    struct SpawnGroupId
+    {
+        uint8_t groupId;
+        std::string groupName;
+        SpawnGroupFlags groupFlags;
+        SpawnFlags spawnFlags;
+        uint32_t bossId;
+    };
+
+    // creature_group_spawn
+    struct CreatureGroupSpawn
+    {
+        uint8_t groupId;
+        uint32_t spawnId;
+    };
 
     //item_pages
     struct ItemPage

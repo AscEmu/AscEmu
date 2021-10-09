@@ -1836,7 +1836,7 @@ void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
     };
 #endif
 
-    if (GetTypeFromGUID() == TYPEID_PLAYER)
+    if (getObjectTypeId() == TYPEID_PLAYER)
     {
         // register forced speed changes for WorldSession::HandleForceSpeedChangeAck
         // and do it only for real sent packets and use run for run/mounted as client expected
@@ -1913,7 +1913,7 @@ void Unit::setSpeedRate(UnitSpeedType type, float value, bool current)
     // Update Also For Movement Generators
     propagateSpeedChange();
 
-    if (GetTypeFromGUID() == TYPEID_PLAYER)
+    if (getObjectTypeId() == TYPEID_PLAYER)
     {
         // register forced speed changes for WorldSession::HandleForceSpeedChangeAck
         // and do it only for real sent packets and use run for run/mounted as client expected
@@ -6304,10 +6304,10 @@ void Unit::setStunned(bool apply)
         addUnitMovementFlag(MOVEFLAG_ROOTED);
         stopMoving();
 
-        if (GetTypeFromGUID() == TYPEID_PLAYER)
+        if (getObjectTypeId() == TYPEID_PLAYER)
             setStandState(STANDSTATE_STAND);
 
-        if (GetTypeFromGUID() == TYPEID_PLAYER)
+        if (getObjectTypeId() == TYPEID_PLAYER)
         {
             WorldPacket data(SMSG_FORCE_MOVE_ROOT, 10);
             data << GetNewGUID();
@@ -6328,12 +6328,12 @@ void Unit::setStunned(bool apply)
 
         // don't remove UNIT_FLAG_STUNNED for pet when owner is mounted (disabled pet's interface)
         Unit* owner = GetMapMgrUnit(getCharmerOrOwnerGUID());
-        if (!owner || owner->GetTypeFromGUID() != TYPEID_PLAYER || !owner->ToPlayer()->IsMounted())
+        if (!owner || owner->getObjectTypeId() != TYPEID_PLAYER || !owner->ToPlayer()->IsMounted())
             removeUnitFlags(UNIT_FLAG_STUNNED);
 
         if (!hasUnitStateFlag(UNIT_STATE_ROOTED))         // prevent moving if it also has root effect
         {
-            if (GetTypeFromGUID() == TYPEID_PLAYER)
+            if (getObjectTypeId() == TYPEID_PLAYER)
             {
                 WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 10);
                 data << GetNewGUID();
@@ -6383,7 +6383,7 @@ void Unit::setFeared(bool apply)
     }
 
     // block / allow control to real player in control (eg charmer)
-    if (GetTypeFromGUID() == TYPEID_PLAYER)
+    if (getObjectTypeId() == TYPEID_PLAYER)
     {
         if (getPlayerOwner())
             getPlayerOwner()->sendClientControlPacket(this, !apply);
@@ -6408,7 +6408,7 @@ void Unit::setConfused(bool apply)
     }
 
     // block / allow control to real player in control (eg charmer)
-    if (GetTypeFromGUID() == TYPEID_PLAYER)
+    if (getObjectTypeId() == TYPEID_PLAYER)
     {
         if (getPlayerOwner())
             getPlayerOwner()->sendClientControlPacket(this, !apply);
@@ -6431,7 +6431,7 @@ void Unit::jumpTo(float speedXY, float speedZ, bool forward, Optional<LocationVe
     if (dest)
         angle += getRelativeAngle(*dest);
 
-    if (GetTypeFromGUID() == TYPEID_UNIT)
+    if (getObjectTypeId() == TYPEID_UNIT)
         getMovementManager()->moveJumpTo(angle, speedXY, speedZ);
     else
     {

@@ -576,6 +576,9 @@ class SERVER_DECL InstanceScript
         // Player
         virtual void OnPlayerDeath(Player* /*pVictim*/, Unit* /*pKiller*/) {}
 
+        // Spawn Groups
+        virtual void OnSpawnGroupKilled(uint32_t groupId) {}
+
         // Area and AreaTrigger
         virtual void OnPlayerEnter(Player* /*pPlayer*/) {}
         virtual void OnAreaTrigger(Player* /*pPlayer*/, uint32 /*pAreaId*/) {}

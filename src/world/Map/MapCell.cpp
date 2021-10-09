@@ -216,37 +216,67 @@ void MapCell::LoadObjects(CellSpawns* sp)
     {
         for (CreatureSpawnList::iterator i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
         {
+            auto spawnGroupData = sMySQLStore.getSpawnGroupDataBySpawn((*i)->id);
+            bool skip = false;
+            bool onRespawn = false;
             if (pInstance)
             {
                 auto encounters = sObjectMgr.GetDungeonEncounterList(_mapmgr->GetMapId(), pInstance->m_difficulty);
 
-                if (encounters != NULL && pInstance->isPersistent())
+                // Spawn Group Handling
+                if (spawnGroupData && spawnGroupData->groupFlags & SPAWNGROUP_FLAG_MANUAL_SPAWN)
+                    skip = true;
+
+                if (encounters != NULL && !skip)
                 {
-                    bool skip = false;
-                    for (std::set<uint32>::iterator killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
+                    for (auto killedNpc : pInstance->m_killedNpcs)
                     {
-                        // Do not spawn the killed boss.
-                        if ((*killedNpc) == (*i)->entry)
+                        // is Killed add ?
+                        if (killedNpc == (*i)->id)
                         {
-                            skip = true;
+                            auto data = sMySQLStore.getSpawnGroupDataBySpawn(killedNpc);
+
+                            // When Our Add is bound to a Boss thats not killed Respawn it
+                            if (data && data->spawnFlags & SPAWFLAG_FLAG_BOUNDTOBOSS && data->bossId)
+                            {
+                                if (pInstance->m_killedNpcs.find(data->bossId) != pInstance->m_killedNpcs.end())
+                                {
+                                    skip = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    skip = false;
+                                    break;
+                                }
+                            }
+
+                            onRespawn = true;
                             break;
                         }
 
-                        // Do not spawn the killed boss' trash.
-                        for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
+                        // Is killed boss?
+                        if (killedNpc == (*i)->entry)
                         {
-                            DungeonEncounter const* encounter = *itr;
-                            if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == (*killedNpc))
+                            for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
                             {
-                                skip = true;
-                                break;
-                            }
+                                DungeonEncounter const* encounter = *itr;
+                                if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == killedNpc)
+                                {
+                                    skip = true;
+                                    break;
+                                }
 
+                            }
                         }
                     }
-                    if (skip)
-                        continue;
 
+                    if (!skip && !onRespawn)
+                    {
+                        // remove from Killed Npcs
+                        if (pInstance->m_killedNpcs.find((*i)->id) != pInstance->m_killedNpcs.end())
+                            pInstance->m_killedNpcs.erase((*i)->id);
+                    }
                 }
                 else
                 {
@@ -256,6 +286,8 @@ void MapCell::LoadObjects(CellSpawns* sp)
                 }
             }
 
+            sInstanceMgr.SaveInstanceToDB(pInstance);
+
             Creature* c = _mapmgr->CreateCreature((*i)->entry);
 
             c->m_loadedFromDB = true;
@@ -263,7 +295,31 @@ void MapCell::LoadObjects(CellSpawns* sp)
 
             if (c->Load(*i, _mapmgr->iInstanceMode, _mapmgr->GetMapInfo()) && c->CanAddToWorld())
             {
-                c->PushToWorld(_mapmgr);
+                if (spawnGroupData)
+                    spawnGroupData->spawns[(*i)->id] = c;
+
+                if (!skip && !onRespawn)
+                    c->PushToWorld(_mapmgr);
+
+                // Creatures in Instances are always Respawning after 2 hours
+                if (onRespawn)
+                {
+                    // get the cell with our SPAWN location. if we've moved cell this might break :P
+                    MapCell* pCell = _mapmgr->GetCellByCoords(c->GetSpawnX(), c->GetSpawnY());
+                    if (pCell == nullptr)
+                        pCell = c->GetMapCell();
+
+                    if (pCell != nullptr)
+                    {
+                        pCell->_respawnObjects.insert(c);
+
+                        sEventMgr.RemoveEvents(c);
+                        sEventMgr.AddEvent(_mapmgr, &MapMgr::EventRespawnCreature, c, pCell->GetPositionX(), pCell->GetPositionY(), EVENT_CREATURE_RESPAWN, (1000 * 60 * 60 * 2), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+
+                        c->SetPosition(c->GetSpawnPosition(), true);
+                        c->m_respawnCell = pCell;
+                    }
+                }
             }
             else
             {
