@@ -125,4 +125,3 @@ INSERT INTO `creature_formations` VALUES ('160038', '160083', '3', '260', '512',
 INSERT INTO `creature_formations` VALUES ('160038', '160038', '0', '0', '512', '0', '0');
 
 INSERT INTO `world_db_version` (`id`, `LastUpdate`) VALUES ('93', '20211015-00_group_spawns');
-
