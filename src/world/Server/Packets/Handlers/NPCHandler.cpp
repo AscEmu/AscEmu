@@ -473,6 +473,8 @@ void WorldSession::sendTrainerList(Creature* creature)
 
 uint8_t WorldSession::trainerGetSpellStatus(TrainerSpell* trainerSpell)
 {
+    bool can_learn_primary_prof = _player->getFreePrimaryProfessionPoints() < 2;
+
     if (!trainerSpell->pCastSpell && !trainerSpell->pLearnSpell)
         return TRAINER_STATUS_NOT_LEARNABLE;
 
@@ -489,7 +491,7 @@ uint8_t WorldSession::trainerGetSpellStatus(TrainerSpell* trainerSpell)
         || (trainerSpell->RequiredSpell && !_player->HasSpell(trainerSpell->RequiredSpell))
         || (trainerSpell->Cost && !_player->hasEnoughCoinage(trainerSpell->Cost))
         || (trainerSpell->RequiredSkillLine && _player->_GetSkillLineCurrent(trainerSpell->RequiredSkillLine, true) < trainerSpell->RequiredSkillLineValue)
-        || (trainerSpell->IsProfession && _player->getFreePrimaryProfessionPoints() == 0)
+        || (trainerSpell->IsProfession && !can_learn_primary_prof)
         )
         return TRAINER_STATUS_NOT_LEARNABLE;
     return TRAINER_STATUS_LEARNABLE;

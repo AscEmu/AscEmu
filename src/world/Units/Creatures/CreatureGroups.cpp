@@ -193,7 +193,7 @@ CreatureGroup::~CreatureGroup()
 
 void CreatureGroup::addMember(Creature* member)
 {
-    sLogger.debug("FormationMgr : CreatureGroup::AddMember: Adding unit %s.", member->getGuid());
+    sLogger.debug("FormationMgr : CreatureGroup::AddMember: Adding unit %u.", member->getGuid());
 
     //Check if it is a leader
     if (member->getSpawnId() == _leaderSpawnId)
@@ -263,7 +263,7 @@ void CreatureGroup::formationReset(bool dismiss)
                 pair.first->getMovementManager()->initialize();
             else
                 pair.first->getMovementManager()->moveIdle();
-            sLogger.debug("FormationMgr : CreatureGroup::FormationReset: Set %s movement for member %s", dismiss ? "default" : "idle", pair.first->getGuid());
+            sLogger.debug("FormationMgr : CreatureGroup::FormationReset: Set %s movement for member %u", dismiss ? "default" : "idle", pair.first->getGuid());
         }
     }
 
