@@ -778,7 +778,7 @@ void WorldSession::handleBuyBankSlotOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BUY_BANK_SLOT: %u (guidLow)", srlPacket.guid.getGuidLow());
 
-    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLow());
+    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr || !creature->isBanker())
     {
         SendPacket(SmsgBuyBankSlotResult(BankslotError::NotABanker).serialise().get());
