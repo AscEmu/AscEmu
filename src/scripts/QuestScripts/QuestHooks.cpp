@@ -349,6 +349,19 @@ void InvasionPointCataclysm(Player* pPlayer, uint32_t /*AreaTrigger*/)
         pPlayer->SafeTeleport(530, 0, -2723.674561f, 1952.664673f, 146.939743f, 3.185559f);
 }
 
+void TheAffray(Player* pPlayer, uint32_t /*AreaTrigger*/)
+{
+    if (pPlayer->hasQuestInQuestLog(1719))
+    {
+        Creature* twiggy = pPlayer->GetMapMgr()->GetInterface()->findNearestCreature(pPlayer, 6248, 30.0f);
+        if (twiggy && twiggy->GetScript())
+        {
+            twiggy->GetScript()->SetCreatureData64(1, pPlayer->getGuid());
+            twiggy->GetScript()->DoAction(1);
+        }
+    }
+}
+
 void Scratches(Player* pPlayer, uint32_t /*AreaTrigger*/)
 {
     if (auto* questLog = pPlayer->getQuestLogByQuestId(10556))
@@ -373,6 +386,9 @@ void OnAreaTrigger(Player* pPlayer, uint32_t AreaTrigger)
             break;
         case 4560:
             InvasionPointCataclysm(pPlayer, 4560);
+            break;
+        case 522:
+            TheAffray(pPlayer, 522);
             break;
     }
 }

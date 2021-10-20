@@ -139,9 +139,247 @@ public:
     }
 };
 
+enum TwiggyFlatheadInfo
+{
+    NPC_BIG_WILL = 6238,
+    NPC_AFFRAY_CHALLENGER = 6240,
+
+    SAY_BIG_WILL_READY = 3375,
+    SAY_TWIGGY_FLATHEAD_BEGIN = 3376,
+    SAY_TWIGGY_FLATHEAD_FRAY = 3377,
+    SAY_TWIGGY_FLATHEAD_DOWN = 3378,
+    SAY_TWIGGY_FLATHEAD_OVER = 3379
+};
+
+LocationVector const AffrayChallengerLoc[6] =
+{
+    {-1683.0f, -4326.0f, 2.79f, 0.0f},
+    {-1682.0f, -4329.0f, 2.79f, 0.0f},
+    {-1683.0f, -4330.0f, 2.79f, 0.0f},
+    {-1680.0f, -4334.0f, 2.79f, 1.49f},
+    {-1674.0f, -4326.0f, 2.79f, 3.49f},
+    {-1677.0f, -4334.0f, 2.79f, 1.66f}
+};
+
+class TwiggyFlathead : public CreatureAIScript
+{
+public:
+    static CreatureAIScript* Create(Creature* c) { return new TwiggyFlathead(c); }
+    explicit TwiggyFlathead(Creature* pCreature) : CreatureAIScript(pCreature) {}
+
+    void OnLoad() override
+    {
+        initialize();
+    }
+
+    void reset()
+    {
+        initialize();
+    }
+
+    void initialize()
+    {
+        eventInProgress = false;
+        eventGrate = false;
+        eventBigWill = false;
+        WaveTimer = 600000;
+        ChallengerChecker = 0;
+        Wave = 0;
+        pPlayer = nullptr;
+
+        for (uint8_t i = 0; i < 6; ++i)
+        {
+            affrayChallenger[i] = nullptr;
+            challengerDown[i] = false;
+        }
+
+        bigWill = nullptr;
+    }
+
+    void SetCreatureData64(uint32_t Type, uint64_t Data) override
+    {
+        switch (Type)
+        {
+        case 1:
+            if (!eventInProgress)
+            {
+                Player* warrior = getCreature()->GetMapMgrPlayer(Data);
+
+                if (warrior)
+                    pPlayer = warrior;
+            }
+            break;
+        }
+    }
+
+    void AIUpdate() override
+    {
+        if (eventInProgress)
+        {
+            Player* warrior = nullptr;
+
+            if (pPlayer)
+                warrior = pPlayer;
+
+            if (!warrior || !warrior->hasQuestInQuestLog(1719))
+            {
+                despawnAndUnsummon();
+                reset();
+                return;
+            }
+
+            if (!warrior->isAlive() && warrior->getQuestLogByQuestId(1719)->getQuestState() == QUEST_INCOMPLETE)
+            {
+                sendDBChatMessage(SAY_TWIGGY_FLATHEAD_DOWN);
+                warrior->getQuestLogByQuestId(1719)->sendQuestFailed(true);
+                despawnAndUnsummon();
+                reset();
+            }
+
+            if (!eventGrate && eventInProgress)
+            {
+                float x, y, z;
+                warrior->getPosition(x, y, z);
+
+                if (x >= -1684 && x <= -1674 && y >= -4334 && y <= -4324)
+                {
+                    warrior->AreaExploredOrEventHappens(1719);
+                    sendDBChatMessage(SAY_TWIGGY_FLATHEAD_BEGIN, warrior);
+
+                    for (uint8_t i = 0; i < 6; ++i)
+                    {
+                        Creature* creature = spawnCreature(NPC_AFFRAY_CHALLENGER, AffrayChallengerLoc[i]);
+                        if (!creature)
+                            continue;
+
+                        creature->SetFaction(35);
+                        creature->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
+                        creature->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
+                        creature->emote(EMOTE_ONESHOT_ROAR);
+                        creature->Despawn(600000, 0);
+                        affrayChallenger[i] = creature;
+                    }
+                    WaveTimer = 5000;
+                    ChallengerChecker = 1000;
+                    eventGrate = true;
+                }
+            }
+            else if (eventInProgress)
+            {
+                if (ChallengerChecker <= GetAIUpdateFreq())
+                {
+                    for (uint8_t i = 0; i < 6; ++i)
+                    {
+                        if (affrayChallenger[i])
+                        {
+                            Creature* creature = affrayChallenger[i];
+                            if ((!creature || (!creature->isAlive())) && !challengerDown[i])
+                            {
+                                sendDBChatMessage(3378);
+                                challengerDown[i] = true;
+                            }
+                        }
+                    }
+                    ChallengerChecker = 1000;
+                }
+                else ChallengerChecker -= GetAIUpdateFreq();
+
+                if (WaveTimer <= GetAIUpdateFreq())
+                {
+                    if (Wave < 6 && affrayChallenger[Wave] && !eventBigWill)
+                    {
+                        sendDBChatMessage(3377);
+                        Creature* creature = affrayChallenger[Wave];
+                        if (creature && (creature->isAlive()))
+                        {
+                            creature->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
+                            creature->removeUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
+                            creature->emote(EMOTE_ONESHOT_ROAR);
+                            creature->SetFaction(14);
+
+                            creature->GetAIInterface()->onHostileAction(warrior);
+                            ++Wave;
+                            WaveTimer = 20000;
+                        }
+                    }
+                    else if (Wave >= 6 && !eventBigWill)
+                    {
+                        if (Creature* creature = spawnCreature(NPC_BIG_WILL, -1722, -4341, 6.12f, 6.26f))
+                        {
+                            bigWill = creature;
+                            creature->getMovementManager()->movePoint(0, -1682, -4329, 2.79f);
+                            creature->emote(EMOTE_STATE_READYUNARMED);
+                            creature->Despawn(480000, 0);
+                            eventBigWill = true;
+                            WaveTimer = 1000;
+                        }
+                    }
+                    else if (Wave >= 6 && eventBigWill && bigWill)
+                    {
+                        Creature* creature = bigWill;
+                        if (!creature || !creature->isAlive())
+                        {
+                            sendDBChatMessage(SAY_TWIGGY_FLATHEAD_OVER);
+                            reset();
+                        }
+                        else if(!creature->GetAIInterface()->isEngaged()) // Makes BIG WILL attackable.
+                        {
+                            creature->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
+                            creature->removeUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
+                            creature->SendScriptTextChatMessage(SAY_BIG_WILL_READY);
+                            creature->emote(EMOTE_ONESHOT_ROAR);
+                            creature->SetFaction(14);
+                            creature->GetAIInterface()->onHostileAction(warrior);
+                        }
+                    }
+                }
+                else WaveTimer -= GetAIUpdateFreq();
+            }
+        }
+    }
+
+    void despawnAndUnsummon()
+    {
+        for (uint8_t i = 0; i < 6; ++i) // unsummon challengers
+        {
+            if (affrayChallenger[i])
+            {
+                if (affrayChallenger[i] && affrayChallenger[i]->isAlive())
+                    affrayChallenger[i]->Despawn(0, 0);
+            }
+        }
+
+        if (bigWill) // unsummon bigWill
+        {
+            if (bigWill && bigWill->isAlive())
+                bigWill->Despawn(0, 0);
+        }
+    }
+
+    void DoAction(int32_t const action) override
+    {
+        if (action == 1 && !eventInProgress)
+        {
+            eventInProgress = true;
+        }
+    }
+
+    bool eventInProgress;
+    bool eventGrate;
+    bool eventBigWill;
+    bool challengerDown[6];
+    uint8_t Wave;
+    uint32_t WaveTimer;
+    uint32_t ChallengerChecker;
+    Player* pPlayer;
+    Creature* affrayChallenger[6];
+    Creature* bigWill;
+};
+
 void SetupWarrior(ScriptMgr* mgr)
 {
     mgr->register_quest_script(1713, new TheSummoning());
     mgr->register_creature_script(6090, &Bartleby::Create);
     mgr->register_quest_script(1640, new BeatBartleby());
+    mgr->register_creature_script(6248, &TwiggyFlathead::Create);
 }

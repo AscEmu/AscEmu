@@ -52,6 +52,7 @@ public:
     bool isUnitAffected(Unit* unit) const;
     void addAffectedUnit(Unit* unit);
     void clearAffectedUnits();
+    uint32_t getQuestState() { return m_state; }
 
     bool canBeFinished() const;
     void finishAndRemove();

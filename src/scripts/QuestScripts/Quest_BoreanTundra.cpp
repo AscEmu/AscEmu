@@ -650,6 +650,32 @@ public:
     }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Fuelling the Project (Quest: 11715)
+bool PlaceOil(uint8_t /*effectIndex*/, Spell* pSpell)
+{
+    Player* pPlayer = pSpell->getPlayerCaster();
+    if (pPlayer == nullptr)
+        return true;
+
+    Creature* pCreature = pSpell->GetTargetConstraintCreature();
+    auto* questLog = pPlayer->getQuestLogByQuestId(11715);
+    if (questLog == nullptr)
+        return true;
+
+    if (pCreature->getEntry() == 25781)
+    {
+        if (questLog->getMobCountByIndex(0) < questLog->getQuestProperties()->required_mob_or_go_count[0])
+        {
+            pCreature->castSpell(pCreature, 45991,false);
+            pCreature->Despawn(10000, pCreature->GetCreatureProperties()->RespawnTime);
+            pPlayer->AddQuestKill(11715, 0, 0);
+        }
+    }
+
+    return true;
+}
+
 void SetupBoreanTundra(ScriptMgr* mgr)
 {
     // Call to Arms!
@@ -695,4 +721,7 @@ void SetupBoreanTundra(ScriptMgr* mgr)
     // Quest: Plug the Sinkholes
     mgr->register_dummy_spell(46797, &PlaceCart);
     mgr->register_creature_script(26250, &Worm::Create);
+
+    // Quest: Fueling the Project
+    mgr->register_dummy_spell(45990, &PlaceOil);
 }
