@@ -1488,7 +1488,7 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
     data << itemProperties->RandomPropId;
     data << itemProperties->RandomSuffixId;
     data << itemProperties->Block;
-    data << sMySQLStore.getItemSetLinkedBonus(itemProperties->ItemSet);
+    data << itemProperties->ItemSet;
     data << itemProperties->MaxDurability;
     data << itemProperties->ZoneNameID;
     data << itemProperties->MapID;
