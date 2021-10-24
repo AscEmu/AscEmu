@@ -30,7 +30,9 @@ endif()
 include(${CMAKE_SOURCE_DIR}/cmake/Options.cmake)
 
 # perform system tasks
-#include(${CMAKE_SOURCE_DIR}/cmake/CheckSystem.cmake) #sch: fix windows 
+if (NOT WIN32) #sch: need a fix for windows
+include(${CMAKE_SOURCE_DIR}/cmake/CheckSystem.cmake)
+endif()
 
 # set RPATH-handing (CMake parameters)
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
