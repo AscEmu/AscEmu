@@ -10,14 +10,6 @@
 - Web: https://github.com/memononen/recastnavigation
 - Version: 64385e9ed0822427bca5814d03a3f4c4d7a6db9f (2016/08/17)  
 
-## Folder: OpenSSL
-- Web: https://www.openssl.org
-- Version: 1.0.2n (2017-12-7)
-
-## Folder: MySQL Connector/C
-- Web: http://www.mysql.com
-- Version: 6.1.11 (2017-07-13)
-
 ## Folder: zlib
 - Web: http://www.zlib.net
 - Version: 1.2.11 (2017/01/15)
