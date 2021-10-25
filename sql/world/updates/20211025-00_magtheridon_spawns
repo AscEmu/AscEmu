@@ -1,0 +1,2 @@
+DELETE FROM `creature_spawns` WHERE (`entry`='17454') AND (`map`='544');
+INSERT INTO `world_db_version` (`id`, `LastUpdate`) VALUES ('95', '20211025-00_magtheridon_spawns');

@@ -514,7 +514,7 @@ public:
     void eventEnterCombat(Unit* pUnit, uint32_t misc1);
     void eventOnLoad();
     void eventChangeFaction(Unit* ForceAttackersToHateThisInstead = NULL);    /// we have to tell our current enemies to stop attacking us, we should also forget about our targets
-    void onDeath(Object* pKiller);
+    void eventOnTargetDied(Object* pKiller);
 
     // Update
     void Update(unsigned long time_passed);

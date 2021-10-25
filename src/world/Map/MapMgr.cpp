@@ -303,6 +303,10 @@ void MapMgr::PushObject(Object* obj)
             }
         }
 
+        // Forced Cells
+        for (auto& cell : m_forcedcells)
+            UpdateInRangeSet(obj, plObj, cell, &buf);
+
         //Add to the cell's object list
         objCell->AddObject(obj);
 
@@ -943,6 +947,10 @@ float MapMgr::GetUpdateDistance(Object* curObj, Object* obj, Player* plObj)
         return no_distance;
     // unlimited distance for transporters (only up to 2 cells +/- anyway.)
     if (curObj->GetTypeFromGUID() == HIGHGUID_TYPE_TRANSPORTER)
+        return no_distance;
+
+    // unlimited distance in Instances/Raids
+    if (GetMapInfo()->isInstanceMap())
         return no_distance;
 
     //If the object announcing its position is a transport, or other special object, then deleting it from visible objects should be avoided. - By: VLack
@@ -2250,20 +2258,181 @@ void MapMgr::RemoveCombatInProgress(uint64 guid)
     _combatProgress.erase(guid);
 }
 
-void MapMgr::AddForcedCell(MapCell* c)
+void MapMgr::addForcedCell(MapCell* c)
 {
-    uint8 cellNumber = worldConfig.server.mapCellNumber;
+    uint8_t cellNumber = worldConfig.server.mapCellNumber;
 
     m_forcedcells.insert(c);
     UpdateCellActivity(c->GetPositionX(), c->GetPositionY(), cellNumber);
 }
 
-void MapMgr::RemoveForcedCell(MapCell* c)
+void MapMgr::removeForcedCell(MapCell* c)
 {
-    uint8 cellNumber = worldConfig.server.mapCellNumber;
+    uint8_t cellNumber = worldConfig.server.mapCellNumber;
 
     m_forcedcells.erase(c);
     UpdateCellActivity(c->GetPositionX(), c->GetPositionY(), cellNumber);
+}
+
+void MapMgr::addForcedCell(MapCell* c, uint32_t range)
+{
+    m_forcedcells.insert(c);
+    UpdateCellActivity(c->GetPositionX(), c->GetPositionY(), range);
+}
+
+void MapMgr::removeForcedCell(MapCell* c, uint32_t range)
+{
+    m_forcedcells.erase(c);
+    UpdateCellActivity(c->GetPositionX(), c->GetPositionY(), range);
+}
+
+bool MapMgr::cellHasAreaID(uint32_t CellX, uint32_t CellY, uint16_t &AreaID)
+{
+    int32_t TileX = CellX / 8;
+    int32_t TileY = CellY / 8;
+
+    if (!_terrain->areTilesValid(TileX, TileY))
+        return false;
+
+    int32_t OffsetTileX = TileX - _terrain->TileStartX;
+    int32_t OffsetTileY = TileY - _terrain->TileStartY;
+
+    uint32_t areaid = 0;
+    bool Required = false;
+    bool Result = false;
+
+    if (!_terrain->tileLoaded(OffsetTileX, OffsetTileY))
+        Required = true;
+
+    if (Required)
+    {
+        _terrain->LoadTile(TileX, TileY);
+        _terrain->LoadTile(TileX, TileY);
+        return Result;
+    }
+
+    for (uint32_t xc = (CellX%CellsPerTile) * 16 / CellsPerTile; xc < (CellX%CellsPerTile) * 16 / CellsPerTile + 16 / CellsPerTile; xc++)
+    {
+        for (uint32_t yc = (CellY%CellsPerTile) * 16 / CellsPerTile; yc < (CellY%CellsPerTile) * 16 / CellsPerTile + 16 / CellsPerTile; yc++)
+        {
+            areaid = _terrain->GetTile(OffsetTileX, OffsetTileY)->m_map.m_areaMap[yc * 16 + xc];
+            if (areaid)
+            {
+                AreaID = areaid;
+                Result = true;
+                break;
+            }
+        }
+    }
+
+    if (Required)
+        _terrain->UnloadTile(TileX, TileY);
+
+    return Result;
+}
+
+void MapMgr::updateAllCells(bool apply, uint32_t areamask)
+{
+    uint16_t AreaID = 0;
+    MapCell* cellInfo;
+    CellSpawns* spawns;
+    uint32_t StartX = 0, EndX = 0, StartY = 0, EndY = 0;
+    _terrain->getCellLimits(StartX, EndX, StartY, EndY);
+
+    if (!areamask)
+        sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Updating all cells for map %03u, server might lag.", GetMapId());
+
+    for (uint32_t x = StartX; x < EndX; x++)
+    {
+        for (uint32_t y = StartY; y < EndY; y++)
+        {
+            if (areamask)
+            {
+                if (!cellHasAreaID(x, y, AreaID))
+                    continue;
+
+                auto at = sAreaStore.LookupEntry(AreaID);
+                if (at == nullptr)
+                    continue;
+                if (at->zone != areamask)
+                    if (at->id != areamask)
+                        continue;
+                AreaID = 0;
+            }
+
+            cellInfo = GetCell(x, y);
+            if (apply)
+            {
+                if (!cellInfo)
+                {   // Cell doesn't exist, create it.
+                    cellInfo = Create(x, y);
+                    cellInfo->Init(x, y, this);
+                    sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Created cell [%u,%u] on map %u (instance %u).", x, y, GetMapId(), m_instanceID);
+                }
+                
+                spawns = _map->GetSpawnsList(x, y);
+                if (spawns)
+                {
+                    addForcedCell(cellInfo, 1);
+
+                    if (!cellInfo->IsLoaded())
+                        cellInfo->LoadObjects(spawns);
+                }
+            }
+            else
+            {
+                if (!cellInfo)
+                    continue;
+
+                removeForcedCell(cellInfo, 1);
+            }
+        }
+    }
+
+    if (!areamask)
+        sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Cell updating success for map %03u", _mapId);
+}
+
+void MapMgr::updateAllCells(bool apply)
+{
+    MapCell* cellInfo;
+    CellSpawns* spawns;
+    uint32_t StartX = 0, EndX = 0, StartY = 0, EndY = 0;
+    _terrain->getCellLimits(StartX, EndX, StartY, EndY);
+
+    for (uint32_t x = StartX; x < EndX; x++)
+    {
+        for (uint32_t y = StartY; y < EndY; y++)
+        {
+            cellInfo = GetCell(x, y);
+            if (apply)
+            {
+                if (!cellInfo)
+                {   // Cell doesn't exist, create it.
+                    cellInfo = Create(x, y);
+                    cellInfo->Init(x, y, this);
+                    sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Created cell [%u,%u] on map %u (instance %u).", x, y, GetMapId(), m_instanceID);
+                }
+
+                spawns = _map->GetSpawnsList(cellInfo->GetPositionX(), cellInfo->GetPositionY());
+                if (spawns)
+                {
+                    addForcedCell(cellInfo, 1);
+
+                    if (!cellInfo->IsLoaded())
+                        cellInfo->LoadObjects(spawns);
+                }
+            }
+            else
+            {
+                if (!cellInfo)
+                    continue;
+
+                removeForcedCell(cellInfo, 1);
+            }
+        }
+    }
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Cell updating success for map %03u", _mapId);
 }
 
 float MapMgr::GetFirstZWithCPZ(float x, float y, float z)
