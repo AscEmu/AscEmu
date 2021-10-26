@@ -23,6 +23,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include <G3D/Quat.h>
+#include "Macros/ScriptMacros.hpp"
 #include "Map/MapCell.h"
 #include "Map/MapMgr.h"
 #include "Faction.h"

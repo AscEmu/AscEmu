@@ -20,6 +20,7 @@
  */
 
 #include "Objects/DynamicObject.h"
+#include "Macros/ScriptMacros.hpp"
 #include "Management/AuctionMgr.h"
 #include "Management/QuestMgr.h"
 #include "Management/Quest.h"

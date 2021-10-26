@@ -26,6 +26,7 @@
 #include "Units/Summons/Summon.h"
 #include "Units/Summons/TotemSummon.h"
 #include "Objects/DynamicObject.h"
+#include "Macros/ScriptMacros.hpp"
 #include "Management/HonorHandler.h"
 #include "Management/Item.h"
 #include "Management/Container.h"

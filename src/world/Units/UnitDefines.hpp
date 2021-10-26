@@ -20,6 +20,7 @@
 
 #include "CommonTypes.hpp"
 #include "LocationVector.h"
+#include "WorldConf.h"
 
 // APGL Ends
 // MIT Start

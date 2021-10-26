@@ -5,6 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <cstdint>
+#include <list>
+#include "Network/NetworkIncludes.hpp"
+#include <string>
+#include "Threading/Mutex.h"
+
 struct IPBan
 {
     unsigned int Mask;

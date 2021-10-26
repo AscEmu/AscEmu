@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
+#include "Macros/ScriptMacros.hpp"
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
 #include "Spell/SpellMgr.hpp"

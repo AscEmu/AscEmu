@@ -23,6 +23,7 @@
 #include "Units/Creatures/Vehicle.h"
 #include "Server/EventableObject.h"
 #include "Objects/DynamicObject.h"
+#include "Macros/ScriptMacros.hpp"
 #include "Management/Item.h"
 #include "Units/Stats.h"
 #include "Server/WorldSocket.h"
