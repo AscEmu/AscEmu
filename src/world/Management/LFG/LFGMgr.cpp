@@ -283,7 +283,7 @@ void LfgMgr::Update(uint32 diff)
                         Group* grp = player->getGroup();
                         if (grp)
                         {
-                            uint64 gguid = grp->GetGUID();
+                            uint64 gguid = grp->GetID();
                             SetState(gguid, LFG_STATE_PROPOSAL);
                             player->GetSession()->sendLfgUpdateParty(LfgUpdateData(LFG_UPDATETYPE_PROPOSAL_BEGIN, GetSelectedDungeons(guid), GetComment(guid)));
                         }
@@ -477,7 +477,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
 
     Group* grp = player->getGroup();
     uint64 guid = player->getGuid();
-    uint64 gguid = grp ? grp->GetGUID() : guid;
+    uint64 gguid = grp ? grp->GetID() : guid;
     LfgJoinResultData joinData;
     PlayerSet players;
     Player* plr = nullptr;
@@ -761,7 +761,7 @@ void LfgMgr::Leave(Player* player, Group* grp /* = NULL*/)
         return;
     }
 
-    uint64 guid = grp ? grp->GetGUID() : player->getGuid();
+    uint64 guid = grp ? grp->GetID() : player->getGuid();
     LfgState state = GetState(guid);
 
     sLogger.debug("%u", guid);
@@ -830,7 +830,7 @@ void LfgMgr::OfferContinue(Group* grp)
 {
     if (grp)
     {
-        uint64 gguid = grp->GetGUID();
+        uint64 gguid = grp->GetID();
         if (Player* leader = sObjectMgr.GetPlayer(grp->GetLeader()->guid))
         {
             leader->GetSession()->sendLfgOfferContinue(GetDungeon(gguid, false));
@@ -1427,7 +1427,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
 
             // Only teleport new players
             Group* grp = player->getGroup();
-            uint64 gguid = grp ? grp->GetGUID() : 0;
+            uint64 gguid = grp ? grp->GetID() : 0;
             if (!gguid || !grp->isLFGGroup() || GetState(gguid) == LFG_STATE_FINISHED_DUNGEON)
                 playersToTeleport.push_back(player);
         }
@@ -1500,11 +1500,11 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
 
 #if VERSION_STRING < Cata
                 DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(pProposal->dungeonId);
-                SetDungeon(grp->GetGUID(), dungeon->Entry());
+                SetDungeon(grp->GetID(), dungeon->Entry());
 #endif
 
                 // uint32 low_gguid = grp->GetID();
-                uint64 gguid = grp->GetGUID();
+                uint64 gguid = grp->GetID();
                 SetState(gguid, LFG_STATE_PROPOSAL);
                 grp->AddMember(player->getPlayerInfo());
                 sLogger.debug("Add Player In Group %s", player->getName().c_str());
@@ -1560,7 +1560,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
         if (grp == nullptr) // something went definitely wrong if we end up here... I'm sure it is just bad code design.
             return;
 
-        uint64 gguid = grp->GetGUID();
+        uint64 gguid = grp->GetID();
 #if VERSION_STRING < Cata
         SetDungeon(gguid, dungeon->ID);
 #endif
@@ -1691,7 +1691,7 @@ void LfgMgr::InitBoot(Group* grp, uint64 kicker, uint64 victim, std::string reas
 {
     if (!grp)
         return;
-    uint64 gguid = grp->GetGUID();
+    uint64 gguid = grp->GetID();
     SetState(gguid, LFG_STATE_BOOT);
 
     LfgPlayerBoot* pBoot = new LfgPlayerBoot();
@@ -1832,7 +1832,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
     else
     {
 #if VERSION_STRING < Cata
-        uint64 gguid = grp->GetGUID();
+        uint64 gguid = grp->GetID();
         DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(GetDungeon(gguid));
 
         if (!dungeon)
@@ -1909,7 +1909,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
     }
 
     uint64 guid = player->getGuid();
-    uint64 gguid = player->getGroup()->GetGUID();
+    uint64 gguid = player->getGroup()->GetID();
     uint32 gDungeonId = GetDungeon(gguid, true);
     if (gDungeonId != dungeonId)
     {
