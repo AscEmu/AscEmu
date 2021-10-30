@@ -82,7 +82,6 @@ enum CreatureSpells
     SPELL_CAMERA_SHAKE                  = 36455,
     SPELL_BERSERK                       = 27680,
     SPELL_QUAKE                         = 30657,
-    SPELL_DEBRIS_SERVERSIDE             = 30630,
 
     // Player or Manticron Cube
     SPELL_SHADOW_CAGE                   = 30168,
@@ -101,6 +100,15 @@ enum CreatureSpells
     SPELL_SOUL_TRANSFER                 = 30531,
     SPELL_FEAR                          = 30530,
 
+    // Hellfire Warder
+    HW_SHADOW_BOLT_VOLLEY               = 36275, // 39175
+    SHADOW_WORD_PAIN                    = 34441,
+    UNSTABLE_AFFLICTION                 = 35183,
+    DEATH_COIL                          = 33130,
+    RAIN_OF_FIRE                        = 34435,
+    HW_FEAR                             = 34259, // this one is probably wrong
+    SHADOW_BURST                        = 34436,
+
     // WorldTrigger
     SPELL_DEBRIS_KNOCKDOWN              = 36449,
 
@@ -115,7 +123,8 @@ enum CreatureSpells
 enum Actions
 {
     ACTION_ENABLE                       = 1,
-    ACTION_DISABLE                      = 2
+    ACTION_DISABLE                      = 2,
+    ACTION_START_CHANNELERS_EVENT       = 3
 };
 
 enum DataTypes
@@ -125,7 +134,8 @@ enum DataTypes
     DATA_MAGTHERIDON_HALL               = 2,
     DATA_MANTICRON_CUBE                 = 3,
     DATA_COLLAPSE                       = 4,
-    DATA_COLLAPSE_2                     = 5
+    DATA_COLLAPSE_2                     = 5,
+    DATA_DOOR                           = 6
 };
 
 enum Events
@@ -146,8 +156,6 @@ enum Events
     // Hellfire Channelers events
     EVENT_SHADOWBOLT,
     EVENT_FEAR1,
-    EVENT_CHECK_FRIEND,
-    EVENT_DARK_MENDING,
     EVENT_ABYSSAL
 };
 

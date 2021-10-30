@@ -636,6 +636,9 @@ void AIInterface::Update(unsigned long time_passed)
     if (m_Unit->isPlayer() || m_Unit->GetMapMgr() == nullptr)
         return;
 
+    // Call new AIUpdate function
+    CALL_SCRIPT_EVENT(m_Unit, AIUpdate)(time_passed);
+
     if (getAiState() == AI_STATE_FEAR)
         return;
 
