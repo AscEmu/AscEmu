@@ -1977,10 +1977,19 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             {
                 // Spell requires an explicit target
                 // Most these spells are casted from items and then client does NOT send target guid in cast spell packet
-                // Use player's selection guid as target
                 Unit* creatureTarget = nullptr;
                 if (p_caster != nullptr)
+                {
+                    // If caster is player, use player's selected target
                     creatureTarget = p_caster->GetMapMgrUnit(p_caster->getTargetGuid());
+                }
+                else if (u_caster != nullptr)
+                {
+                    // If caster is creature, use the one set in castSpell function
+                    creatureTarget = u_caster->GetMapMgrUnit(m_targets.getUnitTarget());
+                    if (creatureTarget == nullptr)
+                        creatureTarget = u_caster->GetMapMgrUnit(u_caster->getTargetGuid());
+                }
 
                 if (creatureTarget == nullptr)
                     continue;

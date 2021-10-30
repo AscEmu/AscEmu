@@ -4332,8 +4332,19 @@ bool Unit::canSee(Object* const obj)
     ////////////////////////////
     // Invisibility detection
 
+    if (obj->isCreatureOrPlayer())
+    {
+        // Players should never see these types of invisible units
+        // Creatures need to be able to see them so invisible triggers can cast spells on visible targets
+        if (meUnit->isPlayer() && unitTarget->getInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE) > 0)
+            return false;
+    }
+
     for (uint8_t i = 0; i < INVIS_FLAG_TOTAL; ++i)
     {
+        if (i == INVIS_FLAG_NEVER_VISIBLE)
+            continue;
+
         auto unitInvisibilityValue = meUnit->getInvisibilityLevel(InvisibilityFlag(i));
         auto unitInvisibilityDetection = meUnit->getInvisibilityDetection(InvisibilityFlag(i));
         auto objectInvisibilityValue = 0;

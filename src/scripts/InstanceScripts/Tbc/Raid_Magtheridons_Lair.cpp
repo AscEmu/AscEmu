@@ -163,11 +163,6 @@ public:
 
         if (Creature* trigger = _gameobject->GetMapMgr()->GetInterface()->findNearestCreature(pPlayer, NPC_HELFIRE_RAID_TRIGGER, 10.0f))
         {
-            trigger->setTargetGuid(Instance->magtheridon->getGuid());
-
-            trigger->setChannelObjectGuid(Instance->magtheridon->getGuid());
-            trigger->setChannelSpellId(SPELL_SHADOW_GRASP_VISUAL);
-
             trigger->castSpell(Instance->magtheridon, SPELL_SHADOW_GRASP_VISUAL, true);
         }
 

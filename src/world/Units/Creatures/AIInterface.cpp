@@ -1638,6 +1638,10 @@ SpellCastTargets AIInterface::setSpellTargets(SpellInfo const* /*spellInfo*/, Un
 //function is designed to make a quick check on target to decide if we can attack it
 bool AIInterface::canOwnerAttackUnit(Unit* pUnit)
 {
+    // Creature should not attack permanently invisible units
+    if (pUnit->getInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE) > 0)
+        return false;
+
     if (!isHostile(m_Unit, pUnit))
         return false;
 
