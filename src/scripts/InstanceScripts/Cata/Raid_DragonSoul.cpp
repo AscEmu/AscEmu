@@ -12,6 +12,12 @@ class DragonSoulInstanceScript : public InstanceScript
 public:
     explicit DragonSoulInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new DragonSoulInstanceScript(pMapMgr); }
+
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
 };
 
 void SetupDragonSoul(ScriptMgr* mgr)

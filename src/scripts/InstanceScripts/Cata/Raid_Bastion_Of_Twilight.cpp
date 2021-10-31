@@ -12,6 +12,12 @@ class BastionOfTwilightInstanceScript : public InstanceScript
 public:
     explicit BastionOfTwilightInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new BastionOfTwilightInstanceScript(pMapMgr); }
+
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
 };
 
 void SetupBastionOfTwilight(ScriptMgr* mgr)

@@ -12,6 +12,12 @@ class HallsOfOriginationInstanceScript : public InstanceScript
 public:
     explicit HallsOfOriginationInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new HallsOfOriginationInstanceScript(pMapMgr); }
+
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
 };
 
 void SetupHallsOfOrigination(ScriptMgr* mgr)

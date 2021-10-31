@@ -12,6 +12,12 @@ class HourOfTwilightInstanceScript : public InstanceScript
 public:
     explicit HourOfTwilightInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new HourOfTwilightInstanceScript(pMapMgr); }
+
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
 };
 
 void SetupHourOfTwilight(ScriptMgr* mgr)
