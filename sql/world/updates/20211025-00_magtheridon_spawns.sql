@@ -1,331 +1,335 @@
 DELETE FROM `creature_spawns` WHERE (`entry`='17454') AND (`map`='544');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('29', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('30', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('31', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('32', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('33', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('34', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('35', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('36', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('37', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('38', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('39', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('40', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('41', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('42', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('43', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('44', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('45', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('46', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('47', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('48', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('49', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('50', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('51', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('52', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('53', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('54', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('55', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('56', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('57', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('58', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('59', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('60', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '2', '17380');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('61', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '2', '17380');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('62', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '2', '17380');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('63', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '2', '17380');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('64', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('65', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('66', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('67', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('68', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('69', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('70', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('71', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('72', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('73', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '2', '17377');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('75', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('76', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('77', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('78', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('79', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('80', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('81', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('82', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('83', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('84', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('85', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('86', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('87', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('88', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '1', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('89', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '1', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('90', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '1', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('91', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '1', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('91', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '2', '16807');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('92', 'Hellfire Ramparts Shatted Halls ( Proung )', '1', '1', '20923');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('93', 'Hellfire Ramparts Shatted Halls ( Proung )', '1', '1', '20923');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('94', 'Hellfire Ramparts Shatted Halls ( Proung )', '1', '1', '20923');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('95', 'Hellfire Ramparts Shatted Halls ( Proung )', '1', '1', '20923');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('96', 'Hellfire Ramparts Shatted Halls ( Proung )', '1', '1', '20923');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('97', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '0', '16809');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('98', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '1', '16809');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('99', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '1', '16809');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('100', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '0', '16809');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('101', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '1', '16809');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('102', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '1', '16809');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('103', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '1', '16809');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('104', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '1', '16809');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('105', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '1', '16809');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('106', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '1', '16809');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('107', 'Hellfire Ramparts Shatted Halls ( Warchief Kargath Bladefist )', '1', '0', '16808');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('108', 'Magtheridons Lair Channelers', '1', '2', '17257');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('109', 'Magtheridons Lair Trash', '1', '0', '17257');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('110', 'Magtheridons Lair Trash', '1', '0', '17257');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('111', 'Magtheridons Lair Trash', '1', '0', '17257');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('112', 'Magtheridons Lair Trash', '1', '0', '17257');
-INSERT INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES ('113', 'Magtheridons Lair World Trigger', '1', '2', '17257');
-INSERT INTO `creature_group_spawn` VALUES ('29', '72719');
-INSERT INTO `creature_group_spawn` VALUES ('29', '72720');
-INSERT INTO `creature_group_spawn` VALUES ('30', '72721');
-INSERT INTO `creature_group_spawn` VALUES ('30', '72722');
-INSERT INTO `creature_group_spawn` VALUES ('30', '72881');
-INSERT INTO `creature_group_spawn` VALUES ('30', '73159');
-INSERT INTO `creature_group_spawn` VALUES ('31', '72723');
-INSERT INTO `creature_group_spawn` VALUES ('31', '72724');
-INSERT INTO `creature_group_spawn` VALUES ('31', '72884');
-INSERT INTO `creature_group_spawn` VALUES ('31', '72885');
-INSERT INTO `creature_group_spawn` VALUES ('31', '73160');
-INSERT INTO `creature_group_spawn` VALUES ('32', '72725');
-INSERT INTO `creature_group_spawn` VALUES ('32', '72726');
-INSERT INTO `creature_group_spawn` VALUES ('33', '72882');
-INSERT INTO `creature_group_spawn` VALUES ('33', '72883');
-INSERT INTO `creature_group_spawn` VALUES ('33', '73161');
-INSERT INTO `creature_group_spawn` VALUES ('34', '72727');
-INSERT INTO `creature_group_spawn` VALUES ('34', '72728');
-INSERT INTO `creature_group_spawn` VALUES ('35', '72729');
-INSERT INTO `creature_group_spawn` VALUES ('35', '72730');
-INSERT INTO `creature_group_spawn` VALUES ('36', '72731');
-INSERT INTO `creature_group_spawn` VALUES ('36', '72732');
-INSERT INTO `creature_group_spawn` VALUES ('37', '73721');
-INSERT INTO `creature_group_spawn` VALUES ('38', '73720');
-INSERT INTO `creature_group_spawn` VALUES ('39', '73722');
-INSERT INTO `creature_group_spawn` VALUES ('39', '73723');
-INSERT INTO `creature_group_spawn` VALUES ('39', '73728');
-INSERT INTO `creature_group_spawn` VALUES ('40', '72733');
-INSERT INTO `creature_group_spawn` VALUES ('40', '79994');
-INSERT INTO `creature_group_spawn` VALUES ('41', '72878');
-INSERT INTO `creature_group_spawn` VALUES ('41', '72879');
-INSERT INTO `creature_group_spawn` VALUES ('42', '72874');
-INSERT INTO `creature_group_spawn` VALUES ('42', '72875');
-INSERT INTO `creature_group_spawn` VALUES ('42', '72907');
-INSERT INTO `creature_group_spawn` VALUES ('43', '72876');
-INSERT INTO `creature_group_spawn` VALUES ('43', '72877');
-INSERT INTO `creature_group_spawn` VALUES ('43', '72908');
-INSERT INTO `creature_group_spawn` VALUES ('44', '72734');
-INSERT INTO `creature_group_spawn` VALUES ('44', '73725');
-INSERT INTO `creature_group_spawn` VALUES ('44', '73726');
-INSERT INTO `creature_group_spawn` VALUES ('45', '72948');
-INSERT INTO `creature_group_spawn` VALUES ('45', '72949');
-INSERT INTO `creature_group_spawn` VALUES ('45', '73724');
-INSERT INTO `creature_group_spawn` VALUES ('46', '72956');
-INSERT INTO `creature_group_spawn` VALUES ('46', '73716');
-INSERT INTO `creature_group_spawn` VALUES ('46', '73717');
-INSERT INTO `creature_group_spawn` VALUES ('46', '73727');
-INSERT INTO `creature_group_spawn` VALUES ('47', '72950');
-INSERT INTO `creature_group_spawn` VALUES ('47', '72951');
-INSERT INTO `creature_group_spawn` VALUES ('48', '72953');
-INSERT INTO `creature_group_spawn` VALUES ('48', '72954');
-INSERT INTO `creature_group_spawn` VALUES ('49', '72955');
-INSERT INTO `creature_group_spawn` VALUES ('50', '72952');
-INSERT INTO `creature_group_spawn` VALUES ('51', '72886');
-INSERT INTO `creature_group_spawn` VALUES ('51', '72957');
-INSERT INTO `creature_group_spawn` VALUES ('51', '72958');
-INSERT INTO `creature_group_spawn` VALUES ('52', '72887');
-INSERT INTO `creature_group_spawn` VALUES ('52', '72959');
-INSERT INTO `creature_group_spawn` VALUES ('52', '72960');
-INSERT INTO `creature_group_spawn` VALUES ('53', '73729');
-INSERT INTO `creature_group_spawn` VALUES ('53', '73730');
-INSERT INTO `creature_group_spawn` VALUES ('53', '73735');
-INSERT INTO `creature_group_spawn` VALUES ('54', '73715');
-INSERT INTO `creature_group_spawn` VALUES ('54', '73731');
-INSERT INTO `creature_group_spawn` VALUES ('54', '73732');
-INSERT INTO `creature_group_spawn` VALUES ('55', '72888');
-INSERT INTO `creature_group_spawn` VALUES ('55', '72961');
-INSERT INTO `creature_group_spawn` VALUES ('55', '72962');
-INSERT INTO `creature_group_spawn` VALUES ('56', '73733');
-INSERT INTO `creature_group_spawn` VALUES ('56', '73734');
-INSERT INTO `creature_group_spawn` VALUES ('57', '72975');
-INSERT INTO `creature_group_spawn` VALUES ('57', '72976');
-INSERT INTO `creature_group_spawn` VALUES ('57', '73193');
-INSERT INTO `creature_group_spawn` VALUES ('58', '73194');
-INSERT INTO `creature_group_spawn` VALUES ('58', '73197');
-INSERT INTO `creature_group_spawn` VALUES ('59', '73195');
-INSERT INTO `creature_group_spawn` VALUES ('59', '73196');
-INSERT INTO `creature_group_spawn` VALUES ('60', '72889');
-INSERT INTO `creature_group_spawn` VALUES ('60', '72890');
-INSERT INTO `creature_group_spawn` VALUES ('60', '72891');
-INSERT INTO `creature_group_spawn` VALUES ('60', '72892');
-INSERT INTO `creature_group_spawn` VALUES ('61', '72901');
-INSERT INTO `creature_group_spawn` VALUES ('61', '72902');
-INSERT INTO `creature_group_spawn` VALUES ('61', '72903');
-INSERT INTO `creature_group_spawn` VALUES ('61', '72904');
-INSERT INTO `creature_group_spawn` VALUES ('61', '72905');
-INSERT INTO `creature_group_spawn` VALUES ('61', '72906');
-INSERT INTO `creature_group_spawn` VALUES ('62', '72893');
-INSERT INTO `creature_group_spawn` VALUES ('62', '72894');
-INSERT INTO `creature_group_spawn` VALUES ('62', '72895');
-INSERT INTO `creature_group_spawn` VALUES ('63', '72896');
-INSERT INTO `creature_group_spawn` VALUES ('63', '72897');
-INSERT INTO `creature_group_spawn` VALUES ('63', '72898');
-INSERT INTO `creature_group_spawn` VALUES ('63', '72899');
-INSERT INTO `creature_group_spawn` VALUES ('63', '72900');
-INSERT INTO `creature_group_spawn` VALUES ('64', '72735');
-INSERT INTO `creature_group_spawn` VALUES ('64', '72736');
-INSERT INTO `creature_group_spawn` VALUES ('64', '79995');
-INSERT INTO `creature_group_spawn` VALUES ('64', '79996');
-INSERT INTO `creature_group_spawn` VALUES ('64', '79997');
-INSERT INTO `creature_group_spawn` VALUES ('64', '79998');
-INSERT INTO `creature_group_spawn` VALUES ('65', '73713');
-INSERT INTO `creature_group_spawn` VALUES ('65', '73714');
-INSERT INTO `creature_group_spawn` VALUES ('66', '79403');
-INSERT INTO `creature_group_spawn` VALUES ('67', '79401');
-INSERT INTO `creature_group_spawn` VALUES ('67', '79402');
-INSERT INTO `creature_group_spawn` VALUES ('68', '72737');
-INSERT INTO `creature_group_spawn` VALUES ('69', '137396');
-INSERT INTO `creature_group_spawn` VALUES ('69', '137397');
-INSERT INTO `creature_group_spawn` VALUES ('70', '137398');
-INSERT INTO `creature_group_spawn` VALUES ('70', '137399');
-INSERT INTO `creature_group_spawn` VALUES ('71', '137400');
-INSERT INTO `creature_group_spawn` VALUES ('71', '137401');
-INSERT INTO `creature_group_spawn` VALUES ('72', '79404');
-INSERT INTO `creature_group_spawn` VALUES ('72', '79405');
-INSERT INTO `creature_group_spawn` VALUES ('72', '79406');
-INSERT INTO `creature_group_spawn` VALUES ('73', '73762');
-INSERT INTO `creature_group_spawn` VALUES ('73', '73763');
-INSERT INTO `creature_group_spawn` VALUES ('73', '73764');
-INSERT INTO `creature_group_spawn` VALUES ('73', '73765');
-INSERT INTO `creature_group_spawn` VALUES ('73', '73766');
-INSERT INTO `creature_group_spawn` VALUES ('74', '72717');
-INSERT INTO `creature_group_spawn` VALUES ('74', '72718');
-INSERT INTO `creature_group_spawn` VALUES ('75', '67441');
-INSERT INTO `creature_group_spawn` VALUES ('76', '72963');
-INSERT INTO `creature_group_spawn` VALUES ('77', '67442');
-INSERT INTO `creature_group_spawn` VALUES ('77', '137374');
-INSERT INTO `creature_group_spawn` VALUES ('78', '67448');
-INSERT INTO `creature_group_spawn` VALUES ('79', '66835');
-INSERT INTO `creature_group_spawn` VALUES ('79', '66836');
-INSERT INTO `creature_group_spawn` VALUES ('80', '73854');
-INSERT INTO `creature_group_spawn` VALUES ('81', '73855');
-INSERT INTO `creature_group_spawn` VALUES ('82', '67318');
-INSERT INTO `creature_group_spawn` VALUES ('83', '67322');
-INSERT INTO `creature_group_spawn` VALUES ('83', '67323');
-INSERT INTO `creature_group_spawn` VALUES ('83', '69290');
-INSERT INTO `creature_group_spawn` VALUES ('83', '137156');
-INSERT INTO `creature_group_spawn` VALUES ('84', '67321');
-INSERT INTO `creature_group_spawn` VALUES ('84', '69289');
-INSERT INTO `creature_group_spawn` VALUES ('84', '73849');
-INSERT INTO `creature_group_spawn` VALUES ('84', '137154');
-INSERT INTO `creature_group_spawn` VALUES ('85', '67324');
-INSERT INTO `creature_group_spawn` VALUES ('85', '73850');
-INSERT INTO `creature_group_spawn` VALUES ('86', '137155');
-INSERT INTO `creature_group_spawn` VALUES ('87', '66837');
-INSERT INTO `creature_group_spawn` VALUES ('87', '66838');
-INSERT INTO `creature_group_spawn` VALUES ('88', '67443');
-INSERT INTO `creature_group_spawn` VALUES ('88', '67449');
-INSERT INTO `creature_group_spawn` VALUES ('88', '67453');
-INSERT INTO `creature_group_spawn` VALUES ('88', '67454');
-INSERT INTO `creature_group_spawn` VALUES ('88', '72964');
-INSERT INTO `creature_group_spawn` VALUES ('88', '138226');
-INSERT INTO `creature_group_spawn` VALUES ('89', '67317');
-INSERT INTO `creature_group_spawn` VALUES ('89', '67444');
-INSERT INTO `creature_group_spawn` VALUES ('89', '67445');
-INSERT INTO `creature_group_spawn` VALUES ('89', '67450');
-INSERT INTO `creature_group_spawn` VALUES ('89', '67455');
-INSERT INTO `creature_group_spawn` VALUES ('89', '72965');
-INSERT INTO `creature_group_spawn` VALUES ('90', '67446');
-INSERT INTO `creature_group_spawn` VALUES ('90', '67447');
-INSERT INTO `creature_group_spawn` VALUES ('90', '67451');
-INSERT INTO `creature_group_spawn` VALUES ('90', '69291');
-INSERT INTO `creature_group_spawn` VALUES ('90', '69292');
-INSERT INTO `creature_group_spawn` VALUES ('90', '72966');
-INSERT INTO `creature_group_spawn` VALUES ('91', '73710');
-INSERT INTO `creature_group_spawn` VALUES ('91', '73711');
-INSERT INTO `creature_group_spawn` VALUES ('91', '73783');
-INSERT INTO `creature_group_spawn` VALUES ('91', '73784');
-INSERT INTO `creature_group_spawn` VALUES ('91', '73785');
-INSERT INTO `creature_group_spawn` VALUES ('92', '69293');
-INSERT INTO `creature_group_spawn` VALUES ('92', '69294');
-INSERT INTO `creature_group_spawn` VALUES ('92', '69295');
-INSERT INTO `creature_group_spawn` VALUES ('92', '69296');
-INSERT INTO `creature_group_spawn` VALUES ('92', '72972');
-INSERT INTO `creature_group_spawn` VALUES ('92', '72973');
-INSERT INTO `creature_group_spawn` VALUES ('92', '72974');
-INSERT INTO `creature_group_spawn` VALUES ('92', '73048');
-INSERT INTO `creature_group_spawn` VALUES ('93', '73059');
-INSERT INTO `creature_group_spawn` VALUES ('93', '73060');
-INSERT INTO `creature_group_spawn` VALUES ('94', '67315');
-INSERT INTO `creature_group_spawn` VALUES ('94', '67316');
-INSERT INTO `creature_group_spawn` VALUES ('94', '73055');
-INSERT INTO `creature_group_spawn` VALUES ('94', '73056');
-INSERT INTO `creature_group_spawn` VALUES ('94', '73057');
-INSERT INTO `creature_group_spawn` VALUES ('94', '73058');
-INSERT INTO `creature_group_spawn` VALUES ('95', '73049');
-INSERT INTO `creature_group_spawn` VALUES ('95', '73050');
-INSERT INTO `creature_group_spawn` VALUES ('95', '73051');
-INSERT INTO `creature_group_spawn` VALUES ('95', '73052');
-INSERT INTO `creature_group_spawn` VALUES ('96', '73053');
-INSERT INTO `creature_group_spawn` VALUES ('96', '73054');
-INSERT INTO `creature_group_spawn` VALUES ('97', '67313');
-INSERT INTO `creature_group_spawn` VALUES ('97', '67314');
-INSERT INTO `creature_group_spawn` VALUES ('98', '73065');
-INSERT INTO `creature_group_spawn` VALUES ('98', '73066');
-INSERT INTO `creature_group_spawn` VALUES ('98', '73067');
-INSERT INTO `creature_group_spawn` VALUES ('98', '73068');
-INSERT INTO `creature_group_spawn` VALUES ('98', '73078');
-INSERT INTO `creature_group_spawn` VALUES ('99', '73061');
-INSERT INTO `creature_group_spawn` VALUES ('99', '73062');
-INSERT INTO `creature_group_spawn` VALUES ('99', '73063');
-INSERT INTO `creature_group_spawn` VALUES ('99', '73064');
-INSERT INTO `creature_group_spawn` VALUES ('99', '73077');
-INSERT INTO `creature_group_spawn` VALUES ('100', '73708');
-INSERT INTO `creature_group_spawn` VALUES ('100', '73709');
-INSERT INTO `creature_group_spawn` VALUES ('101', '73069');
-INSERT INTO `creature_group_spawn` VALUES ('101', '73070');
-INSERT INTO `creature_group_spawn` VALUES ('101', '73071');
-INSERT INTO `creature_group_spawn` VALUES ('101', '73072');
-INSERT INTO `creature_group_spawn` VALUES ('101', '73079');
-INSERT INTO `creature_group_spawn` VALUES ('102', '73073');
-INSERT INTO `creature_group_spawn` VALUES ('102', '73074');
-INSERT INTO `creature_group_spawn` VALUES ('102', '73075');
-INSERT INTO `creature_group_spawn` VALUES ('102', '73076');
-INSERT INTO `creature_group_spawn` VALUES ('102', '73080');
-INSERT INTO `creature_group_spawn` VALUES ('103', '73786');
-INSERT INTO `creature_group_spawn` VALUES ('103', '73787');
-INSERT INTO `creature_group_spawn` VALUES ('104', '73788');
-INSERT INTO `creature_group_spawn` VALUES ('104', '73789');
-INSERT INTO `creature_group_spawn` VALUES ('105', '73790');
-INSERT INTO `creature_group_spawn` VALUES ('105', '73791');
-INSERT INTO `creature_group_spawn` VALUES ('106', '73792');
-INSERT INTO `creature_group_spawn` VALUES ('106', '73793');
-INSERT INTO `creature_group_spawn` VALUES ('107', '67312');
-INSERT INTO `creature_group_spawn` VALUES ('107', '67319');
-INSERT INTO `creature_group_spawn` VALUES ('107', '67320');
-INSERT INTO `creature_group_spawn` VALUES ('108', '71891');
-INSERT INTO `creature_group_spawn` VALUES ('108', '71892');
-INSERT INTO `creature_group_spawn` VALUES ('108', '71893');
-INSERT INTO `creature_group_spawn` VALUES ('108', '71894');
-INSERT INTO `creature_group_spawn` VALUES ('108', '71895');
-INSERT INTO `creature_group_spawn` VALUES ('109', '78764');
-INSERT INTO `creature_group_spawn` VALUES ('109', '78765');
-INSERT INTO `creature_group_spawn` VALUES ('109', '78766');
-INSERT INTO `creature_group_spawn` VALUES ('110', '78770');
-INSERT INTO `creature_group_spawn` VALUES ('110', '78771');
-INSERT INTO `creature_group_spawn` VALUES ('110', '78772');
-INSERT INTO `creature_group_spawn` VALUES ('111', '78761');
-INSERT INTO `creature_group_spawn` VALUES ('111', '78762');
-INSERT INTO `creature_group_spawn` VALUES ('111', '78763');
-INSERT INTO `creature_group_spawn` VALUES ('112', '78767');
-INSERT INTO `creature_group_spawn` VALUES ('112', '78768');
-INSERT INTO `creature_group_spawn` VALUES ('112', '78769');
-INSERT INTO `creature_group_spawn` VALUES ('113', '87149');
+
+REPLACE INTO `spawn_group_id` (`groupId`, `groupName`, `groupFlags`, `extraFlags`, `BossId`) VALUES
+('29', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('30', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('31', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('32', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('33', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('34', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('35', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('36', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('37', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('38', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('39', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('40', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('41', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('42', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('43', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('44', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('45', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('46', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('47', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('48', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('49', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('50', 'Hellfire Ramparts Blood Furnace ( The Maker )', '1', '0', '17381'),
+('51', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380'),
+('52', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380'),
+('53', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380'),
+('54', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380'),
+('55', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380'),
+('56', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380'),
+('57', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380'),
+('58', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380'),
+('59', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '0', '17380'),
+('60', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '2', '17380'),
+('61', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '2', '17380'),
+('62', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '2', '17380'),
+('63', 'Hellfire Ramparts Blood Furnace ( Broggok )', '1', '2', '17380'),
+('64', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377'),
+('65', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377'),
+('66', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377'),
+('67', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377'),
+('68', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377'),
+('69', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377'),
+('70', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377'),
+('71', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377'),
+('72', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '0', '17377'),
+('73', 'Hellfire Ramparts Blood Furnace ( Kelidan )', '1', '2', '17377'),
+('75', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807'),
+('76', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807'),
+('77', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807'),
+('78', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807'),
+('79', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807'),
+('80', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807'),
+('81', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807'),
+('82', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807'),
+('83', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807'),
+('84', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807'),
+('85', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807'),
+('86', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807'),
+('87', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '0', '16807'),
+('88', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '1', '16807'),
+('89', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '1', '16807'),
+('90', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '1', '16807'),
+('91', 'Hellfire Ramparts Shatted Halls ( Grand Warlock )', '1', '1', '16807'),
+('92', 'Hellfire Ramparts Shatted Halls ( Proung )', '1', '1', '20923'),
+('93', 'Hellfire Ramparts Shatted Halls ( Proung )', '1', '1', '20923'),
+('94', 'Hellfire Ramparts Shatted Halls ( Proung )', '1', '1', '20923'),
+('95', 'Hellfire Ramparts Shatted Halls ( Proung )', '1', '1', '20923'),
+('96', 'Hellfire Ramparts Shatted Halls ( Proung )', '1', '1', '20923'),
+('97', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '0', '16809'),
+('98', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '1', '16809'),
+('99', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '1', '16809'),
+('100', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '0', '16809'),
+('101', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '1', '16809'),
+('102', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '1', '16809'),
+('103', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '1', '16809'),
+('104', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '1', '16809'),
+('105', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '1', '16809'),
+('106', 'Hellfire Ramparts Shatted Halls ( Warbringer O Mrogg )', '1', '1', '16809'),
+('107', 'Hellfire Ramparts Shatted Halls ( Warchief Kargath Bladefist )', '1', '0', '16808'),
+('108', 'Magtheridons Lair Channelers', '1', '2', '17257'),
+('109', 'Magtheridons Lair Trash', '1', '0', '17257'),
+('110', 'Magtheridons Lair Trash', '1', '0', '17257'),
+('111', 'Magtheridons Lair Trash', '1', '0', '17257'),
+('112', 'Magtheridons Lair Trash', '1', '0', '17257'),
+('113', 'Magtheridons Lair World Trigger', '1', '2', '17257');
+
+REPLACE INTO `creature_group_spawn` VALUES
+('29', '72719'),
+('29', '72720'),
+('30', '72721'),
+('30', '72722'),
+('30', '72881'),
+('30', '73159'),
+('31', '72723'),
+('31', '72724'),
+('31', '72884'),
+('31', '72885'),
+('31', '73160'),
+('32', '72725'),
+('32', '72726'),
+('33', '72882'),
+('33', '72883'),
+('33', '73161'),
+('34', '72727'),
+('34', '72728'),
+('35', '72729'),
+('35', '72730'),
+('36', '72731'),
+('36', '72732'),
+('37', '73721'),
+('38', '73720'),
+('39', '73722'),
+('39', '73723'),
+('39', '73728'),
+('40', '72733'),
+('40', '79994'),
+('41', '72878'),
+('41', '72879'),
+('42', '72874'),
+('42', '72875'),
+('42', '72907'),
+('43', '72876'),
+('43', '72877'),
+('43', '72908'),
+('44', '72734'),
+('44', '73725'),
+('44', '73726'),
+('45', '72948'),
+('45', '72949'),
+('45', '73724'),
+('46', '72956'),
+('46', '73716'),
+('46', '73717'),
+('46', '73727'),
+('47', '72950'),
+('47', '72951'),
+('48', '72953'),
+('48', '72954'),
+('49', '72955'),
+('50', '72952'),
+('51', '72886'),
+('51', '72957'),
+('51', '72958'),
+('52', '72887'),
+('52', '72959'),
+('52', '72960'),
+('53', '73729'),
+('53', '73730'),
+('53', '73735'),
+('54', '73715'),
+('54', '73731'),
+('54', '73732'),
+('55', '72888'),
+('55', '72961'),
+('55', '72962'),
+('56', '73733'),
+('56', '73734'),
+('57', '72975'),
+('57', '72976'),
+('57', '73193'),
+('58', '73194'),
+('58', '73197'),
+('59', '73195'),
+('59', '73196'),
+('60', '72889'),
+('60', '72890'),
+('60', '72891'),
+('60', '72892'),
+('61', '72901'),
+('61', '72902'),
+('61', '72903'),
+('61', '72904'),
+('61', '72905'),
+('61', '72906'),
+('62', '72893'),
+('62', '72894'),
+('62', '72895'),
+('63', '72896'),
+('63', '72897'),
+('63', '72898'),
+('63', '72899'),
+('63', '72900'),
+('64', '72735'),
+('64', '72736'),
+('64', '79995'),
+('64', '79996'),
+('64', '79997'),
+('64', '79998'),
+('65', '73713'),
+('65', '73714'),
+('66', '79403'),
+('67', '79401'),
+('67', '79402'),
+('68', '72737'),
+('69', '137396'),
+('69', '137397'),
+('70', '137398'),
+('70', '137399'),
+('71', '137400'),
+('71', '137401'),
+('72', '79404'),
+('72', '79405'),
+('72', '79406'),
+('73', '73762'),
+('73', '73763'),
+('73', '73764'),
+('73', '73765'),
+('73', '73766'),
+('74', '72717'),
+('74', '72718'),
+('75', '67441'),
+('76', '72963'),
+('77', '67442'),
+('77', '137374'),
+('78', '67448'),
+('79', '66835'),
+('79', '66836'),
+('80', '73854'),
+('81', '73855'),
+('82', '67318'),
+('83', '67322'),
+('83', '67323'),
+('83', '69290'),
+('83', '137156'),
+('84', '67321'),
+('84', '69289'),
+('84', '73849'),
+('84', '137154'),
+('85', '67324'),
+('85', '73850'),
+('86', '137155'),
+('87', '66837'),
+('87', '66838'),
+('88', '67443'),
+('88', '67449'),
+('88', '67453'),
+('88', '67454'),
+('88', '72964'),
+('88', '138226'),
+('89', '67317'),
+('89', '67444'),
+('89', '67445'),
+('89', '67450'),
+('89', '67455'),
+('89', '72965'),
+('90', '67446'),
+('90', '67447'),
+('90', '67451'),
+('90', '69291'),
+('90', '69292'),
+('90', '72966'),
+('91', '73710'),
+('91', '73711'),
+('91', '73783'),
+('91', '73784'),
+('91', '73785'),
+('92', '69293'),
+('92', '69294'),
+('92', '69295'),
+('92', '69296'),
+('92', '72972'),
+('92', '72973'),
+('92', '72974'),
+('92', '73048'),
+('93', '73059'),
+('93', '73060'),
+('94', '67315'),
+('94', '67316'),
+('94', '73055'),
+('94', '73056'),
+('94', '73057'),
+('94', '73058'),
+('95', '73049'),
+('95', '73050'),
+('95', '73051'),
+('95', '73052'),
+('96', '73053'),
+('96', '73054'),
+('97', '67313'),
+('97', '67314'),
+('98', '73065'),
+('98', '73066'),
+('98', '73067'),
+('98', '73068'),
+('98', '73078'),
+('99', '73061'),
+('99', '73062'),
+('99', '73063'),
+('99', '73064'),
+('99', '73077'),
+('100', '73708'),
+('100', '73709'),
+('101', '73069'),
+('101', '73070'),
+('101', '73071'),
+('101', '73072'),
+('101', '73079'),
+('102', '73073'),
+('102', '73074'),
+('102', '73075'),
+('102', '73076'),
+('102', '73080'),
+('103', '73786'),
+('103', '73787'),
+('104', '73788'),
+('104', '73789'),
+('105', '73790'),
+('105', '73791'),
+('106', '73792'),
+('106', '73793'),
+('107', '67312'),
+('107', '67319'),
+('107', '67320'),
+('108', '71891'),
+('108', '71892'),
+('108', '71893'),
+('108', '71894'),
+('108', '71895'),
+('109', '78764'),
+('109', '78765'),
+('109', '78766'),
+('110', '78770'),
+('110', '78771'),
+('110', '78772'),
+('111', '78761'),
+('111', '78762'),
+('111', '78763'),
+('112', '78767'),
+('112', '78768'),
+('112', '78769'),
+('113', '87149');
+
 INSERT INTO `world_db_version` (`id`, `LastUpdate`) VALUES ('95', '20211025-00_magtheridon_spawns');
