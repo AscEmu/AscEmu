@@ -16,5 +16,5 @@ public:
 
 void SetupZulAmanCata(ScriptMgr* mgr)
 {
-    mgr->register_instance_script(MAP_ZUL_AMAN_CATA, &ZulAmanCataInstanceScript::Create);
+    mgr->register_instance_script(MAP_ZUL_AMAN_CATACLYSM, &ZulAmanCataInstanceScript::Create);
 }

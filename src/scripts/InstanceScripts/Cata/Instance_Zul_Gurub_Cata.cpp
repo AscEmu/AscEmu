@@ -16,5 +16,5 @@ public:
 
 void SetupZulGurubCata(ScriptMgr* mgr)
 {
-    mgr->register_instance_script(MAP_ZUL_GURUB_CATA, &ZulGurubCataInstanceScript::Create);
+    mgr->register_instance_script(MAP_ZUL_GURUB_CATACLYSM, &ZulGurubCataInstanceScript::Create);
 }
