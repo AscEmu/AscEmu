@@ -131,32 +131,12 @@ void createExtendedLogDir()
         fs::create_directories(logDir);
 }
 
-void checkRequiredDirs()
+bool checkRequiredDirs()
 {
     std::vector<std::string> requiredDirs;
     requiredDirs.emplace_back(CONFDIR);
     requiredDirs.emplace_back("dbc");
     requiredDirs.emplace_back("maps");
-
-    if (worldConfig.terrainCollision.isCollisionEnabled)
-        requiredDirs.emplace_back("vmaps");
-
-    if (worldConfig.terrainCollision.isPathfindingEnabled)
-    {
-        // Check that vertical maps are also enabled
-        if (!worldConfig.terrainCollision.isCollisionEnabled)
-        {
-            sLogger.failure("Pathfinding is enabled but collision is disabled. Disabling pathfinding.");
-            worldConfig.terrainCollision.isPathfindingEnabled = false;
-
-            // Give user a chance to read the error message
-            Arcemu::Sleep(2000);
-        }
-        else
-        {
-            requiredDirs.emplace_back("mmaps");
-        }
-    }
 
     std::string dataDir = worldConfig.server.dataDir;
     dataDir.erase(0, 2); //remove ./ from string
@@ -181,19 +161,73 @@ void checkRequiredDirs()
         }
         else
         {
+            sLogger.failure("Directory %s not found. Shutting down.", requiredPath.u8string().c_str());
+            return false;
+        }
+    }
+    return true;
+}
+
+void checkAdditinaloDirs()
+{
+    std::vector<std::string> additionalDirs;
+
+    if (worldConfig.terrainCollision.isCollisionEnabled)
+        additionalDirs.emplace_back("vmaps");
+
+    if (worldConfig.terrainCollision.isPathfindingEnabled)
+    {
+        // Check that vertical maps are also enabled
+        if (!worldConfig.terrainCollision.isCollisionEnabled)
+        {
+            sLogger.failure("Pathfinding is enabled but collision is disabled. Disabling pathfinding.");
+            worldConfig.terrainCollision.isPathfindingEnabled = false;
+
+            // Give user a chance to read the error message
+            Arcemu::Sleep(2000);
+        }
+        else
+        {
+            additionalDirs.emplace_back("mmaps");
+        }
+    }
+
+    std::string dataDir = worldConfig.server.dataDir;
+    dataDir.erase(0, 2); //remove ./ from string
+
+    for (const auto& dir : additionalDirs)
+    {
+        fs::path additionalPath = fs::current_path();
+
+        if (dataDir.empty() || dir == CONFDIR)
+        {
+            additionalPath /= dir;
+        }
+        else
+        {
+            additionalPath /= dataDir;
+            additionalPath /= dir;
+        }
+
+        if (fs::exists(additionalPath))
+        {
+            sLogger.info("Required dir %s found!", additionalPath.u8string().c_str());
+        }
+        else
+        {
             if (dir == "mmaps")
             {
-                sLogger.failure("Movement maps in %s not found. Disabling pathfinding.", requiredPath.u8string().c_str());
+                sLogger.failure("Movement maps in %s not found. Disabling pathfinding.", additionalPath.u8string().c_str());
                 worldConfig.terrainCollision.isPathfindingEnabled = false;
             }
             else if (dir == "vmaps")
             {
-                sLogger.failure("Vertical maps in %s not found. Disabling collision.", requiredPath.u8string().c_str());
+                sLogger.failure("Vertical maps in %s not found. Disabling collision.", additionalPath.u8string().c_str());
                 worldConfig.terrainCollision.isCollisionEnabled = false;
             }
             else
             {
-                sLogger.failure("Required dir %s not found!", requiredPath.u8string().c_str());
+                sLogger.failure("Required dir %s not found!", additionalPath.u8string().c_str());
             }
 
             // Give user a chance to read the error message
@@ -259,7 +293,14 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     createExtendedLogDir();
 
-    checkRequiredDirs();
+    if (!checkRequiredDirs())
+    {
+        Database::CleanupLibs();
+        sLogger.finalize();
+        return false;
+    }
+
+    checkAdditinaloDirs();
 
     const std::string charDbName = worldConfig.charDb.dbName;
     DatabaseUpdater::initBaseIfNeeded(charDbName, "character", CharacterDatabase);
