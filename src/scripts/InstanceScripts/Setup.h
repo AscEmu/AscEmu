@@ -207,24 +207,24 @@ enum InstanceMaps
     MAP_HALLSOFREFLECTION       = 668,  // Halls of Reflection
 
     //Cataclysm Map Ids
-    MAP_LOST_CITY_OF_TOLVIR     = 747,
-    MAP_BLACKROCK_CAVERNS       = 753,
-    MAP_GRIM_BATOL              = 757,
-    MAP_HALLS_OF_ORIGINATION    = 759,
-    MAP_THRONE_OF_THE_TIDES     = 767,
-    MAP_THE_STONECORE           = 768,
-    MAP_THE_VORTEX_PINNACLE     = 769,
-    MAP_ZUL_AMAN_CATACLYSM      = 781,
-    MAP_ZUL_GURUB_CATACLYSM     = 793,
-    MAP_WELL_OF_ETERNITY        = 816,
-    MAP_HOUR_OF_TWILIGHT        = 819,
-    MAP_END_TIME                = 820,
-    MAP_BARADIN_HOLD            = 752,
-    MAP_BLACKWING_DESCENT       = 754,
-    MAP_BASTION_OF_TWILIGHT     = 758,
-    MAP_THRONE_OF_FOUR_WINDS    = 773,
-    MAP_FIRELANDS               = 800,
-    MAP_DRAGON_SOUL             = 824,
+    MAP_LOST_CITY_OF_TOLVIR     = 747, // Lost city of Tol'vir
+    MAP_BLACKROCK_CAVERNS       = 753, // Blackrock Caverns
+    MAP_GRIM_BATOL              = 757, // Grim Batol
+    MAP_HALLS_OF_ORIGINATION    = 759, // Halls of Origination
+    MAP_THRONE_OF_THE_TIDES     = 767, // Throne of Tides
+    MAP_THE_STONECORE           = 768, // The Stonecore
+    MAP_THE_VORTEX_PINNACLE     = 769, // Vortex Pinnacle
+    MAP_ZUL_AMAN_CATACLYSM      = 781, // Zul'Aman (Cataclysm)
+    MAP_ZUL_GURUB_CATACLYSM     = 793, // ZUl'Gurub (Cataclysm)
+    MAP_WELL_OF_ETERNITY        = 816, // Well of Eternity
+    MAP_HOUR_OF_TWILIGHT        = 819, // Hour of Twilight
+    MAP_END_TIME                = 820, // End Time
+    MAP_BARADIN_HOLD            = 752, // Baradin Hold
+    MAP_BLACKWING_DESCENT       = 754, // Blackwing Descent
+    MAP_BASTION_OF_TWILIGHT     = 758, // Bastion of Twilight
+    MAP_THRONE_OF_FOUR_WINDS    = 773, // Throne of the Four Winds
+    MAP_FIRELANDS               = 800, // Firelands
+    MAP_DRAGON_SOUL             = 824, // Dragon Soul
 
 
     /*
