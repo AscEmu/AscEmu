@@ -30,9 +30,11 @@ endif()
 include(${CMAKE_SOURCE_DIR}/cmake/Options.cmake)
 
 # perform system tasks
-if (NOT WIN32) #sch: need a fix for windows
-include(${CMAKE_SOURCE_DIR}/cmake/CheckSystem.cmake)
+if (WIN32) #ugly fix for windows
+include(${CMAKE_SOURCE_DIR}/dep/openssl/CMakeLists.txt)
 endif()
+
+include(${CMAKE_SOURCE_DIR}/cmake/CheckSystem.cmake)
 
 # set RPATH-handing (CMake parameters)
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
@@ -49,9 +51,9 @@ add_subdirectory(src)
 add_subdirectory(src/scripts)
 
 # install libraries for windows build (libmysql.dll, libey32.dll)
-#if(WIN32)
-#    install(FILES ${INSTALLED_DEPENDENCIES} DESTINATION .)
-#endif()
+if(WIN32)
+    install(FILES ${INSTALLED_DEPENDENCIES} DESTINATION .)
+endif()
 
 # install db updates
 install(DIRECTORY ${INSTALL_DB_FILES} DESTINATION sql FILES_MATCHING PATTERN "*.sql")

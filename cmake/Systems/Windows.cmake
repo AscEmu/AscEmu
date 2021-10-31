@@ -11,7 +11,6 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake/Modules/FindMySQL.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/Modules/FindOpenSSL.cmake)
 
 # needed for socket stuff and crash handler
 set(EXTRA_LIBS 
