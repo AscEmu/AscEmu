@@ -252,6 +252,7 @@ void Object::setGuid(uint64_t guid)
 {
     write(objectData()->guid, guid);
     m_wowGuid.Init(guid);
+    obj_movement_info.guid = guid;
 }
 void Object::setGuid(uint32_t low, uint32_t high) { setGuid(static_cast<uint64_t>(high) << 32 | low); }
 
