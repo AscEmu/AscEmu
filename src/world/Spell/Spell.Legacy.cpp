@@ -39,6 +39,7 @@
 #include "Objects/DynamicObject.h"
 #include "Management/ItemInterface.h"
 #include "Units/Stats.h"
+#include "Macros/ScriptMacros.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"

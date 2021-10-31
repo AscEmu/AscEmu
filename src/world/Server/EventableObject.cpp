@@ -19,8 +19,8 @@
  *
  */
 
-
 #include "EventableObject.h"
+#include "Logging/Logger.hpp"
 
 EventableObject::~EventableObject()
 {

@@ -24,6 +24,7 @@
 #include "Objects/DynamicObject.h"
 #include "Management/HonorHandler.h"
 #include "Units/Stats.h"
+#include "Macros/ScriptMacros.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"

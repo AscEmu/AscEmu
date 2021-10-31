@@ -33,6 +33,7 @@
 #include "Macros/CorpseMacros.hpp"
 #include "Management/HonorHandler.h"
 #include "Storage/WorldStrings.h"
+#include "Macros/ScriptMacros.hpp"
 #include "Management/TaxiMgr.h"
 #include "Management/WeatherMgr.h"
 #include "Management/ItemInterface.h"

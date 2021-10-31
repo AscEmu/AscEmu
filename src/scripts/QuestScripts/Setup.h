@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/WorldCreatorDefines.hpp"
 #include "Management/ItemInterface.h"
 #include "Movement/Spline/MoveSpline.h"
+#include "Server/Script/CreatureAIScript.h"
 #include "Storage/MySQLDataStore.hpp"
 #include <Spell/SpellMgr.hpp>
 #include "Movement/Spline/MoveSplineInit.h"

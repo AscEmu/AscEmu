@@ -36,6 +36,7 @@
 
 #include <string>
 #include "Objects/MovementInfo.h"
+#include "Logging/Logger.hpp"
 
 class Player;
 class WorldPacket;

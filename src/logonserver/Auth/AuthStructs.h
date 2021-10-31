@@ -20,6 +20,8 @@
 #ifndef AUTHSTRUCTS_H
 #define AUTHSTRUCTS_H
 
+#include "CommonTypes.hpp"
+
 #pragma pack(push,1)
 typedef struct
 {

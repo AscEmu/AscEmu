@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/WeatherMgr.h"
 #include "Management/ItemInterface.h"
 #include "Macros/CorpseMacros.hpp"
+#include "Macros/ScriptMacros.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"

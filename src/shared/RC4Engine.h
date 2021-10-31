@@ -19,6 +19,8 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "CommonTypes.hpp"
+
 class RC4Engine
 {
         unsigned char perm[256];

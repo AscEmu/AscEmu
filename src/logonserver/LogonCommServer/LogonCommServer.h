@@ -21,6 +21,8 @@
 #define __LOGON_COMM_SERVER_H
 
 #include <RC4Engine.h>
+#include "CommonTypes.hpp"
+#include "Network/Socket.h"
 #include "zlib.h"
 
 class LogonCommServerSocket : public Socket

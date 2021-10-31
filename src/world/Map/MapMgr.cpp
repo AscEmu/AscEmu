@@ -37,6 +37,7 @@
 #include "VMapFactory.h"
 #include "MMapFactory.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Macros/ScriptMacros.hpp"
 #include "MapMgr.h"
 #include "MapScriptInterface.h"
 #include "WorldCreator.h"

@@ -25,6 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellState.hpp"
 #include "Definitions/SpellRanged.hpp"
 
+#include "Macros/ScriptMacros.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Management/ItemInterface.h"
 #include "Map/Area/AreaManagementGlobals.hpp"
