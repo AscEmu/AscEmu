@@ -80,6 +80,10 @@ void SetupUtgardePinnacle(ScriptMgr* mgr);
 void SetupVaultOfArchavon(ScriptMgr* mgr);
 #endif
 
+//Cataclysm
+#if VERSION_STRING >= Cata
+#endif
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Raids
@@ -111,6 +115,10 @@ void SetupTheObsidianSanctum(ScriptMgr* mgr);
 void SetupNaxxramas(ScriptMgr* mgr);
 void SetupUlduar(ScriptMgr* mgr);
 void SetupTrialOfTheCrusader(ScriptMgr* mgr);
+#endif
+
+//Cataclysm
+#if VERSION_STRING >= Cata
 #endif
 
 
@@ -197,6 +205,26 @@ enum InstanceMaps
     MAP_TRIAL_OF_THE_CHAMPION   = 650,  // Trial of the Champion
     MAP_PIT_OF_SARON            = 658,  // Pit of Saron.
     MAP_HALLSOFREFLECTION       = 668,  // Halls of Reflection
+
+    //Cataclysm Map Ids
+    MAP_LOST_CITY_OF_TOLVIR     = 747,
+    MAP_BLACKROCK_CAVERNS       = 753,
+    MAP_GRIM_BATOL              = 757,
+    MAP_HALLS_OF_ORIGINATION    = 759,
+    MAP_THRONE_OF_THE_TIDES     = 767,
+    MAP_THE_STONECORE           = 768,
+    MAP_THE_VORTEX_PINNACLE     = 769,
+    MAP_ZUL_AMAN_CATACLYSM      = 781,
+    MAP_ZUL_GURUB_CATACLYSM     = 793,
+    MAP_WELL_OF_ETERNITY        = 816,
+    MAP_HOUR_OF_TWILIGHT        = 819,
+    MAP_END_TIME                = 820,
+    MAP_BARADIN_HOLD            = 752,
+    MAP_BLACKWING_DESCENT       = 754,
+    MAP_BASTION_OF_TWILIGHT     = 758,
+    MAP_THRONE_OF_FOUR_WINDS    = 773,
+    MAP_FIRELANDS               = 800,
+    MAP_DRAGON_SOUL             = 824,
 
 
     /*

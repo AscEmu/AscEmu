@@ -11,6 +11,7 @@ project(InstanceScripts CXX)
 include(Classic/CMakeLists.txt)
 include(Tbc/CMakeLists.txt)
 include(Wotlk/CMakeLists.txt)
+include(Cata/CMakeLists.txt)
 
 set(SRC_BASIC
    Setup.cpp
@@ -26,6 +27,7 @@ set(sources
     ${SRC_CLASSIC_SCRIPTS_FILES}
     ${SRC_TBC_SCRIPTS_FILES}
     ${SRC_WOTLK_SCRIPTS_FILES}	
+    ${SRC_CATA_SCRIPTS_FILES}	
     )
 
 include_directories(

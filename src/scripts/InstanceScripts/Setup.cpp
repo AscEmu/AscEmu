@@ -94,6 +94,10 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupVaultOfArchavon(mgr);
 #endif
 
+    //Cataclysm
+#if VERSION_STRING >= Cata
+#endif
+
     //Classic
     SetupBlackwingLair(mgr);
     SetupOnyxiasLair(mgr);
@@ -121,6 +125,10 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupNaxxramas(mgr);
     SetupUlduar(mgr);
     SetupTrialOfTheCrusader(mgr);
+#endif
+
+    //Cataclysm
+#if VERSION_STRING >= Cata
 #endif
 }
 
