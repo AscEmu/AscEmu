@@ -13,6 +13,12 @@ class VaultOfArchavonInstanceScript : public InstanceScript
 public:
     explicit VaultOfArchavonInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new VaultOfArchavonInstanceScript(pMapMgr); }
+
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
 };
 
 void SetupVaultOfArchavon(ScriptMgr* mgr)

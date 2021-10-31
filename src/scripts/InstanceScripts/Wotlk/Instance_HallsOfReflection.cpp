@@ -15,6 +15,12 @@ public:
     explicit HallsOfReflectionScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new HallsOfReflectionScript(pMapMgr); }
 
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
+
     void OnPlayerEnter(Player* pPlayer) override
     {
         // Fixes a bug where you enter the instance and you run so far and teleports you out, changed DB coords still not working so this is a solution.

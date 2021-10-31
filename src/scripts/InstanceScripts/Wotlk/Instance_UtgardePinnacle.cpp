@@ -12,13 +12,24 @@ class UtgardePinnacleInstanceScript : public InstanceScript
 public:
     explicit UtgardePinnacleInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new UtgardePinnacleInstanceScript(pMapMgr); }
+
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
 };
 
 class SvalaSorrowgraveAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new SvalaSorrowgraveAI(c); }
-    explicit SvalaSorrowgraveAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    explicit SvalaSorrowgraveAI(Creature* pCreature) : CreatureAIScript(pCreature) 
+    {
+        mInstance = getInstanceScript();
+    }
+protected:
+    InstanceScript* mInstance;
 };
 
 class GortokPalehoofAI : public CreatureAIScript

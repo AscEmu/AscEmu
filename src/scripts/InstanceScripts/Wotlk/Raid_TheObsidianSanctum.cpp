@@ -19,6 +19,12 @@ public:
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ObsidianSanctumScript(pMapMgr); }
 
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
+
     void OnCreaturePushToWorld(Creature* pCreature) override
     {
         switch (pCreature->getEntry())

@@ -12,6 +12,12 @@ class HallsOfStoneInstanceScript : public InstanceScript
 public:
     explicit HallsOfStoneInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new HallsOfStoneInstanceScript(pMapMgr); }
+
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
 };
 
 class DarkRuneStormcallerAI : public CreatureAIScript

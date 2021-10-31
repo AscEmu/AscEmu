@@ -12,6 +12,12 @@ class TrialOfTheCrusaderInstanceScript : public InstanceScript
 public:
     explicit TrialOfTheCrusaderInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new TrialOfTheCrusaderInstanceScript(pMapMgr); }
+
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
 };
 
 void SetupTrialOfTheCrusader(ScriptMgr* mgr)
