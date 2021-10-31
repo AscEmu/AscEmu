@@ -2668,6 +2668,32 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
     delete player_levelstats_result;
 
     sLogger.info("MySQLDataLoads : Loaded %u rows from `player_levelstats` table in %u ms!", player_levelstats_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+
+    //Zyres: load required and missing levelstats
+    for (uint8_t _race = 0; _race < DBC_NUM_RACES; ++_race)
+    {
+        if (!sChrRacesStore.LookupEntry(_race))
+            continue;
+
+        for (uint8_t _class = 0; _class < MAX_PLAYER_CLASSES; ++_class)
+        {
+            if (!sChrClassesStore.LookupEntry(_class))
+                continue;
+
+            auto info = _playerCreateInfoStoreNew[_race][_class];
+            if (!info)
+                continue;
+
+            for (uint8_t level = 1; level < DBC_STAT_LEVEL_CAP; ++level)
+            {
+                if (info->level_stats[level].strength == 0)
+                {
+                    sLogger.info("Race %i Class %i Level %i does not have stats data. Using stats data of level % i.", _race, _class, level + 1, level);
+                    info->level_stats[level] = info->level_stats[level - 1];
+                }
+            }
+        }
+    }
 }
 
 void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
@@ -2711,7 +2737,7 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
     }
 
 #if VERSION_STRING > WotLK
-    //Zyres: load missing and rewuired data from dbc!
+    //Zyres: load missing and required data from dbc!
     int32_t player_classlevelstats_count = 0;
 
     for (uint8_t player_class = 1; player_class < MAX_PLAYER_CLASSES - 1; ++player_class)

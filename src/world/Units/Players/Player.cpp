@@ -1148,18 +1148,8 @@ void Player::applyLevelInfo(uint32_t newLevel)
         setLevel(newLevel);
 
         // Set new base health and mana
-        //\ TODO: LevelInfo base health and mana stats already have stamina and intellect calculated into them
-        const auto levelone = sObjectMgr.GetLevelInfo(getRace(), getClass(), 1);
-        if (levelone != nullptr)
-        {
-            setBaseHealth(lvlinfo->HP - ((lvlinfo->Stat[STAT_STAMINA] - levelone->Stat[STAT_STAMINA]) * 10));
-            setBaseMana(lvlinfo->Mana - ((lvlinfo->Stat[STAT_INTELLECT] - levelone->Stat[STAT_INTELLECT]) * 15));
-        }
-        else
-        {
-            setBaseHealth(lvlinfo->HP);
-            setBaseMana(lvlinfo->Mana);
-        }
+        setBaseHealth(lvlinfo->HP);
+        setBaseMana(lvlinfo->Mana);
 
         // Set new base stats
         for (uint8_t i = 0; i < STAT_COUNT; ++i)
