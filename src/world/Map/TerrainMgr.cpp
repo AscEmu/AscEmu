@@ -28,20 +28,50 @@
 
 TerrainHolder::TerrainHolder(uint32 mapid)
 {
-    for (uint8 i = 0; i < TERRAIN_NUM_TILES; ++i)
-        for (uint8 j = 0; j < TERRAIN_NUM_TILES; ++j)
+    TileCountX = TileCountY = 0;
+    TileStartX = TileEndX = 0;
+    TileStartY = TileEndY = 0;
+
+    for (uint8_t i = 0; i < TERRAIN_NUM_TILES; ++i)
+    {
+        for (uint8_t j = 0; j < TERRAIN_NUM_TILES; ++j)
+        {
             m_tiles[i][j] = NULL;
+            if (TileOffsets[i][j])
+            {
+                if (!TileStartX || TileStartX > i)
+                    TileStartX = i;
+                if (!TileStartY || TileStartY > j)
+                    TileStartY = j;
+                if (i > TileEndX)
+                    TileEndX = i;
+                if (j > TileEndY)
+                    TileEndY = j;
+            }
+        }
+    }
+
     m_mapid = mapid;
+    TileCountX = (TileEndX - TileStartX) + 1;
+    TileCountY = (TileEndY - TileStartY) + 1;
 }
 
 TerrainHolder::~TerrainHolder()
 {
-    for (uint8 i = 0; i < TERRAIN_NUM_TILES; ++i)
-        for (uint8 j = 0; j < TERRAIN_NUM_TILES; ++j)
+    for (uint8_t i = 0; i < TERRAIN_NUM_TILES; ++i)
+        for (uint8_t j = 0; j < TERRAIN_NUM_TILES; ++j)
             UnloadTile(i, j);
 }
 
-uint32 TerrainHolder::GetAreaFlagWithoutAdtId(float x, float y)
+void TerrainHolder::getCellLimits(uint32_t &StartX, uint32_t &EndX, uint32_t &StartY, uint32_t &EndY)
+{
+    StartX = TileStartX * 8;
+    StartY = TileStartY * 8;
+    EndX = TileEndX * 8;
+    EndY = TileEndY * 8;
+}
+
+uint32_t TerrainHolder::GetAreaFlagWithoutAdtId(float x, float y)
 {
     auto tile = this->GetTile(x, y);
     if (tile)

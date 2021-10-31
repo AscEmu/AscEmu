@@ -596,7 +596,7 @@ bool AIInterface::_enterEvadeMode()
 
     if (!getUnit()->isAlive())
     {
-        handleEvent(EVENT_LEAVECOMBAT, getUnit(), 0);
+        handleEvent(EVENT_UNITDIED, getUnit(), 0);
         return false;
     }
     handleEvent(EVENT_LEAVECOMBAT, getUnit(), 0);
@@ -636,6 +636,9 @@ void AIInterface::Update(unsigned long time_passed)
 {
     if (m_Unit->isPlayer() || m_Unit->GetMapMgr() == nullptr)
         return;
+
+    // Call new AIUpdate function
+    CALL_SCRIPT_EVENT(m_Unit, AIUpdate)(time_passed);
 
     if (getAiState() == AI_STATE_FEAR)
         return;
@@ -1360,7 +1363,7 @@ void AIInterface::findAssistance()
             if (DistToMe <= 25.0f && helper->isInCombat() && !isAlreadyAssisting(helper)) // Also add targets if already in fight
                 m_assistTargets.insert(helper);
 
-            if (DistToMe <= 10.0f) // what should be correct also maybe differ instances/raids to normal world?
+            if (DistToMe <= 10.0f && getUnit()->GetMapMgr()->GetMapInfo()->isInstanceMap()) // only Search additional Attackers in Instanced Maps
             {
                 if (helper->GetAIInterface()->canAssistTo(getUnit(), getCurrentTarget(), false))
                 {
@@ -1639,6 +1642,10 @@ SpellCastTargets AIInterface::setSpellTargets(SpellInfo const* /*spellInfo*/, Un
 //function is designed to make a quick check on target to decide if we can attack it
 bool AIInterface::canOwnerAttackUnit(Unit* pUnit)
 {
+    // Creature should not attack permanently invisible units
+    if (pUnit->getInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE) > 0)
+        return false;
+
     if (!isHostile(m_Unit, pUnit))
         return false;
 
@@ -2033,7 +2040,7 @@ void AIInterface::justEnteredCombat(Unit* pUnit)
     {
         for (auto members : group->spawns)
         {
-            if (members.second && members.second->isAlive())
+            if (members.second && members.second->isAlive() && members.second->IsInWorld())
                 members.second->GetAIInterface()->onHostileAction(pUnit, nullptr, false);
         }
     }
@@ -2491,13 +2498,19 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
 void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
 {
     m_isEngaged = false;
-    spellEvents.resetEvents();
-    internalPhase = 0;
     mCreatureAISpells.clear();
-    setCurrentTarget(nullptr);
+    internalPhase = 0;
+    spellEvents.resetEvents();
     setUnitToFollow(nullptr);
+    setCannotReachTarget(false);
+    setNoCallAssistance(false);
+    setCurrentTarget(nullptr);
+    getUnit()->setTargetGuid(0);
+
     if (pUnit == nullptr)
         return;
+
+     pUnit->RemoveAllAuras();
 
     CALL_SCRIPT_EVENT(m_Unit, _internalOnDied)(pUnit);
     CALL_SCRIPT_EVENT(m_Unit, OnDied)(pUnit);
@@ -2640,13 +2653,8 @@ void AIInterface::eventOnLoad()
     }
 }
 
-void AIInterface::onDeath(Object* pKiller)
+void AIInterface::eventOnTargetDied(Object* pKiller)
 {
-    if (pKiller->isCreatureOrPlayer())
-        handleEvent(EVENT_UNITDIED, static_cast<Unit*>(pKiller), 0);
-    else
-        handleEvent(EVENT_UNITDIED, m_Unit, 0);
-
     // Killed Scripts
     for (auto onKilledScript : onKilledScripts)
     {

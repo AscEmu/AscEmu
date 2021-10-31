@@ -23,46 +23,19 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new HungarfenAI(c); }
     explicit HungarfenAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        auto mushroom = addAISpell(UNDERBOG_MUSHROOM, 0.0f, TARGET_RANDOM_DESTINATION, 0, 15, false, true);
-        mushroom->setAttackStopTimer(1000);
-
-        spores = addAISpell(FOUL_SPORES, 0.0f, TARGET_VARIOUS);
-        spores->setAttackStopTimer(1000);
-
-        FourSpores = false;
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        FourSpores = false;
     }
 
     void OnDied(Unit* /*mKiller*/) override
     {
-        FourSpores = false;
     }
 
     void AIUpdate() override
     {
-        if (getCreature()->getHealthPct() <= 20 && !FourSpores)
-        {
-            getCreature()->pauseMovement(11000);
-            getCreature()->setAttackTimer(MELEE, 1200);
-
-            getCreature()->castSpell(getCreature(), spores->mSpellInfo, spores->mIsTriggered);
-
-            FourSpores = true;
-        }
-        else if (!getCreature()->getAuraWithId(FOUL_SPORES))
-        {
-            // Not yet added
-            //CastSpellOnRandomTarget(0, 0.0f, 40.0f, 0, 100);
-        }
     }
-
-protected:
-    bool FourSpores;
-    CreatureAISpells* spores;
 };
 
 class GhazanAI : public CreatureAIScript

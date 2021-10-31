@@ -5,71 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-
-enum QuestEvents
-{
-    CN_CUBE_TRIGGER = 17376,
-
-    // Encounter Settings
-    BANISH_TIMER = 120, // 2 minutes
-    YELL_TIMER = 260, // 4 minutes and 20 seconds
-    ACTIVE_CUBES_TO_BANISH = 5, // 5 cubes
-
-    // Magtheridon Trigger AI - Creature AI Class
-    CN_MAGTHERIDON_TRIGGER = 133338,
-
-    // Spell macros used in whole script
-    BANISH = 30231, // 31797
-    BANISHMENT = 40825,
-    SOUL_TRANSFER = 30531,
-    SHADOW_GRASP = 30166, // 30207
-    SHADOW_GRASP2 = 30410,
-
-    // Manticron Cube Gameobject
-
-    MANTICRON_CUBE = 181713,
-
-    MIND_EXHAUSTION = 44032,
-
-    // Hellfire Warder
-    CN_HELLFIRE_WARDER = 18829,
-
-    HW_SHADOW_BOLT_VOLLEY = 36275, // 39175
-    SHADOW_WORD_PAIN = 34441,
-    UNSTABLE_AFFLICTION = 35183,
-    DEATH_COIL = 33130,
-    RAIN_OF_FIRE = 34435,
-    HW_FEAR = 34259, // this one is probably wrong
-    SHADOW_BURST = 34436,
-
-    // Hellfire Channeler
-    CN_HELLFIRE_CHANNELER = 17256,
-
-    SHADOW_BOLT_VOLLEY = 30510, // 39175
-    FEAR = 30615, // not sure
-    DARK_MENDING = 30528,
-    BURNING_ABYSSAL = 30511,
-
-    CN_BURNING_ABYSSAL = 17454,
-
-    FIRE_BLAST = 37110,
-
-    // Magtheridon
-    CN_MAGTHERIDON = 17257,
-
-    // Normal Casts
-    CLEAVE = 31345, // not sure; should be better, but not sure if it gives 8k dmg
-    CONFLAGRATION = 23023, // 35840 - this one was affecting caster; not sure - it's not right spell, but better than nothing for now
-
-    // Timed Casts
-    QUAKE1 = 30571, // Each 40 sec after Phase 2 starts
-    QUAKE2 = 30658, // Effect
-    BLAST_NOVA = 30616,// Each 60 sec after Phase 2 starts
-    CAVE_IN = 36240, // don't know correct timer
-    CAMERA_SHAKE = 36455, // is used when Magtheridon uses Cave In
-    ENRAGE = 34624, // dunno if it's correct spell    -- 20 min after Phase 2 starts
-};
-
 // Channelers Coords is list of spawn points of all 5 channelers casting spell on Magtheridon
 static LocationVector Channelers[] =
 {
@@ -112,10 +47,141 @@ static LocationVector CubeTriggers[] =
     { -31.891800f,  38.430302f, 2.286470f, 0.0f }
 };
 
-enum CreatureEntry
+enum GameObjectIds
 {
+    GO_MAGTHERIDON_DOOR                 = 183847,
+    GO_MANTICRON_CUBE                   = 181713,
+    GO_MAGTHERIDON_HALL                 = 184653,
+    GO_MAGTHERIDON_COLUMN_0             = 184638,
+    GO_MAGTHERIDON_COLUMN_1             = 184639,
+    GO_MAGTHERIDON_COLUMN_2             = 184635,
+    GO_MAGTHERIDON_COLUMN_3             = 184634,
+    GO_MAGTHERIDON_COLUMN_4             = 184636,
+    GO_MAGTHERIDON_COLUMN_5             = 184637
+};
+
+enum CreatureIds
+{
+    NPC_MAGTHERIDON                     = 17257,
+    NPC_ABYSSAL                         = 17454,
+    NPC_HELLFIRE_CHANNELLER             = 17256,
+    NPC_TARGET_TRIGGER                  = 17474,
+    NPC_WORLD_TRIGGER                   = 21252,
+    NPC_HELFIRE_RAID_TRIGGER            = 17376,
+    NPC_OLDWORLD_TRIGGER                = 15384,
+    NPC_MAGTHERIDON_ROOM                = 17516,
+    NPC_HELLFIRE_WARDER                 = 18829
 };
 
 enum CreatureSpells
 {
+    // Magtheridon
+    SPELL_BLAST_NOVA                    = 30616,
+    SPELL_CLEAVE                        = 30619,
+    SPELL_BLAZE_TARGET                  = 30541,
+    SPELL_CAMERA_SHAKE                  = 36455,
+    SPELL_BERSERK                       = 27680,
+    SPELL_QUAKE                         = 30657,
+
+    // Player or Manticron Cube
+    SPELL_SHADOW_CAGE                   = 30168,
+    SPELL_SHADOW_GRASP                  = 30410,
+    SPELL_MIND_EXHAUSTION               = 44032,
+
+    // Hellfire Raid Trigger
+    SPELL_SHADOW_GRASP_VISUAL           = 30166,
+
+    // HellFire Channeler
+    SPELL_SHADOW_CAGE_C                 = 30205,
+    SPELL_SHADOW_GRASP_C                = 30207,
+    SPELL_SHADOW_BOLT_VOLLEY            = 30510,
+    SPELL_DARK_MENDING                  = 30528,
+    SPELL_BURNING_ABYSSAL               = 30511,
+    SPELL_SOUL_TRANSFER                 = 30531,
+    SPELL_FEAR                          = 30530,
+
+    // Hellfire Warder
+    HW_SHADOW_BOLT_VOLLEY               = 36275, // 39175
+    SHADOW_WORD_PAIN                    = 34441,
+    UNSTABLE_AFFLICTION                 = 35183,
+    DEATH_COIL                          = 33130,
+    RAIN_OF_FIRE                        = 34435,
+    HW_FEAR                             = 34259, // this one is probably wrong
+    SHADOW_BURST                        = 34436,
+
+    // WorldTrigger
+    SPELL_DEBRIS_KNOCKDOWN              = 36449,
+
+    // Magtheridon Room
+    SPELL_DEBRIS_VISUAL                 = 30632,
+    SPELL_DEBRIS_DAMAGE                 = 30631,
+
+    // Target Trigger
+    SPELL_BLAZE                         = 30542
+};
+
+enum Actions
+{
+    ACTION_ENABLE                       = 1,
+    ACTION_DISABLE                      = 2,
+    ACTION_START_CHANNELERS_EVENT       = 3
+};
+
+enum DataTypes
+{
+    DATA_MAGTHERIDON                    = 0,
+    DATA_WORLD_TRIGGER                  = 1,
+    DATA_MAGTHERIDON_HALL               = 2,
+    DATA_MANTICRON_CUBE                 = 3,
+    DATA_COLLAPSE                       = 4,
+    DATA_COLLAPSE_2                     = 5,
+    DATA_DOOR                           = 6
+};
+
+enum Events
+{
+    // Magtheridon
+    EVENT_BERSERK = 1,
+    EVENT_CLEAVE,
+    EVENT_BLAZE,
+    EVENT_BLAST_NOVA,
+    EVENT_QUAKE,
+    EVENT_START_FIGHT,
+    EVENT_RELEASED,
+    EVENT_COLLAPSE,
+    EVENT_DEBRIS_KNOCKDOWN,
+    EVENT_DEBRIS,
+    EVENT_NEARLY_EMOTE,
+    EVENT_TAUNT,
+    // Hellfire Channelers events
+    EVENT_SHADOWBOLT,
+    EVENT_FEAR1,
+    EVENT_ABYSSAL
+};
+
+enum Phases
+{
+    PHASE_BANISH = 1,
+    PHASE_1,
+    PHASE_2,
+    PHASE_3
+};
+
+enum Yells
+{
+    SAY_TAUNT01                         = 8740,
+    SAY_TAUNT02                         = 8741,
+    SAY_TAUNT03                         = 8742,
+    SAY_TAUNT04                         = 8743,
+    SAY_TAUNT05                         = 8743,
+    SAY_TAUNT06                         = 8745,
+    SAY_FREE                            = 8748,
+    SAY_SLAY                            = 8751,
+    SAY_BANISHED                        = 8749,
+    SAY_COLLAPSE                        = 8752,
+    SAY_DEATH                           = 8750
+    //EMOTE_WEAKEN                        = not in database "%s's bonds begin to weaken!",
+    //EMOTE_NEARLY_FREE                   = not in database "%s is nearly free of his bonds!",
+    //EMOTE_BREAKS_FREE                   = not in database "%s breaks free!",
+    //EMOTE_BLAST_NOVA                    = not in database "%s begins to cast Blast Nova!"
 };

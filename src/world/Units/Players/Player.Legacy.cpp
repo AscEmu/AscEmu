@@ -9785,6 +9785,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     CombatStatus.Vanished();
 
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
+    pAttacker->GetAIInterface()->eventOnTargetDied(this);
     pAttacker->smsg_AttackStop(this);
 
     m_underwaterTime = 0;

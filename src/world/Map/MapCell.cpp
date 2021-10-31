@@ -232,6 +232,21 @@ void MapCell::LoadObjects(CellSpawns* sp)
                 {
                     for (auto killedNpc : pInstance->m_killedNpcs)
                     {
+                        // is Boss Killed but trash untouched ( on Retail all Npcs not Killed but linked to a Boss thats already Killed dont Spawn )
+                        if (spawnGroupData && spawnGroupData->bossId)
+                        {
+                            if (pInstance->m_killedNpcs.find(spawnGroupData->bossId) != pInstance->m_killedNpcs.end())
+                            {
+                                skip = true;
+                                break;
+                            }
+                            else
+                            {
+                                skip = false;
+                                break;
+                            }
+                        }
+
                         // is Killed add ?
                         if (killedNpc == (*i)->id)
                         {

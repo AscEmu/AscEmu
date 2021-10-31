@@ -1205,9 +1205,9 @@ void InstanceScript::setCellForcedStates(float xMin, float xMax, float yMin, flo
             if (CurrentCell != nullptr)
             {
                 if (forceActive)
-                    mInstance->AddForcedCell(CurrentCell);
+                    mInstance->addForcedCell(CurrentCell);
                 else
-                    mInstance->RemoveForcedCell(CurrentCell);
+                    mInstance->removeForcedCell(CurrentCell);
             }
 
             yMin += 40.0f;

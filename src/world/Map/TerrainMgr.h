@@ -186,6 +186,14 @@ public:
     FastMutex m_lock[TERRAIN_NUM_TILES][TERRAIN_NUM_TILES];
     std::atomic<unsigned long> m_tilerefs[TERRAIN_NUM_TILES][TERRAIN_NUM_TILES];
 
+    /// Our memory saving system for small allocations
+    uint32_t TileCountX, TileCountY;
+    uint32_t TileStartX, TileEndX;
+    uint32_t TileStartY, TileEndY;
+
+    /// This holds the offsets of the tile information for each tile.
+    uint32_t TileOffsets[TERRAIN_NUM_TILES][TERRAIN_NUM_TILES];
+
     TerrainHolder(uint32_t mapid);
     ~TerrainHolder();
 
@@ -202,4 +210,23 @@ public:
 
     // test
     uint32_t GetAreaFlag(float x, float y);
+
+    void getCellLimits(uint32_t &StartX, uint32_t &EndX, uint32_t &StartY, uint32_t &EndY);
+
+    bool areTilesValid(uint32_t x, uint32_t y)
+    {
+        if (x < TileStartX || x > TileEndX)
+            return false;
+        if (y < TileStartY || y > TileEndY)
+            return false;
+        return true;
+    }
+
+    bool tileLoaded(int32_t x, int32_t y)
+    {
+        if (m_tiles[x][y] != 0)
+            return true;
+
+        return false;
+    }
 };

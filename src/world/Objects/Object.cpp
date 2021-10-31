@@ -4200,7 +4200,7 @@ void Object::updateAllowedPositionZ(float x, float y, float &z, float* groundZ)
     if (GetTransport())
     {
         if (groundZ)
-            *groundZ = z + 1.0f; // dont clip inside our transport :)
+            *groundZ = z + 2.0f; // dont clip inside our transport :)
 
         return;
     }
@@ -4215,7 +4215,7 @@ void Object::updateAllowedPositionZ(float x, float y, float &z, float* groundZ)
             if (canSwim)
                 max_z = getMapWaterOrGroundLevel(x, y, z, &ground_z);
             else
-                max_z = ground_z = GetMapMgr()->GetLandHeight(x, y, z);
+                max_z = ground_z = GetMapMgr()->GetLandHeight(x, y, z + 5.0f);
 
             if (max_z > INVALID_HEIGHT)
             {
@@ -4237,7 +4237,7 @@ void Object::updateAllowedPositionZ(float x, float y, float &z, float* groundZ)
         }
         else
         {
-            float ground_z = GetMapMgr()->GetLandHeight(x, y, z);
+            float ground_z = GetMapMgr()->GetLandHeight(x, y, z + 5.0f);
 #if VERSION_STRING >= WotLK
             ground_z += unit->getHoverHeight();
 #endif
@@ -4251,7 +4251,7 @@ void Object::updateAllowedPositionZ(float x, float y, float &z, float* groundZ)
     }
     else
     {
-        float ground_z = GetMapMgr()->GetLandHeight(x, y, z);
+        float ground_z = GetMapMgr()->GetLandHeight(x, y, z + 5.0f);
         if (ground_z > INVALID_HEIGHT)
             z = ground_z;
 

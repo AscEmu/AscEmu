@@ -2267,12 +2267,11 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     CALL_SCRIPT_EVENT(pAttacker, _internalOnTargetDied)(this);
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
+    pAttacker->GetAIInterface()->eventOnTargetDied(this);
 
     pAttacker->smsg_AttackStop(this);
 
     getSummonInterface()->removeAllSummons();
-
-    GetAIInterface()->onDeath(pAttacker);
 
     // Clear Threat
     getThreatManager().clearAllThreat();

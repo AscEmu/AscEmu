@@ -76,7 +76,8 @@ void CreatureAIScript::_internalOnCombatStart(Unit* target)
 
     sendRandomDBChatMessage(mEmotesOnCombatStart, target);
 
-    setScriptPhase(1);
+    if(isScriptPhase(0))
+        setScriptPhase(1);
 
     RegisterAIUpdateEvent(mAIUpdateFrequency);
 }
@@ -889,6 +890,12 @@ void CreatureAIScript::_castOnInrangePlayersWithinDist(float minDistance, float 
 
 void CreatureAIScript::_castAISpell(CreatureAISpells* aiSpell)
 {
+    if (!aiSpell)
+    {
+        sLogger.failure("CreatureAISpells tried to cast nonexistant Spell");
+        return;
+    }
+
     Unit* target = getCreature()->GetAIInterface()->getCurrentTarget();
     switch (aiSpell->mTargetType)
     {

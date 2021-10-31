@@ -4119,7 +4119,8 @@ bool Unit::canSee(Object* const obj)
 
     // Get map view distance (WIP: usually 100 yards for open world and 500 yards for instanced maps)
     //\ todo: there are some objects which should be visible even further and some objects which should always be visible
-    const auto viewDistance = GetMapMgr()->m_UpdateDistance;
+    // should cover all Instances with 5000 * 5000 easyier for far Gameobjects / Creatures to Handle, also Loaded Cells affect the Distance standart 2 Cells equal 500.0f * 500.0f : aaron02
+    const auto viewDistance = GetMapMgr()->GetMapInfo()->isInstanceMap() ? 5000.0f * 5000.0f : GetMapMgr()->m_UpdateDistance;
     if (obj->isGameObject())
     {
         // TODO: for now, all maps have 500 yard view distance
@@ -4331,8 +4332,19 @@ bool Unit::canSee(Object* const obj)
     ////////////////////////////
     // Invisibility detection
 
+    if (obj->isCreatureOrPlayer())
+    {
+        // Players should never see these types of invisible units
+        // Creatures need to be able to see them so invisible triggers can cast spells on visible targets
+        if (meUnit->isPlayer() && unitTarget->getInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE) > 0)
+            return false;
+    }
+
     for (uint8_t i = 0; i < INVIS_FLAG_TOTAL; ++i)
     {
+        if (i == INVIS_FLAG_NEVER_VISIBLE)
+            continue;
+
         auto unitInvisibilityValue = meUnit->getInvisibilityLevel(InvisibilityFlag(i));
         auto unitInvisibilityDetection = meUnit->getInvisibilityDetection(InvisibilityFlag(i));
         auto objectInvisibilityValue = 0;

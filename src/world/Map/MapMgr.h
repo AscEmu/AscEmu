@@ -70,8 +70,14 @@ public:
     // This will be done in regular way soon
     std::set<MapCell*> m_forcedcells;
 
-    void AddForcedCell(MapCell* c);
-    void RemoveForcedCell(MapCell* c);
+    void addForcedCell(MapCell* c);
+    void removeForcedCell(MapCell* c);
+    void addForcedCell(MapCell* c, uint32_t range);
+    void removeForcedCell(MapCell* c, uint32_t range);
+
+    bool cellHasAreaID(uint32_t x, uint32_t y, uint16_t &AreaID);
+    void updateAllCells(bool apply, uint32_t areamask);
+    void updateAllCells(bool apply);
 
     Mutex m_objectinsertlock;
     ObjectSet m_objectinsertpool;

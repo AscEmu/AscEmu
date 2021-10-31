@@ -181,14 +181,14 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new ShatteredHandReaverAI(c); }
     explicit ShatteredHandReaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        auto cleave = addAISpell(SP_SHATT_HAND_REAVER_CLEAVE, 7.0f, TARGET_VARIOUS, 0, 10, false, true);
+        /*auto cleave = addAISpell(SP_SHATT_HAND_REAVER_CLEAVE, 7.0f, TARGET_VARIOUS, 0, 10, false, true);
         cleave->setAttackStopTimer(1000);
 
         auto uppercut = addAISpell(SP_SHATT_HAND_REAVER_UPPERCUT, 7.0f, TARGET_ATTACKING, 0, 35, false, true);
         uppercut->setAttackStopTimer(1000);
 
         auto enrage = addAISpell(SP_SHATT_HAND_REAVER_ENRAGE, 5.0f, TARGET_SELF, 0, 70, false, true);
-        enrage->setAttackStopTimer(1000);
+        enrage->setAttackStopTimer(1000);*/
     }
 };
 
