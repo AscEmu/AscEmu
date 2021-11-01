@@ -45,6 +45,12 @@ public:
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new TheVioletHoldScript(pMapMgr); }
 
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
+
     void UpdateEvent() override
     {
         auto state = getData(MAP_VIOLET_HOLD);

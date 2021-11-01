@@ -53,20 +53,18 @@ enum CreatureSpells
 enum CreatureSay
 {
     //SvalaSorrowgrave Say
-    /*
-    635 - The sensation is... beyond my imagining.I am yours to command, my king.
-    636 - I will be happy to slaughter them in your name!Come, enemies of the Scourge!I will show you the might of the Lich King!
-    637 - I will vanquish your soul!
-    638 - You were a fool to challenge the power of the Lich King!
-    639 - Your will is done, my king!
-    640 - Another soul for my master!
-    641 - Nooo!I did not come this far... to...
-    642 - Your death approaches....
-    643 - Go now to my master!
-    644 - Your end is inevitable.
-    645 - Yor - guul mak!
-    646 - Any last words ?
-    */
+    SAY_SVALA_INTRO_00 = 815,  // My liege! I have done as you asked, and now beseech you for your blessing!
+    SAY_SVALA_INTRO_01 = 635, // The sensation is... beyond my imagining. I am yours to command, my king.
+    SAY_SVALA_INTRO_02 = 636, // I will be happy to slaughter them in your name! Come, enemies of the Scourge! I will show you the might of the Lich King!
+    SAY_SVALA_SORROWGRAVE_AGGRO = 637, // I will vanquish your soul!
+    SAY_SVALA_SORROWGRAVE_RITUAL_01 = 642, // Your death approaches.
+    SAY_SVALA_SORROWGRAVE_RITUAL_02 = 643, // Go now to my master.
+    SAY_SVALA_SORROWGRAVE_RITUAL_03 = 644, // Your end is inevitable.
+    SAY_SVALA_SORROWGRAVE_RITUAL_04 = 646, // Any last words?
+    SAY_SVALA_SORROWGRAVE_KILL_01 = 638, // You were a fool to challenge the power of the Lich King!
+    SAY_SVALA_SORROWGRAVE_KILL_02 = 639, // Your will is done, my king.
+    SAY_SVALA_SORROWGRAVE_KILL_03 = 640, // Another soul for my master.
+    SAY_SVALA_SORROWGRAVE_DEATH = 641, // Nooo! I did not come this far... to...
 
     //GortokPalehoof Say
     SAY_GROTOK_PALEHOOF_01 = 4491,      // What this place? I will destroy you!

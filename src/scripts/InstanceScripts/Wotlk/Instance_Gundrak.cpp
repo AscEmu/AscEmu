@@ -51,6 +51,12 @@ public:
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new GundrakScript(pMapMgr); }
 
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
+
     void OnGameObjectPushToWorld(GameObject* pGameObject) override
     {
         switch (pGameObject->getEntry())
