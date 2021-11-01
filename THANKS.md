@@ -29,4 +29,5 @@ people are awsome:
 - schnek
 - Sdyessdev (Taft)
 - sanctum32
+- Viste
 - Zyres
