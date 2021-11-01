@@ -14,6 +14,12 @@ class KarazhanInstanceScript : public InstanceScript
 public:
     explicit KarazhanInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new KarazhanInstanceScript(pMapMgr); }
+
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
 };
 
 // Partially by Plexor (I used a spell before, but changed to his method)

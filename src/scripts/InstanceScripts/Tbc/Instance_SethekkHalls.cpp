@@ -13,6 +13,12 @@ class SethekkHallsInstanceScript : public InstanceScript
 public:
     explicit SethekkHallsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new SethekkHallsInstanceScript(pMapMgr); }
+
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
 };
 
 class AvianDarkhawkAI : public CreatureAIScript

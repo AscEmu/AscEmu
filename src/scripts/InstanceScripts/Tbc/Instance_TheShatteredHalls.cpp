@@ -14,6 +14,12 @@ class InstanceTheShatteredHallsScript : public InstanceScript
 public:
     explicit InstanceTheShatteredHallsScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceTheShatteredHallsScript(pMapMgr); }
+
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
 };
 
 class FelOrcConvertAI : public CreatureAIScript
