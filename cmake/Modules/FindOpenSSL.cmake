@@ -409,7 +409,6 @@ if(WIN32 AND NOT CYGWIN)
     set(OPENSSL_CRYPTO_LIBRARY ${LIB_EAY} )
   endif()
 else()
-
   find_library(OPENSSL_SSL_LIBRARY
     NAMES
       ssl
@@ -437,7 +436,6 @@ else()
   )
 
   mark_as_advanced(OPENSSL_CRYPTO_LIBRARY OPENSSL_SSL_LIBRARY)
-
 endif()
 
 set(OPENSSL_SSL_LIBRARIES ${OPENSSL_SSL_LIBRARY})

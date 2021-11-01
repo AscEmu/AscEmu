@@ -38,7 +38,7 @@ link_directories(${EXTRA_LIBS_PATH} ${DEPENDENCY_LIBS})
 
 add_executable(${PROJECT_NAME} ${sources})
 
-if(APPLE)
+if (APPLE)
     target_link_libraries(${PROJECT_NAME} c++)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD")
     target_link_libraries(${PROJECT_NAME} c++experimental)
