@@ -1,9 +1,8 @@
 # Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
-
 project(Ascemu)
 
-# cmake >= 3.2
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.16)
+cmake_policy(SET CMP0057 NEW)
 
 # set runtime binary where all compiled (before install) binary will compiled in
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -19,6 +18,8 @@ if(UNIX)
 
     if(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD")
         set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -lc++experimental")
+    elseif(APPLE)
+        set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -lc++")
     else()
         # Link atomic library
         set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -latomic")
@@ -29,12 +30,15 @@ endif()
 include(${CMAKE_SOURCE_DIR}/cmake/Options.cmake)
 
 # perform system tasks
+if (WIN32) #ugly fix for windows
+include(${CMAKE_SOURCE_DIR}/dep/openssl/CMakeLists.txt)
+endif()
+
 include(${CMAKE_SOURCE_DIR}/cmake/CheckSystem.cmake)
 
 # set RPATH-handing (CMake parameters)
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # add dependecies
