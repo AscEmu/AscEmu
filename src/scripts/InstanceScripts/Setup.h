@@ -83,6 +83,18 @@ void SetupVaultOfArchavon(ScriptMgr* mgr);
 
 //Cataclysm
 #if VERSION_STRING >= Cata
+void SetupBlackrockCaverns(ScriptMgr* mgr);
+void SetupEndTime(ScriptMgr* mgr);
+void SetupGrimBatol(ScriptMgr* mgr);
+void SetupHallsOfOrigination(ScriptMgr* mgr);
+void SetupHourOfTwilight(ScriptMgr* mgr);
+void SetupLostCityOfTolvir(ScriptMgr* mgr);
+void SetupTheStonecore(ScriptMgr* mgr);
+void SetupThroneOfTides(ScriptMgr* mgr);
+void SetupVortexPinnacle(ScriptMgr* mgr);
+void SetupWellOfEternity(ScriptMgr* mgr);
+void SetupZulAmanCata(ScriptMgr* mgr);
+void SetupZulGurubCata(ScriptMgr* mgr);
 #endif
 
 
@@ -120,6 +132,11 @@ void SetupTrialOfTheCrusader(ScriptMgr* mgr);
 
 //Cataclysm
 #if VERSION_STRING >= Cata
+void SetupBaradinHold(ScriptMgr* mgr);
+void SetupBastionOfTwilight(ScriptMgr* mgr);
+void SetupBlackwingDescent(ScriptMgr* mgr);
+void SetupDragonSoul(ScriptMgr* mgr);
+void SetupFirelands(ScriptMgr* mgr);
 #endif
 
 

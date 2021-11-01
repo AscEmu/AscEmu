@@ -96,6 +96,18 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
 
     //Cataclysm
 #if VERSION_STRING >= Cata
+    SetupBlackrockCaverns(mgr);
+    SetupEndTime(mgr);
+    SetupGrimBatol(mgr);
+    SetupHallsOfOrigination(mgr);
+    SetupHourOfTwilight(mgr);
+    SetupLostCityOfTolvir(mgr);
+    SetupTheStonecore(mgr);
+    SetupThroneOfTides(mgr);
+    SetupVortexPinnacle(mgr);
+    SetupWellOfEternity(mgr);
+    SetupZulAmanCata(mgr);
+    SetupZulGurubCata(mgr);
 #endif
 
     //Classic
@@ -129,6 +141,11 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
 
     //Cataclysm
 #if VERSION_STRING >= Cata
+    SetupBaradinHold(mgr);
+    SetupBastionOfTwilight(mgr);
+    SetupBlackwingDescent(mgr);
+    SetupDragonSoul(mgr);
+    SetupFirelands(mgr);
 #endif
 }
 
