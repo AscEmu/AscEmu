@@ -269,7 +269,7 @@ altered for:
     get_source_file_property(_cotireTargetName "example.cpp" COTIRE_TARGET)
     if (_cotireTargetName)
         message(STATUS "example.cpp has been cotired for target ${_cotireTargetName}")
-    endif()
+    endif ()
 
 ### changing the name of the generated unity build target
 
@@ -533,7 +533,7 @@ can be applied to using cotire:
     ...
     if (COMMAND cotire)
         cotire(example)
-    endif()
+    endif ()
 
 The `include(cotire OPTIONAL)` will prevent CMake from raising an error if cotire cannot be
 found. The actual calls to cotire need to be guarded by `if (COMMAND cotire)` blocks.
@@ -668,7 +668,7 @@ dependency explicit by using `add_definitions` in the corresponding `CMakeLists.
     if (WIN32)
         # prevent definition of min and max macros through inclusion of Windows.h
         add_definitions("-DNOMINMAX")
-    endif()
+    endif ()
 
 That way, the preprocessor define `NOMINMAX` will be picked up by cotire and applied to the
 pre-compilation of the prefix header.

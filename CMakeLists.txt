@@ -8,31 +8,31 @@ cmake_policy(SET CMP0057 NEW)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # set build type on unix if it wasn't defined by user
-if(UNIX)
-    if(NOT CMAKE_BUILD_TYPE)
+if (UNIX)
+    if (NOT CMAKE_BUILD_TYPE)
         message(STATUS "Build configuration was not detected, setting to \"Release\"")
         set(CMAKE_BUILD_TYPE "Release")
-    else()
+    else ()
         message(STATUS "Detected ${CMAKE_BUILD_TYPE} configuration")
-    endif()
+    endif ()
 
-    if(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD")
+    if (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD")
         set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -lc++experimental")
-    elseif(APPLE)
+    elseif (APPLE)
         set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -lc++")
-    else()
-        # Link atomic library
+    else ()
+        # link atomic library
         set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -latomic")
-    endif()
-endif()
+    endif ()
+endif ()
 
 # cmake options
 include(${CMAKE_SOURCE_DIR}/cmake/Options.cmake)
 
 # perform system tasks
-if (WIN32) #ugly fix for windows
+if (WIN32) # ugly fix for windows
 include(${CMAKE_SOURCE_DIR}/dep/openssl/CMakeLists.txt)
-endif()
+endif ()
 
 include(${CMAKE_SOURCE_DIR}/cmake/CheckSystem.cmake)
 
@@ -50,10 +50,10 @@ add_subdirectory(src)
 # add script libraries
 add_subdirectory(src/scripts)
 
-# install libraries for windows build (libmysql.dll, libey32.dll)
-if(WIN32)
+# install libraries for windows build (libmysql.dll)
+if (WIN32)
     install(FILES ${INSTALLED_DEPENDENCIES} DESTINATION .)
-endif()
+endif ()
 
 # install db updates
 install(DIRECTORY ${INSTALL_DB_FILES} DESTINATION sql FILES_MATCHING PATTERN "*.sql")

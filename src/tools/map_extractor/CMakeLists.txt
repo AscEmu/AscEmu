@@ -8,10 +8,10 @@ set(source
     ${CMAKE_SOURCE_DIR}/dep/libmpq/libmpq
 )
 include_directories(
-  ${CMAKE_SOURCE_DIR}/dep/libmpq/libmpq
-  ${CMAKE_SOURCE_DIR}/dep/dbcfile 
-  ${CMAKE_SOURCE_DIR}/dep/loadlib
-  ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/dep/libmpq/libmpq
+    ${CMAKE_SOURCE_DIR}/dep/dbcfile 
+    ${CMAKE_SOURCE_DIR}/dep/loadlib
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 add_executable(${PROJECT_NAME} ${source})

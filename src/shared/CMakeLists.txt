@@ -86,22 +86,22 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFre
     target_link_libraries(${PROJECT_NAME} c++experimental)
 elseif (NOT WIN32)
     target_link_libraries(${PROJECT_NAME} stdc++fs)
-endif()
+endif ()
 
-if(USE_PCH)
-  target_precompile_headers(${PROJECT_NAME}
-  PRIVATE
-  <iostream>
-  <list>
-  <vector>
-  <map>
-  <sstream>
-  <string>
-  <atomic>
-  Common.hpp
-  Util.hpp
+if (USE_PCH)
+    target_precompile_headers(${PROJECT_NAME}
+    PRIVATE
+    <iostream>
+    <list>
+    <vector>
+    <map>
+    <sstream>
+    <string>
+    <atomic>
+    Common.hpp
+    Util.hpp
 )
-endif()
+endif ()
 
 unset(sources)
 unset(headers)

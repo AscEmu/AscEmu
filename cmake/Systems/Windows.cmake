@@ -6,9 +6,9 @@ set(LIBS_DIR ${CMAKE_INSTALL_PREFIX}/bin)
 
 # set default install prefix if it wasn't setted up
 add_definitions(-DWIN32)
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX "C:/AscEmu" CACHE PATH "Install path prefix" FORCE)
-endif()
+endif ()
 
 include(${CMAKE_SOURCE_DIR}/cmake/Modules/FindMySQL.cmake)
 
@@ -29,8 +29,8 @@ set(PATH_DB_FILES ${CMAKE_SOURCE_DIR}/sql/)
 
 set(INSTALL_DB_FILES ${PATH_DB_FILES})
 
-if(MSVC)
+if (MSVC)
     include(${CMAKE_SOURCE_DIR}/cmake/Compilers/msvc.cmake)
-else()
+else ()
     message(FATAL_ERROR "Compiler is not supported")
-endif()
+endif ()

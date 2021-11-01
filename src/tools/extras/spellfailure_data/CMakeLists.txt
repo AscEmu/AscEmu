@@ -3,7 +3,7 @@
 file(GLOB spellfailure_data_sources *.cpp)
 
 set(spellfailure_SRCS
-  ${spellfailure_data_sources}
+    ${spellfailure_data_sources}
 )
 
 add_executable(spellfailure_data ${spellfailure_SRCS})

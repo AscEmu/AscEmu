@@ -4,13 +4,13 @@
 project(bzip2 C)
 
 set(sources
-   blocksort.c
-   bzlib.c
-   compress.c
-   crctable.c
-   decompress.c
-   huffman.c
-   randtable.c
+    blocksort.c
+    bzlib.c
+    compress.c
+    crctable.c
+    decompress.c
+    huffman.c
+    randtable.c
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

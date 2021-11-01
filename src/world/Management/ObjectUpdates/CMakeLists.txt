@@ -3,10 +3,10 @@
 set(PATH_PREFIX Management/ObjectUpdates)
 
 set(SRC_MANAGEMENT_OBJECTUPDATES_FILES
-   ${PATH_PREFIX}/SplineManager.cpp
-   ${PATH_PREFIX}/SplineManager.h
-   ${PATH_PREFIX}/UpdateManager.cpp
-   ${PATH_PREFIX}/UpdateManager.h
+    ${PATH_PREFIX}/SplineManager.cpp
+    ${PATH_PREFIX}/SplineManager.h
+    ${PATH_PREFIX}/UpdateManager.cpp
+    ${PATH_PREFIX}/UpdateManager.h
 )
 
 source_group(Management\\ObjectUpdates FILES ${SRC_MANAGEMENT_OBJECTUPDATES_FILES})

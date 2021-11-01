@@ -4,8 +4,7 @@
 # ENSURE_VERSION        - test that a version number is greater than
 #                               or equal to some minimum
 # ENSURE_VERSION_RANGE - test that a version number is greater than
-#                               or equal to some minimum and less than some
-#                               maximum
+#                               or equal to some minimum and less than some maximum
 # ENSURE_VERSION2       - deprecated, do not use in new code
 #
 
@@ -62,7 +61,7 @@
 MACRO(NORMALIZE_VERSION _requested_version _normalized_version)
     STRING(REGEX MATCH "[^0-9]*[0-9]+\\.[0-9]+\\.[0-9]+.*" _threePartMatch "${_requested_version}")
     if (_threePartMatch)
-    # parse the parts of the version string
+        # parse the parts of the version string
         STRING(REGEX REPLACE "[^0-9]*([0-9]+)\\.[0-9]+\\.[0-9]+.*" "\\1" _major_vers "${_requested_version}")
         STRING(REGEX REPLACE "[^0-9]*[0-9]+\\.([0-9]+)\\.[0-9]+.*" "\\1" _minor_vers "${_requested_version}")
         STRING(REGEX REPLACE "[^0-9]*[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" _patch_vers "${_requested_version}")
@@ -77,17 +76,17 @@ MACRO(NORMALIZE_VERSION _requested_version _normalized_version)
 ENDMACRO(NORMALIZE_VERSION)
 
 MACRO(CHECK_RANGE_INCLUSIVE_LOWER _lower_limit _value _upper_limit _ok)
-   if (${_value} LESS ${_lower_limit})
-      set( ${_ok} FALSE )
-  elseif (${_value} EQUAL ${_lower_limit})
-      set( ${_ok} TRUE )
-  elseif (${_value} EQUAL ${_upper_limit})
-      set( ${_ok} FALSE )
-  elseif (${_value} GREATER ${_upper_limit})
-      set( ${_ok} FALSE )
-  else (${_value} LESS ${_lower_limit})
-      set( ${_ok} TRUE )
-  endif (${_value} LESS ${_lower_limit})
+    if (${_value} LESS ${_lower_limit})
+        set( ${_ok} FALSE )
+    elseif (${_value} EQUAL ${_lower_limit})
+        set( ${_ok} TRUE )
+    elseif (${_value} EQUAL ${_upper_limit})
+        set( ${_ok} FALSE )
+    elseif (${_value} GREATER ${_upper_limit})
+        set( ${_ok} FALSE )
+    else (${_value} LESS ${_lower_limit})
+        set( ${_ok} TRUE )
+    endif (${_value} LESS ${_lower_limit})
 ENDMACRO(CHECK_RANGE_INCLUSIVE_LOWER)
 
 MACRO(ENSURE_VERSION requested_version found_version var_too_old)

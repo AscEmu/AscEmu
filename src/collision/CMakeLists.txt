@@ -6,44 +6,44 @@ file(GLOB sources_Models Models/*.cpp Models/*.h)
 file(GLOB sources_localdir *.cpp *.h)
 
 set(collision_STAT_SRCS
-  ${collision_STAT_SRCS}
-  ${sources_Management}
-  ${sources_Maps}
-  ${sources_Models}
-  ${sources_localdir}
+    ${collision_STAT_SRCS}
+    ${sources_Management}
+    ${sources_Maps}
+    ${sources_Models}
+    ${sources_localdir}
 )
 
 include_directories(
-  ${OPENSSL_INCLUDE_DIR}
-  ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
-  ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
-  ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Recast/Include
-  ${CMAKE_SOURCE_DIR}/src/shared
-  ${CMAKE_SOURCE_DIR}/src/world
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/Management
-  ${CMAKE_CURRENT_SOURCE_DIR}/Maps
-  ${CMAKE_CURRENT_SOURCE_DIR}/Models
-  ${ZLIB_INCLUDE_DIRS}
+    ${OPENSSL_INCLUDE_DIR}
+    ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
+    ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
+    ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Recast/Include
+    ${CMAKE_SOURCE_DIR}/src/shared
+    ${CMAKE_SOURCE_DIR}/src/world
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/Management
+    ${CMAKE_CURRENT_SOURCE_DIR}/Maps
+    ${CMAKE_CURRENT_SOURCE_DIR}/Models
+    ${ZLIB_INCLUDE_DIRS}
 )
 
 add_library(collision STATIC ${collision_STAT_SRCS})
 target_link_libraries(collision g3dlite shared)
 
-if(USE_PCH)
-  target_precompile_headers(collision
-  PRIVATE
-  <set>
-  <sstream>
-  <iomanip>
-  <Common.hpp>
-  <Util.hpp>
-  <Logging/Logger.hpp>
-  Models/ModelInstance.h
-  Models/GameObjectModel.h
-  Models/WorldModel.h
-  Maps/MapTree.h
-  BoundingIntervalHierarchy.h
-  VMapDefinitions.h
+if (USE_PCH)
+    target_precompile_headers(collision
+    PRIVATE
+    <set>
+    <sstream>
+    <iomanip>
+    <Common.hpp>
+    <Util.hpp>
+    <Logging/Logger.hpp>
+    Models/ModelInstance.h
+    Models/GameObjectModel.h
+    Models/WorldModel.h
+    Maps/MapTree.h
+    BoundingIntervalHierarchy.h
+    VMapDefinitions.h
 )
-endif()
+endif ()

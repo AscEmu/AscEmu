@@ -4,17 +4,17 @@
 project(vmap4_assembler CXX)
 
 set(sources
-   VMapAssembler.cpp
+    VMapAssembler.cpp
 )
 
 include_directories(
-   ${CMAKE_SOURCE_DIR}/src/shared
-   ${CMAKE_SOURCE_DIR}/src/collision
-   ${CMAKE_SOURCE_DIR}/src/collision/Management
-   ${CMAKE_SOURCE_DIR}/src/collision/Maps
-   ${CMAKE_SOURCE_DIR}/src/collision/Models
-   ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
-   ${ZLIB_INCLUDE_DIRS}
+    ${CMAKE_SOURCE_DIR}/src/shared
+    ${CMAKE_SOURCE_DIR}/src/collision
+    ${CMAKE_SOURCE_DIR}/src/collision/Management
+    ${CMAKE_SOURCE_DIR}/src/collision/Maps
+    ${CMAKE_SOURCE_DIR}/src/collision/Models
+    ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
+    ${ZLIB_INCLUDE_DIRS}
 )
 
 add_executable(${PROJECT_NAME} ${sources})
