@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_Lost_City_Of_Tolvir.h"
-#include <Units/Creatures/Pet.h>
 
 class LostCityOfTolvirInstanceScript : public InstanceScript
 {

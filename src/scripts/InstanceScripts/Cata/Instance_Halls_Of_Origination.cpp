@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_Halls_Of_Origination.h"
-#include <Units/Creatures/Pet.h>
 
 class HallsOfOriginationInstanceScript : public InstanceScript
 {

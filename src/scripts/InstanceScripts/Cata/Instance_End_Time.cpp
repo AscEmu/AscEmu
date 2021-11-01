@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_End_Time.h"
-#include <Units/Creatures/Pet.h>
 
 class EndTimeInstanceScript : public InstanceScript
 {

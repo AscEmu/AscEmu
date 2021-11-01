@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Raid_Blackwing_Descent.h"
-#include <Units/Creatures/Pet.h>
 
 class BlackwingDescentInstanceScript : public InstanceScript
 {

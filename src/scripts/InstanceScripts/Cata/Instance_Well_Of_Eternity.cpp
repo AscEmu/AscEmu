@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_Well_Of_Eternity.h"
-#include <Units/Creatures/Pet.h>
 
 class WellOfEternityInstanceScript : public InstanceScript
 {
