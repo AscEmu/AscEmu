@@ -13,6 +13,12 @@ class BotanicaInstanceScript : public InstanceScript
 public:
     explicit BotanicaInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new BotanicaInstanceScript(pMapMgr); }
+
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
 };
 
 class BloodProtectorAI : public CreatureAIScript

@@ -16,6 +16,12 @@ class InstanceMagistersTerraceScript : public InstanceScript
 public:
     explicit InstanceMagistersTerraceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceMagistersTerraceScript(pMapMgr); }
+
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
 };
 
 // Fel Crystal Spawn Locations

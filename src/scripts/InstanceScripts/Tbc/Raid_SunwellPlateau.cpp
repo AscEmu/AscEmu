@@ -13,6 +13,12 @@ class SunwellPlateauInstanceScript : public InstanceScript
 public:
     explicit SunwellPlateauInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new SunwellPlateauInstanceScript(pMapMgr); }
+
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
 };
 
 /*

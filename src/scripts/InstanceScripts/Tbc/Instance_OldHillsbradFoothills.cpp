@@ -33,6 +33,12 @@ public:
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new OldHilsbradInstance(pMapMgr); }
 
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
+
     void OnPlayerEnter(Player* pPlayer)
     {
         if (pPlayer->getGender() == 0)

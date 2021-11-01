@@ -13,6 +13,12 @@ class BloodFurnaceInstanceScript : public InstanceScript
 public:
     explicit BloodFurnaceInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new BloodFurnaceInstanceScript(pMapMgr); }
+
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
 };
 
 class KelidanTheBreakerAI : public CreatureAIScript

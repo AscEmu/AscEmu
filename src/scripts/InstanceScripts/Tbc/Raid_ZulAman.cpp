@@ -13,6 +13,12 @@ class ZulAmanInstanceScript : public InstanceScript
 public:
     explicit ZulAmanInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ZulAmanInstanceScript(pMapMgr); }
+
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
 };
 
 //\todo move AddEmote to database

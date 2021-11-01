@@ -12,6 +12,12 @@ class AuchenaiCryptsInstanceScript : public InstanceScript
 public:
     explicit AuchenaiCryptsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(MapMgr* pMapMgr) { return new AuchenaiCryptsInstanceScript(pMapMgr); }
+
+    void OnLoad() override
+    {
+        // Load All Cells in Our Instance
+        GetInstance()->updateAllCells(true);
+    }
 };
 
 // Shirrak the Dead WatcherAI
