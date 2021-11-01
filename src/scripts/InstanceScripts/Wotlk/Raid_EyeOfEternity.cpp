@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
-#include "Instance_EyeOfEternity.h"
+#include "Raid_EyeOfEternity.h"
 #include <Units/Creatures/Pet.h>
 #include "Server/Script/CreatureAIScript.h"
 

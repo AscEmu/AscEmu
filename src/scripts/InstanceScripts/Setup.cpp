@@ -78,7 +78,6 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupAzjolNerub(mgr);
     SetupCullingOfStratholme(mgr);
     SetupDrakTharonKeep(mgr);
-    SetupEyeOfEternity(mgr);
     SetupForgeOfSouls(mgr);
     SetupGundrak(mgr);
     SetupHallsOfLightning(mgr);
@@ -91,7 +90,6 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupTrialOfTheChampion(mgr);
     SetupUtgardeKeep(mgr);
     SetupUtgardePinnacle(mgr);
-    SetupVaultOfArchavon(mgr);
 #endif
 
     //Cataclysm
@@ -137,6 +135,8 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupNaxxramas(mgr);
     SetupUlduar(mgr);
     SetupTrialOfTheCrusader(mgr);
+    SetupEyeOfEternity(mgr);
+    SetupVaultOfArchavon(mgr);
 #endif
 
     //Cataclysm
