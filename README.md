@@ -16,15 +16,17 @@ We focus on optimizing the codebase and improving the ingame functionality.
 You can help us by contributing. It is completely open source and can be used by everyone.
 This project is for educational purpose. So, if you're looking for serverfiles to run your server or create some "custom" scripts  this is the wrong place for you. If you want to discuss/develop/work on an open source project and on important stuff for the framework feel free to join our community.
 
-## Multiversion Status
-AscEmu will support the most common versions. This is currently a work in progress. Check out the following table to see the current status of multiversion support:
+## Multiversion
+AscEmu supports several versions as listed below. We achieved to handle different versions of the serverside code in one repo. The biggest advantage of that is that we always develop for all our supported versions without wasting time to merge features across all repos.
+
+Beside our multiversion-core we developed our world database with this attitude. Compared to other projects we are still a small project but with one core and database we are able to work on different versions at the same time. Beside all that we are able to show the changes to the game side by side in our code and database.
 
 Description | Classic | TBC | WotLK | Cata | MoP
 :------------: | :------------: | :------------: | :------------: | :------------: | :------------:
-Authentification | OK | OK | OK | OK | OK
-Worldsocket | OK | OK | OK | OK | OK
-Char Enum | OK | OK | OK | OK | OK
-Log into world | NO | OK | OK | OK | NO
+Authentification | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:
+Worldsocket | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:
+Char Enum | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:
+Log into world | :x: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :x:
 
 ## Contributing
 Feel free to contribute any corrections but make sure it is useful and tested before opening PRs.
