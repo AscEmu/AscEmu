@@ -33,6 +33,53 @@
  // APGL End
  // MIT Start
 
+SpellCastResult Spell::checkExplicitTarget(Object* target, uint32_t requiredTargetMask) const
+{
+    if (target == nullptr || !target->IsInWorld())
+        return SPELL_FAILED_BAD_IMPLICIT_TARGETS;
+
+    // Gameobject target, not item
+    if (!target->isGameObject() && (requiredTargetMask & SPELL_TARGET_REQUIRE_GAMEOBJECT) && !(requiredTargetMask & SPELL_TARGET_REQUIRE_ITEM))
+        return SPELL_FAILED_BAD_TARGETS;
+
+    // Check if spell can target gameobjects
+    if (target->isGameObject() && !m_triggeredSpell && !(requiredTargetMask & SPELL_TARGET_OBJECT_SCRIPTED) && !(requiredTargetMask & SPELL_TARGET_REQUIRE_GAMEOBJECT))
+        return SPELL_FAILED_BAD_TARGETS;
+
+    // Check if spell can target items
+    if (target->isItem() && !m_triggeredSpell && !(requiredTargetMask & SPELL_TARGET_REQUIRE_ITEM))
+        return SPELL_FAILED_BAD_TARGETS;
+
+    // Check if spell can target friendly unit
+    if (requiredTargetMask & SPELL_TARGET_REQUIRE_FRIENDLY && !isFriendly(m_caster, target))
+        return SPELL_FAILED_BAD_TARGETS;
+
+    // Check if spell can target attackable unit
+    if (requiredTargetMask & SPELL_TARGET_REQUIRE_ATTACKABLE && !isAttackable(m_caster, target, false))
+        return SPELL_FAILED_BAD_TARGETS;
+
+    if (requiredTargetMask & SPELL_TARGET_OBJECT_TARCLASS)
+    {
+        const auto* const originalTarget = m_caster->GetMapMgrObject(m_targets.getUnitTarget());
+        if (originalTarget == nullptr)
+            return SPELL_FAILED_BAD_TARGETS;
+        if ((originalTarget->isPlayer() && !target->isPlayer()) || (!originalTarget->isPlayer() && target->isPlayer()))
+            return SPELL_FAILED_BAD_TARGETS;
+        if ((originalTarget->isPlayer() && target->isPlayer() && static_cast<Player const*>(originalTarget)->getClass() != static_cast<Player const*>(target)->getClass()))
+            return SPELL_FAILED_BAD_TARGETS;
+    }
+
+    // Check if spell can target pet
+    if (requiredTargetMask & SPELL_TARGET_OBJECT_CURPET && !target->isPet())
+        return SPELL_FAILED_BAD_TARGETS;
+
+    if (((target->isCreatureOrPlayer() && !static_cast<Unit const*>(target)->isAlive()) || (target->isCreature() && target->isTotem()))
+        && (requiredTargetMask & (SPELL_TARGET_AREA | SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_CURTARGET | SPELL_TARGET_AREA_CONE | SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID)))
+        return SPELL_FAILED_BAD_TARGETS;
+
+    return SPELL_CAST_SUCCESS;
+}
+
 void Spell::safeAddMissedTarget(uint64_t targetGuid, SpellDidHitResult hitResult, SpellDidHitResult extendedHitResult)
 {
     for (const auto& targetMod : missedTargets)
@@ -357,39 +404,13 @@ void Spell::AddAOETargets(uint32 i, uint32 targetType, float r, uint32 maxtarget
 
 bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
 {
+    const auto targetCheck = checkExplicitTarget(obj, TargetType);
+    if (targetCheck != SPELL_CAST_SUCCESS)
+        return false;
+
     std::vector<uint64_t>* t = &m_effectTargets[i];
 
-    if (obj == nullptr || !obj->IsInWorld())
-        return false;
-
-    //GO target, not item
-    if ((TargetType & SPELL_TARGET_REQUIRE_GAMEOBJECT) && !(TargetType & SPELL_TARGET_REQUIRE_ITEM) && !obj->isGameObject())
-        return false;
-
-    //target go, not able to target go
-    if (obj->isGameObject() && !(TargetType & SPELL_TARGET_OBJECT_SCRIPTED) && !(TargetType & SPELL_TARGET_REQUIRE_GAMEOBJECT) && !m_triggeredSpell)
-        return false;
-    //target item, not able to target item
-    if (obj->isItem() && !(TargetType & SPELL_TARGET_REQUIRE_ITEM) && !m_triggeredSpell)
-        return false;
-
     if (u_caster != nullptr && u_caster->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT) && ((obj->isPlayer() || obj->isPet()) || (p_caster != nullptr || m_caster->isPet())))
-        return false;
-
-    if (TargetType & SPELL_TARGET_REQUIRE_FRIENDLY && !isFriendly(m_caster, obj))
-        return false;
-    if (TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE && !isAttackable(m_caster, obj, false))
-        return false;
-    if (TargetType & SPELL_TARGET_OBJECT_TARCLASS)
-    {
-        Object* originaltarget = m_caster->GetMapMgr()->_GetObject(m_targets.getUnitTarget());
-
-        if (originaltarget == nullptr || (originaltarget->isPlayer() && obj->isPlayer() && static_cast<Player*>(originaltarget)->getClass() != static_cast<Player*>(obj)->getClass()) || (originaltarget->isPlayer() && !obj->isPlayer()) || (!originaltarget->isPlayer() && obj->isPlayer()))
-            return false;
-    }
-    if (TargetType & SPELL_TARGET_OBJECT_CURPET && !obj->isPet())
-        return false;
-    if (TargetType & (SPELL_TARGET_AREA | SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_CURTARGET | SPELL_TARGET_AREA_CONE | SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID) && ((obj->isCreatureOrPlayer() && !static_cast<Unit*>(obj)->isAlive()) || (obj->isCreature() && obj->isTotem())))
         return false;
 
     SpellDidHitResult hitresult = (TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE && obj->isCreatureOrPlayer()) ? static_cast<SpellDidHitResult>(DidHit(i, static_cast<Unit*>(obj))) : SPELL_DID_HIT_SUCCESS;

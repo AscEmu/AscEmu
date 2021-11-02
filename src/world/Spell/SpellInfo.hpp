@@ -60,7 +60,8 @@ public:
 
     bool hasTargetType(uint32_t type) const;
     uint32_t getRequiredTargetMaskForEffectTarget(uint32_t implicitTarget, uint8_t effectIndex) const;
-    uint32_t getRequiredTargetMaskForEffect(uint8_t effectIndex) const;
+    uint32_t getRequiredTargetMaskForEffect(uint8_t effectIndex, bool getExplicitMask = false) const;
+    uint32_t getRequiredTargetMask(bool getExplicitMask) const;
     int aiTargetType() const;
     bool isTargetingStealthed() const;
 
@@ -81,6 +82,8 @@ public:
 
     bool appliesAreaAura(uint32_t auraType) const;
     uint32_t getAreaAuraEffect() const;
+
+    bool isTriggerSpellCastedByCaster(SpellInfo const* triggeringSpell) const;
 
     // Getters for spell data
     uint32_t getId() const { return Id; }

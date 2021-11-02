@@ -758,7 +758,7 @@ uint32_t SpellInfo::getRequiredTargetMaskForEffectTarget(uint32_t implicitTarget
     return targetMask;
 }
 
-uint32_t SpellInfo::getRequiredTargetMaskForEffect(uint8_t effectIndex) const
+uint32_t SpellInfo::getRequiredTargetMaskForEffect(uint8_t effectIndex, bool getExplicitMask/* = false*/) const
 {
     auto targetMask = getRequiredTargetMaskForEffectTarget(getEffectImplicitTargetA(effectIndex), effectIndex);
 
@@ -766,7 +766,38 @@ uint32_t SpellInfo::getRequiredTargetMaskForEffect(uint8_t effectIndex) const
     if (getEffectImplicitTargetB(effectIndex) != EFF_TARGET_NONE)
         targetMask |= getRequiredTargetMaskForEffectTarget(getEffectImplicitTargetB(effectIndex), effectIndex);
 
+    // Remove explicit object target masks if spell has no max range
+    if (getExplicitMask)
+    {
+        const auto rangeEntry = sSpellRangeStore.LookupEntry(getRangeIndex());
+        if (rangeEntry != nullptr)
+        {
+#if VERSION_STRING >= WotLK
+            if (rangeEntry->maxRangeFriendly == 0.0f && rangeEntry->maxRange == 0.0f)
+#else
+            if (rangeEntry->maxRange == 0.0f)
+#endif
+            {
+                targetMask &= ~(SPELL_TARGET_REQUIRE_GAMEOBJECT | SPELL_TARGET_REQUIRE_ATTACKABLE | SPELL_TARGET_REQUIRE_FRIENDLY);
+            }
+        }
+    }
+
     return targetMask;
+}
+
+uint32_t SpellInfo::getRequiredTargetMask(bool getExplicitMask) const
+{
+    uint32_t fullMask = 0;
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        if (getEffect(i) == SPELL_EFFECT_NULL)
+            continue;
+
+        fullMask |= getRequiredTargetMaskForEffect(i, getExplicitMask);
+    }
+
+    return fullMask;
 }
 
 int SpellInfo::aiTargetType() const
@@ -1089,4 +1120,34 @@ uint32_t SpellInfo::getAreaAuraEffect() const
     }
 
     return 0;
+}
+
+bool SpellInfo::isTriggerSpellCastedByCaster(SpellInfo const* triggeringSpell) const
+{
+    const auto targetMask = getRequiredTargetMask(true);
+    if (targetMask & (SPELL_TARGET_REQUIRE_ATTACKABLE | SPELL_TARGET_REQUIRE_FRIENDLY))
+        return true;
+
+    if (triggeringSpell != nullptr && triggeringSpell->isChanneled())
+    {
+        uint32_t mask = 0;
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            if (getEffect(i) == SPELL_EFFECT_NULL)
+                continue;
+
+            if (getEffectImplicitTargetA(i) == EFF_TARGET_SELF || getEffectImplicitTargetA(i) == EFF_TARGET_LOCATION_TO_SUMMON)
+                continue;
+
+            if (getEffectImplicitTargetB(i) == EFF_TARGET_SELF || getEffectImplicitTargetB(i) == EFF_TARGET_LOCATION_TO_SUMMON)
+                continue;
+
+            mask |= getRequiredTargetMaskForEffect(i);
+        }
+
+        if (mask & (SPELL_TARGET_REQUIRE_ATTACKABLE | SPELL_TARGET_REQUIRE_FRIENDLY))
+            return true;
+    }
+
+    return false;
 }
