@@ -76,16 +76,16 @@ public:
 
         if (mMaulgar && mMaulgar->GetScript())
         {
-            if (mKrosh  && mKrosh->GetScript() && !mKrosh->GetScript()->getLinkedCreatureAIScript())
+            if (mKrosh && mKrosh->GetScript() && !mKrosh->GetScript()->getLinkedCreatureAIScript())
                 mKrosh->GetScript()->setLinkedCreatureAIScript(mMaulgar->GetScript());
 
-            if (mOlm  && mOlm->GetScript() && !mOlm->GetScript()->getLinkedCreatureAIScript())
+            if (mOlm && mOlm->GetScript() && !mOlm->GetScript()->getLinkedCreatureAIScript())
                 mOlm->GetScript()->setLinkedCreatureAIScript(mMaulgar->GetScript());
 
-            if (mKiggler  && mKiggler->GetScript() && !mKiggler->GetScript()->getLinkedCreatureAIScript())
+            if (mKiggler && mKiggler->GetScript() && !mKiggler->GetScript()->getLinkedCreatureAIScript())
                 mKiggler->GetScript()->setLinkedCreatureAIScript(mMaulgar->GetScript());
 
-            if (mBlindeye  && mBlindeye->GetScript() && !mBlindeye->GetScript()->getLinkedCreatureAIScript())
+            if (mBlindeye && mBlindeye->GetScript() && !mBlindeye->GetScript()->getLinkedCreatureAIScript())
                 mBlindeye->GetScript()->setLinkedCreatureAIScript(mMaulgar->GetScript());
         }
     }
@@ -95,36 +95,40 @@ public:
         switch (entry)
         {
             case NPC_MAULGAR:
+            {
                 switch (state)
                 {
-                    case NotStarted:
-                        setLocalData(DATA_DOOR_MAULGAR, ACTION_DISABLE);
-                        break;
-                    case InProgress:
-                        setLocalData(DATA_DOOR_MAULGAR, ACTION_DISABLE);
-                        break;
-                    case Finished:
-                        setLocalData(DATA_DOOR_MAULGAR, ACTION_ENABLE);
-                        break;
-                    default:
-                        break;
+                case NotStarted:
+                    setLocalData(DATA_DOOR_MAULGAR, ACTION_DISABLE);
+                    break;
+                case InProgress:
+                    setLocalData(DATA_DOOR_MAULGAR, ACTION_DISABLE);
+                    break;
+                case Finished:
+                    setLocalData(DATA_DOOR_MAULGAR, ACTION_ENABLE);
+                    break;
+                default:
+                    break;
                 }
+            }
                 break;
             case NPC_GRUUL_THE_DRAGONKILLER:
+            {
                 switch (state)
                 {
-                    case NotStarted:
-                        setLocalData(DATA_DOOR_GRUUL, ACTION_ENABLE);
-                        break;
-                    case InProgress:
-                        setLocalData(DATA_DOOR_GRUUL, ACTION_DISABLE);
-                        break;
-                    case Finished:
-                        setLocalData(DATA_DOOR_GRUUL, ACTION_DISABLE);
-                        break;
-                    default:
-                        break;
+                case NotStarted:
+                    setLocalData(DATA_DOOR_GRUUL, ACTION_ENABLE);
+                    break;
+                case InProgress:
+                    setLocalData(DATA_DOOR_GRUUL, ACTION_DISABLE);
+                    break;
+                case Finished:
+                    setLocalData(DATA_DOOR_GRUUL, ACTION_DISABLE);
+                    break;
+                default:
+                    break;
                 }
+            }
                 break;
             default:
                 break;
@@ -169,6 +173,7 @@ public:
         switch (type)
         {
             case DATA_DOOR_MAULGAR:
+            {
                 if (mDoorMaulgar)
                 {
                     if (data == ACTION_ENABLE)
@@ -176,8 +181,10 @@ public:
                     else
                         mDoorMaulgar->setState(GO_STATE_CLOSED);
                 }
+            }
                 break;
             case DATA_DOOR_GRUUL:
+            {
                 if (mDoorGruul)
                 {
                     if (data == ACTION_ENABLE)
@@ -185,6 +192,7 @@ public:
                     else
                         mDoorGruul->setState(GO_STATE_CLOSED);
                 }
+            }
                 break;
             default:
                 break;
