@@ -2298,7 +2298,6 @@ bool MapMgr::cellHasAreaID(uint32_t CellX, uint32_t CellY, uint16_t &AreaID)
     int32_t OffsetTileX = TileX - _terrain->TileStartX;
     int32_t OffsetTileY = TileY - _terrain->TileStartY;
 
-    uint32_t areaid = 0;
     bool Required = false;
     bool Result = false;
 
@@ -2316,7 +2315,7 @@ bool MapMgr::cellHasAreaID(uint32_t CellX, uint32_t CellY, uint16_t &AreaID)
     {
         for (uint32_t yc = (CellY%CellsPerTile) * 16 / CellsPerTile; yc < (CellY%CellsPerTile) * 16 / CellsPerTile + 16 / CellsPerTile; yc++)
         {
-            areaid = _terrain->GetTile(OffsetTileX, OffsetTileY)->m_map.m_areaMap[yc * 16 + xc];
+            const auto areaid = _terrain->GetTile(OffsetTileX, OffsetTileY)->m_map.m_areaMap[yc * 16 + xc];
             if (areaid)
             {
                 AreaID = areaid;

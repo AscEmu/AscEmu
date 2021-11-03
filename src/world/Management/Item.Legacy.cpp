@@ -651,7 +651,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
         //This in some cases will try to write for example 3 visuals into one place, but now every item has only one 
         //field for this, and as we can't choose which visual to have, we'll accept the last one.
 
-        m_owner->setVisibleItemEnchantment(ItemSlot, Slot, Apply ? Entry->Id : 0);
+        m_owner->setVisibleItemEnchantment(ItemSlot, static_cast<uint8_t>(Slot), Apply ? Entry->Id : 0);
     }
     else
     {

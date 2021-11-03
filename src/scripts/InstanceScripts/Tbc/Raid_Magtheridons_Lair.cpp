@@ -336,7 +336,7 @@ public:
         }
     }
 
-    void OnDied(Unit* killer) override
+    void OnDied(Unit* /*killer*/) override
     {
          _castAISpell(soulTransfer);
     }
@@ -401,7 +401,7 @@ public:
         Reset();
     }
 
-    void OnDied(Unit* killer) override
+    void OnDied(Unit* /*killer*/) override
     {
         sendDBChatMessage(SAY_DEATH);
         getInstanceScript()->setLocalData(DATA_MANTICRON_CUBE, ACTION_DISABLE);
@@ -484,7 +484,7 @@ public:
 
                     if (target)
                     {
-                        Creature* debris = spawnCreature(NPC_MAGTHERIDON_ROOM, target->GetPosition());
+                        /*Creature* debris = */spawnCreature(NPC_MAGTHERIDON_ROOM, target->GetPosition());
                         target->castSpell(target, SPELL_DEBRIS_VISUAL, true); // hackfix invis creatures cant have visual spells atm -_-
                         scriptEvents.addEvent(EVENT_DEBRIS, 20000);
                     }
@@ -590,7 +590,7 @@ protected:
 class SoulTransfer : public SpellScript
 {
 public:
-    void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) override
+    void filterEffectTargets(Spell* spell, uint8_t /*effectIndex*/, std::vector<uint64_t>* effectTargets) override
     {
         // Hackfix shouldnt only cast on Channelers
         effectTargets->clear();

@@ -733,7 +733,7 @@ void AIInterface::UpdateAgent(unsigned long time_passed)
             {
                 if (float(getUnit()->getHealthPct()) <= itr->maxHealth && itr->maxCount)
                 {
-                    internalPhase = itr->misc1;
+                    internalPhase = static_cast<uint8_t>(itr->misc1);
 
                     itr->maxCount = itr->maxCount - 1;
 
@@ -2653,7 +2653,7 @@ void AIInterface::eventOnLoad()
     }
 }
 
-void AIInterface::eventOnTargetDied(Object* pKiller)
+void AIInterface::eventOnTargetDied(Object* /*pKiller*/)
 {
     // Killed Scripts
     for (auto onKilledScript : onKilledScripts)
@@ -2666,7 +2666,7 @@ void AIInterface::eventOnTargetDied(Object* pKiller)
                 {
                     if (float(getUnit()->getHealthPct()) <= onKilledScript.maxHealth && onKilledScript.maxCount)
                     {
-                        internalPhase = onKilledScript.misc1;
+                        internalPhase = static_cast<uint8_t>(onKilledScript.misc1);
 
                         onKilledScript.maxCount = onKilledScript.maxCount - 1;
 
@@ -2958,7 +2958,7 @@ void AIInterface::setWayPointToMove(uint32_t waypointId)
     init.Launch();
 }
 
-bool AIInterface::activateShowWayPoints(Player* player, bool showBackwards)
+bool AIInterface::activateShowWayPoints(Player* player, bool /*showBackwards*/)
 {
     if (sWaypointMgr->getPath(getUnit()->ToCreature()->getWaypointPath()) == nullptr)
         return false;
