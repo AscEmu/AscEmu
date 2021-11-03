@@ -961,35 +961,36 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 return;
             }
 
-            const auto casterUnit = GetUnitCaster();
+            auto* const originalCaster = GetUnitCaster();
+            Unit* casterUnit = nullptr;
+            auto* target = getOwner();
+
+            // Note; some spells might need a spell script here to set correct caster and target
+
+            if (triggerInfo->isTriggerSpellCastedByCaster(getSpellInfo()))
+                casterUnit = originalCaster;
+            else
+                casterUnit = target;
+
+            // If spell is channeled, periodic target should be the channel object
+            if (originalCaster != nullptr && getSpellInfo()->isChanneled())
+            {
+                target = originalCaster->GetMapMgrUnit(originalCaster->getChannelObjectGuid());
+                if (target == nullptr)
+                    target = getOwner();
+            }
+
             if (casterUnit != nullptr)
             {
-                Unit* target = nullptr;
-                // If spell is channeled, periodic target should be the channel object
-                if (getSpellInfo()->isChanneled())
-                    target = casterUnit->GetMapMgrUnit(casterUnit->getChannelObjectGuid());
-
                 Spell* triggerSpell = sSpellMgr.newSpell(casterUnit, triggerInfo, true, this);
                 for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
                 {
                     triggerSpell->forced_basepoints[i] = customDamage;
                 }
 
-                // Note; target is nullptr here if spell is not channeled
-                // In that case we are using GenerateTargets to get correct target for periodic target
-                // but it is very very inaccurate and should never be used
-                // There is no other way to fix it than use SpellScript to set correct target for each periodic spell which have no target
-
                 SpellCastTargets spellTargets(0);
-                if (target != nullptr)
-                {
-                    spellTargets.addTargetMask(TARGET_FLAG_UNIT);
-                    spellTargets.setUnitTarget(target->getGuid());
-                }
-                else
-                {
-                    triggerSpell->GenerateTargets(&spellTargets);
-                }
+                spellTargets.addTargetMask(TARGET_FLAG_UNIT);
+                spellTargets.setUnitTarget(target->getGuid());
 
                 triggerSpell->prepare(&spellTargets);
             }

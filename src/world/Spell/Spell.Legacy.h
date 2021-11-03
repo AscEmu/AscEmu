@@ -179,6 +179,7 @@ class SERVER_DECL Spell
         // Stores hitted targets for each spell effect
         std::vector<uint64_t> m_effectTargets[MAX_SPELL_EFFECTS];
 
+        SpellCastResult checkExplicitTarget(Object* target, uint32_t requiredTargetMask) const;
         void safeAddMissedTarget(uint64_t targetGuid, SpellDidHitResult hitResult, SpellDidHitResult extendedHitResult);
 
         Unit* unitTarget = nullptr;

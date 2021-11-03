@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellDamageType.hpp"
 #include "Definitions/SpellDidHitResult.hpp"
+#include "Definitions/SpellEffects.hpp"
 #include "Definitions/SpellEffectTarget.hpp"
 #include "Definitions/SpellFamily.hpp"
 #include "Definitions/SpellInFrontStatus.hpp"
@@ -41,14 +42,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgCancelCombat.h"
 #include "Server/Packets/MsgChannelUpdate.h"
 #include "Server/Packets/MsgChannelStart.h"
+#include "Server/Script/CreatureAIScript.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Units/Players/PlayerClasses.hpp"
 #include "Units/UnitDefines.hpp"
 #include "Util.hpp"
-#include "Definitions/SpellEffects.hpp"
-#include "Server/Script/CreatureAIScript.h"
 
 using namespace AscEmu::Packets;
 
@@ -1462,10 +1462,24 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
     ////////////////////////////////////////////////////////
     // Target checks
 
+    // Check explicit gameobject target
+    if (m_targets.getGameObjectTarget() != 0)
+    {
+        const auto objTarget = m_caster->GetMapMgrGameObject(m_targets.getGameObjectTarget());
+        const auto targetCheck = checkExplicitTarget(objTarget, getSpellInfo()->getRequiredTargetMask(true));
+        if (targetCheck != SPELL_CAST_SUCCESS)
+            return targetCheck;
+    }
+
     // Unit target
     const auto target = m_caster->GetMapMgrUnit(m_targets.getUnitTarget());
     if (target != nullptr)
     {
+        // Check explicit unit target
+        const auto targetCheck = checkExplicitTarget(target, getSpellInfo()->getRequiredTargetMask(true));
+        if (targetCheck != SPELL_CAST_SUCCESS)
+            return targetCheck;
+
         // Target's aura state requirements
         if (!m_triggeredSpell && getSpellInfo()->getTargetAuraState() > 0 && !target->hasAuraState(static_cast<AuraState>(getSpellInfo()->getTargetAuraState()), getSpellInfo(), u_caster))
             return SPELL_FAILED_TARGET_AURASTATE;
@@ -3035,7 +3049,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
     // Casted on an item
     if (m_targets.getItemTarget() > 0)
     {
-        Item const* targetItem = nullptr;
+        Item* targetItem = nullptr;
         // Check if the targeted item is in the trade window
         if (m_targets.isTradeItem())
         {
@@ -3051,7 +3065,9 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                     targetItem = p_caster->getTradeTarget()->getTradeData()->getTradeItem(TradeSlots(m_targets.getItemTarget()));
             }
             else
+            {
                 return SPELL_FAILED_NOT_TRADEABLE;
+            }
         }
         else
         {
@@ -3060,6 +3076,11 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
 
         if (targetItem == nullptr)
             return SPELL_FAILED_ITEM_GONE;
+
+        // Check explicit item target
+        const auto targetCheck = checkExplicitTarget(targetItem, getSpellInfo()->getRequiredTargetMask(true));
+        if (targetCheck != SPELL_CAST_SUCCESS)
+            return targetCheck;
 
         if (!targetItem->fitsToSpellRequirements(getSpellInfo()))
             return SPELL_FAILED_BAD_TARGETS;
