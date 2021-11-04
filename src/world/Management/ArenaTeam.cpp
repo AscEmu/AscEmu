@@ -213,7 +213,7 @@ std::vector<ArenaTeamPacketList> ArenaTeam::getRoosterMembers() const
             arenaTeamListMember.isLoggedIn = playerInfo->m_loggedInPlayer ? 1 : 0;
             arenaTeamListMember.name = playerInfo->name;
             arenaTeamListMember.isLeader = m_members[i].Info->guid == m_leader ? 0 : 1;
-            arenaTeamListMember.lastLevel = playerInfo->lastLevel;
+            arenaTeamListMember.lastLevel = static_cast<uint8_t>(playerInfo->lastLevel);
             arenaTeamListMember.cl = playerInfo->cl;
             arenaTeamListMember.playedWeek = m_members[i].Played_ThisWeek;
             arenaTeamListMember.wonWeek = m_members[i].Won_ThisWeek;

@@ -362,7 +362,7 @@ public:
         getLinkedCreatureAIScript()->DoAction(ACTION_ADD_DEATH);
     }
 
-    void AIUpdate(unsigned long time_passed) override
+    void AIUpdate(unsigned long /*time_passed*/) override
     {
         Unit* pTarget = getCreature()->GetAIInterface()->getCurrentTarget();
         if (pTarget != NULL)
@@ -598,7 +598,7 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Spell Effect: Ground Slam
-bool GroundSlamEffect(uint8_t effectIndex, Spell* pSpell)
+bool GroundSlamEffect(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Unit* target = pSpell->GetUnitTarget();
 
@@ -612,7 +612,7 @@ bool GroundSlamEffect(uint8_t effectIndex, Spell* pSpell)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Spell Effect: Shatter
-bool ShatterEffect(uint8_t effectIndex, Spell* pSpell)
+bool ShatterEffect(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Unit* target = pSpell->GetUnitTarget();
 

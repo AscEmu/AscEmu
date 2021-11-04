@@ -7365,6 +7365,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             {
                 pVictim->GetAIInterface()->onHostileAction(this);
             }
+            vstate = VisualState::MISS;
             break;
         case 1:     //dodge
             if (pVictim->isCreature() && pVictim->getThreatManager().getCurrentVictim() == nullptr) // if our target dodget our attack fix agro by adding threat
@@ -7742,7 +7743,6 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 if (realdamage < 0)
                 {
                     realdamage = 0;
-                    vstate = VisualState::IMMUNE;
                     if (!(hit_status & HITSTATUS_BLOCK))
                         hit_status |= HITSTATUS_ABSORBED;
                     else
@@ -7877,9 +7877,17 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     {
         if (dmg.fullDamage > 0)
         {
+#if VERSION_STRING >= WotLK
             if (dmg.fullDamage == (int32)dmg.absorbedDamage)
+                hit_status |= HITSTATUS_ABSORB_FULL;
+            else if (dmg.absorbedDamage > 0)
+                hit_status |= HITSTATUS_ABSORB_PARTIAL;
+#else
+            if (dmg.absorbedDamage > 0)
                 hit_status |= HITSTATUS_ABSORBED;
-            else if (dmg.fullDamage <= (int32)dmg.resistedDamage)
+#endif
+
+            if (dmg.fullDamage <= (int32)dmg.resistedDamage)
             {
                 hit_status |= HITSTATUS_RESIST;
                 dmg.resistedDamage = dmg.fullDamage;
@@ -7889,16 +7897,42 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         if (dmg.fullDamage < 0)
             dmg.fullDamage = 0;
     }
-    else
-    {
-        //FIX ME: add log for miss,block etc for ability and ranged
-        //example how it works
-        //SendSpellLog(this,pVictim,ability->getId(),SPELL_LOG_MISS);
-    }
 
     if (ability && dmg.realDamage == 0)
     {
-        SendSpellLog(this, pVictim, ability->getId(), SPELL_LOG_RESIST);
+        auto logSent = true;
+        switch (vstate)
+        {
+            case VisualState::MISS:
+                SendSpellLog(this, pVictim, ability->getId(), SPELL_LOG_MISS);
+                // have to set attack target here otherwise it wont be set
+                CombatStatus.OnDamageDealt(pVictim);
+                break;
+            case VisualState::DODGE:
+                SendSpellLog(this, pVictim, ability->getId(), SPELL_LOG_DODGE);
+                // have to set attack target here otherwise it wont be set
+                CombatStatus.OnDamageDealt(pVictim);
+                break;
+            case VisualState::PARRY:
+                SendSpellLog(this, pVictim, ability->getId(), SPELL_LOG_PARRY);
+                // have to set attack target here otherwise it wont be set
+                CombatStatus.OnDamageDealt(pVictim);
+                break;
+            case VisualState::EVADE:
+                SendSpellLog(this, pVictim, ability->getId(), SPELL_LOG_EVADE);
+                break;
+            case VisualState::IMMUNE:
+                SendSpellLog(this, pVictim, ability->getId(), SPELL_LOG_IMMUNE);
+                // have to set attack target here otherwise it wont be set
+                CombatStatus.OnDamageDealt(pVictim);
+                break;
+            default:
+                logSent = false;
+                break;
+        }
+
+        if (logSent)
+            return dmg;
     }
     //////////////////////////////////////////////////////////////////////////////////////////
     //Damage Dealing
@@ -7964,7 +7998,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     const auto overKill = pVictim->calculateEstimatedOverKillForCombatLog(dmg.realDamage);
     if (ability == nullptr)
         sendAttackerStateUpdate(GetNewGUID(), pVictim->GetNewGUID(), HitStatus(hit_status), dmg.realDamage, overKill, dmg, dmg.absorbedDamage, vstate, dmg.blockedDamage, rageGenerated);
-    else if (dmg.realDamage > 0)
+    else if (dmg.fullDamage > 0)
         pVictim->sendSpellNonMeleeDamageLog(this, pVictim, ability, dmg.realDamage, dmg.absorbedDamage, dmg.resistedDamage, dmg.blockedDamage, overKill, false, hit_status & HITSTATUS_CRICTICAL);
 
     // invincible people don't take damage

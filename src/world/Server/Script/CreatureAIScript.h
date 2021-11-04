@@ -50,7 +50,7 @@ public:
     virtual void OnReachWP(uint32_t /*type*/, uint32_t /*id*/) {}
     virtual void OnLootTaken(Player* /*player*/, ItemProperties const* /*_itemProperties*/) {}
     virtual void AIUpdate() {}
-    virtual void AIUpdate(unsigned long time_passed) {}
+    virtual void AIUpdate(unsigned long /*time_passed*/) {}
     virtual void OnEmote(Player* /*_player*/, EmoteType /*_emote*/) {}
     virtual void StringFunctionCall(int) {}
     virtual void OnSummon(Unit* /*summoner*/) {}

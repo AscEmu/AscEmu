@@ -272,12 +272,6 @@ public:
         TheVioletHoldScript* pInstance = (TheVioletHoldScript*)getCreature()->GetMapMgr()->GetScript();
         if (!pInstance)
             return;
-
-        auto guardSet = pInstance->getCreatureSetForEntry(30659);
-        for (auto guard : guardSet)
-        {
-
-        }
     }
 };
 
@@ -316,7 +310,6 @@ public:
         if (!pObject->isCreature())
             return;
 
-        Creature* sinclari = static_cast<Creature*>(pObject);
         switch (Id)
         {
             case 1:

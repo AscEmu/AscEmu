@@ -1301,26 +1301,19 @@ void Player::setInitialPlayerData()
 {
     if (lvlinfo != nullptr)
     {
-        //\ TODO: LevelInfo base health and mana stats already have stamina and intellect calculated into them
-        const auto levelone = sObjectMgr.GetLevelInfo(getRace(), getClass(), 1);
-        if (levelone != nullptr)
-        {
-            setBaseHealth(lvlinfo->HP - ((lvlinfo->Stat[STAT_STAMINA] - levelone->Stat[STAT_STAMINA]) * 10));
-            setBaseMana(lvlinfo->Mana - ((lvlinfo->Stat[STAT_INTELLECT] - levelone->Stat[STAT_INTELLECT]) * 15));
-        }
-        else
-        {
-            setBaseHealth(lvlinfo->HP);
-            setBaseMana(lvlinfo->Mana);
-        }
-
-        // Set max health and powers
-        setMaxHealth(lvlinfo->HP);
+        setBaseHealth(lvlinfo->HP);
+        setBaseMana(lvlinfo->Mana);
     }
     else
     {
-        sLogger.failure("No Levelinfo for Player!");
+        sLogger.failure("Major error in Player::setInitialPlayerData : No LevelInfo for player (level %u, race %u, class %u)!", getLevel(), getRace(), getClass());
+
+        setBaseHealth(1);
+        setBaseMana(1);
     }
+
+    // Set max health and powers
+    setMaxHealth(getBaseHealth());
 
     // First initialize all power fields to 0
     for (uint8_t power = POWER_TYPE_MANA; power < TOTAL_PLAYER_POWER_TYPES; ++power)

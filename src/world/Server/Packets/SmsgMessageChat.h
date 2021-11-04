@@ -234,7 +234,6 @@ namespace AscEmu::Packets
             uint64_t unpacked_guid;
             uint32_t unk;
             uint32_t message_length;
-            uint8_t flag;
             packet >> type >> language >> unpacked_guid >> unk >> unpacked_guid >> message_length >> message >> flag;
             senderGuid = WoWGuid(unpacked_guid);
             return false;

@@ -108,7 +108,8 @@ enum TotemSlots : uint8_t
 
 enum class VisualState : uint8_t
 {
-    ATTACK              = 1,
+    MISS                = 0,
+    ATTACK,
     DODGE,
     PARRY,
     INTERRUPT,
