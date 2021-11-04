@@ -3,8 +3,8 @@
 file(GLOB Detour_SRCS Source/*.cpp Include/*.h)
 
 include_directories(
-   ${CMAKE_CURRENT_SOURCE_DIR}/Include
-   ${ZLIB_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include
+    ${ZLIB_INCLUDE_DIRS}
 )
 
 add_library(Detour STATIC ${Detour_SRCS})

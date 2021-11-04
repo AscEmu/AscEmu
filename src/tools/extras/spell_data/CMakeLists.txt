@@ -3,16 +3,16 @@
 file(GLOB spell_data_sources *.cpp *.h)
 
 set(spell_SRCS
-  ${spell_data_sources}
+    ${spell_data_sources}
 )
 
-if(NOT WIN32 AND NOT IS_64BIT)
+if (NOT WIN32 AND NOT IS_64BIT)
     add_definitions(-D_FILE_OFFSET_BITS=64)
-endif()
+endif ()
 
 include_directories(
-   ${LOADLIB_PATH}
-   )
+    ${LOADLIB_PATH}
+)
 
 add_executable(spell_data ${spell_SRCS})
 target_link_libraries(spell_data ${ZLIB_LIBRARIES})

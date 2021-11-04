@@ -2,7 +2,7 @@
 
 set(PATH_PREFIX Cata)
 
-if("${ASCEMU_NUMBER}" GREATER_EQUAL 3)
+if ("${ASCEMU_NUMBER}" GREATER_EQUAL 3)
 set(SRC_CATA_SCRIPTS_FILES
     ${PATH_PREFIX}/Instance_Lost_City_Of_Tolvir.cpp
     ${PATH_PREFIX}/Instance_Blackrock_Caverns.cpp
@@ -39,7 +39,7 @@ set(SRC_CATA_SCRIPTS_FILES
     ${PATH_PREFIX}/Raid_DragonSoul.h
     ${PATH_PREFIX}/Raid_Firelands.h
 )
-endif()
+endif ()
 
 source_group(Cata FILES ${SRC_CATA_SCRIPTS_FILES})
 unset(PATH_PREFIX)
