@@ -3185,6 +3185,23 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 break;
         }
 
+        // These triggered learn spell effects shouldn't fail here
+        if (m_triggeredSpell)
+        {
+            for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+            {
+                const auto eff = getSpellInfo()->getEffect(i);
+                if (eff == SPELL_EFFECT_NULL)
+                    continue;
+
+                if (eff == SPELL_EFFECT_BLOCK || eff == SPELL_EFFECT_WEAPON || eff == SPELL_EFFECT_PROFICIENCY)
+                {
+                    hasItemWithProperType = true;
+                    break;
+                }
+            }
+        }
+
         if (!hasItemWithProperType)
         {
             *parameter1 = getSpellInfo()->getEquippedItemClass();

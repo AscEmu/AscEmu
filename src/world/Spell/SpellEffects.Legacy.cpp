@@ -2761,7 +2761,9 @@ void Spell::SpellEffectWeapon(uint8_t /*effectIndex*/)
         case 5011: // crossbows
         {
             skill = SKILL_CROSSBOWS;
-            spell = SPELL_RANGED_GENERAL;
+
+            if (!playerTarget->isClassHunter())
+                spell = SPELL_RANGED_GENERAL;
         }
         break;
         case 227:   // staves
@@ -2787,23 +2789,29 @@ void Spell::SpellEffectWeapon(uint8_t /*effectIndex*/)
         case 264:   // bows
         {
             skill = SKILL_BOWS;
-            spell = SPELL_RANGED_GENERAL;
+
+            if (!playerTarget->isClassHunter())
+                spell = SPELL_RANGED_GENERAL;
         }
         break;
         case 266: // guns
         {
             skill = SKILL_GUNS;
-            spell = SPELL_RANGED_GENERAL;
+
+            if (!playerTarget->isClassHunter())
+                spell = SPELL_RANGED_GENERAL;
         }
         break;
         case 2567:  // thrown
         {
             skill = SKILL_THROWN;
+            spell = SPELL_RANGED_THROW;
         }
         break;
         case 5009:  // wands
         {
             skill = SKILL_WANDS;
+            spell = SPELL_RANGED_WAND;
         }
         break;
         case 2382:  // Generic
@@ -2837,11 +2845,11 @@ void Spell::SpellEffectWeapon(uint8_t /*effectIndex*/)
 
 void Spell::SpellEffectDefense(uint8_t /*effectIndex*/)
 {
-    //i think this actually enables the skill to be able to use defense
-    //value is static and sets value directly which will be modified by other factors
-    //this is only basic value and will be overwritten elsewhere !!!
-    //  if (unitTarget->isPlayer())
-    //      unitTarget->SetFloatValue(UNIT_FIELD_RESISTANCES,damage);
+    if (playerTarget == nullptr)
+        return;
+
+    if (!playerTarget->_HasSkillLine(SKILL_DEFENSE))
+        playerTarget->_AddSkillLine(SKILL_DEFENSE, 1, playerTarget->getLevel() * 5);
 }
 
 void Spell::SpellEffectPersistentAA(uint8_t effectIndex) // Persistent Area Aura

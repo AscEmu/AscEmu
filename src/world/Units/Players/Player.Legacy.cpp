@@ -2671,13 +2671,13 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     LoadSkills(results[PlayerQuery::Skills].result);
 
-    if (m_skills.empty())
+    if (m_FirstLogin || m_skills.empty())
     {
         /* no skills - reset to defaults */
         for (std::list<CreateInfo_SkillStruct>::const_iterator ss = info->skills.begin(); ss != info->skills.end(); ++ss)
         {
-            if (ss->skillid && ss->currentval && ss->maxval && !::GetSpellForLanguage(ss->skillid))
-                _AddSkillLine(ss->skillid, ss->currentval, ss->maxval);
+            if (ss->skillid && !::GetSpellForLanguage(ss->skillid))
+                _AddSkillLine(ss->skillid, ss->currentval, getLevel() * 5);
         }
     }
 

@@ -2517,7 +2517,7 @@ void MySQLDataStore::loadPlayerCreateInfoSpellLearn()
     auto startTime = Util::TimeNow();
 
     //                                                                              0         1         2
-    QueryResult* player_create_info_spells_result = WorldDatabase.Query("SELECT raceMask, classMask, spellid FROM playercreateinfo_spell_learn WHERE build = %u", VERSION_STRING);
+    QueryResult* player_create_info_spells_result = WorldDatabase.Query("SELECT raceMask, classMask, spellid FROM playercreateinfo_spell_learn WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
 
     if (player_create_info_spells_result == nullptr)
     {
