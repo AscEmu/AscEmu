@@ -80,7 +80,7 @@ public:
     void _internalOnTargetDied(Unit* target);
     void _internalOnCombatStart(Unit* target);
     void _internalOnCombatStop();
-    void _internalAIUpdate();
+    void _internalAIUpdate(unsigned long time_passed);
     void _internalOnScriptPhaseChange();
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -220,7 +220,7 @@ public:
     uint32_t _getTimerCount();
 
     //only for internal use!
-    void updateAITimers();
+    void updateAITimers(unsigned long time_passed);
 
     //used for debug
     void displayCreatureTimerList(Player* player);
@@ -234,10 +234,6 @@ private:
     uint32_t mCustomAIUpdateDelay;
 
 public:
-    //new
-    void registerAiUpdateFrequency();
-    void removeAiUpdateFrequency();
-
     //old stuff
     void SetAIUpdateFreq(uint32_t pUpdateFreq);
     uint32_t GetAIUpdateFreq();
@@ -261,8 +257,6 @@ public:
     CreatureAISpellsArray mCreatureAISpells;
 
 public:
-    uint32_t mSpellWaitTimerId;
-
     //addAISpell(spellID, Chance, TargetType, Duration (s), waitBeforeNextCast (s))
     CreatureAISpells* addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration = 0, uint32_t cooldown = 0, bool forceRemove = false, bool isTriggered = false);
 

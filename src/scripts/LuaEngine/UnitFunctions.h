@@ -3728,14 +3728,6 @@ public:
         return 1;
     }
 
-    static int RegisterAIUpdateEvent(lua_State* L, Unit* ptr)
-    {
-        TEST_UNIT()
-        time_t time = static_cast<time_t>(luaL_checkinteger(L, 1));
-        sEventMgr.AddEvent(static_cast<Creature*>(ptr), &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, time, 0, 0);
-        return 0;
-    }
-
     static int ModifyAIUpdateEvent(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()

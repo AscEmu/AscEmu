@@ -216,6 +216,8 @@ public:
     void setMaxCastCount(uint32_t castCount);
     const uint32_t getMaxCastCount();
     const uint32_t getCastCount();
+    void setCastCount(uint32_t count) { mCastCount = count; }
+    void increaseCastCount() { ++mCastCount; }
 
     bool mForceRemoveAura;
     bool mIsTriggered;
@@ -667,6 +669,8 @@ public:
 
     void castAISpell(CreatureAISpells* aiSpell);
     void castAISpell(uint32_t aiSpellId);
+    bool hasAISpell(CreatureAISpells* aiSpell);
+    bool hasAISpell(uint32_t SpellId);
     void castSpellOnRandomTarget(CreatureAISpells* AiSpell);
     void UpdateAISpells();
 
