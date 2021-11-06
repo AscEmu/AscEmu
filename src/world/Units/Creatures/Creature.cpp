@@ -1193,15 +1193,10 @@ void Creature::RegenerateHealth()
     setHealth((cur >= mh) ? mh : cur);
 }
 
-void Creature::CallScriptUpdate()
+void Creature::CallScriptUpdate(unsigned long time_passed)
 {
-    if (!IsInWorld())
-        return;
-
     if (_myScriptClass)
-        _myScriptClass->_internalAIUpdate();
-    else
-        sLogger.failure("Creature::CallScriptUpdate tried to update script but Creature %u has no script!", this->getEntry());
+        _myScriptClass->_internalAIUpdate(time_passed);
 }
 
 CreatureProperties const* Creature::GetCreatureProperties()

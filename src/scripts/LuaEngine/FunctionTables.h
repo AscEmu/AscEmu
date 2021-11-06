@@ -263,7 +263,6 @@ RegType<Unit> UnitMethods[] =
     { "GetStealthLevel", &LuaUnit::GetStealthLevel },
     { "IsStealthed", &LuaUnit::IsStealthed },
     { "RemoveFlag", &LuaUnit::RemoveFlag },
-    { "RegisterAIUpdateEvent", &LuaUnit::RegisterAIUpdateEvent },
     { "ModifyAIUpdateEvent", &LuaUnit::ModifyAIUpdateEvent },
     { "RemoveAIUpdateEvent", &LuaUnit::RemoveAIUpdateEvent },
     { "DealGoldCost", &LuaUnit::DealGoldCost },

@@ -210,6 +210,16 @@ void AIInterface::Init(Unit* un, AiScriptTypes at, Unit* owner)
 
 void AIInterface::initialiseScripts(uint32_t entry)
 {
+    // Reset AI Spells
+    if (mCreatureAISpells.size())
+    {
+        for (auto spell : mCreatureAISpells)
+        {
+            spell->mCooldownTimer.resetInterval(spell->mCooldown);
+            spell->setCastCount(0);
+        }
+    }
+
     onLoadScripts.clear();
     onCombatStartScripts.clear();
     onAIUpdateScripts.clear();
@@ -479,7 +489,8 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 newAISpell->fromDB = true;
 
                 // Ready add to our List
-                mCreatureAISpells.push_back(newAISpell);
+                if (!hasAISpell(onCombatStartScript.spellId))
+                    mCreatureAISpells.push_back(newAISpell);
             }
             else
                 sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", onCombatStartScript.spellId);
@@ -519,7 +530,8 @@ void AIInterface::initialiseScripts(uint32_t entry)
                     newAISpell->setMinMaxPercentHp(onAIUpdateScript.minHealth, onAIUpdateScript.maxHealth);
 
                 // Ready add to our List
-                mCreatureAISpells.push_back(newAISpell);
+                if (!hasAISpell(onAIUpdateScript.spellId))
+                    mCreatureAISpells.push_back(newAISpell);
             }
             else
                 sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", onAIUpdateScript.spellId);
@@ -637,8 +649,8 @@ void AIInterface::Update(unsigned long time_passed)
     if (m_Unit->isPlayer() || m_Unit->GetMapMgr() == nullptr)
         return;
 
-    // Call new AIUpdate function
-    CALL_SCRIPT_EVENT(m_Unit, AIUpdate)(time_passed);
+    // Call AIUpdate
+    m_Unit->ToCreature()->CallScriptUpdate(time_passed);
 
     if (getAiState() == AI_STATE_FEAR)
         return;
@@ -825,6 +837,26 @@ void AIInterface::castAISpell(uint32_t aiSpellId)
         return;
 
     castAISpell(aiSpell);
+}
+
+bool AIInterface::hasAISpell(CreatureAISpells* aiSpell)
+{
+    // Lets find the stored Spellinfo
+    for (auto spell : mCreatureAISpells)
+        if (spell->mSpellInfo && spell->mSpellInfo->getId() == aiSpell->mSpellInfo->getId())
+            return true;
+
+    return false;
+}
+
+bool AIInterface::hasAISpell(uint32_t SpellId)
+{
+    // Lets find the stored Spellinfo
+    for (auto spell : mCreatureAISpells)
+        if (spell->mSpellInfo && spell->mSpellInfo->getId() == SpellId)
+            return true;
+
+    return false;
 }
 
 void AIInterface::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
@@ -2398,7 +2430,6 @@ void AIInterface::initGroupThreat(Unit* target)
 void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
 {
     m_isEngaged = false;
-    mCreatureAISpells.clear();
     internalPhase = 0;
     spellEvents.resetEvents();
     setUnitToFollow(nullptr);
@@ -2498,7 +2529,6 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
 void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
 {
     m_isEngaged = false;
-    mCreatureAISpells.clear();
     internalPhase = 0;
     spellEvents.resetEvents();
     setUnitToFollow(nullptr);
@@ -3491,7 +3521,7 @@ void AIInterface::UpdateAISpells()
             mLastCastedSpell->sendRandomEmote(getUnit());
 
             // spell sucessfully castet increase cast Amount
-            ++mLastCastedSpell->mCastCount;
+            mLastCastedSpell->increaseCastCount();
 
             // override attack stop timer if needed
             if (mLastCastedSpell->getAttackStopTimer() != 0)

@@ -280,7 +280,7 @@ public:
         //MIT
         void registerDatabaseGossip();
 
-        void CallScriptUpdate();
+        void CallScriptUpdate(unsigned long time_passed);
 
         CreatureProperties const* GetCreatureProperties();
         void SetCreatureProperties(CreatureProperties const* creature_properties);

@@ -23,10 +23,8 @@ mCreatureTimerCount(0), isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmot
 
     mCustomAIUpdateDelayTimerId = 0;
     mCustomAIUpdateDelay = 0;
-    registerAiUpdateFrequency();
 
     //new CreatureAISpell handling
-    mSpellWaitTimerId = _addTimer(defaultUpdateFrequency);
     mCurrentSpellTarget = nullptr;
     mLastCastedSpell = nullptr;
 }
@@ -50,8 +48,6 @@ void CreatureAIScript::_internalOnDied(Unit* killer)
 
     _cancelAllTimers();
     _removeAllAuras();
-
-    removeAiUpdateFrequency();
 
     RemoveAIUpdateEvent();
     sendRandomDBChatMessage(mEmotesOnDied, killer);
@@ -96,20 +92,12 @@ void CreatureAIScript::_internalOnCombatStop()
     enableOnIdleEmote(true);
 }
 
-void CreatureAIScript::_internalAIUpdate()
+void CreatureAIScript::_internalAIUpdate(unsigned long time_passed)
 {
     //sLogger.debug("CreatureAIScript::_internalAIUpdate() called");
 
-    updateAITimers();
-
-    // old AIUpdate stuff is now handled by customAIUpdateTimer. Keep this until all scripts are updated to new logic.
-    if (mCustomAIUpdateDelayTimerId != 0)
-    {
-        if (!_isTimerFinished(mCustomAIUpdateDelayTimerId))
-            return;
-
-        _resetTimer(mCustomAIUpdateDelayTimerId, mCustomAIUpdateDelay);
-    }
+    updateAITimers(time_passed);
+    AIUpdate(time_passed);
 
     // idleemotes
     if (!_isInCombat() && isIdleEmoteEnabled)
@@ -121,10 +109,17 @@ void CreatureAIScript::_internalAIUpdate()
         }
     }
 
-    AIUpdate();
+    // old AIUpdate stuff is now handled by customAIUpdateTimer. Keep this until all scripts are updated to new logic.
+    if (mCustomAIUpdateDelayTimerId != 0)
+    {
+        if (!_isTimerFinished(mCustomAIUpdateDelayTimerId))
+            return;
 
-    if (!_isInCombat())
-        return;
+        _resetTimer(mCustomAIUpdateDelayTimerId, mCustomAIUpdateDelay);
+    }
+
+    // old Timer AIUpdate
+    AIUpdate();
 }
 
 void CreatureAIScript::_internalOnScriptPhaseChange()
@@ -619,6 +614,7 @@ void CreatureAIScript::_removeTimer(uint32_t& timerId)
         inScript->removeTimer(timerId);
         if (timerId == 0)
             mCreatureTimerIds.remove(mTimerId);
+        timerId = 0;
     }
     else
     {
@@ -693,15 +689,15 @@ uint32_t CreatureAIScript::_getTimerCount()
     return static_cast<uint32_t>(mCreatureTimer.size());
 }
 
-void CreatureAIScript::updateAITimers()
+void CreatureAIScript::updateAITimers(unsigned long time_passed)
 {
     for (auto& TimerIter : mCreatureTimer)
     {
         if (TimerIter.second > 0)
         {
-            int leftTime = TimerIter.second - mAIUpdateFrequency;
+            int leftTime = TimerIter.second - time_passed;
             if (leftTime > 0)
-                TimerIter.second -= mAIUpdateFrequency;
+                TimerIter.second -= time_passed;
             else
                 TimerIter.second = 0;
         }
@@ -733,16 +729,6 @@ void CreatureAIScript::displayCreatureTimerList(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // ai upodate frequency
-void CreatureAIScript::registerAiUpdateFrequency()
-{
-    sEventMgr.AddEvent(_creature, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, mAIUpdateFrequency, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-}
-
-void CreatureAIScript::removeAiUpdateFrequency()
-{
-    sEventMgr.RemoveEvents(_creature, EVENT_SCRIPT_UPDATE_EVENT);
-}
-
 // old stuff
 void CreatureAIScript::SetAIUpdateFreq(uint32_t pUpdateFreq)
 {
