@@ -19,6 +19,8 @@
 #ifndef MAILMGR_H
 #define MAILMGR_H
 
+#include "Server/EventableObject.h"
+
 #define MAIL_MAX_ITEM_SLOT 12
 #define MAIL_DEFAULT_EXPIRATION_TIME 30
 

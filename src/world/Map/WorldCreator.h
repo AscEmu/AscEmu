@@ -23,7 +23,6 @@
 #define WORLDCREATOR_H
 
 #include "Server/World.h"
-#include "Server/World.Legacy.h"
 #include "Instance.h"
 
 extern const char* InstanceAbortMessages[];

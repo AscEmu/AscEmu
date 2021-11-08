@@ -23,7 +23,6 @@
 #include "crc32.h"
 #include "Units/Players/PlayerClasses.hpp"
 #include "Server/World.h"
-#include "Server/World.Legacy.h"
 #include "Spell/Definitions/SpellModifierType.hpp"
 #include "Spell/Definitions/SpellDamageType.hpp"
 #include "Spell/Definitions/CastInterruptFlags.hpp"

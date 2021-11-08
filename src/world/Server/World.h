@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "IUpdatable.h"
 #include "WorldSession.h"
 #include "WorldConfig.h"
-#include "World.Legacy.h"
 
 #include <set>
 #include <string>
@@ -42,6 +41,7 @@ enum ServerMessageType
 };
 
 class SpellInfo;
+class Object;
 
 typedef std::set<WorldSession*> SessionSet;
 

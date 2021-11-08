@@ -24,7 +24,6 @@
 #include "Management/ChannelMgr.h"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
-#include "Server/World.Legacy.h"
 #include "Chat/ChatDefines.hpp"
 #include "WorldPacket.h"
 #include "Units/Players/Player.h"

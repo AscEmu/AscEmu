@@ -30,7 +30,6 @@
 #include <zlib.h>
 
 #include "Server/World.h"
-#include "Server/World.Legacy.h"
 #include "LogonCommDefines.h"
 
 LogonCommClientSocket::LogonCommClientSocket(SOCKET fd) : Socket(fd, 724288, 262444)

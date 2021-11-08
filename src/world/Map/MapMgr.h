@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Summons/SummonDefines.hpp"
 #include "Objects/CObjectFactory.h"
 #include "Server/EventableObject.h"
+#include "Storage/DBC/DBCStructures.hpp"
 
 namespace Arcemu
 {

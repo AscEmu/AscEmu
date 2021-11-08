@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgAreatrigger.h"
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgAreaTriggerMessage.h"
-#include "Server/World.Legacy.h"
 #include "Macros/ScriptMacros.hpp"
 #include "Map/InstanceDefines.hpp"
 #include "Management/Group.h"
