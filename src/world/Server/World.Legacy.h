@@ -84,22 +84,6 @@ enum AccountFlags
 };
 //MIT end 
 
-class BasicTaskExecutor : public ThreadBase
-{
-    CallbackBase* cb;
-    uint32 priority;
-
-public:
-
-    BasicTaskExecutor(CallbackBase* Callback, uint32 Priority) : cb(Callback), priority(Priority)
-    {}
-    ~BasicTaskExecutor()
-    {
-        delete cb;
-    }
-    bool run();
-};
-
 class Task
 {
     CallbackBase* _cb;

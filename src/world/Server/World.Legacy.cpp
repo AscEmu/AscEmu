@@ -33,55 +33,6 @@
 #include "World.Legacy.h"
 
 
-bool BasicTaskExecutor::run()
-{
-    /* Set thread priority, this is a bitch for multiplatform :P */
-#ifdef WIN32
-    switch (priority)
-    {
-        case BTE_PRIORITY_LOW:
-            ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_LOWEST);
-            break;
-
-        case BTW_PRIORITY_HIGH:
-            ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
-            break;
-
-        default: // BTW_PRIORITY_MED
-            ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_NORMAL);
-            break;
-    }
-#else
-    struct sched_param param;
-    switch (priority)
-    {
-        case BTE_PRIORITY_LOW:
-            param.sched_priority = 0;
-            break;
-
-        case BTW_PRIORITY_HIGH:
-            param.sched_priority = 10;
-            break;
-
-        default:        // BTW_PRIORITY_MED
-            param.sched_priority = 5;
-            break;
-    }
-    pthread_setschedparam(pthread_self(), SCHED_OTHER, &param);
-#endif
-
-    // Execute the task in our new context.
-    cb->execute();
-#ifdef WIN32
-    ::SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL);
-#else
-    param.sched_priority = 5;
-    pthread_setschedparam(pthread_self(), SCHED_OTHER, &param);
-#endif
-
-    return true;
-}
-
 void TaskList::AddTask(Task* task)
 {
     queueLock.Acquire();
