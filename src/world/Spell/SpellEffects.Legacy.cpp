@@ -33,6 +33,7 @@
 #include "Management/TaxiMgr.h"
 #include "Management/ItemInterface.h"
 #include "Management/ItemPrototype.h"
+#include "Management/Skill.hpp"
 #include "Units/Stats.h"
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -519,6 +520,24 @@ void Spell::spellEffectProficiency(uint8_t /*effectIndex*/)
 {
     if (playerTarget == nullptr)
         return;
+
+    uint32_t skillId = 0;
+    const auto skill_line_ability = sObjectMgr.GetSpellSkill(getSpellInfo()->getId());
+    if (skill_line_ability != nullptr)
+        skillId = skill_line_ability->skilline;
+
+    const auto skill_line = sSkillLineStore.LookupEntry(skillId);
+    if (skill_line == nullptr)
+        return;
+
+    // Add the skill to player if player does not have it
+    if (!playerTarget->_HasSkillLine(skillId))
+    {
+        if (skill_line->type == SKILL_TYPE_WEAPON)
+            playerTarget->_AddSkillLine(skillId, 1, 5 * playerTarget->getLevel());
+        else
+            playerTarget->_AddSkillLine(skillId, 1, 1);
+    }
 
     const auto subclass = getSpellInfo()->getEquippedItemSubClass();
     if (getSpellInfo()->getEquippedItemClass() == ITEM_CLASS_ARMOR && !(playerTarget->getArmorProficiency() & subclass))
