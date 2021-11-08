@@ -16,6 +16,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 class SpellInfo;
 
+typedef std::set<WorldSession*> SessionSet;
+
 class SERVER_DECL World : public EventableObject, public IUpdatable
 {
     private:

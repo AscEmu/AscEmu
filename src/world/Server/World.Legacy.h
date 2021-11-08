@@ -101,20 +101,6 @@ public:
     void execute();
 };
 
-struct CharacterLoaderThread : public ThreadBase
-{
-    Arcemu::Threading::ConditionVariable cond;
-
-    bool running;
-
-public:
-
-    CharacterLoaderThread();
-    ~CharacterLoaderThread();
-    void onShutdown();
-    bool runThread();
-};
-
 class TaskList
 {
     std::set<Task*> tasks;
@@ -159,7 +145,3 @@ public:
 
     bool runThread();
 };
-
-class WorldSocket;
-
-typedef std::set<WorldSession*> SessionSet;

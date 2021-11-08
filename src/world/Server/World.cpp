@@ -761,8 +761,6 @@ bool World::setInitialWorldSettings()
 
     broadcastMgr = std::move(std::make_unique<BroadcastMgr>());
 
-    ThreadPool.ExecuteTask(new CharacterLoaderThread());
-
     sEventMgr.AddEvent(this, &World::checkForExpiredInstances, EVENT_WORLD_UPDATEAUCTIONS, 120000, 0, 0);
 
     sLogger.info("World: init in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
