@@ -14,6 +14,33 @@ This file is released under the MIT license. See README-MIT for more information
 #include <set>
 #include <string>
 
+// Values based on ServerMessages.dbc
+enum ServerMessageType
+{
+    // Vanilla
+    SERVER_MSG_SHUTDOWN_TIME = 1,                               // [SERVER] Shutdown in %s
+    SERVER_MSG_RESTART_TIME = 2,                                // [SERVER] Restart in %s
+    SERVER_MSG_STRING = 3,                                      // %s
+    SERVER_MSG_SHUTDOWN_CANCELLED = 4,                          // [SERVER] Shutdown cancelled
+    SERVER_MSG_RESTART_CANCELLED = 5,                           // [SERVER] Restart cancelled
+    // TBC
+    SERVER_MSG_BATTLEGROUND_SHUTDOWN = 6,                       // [SERVER] Battleground shutdown in %s
+    SERVER_MSG_BATTLEGROUND_RESTART = 7,                        // [SERVER] Battleground restart in %s
+    SERVER_MSG_INSTANCE_SHUTDOWN = 8,                           // [SERVER] Instance shutdown in %s
+    SERVER_MSG_INSTANCE_RESTART = 9,                            // [SERVER] Instance restart in %s
+    // Cataclysm
+    SERVER_MSG_CATACLYSM_CONTENT_AVAILABLE = 10,                // Cataclysm content is now available. Please completely quit and restart World of Warcraft, then enjoy the game.
+    SERVER_MSG_TICKET_WILL_BE_SERVICED_SOON = 11,               // Your ticket will be serviced soon.
+    SERVER_MSG_WAIT_TIME_CURRENTLY_UNAVAILABLE = 12,            // Wait time currently unavailable.
+    SERVER_MSG_AVERAGE_TICKET_WAIT_TIME = 13,                   // Average ticket wait time:\n %s
+    // MOP
+    SERVER_MSG_MOP_HAS_LAUNCHED = 14,                           // Mists of Pandaria has launched!
+    SERVER_MSG_MOP_HAS_LAUNCHED_VISIT_ORGRIMMAR = 15,           // Mists of Pandaria has launched! Visit Orgrimmar to begin your adventure!
+    SERVER_MSG_MOP_HAS_LAUNCHED_VISIT_STORMWIND = 16,           // Mists of Pandaria has launched! Visit Stormwind to begin your adventure!
+    SERVER_MSG_CROSS_REALM_SHUTDOWN = 17,                       // [SERVER] Cross realm shutdown in %s
+    SERVER_MSG_CROSS_REALM_RESTART = 18,                        // [SERVER] Cross realm restart in %s
+};
+
 class SpellInfo;
 
 typedef std::set<WorldSession*> SessionSet;

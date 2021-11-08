@@ -881,72 +881,52 @@ void World::loadMySQLTablesByTask()
     sTicketMgr.initialize();
     sGameEventMgr.initialize();
 
-#define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(&sp::getInstance(), &sp::ptr)))
-#define MAKE_TASK2(sp, ptr, value) tl.AddTask(new Task(new CallbackP1<sp, uint8_t>(&sp::getInstance(), &sp::ptr, value)))
-    // Fill the task list with jobs to do.
-    TaskList tl;
 
-    // spawn worker threads (2 * number of cpus)
-    tl.spawn();
+    sObjectMgr.GenerateLevelUpInfo();
+    sObjectMgr.LoadPlayersInfo();
 
-    // storage stuff has to be loaded first
-    tl.wait();
+    sMySQLStore.loadCreatureSpawns();
+    sMySQLStore.loadGameobjectSpawns();
 
-    MAKE_TASK(ObjectMgr, GenerateLevelUpInfo);
-    MAKE_TASK(ObjectMgr, LoadPlayersInfo);
-    tl.wait();
+    sMySQLStore.loadCreatureGroupSpawns();
 
-    MAKE_TASK(MySQLDataStore, loadCreatureSpawns);
-    MAKE_TASK(MySQLDataStore, loadGameobjectSpawns);
-
-    tl.wait();
-    MAKE_TASK(MySQLDataStore, loadCreatureGroupSpawns);
-
-    MAKE_TASK(ObjectMgr, LoadInstanceEncounters);
-    MAKE_TASK(ObjectMgr, LoadCreatureTimedEmotes);
-    MAKE_TASK(ObjectMgr, LoadTrainers);
-    MAKE_TASK(ObjectMgr, LoadSpellSkills);
-    MAKE_TASK(ObjectMgr, LoadVendors);
-    MAKE_TASK(ObjectMgr, LoadSpellTargetConstraints);
+    sObjectMgr.LoadInstanceEncounters();
+    sObjectMgr.LoadCreatureTimedEmotes();
+    sObjectMgr.LoadTrainers();
+    sObjectMgr.LoadSpellSkills();
+    sObjectMgr.LoadVendors();
+    sObjectMgr.LoadSpellTargetConstraints();
 #if VERSION_STRING >= Cata
-    MAKE_TASK(ObjectMgr, LoadSpellRequired);
-    MAKE_TASK(ObjectMgr, LoadSkillLineAbilityMap);
+    sObjectMgr.LoadSpellRequired();
+    sObjectMgr.LoadSkillLineAbilityMap();
 #endif
-    MAKE_TASK(ObjectMgr, LoadPetSpellCooldowns);
-    MAKE_TASK(ObjectMgr, LoadGuildCharters);
-    MAKE_TASK(TicketMgr, loadGMTickets);
-    MAKE_TASK(ObjectMgr, SetHighestGuids);
-    MAKE_TASK(ObjectMgr, LoadReputationModifiers);
-    MAKE_TASK(ObjectMgr, LoadGroups);
-    MAKE_TASK(ObjectMgr, LoadArenaTeams);
-    MAKE_TASK(ObjectMgr, LoadVehicleAccessories);
-    MAKE_TASK(ObjectMgr, LoadWorldStateTemplates);
+    sObjectMgr.LoadPetSpellCooldowns();
+    sObjectMgr.LoadGuildCharters();
+    sTicketMgr.loadGMTickets();
+    sObjectMgr.SetHighestGuids();
+    sObjectMgr.LoadReputationModifiers();
+    sObjectMgr.LoadGroups();
+    sObjectMgr.LoadArenaTeams();
+    sObjectMgr.LoadVehicleAccessories();
+    sObjectMgr.LoadWorldStateTemplates();
 
 #if VERSION_STRING > TBC
-    MAKE_TASK(ObjectMgr, LoadAchievementRewards);
+    sObjectMgr.LoadAchievementRewards();
 #endif
 
-    tl.wait();
+    sLootMgr.loadAndGenerateLoot(0);
+    sLootMgr.loadAndGenerateLoot(1);
+    sLootMgr.loadAndGenerateLoot(2);
+    sLootMgr.loadAndGenerateLoot(3);
+    sLootMgr.loadAndGenerateLoot(4);
+    sLootMgr.loadAndGenerateLoot(5);
 
-    MAKE_TASK2(LootMgr, loadAndGenerateLoot, 0);
-    MAKE_TASK2(LootMgr, loadAndGenerateLoot, 1);
-    MAKE_TASK2(LootMgr, loadAndGenerateLoot, 2);
-    MAKE_TASK2(LootMgr, loadAndGenerateLoot, 3);
-    MAKE_TASK2(LootMgr, loadAndGenerateLoot, 4);
-    MAKE_TASK2(LootMgr, loadAndGenerateLoot, 5);
-
-    MAKE_TASK(QuestMgr, LoadExtraQuestStuff);
-    MAKE_TASK(ObjectMgr, LoadEventScripts);
-    MAKE_TASK(WeatherMgr, LoadFromDB);
-    MAKE_TASK(AddonMgr, LoadFromDB);
-    MAKE_TASK(GameEventMgr, LoadFromDB);
-    MAKE_TASK(CalendarMgr, LoadFromDB);
-
-#undef MAKE_TASK
-#undef MAKE_TASK2
-
-    // wait for tasks above
-    tl.wait();
+    sQuestMgr.LoadExtraQuestStuff();
+    sObjectMgr.LoadEventScripts();
+    sWeatherMgr.LoadFromDB();
+    sAddonMgr.LoadFromDB();
+    sGameEventMgr.LoadFromDB();
+    sCalendarMgr.LoadFromDB();
 
     sCommandTableStorage.Load();
     sLogger.info("WordFilter : Loading...");
@@ -957,13 +937,6 @@ void World::loadMySQLTablesByTask()
 
     // calling this puts all maps into our task list.
     sInstanceMgr.Load();
-
-    // wait for the events to complete.
-    tl.wait();
-
-    // wait for them to exit, now.
-    tl.kill();
-    tl.waitForThreadsToExit();
 }
 
 void World::logEntitySize()

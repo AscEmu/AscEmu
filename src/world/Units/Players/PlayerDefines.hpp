@@ -296,6 +296,21 @@ enum LoginFlags
     LOGIN_CUSTOMIZE_LOOKS       = 8
 };
 
+enum AccountFlags
+{
+    ACCOUNT_FLAG_TOURNAMENT     = 0x01,
+    ACCOUNT_FLAG_NO_AUTOJOIN    = 0x02,
+    //ACCOUNT_FLAG_XTEND_INFO   = 0x04,
+    ACCOUNT_FLAG_XPACK_01       = 0x08,       // The Burning Crusade
+    ACCOUNT_FLAG_XPACK_02       = 0x10,       // Wrath of the Lich King
+    ACCOUNT_FLAG_XPACK_03       = 0x20,       // Cataclysm
+    ACCOUNT_FLAG_XPACK_04       = 0x40,       // Mists of Pandaria
+
+    AF_FULL_WOTLK = ACCOUNT_FLAG_XPACK_01 | ACCOUNT_FLAG_XPACK_02,
+    AF_FULL_CATA = AF_FULL_WOTLK | ACCOUNT_FLAG_XPACK_03,
+    AF_FULL_MOP = AF_FULL_CATA | ACCOUNT_FLAG_XPACK_04
+};
+
 enum CharacterScreenFlags
 {
     CHARACTER_SCREEN_FLAG_NONE              = 0x00000000,
