@@ -142,13 +142,6 @@ public:
     bool running;
 };
 
-enum BasicTaskExecutorPriorities
-{
-    BTE_PRIORITY_LOW = 0,
-    BTE_PRIORITY_MED = 1,
-    BTW_PRIORITY_HIGH = 2
-};
-
 class TaskExecutor : public ThreadBase
 {
     TaskList* starter;
