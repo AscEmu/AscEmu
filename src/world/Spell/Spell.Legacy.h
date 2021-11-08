@@ -316,7 +316,6 @@ class SERVER_DECL Spell
         void spellEffectLearnSpell(uint8_t effectIndex);
         void spellEffectSpellDefense(uint8_t effectIndex);
         void spellEffectDispel(uint8_t effectIndex);
-        void spellEffectLanguage(uint8_t effectIndex);
         void spellEffectDualWield(uint8_t effectIndex);
         void spellEffectSkillStep(uint8_t effectIndex);
         void spellEffectAddHonor(uint8_t effectIndex);
@@ -503,7 +502,6 @@ class SERVER_DECL Spell
         void SpellEffectBlock(uint8_t effectIndex);
         void SpellEffectCreateItem(uint8_t effectIndex);
         void SpellEffectWeapon(uint8_t effectIndex);
-        void SpellEffectDefense(uint8_t effectIndex);
         void SpellEffectPersistentAA(uint8_t effectIndex);
 
         virtual void SpellEffectSummon(uint8_t effectIndex);
@@ -523,7 +521,6 @@ class SERVER_DECL Spell
         void SpellEffectLearnSpell(uint8_t effectIndex);
         void SpellEffectSpellDefense(uint8_t effectIndex);
         void SpellEffectDispel(uint8_t effectIndex);
-        void SpellEffectLanguage(uint8_t effectIndex);
         void SpellEffectDualWield(uint8_t effectIndex);
         void SpellEffectSkillStep(uint8_t effectIndex);
         void SpellEffectAddHonor(uint8_t effectIndex);
@@ -536,7 +533,6 @@ class SERVER_DECL Spell
         void SpellEffectLearnPetSpell(uint8_t effectIndex);
         void SpellEffectWeapondamage(uint8_t effectIndex);
         void SpellEffectOpenLockItem(uint8_t effectIndex);
-        void SpellEffectProficiency(uint8_t effectIndex);
         void SpellEffectSendEvent(uint8_t effectIndex);
         void SpellEffectPowerBurn(uint8_t effectIndex);
         void SpellEffectThreat(uint8_t effectIndex);

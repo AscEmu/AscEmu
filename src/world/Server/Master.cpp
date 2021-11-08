@@ -58,7 +58,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20201216-00_rename_event_properties";
-static const char* REQUIRED_WORLD_DB_VERSION = "20211025-00_magtheridon_spawns";
+static const char* REQUIRED_WORLD_DB_VERSION = "20211108-00_playercreateinfo";
 
 void Master::_OnSignal(int s)
 {

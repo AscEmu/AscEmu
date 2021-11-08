@@ -2684,6 +2684,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     }
                 }
                 break;
+#if VERSION_STRING <= WotLK
                 //warlock - Aftermath
                 case 18118:
                 {
@@ -2699,6 +2700,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                         continue;
                 }
                 break;
+#endif
                 //warlock - Nether Protection
                 case 30300:
                 {
@@ -6815,7 +6817,9 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
             uint8 form = this->getShapeShiftForm();
             if (form == FORM_CAT || form == FORM_BEAR || form == FORM_DIREBEAR)
             {
+#if VERSION_STRING <= Cata
                 SubClassSkill = SKILL_FERAL_COMBAT;
+#endif
                 self_skill += pr->getLevel() * 5;           // Adjust skill for Level * 5 for Feral Combat
             }
         }
@@ -7109,7 +7113,9 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             uint8 form = pr->getShapeShiftForm();
             if (form == FORM_CAT || form == FORM_BEAR || form == FORM_DIREBEAR)
             {
+#if VERSION_STRING <= Cata
                 SubClassSkill = SKILL_FERAL_COMBAT;
+#endif
                 self_skill += pr->getLevel() * 5;
             }
         }

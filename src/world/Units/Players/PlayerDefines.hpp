@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 #include "Macros/ItemMacros.hpp"
+#include "Management/Skill.hpp"
 #include "../../WorldConf.h"
 
 #include <ctime>
@@ -805,6 +806,60 @@ static inline uint8_t getSideByRace(uint8_t race)
         default:
             return TEAM_HORDE;
     }
+}
+
+// TODO: move this to Player.cpp when this is no longer needed in Player.Legacy.cpp!
+static inline uint32_t getSpellIdForLanguage(uint32_t skillId)
+{
+    switch (skillId)
+    {
+        case SKILL_LANG_COMMON:
+            return 668;
+        case SKILL_LANG_ORCISH:
+            return 669;
+        case SKILL_LANG_TAURAHE:
+            return 670;
+        case SKILL_LANG_DARNASSIAN:
+            return 671;
+        case SKILL_LANG_DWARVEN:
+            return 672;
+        case SKILL_LANG_THALASSIAN:
+            return 813;
+        case SKILL_LANG_DRACONIC:
+            return 814;
+        case SKILL_LANG_DEMON_TONGUE:
+            return 815;
+        case SKILL_LANG_TITAN:
+            return 816;
+        case SKILL_LANG_OLD_TONGUE:
+            return 817;
+        case SKILL_LANG_GNOMISH:
+            return 7340;
+        case SKILL_LANG_TROLL:
+            return 7341;
+        case SKILL_LANG_GUTTERSPEAK:
+            return 17737;
+#if VERSION_STRING >= TBC
+        case SKILL_LANG_DRAENEI:
+            return 29932;
+#endif
+#if VERSION_STRING >= Cata
+        case SKILL_LANG_GOBLIN:
+            return 69269;
+        case SKILL_LANG_GILNEAN:
+            return 69270;
+#endif
+#if VERSION_STRING >= Mop
+        case SKILL_LANG_PANDAREN_NEUTRAL:
+            return 108127;
+        case SKILL_LANG_PANDAREN_ALLIANCE:
+            return 108130;
+        case SKILL_LANG_PANDAREN_HORDE:
+            return 108131;
+#endif
+    }
+
+    return 0;
 }
 
 enum FactionFlags

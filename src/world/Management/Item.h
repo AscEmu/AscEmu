@@ -44,13 +44,6 @@ struct EnchantmentInstance
     uint32 RandomSuffix;
 };
 
-const static ItemProf prof[22] =
-{
-    {4, 2}, {4, 4}, {4, 8}, {4, 16}, {4, 64},
-    {2, 1}, {2, 2}, {2, 4}, {2, 8}, {2, 16}, {2, 32}, {2, 64}, {2, 128}, {2, 256}, {2, 1024}, {2, 8192}, {2, 32768}, {2, 65536}, {2, 131072},
-    {2, 262144}, {2, 524288}, {2, 1048576}
-};
-
 const static uint32 arm_skills[7] =
 {
     0,
@@ -80,8 +73,13 @@ const static uint32 weap_skills[21] =
     SKILL_FIST_WEAPONS,
     0, // 13
     SKILL_DAGGERS,
+#if VERSION_STRING <= Cata
     SKILL_THROWN,
     SKILL_ASSASSINATION,
+#else
+    0,
+    0,
+#endif
     SKILL_CROSSBOWS,
     SKILL_WANDS,
     SKILL_FISHING

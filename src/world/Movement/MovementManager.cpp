@@ -1097,8 +1097,10 @@ void MovementManager::directAdd(MovementGenerator* movement, MovementSlot slot/*
                     remove(itr, false, false);
             }
         }
-        else
+        else if (_defaultGenerator != nullptr)
+        {
             _defaultGenerator->deactivate(_owner);
+        }
 
         _generators.emplace(movement);
         addBaseUnitState(movement);

@@ -3,8 +3,6 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
-
 #include "Player.h"
 
 #include "Chat/ChatDefines.hpp"
@@ -14,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/QuestLogEntry.hpp"
+#include "Management/Skill.hpp"
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/MapMgr.h"
@@ -1898,6 +1897,47 @@ void Player::resetAllCooldowns()
 
     // Clear proc cooldowns
     clearProcCooldowns();
+}
+
+void Player::setInitialLanguages()
+{
+    for (const auto& skillStruct : info->skills)
+    {
+        const auto skillLine = sSkillLineStore.LookupEntry(skillStruct.skillid);
+        if (skillLine == nullptr || skillLine->type != SKILL_TYPE_LANGUAGE)
+            continue;
+
+        PlayerSkill lang;
+        lang.Reset(skillStruct.skillid);
+        lang.MaximumValue = lang.CurrentValue = 300;
+        m_skills.insert(std::make_pair(skillStruct.skillid, lang));
+
+        const auto spellId = getSpellIdForLanguage(skillStruct.skillid);
+        if (spellId != 0)
+            addSpell(spellId);
+    }
+
+    _UpdateSkillFields();
+}
+
+uint32_t Player::getArmorProficiency() const
+{
+    return armorProficiency;
+}
+
+void Player::addArmorProficiency(uint32_t proficiency)
+{
+    armorProficiency |= proficiency;
+}
+
+uint32_t Player::getWeaponProficiency() const
+{
+    return weaponProficiency;
+}
+
+void Player::addWeaponProficiency(uint32_t proficiency)
+{
+    weaponProficiency |= proficiency;
 }
 
 #ifdef FT_GLYPHS
