@@ -916,7 +916,7 @@ public:
     bool loadReputations(QueryResult* result);
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Spells
+    // Spells and skills
     bool isSpellFitByClassAndRace(uint32_t spell_id);
     void updateAutoRepeatSpell();
     bool canUseFlyingMountHere();
@@ -935,7 +935,14 @@ public:
     void clearGlobalCooldown();
     void resetAllCooldowns();
 
-#if VERSION_STRING >= WotLK
+    void setInitialLanguages();
+
+    uint32_t getArmorProficiency() const;
+    void addArmorProficiency(uint32_t proficiency);
+    uint32_t getWeaponProficiency() const;
+    void addWeaponProficiency(uint32_t proficiency);
+
+#ifdef FT_GLYPHS
     // Glyphs
     // Initializes glyph slots or updates them on levelup
     void updateGlyphs();
@@ -945,6 +952,9 @@ public:
 
 private:
     bool m_canDualWield2H = false;
+
+    uint32_t armorProficiency = 0;
+    uint32_t weaponProficiency = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Talents
@@ -1392,7 +1402,6 @@ public:
         void RemoveSpellsFromLine(uint32 skill_line);
         void _RemoveAllSkills();
         void _RemoveLanguages();
-        void _AddLanguages(bool All);
         void _AdvanceAllSkills(uint32 count);
         void _ModifySkillMaximum(uint32 SkillLine, uint32 NewMax);
         void _LearnSkillSpells(uint32 SkillLine, uint32 Current);
@@ -2097,9 +2106,6 @@ public:
         void ProcessPendingUpdates();
         bool CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer);
 
-        uint32 GetArmorProficiency() { return armor_proficiency; }
-        uint32 GetWeaponProficiency() { return weapon_proficiency; }
-
         bool ExitInstance();
         void SaveEntryPoint(uint32 mapId);
 
@@ -2332,8 +2338,6 @@ public:
         uint32 m_healthfromitems;
         uint32 m_manafromitems;
 
-        uint32 armor_proficiency;
-        uint32 weapon_proficiency;
         // Talents
         uint32 m_talentresettimes;
         // Raid

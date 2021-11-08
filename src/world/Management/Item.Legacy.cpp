@@ -456,62 +456,6 @@ uint32 GetSkillByProto(uint32 Class, uint32 SubClass)
     return 0;
 }
 
-//This map is used for profess.
-//Prof packet struct: {SMSG_SET_PROFICIENCY,(uint8)item_class,(uint32)1<<item_subclass}
-//ie: for fishing (it's class=2--weapon, subclass ==20 -- fishing rod) permissive packet
-// will have structure 0x2,524288
-//this table is needed to get class/subclass by skill, valid classes are 2 and 4
-const ItemProf* GetProficiencyBySkill(uint32 skill)
-{
-    switch (skill)
-    {
-        case SKILL_CLOTH:
-            return &prof[0];
-        case SKILL_LEATHER:
-            return &prof[1];
-        case SKILL_MAIL:
-            return &prof[2];
-        case SKILL_PLATE_MAIL:
-            return &prof[3];
-        case SKILL_SHIELD:
-            return &prof[4];
-        case SKILL_AXES:
-            return &prof[5];
-        case SKILL_2H_AXES:
-            return &prof[6];
-        case SKILL_BOWS:
-            return &prof[7];
-        case SKILL_GUNS:
-            return &prof[8];
-        case SKILL_MACES:
-            return &prof[9];
-        case SKILL_2H_MACES:
-            return &prof[10];
-        case SKILL_POLEARMS:
-            return &prof[11];
-        case SKILL_SWORDS:
-            return &prof[12];
-        case SKILL_2H_SWORDS:
-            return &prof[13];
-        case SKILL_STAVES:
-            return &prof[14];
-        case SKILL_FIST_WEAPONS:
-            return &prof[15];
-        case SKILL_DAGGERS:
-            return &prof[16];
-        case SKILL_THROWN:
-            return &prof[17];
-        case SKILL_CROSSBOWS:
-            return &prof[19];
-        case SKILL_WANDS:
-            return &prof[20];
-        case SKILL_FISHING:
-            return &prof[21];
-        default:
-            return nullptr;
-    }
-}
-
 uint32 GetSellPriceForItem(ItemProperties const* proto, uint32 count)
 {
     int32 cost = proto->SellPrice * ((count < 1) ? 1 : count);

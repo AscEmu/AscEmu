@@ -486,10 +486,10 @@ void AuctionHouse::sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionL
             if (proto->AllowableRace && !(player->getRaceMask() & proto->AllowableRace))
                 continue;
 
-            if (proto->Class == 4 && proto->SubClass && !(player->GetArmorProficiency() & (((uint32_t)(1)) << proto->SubClass)))
+            if (proto->Class == 4 && proto->SubClass && !(player->getArmorProficiency() & (((uint32_t)(1)) << proto->SubClass)))
                 continue;
 
-            if (proto->Class == 2 && proto->SubClass && !(player->GetWeaponProficiency() & (((uint32_t)(1)) << proto->SubClass)))
+            if (proto->Class == 2 && proto->SubClass && !(player->getWeaponProficiency() & (((uint32_t)(1)) << proto->SubClass)))
                 continue;
 
             if (proto->RequiredSkill && (!player->_HasSkillLine(proto->RequiredSkill) || proto->RequiredSkillRank > player->_GetSkillLineCurrent(proto->RequiredSkill, true)))

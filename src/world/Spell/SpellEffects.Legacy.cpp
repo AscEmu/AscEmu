@@ -32,6 +32,7 @@
 #include "Management/Container.h"
 #include "Management/TaxiMgr.h"
 #include "Management/ItemInterface.h"
+#include "Management/ItemPrototype.h"
 #include "Units/Stats.h"
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -104,7 +105,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectBlock,                   //  23 SPELL_EFFECT_BLOCK
     &Spell::SpellEffectCreateItem,              //  24 SPELL_EFFECT_CREATE_ITEM
     &Spell::SpellEffectWeapon,                  //  25 SPELL_EFFECT_WEAPON
-    &Spell::SpellEffectDefense,                 //  26 SPELL_EFFECT_DEFENSE
+    &Spell::spellEffectDefense,                 //  26 SPELL_EFFECT_DEFENSE
     &Spell::SpellEffectPersistentAA,            //  27 SPELL_EFFECT_PERSISTENT_AA
     &Spell::SpellEffectSummon,                  //  28 SPELL_EFFECT_SUMMON
     &Spell::SpellEffectLeap,                    //  29 SPELL_EFFECT_LEAP
@@ -117,7 +118,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectLearnSpell,              //  36 SPELL_EFFECT_LEARN_SPELL
     &Spell::SpellEffectSpellDefense,            //  37 SPELL_EFFECT_SPELL_DEFENSE
     &Spell::SpellEffectDispel,                  //  38 SPELL_EFFECT_DISPEL
-    &Spell::spellEffectNotUsed,                 //  39 SPELL_EFFECT_UNUSED
+    &Spell::spellEffectNotUsed,                 //  39 SPELL_EFFECT_LANGUAGE
     &Spell::SpellEffectDualWield,               //  40 SPELL_EFFECT_DUAL_WIELD
     &Spell::SpellEffectJumpTarget,              //  41 SPELL_EFFECT_JUMP_TARGET
     &Spell::SpellEffectJumpBehindTarget,        //  42 SPELL_EFFECT_JUMP_BEHIND_TARGET
@@ -138,7 +139,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectLearnPetSpell,           //  57 SPELL_EFFECT_LEARN_PET_SPELL
     &Spell::SpellEffectWeapondamage,            //  58 SPELL_EFFECT_WEAPONDAMAGE
     &Spell::SpellEffectOpenLockItem,            //  59 SPELL_EFFECT_OPEN_LOCK_ITEM
-    &Spell::SpellEffectProficiency,             //  60 SPELL_EFFECT_PROFICIENCY
+    &Spell::spellEffectProficiency,             //  60 SPELL_EFFECT_PROFICIENCY
     &Spell::SpellEffectSendEvent,               //  61 SPELL_EFFECT_SEND_EVENT
     &Spell::SpellEffectPowerBurn,               //  62 SPELL_EFFECT_POWER_BURN
     &Spell::SpellEffectThreat,                  //  63 SPELL_EFFECT_THREAT
@@ -304,7 +305,7 @@ const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =
     "SPELL_EFFECT_LEARN_SPELL",                 //    36
     "SPELL_EFFECT_SPELL_DEFENSE",               //    37
     "SPELL_EFFECT_DISPEL",                      //    38
-    "SPELL_EFFECT_UNUSED",                      //    39
+    "SPELL_EFFECT_LANGUAGE",                    //    39
     "SPELL_EFFECT_DUAL_WIELD",                  //    40
     "SPELL_EFFECT_JUMP_TARGET",                 //    41
     "SPELL_EFFECT_JUMP_BEHIND_TARGET",          //    42
@@ -503,6 +504,33 @@ void Spell::spellEffectSummonTotem(uint8_t summonSlot, CreatureProperties const*
     totem->setHealth(damage);
 
     totem->PushToWorld(u_caster->GetMapMgr());
+}
+
+void Spell::spellEffectDefense(uint8_t /*effectIndex*/)
+{
+    if (playerTarget == nullptr)
+        return;
+
+    if (!playerTarget->_HasSkillLine(SKILL_DEFENSE))
+        playerTarget->_AddSkillLine(SKILL_DEFENSE, 1, playerTarget->getLevel() * 5);
+}
+
+void Spell::spellEffectProficiency(uint8_t /*effectIndex*/)
+{
+    if (playerTarget == nullptr)
+        return;
+
+    const auto subclass = getSpellInfo()->getEquippedItemSubClass();
+    if (getSpellInfo()->getEquippedItemClass() == ITEM_CLASS_ARMOR && !(playerTarget->getArmorProficiency() & subclass))
+    {
+        playerTarget->addArmorProficiency(subclass);
+        playerTarget->sendSetProficiencyPacket(ITEM_CLASS_ARMOR, playerTarget->getArmorProficiency());
+    }
+    else if (getSpellInfo()->getEquippedItemClass() == ITEM_CLASS_WEAPON && !(playerTarget->getWeaponProficiency() & subclass))
+    {
+        playerTarget->addWeaponProficiency(subclass);
+        playerTarget->sendSetProficiencyPacket(ITEM_CLASS_WEAPON, playerTarget->getWeaponProficiency());
+    }
 }
 
 // MIT End
@@ -2761,7 +2789,9 @@ void Spell::SpellEffectWeapon(uint8_t /*effectIndex*/)
         case 5011: // crossbows
         {
             skill = SKILL_CROSSBOWS;
-            spell = SPELL_RANGED_GENERAL;
+
+            if (!playerTarget->isClassHunter())
+                spell = SPELL_RANGED_GENERAL;
         }
         break;
         case 227:   // staves
@@ -2787,23 +2817,29 @@ void Spell::SpellEffectWeapon(uint8_t /*effectIndex*/)
         case 264:   // bows
         {
             skill = SKILL_BOWS;
-            spell = SPELL_RANGED_GENERAL;
+
+            if (!playerTarget->isClassHunter())
+                spell = SPELL_RANGED_GENERAL;
         }
         break;
         case 266: // guns
         {
             skill = SKILL_GUNS;
-            spell = SPELL_RANGED_GENERAL;
+
+            if (!playerTarget->isClassHunter())
+                spell = SPELL_RANGED_GENERAL;
         }
         break;
         case 2567:  // thrown
         {
             skill = SKILL_THROWN;
+            spell = SPELL_RANGED_THROW;
         }
         break;
         case 5009:  // wands
         {
             skill = SKILL_WANDS;
+            spell = SPELL_RANGED_WAND;
         }
         break;
         case 2382:  // Generic
@@ -2833,15 +2869,6 @@ void Spell::SpellEffectWeapon(uint8_t /*effectIndex*/)
         {
         }
     }
-}
-
-void Spell::SpellEffectDefense(uint8_t /*effectIndex*/)
-{
-    //i think this actually enables the skill to be able to use defense
-    //value is static and sets value directly which will be modified by other factors
-    //this is only basic value and will be overwritten elsewhere !!!
-    //  if (unitTarget->isPlayer())
-    //      unitTarget->SetFloatValue(UNIT_FIELD_RESISTANCES,damage);
 }
 
 void Spell::SpellEffectPersistentAA(uint8_t effectIndex) // Persistent Area Aura
@@ -4023,47 +4050,6 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
     }
 }
 
-void Spell::SpellEffectLanguage(uint8_t effectIndex)
-{
-    if (!playerTarget || !getSpellInfo()->getEffectMiscValue(effectIndex))
-        return;
-
-#if VERSION_STRING < Cata
-    uint32 skills[15][2] =
-#else
-    uint32 skills[17][2] =
-#endif
-    {
-        { 0, 0 },
-        { SKILL_LANG_ORCISH, 669 },
-        { SKILL_LANG_DARNASSIAN, 671 },
-        { SKILL_LANG_TAURAHE, 670 },
-        { SKILL_LANG_DWARVEN, 672 },
-        { SKILL_LANG_COMMON, 668 },
-        { SKILL_LANG_DEMON_TONGUE, 815 },
-        { SKILL_LANG_TITAN, 816 },
-        { SKILL_LANG_THALASSIAN, 813 },
-        { SKILL_LANG_DRACONIC, 814 },
-        { 0, 0 },
-        { SKILL_LANG_GNOMISH, 7340 },
-        { SKILL_LANG_TROLL, 7341 },
-        { SKILL_LANG_GUTTERSPEAK, 17737 },
-        { SKILL_LANG_DRAENEI, 29932 },
-#if VERSION_STRING >= Cata
-        { SKILL_LANG_GOBLIN, 69269 },
-        { SKILL_LANG_GILNEAN, 69270 },
-#endif
-    };
-
-#if VERSION_STRING < Cata
-    if (skills[getSpellInfo()->getEffectMiscValue(effectIndex)][0])
-    {
-        playerTarget->_AddSkillLine(skills[getSpellInfo()->getEffectMiscValue(effectIndex)][0], 300, 300);
-        playerTarget->addSpell(skills[getSpellInfo()->getEffectMiscValue(effectIndex)][1]);
-    }
-#endif
-}
-
 void Spell::SpellEffectDualWield(uint8_t /*effectIndex*/)
 {
     if (u_caster == nullptr)
@@ -4528,39 +4514,6 @@ void Spell::SpellEffectOpenLockItem(uint8_t /*effectIndex*/)
         return;
 
     p_caster->HandleSpellLoot(i_caster->getItemProperties()->ItemId);
-}
-
-void Spell::SpellEffectProficiency(uint8_t /*effectIndex*/)
-{
-    uint32 skill = 0;
-
-    auto skill_line_ability = sObjectMgr.GetSpellSkill(getSpellInfo()->getId());
-    if (skill_line_ability != nullptr)
-        skill = skill_line_ability->skilline;
-
-    auto skill_line = sSkillLineStore.LookupEntry(skill);
-    if (skill_line)
-    {
-        if (playerTarget)
-        {
-            if (playerTarget->_HasSkillLine(skill))
-            {
-                // Increase it by one
-                // playerTarget->AdvanceSkillLine(skill);
-            }
-            else
-            {
-                // Don't add skills to players logging in.
-                /*if ((GetProto()->Attributes & 64) && playerTarget->m_TeleportState == 1)
-                return;*/
-
-                if (skill_line->type == SKILL_TYPE_WEAPON)
-                    playerTarget->_AddSkillLine(skill, 1, 5 * playerTarget->getLevel());
-                else
-                    playerTarget->_AddSkillLine(skill, 1, 1);
-            }
-        }
-    }
 }
 
 void Spell::SpellEffectSendEvent(uint8_t effectIndex) //Send Event

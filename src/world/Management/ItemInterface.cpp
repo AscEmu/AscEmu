@@ -2130,13 +2130,13 @@ int8 ItemInterface::CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemPropertie
             else
                 bogus_subclass = proto->SubClass;
 
-            if (!(m_pOwner->GetArmorProficiency() & (((uint32)(1)) << bogus_subclass)))
+            if (!(m_pOwner->getArmorProficiency() & (((uint32)(1)) << bogus_subclass)))
                 return INV_ERR_NO_REQUIRED_PROFICIENCY;
 
         }
         else if (proto->Class == 2)
         {
-            if (!(m_pOwner->GetWeaponProficiency() & (((uint32)(1)) << proto->SubClass)))
+            if (!(m_pOwner->getWeaponProficiency() & (((uint32)(1)) << proto->SubClass)))
                 return INV_ERR_NO_REQUIRED_PROFICIENCY;
         }
 

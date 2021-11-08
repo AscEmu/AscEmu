@@ -206,10 +206,6 @@ Player::Player(uint32 guid)
     m_manafromspell(0),
     m_healthfromitems(0),
     m_manafromitems(0),
-    // FIX for shit like shirt etc
-    armor_proficiency(1),
-    // FIX for professions
-    weapon_proficiency(0x4000), //2^14
     m_talentresettimes(0),
     m_targetIcon(0),
     m_session(nullptr),
@@ -518,49 +514,6 @@ Player::~Player()
     RemoveGarbageItems();
 }
 
-uint32 GetSpellForLanguage(uint32 SkillID)
-{
-    switch (SkillID)
-    {
-        case SKILL_LANG_COMMON:
-            return 668;
-        case SKILL_LANG_ORCISH:
-            return 669;
-        case SKILL_LANG_TAURAHE:
-            return 670;
-        case SKILL_LANG_DARNASSIAN:
-            return 671;
-        case SKILL_LANG_DWARVEN:
-            return 672;
-        case SKILL_LANG_THALASSIAN:
-            return 813;
-        case SKILL_LANG_DRACONIC:
-            return 814;
-        case SKILL_LANG_DEMON_TONGUE:
-            return 815;
-        case SKILL_LANG_TITAN:
-            return 816;
-        case SKILL_LANG_OLD_TONGUE:
-            return 817;
-        case SKILL_LANG_GNOMISH:
-            return 7430;
-        case SKILL_LANG_TROLL:
-            return 7341;
-        case SKILL_LANG_GUTTERSPEAK:
-            return 17737;
-        case SKILL_LANG_DRAENEI:
-            return 29932;
-#if VERSION_STRING >= Cata
-        case SKILL_LANG_GOBLIN:
-            return 69269;
-        case SKILL_LANG_GILNEAN:
-            return 69270;
-#endif
-    }
-
-    return 0;
-}
-
 void Player::CharChange_Looks(uint64 GUID, uint8 gender, uint8 skin, uint8 face, uint8 hairStyle, uint8 hairColor, uint8 facialHair)
 {
     QueryResult* result = CharacterDatabase.Query("SELECT bytes2 FROM `characters` WHERE guid = '%u'", (uint32)GUID);
@@ -582,56 +535,56 @@ void Player::CharChange_Looks(uint64 GUID, uint8 gender, uint8 skin, uint8 face,
 void Player::CharChange_Language(uint64 GUID, uint8 race)
 {
 #if VERSION_STRING < Cata
-    CharacterDatabase.Execute("DELETE FROM `playerspells` WHERE GUID = '%u' AND SpellID IN ('%u', '%u', '%u', '%u', '%u','%u', '%u', '%u', '%u', '%u');", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_ORCISH), GetSpellForLanguage(SKILL_LANG_TAURAHE), GetSpellForLanguage(SKILL_LANG_TROLL), GetSpellForLanguage(SKILL_LANG_GUTTERSPEAK), GetSpellForLanguage(SKILL_LANG_THALASSIAN), GetSpellForLanguage(SKILL_LANG_COMMON), GetSpellForLanguage(SKILL_LANG_DARNASSIAN), GetSpellForLanguage(SKILL_LANG_DRAENEI), GetSpellForLanguage(SKILL_LANG_DWARVEN), GetSpellForLanguage(SKILL_LANG_GNOMISH));
+    CharacterDatabase.Execute("DELETE FROM `playerspells` WHERE GUID = '%u' AND SpellID IN ('%u', '%u', '%u', '%u', '%u','%u', '%u', '%u', '%u', '%u');", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_ORCISH), getSpellIdForLanguage(SKILL_LANG_TAURAHE), getSpellIdForLanguage(SKILL_LANG_TROLL), getSpellIdForLanguage(SKILL_LANG_GUTTERSPEAK), getSpellIdForLanguage(SKILL_LANG_THALASSIAN), getSpellIdForLanguage(SKILL_LANG_COMMON), getSpellIdForLanguage(SKILL_LANG_DARNASSIAN), getSpellIdForLanguage(SKILL_LANG_DRAENEI), getSpellIdForLanguage(SKILL_LANG_DWARVEN), getSpellIdForLanguage(SKILL_LANG_GNOMISH));
 #else
-    CharacterDatabase.Execute("DELETE FROM `playerspells` WHERE GUID = '%u' AND SpellID IN ('%u', '%u', '%u', '%u', '%u','%u', '%u', '%u', '%u', '%u');", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_ORCISH), GetSpellForLanguage(SKILL_LANG_TAURAHE), GetSpellForLanguage(SKILL_LANG_TROLL), GetSpellForLanguage(SKILL_LANG_GUTTERSPEAK), GetSpellForLanguage(SKILL_LANG_THALASSIAN), GetSpellForLanguage(SKILL_LANG_COMMON), GetSpellForLanguage(SKILL_LANG_DARNASSIAN), GetSpellForLanguage(SKILL_LANG_DRAENEI), GetSpellForLanguage(SKILL_LANG_DWARVEN), GetSpellForLanguage(SKILL_LANG_GNOMISH), GetSpellForLanguage(SKILL_LANG_GILNEAN), GetSpellForLanguage(SKILL_LANG_GOBLIN));
+    CharacterDatabase.Execute("DELETE FROM `playerspells` WHERE GUID = '%u' AND SpellID IN ('%u', '%u', '%u', '%u', '%u','%u', '%u', '%u', '%u', '%u');", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_ORCISH), getSpellIdForLanguage(SKILL_LANG_TAURAHE), getSpellIdForLanguage(SKILL_LANG_TROLL), getSpellIdForLanguage(SKILL_LANG_GUTTERSPEAK), getSpellIdForLanguage(SKILL_LANG_THALASSIAN), getSpellIdForLanguage(SKILL_LANG_COMMON), getSpellIdForLanguage(SKILL_LANG_DARNASSIAN), getSpellIdForLanguage(SKILL_LANG_DRAENEI), getSpellIdForLanguage(SKILL_LANG_DWARVEN), getSpellIdForLanguage(SKILL_LANG_GNOMISH), getSpellIdForLanguage(SKILL_LANG_GILNEAN), getSpellIdForLanguage(SKILL_LANG_GOBLIN));
 #endif
     switch (race)
     {
         case RACE_DWARF:
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_COMMON));
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_DWARVEN));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_COMMON));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_DWARVEN));
             break;
 #if VERSION_STRING > Classic
         case RACE_DRAENEI:
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_COMMON));
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_DRAENEI));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_COMMON));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_DRAENEI));
             break;
 #endif
         case RACE_GNOME:
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_COMMON));
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_GNOMISH));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_COMMON));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_GNOMISH));
             break;
         case RACE_NIGHTELF:
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_COMMON));
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_DARNASSIAN));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_COMMON));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_DARNASSIAN));
             break;
         case RACE_UNDEAD:
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_ORCISH));
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_GUTTERSPEAK));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_ORCISH));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_GUTTERSPEAK));
             break;
         case RACE_TAUREN:
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_ORCISH));
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_TAURAHE));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_ORCISH));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_TAURAHE));
             break;
         case RACE_TROLL:
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_ORCISH));
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_TROLL));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_ORCISH));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_TROLL));
             break;
 #if VERSION_STRING > Classic
         case RACE_BLOODELF:
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_ORCISH));
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_THALASSIAN));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_ORCISH));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_THALASSIAN));
             break;
 #endif
 #if VERSION_STRING >= Cata
         case RACE_WORGEN:
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_COMMON));
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_GILNEAN));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_COMMON));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_GILNEAN));
             break;
         case RACE_GOBLIN:
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_ORCISH));
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_GOBLIN));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_ORCISH));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_GOBLIN));
             break;
 #endif
     }
@@ -2665,19 +2618,32 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     // Process exploration data.
     LoadFieldsFromString(field[10].GetString(), getOffsetForStructuredField(WoWPlayer, explored_zones), WOWPLAYER_EXPLORED_ZONES_COUNT); //10
 
-
-    // new format
-    const ItemProf* prof1;
-
     LoadSkills(results[PlayerQuery::Skills].result);
 
-    if (m_skills.empty())
+    if (m_FirstLogin || m_skills.empty())
     {
         /* no skills - reset to defaults */
         for (std::list<CreateInfo_SkillStruct>::const_iterator ss = info->skills.begin(); ss != info->skills.end(); ++ss)
         {
-            if (ss->skillid && ss->currentval && ss->maxval && !::GetSpellForLanguage(ss->skillid))
-                _AddSkillLine(ss->skillid, ss->currentval, ss->maxval);
+            // skip languages here
+            if (ss->skillid && getSpellIdForLanguage(ss->skillid) == 0)
+            {
+#if VERSION_STRING >= Cata
+                // In cata, add skill to player but do not call _UpdateSkillFields
+                // Skills are updated when languages are set
+                PlayerSkill skill;
+                skill.Reset(ss->skillid);
+                skill.MaximumValue = getLevel() * 5;
+                skill.CurrentValue = ss->currentval;
+                m_skills.insert(std::make_pair(ss->skillid, skill));
+
+                const auto spellId = getSpellIdForLanguage(ss->skillid);
+                if (spellId != 0)
+                    addSpell(spellId);
+#else
+                _AddSkillLine(ss->skillid, ss->currentval, getLevel() * 5);
+#endif
+            }
         }
     }
 
@@ -2686,14 +2652,6 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         if (itr->first == SKILL_RIDING)
             itr->second.CurrentValue = itr->second.MaximumValue;
 
-        prof1 = GetProficiencyBySkill(itr->first);
-        if (prof1)
-        {
-            if (prof1->itemclass == 4)
-                armor_proficiency |= prof1->subclass;
-            else
-                weapon_proficiency |= prof1->subclass;
-        }
         _LearnSkillSpells(itr->second.Skill->id, itr->second.CurrentValue);
     }
 
@@ -3166,18 +3124,6 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     //class fixes
     switch (getClass())
     {
-        case PALADIN:
-            armor_proficiency |= (1 << 7);  // Libram
-            break;
-        case DRUID:
-            armor_proficiency |= (1 << 8);  // Idol
-            break;
-        case SHAMAN:
-            armor_proficiency |= (1 << 9);  // Totem
-            break;
-        case DEATHKNIGHT:
-            armor_proficiency |= (1 << 10); // Sigil
-            break;
         case WARLOCK:
         case HUNTER:
             _LoadPet(results[PlayerQuery::Pets].result);
@@ -3185,14 +3131,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             break;
     }
 
-#if VERSION_STRING < Cata
-    if (m_session->CanUseCommand('c'))
-        _AddLanguages(true);
-    else
-        _AddLanguages(false);
-#else
-    _AddLanguages(false);
-#endif
+    setInitialLanguages();
 
     if (getGuildId())
         setGuildTimestamp(static_cast<uint32_t>(UNIXTIME));
@@ -8223,20 +8162,6 @@ void Player::_AddSkillLine(uint32 SkillLine, uint32 Curr_sk, uint32 Max_sk)
         _UpdateSkillFields();
     }
 
-    //Add to proficiency
-    if (ItemProf* prof1 = (ItemProf*)GetProficiencyBySkill(SkillLine))
-    {
-        if (prof1->itemclass == 4)
-        {
-            armor_proficiency |= prof1->subclass;
-            sendSetProficiencyPacket(prof1->itemclass, armor_proficiency);
-        }
-        else
-        {
-            weapon_proficiency |= prof1->subclass;
-            sendSetProficiencyPacket(prof1->itemclass, weapon_proficiency);
-        }
-    }
     _LearnSkillSpells(SkillLine, Curr_sk);
 
     // Displaying bug fix
@@ -8614,69 +8539,6 @@ void PlayerSkill::Reset(uint32 Id)
     CurrentValue = 0;
     BonusValue = 0;
     Skill = (Id == 0) ? NULL : sSkillLineStore.LookupEntry(Id);
-}
-
-void Player::_AddLanguages(bool All)
-{
-    /** This function should only be used at login, and after _RemoveLanguages is called.
-     * Otherwise weird stuff could happen :P
-     * - Burlex
-     */
-
-    static uint32 skills[] =
-    {
-        SKILL_LANG_COMMON,
-        SKILL_LANG_ORCISH,
-        SKILL_LANG_DWARVEN,
-        SKILL_LANG_DARNASSIAN,
-        SKILL_LANG_TAURAHE,
-        SKILL_LANG_THALASSIAN,
-        SKILL_LANG_TROLL,
-        SKILL_LANG_GUTTERSPEAK,
-        SKILL_LANG_DRAENEI,
-#if VERSION_STRING >= Cata
-        SKILL_LANG_GOBLIN,
-        SKILL_LANG_GILNEAN,
-#endif
-        0
-    };
-
-    if (All)
-    {
-        for (uint8 i = 0; skills[i] != 0; ++i)
-        {
-            if (!skills[i])
-                break;
-
-            PlayerSkill sk;
-            sk.Reset(skills[i]);
-            sk.MaximumValue = sk.CurrentValue = 300;
-            m_skills.insert(std::make_pair(skills[i], sk));
-            if (uint32 spell_id = ::GetSpellForLanguage(skills[i]))
-                addSpell(spell_id);
-        }
-    }
-    else
-    {
-        for (std::list<CreateInfo_SkillStruct>::const_iterator itr = info->skills.begin(); itr != info->skills.end(); ++itr)
-        {
-            auto skill_line = sSkillLineStore.LookupEntry(itr->skillid);
-            if (skill_line != nullptr)
-            {
-                if (skill_line->type == SKILL_TYPE_LANGUAGE)
-                {
-                    PlayerSkill sk;
-                    sk.Reset(itr->skillid);
-                    sk.MaximumValue = sk.CurrentValue = 300;
-                    m_skills.insert(std::make_pair(itr->skillid, sk));
-                    if (uint32 spell_id = ::GetSpellForLanguage(itr->skillid))
-                        addSpell(spell_id);
-                }
-            }
-        }
-    }
-
-    _UpdateSkillFields();
 }
 
 float Player::GetSkillUpChance(uint32 id)
@@ -11062,9 +10924,6 @@ void Player::SendInitialLogonPackets()
 
 #else
     m_session->SendPacket(SmsgBindPointUpdate(getBindPosition(), getBindMapId(), getBindZoneId()).serialise().get());
-
-    sendSetProficiencyPacket(4, armor_proficiency);
-    sendSetProficiencyPacket(2, weapon_proficiency);
 
     std::vector<uint32_t> tutorials;
     for (auto tutorial : m_Tutorials)

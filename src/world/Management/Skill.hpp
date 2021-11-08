@@ -243,5 +243,3 @@ typedef struct
     uint8_t itemclass;
     uint32_t subclass;
 } ItemProf;
-
-const ItemProf* GetProficiencyBySkill(uint32_t skill);

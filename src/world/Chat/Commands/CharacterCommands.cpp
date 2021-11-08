@@ -943,7 +943,7 @@ bool ChatHandler::HandleCharResetSkillsCommand(const char* /*args*/, WorldSessio
     selected_player->UpdateStats();
     selected_player->UpdateChances();
     selected_player->_UpdateMaxSkillCounts();
-    selected_player->_AddLanguages(false);
+    selected_player->setInitialLanguages();
 
     if (selected_player != m_session->GetPlayer())
     {
