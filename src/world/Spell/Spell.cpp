@@ -1476,9 +1476,13 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
     if (target != nullptr)
     {
         // Check explicit unit target
-        const auto targetCheck = checkExplicitTarget(target, getSpellInfo()->getRequiredTargetMask(true));
-        if (targetCheck != SPELL_CAST_SUCCESS)
-            return targetCheck;
+        // but skip spells with pet target here
+        if (!getSpellInfo()->hasTargetType(EFF_TARGET_PET))
+        {
+            const auto targetCheck = checkExplicitTarget(target, getSpellInfo()->getRequiredTargetMask(true));
+            if (targetCheck != SPELL_CAST_SUCCESS)
+                return targetCheck;
+        }
 
         // Target's aura state requirements
         if (!m_triggeredSpell && getSpellInfo()->getTargetAuraState() > 0 && !target->hasAuraState(static_cast<AuraState>(getSpellInfo()->getTargetAuraState()), getSpellInfo(), u_caster))

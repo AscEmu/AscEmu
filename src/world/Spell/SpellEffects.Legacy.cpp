@@ -4138,20 +4138,6 @@ void Spell::SpellEffectSkillStep(uint8_t effectIndex) // Skill Step
     {
         target->_ModifySkillMaximum(skill, max);
     }
-    else
-    {
-        // Don't add skills to players logging in.
-        /*if ((GetProto()->Attributes & 64) && playerTarget->m_TeleportState == 1)
-        return;*/
-
-        if (skill_line->type == SKILL_TYPE_PROFESSION)
-            target->ModPrimaryProfessionPoints(-1);
-
-        if (skill == SKILL_RIDING)
-            target->_AddSkillLine(skill, max, max);
-        else
-            target->_AddSkillLine(skill, 1, max);
-    }
 }
 
 void Spell::SpellEffectAddHonor(uint8_t effectIndex)

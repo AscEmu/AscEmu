@@ -3555,9 +3555,9 @@ void AIInterface::UpdateAISpells()
         // Shuffle Around our Spells to randomize the cast
         if (mCreatureAISpells.size())
         {
-            for (size_t i = 0; i < mCreatureAISpells.size() - 1; ++i)
+            for (uint16_t i = 0; i < mCreatureAISpells.size() - 1; ++i)
             {
-                int j = i + rand() % (mCreatureAISpells.size() - i);
+                const auto j = i + rand() % (mCreatureAISpells.size() - i);
                 std::swap(mCreatureAISpells[i], mCreatureAISpells[j]);
             }
         }
@@ -3878,9 +3878,9 @@ void AIInterface::sendStoredText(definedEmoteVector store, Unit* target)
     // Shuffle Around our textIds to randomize it
     if (store.size())
     {
-        for (size_t i = 0; i < store.size() - 1; ++i)
+        for (uint16_t i = 0; i < store.size() - 1; ++i)
         {
-            int j = i + rand() % (store.size() - i);
+            const auto j = i + rand() % (store.size() - i);
             std::swap(store[i], store[j]);
         }
 

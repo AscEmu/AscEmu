@@ -8768,15 +8768,24 @@ AuraCheckResponse Unit::AuraCheck(SpellInfo const* proto, Object* /*caster*/)
     resp.Error = AURA_CHECK_RESULT_NONE;
     resp.Misc = 0;
 
-    uint32 name_hash = proto->custom_NameHash;
     uint32 rank = proto->custom_RankNumber;
 
     // look for spells with same namehash
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
     {
         Aura* aura = m_auras[x];
-        if (aura != NULL && aura->getSpellInfo()->custom_NameHash == name_hash)
+        if (aura != NULL)
         {
+            // Very hacky way to check if spell is same but different rank
+            // It's better than nothing until better solution is implemented -Appled
+            const bool sameSpell = aura->getSpellInfo()->custom_NameHash == proto->custom_NameHash &&
+                aura->getSpellInfo()->getSpellVisual(0) == proto->getSpellVisual(0) &&
+                aura->getSpellInfo()->getSpellIconID() == proto->getSpellIconID() &&
+                aura->getSpellInfo()->getName() == proto->getName();
+
+            if (!sameSpell)
+                continue;
+
             // we've got an aura with the same name as the one we're trying to apply
             // but first we check if it has the same effects
             SpellInfo const* aura_sp = aura->getSpellInfo();
@@ -8824,8 +8833,14 @@ AuraCheckResponse Unit::AuraCheck(SpellInfo const* proto, Aura* aur, Object* /*c
     resp.Error = AURA_CHECK_RESULT_NONE;
     resp.Misc = 0;
 
-    // look for spells with same namehash
-    if (aur->getSpellInfo()->custom_NameHash == proto->custom_NameHash)
+    // Very hacky way to check if spell is same but different rank
+    // It's better than nothing until better solution is implemented -Appled
+    const bool sameSpell = aur->getSpellInfo()->custom_NameHash == proto->custom_NameHash &&
+        aur->getSpellInfo()->getSpellVisual(0) == proto->getSpellVisual(0) &&
+        aur->getSpellInfo()->getSpellIconID() == proto->getSpellIconID() &&
+        aur->getSpellInfo()->getName() == proto->getName();
+
+    if (sameSpell)
     {
         // we've got an aura with the same name as the one we're trying to apply
         // but first we check if it has the same effects

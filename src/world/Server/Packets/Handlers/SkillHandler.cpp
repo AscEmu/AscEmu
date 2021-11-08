@@ -3,7 +3,7 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
+#include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/Packets/ManagedPacket.h"
 #include "Server/Packets/CmsgUnlearnSkill.h"
@@ -12,7 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Players/Player.h"
 
 using namespace AscEmu::Packets;
-
 
 void WorldSession::handleUnlearnSkillOpcode(WorldPacket& recvPacket)
 {
@@ -23,16 +22,13 @@ void WorldSession::handleUnlearnSkillOpcode(WorldPacket& recvPacket)
     _player->RemoveSpellsFromLine(srlPacket.skillLineId);
     _player->_RemoveSkillLine(srlPacket.skillLineId);
 
-    uint32_t remainingPoints = _player->getFreePrimaryProfessionPoints();
-    if (remainingPoints == _player->getFreePrimaryProfessionPoints())
-    {
-        const auto skillLineEntry = sSkillLineStore.LookupEntry(srlPacket.skillLineId);
-        if (!skillLineEntry)
-            return;
+    const auto skillLineEntry = sSkillLineStore.LookupEntry(srlPacket.skillLineId);
+    if (!skillLineEntry)
+        return;
 
-        if (skillLineEntry->type == SKILL_TYPE_PROFESSION && remainingPoints < 2)
-            _player->setFreePrimaryProfessionPoints(remainingPoints + 1);
-    }
+    const auto remainingPoints = _player->getFreePrimaryProfessionPoints();
+    if (skillLineEntry->type == SKILL_TYPE_PROFESSION && remainingPoints < worldConfig.player.maxProfessions)
+        _player->modFreePrimaryProfessionPoints(1);
 }
 
 void WorldSession::handleLearnTalentOpcode(WorldPacket& recvPacket)
