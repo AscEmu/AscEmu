@@ -73,8 +73,13 @@ const static uint32 weap_skills[21] =
     SKILL_FIST_WEAPONS,
     0, // 13
     SKILL_DAGGERS,
+#if VERSION_STRING <= Cata
     SKILL_THROWN,
     SKILL_ASSASSINATION,
+#else
+    0,
+    0,
+#endif
     SKILL_CROSSBOWS,
     SKILL_WANDS,
     SKILL_FISHING

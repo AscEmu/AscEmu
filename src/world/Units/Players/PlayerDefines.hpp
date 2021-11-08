@@ -839,8 +839,10 @@ static inline uint32_t getSpellIdForLanguage(uint32_t skillId)
             return 7341;
         case SKILL_LANG_GUTTERSPEAK:
             return 17737;
+#if VERSION_STRING >= TBC
         case SKILL_LANG_DRAENEI:
             return 29932;
+#endif
 #if VERSION_STRING >= Cata
         case SKILL_LANG_GOBLIN:
             return 69269;

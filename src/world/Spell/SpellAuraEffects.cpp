@@ -1557,6 +1557,7 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
 
         if (casterUnit != nullptr)
         {
+#if VERSION_STRING <= Cata
             // Hackfix from legacy method
             // Apply bonus from [Warlock] Soul Siphon
             if (casterUnit->m_soulSiphon.amt)
@@ -1612,6 +1613,7 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
                     pct = casterUnit->m_soulSiphon.max;
                 damage += aurEff->getEffectFloatDamage() * pct / 100;
             }
+#endif
         }
 
         aurEff->setEffectDamage(damage);

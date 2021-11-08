@@ -2240,9 +2240,11 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                         uint32_t skillId = 0;
                         switch (lockInfo->lockmisc[x])
                         {
+#if VERSION_STRING <= WotLK
                             case LOCKTYPE_PICKLOCK:
                                 skillId = SKILL_LOCKPICKING;
                                 break;
+#endif
                             case LOCKTYPE_HERBALISM:
                                 skillId = SKILL_HERBALISM;
                                 break;
@@ -2252,9 +2254,11 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                             case LOCKTYPE_FISHING:
                                 skillId = SKILL_FISHING;
                                 break;
+#if VERSION_STRING >= WotLK
                             case LOCKTYPE_INSCRIPTION:
                                 skillId = SKILL_INSCRIPTION;
                                 break;
+#endif
                             default:
                                 break;
                         }

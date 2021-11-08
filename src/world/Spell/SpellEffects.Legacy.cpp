@@ -2830,12 +2830,14 @@ void Spell::SpellEffectWeapon(uint8_t /*effectIndex*/)
                 spell = SPELL_RANGED_GENERAL;
         }
         break;
+#if VERSION_STRING <= Cata
         case 2567:  // thrown
         {
             skill = SKILL_THROWN;
             spell = SPELL_RANGED_THROW;
         }
         break;
+#endif
         case 5009:  // wands
         {
             skill = SKILL_WANDS;
@@ -3562,6 +3564,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
     uint32 locktype = getSpellInfo()->getEffectMiscValue(effectIndex);
     switch (locktype)
     {
+#if VERSION_STRING <= WotLK
         case LOCKTYPE_PICKLOCK:
         {
             uint32 v = 0;
@@ -3627,6 +3630,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
             }
         }
         break;
+#endif
         case LOCKTYPE_HERBALISM:
         {
             if (!gameObjTarget) return;
@@ -4078,8 +4082,10 @@ void Spell::SpellEffectSkillStep(uint8_t effectIndex) // Skill Step
     }
 
     uint32 skill = getSpellInfo()->getEffectMiscValue(effectIndex);
+#if VERSION_STRING <= WotLK
     if (skill == 242)
         skill = SKILL_LOCKPICKING; // somehow for lockpicking misc is different than the skill :s
+#endif
 
     auto skill_line = sSkillLineStore.LookupEntry(skill);
 
@@ -4098,8 +4104,12 @@ void Spell::SpellEffectSkillStep(uint8_t effectIndex) // Skill Step
             break;
         case SKILL_TYPE_CLASS:
         case SKILL_TYPE_ARMOR:
-            if (skill == SKILL_LOCKPICKING) { max = damage * 75; }
-            else { max = 1; }
+#if VERSION_STRING <= WotLK
+            if (skill == SKILL_LOCKPICKING)
+                max = damage * 75;
+            else
+#endif
+                max = 1;
             break;
         default: //u cant learn other types in game
             return;

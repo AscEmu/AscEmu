@@ -181,6 +181,7 @@ bool Give5kGold(uint8_t /*effectIndex*/, Spell* s)
     return true;
 }
 
+#if VERSION_STRING >= WotLK
 bool NorthRendInscriptionResearch(uint8_t /*effectIndex*/, Spell* s)
 {
     // http://www.wowwiki.com/Minor_Inscription_Research :
@@ -244,6 +245,7 @@ bool NorthRendInscriptionResearch(uint8_t /*effectIndex*/, Spell* s)
 
     return true;
 }
+#endif
 
 bool DeadlyThrowInterrupt(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
@@ -706,9 +708,11 @@ void SetupLegacyMiscSpellhandlers(ScriptMgr* mgr)
 
     mgr->register_script_effect(46642, &Give5kGold);
 
+#if VERSION_STRING >= WotLK
     mgr->register_script_effect(61288, &NorthRendInscriptionResearch);
 
     mgr->register_script_effect(61177, &NorthRendInscriptionResearch);
+#endif
 
     mgr->register_dummy_aura(32748, &DeadlyThrowInterrupt);
 

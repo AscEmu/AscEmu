@@ -1139,9 +1139,11 @@ bool ChatHandler::HandleCharIncreaseWeaponSkill(const char* args, WorldSession* 
             case 15: // daggers
                 SubClassSkill = SKILL_DAGGERS;
                 break;
+#if VERSION_STRING <= Cata
             case 16: // thrown
                 SubClassSkill = SKILL_THROWN;
                 break;
+#endif
             case 18: // crossbows
                 SubClassSkill = SKILL_CROSSBOWS;
                 break;

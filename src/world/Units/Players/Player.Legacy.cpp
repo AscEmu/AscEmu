@@ -534,7 +534,9 @@ void Player::CharChange_Looks(uint64 GUID, uint8 gender, uint8 skin, uint8 face,
 // Begining of code for phase two of character customization (Race/Faction) Change.
 void Player::CharChange_Language(uint64 GUID, uint8 race)
 {
-#if VERSION_STRING < Cata
+#if VERSION_STRING < TBC
+    CharacterDatabase.Execute("DELETE FROM `playerspells` WHERE GUID = '%u' AND SpellID IN ('%u', '%u', '%u', '%u', '%u','%u', '%u', '%u', '%u');", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_ORCISH), getSpellIdForLanguage(SKILL_LANG_TAURAHE), getSpellIdForLanguage(SKILL_LANG_TROLL), getSpellIdForLanguage(SKILL_LANG_GUTTERSPEAK), getSpellIdForLanguage(SKILL_LANG_THALASSIAN), getSpellIdForLanguage(SKILL_LANG_COMMON), getSpellIdForLanguage(SKILL_LANG_DARNASSIAN), getSpellIdForLanguage(SKILL_LANG_DWARVEN), getSpellIdForLanguage(SKILL_LANG_GNOMISH));
+#elif VERSION_STRING < Cata
     CharacterDatabase.Execute("DELETE FROM `playerspells` WHERE GUID = '%u' AND SpellID IN ('%u', '%u', '%u', '%u', '%u','%u', '%u', '%u', '%u', '%u');", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_ORCISH), getSpellIdForLanguage(SKILL_LANG_TAURAHE), getSpellIdForLanguage(SKILL_LANG_TROLL), getSpellIdForLanguage(SKILL_LANG_GUTTERSPEAK), getSpellIdForLanguage(SKILL_LANG_THALASSIAN), getSpellIdForLanguage(SKILL_LANG_COMMON), getSpellIdForLanguage(SKILL_LANG_DARNASSIAN), getSpellIdForLanguage(SKILL_LANG_DRAENEI), getSpellIdForLanguage(SKILL_LANG_DWARVEN), getSpellIdForLanguage(SKILL_LANG_GNOMISH));
 #else
     CharacterDatabase.Execute("DELETE FROM `playerspells` WHERE GUID = '%u' AND SpellID IN ('%u', '%u', '%u', '%u', '%u','%u', '%u', '%u', '%u', '%u');", (uint32)GUID, getSpellIdForLanguage(SKILL_LANG_ORCISH), getSpellIdForLanguage(SKILL_LANG_TAURAHE), getSpellIdForLanguage(SKILL_LANG_TROLL), getSpellIdForLanguage(SKILL_LANG_GUTTERSPEAK), getSpellIdForLanguage(SKILL_LANG_THALASSIAN), getSpellIdForLanguage(SKILL_LANG_COMMON), getSpellIdForLanguage(SKILL_LANG_DARNASSIAN), getSpellIdForLanguage(SKILL_LANG_DRAENEI), getSpellIdForLanguage(SKILL_LANG_DWARVEN), getSpellIdForLanguage(SKILL_LANG_GNOMISH), getSpellIdForLanguage(SKILL_LANG_GILNEAN), getSpellIdForLanguage(SKILL_LANG_GOBLIN));
@@ -1766,11 +1768,13 @@ void Player::addSpell(uint32 spell_id)
                 case SKILL_TYPE_WEAPON:
                     max = 5 * getLevel();
                     break;
+#if VERSION_STRING <= WotLK
                 case SKILL_TYPE_CLASS:
                 case SKILL_TYPE_ARMOR:
                     if (skill_line->id == SKILL_LOCKPICKING)
                         max = 5 * getLevel();
                     break;
+#endif
             };
         }
 
@@ -2629,6 +2633,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             if (ss->skillid && getSpellIdForLanguage(ss->skillid) == 0)
             {
 #if VERSION_STRING >= Cata
+                if (m_skills.find(ss->skillid) != m_skills.end())
+                    continue;
+
                 // In cata, add skill to player but do not call _UpdateSkillFields
                 // Skills are updated when languages are set
                 PlayerSkill skill;
@@ -8439,7 +8446,10 @@ void Player::_UpdateMaxSkillCounts()
     uint32 new_max;
     for (SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end(); ++itr)
     {
-        auto level_bound_skill = itr->second.Skill->type == SKILL_TYPE_WEAPON || itr->second.Skill->id == SKILL_LOCKPICKING;
+        auto level_bound_skill = itr->second.Skill->type == SKILL_TYPE_WEAPON || itr->second.Skill->type == SKILL_TYPE_CLASS;
+#if VERSION_STRING <= WotLK
+        level_bound_skill = level_bound_skill || itr->second.Skill->id == SKILL_LOCKPICKING;
+#endif
 #if VERSION_STRING <= TBC
         level_bound_skill = level_bound_skill || itr->second.Skill->id == SKILL_POISONS;
 #endif
@@ -8480,6 +8490,10 @@ void Player::_UpdateMaxSkillCounts()
             dirty = true;
             itr->second.CurrentValue = new_max;
         }
+
+        // These are at max value all the time
+        if (itr->second.Skill->type == SKILL_TYPE_CLASS)
+            itr->second.CurrentValue = new_max;
     }
 
     if (dirty)
