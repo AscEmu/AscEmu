@@ -104,6 +104,7 @@
 #include "Server/Packets/SmsgSetFactionStanding.h"
 #include "Server/Packets/SmsgSetFactionVisible.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Server/World.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Units/ThreatHandler.h"
 #include "Util/Strings.hpp"
@@ -723,6 +724,9 @@ bool Player::Create(CharCreate& charCreateContent)
 
     // Default value is -1
     setWatchedFaction(std::numeric_limits<uint32_t>::max());
+
+    // Profession points
+    setFreePrimaryProfessionPoints(worldConfig.player.maxProfessions);
 
     m_StableSlotCount = 0;
 
@@ -1577,7 +1581,18 @@ void Player::AddSummonSpell(uint32 Entry, uint32 SpellID)
         for (std::set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end();)
         {
             it3 = it2++;
-            if (sSpellMgr.getSpellInfo(*it3)->custom_NameHash == sp->custom_NameHash)
+            const auto se = sSpellMgr.getSpellInfo(*it3);
+            if (se == nullptr)
+                continue;
+
+            // Very hacky way to check if spell is same but different rank
+            // It's better than nothing until better solution is implemented -Appled
+            const bool sameSpell = se->custom_NameHash == sp->custom_NameHash &&
+                se->getSpellVisual(0) == sp->getSpellVisual(0) &&
+                se->getSpellIconID() == sp->getSpellIconID() &&
+                se->getName() == sp->getName();
+
+            if (sameSpell)
                 itr->second.erase(it3);
         }
         itr->second.insert(SpellID);
@@ -1760,7 +1775,7 @@ void Player::addSpell(uint32 spell_id)
             {
                 case SKILL_TYPE_PROFESSION:
                     max = 75 * ((spell->custom_RankNumber) + 1);
-                    ModPrimaryProfessionPoints(-1);   // we are learning a profession, so subtract a point.
+                    modFreePrimaryProfessionPoints(-1);   // we are learning a profession, so subtract a point.
                     break;
                 case SKILL_TYPE_SECONDARY:
                     max = 75 * ((spell->custom_RankNumber) + 1);
@@ -2084,9 +2099,6 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     if (m_bg != nullptr && isArena(m_bg->GetType()))
         in_arena = true;
-
-    if (getFreePrimaryProfessionPoints() > worldConfig.player.maxProfessions)
-        setFreePrimaryProfessionPoints(worldConfig.player.maxProfessions);
 
     //Calc played times
     uint32 playedt = (uint32)UNIXTIME - m_playedtime[2];
@@ -2677,8 +2689,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
 #if VERSION_STRING < Cata
     setAmmoId(field[17].GetUInt32());
-    setFreePrimaryProfessionPoints(field[18].GetUInt32());
 #endif
+
+    setFreePrimaryProfessionPoints(field[18].GetUInt32());
 
     load_health = field[19].GetUInt32();
     load_mana = field[20].GetUInt32();
@@ -8372,7 +8385,14 @@ void Player::_LearnSkillSpells(uint32 SkillLine, uint32 curr_sk)
                 for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
                 {
                     SpellInfo const* se = sSpellMgr.getSpellInfo(*itr);
-                    if ((se->custom_NameHash == sp->custom_NameHash) && (se->custom_RankNumber >= sp->custom_RankNumber))
+                    // Very hacky way to check if spell is same but different rank
+                    // It's better than nothing until better solution is implemented -Appled
+                    const bool sameSpell = se->custom_NameHash == sp->custom_NameHash &&
+                        se->getSpellVisual(0) == sp->getSpellVisual(0) &&
+                        se->getSpellIconID() == sp->getSpellIconID() &&
+                        se->getName() == sp->getName();
+
+                    if (sameSpell && (se->custom_RankNumber >= sp->custom_RankNumber))
                     {
                         // Stupid profession related spells for "skinning" having the same namehash and not ranked
                         if (sp->getId() != 32605 && sp->getId() != 32606 && sp->getId() != 49383)

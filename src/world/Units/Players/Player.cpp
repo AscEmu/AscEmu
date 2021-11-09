@@ -344,11 +344,25 @@ uint32_t Player::getFreePrimaryProfessionPoints() const
 
 void Player::setFreePrimaryProfessionPoints(uint32_t points)
 {
+    if (points > worldConfig.player.maxProfessions)
+        points = worldConfig.player.maxProfessions;
+
 #if VERSION_STRING < Cata
     write(playerData()->character_points_2, points);
 #else
     write(playerData()->character_points_1, points);
 #endif
+}
+
+void Player::modFreePrimaryProfessionPoints(int32_t amount)
+{
+    int32_t value = getFreePrimaryProfessionPoints();
+    value += amount;
+
+    if (value < 0)
+        value = 0;
+
+    setFreePrimaryProfessionPoints(value);
 }
 
 uint32_t Player::getTrackCreature() const { return playerData()->track_creatures; }
@@ -1447,8 +1461,6 @@ void Player::setInitialPlayerData()
 #if VERSION_STRING >= TBC
     addUnitFlags2(UNIT_FLAG2_ENABLE_POWER_REGEN);
 #endif
-
-    setFreePrimaryProfessionPoints(worldConfig.player.maxProfessions);
 
     // Set current health and power after stats are loaded
     setHealth(getMaxHealth());

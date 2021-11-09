@@ -575,6 +575,7 @@ public:
 
     uint32_t getFreePrimaryProfessionPoints() const;
     void setFreePrimaryProfessionPoints(uint32_t points);
+    void modFreePrimaryProfessionPoints(int32_t amount);
 
     uint32_t getTrackCreature() const;
     void setTrackCreature(uint32_t id);
@@ -1917,23 +1918,6 @@ public:
         //  PVP Stuff
         /////////////////////////////////////////////////////////////////////////////////////////
         uint32 m_pvpTimer;
-
-        //\todo fix this
-        void ModPrimaryProfessionPoints(int32 amt)
-        {
-    #if VERSION_STRING < Cata
-            int32_t value = getFreePrimaryProfessionPoints();
-            value += amt;
-
-            if (value < 0)
-                value = 0;
-
-            setFreePrimaryProfessionPoints(value);
-
-    #else
-            if (amt == 0) { return; }
-    #endif
-        }
 
         void AddHonor(uint32 honorPoints, bool sendUpdate);
         void UpdateHonor();

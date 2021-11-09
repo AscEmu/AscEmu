@@ -1360,7 +1360,13 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
     data << itemProto->RandomPropId;
     data << itemProto->RandomSuffixId;
     data << itemProto->Block;
-    data << sMySQLStore.getItemSetLinkedBonus(itemProto->ItemSet);
+
+    const auto setBonus = sMySQLStore.getItemSetLinkedBonus(itemProto->ItemSet);
+    if (setBonus == 0)
+        data << itemProto->ItemSet;
+    else
+        data << setBonus;
+
     data << itemProto->MaxDurability;
     data << itemProto->ZoneNameID;
     data << itemProto->MapID;
@@ -1488,7 +1494,13 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
     data << itemProperties->RandomPropId;
     data << itemProperties->RandomSuffixId;
     data << itemProperties->Block;
-    data << itemProperties->ItemSet;
+
+    const auto setBonus = sMySQLStore.getItemSetLinkedBonus(itemProperties->ItemSet);
+    if (setBonus == 0)
+        data << itemProperties->ItemSet;
+    else
+        data << setBonus;
+
     data << itemProperties->MaxDurability;
     data << itemProperties->ZoneNameID;
     data << itemProperties->MapID;

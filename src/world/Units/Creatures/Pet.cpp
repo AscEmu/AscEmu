@@ -1390,7 +1390,14 @@ void Pet::UpdateSpellList(bool showLearnSpells)
                     bool addThisSpell = true;
                     for (PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
                     {
-                        if ((itr->first->custom_NameHash == sp->custom_NameHash) && (itr->first->custom_RankNumber >= sp->custom_RankNumber))
+                        // Very hacky way to check if spell is same but different rank
+                        // It's better than nothing until better solution is implemented -Appled
+                        const bool sameSpell = itr->first->custom_NameHash == sp->custom_NameHash &&
+                            itr->first->getSpellVisual(0) == sp->getSpellVisual(0) &&
+                            itr->first->getSpellIconID() == sp->getSpellIconID() &&
+                            itr->first->getName() == sp->getName();
+
+                        if (sameSpell && (itr->first->custom_RankNumber >= sp->custom_RankNumber))
                         {
                             // Pet already has this spell, or a higher rank. Don't add it.
                             addThisSpell = false;
@@ -1430,7 +1437,14 @@ void Pet::AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell)
         {
             for (PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
             {
-                if (sp->custom_NameHash == itr->first->custom_NameHash)
+                // Very hacky way to check if spell is same but different rank
+                // It's better than nothing until better solution is implemented -Appled
+                const bool sameSpell = itr->first->custom_NameHash == sp->custom_NameHash &&
+                    itr->first->getSpellVisual(0) == sp->getSpellVisual(0) &&
+                    itr->first->getSpellIconID() == sp->getSpellIconID() &&
+                    itr->first->getName() == sp->getName();
+
+                if (sameSpell)
                 {
                     // replace the action bar
                     for (uint8 i = 0; i < 10; ++i)

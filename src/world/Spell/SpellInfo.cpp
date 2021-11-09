@@ -546,6 +546,9 @@ bool SpellInfo::hasTargetType(uint32_t type) const
 {
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
+        if (Effect[i] == SPELL_EFFECT_NULL)
+            continue;
+
         if (EffectImplicitTargetA[i] == type ||
             EffectImplicitTargetB[i] == type)
             return true;
