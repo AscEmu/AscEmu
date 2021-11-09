@@ -213,7 +213,7 @@ void PacketBuilder::WriteCreateData(MoveSpline const& moveSpline, ByteBuffer& da
             data.WriteByteSeq(facingGuid[0]);
         }
 
-        uint32 nodes = moveSpline.getPath().size();
+        uint32 nodes = static_cast<uint32_t>(moveSpline.getPath().size());
         for (uint32 i = 0; i < nodes; ++i)
         {
             data << float(moveSpline.getPath()[i].z);
