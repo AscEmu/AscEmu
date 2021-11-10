@@ -8211,23 +8211,15 @@ void Player::_UpdateSkillFields()
         }
 
         const uint16_t id = itr->first;
+        uint8_t skillStep = 0;
 
-        if (itr->second.Skill->type == SKILL_TYPE_PROFESSION)
-        {
-            //field 0
-            setSkillInfoId(f, id | 0x10000);
-#if VERSION_STRING > TBC
-            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
-#endif
-        }
-        else
-        {
-            //field 0
-            setSkillInfoId(f, id);
-#if VERSION_STRING > TBC
-            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, itr->second.Skill->id, itr->second.MaximumValue / 75, 0);
-#endif
-        }
+        // Get skill step
+        if (itr->second.Skill->type == SKILL_TYPE_SECONDARY || itr->second.Skill->type == SKILL_TYPE_PROFESSION)
+            skillStep = static_cast<uint8_t>(itr->second.MaximumValue / 75);
+
+        //field 0
+        setSkillInfoId(f, id);
+        setSkillInfoStep(f, skillStep);
 
         //field 1
         setSkillInfoCurrentValue(f, itr->second.CurrentValue);
@@ -8235,6 +8227,14 @@ void Player::_UpdateSkillFields()
 
         //field 2
         setSkillInfoBonusTemporary(f, itr->second.BonusValue);
+
+#ifdef FT_ACHIEVEMENTS
+        if (itr->second.Skill->type == SKILL_TYPE_PROFESSION)
+            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
+        else
+            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, itr->second.Skill->id, itr->second.MaximumValue / 75, 0);
+#endif
+
         ++itr;
         ++f;
     }
