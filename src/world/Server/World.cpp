@@ -791,6 +791,8 @@ bool World::loadDbcDb2Stores()
 
 void World::loadMySQLStores()
 {
+    auto startTime = Util::TimeNow();
+
     sMySQLStore.loadAdditionalTableConfig();
 
     sMySQLStore.loadItemPagesTable();
@@ -864,6 +866,8 @@ void World::loadMySQLStores()
     sMySQLStore.loadRecallTable();
     sMySQLStore.loadCreatureAIScriptsTable();
     sMySQLStore.loadSpawnGroupIds();
+
+    sLogger.info("Done. MySQLStore loaded in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     sFormationMgr->loadCreatureFormations();
     sWaypointMgr->load();
