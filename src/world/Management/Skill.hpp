@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
-enum PlayerSkills
+enum PlayerSkills : uint16_t
 {
 #if VERSION_STRING <= Cata
     SKILL_FROST                         = 6,
@@ -283,4 +283,13 @@ enum SkillTypes : uint8_t
     SKILL_TYPE_LANGUAGE                 = 10, // Language skills
     SKILL_TYPE_PROFESSION               = 11, // Profession skills
     SKILL_TYPE_NA                       = 12
+};
+
+enum SkillRangeType : uint8_t
+{
+    SKILL_RANGE_LANGUAGE,                     // 300..300
+    SKILL_RANGE_LEVEL,                        // 1..max skill for level
+    SKILL_RANGE_MONO,                         // 1..1, grey monolite bar
+    SKILL_RANGE_RANK,                         // 1..skill for known rank
+    SKILL_RANGE_NONE                          // 0..0 always
 };

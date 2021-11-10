@@ -895,14 +895,12 @@ void World::loadMySQLTablesByTask()
 
     sObjectMgr.LoadInstanceEncounters();
     sObjectMgr.LoadCreatureTimedEmotes();
-    sObjectMgr.LoadTrainers();
+    sObjectMgr.loadTrainers();
     sObjectMgr.LoadSpellSkills();
     sObjectMgr.LoadVendors();
     sObjectMgr.LoadSpellTargetConstraints();
-#if VERSION_STRING >= Cata
     sObjectMgr.LoadSpellRequired();
     sObjectMgr.LoadSkillLineAbilityMap();
-#endif
     sObjectMgr.LoadPetSpellCooldowns();
     sObjectMgr.LoadGuildCharters();
     sTicketMgr.loadGMTickets();

@@ -7370,6 +7370,9 @@ void Player::CompleteLoading()
         }
     }
 
+    // Must be after passive spells are loaded
+    setInitialPlayerSkills();
+
     for (std::list<LoginAura>::iterator i = loginauras.begin(); i != loginauras.end(); ++i)
     {
         if (SpellInfo const* sp = sSpellMgr.getSpellInfo((*i).id))
@@ -8261,6 +8264,9 @@ void Player::_UpdateSkillFields()
             continue;
         }
 
+        if (index >= WOWPLAYER_SKILL_INFO_COUNT)
+            break;
+
         uint16_t field = index / 2;
         uint8_t offset = index & 1; // i % 2
 
@@ -8276,24 +8282,65 @@ void Player::_UpdateSkillFields()
         uint32_t highSkillRank = getSkillCurrentValue(field, 1);
         uint32_t highSkillMaxRank = getSkillMaximumValue(field, 1);
 
+        const auto setSkillRankAndStep = [&](uint32_t* rank, uint32_t* maxRank, uint32_t* step) -> void
+        {
+            switch (sSpellMgr.getSkillRangeType(itr->second.Skill, false))
+            {
+                case SKILL_RANGE_LANGUAGE:                      // 300..300
+                    *rank = *maxRank = 300;
+                    break;
+                case SKILL_RANGE_MONO:                          // 1..1, grey monolite bar
+                    *rank = *maxRank = 1;
+                    break;
+                default:
+                    break;
+            }
+
+            if (itr->second.Skill->type == SKILL_TYPE_SECONDARY || itr->second.Skill->type == SKILL_TYPE_PROFESSION)
+                *step = *maxRank / 75;
+            else
+                *step = 0;
+        };
+
+        const auto skillLine = getSkillLineId(field, offset);
         if (offset)
         {
             highSkillLine = (uint16_t(itr->second.Skill->id) << 16);
-            highSkillStep = (uint16_t(0) << 16);
-            highSkillRank = (uint16_t(itr->second.CurrentValue) << 16);
-            highSkillMaxRank = (uint16_t(itr->second.MaximumValue) << 16);
+            highSkillRank = itr->second.CurrentValue;
+            highSkillMaxRank = itr->second.MaximumValue;
+
+            setSkillRankAndStep(&highSkillRank, &highSkillMaxRank, &highSkillStep);
+
+            highSkillRank = (uint16_t(highSkillRank) << 16);
+            highSkillMaxRank = (uint16_t(highSkillMaxRank) << 16);
+            highSkillStep = (uint16_t(highSkillStep) << 16);
         }
         else
         {
             lowSkillLine = (uint16_t(itr->second.Skill->id));
-            lowSkillStep = (uint16_t(0));
-            lowSkillRank = (uint16_t(itr->second.CurrentValue));
-            lowSkillMaxRank = (uint16_t(itr->second.MaximumValue));
+            lowSkillRank = itr->second.CurrentValue;
+            lowSkillMaxRank = itr->second.MaximumValue;
+
+            setSkillRankAndStep(&lowSkillRank, &lowSkillMaxRank, &lowSkillStep);
+
+            lowSkillRank = (uint16_t(lowSkillRank));
+            lowSkillMaxRank = (uint16_t(lowSkillMaxRank));
+            lowSkillStep = (uint16_t(lowSkillStep));
         }
 
-        if (!getSkillLineId(field, offset))
+        if (itr->second.Skill->type == SKILL_TYPE_PROFESSION)
         {
-            setSkillLineId(field, highSkillLine + lowSkillLine);
+            if (getProfessionSkillLine(0) == 0 && getProfessionSkillLine(1) != itr->second.Skill->id)
+                setProfessionSkillLine(0, itr->second.Skill->id);
+            else if (getProfessionSkillLine(1) == 0 && getProfessionSkillLine(0) != itr->second.Skill->id)
+                setProfessionSkillLine(1, itr->second.Skill->id);
+        }
+
+        if (skillLine == 0 || skillLine == itr->second.Skill->id)
+        {
+            if (skillLine == 0)
+                setSkillLineId(field, highSkillLine + lowSkillLine);
+
             setSkillStep(field, highSkillStep + lowSkillStep);
             setSkillCurrentValue(field, highSkillRank + lowSkillRank);
             setSkillMaximumValue(field, highSkillMaxRank + lowSkillMaxRank);
@@ -8329,7 +8376,14 @@ void Player::_UpdateSkillFields()
 
 bool Player::_HasSkillLine(uint32 SkillLine)
 {
-    return (m_skills.find(SkillLine) != m_skills.end());
+    const auto itr = m_skills.find(SkillLine);
+    if (itr == m_skills.end())
+        return false;
+
+    if ((*itr).second.CurrentValue == 0)
+        return false;
+
+    return true;
 }
 
 void Player::_AdvanceSkillLine(uint32 SkillLine, uint32 Count /* = 1 */)
@@ -8456,7 +8510,28 @@ void Player::_RemoveSkillLine(uint32 SkillLine)
     if (itr == m_skills.end())
         return;
 
-    m_skills.erase(itr);
+#if VERSION_STRING >= Cata
+    // Null out Profession Skill Line
+    if (getProfessionSkillLine(0) == itr->second.Skill->id)
+        setProfessionSkillLine(0, 0);
+    else if (getProfessionSkillLine(1) == itr->second.Skill->id)
+        setProfessionSkillLine(1, 0);
+
+    const auto skillLine = sSkillLineStore.LookupEntry(SkillLine);
+    if (skillLine != nullptr &&
+        (skillLine->type == SKILL_TYPE_PROFESSION || skillLine->type == SKILL_TYPE_SECONDARY))
+    {
+        // Do not remove profession skills, just set them to 0
+        (*itr).second.MaximumValue = 75;
+        (*itr).second.CurrentValue = 0;
+        (*itr).second.BonusValue = 0;
+    }
+    else
+#endif
+    {
+        m_skills.erase(itr);
+    }
+
     _UpdateSkillFields();
 }
 
@@ -8466,6 +8541,10 @@ void Player::_UpdateMaxSkillCounts()
     uint32 new_max;
     for (SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end(); ++itr)
     {
+        // Skip only initialized values
+        if (itr->second.CurrentValue == 0)
+            continue;
+
         auto level_bound_skill = itr->second.Skill->type == SKILL_TYPE_WEAPON || itr->second.Skill->type == SKILL_TYPE_CLASS;
 #if VERSION_STRING <= WotLK
         level_bound_skill = level_bound_skill || itr->second.Skill->id == SKILL_LOCKPICKING;
@@ -10184,6 +10263,10 @@ bool Player::SaveSkills(bool NewCharacter, QueryBuffer* buf)
         uint32 skillid = itr->first;
         uint32 currval = itr->second.CurrentValue;
         uint32 maxval = itr->second.MaximumValue;
+
+        // Skip only initialized values
+        if (currval == 0)
+            continue;
 
         std::stringstream ss;
 

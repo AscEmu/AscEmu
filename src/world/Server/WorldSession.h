@@ -794,11 +794,8 @@ class SERVER_DECL WorldSession
         void sendInnkeeperBind(Creature* creature);
         void sendTrainerList(Creature* creature);
         void sendStabledPetList(uint64_t npcguid);
-#if VERSION_STRING < Cata
-        uint8_t trainerGetSpellStatus(TrainerSpell* trainerSpell);
-#else
-        TrainerSpellState trainerGetSpellStatus(TrainerSpell* trainerSpell);
-#endif
+
+        TrainerSpellState trainerGetSpellStatus(TrainerSpell const* trainerSpell) const;
 
     protected:
         void handleTabardVendorActivateOpcode(WorldPacket& recvPacket);

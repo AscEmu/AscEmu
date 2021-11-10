@@ -8,6 +8,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldConf.h"
 
 #if VERSION_STRING == Classic
+enum TrainerSpellState
+{
+    TRAINER_SPELL_GREEN                 = 0,
+    TRAINER_SPELL_RED                   = 1,
+    TRAINER_SPELL_GRAY                  = 2,
+    TRAINER_SPELL_GREEN_DISABLED        = 10
+};
+
 enum ObjectUpdateFlags
 {
     UPDATEFLAG_NONE                     = 0x0000,
@@ -23,6 +31,14 @@ enum ObjectUpdateFlags
 #endif
 
 #if VERSION_STRING == TBC
+enum TrainerSpellState
+{
+    TRAINER_SPELL_GREEN                 = 0,
+    TRAINER_SPELL_RED                   = 1,
+    TRAINER_SPELL_GRAY                  = 2,
+    TRAINER_SPELL_GREEN_DISABLED        = 10
+};
+
 enum ObjectUpdateFlags
 {
     UPDATEFLAG_NONE                     = 0x0000,
@@ -38,6 +54,14 @@ enum ObjectUpdateFlags
 #endif
 
 #if VERSION_STRING == WotLK
+enum TrainerSpellState
+{
+    TRAINER_SPELL_GREEN                 = 0,
+    TRAINER_SPELL_RED                   = 1,
+    TRAINER_SPELL_GRAY                  = 2,
+    TRAINER_SPELL_GREEN_DISABLED        = 10
+};
+
 enum ObjectUpdateFlags
 {
     UPDATEFLAG_NONE                     = 0x0000,

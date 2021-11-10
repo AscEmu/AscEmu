@@ -289,6 +289,58 @@ SpellInfo const* SpellMgr::getSpellInfoByDifficulty([[maybe_unused]]const uint32
 #endif
 }
 
+SkillRangeType SpellMgr::getSkillRangeType(DBC::Structures::SkillLineEntry const* skill, bool racial) const
+{
+    if (skill == nullptr)
+        return SKILL_RANGE_NONE;
+
+    // Helper lambda
+    const auto isProfessionSkill = [](uint32_t skillId) -> bool
+    {
+        auto* const skillLine = sSkillLineStore.LookupEntry(skillId);
+        const auto isPrimaryProfessionSkill = skillLine != nullptr && skillLine->type == SKILL_TYPE_PROFESSION;
+
+        return isPrimaryProfessionSkill || skillId == SKILL_FISHING || skillId == SKILL_COOKING || skillId == SKILL_FIRST_AID;
+    };
+
+    switch (skill->type)
+    {
+        case SKILL_TYPE_LANGUAGE:
+        {
+            return SKILL_RANGE_LANGUAGE;
+        }
+        case SKILL_TYPE_WEAPON:
+        {
+            return SKILL_RANGE_LEVEL;
+        }
+        case SKILL_TYPE_ARMOR:
+        case SKILL_TYPE_CLASS:
+        {
+#if VERSION_STRING <= WotLK
+            if (skill->id != SKILL_LOCKPICKING)
+                return SKILL_RANGE_MONO;
+            else
+#endif
+                return SKILL_RANGE_LEVEL;
+        }
+        case SKILL_TYPE_SECONDARY:
+        case SKILL_TYPE_PROFESSION:
+        {
+            // not set skills for professions and racial abilities
+            if (isProfessionSkill(skill->id))
+                return SKILL_RANGE_RANK;
+            else if (racial)
+                return SKILL_RANGE_NONE;
+            else
+                return SKILL_RANGE_MONO;
+        }
+        default:
+            break;
+    }
+
+    return SKILL_RANGE_NONE;
+}
+
 // Private methods
 
 void SpellMgr::loadSpellInfoData()

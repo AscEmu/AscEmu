@@ -1037,7 +1037,6 @@ void ObjectMgr::CorpseCollectorUnload()
     _corpseslock.Release();
 }
 
-#if VERSION_STRING >= Cata
 //move to spellmgr or mysqldatastore todo danko
 void ObjectMgr::LoadSkillLineAbilityMap()
 {
@@ -1154,7 +1153,6 @@ uint32_t ObjectMgr::GetSpellRequired(uint32_t spell_id) const
 
     return itr->second;
 }
-#endif
 
 //MIT
 void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId /*= 0*/)
@@ -1309,165 +1307,21 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* p
     }
 }
 
-#if VERSION_STRING >= Cata
-void ObjectMgr::LoadTrainers()
-{
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM trainer_defs");
-    LoadDisabledSpells();
-
-    if (!result)
-        return;
-
-    do
-    {
-        Field* fields = result->Fetch();
-        uint32 entry = fields[0].GetUInt32();
-        Trainer* tr = new Trainer;
-        tr->RequiredSkill = fields[1].GetUInt32();
-        tr->RequiredSkillLine = fields[2].GetUInt32();
-        tr->RequiredClass = fields[3].GetUInt32();
-        tr->RequiredRace = fields[4].GetUInt32();
-        tr->RequiredRepFaction = fields[5].GetUInt32();
-        tr->RequiredRepValue = fields[6].GetUInt32();
-        tr->TrainerType = fields[7].GetUInt32();
-        tr->Can_Train_Gossip_TextId = fields[9].GetUInt32();
-        tr->Cannot_Train_GossipTextId = fields[10].GetUInt32();
-
-        if (!tr->Can_Train_Gossip_TextId)
-            tr->Can_Train_Gossip_TextId = 1;
-        if (!tr->Cannot_Train_GossipTextId)
-            tr->Cannot_Train_GossipTextId = 1;
-
-        const char* temp = fields[8].GetString();
-        size_t len = strlen(temp);
-        if (len)
-        {
-            tr->UIMessage = new char[len + 1];
-            strcpy(tr->UIMessage, temp);
-            tr->UIMessage[len] = 0;
-        }
-        else
-        {
-            tr->UIMessage = new char[strlen(NormalTalkMessage) + 1];
-            strcpy(tr->UIMessage, NormalTalkMessage);
-            tr->UIMessage[strlen(NormalTalkMessage)] = 0;
-        }
-
-        QueryResult* result2 = WorldDatabase.Query("SELECT * FROM trainer_spells where entry='%u'", entry);
-        if (!result2)
-        {
-            sLogger.debug("LoadTrainers : Trainer with no spells, entry %u.", entry);
-            if (tr->UIMessage != NormalTalkMessage)
-                delete[] tr->UIMessage;
-
-            delete tr;
-            continue;
-        }
-        if (result2->GetFieldCount() != 9)
-        {
-            sLogger.failure("Trainers table format is invalid. Please update your database.", NULL);
-            delete tr;
-            delete result;
-            delete result2;
-            return;
-        }
-        else
-        {
-            do
-            {
-                Field* fields2 = result2->Fetch();
-                uint32 entry1 = fields2[0].GetUInt32();
-                uint32 spell = fields2[2].GetUInt32();
-                uint32 spellCost = fields2[3].GetUInt32();
-                uint32 reqSkill = fields2[5].GetUInt16();
-                uint32 reqSkillValue = fields2[6].GetUInt16();
-                uint32 reqLevel = fields2[7].GetUInt8();
-
-                TrainerSpell ts;
-                ts.spell = spell;
-                ts.spellCost = spellCost;
-                ts.reqSkill = reqSkill;
-                ts.reqSkillValue = reqSkillValue;
-                ts.reqLevel = reqLevel;
-
-                DBC::Structures::SpellEntry const* spellInfo = sSpellStore.LookupEntry(spell);
-                if (spellInfo == nullptr)
-                    continue;
-
-                if (!ts.reqLevel)
-                    ts.reqLevel = spellInfo->GetSpellLevel();
-
-                // calculate learned spell for profession case when stored cast-spell
-                ts.learnedSpell[0] = spell;
-                for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                {
-                    auto effect = spellInfo->GetSpellEffect(i);
-                    if (effect == nullptr)
-                        continue;
-
-                    if (effect->Effect != SPELL_EFFECT_LEARN_SPELL)
-                        continue;
-
-                    if (ts.learnedSpell[0] == spell)
-                        ts.learnedSpell[0] = 0;
-                    // player must be able to cast spell on himself
-                    if (effect->EffectImplicitTargetA != 0 &&
-                        effect->EffectImplicitTargetA != 21 &&
-                        effect->EffectImplicitTargetA != 25 &&
-                        effect->EffectImplicitTargetA != 1)
-                    {
-                        sLogger.debug("LoadTrainers : Table `trainer_spels` has spell %u for trainer entry %u with learn effect which has incorrect target type, ignoring learn effect!", spell, entry1);
-                        continue;
-                    }
-
-                    ts.learnedSpell[i] = spellInfo->GetSpellEffect(i)->EffectTriggerSpell;
-
-                    if (ts.learnedSpell[i])
-                    {
-                        /*
-                        SpellEntry const* learnedSpellInfo = sSpellMgr.getSpellInfo(ts.learnedSpell[i]);
-                        if (learnedSpellInfo && learnedSpellInfo->)
-                        tr->TrainerType = 2;
-                        */
-                    }
-                }
-
-                tr->Spells.push_back(ts);
-            } while (result2->NextRow());
-            delete result2;
-
-            tr->SpellCount = (uint32)tr->Spells.size();
-
-            //and now we insert it to our lookup table
-            if (!tr->SpellCount)
-            {
-                if (tr->UIMessage != NormalTalkMessage)
-                    delete[] tr->UIMessage;
-                delete tr;
-                continue;
-            }
-
-            mTrainers.insert(TrainerMap::value_type(entry, tr));
-        }
-
-    } while (result->NextRow());
-    delete result;
-    sLogger.info("ObjectMgr : %u trainers loaded.", static_cast<uint32_t>(mTrainers.size()));
-}
-#else
-void ObjectMgr::LoadTrainers()
+//MIT
+void ObjectMgr::loadTrainers()
 {
 #if VERSION_STRING > TBC    //todo: tbc
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM trainer_defs");
+    auto* const result = WorldDatabase.Query("SELECT * FROM trainer_defs");
     LoadDisabledSpells();
 
-    if (!result)
+    if (result == nullptr)
         return;
 
     do
     {
-        Field* fields = result->Fetch();
-        uint32 entry = fields[0].GetUInt32();
+        auto* const fields = result->Fetch();
+        const auto entry = fields[0].GetUInt32();
+
         Trainer* tr = new Trainer;
         tr->RequiredSkill = fields[1].GetUInt32();
         tr->RequiredSkillLine = fields[2].GetUInt32();
@@ -1499,9 +1353,9 @@ void ObjectMgr::LoadTrainers()
             tr->UIMessage[strlen(NormalTalkMessage)] = 0;
         }
 
-        //now load the spells
-        QueryResult* result2 = WorldDatabase.Query("SELECT * FROM trainer_spells where entry='%u'", entry);
-        if (!result2)
+        // Now load the spells
+        auto* const result2 = WorldDatabase.Query("SELECT * FROM trainer_spells where entry='%u'", entry);
+        if (result2 == nullptr)
         {
             sLogger.debug("LoadTrainers : Trainer with no spells, entry %u.", entry);
             if (tr->UIMessage != NormalTalkMessage)
@@ -1510,113 +1364,100 @@ void ObjectMgr::LoadTrainers()
             delete tr;
             continue;
         }
+
         if (result2->GetFieldCount() != 9)
         {
-            sLogger.failure("Trainers table format is invalid. Please update your database.");
+            sLogger.failure("trainer_spells table format is invalid. Please update your database.");
             delete tr;
             delete result;
             delete result2;
             return;
         }
-        else
+
+        do
         {
-            do
+            auto* const fields2 = result2->Fetch();
+            TrainerSpell ts;
+            auto abrt = false;
+            auto castSpellID = fields2[1].GetUInt32();
+            auto learnSpellID = fields2[2].GetUInt32();
+
+            if (castSpellID != 0)
             {
-                Field* fields2 = result2->Fetch();
-                TrainerSpell ts;
-                bool abrt = false;
-                uint32 CastSpellID = fields2[1].GetUInt32();
-                uint32 LearnSpellID = fields2[2].GetUInt32();
-
-                ts.pCastSpell = NULL;
-                ts.pLearnSpell = NULL;
-                ts.pCastRealSpell = NULL;
-
-                if (CastSpellID != 0)
+                ts.castSpell = sSpellMgr.getSpellInfo(castSpellID);
+                if (ts.castSpell != nullptr)
                 {
-                    ts.pCastSpell = sSpellMgr.getSpellInfo(CastSpellID);
-                    if (ts.pCastSpell)
+                    // Check that the castable spell has learn spell effect
+                    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
                     {
-                        for (uint8 k = 0; k < 3; ++k)
+                        if (ts.castSpell->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
                         {
-                            if (ts.pCastSpell->getEffect(k) == SPELL_EFFECT_LEARN_SPELL)
+                            ts.castRealSpell = sSpellMgr.getSpellInfo(ts.castSpell->getEffectTriggerSpell(i));
+                            if (ts.castRealSpell == nullptr)
                             {
-                                ts.pCastRealSpell = sSpellMgr.getSpellInfo(ts.pCastSpell->getEffectTriggerSpell(k));
-                                if (ts.pCastRealSpell == NULL)
-                                {
-                                    sLogger.failure("Trainer %u contains cast spell %u that is non-teaching", entry, CastSpellID);
-                                    abrt = true;
-                                }
-                                break;
+                                sLogger.failure("LoadTrainers : Trainer %u contains cast spell %u that is non-teaching", entry, castSpellID);
+                                abrt = true;
                             }
+
+                            break;
                         }
                     }
-
-                    if (abrt)
-                        continue;
                 }
 
-                if (LearnSpellID != 0)
-                {
-                    ts.pLearnSpell = sSpellMgr.getSpellInfo(LearnSpellID);
-                }
-
-                if (ts.pCastSpell == NULL && ts.pLearnSpell == NULL)
-                {
-                    sLogger.failure("Trainer %u without valid spells (%u/%u).", entry, CastSpellID, LearnSpellID);
-                    continue; //omg a bad spell !
-                }
-
-                if (ts.pCastSpell && !ts.pCastRealSpell)
+                if (abrt)
                     continue;
-
-                ts.Cost = fields2[3].GetUInt32();
-                ts.RequiredSpell = fields2[4].GetUInt32();
-                ts.RequiredSkillLine = fields2[5].GetUInt32();
-                ts.RequiredSkillLineValue = fields2[6].GetUInt32();
-                ts.RequiredLevel = fields2[7].GetUInt32();
-                ts.DeleteSpell = fields2[8].GetUInt32();
-                //IsProfession is true if the TrainerSpell will teach a primary profession
-                if (ts.RequiredSkillLine == 0 && ts.pCastRealSpell != NULL && ts.pCastRealSpell->getEffect(1) == SPELL_EFFECT_SKILL)
-                {
-                    uint32 skill = ts.pCastRealSpell->getEffectMiscValue(1);
-                    if (auto skill_line = sSkillLineStore.LookupEntry(skill))
-                    {
-                        if (skill_line->type == SKILL_TYPE_PROFESSION)
-                            ts.IsProfession = true;
-                        else
-                            ts.IsProfession = false;
-                    }
-                }
-                else
-                    ts.IsProfession = false;
-
-                tr->Spells.push_back(ts);
             }
-            while (result2->NextRow());
-            delete result2;
 
-            tr->SpellCount = (uint32)tr->Spells.size();
+            if (learnSpellID != 0)
+                ts.learnSpell = sSpellMgr.getSpellInfo(learnSpellID);
 
-            //and now we insert it to our lookup table
-            if (!tr->SpellCount)
+            if (ts.castSpell == nullptr && ts.learnSpell == nullptr)
             {
-                if (tr->UIMessage != NormalTalkMessage)
-                    delete[] tr->UIMessage;
-                delete tr;
+                // Trainer spell entry has invalid spells, skip this entry
                 continue;
             }
 
-            mTrainers.insert(TrainerMap::value_type(entry, tr));
+            if (ts.castSpell != nullptr && ts.castRealSpell == nullptr)
+                continue;
+
+            ts.cost = fields2[3].GetUInt32();
+            ts.requiredSpell[0] = fields2[4].GetUInt32();
+            // todo: add to database
+            ts.requiredSpell[1] = 0;
+            // todo: add to database
+            ts.requiredSpell[2] = 0;
+            ts.requiredSkillLine = fields2[5].GetUInt32();
+            ts.requiredSkillLineValue = fields2[6].GetUInt32();
+            ts.requiredLevel = fields2[7].GetUInt32();
+            ts.deleteSpell = fields2[8].GetUInt32();
+
+            // Check if spell teaches a primary profession skill
+            if (ts.requiredSkillLine == 0 && ts.castRealSpell != nullptr)
+                ts.isPrimaryProfession = ts.castRealSpell->isPrimaryProfession();
+
+            tr->Spells.push_back(ts);
+        } while (result2->NextRow());
+        delete result2;
+
+        tr->SpellCount = static_cast<uint32_t>(tr->Spells.size());
+
+        // and now we insert it to our lookup table
+        if (tr->SpellCount == 0)
+        {
+            if (tr->UIMessage != NormalTalkMessage)
+                delete[] tr->UIMessage;
+            delete tr;
+            continue;
         }
 
+        mTrainers.insert(TrainerMap::value_type(entry, tr));
     }
     while (result->NextRow());
+
     delete result;
     sLogger.info("ObjectMgr : %u trainers loaded.", static_cast<uint32_t>(mTrainers.size()));
 #endif
 }
-#endif
 
 Trainer* ObjectMgr::GetTrainer(uint32 Entry)
 {
