@@ -93,43 +93,39 @@ class Group;
 class SpellInfo;
 
 //it seems trainerspells should be part of trainer files ;)
-#if VERSION_STRING >= Cata
 struct TrainerSpell
 {
-    TrainerSpell() : spell(0), spellCost(0), reqSkill(0), reqSkillValue(0), reqLevel(0)
+    TrainerSpell() : castSpell(nullptr), castRealSpell(nullptr), learnSpell(nullptr), deleteSpell(0),
+        requiredLevel(0), requiredSkillLine(0), requiredSkillLineValue(0), isPrimaryProfession(false),
+        cost(0)
     {
-        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            learnedSpell[i] = 0;
+        for (uint8_t i = 0; i < 3; ++i)
+            requiredSpell[i] = 0;
     }
 
-    uint32_t spell;
-    uint32_t spellCost;
-    uint32_t reqSkill;
-    uint32_t reqSkillValue;
-    uint32_t reqLevel;
-    uint32_t learnedSpell[3];
+    // This spell is casted on player
+    SpellInfo const* castSpell;
+    // The taught spell from castSpell
+    SpellInfo const* castRealSpell;
+    // This spell is added to player
+    SpellInfo const* learnSpell;
+    uint32_t deleteSpell;
+    uint32_t requiredLevel;
+    uint32_t requiredSpell[3];
+    uint32_t requiredSkillLine;
+    uint32_t requiredSkillLineValue;
+    bool isPrimaryProfession;
+    uint32_t cost;
 
-    // helpers
-    bool IsCastable() const
+    static uint8_t getMaxRequiredSpellCount()
     {
-        return learnedSpell[0] != spell;
-    }
-};
+#if VERSION_STRING < Cata
+        return 3;
 #else
-struct TrainerSpell
-{
-    SpellInfo const* pCastSpell;
-    SpellInfo const* pLearnSpell;
-    SpellInfo const* pCastRealSpell;
-    uint32 DeleteSpell;
-    uint32 RequiredSpell;
-    uint32 RequiredSkillLine;
-    uint32 RequiredSkillLineValue;
-    bool IsProfession;
-    uint32 Cost;
-    uint32 RequiredLevel;
-};
+        return 2;
 #endif
+    }
+};
 
 // oh a trainer look it is here and not in Unit/Creature/whatever file ;)
 struct Trainer
@@ -207,7 +203,6 @@ typedef std::map<std::string, PlayerInfo*> PlayerNameStringIndexMap;
 typedef std::unordered_map<std::string, PlayerInfo*> PlayerNameStringIndexMap;
 #endif
 
-#if VERSION_STRING >= Cata
 // spell_id  req_spell
 typedef std::multimap<uint32_t, uint32_t> SpellRequiredMap;
 typedef std::pair<SpellRequiredMap::const_iterator, SpellRequiredMap::const_iterator> SpellRequiredMapBounds;
@@ -219,7 +214,6 @@ typedef std::pair<SpellsRequiringSpellMap::const_iterator, SpellsRequiringSpellM
 // skill line ability
 typedef std::multimap<uint32_t, DBC::Structures::SkillLineAbilityEntry const*> SkillLineAbilityMap;
 typedef std::pair<SkillLineAbilityMap::const_iterator, SkillLineAbilityMap::const_iterator> SkillLineAbilityMapBounds;
-#endif
 
 // finally we are here, the base class of this file ;)
 class SERVER_DECL ObjectMgr : public EventableObject
@@ -241,6 +235,8 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         void generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId = 0);
         void generateDatabaseGossipOptionAndSubMenu(Object* object, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId);
+
+        void loadTrainers();
         //MIT END
 
         void LoadCreatureTimedEmotes();
@@ -366,7 +362,6 @@ class SERVER_DECL ObjectMgr : public EventableObject
         uint32 GenerateReportID();
         uint32 GenerateEquipmentSetID();
 
-#if VERSION_STRING >= Cata
         // Spell Required table
         SpellRequiredMapBounds GetSpellsRequiredForSpellBounds(uint32_t spell_id) const;
         SpellsRequiringSpellMapBounds GetSpellsRequiringSpellBounds(uint32_t spell_id) const;
@@ -377,9 +372,7 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         void LoadSkillLineAbilityMap();
         SkillLineAbilityMapBounds GetSkillLineAbilityMapBounds(uint32_t spell_id) const;
-#endif
 
-        void LoadTrainers();
         Trainer* GetTrainer(uint32 Entry);
 
         LevelInfo* GetLevelInfo(uint32 Race, uint32 Class, uint32 Level);
@@ -491,11 +484,9 @@ class SERVER_DECL ObjectMgr : public EventableObject
         DungeonEncounterContainer _dungeonEncounterStore;
         std::unordered_map<uint32_t, CreatureMovementData> _creatureMovementOverrides;
 
-#if VERSION_STRING >= Cata
         SpellsRequiringSpellMap mSpellsReqSpell;
         SpellRequiredMap mSpellReq;
         SkillLineAbilityMap mSkillLineAbilityMap;
-#endif
 
     protected:
 

@@ -312,11 +312,11 @@ public:
 
     uint8_t getRace() const;
     void setRace(uint8_t race);
-    uint32_t getRaceMask() { return 1 << (getRace() - 1); }
+    uint32_t getRaceMask() const { return 1 << (getRace() - 1); }
 
     uint8_t getClass() const;
     void setClass(uint8_t class_);
-    uint32_t getClassMask() { return 1 << (getClass() - 1); }
+    uint32_t getClassMask() const { return 1 << (getClass() - 1); }
 
     uint8_t getGender() const;
     void setGender(uint8_t gender);

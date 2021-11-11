@@ -562,10 +562,12 @@ public:
     uint16_t getSkillStep(uint32_t index, uint8_t offset) const;
     uint16_t getSkillCurrentValue(uint32_t index, uint8_t offset) const;
     uint16_t getSkillMaximumValue(uint32_t index, uint8_t offset) const;
+    uint32_t getProfessionSkillLine(uint32_t index) const;
     void setSkillLineId(uint32_t index, uint32_t value);
     void setSkillStep(uint32_t index, uint32_t value);
     void setSkillCurrentValue(uint32_t index, uint32_t value);
     void setSkillMaximumValue(uint32_t index, uint32_t value);
+    void setProfessionSkillLine(uint32_t index, uint32_t value);
 #endif
 
     uint32_t getFreeTalentPoints() const;
@@ -918,12 +920,15 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells and skills
-    bool isSpellFitByClassAndRace(uint32_t spell_id);
+    void setInitialPlayerSkills();
+
     void updateAutoRepeatSpell();
     bool canUseFlyingMountHere();
 
     bool canDualWield2H() const;
     void setDualWield2H(bool enable);
+
+    bool isSpellFitByClassAndRace(uint32_t spell_id) const;
 
     // Cooldowns
     bool hasSpellOnCooldown(SpellInfo const* spellInfo);

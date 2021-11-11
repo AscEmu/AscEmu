@@ -9,6 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellAuras.h"
 #include "SpellInfo.hpp"
 
+#include "Management/Skill.hpp"
+#include "Storage/DBC/DBCStructures.hpp"
 #include "Units/Players/PlayerDefines.hpp"
 
 struct SpellArea
@@ -84,6 +86,8 @@ public:
     SpellInfo const* getSpellInfo(const uint32_t spellId) const;
     SpellInfo const* getSpellInfoByDifficulty(const uint32_t spellId, const uint8_t difficulty) const;
     SpellInfoMap const* getSpellInfoMap() const { return &mSpellInfoMapStore; }
+
+    SkillRangeType getSkillRangeType(DBC::Structures::SkillLineEntry const* skill, bool racial) const;
 
 private:
     // DBC files

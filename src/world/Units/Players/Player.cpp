@@ -314,10 +314,12 @@ void Player::setSkillLineId(uint32_t index, uint32_t value) { write(playerData()
 void Player::setSkillStep(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_step[index], value); }
 void Player::setSkillCurrentValue(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_rank[index], value); }
 void Player::setSkillMaximumValue(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_max_rank[index], value); }
+void Player::setProfessionSkillLine(uint32_t index, uint32_t value) { write(playerData()->profession_skill_line[index], value); }
 uint16_t Player::getSkillLineId(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_line[index]) + offset); }
 uint16_t Player::getSkillStep(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_step[index]) + offset); }
 uint16_t Player::getSkillCurrentValue(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_rank[index]) + offset); }
 uint16_t Player::getSkillMaximumValue(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_max_rank[index]) + offset); }
+uint32_t Player::getProfessionSkillLine(uint32_t index) const { return playerData()->profession_skill_line[index]; }
 #endif
 
 uint32_t Player::getFreeTalentPoints() const
@@ -609,14 +611,7 @@ void Player::setGlyphsEnabled(uint32_t glyphs) { write(playerData()->glyphs_enab
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 
-#if VERSION_STRING < Cata
-
-bool Player::isSpellFitByClassAndRace(uint32_t /*spell_id*/)
-{
-    return false;
-}
-
-#else
+#if VERSION_STRING >= Cata
 void Player::sendForceMovePacket(UnitSpeedType speed_type, float speed)
 {
     WorldPacket data(60);
@@ -795,38 +790,6 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
 
     SendMessageToSet(&data, true);
 }
-
-bool Player::isSpellFitByClassAndRace(uint32_t spell_id)
-{
-    auto racemask = getRaceMask();
-    auto classmask = getClassMask();
-
-    auto bounds = sObjectMgr.GetSkillLineAbilityMapBounds(spell_id);
-    if (bounds.first == bounds.second)
-    {
-        return true;
-    }
-
-    for (auto _spell_idx = bounds.first; _spell_idx != bounds.second; ++_spell_idx)
-    {
-        // skip wrong race skills
-        if (_spell_idx->second->race_mask && (_spell_idx->second->race_mask & racemask) == 0)
-        {
-            continue;
-        }
-
-        // skip wrong class skills
-        if (_spell_idx->second->class_mask && (_spell_idx->second->class_mask & classmask) == 0)
-        {
-            continue;
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
 #endif
 
 void Player::handleAuraInterruptForMovementFlags(MovementInfo const& movementInfo)
@@ -1626,6 +1589,44 @@ bool Player::loadReputations(QueryResult* result)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spells
+void Player::setInitialPlayerSkills()
+{
+#if VERSION_STRING < Cata
+    return;
+#else
+    // Since cata player must have profession skills initialized even if the player does not have them
+#if VERSION_STRING == Cata
+    for (uint16_t skillId = SKILL_FROST; skillId != SKILL_PET_HYDRA; ++skillId)
+#elif VERSION_STRING == Mop
+    for (uint16_t skillId = SKILL_SWORDS; skillId != SKILL_DIREHORN; ++skillId)
+#endif
+    {
+        const auto skillLine = sSkillLineStore.LookupEntry(skillId);
+        if (skillLine == nullptr)
+            continue;
+
+        if (//skillLine->type != SKILL_TYPE_WEAPON &&
+            //skillLine->type != SKILL_TYPE_ARMOR &&
+            skillLine->type != SKILL_TYPE_SECONDARY &&
+            //skillLine->type != SKILL_TYPE_LANGUAGE &&
+            skillLine->type != SKILL_TYPE_PROFESSION)
+            continue;
+
+        if (!_HasSkillLine(skillLine->id))
+        {
+            PlayerSkill skill;
+            skill.Skill = skillLine;
+            skill.MaximumValue = 0;
+            skill.CurrentValue = 0;
+            skill.BonusValue = 0;
+            m_skills.insert(std::make_pair(skillLine->id, skill));
+        }
+    }
+
+    _UpdateSkillFields();
+#endif
+}
+
 void Player::updateAutoRepeatSpell()
 {
     // Get the autorepeat spell
@@ -1729,6 +1730,31 @@ bool Player::canDualWield2H() const
 void Player::setDualWield2H(bool enable)
 {
     m_canDualWield2H = enable;
+}
+
+bool Player::isSpellFitByClassAndRace(uint32_t spell_id) const
+{
+    const auto racemask = getRaceMask();
+    const auto classmask = getClassMask();
+
+    const auto bounds = sObjectMgr.GetSkillLineAbilityMapBounds(spell_id);
+    if (bounds.first == bounds.second)
+        return true;
+
+    for (auto _spell_idx = bounds.first; _spell_idx != bounds.second; ++_spell_idx)
+    {
+        // skip wrong race skills
+        if (_spell_idx->second->race_mask && (_spell_idx->second->race_mask & racemask) == 0)
+            continue;
+
+        // skip wrong class skills
+        if (_spell_idx->second->class_mask && (_spell_idx->second->class_mask & classmask) == 0)
+            continue;
+
+        return true;
+    }
+
+    return false;
 }
 
 bool Player::hasSpellOnCooldown(SpellInfo const* spellInfo)
