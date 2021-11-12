@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 enum MageSpells
 {
+    SPELL_ARCANE_MISSILES_PROC  = 79683,
+    SPELL_DEEP_FREEZE_DAMAGE    = 71757,
     SPELL_GLYPH_OF_THE_PENGUIN  = 52648,
     SPELL_HOT_STREAK_BUFF       = 48108,
     SPELL_HOT_STREAK_R1         = 44445,
@@ -31,6 +33,30 @@ enum MageSpells
     ICON_POLYMORPH_SHEEP        = 82,
     CREATURE_CHILLY             = 29726, // Penguin NPC for Glyph of the Penguin
 };
+
+#if VERSION_STRING >= Cata
+class ArcaneMissilesProc : public SpellScript
+{
+public:
+    uint32_t calcProcChance(SpellProc* /*proc*/, Unit* /*victim*/, SpellInfo const* /*castingSpell*/) override
+    {
+        // DBC data says 100% but ingame tooltip says 40%
+        return 40;
+    }
+};
+#endif
+
+#if VERSION_STRING >= WotLK
+class DeepFreezeDamage : public SpellScript
+{
+public:
+    bool canProc(SpellProc* /*spellProc*/, Unit* victim, SpellInfo const* /*castingSpell*/, DamageInfo /*damageInfo*/) override
+    {
+        // TODO: prevent proc for now, fix this later
+        return false;
+    }
+};
+#endif
 
 #if VERSION_STRING >= WotLK
 class HotStreakDummy : public SpellScript
@@ -236,6 +262,14 @@ void setupMageSpells(ScriptMgr* mgr)
 {
     // Call legacy script setup
     SetupLegacyMageSpells(mgr);
+
+#if VERSION_STRING >= Cata
+    mgr->register_spell_script(SPELL_ARCANE_MISSILES_PROC, new ArcaneMissilesProc);
+#endif
+
+#if VERSION_STRING >= WotLK
+    mgr->register_spell_script(SPELL_DEEP_FREEZE_DAMAGE, new DeepFreezeDamage);
+#endif
 
 #if VERSION_STRING >= WotLK
     uint32_t hotStreakIds[] =

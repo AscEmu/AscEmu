@@ -8037,6 +8037,15 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             this->CombatStatus.OnDamageDealt(pVictim);
         }
     }
+
+    // Tagging should happen when damage packets are sent
+    const auto plrOwner = getPlayerOwner();
+    if (plrOwner != nullptr && pVictim->isCreature() && pVictim->IsTaggable())
+    {
+        pVictim->Tag(getGuid());
+        plrOwner->TagUnit(pVictim);
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////
     //Post Damage Dealing Processing
     //////////////////////////////////////////////////////////////////////////////////////////

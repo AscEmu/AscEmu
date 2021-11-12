@@ -5182,9 +5182,16 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
 
     victim->setStandState(STANDSTATE_STAND);
 
+    // Tagging should happen when damage packets are sent
+    const auto plrOwner = getPlayerOwner();
+    if (plrOwner != nullptr && victim->isCreature() && victim->IsTaggable())
+    {
+        victim->Tag(getGuid());
+        plrOwner->TagUnit(victim);
+    }
+
     if (victim->isPvpFlagSet())
     {
-        const auto plrOwner = getPlayerOwner();
         if (isPet())
         {
             if (!isPvpFlagSet())
@@ -5749,12 +5756,6 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
         const auto plrOwner = attacker->getPlayerOwner();
         if (plrOwner != nullptr)
         {
-            if (isCreature() && IsTaggable())
-            {
-                Tag(plrOwner->getGuid());
-                plrOwner->TagUnit(this);
-            }
-
             // Battleground damage score
             if (plrOwner->m_bg != nullptr && GetMapMgr() == attacker->GetMapMgr())
             {

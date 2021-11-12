@@ -940,6 +940,14 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
 
     victim->addHealthBatchEvent(healthBatch);
 
+    // Tagging should happen when damage packets are sent
+    const auto plrOwner = getPlayerOwner();
+    if (plrOwner != nullptr && victim->isCreature() && victim->IsTaggable())
+    {
+        victim->Tag(getGuid());
+        plrOwner->TagUnit(victim);
+    }
+
     // Handle procs
     if (isCreatureOrPlayer())
     {

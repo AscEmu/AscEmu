@@ -1040,7 +1040,10 @@ int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = n
         else
             diff += unitCaster->getLevel();
 
-        basePoints += float2int32(diff * basePointsPerLevel);
+        diff = float2int32(diff * basePointsPerLevel);
+        // Should not happen but just in case do not make total value negative
+        if (diff > 0)
+            basePoints += diff;
     }
 
     if (randomPoints > 1)
