@@ -22,7 +22,7 @@ namespace AscEmu::Packets
         }
 
         CmsgInspectAchievements(uint64_t guid) :
-            ManagedPacket(CMSG_QUERY_INSPECT_ACHIEVEMENTS, 8),
+            ManagedPacket(CMSG_QUERY_INSPECT_ACHIEVEMENTS, 2),
             guid(guid)
         {
         }

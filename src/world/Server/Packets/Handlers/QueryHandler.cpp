@@ -99,7 +99,12 @@ void WorldSession::handleAchievmentQueryOpcode(WorldPacket& recvPacket)
     if (player == nullptr)
         return;
 
+#if VERSION_STRING >= Cata
+    player->GetAchievementMgr().SendRespondInspectAchievements(_player);
+#else
     player->GetAchievementMgr().SendAllAchievementData(_player);
+#endif
+
 #endif
 }
 

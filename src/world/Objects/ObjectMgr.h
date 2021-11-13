@@ -538,6 +538,9 @@ class SERVER_DECL ObjectMgr : public EventableObject
 #if VERSION_STRING > TBC
         AchievementCriteriaEntryList m_AchievementCriteriasByType[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
 #endif
+#if VERSION_STRING > WotLK
+        AchievementCriteriaEntryList m_GuildAchievementCriteriasByType[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
+#endif
         std::map< uint32, std::vector<VehicleAccessoryEntry*>* > vehicle_accessories;
         std::map< uint32, std::multimap<uint32, WorldState>* > worldstate_templates;
 };

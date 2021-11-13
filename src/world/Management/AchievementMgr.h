@@ -25,12 +25,23 @@ enum AchievementRewardTypes
 
 enum AchievementFlags
 {
-    ACHIEVEMENT_FLAG_NONE               = 0x0000,
-    ACHIEVEMENT_FLAG_COUNTER            = 0x0001,   // used for statistics
-    ACHIEVEMENT_FLAG_REACH_LEVEL        = 0x0004,   // unused
-    ACHIEVEMENT_FLAG_AVERAGE            = 0x0040,
-    ACHIEVEMENT_FLAG_REALM_FIRST_REACH  = 0x0100,
-    ACHIEVEMENT_FLAG_REALM_FIRST_KILL   = 0x0200    // Currently only used in Realm First! Obsidian Slayer (456)
+    ACHIEVEMENT_FLAG_COUNTER                = 0x00000001,    // Just count statistic (never stop and complete)
+    ACHIEVEMENT_FLAG_HIDDEN                 = 0x00000002,    // Not sent to client - internal use only
+    ACHIEVEMENT_FLAG_PLAY_NO_VISUAL         = 0x00000004,    // Client does not play achievement earned visual
+    ACHIEVEMENT_FLAG_SUMM                   = 0x00000008,    // Use summ criteria value from all requirements (and calculate max value)
+    ACHIEVEMENT_FLAG_MAX_USED               = 0x00000010,    // Show max criteria (and calculate max value ??)
+    ACHIEVEMENT_FLAG_REQ_COUNT              = 0x00000020,    // Use not zero req count (and calculate max value)
+    ACHIEVEMENT_FLAG_AVERAGE                = 0x00000040,    // Show as average value (value / time_in_days) depend from other flag (by def use last criteria value)
+    ACHIEVEMENT_FLAG_BAR                    = 0x00000080,    // Show as progress bar (value / max vale) depend from other flag (by def use last criteria value)
+    ACHIEVEMENT_FLAG_REALM_FIRST_REACH      = 0x00000100,    //
+    ACHIEVEMENT_FLAG_REALM_FIRST_KILL       = 0x00000200,    //
+    ACHIEVEMENT_FLAG_UNK3                   = 0x00000400,    // ACHIEVEMENT_FLAG_HIDE_NAME_IN_TIE
+    ACHIEVEMENT_FLAG_REALM_FIRST_GUILD      = 0x00000800,    // first guild on realm done something
+    ACHIEVEMENT_FLAG_SHOW_IN_GUILD_NEWS     = 0x00001000,    // Shows in guild news
+    ACHIEVEMENT_FLAG_SHOW_IN_GUILD_HEADER   = 0x00002000,    // Shows in guild news header
+    ACHIEVEMENT_FLAG_GUILD                  = 0x00004000,    //
+    ACHIEVEMENT_FLAG_SHOW_GUILD_MEMBERS     = 0x00008000,    //
+    ACHIEVEMENT_FLAG_SHOW_CRITERIA_MEMBERS  = 0x00010000     //
 };
 
 
@@ -197,8 +208,33 @@ enum AchievementCriteriaTypes
     ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL = 113,
     ACHIEVEMENT_CRITERIA_TYPE_ACCEPTED_SUMMONINGS = 114,
     ///\todo 0..114 => 124 criteria types total : Alleycat - We need to get the new Acheivements!
-    ACHIEVEMENT_CRITERIA_TYPE_TOTAL = 124,
+    ACHIEVEMENT_CRITERIA_TYPE_EARN_ACHIEVEMENT_POINTS = 115,
+    ACHIEVEMENT_CRITERIA_TYPE_USE_LFD_TO_GROUP_WITH_PLAYERS = 119,
+    ACHIEVEMENT_CRITERIA_TYPE_SPENT_GOLD_GUILD_REPAIRS = 124,
+#if VERSION_STRING > WotLK
+    ACHIEVEMENT_CRITERIA_TYPE_REACH_GUILD_LEVEL = 125,
+    ACHIEVEMENT_CRITERIA_TYPE_CRAFT_ITEMS_GUILD = 126,
+    ACHIEVEMENT_CRITERIA_TYPE_CATCH_FROM_POOL = 127,
+    ACHIEVEMENT_CRITERIA_TYPE_BUY_GUILD_BANK_SLOTS = 128,
+    ACHIEVEMENT_CRITERIA_TYPE_EARN_GUILD_ACHIEVEMENT_POINTS = 129,
+    ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_BATTLEGROUND = 130,
+    ACHIEVEMENT_CRITERIA_TYPE_REACH_BG_RATING = 132,
+    ACHIEVEMENT_CRITERIA_TYPE_BUY_GUILD_TABARD = 133,
+    ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_GUILD = 134,
+    ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILLS_GUILD = 135,
+    ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE_GUILD = 136,
+    ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_GUILD_CHALLENGE_TYPE = 138, //struct { Flag flag; uint32 count; } 1: Guild Dungeon, 2:Guild Challenge, 3:Guild battlefield
+    ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_GUILD_CHALLENGE = 139,  //struct { uint32 count; } Guild Challenge
+#endif
 };
+
+#if VERSION_STRING == WotLK
+    #define ACHIEVEMENT_CRITERIA_TYPE_TOTAL 124,
+#endif
+#if VERSION_STRING > WotLK
+    #define ACHIEVEMENT_CRITERIA_TYPE_TOTAL 140
+#endif
+
 
 /**
 AchievementMgr class
@@ -261,6 +297,9 @@ public:
     void SaveToDB(QueryBuffer* buf);
     void CheckAllAchievementCriteria();
     void SendAllAchievementData(Player* player);
+#if VERSION_STRING >= Cata
+    void SendRespondInspectAchievements(Player* player); // Used when Inspecting a Player
+#endif
     void UpdateAchievementCriteria(AchievementCriteriaTypes type, int32_t miscvalue1, int32_t miscvalue2, uint32_t time);
     void UpdateAchievementCriteria(AchievementCriteriaTypes type);
     bool UpdateAchievementCriteria(Player* player, int32_t criteriaID, uint32_t count);
