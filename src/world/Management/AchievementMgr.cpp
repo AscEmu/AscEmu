@@ -1604,7 +1604,6 @@ struct VisibleAchievementPred
 void AchievementMgr::SendAllAchievementData(Player* player)
 {
     DBC::Structures::AchievementCriteriaEntry const* acEntry;
-    DBC::Structures::AchievementEntry const* achievement;
 
     VisibleAchievementPred isVisible;
 
@@ -1696,7 +1695,6 @@ void AchievementMgr::SendAllAchievementData(Player* player)
 void AchievementMgr::SendRespondInspectAchievements(Player* player)
 {
     DBC::Structures::AchievementCriteriaEntry const* acEntry;
-    DBC::Structures::AchievementEntry const* achievement;
 
     VisibleAchievementPred isVisible;
 
