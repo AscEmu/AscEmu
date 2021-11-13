@@ -1590,7 +1590,7 @@ void AchievementMgr::CompletedAchievement(DBC::Structures::AchievementEntry cons
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Sends all achievement data to the player. Also used for achievement inspection.
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 
 struct VisibleAchievementPred
 {
@@ -1601,7 +1601,7 @@ struct VisibleAchievementPred
     }
 };
 
-void AchievementMgr::SendAllAchievementData(Player* player)
+void AchievementMgr::sendAllAchievementData(Player* player)
 {
     DBC::Structures::AchievementCriteriaEntry const* acEntry;
 
@@ -1653,10 +1653,10 @@ void AchievementMgr::SendAllAchievementData(Player* player)
         criteriaData.WriteByteSeq(guid[4]);
         criteriaData.WriteByteSeq(guid[6]);
         criteriaData.WriteByteSeq(counter[2]);
-        criteriaData << uint32_t(0); // timer 2
+        criteriaData << uint32_t(0);    // timer 2
         criteriaData.WriteByteSeq(guid[2]);
 
-        criteriaData << uint32_t(progressIter.first); // criteria id
+        criteriaData << uint32_t(progressIter.first);   // criteria id
         criteriaData.WriteByteSeq(guid[5]);
         criteriaData.WriteByteSeq(counter[0]);
         criteriaData.WriteByteSeq(counter[3]);
@@ -1666,7 +1666,7 @@ void AchievementMgr::SendAllAchievementData(Player* player)
         criteriaData.WriteByteSeq(guid[7]);
         criteriaData.WriteByteSeq(counter[7]);
         criteriaData << uint32_t(0); // timer 1
-        criteriaData.appendPackedTime(progressIter.second->date);  // criteria date
+        criteriaData.appendPackedTime(progressIter.second->date);   // criteria date
         criteriaData.WriteByteSeq(guid[1]);
     }
 
@@ -1679,7 +1679,7 @@ void AchievementMgr::SendAllAchievementData(Player* player)
         if (!isVisible(completeIter))
             continue;
 
-        data << uint32(completeIter.first);
+        data << uint32_t(completeIter.first);
         data.appendPackedTime(completeIter.second);
     }
 
@@ -1692,7 +1692,7 @@ void AchievementMgr::SendAllAchievementData(Player* player)
     }
 }
 
-void AchievementMgr::SendRespondInspectAchievements(Player* player)
+void AchievementMgr::sendRespondInspectAchievements(Player* player)
 {
     DBC::Structures::AchievementCriteriaEntry const* acEntry;
 
@@ -1739,7 +1739,7 @@ void AchievementMgr::SendRespondInspectAchievements(Player* player)
         data.writeBit(counter[2]);
         data.writeBit(guid[3]);
         data.writeBit(guid[7]);
-        data.writeBits(0, 2);           // criteria progress flags
+        data.writeBits(0, 2);   // criteria progress flags
         data.writeBit(counter[0]);
         data.writeBit(guid[5]);
         data.writeBit(guid[6]);
@@ -1747,7 +1747,7 @@ void AchievementMgr::SendRespondInspectAchievements(Player* player)
 
         criteriaData.WriteByteSeq(guid[3]);
         criteriaData.WriteByteSeq(counter[4]);
-        criteriaData << uint32_t(0);      // timer 1
+        criteriaData << uint32_t(0);    // timer 1
         criteriaData.WriteByteSeq(guid[1]);
         criteriaData.appendPackedTime(progressIter.second->date);
         criteriaData.WriteByteSeq(counter[3]);
@@ -1760,7 +1760,7 @@ void AchievementMgr::SendRespondInspectAchievements(Player* player)
         criteriaData.WriteByteSeq(guid[7]);
         criteriaData.WriteByteSeq(counter[6]);
         criteriaData << uint32_t(progressIter.first);
-        criteriaData << uint32_t(0);      // timer 2
+        criteriaData << uint32_t(0);    // timer 2
         criteriaData.WriteByteSeq(counter[1]);
         criteriaData.WriteByteSeq(counter[5]);
         criteriaData.WriteByteSeq(guid[0]);
@@ -1795,7 +1795,7 @@ void AchievementMgr::SendRespondInspectAchievements(Player* player)
 #endif
 
 #if VERSION_STRING <= WotLK
-void AchievementMgr::SendAllAchievementData(Player* player)
+void AchievementMgr::sendAllAchievementData(Player* player)
 {
     // maximum size for the SMSG_ALL_ACHIEVEMENT_DATA packet without causing client problems seems to be 0x7fff
     uint32_t packetSize = 18 + ((uint32_t)m_completedAchievements.size() * 8) + (GetCriteriaProgressCount() * 36);

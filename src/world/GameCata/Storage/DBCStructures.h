@@ -387,15 +387,15 @@ namespace DBC::Structures
             // ACHIEVEMENT_CRITERIA_TYPE_CURRENCY = 12
             struct
             {
-                uint32 currency;
-                uint32 count;
+                uint32_t currency;
+                uint32_t count;
             } currencyGain;
 
             // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_DAILY_QUEST   = 14
             struct
             {
-                uint32  unused;                                 // 3
-                uint32  questCount;                             // 4
+                uint32_t  unused;                                 // 3
+                uint32_t  questCount;                             // 4
             } complete_daily_quest;
 
             // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_BATTLEGROUND= 15
@@ -413,7 +413,7 @@ namespace DBC::Structures
             // ACHIEVEMENT_CRITERIA_TYPE_DEATH_IN_DUNGEON       = 18
             struct
             {
-                uint32  manLimit;                               // 3
+                uint32_t  manLimit;                               // 3
             } death_in_dungeon;
 
             // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_RAID = 19
@@ -438,7 +438,7 @@ namespace DBC::Structures
             // ACHIEVEMENT_CRITERIA_TYPE_DEATHS_FROM            = 26
             struct
             {
-                uint32 type;                                    // 3, see enum EnviromentalDamage
+                uint32_t type;                                    // 3, see enum EnviromentalDamage
             } death_from;
 
             // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST = 27
@@ -467,8 +467,8 @@ namespace DBC::Structures
             // ACHIEVEMENT_CRITERIA_TYPE_BG_OBJECTIVE_CAPTURE
             struct
             {
-                uint32 objectiveId;                             // 3
-                uint32 completeCount;                           // 4
+                uint32_t objectiveId;                             // 3
+                uint32_t completeCount;                           // 4
             } bg_objective;
 
             // ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA = 31
@@ -527,8 +527,8 @@ namespace DBC::Structures
             // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_PERSONAL_RATING = 39
             struct
             {
-                uint32 teamtype; // 3 {2, 3, 5}
-                uint32 PersonalRating; // 4
+                uint32_t teamtype; // 3 {2, 3, 5}
+                uint32_t PersonalRating; // 4
             } highest_personal_rating;
 
             // ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL = 40

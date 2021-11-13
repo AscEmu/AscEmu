@@ -3422,7 +3422,7 @@ void Player::OnPrePushToWorld()
 {
     SendInitialLogonPackets();
 #if VERSION_STRING > TBC
-    m_achievementMgr.SendAllAchievementData(this);
+    m_achievementMgr.sendAllAchievementData(this);
 #endif
 }
 
