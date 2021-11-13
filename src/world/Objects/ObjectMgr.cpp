@@ -1007,8 +1007,8 @@ void ObjectMgr::LoadAchievementCriteriaList()
         if (!criteria)
             continue;
 
-        auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
 #if VERSION_STRING > WotLK
+        auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
         if (achievement && achievement->flags & ACHIEVEMENT_FLAG_GUILD)
             m_GuildAchievementCriteriasByType[criteria->requiredType].push_back(criteria);
         else
