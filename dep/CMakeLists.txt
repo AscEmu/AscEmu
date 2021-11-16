@@ -13,14 +13,11 @@ if (WIN32)
     add_subdirectory(zlib)
 endif ()
 
-if (NOT WIN32)
-    add_subdirectory(openssl)
-endif ()
-
 # add our dependecies
 add_subdirectory(recastnavigation)
 add_subdirectory(g3dlite)
 add_subdirectory(utf8cpp)
+add_subdirectory(openssl)
 
 if (BUILD_ASCEMUSCRIPTS AND BUILD_LUAENGINE)
     add_subdirectory(lualib/src)

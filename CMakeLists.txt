@@ -2,7 +2,6 @@
 project(Ascemu)
 
 cmake_minimum_required(VERSION 3.16)
-cmake_policy(SET CMP0057 NEW)
 
 # set runtime binary where all compiled (before install) binary will compiled in
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -26,14 +25,13 @@ if (UNIX)
     endif ()
 endif ()
 
+# needed for windows
+find_package(OpenSSL)
+
 # cmake options
 include(${CMAKE_SOURCE_DIR}/cmake/Options.cmake)
 
 # perform system tasks
-if (WIN32) # ugly fix for windows
-include(${CMAKE_SOURCE_DIR}/dep/openssl/CMakeLists.txt)
-endif ()
-
 include(${CMAKE_SOURCE_DIR}/cmake/CheckSystem.cmake)
 
 # set RPATH-handing (CMake parameters)
