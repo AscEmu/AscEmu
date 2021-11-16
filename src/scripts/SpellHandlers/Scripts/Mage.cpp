@@ -50,7 +50,7 @@ public:
 class DeepFreezeDamage : public SpellScript
 {
 public:
-    bool canProc(SpellProc* /*spellProc*/, Unit* victim, SpellInfo const* /*castingSpell*/, DamageInfo /*damageInfo*/) override
+    bool canProc(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo /*damageInfo*/) override
     {
         // TODO: prevent proc for now, fix this later
         return false;

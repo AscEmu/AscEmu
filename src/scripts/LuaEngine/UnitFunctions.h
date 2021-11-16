@@ -2226,7 +2226,7 @@ public:
         return 1;
     }
 
-    static int GetFloatValue(lua_State* L, Unit* ptr)
+    static int GetFloatValue(lua_State* /*L*/, Unit* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         if (ptr)
@@ -2266,7 +2266,7 @@ public:
         return 0;
     }
 
-    static int ModUInt32Value(lua_State* L, Unit* ptr)
+    static int ModUInt32Value(lua_State* /*L*/, Unit* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         int32_t value = static_cast<int32_t>(luaL_checkinteger(L, 2));
@@ -2275,7 +2275,7 @@ public:
         return 0;
     }
 
-    static int ModFloatValue(lua_State* L, Unit* ptr)
+    static int ModFloatValue(lua_State* /*L*/, Unit* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         float value = CHECK_FLOAT(L, 2);
@@ -2284,7 +2284,7 @@ public:
         return 0;
     }
 
-    static int SetUInt32Value(lua_State* L, Unit* ptr)
+    static int SetUInt32Value(lua_State* /*L*/, Unit* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
@@ -2293,7 +2293,7 @@ public:
         return 0;
     }
 
-    static int SetUInt64Value(lua_State* L, Unit* ptr)
+    static int SetUInt64Value(lua_State* /*L*/, Unit* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(CHECK_ULONG(L, 1));
         uint64_t guid = CHECK_GUID(L, 2);
@@ -2302,7 +2302,7 @@ public:
         return 0;
     }
 
-    static int RemoveFlag(lua_State* L, Unit* ptr)
+    static int RemoveFlag(lua_State* /*L*/, Unit* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
@@ -2311,7 +2311,7 @@ public:
         return 0;
     }
 
-    static int SetFlag(lua_State* L, Unit* ptr)
+    static int SetFlag(lua_State* /*L*/, Unit* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
@@ -2320,7 +2320,7 @@ public:
         return 0;
     }
 
-    static int SetFloatValue(lua_State* L, Unit* ptr)
+    static int SetFloatValue(lua_State* /*L*/, Unit* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         float value = CHECK_FLOAT(L, 2);
@@ -2329,7 +2329,7 @@ public:
         return 0;
     }
 
-    static int GetUInt32Value(lua_State* L, Unit* ptr)
+    static int GetUInt32Value(lua_State* /*L*/, Unit* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         if (ptr)
@@ -2337,7 +2337,7 @@ public:
         return 1;
     }
 
-    static int GetUInt64Value(lua_State* L, Unit* ptr)
+    static int GetUInt64Value(lua_State* /*L*/, Unit* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         if (ptr)
@@ -3127,7 +3127,7 @@ public:
     {
         if (!ptr)
             return 0;
-        bool enabled = CHECK_BOOL(L, 1);
+        //bool enabled = CHECK_BOOL(L, 1);
         // TODO: remove this
         return 0;
     }
@@ -3293,8 +3293,6 @@ public:
         uint32_t damage = CHECK_ULONG(L, 3);
         uint8_t effIndex = CHECK_ULONG(L, 4);
         bool isTriggered = CHECK_BOOL(L, 5);
-        bool static_dmg = CHECK_BOOL(L, 6);
-        bool no_remove_auras = CHECK_BOOL(L, 7);
         if (pVictim && spellid && damage)
         {
             ptr->doSpellDamage(pVictim, spellid, static_cast<float_t>(damage), effIndex, isTriggered);
@@ -3673,7 +3671,7 @@ public:
         return 0;
     }
 
-    static int SetStealth(lua_State* L, Unit* ptr)
+    static int SetStealth(lua_State* /*L*/, Unit* ptr)
     {
         if (!ptr)
             return 0;
@@ -4895,7 +4893,7 @@ public:
         return 0;
     }
 
-    static int SetByteValue(lua_State* L, Unit* ptr)
+    static int SetByteValue(lua_State* /*L*/, Unit* ptr)
     {
         if (ptr == nullptr)
             return 0;
@@ -4907,7 +4905,7 @@ public:
         return 0;
     }
 
-    static int GetByteValue(lua_State* L, Unit* ptr)
+    static int GetByteValue(lua_State* /*L*/, Unit* ptr)
     {
         if (ptr == nullptr)
             return 0;

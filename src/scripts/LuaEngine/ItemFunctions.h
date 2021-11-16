@@ -268,7 +268,7 @@ namespace luaItem
         lua_pushstring(L, ptr->GetItemLink(lang).c_str());
         return 1;
     }
-    int SetByteValue(lua_State* L, Item* ptr)
+    int SetByteValue(lua_State* /*L*/, Item* /*ptr*/)
     {
         /*uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint8_t index1 = static_cast<uint8_t>(luaL_checkinteger(L, 2));
@@ -277,7 +277,7 @@ namespace luaItem
         return 1;
     }
 
-    int GetByteValue(lua_State* L, Item* ptr)
+    int GetByteValue(lua_State* /*L*/, Item* /*ptr*/)
     {
         /*uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint8_t index1 = static_cast<uint8_t>(luaL_checkinteger(L, 2));
@@ -368,7 +368,7 @@ namespace luaItem
         return 1;
     }
 
-    int HasFlag(lua_State* L, Item* ptr)
+    int HasFlag(lua_State* /*L*/, Item* ptr)
     {
         if (ptr == nullptr)
             return 0;
@@ -456,7 +456,7 @@ namespace luaItem
         return 1;
     }
 
-    int ModUInt32Value(lua_State* L, Item* ptr)
+    int ModUInt32Value(lua_State* /*L*/, Item* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         int32_t value = static_cast<int32_t>(luaL_checkinteger(L, 2));
@@ -465,7 +465,7 @@ namespace luaItem
         return 0;
     }
 
-    int ModFloatValue(lua_State* L, Item* ptr)
+    int ModFloatValue(lua_State* /*L*/, Item* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         float value = CHECK_FLOAT(L, 2);
@@ -474,7 +474,7 @@ namespace luaItem
         return 0;
     }
 
-    int SetUInt32Value(lua_State* L, Item* ptr)
+    int SetUInt32Value(lua_State* /*L*/, Item* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint8_t value = static_cast<uint8_t>(luaL_checkinteger(L, 2));
@@ -483,7 +483,7 @@ namespace luaItem
         return 0;
     }
 
-    int SetUInt64Value(lua_State* L, Item* ptr)
+    int SetUInt64Value(lua_State* /*L*/, Item* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(CHECK_ULONG(L, 1));
         uint64_t guid = static_cast<uint64_t>(CHECK_GUID(L, 2));
@@ -492,7 +492,7 @@ namespace luaItem
         return 0;
     }
 
-    int RemoveFlag(lua_State* L, Item* ptr)
+    int RemoveFlag(lua_State* /*L*/, Item* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
@@ -501,7 +501,7 @@ namespace luaItem
         return 0;
     }
 
-    int SetFlag(lua_State* L, Item* ptr)
+    int SetFlag(lua_State* /*L*/, Item* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
@@ -510,7 +510,7 @@ namespace luaItem
         return 0;
     }
 
-    int SetFloatValue(lua_State* L, Item* ptr)
+    int SetFloatValue(lua_State* /*L*/, Item* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         float value = CHECK_FLOAT(L, 2);
@@ -519,7 +519,7 @@ namespace luaItem
         return 0;
     }
 
-    int GetUInt32Value(lua_State* L, Item* ptr)
+    int GetUInt32Value(lua_State* /*L*/, Item* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         if (ptr)
@@ -527,7 +527,7 @@ namespace luaItem
         return 1;
     }
 
-    int GetUInt64Value(lua_State* L, Item* ptr)
+    int GetUInt64Value(lua_State* /*L*/, Item* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         if (ptr)
@@ -535,7 +535,7 @@ namespace luaItem
         return 1;
     }
 
-    int GetFloatValue(lua_State* L, Item* ptr)
+    int GetFloatValue(lua_State* /*L*/, Item* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         if (ptr)

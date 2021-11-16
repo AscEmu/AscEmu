@@ -22,16 +22,16 @@ namespace AscEmu::Realm
         return mInstance;
     }
 
-    void RealmManager::initialize(uint32_t checkTime)
+    void RealmManager::initialize(uint32_t _checkTime)
     {
         sLogger.trace("[RealmManager] Initializing...");
-        this->checkTime = checkTime;
+        this->checkTime = _checkTime;
         this->checkThread = nullptr;
         this->usePings = !logonConfig.logonServer.disablePings;
 
         loadRealms();
 
-        this->checkThread = std::make_unique<AscEmu::Threading::AEThread>("CheckRealmStatus", [this](AscEmu::Threading::AEThread& thread) { this->checkRealmStatus(false); }, std::chrono::seconds(this->checkTime));
+        this->checkThread = std::make_unique<AscEmu::Threading::AEThread>("CheckRealmStatus", [this](AscEmu::Threading::AEThread& /*thread*/) { this->checkRealmStatus(false); }, std::chrono::seconds(this->checkTime));
     }
 
     void RealmManager::finalize()
@@ -77,13 +77,13 @@ namespace AscEmu::Realm
         return nullptr;
     }
 
-    void RealmManager::setStatusForRealm(uint8_t realm_id, uint32_t status)
+    void RealmManager::setStatusForRealm(uint8_t realm_id, uint8_t status)
     {
         if (this->realms.empty())
         {
             auto realm = std::make_shared<Realm>();
             realm->id = realm_id;
-            realm->status = uint8_t(status);
+            realm->status = status;
             realm->lastPing = ::Util::TimeNow();
 
             this->realms.push_back(std::move(realm));

@@ -765,12 +765,12 @@ namespace MMAP
                                     }
 
                                     uint32 liqOffset = meshData.liquidVerts.size() / 3;
-                                    for (uint32 i = 0; i < liqVerts.size(); ++i)
-                                        meshData.liquidVerts.append(liqVerts[i].y, liqVerts[i].z, liqVerts[i].x);
+                                    for (uint32 u = 0; u < liqVerts.size(); ++u)
+                                        meshData.liquidVerts.append(liqVerts[u].y, liqVerts[u].z, liqVerts[u].x);
 
-                                    for (uint32 i = 0; i < liqTris.size() / 3; ++i)
+                                    for (uint32 u = 0; u < liqTris.size() / 3; ++u)
                                     {
-                                        meshData.liquidTris.append(liqTris[i*3+1] + liqOffset, liqTris[i*3+2] + liqOffset, liqTris[i*3] + liqOffset);
+                                        meshData.liquidTris.append(liqTris[u*3+1] + liqOffset, liqTris[u*3+2] + liqOffset, liqTris[u*3] + liqOffset);
                                         meshData.liquidType.append(type);
                                     }
                     }
