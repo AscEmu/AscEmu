@@ -384,11 +384,18 @@ namespace DBC::Structures
                 uint32_t questCount;                                // 4
             } complete_quests_in_zone;
 
-            // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_DAILY_QUEST = 14
+            // ACHIEVEMENT_CRITERIA_TYPE_CURRENCY = 12
             struct
             {
-                uint32_t unused;                                    // 3
-                uint32_t questCount;                                // 4
+                uint32_t currency;
+                uint32_t count;
+            } currencyGain;
+
+            // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_DAILY_QUEST   = 14
+            struct
+            {
+                uint32_t  unused;                                 // 3
+                uint32_t  questCount;                             // 4
             } complete_daily_quest;
 
             // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_BATTLEGROUND= 15
@@ -402,6 +409,12 @@ namespace DBC::Structures
             {
                 uint32_t mapID;                                     // 3
             } death_at_map;
+
+            // ACHIEVEMENT_CRITERIA_TYPE_DEATH_IN_DUNGEON       = 18
+            struct
+            {
+                uint32_t  manLimit;                               // 3
+            } death_in_dungeon;
 
             // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_RAID = 19
             struct
@@ -422,6 +435,12 @@ namespace DBC::Structures
                 uint32_t fallHeight;                                // 4
             } fall_without_dying;
 
+            // ACHIEVEMENT_CRITERIA_TYPE_DEATHS_FROM            = 26
+            struct
+            {
+                uint32_t type;                                    // 3, see enum EnviromentalDamage
+            } death_from;
+
             // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST = 27
             struct
             {
@@ -438,11 +457,19 @@ namespace DBC::Structures
             } be_spell_target;
 
             // ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL= 29
+            // ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2            = 110
             struct
             {
                 uint32_t spellID;                                   // 3
                 uint32_t castCount;                                 // 4
             } cast_spell;
+
+            // ACHIEVEMENT_CRITERIA_TYPE_BG_OBJECTIVE_CAPTURE
+            struct
+            {
+                uint32_t objectiveId;                             // 3
+                uint32_t completeCount;                           // 4
+            } bg_objective;
 
             // ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA = 31
             struct
@@ -496,6 +523,13 @@ namespace DBC::Structures
                 uint32_t teamtype;                                  // 3 {2,3,5}
                 uint32_t teamrating;                                // 4
             } reach_team_rating;
+
+            // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_PERSONAL_RATING = 39
+            struct
+            {
+                uint32_t teamtype; // 3 {2, 3, 5}
+                uint32_t PersonalRating; // 4
+            } highest_personal_rating;
 
             // ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL = 40
             struct

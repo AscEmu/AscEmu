@@ -1001,16 +1001,20 @@ AchievementCriteriaEntryList const & ObjectMgr::GetAchievementCriteriaByType(Ach
 
 void ObjectMgr::LoadAchievementCriteriaList()
 {
-#if VERSION_STRING < Cata
     for (uint32 rowId = 0; rowId < sAchievementCriteriaStore.GetNumRows(); ++rowId)
     {
         auto criteria = sAchievementCriteriaStore.LookupEntry(rowId);
         if (!criteria)
             continue;
 
-        m_AchievementCriteriasByType[criteria->requiredType].push_back(criteria);
-    }
+#if VERSION_STRING > WotLK
+        auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
+        if (achievement && achievement->flags & ACHIEVEMENT_FLAG_GUILD)
+            m_GuildAchievementCriteriasByType[criteria->requiredType].push_back(criteria);
+        else
 #endif
+            m_AchievementCriteriasByType[criteria->requiredType].push_back(criteria);
+    }
 }
 #endif
 
