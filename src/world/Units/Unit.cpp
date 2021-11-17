@@ -6144,65 +6144,65 @@ void Unit::setControlled(bool apply, UnitStates state)
         addUnitStateFlag(state);
         switch (state)
         {
-        case UNIT_STATE_STUNNED:
-            setStunned(true);
-            break;
-        case UNIT_STATE_ROOTED:
-            if (!hasUnitStateFlag(UNIT_STATE_STUNNED))
-                setMoveRoot(true);
-            break;
-        case UNIT_STATE_CONFUSED:
-            if (!hasUnitStateFlag(UNIT_STATE_STUNNED))
-            {
-                removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
-                setConfused(true);
-            }
-            break;
-        case UNIT_STATE_FLEEING:
-            if (!hasUnitStateFlag(UNIT_STATE_STUNNED | UNIT_STATE_CONFUSED))
-            {
-                removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
-                setFeared(true);
-            }
-            break;
-        default:
-            break;
+            case UNIT_STATE_STUNNED:
+                setStunned(true);
+                break;
+            case UNIT_STATE_ROOTED:
+                if (!hasUnitStateFlag(UNIT_STATE_STUNNED))
+                    setMoveRoot(true);
+                break;
+            case UNIT_STATE_CONFUSED:
+                if (!hasUnitStateFlag(UNIT_STATE_STUNNED))
+                {
+                    removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
+                    setConfused(true);
+                }
+                break;
+            case UNIT_STATE_FLEEING:
+                if (!hasUnitStateFlag(UNIT_STATE_STUNNED | UNIT_STATE_CONFUSED))
+                {
+                    removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
+                    setFeared(true);
+                }
+                break;
+            default:
+                break;
         }
     }
     else
     {
         switch (state)
         {
-        case UNIT_STATE_STUNNED:
-            if (getAuraWithAuraEffect(SPELL_AURA_MOD_STUN))
-                return;
+            case UNIT_STATE_STUNNED:
+                if (getAuraWithAuraEffect(SPELL_AURA_MOD_STUN))
+                    return;
 
-            removeUnitStateFlag(state);
-            setStunned(false);
-            break;
-        case UNIT_STATE_ROOTED:
-            if (getAuraWithAuraEffect(SPELL_AURA_MOD_ROOT) || isVehicle() || (ToCreature() && ToCreature()->getMovementTemplate().isRooted()))
-                return;
+                removeUnitStateFlag(state);
+                setStunned(false);
+                break;
+            case UNIT_STATE_ROOTED:
+                if (getAuraWithAuraEffect(SPELL_AURA_MOD_ROOT) || isVehicle() || (ToCreature() && ToCreature()->getMovementTemplate().isRooted()))
+                    return;
 
-            removeUnitStateFlag(state);
-            setMoveRoot(false);
-            break;
-        case UNIT_STATE_CONFUSED:
-            if (getAuraWithAuraEffect(SPELL_AURA_MOD_CONFUSE))
-                return;
+                removeUnitStateFlag(state);
+                setMoveRoot(false);
+                break;
+            case UNIT_STATE_CONFUSED:
+                if (getAuraWithAuraEffect(SPELL_AURA_MOD_CONFUSE))
+                    return;
 
-            removeUnitStateFlag(state);
-            setConfused(false);
-            break;
-        case UNIT_STATE_FLEEING:
-            if (getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR))
-                return;
+                removeUnitStateFlag(state);
+                setConfused(false);
+                break;
+            case UNIT_STATE_FLEEING:
+                if (getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR))
+                    return;
 
-            removeUnitStateFlag(state);
-            setFeared(false);
-            break;
-        default:
-            return;
+                removeUnitStateFlag(state);
+                setFeared(false);
+                break;
+            default:
+                return;
         }
 
         applyControlStatesIfNeeded();
@@ -6230,7 +6230,7 @@ void Unit::setStunned(bool apply)
     if (apply)
     {
         setTargetGuid(0);
-        setUnitFlags(UNIT_FLAG_STUNNED);
+        addUnitFlags(UNIT_FLAG_STUNNED);
 
         // MOVEMENTFLAG_ROOT cannot be used in conjunction with MOVEMENTFLAG_MASK_MOVING (tested 3.3.5a)
         // this will freeze clients. That's why we remove MOVEMENTFLAG_MASK_MOVING before
