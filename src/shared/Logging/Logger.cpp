@@ -65,9 +65,9 @@ namespace AscEmu::Logging
             writeFile(this->errorLogFile, logMessage);
     }
 
-    void Logger::setMinimumMessageType(MessageType minimumMessageType)
+    void Logger::setMinimumMessageType(MessageType _minimumMessageType)
     {
-        this->minimumMessageType = minimumMessageType;
+        this->minimumMessageType = _minimumMessageType;
     }
 
     void Logger::setDebugFlags(DebugFlags debug_flags)

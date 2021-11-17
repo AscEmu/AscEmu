@@ -27,7 +27,7 @@ void AccountMgr::initialize(uint32_t reloadTime)
 
     sLogger.info("AccountMgr : loaded %u accounts.", static_cast<uint32_t>(getCount()));
 
-    m_reloadThread = std::make_unique<AscEmu::Threading::AEThread>("ReloadAccounts", [this](AscEmu::Threading::AEThread& thread) { this->reloadAccounts(false); }, std::chrono::seconds(m_reloadTime));
+    m_reloadThread = std::make_unique<AscEmu::Threading::AEThread>("ReloadAccounts", [this](AscEmu::Threading::AEThread& /*thread*/) { this->reloadAccounts(false); }, std::chrono::seconds(m_reloadTime));
 }
 
 void AccountMgr::finalize()

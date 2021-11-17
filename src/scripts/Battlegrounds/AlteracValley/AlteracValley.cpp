@@ -721,7 +721,7 @@ void AlteracValley::AVNode::Spawn()
         m_guards.clear();
 
         // spawn guards if needed
-        uint8_t t = g_stateToGuardType[m_state];
+        const auto t = g_stateToGuardType[m_state];
         if (t > 0 && t < 3 && m_template->m_guardId[t] != 0)
         {
             DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : spawning %u guards of %u", m_template->m_name, m_template->m_guardCount, m_template->m_guardId[t]);

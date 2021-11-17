@@ -351,7 +351,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32_t id)
     }
 #endif
 
-    uint32_t team = plr->getTeam();
+    const auto team = plr->getTeam();
     if (plr->getGuidLow() != m_flagHolder)
         return;
 

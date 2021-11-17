@@ -53,7 +53,7 @@ namespace AscEmu::Realm
 
         std::shared_ptr<Realm> getRealmById(uint32_t id) const;
 
-        void setStatusForRealm(uint8_t realm_id, uint32_t status);
+        void setStatusForRealm(uint8_t realm_id, uint8_t status);
 
         void setLastPing(uint8_t realm_id);
 

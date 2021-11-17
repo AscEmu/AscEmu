@@ -544,7 +544,7 @@ int LuaGameObject::IsInBack(lua_State* L, GameObject* ptr)
     return 1;
 }
 
-int LuaGameObject::GetUInt32Value(lua_State* L, GameObject* ptr)
+int LuaGameObject::GetUInt32Value(lua_State* /*L*/, GameObject* /*ptr*/)
 {
     /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     if (ptr && field > 0)
@@ -554,7 +554,7 @@ int LuaGameObject::GetUInt32Value(lua_State* L, GameObject* ptr)
     return 1;
 }
 
-int LuaGameObject::GetUInt64Value(lua_State* L, GameObject* ptr)
+int LuaGameObject::GetUInt64Value(lua_State* /*L*/, GameObject* /*ptr*/)
 {
     /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     if (ptr && field)
@@ -564,7 +564,7 @@ int LuaGameObject::GetUInt64Value(lua_State* L, GameObject* ptr)
     return 1;
 }
 
-int LuaGameObject::SetUInt32Value(lua_State* L, GameObject* ptr)
+int LuaGameObject::SetUInt32Value(lua_State* /*L*/, GameObject* /*ptr*/)
 {
     /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
@@ -573,7 +573,7 @@ int LuaGameObject::SetUInt32Value(lua_State* L, GameObject* ptr)
     return 0;
 }
 
-int LuaGameObject::SetUInt64Value(lua_State* L, GameObject* ptr)
+int LuaGameObject::SetUInt64Value(lua_State* /*L*/, GameObject* /*ptr*/)
 {
     /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     uint64_t guid = CHECK_GUID(L, 1);
@@ -582,7 +582,7 @@ int LuaGameObject::SetUInt64Value(lua_State* L, GameObject* ptr)
     return 0;
 }
 
-int LuaGameObject::SetFloatValue(lua_State* L, GameObject* ptr)
+int LuaGameObject::SetFloatValue(lua_State* /*L*/, GameObject* /*ptr*/)
 {
     /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     float value = CHECK_FLOAT(L, 2);
@@ -591,7 +591,7 @@ int LuaGameObject::SetFloatValue(lua_State* L, GameObject* ptr)
     return 0;
 }
 
-int LuaGameObject::RemoveFlag(lua_State* L, GameObject* ptr)
+int LuaGameObject::RemoveFlag(lua_State* /*L*/, GameObject* /*ptr*/)
 {
     /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
@@ -600,7 +600,7 @@ int LuaGameObject::RemoveFlag(lua_State* L, GameObject* ptr)
     return 0;
 }
 
-int LuaGameObject::SetFlag(lua_State* L, GameObject* ptr)
+int LuaGameObject::SetFlag(lua_State* /*L*/, GameObject* /*ptr*/)
 {
     /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
@@ -623,7 +623,7 @@ int LuaGameObject::Update(lua_State* /*L*/, GameObject* ptr)
     return 0;
 }
 
-int LuaGameObject::GetFloatValue(lua_State* L, GameObject* ptr)
+int LuaGameObject::GetFloatValue(lua_State* /*L*/, GameObject* /*ptr*/)
 {
     /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     if (ptr && field)
@@ -633,7 +633,7 @@ int LuaGameObject::GetFloatValue(lua_State* L, GameObject* ptr)
     return 1;
 }
 
-int LuaGameObject::ModUInt32Value(lua_State* L, GameObject* ptr)
+int LuaGameObject::ModUInt32Value(lua_State* /*L*/, GameObject* /*ptr*/)
 {
     /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));

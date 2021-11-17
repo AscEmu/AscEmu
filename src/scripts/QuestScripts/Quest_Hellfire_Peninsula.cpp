@@ -155,7 +155,7 @@ class PrisonerGossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* pPlayer) override
     {
-        int32_t i = -1;
+        int8_t i = -1;
         Creature* pPrisoner = static_cast<Creature*>(pObject);
         switch (pPrisoner->getEntry())
         {
