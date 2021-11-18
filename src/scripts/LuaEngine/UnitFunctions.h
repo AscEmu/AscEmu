@@ -381,7 +381,7 @@ public:
     static int PlayerSendChatMessage(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        uint32_t type = CHECK_ULONG(L, 1);
+        uint8_t type = CHECK_UINT8(L, 1);
         uint32_t lang = CHECK_ULONG(L, 2);
         const char* msg = luaL_checklstring(L, 3, nullptr);
         Player* plr = static_cast<Player*>(ptr);
@@ -1486,7 +1486,7 @@ public:
     {
         TEST_PLAYER()
         uint32_t questid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        int objective = static_cast<int>(luaL_checkinteger(L, 2));
+        uint8_t objective = static_cast<uint8_t>(luaL_checkinteger(L, 2));
         Player* player = static_cast<Player*>(ptr);
 
         if (!player->HasFinishedQuest(questid))
@@ -2349,7 +2349,7 @@ public:
     {
         TEST_PLAYER()
         uint32_t questid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        uint32_t objective = static_cast<uint32_t>(luaL_checkinteger(L, 2));
+        uint8_t objective = static_cast<uint8_t>(luaL_checkinteger(L, 2));
         Player* player = static_cast<Player*>(ptr);
 
         if (auto* questLog = player->getQuestLogByQuestId(questid))
@@ -2507,7 +2507,7 @@ public:
 
         uint8_t powertype;
         if (luaL_optinteger(L, 1, -1) == -1)
-            powertype = ptr->getPowerType();
+            powertype = static_cast<uint8_t>(ptr->getPowerType());
         else
             powertype = static_cast<uint8_t>(luaL_optinteger(L, 1, -1));
 
@@ -3123,7 +3123,7 @@ public:
         return 1;
     }
 
-    static int IsInvisible(lua_State* L, Unit* ptr)   //THIS IS NOT "IS" IT'S SET!
+    static int IsInvisible(lua_State* /*L*/, Unit* ptr)   //THIS IS NOT "IS" IT'S SET!
     {
         if (!ptr)
             return 0;
@@ -3291,7 +3291,7 @@ public:
         Unit* pVictim = CHECK_UNIT(L, 1);
         uint32_t spellid = CHECK_ULONG(L, 2);
         uint32_t damage = CHECK_ULONG(L, 3);
-        uint8_t effIndex = CHECK_ULONG(L, 4);
+        uint8_t effIndex = CHECK_UINT8(L, 4);
         bool isTriggered = CHECK_BOOL(L, 5);
         if (pVictim && spellid && damage)
         {
@@ -5684,7 +5684,7 @@ public:
     {
         TEST_PLAYER_RET()
         uint32_t questid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        uint32_t objective = static_cast<uint32_t>(luaL_checkinteger(L, 2));
+        uint8_t objective = static_cast<uint8_t>(luaL_checkinteger(L, 2));
         Player* player = static_cast<Player*>(ptr);
 
         if (auto* questLog = player->getQuestLogByQuestId(questid))

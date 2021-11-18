@@ -102,7 +102,7 @@ class SERVER_DECL OpcodeTables
             return 0;
         }
 
-        std::string getNameForOpcode(uint32_t hex, int versionId = -1)
+        std::string getNameForOpcode(uint16_t hex, int versionId = -1)
         {
             const auto internalId = getInternalIdForHex(hex, versionId);
 
