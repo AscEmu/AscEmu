@@ -57,7 +57,7 @@ bool ChatHandler::HandleAchievementCriteriaCommand(const char* args, WorldSessio
     {
         if (stricmp(args, "all") == 0)
         {
-            selected_player->GetAchievementMgr().GMCompleteCriteria(m_session, -1);
+            selected_player->GetAchievementMgr().GMCompleteCriteria(m_session, 0, true);
             SystemMessage(m_session, "All achievement criteria have now been completed for that player.");
             sGMLog.writefromsession(m_session, "completed all achievement criteria for player %s", selected_player->getName().c_str());
             return true;

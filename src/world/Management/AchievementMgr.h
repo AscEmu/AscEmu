@@ -299,7 +299,7 @@ public:
     void UpdateAchievementCriteria(AchievementCriteriaTypes type);
     bool UpdateAchievementCriteria(Player* player, int32_t criteriaID, uint32_t count);
     bool GMCompleteAchievement(WorldSession* gmSession, int32_t achievementID);
-    bool GMCompleteCriteria(WorldSession* gmSession, int32_t criteriaID);
+    bool GMCompleteCriteria(WorldSession* gmSession, uint32_t criteriaID, bool finishAll = false);
     void GMResetAchievement(int achievementID);
     void GMResetCriteria(int criteriaID);
     bool HasCompleted(uint32_t achievementID);

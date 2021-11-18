@@ -2069,11 +2069,11 @@ bool AchievementMgr::GMCompleteAchievement(WorldSession* gmSession, int32_t achi
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// \brief GM has used a command to make the specified achievement criteria to be completed.
-/// If criteriaID is -1, all achievement criteria get marked as completed
+/// If finishAll is true, all achievement criteria get marked as completed
 /// \return true if able to complete the achievement criteria, otherwise false
-bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32_t criteriaID)
+bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, uint32_t criteriaID, bool finishAll/* = false*/)
 {
-    if (criteriaID == -1)
+    if (finishAll)
     {
         uint32_t nr = sAchievementCriteriaStore.GetNumRows();
         DBC::Structures::AchievementCriteriaEntry const* crt;
@@ -2095,17 +2095,20 @@ bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32_t criteri
         m_player->GetSession()->SystemMessage("All achievement criteria completed.");
         return true;
     }
+
     auto criteria = sAchievementCriteriaStore.LookupEntry(criteriaID);
     if (!criteria)
     {
         gmSession->SystemMessage("Achievement criteria %d not found.", criteriaID);
         return false;
     }
+
     if (IsCompletedCriteria(criteria))
     {
         gmSession->SystemMessage("Achievement criteria %d already completed.", criteriaID);
         return false;
     }
+
     auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
     if (!achievement)
     {
@@ -2113,6 +2116,7 @@ bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32_t criteri
         gmSession->SystemMessage("Referred achievement (%u) entry not found.", criteria->referredAchievement);
         return false;
     }
+
     if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER)
     {
         // can't complete this type of achivement (counter)
