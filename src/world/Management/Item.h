@@ -389,7 +389,7 @@ public:
 
         uint32_t getVisibleEntry() const
         {
-            if (uint32 transmogrification = getEnchantmentId(TRANSMOGRIFY_ENCHANTMENT_SLOT))
+            if (uint32_t transmogrification = getEnchantmentId(TRANSMOGRIFY_ENCHANTMENT_SLOT))
                 return transmogrification;
             return getEntry();
         }

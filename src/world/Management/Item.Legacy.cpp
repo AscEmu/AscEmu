@@ -179,12 +179,22 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
         {
             if (sscanf(enchant.c_str(), "%u,%u,%u", &enchant_id, &time_left, &enchslot) == 3)
             {
-                auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
-                if (spell_item_enchant == nullptr)
-                    continue;
+                if (enchslot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
+                {
+                    auto Transmog = new DBC::Structures::SpellItemEnchantmentEntry();
+                    Transmog->Id = enchant_id;
 
-                if (spell_item_enchant->Id == enchant_id && m_itemProperties->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
-                    AddEnchantment(spell_item_enchant, time_left, (time_left == 0), false, false, enchslot);
+                    AddEnchantment(Transmog, 0, true, false, false, TRANSMOGRIFY_ENCHANTMENT_SLOT, 0);
+                }
+                else
+                {
+                    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
+                    if (spell_item_enchant == nullptr)
+                        continue;
+
+                    if (spell_item_enchant->Id == enchant_id && m_itemProperties->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
+                        AddEnchantment(spell_item_enchant, time_left, (time_left == 0), false, false, enchslot);
+                }
             }
         }
     }
@@ -549,22 +559,20 @@ void Item::setEnchantment(EnchantmentSlot slot, uint32_t id, uint32_t duration, 
     setEnchantmentCharges(static_cast<uint8_t>(slot), charges);
 }
 
-void Item::RemoveEnchantment(uint32 EnchantmentSlot)
+void Item::RemoveEnchantment(uint32 enchantmentSlot)
 {
     // Make sure we actually exist.
-    EnchantmentMap::iterator itr = Enchantments.find(EnchantmentSlot);
+    EnchantmentMap::iterator itr = Enchantments.find(enchantmentSlot);
     if (itr == Enchantments.end())
         return;
 
     m_isDirty = true;
-    uint32 Slot = itr->first;
+    uint32_t Slot = itr->first;
     if (itr->second.BonusApplied)
-        ApplyEnchantmentBonus(EnchantmentSlot, false);
+        ApplyEnchantmentBonus(enchantmentSlot, false);
 
     // Unset the item fields.
-    setEnchantmentId(static_cast<uint8_t>(Slot), 0);
-    setEnchantmentDuration(static_cast<uint8_t>(Slot), 0);
-    setEnchantmentCharges(static_cast<uint8_t>(Slot), 0);
+    setEnchantment(EnchantmentSlot(Slot), 0, 0, 0);
 
     // Remove the enchantment event for removal.
     event_RemoveEvents(EVENT_REMOVE_ENCHANTMENT1 + Slot);

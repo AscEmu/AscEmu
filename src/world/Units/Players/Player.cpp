@@ -3931,7 +3931,7 @@ void Player::setVisibleItemFields(uint32_t slot, Item* item)
 {
     if (item)
     {
-        setVisibleItemEntry(slot, item->getEntry());
+        setVisibleItemEntry(slot, item->getVisibleEntry());
 #if VERSION_STRING > TBC
         setVisibleItemEnchantment(slot, 0, item->getEnchantmentId(PERM_ENCHANTMENT_SLOT));
         setVisibleItemEnchantment(slot, 1, item->getEnchantmentId(TEMP_ENCHANTMENT_SLOT));
@@ -3972,20 +3972,4 @@ bool Player::isOnGMTargetList(uint32_t guid) const
         return true;
 
     return false;
-}
-
-void Player::setVisibleItemSlot(uint8_t slot, Item* pItem)
-{
-    if (pItem)
-    {
-        setVisibleItemEntry((slot * 2), pItem->getVisibleEntry());
-        setVisibleItemEnchantment((slot * 2), 0, pItem->getEnchantmentId(PERM_ENCHANTMENT_SLOT));
-        setVisibleItemEnchantment((slot * 2), 1, pItem->getEnchantmentId(PERM_ENCHANTMENT_SLOT));
-    }
-    else
-    {
-        setVisibleItemEntry((slot * 2), 0);
-        setVisibleItemEnchantment((slot * 2), 0, 0);
-        setVisibleItemEnchantment((slot * 2), 1, 0);
-    }
 }

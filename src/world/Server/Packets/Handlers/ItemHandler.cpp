@@ -570,13 +570,18 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
     recvData.ReadByteSeq(npcGuid[6]);
     recvData.ReadByteSeq(npcGuid[0]);
 
-    const auto creature = player->GetMapMgrCreature(npcGuid);
+    Creature* creature = player->GetMapMgrCreature(npcGuid);
+    if (!creature)
+    {
+        sLogger.debug("handleTransmogrifyItems - Unit (GUID: %u) not found.", uint64_t(npcGuid));
+        return;
+    }
 
     // Validate
-    if (!creature && !creature->isTransmog() && creature->getDistance(player) > 5.0f)
+    if (!creature->isTransmog() && creature->getDistance(player) > 5.0f)
     {
-        sLogger.debug("handleTransmogrifyItems - Unit (GUID: %u) not found or player can't interact with it.", uint64_t(npcGuid));
-        return;
+        sLogger.debug("handleTransmogrifyItems - Unit (GUID: %u) can't interact with it or is no Transmogrifier.", uint64_t(npcGuid));
+        //return;
     }
 
     int32_t cost = 0;
@@ -623,7 +628,7 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
         if (!newEntries[i]) // reset look
         {
             itemTransmogrified->RemoveEnchantment(TRANSMOGRIFY_ENCHANTMENT_SLOT);
-            player->setVisibleItemSlot(slots[i], itemTransmogrified);
+            player->setVisibleItemFields(slots[i], itemTransmogrified);
         }
         else
         {
@@ -634,8 +639,11 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
             }
 
             // All okay, proceed
-            itemTransmogrified->setEnchantment(TRANSMOGRIFY_ENCHANTMENT_SLOT, newEntries[i], 0, 0);
-            player->setVisibleItemSlot(slots[i], itemTransmogrified);
+            auto Transmog = new DBC::Structures::SpellItemEnchantmentEntry();
+            Transmog->Id = newEntries[i];
+
+            itemTransmogrified->AddEnchantment(Transmog, 0, true, false, false, TRANSMOGRIFY_ENCHANTMENT_SLOT, 0);
+            player->setVisibleItemFields(slots[i], itemTransmogrified);
 
             itemTransmogrified->setOwnerGuid(player->getGuid());
             itemTransmogrified->RemoveFromRefundableMap();
