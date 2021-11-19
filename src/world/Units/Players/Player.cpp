@@ -3973,3 +3973,19 @@ bool Player::isOnGMTargetList(uint32_t guid) const
 
     return false;
 }
+
+void Player::setVisibleItemSlot(uint8_t slot, Item* pItem)
+{
+    if (pItem)
+    {
+        setVisibleItemEntry((slot * 2), pItem->getVisibleEntry());
+        setVisibleItemEnchantment((slot * 2), 0, pItem->getEnchantmentId(PERM_ENCHANTMENT_SLOT));
+        setVisibleItemEnchantment((slot * 2), 1, pItem->getEnchantmentId(PERM_ENCHANTMENT_SLOT));
+    }
+    else
+    {
+        setVisibleItemEntry((slot * 2), 0);
+        setVisibleItemEnchantment((slot * 2), 0, 0);
+        setVisibleItemEnchantment((slot * 2), 1, 0);
+    }
+}

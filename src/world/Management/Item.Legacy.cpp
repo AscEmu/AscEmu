@@ -507,9 +507,7 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
     Instance.RandomSuffix = RandomSuffix;
 
     // Set the enchantment in the item fields.
-    setEnchantmentId(static_cast<uint8_t>(Slot), Enchantment->Id);
-    setEnchantmentDuration(static_cast<uint8_t>(Slot), static_cast<uint32>(Instance.ApplyTime));
-    setEnchantmentCharges(static_cast<uint8_t>(Slot), 0);
+    setEnchantment(EnchantmentSlot(Slot), Enchantment->Id, static_cast<uint32>(Instance.ApplyTime), 0);
 
     // Add it to our map.
     Enchantments.insert(std::make_pair(static_cast<uint32>(Slot), Instance));
@@ -538,6 +536,17 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
     }
 
     return Slot;
+}
+
+void Item::setEnchantment(EnchantmentSlot slot, uint32_t id, uint32_t duration, uint32_t charges)
+{
+    // Better lost small time at check in comparison lost time at item save to DB.
+    if ((getEnchantmentId(slot) == id) && (getEnchantmentDuration(slot) == duration) && (getEnchantmentCharges(slot) == charges))
+        return;
+
+    setEnchantmentId(static_cast<uint8_t>(slot), id);
+    setEnchantmentDuration(static_cast<uint8_t>(slot), duration);
+    setEnchantmentCharges(static_cast<uint8_t>(slot), charges);
 }
 
 void Item::RemoveEnchantment(uint32 EnchantmentSlot)
@@ -976,28 +985,28 @@ std::string GetItemLinkByProto(ItemProperties const* iProto, uint32 language = 0
 
     switch (iProto->Quality)
     {
-        case 0: //Poor,gray
+        case ITEM_QUALITY_POOR: //Poor,gray
             colour = "cff9d9d9d";
             break;
-        case 1: //Common,white
+        case ITEM_QUALITY_NORMAL: //Common,white
             colour = "cffffffff";
             break;
-        case 2: //Uncommon,green
+        case ITEM_QUALITY_UNCOMMON: //Uncommon,green
             colour = "cff1eff00";
             break;
-        case 3: //Rare,blue
+        case ITEM_QUALITY_RARE: //Rare,blue
             colour = "cff0070dd";
             break;
-        case 4: //Epic,purple
+        case ITEM_QUALITY_EPIC: //Epic,purple
             colour = "cffa335ee";
             break;
-        case 5: //Legendary,orange
+        case ITEM_QUALITY_LEGENDARY: //Legendary,orange
             colour = "cffff8000";
             break;
-        case 6: //Artifact,pale gold
+        case ITEM_QUALITY_ARTIFACT: //Artifact,pale gold
             colour = "c00fce080";
             break;
-        case 7: //Heirloom,pale gold
+        case ITEM_QUALITY_HEIRLOOM: //Heirloom,pale gold
             colour = "c00fce080";
             break;
         default:

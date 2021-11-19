@@ -2644,6 +2644,7 @@ void WorldSession::loadHandlers() // Cata
     //WorldPacketHandlers[CMSG_EQUIPMENT_SET_SAVE].handler = &WorldSession::handleEquipmentSetSave;
     //WorldPacketHandlers[CMSG_EQUIPMENT_SET_USE].handler = &WorldSession::handleEquipmentSetUse;
     //WorldPacketHandlers[CMSG_EQUIPMENT_SET_DELETE].handler = &WorldSession::handleEquipmentSetDelete;
+    WorldPacketHandlers[CMSG_TRANSMOGRIFY_ITEMS].handler = &WorldSession::handleTransmogrifyItems;
 
     // Spell System
     WorldPacketHandlers[CMSG_USE_ITEM].handler = &WorldSession::handleUseItemOpcode;

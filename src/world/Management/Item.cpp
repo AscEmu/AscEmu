@@ -219,3 +219,105 @@ bool Item::fitsToSpellRequirements(SpellInfo const* spellInfo) const
     }
     return true;
 }
+
+bool Item::hasStats() const
+{
+    if (getRandomPropertiesId() != 0)
+        return true;
+
+    ItemProperties const* proto = getItemProperties();
+    for (uint8 i = 0; i < MAX_ITEM_PROTO_STATS; ++i)
+        if (proto->Stats[i].Value != 0)
+            return true;
+
+    return false;
+}
+
+bool Item::canBeTransmogrified() const
+{
+    ItemProperties const* proto = getItemProperties();
+
+    if (!proto)
+        return false;
+
+    if (proto->Quality == ITEM_QUALITY_LEGENDARY)
+        return false;
+
+    if (proto->Class != ITEM_CLASS_ARMOR &&
+        proto->Class != ITEM_CLASS_WEAPON)
+        return false;
+
+    if (proto->Class == ITEM_CLASS_WEAPON && proto->SubClass == ITEM_SUBCLASS_WEAPON_FISHING_POLE)
+        return false;
+
+    if (proto->Flags2 & ITEM_FLAGS_EXTRA_CANNOT_BE_TRANSMOG)
+        return false;
+
+    if (!hasStats())
+        return false;
+
+    return true;
+}
+
+bool Item::canTransmogrify() const
+{
+    ItemProperties const* proto = getItemProperties();
+
+    if (!proto)
+        return false;
+
+    if (proto->Flags2 & ITEM_FLAGS_EXTRA_CANNOT_TRANSMOG)
+        return false;
+
+    if (proto->Quality == ITEM_QUALITY_LEGENDARY)
+        return false;
+
+    if (proto->Class != ITEM_CLASS_ARMOR &&
+        proto->Class != ITEM_CLASS_WEAPON)
+        return false;
+
+    if (proto->Class == ITEM_CLASS_WEAPON && proto->SubClass == ITEM_SUBCLASS_WEAPON_FISHING_POLE)
+        return false;
+
+    if (proto->Flags2 & ITEM_FLAGS_EXTRA_CAN_TRANSMOG)
+        return true;
+
+    if (!hasStats())
+        return false;
+
+    return true;
+}
+
+bool Item::canTransmogrifyItemWithItem(Item const* transmogrified, Item const* transmogrifier)
+{
+    if (!transmogrifier || !transmogrified)
+        return false;
+
+    ItemProperties const* proto1 = transmogrifier->getItemProperties(); // source
+    ItemProperties const* proto2 = transmogrified->getItemProperties(); // dest
+
+    if (proto1->ItemId == proto2->ItemId)
+        return false;
+
+    if (!transmogrified->canTransmogrify() || !transmogrifier->canBeTransmogrified())
+        return false;
+
+    if (proto1->InventoryType == INVTYPE_BAG ||
+        proto1->InventoryType == INVTYPE_RELIC ||
+        proto1->InventoryType == INVTYPE_BODY ||
+        proto1->InventoryType == INVTYPE_FINGER ||
+        proto1->InventoryType == INVTYPE_TRINKET ||
+        proto1->InventoryType == INVTYPE_AMMO ||
+        proto1->InventoryType == INVTYPE_QUIVER)
+        return false;
+
+    if (proto1->SubClass != proto2->SubClass && (proto1->Class != ITEM_CLASS_WEAPON || !proto2->isRangedWeapon() || !proto1->isRangedWeapon()))
+        return false;
+
+    if (proto1->InventoryType != proto2->InventoryType &&
+        (proto1->Class != ITEM_CLASS_WEAPON || (proto2->InventoryType != INVTYPE_WEAPONMAINHAND && proto2->InventoryType != INVTYPE_WEAPONOFFHAND)) &&
+        (proto1->Class != ITEM_CLASS_ARMOR || (proto1->InventoryType != INVTYPE_CHEST && proto2->InventoryType != INVTYPE_ROBE && proto1->InventoryType != INVTYPE_ROBE && proto2->InventoryType != INVTYPE_CHEST)))
+        return false;
+
+    return true;
+}

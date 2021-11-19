@@ -1369,6 +1369,8 @@ public:
     void removeFromGMTargetList(uint32_t guid);
     bool isOnGMTargetList(uint32_t guid) const;
 
+    void setVisibleItemSlot(uint8_t slot, Item* pItem);
+
 private:
     uint16_t m_spellAreaUpdateTimer = 1000;
     uint16_t m_pendingPacketTimer = 100;

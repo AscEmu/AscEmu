@@ -62,6 +62,9 @@ bool Creature::isTabardDesigner() const { return getNpcFlags() & UNIT_NPC_FLAG_T
 bool Creature::isAuctioneer() const { return getNpcFlags() & UNIT_NPC_FLAG_AUCTIONEER; }
 bool Creature::isStableMaster() const { return getNpcFlags() & UNIT_NPC_FLAG_STABLEMASTER; }
 bool Creature::isArmorer() const { return getNpcFlags() & UNIT_NPC_FLAG_ARMORER; }
+#if VERSION_STRING >= Cata
+bool Creature::isTransmog() const { return getNpcFlags() & UNIT_NPC_FLAG_TRANSMOGRIFIER; }
+#endif
 
 bool Creature::isVehicle() const
 {

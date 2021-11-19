@@ -343,7 +343,7 @@ enum ITEM_FLAG
     ITEM_FLAG_INDESTRUCTIBLE        = 0x00000020, // can't destruct this item
     ITEM_FLAG_UNKNOWN_07            = 0x00000040, // many consumables
     ITEM_FLAG_UNKNOWN_08            = 0x00000080, // only 1 wand uses this
-    ITEM_FLAG_UNKNOWN_09            = 0x00000100, // some wands & relics
+    ITEM_FLAG_BOP_TRADEABLE         = 0x00000100, // Allows trading soulbound items
     ITEM_FLAG_WRAP_GIFT             = 0x00000200,
     ITEM_FLAG_CREATE_ITEM           = 0x00000400, // probably worng
     ITEM_FLAG_FREE_FOR_ALL          = 0x00000800, // can be looted ffa
@@ -371,10 +371,16 @@ enum ITEM_FLAG
 
 enum ITEM_FLAGS2
 {
-    ITEM_FLAG2_HORDE_ONLY               = 0x00001,
-    ITEM_FLAG2_ALLIANCE_ONLY            = 0x00002,
-    ITEM_FLAG2_EXT_COST_REQUIRES_GOLD   = 0x00004,
-    ITEM_FLAG2_NEED_ROLL_DISABLED       = 0x00100,
+    ITEM_FLAG2_HORDE_ONLY                   = 0x00000001,
+    ITEM_FLAG2_ALLIANCE_ONLY                = 0x00000002,
+    ITEM_FLAG2_EXT_COST_REQUIRES_GOLD       = 0x00000004,
+    ITEM_FLAG2_NEED_ROLL_DISABLED           = 0x00000100,
+    ITEM_FLAGS_EXTRA_CASTER_WEAPON          = 0x00000200,
+    ITEM_FLAGS_EXTRA_HAS_NORMAL_PRICE       = 0x00004000,
+    ITEM_FLAGS_EXTRA_BNET_ACCOUNT_BOUND     = 0x00020000,
+    ITEM_FLAGS_EXTRA_CANNOT_BE_TRANSMOG     = 0x00200000,
+    ITEM_FLAGS_EXTRA_CANNOT_TRANSMOG        = 0x00400000,
+    ITEM_FLAGS_EXTRA_CAN_TRANSMOG           = 0x00800000,
 };
 
 // dictates what bag-types an item can go into
@@ -529,6 +535,14 @@ struct ItemProperties
             return true;
         
         return false;
+    }
+
+    bool isRangedWeapon() const
+    {
+        return Class == ITEM_CLASS_WEAPON ||
+            SubClass == ITEM_SUBCLASS_WEAPON_BOW ||
+            SubClass == ITEM_SUBCLASS_WEAPON_GUN ||
+            SubClass == ITEM_SUBCLASS_WEAPON_CROSSBOW;
     }
 };
 

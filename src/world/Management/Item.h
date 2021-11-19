@@ -44,6 +44,18 @@ struct EnchantmentInstance
     uint32 RandomSuffix;
 };
 
+enum ItemQualities
+{
+    ITEM_QUALITY_POOR               = 0,                 //GREY
+    ITEM_QUALITY_NORMAL             = 1,                 //WHITE
+    ITEM_QUALITY_UNCOMMON           = 2,                 //GREEN
+    ITEM_QUALITY_RARE               = 3,                 //BLUE
+    ITEM_QUALITY_EPIC               = 4,                 //PURPLE
+    ITEM_QUALITY_LEGENDARY          = 5,                 //ORANGE
+    ITEM_QUALITY_ARTIFACT           = 6,                 //LIGHT YELLOW
+    ITEM_QUALITY_HEIRLOOM           = 7
+};
+
 const static uint32 arm_skills[7] =
 {
     0,
@@ -292,6 +304,11 @@ public:
 
     bool fitsToSpellRequirements(SpellInfo const* spellInfo) const;
 
+    bool hasStats() const;
+    bool canBeTransmogrified() const;
+    bool canTransmogrify() const;
+    static bool canTransmogrifyItemWithItem(Item const* transmogrified, Item const* transmogrifier);
+
     // MIT End
 
         Item();
@@ -370,7 +387,15 @@ public:
                 return itr->second.ApplyTime;
         }
 
+        uint32_t getVisibleEntry() const
+        {
+            if (uint32 transmogrification = getEnchantmentId(TRANSMOGRIFY_ENCHANTMENT_SLOT))
+                return transmogrification;
+            return getEntry();
+        }
+
         // Adds an enchantment to the item.
+        void setEnchantment(EnchantmentSlot slot, uint32_t id, uint32_t duration, uint32_t charges);
         int32 AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32 Duration, bool Perm = false, bool apply = true, bool RemoveAtLogout = false, uint32 Slot_ = 0, uint32 RandomSuffix = 0);
         uint32 GetSocketsCount();
 
