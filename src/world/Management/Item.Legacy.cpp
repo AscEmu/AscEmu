@@ -179,6 +179,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
         {
             if (sscanf(enchant.c_str(), "%u,%u,%u", &enchant_id, &time_left, &enchslot) == 3)
             {
+#if VERSION_STRING == Cata
                 if (enchslot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
                 {
                     auto Transmog = new DBC::Structures::SpellItemEnchantmentEntry();
@@ -195,6 +196,21 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
                     if (spell_item_enchant->Id == enchant_id && m_itemProperties->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
                         AddEnchantment(spell_item_enchant, time_left, (time_left == 0), false, false, enchslot);
                 }
+#else
+                if (enchslot > MAX_INSPECTED_ENCHANTMENT_SLOT)
+                {
+                    continue;
+                }
+                else
+                {
+                    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
+                    if (spell_item_enchant == nullptr)
+                        continue;
+
+                    if (spell_item_enchant->Id == enchant_id && m_itemProperties->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
+                        AddEnchantment(spell_item_enchant, time_left, (time_left == 0), false, false, enchslot);
+                }
+#endif
             }
         }
     }

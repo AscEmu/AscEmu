@@ -389,8 +389,10 @@ public:
 
         uint32_t getVisibleEntry() const
         {
+#if VERSION_STRING == Cata
             if (uint32_t transmogrification = getEnchantmentId(TRANSMOGRIFY_ENCHANTMENT_SLOT))
                 return transmogrification;
+#endif
             return getEntry();
         }
 
