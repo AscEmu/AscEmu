@@ -956,7 +956,8 @@ void WorldSession::characterEnumProc(QueryResult* result)
                                 if (enchslot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
                                 {
                                     const auto itemProperties = sMySQLStore.getItemProperties(enchantid);
-                                    charEnum.player_items[item_slot].displayId = itemProperties->DisplayInfoID;
+                                    if (itemProperties)
+                                        charEnum.player_items[item_slot].displayId = itemProperties->DisplayInfoID;
                                 }
                             }
 #endif
