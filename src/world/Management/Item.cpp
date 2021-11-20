@@ -220,6 +220,15 @@ bool Item::fitsToSpellRequirements(SpellInfo const* spellInfo) const
     return true;
 }
 
+uint32_t Item::getVisibleEntry() const
+{
+#if VERSION_STRING == Cata
+    if (uint32_t transmogrification = getEnchantmentId(TRANSMOGRIFY_ENCHANTMENT_SLOT))
+        return transmogrification;
+#endif
+    return getEntry();
+}
+
 bool Item::hasStats() const
 {
     if (getRandomPropertiesId() != 0)

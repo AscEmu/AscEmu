@@ -387,14 +387,7 @@ public:
                 return itr->second.ApplyTime;
         }
 
-        uint32_t getVisibleEntry() const
-        {
-#if VERSION_STRING == Cata
-            if (uint32_t transmogrification = getEnchantmentId(TRANSMOGRIFY_ENCHANTMENT_SLOT))
-                return transmogrification;
-#endif
-            return getEntry();
-        }
+        uint32_t getVisibleEntry() const;
 
         // Adds an enchantment to the item.
         void setEnchantment(EnchantmentSlot slot, uint32_t id, uint32_t duration, uint32_t charges);

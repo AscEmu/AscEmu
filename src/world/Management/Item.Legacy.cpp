@@ -533,7 +533,7 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
     Instance.RandomSuffix = RandomSuffix;
 
     // Set the enchantment in the item fields.
-    setEnchantment(EnchantmentSlot(Slot), Enchantment->Id, static_cast<uint32>(Instance.ApplyTime), 0);
+    setEnchantment(EnchantmentSlot(Slot), Enchantment->Id, static_cast<uint32_t>(Instance.ApplyTime), 0);
 
     // Add it to our map.
     Enchantments.insert(std::make_pair(static_cast<uint32>(Slot), Instance));
