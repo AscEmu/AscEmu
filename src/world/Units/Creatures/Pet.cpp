@@ -562,31 +562,8 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
     return true;
 }
 
-Pet::Pet(uint64 guid) : Creature(guid), m_Owner(nullptr)
+Pet::Pet(uint64 guid) : Creature(guid)
 {
-    Summon = false;
-    memset(ActionBar, 0, sizeof(uint32) * 10);
-    ScheduledForDeletion = false;
-
-    m_AutoCombatSpell = 0;
-
-    m_HappinessTimer = PET_HAPPINESS_UPDATE_TIMER;
-    m_PetNumber = 0;
-
-    m_State = PET_STATE_DEFENSIVE;
-    m_Action = PET_ACTION_FOLLOW;
-    m_ExpireTime = 0;
-    bExpires = false;
-    m_Diet = 0;
-    reset_time = 0;
-    reset_cost = 0;
-
-    for (uint8 i = 0; i < AUTOCAST_EVENT_COUNT; i++)
-        m_autoCastSpells[i].clear();
-
-    m_AISpellStore.clear();
-    mSpells.clear();
-    mPi = NULL;
 }
 
 Pet::~Pet()

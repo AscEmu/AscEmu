@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-Transporter::Transporter(uint64 guid) : GameObject(guid), _transportInfo(nullptr), _isMoving(true), _pendingStop(false), _triggeredArrivalEvent(false), _triggeredDepartureEvent(false), _passengerTeleportItr(_passengers.begin())
+Transporter::Transporter(uint64 guid) : GameObject(guid), _passengerTeleportItr(_passengers.begin())
 {
 #if VERSION_STRING == Classic
     m_updateFlag = (UPDATEFLAG_TRANSPORT | UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
@@ -31,8 +31,6 @@ Transporter::Transporter(uint64 guid) : GameObject(guid), _transportInfo(nullptr
 #if VERSION_STRING == Mop
     m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
 #endif
-
-    positionUpdateDelay = 100;
 }
 
 Transporter::~Transporter()

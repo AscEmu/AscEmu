@@ -27,6 +27,7 @@
 #include "Units/Unit.h"
 #include "Objects/Object.h"
 #include "Management/Group.h"
+#include "Movement/MovementDefines.h"
 #include "Server/UpdateFieldInclude.h"
 
 class CreatureAIScript;
@@ -186,29 +187,29 @@ public:
 
         void SetHealthFromSpell(uint32 value);
 
-        int32 m_speedFromHaste;
-        int32 FlatResistanceMod[TOTAL_SPELL_SCHOOLS];
-        int32 BaseResistanceModPct[TOTAL_SPELL_SCHOOLS];
-        int32 ResistanceModPct[TOTAL_SPELL_SCHOOLS];
+        int32 m_speedFromHaste = 0;
+        int32 FlatResistanceMod[TOTAL_SPELL_SCHOOLS] = {0};
+        int32 BaseResistanceModPct[TOTAL_SPELL_SCHOOLS] = {0};
+        int32 ResistanceModPct[TOTAL_SPELL_SCHOOLS] = {0};
 
-        int32 FlatStatMod[5];
-        int32 StatModPct[5];
-        int32 TotalStatModPct[5];
+        int32 FlatStatMod[5] = {0};
+        int32 StatModPct[5] = {0};
+        int32 TotalStatModPct[5] = {0};
 
-        int32 ModDamageDone[TOTAL_SPELL_SCHOOLS];
-        float ModDamageDonePct[TOTAL_SPELL_SCHOOLS];
+        int32 ModDamageDone[TOTAL_SPELL_SCHOOLS] = {0};
+        float ModDamageDonePct[TOTAL_SPELL_SCHOOLS] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
         void CalcResistance(uint8_t type);
         void CalcStat(uint8_t type);
 
-        bool m_canRegenerateHP;
+        bool m_canRegenerateHP = true;
         void RegenerateHealth();
-        int BaseAttackType;
+        int BaseAttackType = SCHOOL_NORMAL;
 
         // Looting
         void generateLoot();
         bool HasLootForPlayer(Player* plr);
 
-        bool Skinned;
+        bool Skinned = false;
         uint32 GetRequiredLootSkill();
 
         // Misc
@@ -242,8 +243,8 @@ public:
 
     private:
         // Waypoint path
-        uint32_t _waypointPathId;
-        std::pair<uint32_t/*nodeId*/, uint32_t/*pathId*/> _currentWaypointNodeInfo;
+        uint32_t _waypointPathId = 0;
+        std::pair<uint32_t/*nodeId*/, uint32_t/*pathId*/> _currentWaypointNodeInfo = {0, 0};
 
     protected:
 
@@ -290,7 +291,7 @@ public:
 
         Trainer* GetTrainer();
 
-        DBC::Structures::CreatureFamilyEntry const* myFamily;
+        DBC::Structures::CreatureFamilyEntry const* myFamily = nullptr;
 
         bool IsExotic();
         bool isCritter() override;
@@ -309,8 +310,8 @@ public:
         void ChannelLinkUpGO(uint32 SqlId);
         void ChannelLinkUpCreature(uint32 SqlId);
 
-        uint32 spawnid;
-        uint32 original_emotestate;
+        uint32 spawnid = 0;
+        uint32 original_emotestate = 0;
 
         void motion_Initialize();
         void immediateMovementFlagsUpdate();
@@ -324,13 +325,13 @@ public:
         MovementGeneratorType getDefaultMovementType() const override { return m_defaultMovementType; }
         void setDefaultMovementType(MovementGeneratorType mgt) { m_defaultMovementType = mgt; }
 
-        MySQLStructure::CreatureSpawn* m_spawn;
+        MySQLStructure::CreatureSpawn* m_spawn = nullptr;
 
         void OnPushToWorld() override;
         virtual void Despawn(uint32 delay, uint32 respawntime);
         void TriggerScriptEvent(int);
 
-        AuctionHouse* auctionHouse;
+        AuctionHouse* auctionHouse = nullptr;
 
         void DeleteMe();
         bool CanAddToWorld();
@@ -338,17 +339,17 @@ public:
         // scriptdev2
         uint32 GetNpcTextId();
 
-        Player* m_escorter;
+        Player* m_escorter = nullptr;
         bool IsInLimboState();
 
         void SetLimboState(bool set);
     static uint32 GetLineByFamily(DBC::Structures::CreatureFamilyEntry const* family);
         void RemoveLimboState(Unit* healer);
 
-        bool m_corpseEvent;
-        MapCell* m_respawnCell;
-        bool m_noRespawn;
-        uint32 m_respawnTimeOverride;
+        bool m_corpseEvent = false;
+        MapCell* m_respawnCell = nullptr;
+        bool m_noRespawn = false;
+        uint32 m_respawnTimeOverride = 0;
 
         float GetBaseParry();
         bool isattackable(MySQLStructure::CreatureSpawn* spawn);
@@ -361,39 +362,39 @@ public:
 
     protected:
 
-        CreatureAIScript* _myScriptClass;
-        bool m_limbostate;
-        Trainer* mTrainer;
+        CreatureAIScript* _myScriptClass = nullptr;
+        bool m_limbostate = false;
+        Trainer* mTrainer = nullptr;
 
         // Movement
-        MovementGeneratorType m_defaultMovementType;
+        MovementGeneratorType m_defaultMovementType = IDLE_MOTION_TYPE;
 
         // Vendor data
-        std::vector<CreatureItem>* m_SellItems;
+        std::vector<CreatureItem>* m_SellItems = nullptr;
 
         // Taxi data
-        uint32 mTaxiNode;
+        uint32 mTaxiNode = 0;
 
         // Quest data
-        std::list<QuestRelation*>* m_quests;
+        std::list<QuestRelation*>* m_quests = nullptr;
 
-        uint32 m_enslaveCount;
-        uint32 m_enslaveSpell;
+        uint32 m_enslaveCount = 0;
+        uint32 m_enslaveSpell = 0;
 
-        bool m_PickPocketed;
+        bool m_PickPocketed = false;
         uint32 _fields[getSizeOfStructure(WoWUnit)];
-        uint32 m_healthfromspell;
+        uint32 m_healthfromspell = 0;
 
-        CreatureProperties const* creature_properties;
+        CreatureProperties const* creature_properties = nullptr;
 
     private:
 
-        uint32 m_Creature_type;
+        uint32 m_Creature_type = 0;
 
         uint16_t m_movementFlagUpdateTimer = 1000;
 
         // Formation var
-        CreatureGroup* m_formation;
+        CreatureGroup* m_formation = nullptr;
 
         float_t m_wanderDistance = 0.0f;
 };

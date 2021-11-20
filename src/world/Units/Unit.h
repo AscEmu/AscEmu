@@ -40,6 +40,7 @@
 #include "Movement/AbstractFollower.h"
 #include <optional>
 
+struct DamageSplitTarget;
 template <class T>
 using Optional = std::optional<T>;
 
@@ -212,14 +213,14 @@ class SERVER_DECL CombatStatusHandler
 
     Unit* m_Unit;
 
-    bool m_lastStatus;
+    bool m_lastStatus = false;
 
     AttackerMap m_attackTargets;
 
-    uint64 m_primaryAttackTarget;
+    uint64 m_primaryAttackTarget = 0;
 
 public:
-    CombatStatusHandler() : m_Unit(nullptr), m_lastStatus(false), m_primaryAttackTarget(0) {}
+    CombatStatusHandler(Unit* _unit) : m_Unit(_unit) {}
 
     AttackerMap m_attackers;
 
@@ -268,7 +269,7 @@ class SERVER_DECL Unit : public Object
     const WoWUnit* unitData() const { return reinterpret_cast<WoWUnit*>(wow_data); }
 
     friend class ThreatManager;
-    ThreatManager m_threatManager;
+    ThreatManager m_threatManager = this;
 public:
     void setLocationWithoutUpdate(LocationVector& location);
 public:
@@ -576,7 +577,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
 private:
-    int32_t m_rootCounter;
+    int32_t m_rootCounter = 0;
 
 public:
     void setInFront(Object const* target);
@@ -632,7 +633,7 @@ public:
     void propagateSpeedChange();
     void setSpeedRate(UnitSpeedType mtype, float rate, bool current);
 
-    uint8_t m_forced_speed_changes[MAX_SPEED_TYPE];
+    uint8_t m_forced_speed_changes[MAX_SPEED_TYPE] = {0};
 
     // Movement info
     MovementNew::MoveSpline* movespline;
@@ -674,13 +675,13 @@ public:
     virtual MovementGeneratorType getDefaultMovementType() const;
 
     // Mover
-    Unit* mControledUnit;
-    Player* mPlayerControler;
+    Unit* mControledUnit = this;
+    Player* mPlayerControler = nullptr;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Internal States
 private:
-    uint32_t m_unitState;
+    uint32_t m_unitState = 0;
 
 public:
     void addUnitStateFlag(uint32_t state_flag) { m_unitState |= state_flag; };
@@ -745,7 +746,7 @@ public:
     template <typename T> void getTotalSpellModifiers(SpellModifierType modType, T baseValue, int32_t* flatMod, int32_t* pctMod, SpellInfo const* spellInfo, Spell* castingSpell = nullptr, Aura* castingAura = nullptr, bool checkOnly = false);
 
 private:
-    bool m_canDualWield;
+    bool m_canDualWield = false;
 
     std::list<SpellProc*> m_procSpells;
 
@@ -824,11 +825,11 @@ public:
 
  private:
      // Stealth
-     int32_t m_stealthLevel[STEALTH_FLAG_TOTAL];
-     int32_t m_stealthDetection[STEALTH_FLAG_TOTAL];
+     int32_t m_stealthLevel[STEALTH_FLAG_TOTAL] = {0};
+     int32_t m_stealthDetection[STEALTH_FLAG_TOTAL] = {0};
      // Invisibility
-     int32_t m_invisibilityLevel[INVIS_FLAG_TOTAL];
-     int32_t m_invisibilityDetection[INVIS_FLAG_TOTAL];
+     int32_t m_invisibilityLevel[INVIS_FLAG_TOTAL] = {0};
+     int32_t m_invisibilityDetection[INVIS_FLAG_TOTAL] = {0};
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -861,7 +862,7 @@ private:
 #endif
 
     // The leftover power from power regeneration which will be added to new value on next power update
-    float_t m_powerFractions[TOTAL_PLAYER_POWER_TYPES];
+    float_t m_powerFractions[TOTAL_PLAYER_POWER_TYPES] = {0};
 
 #if VERSION_STRING >= WotLK
     // Powers in real time
@@ -944,9 +945,9 @@ public:
     bool isTaggedByPlayerOrItsGroup(Player* tagger);
 
 private:
-    uint32_t m_attackTimer[TOTAL_WEAPON_DAMAGE_TYPES];
+    uint32_t m_attackTimer[TOTAL_WEAPON_DAMAGE_TYPES] = {0};
     //\ todo: there seems to be new haste update fields in playerdata in cata, and moved to unitdata in mop
-    float m_attackSpeed[TOTAL_WEAPON_DAMAGE_TYPES];
+    float m_attackSpeed[TOTAL_WEAPON_DAMAGE_TYPES] = { 1.0f, 1.0f, 1.0f };
 
     void _updateHealth();
     // Handles some things on each damage event in the batch
@@ -959,13 +960,13 @@ private:
     uint32_t m_lastSpellUpdateTime = 0;
     uint32_t m_lastSummonUpdateTime = 0;
 
-    uint32_t m_oldEmote;
+    uint32_t m_oldEmote = 0;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Death
 protected:
-    DeathState m_deathState;
+    DeathState m_deathState = ALIVE;
 
 public:
     bool isAlive() const;
@@ -1002,8 +1003,8 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Vehicle
 protected:
-    Vehicle* m_currentVehicle;    // The vehicle the unit is attached to
-    Vehicle* m_vehicle;           // The Unit's own vehicle component
+    Vehicle* m_currentVehicle = nullptr;    // The vehicle the unit is attached to
+    Vehicle* m_vehicle = nullptr;           // The Unit's own vehicle component
 
 public:
     Vehicle* getCurrentVehicle() const;
@@ -1149,17 +1150,17 @@ public:
 
     void OnDamageTaken();
 
-    uint32 m_addDmgOnce;
-    uint32 m_ObjectSlots[4];
-    uint32 m_triggerSpell;
-    uint32 m_triggerDamage;
-    uint32 m_canMove;
+    uint32 m_addDmgOnce = 0;
+    uint32 m_ObjectSlots[4] = {0};
+    uint32 m_triggerSpell = 0;
+    uint32 m_triggerDamage = 0;
+    uint32 m_canMove = 0;
     void Possess(Unit* pTarget, uint32 delay = 0);
     void UnPossess();
 
     // Spell Effect Variables
-    int32 m_silenced;
-    bool m_damgeShieldsInUse;
+    int32 m_silenced = 0;
+    bool m_damgeShieldsInUse = false;
 #if VERSION_STRING == Cata
     DBC::Structures::MountCapabilityEntry const* getMountCapability(uint32_t mountType);
 #endif
@@ -1168,7 +1169,7 @@ public:
 
     void RemoveReflect(uint32 spellid, bool apply);
 
-    struct DamageSplitTarget* m_damageSplitTarget;
+    DamageSplitTarget* m_damageSplitTarget = nullptr;
 
     void SetOnMeleeSpell(uint32 spell, uint8 ecn = 0) { m_meleespell = spell; m_meleespell_ecn = ecn; }
     uint32 GetOnMeleeSpell() { return m_meleespell; }
@@ -1178,7 +1179,7 @@ public:
     uint32 DoDamageSplitTarget(uint32 res, SchoolMask schoolMask, bool melee_dmg);
 
     // Spell Crit
-    float spellcritperc;
+    float spellcritperc = 0.0f;
 
     // AIInterface
     AIInterface* GetAIInterface() { return m_aiInterface; }
@@ -1195,7 +1196,7 @@ public:
 
     void SetHitFromMeleeSpell(float value) { m_hitfrommeleespell = value; }
     float GetHitFromMeleeSpell() { return m_hitfrommeleespell; }
-    float m_hitfrommeleespell;
+    float m_hitfrommeleespell = 0.0f;
 
     // DK:Affect
     uint32 IsPacified() { return m_pacified; }
@@ -1210,40 +1211,40 @@ public:
     int32 getDetectRangeMod(uint64 guid);
 
     Loot loot;
-    uint32 SchoolCastPrevent[TOTAL_SPELL_SCHOOLS];
-    int32 MechanicDurationPctMod[28];
+    uint32 SchoolCastPrevent[TOTAL_SPELL_SCHOOLS] = {0};
+    int32 MechanicDurationPctMod[28] = {0};
 
     virtual int32 GetDamageDoneMod(uint16_t /*school*/) { return 0; }
     virtual float GetDamageDonePctMod(uint16_t /*school*/) { return 0; }
 
-    int32 DamageTakenMod[TOTAL_SPELL_SCHOOLS];
-    float DamageTakenPctMod[TOTAL_SPELL_SCHOOLS];
-    float DamageTakenPctModOnHP35;
-    float CritMeleeDamageTakenPctMod[TOTAL_SPELL_SCHOOLS];
-    float CritRangedDamageTakenPctMod[TOTAL_SPELL_SCHOOLS];
-    int32 RangedDamageTaken;
+    int32 DamageTakenMod[TOTAL_SPELL_SCHOOLS] = {0};
+    float DamageTakenPctMod[TOTAL_SPELL_SCHOOLS] = {0};
+    float DamageTakenPctModOnHP35 = 1;
+    float CritMeleeDamageTakenPctMod[TOTAL_SPELL_SCHOOLS] = {0};
+    float CritRangedDamageTakenPctMod[TOTAL_SPELL_SCHOOLS] = {0};
+    int32 RangedDamageTaken = 0;
     void CalcDamage();
-    float BaseDamage[2];
-    float BaseOffhandDamage[2];
-    float BaseRangedDamage[2];
-    int32 RAPvModifier;
-    int32 APvModifier;
-    uint64 stalkedby;
-    uint32 dispels[10];
-    bool trackStealth;
-    uint32 MechanicsDispels[32];
-    float MechanicsResistancesPCT[32];
-    float ModDamageTakenByMechPCT[32];
-    int32 DoTPctIncrease[TOTAL_SPELL_SCHOOLS];
-    float AOEDmgMod;
-    float m_ignoreArmorPctMaceSpec;
-    float m_ignoreArmorPct;
+    float BaseDamage[2] = {0};
+    float BaseOffhandDamage[2] = {0};
+    float BaseRangedDamage[2] = {0};
+    int32 RAPvModifier = 0;
+    int32 APvModifier = 0;
+    uint64 stalkedby = 0;
+    uint32 dispels[10] = {0};
+    bool trackStealth = false;
+    uint32 MechanicsDispels[32] = {0};
+    float MechanicsResistancesPCT[32] = {0};
+    float ModDamageTakenByMechPCT[32] = {0};
+    int32 DoTPctIncrease[TOTAL_SPELL_SCHOOLS] = {0};
+    float AOEDmgMod = 1.0f;
+    float m_ignoreArmorPctMaceSpec = 0.0f;
+    float m_ignoreArmorPct = 0.0f;
 
     // Stun Immobilize
-    uint32 trigger_on_stun; // bah, warrior talent but this will not get triggered on triggered spells if used on proc so I'm forced to used a special variable
-    uint32 trigger_on_stun_chance;
-    uint32 trigger_on_stun_victim;
-    uint32 trigger_on_stun_chance_victim;
+    uint32 trigger_on_stun = 0; // bah, warrior talent but this will not get triggered on triggered spells if used on proc so I'm forced to used a special variable
+    uint32 trigger_on_stun_chance = 100;
+    uint32 trigger_on_stun_victim = 0;
+    uint32 trigger_on_stun_chance_victim = 100;
 
     void SetTriggerStunOrImmobilize(uint32 newtrigger, uint32 new_chance, bool is_victim = false)
     {
@@ -1262,10 +1263,10 @@ public:
 
     ///\todo Remove this hack
     // Chill
-    uint32 trigger_on_chill;         //mage "Frostbite" talent chill
-    uint32 trigger_on_chill_chance;
-    uint32 trigger_on_chill_victim;
-    uint32 trigger_on_chill_chance_victim;
+    uint32 trigger_on_chill = 0;         //mage "Frostbite" talent chill
+    uint32 trigger_on_chill_chance = 100;
+    uint32 trigger_on_chill_victim = 0;
+    uint32 trigger_on_chill_chance_victim = 100;
 
     void SetTriggerChill(uint32 newtrigger, uint32 new_chance, bool is_victim = false)
     {
@@ -1298,80 +1299,80 @@ public:
     virtual void onRemoveInRangeObject(Object* pObj);
     void clearInRangeSets();
 
-    uint32 m_CombatUpdateTimer;
+    uint32 m_CombatUpdateTimer = 0;
 
     void setcanparry(bool newstatus) { can_parry = newstatus; }
 
     std::map<uint32, Aura*> tmpAura;
 
-    uint32 BaseResistance[TOTAL_SPELL_SCHOOLS];        // there are resistances for silence, fear, mechanics ....
-    uint32 BaseStats[5];
+    uint32 BaseResistance[TOTAL_SPELL_SCHOOLS] = {0};        // there are resistances for silence, fear, mechanics ....
+    uint32 BaseStats[5] = {0};
 
-    int32 HealDoneMod[TOTAL_SPELL_SCHOOLS];
-    float HealDonePctMod[TOTAL_SPELL_SCHOOLS];
+    int32 HealDoneMod[TOTAL_SPELL_SCHOOLS] = {0};
+    float HealDonePctMod[TOTAL_SPELL_SCHOOLS] = {0};
 
-    int32 HealTakenMod[TOTAL_SPELL_SCHOOLS];
-    float HealTakenPctMod[TOTAL_SPELL_SCHOOLS];
+    int32 HealTakenMod[TOTAL_SPELL_SCHOOLS] = {0};
+    float HealTakenPctMod[TOTAL_SPELL_SCHOOLS] = {0};
 
-    uint32 SchoolImmunityList[TOTAL_SPELL_SCHOOLS];
-    float SpellCritChanceSchool[TOTAL_SPELL_SCHOOLS];
+    uint32 SchoolImmunityList[TOTAL_SPELL_SCHOOLS] = {0};
+    float SpellCritChanceSchool[TOTAL_SPELL_SCHOOLS] = {0};
 
-    float PowerCostPctMod[TOTAL_SPELL_SCHOOLS];        // armor penetration & spell penetration
+    float PowerCostPctMod[TOTAL_SPELL_SCHOOLS] = {0};        // armor penetration & spell penetration
 
-    int32 AttackerCritChanceMod[TOTAL_SPELL_SCHOOLS];
-    uint32 SpellDelayResist[TOTAL_SPELL_SCHOOLS];
+    int32 AttackerCritChanceMod[TOTAL_SPELL_SCHOOLS] = {0};
+    uint32 SpellDelayResist[TOTAL_SPELL_SCHOOLS] = {0};
 
-    int32 CreatureAttackPowerMod[12];
-    int32 CreatureRangedAttackPowerMod[12];
+    int32 CreatureAttackPowerMod[12] = {0};
+    int32 CreatureRangedAttackPowerMod[12] = {0};
 
-    int32 PctRegenModifier;
+    int32 PctRegenModifier = 0;
     // SPELL_AURA_MOD_POWER_REGEN_PERCENT
-    float PctPowerRegenModifier[TOTAL_PLAYER_POWER_TYPES];
+    float PctPowerRegenModifier[TOTAL_PLAYER_POWER_TYPES] = {1,1,1,1,1,1,1};
 
     // Auras Modifiers
-    int32 m_pacified;
-    int32 m_interruptRegen;
-    int32 m_resistChance;
-    int32 m_powerRegenPCT;
-    int32 m_stunned;
-    int32 m_extraattacks;
-    bool m_extrastriketarget;
-    int32 m_extrastriketargetc;
+    int32 m_pacified = 0;
+    int32 m_interruptRegen = 0;
+    int32 m_resistChance = 0;
+    int32 m_powerRegenPCT = 0;
+    int32 m_stunned = 0;
+    int32 m_extraattacks = 0;
+    bool m_extrastriketarget = false;
+    int32 m_extrastriketargetc = 0;
     std::list<ExtraStrike*> m_extraStrikeTargets;
-    int32 m_fearmodifiers;
-    int64 m_magnetcaster;       // Unit who acts as a magnet for this unit
+    int32 m_fearmodifiers = 0;
+    int64 m_magnetcaster = 0;   // Unit who acts as a magnet for this unit
 
-                                //Combat Mod Results:
-    int32 m_CombatResult_Dodge;
-    int32 m_CombatResult_Parry; // is not implented yet
+    //Combat Mod Results:
+    int32 m_CombatResult_Dodge = 0;
+    int32 m_CombatResult_Parry = 0; // is not implented yet
 
                                 // aurastate counters
-    int8 asc_frozen;
-    int8 asc_enraged;
-    int8 asc_seal;
-    int8 asc_bleed;
+    int8 asc_frozen = 0;
+    int8 asc_enraged = 0;
+    int8 asc_seal = 0;
+    int8 asc_bleed = 0;
 
-    uint16 m_noInterrupt;
-    bool disarmed;
-    uint64 m_detectRangeGUID[5];
-    int32  m_detectRangeMOD[5];
+    uint16 m_noInterrupt = 0;
+    bool disarmed = false;
+    uint64 m_detectRangeGUID[5] = {0};
+    int32  m_detectRangeMOD[5] = {0};
 
     // Affect Speed
-    int32 m_speedModifier;
-    int32 m_slowdown;
-    float m_maxSpeed;
+    int32 m_speedModifier = 0;
+    int32 m_slowdown = 0;
+    float m_maxSpeed = 0;
     std::map< uint32, int32 > speedReductionMap;
     bool GetSpeedDecrease();
-    int32 m_mountedspeedModifier;
-    int32 m_flyspeedModifier;
+    int32 m_mountedspeedModifier = 0;
+    int32 m_flyspeedModifier = 0;
 
     void UpdateSpeed();
 
-    bool m_can_stealth;
+    bool m_can_stealth = true;
 
-    Aura* m_auras[MAX_TOTAL_AURAS_END];
+    Aura* m_auras[MAX_TOTAL_AURAS_END] = {nullptr};
 
-    int32 m_modlanguage;
+    int32 m_modlanguage = -1;
 
     uint32 GetCharmTempVal() { return m_charmtemp; }
     void SetCharmTempVal(uint32 val) { m_charmtemp = val; }
@@ -1381,8 +1382,8 @@ public:
 
     void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
 
-    bool Tagged;
-    uint64 TaggerGuid;
+    bool Tagged = false;
+    uint64 TaggerGuid = 0;
     void Tag(uint64 TaggerGUID);
     void UnTag();
     bool IsTagged();
@@ -1397,35 +1398,35 @@ public:
     AuraCheckResponse AuraCheck(SpellInfo const* proto, Object* caster = nullptr);
     AuraCheckResponse AuraCheck(SpellInfo const* proto, Aura* aur, Object* caster = nullptr);
 
-    uint16 m_diminishCount[DIMINISHING_GROUP_COUNT];
-    uint8 m_diminishAuraCount[DIMINISHING_GROUP_COUNT];
-    uint16 m_diminishTimer[DIMINISHING_GROUP_COUNT];
-    bool m_diminishActive;
+    uint16 m_diminishCount[DIMINISHING_GROUP_COUNT] = {0};
+    uint8 m_diminishAuraCount[DIMINISHING_GROUP_COUNT] = {0};
+    uint16 m_diminishTimer[DIMINISHING_GROUP_COUNT] = {0};
+    bool m_diminishActive = false;
 
     void SetDiminishTimer(uint32 index)
     {
         m_diminishTimer[index] = 15000;
     }
 
-    DynamicObject* dynObj;
+    DynamicObject* dynObj = nullptr;
 
-    uint32 m_auravisuals[MAX_NEGATIVE_VISUAL_AURAS_END];
+    uint32 m_auravisuals[MAX_NEGATIVE_VISUAL_AURAS_END] = {0};
 
-    bool bProcInUse;
-    bool bInvincible;
-    Player* m_redirectSpellPackets;
+    bool bProcInUse = false;
+    bool bInvincible = false;
+    Player* m_redirectSpellPackets = nullptr;
     void UpdateVisibility();
 
     struct
     {
-        int32 amt;
-        int32 max;
+        int32 amt = 0;
+        int32 max = 0;
     } m_soulSiphon;
 
-    uint32 m_cTimer;
+    uint32 m_cTimer = 0;
     void EventUpdateFlag();
     CombatStatusHandler CombatStatus;
-    bool m_temp_summon;
+    bool m_temp_summon = false;
 
     void DispelAll(bool positive);
 
@@ -1467,8 +1468,8 @@ protected:
     void RemoveGarbage();
     void AddGarbageAura(Aura* aur);
 
-    uint32 m_meleespell;
-    uint8 m_meleespell_ecn;         // extra_cast_number
+    uint32 m_meleespell = 0;
+    uint8 m_meleespell_ecn = 0;         // extra_cast_number
 
     std::list<Aura*> m_GarbageAuras;
     std::list<Pet*> m_GarbagePets;
@@ -1477,38 +1478,38 @@ protected:
 
     // AI
     AIInterface* m_aiInterface;
-    bool m_useAI;
-    bool can_parry;         //will be enabled by block spell
-    int32 m_threatModifyer;
-    int32 m_generatedThreatModifyer[TOTAL_SPELL_SCHOOLS];
+    bool m_useAI = false;
+    bool can_parry = false;         //will be enabled by block spell
+    int32 m_threatModifyer = 0;
+    int32 m_generatedThreatModifyer[TOTAL_SPELL_SCHOOLS] = {0};
 
-    int32 m_manashieldamt;
-    uint32 m_manaShieldId;
+    int32 m_manashieldamt = 0;
+    uint32 m_manaShieldId = 0;
 
     // Some auras can only be cast on one target at a time
     // This will map aura spell id to target guid
     UniqueAuraTargetMap m_singleTargetAura;
 
-    uint32 m_charmtemp;
+    uint32 m_charmtemp = 0;
 
-    bool m_extraAttackCounter;
+    bool m_extraAttackCounter = false;
 
-    float m_modelhalfsize;      // used to calculate if something is in range of this unit
+    float m_modelhalfsize = 1.0f;      // used to calculate if something is in range of this unit
 
-    float m_blockfromspell;
-    float m_dodgefromspell;
-    float m_parryfromspell;
-    uint32 m_BlockModPct;       // is % but does not need float and does not need /100!
+    float m_blockfromspell = 0.0f;
+    float m_dodgefromspell = 0.0f;
+    float m_parryfromspell = 0.0f;
+    uint32 m_BlockModPct = 0;       // is % but does not need float and does not need /100!
 
     
-    uint64 m_auraRaidUpdateMask;
+    uint64 m_auraRaidUpdateMask = 0;
 
 public:
     const CombatStatusHandler* getcombatstatus() const { return &CombatStatus; }
 
-    bool m_noFallDamage;
-    float z_axisposition;
-    int32 m_safeFall;
+    bool m_noFallDamage = false;
+    float z_axisposition = 0.0f;
+    int32 m_safeFall = 0;
 
     void BuildMovementPacket(ByteBuffer* data);
     void BuildMovementPacket(ByteBuffer* data, float x, float y, float z, float o);

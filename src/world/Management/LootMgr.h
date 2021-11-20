@@ -166,19 +166,14 @@ struct StoreLootList
 struct Loot
 {
     std::vector<__LootItem> items;
-    uint32 gold;
+    uint32 gold = 0;
     LooterSet looters;
-
-    Loot()
-    {
-        gold = 0;
-    }
 
     bool HasRoll()
     {
-        for (std::vector<__LootItem>::iterator itr = items.begin(); itr != items.end(); ++itr)
+        for (auto& item : items)
         {
-            if (itr->roll != NULL)
+            if (item.roll != nullptr)
                 return true;
         }
         return false;

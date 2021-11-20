@@ -28,13 +28,6 @@
 
 Vehicle::Vehicle()
 {
-    owner = nullptr;
-    vehicle_info = nullptr;
-    passengercount = 0;
-    freeseats = 0;
-    creature_entry = 0;
-    std::fill(seats.begin(), seats.end(), static_cast<VehicleSeat*>(NULL));
-    installed_accessories.clear();
 }
 
 Vehicle::~Vehicle()

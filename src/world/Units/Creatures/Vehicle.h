@@ -303,16 +303,16 @@ class SERVER_DECL Vehicle : public TransportBase
 
     private:
 
-        std::array<VehicleSeat*, MAX_VEHICLE_SEATS> seats;
+        std::array<VehicleSeat*, MAX_VEHICLE_SEATS> seats = {nullptr};
         std::vector<uint64> installed_accessories;
 
-        uint32 creature_entry;
-        Unit* owner;
+        uint32 creature_entry = 0;
+        Unit* owner = nullptr;
 
-        DBC::Structures::VehicleEntry const* vehicle_info;
+        DBC::Structures::VehicleEntry const* vehicle_info = nullptr;
 
-        uint32 passengercount;
-        uint32 freeseats;
+        uint32 passengercount = 0;
+        uint32 freeseats = 0;
 
         /// This method transforms supplied transport offsets into global coordinates
         void CalculatePassengerPosition(float& x, float& y, float& z, float* o /*= nullptr*/) const override

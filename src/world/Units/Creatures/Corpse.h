@@ -141,10 +141,10 @@ public:
 
     private:
 
-        uint32 m_state;
-        time_t m_time;
+        uint32 m_state = CORPSE_STATE_BODY;
+        time_t m_time = 0;
         uint32 _fields[getSizeOfStructure(WoWCorpse)];
-        bool _loadedfromdb;
+        bool _loadedfromdb = false;
 };
 
 #endif // _WOWSERVER_CORPSE_H

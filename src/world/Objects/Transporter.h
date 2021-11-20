@@ -131,16 +131,16 @@ private:
     bool IsMoving() const { return _isMoving; }
     void SetMoving(bool val) { _isMoving = val; }
 
-    TransportTemplate const* _transportInfo;
+    TransportTemplate const* _transportInfo = nullptr;
 
     KeyFrameVec::const_iterator _currentFrame;
     KeyFrameVec::const_iterator _nextFrame;
-    bool _isMoving;
-    bool _pendingStop;
+    bool _isMoving = true;
+    bool _pendingStop = false;
 
     // These are needed to properly control events triggering only once for each frame
-    bool _triggeredArrivalEvent;
-    bool _triggeredDepartureEvent;
+    bool _triggeredArrivalEvent = false;
+    bool _triggeredDepartureEvent = false;
 
     PassengerSet _passengers;
     PassengerSet::iterator _passengerTeleportItr;
@@ -149,6 +149,6 @@ private:
     int32_t _positionChangeTimer = 100;
     int32_t _mapUpdateTimer = 0;
 
-    uint32_t positionUpdateDelay;
+    uint32_t positionUpdateDelay = 100;
     bool _delayedTeleport = false;
 };

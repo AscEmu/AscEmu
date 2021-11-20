@@ -1585,45 +1585,13 @@ void Object::sendGameobjectDespawnAnim()
 
 // MIT End
 
-Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
+Object::Object()
 {
-    m_mapId = MAPID_NOT_IN_WORLD;
-    m_zoneId = 0;
-
-    m_uint32Values = nullptr;
-    m_objectUpdated = false;
-
-    for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
-    {
-        m_currentSpell[i] = nullptr;
-    }
-    m_valuesCount = 0;
-
-    m_transport = nullptr;
-
-    m_phase = 1;                //Set the default phase: 00000000 00000000 00000000 00000001
-
-    m_mapMgr = nullptr;
-    m_mapCell_x = m_mapCell_y = uint32(-1);
-
-    m_factionTemplate = nullptr;
-    m_factionEntry = nullptr;
-
-    m_instanceId = INSTANCEID_NOT_IN_WORLD;
-    Active = false;
-    m_inQueue = false;
-    m_loadedFromDB = false;
-
+    //////////////////////////////////////////////////////////////////////////
     m_objectType = TYPE_OBJECT;
     m_objectTypeId = TYPEID_OBJECT;
     m_updateFlag = UPDATEFLAG_NONE;
-
-    mInRangeObjectsSet.clear();
-    mInRangePlayersSet.clear();
-    mInRangeOppositeFactionSet.clear();
-    mInRangeSameFactionSet.clear();
-
-    Active = false;
+    //////////////////////////////////////////////////////////////////////////
 }
 
 Object::~Object()

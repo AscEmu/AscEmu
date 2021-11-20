@@ -469,39 +469,13 @@ static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
 #endif
 
 Unit::Unit() :
-    m_threatManager(this),
     movespline(new MovementNew::MoveSpline()),
-    i_movementManager(new MovementManager(this))
+    i_movementManager(new MovementManager(this)),
+    m_summonInterface(new SummonHandler),
+    CombatStatus(this),
+    m_aiInterface(new AIInterface())
 {
-    mControledUnit = this;
-    mPlayerControler = nullptr;
-
-    uint8_t i;
-
-    m_canDualWield = false;
-    for (i = 0; i < TOTAL_WEAPON_DAMAGE_TYPES; ++i)
-    {
-        m_attackTimer[i] = 0;
-        m_attackSpeed[i] = 1.0f;
-    }
-
-    m_ignoreArmorPctMaceSpec = 0;
-    m_ignoreArmorPct = 0;
-    m_fearmodifiers = 0;
-    m_unitState = 0;
-    m_deathState = ALIVE;
-    m_meleespell = 0;
-    m_addDmgOnce = 0;
-
-    m_ObjectSlots[0] = 0;
-    m_ObjectSlots[1] = 0;
-    m_ObjectSlots[2] = 0;
-    m_ObjectSlots[3] = 0;
-    m_silenced = 0;
-    disarmed = false;
-
     m_objectType |= TYPE_UNIT;
-    m_objectTypeId = TYPEID_UNIT;
 
 #if VERSION_STRING < Cata
     m_updateFlag = (UPDATEFLAG_LIVING | UPDATEFLAG_HAS_POSITION);
@@ -509,212 +483,8 @@ Unit::Unit() :
     m_updateFlag = UPDATEFLAG_LIVING;
 #endif
 
-    //DK:modifiers
-    PctRegenModifier = 0;
-    for (i = 0; i < TOTAL_PLAYER_POWER_TYPES; i++)
-    {
-        PctPowerRegenModifier[i] = 1;
-        m_powerFractions[i] = 0;
-    }
-
-    m_speedModifier = 0;
-    m_slowdown = 0;
-    m_mountedspeedModifier = 0;
-    m_maxSpeed = 0;
-    for (i = 0; i < 32; i++)
-    {
-        MechanicsDispels[i] = 0;
-        MechanicsResistancesPCT[i] = 0;
-        ModDamageTakenByMechPCT[i] = 0;
-    }
-
-    m_pacified = 0;
-    m_interruptRegen = 0;
-    m_resistChance = 0;
-    m_powerRegenPCT = 0;
-    RAPvModifier = 0;
-    APvModifier = 0;
-    stalkedby = 0;
-
-    m_extraattacks = 0;
-    m_stunned = 0;
-    m_manashieldamt = 0;
-    m_rootCounter = 0;
-    m_triggerSpell = 0;
-    m_triggerDamage = 0;
-    m_canMove = 0;
-    m_noInterrupt = 0;
-    m_modlanguage = -1;
-    m_magnetcaster = 0;
-
-    m_CombatResult_Dodge = 0;
-    m_CombatResult_Parry = 0;
-
-    m_useAI = false;
-    for (i = 0; i < 10; i++)
-    {
-        dispels[i] = 0;
-        CreatureAttackPowerMod[i] = 0;
-        CreatureRangedAttackPowerMod[i] = 0;
-    }
-    //REMIND:Update these if you make any changes
-    CreatureAttackPowerMod[UNIT_TYPE_MISC] = 0;
-    CreatureRangedAttackPowerMod[UNIT_TYPE_MISC] = 0;
-    CreatureAttackPowerMod[11] = 0;
-    CreatureRangedAttackPowerMod[11] = 0;
-
-    m_can_stealth = true;
-
-    for (i = 0; i < 5; i++)
-        BaseStats[i] = 0;
-
-    //  if (getObjectTypeId() == TYPEID_PLAYER) // only player for now
-    //      CalculateActualArmor();
-
-    m_aiInterface = new AIInterface();
     m_aiInterface->Init(this, AI_SCRIPT_AGRO);
     getThreatManager().initialize();
-
-    m_oldEmote = 0;
-
-    BaseDamage[0] = 0;
-    BaseOffhandDamage[0] = 0;
-    BaseRangedDamage[0] = 0;
-    BaseDamage[1] = 0;
-    BaseOffhandDamage[1] = 0;
-    BaseRangedDamage[1] = 0;
-
-    m_CombatUpdateTimer = 0;
-    for (i = 0; i < TOTAL_SPELL_SCHOOLS; i++)
-    {
-        SchoolImmunityList[i] = 0;
-        BaseResistance[i] = 0;
-        HealDoneMod[i] = 0;
-        HealDonePctMod[i] = 0;
-        HealTakenMod[i] = 0;
-        HealTakenPctMod[i] = 0;
-        DamageTakenMod[i] = 0;
-        SchoolCastPrevent[i] = 0;
-        DamageTakenPctMod[i] = 0;
-        SpellCritChanceSchool[i] = 0;
-        PowerCostPctMod[i] = 0; // armor penetration & spell penetration
-        AttackerCritChanceMod[i] = 0;
-        CritMeleeDamageTakenPctMod[i] = 0;
-        CritRangedDamageTakenPctMod[i] = 0;
-        m_generatedThreatModifyer[i] = 0;
-        DoTPctIncrease[i] = 0;
-    }
-    DamageTakenPctModOnHP35 = 1;
-    RangedDamageTaken = 0;
-    AOEDmgMod = 1.0f;
-
-    for (i = 0; i < 5; i++)
-    {
-        m_detectRangeGUID[i] = 0;
-        m_detectRangeMOD[i] = 0;
-    }
-
-    trackStealth = false;
-
-    m_threatModifyer = 0;
-    memset(m_auras, 0, (MAX_TOTAL_AURAS_END)*sizeof(Aura*));
-
-    // diminishing return stuff
-    memset(m_diminishAuraCount, 0, DIMINISHING_GROUP_COUNT);
-    memset(m_diminishCount, 0, DIMINISHING_GROUP_COUNT * 2);
-    memset(m_diminishTimer, 0, DIMINISHING_GROUP_COUNT * 2);
-    memset(m_auravisuals, 0, MAX_NEGATIVE_VISUAL_AURAS_END * sizeof(uint32));
-
-    m_diminishActive = false;
-    dynObj = 0;
-    m_flyspeedModifier = 0;
-    bInvincible = false;
-    m_redirectSpellPackets = 0;
-    can_parry = false;
-    bProcInUse = false;
-    spellcritperc = 0;
-
-    RangedDamageTaken = 0;
-    m_damgeShieldsInUse = false;
-    // fearSpell = 0;
-    m_extraAttackCounter = false;
-    CombatStatus.SetUnit(this);
-    m_hitfrommeleespell = 0;
-    m_damageSplitTarget = NULL;
-    m_extrastriketarget = false;
-    m_extrastriketargetc = 0;
-    trigger_on_stun = 0;
-    trigger_on_stun_chance = 100;
-    trigger_on_stun_victim = 0;
-    trigger_on_stun_chance_victim = 100;
-    trigger_on_chill = 0;
-    trigger_on_chill_chance = 100;
-    trigger_on_chill_victim = 0;
-    trigger_on_chill_chance_victim = 100;
-    m_soulSiphon.amt = 0;
-    m_soulSiphon.max = 0;
-    m_modelhalfsize = 1.0f; //worst case unit size. (Should be overwritten)
-
-    m_blockfromspell = 0;
-    m_dodgefromspell = 0;
-    m_parryfromspell = 0;
-    m_BlockModPct = 0;
-
-    m_damageShields.clear();
-    m_reflectSpellSchool.clear();
-    m_procSpells.clear();
-    tmpAura.clear();
-    m_extraStrikeTargets.clear();
-
-    asc_frozen = 0;
-    asc_enraged = 0;
-    asc_seal = 0;
-    asc_bleed = 0;
-
-    Tagged = false;
-    TaggerGuid = 0;
-
-    m_singleTargetAura.clear();
-
-    m_vehicle = NULL;
-    m_currentVehicle = NULL;
-
-    m_noFallDamage = false;
-    z_axisposition = 0.0f;
-    m_safeFall = 0;
-    m_cTimer = 0;
-    m_temp_summon = false;
-    m_meleespell_ecn = 0;
-    m_manaShieldId = 0;
-    m_charmtemp = 0;
-    m_auraRaidUpdateMask = 0;
-
-    // APGL End
-    // MIT Start
-
-    m_summonInterface = new SummonHandler;
-
-    m_healthBatch.clear();
-
-    for (i = 0; i < INVIS_FLAG_TOTAL; i++)
-    {
-        m_invisibilityLevel[i] = 0;
-        m_invisibilityDetection[i] = 0;
-    }
-
-    for (i = 0; i < STEALTH_FLAG_TOTAL; ++i)
-    {
-        m_stealthLevel[i] = 0;
-        m_stealthDetection[i] = 0;
-    }
-
-    for (i = 0; i < MAX_SPELLMOD_TYPE; ++i)
-    {
-        m_spellModifiers[i].clear();
-    }
-
-    // MIT End
-    // APGL Start
 }
 
 Unit::~Unit()
@@ -725,12 +495,12 @@ Unit::~Unit()
     delete i_movementManager;
 
     delete m_aiInterface;
-    m_aiInterface = NULL;
+    m_aiInterface = nullptr;
 
     for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
     {
-        if (getCurrentSpell(CurrentSpellType(i)) != nullptr)
-            interruptSpellWithSpellType(CurrentSpellType(i));
+        if (getCurrentSpell(static_cast<CurrentSpellType>(i)) != nullptr)
+            interruptSpellWithSpellType(static_cast<CurrentSpellType>(i));
     }
 
     for (uint8_t i = 0; i < MAX_SPELLMOD_TYPE; ++i)
@@ -741,7 +511,7 @@ Unit::~Unit()
     if (m_damageSplitTarget)
     {
         delete m_damageSplitTarget;
-        m_damageSplitTarget = NULL;
+        m_damageSplitTarget = nullptr;
     }
 
     // reflects not created by auras need to be deleted manually

@@ -24,14 +24,14 @@
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgConvertRune.h"
 
-void DeathKnight::SendRuneUpdate(uint8 slot)
+void DeathKnight::SendRuneUpdate(uint8_t slot)
 {
 #if VERSION_STRING > TBC
     GetSession()->SendPacket(AscEmu::Packets::SmsgConvertRune(slot, m_runes[slot].type).serialise().get());
 #endif
 }
 
-uint8 DeathKnight::GetBaseRuneType(uint8 slot)
+uint8_t DeathKnight::GetBaseRuneType(uint8_t slot)
 {
     return base_runes[slot];
 }
@@ -41,12 +41,12 @@ uint8_t DeathKnight::GetRuneType(uint8_t slot)
     return m_runes[slot].type;
 }
 
-bool DeathKnight::GetRuneIsUsed(uint8 slot)
+bool DeathKnight::GetRuneIsUsed(uint8_t slot)
 {
     return m_runes[slot].is_used;
 }
 
-void DeathKnight::ConvertRune(uint8 slot, uint8 type)
+void DeathKnight::ConvertRune(uint8_t slot, uint8_t type)
 {
     if (m_runes[slot].type == type)
         return;
@@ -55,20 +55,20 @@ void DeathKnight::ConvertRune(uint8 slot, uint8 type)
     SendRuneUpdate(slot);
 }
 
-uint32 DeathKnight::HasRunes(uint8 type, uint32 count)
+uint32_t DeathKnight::HasRunes(uint8_t type, uint32_t count)
 {
-    uint32 found = 0;
-    for (uint8 i = 0; i < MAX_RUNES && count != found; ++i)
+    uint32_t found = 0;
+    for (uint8_t i = 0; i < MAX_RUNES && count != found; ++i)
         if (m_runes[i].type == type && !m_runes[i].is_used)
             found++;
 
     return (count - found);
 }
 
-uint32 DeathKnight::TakeRunes(uint8 type, uint32 count)
+uint32_t DeathKnight::TakeRunes(uint8_t type, uint32_t count)
 {
-    uint8 found = 0;
-    for (uint8 i = 0; i < MAX_RUNES && count != found; ++i)
+    uint8_t found = 0;
+    for (uint8_t i = 0; i < MAX_RUNES && count != found; ++i)
     {
         if (m_runes[i].type == type && !m_runes[i].is_used)
         {
@@ -81,25 +81,25 @@ uint32 DeathKnight::TakeRunes(uint8 type, uint32 count)
     return (count - found);
 }
 
-void DeathKnight::ResetRune(uint8 slot)
+void DeathKnight::ResetRune(uint8_t slot)
 {
     m_runes[slot].is_used = false;
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_RUNE_REGEN + slot);
 }
 
-uint8 DeathKnight::GetRuneFlags()
+uint8_t DeathKnight::GetRuneFlags()
 {
-    uint8 result = 0;
-    for (uint8 k = 0; k < MAX_RUNES; k++)
+    uint8_t result = 0;
+    for (uint8_t k = 0; k < MAX_RUNES; k++)
         if (!m_runes[k].is_used)
             result |= (1 << k);
 
     return result;
 }
 
-bool DeathKnight::IsAllRunesOfTypeInUse(uint8 type)
+bool DeathKnight::IsAllRunesOfTypeInUse(uint8_t type)
 {
-    for (uint8 i = 0; i < MAX_RUNES; ++i)
+    for (uint8_t i = 0; i < MAX_RUNES; ++i)
         if (m_runes[i].type == type && !m_runes[i].is_used)
             return false;
 

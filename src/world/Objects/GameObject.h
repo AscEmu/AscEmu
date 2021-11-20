@@ -52,9 +52,9 @@ enum GameObject_Flags
 
 struct TransportInfoData
 {
-    uint32_t PathProgress;
-    TransportAnimation const* AnimationInfo;
-    uint32_t CurrentSeg;
+    uint32_t PathProgress = 0;
+    TransportAnimation const* AnimationInfo = nullptr;
+    uint32_t CurrentSeg = 0;
 };
 
 class Player;
@@ -448,10 +448,10 @@ public:
     bool isFishingNode() const;
 
     // Trap objects
-    bool invisible;
-    bool inStealth;
-    uint8_t invisibilityFlag;
-    uint8_t stealthFlag;
+    bool invisible = false;
+    bool inStealth = false;
+    uint8_t invisibilityFlag = INVIS_FLAG_NORMAL;
+    uint8_t stealthFlag = STEALTH_FLAG_NORMAL;
 
     // Owner
     Player* getPlayerOwner() override;
@@ -500,23 +500,23 @@ public:
 
         void ExpireAndDelete();
 
-        int32 charges;
+        int32 charges = -1;
 
         virtual void InitAI();
 
-        Unit* m_summoner;
+        Unit* m_summoner = nullptr;
 
         void CallScriptUpdate();
 
         GameObjectAIScript* GetScript() { return myScript; }
 
-        MySQLStructure::GameobjectSpawn* m_spawn;
+        MySQLStructure::GameobjectSpawn* m_spawn = nullptr;
         void OnPushToWorld();
         void onRemoveInRangeObject(Object* pObj);
         void RemoveFromWorld(bool free_guid);
 
         uint32 GetGOReqSkill();
-    MapCell* m_respawnCell;
+    MapCell* m_respawnCell = nullptr;
 
         void SetOverrides(uint32 go_overrides) { m_overrides = go_overrides; }
         uint32 GetOverrides() { return m_overrides; }
@@ -530,7 +530,7 @@ public:
             setServersideFaction();
         }
 
-        GameObjectModel* m_model;
+        GameObjectModel* m_model = nullptr;
 
         TransportInfoData const* GetTransValues() const { return &mTransValues; }
         Transporter* ToTransport() { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter*>(this); else return nullptr; }
@@ -538,18 +538,18 @@ public:
 
     protected:
 
-        bool m_summonedGo;
-        bool m_deleted;
-        GameObjectProperties const* gameobject_properties;
-        GameObjectAIScript* myScript;
+        bool m_summonedGo = false;
+        bool m_deleted = false;
+        GameObjectProperties const* gameobject_properties = nullptr;
+        GameObjectAIScript* myScript = nullptr;
         uint32 _fields[getSizeOfStructure(WoWGameObject)];
 
         // Transport Infos
         TransportInfoData mTransValues;
 
-        uint32 m_overrides;             //See enum GAMEOBJECT_OVERRIDES!
+        uint32 m_overrides = 0;             //See enum GAMEOBJECT_OVERRIDES!
 
-        uint64 m_rotation;
+        uint64 m_rotation = 0;
 
     //MIT
     public:

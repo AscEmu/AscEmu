@@ -95,9 +95,9 @@ struct CreateInfo_SkillStruct
 #pragma pack(push,1)
 struct ActionButton
 {
-    uint32_t Action;
-    uint8_t Type;
-    uint8_t Misc;
+    uint32_t Action = 0;
+    uint8_t Type = 0;
+    uint8_t Misc = 0;
 };
 #pragma pack(pop)
 
@@ -319,7 +319,7 @@ class PlayerSpec
 
         std::map<uint32, uint8> talents;
 #ifdef FT_GLYPHS
-        uint16 glyphs[GLYPHS_COUNT];
+        uint16 glyphs[GLYPHS_COUNT] = {0};
 #endif
         ActionButton mActions[PLAYER_ACTION_BUTTON_COUNT];
     private:
@@ -1422,9 +1422,9 @@ public:
         SkillMap m_skills;
 
         // COOLDOWNS
-        uint32 m_lastPotionId;
+        uint32 m_lastPotionId = 0;
         PlayerCooldownMap m_cooldownMap[NUM_COOLDOWN_TYPES];
-        uint32 m_globalCooldown;
+        uint32 m_globalCooldown = 0;
 
         /***********************************************************************************
             AFTER THIS POINT, public and private ARE PASSED AROUND LIKE A CHEAP WH*RE :P
@@ -1451,8 +1451,7 @@ public:
         void RemoveItemByGuid(uint64 GUID);
 
         //! Okay to remove from world
-        bool ok_to_remove;
-        void OnLogin();//custom stuff on player login.
+        bool ok_to_remove = false;
 
         void SendEquipmentSetList();
         void SendEquipmentSetSaved(uint32 setID, uint32 setGUID);
@@ -1503,16 +1502,16 @@ public:
 
         // Taxi related variables
         std::vector<TaxiPath*> m_taxiPaths;
-        TaxiPath* m_CurrentTaxiPath;
-        uint32 taxi_model_id;
-        uint32 lastNode;
-        uint32 m_taxi_ride_time;
+        TaxiPath* m_CurrentTaxiPath = nullptr;
+        uint32 taxi_model_id = 0;
+        uint32 lastNode = 0;
+        uint32 m_taxi_ride_time = 0;
         uint32_t m_taximask[DBC_TAXI_MASK_SIZE];
-        float m_taxi_pos_x;
-        float m_taxi_pos_y;
-        float m_taxi_pos_z;
-        bool m_onTaxi;
-        uint32 m_taxiMapChangeNode;
+        float m_taxi_pos_x = 0.0f;
+        float m_taxi_pos_y = 0.0f;
+        float m_taxi_pos_z = 0.0f;
+        bool m_onTaxi = false;
+        uint32 m_taxiMapChangeNode = 0;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Quests
@@ -1545,7 +1544,7 @@ public:
 
         std::set<uint32> m_removequests;
         std::set<uint32> m_finishedQuests;
-        uint32 m_questSharer;
+        uint32 m_questSharer = 0;
         std::set<uint32> quest_spells;
         std::set<uint32> quest_mobs;
 
@@ -1607,7 +1606,7 @@ public:
         }
 
         void CalcDamage();
-        float offhand_dmg_mod;
+        float offhand_dmg_mod = 0.5f;
 
         int32 GetDamageDoneMod(uint16_t school)
         {
@@ -1650,8 +1649,8 @@ public:
         void smsg_InitialFactions();
         uint32 GetInitialFactionId();
         // factions variables
-        int32 pctReputationMod;
-        FactionReputation* reputationByListId[128];
+        int32 pctReputationMod = 0;
+        FactionReputation* reputationByListId[128] = {nullptr};
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // PVP
@@ -1684,10 +1683,10 @@ public:
         void SetDuelState(uint8 state) { m_duelState = state; }
         uint8 GetDuelState() { return m_duelState; }
 
-        Player* DuelingWith;
-        uint32 m_duelCountdownTimer;
-        uint8 m_duelStatus;
-        uint8 m_duelState;
+        Player* DuelingWith = nullptr;
+        uint32 m_duelCountdownTimer = 0;
+        uint8 m_duelStatus = 0;
+        uint8 m_duelState = DUEL_STATE_FINISHED;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Pets/Summons
@@ -1730,11 +1729,11 @@ public:
 
     protected:
         std::list<Pet*>  m_Summons;
-        uint8 m_StableSlotCount;
-        uint32 m_PetNumberMax;
+        uint8 m_StableSlotCount = 0;
+        uint32 m_PetNumberMax = 0;
         std::map<uint32, PlayerPet*> m_Pets;
 
-        Object* m_SummonedObject;
+        Object* m_SummonedObject = nullptr;
     
         /////////////////////////////////////////////////////////////////////////////////////////
         // Item Interface
@@ -1755,9 +1754,9 @@ public:
         void TagUnit(Object* o);
         
         // loot variables
-        uint64 m_lootGuid;
-        uint64 m_currentLoot;
-        bool bShouldHaveLootableOnCorpse;
+        uint64 m_lootGuid = 0;
+        uint64 m_currentLoot = 0;
+        bool bShouldHaveLootableOnCorpse = false;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // World Session
@@ -1767,7 +1766,7 @@ public:
 
         void SendDelayedPacket(WorldPacket* data, bool bDeleteOnSend);
 protected:
-        WorldSession* m_session;
+        WorldSession* m_session = nullptr;
 public:
 
         // Talents
@@ -1796,7 +1795,7 @@ public:
         bool LoadSkills(QueryResult* result);
         bool SaveSkills(bool NewCharacter, QueryBuffer* buf);
 
-        bool m_FirstLogin;
+        bool m_FirstLogin = false;
 protected:
         ReputationMap m_reputation;
 
@@ -1809,8 +1808,8 @@ public:
         static DrunkenState GetDrunkenstateByValue(uint16 value);
         void HandleSobering();
 
-        uint32 m_drunkTimer;
-        uint16 m_drunk;
+        uint32 m_drunkTimer = 0;
+        uint16 m_drunk = 0;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Death system
@@ -1825,16 +1824,16 @@ public:
         void DeathDurabilityLoss(double percent);
         void RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid);
 
-        uint64 m_resurrecter;
+        uint64 m_resurrecter = 0;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Talent Specs
         /////////////////////////////////////////////////////////////////////////////////////////
-        uint16 m_maxTalentPoints;
-        uint8 m_talentSpecsCount;
-        uint8 m_talentActiveSpec;
+        uint16 m_maxTalentPoints = 0;
+        uint8 m_talentSpecsCount = 1;
+        uint8 m_talentActiveSpec = 0;
 #if VERSION_STRING >= Cata
-        uint32 m_FirstTalentTreeLock;
+        uint32 m_FirstTalentTreeLock = 0;
 #endif
 
 #ifdef FT_DUAL_SPEC
@@ -1877,16 +1876,16 @@ public:
         bool HasWonRbgToday();
         void SetHasWonRbgToday(bool value);
 
-        CBattleground* m_bg;
-        CBattleground* m_pendingBattleground;
-        bool m_bgHasFlag;
-        bool m_bgIsQueued;
-        uint32 m_bgQueueType;
-        uint32 m_bgQueueInstanceId;
+        CBattleground* m_bg = nullptr;
+        CBattleground* m_pendingBattleground = nullptr;
+        bool m_bgHasFlag = false;
+        bool m_bgIsQueued = false;
+        uint32 m_bgQueueType = 0;
+        uint32 m_bgQueueInstanceId = 0;
 
     protected:
-        bool m_bgIsRbg;
-        bool m_bgIsRbgWon;
+        bool m_bgIsRbg = false;
+        bool m_bgIsRbgWon = false;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -1914,15 +1913,15 @@ public:
         void ApplyPlayerRestState(bool apply);
         void UpdateRestState();
 protected:
-        uint8 m_isResting;
-        uint8 m_restState;
-        uint32 m_restAmount;
+        uint8 m_isResting = 0;
+        uint8 m_restState = 0;
+        uint32 m_restAmount = 0;
 public:
 
         /////////////////////////////////////////////////////////////////////////////////////////
         //  PVP Stuff
         /////////////////////////////////////////////////////////////////////////////////////////
-        uint32 m_pvpTimer;
+        uint32 m_pvpTimer = 0;
 
         void AddHonor(uint32 honorPoints, bool sendUpdate);
         void UpdateHonor();
@@ -1948,7 +1947,7 @@ public:
         //Note:ModSkillLine -> value+=amt;ModSkillMax -->value=amt; --weird
         float GetSkillUpChance(uint32 id);
 
-        float SpellHasteRatingBonus;
+        float SpellHasteRatingBonus = 1.0f;
         void UpdateAttackSpeed();
         float GetDefenseChance(uint32 opLevel);
         float GetDodgeChance();
@@ -1976,14 +1975,14 @@ public:
 
         uint32 m_nextSave;
 
-        int m_lifetapbonus;         //warlock spell related
-        bool m_requiresNoAmmo;      //warlock spell related
+        int m_lifetapbonus = 0;         //warlock spell related
+        bool m_requiresNoAmmo = false;      //warlock spell related
 
         // Misc
         void EventCannibalize(uint32 amount);
 
-        uint32 m_modblockabsorbvalue;
-        uint32 m_modblockvaluefromspells;
+        uint32 m_modblockabsorbvalue = 0;
+        uint32 m_modblockvaluefromspells = 0;
         void SendInitialLogonPackets();
         void Reset_Spells();
 
@@ -1997,59 +1996,59 @@ public:
         void res_M_crit_set(float newvalue) { m_resist_critical[0] = newvalue; }
         float res_R_crit_get() { return m_resist_critical[1]; }
         void res_R_crit_set(float newvalue) { m_resist_critical[1] = newvalue; }
-        uint32 FlatResistanceModifierPos[TOTAL_SPELL_SCHOOLS];
-        uint32 FlatResistanceModifierNeg[TOTAL_SPELL_SCHOOLS];
-        uint32 BaseResistanceModPctPos[TOTAL_SPELL_SCHOOLS];
-        uint32 BaseResistanceModPctNeg[TOTAL_SPELL_SCHOOLS];
-        uint32 ResistanceModPctPos[TOTAL_SPELL_SCHOOLS];
-        uint32 ResistanceModPctNeg[TOTAL_SPELL_SCHOOLS];
-        float m_resist_critical[2];             // when we are a victim we can have talents to decrease chance for critical hit. This is a negative value and it's added to critchances
-        float m_resist_hit[2];                  // 0 = melee; 1= ranged;
-        int32 m_resist_hit_spell[TOTAL_SPELL_SCHOOLS]; // spell resist per school
-        uint32 m_modphyscritdmgPCT;
-        uint32 m_RootedCritChanceBonus;         // Class Script Override: Shatter
-        uint32 m_IncreaseDmgSnaredSlowed;
+        uint32 FlatResistanceModifierPos[TOTAL_SPELL_SCHOOLS] = {0};
+        uint32 FlatResistanceModifierNeg[TOTAL_SPELL_SCHOOLS] = {0};
+        uint32 BaseResistanceModPctPos[TOTAL_SPELL_SCHOOLS] = {0};
+        uint32 BaseResistanceModPctNeg[TOTAL_SPELL_SCHOOLS] = {0};
+        uint32 ResistanceModPctPos[TOTAL_SPELL_SCHOOLS] = {0};
+        uint32 ResistanceModPctNeg[TOTAL_SPELL_SCHOOLS] = {0};
+        float m_resist_critical[2] = {0};             // when we are a victim we can have talents to decrease chance for critical hit. This is a negative value and it's added to critchances
+        float m_resist_hit[2] = {0};                  // 0 = melee; 1= ranged;
+        int32 m_resist_hit_spell[TOTAL_SPELL_SCHOOLS] = {0}; // spell resist per school
+        uint32 m_modphyscritdmgPCT = 0;
+        uint32 m_RootedCritChanceBonus = 0;         // Class Script Override: Shatter
+        uint32 m_IncreaseDmgSnaredSlowed = 0;
 
         // SPELL_AURA_MOD_MANA_REGEN_INTERRUPT
-        uint32 m_ModInterrMRegenPCT;
+        uint32 m_ModInterrMRegenPCT = 0;
         // SPELL_AURA_MOD_POWER_REGEN
-        int32 m_ModInterrMRegen;
+        int32 m_ModInterrMRegen = 0;
         // SPELL_AURA_REGEN_MANA_STAT_PCT
-        int32_t m_modManaRegenFromStat[STAT_COUNT];
-        float m_RegenManaOnSpellResist;
-        uint32 m_casted_amount[TOTAL_SPELL_SCHOOLS];   // Last casted spells amounts. Need for some spells. Like Ignite etc. DOesn't count HoTs and DoTs. Only directs
+        int32_t m_modManaRegenFromStat[STAT_COUNT] = {0};
+        float m_RegenManaOnSpellResist = 0.0f;
+        uint32 m_casted_amount[TOTAL_SPELL_SCHOOLS] = {0};   // Last casted spells amounts. Need for some spells. Like Ignite etc. DOesn't count HoTs and DoTs. Only directs
 
-        uint32 FlatStatModPos[5];
-        uint32 FlatStatModNeg[5];
-        uint32 StatModPctPos[5];
-        uint32 StatModPctNeg[5];
-        uint32 TotalStatModPctPos[5];
-        uint32 TotalStatModPctNeg[5];
-        int32 IncreaseDamageByType[12];         // mod dmg by creature type
-        float IncreaseDamageByTypePCT[12];
-        float IncreaseCricticalByTypePCT[12];
-        int32 DetectedRange;
-        float PctIgnoreRegenModifier;
-        uint32 m_retainedrage;                  // Warrior spell related
+        uint32 FlatStatModPos[5] = {0};
+        uint32 FlatStatModNeg[5] = {0};
+        uint32 StatModPctPos[5] = {0};
+        uint32 StatModPctNeg[5] = {0};
+        uint32 TotalStatModPctPos[5] = {0};
+        uint32 TotalStatModPctNeg[5] = {0};
+        int32 IncreaseDamageByType[12] = {0};         // mod dmg by creature type
+        float IncreaseDamageByTypePCT[12] = {0};
+        float IncreaseCricticalByTypePCT[12] = {0};
+        int32 DetectedRange = 0;
+        float PctIgnoreRegenModifier = 0.0f;
+        uint32 m_retainedrage = 0;                  // Warrior spell related
 
         uint32* GetPlayedtime() { return m_playedtime; };
         void CalcStat(uint8_t t);
         float CalcRating(PlayerCombatRating t);
         void RegenerateHealth(bool inCombat);
 
-        uint64 misdirectionTarget;              // Hunter spell related
+        uint64 misdirectionTarget = 0;              // Hunter spell related
 
         uint64 GetMisdirectionTarget() { return misdirectionTarget; }
         void SetMisdirectionTarget(uint64 PlayerGUID) { misdirectionTarget = PlayerGUID; }
 
-        bool bReincarnation;                    // Shaman spell related
+        bool bReincarnation = false;                    // Shaman spell related
 
         std::map<uint32, WeaponModifier> damagedone;
         std::map<uint32, WeaponModifier> tocritchance;
-        bool cannibalize;
-        uint8 cannibalizeCount;
-        int32 rageFromDamageDealt;
-        int32 rageFromDamageTaken;
+        bool cannibalize = false;
+        uint8 cannibalizeCount = 0;
+        int32 rageFromDamageDealt = 0;
+        int32 rageFromDamageTaken = 0;
 
         void _Relocate(uint32 mapid, const LocationVector & v, bool sendpending, bool force_new_world, uint32 instance_id);
 
@@ -2057,8 +2056,8 @@ public:
         void RemoveItemsFromWorld();
         void UpdateKnownCurrencies(uint32 itemId, bool apply);
 
-        uint32 m_MountSpellId;
-        uint32 mountvehicleid;
+        uint32 m_MountSpellId = 0;
+        uint32 mountvehicleid = 0;
 
         bool IsMounted();
 
@@ -2083,7 +2082,7 @@ public:
 
         void removeVehicleComponent();
 
-        uint32 TrackingSpell;
+        uint32 TrackingSpell = 0;
         void _EventCharmAttack();
         
         void SoftDisconnect();
@@ -2128,27 +2127,27 @@ public:
 
     public:
 
-        bool m_Autojoin;
-        bool m_AutoAddMem;
+        bool m_Autojoin = false;
+        bool m_AutoAddMem = false;
         void SendMirrorTimer(MirrorTimerTypes Type, uint32 max, uint32 current, int32 regen);
         
         BGScore m_bgScore;
         
         void UpdateChanceFields();
         //Honor Variables
-        time_t m_fallDisabledUntil;
-        uint32 m_honorToday;
-        uint32 m_honorYesterday;
+        time_t m_fallDisabledUntil = 0;
+        uint32 m_honorToday = 0;
+        uint32 m_honorYesterday = 0;
 
         void RolloverHonor();
-        uint32 m_honorPoints;
-        uint32 m_honorRolloverTime;
-        uint32 m_killsToday;
-        uint32 m_killsYesterday;
-        uint32 m_killsLifetime;
-        uint32 m_arenaPoints;
-        uint32 m_honorless;
-        uint32 m_lastSeenWeather;
+        uint32 m_honorPoints = 0;
+        uint32 m_honorRolloverTime = 0;
+        uint32 m_killsToday = 0;
+        uint32 m_killsYesterday = 0;
+        uint32 m_killsLifetime = 0;
+        uint32 m_arenaPoints = 0;
+        uint32 m_honorless = 0;
+        uint32 m_lastSeenWeather = 0;
         std::set<Object*> m_visibleFarsightObjects;
         void EventTeleport(uint32 mapid, float x, float y, float z);
         void EventTeleportTaxi(uint32 mapid, float x, float y, float z);
@@ -2159,22 +2158,24 @@ public:
         void RemoveSummonSpell(uint32 Entry, uint32 SpellID);
         std::set<uint32>* GetSummonSpells(uint32 Entry);
 
-        uint32 m_UnderwaterLastDmg;
+        uint32 m_UnderwaterLastDmg = Util::getMSTime();
         
-        uint32 m_resurrectHealth, m_resurrectMana;
-        uint32 m_resurrectInstanceID, m_resurrectMapId;
+        uint32 m_resurrectHealth = 0;
+        uint32 m_resurrectMana = 0;
+        uint32 m_resurrectInstanceID = 0;
+        uint32 m_resurrectMapId = 0;
         LocationVector m_resurrectPosition;
-        bool blinked;
-        uint32 m_explorationTimer;
+        bool blinked = false;
+        uint32 m_explorationTimer = Util::getMSTime();
         // DBC stuff
-        DBC::Structures::ChrRacesEntry const* myRace;
-        DBC::Structures::ChrClassesEntry const* myClass;
+        DBC::Structures::ChrRacesEntry const* myRace = nullptr;
+        DBC::Structures::ChrClassesEntry const* myClass = nullptr;
 
         bool SafeTeleport(uint32 MapID, uint32 InstanceID, float X, float Y, float Z, float O);
         bool SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector & vec);
         void SafeTeleport(MapMgr* mgr, const LocationVector & vec);
         void EjectFromInstance();
-        bool raidgrouponlysent;
+        bool raidgrouponlysent = false;
 
         void EventSafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector vec)
         {
@@ -2195,53 +2196,53 @@ public:
 
         uint32 LastHonorResetTime() const { return m_lastHonorResetTime; }
         void LastHonorResetTime(uint32 val) { m_lastHonorResetTime = val; }
-        uint32 OnlineTime;
-        bool tutorialsDirty;
-        LevelInfo* lvlinfo;
-        uint32 load_health;
-        uint32 load_mana;
+        uint32 OnlineTime = static_cast<uint32_t>(UNIXTIME);
+        bool tutorialsDirty = true;
+        LevelInfo* lvlinfo = nullptr;
+        uint32 load_health = 0;
+        uint32 load_mana = 0;
         void CompleteLoading();
         void OnPushToWorld() override;
         void OnPrePushToWorld() override;
         void OnWorldPortAck();
-        uint32 m_TeleportState;
-        bool m_beingPushed;
+        uint32 m_TeleportState = 1;
+        bool m_beingPushed = false;
         
-        uint32 flying_aura;
-        bool resend_speed;
-        uint32 login_flags;
+        uint32 flying_aura = 0;
+        bool resend_speed = false;
+        uint32 login_flags = LOGIN_NO_FLAG;
 
-        uint64 m_comboTarget;
-        int8 m_comboPoints;
-        bool m_retainComboPoints;
-        int8 m_spellcomboPoints;        // rogue talent Ruthlessness will change combopoints while consuming them. solutions 1) add post cast prochandling, 2) delay adding the CP
+        uint64 m_comboTarget = 0;
+        int8 m_comboPoints = 0;
+        bool m_retainComboPoints = false;
+        int8 m_spellcomboPoints = 0;        // rogue talent Ruthlessness will change combopoints while consuming them. solutions 1) add post cast prochandling, 2) delay adding the CP
         void UpdateComboPoints();
 
         void AddComboPoints(uint64 target, int8 count);
 
         void NullComboPoints() { if (!m_retainComboPoints) { m_comboTarget = 0; m_comboPoints = 0; m_spellcomboPoints = 0; } UpdateComboPoints(); }
-        uint32 m_speedChangeCounter;
+        uint32 m_speedChangeCounter = 1;
 
         void SendAreaTriggerMessage(const char* message, ...);
 
         void RemoteRevive();
 
         LocationVector m_last_group_position;
-        int32 m_rap_mod_pct;
+        int32 m_rap_mod_pct = 0;
 
 
         void SummonRequest(uint32 Requestor, uint32 ZoneID, uint32 MapID, uint32 InstanceID, const LocationVector & Position);
     protected:
 
         LocationVector m_summonPos;
-        uint32 m_summonInstanceId;
-        uint32 m_summonMapId;
-        uint32 m_summoner;
+        uint32 m_summonInstanceId = 0;
+        uint32 m_summonMapId = 0;
+        uint32 m_summoner = 0;
     public:
 
 
-        bool m_deathVision;
-        SpellInfo const* last_heal_spell;
+        bool m_deathVision = false;
+        SpellInfo const* last_heal_spell = nullptr;
         LocationVector m_sentTeleportPosition;
 
         bool InBattleground() const { return m_bgQueueInstanceId != 0; }
@@ -2250,7 +2251,7 @@ public:
         void RemoveFromBattlegroundQueue();
         void FullHPMP();
         void RemoveTempEnchantsOnArena();
-        uint32 m_arenateaminviteguid;
+        uint32 m_arenateaminviteguid = 0;
 
         void ResetTimeSync();
         void SendTimeSync();
@@ -2265,8 +2266,8 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
 
         Mailbox m_mailBox;
-        uint64 m_areaSpiritHealer_guid;
-        bool m_finishingmovesdodge;
+        uint64 m_areaSpiritHealer_guid = 0;
+        bool m_finishingmovesdodge = false;
 
         bool IsAttacking() { return m_attacking; }
 
@@ -2300,43 +2301,43 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         // Player Class systems, info and misc things
         /////////////////////////////////////////////////////////////////////////////////////////
-        PlayerCreateInfo const* info;
-        uint32 m_AttackMsgTimer;        // "too far away" and "wrong facing" timer
-        bool m_attacking;
+        PlayerCreateInfo const* info = nullptr;
+        uint32 m_AttackMsgTimer = 0;        // "too far away" and "wrong facing" timer
+        bool m_attacking = false;
 
-        uint32 m_invitersGuid;      // It is guild inviters guid ,0 when its not used
+        uint32 m_invitersGuid = 0;      // It is guild inviters guid ,0 when its not used
 
         std::list<ItemSet> m_itemsets;
 
         // Rested State Stuff
-        uint32 m_timeLogoff;
+        uint32 m_timeLogoff = 0;
         // Played time
         // 0 = played on level
         // 1 = played total
         // 2 = played session
-        uint32 m_playedtime[3];
+        uint32 m_playedtime[3] = { 0, 0, static_cast<uint32_t>(UNIXTIME) };
 
         //combat mods
-        float m_blockfromspellPCT;
-        float m_critfromspell;
-        float m_spellcritfromspell;
-        float m_hitfromspell;
+        float m_blockfromspellPCT = 0.0f;
+        float m_critfromspell = 0.0f;
+        float m_spellcritfromspell = 0.0f;
+        float m_hitfromspell = 0.0f;
         //stats mods
-        uint32 m_healthfromspell;
-        uint32 m_manafromspell;
-        uint32 m_healthfromitems;
-        uint32 m_manafromitems;
+        uint32 m_healthfromspell = 0;
+        uint32 m_manafromspell = 0;
+        uint32 m_healthfromitems = 0;
+        uint32 m_manafromitems = 0;
 
         // Talents
-        uint32 m_talentresettimes;
+        uint32 m_talentresettimes = 0;
         // Raid
-        uint8 m_targetIcon;
+        uint8 m_targetIcon = 0;
 
-        uint32 m_lastHonorResetTime;
+        uint32 m_lastHonorResetTime = 0;
         uint32 _fields[getSizeOfStructure(WoWPlayer)];
-        int hearth_of_wild_pct;        // druid hearth of wild talent used on shapeshifting. We either know what is last talent level or memo on learn
+        int hearth_of_wild_pct = 0;        // druid hearth of wild talent used on shapeshifting. We either know what is last talent level or memo on learn
 
-        uint32 m_indoorCheckTimer;
+        uint32 m_indoorCheckTimer = 0;
         void RemovePendingPlayer();
 
     public:
@@ -2345,29 +2346,29 @@ public:
 
         std::map<uint32, uint32> m_forcedReactions;
 
-        bool m_passOnLoot;
+        bool m_passOnLoot = false;
         uint32 m_tradeSequence;
-        bool m_changingMaps;
+        bool m_changingMaps = true;
 
-        uint32 m_outStealthDamageBonusPct;
-        uint32 m_outStealthDamageBonusPeriod;
-        uint32 m_outStealthDamageBonusTimer;
+        uint32 m_outStealthDamageBonusPct = 0;
+        uint32 m_outStealthDamageBonusPeriod = 0;
+        uint32 m_outStealthDamageBonusTimer = 0;
 
     private:
 
-        PlayerInfo* m_playerInfo;
+        PlayerInfo* m_playerInfo = nullptr;
 
-        bool resettalents;
+        bool resettalents = false;
         std::list< Item* > m_GarbageItems;
 
         void RemoveGarbageItems();
 
-        uint32 ChampioningFactionID;
+        uint32 ChampioningFactionID = 0;
 
-        uint32 m_timeSyncCounter;
-        uint32 m_timeSyncTimer;
-        uint32 m_timeSyncClient;
-        uint32 m_timeSyncServer;
+        uint32 m_timeSyncCounter = 0;
+        uint32 m_timeSyncTimer = 0;
+        uint32 m_timeSyncClient = 0;
+        uint32 m_timeSyncServer = 0;
 
     public:
 
@@ -2381,14 +2382,14 @@ public:
 
         // Avenging Wrath
         void AvengingWrath() { mAvengingWrath = true; }
-        bool mAvengingWrath;
+        bool mAvengingWrath = true;
 
         void ToggleXpGain();
         bool CanGainXp();
 
 #if VERSION_STRING > TBC
         AchievementMgr & GetAchievementMgr() { return m_achievementMgr; }
-        AchievementMgr m_achievementMgr;
+        AchievementMgr m_achievementMgr = this;
 #endif
 
         void SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, bool sendtoself);
@@ -2398,7 +2399,7 @@ public:
 
         void SetRoles(uint8 role) { m_roles = role; }
         uint8 GetRoles() { return m_roles; }
-        uint8 m_roles;
+        uint8 m_roles = 0;
 
         uint32 GetGroupUpdateFlags() { return GroupUpdateFlags; }
         void SetGroupUpdateFlags(uint32 flags);

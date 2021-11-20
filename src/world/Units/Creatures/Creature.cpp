@@ -157,70 +157,26 @@ void Creature::setMaxWanderDistance(float_t dist)
 
 Creature::Creature(uint64 guid)
 {
-    m_valuesCount = getSizeOfStructure(WoWUnit);
+    //////////////////////////////////////////////////////////////////////////
     m_objectTypeId = TYPEID_UNIT;
+    m_valuesCount = getSizeOfStructure(WoWUnit);
+    //////////////////////////////////////////////////////////////////////////
+
+    //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
     m_uint32Values = _fields;
+
     memset(m_uint32Values, 0, ((getSizeOfStructure(WoWUnit))*sizeof(uint32)));
     m_updateMask.SetCount(getSizeOfStructure(WoWUnit));
+
     setOType(TYPE_UNIT | TYPE_OBJECT);
     setGuid(guid);
-    m_wowGuid.Init(getGuid());
-    m_defaultMovementType = IDLE_MOTION_TYPE;
-    m_formation = nullptr;
-    m_quests = NULL;
-    creature_properties = nullptr;
-    spawnid = 0;
 
-    m_useAI = true;
-    mTaxiNode = 0;
-
-    Skinned = false;
-    m_enslaveCount = 0;
-    m_enslaveSpell = 0;
-
-    for (uint8 x = 0; x < 7; ++x)
-    {
-        FlatResistanceMod[x] = 0;
-        BaseResistanceModPct[x] = 0;
-        ResistanceModPct[x] = 0;
-        ModDamageDone[x] = 0;
-        ModDamageDonePct[x] = 1.0;
-    }
-
-    for (uint8 x = 0; x < 5; ++x)
-    {
-        TotalStatModPct[x] = 0;
-        StatModPct[x] = 0;
-        FlatStatMod[x] = 0;
-    }
-
-    m_PickPocketed = false;
-    m_SellItems = NULL;
-    _myScriptClass = NULL;
-    myFamily = 0;
-
-    loot.gold = 0;
-    original_emotestate = 0;
-    mTrainer = 0;
-    m_spawn = 0;
-    auctionHouse = 0;
     setAttackPowerMultiplier(0.0f);
     setRangedAttackPowerMultiplier(0.0f);
-    _waypointPathId = 0;
-    _currentWaypointNodeInfo = std::make_pair(0, 0);
-    m_escorter = NULL;
-    m_limbostate = false;
-    m_corpseEvent = false;
-    m_respawnCell = NULL;
-    m_noRespawn = false;
-    m_respawnTimeOverride = 0;
-    m_canRegenerateHP = true;
-    BaseAttackType = SCHOOL_NORMAL;
-    m_healthfromspell = 0;
-    m_speedFromHaste = 0;
-    m_Creature_type = 0;
-}
 
+    //override class "Unit" initialisation
+    m_useAI = true;
+}
 
 Creature::~Creature()
 {

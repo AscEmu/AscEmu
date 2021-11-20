@@ -137,97 +137,18 @@ bool Player::Teleport(const LocationVector& vec, MapMgr* map)
     return true;
 }
 
-Player::Player(uint32 guid)
-    :
-    taxi_model_id(0),
-    lastNode(0),
-    m_taxi_ride_time(0),
-    m_taxi_pos_x(0),
-    m_taxi_pos_y(0),
-    m_taxi_pos_z(0),
-    m_onTaxi(false),
-    m_questSharer(0),
-    pctReputationMod(0),
-    DuelingWith(nullptr),
-    m_lootGuid(0),
-    m_currentLoot(0),
-    bShouldHaveLootableOnCorpse(false),
-    offhand_dmg_mod(0.5),
-    SpellHasteRatingBonus(1.0f),
+Player::Player(uint32 guid) :
+    m_updateMgr(this, static_cast<size_t>(worldConfig.server.compressionThreshold), 40000, 30000, 1000),
     m_nextSave(Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
-    m_lifetapbonus(0),
-    // Battleground
-    m_bg(nullptr),
-    m_bgHasFlag(false),
-    m_bgIsQueued(false),
-    m_bgQueueType(0),
-    m_bgQueueInstanceId(0),
-    m_bgIsRbg(false),
-    m_bgIsRbgWon(false),
-    DetectedRange(0),
-    PctIgnoreRegenModifier(0.0f),
-    m_retainedrage(0),
-    misdirectionTarget(0),
-    bReincarnation(false),
-    m_MountSpellId(0),
-    TrackingSpell(0),
-    // GM stuff
-    m_Autojoin(false),
-    m_AutoAddMem(false),
-    m_UnderwaterLastDmg(Util::getMSTime()),
-    m_resurrectHealth(0),
-    m_resurrectMana(0),
-    m_resurrectInstanceID(0),
-    m_resurrectMapId(0),
     m_mailBox(guid),
-    m_finishingmovesdodge(false),
-    // Trade
-    info(nullptr), // Playercreate info
-    m_AttackMsgTimer(0),
-    // PVP
-    m_Summons(),
-    m_PetNumberMax(0),
-    // DK
-    m_invitersGuid(0),
-    // Duel
-    m_duelCountdownTimer(0),
-    m_duelStatus(0),
-    m_duelState(DUEL_STATE_FINISHED), // finished
-    // Rest
-    m_timeLogoff(0),
-    m_isResting(0),
-    m_restState(0),
-    m_restAmount(0),
-    // Attack related variables
-    m_blockfromspellPCT(0),
-    m_critfromspell(0),
-    m_spellcritfromspell(0),
-    m_hitfromspell(0),
-    m_healthfromspell(0),
-    m_manafromspell(0),
-    m_healthfromitems(0),
-    m_manafromitems(0),
-    m_talentresettimes(0),
-    m_targetIcon(0),
-    m_session(nullptr),
-    m_SummonedObject(nullptr),
-    m_updateMgr(this, (size_t)worldConfig.server.compressionThreshold, 40000, 30000, 1000),
-    m_splineMgr()
-#ifdef FT_ACHIEVEMENTS
-    ,
-    m_achievementMgr(this)
-#endif
+    SDetector(new SpeedCheatDetector),
+    GroupUpdateFlags(GROUP_UPDATE_FLAG_NONE)
 {
-    int i;
-
     //////////////////////////////////////////////////////////////////////////
     m_objectType |= TYPE_PLAYER;
     m_objectTypeId = TYPEID_PLAYER;
     m_valuesCount = getSizeOfStructure(WoWPlayer);
     //////////////////////////////////////////////////////////////////////////
-
-    for (uint8_t x = 0; x < MAX_SPEED_TYPE; ++x)
-        m_forced_speed_changes[x] = 0;
 
     //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
     m_uint32Values = _fields;
@@ -245,216 +166,14 @@ Player::Player(uint32 guid)
     setRuneRegen(3, 0.100000f);
 #endif
 
-    for (i = 0; i < 28; i++)
-    {
-        MechanicDurationPctMod[i] = 0;
-    }
-
-    m_playedtime[0] = 0;
-    m_playedtime[1] = 0;
-    m_playedtime[2] = (uint32)UNIXTIME;
-
-    for (i = 0; i < 7; i++)
-    {
-        FlatResistanceModifierPos[i] = 0;
-        FlatResistanceModifierNeg[i] = 0;
-        BaseResistanceModPctPos[i] = 0;
-        BaseResistanceModPctNeg[i] = 0;
-        ResistanceModPctPos[i] = 0;
-        ResistanceModPctNeg[i] = 0;
-        SpellDelayResist[i] = 0;
-        m_casted_amount[i] = 0;
-    }
-
-    for (i = 0; i < 5; i++)
-    {
-        FlatStatModPos[i] = 0;
-        FlatStatModNeg[i] = 0;
-        StatModPctPos[i] = 0;
-        StatModPctNeg[i] = 0;
-        TotalStatModPctPos[i] = 0;
-        TotalStatModPctNeg[i] = 0;
-    }
-
-    for (i = 0; i < 12; i++)
-    {
-        IncreaseDamageByType[i] = 0;
-        IncreaseDamageByTypePCT[i] = 0;
-        IncreaseCricticalByTypePCT[i] = 0;
-    }
-
-    mControledUnit = this;
     mPlayerControler = this;
-
-    m_itemInterface = new ItemInterface(this);
-
-    SDetector = new SpeedCheatDetector;
-
-    cannibalize = false;
-    mAvengingWrath = true;
-    cannibalizeCount = 0;
-    rageFromDamageDealt = 0;
-    rageFromDamageTaken = 0;
-
-    m_honorToday = 0;
-    m_honorYesterday = 0;
-    m_honorPoints = 0;
-    m_killsToday = 0;
-    m_killsYesterday = 0;
-    m_killsLifetime = 0;
-    m_honorless = 0;
-    m_lastSeenWeather = 0;
-    m_attacking = false;
-
-    blinked = false;
-    m_explorationTimer = Util::getMSTime();
-    m_pvpTimer = 0;
-    m_globalCooldown = 0;
-    m_lastHonorResetTime = 0;
-    tutorialsDirty = true;
-    m_TeleportState = 1;
-    m_beingPushed = false;
-
-    flying_aura = 0;
-    resend_speed = false;
-    login_flags = LOGIN_NO_FLAG;
-    resettalents = false;
-    memset(reputationByListId, 0, sizeof(FactionReputation*) * 128);
-
-    m_comboTarget = 0;
-    m_comboPoints = 0;
 
     setAttackPowerMultiplier(0.f);
     setRangedAttackPowerMultiplier(0.f);
 
-    m_resist_critical[0] = m_resist_critical[1] = 0;
-
-    for (i = 0; i < TOTAL_SPELL_SCHOOLS; i++)
-        m_resist_hit_spell[i] = 0;
-
-    m_resist_hit[MOD_MELEE] = 0.0f;
-    m_resist_hit[MOD_RANGED] = 0.0f;
-
-    m_maxTalentPoints = 0; //VLack: 3 Aspire values initialized
-    m_talentActiveSpec = 0;
-    m_talentSpecsCount = 1;
-#if VERSION_STRING >= Cata
-    m_FirstTalentTreeLock = 0;
-#endif
-
-#ifdef FT_DUAL_SPEC
-    for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
-    {
-        m_specs[s].talents.clear();
-        memset(m_specs[s].glyphs, 0, GLYPHS_COUNT * sizeof(uint16));
-        memset(m_specs[s].mActions, 0, PLAYER_ACTION_BUTTON_SIZE);
-    }
-#else
-    m_spec.talents.clear();
-    memset(m_spec.mActions, 0, PLAYER_ACTION_BUTTON_SIZE);
-#endif
-
-    m_drunkTimer = 0;
-    m_drunk = 0;
-
-    ok_to_remove = false;
-    m_modphyscritdmgPCT = 0;
-    m_RootedCritChanceBonus = 0;
-    m_IncreaseDmgSnaredSlowed = 0;
-    m_ModInterrMRegenPCT = 0;
-    m_ModInterrMRegen = 0;
-
-    for (uint8_t x = 0; x < STAT_COUNT; ++x)
-        m_modManaRegenFromStat[x] = 0;
-
-    m_RegenManaOnSpellResist = 0;
-    m_rap_mod_pct = 0; // only initialized to 0: why?
-    m_modblockabsorbvalue = 0;
-    m_modblockvaluefromspells = 0;
-    m_summoner = m_summonInstanceId = m_summonMapId = 0;
-    m_spellcomboPoints = 0;
-    m_pendingBattleground = nullptr;
-    m_deathVision = false;
-    m_resurrecter = 0;
-    m_retainComboPoints = false;
-    last_heal_spell = nullptr;
-    m_playerInfo = nullptr;
     m_sentTeleportPosition.ChangeCoords({ 999999.0f, 999999.0f, 999999.0f });
-    m_speedChangeCounter = 1;
-    memset(&m_bgScore, 0, sizeof(BGScore));
-    m_arenateaminviteguid = 0;
-    m_arenaPoints = 0;
-    m_honorRolloverTime = 0;
-    hearth_of_wild_pct = 0;
-    raidgrouponlysent = false;
-    loot.gold = 0;
-    m_areaSpiritHealer_guid = 0;
-    m_CurrentTaxiPath = nullptr;
-
-    m_fallDisabledUntil = 0;
-    m_indoorCheckTimer = 0;
-    m_taxiMapChangeNode = 0;
-    this->OnLogin();
-
-    m_requiresNoAmmo = false;
-    m_passOnLoot = false;
-    m_changingMaps = true;
-    m_outStealthDamageBonusPct = m_outStealthDamageBonusPeriod = m_outStealthDamageBonusTimer = 0;
-
-    m_skills.clear();
-    m_wratings.clear();
-    m_taxiPaths.clear();
-    m_removequests.clear();
-    m_finishedQuests.clear();
-    quest_spells.clear();
-    quest_mobs.clear();
-
-    m_onStrikeSpells.clear();
-    m_onStrikeSpellDmg.clear();
-    mSpellOverrideMap.clear();
-    mSpells.clear();
-    mDeletedSpells.clear();
-    mShapeShiftSpells.clear();
-    m_Pets.clear();
-    m_itemsets.clear();
-    m_reputation.clear();
-    m_channels.clear();
-    m_visibleObjects.clear();
-    m_forcedReactions.clear();
-
-    loginauras.clear();
-    damagedone.clear();
-    tocritchance.clear();
-    m_visibleFarsightObjects.clear();
-    SummonSpells.clear();
-    PetSpells.clear();
-
-    m_lastPotionId = 0;
-    for (i = 0; i < NUM_COOLDOWN_TYPES; i++)
-        m_cooldownMap[i].clear();
-
-    ChampioningFactionID = 0;
-    mountvehicleid = 0;
-
-    myRace = nullptr;
-    myClass = nullptr;
-    OnlineTime = (uint32)UNIXTIME;
-    lvlinfo = nullptr;
-    load_health = 0;
-    load_mana = 0;
-
-    m_StableSlotCount = 0;
-    m_timeSyncCounter = 0;
-    m_timeSyncTimer = 0;
-    m_timeSyncClient = 0;
-    m_timeSyncServer = 0;
-    m_roles = 0;
-    GroupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
-    m_FirstLogin = false;
+    m_itemInterface = new ItemInterface(this);
 }
-
-void Player::OnLogin()
-{}
 
 Player::~Player()
 {
@@ -475,14 +194,14 @@ Player::~Player()
     if (m_TradeData != nullptr)
         cancelTrade(false);
 
-    Player* pTarget = sObjectMgr.GetPlayer(getGroupInviterId());
-    if (pTarget)
+    if (Player* pTarget = sObjectMgr.GetPlayer(getGroupInviterId()))
         pTarget->setGroupInviterId(0);
 
     DismissActivePets();
 
     if (DuelingWith != nullptr)
         DuelingWith->DuelingWith = nullptr;
+
     DuelingWith = nullptr;
 
     for (uint8 i = 0; i < MAX_QUEST_SLOT; ++i)

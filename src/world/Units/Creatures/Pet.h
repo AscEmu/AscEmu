@@ -130,7 +130,7 @@ public:
     Player* getPlayerOwner() override;
 
 protected:
-    Player* m_Owner;
+    Player* m_Owner = nullptr;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -268,24 +268,24 @@ public:
     protected:
 
         PetSpellMap mSpells;
-        PlayerPet* mPi;
-        uint32 ActionBar[10];       /// 10 slots
+        PlayerPet* mPi = nullptr;
+        uint32 ActionBar[10] = {0};
 
         std::map<uint32, AI_Spell*> m_AISpellStore;
 
-        uint32 m_AutoCombatSpell;
+        uint32 m_AutoCombatSpell = 0;
 
-        uint32 m_HappinessTimer;
-        uint32 m_PetNumber;
-        uint32 m_Action;
-        uint32 m_State;
-        uint32 m_ExpireTime;
-        uint32 m_Diet;
-        time_t reset_time;
-        uint32 reset_cost;
-        bool bExpires;
-        bool Summon;
-        bool ScheduledForDeletion;
+        uint32 m_HappinessTimer = PET_HAPPINESS_UPDATE_TIMER;
+        uint32 m_PetNumber = 0;
+        uint32 m_Action = PET_ACTION_FOLLOW;
+        uint32 m_State = PET_STATE_DEFENSIVE;
+        uint32 m_ExpireTime = 0;
+        uint32 m_Diet = 0;
+        time_t reset_time = 0;
+        uint32 reset_cost = 0;
+        bool bExpires = false;
+        bool Summon = false;
+        bool ScheduledForDeletion = false;
         std::string m_name;
         HappinessState GetHappinessState();
         void SetNameForEntry(uint32 entry);

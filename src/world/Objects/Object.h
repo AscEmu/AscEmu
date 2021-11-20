@@ -122,7 +122,7 @@ protected:
     {
         uint8_t* wow_data_ptr;
         WoWObject* wow_data;
-        uint32_t* m_uint32Values;
+        uint32_t* m_uint32Values = nullptr;
     };
 
     bool skipping_updates = false;
@@ -179,7 +179,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Object Type Id
 protected:
-    uint8_t m_objectTypeId;
+    uint8_t m_objectTypeId = TYPEID_UNIT;
 
 public:
     uint8_t getObjectTypeId() const;
@@ -209,7 +209,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spell functions
 private:
-    Spell* m_currentSpell[CURRENT_SPELL_MAX];
+    Spell* m_currentSpell[CURRENT_SPELL_MAX] = {nullptr};
 
     std::map<Spell*, bool> m_travelingSpells;
     std::list<Spell*> m_garbageSpells;
@@ -611,7 +611,7 @@ public:
 
         MovementInfo obj_movement_info;
 
-        uint32 m_phase;         // This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
+        uint32 m_phase = 1;         // This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
 
     uint32 GetPhase() { return m_phase; }
         virtual void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
@@ -623,8 +623,8 @@ public:
         void setServersideFaction();
         uint32 getServersideFaction();
 
-        DBC::Structures::FactionTemplateEntry const* m_factionTemplate;
-        DBC::Structures::FactionEntry const* m_factionEntry;
+        DBC::Structures::FactionTemplateEntry const* m_factionTemplate = nullptr;
+        DBC::Structures::FactionEntry const* m_factionEntry = nullptr;
 
         void SetInstanceID(int32 instance) { m_instanceId = instance; }
         int32 GetInstanceID() { return m_instanceId; }
@@ -634,7 +634,7 @@ public:
         // Object activation
     private:
 
-        bool Active;
+        bool Active = false;
     public:
 
         bool IsActive() { return Active; }
@@ -642,7 +642,7 @@ public:
         virtual void Activate(MapMgr* mgr);
         virtual void Deactivate(MapMgr* mgr);
         // Player is in pvp queue.
-        bool m_inQueue;
+        bool m_inQueue = false;
         void SetMapMgr(MapMgr* mgr) { m_mapMgr = mgr; }
 
         void Delete()
@@ -689,38 +689,39 @@ public:
         uint16 m_updateFlag;
 
         // Zone id.
-        uint32 m_zoneId;
+        uint32 m_zoneId = 0;
         // Continent/map id.
-        uint32 m_mapId;
+        uint32 m_mapId = MAPID_NOT_IN_WORLD;
         // Map manager
-        MapMgr* m_mapMgr;
+        MapMgr* m_mapMgr = nullptr;
         // Current map cell row and column
-        uint32 m_mapCell_x, m_mapCell_y;
+        uint32 m_mapCell_x = uint32(-1);
+        uint32 m_mapCell_y = uint32(-1);
 
         // Main Function called by isInFront();
         bool inArc(float Position1X, float Position1Y, float FOV, float Orientation, float Position2X, float Position2Y);
 
-        LocationVector m_position;
+        LocationVector m_position = {0, 0, 0, 0};
         LocationVector m_lastMapUpdatePosition;
-        LocationVector m_spawnLocation;
+        LocationVector m_spawnLocation = { 0, 0, 0, 0 };
 
         // Number of properties
-        uint16 m_valuesCount;
+        uint16 m_valuesCount = 0;
 
         // List of object properties that need updating.
         UpdateMask m_updateMask;
 
         // True if object was updated
-        bool m_objectUpdated;
+        bool m_objectUpdated = false;
 
-        int32 m_instanceId;
+        int32 m_instanceId = INSTANCEID_NOT_IN_WORLD;
 
         // Transporters
-        Transporter* m_transport;
+        Transporter* m_transport = nullptr;
 
     public:
 
-        bool m_loadedFromDB;
+        bool m_loadedFromDB = false;
 
         // Andy's crap
         std::set<Spell*> m_pendingSpells;

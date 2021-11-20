@@ -138,8 +138,11 @@ void Corpse::setCorpseDataFromDbString(std::string dbString)
  // AGPL Start
 Corpse::Corpse(uint32 high, uint32 low)
 {
+    //////////////////////////////////////////////////////////////////////////
     m_objectType |= TYPE_CORPSE;
     m_objectTypeId = TYPEID_CORPSE;
+    m_valuesCount = getSizeOfStructure(WoWCorpse);
+    //////////////////////////////////////////////////////////////////////////
 
 #if VERSION_STRING == Classic
     m_updateFlag = (UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
@@ -157,22 +160,16 @@ Corpse::Corpse(uint32 high, uint32 low)
     m_updateFlag = UPDATEFLAG_HAS_POSITION;
 #endif
 
-    m_valuesCount = getSizeOfStructure(WoWCorpse);
-
+    //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
     m_uint32Values = _fields;
+
     memset(m_uint32Values, 0, (getSizeOfStructure(WoWCorpse))*sizeof(uint32));
     m_updateMask.SetCount(getSizeOfStructure(WoWCorpse));
 
     setOType(TYPE_CORPSE | TYPE_OBJECT);
-
     setGuid(low, high);
 
     setScale(1);   //always 1
-
-    m_time = (time_t)0;
-
-    m_state = CORPSE_STATE_BODY;
-    _loadedfromdb = false;
 
     if (high != 0)
         sObjectMgr.AddCorpse(this);

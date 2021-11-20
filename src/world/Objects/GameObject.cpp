@@ -185,12 +185,11 @@ Player* GameObject::getPlayerOwner()
 
 GameObject::GameObject(uint64 guid)
 {
+    //////////////////////////////////////////////////////////////////////////
     m_objectType |= TYPE_GAMEOBJECT;
     m_objectTypeId = TYPEID_GAMEOBJECT;
-
-    mTransValues.CurrentSeg = 0;
-    mTransValues.AnimationInfo = 0;
-    mTransValues.PathProgress = 0;
+    m_valuesCount = getSizeOfStructure(WoWGameObject);
+    //////////////////////////////////////////////////////////////////////////
 
 #if VERSION_STRING == Classic
     m_updateFlag = (UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
@@ -208,32 +207,17 @@ GameObject::GameObject(uint64 guid)
     m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
 #endif
 
-    m_valuesCount = getSizeOfStructure(WoWGameObject);
+    //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
     m_uint32Values = _fields;
+
     std::fill(m_uint32Values, &m_uint32Values[getSizeOfStructure(WoWGameObject)], 0);
     m_updateMask.SetCount(getSizeOfStructure(WoWGameObject));
 
     setOType(TYPE_GAMEOBJECT | TYPE_OBJECT);
     setGuid(guid);
-    setAnimationProgress(100);
-    m_wowGuid.Init(guid);
-    setScale(1);
-    m_summonedGo = false;
-    invisible = false;
-    inStealth = false;
-    invisibilityFlag = INVIS_FLAG_NORMAL;
-    stealthFlag = STEALTH_FLAG_NORMAL;
-    m_summoner = NULL;
-    charges = -1;
-    gameobject_properties = nullptr;
-    myScript = NULL;
-    m_spawn = 0;
-    m_deleted = false;
-    m_respawnCell = NULL;
-    m_rotation = 0;
-    m_overrides = 0;
 
-    m_model = NULL;
+    setAnimationProgress(100);
+    setScale(1);
 }
 
 GameObject::~GameObject()
