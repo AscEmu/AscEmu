@@ -519,7 +519,7 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
 
     std::vector<ObjectGuid> itemGuids(count, ObjectGuid(0));
     std::vector<uint32_t> newEntries(count, 0);
-    std::vector<uint16_t> slots(count, 0);
+    std::vector<uint32_t> slots(count, 0);
 
     for (uint8_t i = 0; i < count; ++i)
     {
@@ -581,7 +581,7 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
     if (!creature->isTransmog() && creature->getDistance(player) > 5.0f)
     {
         sLogger.debug("handleTransmogrifyItems - Unit (GUID: %u) can't interact with it or is no Transmogrifier.", uint64_t(npcGuid));
-        //return;
+        return;
     }
 
     int32_t cost = 0;
