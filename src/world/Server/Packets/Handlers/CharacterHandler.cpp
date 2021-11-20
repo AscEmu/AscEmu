@@ -928,6 +928,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
                 do
                 {
                     uint32_t enchantid;
+                    uint32_t enchslot;
 
                     int8_t item_slot = item_db_result->Fetch()[0].GetInt8();
                     const auto itemProperties = sMySQLStore.getItemProperties(item_db_result->Fetch()[1].GetUInt32());
@@ -945,6 +946,21 @@ void WorldSession::characterEnumProc(QueryResult* result)
                                 if (spellItemEnchantmentEntry != nullptr)
                                     charEnum.player_items[item_slot].enchantmentId = spellItemEnchantmentEntry->visual;
                             }
+                        }
+                        else
+                        {
+#if VERSION_STRING == Cata
+                            const char* enchant_field = item_db_result->Fetch()[2].GetString();
+                            if (sscanf(enchant_field, "%u,0,%u;", &enchantid, &enchslot) == 2 && enchantid > 0)
+                            {
+                                if (enchslot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
+                                {
+                                    const auto itemProperties = sMySQLStore.getItemProperties(enchantid);
+                                    if (itemProperties)
+                                        charEnum.player_items[item_slot].displayId = itemProperties->DisplayInfoID;
+                                }
+                            }
+#endif
                         }
                     }
                 } while (item_db_result->NextRow());

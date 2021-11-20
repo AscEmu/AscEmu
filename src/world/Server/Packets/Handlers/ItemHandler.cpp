@@ -500,6 +500,169 @@ void WorldSession::sendRefundInfo(uint64_t guid)
 }
 #endif
 
+// todo : Check for MOP
+#if VERSION_STRING == Cata
+void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
+{
+    sLogger.debug("Received CMSG_TRANSMOGRIFY_ITEMS");
+    Player* player = GetPlayer();
+
+    // Read data
+    uint32_t count = recvData.readBits(22);
+
+    if (count >= EQUIPMENT_SLOT_END)
+    {
+        sLogger.debug("handleTransmogrifyItems - Player (GUID: %u, name: %s) sent a wrong count (%u) when transmogrifying items.", player->getGuidLow(), player->getName().c_str(), count);
+        recvData.rfinish();
+        return;
+    }
+
+    std::vector<ObjectGuid> itemGuids(count, ObjectGuid(0));
+    std::vector<uint32_t> newEntries(count, 0);
+    std::vector<uint32_t> slots(count, 0);
+
+    for (uint8_t i = 0; i < count; ++i)
+    {
+        itemGuids[i][0] = recvData.readBit();
+        itemGuids[i][5] = recvData.readBit();
+        itemGuids[i][6] = recvData.readBit();
+        itemGuids[i][2] = recvData.readBit();
+        itemGuids[i][3] = recvData.readBit();
+        itemGuids[i][7] = recvData.readBit();
+        itemGuids[i][4] = recvData.readBit();
+        itemGuids[i][1] = recvData.readBit();
+    }
+
+    ObjectGuid npcGuid;
+    npcGuid[7] = recvData.readBit();
+    npcGuid[3] = recvData.readBit();
+    npcGuid[5] = recvData.readBit();
+    npcGuid[6] = recvData.readBit();
+    npcGuid[1] = recvData.readBit();
+    npcGuid[4] = recvData.readBit();
+    npcGuid[0] = recvData.readBit();
+    npcGuid[2] = recvData.readBit();
+
+    recvData.flushBits();
+
+    for (uint32_t i = 0; i < count; ++i)
+    {
+        recvData >> newEntries[i];
+
+        recvData.ReadByteSeq(itemGuids[i][1]);
+        recvData.ReadByteSeq(itemGuids[i][5]);
+        recvData.ReadByteSeq(itemGuids[i][0]);
+        recvData.ReadByteSeq(itemGuids[i][4]);
+        recvData.ReadByteSeq(itemGuids[i][6]);
+        recvData.ReadByteSeq(itemGuids[i][7]);
+        recvData.ReadByteSeq(itemGuids[i][3]);
+        recvData.ReadByteSeq(itemGuids[i][2]);
+
+        recvData >> slots[i];
+    }
+
+    recvData.ReadByteSeq(npcGuid[7]);
+    recvData.ReadByteSeq(npcGuid[2]);
+    recvData.ReadByteSeq(npcGuid[5]);
+    recvData.ReadByteSeq(npcGuid[4]);
+    recvData.ReadByteSeq(npcGuid[3]);
+    recvData.ReadByteSeq(npcGuid[1]);
+    recvData.ReadByteSeq(npcGuid[6]);
+    recvData.ReadByteSeq(npcGuid[0]);
+
+    Creature* creature = player->GetMapMgrCreature(npcGuid);
+    if (!creature)
+    {
+        sLogger.debug("handleTransmogrifyItems - Unit (GUID: %u) not found.", uint64_t(npcGuid));
+        return;
+    }
+
+    // Validate
+    if (!creature->isTransmog() && creature->getDistance(player) > 5.0f)
+    {
+        sLogger.debug("handleTransmogrifyItems - Unit (GUID: %u) can't interact with it or is no Transmogrifier.", uint64_t(npcGuid));
+        return;
+    }
+
+    int32_t cost = 0;
+    for (uint8_t i = 0; i < count; ++i)
+    {
+        // slot of the transmogrified item
+        if (slots[i] >= EQUIPMENT_SLOT_END)
+        {
+            sLogger.debug("handleTransmogrifyItems - Player (GUID: %u, name: %s) tried to transmogrify an item (lowguid: %u) with a wrong slot (%u) when transmogrifying items.", player->getGuidLow(), player->getName().c_str(), uint64_t(itemGuids[i]), slots[i]);
+            return;
+        }
+
+        // entry of the transmogrifier item, if it's not 0
+        if (newEntries[i])
+        {
+            ItemProperties const* proto = sMySQLStore.getItemProperties(newEntries[i]);
+            if (!proto)
+            {
+                sLogger.debug("handleTransmogrifyItems - Player (GUID: %u, name: %s) tried to transmogrify to an invalid item (entry: %u).", player->getGuidLow(), player->getName().c_str(), newEntries[i]);
+                return;
+            }
+        }
+
+        Item* itemTransmogrifier = nullptr;
+        // guid of the transmogrifier item, if it's not 0
+        if (itemGuids[i])
+        {
+            itemTransmogrifier = player->getItemInterface()->GetItemByGUID(itemGuids[i]);
+            if (!itemTransmogrifier)
+            {
+                sLogger.debug("handleTransmogrifyItems - Player (GUID: %u, name: %s) tried to transmogrify with an invalid item (lowguid: %u).", player->getGuidLow(), player->getName().c_str(), uint64_t(itemGuids[i]));
+                return;
+            }
+        }
+
+        // transmogrified item
+        Item* itemTransmogrified = player->getItemInterface()->GetInventoryItem(slots[i]);
+        if (!itemTransmogrified)
+        {
+            sLogger.debug("handleTransmogrifyItems - Player (GUID: %u, name: %s) tried to transmogrify an invalid item in a valid slot (slot: %u).", player->getGuidLow(), player->getName().c_str(), slots[i]);
+            return;
+        }
+
+        if (!newEntries[i]) // reset look
+        {
+            itemTransmogrified->RemoveEnchantment(TRANSMOGRIFY_ENCHANTMENT_SLOT);
+            player->setVisibleItemFields(slots[i], itemTransmogrified);
+        }
+        else
+        {
+            if (!Item::canTransmogrifyItemWithItem(itemTransmogrified, itemTransmogrifier))
+            {
+                sLogger.debug("handleTransmogrifyItems - Player (GUID: %u, name: %s) failed CanTransmogrifyItemWithItem (%u with %u).", player->getGuidLow(), player->getName().c_str(), itemTransmogrified->getEntry(), itemTransmogrifier->getEntry());
+                return;
+            }
+
+            // All okay, proceed
+            auto Transmog = new DBC::Structures::SpellItemEnchantmentEntry();
+            Transmog->Id = newEntries[i];
+
+            itemTransmogrified->AddEnchantment(Transmog, 0, true, false, false, TRANSMOGRIFY_ENCHANTMENT_SLOT, 0);
+            player->setVisibleItemFields(slots[i], itemTransmogrified);
+
+            itemTransmogrified->setOwnerGuid(player->getGuid());
+            itemTransmogrified->RemoveFromRefundableMap();
+            itemTransmogrified->removeFlags(ITEM_FLAG_BOP_TRADEABLE);   // todo implement this properly
+
+            if (itemTransmogrifier->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP || itemTransmogrifier->getItemProperties()->Bonding == ITEM_BIND_ON_USE)
+                itemTransmogrifier->addFlags(ITEM_FLAG_SOULBOUND);
+
+            cost += 1000; // todo implement this properly
+        }
+    }
+
+    // trusting the client, if it got here it has to have enough money
+    // ... unless client was modified
+    if (cost) // 0 cost if reverting look
+        player->modCoinage(-cost);
+}
+#endif
+
 #if VERSION_STRING >= WotLK
 void WorldSession::handleItemRefundInfoOpcode(WorldPacket& recvPacket)
 {

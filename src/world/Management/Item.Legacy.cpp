@@ -179,12 +179,38 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
         {
             if (sscanf(enchant.c_str(), "%u,%u,%u", &enchant_id, &time_left, &enchslot) == 3)
             {
-                auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
-                if (spell_item_enchant == nullptr)
-                    continue;
+#if VERSION_STRING == Cata
+                if (enchslot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
+                {
+                    auto Transmog = new DBC::Structures::SpellItemEnchantmentEntry();
+                    Transmog->Id = enchant_id;
 
-                if (spell_item_enchant->Id == enchant_id && m_itemProperties->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
-                    AddEnchantment(spell_item_enchant, time_left, (time_left == 0), false, false, enchslot);
+                    AddEnchantment(Transmog, 0, true, false, false, TRANSMOGRIFY_ENCHANTMENT_SLOT, 0);
+                }
+                else
+                {
+                    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
+                    if (spell_item_enchant == nullptr)
+                        continue;
+
+                    if (spell_item_enchant->Id == enchant_id && m_itemProperties->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
+                        AddEnchantment(spell_item_enchant, time_left, (time_left == 0), false, false, enchslot);
+                }
+#else
+                if (enchslot > MAX_INSPECTED_ENCHANTMENT_SLOT)
+                {
+                    continue;
+                }
+                else
+                {
+                    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
+                    if (spell_item_enchant == nullptr)
+                        continue;
+
+                    if (spell_item_enchant->Id == enchant_id && m_itemProperties->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
+                        AddEnchantment(spell_item_enchant, time_left, (time_left == 0), false, false, enchslot);
+                }
+#endif
             }
         }
     }
@@ -507,9 +533,7 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
     Instance.RandomSuffix = RandomSuffix;
 
     // Set the enchantment in the item fields.
-    setEnchantmentId(static_cast<uint8_t>(Slot), Enchantment->Id);
-    setEnchantmentDuration(static_cast<uint8_t>(Slot), static_cast<uint32>(Instance.ApplyTime));
-    setEnchantmentCharges(static_cast<uint8_t>(Slot), 0);
+    setEnchantment(EnchantmentSlot(Slot), Enchantment->Id, static_cast<uint32_t>(Instance.ApplyTime), 0);
 
     // Add it to our map.
     Enchantments.insert(std::make_pair(static_cast<uint32>(Slot), Instance));
@@ -540,22 +564,31 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
     return Slot;
 }
 
-void Item::RemoveEnchantment(uint32 EnchantmentSlot)
+void Item::setEnchantment(EnchantmentSlot slot, uint32_t id, uint32_t duration, uint32_t charges)
+{
+    // Better lost small time at check in comparison lost time at item save to DB.
+    if ((getEnchantmentId(slot) == id) && (getEnchantmentDuration(slot) == duration) && (getEnchantmentCharges(slot) == charges))
+        return;
+
+    setEnchantmentId(static_cast<uint8_t>(slot), id);
+    setEnchantmentDuration(static_cast<uint8_t>(slot), duration);
+    setEnchantmentCharges(static_cast<uint8_t>(slot), charges);
+}
+
+void Item::RemoveEnchantment(uint32 enchantmentSlot)
 {
     // Make sure we actually exist.
-    EnchantmentMap::iterator itr = Enchantments.find(EnchantmentSlot);
+    EnchantmentMap::iterator itr = Enchantments.find(enchantmentSlot);
     if (itr == Enchantments.end())
         return;
 
     m_isDirty = true;
-    uint32 Slot = itr->first;
+    uint32_t Slot = itr->first;
     if (itr->second.BonusApplied)
-        ApplyEnchantmentBonus(EnchantmentSlot, false);
+        ApplyEnchantmentBonus(enchantmentSlot, false);
 
     // Unset the item fields.
-    setEnchantmentId(static_cast<uint8_t>(Slot), 0);
-    setEnchantmentDuration(static_cast<uint8_t>(Slot), 0);
-    setEnchantmentCharges(static_cast<uint8_t>(Slot), 0);
+    setEnchantment(EnchantmentSlot(Slot), 0, 0, 0);
 
     // Remove the enchantment event for removal.
     event_RemoveEvents(EVENT_REMOVE_ENCHANTMENT1 + Slot);
@@ -976,28 +1009,28 @@ std::string GetItemLinkByProto(ItemProperties const* iProto, uint32 language = 0
 
     switch (iProto->Quality)
     {
-        case 0: //Poor,gray
+        case ITEM_QUALITY_POOR: //Poor,gray
             colour = "cff9d9d9d";
             break;
-        case 1: //Common,white
+        case ITEM_QUALITY_NORMAL: //Common,white
             colour = "cffffffff";
             break;
-        case 2: //Uncommon,green
+        case ITEM_QUALITY_UNCOMMON: //Uncommon,green
             colour = "cff1eff00";
             break;
-        case 3: //Rare,blue
+        case ITEM_QUALITY_RARE: //Rare,blue
             colour = "cff0070dd";
             break;
-        case 4: //Epic,purple
+        case ITEM_QUALITY_EPIC: //Epic,purple
             colour = "cffa335ee";
             break;
-        case 5: //Legendary,orange
+        case ITEM_QUALITY_LEGENDARY: //Legendary,orange
             colour = "cffff8000";
             break;
-        case 6: //Artifact,pale gold
+        case ITEM_QUALITY_ARTIFACT: //Artifact,pale gold
             colour = "c00fce080";
             break;
-        case 7: //Heirloom,pale gold
+        case ITEM_QUALITY_HEIRLOOM: //Heirloom,pale gold
             colour = "c00fce080";
             break;
         default:

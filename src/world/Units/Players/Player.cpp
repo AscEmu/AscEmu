@@ -3931,7 +3931,7 @@ void Player::setVisibleItemFields(uint32_t slot, Item* item)
 {
     if (item)
     {
-        setVisibleItemEntry(slot, item->getEntry());
+        setVisibleItemEntry(slot, item->getVisibleEntry());
 #if VERSION_STRING > TBC
         setVisibleItemEnchantment(slot, 0, item->getEnchantmentId(PERM_ENCHANTMENT_SLOT));
         setVisibleItemEnchantment(slot, 1, item->getEnchantmentId(TEMP_ENCHANTMENT_SLOT));

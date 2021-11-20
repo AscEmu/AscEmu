@@ -68,6 +68,9 @@ public:
     bool isAuctioneer() const;
     bool isStableMaster() const;
     bool isArmorer() const;
+#if VERSION_STRING >= Cata
+    bool isTransmog() const;
+#endif
 
     //type helper
     bool isVehicle() const override;
