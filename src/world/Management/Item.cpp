@@ -226,7 +226,7 @@ bool Item::hasStats() const
         return true;
 
     ItemProperties const* proto = getItemProperties();
-    for (uint8 i = 0; i < MAX_ITEM_PROTO_STATS; ++i)
+    for (uint8_t i = 0; i < MAX_ITEM_PROTO_STATS; ++i)
         if (proto->Stats[i].Value != 0)
             return true;
 
