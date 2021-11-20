@@ -18,7 +18,7 @@
  */
 
 #include "LegacyThreadPool.h"
-#include "../Logging/Logger.hpp"
+#include <Logging/Logger.hpp>
 #include "Util.hpp"
 
 #ifdef WIN32

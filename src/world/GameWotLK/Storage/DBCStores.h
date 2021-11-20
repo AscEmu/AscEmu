@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldConf.h"
 
 #if VERSION_STRING == WotLK
-#include "../world/Storage/DBC/DBCGlobals.hpp"
+#include <Storage/DBC/DBCGlobals.hpp>
 
 inline float GetRadius(DBC::Structures::SpellRadiusEntry const* radius)
 {

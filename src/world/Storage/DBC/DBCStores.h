@@ -8,21 +8,21 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldConf.h"
 
 #ifdef AE_MOP
-#include "../world/GameMop/Storage/DBCStores.h"
+#include <GameMop/Storage/DBCStores.h>
 #endif
 
 #ifdef AE_CATA
-    #include "../world/GameCata/Storage/DBCStores.h"
+    #include <GameCata/Storage/DBCStores.h>
 #endif
 
 #ifdef AE_WOTLK
-    #include "../world/GameWotLK/Storage/DBCStores.h"
+    #include <GameWotLK/Storage/DBCStores.h>
 #endif
 
 #ifdef AE_TBC
-    #include "../world/GameTBC/Storage/DBCStores.h"
+    #include <GameTBC/Storage/DBCStores.h>
 #endif
 
 #ifdef AE_CLASSIC
-    #include "../world/GameClassic/Storage/DBCStores.h"
+    #include <GameClassic/Storage/DBCStores.h>
 #endif

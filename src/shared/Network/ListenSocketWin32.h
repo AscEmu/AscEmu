@@ -12,7 +12,7 @@
 
 #ifdef CONFIG_USE_IOCP
 
-#include "../Threading/LegacyThreadPool.h"
+#include <Threading/LegacyThreadPool.h>
 
 #ifdef _MSC_VER
 #   pragma warning (push)

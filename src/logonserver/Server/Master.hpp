@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "LogonServerDefines.hpp"
-#include "../shared/AscemuServerDefines.hpp"
+#include <AscemuServerDefines.hpp>
 #include "Database/Database.h"
 
 extern Database* sLogonSQL;

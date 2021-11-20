@@ -32,13 +32,13 @@
 #include <map>
 
 #include "WoWGuid.h"
-#include "../shared/LocationVector.h"
+#include <LocationVector.h>
 #include "Storage/MySQLStructures.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #if VERSION_STRING >= Cata
     #include "Storage/DB2/DB2Structures.h"
 #endif
-#include "../shared/CommonDefines.hpp"
+#include <CommonDefines.hpp>
 #include "WorldPacket.h"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Data/WoWObject.hpp"

@@ -19,7 +19,7 @@
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Skill.hpp"
 #include "Management/ItemInterface.h"
-#include "../EventScripts/Setup.h"
+#include "Map/MapScriptInterface.h"
 #include "Objects/Faction.h"
 #include "Spell/SpellAuras.h"
 
@@ -80,7 +80,7 @@ bool HallowsEndCandy(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pSpell->getPlayerCaster())
         return true;
 
-    int newspell = 24924 + Util::getRandomUInt(3);
+    const uint32_t newspell = 24924 + Util::getRandomUInt(3);
 
     SpellInfo const* spInfo = sSpellMgr.getSpellInfo(newspell);
     if (!spInfo) return true;
@@ -94,7 +94,7 @@ bool DeviateFish(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pSpell->getPlayerCaster())
         return true;
 
-    int newspell = 8064 + Util::getRandomUInt(4);
+    const uint32_t newspell = 8064 + Util::getRandomUInt(4);
 
     SpellInfo const* spInfo = sSpellMgr.getSpellInfo(newspell);
     if (!spInfo) return true;
@@ -108,10 +108,9 @@ bool CookedDeviateFish(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pSpell->getPlayerCaster())
         return true;
 
-    int chance = 0;
-    int newspell = 0;
+    uint32_t newspell;
 
-    chance = Util::getRandomUInt(1);
+    uint32_t chance = Util::getRandomUInt(1);
 
     switch (chance)
     {
@@ -120,6 +119,9 @@ bool CookedDeviateFish(uint8_t /*effectIndex*/, Spell* pSpell)
             break;
         case 1:
             newspell = 8221; // Yaaarrrr (60 min) (turns you into a pirate)
+            break;
+        default:
+            newspell = 0;
             break;
     }
 
@@ -166,7 +168,7 @@ bool NetOMatic(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!spInfo)
         return true;
 
-    int chance = Util::getRandomUInt(99) + 1;
+    uint32_t chance = Util::getRandomUInt(99) + 1;
 
     if (chance < 51) // nets target: 50%
         pSpell->getPlayerCaster()->castSpell(target, spInfo, true);
@@ -245,7 +247,7 @@ bool NighInvulnBelt(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pSpell->getPlayerCaster())
         return true;
 
-    int chance = Util::getRandomUInt(99) + 1;
+    uint32_t chance = Util::getRandomUInt(99) + 1;
 
     if (chance > 10)    // Buff - Nigh-Invulnerability - 30456
         pSpell->getPlayerCaster()->castSpell(pSpell->getPlayerCaster(), sSpellMgr.getSpellInfo(30456), true);
@@ -749,10 +751,10 @@ bool ChampioningTabards(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Player* p_caster = a->GetPlayerCaster();
 
-    if (p_caster == NULL)
+    if (!p_caster)
         return true;
 
-    uint32_t Faction = a->getSpellInfo()->getEffectMiscValue(0);
+    uint32_t Faction = static_cast<uint32_t>(a->getSpellInfo()->getEffectMiscValue(0));
 
     if (apply)
         p_caster->SetChampioningFaction(Faction);
@@ -778,7 +780,7 @@ bool Spinning(uint8_t /*effectIndex*/, Spell* s)
 {
     Player* p_caster = s->getPlayerCaster();
 
-    if (p_caster == NULL)
+    if (!p_caster)
         return true;
 
     float neworientation = Util::getRandomFloat(M_PI_FLOAT * 2);
@@ -848,7 +850,7 @@ bool DrinkDummyAura(uint8_t /*effectIndex*/, Aura* a, bool apply)
         return true;
 
     float famount = 2.2f * (static_cast<float>(a->getSpellInfo()->getEffectBasePoints(1)) / 5.0f);
-    int32_t amount = static_cast<int32_t>(std::round(famount));
+    uint32_t amount = static_cast<uint32_t>(std::round(famount));
 
     a->EventPeriodicDrink(amount);
 
@@ -896,7 +898,7 @@ bool SchoolsOfArcaneMagicMastery(uint8_t /*effectIndex*/, Spell* s)
 {
     if (auto player = s->GetPlayerTarget())
     {
-        auto spell = player->getAreaId() == 4637 ? 59316 : 59314;
+        uint32_t spell = player->getAreaId() == 4637 ? 59316 : 59314;
         player->castSpell(player, spell, true);
     }
 

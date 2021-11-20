@@ -4,12 +4,12 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "MoveSplineInit.h"
-#include "../world/Units/Creatures/Creature.h"
-#include "../world/Units/Creatures/Vehicle.h"
+#include <Units/Creatures/Creature.h>
+#include <Units/Creatures/Vehicle.h>
 #include "MoveSpline.h"
 #include "MovementPacketBuilder.h"
-#include "../world/Units/Unit.h"
-#include "../world/Objects/Transporter.h"
+#include <Units/Unit.h>
+#include <Objects/Transporter.h>
 #include "WorldPacket.h"
 #include "Movement/PathGenerator.h"
 

@@ -18,7 +18,7 @@
  */
 
 #pragma once
-#include "../Common.hpp"
+#include <Common.hpp>
 
  // This HAS to be called outside the threads __try / __except block!
 void SetThreadName(const char* format, ...);

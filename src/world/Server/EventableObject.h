@@ -22,7 +22,7 @@
 #define EVENTABLEOBJECT_H
 
 #include "EventMgr.h"
-#include "../shared/Util.hpp"
+#include <Util.hpp>
 #include <list>
 #include <set>
 

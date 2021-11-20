@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTypes.hpp"
 #include "Macros/ItemMacros.hpp"
 #include "Management/Skill.hpp"
-#include "../../WorldConf.h"
+#include <WorldConf.h>
 
 #include <ctime>
 #include <string>

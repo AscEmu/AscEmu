@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #if VERSION_STRING == WotLK
 
 
-#include "../world/Storage/DBC/DBCGlobals.hpp"
+#include <Storage/DBC/DBCGlobals.hpp>
 #include "Map/Area/AreaStorage.hpp"
 
 typedef std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*> WMOAreaInfoByTripple;

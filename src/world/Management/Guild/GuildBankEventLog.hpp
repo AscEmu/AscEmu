@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/GuildDefinitions.hpp"
 #include "GuildLog.hpp"
 
-#include "../world/Server/WorldSession.h"
+#include <Server/WorldSession.h>
 
 class GuildBankEventLogEntry : public GuildLogEntry
 {

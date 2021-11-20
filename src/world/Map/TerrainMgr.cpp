@@ -18,7 +18,7 @@
  *
  */
 
-#include "../WorldConf.h"
+#include <WorldConf.h>
 #include "VMapFactory.h"
 #include "IVMapManager.h"
 

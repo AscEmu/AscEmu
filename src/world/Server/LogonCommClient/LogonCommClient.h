@@ -25,7 +25,7 @@
 #include "ByteBuffer.h"
 #include "Network/Socket.h"
 #include "LogonCommDefines.h"
-#include "../shared/Log.hpp"
+#include <Log.hpp>
 #include <RC4Engine.h>
 
 class LogonCommClientSocket : public Socket

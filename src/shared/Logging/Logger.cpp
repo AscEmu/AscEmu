@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <iostream>
 #include <cstdarg>
 #include <string>
-#include "../../src/world/WorldConf.h"
 
 namespace AscEmu::Logging
 {

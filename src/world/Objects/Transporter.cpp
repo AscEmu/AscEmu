@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/ScriptMacros.hpp"
 #include "Map/MapMgr.h"
 #include "Server/Packets/SmsgTransferPending.h"
-#include "../Movement/Spline/Spline.h"
+#include <Movement/Spline/Spline.h>
 #include "Server/Script/ScriptMgr.h"
 #include "Server/Definitions.h"
 

@@ -19,7 +19,7 @@
  */
 
 #include "DatabaseCommon.hpp"
-#include "../Log.hpp"
+#include <Log.hpp>
 #include "MySQLDatabase.h"
 
 

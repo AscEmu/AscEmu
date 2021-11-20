@@ -7,14 +7,14 @@ This file is released under the MIT license. See README-MIT for more information
 #undef check
 #endif
 
-#include "../../world/Objects/GameObject.h"
-#include "../../world/Management/Guild/Guild.hpp"
-#include "../../world/Spell/Spell.h"
-#include "../../world/Units/Creatures/Creature.h"
+#include <Objects/GameObject.h>
+#include <Management/Guild/Guild.hpp>
+#include <Spell/Spell.h>
+#include <Units/Creatures/Creature.h>
 #include "LUAEngine.h"
 #include "Map/MapMgr.h"
 #include "Server/Script/ScriptSetup.h"
-#include "../../world/WorldConf.h"
+#include <WorldConf.h>
 
 #ifndef _WIN32
 #include <dirent.h>

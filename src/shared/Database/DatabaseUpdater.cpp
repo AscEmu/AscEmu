@@ -4,11 +4,11 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "DatabaseUpdater.hpp"
-#include "../Logging/Logger.hpp"
+#include <Logging/Logger.hpp>
 #include "Database.h"
 #include "Field.hpp"
-#include "../Common.hpp"
-#include "../Util.hpp"
+#include <Common.hpp>
+#include <Util.hpp>
 #include <iostream>
 
 void DatabaseUpdater::initBaseIfNeeded(std::string dbName, std::string dbBaseType, Database& dbPointer)

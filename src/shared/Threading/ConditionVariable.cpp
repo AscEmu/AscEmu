@@ -18,7 +18,7 @@
  *
  */
 
-#include "../Common.hpp"
+#include <Common.hpp>
 
 namespace Arcemu
 {
