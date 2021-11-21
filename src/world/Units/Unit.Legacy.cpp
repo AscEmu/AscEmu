@@ -43,15 +43,12 @@
 #include "Creatures/Pet.h"
 #include "Management/ItemInterface.h"
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
-#include "Server/Packets/SmsgAttackStart.h"
-#include "Server/Packets/SmsgAttackStop.h"
 #include "Server/Packets/SmsgSpellDamageShield.h"
 #include "Server/Packets/SmsgAttackSwingBadFacing.h"
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Movement/Spline/MovementPacketBuilder.h"
 #include "Server/Packets/SmsgMessageChat.h"
-#include "Server/Packets/SmsgMoveKnockBack.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 
@@ -615,127 +612,6 @@ void Unit::Update(unsigned long time_passed)
                 m_diminishActive = false;
         }
     }
-}
-
-void Unit::updateSplineMovement(uint32 t_diff)
-{
-    if (movespline->Finalized())
-        return;
-
-    movespline->updateState(t_diff);
-    bool arrived = movespline->Finalized();
-
-    if (movespline->isCyclic())
-    {
-        m_splineSyncTimer -= t_diff;
-        if (m_splineSyncTimer <= 0)
-        {
-            m_splineSyncTimer = 5000; // Retail value, do not change
-
-            ByteBuffer packedGuid;
-            packedGuid.appendPackGUID(getGuid());
-
-            WorldPacket data(SMSG_FLIGHT_SPLINE_SYNC, 4 + packedGuid.size());
-            MovementNew::PacketBuilder::WriteSplineSync(*movespline, data);
-            data.append(packedGuid);
-            SendMessageToSet(&data, true);
-        }
-    }
-
-    if (arrived)
-    {
-        disableSpline();
-
-        if (movespline->HasAnimation())
-            setAnimationFlags(movespline->GetAnimationTier());
-    }
-
-    updateSplinePosition();
-}
-
-void Unit::updateSplinePosition()
-{
-    MovementNew::Location loc = movespline->ComputePosition();
-
-    if (movespline->onTransport)
-    {
-        LocationVector& pos = getMovementInfo()->transport_position;
-        pos.x = loc.x;
-        pos.y = loc.y;
-        pos.z = loc.z;
-        pos.o = normalizeOrientation(loc.orientation);
-
-        if (TransportBase* vehicle = getCurrentVehicle())
-        {
-            vehicle->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
-        }
-        else if (TransportBase* transport = GetTransport())
-        {
-            transport->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
-        }
-        else
-        {
-            return;
-        }
-    }
-
-    if (hasUnitStateFlag(UNIT_STATE_CANNOT_TURN))
-        loc.orientation = GetOrientation();
-
-    SetPosition(loc.x, loc.y, loc.z, loc.orientation);
-}
-
-void Unit::stopMoving()
-{
-    removeUnitStateFlag(UNIT_STATE_MOVING);
-
-    // not need send any packets if not in world or not moving
-    if (!IsInWorld() || movespline->Finalized())
-        return;
-
-    // Update position now since Stop does not start a new movement that can be updated later
-    if (movespline->HasStarted())
-        updateSplinePosition();
-    MovementNew::MoveSplineInit init(this);
-    init.Stop();
-}
-
-void Unit::pauseMovement(uint32_t timer/* = 0*/, uint8_t slot/* = 0*/, bool forced/* = true*/)
-{
-    if (isInvalidMovementSlot(slot))
-        return;
-
-    if (MovementGenerator* movementGenerator = getMovementManager()->getCurrentMovementGenerator(MovementSlot(slot)))
-        movementGenerator->pause(timer);
-
-    if (forced && getMovementManager()->getCurrentSlot() == MovementSlot(slot))
-        stopMoving();
-}
-
-void Unit::resumeMovement(uint32_t timer/* = 0*/, uint8_t slot/* = 0*/)
-{
-    if (isInvalidMovementSlot(slot))
-        return;
-
-    if (MovementGenerator* movementGenerator = getMovementManager()->getCurrentMovementGenerator(MovementSlot(slot)))
-        movementGenerator->resume(timer);
-}
-
-void Unit::removeAllFollowers()
-{
-    while (!m_followingMe.empty())
-        (*m_followingMe.begin())->setTarget(nullptr);
-}
-
-void Unit::disableSpline()
-{
-#if VERSION_STRING >= Cata
-    getMovementInfo()->removeMovementFlag(MovementFlags(MOVEFLAG_MOVE_FORWARD));
-#else
-    getMovementInfo()->removeMovementFlag(MovementFlags(MOVEFLAG_SPLINE_FORWARD_ENABLED));
-#endif
-
-    movespline->_Interrupt();
 }
 
 bool Unit::canReachWithAttack(Unit* pVictim)
@@ -7844,55 +7720,6 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     return dmg;
 }
 
-void Unit::smsg_AttackStop(Unit* pVictim)
-{
-    if (pVictim)
-        SendMessageToSet(SmsgAttackStop(GetNewGUID(), pVictim->GetNewGUID()).serialise().get(), true);
-    else
-        SendMessageToSet(SmsgAttackStop(GetNewGUID(), WoWGuid()).serialise().get(), true);
-
-    if (pVictim)
-    {
-        if (pVictim->isPlayer())
-        {
-            pVictim->CombatStatusHandler_ResetPvPTimeout();
-            CombatStatusHandler_ResetPvPTimeout();
-        }
-        else
-        {
-            if (!isPlayer() || getClass() == ROGUE)
-            {
-                m_cTimer = Util::getMSTime() + 8000;
-                sEventMgr.RemoveEvents(this, EVENT_COMBAT_TIMER);
-                sEventMgr.AddEvent(this, &Unit::EventUpdateFlag, EVENT_COMBAT_TIMER, 8000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-                if (pVictim->isCreatureOrPlayer())   // there could be damage coming from objects/enviromental
-                    sEventMgr.AddEvent(pVictim, &Unit::EventUpdateFlag, EVENT_COMBAT_TIMER, 8000, 1, 0);
-            }
-        }
-    }
-}
-
-void Unit::smsg_AttackStart(Unit* pVictim)
-{
-    SendMessageToSet(SmsgAttackStart(getGuid(), pVictim->getGuid()).serialise().get(), false);
-
-    sLogger.debug("WORLD: Sent SMSG_ATTACKSTART");
-
-    // FLAGS changed so other players see attack animation
-    //    addUnitFlag(UNIT_FLAG_COMBAT);
-    //    setUpdateMaskBit(UNIT_FIELD_FLAGS);
-    if (isPlayer())
-    {
-        Player* pThis = static_cast<Player*>(this);
-        if (pThis->cannibalize)
-        {
-            sEventMgr.RemoveEvents(pThis, EVENT_CANNIBALIZE);
-            pThis->setEmoteState(EMOTE_ONESHOT_NONE);
-            pThis->cannibalize = false;
-        }
-    }
-}
-
 bool Unit::RemoveAura(Aura* aur)
 {
     if (aur == NULL)
@@ -8140,40 +7967,6 @@ void Unit::WipeTargetList()
     getThreatManager().clearAllThreat();
 }
 
-void Unit::addToInRangeObjects(Object* pObj)
-{
-    if (pObj->isCreatureOrPlayer())
-    {
-        if (isHostile(this, pObj))
-            addInRangeOppositeFaction(pObj);
-
-        if (isFriendly(this, pObj))
-            addInRangeSameFaction(pObj);
-    }
-
-    Object::addToInRangeObjects(pObj);
-}//427
-
-void Unit::onRemoveInRangeObject(Object* pObj)
-{
-    removeObjectFromInRangeOppositeFactionSet(pObj);
-    removeObjectFromInRangeSameFactionSet(pObj);
-
-    if (pObj->isCreatureOrPlayer())
-    {
-        //Unit* pUnit = static_cast<Unit*>(pObj);
-        //GetAIInterface()->CheckTarget(pUnit); look if still needed now
-
-        if (getCharmGuid() == pObj->getGuid())
-            interruptSpell();
-    }
-}
-
-void Unit::clearInRangeSets()
-{
-    Object::clearInRangeSets();
-}
-
 void Unit::CalcDamage()
 {
     if (isPlayer())
@@ -8223,54 +8016,6 @@ uint32 Unit::ManaShieldAbsorb(uint32 dmg)
     if (!m_manashieldamt)
         RemoveAura(m_manaShieldId);
     return potential;
-}
-
-bool Unit::setDetectRangeMod(uint64 guid, int32 amount)
-{
-    int next_free_slot = -1;
-    for (uint8 i = 0; i < 5; i++)
-    {
-        if (m_detectRangeGUID[i] == 0 && next_free_slot == -1)
-        {
-            next_free_slot = i;
-        }
-        if (m_detectRangeGUID[i] == guid)
-        {
-            m_detectRangeMOD[i] = amount;
-            return true;
-        }
-    }
-    if (next_free_slot != -1)
-    {
-        m_detectRangeGUID[next_free_slot] = guid;
-        m_detectRangeMOD[next_free_slot] = amount;
-        return true;
-    }
-    return false;
-}
-
-void Unit::unsetDetectRangeMod(uint64 guid)
-{
-    for (uint8 i = 0; i < 5; i++)
-    {
-        if (m_detectRangeGUID[i] == guid)
-        {
-            m_detectRangeGUID[i] = 0;
-            m_detectRangeMOD[i] = 0;
-        }
-    }
-}
-
-int32 Unit::getDetectRangeMod(uint64 guid)
-{
-    for (uint8 i = 0; i < 5; i++)
-    {
-        if (m_detectRangeGUID[i] == guid)
-        {
-            return m_detectRangeMOD[i];
-        }
-    }
-    return 0;
 }
 
 void Unit::RemoveAurasByInterruptFlag(uint32 flag)
@@ -9721,31 +9466,6 @@ void Unit::HandleKnockback(Object* caster, float horizontal, float vertical)
     float destx, desty, destz;
     if (GetPoint(angle, horizontal, destx, desty, destz, true))
         getMovementManager()->moveKnockbackFrom(destx, desty, horizontal, vertical);
-}
-
-void Unit::knockbackFrom(float x, float y, float speedXY, float speedZ)
-{
-    Player* player = ToPlayer();
-    if (!player)
-    {
-        if (getCharmGuid())
-        {
-            Unit* charmer = GetMapMgrPlayer(getCharmGuid());
-            player = charmer->ToPlayer();
-        }
-    }
-
-    if (!player)
-    {
-        getMovementManager()->moveKnockbackFrom(x, y, speedXY, speedZ);
-    }
-    else
-    {
-        player->GetSession()->SendPacket(SmsgMoveKnockBack(player->GetNewGUID(), Util::getMSTime(), cosf(player->GetOrientation()), sinf(player->GetOrientation()), speedXY, -speedZ).serialise().get());
-
-        if (player->hasAuraWithAuraEffect(SPELL_AURA_ENABLE_FLIGHT2) || player->hasAuraWithAuraEffect(SPELL_AURA_FLY))
-            player->setMoveCanFly(true);
-    }
 }
 
 void Unit::BuildPetSpellList(WorldPacket& data)

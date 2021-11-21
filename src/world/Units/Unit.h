@@ -646,6 +646,9 @@ public:
     void disableSpline();
     bool isSplineEnabled() const;
 
+    void jumpTo(float speedXY, float speedZ, bool forward = true, Optional<LocationVector> dest = {});
+    void jumpTo(Object* obj, float speedZ, bool withOrientation = false);
+
     virtual MovementGeneratorType getDefaultMovementType() const;
 
     // Mover
@@ -919,6 +922,21 @@ public:
     //\ todo: should this and other tag related variables be under Creature class?
     bool isTaggedByPlayerOrItsGroup(Player* tagger);
 
+    void smsg_AttackStart(Unit* pVictim);
+    void smsg_AttackStop(Unit* pVictim);
+
+    virtual void addToInRangeObjects(Object* pObj);
+    virtual void onRemoveInRangeObject(Object* pObj);
+    void clearInRangeSets();
+
+    bool setDetectRangeMod(uint64_t guid, int32_t amount);
+    void unsetDetectRangeMod(uint64_t guid);
+    int32_t getDetectRangeMod(uint64_t guid) const;
+
+    virtual bool isCritter() { return false; }
+
+    void knockbackFrom(float x, float y, float speedXY, float speedZ);
+
 private:
     uint32_t m_attackTimer[TOTAL_WEAPON_DAMAGE_TYPES] = {0};
     //\ todo: there seems to be new haste update fields in playerdata in cata, and moved to unitdata in mop
@@ -1049,8 +1067,6 @@ public:
     void CalculateResistanceReduction(Unit* pVictim, DamageInfo* dmg, SpellInfo const* ability, float ArmorPctReduce);
     void DeMorph();
     uint32 ManaShieldAbsorb(uint32 dmg);
-    void smsg_AttackStart(Unit* pVictim);
-    void smsg_AttackStop(Unit* pVictim);
 
     bool IsDazed();
     //this function is used for creatures to get chance to daze for another unit
@@ -1189,9 +1205,6 @@ public:
     void SetResistChanceMod(uint32 amount) { m_resistChance = amount; }
 
     uint16 HasNoInterrupt() { return m_noInterrupt; }
-    bool setDetectRangeMod(uint64 guid, int32 amount);
-    void unsetDetectRangeMod(uint64 guid);
-    int32 getDetectRangeMod(uint64 guid);
 
     Loot loot;
     uint32 SchoolCastPrevent[TOTAL_SPELL_SCHOOLS] = {0};
@@ -1276,11 +1289,6 @@ public:
     void RegisterPeriodicChatMessage(uint32 delay, uint32 msgid, std::string message, bool sendnotify);
 
     void SetHealthPct(uint32 val) { if (val > 0) setHealth(float2int32(val * 0.01f * getMaxHealth())); };
-
-    // In-Range
-    virtual void addToInRangeObjects(Object* pObj);
-    virtual void onRemoveInRangeObject(Object* pObj);
-    void clearInRangeSets();
 
     uint32 m_CombatUpdateTimer = 0;
 
@@ -1427,11 +1435,7 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     virtual void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
-    virtual bool isCritter() { return false; }
-
-    void knockbackFrom(float x, float y, float speedXY, float speedZ);
-    void jumpTo(float speedXY, float speedZ, bool forward = true, Optional<LocationVector> dest = {});
-    void jumpTo(Object* obj, float speedZ, bool withOrientation = false);
+    
     virtual void HandleKnockback(Object* caster, float horizontal, float vertical);
 
     void AddGarbagePet(Pet* pet);
