@@ -93,7 +93,7 @@ public:
 
         if (iWaypointId == 9)
         {
-            getCreature()->SetFaction(38);
+            getCreature()->setFaction(38);
             getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
             getCreature()->Despawn(10 * 60 * 1000, 1000); //if failed allow other players to do quest from beggining
             getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "What manner of trick is this, blood elf? If you seek to ambush me, I warn you I will not go down quietly!");

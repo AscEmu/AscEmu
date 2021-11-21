@@ -66,11 +66,11 @@ namespace luaGlobalFunctions
                 //int32_t instanceid = static_cast<int32_t>(luaL_optinteger(L, 13, mapMgr->GetInstanceID()));
                 Creature* pCreature = mapMgr->CreateCreature(entry);
                 pCreature->Load(p, x, y, z, o);
-                pCreature->SetFaction(faction);
+                pCreature->setFaction(faction);
                 pCreature->setVirtualItemSlotId(MELEE, equip1);
                 pCreature->setVirtualItemSlotId(OFFHAND, equip2);
                 pCreature->setVirtualItemSlotId(RANGED, equip3);
-                pCreature->Phase(PHASE_SET, 1);
+                pCreature->setPhase(PHASE_SET, 1);
                 pCreature->m_noRespawn = true;
                 pCreature->AddToWorld(mapMgr);
                 if (duration > 0)

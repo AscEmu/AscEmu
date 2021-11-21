@@ -40,7 +40,7 @@ public:
 
     void OnLoad() override
     {
-        getCreature()->SetFaction(68);
+        getCreature()->setFaction(68);
         getCreature()->setStandState(STANDSTATE_STAND);
     }
 
@@ -66,7 +66,7 @@ public:
         {
             getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting.");
             getCreature()->RemoveNegativeAuras();
-            getCreature()->SetFaction(68);
+            getCreature()->setFaction(68);
             getCreature()->setStandState(STANDSTATE_SIT);
             getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(433), true);
             sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::setStandState, (uint8_t)STANDSTATE_STAND, EVENT_CREATURE_UPDATE, 18000, 0, 1);
@@ -94,7 +94,7 @@ public:
         if (Dashel == nullptr)
             return;
 
-        Dashel->SetFaction(28);
+        Dashel->setFaction(28);
         Dashel->getAIInterface()->setMeleeDisabled(false);
         Dashel->getAIInterface()->setAllowedToEnterCombat(true);
     }

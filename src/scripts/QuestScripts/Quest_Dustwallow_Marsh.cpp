@@ -55,7 +55,7 @@ public:
         {
             // set Balos Jacken friendly and start friendlyTimer cooldown
             getCreature()->RemoveNegativeAuras();
-            getCreature()->SetFaction(35);
+            getCreature()->setFaction(35);
             getCreature()->SetHealthPct(100);
             getCreature()->getThreatManager().clearAllThreat();
             getCreature()->getThreatManager().removeMeFromThreatLists();
@@ -70,7 +70,7 @@ public:
         else if (friendlyTimer == 0)
         {
             // set Balos Jacken unfriendly and reset FriendlyTimer
-            getCreature()->SetFaction(14);
+            getCreature()->setFaction(14);
             _setMeleeDisabled(false);
             getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
             friendlyTimer = BALOS_FRIENDLY_TIMER;
@@ -126,7 +126,7 @@ public:
     void AIUpdate() override
     {
         getCreature()->RemoveNegativeAuras();
-        getCreature()->SetFaction(29);
+        getCreature()->setFaction(29);
         getCreature()->SetHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();
         getCreature()->getThreatManager().removeMeFromThreatLists();
@@ -155,7 +155,7 @@ public:
         say += mTarget->getName();
         say += " wanna fight Overlord Mok'Morokk? Me beat you! Me boss here!";
         Overlord->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
-        Overlord->SetFaction(72);
+        Overlord->setFaction(72);
         Overlord->getAIInterface()->setMeleeDisabled(false);
         Overlord->getAIInterface()->setAllowedToEnterCombat(true);
     }
@@ -169,7 +169,7 @@ public:
 
     void OnLoad() override
     {
-        getCreature()->SetFaction(12);
+        getCreature()->setFaction(12);
         getCreature()->setStandState(STANDSTATE_STAND);
     }
 
@@ -192,7 +192,7 @@ public:
     {
         getCreature()->emote(EMOTE_STATE_KNEEL);
         getCreature()->RemoveNegativeAuras();
-        getCreature()->SetFaction(12);
+        getCreature()->setFaction(12);
         getCreature()->SetHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();
         getCreature()->getThreatManager().removeMeFromThreatLists();
@@ -217,7 +217,7 @@ public:
         if (Dashel == nullptr)
             return;
 
-        Dashel->SetFaction(72);
+        Dashel->setFaction(72);
         Dashel->getAIInterface()->setMeleeDisabled(false);
         Dashel->getAIInterface()->setAllowedToEnterCombat(true);
     }

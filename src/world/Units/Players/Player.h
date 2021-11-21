@@ -2192,7 +2192,7 @@ public:
         void HandleSpellLoot(uint32 itemid);
 
         void Die(Unit* pAttacker, uint32 damage, uint32 spellid) override;
-        void HandleKnockback(Object* caster, float horizontal, float vertical) override;
+        void handleKnockback(Object* caster, float horizontal, float vertical) override;
 
         uint32 LastHonorResetTime() const { return m_lastHonorResetTime; }
         void LastHonorResetTime(uint32 val) { m_lastHonorResetTime = val; }

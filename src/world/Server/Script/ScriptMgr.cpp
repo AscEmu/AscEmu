@@ -1232,9 +1232,9 @@ Creature* InstanceScript::spawnCreature(uint32_t entry, float posX, float posY, 
         return nullptr;
 
     if (factionId != 0)
-        creature->SetFaction(factionId);
+        creature->setFaction(factionId);
     else
-        creature->SetFaction(creatureProperties->Faction);
+        creature->setFaction(creatureProperties->Faction);
 
     return creature;
 }

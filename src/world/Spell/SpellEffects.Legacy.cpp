@@ -1661,7 +1661,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
         float new_x = unitTarget->GetPositionX() - (shadowstep_distance * cosf(ang));
         float new_y = unitTarget->GetPositionY() - (shadowstep_distance * sinf(ang));
         /* Send a movement packet to "charge" at this target. Similar to warrior charge. */
-        p_caster->z_axisposition = 0.0f;
+        p_caster->m_zAxisPosition = 0.0f;
         p_caster->SafeTeleport(p_caster->GetMapId(), p_caster->GetInstanceID(), LocationVector(new_x, new_y, (unitTarget->GetPositionZ() + 0.1f), ang));
 
 
@@ -3145,13 +3145,13 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
                 p->setCreatedByGuid(m_caster->getGuid());
 
                 if (m_caster->isGameObject())
-                    p->SetFaction(static_cast<GameObject*>(m_caster)->getFactionTemplate());
+                    p->setFaction(static_cast<GameObject*>(m_caster)->getFactionTemplate());
                 else
-                    p->SetFaction(static_cast<Unit*>(m_caster)->getFactionTemplate());
+                    p->setFaction(static_cast<Unit*>(m_caster)->getFactionTemplate());
             }
             else
             {
-                p->SetFaction(properties->Faction);
+                p->setFaction(properties->Faction);
             }
             p->PushToWorld(m_caster->GetMapMgr());
 
@@ -3329,7 +3329,7 @@ void Spell::SpellEffectSummonVehicle(uint32 /*i*/, DBC::Structures::SummonProper
 
     Creature* c = u_caster->GetMapMgr()->CreateCreature(properties_->Id);
     c->Load(properties_, v.x, v.y, v.z, v.o);
-    c->Phase(PHASE_SET, u_caster->GetPhase());
+    c->setPhase(PHASE_SET, u_caster->GetPhase());
     c->setCreatedBySpellId(m_spellInfo->getId());
     c->setCreatedByGuid(u_caster->getGuid());
     c->setSummonedByGuid(u_caster->getGuid());
@@ -4753,7 +4753,7 @@ void Spell::SpellEffectDistract(uint8_t /*effectIndex*/) // Distract
         float newo = unitTarget->calcRadAngle(unitTarget->GetPositionX(), unitTarget->GetPositionY(), destination.x, destination.y);
 
         unitTarget->pauseMovement(Stare_duration);
-        unitTarget->SetFacing(newo);
+        unitTarget->setFacing(newo);
     }
 
     //Smoke Emitter 164870
@@ -5239,7 +5239,7 @@ void Spell::SpellEffectKnockBack2(uint8_t effectIndex)
     if (unitTarget == nullptr || !unitTarget->isAlive())
         return;
 
-    unitTarget->HandleKnockback(m_caster, getSpellInfo()->getEffectMiscValue(effectIndex) / 10.0f, damage / 10.0f);
+    unitTarget->handleKnockback(m_caster, getSpellInfo()->getEffectMiscValue(effectIndex) / 10.0f, damage / 10.0f);
 }
 
 void Spell::SpellEffectPullTowardsDest(uint8_t effIndex)
@@ -6411,7 +6411,7 @@ void Spell::SpellEffectActivateSpec(uint8_t /*effectIndex*/)
     if (p_caster == nullptr)
         return;
 
-    if (p_caster->combatStatusHandler.IsInCombat())
+    if (p_caster->m_combatStatusHandler.IsInCombat())
     {
         sendCastResult(SPELL_FAILED_AFFECTING_COMBAT);
         return;

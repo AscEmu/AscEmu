@@ -26,7 +26,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new WoodlandWalker(c); }
     explicit WoodlandWalker(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        pCreature->SetFaction(35);
+        pCreature->setFaction(35);
     }
 };
 
@@ -42,7 +42,7 @@ public:
         uint32_t chance = Util::getRandomUInt(1);
         if (chance == 0)
         {
-            pCreature->SetFaction(14);
+            pCreature->setFaction(14);
             pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "The Woodlands Walker is angered by your request and attacks!");
         }
         else

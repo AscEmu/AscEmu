@@ -605,7 +605,7 @@ bool GroundSlamEffect(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!target || !target->isPlayer())
         return true;
 
-    target->HandleKnockback(target, Util::getRandomFloat(10.0f, 15.0f), Util::getRandomFloat(10.0f, 15.0f));
+    target->handleKnockback(target, Util::getRandomFloat(10.0f, 15.0f), Util::getRandomFloat(10.0f, 15.0f));
 
     return true;
 }

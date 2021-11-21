@@ -6179,15 +6179,6 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* attacker)
     m_damgeShieldsInUse = false;
 }
 
-bool Unit::IsInInstance()
-{
-    MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(this->GetMapId());
-    if (pMapinfo)
-        return !pMapinfo->isNonInstanceMap();
-
-    return false;
-}
-
 void Unit::CalculateResistanceReduction(Unit* pVictim, DamageInfo* dmg, SpellInfo const* ability, float ArmorPctReduce)
 {
     float AverageResistance = 0.0f;
@@ -7475,17 +7466,17 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             case VisualState::MISS:
                 SendSpellLog(this, pVictim, ability->getId(), SPELL_LOG_MISS);
                 // have to set attack target here otherwise it wont be set
-                combatStatusHandler.OnDamageDealt(pVictim);
+                m_combatStatusHandler.OnDamageDealt(pVictim);
                 break;
             case VisualState::DODGE:
                 SendSpellLog(this, pVictim, ability->getId(), SPELL_LOG_DODGE);
                 // have to set attack target here otherwise it wont be set
-                combatStatusHandler.OnDamageDealt(pVictim);
+                m_combatStatusHandler.OnDamageDealt(pVictim);
                 break;
             case VisualState::PARRY:
                 SendSpellLog(this, pVictim, ability->getId(), SPELL_LOG_PARRY);
                 // have to set attack target here otherwise it wont be set
-                combatStatusHandler.OnDamageDealt(pVictim);
+                m_combatStatusHandler.OnDamageDealt(pVictim);
                 break;
             case VisualState::EVADE:
                 SendSpellLog(this, pVictim, ability->getId(), SPELL_LOG_EVADE);
@@ -7493,7 +7484,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             case VisualState::IMMUNE:
                 SendSpellLog(this, pVictim, ability->getId(), SPELL_LOG_IMMUNE);
                 // have to set attack target here otherwise it wont be set
-                combatStatusHandler.OnDamageDealt(pVictim);
+                m_combatStatusHandler.OnDamageDealt(pVictim);
                 break;
             default:
                 logSent = false;
@@ -7597,7 +7588,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             // have to set attack target here otherwise it wont be set
             // because dealdamage is not called.
             //setAttackTarget(pVictim);
-            this->combatStatusHandler.OnDamageDealt(pVictim);
+            this->m_combatStatusHandler.OnDamageDealt(pVictim);
         }
     }
 
@@ -7941,17 +7932,6 @@ void Unit::DeMorph()
     EventModelChange();
 }
 
-void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, const char* msg)
-{
-    CreatureProperties const* ci = sMySQLStore.getCreatureProperties(entry);
-    if (ci == nullptr)
-        return;
-
-    const auto data = SmsgMessageChat(type, lang, 0, msg, getGuid(), ci->Name).serialise();
-
-    SendMessageToSet(data.get(), true);
-}
-
 void Unit::CalcDamage()
 {
     if (isPlayer())
@@ -8192,7 +8172,7 @@ void Unit::OnPushToWorld()
     if (getVehicleComponent() != NULL)
         getVehicleComponent()->InstallAccessories();
 
-    z_axisposition = 0.0f;
+    m_zAxisPosition = 0.0f;
 #endif
 
     getMovementManager()->addToWorld();
@@ -8214,7 +8194,7 @@ void Unit::RemoveFromWorld(bool free_guid)
 
     removeAllFollowers();
 
-    combatStatusHandler.OnRemoveFromWorld();
+    m_combatStatusHandler.OnRemoveFromWorld();
 #if VERSION_STRING > TBC
     if (getCritterGuid() != 0)
     {
@@ -8271,7 +8251,7 @@ void Unit::RemoveFromWorld(bool free_guid)
 
 void Unit::Deactivate(MapMgr* mgr)
 {
-    combatStatusHandler.Vanished();
+    m_combatStatusHandler.Vanished();
     Object::Deactivate(mgr);
 }
 
@@ -8457,66 +8437,6 @@ int32 Unit::GetRAP()
     return 0;
 }
 
-#if VERSION_STRING == TBC
-void Unit::SetFacing(float newo)
-{
-    SetOrientation(newo);
-
-    //generate smsg_monster_move
-    WorldPacket data(SMSG_MONSTER_MOVE, 60);
-
-    data << GetNewGUID();
-
-    data << GetPositionX();
-    data << GetPositionY();
-    data << GetPositionZ();
-    data << Util::getMSTime();
-    if (newo != 0.0f)
-    {
-        data << uint8(4);
-        data << newo;
-    }
-    else
-    {
-        data << uint8(0);
-    }
-
-    data << uint32(0x1000); //move flags: run
-    data << uint32(0); //movetime
-    data << uint32(1); //1 point
-    data << GetPositionX();
-    data << GetPositionY();
-    data << GetPositionZ();
-
-    SendMessageToSet(&data, true);
-}
-#else
-void Unit::SetFacing(float newo)
-{
-    SetOrientation(newo);
-
-    //generate smsg_monster_move
-    WorldPacket data(SMSG_MONSTER_MOVE, 100);
-
-    data << GetNewGUID();
-    data << uint8(0); //vehicle seat index
-    data << GetPositionX();
-    data << GetPositionY();
-    data << GetPositionZ();
-    data << Util::getMSTime();
-    data << uint8(4); //set orientation
-    data << newo;
-    data << uint32(0x1000); //move flags: run
-    data << uint32(0); //movetime
-    data << uint32(1); //1 point
-    data << GetPositionX();
-    data << GetPositionY();
-    data << GetPositionZ();
-
-    SendMessageToSet(&data, true);
-}
-#endif
-
 float Unit::get_chance_to_daze(Unit* target)
 {
     if (target->getLevel() < CREATURE_DAZE_MIN_LEVEL) // since 3.3.0
@@ -8544,7 +8464,7 @@ void CombatStatusHandler::ClearMyHealers()
     {
         Player* pt = m_Unit->GetMapMgr()->GetPlayer(*i);
         if (pt != NULL)
-            pt->combatStatusHandler.RemoveHealed(m_Unit);
+            pt->m_combatStatusHandler.RemoveHealed(m_Unit);
     }
 
     m_healers.clear();
@@ -8634,7 +8554,7 @@ void CombatStatusHandler::ClearPrimaryAttackTarget()
             // remove from their attacker set. (if we have no longer got any DoT's, etc)
             if (!IsAttacking(pt))
             {
-                pt->combatStatusHandler.RemoveAttacker(m_Unit, m_Unit->getGuid());
+                pt->m_combatStatusHandler.RemoveAttacker(m_Unit, m_Unit->getGuid());
                 m_attackTargets.erase(m_primaryAttackTarget);
             }
 
@@ -8685,7 +8605,7 @@ void CombatStatusHandler::RemoveAttacker(Unit* pAttacker, const uint64_t& guid)
     if (itr == m_attackers.end())
         return;
 
-    if ((!pAttacker) || (!pAttacker->combatStatusHandler.IsAttacking(m_Unit)))
+    if ((!pAttacker) || (!pAttacker->m_combatStatusHandler.IsAttacking(m_Unit)))
     {
         m_attackers.erase(itr);
         UpdateFlag();
@@ -8706,9 +8626,9 @@ void CombatStatusHandler::OnDamageDealt(Unit* pTarget)
     if (itr == m_attackTargets.end())
         AddAttackTarget(pTarget->getGuid());
 
-    itr = pTarget->combatStatusHandler.m_attackers.find(m_Unit->getGuid());
-    if (itr == pTarget->combatStatusHandler.m_attackers.end())
-        pTarget->combatStatusHandler.AddAttacker(m_Unit->getGuid());
+    itr = pTarget->m_combatStatusHandler.m_attackers.find(m_Unit->getGuid());
+    if (itr == pTarget->m_combatStatusHandler.m_attackers.end())
+        pTarget->m_combatStatusHandler.AddAttacker(m_Unit->getGuid());
 
     // update the timeout
     m_Unit->combatResetPvPTimeout();
@@ -8734,8 +8654,8 @@ void CombatStatusHandler::ClearAttackers()
         Unit* pt = m_Unit->GetMapMgr()->GetUnit(*itr);
         if (pt)
         {
-            pt->combatStatusHandler.m_attackers.erase(m_Unit->getGuid());
-            pt->combatStatusHandler.UpdateFlag();
+            pt->m_combatStatusHandler.m_attackers.erase(m_Unit->getGuid());
+            pt->m_combatStatusHandler.UpdateFlag();
         }
     }
 
@@ -8744,8 +8664,8 @@ void CombatStatusHandler::ClearAttackers()
         Unit* pt = m_Unit->GetMapMgr()->GetUnit(*itr);
         if (pt)
         {
-            pt->combatStatusHandler.m_attackTargets.erase(m_Unit->getGuid());
-            pt->combatStatusHandler.UpdateFlag();
+            pt->m_combatStatusHandler.m_attackTargets.erase(m_Unit->getGuid());
+            pt->m_combatStatusHandler.UpdateFlag();
         }
     }
 
@@ -8764,8 +8684,8 @@ void CombatStatusHandler::ClearHealers()
         Player* pt = m_Unit->GetMapMgr()->GetPlayer(*itr);
         if (pt)
         {
-            pt->combatStatusHandler.m_healers.erase(m_Unit->getGuidLow());
-            pt->combatStatusHandler.UpdateFlag();
+            pt->m_combatStatusHandler.m_healers.erase(m_Unit->getGuidLow());
+            pt->m_combatStatusHandler.UpdateFlag();
         }
     }
 
@@ -8774,8 +8694,8 @@ void CombatStatusHandler::ClearHealers()
         Player* pt = m_Unit->GetMapMgr()->GetPlayer(*itr);
         if (pt)
         {
-            pt->combatStatusHandler.m_healed.erase(m_Unit->getGuidLow());
-            pt->combatStatusHandler.UpdateFlag();
+            pt->m_combatStatusHandler.m_healed.erase(m_Unit->getGuidLow());
+            pt->m_combatStatusHandler.UpdateFlag();
         }
     }
 
@@ -8800,7 +8720,7 @@ void CombatStatusHandler::TryToClearAttackTargets()
         }
 
         RemoveAttackTarget(pt);
-        pt->combatStatusHandler.RemoveAttacker(m_Unit, m_Unit->getGuid());
+        pt->m_combatStatusHandler.RemoveAttacker(m_Unit, m_Unit->getGuid());
     }
 }
 
@@ -8840,7 +8760,7 @@ bool CombatStatusHandler::IsInCombat() const
         {
             std::list<Pet*> summons = static_cast<Player*>(m_Unit)->GetSummons();
             for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-                if ((*itr)->getPlayerOwner() == m_Unit && (*itr)->combatStatusHandler.IsInCombat())
+                if ((*itr)->getPlayerOwner() == m_Unit && (*itr)->m_combatStatusHandler.IsInCombat())
                     return true;
 
             return m_lastStatus;
@@ -8855,10 +8775,10 @@ void CombatStatusHandler::WeHealed(Unit* pHealTarget)
     if (!pHealTarget->isPlayer() || !m_Unit->isPlayer() || pHealTarget == m_Unit)
         return;
 
-    if (pHealTarget->combatStatusHandler.IsInCombat())
+    if (pHealTarget->m_combatStatusHandler.IsInCombat())
     {
         m_healed.insert(pHealTarget->getGuidLow());
-        pHealTarget->combatStatusHandler.m_healers.insert(m_Unit->getGuidLow());
+        pHealTarget->m_combatStatusHandler.m_healers.insert(m_Unit->getGuidLow());
     }
 
     UpdateFlag();
@@ -8954,11 +8874,6 @@ void Unit::RemoveAllMovementImpairing()
             }
         }
     }
-}
-
-void Unit::EventUpdateFlag()
-{
-    combatStatusHandler.UpdateFlag();
 }
 
 void Unit::EventModelChange()
@@ -9275,35 +9190,9 @@ void Unit::RemoveGarbage()
     m_GarbagePets.clear();
 }
 
-bool Unit::isLootable()
-{
-    if (isTagged() && !isPet() && !(isPlayer() && !IsInBg()) && (getCreatedByGuid() == 0) && !isVehicle())
-    {
-        auto creature_prop = sMySQLStore.getCreatureProperties(getEntry());
-        if (isCreature() && !sLootMgr.HasLootForCreature(getEntry()) && creature_prop != nullptr && (creature_prop->money == 0))  // Since it is inworld we can safely assume there is a proto cached with this Id!
-            return false;
-
-        return true;
-    }
-    
-    return false;
-}
-
 void Unit::Die(Unit* /*pAttacker*/, uint32 /*damage*/, uint32 /*spellid*/)
 {}
 
-void Unit::Phase(uint8 command, uint32 newphase)
-{
-    Object::Phase(command, newphase);
-
-    for (const auto& itr : getInRangeObjectsSet())
-    {
-        if (itr && itr->isCreatureOrPlayer())
-            static_cast<Unit*>(itr)->UpdateVisibility();
-    }
-
-    UpdateVisibility();
-}
 
 uint32 Unit::GetAuraCountWithDispelType(uint32 dispel_type, uint64 guid)
 {
@@ -9319,20 +9208,6 @@ uint32 Unit::GetAuraCountWithDispelType(uint32 dispel_type, uint64 guid)
     }
 
     return result;
-}
-
-void Unit::HandleKnockback(Object* caster, float horizontal, float vertical)
-{
-    //This is in unit and not creature because players who are mind controlled must use this.
-    if (caster == NULL)
-        caster = this;
-    float angle = calcRadAngle(caster->GetPositionX(), caster->GetPositionY(), GetPositionX(), GetPositionY());
-    if (caster == this)
-        angle = float(GetOrientation() + M_PI);
-
-    float destx, desty, destz;
-    if (GetPoint(angle, horizontal, destx, desty, destz, true))
-        getMovementManager()->moveKnockbackFrom(destx, desty, horizontal, vertical);
 }
 
 void Unit::BuildPetSpellList(WorldPacket& data)
@@ -9545,7 +9420,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     pTarget->SetCharmTempVal(pTarget->getFactionTemplate());
     pThis->setFarsightGuid(pTarget->getGuid());
     pThis->mControledUnit = pTarget;
-    pTarget->SetFaction(getFactionTemplate());
+    pTarget->setFaction(getFactionTemplate());
     pTarget->addUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
 
     addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
@@ -9600,7 +9475,7 @@ void Unit::UnPossess()
 
     removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
     pTarget->removeUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
-    pTarget->SetFaction(pTarget->GetCharmTempVal());
+    pTarget->setFaction(pTarget->GetCharmTempVal());
     pTarget->updateInRangeOppositeFactionSet();
 
     // send "switch mover" packet

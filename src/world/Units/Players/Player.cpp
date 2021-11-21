@@ -1538,7 +1538,7 @@ void Player::setInitialPlayerData()
 void Player::regeneratePlayerPowers(uint16_t diff)
 {
     // Rage and Runic Power (neither decays while in combat)
-    if ((isClassDeathKnight() || isClassDruid() || isClassWarrior()) && !combatStatusHandler.IsInCombat())
+    if ((isClassDeathKnight() || isClassDruid() || isClassWarrior()) && !m_combatStatusHandler.IsInCombat())
     {
         m_rageRunicPowerRegenerateTimer += diff;
         if (m_rageRunicPowerRegenerateTimer >= REGENERATION_INTERVAL_RAGE_RUNIC_POWER)
@@ -1555,7 +1555,7 @@ void Player::regeneratePlayerPowers(uint16_t diff)
 
 #if VERSION_STRING >= Cata
     // Holy Power (does not decay while in combat)
-    if (isClassPaladin() && !combatStatusHandler.IsInCombat())
+    if (isClassPaladin() && !m_combatStatusHandler.IsInCombat())
     {
         m_holyPowerRegenerateTimer += diff;
         if (m_holyPowerRegenerateTimer >= REGENERATION_INTERVAL_HOLY_POWER)
@@ -3943,7 +3943,7 @@ void Player::setPvpFlag()
     for (auto& summon : GetSummons())
         summon->setPvpFlag();
 
-    if (combatStatusHandler.IsInCombat())
+    if (m_combatStatusHandler.IsInCombat())
         addPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE);
 }
 

@@ -51,7 +51,7 @@ void TotemSummon::Load(CreatureProperties const* creatureProperties, Unit* unitO
 
     m_aiInterface->Init(this, AI_SCRIPT_TOTEM, unitOwner);
 
-    DisableAI();
+    setAItoUse(false);
 
     if (getPlayerOwner() != nullptr)
         getPlayerOwner()->sendTotemCreatedPacket(static_cast<uint8_t>(m_summonSlot), getGuid(), getTimeLeft(), getCreatedBySpellId());
@@ -141,7 +141,7 @@ void TotemSummon::SetupSpells()
     else
     {
         // We're a casting totem. Switch AI on, and tell it to cast this spell.
-        EnableAI();
+        setAItoUse(true);
         m_aiInterface->totemspell = totemSpell;
         m_aiInterface->m_totemspelltimer = 0;
         m_aiInterface->m_totemspelltime = 3 * TimeVarsMs::Second;

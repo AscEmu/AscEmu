@@ -385,7 +385,7 @@ public:
             Player* pPlayer = static_cast<Player*>(mCurrentTarget);
             char msg[256];
             snprintf((char*)msg, 256, "%s sets eyes on %s", getCreature()->GetCreatureProperties()->Name.c_str(), pPlayer->getName().c_str());
-            getCreature()->SendChatMessageAlternateEntry(CN_DARKENER, CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, msg);
+            getCreature()->sendChatMessageAlternateEntry(CN_DARKENER, CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, msg);
             return true;
         }
 

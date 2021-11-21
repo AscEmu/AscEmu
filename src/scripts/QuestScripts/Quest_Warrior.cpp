@@ -81,7 +81,7 @@ public:
 
     void OnLoad() override
     {
-        getCreature()->SetFaction(11);
+        getCreature()->setFaction(11);
         getCreature()->setEmoteState(EMOTE_ONESHOT_EAT);
     }
 
@@ -103,7 +103,7 @@ public:
     void AIUpdate() override
     {
         getCreature()->RemoveNegativeAuras();
-        getCreature()->SetFaction(11);
+        getCreature()->setFaction(11);
         getCreature()->SetHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();
         getCreature()->getThreatManager().removeMeFromThreatLists();
@@ -133,7 +133,7 @@ public:
         if (Bartleby == nullptr)
             return;
 
-        Bartleby->SetFaction(168);
+        Bartleby->setFaction(168);
         Bartleby->getAIInterface()->setMeleeDisabled(false);
         Bartleby->getAIInterface()->setAllowedToEnterCombat(true);
     }
@@ -252,7 +252,7 @@ public:
                         if (!creature)
                             continue;
 
-                        creature->SetFaction(35);
+                        creature->setFaction(35);
                         creature->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                         creature->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
                         creature->emote(EMOTE_ONESHOT_ROAR);
@@ -295,7 +295,7 @@ public:
                             creature->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                             creature->removeUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
                             creature->emote(EMOTE_ONESHOT_ROAR);
-                            creature->SetFaction(14);
+                            creature->setFaction(14);
 
                             creature->getAIInterface()->onHostileAction(warrior);
                             ++Wave;
@@ -328,7 +328,7 @@ public:
                             creature->removeUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
                             creature->SendScriptTextChatMessage(SAY_BIG_WILL_READY);
                             creature->emote(EMOTE_ONESHOT_ROAR);
-                            creature->SetFaction(14);
+                            creature->setFaction(14);
                             creature->getAIInterface()->onHostileAction(warrior);
                         }
                     }

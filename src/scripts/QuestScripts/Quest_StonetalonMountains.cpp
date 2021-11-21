@@ -30,7 +30,7 @@ public:
         creat->setNpcFlags(UNIT_NPC_FLAG_NONE);
         // Prevention "not starting from spawn after attacking"
         creat->getAIInterface()->setAllowedToEnterCombat(true);
-        creat->SetFaction(1801);
+        creat->setFaction(1801);
     }
 };
 

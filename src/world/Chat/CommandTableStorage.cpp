@@ -385,7 +385,7 @@ void CommandTableStorage::Init()
         { "castself",           'd', &ChatHandler::HandleCastSelfCommand,           "Target casts spell <spellId> on itself.",                  nullptr },
         { "castspellne",        'd', &ChatHandler::HandleCastSpellNECommand,        "Casts spell by spellid on target (only plays animations)", nullptr },
         { "aggrorange",         'd', &ChatHandler::HandleAggroRangeCommand,         "Shows aggro Range of the selected Creature.",              nullptr },
-        { "knockback",          'd', &ChatHandler::HandleKnockBackCommand,          "Knocks you back by <balue>.",                              nullptr },
+        { "knockback",          'd', &ChatHandler::HandleKnockBackCommand,          "Knocks you back by <value>.",                              nullptr },
         { "fade",               'd', &ChatHandler::HandleFadeCommand,               "Calls ModThreatModifyer() with <value>.",                  nullptr },
         { "threatMod",          'd', &ChatHandler::HandleThreatModCommand,          "Calls ModGeneratedThreatModifyer() with <value>.",         nullptr },
         { "movefall",           'd', &ChatHandler::HandleMoveFallCommand,           "Makes the creature fall to the ground",                    nullptr },

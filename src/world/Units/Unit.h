@@ -344,6 +344,13 @@ public:
     uint32_t getFactionTemplate() const;
     void setFactionTemplate(uint32_t id);
 
+    // helper
+    void setFaction(uint32_t factionId)
+    {
+        setFactionTemplate(factionId);
+        setServersideFaction();
+    }
+
     uint32_t getVirtualItemSlotId(uint8_t slot) const;
     void setVirtualItemSlotId(uint8_t slot, uint32_t item_id);
 
@@ -563,15 +570,18 @@ public:
     void setHoverHeight(float height);
 #endif
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Area & Position
+    // Area/Map/Phase & Position
 public:
     void setLocationWithoutUpdate(LocationVector& location);
+
+    void setPhase(uint8_t command = PHASE_SET, uint32_t newPhase = 1);
 
     bool isWithinCombatRange(Unit* obj, float dist2compare);
     bool isWithinMeleeRange(Unit* obj) { return isWithinMeleeRangeAt(GetPosition(), obj); }
     bool isWithinMeleeRangeAt(LocationVector const& pos, Unit* obj);
     float getMeleeRange(Unit* target);
 
+    bool isInInstance() const;
     virtual bool isInWater() const;
     bool isUnderWater() const;
     bool isInAccessiblePlaceFor(Creature* c) const;
@@ -581,16 +591,18 @@ public:
 private:
 
 public:
-    CombatStatusHandler combatStatusHandler;
+    CombatStatusHandler m_combatStatusHandler;
 
-    int32 m_CombatResult_Dodge = 0;
-    int32 m_CombatResult_Parry = 0;
-    uint32 m_CombatUpdateTimer = 0;
+    int32_t m_CombatResult_Dodge = 0;
+    int32_t m_CombatResult_Parry = 0;
+    uint32_t m_CombatUpdateTimer = 0;
 
-    const CombatStatusHandler* getCombatHandler() const { return &combatStatusHandler; }
+    const CombatStatusHandler* getCombatHandler() const { return &m_combatStatusHandler; }
 
     void combatUpdatePvPTimeout();
     void combatResetPvPTimeout();
+
+    void eventUpdateCombatFlag();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // MovementInfo (from class Object)
@@ -637,10 +649,11 @@ public:
     void setMoveSwim(bool set_swim);
     void setMoveDisableGravity(bool disable_gravity);
     void setMoveWalk(bool set_walk);
+    void setFacing(float newo);     //only working if creature is idle
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // used for handling fall
-    float z_axisposition = 0.0f;
+    float m_zAxisPosition = 0.0f;
     int32_t m_safeFall = 0;
     bool m_noFallDamage = false;
 
@@ -715,6 +728,8 @@ public:
 
     void jumpTo(float speedXY, float speedZ, bool forward = true, Optional<LocationVector> dest = {});
     void jumpTo(Object* obj, float speedZ, bool withOrientation = false);
+
+    virtual void handleKnockback(Object* caster, float horizontal, float vertical);
 
     virtual MovementGeneratorType getDefaultMovementType() const;
 
@@ -955,6 +970,8 @@ public:
 
     void sendChatMessageToPlayer(uint8_t type, uint32_t language, std::string msg, Player* plr);
 
+    void sendChatMessageAlternateEntry(uint32_t entry, uint8_t type, uint32_t lang, std::string msg);
+
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
@@ -1005,9 +1022,6 @@ public:
     // Modifies dmg and returns absorbed amount
     uint32_t absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly = true);
 
-    //\ todo: should this and other tag related variables be under Creature class?
-    bool isTaggedByPlayerOrItsGroup(Player* tagger);
-
     void smsg_AttackStart(Unit* pVictim);
     void smsg_AttackStop(Unit* pVictim);
 
@@ -1022,6 +1036,8 @@ public:
     virtual bool isCritter() { return false; }
 
     void knockbackFrom(float x, float y, float speedXY, float speedZ);
+
+    virtual bool isTrainingDummy() { return false; }
 
 private:
     uint32_t m_attackTimer[TOTAL_WEAPON_DAMAGE_TYPES] = {0};
@@ -1116,6 +1132,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Tagging (helper for dynamic flags)
+    //\todo: Zyres: tagging is Creature related, maybe move this to the correct class
 private:
     uint64_t m_taggerGuid = 0;
 
@@ -1125,6 +1142,15 @@ public:
 
     bool isTagged() const;
     bool isTaggable() const;
+
+    bool isTaggedByPlayerOrItsGroup(Player* tagger);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Loot
+    //\todo Zyres: you can loot only creatures, maybe this is the wrong place for member
+    Loot loot;
+
+    bool isLootable();
 
     // Do not alter anything below this line
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -1160,7 +1186,6 @@ public:
     int32 GetAP();
     int32 GetRAP();
 
-    bool IsInInstance();
     void CalculateResistanceReduction(Unit* pVictim, DamageInfo* dmg, SpellInfo const* ability, float ArmorPctReduce);
     void DeMorph();
     uint32 ManaShieldAbsorb(uint32 dmg);
@@ -1290,7 +1315,6 @@ public:
 
     uint16 HasNoInterrupt() { return m_noInterrupt; }
 
-    Loot loot;
     uint32 SchoolCastPrevent[TOTAL_SPELL_SCHOOLS] = {0};
     int32 MechanicDurationPctMod[28] = {0};
 
@@ -1363,15 +1387,6 @@ public:
     }
     void EventChill(Unit* proc_target, bool is_victim = false);
 
-    void SetFaction(uint32 factionId)
-    {
-        setFactionTemplate(factionId);
-        setServersideFaction();
-    }
-
-    void SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, const char* msg);
-    void RegisterPeriodicChatMessage(uint32 delay, uint32 msgid, std::string message, bool sendnotify);
-
     void SetHealthPct(uint32 val) { if (val > 0) setHealth(float2int32(val * 0.01f * getMaxHealth())); };
 
     void setcanparry(bool newstatus) { can_parry = newstatus; }
@@ -1431,17 +1446,6 @@ public:
     uint32 GetCharmTempVal() { return m_charmtemp; }
     void SetCharmTempVal(uint32 val) { m_charmtemp = val; }
 
-    void DisableAI() { m_useAI = false; }
-    void EnableAI() { m_useAI = true; }
-
-    void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
-
-    bool isLootable();
-
-    virtual bool isTrainingDummy() { return false; }
-
-    void SetFacing(float newo);     //only working if creature is idle
-
     AuraCheckResponse AuraCheck(SpellInfo const* proto, Object* caster = nullptr);
     AuraCheckResponse AuraCheck(SpellInfo const* proto, Aura* aur, Object* caster = nullptr);
 
@@ -1471,7 +1475,6 @@ public:
     } m_soulSiphon;
 
     uint32 m_cTimer = 0;
-    void EventUpdateFlag();
 
     void DispelAll(bool positive);
 
@@ -1493,8 +1496,6 @@ public:
 
     virtual void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
     
-    virtual void HandleKnockback(Object* caster, float horizontal, float vertical);
-
     void AddGarbagePet(Pet* pet);
 
     virtual void BuildPetSpellList(WorldPacket & data);

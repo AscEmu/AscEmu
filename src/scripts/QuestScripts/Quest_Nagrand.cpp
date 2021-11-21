@@ -46,8 +46,8 @@ public:
             pMogor->getAIInterface()->setAllowedToEnterCombat(true);
             pMogor->getAIInterface()->moveTo(-704.669f, 7871.08f, 45.0387f);
             pMogor->SetOrientation(1.59531f);
-            pMogor->SetFacing(1.908516f);
-            pMogor->SetFaction(14);
+            pMogor->setFacing(1.908516f);
+            pMogor->setFaction(14);
         }
     }
 
@@ -278,7 +278,7 @@ public:
 
     void OnLoad() override
     {
-        getCreature()->SetFaction(14);
+        getCreature()->setFaction(14);
         RemoveAIUpdateEvent();
     };
 
@@ -290,7 +290,7 @@ public:
             if (pUnit != nullptr && pUnit->isPlayer())
                 static_cast<Player*>(pUnit)->EventAttackStop();
 
-            getCreature()->SetFaction(35);
+            getCreature()->setFaction(35);
             getCreature()->getThreatManager().clearAllThreat();
             getCreature()->getThreatManager().removeMeFromThreatLists();
             getCreature()->setStandState(STANDSTATE_SIT);

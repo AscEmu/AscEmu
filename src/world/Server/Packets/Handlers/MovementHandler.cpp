@@ -264,7 +264,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
             // whilst player is not falling, continuously update Z axis position.
             // once player lands, this will be used to determine how far he fell.
             if (!(sessionMovementInfo.flags & MOVEFLAG_FALLING))
-                mover->z_axisposition = sessionMovementInfo.position.z;
+                mover->m_zAxisPosition = sessionMovementInfo.position.z;
         }
     }
 

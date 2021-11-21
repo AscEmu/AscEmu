@@ -17,8 +17,8 @@ void Summon::Load(CreatureProperties const* creatureProperties, Unit* unitOwner,
     {
         Creature::Load(creatureProperties, position.x, position.y, position.z, position.o);
 
-        SetFaction(unitOwner->getFactionTemplate());
-        Phase(PHASE_SET, unitOwner->GetPhase());
+        setFaction(unitOwner->getFactionTemplate());
+        setPhase(PHASE_SET, unitOwner->GetPhase());
         SetZoneId(unitOwner->GetZoneId());
         setCreatedBySpellId(spellId);
         this->m_summonSlot = summonSlot;

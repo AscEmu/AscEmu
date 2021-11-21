@@ -2741,7 +2741,7 @@ public:
     {
         // Instance Script
         mInstance = (IceCrownCitadelScript*)getInstanceScript();
-        getCreature()->EnableAI();
+        getCreature()->setAItoUse(true);
         getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
 
         _introDone = false;
@@ -2763,7 +2763,7 @@ public:
             {
             case EVENT_INTRO_ALLIANCE_2_SE:
                 getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-                getCreature()->SetFaction(974);
+                getCreature()->setFaction(974);
                 sendDBChatMessage(SAY_DEATHBRINGER_INTRO_ALLIANCE_2);
                 break;
             case EVENT_INTRO_ALLIANCE_3_SE:
@@ -2779,7 +2779,7 @@ public:
                 break;
             case EVENT_INTRO_HORDE_2_SE:
                 getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-                getCreature()->SetFaction(974);
+                getCreature()->setFaction(974);
                 sendDBChatMessage(SAY_DEATHBRINGER_INTRO_HORDE_2);
                 break;
             case EVENT_INTRO_HORDE_4_SE:

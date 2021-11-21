@@ -473,7 +473,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
 
     setBaseAttackTime(MELEE, 2000);
     setBaseAttackTime(OFFHAND, 2000);
-    SetFaction(owner->getFactionTemplate());
+    setFaction(owner->getFactionTemplate());
     setModCastSpeed(1.0f);    // better set this one
 
     if (type == 1)
@@ -526,7 +526,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
         setPetFlags(PET_RENAME_ALLOWED);    // 0x3 -> Enable pet rename.
         setPowerType(POWER_TYPE_FOCUS);
     }
-    SetFaction(owner->getFactionTemplate());
+    setFaction(owner->getFactionTemplate());
 
     if (owner->isPvpFlagSet())
         this->setPvpFlag();
@@ -601,7 +601,7 @@ void Pet::Update(unsigned long time_passed)
         if (m_HappinessTimer == 0)
         {
             int32 burn = 1042;          //Based on WoWWiki pet looses 50 happiness over 6 min => 1042 every 7.5 s
-            if (combatStatusHandler.IsInCombat())
+            if (m_combatStatusHandler.IsInCombat())
                 burn >>= 1;             //in combat reduce burn by half (guessed)
 
             modPower(POWER_TYPE_HAPPINESS, -burn);
@@ -975,7 +975,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     setSummonedByGuid(owner->getGuid());
     setCreatedByGuid(owner->getGuid());
     setCreatedBySpellId(mPi->spellid);
-    SetFaction(owner->getFactionTemplate());
+    setFaction(owner->getFactionTemplate());
 
     ApplyStatsForLevel();
 
@@ -2188,7 +2188,7 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     setHealth(0);
 
     // Wipe our attacker set on death
-    combatStatusHandler.Vanished();
+    m_combatStatusHandler.Vanished();
 
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
     pAttacker->getAIInterface()->eventOnTargetDied(this);

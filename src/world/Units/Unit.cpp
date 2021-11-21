@@ -61,7 +61,7 @@ Unit::Unit() :
     movespline(new MovementNew::MoveSpline()),
     i_movementManager(new MovementManager(this)),
     m_summonInterface(new SummonHandler),
-    combatStatusHandler(this),
+    m_combatStatusHandler(this),
     m_aiInterface(new AIInterface())
 {
     m_objectType |= TYPE_UNIT;
@@ -1204,6 +1204,19 @@ void Unit::setLocationWithoutUpdate(LocationVector& location)
     m_position.ChangeCoords({ location.x, location.y, location.z });
 }
 
+void Unit::setPhase(uint8_t command/* = PHASE_SET*/, uint32_t newPhase/* = 1*/)
+{
+    Object::Phase(command, newPhase);
+
+    for (const auto& itr : getInRangeObjectsSet())
+    {
+        if (itr && itr->isCreatureOrPlayer())
+            dynamic_cast<Unit*>(itr)->UpdateVisibility();
+    }
+
+    UpdateVisibility();
+}
+
 bool Unit::isWithinCombatRange(Unit* obj, float dist2compare)
 {
     if (!obj || !IsInMap(obj) || !(GetPhase() == obj->GetPhase()))
@@ -1239,6 +1252,14 @@ float Unit::getMeleeRange(Unit* target)
 {
     float range = getCombatReach() + target->getCombatReach() + 4.0f / 3.0f;
     return std::max(range, NOMINAL_MELEE_RANGE);
+}
+
+bool Unit::isInInstance() const
+{
+    if (MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo(this->GetMapId()))
+        return !mapInfo->isNonInstanceMap();
+
+    return false;
 }
 
 bool Unit::isInWater() const
@@ -1299,7 +1320,7 @@ bool Unit::isInAccessiblePlaceFor(Creature* c) const
 // Combat
 void Unit::combatUpdatePvPTimeout()
 {
-    combatStatusHandler.TryToClearAttackTargets();
+    m_combatStatusHandler.TryToClearAttackTargets();
 }
 
 void Unit::combatResetPvPTimeout()
@@ -1324,6 +1345,11 @@ void Unit::combatResetPvPTimeout()
 
     sEventMgr.AddEvent(this, &Unit::combatUpdatePvPTimeout, EVENT_ATTACK_TIMEOUT, 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     m_lock.Release();
+}
+
+void Unit::eventUpdateCombatFlag()
+{
+    m_combatStatusHandler.UpdateFlag();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1841,13 +1867,68 @@ void Unit::setMoveWalk(bool set_walk)
     }
 }
 
+#if VERSION_STRING == TBC
+void Unit::setFacing(float newo)
+{
+    SetOrientation(newo);
+
+    WorldPacket data(SMSG_MONSTER_MOVE, 60);
+    data << GetNewGUID();
+    data << GetPositionX();
+    data << GetPositionY();
+    data << GetPositionZ();
+    data << Util::getMSTime();
+    if (newo != 0.0f)
+    {
+        data << uint8_t(4);
+        data << newo;
+    }
+    else
+    {
+        data << uint8_t(0);
+    }
+
+    data << uint32_t(0x1000);   // move flags: run
+    data << uint32_t(0);        // movetime
+    data << uint32_t(1);        // 1 point
+    data << GetPositionX();
+    data << GetPositionY();
+    data << GetPositionZ();
+
+    SendMessageToSet(&data, true);
+}
+#else
+void Unit::setFacing(float newo)
+{
+    SetOrientation(newo);
+
+    WorldPacket data(SMSG_MONSTER_MOVE, 100);
+    data << GetNewGUID();
+    data << uint8_t(0);         // vehicle seat index
+    data << GetPositionX();
+    data << GetPositionY();
+    data << GetPositionZ();
+    data << Util::getMSTime();
+    data << uint8_t(4);         // set orientation
+    data << newo;
+    data << uint32_t(0x1000);   // move flags: run
+    data << uint32_t(0);        // movetime
+    data << uint32_t(1);        // 1 point
+    data << GetPositionX();
+    data << GetPositionY();
+    data << GetPositionZ();
+
+    SendMessageToSet(&data, true);
+}
+#endif
+
 void Unit::handleFall(MovementInfo const& movementInfo)
 {
-    if (!z_axisposition)
-        z_axisposition = movementInfo.getPosition()->z;
+    if (!m_zAxisPosition)
+        m_zAxisPosition = movementInfo.getPosition()->z;
 
-    uint32 falldistance = float2int32(z_axisposition - movementInfo.getPosition()->z);
-    if (z_axisposition <= movementInfo.getPosition()->z)
+    uint32 falldistance = float2int32(m_zAxisPosition - movementInfo.getPosition()->z);
+    if (m_zAxisPosition <= movementInfo.getPosition()->z)
         falldistance = 1;
 
     if (static_cast<int>(falldistance) > m_safeFall)
@@ -1884,7 +1965,7 @@ void Unit::handleFall(MovementInfo const& movementInfo)
         addSimpleEnvironmentalDamageBatchEvent(DAMAGE_FALL, health_loss);
     }
 
-    z_axisposition = 0.0f;
+    m_zAxisPosition = 0.0f;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2677,6 +2758,20 @@ void Unit::jumpTo(Object* obj, float speedZ, bool withOrientation)
     obj->getNearPoint(this, x, y, z, 0.5f, getAbsoluteAngle(obj->GetPosition()));
     float speedXY = getExactDist2d(x, y) * 10.0f / speedZ;
     getMovementManager()->moveJump(x, y, z, getAbsoluteAngle(obj), speedXY, speedZ, EVENT_JUMP, withOrientation);
+}
+
+void Unit::handleKnockback(Object* object, float horizontal, float vertical)
+{
+    if (object == nullptr)
+        object = this;
+
+    float angle = calcRadAngle(object->GetPositionX(), object->GetPositionY(), GetPositionX(), GetPositionY());
+    if (object == this)
+        angle = static_cast<float>(M_PI + GetOrientation());
+
+    float destx, desty, destz;
+    if (GetPoint(angle, horizontal, destx, desty, destz, true))
+        getMovementManager()->moveKnockbackFrom(destx, desty, horizontal, vertical);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -4018,7 +4113,7 @@ void Unit::addAura(Aura* aur)
         const auto pCaster = aur->GetUnitCaster();
         if (pCaster && pCaster->isAlive() && isAlive())
         {
-            pCaster->combatStatusHandler.OnDamageDealt(this);
+            pCaster->m_combatStatusHandler.OnDamageDealt(this);
 
             if (isCreature())
             {
@@ -5089,7 +5184,7 @@ void Unit::regenerateHealthAndPowers(uint16_t timePassed)
         (!hasUnitStateFlag(UNIT_STATE_POLYMORPHED) && m_healthRegenerateTimer >= REGENERATION_INTERVAL_HEALTH))
     {
         if (isPlayer())
-            static_cast<Player*>(this)->RegenerateHealth(combatStatusHandler.IsInCombat());
+            static_cast<Player*>(this)->RegenerateHealth(m_combatStatusHandler.IsInCombat());
         else
             static_cast<Creature*>(this)->RegenerateHealth();
 
@@ -5179,7 +5274,7 @@ void Unit::regeneratePower(PowerType type)
                     amount = static_cast<Player*>(this)->getManaRegeneration();
 #else
                 // Check for combat (5 second rule was removed in cata)
-                if (combatStatusHandler.IsInCombat())
+                if (m_combatStatusHandler.IsInCombat())
                     amount = getManaRegenerationWhileCasting();
                 else
                     amount = getManaRegeneration();
@@ -5192,7 +5287,7 @@ void Unit::regeneratePower(PowerType type)
             else
             {
                 //\ todo: this creature mana regeneration is not correct, rewrite it
-                if (combatStatusHandler.IsInCombat())
+                if (m_combatStatusHandler.IsInCombat())
                 {
                     amount = (getLevel() + 10) * PctPowerRegenModifier[POWER_TYPE_MANA];
                 }
@@ -5222,7 +5317,7 @@ void Unit::regeneratePower(PowerType type)
 #endif
         {
             // Rage and Runic Power do not decay while in combat
-            if (combatStatusHandler.IsInCombat())
+            if (m_combatStatusHandler.IsInCombat())
                 return;
 
             // TODO: fix this hackfix when aura system supports this
@@ -5283,7 +5378,7 @@ void Unit::regeneratePower(PowerType type)
 #if VERSION_STRING >= Cata
         case POWER_TYPE_HOLY_POWER:
         {
-            if (combatStatusHandler.IsInCombat())
+            if (m_combatStatusHandler.IsInCombat())
                 return;
 
             amount = -1.0f;
@@ -5563,6 +5658,15 @@ void Unit::sendChatMessageToPlayer(uint8_t type, uint32_t language, std::string 
     plr->GetSession()->SendPacket(data.get());
 }
 
+void Unit::sendChatMessageAlternateEntry(uint32_t entry, uint8_t type, uint32_t lang, std::string  msg)
+{
+    if (CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry))
+    {
+        const auto data = SmsgMessageChat(type, lang, 0, msg, getGuid(), creatureProperties->Name).serialise();
+        SendMessageToSet(data.get(), true);
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 void Unit::setAttackTimer(WeaponDamageType type, int32_t time)
@@ -5777,11 +5881,11 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
             if (!plr->GetSession()->HasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
                 damage = plr->CheckDamageLimits(damage, spellId);
 
-            if (plr->combatStatusHandler.IsInCombat())
+            if (plr->m_combatStatusHandler.IsInCombat())
                 sHookInterface.OnEnterCombat(plr, victim);
         }
 
-        combatStatusHandler.OnDamageDealt(victim);
+        m_combatStatusHandler.OnDamageDealt(victim);
 
         const auto plrOwner = getPlayerOwner();
         if (plrOwner != nullptr)
@@ -6056,7 +6160,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
 
         // todo: this should be moved to combat handler...
         // atm its called every time player takes damage -Appled
-        if (combatStatusHandler.IsInCombat())
+        if (m_combatStatusHandler.IsInCombat())
             sHookInterface.OnEnterCombat(dynamic_cast<Player*>(this), attacker);
 
         // todo: remove this hackfix...
@@ -6250,24 +6354,6 @@ uint32_t Unit::absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly
     return totalAbsorbedDamage;
 }
 
-bool Unit::isTaggedByPlayerOrItsGroup(Player* tagger)
-{
-    if (!isTagged() || tagger == nullptr)
-        return false;
-
-    if (getTaggerGuid() == tagger->getGuid())
-        return true;
-
-    if (tagger->isInGroup())
-    {
-        const auto playerTagger = GetMapMgrPlayer(getTaggerGuid());
-        if (playerTagger != nullptr && tagger->getGroup()->HasMember(playerTagger))
-            return true;
-    }
-
-    return false;
-}
-
 void Unit::smsg_AttackStop(Unit* pVictim)
 {
     if (pVictim)
@@ -6288,9 +6374,9 @@ void Unit::smsg_AttackStop(Unit* pVictim)
             {
                 m_cTimer = Util::getMSTime() + 8000;
                 sEventMgr.RemoveEvents(this, EVENT_COMBAT_TIMER);
-                sEventMgr.AddEvent(this, &Unit::EventUpdateFlag, EVENT_COMBAT_TIMER, 8000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(this, &Unit::eventUpdateCombatFlag, EVENT_COMBAT_TIMER, 8000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 if (pVictim->isCreatureOrPlayer())   // there could be damage coming from objects/enviromental
-                    sEventMgr.AddEvent(pVictim, &Unit::EventUpdateFlag, EVENT_COMBAT_TIMER, 8000, 1, 0);
+                    sEventMgr.AddEvent(pVictim, &Unit::eventUpdateCombatFlag, EVENT_COMBAT_TIMER, 8000, 1, 0);
             }
         }
     }
@@ -6526,7 +6612,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
                 damage = plr->CheckDamageLimits(damage, spellId);
 
             //\ todo: this hook is called here and in takeDamage... sort this out
-            if (plr->combatStatusHandler.IsInCombat())
+            if (plr->m_combatStatusHandler.IsInCombat())
                 sHookInterface.OnEnterCombat(plr, this);
         }
 
@@ -6547,7 +6633,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
             *rageGenerated = float2int32(val);
         }
 
-        attacker->combatStatusHandler.OnDamageDealt(this);
+        attacker->m_combatStatusHandler.OnDamageDealt(this);
 
         const auto plrOwner = attacker->getPlayerOwner();
         if (plrOwner != nullptr)
@@ -6687,7 +6773,7 @@ uint32_t Unit::_handleBatchHealing(HealthBatchEvent const* batch, uint32_t* abso
         getThreatManager().forwardThreatForAssistingMe(healer, static_cast<float_t>(healing), batch->spellInfo);
 
         if (IsInWorld() && healer->IsInWorld())
-            healer->combatStatusHandler.WeHealed(this);
+            healer->m_combatStatusHandler.WeHealed(this);
     }
 
     RemoveAurasByHeal();
@@ -6973,6 +7059,43 @@ bool Unit::isTaggable() const
 {
     if (!isPet() && !hasDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER))
         return true;
+
+    return false;
+}
+
+bool Unit::isTaggedByPlayerOrItsGroup(Player* tagger)
+{
+    if (!isTagged() || tagger == nullptr)
+        return false;
+
+    if (getTaggerGuid() == tagger->getGuid())
+        return true;
+
+    if (tagger->isInGroup())
+    {
+        if (const auto playerTagger = GetMapMgrPlayer(getTaggerGuid()))
+            if (tagger->getGroup()->HasMember(playerTagger))
+                return true;
+    }
+
+    return false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Loot
+
+bool Unit::isLootable()
+{
+    if (isTagged() && !isPet() && !(isPlayer() && !IsInBg()) && (getCreatedByGuid() == 0) && !isVehicle())
+    {
+        if (const auto creatureProperties = sMySQLStore.getCreatureProperties(getEntry()))
+        {
+            if (isCreature() && !sLootMgr.HasLootForCreature(getEntry()) && creatureProperties->money == 0)
+                return false;
+        }
+
+        return true;
+    }
 
     return false;
 }

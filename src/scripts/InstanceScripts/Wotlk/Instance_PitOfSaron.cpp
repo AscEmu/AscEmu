@@ -90,7 +90,7 @@ public:
             getCreature()->getMovementManager()->moveJump(JumpCords[0], 25.0f, 15.0f, 0);
             
             if (GameObject * pObject = getNearestGameObject(401006)) //forgemaster's anvil (TEMP)
-                getCreature()->SetFacing(getCreature()->calcRadAngle(getCreature()->GetPositionX(), getCreature()->GetPositionY(), pObject->GetPositionX(), pObject->GetPositionY()));
+                getCreature()->setFacing(getCreature()->calcRadAngle(getCreature()->GetPositionX(), getCreature()->GetPositionY(), pObject->GetPositionX(), pObject->GetPositionY()));
 
             if (_isHeroic())
                 getCreature()->castSpell(getCreature(), H_SPELL_FORGE_BLADE, false);
@@ -110,7 +110,7 @@ public:
             getCreature()->getMovementManager()->moveJump(JumpCords[1], 25.0f, 15.0f, 0);
 
             if (GameObject * pObject = getNearestGameObject(401006)) //forgemaster's anvil (TEMP)
-                getCreature()->SetFacing(getCreature()->calcRadAngle(getCreature()->GetPositionX(), getCreature()->GetPositionY(), pObject->GetPositionX(), pObject->GetPositionY()));
+                getCreature()->setFacing(getCreature()->calcRadAngle(getCreature()->GetPositionX(), getCreature()->GetPositionY(), pObject->GetPositionX(), pObject->GetPositionY()));
             
             if (_isHeroic())
                 getCreature()->castSpell(getCreature(), H_SPELL_FORGE_MACE, false);

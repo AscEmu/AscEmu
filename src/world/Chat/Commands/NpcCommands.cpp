@@ -334,7 +334,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     if (creature_target->m_factionTemplate)
         SystemMessage(m_session, "Combat Support: 0x%.3X", creature_target->m_factionTemplate->FriendlyMask);
 
-    if (creature_target->combatStatusHandler.IsInCombat())
+    if (creature_target->m_combatStatusHandler.IsInCombat())
         SystemMessage(m_session, "Is in combat!");
     else
         SystemMessage(m_session, "Not in combat!");
@@ -1234,7 +1234,7 @@ bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_ses
         return false;
 
     uint32 old_npc_phase = creature_target->m_spawn->phase;
-    creature_target->Phase(PHASE_SET, npc_phase);
+    creature_target->setPhase(PHASE_SET, npc_phase);
 
     if (m_session->GetPlayer()->m_saveAllChangesCommand)
         save = 1;

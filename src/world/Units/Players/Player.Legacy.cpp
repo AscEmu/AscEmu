@@ -295,9 +295,9 @@ bool Player::Create(CharCreate& charCreateContent)
         sLogger.failure("No class levelstatd found!");
 
     if (const auto raceEntry = sChrRacesStore.LookupEntry(charCreateContent._race))
-        SetFaction(raceEntry->faction_id);
+        setFaction(raceEntry->faction_id);
     else
-        SetFaction(0);
+        setFaction(0);
 
 #if VERSION_STRING > TBC
     if (charCreateContent._class != DEATHKNIGHT || worldConfig.player.playerStartingLevel > 55)
@@ -1308,7 +1308,7 @@ void Player::SpawnPet(uint32 pet_number)
     else
         pPet->removeSanctuaryFlag();
 
-    pPet->SetFaction(this->getFactionTemplate());
+    pPet->setFaction(this->getFactionTemplate());
 
     if (itr->second->spellid)
     {
@@ -2355,13 +2355,13 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     EventModelChange();
 
     if (const auto raceEntry = sChrRacesStore.LookupEntry(getRace()))
-        SetFaction(raceEntry->faction_id);
+        setFaction(raceEntry->faction_id);
     else
-        SetFaction(0);
+        setFaction(0);
 
     if (cfaction)
     {
-        SetFaction(cfaction);
+        setFaction(cfaction);
         // re-calculate team
         switch (cfaction)
         {
@@ -5720,7 +5720,7 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
 
     SpeedCheatReset();
 
-    z_axisposition = 0.0f;
+    m_zAxisPosition = 0.0f;
 }
 
 #ifdef AE_TBC
@@ -6336,7 +6336,7 @@ void Player::EndDuel(uint8 WinCondition)
     std::list<Pet*> summons = GetSummons();
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
     {
-        (*itr)->combatStatusHandler.Vanished();
+        (*itr)->m_combatStatusHandler.Vanished();
         (*itr)->getAIInterface()->setPetOwner(this);
         (*itr)->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, *itr, 0);
         (*itr)->getThreatManager().clearAllThreat();
@@ -6346,7 +6346,7 @@ void Player::EndDuel(uint8 WinCondition)
     std::list<Pet*> duelingWithSummons = DuelingWith->GetSummons();
     for (std::list<Pet*>::iterator itr = duelingWithSummons.begin(); itr != duelingWithSummons.end(); ++itr)
     {
-        (*itr)->combatStatusHandler.Vanished();
+        (*itr)->m_combatStatusHandler.Vanished();
         (*itr)->getAIInterface()->setPetOwner(this);
         (*itr)->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, *itr, 0);
         (*itr)->getThreatManager().clearAllThreat();
@@ -7085,7 +7085,7 @@ void Player::CompleteLoading()
     }
 
     sInstanceMgr.BuildSavedInstancesForPlayer(this);
-    combatStatusHandler.UpdateFlag();
+    m_combatStatusHandler.UpdateFlag();
 
 #if VERSION_STRING > TBC
     // add glyphs
@@ -8548,7 +8548,7 @@ void Player::RemoveShapeShiftSpell(uint32 id)
 // COOLDOWNS
 void Player::UpdatePotionCooldown()
 {
-    if (m_lastPotionId == 0 || combatStatusHandler.IsInCombat())
+    if (m_lastPotionId == 0 || m_combatStatusHandler.IsInCombat())
         return;
 
     if (ItemProperties const* proto = sMySQLStore.getItemProperties(m_lastPotionId))
@@ -9379,7 +9379,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     }
 
     // Wipe our attacker set on death
-    combatStatusHandler.Vanished();
+    m_combatStatusHandler.Vanished();
 
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
     pAttacker->getAIInterface()->eventOnTargetDied(this);
@@ -9414,14 +9414,14 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         m_mapMgr->m_battleground->HookOnUnitDied(this);
 }
 
-void Player::HandleKnockback(Object* caster, float horizontal, float vertical)
+void Player::handleKnockback(Object* object, float horizontal, float vertical)
 {
-    if (caster == nullptr)
-        caster = this;
+    if (object == nullptr)
+        object = this;
 
-    float angle = calcRadAngle(caster->GetPositionX(), caster->GetPositionY(), GetPositionX(), GetPositionY());
-    if (caster == this)
-        angle = float(GetOrientation() + M_PI);
+    float angle = calcRadAngle(object->GetPositionX(), object->GetPositionY(), GetPositionX(), GetPositionY());
+    if (object == this)
+        angle = static_cast<float>(M_PI + GetOrientation());
 
     float sin = sinf(angle);
     float cos = cosf(angle);
@@ -9444,7 +9444,7 @@ void Player::RemoveIfVisible(uint64 obj)
 
 void Player::Phase(uint8 command, uint32 newphase)
 {
-    Unit::Phase(command, newphase);
+    Unit::setPhase(command, newphase);
 
     if (GetSession())
     {
@@ -9474,7 +9474,7 @@ void Player::Phase(uint8 command, uint32 newphase)
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
     {
         Pet* p = *itr;
-        p->Phase(command, newphase);
+        p->setPhase(command, newphase);
     }
     //We should phase other, non-combat "pets" too...
 
@@ -9484,7 +9484,7 @@ void Player::Phase(uint8 command, uint32 newphase)
         if (charm == NULL)
             return;
 
-        charm->Phase(command, newphase);
+        charm->setPhase(command, newphase);
     }
 }
 

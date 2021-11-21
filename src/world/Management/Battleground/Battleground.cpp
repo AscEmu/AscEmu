@@ -421,7 +421,7 @@ Creature* CBattleground::SpawnCreature(uint32 entry, float x, float y, float z, 
         c->Load(cp, x, y, z, o);
 
         if (faction != 0)
-            c->SetFaction(faction);
+            c->setFaction(faction);
 
         c->PushToWorld(m_mapMgr);
         return c;
@@ -851,7 +851,7 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
     pCreature->setPower(POWER_TYPE_HAPPINESS, 2000000);
 
     pCreature->setLevel(60);
-    pCreature->SetFaction(84 - horde);
+    pCreature->setFaction(84 - horde);
 
     pCreature->setRace(0);
     pCreature->setClass(2);
@@ -877,7 +877,7 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
     pCreature->setSheathType(SHEATH_STATE_MELEE);
     pCreature->setPvpFlags(U_FIELD_BYTES_FLAG_AURAS);
 
-    pCreature->DisableAI();
+    pCreature->setAItoUse(false);
 
     pCreature->SetCreatureProperties(sMySQLStore.getCreatureProperties(pInfo->Id));
 

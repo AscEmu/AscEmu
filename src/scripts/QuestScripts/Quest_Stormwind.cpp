@@ -29,7 +29,7 @@ public:
 
     void OnLoad() override
     {
-        getCreature()->SetFaction(12);
+        getCreature()->setFaction(12);
         getCreature()->setStandState(STANDSTATE_STAND);
     }
 
@@ -52,7 +52,7 @@ public:
     {
         getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting. No one else needs to get hurt.");
         getCreature()->RemoveNegativeAuras();
-        getCreature()->SetFaction(12);
+        getCreature()->setFaction(12);
         getCreature()->SetHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();
         getCreature()->getThreatManager().removeMeFromThreatLists();
@@ -78,7 +78,7 @@ public:
         if (Dashel == nullptr)
             return;
 
-        Dashel->SetFaction(72);
+        Dashel->setFaction(72);
         Dashel->getAIInterface()->setMeleeDisabled(false);
         Dashel->getAIInterface()->setAllowedToEnterCombat(true);
 

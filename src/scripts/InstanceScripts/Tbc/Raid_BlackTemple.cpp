@@ -3073,7 +3073,7 @@ public:
         switch (mScenePart)
         {
             case 1:
-                getCreature()->SetFacing(6.248631f);
+                getCreature()->setFacing(6.248631f);
                 break;
             case 2:
                 sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "The door is all that stands between us and the Betrayer. Stand aside, friends.");
@@ -3153,7 +3153,7 @@ public:
                 break;
             case 16:
                 sendChatMessage(CHAT_MSG_MONSTER_SAY, 11388, "");
-                getCreature()->SetFacing(2.113512f);
+                getCreature()->setFacing(2.113512f);
                 break;
             case 17:
                 getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
@@ -3193,7 +3193,7 @@ public:
         switch (mScenePart)
         {
             case 1:
-                getCreature()->SetFacing(3.126680f);
+                getCreature()->setFacing(3.126680f);
                 break;
             case 2:
                 mIllidanAI->_removeAura(39656);
@@ -3721,7 +3721,7 @@ public:
         float Facing = getCreature()->calcRadAngle(getCreature()->GetPositionX(), getCreature()->GetPositionY(), mIllidanAI->getCreature()->GetPositionX(), mIllidanAI->getCreature()->GetPositionY());
         if (getCreature()->GetOrientation() != Facing)
         {
-            getCreature()->SetFacing(Facing);
+            getCreature()->setFacing(Facing);
         }
 
         setAIAgent(AGENT_SPELL);
@@ -4669,7 +4669,7 @@ public:
             case 9:
                 {
                     float Facing = pMaievAI->getCreature()->calcRadAngle(getCreature()->GetPositionX(), getCreature()->GetPositionY(), pMaievAI->getCreature()->GetPositionX(), pMaievAI->getCreature()->GetPositionY());
-                    getCreature()->SetFacing(Facing);
+                    getCreature()->setFacing(Facing);
                     getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
                 }
                 break;

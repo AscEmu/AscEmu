@@ -211,7 +211,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
         if (owner->isCreature())
         {
             Creature* c = static_cast<Creature*>(owner);
-            c->SetFaction(passenger->getFactionTemplate());
+            c->setFaction(passenger->getFactionTemplate());
         }
     }
 
@@ -579,8 +579,8 @@ void Vehicle::InstallAccessories()
         c->obj_movement_info.transport_seat = static_cast<uint8_t>(accessory->seat);
 #endif
 #endif
-        c->Phase(PHASE_SET, owner->GetPhase());
-        c->SetFaction(owner->getFactionTemplate());
+        c->setPhase(PHASE_SET, owner->GetPhase());
+        c->setFaction(owner->getFactionTemplate());
         c->PushToWorld(owner->GetMapMgr());
 
         AddPassengerToSeat(c, accessory->seat);

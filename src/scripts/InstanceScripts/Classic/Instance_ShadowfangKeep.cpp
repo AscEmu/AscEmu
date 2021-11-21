@@ -691,7 +691,7 @@ public:
                     // Face him to doors
                     case 1:
                     {
-                        getCreature()->SetFacing(1.33f);
+                        getCreature()->setFacing(1.33f);
                     }break;
                     // Preparing to cast spell
                     case 2:

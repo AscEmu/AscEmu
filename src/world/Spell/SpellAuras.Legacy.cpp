@@ -828,7 +828,7 @@ void Aura::SpellAuraModPossess(AuraEffectModifier* /*aurEff*/, bool apply)
 
             m_target->setCharmedByGuid(0);
             m_target->removeUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
-            m_target->SetFaction(m_target->GetCharmTempVal());
+            m_target->setFaction(m_target->GetCharmTempVal());
             m_target->updateInRangeOppositeFactionSet();
         }
         else
@@ -929,7 +929,7 @@ void Aura::SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply)
 
         m_target->addUnitStateFlag(UNIT_STATE_CHARMED);
         m_target->SetCharmTempVal(m_target->getFactionTemplate());
-        m_target->SetFaction(caster->getFactionTemplate());
+        m_target->setFaction(caster->getFactionTemplate());
         m_target->updateInRangeOppositeFactionSet();
         m_target->getAIInterface()->Init(m_target, AI_SCRIPT_PET, caster);
         m_target->setCharmedByGuid(caster->getGuid());
@@ -961,7 +961,7 @@ void Aura::SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply)
     else
     {
         m_target->removeUnitStateFlag(UNIT_STATE_CHARMED);
-        m_target->SetFaction(m_target->GetCharmTempVal());
+        m_target->setFaction(m_target->GetCharmTempVal());
         m_target->getThreatManager().clearAllThreat();
         m_target->updateInRangeOppositeFactionSet();
         m_target->getAIInterface()->Init(m_target, AI_SCRIPT_AGRO);
@@ -2818,7 +2818,7 @@ void Aura::SpellAuraFeignDeath(AuraEffectModifier* /*aurEff*/, bool apply)
             p_target->addUnitFlags(UNIT_FLAG_FEIGN_DEATH);
             p_target->addDynamicFlags(U_DYN_FLAG_DEAD);
 
-            //now get rid of mobs agro. pTarget->combatStatusHandler.AttackersForgetHate() - this works only for already attacking mobs
+            //now get rid of mobs agro. pTarget->m_combatStatusHandler.AttackersForgetHate() - this works only for already attacking mobs
             for (const auto& itr : p_target->getInRangeObjectsSet())
             {
                 if (itr && itr->isCreatureOrPlayer() && static_cast<Unit*>(itr)->isAlive())
@@ -6090,16 +6090,16 @@ void Aura::SpellAuraPhase(AuraEffectModifier* aurEff, bool apply)
     if (apply)
     {
         if (m_target->isPlayer())
-            static_cast<Player*>(m_target)->Phase(PHASE_SET, m_spellInfo->getEffectMiscValue(aurEff->getEffectIndex()));
+            static_cast<Player*>(m_target)->setPhase(PHASE_SET, m_spellInfo->getEffectMiscValue(aurEff->getEffectIndex()));
         else
-            m_target->Phase(PHASE_SET, m_spellInfo->getEffectMiscValue(aurEff->getEffectIndex()));
+            m_target->setPhase(PHASE_SET, m_spellInfo->getEffectMiscValue(aurEff->getEffectIndex()));
     }
     else
     {
         if (m_target->isPlayer())
-            static_cast<Player*>(m_target)->Phase(PHASE_RESET);
+            static_cast<Player*>(m_target)->setPhase(PHASE_RESET);
         else
-            m_target->Phase(PHASE_RESET);
+            m_target->setPhase(PHASE_RESET);
     }
 }
 

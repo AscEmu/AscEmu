@@ -13,7 +13,7 @@ void CompanionSummon::Load(CreatureProperties const* properties_, Unit* companio
 {
     Summon::Load(properties_, companionOwner, position, spellid, summonSlot);
 
-    SetFaction(35);
+    setFaction(35);
     setLevel(1);
 
     m_aiInterface->Init(this, AI_SCRIPT_PET, companionOwner);

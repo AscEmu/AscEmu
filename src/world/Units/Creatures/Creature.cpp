@@ -1081,10 +1081,10 @@ void Creature::EnslaveExpire()
     switch (GetCreatureProperties()->Type)
     {
         case UNIT_TYPE_DEMON:
-            SetFaction(90);
+            setFaction(90);
             break;
         default:
-            SetFaction(954);
+            setFaction(954);
             break;
     };
 
@@ -1277,7 +1277,7 @@ void Creature::RegenerateHealth()
     {
         amt = getMaxHealth() * 0.10f;
     }
-    else if (!combatStatusHandler.IsInCombat())
+    else if (!m_combatStatusHandler.IsInCombat())
     {
         // 25% of max health per tick
         amt = getMaxHealth() * 0.25f;
@@ -1531,7 +1531,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     setVirtualItemInfo(5, 0);
 #endif
 
-    SetFaction(spawn->factionid);
+    setFaction(spawn->factionid);
     setUnitFlags(spawn->flags);
     setEmoteState(spawn->emote_state);
     setBoundingRadius(creature_properties->BoundingRadius);
@@ -1748,7 +1748,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setMaxDamage(creature_properties->MaxDamage);
 
 
-    SetFaction(creature_properties->Faction);
+    setFaction(creature_properties->Faction);
     setBoundingRadius(creature_properties->BoundingRadius);
     setCombatReach(creature_properties->CombatReach);
 
@@ -2311,7 +2311,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     setHealth(0);
 
     // Wipe our attacker set on death
-    combatStatusHandler.Vanished();
+    m_combatStatusHandler.Vanished();
 
     RemoveAllNonPersistentAuras();
 

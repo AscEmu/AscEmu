@@ -35,7 +35,7 @@ void GameEvent::CreateNPCs()
 
         // Set up spawn specific information
         c->setDisplayId(npc.displayid);
-        c->SetFaction(npc.faction);
+        c->setFaction(npc.faction);
 
         // Equipment
         c->setVirtualItemSlotId(MELEE, sMySQLStore.getItemDisplayIdForEntry(cp->itemslot_1));

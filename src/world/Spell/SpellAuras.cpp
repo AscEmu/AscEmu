@@ -177,8 +177,8 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
         // Remove attacker
         if (caster != getOwner())
         {
-            caster->combatStatusHandler.RemoveAttackTarget(getOwner());
-            getOwner()->combatStatusHandler.RemoveAttacker(caster, caster->getGuid());
+            caster->m_combatStatusHandler.RemoveAttackTarget(getOwner());
+            getOwner()->m_combatStatusHandler.RemoveAttacker(caster, caster->getGuid());
         }
 
         /**********************Cooldown**************************
@@ -228,7 +228,7 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
     else
     {
         // Remove attacker
-        getOwner()->combatStatusHandler.RemoveAttacker(nullptr, m_casterGuid);
+        getOwner()->m_combatStatusHandler.RemoveAttacker(nullptr, m_casterGuid);
     }
 
     // Remove aura from unit before removing modifiers

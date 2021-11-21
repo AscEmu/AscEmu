@@ -22,7 +22,7 @@ bool ChatHandler::HandleGMActiveCommand(const char* args, WorldSession* m_sessio
             BlueSystemMessage(m_session, "<GM> Will no longer show in chat messages or above your name until you use this command again.");
         }
         player->removePlayerFlags(PLAYER_FLAG_GM);
-        player->SetFaction(player->GetInitialFactionId());
+        player->setFaction(player->GetInitialFactionId());
         player->UpdatePvPArea();
         player->UpdateVisibility();
     }
@@ -34,7 +34,7 @@ bool ChatHandler::HandleGMActiveCommand(const char* args, WorldSession* m_sessio
         SystemMessage(m_session, "GM Flag set.");
         BlueSystemMessage(m_session, "<GM> will now appear above your name and in chat messages until you use this command again.");
         player->addPlayerFlags(PLAYER_FLAG_GM);
-        player->SetFaction(35);
+        player->setFaction(35);
         player->removePvpFlag();
         player->UpdateVisibility();
     }

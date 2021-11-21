@@ -1501,7 +1501,7 @@ bool ChatHandler::HandleCharSetPhaseCommand(const char* args, WorldSession* m_se
     if (player_target == nullptr)
         return true;
 
-    player_target->Phase(PHASE_SET, phase);
+    player_target->setPhase(PHASE_SET, phase);
 
     if (player_target != m_session->GetPlayer())
     {

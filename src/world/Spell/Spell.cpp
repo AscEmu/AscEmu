@@ -862,7 +862,7 @@ void Spell::finish(bool successful)
         if (getItemCaster()->getItemProperties()->Class == ITEM_CLASS_CONSUMABLE && getItemCaster()->getItemProperties()->SubClass == 1)
         {
             getItemCaster()->getOwner()->SetLastPotion(getItemCaster()->getItemProperties()->ItemId);
-            if (!getItemCaster()->getOwner()->combatStatusHandler.IsInCombat())
+            if (!getItemCaster()->getOwner()->m_combatStatusHandler.IsInCombat())
                 getItemCaster()->getOwner()->UpdatePotionCooldown();
         }
         else
@@ -1354,7 +1354,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         }
 
         // Check if spell requires caster to be in combat
-        if (getSpellInfo()->getAttributes() & ATTRIBUTES_STOP_ATTACK && getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_UNAFFECTED_BY_SCHOOL_IMMUNITY && !u_caster->combatStatusHandler.IsInCombat())
+        if (getSpellInfo()->getAttributes() & ATTRIBUTES_STOP_ATTACK && getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_UNAFFECTED_BY_SCHOOL_IMMUNITY && !u_caster->m_combatStatusHandler.IsInCombat())
             return SPELL_FAILED_CASTER_AURASTATE;
 
         auto requireCombat = true;
@@ -1411,7 +1411,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         if (!m_triggeredSpell)
         {
             // Out of combat spells should not be able to be casted in combat
-            if (requireCombat && (getSpellInfo()->getAttributes() & ATTRIBUTES_REQ_OOC) && u_caster->combatStatusHandler.IsInCombat())
+            if (requireCombat && (getSpellInfo()->getAttributes() & ATTRIBUTES_REQ_OOC) && u_caster->m_combatStatusHandler.IsInCombat())
                 return SPELL_FAILED_AFFECTING_COMBAT;
 
             if (!secondCheck)
@@ -1520,7 +1520,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             return SPELL_FAILED_BAD_TARGETS;
 
         // Check if spell requires target to be out of combat
-        if (getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_REQ_OOC_TARGET && target->combatStatusHandler.IsInCombat())
+        if (getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_REQ_OOC_TARGET && target->m_combatStatusHandler.IsInCombat())
             return SPELL_FAILED_TARGET_AFFECTING_COMBAT;
 
         if (!(getSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_CAN_TARGET_INVISIBLE) && (u_caster != nullptr && !u_caster->canSee(target)))
@@ -2963,7 +2963,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
 
         if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
         {
-            if (p_caster->combatStatusHandler.IsInCombat())
+            if (p_caster->m_combatStatusHandler.IsInCombat())
             {
                 p_caster->getItemInterface()->buildInventoryChangeError(i_caster, nullptr, INV_ERR_CANT_DO_IN_COMBAT);
                 return SPELL_FAILED_DONT_REPORT;

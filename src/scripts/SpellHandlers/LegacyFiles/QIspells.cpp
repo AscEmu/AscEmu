@@ -453,7 +453,7 @@ bool YennikuRelease(uint8_t /*effectIndex*/, Spell* pSpell)
     if (yenniku == nullptr)
         return true;
 
-    yenniku->SetFaction(29);
+    yenniku->setFaction(29);
     yenniku->getThreatManager().clearAllThreat();
     yenniku->getThreatManager().removeMeFromThreatLists();
     yenniku->Despawn(30 * 1000, 60 * 1000);
@@ -1521,7 +1521,7 @@ bool CenarionMoondust(uint8_t /*effectIndex*/, Spell* pSpell) // Body And Heart 
     }
 
     // Make sure that creature will attack player
-    if (!lunaclaw->combatStatusHandler.IsInCombat())
+    if (!lunaclaw->m_combatStatusHandler.IsInCombat())
     {
         lunaclaw->getAIInterface()->setCurrentTarget(p_caster);
     }
@@ -1564,7 +1564,7 @@ bool CenarionLunardust(uint8_t /*effectIndex*/, Spell* pSpell)  // Body And Hear
     }
 
     // Make sure that creature will attack player
-    if (!lunaclaw->combatStatusHandler.IsInCombat())
+    if (!lunaclaw->m_combatStatusHandler.IsInCombat())
     {
         lunaclaw->getAIInterface()->setCurrentTarget(p_caster);
     }
@@ -1739,7 +1739,7 @@ bool DouseEternalFlame(uint8_t /*effectIndex*/, Spell* pSpell)
 
             Creature* pCreature = plr->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 10917);
             if (pCreature != nullptr)
-                pCreature->SetFaction(11);
+                pCreature->setFaction(11);
         }
     }
     return true;

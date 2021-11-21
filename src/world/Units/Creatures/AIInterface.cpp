@@ -1010,7 +1010,7 @@ void AIInterface::updateTargets(unsigned long time_passed)
             {
                 auto i2 = i++;
                 if ((*i2) == NULL || (*i2)->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
-                    !(*i2)->isAlive() || m_Unit->getDistanceSq((*i2)) >= 2500.0f || !(*i2)->combatStatusHandler.IsInCombat() || !((*i2)->m_phase & m_Unit->m_phase))
+                    !(*i2)->isAlive() || m_Unit->getDistanceSq((*i2)) >= 2500.0f || !(*i2)->m_combatStatusHandler.IsInCombat() || !((*i2)->m_phase & m_Unit->m_phase))
                 {
                     m_assistTargets.erase(i2);
                 }
@@ -2177,7 +2177,7 @@ void AIInterface::setCreatureProtoDifficulty(uint32_t entry)
             getUnit()->setMaxRangedDamage(properties_difficulty->RangedMaxDamage);
 
 
-            getUnit()->SetFaction(properties_difficulty->Faction);
+            getUnit()->setFaction(properties_difficulty->Faction);
 
             if (!(getUnit()->m_factionEntry->RepListId == -1 && getUnit()->m_factionTemplate->HostileMask == 0 && getUnit()->m_factionTemplate->FriendlyMask == 0))
             {
@@ -2324,7 +2324,7 @@ void AIInterface::eventDamageTaken(Unit* pUnit, uint32_t misc1)
     pUnit->RemoveAura(24575);
 
     CALL_SCRIPT_EVENT(m_Unit, OnDamageTaken)(pUnit, misc1);
-    pUnit->combatStatusHandler.OnDamageDealt(m_Unit);
+    pUnit->m_combatStatusHandler.OnDamageDealt(m_Unit);
 }
 
 void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
@@ -2483,7 +2483,7 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
 
     initialiseScripts(getUnit()->getEntry());
 
-    m_Unit->combatStatusHandler.Vanished();
+    m_Unit->m_combatStatusHandler.Vanished();
     m_Unit->getThreatManager().clearAllThreat();
     m_Unit->getThreatManager().removeMeFromThreatLists();
 
@@ -3016,7 +3016,7 @@ bool AIInterface::activateShowWayPoints(Player* player, bool /*showBackwards*/)
 
         wpCreature->setLevel(wayPoint.id);
         wpCreature->setNpcFlags(UNIT_NPC_FLAG_NONE);
-        wpCreature->SetFaction(player->getFactionTemplate());
+        wpCreature->setFaction(player->getFactionTemplate());
         wpCreature->setMaxHealth(1);
         wpCreature->setHealth(1);
 
@@ -3857,7 +3857,7 @@ bool AIInterface::isValidUnitTarget(Object* pObject, TargetFilter pFilter, float
         // hostile/friendly
         if ((~pFilter & TargetFilter_Corpse) && (pFilter & TargetFilter_Friendly))
         {
-            if (!UnitTarget->combatStatusHandler.IsInCombat())
+            if (!UnitTarget->m_combatStatusHandler.IsInCombat())
                 return false; // not-in-combat targets if friendly
 
             if (isHostile(getUnit(), UnitTarget) || getUnit()->getThreatManager().getThreat(UnitTarget) > 0)

@@ -139,7 +139,7 @@ public:
     {
         setRooted(true);
         setCanEnterCombat(false);
-        getCreature()->SetFaction(21);
+        getCreature()->setFaction(21);
     }
 
     void OnLoad() override
@@ -551,7 +551,7 @@ public:
     void onSelectOption(Object* pObject, Player* /*pPlayer*/, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Creature* SaltyJohn = static_cast<Creature*>(pObject);
-        SaltyJohn->SetFaction(14);
+        SaltyJohn->setFaction(14);
         SaltyJohn->sendChatMessage(12, 0, "I suppose this is it.. then? I won't go down quietly!");
     }
 };
@@ -572,7 +572,7 @@ public:
     void onSelectOption(Object* pObject, Player* /*pPlayer*/, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Creature* TomHegger = static_cast<Creature*>(pObject);
-        TomHegger->SetFaction(14);
+        TomHegger->setFaction(14);
         TomHegger->sendChatMessage(12, 0, "You don't know who you're messing with, ! Death beckons!");
     }
 };
@@ -593,7 +593,7 @@ public:
     void onSelectOption(Object* pObject, Player* /*pPlayer*/, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Creature* GuardMitch = static_cast<Creature*>(pObject);
-        GuardMitch->SetFaction(14);
+        GuardMitch->setFaction(14);
         GuardMitch->sendChatMessage(12, 0, "Finally! This charade is over... Arthas give me strength!");
     }
 };

@@ -264,7 +264,7 @@ public:
         {
             case TYPEID_UNIT:
                 crt = static_cast<Creature*>(ptr);
-                crt->Phase(PHASE_SET, newphase);
+                crt->setPhase(PHASE_SET, newphase);
                 if (crt->m_spawn)
                     crt->m_spawn->phase = newphase;
                 if (Save)
@@ -276,7 +276,7 @@ public:
 
             case TYPEID_PLAYER:
                 p_target = static_cast<Player*>(ptr);
-                p_target->Phase(PHASE_SET, newphase);
+                p_target->setPhase(PHASE_SET, newphase);
                 break;
 
             default:
@@ -300,7 +300,7 @@ public:
         {
             case TYPEID_UNIT:
                 crt = static_cast<Creature*>(ptr);
-                crt->Phase(PHASE_ADD, newphase);
+                crt->setPhase(PHASE_ADD, newphase);
                 if (crt->m_spawn)
                     crt->m_spawn->phase |= newphase;
                 if (Save)
@@ -312,7 +312,7 @@ public:
 
             case TYPEID_PLAYER:
                 p_target = static_cast<Player*>(ptr);
-                p_target->Phase(PHASE_ADD, newphase);
+                p_target->setPhase(PHASE_ADD, newphase);
                 break;
 
             default:
@@ -336,7 +336,7 @@ public:
         {
             case TYPEID_UNIT:
                 crt = static_cast<Creature*>(ptr);
-                crt->Phase(PHASE_DEL, newphase);
+                crt->setPhase(PHASE_DEL, newphase);
                 if (crt->m_spawn)
                     crt->m_spawn->phase &= ~newphase;
                 if (Save)
@@ -348,7 +348,7 @@ public:
 
             case TYPEID_PLAYER:
                 p_target = static_cast<Player*>(ptr);
-                p_target->Phase(PHASE_DEL, newphase);
+                p_target->setPhase(PHASE_DEL, newphase);
                 break;
 
             default:
@@ -401,7 +401,7 @@ public:
     {
         TEST_UNIT()
         // If Pointer isn't in combat skip everything
-        if (!ptr->combatStatusHandler.IsInCombat())
+        if (!ptr->m_combatStatusHandler.IsInCombat())
             return 0;
 
         Unit* pTarget = ptr->getAIInterface()->getCurrentTarget();
@@ -567,11 +567,11 @@ public:
             return 1;
         }
         pCreature->Load(p, x, y, z, o);
-        pCreature->SetFaction(faction);
+        pCreature->setFaction(faction);
         pCreature->setVirtualItemSlotId(MELEE, equip1);
         pCreature->setVirtualItemSlotId(OFFHAND, equip2);
         pCreature->setVirtualItemSlotId(RANGED, equip3);
-        pCreature->Phase(PHASE_SET, phase);
+        pCreature->setPhase(PHASE_SET, phase);
         pCreature->m_noRespawn = true;
         pCreature->AddToWorld(ptr->GetMapMgr());
         if (duration)
@@ -718,7 +718,7 @@ public:
         if (!faction)
             return 0;
 
-        ptr->SetFaction(faction);
+        ptr->setFaction(faction);
         return 0;
     }
 
@@ -756,7 +756,7 @@ public:
     {
         if (ptr == nullptr || !ptr->IsInWorld())
             RET_NIL()
-            if (ptr->combatStatusHandler.IsInCombat())
+            if (ptr->m_combatStatusHandler.IsInCombat())
                 lua_pushboolean(L, 1);
             else
                 lua_pushboolean(L, 0);
@@ -1258,13 +1258,13 @@ public:
     {
         TEST_PLAYER()
 
-        if (!ptr->combatStatusHandler.IsInCombat())
+        if (!ptr->m_combatStatusHandler.IsInCombat())
         {
             lua_pushinteger(L, 0);
             return 1;
         }
 
-        PUSH_UNIT(L, ptr->GetMapMgr()->GetUnit(dynamic_cast<Player*>(ptr)->combatStatusHandler.GetPrimaryAttackTarget()));
+        PUSH_UNIT(L, ptr->GetMapMgr()->GetUnit(dynamic_cast<Player*>(ptr)->m_combatStatusHandler.GetPrimaryAttackTarget()));
 
         return 1;
     }
@@ -1829,7 +1829,7 @@ public:
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
         float o = CHECK_FLOAT(L, 4);
-        ptr->SetFacing(o);
+        ptr->setFacing(o);
         ptr->SetOrientation(o);
 
         WorldPacket data(SMSG_MONSTER_MOVE, 50);
@@ -2395,7 +2395,7 @@ public:
         const char* msg = luaL_checkstring(L, 4);
         if (!entry || !lang || !msg)
             return 0;
-        ptr->SendChatMessageAlternateEntry(entry, type, lang, msg);
+        ptr->sendChatMessageAlternateEntry(entry, type, lang, msg);
         return 0;
     }
 
@@ -2909,7 +2909,7 @@ public:
             }
             else
             {
-                if (!plr->IsInInstance())
+                if (!plr->isInInstance())
                     return 0;
                 Instance* pInstance = sInstanceMgr.GetInstanceByIds(plr->GetMapId(), plr->GetInstanceID());
                 lua_pushinteger(L, pInstance->m_difficulty);
@@ -2918,7 +2918,7 @@ public:
         }
         else
         {
-            if (!ptr->IsInInstance())
+            if (!ptr->isInInstance())
             {
                 lua_pushboolean(L, 0);
                 return 1;
@@ -2934,7 +2934,7 @@ public:
         if (!ptr)
             return 0;
 
-        if (!ptr->IsInInstance())
+        if (!ptr->isInInstance())
         {
             lua_pushnil(L);
         }
@@ -3011,7 +3011,7 @@ public:
         uint8_t difficulty = static_cast<uint8_t>(CHECK_ULONG(L, 1));
         if (!ptr)
             return 0;
-        if (ptr->IsInInstance())
+        if (ptr->isInInstance())
         {
             if (ptr->isPlayer())
             {
@@ -3079,7 +3079,7 @@ public:
         float newo = CHECK_FLOAT(L, 1);
         if (!ptr)
             return 0;
-        ptr->SetFacing(newo);
+        ptr->setFacing(newo);
         return 0;
     }
 
@@ -4432,7 +4432,7 @@ public:
             else
                 moveSpeed = 7.0f * 0.001f;
         }
-        ptr->SetFacing(o);
+        ptr->setFacing(o);
         ptr->SetOrientation(o);
         float distance = ptr->CalcDistance(ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ(), x, y, z);
         uint32_t moveTime = uint32_t(distance / moveSpeed);

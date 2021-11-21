@@ -74,7 +74,7 @@ public:
 
     void OnLoad() override
     {
-        getCreature()->SetFaction(12);
+        getCreature()->setFaction(12);
         getCreature()->removeNpcFlags(UNIT_NPC_FLAG_QUESTGIVER);
         RegisterAIUpdateEvent(120000);
     }
@@ -94,7 +94,7 @@ public:
 
     void OnLoad() override
     {
-        getCreature()->SetFaction(35);
+        getCreature()->setFaction(35);
     }
 };
 

@@ -582,7 +582,7 @@ public:
                 if (spotlight)
                     spotlight->Despawn(43000, 0);
 
-                getCreature()->SetFacing(4.5f);
+                getCreature()->setFacing(4.5f);
                 switch (eventRand)
                 {
                     case 0:
@@ -1784,7 +1784,7 @@ public:
     {
         getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(CHAINS_VISUAL), true);
         getCreature()->setMoveRoot(true);
-        getCreature()->DisableAI();
+        getCreature()->setAItoUse(false);
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
@@ -2439,7 +2439,7 @@ public:
     explicit VoidZoneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->setMoveRoot(true);
-        getCreature()->DisableAI();
+        getCreature()->setAItoUse(false);
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         _setMeleeDisabled(true);
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);

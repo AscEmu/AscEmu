@@ -261,7 +261,7 @@ public:
 
     void OnTargetDied(Unit* /*mTarget*/) override
     {
-        getCreature()->SetFaction(35);
+        getCreature()->setFaction(35);
         getCreature()->setScale(0.4f);
     }
 };
@@ -282,7 +282,7 @@ public:
             Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(3989.094482f, 6071.562500f, 266.416656f, 22920);
             if (pCreature != nullptr)
             {
-                pCreature->SetFaction(14);
+                pCreature->setFaction(14);
                 pCreature->setScale(1.0f);
                 pCreature->getAIInterface()->setCurrentTarget(pPlayer);
                 pCreature->getAIInterface()->onHostileAction(pPlayer);
@@ -313,7 +313,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new BrutebaneStoutTriggerAI(c); }
     explicit BrutebaneStoutTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->SetFaction(35);
+        getCreature()->setFaction(35);
 
         setRooted(true);
         NdGo = nullptr;
@@ -345,7 +345,7 @@ public:
         {
             Ogre->_setDisplayWeaponIds(28562, 0);
             Ogre->getCreature()->setEmoteState(EMOTE_ONESHOT_EAT_NOSHEATHE);
-            Ogre->getCreature()->SetFaction(35);
+            Ogre->getCreature()->setFaction(35);
             Ogre->getCreature()->setStandState(STANDSTATE_SIT);
 
             NdGo = getNearestGameObject(184315);

@@ -179,7 +179,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     }
 
     // Combat check
-    if (_player->combatStatusHandler.IsInCombat())
+    if (_player->m_combatStatusHandler.IsInCombat())
     {
         for (uint8_t i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
         {
@@ -923,7 +923,7 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
     // We're doing an equip swap.
     if (srlPacket.srcSlot < EQUIPMENT_SLOT_END || srlPacket.destSlot < EQUIPMENT_SLOT_END)
     {
-        if (_player->combatStatusHandler.IsInCombat())
+        if (_player->m_combatStatusHandler.IsInCombat())
         {
             // These can't be swapped
             if (srlPacket.srcSlot < EQUIPMENT_SLOT_MAINHAND || srlPacket.destSlot < EQUIPMENT_SLOT_MAINHAND)

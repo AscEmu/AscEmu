@@ -385,7 +385,7 @@ public:
         scriptEvents.removeEvent(EVENT_NEARLY_EMOTE);
         scriptEvents.addEvent(EVENT_RELEASED, 6000);
 
-        getCreature()->SendChatMessageAlternateEntry(17257, CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, "%s breaks free!");
+        getCreature()->sendChatMessageAlternateEntry(17257, CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, "%s breaks free!");
         sendDBChatMessage(SAY_FREE);
         _removeAura(SPELL_SHADOW_CAGE_C);
     }
@@ -491,10 +491,10 @@ public:
                 }
                 break;
             case EVENT_NEARLY_EMOTE:
-                getCreature()->SendChatMessageAlternateEntry(17257, CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, "%s is nearly free of his bonds!");
+                getCreature()->sendChatMessageAlternateEntry(17257, CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, "%s is nearly free of his bonds!");
                 break;
             case EVENT_BLAST_NOVA:
-                getCreature()->SendChatMessageAlternateEntry(17257, CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, "%s begins to cast Blast Nova!");
+                getCreature()->sendChatMessageAlternateEntry(17257, CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, "%s begins to cast Blast Nova!");
                 _castAISpell(blastNova);
                 scriptEvents.addEvent(EVENT_BLAST_NOVA, 55000);
                 break;
@@ -538,7 +538,7 @@ public:
         if (action == ACTION_START_CHANNELERS_EVENT && isScriptPhase(PHASE_BANISH))
         {
             setScriptPhase(PHASE_1);
-            getCreature()->SendChatMessageAlternateEntry(17257, CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, "%s's bonds begin to weaken!");
+            getCreature()->sendChatMessageAlternateEntry(17257, CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, "%s's bonds begin to weaken!");
 
             scriptEvents.addEvent(EVENT_START_FIGHT, 120000);
             scriptEvents.addEvent(EVENT_NEARLY_EMOTE, 60000);
