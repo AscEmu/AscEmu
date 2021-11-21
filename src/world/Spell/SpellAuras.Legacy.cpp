@@ -1727,27 +1727,6 @@ void Aura::SpellAuraModResistance(AuraEffectModifier* aurEff, bool apply)
     if (isNegative() && caster != nullptr && m_target->isCreature())
         m_target->GetAIInterface()->onHostileAction(caster);
 
-    switch (getSpellInfo()->getId())
-    {
-        //SPELL_HASH_FAERIE_FIRE__FERAL_
-        case 16857:
-        case 60089:
-        //SPELL_HASH_FAERIE_FIRE
-        case 770:
-        case 6950:
-        case 13424:
-        case 13752:
-        case 16498:
-        case 20656:
-        case 21670:
-        case 25602:
-        case 32129:
-        case 65863:
-        {
-            m_target->m_can_stealth = !apply;
-        } break;
-    }
-
     Player* plr = GetPlayerCaster();
     if (plr != nullptr)
     {

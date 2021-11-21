@@ -1180,9 +1180,11 @@ public:
     float m_hitfrommeleespell = 0.0f;
 
     // DK:Affect
+    //\todo: these local vars can be replaced by proper aura effect handling.
     uint32 IsPacified() { return m_pacified; }
     uint32 IsStunned() { return m_stunned; }
     uint32 IsFeared() { return m_fearmodifiers; }
+
     uint32 GetResistChanceMod() { return m_resistChance; }
     void SetResistChanceMod(uint32 amount) { m_resistChance = amount; }
 
@@ -1349,8 +1351,6 @@ public:
 
     void UpdateSpeed();
 
-    bool m_can_stealth = true;
-
     Aura* m_auras[MAX_TOTAL_AURAS_END] = {nullptr};
 
     int32 m_modlanguage = -1;
@@ -1407,7 +1407,6 @@ public:
     uint32 m_cTimer = 0;
     void EventUpdateFlag();
     CombatStatusHandler CombatStatus;
-    bool m_temp_summon = false;
 
     void DispelAll(bool positive);
 
