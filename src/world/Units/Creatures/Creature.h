@@ -1,25 +1,9 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef WOWSERVER_CREATURE_H
-#define WOWSERVER_CREATURE_H
+#pragma once
 
 #include "CreatureDefines.hpp"
 #include "Units/UnitDefines.hpp"
@@ -44,10 +28,12 @@ enum MovementGeneratorType : uint8_t;
 uint8 get_byte(uint32 buffer, uint32 index);
 
 
-//MIT start
 class SERVER_DECL Creature : public Unit
 {
 public:
+
+    Creature(uint64_t guid);
+    virtual ~Creature();
 
     GameEvent * mEvent = nullptr;
 
@@ -99,15 +85,53 @@ public:
     float_t getMaxWanderDistance() const;
     void setMaxWanderDistance(float_t dist);
 
- //MIT end
+    void addVehicleComponent(uint32_t creature_entry, uint32_t vehicleid);
+    void removeVehicleComponent();
+
+    std::vector<CreatureItem>* getSellItems();
+
+    void generateLoot();
+
+    uint32_t getWaypointPath() const { return _waypointPathId; }
+    void loadPath(uint32_t pathid) { _waypointPathId = pathid; }
+
+    // nodeId, pathId
+    std::pair<uint32_t, uint32_t> getCurrentWaypointInfo() const { return _currentWaypointNodeInfo; }
+    void updateCurrentWaypointInfo(uint32_t nodeId, uint32_t pathId) { _currentWaypointNodeInfo = { nodeId, pathId }; }
+
+    virtual void setDeathState(DeathState s);
+
+    void addToInRangeObjects(Object* pObj) override;
+    void onRemoveInRangeObject(Object* pObj) override;
+    void clearInRangeSets() override;
+
+    void registerDatabaseGossip();
+
+    bool isReturningHome() const;
+    void searchFormation();
+    CreatureGroup* getFormation() { return m_formation; }
+    void setFormation(CreatureGroup* formation) { m_formation = formation; }
+    bool isFormationLeader() const;
+    void signalFormationMovement();
+    bool isFormationLeaderMoveAllowed() const;
+
+    uint32_t getSpawnId() { return spawnid; }
+
+    void motion_Initialize();
+    void immediateMovementFlagsUpdate();
+    void updateMovementFlags();
+    CreatureMovementData const& getMovementTemplate();
+    bool canWalk() { return getMovementTemplate().isGroundAllowed(); }
+    bool canSwim() override { return getMovementTemplate().isSwimAllowed() || isPet(); }
+    bool canFly()  override { return getMovementTemplate().isFlightAllowed() || IsFlying(); }
+    bool canHover() { return getMovementTemplate().Ground == CreatureGroundMovementType::Hover || isHovering(); }
+
+    MovementGeneratorType getDefaultMovementType() const override { return m_defaultMovementType; }
+    void setDefaultMovementType(MovementGeneratorType mgt) { m_defaultMovementType = mgt; }
+
+ //AGPL Starts
 
         bool Teleport(const LocationVector& vec, MapMgr* map) override;
-
-        Creature(uint64 guid);
-        virtual ~Creature();
-
-        void addVehicleComponent(uint32 creature_entry, uint32 vehicleid);
-        void removeVehicleComponent();
 
         bool Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStructure::MapInfo const* info);
         void Load(CreatureProperties const* c_properties, float x, float y, float z, float o = 0);
@@ -154,10 +178,6 @@ public:
         std::vector<CreatureItem>::iterator GetSellItemBegin();
 
         std::vector<CreatureItem>::iterator GetSellItemEnd();
-
-    //MIT
-        std::vector<CreatureItem>* getSellItems();
-    //MIT end
 
         size_t GetSellItemCount();
 
@@ -206,7 +226,6 @@ public:
         int BaseAttackType = SCHOOL_NORMAL;
 
         // Looting
-        void generateLoot();
         bool HasLootForPlayer(Player* plr);
 
         bool Skinned = false;
@@ -219,15 +238,6 @@ public:
         void GetTransportHomePosition(float &x, float &y, float &z, float &ori) { x = m_transportHomePosition.x, y = m_transportHomePosition.y, z = m_transportHomePosition.z, ori = m_transportHomePosition.o; }
         LocationVector GetTransportHomePosition() { return m_transportHomePosition; }
         LocationVector m_transportHomePosition;
-
-        uint32_t getWaypointPath() const { return _waypointPathId; }
-        void loadPath(uint32_t pathid) { _waypointPathId = pathid; }
-
-        // nodeId, pathId
-        std::pair<uint32_t, uint32_t> getCurrentWaypointInfo() const { return _currentWaypointNodeInfo; }
-        void updateCurrentWaypointInfo(uint32_t nodeId, uint32_t pathId) { _currentWaypointNodeInfo = { nodeId, pathId }; }
-
-        virtual void setDeathState(DeathState s);
 
         void SendScriptTextChatMessage(uint32 textid, Unit* target = nullptr);
         void SendTimedScriptTextChatMessage(uint32 textid, uint32 delay = 0, Unit* target = nullptr);
@@ -251,11 +261,6 @@ public:
         virtual void SafeDelete();      // use DeleteMe() instead of SafeDelete() to avoid crashes like InWorld Creatures deleted.
 
     public:
-
-        // In Range
-        void addToInRangeObjects(Object* pObj) override;
-        void onRemoveInRangeObject(Object* pObj) override;
-        void clearInRangeSets() override;
 
         // Demon
         void EnslaveExpire();
@@ -281,9 +286,6 @@ public:
         CreatureAIScript* GetScript();
         void LoadScript();
 
-        //MIT
-        void registerDatabaseGossip();
-
         void CallScriptUpdate(unsigned long time_passed);
 
         CreatureProperties const* GetCreatureProperties();
@@ -296,34 +298,11 @@ public:
         bool IsExotic();
         bool isCritter() override;
 
-        bool isReturningHome() const;
-        void searchFormation();
-        CreatureGroup* getFormation() { return m_formation; }
-        void setFormation(CreatureGroup* formation) { m_formation = formation; }
-        bool isFormationLeader() const;
-        void signalFormationMovement();
-        bool isFormationLeaderMoveAllowed() const;
-
-        uint32_t getSpawnId() { return spawnid; }
-
-
         void ChannelLinkUpGO(uint32 SqlId);
         void ChannelLinkUpCreature(uint32 SqlId);
 
         uint32 spawnid = 0;
         uint32 original_emotestate = 0;
-
-        void motion_Initialize();
-        void immediateMovementFlagsUpdate();
-        void updateMovementFlags();
-        CreatureMovementData const& getMovementTemplate();
-        bool canWalk() { return getMovementTemplate().isGroundAllowed(); }
-        bool canSwim() override { return getMovementTemplate().isSwimAllowed() || isPet(); }
-        bool canFly()  override { return getMovementTemplate().isFlightAllowed() || IsFlying(); }
-        bool canHover() { return getMovementTemplate().Ground == CreatureGroundMovementType::Hover || isHovering(); }
-
-        MovementGeneratorType getDefaultMovementType() const override { return m_defaultMovementType; }
-        void setDefaultMovementType(MovementGeneratorType mgt) { m_defaultMovementType = mgt; }
 
         MySQLStructure::CreatureSpawn* m_spawn = nullptr;
 
@@ -398,5 +377,3 @@ public:
 
         float_t m_wanderDistance = 0.0f;
 };
-
-#endif // _WOWSERVER_CREATURE_H

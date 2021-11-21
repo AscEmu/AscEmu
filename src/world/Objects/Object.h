@@ -1,28 +1,11 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef OBJECT_H
-#define OBJECT_H
+#pragma once
 
 #include "ObjectDefines.h"
-
 #include "Server/UpdateMask.h"
 #include "CommonTypes.hpp"
 #include "Server/EventableObject.h"
@@ -35,6 +18,7 @@
 #include <LocationVector.h>
 #include "Storage/MySQLStructures.h"
 #include "Storage/DBC/DBCStructures.hpp"
+
 #if VERSION_STRING >= Cata
     #include "Storage/DB2/DB2Structures.h"
 #endif
@@ -47,12 +31,9 @@
 #include "Units/UnitDefines.hpp"
 
 struct WoWObject;
-
 class SpellInfo;
-
 struct FactionDBC;
 struct AuraEffectModifier;
-
 class Unit;
 class Group;
 class Transporter;
@@ -74,7 +55,6 @@ class EventableObject;
 
 #define MAX_INTERACTION_RANGE 5.0f
 
-// MIT Start
 enum CurrentSpellType : uint8_t
 {
     CURRENT_MELEE_SPELL         = 0,
@@ -114,6 +94,11 @@ struct DamageInfo
 
 class SERVER_DECL Object : public EventableObject, public IUpdatable
 {
+public:
+
+    Object();
+    virtual ~Object();
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Object values
 
@@ -269,9 +254,7 @@ public:
 
     // Players
     std::vector<Object*> getInRangePlayersSet();
-
     size_t getInRangePlayersCount();
-
 
     // Opposite Faction
     std::vector<Object*> getInRangeOppositeFactionSet();
@@ -302,10 +285,8 @@ public:
 
     void sendGameobjectDespawnAnim();
 
-    // MIT End
-
-        Object();
-        virtual ~Object();
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // AGPL Starts
 
         void Update(unsigned long /*time_passed*/) {}
 
@@ -730,5 +711,3 @@ public:
         bool GetRandomPoint(float rad, float & outx, float & outy, float & outz) { return GetPoint(Util::getRandomFloat(float(M_PI * 2)), rad, outx, outy, outz); }
         bool GetRandomPoint(float rad, LocationVector & out) { return GetRandomPoint(rad, out.x, out.y, out.z); }
 };
-
-#endif // OBJECT_H

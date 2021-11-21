@@ -73,10 +73,108 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgTriggerCinematic.h"
 #include "Server/Packets/SmsgSpellCooldown.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Server/Warden/SpeedDetector.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 
 using namespace AscEmu::Packets;
 
+Player::Player(uint32_t guid) :
+    m_updateMgr(this, static_cast<size_t>(worldConfig.server.compressionThreshold), 40000, 30000, 1000),
+    m_nextSave(Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
+    m_mailBox(guid),
+    SDetector(new SpeedCheatDetector),
+    GroupUpdateFlags(GROUP_UPDATE_FLAG_NONE)
+{
+    //////////////////////////////////////////////////////////////////////////
+    m_objectType |= TYPE_PLAYER;
+    m_objectTypeId = TYPEID_PLAYER;
+    m_valuesCount = getSizeOfStructure(WoWPlayer);
+    //////////////////////////////////////////////////////////////////////////
+
+    //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
+    m_uint32Values = _fields;
+
+    memset(m_uint32Values, 0, (getSizeOfStructure(WoWPlayer)) * sizeof(uint32_t));
+    m_updateMask.SetCount(getSizeOfStructure(WoWPlayer));
+
+    setObjectType(TYPEID_PLAYER);
+    setGuidLow(guid);
+
+#if VERSION_STRING >= WotLK
+    setRuneRegen(0, 0.100000f);
+    setRuneRegen(1, 0.100000f);
+    setRuneRegen(2, 0.100000f);
+    setRuneRegen(3, 0.100000f);
+#endif
+
+    mPlayerControler = this;
+
+    setAttackPowerMultiplier(0.f);
+    setRangedAttackPowerMultiplier(0.f);
+
+    m_sentTeleportPosition.ChangeCoords({ 999999.0f, 999999.0f, 999999.0f });
+
+    // Zyres: initialise here because ItemInterface needs the guid from object data
+    m_itemInterface = new ItemInterface(this);
+}
+
+Player::~Player()
+{
+    if (!ok_to_remove)
+    {
+        sLogger.failure("Player deleted from non-logout player!");
+        sObjectMgr.RemovePlayer(this);
+    }
+
+    if (m_session)
+    {
+        m_session->SetPlayer(nullptr);
+        if (!ok_to_remove)
+            m_session->Disconnect();
+    }
+
+    if (m_TradeData != nullptr)
+        cancelTrade(false);
+
+    if (Player* inviterPlayer = sObjectMgr.GetPlayer(getGroupInviterId()))
+        inviterPlayer->setGroupInviterId(0);
+
+    DismissActivePets();
+
+    if (DuelingWith != nullptr)
+        DuelingWith->DuelingWith = nullptr;
+
+    DuelingWith = nullptr;
+
+    for (uint8_t i = 0; i < MAX_QUEST_SLOT; ++i)
+    {
+        if (m_questlog[i] != nullptr)
+        {
+            delete m_questlog[i];
+            m_questlog[i] = nullptr;
+        }
+    }
+
+    delete m_itemInterface;
+    m_itemInterface = nullptr;
+
+    for (auto reputation = m_reputation.begin(); reputation != m_reputation.end(); ++reputation)
+        delete reputation->second;
+
+    m_reputation.clear();
+
+    if (m_playerInfo)
+        m_playerInfo->m_loggedInPlayer = nullptr;
+
+    delete SDetector;
+    SDetector = nullptr;
+
+    for (auto pet = m_Pets.begin(); pet != m_Pets.end(); ++pet)
+        delete pet->second;
+
+    m_Pets.clear();
+    RemoveGarbageItems();
+}
 
 void Player::resendSpeed()
 {

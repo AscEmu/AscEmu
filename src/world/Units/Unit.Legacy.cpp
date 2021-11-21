@@ -468,89 +468,6 @@ static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
 };
 #endif
 
-Unit::Unit() :
-    movespline(new MovementNew::MoveSpline()),
-    i_movementManager(new MovementManager(this)),
-    m_summonInterface(new SummonHandler),
-    CombatStatus(this),
-    m_aiInterface(new AIInterface())
-{
-    m_objectType |= TYPE_UNIT;
-
-#if VERSION_STRING < Cata
-    m_updateFlag = (UPDATEFLAG_LIVING | UPDATEFLAG_HAS_POSITION);
-#else
-    m_updateFlag = UPDATEFLAG_LIVING;
-#endif
-
-    m_aiInterface->Init(this, AI_SCRIPT_AGRO);
-    getThreatManager().initialize();
-}
-
-Unit::~Unit()
-{
-    //start to remove badptrs, if you delete from the heap null the ptr's damn!
-    RemoveAllAuras();
-    delete movespline;
-    delete i_movementManager;
-
-    delete m_aiInterface;
-    m_aiInterface = nullptr;
-
-    for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
-    {
-        if (getCurrentSpell(static_cast<CurrentSpellType>(i)) != nullptr)
-            interruptSpellWithSpellType(static_cast<CurrentSpellType>(i));
-    }
-
-    for (uint8_t i = 0; i < MAX_SPELLMOD_TYPE; ++i)
-    {
-        m_spellModifiers[i].clear();
-    }
-
-    if (m_damageSplitTarget)
-    {
-        delete m_damageSplitTarget;
-        m_damageSplitTarget = nullptr;
-    }
-
-    // reflects not created by auras need to be deleted manually
-    for (std::list<struct ReflectSpellSchool*>::iterator i = m_reflectSpellSchool.begin(); i != m_reflectSpellSchool.end(); ++i)
-        delete *i;
-
-    m_reflectSpellSchool.clear();
-
-    for (std::list<ExtraStrike*>::iterator itx = m_extraStrikeTargets.begin(); itx != m_extraStrikeTargets.end(); ++itx)
-    {
-        ExtraStrike* es = *itx;
-        sLogger.failure("ExtraStrike added to Unit %u by Spell ID %u wasn't removed when removing the Aura", getGuid(), es->spell_info->getId());
-        delete es;
-    }
-    m_extraStrikeTargets.clear();
-
-    // delete auras which did not get added to unit yet
-    for (std::map<uint32, Aura*>::iterator i = tmpAura.begin(); i != tmpAura.end(); ++i)
-        delete i->second;
-
-    tmpAura.clear();
-
-    for (std::list<SpellProc*>::iterator itr = m_procSpells.begin(); itr != m_procSpells.end(); ++itr)
-        delete *itr;
-
-    m_procSpells.clear();
-
-    m_singleTargetAura.clear();
-
-    delete m_summonInterface;
-
-    clearHealthBatch();
-
-    RemoveGarbage();
-
-    getThreatManager().clearAllThreat();
-    getThreatManager().removeMeFromThreatLists();
-}
-
 void Unit::Update(unsigned long time_passed)
 {
     const auto msTime = Util::getMSTime();
@@ -9108,7 +9025,7 @@ bool CombatStatusHandler::InternalIsInCombat()
     return false;
 }
 
-void CombatStatusHandler::AddAttackTarget(const uint64 & guid)
+void CombatStatusHandler::AddAttackTarget(const uint64_t& guid)
 {
     if (guid == m_Unit->getGuid())
        return;
@@ -9159,7 +9076,7 @@ void CombatStatusHandler::ClearPrimaryAttackTarget()
 bool CombatStatusHandler::IsAttacking(Unit* pTarget)
 {
     // check the target for any of our DoT's.
-    for (uint32 i = MAX_NEGATIVE_AURAS_EXTEDED_START; i < MAX_NEGATIVE_AURAS_EXTEDED_END; ++i)
+    for (uint32_t i = MAX_NEGATIVE_AURAS_EXTEDED_START; i < MAX_NEGATIVE_AURAS_EXTEDED_END; ++i)
         if (pTarget->m_auras[i] != NULL)
             if (m_Unit->getGuid() == pTarget->m_auras[i]->getCasterGuid() && pTarget->m_auras[i]->IsCombatStateAffecting())
                 return true;
@@ -9185,7 +9102,7 @@ void CombatStatusHandler::RemoveAttackTarget(Unit* pTarget)
     }
 }
 
-void CombatStatusHandler::RemoveAttacker(Unit* pAttacker, const uint64 & guid)
+void CombatStatusHandler::RemoveAttacker(Unit* pAttacker, const uint64_t& guid)
 {
     AttackerMap::iterator itr = m_attackers.find(guid);
     if (itr == m_attackers.end())
@@ -9220,7 +9137,7 @@ void CombatStatusHandler::OnDamageDealt(Unit* pTarget)
     m_Unit->CombatStatusHandler_ResetPvPTimeout();
 }
 
-void CombatStatusHandler::AddAttacker(const uint64 & guid)
+void CombatStatusHandler::AddAttacker(const uint64_t& guid)
 {
     if (!m_Unit->IsInWorld())
         return;

@@ -1,23 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-
+Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Units/Unit.h"
 #include "Units/Summons/Summon.h"
@@ -40,7 +24,6 @@
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/Definitions/SpellState.hpp"
 #include <Spell/Definitions/AuraInterruptFlags.hpp>
-
 #include "Chat/ChatHandler.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/SpellMgr.hpp"
@@ -54,9 +37,49 @@
 #include "Movement/PathGenerator.h"
 #include "Movement/Spline/MovementPacketBuilder.h"
 
-// MIT Start
-
 using namespace AscEmu::Packets;
+
+Object::Object()
+{
+    //////////////////////////////////////////////////////////////////////////
+    m_objectType = TYPE_OBJECT;
+    m_objectTypeId = TYPEID_OBJECT;
+    m_updateFlag = UPDATEFLAG_NONE;
+    //////////////////////////////////////////////////////////////////////////
+}
+
+Object::~Object()
+{
+    if (!isItem())
+    {
+        if (!m_inQueue && !IsInWorld())
+        {
+            m_instanceId = INSTANCEID_NOT_IN_WORLD;
+
+            for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+            {
+                if (m_currentSpell[i] != nullptr)
+                    interruptSpellWithSpellType(static_cast<CurrentSpellType>(i));
+            }
+
+            for (auto travelingSpellItr = m_travelingSpells.begin(); travelingSpellItr != m_travelingSpells.end();)
+            {
+                delete (*travelingSpellItr).first;
+                travelingSpellItr = m_travelingSpells.erase(travelingSpellItr);
+            }
+
+            removeGarbageSpells();
+
+            for (auto pendingSpellItr = m_pendingSpells.begin(); pendingSpellItr != m_pendingSpells.end();)
+            {
+                delete (*pendingSpellItr);
+                pendingSpellItr = m_pendingSpells.erase(pendingSpellItr);
+            }
+
+            sEventMgr.RemoveEvents(this);
+        }
+    }
+}
 
 bool Object::write(const uint8_t& member, uint8_t val)
 {
@@ -1583,57 +1606,8 @@ void Object::sendGameobjectDespawnAnim()
     SendMessageToSet(SmsgGameobjectDespawnAnim(this->getGuid()).serialise().get(), true);
 }
 
-// MIT End
-
-Object::Object()
-{
-    //////////////////////////////////////////////////////////////////////////
-    m_objectType = TYPE_OBJECT;
-    m_objectTypeId = TYPEID_OBJECT;
-    m_updateFlag = UPDATEFLAG_NONE;
-    //////////////////////////////////////////////////////////////////////////
-}
-
-Object::~Object()
-{
-    if (!isItem())
-    {
-        if (!m_inQueue && !IsInWorld())
-        {
-            // for linux
-            m_instanceId = INSTANCEID_NOT_IN_WORLD;
-
-            //todo zyres: this is the wrong place to remove a passenger....
-            /*if (GetTransport() != nullptr)
-                GetTransport()->RemovePassenger(this);*/
-
-            for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
-            {
-                if (m_currentSpell[i] != nullptr)
-                {
-                    interruptSpellWithSpellType(CurrentSpellType(i));
-                }
-            }
-
-            for (auto travelingSpellItr = m_travelingSpells.begin(); travelingSpellItr != m_travelingSpells.end();)
-            {
-                delete (*travelingSpellItr).first;
-                travelingSpellItr = m_travelingSpells.erase(travelingSpellItr);
-            }
-
-            removeGarbageSpells();
-
-            for (auto pendingSpellItr = m_pendingSpells.begin(); pendingSpellItr != m_pendingSpells.end();)
-            {
-                delete (*pendingSpellItr);
-                pendingSpellItr = m_pendingSpells.erase(pendingSpellItr);
-            }
-
-            //avoid leaving traces in eventmanager. Have to work on the speed. Not all objects ever had events so list iteration can be skipped
-            sEventMgr.RemoveEvents(this);
-        }
-    }
-}
+//////////////////////////////////////////////////////////////////////////////////////////
+// AGPL Starts
 
 ::DBC::Structures::AreaTableEntry const* Object::GetArea()
 {

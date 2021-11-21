@@ -42,6 +42,22 @@
 #include "Spell/Definitions/SpellEffects.hpp"
 
 //MIT START
+
+Pet::Pet(uint64_t guid) : Creature(guid) {}
+
+Pet::~Pet()
+{
+    for (auto aiSpell = m_AISpellStore.begin(); aiSpell != m_AISpellStore.end(); ++aiSpell)
+        delete aiSpell->second;
+
+    m_AISpellStore.clear();
+
+    for (uint8_t i = 0; i < AUTOCAST_EVENT_COUNT; ++i)
+        m_autoCastSpells[i].clear();
+
+    mSpells.clear();
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Owner
 Player* Pet::getPlayerOwner() { return m_Owner; }
@@ -560,23 +576,6 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
 
     InitializeMe(true);
     return true;
-}
-
-Pet::Pet(uint64 guid) : Creature(guid)
-{
-}
-
-Pet::~Pet()
-{
-    for (std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.begin(); itr != m_AISpellStore.end(); ++itr)
-        delete itr->second;
-
-    m_AISpellStore.clear();
-
-    for (uint8 i = 0; i < AUTOCAST_EVENT_COUNT; i++)
-        m_autoCastSpells[i].clear();
-
-    mSpells.clear();
 }
 
 void Pet::Update(unsigned long time_passed)

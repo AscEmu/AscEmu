@@ -396,6 +396,11 @@ class GameEvent;
 class SERVER_DECL GameObject : public Object
 {
     // MIT Start
+public:
+    GameObject(uint64_t guid);
+    ~GameObject();
+
+private:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
@@ -457,9 +462,6 @@ public:
     Player* getPlayerOwner() override;
 
     // MIT End
-
-        GameObject(uint64 guid);
-        ~GameObject();
 
     GameEvent* mEvent = nullptr;
 

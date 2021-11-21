@@ -45,6 +45,72 @@
 
 using namespace AscEmu::Packets;
 
+GameObject::GameObject(uint64_t guid)
+{
+    //////////////////////////////////////////////////////////////////////////
+    m_objectType |= TYPE_GAMEOBJECT;
+    m_objectTypeId = TYPEID_GAMEOBJECT;
+    m_valuesCount = getSizeOfStructure(WoWGameObject);
+    //////////////////////////////////////////////////////////////////////////
+
+#if VERSION_STRING == Classic
+    m_updateFlag = (UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
+#endif
+#if VERSION_STRING == TBC
+    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION);
+#endif
+#if VERSION_STRING == WotLK
+    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_POSITION | UPDATEFLAG_ROTATION);
+#endif
+#if VERSION_STRING == Cata
+    m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
+#endif
+#if VERSION_STRING == Mop
+    m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
+#endif
+
+    //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
+    m_uint32Values = _fields;
+
+    std::fill(m_uint32Values, &m_uint32Values[getSizeOfStructure(WoWGameObject)], 0);
+    m_updateMask.SetCount(getSizeOfStructure(WoWGameObject));
+
+    setOType(TYPE_GAMEOBJECT | TYPE_OBJECT);
+    setGuid(guid);
+
+    setAnimationProgress(100);
+    setScale(1);
+}
+
+GameObject::~GameObject()
+{
+    sEventMgr.RemoveEvents(this);
+
+    if (myScript)
+    {
+        myScript->Destroy();
+        myScript = nullptr;
+    }
+
+    if (uint32_t guid = static_cast<uint32_t>(getCreatedByGuid()))
+    {
+        Player* player = sObjectMgr.GetPlayer(guid);
+        if (player && player->GetSummonedObject() == this)
+            player->SetSummonedObject(nullptr);
+
+        if (player == m_summoner)
+            m_summoner = nullptr;
+    }
+
+    if (m_respawnCell)
+        m_respawnCell->_respawnObjects.erase(this);
+
+    if (m_summonedGo && m_summoner)
+        for (uint8_t i = 0; i < 4; ++i)
+            if (m_summoner->m_ObjectSlots[i] == getGuidLow())
+                m_summoner->m_ObjectSlots[i] = 0;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
 
@@ -182,75 +248,6 @@ Player* GameObject::getPlayerOwner()
     return nullptr;
 }
 // MIT End
-
-GameObject::GameObject(uint64 guid)
-{
-    //////////////////////////////////////////////////////////////////////////
-    m_objectType |= TYPE_GAMEOBJECT;
-    m_objectTypeId = TYPEID_GAMEOBJECT;
-    m_valuesCount = getSizeOfStructure(WoWGameObject);
-    //////////////////////////////////////////////////////////////////////////
-
-#if VERSION_STRING == Classic
-    m_updateFlag = (UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
-#endif
-#if VERSION_STRING == TBC
-    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION);
-#endif
-#if VERSION_STRING == WotLK
-    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_POSITION | UPDATEFLAG_ROTATION);
-#endif
-#if VERSION_STRING == Cata
-    m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
-#endif
-#if VERSION_STRING == Mop
-    m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
-#endif
-
-    //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
-    m_uint32Values = _fields;
-
-    std::fill(m_uint32Values, &m_uint32Values[getSizeOfStructure(WoWGameObject)], 0);
-    m_updateMask.SetCount(getSizeOfStructure(WoWGameObject));
-
-    setOType(TYPE_GAMEOBJECT | TYPE_OBJECT);
-    setGuid(guid);
-
-    setAnimationProgress(100);
-    setScale(1);
-}
-
-GameObject::~GameObject()
-{
-    sEventMgr.RemoveEvents(this);
-
-    if (myScript != NULL)
-    {
-        myScript->Destroy();
-        myScript = NULL;
-    }
-
-    //\todo guid (uint64_t) can not be used for GetPlayer... however it seems to be common to cast uint64_t to uint32_t.
-    // it would be probably the best to store player guid as uint64_t instead of uint32_t
-    uint32 guid = static_cast<uint32_t>(getCreatedByGuid());
-    if (guid)
-    {
-        Player* plr = sObjectMgr.GetPlayer(guid);
-        if (plr && plr->GetSummonedObject() == this)
-            plr->SetSummonedObject(NULL);
-
-        if (plr == m_summoner)
-            m_summoner = 0;
-    }
-
-    if (m_respawnCell != NULL)
-        m_respawnCell->_respawnObjects.erase(this);
-
-    if (m_summonedGo && m_summoner)
-        for (uint8 i = 0; i < 4; i++)
-            if (m_summoner->m_ObjectSlots[i] == getGuidLow())
-                m_summoner->m_ObjectSlots[i] = 0;
-}
 
 GameObjectProperties const* GameObject::GetGameObjectProperties() const
 {

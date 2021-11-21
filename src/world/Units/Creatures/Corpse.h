@@ -1,25 +1,9 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef WOWSERVER_CORPSE_H
-#define WOWSERVER_CORPSE_H
+#pragma once
 
 #include "Objects/Object.h"
 #include "Management/LootMgr.h"
@@ -31,8 +15,6 @@ enum CORPSE_STATE
     CORPSE_STATE_BODY   = 0,
     CORPSE_STATE_BONES  = 1
 };
-
-// MIT Start
 
 enum CorpseFlags
 {
@@ -48,6 +30,12 @@ enum CorpseFlags
 struct WoWCorpse;
 class SERVER_DECL Corpse : public Object
 {
+public:
+
+    Corpse(uint32_t high, uint32_t low);
+    ~Corpse();
+
+private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
     const WoWCorpse* corpseData() const { return reinterpret_cast<WoWCorpse*>(wow_data); }
@@ -110,12 +98,8 @@ public:
     // Misc
     void setCorpseDataFromDbString(std::string dbString);
 
-// MIT End
 // AGPL Start
-        Corpse(uint32 high, uint32 low);
-        ~Corpse();
 
-        // void Create();
         void Create(Player* owner, uint32 mapid, float x, float y, float z, float ang);
 
         void SaveToDB();
@@ -146,5 +130,3 @@ public:
         uint32 _fields[getSizeOfStructure(WoWCorpse)];
         bool _loadedfromdb = false;
 };
-
-#endif // _WOWSERVER_CORPSE_H

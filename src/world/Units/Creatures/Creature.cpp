@@ -1,23 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Objects/DynamicObject.h"
 #include "Macros/ScriptMacros.hpp"
@@ -43,7 +27,45 @@
 
 using namespace AscEmu::Packets;
 
-//MIT start
+Creature::Creature(uint64_t guid)
+{
+    //////////////////////////////////////////////////////////////////////////
+    m_objectTypeId = TYPEID_UNIT;
+    m_valuesCount = getSizeOfStructure(WoWUnit);
+    //////////////////////////////////////////////////////////////////////////
+
+    //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
+    m_uint32Values = _fields;
+
+    memset(m_uint32Values, 0, ((getSizeOfStructure(WoWUnit)) * sizeof(uint32_t)));
+    m_updateMask.SetCount(getSizeOfStructure(WoWUnit));
+
+    setOType(TYPE_UNIT | TYPE_OBJECT);
+    setGuid(guid);
+
+    setAttackPowerMultiplier(0.0f);
+    setRangedAttackPowerMultiplier(0.0f);
+
+    //override class "Unit" initialisation
+    m_useAI = true;
+}
+
+Creature::~Creature()
+{
+    sEventMgr.RemoveEvents(this);
+
+    if (_myScriptClass)
+    {
+        _myScriptClass->Destroy();
+        _myScriptClass = nullptr;
+    }
+
+    if (m_respawnCell)
+        m_respawnCell->_respawnObjects.erase(this);
+
+    if (m_escorter)
+        m_escorter = nullptr;
+}
 
 bool Creature::isVendor() const { return getNpcFlags() & UNIT_NPC_FLAG_VENDOR; }
 bool Creature::isTrainer() const { return getNpcFlags() & UNIT_NPC_FLAG_TRAINER; }
@@ -153,50 +175,361 @@ void Creature::setMaxWanderDistance(float_t dist)
     m_wanderDistance = dist;
 }
 
-//MIT end
-
-Creature::Creature(uint64 guid)
+void Creature::addVehicleComponent(uint32_t creature_entry, uint32_t vehicleid)
 {
-    //////////////////////////////////////////////////////////////////////////
-    m_objectTypeId = TYPEID_UNIT;
-    m_valuesCount = getSizeOfStructure(WoWUnit);
-    //////////////////////////////////////////////////////////////////////////
-
-    //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
-    m_uint32Values = _fields;
-
-    memset(m_uint32Values, 0, ((getSizeOfStructure(WoWUnit))*sizeof(uint32)));
-    m_updateMask.SetCount(getSizeOfStructure(WoWUnit));
-
-    setOType(TYPE_UNIT | TYPE_OBJECT);
-    setGuid(guid);
-
-    setAttackPowerMultiplier(0.0f);
-    setRangedAttackPowerMultiplier(0.0f);
-
-    //override class "Unit" initialisation
-    m_useAI = true;
-}
-
-Creature::~Creature()
-{
-    sEventMgr.RemoveEvents(this);
-
-    if (_myScriptClass != NULL)
+    if (m_vehicle != nullptr)
     {
-        _myScriptClass->Destroy();
-        _myScriptClass = NULL;
+        sLogger.failure("Creature %u (%s) with GUID %u already has a vehicle component.", creature_properties->Id, creature_properties->Name.c_str(), GetUIdFromGUID());
+        return;
     }
 
-    if (m_respawnCell != NULL)
-        m_respawnCell->_respawnObjects.erase(this);
-
-    if (m_escorter != NULL)
-        m_escorter = NULL;
-
-    // Creature::PrepareForRemove() nullifies m_owner. If m_owner is not NULL then the Creature wasn't removed from world
-    //but it got a reference to m_owner
+    m_vehicle = new Vehicle();
+    m_vehicle->Load(this, creature_entry, vehicleid);
 }
+
+void Creature::removeVehicleComponent()
+{
+    delete m_vehicle;
+    m_vehicle = nullptr;
+}
+
+std::vector<CreatureItem>* Creature::getSellItems()
+{
+    return m_SellItems;
+}
+
+void Creature::generateLoot()
+{
+    if (!loot.items.empty())
+        return;
+
+    if (m_mapMgr)
+        sLootMgr.FillCreatureLoot(&loot, getEntry(), m_mapMgr->iInstanceMode);
+    else
+        sLootMgr.FillCreatureLoot(&loot, getEntry(), 0);
+
+    loot.gold = creature_properties->money;
+
+    if (GetAIInterface()->getDifficultyType() != 0)
+    {
+        uint32_t creature_difficulty_entry = sMySQLStore.getCreatureDifficulty(getEntry(), GetAIInterface()->getDifficultyType());
+        if (auto properties_difficulty = sMySQLStore.getCreatureProperties(creature_difficulty_entry))
+        {
+            if (properties_difficulty->money != creature_properties->money)
+                loot.gold = properties_difficulty->money;
+        }
+    }
+
+    // Master Looting Ninja Checker
+    if (worldConfig.player.deactivateMasterLootNinja)
+    {
+        Player* looter = sObjectMgr.GetPlayer(static_cast<uint32_t>(this->TaggerGuid));
+        if (looter && looter->getGroup() && looter->getGroup()->GetMethod() == PARTY_LOOT_MASTER)
+        {
+            uint16_t lootThreshold = looter->getGroup()->GetThreshold();
+
+            for (auto itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+            {
+                if (itr->item.itemproto->Quality < lootThreshold)
+                    continue;
+
+                // Master Loot Stuff - Let the rest of the raid know what dropped..
+                ///\todo Shouldn't we move this array to a global position? Or maybe it already exists^^ (VirtualAngel) --- I can see (dead) talking pigs...^^
+                const char* itemColours[8] = { "9d9d9d", "ffffff", "1eff00", "0070dd", "a335ee", "ff8000", "e6cc80", "e6cc80" };
+                char buffer[256];
+                sprintf(buffer, "\174cff%s\174Hitem:%u:0:0:0:0:0:0:0\174h[%s]\174h\174r", itemColours[itr->item.itemproto->Quality], itr->item.itemproto->ItemId, itr->item.itemproto->Name.c_str());
+                this->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, buffer);
+            }
+        }
+    }
+
+    /// \brief If there's an amount given, take it as an expected value and generated a corresponding random value. The random value is
+    /// something similar to a normal distribution.
+    /// You'd get a ``better'' distribution if you called `rand()' for each copper individually. However, if the loot was 1G we'd call `rand()'
+    /// 15000 times, which is not ideal. So we use one call to `rand()' to (hopefully) get 24 random bits, which is then used to create a
+    /// normal distribution over 1/24th of the difference.
+    if (loot.gold >= 12)
+    {
+        // Split up the difference into 12 chunks..
+        double chunk_size = loot.gold / 12.0;
+
+        // Get 24 random bits. We use the low order bits, because we're too lazy to check how many random bits the system actually returned
+        uint32_t random_bits = rand() & 0x00ffffff;
+
+        double gold_fp = 0.0;
+        while (random_bits != 0)
+        {
+            // If last bit is one ..
+            if ((random_bits & 0x01) == 1)
+                // .. increase loot by 1/12th of expected value
+                gold_fp += chunk_size;
+
+            // Shift away the LSB
+            random_bits >>= 1;
+        }
+
+        // To hide your discrete values a bit, add another random amount between -(chunk_size/2) and +(chunk_size/2)
+        gold_fp += (chunk_size * (Util::getRandomFloat(1.0f) - 0.5f));
+
+        //\brief In theory we can end up with a negative amount. Give at least one chunk_size here to prevent this from happening. In
+        // case you're interested, the probability is around 2.98e-8.
+        if (gold_fp < chunk_size)
+            gold_fp = chunk_size;
+
+        // Convert the floating point gold value to an integer again and we're done
+        loot.gold = static_cast<uint32_t>(0.5 + gold_fp);
+    }
+
+    loot.gold = static_cast<uint32_t>(loot.gold * worldConfig.getFloatRate(RATE_MONEY));
+}
+
+void Creature::setDeathState(DeathState s)
+{
+    if (s == ALIVE)
+        this->removeUnitFlags(UNIT_FLAG_DEAD);
+
+    if (s == JUST_DIED)
+    {
+        stopMoving();
+        m_deathState = CORPSE;
+        m_corpseEvent = true;
+
+        if (m_enslaveSpell)
+            RemoveEnslave();
+
+        //Dismiss group if is leader
+        if (m_formation && m_formation->getLeader() == this)
+            m_formation->formationReset(true);
+
+        for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+            interruptSpellWithSpellType(static_cast<CurrentSpellType>(i));
+
+        // if it's not a Pet, and not a summon and it has skinningloot then we will allow skinning
+        if (getCreatedByGuid() == 0 && getSummonedByGuid() == 0 && sLootMgr.IsSkinnable(creature_properties->Id))
+            addUnitFlags(UNIT_FLAG_SKINNABLE);
+    }
+    else
+    {
+        m_deathState = s;
+    }
+}
+
+void Creature::addToInRangeObjects(Object* pObj)
+{
+    Unit::addToInRangeObjects(pObj);
+}
+
+void Creature::onRemoveInRangeObject(Object* pObj)
+{
+    if (m_escorter == pObj)
+    {
+        stopMoving();
+
+        m_escorter = nullptr;
+        Despawn(1000, 1000);
+    }
+
+    Unit::onRemoveInRangeObject(pObj);
+}
+
+void Creature::clearInRangeSets()
+{
+    Unit::clearInRangeSets();
+}
+
+//! brief: used to generate gossip menu based on db values from table gossip_menu, gossip_menu_item and gossip_menu_option. WIP.
+class DatabaseGossip : public GossipScript
+{
+    uint32_t m_gossipMenuId;
+
+public:
+
+    DatabaseGossip(uint32_t gossipId) : m_gossipMenuId(gossipId) {}
+
+    void onHello(Object* object, Player* player) override
+    {
+        sObjectMgr.generateDatabaseGossipMenu(object, m_gossipMenuId, player);
+    }
+
+    void onSelectOption(Object* object, Player* player, uint32_t gossipItemId, const char* /*Code*/, uint32_t gossipMenuId) override
+    {
+        if (gossipItemId > 0)
+        {
+            if (gossipMenuId != 0)
+                sObjectMgr.generateDatabaseGossipOptionAndSubMenu(object, player, gossipItemId, gossipMenuId);
+            else
+                sObjectMgr.generateDatabaseGossipOptionAndSubMenu(object, player, gossipItemId, m_gossipMenuId);
+        }
+    }
+};
+
+void Creature::registerDatabaseGossip()
+{
+    if (GetCreatureProperties()->gossipId)
+        sScriptMgr.register_creature_gossip(getEntry(), new DatabaseGossip(GetCreatureProperties()->gossipId));
+}
+
+bool Creature::isReturningHome() const
+{
+    if (getMovementManager()->getCurrentMovementGeneratorType() == HOME_MOTION_TYPE)
+        return true;
+
+    return false;
+}
+
+void Creature::searchFormation()
+{
+    if (isSummon())
+        return;
+
+    uint32_t lowguid = getSpawnId();
+    if (!lowguid)
+        return;
+
+    if (FormationInfo const* formationInfo = sFormationMgr->getFormationInfo(lowguid))
+        sFormationMgr->addCreatureToGroup(formationInfo->LeaderSpawnId, this);
+}
+
+bool Creature::isFormationLeader() const
+{
+    if (!m_formation)
+        return false;
+
+    return m_formation->isLeader(this);
+}
+
+void Creature::signalFormationMovement()
+{
+    if (!m_formation)
+        return;
+
+    if (!m_formation->isLeader(this))
+        return;
+
+    m_formation->leaderStartedMoving();
+}
+
+bool Creature::isFormationLeaderMoveAllowed() const
+{
+    if (!m_formation)
+        return false;
+
+    return m_formation->canLeaderStartMoving();
+}
+
+void Creature::motion_Initialize()
+{
+    if (m_formation)
+    {
+        if (m_formation->getLeader() == this)
+            m_formation->formationReset(false);
+        else if (m_formation->isFormed())
+        {
+            getMovementManager()->moveIdle(); // wait the order of leader
+            return;
+        }
+    }
+
+    getMovementManager()->initialize();
+}
+
+void Creature::immediateMovementFlagsUpdate()
+{
+    updateMovementFlags();
+    // reset timer
+    m_movementFlagUpdateTimer = 1000;
+}
+
+void Creature::updateMovementFlags()
+{
+    // Do not update movement flags if creature is controlled by a player (charm/vehicle)
+    if (getCharmerOrOwnerGUID())
+        return;
+
+    // Set the movement flags if the creature is in that mode. (Only fly if actually in air, only swim if in water, etc)
+    const float ground = GetMapMgr()->GetLandHeight(GetPositionX(), GetPositionY(), GetPositionZ());
+
+    bool isInAir;
+
+#if VERSION_STRING < WotLK
+    isInAir = (G3D::fuzzyGt(GetPositionZ(), ground + GROUND_HEIGHT_TOLERANCE) || G3D::fuzzyLt(GetPositionZ(), ground - GROUND_HEIGHT_TOLERANCE)); // Can be underground too, prevent the falling
+#else
+    isInAir = (G3D::fuzzyGt(GetPositionZ(), ground + (canHover() ? getHoverHeight() : 0.0f) + GROUND_HEIGHT_TOLERANCE) || G3D::fuzzyLt(GetPositionZ(), ground - GROUND_HEIGHT_TOLERANCE)); // Can be underground too, prevent the falling
+#endif
+
+    if (isInAir && !IsFalling())
+    {
+        auto needsFalling = false;
+        if (getMovementTemplate().isFlightAllowed())
+        {
+            if (isAlive())
+            {
+                if (getMovementTemplate().Flight == CreatureFlightMovementType::CanFly)
+                {
+                    if (!hasUnitMovementFlag(MOVEFLAG_CAN_FLY))
+                        setMoveCanFly(true);
+                }
+                else
+                {
+                    if (!hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
+                        setMoveDisableGravity(true);
+                }
+
+                if (isHovering() && hasAuraWithAuraEffect(SPELL_AURA_HOVER))
+                    setMoveHover(false);
+            }
+            else
+            {
+                if (hasUnitMovementFlag(MOVEFLAG_CAN_FLY))
+                    setMoveCanFly(false);
+
+                if (hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
+                    setMoveDisableGravity(false);
+
+                // Unit is in air and is dead => needs to fall down
+                needsFalling = true;
+            }
+        }
+
+        if (isHovering() && (!hasAuraWithAuraEffect(SPELL_AURA_HOVER) || !isAlive()))
+        {
+            setMoveHover(false);
+            needsFalling = true;
+        }
+
+        // Make unit fall
+        if (needsFalling && !isUnderWater())
+            getMovementManager()->moveFall();
+    }
+
+    if (!isInAir)
+    {
+        removeUnitMovementFlag(MOVEFLAG_FALLING);
+
+        if (hasUnitMovementFlag(MOVEFLAG_CAN_FLY))
+            setMoveCanFly(false);
+
+        if (hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
+            setMoveDisableGravity(false);
+
+        if (!isHovering() && isAlive() && (canHover() || hasAuraWithAuraEffect(SPELL_AURA_HOVER)))
+            setMoveHover(true);
+    }
+
+    // Swimming flag
+    if (isInWater() && getMovementTemplate().isSwimAllowed())
+    {
+        if (!hasUnitMovementFlag(MOVEFLAG_SWIMMING))
+            setMoveSwim(true);
+    }
+    else
+    {
+        if (hasUnitMovementFlag(MOVEFLAG_SWIMMING))
+            setMoveSwim(false);
+    }
+}
+
+//MIT end
 
 void Creature::Update(unsigned long time_passed)
 {
@@ -424,96 +757,6 @@ void Creature::CreateWayPoint(uint32 /*WayPointID*/, uint32 mapid, float x, floa
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Looting
 
-void Creature::generateLoot()
-{
-    if (!loot.items.empty())
-        return;
-
-    if (m_mapMgr != NULL)
-        sLootMgr.FillCreatureLoot(&loot, getEntry(), m_mapMgr->iInstanceMode);
-    else
-        sLootMgr.FillCreatureLoot(&loot, getEntry(), 0);
-
-    loot.gold = creature_properties->money;
-
-    if (GetAIInterface()->getDifficultyType() != 0)
-    {
-        uint32 creature_difficulty_entry = sMySQLStore.getCreatureDifficulty(getEntry(), GetAIInterface()->getDifficultyType());
-        auto properties_difficulty = sMySQLStore.getCreatureProperties(creature_difficulty_entry);
-        if (properties_difficulty != nullptr)
-        {
-            if (properties_difficulty->money != creature_properties->money)
-                loot.gold = properties_difficulty->money;
-        }
-    }
-
-    // Master Looting Ninja Checker
-    if (worldConfig.player.deactivateMasterLootNinja)
-    {
-        Player* looter = sObjectMgr.GetPlayer((uint32)this->TaggerGuid);
-        if (looter && looter->getGroup() && looter->getGroup()->GetMethod() == PARTY_LOOT_MASTER)
-        {
-            uint16 lootThreshold = looter->getGroup()->GetThreshold();
-
-            for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
-            {
-                if (itr->item.itemproto->Quality < lootThreshold)
-                    continue;
-
-                // Master Loot Stuff - Let the rest of the raid know what dropped..
-                ///\todo Shouldn't we move this array to a global position? Or maybe it already exists^^ (VirtualAngel) --- I can see (dead) talking pigs...^^
-                const char* itemColours[8] = { "9d9d9d", "ffffff", "1eff00", "0070dd", "a335ee", "ff8000", "e6cc80", "e6cc80" };
-                char buffer[256];
-                sprintf(buffer, "\174cff%s\174Hitem:%u:0:0:0:0:0:0:0\174h[%s]\174h\174r", itemColours[itr->item.itemproto->Quality], itr->item.itemproto->ItemId, itr->item.itemproto->Name.c_str());
-                this->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, buffer);
-            }
-        }
-    }
-
-    /// \brief If there's an amount given, take it as an expected value and generated a corresponding random value. The random value is
-    /// something similar to a normal distribution.
-    /// You'd get a ``better'' distribution if you called `rand()' for each copper individually. However, if the loot was 1G we'd call `rand()'
-    /// 15000 times, which is not ideal. So we use one call to `rand()' to (hopefully) get 24 random bits, which is then used to create a
-    /// normal distribution over 1/24th of the difference.
-    if (loot.gold >= 12)
-    {
-        uint32 random_bits;
-        double chunk_size;
-        double gold_fp;
-
-        // Split up the difference into 12 chunks..
-        chunk_size = loot.gold / 12.0;
-
-        // Get 24 random bits. We use the low order bits, because we're too lazy to check how many random bits the system actually returned
-        random_bits = rand() & 0x00ffffff;
-
-        gold_fp = 0.0;
-        while (random_bits != 0)
-        {
-            // If last bit is one ..
-            if ((random_bits & 0x01) == 1)
-                // .. increase loot by 1/12th of expected value
-                gold_fp += chunk_size;
-
-            // Shift away the LSB
-            random_bits >>= 1;
-        }
-
-        // To hide your discrete values a bit, add another random amount between -(chunk_size/2) and +(chunk_size/2)
-        gold_fp += (chunk_size * (Util::getRandomFloat(1.0f) - 0.5f));
-
-        //\brief In theory we can end up with a negative amount. Give at least one chunk_size here to prevent this from happening. In
-        // case you're interested, the probability is around 2.98e-8.
-        if (gold_fp < chunk_size)
-            gold_fp = chunk_size;
-
-        // Convert the floating point gold value to an integer again and we're done
-        loot.gold = static_cast<uint32>(0.5 + gold_fp);
-    }
-
-    loot.gold = static_cast<uint32>(loot.gold * worldConfig.getFloatRate(RATE_MONEY));
-}
-
 void Creature::SaveToDB()
 {
     if (m_spawn == NULL)
@@ -620,40 +863,6 @@ void Creature::SaveToDB()
         << ")";
 
     WorldDatabase.Execute(ss.str().c_str());
-}
-
-//MIT
-//! brief: used to generate gossip menu based on db values from table gossip_menu, gossip_menu_item and gossip_menu_option. WIP.
-class DatabaseGossip : public GossipScript
-{
-    uint32_t m_gossipMenuId;
-
-public:
-
-    DatabaseGossip(uint32_t gossipId) : m_gossipMenuId(gossipId) {}
-
-    void onHello(Object* object, Player* player) override
-    {
-        sObjectMgr.generateDatabaseGossipMenu(object, m_gossipMenuId, player);
-    }
-
-    void onSelectOption(Object* object, Player* player, uint32_t gossipItemId, const char* /*Code*/, uint32_t gossipMenuId) override
-    {
-        if (gossipItemId > 0)
-        {
-            if (gossipMenuId != 0)
-                sObjectMgr.generateDatabaseGossipOptionAndSubMenu(object, player, gossipItemId, gossipMenuId);
-            else
-                sObjectMgr.generateDatabaseGossipOptionAndSubMenu(object, player, gossipItemId, m_gossipMenuId);
-        }
-    }
-};
-
-//MIT
-void Creature::registerDatabaseGossip()
-{
-    if (GetCreatureProperties()->gossipId)
-        sScriptMgr.register_creature_gossip(getEntry(), new DatabaseGossip(GetCreatureProperties()->gossipId));
 }
 
 void Creature::LoadScript()
@@ -771,41 +980,6 @@ bool Creature::HasQuest(uint32 id, uint32 type)
                 return true;
         }
     return false;
-}
-
-void Creature::setDeathState(DeathState s)
-{
-    if (s == ALIVE)
-        this->removeUnitFlags(UNIT_FLAG_DEAD);
-
-    if (s == JUST_DIED)
-    {
-        stopMoving();
-        m_deathState = CORPSE;
-        m_corpseEvent = true;
-
-        //sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, 180000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        if (m_enslaveSpell)
-            RemoveEnslave();
-
-        //Dismiss group if is leader
-        if (m_formation && m_formation->getLeader() == this)
-            m_formation->formationReset(true);
-
-        for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
-        {
-            interruptSpellWithSpellType(CurrentSpellType(i));
-        }
-
-        // if it's not a Pet, and not a summon and it has skinningloot then we will allow skinning
-        if ((getCreatedByGuid() == 0) && (getSummonedByGuid() == 0) && sLootMgr.IsSkinnable(creature_properties->Id))
-            addUnitFlags(UNIT_FLAG_SKINNABLE);
-
-
-    }
-    else m_deathState = s;
-
-    //motion_Initialize();
 }
 
 void Creature::AddToWorld()
@@ -945,30 +1119,6 @@ void Creature::SetEnslaveSpell(uint32 spellId)
 bool Creature::RemoveEnslave()
 {
     return RemoveAura(m_enslaveSpell);
-}
-
-void Creature::addToInRangeObjects(Object* pObj)
-{
-    Unit::addToInRangeObjects(pObj);
-}
-
-void Creature::onRemoveInRangeObject(Object* pObj)
-{
-    if (m_escorter == pObj)
-    {
-        // we lost our escorter, return to the spawn.
-        stopMoving();
-
-        m_escorter = NULL;
-        Despawn(1000, 1000);
-    }
-
-    Unit::onRemoveInRangeObject(pObj);
-}
-
-void Creature::clearInRangeSets()
-{
-    Unit::clearInRangeSets();
 }
 
 void Creature::CalcResistance(uint8_t type)
@@ -1233,54 +1383,6 @@ void Creature::UpdateItemAmount(uint32 itemid)
             return;
         }
     }
-}
-
-bool Creature::isReturningHome() const
-{
-    if (getMovementManager()->getCurrentMovementGeneratorType() == HOME_MOTION_TYPE)
-        return true;
-
-    return false;
-}
-
-void Creature::searchFormation()
-{
-    if (isSummon())
-        return;
-
-    uint32_t lowguid = getSpawnId();
-    if (!lowguid)
-        return;
-
-    if (FormationInfo const* formationInfo = sFormationMgr->getFormationInfo(lowguid))
-        sFormationMgr->addCreatureToGroup(formationInfo->LeaderSpawnId, this);
-}
-
-bool Creature::isFormationLeader() const
-{
-    if (!m_formation)
-        return false;
-
-    return m_formation->isLeader(this);
-}
-
-void Creature::signalFormationMovement()
-{
-    if (!m_formation)
-        return;
-
-    if (!m_formation->isLeader(this))
-        return;
-
-    m_formation->leaderStartedMoving();
-}
-
-bool Creature::isFormationLeaderMoveAllowed() const
-{
-    if (!m_formation)
-        return false;
-
-    return m_formation->canLeaderStartMoving();
 }
 
 void Creature::ChannelLinkUpGO(uint32 SqlId)
@@ -2072,10 +2174,6 @@ std::vector<CreatureItem>::iterator Creature::GetSellItemEnd()
     return m_SellItems->end();
 }
 
-std::vector<CreatureItem>* Creature::getSellItems()
-{
-    return m_SellItems;
-}
 
 size_t Creature::GetSellItemCount()
 {
@@ -2345,24 +2443,6 @@ void Creature::BuildPetSpellList(WorldPacket& data)
     data << uint8_t(0);
 }
 
-void Creature::addVehicleComponent(uint32 creature_entry, uint32 vehicleid)
-{
-    if (m_vehicle != nullptr)
-    {
-        sLogger.failure("Creature %u (%s) with GUID %u already has a vehicle component.", creature_properties->Id, creature_properties->Name.c_str(), GetUIdFromGUID());
-        return;
-    }
-
-    m_vehicle = new Vehicle();
-    m_vehicle->Load(this, creature_entry, vehicleid);
-}
-
-void Creature::removeVehicleComponent()
-{
-    delete m_vehicle;
-    m_vehicle = nullptr;
-}
-
 CreatureMovementData const& Creature::getMovementTemplate()
 {
     if (CreatureMovementData const* movementOverride = sObjectMgr.getCreatureMovementOverride(spawnid))
@@ -2371,114 +2451,4 @@ CreatureMovementData const& Creature::getMovementTemplate()
     return GetCreatureProperties()->Movement;
 }
 
-void Creature::motion_Initialize()
-{
-    if (m_formation)
-    {
-        if (m_formation->getLeader() == this)
-            m_formation->formationReset(false);
-        else if (m_formation->isFormed())
-        {
-            getMovementManager()->moveIdle(); // wait the order of leader
-            return;
-        }
-    }
 
-    getMovementManager()->initialize();
-}
-
-void Creature::immediateMovementFlagsUpdate()
-{
-    updateMovementFlags();
-    // reset timer
-    m_movementFlagUpdateTimer = 1000;
-}
-
-void Creature::updateMovementFlags()
-{
-    // Do not update movement flags if creature is controlled by a player (charm/vehicle)
-    if (getCharmerOrOwnerGUID())
-        return;
-
-    // Set the movement flags if the creature is in that mode. (Only fly if actually in air, only swim if in water, etc)
-    const float ground = GetMapMgr()->GetLandHeight(GetPositionX(), GetPositionY(), GetPositionZ());
-
-    auto isInAir = false;
-
-#if VERSION_STRING < WotLK
-    isInAir = (G3D::fuzzyGt(GetPositionZ(), ground + GROUND_HEIGHT_TOLERANCE) || G3D::fuzzyLt(GetPositionZ(), ground - GROUND_HEIGHT_TOLERANCE)); // Can be underground too, prevent the falling
-#else
-    isInAir = (G3D::fuzzyGt(GetPositionZ(), ground + (canHover() ? getHoverHeight() : 0.0f) + GROUND_HEIGHT_TOLERANCE) || G3D::fuzzyLt(GetPositionZ(), ground - GROUND_HEIGHT_TOLERANCE)); // Can be underground too, prevent the falling
-#endif
-
-    if (isInAir && !IsFalling())
-    {
-        auto needsFalling = false;
-        if (getMovementTemplate().isFlightAllowed())
-        {
-            if (isAlive())
-            {
-                if (getMovementTemplate().Flight == CreatureFlightMovementType::CanFly)
-                {
-                    if (!hasUnitMovementFlag(MOVEFLAG_CAN_FLY))
-                        setMoveCanFly(true);
-                }
-                else
-                {
-                    if (!hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
-                        setMoveDisableGravity(true);
-                }
-
-                if (isHovering() && hasAuraWithAuraEffect(SPELL_AURA_HOVER))
-                    setMoveHover(false);
-            }
-            else
-            {
-                if (hasUnitMovementFlag(MOVEFLAG_CAN_FLY))
-                    setMoveCanFly(false);
-
-                if (hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
-                    setMoveDisableGravity(false);
-
-                // Unit is in air and is dead => needs to fall down
-                needsFalling = true;
-            }
-        }
-
-        if (isHovering() && (!hasAuraWithAuraEffect(SPELL_AURA_HOVER) || !isAlive()))
-        {
-            setMoveHover(false);
-            needsFalling = true;
-        }
-
-        // Make unit fall
-        if (needsFalling && !isUnderWater())
-            getMovementManager()->moveFall();
-    }
-
-    if (!isInAir)
-    {
-        removeUnitMovementFlag(MOVEFLAG_FALLING);
-
-        if (hasUnitMovementFlag(MOVEFLAG_CAN_FLY))
-            setMoveCanFly(false);
-
-        if (hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
-            setMoveDisableGravity(false);
-
-        if (!isHovering() && isAlive() && (canHover() || hasAuraWithAuraEffect(SPELL_AURA_HOVER)))
-            setMoveHover(true);
-    }
-
-    // Swimming flag
-    if (isInWater() && getMovementTemplate().isSwimAllowed())
-    {
-        if (!hasUnitMovementFlag(MOVEFLAG_SWIMMING))
-            setMoveSwim(true);
-    }
-    else
-    {
-        if (hasUnitMovementFlag(MOVEFLAG_SWIMMING))
-            setMoveSwim(false);
-    }
-}

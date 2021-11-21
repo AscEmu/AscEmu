@@ -1,28 +1,11 @@
 /*
-* AscEmu Framework based on ArcEmu MMORPG Server
-* Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
-* Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
-* Copyright (C) 2005-2007 Ascent Team
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
 */
 
 #pragma once
 
-// MIT Start
 #include "Objects/Object.h"
-
 #include "UnitDefines.hpp"
 #include "Management/LootMgr.h"
 #include "Macros/UnitMacros.hpp"
@@ -56,11 +39,9 @@ class SpellProc;
 class TotemSummon;
 class Vehicle;
 class MovementManager;
-
 struct FactionDBC;
 
 namespace MovementNew {
-
 class MoveSpline;
 }
 
@@ -133,20 +114,16 @@ struct HealthBatchEvent
     EnviromentalDamage environmentType = DAMAGE_EXHAUSTED;
 
     bool isLeech = false;
-    float_t leechMultipleValue = 0.0f;
+    float leechMultipleValue = 0.0f;
 
     SpellInfo const* spellInfo = nullptr;
 };
-
-// MIT End
-// AGPL Start
 
 typedef std::unordered_map<uint32, uint64> UniqueAuraTargetMap;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Checks for conditions specified in subclasses on Auras. When calling operator()
 /// it tells if the conditions are met.
-//////////////////////////////////////////////////////////////////////////////////////////
 class SERVER_DECL AuraCondition
 {
 public:
@@ -158,7 +135,6 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Performs the actions specified in subclasses on the Aura, when calling operator().
-//////////////////////////////////////////////////////////////////////////////////////////
 class SERVER_DECL AuraAction
 {
 public:
@@ -168,36 +144,36 @@ public:
 
 struct ReflectSpellSchool
 {
-    uint32 spellId;
-    uint32 charges;
-    int32 school;
-    int32 chance;
+    uint32_t spellId;
+    uint32_t charges;
+    int32_t school;
+    int32_t chance;
     bool infront;
 };
 
 struct OnHitSpell
 {
-    uint32 spellid;
-    uint32 mindmg;
-    uint32 maxdmg;
+    uint32_t spellid;
+    uint32_t mindmg;
+    uint32_t maxdmg;
 };
 
 struct AreaAura
 {
-    uint32 auraid;
+    uint32_t auraid;
     Unit* caster;
 };
 
 typedef struct
 {
     SpellInfo const* spell_info;
-    uint32 charges;
+    uint32_t charges;
 } ExtraStrike;
 
 struct AuraCheckResponse
 {
-    uint32 Error;
-    uint32 Misc;
+    uint32_t Error;
+    uint32_t Misc;
 };
 
 typedef std::list<struct ProcTriggerSpellOnSpell> ProcTriggerSpellOnSpellList;
@@ -205,8 +181,8 @@ typedef std::list<struct ProcTriggerSpellOnSpell> ProcTriggerSpellOnSpellList;
 class Unit;
 class SERVER_DECL CombatStatusHandler
 {
-    typedef std::set<uint64> AttackerMap;
-    typedef std::set<uint32> HealedSet; // Must Be Players!
+    typedef std::set<uint64_t> AttackerMap;
+    typedef std::set<uint32_t> HealedSet; // Must Be Players!
 
     HealedSet m_healers;
     HealedSet m_healed;
@@ -217,20 +193,20 @@ class SERVER_DECL CombatStatusHandler
 
     AttackerMap m_attackTargets;
 
-    uint64 m_primaryAttackTarget = 0;
+    uint64_t m_primaryAttackTarget = 0;
 
 public:
     CombatStatusHandler(Unit* _unit) : m_Unit(_unit) {}
 
     AttackerMap m_attackers;
 
-    void AddAttackTarget(const uint64 & guid);                      // this means we clicked attack, not actually striked yet, so they shouldn't be in combat.
+    void AddAttackTarget(const uint64_t& guid);                      // this means we clicked attack, not actually striked yet, so they shouldn't be in combat.
     void ClearPrimaryAttackTarget();                                // means we deselected the unit, stopped attacking it.
 
     void OnDamageDealt(Unit* pTarget);                              // this is what puts the other person in combat.
     void WeHealed(Unit* pHealTarget);                               // called when a player heals another player, regardless of combat state.
 
-    void RemoveAttacker(Unit* pAttacker, const uint64 & guid);      // this means we stopped attacking them totally. could be because of deaggro, etc.
+    void RemoveAttacker(Unit* pAttacker, const uint64_t& guid);      // this means we stopped attacking them totally. could be because of deaggro, etc.
     void RemoveAttackTarget(Unit* pTarget);                         // means our DoT expired.
 
     void UpdateFlag();                                              // detects if we have changed combat state (in/out), and applies the flag.
@@ -243,7 +219,7 @@ public:
         ClearHealers();
     }
 
-    const uint64 & GetPrimaryAttackTarget() { return m_primaryAttackTarget; }
+    const uint64_t& GetPrimaryAttackTarget() { return m_primaryAttackTarget; }
     void SetUnit(Unit* p) { m_Unit = p; }
     void TryToClearAttackTargets();                                 // for pvp timeout
     void AttackersForgetHate();                                     // used right now for Feign Death so attackers go home
@@ -251,15 +227,13 @@ public:
 protected:
     bool InternalIsInCombat();                                      // called by UpdateFlag, do not call from anything else!
     bool IsAttacking(Unit* pTarget);                                // internal function used to determine if we are still attacking target x.
-    void AddAttacker(const uint64 & guid);                          // internal function to add an attacker
+    void AddAttacker(const uint64_t& guid);                          // internal function to add an attacker
     void RemoveHealed(Unit* pHealTarget);                           // usually called only by updateflag
     void ClearHealers();                                            // this is called on instance change.
     void ClearAttackers();                                          // means we vanished, or died.
     void ClearMyHealers();
 };
-// AGPL End
 
-// MIT Start
 struct WoWUnit;
 
 class SERVER_DECL Unit : public Object
@@ -1327,7 +1301,7 @@ public:
 
     int32 PctRegenModifier = 0;
     // SPELL_AURA_MOD_POWER_REGEN_PERCENT
-    float PctPowerRegenModifier[TOTAL_PLAYER_POWER_TYPES] = {1,1,1,1,1,1,1};
+    float PctPowerRegenModifier[TOTAL_PLAYER_POWER_TYPES];
 
     // Auras Modifiers
     int32 m_pacified = 0;

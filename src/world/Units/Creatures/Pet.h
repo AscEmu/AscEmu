@@ -125,6 +125,9 @@ class SERVER_DECL Pet : public Creature
 
     // MIT START
 public:
+    Pet(uint64_t guid);
+    ~Pet();
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Owner
     Player* getPlayerOwner() override;
@@ -138,9 +141,6 @@ public:
     void giveXp(uint32_t xp);
 
     // MIT END
-
-        Pet(uint64 guid);
-        ~Pet();
 
         // Override superclass method that returns false
         bool isPet() const override { return true; }

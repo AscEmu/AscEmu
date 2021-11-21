@@ -26,13 +26,11 @@
 #include "Server/Packets/SmsgControlVehicle.h"
 #include "Server/Script/CreatureAIScript.h"
 
-Vehicle::Vehicle()
-{
-}
+Vehicle::Vehicle() {}
 
 Vehicle::~Vehicle()
 {
-    for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; ++i)
         delete seats[i];
 
     installed_accessories.clear();

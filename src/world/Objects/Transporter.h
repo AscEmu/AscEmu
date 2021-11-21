@@ -49,8 +49,8 @@ protected:
 
 class SERVER_DECL Transporter : public GameObject, public TransportBase
 {
-    friend Transporter* TransportHandler::createTransport(uint32, MapMgr*);
-    Transporter(uint64 guid);
+    friend Transporter* TransportHandler::createTransport(uint32_t, MapMgr*);
+    Transporter(uint64_t guid);
 
 public:
     typedef std::set<Object*> PassengerSet;

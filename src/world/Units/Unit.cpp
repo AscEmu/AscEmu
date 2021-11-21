@@ -52,6 +52,94 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
+Unit::Unit() :
+    movespline(new MovementNew::MoveSpline()),
+    i_movementManager(new MovementManager(this)),
+    m_summonInterface(new SummonHandler),
+    CombatStatus(this),
+    m_aiInterface(new AIInterface())
+{
+    m_objectType |= TYPE_UNIT;
+
+#if VERSION_STRING < Cata
+    m_updateFlag = (UPDATEFLAG_LIVING | UPDATEFLAG_HAS_POSITION);
+#else
+    m_updateFlag = UPDATEFLAG_LIVING;
+#endif
+
+    // Zyres: initialise here because multiversion differences
+    std::fill_n(PctPowerRegenModifier, TOTAL_PLAYER_POWER_TYPES, 1);
+
+    m_aiInterface->Init(this, AI_SCRIPT_AGRO);
+    getThreatManager().initialize();
+}
+
+Unit::~Unit()
+{
+    RemoveAllAuras();
+
+    delete movespline;
+    movespline = nullptr;
+
+    delete i_movementManager;
+    i_movementManager = nullptr;
+
+    delete m_aiInterface;
+    m_aiInterface = nullptr;
+
+    for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+    {
+        if (getCurrentSpell(static_cast<CurrentSpellType>(i)) != nullptr)
+            interruptSpellWithSpellType(static_cast<CurrentSpellType>(i));
+    }
+
+    for (uint8_t i = 0; i < MAX_SPELLMOD_TYPE; ++i)
+        m_spellModifiers[i].clear();
+
+    if (m_damageSplitTarget)
+    {
+        delete m_damageSplitTarget;
+        m_damageSplitTarget = nullptr;
+    }
+
+    // reflects not created by auras need to be deleted manually
+    for (auto reflectSpellSchool = m_reflectSpellSchool.begin(); reflectSpellSchool != m_reflectSpellSchool.end(); ++reflectSpellSchool)
+        delete* reflectSpellSchool;
+
+    m_reflectSpellSchool.clear();
+
+    for (auto extraStrikeTarget = m_extraStrikeTargets.begin(); extraStrikeTarget != m_extraStrikeTargets.end(); ++extraStrikeTarget)
+    {
+        ExtraStrike* extraStrike = *extraStrikeTarget;
+        sLogger.failure("ExtraStrike added to Unit %u by Spell ID %u wasn't removed when removing the Aura", getGuid(), extraStrike->spell_info->getId());
+        delete extraStrike;
+    }
+    m_extraStrikeTargets.clear();
+
+    // delete auras which did not get added to unit yet
+    for (auto tempAura = tmpAura.begin(); tempAura != tmpAura.end(); ++tempAura)
+        delete tempAura->second;
+
+    tmpAura.clear();
+
+    for (auto procSpell = m_procSpells.begin(); procSpell != m_procSpells.end(); ++procSpell)
+        delete* procSpell;
+
+    m_procSpells.clear();
+
+    m_singleTargetAura.clear();
+
+    delete m_summonInterface;
+    m_summonInterface = nullptr;
+
+    clearHealthBatch();
+
+    RemoveGarbage();
+
+    getThreatManager().clearAllThreat();
+    getThreatManager().removeMeFromThreatLists();
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
 
