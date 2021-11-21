@@ -48,12 +48,12 @@ enum AchievementFlags
 inline uint32_t secsToTimeBitFields(time_t secs)
 {
     tm* lt = localtime(&secs);
-    return (lt->tm_year - 100) << 24 | lt->tm_mon << 20 | (lt->tm_mday - 1) << 14 | lt->tm_wday << 11 | lt->tm_hour << 6 | lt->tm_min;
+    return static_cast<uint32_t>((lt->tm_year - 100) << 24 | lt->tm_mon << 20 | (lt->tm_mday - 1) << 14 | lt->tm_wday << 11 | lt->tm_hour << 6 | lt->tm_min);
 }
 
 struct CriteriaProgress
 {
-    CriteriaProgress(uint32_t iid, uint32_t icounter, time_t tdate = time(NULL))
+    CriteriaProgress(uint32_t iid, uint32_t icounter, time_t tdate = time(nullptr))
         :
         id(iid),
         counter(icounter),
@@ -61,7 +61,7 @@ struct CriteriaProgress
     { }
 
     uint32_t id;     ///< Criteria ID
-    int32_t counter; ///< Completed count: how many times the criteria has been completed
+    uint32_t counter; ///< Completed count: how many times the criteria has been completed
     time_t date;   ///< Date/time
 };
 
@@ -298,10 +298,10 @@ public:
     void UpdateAchievementCriteria(AchievementCriteriaTypes type, int32_t miscvalue1, int32_t miscvalue2, uint32_t time);
     void UpdateAchievementCriteria(AchievementCriteriaTypes type);
     bool UpdateAchievementCriteria(Player* player, int32_t criteriaID, uint32_t count);
-    bool GMCompleteAchievement(WorldSession* gmSession, int32_t achievementID);
+    bool GMCompleteAchievement(WorldSession* gmSession, uint32_t achievementID, bool finishAll = false);
     bool GMCompleteCriteria(WorldSession* gmSession, uint32_t criteriaID, bool finishAll = false);
-    void GMResetAchievement(int achievementID);
-    void GMResetCriteria(int criteriaID);
+    void GMResetAchievement(uint32_t achievementID, bool finishAll = false);
+    void GMResetCriteria(uint32_t criteriaID, bool finishAll = false);
     bool HasCompleted(uint32_t achievementID);
     uint32_t GetCompletedAchievementsCount() const;
     uint32_t GetCriteriaProgressCount();

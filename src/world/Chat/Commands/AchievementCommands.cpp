@@ -18,21 +18,18 @@ bool ChatHandler::HandleAchievementCompleteCommand(const char* args, WorldSessio
     if (!*args)
         return false;
 
+    if (stricmp(args, "all") == 0)
+    {
+        selected_player->GetAchievementMgr().GMCompleteAchievement(m_session, 0, true);
+        SystemMessage(m_session, "All achievements have now been completed for that player.");
+        sGMLog.writefromsession(m_session, "completed all achievements for player %s", selected_player->getName().c_str());
+        return true;
+    }
+
     uint32 achievement_id = atol(args);
     if (achievement_id == 0)
     {
-        achievement_id = GetAchievementIDFromLink(args);
-        if (achievement_id == 0)
-        {
-            if (stricmp(args, "all") == 0)
-            {
-                selected_player->GetAchievementMgr().GMCompleteAchievement(m_session, -1);
-                SystemMessage(m_session, "All achievements have now been completed for that player.");
-                sGMLog.writefromsession(m_session, "completed all achievements for player %s", selected_player->getName().c_str());
-                return true;
-            }
             return false;
-        }
     }
     else if (selected_player->GetAchievementMgr().GMCompleteAchievement(m_session, achievement_id))
     {
@@ -84,7 +81,8 @@ bool ChatHandler::HandleAchievementResetCommand(const char* args, WorldSession* 
 
     bool reset_achievement = true;
     bool reset_criteria = false;
-    int32 achievement_id;
+    bool resetAll = false;
+    uint32_t achievement_id = 0;
 
     if (strnicmp(args, "criteria ", 9) == 0)
     {
@@ -95,14 +93,14 @@ bool ChatHandler::HandleAchievementResetCommand(const char* args, WorldSession* 
             {
                 return false;
             }
-            achievement_id = -1;
+            resetAll = true;
         }
         reset_criteria = true;
         reset_achievement = false;
     }
     else if (stricmp(args, "all") == 0)
     {
-        achievement_id = -1;
+        resetAll = true;
         reset_criteria = true;
     }
     else
@@ -117,10 +115,10 @@ bool ChatHandler::HandleAchievementResetCommand(const char* args, WorldSession* 
     }
 
     if (reset_achievement)
-        selected_player->GetAchievementMgr().GMResetAchievement(achievement_id);
+        selected_player->GetAchievementMgr().GMResetAchievement(achievement_id, resetAll);
 
     if (reset_criteria)
-        selected_player->GetAchievementMgr().GMResetCriteria(achievement_id);
+        selected_player->GetAchievementMgr().GMResetCriteria(achievement_id, resetAll);
 
     return true;
 }

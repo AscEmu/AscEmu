@@ -602,14 +602,14 @@ void World::sendAreaTriggerMessage(const std::string& message, WorldSession* sen
     sendGlobalMessage(AscEmu::Packets::SmsgAreaTriggerMessage(0, message.c_str(), 0).serialise().get(), sendToSelf);
 }
 
-void World::sendGlobalMessage(WorldPacket* worldPacket, WorldSession* sendToSelf /*nullptr*/, int32_t team /*-1*/)
+void World::sendGlobalMessage(WorldPacket* worldPacket, WorldSession* sendToSelf /*nullptr*/, uint32_t team /*3*/)
 {
     std::lock_guard<std::mutex> guard(mSessionLock);
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
         if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld()
-            && activeSessions->second != sendToSelf && (team == -1 || activeSessions->second->GetPlayer()->GetTeam() == static_cast<uint32_t>(team)))
+            && activeSessions->second != sendToSelf && (team == 3 || activeSessions->second->GetPlayer()->GetTeam() == team))
             activeSessions->second->SendPacket(worldPacket);
     }
 }

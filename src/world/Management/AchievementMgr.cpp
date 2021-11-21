@@ -337,7 +337,7 @@ void AchievementMgr::LoadFromDB(QueryResult* achievementResult, QueryResult* cri
             uint32_t progress_id = fields[0].GetUInt32();
             if (m_criteriaProgress[progress_id] == nullptr)
             {
-                CriteriaProgress* progress = new CriteriaProgress(progress_id, fields[1].GetUInt32(), fields[2].GetUInt64());
+                CriteriaProgress* progress = new CriteriaProgress(progress_id, fields[1].GetUInt32(), static_cast<time_t>(fields[2].GetUInt64()));
                 m_criteriaProgress[progress_id] = progress;
             }
             else
@@ -2014,12 +2014,12 @@ uint32_t AchievementMgr::GetCompletedAchievementsCount() const
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// \brief GM has used a command to make the specified achievement to be completed.
-/// If achievementID is -1, all achievements available for the player's faction get
+/// If finishAll is true, all achievements available for the player's faction get
 /// marked as completed
 /// \return true if able to complete specified achievement successfully, otherwise false
-bool AchievementMgr::GMCompleteAchievement(WorldSession* gmSession, int32_t achievementID)
+bool AchievementMgr::GMCompleteAchievement(WorldSession* gmSession, uint32_t achievementID, bool finishAll/* = false*/)
 {
-    if (achievementID == -1)
+    if (finishAll)
     {
         uint32_t nr = sAchievementStore.GetNumRows();
 
@@ -2194,10 +2194,10 @@ bool AchievementMgr::UpdateAchievementCriteria(Player* player, int32_t criteriaI
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// \brief GM has used a command to reset achievement(s) for this player. If
-/// achievementID is -1, all achievements get reset, otherwise the one specified gets reset
-void AchievementMgr::GMResetAchievement(int32_t achievementID)
+/// finishAll is true, all achievements get reset, otherwise the one specified gets reset
+void AchievementMgr::GMResetAchievement(uint32_t achievementID, bool finishAll/* = false*/)
 {
-    if (achievementID == -1)
+    if (finishAll)
     {
         for (auto& m_completedAchievement : m_completedAchievements)
             GetPlayer()->SendPacket(SmsgAchievementDeleted(m_completedAchievement.first).serialise().get());
@@ -2216,10 +2216,10 @@ void AchievementMgr::GMResetAchievement(int32_t achievementID)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// GM has used a command to reset achievement criteria for this player. If criteriaID
-/// is -1, all achievement criteria get reset, otherwise only the one specified gets reset
-void AchievementMgr::GMResetCriteria(int32_t criteriaID)
+/// is finishAll true, all achievement criteria get reset, otherwise only the one specified gets reset
+void AchievementMgr::GMResetCriteria(uint32_t criteriaID, bool finishAll/* = false*/)
 {
-    if (criteriaID == -1)
+    if (finishAll)
     {
         for (auto criteriaProgress : m_criteriaProgress)
         {
