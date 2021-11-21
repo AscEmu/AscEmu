@@ -269,7 +269,7 @@ public:
             return false;
 
         // Check if caster has Chaos Bane buff active which prevents gathering Soul Fragments
-        if (spellProc->getProcOwner()->HasAura(SPELL_CHAOS_BANE_BUFF))
+        if (spellProc->getProcOwner()->hasAurasWithId(SPELL_CHAOS_BANE_BUFF))
             return false;
 
         return true;

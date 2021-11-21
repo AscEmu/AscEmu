@@ -540,7 +540,7 @@ class SaltyJohnGossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* pPlayer) override
     {
-        if (pPlayer->hasQuestInQuestLog(QUEST_HUNT_IS_ON) && pPlayer->HasAura(46078))
+        if (pPlayer->hasQuestInQuestLog(QUEST_HUNT_IS_ON) && pPlayer->hasAurasWithId(46078))
         {
             GossipMenu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 603, 1);
@@ -561,7 +561,7 @@ class TomHeggerGossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* pPlayer) override
     {
-        if (pPlayer->hasQuestInQuestLog(QUEST_HUNT_IS_ON) && pPlayer->HasAura(46078))
+        if (pPlayer->hasQuestInQuestLog(QUEST_HUNT_IS_ON) && pPlayer->hasAurasWithId(46078))
         {
             GossipMenu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 604, 1);
@@ -582,7 +582,7 @@ class GuardMitchGossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* pPlayer) override
     {
-        if (pPlayer->hasQuestInQuestLog(QUEST_HUNT_IS_ON) && pPlayer->HasAura(46078))
+        if (pPlayer->hasQuestInQuestLog(QUEST_HUNT_IS_ON) && pPlayer->hasAurasWithId(46078))
         {
             GossipMenu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 605, 1);

@@ -747,7 +747,7 @@ public:
             switch (eventId)
             {
             case EVENT_BONE_SPIKE_GRAVEYARD:
-                if (_isHeroic() || !getCreature()->HasAura(SPELL_BONE_STORM))
+                if (_isHeroic() || !getCreature()->hasAurasWithId(SPELL_BONE_STORM))
                     _castAISpell(boneSpikeGraveyardSpell);
 
                 scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(15000, 20000));
@@ -755,7 +755,7 @@ public:
             case EVENT_COLDFLAME:
                 coldflameLastPos = getCreature()->GetPosition();
 
-                if (!getCreature()->HasAura(SPELL_BONE_STORM))
+                if (!getCreature()->hasAurasWithId(SPELL_BONE_STORM))
                     _castAISpell(coldflameNormalSpell);
                 else
                     _castAISpell(coldflameBoneStormSpell);
@@ -820,7 +820,7 @@ public:
         }
      
         // We should not melee attack when storming
-        if (getCreature()->HasAura(SPELL_BONE_STORM))
+        if (getCreature()->hasAurasWithId(SPELL_BONE_STORM))
         {
             _setMeleeDisabled(true);
             return;
@@ -947,7 +947,7 @@ public:
         if (!mInstance || !summoner->isCreature())
             return;
 
-        if (summoner->HasAura(SPELL_BONE_STORM))
+        if (summoner->hasAurasWithId(SPELL_BONE_STORM))
         {
             // Bonestorm X Pattern
             if (LordMarrowgarAI* marrowgarAI = static_cast<LordMarrowgarAI*>(static_cast<Creature*>(summoner)->GetScript()))
@@ -1200,7 +1200,7 @@ public:
         if (target->getObjectTypeId() != TYPEID_PLAYER)
             return false;
 
-        if (target->HasAura(SPELL_IMPALED))
+        if (target->hasAurasWithId(SPELL_IMPALED))
             return false;
 
         // Check if it is one of the tanks soaking Bone Slice
@@ -1297,7 +1297,7 @@ public:
 
     bool CanBeAppliedOn(Unit* target, Spell* spell)
     {
-        if (target->HasAura(SPELL_IMPALED))
+        if (target->hasAurasWithId(SPELL_IMPALED))
             return false;
 
         if (target->GetDistance2dSq(spell->getUnitCaster()) > static_cast<float>(spell->getSpellInfo()->getEffectRadiusIndex(EFF_INDEX_0)) )
@@ -1603,7 +1603,7 @@ public:
         }
 
         // We should not melee attack when barrier is up
-        if (getCreature()->HasAura(SPELL_MANA_BARRIER))
+        if (getCreature()->hasAurasWithId(SPELL_MANA_BARRIER))
         {
             _setMeleeDisabled(true);
             return;

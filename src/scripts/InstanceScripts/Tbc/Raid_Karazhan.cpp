@@ -1606,7 +1606,7 @@ public:
                 DemonChain = t + 45;
                 PlrSacrifice();
             }
-            if (getCreature()->HasAura(BROKEN_PACT) && !ReSummon)
+            if (getCreature()->hasAurasWithId(BROKEN_PACT) && !ReSummon)
             {
                 ReSummon = true;
                 ReKilrek = t + 45;

@@ -225,12 +225,12 @@ void Aura::EventUpdateGroupAA(AuraEffectModifier* /*aurEff*/, float r)
         {
             if ((m_target->getDistanceSq(owner) <= r))
             {
-                if (!owner->HasAura(m_spellInfo->getId()))
+                if (!owner->hasAurasWithId(m_spellInfo->getId()))
                     targets.insert(owner->getGuid());
             }
             else
             {
-                if (owner->HasAura(m_spellInfo->getId()))
+                if (owner->hasAurasWithId(m_spellInfo->getId()))
                 {
                     targets.erase(owner->getGuidLow());
                     owner->RemoveAura(m_spellInfo->getId());
@@ -262,7 +262,7 @@ void Aura::EventUpdateGroupAA(AuraEffectModifier* /*aurEff*/, float r)
             if (!op->isAlive())
                 continue;
 
-            if (op->HasAura(m_spellInfo->getId()))
+            if (op->hasAurasWithId(m_spellInfo->getId()))
                 continue;
 
             targets.insert(op->getGuid());
@@ -328,12 +328,12 @@ void Aura::EventUpdateRaidAA(AuraEffectModifier* /*aurEff*/, float r)
         {
             if ((m_target->getDistanceSq(owner) <= r))
             {
-                if (!owner->HasAura(m_spellInfo->getId()))
+                if (!owner->hasAurasWithId(m_spellInfo->getId()))
                     targets.insert(owner->getGuid());
             }
             else
             {
-                if (owner->HasAura(m_spellInfo->getId()))
+                if (owner->hasAurasWithId(m_spellInfo->getId()))
                 {
                     targets.erase(owner->getGuidLow());
                     owner->RemoveAura(m_spellInfo->getId());
@@ -373,7 +373,7 @@ void Aura::EventUpdateRaidAA(AuraEffectModifier* /*aurEff*/, float r)
                 if (!op->isAlive())
                     continue;
 
-                if (op->HasAura(m_spellInfo->getId()))
+                if (op->hasAurasWithId(m_spellInfo->getId()))
                     continue;
 
                 targets.insert(op->getGuid());
@@ -435,7 +435,7 @@ void Aura::EventUpdatePetAA(AuraEffectModifier* aurEff, float r)
         if (!pet->isAlive())
             continue;
 
-        if (pet->HasAura(m_spellInfo->getId()))
+        if (pet->hasAurasWithId(m_spellInfo->getId()))
             continue;
 
         {
@@ -490,7 +490,7 @@ void Aura::EventUpdateFriendAA(AuraEffectModifier* /*aurEff*/, float r)
         if (isNeutral(u, ou))
             continue;
 
-        if (ou->HasAura(m_spellInfo->getId()))
+        if (ou->hasAurasWithId(m_spellInfo->getId()))
             continue;
 
         targets.insert(ou->getGuid());
@@ -557,7 +557,7 @@ void Aura::EventUpdateEnemyAA(AuraEffectModifier* /*aurEff*/, float r)
         if (!isHostile(u, ou))
             continue;
 
-        if (ou->HasAura(m_spellInfo->getId()))
+        if (ou->hasAurasWithId(m_spellInfo->getId()))
             continue;
 
         targets.insert(ou->getGuid());
@@ -614,7 +614,7 @@ void Aura::EventUpdateOwnerAA(AuraEffectModifier* aurEff, float r)
         return;
 
     if (ou->isAlive() &&
-        !ou->HasAura(m_spellInfo->getId()) &&
+        !ou->hasAurasWithId(m_spellInfo->getId()) &&
         (c->getDistanceSq(ou) <= r))
     {
 
@@ -689,7 +689,7 @@ void Aura::EventUpdateAreaAura(uint8_t effIndex, float r)
         if (unit == nullptr)
             return;
 
-        if (unit->HasAura(m_spellInfo->getId()))
+        if (unit->hasAurasWithId(m_spellInfo->getId()))
             continue;
 
         Aura* a = sSpellMgr.newAura(m_spellInfo, getTimeLeft(), m_target, unit, true);
@@ -1375,7 +1375,7 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
     if (apply)
     {
         //Overkill must proc only if we aren't already stealthed, also refreshing duration.
-        if (!m_target->isStealthed() && m_target->HasAura(58426))
+        if (!m_target->isStealthed() && m_target->hasAurasWithId(58426))
         {
             Aura *buff = m_target->getAuraWithId(58427);
             if (buff)
@@ -3124,7 +3124,7 @@ void Aura::SpellAuraMechanicImmunity(AuraEffectModifier* aurEff, bool apply)
             mPositive = false;
 
         // Demonic Circle hack
-        if (m_spellInfo->getId() == 48020 && m_target->isPlayer() && m_target->HasAura(62388))
+        if (m_spellInfo->getId() == 48020 && m_target->isPlayer() && m_target->hasAurasWithId(62388))
         {
             GameObject* obj = m_target->GetMapMgr()->GetGameObject(m_target->m_ObjectSlots[0]);
 
@@ -5996,7 +5996,7 @@ void Aura::SpellAuraConsumeNoAmmo(AuraEffectModifier* /*aurEff*/, bool apply)
             case 46699:
             {
                 // We are unequipping Thori'dal but have an aura with no ammo consumption effect
-                if (p_target->HasAuraWithName(SPELL_AURA_CONSUMES_NO_AMMO))
+                if (p_target->hasAuraWithAuraEffect(SPELL_AURA_CONSUMES_NO_AMMO))
                     other = true;
             } break;
             default:
@@ -6008,7 +6008,7 @@ void Aura::SpellAuraConsumeNoAmmo(AuraEffectModifier* /*aurEff*/, bool apply)
         }
 
         // We have more than 1 aura with no ammo consumption effect
-        if (p_target->GetAuraCountWithName(SPELL_AURA_CONSUMES_NO_AMMO) >= 2)
+        if (p_target->getAuraCountForEffect(SPELL_AURA_CONSUMES_NO_AMMO) >= 2)
             other = true;
 
         p_target->m_requiresNoAmmo = other;
@@ -6100,7 +6100,7 @@ void Aura::SpellAuraDeflectSpells(AuraEffectModifier* /*aurEff*/, bool /*apply*/
 
 void Aura::SpellAuraPhase(AuraEffectModifier* aurEff, bool apply)
 {
-    if (m_target->GetAuraStackCount(SPELL_AURA_PHASE) > 1)
+    if (m_target->getAuraCountForId(SPELL_AURA_PHASE) > 1)
     {
         if (m_target->isPlayer())
             static_cast< Player* >(m_target)->GetSession()->SystemMessage("You can have only one phase aura!");

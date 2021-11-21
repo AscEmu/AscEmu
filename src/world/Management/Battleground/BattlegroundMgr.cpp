@@ -637,7 +637,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                 {
                     if (isArena(i))
                         tempPlayerVec[plr->getTeam()].push_back(plrguid);
-                    else if (!plr->HasAura(BG_DESERTER))
+                    else if (!plr->hasAurasWithId(BG_DESERTER))
                         tempPlayerVec[plr->getTeam()].push_back(plrguid);
                 }
             }

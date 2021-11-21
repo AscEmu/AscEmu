@@ -82,7 +82,7 @@ void WorldSession::handleSpellClick(WorldPacket& recvPacket)
                 return;
             }
 
-            if (!creatureTarget->HasAura(lightWellCharges))
+            if (!creatureTarget->hasAurasWithId(lightWellCharges))
             {
                 creatureTarget->Despawn(0, 0);
             }

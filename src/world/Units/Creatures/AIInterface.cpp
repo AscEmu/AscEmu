@@ -1205,7 +1205,7 @@ void AIInterface::updateCombat(uint32_t p_time)
                 // cast the buff at requested percent only if we don't have it already
                 if (Util::checkChance(AIspell->procChance))
                 {
-                    if (!m_Unit->HasBuff(AIspell->spell->getId()))
+                    if (!m_Unit->hasAurasWithId(AIspell->spell->getId()))
                     {
                         canCastSpell = true;
                     }

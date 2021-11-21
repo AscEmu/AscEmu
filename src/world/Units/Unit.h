@@ -738,20 +738,21 @@ public:
     Aura* getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid);
     Aura* getAuraWithAuraEffect(AuraEffect aura_effect);
 
-    bool hasAurasWithId(uint32_t auraId);
-    bool hasAurasWithId(uint32_t* auraId);
+    bool hasAurasWithId(uint32_t auraId) const;
+    bool hasAurasWithId(uint32_t* auraId) const;
     bool hasAuraWithAuraEffect(AuraEffect type) const;
     bool hasAuraState(AuraState state, SpellInfo const* spellInfo = nullptr, Unit const* caster = nullptr) const;
 
     void addAuraStateAndAuras(AuraState state);
     void removeAuraStateAndAuras(AuraState state);
 
-    uint32_t getAuraCountForId(uint32_t auraId);
+    uint32_t getAuraCountForId(uint32_t auraId) const;
+    uint32_t getAuraCountForEffect(AuraEffect aura_effect) const;
 
     void removeAllAurasById(uint32_t auraId);
     void removeAllAurasById(uint32_t* auraId);
     void removeAllAurasByIdForGuid(uint32_t auraId, uint64_t guid);
-    uint32_t removeAllAurasByIdReturnCount(uint32_t auraId);
+    uint32_t removeAllAurasByIdReturnCount(uint32_t auraId) const;
     // Can remove only the effect from aura, or (by default) entire aura
     void removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell = 0, bool removeOnlyEffect = false);
 
@@ -1059,22 +1060,28 @@ public:
     // AURAS
     //////////////////////////////////////////////////////////////////////////////////////////
 
-    bool HasAura(uint32 spellid);                   //this checks passive auras too
-    uint16 GetAuraStackCount(uint32 spellid);
-    bool HasAuraVisual(uint32 visualid);            //not spell id!!!
-    bool HasBuff(uint32 spelllid);                  //this does not check passive auras & it was visible auras
-    bool HasBuff(uint32 spelllid, uint64 guid);     //this does not check passive auras & it was visible auras
+    //\todo: used in 1xUnitFunctions.h and 2xObject.cpp - is this really needed?
     bool HasAuraWithMechanics(uint32 mechanic);     //this checks passive auras too
+
+    //\todo: checks custom fiel filled by "assign_on_target_flag" from table "spell_custom_override" - there should be another way
     bool HasAurasOfBuffType(uint32 buff_type, const uint64 & guid, uint32 skip);
-    bool HasAuraWithName(uint32 name);
-    uint32 GetAuraCountWithName(uint32 name);
+
+    //\todo: user for DeathStrike and BloodStrike calculation
     uint32 GetAuraCountWithDispelType(uint32 dispel_type, uint64 guid);
+
+    //\todo: user for SMSG_PARTY_MEMBER_STATS_FULL iterating through 64 aura slots
     Aura * GetAuraWithSlot(uint32 slot);
+
+    //\todo: removing a specific aura (charges/queue related?)
     bool RemoveAura(Aura* aur);
-    bool RemoveAura(uint32 spellId);
-    bool RemoveAura(uint32 spellId, uint64 guid);
+
+    //\todo: removing first aura with spellid (charges/queue related?)
+    bool RemoveAura(uint32 spellId, uint64 guid = 0);
+
+    //\todo: used once
     bool RemoveAuraByItemGUID(uint32 spellId, uint64 guid);
-    bool RemoveAuras(uint32* SpellIds);
+
+    //\todo: isn't the aura timed or triggered after healing?
     bool RemoveAurasByHeal();
 
     //////////////////////////////////////////////////////////////////////////////////////////

@@ -526,7 +526,7 @@ bool IOCTeleporterIn(uint8_t /*effectIndex*/, Spell* s)
         return true;
 
     // recently used the teleporter
-    if (p->HasAura(66550) || p->HasAura(66551))
+    if (p->hasAurasWithId(66550) || p->hasAurasWithId(66551))
         return true;
 
     // Let's not teleport in/out before the battle starts
@@ -557,7 +557,7 @@ bool IOCTeleporterOut(uint8_t /*effectIndex*/, Spell* s)
         return true;
 
     // recently used the teleporter
-    if (p->HasAura(66550) || p->HasAura(66551))
+    if (p->hasAurasWithId(66550) || p->hasAurasWithId(66551))
         return true;
 
     // Let's not teleport in/out before the battle starts
@@ -626,7 +626,7 @@ bool EyeOfAcherusVisual(uint8_t /*effectIndex*/, Spell* spell)
     if (player == nullptr)
         return true;
 
-    if (player->HasAura(51892))
+    if (player->hasAurasWithId(51892))
         player->removeAllAurasById(51892);
     return true;
 }

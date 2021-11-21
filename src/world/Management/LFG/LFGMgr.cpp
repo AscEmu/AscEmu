@@ -528,11 +528,11 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
     {
         joinData.result = LFG_JOIN_USING_BG_SYSTEM;
     }
-    else if (player->HasAura(LFG_SPELL_DUNGEON_DESERTER))
+    else if (player->hasAurasWithId(LFG_SPELL_DUNGEON_DESERTER))
     {
         joinData.result = LFG_JOIN_DESERTER;
     }
-    else if (player->HasAura(LFG_SPELL_DUNGEON_COOLDOWN))
+    else if (player->hasAurasWithId(LFG_SPELL_DUNGEON_COOLDOWN))
     {
         joinData.result = LFG_JOIN_RANDOM_COOLDOWN;
     }
@@ -556,11 +556,11 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
                 {
                     if (joinData.result == LFG_JOIN_OK)
                     {
-                        if (plrg->HasAura(LFG_SPELL_DUNGEON_DESERTER))
+                        if (plrg->hasAurasWithId(LFG_SPELL_DUNGEON_DESERTER))
                         {
                             joinData.result = LFG_JOIN_PARTY_DESERTER;
                         }
-                        else if (plrg->HasAura(LFG_SPELL_DUNGEON_COOLDOWN))
+                        else if (plrg->hasAurasWithId(LFG_SPELL_DUNGEON_COOLDOWN))
                         {
                             joinData.result = LFG_JOIN_PARTY_RANDOM_COOLDOWN;
                         }

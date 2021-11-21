@@ -137,7 +137,7 @@ public:
         if (!player->hasQuestInQuestLog(12641))
             return;
 
-        if (player->HasAura(51852))
+        if (player->hasAurasWithId(51852))
             return;
 
         player->castSpell(player, 51888, true);

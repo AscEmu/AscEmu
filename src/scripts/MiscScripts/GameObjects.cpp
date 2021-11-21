@@ -432,7 +432,7 @@ public:
         if (qle == nullptr)
             return;
 
-        if (!player->HasAura(33382))
+        if (!player->hasAurasWithId(33382))
             player->castSpell(player, 33382, true);
     }
 };

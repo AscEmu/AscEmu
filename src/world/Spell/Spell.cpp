@@ -1391,7 +1391,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             return SPELL_FAILED_CASTER_AURASTATE;
 
         // Caster's aura spell requirements
-        if (getSpellInfo()->getCasterAuraSpell() > 0 && !u_caster->HasAura(getSpellInfo()->getCasterAuraSpell()))
+        if (getSpellInfo()->getCasterAuraSpell() > 0 && !u_caster->hasAurasWithId(getSpellInfo()->getCasterAuraSpell()))
             return SPELL_FAILED_CASTER_AURASTATE;
         if (getSpellInfo()->getCasterAuraSpellNot() > 0)
         {
@@ -1399,10 +1399,10 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             // Paladin's Avenging Wrath / Forbearance thing
             if (getSpellInfo()->getCasterAuraSpellNot() == 61988)
             {
-                if (u_caster->HasAura(61987))
+                if (u_caster->hasAurasWithId(61987))
                     return SPELL_FAILED_CASTER_AURASTATE;
             }
-            else if (u_caster->HasAura(getSpellInfo()->getCasterAuraSpellNot()))
+            else if (u_caster->hasAurasWithId(getSpellInfo()->getCasterAuraSpellNot()))
             {
                 return SPELL_FAILED_CASTER_AURASTATE;
             }
@@ -1491,7 +1491,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             return SPELL_FAILED_TARGET_AURASTATE;
 
         // Target's aura spell requirements
-        if (getSpellInfo()->getTargetAuraSpell() > 0 && !target->HasAura(getSpellInfo()->getTargetAuraSpell()))
+        if (getSpellInfo()->getTargetAuraSpell() > 0 && !target->hasAurasWithId(getSpellInfo()->getTargetAuraSpell()))
             return SPELL_FAILED_TARGET_AURASTATE;
         if (getSpellInfo()->getTargetAuraSpellNot() > 0)
         {
@@ -1499,10 +1499,10 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             // Paladin's Avenging Wrath / Forbearance thing
             if (getSpellInfo()->getTargetAuraSpellNot() == 61988)
             {
-                if (target->HasAura(61987))
+                if (target->hasAurasWithId(61987))
                     return SPELL_FAILED_TARGET_AURASTATE;
             }
-            else if (target->HasAura(getSpellInfo()->getTargetAuraSpellNot()))
+            else if (target->hasAurasWithId(getSpellInfo()->getTargetAuraSpellNot()))
             {
                 return SPELL_FAILED_TARGET_AURASTATE;
             }
@@ -2399,7 +2399,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_GLYPH_SOCKET_LOCKED;
 
                 // Check if player already has this glyph
-                if (p_caster->HasAura(glyphEntry->SpellID))
+                if (p_caster->hasAurasWithId(glyphEntry->SpellID))
                     return SPELL_FAILED_UNIQUE_GLYPH;
             } break;
 #endif

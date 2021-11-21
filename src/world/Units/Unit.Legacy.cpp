@@ -7902,43 +7902,6 @@ bool Unit::RemoveAura(Aura* aur)
     return true;
 }
 
-bool Unit::RemoveAura(uint32 spellId)
-{
-    //this can be speed up, if we know passive \pos neg
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        if (m_auras[x] && m_auras[x]->getSpellId() == spellId)
-        {
-            m_auras[x]->removeAura();
-            return true;  // sky: yes, only one, see bug charges/auras queues
-        }
-    }
-    return false;
-}
-
-bool Unit::RemoveAuras(uint32* SpellIds)
-{
-    if (!SpellIds || *SpellIds == 0)
-        return false;
-
-    bool res = false;
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        if (m_auras[x])
-        {
-            for (uint32 y = 0; SpellIds[y] != 0; y++)
-            {
-                if (m_auras[x] && m_auras[x]->getSpellId() == SpellIds[y])
-                {
-                    m_auras[x]->removeAura();
-                    res = true;
-                }
-            }
-        }
-    }
-    return res;
-}
-
 bool Unit::RemoveAurasByHeal()
 {
     bool res = false;
@@ -8038,16 +8001,19 @@ void Unit::RemoveAllAreaAuraByOther()
     }
 }
 
-bool Unit::RemoveAura(uint32 spellId, uint64 guid)
+bool Unit::RemoveAura(uint32 spellId, uint64 guid /* = 0*/)
 {
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
     {
         if (m_auras[x])
         {
-            if (m_auras[x]->getSpellId() == spellId && m_auras[x]->getCasterGuid() == guid)
+            if (m_auras[x]->getSpellId() == spellId)
             {
+                if (guid && m_auras[x]->getCasterGuid() != guid)
+                    continue;
+
                 m_auras[x]->removeAura();
-                return true;
+                return true;                // sky: yes, only one, see bug charges/auras queues
             }
         }
     }
@@ -8324,25 +8290,6 @@ void Unit::RemoveAurasByInterruptFlag(uint32 flag)
     }
 }
 
-bool Unit::HasAuraVisual(uint32 visualid)
-{
-    //passive auras do not have visual (at least when code was written)
-    for (uint32 x = MAX_REMOVABLE_AURAS_START; x < MAX_REMOVABLE_AURAS_END; x++)
-        if (m_auras[x] && m_auras[x]->getSpellInfo()->getSpellVisual(0) == visualid)
-            return true;
-
-    return false;
-}
-
-bool Unit::HasAura(uint32 spellid)
-{
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-        if (m_auras[x] && m_auras[x]->getSpellId() == spellid)
-            return true;
-
-    return false;
-}
-
 Aura* Unit::GetAuraWithSlot(uint32 slot)
 {
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
@@ -8350,16 +8297,6 @@ Aura* Unit::GetAuraWithSlot(uint32 slot)
             return m_auras[x];
 
     return NULL;
-}
-
-uint16 Unit::GetAuraStackCount(uint32 spellid)
-{
-    uint16 count = 0;
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-        if (m_auras[x] && m_auras[x]->getSpellId() == spellid)
-            count++;
-
-    return count;
 }
 
 void Unit::DropAurasOnDeath()
@@ -8405,24 +8342,6 @@ void Unit::UpdateSpeed()
         setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
         setSpeedRate(TYPE_FLY, getSpeedRate(TYPE_FLY, true), true);
     }
-}
-
-bool Unit::HasBuff(uint32 spellid) // cebernic:it does not check passive auras & must be visible auras
-{
-    for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
-        if (m_auras[x] && m_auras[x]->getSpellId() == spellid)
-            return true;
-
-    return false;
-}
-
-bool Unit::HasBuff(uint32 spellid, uint64 guid)
-{
-    for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
-        if (m_auras[x] && m_auras[x]->getSpellId() == spellid && m_auras[x]->getCasterGuid() == guid)
-            return true;
-
-    return false;
 }
 
 void Unit::RemoveAurasByBuffType(uint32 buff_type, const uint64 & guid, uint32 skip)
@@ -8671,27 +8590,6 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
             a->removeAura();
         }
     }
-}
-
-bool Unit::HasAuraWithName(uint32 name)
-{
-
-    for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
-        if (m_auras[i] != NULL && m_auras[i]->getSpellInfo()->appliesAreaAura(name))
-            return true;
-
-    return false;
-}
-
-uint32 Unit::GetAuraCountWithName(uint32 name)
-{
-    uint32 count = 0;
-
-    for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
-        if (m_auras[i] != NULL && m_auras[i]->getSpellInfo()->appliesAreaAura(name))
-            ++count;
-
-    return count;
 }
 
 bool Unit::HasAuraWithMechanics(uint32 mechanic)
@@ -9655,9 +9553,9 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
             if (pGroup != NULL)
             {
                 int32 targets = 0;
-                if (pPlayer->HasAura(59088))
+                if (pPlayer->hasAurasWithId(59088))
                     targets = 2;
-                else if (pPlayer->HasAura(59089))
+                else if (pPlayer->hasAurasWithId(59089))
                     targets = 4;
 
                 pGroup->Lock();
@@ -9667,7 +9565,7 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
                     for (GroupMembersSet::iterator itr = subGroup->GetGroupMembersBegin(); itr != subGroup->GetGroupMembersEnd() && targets > 0; ++itr)
                     {
                         Player* member = (*itr)->m_loggedInPlayer;
-                        if (member == NULL || member == pPlayer || !member->IsInWorld() || !member->isAlive() || member->HasAura(59725))
+                        if (member == NULL || member == pPlayer || !member->IsInWorld() || !member->isAlive() || member->hasAurasWithId(59725))
                             continue;
 
                         if (!member->isInRange(pPlayer, 20))

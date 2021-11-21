@@ -1729,7 +1729,7 @@ public:
             return 0;
         else
         {
-            if (ptr->HasAura(spellid))
+            if (ptr->hasAurasWithId(spellid))
                 lua_pushboolean(L, 1);
             else
                 lua_pushboolean(L, 0);
@@ -5652,7 +5652,7 @@ public:
     {
         TEST_UNITPLAYER_RET()
         uint32_t id = CHECK_ULONG(L, 1);
-        RET_NUMBER(ptr->GetAuraStackCount(id));
+        RET_NUMBER(ptr->getAuraCountForId(id));
     }
 
     static int AddAuraObject(lua_State* L, Unit* ptr)

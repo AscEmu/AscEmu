@@ -427,7 +427,7 @@ public:
     {
         if (!reset)
         {
-            if (getCreature()->HasAura(29528) && !respawn)
+            if (getCreature()->hasAurasWithId(29528) && !respawn)
             {
                 reset = true;
                 getCreature()->setMoveRoot(true);
@@ -445,7 +445,7 @@ public:
 
     void GiveKillCredit()
     {
-        if (getCreature()->HasAura(29528))
+        if (getCreature()->hasAurasWithId(29528))
         {
             if (auto* player = getCreature()->GetMapMgr()->GetPlayer(static_cast<uint32_t>(getCreature()->getTargetGuid())))
             {

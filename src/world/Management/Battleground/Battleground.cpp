@@ -983,7 +983,7 @@ void CBattleground::EventResurrectPlayers()
 
 bool CBattleground::CanPlayerJoin(Player* plr, uint32 type)
 {
-    return HasFreeSlots(plr->getBgTeam(), type) && (GetLevelGrouping(plr->getLevel()) == GetLevelGroup()) && (!plr->HasAura(BG_DESERTER));
+    return HasFreeSlots(plr->getBgTeam(), type) && (GetLevelGrouping(plr->getLevel()) == GetLevelGroup()) && (!plr->hasAurasWithId(BG_DESERTER));
 }
 
 bool CBattleground::CreateCorpse(Player* /*plr*/)

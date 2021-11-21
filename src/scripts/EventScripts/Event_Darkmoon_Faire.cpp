@@ -143,7 +143,7 @@ void OnActivate(Player* pPlayer)
 
 void AIUpdate()
 {
-    if (!Plr->HasAura(33849) || Tonk->isDead())
+    if (!Plr->hasAurasWithId(33849) || Tonk->isDead())
     {
         // Kill then Despawn Tonk after 10 seconds
         Plr->castSpell(Tonk, 5, false); // Kill spell
@@ -399,7 +399,7 @@ public:
     void onHello(Object* pObject, Player* plr) override
     {
         // Check to see if the player already has a buff from Sayge.
-        if (plr->HasAura(23768) || plr->HasAura(23769) || plr->HasAura(23767) || plr->HasAura(23738) || plr->HasAura(23766) || plr->HasAura(23737) || plr->HasAura(23735) || plr->HasAura(23736))
+        if (plr->hasAurasWithId(23768) || plr->hasAurasWithId(23769) || plr->hasAurasWithId(23767) || plr->hasAurasWithId(23738) || plr->hasAurasWithId(23766) || plr->hasAurasWithId(23737) || plr->hasAurasWithId(23735) || plr->hasAurasWithId(23736))
         {
             GossipMenu menu(pObject->getGuid(), 60034, plr->GetSession()->language);
             menu.sendGossipPacket(plr);

@@ -209,7 +209,7 @@ public:
 
     void OnDamageTaken(Unit* /*mAttacker*/, uint32_t fAmount) override
     {
-        if (getCreature()->HasAura(52723))    //handling a dummy :)
+        if (getCreature()->hasAurasWithId(52723))    //handling a dummy :)
         {
             getCreature()->addSimpleHealingBatchEvent(fAmount / 2, getCreature(), sSpellMgr.getSpellInfo(52723));
         }

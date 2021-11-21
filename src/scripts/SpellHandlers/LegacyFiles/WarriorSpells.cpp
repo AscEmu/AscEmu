@@ -37,7 +37,7 @@ bool Execute(uint8_t effectIndex, Spell* pSpell)
 
     uint32_t rage = Caster->getPower(POWER_TYPE_RAGE);
 
-    if (Caster->HasAura(58367))     // Glyph of Execution: Your Execute ability deals damage as if you had 10 additional rage.
+    if (Caster->hasAurasWithId(58367))     // Glyph of Execution: Your Execute ability deals damage as if you had 10 additional rage.
     {
         rage += 10;
     }

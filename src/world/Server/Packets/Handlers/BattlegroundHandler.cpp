@@ -238,7 +238,7 @@ void WorldSession::handleBattlefieldStatusOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleBattleMasterJoinOpcode(WorldPacket& recvPacket)
 {
-    if (_player->HasAura(BG_DESERTER))
+    if (_player->hasAurasWithId(BG_DESERTER))
     {
         WorldPacket data(SMSG_GROUP_JOINED_BATTLEGROUND, 4);
         data << uint32_t(0xFFFFFFFE);

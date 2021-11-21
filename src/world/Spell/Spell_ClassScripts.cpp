@@ -40,7 +40,7 @@ public:
 
     void DoAfterHandleEffect(Unit* target, uint32 /*i*/) override
     {
-        if (p_caster != NULL && target != NULL && p_caster->HasAura(54741)) // Cronicman: Player has "Firestarter" aura so we remove it AFTER casting Flamestrike.
+        if (p_caster != NULL && target != NULL && p_caster->hasAurasWithId(54741)) // Cronicman: Player has "Firestarter" aura so we remove it AFTER casting Flamestrike.
         {
             p_caster->removeAllAurasById(54741);
         }
@@ -57,7 +57,7 @@ public:
 
     void DoAfterHandleEffect(Unit* target, uint32 /*i*/) override
     {
-        if (p_caster != NULL && target != NULL && p_caster->HasAura(44401)) // Player has "Missile Barrage" aura so we remove it AFTER casting arcane missles.
+        if (p_caster != NULL && target != NULL && p_caster->hasAurasWithId(44401)) // Player has "Missile Barrage" aura so we remove it AFTER casting arcane missles.
         {
             p_caster->removeAllAurasById(44401);
         }
@@ -311,7 +311,7 @@ public:
             value += (uint32)(ap * 0.08);
 
             // Does additional damage if target has diseases (http://www.tankspot.com/forums/f14/48814-3-1-blood-boil-mechanics-tested.html)
-            if (target != NULL && (target->HasAura(55078) || target->HasAura(55095)))
+            if (target != NULL && (target->hasAurasWithId(55078) || target->hasAurasWithId(55095)))
                 value += (uint32)(ap * 0.015 + 95);
         }
 

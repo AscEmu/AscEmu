@@ -25,7 +25,7 @@ void Catrina(Player* pPlayer, Unit* pUnit)
         return;
     }
 
-    if (pPlayer->HasAura(SPELL_HONOR_THE_DEAD) == false)
+    if (pPlayer->hasAurasWithId(SPELL_HONOR_THE_DEAD) == false)
     {
         if (pPlayer->isDead() == false)
         {

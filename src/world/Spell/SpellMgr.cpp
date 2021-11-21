@@ -50,7 +50,7 @@ bool SpellArea::fitsToRequirements(Player* player, uint32_t newZone, uint32_t ne
 
     if (auraSpell != 0)
     {
-        if (player == nullptr || (auraSpell > 0 && !player->HasAura(auraSpell)) || (auraSpell < 0 && player->HasAura(-auraSpell)))
+        if (player == nullptr || (auraSpell > 0 && !player->hasAurasWithId(auraSpell)) || (auraSpell < 0 && player->hasAurasWithId(-auraSpell)))
             return false;
     }
 

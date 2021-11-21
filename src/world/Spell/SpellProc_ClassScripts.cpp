@@ -490,7 +490,7 @@ public:
 
         caster->castSpell(getProcOwner(), 33110, value, true);
 
-        int32 count = getProcOwner()->GetAuraStackCount(getSpell()->getId());
+        int32 count = getProcOwner()->getAuraCountForId(getSpell()->getId());
 
         if (count <= 1)
             return true;

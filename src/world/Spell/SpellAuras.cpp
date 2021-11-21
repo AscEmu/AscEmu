@@ -208,7 +208,7 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
         }
 
         // If this aura can affect one target at a time, remove this target from the caster map
-        if (getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SINGLE_TARGET_AURA && getOwner()->GetAuraStackCount(getSpellId()) == 1)
+        if (getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SINGLE_TARGET_AURA && getOwner()->getAuraCountForId(getSpellId()) == 1)
             getOwner()->removeSingleTargetGuidForAura(getSpellInfo()->getId());
 
         // only remove channel stuff if caster == target, then it's not removed twice, for example, arcane missiles applies a dummy aura to target

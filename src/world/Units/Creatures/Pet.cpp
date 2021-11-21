@@ -2059,7 +2059,7 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
 
         if (sp->spelltargetType == TTYPE_OWNER)
         {
-            if (!m_Owner->HasAura(sp->spell->getId()))
+            if (!m_Owner->hasAurasWithId(sp->spell->getId()))
                 castSpell(m_Owner, sp->spell, false);
         }
         else

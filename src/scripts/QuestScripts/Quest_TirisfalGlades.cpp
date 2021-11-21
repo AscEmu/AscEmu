@@ -111,7 +111,7 @@ public:
         if (type != WAYPOINT_MOTION_TYPE)
             return;
 
-        if (!getCreature()->HasAura(3287))
+        if (!getCreature()->hasAurasWithId(3287))
             return;
         if (iWaypointId == 2)
         {
@@ -137,7 +137,7 @@ public:
         mTarget->castSpell(mTarget, sSpellMgr.getSpellInfo(ressurrectSpell), true);
 
         // Remove death Aura
-        if (mTarget->HasAura(rigorMortisSpell))
+        if (mTarget->hasAurasWithId(rigorMortisSpell))
             mTarget->removeAllAurasById(rigorMortisSpell);
     }
 };

@@ -1915,7 +1915,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
             // Lazy Peons - Quest 5441
             if (getSpellInfo()->getId() == 19938 && target->isCreature() && target->getEntry() == 10556)
             {
-                if (!target->HasAura(17743))
+                if (!target->hasAurasWithId(17743))
                 {
                     return SPELL_FAILED_BAD_TARGETS;
                 }

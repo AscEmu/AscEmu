@@ -45,7 +45,7 @@ bool Preparation(uint8_t /*effectIndex*/, Spell* pSpell)
     pSpell->getPlayerCaster()->clearCooldownForSpell(26889);         // Vanish Rank 3
     pSpell->getPlayerCaster()->clearCooldownForSpell(14177);         // Cold Blood
     pSpell->getPlayerCaster()->clearCooldownForSpell(36554);         // Shadowstep
-    if (pSpell->getPlayerCaster()->HasAura(56819))                   // Glyph of Preparation item = 42968 casts 57127 that apply aura 56819.
+    if (pSpell->getPlayerCaster()->hasAurasWithId(56819))                   // Glyph of Preparation item = 42968 casts 57127 that apply aura 56819.
     {
         pSpell->getPlayerCaster()->clearCooldownForSpell(13877);     // Blade Flurry
         pSpell->getPlayerCaster()->clearCooldownForSpell(51722);     // Dismantle

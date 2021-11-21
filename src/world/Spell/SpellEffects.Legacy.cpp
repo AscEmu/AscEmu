@@ -986,11 +986,11 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 {
                     if (!unitTarget->IsStunned())
                         dmg = dmg >> 1;
-                    if (p_caster->HasAura(34258))
+                    if (p_caster->hasAurasWithId(34258))
                         p_caster->castSpell(p_caster, 34260, true);
-                    if ((p_caster->HasAura(53696) || p_caster->HasAura(53695)))
+                    if ((p_caster->hasAurasWithId(53696) || p_caster->hasAurasWithId(53695)))
                         p_caster->castSpell(p_caster, 68055, true);
-                    if (p_caster->HasAura(37186))
+                    if (p_caster->hasAurasWithId(37186))
                         dmg = 33;
                 }
             } break;
@@ -1103,7 +1103,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 54261:
             {
                 // Deal triple damage to frozen targets or to those in Deep Freeze
-                if (unitTarget->hasAuraState(AURASTATE_FLAG_FROZEN, getSpellInfo(), u_caster) || unitTarget->HasAura(44572))
+                if (unitTarget->hasAuraState(AURASTATE_FLAG_FROZEN, getSpellInfo(), u_caster) || unitTarget->hasAurasWithId(44572))
                     dmg *= 3;
             } break;
 
@@ -1370,11 +1370,11 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                     auto item = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                     if (item != nullptr)
                     {
-                        if (p_caster->HasAura(12329))
+                        if (p_caster->hasAurasWithId(12329))
                             dmg = static_cast<uint32>(std::round((((item->getItemProperties()->Damage[0].Min + item->getItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->getEffectBasePoints(effectIndex)) * 0.4));
-                        else if (p_caster->HasAura(12950))
+                        else if (p_caster->hasAurasWithId(12950))
                             dmg = static_cast<uint32>(std::round((((item->getItemProperties()->Damage[0].Min + item->getItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->getEffectBasePoints(effectIndex)) * 0.8));
-                        else if (p_caster->HasAura(20496))
+                        else if (p_caster->hasAurasWithId(20496))
                             dmg = static_cast<uint32>(std::round((((item->getItemProperties()->Damage[0].Min + item->getItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->getEffectBasePoints(effectIndex)) * 1.2));
                         else
                             dmg = static_cast<uint32>(std::round(((item->getItemProperties()->Damage[0].Min + item->getItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->getEffectBasePoints(effectIndex)));
@@ -1409,11 +1409,11 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             {
                 if (p_caster != nullptr)
                 {
-                    if (p_caster->HasAura(34258))
+                    if (p_caster->hasAurasWithId(34258))
                         p_caster->castSpell(p_caster, 34260, true);
-                    if ((p_caster->HasAura(53696) || p_caster->HasAura(53695)))
+                    if ((p_caster->hasAurasWithId(53696) || p_caster->hasAurasWithId(53695)))
                         p_caster->castSpell(p_caster, 68055, true);
-                    if (p_caster->HasAura(37186))
+                    if (p_caster->hasAurasWithId(37186))
                         dmg = 33;
                 }
             }break;
@@ -2109,7 +2109,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                 damage = (int32)(damage * 1.02);
         }
 
-        if (p_caster->HasSpell(54943) && p_caster->HasAura(20165))       // Glyph of Seal of Light
+        if (p_caster->HasSpell(54943) && p_caster->hasAurasWithId(20165))       // Glyph of Seal of Light
             damage = (int32)(damage * 1.05);
     }
 
@@ -3436,7 +3436,7 @@ void Spell::SpellEffectEnergize(uint8_t effectIndex) // Energize
             break;
     }
 
-    if (unitTarget->HasAura(17619))
+    if (unitTarget->hasAurasWithId(17619))
         modEnergy = uint32(modEnergy * 1.4f);
 
     if (u_caster)

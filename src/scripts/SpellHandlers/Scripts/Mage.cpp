@@ -243,7 +243,7 @@ public:
 
             // Glyph of the Penguin
             const auto caster = aur->GetUnitCaster();
-            if (caster != nullptr && caster->HasAura(SPELL_GLYPH_OF_THE_PENGUIN) && aur->getSpellInfo()->getSpellIconID() == ICON_POLYMORPH_SHEEP)
+            if (caster != nullptr && caster->hasAurasWithId(SPELL_GLYPH_OF_THE_PENGUIN) && aur->getSpellInfo()->getSpellIconID() == ICON_POLYMORPH_SHEEP)
             {
                 // Override misc value (Sheep) with Penguin npc
                 aurEff->setEffectMiscValue(CREATURE_CHILLY);

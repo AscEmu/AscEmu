@@ -306,7 +306,7 @@ public:
 
     void AIUpdate(unsigned long time_passed) override
     {
-        if(!_isInCombat() && !getCreature()->HasAura(SPELL_SHADOW_GRASP_C))
+        if(!_isInCombat() && !getCreature()->hasAurasWithId(SPELL_SHADOW_GRASP_C))
             _castAISpell(shadowGasp);
 
         scriptEvents.updateEvents(time_passed, getScriptPhase());

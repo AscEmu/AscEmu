@@ -70,7 +70,7 @@ public:
     bool canProc(SpellProc* proc, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo damageInfo) override
     {
         // Cannot proc if warlock already has the aura
-        if (proc->getProcOwner()->HasAura(SPELL_SHADOW_TRANCE_PROC))
+        if (proc->getProcOwner()->hasAurasWithId(SPELL_SHADOW_TRANCE_PROC))
             return false;
 
         // Should proc only when dealing damage

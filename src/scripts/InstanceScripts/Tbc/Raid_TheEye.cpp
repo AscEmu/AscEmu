@@ -1027,7 +1027,7 @@ public:
                     CastSpellNowNoScheduling(mFlameStrikeFunc);
                 }*/
             }
-            if (getCreature()->HasAura(KAELTHAS_SHOCK_BARRIER))
+            if (getCreature()->hasAurasWithId(KAELTHAS_SHOCK_BARRIER))
             {
                 _castAISpell(mPyroblast);
                 setAIAgent(AGENT_SPELL);

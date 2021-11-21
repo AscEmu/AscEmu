@@ -49,7 +49,7 @@ void InnkeeperGossip::onHello(Object* pObject, Player* Plr)
     tm * ct = std::localtime(&_time_now);
     if (ct->tm_mon == 9 && (ct->tm_mday > 17 && ct->tm_mday <= 31))
     {
-        if (!Plr->HasAura(SPELL_TRICK_OR_TREATED))
+        if (!Plr->hasAurasWithId(SPELL_TRICK_OR_TREATED))
         {
             menu.addItem(GOSSIP_ICON_CHAT, GI_TRICK_TREAT, 4);
         }
@@ -90,7 +90,7 @@ void InnkeeperGossip::onSelectOption(Object* pObject, Player* Plr, uint32_t Id, 
         } break;
         case 4: // Event of halloween
         {
-            if (!Plr->HasAura(SPELL_TRICK_OR_TREATED))
+            if (!Plr->hasAurasWithId(SPELL_TRICK_OR_TREATED))
             {
                 pCreature->castSpell(Plr, SPELL_TRICK_OR_TREATED, true);
 

@@ -28,7 +28,7 @@ public:
         if (!plr)
             return;
 
-        if (_gameobject->CalcDistance(_gameobject, plr) <= 1.050000f && !plr->HasAura(26273))       /// aura given by the PX-238 Winter Wondervolt
+        if (_gameobject->CalcDistance(_gameobject, plr) <= 1.050000f && !plr->hasAurasWithId(26273))       /// aura given by the PX-238 Winter Wondervolt
         {
             plr->castSpell(plr, 26275, true);   /// Spell that change into random gnome dispalyid (respect male & female)
         }
@@ -112,7 +112,7 @@ void WinterVeilEmote(Player* pPlayer, uint32_t Emote, Unit* pUnit)
 
     if (Emote == EMOTE_ONESHOT_KISS)
     {
-        if (!pPlayer->HasAura(26218))
+        if (!pPlayer->hasAurasWithId(26218))
             WinterReveler(pPlayer, pUnit);
     }
 }

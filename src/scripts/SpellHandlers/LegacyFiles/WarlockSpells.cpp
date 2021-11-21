@@ -657,7 +657,7 @@ bool DemonicCircleSummon(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
         if (circle != NULL && sp != NULL && m_target->CalcDistance(circle) <= GetMaxRange(sSpellRangeStore.LookupEntry(sp->getRangeIndex())))
         {
-            if (!m_target->HasAura(62388))
+            if (!m_target->hasAurasWithId(62388))
                 m_target->castSpell(m_target, 62388, true);
         }
         else

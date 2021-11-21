@@ -311,7 +311,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
         static_cast<Player*>(passenger)->setFarsightGuid(0);
 
     // if we are on a flying vehicle, add a parachute!
-    if (owner->HasAuraWithName(SPELL_AURA_ENABLE_FLIGHT) || owner->HasAuraWithName(SPELL_AURA_ENABLE_FLIGHT2))
+    if (owner->hasAuraWithAuraEffect(SPELL_AURA_ENABLE_FLIGHT) || owner->hasAuraWithAuraEffect(SPELL_AURA_ENABLE_FLIGHT2))
         passenger->castSpell(passenger, 45472, false);
 
     // re-add spellclick flag if needed

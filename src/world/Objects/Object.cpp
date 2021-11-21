@@ -906,11 +906,11 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
         {
             float_t pctmod = 0.0f;
             const auto pl = static_cast<Player*>(victim);
-            if (pl->HasAura(44394))
+            if (pl->hasAurasWithId(44394))
                 pctmod = 0.05f;
-            else if (pl->HasAura(44395))
+            else if (pl->hasAurasWithId(44395))
                 pctmod = 0.10f;
-            else if (pl->HasAura(44396))
+            else if (pl->hasAurasWithId(44396))
                 pctmod = 0.15f;
 
             const auto hp = static_cast<uint32_t>(0.05f * pl->getMaxHealth());

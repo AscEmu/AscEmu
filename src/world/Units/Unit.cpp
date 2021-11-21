@@ -3591,7 +3591,7 @@ Aura* Unit::getAuraWithId(uint32_t spell_id)
     return nullptr;
 }
 
-bool Unit::hasAurasWithId(uint32_t* auraId)
+bool Unit::hasAurasWithId(uint32_t* auraId) const
 {
     for (int i = 0; auraId[i] != 0; ++i)
     {
@@ -3675,7 +3675,7 @@ void Unit::removeAuraStateAndAuras(AuraState state)
             if (m_auras[i]->getSpellInfo()->getCasterAuraState() != static_cast<uint32_t>(state))
                 continue;
             if (m_auras[i]->getSpellInfo()->isPassive() || state != AURASTATE_FLAG_ENRAGED)
-                RemoveAura(m_auras[i]);
+                RemoveAura(m_auras[i]->getSpellInfo()->getId());
         }
     }
 }
@@ -3707,7 +3707,7 @@ Aura* Unit::getAuraWithAuraEffect(AuraEffect aura_effect)
     return nullptr;
 }
 
-bool Unit::hasAurasWithId(uint32_t auraId)
+bool Unit::hasAurasWithId(uint32_t auraId) const
 {
     for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
     {
@@ -3732,19 +3732,30 @@ Aura* Unit::getAuraWithId(uint32_t* auraId)
     return nullptr;
 }
 
-uint32_t Unit::getAuraCountForId(uint32_t auraId)
+uint32_t Unit::getAuraCountForId(uint32_t auraId) const
 {
     uint32_t auraCount = 0;
 
     for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
     {
-        if (m_auras[x] && (m_auras[x]->getSpellInfo()->getId() == auraId))
-        {
+        if (m_auras[x] && m_auras[x]->getSpellInfo()->getId() == auraId)
             ++auraCount;
-        }
     }
 
     return auraCount;
+}
+
+uint32_t Unit::getAuraCountForEffect(AuraEffect aura_effect) const
+{
+    uint32_t count = 0;
+
+    for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+    {
+        if (m_auras[i] && m_auras[i]->getSpellInfo()->hasEffectApplyAuraName(aura_effect))
+            ++count;
+    }
+
+    return count;
 }
 
 Aura* Unit::getAuraWithIdForGuid(uint32_t* auraId, uint64 guid)
@@ -3793,13 +3804,13 @@ void Unit::removeAllAurasById(uint32_t* auraId)
     }
 }
 
-void Unit::removeAllAurasByIdForGuid(uint32_t spellId, uint64_t guid)
+void Unit::removeAllAurasByIdForGuid(uint32_t auraId, uint64_t guid)
 {
     for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
     {
         if (m_auras[x])
         {
-            if (m_auras[x]->getSpellId() == spellId)
+            if (m_auras[x]->getSpellId() == auraId)
             {
                 if (!guid || m_auras[x]->getCasterGuid() == guid)
                 {
@@ -3810,7 +3821,7 @@ void Unit::removeAllAurasByIdForGuid(uint32_t spellId, uint64_t guid)
     }
 }
 
-uint32_t Unit::removeAllAurasByIdReturnCount(uint32_t auraId)
+uint32_t Unit::removeAllAurasByIdReturnCount(uint32_t auraId) const
 {
     uint32_t res = 0;
     for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
@@ -4666,7 +4677,7 @@ void Unit::regeneratePower(PowerType type)
                 return;
 
             // TODO: fix this hackfix when aura system supports this
-            const auto hasAngerManagement = HasAura(12296);
+            const auto hasAngerManagement = hasAurasWithId(12296);
 
             // Rage and Runic Power are lost at rate of 1.25 point per 1 second (or 1 point per 800ms)
             // Convert the value first to 5 seconds because regeneration modifiers work like that
@@ -6528,7 +6539,7 @@ DBC::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t m
         if (mountCapability->reqArea && (mountCapability->reqArea != zoneId && mountCapability->reqArea != areaId))
             continue;
 
-        if (mountCapability->reqAura && !HasAura(mountCapability->reqAura))
+        if (mountCapability->reqAura && !hasAurasWithId(mountCapability->reqAura))
             continue;
 
         if (mountCapability->reqSpell && (GetTypeFromGUID() != TYPEID_PLAYER || !ToPlayer()->HasSpell(mountCapability->reqSpell)))

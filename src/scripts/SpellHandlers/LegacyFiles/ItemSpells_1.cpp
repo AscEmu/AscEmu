@@ -202,7 +202,7 @@ bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
 
     // check to see that we have the correct creature
     Creature* c_target = static_cast<Creature*>(target);
-    if (c_target->getEntry() != 10556 || !c_target->HasAura(17743))
+    if (c_target->getEntry() != 10556 || !c_target->hasAurasWithId(17743))
         return true;
 
     // Start moving again

@@ -384,7 +384,7 @@ public:
 
         if (Phase == BATTLE)
         {
-            if (getCreature()->HasAura(SPELL_EXPLOSIVE_BARRAGE_KRICK))
+            if (getCreature()->hasAurasWithId(SPELL_EXPLOSIVE_BARRAGE_KRICK))
             {
                 if (_isTimerFinished(mBarrageTimer))
                 {
@@ -537,9 +537,9 @@ public:
 
     void AIUpdate() override
     {
-        if (getCreature()->HasAura(SPELL_HASTY_GROW))
+        if (getCreature()->hasAurasWithId(SPELL_HASTY_GROW))
         {
-            if (getCreature()->GetAuraStackCount(SPELL_HASTY_GROW) >= 15)
+            if (getCreature()->getAuraCountForId(SPELL_HASTY_GROW) >= 15)
             {
                 getCreature()->castSpell(getCreature(), SPELL_EXPLOSIVE_BARRAGE_DAMAGE, true);
                 getCreature()->Despawn(100, 0);

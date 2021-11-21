@@ -1049,7 +1049,7 @@ public:
 
     void AIUpdate() override
     {
-        if (getCreature()->HasAura(ILLIDARI_ASSASSIN_VANISH))
+        if (getCreature()->hasAurasWithId(ILLIDARI_ASSASSIN_VANISH))
         {
             _delayNextAttack(1500);
         }            
@@ -1354,7 +1354,7 @@ public:
 
     void AIUpdate() override
     {
-        if (getCreature()->HasAura(STORM_FURY_STORM_BLINK))
+        if (getCreature()->hasAurasWithId(STORM_FURY_STORM_BLINK))
         {
             _delayNextAttack(2000);
         }
@@ -3613,7 +3613,7 @@ public:
         }
         if (mIllidanAI->isAlive())
         {
-            if (mIllidanAI->getCreature()->HasAura(40506))
+            if (mIllidanAI->getCreature()->hasAurasWithId(40506))
             {
                 setScriptPhase(2);
                 FightWithDemon();
@@ -3677,7 +3677,7 @@ public:
             despawn(500, 0);
             return;
         }
-        if (!mIllidanAI->getCreature()->HasAura(40506))
+        if (!mIllidanAI->getCreature()->hasAurasWithId(40506))
         {
             if (mIllidanAI->isAlive())
             {
@@ -4901,7 +4901,7 @@ public:
         mDemonTimer -= GetAIUpdateFreq();
         mEnrageTimer -= GetAIUpdateFreq();
         mParasiticTimer -= GetAIUpdateFreq();
-        if (getCreature()->HasAura(40760) || getCreature()->HasAura(40695))
+        if (getCreature()->hasAurasWithId(40760) || getCreature()->hasAurasWithId(40695))
         {
             mEnrageTimer = 120000;
         }

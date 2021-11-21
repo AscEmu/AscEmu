@@ -45,7 +45,7 @@ bool SummonWaterElemental(uint8_t /*effectIndex*/, Spell* pSpell)
     if (caster == NULL)
         return true;
 
-    if (caster->HasAura(70937))    // Glyph of Eternal Water
+    if (caster->hasAurasWithId(70937))    // Glyph of Eternal Water
         caster->castSpell(caster, 70908, true);
     else
         caster->castSpell(caster, 70907, true);

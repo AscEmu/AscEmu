@@ -613,13 +613,13 @@ public:
 
     void AIUpdate() override
     {
-        if (plr == nullptr || plr->isDead() || !plr->HasAura(FROST_TOMB_SPELL))
+        if (plr == nullptr || plr->isDead() || !plr->hasAurasWithId(FROST_TOMB_SPELL))
             despawn();
     }
 
     void OnDied(Unit* /*pKilled*/) override
     {
-        if (plr != nullptr && plr->HasAura(FROST_TOMB_SPELL))
+        if (plr != nullptr && plr->hasAurasWithId(FROST_TOMB_SPELL))
         {
             plr->RemoveAura(FROST_TOMB_SPELL);
         }

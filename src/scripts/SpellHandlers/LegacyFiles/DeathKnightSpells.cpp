@@ -45,16 +45,16 @@ bool Pestilence(uint8_t effectIndex, Spell* pSpell)
         Unit* Main = u_caster->GetMapMgr()->GetUnit(u_caster->getTargetGuid());
         if (Main == NULL)
             return true;
-        bool blood = Main->HasAura(BLOOD_PLAGUE);
-        bool frost = Main->HasAura(FROST_FEVER);
-        int inc = (u_caster->HasAura(59309) ? 10 : 5);
+        bool blood = Main->hasAurasWithId(BLOOD_PLAGUE);
+        bool frost = Main->hasAurasWithId(FROST_FEVER);
+        int inc = (u_caster->hasAurasWithId(59309) ? 10 : 5);
         for (const auto& itr : u_caster->getInRangeObjectsSet())
         {
             if (!itr || !itr->isCreatureOrPlayer())
                 continue;
 
             Unit* Target = static_cast<Unit*>(itr);
-            if (Main->getGuid() == Target->getGuid() && !u_caster->HasAura(63334))
+            if (Main->getGuid() == Target->getGuid() && !u_caster->hasAurasWithId(63334))
                 continue;
 
             if (isAttackable(Target, u_caster) && u_caster->CalcDistance(itr) <= (pSpell->GetRadius(effectIndex) + inc))
@@ -152,7 +152,7 @@ bool RaiseDead(uint8_t /*effectIndex*/, Spell* s)
     SpellInfo const* sp = nullptr;
 
     // Master of Ghouls
-    if (s->getPlayerCaster()->HasAura(52143) == false)
+    if (s->getPlayerCaster()->hasAurasWithId(52143) == false)
     {
         // Minion version, 1 min duration
         sp = sSpellMgr.getSpellInfo(46585);

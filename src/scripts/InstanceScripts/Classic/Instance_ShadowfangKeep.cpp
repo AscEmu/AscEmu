@@ -811,14 +811,14 @@ public:
     void OnCombatStart(Unit* /*pTarget*/) override
     {
         // Turn aura ON!
-        if (!getCreature()->HasAura(SPELL_DEVO_AURA))
+        if (!getCreature()->hasAurasWithId(SPELL_DEVO_AURA))
             _castAISpell(DevoAura);
     }
 
     void OnCombatStop(Unit* /*pTarget*/) override
     {
         // Turn aura OFF!
-        if (getCreature()->HasAura(SPELL_DEVO_AURA))
+        if (getCreature()->hasAurasWithId(SPELL_DEVO_AURA))
             _removeAura(SPELL_DEVO_AURA);
     }
 

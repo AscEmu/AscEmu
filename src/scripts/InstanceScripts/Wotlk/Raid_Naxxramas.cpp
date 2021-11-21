@@ -200,7 +200,7 @@ void WebWrapAI::OnDied(Unit* /*pKiller*/)
     if (mPlayerGuid != 0)
     {
         Player* PlayerPtr = sObjectMgr.GetPlayer(static_cast<uint32_t>(mPlayerGuid));
-        if (PlayerPtr != NULL && PlayerPtr->HasAura(MAEXXNA_WEB_WRAP))
+        if (PlayerPtr != NULL && PlayerPtr->hasAurasWithId(MAEXXNA_WEB_WRAP))
         {
             PlayerPtr->RemoveAura(MAEXXNA_WEB_WRAP);
             PlayerPtr->setMoveRoot(false);
@@ -215,7 +215,7 @@ void WebWrapAI::AIUpdate()
     if (mPlayerGuid != 0)
     {
         Player* PlayerPtr = sObjectMgr.GetPlayer(static_cast<uint32_t>(mPlayerGuid));
-        if (PlayerPtr == NULL || !PlayerPtr->isAlive() || !PlayerPtr->HasAura(MAEXXNA_WEB_WRAP))
+        if (PlayerPtr == NULL || !PlayerPtr->isAlive() || !PlayerPtr->hasAurasWithId(MAEXXNA_WEB_WRAP))
         {
             mPlayerGuid = 0;
             RemoveAIUpdateEvent();
@@ -229,7 +229,7 @@ void WebWrapAI::Destroy()
     if (mPlayerGuid != 0)
     {
         Player* PlayerPtr = sObjectMgr.GetPlayer(static_cast<uint32_t>(mPlayerGuid));
-        if (PlayerPtr != NULL && PlayerPtr->HasAura(MAEXXNA_WEB_WRAP))
+        if (PlayerPtr != NULL && PlayerPtr->hasAurasWithId(MAEXXNA_WEB_WRAP))
         {
             PlayerPtr->RemoveAura(MAEXXNA_WEB_WRAP);
             PlayerPtr->setMoveRoot(false);
@@ -346,7 +346,7 @@ void MaexxnaAI::AIUpdate()
 //    if (Maexxna != NULL)
 //    {
 //        // Is target really added everytime and isn't this check redundant ?
-//        if (pTarget == NULL || !pTarget->isPlayer() || pTarget->HasAura(MAEXXNA_WEB_WRAP) || Maexxna->getCreature() == NULL || Maexxna->getCreature()->GetMapMgr() == NULL)
+//        if (pTarget == NULL || !pTarget->isPlayer() || pTarget->hasAurasWithId(MAEXXNA_WEB_WRAP) || Maexxna->getCreature() == NULL || Maexxna->getCreature()->GetMapMgr() == NULL)
 //            return;
 //
 //        uint32_t Id = Util::getRandomUInt(1);
@@ -415,9 +415,9 @@ void NaxxramasWorshipperAI::OnDied(Unit* /*pKiller*/)
 
             // Not sure about new Frenzy Timer
             mGrandWidow->_resetTimer(mGrandWidow->mFrenzyTimer, 60000 + Util::getRandomUInt(20) * 1000);
-            if (mGrandWidow->getCreature()->HasAura(GRAND_WIDOW_FAERLINA_FRENZY_NORMAL))
+            if (mGrandWidow->getCreature()->hasAurasWithId(GRAND_WIDOW_FAERLINA_FRENZY_NORMAL))
                 mGrandWidow->getCreature()->RemoveAura(GRAND_WIDOW_FAERLINA_FRENZY_NORMAL);    // Really needed ?
-            else if (mGrandWidow->getCreature()->HasAura(GRAND_WIDOW_FAERLINA_FRENZY_HEROIC))
+            else if (mGrandWidow->getCreature()->hasAurasWithId(GRAND_WIDOW_FAERLINA_FRENZY_HEROIC))
                 mGrandWidow->getCreature()->RemoveAura(GRAND_WIDOW_FAERLINA_FRENZY_HEROIC);    // Really needed ?
             else
             {
@@ -1027,7 +1027,7 @@ StoneskinGargoyleAI::StoneskinGargoyleAI(Creature* pCreature) : CreatureAIScript
 
 bool StoneskinGargoyleAI::HasStoneskin()
 {
-    return (getCreature()->HasAura(STONESKIN_GARGOYLE_STONESKIN_NORMAL) || getCreature()->HasAura(STONESKIN_GARGOYLE_STONESKIN_HEROIC));
+    return (getCreature()->hasAurasWithId(STONESKIN_GARGOYLE_STONESKIN_NORMAL) || getCreature()->hasAurasWithId(STONESKIN_GARGOYLE_STONESKIN_HEROIC));
 }
 
 void StoneskinGargoyleAI::AIUpdate()
@@ -1905,7 +1905,7 @@ void LoathebAI::AIUpdate()
                     if (!PlayerPtr->isAlive())
                         continue;
 
-                    if (!PlayerPtr->HasAura(LOATHEB_DEATHBLOOM_NORMAL) && !PlayerPtr->HasAura(LOATHEB_DEATHBLOOM_HEROIC))
+                    if (!PlayerPtr->hasAurasWithId(LOATHEB_DEATHBLOOM_NORMAL) && !PlayerPtr->hasAurasWithId(LOATHEB_DEATHBLOOM_HEROIC))
                         continue;
 
                     if (_isHeroic())

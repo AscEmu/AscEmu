@@ -3798,7 +3798,7 @@ void Player::BuildPlayerRepop()
 
     // Cleanup first
     uint32 AuraIds[] = { 20584, 9036, 8326, 0 };
-    RemoveAuras(AuraIds); // Cebernic: Removeaura just remove once(bug?).
+    removeAllAurasById(AuraIds);
 
     setHealth(1);
 
@@ -3934,7 +3934,7 @@ void Player::ResurrectPlayer()
 
     RemoveNegativeAuras();
     uint32 AuraIds[] = { 20584, 9036, 8326, 55164, 0 };
-    RemoveAuras(AuraIds); // Cebernic: removeaura just remove once(bug?).
+    removeAllAurasById(AuraIds);
 
     removePlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE);
     setDeathState(ALIVE);
@@ -4141,7 +4141,7 @@ void Player::DeathDurabilityLoss(double percent)
 
 void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
 {
-    if (HasAuraWithName(SPELL_AURA_PREVENT_RESURRECTION))
+    if (hasAuraWithAuraEffect(SPELL_AURA_PREVENT_RESURRECTION))
         return;
 
     bool first = true;
@@ -9690,7 +9690,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
         {
             if (itr->second->autoCast && itr->second->fitsToRequirements(this, GetZoneId(), getAreaId()))
-                if (!HasAura(itr->second->spellId))
+                if (!hasAurasWithId(itr->second->spellId))
                     castSpell(this, itr->second->spellId, true);
         }
     }
@@ -10155,7 +10155,7 @@ void Player::CastSpellArea()
     SpellAreaForAreaMapBounds saBounds = sSpellMgr.getSpellAreaForAreaMapBounds(AreaId);
     for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
         if (itr->second->autoCast && itr->second->fitsToRequirements(this, ZoneId, AreaId))
-            if (!HasAura(itr->second->spellId))
+            if (!hasAurasWithId(itr->second->spellId))
                 castSpell(this, itr->second->spellId, true);
 
 
@@ -10163,7 +10163,7 @@ void Player::CastSpellArea()
     SpellAreaForAreaMapBounds szBounds = sSpellMgr.getSpellAreaForAreaMapBounds(ZoneId);
     for (SpellAreaForAreaMap::const_iterator itr = szBounds.first; itr != szBounds.second; ++itr)
         if (itr->second->autoCast && itr->second->fitsToRequirements(this, ZoneId, AreaId))
-            if (!HasAura(itr->second->spellId))
+            if (!hasAurasWithId(itr->second->spellId))
                 castSpell(this, itr->second->spellId, true);
 
 

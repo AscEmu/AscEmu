@@ -1057,7 +1057,7 @@ bool PlagueSpray(uint8_t /*effectIndex*/, Spell* pSpell)
     Unit* target = pSpell->GetUnitTarget();
     if (!target || target->getEntry() != 23652 || !target->isAlive())
         return true;
-    else if (!target || target->getEntry() != 23652 || !target->HasAura(40467))
+    else if (!target || target->getEntry() != 23652 || !target->hasAurasWithId(40467))
         return true;
 
     Player* pPlayer = pSpell->getPlayerCaster();
@@ -2747,7 +2747,7 @@ bool Carcass(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a Shadoweave Ta
     if (NetherDrake == nullptr)
         return true;
 
-    if (NetherDrake->HasAura(38502))
+    if (NetherDrake->hasAurasWithId(38502))
         return true;
 
     if (pQuest != nullptr && pQuest->getMobCountByIndex(0) < pQuest->getQuestProperties()->required_mob_or_go_count[0])
