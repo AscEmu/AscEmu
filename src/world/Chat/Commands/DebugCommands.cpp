@@ -102,7 +102,7 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
             if (map_cell != nullptr)
                 map_cell->SetLoaded();
 
-            for (auto aiSpells : creature->GetAIInterface()->mCreatureAISpells)
+            for (auto aiSpells : creature->getAIInterface()->mCreatureAISpells)
             {
                 if (aiSpells->fromDB)
                     continue;
@@ -297,9 +297,9 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
     bool in_front_of_creature = m_session->GetPlayer()->isInFront(selected_unit);
     float distance_to_creature = m_session->GetPlayer()->CalcDistance(selected_unit);
 
-    uint32 ai_state = selected_unit->GetAIInterface()->getAiState();
-    uint32 ai_type = selected_unit->GetAIInterface()->getAiScriptType();
-    uint32 ai_agent = selected_unit->GetAIInterface()->getCurrentAgent();
+    uint32 ai_state = selected_unit->getAIInterface()->getAiState();
+    uint32 ai_type = selected_unit->getAIInterface()->getAiScriptType();
+    uint32 ai_agent = selected_unit->getAIInterface()->getCurrentAgent();
 
     uint32 attackerscount = static_cast<uint32>(selected_unit->getThreatManager().getThreatListSize());
 

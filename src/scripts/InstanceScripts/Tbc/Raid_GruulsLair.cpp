@@ -231,9 +231,9 @@ public:
             Unit* pCurrentTarget = getCreature()->getThreatManager().getCurrentVictim();
             if (pCurrentTarget != nullptr)
             {
-                getCreature()->GetAIInterface()->onHostileAction(pCurrentTarget);
+                getCreature()->getAIInterface()->onHostileAction(pCurrentTarget);
                 getCreature()->getThreatManager().addThreat(pCurrentTarget, 500.f);
-                getCreature()->GetAIInterface()->setCurrentTarget(pCurrentTarget);
+                getCreature()->getAIInterface()->setCurrentTarget(pCurrentTarget);
                 getCreature()->getThreatManager().clearThreat(pCurrentTarget);
             }
         }
@@ -364,7 +364,7 @@ public:
 
     void AIUpdate(unsigned long /*time_passed*/) override
     {
-        Unit* pTarget = getCreature()->GetAIInterface()->getCurrentTarget();
+        Unit* pTarget = getCreature()->getAIInterface()->getCurrentTarget();
         if (pTarget != NULL)
         {
             if (getRangeToObject(pTarget) <= 40.0f)
@@ -554,7 +554,7 @@ public:
                     break;
                 case EVENT_HURTFUL_STRIKE:
                 {
-                    Unit* pCurrentTarget = getCreature()->GetAIInterface()->getCurrentTarget();
+                    Unit* pCurrentTarget = getCreature()->getAIInterface()->getCurrentTarget();
                     if (pCurrentTarget != nullptr)
                     {
                         Unit* pTarget = pCurrentTarget;

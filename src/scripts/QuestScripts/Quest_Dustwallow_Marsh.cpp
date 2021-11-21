@@ -59,9 +59,9 @@ public:
             getCreature()->SetHealthPct(100);
             getCreature()->getThreatManager().clearAllThreat();
             getCreature()->getThreatManager().removeMeFromThreatLists();
-            getCreature()->GetAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
+            getCreature()->getAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
             _setMeleeDisabled(true);
-            getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+            getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
             //remove not_selectable flag:
             getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             // decrease timer
@@ -72,7 +72,7 @@ public:
             // set Balos Jacken unfriendly and reset FriendlyTimer
             getCreature()->SetFaction(14);
             _setMeleeDisabled(false);
-            getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+            getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
             friendlyTimer = BALOS_FRIENDLY_TIMER;
             RemoveAIUpdateEvent();
         }
@@ -130,9 +130,9 @@ public:
         getCreature()->SetHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();
         getCreature()->getThreatManager().removeMeFromThreatLists();
-        getCreature()->GetAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
+        getCreature()->getAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
         _setMeleeDisabled(true);
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
     }
 };
@@ -156,8 +156,8 @@ public:
         say += " wanna fight Overlord Mok'Morokk? Me beat you! Me boss here!";
         Overlord->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         Overlord->SetFaction(72);
-        Overlord->GetAIInterface()->setMeleeDisabled(false);
-        Overlord->GetAIInterface()->setAllowedToEnterCombat(true);
+        Overlord->getAIInterface()->setMeleeDisabled(false);
+        Overlord->getAIInterface()->setAllowedToEnterCombat(true);
     }
 };
 
@@ -196,9 +196,9 @@ public:
         getCreature()->SetHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();
         getCreature()->getThreatManager().removeMeFromThreatLists();
-        getCreature()->GetAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
+        getCreature()->getAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
         _setMeleeDisabled(true);
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
     }
 };
@@ -218,8 +218,8 @@ public:
             return;
 
         Dashel->SetFaction(72);
-        Dashel->GetAIInterface()->setMeleeDisabled(false);
-        Dashel->GetAIInterface()->setAllowedToEnterCombat(true);
+        Dashel->getAIInterface()->setMeleeDisabled(false);
+        Dashel->getAIInterface()->setAllowedToEnterCombat(true);
     }
 };
 

@@ -238,14 +238,17 @@ struct WoWUnit;
 
 class SERVER_DECL Unit : public Object
 {
+protected:
+    Unit();
+
+public: //\todo Zyres: public fpr LuaEngine, sort out why
+    virtual ~Unit();
+
+private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
     const WoWUnit* unitData() const { return reinterpret_cast<WoWUnit*>(wow_data); }
 
-    friend class ThreatManager;
-    ThreatManager m_threatManager = this;
-public:
-    void setLocationWithoutUpdate(LocationVector& location);
 public:
     uint64_t getCharmGuid() const;
     void setCharmGuid(uint64_t guid);
@@ -261,8 +264,14 @@ public:
     uint64_t getCharmedByGuid() const;
     void setCharmedByGuid(uint64_t guid);
 
+    // helper
+    bool isCharmed() const { return !getCharmedByGuid(); }
+
     uint64_t getSummonedByGuid() const;
     void setSummonedByGuid(uint64_t guid);
+
+    // helper
+    uint64_t getCharmerOrOwnerGUID() const override { return isCharmed() ? getCharmedByGuid() : getSummonedByGuid(); }
 
     uint64_t getCreatedByGuid() const;
     void setCreatedByGuid(uint64_t guid);
@@ -348,6 +357,10 @@ public:
     void addUnitFlags(uint32_t unitFlags);
     void removeUnitFlags(uint32_t unitFlags);
     bool hasUnitFlags(uint32_t unitFlags) const;
+
+    // helper
+    bool isInCombat() const { return hasUnitFlags(UNIT_FLAG_COMBAT); }
+    virtual bool canSwim();
 
 #if VERSION_STRING > Classic
     uint32_t getUnitFlags2() const;
@@ -549,6 +562,62 @@ public:
     void setHoverHeight(float height);
 #endif
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Area & Position
+public:
+    void setLocationWithoutUpdate(LocationVector& location);
+
+    bool isWithinCombatRange(Unit* obj, float dist2compare);
+    bool isWithinMeleeRange(Unit* obj) { return isWithinMeleeRangeAt(GetPosition(), obj); }
+    bool isWithinMeleeRangeAt(LocationVector const& pos, Unit* obj);
+    float getMeleeRange(Unit* target);
+
+    virtual bool isInWater() const;
+    bool isUnderWater() const;
+    bool isInAccessiblePlaceFor(Creature* c) const;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Combat
+private:
+
+public:
+    CombatStatusHandler combatStatusHandler;
+
+    int32 m_CombatResult_Dodge = 0;
+    int32 m_CombatResult_Parry = 0;
+    uint32 m_CombatUpdateTimer = 0;
+
+    const CombatStatusHandler* getCombatHandler() const { return &combatStatusHandler; }
+
+    void combatUpdatePvPTimeout();
+    void combatResetPvPTimeout();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // MovementInfo (from class Object)
+public:
+    MovementInfo* getMovementInfo();
+
+    uint32_t getUnitMovementFlags() const;
+    void setUnitMovementFlags(uint32_t f);
+    void addUnitMovementFlag(uint32_t f);
+    void removeUnitMovementFlag(uint32_t f);
+    bool hasUnitMovementFlag(uint32_t f) const;
+
+    //\brief: this is not uint16_t on version < wotlk
+    uint16_t getExtraUnitMovementFlags() const;
+    void addExtraUnitMovementFlag(uint16_t f2);
+    bool hasExtraUnitMovementFlag(uint16_t f2) const;
+
+    //helpers
+    bool isRooted() const;
+    bool isMoving() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_MOVING_MASK); }
+    bool isTurning() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_TURNING_MASK); }
+    bool IsFlying() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_FLYING_MASK); }
+    bool IsFalling() const;
+
+    bool isWalking() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_WALK); }
+    bool isHovering() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_HOVER); }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
 private:
     int32_t m_rootCounter = 0;
@@ -564,41 +633,35 @@ public:
     void setMoveHover(bool set_hover);
     void setMoveCanFly(bool set_fly);
     void setMoveRoot(bool set_root);
-    bool isRooted() const;
-    bool isMoving() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_MOVING_MASK); }
-    bool isTurning() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_TURNING_MASK); }
-    bool IsFlying() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_FLYING_MASK); }
-    bool IsFalling() const;
-    virtual bool canSwim();
-    virtual bool isInWater() const;
-    bool isUnderWater() const;
-    bool isInAccessiblePlaceFor(Creature* c) const;
-
-    uint64_t getCharmerOrOwnerGUID() const override { return isCharmed() ? getCharmedByGuid() : getSummonedByGuid(); }
-    bool isCharmed() const { return !getCharmedByGuid(); }
-
-    void setControlled(bool apply, UnitStates state);
-    void applyControlStatesIfNeeded();
-
-    virtual bool canFly();
-
-    bool isWalking() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_WALK); }
-    bool isHovering() const { return obj_movement_info.hasMovementFlag(MOVEFLAG_HOVER); }
-
-    bool isInCombat() const { return hasUnitFlags(UNIT_FLAG_COMBAT); }
-    bool isInEvadeMode() { return hasUnitStateFlag(UNIT_STATE_EVADING); }
-
-    bool isWithinCombatRange(Unit* obj, float dist2compare);
-    bool isWithinMeleeRange(Unit* obj) { return isWithinMeleeRangeAt(GetPosition(), obj); }
-    bool isWithinMeleeRangeAt(LocationVector const& pos, Unit* obj);
-    float getMeleeRange(Unit* target);
-
     void setMoveSwim(bool set_swim);
     void setMoveDisableGravity(bool disable_gravity);
     void setMoveWalk(bool set_walk);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // used for handling fall
+    float z_axisposition = 0.0f;
+    int32_t m_safeFall = 0;
+    bool m_noFallDamage = false;
+
     void handleFall(MovementInfo const& movementInfo);
- 
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Speed
+private:
+    UnitSpeedInfo m_UnitSpeedInfo;
+
+    //\todo Zyres: guess that should be part of UnitSpeedInfo
+    int32_t m_speedModifier = 0;
+    int32_t m_mountedspeedModifier = 0;
+    int32_t m_flyspeedModifier = 0;
+    int32_t m_slowdown = 0;
+    float m_maxSpeed = 0;
+
+    std::map<uint32_t, int32_t> speedReductionMap;
+
+public:
+    uint8_t m_forced_speed_changes[MAX_SPEED_TYPE] = { 0 };
+
     UnitSpeedInfo const* getSpeedInfo() const { return &m_UnitSpeedInfo; }
     float getSpeedRate(UnitSpeedType type, bool current) const;
     void resetCurrentSpeeds();
@@ -607,9 +670,11 @@ public:
     void propagateSpeedChange();
     void setSpeedRate(UnitSpeedType mtype, float rate, bool current);
 
-    uint8_t m_forced_speed_changes[MAX_SPEED_TYPE] = {0};
+    bool getSpeedDecrease();
+    void updateSpeed();
 
-    // Movement info
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Movement spline
     MovementNew::MoveSpline* movespline;
 
     void followerAdded(AbstractFollower* f) { m_followingMe.insert(f); }
@@ -619,6 +684,8 @@ public:
 
     MovementManager* getMovementManager() { return i_movementManager; }
     MovementManager const* getMovementManager() const { return i_movementManager; }
+
+    virtual bool canFly();
 
     void stopMoving();
     void pauseMovement(uint32_t timer = 0, uint8_t slot = 0, bool forced = true); // timer in ms
@@ -635,7 +702,6 @@ protected:
     void setStunned(bool apply);
 
 private:
-    UnitSpeedInfo m_UnitSpeedInfo;
     void updateSplineMovement(uint32 t_diff);
     void updateSplinePosition();
 
@@ -651,9 +717,21 @@ public:
 
     virtual MovementGeneratorType getDefaultMovementType() const;
 
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Mover
     Unit* mControledUnit = this;
-    Player* mPlayerControler = nullptr;
+    Player* mPlayerControler = nullptr;  
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // AI Stuff
+protected:
+    AIInterface* m_aiInterface;
+    bool m_useAI = false;
+
+public:
+    AIInterface* getAIInterface() const { return m_aiInterface; }
+
+    void setAItoUse(bool value) { m_useAI = value; }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Internal States
@@ -661,11 +739,16 @@ private:
     uint32_t m_unitState = 0;
 
 public:
-    void addUnitStateFlag(uint32_t state_flag) { m_unitState |= state_flag; };
-    bool hasUnitStateFlag(uint32_t state_flag) { return (m_unitState & state_flag ? true : false); }
-    void removeUnitStateFlag(uint32_t state_flag) { m_unitState &= ~state_flag; };
-    uint32_t getUnitStateFlags() { return m_unitState; };
+    void addUnitStateFlag(uint32_t state_flag) { m_unitState |= state_flag; }
+    bool hasUnitStateFlag(uint32_t state_flag) const { return (m_unitState & state_flag ? true : false); }
+    void removeUnitStateFlag(uint32_t state_flag) { m_unitState &= ~state_flag; }
+    uint32_t getUnitStateFlags() { return m_unitState; }
 
+    // helper
+    bool isInEvadeMode() const { return hasUnitStateFlag(UNIT_STATE_EVADING); }
+
+    void setControlled(bool apply, UnitStates state);
+    void applyControlStatesIfNeeded();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells
@@ -862,6 +945,8 @@ protected:
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Chat
+    int32_t m_modlanguage = -1;
+
     std::unique_ptr<WorldPacket> createChatPacket(uint8_t type, uint32_t language, std::string msg, Unit* receiver = nullptr, uint32_t sessionLanguage = 0);
     void sendChatMessage(uint8_t type, uint32_t language, std::string msg, Unit* receiver = nullptr, uint32_t sessionLanguage = 0);
     void sendChatMessage(uint8_t type, uint32_t language, std::string msg, uint32_t delay);
@@ -969,21 +1054,6 @@ public:
     DeathState getDeathState() const;
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Movement
-    MovementInfo* getMovementInfo();
-
-    uint32_t getUnitMovementFlags() const;
-    void setUnitMovementFlags(uint32_t f);
-    void addUnitMovementFlag(uint32_t f);
-    void removeUnitMovementFlag(uint32_t f);
-    bool hasUnitMovementFlag(uint32_t f) const;
-
-    //\brief: this is not uint16_t on version < wotlk
-    uint16_t getExtraUnitMovementFlags() const;
-    void addExtraUnitMovementFlag(uint16_t f2);
-    bool hasExtraUnitMovementFlag(uint16_t f2) const;
-
-    //////////////////////////////////////////////////////////////////////////////////////////
     // Summons
 
     TotemSummon* getTotem(TotemSlots slot) const;
@@ -1021,9 +1091,27 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Threat Management
+private:
+    friend class ThreatManager;
+    ThreatManager m_threatManager = this;
+
+    //\todo: Why do we have these two vars here instead of ThreatManager?
+    int32_t m_threatModifyer = 0;
+    int32_t m_generatedThreatModifyer[TOTAL_SPELL_SCHOOLS] = { 0 };
+
 public:
     ThreatManager& getThreatManager() { return m_threatManager; }
     ThreatManager const& getThreatManager() const { return m_threatManager; }
+
+    void clearHateList();
+    void wipeHateList();
+    void wipeTargetList();
+
+    int32_t getThreatModifyer() { return m_threatModifyer; }
+    void modThreatModifyer(int32_t mod) { m_threatModifyer += mod; }
+
+    int32_t getGeneratedThreatModifyer(uint32_t school) { return m_generatedThreatModifyer[school]; }
+    void modGeneratedThreatModifyer(uint32_t school, int32_t mod) { m_generatedThreatModifyer[school] += mod; }
 
     // Do not alter anything below this line
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -1031,10 +1119,6 @@ public:
     // MIT End
     // AGPL Start
 public:
-    void CombatStatusHandler_UpdatePvPTimeout();
-    void CombatStatusHandler_ResetPvPTimeout();
-
-    virtual ~Unit();
 
     friend class AIInterface;
     friend class Aura;
@@ -1178,19 +1262,6 @@ public:
     // Spell Crit
     float spellcritperc = 0.0f;
 
-    // AIInterface
-    AIInterface* GetAIInterface() { return m_aiInterface; }
-    void ReplaceAIInterface(AIInterface* new_interface);
-    void ClearHateList();
-    void WipeHateList();
-    void WipeTargetList();
-    void setAItoUse(bool value) { m_useAI = value; }
-
-    int32 GetThreatModifyer() { return m_threatModifyer; }
-    void ModThreatModifyer(int32 mod) { m_threatModifyer += mod; }
-    int32 GetGeneratedThreatModifyer(uint32 school) { return m_generatedThreatModifyer[school]; }
-    void ModGeneratedThreatModifyer(uint32 school, int32 mod) { m_generatedThreatModifyer[school] += mod; }
-
     void SetHitFromMeleeSpell(float value) { m_hitfrommeleespell = value; }
     float GetHitFromMeleeSpell() { return m_hitfrommeleespell; }
     float m_hitfrommeleespell = 0.0f;
@@ -1290,8 +1361,6 @@ public:
 
     void SetHealthPct(uint32 val) { if (val > 0) setHealth(float2int32(val * 0.01f * getMaxHealth())); };
 
-    uint32 m_CombatUpdateTimer = 0;
-
     void setcanparry(bool newstatus) { can_parry = newstatus; }
 
     std::map<uint32, Aura*> tmpAura;
@@ -1333,11 +1402,7 @@ public:
     int32 m_fearmodifiers = 0;
     int64 m_magnetcaster = 0;   // Unit who acts as a magnet for this unit
 
-    //Combat Mod Results:
-    int32 m_CombatResult_Dodge = 0;
-    int32 m_CombatResult_Parry = 0; // is not implented yet
-
-                                // aurastate counters
+    // aurastate counters
     int8 asc_frozen = 0;
     int8 asc_enraged = 0;
     int8 asc_seal = 0;
@@ -1348,20 +1413,7 @@ public:
     uint64 m_detectRangeGUID[5] = {0};
     int32  m_detectRangeMOD[5] = {0};
 
-    // Affect Speed
-    int32 m_speedModifier = 0;
-    int32 m_slowdown = 0;
-    float m_maxSpeed = 0;
-    std::map< uint32, int32 > speedReductionMap;
-    bool GetSpeedDecrease();
-    int32 m_mountedspeedModifier = 0;
-    int32 m_flyspeedModifier = 0;
-
-    void UpdateSpeed();
-
     Aura* m_auras[MAX_TOTAL_AURAS_END] = {nullptr};
-
-    int32 m_modlanguage = -1;
 
     uint32 GetCharmTempVal() { return m_charmtemp; }
     void SetCharmTempVal(uint32 val) { m_charmtemp = val; }
@@ -1414,7 +1466,6 @@ public:
 
     uint32 m_cTimer = 0;
     void EventUpdateFlag();
-    CombatStatusHandler CombatStatus;
 
     void DispelAll(bool positive);
 
@@ -1448,7 +1499,7 @@ public:
     void UpdateAuraForGroup(uint8 slot);
 
 protected:
-    Unit();
+    
     void RemoveGarbage();
     void AddGarbageAura(Aura* aur);
 
@@ -1459,13 +1510,8 @@ protected:
     std::list<Pet*> m_GarbagePets;
 
     // DK:pet
-
-    // AI
-    AIInterface* m_aiInterface;
-    bool m_useAI = false;
+    
     bool can_parry = false;         //will be enabled by block spell
-    int32 m_threatModifyer = 0;
-    int32 m_generatedThreatModifyer[TOTAL_SPELL_SCHOOLS] = {0};
 
     int32 m_manashieldamt = 0;
     uint32 m_manaShieldId = 0;
@@ -1489,12 +1535,7 @@ protected:
     uint64 m_auraRaidUpdateMask = 0;
 
 public:
-    const CombatStatusHandler* getcombatstatus() const { return &CombatStatus; }
-
-    bool m_noFallDamage = false;
-    float z_axisposition = 0.0f;
-    int32 m_safeFall = 0;
-
+    
     void BuildMovementPacket(ByteBuffer* data);
     void BuildMovementPacket(ByteBuffer* data, float x, float y, float z, float o);
 

@@ -77,8 +77,8 @@ public:
                         c->Load(cp, -259.532f, -618.976f, 26.669f, 0.0f);
                         c->PushToWorld(getCreature()->GetMapMgr());
                         //path finding would be usefull :)
-                        //c->GetAIInterface()->SetRun();
-                        c->GetAIInterface()->moveTo(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ());
+                        //c->getAIInterface()->SetRun();
+                        c->getAIInterface()->moveTo(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ());
                     }
                 }
             }
@@ -258,7 +258,7 @@ public:
                     Player* p_target = GetRandomPlayerTarget();
                     if (p_target)
                     {
-                        c->GetAIInterface()->moveTo(p_target->GetPositionX(), p_target->GetPositionY(), p_target->GetPositionZ(), 0.0f, true);
+                        c->getAIInterface()->moveTo(p_target->GetPositionX(), p_target->GetPositionY(), p_target->GetPositionZ(), 0.0f, true);
                     }
                 }
             }
@@ -288,7 +288,7 @@ public:
                         Player* p_target = GetRandomPlayerTarget();
                         if (p_target)
                         {
-                            c->GetAIInterface()->moveTo(p_target->GetPositionX(), p_target->GetPositionY(), p_target->GetPositionZ(), 0.0f, true);
+                            c->getAIInterface()->moveTo(p_target->GetPositionX(), p_target->GetPositionY(), p_target->GetPositionZ(), 0.0f, true);
                         }
                     }
                 }

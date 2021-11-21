@@ -319,7 +319,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
     else if (_player->getCharmGuid() == srlPacket.petGuid)
     {
         bool found = false;
-        for (auto aiSpell : petUnit->GetAIInterface()->m_spells)
+        for (auto aiSpell : petUnit->getAIInterface()->m_spells)
         {
             if (aiSpell->spell->getId() == srlPacket.spellId)
             {

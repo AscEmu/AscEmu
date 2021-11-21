@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 static bool hasLostTarget(Unit* owner, Unit* target)
 {
-    return owner->GetAIInterface()->getCurrentTarget() != target;
+    return owner->getAIInterface()->getCurrentTarget() != target;
 }
 
 static bool isMutualChase(Unit* owner, Unit* target)
@@ -53,7 +53,7 @@ static void doMovementInform(Unit* owner, Unit* target)
     if (owner->getObjectTypeId() != TYPEID_UNIT)
         return;
 
-    if (AIInterface* AI = owner->GetAIInterface())
+    if (AIInterface* AI = owner->getAIInterface())
         AI->movementInform(CHASE_MOTION_TYPE, target->getGuidLow());
 }
 
@@ -101,7 +101,7 @@ bool ChaseMovementGenerator::update(Unit* owner, uint32_t diff)
         owner->stopMoving();
         _lastTargetPosition.reset();
         if (Creature* cOwner = owner->ToCreature())
-            cOwner->GetAIInterface()->setCannotReachTarget(false);
+            cOwner->getAIInterface()->setCannotReachTarget(false);
         return true;
     }
 
@@ -123,7 +123,7 @@ bool ChaseMovementGenerator::update(Unit* owner, uint32_t diff)
             removeFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED);
             _path = nullptr;
             if (Creature* cOwner = owner->ToCreature())
-                cOwner->GetAIInterface()->setCannotReachTarget(false);
+                cOwner->getAIInterface()->setCannotReachTarget(false);
             owner->stopMoving();
             owner->setInFront(target);
             doMovementInform(owner, target);
@@ -137,7 +137,7 @@ bool ChaseMovementGenerator::update(Unit* owner, uint32_t diff)
         removeFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED);
         _path = nullptr;
         if (Creature* cOwner = owner->ToCreature())
-            cOwner->GetAIInterface()->setCannotReachTarget(false);
+            cOwner->getAIInterface()->setCannotReachTarget(false);
         owner->removeUnitStateFlag(UNIT_STATE_CHASE_MOVE);
         owner->setInFront(target);
         doMovementInform(owner, target);
@@ -154,7 +154,7 @@ bool ChaseMovementGenerator::update(Unit* owner, uint32_t diff)
             // can we get to the target?
             if (cOwner && !target->isInAccessiblePlaceFor(cOwner))
             {
-                cOwner->GetAIInterface()->setCannotReachTarget(true);
+                cOwner->getAIInterface()->setCannotReachTarget(true);
                 cOwner->stopMoving();
                 _path = nullptr;
                 return true;
@@ -192,7 +192,7 @@ bool ChaseMovementGenerator::update(Unit* owner, uint32_t diff)
             if (!success || (_path->getPathType() & (PATHFIND_NOPATH /* | PATHFIND_INCOMPLETE*/)))
             {
                 if (cOwner)
-                    cOwner->GetAIInterface()->setCannotReachTarget(true);
+                    cOwner->getAIInterface()->setCannotReachTarget(true);
                 owner->stopMoving();
                 return true;
             }
@@ -201,7 +201,7 @@ bool ChaseMovementGenerator::update(Unit* owner, uint32_t diff)
                 _path->shortenPathUntilDist(positionToVector3(target->GetPosition()), maxTarget);
 
             if (cOwner)
-                cOwner->GetAIInterface()->setCannotReachTarget(false);
+                cOwner->getAIInterface()->setCannotReachTarget(false);
 
             bool walk = false;
             if (cOwner && !cOwner->isPet())
@@ -240,7 +240,7 @@ void ChaseMovementGenerator::deactivate(Unit* owner)
     removeFlag(MOVEMENTGENERATOR_FLAG_TRANSITORY | MOVEMENTGENERATOR_FLAG_INFORM_ENABLED);
     owner->removeUnitStateFlag(UNIT_STATE_CHASE_MOVE);
     if (Creature* cOwner = owner->ToCreature())
-        cOwner->GetAIInterface()->setCannotReachTarget(false);
+        cOwner->getAIInterface()->setCannotReachTarget(false);
 }
 
 void ChaseMovementGenerator::finalize(Unit* owner, bool active, bool/* movementInform*/)
@@ -250,6 +250,6 @@ void ChaseMovementGenerator::finalize(Unit* owner, bool active, bool/* movementI
     {
         owner->removeUnitStateFlag(UNIT_STATE_CHASE_MOVE);
         if (Creature* cOwner = owner->ToCreature())
-            cOwner->GetAIInterface()->setCannotReachTarget(false);
+            cOwner->getAIInterface()->setCannotReachTarget(false);
     }
 }

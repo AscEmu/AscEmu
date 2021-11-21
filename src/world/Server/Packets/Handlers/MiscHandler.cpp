@@ -217,7 +217,7 @@ void WorldSession::handleSetSelectionOpcode(WorldPacket& recvPacket)
     if (srlPacket.guid == 0)
     {
         if (_player->IsInWorld())
-            _player->CombatStatusHandler_ResetPvPTimeout();
+            _player->combatResetPvPTimeout();
     }
 }
 
@@ -274,7 +274,7 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
 
     if (GetPermissionCount() == 0)
     {
-        if (_player->CombatStatus.IsInCombat() || _player->DuelingWith != nullptr)
+        if (_player->combatStatusHandler.IsInCombat() || _player->DuelingWith != nullptr)
         {
             SendPacket(SmsgLogoutResponse(true).serialise().get());
             return;
@@ -1040,7 +1040,7 @@ void WorldSession::handleSummonResponseOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (_player->CombatStatus.IsInCombat())
+    if (_player->combatStatusHandler.IsInCombat())
         return;
 
     _player->SafeTeleport(_player->m_summonMapId, _player->m_summonInstanceId, _player->m_summonPos);

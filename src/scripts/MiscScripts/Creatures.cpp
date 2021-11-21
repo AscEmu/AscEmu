@@ -354,7 +354,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new SilithidCreeperEgg(c); }
     explicit SilithidCreeperEgg(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        pCreature->GetAIInterface()->setAllowedToEnterCombat(false);
+        pCreature->getAIInterface()->setAllowedToEnterCombat(false);
     }
 
     void OnDied(Unit* /*mKiller*/) override

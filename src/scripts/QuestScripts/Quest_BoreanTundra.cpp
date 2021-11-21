@@ -484,7 +484,7 @@ public:
     {
         getCreature()->setVirtualItemSlotId(MELEE, 28487);
         getCreature()->setVirtualItemSlotId(OFFHAND, 11587);
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         RegisterAIUpdateEvent(100);
         phase = 0;
     }
@@ -520,7 +520,7 @@ public:
             }break;
             case 4:
             {
-                getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+                getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
                 getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                 RemoveAIUpdateEvent();          // Remove Update, now we are in OnCombatStart
             }break;

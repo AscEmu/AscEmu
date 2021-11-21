@@ -118,7 +118,7 @@ void RotateMovementGenerator::finalize(Unit* owner, bool/* active*/, bool moveme
     addFlag(MOVEMENTGENERATOR_FLAG_FINALIZED);
 
     if (movementInform && owner->getObjectTypeId() == TYPEID_UNIT)
-        owner->ToCreature()->GetAIInterface()->movementInform(ROTATE_MOTION_TYPE, _id);
+        owner->ToCreature()->getAIInterface()->movementInform(ROTATE_MOTION_TYPE, _id);
 }
 
 MovementGeneratorType RotateMovementGenerator::getMovementGeneratorType() const
@@ -210,7 +210,7 @@ void AssistanceDistractMovementGenerator::finalize(Unit* owner, bool/* active*/,
     addFlag(MOVEMENTGENERATOR_FLAG_FINALIZED);
 
     if (movementInform && hasFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED) && owner->getObjectTypeId() == TYPEID_UNIT)
-        owner->ToCreature()->GetAIInterface()->setReactState(REACT_AGGRESSIVE);
+        owner->ToCreature()->getAIInterface()->setReactState(REACT_AGGRESSIVE);
 }
 
 MovementGeneratorType AssistanceDistractMovementGenerator::getMovementGeneratorType() const

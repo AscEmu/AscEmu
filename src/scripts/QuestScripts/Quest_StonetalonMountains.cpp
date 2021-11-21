@@ -29,7 +29,7 @@ public:
         creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Lets go");
         creat->setNpcFlags(UNIT_NPC_FLAG_NONE);
         // Prevention "not starting from spawn after attacking"
-        creat->GetAIInterface()->setAllowedToEnterCombat(true);
+        creat->getAIInterface()->setAllowedToEnterCombat(true);
         creat->SetFaction(1801);
     }
 };

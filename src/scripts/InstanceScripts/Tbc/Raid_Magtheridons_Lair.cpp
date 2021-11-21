@@ -189,7 +189,7 @@ public:
     explicit CubeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
     }
 };
 
@@ -286,8 +286,8 @@ public:
     void OnLoad() override
     {
         _castAISpell(shadowGasp);
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
-        getCreature()->GetAIInterface()->setReactState(REACT_DEFENSIVE);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setReactState(REACT_DEFENSIVE);
     }
 
     void OnCombatStart(Unit* /*mTarget*/) override
@@ -343,8 +343,8 @@ public:
 
     void OnDamageTaken(Unit* /*mAttacker*/, uint32_t /*fAmount*/) override
     {
-        if (!getCreature()->GetAIInterface()->getAllowedToEnterCombat())
-            getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+        if (!getCreature()->getAIInterface()->getAllowedToEnterCombat())
+            getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
     }
 
 protected:
@@ -418,7 +418,7 @@ public:
         if(isScriptPhase(PHASE_BANISH))
             _castAISpell(shadowCage);
 
-        if (!isScriptPhase(PHASE_BANISH) && !isScriptPhase(PHASE_1) && !getCreature()->GetAIInterface()->getCurrentTarget())
+        if (!isScriptPhase(PHASE_BANISH) && !isScriptPhase(PHASE_1) && !getCreature()->getAIInterface()->getCurrentTarget())
             return;
 
         scriptEvents.updateEvents(time_passed, getScriptPhase());
@@ -449,9 +449,9 @@ public:
                 CombatStart();
                 break;
             case EVENT_RELEASED:
-                getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
-                getCreature()->GetAIInterface()->setImmuneToPC(false);
-                getCreature()->GetAIInterface()->setImmuneToNPC(false);
+                getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
+                getCreature()->getAIInterface()->setImmuneToPC(false);
+                getCreature()->getAIInterface()->setImmuneToNPC(false);
                 getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 setScriptPhase(PHASE_2);
 
@@ -471,7 +471,7 @@ public:
                     if (Creature* trigger = ((MagtheridonsLairInstanceScript*)getInstanceScript())->worldTrigger)
                     {
                         trigger->castSpell(trigger, SPELL_DEBRIS_KNOCKDOWN, true);
-                        getCreature()->GetAIInterface()->setReactState(REACT_AGGRESSIVE);
+                        getCreature()->getAIInterface()->setReactState(REACT_AGGRESSIVE);
                     }
                     scriptEvents.addEvent(EVENT_DEBRIS, 20000);
                 }
@@ -559,7 +559,7 @@ public:
         if (_getHealthPercent() < 30 && !isScriptPhase(PHASE_3))
         {
             setScriptPhase(PHASE_3);
-            getCreature()->GetAIInterface()->setReactState(REACT_PASSIVE);
+            getCreature()->getAIInterface()->setReactState(REACT_PASSIVE);
             //me->AttackStop();
             sendDBChatMessage(SAY_COLLAPSE);
             getInstanceScript()->setLocalData(DATA_COLLAPSE, ACTION_ENABLE);

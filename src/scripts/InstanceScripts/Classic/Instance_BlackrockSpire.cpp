@@ -38,7 +38,7 @@ public:
             {
                 if (getCreature()->getThreatManager().getCurrentVictim() != nullptr)
                 {
-                    Warchief->GetAIInterface()->onHostileAction(getCreature()->getThreatManager().getCurrentVictim());
+                    Warchief->getAIInterface()->onHostileAction(getCreature()->getThreatManager().getCurrentVictim());
                 }
             }
 
@@ -73,7 +73,7 @@ public:
             {
                 if (getCreature()->getThreatManager().getCurrentVictim() != nullptr)
                 {
-                    cGizrul->GetAIInterface()->onHostileAction(getCreature()->getThreatManager().getCurrentVictim());
+                    cGizrul->getAIInterface()->onHostileAction(getCreature()->getThreatManager().getCurrentVictim());
                 }
             }
 
@@ -109,11 +109,11 @@ public:
             {
                 if (Warlord1 != nullptr)
                 {
-                    Warlord1->GetAIInterface()->onHostileAction(getCreature()->getThreatManager().getCurrentVictim());
+                    Warlord1->getAIInterface()->onHostileAction(getCreature()->getThreatManager().getCurrentVictim());
                 }
                 if (Warlord2 != nullptr)
                 {
-                    Warlord2->GetAIInterface()->onHostileAction(getCreature()->getThreatManager().getCurrentVictim());
+                    Warlord2->getAIInterface()->onHostileAction(getCreature()->getThreatManager().getCurrentVictim());
                 }
             }
 

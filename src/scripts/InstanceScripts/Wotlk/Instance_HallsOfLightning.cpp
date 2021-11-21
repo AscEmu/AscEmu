@@ -288,7 +288,7 @@ public:
                 getCreature()->castSpell(getCreature(), SPELL_TEMPER, true);
 
             setCanEnterCombat(true);
-            getCreature()->GetAIInterface()->onHostileAction(getNearestPlayer());   // hackfix
+            getCreature()->getAIInterface()->onHostileAction(getNearestPlayer());   // hackfix
         }
     }
 
@@ -356,7 +356,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new VolkhansAnvil(c); }
     explicit VolkhansAnvil(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         setRooted(true);
     }

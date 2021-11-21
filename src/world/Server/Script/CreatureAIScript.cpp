@@ -85,7 +85,7 @@ void CreatureAIScript::_internalOnCombatStop()
     _cancelAllTimers();
     _removeAllAuras();
     setAIAgent(AGENT_NULL);
-    getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+    getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     RemoveAIUpdateEvent();
 
     resetScriptPhase();
@@ -221,12 +221,12 @@ bool CreatureAIScript::isAlive()
 void CreatureAIScript::setAIAgent(AI_Agent agent)
 {
     if (agent <= AGENT_CALLFORHELP)
-        _creature->GetAIInterface()->setCurrentAgent(agent);
+        _creature->getAIInterface()->setCurrentAgent(agent);
 }
 
 uint8_t CreatureAIScript::getAIAgent()
 {
-    return _creature->GetAIInterface()->getCurrentAgent();
+    return _creature->getAIInterface()->getCurrentAgent();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -441,7 +441,7 @@ bool CreatureAIScript::hasWaypoints(uint32_t pathId)
 
 bool CreatureAIScript::canEnterCombat()
 {
-    return _creature->GetAIInterface()->getAllowedToEnterCombat();
+    return _creature->getAIInterface()->getAllowedToEnterCombat();
 }
 
 void CreatureAIScript::setCanEnterCombat(bool enterCombat)
@@ -456,12 +456,12 @@ void CreatureAIScript::setCanEnterCombat(bool enterCombat)
         _creature->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
     }
 
-    _creature->GetAIInterface()->setAllowedToEnterCombat(enterCombat);
+    _creature->getAIInterface()->setAllowedToEnterCombat(enterCombat);
 }
 
 bool CreatureAIScript::_isInCombat()
 {
-    return _creature->CombatStatus.IsInCombat();
+    return _creature->combatStatusHandler.IsInCombat();
 }
 
 void CreatureAIScript::_delayNextAttack(int32_t milliseconds)
@@ -471,42 +471,42 @@ void CreatureAIScript::_delayNextAttack(int32_t milliseconds)
 
 void CreatureAIScript::_setMeleeDisabled(bool disable)
 {
-    _creature->GetAIInterface()->setMeleeDisabled(disable);
+    _creature->getAIInterface()->setMeleeDisabled(disable);
 }
 
 bool CreatureAIScript::_isMeleeDisabled()
 {
-    return _creature->GetAIInterface()->isMeleeDisabled();
+    return _creature->getAIInterface()->isMeleeDisabled();
 }
 
 void CreatureAIScript::_setRangedDisabled(bool disable)
 {
-    _creature->GetAIInterface()->setRangedDisabled(disable);
+    _creature->getAIInterface()->setRangedDisabled(disable);
 }
 
 bool CreatureAIScript::_isRangedDisabled()
 {
-    return _creature->GetAIInterface()->isRangedDisabled();
+    return _creature->getAIInterface()->isRangedDisabled();
 }
 
 void CreatureAIScript::_setCastDisabled(bool disable)
 {
-    _creature->GetAIInterface()->setCastDisabled(disable);
+    _creature->getAIInterface()->setCastDisabled(disable);
 }
 
 bool CreatureAIScript::_isCastDisabled()
 {
-    return _creature->GetAIInterface()->isCastDisabled();
+    return _creature->getAIInterface()->isCastDisabled();
 }
 
 void CreatureAIScript::_setTargetingDisabled(bool disable)
 {
-    _creature->GetAIInterface()->setTargetingDisabled(disable);
+    _creature->getAIInterface()->setTargetingDisabled(disable);
 }
 
 bool CreatureAIScript::_isTargetingDisabled()
 {
-    return _creature->GetAIInterface()->isTargetingDisabled();
+    return _creature->getAIInterface()->isTargetingDisabled();
 }
 
 void CreatureAIScript::_clearHateList()
@@ -820,7 +820,7 @@ void CreatureAIScript::_setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2)
 
 CreatureAISpells* CreatureAIScript::addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration /*= 0*/, uint32_t cooldown /*= 0*/, bool forceRemove /*= false*/, bool isTriggered /*= false*/)
 {
-    auto aiSpell = getCreature()->GetAIInterface()->addAISpell(spellId, castChance, targetType, duration, cooldown, forceRemove, isTriggered);
+    auto aiSpell = getCreature()->getAIInterface()->addAISpell(spellId, castChance, targetType, duration, cooldown, forceRemove, isTriggered);
 
     if (aiSpell)
         return aiSpell;
@@ -882,7 +882,7 @@ void CreatureAIScript::_castAISpell(CreatureAISpells* aiSpell)
         return;
     }
 
-    Unit* target = getCreature()->GetAIInterface()->getCurrentTarget();
+    Unit* target = getCreature()->getAIInterface()->getCurrentTarget();
     switch (aiSpell->mTargetType)
     {
         case TARGET_SELF:
@@ -968,7 +968,7 @@ void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
 
     // if we already cast a spell, do not set/cast another one!
     if (!getCreature()->isCastingSpell()
-        && getCreature()->GetAIInterface()->getCurrentTarget())
+        && getCreature()->getAIInterface()->getCurrentTarget())
     {
         // set up targets in range by position, relation and hp range
         std::vector<Unit*> possibleUnitTargets;
@@ -1273,7 +1273,7 @@ Unit* CreatureAIScript::getSecondMostHatedTargetInArray(UnitArray & pTargetArray
 {
     Unit* MostHatedUnit = nullptr;
     Unit* TargetUnit = nullptr;
-    Unit* CurrentTarget = getCreature()->GetAIInterface()->getCurrentTarget();
+    Unit* CurrentTarget = getCreature()->getAIInterface()->getCurrentTarget();
     uint32_t Threat = 0;
     uint32_t HighestThreat = 0;
 
@@ -1329,7 +1329,7 @@ bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, 
             return false;
 
         // current attacking target if requested
-        if ((pFilter & TargetFilter_NotCurrent) && UnitTarget == getCreature()->GetAIInterface()->getCurrentTarget())
+        if ((pFilter & TargetFilter_NotCurrent) && UnitTarget == getCreature()->getAIInterface()->getCurrentTarget())
             return false;
 
         // only wounded targets if requested
@@ -1358,14 +1358,14 @@ bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, 
         // hostile/friendly
         if ((~pFilter & TargetFilter_Corpse) && (pFilter & TargetFilter_Friendly))
         {
-            if (!UnitTarget->CombatStatus.IsInCombat())
+            if (!UnitTarget->combatStatusHandler.IsInCombat())
                 return false; // not-in-combat targets if friendly
 
             if (isHostile(getCreature(), UnitTarget) || getCreature()->getThreatManager().getThreat(UnitTarget) > 0)
                 return false;
         }
 
-        if ((pFilter & TargetFilter_Current) && UnitTarget != getCreature()->GetAIInterface()->getCurrentTarget())
+        if ((pFilter & TargetFilter_Current) && UnitTarget != getCreature()->getAIInterface()->getCurrentTarget())
             return false;
     }
 

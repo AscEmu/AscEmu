@@ -348,7 +348,7 @@ public:
         //this->createWaypoint(1, 0, 0, VH_DOOR_ATTACK_POSITION);
         //this->SetWaypointToMove(1);
         //this->moveTo(VH_DOOR_ATTACK_POSITION.x, VH_DOOR_ATTACK_POSITION.y, VH_DOOR_ATTACK_POSITION.z, true);
-        //_unit->GetAIInterface()->UpdateMove();
+        //_unit->getAIInterface()->UpdateMove();
         for (int i = 1; i < 3; ++i)
         {
             addWaypoint(1, createWaypoint(i, 0, WAYPOINT_MOVE_TYPE_RUN, AttackerWP[i]));

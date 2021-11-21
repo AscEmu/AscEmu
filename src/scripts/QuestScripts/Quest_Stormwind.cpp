@@ -56,9 +56,9 @@ public:
         getCreature()->SetHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();
         getCreature()->getThreatManager().removeMeFromThreatLists();
-        getCreature()->GetAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
+        getCreature()->getAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
         _setMeleeDisabled(true);
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         RemoveAIUpdateEvent();
     }
@@ -79,8 +79,8 @@ public:
             return;
 
         Dashel->SetFaction(72);
-        Dashel->GetAIInterface()->setMeleeDisabled(false);
-        Dashel->GetAIInterface()->setAllowedToEnterCombat(true);
+        Dashel->getAIInterface()->setMeleeDisabled(false);
+        Dashel->getAIInterface()->setAllowedToEnterCombat(true);
 
         uint32_t chance = Util::getRandomUInt(100);
         if (chance < 15)

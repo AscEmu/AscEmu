@@ -105,7 +105,7 @@ int32_t MoveSplineInit::Launch()
 
         args.velocity = unit->getSpeedRate(SelectSpeedType(moveFlagsForSpeed), true);
         if (unit->isCreature())
-            if (unit->GetAIInterface()->alreadyCalledForHelp())
+            if (unit->getAIInterface()->alreadyCalledForHelp())
                 args.velocity *= 0.66f;
     }
 

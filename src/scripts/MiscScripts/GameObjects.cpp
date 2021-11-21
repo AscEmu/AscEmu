@@ -349,8 +349,8 @@ public:
         if (NewCreature != nullptr)
         {
             NewCreature->Despawn(180000, 0);
-            NewCreature->GetAIInterface()->setCurrentTarget(player);
-            NewCreature->GetAIInterface()->onHostileAction(player);
+            NewCreature->getAIInterface()->setCurrentTarget(player);
+            NewCreature->getAIInterface()->onHostileAction(player);
             pDoor->setFlags(GO_FLAG_NONSELECTABLE | GO_FLAG_NEVER_DESPAWN);
             pDoor->setState(GO_STATE_OPEN);
         };

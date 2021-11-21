@@ -247,7 +247,7 @@ void CreatureGroup::memberEngagingTarget(Creature* member, Unit* target)
             continue;
 
         if (((other != _leader && (groupAI & FLAG_MEMBERS_ASSIST_LEADER)) || (other == _leader && (groupAI & FLAG_LEADER_ASSISTS_MEMBER))))
-            other->GetAIInterface()->onHostileAction(target);
+            other->getAIInterface()->onHostileAction(target);
     }
 
     _engaging = false;
@@ -278,7 +278,7 @@ void CreatureGroup::leaderStartedMoving()
     for (auto const& pair : _members)
     {
         Creature* member = pair.first;
-        if (member == _leader || !member->isAlive() || member->GetAIInterface()->isEngaged() || !(pair.second->GroupAI & FLAG_IDLE_IN_FORMATION))
+        if (member == _leader || !member->isAlive() || member->getAIInterface()->isEngaged() || !(pair.second->GroupAI & FLAG_IDLE_IN_FORMATION))
             continue;
 
         float angle = pair.second->FollowAngle + float(M_PI); // for some reason, someone thought it was a great idea to invert relativ angles...
@@ -295,7 +295,7 @@ bool CreatureGroup::canLeaderStartMoving() const
     {
         if (pair.first != _leader && pair.first->isAlive())
         {
-            if (pair.first->GetAIInterface()->isEngaged() || pair.first->isReturningHome())
+            if (pair.first->getAIInterface()->isEngaged() || pair.first->isReturningHome())
                 return false;
         }
     }

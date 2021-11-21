@@ -53,9 +53,9 @@ public:
         creature->m_spawn = nullptr;
         creature->Load(p, posX, posY, posZ);
         creature->SetOrientation(posO);
-        creature->GetAIInterface()->setCombatDisabled(true);
-        creature->GetAIInterface()->setMeleeDisabled(true);
-        creature->GetAIInterface()->setTargetingDisabled(true);
+        creature->getAIInterface()->setCombatDisabled(true);
+        creature->getAIInterface()->setMeleeDisabled(true);
+        creature->getAIInterface()->setTargetingDisabled(true);
         creature->PushToWorld(pThis->GetMapMgr());
         creature->Despawn(180000, 0);
         creature->setFactionTemplate(35);

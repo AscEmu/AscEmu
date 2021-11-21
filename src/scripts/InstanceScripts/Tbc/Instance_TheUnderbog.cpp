@@ -140,7 +140,7 @@ public:
     {
         Unit* Bear = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 17827);
         if (Bear && Bear->isAlive())
-            Bear->GetAIInterface()->onHostileAction(mTarget);
+            Bear->getAIInterface()->onHostileAction(mTarget);
     }
 
     void AIUpdate() override

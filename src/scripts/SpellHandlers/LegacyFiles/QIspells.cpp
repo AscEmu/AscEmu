@@ -658,7 +658,7 @@ bool FloraoftheEcoDomes(uint8_t /*effectIndex*/, Spell* pSpell)
     normal->Despawn(1, 6 * 60 * 1000);
     mutant->Despawn(5 * 60 * 1000, 0);
 
-    mutant->GetAIInterface()->Init(mutant, AI_SCRIPT_AGRO);
+    mutant->getAIInterface()->Init(mutant, AI_SCRIPT_AGRO);
     mutant->getThreatManager().tauntUpdate();
 
     pPlayer->AddQuestKill(10426, 0, 0);
@@ -1322,7 +1322,7 @@ bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
     if (apply)
     {
-        m_target->GetAIInterface()->onHostileAction(a->GetUnitCaster());
+        m_target->getAIInterface()->onHostileAction(a->GetUnitCaster());
         m_target->getThreatManager().addThreat(a->GetUnitCaster(), 10.f);
     }
     else
@@ -1357,7 +1357,7 @@ bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
                 if (m_target->isCreature())
                 {
                     Creature* tamed = static_cast<Creature*>(m_target);
-                    tamed->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getPlayerCaster(), 0);
+                    tamed->getAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getPlayerCaster(), 0);
 
                     Pet* pPet = sObjectMgr.CreatePet(tamed->getEntry());
                     if (!pPet->CreateAsSummon(tamed->getEntry(), tamed->GetCreatureProperties(), tamed, getPlayerCaster(), triggerspell, 2, 900000))
@@ -1459,9 +1459,9 @@ bool ToLegionHold(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
         if (pJovaan != nullptr)
         {
             pJovaan->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
-            if (pJovaan->GetAIInterface() != nullptr)
+            if (pJovaan->getAIInterface() != nullptr)
             {
-                pJovaan->GetAIInterface()->setAllowedToEnterCombat(false);
+                pJovaan->getAIInterface()->setAllowedToEnterCombat(false);
             }
         }
         GameObject* pGameObject = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 184834);
@@ -1521,9 +1521,9 @@ bool CenarionMoondust(uint8_t /*effectIndex*/, Spell* pSpell) // Body And Heart 
     }
 
     // Make sure that creature will attack player
-    if (!lunaclaw->CombatStatus.IsInCombat())
+    if (!lunaclaw->combatStatusHandler.IsInCombat())
     {
-        lunaclaw->GetAIInterface()->setCurrentTarget(p_caster);
+        lunaclaw->getAIInterface()->setCurrentTarget(p_caster);
     }
 
     return true;
@@ -1564,9 +1564,9 @@ bool CenarionLunardust(uint8_t /*effectIndex*/, Spell* pSpell)  // Body And Hear
     }
 
     // Make sure that creature will attack player
-    if (!lunaclaw->CombatStatus.IsInCombat())
+    if (!lunaclaw->combatStatusHandler.IsInCombat())
     {
-        lunaclaw->GetAIInterface()->setCurrentTarget(p_caster);
+        lunaclaw->getAIInterface()->setCurrentTarget(p_caster);
     }
 
     return true;
@@ -1873,7 +1873,7 @@ bool TestingTheAntidote(uint8_t /*effectIndex*/, Spell* pSpell)
 
     target->Despawn(0, 300000);
 
-    spawned->GetAIInterface()->setCurrentTarget(pSpell->getUnitCaster());
+    spawned->getAIInterface()->setCurrentTarget(pSpell->getUnitCaster());
 
     return true;
 }

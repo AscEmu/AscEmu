@@ -207,6 +207,6 @@ void FormationMovementGenerator::doFinalize(Creature* owner, bool active, bool _
 
 void FormationMovementGenerator::movementInform(Creature* owner)
 {
-    if (owner->GetAIInterface())
-        owner->GetAIInterface()->movementInform(FORMATION_MOTION_TYPE, 0);
+    if (owner->getAIInterface())
+        owner->getAIInterface()->movementInform(FORMATION_MOTION_TYPE, 0);
 }

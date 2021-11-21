@@ -405,7 +405,7 @@ public:
         addWaypoint(1, createWaypoint(7, 0, WAYPOINT_MOVE_TYPE_RUN, ArthasWalk[7]));
 
         setAIAgent(AGENT_NULL);
-        getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+        getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
         phase = 0;
     }
 
@@ -425,7 +425,7 @@ public:
             case 7:
             {
                 stopMovement();
-                getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+                getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                 getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                 getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
             }
@@ -454,7 +454,7 @@ public:
             case 0:
             {
                 getCreature()->stopMoving();
-                getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+                getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 setWaypointToMove(1, 1);
             }
             break;
@@ -464,13 +464,13 @@ public:
                 Creature* citizen = getNearestCreature(28167);
                 if (citizen)
                 {
-                    getCreature()->GetAIInterface()->moveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
+                    getCreature()->getAIInterface()->moveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
                     getCreature()->dealDamage(citizen, citizen->getHealth(), 0);
                 }
                 citizen = getNearestCreature(28169);
                 if (citizen)
                 {
-                    getCreature()->GetAIInterface()->moveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
+                    getCreature()->getAIInterface()->moveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
                     getCreature()->dealDamage(citizen, citizen->getHealth(), 0);
                 }
                 getCreature()->SendTimedScriptTextChatMessage(SAY_ARTHAS_13, 1000);
@@ -497,7 +497,7 @@ public:
                 {
                     c->bInvincible = true;
                     c->setControlled(true, UNIT_STATE_ROOTED);
-                    c->GetAIInterface()->setAllowedToEnterCombat(false);
+                    c->getAIInterface()->setAllowedToEnterCombat(false);
                     for (uint8_t i = 0; i < 7; i++)
                         c->SchoolImmunityList[i] = 1;
                     c->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);

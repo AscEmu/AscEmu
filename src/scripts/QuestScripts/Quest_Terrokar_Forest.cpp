@@ -100,7 +100,7 @@ public:
     void OnLoad() override
     {
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
-        getCreature()->GetAIInterface()->setCombatDisabled(true);
+        getCreature()->getAIInterface()->setCombatDisabled(true);
     }
 
     void OnDied(Unit* mKiller) override

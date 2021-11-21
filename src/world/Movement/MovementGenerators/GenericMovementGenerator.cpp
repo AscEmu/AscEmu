@@ -72,7 +72,7 @@ void GenericMovementGenerator::movementInform(Unit* owner)
 {
     if (Creature* creature = owner->ToCreature())
     {
-        if (creature->GetAIInterface())
-            creature->GetAIInterface()->movementInform(_type, _pointId);
+        if (creature->getAIInterface())
+            creature->getAIInterface()->movementInform(_type, _pointId);
     }
 }

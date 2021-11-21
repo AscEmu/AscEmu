@@ -110,7 +110,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new ChaoticRiftAI(c); }
     explicit ChaoticRiftAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         auto spell_mana_wrath = sSpellMgr.getSpellInfo(SUMMON_MANA_WRAITH);
         if (spell_mana_wrath != nullptr)
             addAISpell(SUMMON_MANA_WRAITH, 30.0f, TARGET_SELF, 0, spell_mana_wrath->getRecoveryTime());

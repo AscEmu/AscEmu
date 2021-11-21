@@ -145,7 +145,7 @@ class SERVER_DECL MapScriptInterface
                         CurrentDist = (*iter)->CalcDistance(pCreature);
                         if (CurrentDist <= range)
                         {
-                            if (helper->GetAIInterface()->canAssistTo(pCreature, enemy))
+                            if (helper->getAIInterface()->canAssistTo(pCreature, enemy))
                             {
                                 return helper;
                             }

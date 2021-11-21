@@ -181,8 +181,8 @@ void PathGenerator::buildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 con
                 // One of the points is not in the water, cancel movement.
                 if (waterz >= outz || liquidStatus == LIQUID_MAP_IN_WATER)
                 {
-                    if (_source->ToUnit()->GetAIInterface()->getCurrentTarget())
-                        _pathPoints[i].z = _source->ToUnit()->GetAIInterface()->getCurrentTarget()->GetPositionZ();
+                    if (_source->ToUnit()->getAIInterface()->getCurrentTarget())
+                        _pathPoints[i].z = _source->ToUnit()->getAIInterface()->getCurrentTarget()->GetPositionZ();
                     else
                         _pathPoints[i].z = _source->GetPositionZ();
                 }

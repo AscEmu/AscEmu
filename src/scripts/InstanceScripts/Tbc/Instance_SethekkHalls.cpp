@@ -339,7 +339,7 @@ public:
         if (mLakka != NULL && mLakka->GetScript())
         {
             CreatureAIScript* pLakkaAI = static_cast< CreatureAIScript* >(mLakka->GetScript());
-            mLakka->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+            mLakka->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             pLakkaAI->setWaypointToMove(1, 1);
             pLakkaAI->setAIAgent(AGENT_NULL);
         }

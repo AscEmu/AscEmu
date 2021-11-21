@@ -801,7 +801,7 @@ public:
                 }))
                     getCreature()->getMovementManager()->remove(movement);
 
-                getCreature()->getMovementManager()->moveChase(getCreature()->GetAIInterface()->getCurrentTarget());
+                getCreature()->getMovementManager()->moveChase(getCreature()->getAIInterface()->getCurrentTarget());
 
                 getCreature()->setSpeedRate(TYPE_RUN, baseSpeed, true);
                 scriptEvents.removeEvent(EVENT_BONE_STORM_MOVE);
@@ -931,8 +931,8 @@ public:
     {
         // Instance Script
         mInstance = getInstanceScript();     
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
-        getCreature()->GetAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
         coldflameTriggerSpell = addAISpell(SPELL_COLDFLAME_SUMMON, 0.0f, TARGET_SOURCE);
         coldflameTriggerSpell->mIsTriggered = true;
     }
@@ -1030,14 +1030,14 @@ public:
         hasTrappedUnit = false;
         summon = nullptr;
 
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
     }
 
     void OnSummon(Unit* summoner) override
     {
         summon = summoner;
         // Make our Creature in Combat otherwise on Died Script wont trigger
-        getCreature()->GetAIInterface()->setAiScriptType(AI_SCRIPT_AGRO);
+        getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_AGRO);
 
         getCreature()->castSpell(summoner, SPELL_IMPALED, false);
         summoner->castSpell(getCreature(), SPELL_RIDE_VEHICLE, true);
@@ -1178,7 +1178,7 @@ public:
         Unit* target = nullptr;
         std::vector<Player*> players;
 
-        Unit* mt = caster->GetAIInterface()->getCurrentTarget();
+        Unit* mt = caster->getAIInterface()->getCurrentTarget();
         if (mt == nullptr || !mt->isPlayer())
             return 0;
 
@@ -1439,7 +1439,7 @@ public:
         if (mInstance->GetDifficulty() != InstanceDifficulty::RAID_10MAN_NORMAL)
             scriptEvents.addEvent(EVENT_DOMINATE_MIND_H, 27000);
 
-        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
         _setMeleeDisabled(true);
         setRooted(true);
 
@@ -1467,7 +1467,7 @@ public:
                 sendDBChatMessage(SAY_LADY_PHASE_2_EMOTE);
                 setRooted(false);
                 getCreature()->setPower(POWER_TYPE_MANA, 0);
-                getCreature()->getMovementManager()->moveChase(getCreature()->GetAIInterface()->getCurrentTarget());
+                getCreature()->getMovementManager()->moveChase(getCreature()->getAIInterface()->getCurrentTarget());
                 setScriptPhase(PHASE_TWO);
                 scriptEvents.addEvent(EVENT_P2_FROSTBOLT, Util::getRandomUInt(10000, 12000), PHASE_TWO);
                 scriptEvents.addEvent(EVENT_P2_FROSTBOLT_VOLLEY, Util::getRandomUInt(19000, 21000), PHASE_TWO);
@@ -1507,7 +1507,7 @@ public:
 
         scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
 
-        if (getCreature()->GetAIInterface()->getAiState() == AI_STATE_CASTING)
+        if (getCreature()->getAIInterface()->getAiState() == AI_STATE_CASTING)
             return;
 
         while (uint32_t eventId = scriptEvents.getFinishedEvent())
@@ -1829,8 +1829,8 @@ public:
         auto NewTarget = getBestPlayerTarget(TargetFilter_Closest);
         if (NewTarget)
         {
-            getCreature()->GetAIInterface()->setCurrentTarget(NewTarget);
-            getCreature()->GetAIInterface()->onHostileAction(NewTarget);
+            getCreature()->getAIInterface()->setCurrentTarget(NewTarget);
+            getCreature()->getAIInterface()->onHostileAction(NewTarget);
         }
     }
 
@@ -1871,8 +1871,8 @@ public:
         auto NewTarget = getBestPlayerTarget(TargetFilter_Closest);
         if (NewTarget)
         {
-            getCreature()->GetAIInterface()->setCurrentTarget(NewTarget);
-            getCreature()->GetAIInterface()->onHostileAction(NewTarget);
+            getCreature()->getAIInterface()->setCurrentTarget(NewTarget);
+            getCreature()->getAIInterface()->onHostileAction(NewTarget);
         }
     }
 
@@ -1960,7 +1960,7 @@ public:
 
     void AIUpdate() override
     {
-        if (getCreature()->GetAIInterface()->getAiState() == AI_STATE_CASTING)
+        if (getCreature()->getAIInterface()->getAiState() == AI_STATE_CASTING)
             return;
 
         scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
@@ -2108,7 +2108,7 @@ public:
 
     void AIUpdate() override
     {
-        if (getCreature()->GetAIInterface()->getAiState() == AI_STATE_CASTING)
+        if (getCreature()->getAIInterface()->getAiState() == AI_STATE_CASTING)
             return;
 
         scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
@@ -2544,7 +2544,7 @@ public:
 
             // Clear NPC FLAGS
             getCreature()->removeNpcFlags(UNIT_NPC_FLAG_GOSSIP);
-            getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+            getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
             break;
         }
         case ACTION_START_OUTRO:
@@ -2603,7 +2603,7 @@ public:
         mInstance = (IceCrownCitadelScript*)getInstanceScript();
 
         getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
-        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     }
 
     void AIUpdate() override
@@ -2706,7 +2706,7 @@ public:
 
             // Clear NPC FLAGS
             getCreature()->removeUnitFlags(UNIT_NPC_FLAG_GOSSIP);
-            getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+            getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
 
             break;
         }
@@ -2742,7 +2742,7 @@ public:
         // Instance Script
         mInstance = (IceCrownCitadelScript*)getInstanceScript();
         getCreature()->EnableAI();
-        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
 
         _introDone = false;
 
@@ -2752,7 +2752,7 @@ public:
 
     void AIUpdate() override
     {
-        if (getCreature()->GetAIInterface()->getAiState() == AI_STATE_CASTING)
+        if (getCreature()->getAIInterface()->getAiState() == AI_STATE_CASTING)
             return;
 
         scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
@@ -2775,7 +2775,7 @@ public:
                 _castAISpell(GripOfAgonySpell);
                 setCanEnterCombat(true);
                 getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
-                getCreature()->GetAIInterface()->setAiScriptType(AI_SCRIPT_LONER);
+                getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_LONER);
                 break;
             case EVENT_INTRO_HORDE_2_SE:
                 getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -2790,7 +2790,7 @@ public:
                 _castAISpell(GripOfAgonySpell);
                 setCanEnterCombat(true);
                 getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
-                getCreature()->GetAIInterface()->setAiScriptType(AI_SCRIPT_LONER);
+                getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_LONER);
                 break;
             case EVENT_INTRO_FINISH_SE:
                 setScriptPhase(PHASE_COMBAT);
@@ -2862,7 +2862,7 @@ public:
     {
         // Instance Script
         mInstance = (IceCrownCitadelScript*)getInstanceScript();
-        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
         _index = 0;
     }
 

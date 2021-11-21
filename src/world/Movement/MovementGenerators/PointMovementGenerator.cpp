@@ -146,8 +146,8 @@ void PointMovementGenerator<T>::movementInform(T*) { }
 template <>
 void PointMovementGenerator<Creature>::movementInform(Creature* owner)
 {
-    if (owner->GetAIInterface())
-        owner->GetAIInterface()->movementInform(POINT_MOTION_TYPE, _movementId);
+    if (owner->getAIInterface())
+        owner->getAIInterface()->movementInform(POINT_MOTION_TYPE, _movementId);
 }
 
 template PointMovementGenerator<Player>::PointMovementGenerator(uint32_t, float, float, float, bool, float, Optional<float>);
@@ -176,8 +176,8 @@ void AssistanceMovementGenerator::finalize(Unit* owner, bool active, bool moveme
     if (movementInform && hasFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED))
     {
         Creature* ownerCreature = owner->ToCreature();
-        ownerCreature->GetAIInterface()->setNoCallAssistance(false);
-        ownerCreature->GetAIInterface()->callAssistance();
+        ownerCreature->getAIInterface()->setNoCallAssistance(false);
+        ownerCreature->getAIInterface()->callAssistance();
         if (ownerCreature->isAlive())
             ownerCreature->getMovementManager()->moveSeekAssistanceDistract(1500); // move to config
     }

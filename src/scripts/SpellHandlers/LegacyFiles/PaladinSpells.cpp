@@ -265,7 +265,7 @@ bool RighteousDefense(uint8_t /*effectIndex*/, Spell* s)
                 continue;
 
             Creature* cr = static_cast<Creature*>(itr);
-            if (cr->GetAIInterface()->getCurrentTarget() == unitTarget)
+            if (cr->getAIInterface()->getCurrentTarget() == unitTarget)
                 targets[targets_got++] = cr;
 
             if (targets_got == 3)
@@ -282,8 +282,8 @@ bool RighteousDefense(uint8_t /*effectIndex*/, Spell* s)
         if (threat_dif > 0) //should nto happen
             targets[j]->getThreatManager().matchUnitThreatToHighestThreat(s->getUnitCaster());
 
-        targets[j]->GetAIInterface()->onHostileAction(s->getUnitCaster());
-        targets[j]->GetAIInterface()->setCurrentTarget(s->getUnitCaster());
+        targets[j]->getAIInterface()->onHostileAction(s->getUnitCaster());
+        targets[j]->getAIInterface()->setCurrentTarget(s->getUnitCaster());
     }
 
     return true;

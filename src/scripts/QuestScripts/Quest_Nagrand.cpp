@@ -43,8 +43,8 @@ public:
                 Qgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 32000);
             }
 
-            pMogor->GetAIInterface()->setAllowedToEnterCombat(true);
-            pMogor->GetAIInterface()->moveTo(-704.669f, 7871.08f, 45.0387f);
+            pMogor->getAIInterface()->setAllowedToEnterCombat(true);
+            pMogor->getAIInterface()->moveTo(-704.669f, 7871.08f, 45.0387f);
             pMogor->SetOrientation(1.59531f);
             pMogor->SetFacing(1.908516f);
             pMogor->SetFaction(14);
@@ -250,7 +250,7 @@ public:
     explicit mogorQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
     };
 };
 
@@ -286,7 +286,7 @@ public:
     {
         if (getCreature()->getHealthPct() < 30)
         {
-            Unit* pUnit = getCreature()->GetAIInterface()->getCurrentTarget();
+            Unit* pUnit = getCreature()->getAIInterface()->getCurrentTarget();
             if (pUnit != nullptr && pUnit->isPlayer())
                 static_cast<Player*>(pUnit)->EventAttackStop();
 

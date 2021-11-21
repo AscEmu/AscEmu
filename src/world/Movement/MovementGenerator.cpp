@@ -49,6 +49,6 @@ MovementGenerator* WaypointMovementFactory::create(Unit* /*object*/) const
 
 void MovementGenerator::notifyAIOnFinalize(Unit* object)
 {
-    if (auto ai = object->GetAIInterface())
+    if (auto ai = object->getAIInterface())
         ai->onMovementGeneratorFinalized(getMovementGeneratorType());
 }

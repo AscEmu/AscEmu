@@ -542,7 +542,7 @@ public:
         Player* pTarget = getNearestPlayer();
         if (pTarget != nullptr)
         {
-            getCreature()->GetAIInterface()->onHostileAction(pTarget);
+            getCreature()->getAIInterface()->onHostileAction(pTarget);
             getCreature()->getThreatManager().addThreat(pTarget, 50.f);
         }
     }
@@ -573,7 +573,7 @@ public:
         Player* pTarget = getNearestPlayer();
         if (pTarget != nullptr)
         {
-            getCreature()->GetAIInterface()->onHostileAction(pTarget);
+            getCreature()->getAIInterface()->onHostileAction(pTarget);
             getCreature()->getThreatManager().addThreat(pTarget, 50.f);
         }
     }
@@ -648,7 +648,7 @@ public:
         Player* pTarget = getNearestPlayer();
         if (pTarget != nullptr)
         {
-            getCreature()->GetAIInterface()->onHostileAction(pTarget);
+            getCreature()->getAIInterface()->onHostileAction(pTarget);
             getCreature()->getThreatManager().addThreat(pTarget, 50.f);
         }
     }
@@ -722,7 +722,7 @@ public:
         Player* pTarget = getNearestPlayer();
         if (pTarget != nullptr)
         {
-            getCreature()->GetAIInterface()->onHostileAction(pTarget);
+            getCreature()->getAIInterface()->onHostileAction(pTarget);
             getCreature()->getThreatManager().addThreat(pTarget, 50.f);
         }
     }

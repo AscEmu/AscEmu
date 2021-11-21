@@ -61,7 +61,7 @@ Unit::Unit() :
     movespline(new MovementNew::MoveSpline()),
     i_movementManager(new MovementManager(this)),
     m_summonInterface(new SummonHandler),
-    CombatStatus(this),
+    combatStatusHandler(this),
     m_aiInterface(new AIInterface())
 {
     m_objectType |= TYPE_UNIT;
@@ -147,11 +147,6 @@ Unit::~Unit()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
-
-void Unit::setLocationWithoutUpdate(LocationVector & location)
-{
-    m_position.ChangeCoords({ location.x, location.y, location.z });
-}
 
 uint64_t Unit::getCharmGuid() const { return unitData()->charm_guid.guid; };
 void Unit::setCharmGuid(uint64_t guid) { write(unitData()->charm_guid.guid, guid); }
@@ -708,6 +703,23 @@ void Unit::addUnitFlags(uint32_t unitFlags) { setUnitFlags(getUnitFlags() | unit
 void Unit::removeUnitFlags(uint32_t unitFlags) { setUnitFlags(getUnitFlags() & ~unitFlags); }
 bool Unit::hasUnitFlags(uint32_t unitFlags) const { return (getUnitFlags() & unitFlags) != 0; }
 
+//helpers
+bool Unit::canSwim()
+{
+    // Mirror client behavior, if this method returns false then client will not use swimming animation and for players will apply gravity as if there was no water
+    if (hasUnitFlags(UNIT_FLAG_DEAD))
+        return false;
+    if (hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE)) // is player
+        return true;
+#if VERSION_STRING >= TBC
+    if (hasUnitFlags2(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE))
+        return false;
+#endif
+    if (isPet() && hasUnitFlags(UNIT_FLAG_PET_IN_COMBAT))
+        return true;
+    return hasUnitFlags(UNIT_FLAG_UNKNOWN_5 | UNIT_FLAG_SWIMMING);
+}
+
 #if VERSION_STRING > Classic
 uint32_t Unit::getUnitFlags2() const { return unitData()->unit_flags_2; }
 void Unit::setUnitFlags2(uint32_t unitFlags2) { write(unitData()->unit_flags_2, unitFlags2); }
@@ -1184,7 +1196,169 @@ void Unit::setHoverHeight(float height) { write(unitData()->hover_height, height
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Area & Position
+
+void Unit::setLocationWithoutUpdate(LocationVector& location)
+{
+    m_position.ChangeCoords({ location.x, location.y, location.z });
+}
+
+bool Unit::isWithinCombatRange(Unit* obj, float dist2compare)
+{
+    if (!obj || !IsInMap(obj) || !(GetPhase() == obj->GetPhase()))
+        return false;
+
+    float dx = GetPositionX() - obj->GetPositionX();
+    float dy = GetPositionY() - obj->GetPositionY();
+    float dz = GetPositionZ() - obj->GetPositionZ();
+    float distsq = dx * dx + dy * dy + dz * dz;
+
+    float sizefactor = getCombatReach() + obj->getCombatReach();
+    float maxdist = dist2compare + sizefactor;
+
+    return distsq < maxdist* maxdist;
+}
+
+bool Unit::isWithinMeleeRangeAt(LocationVector const& pos, Unit* obj)
+{
+    if (!obj || !IsInMap(obj) || !(GetPhase() == obj->GetPhase()))
+        return false;
+
+    float dx = pos.getPositionX() - obj->GetPositionX();
+    float dy = pos.getPositionY() - obj->GetPositionY();
+    float dz = pos.getPositionZ() - obj->GetPositionZ();
+    float distsq = dx * dx + dy * dy + dz * dz;
+
+    float maxdist = getMeleeRange(obj);
+
+    return distsq <= maxdist * maxdist;
+}
+
+float Unit::getMeleeRange(Unit* target)
+{
+    float range = getCombatReach() + target->getCombatReach() + 4.0f / 3.0f;
+    return std::max(range, NOMINAL_MELEE_RANGE);
+}
+
+bool Unit::isInWater() const
+{
+    if (worldConfig.terrainCollision.isCollisionEnabled)
+    {
+        float outx = GetPositionX() + 3.5f * cos(GetOrientation());
+        float outy = GetPositionY() + 3.5f * sin(GetOrientation());
+        float outz = GetMapMgr()->GetLandHeight(outx, outy, GetPositionZ() + 2);
+        uint32_t watertype;
+        float watermark;
+        GetMapMgr()->GetLiquidInfo(outx, outy, outz, watermark, watertype);
+        outz = std::max(watermark, outz);
+
+        // Check for liquid type also, i.e. Orgrimmar is below water level
+        const auto liquidStatus = GetMapMgr()->getLiquidStatus(0, GetPositionX(), GetPositionY(), GetPositionZ(), MAP_ALL_LIQUIDS);
+        if (liquidStatus == LIQUID_MAP_NO_WATER)
+            return false;
+
+        if (watermark >= outz)
+            return true;
+    }
+
+    return false;
+}
+
+bool Unit::isUnderWater() const
+{
+    float outx = GetPositionX() + 3.5f * cos(GetOrientation());
+    float outy = GetPositionY() + 3.5f * sin(GetOrientation());
+    float outz = GetMapMgr()->GetLandHeight(outx, outy, GetPositionZ() + 2);
+    uint32 watertype;
+    float watermark;
+    GetMapMgr()->GetLiquidInfo(outx, outy, outz, watermark, watertype);
+    outz = std::max(watermark, outz);
+
+    if ((watermark - 2.0f) >= outz)
+        return true;
+
+    return false;
+}
+
+bool Unit::isInAccessiblePlaceFor(Creature* c) const
+{
+    float ground = GetMapMgr()->GetLandHeight(GetPositionX(), GetPositionY(), GetPositionZ());
+    float height = GetPositionZ();
+
+    if (isInWater())
+        return c->canSwim();
+
+    if (IsFlying() || (ground) < (height - 10) && !GetTransport()) // we could be flying antihack!
+        return c->canFly();
+
+    return c->canWalk() || c->canFly();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Combat
+void Unit::combatUpdatePvPTimeout()
+{
+    combatStatusHandler.TryToClearAttackTargets();
+}
+
+void Unit::combatResetPvPTimeout()
+{
+    if (!isPlayer())
+        return;
+
+    m_lock.Acquire();
+    EventMap::iterator itr = m_events.find(EVENT_ATTACK_TIMEOUT);
+    if (itr != m_events.end())
+    {
+        for (; itr != m_events.upper_bound(EVENT_ATTACK_TIMEOUT); ++itr)
+        {
+            if (!itr->second->deleted)
+            {
+                itr->second->currTime = 5000;
+                m_lock.Release();
+                return;
+            }
+        }
+    }
+
+    sEventMgr.AddEvent(this, &Unit::combatUpdatePvPTimeout, EVENT_ATTACK_TIMEOUT, 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    m_lock.Release();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// MovementInfo (from class Object)
+
+MovementInfo* Unit::getMovementInfo() { return &obj_movement_info; }
+
+uint32_t Unit::getUnitMovementFlags() const { return obj_movement_info.flags; }
+void Unit::setUnitMovementFlags(uint32_t f) { obj_movement_info.flags = f; }
+void Unit::addUnitMovementFlag(uint32_t f) { obj_movement_info.flags |= f; }
+void Unit::removeUnitMovementFlag(uint32_t f) { obj_movement_info.flags &= ~f; }
+bool Unit::hasUnitMovementFlag(uint32_t f) const { return (obj_movement_info.flags & f) != 0; }
+
+//\brief: this is not uint16_t on version < wotlk
+uint16_t Unit::getExtraUnitMovementFlags() const { return obj_movement_info.flags2; }
+void Unit::addExtraUnitMovementFlag(uint16_t f2) { obj_movement_info.flags2 |= f2; }
+bool Unit::hasExtraUnitMovementFlag(uint16_t f2) const { return (obj_movement_info.flags2 & f2) != 0; }
+
+//helpers
+bool Unit::isRooted() const
+{
+    return hasUnitMovementFlag(MOVEFLAG_ROOTED);
+}
+
+bool Unit::IsFalling() const
+{
+    return obj_movement_info.hasMovementFlag(MOVEFLAG_FALLING_MASK) || movespline->isFalling();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Movement
+void Unit::setInFront(Object const* target)
+{
+    if (!hasUnitStateFlag(UNIT_STATE_CANNOT_TURN))
+        SetOrientation(getAbsoluteAngle(target));
+}
 
 void Unit::setFacingTo(float ori, bool force)
 {
@@ -1539,11 +1713,6 @@ void Unit::setMoveRoot(bool set_root)
     }
 }
 
-bool Unit::isRooted() const
-{
-    return hasUnitMovementFlag(MOVEFLAG_ROOTED);
-}
-
 void Unit::setMoveSwim(bool set_swim)
 {
     if (isCreature())
@@ -1717,71 +1886,8 @@ void Unit::handleFall(MovementInfo const& movementInfo)
     z_axisposition = 0.0f;
 }
 
-bool Unit::IsFalling() const
-{
-    return obj_movement_info.hasMovementFlag(MOVEFLAG_FALLING_MASK) || movespline->isFalling();
-}
-
-bool Unit::isInWater() const
-{
-    if (worldConfig.terrainCollision.isCollisionEnabled)
-    {
-        float outx = GetPositionX() + 3.5f * cos(GetOrientation());
-        float outy = GetPositionY() + 3.5f * sin(GetOrientation());
-        float outz = GetMapMgr()->GetLandHeight(outx, outy, GetPositionZ() + 2);
-        uint32 watertype;
-        float watermark;
-        GetMapMgr()->GetLiquidInfo(outx, outy, outz, watermark, watertype);
-        outz = std::max(watermark, outz);
-
-        // Check for liquid type also, i.e. Orgrimmar is below water level
-        const auto liquidStatus = GetMapMgr()->getLiquidStatus(0, GetPositionX(), GetPositionY(), GetPositionZ(), MAP_ALL_LIQUIDS);
-        if (liquidStatus == LIQUID_MAP_NO_WATER)
-            return false;
-
-        if (watermark >= outz)
-            return true;
-    }
-
-    return false;
-}
-
-bool Unit::isUnderWater() const
-{
-    float outx = GetPositionX() + 3.5f * cos(GetOrientation());
-    float outy = GetPositionY() + 3.5f * sin(GetOrientation());
-    float outz = GetMapMgr()->GetLandHeight(outx, outy, GetPositionZ() + 2);
-    uint32 watertype;
-    float watermark;
-    GetMapMgr()->GetLiquidInfo(outx, outy, outz, watermark, watertype);
-    outz = std::max(watermark, outz);
-
-    if ((watermark -2.0f) >= outz)
-        return true;
-
-    return false;
-}
-
-bool Unit::canSwim()
-{
-    // Mirror client behavior, if this method returns false then client will not use swimming animation and for players will apply gravity as if there was no water
-    if (hasUnitFlags(UNIT_FLAG_DEAD))
-        return false;
-    if (hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE)) // is player
-        return true;
-#if VERSION_STRING >= TBC
-    if (hasUnitFlags2(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE))
-        return false;
-#endif
-    if (isPet() && hasUnitFlags(UNIT_FLAG_PET_IN_COMBAT))
-        return true;
-    return hasUnitFlags(UNIT_FLAG_UNKNOWN_5 | UNIT_FLAG_SWIMMING);
-}
-
-bool Unit::canFly()
-{
-    return false;
-}
+//////////////////////////////////////////////////////////////////////////////////////////
+// Speed
 
 float Unit::getSpeedRate(UnitSpeedType type, bool current) const
 {
@@ -2150,12 +2256,6 @@ void Unit::setSpeedRate(UnitSpeedType type, float value, bool current)
 }
 #endif
 
-void Unit::removeAllFollowers()
-{
-    while (!m_followingMe.empty())
-        (*m_followingMe.begin())->setTarget(nullptr);
-}
-
 void Unit::resetCurrentSpeeds()
 {
     for (uint8_t i = 0; i < MAX_SPEED_TYPE; ++i)
@@ -2190,6 +2290,299 @@ UnitSpeedType Unit::getFastestSpeedType() const
     }
 
     return fastest_speed_type;
+}
+
+bool Unit::getSpeedDecrease()
+{
+    int32 before = m_speedModifier;
+    m_speedModifier -= m_slowdown;
+    m_slowdown = 0;
+
+    for (auto& itr : speedReductionMap)
+        m_slowdown = static_cast<int32>(std::min(m_slowdown, itr.second));
+
+    if (m_slowdown < -100)
+        m_slowdown = 100;
+
+    m_speedModifier += m_slowdown;
+
+    if (m_speedModifier != before)
+        return true;
+
+    return false;
+}
+
+void Unit::updateSpeed()
+{
+    if (getMountDisplayId() == 0)
+    {
+        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, false) * (1.0f + static_cast<float>(m_speedModifier) / 100.0f), true);
+    }
+    else
+    {
+        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, false) * (1.0f + static_cast<float>(m_mountedspeedModifier) / 100.0f), true);
+        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true) + (m_speedModifier < 0 ? (getSpeedRate(TYPE_RUN, false) * static_cast<float>(m_speedModifier) / 100.0f) : 0), true);
+    }
+
+    setSpeedRate(TYPE_FLY, getSpeedRate(TYPE_FLY, false) * (1.0f + ((float)m_flyspeedModifier) / 100.0f), true);
+
+    // Limit speed due to effects such as http://www.wowhead.com/?spell=31896 [Judgement of Justice]
+    if (m_maxSpeed && getSpeedRate(TYPE_RUN, true) > m_maxSpeed)
+    {
+        setSpeedRate(TYPE_RUN, m_maxSpeed, true);
+    }
+
+    if (isPlayer() && static_cast<Player*>(this)->m_changingMaps)
+    {
+        static_cast<Player*>(this)->resend_speed = true;
+    }
+    else
+    {
+        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
+        setSpeedRate(TYPE_FLY, getSpeedRate(TYPE_FLY, true), true);
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Movement spline
+void Unit::removeAllFollowers()
+{
+    while (!m_followingMe.empty())
+        (*m_followingMe.begin())->setTarget(nullptr);
+}
+
+bool Unit::canFly()
+{
+    return false;
+}
+
+void Unit::stopMoving()
+{
+    removeUnitStateFlag(UNIT_STATE_MOVING);
+
+    // not need send any packets if not in world or not moving
+    if (!IsInWorld() || movespline->Finalized())
+        return;
+
+    // Update position now since Stop does not start a new movement that can be updated later
+    if (movespline->HasStarted())
+        updateSplinePosition();
+    MovementNew::MoveSplineInit init(this);
+    init.Stop();
+}
+
+void Unit::pauseMovement(uint32_t timer/* = 0*/, uint8_t slot/* = 0*/, bool forced/* = true*/)
+{
+    if (isInvalidMovementSlot(slot))
+        return;
+
+    if (MovementGenerator* movementGenerator = getMovementManager()->getCurrentMovementGenerator(MovementSlot(slot)))
+        movementGenerator->pause(timer);
+
+    if (forced && getMovementManager()->getCurrentSlot() == MovementSlot(slot))
+        stopMoving();
+}
+
+void Unit::resumeMovement(uint32_t timer/* = 0*/, uint8_t slot/* = 0*/)
+{
+    if (isInvalidMovementSlot(slot))
+        return;
+
+    if (MovementGenerator* movementGenerator = getMovementManager()->getCurrentMovementGenerator(MovementSlot(slot)))
+        movementGenerator->resume(timer);
+}
+
+void Unit::setFeared(bool apply)
+{
+    if (apply)
+    {
+        setTargetGuid(0);
+
+        Unit* caster = nullptr;
+        if (const auto fearAura = getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR))
+            caster = fearAura->GetUnitCaster();
+
+        if (caster == nullptr)
+            caster = getAIInterface()->getCurrentTarget();
+
+        getMovementManager()->moveFleeing(caster);             // caster == NULL processed in MoveFleeing
+    }
+    else
+    {
+        if (isAlive())
+        {
+            getMovementManager()->remove(FLEEING_MOTION_TYPE);
+            if (getThreatManager().getCurrentVictim())
+                setTargetGuid(getThreatManager().getCurrentVictim()->getGuid());
+
+            if (!isPlayer() && !isInCombat() && getTargetGuid() == 0)
+                getMovementManager()->moveTargetedHome();
+            else
+                getMovementManager()->moveChase(getThreatManager().getCurrentVictim());
+        }
+    }
+
+    // block / allow control to real player in control (eg charmer)
+    if (getObjectTypeId() == TYPEID_PLAYER)
+    {
+        if (getPlayerOwner())
+            getPlayerOwner()->sendClientControlPacket(this, !apply);
+    }
+}
+
+void Unit::setConfused(bool apply)
+{
+    if (apply)
+    {
+        setTargetGuid(0);
+        getMovementManager()->moveConfused();
+    }
+    else
+    {
+        if (isAlive())
+        {
+            getMovementManager()->remove(CONFUSED_MOTION_TYPE);
+            if (getThreatManager().getCurrentVictim())
+                setTargetGuid(getThreatManager().getCurrentVictim()->getGuid());
+        }
+    }
+
+    // block / allow control to real player in control (eg charmer)
+    if (getObjectTypeId() == TYPEID_PLAYER)
+    {
+        if (getPlayerOwner())
+            getPlayerOwner()->sendClientControlPacket(this, !apply);
+    }
+}
+
+void Unit::setStunned(bool apply)
+{
+    if (apply)
+    {
+        setTargetGuid(0);
+        addUnitFlags(UNIT_FLAG_STUNNED);
+
+        // MOVEMENTFLAG_ROOT cannot be used in conjunction with MOVEMENTFLAG_MASK_MOVING (tested 3.3.5a)
+        // this will freeze clients. That's why we remove MOVEMENTFLAG_MASK_MOVING before
+        // setting MOVEMENTFLAG_ROOT
+        removeUnitMovementFlag(MOVEFLAG_MOVING_MASK);
+        addUnitMovementFlag(MOVEFLAG_ROOTED);
+        stopMoving();
+
+        if (getObjectTypeId() == TYPEID_PLAYER)
+            setStandState(STANDSTATE_STAND);
+
+        if (getObjectTypeId() == TYPEID_PLAYER)
+        {
+            WorldPacket data(SMSG_FORCE_MOVE_ROOT, 10);
+            data << GetNewGUID();
+            data << 0;
+            SendMessageToSet(&data, true);
+        }
+        else
+        {
+            WorldPacket data(SMSG_SPLINE_MOVE_ROOT, 8);
+            data << 0;
+            SendMessageToSet(&data, true);
+        }
+    }
+    else
+    {
+        if (isAlive() && getThreatManager().getCurrentVictim())
+            setTargetGuid(getThreatManager().getCurrentVictim()->getGuid());
+
+        // don't remove UNIT_FLAG_STUNNED for pet when owner is mounted (disabled pet's interface)
+        Unit* owner = GetMapMgrUnit(getCharmerOrOwnerGUID());
+        if (!owner || owner->getObjectTypeId() != TYPEID_PLAYER || !owner->ToPlayer()->IsMounted())
+            removeUnitFlags(UNIT_FLAG_STUNNED);
+
+        if (!hasUnitStateFlag(UNIT_STATE_ROOTED))         // prevent moving if it also has root effect
+        {
+            if (getObjectTypeId() == TYPEID_PLAYER)
+            {
+                WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 10);
+                data << GetNewGUID();
+                data << 0;
+                SendMessageToSet(&data, true);
+            }
+            else
+            {
+                WorldPacket data(SMSG_SPLINE_MOVE_UNROOT, 8);
+                data << GetNewGUID();
+                SendMessageToSet(&data, true);
+            }
+
+            removeUnitMovementFlag(MOVEFLAG_ROOTED);
+        }
+    }
+}
+
+void Unit::updateSplineMovement(uint32 t_diff)
+{
+    if (movespline->Finalized())
+        return;
+
+    movespline->updateState(t_diff);
+    bool arrived = movespline->Finalized();
+
+    if (movespline->isCyclic())
+    {
+        m_splineSyncTimer -= t_diff;
+        if (m_splineSyncTimer <= 0)
+        {
+            m_splineSyncTimer = 5000; // Retail value, do not change
+
+            ByteBuffer packedGuid;
+            packedGuid.appendPackGUID(getGuid());
+
+            WorldPacket data(SMSG_FLIGHT_SPLINE_SYNC, 4 + packedGuid.size());
+            MovementNew::PacketBuilder::WriteSplineSync(*movespline, data);
+            data.append(packedGuid);
+            SendMessageToSet(&data, true);
+        }
+    }
+
+    if (arrived)
+    {
+        disableSpline();
+
+        if (movespline->HasAnimation())
+            setAnimationFlags(movespline->GetAnimationTier());
+    }
+
+    updateSplinePosition();
+}
+
+void Unit::updateSplinePosition()
+{
+    MovementNew::Location loc = movespline->ComputePosition();
+
+    if (movespline->onTransport)
+    {
+        LocationVector& pos = getMovementInfo()->transport_position;
+        pos.x = loc.x;
+        pos.y = loc.y;
+        pos.z = loc.z;
+        pos.o = normalizeOrientation(loc.orientation);
+
+        if (TransportBase* vehicle = getCurrentVehicle())
+        {
+            vehicle->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
+        }
+        else if (TransportBase* transport = GetTransport())
+        {
+            transport->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    if (hasUnitStateFlag(UNIT_STATE_CANNOT_TURN))
+        loc.orientation = GetOrientation();
+
+    SetPosition(loc.x, loc.y, loc.z, loc.orientation);
 }
 
 void Unit::sendMoveSplinePaket(UnitSpeedType speedType)
@@ -2233,6 +2626,150 @@ void Unit::sendMoveSplinePaket(UnitSpeedType speedType)
     data << float(getSpeedRate(speedType, true));
 
     SendMessageToSet(&data, false);
+}
+
+void Unit::disableSpline()
+{
+#if VERSION_STRING >= Cata
+    getMovementInfo()->removeMovementFlag(MovementFlags(MOVEFLAG_MOVE_FORWARD));
+#else
+    getMovementInfo()->removeMovementFlag(MovementFlags(MOVEFLAG_SPLINE_FORWARD_ENABLED));
+#endif
+
+    movespline->_Interrupt();
+}
+
+bool Unit::isSplineEnabled() const
+{
+    return movespline->Initialized();
+}
+
+void Unit::jumpTo(float speedXY, float speedZ, bool forward, Optional<LocationVector> dest)
+{
+    float angle = forward ? 0 : static_cast<float>(M_PI);
+    if (dest)
+        angle += getRelativeAngle(*dest);
+
+    if (getObjectTypeId() == TYPEID_UNIT)
+    {
+        getMovementManager()->moveJumpTo(angle, speedXY, speedZ);
+    }
+    else
+    {
+        const float vcos = std::cos(angle + GetOrientation());
+        const float vsin = std::sin(angle + GetOrientation());
+
+        WorldPacket data(SMSG_MOVE_KNOCK_BACK, (8 + 4 + 4 + 4 + 4 + 4));
+        data << GetNewGUID();
+        data << uint32_t(0);                                    // Sequence
+        data << vcos << vsin;
+        data << float(speedXY);                                 // Horizontal speed
+        data << float(-speedZ);                                 // Z Movement speed (vertical)
+
+        ToPlayer()->SendPacket(&data);
+    }
+}
+
+void Unit::jumpTo(Object* obj, float speedZ, bool withOrientation)
+{
+    float x, y, z;
+    obj->getNearPoint(this, x, y, z, 0.5f, getAbsoluteAngle(obj->GetPosition()));
+    float speedXY = getExactDist2d(x, y) * 10.0f / speedZ;
+    getMovementManager()->moveJump(x, y, z, getAbsoluteAngle(obj), speedXY, speedZ, EVENT_JUMP, withOrientation);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Internal States
+
+void Unit::setControlled(bool apply, UnitStates state)
+{
+    if (apply)
+    {
+        if (hasUnitStateFlag(state))
+            return;
+
+        addUnitStateFlag(state);
+        switch (state)
+        {
+        case UNIT_STATE_STUNNED:
+            setStunned(true);
+            break;
+        case UNIT_STATE_ROOTED:
+            if (!hasUnitStateFlag(UNIT_STATE_STUNNED))
+                setMoveRoot(true);
+            break;
+        case UNIT_STATE_CONFUSED:
+            if (!hasUnitStateFlag(UNIT_STATE_STUNNED))
+            {
+                removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
+                setConfused(true);
+            }
+            break;
+        case UNIT_STATE_FLEEING:
+            if (!hasUnitStateFlag(UNIT_STATE_STUNNED | UNIT_STATE_CONFUSED))
+            {
+                removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
+                setFeared(true);
+            }
+            break;
+        default:
+            break;
+        }
+    }
+    else
+    {
+        switch (state)
+        {
+        case UNIT_STATE_STUNNED:
+            if (getAuraWithAuraEffect(SPELL_AURA_MOD_STUN))
+                return;
+
+            removeUnitStateFlag(state);
+            setStunned(false);
+            break;
+        case UNIT_STATE_ROOTED:
+            if (getAuraWithAuraEffect(SPELL_AURA_MOD_ROOT) || isVehicle() || (ToCreature() && ToCreature()->getMovementTemplate().isRooted()))
+                return;
+
+            removeUnitStateFlag(state);
+            setMoveRoot(false);
+            break;
+        case UNIT_STATE_CONFUSED:
+            if (getAuraWithAuraEffect(SPELL_AURA_MOD_CONFUSE))
+                return;
+
+            removeUnitStateFlag(state);
+            setConfused(false);
+            break;
+        case UNIT_STATE_FLEEING:
+            if (getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR))
+                return;
+
+            removeUnitStateFlag(state);
+            setFeared(false);
+            break;
+        default:
+            return;
+        }
+
+        applyControlStatesIfNeeded();
+    }
+}
+
+void Unit::applyControlStatesIfNeeded()
+{
+    // Unit States might have been already cleared but auras still present. I need to check with HasAuraType
+    if (hasUnitStateFlag(UNIT_STATE_STUNNED) || getAuraWithAuraEffect(SPELL_AURA_MOD_STUN))
+        setStunned(true);
+
+    if (hasUnitStateFlag(UNIT_STATE_ROOTED) || getAuraWithAuraEffect(SPELL_AURA_MOD_ROOT))
+        setMoveRoot(true);
+
+    if (hasUnitStateFlag(UNIT_STATE_CONFUSED) || getAuraWithAuraEffect(SPELL_AURA_MOD_CONFUSE))
+        setConfused(true);
+
+    if (hasUnitStateFlag(UNIT_STATE_FLEEING) || getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR))
+        setFeared(true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -3480,7 +4017,7 @@ void Unit::addAura(Aura* aur)
         const auto pCaster = aur->GetUnitCaster();
         if (pCaster && pCaster->isAlive() && isAlive())
         {
-            pCaster->CombatStatus.OnDamageDealt(this);
+            pCaster->combatStatusHandler.OnDamageDealt(this);
 
             if (isCreature())
             {
@@ -4301,9 +4838,9 @@ bool Unit::canSee(Object* const obj)
                 }
 
                 // If object is only visible to either faction
-                if (unitObj->GetAIInterface()->faction_visibility == 1)
+                if (unitObj->getAIInterface()->faction_visibility == 1)
                     return static_cast<Player*>(this)->isTeamHorde() ? true : false;
-                if (unitObj->GetAIInterface()->faction_visibility == 2)
+                if (unitObj->getAIInterface()->faction_visibility == 2)
                     return static_cast<Player*>(this)->isTeamHorde() ? false : true;
             }
         } break;
@@ -4551,7 +5088,7 @@ void Unit::regenerateHealthAndPowers(uint16_t timePassed)
         (!hasUnitStateFlag(UNIT_STATE_POLYMORPHED) && m_healthRegenerateTimer >= REGENERATION_INTERVAL_HEALTH))
     {
         if (isPlayer())
-            static_cast<Player*>(this)->RegenerateHealth(CombatStatus.IsInCombat());
+            static_cast<Player*>(this)->RegenerateHealth(combatStatusHandler.IsInCombat());
         else
             static_cast<Creature*>(this)->RegenerateHealth();
 
@@ -4641,7 +5178,7 @@ void Unit::regeneratePower(PowerType type)
                     amount = static_cast<Player*>(this)->getManaRegeneration();
 #else
                 // Check for combat (5 second rule was removed in cata)
-                if (CombatStatus.IsInCombat())
+                if (combatStatusHandler.IsInCombat())
                     amount = getManaRegenerationWhileCasting();
                 else
                     amount = getManaRegeneration();
@@ -4654,7 +5191,7 @@ void Unit::regeneratePower(PowerType type)
             else
             {
                 //\ todo: this creature mana regeneration is not correct, rewrite it
-                if (CombatStatus.IsInCombat())
+                if (combatStatusHandler.IsInCombat())
                 {
                     amount = (getLevel() + 10) * PctPowerRegenModifier[POWER_TYPE_MANA];
                 }
@@ -4684,7 +5221,7 @@ void Unit::regeneratePower(PowerType type)
 #endif
         {
             // Rage and Runic Power do not decay while in combat
-            if (CombatStatus.IsInCombat())
+            if (combatStatusHandler.IsInCombat())
                 return;
 
             // TODO: fix this hackfix when aura system supports this
@@ -4745,7 +5282,7 @@ void Unit::regeneratePower(PowerType type)
 #if VERSION_STRING >= Cata
         case POWER_TYPE_HOLY_POWER:
         {
-            if (CombatStatus.IsInCombat())
+            if (combatStatusHandler.IsInCombat())
                 return;
 
             amount = -1.0f;
@@ -5239,11 +5776,11 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
             if (!plr->GetSession()->HasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
                 damage = plr->CheckDamageLimits(damage, spellId);
 
-            if (plr->CombatStatus.IsInCombat())
+            if (plr->combatStatusHandler.IsInCombat())
                 sHookInterface.OnEnterCombat(plr, victim);
         }
 
-        CombatStatus.OnDamageDealt(victim);
+        combatStatusHandler.OnDamageDealt(victim);
 
         const auto plrOwner = getPlayerOwner();
         if (plrOwner != nullptr)
@@ -5272,7 +5809,7 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
                 if (pet->GetPetState() != PET_STATE_PASSIVE)
                 {
                     // Start Combat
-                    pet->GetAIInterface()->onHostileAction(this);
+                    pet->getAIInterface()->onHostileAction(this);
                     pet->HandleAutoCastEvent(AUTOCAST_EVENT_OWNER_ATTACKED);
                 }
             }
@@ -5280,7 +5817,7 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
         else
         {
             // Start Combat
-            victim->GetAIInterface()->onHostileAction(this);
+            victim->getAIInterface()->onHostileAction(this);
             // Add Threat
             if (victim->getThreatManager().canHaveThreatList())
                 victim->getThreatManager().addThreat(this, static_cast<float>(damage), sSpellMgr.getSpellInfo(spellId), true, true);
@@ -5518,7 +6055,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
 
         // todo: this should be moved to combat handler...
         // atm its called every time player takes damage -Appled
-        if (CombatStatus.IsInCombat())
+        if (combatStatusHandler.IsInCombat())
             sHookInterface.OnEnterCombat(dynamic_cast<Player*>(this), attacker);
 
         // todo: remove this hackfix...
@@ -5741,8 +6278,8 @@ void Unit::smsg_AttackStop(Unit* pVictim)
     {
         if (pVictim->isPlayer())
         {
-            pVictim->CombatStatusHandler_ResetPvPTimeout();
-            CombatStatusHandler_ResetPvPTimeout();
+            pVictim->combatResetPvPTimeout();
+            combatResetPvPTimeout();
         }
         else
         {
@@ -5988,7 +6525,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
                 damage = plr->CheckDamageLimits(damage, spellId);
 
             //\ todo: this hook is called here and in takeDamage... sort this out
-            if (plr->CombatStatus.IsInCombat())
+            if (plr->combatStatusHandler.IsInCombat())
                 sHookInterface.OnEnterCombat(plr, this);
         }
 
@@ -6009,7 +6546,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
             *rageGenerated = float2int32(val);
         }
 
-        attacker->CombatStatus.OnDamageDealt(this);
+        attacker->combatStatusHandler.OnDamageDealt(this);
 
         const auto plrOwner = attacker->getPlayerOwner();
         if (plrOwner != nullptr)
@@ -6051,7 +6588,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
                 {
                     // Start Combat
                     // todo: move this to ::Strike and ::doSpellDamage
-                    pet->GetAIInterface()->onHostileAction(attacker);
+                    pet->getAIInterface()->onHostileAction(attacker);
                     pet->HandleAutoCastEvent(AUTOCAST_EVENT_OWNER_ATTACKED);
                 }
             }
@@ -6060,7 +6597,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
         {
             // Start Combat
             // todo: move this to ::Strike and ::doSpellDamage
-            GetAIInterface()->onHostileAction(attacker);
+            getAIInterface()->onHostileAction(attacker);
             // Add Threat
             if (getThreatManager().canHaveThreatList())
                 getThreatManager().addThreat(attacker, static_cast<float>(damage), sSpellMgr.getSpellInfo(spellId), true, true);
@@ -6149,7 +6686,7 @@ uint32_t Unit::_handleBatchHealing(HealthBatchEvent const* batch, uint32_t* abso
         getThreatManager().forwardThreatForAssistingMe(healer, static_cast<float_t>(healing), batch->spellInfo);
 
         if (IsInWorld() && healer->IsInWorld())
-            healer->CombatStatus.WeHealed(this);
+            healer->combatStatusHandler.WeHealed(this);
     }
 
     RemoveAurasByHeal();
@@ -6174,22 +6711,6 @@ void Unit::setDeathState(DeathState state)
 }
 
 DeathState Unit::getDeathState() const { return m_deathState; }
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Movement
-
-MovementInfo* Unit::getMovementInfo() { return &obj_movement_info; }
-
-uint32_t Unit::getUnitMovementFlags() const { return obj_movement_info.flags; }   //checked
-void Unit::setUnitMovementFlags(uint32_t f) { obj_movement_info.flags = f; }
-void Unit::addUnitMovementFlag(uint32_t f) { obj_movement_info.flags |= f; }
-void Unit::removeUnitMovementFlag(uint32_t f) { obj_movement_info.flags &= ~f; }
-bool Unit::hasUnitMovementFlag(uint32_t f) const { return (obj_movement_info.flags & f) != 0; }
-
-//\brief: this is not uint16_t on version < wotlk
-uint16_t Unit::getExtraUnitMovementFlags() const { return obj_movement_info.flags2; }
-void Unit::addExtraUnitMovementFlag(uint16_t f2) { obj_movement_info.flags2 |= f2; }
-bool Unit::hasExtraUnitMovementFlag(uint16_t f2) const { return (obj_movement_info.flags2 & f2) != 0; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Summons
@@ -6336,435 +6857,9 @@ uint64_t Unit::getTransGuid()
     return 0;
 }
 
-void Unit::setInFront(Object const* target)
-{
-    if (!hasUnitStateFlag(UNIT_STATE_CANNOT_TURN))
-        SetOrientation(getAbsoluteAngle(target));
-}
-
-bool Unit::isWithinCombatRange(Unit* obj, float dist2compare)
-{
-    if (!obj || !IsInMap(obj) || !(GetPhase() == obj->GetPhase()))
-        return false;
-
-    float dx = GetPositionX() - obj->GetPositionX();
-    float dy = GetPositionY() - obj->GetPositionY();
-    float dz = GetPositionZ() - obj->GetPositionZ();
-    float distsq = dx * dx + dy * dy + dz * dz;
-
-    float sizefactor = getCombatReach() + obj->getCombatReach();
-    float maxdist = dist2compare + sizefactor;
-
-    return distsq < maxdist * maxdist;
-}
-
-bool Unit::isWithinMeleeRangeAt(LocationVector const& pos, Unit* obj)
-{
-    if (!obj || !IsInMap(obj) || !(GetPhase() == obj->GetPhase()))
-        return false;
-
-    float dx = pos.getPositionX() - obj->GetPositionX();
-    float dy = pos.getPositionY() - obj->GetPositionY();
-    float dz = pos.getPositionZ() - obj->GetPositionZ();
-    float distsq = dx * dx + dy * dy + dz * dz;
-
-    float maxdist = getMeleeRange(obj);
-
-    return distsq <= maxdist * maxdist;
-}
-
-float Unit::getMeleeRange(Unit* target)
-{
-    float range = getCombatReach() + target->getCombatReach() + 4.0f / 3.0f;
-    return std::max(range, NOMINAL_MELEE_RANGE);
-}
-
-bool Unit::isInAccessiblePlaceFor(Creature* c) const
-{
-    float ground = GetMapMgr()->GetLandHeight(GetPositionX(), GetPositionY(), GetPositionZ());
-    float height = GetPositionZ();
-
-    if (isInWater())
-        return c->canSwim();
-    else if (IsFlying() || (ground) < (height - 10) && !GetTransport()) // we could be flying antihack!
-        return c->canFly();
-    else
-        return c->canWalk() || c->canFly();
-}
-
-void Unit::setControlled(bool apply, UnitStates state)
-{
-    if (apply)
-    {
-        if (hasUnitStateFlag(state))
-            return;
-
-        addUnitStateFlag(state);
-        switch (state)
-        {
-            case UNIT_STATE_STUNNED:
-                setStunned(true);
-                break;
-            case UNIT_STATE_ROOTED:
-                if (!hasUnitStateFlag(UNIT_STATE_STUNNED))
-                    setMoveRoot(true);
-                break;
-            case UNIT_STATE_CONFUSED:
-                if (!hasUnitStateFlag(UNIT_STATE_STUNNED))
-                {
-                    removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
-                    setConfused(true);
-                }
-                break;
-            case UNIT_STATE_FLEEING:
-                if (!hasUnitStateFlag(UNIT_STATE_STUNNED | UNIT_STATE_CONFUSED))
-                {
-                    removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
-                    setFeared(true);
-                }
-                break;
-            default:
-                break;
-        }
-    }
-    else
-    {
-        switch (state)
-        {
-            case UNIT_STATE_STUNNED:
-                if (getAuraWithAuraEffect(SPELL_AURA_MOD_STUN))
-                    return;
-
-                removeUnitStateFlag(state);
-                setStunned(false);
-                break;
-            case UNIT_STATE_ROOTED:
-                if (getAuraWithAuraEffect(SPELL_AURA_MOD_ROOT) || isVehicle() || (ToCreature() && ToCreature()->getMovementTemplate().isRooted()))
-                    return;
-
-                removeUnitStateFlag(state);
-                setMoveRoot(false);
-                break;
-            case UNIT_STATE_CONFUSED:
-                if (getAuraWithAuraEffect(SPELL_AURA_MOD_CONFUSE))
-                    return;
-
-                removeUnitStateFlag(state);
-                setConfused(false);
-                break;
-            case UNIT_STATE_FLEEING:
-                if (getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR))
-                    return;
-
-                removeUnitStateFlag(state);
-                setFeared(false);
-                break;
-            default:
-                return;
-        }
-
-        applyControlStatesIfNeeded();
-    }
-}
-
-void Unit::applyControlStatesIfNeeded()
-{
-    // Unit States might have been already cleared but auras still present. I need to check with HasAuraType
-    if (hasUnitStateFlag(UNIT_STATE_STUNNED) || getAuraWithAuraEffect(SPELL_AURA_MOD_STUN))
-        setStunned(true);
-
-    if (hasUnitStateFlag(UNIT_STATE_ROOTED) || getAuraWithAuraEffect(SPELL_AURA_MOD_ROOT))
-        setMoveRoot(true);
-
-    if (hasUnitStateFlag(UNIT_STATE_CONFUSED) || getAuraWithAuraEffect(SPELL_AURA_MOD_CONFUSE))
-        setConfused(true);
-
-    if (hasUnitStateFlag(UNIT_STATE_FLEEING) || getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR))
-        setFeared(true);
-}
-
-void Unit::stopMoving()
-{
-    removeUnitStateFlag(UNIT_STATE_MOVING);
-
-    // not need send any packets if not in world or not moving
-    if (!IsInWorld() || movespline->Finalized())
-        return;
-
-    // Update position now since Stop does not start a new movement that can be updated later
-    if (movespline->HasStarted())
-        updateSplinePosition();
-    MovementNew::MoveSplineInit init(this);
-    init.Stop();
-}
-
-void Unit::pauseMovement(uint32_t timer/* = 0*/, uint8_t slot/* = 0*/, bool forced/* = true*/)
-{
-    if (isInvalidMovementSlot(slot))
-        return;
-
-    if (MovementGenerator* movementGenerator = getMovementManager()->getCurrentMovementGenerator(MovementSlot(slot)))
-        movementGenerator->pause(timer);
-
-    if (forced && getMovementManager()->getCurrentSlot() == MovementSlot(slot))
-        stopMoving();
-}
-
-void Unit::resumeMovement(uint32_t timer/* = 0*/, uint8_t slot/* = 0*/)
-{
-    if (isInvalidMovementSlot(slot))
-        return;
-
-    if (MovementGenerator* movementGenerator = getMovementManager()->getCurrentMovementGenerator(MovementSlot(slot)))
-        movementGenerator->resume(timer);
-}
-
-void Unit::setStunned(bool apply)
-{
-    if (apply)
-    {
-        setTargetGuid(0);
-        addUnitFlags(UNIT_FLAG_STUNNED);
-
-        // MOVEMENTFLAG_ROOT cannot be used in conjunction with MOVEMENTFLAG_MASK_MOVING (tested 3.3.5a)
-        // this will freeze clients. That's why we remove MOVEMENTFLAG_MASK_MOVING before
-        // setting MOVEMENTFLAG_ROOT
-        removeUnitMovementFlag(MOVEFLAG_MOVING_MASK);
-        addUnitMovementFlag(MOVEFLAG_ROOTED);
-        stopMoving();
-
-        if (getObjectTypeId() == TYPEID_PLAYER)
-            setStandState(STANDSTATE_STAND);
-
-        if (getObjectTypeId() == TYPEID_PLAYER)
-        {
-            WorldPacket data(SMSG_FORCE_MOVE_ROOT, 10);
-            data << GetNewGUID();
-            data << 0;
-            SendMessageToSet(&data, true);
-        }
-        else
-        {
-            WorldPacket data(SMSG_SPLINE_MOVE_ROOT, 8);
-            data << 0;
-            SendMessageToSet(&data, true);
-        }
-    }
-    else
-    {
-        if (isAlive() && getThreatManager().getCurrentVictim())
-            setTargetGuid(getThreatManager().getCurrentVictim()->getGuid());
-
-        // don't remove UNIT_FLAG_STUNNED for pet when owner is mounted (disabled pet's interface)
-        Unit* owner = GetMapMgrUnit(getCharmerOrOwnerGUID());
-        if (!owner || owner->getObjectTypeId() != TYPEID_PLAYER || !owner->ToPlayer()->IsMounted())
-            removeUnitFlags(UNIT_FLAG_STUNNED);
-
-        if (!hasUnitStateFlag(UNIT_STATE_ROOTED))         // prevent moving if it also has root effect
-        {
-            if (getObjectTypeId() == TYPEID_PLAYER)
-            {
-                WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 10);
-                data << GetNewGUID();
-                data << 0;
-                SendMessageToSet(&data, true);
-            }
-            else
-            {
-                WorldPacket data(SMSG_SPLINE_MOVE_UNROOT, 8);
-                data << GetNewGUID();
-                SendMessageToSet(&data, true);
-            }
-
-            removeUnitMovementFlag(MOVEFLAG_ROOTED);
-        }
-    }
-}
-
-void Unit::setFeared(bool apply)
-{
-    if (apply)
-    {
-        setTargetGuid(0);
-
-        Unit* caster = nullptr;
-        if (const auto fearAura = getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR))
-            caster = fearAura->GetUnitCaster();
-
-        if (caster == nullptr)
-            caster = GetAIInterface()->getCurrentTarget();
-
-        getMovementManager()->moveFleeing(caster);             // caster == NULL processed in MoveFleeing
-    }
-    else
-    {
-        if (isAlive())
-        {
-            getMovementManager()->remove(FLEEING_MOTION_TYPE);
-            if (getThreatManager().getCurrentVictim())
-                setTargetGuid(getThreatManager().getCurrentVictim()->getGuid());
-
-            if (!isPlayer() && !isInCombat() && getTargetGuid() == 0)
-                getMovementManager()->moveTargetedHome();
-            else
-                getMovementManager()->moveChase(getThreatManager().getCurrentVictim());
-        }
-    }
-
-    // block / allow control to real player in control (eg charmer)
-    if (getObjectTypeId() == TYPEID_PLAYER)
-    {
-        if (getPlayerOwner())
-            getPlayerOwner()->sendClientControlPacket(this, !apply);
-    }
-}
-
-void Unit::setConfused(bool apply)
-{
-    if (apply)
-    {
-        setTargetGuid(0);
-        getMovementManager()->moveConfused();
-    }
-    else
-    {
-        if (isAlive())
-        {
-            getMovementManager()->remove(CONFUSED_MOTION_TYPE);
-            if (getThreatManager().getCurrentVictim())
-                setTargetGuid(getThreatManager().getCurrentVictim()->getGuid());
-        }
-    }
-
-    // block / allow control to real player in control (eg charmer)
-    if (getObjectTypeId() == TYPEID_PLAYER)
-    {
-        if (getPlayerOwner())
-            getPlayerOwner()->sendClientControlPacket(this, !apply);
-    }
-}
-
-void Unit::updateSplineMovement(uint32 t_diff)
-{
-    if (movespline->Finalized())
-        return;
-
-    movespline->updateState(t_diff);
-    bool arrived = movespline->Finalized();
-
-    if (movespline->isCyclic())
-    {
-        m_splineSyncTimer -= t_diff;
-        if (m_splineSyncTimer <= 0)
-        {
-            m_splineSyncTimer = 5000; // Retail value, do not change
-
-            ByteBuffer packedGuid;
-            packedGuid.appendPackGUID(getGuid());
-
-            WorldPacket data(SMSG_FLIGHT_SPLINE_SYNC, 4 + packedGuid.size());
-            MovementNew::PacketBuilder::WriteSplineSync(*movespline, data);
-            data.append(packedGuid);
-            SendMessageToSet(&data, true);
-        }
-    }
-
-    if (arrived)
-    {
-        disableSpline();
-
-        if (movespline->HasAnimation())
-            setAnimationFlags(movespline->GetAnimationTier());
-    }
-
-    updateSplinePosition();
-}
-
-void Unit::updateSplinePosition()
-{
-    MovementNew::Location loc = movespline->ComputePosition();
-
-    if (movespline->onTransport)
-    {
-        LocationVector& pos = getMovementInfo()->transport_position;
-        pos.x = loc.x;
-        pos.y = loc.y;
-        pos.z = loc.z;
-        pos.o = normalizeOrientation(loc.orientation);
-
-        if (TransportBase* vehicle = getCurrentVehicle())
-        {
-            vehicle->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
-        }
-        else if (TransportBase* transport = GetTransport())
-        {
-            transport->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
-        }
-        else
-        {
-            return;
-        }
-    }
-
-    if (hasUnitStateFlag(UNIT_STATE_CANNOT_TURN))
-        loc.orientation = GetOrientation();
-
-    SetPosition(loc.x, loc.y, loc.z, loc.orientation);
-}
-
-void Unit::disableSpline()
-{
-#if VERSION_STRING >= Cata
-    getMovementInfo()->removeMovementFlag(MovementFlags(MOVEFLAG_MOVE_FORWARD));
-#else
-    getMovementInfo()->removeMovementFlag(MovementFlags(MOVEFLAG_SPLINE_FORWARD_ENABLED));
-#endif
-
-    movespline->_Interrupt();
-}
-
 MovementGeneratorType Unit::getDefaultMovementType() const
 {
     return IDLE_MOTION_TYPE;
-}
-
-bool Unit::isSplineEnabled() const
-{
-    return movespline->Initialized();
-}
-
-void Unit::jumpTo(float speedXY, float speedZ, bool forward, Optional<LocationVector> dest)
-{
-    float angle = forward ? 0 : static_cast<float>(M_PI);
-    if (dest)
-        angle += getRelativeAngle(*dest);
-
-    if (getObjectTypeId() == TYPEID_UNIT)
-    {
-        getMovementManager()->moveJumpTo(angle, speedXY, speedZ);
-    }
-    else
-    {
-        const float vcos = std::cos(angle + GetOrientation());
-        const float vsin = std::sin(angle + GetOrientation());
-
-        WorldPacket data(SMSG_MOVE_KNOCK_BACK, (8 + 4 + 4 + 4 + 4 + 4));
-        data << GetNewGUID();
-        data << uint32_t(0);                                    // Sequence
-        data << vcos << vsin;
-        data << float(speedXY);                                 // Horizontal speed
-        data << float(-speedZ);                                 // Z Movement speed (vertical)
-
-        ToPlayer()->SendPacket(&data);
-    }
-}
-
-void Unit::jumpTo(Object* obj, float speedZ, bool withOrientation)
-{
-    float x, y, z;
-    obj->getNearPoint(this, x, y, z, 0.5f, getAbsoluteAngle(obj->GetPosition()));
-    float speedXY = getExactDist2d(x, y) * 10.0f / speedZ;
-    getMovementManager()->moveJump(x, y, z, getAbsoluteAngle(obj), speedXY, speedZ, EVENT_JUMP, withOrientation);
 }
 
 #if VERSION_STRING == Cata
@@ -6827,3 +6922,21 @@ DBC::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t m
     return nullptr;
 }
 #endif
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Threat Management
+
+void Unit::clearHateList()
+{
+    getThreatManager().resetAllThreat();
+}
+
+void Unit::wipeHateList()
+{
+    getThreatManager().clearAllThreat();
+}
+
+void Unit::wipeTargetList()
+{
+    getThreatManager().clearAllThreat();
+}

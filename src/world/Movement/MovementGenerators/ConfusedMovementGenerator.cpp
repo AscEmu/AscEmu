@@ -145,7 +145,7 @@ void ConfusedMovementGenerator<Creature>::doFinalize(Creature* owner, bool activ
     {
         owner->removeUnitFlags(UNIT_FLAG_CONFUSED);
         owner->removeUnitStateFlag(UNIT_STATE_CONFUSED_MOVE);
-        if (owner->GetAIInterface()->getCurrentTarget())
+        if (owner->getAIInterface()->getCurrentTarget())
             owner->setTargetGuid(owner->getGuid());
     }
 }

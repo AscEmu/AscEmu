@@ -75,7 +75,7 @@ public:
                     if (Creature* ArugalSpawn = spawnCreature(ShadowfangKeep::CN_ARUGAL_BOSS, ShadowfangKeep::ArugalAtFenrusLoc.x, ShadowfangKeep::ArugalAtFenrusLoc.y, ShadowfangKeep::ArugalAtFenrusLoc.z, ShadowfangKeep::ArugalAtFenrusLoc.o))
                     {
                         ArugalSpawn->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-                        ArugalSpawn->GetAIInterface()->setAllowedToEnterCombat(false);
+                        ArugalSpawn->getAIInterface()->setAllowedToEnterCombat(false);
                         ArugalSpawn->setControlled(true, UNIT_STATE_ROOTED);
                         if (ArugalSpawn->GetScript())
                         {
@@ -405,8 +405,8 @@ public:
                     ModifyAIUpdateEvent(5500);  // call every step after 5.5 seconds
                     if (Creature* pVincent = getNearestCreature(ShadowfangKeep::CN_DEATHSTALKER_VINCENT))
                     {
-                        pVincent->GetAIInterface()->onHostileAction(getCreature());
-                        pVincent->GetAIInterface()->setMeleeDisabled(true);
+                        pVincent->getAIInterface()->onHostileAction(getCreature());
+                        pVincent->getAIInterface()->setMeleeDisabled(true);
                     }
                 }break;
                 case 1:
@@ -604,7 +604,7 @@ public:
                 pPrisoner->getCreature()->SendScriptTextChatMessage(ShadowfangKeep::SAY_ADAMANT_FOLLOW);
                 pPrisoner->DoAction(0);
                 pPrisoner->getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-                pPrisoner->getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+                pPrisoner->getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
                 pPrisoner->getCreature()->eventAddEmote(EMOTE_ONESHOT_CHEER, 4000);
                 pPrisoner->eventStarted = true;
                 if (ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript()))
@@ -769,7 +769,7 @@ public:
                 pPrisoner->getCreature()->SendScriptTextChatMessage(ShadowfangKeep::SAY_ASHCROMBE_FOLLOW);
                 pPrisoner->RegisterAIUpdateEvent(4000);
                 pPrisoner->getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-                pPrisoner->getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+                pPrisoner->getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
                 pPrisoner->getCreature()->emote(EMOTE_ONESHOT_POINT);
                 pPrisoner->eventStarted = true;
                 if (ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript()))
@@ -1082,7 +1082,7 @@ public:
     void Reset()
     {
         setAIAgent(AGENT_SPELL);
-        getCreature()->GetAIInterface()->setMeleeDisabled(true);
+        getCreature()->getAIInterface()->setMeleeDisabled(true);
         getCreature()->PctPowerRegenModifier[POWER_TYPE_MANA] = originalRegen;
     }
 
@@ -1094,7 +1094,7 @@ public:
         originalRegen = getCreature()->PctPowerRegenModifier[POWER_TYPE_MANA];
 
         // Do not do melee attacks
-        getCreature()->GetAIInterface()->setMeleeDisabled(true);
+        getCreature()->getAIInterface()->setMeleeDisabled(true);
     }
 
     void OnCombatStop(Unit* /*pEnemy*/) override
@@ -1128,7 +1128,7 @@ public:
                     }
                 }
                 getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-                getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+                getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
                 getCreature()->setControlled(false, UNIT_STATE_ROOTED);
 
                 // sanctum32: not sure if it is correct spell id
@@ -1153,13 +1153,13 @@ public:
             if (getCreature()->getPowerPct(POWER_TYPE_MANA) <= 10 && getAIAgent() == AGENT_SPELL)
             {
                 setAIAgent(AGENT_MELEE);
-                getCreature()->GetAIInterface()->setMeleeDisabled(false);
+                getCreature()->getAIInterface()->setMeleeDisabled(false);
             }
             // boss got mana regenerated
             else
             {
                 setAIAgent(AGENT_SPELL);
-                getCreature()->GetAIInterface()->setMeleeDisabled(true);
+                getCreature()->getAIInterface()->setMeleeDisabled(true);
             }
 
             // Cast void bolt non stop

@@ -123,13 +123,13 @@ public:
 //                {
 //                    Creature* Tsunami = pCreatureAI->spawnCreature(CN_FLAME_TSUNAMI, TSUNAMI_SPAWN[i].x, TSUNAMI_SPAWN[i].y, TSUNAMI_SPAWN[i].z, TSUNAMI_SPAWN[i].o);
 //                    if (Tsunami != nullptr)
-//                        Tsunami->GetAIInterface()->moveTo(TSUNAMI_MOVE[i].x, TSUNAMI_MOVE[i].y, TSUNAMI_MOVE[i].z);
+//                        Tsunami->getAIInterface()->moveTo(TSUNAMI_MOVE[i].x, TSUNAMI_MOVE[i].y, TSUNAMI_MOVE[i].z);
 //                } break;
 //                case 1:
 //                {
 //                    Creature* Tsunami = pCreatureAI->spawnCreature(CN_FLAME_TSUNAMI, TSUNAMI_SPAWN[i + 3].x, TSUNAMI_SPAWN[i + 3].y, TSUNAMI_SPAWN[i + 3].z, TSUNAMI_SPAWN[i + 3].o);
 //                    if (Tsunami != nullptr)
-//                        Tsunami->GetAIInterface()->moveTo(TSUNAMI_MOVE[i + 3].x, TSUNAMI_MOVE[i + 3].y, TSUNAMI_MOVE[i + 3].z);
+//                        Tsunami->getAIInterface()->moveTo(TSUNAMI_MOVE[i + 3].x, TSUNAMI_MOVE[i + 3].y, TSUNAMI_MOVE[i + 3].z);
 //                } break;
 //            }
 //        }
@@ -257,7 +257,7 @@ public:
         if (m_cDrakes[DRAKE_TENEBRON] != NULL && m_cDrakes[DRAKE_TENEBRON]->isAlive())
         {
             sendDBChatMessage(3982);     //Tenebron!The eggs are yours to protect as well!
-            m_cDrakes[DRAKE_TENEBRON]->GetAIInterface()->moveTo(3254.606689f, 531.867859f, 66.898163f);
+            m_cDrakes[DRAKE_TENEBRON]->getAIInterface()->moveTo(3254.606689f, 531.867859f, 66.898163f);
             m_cDrakes[DRAKE_TENEBRON]->SetOrientation(4.215994f);
         }
         m_bDrakes[DRAKE_TENEBRON] = false;
@@ -268,7 +268,7 @@ public:
         if (m_cDrakes[DRAKE_SHADRON] != NULL && m_cDrakes[DRAKE_SHADRON]->isAlive())
         {
             sendDBChatMessage(3981); // Shadron! Come to me! All is at risk!
-            m_cDrakes[DRAKE_SHADRON]->GetAIInterface()->moveTo(3254.606689f, 531.867859f, 66.898163f);
+            m_cDrakes[DRAKE_SHADRON]->getAIInterface()->moveTo(3254.606689f, 531.867859f, 66.898163f);
             m_cDrakes[DRAKE_SHADRON]->SetOrientation(4.215994f);
         }
         m_bDrakes[DRAKE_SHADRON] = false;
@@ -279,7 +279,7 @@ public:
         if (m_cDrakes[DRAKE_VESPERON] != NULL && m_cDrakes[DRAKE_VESPERON]->isAlive())
         {
             sendDBChatMessage(3983);     //Vesperon, the clutch is in danger! Assist me!
-            m_cDrakes[DRAKE_VESPERON]->GetAIInterface()->moveTo(3254.606689f, 531.867859f, 66.898163f);
+            m_cDrakes[DRAKE_VESPERON]->getAIInterface()->moveTo(3254.606689f, 531.867859f, 66.898163f);
             m_cDrakes[DRAKE_VESPERON]->SetOrientation(4.215994f);
         }
         m_bDrakes[DRAKE_VESPERON] = false;

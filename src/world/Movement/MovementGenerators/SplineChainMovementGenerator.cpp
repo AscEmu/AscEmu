@@ -170,7 +170,7 @@ void SplineChainMovementGenerator::finalize(Unit* owner, bool active, bool movem
     if (movementInform && hasFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED))
     {
         Creature* ownerCreature = owner->ToCreature();
-        if (AIInterface* AI = ownerCreature ? ownerCreature->GetAIInterface() : nullptr)
+        if (AIInterface* AI = ownerCreature ? ownerCreature->getAIInterface() : nullptr)
             AI->movementInform(SPLINE_CHAIN_MOTION_TYPE, _id);
     }
 }

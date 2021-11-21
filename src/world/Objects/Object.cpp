@@ -1013,11 +1013,11 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
                 pVictim->energize(pVictim, 29442, amount, POWER_TYPE_MANA);
             }
 
-            pVictim->CombatStatusHandler_ResetPvPTimeout();
+            pVictim->combatResetPvPTimeout();
         }
 
         if (isPlayer())
-            static_cast<Player*>(this)->CombatStatusHandler_ResetPvPTimeout();
+            static_cast<Player*>(this)->combatResetPvPTimeout();
     }
 
     // Hackfix from legacy method
@@ -3547,7 +3547,7 @@ bool Object::isInBack(Object* target)
     // if we are a creature and have a UNIT_FIELD_TARGET then we are always facing them
     if (isCreature() && static_cast<Creature*>(this)->getTargetGuid() != 0)
     {
-        Unit* pTarget = static_cast<Creature*>(this)->GetAIInterface()->getCurrentTarget();
+        Unit* pTarget = static_cast<Creature*>(this)->getAIInterface()->getCurrentTarget();
         if (pTarget != nullptr)
             angle -= double(Object::calcRadAngle(target->m_position.x, target->m_position.y, pTarget->m_position.x, pTarget->m_position.y));
         else
@@ -3983,7 +3983,7 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
     if (nav != nullptr)
     {
         //if we can path there, go for it
-        if (!isCreatureOrPlayer() || !sloppypath /*|| !static_cast<Unit*>(this)->GetAIInterface()->CanCreatePath(outx, outy, outz)*/)
+        if (!isCreatureOrPlayer() || !sloppypath /*|| !static_cast<Unit*>(this)->getAIInterface()->CanCreatePath(outx, outy, outz)*/)
         {
             //raycast nav mesh to see if this place is valid
             float start[3] = { GetPositionY(), GetPositionZ() + 0.5f, GetPositionX() };

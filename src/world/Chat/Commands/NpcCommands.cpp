@@ -73,19 +73,19 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
     switch (ai_type)
     {
         case AGENT_MELEE:
-            creature_target->GetAIInterface()->setMeleeDisabled(false);
+            creature_target->getAIInterface()->setMeleeDisabled(false);
             break;
         case AGENT_RANGED:
-            creature_target->GetAIInterface()->m_canRangedAttack = true;
+            creature_target->getAIInterface()->m_canRangedAttack = true;
             break;
         case AGENT_FLEE:
-            creature_target->GetAIInterface()->m_canFlee = true;
+            creature_target->getAIInterface()->m_canFlee = true;
             break;
         case AGENT_SPELL:
-            creature_target->GetAIInterface()->addSpellToList(ai_spell);
+            creature_target->getAIInterface()->addSpellToList(ai_spell);
             break;
         case AGENT_CALLFORHELP:
-            creature_target->GetAIInterface()->m_canCallForHelp = true;
+            creature_target->getAIInterface()->m_canCallForHelp = true;
             break;
         default:
         {
@@ -225,7 +225,7 @@ bool ChatHandler::HandleNpcDeleteCommand(const char* args, WorldSession* m_sessi
     }
     else
     {
-        //creature_target->GetAIInterface()->hideWayPoints(m_session->GetPlayer());
+        //creature_target->getAIInterface()->hideWayPoints(m_session->GetPlayer());
 
         uint32 spawn_id = creature_target->spawnid;
 
@@ -334,7 +334,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     if (creature_target->m_factionTemplate)
         SystemMessage(m_session, "Combat Support: 0x%.3X", creature_target->m_factionTemplate->FriendlyMask);
 
-    if (creature_target->CombatStatus.IsInCombat())
+    if (creature_target->combatStatusHandler.IsInCombat())
         SystemMessage(m_session, "Is in combat!");
     else
         SystemMessage(m_session, "Not in combat!");
@@ -659,7 +659,7 @@ bool ChatHandler::HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_s
     if (creature_target == nullptr)
         return true;
 
-    creature_target->GetAIInterface()->setAiState(AI_STATE_IDLE);
+    creature_target->getAIInterface()->setAiState(AI_STATE_IDLE);
 
     creature_target->getMovementManager()->moveTargetedHome();
 

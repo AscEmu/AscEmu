@@ -87,8 +87,8 @@ public:
                 const auto unitTarget = pet->GetMapMgr()->GetUnit(playerOwner->getTargetGuid());
                 if (unitTarget != nullptr && isAttackable(playerOwner, unitTarget))
                 {
-                    pet->GetAIInterface()->onHostileAction(unitTarget);
-                    pet->GetAIInterface()->setCurrentTarget(unitTarget);
+                    pet->getAIInterface()->onHostileAction(unitTarget);
+                    pet->getAIInterface()->setCurrentTarget(unitTarget);
                 }
             }
         }
@@ -140,7 +140,7 @@ public:
                     sp1.minrange = GetMinRange(range);
                     sp1.maxrange = GetMaxRange(range);
 
-                    getCreature()->GetAIInterface()->addSpellToList(&sp1);
+                    getCreature()->getAIInterface()->addSpellToList(&sp1);
 
                     AI_Spell sp2{};
                     sp2.entryId = 59637;
@@ -160,7 +160,7 @@ public:
                     sp2.minrange = GetMinRange(range);
                     sp2.maxrange = GetMaxRange(range);
 
-                    getCreature()->GetAIInterface()->addSpellToList(&sp2);
+                    getCreature()->getAIInterface()->addSpellToList(&sp2);
                 }
             }
         }

@@ -123,7 +123,7 @@ public:
             {
                 pCreature->setNpcFlags(UNIT_NPC_FLAG_NONE);
                 pCreature->stopMoving();
-                pCreature->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+                pCreature->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 pCreature->GetScript()->DoAction(0);
             } break;
             default:

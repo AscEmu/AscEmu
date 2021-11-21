@@ -601,7 +601,7 @@ void Pet::Update(unsigned long time_passed)
         if (m_HappinessTimer == 0)
         {
             int32 burn = 1042;          //Based on WoWWiki pet looses 50 happiness over 6 min => 1042 every 7.5 s
-            if (CombatStatus.IsInCombat())
+            if (combatStatusHandler.IsInCombat())
                 burn >>= 1;             //in combat reduce burn by half (guessed)
 
             modPower(POWER_TYPE_HAPPINESS, -burn);
@@ -1019,9 +1019,9 @@ void Pet::OnPushToWorld()
 
 void Pet::InitializeMe(bool first)
 {
-    GetAIInterface()->Init(this, AI_SCRIPT_PET, m_Owner);
-    GetAIInterface()->setPetOwner(m_Owner);
-    GetAIInterface()->handleEvent(EVENT_FOLLOWOWNER, this, 0);
+    getAIInterface()->Init(this, AI_SCRIPT_PET, m_Owner);
+    getAIInterface()->setPetOwner(m_Owner);
+    getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, this, 0);
 
     creature_properties = sMySQLStore.getCreatureProperties(getEntry());
     if (creature_properties == nullptr)
@@ -1050,7 +1050,7 @@ void Pet::InitializeMe(bool first)
             ModDamageDone[SCHOOL_FROST] = (uint32)parentfrost;
         }
         else if (getEntry() == PET_IMP)
-            GetAIInterface()->setMeleeDisabled(true);
+            getAIInterface()->setMeleeDisabled(true);
         else if (getEntry() == PET_FELGUARD)
             setVirtualItemSlotId(MELEE, 12784);
 
@@ -2143,7 +2143,7 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     }
 
     setDeathState(JUST_DIED);
-    GetAIInterface()->enterEvadeMode();
+    getAIInterface()->enterEvadeMode();
 
     if (getChannelObjectGuid() != 0)
     {
@@ -2188,10 +2188,10 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     setHealth(0);
 
     // Wipe our attacker set on death
-    CombatStatus.Vanished();
+    combatStatusHandler.Vanished();
 
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
-    pAttacker->GetAIInterface()->eventOnTargetDied(this);
+    pAttacker->getAIInterface()->eventOnTargetDied(this);
     pAttacker->smsg_AttackStop(this);
 
     // Clear Threat

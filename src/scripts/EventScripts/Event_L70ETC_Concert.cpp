@@ -53,7 +53,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new SamAI(c); }
     explicit SamAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -112,7 +112,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new BerAI(c); }
     explicit BerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -168,7 +168,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new SigAI(c); }
     explicit SigAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -227,7 +227,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new MaiAI(c); }
     explicit MaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -284,7 +284,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new ThuAI(c); }
     explicit ThuAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -354,7 +354,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new UndeadAI(c); }
     explicit UndeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -399,7 +399,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new Undead2AI(c); }
     explicit Undead2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -445,7 +445,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new Undead3AI(c); }
     explicit Undead3AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -484,7 +484,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new TriggerAI(c); }
     explicit TriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -558,7 +558,7 @@ public:
             case 281:
             {
                 setAIAgent(AGENT_NULL);
-                getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+                getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
                 RemoveAIUpdateEvent();
                 getCreature()->Despawn(1000, 301000); break;
             }
@@ -575,7 +575,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new Trigger2AI(c); }
     explicit Trigger2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -660,7 +660,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new Effectsground(c); }
     explicit Effectsground(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -776,7 +776,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new Effectsair(c); }
     explicit Effectsair(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
         _setMeleeDisabled(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);

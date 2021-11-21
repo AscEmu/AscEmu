@@ -115,7 +115,7 @@ void FleeingMovementGenerator<Creature>::doFinalize(Creature* owner, bool active
     {
         owner->removeUnitFlags(UNIT_FLAG_FLEEING);
         owner->removeUnitStateFlag(UNIT_STATE_FLEEING_MOVE);
-        if (owner->GetAIInterface()->getCurrentTarget())
+        if (owner->getAIInterface()->getCurrentTarget())
             owner->setTargetGuid(owner->getGuid());
     }
 }
@@ -245,12 +245,12 @@ void TimedFleeingMovementGenerator::finalize(Unit* owner, bool active, bool/* mo
 
     owner->removeUnitFlags(UNIT_FLAG_FLEEING);
     owner->stopMoving();
-    if (Unit* victim = owner->GetAIInterface()->getCurrentTarget())
+    if (Unit* victim = owner->getAIInterface()->getCurrentTarget())
     {
         if (owner->isAlive())
         {
             //owner->AttackStop(); //todo
-            owner->ToCreature()->GetAIInterface()->onHostileAction(victim);
+            owner->ToCreature()->getAIInterface()->onHostileAction(victim);
         }
     }
 }

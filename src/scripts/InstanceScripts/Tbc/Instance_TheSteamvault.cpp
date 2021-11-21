@@ -65,7 +65,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new SteamriggerMechanicAI(c); }
     explicit SteamriggerMechanicAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->m_noRespawn = true;
     }
 
@@ -77,7 +77,7 @@ public:
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
     }
 
     void OnTargetDied(Unit* mTarget) override
@@ -92,7 +92,7 @@ public:
 
     void OnDamageTaken(Unit* /*mAttacker*/, uint32_t /*fAmount*/) override
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
     }
 };
 
@@ -171,10 +171,10 @@ public:
                     continue;
                 }
 
-                if (Gnome->GetAIInterface()->getCurrentTarget())
+                if (Gnome->getAIInterface()->getCurrentTarget())
                     continue;
 
-                if (!Gnome->GetAIInterface()->getUnitToFollow())
+                if (!Gnome->getAIInterface()->getUnitToFollow())
                 {
                     Gnome->getMovementManager()->moveFollow(getCreature(), 15.0f, Gnome->getFollowAngle());
                 }
@@ -243,7 +243,7 @@ public:
     explicit NagaDistillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         _setMeleeDisabled(true);
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
     }
@@ -308,7 +308,7 @@ public:
         if (Gate)
             Gate->setState(GO_STATE_OPEN);
 
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
         getCreature()->setControlled(false, UNIT_STATE_ROOTED);
         getCreature()->getMovementManager()->clear();
 
@@ -341,7 +341,7 @@ public:
             pDistiller = GetClosestDistiller();
             if (!pDistiller || (pDistiller->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT) && RagePhase != 0))
             {
-                getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+                getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
                 getCreature()->setControlled(false, UNIT_STATE_ROOTED);
                 getCreature()->getMovementManager()->clear();
 
@@ -359,12 +359,12 @@ public:
             {
                 if (EnrageTimer == 0 && RagePhase == 0)
                 {
-                    getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+                    getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
                     getCreature()->getMovementManager()->moveFollow(pDistiller, 10.0f, 2.0f);
 
                     getCreature()->stopMoving();
-                    getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-                    getCreature()->GetAIInterface()->moveTo(DistillerMoveTo[DistillerNumber].x, DistillerMoveTo[DistillerNumber].y, DistillerMoveTo[DistillerNumber].z);
+                    getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+                    getCreature()->getAIInterface()->moveTo(DistillerMoveTo[DistillerNumber].x, DistillerMoveTo[DistillerNumber].y, DistillerMoveTo[DistillerNumber].z);
 
                     if (getCreature()->GetDistance2dSq(pDistiller) <= 100.0f)
                     {
@@ -373,7 +373,7 @@ public:
                         pDistiller->setChannelSpellId(31543);
 
                         getCreature()->stopMoving();
-                        getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+                        getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                         sendDBChatMessage(SAY_WARLORD_KALITRESH_02);
 
@@ -399,7 +399,7 @@ public:
                     pDistiller->getThreatManager().clearAllThreat();
                     pDistiller->getThreatManager().removeMeFromThreatLists();
 
-                    getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+                    getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
                     getCreature()->setControlled(false, UNIT_STATE_ROOTED);
                     getCreature()->getMovementManager()->clear();
                     getCreature()->castSpell(getCreature(), 36453, true);

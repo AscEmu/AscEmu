@@ -206,8 +206,8 @@ void WaypointMovementGenerator<Creature>::doFinalize(Creature* owner, bool activ
 
 void WaypointMovementGenerator<Creature>::movementInform(Creature* owner)
 {
-    if (owner->GetAIInterface())
-        owner->GetAIInterface()->movementInform(WAYPOINT_MOTION_TYPE, _currentNode);
+    if (owner->getAIInterface())
+        owner->getAIInterface()->movementInform(WAYPOINT_MOTION_TYPE, _currentNode);
 }
 
 void WaypointMovementGenerator<Creature>::onArrived(Creature* owner)
@@ -231,7 +231,7 @@ void WaypointMovementGenerator<Creature>::onArrived(Creature* owner)
     }
 
     // inform AI
-    if (AIInterface* AI = owner->GetAIInterface())
+    if (AIInterface* AI = owner->getAIInterface())
     {
         AI->movementInform(WAYPOINT_MOTION_TYPE, _currentNode);
         AI->waypointReached(waypoint.id, _path->id);
@@ -261,7 +261,7 @@ void WaypointMovementGenerator<Creature>::startMove(Creature* owner, bool relaun
             ASSERT(_currentNode < _path->nodes.size() && "WaypointMovementGenerator::startMove: tried to reference a node id which is not included in path");
 
             // inform AI
-            if (AIInterface* AI = owner->GetAIInterface())
+            if (AIInterface* AI = owner->getAIInterface())
                 AI->waypointStarted(_path->nodes[_currentNode].id, _path->id);
         }
         else
@@ -289,7 +289,7 @@ void WaypointMovementGenerator<Creature>::startMove(Creature* owner, bool relaun
             owner->updateCurrentWaypointInfo(0, 0);
 
             // inform AI
-            if (AIInterface* AI = owner->GetAIInterface())
+            if (AIInterface* AI = owner->getAIInterface())
                 AI->waypointPathEnded(waypoint.id, _path->id);
             return;
         }
@@ -299,7 +299,7 @@ void WaypointMovementGenerator<Creature>::startMove(Creature* owner, bool relaun
         addFlag(MOVEMENTGENERATOR_FLAG_INITIALIZED);
 
         // inform AI
-        if (AIInterface* AI = owner->GetAIInterface())
+        if (AIInterface* AI = owner->getAIInterface())
             AI->waypointStarted(_path->nodes[_currentNode].id, _path->id);
     }
 

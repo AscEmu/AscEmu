@@ -4170,7 +4170,7 @@ void Spell::SpellEffectSpawn(uint8_t /*effectIndex*/)
             static float coord[3][3] = { { -108.9034f, 2129.5678f, 144.9210f }, { -108.9034f, 2155.5678f, 155.678f }, { -77.9034f, 2155.5678f, 155.678f } };
 
             // uint8 j = RandomUInt(3);
-            //u_caster->GetAIInterface()->SendMoveToPacket(coord[j][0],coord[j][1],coord[j][2],0.0f,0,u_caster->GetAIInterface()->getMoveFlags());
+            //u_caster->getAIInterface()->SendMoveToPacket(coord[j][0],coord[j][1],coord[j][2],0.0f,0,u_caster->getAIInterface()->getMoveFlags());
         }
     }
 }
@@ -4377,7 +4377,7 @@ void Spell::SpellEffectTameCreature(uint8_t /*effectIndex*/)
     Creature* tame = static_cast<Creature*>(unitTarget);
 
     // Remove target
-    tame->GetAIInterface()->handleEvent(EVENT_LEAVECOMBAT, p_caster, 0);
+    tame->getAIInterface()->handleEvent(EVENT_LEAVECOMBAT, p_caster, 0);
     Pet* pPet = sObjectMgr.CreatePet(tame->getEntry());
     if (!pPet->CreateAsSummon(tame->getEntry(), tame->GetCreatureProperties(), tame, p_caster, nullptr, 2, 0))
     {
@@ -4587,7 +4587,7 @@ void Spell::SpellEffectThreat(uint8_t effectIndex) // Threat
 
     if (!chck)
     {
-        unitTarget->GetAIInterface()->onHostileAction(u_caster);
+        unitTarget->getAIInterface()->onHostileAction(u_caster);
         unitTarget->getThreatManager().addThreat(u_caster, 0.0f);
     }
     else
@@ -4746,7 +4746,7 @@ void Spell::SpellEffectDistract(uint8_t /*effectIndex*/) // Distract
 
     if (m_targets.getDestination().isSet())
     {
-        //      unitTarget->GetAIInterface()->MoveTo(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, 0);
+        //      unitTarget->getAIInterface()->MoveTo(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, 0);
         uint32 Stare_duration = GetDuration();
         if (Stare_duration > 30 * 60 * 1000)
             Stare_duration = 10000;//if we try to stare for more then a half an hour then better not stare at all :P (bug)
@@ -5469,7 +5469,7 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
         pPet->setDynamicFlags(0);
         pPet->setHealth(pPet->getMaxHealth() * damage / 100);
         pPet->setDeathState(ALIVE);
-        pPet->GetAIInterface()->handleEvent(EVENT_FOLLOWOWNER, pPet, 0);
+        pPet->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, pPet, 0);
         sEventMgr.RemoveEvents(pPet, EVENT_PET_DELAYED_REMOVE);
         pPet->SendSpellsToOwner();
     }
@@ -6415,7 +6415,7 @@ void Spell::SpellEffectActivateSpec(uint8_t /*effectIndex*/)
     if (p_caster == nullptr)
         return;
 
-    if (p_caster->CombatStatus.IsInCombat())
+    if (p_caster->combatStatusHandler.IsInCombat())
     {
         sendCastResult(SPELL_FAILED_AFFECTING_COMBAT);
         return;

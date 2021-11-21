@@ -52,7 +52,7 @@ public:
         Creature* firstenemy = plr->GetMapMgr()->CreateAndSpawnCreature(1511, -13770.5f, -6.79f, 42.8f, 5.7f);
         if (firstenemy != nullptr)
         {
-            firstenemy->GetAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
+            firstenemy->getAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
             firstenemy->Despawn(10 * 60 * 1000, 0);
         }
     }
@@ -72,7 +72,7 @@ public:
             Creature* beka1 =mPlayer->GetMapMgr()->CreateAndSpawnCreature(1516, -13770.5f, -6.79f, 42.8f, 5.7f);
             if (beka1 != nullptr)
             {
-                beka1->GetAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
+                beka1->getAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
                 beka1->SetOrientation(4.07f);
                 beka1->Despawn(10 * 60 * 1000, 0);
             }
@@ -85,7 +85,7 @@ public:
                 Creature* beka1 = mPlayer->GetMapMgr()->CreateAndSpawnCreature(1516, -13770.5f, -6.79f, 42.8f, 5.7f);
                 if (beka1 != nullptr)
                 {
-                    beka1->GetAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
+                    beka1->getAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
                     beka1->SetOrientation(4.07f);
                     beka1->Despawn(10 * 60 * 1000, 0);
                 }
@@ -108,7 +108,7 @@ public:
             Creature* beka1 = mPlayer->GetMapMgr()->CreateAndSpawnCreature(1514, -13770.5f, -6.79f, 42.8f, 5.7f);
             if (beka1 != nullptr)
             {
-                beka1->GetAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
+                beka1->getAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
                 beka1->SetOrientation(4.07f);
                 beka1->Despawn(10 * 60 * 1000, 0);
             }
@@ -121,7 +121,7 @@ public:
                 Creature* beka1 = mPlayer->GetMapMgr()->CreateAndSpawnCreature(1514, -13770.5f, -6.79f, 42.8f, 5.7f);
                 if (beka1 != nullptr)
                 {
-                    beka1->GetAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
+                    beka1->getAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
                     beka1->SetOrientation(4.07f);
                     beka1->Despawn(10 * 60 * 1000, 0);
                 }
@@ -279,7 +279,7 @@ class FacingNegolash : public QuestScript
         Creature* Negolash = pPlayer->GetMapMgr()->CreateAndSpawnCreature(1494, -14657.400391f, 155.115997f, 4.081050f, 0.353429f);
         if (Negolash != nullptr)
         {
-            Negolash->GetAIInterface()->moveTo(-14647.526367f, 143.710052f, 1.164550f);
+            Negolash->getAIInterface()->moveTo(-14647.526367f, 143.710052f, 1.164550f);
         }
     }
 };

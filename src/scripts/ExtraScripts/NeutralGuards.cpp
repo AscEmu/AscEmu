@@ -27,7 +27,7 @@ public:
                 if (guard != nullptr)
                 {
                     setGuardWaypoints();
-                    guard->GetAIInterface()->onHostileAction(mTarget);
+                    guard->getAIInterface()->onHostileAction(mTarget);
                     getCreature()->Despawn(60000, 0);
                 }
             }

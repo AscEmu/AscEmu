@@ -275,7 +275,7 @@ public:
     explicit ArchimondeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->m_noRespawn = true;
 
         Unit* Archimonde = getNearestCreature(5598.629883f, -3447.719971f, 1576.650024f, 17968);
@@ -294,7 +294,7 @@ public:
     explicit DoomfireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->m_noRespawn = true;
 
         RegisterAIUpdateEvent(1000);
@@ -315,15 +315,15 @@ public:
         DirChange++;
         if (DirChange == 4 && Util::getRandomUInt(3) == 1 || DirChange >= 5)
         {
-            if (getCreature()->GetAIInterface()->getUnitToFollow())
+            if (getCreature()->getAIInterface()->getUnitToFollow())
             {
-                if (Util::getRandomUInt(3) == 1 || getCreature()->GetDistance2dSq(getCreature()->GetAIInterface()->getUnitToFollow()) <= 2.0f)
+                if (Util::getRandomUInt(3) == 1 || getCreature()->GetDistance2dSq(getCreature()->getAIInterface()->getUnitToFollow()) <= 2.0f)
                 {
-                    getCreature()->GetAIInterface()->setUnitToFollow(nullptr);
+                    getCreature()->getAIInterface()->setUnitToFollow(nullptr);
                 }
             }
 
-            if (!getCreature()->GetAIInterface()->getUnitToFollow())
+            if (!getCreature()->getAIInterface()->getUnitToFollow())
             {
                 if (Util::getRandomUInt(3) == 1)
                 {
@@ -331,12 +331,12 @@ public:
                     NewTarget = FindTarget();
                     if (NewTarget)
                     {
-                        getCreature()->GetAIInterface()->setUnitToFollow(NewTarget);
+                        getCreature()->getAIInterface()->setUnitToFollow(NewTarget);
                         getCreature()->getMovementManager()->moveFollow(NewTarget, 2.0f, 0.0f);
                     }
                 }
 
-                if (!getCreature()->GetAIInterface()->getUnitToFollow())
+                if (!getCreature()->getAIInterface()->getUnitToFollow())
                 {
                     float movedist = 10.0f;
                     float x = 0.0f;
@@ -353,7 +353,7 @@ public:
                     x = getCreature()->GetPositionX() + xchange;
                     y = getCreature()->GetPositionY() + ychange;
 
-                    getCreature()->GetAIInterface()->moveTo(x, y, getCreature()->GetPositionZ());
+                    getCreature()->getAIInterface()->moveTo(x, y, getCreature()->GetPositionZ());
                 }
             }
 

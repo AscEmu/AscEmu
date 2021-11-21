@@ -480,8 +480,8 @@ void NaxxramasFollowerAI::Destroy()
 //        Unit* CurrentTarget = NaxxramasFollower->getCreature()->getThreatManager().getCurrentVictim();
 //        if (CurrentTarget != NULL && CurrentTarget != pTarget)
 //        {
-//            NaxxramasFollower->getCreature()->GetAIInterface()->onHostileAction(pTarget, 500);
-//            NaxxramasFollower->getCreature()->GetAIInterface()->setCurrentTarget(pTarget);
+//            NaxxramasFollower->getCreature()->getAIInterface()->onHostileAction(pTarget, 500);
+//            NaxxramasFollower->getCreature()->getAIInterface()->setCurrentTarget(pTarget);
 //        }
 //
 //        NaxxramasFollower->castSpell(NaxxramasFollower->mCharge);
@@ -1121,8 +1121,8 @@ void EyeStalkerAI::AIUpdate()
             Unit* NewTarget = getBestUnitTarget(TargetFilter_Closest);
             if (NewTarget != NULL && getRangeToObject(NewTarget) <= MaxRange)
             {
-                getCreature()->GetAIInterface()->setCurrentTarget(NewTarget);
-                getCreature()->GetAIInterface()->onHostileAction(NewTarget);
+                getCreature()->getAIInterface()->setCurrentTarget(NewTarget);
+                getCreature()->getAIInterface()->onHostileAction(NewTarget);
                 getCreature()->getThreatManager().addThreat(NewTarget, 200.f);
             }
 
@@ -1456,9 +1456,9 @@ void NothThePlaguebringerAI::Destroy()
 //        Noth->getCreature()->SetPosition(2684.620850f, -3502.447266f, 261.314880f, 0.098174f);
 //
 //        if (pTarget != NULL)
-//            Noth->getCreature()->GetAIInterface()->onHostileAction(pTarget, 200);
+//            Noth->getCreature()->getAIInterface()->onHostileAction(pTarget, 200);
 //
-//        Noth->getCreature()->GetAIInterface()->setCurrentTarget(pTarget);
+//        Noth->getCreature()->getAIInterface()->setCurrentTarget(pTarget);
 //    }
 //}
 //
@@ -1485,9 +1485,9 @@ void NothThePlaguebringerAI::Destroy()
 //        Noth->getCreature()->SetPosition(NewX, NewY, Noth->getCreature()->GetPositionZ(), Angle);
 //        Noth->_clearHateList();
 //        if (pTarget != NULL)
-//            Noth->getCreature()->GetAIInterface()->onHostileAction(pTarget, 500);
+//            Noth->getCreature()->getAIInterface()->onHostileAction(pTarget, 500);
 //
-//        Noth->getCreature()->GetAIInterface()->setCurrentTarget(pTarget);
+//        Noth->getCreature()->getAIInterface()->setCurrentTarget(pTarget);
 //    }
 //}
 
@@ -2155,8 +2155,8 @@ NecroKnightAI::NecroKnightAI(Creature* pCreature) : CreatureAIScript(pCreature)
 //    {
 //        NecroKnight->_applyAura(NECRO_KNIGHT_BLINK);
 //        NecroKnight->getCreature()->SetPosition(pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), NecroKnight->getCreature()->GetOrientation());
-//        NecroKnight->getCreature()->GetAIInterface()->onHostileAction(pTarget, 500);
-//        NecroKnight->getCreature()->GetAIInterface()->setCurrentTarget(pTarget);
+//        NecroKnight->getCreature()->getAIInterface()->onHostileAction(pTarget, 500);
+//        NecroKnight->getCreature()->getAIInterface()->setCurrentTarget(pTarget);
 //    }
 //}
 

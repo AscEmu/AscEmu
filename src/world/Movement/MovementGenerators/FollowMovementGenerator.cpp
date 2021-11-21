@@ -17,7 +17,7 @@ static void doMovementInform(Unit* owner, Unit* target)
     if (owner->getObjectTypeId() != TYPEID_UNIT)
         return;
 
-    if (AIInterface* AI = owner->GetAIInterface())
+    if (AIInterface* AI = owner->getAIInterface())
         AI->movementInform(FOLLOW_MOTION_TYPE, target->getGuidLow());
 }
 
@@ -180,7 +180,7 @@ void FollowMovementGenerator::updatePetSpeed(Unit* owner)
     {
         if (!getTarget() || getTarget()->getGuid() == owner->getOwnerGUID())
         {
-            oPet->UpdateSpeed();
+            oPet->updateSpeed();
         }
     }
 }

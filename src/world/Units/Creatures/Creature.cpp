@@ -210,9 +210,9 @@ void Creature::generateLoot()
 
     loot.gold = creature_properties->money;
 
-    if (GetAIInterface()->getDifficultyType() != 0)
+    if (getAIInterface()->getDifficultyType() != 0)
     {
-        uint32_t creature_difficulty_entry = sMySQLStore.getCreatureDifficulty(getEntry(), GetAIInterface()->getDifficultyType());
+        uint32_t creature_difficulty_entry = sMySQLStore.getCreatureDifficulty(getEntry(), getAIInterface()->getDifficultyType());
         if (auto properties_difficulty = sMySQLStore.getCreatureProperties(creature_difficulty_entry))
         {
             if (properties_difficulty->money != creature_properties->money)
@@ -738,7 +738,7 @@ void Creature::OnRespawn(MapMgr* m)
     getMovementManager()->initializeDefault();
 
     // Re-initialize reactstate that could be altered by movementgenerators
-    GetAIInterface()->initializeReactState();
+    getAIInterface()->initializeReactState();
 
     m_PickPocketed = false;
     PushToWorld(m);
@@ -1090,7 +1090,7 @@ void Creature::EnslaveExpire()
             break;
     };
 
-    GetAIInterface()->Init(this, AI_SCRIPT_AGRO);
+    getAIInterface()->Init(this, AI_SCRIPT_AGRO);
 
     updateInRangeOppositeFactionSet();
     updateInRangeSameFactionSet();
@@ -1279,7 +1279,7 @@ void Creature::RegenerateHealth()
     {
         amt = getMaxHealth() * 0.10f;
     }
-    else if (!CombatStatus.IsInCombat())
+    else if (!combatStatusHandler.IsInCombat())
     {
         // 25% of max health per tick
         amt = getMaxHealth() * 0.25f;
@@ -1548,12 +1548,12 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     // not a neutral creature
     if (!(m_factionEntry != nullptr && m_factionEntry->RepListId == -1 && m_factionTemplate->HostileMask == 0 && m_factionTemplate->FriendlyMask == 0))
     {
-        GetAIInterface()->setCanCallForHelp(true);
+        getAIInterface()->setCanCallForHelp(true);
     }
 
     // set if creature can shoot or not.
     if (creature_properties->CanRanged == 1)
-        GetAIInterface()->m_canRangedAttack = true;
+        getAIInterface()->m_canRangedAttack = true;
     else
         m_aiInterface->m_canRangedAttack = false;
 
@@ -1601,23 +1601,23 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     setBytes2(spawn->bytes2);
 
     ////////////AI
-    GetAIInterface()->initialiseScripts(getEntry());
-    GetAIInterface()->eventOnLoad();
+    getAIInterface()->initialiseScripts(getEntry());
+    getAIInterface()->eventOnLoad();
 
     if (!creature_properties->isTrainingDummy && !isVehicle())
     {
-        GetAIInterface()->setAllowedToEnterCombat(isattackable(spawn));
+        getAIInterface()->setAllowedToEnterCombat(isattackable(spawn));
     }
     else
     {
         if (!isattackable(spawn))
         {
-            GetAIInterface()->setAllowedToEnterCombat(false);
-            GetAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
+            getAIInterface()->setAllowedToEnterCombat(false);
+            getAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
         }
         else
         {
-            GetAIInterface()->setAllowedToEnterCombat(true);
+            getAIInterface()->setAllowedToEnterCombat(true);
         }
     }
 
@@ -1643,14 +1643,14 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
 
     /*  // Dont was Used in old AIInterface left the code here if needed at other Date
     if (creature_properties->guardtype == GUARDTYPE_CITY)
-        GetAIInterface()->setGuard(true);
+        getAIInterface()->setGuard(true);
     else
-        GetAIInterface()->setGuard(false);*/
+        getAIInterface()->setGuard(false);*/
 
     if (creature_properties->guardtype == GUARDTYPE_NEUTRAL)
-        GetAIInterface()->setGuard(true);
+        getAIInterface()->setGuard(true);
     else
-        GetAIInterface()->setGuard(false);
+        getAIInterface()->setGuard(false);
 
 
     // creature death state
@@ -1699,12 +1699,12 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 
     if (creature_properties->isTrainingDummy == 0 && !isVehicle())
     {
-        GetAIInterface()->setAllowedToEnterCombat(true);
+        getAIInterface()->setAllowedToEnterCombat(true);
     }
     else
     {
-        GetAIInterface()->setAllowedToEnterCombat(false);
-        GetAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
+        getAIInterface()->setAllowedToEnterCombat(false);
+        getAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
     }
 
     setSpeedRate(TYPE_WALK, creature_properties->walk_speed, false);
@@ -1763,14 +1763,14 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     // not a neutral creature
     if (m_factionEntry && !(m_factionEntry->RepListId == -1 && m_factionTemplate->HostileMask == 0 && m_factionTemplate->FriendlyMask == 0))
     {
-        GetAIInterface()->setCanCallForHelp(true);
+        getAIInterface()->setCanCallForHelp(true);
     }
 
     // set if creature can shoot or not.
     if (creature_properties->CanRanged == 1)
-        GetAIInterface()->m_canRangedAttack = true;
+        getAIInterface()->m_canRangedAttack = true;
     else
-        GetAIInterface()->m_canRangedAttack = false;
+        getAIInterface()->m_canRangedAttack = false;
 
     // checked at loading
     m_defaultMovementType = MovementGeneratorType(IDLE_MOTION_TYPE);
@@ -1812,8 +1812,8 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setModCastSpeed(1.0f);   // better set this one
 
     ////////////AI
-    GetAIInterface()->initialiseScripts(getEntry());
-    GetAIInterface()->eventOnLoad();
+    getAIInterface()->initialiseScripts(getEntry());
+    getAIInterface()->eventOnLoad();
 
     //////////////AI
 
@@ -1833,14 +1833,14 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 
     /*  // Dont was Used in old AIInterface left the code here if needed at other Date
     if (creature_properties->guardtype == GUARDTYPE_CITY)
-        GetAIInterface()->setGuard(true);
+        getAIInterface()->setGuard(true);
     else
-        GetAIInterface()->setGuard(false);*/
+        getAIInterface()->setGuard(false);*/
 
     if (creature_properties->guardtype == GUARDTYPE_NEUTRAL)
-        GetAIInterface()->setGuard(true);
+        getAIInterface()->setGuard(true);
     else
-        GetAIInterface()->setGuard(false);
+        getAIInterface()->setGuard(false);
 
     if (creature_properties->invisibility_type > INVIS_FLAG_NORMAL)
         // TODO: currently only invisibility type 15 is used for invisible trigger NPCs
@@ -1924,7 +1924,7 @@ void Creature::OnPushToWorld()
 
     }
 
-    GetAIInterface()->setCreatureProtoDifficulty(creature_properties->Id);
+    getAIInterface()->setCreatureProtoDifficulty(creature_properties->Id);
 
     if (mEvent != nullptr)
     {
@@ -2267,7 +2267,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     }
 
     setDeathState(JUST_DIED);
-    GetAIInterface()->enterEvadeMode();
+    getAIInterface()->enterEvadeMode();
 
     if (getChannelObjectGuid() != 0)
     {
@@ -2313,13 +2313,13 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     setHealth(0);
 
     // Wipe our attacker set on death
-    CombatStatus.Vanished();
+    combatStatusHandler.Vanished();
 
     RemoveAllNonPersistentAuras();
 
     CALL_SCRIPT_EVENT(pAttacker, _internalOnTargetDied)(this);
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
-    pAttacker->GetAIInterface()->eventOnTargetDied(this);
+    pAttacker->getAIInterface()->eventOnTargetDied(this);
 
     pAttacker->smsg_AttackStop(this);
 

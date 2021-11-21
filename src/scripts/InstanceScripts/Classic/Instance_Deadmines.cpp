@@ -170,7 +170,7 @@ public:
         {
             if (NearChest())
                 SwitchWeapons();
-            else if (getCreature()->GetAIInterface()->isAiState(AI_STATE_SCRIPTMOVE) == false)
+            else if (getCreature()->getAIInterface()->isAiState(AI_STATE_SCRIPTMOVE) == false)
             {
                 MoveToChest();
             }
@@ -200,17 +200,17 @@ public:
     void MoveToChest()
     {
         if (canEnterCombat())
-            getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+            getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
 
         stopMovement();
-        getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+        getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
         moveTo(1.100060f, -780.026367f, 9.811194f);
     }
 
     void MoveToPlayer()
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
-        getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
+        getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
     }
 
     bool NearChest()
@@ -218,7 +218,7 @@ public:
         if (getCreature()->GetPositionX() == 1.100060f && getCreature()->GetPositionY() == -780.026367f)
             return true;
 
-        if (getCreature()->GetAIInterface()->isAiState(AI_STATE_SCRIPTMOVE) == false)
+        if (getCreature()->getAIInterface()->isAiState(AI_STATE_SCRIPTMOVE) == false)
         {
             float XDiff = getCreature()->GetPositionX() - 1.100060f;
             float YDiff = getCreature()->GetPositionY() + 780.026367f;

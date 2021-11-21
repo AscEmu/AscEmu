@@ -277,7 +277,7 @@ public:
             if (pTarget != NULL)
             {
                 _clearHateList();
-                getCreature()->GetAIInterface()->setCurrentTarget(pTarget);
+                getCreature()->getAIInterface()->setCurrentTarget(pTarget);
                 getCreature()->getThreatManager().addThreat(pTarget, 1000);
                 //CastSpellOnTarget(pTarget, TargetGen_Current, mPursue->mSpellInfo, true);
             }
@@ -419,7 +419,7 @@ public:
 
             // Clear Hatelist dont allow Combat and root the Unit
             getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
             getCreature()->getThreatManager().clearAllThreat();
             getCreature()->getThreatManager().removeMeFromThreatLists();
 

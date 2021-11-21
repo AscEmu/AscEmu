@@ -256,7 +256,7 @@ void ThreatManager::updateVictim()
 
     // Tell the AIInterface to chase our target because our Victim has changed
     if (newHighest)
-        _owner->GetAIInterface()->updateVictim(_currentVictimRef->getVictim());
+        _owner->getAIInterface()->updateVictim(_currentVictimRef->getVictim());
 }
 
 ThreatReference const* ThreatManager::reselectVictim()
@@ -447,7 +447,7 @@ void ThreatManager::removeMeFromThreatLists()
                 threat *= it->second;
                 break;
             }
-            float mod = static_cast<float>(victim->GetGeneratedThreatModifyer(mask));
+            float mod = static_cast<float>(victim->getGeneratedThreatModifyer(mask));
             victimMgr._multiSchoolModifiers[mask] = mod;
             threat *= mod;
             break;
@@ -553,7 +553,7 @@ void ThreatManager::addThreat(Unit* target, float amount, SpellInfo const* spell
     }
 
     // Damage Dealt for Scripts
-    getOwner()->GetAIInterface()->handleEvent(EVENT_DAMAGETAKEN, target, static_cast<uint32_t>(amount));
+    getOwner()->getAIInterface()->handleEvent(EVENT_DAMAGETAKEN, target, static_cast<uint32_t>(amount));
 
     // ok, now we actually apply threat
     // check if we already have an entry - if we do, just increase threat for that entry and we're done

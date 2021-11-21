@@ -836,7 +836,7 @@ void Aura::SpellAuraModPossess(AuraEffectModifier* /*aurEff*/, bool apply)
             //mob woke up and realized he was controlled. He will turn to controller and also notify the other mobs he is fighting that they should attack the caster
             //sadly i got only 3 test cases about this so i might be wrong :(
             //zack : disabled until tested
-            m_target->GetAIInterface()->eventChangeFaction(caster);
+            m_target->getAIInterface()->eventChangeFaction(caster);
         }
     }
 }
@@ -895,7 +895,7 @@ void Aura::SpellAuraModConfuse(AuraEffectModifier* aurEff, bool apply)
         }
         else
         {
-            m_target->GetAIInterface()->onHostileAction(u_caster);
+            m_target->getAIInterface()->onHostileAction(u_caster);
         }
     }
 }
@@ -931,7 +931,7 @@ void Aura::SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply)
         m_target->SetCharmTempVal(m_target->getFactionTemplate());
         m_target->SetFaction(caster->getFactionTemplate());
         m_target->updateInRangeOppositeFactionSet();
-        m_target->GetAIInterface()->Init(m_target, AI_SCRIPT_PET, caster);
+        m_target->getAIInterface()->Init(m_target, AI_SCRIPT_PET, caster);
         m_target->setCharmedByGuid(caster->getGuid());
         caster->setCharmGuid(target->getGuid());
         //damn it, the other effects of enslave demon will agro him on us anyway :S
@@ -964,7 +964,7 @@ void Aura::SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply)
         m_target->SetFaction(m_target->GetCharmTempVal());
         m_target->getThreatManager().clearAllThreat();
         m_target->updateInRangeOppositeFactionSet();
-        m_target->GetAIInterface()->Init(m_target, AI_SCRIPT_AGRO);
+        m_target->getAIInterface()->Init(m_target, AI_SCRIPT_AGRO);
         m_target->setCharmedByGuid(0);
 
         if (caster->GetSession() != nullptr)   // crashfix
@@ -999,7 +999,7 @@ void Aura::SpellAuraModFear(AuraEffectModifier* aurEff, bool apply)
         mPositive = false;
         m_target->addUnitFlags(UNIT_FLAG_FLEEING);
         m_target->setAItoUse(true);
-        m_target->GetAIInterface()->handleEvent(EVENT_FEAR, u_caster, 0);
+        m_target->getAIInterface()->handleEvent(EVENT_FEAR, u_caster, 0);
         m_target->m_fearmodifiers++;
         if (p_target)
         {
@@ -1016,7 +1016,7 @@ void Aura::SpellAuraModFear(AuraEffectModifier* aurEff, bool apply)
         if (m_target->m_fearmodifiers <= 0)
         {
             m_target->removeUnitFlags(UNIT_FLAG_FLEEING);
-            m_target->GetAIInterface()->handleEvent(EVENT_UNFEAR, nullptr, 0);
+            m_target->getAIInterface()->handleEvent(EVENT_UNFEAR, nullptr, 0);
 
             if (p_target)
             {
@@ -1031,7 +1031,7 @@ void Aura::SpellAuraModFear(AuraEffectModifier* aurEff, bool apply)
             }
             else
             {
-                m_target->GetAIInterface()->onHostileAction(u_caster);
+                m_target->getAIInterface()->onHostileAction(u_caster);
             }
         }
     }
@@ -1075,9 +1075,9 @@ void Aura::SpellAuraModThreatGenerated(AuraEffectModifier* aurEff, bool apply)
         if (aurEff->getEffectMiscValue() & (((uint32)1) << x))
         {
             if (apply)
-                m_target->ModGeneratedThreatModifyer(x, aurEff->getEffectDamage());
+                m_target->modGeneratedThreatModifyer(x, aurEff->getEffectDamage());
             else
-                m_target->ModGeneratedThreatModifyer(x, -(aurEff->getEffectDamage()));
+                m_target->modGeneratedThreatModifyer(x, -(aurEff->getEffectDamage()));
         }
     }
 }
@@ -1193,13 +1193,13 @@ void Aura::SpellAuraModStun(AuraEffectModifier* aurEff, bool apply)
         if (m_target->isCreature())
         {
             Unit* target = GetUnitCaster();
-            if (m_target->GetAIInterface()->getCurrentTarget() != nullptr)
-                target = m_target->GetAIInterface()->getCurrentTarget();
+            if (m_target->getAIInterface()->getCurrentTarget() != nullptr)
+                target = m_target->getAIInterface()->getCurrentTarget();
 
             if (target == nullptr)
                 return;
 
-            m_target->GetAIInterface()->onHostileAction(target, nullptr);
+            m_target->getAIInterface()->onHostileAction(target, nullptr);
         }
     }
 
@@ -1725,7 +1725,7 @@ void Aura::SpellAuraModResistance(AuraEffectModifier* aurEff, bool apply)
         amt = -aurEff->getEffectDamage();
     Unit* caster = GetUnitCaster();
     if (isNegative() && caster != nullptr && m_target->isCreature())
-        m_target->GetAIInterface()->onHostileAction(caster);
+        m_target->getAIInterface()->onHostileAction(caster);
 
     Player* plr = GetPlayerCaster();
     if (plr != nullptr)
@@ -1853,7 +1853,7 @@ void Aura::SpellAuraModRoot(AuraEffectModifier* aurEff, bool apply)
             m_target->setControlled(false, UNIT_STATE_ROOTED);
 
         if (m_target->isCreature())
-            m_target->GetAIInterface()->onHostileAction(GetUnitCaster());
+            m_target->getAIInterface()->onHostileAction(GetUnitCaster());
 
         if (getSpellInfo()->getSchoolMask() & SCHOOL_MASK_FROST && !--m_target->asc_frozen)
             m_target->removeAuraStateAndAuras(AURASTATE_FLAG_FROZEN);
@@ -2002,7 +2002,7 @@ void Aura::SpellAuraModIncreaseSpeed(AuraEffectModifier* aurEff, bool apply)
     else
         m_target->m_speedModifier -= aurEff->getEffectDamage();
 
-    m_target->UpdateSpeed();
+    m_target->updateSpeed();
 }
 
 void Aura::SpellAuraModIncreaseMountedSpeed(AuraEffectModifier* aurEff, bool apply)
@@ -2026,7 +2026,7 @@ void Aura::SpellAuraModIncreaseMountedSpeed(AuraEffectModifier* aurEff, bool app
     }
     else
         m_target->m_mountedspeedModifier -= aurEff->getEffectDamage();
-    m_target->UpdateSpeed();
+    m_target->updateSpeed();
 }
 
 void Aura::SpellAuraModCreatureRangedAttackPower(AuraEffectModifier* aurEff, bool apply)
@@ -2130,8 +2130,8 @@ void Aura::SpellAuraModDecreaseSpeed(AuraEffectModifier* aurEff, bool apply)
         //m_target->m_speedModifier -= aurEff->getEffectDamage();
         //m_target->m_slowdown= NULL;
     }
-    if (m_target->GetSpeedDecrease())
-        m_target->UpdateSpeed();
+    if (m_target->getSpeedDecrease())
+        m_target->updateSpeed();
 }
 
 void Aura::UpdateAuraModDecreaseSpeed(AuraEffectModifier* aurEff)
@@ -2818,7 +2818,7 @@ void Aura::SpellAuraFeignDeath(AuraEffectModifier* /*aurEff*/, bool apply)
             p_target->addUnitFlags(UNIT_FLAG_FEIGN_DEATH);
             p_target->addDynamicFlags(U_DYN_FLAG_DEAD);
 
-            //now get rid of mobs agro. pTarget->CombatStatus.AttackersForgetHate() - this works only for already attacking mobs
+            //now get rid of mobs agro. pTarget->combatStatusHandler.AttackersForgetHate() - this works only for already attacking mobs
             for (const auto& itr : p_target->getInRangeObjectsSet())
             {
                 if (itr && itr->isCreatureOrPlayer() && static_cast<Unit*>(itr)->isAlive())
@@ -3737,10 +3737,10 @@ void Aura::SpellAuraModTotalThreat(AuraEffectModifier* aurEff, bool apply)
         else
             mPositive = false;
 
-        m_target->ModThreatModifyer(aurEff->getEffectDamage());
+        m_target->modThreatModifyer(aurEff->getEffectDamage());
     }
     else
-        m_target->ModThreatModifyer(-(aurEff->getEffectDamage()));
+        m_target->modThreatModifyer(-(aurEff->getEffectDamage()));
 }
 
 void Aura::SpellAuraWaterWalk(AuraEffectModifier* /*aurEff*/, bool apply)
@@ -4198,7 +4198,7 @@ void Aura::SpellAuraModIncreaseSpeedAlways(AuraEffectModifier* aurEff, bool appl
     else
         m_target->m_speedModifier -= aurEff->getEffectDamage();
 
-    m_target->UpdateSpeed();
+    m_target->updateSpeed();
 }
 
 void Aura::SpellAuraModIncreaseEnergyPerc(AuraEffectModifier* aurEff, bool apply)
@@ -4770,7 +4770,7 @@ void Aura::SpellAuraIncreasePartySpeed(AuraEffectModifier* aurEff, bool apply)
         {
             m_target->m_speedModifier -= aurEff->getEffectDamage();
         }
-        m_target->UpdateSpeed();
+        m_target->updateSpeed();
     }
 }
 
@@ -5196,7 +5196,7 @@ void Aura::SpellAuraLimitSpeed(AuraEffectModifier* aurEff, bool apply)
 {
     int32 amount = (apply) ? aurEff->getEffectDamage() : -aurEff->getEffectDamage();
     m_target->m_maxSpeed += (float)amount;
-    m_target->UpdateSpeed();
+    m_target->updateSpeed();
 }
 void Aura::SpellAuraIncreaseTimeBetweenAttacksPCT(AuraEffectModifier* aurEff, bool apply)
 {
@@ -5392,7 +5392,7 @@ void Aura::SpellAuraEnableFlight(AuraEffectModifier* aurEff, bool apply)
     {
         m_target->setMoveCanFly(true);
         m_target->m_flyspeedModifier += aurEff->getEffectDamage();
-        m_target->UpdateSpeed();
+        m_target->updateSpeed();
         if (m_target->isPlayer())
         {
             static_cast< Player* >(m_target)->flying_aura = m_spellInfo->getId();
@@ -5402,7 +5402,7 @@ void Aura::SpellAuraEnableFlight(AuraEffectModifier* aurEff, bool apply)
     {
         m_target->setMoveCanFly(false);
         m_target->m_flyspeedModifier -= aurEff->getEffectDamage();
-        m_target->UpdateSpeed();
+        m_target->updateSpeed();
         if (m_target->isPlayer())
         {
             static_cast< Player* >(m_target)->flying_aura = 0;
@@ -5417,7 +5417,7 @@ void Aura::SpellAuraEnableFlightWithUnmountedSpeed(AuraEffectModifier* aurEff, b
     {
         m_target->setMoveCanFly(true);
         m_target->m_flyspeedModifier += aurEff->getEffectDamage();
-        m_target->UpdateSpeed();
+        m_target->updateSpeed();
         if (m_target->isPlayer())
         {
             static_cast< Player* >(m_target)->flying_aura = m_spellInfo->getId();
@@ -5427,7 +5427,7 @@ void Aura::SpellAuraEnableFlightWithUnmountedSpeed(AuraEffectModifier* aurEff, b
     {
         m_target->setMoveCanFly(false);
         m_target->m_flyspeedModifier -= aurEff->getEffectDamage();
-        m_target->UpdateSpeed();
+        m_target->updateSpeed();
         if (m_target->isPlayer())
         {
             static_cast< Player* >(m_target)->flying_aura = 0;
@@ -5441,7 +5441,7 @@ void Aura::SpellAuraIncreaseMovementAndMountedSpeed(AuraEffectModifier* aurEff, 
         m_target->m_mountedspeedModifier += aurEff->getEffectDamage();
     else
         m_target->m_mountedspeedModifier -= aurEff->getEffectDamage();
-    m_target->UpdateSpeed();
+    m_target->updateSpeed();
 }
 
 void Aura::SpellAuraIncreaseFlightSpeed(AuraEffectModifier* aurEff, bool apply)
@@ -5450,7 +5450,7 @@ void Aura::SpellAuraIncreaseFlightSpeed(AuraEffectModifier* aurEff, bool apply)
         m_target->m_flyspeedModifier += aurEff->getEffectDamage();
     else
         m_target->m_flyspeedModifier -= aurEff->getEffectDamage();
-    m_target->UpdateSpeed();
+    m_target->updateSpeed();
 }
 
 

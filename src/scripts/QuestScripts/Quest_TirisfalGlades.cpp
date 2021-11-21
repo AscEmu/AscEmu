@@ -72,9 +72,9 @@ public:
             sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::setStandState, (uint8_t)STANDSTATE_STAND, EVENT_CREATURE_UPDATE, 18000, 0, 1);
             getCreature()->getThreatManager().clearAllThreat();
             getCreature()->getThreatManager().removeMeFromThreatLists();
-            getCreature()->GetAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
+            getCreature()->getAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
             _setMeleeDisabled(true);
-            getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+            getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
             getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         }
     }
@@ -95,8 +95,8 @@ public:
             return;
 
         Dashel->SetFaction(28);
-        Dashel->GetAIInterface()->setMeleeDisabled(false);
-        Dashel->GetAIInterface()->setAllowedToEnterCombat(true);
+        Dashel->getAIInterface()->setMeleeDisabled(false);
+        Dashel->getAIInterface()->setAllowedToEnterCombat(true);
     }
 };
 

@@ -52,7 +52,7 @@ public:
             m_useSpell = false;
 
         // todo: add boundary
-        //getCreature()->GetAIInterface()->setOutOfCombatRange(200000);
+        //getCreature()->getAIInterface()->setOutOfCombatRange(200000);
 
         m_fBreath = false;
         m_kAway = false;
@@ -83,7 +83,7 @@ public:
         stopMovement();
         setWaypointToMove(1, 0);
 
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
         getCreature()->setMoveCanFly(false);
         getCreature()->setControlled(false, UNIT_STATE_ROOTED);
         getCreature()->setStandState(STANDSTATE_SLEEP);
@@ -121,10 +121,10 @@ public:
             case 3:
                 {
                     getCreature()->setControlled(true, UNIT_STATE_ROOTED);
-                    getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+                    getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
                     setAIAgent(AGENT_SPELL);
                     //_unit->m_pacified--;
-                    getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+                    getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                     stopMovement();
                     setWaypointToMove(1, 0);
 
@@ -134,9 +134,9 @@ public:
                 break;
             case 8:
                 {
-                    getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+                    getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
                     setAIAgent(AGENT_NULL);
-                    getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+                    getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                     stopMovement();
                     setWaypointToMove(1, 0);
                     /*_unit->m_pacified--;
@@ -149,8 +149,8 @@ public:
             default:
                 {
                     getCreature()->setControlled(true, UNIT_STATE_ROOTED);
-                    getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
-                    getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+                    getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
+                    getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                     stopMovement();
                     setWaypointToMove(1, 0);
 
@@ -196,10 +196,10 @@ public:
             if (getCreature()->isCastingSpell())
                 getCreature()->interruptSpell();
 
-            getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+            getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
             //_unit->m_pacified++;
             getCreature()->stopMoving();
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+            getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             setWaypointToMove(1, 1);
 
             return;
@@ -217,10 +217,10 @@ public:
             if (getCreature()->isCastingSpell())
                 getCreature()->interruptSpell();
             getCreature()->setControlled(false, UNIT_STATE_ROOTED);
-            getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+            getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
             //_unit->m_pacified++;
             getCreature()->stopMoving();
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+            getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             setWaypointToMove(1, 8);
 
             return;
@@ -242,9 +242,9 @@ public:
                     m_currentWP = 3;
 
                 getCreature()->setControlled(false, UNIT_STATE_ROOTED);
-                getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+                getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
                 //_unit->m_pacified++;
-                getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+                getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 setWaypointToMove(1, m_currentWP);
                 m_fCastCount = 5;
             }
@@ -255,9 +255,9 @@ public:
                     m_currentWP = 7;
 
                 getCreature()->setControlled(false, UNIT_STATE_ROOTED);
-                getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+                getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
                 //_unit->m_pacified++;
-                getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+                getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 setWaypointToMove(1, m_currentWP);
                 m_fCastCount = 5;
             }
@@ -279,18 +279,18 @@ public:
                 cre = spawnCreature(11262, OnyxiasLair::whelpCoords[i].x, OnyxiasLair::whelpCoords[i].y, OnyxiasLair::whelpCoords[i].z, OnyxiasLair::whelpCoords[i].o);
                 if (cre)
                 {
-                    cre->GetAIInterface()->moveTo(14.161f, -177.874f, -85.649f);
+                    cre->getAIInterface()->moveTo(14.161f, -177.874f, -85.649f);
                     cre->SetOrientation(0.23f);
                     // todo: add boundary
-                    //cre->GetAIInterface()->setOutOfCombatRange(100000);
+                    //cre->getAIInterface()->setOutOfCombatRange(100000);
                 }
                 cre = spawnCreature(11262, OnyxiasLair::whelpCoords[5 - i].x, OnyxiasLair::whelpCoords[5 - i].y, OnyxiasLair::whelpCoords[5 - i].z, OnyxiasLair::whelpCoords[5 - i].o);
                 if (cre)
                 {
-                    cre->GetAIInterface()->moveTo(27.133f, -232.030f, -84.188f);
+                    cre->getAIInterface()->moveTo(27.133f, -232.030f, -84.188f);
                     cre->SetOrientation(0.44f);
                     // todo: add boundary
-                    //cre->GetAIInterface()->setOutOfCombatRange(100000);
+                    //cre->getAIInterface()->setOutOfCombatRange(100000);
                 }
             }
             m_whelpCooldown = 30;
@@ -317,18 +317,18 @@ public:
                 cre = spawnCreature(11262, OnyxiasLair::whelpCoords[i].x, OnyxiasLair::whelpCoords[i].y, OnyxiasLair::whelpCoords[i].z, OnyxiasLair::whelpCoords[i].o);
                 if (cre)
                 {
-                    cre->GetAIInterface()->moveTo(14.161f, -177.874f, -85.649f);
+                    cre->getAIInterface()->moveTo(14.161f, -177.874f, -85.649f);
                     cre->SetOrientation(0.23f);
                     // todo: add boundary
-                    //cre->GetAIInterface()->setOutOfCombatRange(100000);
+                    //cre->getAIInterface()->setOutOfCombatRange(100000);
                 }
                 cre = spawnCreature(11262, OnyxiasLair::whelpCoords[5 - i].x, OnyxiasLair::whelpCoords[5 - i].y, OnyxiasLair::whelpCoords[5 - i].z, OnyxiasLair::whelpCoords[5 - i].o);
                 if (cre)
                 {
-                    cre->GetAIInterface()->moveTo(27.133f, -232.030f, -84.188f);
+                    cre->getAIInterface()->moveTo(27.133f, -232.030f, -84.188f);
                     cre->SetOrientation(0.23f);
                     // todo: add boundary
-                    //cre->GetAIInterface()->setOutOfCombatRange(100000);
+                    //cre->getAIInterface()->setOutOfCombatRange(100000);
                 }
             }
             m_whelpCooldown = 300;
@@ -390,7 +390,7 @@ public:
             {
                 getCreature()->setAttackTimer(MELEE, 4000);//2000
                 m_kAway = true;
-                //_unit->castSpell(_unit->GetAIInterface()->GetNextTarget(), infoKAway, false);
+                //_unit->castSpell(_unit->getAIInterface()->GetNextTarget(), infoKAway, false);
             }
             else if (val > 300 && val <= 375)
             {
@@ -402,7 +402,7 @@ public:
             {
                 getCreature()->setAttackTimer(MELEE, 4000);//2000
                 m_Cleave = true;
-                // _unit->castSpell(_unit->GetAIInterface()->GetNextTarget(), infoCleave, false);
+                // _unit->castSpell(_unit->getAIInterface()->GetNextTarget(), infoCleave, false);
             }
         }
     }

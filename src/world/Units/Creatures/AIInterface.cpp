@@ -869,7 +869,7 @@ void AIInterface::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
 
     // if we already cast a spell, do not set/cast another one!
     if (!getUnit()->isCastingSpell()
-        && getUnit()->GetAIInterface()->getCurrentTarget())
+        && getUnit()->getAIInterface()->getCurrentTarget())
     {
         // set up targets in range by position, relation and hp range
         std::vector<Unit*> possibleUnitTargets;
@@ -1010,7 +1010,7 @@ void AIInterface::updateTargets(unsigned long time_passed)
             {
                 auto i2 = i++;
                 if ((*i2) == NULL || (*i2)->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
-                    !(*i2)->isAlive() || m_Unit->getDistanceSq((*i2)) >= 2500.0f || !(*i2)->CombatStatus.IsInCombat() || !((*i2)->m_phase & m_Unit->m_phase))
+                    !(*i2)->isAlive() || m_Unit->getDistanceSq((*i2)) >= 2500.0f || !(*i2)->combatStatusHandler.IsInCombat() || !((*i2)->m_phase & m_Unit->m_phase))
                 {
                     m_assistTargets.erase(i2);
                 }
@@ -1374,7 +1374,7 @@ void AIInterface::callAssistance()
             Creature* creature = getUnit()->GetMapMgr()->GetInterface()->getNearestAssistCreatureInGrid(getUnit()->ToCreature(), getCurrentTarget(), radius);
 
             if (creature)
-                creature->GetAIInterface()->onHostileAction(getCurrentTarget());
+                creature->getAIInterface()->onHostileAction(getCurrentTarget());
         }
     }
 }
@@ -1397,11 +1397,11 @@ void AIInterface::findAssistance()
 
             if (DistToMe <= 10.0f && getUnit()->GetMapMgr()->GetMapInfo()->isInstanceMap()) // only Search additional Attackers in Instanced Maps
             {
-                if (helper->GetAIInterface()->canAssistTo(getUnit(), getCurrentTarget(), false))
+                if (helper->getAIInterface()->canAssistTo(getUnit(), getCurrentTarget(), false))
                 {
                     m_assistTargets.insert(helper);
                     if (!helper->isInCombat())
-                        helper->GetAIInterface()->onHostileAction(getCurrentTarget());
+                        helper->getAIInterface()->onHostileAction(getCurrentTarget());
                 }
             }
         }
@@ -2073,7 +2073,7 @@ void AIInterface::justEnteredCombat(Unit* pUnit)
         for (auto members : group->spawns)
         {
             if (members.second && members.second->isAlive() && members.second->IsInWorld())
-                members.second->GetAIInterface()->onHostileAction(pUnit, nullptr, false);
+                members.second->getAIInterface()->onHostileAction(pUnit, nullptr, false);
         }
     }
 
@@ -2136,12 +2136,12 @@ void AIInterface::setCreatureProtoDifficulty(uint32_t entry)
         {
             if (!properties_difficulty->isTrainingDummy && !getUnit()->isVehicle())
             {
-                getUnit()->GetAIInterface()->setAllowedToEnterCombat(true);
+                getUnit()->getAIInterface()->setAllowedToEnterCombat(true);
             }
             else
             {
-                getUnit()->GetAIInterface()->setAllowedToEnterCombat(false);
-                getUnit()->GetAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
+                getUnit()->getAIInterface()->setAllowedToEnterCombat(false);
+                getUnit()->getAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
             }
 
             getUnit()->setSpeedRate(TYPE_WALK, properties_difficulty->walk_speed, false);
@@ -2181,11 +2181,11 @@ void AIInterface::setCreatureProtoDifficulty(uint32_t entry)
 
             if (!(getUnit()->m_factionEntry->RepListId == -1 && getUnit()->m_factionTemplate->HostileMask == 0 && getUnit()->m_factionTemplate->FriendlyMask == 0))
             {
-                m_Unit->GetAIInterface()->setCanCallForHelp(true);
+                m_Unit->getAIInterface()->setCanCallForHelp(true);
             }
 
             if (properties_difficulty->CanRanged == 1)
-                getUnit()->GetAIInterface()->m_canRangedAttack = true;
+                getUnit()->getAIInterface()->m_canRangedAttack = true;
             else
                 getUnit()->m_aiInterface->m_canRangedAttack = false;
 
@@ -2217,14 +2217,14 @@ void AIInterface::setCreatureProtoDifficulty(uint32_t entry)
 
             /*  // Dont was Used in old AIInterface left the code here if needed at other Date
             if (properties_difficulty->guardtype == GUARDTYPE_CITY)
-                getUnit()->GetAIInterface()->setGuard(true);
+                getUnit()->getAIInterface()->setGuard(true);
             else
-                getUnit()->GetAIInterface()->setGuard(false);*/
+                getUnit()->getAIInterface()->setGuard(false);*/
 
             if (properties_difficulty->guardtype == GUARDTYPE_NEUTRAL)
-                getUnit()->GetAIInterface()->setGuard(true);
+                getUnit()->getAIInterface()->setGuard(true);
             else
-                getUnit()->GetAIInterface()->setGuard(false);
+                getUnit()->getAIInterface()->setGuard(false);
 
             //invisibility
             if (properties_difficulty->invisibility_type > INVIS_FLAG_NORMAL)
@@ -2324,7 +2324,7 @@ void AIInterface::eventDamageTaken(Unit* pUnit, uint32_t misc1)
     pUnit->RemoveAura(24575);
 
     CALL_SCRIPT_EVENT(m_Unit, OnDamageTaken)(pUnit, misc1);
-    pUnit->CombatStatus.OnDamageDealt(m_Unit);
+    pUnit->combatStatusHandler.OnDamageDealt(m_Unit);
 }
 
 void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
@@ -2483,7 +2483,7 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
 
     initialiseScripts(getUnit()->getEntry());
 
-    m_Unit->CombatStatus.Vanished();
+    m_Unit->combatStatusHandler.Vanished();
     m_Unit->getThreatManager().clearAllThreat();
     m_Unit->getThreatManager().removeMeFromThreatLists();
 
@@ -2839,7 +2839,7 @@ void AIInterface::eventChangeFaction(Unit* ForceAttackersToHateThisInstead)
     {
         for (const auto& itr : m_Unit->getInRangeObjectsSet())
         {
-            if (itr && itr->isCreatureOrPlayer() && static_cast<Unit*>(itr)->GetAIInterface())
+            if (itr && itr->isCreatureOrPlayer() && static_cast<Unit*>(itr)->getAIInterface())
             {
                 static_cast<Unit*>(itr)->getThreatManager().clearThreat(m_Unit);
             }
@@ -3857,7 +3857,7 @@ bool AIInterface::isValidUnitTarget(Object* pObject, TargetFilter pFilter, float
         // hostile/friendly
         if ((~pFilter & TargetFilter_Corpse) && (pFilter & TargetFilter_Friendly))
         {
-            if (!UnitTarget->CombatStatus.IsInCombat())
+            if (!UnitTarget->combatStatusHandler.IsInCombat())
                 return false; // not-in-combat targets if friendly
 
             if (isHostile(getUnit(), UnitTarget) || getUnit()->getThreatManager().getThreat(UnitTarget) > 0)

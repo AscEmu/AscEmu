@@ -206,7 +206,7 @@ bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     // Start moving again
-    if (target->GetAIInterface())
+    if (target->getAIInterface())
         target->stopMoving();
 
     // Remove Zzz aura

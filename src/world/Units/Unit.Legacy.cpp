@@ -6924,7 +6924,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     // postroll processing
 
     //trigger hostile action in ai
-    pVictim->GetAIInterface()->handleEvent(EVENT_HOSTILEACTION, this, 0);
+    pVictim->getAIInterface()->handleEvent(EVENT_HOSTILEACTION, this, 0);
 
     switch (r)
     {
@@ -6932,14 +6932,14 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             hit_status |= HITSTATUS_MISS;
             if (pVictim->isCreature() && pVictim->getThreatManager().getCurrentVictim() == nullptr) // if we missed our target fix agro by adding threat
             {
-                pVictim->GetAIInterface()->onHostileAction(this);
+                pVictim->getAIInterface()->onHostileAction(this);
             }
             vstate = VisualState::MISS;
             break;
         case 1:     //dodge
             if (pVictim->isCreature() && pVictim->getThreatManager().getCurrentVictim() == nullptr) // if our target dodget our attack fix agro by adding threat
             {
-                pVictim->GetAIInterface()->onHostileAction(this);
+                pVictim->getAIInterface()->onHostileAction(this);
             }
             CALL_SCRIPT_EVENT(pVictim, OnTargetDodged)(this);
             CALL_SCRIPT_EVENT(this, OnDodged)(this);
@@ -6972,7 +6972,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         case 2:     //parry
             if (pVictim->isCreature() && pVictim->getThreatManager().getCurrentVictim() == nullptr) // if our target parry our attack fix agro by adding threat
             {
-                pVictim->GetAIInterface()->onHostileAction(this);
+                pVictim->getAIInterface()->onHostileAction(this);
             }
 
             CALL_SCRIPT_EVENT(pVictim, OnTargetParried)(this);
@@ -7338,7 +7338,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     if (pVictim->isCreature())
     {
         if (pVictim->isInEvadeMode())
-/*      || (pVictim->GetAIInterface()->GetIsSoulLinked() && pVictim->GetAIInterface()->getSoullinkedWith() != this))*/
+/*      || (pVictim->getAIInterface()->GetIsSoulLinked() && pVictim->getAIInterface()->getSoullinkedWith() != this))*/
         {
             vstate = VisualState::EVADE;
             dmg.realDamage = 0;
@@ -7475,17 +7475,17 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             case VisualState::MISS:
                 SendSpellLog(this, pVictim, ability->getId(), SPELL_LOG_MISS);
                 // have to set attack target here otherwise it wont be set
-                CombatStatus.OnDamageDealt(pVictim);
+                combatStatusHandler.OnDamageDealt(pVictim);
                 break;
             case VisualState::DODGE:
                 SendSpellLog(this, pVictim, ability->getId(), SPELL_LOG_DODGE);
                 // have to set attack target here otherwise it wont be set
-                CombatStatus.OnDamageDealt(pVictim);
+                combatStatusHandler.OnDamageDealt(pVictim);
                 break;
             case VisualState::PARRY:
                 SendSpellLog(this, pVictim, ability->getId(), SPELL_LOG_PARRY);
                 // have to set attack target here otherwise it wont be set
-                CombatStatus.OnDamageDealt(pVictim);
+                combatStatusHandler.OnDamageDealt(pVictim);
                 break;
             case VisualState::EVADE:
                 SendSpellLog(this, pVictim, ability->getId(), SPELL_LOG_EVADE);
@@ -7493,7 +7493,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             case VisualState::IMMUNE:
                 SendSpellLog(this, pVictim, ability->getId(), SPELL_LOG_IMMUNE);
                 // have to set attack target here otherwise it wont be set
-                CombatStatus.OnDamageDealt(pVictim);
+                combatStatusHandler.OnDamageDealt(pVictim);
                 break;
             default:
                 logSent = false;
@@ -7597,7 +7597,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             // have to set attack target here otherwise it wont be set
             // because dealdamage is not called.
             //setAttackTarget(pVictim);
-            this->CombatStatus.OnDamageDealt(pVictim);
+            this->combatStatusHandler.OnDamageDealt(pVictim);
         }
     }
 
@@ -7952,21 +7952,6 @@ void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, 
     SendMessageToSet(data.get(), true);
 }
 
-void Unit::WipeHateList()
-{
-    getThreatManager().clearAllThreat();
-}
-
-void Unit::ClearHateList()
-{
-    getThreatManager().resetAllThreat();
-}
-
-void Unit::WipeTargetList()
-{
-    getThreatManager().clearAllThreat();
-}
-
 void Unit::CalcDamage()
 {
     if (isPlayer())
@@ -8055,37 +8040,6 @@ void Unit::DropAurasOnDeath()
 
             m_auras[x]->removeAura();
         }
-    }
-}
-
-void Unit::UpdateSpeed()
-{
-    if (getMountDisplayId() == 0)
-    {
-        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, false) * (1.0f + static_cast<float>(m_speedModifier) / 100.0f), true);
-    }
-    else
-    {
-        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, false) * (1.0f + static_cast<float>(m_mountedspeedModifier) / 100.0f), true);
-        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true) + (m_speedModifier < 0 ? (getSpeedRate(TYPE_RUN, false) * static_cast<float>(m_speedModifier) / 100.0f) : 0), true);
-    }
-
-    setSpeedRate(TYPE_FLY, getSpeedRate(TYPE_FLY, false) * (1.0f + ((float)m_flyspeedModifier) / 100.0f), true);
-
-    // Limit speed due to effects such as http://www.wowhead.com/?spell=31896 [Judgement of Justice]
-    if (m_maxSpeed && getSpeedRate(TYPE_RUN, true) > m_maxSpeed)
-    {
-        setSpeedRate(TYPE_RUN, m_maxSpeed, true);
-    }
-
-    if (isPlayer() && static_cast<Player*>(this)->m_changingMaps)
-    {
-        static_cast<Player*>(this)->resend_speed = true;
-    }
-    else
-    {
-        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
-        setSpeedRate(TYPE_FLY, getSpeedRate(TYPE_FLY, true), true);
     }
 }
 
@@ -8260,7 +8214,7 @@ void Unit::RemoveFromWorld(bool free_guid)
 
     removeAllFollowers();
 
-    CombatStatus.OnRemoveFromWorld();
+    combatStatusHandler.OnRemoveFromWorld();
 #if VERSION_STRING > TBC
     if (getCritterGuid() != 0)
     {
@@ -8317,7 +8271,7 @@ void Unit::RemoveFromWorld(bool free_guid)
 
 void Unit::Deactivate(MapMgr* mgr)
 {
-    CombatStatus.Vanished();
+    combatStatusHandler.Vanished();
     Object::Deactivate(mgr);
 }
 
@@ -8503,26 +8457,6 @@ int32 Unit::GetRAP()
     return 0;
 }
 
-bool Unit::GetSpeedDecrease()
-{
-    int32 before = m_speedModifier;
-    m_speedModifier -= m_slowdown;
-    m_slowdown = 0;
-    
-    for (auto& itr : speedReductionMap)
-        m_slowdown = static_cast<int32>(std::min(m_slowdown, itr.second));
-
-    if (m_slowdown < -100)
-        m_slowdown = 100; //do not walk backwards !
-
-    m_speedModifier += m_slowdown;
-    //save bandwidth :P
-    if (m_speedModifier != before)
-        return true;
-
-    return false;
-}
-
 #if VERSION_STRING == TBC
 void Unit::SetFacing(float newo)
 {
@@ -8610,7 +8544,7 @@ void CombatStatusHandler::ClearMyHealers()
     {
         Player* pt = m_Unit->GetMapMgr()->GetPlayer(*i);
         if (pt != NULL)
-            pt->CombatStatus.RemoveHealed(m_Unit);
+            pt->combatStatusHandler.RemoveHealed(m_Unit);
     }
 
     m_healers.clear();
@@ -8700,7 +8634,7 @@ void CombatStatusHandler::ClearPrimaryAttackTarget()
             // remove from their attacker set. (if we have no longer got any DoT's, etc)
             if (!IsAttacking(pt))
             {
-                pt->CombatStatus.RemoveAttacker(m_Unit, m_Unit->getGuid());
+                pt->combatStatusHandler.RemoveAttacker(m_Unit, m_Unit->getGuid());
                 m_attackTargets.erase(m_primaryAttackTarget);
             }
 
@@ -8751,7 +8685,7 @@ void CombatStatusHandler::RemoveAttacker(Unit* pAttacker, const uint64_t& guid)
     if (itr == m_attackers.end())
         return;
 
-    if ((!pAttacker) || (!pAttacker->CombatStatus.IsAttacking(m_Unit)))
+    if ((!pAttacker) || (!pAttacker->combatStatusHandler.IsAttacking(m_Unit)))
     {
         m_attackers.erase(itr);
         UpdateFlag();
@@ -8772,12 +8706,12 @@ void CombatStatusHandler::OnDamageDealt(Unit* pTarget)
     if (itr == m_attackTargets.end())
         AddAttackTarget(pTarget->getGuid());
 
-    itr = pTarget->CombatStatus.m_attackers.find(m_Unit->getGuid());
-    if (itr == pTarget->CombatStatus.m_attackers.end())
-        pTarget->CombatStatus.AddAttacker(m_Unit->getGuid());
+    itr = pTarget->combatStatusHandler.m_attackers.find(m_Unit->getGuid());
+    if (itr == pTarget->combatStatusHandler.m_attackers.end())
+        pTarget->combatStatusHandler.AddAttacker(m_Unit->getGuid());
 
     // update the timeout
-    m_Unit->CombatStatusHandler_ResetPvPTimeout();
+    m_Unit->combatResetPvPTimeout();
 }
 
 void CombatStatusHandler::AddAttacker(const uint64_t& guid)
@@ -8800,8 +8734,8 @@ void CombatStatusHandler::ClearAttackers()
         Unit* pt = m_Unit->GetMapMgr()->GetUnit(*itr);
         if (pt)
         {
-            pt->CombatStatus.m_attackers.erase(m_Unit->getGuid());
-            pt->CombatStatus.UpdateFlag();
+            pt->combatStatusHandler.m_attackers.erase(m_Unit->getGuid());
+            pt->combatStatusHandler.UpdateFlag();
         }
     }
 
@@ -8810,8 +8744,8 @@ void CombatStatusHandler::ClearAttackers()
         Unit* pt = m_Unit->GetMapMgr()->GetUnit(*itr);
         if (pt)
         {
-            pt->CombatStatus.m_attackTargets.erase(m_Unit->getGuid());
-            pt->CombatStatus.UpdateFlag();
+            pt->combatStatusHandler.m_attackTargets.erase(m_Unit->getGuid());
+            pt->combatStatusHandler.UpdateFlag();
         }
     }
 
@@ -8830,8 +8764,8 @@ void CombatStatusHandler::ClearHealers()
         Player* pt = m_Unit->GetMapMgr()->GetPlayer(*itr);
         if (pt)
         {
-            pt->CombatStatus.m_healers.erase(m_Unit->getGuidLow());
-            pt->CombatStatus.UpdateFlag();
+            pt->combatStatusHandler.m_healers.erase(m_Unit->getGuidLow());
+            pt->combatStatusHandler.UpdateFlag();
         }
     }
 
@@ -8840,43 +8774,14 @@ void CombatStatusHandler::ClearHealers()
         Player* pt = m_Unit->GetMapMgr()->GetPlayer(*itr);
         if (pt)
         {
-            pt->CombatStatus.m_healed.erase(m_Unit->getGuidLow());
-            pt->CombatStatus.UpdateFlag();
+            pt->combatStatusHandler.m_healed.erase(m_Unit->getGuidLow());
+            pt->combatStatusHandler.UpdateFlag();
         }
     }
 
     m_healed.clear();
     m_healers.clear();
     UpdateFlag();
-}
-
-void Unit::CombatStatusHandler_ResetPvPTimeout()
-{
-    if (!isPlayer())
-        return;
-
-    m_lock.Acquire();
-    EventMap::iterator itr = m_events.find(EVENT_ATTACK_TIMEOUT);
-    if (itr != m_events.end())
-    {
-        for (; itr != m_events.upper_bound(EVENT_ATTACK_TIMEOUT); ++itr)
-        {
-            if (!itr->second->deleted)
-            {
-                itr->second->currTime = 5000;
-                m_lock.Release();
-                return;
-            }
-        }
-    }
-
-    sEventMgr.AddEvent(this, &Unit::CombatStatusHandler_UpdatePvPTimeout, EVENT_ATTACK_TIMEOUT, 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    m_lock.Release();
-}
-
-void Unit::CombatStatusHandler_UpdatePvPTimeout()
-{
-    CombatStatus.TryToClearAttackTargets();
 }
 
 void CombatStatusHandler::TryToClearAttackTargets()
@@ -8895,7 +8800,7 @@ void CombatStatusHandler::TryToClearAttackTargets()
         }
 
         RemoveAttackTarget(pt);
-        pt->CombatStatus.RemoveAttacker(m_Unit, m_Unit->getGuid());
+        pt->combatStatusHandler.RemoveAttacker(m_Unit, m_Unit->getGuid());
     }
 }
 
@@ -8935,7 +8840,7 @@ bool CombatStatusHandler::IsInCombat() const
         {
             std::list<Pet*> summons = static_cast<Player*>(m_Unit)->GetSummons();
             for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-                if ((*itr)->getPlayerOwner() == m_Unit && (*itr)->CombatStatus.IsInCombat())
+                if ((*itr)->getPlayerOwner() == m_Unit && (*itr)->combatStatusHandler.IsInCombat())
                     return true;
 
             return m_lastStatus;
@@ -8950,10 +8855,10 @@ void CombatStatusHandler::WeHealed(Unit* pHealTarget)
     if (!pHealTarget->isPlayer() || !m_Unit->isPlayer() || pHealTarget == m_Unit)
         return;
 
-    if (pHealTarget->CombatStatus.IsInCombat())
+    if (pHealTarget->combatStatusHandler.IsInCombat())
     {
         m_healed.insert(pHealTarget->getGuidLow());
-        pHealTarget->CombatStatus.m_healers.insert(m_Unit->getGuidLow());
+        pHealTarget->combatStatusHandler.m_healers.insert(m_Unit->getGuidLow());
     }
 
     UpdateFlag();
@@ -9051,15 +8956,9 @@ void Unit::RemoveAllMovementImpairing()
     }
 }
 
-void Unit::ReplaceAIInterface(AIInterface* new_interface)
-{
-    delete m_aiInterface; //be careful when you do this. Might screw unit states !
-    m_aiInterface = new_interface;
-}
-
 void Unit::EventUpdateFlag()
 {
-    CombatStatus.UpdateFlag();
+    combatStatusHandler.UpdateFlag();
 }
 
 void Unit::EventModelChange()
@@ -9092,9 +8991,9 @@ void Unit::AggroPvPGuards()
         if (i && i->isCreature())
         {
             Unit* tmpUnit = static_cast<Unit*>(i);
-            if (tmpUnit->GetAIInterface() && tmpUnit->GetAIInterface()->m_isNeutralGuard && CalcDistance(tmpUnit) <= (50.0f * 50.0f))
+            if (tmpUnit->getAIInterface() && tmpUnit->getAIInterface()->m_isNeutralGuard && CalcDistance(tmpUnit) <= (50.0f * 50.0f))
             {
-                tmpUnit->GetAIInterface()->onHostileAction(this);
+                tmpUnit->getAIInterface()->onHostileAction(this);
             }
         }
     }

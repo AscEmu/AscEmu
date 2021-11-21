@@ -6336,9 +6336,9 @@ void Player::EndDuel(uint8 WinCondition)
     std::list<Pet*> summons = GetSummons();
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
     {
-        (*itr)->CombatStatus.Vanished();
-        (*itr)->GetAIInterface()->setPetOwner(this);
-        (*itr)->GetAIInterface()->handleEvent(EVENT_FOLLOWOWNER, *itr, 0);
+        (*itr)->combatStatusHandler.Vanished();
+        (*itr)->getAIInterface()->setPetOwner(this);
+        (*itr)->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, *itr, 0);
         (*itr)->getThreatManager().clearAllThreat();
         (*itr)->getThreatManager().removeMeFromThreatLists();
     }
@@ -6346,9 +6346,9 @@ void Player::EndDuel(uint8 WinCondition)
     std::list<Pet*> duelingWithSummons = DuelingWith->GetSummons();
     for (std::list<Pet*>::iterator itr = duelingWithSummons.begin(); itr != duelingWithSummons.end(); ++itr)
     {
-        (*itr)->CombatStatus.Vanished();
-        (*itr)->GetAIInterface()->setPetOwner(this);
-        (*itr)->GetAIInterface()->handleEvent(EVENT_FOLLOWOWNER, *itr, 0);
+        (*itr)->combatStatusHandler.Vanished();
+        (*itr)->getAIInterface()->setPetOwner(this);
+        (*itr)->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, *itr, 0);
         (*itr)->getThreatManager().clearAllThreat();
         (*itr)->getThreatManager().removeMeFromThreatLists();
     }
@@ -7085,7 +7085,7 @@ void Player::CompleteLoading()
     }
 
     sInstanceMgr.BuildSavedInstancesForPlayer(this);
-    CombatStatus.UpdateFlag();
+    combatStatusHandler.UpdateFlag();
 
 #if VERSION_STRING > TBC
     // add glyphs
@@ -8548,7 +8548,7 @@ void Player::RemoveShapeShiftSpell(uint32 id)
 // COOLDOWNS
 void Player::UpdatePotionCooldown()
 {
-    if (m_lastPotionId == 0 || CombatStatus.IsInCombat())
+    if (m_lastPotionId == 0 || combatStatusHandler.IsInCombat())
         return;
 
     if (ItemProperties const* proto = sMySQLStore.getItemProperties(m_lastPotionId))
@@ -9379,10 +9379,10 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     }
 
     // Wipe our attacker set on death
-    CombatStatus.Vanished();
+    combatStatusHandler.Vanished();
 
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
-    pAttacker->GetAIInterface()->eventOnTargetDied(this);
+    pAttacker->getAIInterface()->eventOnTargetDied(this);
     pAttacker->smsg_AttackStop(this);
 
     m_underwaterTime = 0;
@@ -10685,7 +10685,7 @@ void Player::SendInitialLogonPackets()
 
     m_session->SendPacket(SmsgLoginSetTimespeed(Util::getGameTime(), 0.0166666669777748f).serialise().get());
 
-    UpdateSpeed();
+    updateSpeed();
 
 #if VERSION_STRING > TBC
     m_session->SendPacket(SmsgUpdateWorldState(0xC77, worldConfig.arena.arenaProgress, 0xF3D, worldConfig.arena.arenaSeason).serialise().get());

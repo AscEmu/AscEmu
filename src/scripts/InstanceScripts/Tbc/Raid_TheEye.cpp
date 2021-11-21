@@ -238,7 +238,7 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint32_t /*pEffectIndex*/, Spell* pSpe
     Unit* Caster = pSpell->getUnitCaster();
     if (!Caster) return true;
 
-    Unit* Target = Caster->GetAIInterface()->getCurrentTarget();
+    Unit* Target = Caster->getAIInterface()->getCurrentTarget();
     if (!Target) return true;
 
     SpellInfo const* SpellInfo = sSpellMgr.getSpellInfo(SOLARIAN_WRATH_OF_THE_ASTROMANCER_BOMB);
@@ -555,7 +555,7 @@ public:
         Unit* pTarget = getBestPlayerTarget();
         if (pTarget != NULL)
         {
-            getCreature()->GetAIInterface()->onHostileAction(pTarget);
+            getCreature()->getAIInterface()->onHostileAction(pTarget);
             getCreature()->getThreatManager().addThreat(pTarget, 500.f);
         }
 
@@ -567,7 +567,7 @@ public:
         Unit* pTarget = getBestPlayerTarget(TargetFilter_Closest);
         if (pTarget != NULL)
         {
-            getCreature()->GetAIInterface()->onHostileAction(pTarget);
+            getCreature()->getAIInterface()->onHostileAction(pTarget);
             getCreature()->getThreatManager().addThreat(pTarget, 500.f);
         }
         else
@@ -638,7 +638,7 @@ public:
         Unit* pTarget = getBestPlayerTarget();
         if (pTarget != NULL)
         {
-            getCreature()->GetAIInterface()->onHostileAction(pTarget);
+            getCreature()->getAIInterface()->onHostileAction(pTarget);
             getCreature()->getThreatManager().addThreat(pTarget, 200.f);
         }
     }
@@ -648,7 +648,7 @@ public:
         Unit* pTarget = getBestPlayerTarget();
         if (pTarget != NULL)
         {
-            getCreature()->GetAIInterface()->onHostileAction(pTarget);
+            getCreature()->getAIInterface()->onHostileAction(pTarget);
             getCreature()->getThreatManager().addThreat(pTarget, 500.f);
         }
         else
@@ -860,13 +860,13 @@ public:
 
     void SendAdvisorToFight(Creature* pCreature)
     {
-        pCreature->GetAIInterface()->setAllowedToEnterCombat(true);
+        pCreature->getAIInterface()->setAllowedToEnterCombat(true);
         pCreature->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
 
         Unit* pTarget = getBestPlayerTarget();
         if (pTarget != NULL)
         {
-            pCreature->GetAIInterface()->onHostileAction(pTarget);
+            pCreature->getAIInterface()->onHostileAction(pTarget);
             pCreature->getThreatManager().addThreat(pTarget, 200.f);
         }
 
@@ -968,7 +968,7 @@ public:
 
                     if (pCreature != nullptr)
                     {
-                        pCreature->GetAIInterface()->setAllowedToEnterCombat(true);
+                        pCreature->getAIInterface()->setAllowedToEnterCombat(true);
                         pCreature->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                     }
                 }

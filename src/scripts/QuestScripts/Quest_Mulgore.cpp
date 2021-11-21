@@ -53,7 +53,7 @@ public:
     explicit The_Plains_Vision(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         WPCount = 22;
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
 
         for (uint8_t i = 1; i < WPCount; ++i)
             addWaypoint(1, createWaypoint(i, 0, WAYPOINT_MOVE_TYPE_RUN, WaypointPlainVision[i]));

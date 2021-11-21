@@ -195,7 +195,7 @@ bool PreyOnTheWeakPeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool apply)
     if (p_target != NULL && p_target->getClass() == ROGUE)
     {
 
-        Unit* target = p_target->GetMapMgr()->GetUnit(p_target->CombatStatus.GetPrimaryAttackTarget());
+        Unit* target = p_target->GetMapMgr()->GetUnit(p_target->combatStatusHandler.GetPrimaryAttackTarget());
         if (target == NULL)
             return true;
 

@@ -59,7 +59,7 @@ public:
         phaseIn = addAISpell(PHASE_IN, 0.0f, TARGET_ATTACKING, 0, 10, false, true);
         phaseIn->setAttackStopTimer(1000);
 
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->m_noRespawn = true;
 
         Appear = true;
@@ -70,7 +70,7 @@ public:
         if (Appear)
         {
             getCreature()->castSpell(getCreature(), phaseIn->mSpellInfo, phaseIn->mIsTriggered);
-            getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+            getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
 
             Appear = false;
         }

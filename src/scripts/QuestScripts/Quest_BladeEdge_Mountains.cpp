@@ -152,7 +152,7 @@ public:
     {
         RegisterAIUpdateEvent(5000);
         getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         setAIAgent(AGENT_NULL);
         _setMeleeDisabled(true);
         getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
@@ -284,8 +284,8 @@ public:
             {
                 pCreature->SetFaction(14);
                 pCreature->setScale(1.0f);
-                pCreature->GetAIInterface()->setCurrentTarget(pPlayer);
-                pCreature->GetAIInterface()->onHostileAction(pPlayer);
+                pCreature->getAIInterface()->setCurrentTarget(pPlayer);
+                pCreature->getAIInterface()->onHostileAction(pPlayer);
             }
         }
         else

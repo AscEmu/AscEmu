@@ -929,7 +929,7 @@ void MovementManager::moveSeekAssistance(float x, float y, float z)
         //creature->AttackStop();
         //creature->CastStop();
         //creature->DoNotReacquireSpellFocusTarget();
-        creature->GetAIInterface()->setReactState(REACT_PASSIVE);
+        creature->getAIInterface()->setReactState(REACT_PASSIVE);
         add(new AssistanceMovementGenerator(EVENT_ASSIST_MOVE, x, y, z));
     }
 }

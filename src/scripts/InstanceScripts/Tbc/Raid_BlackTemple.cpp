@@ -1897,7 +1897,7 @@ public:
     void AIUpdate() override
     {
         // todo: fix this
-        /*if (getCreature()->GetAIInterface()->GetIsTaunted())
+        /*if (getCreature()->getAIInterface()->GetIsTaunted())
         {
             _castAISpell(mTaunt);
         }*/
@@ -2397,7 +2397,7 @@ public:
                 cre = spawnCreature(23421, getCreature()->GetPosition());
                 // todo: fix boundary
                 /*if (cre)
-                    cre->GetAIInterface()->setOutOfCombatRange(30000);*/
+                    cre->getAIInterface()->setOutOfCombatRange(30000);*/
             }
             getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
             getCreature()->PlaySoundToSet(10999);
@@ -2411,7 +2411,7 @@ public:
                 cre = spawnCreature(23215, getCreature()->GetPosition());
                 // todo: fix boundary
                 /*if (cre)
-                    cre->GetAIInterface()->setOutOfCombatRange(30000);*/
+                    cre->getAIInterface()->setOutOfCombatRange(30000);*/
             }
             getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
             getCreature()->PlaySoundToSet(10999);
@@ -2425,7 +2425,7 @@ public:
                 cre = spawnCreature(23216, getCreature()->GetPosition());
                 // todo: fix boundary
                 /*if (cre)
-                    cre->GetAIInterface()->setOutOfCombatRange(30000);*/
+                    cre->getAIInterface()->setOutOfCombatRange(30000);*/
             }
             getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
             getCreature()->PlaySoundToSet(10999);
@@ -2439,7 +2439,7 @@ public:
                 cre = spawnCreature(23523, getCreature()->GetPosition());
                 // todo: fix boundary
                 /*if (cre)
-                    cre->GetAIInterface()->setOutOfCombatRange(30000);*/
+                    cre->getAIInterface()->setOutOfCombatRange(30000);*/
             }
             getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
             getCreature()->PlaySoundToSet(10999);
@@ -2453,7 +2453,7 @@ public:
                 cre = spawnCreature(23318, getCreature()->GetPosition());
                 // todo: fix boundary
                 /*if (cre)
-                    cre->GetAIInterface()->setOutOfCombatRange(30000);*/
+                    cre->getAIInterface()->setOutOfCombatRange(30000);*/
             }
             getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
             getCreature()->PlaySoundToSet(10999);
@@ -2467,7 +2467,7 @@ public:
                 cre = spawnCreature(23524, getCreature()->GetPosition());
                 // todo: fix boundary
                 /*if (cre)
-                    cre->GetAIInterface()->setOutOfCombatRange(30000);*/
+                    cre->getAIInterface()->setOutOfCombatRange(30000);*/
             }
             getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
             getCreature()->PlaySoundToSet(10999);
@@ -2803,7 +2803,7 @@ public:
     explicit EyeBeamTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
-        getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+        getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
         getCreature()->m_noRespawn = true;
 
         _setMeleeDisabled(false);
@@ -2849,7 +2849,7 @@ public:
         Unit* pTarget = getBestPlayerTarget();
         if (pTarget != NULL)
         {
-            getCreature()->GetAIInterface()->onHostileAction(pTarget);
+            getCreature()->getAIInterface()->onHostileAction(pTarget);
             getCreature()->getThreatManager().addThreat(pTarget, 200000.f);
             _setTargetToChannel(pTarget, SHADOW_DEMON_PURPLE_BEAM);
             _castAISpell(mParalyze);
@@ -3259,9 +3259,9 @@ public:
                 stopMovement();
                 setWaypointToMove(1, 0);
                 RemoveAIUpdateEvent();
-                getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+                getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
 
-                getCreature()->GetAIInterface()->onHostileAction(mIllidanAI->getCreature());
+                getCreature()->getAIInterface()->onHostileAction(mIllidanAI->getCreature());
 
                 mIllidanAI->setCanEnterCombat(true);
                 mIllidanAI->setRooted(false);
@@ -3272,7 +3272,7 @@ public:
                     pTarget = getCreature();
                 }
 
-                mIllidanAI->getCreature()->GetAIInterface()->onHostileAction(pTarget);
+                mIllidanAI->getCreature()->getAIInterface()->onHostileAction(pTarget);
                 mIllidanAI->getCreature()->getThreatManager().addThreat(pTarget, 500.f);
 
                 mScenePart = 0;
@@ -3325,8 +3325,8 @@ public:
             else if (mIllidanAI->getCreature()->IsFlying())
             {
                 setCanEnterCombat(false);
-                getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-                getCreature()->GetAIInterface()->setCurrentTarget(nullptr);
+                getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
+                getCreature()->getAIInterface()->setCurrentTarget(nullptr);
                 getCreature()->getThreatManager().clearAllThreat();
                 getCreature()->getThreatManager().removeMeFromThreatLists();
                 _setMeleeDisabled(false);
@@ -3359,8 +3359,8 @@ public:
                     if (canEnterCombat())
                     {
                         setCanEnterCombat(false);
-                        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-                        getCreature()->GetAIInterface()->setCurrentTarget(nullptr);
+                        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
+                        getCreature()->getAIInterface()->setCurrentTarget(nullptr);
                         getCreature()->getThreatManager().clearAllThreat();
                         getCreature()->getThreatManager().removeMeFromThreatLists();
                         _setMeleeDisabled(false);
@@ -3420,7 +3420,7 @@ public:
                     Unit* pIllidan = getNearestCreature(22917);
                     if (pIllidan != NULL)
                     {
-                        getCreature()->GetAIInterface()->setCurrentTarget(pIllidan);
+                        getCreature()->getAIInterface()->setCurrentTarget(pIllidan);
                     }
 
                     getCreature()->emote(EMOTE_ONESHOT_TALK);
@@ -3547,7 +3547,7 @@ public:
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
         getCreature()->setMaxHealth(1000000);
         getCreature()->setHealth(1000000);
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
 
         stopMovement();
         setScriptPhase(1);
@@ -3700,13 +3700,13 @@ public:
         }
         else if (getRangeToObject(mIllidanAI->getCreature()) < 15.0f)
         {
-            getCreature()->GetAIInterface()->calcDestinationAndMove(mIllidanAI->getCreature(), 20.0f);
+            getCreature()->getAIInterface()->calcDestinationAndMove(mIllidanAI->getCreature(), 20.0f);
             setAIAgent(AGENT_SPELL);
             return;
         }
         else if (getRangeToObject(mIllidanAI->getCreature()) > 35.0f)
         {
-            getCreature()->GetAIInterface()->calcDestinationAndMove(mIllidanAI->getCreature(), 30.0f);
+            getCreature()->getAIInterface()->calcDestinationAndMove(mIllidanAI->getCreature(), 30.0f);
             setAIAgent(AGENT_SPELL);
             return;
         }
@@ -3754,7 +3754,7 @@ public:
                 case 2:
                     mIllidanAI->getCreature()->setEmoteState(EMOTE_ONESHOT_CUSTOMSPELL07);
 
-                    getCreature()->GetAIInterface()->setCurrentTarget(mIllidanAI->getCreature());
+                    getCreature()->getAIInterface()->setCurrentTarget(mIllidanAI->getCreature());
                     break;
                 case 3:
                     mIllidanAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11478, "You have won... Maiev. But the huntress... is nothing without the hunt. You... are nothing... without me.");
@@ -4033,7 +4033,7 @@ public:
             _applyAura(ILLIDAN_DEATH2);
 
             pMaiev->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-            pMaiev->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            pMaiev->getAIInterface()->setAiState(AI_STATE_IDLE);
             pMaiev->getThreatManager().clearAllThreat();
             pMaiev->getThreatManager().removeMeFromThreatLists();
         }
@@ -4071,7 +4071,7 @@ public:
                 }
             }
 
-            getCreature()->GetAIInterface()->setCurrentTarget(pTarget);
+            getCreature()->getAIInterface()->setCurrentTarget(pTarget);
             getCreature()->getThreatManager().addThreat(pTarget, fAmount * 2);
             getCreature()->getThreatManager().clearThreat(mVictim);
         }
@@ -4088,7 +4088,7 @@ public:
             }
             if (pTarget != NULL && pTarget->isPlayer())
             {
-                getCreature()->GetAIInterface()->setCurrentTarget(pTarget);
+                getCreature()->getAIInterface()->setCurrentTarget(pTarget);
                 getCreature()->getThreatManager().addThreat(pTarget, static_cast<float>(fAmount * 3));
             }
             else
@@ -4156,7 +4156,7 @@ public:
             {
                 pAI->m_noRespawn = true;
 
-                getCreature()->GetAIInterface()->setCurrentTarget(pAI);
+                getCreature()->getAIInterface()->setCurrentTarget(pAI);
             }
 
             setScriptPhase(2);
@@ -4177,8 +4177,8 @@ public:
                 if (pAkamaAI->mScenePart <= 2 && pAkamaAI->canEnterCombat())
                 {
                     pAkamaAI->setCanEnterCombat(false);
-                    pAkamaAI->getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-                    pAkamaAI->getCreature()->GetAIInterface()->setCurrentTarget(nullptr);
+                    pAkamaAI->getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
+                    pAkamaAI->getCreature()->getAIInterface()->setCurrentTarget(nullptr);
                     pAkama->getThreatManager().clearAllThreat();
                     pAkama->getThreatManager().removeMeFromThreatLists();
                     pAkamaAI->_setMeleeDisabled(false);
@@ -4270,11 +4270,11 @@ public:
                     break;
                 case 4:
                     {
-                        getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+                        getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
                         SetAIUpdateFreq(1000);
                         mScenePart = 0;
 
-                        getCreature()->GetAIInterface()->setCurrentTarget(getBestPlayerTarget(TargetFilter_Closest));
+                        getCreature()->getAIInterface()->setCurrentTarget(getBestPlayerTarget(TargetFilter_Closest));
                         return;
                     }
                     break;
@@ -4310,7 +4310,7 @@ public:
                             pTrigger->Despawn(0, 0);
                         }
 
-                        getCreature()->GetAIInterface()->setCurrentTarget(getBestPlayerTarget(TargetFilter_Closest));
+                        getCreature()->getAIInterface()->setCurrentTarget(getBestPlayerTarget(TargetFilter_Closest));
                         getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
                         setCanEnterCombat(true);
                         _setMeleeDisabled(true);
@@ -4376,7 +4376,7 @@ public:
                     Unit* pTrigger = getNearestCreature(677.399963f, 305.545044f, 353.192169f, CN_FACE_TRIGGER);
                     if (pTrigger != NULL)
                     {
-                        getCreature()->GetAIInterface()->setCurrentTarget(pTrigger);
+                        getCreature()->getAIInterface()->setCurrentTarget(pTrigger);
                     }
 
                     setWaypointToMove(1, 4);
@@ -4425,7 +4425,7 @@ public:
                         sendChatMessage(CHAT_MSG_MONSTER_YELL, 11481, "Stare into the eyes of the Betrayer!");
                         _setTargetToChannel(pTrigger, ILLIDAN_EYE_BLAST1);
                         getCreature()->castSpell(pTrigger, ILLIDAN_EYE_BLAST1, true);
-                        getCreature()->GetAIInterface()->setCurrentTarget(pTrigger);
+                        getCreature()->getAIInterface()->setCurrentTarget(pTrigger);
 
                         float Distance = pTrigger->CalcDistance(EyeBeamPaths[7 - FireWall].x, EyeBeamPaths[7 - FireWall].y, EyeBeamPaths[7 - FireWall].z);
                         uint32_t TimeToReach = (uint32_t)(Distance * 1000 / pTrigger->getSpeedRate(TYPE_WALK, true));
@@ -4449,7 +4449,7 @@ public:
                 {
                     _unsetTargetToChannel();
                     _removeAura(ILLIDAN_EYE_BLAST1);
-                    getCreature()->GetAIInterface()->setCurrentTarget(getBestPlayerTarget(TargetFilter_Closest));
+                    getCreature()->getAIInterface()->setCurrentTarget(getBestPlayerTarget(TargetFilter_Closest));
 
                     mFireWallTimer = 30000;
                     mMiscEventPart = 0;
@@ -4489,7 +4489,7 @@ public:
                 Unit* pTarget = getBestPlayerTarget();
                 if (pTarget != NULL)
                 {
-                    getCreature()->GetAIInterface()->onHostileAction(pTarget);
+                    getCreature()->getAIInterface()->onHostileAction(pTarget);
                     getCreature()->getThreatManager().addThreat(pTarget, 5000.f);
                 }
                 setAIAgent(AGENT_SPELL);
@@ -4597,7 +4597,7 @@ public:
             return false;
         }
 
-        pMaievAI->getCreature()->GetAIInterface()->setCurrentTarget(getCreature());
+        pMaievAI->getCreature()->getAIInterface()->setCurrentTarget(getCreature());
         return true;
     }
 
@@ -4648,7 +4648,7 @@ public:
                 break;
             case 4:
                 pMaievAI->_applyAura(MAIEV_TELEPORT);
-                getCreature()->GetAIInterface()->setCurrentTarget(pMaievAI->getCreature());
+                getCreature()->getAIInterface()->setCurrentTarget(pMaievAI->getCreature());
                 break;
             case 5:
                 pMaievAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11491, "Their fury pales before mine, Illidan. We have some unsettled business between us.");
@@ -4698,16 +4698,16 @@ public:
                 pMaievAI->mTrapTimer = pMaievAI->_addTimer((Util::getRandomUInt(5) + 18) * 1000);
                 pMaievAI->getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
                 pMaievAI->setCanEnterCombat(true);
-                pMaievAI->getCreature()->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-                pMaievAI->getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+                pMaievAI->getCreature()->getAIInterface()->setCurrentAgent(AGENT_NULL);
+                pMaievAI->getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
                 pMaievAI->setRooted(false);
-                pMaievAI->getCreature()->GetAIInterface()->onHostileAction(getCreature());
+                pMaievAI->getCreature()->getAIInterface()->onHostileAction(getCreature());
                 pMaievAI->getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
                 pMaievAI->_setWieldWeapon(true);
                 pMaievAI->mIllidanAI = this;
 
                 _clearHateList();
-                getCreature()->GetAIInterface()->onHostileAction(pMaievAI->getCreature());
+                getCreature()->getAIInterface()->onHostileAction(pMaievAI->getCreature());
                 getCreature()->getThreatManager().addThreat(pMaievAI->getCreature(), 200.f);
 
                 mParasiticTimer = 30000;
@@ -4962,7 +4962,7 @@ public:
                 Creature* pTrigger = getNearestCreature(677.399963f, 305.545044f, 353.192169f, CN_FACE_TRIGGER);
                 if (pTrigger != NULL)
                 {
-                    getCreature()->GetAIInterface()->setCurrentTarget(pTrigger);
+                    getCreature()->getAIInterface()->setCurrentTarget(pTrigger);
                 }
             }
         }

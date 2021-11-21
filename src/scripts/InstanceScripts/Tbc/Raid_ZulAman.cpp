@@ -275,7 +275,7 @@ public:
         mLynx = spawnCreature(CN_LYNX_SPIRIT, getCreature()->GetPosition());
         if (mLynx)
         {
-            mLynx->GetAIInterface()->onHostileAction(getCreature()->getThreatManager().getCurrentVictim());
+            mLynx->getAIInterface()->onHostileAction(getCreature()->getThreatManager().getCurrentVictim());
             mLynx->m_noRespawn = true;
         }
 

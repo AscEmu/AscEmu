@@ -110,12 +110,12 @@ public:
             case 128959:
             case 129859:
             case 129346:
-                getCreature()->GetAIInterface()->faction_visibility = 2;
+                getCreature()->getAIInterface()->faction_visibility = 2;
                 break;
             case 128960:
             case 129860:
             case 129347:
-                getCreature()->GetAIInterface()->faction_visibility = 1;
+                getCreature()->getAIInterface()->faction_visibility = 1;
                 break;
             default:
                 break;

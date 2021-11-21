@@ -408,7 +408,7 @@ bool ChatHandler::HandleAggroRangeCommand(const char* /*args*/, WorldSession* m_
     if (unit == nullptr)
         return true;
 
-    float aggroRange = unit->GetAIInterface()->calcAggroRange(m_session->GetPlayer());
+    float aggroRange = unit->getAIInterface()->calcAggroRange(m_session->GetPlayer());
 
     GreenSystemMessage(m_session, "Aggrorange is %f", aggroRange);
 
@@ -439,10 +439,10 @@ bool ChatHandler::HandleFadeCommand(const char* args, WorldSession* m_session)
     if (!v)
         return false;
 
-    target->ModThreatModifyer(atoi(v));
+    target->modThreatModifyer(atoi(v));
 
     std::stringstream sstext;
-    sstext << "threat is now reduced by: " << target->GetThreatModifyer() << '\0';
+    sstext << "threat is now reduced by: " << target->getThreatModifyer() << '\0';
 
     SystemMessage(m_session, sstext.str().c_str());
     return true;
@@ -457,10 +457,10 @@ bool ChatHandler::HandleThreatModCommand(const char* args, WorldSession* m_sessi
     if (!v)
         return false;
 
-    target->ModGeneratedThreatModifyer(0, atoi(v));
+    target->modGeneratedThreatModifyer(0, atoi(v));
 
     std::stringstream sstext;
-    sstext << "new threat caused is now reduced by: " << target->GetGeneratedThreatModifyer(0) << "%" << '\0';
+    sstext << "new threat caused is now reduced by: " << target->getGeneratedThreatModifyer(0) << "%" << '\0';
 
     SystemMessage(m_session, sstext.str().c_str());
     return true;

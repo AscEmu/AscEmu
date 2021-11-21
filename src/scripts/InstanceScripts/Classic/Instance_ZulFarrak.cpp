@@ -117,7 +117,7 @@ public:
         {
             if (antusul->isAlive())
             {
-                antusul->GetAIInterface()->onHostileAction(mTarget);
+                antusul->getAIInterface()->onHostileAction(mTarget);
                 antusul->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Lunch has arrived, my beutiful childern. Tear them to pieces!");
             }
         }
@@ -197,22 +197,22 @@ public:
             if (getCreature()->getThreatManager().getCurrentVictim())
             {
                 if (add1 && Target)
-                    add1->GetAIInterface()->onHostileAction(Target);
+                    add1->getAIInterface()->onHostileAction(Target);
 
                 if (add2 && Target)
-                    add2->GetAIInterface()->onHostileAction(Target);
+                    add2->getAIInterface()->onHostileAction(Target);
 
                 if (add3 && Target)
-                    add3->GetAIInterface()->onHostileAction(Target);
+                    add3->getAIInterface()->onHostileAction(Target);
 
                 if (add4 && Target)
-                    add4->GetAIInterface()->onHostileAction(Target);
+                    add4->getAIInterface()->onHostileAction(Target);
 
                 if (add5 && Target)
-                    add5->GetAIInterface()->onHostileAction(Target);
+                    add5->getAIInterface()->onHostileAction(Target);
 
                 if (add6 && Target)
-                    add6->GetAIInterface()->onHostileAction(Target);
+                    add6->getAIInterface()->onHostileAction(Target);
             }
 
             attack = false;
@@ -257,7 +257,7 @@ public:
         if (trigger)
         {
             trigger->setControlled(false, UNIT_STATE_ROOTED);
-            trigger->GetAIInterface()->setMeleeDisabled(false);
+            trigger->getAIInterface()->setMeleeDisabled(false);
         }
     }
 

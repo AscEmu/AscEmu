@@ -346,12 +346,12 @@ bool EatenRecently(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
     if (apply)
     {
-        NetherDrake->GetAIInterface()->setAllowedToEnterCombat(false);
+        NetherDrake->getAIInterface()->setAllowedToEnterCombat(false);
         NetherDrake->emote(EMOTE_ONESHOT_EAT);
     }
     else
     {
-        NetherDrake->GetAIInterface()->setAllowedToEnterCombat(true);
+        NetherDrake->getAIInterface()->setAllowedToEnterCombat(true);
         NetherDrake->getMovementManager()->moveTakeoff(0, NetherDrake->GetSpawnPosition());
     }
     return true;
@@ -367,11 +367,11 @@ bool Temper(uint8_t /*effectIndex*/, Spell* pSpell)
     MapScriptInterface* pMap = pSpell->getUnitCaster()->GetMapMgr()->GetInterface();
     Creature* pCreature1 = pMap->SpawnCreature(28695, 1335.296265f, -89.237503f, 56.717800f, 1.994538f, true, true, 0, 0, 1);
     if (pCreature1)
-        pCreature1->GetAIInterface()->onHostileAction(pHated);
+        pCreature1->getAIInterface()->onHostileAction(pHated);
 
     Creature* pCreature2 = pMap->SpawnCreature(28695, 1340.615234f, -89.083313f, 56.717800f, 0.028982f, true, true, 0, 0, 1);
     if (pCreature2)
-        pCreature2->GetAIInterface()->onHostileAction(pHated);
+        pCreature2->getAIInterface()->onHostileAction(pHated);
 
     return true;
 };
@@ -393,7 +393,7 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint8_t /*effectIndex*/, Spell* pSpell
     if (!Caster)
         return true;
 
-    Unit* Target = Caster->GetAIInterface()->getCurrentTarget();
+    Unit* Target = Caster->getAIInterface()->getCurrentTarget();
     if (!Target)
         return true;
 

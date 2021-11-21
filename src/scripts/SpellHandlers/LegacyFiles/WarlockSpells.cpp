@@ -513,7 +513,7 @@ bool SummonSuccubusQuest(uint8_t /*effectIndex*/, Spell* s)
 
     Creature* pCreature = s->getPlayerCaster()->GetMapMgr()->CreateCreature(cp->Id);
     pCreature->Load(cp, s->getPlayerCaster()->GetPositionX(), s->getPlayerCaster()->GetPositionY(), s->getPlayerCaster()->GetPositionZ());
-    pCreature->GetAIInterface()->Init(pCreature, AI_SCRIPT_AGRO);
+    pCreature->getAIInterface()->Init(pCreature, AI_SCRIPT_AGRO);
     pCreature->getThreatManager().tauntUpdate();
     pCreature->PushToWorld(s->getPlayerCaster()->GetMapMgr());
     pCreature->Despawn(60000, 0);
@@ -531,7 +531,7 @@ bool SummonVoidWalkerQuest(uint8_t /*effectIndex*/, Spell* s)
 
     Creature* pCreature = p_caster->GetMapMgr()->CreateCreature(cp->Id);
     pCreature->Load(cp, p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ());
-    pCreature->GetAIInterface()->Init(pCreature, AI_SCRIPT_AGRO);
+    pCreature->getAIInterface()->Init(pCreature, AI_SCRIPT_AGRO);
     pCreature->getThreatManager().tauntUpdate();
     pCreature->PushToWorld(p_caster->GetMapMgr());
     pCreature->Despawn(60000, 0);
@@ -549,7 +549,7 @@ bool SummonFelHunterQuest(uint8_t /*effectIndex*/, Spell* s)
 
     Creature* pCreature = p_caster->GetMapMgr()->CreateCreature(cp->Id);
     pCreature->Load(cp, p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ());
-    pCreature->GetAIInterface()->Init(pCreature, AI_SCRIPT_AGRO);
+    pCreature->getAIInterface()->Init(pCreature, AI_SCRIPT_AGRO);
     pCreature->getThreatManager().tauntUpdate();
     pCreature->PushToWorld(p_caster->GetMapMgr());
     pCreature->Despawn(60000, 0);

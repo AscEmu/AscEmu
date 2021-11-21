@@ -269,7 +269,7 @@ public:
         if (GrandWarlock)
         {
             GrandWarlock->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-            GrandWarlock->GetAIInterface()->setAllowedToEnterCombat(false);
+            GrandWarlock->getAIInterface()->setAllowedToEnterCombat(false);
         }
     }
 
@@ -317,7 +317,7 @@ public:
 
             if (Counter == 0)
             {
-                GrandWarlock->GetAIInterface()->handleEvent(EVENT_ENTERCOMBAT, GrandWarlock, 0);
+                GrandWarlock->getAIInterface()->handleEvent(EVENT_ENTERCOMBAT, GrandWarlock, 0);
             }
 
             switch (Util::getRandomUInt(2))    // those need to be verified too
@@ -531,7 +531,7 @@ public:
         if (pTarget != nullptr)
         {
             _clearHateList();
-            getCreature()->GetAIInterface()->setCurrentTarget(pTarget);
+            getCreature()->getAIInterface()->setCurrentTarget(pTarget);
             getCreature()->getThreatManager().addThreat(pTarget, 1000);
 
             if (mLeftHead == nullptr || mRightHead == nullptr || mSpeechTimer != INVALIDATE_TIMER)

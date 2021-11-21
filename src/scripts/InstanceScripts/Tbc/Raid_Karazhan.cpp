@@ -476,7 +476,7 @@ public:
                 pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Splendid. I'm going to get the audience ready. Break a leg!");
                 pCreature->castSpell(pCreature, 32616, false);
                 pCreature->stopMoving();
-                pCreature->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+                pCreature->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 pCreature->GetScript()->DoAction(0);
                 pCreature->setNpcFlags(UNIT_NPC_FLAG_NONE);
                 pCreature->PlaySoundToSet(9357);
@@ -507,7 +507,7 @@ public:
                 static_cast<Creature*>(pObject)->Despawn(100, 0);
                 Creature* pop = pObject->GetMapMgr()->GetInterface()->SpawnCreature(17521, pObject->GetPositionX(), pObject->GetPositionY(), pObject->GetPositionZ(), 0, true, true, 0, 0);
                 if (pop)
-                    pop->GetAIInterface()->onHostileAction(Plr);
+                    pop->getAIInterface()->onHostileAction(Plr);
                 break;
             }
         }
@@ -535,9 +535,9 @@ public:
         addWaypoint(1, createWaypoint(3, 0, WAYPOINT_MOVE_TYPE_WALK, Barnes[3]));
         addWaypoint(1, createWaypoint(4, 0, WAYPOINT_MOVE_TYPE_WALK, Barnes[4]));
 
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         setAIAgent(AGENT_NULL);
-        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
 
         WayStartBBW[getCreature()->GetInstanceID()] = 1;
 
@@ -893,28 +893,28 @@ public:
             case 0:
             {
                 AstralFlare = spawnCreature(CN_ASTRALFLARE, dX + 3, dY + 3, getCreature()->GetPositionZ(), 0);
-                AstralFlare->GetAIInterface()->onHostileAction(random_target);
+                AstralFlare->getAIInterface()->onHostileAction(random_target);
                 AstralFlare = NULL;
             }
             break;
             case 1:
             {
                 AstralFlare = spawnCreature(CN_ASTRALFLARE, dX + 3, dY - 3, getCreature()->GetPositionZ(), 0);
-                AstralFlare->GetAIInterface()->onHostileAction(random_target);
+                AstralFlare->getAIInterface()->onHostileAction(random_target);
                 AstralFlare = NULL;
             }
             break;
             case 2:
             {
                 AstralFlare = spawnCreature(CN_ASTRALFLARE, dX - 3, dY - 3, getCreature()->GetPositionZ(), 0);
-                AstralFlare->GetAIInterface()->onHostileAction(random_target);
+                AstralFlare->getAIInterface()->onHostileAction(random_target);
                 AstralFlare = NULL;
             }
             break;
             case 3:
             {
                 AstralFlare = spawnCreature(CN_ASTRALFLARE, dX - 3, dY + 3, getCreature()->GetPositionZ(), 0);
-                AstralFlare->GetAIInterface()->onHostileAction(random_target);
+                AstralFlare->getAIInterface()->onHostileAction(random_target);
                 AstralFlare = NULL;
             }
             break;
@@ -1736,7 +1736,7 @@ public:
 
     void OnCombatStart(Unit* mTarget) override
     {
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
 
         if (getCreature()->GetDistance2dSq(mTarget) <= 1225.0f)
         {
@@ -2198,7 +2198,7 @@ public:
 
         /*for (std::vector<Player*>::iterator E_Itr = Targets.begin(); E_Itr != Targets.end(); ++E_Itr)
         {
-            if ((*E_Itr)->getGuid() != getCreature()->GetAIInterface()->GetMostHated()->getGuid())
+            if ((*E_Itr)->getGuid() != getCreature()->getAIInterface()->GetMostHated()->getGuid())
             {
                 Enfeeble_Targets[i] = (*E_Itr)->getGuid();
                 Enfeeble_Health[i] = (*E_Itr)->getHealth();
@@ -2572,7 +2572,7 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         stopMovement();
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
         getCreature()->setMoveCanFly(false);
         getCreature()->setControlled(false, UNIT_STATE_ROOTED);
     }
@@ -2605,15 +2605,15 @@ public:
             case 1: //casting point
             {
                 getCreature()->setControlled(true, UNIT_STATE_ROOTED);
-                getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
-                getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+                getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
+                getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                 m_currentWP = 1;
             }
             break;
             case 4: //ground point
             {
-                getCreature()->GetAIInterface()->setAllowedToEnterCombat(true);
-                getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+                getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
+                getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                 Land();
                 m_currentWP = 4;
             }
@@ -2639,9 +2639,9 @@ public:
                 getCreature()->interruptSpell();
 
             getCreature()->setControlled(false, UNIT_STATE_ROOTED);
-            getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+            getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
             getCreature()->stopMoving();
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+            getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             setWaypointToMove(1, 2);
             m_phase++;
             return;
@@ -2699,9 +2699,9 @@ public:
             if (getCreature()->isCastingSpell())
                 getCreature()->interruptSpell();
 
-            getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+            getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
             getCreature()->stopMoving();
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+            getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             setWaypointToMove(1, 1);
             Fly();
             m_FlyPhaseTimer = 17;

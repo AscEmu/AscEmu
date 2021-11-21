@@ -40,7 +40,7 @@ public:
     {
         if (!getCreature()->isCastingSpell() && getCreature()->getThreatManager().getCurrentVictim())//_unit->getAttackTarget())
         {
-            //Unit* target = _unit->GetAIInterface()->GetNextTarget();
+            //Unit* target = _unit->getAIInterface()->GetNextTarget();
             if (m_mangle)
             {
                 getCreature()->castSpell(getCreature(), info_mangle, false);
@@ -89,7 +89,7 @@ public:
     {
         if (!getCreature()->isCastingSpell() && getCreature()->getThreatManager().getCurrentVictim())//_unit->getAttackTarget())
         {
-            //Unit* target = _unit->GetAIInterface()->GetNextTarget();
+            //Unit* target = _unit->getAIInterface()->GetNextTarget();
 
             if (m_demoralizingshout)
             {

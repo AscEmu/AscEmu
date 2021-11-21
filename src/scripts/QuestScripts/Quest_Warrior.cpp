@@ -107,9 +107,9 @@ public:
         getCreature()->SetHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();
         getCreature()->getThreatManager().removeMeFromThreatLists();
-        getCreature()->GetAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
+        getCreature()->getAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
         _setMeleeDisabled(true);
-        getCreature()->GetAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
     }
 
@@ -134,8 +134,8 @@ public:
             return;
 
         Bartleby->SetFaction(168);
-        Bartleby->GetAIInterface()->setMeleeDisabled(false);
-        Bartleby->GetAIInterface()->setAllowedToEnterCombat(true);
+        Bartleby->getAIInterface()->setMeleeDisabled(false);
+        Bartleby->getAIInterface()->setAllowedToEnterCombat(true);
     }
 };
 
@@ -297,7 +297,7 @@ public:
                             creature->emote(EMOTE_ONESHOT_ROAR);
                             creature->SetFaction(14);
 
-                            creature->GetAIInterface()->onHostileAction(warrior);
+                            creature->getAIInterface()->onHostileAction(warrior);
                             ++Wave;
                             WaveTimer = 20000;
                         }
@@ -322,14 +322,14 @@ public:
                             sendDBChatMessage(SAY_TWIGGY_FLATHEAD_OVER);
                             reset();
                         }
-                        else if(!creature->GetAIInterface()->isEngaged()) // Makes BIG WILL attackable.
+                        else if(!creature->getAIInterface()->isEngaged()) // Makes BIG WILL attackable.
                         {
                             creature->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                             creature->removeUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
                             creature->SendScriptTextChatMessage(SAY_BIG_WILL_READY);
                             creature->emote(EMOTE_ONESHOT_ROAR);
                             creature->SetFaction(14);
-                            creature->GetAIInterface()->onHostileAction(warrior);
+                            creature->getAIInterface()->onHostileAction(warrior);
                         }
                     }
                 }

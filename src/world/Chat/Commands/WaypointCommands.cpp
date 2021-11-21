@@ -40,7 +40,7 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
         if (creature_target == nullptr)
             return true;
 
-        ai = creature_target->GetAIInterface();
+        ai = creature_target->getAIInterface();
     }
 
     char* pWaitTime = strtok((char*)args, " ");
@@ -134,7 +134,7 @@ bool ChatHandler::HandleWayPointHideCommand(const char* /*args*/, WorldSession* 
     if (creature_target == nullptr)
         return true;
 
-    AIInterface* ai = creature_target->GetAIInterface();
+    AIInterface* ai = creature_target->getAIInterface();
     Player* player = m_session->GetPlayer();
 
     if (player->m_aiInterfaceWaypoint == ai)
@@ -164,7 +164,7 @@ bool ChatHandler::HandleWayPointShowCommand(const char* args, WorldSession* m_se
     char* pBackwards = strtok((char*)args, " ");
     bool Backwards = (pBackwards) ? ((atoi(pBackwards) > 0) ? true : false) : false;
 
-    AIInterface* ai = creature_target->GetAIInterface();
+    AIInterface* ai = creature_target->getAIInterface();
     Player* player = m_session->GetPlayer();
     if (player->m_aiInterfaceWaypoint != ai)
     {

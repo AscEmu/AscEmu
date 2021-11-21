@@ -1105,7 +1105,7 @@ void GameObject_Chair::onUse(Player* player)
     player->SafeTeleport(player->GetMapId(), player->GetInstanceID(), GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
     player->setStandState(STANDSTATE_SIT_MEDIUM_CHAIR);
 
-    player->UpdateSpeed();
+    player->updateSpeed();
 }
 
 
@@ -1652,7 +1652,7 @@ void GameObject_BarberChair::onUse(Player* player)
 #if VERSION_STRING > TBC
     //parameter_0 defines the height!
     player->SafeTeleport(player->GetMapId(), player->GetInstanceID(), GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
-    player->UpdateSpeed();
+    player->updateSpeed();
 
     //send barber shop menu to player
     player->SendPacket(SmsgEnableBarberShop().serialise().get());

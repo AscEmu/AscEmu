@@ -401,10 +401,10 @@ public:
     {
         TEST_UNIT()
         // If Pointer isn't in combat skip everything
-        if (!ptr->CombatStatus.IsInCombat())
+        if (!ptr->combatStatusHandler.IsInCombat())
             return 0;
 
-        Unit* pTarget = ptr->GetAIInterface()->getCurrentTarget();
+        Unit* pTarget = ptr->getAIInterface()->getCurrentTarget();
         if (!pTarget)
             return 0;
 
@@ -426,8 +426,8 @@ public:
 
             Unit* pUnit = static_cast<Unit*>(obj);
 
-            pUnit->GetAIInterface()->setCurrentTarget(pTarget);
-            pUnit->GetAIInterface()->onHostileAction(pTarget);
+            pUnit->getAIInterface()->setCurrentTarget(pTarget);
+            pUnit->getAIInterface()->onHostileAction(pTarget);
         }
         return 0;
     }
@@ -440,7 +440,7 @@ public:
         float z = CHECK_FLOAT(L, 3);
         //float o = CHECK_FLOAT(L, 4);
 
-        ptr->GetAIInterface()->moveTo(x, y, z);
+        ptr->getAIInterface()->moveTo(x, y, z);
         return 0;
     }
 
@@ -455,7 +455,7 @@ public:
         float z2 = CHECK_FLOAT(L, 6);
         //float o2 = CHECK_FLOAT(L, 7);
 
-        ptr->GetAIInterface()->moveTo(x1 + (Util::getRandomFloat(x2 - x1)), y1 + (Util::getRandomFloat(y2 - y1)), z1 + (Util::getRandomFloat(z2 - z1)));
+        ptr->getAIInterface()->moveTo(x1 + (Util::getRandomFloat(x2 - x1)), y1 + (Util::getRandomFloat(y2 - y1)), z1 + (Util::getRandomFloat(z2 - z1)));
         return 0;
     }
 
@@ -756,7 +756,7 @@ public:
     {
         if (ptr == nullptr || !ptr->IsInWorld())
             RET_NIL()
-            if (ptr->CombatStatus.IsInCombat())
+            if (ptr->combatStatusHandler.IsInCombat())
                 lua_pushboolean(L, 1);
             else
                 lua_pushboolean(L, 0);
@@ -984,7 +984,7 @@ public:
             break;
             case RANDOM_NOT_MAINTANK:
             {
-                Unit* mt = ptr->GetAIInterface()->getCurrentTarget();
+                Unit* mt = ptr->getAIInterface()->getCurrentTarget();
                 if (mt == nullptr || !mt->isPlayer())
                     return 0;
 
@@ -1258,13 +1258,13 @@ public:
     {
         TEST_PLAYER()
 
-        if (!ptr->CombatStatus.IsInCombat())
+        if (!ptr->combatStatusHandler.IsInCombat())
         {
             lua_pushinteger(L, 0);
             return 1;
         }
 
-        PUSH_UNIT(L, ptr->GetMapMgr()->GetUnit(dynamic_cast<Player*>(ptr)->CombatStatus.GetPrimaryAttackTarget()));
+        PUSH_UNIT(L, ptr->GetMapMgr()->GetUnit(dynamic_cast<Player*>(ptr)->combatStatusHandler.GetPrimaryAttackTarget()));
 
         return 1;
     }
@@ -1272,7 +1272,7 @@ public:
     static int GetMainTank(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        Unit* ret = ptr->GetAIInterface()->getCurrentTarget();
+        Unit* ret = ptr->getAIInterface()->getCurrentTarget();
         if (!ret)
             lua_pushnil(L);
         else
@@ -1294,7 +1294,7 @@ public:
     static int ClearThreatList(lua_State* /*L*/, Unit* ptr)
     {
         TEST_UNIT()
-        ptr->ClearHateList();
+        ptr->clearHateList();
         return 0;
     }
 
@@ -1333,7 +1333,7 @@ public:
         if (!target || !isHostile(ptr, target) || ptr == target)
             return 0;
         else
-            ptr->GetAIInterface()->setCurrentTarget(target);
+            ptr->getAIInterface()->setCurrentTarget(target);
         return 0;
     }
 
@@ -1592,7 +1592,7 @@ public:
     static int WipeHateList(lua_State* /*L*/, Unit* ptr)
     {
         TEST_UNIT()
-        ptr->WipeHateList();
+        ptr->wipeHateList();
         ptr->getThreatManager().clearAllThreat();
         ptr->getThreatManager().removeMeFromThreatLists();
         return 0;
@@ -1609,7 +1609,7 @@ public:
     static int WipeCurrentTarget(lua_State* /*L*/, Unit* ptr)
     {
         TEST_UNIT()
-        ptr->getThreatManager().clearThreat(ptr->GetAIInterface()->getCurrentTarget());
+        ptr->getThreatManager().clearThreat(ptr->getAIInterface()->getCurrentTarget());
         return 0;
     }
 
@@ -1667,7 +1667,7 @@ public:
     static int ClearHateList(lua_State* /*L*/, Unit* ptr)
     {
         TEST_UNIT()
-        ptr->ClearHateList();
+        ptr->clearHateList();
         return 0;
     }
 
@@ -1704,7 +1704,7 @@ public:
             return 0;
 
         ptr->setMoveHover(true);
-        ptr->GetAIInterface()->setMeleeDisabled(true);
+        ptr->getAIInterface()->setMeleeDisabled(true);
         ptr->setMoveCanFly(true);
         ptr->emote(EMOTE_ONESHOT_LIFTOFF);
         return 0;
@@ -1717,7 +1717,7 @@ public:
 
         ptr->setMoveHover(false);
         ptr->setMoveCanFly(false);
-        ptr->GetAIInterface()->setMeleeDisabled(false);
+        ptr->getAIInterface()->setMeleeDisabled(false);
         ptr->emote(EMOTE_ONESHOT_LAND);
         return 0;
     }
@@ -1751,7 +1751,7 @@ public:
 
         if (ptr->isCreature())
         {
-            ptr->GetAIInterface()->moveTo(x, y, z);
+            ptr->getAIInterface()->moveTo(x, y, z);
             ptr->SetOrientation(o);
         }
 
@@ -2077,7 +2077,7 @@ public:
         TEST_UNIT()
         auto range = static_cast<float>(luaL_checkinteger(L, 1));
         if (range)
-            ptr->GetAIInterface()->addBoundary(new CircleBoundary(ptr->GetPosition(), range), true);
+            ptr->getAIInterface()->addBoundary(new CircleBoundary(ptr->GetPosition(), range), true);
         return 0;
     }
 
@@ -2177,7 +2177,7 @@ public:
         Unit* target = CHECK_UNIT(L, 1);
         uint32_t event_id = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         uint32_t misc_1 = static_cast<uint32_t>(luaL_checkinteger(L, 3));
-        ptr->GetAIInterface()->handleEvent(event_id, target, misc_1);
+        ptr->getAIInterface()->handleEvent(event_id, target, misc_1);
         return 1;
     }
 
@@ -2222,7 +2222,7 @@ public:
     static int GetAIState(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        lua_pushnumber(L, ptr->GetAIInterface()->getAiState());
+        lua_pushnumber(L, ptr->getAIInterface()->getAiState());
         return 1;
     }
 
@@ -2625,14 +2625,14 @@ public:
     {
         Unit* target = CHECK_UNIT(L, 1);
         if (ptr && target)
-            ptr->GetAIInterface()->setCurrentTarget(target);
+            ptr->getAIInterface()->setCurrentTarget(target);
         return 0;
     }
 
     static int getCurrentTarget(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        PUSH_UNIT(L, ptr->GetAIInterface()->getCurrentTarget());
+        PUSH_UNIT(L, ptr->getAIInterface()->getCurrentTarget());
         return 1;
     }
 
@@ -2641,7 +2641,7 @@ public:
         TEST_UNIT()
         Unit* owner = CHECK_UNIT(L, 1);
         if (owner)
-            ptr->GetAIInterface()->setPetOwner(owner);
+            ptr->getAIInterface()->setPetOwner(owner);
         return 0;
     }
 
@@ -2667,7 +2667,7 @@ public:
     static int GetPetOwner(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-        PUSH_UNIT(L, ptr->GetAIInterface()->getPetOwner());
+        PUSH_UNIT(L, ptr->getAIInterface()->getPetOwner());
         return 1;
     }
 
@@ -3167,7 +3167,7 @@ public:
     {
         TEST_UNIT()
         bool enabled = CHECK_BOOL(L, 1);
-        ptr->GetAIInterface()->m_canCallForHelp = enabled;
+        ptr->getAIInterface()->m_canCallForHelp = enabled;
         return 0;
     }
 
@@ -3175,7 +3175,7 @@ public:
     {
         TEST_UNIT()
         float hp = CHECK_FLOAT(L, 1);
-        ptr->GetAIInterface()->m_CallForHelpHealth = hp;
+        ptr->getAIInterface()->m_CallForHelpHealth = hp;
         return 0;
     }
 
@@ -3323,7 +3323,7 @@ public:
         //uint32_t spell = static_cast<uint32_t>(luaL_checkinteger(L, 3));
         if (ptr && target && damage)
         {
-            ptr->GetAIInterface()->onHostileAction(target);
+            ptr->getAIInterface()->onHostileAction(target);
             ptr->getThreatManager().addThreat(target, static_cast<float>(damage));
         }
         return 0;
@@ -3631,40 +3631,40 @@ public:
             switch (state)
             {
                 case 0:
-                    ptr->GetAIInterface()->setAiState(AI_STATE_IDLE);
+                    ptr->getAIInterface()->setAiState(AI_STATE_IDLE);
                     break;
                 case 1:
-                    ptr->GetAIInterface()->setAiState(AI_STATE_ATTACKING);
+                    ptr->getAIInterface()->setAiState(AI_STATE_ATTACKING);
                     break;
                 case 2:
-                    ptr->GetAIInterface()->setAiState(AI_STATE_CASTING);
+                    ptr->getAIInterface()->setAiState(AI_STATE_CASTING);
                     break;
                 case 3:
-                    ptr->GetAIInterface()->setAiState(AI_STATE_FLEEING);
+                    ptr->getAIInterface()->setAiState(AI_STATE_FLEEING);
                     break;
                 case 4:
-                    ptr->GetAIInterface()->setAiState(AI_STATE_FOLLOWING);
+                    ptr->getAIInterface()->setAiState(AI_STATE_FOLLOWING);
                     break;
                 case 5:
-                    ptr->GetAIInterface()->setAiState(AI_STATE_EVADE);
+                    ptr->getAIInterface()->setAiState(AI_STATE_EVADE);
                     break;
                 case 6:
-                    ptr->GetAIInterface()->setAiState(AI_STATE_MOVEWP);
+                    ptr->getAIInterface()->setAiState(AI_STATE_MOVEWP);
                     break;
                 case 7:
-                    ptr->GetAIInterface()->setAiState(AI_STATE_FEAR);
+                    ptr->getAIInterface()->setAiState(AI_STATE_FEAR);
                     break;
                 case 8:
-                    ptr->GetAIInterface()->setAiState(AI_STATE_WANDER);
+                    ptr->getAIInterface()->setAiState(AI_STATE_WANDER);
                     break;
                 case 9:
-                    ptr->GetAIInterface()->setAiState(AI_STATE_STOPPED);
+                    ptr->getAIInterface()->setAiState(AI_STATE_STOPPED);
                     break;
                 case 10:
-                    ptr->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+                    ptr->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                     break;
                 case 11:
-                    ptr->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+                    ptr->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                     break;
             }
         }
@@ -5450,35 +5450,35 @@ public:
     {
         TEST_UNIT_RET()
         bool disable = CHECK_BOOL(L, 1);
-        static_cast<Creature*>(ptr)->GetAIInterface()->setMeleeDisabled(disable);
+        static_cast<Creature*>(ptr)->getAIInterface()->setMeleeDisabled(disable);
         RET_BOOL(true)
     }
     static int DisableSpells(lua_State* L, Unit* ptr)
     {
         TEST_UNIT_RET()
         bool disable = CHECK_BOOL(L, 1);
-        static_cast<Creature*>(ptr)->GetAIInterface()->setCastDisabled(disable);
+        static_cast<Creature*>(ptr)->getAIInterface()->setCastDisabled(disable);
         RET_BOOL(true)
     }
     static int DisableRanged(lua_State* L, Unit* ptr)
     {
         TEST_UNIT_RET()
         bool disable = CHECK_BOOL(L, 1);
-        static_cast<Creature*>(ptr)->GetAIInterface()->setRangedDisabled(disable);
+        static_cast<Creature*>(ptr)->getAIInterface()->setRangedDisabled(disable);
         RET_BOOL(true)
     }
     static int DisableCombat(lua_State* L, Unit* ptr)
     {
         TEST_UNIT_RET()
         bool disable = CHECK_BOOL(L, 1);
-        static_cast<Creature*>(ptr)->GetAIInterface()->setCombatDisabled(disable);
+        static_cast<Creature*>(ptr)->getAIInterface()->setCombatDisabled(disable);
         RET_BOOL(true)
     }
     static int DisableTargeting(lua_State* L, Unit* ptr)
     {
         TEST_UNIT_RET()
         bool disable = CHECK_BOOL(L, 1);
-        static_cast<Creature*>(ptr)->GetAIInterface()->setTargetingDisabled(disable);
+        static_cast<Creature*>(ptr)->getAIInterface()->setTargetingDisabled(disable);
         RET_BOOL(true)
     }
     static int IsInGroup(lua_State* L, Unit* ptr)
