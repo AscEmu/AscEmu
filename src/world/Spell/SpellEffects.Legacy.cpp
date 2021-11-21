@@ -2461,10 +2461,8 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
                     }
                     unitTarget->setHealth(hlth);
                     unitTarget->setPower(POWER_TYPE_MANA, mana);
-                    //\note remove all dynmic flags
-                    unitTarget->setDynamicFlags(0);
+                    unitTarget->setTaggerGuid(0);
                     unitTarget->setDeathState(ALIVE);
-                    unitTarget->UnTag();
                     unitTarget->loot.gold = 0;
                     unitTarget->loot.looters.clear();
                     unitTarget->loot.items.clear();
@@ -5553,10 +5551,8 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
                     }
                     unitTarget->setHealth(hlth);
                     unitTarget->setPower(POWER_TYPE_MANA, mana);
-                    //\note remove all dynamic flags
-                    unitTarget->setDynamicFlags(0);
+                    unitTarget->setTaggerGuid(0);
                     unitTarget->setDeathState(ALIVE);
-                    unitTarget->UnTag();
                     unitTarget->loot.gold = 0;
                     unitTarget->loot.looters.clear();
                     unitTarget->loot.items.clear();

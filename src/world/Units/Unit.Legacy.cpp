@@ -7603,9 +7603,9 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
 
     // Tagging should happen when damage packets are sent
     const auto plrOwner = getPlayerOwner();
-    if (plrOwner != nullptr && pVictim->isCreature() && pVictim->IsTaggable())
+    if (plrOwner != nullptr && pVictim->isCreature() && pVictim->isTaggable())
     {
-        pVictim->Tag(getGuid());
+        pVictim->setTaggerGuid(getGuid());
         plrOwner->TagUnit(pVictim);
     }
 
@@ -9275,41 +9275,9 @@ void Unit::RemoveGarbage()
     m_GarbagePets.clear();
 }
 
-void Unit::Tag(uint64 TaggerGUID)
-{
-    Tagged = true;
-    this->TaggerGuid = TaggerGUID;
-    addDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER);
-}
-
-void Unit::UnTag()
-{
-    Tagged = false;
-    TaggerGuid = 0;
-    removeDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER);
-}
-
-bool Unit::IsTagged()
-{
-    return Tagged;
-}
-
-bool Unit::IsTaggable()
-{
-    if (!isPet() && !Tagged)
-        return true;
-
-    return false;
-}
-
-uint64 Unit::GetTaggerGUID()
-{
-    return TaggerGuid;
-}
-
 bool Unit::isLootable()
 {
-    if (IsTagged() && !isPet() && !(isPlayer() && !IsInBg()) && (getCreatedByGuid() == 0) && !isVehicle())
+    if (isTagged() && !isPet() && !(isPlayer() && !IsInBg()) && (getCreatedByGuid() == 0) && !isVehicle())
     {
         auto creature_prop = sMySQLStore.getCreatureProperties(getEntry());
         if (isCreature() && !sLootMgr.HasLootForCreature(getEntry()) && creature_prop != nullptr && (creature_prop->money == 0))  // Since it is inworld we can safely assume there is a proto cached with this Id!

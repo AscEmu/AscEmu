@@ -223,7 +223,7 @@ void Creature::generateLoot()
     // Master Looting Ninja Checker
     if (worldConfig.player.deactivateMasterLootNinja)
     {
-        Player* looter = sObjectMgr.GetPlayer(static_cast<uint32_t>(this->TaggerGuid));
+        Player* looter = sObjectMgr.GetPlayer(static_cast<uint32_t>(this->getTaggerGuid()));
         if (looter && looter->getGroup() && looter->getGroup()->GetMethod() == PARTY_LOOT_MASTER)
         {
             uint16_t lootThreshold = looter->getGroup()->GetThreshold();
@@ -702,8 +702,7 @@ void Creature::OnRespawn(MapMgr* m)
 
     sLogger.info("Respawning " I64FMT "...", getGuid());
     setHealth(getMaxHealth());
-    //\note remove all dynamic flags
-    setDynamicFlags(0); // not tagging shit
+
     if (m_spawn)
     {
         setNpcFlags(creature_properties->NPCFLags);
@@ -727,9 +726,8 @@ void Creature::OnRespawn(MapMgr* m)
     }
 
     removeUnitFlags(UNIT_FLAG_SKINNABLE);
-    Skinned = false;
-    Tagged = false;
-    TaggerGuid = 0;
+
+    setTaggerGuid(0);
 
     //empty loot
     loot.items.clear();
@@ -2342,9 +2340,9 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     addUnitFlags(UNIT_FLAG_DEAD);
 
-    if ((getCreatedByGuid() == 0) && (GetTaggerGUID() != 0))
+    if ((getCreatedByGuid() == 0) && (getTaggerGuid() != 0))
     {
-        Unit* owner = m_mapMgr->GetUnit(GetTaggerGUID());
+        Unit* owner = m_mapMgr->GetUnit(getTaggerGuid());
 
         if (owner != NULL)
             generateLoot();

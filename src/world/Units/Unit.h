@@ -456,6 +456,7 @@ public:
     void setDynamicFlags(uint32_t dynamicFlags);
     void addDynamicFlags(uint32_t dynamicFlags);
     void removeDynamicFlags(uint32_t dynamicFlags);
+    bool hasDynamicFlags(uint32_t dynamicFlags) const;
 
     float getModCastSpeed() const;
     void setModCastSpeed(float modifier);
@@ -1113,6 +1114,18 @@ public:
     int32_t getGeneratedThreatModifyer(uint32_t school) { return m_generatedThreatModifyer[school]; }
     void modGeneratedThreatModifyer(uint32_t school, int32_t mod) { m_generatedThreatModifyer[school] += mod; }
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Tagging (helper for dynamic flags)
+private:
+    uint64_t m_taggerGuid = 0;
+
+public:
+    void setTaggerGuid(uint64_t guid);
+    uint64_t getTaggerGuid() const;
+
+    bool isTagged() const;
+    bool isTaggable() const;
+
     // Do not alter anything below this line
     //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1423,13 +1436,6 @@ public:
 
     void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
 
-    bool Tagged = false;
-    uint64 TaggerGuid = 0;
-    void Tag(uint64 TaggerGUID);
-    void UnTag();
-    bool IsTagged();
-    bool IsTaggable();
-    uint64 GetTaggerGUID();
     bool isLootable();
 
     virtual bool isTrainingDummy() { return false; }

@@ -965,9 +965,9 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
 
     // Tagging should happen when damage packets are sent
     const auto plrOwner = getPlayerOwner();
-    if (plrOwner != nullptr && victim->isCreature() && victim->IsTaggable())
+    if (plrOwner != nullptr && victim->isCreature() && victim->isTaggable())
     {
-        victim->Tag(getGuid());
+        victim->setTaggerGuid(getGuid());
         plrOwner->TagUnit(victim);
     }
 
@@ -2952,11 +2952,11 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
         if (isCreature())
         {
             auto this_creature = static_cast<Creature*>(this);
-            if (this_creature->IsTagged() && this_creature->loot.any())
+            if (this_creature->isTagged() && this_creature->loot.any())
             {
                 uint32_t current_flags;
                 old_flags = current_flags = this_creature->getDynamicFlags();
-                if (this_creature->GetTaggerGUID() == target->getGuid())
+                if (this_creature->getTaggerGuid() == target->getGuid())
                 {
                     old_flags = U_DYN_FLAG_TAGGED_BY_OTHER;
                     if (current_flags & U_DYN_FLAG_TAGGED_BY_OTHER)

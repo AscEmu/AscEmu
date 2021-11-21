@@ -1555,7 +1555,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 // Check if target is already tagged
                 // Several spells cannot be casted at already tagged creatures
                 // TODO: implement this error message for skinning, mining and herbalism (mining and herbalism cata only)
-                if (getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_CANT_TARGET_TAGGED && target->IsTagged() && !target->isTaggedByPlayerOrItsGroup(p_caster))
+                if (getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_CANT_TARGET_TAGGED && target->isTagged() && !target->isTaggedByPlayerOrItsGroup(p_caster))
                     return SPELL_FAILED_CANT_CAST_ON_TAPPED;
 
                 // GM flagged players should be immune to other players' casts, but not their own
@@ -2494,9 +2494,9 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_TARGET_UNSKINNABLE;
 
                 // Check if creature is looted
-                if (creatureTarget->loot.any() && creatureTarget->IsTagged())
+                if (creatureTarget->loot.any() && creatureTarget->isTagged())
                 {
-                    const auto taggerPlayer = creatureTarget->GetMapMgrPlayer(creatureTarget->GetTaggerGUID());
+                    const auto taggerPlayer = creatureTarget->GetMapMgrPlayer(creatureTarget->getTaggerGuid());
                     if (taggerPlayer != nullptr && creatureTarget->HasLootForPlayer(taggerPlayer))
                         return SPELL_FAILED_TARGET_NOT_LOOTED;
                 }
@@ -2692,7 +2692,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_HIGHLEVEL;
 
                 const auto targetCreature = dynamic_cast<Creature*>(target);
-                if (p_caster != nullptr && target->isCreature() && targetCreature->IsTagged() && !targetCreature->isTaggedByPlayerOrItsGroup(p_caster))
+                if (p_caster != nullptr && target->isCreature() && targetCreature->isTagged() && !targetCreature->isTaggedByPlayerOrItsGroup(p_caster))
                     return SPELL_FAILED_CANT_CAST_ON_TAPPED;
             } break;
             case SPELL_AURA_PERIODIC_MANA_LEECH:

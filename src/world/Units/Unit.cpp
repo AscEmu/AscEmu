@@ -957,6 +957,7 @@ uint32_t Unit::getDynamicFlags() const { return unitData()->dynamic_flags; }
 void Unit::setDynamicFlags(uint32_t dynamicFlags) { write(unitData()->dynamic_flags, dynamicFlags); }
 void Unit::addDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() | dynamicFlags); }
 void Unit::removeDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() & ~dynamicFlags); }
+bool Unit::hasDynamicFlags(uint32_t dynamicFlags) const { return (getDynamicFlags() & dynamicFlags) != 0; }
 
 float Unit::getModCastSpeed() const { return unitData()->mod_cast_speed; }
 void Unit::setModCastSpeed(float modifier) { write(unitData()->mod_cast_speed, modifier); }
@@ -5785,9 +5786,9 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
         const auto plrOwner = getPlayerOwner();
         if (plrOwner != nullptr)
         {
-            if (victim->isCreature() && victim->IsTaggable())
+            if (victim->isCreature() && victim->isTaggable())
             {
-                victim->Tag(plrOwner->getGuid());
+                victim->setTaggerGuid(plrOwner->getGuid());
                 plrOwner->TagUnit(victim);
             }
 
@@ -5831,9 +5832,9 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
 
     // Tagging should happen when damage packets are sent
     const auto plrOwner = getPlayerOwner();
-    if (plrOwner != nullptr && victim->isCreature() && victim->IsTaggable())
+    if (plrOwner != nullptr && victim->isCreature() && victim->isTaggable())
     {
-        victim->Tag(getGuid());
+        victim->setTaggerGuid(getGuid());
         plrOwner->TagUnit(victim);
     }
 
@@ -5977,7 +5978,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
         // Loot
         if (isLootable())
         {
-            const auto tagger = GetMapMgrPlayer(GetTaggerGUID());
+            const auto tagger = GetMapMgrPlayer(getTaggerGuid());
             if (tagger != nullptr)
             {
                 if (tagger->isInGroup())
@@ -5990,9 +5991,9 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
         if (!isPet() && getCreatedByGuid() == 0)
         {
             // Experience points
-            if (IsTagged())
+            if (isTagged())
             {
-                const auto taggerUnit = GetMapMgrUnit(GetTaggerGUID());
+                const auto taggerUnit = GetMapMgrUnit(getTaggerGuid());
                 const auto tagger = taggerUnit != nullptr ? taggerUnit->getPlayerOwner() : nullptr;
                 if (tagger != nullptr)
                 {
@@ -6251,15 +6252,15 @@ uint32_t Unit::absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly
 
 bool Unit::isTaggedByPlayerOrItsGroup(Player* tagger)
 {
-    if (!IsTagged() || tagger == nullptr)
+    if (!isTagged() || tagger == nullptr)
         return false;
 
-    if (GetTaggerGUID() == tagger->getGuid())
+    if (getTaggerGuid() == tagger->getGuid())
         return true;
 
     if (tagger->isInGroup())
     {
-        const auto playerTagger = GetMapMgrPlayer(GetTaggerGUID());
+        const auto playerTagger = GetMapMgrPlayer(getTaggerGuid());
         if (playerTagger != nullptr && tagger->getGroup()->HasMember(playerTagger))
             return true;
     }
@@ -6939,4 +6940,39 @@ void Unit::wipeHateList()
 void Unit::wipeTargetList()
 {
     getThreatManager().clearAllThreat();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Tagging (helper for dynamic flags)
+
+void Unit::setTaggerGuid(uint64_t guid)
+{
+    if (guid)
+    {
+        this->m_taggerGuid = guid;
+        addDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER);
+    }
+    else
+    {
+        this->m_taggerGuid = 0;
+        removeDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER);
+    }
+}
+
+uint64_t Unit::getTaggerGuid() const
+{
+    return m_taggerGuid;
+}
+
+bool Unit::isTagged() const
+{
+    return hasDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER);
+}
+
+bool Unit::isTaggable() const
+{
+    if (!isPet() && !hasDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER))
+        return true;
+
+    return false;
 }

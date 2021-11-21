@@ -1338,7 +1338,7 @@ void Group::SendLootUpdates(Object* o)
                 {
                     Unit* victim = static_cast<Unit*>(o);
 
-                    victim->Tag(pLooter->getGuid());
+                    victim->setTaggerGuid(pLooter->getGuid());
                     pLooter->getUpdateMgr().pushUpdateData(&buf, 1);
                 }
 
