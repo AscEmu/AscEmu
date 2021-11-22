@@ -148,19 +148,6 @@ enum Targets
     TARGET_127                                  = 127,
 };
 
-enum ItemEnchantmentType
-{
-    ITEM_ENCHANTMENT_TYPE_NONE                  = 0,
-    ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL          = 1,
-    ITEM_ENCHANTMENT_TYPE_DAMAGE                = 2,
-    ITEM_ENCHANTMENT_TYPE_EQUIP_SPELL           = 3,
-    ITEM_ENCHANTMENT_TYPE_RESISTANCE            = 4,
-    ITEM_ENCHANTMENT_TYPE_STAT                  = 5,
-    ITEM_ENCHANTMENT_TYPE_TOTEM                 = 6,
-    ITEM_ENCHANTMENT_TYPE_USE_SPELL             = 7,
-    ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET      = 8
-};
-
 enum MountFlags
 {
     MOUNT_FLAG_CAN_PITCH    = 0x4, // client checks MOVEMENTFLAG2_FULL_SPEED_PITCHING

@@ -496,19 +496,17 @@ int32 Item::AddEnchantment(uint32_t enchantment, uint32 Duration, bool /*Perm*/ 
 
     switch (Slot)
     {
+#if VERSION_STRING >= Cata
         case TRANSMOGRIFY_ENCHANTMENT_SLOT:
         case REFORGE_ENCHANTMENT_SLOT:
         {
-#if VERSION_STRING >= Cata
             auto custom_enchant = new DBC::Structures::SpellItemEnchantmentEntry();
             custom_enchant->Id = enchantment;
 
             Enchantment = custom_enchant;
-#else
-            return Slot;
-#endif
         }
             break;
+#endif
         default:
         {
             auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchantment);

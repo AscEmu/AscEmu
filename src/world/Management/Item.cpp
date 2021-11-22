@@ -345,6 +345,7 @@ bool Item::isEquipped() const
     return !isInBag() && m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()) < EQUIPMENT_SLOT_END;
 }
 
+#if VERSION_STRING == Cata
 int32_t Item::getReforgableStat(ItemModType statType) const
 {
     ItemProperties const* proto = getItemProperties();
@@ -387,3 +388,4 @@ int32_t Item::getReforgableStat(ItemModType statType) const
 
     return 0;
 }
+#endif

@@ -4051,6 +4051,7 @@ void Player::setVisibleItemFields(uint32_t slot, Item* item)
     }
 }
 
+#if VERSION_STRING == Cata
 void Player::applyReforgeEnchantment(Item* item, bool apply)
 {
     if (!item)
@@ -4259,6 +4260,7 @@ void Player::applyReforgeEnchantment(Item* item, bool apply)
 
     UpdateStats();
 }
+#endif
 
 void Player::addToGMTargetList(uint32_t guid)
 {
