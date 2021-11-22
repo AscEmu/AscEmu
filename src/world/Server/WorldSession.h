@@ -577,6 +577,8 @@ class SERVER_DECL WorldSession
 
 #if VERSION_STRING >= Cata
         void handleTransmogrifyItems(WorldPacket& recvData);
+        void handleReforgeItemOpcode(WorldPacket& recvData);
+        void sendReforgeResult(bool success);
 #endif
 
 #if VERSION_STRING >= WotLK

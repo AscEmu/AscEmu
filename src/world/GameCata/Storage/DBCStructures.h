@@ -148,6 +148,19 @@ enum Targets
     TARGET_127                                  = 127,
 };
 
+enum ItemEnchantmentType
+{
+    ITEM_ENCHANTMENT_TYPE_NONE                  = 0,
+    ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL          = 1,
+    ITEM_ENCHANTMENT_TYPE_DAMAGE                = 2,
+    ITEM_ENCHANTMENT_TYPE_EQUIP_SPELL           = 3,
+    ITEM_ENCHANTMENT_TYPE_RESISTANCE            = 4,
+    ITEM_ENCHANTMENT_TYPE_STAT                  = 5,
+    ITEM_ENCHANTMENT_TYPE_TOTEM                 = 6,
+    ITEM_ENCHANTMENT_TYPE_USE_SPELL             = 7,
+    ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET      = 8
+};
+
 enum MountFlags
 {
     MOUNT_FLAG_CAN_PITCH    = 0x4, // client checks MOVEMENTFLAG2_FULL_SPEED_PITCHING
@@ -234,7 +247,8 @@ namespace DBC::Structures
         //char const item_bag_family_format[] = "nx"; new
         //char const item_class_format[] = "nixxxs"; new
         //char const item_damage_format[] = "nfffffffi"; new
-        char const item_random_properties_format[] = "nxiiiiis";
+        char const item_reforge_format[] = "nifif";
+        char const item_random_properties_format[] = "nxiiixxs";
         char const item_random_suffix_format[] = "nsxiiiiiiiiii";
         char const item_set_format[] = "dsxxxxxxxxxxxxxxxxxiiiiiiiiiiiiiiiiii";
         char const item_limit_category_format[] = "nxii";
@@ -1239,11 +1253,13 @@ namespace DBC::Structures
         uint32_t equippedFlag;                                      // 3
     };
 
+#define MAX_ITEM_ENCHANTMENT_EFFECTS 3
+
     struct ItemRandomPropertiesEntry
     {
         uint32_t ID;                                                // 0
         //char* name1;                                              // 1
-        uint32_t spells[5];                                         // 2-6 enchant_id
+        uint32_t spells[MAX_ITEM_ENCHANTMENT_EFFECTS];                                         // 2-6 enchant_id
         char* name_suffix;                                          // 7
     };
 
@@ -1265,6 +1281,15 @@ namespace DBC::Structures
         uint32_t itemscount[8];                                     // 27-34
         uint32_t RequiredSkillID;                                   // 35
         uint32_t RequiredSkillAmt;                                  // 36
+    };
+
+    struct ItemReforgeEntry
+    {
+        uint32_t Id;
+        uint32_t SourceStat;
+        float SourceMultiplier;
+        uint32_t FinalStat;
+        float FinalMultiplier;
     };
 
     struct LFGDungeonEntry
@@ -1648,10 +1673,10 @@ namespace DBC::Structures
     {
         uint32_t Id;                                                // 0
         //uint32_t charges;                                         // 1
-        uint32_t type[3];                                           // 2-4
-        uint32_t min[3];                                            // 5-7 for combat, in practice min==max
-        //uint32_t max[3];                                          // 8-10
-        uint32_t spell[3];                                          // 11-13
+        uint32_t type[MAX_ITEM_ENCHANTMENT_EFFECTS];                                           // 2-4
+        uint32_t min[MAX_ITEM_ENCHANTMENT_EFFECTS];                                            // 5-7 for combat, in practice min==max
+        //uint32_t max[MAX_ITEM_ENCHANTMENT_EFFECTS];                                          // 8-10
+        uint32_t spell[MAX_ITEM_ENCHANTMENT_EFFECTS];                                          // 11-13
         char* Name;                                                 // 14-29
         //uint32_t NameFlags;                                       // 30
         uint32_t visual;                                            // 31 aura

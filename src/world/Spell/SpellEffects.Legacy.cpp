@@ -1143,7 +1143,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                         float block_multiplier = (100.0f + p_caster->m_modblockabsorbvalue) / 100.0f;
                         if (block_multiplier < 1.0f)block_multiplier = 1.0f;
 
-                        int32 blockable_damage = float2int32((it->getItemProperties()->Block + p_caster->m_modblockvaluefromspells + p_caster->getCombatRating(PCR_BLOCK) + ((p_caster->getStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
+                        int32 blockable_damage = float2int32((it->getItemProperties()->Block + p_caster->m_modblockvaluefromspells + p_caster->getCombatRating(CR_BLOCK) + ((p_caster->getStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
 
                         /*
                         3.2.0:
@@ -1982,7 +1982,7 @@ void Spell::SpellEffectPowerDrain(uint8_t effectIndex)  // Power Drain
             return;
 
         // Resilience - reduces the effect of mana drains by (CalcRating*2)%.
-        damage = float2int32(damage * (1 - ((static_cast< Player* >(unitTarget)->CalcRating(PCR_SPELL_CRIT_RESILIENCE) * 2) / 100.0f)));
+        damage = float2int32(damage * (1 - ((static_cast< Player* >(unitTarget)->CalcRating(CR_CRIT_TAKEN_SPELL) * 2) / 100.0f)));
     }
     uint32 amt = damage + ((u_caster->GetDamageDoneMod(getSpellInfo()->getFirstSchoolFromSchoolMask()) * 80) / 100);
     if (amt > curPower)
@@ -4320,7 +4320,7 @@ void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanen
 
     //remove other perm enchantment that was enchanted by profession
     itemTarget->RemoveProfessionEnchant();
-    int32 Slot = itemTarget->AddEnchantment(spell_item_enchant, 0, true, true, false, 0);
+    int32 Slot = itemTarget->AddEnchantment(getSpellInfo()->getEffectMiscValue(effectIndex), 0, true, true, false, 0);
     if (Slot < 0)
         return; // Apply failed
 
@@ -4361,7 +4361,7 @@ void Spell::SpellEffectEnchantItemTemporary(uint8_t effectIndex)  // Enchant Ite
 
     itemTarget->RemoveEnchantment(TEMP_ENCHANTMENT_SLOT);
 
-    int32 Slot = itemTarget->AddEnchantment(spell_item_enchant, Duration, false, true, false, TEMP_ENCHANTMENT_SLOT);
+    int32 Slot = itemTarget->AddEnchantment(EnchantmentID, Duration, false, true, false, TEMP_ENCHANTMENT_SLOT);
     if (Slot < 0)
         return; // Apply failed
 
@@ -4557,7 +4557,7 @@ void Spell::SpellEffectPowerBurn(uint8_t effectIndex) // power burn
             return;
 
         // Resilience - reduces the effect of mana drains by (CalcRating*2)%.
-        damage = float2int32(damage * (1 - ((static_cast< Player* >(unitTarget)->CalcRating(PCR_SPELL_CRIT_RESILIENCE) * 2) / 100.0f)));
+        damage = float2int32(damage * (1 - ((static_cast< Player* >(unitTarget)->CalcRating(CR_CRIT_TAKEN_SPELL) * 2) / 100.0f)));
     }
     int32 mult = damage;
     damage = mult * unitTarget->getMaxPower(POWER_TYPE_MANA) / 100;
@@ -5105,7 +5105,7 @@ void Spell::SpellEffectEnchantHeldItem(uint8_t effectIndex)
     }
 
     item->RemoveEnchantment(1);
-    item->AddEnchantment(spell_item_enchant, Duration, false, true, false, 1);
+    item->AddEnchantment(getSpellInfo()->getEffectMiscValue(effectIndex), Duration, false, true, false, 1);
 }
 
 void Spell::SpellEffectSelfResurrect(uint8_t effectIndex)
@@ -6322,7 +6322,7 @@ void Spell::SpellEffectEnchantItemPrismatic(uint8_t effectIndex)
 
     //remove other socket enchant
     itemTarget->RemoveEnchantment(6);
-    int32 Slot = itemTarget->AddEnchantment(spell_item_enchant, 0, true, true, false, 6);
+    int32 Slot = itemTarget->AddEnchantment(m_spellInfo->getEffectMiscValue(effectIndex), 0, true, true, false, 6);
 
     if (Slot < 6)
         return; // Apply failed

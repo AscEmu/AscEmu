@@ -639,10 +639,7 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
             }
 
             // All okay, proceed
-            auto Transmog = new DBC::Structures::SpellItemEnchantmentEntry();
-            Transmog->Id = newEntries[i];
-
-            itemTransmogrified->AddEnchantment(Transmog, 0, true, false, false, TRANSMOGRIFY_ENCHANTMENT_SLOT, 0);
+            itemTransmogrified->AddEnchantment(newEntries[i], 0, true, false, false, TRANSMOGRIFY_ENCHANTMENT_SLOT, 0);
             player->setVisibleItemFields(slots[i], itemTransmogrified);
 
             itemTransmogrified->setOwnerGuid(player->getGuid());
@@ -652,7 +649,7 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
             if (itemTransmogrifier->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP || itemTransmogrifier->getItemProperties()->Bonding == ITEM_BIND_ON_USE)
                 itemTransmogrifier->addFlags(ITEM_FLAG_SOULBOUND);
 
-            cost += 1000; // todo implement this properly
+            cost += 10000; // todo implement this properly
         }
     }
 
@@ -660,6 +657,107 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
     // ... unless client was modified
     if (cost) // 0 cost if reverting look
         player->modCoinage(-cost);
+}
+
+void WorldSession::handleReforgeItemOpcode(WorldPacket& recvData)
+{
+    uint32_t slot, reforgeEntry;
+    ObjectGuid guid;
+    uint32_t bag;
+    Player* player = GetPlayer();
+
+    recvData >> reforgeEntry >> slot >> bag;
+
+    guid[2] = recvData.readBit();
+    guid[6] = recvData.readBit();
+    guid[3] = recvData.readBit();
+    guid[4] = recvData.readBit();
+    guid[1] = recvData.readBit();
+    guid[0] = recvData.readBit();
+    guid[7] = recvData.readBit();
+    guid[5] = recvData.readBit();
+
+    recvData.ReadByteSeq(guid[2]);
+    recvData.ReadByteSeq(guid[3]);
+    recvData.ReadByteSeq(guid[6]);
+    recvData.ReadByteSeq(guid[4]);
+    recvData.ReadByteSeq(guid[1]);
+    recvData.ReadByteSeq(guid[0]);
+    recvData.ReadByteSeq(guid[7]);
+    recvData.ReadByteSeq(guid[5]);
+
+    Creature* creature = player->GetMapMgrCreature(guid);
+    if (!creature)
+    {
+        sLogger.debug("handleReforgeItemOpcode - Unit (GUID: %u) not found.", uint64_t(guid));
+        sendReforgeResult(false);
+        return;
+    }
+
+    // Validate
+    if (!creature->isReforger() && creature->getDistance(player) > 5.0f)
+    {
+        sLogger.debug("handleReforgeItemOpcode - Unit (GUID: %u) can't interact with it or is no Reforger.", uint64_t(guid));
+        sendReforgeResult(false);
+        return;
+    }
+
+    Item* item = player->getItemInterface()->GetInventoryItem(bag, slot);
+
+    if (!item)
+    {
+        sLogger.debug("handleReforgeItemOpcode - Player (Guid: %u Name: %s) tried to reforge an invalid/non-existant item.", player->getGuidLow(), player->getName().c_str());
+        sendReforgeResult(false);
+        return;
+    }
+
+    if (!reforgeEntry)
+    {
+        // Reset the item
+        if (item->isEquipped())
+            player->applyReforgeEnchantment(item, false);
+        item->RemoveEnchantment(REFORGE_ENCHANTMENT_SLOT);
+        sendReforgeResult(true);
+        return;
+    }
+    
+    DBC::Structures::ItemReforgeEntry const* stats = sItemReforgeStore.LookupEntry(reforgeEntry);
+    if (!stats)
+    {
+        sLogger.debug("handleReforgeItemOpcode - Player (Guid: %u Name: %s) tried to reforge an item with invalid reforge entry (%u).", player->getGuidLow(), player->getName().c_str(), reforgeEntry);
+        sendReforgeResult(false);
+        return;
+    }
+
+    if (!item->getReforgableStat(ItemModType(stats->SourceStat)) || item->getReforgableStat(ItemModType(stats->FinalStat))) // Cheating, you cant reforge to a stat that the item already has, nor reforge from a stat that the item does not have
+    {
+        sendReforgeResult(false);
+        return;
+    }
+
+    // todo implement special prices
+    if (!player->getCoinage() > uint64_t(100000)) // cheating
+    {
+        sendReforgeResult(false);
+        return;
+    }
+
+    player->modCoinage(-int64_t(100000));
+
+    item->AddEnchantment(reforgeEntry, 0, true, false, false, REFORGE_ENCHANTMENT_SLOT, 0);
+
+    sendReforgeResult(true);
+
+    if (item->isEquipped())
+        player->applyReforgeEnchantment(item, true);
+}
+
+void WorldSession::sendReforgeResult(bool success)
+{
+    WorldPacket data(SMSG_REFORGE_RESULT, 1);
+    data.writeBit(success);
+    data.flushBits();
+    SendPacket(&data);
 }
 #endif
 
@@ -2797,7 +2895,7 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
             if (spell_item_enchant != nullptr)
             {
                 if (TargetItem->getItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
-                    TargetItem->AddEnchantment(spell_item_enchant, 0, true, apply, false, 2 + i);
+                    TargetItem->AddEnchantment(gem_properties->EnchantmentID, 0, true, apply, false, 2 + i);
             }
 
         }
@@ -2817,7 +2915,7 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
                 if (TargetItem->getItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
                 {
                     int32_t Slot = TargetItem->FindFreeEnchantSlot(spell_item_enchant, 0);
-                    TargetItem->AddEnchantment(spell_item_enchant, 0, true, apply, false, Slot);
+                    TargetItem->AddEnchantment(TargetItem->getItemProperties()->SocketBonus, 0, true, apply, false, Slot);
                 }
             }
         }

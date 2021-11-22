@@ -77,6 +77,7 @@ uint32_t Item::getOwnerGuidHigh() const { return itemData()->owner_guid.parts.hi
 void Item::setOwnerGuid(uint64_t guid) { write(itemData()->owner_guid.guid, guid); }
 
 void Item::setContainerGuid(uint64_t guid) { write(itemData()->container_guid.guid, guid); }
+uint64_t Item::getContainerGuid() const { return itemData()->container_guid.guid; }
 
 uint64_t Item::getCreatorGuid() const { return itemData()->creator_guid.guid; }
 void Item::setCreatorGuid(uint64_t guid) { write(itemData()->creator_guid.guid, guid); }
@@ -329,4 +330,60 @@ bool Item::canTransmogrifyItemWithItem(Item const* transmogrified, Item const* t
         return false;
 
     return true;
+}
+
+bool Item::isInBag() const 
+{
+    if (m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()) > EQUIPMENT_SLOT_END)
+        return true;
+    
+    return false;
+}
+
+bool Item::isEquipped() const
+{
+    return !isInBag() && m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()) < EQUIPMENT_SLOT_END;
+}
+
+int32_t Item::getReforgableStat(ItemModType statType) const
+{
+    ItemProperties const* proto = getItemProperties();
+    for (uint32_t i = 0; i < MAX_ITEM_PROTO_STATS; ++i)
+        if (ItemModType(proto->Stats[i].Type) == statType)
+            return proto->Stats[i].Value;
+    
+    int32_t randomPropId = getRandomPropertiesId();
+    if (!randomPropId)
+        return 0;
+
+    if (randomPropId < 0)
+    {
+        DBC::Structures::ItemRandomSuffixEntry const* randomSuffix = sItemRandomSuffixStore.LookupEntry(-randomPropId);
+        if (!randomSuffix)
+            return 0;
+
+        for (uint32_t e = PROP_ENCHANTMENT_SLOT_0; e <= PROP_ENCHANTMENT_SLOT_4; ++e)
+            if (DBC::Structures::SpellItemEnchantmentEntry const* enchant = sSpellItemEnchantmentStore.LookupEntry(getEnchantmentId(EnchantmentSlot(e))))
+                for (uint32_t f = 0; f < MAX_ITEM_ENCHANTMENT_EFFECTS; ++f)
+                    if (enchant->type[f] == ITEM_ENCHANTMENT_TYPE_STAT && ItemModType(enchant->spell[f]) == statType)
+                        for (int k = 0; k < 5; ++k)
+                            if (randomSuffix->enchantments[k] == enchant->Id)
+                                return int32_t((randomSuffix->prefixes[k] * getPropertySeed()) / 10000);
+    }
+    else
+    {
+        DBC::Structures::ItemRandomPropertiesEntry const* randomProp = sItemRandomPropertiesStore.LookupEntry(randomPropId);
+        if (!randomProp)
+            return 0;
+
+        for (uint32_t e = PROP_ENCHANTMENT_SLOT_0; e <= PROP_ENCHANTMENT_SLOT_4; ++e)
+            if (DBC::Structures::SpellItemEnchantmentEntry const* enchant = sSpellItemEnchantmentStore.LookupEntry(getEnchantmentId(EnchantmentSlot(e))))
+                for (uint32_t f = 0; f < MAX_ITEM_ENCHANTMENT_EFFECTS; ++f)
+                    if (enchant->type[f] == ITEM_ENCHANTMENT_TYPE_STAT && ItemModType(enchant->spell[f]) == statType)
+                        for (int k = 0; k < MAX_ITEM_ENCHANTMENT_EFFECTS; ++k)
+                            if (randomProp->spells[k] == enchant->Id)
+                                return int32_t(enchant->min[k]);
+    }
+
+    return 0;
 }

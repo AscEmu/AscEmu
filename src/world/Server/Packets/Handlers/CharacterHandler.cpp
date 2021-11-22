@@ -927,9 +927,6 @@ void WorldSession::characterEnumProc(QueryResult* result)
             {
                 do
                 {
-                    uint32_t enchantid;
-                    uint32_t enchslot;
-
                     int8_t item_slot = item_db_result->Fetch()[0].GetInt8();
                     const auto itemProperties = sMySQLStore.getItemProperties(item_db_result->Fetch()[1].GetUInt32());
                     if (itemProperties)
@@ -937,30 +934,34 @@ void WorldSession::characterEnumProc(QueryResult* result)
                         charEnum.player_items[item_slot].displayId = itemProperties->DisplayInfoID;
                         charEnum.player_items[item_slot].inventoryType = static_cast<uint8>(itemProperties->InventoryType);
 
-                        if (item_slot == EQUIPMENT_SLOT_MAINHAND || item_slot == EQUIPMENT_SLOT_OFFHAND)
+                        std::string enchant_field = item_db_result->Fetch()[2].GetString();
+                        if (!enchant_field.empty())
                         {
-                            const char* enchant_field = item_db_result->Fetch()[2].GetString();
-                            if (sscanf(enchant_field, "%u,0,0;", &enchantid) == 1 && enchantid > 0)
+                            std::vector<std::string> enchants = AscEmu::Util::Strings::split(enchant_field, ";");
+                            uint32_t enchant_id;
+                            uint32_t enchslot;
+
+                            for (auto& enchant : enchants)
                             {
-                                const auto spellItemEnchantmentEntry = sSpellItemEnchantmentStore.LookupEntry(enchantid);
-                                if (spellItemEnchantmentEntry != nullptr)
-                                    charEnum.player_items[item_slot].enchantmentId = spellItemEnchantmentEntry->visual;
-                            }
-                        }
-                        else
-                        {
-#if VERSION_STRING == Cata
-                            const char* enchant_field = item_db_result->Fetch()[2].GetString();
-                            if (sscanf(enchant_field, "%u,0,%u;", &enchantid, &enchslot) == 2 && enchantid > 0)
-                            {
-                                if (enchslot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
+                                if (sscanf(enchant.c_str(), "%u,0,%u", &enchant_id, &enchslot) == 2)
                                 {
-                                    const auto itemProperties = sMySQLStore.getItemProperties(enchantid);
-                                    if (itemProperties)
-                                        charEnum.player_items[item_slot].displayId = itemProperties->DisplayInfoID;
+#if VERSION_STRING == Cata
+                                    if (enchslot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
+                                    {
+                                        const auto itemProperties = sMySQLStore.getItemProperties(enchant_id);
+                                        if (itemProperties)
+                                            charEnum.player_items[item_slot].displayId = itemProperties->DisplayInfoID;
+                                    }
+#endif
+                                    // Only Display Perm Enchants on Weapons
+                                    if (item_slot == EQUIPMENT_SLOT_MAINHAND || item_slot == EQUIPMENT_SLOT_OFFHAND && enchslot == PERM_ENCHANTMENT_SLOT)
+                                    {
+                                        const auto spellItemEnchantmentEntry = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
+                                        if (spellItemEnchantmentEntry != nullptr)
+                                            charEnum.player_items[item_slot].enchantmentId = spellItemEnchantmentEntry->visual;
+                                    }
                                 }
                             }
-#endif
                         }
                     }
                 } while (item_db_result->NextRow());

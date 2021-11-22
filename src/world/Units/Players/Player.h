@@ -1361,6 +1361,7 @@ public:
     void sendRaidGroupOnly(uint32_t timeInMs, uint32_t type);
 
     void setVisibleItemFields(uint32_t slot, Item* item);
+    void applyReforgeEnchantment(Item* item, bool apply);
 
     void setAFKReason(std::string reason) { afkReason = reason; }
     std::string getAFKReason() const { return afkReason; }

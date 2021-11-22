@@ -235,6 +235,7 @@ public:
     void setOwnerGuid(uint64_t guid);
 
     void setContainerGuid(uint64_t guid);
+    uint64_t getContainerGuid() const;
 
     uint64_t getCreatorGuid() const;
     void setCreatorGuid(uint64_t guid);
@@ -307,6 +308,10 @@ public:
     bool hasStats() const;
     bool canBeTransmogrified() const;
     bool canTransmogrify() const;
+
+    bool isInBag() const;
+    bool isEquipped() const;
+    int32_t Item::getReforgableStat(ItemModType statType) const;
     static bool canTransmogrifyItemWithItem(Item const* transmogrified, Item const* transmogrifier);
 
     // MIT End
@@ -391,7 +396,7 @@ public:
 
         // Adds an enchantment to the item.
         void setEnchantment(EnchantmentSlot slot, uint32_t id, uint32_t duration, uint32_t charges);
-        int32 AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32 Duration, bool Perm = false, bool apply = true, bool RemoveAtLogout = false, uint32 Slot_ = 0, uint32 RandomSuffix = 0);
+        int32 AddEnchantment(uint32_t enchantment, uint32 Duration, bool Perm = false, bool apply = true, bool RemoveAtLogout = false, uint32 Slot_ = 0, uint32 RandomSuffix = 0);
         uint32 GetSocketsCount();
 
         /// Removes an enchantment from the item.

@@ -5338,7 +5338,7 @@ void Aura::SpellAuraIncreaseHitRate(AuraEffectModifier* aurEff, bool apply)
     if (!m_target->isPlayer())
         return;
 
-    static_cast< Player* >(m_target)->ModifyBonuses(SPELL_HIT_RATING, aurEff->getEffectDamage(), apply);
+    static_cast< Player* >(m_target)->ModifyBonuses(ITEM_MOD_SPELL_HIT_RATING, aurEff->getEffectDamage(), apply);
     static_cast< Player* >(m_target)->UpdateStats();
 }
 
@@ -5469,7 +5469,7 @@ void Aura::SpellAuraIncreaseRating(AuraEffectModifier* aurEff, bool apply)
     //MELEE_CRITICAL_AVOIDANCE_RATING + RANGED_CRITICAL_AVOIDANCE_RATING + SPELL_CRITICAL_AVOIDANCE_RATING
     //comes only as combination of them  - ModifyBonuses() not adding them individually anyhow
     if (aurEff->getEffectMiscValue() & (0x0004000 | 0x0008000 | 0x0010000))
-        plr->ModifyBonuses(RESILIENCE_RATING, aurEff->getEffectDamage(), apply);
+        plr->ModifyBonuses(ITEM_MOD_RESILIENCE_RATING, aurEff->getEffectDamage(), apply);
 
     if (aurEff->getEffectMiscValue() & 1)  //weapon skill
     {
@@ -5522,7 +5522,7 @@ void Aura::SpellAuraSpellHealingStatPCT(AuraEffectModifier* aurEff, bool apply)
 
         aurEff->setEffectFixedDamage(((m_target->getStat(STAT_SPIRIT) * aurEff->getEffectDamage()) / 100));
 
-        static_cast<Player*>(m_target)->ModifyBonuses(CRITICAL_STRIKE_RATING, aurEff->getEffectFixedDamage(), true);
+        static_cast<Player*>(m_target)->ModifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, aurEff->getEffectFixedDamage(), true);
         static_cast<Player*>(m_target)->UpdateChances();
     }
     else
@@ -5530,7 +5530,7 @@ void Aura::SpellAuraSpellHealingStatPCT(AuraEffectModifier* aurEff, bool apply)
         /*for (uint32 x = 1; x < 7; x++)
             m_target->HealDoneMod[x] -= aurEff->getEffectFixedDamage();*/
 
-        static_cast<Player*>(m_target)->ModifyBonuses(CRITICAL_STRIKE_RATING, aurEff->getEffectFixedDamage(), false);
+        static_cast<Player*>(m_target)->ModifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, aurEff->getEffectFixedDamage(), false);
         static_cast<Player*>(m_target)->UpdateChances();
     }
 }

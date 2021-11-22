@@ -4242,7 +4242,7 @@ bool Player::GetQuestRewardStatus(uint32 quest_id)
 float Player::GetDefenseChance(uint32 opLevel)
 {
     float chance = _GetSkillLineCurrent(SKILL_DEFENSE, true) - (opLevel * 5.0f);
-    chance += CalcRating(PCR_DEFENCE);
+    chance += CalcRating(CR_DEFENSE_SKILL);
     chance = floorf(chance) * 0.04f;   // defense skill is treated as an integer on retail
 
     return chance;
@@ -4285,7 +4285,7 @@ float Player::GetDodgeChance()
     chance += tmp;
 
     // Dodge from dodge rating
-    chance += CalcRating(PCR_DODGE);
+    chance += CalcRating(CR_DODGE);
 
     // Dodge from spells
     chance += GetDodgeFromSpell();
@@ -4303,7 +4303,7 @@ float Player::GetBlockChance()
     chance = BASE_BLOCK_CHANCE;
 
     // Block rating
-    chance += CalcRating(PCR_BLOCK);
+    chance += CalcRating(CR_BLOCK);
 
     // Block chance from spells
     chance += GetBlockFromSpell();
@@ -4320,7 +4320,7 @@ float Player::GetParryChance()
     chance = BASE_PARRY_CHANCE;
 
     // Parry rating
-    chance += CalcRating(PCR_PARRY);
+    chance += CalcRating(CR_PARRY);
 
     // Parry chance from spells
     chance += GetParryFromSpell();
@@ -4400,10 +4400,10 @@ void Player::UpdateChances()
         }
     }
 
-    float cr = tmp + CalcRating(PCR_MELEE_CRIT) + melee_bonus;
+    float cr = tmp + CalcRating(CR_CRIT_MELEE) + melee_bonus;
     setMeleeCritPercentage(std::min(cr, 95.0f));
 
-    float rcr = tmp + CalcRating(PCR_RANGED_CRIT) + ranged_bonus;
+    float rcr = tmp + CalcRating(CR_CRIT_RANGED) + ranged_bonus;
     setRangedCritPercentage(std::min(rcr, 95.0f));
 
     auto SpellCritBase = sGtChanceToSpellCritBaseStore.LookupEntry(pClass - 1);
@@ -4414,7 +4414,7 @@ void Player::UpdateChances()
 
     spellcritperc = 100 * (SpellCritBase->val + getStat(STAT_INTELLECT) * SpellCritPerInt->val) +
         this->GetSpellCritFromSpell() +
-        this->CalcRating(PCR_SPELL_CRIT);
+        this->CalcRating(CR_CRIT_SPELL);
     UpdateChanceFields();
 }
 
@@ -4447,14 +4447,14 @@ void Player::UpdateAttackSpeed()
             speed = weap->getItemProperties()->Delay;
     }
     setBaseAttackTime(MELEE,
-                      (uint32)((float)speed / (getAttackSpeedModifier(MELEE) * (1.0f + CalcRating(PCR_MELEE_HASTE) / 100.0f))));
+                      (uint32)((float)speed / (getAttackSpeedModifier(MELEE) * (1.0f + CalcRating(CR_HASTE_MELEE) / 100.0f))));
 
     weap = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (weap != nullptr && weap->getItemProperties()->Class == ITEM_CLASS_WEAPON)
     {
         speed = weap->getItemProperties()->Delay;
         setBaseAttackTime(OFFHAND,
-                          (uint32)((float)speed / (getAttackSpeedModifier(OFFHAND) * (1.0f + CalcRating(PCR_MELEE_HASTE) / 100.0f))));
+                          (uint32)((float)speed / (getAttackSpeedModifier(OFFHAND) * (1.0f + CalcRating(CR_HASTE_MELEE) / 100.0f))));
     }
 
     weap = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
@@ -4462,7 +4462,7 @@ void Player::UpdateAttackSpeed()
     {
         speed = weap->getItemProperties()->Delay;
         setBaseAttackTime(RANGED,
-                          (uint32)((float)speed / (getAttackSpeedModifier(RANGED) * (1.0f + CalcRating(PCR_RANGED_HASTE) / 100.0f))));
+                          (uint32)((float)speed / (getAttackSpeedModifier(RANGED) * (1.0f + CalcRating(CR_HASTE_RANGED) / 100.0f))));
     }
 }
 
@@ -4666,7 +4666,7 @@ void Player::UpdateStats()
     }
 
     // Spell haste rating
-    float haste = 1.0f + CalcRating(PCR_SPELL_HASTE) / 100.0f;
+    float haste = 1.0f + CalcRating(CR_HASTE_SPELL) / 100.0f;
     if (haste != SpellHasteRatingBonus)
     {
         float value = getModCastSpeed() * SpellHasteRatingBonus / haste; // remove previous mod and apply current
@@ -4683,7 +4683,7 @@ void Player::UpdateStats()
         if (block_multiplier < 1.0f)
             block_multiplier = 1.0f;
 
-        int32 blockable_damage = float2int32((shield->getItemProperties()->Block + m_modblockvaluefromspells + getCombatRating(PCR_BLOCK) + (str / 2.0f) - 1.0f) * block_multiplier);
+        int32 blockable_damage = float2int32((shield->getItemProperties()->Block + m_modblockvaluefromspells + getCombatRating(CR_BLOCK) + (str / 2.0f) - 1.0f) * block_multiplier);
 #if VERSION_STRING != Classic
         setShieldBlock(blockable_damage);
 #endif
@@ -7142,23 +7142,23 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
 
     switch (type)
     {
-        case POWER:
+        case ITEM_MOD_MANA:
         {
             modMaxPower(POWER_TYPE_MANA, val);
             m_manafromitems += val;
         }
         break;
-        case HEALTH:
+        case ITEM_MOD_HEALTH:
         {
             modMaxHealth(val);
             m_healthfromitems += val;
         }
         break;
-        case AGILITY:       // modify agility
-        case STRENGTH:      // modify strength
-        case INTELLECT:     // modify intellect
-        case SPIRIT:        // modify spirit
-        case STAMINA:       // modify stamina
+        case ITEM_MOD_AGILITY:       // modify agility
+        case ITEM_MOD_STRENGTH:      // modify strength
+        case ITEM_MOD_INTELLECT:     // modify intellect
+        case ITEM_MOD_SPIRIT:        // modify spirit
+        case ITEM_MOD_STAMINA:       // modify stamina
         {
             uint8 convert[] = { 1, 0, 3, 4, 2 };
             if (_val > 0)
@@ -7168,167 +7168,167 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
             CalcStat(convert[type - 3]);
         }
         break;
-        case WEAPON_SKILL_RATING:
+        case ITEM_MOD_WEAPON_SKILL_RATING:
         {
-            modCombatRating(PCR_RANGED_SKILL, val);
-            modCombatRating(PCR_MELEE_MAIN_HAND_SKILL, val); // melee main hand
-            modCombatRating(PCR_MELEE_OFF_HAND_SKILL, val); // melee off hand
+            modCombatRating(CR_WEAPON_SKILL_RANGED, val);
+            modCombatRating(CR_WEAPON_SKILL_MAINHAND, val); // melee main hand
+            modCombatRating(CR_WEAPON_SKILL_OFFHAND, val); // melee off hand
         }
         break;
-        case DEFENSE_RATING:
+        case ITEM_MOD_DEFENSE_RATING:
         {
-            modCombatRating(PCR_DEFENCE, val);
+            modCombatRating(CR_DEFENSE_SKILL, val);
         }
         break;
-        case DODGE_RATING:
+        case ITEM_MOD_DODGE_RATING:
         {
-            modCombatRating(PCR_DODGE, val);
+            modCombatRating(CR_DODGE, val);
         }
         break;
-        case PARRY_RATING:
+        case ITEM_MOD_PARRY_RATING:
         {
-            modCombatRating(PCR_PARRY, val);
+            modCombatRating(CR_PARRY, val);
         }
         break;
-        case SHIELD_BLOCK_RATING:
+        case ITEM_MOD_SHIELD_BLOCK_RATING:
         {
-            modCombatRating(PCR_BLOCK, val);
+            modCombatRating(CR_BLOCK, val);
         }
         break;
-        case MELEE_HIT_RATING:
+        case ITEM_MOD_MELEE_HIT_RATING:
         {
-            modCombatRating(PCR_MELEE_HIT, val);
+            modCombatRating(CR_HIT_MELEE, val);
         }
         break;
-        case RANGED_HIT_RATING:
+        case ITEM_MOD_RANGED_HIT_RATING:
         {
-            modCombatRating(PCR_RANGED_HIT, val);
+            modCombatRating(CR_HIT_RANGED, val);
         }
         break;
-        case SPELL_HIT_RATING:
+        case ITEM_MOD_SPELL_HIT_RATING:
         {
-            modCombatRating(PCR_SPELL_HIT, val);
+            modCombatRating(CR_HIT_SPELL, val);
         }
         break;
-        case MELEE_CRITICAL_STRIKE_RATING:
+        case ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING:
         {
-            modCombatRating(PCR_MELEE_CRIT, val);
+            modCombatRating(CR_CRIT_MELEE, val);
         }
         break;
-        case RANGED_CRITICAL_STRIKE_RATING:
+        case ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING:
         {
-            modCombatRating(PCR_RANGED_CRIT, val);
+            modCombatRating(CR_CRIT_RANGED, val);
         }
         break;
-        case SPELL_CRITICAL_STRIKE_RATING:
+        case ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING:
         {
-            modCombatRating(PCR_SPELL_CRIT, val);
+            modCombatRating(CR_CRIT_SPELL, val);
         }
         break;
-        case MELEE_HIT_AVOIDANCE_RATING:
+        case ITEM_MOD_MELEE_HIT_AVOIDANCE_RATING:
         {
-            modCombatRating(PCR_MELEE_HIT_AVOIDANCE, val);
+            modCombatRating(CR_HIT_TAKEN_MELEE, val);
         }
         break;
-        case RANGED_HIT_AVOIDANCE_RATING:
+        case ITEM_MOD_RANGED_HIT_AVOIDANCE_RATING:
         {
-            modCombatRating(PCR_RANGED_HIT_AVOIDANCE, val);
+            modCombatRating(CR_HIT_TAKEN_RANGED, val);
         }
         break;
-        case SPELL_HIT_AVOIDANCE_RATING:
+        case ITEM_MOD_SPELL_HIT_AVOIDANCE_RATING:
         {
-            modCombatRating(PCR_SPELL_HIT_AVOIDANCE, val);
+            modCombatRating(CR_HIT_TAKEN_SPELL, val);
         }
         break;
-        case MELEE_CRITICAL_AVOIDANCE_RATING:
+        case ITEM_MOD_MELEE_CRITICAL_AVOIDANCE_RATING:
         {
 
         } break;
-        case RANGED_CRITICAL_AVOIDANCE_RATING:
+        case ITEM_MOD_RANGED_CRITICAL_AVOIDANCE_RATING:
         {
 
         } break;
-        case SPELL_CRITICAL_AVOIDANCE_RATING:
+        case ITEM_MOD_SPELL_CRITICAL_AVOIDANCE_RATING:
         {
 
         } break;
-        case MELEE_HASTE_RATING:
+        case ITEM_MOD_MELEE_HASTE_RATING:
         {
-            modCombatRating(PCR_MELEE_HASTE, val); // melee
+            modCombatRating(CR_HASTE_MELEE, val); // melee
         }
         break;
-        case RANGED_HASTE_RATING:
+        case ITEM_MOD_RANGED_HASTE_RATING:
         {
-            modCombatRating(PCR_RANGED_HASTE, val); // ranged
+            modCombatRating(CR_HASTE_RANGED, val); // ranged
         }
         break;
-        case SPELL_HASTE_RATING:
+        case ITEM_MOD_SPELL_HASTE_RATING:
         {
-            modCombatRating(PCR_SPELL_HASTE, val); // spell
+            modCombatRating(CR_HASTE_SPELL, val); // spell
         }
         break;
-        case HIT_RATING:
+        case ITEM_MOD_HIT_RATING:
         {
-            modCombatRating(PCR_MELEE_HIT, val); // melee
-            modCombatRating(PCR_RANGED_HIT, val); // ranged
-            modCombatRating(PCR_SPELL_HIT, val); // spell
+            modCombatRating(CR_HIT_MELEE, val); // melee
+            modCombatRating(CR_HIT_RANGED, val); // ranged
+            modCombatRating(CR_HIT_SPELL, val); // spell
         }
         break;
-        case CRITICAL_STRIKE_RATING:
+        case ITEM_MOD_CRITICAL_STRIKE_RATING:
         {
-            modCombatRating(PCR_MELEE_CRIT, val);  // melee
-            modCombatRating(PCR_RANGED_CRIT, val);  // ranged
-            modCombatRating(PCR_SPELL_CRIT, val);   // spell
+            modCombatRating(CR_CRIT_MELEE, val);  // melee
+            modCombatRating(CR_CRIT_RANGED, val);  // ranged
+            modCombatRating(CR_CRIT_SPELL, val);   // spell
         }
         break;
-        case HIT_AVOIDANCE_RATING: // this is guessed based on layout of other fields
+        case ITEM_MOD_HIT_AVOIDANCE_RATING: // this is guessed based on layout of other fields
         {
-            modCombatRating(PCR_MELEE_HIT_AVOIDANCE, val); // melee
-            modCombatRating(PCR_RANGED_HIT_AVOIDANCE, val); // ranged
-            modCombatRating(PCR_SPELL_HIT_AVOIDANCE, val); // spell
+            modCombatRating(CR_HIT_TAKEN_MELEE, val); // melee
+            modCombatRating(CR_HIT_TAKEN_RANGED, val); // ranged
+            modCombatRating(CR_HIT_TAKEN_SPELL, val); // spell
         }
         break;
-        case CRITICAL_AVOIDANCE_RATING:
+        case ITEM_MOD_CRITICAL_AVOIDANCE_RATING:
         {
 
         } break;
-        case EXPERTISE_RATING:
+        case ITEM_MOD_EXPERTISE_RATING:
         {
-            modCombatRating(PCR_EXPERTISE, val);
+            modCombatRating(CR_EXPERTISE, val);
         }
         break;
-        case RESILIENCE_RATING:
+        case ITEM_MOD_RESILIENCE_RATING:
         {
-            modCombatRating(PCR_MELEE_CRIT_RESILIENCE, val); // melee
-            modCombatRating(PCR_RANGED_CRIT_RESILIENCE, val); // ranged
-            modCombatRating(PCR_SPELL_CRIT_RESILIENCE, val); // spell
+            modCombatRating(CR_RESILIENCE_CRIT_TAKEN, val); // melee
+            modCombatRating(CR_RESILIENCE_PLAYER_DAMAGE_TAKEN, val); // ranged
+            modCombatRating(CR_CRIT_TAKEN_SPELL, val); // spell
         }
         break;
-        case HASTE_RATING:
+        case ITEM_MOD_HASTE_RATING:
         {
-            modCombatRating(PCR_MELEE_HASTE, val); // melee
-            modCombatRating(PCR_RANGED_HASTE, val); // ranged
-            modCombatRating(PCR_SPELL_HASTE, val); // spell
+            modCombatRating(CR_HASTE_MELEE, val); // melee
+            modCombatRating(CR_HASTE_RANGED, val); // ranged
+            modCombatRating(CR_HASTE_SPELL, val); // spell
         }
         break;
-        case ATTACK_POWER:
+        case ITEM_MOD_ATTACK_POWER:
         {
             modAttackPowerMods(val);
             modRangedAttackPowerMods(val);
         }
         break;
-        case RANGED_ATTACK_POWER:
+        case ITEM_MOD_RANGED_ATTACK_POWER:
         {
             modRangedAttackPowerMods(val);
         }
         break;
-        case FERAL_ATTACK_POWER:
+        case ITEM_MOD_FERAL_ATTACK_POWER:
         {
             modAttackPowerMods(val);
         }
         break;
 #if VERSION_STRING > Classic
-        case SPELL_HEALING_DONE:
+        case ITEM_MOD_SPELL_HEALING_DONE:
         {
             for (uint8 school = 1; school < TOTAL_SPELL_SCHOOLS; ++school)
             {
@@ -7338,7 +7338,7 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
         }
         break;
 #endif
-        case SPELL_DAMAGE_DONE:
+        case ITEM_MOD_SPELL_DAMAGE_DONE:
         {
             for (uint8 school = 1; school < TOTAL_SPELL_SCHOOLS; ++school)
             {
@@ -7346,17 +7346,17 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
             }
         }
         break;
-        case MANA_REGENERATION:
+        case ITEM_MOD_MANA_REGENERATION:
         {
             m_ModInterrMRegen += val;
         }
         break;
-        case ARMOR_PENETRATION_RATING:
+        case ITEM_MOD_ARMOR_PENETRATION_RATING:
         {
-            modCombatRating(PCR_ARMOR_PENETRATION_RATING, val);
+            modCombatRating(CR_ARMOR_PENETRATION, val);
         }
         break;
-        case SPELL_POWER:
+        case ITEM_MOD_SPELL_POWER:
         {
             for (uint8 school = 1; school < 7; ++school)
             {
@@ -7543,7 +7543,7 @@ void Player::CalcDamage()
     }
     //\todo investigate
 #if VERSION_STRING != Classic
-    setCombatRating(PCR_MELEE_MAIN_HAND_SKILL, cr);
+    setCombatRating(CR_WEAPON_SKILL_MAINHAND, cr);
 #endif
     /////////////// MAIN HAND END
 
@@ -7584,7 +7584,7 @@ void Player::CalcDamage()
     }
     //\todo investigate
 #if VERSION_STRING != Classic
-    setCombatRating(PCR_MELEE_OFF_HAND_SKILL, cr);
+    setCombatRating(CR_WEAPON_SKILL_OFFHAND, cr);
 #endif
     /////////////second hand end
     ///////////////////////////RANGED
@@ -7641,7 +7641,7 @@ void Player::CalcDamage()
     }
     //\todo investigate
 #if VERSION_STRING != Classic
-    setCombatRating(PCR_RANGED_SKILL, cr);
+    setCombatRating(CR_WEAPON_SKILL_RANGED, cr);
 #endif
     /////////////////////////////////RANGED end
     std::list<Pet*> summons = GetSummons();
@@ -8976,8 +8976,8 @@ void Player::CalcExpertise()
     }
 
 #if VERSION_STRING != Classic
-    modExpertise((int32_t)CalcRating(PCR_EXPERTISE) + modifier);
-    modOffHandExpertise((int32_t)CalcRating(PCR_EXPERTISE) + modifier);
+    modExpertise((int32_t)CalcRating(CR_EXPERTISE) + modifier);
+    modOffHandExpertise((int32_t)CalcRating(CR_EXPERTISE) + modifier);
 #endif
     UpdateStats();
 }
@@ -9499,7 +9499,7 @@ uint32 Player::GetBlockDamageReduction()
     if (block_multiplier < 1.0f)
         block_multiplier = 1.0f;
 
-    return float2int32((it->getItemProperties()->Block + this->m_modblockvaluefromspells + this->getCombatRating(PCR_BLOCK) + this->getStat(STAT_STRENGTH) / 2.0f - 1.0f) * block_multiplier);
+    return float2int32((it->getItemProperties()->Block + this->m_modblockvaluefromspells + this->getCombatRating(CR_BLOCK) + this->getStat(STAT_STRENGTH) / 2.0f - 1.0f) * block_multiplier);
 }
 
 void Player::ApplyFeralAttackPower(bool apply, Item* item)
@@ -9518,7 +9518,7 @@ void Player::ApplyFeralAttackPower(bool apply, Item* item)
         if (dps > 54.8f)
             FeralAP = (dps - 54.8f) * 14;
     }
-    ModifyBonuses(FERAL_ATTACK_POWER, (int)FeralAP, apply);
+    ModifyBonuses(ITEM_MOD_FERAL_ATTACK_POWER, (int)FeralAP, apply);
 }
 
 void Player::AcceptQuest(uint64 guid, uint32 quest_id)

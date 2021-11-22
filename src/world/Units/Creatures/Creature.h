@@ -57,6 +57,7 @@ public:
     bool isArmorer() const;
 #if VERSION_STRING >= Cata
     bool isTransmog() const;
+    bool isReforger() const;
 #endif
 
     //type helper
