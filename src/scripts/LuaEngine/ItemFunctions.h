@@ -153,11 +153,7 @@ namespace luaItem
         bool permanent = (duration == 0) ? true : false;
         bool temp = (luaL_checkinteger(L, 3) == 1) ? true : false;
 
-        auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(entry);
-        if (spell_item_enchant == nullptr)
-            return 0;
-
-        lua_pushinteger(L, ptr->AddEnchantment(spell_item_enchant, duration, permanent, true, temp)); //Return the enchantment Slot back to LUA
+        lua_pushinteger(L, ptr->AddEnchantment(entry, duration, permanent, true, temp)); //Return the enchantment Slot back to LUA
         return 1;
     }
 

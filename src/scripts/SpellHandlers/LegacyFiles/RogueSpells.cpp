@@ -133,7 +133,7 @@ bool CheatDeath(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
     if (p_target != NULL)
     {
-        int32_t m = (int32_t)(8.0f * p_target->CalcRating(PCR_MELEE_CRIT_RESILIENCE));
+        int32_t m = (int32_t)(8.0f * p_target->CalcRating(CR_HIT_TAKEN_MELEE));
         if (m > 90)
             m = 90;
 
