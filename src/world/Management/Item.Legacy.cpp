@@ -179,38 +179,8 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
         {
             if (sscanf(enchant.c_str(), "%u,%u,%u", &enchant_id, &time_left, &enchslot) == 3)
             {
-#if VERSION_STRING == Cata
-                if (enchslot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
-                {
-                    auto Transmog = new DBC::Structures::SpellItemEnchantmentEntry();
-                    Transmog->Id = enchant_id;
-
-                    AddEnchantment(Transmog, 0, true, false, false, TRANSMOGRIFY_ENCHANTMENT_SLOT, 0);
-                }
-                else
-                {
-                    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
-                    if (spell_item_enchant == nullptr)
-                        continue;
-
-                    if (spell_item_enchant->Id == enchant_id && m_itemProperties->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
-                        AddEnchantment(spell_item_enchant, time_left, (time_left == 0), false, false, enchslot);
-                }
-#else
-                if (enchslot > MAX_INSPECTED_ENCHANTMENT_SLOT)
-                {
-                    continue;
-                }
-                else
-                {
-                    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
-                    if (spell_item_enchant == nullptr)
-                        continue;
-
-                    if (spell_item_enchant->Id == enchant_id && m_itemProperties->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
-                        AddEnchantment(spell_item_enchant, time_left, (time_left == 0), false, false, enchslot);
-                }
-#endif
+                if (enchant_id && m_itemProperties->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
+                    AddEnchantment(enchant_id, time_left, (time_left == 0), false, false, enchslot);
             }
         }
     }
@@ -292,11 +262,11 @@ void Item::ApplyRandomProperties(bool apply)
                     if (spell_item_enchant == nullptr)
                         continue;
 
-                    int32 Slot = HasEnchantment(spell_item_enchant->Id);
+                    int32 Slot = HasEnchantment(item_random_properties->spells[k]);
                     if (Slot < 0)
                     {
                         Slot = FindFreeEnchantSlot(spell_item_enchant, 1);
-                        AddEnchantment(spell_item_enchant, 0, false, apply, true, Slot);
+                        AddEnchantment(item_random_properties->spells[k], 0, false, apply, true, Slot);
                     }
                     else if (apply)
                     {
@@ -324,7 +294,7 @@ void Item::ApplyRandomProperties(bool apply)
                     if (Slot < 0)
                     {
                         Slot = FindFreeEnchantSlot(spell_item_enchant, 2);
-                        AddEnchantment(spell_item_enchant, 0, false, apply, true, Slot, item_random_suffix->prefixes[k]);
+                        AddEnchantment(item_random_suffix->enchantments[k], 0, false, apply, true, Slot, item_random_suffix->prefixes[k]);
                     }
                     else if (apply)
                     {
@@ -517,10 +487,36 @@ void Item::RemoveFromWorld()
     event_Relocate();
 }
 
-int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32 Duration, bool /*Perm*/ /* = false */, bool apply /* = true */, bool RemoveAtLogout /* = false */, uint32 Slot_, uint32 RandomSuffix)
+int32 Item::AddEnchantment(uint32_t enchantment, uint32 Duration, bool /*Perm*/ /* = false */, bool apply /* = true */, bool RemoveAtLogout /* = false */, uint32 Slot_, uint32 RandomSuffix)
 {
     int32 Slot = Slot_;
     m_isDirty = true;
+
+    DBC::Structures::SpellItemEnchantmentEntry const* Enchantment = nullptr;
+
+    switch (Slot)
+    {
+#if VERSION_STRING >= Cata
+        case TRANSMOGRIFY_ENCHANTMENT_SLOT:
+        case REFORGE_ENCHANTMENT_SLOT:
+        {
+            auto custom_enchant = new DBC::Structures::SpellItemEnchantmentEntry();
+            custom_enchant->Id = enchantment;
+
+            Enchantment = custom_enchant;
+        }
+            break;
+#endif
+        default:
+        {
+            auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchantment);
+            if (spell_item_enchant == nullptr)
+                return Slot;
+
+            Enchantment = spell_item_enchant;
+        }
+            break;
+    }
 
     // Create the enchantment struct.
     EnchantmentInstance Instance;
@@ -644,7 +640,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
             // Depending on the enchantment type, take the appropriate course of action.
             switch (Entry->type[c])
             {
-                case 1:         // Trigger spell on melee attack.
+                case ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL:    // Trigger spell on melee attack.
                 {
                     if (Apply)
                     {
@@ -681,7 +677,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 }
                 break;
 
-                case 2:         // Mod damage done.
+                case ITEM_ENCHANTMENT_TYPE_DAMAGE:  // Mod damage done.
                 {
                     int32 val = Entry->min[c];
                     if (RandomSuffixAmount)
@@ -696,7 +692,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 }
                 break;
 
-                case 3:         // Cast spell (usually means apply aura)
+                case ITEM_ENCHANTMENT_TYPE_EQUIP_SPELL: // Cast spell (usually means apply aura)
                 {
                     if (Apply)
                     {
@@ -721,7 +717,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 }
                 break;
 
-                case 4:         // Modify physical resistance
+                case ITEM_ENCHANTMENT_TYPE_RESISTANCE:  // Modify physical resistance
                 {
                     int32 val = Entry->min[c];
                     if (RandomSuffixAmount)
@@ -736,7 +732,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 }
                 break;
 
-                case 5:     //Modify rating ...order is PLAYER_FIELD_COMBAT_RATING_1 and above
+                case ITEM_ENCHANTMENT_TYPE_STAT:    //Modify rating ...order is PLAYER_FIELD_COMBAT_RATING_1 and above
                 {
                     //spellid is enum ITEM_STAT_TYPE
                     //min=max is amount
@@ -749,7 +745,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 }
                 break;
 
-                case 6:     // Rockbiter weapon (increase damage per second... how the hell do you calc that)
+                case ITEM_ENCHANTMENT_TYPE_TOTEM:   // Rockbiter weapon (increase damage per second... how the hell do you calc that)
                 {
                     if (Apply)
                     {
@@ -775,7 +771,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 }
                 break;
 
-                case 7:
+                case ITEM_ENCHANTMENT_TYPE_USE_SPELL:
                 {
                     if (Apply)
                     {
@@ -790,7 +786,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                     break;
                 }
 
-                case 8:
+                case ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET:
                 {
                     // Adding a prismatic socket to belt, hands, etc is type 8, it has no bonus to apply HERE
                     break;
