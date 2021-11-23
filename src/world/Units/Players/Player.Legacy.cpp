@@ -2785,6 +2785,10 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     getItemInterface()->mLoadItemsFromDatabase(results[PlayerQuery::Items].result);
     getItemInterface()->m_EquipmentSets.LoadfromDB(results[PlayerQuery::EquipmentSets].result);
 
+#if VERSION_STRING > WotLK
+    loadVoidStorage();
+#endif
+
     m_mailBox.Load(results[PlayerQuery::Mailbox].result);
 
     // SOCIAL
@@ -7299,8 +7303,13 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
         break;
         case ITEM_MOD_RESILIENCE_RATING:
         {
+#if VERSION_STRING >= Cata
             modCombatRating(CR_RESILIENCE_CRIT_TAKEN, val); // melee
             modCombatRating(CR_RESILIENCE_PLAYER_DAMAGE_TAKEN, val); // ranged
+#else
+            modCombatRating(CR_CRIT_TAKEN_MELEE, val); // melee
+            modCombatRating(CR_CRIT_TAKEN_RANGED, val); // ranged
+#endif
             modCombatRating(CR_CRIT_TAKEN_SPELL, val); // spell
         }
         break;

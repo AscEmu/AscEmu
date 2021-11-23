@@ -94,6 +94,9 @@ Player::Player(uint32_t guid) :
     //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
     m_uint32Values = _fields;
 
+#if VERSION_STRING > WotLK
+    memset(_voidStorageItems, 0, VOID_STORAGE_MAX_SLOT * sizeof(VoidStorageItem*));
+#endif
     memset(m_uint32Values, 0, (getSizeOfStructure(WoWPlayer)) * sizeof(uint32_t));
     m_updateMask.SetCount(getSizeOfStructure(WoWPlayer));
 
@@ -168,6 +171,11 @@ Player::~Player()
 
     delete SDetector;
     SDetector = nullptr;
+
+#if VERSION_STRING > WotLK
+    for (uint8 i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
+        delete _voidStorageItems[i];
+#endif
 
     for (auto pet = m_Pets.begin(); pet != m_Pets.end(); ++pet)
         delete pet->second;
@@ -4282,3 +4290,177 @@ bool Player::isOnGMTargetList(uint32_t guid) const
 
     return false;
 }
+#if VERSION_STRING > WotLK
+uint8 Player::getNextVoidStorageFreeSlot() const
+{
+    for (uint8 i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
+        if (!_voidStorageItems[i]) // unused item
+            return i;
+
+    return VOID_STORAGE_MAX_SLOT;
+}
+
+uint8 Player::getNumOfVoidStorageFreeSlots() const
+{
+    uint8 count = 0;
+
+    for (uint8 i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
+        if (!_voidStorageItems[i])
+            count++;
+
+    return count;
+}
+
+uint8_t Player::addVoidStorageItem(const VoidStorageItem& item)
+{
+    int8_t slot = getNextVoidStorageFreeSlot();
+
+    if (slot >= VOID_STORAGE_MAX_SLOT)
+    {
+        GetSession()->sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_FULL);
+        return 255;
+    }
+
+    _voidStorageItems[slot] = new VoidStorageItem(item.itemId, item.itemEntry,
+        item.creatorGuid, item.itemRandomPropertyId, item.itemSuffixFactor);
+    return slot;
+}
+
+void Player::addVoidStorageItemAtSlot(uint8_t slot, const VoidStorageItem& item)
+{
+    if (slot >= VOID_STORAGE_MAX_SLOT)
+    {
+        GetSession()->sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_FULL);
+        return;
+    }
+
+    if (_voidStorageItems[slot])
+    {
+        sLogger.debug("Player::addVoidStorageItemAtSlot - Player (GUID: %u, name: %s) tried to add an item to an used slot (item id: %u, entry: %u, slot: %u).", getGuidLow(), getName().c_str(), _voidStorageItems[slot]->itemId, _voidStorageItems[slot]->itemEntry, slot);
+        GetSession()->sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_INTERNAL_ERROR_1);
+        return;
+    }
+
+    _voidStorageItems[slot] = new VoidStorageItem(item.itemId, item.itemId,
+        item.creatorGuid, item.itemRandomPropertyId, item.itemSuffixFactor);
+}
+
+void Player::deleteVoidStorageItem(uint8_t slot)
+{
+    if (slot >= VOID_STORAGE_MAX_SLOT)
+    {
+        GetSession()->sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_INTERNAL_ERROR_1);
+        return;
+    }
+
+    delete _voidStorageItems[slot];
+    _voidStorageItems[slot] = NULL;
+}
+
+bool Player::swapVoidStorageItem(uint8_t oldSlot, uint8_t newSlot)
+{
+    if (oldSlot >= VOID_STORAGE_MAX_SLOT || newSlot >= VOID_STORAGE_MAX_SLOT || oldSlot == newSlot)
+        return false;
+
+    std::swap(_voidStorageItems[newSlot], _voidStorageItems[oldSlot]);
+    return true;
+}
+
+VoidStorageItem* Player::getVoidStorageItem(uint8_t slot) const
+{
+    if (slot >= VOID_STORAGE_MAX_SLOT)
+    {
+        GetSession()->sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_INTERNAL_ERROR_1);
+        return NULL;
+    }
+
+    return _voidStorageItems[slot];
+}
+
+VoidStorageItem* Player::getVoidStorageItem(uint64_t id, uint8_t& slot) const
+{
+    for (uint8 i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
+    {
+        if (_voidStorageItems[i] && _voidStorageItems[i]->itemId == id)
+        {
+            slot = i;
+            return _voidStorageItems[i];
+        }
+    }
+
+    return NULL;
+}
+
+void Player::loadVoidStorage()
+{
+    QueryResult* result = CharacterDatabase.Query("SELECT itemid, itemEntry, slot, creatorGuid, randomProperty, suffixFactor FROM character_void_storage WHERE playerGuid = %u", getGuidLow());
+    if (!result)
+        return;
+
+    do
+    {
+        Field* fields = result->Fetch();
+
+        uint64_t itemId = fields[0].GetUInt64();
+        uint32_t itemEntry = fields[1].GetUInt32();
+        uint8_t slot = fields[2].GetUInt8();
+        uint32_t creatorGuid = fields[3].GetUInt32();
+        uint32_t randomProperty = fields[4].GetUInt32();
+        uint32_t suffixFactor = fields[5].GetUInt32();
+
+        if (!itemId)
+        {
+            sLogger.debug("Player::loadVoidStorage - Player (GUID: %u, name: %s) has an item with an invalid id (item id: %I64u, entry: %u).", getGuidLow(), getName().c_str(), itemId, itemEntry);
+            continue;
+        }
+
+        if (!sMySQLStore.getItemProperties(itemEntry))
+        {
+            sLogger.debug("Player::loadVoidStorage - Player (GUID: %u, name: %s) has an item with an invalid entry (item id: %I64u, entry: %u).", getGuidLow(), getName().c_str(), itemId, itemEntry);
+            continue;
+        }
+
+        if (slot >= VOID_STORAGE_MAX_SLOT)
+        {
+            sLogger.debug("Player::loadVoidStorage - Player (GUID: %u, name: %s) has an item with an invalid slot (item id: %I64u, entry: %u, slot: %u).", getGuidLow(), getName().c_str(), itemId, itemEntry, slot);
+            continue;
+        }
+
+        if (!sObjectMgr.GetPlayer(creatorGuid))
+        {
+            sLogger.debug("Player::loadVoidStorage - Player (GUID: %u, name: %s) has an item with an invalid creator guid, set to 0 (item id: %I64u, entry: %u, creatorGuid: %u).", getGuidLow(), getName().c_str(), itemId, itemEntry, creatorGuid);
+            creatorGuid = 0;
+        }
+
+        _voidStorageItems[slot] = new VoidStorageItem(itemId, itemEntry, creatorGuid, randomProperty, suffixFactor);
+    } while (result->NextRow());
+}
+
+void Player::saveVoidStorage()
+{
+    uint32_t lowGuid = getGuidLow();
+
+    for (uint8_t slot = 0; slot < VOID_STORAGE_MAX_SLOT; ++slot)
+    {
+        if (!_voidStorageItems[slot]) // unused item
+        {
+            // DELETE FROM void_storage WHERE slot = ? AND playerGuid = ?
+            CharacterDatabase.Execute("DELETE FROM character_void_storage WHERE playerGuid = %u AND slot = %u ", lowGuid, slot);
+        }
+        else
+        {
+            std::stringstream ss;
+            ss << "REPLACE INTO character_void_storage VALUES(";
+            ss << _voidStorageItems[slot]->itemId << ",";
+            ss << lowGuid << ",";
+            ss << uint32_t(_voidStorageItems[slot]->itemEntry) << ",";
+            ss << int(slot) << ",";
+            ss << _voidStorageItems[slot]->creatorGuid << ",";
+            ss << _voidStorageItems[slot]->itemRandomPropertyId << ",";
+            ss << _voidStorageItems[slot]->itemSuffixFactor;
+            ss << ")";
+            CharacterDatabase.Execute(ss.str().c_str());
+        }
+    }
+}
+#endif

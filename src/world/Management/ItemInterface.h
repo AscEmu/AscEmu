@@ -27,6 +27,53 @@ class Creature;
 
 const uint8 INVALID_BACKPACK_SLOT = 0xFF;
 
+#define VOID_STORAGE_UNLOCK       100*GOLD
+#define VOID_STORAGE_STORE_ITEM   25*GOLD
+#define VOID_STORAGE_MAX_DEPOSIT  9
+#define VOID_STORAGE_MAX_WITHDRAW 9
+#define VOID_STORAGE_MAX_SLOT     80
+
+enum VoidTransferError
+{
+    VOID_TRANSFER_ERROR_NO_ERROR                = 0,
+    VOID_TRANSFER_ERROR_INTERNAL_ERROR_1        = 1,
+    VOID_TRANSFER_ERROR_INTERNAL_ERROR_2        = 2,
+    VOID_TRANSFER_ERROR_FULL                    = 3,
+    VOID_TRANSFER_ERROR_INTERNAL_ERROR_3        = 4,
+    VOID_TRANSFER_ERROR_INTERNAL_ERROR_4        = 5,
+    VOID_TRANSFER_ERROR_NOT_ENOUGH_MONEY        = 6,
+    VOID_TRANSFER_ERROR_INVENTORY_FULL          = 7,
+    VOID_TRANSFER_ERROR_INTERNAL_ERROR_5        = 8,
+    VOID_TRANSFER_ERROR_TRANSFER_UNKNOWN        = 9,
+};
+
+struct VoidStorageItem
+{
+    VoidStorageItem()
+    {
+        itemId = 0;
+        itemEntry = 0;
+        creatorGuid = 0;
+        itemRandomPropertyId = 0;
+        itemSuffixFactor = 0;
+    }
+
+    VoidStorageItem(uint64 id, uint32 entry, uint32 creator, uint32 randomPropertyId, uint32 suffixFactor)
+    {
+        itemId = id;
+        itemEntry = entry;
+        creatorGuid = creator;
+        itemRandomPropertyId = randomPropertyId;
+        itemSuffixFactor = suffixFactor;
+    }
+
+    uint64_t itemId;
+    uint32_t itemEntry;
+    uint32_t creatorGuid;
+    uint32_t itemRandomPropertyId;
+    uint32_t itemSuffixFactor;
+};
+
 enum EquipmentSlots                                         // 19 slots
 {
     EQUIPMENT_SLOT_START        = 0,

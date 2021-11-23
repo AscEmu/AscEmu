@@ -32,6 +32,7 @@ set(SRC_PACKET_HANDLER_FILES
     ${PATH_PREFIX}/TaxiHandler.cpp
     ${PATH_PREFIX}/TradeHandler.cpp
     ${PATH_PREFIX}/VehicleHandler.cpp
+    ${PATH_PREFIX}/VoidStorageHandler.cpp
     #${PATH_PREFIX}/VoiceChatHandler.Legacy.cpp //Not used!
 )
 

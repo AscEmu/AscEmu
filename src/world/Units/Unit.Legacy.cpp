@@ -6775,7 +6775,11 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     }
 
     // by ratings
+#if VERSION_STRING >= Cata
     crit -= pVictim->isPlayer() ? static_cast<Player*>(pVictim)->CalcRating(CR_RESILIENCE_CRIT_TAKEN) : 0.0f;
+#else
+    crit -= pVictim->isPlayer() ? static_cast<Player*>(pVictim)->CalcRating(CR_CRIT_TAKEN_MELEE) : 0.0f;
+#endif
 
     if (crit < 0)
         crit = 0.0f;
@@ -7244,7 +7248,11 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                         if (pVictim->isPlayer())
                         {
                             //Resilience is a special new rating which was created to reduce the effects of critical hits against your character.
+#if VERSION_STRING >= Cata
                             float dmg_reduction_pct = 2.0f * static_cast<Player*>(pVictim)->CalcRating(CR_RESILIENCE_CRIT_TAKEN) / 100.0f;
+#else
+                            float dmg_reduction_pct = 2.0f * static_cast<Player*>(pVictim)->CalcRating(CR_CRIT_TAKEN_MELEE) / 100.0f;
+#endif
                             if (dmg_reduction_pct > 1.0f)
                                 dmg_reduction_pct = 1.0f; //we cannot resist more then he is criticalling us, there is no point of the critical then :P
                             dmg.fullDamage = float2int32(dmg.fullDamage - dmg.fullDamage * dmg_reduction_pct);

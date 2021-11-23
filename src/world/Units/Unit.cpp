@@ -3478,7 +3478,11 @@ float_t Unit::getCriticalChanceForDamageSpell(Spell* spell, Aura* aura, Unit* ta
         }
 
         if (target->isPlayer())
+#if VERSION_STRING >= Cata
             resilienceType = CR_RESILIENCE_PLAYER_DAMAGE_TAKEN;
+#else
+            resilienceType = CR_CRIT_TAKEN_RANGED;
+#endif
     }
     else if (spellInfo->getDmgClass() == SPELL_DMG_TYPE_MELEE)
     {
@@ -3490,7 +3494,11 @@ float_t Unit::getCriticalChanceForDamageSpell(Spell* spell, Aura* aura, Unit* ta
         {
             //this could be ability but in that case we overwrite the value
             critChance += static_cast<Player*>(target)->res_M_crit_get();
+#if VERSION_STRING >= Cata
             resilienceType = CR_RESILIENCE_CRIT_TAKEN;
+#else
+            resilienceType = CR_CRIT_TAKEN_MELEE;
+#endif
         }
 
         // Victim's (!) crit chance mod for physical attacks?
@@ -3589,7 +3597,11 @@ float_t Unit::getCriticalDamageBonusForSpell(float_t damage, Unit* target, Spell
     // todo: move this elsewhere and correct it to work on all versions
     if (target != nullptr && target->isPlayer())
     {
+#if VERSION_STRING >= Cata
         float_t dmgReductionPct = 2.0f * static_cast<Player*>(target)->CalcRating(CR_RESILIENCE_CRIT_TAKEN) / 100.0f;
+#else
+        float_t dmgReductionPct = 2.0f * static_cast<Player*>(target)->CalcRating(CR_CRIT_TAKEN_MELEE) / 100.0f;
+#endif
         if (dmgReductionPct > 1.0f)
             dmgReductionPct = 1.0f;
 

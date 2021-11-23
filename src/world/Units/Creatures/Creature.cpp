@@ -87,6 +87,7 @@ bool Creature::isArmorer() const { return getNpcFlags() & UNIT_NPC_FLAG_REPAIR; 
 #if VERSION_STRING >= Cata
 bool Creature::isTransmog() const { return getNpcFlags() & UNIT_NPC_FLAG_TRANSMOGRIFIER; }
 bool Creature::isReforger() const { return getNpcFlags() & UNIT_NPC_FLAG_REFORGER; }
+bool Creature::isVoidStorage() const { return getNpcFlags() & UNIT_NPC_FLAG_VAULTKEEPER; }
 #endif
 
 bool Creature::isVehicle() const

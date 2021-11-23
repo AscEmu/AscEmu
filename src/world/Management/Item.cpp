@@ -365,9 +365,9 @@ int32_t Item::getReforgableStat(ItemModType statType) const
 
         for (uint32_t e = PROP_ENCHANTMENT_SLOT_0; e <= PROP_ENCHANTMENT_SLOT_4; ++e)
             if (DBC::Structures::SpellItemEnchantmentEntry const* enchant = sSpellItemEnchantmentStore.LookupEntry(getEnchantmentId(EnchantmentSlot(e))))
-                for (uint32_t f = 0; f < MAX_ITEM_ENCHANTMENT_EFFECTS; ++f)
+                for (uint8_t f = 0; f < MAX_ITEM_ENCHANTMENT_EFFECTS; ++f)
                     if (enchant->type[f] == ITEM_ENCHANTMENT_TYPE_STAT && ItemModType(enchant->spell[f]) == statType)
-                        for (int k = 0; k < 5; ++k)
+                        for (uint8_t k = 0; k < 5; ++k)
                             if (randomSuffix->enchantments[k] == enchant->Id)
                                 return int32_t((randomSuffix->prefixes[k] * getPropertySeed()) / 10000);
     }
@@ -379,9 +379,9 @@ int32_t Item::getReforgableStat(ItemModType statType) const
 
         for (uint32_t e = PROP_ENCHANTMENT_SLOT_0; e <= PROP_ENCHANTMENT_SLOT_4; ++e)
             if (DBC::Structures::SpellItemEnchantmentEntry const* enchant = sSpellItemEnchantmentStore.LookupEntry(getEnchantmentId(EnchantmentSlot(e))))
-                for (uint32_t f = 0; f < MAX_ITEM_ENCHANTMENT_EFFECTS; ++f)
+                for (uint8_t f = 0; f < MAX_ITEM_ENCHANTMENT_EFFECTS; ++f)
                     if (enchant->type[f] == ITEM_ENCHANTMENT_TYPE_STAT && ItemModType(enchant->spell[f]) == statType)
-                        for (int k = 0; k < MAX_ITEM_ENCHANTMENT_EFFECTS; ++k)
+                        for (uint8_t k = 0; k < MAX_ITEM_ENCHANTMENT_EFFECTS; ++k)
                             if (randomProp->spells[k] == enchant->Id)
                                 return int32_t(enchant->min[k]);
     }

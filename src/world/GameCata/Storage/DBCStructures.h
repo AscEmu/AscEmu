@@ -1246,7 +1246,7 @@ namespace DBC::Structures
     {
         uint32_t ID;                                                // 0
         //char* name1;                                              // 1
-        uint32_t spells[MAX_ITEM_ENCHANTMENT_EFFECTS];                                         // 2-6 enchant_id
+        uint32_t spells[MAX_ITEM_ENCHANTMENT_EFFECTS];              // 2-6 enchant_id but we only use 2-4 because 5-6 is always 0
         char* name_suffix;                                          // 7
     };
 

@@ -274,7 +274,7 @@ enum PlayerFlags
     PLAYER_FLAG_UNK7                    = 0x04000000,
     PLAYER_FLAGS_AUTO_DECLINE_GUILD     = 0x08000000,
     PLAYER_FLAGS_GUILD_LVL_ENABLED      = 0x10000000,
-    PLAYER_FLAG_UNK8                    = 0x20000000,
+    PLAYER_FLAGS_VOID_UNLOCKED          = 0x20000000,
     PLAYER_FLAG_UNK9                    = 0x40000000,
     PLAYER_FLAG_UNK10                   = 0x80000000
 };
@@ -603,8 +603,13 @@ enum PlayerCombatRating : uint8_t
     CR_HIT_TAKEN_MELEE                  = 11,   // Deprecated since Cataclysm
     CR_HIT_TAKEN_RANGED                 = 12,   // Deprecated since Cataclysm
     CR_HIT_TAKEN_SPELL                  = 13,   // Deprecated since Cataclysm
+#if VERSION_STRING < Cata
+    CR_CRIT_TAKEN_MELEE                 = 14,
+    CR_CRIT_TAKEN_RANGED                = 15,
+#else
     CR_RESILIENCE_CRIT_TAKEN            = 14,
     CR_RESILIENCE_PLAYER_DAMAGE_TAKEN   = 15,
+#endif
     CR_CRIT_TAKEN_SPELL                 = 16,   // Deprecated since Cataclysm
     CR_HASTE_MELEE                      = 17,
     CR_HASTE_RANGED                     = 18,
