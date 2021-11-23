@@ -4291,9 +4291,9 @@ bool Player::isOnGMTargetList(uint32_t guid) const
     return false;
 }
 #if VERSION_STRING > WotLK
-uint8 Player::getNextVoidStorageFreeSlot() const
+uint8_t Player::getNextVoidStorageFreeSlot() const
 {
-    for (uint8 i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
+    for (uint8_t i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
         if (!_voidStorageItems[i]) // unused item
             return i;
 
@@ -4302,9 +4302,9 @@ uint8 Player::getNextVoidStorageFreeSlot() const
 
 uint8 Player::getNumOfVoidStorageFreeSlots() const
 {
-    uint8 count = 0;
+    uint8_t count = 0;
 
-    for (uint8 i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
+    for (uint8_t i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
         if (!_voidStorageItems[i])
             count++;
 
@@ -4379,7 +4379,7 @@ VoidStorageItem* Player::getVoidStorageItem(uint8_t slot) const
 
 VoidStorageItem* Player::getVoidStorageItem(uint64_t id, uint8_t& slot) const
 {
-    for (uint8 i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
+    for (uint8_t i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
     {
         if (_voidStorageItems[i] && _voidStorageItems[i]->itemId == id)
         {

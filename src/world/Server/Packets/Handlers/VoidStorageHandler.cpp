@@ -14,6 +14,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
+#if VERSION_STRING >= Cata
+
 void WorldSession::sendVoidStorageTransferResult(VoidTransferError result)
 {
     WorldPacket data(SMSG_VOID_TRANSFER_RESULT, 4);
@@ -633,3 +635,4 @@ void WorldSession::handleVoidSwapItem(WorldPacket& recvData)
 
     player->saveVoidStorage();
 }
+#endif

@@ -58,7 +58,7 @@ struct VoidStorageItem
         itemSuffixFactor = 0;
     }
 
-    VoidStorageItem(uint64 id, uint32 entry, uint32 creator, uint32 randomPropertyId, uint32 suffixFactor)
+    VoidStorageItem(uint64_t id, uint32_t entry, uint32_t creator, uint32_t randomPropertyId, uint32_t suffixFactor)
     {
         itemId = id;
         itemEntry = entry;
