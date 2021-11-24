@@ -554,8 +554,8 @@ void WorldSession::handleVoidSwapItem(WorldPacket& recvData)
         return;
     }
 
-    bool usedSrcSlot = player->getVoidStorageItem(oldSlot) != NULL; // should be always true
-    bool usedDestSlot = player->getVoidStorageItem(newSlot) != NULL;
+    bool usedSrcSlot = player->getVoidStorageItem(oldSlot) != nullptr; // should be always true
+    bool usedDestSlot = player->getVoidStorageItem(newSlot) != nullptr;
     ObjectGuid itemIdDest;
     if (usedDestSlot)
         itemIdDest = player->getVoidStorageItem(newSlot)->itemId;

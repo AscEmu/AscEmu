@@ -173,7 +173,7 @@ Player::~Player()
     SDetector = nullptr;
 
 #if VERSION_STRING > WotLK
-    for (uint8 i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
+    for (uint8_t i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
         delete _voidStorageItems[i];
 #endif
 
@@ -4300,7 +4300,7 @@ uint8_t Player::getNextVoidStorageFreeSlot() const
     return VOID_STORAGE_MAX_SLOT;
 }
 
-uint8 Player::getNumOfVoidStorageFreeSlots() const
+uint8_t Player::getNumOfVoidStorageFreeSlots() const
 {
     uint8_t count = 0;
 
@@ -4354,7 +4354,7 @@ void Player::deleteVoidStorageItem(uint8_t slot)
     }
 
     delete _voidStorageItems[slot];
-    _voidStorageItems[slot] = NULL;
+    _voidStorageItems[slot] = nullptr;
 }
 
 bool Player::swapVoidStorageItem(uint8_t oldSlot, uint8_t newSlot)
@@ -4371,7 +4371,7 @@ VoidStorageItem* Player::getVoidStorageItem(uint8_t slot) const
     if (slot >= VOID_STORAGE_MAX_SLOT)
     {
         GetSession()->sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_INTERNAL_ERROR_1);
-        return NULL;
+        return nullptr;
     }
 
     return _voidStorageItems[slot];
@@ -4388,7 +4388,7 @@ VoidStorageItem* Player::getVoidStorageItem(uint64_t id, uint8_t& slot) const
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void Player::loadVoidStorage()
