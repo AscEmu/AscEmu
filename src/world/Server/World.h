@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "EventableObject.h"
-#include "IUpdatable.h"
+//#include "IUpdatable.h"
 #include "WorldSession.h"
 #include "WorldConfig.h"
 
@@ -45,7 +45,7 @@ class Object;
 
 typedef std::set<WorldSession*> SessionSet;
 
-class SERVER_DECL World : public EventableObject, public IUpdatable
+class SERVER_DECL World : public EventableObject //, public IUpdatable
 {
     private:
 

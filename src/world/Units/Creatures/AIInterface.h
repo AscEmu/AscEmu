@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Map/RecastIncludes.hpp"
-#include "Server/IUpdatable.h"
+//#include "Server/IUpdatable.h"
 #include "Units/Creatures/AIEvents.h"
 #include "Units/Unit.h"
 #include "Macros/AIInterfaceMacros.hpp"
@@ -339,7 +339,7 @@ struct AI_Spell
     uint32_t autocast_type;
 };
 
-class SERVER_DECL AIInterface : public IUpdatable
+class SERVER_DECL AIInterface // : public IUpdatable
 {
 public:
     AIInterface();

@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/UpdateMask.h"
 #include "CommonTypes.hpp"
 #include "Server/EventableObject.h"
-#include "Server/IUpdatable.h"
+//#include "Server/IUpdatable.h"
 
 #include <set>
 #include <map>
@@ -92,7 +92,7 @@ struct DamageInfo
     }
 };
 
-class SERVER_DECL Object : public EventableObject, public IUpdatable
+class SERVER_DECL Object : public EventableObject //, public IUpdatable
 {
 public:
 
@@ -102,7 +102,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Essential functions (mostly inherited by other classes)
 
-    // updated by EventableObject and managed by IUpdatable
+    // updated by EventableObject
     void Update(unsigned long /*time_passed*/) {}
 
     // adds/queues object to world and links mapmgr to it if possible
