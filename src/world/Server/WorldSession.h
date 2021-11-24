@@ -27,7 +27,7 @@
 #include "FastQueue.h"
 #include "Server/CharacterErrors.h"
 #include "Units/Players/PlayerDefines.hpp"
-#include "world/Management/ItemInterface.h"
+#include "Management/ItemInterface.h"
 #if VERSION_STRING >= Cata
     #include "Management/AddonMgr.h"
     #include "Units/Players/Player.h"
