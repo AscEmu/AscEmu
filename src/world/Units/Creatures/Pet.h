@@ -129,6 +129,19 @@ public:
     ~Pet();
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Essential functions
+
+    void Update(unsigned long /*time_passed*/);         // hides function Creature::Update
+    // void AddToWorld();                               // not used
+    // void AddToWorld(MapMgr* pMapMgr);                // not used
+    // void PushToWorld(MapMgr*);                       // not used
+    void RemoveFromWorld(bool free_guid);               // hides function Creature::RemoveFromWorld
+    // void OnPrePushToWorld();                         // not used
+    void OnPushToWorld();                               // hides function Creature::OnPushToWorld
+    // void OnPreRemoveFromWorld();                     // not used
+    void OnRemoveFromWorld();                           // hides function Object::OnRemoveFromWorld
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Owner
     Player* getPlayerOwner() override;
 
@@ -148,9 +161,6 @@ public:
         void LoadFromDB(Player* owner, PlayerPet* pi);
         /// returns false if an error occurred. The caller MUST delete us.
         bool CreateAsSummon(uint32 entry, CreatureProperties const* properties_, Creature* created_from_creature, Player* owner, SpellInfo const* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec = NULL, bool dismiss_old_pet = true);
-
-        void Update(unsigned long time_passed);
-        void OnPushToWorld();
 
         void InitializeSpells();
         void InitializeMe(bool first);
@@ -190,8 +200,6 @@ public:
         void setDeathState(DeathState s);
 
         void PrepareForRemove(bool bUpdate, bool bSetOffline);
-        void RemoveFromWorld(bool free_guid);
-        void OnRemoveFromWorld();
         void DelayedRemove(bool bTime, bool dismiss = false, uint32 delay = PET_DELAYED_REMOVAL_TIME);
         void Despawn(uint32 delay, uint32 respawntime);
 

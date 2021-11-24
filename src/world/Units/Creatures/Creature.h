@@ -35,6 +35,19 @@ public:
     Creature(uint64_t guid);
     virtual ~Creature();
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Essential functions
+
+    void Update(unsigned long time_passed);             // hides function Unit::Update
+    void AddToWorld();                                  // hides virtual function Object::AddToWorld
+    void AddToWorld(MapMgr* pMapMgr);                   // hides virtual function Object::AddToWorld
+    // void PushToWorld(MapMgr*);                       // not used
+    void RemoveFromWorld(bool free_guid);               // hides virtual function Unit::RemoveFromWorld
+    // void OnPrePushToWorld();                         // not used
+    void OnPushToWorld() override;                      // overrides virtual function Unit::OnPushToWorld
+    // void OnPreRemoveFromWorld();                     // not used
+    // void OnRemoveFromWorld();                        // not used
+
     GameEvent * mEvent = nullptr;
 
     // npc flag helper
@@ -136,10 +149,7 @@ public:
         bool Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStructure::MapInfo const* info);
         void Load(CreatureProperties const* c_properties, float x, float y, float z, float o = 0);
 
-        void AddToWorld();
-        void AddToWorld(MapMgr* pMapMgr);
         void RemoveFromWorld(bool addrespawnevent, bool free_guid);
-        void RemoveFromWorld(bool free_guid);
 
         // remove auras, guardians, scripts
         void PrepareForRemove();
@@ -147,9 +157,6 @@ public:
         // Creation
         void Create(uint32 mapid, float x, float y, float z, float ang);
         void CreateWayPoint(uint32 WayPointID, uint32 mapid, float x, float y, float z, float ang);
-
-        // Updates
-        void Update(unsigned long time_passed);
 
         // Creature inventory
         uint32 GetItemIdBySlot(uint32 slot) { return m_SellItems->at(slot).itemid; }
@@ -306,7 +313,6 @@ public:
 
         MySQLStructure::CreatureSpawn* m_spawn = nullptr;
 
-        void OnPushToWorld() override;
         virtual void Despawn(uint32 delay, uint32 respawntime);
         void TriggerScriptEvent(int);
 

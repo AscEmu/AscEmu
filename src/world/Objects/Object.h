@@ -100,6 +100,39 @@ public:
     virtual ~Object();
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Essential functions (mostly inherited by other classes)
+
+    // updated by EventableObject and managed by IUpdatable
+    void Update(unsigned long /*time_passed*/) {}
+
+    // adds/queues object to world and links mapmgr to it if possible
+    virtual void AddToWorld();
+
+    // adds/queues objext to world and links mapmgr to it
+    virtual void AddToWorld(MapMgr* pMapMgr);
+
+    // Unlike addtoworld it pushes it directly ignoring add pool this can only be called from the thread of mapmgr!
+    void PushToWorld(MapMgr*);
+
+    // removes object from world and queue
+    virtual void RemoveFromWorld(bool free_guid);
+
+    // True if object exists in world, else false
+    bool IsInWorld() { return m_mapMgr != NULL; }
+
+    // is called BEFORE pushing the Object in the game world
+    virtual void OnPrePushToWorld() {}
+
+    // is called AFTER pushing the Object in the game world
+    virtual void OnPushToWorld() {}
+
+    // is called BEFORE removing the Object from the game world
+    virtual void OnPreRemoveFromWorld() {}
+
+    // is called AFTER removing the Object from the game world
+    virtual void OnRemoveFromWorld() {}
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Object values
 
 protected:
@@ -287,27 +320,6 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // AGPL Starts
-
-        void Update(unsigned long /*time_passed*/) {}
-
-        // True if object exists in world, else false
-        bool IsInWorld() { return m_mapMgr != NULL; }
-        virtual void AddToWorld();
-        virtual void AddToWorld(MapMgr* pMapMgr);
-        void PushToWorld(MapMgr*);
-        virtual void RemoveFromWorld(bool free_guid);
-
-        // Virtual method that is called, BEFORE pushing the Object in the game world
-        virtual void OnPrePushToWorld() {}
-
-        // Virtual method that is called, AFTER pushing the Object in the game world
-        virtual void OnPushToWorld() {}
-
-        // Virtual method that is called, BEFORE removing the Object from the game world
-        virtual void OnPreRemoveFromWorld() {}
-
-        // Virtual method that is called, AFTER removing the Object from the game world
-        virtual void OnRemoveFromWorld() {}
 
         // Guid always comes first
 

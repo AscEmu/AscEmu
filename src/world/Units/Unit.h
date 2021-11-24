@@ -244,6 +244,19 @@ protected:
 public: //\todo Zyres: public fpr LuaEngine, sort out why
     virtual ~Unit();
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Essential functions
+
+    void Update(unsigned long time_passed);             // hides function Object::Update
+    // void AddToWorld();                               // not used
+    // void AddToWorld(MapMgr* pMapMgr);                // not used
+    // void PushToWorld(MapMgr*);                       // not used
+    virtual void RemoveFromWorld(bool free_guid);       // hides virtual function Object::RemoveFromWorld
+    // void OnPrePushToWorld();                         // not used
+    virtual void OnPushToWorld();                       // hides virtual function Object::OnPushToWorld
+    // void OnPreRemoveFromWorld();                     // not used
+    // void OnRemoveFromWorld();                        // not used
+
 private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
@@ -1164,10 +1177,6 @@ public:
     TransportData m_transportData;
 
     virtual bool Teleport(const LocationVector& vec, MapMgr* map) = 0;
-
-    void Update(unsigned long time_passed);
-    virtual void RemoveFromWorld(bool free_guid);
-    virtual void OnPushToWorld();
 
     virtual void Deactivate(MapMgr* mgr);
 

@@ -394,6 +394,21 @@ enum GlyphSlotMask
 struct WoWPlayer;
 class SERVER_DECL Player : public Unit
 {
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Essential functions
+
+    void Update(unsigned long time_passed);             // hides function Unit::Update
+    void AddToWorld();                                  // hides virtual function Object::AddToWorld
+    void AddToWorld(MapMgr* pMapMgr);                   // hides virtual function Object::AddToWorld
+    // void PushToWorld(MapMgr*);                       // not used
+    // void RemoveFromWorld(bool free_guid);            // not used
+    void OnPrePushToWorld() override;                   // overrides virtual function  Object::OnPrePushToWorld
+    void OnPushToWorld() override;                      // overrides virtual function  Object::OnPushToWorld
+    // void OnPreRemoveFromWorld();                     // not used
+    // void OnRemoveFromWorld();                        // not used
+
+private:
     const WoWPlayer* playerData() const { return reinterpret_cast<WoWPlayer*>(wow_data); }
 public:
     void resendSpeed();
@@ -1468,12 +1483,9 @@ public:
         static void CharChange_Looks(uint64 GUID, uint8 gender, uint8 skin, uint8 face, uint8 hairStyle, uint8 hairColor, uint8 facialHair);
         static void CharChange_Language(uint64 GUID, uint8 race);
 
-        void AddToWorld();
-        void AddToWorld(MapMgr* pMapMgr);
         void RemoveFromWorld();
         bool Create(CharCreate& charCreateContent);
 
-        void Update(unsigned long time_passed);
         void BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag);
         void BuildPetSpellList(WorldPacket & data);
 
@@ -2202,8 +2214,6 @@ public:
         uint32 load_health = 0;
         uint32 load_mana = 0;
         void CompleteLoading();
-        void OnPushToWorld() override;
-        void OnPrePushToWorld() override;
         void OnWorldPortAck();
         uint32 m_TeleportState = 1;
         bool m_beingPushed = false;

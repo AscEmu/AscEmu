@@ -222,6 +222,20 @@ struct WoWItem;
 class SERVER_DECL Item : public Object
 {
     // MIT Start
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Essential functions
+
+    // void Update(unsigned long /*time_passed*/);      // not used
+    // void AddToWorld();                               // not used
+    // void AddToWorld(MapMgr* pMapMgr);                // not used
+    // void PushToWorld(MapMgr*);                       // not used
+    // void RemoveFromWorld(bool free_guid);            // not used
+    // void OnPrePushToWorld();                         // not used
+    // void OnPushToWorld();                            // not used
+    // void OnPreRemoveFromWorld();                     // not used
+    // void OnRemoveFromWorld();                        // not used
+
     const WoWItem* itemData() const { return reinterpret_cast<WoWItem*>(wow_data); }
 public:
     void init(uint32_t high, uint32_t low);
