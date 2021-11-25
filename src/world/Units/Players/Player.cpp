@@ -119,6 +119,9 @@ Player::Player(uint32_t guid) :
 
     // Zyres: initialise here because ItemInterface needs the guid from object data
     m_itemInterface = new ItemInterface(this);
+
+    // Override initialization from Unit class
+    getThreatManager().initialize();
 }
 
 Player::~Player()

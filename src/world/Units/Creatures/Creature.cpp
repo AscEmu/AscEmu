@@ -48,6 +48,9 @@ Creature::Creature(uint64_t guid)
 
     //override class "Unit" initialisation
     m_useAI = true;
+
+    // Override initialization from Unit class
+    getThreatManager().initialize();
 }
 
 Creature::~Creature()
