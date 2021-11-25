@@ -14,7 +14,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Units/Players/PlayerDefines.hpp"
 
-TotemSummon::TotemSummon(uint64_t guid, uint32_t duration) : Summon(guid, duration) {}
+TotemSummon::TotemSummon(uint64_t guid, uint32_t duration) : Summon(guid, duration)
+{
+    // Override initialization from Summon class
+    getThreatManager().initialize();
+}
 
 TotemSummon::~TotemSummon() {}
 

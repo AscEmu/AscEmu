@@ -184,11 +184,15 @@ void ThreatManager::initialize()
 
     // summons cannot have a threat list if they were summoned by a player
     if (pUnit->isSummon())
+    {
+        // TODO: Summoner is set in Summon::Load and we call ThreatManager initialize from Summon constructor
+        // so summoner is always nullptr here. Maybe in the future it's set in constructor ;) -Appled
         if (Unit* summoner = pUnit->GetMapMgr()->GetUnit(WoWGuid::getGuidLowPartFromUInt64(pUnit->getSummonedByGuid())))
             if (summoner->isPlayer())
                 return false;
+    }
 
-   return true;
+    return true;
 }
 
 void ThreatManager::update(uint32_t tdiff)

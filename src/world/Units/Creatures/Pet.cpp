@@ -43,7 +43,11 @@
 
 //MIT START
 
-Pet::Pet(uint64_t guid) : Creature(guid) {}
+Pet::Pet(uint64_t guid) : Creature(guid)
+{
+    // Override initialization from Creature class
+    getThreatManager().initialize();
+}
 
 Pet::~Pet()
 {
