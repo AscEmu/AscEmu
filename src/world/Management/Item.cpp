@@ -10,30 +10,70 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
+Item::Item()
+{
+    //////////////////////////////////////////////////////////////////////////
+    m_objectType |= TYPE_ITEM;
+    m_objectTypeId = TYPEID_ITEM;
+    m_valuesCount = getSizeOfStructure(WoWItem);
+    //////////////////////////////////////////////////////////////////////////
+
+#if VERSION_STRING == Classic
+    m_updateFlag = UPDATEFLAG_ALL;
+#endif
+#if VERSION_STRING == TBC
+    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HIGHGUID);
+#endif
+#if VERSION_STRING == WotLK
+    m_updateFlag = UPDATEFLAG_LOWGUID;
+#endif
+#if VERSION_STRING == Cata
+    m_updateFlag = UPDATEFLAG_NONE;
+#endif
+#if VERSION_STRING == Mop
+    m_updateFlag = UPDATEFLAG_NONE;
+#endif
+
+    //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
+    m_uint32Values = _fields;
+
+    memset(m_uint32Values, 0, sizeof(WoWItem));
+    m_updateMask.SetCount(getSizeOfStructure(WoWItem));
+}
+
+Item::~Item()
+{
+    if (loot != nullptr)
+    {
+        delete loot;
+        loot = nullptr;
+    }
+
+    sEventMgr.RemoveEvents(this);
+
+    for (EnchantmentMap::iterator itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
+    {
+        if (itr->second.Slot == 0 && itr->second.ApplyTime == 0 && itr->second.Duration == 0)
+        {
+            delete itr->second.Enchantment;
+            itr->second.Enchantment = nullptr;
+        }
+    }
+    Enchantments.clear();
+
+    if (IsInWorld())
+        RemoveFromWorld();
+
+    m_owner = nullptr;
+}
+
 void Item::init(uint32_t high, uint32_t low)
 {
-    memset(m_uint32Values, 0, sizeof(WoWItem));
     setObjectType(TYPEID_ITEM);
     setScale(1.f);
     setGuid(low, high);
 
-    m_itemProperties = nullptr;
-    m_owner = nullptr;
-    loot = nullptr;
-    locked = false;
     m_isDirty = true;
-    random_prop = 0;
-    random_suffix = 0;
-    wrapped_item_id = 0;
-    m_mapId = MAPID_NOT_IN_WORLD;
-    m_zoneId = 0;
-    m_objectUpdated = false;
-    m_mapMgr = nullptr;
-    m_factionTemplate = nullptr;
-    m_factionEntry = nullptr;
-    m_instanceId = INSTANCEID_NOT_IN_WORLD;
-    m_inQueue = false;
-    m_loadedFromDB = false;
 }
 
 void Item::create(uint32_t itemId, Player* owner)

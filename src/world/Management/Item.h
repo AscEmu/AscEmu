@@ -235,6 +235,10 @@ struct WoWItem;
 class SERVER_DECL Item : public Object
 {
     // MIT Start
+public:
+
+    Item();
+    virtual ~Item();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Essential functions
@@ -249,6 +253,7 @@ class SERVER_DECL Item : public Object
     // void OnPreRemoveFromWorld();                     // not used
     // void OnRemoveFromWorld();                        // not used
 
+private:
     const WoWItem* itemData() const { return reinterpret_cast<WoWItem*>(wow_data); }
 public:
     void init(uint32_t high, uint32_t low);
@@ -342,9 +347,6 @@ public:
     static bool canTransmogrifyItemWithItem(Item const* transmogrified, Item const* transmogrifier);
 
     // MIT End
-
-        Item();
-        virtual ~Item();
 
         void SetDirty(){ m_isDirty = true; }
 
@@ -479,9 +481,9 @@ public:
 
         void RemoveFromWorld();
 
-        Loot* loot;
-        bool locked;
-        bool m_isDirty;
+        Loot* loot = nullptr;
+        bool locked = false;
+        bool m_isDirty = false;
 
         EnchantmentInstance* GetEnchantment(uint32 slot);
         bool IsGemRelated(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment);
@@ -490,7 +492,7 @@ public:
 
         bool HasEnchantments() { return (Enchantments.size() > 0) ? true : false; }
 
-        uint32 wrapped_item_id;
+        uint32 wrapped_item_id = 0;
 
         time_t GetItemExpireTime() { return ItemExpiresOn; }
         void SetItemExpireTime(time_t timesec) { ItemExpiresOn = timesec; }
@@ -514,17 +516,17 @@ public:
 
     protected:
 
-        ItemProperties const* m_itemProperties;
+        ItemProperties const* m_itemProperties = nullptr;
         EnchantmentMap Enchantments;
-        uint32 _fields[getSizeOfStructure(WoWItem)];   /// this mem is wasted in case of container... but this will be fixed in future
-        Player* m_owner;            /// let's not bother the manager with unneeded requests
-        uint32 random_prop;
-        uint32 random_suffix;
-        time_t ItemExpiresOn;       /// this is for existingduration
+        uint32 _fields[getSizeOfStructure(WoWItem)] = {0};   /// this mem is wasted in case of container... but this will be fixed in future
+        Player* m_owner = nullptr;            /// let's not bother the manager with unneeded requests
+        uint32 random_prop = 0;
+        uint32 random_suffix = 0;
+        time_t ItemExpiresOn = 0;       /// this is for existingduration
 
     private:
         /// Enchant type 3 spellids, like engineering gadgets appliable to items.
-        uint32 OnUseSpellIDs[3];
+        uint32 OnUseSpellIDs[3] = {0};
         std::string text;
 };
 

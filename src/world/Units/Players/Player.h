@@ -395,6 +395,10 @@ struct WoWPlayer;
 class SERVER_DECL Player : public Unit
 {
 public:
+
+    Player(uint32_t guid);
+    ~Player();
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Essential functions
 
@@ -1426,9 +1430,6 @@ public:
     public:
 
         bool Teleport(const LocationVector& vec, MapMgr* map) override;
-
-        Player(uint32 guid);
-        ~Player();
 
         void EventGroupFullUpdate();
 
