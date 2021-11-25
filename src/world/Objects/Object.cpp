@@ -832,7 +832,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     float_t damageReductionPct = 1.0f;
     if (victim->isPlayer())
     {
-        auto resilienceValue = static_cast<Player*>(victim)->CalcRating(PCR_SPELL_CRIT_RESILIENCE) / 100.0f;
+        auto resilienceValue = static_cast<Player*>(victim)->CalcRating(CR_CRIT_TAKEN_SPELL) / 100.0f;
         if (resilienceValue > 1.0f)
             resilienceValue = 1.0f;
         damageReductionPct -= resilienceValue;

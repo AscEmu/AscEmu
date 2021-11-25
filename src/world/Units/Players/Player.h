@@ -1376,6 +1376,7 @@ public:
     void sendRaidGroupOnly(uint32_t timeInMs, uint32_t type);
 
     void setVisibleItemFields(uint32_t slot, Item* item);
+    void applyReforgeEnchantment(Item* item, bool apply);
 
     void setAFKReason(std::string reason) { afkReason = reason; }
     std::string getAFKReason() const { return afkReason; }
@@ -1393,6 +1394,27 @@ private:
 
     std::vector<uint32_t> m_gmPlayerTargetList;
     mutable std::mutex m_lockGMTargetList;
+
+#if VERSION_STRING > WotLK
+    // Void Storage
+public:
+    void loadVoidStorage();
+    void saveVoidStorage();
+
+    bool isVoidStorageUnlocked() const { return hasPlayerFlags(PLAYER_FLAGS_VOID_UNLOCKED); }
+    void unlockVoidStorage() { setPlayerFlags(PLAYER_FLAGS_VOID_UNLOCKED); }
+    void lockVoidStorage() { removePlayerFlags(PLAYER_FLAGS_VOID_UNLOCKED); }
+    uint8_t getNextVoidStorageFreeSlot() const;
+    uint8_t getNumOfVoidStorageFreeSlots() const;
+    uint8_t addVoidStorageItem(const VoidStorageItem& item);
+    void addVoidStorageItemAtSlot(uint8_t slot, const VoidStorageItem& item);
+    void deleteVoidStorageItem(uint8_t slot);
+    bool swapVoidStorageItem(uint8_t oldSlot, uint8_t newSlot);
+    VoidStorageItem* getVoidStorageItem(uint8_t slot) const;
+    VoidStorageItem* getVoidStorageItem(uint64_t id, uint8_t& slot) const;
+
+    VoidStorageItem* _voidStorageItems[VOID_STORAGE_MAX_SLOT];
+#endif
 
 public:
     //MIT End

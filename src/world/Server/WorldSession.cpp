@@ -2645,6 +2645,11 @@ void WorldSession::loadHandlers() // Cata
     //WorldPacketHandlers[CMSG_EQUIPMENT_SET_USE].handler = &WorldSession::handleEquipmentSetUse;
     //WorldPacketHandlers[CMSG_EQUIPMENT_SET_DELETE].handler = &WorldSession::handleEquipmentSetDelete;
     WorldPacketHandlers[CMSG_TRANSMOGRIFY_ITEMS].handler = &WorldSession::handleTransmogrifyItems;
+    WorldPacketHandlers[CMSG_REFORGE_ITEM].handler = &WorldSession::handleReforgeItemOpcode;
+    WorldPacketHandlers[CMSG_VOID_STORAGE_QUERY].handler = &WorldSession::handleVoidStorageQuery;
+    WorldPacketHandlers[CMSG_VOID_STORAGE_TRANSFER].handler = &WorldSession::handleVoidStorageTransfer;
+    WorldPacketHandlers[CMSG_VOID_STORAGE_UNLOCK].handler = &WorldSession::handleVoidStorageUnlock;
+    WorldPacketHandlers[CMSG_VOID_SWAP_ITEM].handler = &WorldSession::handleVoidSwapItem;
 
     // Spell System
     WorldPacketHandlers[CMSG_USE_ITEM].handler = &WorldSession::handleUseItemOpcode;

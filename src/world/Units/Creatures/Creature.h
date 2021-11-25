@@ -70,6 +70,8 @@ public:
     bool isArmorer() const;
 #if VERSION_STRING >= Cata
     bool isTransmog() const;
+    bool isReforger() const;
+    bool isVoidStorage() const;
 #endif
 
     //type helper

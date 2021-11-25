@@ -27,6 +27,7 @@
 #include "FastQueue.h"
 #include "Server/CharacterErrors.h"
 #include "Units/Players/PlayerDefines.hpp"
+#include "Management/ItemInterface.h"
 #if VERSION_STRING >= Cata
     #include "Management/AddonMgr.h"
     #include "Units/Players/Player.h"
@@ -576,7 +577,19 @@ class SERVER_DECL WorldSession
         void sendSellItem(uint64_t vendorguid, uint64_t itemid, uint8_t error);
 
 #if VERSION_STRING >= Cata
+        // Void Storage
+        void handleVoidStorageUnlock(WorldPacket& recvData);
+        void handleVoidStorageQuery(WorldPacket& recvData);
+        void handleVoidStorageTransfer(WorldPacket& recvData);
+        void handleVoidSwapItem(WorldPacket& recvData);
+        void sendVoidStorageTransferResult(VoidTransferError result);
+
+        // Transmogrification
         void handleTransmogrifyItems(WorldPacket& recvData);
+
+        // Reforge
+        void handleReforgeItemOpcode(WorldPacket& recvData);
+        void sendReforgeResult(bool success);
 #endif
 
 #if VERSION_STRING >= WotLK

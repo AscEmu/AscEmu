@@ -6188,7 +6188,7 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, DamageInfo* dmg, SpellInf
     {
 #if VERSION_STRING > TBC
         if (this->isPlayer())
-            ArmorReduce = PowerCostPctMod[0] + ((float)pVictim->getResistance(0) * (ArmorPctReduce + static_cast<Player*>(this)->CalcRating(PCR_ARMOR_PENETRATION_RATING)) / 100.0f);
+            ArmorReduce = PowerCostPctMod[0] + ((float)pVictim->getResistance(0) * (ArmorPctReduce + static_cast<Player*>(this)->CalcRating(CR_ARMOR_PENETRATION)) / 100.0f);
         else
             ArmorReduce = 0.0f;
 #else
@@ -6285,7 +6285,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
                 }
             }
         }
-        victim_skill = float2int32(vskill + static_cast<Player*>(pVictim)->CalcRating(PCR_DEFENCE));
+        victim_skill = float2int32(vskill + static_cast<Player*>(pVictim)->CalcRating(CR_DEFENSE_SKILL));
     }
     else                                                                // mob defensive chances
     {
@@ -6314,18 +6314,18 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
         {
             case MELEE:   // melee main hand weapon
                 it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                hitmodifier += pr->CalcRating(PCR_MELEE_HIT);
-                self_skill = float2int32(pr->CalcRating(PCR_MELEE_MAIN_HAND_SKILL));
+                hitmodifier += pr->CalcRating(CR_HIT_MELEE);
+                self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_MAINHAND));
                 break;
             case OFFHAND: // melee offhand weapon (dualwield)
                 it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-                hitmodifier += pr->CalcRating(PCR_MELEE_HIT);
-                self_skill = float2int32(pr->CalcRating(PCR_MELEE_OFF_HAND_SKILL));
+                hitmodifier += pr->CalcRating(CR_HIT_MELEE);
+                self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_OFFHAND));
                 break;
             case RANGED:  // ranged weapon
                 it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-                hitmodifier += pr->CalcRating(PCR_RANGED_HIT);
-                self_skill = float2int32(pr->CalcRating(PCR_RANGED_SKILL));
+                hitmodifier += pr->CalcRating(CR_HIT_RANGED);
+                self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_RANGED));
                 break;
         }
 
@@ -6349,8 +6349,8 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
                 case 51384:
                 {
                     it = pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                    hitmodifier += pr->CalcRating(PCR_MELEE_HIT);
-                    self_skill = float2int32(pr->CalcRating(PCR_MELEE_MAIN_HAND_SKILL));
+                    hitmodifier += pr->CalcRating(CR_HIT_MELEE);
+                    self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_MAINHAND));
                 } break;
                 default:
                     break;
@@ -6574,7 +6574,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 block = plr->GetBlockChance();
             }
         }
-        victim_skill = float2int32(vskill + floorf(plr->CalcRating(PCR_DEFENCE)));
+        victim_skill = float2int32(vskill + floorf(plr->CalcRating(CR_DEFENSE_SKILL)));
     }
     //////////////////////////////////////////////////////////////////////////////////////////
     //mob defensive chances
@@ -6624,7 +6624,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         {
             case MELEE:   // melee main hand weapon
                 it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                self_skill = float2int32(pr->CalcRating(PCR_MELEE_MAIN_HAND_SKILL));
+                self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_MAINHAND));
                 if (it)
                 {
                     dmg.schoolMask = SchoolMask(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
@@ -6634,7 +6634,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 break;
             case OFFHAND: // melee offhand weapon (dualwield)
                 it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-                self_skill = float2int32(pr->CalcRating(PCR_MELEE_OFF_HAND_SKILL));
+                self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_OFFHAND));
                 hit_status |= HITSTATUS_DUALWIELD;//animation
                 if (it)
                 {
@@ -6645,7 +6645,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 break;
             case RANGED:  // ranged weapon
                 it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-                self_skill = float2int32(pr->CalcRating(PCR_RANGED_SKILL));
+                self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_RANGED));
                 if (it)
                     dmg.schoolMask = SchoolMask(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
                 break;
@@ -6775,7 +6775,11 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     }
 
     // by ratings
-    crit -= pVictim->isPlayer() ? static_cast<Player*>(pVictim)->CalcRating(PCR_MELEE_CRIT_RESILIENCE) : 0.0f;
+#if VERSION_STRING >= Cata
+    crit -= pVictim->isPlayer() ? static_cast<Player*>(pVictim)->CalcRating(CR_RESILIENCE_CRIT_TAKEN) : 0.0f;
+#else
+    crit -= pVictim->isPlayer() ? static_cast<Player*>(pVictim)->CalcRating(CR_CRIT_TAKEN_MELEE) : 0.0f;
+#endif
 
     if (crit < 0)
         crit = 0.0f;
@@ -6783,9 +6787,9 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     if (this->isPlayer())
     {
         Player* plr = static_cast<Player*>(this);
-        hitmodifier += (dmg.weaponType == RANGED) ? plr->CalcRating(PCR_RANGED_HIT) : plr->CalcRating(PCR_MELEE_HIT);
+        hitmodifier += (dmg.weaponType == RANGED) ? plr->CalcRating(CR_HIT_RANGED) : plr->CalcRating(CR_HIT_MELEE);
 
-        float expertise_bonus = plr->CalcRating(PCR_EXPERTISE);
+        float expertise_bonus = plr->CalcRating(CR_EXPERTISE);
 #if VERSION_STRING != Classic
         if (dmg.weaponType == MELEE)
             expertise_bonus += plr->getExpertise();
@@ -7185,7 +7189,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                                 float block_multiplier = (100.0f + static_cast<Player*>(pVictim)->m_modblockabsorbvalue) / 100.0f;
                                 if (block_multiplier < 1.0f)block_multiplier = 1.0f;
 
-                                dmg.blockedDamage = float2int32((shield->getItemProperties()->Block + ((static_cast<Player*>(pVictim)->m_modblockvaluefromspells + static_cast<Player*>(pVictim)->getCombatRating(PCR_BLOCK))) + ((pVictim->getStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
+                                dmg.blockedDamage = float2int32((shield->getItemProperties()->Block + ((static_cast<Player*>(pVictim)->m_modblockvaluefromspells + static_cast<Player*>(pVictim)->getCombatRating(CR_BLOCK))) + ((pVictim->getStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
 
                                 if (Util::checkChance(m_BlockModPct))
                                     dmg.blockedDamage *= 2;
@@ -7244,7 +7248,11 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                         if (pVictim->isPlayer())
                         {
                             //Resilience is a special new rating which was created to reduce the effects of critical hits against your character.
-                            float dmg_reduction_pct = 2.0f * static_cast<Player*>(pVictim)->CalcRating(PCR_MELEE_CRIT_RESILIENCE) / 100.0f;
+#if VERSION_STRING >= Cata
+                            float dmg_reduction_pct = 2.0f * static_cast<Player*>(pVictim)->CalcRating(CR_RESILIENCE_CRIT_TAKEN) / 100.0f;
+#else
+                            float dmg_reduction_pct = 2.0f * static_cast<Player*>(pVictim)->CalcRating(CR_CRIT_TAKEN_MELEE) / 100.0f;
+#endif
                             if (dmg_reduction_pct > 1.0f)
                                 dmg_reduction_pct = 1.0f; //we cannot resist more then he is criticalling us, there is no point of the critical then :P
                             dmg.fullDamage = float2int32(dmg.fullDamage - dmg.fullDamage * dmg_reduction_pct);

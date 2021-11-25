@@ -274,7 +274,7 @@ enum PlayerFlags
     PLAYER_FLAG_UNK7                    = 0x04000000,
     PLAYER_FLAGS_AUTO_DECLINE_GUILD     = 0x08000000,
     PLAYER_FLAGS_GUILD_LVL_ENABLED      = 0x10000000,
-    PLAYER_FLAG_UNK8                    = 0x20000000,
+    PLAYER_FLAGS_VOID_UNLOCKED          = 0x20000000,
     PLAYER_FLAG_UNK9                    = 0x40000000,
     PLAYER_FLAG_UNK10                   = 0x80000000
 };
@@ -589,32 +589,42 @@ const time_t forcedResurrectInterval = 360000;  // 1000*60*6=6 minutes
 
 enum PlayerCombatRating : uint8_t
 {
-    PCR_RANGED_SKILL                = 0,
-    PCR_DEFENCE                     = 1,
-    PCR_DODGE                       = 2,
-    PCR_PARRY                       = 3,
-    PCR_BLOCK                       = 4,
-    PCR_MELEE_HIT                   = 5,
-    PCR_RANGED_HIT                  = 6,
-    PCR_SPELL_HIT                   = 7,
-    PCR_MELEE_CRIT                  = 8,
-    PCR_RANGED_CRIT                 = 9,
-    PCR_SPELL_CRIT                  = 10,
-    PCR_MELEE_HIT_AVOIDANCE         = 11,   // Not 100% sure but the numbers line up
-    PCR_RANGED_HIT_AVOIDANCE        = 12,   // GUESSED
-    PCR_SPELL_HIT_AVOIDANCE         = 13,   // GUESSED
-    PCR_MELEE_CRIT_RESILIENCE       = 14,
-    PCR_RANGED_CRIT_RESILIENCE      = 15,
-    PCR_SPELL_CRIT_RESILIENCE       = 16,
-    PCR_MELEE_HASTE                 = 17,
-    PCR_RANGED_HASTE                = 18,
-    PCR_SPELL_HASTE                 = 19,
-    PCR_MELEE_MAIN_HAND_SKILL       = 20,
-    PCR_MELEE_OFF_HAND_SKILL        = 21,
-    PCR_MELEE_RANGED_SKILL          = 22,   // Not used
-    PCR_EXPERTISE                   = 23,
-    PCR_ARMOR_PENETRATION_RATING    = 24,
-    MAX_PCR                         = 25
+    CR_WEAPON_SKILL                     = 0,
+    CR_DEFENSE_SKILL                    = 1,    // Removed in 4.0.1
+    CR_DODGE                            = 2,
+    CR_PARRY                            = 3,
+    CR_BLOCK                            = 4,
+    CR_HIT_MELEE                        = 5,
+    CR_HIT_RANGED                       = 6,
+    CR_HIT_SPELL                        = 7,
+    CR_CRIT_MELEE                       = 8,
+    CR_CRIT_RANGED                      = 9,
+    CR_CRIT_SPELL                       = 10,
+    CR_HIT_TAKEN_MELEE                  = 11,   // Deprecated since Cataclysm
+    CR_HIT_TAKEN_RANGED                 = 12,   // Deprecated since Cataclysm
+    CR_HIT_TAKEN_SPELL                  = 13,   // Deprecated since Cataclysm
+#if VERSION_STRING < Cata
+    CR_CRIT_TAKEN_MELEE                 = 14,
+    CR_CRIT_TAKEN_RANGED                = 15,
+#else
+    CR_RESILIENCE_CRIT_TAKEN            = 14,
+    CR_RESILIENCE_PLAYER_DAMAGE_TAKEN   = 15,
+#endif
+    CR_CRIT_TAKEN_SPELL                 = 16,   // Deprecated since Cataclysm
+    CR_HASTE_MELEE                      = 17,
+    CR_HASTE_RANGED                     = 18,
+    CR_HASTE_SPELL                      = 19,
+    CR_WEAPON_SKILL_MAINHAND            = 20,
+    CR_WEAPON_SKILL_OFFHAND             = 21,
+    CR_WEAPON_SKILL_RANGED              = 22,   // Not used
+    CR_EXPERTISE                        = 23,
+    CR_ARMOR_PENETRATION                = 24,
+#if VERSION_STRING >= Cata
+    CR_MASTERY                          = 25,
+    MAX_PCR                             = 26
+#else
+    MAX_PCR                             = 25
+#endif
 };
 
 enum MirrorTimerTypes

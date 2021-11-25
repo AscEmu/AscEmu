@@ -362,6 +362,10 @@ class SERVER_DECL ObjectMgr : public EventableObject
         uint32 GenerateReportID();
         uint32 GenerateEquipmentSetID();
 
+#if VERSION_STRING > WotLK
+        uint64_t generateVoidStorageItemId();
+#endif
+
         // Spell Required table
         SpellRequiredMapBounds GetSpellsRequiredForSpellBounds(uint32_t spell_id) const;
         SpellsRequiringSpellMapBounds GetSpellsRequiringSpellBounds(uint32_t spell_id) const;
@@ -506,7 +510,9 @@ class SERVER_DECL ObjectMgr : public EventableObject
         std::atomic<unsigned long> m_hiPetGuid;
         std::atomic<unsigned long> m_hiArenaTeamId;
         std::atomic<unsigned long> m_hiPlayerGuid;
-
+#if VERSION_STRING > WotLK
+        std::atomic<unsigned long> m_voidItemId;
+#endif
         std::mutex m_charterLock;
 
         ReputationModMap m_reputation_faction;

@@ -63,6 +63,9 @@ void ObjectMgr::initialize()
     m_hiPetGuid = 0;
     m_hiArenaTeamId = 0;
     m_hiPlayerGuid = 1;
+#if VERSION_STRING > WotLK
+    m_voidItemId = 1;
+#endif
 }
 
 void ObjectMgr::finalize()
@@ -735,7 +738,13 @@ void ObjectMgr::SetHighestGuids()
         delete result;
     }
 
-
+#if VERSION_STRING > WotLK
+    result = CharacterDatabase.Query("SELECT MAX(itemId) FROM character_void_storage");
+    if (result  != nullptr)
+    {
+        m_voidItemId = uint64_t(result->Fetch()[0].GetUInt32() + 1);
+    }
+#endif
 
     sLogger.info("ObjectMgr : HighGuid(CORPSE) = %lu", m_hiCorpseGuid.load());
     sLogger.info("ObjectMgr : HighGuid(PLAYER) = %lu", m_hiPlayerGuid.load());
@@ -2953,3 +2962,10 @@ void ObjectMgr::checkCreatureMovement(uint32_t /*id*/, CreatureMovementData& cre
         creatureMovement.Random = CreatureRandomMovementType::Walk;
     }
 }
+
+#if VERSION_STRING > WotLK
+uint64_t ObjectMgr::generateVoidStorageItemId()
+{
+    return ++m_voidItemId;
+}
+#endif
