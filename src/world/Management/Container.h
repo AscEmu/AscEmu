@@ -28,7 +28,11 @@ struct WoWContainer;
 class SERVER_DECL Container : public Item
 {
     // MIT Start
+public:
+    Container(uint32_t high, uint32_t low);
+    ~Container();
 
+private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
     const WoWContainer* containerData() const { return reinterpret_cast<WoWContainer*>(wow_data); }
@@ -44,9 +48,6 @@ public:
     // MIT End
 
         friend class WorldSession;
-
-        Container(uint32 high, uint32 low);
-        ~Container();
 
         void Create(uint32 itemid, Player* owner);
         void LoadFromDB(Field* fields);
@@ -66,8 +67,8 @@ public:
 
 protected:
 
-        Item** m_Slot;
-        uint32 __fields[getSizeOfStructure(WoWContainer)];
+        Item** m_Slot = nullptr;
+        uint32 __fields[getSizeOfStructure(WoWContainer)] = {0};
 };
 
 #endif // CONTAINER_H

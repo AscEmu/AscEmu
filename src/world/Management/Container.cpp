@@ -25,6 +25,39 @@
 #include "Data/WoWContainer.hpp"
 
 // MIT start
+
+Container::Container(uint32_t high, uint32_t low) : Item()
+{
+    //////////////////////////////////////////////////////////////////////////
+    m_objectType |= TYPE_ITEM | TYPE_CONTAINER;
+    m_objectTypeId = TYPEID_CONTAINER;
+    m_valuesCount = getSizeOfStructure(WoWContainer);
+    //////////////////////////////////////////////////////////////////////////
+
+    //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
+    m_uint32Values = __fields;
+
+    memset(m_uint32Values, 0, (getSizeOfStructure(WoWContainer)) * sizeof(uint32_t));
+    m_updateMask.SetCount(getSizeOfStructure(WoWContainer));
+
+    setOType(TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
+
+    setGuid(low, high);
+
+    setScale(1);   //always 1
+}
+
+Container::~Container()
+{
+    for (uint32_t i = 0; i < m_itemProperties->ContainerSlots; ++i)
+    {
+        if (m_Slot[i] && m_Slot[i]->getOwner() == m_owner)
+            m_Slot[i]->DeleteMe();
+    }
+
+    delete[] m_Slot;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
 
@@ -36,38 +69,6 @@ uint64_t Container::getSlot(uint16_t slot) const { return containerData()->item_
 void Container::setSlot(uint16_t slot, uint64_t guid) { write(containerData()->item_slot[slot].guid, guid); }
 // MIT end
 
-Container::Container(uint32 high, uint32 low) : Item()
-{
-    m_objectType |= (TYPE_ITEM | TYPE_CONTAINER);
-    m_objectTypeId = TYPEID_CONTAINER;
-    m_valuesCount = getSizeOfStructure(WoWContainer);
-
-    m_uint32Values = __fields;
-    memset(m_uint32Values, 0, (getSizeOfStructure(WoWContainer))*sizeof(uint32));
-    m_updateMask.SetCount(getSizeOfStructure(WoWContainer));
-
-    setOType(TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
-
-    setGuid(low, high);
-
-    setScale(1);   //always 1
-
-    m_Slot = NULL;
-    random_suffix = random_prop = 0;
-}
-
-Container::~Container()
-{
-    for (uint32 i = 0; i < m_itemProperties->ContainerSlots; ++i)
-    {
-        if (m_Slot[i] && m_Slot[i]->getOwner() == m_owner)
-        {
-            m_Slot[i]->DeleteMe();
-        }
-    }
-
-    delete[] m_Slot;
-}
 
 void Container::LoadFromDB(Field* fields)
 {
