@@ -21,7 +21,7 @@
 
 
 #include "Storage/DBC/DBCStores.h"
-#include "Management/Item.h"
+#include "Objects/Item.h"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"

@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <Units/Unit.h>
-#include <Management/Item.h>
+#include <Objects/Units/Unit.h>
+#include <Objects/Item.h>
 #include <Management/TaxiMgr.h>
 
 extern "C"

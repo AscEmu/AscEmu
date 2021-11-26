@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Units/Unit.h"
-#include "Units/Summons/Summon.h"
+#include "Units/Creatures/Summons/Summon.h"
 #include "Storage/DBC/DBCStores.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Server/EventableObject.h"

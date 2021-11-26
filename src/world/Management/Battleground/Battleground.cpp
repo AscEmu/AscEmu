@@ -19,7 +19,7 @@
  */
 
 
-#include "Units/Players/PlayerDefines.hpp"
+#include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Management/HonorHandler.h"
 #include "Management/Battleground/Battleground.h"
 #include "Management/Arenas.h"

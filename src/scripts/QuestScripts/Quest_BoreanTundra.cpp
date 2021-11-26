@@ -18,8 +18,8 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Units/Creatures/Creature.h"
-#include "Units/Summons/Summon.h"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/Summons/Summon.h"
 
 enum 
 {

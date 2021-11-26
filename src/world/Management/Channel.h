@@ -26,7 +26,7 @@
 #define CHANNEL_LFG 26
 
 #include "Threading/Mutex.h"
-#include "Units/Players/Player.h"
+#include "Objects/Units/Players/Player.h"
 
 #include <set>
 #include <map>

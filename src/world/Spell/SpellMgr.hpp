@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Management/Skill.hpp"
 #include "Storage/DBC/DBCStructures.hpp"
-#include "Units/Players/PlayerDefines.hpp"
+#include "Objects/Units/Players/PlayerDefines.hpp"
 
 struct SpellArea
 {

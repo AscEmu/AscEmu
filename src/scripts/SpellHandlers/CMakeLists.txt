@@ -51,7 +51,7 @@ if (USE_PCH)
     target_precompile_headers(${PROJECT_NAME}
     PRIVATE
     Setup.h
-    <Management/Item.h>
+    <Objects/Item.h>
     <Management/ItemInterface.h>
     <Map/MapMgr.h>
     <Objects/Faction.h>
@@ -63,7 +63,7 @@ if (USE_PCH)
     <Spell/Definitions/PowerType.hpp>
     <Server/Script/CreatureAIScript.h>
     <Server/Script/ScriptMgr.h>
-    <Units/Creatures/Pet.h>
+    <Objects/Units/Creatures/Pet.h>
 )
 endif ()
 

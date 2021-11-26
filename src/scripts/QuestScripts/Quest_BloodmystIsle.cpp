@@ -19,7 +19,7 @@
  */
 
 #include "Setup.h"
-#include <Units/Creatures/Pet.h>
+#include <Objects/Units/Creatures/Pet.h>
 
 #include "Server/Script/CreatureAIScript.h"
 

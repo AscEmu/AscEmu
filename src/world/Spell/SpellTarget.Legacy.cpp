@@ -28,7 +28,7 @@
 #include "Server/World.h"
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellDidHitResult.hpp"
-#include "Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/Pet.h"
 
  // APGL End
  // MIT Start

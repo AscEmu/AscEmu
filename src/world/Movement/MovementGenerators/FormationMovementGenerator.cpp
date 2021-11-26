@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "FormationMovementGenerator.h"
-#include "Units/Creatures/Creature.h"
-#include "Units/Creatures/AIInterface.h"
-#include "Units/Creatures/CreatureGroups.h"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/AIInterface.h"
+#include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Objects/G3DPosition.hpp"
 #include "Movement/MovementDefines.h"
 #include "Movement/Spline/MoveSpline.h"

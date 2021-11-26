@@ -18,8 +18,8 @@
  */
 
 #include "Setup.h"
-#include "Units/Creatures/AIInterface.h"
-#include "Management/Item.h"
+#include "Objects/Units/Creatures/AIInterface.h"
+#include "Objects/Item.h"
 #include "Map/MapMgr.h"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"

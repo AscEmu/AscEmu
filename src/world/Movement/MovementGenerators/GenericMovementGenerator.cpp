@@ -4,11 +4,11 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "GenericMovementGenerator.h"
-#include "Units/Creatures/Creature.h"
-#include "Units/Creatures/AIInterface.h"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/AIInterface.h"
 #include "Movement/MovementDefines.h"
 #include "Movement/Spline/MoveSpline.h"
-#include "Units/Unit.h"
+#include "Objects/Units/Unit.h"
 
 GenericMovementGenerator::GenericMovementGenerator(MovementNew::MoveSplineInit&& splineInit, MovementGeneratorType type, uint32_t id) : _splineInit(std::move(splineInit)), _type(type), _pointId(id), _duration(0)
 {

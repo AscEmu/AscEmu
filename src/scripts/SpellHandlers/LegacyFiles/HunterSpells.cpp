@@ -21,7 +21,7 @@
 #include "Spell/SpellAuras.h"
 #include "Server/Script/ScriptMgr.h"
 #include <Spell/Definitions/SpellMechanics.hpp>
-#include <Units/Creatures/Pet.h>
+#include <Objects/Units/Creatures/Pet.h>
 
 bool Refocus(uint8_t /*effectIndex*/, Spell* pSpell)
 {

@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "PathGenerator.h"
 #include "Map/Map.h"
 #include "Map/MapMgr.h"
-#include "Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/Creature.h"
 #include "MMapFactory.h"
 #include "MMapManager.h"
 #include "DetourCommon.h"

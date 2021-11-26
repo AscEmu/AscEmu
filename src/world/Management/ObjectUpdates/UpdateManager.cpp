@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 #include <vector>
 #include "Map/MapMgr.h"
-#include "Units/Players/Player.h"
+#include "Objects/Units/Players/Player.h"
 
 using namespace std;
 

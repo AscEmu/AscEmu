@@ -20,7 +20,7 @@
 #include "Macros/LFGMacros.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Management/Item.h"
+#include "Objects/Item.h"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Management/LFG/LFGGroupData.hpp"
 #include "Management/LFG/LFGPlayerData.hpp"

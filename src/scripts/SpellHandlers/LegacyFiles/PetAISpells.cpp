@@ -17,12 +17,12 @@
  */
 
 #include "Setup.h"
-#include "Units/Summons/Summon.h"
-#include "Management/Item.h"
+#include "Objects/Units/Creatures/Summons/Summon.h"
+#include "Objects/Item.h"
 #include "Management/ItemInterface.h"
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
-#include "Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/Pet.h"
 #include "Spell/Spell.h"
 #include "Server/Script/ScriptMgr.h"
 #include <Spell/Definitions/PowerType.hpp>

@@ -5,14 +5,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 //
 #include "MovementManager.h"
-#include "Units/Unit.h"
+#include "Objects/Units/Unit.h"
 #include "AbstractFollower.h"
-#include "Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Object.h"
 #include "Objects/G3DPosition.hpp"
 #include "Spline/MoveSpline.h"
 #include "Spline/MoveSplineInit.h"
-#include "Units/Players/Player.h"
+#include "Objects/Units/Players/Player.h"
 #include "PathGenerator.h"
 #include "WaypointDefines.h"
 #include <algorithm>

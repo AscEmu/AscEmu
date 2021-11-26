@@ -21,8 +21,8 @@
 #ifndef BATTLEGROUND_H
 #define BATTLEGROUND_H
 
-#include "Units/Players/PlayerDefines.hpp"
-#include "Units/Unit.h"
+#include "Objects/Units/Players/PlayerDefines.hpp"
+#include "Objects/Units/Unit.h"
 #include "Spell/Spell.h"
 #include "Objects/Object.h"
 #include <mutex>

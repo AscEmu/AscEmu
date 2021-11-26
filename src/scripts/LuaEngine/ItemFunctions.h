@@ -20,8 +20,8 @@
 #ifndef ITEMFUNCTIONS_H
 #define ITEMFUNCTIONS_H
 
-#include "Management/Item.h"
-#include "Management/Container.h"
+#include "Objects/Item.h"
+#include "Objects/Container.h"
 #include "Management/ItemInterface.h"
 #include "Server/MainServerDefines.h"
 

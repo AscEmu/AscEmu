@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Management/AuctionHouse.h"
-#include "Management/Item.h"
+#include "Objects/Item.h"
 #include "Management/ItemInterface.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"

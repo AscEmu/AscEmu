@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Chat/ChatHandler.hpp"
-#include "Management/Item.h"
+#include "Objects/Item.h"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
 #include "Map/MapMgr.h"
@@ -13,9 +13,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Units/Creatures/Pet.h"
-#include "Units/Summons/TotemSummon.h"
-#include "Units/UnitDefines.hpp"
+#include "Objects/Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/Summons/TotemSummon.h"
+#include "Objects/Units/UnitDefines.hpp"
 #include "Objects/Faction.h"
 #include "Server/Packets/CmsgCastSpell.h"
 #include "Server/Packets/CmsgPetCastSpell.h"

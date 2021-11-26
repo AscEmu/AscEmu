@@ -48,7 +48,7 @@ if (USE_PCH)
     target_precompile_headers(${PROJECT_NAME}
     PRIVATE
     <Server/Script/CreatureAIScript.h>
-    <Units/Creatures/Creature.h>
+    <Objects/Units/Creatures/Creature.h>
     Setup.h
 )
 endif ()

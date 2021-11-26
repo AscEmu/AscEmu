@@ -7,8 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetActiveMover.h"
 #include "Server/Packets/MovementPacket.h"
 #include "Server/WorldSession.h"
-#include "Units/Players/Player.h"
-#include "Units/Creatures/Vehicle.h"
+#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Creatures/Vehicle.h"
 #include "Map/CellHandlerDefines.hpp"
 #include "Objects/GameObject.h"
 #include "Server/MainServerDefines.h"
@@ -19,7 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMountspecialAnim.h"
 #include "Server/Packets/MsgMoveTeleportAck.h"
 #include "Server/Packets/SmsgNewWorld.h"
-#include "Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/Pet.h"
 #include "Server/OpcodeTable.hpp"
 
 using namespace AscEmu::Packets;

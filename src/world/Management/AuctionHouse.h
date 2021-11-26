@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Storage/DBC/DBCStructures.hpp"
 #include "WorldConf.h"
-#include "Item.h"
+#include "Objects/Item.h"
 
 namespace AscEmu::Packets
 {

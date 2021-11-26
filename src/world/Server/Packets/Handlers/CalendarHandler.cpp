@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Server/WorldSession.h"
-#include "Units/Players/Player.h"
+#include "Objects/Units/Players/Player.h"
 
 #if VERSION_STRING > TBC
 

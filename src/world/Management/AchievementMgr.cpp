@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "AchievementMgr.h"
-#include "Management/Item.h"
-#include "Units/Stats.h"
+#include "Objects/Item.h"
+#include "Objects/Units/Stats.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"

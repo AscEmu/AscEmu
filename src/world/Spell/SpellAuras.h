@@ -22,10 +22,10 @@
 
 #include "Definitions/AuraEffects.hpp"
 #include "Definitions/AuraRemoveMode.hpp"
-#include "Management/Item.h"
+#include "Objects/Item.h"
 #include "Objects/Object.h"
 #include "Server/EventableObject.h"
-#include "Units/Unit.h"
+#include "Objects/Units/Unit.h"
 
 #include <cstdint>
 #include <set>

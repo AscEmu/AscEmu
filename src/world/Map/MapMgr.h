@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/WorldStatesHandler.h"
 #include "MapDefines.h"
 #include "CThreads.h"
-#include "Units/Summons/SummonDefines.hpp"
+#include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
 #include "Objects/CObjectFactory.h"
 #include "Server/EventableObject.h"
 #include "Storage/DBC/DBCStructures.hpp"

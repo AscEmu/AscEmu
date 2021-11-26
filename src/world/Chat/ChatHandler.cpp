@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
 #include "Exceptions/PlayerExceptions.hpp"
-#include "Management/Item.h"
+#include "Objects/Item.h"
 #include "Management/ItemInterface.h"
 #include "Map/WorldCreatorDefines.hpp"
 #include "ChatHandler.hpp"

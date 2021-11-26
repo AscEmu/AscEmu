@@ -24,7 +24,7 @@
 
 #include "Objects/ObjectDefines.h"
 #include "Objects/Object.h"
-#include "Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/Creature.h"
 
 #include "Map/MapCell.h"
 #include "Map/MapMgr.h"

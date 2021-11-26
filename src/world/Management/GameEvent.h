@@ -23,7 +23,7 @@
 #include <string>
 
 #include "GameEventMgr.h"
-#include "Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/Creature.h"
 
 struct EventNamesQueryResult;
 struct EventCreatureSpawnsQueryResult;

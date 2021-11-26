@@ -22,7 +22,7 @@
 
 #include "Config/Config.h"
 #include "Management/HonorHandler.h"
-#include "Management/Item.h"
+#include "Objects/Item.h"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
 #include "Server/World.h"

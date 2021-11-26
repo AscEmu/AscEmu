@@ -21,7 +21,7 @@
 
 
 #include "Chat/ChatHandler.hpp"
-#include "Management/Item.h"
+#include "Objects/Item.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"

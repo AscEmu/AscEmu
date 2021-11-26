@@ -4,12 +4,12 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "ConfusedMovementGenerator.h"
-#include "Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/Creature.h"
 #include "Movement/MovementDefines.h"
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Movement/PathGenerator.h"
-#include "Units/Players/Player.h"
+#include "Objects/Units/Players/Player.h"
 
 template<class T>
 ConfusedMovementGenerator<T>::ConfusedMovementGenerator() : _timer(0), _x(0.f), _y(0.f), _z(0.f)

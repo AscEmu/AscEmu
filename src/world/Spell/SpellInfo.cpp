@@ -12,8 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellTarget.h"
 
 #include "Management/Skill.hpp"
-#include "Units/Creatures/AIInterface.h"
-#include "Units/Players/Player.h"
+#include "Objects/Units/Creatures/AIInterface.h"
+#include "Objects/Units/Players/Player.h"
 
 SpellInfo::SpellInfo()
 {

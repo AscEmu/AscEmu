@@ -21,7 +21,7 @@
 #ifndef ARENATEAMS_H
 #define ARENATEAMS_H
 
-#include "Units/Players/Player.h"
+#include "Objects/Units/Players/Player.h"
 
 //MIT
 struct ArenaTeamPacketList

@@ -20,14 +20,14 @@
  */
 
 
-#include "Units/Creatures/Creature.h"
-#include "Units/Summons/Summon.h"
-#include "Management/Item.h"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/Summons/Summon.h"
+#include "Objects/Item.h"
 #include "Management/ItemInterface.h"
-#include "Units/Stats.h"
+#include "Objects/Units/Stats.h"
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Units/Players/PlayerClasses.hpp"
+#include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
 #include "SpellAuras.h"
@@ -40,7 +40,7 @@
 #include "Definitions/SpellMechanics.hpp"
 #include "Definitions/PowerType.hpp"
 #include "Definitions/SpellEffects.hpp"
-#include "Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
 #include "Server/Packets/MsgChannelUpdate.h"
 #include "Server/Packets/SmsgPlayerVehicleData.h"
@@ -48,7 +48,7 @@
 #include "Server/Packets/SmsgControlVehicle.h"
 #include "Server/Packets/SmsgCancelCombat.h"
 #include "Server/Script/ScriptMgr.h"
-#include "Units/ThreatHandler.h"
+#include "Objects/Units/ThreatHandler.h"
 
 using namespace AscEmu::Packets;
 

@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <WorldConf.h>
-#include "Units/Unit.h"
+#include "Objects/Units/Unit.h"
 
 #if VERSION_STRING > TBC
 

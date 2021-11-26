@@ -18,13 +18,13 @@
  */
 
 #include "Setup.h"
-#include "Units/Stats.h"
+#include "Objects/Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include <Spell/Definitions/PowerType.hpp>
-#include <Units/Creatures/Pet.h>
+#include <Objects/Units/Creatures/Pet.h>
 
 #include "Management/ItemInterface.h"
 

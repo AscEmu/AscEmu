@@ -20,11 +20,11 @@
  */
 
 
-#include "Management/Item.h"
+#include "Objects/Item.h"
 #include "Management/ItemInterface.h"
 #include "SpellProc.hpp"
-#include "Units/Unit.h"
-#include "Units/Players/Player.h"
+#include "Objects/Units/Unit.h"
+#include "Objects/Units/Players/Player.h"
 
 class TwinBladesOfAzzinothSpellProc : public SpellProc
 {

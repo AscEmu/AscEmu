@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/AddonMgr.h"
 #include "Management/AuctionMgr.h"
 #include "Management/CalendarMgr.h"
-#include "Management/Item.h"
+#include "Objects/Item.h"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Management/WordFilter.h"
 #include "Management/WeatherMgr.h"
@@ -34,7 +34,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "OpcodeTable.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Management/GameEventMgr.h"
-#include "Units/Creatures/CreatureGroups.h"
+#include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Movement/WaypointManager.h"
 #include "Packets/SmsgMessageChat.h"
 

@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Guild.hpp"
 #include "GuildBankTab.hpp"
 #include "Server/MainServerDefines.h"
-#include "Management/Item.h"
+#include "Objects/Item.h"
 #include "Objects/ObjectMgr.h"
 
 #if VERSION_STRING < Cata

@@ -26,7 +26,7 @@
 #include "Spell/SpellAuras.h"
 #include "Map/WorldCreator.h"
 #include "Objects/ObjectMgr.h"
-#include "Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgPartyCommandResult.h"
 #include "Server/Packets/SmsgGroupSetLeader.h"
 #include "Server/Packets/SmsgGroupDestroyed.h"

@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LuaGlobal.h"
 #include "LUAEngine.h"
 #include <Map/MapScriptInterface.h>
-#include <Units/Creatures/Creature.h>
+#include <Objects/Units/Creatures/Creature.h>
 #include <Storage/MySQLDataStore.hpp>
 #include <Map/WorldCreatorDefines.hpp>
 #include <Spell/SpellMgr.hpp>

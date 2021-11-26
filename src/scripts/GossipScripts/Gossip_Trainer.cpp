@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Server/WorldSession.h"
-#include "Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/Creature.h"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Management/Gossip/GossipMenu.hpp"

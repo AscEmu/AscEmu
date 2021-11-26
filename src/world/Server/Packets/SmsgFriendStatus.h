@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 #include "ManagedPacket.h"
-#include "Units/Players/PlayerDefines.hpp"
+#include "Objects/Units/Players/PlayerDefines.hpp"
 
 //\todo send friend note based on status.
 namespace AscEmu::Packets

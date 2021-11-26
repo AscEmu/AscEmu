@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "Spell/SpellAuras.h"
-#include "Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/Pet.h"
 
 namespace AscEmu::Packets
 {

@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "MoveSplineInitArgs.h"
-#include "Units/UnitDefines.hpp"
+#include "Objects/Units/UnitDefines.hpp"
 
 class Unit;
 

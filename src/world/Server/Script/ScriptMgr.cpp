@@ -23,7 +23,7 @@
 
 #include "WorldConf.h"
 #include "Management/GameEvent.h"
-#include "Management/Item.h"
+#include "Objects/Item.h"
 #include "Storage/MySQLDataStore.hpp"
 #include <git_version.h>
 

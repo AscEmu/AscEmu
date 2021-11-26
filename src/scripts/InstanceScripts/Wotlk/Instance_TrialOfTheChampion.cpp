@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_TrialOfTheChampion.h"
-#include <Units/Creatures/Pet.h>
+#include <Objects/Units/Creatures/Pet.h>
 
 class TrialOfTheChampionInstanceScript : public InstanceScript
 {

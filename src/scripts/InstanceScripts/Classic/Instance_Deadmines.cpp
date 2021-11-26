@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_Deadmines.h"
-#include <Units/Creatures/Pet.h>
+#include <Objects/Units/Creatures/Pet.h>
 #include "Server/Script/CreatureAIScript.h"
 
 class DeadminesInstanceScript : public InstanceScript

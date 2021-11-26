@@ -4,8 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "HomeMovementGenerator.h"
-#include "Units/Creatures/Creature.h"
-#include "Units/Creatures/AIInterface.h"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/G3DPosition.hpp"
 #include "Movement/MovementManager.h"
 #include "Movement/MovementDefines.h"

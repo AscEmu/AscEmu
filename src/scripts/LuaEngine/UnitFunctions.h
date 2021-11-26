@@ -5,16 +5,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Units/Unit.h"
-#include "Units/Summons/SummonHandler.h"
-#include "Units/Creatures/Vehicle.h"
-#include "Units/Creatures/Creature.h"
-#include "Units/Summons/Summon.h"
-#include "Management/Item.h"
-#include "Management/Container.h"
+#include "Objects/Units/Unit.h"
+#include "Objects/Units/Creatures/Summons/SummonHandler.h"
+#include "Objects/Units/Creatures/Vehicle.h"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/Summons/Summon.h"
+#include "Objects/Item.h"
+#include "Objects/Container.h"
 #include "Map/AreaBoundary.h"
 #include "Map/MapMgr.h"
-#include "Units/Stats.h"
+#include "Objects/Units/Stats.h"
 #include "Management/ChannelMgr.h"
 #include "Management/Channel.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -27,7 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LuaGlobal.h"
 #include <Spell/Definitions/PowerType.hpp>
 #include <Map/MapScriptInterface.h>
-#include <Units/Creatures/Pet.h>
+#include <Objects/Units/Creatures/Pet.h>
 
 #include "Management/ItemInterface.h"
 #include "Management/Guild/GuildMgr.hpp"

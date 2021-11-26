@@ -19,7 +19,7 @@
  *
  */
 
-#include "Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/Pet.h"
 #include "Spell.Legacy.h"
 #include "Definitions/SpellInFrontStatus.hpp"
 #include "Definitions/SpellCastTargetFlags.hpp"
@@ -35,15 +35,15 @@
 #include "SpellHelpers.h"
 
 #include "VMapFactory.h"
-#include "Management/Item.h"
+#include "Objects/Item.h"
 #include "Objects/DynamicObject.h"
 #include "Management/ItemInterface.h"
-#include "Units/Stats.h"
+#include "Objects/Units/Stats.h"
 #include "Macros/ScriptMacros.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Units/Players/PlayerClasses.hpp"
+#include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
 #include "Objects/Faction.h"

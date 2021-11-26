@@ -4,12 +4,12 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "MovementGenerator.h"
-#include "Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/Creature.h"
 #include "MovementGenerators/IdleMovementGenerator.h"
 #include "MovementDefines.h"
 #include "PathGenerator.h"
 #include "MovementGenerators/RandomMovementGenerator.h"
-#include "Units/Creatures/AIInterface.h"
+#include "Objects/Units/Creatures/AIInterface.h"
 #include "MovementGenerators/WaypointMovementGenerator.h"
 
 MovementGenerator::~MovementGenerator() { }

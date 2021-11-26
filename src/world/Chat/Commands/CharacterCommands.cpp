@@ -6,8 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Management/HonorHandler.h"
-#include "Management/Item.h"
-#include "Management/Container.h"
+#include "Objects/Item.h"
+#include "Objects/Container.h"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
@@ -19,7 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 #include "Spell/Definitions/Spec.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
-#include "Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/Pet.h"
 #include "Util/Strings.hpp"
 
 //.character clearcooldowns

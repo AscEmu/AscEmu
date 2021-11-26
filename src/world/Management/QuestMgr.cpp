@@ -20,7 +20,7 @@
  */
 
 
-#include "Management/Item.h"
+#include "Objects/Item.h"
 #include "QuestLogEntry.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/QuestDefines.hpp"

@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
-#include "Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/Pet.h"
 
 //.pet create
 bool ChatHandler::HandlePetCreateCommand(const char* args, WorldSession* m_session)

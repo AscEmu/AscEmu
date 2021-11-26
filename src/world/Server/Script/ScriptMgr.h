@@ -23,7 +23,7 @@
 
 #include "Management/Gossip/GossipScript.hpp"
 #include "Management/GameEventMgr.h"
-#include "Units/Unit.h"
+#include "Objects/Units/Unit.h"
 #include "Management/ArenaTeam.h"
 #include "Server/ServerState.h"
 #include "Spell/Definitions/ProcFlags.hpp"

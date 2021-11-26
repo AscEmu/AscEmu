@@ -100,8 +100,8 @@ if (USE_PCH)
     Setup.h
     <Management/TaxiMgr.h>
     <Server/Script/CreatureAIScript.h>
-    <Units/Creatures/AIInterface.h>
-    <Management/Item.h>
+    <Objects/Units/Creatures/AIInterface.h>
+    <Objects/Item.h>
     <Map/MapMgr.h>
     <Map/MapScriptInterface.h>
     <Management/ItemInterface.h>

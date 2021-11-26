@@ -19,10 +19,10 @@
  */
 
 
-#include "Item.h"
-#include "Container.h"
+#include "Objects/Item.h"
+#include "Objects/Container.h"
 #include "ItemPrototype.h"
-#include "Units/Players/Player.h"
+#include "Objects/Units/Players/Player.h"
 #include "Management/ItemInterface.h"
 
 #include "Chat/ChatHandler.hpp"

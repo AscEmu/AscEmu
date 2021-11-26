@@ -18,7 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Server/MainServerDefines.h"
 #include "Objects/ObjectMgr.h"
-#include "Units/Players/Player.h"
+#include "Objects/Units/Players/Player.h"
 #include "Management/ItemInterface.h"
 #include "Server/Packets/SmsgGuildCommandResult.h"
 #include "Server/Packets/MsgSaveGuildEmblem.h"

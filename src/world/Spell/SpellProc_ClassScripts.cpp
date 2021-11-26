@@ -20,9 +20,9 @@
  */
 
 
-#include "Management/Item.h"
+#include "Objects/Item.h"
 #include "Management/ItemInterface.h"
-#include "Units/Players/PlayerClasses.hpp"
+#include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Map/MapMgr.h"
 #include "SpellMgr.hpp"
 #include "SpellAuras.h"

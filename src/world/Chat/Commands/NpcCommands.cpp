@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Chat/ChatHandler.hpp"
-#include "Management/Item.h"
-#include "Units/Creatures/Creature.h"
-#include "Units/Summons/Summon.h"
+#include "Objects/Item.h"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/Summons/Summon.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"

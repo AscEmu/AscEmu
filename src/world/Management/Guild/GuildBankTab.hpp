@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Database/Field.hpp"
 #include "Macros/GuildMacros.hpp"
-#include "Management/Item.h"
+#include "Objects/Item.h"
 
 
 class GuildBankTab

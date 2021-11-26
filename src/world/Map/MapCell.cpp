@@ -26,7 +26,7 @@
 #include "Map/MapCell.h"
 #include "MapMgr.h"
 #include "WorldCreator.h"
-#include "Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/Creature.h"
 #include "Objects/GameObject.h"
 #include "Objects/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"

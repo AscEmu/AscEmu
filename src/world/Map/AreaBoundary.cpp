@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "AreaBoundary.h"
-#include "Units/Unit.h"
+#include "Objects/Units/Unit.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Rectangle

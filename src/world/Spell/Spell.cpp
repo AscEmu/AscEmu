@@ -44,10 +44,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MsgChannelStart.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Units/Creatures/CreatureDefines.hpp"
-#include "Units/Creatures/Pet.h"
-#include "Units/Players/PlayerClasses.hpp"
-#include "Units/UnitDefines.hpp"
+#include "Objects/Units/Creatures/CreatureDefines.hpp"
+#include "Objects/Units/Creatures/Pet.h"
+#include "Objects/Units/Players/PlayerClasses.hpp"
+#include "Objects/Units/UnitDefines.hpp"
 #include "Util.hpp"
 
 using namespace AscEmu::Packets;

@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Units/Players/Player.h"
+#include "Objects/Units/Players/Player.h"
 #include <list>
 #include <vector>
 #include <utility>

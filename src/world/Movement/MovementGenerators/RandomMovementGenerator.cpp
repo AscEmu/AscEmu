@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "RandomMovementGenerator.h"
-#include "Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/Creature.h"
 #include "Movement/MovementDefines.h"
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"

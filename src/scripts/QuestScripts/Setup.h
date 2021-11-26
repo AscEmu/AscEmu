@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Units/Creatures/AIInterface.h"
-#include "Management/Item.h"
+#include "Objects/Units/Creatures/AIInterface.h"
+#include "Objects/Item.h"
 #include <Management/QuestLogEntry.hpp>
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"

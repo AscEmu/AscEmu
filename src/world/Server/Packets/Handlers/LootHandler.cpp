@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/ScriptMacros.hpp"
 #include "Map/MapMgr.h"
 #include "WoWGuid.h"
-#include "Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/Creature.h"
 #include "Management/ItemInterface.h"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/SmsgLootRemoved.h"

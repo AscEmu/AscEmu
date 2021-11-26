@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/WeatherMgr.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Units/ThreatHandler.h"
+#include "Objects/Units/ThreatHandler.h"
 
 bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldSession* session)
 {

@@ -23,8 +23,6 @@ set(SRC_MANAGEMENT_FILES
     ${PATH_PREFIX}/ChannelMgr.h
     ${PATH_PREFIX}/Charter.cpp
     ${PATH_PREFIX}/Charter.hpp
-    ${PATH_PREFIX}/Container.cpp
-    ${PATH_PREFIX}/Container.h
     ${PATH_PREFIX}/CRitual.cpp
     ${PATH_PREFIX}/CRitual.h
     ${PATH_PREFIX}/EquipmentSetMgr.cpp
@@ -37,9 +35,6 @@ set(SRC_MANAGEMENT_FILES
     ${PATH_PREFIX}/Group.h
     ${PATH_PREFIX}/HonorHandler.cpp
     ${PATH_PREFIX}/HonorHandler.h
-    ${PATH_PREFIX}/Item.cpp
-    ${PATH_PREFIX}/Item.Legacy.cpp
-    ${PATH_PREFIX}/Item.h
     ${PATH_PREFIX}/ItemInterface.cpp
     ${PATH_PREFIX}/ItemInterface.h
     ${PATH_PREFIX}/ItemPrototype.h

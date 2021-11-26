@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Objects/GameObject.h>
 #include <Management/Guild/Guild.hpp>
 #include <Spell/Spell.h>
-#include <Units/Creatures/Creature.h>
+#include <Objects/Units/Creatures/Creature.h>
 #include "LUAEngine.h"
 #include "Map/MapMgr.h"
 #include "Server/Script/ScriptSetup.h"
@@ -20,7 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <dirent.h>
 #endif
 #include "Management/QuestLogEntry.hpp"
-#include "Management/Item.h"
+#include "Objects/Item.h"
 #include "Management/ArenaTeam.h"
 #include "Map/WorldCreatorDefines.hpp"
 #include "Map/WorldCreator.h"

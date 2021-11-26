@@ -26,7 +26,7 @@
 #include "Server/World.h"
 #include "Chat/ChatDefines.hpp"
 #include "WorldPacket.h"
-#include "Units/Players/Player.h"
+#include "Objects/Units/Players/Player.h"
 #include "Server/Packets/SmsgChannelNotify.h"
 #include "Server/Packets/SmsgChannelList.h"
 #include "Server/Packets/SmsgMessageChat.h"

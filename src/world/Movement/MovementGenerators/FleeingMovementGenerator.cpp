@@ -4,14 +4,14 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "FleeingMovementGenerator.h"
-#include "Units/Creatures/Creature.h"
-#include "Units/Creatures/AIInterface.h"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Creatures/AIInterface.h"
 #include "Movement/MovementDefines.h"
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Movement/PathGenerator.h"
-#include "Units/Players/Player.h"
-#include "Units/Unit.h"
+#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Unit.h"
 
 #define MIN_QUIET_DISTANCE 28.0f
 #define MAX_QUIET_DISTANCE 43.0f

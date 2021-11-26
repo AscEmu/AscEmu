@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellMgr.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Map/InstanceDefines.hpp"
-#include "Units/Creatures/AIInterface.h"
+#include "Objects/Units/Creatures/AIInterface.h"
 #include "ScriptMgr.h"
 #include "ScriptEvent.hpp"
 #include "Map/MapMgr.h"

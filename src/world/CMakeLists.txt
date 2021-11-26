@@ -44,10 +44,10 @@ if ("${ASCEMU_VERSION}" STREQUAL "Mop")
 endif ()
 
 include(Storage/DBC/CMakeLists.txt)
-include(Units/CMakeLists.txt)
-include(Units/Creatures/CMakeLists.txt)
-include(Units/Players/CMakeLists.txt)
-include(Units/Summons/CMakeLists.txt)
+include(Objects/Units/CMakeLists.txt)
+include(Objects/Units/Creatures/CMakeLists.txt)
+include(Objects/Units/Players/CMakeLists.txt)
+include(Objects/Units/Creatures/Summons/CMakeLists.txt)
 
 if (WIN32)
     set(SRC_WORLD_PROJECT ${SRC_WORLD_PROJECT} ${CMAKE_CURRENT_SOURCE_DIR}/resources.rc)
@@ -212,8 +212,8 @@ if (USE_PCH)
     Spell/Spell.h
     Spell/SpellAuras.h
     Storage/MySQLDataStore.hpp
-    Units/Players/Player.h
-    Units/Unit.h
+    Objects/Units/Players/Player.h
+    Objects/Units/Unit.h
 )
 
 endif ()

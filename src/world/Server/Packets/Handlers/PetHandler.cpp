@@ -19,16 +19,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgPetNameQuery.h"
 #include "Server/Packets/SmsgPetActionSound.h"
 #include "Server/WorldSession.h"
-#include "Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/Pet.h"
 #include "Map/MapMgr.h"
 #include "Movement/MovementDefines.h"
 #include "Movement/MovementManager.h"
 #include "Server/MainServerDefines.h"
-#include "Units/Creatures/Vehicle.h"
+#include "Objects/Units/Creatures/Vehicle.h"
 #include "Objects/Faction.h"
 #include "Spell/Definitions/SpellFailure.hpp"
 #include "Server/Packets/SmsgPetLearnedSpell.h"
-#include "Units/ThreatHandler.h"
+#include "Objects/Units/ThreatHandler.h"
 
 using namespace AscEmu::Packets;
 
