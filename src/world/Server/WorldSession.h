@@ -30,7 +30,7 @@
 #include "Management/ItemInterface.h"
 #if VERSION_STRING >= Cata
     #include "Management/AddonMgr.h"
-    #include "Units/Players/Player.h"
+    #include "Objects/Units/Players/Player.h"
     struct AddonEntry;
 #endif
 
