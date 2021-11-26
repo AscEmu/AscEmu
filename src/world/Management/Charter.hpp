@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 #include <cstring>
 
-#include "Units/Players/PlayerDefines.hpp"
+#include "Objects/Units/Players/PlayerDefines.hpp"
 
 class Field;
 

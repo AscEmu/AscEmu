@@ -21,15 +21,15 @@
 #ifndef OBJECTMGR_H
 #define OBJECTMGR_H
 
-#include "Units/Creatures/Corpse.h"
-#include "Units/Players/Player.h"
-#include "Units/Creatures/Vehicle.h"
+#include "Objects/Units/Creatures/Corpse.h"
+#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Creatures/Vehicle.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #if VERSION_STRING >= Cata
     #include "Storage/DB2/DB2Stores.h"
     #include "Storage/DB2/DB2Structures.h"
 #endif
-#include "Units/Creatures/CreatureDefines.hpp"
+#include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Spell/Spell.h"
 #include "Management/Group.h"
 

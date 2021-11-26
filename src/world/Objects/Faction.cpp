@@ -20,10 +20,10 @@
 
 
 #include "Object.h"
-#include "Units/Players/PlayerDefines.hpp"
-#include "Units/Unit.h"
-#include "Units/Creatures/AIInterface.h"
-#include "Units/Players/Player.h"
+#include "Objects/Units/Players/PlayerDefines.hpp"
+#include "Objects/Units/Unit.h"
+#include "Objects/Units/Creatures/AIInterface.h"
+#include "Objects/Units/Players/Player.h"
 
 bool isNeutral(Object* a, Object* b)
 {

@@ -27,7 +27,7 @@
 #include "Management/ArenaTeam.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Units/Players/PlayerClasses.hpp"
+#include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Server/MainServerDefines.h"
 #include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"

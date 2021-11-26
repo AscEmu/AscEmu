@@ -22,8 +22,9 @@
 #include "Map/MapScriptInterface.h"
 #include "Objects/Faction.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/SpellMgr.hpp"
 
- /*
+/*
      How to add a new item spell to the dummy spell handler:
 
      1) Add a new function to handle the spell at the end of this file but before the
