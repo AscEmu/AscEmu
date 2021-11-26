@@ -11,7 +11,6 @@ set(SRC_SERVER_FILES
     ${PATH_PREFIX}/EventableObject.h
     ${PATH_PREFIX}/EventMgr.cpp
     ${PATH_PREFIX}/EventMgr.h
-    ${PATH_PREFIX}/IUpdatable.h
     ${PATH_PREFIX}/UpdateFieldInclude.h
     ${PATH_PREFIX}/UpdateMask.h
     ${PATH_PREFIX}/Main.cpp

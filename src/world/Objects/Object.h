@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/UpdateMask.h"
 #include "CommonTypes.hpp"
 #include "Server/EventableObject.h"
-//#include "Server/IUpdatable.h"
 
 #include <set>
 #include <map>
@@ -92,7 +91,7 @@ struct DamageInfo
     }
 };
 
-class SERVER_DECL Object : public EventableObject //, public IUpdatable
+class SERVER_DECL Object : public EventableObject
 {
 public:
 
