@@ -3700,7 +3700,9 @@ void Player::setPlayerInfoIfNeeded()
         playerInfo->cl = getClass();
         playerInfo->gender = getGender();
         playerInfo->guid = getGuidLow();
-        playerInfo->name = strdup(getName().c_str());
+        std::string name = getName();
+        AscEmu::Util::Strings::capitalize(name);
+        playerInfo->name = name;
         playerInfo->lastLevel = getLevel();
         playerInfo->lastOnline = UNIXTIME;
         playerInfo->lastZone = GetZoneId();

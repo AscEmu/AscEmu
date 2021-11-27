@@ -1001,7 +1001,7 @@ public:
 
     uint32_t guid;
     uint32_t acct;
-    char* name;
+    std::string name;
     uint8_t race;
     uint8_t gender;
     uint8_t cl;

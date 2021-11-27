@@ -478,7 +478,7 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (strcmp(playerReceiverInfo->name, _player->getName().c_str()) == 0 && !GetPermissionCount())
+    if (playerReceiverInfo->name == _player->getName() && !GetPermissionCount())
     {
         SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_CANNOT_SEND_TO_SELF).serialise().get());
         return;
@@ -521,7 +521,7 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
             msg.items.push_back(pItem->getGuidLow());
 
             if (GetPermissionCount() > 0)
-                sGMLog.writefromsession(this, "sent mail with item entry %u to %s", pItem->getEntry(), playerReceiverInfo->name);
+                sGMLog.writefromsession(this, "sent mail with item entry %u to %s", pItem->getEntry(), playerReceiverInfo->name.c_str());
 
             pItem->DeleteMe();
         }

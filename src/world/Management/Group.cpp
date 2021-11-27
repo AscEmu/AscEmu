@@ -301,7 +301,7 @@ void Group::Update()
                                 continue;
 
                             Player* plr = (*itr2)->m_loggedInPlayer;
-                            data << (plr ? plr->getName().c_str() : (*itr2)->name);
+                            data << (plr ? plr->getName().c_str() : (*itr2)->name.c_str());
                             if(plr)
                                 data << plr->getGuid();
                             else

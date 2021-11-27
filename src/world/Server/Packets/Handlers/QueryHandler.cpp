@@ -37,7 +37,7 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
     if (!info)
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_NAME_QUERY for: %s", info->name);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_NAME_QUERY for: %s", info->name.c_str());
     SendPacket(SmsgNameQueryResponse(srlPacket.guid, info->name, info->race, info->gender, info->cl).serialise().get());
 }
 

@@ -143,11 +143,11 @@ void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
     if (arenaTeam->RemoveMember(playerInfo))
     {
         char buffer[1024];
-        snprintf(buffer, 1024, "%s was removed from the arena team '%s'.", playerInfo->name, arenaTeam->m_name.c_str());
+        snprintf(buffer, 1024, "%s was removed from the arena team '%s'.", playerInfo->name.c_str(), arenaTeam->m_name.c_str());
 
         arenaTeam->SendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
 
-        SystemMessage("Removed %s from the arena team '%s'.", playerInfo->name, arenaTeam->m_name.c_str());
+        SystemMessage("Removed %s from the arena team '%s'.", playerInfo->name.c_str(), arenaTeam->m_name.c_str());
     }
 }
 

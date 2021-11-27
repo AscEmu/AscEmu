@@ -167,7 +167,6 @@ void ObjectMgr::finalize()
     for (std::unordered_map<uint32, PlayerInfo*>::iterator itr = m_playersinfo.begin(); itr != m_playersinfo.end(); ++itr)
     {
         itr->second->m_Group = nullptr;
-        free(itr->second->name);
         delete itr->second;
     }
 
@@ -260,7 +259,7 @@ void ObjectMgr::DeletePlayerInfo(uint32 guid)
     if (pl->m_Group)
         pl->m_Group->RemovePlayer(pl);
 
-    std::string pnam = std::string(pl->name);
+    std::string pnam = pl->name;
     AscEmu::Util::Strings::toLowerCase(pnam);
     PlayerNameStringIndexMap::iterator i2 = m_playersInfoByName.find(pnam);
     if (i2 != m_playersInfoByName.end() && i2->second == pl)
@@ -268,7 +267,6 @@ void ObjectMgr::DeletePlayerInfo(uint32 guid)
         m_playersInfoByName.erase(i2);
     }
 
-    free(pl->name);
     delete i->second;
     m_playersinfo.erase(i);
 }
@@ -290,7 +288,7 @@ void ObjectMgr::AddPlayerInfo(PlayerInfo* pn)
 
     m_playersinfo[pn->guid] = pn;
 
-    std::string pnam = std::string(pn->name);
+    std::string pnam = pn->name;
     AscEmu::Util::Strings::toLowerCase(pnam);
     m_playersInfoByName[pnam] = pn;
 }
@@ -360,7 +358,9 @@ void ObjectMgr::LoadPlayersInfo()
             Field* fields = result->Fetch();
             PlayerInfo* pn = new PlayerInfo;
             pn->guid = fields[0].GetUInt32();
-            pn->name = strdup(fields[1].GetString());
+            std::string dbName = fields[1].GetString();
+            AscEmu::Util::Strings::capitalize(dbName);
+            pn->name = dbName;
             pn->race = fields[2].GetUInt8();
             pn->cl = fields[3].GetUInt8();
             pn->lastLevel = fields[4].GetUInt32();
@@ -414,21 +414,7 @@ void ObjectMgr::LoadPlayersInfo()
 
             pn->team = getSideByRace(pn->race);
 
-            if (GetPlayerInfoByName(pn->name) != nullptr)
-            {
-                // gotta rename him
-                char temp[300];
-                snprintf(temp, 300, "%s__%X__", pn->name, pn->guid);
-                sLogger.info("ObjectMgr : Renaming duplicate player %s to %s. (%u)", pn->name, temp, pn->guid);
-                CharacterDatabase.WaitExecute("UPDATE characters SET name = '%s', login_flags = %u WHERE guid = %u",
-                                              CharacterDatabase.EscapeString(std::string(temp)).c_str(), (uint32)LOGIN_FORCED_RENAME, pn->guid);
-
-
-                free(pn->name);
-                pn->name = strdup(temp);
-            }
-
-            std::string lpn = std::string(pn->name);
+            std::string lpn = pn->name;
             AscEmu::Util::Strings::toLowerCase(lpn);
             m_playersInfoByName[lpn] = pn;
 

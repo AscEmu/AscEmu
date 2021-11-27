@@ -239,13 +239,11 @@ void WorldSession::handleCharRenameOpcode(WorldPacket& recvPacket)
 
     std::string newName = srlPacket.name;
     AscEmu::Util::Strings::capitalize(newName);
-    sObjectMgr.RenamePlayerInfo(playerInfo, playerInfo->name, newName.c_str());
+    sObjectMgr.RenamePlayerInfo(playerInfo, playerInfo->name.c_str(), newName.c_str());
 
-    sPlrLog.writefromsession(this, "renamed character %s, %u (guid), to %s.", playerInfo->name, playerInfo->guid, newName.c_str());
+    sPlrLog.writefromsession(this, "renamed character %s, %u (guid), to %s.", playerInfo->name.c_str(), playerInfo->guid, newName.c_str());
 
-    free(playerInfo->name);
-
-    playerInfo->name = strdup(newName.c_str());
+    playerInfo->name = newName;
 
     CharacterDatabase.WaitExecute("UPDATE characters SET name = '%s' WHERE guid = %u",
         newName.c_str(), srlPacket.guid.getGuidLow());
@@ -522,7 +520,9 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
 
     const auto playerInfo = new PlayerInfo;
     playerInfo->guid = newPlayer->getGuidLow();
-    playerInfo->name = strdup(newPlayer->getName().c_str());
+    std::string name = newPlayer->getName();
+    AscEmu::Util::Strings::capitalize(name);
+    playerInfo->name = name;
     playerInfo->cl = newPlayer->getClass();
     playerInfo->race = newPlayer->getRace();
     playerInfo->gender = newPlayer->getGender();

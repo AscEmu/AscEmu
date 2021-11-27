@@ -1464,10 +1464,9 @@ bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
-    sObjectMgr.RenamePlayerInfo(pi, pi->name, new_name.c_str());
+    sObjectMgr.RenamePlayerInfo(pi, pi->name.c_str(), new_name.c_str());
 
-    free(pi->name);
-    pi->name = strdup(new_name.c_str());
+    pi->name = new_name;
 
     Player* plr = sObjectMgr.GetPlayer(pi->guid);
     if (plr != nullptr)
@@ -1721,9 +1720,9 @@ bool ChatHandler::HandleCharSetForceRenameCommand(const char* args, WorldSession
         BlueSystemMessage(plr->GetSession(), "%s forced your character to be renamed next logon.", m_session->GetPlayer()->getName().c_str());
     }
 
-    CharacterDatabase.Execute("INSERT INTO banned_names VALUES('%s')", CharacterDatabase.EscapeString(std::string(pi->name)).c_str());
+    CharacterDatabase.Execute("INSERT INTO banned_names VALUES('%s')", CharacterDatabase.EscapeString(pi->name).c_str());
     GreenSystemMessage(m_session, "Forcing %s to rename his character next logon.", args);
-    sGMLog.writefromsession(m_session, "forced %s to rename his charater (%u)", pi->name, pi->guid);
+    sGMLog.writefromsession(m_session, "forced %s to rename his charater (%u)", pi->name.c_str(), pi->guid);
     return true;
 }
 
@@ -1755,7 +1754,7 @@ bool ChatHandler::HandleCharSetCustomizeCommand(const char* args, WorldSession* 
     }
 
     GreenSystemMessage(m_session, "%s flagged to customize his character next logon.", args);
-    sGMLog.writefromsession(m_session, "flagged %s for customization for charater (%u)", pi->name, pi->guid);
+    sGMLog.writefromsession(m_session, "flagged %s for customization for charater (%u)", pi->name.c_str(), pi->guid);
     return true;
 }
 
@@ -1787,7 +1786,7 @@ bool ChatHandler::HandleCharSetFactionChangeCommand(const char* args, WorldSessi
     }
 
     GreenSystemMessage(m_session, "%s flagged for a faction change next logon.", args);
-    sGMLog.writefromsession(m_session, "flagged %s for a faction change for charater (%u)", pi->name, pi->guid);
+    sGMLog.writefromsession(m_session, "flagged %s for a faction change for charater (%u)", pi->name.c_str(), pi->guid);
     return true;
 }
 
@@ -1819,7 +1818,7 @@ bool ChatHandler::HandleCharSetRaceChangeCommand(const char* args, WorldSession*
     }
 
     GreenSystemMessage(m_session, "%s flagged for a race change next logon.", args);
-    sGMLog.writefromsession(m_session, "flagged %s for a race change for charater (%u)", pi->name, pi->guid);
+    sGMLog.writefromsession(m_session, "flagged %s for a race change for charater (%u)", pi->name.c_str(), pi->guid);
     return true;
 }
 

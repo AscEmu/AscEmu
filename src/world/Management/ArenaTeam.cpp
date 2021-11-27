@@ -293,7 +293,7 @@ bool ArenaTeam::isMember(uint32_t guid) const
 void ArenaTeam::SetLeader(PlayerInfo* info)
 {
     char buffer[1024];
-    snprintf(buffer, 1024, "%s is now the captain of the arena team, '%s'.", info->name, m_name.c_str());
+    snprintf(buffer, 1024, "%s is now the captain of the arena team, '%s'.", info->name.c_str(), m_name.c_str());
 
     SendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
 
