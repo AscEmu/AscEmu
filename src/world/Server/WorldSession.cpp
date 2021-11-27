@@ -385,8 +385,6 @@ void WorldSession::LogoutPlayer(bool Save)
         if (_player->IsInWorld())
             _player->RemoveFromWorld();
 
-        _player->m_playerInfo->m_loggedInPlayer = nullptr;
-
         if (_player->m_playerInfo->m_Group != nullptr)
             _player->m_playerInfo->m_Group->Update();
 

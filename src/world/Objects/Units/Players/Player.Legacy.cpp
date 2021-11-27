@@ -10577,12 +10577,15 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
                         for (GroupMembersSet::iterator itr2 = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr2 != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr2)
                         {
                             CachedCharacterInfo* pinfo = *itr2;
-                            if (pinfo->m_loggedInPlayer && pinfo->m_loggedInPlayer->getItemInterface()->CanReceiveItem(itemProto, iter->iItemsCount) == 0)
+                            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(pinfo->guid))
                             {
-                                if (pinfo->m_loggedInPlayer->m_passOnLoot)
-                                    iter->roll->PlayerRolled(pinfo->m_loggedInPlayer, 3); // passed
-                                else
-                                    pinfo->m_loggedInPlayer->SendPacket(&data2);
+                                if (loggedInPlayer->getItemInterface()->CanReceiveItem(itemProto, iter->iItemsCount) == 0)
+                                {
+                                    if (loggedInPlayer->m_passOnLoot)
+                                        iter->roll->PlayerRolled(loggedInPlayer, 3); // passed
+                                    else
+                                        loggedInPlayer->SendPacket(&data2);
+                                }
                             }
                         }
                     }
@@ -11186,17 +11189,17 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
     Group* m_Group = getGroup();
 
     // Why would this be accessed if the group didn't exist?
-    if (!InnerLoop && m_Group != NULL)
+    if (!InnerLoop && m_Group != nullptr)
     {
         /* loop the rep for group members */
         m_Group->getLock().Acquire();
-        GroupMembersSet::iterator it;
         for (uint32 i = 0; i < m_Group->GetSubGroupCount(); i++)
         {
-            for (it = m_Group->GetSubGroup(i)->GetGroupMembersBegin(); it != m_Group->GetSubGroup(i)->GetGroupMembersEnd(); ++it)
+            for (GroupMembersSet::iterator it = m_Group->GetSubGroup(i)->GetGroupMembersBegin(); it != m_Group->GetSubGroup(i)->GetGroupMembersEnd(); ++it)
             {
-                if ((*it)->m_loggedInPlayer && (*it)->m_loggedInPlayer->isInRange(this, 100.0f))
-                    (*it)->m_loggedInPlayer->Reputation_OnKilledUnit(pUnit, true);
+                if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*it)->guid))
+                    if (loggedInPlayer->isInRange(this, 100.0f))
+                        loggedInPlayer->Reputation_OnKilledUnit(pUnit, true);
             }
         }
         m_Group->getLock().Release();

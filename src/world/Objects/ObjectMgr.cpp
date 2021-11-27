@@ -370,7 +370,6 @@ void ObjectMgr::LoadPlayersInfo()
             pn->acct = fields[8].GetUInt32();
             pn->m_Group = nullptr;
             pn->subGroup = 0;
-            pn->m_loggedInPlayer = nullptr;
             pn->m_guild = 0;
             pn->guildRank = GUILD_RANK_NONE;
 

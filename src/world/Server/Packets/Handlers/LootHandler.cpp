@@ -391,12 +391,9 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
                 auto subGroup = party->GetSubGroup(i);
                 for (auto groupMemberPlayerInfo : subGroup->getGroupMembers())
                 {
-                    if (groupMemberPlayerInfo->m_loggedInPlayer
-                        && groupMemberPlayerInfo->m_loggedInPlayer->GetZoneId() == _player->GetZoneId()
-                        && _player->GetInstanceID() == groupMemberPlayerInfo->m_loggedInPlayer->GetInstanceID())
-                    {
-                        groupMembers.push_back(groupMemberPlayerInfo->m_loggedInPlayer);
-                    }
+                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer(groupMemberPlayerInfo->guid))
+                        if (loggedInPlayer->GetZoneId() == _player->GetZoneId() && _player->GetInstanceID() == loggedInPlayer->GetInstanceID())
+                            groupMembers.push_back(loggedInPlayer);
                 }
             }
             party->getLock().Release();
@@ -461,8 +458,9 @@ void WorldSession::handleLootOpcode(WorldPacket& recvPacket)
                     {
                         for (auto groupMemberPlayerInfo : subGroup->getGroupMembers())
                         {
-                            if (groupMemberPlayerInfo->m_loggedInPlayer && _player->GetZoneId() == groupMemberPlayerInfo->m_loggedInPlayer->GetZoneId())
-                                onlineGroupMembers.push_back(groupMemberPlayerInfo->m_loggedInPlayer->getGuid());
+                            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(groupMemberPlayerInfo->guid))
+                                if (_player->GetZoneId() == loggedInPlayer->GetZoneId())
+                                    onlineGroupMembers.push_back(loggedInPlayer->getGuid());
                         }
                     }
                 }

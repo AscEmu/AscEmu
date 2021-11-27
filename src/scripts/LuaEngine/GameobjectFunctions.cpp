@@ -878,7 +878,7 @@ int LuaGameObject::GetInstanceOwner(lua_State* L, GameObject* ptr)
         if (group_leader == nullptr)
             return 0;
 
-        auto group_leader_online = group_leader->m_loggedInPlayer;
+        auto group_leader_online = sObjectMgr.GetPlayer(group_leader->guid);
         if (group_leader_online == nullptr)
             return 0;
 

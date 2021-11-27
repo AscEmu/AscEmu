@@ -2861,26 +2861,27 @@ public:
     static int GetGroupPlayers(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        Player* _player = static_cast<Player*>(ptr);
+        Player* _player = dynamic_cast<Player*>(ptr);
         Group* party = _player->getGroup();
         uint32_t count = 0;
         lua_newtable(L);
         if (party)
         {
-            GroupMembersSet::iterator itr;
-            SubGroup* sgrp;
             party->getLock().Acquire();
             for (uint32_t i = 0; i < party->GetSubGroupCount(); i++)
             {
-                sgrp = party->GetSubGroup(i);
-                for (itr = sgrp->GetGroupMembersBegin(); itr != sgrp->GetGroupMembersEnd(); ++itr)
+                SubGroup* sgrp = party->GetSubGroup(i);
+                for (GroupMembersSet::iterator itr = sgrp->GetGroupMembersBegin(); itr != sgrp->GetGroupMembersEnd(); ++itr)
                 {
-                    if ((*itr)->m_loggedInPlayer && (*itr)->m_loggedInPlayer->GetZoneId() == _player->GetZoneId() && _player->GetInstanceID() == (*itr)->m_loggedInPlayer->GetInstanceID())
+                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr)->guid))
                     {
-                        count++;
-                        lua_pushinteger(L, count);
-                        PUSH_UNIT(L, (*itr)->m_loggedInPlayer);
-                        lua_rawset(L, -3);
+                        if (loggedInPlayer->GetZoneId() == _player->GetZoneId() && _player->GetInstanceID() == loggedInPlayer->GetInstanceID())
+                        {
+                            count++;
+                            lua_pushinteger(L, count);
+                            PUSH_UNIT(L, loggedInPlayer);
+                            lua_rawset(L, -3);
+                        }
                     }
                 }
             }
@@ -2954,7 +2955,11 @@ public:
                 if (group_id == nullptr)
                     return 0;
 
-                PUSH_UNIT(L, group_id->GetLeader()->m_loggedInPlayer);
+                if (!group_id->GetLeader())
+                    return 0;
+
+                if (Player* leader = sObjectMgr.GetPlayer(group_id->GetLeader()->guid))
+                PUSH_UNIT(L, leader);
             }
         }
         return 1;
@@ -2974,7 +2979,7 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         if (plr->getGroup())
-            PUSH_UNIT(L, plr->getGroup()->GetLeader()->m_loggedInPlayer);
+            PUSH_UNIT(L, sObjectMgr.GetPlayer(plr->getGroup()->GetLeader()->guid));
         return 1;
     }
 

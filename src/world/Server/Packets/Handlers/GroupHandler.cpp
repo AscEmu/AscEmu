@@ -891,10 +891,12 @@ void WorldSession::handleReadyCheckOpcode(WorldPacket& recvPacket)
         if (!srlPacket.deserialise(recvPacket))
             return;
 
-        if (group->GetLeader() && group->GetLeader()->m_loggedInPlayer)
-            group->GetLeader()->m_loggedInPlayer->SendPacket(MsgRaidReadyCheck(_player->getGuid(), srlPacket.isReady, false).serialise().get());
+        if (group->GetLeader())
+            if (Player* leader = sObjectMgr.GetPlayer(group->GetLeader()->guid))
+                leader->SendPacket(MsgRaidReadyCheck(_player->getGuid(), srlPacket.isReady, false).serialise().get());
 
-        if (group->GetAssistantLeader() && group->GetAssistantLeader()->m_loggedInPlayer)
-            group->GetAssistantLeader()->m_loggedInPlayer->SendPacket(MsgRaidReadyCheck(_player->getGuid(), srlPacket.isReady, false).serialise().get());
+        if (group->GetAssistantLeader())
+            if (Player* assistant = sObjectMgr.GetPlayer(group->GetAssistantLeader()->guid))
+                assistant->SendPacket(MsgRaidReadyCheck(_player->getGuid(), srlPacket.isReady, false).serialise().get());
     }
 }

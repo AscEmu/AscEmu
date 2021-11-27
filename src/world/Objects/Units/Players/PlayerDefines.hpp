@@ -987,8 +987,7 @@ struct PlayerCreateInfo
 //////////////////////////////////////////////////////////////////////////////////////////
 // CachedCharacterInfo
 //\todo: It is mostly used to handle offline player data for groups, somehow it is used to
-// determine if a player is online or not. Do not use sObjectMgr.GetPlayer to replace m_loggedInPlayer
-// this would slow down calls since it locks the player map.
+// determine if a player is online or not.
 
 typedef std::unordered_map<uint32_t, uint32_t> PlayerInstanceMap;
 
@@ -1015,7 +1014,6 @@ public:
     std::mutex savedInstanceIdsLock;
     PlayerInstanceMap savedInstanceIds[InstanceDifficulty::MAX_DIFFICULTY];
 
-    Player* m_loggedInPlayer;
     uint32_t m_guild;
     uint32_t guildRank;
 };

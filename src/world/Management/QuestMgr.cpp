@@ -1236,7 +1236,7 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
                 {
                     for (auto gitr = pGroup->GetSubGroup(k)->GetGroupMembersBegin(); gitr != pGroup->GetSubGroup(k)->GetGroupMembersEnd(); ++gitr)
                     {
-                        Player* gplr = (*gitr)->m_loggedInPlayer;
+                        Player* gplr = sObjectMgr.GetPlayer((*gitr)->guid);
                         if (gplr && gplr != plr && plr->isInRange(gplr, 300) && gplr->HasQuestMob(entry)) // don't double kills also don't give kills to party members at another side of the world
                         {
                             for (uint8 i = 0; i < 25; ++i)

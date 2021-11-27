@@ -705,7 +705,7 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
     {
         for (GroupMembersSet::iterator itr = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
         {
-            pGroupGuy = (*itr)->m_loggedInPlayer;
+            pGroupGuy = sObjectMgr.GetPlayer((*itr)->guid);
             if (pGroupGuy && pGroupGuy->isAlive() && /* PlayerInGroup->GetInstanceID()==pGroupGuy->GetInstanceID() &&*/
                 pVictim->GetMapMgr() == pGroupGuy->GetMapMgr() && pGroupGuy->getDistanceSq(pVictim) < 100 * 100)
             {
@@ -9131,7 +9131,7 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
                     SubGroup* subGroup = pGroup->GetSubGroup(i);
                     for (GroupMembersSet::iterator itr = subGroup->GetGroupMembersBegin(); itr != subGroup->GetGroupMembersEnd() && targets > 0; ++itr)
                     {
-                        Player* member = (*itr)->m_loggedInPlayer;
+                        Player* member = sObjectMgr.GetPlayer((*itr)->guid);
                         if (member == NULL || member == pPlayer || !member->IsInWorld() || !member->isAlive() || member->hasAurasWithId(59725))
                             continue;
 
@@ -9157,7 +9157,7 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
             {
                 for (GroupMembersSet::iterator itr = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
                 {
-                    Player* member = (*itr)->m_loggedInPlayer;
+                    Player* member = sObjectMgr.GetPlayer((*itr)->guid);
                     if (member == NULL)
                         continue;
 

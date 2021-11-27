@@ -256,8 +256,8 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                     {
                         group->Lock();
                         for (auto* group_member : subgroup->getGroupMembers())
-                            if (group_member->m_loggedInPlayer)
-                                group_member->m_loggedInPlayer->SendPacket(send_packet.get());
+                            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(group_member->guid))
+                                loggedInPlayer->SendPacket(send_packet.get());
                         group->Unlock();
                     }
                 }
@@ -269,8 +269,8 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                         {
                             group->Lock();
                             for (auto* group_member : sub_group->getGroupMembers())
-                                if (group_member->m_loggedInPlayer)
-                                    group_member->m_loggedInPlayer->SendPacket(send_packet.get());
+                                if (Player* loggedInPlayer = sObjectMgr.GetPlayer(group_member->guid))
+                                    loggedInPlayer->SendPacket(send_packet.get());
                             group->Unlock();
                         }
                     }

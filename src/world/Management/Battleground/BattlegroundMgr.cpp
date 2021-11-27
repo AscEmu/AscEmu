@@ -448,7 +448,7 @@ uint32 CBattlegroundManager::GetArenaGroupQInfo(Group* group, uint8_t type, uint
     if (group == nullptr || group->GetLeader() == nullptr)
         return 0;
 
-    Player* leader = group->GetLeader()->m_loggedInPlayer;
+    Player* leader = sObjectMgr.GetPlayer(group->GetLeader()->guid);
     if (leader == nullptr)
         return 0;
 
@@ -458,7 +458,7 @@ uint32 CBattlegroundManager::GetArenaGroupQInfo(Group* group, uint8_t type, uint
 
     for (GroupMembersSet::iterator itx = group->GetSubGroup(0)->GetGroupMembersBegin(); itx != group->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
     {
-        Player* member = (*itx)->m_loggedInPlayer;
+        Player* member = sObjectMgr.GetPlayer((*itx)->guid);
         if (member)
         {
             if (team == member->getArenaTeam(type - BATTLEGROUND_ARENA_2V2))
@@ -483,7 +483,7 @@ void CBattlegroundManager::AddGroupToArena(CBattleground* bg, Group* group, uint
     if (group == nullptr || group->GetLeader() == nullptr)
         return;
 
-    Player* plr = group->GetLeader()->m_loggedInPlayer;
+    Player* plr = sObjectMgr.GetPlayer(group->GetLeader()->guid);
     if (plr == nullptr)
         return;
 
@@ -493,7 +493,7 @@ void CBattlegroundManager::AddGroupToArena(CBattleground* bg, Group* group, uint
 
     for (GroupMembersSet::iterator itx = group->GetSubGroup(0)->GetGroupMembersBegin(); itx != group->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
     {
-        plr = (*itx)->m_loggedInPlayer;
+        plr = sObjectMgr.GetPlayer((*itx)->guid);
         if (plr && team == plr->getArenaTeam(static_cast<uint8_t>(bg->GetType() - BATTLEGROUND_ARENA_2V2)))
         {
             if (bg->HasFreeSlots(nteam, bg->GetType()))
@@ -1012,8 +1012,8 @@ void CBattlegroundManager::RemoveGroupFromQueues(Group* grp)
     }
 
     for (GroupMembersSet::iterator itr = grp->GetSubGroup(0)->GetGroupMembersBegin(); itr != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itr)
-        if ((*itr)->m_loggedInPlayer)
-            SendBattlefieldStatus((*itr)->m_loggedInPlayer, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
+        if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr)->guid))
+            SendBattlefieldStatus(loggedInPlayer, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
 
     m_queueLock.Release();
 }
@@ -1288,8 +1288,9 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
             pGroup->Lock();
             for (itx = pGroup->GetSubGroup(0)->GetGroupMembersBegin(); itx != pGroup->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
             {
-                if ((*itx)->m_loggedInPlayer && !(*itx)->m_loggedInPlayer->m_bgIsQueued && !(*itx)->m_loggedInPlayer->m_bg)
-                    HandleArenaJoin((*itx)->m_loggedInPlayer->GetSession(), BattlegroundType, 0, 0);
+                if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itx)->guid))
+                    if (!loggedInPlayer->m_bgIsQueued && !loggedInPlayer->m_bg)
+                        HandleArenaJoin(loggedInPlayer->GetSession(), BattlegroundType, 0, 0);
             }
             pGroup->Unlock();
             return;
@@ -1317,7 +1318,8 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
             break;
         }
 
-        if (pGroup->GetLeader()->m_loggedInPlayer && pGroup->GetLeader()->m_loggedInPlayer->getArenaTeam(type) == nullptr)
+        Player* loggedInLeader = sObjectMgr.GetPlayer(pGroup->GetLeader()->guid);
+        if (loggedInLeader && loggedInLeader->getArenaTeam(type) == nullptr)
         {
             m_session->SendPacket(SmsgArenaError(0, static_cast<uint8_t>(maxplayers)).serialise().get());
             return;
@@ -1340,15 +1342,15 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
                 return;
             }
 
-            if ((*itx)->m_loggedInPlayer)
+            if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itx)->guid))
             {
-                if ((*itx)->m_loggedInPlayer->m_bg || (*itx)->m_loggedInPlayer->m_bgIsQueued)
+                if (loggedInPlayer->m_bg || loggedInPlayer->m_bgIsQueued)
                 {
                     m_session->SystemMessage(m_session->LocalizedWorldSrv(ServerString::SS_ONE_OR_MORE_OF_PARTY_MEMBERS_ARE_ALREADY_QUEUED_OR_INSIDE_BG));
                     pGroup->Unlock();
                     return;
                 };
-                if ((*itx)->m_loggedInPlayer->getArenaTeam(type) != pGroup->GetLeader()->m_loggedInPlayer->getArenaTeam(type))
+                if (loggedInPlayer->getArenaTeam(type) != loggedInLeader->getArenaTeam(type))
                 {
                     m_session->SystemMessage(m_session->LocalizedWorldSrv(ServerString::SS_ONE_OR_MORE_OF_YOUR_PARTY_MEMBERS_ARE_NOT_MEMBERS_OF_YOUR_TEAM));
                     pGroup->Unlock();
@@ -1361,16 +1363,16 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
 
         for (itx = pGroup->GetSubGroup(0)->GetGroupMembersBegin(); itx != pGroup->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
         {
-            if ((*itx)->m_loggedInPlayer)
+            if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itx)->guid))
             {
-                SendBattlefieldStatus((*itx)->m_loggedInPlayer, BGSTATUS_INQUEUE, BattlegroundType, 0, 0, 0, 1);
-                (*itx)->m_loggedInPlayer->m_bgIsQueued = true;
-                (*itx)->m_loggedInPlayer->m_bgQueueInstanceId = 0;
-                (*itx)->m_loggedInPlayer->m_bgQueueType = BattlegroundType;
+                SendBattlefieldStatus(loggedInPlayer, BGSTATUS_INQUEUE, BattlegroundType, 0, 0, 0, 1);
+                loggedInPlayer->m_bgIsQueued = true;
+                loggedInPlayer->m_bgQueueInstanceId = 0;
+                loggedInPlayer->m_bgQueueType = BattlegroundType;
                 //\todo error/bgtype missing, always send all arenas (from legacy)
-                (*itx)->m_loggedInPlayer->GetSession()->SendPacket(SmsgGroupJoinedBattleground(6).serialise().get());
-                (*itx)->m_loggedInPlayer->setBGEntryPoint((*itx)->m_loggedInPlayer->GetPositionX(), (*itx)->m_loggedInPlayer->GetPositionY(), (*itx)->m_loggedInPlayer->GetPositionZ(),
-                    (*itx)->m_loggedInPlayer->GetOrientation(), (*itx)->m_loggedInPlayer->GetMapId(), (*itx)->m_loggedInPlayer->GetInstanceID());
+                loggedInPlayer->GetSession()->SendPacket(SmsgGroupJoinedBattleground(6).serialise().get());
+                loggedInPlayer->setBGEntryPoint(loggedInPlayer->GetPositionX(), loggedInPlayer->GetPositionY(), loggedInPlayer->GetPositionZ(),
+                    loggedInPlayer->GetOrientation(), loggedInPlayer->GetMapId(), loggedInPlayer->GetInstanceID());
             }
         }
 

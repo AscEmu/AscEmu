@@ -116,9 +116,11 @@ void ArenaTeam::SendPacket(WorldPacket* data)
 {
     for (uint32 i = 0; i < m_memberCount; ++i)
     {
-        const auto playerInfo = m_members[i].Info;
-        if (playerInfo && playerInfo->m_loggedInPlayer)
-            playerInfo->m_loggedInPlayer->GetSession()->SendPacket(data);
+        if (m_members[i].Info)
+        {
+            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(m_members[i].Info->guid))
+                loggedInPlayer->GetSession()->SendPacket(data);
+        }
     }
 }
 
@@ -147,32 +149,38 @@ void ArenaTeam::Destroy()
 
 bool ArenaTeam::AddMember(CachedCharacterInfo* info)
 {
-    Player* player = info->m_loggedInPlayer;
-    if (m_memberCount >= m_slots)
+    if (!info)
         return false;
 
-    memset(&m_members[m_memberCount], 0, sizeof(ArenaTeamMember));
-    m_members[m_memberCount].PersonalRating = 1500;
-    m_members[m_memberCount++].Info = info;
-    SaveToDB();
+    if (Player* loggedInPlayer = sObjectMgr.GetPlayer(info->guid))
+    {
+        if (m_memberCount >= m_slots)
+            return false;
+
+        memset(&m_members[m_memberCount], 0, sizeof(ArenaTeamMember));
+        m_members[m_memberCount].PersonalRating = 1500;
+        m_members[m_memberCount++].Info = info;
+        SaveToDB();
 
 #if VERSION_STRING != Classic
-    if (player)
-    {
-        player->setArenaTeamId(m_type, m_id);
-        player->setArenaTeamMemberRank(m_type, 1);
+        loggedInPlayer->setArenaTeamId(m_type, m_id);
+        loggedInPlayer->setArenaTeamMemberRank(m_type, 1);
 
-        player->setArenaTeam(m_type, this);
+        loggedInPlayer->setArenaTeam(m_type, this);
 
-        player->GetSession()->SystemMessage("You are now a member of the arena team, '%s'.", m_name.c_str());
-    }
+        loggedInPlayer->GetSession()->SystemMessage("You are now a member of the arena team, '%s'.", m_name.c_str());
+
 #endif
+    }
 
     return true;
 }
 
 bool ArenaTeam::RemoveMember(CachedCharacterInfo* info)
 {
+    if (!info)
+        return false;
+
     for (uint32 i = 0; i < m_memberCount; ++i)
     {
         if (m_members[i].Info == info)
@@ -185,10 +193,10 @@ bool ArenaTeam::RemoveMember(CachedCharacterInfo* info)
             SaveToDB();
 
 #if VERSION_STRING != Classic
-            if (info->m_loggedInPlayer)
+            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(info->guid))
             {
-                info->m_loggedInPlayer->setArenaTeamId(m_type, 0);
-                info->m_loggedInPlayer->setArenaTeam(m_type, nullptr);
+                loggedInPlayer->setArenaTeamId(m_type, 0);
+                loggedInPlayer->setArenaTeam(m_type, nullptr);
             }
 #endif
 
@@ -211,7 +219,7 @@ std::vector<ArenaTeamPacketList> ArenaTeam::getRoosterMembers() const
             ArenaTeamPacketList arenaTeamListMember;
 
             arenaTeamListMember.guid = playerInfo->guid;
-            arenaTeamListMember.isLoggedIn = playerInfo->m_loggedInPlayer ? 1 : 0;
+            arenaTeamListMember.isLoggedIn = sObjectMgr.GetPlayer(playerInfo->guid) ? 1 : 0;
             arenaTeamListMember.name = playerInfo->name;
             arenaTeamListMember.isLeader = m_members[i].Info->guid == m_leader ? 0 : 1;
             arenaTeamListMember.lastLevel = static_cast<uint8_t>(playerInfo->lastLevel);
@@ -292,26 +300,29 @@ bool ArenaTeam::isMember(uint32_t guid) const
 
 void ArenaTeam::SetLeader(CachedCharacterInfo* info)
 {
-    char buffer[1024];
-    snprintf(buffer, 1024, "%s is now the captain of the arena team, '%s'.", info->name.c_str(), m_name.c_str());
-
-    SendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
-
-    const uint32 old_leader = m_leader;
-    m_leader = info->guid;
-    /* set the fields */
-    for (uint32 i = 0; i < m_memberCount; ++i)
+    if (info)
     {
+        char buffer[1024];
+        snprintf(buffer, 1024, "%s is now the captain of the arena team, '%s'.", info->name.c_str(), m_name.c_str());
+
+        SendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
+
+        const uint32 old_leader = m_leader;
+        m_leader = info->guid;
+
 #if VERSION_STRING != Classic
-        if (m_members[i].Info == info)        /* new leader */
+        for (uint32 i = 0; i < m_memberCount; ++i)
         {
-            if (m_members[i].Info->m_loggedInPlayer)
-                m_members[i].Info->m_loggedInPlayer->setArenaTeamMemberRank(m_type, 0);
-        }
-        else if (m_members[i].Info->guid == old_leader)
-        {
-            if (m_members[i].Info->m_loggedInPlayer)
-                m_members[i].Info->m_loggedInPlayer->setArenaTeamMemberRank(m_type, 1);
+            if (m_members[i].Info)
+            {
+                if (Player* loggedInPlayer = sObjectMgr.GetPlayer(m_members[i].Info->guid))
+                {
+                    if (m_members[i].Info == info)
+                        loggedInPlayer->setArenaTeamMemberRank(m_type, 0);
+                    else if (m_members[i].Info->guid == old_leader)
+                        loggedInPlayer->setArenaTeamMemberRank(m_type, 1);
+                }
+            }
         }
 #endif
     }

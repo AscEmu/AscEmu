@@ -245,7 +245,7 @@ void Aura::EventUpdateGroupAA(AuraEffectModifier* /*aurEff*/, float r)
         SubGroup* sg = owner->getGroup()->GetSubGroup(owner->getSubGroupSlot());
         for (GroupMembersSet::iterator itr = sg->GetGroupMembersBegin(); itr != sg->GetGroupMembersEnd(); ++itr)
         {
-            Player* op = (*itr)->m_loggedInPlayer;
+            Player* op = sObjectMgr.GetPlayer((*itr)->guid);
 
             if (op == nullptr)
                 continue;
@@ -356,7 +356,7 @@ void Aura::EventUpdateRaidAA(AuraEffectModifier* /*aurEff*/, float r)
             for (GroupMembersSet::iterator itr = sg->GetGroupMembersBegin(); itr != sg->GetGroupMembersEnd(); ++itr)
             {
                 CachedCharacterInfo* pi = *itr;
-                Player* op = pi->m_loggedInPlayer;
+                Player* op = sObjectMgr.GetPlayer(pi->guid);
 
                 if (op == nullptr)
                     continue;

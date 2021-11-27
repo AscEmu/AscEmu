@@ -384,43 +384,41 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
         bool alreadySent;
 
         // Send Achievement message to group members
-        Group* grp = GetPlayer()->getGroup();
-
-        if (grp)
+        if (Group* grp = GetPlayer()->getGroup())
         {
             // grp->SendPacketToAll(&cdata);
             uint8_t i = 0;
-            GroupMembersSet::iterator groupItr;
-            GroupMembersSet::iterator groupItrLast;
             grp->Lock();
-            for (; i < grp->GetSubGroupCount(); ++i)
+            for (GroupMembersSet::iterator groupItr; i < grp->GetSubGroupCount(); ++i)
             {
                 SubGroup* sg = grp->GetSubGroup(i);
                 if (sg == nullptr)
-                {
                     continue;
-                }
 
                 groupItr = sg->GetGroupMembersBegin();
-                groupItrLast = sg->GetGroupMembersEnd();
+                GroupMembersSet::iterator groupItrLast = sg->GetGroupMembersEnd();
                 for (; groupItr != groupItrLast; ++groupItr)
                 {
-                    if ((*groupItr)->m_loggedInPlayer != nullptr && (*groupItr)->m_loggedInPlayer->GetSession())
+                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*groupItr)->guid))
                     {
-                        // check if achievement message has already been sent to this player (if they received a guild achievement message already)
-                        alreadySent = false;
-                        for (guidIndex = 0; guidIndex < guidCount; ++guidIndex)
+                        if (loggedInPlayer->GetSession())
                         {
-                            if (guidList[guidIndex] == (*groupItr)->guid)
+                            // check if achievement message has already been sent to this player (if they received a guild achievement message already)
+                            alreadySent = false;
+                            for (guidIndex = 0; guidIndex < guidCount; ++guidIndex)
                             {
-                                alreadySent = true;
-                                guidIndex = guidCount;
+                                if (guidList[guidIndex] == (*groupItr)->guid)
+                                {
+                                    alreadySent = true;
+                                    guidIndex = guidCount;
+                                }
                             }
-                        }
-                        if (!alreadySent)
-                        {
-                            (*groupItr)->m_loggedInPlayer->GetSession()->SendPacket(SmsgMessageChat(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, GetPlayer()->getGuid(), "", GetPlayer()->getGuid(), "", achievement->ID).serialise().get());
-                            guidList[guidCount++] = (*groupItr)->guid;
+
+                            if (!alreadySent)
+                            {
+                                loggedInPlayer->GetSession()->SendPacket(SmsgMessageChat(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, GetPlayer()->getGuid(), "", GetPlayer()->getGuid(), "", achievement->ID).serialise().get());
+                                guidList[guidCount++] = (*groupItr)->guid;
+                            }
                         }
                     }
                 }

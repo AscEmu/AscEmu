@@ -332,7 +332,7 @@ void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
 uint8_t WorldSession::deleteCharacter(WoWGuid guid)
 {
     const auto playerInfo = sObjectMgr.GetPlayerInfo(guid.getGuidLow());
-    if (playerInfo != nullptr && playerInfo->m_loggedInPlayer == nullptr)
+    if (playerInfo != nullptr && sObjectMgr.GetPlayer(playerInfo->guid) == nullptr)
     {
         QueryResult* result = CharacterDatabase.Query("SELECT name FROM characters WHERE guid = %u AND acct = %u",
             guid.getGuidLow(), _accountId);
@@ -529,7 +529,6 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     playerInfo->acct = GetAccountId();
     playerInfo->m_Group = nullptr;
     playerInfo->subGroup = 0;
-    playerInfo->m_loggedInPlayer = nullptr;
     playerInfo->team = newPlayer->getTeam();
     playerInfo->m_guild = 0;
     playerInfo->guildRank = GUILD_RANK_NONE;

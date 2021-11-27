@@ -169,9 +169,6 @@ Player::~Player()
 
     m_reputation.clear();
 
-    if (m_playerInfo)
-        m_playerInfo->m_loggedInPlayer = nullptr;
-
     delete SDetector;
     SDetector = nullptr;
 
@@ -3715,7 +3712,6 @@ void Player::setPlayerInfoIfNeeded()
         sObjectMgr.AddPlayerInfo(playerInfo);
     }
 
-    playerInfo->m_loggedInPlayer = this;
     m_playerInfo = playerInfo;
 }
 

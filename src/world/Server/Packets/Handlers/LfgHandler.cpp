@@ -713,7 +713,7 @@ void WorldSession::handleLfgPartyLockInfoRequestOpcode(WorldPacket& /*recvPacket
     LfgLockPartyMap lockMap;
     for (auto groupPlayerInfo : grp->GetSubGroup(0)->getGroupMembers())
     {
-        Player* plrg = groupPlayerInfo->m_loggedInPlayer;
+        Player* plrg = sObjectMgr.GetPlayer(groupPlayerInfo->guid);
         if (!plrg)
             continue;
 
