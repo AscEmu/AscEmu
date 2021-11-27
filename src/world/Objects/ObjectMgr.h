@@ -23,6 +23,7 @@
 
 #include "Objects/Units/Creatures/Corpse.h"
 #include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/Creatures/Vehicle.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #if VERSION_STRING >= Cata

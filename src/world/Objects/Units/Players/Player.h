@@ -28,8 +28,7 @@
 #include "Management/ItemPrototype.h"
 #include "Management/AchievementMgr.h"
 #include "Map/InstanceDefines.hpp"
-#include "Objects/Units/Unit.h"
-#include "Storage/DBC/DBCStructures.hpp"
+#include "Objects/Units/Unit.h" 
 #include "Storage/MySQLStructures.h"
 #include "Macros/MapsMacros.hpp"
 #include "Macros/PlayerMacros.hpp"
@@ -44,6 +43,7 @@
 
 #include "TradeData.hpp"
 
+class ArenaTeam;
 struct CharCreate;
 class QuestLogEntry;
 struct BGScore;
@@ -70,318 +70,12 @@ class CBattleground;
 class Instance;
 struct CharRaceEntry;
 struct CharClassEntry;
-//struct VendorRestrictionEntry;
 struct Trainer;
 class Aura;
 
 struct OnHitSpell;
+class PlayerInfo;
 
-struct CreateInfo_ItemStruct
-{
-    uint32 protoid;
-    uint8 slot;
-    uint32 amount;
-};
-
-struct CreateInfo_SkillStruct
-{
-    uint32 skillid;
-    uint32 currentval;
-    uint32 maxval;
-};
-
-// APGL End
-// MIT Start
-#pragma pack(push,1)
-struct ActionButton
-{
-    uint32_t Action = 0;
-    uint8_t Type = 0;
-    uint8_t Misc = 0;
-};
-#pragma pack(pop)
-
-struct CreateInfo_ActionBarStruct
-{
-    uint8_t button;
-    uint32_t action;
-    uint8_t type;
-    uint8_t misc;
-};
-
-struct CreateInfo_Levelstats
-{
-    uint32_t strength;
-    uint32_t agility;
-    uint32_t stamina;
-    uint32_t intellect;
-    uint32_t spirit;
-};
-
-typedef std::unordered_map<uint32_t, CreateInfo_Levelstats> CreateInfo_LevelstatsVector;
-
-struct CreateInfo_ClassLevelStats
-{
-    uint32_t health;
-    uint32_t mana;
-};
-
-typedef std::unordered_map<uint32_t, CreateInfo_ClassLevelStats> CreateInfo_ClassLevelStatsVector;
-
-struct PlayerCreateInfo
-{
-    uint32_t mapId;
-    uint32_t zoneId;
-    float positionX;
-    float positionY;
-    float positionZ;
-    float orientation;
-
-    std::list<CreateInfo_ItemStruct> items;
-    std::list<CreateInfo_SkillStruct> skills;
-    std::list<CreateInfo_ActionBarStruct> actionbars;
-    std::set<uint32> spell_list;
-    std::set<uint32> spell_cast_list;
-
-    CreateInfo_LevelstatsVector level_stats;
-};
-
-// MIT End
-// APGL Start
-
-struct DamageSplit
-{
-    Player* caster;
-    Aura* aura;
-    uint32 miscVal;
-    union
-    {
-        uint32 damage;
-        float damagePCT;
-    };
-};
-
-struct LoginAura
-{
-    uint32 id;
-    uint32 dur;
-    bool positive;
-    uint32 charges;
-};
-
-struct FactionReputation
-{
-    int32 standing;
-    uint8 flag;
-    int32 baseStanding;
-    int32 CalcStanding() { return standing - baseStanding; }
-    bool Positive() { return standing >= 0; }
-};
-
-typedef std::unordered_map<uint32, uint32> PlayerInstanceMap;
-class SERVER_DECL PlayerInfo
-{
-    public:
-
-        ~PlayerInfo();
-
-        uint32 guid;        // there is a filed for that
-        uint32 acct;
-        char* name;         // Part of Player class
-        uint8_t race;       // Part of PlayerCreateInfo
-        uint8_t gender;     // there is a field for that in playerbytes3
-        uint8 cl;           // class? Part of PlayerCreateInfo. It is determind on player creation.
-        uint32 team;        // team? there is a field for that since bc. Investigate further for what this is used.
-        uint8 role;         // bg related?
-
-        time_t lastOnline;
-        uint32 lastZone;
-        uint32 lastLevel;
-        Group* m_Group;
-        int8 subGroup;
-        Mutex savedInstanceIdsLock;
-        PlayerInstanceMap savedInstanceIds[InstanceDifficulty::MAX_DIFFICULTY];
-
-        Player* m_loggedInPlayer;
-        uint32 m_guild;
-        uint32 guildRank;
-};
-
-struct PlayerPet
-{
-    std::string name;
-    uint32 entry;
-    uint32 xp;
-    bool active;
-    bool alive;
-    char stablestate;
-    uint32 number;
-    uint32 level;
-    uint32 happinessupdate;
-    std::string actionbar;
-    time_t reset_time;
-    uint32 reset_cost;
-    uint32 spellid;
-    uint32 petstate;
-    uint32 talentpoints;
-    uint32 current_power;
-    uint32 current_hp;
-    uint32 current_happiness;
-    uint32 renamable;
-    uint32 type;
-};
-
-struct WeaponModifier
-{
-    uint32 wclass;
-    uint32 subclass;
-    float value;
-};
-
-struct classScriptOverride
-{
-    uint32 id;
-    uint32 effect;
-    uint32 aura;
-    uint32 damage;
-    bool percent;
-};
-
-class AchievementMgr;
-class Spell;
-class Item;
-class Container;
-class WorldSession;
-class ItemInterface;
-class SpeedCheatDetector;
-struct TaxiPathNode;
-
-struct PlayerSkill
-{
-    DBC::Structures::SkillLineEntry const* Skill;
-    uint32 CurrentValue;
-    uint32 MaximumValue;
-    uint32 BonusValue;
-    float GetSkillUpChance();
-    void Reset(uint32 Id);
-};
-
-class ArenaTeam;
-
-struct PlayerCooldown
-{
-    uint32 ExpireTime;
-    uint32 ItemId;
-    uint32 SpellId;
-};
-
-class PlayerSpec
-{
-    public:
-
-        PlayerSpec()
-        {
-            tp = 0;
-            for (uint8 i = 0; i < PLAYER_ACTION_BUTTON_COUNT; i++)
-            {
-                mActions[i].Action = 0;
-                mActions[i].Type = 0;
-                mActions[i].Misc = 0;
-            }
-        }
-
-        void SetTP(uint32 points){ tp = points; }
-
-        uint32 GetTP() const{ return tp; }
-
-        void Reset()
-        {
-            tp += static_cast<uint32>(talents.size());
-            talents.clear();
-        }
-
-        void AddTalent(uint32 talentid, uint8 rankid)
-        {
-            std::map<uint32, uint8>::iterator itr = talents.find(talentid);
-            if (itr != talents.end())
-                itr->second = rankid;
-            else
-                talents.insert(std::make_pair(talentid, rankid));
-        }
-        bool HasTalent(uint32 talentid, uint8 rankid)
-        {
-            std::map<uint32, uint8>::iterator itr = talents.find(talentid);
-            if (itr != talents.end())
-                return itr->second == rankid;
-
-            return false;
-        }
-
-        std::map<uint32, uint8> talents;
-#ifdef FT_GLYPHS
-        uint16 glyphs[GLYPHS_COUNT] = {0};
-#endif
-        ActionButton mActions[PLAYER_ACTION_BUTTON_COUNT];
-    private:
-
-        uint32 tp;
-};
-
-
-typedef std::set<uint32>                            SpellSet;
-typedef std::list<classScriptOverride*>             ScriptOverrideList;
-typedef std::map<uint32, ScriptOverrideList* >      SpellOverrideMap;
-typedef std::map<uint32, FactionReputation*>        ReputationMap;
-typedef std::map<SpellInfo const*, std::pair<uint32, uint32> >StrikeSpellMap;
-typedef std::map<uint32, OnHitSpell >               StrikeSpellDmgMap;
-typedef std::map<uint32, PlayerSkill>               SkillMap;
-typedef std::map<uint32, PlayerCooldown>            PlayerCooldownMap;
-
-// AGPL End
-
-// MIT Start
-
-
-struct PlayerCheat
-{
-    bool hasTaxiCheat;
-    bool hasCooldownCheat;
-    bool hasCastTimeCheat;
-    bool hasGodModeCheat;
-    bool hasPowerCheat;
-    bool hasFlyCheat;
-    bool hasAuraStackCheat;
-    bool hasItemStackCheat;
-    bool hasTriggerpassCheat;
-};
-
-enum GlyphSlotMask
-{
-#if VERSION_STRING < Cata
-    GS_MASK_1 = 0x001,
-    GS_MASK_2 = 0x002,
-    GS_MASK_3 = 0x008,
-    GS_MASK_4 = 0x004,
-    GS_MASK_5 = 0x010,
-    GS_MASK_6 = 0x020
-#else
-    GS_MASK_1 = 0x001,
-    GS_MASK_2 = 0x002,
-    GS_MASK_3 = 0x040,
-
-    GS_MASK_4 = 0x004,
-    GS_MASK_5 = 0x008,
-    GS_MASK_6 = 0x080,
-
-    GS_MASK_7 = 0x010,
-    GS_MASK_8 = 0x020,
-    GS_MASK_9 = 0x100,
-
-    GS_MASK_LEVEL_25 = GS_MASK_1 | GS_MASK_2 | GS_MASK_3,
-    GS_MASK_LEVEL_50 = GS_MASK_4 | GS_MASK_5 | GS_MASK_6,
-    GS_MASK_LEVEL_75 = GS_MASK_7 | GS_MASK_8 | GS_MASK_9
-#endif
-};
 
 //\todo: everything above this comment, does not belong in this file. Refactor this file to hold only the player class ;-)
 // Everything below this line is bloated (seems we need some new concepts like RAII and a lot of refactoring to shrink it to a manageable class.
@@ -2144,15 +1838,13 @@ public:
             if (mapId >= MAX_NUM_MAPS || difficulty >= InstanceDifficulty::MAX_DIFFICULTY || m_playerInfo == NULL)
                 return 0;
 
-            m_playerInfo->savedInstanceIdsLock.Acquire();
+            std::lock_guard<std::mutex> lock(m_playerInfo->savedInstanceIdsLock);
             PlayerInstanceMap::iterator itr = m_playerInfo->savedInstanceIds[difficulty].find(mapId);
             if (itr == m_playerInfo->savedInstanceIds[difficulty].end())
             {
-                m_playerInfo->savedInstanceIdsLock.Release();
                 return 0;
             }
 
-            m_playerInfo->savedInstanceIdsLock.Release();
             return (*itr).second;
         }
 

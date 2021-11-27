@@ -26,6 +26,7 @@
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/SmsgArenaTeamStats.h"
 #include "Server/Packets/SmsgMessageChat.h"
+#include "Objects/Units/Players/PlayerDefines.hpp"
 
 using namespace AscEmu::Packets;
 

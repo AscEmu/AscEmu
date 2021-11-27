@@ -225,7 +225,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
         if (m_session->CanUseCommand('z'))
         {
             bool foundSomething = false;
-            plr->getPlayerInfo()->savedInstanceIdsLock.Acquire();
+            std::lock_guard<std::mutex> lock(plr->getPlayerInfo()->savedInstanceIdsLock);
             for (uint8 difficulty = 0; difficulty < InstanceDifficulty::MAX_DIFFICULTY; difficulty++)
             {
                 PlayerInstanceMap::iterator itr = plr->getPlayerInfo()->savedInstanceIds[difficulty].find(instance->m_mapId);
@@ -235,7 +235,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
                 SystemMessage(m_session, "Instance with id %u (%s) is persistent and will only be revoked from player.", instanceId, GetDifficultyString(difficulty));
                 foundSomething = true;
             }
-            plr->getPlayerInfo()->savedInstanceIdsLock.Release();
+
             if (!foundSomething)
                 RedSystemMessage(m_session, "Player is not assigned to persistent instance with id %u.", instanceId);
             return true;

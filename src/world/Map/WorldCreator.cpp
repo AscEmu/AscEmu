@@ -321,13 +321,12 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
                             PlayerInfo* pLeaderInfo = pGroup->GetLeader();
                             if (pLeaderInfo)
                             {
-                                pLeaderInfo->savedInstanceIdsLock.Acquire();
+                                std::lock_guard<std::mutex> lock(pLeaderInfo->savedInstanceIdsLock);
                                 const auto itrLeader = pLeaderInfo->savedInstanceIds[grpdiff].find(mapid);
                                 if (itrLeader != pLeaderInfo->savedInstanceIds[grpdiff].end())
                                 {
                                     in = sInstanceMgr.GetInstanceByIds(mapid, (*itrLeader).second);
                                 }
-                                pLeaderInfo->savedInstanceIdsLock.Release();
                             }
                         }
                     }

@@ -24,6 +24,8 @@
 #include "Objects/Units/Players/Player.h"
 
 //MIT
+class PlayerInfo;
+
 struct ArenaTeamPacketList
 {
     uint64_t guid;

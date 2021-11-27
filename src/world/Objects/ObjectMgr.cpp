@@ -390,7 +390,7 @@ void ObjectMgr::LoadPlayersInfo()
                         continue;
                     }
 
-                    pn->savedInstanceIdsLock.Acquire();
+                    std::lock_guard<std::mutex> lock(pn->savedInstanceIdsLock);
                     itr = pn->savedInstanceIds[mode].find(mapId);
                     if (itr == pn->savedInstanceIds[mode].end())
                     {
@@ -408,7 +408,6 @@ void ObjectMgr::LoadPlayersInfo()
                     //    CharacterDatabase.Execute("DELETE FROM instanceids WHERE mapId = %u AND instanceId = %u AND mode = %u", mapId, instanceId, mode);
                     //}
 
-                    pn->savedInstanceIdsLock.Release();
                 } while (result2->NextRow());
                 delete result2;
             }

@@ -1923,7 +1923,8 @@ bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSessi
     uint32 count = 0;
     std::stringstream ss;
     ss << "Show persistent instances of " << MSG_COLOR_CYAN << player_target->getName().c_str() << "|r\n";
-    player_target->getPlayerInfo()->savedInstanceIdsLock.Acquire();
+
+    std::lock_guard<std::mutex> lock(player_target->getPlayerInfo()->savedInstanceIdsLock);
     for (uint32 difficulty = 0; difficulty < InstanceDifficulty::MAX_DIFFICULTY; difficulty++)
     {
         for (PlayerInstanceMap::iterator itr = player_target->getPlayerInfo()->savedInstanceIds[difficulty].begin(); itr != player_target->getPlayerInfo()->savedInstanceIds[difficulty].end(); ++itr)
@@ -1957,7 +1958,6 @@ bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSessi
             ss << "\n";
         }
     }
-    player_target->getPlayerInfo()->savedInstanceIdsLock.Release();
 
     if (count == 0)
         ss << "Player is not assigned to any persistent instances.\n";

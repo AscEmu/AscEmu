@@ -413,9 +413,9 @@ bool Player::Create(CharCreate& charCreateContent)
 
     for (std::list<CreateInfo_ItemStruct>::const_iterator is = info->items.begin(); is != info->items.end(); ++is)
     {
-        if ((*is).protoid != 0)
+        if ((*is).id != 0)
         {
-            auto item = sObjectMgr.CreateItem((*is).protoid, this);
+            auto item = sObjectMgr.CreateItem((*is).id, this);
             if (item)
             {
                 item->setStackCount((*is).amount);
@@ -2903,7 +2903,7 @@ void Player::SetPersistentInstanceId(uint32 mapId, uint8 difficulty, uint32 inst
     if (mapId >= MAX_NUM_MAPS || difficulty >= InstanceDifficulty::MAX_DIFFICULTY || m_playerInfo == nullptr)
         return;
 
-    m_playerInfo->savedInstanceIdsLock.Acquire();
+    std::lock_guard<std::mutex> lock(m_playerInfo->savedInstanceIdsLock);
     PlayerInstanceMap::iterator itr = m_playerInfo->savedInstanceIds[difficulty].find(mapId);
     if (itr == m_playerInfo->savedInstanceIds[difficulty].end())
     {
@@ -2917,7 +2917,6 @@ void Player::SetPersistentInstanceId(uint32 mapId, uint8 difficulty, uint32 inst
         else
             (*itr).second = instanceId;
     }
-    m_playerInfo->savedInstanceIdsLock.Release();
     CharacterDatabase.Execute("DELETE FROM instanceids WHERE playerguid = %u AND mapid = %u AND mode = %u;", m_playerInfo->guid, mapId, difficulty);
     CharacterDatabase.Execute("INSERT INTO instanceids (playerguid, mapid, mode, instanceid) VALUES (%u, %u, %u, %u)", m_playerInfo->guid, mapId, difficulty, instanceId);
 }
@@ -6999,14 +6998,14 @@ void Player::CompleteLoading()
     // Must be after passive spells are loaded
     setInitialPlayerSkills();
 
-    for (std::list<LoginAura>::iterator i = loginauras.begin(); i != loginauras.end(); ++i)
+    for (auto& loginaura : loginauras)
     {
-        if (SpellInfo const* sp = sSpellMgr.getSpellInfo((*i).id))
+        if (SpellInfo const* sp = sSpellMgr.getSpellInfo(loginaura.id))
         {
             if (sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
                 continue; //do not load auras that only exist while pet exist. We should recast these when pet is created anyway
 
-            Aura* aura = sSpellMgr.newAura(sp, (*i).dur, this, this, false);
+            Aura* aura = sSpellMgr.newAura(sp, loginaura.dur, this, this, false);
             //if (!(*i).positive) // do we need this? - vojta
             //    aura->SetNegative();
 
@@ -7018,8 +7017,8 @@ void Player::CompleteLoading()
                 }
             }
 
-            if (sp->getProcCharges() > 0 && (*i).charges > 0)
-                aura->setCharges(static_cast<uint16_t>((*i).charges), false);
+            if (sp->getProcCharges() > 0 && loginaura.charges > 0)
+                aura->setCharges(static_cast<uint16_t>(loginaura.charges), false);
 
             this->addAura(aura);
         }
@@ -8277,7 +8276,7 @@ void Player::_RemoveLanguages()
     }
 }
 
-void PlayerSkill::Reset(uint32 Id)
+void PlayerSkill::Reset(uint32_t Id)
 {
     MaximumValue = 0;
     CurrentValue = 0;

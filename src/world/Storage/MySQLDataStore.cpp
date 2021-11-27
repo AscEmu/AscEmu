@@ -2436,7 +2436,7 @@ void MySQLDataStore::loadPlayerCreateInfoItems()
         if (auto& playerCreateInfo = _playerCreateInfoStoreNew[_race][_class])
         {
             CreateInfo_ItemStruct itm;
-            itm.protoid = item_id;
+            itm.id = item_id;
             itm.slot = fields[3].GetUInt8();
             itm.amount = fields[4].GetUInt32();
 

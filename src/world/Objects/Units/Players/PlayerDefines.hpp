@@ -5,13 +5,31 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "CommonTypes.hpp"
 #include "Macros/ItemMacros.hpp"
+#include "Macros/PlayerMacros.hpp"
 #include "Management/Skill.hpp"
+#include "Map/InstanceDefines.hpp"
 #include <WorldConf.h>
+#include <CommonTypes.hpp>
 
 #include <ctime>
 #include <string>
+#include <map>
+#include <unordered_map>
+#include <mutex>
+#include <set>
+
+class Player;
+
+namespace DBC::Structures
+{
+    struct SkillLineEntry;
+}
+
+struct OnHitSpell;
+class SpellInfo;
+class Aura;
+class Group;
 
 enum PlayerTeam : uint8_t
 {
@@ -439,7 +457,7 @@ enum DrunkenState
     druid - restoration - 282
 */
 
-static const uint32 TalentTreesPerClass[MAX_PLAYER_CLASSES][3] =
+static const uint32_t TalentTreesPerClass[MAX_PLAYER_CLASSES][3] =
 {
 #if VERSION_STRING < Cata
     { 0, 0, 0 },        // NONE
@@ -896,4 +914,287 @@ enum FactionFlags
     FACTION_FLAG_DISABLE_ATWAR      = 0x10, // disables AtWar button for client, but you can be in war with the faction
     FACTION_FLAG_INACTIVE           = 0x20,
     FACTION_FLAG_RIVAL              = 0x40  // only Scryers and Aldor have this flag
+};
+
+#pragma pack(push,1)
+struct ActionButton
+{
+    uint32_t Action = 0;
+    uint8_t Type = 0;
+    uint8_t Misc = 0;
+};
+#pragma pack(pop)
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// CreateInfo
+struct CreateInfo_ItemStruct
+{
+    uint32_t id;
+    uint8_t slot;
+    uint32_t amount;
+};
+
+struct CreateInfo_SkillStruct
+{
+    uint32_t skillid;
+    uint32_t currentval;
+    uint32_t maxval;
+};
+
+struct CreateInfo_ActionBarStruct
+{
+    uint8_t button;
+    uint32_t action;
+    uint8_t type;
+    uint8_t misc;
+};
+
+struct CreateInfo_Levelstats
+{
+    uint32_t strength;
+    uint32_t agility;
+    uint32_t stamina;
+    uint32_t intellect;
+    uint32_t spirit;
+};
+typedef std::unordered_map<uint32_t, CreateInfo_Levelstats> CreateInfo_LevelstatsVector;
+
+struct CreateInfo_ClassLevelStats
+{
+    uint32_t health;
+    uint32_t mana;
+};
+typedef std::unordered_map<uint32_t, CreateInfo_ClassLevelStats> CreateInfo_ClassLevelStatsVector;
+
+struct PlayerCreateInfo
+{
+    uint32_t mapId;
+    uint32_t zoneId;
+    float positionX;
+    float positionY;
+    float positionZ;
+    float orientation;
+
+    std::list<CreateInfo_ItemStruct> items;
+    std::list<CreateInfo_SkillStruct> skills;
+    std::list<CreateInfo_ActionBarStruct> actionbars;
+    std::set<uint32_t> spell_list;
+    std::set<uint32_t> spell_cast_list;
+
+    CreateInfo_LevelstatsVector level_stats;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// PlayerInfo
+//\todo: It is mostly used to handle offline player data for groups, somehow it is used to
+// determine if a player is online or not. Do not use sObjectMgr.GetPlayer to replace m_loggedInPlayer
+// this would slow down calls since it locks the player map. The name should be something like
+// AvailableCharacters instead of something else...
+
+typedef std::unordered_map<uint32_t, uint32_t> PlayerInstanceMap;
+
+class SERVER_DECL PlayerInfo
+{
+public:
+
+    ~PlayerInfo();
+
+    uint32_t guid;
+    uint32_t acct;
+    char* name;
+    uint8_t race;
+    uint8_t gender;
+    uint8_t cl;
+    uint32_t team;
+    uint8_t role;
+
+    time_t lastOnline;
+    uint32_t lastZone;
+    uint32_t lastLevel;
+    Group* m_Group;
+    int8_t subGroup;
+    std::mutex savedInstanceIdsLock;
+    PlayerInstanceMap savedInstanceIds[InstanceDifficulty::MAX_DIFFICULTY];
+
+    Player* m_loggedInPlayer;
+    uint32_t m_guild;
+    uint32_t guildRank;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Misc
+struct LoginAura
+{
+    uint32_t id;
+    uint32_t dur;
+    bool positive;
+    uint32_t charges;
+};
+
+struct FactionReputation
+{
+    int32_t standing;
+    uint8_t flag;
+    int32_t baseStanding;
+    int32_t CalcStanding() { return standing - baseStanding; }
+    bool Positive() { return standing >= 0; }
+};
+
+struct PlayerPet
+{
+    std::string name;
+    uint32_t entry;
+    uint32_t xp;
+    bool active;
+    bool alive;
+    char stablestate;
+    uint32_t number;
+    uint32_t level;
+    uint32_t happinessupdate;
+    std::string actionbar;
+    time_t reset_time;
+    uint32_t reset_cost;
+    uint32_t spellid;
+    uint32_t petstate;
+    uint32_t talentpoints;
+    uint32_t current_power;
+    uint32_t current_hp;
+    uint32_t current_happiness;
+    uint32_t renamable;
+    uint32_t type;
+};
+
+struct WeaponModifier
+{
+    uint32_t wclass;
+    uint32_t subclass;
+    float value;
+};
+
+struct classScriptOverride
+{
+    uint32_t id;
+    uint32_t effect;
+    uint32_t aura;
+    uint32_t damage;
+    bool percent;
+};
+
+struct PlayerSkill
+{
+    DBC::Structures::SkillLineEntry const* Skill;
+    uint32_t CurrentValue;
+    uint32_t MaximumValue;
+    uint32_t BonusValue;
+    float GetSkillUpChance();
+    void Reset(uint32_t Id);
+};
+
+struct PlayerCooldown
+{
+    uint32_t ExpireTime;
+    uint32_t ItemId;
+    uint32_t SpellId;
+};
+
+class PlayerSpec
+{
+public:
+
+    PlayerSpec()
+    {
+        tp = 0;
+        for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; i++)
+        {
+            mActions[i].Action = 0;
+            mActions[i].Type = 0;
+            mActions[i].Misc = 0;
+        }
+    }
+
+    void SetTP(uint32_t points) { tp = points; }
+
+    uint32_t GetTP() const { return tp; }
+
+    void Reset()
+    {
+        tp += static_cast<uint32_t>(talents.size());
+        talents.clear();
+    }
+
+    void AddTalent(uint32_t talentid, uint8_t rankid)
+    {
+        auto itr = talents.find(talentid);
+        if (itr != talents.end())
+            itr->second = rankid;
+        else
+            talents.insert(std::make_pair(talentid, rankid));
+    }
+    bool HasTalent(uint32_t talentid, uint8_t rankid)
+    {
+        auto itr = talents.find(talentid);
+        if (itr != talents.end())
+            return itr->second == rankid;
+
+        return false;
+    }
+
+    std::map<uint32_t, uint8_t> talents;
+#ifdef FT_GLYPHS
+    uint16_t glyphs[GLYPHS_COUNT] = { 0 };
+#endif
+    ActionButton mActions[PLAYER_ACTION_BUTTON_COUNT];
+private:
+
+    uint32_t tp;
+};
+
+typedef std::set<uint32_t>                            SpellSet;
+typedef std::list<classScriptOverride*>             ScriptOverrideList;
+typedef std::map<uint32_t, ScriptOverrideList* >      SpellOverrideMap;
+typedef std::map<uint32_t, FactionReputation*>        ReputationMap;
+typedef std::map<SpellInfo const*, std::pair<uint32_t, uint32_t> >StrikeSpellMap;
+typedef std::map<uint32_t, OnHitSpell >               StrikeSpellDmgMap;
+typedef std::map<uint32_t, PlayerSkill>               SkillMap;
+typedef std::map<uint32_t, PlayerCooldown>            PlayerCooldownMap;
+
+struct PlayerCheat
+{
+    bool hasTaxiCheat;
+    bool hasCooldownCheat;
+    bool hasCastTimeCheat;
+    bool hasGodModeCheat;
+    bool hasPowerCheat;
+    bool hasFlyCheat;
+    bool hasAuraStackCheat;
+    bool hasItemStackCheat;
+    bool hasTriggerpassCheat;
+};
+
+enum GlyphSlotMask
+{
+#if VERSION_STRING < Cata
+    GS_MASK_1 = 0x001,
+    GS_MASK_2 = 0x002,
+    GS_MASK_3 = 0x008,
+    GS_MASK_4 = 0x004,
+    GS_MASK_5 = 0x010,
+    GS_MASK_6 = 0x020
+#else
+    GS_MASK_1 = 0x001,
+    GS_MASK_2 = 0x002,
+    GS_MASK_3 = 0x040,
+
+    GS_MASK_4 = 0x004,
+    GS_MASK_5 = 0x008,
+    GS_MASK_6 = 0x080,
+
+    GS_MASK_7 = 0x010,
+    GS_MASK_8 = 0x020,
+    GS_MASK_9 = 0x100,
+
+    GS_MASK_LEVEL_25 = GS_MASK_1 | GS_MASK_2 | GS_MASK_3,
+    GS_MASK_LEVEL_50 = GS_MASK_4 | GS_MASK_5 | GS_MASK_6,
+    GS_MASK_LEVEL_75 = GS_MASK_7 | GS_MASK_8 | GS_MASK_9
+#endif
 };
