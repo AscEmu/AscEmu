@@ -91,18 +91,18 @@ enum GroupMemberOnlineStatus
     MEMBER_STATUS_DND       = 0x0080        // Lua_UnitIsDND
 };
 
-class PlayerInfo;
+class CachedCharacterInfo;
 
 typedef struct
 {
-    PlayerInfo* player_info;
+    CachedCharacterInfo* player_info;
     Player* player;
 } GroupMember;
 
 class Group;
 class Player;
 
-typedef std::set<PlayerInfo*> GroupMembersSet;
+typedef std::set<CachedCharacterInfo*> GroupMembersSet;
 
 class SERVER_DECL SubGroup // Most stuff will be done through here, not through the "Group" class.
 {
@@ -115,8 +115,8 @@ public:
     inline GroupMembersSet::iterator GetGroupMembersBegin(void) { return m_GroupMembers.begin(); }
     inline GroupMembersSet::iterator GetGroupMembersEnd(void)   { return m_GroupMembers.end(); }
 
-    bool AddPlayer(PlayerInfo* info);
-    void RemovePlayer(PlayerInfo* info);
+    bool AddPlayer(CachedCharacterInfo* info);
+    void RemovePlayer(CachedCharacterInfo* info);
 
     inline bool IsFull(void)                 { return m_GroupMembers.size() >= MAX_GROUP_SIZE_PARTY; }
     inline size_t GetMemberCount(void)       { return m_GroupMembers.size(); }
@@ -149,8 +149,8 @@ public:
     ~Group();
 
     // Adding/Removal Management
-    bool AddMember(PlayerInfo* info, int32 subgroupid = -1);
-    void RemovePlayer(PlayerInfo* info);
+    bool AddMember(CachedCharacterInfo* info, int32 subgroupid = -1);
+    void RemovePlayer(CachedCharacterInfo* info);
 
     // Leaders and Looting
     void SetLeader(Player* pPlayer, bool silent);
@@ -184,13 +184,13 @@ public:
 
     inline uint8 GetMethod(void) { return m_LootMethod; }
     inline uint16 GetThreshold(void) { return m_LootThreshold; }
-    inline PlayerInfo* GetLeader(void) { return m_Leader; }
-    inline PlayerInfo* GetLooter(void) { return m_Looter; }
+    inline CachedCharacterInfo* GetLeader(void) { return m_Leader; }
+    inline CachedCharacterInfo* GetLooter(void) { return m_Looter; }
 
-    void MovePlayer(PlayerInfo* info, uint8 subgroup);
+    void MovePlayer(CachedCharacterInfo* info, uint8 subgroup);
 
     bool HasMember(Player* pPlayer);
-    bool HasMember(PlayerInfo* info);
+    bool HasMember(CachedCharacterInfo* info);
     inline uint32 MemberCount(void) { return m_MemberCount; }
     inline bool IsFull() { return ((m_GroupType == GROUP_TYPE_PARTY && m_MemberCount >= MAX_GROUP_SIZE_PARTY) || (m_GroupType == GROUP_TYPE_RAID && m_MemberCount >= MAX_GROUP_SIZE_RAID)); }
 
@@ -216,13 +216,13 @@ public:
     inline void Unlock() { return m_groupLock.Release(); }
     bool m_isqueued;
 
-    void SetAssistantLeader(PlayerInfo* pMember);
-    void SetMainTank(PlayerInfo* pMember);
-    void SetMainAssist(PlayerInfo* pMember);
+    void SetAssistantLeader(CachedCharacterInfo* pMember);
+    void SetMainTank(CachedCharacterInfo* pMember);
+    void SetMainAssist(CachedCharacterInfo* pMember);
 
-    inline PlayerInfo* GetAssistantLeader() { return m_assistantLeader; }
-    inline PlayerInfo* GetMainTank() { return m_mainTank; }
-    inline PlayerInfo* GetMainAssist() { return m_mainAssist; }
+    inline CachedCharacterInfo* GetAssistantLeader() { return m_assistantLeader; }
+    inline CachedCharacterInfo* GetMainTank() { return m_mainTank; }
+    inline CachedCharacterInfo* GetMainAssist() { return m_mainAssist; }
 
     uint32 m_instanceIds[MAX_NUM_MAPS][InstanceDifficulty::MAX_DIFFICULTY];
 
@@ -262,11 +262,11 @@ public:
     void GoOffline(Player* p);
 
 protected:
-    PlayerInfo* m_Leader;
-    PlayerInfo* m_Looter;
-    PlayerInfo* m_assistantLeader;
-    PlayerInfo* m_mainTank;
-    PlayerInfo* m_mainAssist;
+    CachedCharacterInfo* m_Leader;
+    CachedCharacterInfo* m_Looter;
+    CachedCharacterInfo* m_assistantLeader;
+    CachedCharacterInfo* m_mainTank;
+    CachedCharacterInfo* m_mainAssist;
 
     uint8 m_LootMethod;
     uint16 m_LootThreshold;

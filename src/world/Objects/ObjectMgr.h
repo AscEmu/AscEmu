@@ -198,10 +198,10 @@ typedef std::list<DBC::Structures::AchievementCriteriaEntry const*> AchievementC
 
 //\TODO is this really needed since c++11?
 #ifndef WIN32
-typedef std::map<std::string, PlayerInfo*> PlayerNameStringIndexMap;
+typedef std::map<std::string, CachedCharacterInfo*> PlayerNameStringIndexMap;
 #else
 /// vc++ has the type for a string hash already, so we don't need to do anything special
-typedef std::unordered_map<std::string, PlayerInfo*> PlayerNameStringIndexMap;
+typedef std::unordered_map<std::string, CachedCharacterInfo*> PlayerNameStringIndexMap;
 #endif
 
 // spell_id  req_spell
@@ -294,10 +294,10 @@ class SERVER_DECL ObjectMgr : public EventableObject
         void LoadGroups();
 
         // player names
-        void AddPlayerInfo(PlayerInfo* pn);
-        PlayerInfo* GetPlayerInfo(uint32 guid);
-        PlayerInfo* GetPlayerInfoByName(const char* name);
-        void RenamePlayerInfo(PlayerInfo* pn, const char* oldname, const char* newname);
+        void AddPlayerInfo(CachedCharacterInfo* pn);
+        CachedCharacterInfo* GetPlayerInfo(uint32 guid);
+        CachedCharacterInfo* GetPlayerInfoByName(std::string name);
+        void RenamePlayerInfo(CachedCharacterInfo* pn, std::string oldname, std::string newname);
         void DeletePlayerInfo(uint32 guid);
 
         //Corpse Stuff
@@ -524,7 +524,7 @@ class SERVER_DECL ObjectMgr : public EventableObject
 
         std::set<uint32> m_disabled_spells;
 
-        std::unordered_map<uint32, PlayerInfo*> m_playersinfo;
+        std::unordered_map<uint32, CachedCharacterInfo*> m_playersinfo;
         PlayerNameStringIndexMap m_playersInfoByName;
 
         std::unordered_map<uint32, TimedEmoteList*> m_timedemotes;       /// stored by spawnid

@@ -355,7 +355,7 @@ void Aura::EventUpdateRaidAA(AuraEffectModifier* /*aurEff*/, float r)
 
             for (GroupMembersSet::iterator itr = sg->GetGroupMembersBegin(); itr != sg->GetGroupMembersEnd(); ++itr)
             {
-                PlayerInfo* pi = *itr;
+                CachedCharacterInfo* pi = *itr;
                 Player* op = pi->m_loggedInPlayer;
 
                 if (op == nullptr)

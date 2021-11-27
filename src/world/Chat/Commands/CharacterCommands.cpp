@@ -1451,20 +1451,20 @@ bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_ses
     std::string new_name = new_name_cmd;
     AscEmu::Util::Strings::capitalize(new_name);
 
-    PlayerInfo* pi = sObjectMgr.GetPlayerInfoByName(current_name);
+    CachedCharacterInfo* pi = sObjectMgr.GetPlayerInfoByName(current_name);
     if (pi == nullptr)
     {
         RedSystemMessage(m_session, "Player not found with this name.");
         return true;
     }
 
-    if (sObjectMgr.GetPlayerInfoByName(new_name.c_str()) != nullptr)
+    if (sObjectMgr.GetPlayerInfoByName(new_name) != nullptr)
     {
         RedSystemMessage(m_session, "New name %s is already in use.", new_name.c_str());
         return true;
     }
 
-    sObjectMgr.RenamePlayerInfo(pi, pi->name.c_str(), new_name.c_str());
+    sObjectMgr.RenamePlayerInfo(pi, pi->name, new_name);
 
     pi->name = new_name;
 
@@ -1701,7 +1701,7 @@ bool ChatHandler::HandleCharSetForceRenameCommand(const char* args, WorldSession
         return false;
 
     std::string tmp = std::string(args);
-    PlayerInfo* pi = sObjectMgr.GetPlayerInfoByName(tmp.c_str());
+    CachedCharacterInfo* pi = sObjectMgr.GetPlayerInfoByName(tmp);
     if (pi == nullptr)
     {
         RedSystemMessage(m_session, "Player with that name not found.");
@@ -1734,7 +1734,7 @@ bool ChatHandler::HandleCharSetCustomizeCommand(const char* args, WorldSession* 
         return false;
 
     std::string tmp = std::string(args);
-    PlayerInfo* pi = sObjectMgr.GetPlayerInfoByName(tmp.c_str());
+    CachedCharacterInfo* pi = sObjectMgr.GetPlayerInfoByName(tmp);
     if (pi == nullptr)
     {
         RedSystemMessage(m_session, "Player with that name not found.");
@@ -1766,7 +1766,7 @@ bool ChatHandler::HandleCharSetFactionChangeCommand(const char* args, WorldSessi
         return false;
 
     std::string tmp = std::string(args);
-    PlayerInfo* pi = sObjectMgr.GetPlayerInfoByName(tmp.c_str());
+    CachedCharacterInfo* pi = sObjectMgr.GetPlayerInfoByName(tmp);
     if (pi == nullptr)
     {
         RedSystemMessage(m_session, "Player with that name not found.");
@@ -1798,7 +1798,7 @@ bool ChatHandler::HandleCharSetRaceChangeCommand(const char* args, WorldSession*
         return false;
 
     std::string tmp = std::string(args);
-    PlayerInfo* pi = sObjectMgr.GetPlayerInfoByName(tmp.c_str());
+    CachedCharacterInfo* pi = sObjectMgr.GetPlayerInfoByName(tmp);
     if (pi == nullptr)
     {
         RedSystemMessage(m_session, "Player with that name not found.");

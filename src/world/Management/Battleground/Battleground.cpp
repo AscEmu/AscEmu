@@ -81,7 +81,7 @@ CBattleground::~CBattleground()
         {
             for (GroupMembersSet::iterator itr = m_groups[i]->GetSubGroup(j)->GetGroupMembersBegin(); itr != m_groups[i]->GetSubGroup(j)->GetGroupMembersEnd();)
             {
-                PlayerInfo* inf = (*itr);
+                CachedCharacterInfo* inf = (*itr);
                 ++itr;
                 m_groups[i]->RemovePlayer(inf);
             }

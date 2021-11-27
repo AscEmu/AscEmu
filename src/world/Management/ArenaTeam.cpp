@@ -124,7 +124,7 @@ void ArenaTeam::SendPacket(WorldPacket* data)
 
 void ArenaTeam::Destroy()
 {
-    std::vector<PlayerInfo*> tokill;
+    std::vector<CachedCharacterInfo*> tokill;
     tokill.reserve(m_memberCount);
 
     char buffer[1024];
@@ -145,7 +145,7 @@ void ArenaTeam::Destroy()
     delete this;
 }
 
-bool ArenaTeam::AddMember(PlayerInfo* info)
+bool ArenaTeam::AddMember(CachedCharacterInfo* info)
 {
     Player* player = info->m_loggedInPlayer;
     if (m_memberCount >= m_slots)
@@ -171,7 +171,7 @@ bool ArenaTeam::AddMember(PlayerInfo* info)
     return true;
 }
 
-bool ArenaTeam::RemoveMember(PlayerInfo* info)
+bool ArenaTeam::RemoveMember(CachedCharacterInfo* info)
 {
     for (uint32 i = 0; i < m_memberCount; ++i)
     {
@@ -290,7 +290,7 @@ bool ArenaTeam::isMember(uint32_t guid) const
     return false;
 }
 
-void ArenaTeam::SetLeader(PlayerInfo* info)
+void ArenaTeam::SetLeader(CachedCharacterInfo* info)
 {
     char buffer[1024];
     snprintf(buffer, 1024, "%s is now the captain of the arena team, '%s'.", info->name.c_str(), m_name.c_str());
@@ -317,7 +317,7 @@ void ArenaTeam::SetLeader(PlayerInfo* info)
     }
 }
 
-ArenaTeamMember* ArenaTeam::GetMember(PlayerInfo* info)
+ArenaTeamMember* ArenaTeam::GetMember(CachedCharacterInfo* info)
 {
     for (uint32 i = 0; i < m_memberCount; ++i)
     {

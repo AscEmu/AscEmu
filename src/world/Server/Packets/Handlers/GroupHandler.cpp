@@ -804,7 +804,7 @@ void WorldSession::handleGroupChangeSubGroup(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto playerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.name.c_str());
+    const auto playerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.name);
     if (playerInfo == nullptr || playerInfo->m_Group == nullptr)
         return;
 
@@ -861,7 +861,7 @@ void WorldSession::handleGroupPromote(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    PlayerInfo* playerInfo = nullptr;
+    CachedCharacterInfo* playerInfo = nullptr;
 
     if (srlPacket.isActivated)
         playerInfo = sObjectMgr.GetPlayerInfo(srlPacket.guid.getGuidLow());

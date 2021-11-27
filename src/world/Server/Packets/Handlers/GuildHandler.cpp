@@ -207,7 +207,7 @@ void WorldSession::handleGuildLeader(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto targetPlayerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.name.c_str());
+    const auto targetPlayerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.name);
     if (targetPlayerInfo == nullptr)
     {
         SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, srlPacket.name, GC_ERROR_PLAYER_NOT_FOUND_S).serialise().get());
@@ -255,7 +255,7 @@ void WorldSession::handleGuildRemove(WorldPacket& recvPacket)
         return;
 
 #if VERSION_STRING < Cata
-    const auto targetPlayerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.name.c_str());
+    const auto targetPlayerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.name);
     if (targetPlayerInfo == nullptr)
         return;
 
@@ -275,7 +275,7 @@ void WorldSession::handleGuildPromote(WorldPacket& recvPacket)
         return;
 
 #if VERSION_STRING < Cata
-    const auto targetPlayerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.name.c_str());
+    const auto targetPlayerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.name);
     if (targetPlayerInfo == nullptr)
         return;
 
@@ -295,7 +295,7 @@ void WorldSession::handleGuildDemote(WorldPacket& recvPacket)
         return;
 
 #if VERSION_STRING < Cata
-    const auto targetPlayerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.name.c_str());
+    const auto targetPlayerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.name);
     if (targetPlayerInfo == nullptr)
         return;
 
@@ -314,7 +314,7 @@ void WorldSession::handleGuildSetPublicNote(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto targetPlayerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.targetName.c_str());
+    const auto targetPlayerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.targetName);
     if (targetPlayerInfo == nullptr)
         return;
 
@@ -328,7 +328,7 @@ void WorldSession::handleGuildSetOfficerNote(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto targetPlayerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.targetName.c_str());
+    const auto targetPlayerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.targetName);
     if (targetPlayerInfo == nullptr)
         return;
 
@@ -712,7 +712,7 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
         arenaTeam->AddMember(_player->m_playerInfo);
 
         for (uint32_t i = 0; i < charter->SignatureCount; ++i)
-            if (PlayerInfo* info = sObjectMgr.GetPlayerInfo(charter->Signatures[i]))
+            if (CachedCharacterInfo* info = sObjectMgr.GetPlayerInfo(charter->Signatures[i]))
                 arenaTeam->AddMember(info);
 
         _player->getItemInterface()->SafeFullRemoveItemByGuid(srlPacket.itemGuid);
@@ -1495,7 +1495,7 @@ void WorldSession::handleGuildFinderGetRecruits(WorldPacket& recvPacket)
         MembershipRequest request = *itr;
         WoWGuid playerGuid(request.getPlayerGUID(), 0, HIGHGUID_TYPE_PLAYER);
 
-        PlayerInfo* info = sObjectMgr.GetPlayerInfo(request.getPlayerGUID());
+        CachedCharacterInfo* info = sObjectMgr.GetPlayerInfo(request.getPlayerGUID());
         std::string name = info->name;
 
         data.writeBits(request.getComment().size(), 11);

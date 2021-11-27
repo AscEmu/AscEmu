@@ -92,13 +92,13 @@ SubGroup::~SubGroup()
 
 }
 
-void SubGroup::RemovePlayer(PlayerInfo* info)
+void SubGroup::RemovePlayer(CachedCharacterInfo* info)
 {
     m_GroupMembers.erase(info);
     info->subGroup = -1;
 }
 
-bool SubGroup::AddPlayer(PlayerInfo* info)
+bool SubGroup::AddPlayer(CachedCharacterInfo* info)
 {
     if (IsFull())
         return false;
@@ -132,7 +132,7 @@ SubGroup* Group::FindFreeSubGroup()
     return NULL;
 }
 
-bool Group::AddMember(PlayerInfo* info, int32 subgroupid/* =-1 */)
+bool Group::AddMember(CachedCharacterInfo* info, int32 subgroupid/* =-1 */)
 {
     m_groupLock.Acquire();
     Player* pPlayer = info->m_loggedInPlayer;
@@ -449,7 +449,7 @@ Player* Group::FindFirstPlayer()
     return NULL;
 }
 
-void Group::RemovePlayer(PlayerInfo* info)
+void Group::RemovePlayer(CachedCharacterInfo* info)
 {
     if (info == nullptr)
         return;
@@ -659,7 +659,7 @@ bool Group::HasMember(Player* pPlayer)
     return false;
 }
 
-bool Group::HasMember(PlayerInfo* info)
+bool Group::HasMember(CachedCharacterInfo* info)
 {
     GroupMembersSet::iterator itr;
     uint8 i = 0;
@@ -679,7 +679,7 @@ bool Group::HasMember(PlayerInfo* info)
     return false;
 }
 
-void Group::MovePlayer(PlayerInfo* info, uint8 subgroup)
+void Group::MovePlayer(CachedCharacterInfo* info, uint8 subgroup)
 {
     if (subgroup >= m_SubGroupCount)
         return;
@@ -773,7 +773,7 @@ void Group::LoadFromDB(Field* fields)
             if (guid == 0)
                 continue;
 
-            PlayerInfo* inf = sObjectMgr.GetPlayerInfo(guid);
+            CachedCharacterInfo* inf = sObjectMgr.GetPlayerInfo(guid);
             if (inf == NULL)
                 continue;
 
@@ -1214,7 +1214,7 @@ Group* Group::Create()
     return new Group(true);
 }
 
-void Group::SetMainAssist(PlayerInfo* pMember)
+void Group::SetMainAssist(CachedCharacterInfo* pMember)
 {
     if (m_mainAssist == pMember)
         return;
@@ -1224,7 +1224,7 @@ void Group::SetMainAssist(PlayerInfo* pMember)
     Update();
 }
 
-void Group::SetMainTank(PlayerInfo* pMember)
+void Group::SetMainTank(CachedCharacterInfo* pMember)
 {
     if (m_mainTank == pMember)
         return;
@@ -1234,7 +1234,7 @@ void Group::SetMainTank(PlayerInfo* pMember)
     Update();
 }
 
-void Group::SetAssistantLeader(PlayerInfo* pMember)
+void Group::SetAssistantLeader(CachedCharacterInfo* pMember)
 {
     if (m_assistantLeader == pMember)
         return;
@@ -1318,7 +1318,7 @@ void Group::SendLootUpdates(Object* o)
 
                     for (; itr2 != sGrp->GetGroupMembersEnd(); ++itr2)
                     {
-                        PlayerInfo* p = *itr2;
+                        CachedCharacterInfo* p = *itr2;
 
                         if (p->m_loggedInPlayer != NULL && p->m_loggedInPlayer->IsVisible(o->getGuid()))       // Save updates for non-existent creatures
                             p->m_loggedInPlayer->getUpdateMgr().pushUpdateData(&buf, 1);
@@ -1408,7 +1408,7 @@ void Group::UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTy
 
         for (; itr2 != sGrp->GetGroupMembersEnd(); ++itr2)
         {
-            PlayerInfo* p = *itr2;
+            CachedCharacterInfo* p = *itr2;
 
             if (p->m_loggedInPlayer != NULL && p->m_loggedInPlayer->IsVisible(o->getGuid()))
                 p->m_loggedInPlayer->GetAchievementMgr().UpdateAchievementCriteria(type, miscvalue1, miscvalue2, time);

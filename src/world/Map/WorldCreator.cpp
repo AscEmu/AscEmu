@@ -318,7 +318,7 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
                         }
                         else if (worldConfig.instance.useGroupLeaderInstanceId)
                         {
-                            PlayerInfo* pLeaderInfo = pGroup->GetLeader();
+                            CachedCharacterInfo* pLeaderInfo = pGroup->GetLeader();
                             if (pLeaderInfo)
                             {
                                 std::lock_guard<std::mutex> lock(pLeaderInfo->savedInstanceIdsLock);

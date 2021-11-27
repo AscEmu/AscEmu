@@ -728,7 +728,7 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
     {
         /*if (PlayerInGroup == 0) This cannot be true CID 52876
         {
-            PlayerInfo* pleaderinfo = pGroup->GetLeader();
+            CachedCharacterInfo* pleaderinfo = pGroup->GetLeader();
             if (!pleaderinfo->m_loggedInPlayer)
                 return;
 
@@ -755,7 +755,7 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
 
         /*if (pHighLvlPlayer == 0) This cannot be true CID 52744
         {
-            PlayerInfo* pleaderinfo = pGroup->GetLeader();
+            CachedCharacterInfo* pleaderinfo = pGroup->GetLeader();
             if (!pleaderinfo->m_loggedInPlayer)
                 return;
 

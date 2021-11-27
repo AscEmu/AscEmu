@@ -74,7 +74,7 @@ struct Trainer;
 class Aura;
 
 struct OnHitSpell;
-class PlayerInfo;
+class CachedCharacterInfo;
 
 
 //\todo: everything above this comment, does not belong in this file. Refactor this file to hold only the player class ;-)
@@ -2081,7 +2081,7 @@ public:
 
     private:
 
-        PlayerInfo* m_playerInfo = nullptr;
+        CachedCharacterInfo* m_playerInfo = nullptr;
 
         bool resettalents = false;
         std::list< Item* > m_GarbageItems;
@@ -2101,7 +2101,7 @@ public:
         void AddGarbageItem(Item* it);
         uint32 CheckDamageLimits(uint32 dmg, uint32 spellid);
 
-        PlayerInfo* getPlayerInfo() const { return m_playerInfo; }
+        CachedCharacterInfo* getPlayerInfo() const { return m_playerInfo; }
 
         void LoadFieldsFromString(const char* string, uint16 firstField, uint32 fieldsNum);
 

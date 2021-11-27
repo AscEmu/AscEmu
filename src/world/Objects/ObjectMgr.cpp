@@ -164,7 +164,7 @@ void ObjectMgr::finalize()
     }
 
     sLogger.info("ObjectMgr : Deleting Player Information...");
-    for (std::unordered_map<uint32, PlayerInfo*>::iterator itr = m_playersinfo.begin(); itr != m_playersinfo.end(); ++itr)
+    for (std::unordered_map<uint32, CachedCharacterInfo*>::iterator itr = m_playersinfo.begin(); itr != m_playersinfo.end(); ++itr)
     {
         itr->second->m_Group = nullptr;
         delete itr->second;
@@ -251,11 +251,11 @@ void ObjectMgr::DeletePlayerInfo(uint32 guid)
 {
     std::lock_guard<std::mutex> guard(playernamelock);
 
-    std::unordered_map<uint32, PlayerInfo*>::iterator i = m_playersinfo.find(guid);
+    std::unordered_map<uint32, CachedCharacterInfo*>::iterator i = m_playersinfo.find(guid);
     if (i == m_playersinfo.end())
         return;
 
-    PlayerInfo* pl = i->second;
+    CachedCharacterInfo* pl = i->second;
     if (pl->m_Group)
         pl->m_Group->RemovePlayer(pl);
 
@@ -271,18 +271,18 @@ void ObjectMgr::DeletePlayerInfo(uint32 guid)
     m_playersinfo.erase(i);
 }
 
-PlayerInfo* ObjectMgr::GetPlayerInfo(uint32 guid)
+CachedCharacterInfo* ObjectMgr::GetPlayerInfo(uint32 guid)
 {
     std::lock_guard<std::mutex> guard(playernamelock);
 
-    std::unordered_map<uint32, PlayerInfo*>::iterator i = m_playersinfo.find(guid);
+    std::unordered_map<uint32, CachedCharacterInfo*>::iterator i = m_playersinfo.find(guid);
     if (i != m_playersinfo.end())
         return i->second;
 
     return nullptr;
 }
 
-void ObjectMgr::AddPlayerInfo(PlayerInfo* pn)
+void ObjectMgr::AddPlayerInfo(CachedCharacterInfo* pn)
 {
     std::lock_guard<std::mutex> guard(playernamelock);
 
@@ -293,17 +293,17 @@ void ObjectMgr::AddPlayerInfo(PlayerInfo* pn)
     m_playersInfoByName[pnam] = pn;
 }
 
-void ObjectMgr::RenamePlayerInfo(PlayerInfo* pn, const char* oldname, const char* newname)
+void ObjectMgr::RenamePlayerInfo(CachedCharacterInfo* pn, std::string oldname, std::string newname)
 {
     std::lock_guard<std::mutex> guard(playernamelock);
 
-    std::string oldn = std::string(oldname);
+    std::string oldn = oldname;
     AscEmu::Util::Strings::toLowerCase(oldn);
 
     PlayerNameStringIndexMap::iterator itr = m_playersInfoByName.find(oldn);
     if (itr != m_playersInfoByName.end() && itr->second == pn)
     {
-        std::string newn = std::string(newname);
+        std::string newn = newname;
         AscEmu::Util::Strings::toLowerCase(newn);
         m_playersInfoByName.erase(itr);
         m_playersInfoByName[newn] = pn;
@@ -356,7 +356,7 @@ void ObjectMgr::LoadPlayersInfo()
         do
         {
             Field* fields = result->Fetch();
-            PlayerInfo* pn = new PlayerInfo;
+            CachedCharacterInfo* pn = new CachedCharacterInfo;
             pn->guid = fields[0].GetUInt32();
             std::string dbName = fields[1].GetString();
             AscEmu::Util::Strings::capitalize(dbName);
@@ -428,7 +428,7 @@ void ObjectMgr::LoadPlayersInfo()
     sLogger.info("ObjectMgr : %u players loaded.", static_cast<uint32_t>(m_playersinfo.size()));
 }
 
-PlayerInfo* ObjectMgr::GetPlayerInfoByName(const char* name)
+CachedCharacterInfo* ObjectMgr::GetPlayerInfoByName(std::string name)
 {
     std::string lpn = std::string(name);
     AscEmu::Util::Strings::toLowerCase(lpn);

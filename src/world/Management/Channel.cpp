@@ -422,7 +422,7 @@ void Channel::Kick(Player* plr, Player* die_player, bool ban)
     m_lock.Release();
 }
 
-void Channel::Unban(Player* plr, PlayerInfo* bplr)
+void Channel::Unban(Player* plr, CachedCharacterInfo* bplr)
 {
     m_lock.Acquire();
 

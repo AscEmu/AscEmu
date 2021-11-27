@@ -153,7 +153,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
 
                         for (GroupMembersSet::iterator itr2 = sg->GetGroupMembersBegin(); itr2 != sg->GetGroupMembersEnd(); ++itr2)
                         {
-                            PlayerInfo* pi = (*itr2);
+                            CachedCharacterInfo* pi = (*itr2);
                             Player* gm = sObjectMgr.GetPlayer(pi->guid);
                             if (!gm) continue;
 

@@ -8466,7 +8466,7 @@ void Player::RemoveQuestMob(uint32 entry) //Only for Kill Quests
         quest_mobs.erase(entry);
 }
 
-PlayerInfo::~PlayerInfo()
+CachedCharacterInfo::~CachedCharacterInfo()
 {
     if (m_Group != nullptr)
         m_Group->RemovePlayer(this);
@@ -10576,7 +10576,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
                     {
                         for (GroupMembersSet::iterator itr2 = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr2 != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr2)
                         {
-                            PlayerInfo* pinfo = *itr2;
+                            CachedCharacterInfo* pinfo = *itr2;
                             if (pinfo->m_loggedInPlayer && pinfo->m_loggedInPlayer->getItemInterface()->CanReceiveItem(itemProto, iter->iItemsCount) == 0)
                             {
                                 if (pinfo->m_loggedInPlayer->m_passOnLoot)

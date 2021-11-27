@@ -3696,7 +3696,7 @@ void Player::setPlayerInfoIfNeeded()
     auto playerInfo = sObjectMgr.GetPlayerInfo(getGuidLow());
     if (playerInfo == nullptr)
     {
-        playerInfo = new PlayerInfo;
+        playerInfo = new CachedCharacterInfo;
         playerInfo->cl = getClass();
         playerInfo->gender = getGender();
         playerInfo->guid = getGuidLow();

@@ -189,7 +189,7 @@ bool ChatHandler::HandleGMTicketListCommand(const char* args, WorldSession* m_se
         Player* plr = sObjectMgr.GetPlayer((uint32)(*itr)->playerGuid);
 
         Player* aplr = NULL;
-        PlayerInfo* aplri = NULL;
+        CachedCharacterInfo* aplri = NULL;
         if ((*itr)->assignedToPlayer != 0)
         {
             aplr = sObjectMgr.GetPlayer((uint32)(*itr)->assignedToPlayer);

@@ -985,19 +985,18 @@ struct PlayerCreateInfo
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// PlayerInfo
+// CachedCharacterInfo
 //\todo: It is mostly used to handle offline player data for groups, somehow it is used to
 // determine if a player is online or not. Do not use sObjectMgr.GetPlayer to replace m_loggedInPlayer
-// this would slow down calls since it locks the player map. The name should be something like
-// AvailableCharacters instead of something else...
+// this would slow down calls since it locks the player map.
 
 typedef std::unordered_map<uint32_t, uint32_t> PlayerInstanceMap;
 
-class SERVER_DECL PlayerInfo
+class SERVER_DECL CachedCharacterInfo
 {
 public:
 
-    ~PlayerInfo();
+    ~CachedCharacterInfo();
 
     uint32_t guid;
     uint32_t acct;

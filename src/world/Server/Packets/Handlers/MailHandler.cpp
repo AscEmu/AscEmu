@@ -441,7 +441,7 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const auto playerReceiverInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.receiverName.c_str());
+    const auto playerReceiverInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.receiverName);
     if (playerReceiverInfo == nullptr)
     {
         SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_RECIPIENT_NOT_FOUND).serialise().get());

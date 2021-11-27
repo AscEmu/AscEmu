@@ -24,7 +24,7 @@
 #include "Objects/Units/Players/Player.h"
 
 //MIT
-class PlayerInfo;
+class CachedCharacterInfo;
 
 struct ArenaTeamPacketList
 {
@@ -44,7 +44,7 @@ struct ArenaTeamPacketList
 
 struct ArenaTeamMember
 {
-    PlayerInfo* Info;
+    CachedCharacterInfo* Info;
     uint32 Played_ThisWeek;
     uint32 Won_ThisWeek;
     uint32 Played_ThisSeason;
@@ -90,13 +90,13 @@ class SERVER_DECL ArenaTeam
         void SendPacket(WorldPacket* data);
         
 
-        bool AddMember(PlayerInfo* info);
-        bool RemoveMember(PlayerInfo* info);
+        bool AddMember(CachedCharacterInfo* info);
+        bool RemoveMember(CachedCharacterInfo* info);
 
         bool isMember(uint32_t guid) const;
 
-        void SetLeader(PlayerInfo* info);
-        ArenaTeamMember* GetMember(PlayerInfo* info);
+        void SetLeader(CachedCharacterInfo* info);
+        ArenaTeamMember* GetMember(CachedCharacterInfo* info);
         ArenaTeamMember* GetMemberByGuid(uint32 guid);
 
         uint32 GetPlayersPerTeam()

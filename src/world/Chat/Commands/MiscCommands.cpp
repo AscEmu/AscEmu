@@ -891,7 +891,7 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
     }
     else
     {
-        PlayerInfo* pinfo = sObjectMgr.GetPlayerInfoByName(args);
+        CachedCharacterInfo* pinfo = sObjectMgr.GetPlayerInfoByName(args);
         if (!pinfo)
         {
             char buf[256];
@@ -1218,7 +1218,7 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession* m_se
         return false;
 
     char* pCharacter = (char*)args;
-    PlayerInfo* pInfo = NULL;
+    CachedCharacterInfo* pInfo = NULL;
     char* pReason;
     char* pDuration;
     uint32_t BanTime = 0;
