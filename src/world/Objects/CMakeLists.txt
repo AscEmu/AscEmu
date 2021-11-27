@@ -5,7 +5,7 @@ set(PATH_PREFIX Objects)
 set(SRC_OBJECTS_FILES
     ${PATH_PREFIX}/CObjectFactory.cpp
     ${PATH_PREFIX}/CObjectFactory.h
-	${PATH_PREFIX}/Container.cpp
+    ${PATH_PREFIX}/Container.cpp
     ${PATH_PREFIX}/Container.h
     ${PATH_PREFIX}/DynamicObject.cpp
     ${PATH_PREFIX}/DynamicObject.h
@@ -13,7 +13,7 @@ set(SRC_OBJECTS_FILES
     ${PATH_PREFIX}/Faction.h
     ${PATH_PREFIX}/GameObject.cpp
     ${PATH_PREFIX}/GameObject.h
-	${PATH_PREFIX}/Item.cpp
+    ${PATH_PREFIX}/Item.cpp
     ${PATH_PREFIX}/Item.Legacy.cpp
     ${PATH_PREFIX}/Item.h
     ${PATH_PREFIX}/MovementDefines.h

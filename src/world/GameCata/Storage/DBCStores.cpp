@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldConf.h"
 #include "Server/World.h"
 #include "Spell/SpellAuras.h"
-#include "Units/Players/PlayerDefines.hpp"
+#include "Objects/Units/Players/PlayerDefines.hpp"
 
 #if VERSION_STRING == Cata
 typedef std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*> WMOAreaInfoByTripple;
