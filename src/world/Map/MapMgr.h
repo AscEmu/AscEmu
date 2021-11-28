@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MapDefines.h"
 #include "CThreads.h"
 #include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
-#include "Objects/CObjectFactory.h"
 #include "Server/EventableObject.h"
 #include "Storage/DBC/DBCStructures.hpp"
 
@@ -64,7 +63,6 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
     friend class MapScriptInterface;
 
 public:
-    CObjectFactory ObjectFactory;
 
     uint32 GetAreaFlag(float x, float y, float z, bool *is_outdoors = nullptr) const;
 

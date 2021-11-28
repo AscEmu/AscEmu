@@ -3,8 +3,6 @@
 set(PATH_PREFIX Objects)
 
 set(SRC_OBJECTS_FILES
-    ${PATH_PREFIX}/CObjectFactory.cpp
-    ${PATH_PREFIX}/CObjectFactory.h
     ${PATH_PREFIX}/Container.cpp
     ${PATH_PREFIX}/Container.h
     ${PATH_PREFIX}/DynamicObject.cpp

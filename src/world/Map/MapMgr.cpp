@@ -2219,7 +2219,7 @@ GameObject* MapMgr::CreateGameObject(uint32 entry)
         GUID = m_GOHighGuid;
     }
 
-    GameObject* gameobject = ObjectFactory.CreateGameObject(entry, GUID);
+    GameObject* gameobject = sObjectMgr.createGameObjectByGuid(entry, GUID);
     if (gameobject == nullptr)
         return nullptr;
 

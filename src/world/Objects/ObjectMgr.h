@@ -219,28 +219,30 @@ typedef std::pair<SkillLineAbilityMap::const_iterator, SkillLineAbilityMap::cons
 // finally we are here, the base class of this file ;)
 class SERVER_DECL ObjectMgr : public EventableObject
 {
-    private:
-        ObjectMgr() = default;
-        ~ObjectMgr() = default;
+private:
+    ObjectMgr() = default;
+    ~ObjectMgr() = default;
 
-    public:
-        //MIT
-        static ObjectMgr& getInstance();
-        void initialize();
-        void finalize();
+public:
+    //MIT
+    static ObjectMgr& getInstance();
+    void initialize();
+    void finalize();
 
-        ObjectMgr(ObjectMgr&&) = delete;
-        ObjectMgr(ObjectMgr const&) = delete;
-        ObjectMgr& operator=(ObjectMgr&&) = delete;
-        ObjectMgr& operator=(ObjectMgr const&) = delete;
+    ObjectMgr(ObjectMgr&&) = delete;
+    ObjectMgr(ObjectMgr const&) = delete;
+    ObjectMgr& operator=(ObjectMgr&&) = delete;
+    ObjectMgr& operator=(ObjectMgr const&) = delete;
 
-        void generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId = 0);
-        void generateDatabaseGossipOptionAndSubMenu(Object* object, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId);
+    void generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId = 0);
+    void generateDatabaseGossipOptionAndSubMenu(Object* object, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId);
 
-        void loadTrainers();
+    void loadTrainers();
 
-        Player* createPlayerByGuid(uint8_t _class, uint32_t guid);
-        //MIT END
+    Player* createPlayerByGuid(uint8_t _class, uint32_t guid);
+
+    GameObject* createGameObjectByGuid(uint32_t id, uint32_t guid);
+    //MIT END
 
         void LoadCreatureTimedEmotes();
 
