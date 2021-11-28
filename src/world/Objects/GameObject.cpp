@@ -1365,18 +1365,17 @@ bool GameObject_FishingNode::HasLoot()
 // Class functions for GameObject_Ritual
 GameObject_Ritual::GameObject_Ritual(uint64 GUID) : GameObject(GUID)
 {
-    Ritual = NULL;
 }
 
 GameObject_Ritual::~GameObject_Ritual()
 {
     delete Ritual;
-    Ritual = NULL;
+    Ritual = nullptr;
 }
 
 void GameObject_Ritual::InitAI()
 {
-    Ritual = new CRitual(gameobject_properties->summoning_ritual.req_participants);
+    Ritual = new RitualStruct(gameobject_properties->summoning_ritual.req_participants);
 }
 
 void GameObject_Ritual::onUse(Player* player)

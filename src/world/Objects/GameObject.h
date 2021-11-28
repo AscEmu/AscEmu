@@ -21,7 +21,6 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
-#include "Management/CRitual.h"
 #include "Management/QuestMgr.h"
 #include "Management/TransporterHandler.h"
 #include "Data/WoWGameObject.hpp"
@@ -864,13 +863,98 @@ class GameObject_Ritual : public GameObject
 
         void onUse(Player* player) override;
 
-        CRitual* GetRitual() const
+        struct RitualStruct
         {
-            return Ritual;
-        }
+            uint64_t CasterGUID = 0;
+            uint64_t TargetGUID = 0;
+            uint32_t SpellID = 0;
+            uint32_t CurrentMembers = 0;
+            uint32_t MaxMembers = 0;
+            std::vector<uint64_t> Members;
+
+            RitualStruct(uint32_t members) : MaxMembers(members), Members(members) {}
+
+            void Setup(uint64_t caster_guid, uint64_t target_guid, uint32_t spell_id)
+            {
+                CasterGUID = caster_guid;
+                TargetGUID = target_guid;
+                SpellID = spell_id;
+
+                AddMember(caster_guid);
+            }
+
+            uint64_t GetCasterGUID() { return CasterGUID; }
+            uint64_t GetTargetGUID() { return TargetGUID; }
+            uint32_t GetSpellID() { return SpellID; }
+
+            bool AddMember(uint64_t GUID)
+            {
+                uint32_t i = 0;
+                for (; i < MaxMembers; i++)
+                    if (Members[i] == 0)
+                        break;
+
+                if (i == MaxMembers)
+                    return false;
+
+                Members[i] = GUID;
+                CurrentMembers++;
+
+                return true;
+            }
+
+            bool RemoveMember(uint64_t GUID)
+            {
+                uint32_t i = 0;
+                for (; i < MaxMembers; i++)
+                {
+                    if (Members[i] == GUID)
+                    {
+                        Members[i] = 0;
+                        CurrentMembers--;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            bool HasMember(uint64_t GUID)
+            {
+                for (uint32_t i = 0; i < MaxMembers; i++)
+                    if (Members[i] == GUID)
+                        return true;
+
+                return false;
+            }
+
+            uint64_t GetMemberGUIDBySlot(uint32_t Slot) { return Members[Slot]; }
+
+            bool HasFreeSlots()
+            {
+                if (CurrentMembers < MaxMembers)
+                    return true;
+
+                return false;
+            }
+
+            uint32_t GetMaxMembers() { return MaxMembers; }
+
+            void Finish() { SpellID = 0; }
+
+            bool IsFinished()
+            {
+                if (SpellID == 0)
+                    return true;
+
+                return false;
+            }
+        };
+
+        RitualStruct* GetRitual() const { return Ritual; }
 
     private:
-        CRitual* Ritual;
+        RitualStruct* Ritual = nullptr;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

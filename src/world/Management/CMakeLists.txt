@@ -23,8 +23,6 @@ set(SRC_MANAGEMENT_FILES
     ${PATH_PREFIX}/ChannelMgr.h
     ${PATH_PREFIX}/Charter.cpp
     ${PATH_PREFIX}/Charter.hpp
-    ${PATH_PREFIX}/CRitual.cpp
-    ${PATH_PREFIX}/CRitual.h
     ${PATH_PREFIX}/EquipmentSetMgr.cpp
     ${PATH_PREFIX}/EquipmentSetMgr.h
     ${PATH_PREFIX}/Faction.cpp
