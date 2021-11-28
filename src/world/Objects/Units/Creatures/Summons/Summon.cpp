@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 
-Summon::Summon(uint64_t guid, uint32_t duration) : Creature(guid), m_unitOwner(nullptr), m_summonSlot(-1), m_duration(duration)
+Summon::Summon(uint64_t guid, uint32_t duration) : Creature(guid), m_duration(duration)
 {
     // Override initialization from Creature class
     getThreatManager().initialize();

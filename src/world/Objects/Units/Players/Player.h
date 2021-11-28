@@ -115,9 +115,6 @@ private:
     UpdateManager m_updateMgr;
 public:
     UpdateManager& getUpdateMgr();
-private:
-    SplineManager m_splineMgr;
-public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Data
