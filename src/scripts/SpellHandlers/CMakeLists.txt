@@ -54,7 +54,7 @@ if (USE_PCH)
     <Objects/Item.h>
     <Management/ItemInterface.h>
     <Map/MapMgr.h>
-    <Objects/Faction.h>
+    <Management/Faction.h>
     <Spell/Spell.h>
     <Spell/SpellMgr.hpp>
     <Spell/SpellAuras.h>

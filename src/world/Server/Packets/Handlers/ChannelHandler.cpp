@@ -27,7 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGetChannelMemberCount.h"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 
 using namespace AscEmu::Packets;
 

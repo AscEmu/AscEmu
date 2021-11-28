@@ -22,12 +22,12 @@
 
 #include "Objects/DynamicObject.h"
 #include "Map/MapMgr.h"
-#include "Faction.h"
+#include "Management/Faction.h"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/Spell.Legacy.h"
 #include "Spell/Definitions/SpellIsFlags.hpp"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Data/WoWDynamicObject.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 

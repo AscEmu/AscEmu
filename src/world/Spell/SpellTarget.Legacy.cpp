@@ -21,7 +21,7 @@
 
 #include "VMapFactory.h"
 #include "Map/MapMgr.h"
-#include "Objects/Faction.h"
+#include "Management/Faction.h"
 #include "SpellTarget.h"
 #include "Spell.h"
 #include "Objects/GameObject.h"

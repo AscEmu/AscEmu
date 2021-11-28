@@ -28,7 +28,7 @@
 #include "WorldCreator.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/GameObject.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 
 Mutex m_cellloadLock;

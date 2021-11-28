@@ -21,7 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Pet.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Objects/Units/Creatures/CreatureGroups.h"
 

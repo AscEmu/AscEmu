@@ -19,7 +19,7 @@
 
 #include "Setup.h"
 #include "Map/MapMgr.h"
-#include "Objects/Faction.h"
+#include "Management/Faction.h"
 #include "Spell/SpellAuras.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/Definitions/ProcFlags.hpp"

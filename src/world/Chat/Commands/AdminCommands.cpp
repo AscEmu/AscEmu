@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Spell/SpellMgr.hpp"
 #include "Chat/ChatHandler.hpp"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Spell/SpellAuras.h"
 

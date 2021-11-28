@@ -26,7 +26,7 @@
 #include "Map/WorldCreatorDefines.hpp"
 #include "Map/WorldCreator.h"
 #include "Chat/ChatHandler.hpp"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Server/Packets/SmsgInstanceReset.h"
 #include "Server/Script/ScriptMgr.h"
 

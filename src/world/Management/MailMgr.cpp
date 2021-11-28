@@ -18,7 +18,7 @@
 
 
 #include "Server/MainServerDefines.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Server/Packets/SmsgReceivedMail.h"
 
 MailSystem& MailSystem::getInstance()

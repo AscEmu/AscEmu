@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/MapMgr.h"
 #include "Objects/GameObject.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Server/Opcodes.hpp"
 #include "Server/Packets/MsgTalentWipeConfirm.h"
 #include "Server/Packets/SmsgPetUnlearnConfirm.h"

@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GuildNewsLog.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Server/MainServerDefines.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Objects/Units/Players/Player.h"
 #include "Management/ItemInterface.h"
 #include "Server/Packets/SmsgGuildCommandResult.h"

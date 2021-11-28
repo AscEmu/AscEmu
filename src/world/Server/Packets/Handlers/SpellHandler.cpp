@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Creatures/Summons/Summon.h"
 #include "Objects/Units/UnitDefines.hpp"
-#include "Objects/Faction.h"
+#include "Management/Faction.h"
 #include "Server/Packets/CmsgCastSpell.h"
 #include "Server/Packets/CmsgPetCastSpell.h"
 

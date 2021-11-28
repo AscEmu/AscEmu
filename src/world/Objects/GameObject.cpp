@@ -26,7 +26,7 @@
 #include "Macros/ScriptMacros.hpp"
 #include "Map/MapCell.h"
 #include "Map/MapMgr.h"
-#include "Faction.h"
+#include "Management/Faction.h"
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/SpellEffectTarget.hpp"
 #include "Spell/SpellMgr.hpp"

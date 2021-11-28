@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Map/InstanceDefines.hpp"
 #include "Map/MapMgr.h"
-#include "Objects/Faction.h"
+#include "Management/Faction.h"
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"

@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgPlayerLogin.h"
 #include "Server/Packets/CmsgCharRename.h"
 #include "Server/Packets/SmsgCharRename.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Storage/MySQLDataStore.hpp"

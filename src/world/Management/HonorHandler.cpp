@@ -26,7 +26,7 @@
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
 #include "Server/World.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/SpellMgr.hpp"
 

@@ -27,7 +27,7 @@
 #include "Map/MapMgr.h"
 #include "Map/WorldCreator.h"
 #include "Chat/ChatHandler.hpp"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Server/Packets/SmsgArenaError.h"
 #include "Server/Packets/CmsgBattlemasterJoin.h"
 #include "Server/Packets/SmsgGroupJoinedBattleground.h"

@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Chat/ChatHandler.hpp"
 #include "Management/ArenaTeam.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 
 uint8 ChatHandler::GetArenaTeamInternalType(uint32 type, WorldSession* m_session)
 {

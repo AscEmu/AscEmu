@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/MapMgr.h"
-#include "Faction.h"
+#include "Management/Faction.h"
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/SpellDamageType.hpp"

@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Server/WorldSession.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Server/Packets/MsgInspectArenaTeams.h"
 #include "Map/MapMgr.h"
 #include "Server/Packets/CmsgArenaTeamQuery.h"

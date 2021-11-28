@@ -50,7 +50,7 @@
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/MapMgr.h"
-#include "Objects/Faction.h"
+#include "Management/Faction.h"
 #include "Spell/SpellAuras.h"
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/ProcFlags.hpp"

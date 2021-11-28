@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Raid_Karazhan.h"
-#include "Objects/Faction.h"
+#include "Management/Faction.h"
 #include <Spell/Definitions/PowerType.hpp>
 #include "Server/Script/CreatureAIScript.h"
 

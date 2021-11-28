@@ -43,7 +43,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.h"
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
-#include "Objects/Faction.h"
+#include "Management/Faction.h"
 #include "Server/Packets/SmsgAttackStart.h"
 #include "Server/Packets/SmsgAttackStop.h"
 #include "Server/Packets/SmsgMessageChat.h"

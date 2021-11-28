@@ -29,7 +29,7 @@
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
-#include "Objects/Faction.h"
+#include "Management/Faction.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/SpellLog.hpp"
 #include "Spell/Definitions/ProcFlags.hpp"

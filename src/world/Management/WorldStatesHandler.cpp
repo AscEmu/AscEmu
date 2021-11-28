@@ -21,7 +21,7 @@
 
 #include "WorldStatesHandler.h"
 #include "Server/World.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 
 void WorldStatesHandler::SetWorldStateForZone(uint32 zone, uint32 /*area*/, uint32 field, uint32 value)
 {

@@ -31,7 +31,7 @@
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "ScriptMgr.h"
 #include "Map/MapScriptInterface.h"
 #include "Common.hpp"

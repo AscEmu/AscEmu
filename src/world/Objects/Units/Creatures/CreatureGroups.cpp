@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 
 #include "Movement/MovementManager.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 
 #define MAX_DESYNC 5.0f
 

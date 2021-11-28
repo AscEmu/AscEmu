@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Server/MainServerDefines.h"
 #include "Chat/ChatHandler.hpp"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/Guild/Guild.hpp"

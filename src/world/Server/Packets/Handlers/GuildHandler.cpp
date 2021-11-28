@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGuildCommandResult.h"
 #include "Server/Packets/CmsgGuildInvite.h"
 #include "Management/Guild/GuildMgr.hpp"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Server/Packets/MsgSaveGuildEmblem.h"
 #include "Server/Packets/CmsgGuildBankBuyTab.h"
 #include "Server/Packets/MsgGuildBankLogQuery.h"

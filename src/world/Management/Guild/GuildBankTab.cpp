@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GuildBankTab.hpp"
 #include "Server/MainServerDefines.h"
 #include "Objects/Item.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 
 #if VERSION_STRING < Cata
 #include "Server/Packets/MsgQueryGuildBankText.h"

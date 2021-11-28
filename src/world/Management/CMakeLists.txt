@@ -27,6 +27,9 @@ set(SRC_MANAGEMENT_FILES
     ${PATH_PREFIX}/CRitual.h
     ${PATH_PREFIX}/EquipmentSetMgr.cpp
     ${PATH_PREFIX}/EquipmentSetMgr.h
+    ${PATH_PREFIX}/Faction.cpp
+    ${PATH_PREFIX}/Faction.h
+    ${PATH_PREFIX}/G3DPosition.hpp
     ${PATH_PREFIX}/GameEvent.cpp
     ${PATH_PREFIX}/GameEvent.h
     ${PATH_PREFIX}/GameEventMgr.cpp
@@ -42,6 +45,8 @@ set(SRC_MANAGEMENT_FILES
     ${PATH_PREFIX}/LootMgr.h
     ${PATH_PREFIX}/MailMgr.cpp
     ${PATH_PREFIX}/MailMgr.h
+    ${PATH_PREFIX}/ObjectMgr.cpp
+    ${PATH_PREFIX}/ObjectMgr.h
     ${PATH_PREFIX}/Quest.cpp
     ${PATH_PREFIX}/Quest.h
     ${PATH_PREFIX}/QuestDefines.hpp

@@ -21,7 +21,7 @@
 
 
 #include "Map/MapMgr.h"
-#include "Objects/Faction.h"
+#include "Management/Faction.h"
 #include "Spell/SpellMgr.hpp"
 #include "SpellAuras.h"
 #include "Definitions/SpellSchoolConversionTable.hpp"

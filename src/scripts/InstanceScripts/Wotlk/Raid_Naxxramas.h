@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "Objects/Faction.h"
+#include "Management/Faction.h"
 #include <Objects/Units/Creatures/Pet.h>
 #include "Server/Script/CreatureAIScript.h"
 

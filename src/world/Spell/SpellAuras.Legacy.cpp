@@ -29,7 +29,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Map/MapMgr.h"
-#include "Objects/Faction.h"
+#include "Management/Faction.h"
 #include "SpellAuras.h"
 #include "Definitions/SpellModifierType.hpp"
 #include "SpellHelpers.h"

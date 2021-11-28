@@ -25,7 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementManager.h"
 #include "Server/MainServerDefines.h"
 #include "Objects/Units/Creatures/Vehicle.h"
-#include "Objects/Faction.h"
+#include "Management/Faction.h"
 #include "Spell/Definitions/SpellFailure.hpp"
 #include "Server/Packets/SmsgPetLearnedSpell.h"
 #include "Objects/Units/ThreatHandler.h"

@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "SpellCastTargets.hpp"
 
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include <Server/WorldSocket.h>
 
 void SpellCastTargets::reset()

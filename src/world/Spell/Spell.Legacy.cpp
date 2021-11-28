@@ -46,7 +46,7 @@
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
-#include "Objects/Faction.h"
+#include "Management/Faction.h"
 #include "SpellMgr.hpp"
 #include "SpellAuras.h"
 #include "Definitions/SpellEffects.hpp"

@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.h"
 #include "Management/Battleground/Battleground.h"
 #include "Map/MapMgr.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 
 #if VERSION_STRING >= Cata

@@ -20,7 +20,7 @@
 #include "Management/Skill.hpp"
 #include "Management/ItemInterface.h"
 #include "Map/MapScriptInterface.h"
-#include "Objects/Faction.h"
+#include "Management/Faction.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
 

@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Chat/ChatHandler.hpp"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include <world/Spell/Definitions/PowerType.hpp>
 #include <world/Objects/Units/Stats.h>
 

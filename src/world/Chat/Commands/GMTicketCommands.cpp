@@ -24,7 +24,7 @@
 #include "Management/ChannelMgr.h"
 #include "Chat/ChatHandler.hpp"
 #include "Server/World.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Server/Packets/SmsgGmTicketDeleteTicket.h"
 #include "Server/Packets/SmsgGmTicketStatusUpdate.h"
 #include "Management/Tickets/TicketMgr.hpp"

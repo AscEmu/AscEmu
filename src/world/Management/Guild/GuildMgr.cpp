@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "GuildMgr.hpp"
 #include "Guild.hpp"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Util/Strings.hpp"
 

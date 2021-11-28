@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Spell/Definitions/SpellFailure.hpp"
 #include "Server/ServerState.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Management/WeatherMgr.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Storage/MySQLDataStore.hpp"

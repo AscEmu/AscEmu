@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Raid_IceCrownCitadel.h"
-#include "Objects/Faction.h"
+#include "Management/Faction.h"
 #include "Objects/Units/Creatures/Summons/Summon.h"
-#include <Objects/ObjectMgr.h>
+#include <Management/ObjectMgr.h>
 #include <Management/TransporterHandler.h>
 #include <Objects/Transporter.h>
 #include "Movement/MovementGenerators/PointMovementGenerator.h"

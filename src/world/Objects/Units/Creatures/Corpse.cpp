@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Map/MapCell.h"
 #include "Corpse.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Data/WoWCorpse.hpp"
 #include "Util/Strings.hpp"
 

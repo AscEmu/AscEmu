@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgRequestPartyMemberStats.h"
 #include "Server/Packets/SmsgPartyMemberStatsFull.h"
 #include "Server/WorldSession.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Map/MapMgr.h"
 #include "Map/WorldCreator.h"
 #include "Server/Packets/CmsgGroupChangeSubGroup.h"

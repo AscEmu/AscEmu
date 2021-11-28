@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ChaseMovementGenerator.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/AIInterface.h"
-#include "Objects/G3DPosition.hpp"
+#include "Management/G3DPosition.hpp"
 #include "Movement/MovementManager.h"
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"

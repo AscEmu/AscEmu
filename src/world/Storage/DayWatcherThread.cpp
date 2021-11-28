@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Management/ArenaTeam.h"
 #include "Server/MainServerDefines.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "DayWatcherThread.h"
 
 #include "Chat/ChatHandler.hpp"

@@ -18,7 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/UnitDefines.hpp"
 #include "Map/MapMgr.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Objects/Container.h"
 #include "Management/ItemInterface.h"
 #include "Spell/SpellMgr.hpp"

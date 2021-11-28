@@ -26,7 +26,7 @@
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Objects/GameObject.h"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/SpellMgr.hpp"
 

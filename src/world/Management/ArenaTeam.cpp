@@ -23,7 +23,7 @@
 #include "Server/MainServerDefines.h"
 #include "Server/WorldSession.h"
 #include "Chat/ChatHandler.hpp"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Server/Packets/SmsgArenaTeamStats.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"

@@ -21,7 +21,7 @@
 #include "Objects/Item.h"
 #include "Management/ItemInterface.h"
 #include "Map/MapMgr.h"
-#include "Objects/Faction.h"
+#include "Management/Faction.h"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Spell/Spell.h"
 #include "Server/Script/ScriptMgr.h"

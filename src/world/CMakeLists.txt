@@ -214,6 +214,7 @@ if (USE_PCH)
     Storage/MySQLDataStore.hpp
     Objects/Units/Players/Player.h
     Objects/Units/Unit.h
+	Management/ObjectMgr.h
 )
 
 endif ()
