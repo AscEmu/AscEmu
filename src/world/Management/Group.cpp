@@ -392,7 +392,7 @@ void SubGroup::Disband()
 #if VERSION_STRING >= Cata
                     loggedInPlayer->GetSession()->sendEmptyGroupList(loggedInPlayer);
 #else
-                    (*itr)->m_Group->SendNullUpdate((*itr)->m_loggedInPlayer);   // cebernic: panel refresh.
+                    (*itr)->m_Group->SendNullUpdate(loggedInPlayer);   // cebernic: panel refresh.
 #endif
                 }
             }

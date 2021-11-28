@@ -1816,7 +1816,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
                 GroupMembersSet::iterator itx;
                 for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
                 {
-                    Player* plrg = (*itx)->m_loggedInPlayer;
+                    Player* plrg = sObjectMgr.GetPlayer((*itx)->guid);
                     if (plrg && plrg != player && plrg->GetMapId() == uint32(dungeon->map))
                     {
                         mapid = plrg->GetMapId();

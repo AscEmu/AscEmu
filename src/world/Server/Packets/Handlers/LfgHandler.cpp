@@ -429,7 +429,7 @@ void WorldSession::sendLfgUpdateProposal(uint32_t proposalId, const LfgProposal*
             GroupMembersSet::iterator itx;
             for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
             {
-                Player* groupMember = (*itx)->m_loggedInPlayer;
+                Player* groupMember = sObjectMgr.GetPlayer((*itx)->guid);
                 if (groupMember && groupMember->GetMapId() == uint32_t(dungeon->map))
                 {
                     /* todo fix this
