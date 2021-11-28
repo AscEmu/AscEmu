@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GuildFinderMgr.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/Guild/Guild.hpp"
-#include "Objects/ObjectMgr.h"
+#include "Management/ObjectMgr.h"
 #include "Server/MainServerDefines.h"
 
 GuildFinderMgr& GuildFinderMgr::getInstance()
