@@ -24,7 +24,6 @@
 #include "MMapFactory.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/Summons/Summon.h"
-#include "Objects/Units/Creatures/Summons/TotemSummon.h"
 #include "Objects/DynamicObject.h"
 #include "Macros/ScriptMacros.hpp"
 #include "Management/HonorHandler.h"

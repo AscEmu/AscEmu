@@ -28,11 +28,6 @@
 #include "Map/Area/AreaStorage.hpp"
 #include "CrashHandler.h"
 #include "Objects/Units/Creatures/Summons/Summon.h"
-#include "Objects/Units/Creatures/Summons/GuardianSummon.h"
-#include "Objects/Units/Creatures/Summons/WildSummon.h"
-#include "Objects/Units/Creatures/Summons/TotemSummon.h"
-#include "Objects/Units/Creatures/Summons/PossessedSummon.h"
-#include "Objects/Units/Creatures/Summons/CompanionSummon.h"
 #include "Objects/Units/Unit.h"
 #include "VMapFactory.h"
 #include "MMapFactory.h"
@@ -2114,21 +2109,7 @@ Summon* MapMgr::CreateSummon(uint32 entry, SummonType type, uint32_t duration)
     // Generate always a new guid for totems, otherwise the totem timer bar will get messed up
     uint64 guid = GenerateCreatureGUID(entry, type != SUMMONTYPE_TOTEM);
 
-    switch (type)
-    {
-        case SUMMONTYPE_GUARDIAN:
-            return new GuardianSummon(guid, duration);
-        case SUMMONTYPE_WILD:
-            return new WildSummon(guid, duration);
-        case SUMMONTYPE_TOTEM:
-            return new TotemSummon(guid, duration);
-        case SUMMONTYPE_COMPANION:
-            return new CompanionSummon(guid, duration);
-        case SUMMONTYPE_POSSESSED:
-            return new PossessedSummon(guid, duration);
-    }
-
-    return new Summon(guid, duration);
+    return sObjectMgr.createSummonByGuid(guid, type, duration);
 }
 
 // Spawns the object too, without which you can not interact with the object

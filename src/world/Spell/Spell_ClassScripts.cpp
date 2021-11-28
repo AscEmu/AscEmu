@@ -26,7 +26,7 @@
 #include "SpellAuras.h"
 #include "Definitions/SpellSchoolConversionTable.hpp"
 #include "Definitions/DispelType.hpp"
-#include "Objects/Units/Creatures/Summons/TotemSummon.h"
+#include "Objects/Units/Creatures/Summons/Summon.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
  // Mage Scripts

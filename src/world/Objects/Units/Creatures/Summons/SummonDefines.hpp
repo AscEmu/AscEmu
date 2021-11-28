@@ -7,9 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 enum SummonType
 {
-    SUMMONTYPE_GUARDIAN     = 0,
-    SUMMONTYPE_WILD         = 1,
-    SUMMONTYPE_TOTEM        = 2,
-    SUMMONTYPE_COMPANION    = 3,
-    SUMMONTYPE_POSSESSED    = 4
+    SUMMONTYPE_NONE         = 0,
+    SUMMONTYPE_GUARDIAN     = 1,
+    SUMMONTYPE_WILD         = 2,
+    SUMMONTYPE_TOTEM        = 3,
+    SUMMONTYPE_COMPANION    = 4,
+    SUMMONTYPE_POSSESSED    = 5
 };
