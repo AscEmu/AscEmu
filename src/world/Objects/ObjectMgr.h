@@ -238,6 +238,8 @@ class SERVER_DECL ObjectMgr : public EventableObject
         void generateDatabaseGossipOptionAndSubMenu(Object* object, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId);
 
         void loadTrainers();
+
+        Player* createPlayerByGuid(uint8_t _class, uint32_t guid);
         //MIT END
 
         void LoadCreatureTimedEmotes();

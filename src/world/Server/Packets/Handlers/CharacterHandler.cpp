@@ -269,50 +269,10 @@ void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
     }
 
     Field* fields = result->Fetch();
-    const uint64_t playerGuid = fields[0].GetUInt64();
+    const uint32_t playerGuid = fields[0].GetUInt32();
     const uint8_t _class = fields[1].GetUInt8();
 
-    Player* player = nullptr;
-    switch (_class)
-    {
-        case WARRIOR:
-            player = new Warrior(static_cast<uint32_t>(playerGuid));
-            break;
-        case PALADIN:
-            player = new Paladin(static_cast<uint32_t>(playerGuid));
-            break;
-        case HUNTER:
-            player = new Hunter(static_cast<uint32_t>(playerGuid));
-            break;
-        case ROGUE:
-            player = new Rogue(static_cast<uint32_t>(playerGuid));
-            break;
-        case PRIEST:
-            player = new Priest(static_cast<uint32_t>(playerGuid));
-            break;
-#if VERSION_STRING > TBC
-        case DEATHKNIGHT:
-            player = new DeathKnight(static_cast<uint32_t>(playerGuid));
-            break;
-#endif
-        case SHAMAN:
-            player = new Shaman(static_cast<uint32_t>(playerGuid));
-            break;
-        case MAGE:
-            player = new Mage(static_cast<uint32_t>(playerGuid));
-            break;
-        case WARLOCK:
-            player = new Warlock(static_cast<uint32_t>(playerGuid));
-            break;
-#if VERSION_STRING > Cata
-        case MONK:
-            player = new Monk(static_cast<uint32_t>(playerGuid));
-            break;
-#endif
-        case DRUID:
-            player = new Druid(static_cast<uint32_t>(playerGuid));
-            break;
-    }
+    Player* player = sObjectMgr.createPlayerByGuid(_class, playerGuid);
 
     if (player == nullptr)
     {
@@ -326,7 +286,7 @@ void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
 
     sLogger.debug("Async loading player %u", static_cast<uint32_t>(playerGuid));
     m_loggingInPlayer = player;
-    player->LoadFromDB(static_cast<uint32_t>(playerGuid));
+    player->LoadFromDB(playerGuid);
 }
 
 uint8_t WorldSession::deleteCharacter(WoWGuid guid)

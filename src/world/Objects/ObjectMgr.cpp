@@ -217,6 +217,57 @@ void ObjectMgr::finalize()
     mSpellEffectMaps.clear();
 }
 
+Player* ObjectMgr::createPlayerByGuid(uint8_t _class, uint32_t guid)
+{
+    Player* player;
+
+    switch (_class)
+    {
+        case WARRIOR:
+            player = new Warrior(guid);
+            break;
+        case PALADIN:
+            player = new Paladin(guid);
+            break;
+        case HUNTER:
+            player = new Hunter(guid);
+            break;
+        case ROGUE:
+            player = new Rogue(guid);
+            break;
+        case PRIEST:
+            player = new Priest(guid);
+            break;
+#if VERSION_STRING > TBC
+        case DEATHKNIGHT:
+            player = new DeathKnight(guid);
+            break;
+#endif
+        case SHAMAN:
+            player = new Shaman(guid);
+            break;
+        case MAGE:
+            player = new Mage(guid);
+            break;
+        case WARLOCK:
+            player = new Warlock(guid);
+            break;
+#if VERSION_STRING > Cata
+        case MONK:
+            player = new Monk(guid);
+            break;
+#endif
+        case DRUID:
+            player = new Druid(guid);
+            break;
+        default:
+            player = nullptr;
+            break;
+    }
+
+    return player;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Groups
 Group* ObjectMgr::GetGroupByLeader(Player* pPlayer)
@@ -1804,51 +1855,9 @@ Pet* ObjectMgr::CreatePet(uint32 entry)
 
 Player* ObjectMgr::CreatePlayer(uint8 _class)
 {
-    uint32 guid;
-    guid = ++m_hiPlayerGuid;
+    uint32_t guid= ++m_hiPlayerGuid;
 
-    Player* result = nullptr;
-    switch (_class)
-    {
-        case WARRIOR:
-            result = new Warrior(guid);
-            break;
-        case PALADIN:
-            result = new Paladin(guid);
-            break;
-        case HUNTER:
-            result = new Hunter(guid);
-            break;
-        case ROGUE:
-            result = new Rogue(guid);
-            break;
-        case PRIEST:
-            result = new Priest(guid);
-            break;
-#if VERSION_STRING > TBC
-        case DEATHKNIGHT:
-            result = new DeathKnight(guid);
-            break;
-#endif
-        case SHAMAN:
-            result = new Shaman(guid);
-            break;
-        case MAGE:
-            result = new Mage(guid);
-            break;
-        case WARLOCK:
-            result = new Warlock(guid);
-            break;
-#if VERSION_STRING > CATA
-        case MONK:
-            result = new Monk(guid);
-            break;
-#endif
-        case DRUID:
-            result = new Druid(guid);
-            break;
-    }
-    return result;
+    return createPlayerByGuid(_class, guid);
 }
 
 void ObjectMgr::AddPlayer(Player* p)
