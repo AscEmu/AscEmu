@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <unordered_map>
 #include <mutex>
 #include <set>
+#include <list>
 
 class Player;
 

@@ -117,8 +117,3 @@ GameObject* CObjectFactory::CreateGameObject(uint32 Id, uint32 LowGUID)
 
     return gameobject;
 }
-
-void CObjectFactory::DisposeOf(Object* obj)
-{
-    delete obj;
-}
