@@ -54,6 +54,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAuctionCommandResult.h"
 #include "Server/Packets/SmsgClearCooldown.h"
 #include "Server/World.h"
+#include "Server/WorldSocket.h"
 #include "Server/Packets/SmsgContactList.h"
 #include "Server/Packets/SmsgFriendStatus.h"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
@@ -2135,6 +2136,81 @@ void Player::updateGlyphs()
     setGlyphsEnabled(slotMask);
 }
 #endif
+
+uint64_t Player::getComboPointTarget() const
+{
+    return m_comboTarget;
+}
+
+int8_t Player::getComboPoints() const
+{
+    return m_comboPoints;
+}
+
+void Player::addComboPoints(uint64_t targetGuid, int8_t points)
+{
+    // Remove combo point retain auras
+    // This will not clear points created by retain aura, remove code checks for duration
+    if (points > 0)
+        removeAllAurasByAuraEffect(SPELL_AURA_RETAIN_COMBO_POINTS);
+
+    if (getComboPointTarget() == targetGuid)
+    {
+        m_comboPoints += points;
+    }
+    else
+    {
+        // Clear points when switching combo target
+        m_comboTarget = targetGuid;
+        m_comboPoints = points;
+    }
+
+    updateComboPoints();
+}
+
+void Player::updateComboPoints()
+{
+    if (getComboPoints() > 5)
+        m_comboPoints = 5;
+
+    if (getComboPoints() < 0)
+        m_comboPoints = 0;
+
+    // todo: I think there should be a better way to do this, copypasting from legacy method now -Appled
+    unsigned char buffer[10];
+    uint16_t length = 2;
+
+    if (getComboPointTarget() != 0)
+    {
+        const auto* const target = GetMapMgrUnit(getComboPointTarget());
+        if (target == nullptr || target->isDead() || getTargetGuid() != getComboPointTarget())
+        {
+            buffer[0] = buffer[1] = 0;
+        }
+        else
+        {
+            length = static_cast<uint16_t>(FastGUIDPack(getComboPointTarget(), buffer, 0));
+            buffer[length++] = getComboPoints();
+        }
+    }
+    else
+    {
+        buffer[0] = buffer[1] = 0;
+    }
+
+    m_session->OutPacket(SMSG_UPDATE_COMBO_POINTS, length, buffer);
+}
+
+void Player::clearComboPoints()
+{
+    m_comboTarget = 0;
+    m_comboPoints = 0;
+
+    // Remove combo point retain auras when combo points have been used
+    removeAllAurasByAuraEffect(SPELL_AURA_RETAIN_COMBO_POINTS);
+
+    updateComboPoints();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Talents

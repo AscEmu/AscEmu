@@ -22,6 +22,8 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "WorldConf.h"
 
+#include "Spell/SpellMgr.hpp"
+
 #include <cstdint>
 
 class ScriptMgr;

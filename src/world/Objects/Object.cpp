@@ -734,20 +734,27 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     }
 
     // Setup proc flags
-    uint32_t casterProcFlags = 0;
-    uint32_t victimProcFlags = PROC_ON_TAKEN_ANY_DAMAGE;
+    dmgInfo.victimProcFlags = PROC_ON_TAKEN_ANY_DAMAGE;
 
     if (!isPeriodic)
     {
         switch (spellInfo->getDmgClass())
         {
+            case SPELL_DMG_TYPE_NONE:
+                dmgInfo.attackerProcFlags |= PROC_ON_DONE_NEGATIVE_SPELL_DAMAGE_CLASS_NONE;
+                dmgInfo.victimProcFlags |= PROC_ON_TAKEN_NEGATIVE_SPELL_DAMAGE_CLASS_NONE;
+                break;
+            case SPELL_DMG_TYPE_MAGIC:
+                dmgInfo.attackerProcFlags |= PROC_ON_DONE_NEGATIVE_SPELL_DAMAGE_CLASS_MAGIC;
+                dmgInfo.victimProcFlags |= PROC_ON_TAKEN_NEGATIVE_SPELL_DAMAGE_CLASS_MAGIC;
+                break;
             case SPELL_DMG_TYPE_MELEE:
-                casterProcFlags |= PROC_ON_DONE_MELEE_SPELL_HIT;
-                victimProcFlags |= PROC_ON_TAKEN_MELEE_SPELL_HIT;
+                dmgInfo.attackerProcFlags |= PROC_ON_DONE_MELEE_SPELL_HIT;
+                dmgInfo.victimProcFlags |= PROC_ON_TAKEN_MELEE_SPELL_HIT;
                 break;
             case SPELL_DMG_TYPE_RANGED:
-                casterProcFlags |= PROC_ON_DONE_RANGED_SPELL_HIT;
-                victimProcFlags |= PROC_ON_TAKEN_RANGED_SPELL_HIT;
+                dmgInfo.attackerProcFlags |= PROC_ON_DONE_RANGED_SPELL_HIT;
+                dmgInfo.victimProcFlags |= PROC_ON_TAKEN_RANGED_SPELL_HIT;
                 break;
             default:
                 break;
@@ -755,8 +762,8 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     }
     else
     {
-        casterProcFlags |= PROC_ON_DONE_PERIODIC;
-        victimProcFlags |= PROC_ON_TAKEN_PERIODIC;
+        dmgInfo.attackerProcFlags |= PROC_ON_DONE_PERIODIC;
+        dmgInfo.victimProcFlags |= PROC_ON_TAKEN_PERIODIC;
     }
 
     if (isCreatureOrPlayer())
@@ -920,8 +927,10 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
                 spellpower = hp;
 
             SpellInfo const* entry = sSpellMgr.getSpellInfo(44413);
+            SpellForcedBasePoints forcedBasePoints;
+            forcedBasePoints.basePoints[0] = spellpower;
             if (entry != nullptr)
-                pl->castSpell(pl->getGuid(), entry, spellpower, true);
+                pl->castSpell(pl->getGuid(), entry, forcedBasePoints, true);
         }
     }
 
@@ -975,8 +984,10 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     if (isCreatureOrPlayer())
     {
         const auto casterUnit = static_cast<Unit*>(this);
-        victim->HandleProc(victimProcFlags, casterUnit, spellInfo, dmgInfo, isTriggered);
-        casterUnit->HandleProc(casterProcFlags, victim, spellInfo, dmgInfo, isTriggered);
+        victim->HandleProc(dmgInfo.victimProcFlags, casterUnit, spellInfo, dmgInfo, isTriggered);
+        // If called from spell class, handle caster's procs when spell has finished all targets
+        if (spell == nullptr)
+            casterUnit->HandleProc(dmgInfo.attackerProcFlags, victim, spellInfo, dmgInfo, isTriggered);
     }
 
     if (isPlayer())
@@ -1057,13 +1068,26 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
     dmgInfo.isPeriodic = isPeriodic;
 
     // Setup proc flags
-    uint32_t casterProcFlags = 0;
-    uint32_t victimProcFlags = 0;
-
-    if (isPeriodic)
+    if (!isPeriodic)
     {
-        casterProcFlags |= PROC_ON_DONE_PERIODIC;
-        victimProcFlags |= PROC_ON_TAKEN_PERIODIC;
+        switch (spellInfo->getDmgClass())
+        {
+            case SPELL_DMG_TYPE_NONE:
+                dmgInfo.attackerProcFlags |= PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_NONE;
+                dmgInfo.victimProcFlags |= PROC_ON_TAKEN_POSITIVE_SPELL_DAMAGE_CLASS_NONE;
+                break;
+            case SPELL_DMG_TYPE_MAGIC:
+                dmgInfo.attackerProcFlags |= PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_MAGIC;
+                dmgInfo.victimProcFlags |= PROC_ON_TAKEN_POSITIVE_SPELL_DAMAGE_CLASS_MAGIC;
+                break;
+            default:
+                break;
+        }
+    }
+    else
+    {
+        dmgInfo.attackerProcFlags |= PROC_ON_DONE_PERIODIC;
+        dmgInfo.victimProcFlags |= PROC_ON_TAKEN_PERIODIC;
     }
 
     // Hackfixes from legacy method
@@ -1287,8 +1311,10 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
     if (isCreatureOrPlayer())
     {
         const auto casterUnit = static_cast<Unit*>(this);
-        victim->HandleProc(victimProcFlags, casterUnit, spellInfo, dmgInfo, isTriggered);
-        casterUnit->HandleProc(casterProcFlags, victim, spellInfo, dmgInfo, isTriggered);
+        victim->HandleProc(dmgInfo.victimProcFlags, casterUnit, spellInfo, dmgInfo, isTriggered);
+        // If called from spell class, handle caster's procs when spell has finished all targets
+        if (spell == nullptr)
+            casterUnit->HandleProc(dmgInfo.attackerProcFlags, victim, spellInfo, dmgInfo, isTriggered);
     }
 
     if (isPlayer())

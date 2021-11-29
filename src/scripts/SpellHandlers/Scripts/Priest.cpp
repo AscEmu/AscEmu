@@ -4,9 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
-#include "Spell/SpellMgr.hpp"
-#include "Spell/Definitions/SpellEffects.hpp"
 
+#include "Spell/Definitions/SpellEffects.hpp"
 #include "Spell/Definitions/SpellEffectTarget.hpp"
 
 enum PriestSpells
@@ -527,10 +526,11 @@ public:
             return;
 
         // Create backfire damage on dispel
+        SpellForcedBasePoints forcedBasePoints;
+        forcedBasePoints.basePoints[EFF_INDEX_0] = aur->getAuraEffect(EFF_INDEX_1).getEffectDamage() * 8;
         const auto caster = aur->GetUnitCaster();
-        const auto backfireDmg = aur->getAuraEffect(EFF_INDEX_1).getEffectDamage() * 8;
         if (caster != nullptr)
-            caster->castSpell(aur->getOwner(), SPELL_VAMPIRIC_TOUCH_DISPEL, backfireDmg, true);
+            caster->castSpell(aur->getOwner(), SPELL_VAMPIRIC_TOUCH_DISPEL, forcedBasePoints, true);
     }
 #endif
 };

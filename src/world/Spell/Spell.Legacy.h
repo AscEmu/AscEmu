@@ -198,6 +198,9 @@ class SERVER_DECL Spell
 
         Aura* getTriggeredByAura() const;
 
+        // Returns how many combo points this spell used
+        int8_t getUsedComboPoints() const;
+
         void addUsedSpellModifier(AuraEffectModifier const* aurEff);
         void removeUsedSpellModifier(AuraEffectModifier const* aurEff);
         void takeUsedSpellModifiers();
@@ -240,6 +243,9 @@ class SERVER_DECL Spell
         // Spell reflect stuff
         bool m_canBeReflected = false;
 
+        bool m_requiresCP = false;
+        int8_t m_usedComboPoints = 0;
+
         // Spell proc
         DamageInfo m_casterDamageInfo = DamageInfo();
         DamageInfo m_targetDamageInfo = DamageInfo();
@@ -247,6 +253,8 @@ class SERVER_DECL Spell
         uint32_t m_casterProcFlags = 0;
         uint32_t m_targetProcFlags = 0;
         void _prepareProcFlags();
+        // Stores guids of targets who have handled procs on caster
+        std::set<uint64_t> m_doneTargetProcs;
 
         std::map<uint64_t, HitAuraEffect> m_pendingAuras;
         std::map<uint64_t, HitSpellEffect> m_hitEffects;
@@ -640,7 +648,6 @@ class SERVER_DECL Spell
 
         int32 damage;
         bool m_AreaAura;
-        bool m_requiresCP;
         int32 m_charges;
 
         int32 damageToHit;

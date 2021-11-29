@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
-#include "Spell/SpellMgr.hpp"
 
 enum MageSpells
 {
@@ -15,6 +14,10 @@ enum MageSpells
     SPELL_HOT_STREAK_R1         = 44445,
     SPELL_HOT_STREAK_R2         = 44446,
     SPELL_HOT_STREAK_R3         = 44448,
+    SPELL_IMPACT_DUMMY          = 64343,
+    SPELL_IMPACT_STUN           = 12355,
+    SPELL_INVISIBILITY          = 66,
+    SPELL_INVISIBILITY_REAL     = 32612,
     SPELL_MASTER_OF_ELEMENTS_R1 = 29074,
     SPELL_MASTER_OF_ELEMENTS_R2 = 29075,
     SPELL_MASTER_OF_ELEMENTS_R3 = 29076,
@@ -111,6 +114,94 @@ private:
     uint8_t critsInRow = 0;
 };
 #endif
+
+#if VERSION_STRING < Mop
+#if VERSION_STRING >= WotLK
+class ImpactDummy : public SpellScript
+{
+public:
+    bool canProc(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo damageInfo) override
+    {
+        if (damageInfo.weaponType == RANGED)
+            return false;
+
+        return damageInfo.fullDamage > 0;
+    }
+
+    SpellScriptExecuteState beforeAuraEffect(Aura* aur, AuraEffectModifier* /*aurEff*/, bool apply) override
+    {
+        // Override default action
+        if (apply)
+        {
+            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_IMPACT_STUN), aur, aur->getCasterGuid());
+            // If this proc is not skipped in next ::handleProc event and it was procced by Fire Blast,
+            // the same Fire Blast, that created this aura, will consume this aura
+            if (spellProc != nullptr)
+                spellProc->skipOnNextHandleProc(true);
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(SPELL_IMPACT_STUN, aur->getCasterGuid());
+        }
+
+        return SpellScriptExecuteState::EXECUTE_PREVENT;
+    }
+};
+#endif
+
+class Impact : public SpellScript
+{
+public:
+    void onCreateSpellProc(SpellProc* proc, Object* /*obj*/) override
+    {
+        // TODO: classic and tbc masks
+#if VERSION_STRING >= WotLK
+        // Should proc only from Fire Blast
+        proc->setProcClassMask(EFF_INDEX_0, 0x2);
+#endif
+    }
+
+#if VERSION_STRING < WotLK
+    bool canProc(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo damageInfo) override
+    {
+        if (damageInfo.weaponType == RANGED)
+            return false;
+
+        return damageInfo.fullDamage > 0;
+    }
+#endif
+};
+#endif
+
+class Invisibility : public SpellScript
+{
+public:
+    // TODO: missing periodic threat reduction
+
+    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t /*effIndex*/) override
+    {
+        if (spell->getUnitCaster() == nullptr)
+            return SpellScriptExecuteState::EXECUTE_PREVENT;
+
+        const auto spellDuration = spell->GetDuration();
+        if (spellDuration == 0)
+        {
+            // Prismatic Cloak 3/3 reduces duration to 0 and invisibility should be applied instantly
+            spell->getUnitCaster()->castSpell(spell->getUnitCaster(), sSpellMgr.getSpellInfo(SPELL_INVISIBILITY_REAL), true);
+            return SpellScriptExecuteState::EXECUTE_PREVENT;
+        }
+
+        return SpellScriptExecuteState::EXECUTE_OK;
+    }
+
+    void onAuraRemove(Aura* aur, AuraRemoveMode mode) override
+    {
+        if (mode != AURA_REMOVE_ON_EXPIRE)
+            return;
+
+        aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_INVISIBILITY_REAL), true);
+    }
+};
 
 #if VERSION_STRING < Mop
 class MasterOfElementsDummy : public SpellScript
@@ -282,6 +373,15 @@ void setupMageSpells(ScriptMgr* mgr)
     mgr->register_spell_script(hotStreakIds, new HotStreakDummy);
     mgr->register_spell_script(SPELL_HOT_STREAK_BUFF, new HotStreak);
 #endif
+
+#if VERSION_STRING < Mop
+#if VERSION_STRING >= WotLK
+    mgr->register_spell_script(SPELL_IMPACT_DUMMY, new ImpactDummy);
+#endif
+    mgr->register_spell_script(SPELL_IMPACT_STUN, new Impact);
+#endif
+
+    mgr->register_spell_script(SPELL_INVISIBILITY, new Invisibility);
 
 #if VERSION_STRING < Mop
     uint32_t masterOfElementsId[] =

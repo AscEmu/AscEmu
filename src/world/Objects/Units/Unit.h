@@ -40,6 +40,7 @@ class TotemSummon;
 class Vehicle;
 class MovementManager;
 struct FactionDBC;
+struct SpellForcedBasePoints;
 
 namespace MovementNew {
 class MoveSpline;
@@ -792,15 +793,15 @@ public:
     void castSpell(Unit* target, uint32_t spellId, bool triggered);
     void castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, bool triggered);
     void castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered);
-    void castSpell(uint64_t targetGuid, uint32_t spellId, uint32_t forcedBasepoints, bool triggered);
-    void castSpell(Unit* target, uint32_t spellId, uint32_t forcedBasePoints, bool triggered);
-    void castSpell(Unit* target, SpellInfo const* spellInfo, uint32_t forcedBasePoints, int32_t spellCharges, bool triggered);
+    void castSpell(uint64_t targetGuid, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered);
+    void castSpell(Unit* target, uint32_t spellId, SpellForcedBasePoints forcedBasePoints, bool triggered);
+    void castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasePoints, int32_t spellCharges, bool triggered);
     void castSpellLoc(const LocationVector location, uint32_t spellId, bool triggered);
     void castSpellLoc(const LocationVector location, SpellInfo const* spellInfo, bool triggered);
     void eventCastSpell(Unit* target, SpellInfo const* spellInfo);
 
-    void castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, uint32_t forcedBasepoints, bool triggered);
-    void castSpell(Unit* target, SpellInfo const* spellInfo, uint32_t forcedBasepoints, bool triggered);
+    void castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasepoints, bool triggered);
+    void castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasepoints, bool triggered);
 
     SpellProc* addProcTriggerSpell(uint32_t spellId, uint32_t originalSpellId, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t const* spellFamilyMask, uint32_t const* procClassMask = nullptr, Aura* createdByAura = nullptr, Object* obj = nullptr);
     // Gets proc chance and proc flags from spellInfo

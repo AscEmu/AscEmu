@@ -26,6 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Data/WoWObject.hpp"
 #include "MovementInfo.h"
+#include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/School.hpp"
 #include "Units/UnitDefines.hpp"
 
@@ -77,6 +78,9 @@ struct DamageInfo
     bool isHeal = false;
     bool isCritical = false;
     bool isPeriodic = false;
+
+    uint32_t attackerProcFlags = PROC_NULL;
+    uint32_t victimProcFlags = PROC_NULL;
 
     uint8_t getSchoolTypeFromMask() const
     {

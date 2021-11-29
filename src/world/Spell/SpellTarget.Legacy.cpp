@@ -73,7 +73,9 @@ SpellCastResult Spell::checkExplicitTarget(Object* target, uint32_t requiredTarg
     if (requiredTargetMask & SPELL_TARGET_OBJECT_CURPET && !target->isPet())
         return SPELL_FAILED_BAD_TARGETS;
 
-    if (((target->isCreatureOrPlayer() && !static_cast<Unit const*>(target)->isAlive()) || (target->isCreature() && target->isTotem()))
+    // Area spells cannot target totems or dead units unless spell caster is the target
+    if (m_caster != target &&
+        ((target->isCreatureOrPlayer() && !static_cast<Unit const*>(target)->isAlive()) || (target->isCreature() && target->isTotem()))
         && (requiredTargetMask & (SPELL_TARGET_AREA | SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_CURTARGET | SPELL_TARGET_AREA_CONE | SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID)))
         return SPELL_FAILED_BAD_TARGETS;
 
@@ -106,7 +108,7 @@ void Spell::FillTargetMap(uint32 i)
 
     if (TargetType & SPELL_TARGET_NOT_IMPLEMENTED)
         return;
-    if (TargetType & SPELL_TARGET_NO_OBJECT)  //summon spells that appear infront of caster
+    if (TargetType == SPELL_TARGET_NO_OBJECT)  //summon spells that appear infront of caster
     {
         HandleTargetNoObject();
         return;
@@ -289,6 +291,14 @@ void Spell::AddPartyTargets(uint32 i, uint32 targetType, float r, uint32 /*maxta
     if (u == nullptr)
         u = m_caster;
 
+    // If spell has area aura effect, aura code will handle proper targetting
+    // so add just caster
+    if (getSpellInfo()->isAreaAuraEffect(i))
+    {
+        AddTarget(i, targetType, u);
+        return;
+    }
+
     Player* p = u->getPlayerOwner();
     if (p == nullptr || u_caster == nullptr)
         return;
@@ -319,6 +329,14 @@ void Spell::AddRaidTargets(uint32 i, uint32 targetType, float r, uint32 /*maxtar
     Object* u = m_caster->GetMapMgr()->_GetObject(m_targets.getUnitTarget());
     if (u == nullptr)
         u = m_caster;
+
+    // If spell has area aura effect, aura code will handle proper targetting
+    // so add just caster
+    if (getSpellInfo()->isAreaAuraEffect(i))
+    {
+        AddTarget(i, targetType, u);
+        return;
+    }
 
     Player* p = u->getPlayerOwner();
     if (p == nullptr || u_caster == nullptr)
@@ -383,8 +401,11 @@ void Spell::AddAOETargets(uint32 i, uint32 targetType, float r, uint32 maxtarget
     }
 
     //caster might be in the aoe LOL
-    if (m_caster->CalcDistance(source) <= r)
-        AddTarget(i, targetType, m_caster);
+    if (!(targetType & SPELL_TARGET_REQUIRE_ATTACKABLE))
+    {
+        if (m_caster->CalcDistance(source) <= r)
+            AddTarget(i, targetType, m_caster);
+    }
 
     std::vector<uint64_t>* t = &m_effectTargets[i];
 

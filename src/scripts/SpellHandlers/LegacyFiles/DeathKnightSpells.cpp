@@ -26,8 +26,6 @@
 #include "Spell/Definitions/ProcFlags.hpp"
 #include <Spell/Definitions/DispelType.hpp>
 
-#include "Spell/SpellMgr.hpp"
-
 enum
 {
     BLOOD_PLAGUE = 55078,
@@ -259,15 +257,17 @@ bool DeathCoil(uint8_t /*effectIndex*/, Spell* s)
 
     int32_t dmg = s->damage;
 
+    SpellForcedBasePoints forcedBasePoints;
     if (isAttackable(s->getPlayerCaster(), unitTarget, false))
     {
-        s->getPlayerCaster()->castSpell(unitTarget, 47632, dmg, true);
+        forcedBasePoints.basePoints[EFF_INDEX_0] = dmg;
+        s->getPlayerCaster()->castSpell(unitTarget, 47632, forcedBasePoints, true);
     }
     else if (unitTarget->isPlayer() && unitTarget->getRace() == RACE_UNDEAD)
     {
         float multiplier = 1.5f;
-        dmg = static_cast<int32_t>((dmg * multiplier));
-        s->getPlayerCaster()->castSpell(unitTarget, 47633, dmg, true);
+        forcedBasePoints.basePoints[EFF_INDEX_0] = static_cast<int32_t>((dmg * multiplier));
+        s->getPlayerCaster()->castSpell(unitTarget, 47633, forcedBasePoints, true);
     }
 
     return true;
@@ -297,9 +297,10 @@ bool DeathAndDecay(uint8_t effectIndex, Aura* pAura, bool apply)
         if (caster == NULL)
             return true;
 
-        int32_t value = int32_t(pAura->getEffectDamage(effectIndex) + (int32_t)caster->GetAP() * 0.064);
+        SpellForcedBasePoints forcedBasePoints;
+        forcedBasePoints.basePoints[EFF_INDEX_0] = static_cast<uint32_t>(pAura->getEffectDamage(effectIndex) + caster->GetAP() * 0.064);
 
-        caster->castSpell(pAura->getOwner(), 52212, value, true);
+        caster->castSpell(pAura->getOwner(), 52212, forcedBasePoints, true);
     }
 
     return true;
