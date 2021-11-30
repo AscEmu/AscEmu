@@ -226,8 +226,8 @@ void LootMgr::loadLootProp()
     {
         do
         {
-            uint32 id = result->Fetch()[0].GetUInt32();
-            uint32 eid = result->Fetch()[1].GetUInt32();
+            uint32_t id = result->Fetch()[0].GetUInt32();
+            uint32_t eid = result->Fetch()[1].GetUInt32();
             float ch = result->Fetch()[2].GetFloat();
             auto item_random_properties = sItemRandomPropertiesStore.LookupEntry(eid);
             if (item_random_properties == nullptr)
@@ -236,7 +236,7 @@ void LootMgr::loadLootProp()
                 continue;
             }
 
-            std::map<uint32, RandomPropertyVector>::iterator itr = _randomprops.find(id);
+            std::map<uint32_t, RandomPropertyVector>::iterator itr = _randomprops.find(id);
 
             if (itr == _randomprops.end())
             {
@@ -257,8 +257,8 @@ void LootMgr::loadLootProp()
     {
         do
         {
-            uint32 id = result->Fetch()[0].GetUInt32();
-            uint32 eid = result->Fetch()[1].GetUInt32();
+            uint32_t id = result->Fetch()[0].GetUInt32();
+            uint32_t eid = result->Fetch()[1].GetUInt32();
             float ch = result->Fetch()[2].GetFloat();
             auto item_random_suffix = sItemRandomSuffixStore.LookupEntry(eid);
             if (item_random_suffix == nullptr)
@@ -267,7 +267,7 @@ void LootMgr::loadLootProp()
                 continue;
             }
 
-            std::map<uint32, RandomSuffixVector>::iterator itr = _randomsuffix.find(id);
+            std::map<uint32_t, RandomSuffixVector>::iterator itr = _randomsuffix.find(id);
 
             if (itr == _randomsuffix.end())
             {
@@ -346,7 +346,7 @@ DBC::Structures::ItemRandomPropertiesEntry const* LootMgr::GetRandomProperties(I
     if (proto->RandomPropId == 0)
         return nullptr;
 
-    std::map<uint32, RandomPropertyVector>::iterator itr = _randomprops.find(proto->RandomPropId);
+    std::map<uint32_t, RandomPropertyVector>::iterator itr = _randomprops.find(proto->RandomPropId);
     if (itr == _randomprops.end())
         return nullptr;
 
@@ -358,7 +358,7 @@ DBC::Structures::ItemRandomSuffixEntry const* LootMgr::GetRandomSuffix(ItemPrope
     if (proto->RandomSuffixId == 0)
         return nullptr;
 
-    std::map<uint32, RandomSuffixVector>::iterator itr = _randomsuffix.find(proto->RandomSuffixId);
+    std::map<uint32_t, RandomSuffixVector>::iterator itr = _randomsuffix.find(proto->RandomSuffixId);
     if (itr == _randomsuffix.end())
         return nullptr;
 
@@ -368,7 +368,7 @@ DBC::Structures::ItemRandomSuffixEntry const* LootMgr::GetRandomSuffix(ItemPrope
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Loot Roll
-LootRoll::LootRoll(uint32 /*timer*/, uint32_t groupcount, uint64_t guid, uint32_t slotid, uint32_t itemid, uint32_t randomsuffixid, uint32_t randompropertyid, MapMgr* mgr) : EventableObject()
+LootRoll::LootRoll(uint32_t /*timer*/, uint32_t groupcount, uint64_t guid, uint32_t slotid, uint32_t itemid, uint32_t randomsuffixid, uint32_t randompropertyid, MapMgr* mgr) : EventableObject()
 {
     _mgr = mgr;
     sEventMgr.AddEvent(this, &LootRoll::finalize, EVENT_LOOT_ROLL_FINALIZE, 60000, 1, 0);
@@ -467,7 +467,7 @@ void LootRoll::finalize()
     if (!player || !_player)
     {
         /* all passed */
-        std::set<uint32>::iterator pitr = m_passRolls.begin();
+        std::set<uint32_t>::iterator pitr = m_passRolls.begin();
         while (_player == nullptr && pitr != m_passRolls.end())
             _player = _mgr->GetPlayer((*(pitr++)));
         if (_player != nullptr)
@@ -1029,7 +1029,7 @@ bool Loot::hasItemFor(Player* player) const
 
 bool Loot::hasOverThresholdItem() const
 {
-    for (uint8 i = 0; i < items.size(); ++i)
+    for (uint8_t i = 0; i < items.size(); ++i)
     {
         if (!items[i].is_looted && !items[i].is_underthreshold && !items[i].is_ffa)
             return true;
