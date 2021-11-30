@@ -6097,9 +6097,27 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
             const auto tagger = GetMapMgrPlayer(getTaggerGuid());
             if (tagger != nullptr)
             {
-                if (tagger->isInGroup())
-                    tagger->getGroup()->SendLootUpdates(this);
-                else
+                if (tagger->isInGroup()) // Group Case
+                {
+                    for (uint8_t i = 0; i < tagger->getGroup()->GetSubGroupCount(); i++)
+                    {
+                        if (tagger->getGroup()->GetSubGroup(i) != nullptr)
+                        {
+                            for (auto itr = tagger->getGroup()->GetSubGroup(i)->GetGroupMembersBegin(); itr != tagger->getGroup()->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
+                            {
+                                if ((*itr) != nullptr)
+                                {
+                                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr)->guid))
+                                    {
+                                        if (ToCreature()->HasLootForPlayer(loggedInPlayer))
+                                            loggedInPlayer->SendLootUpdate(this);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (ToCreature()->HasLootForPlayer(tagger))    // Player case
                     tagger->SendLootUpdate(this);
             }
         }
@@ -7102,7 +7120,7 @@ bool Unit::isLootable()
     {
         if (const auto creatureProperties = sMySQLStore.getCreatureProperties(getEntry()))
         {
-            if (isCreature() && !sLootMgr.HasLootForCreature(getEntry()) && creatureProperties->money == 0)
+            if (isCreature() && !sLootMgr.isCreatureLootable(getEntry()) && creatureProperties->money == 0)
                 return false;
         }
 

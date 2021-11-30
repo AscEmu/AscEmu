@@ -2949,10 +2949,10 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
     // Create a new object
     if (updateMask->GetBit(getOffsetForStructuredField(WoWObject, guid)) && target)
     {
-        if (isCreature())
+        if (isCreature() || isCorpse())
         {
             auto this_creature = static_cast<Creature*>(this);
-            if (this_creature->isTagged() && this_creature->loot.any())
+            if (this_creature->isTagged() && !this_creature->loot.isLooted())
             {
                 uint32_t current_flags;
                 old_flags = current_flags = this_creature->getDynamicFlags();
@@ -2965,7 +2965,7 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
                     if (!(current_flags & U_DYN_FLAG_LOOTABLE) && this_creature->HasLootForPlayer(target))
                         current_flags |= U_DYN_FLAG_LOOTABLE;
                 }
-                else
+                else if (!this_creature->loot.isLooted())
                 {
                     old_flags = U_DYN_FLAG_LOOTABLE;
 
@@ -2979,77 +2979,77 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
                 this_creature->setDynamicFlags(current_flags);
                 reset = true;
             }
+        }
 
-            if (isGameObject())
+        if (isGameObject())
+        {
+            const auto this_go = static_cast<GameObject*>(this);
+            if (this_go->isQuestGiver())
             {
-                const auto this_go = static_cast<GameObject*>(this);
-                if (this_go->isQuestGiver())
+                auto this_qg = static_cast<GameObject_QuestGiver*>(this);
+                if (this_qg->HasQuests())
                 {
-                    auto this_qg = static_cast<GameObject_QuestGiver*>(this);
-                    if (this_qg->HasQuests())
+                    for (auto quest_relation : this_qg->getQuestList())
                     {
-                        for (auto quest_relation : this_qg->getQuestList())
-                        {
-                            if (!quest_relation)
-                                continue;
+                        if (!quest_relation)
+                            continue;
 
-                            if (const auto quest_props = quest_relation->qst)
-                            {
-                                activate_quest_object = (quest_relation->type & QUESTGIVER_QUEST_START && !target->hasQuestInQuestLog(quest_props->id))
-                                    || (quest_relation->type & QUESTGIVER_QUEST_END && !target->hasQuestInQuestLog(quest_props->id));
-                            }
+                        if (const auto quest_props = quest_relation->qst)
+                        {
+                            activate_quest_object = (quest_relation->type & QUESTGIVER_QUEST_START && !target->hasQuestInQuestLog(quest_props->id))
+                                || (quest_relation->type & QUESTGIVER_QUEST_END && !target->hasQuestInQuestLog(quest_props->id));
                         }
                     }
-                    else
+                }
+                else
+                {
+                    if (const auto go_props = this_go->GetGameObjectProperties())
                     {
-                        if (const auto go_props = this_go->GetGameObjectProperties())
+                        if (go_props->goMap.size() > 0 || go_props->itemMap.size() > 0)
                         {
-                            if (go_props->goMap.size() > 0 || go_props->itemMap.size() > 0)
+                            for (const auto quest_go : go_props->goMap)
                             {
-                                for (const auto quest_go : go_props->goMap)
+                                if (auto* const questLog = target->getQuestLogByQuestId(quest_go.first->id))
                                 {
-                                    if (auto* const questLog = target->getQuestLogByQuestId(quest_go.first->id))
-                                    {
-                                        const auto quest = questLog->getQuestProperties();
-                                        if (quest->count_required_mob == 0)
-                                            continue;
+                                    const auto quest = questLog->getQuestProperties();
+                                    if (quest->count_required_mob == 0)
+                                        continue;
 
-                                        for (uint8_t i = 0; i < 4; ++i)
+                                    for (uint8_t i = 0; i < 4; ++i)
+                                    {
+                                        if (quest->required_mob_or_go[i] == static_cast<int32_t>(this_go->getEntry()))
                                         {
-                                            if (quest->required_mob_or_go[i] == static_cast<int32_t>(this_go->getEntry()))
+                                            if (questLog->getMobCountByIndex(i) < quest->required_mob_or_go_count[i])
                                             {
-                                                if (questLog->getMobCountByIndex(i) < quest->required_mob_or_go_count[i])
-                                                {
-                                                    activate_quest_object = true;
-                                                    break;
-                                                }
+                                                activate_quest_object = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (activate_quest_object)
+                                    break;
+                            }
+
+                            if (!activate_quest_object)
+                            {
+                                for (auto quest_props : go_props->itemMap)
+                                {
+                                    for (const auto item_pair : quest_props.second)
+                                    {
+                                        if (auto* const questLog = target->getQuestLogByQuestId(quest_props.first->id))
+                                        {
+                                            if (target->getItemInterface()->GetItemCount(item_pair.first) < item_pair.second)
+                                            {
+                                                activate_quest_object = true;
+                                                break;
                                             }
                                         }
                                     }
 
                                     if (activate_quest_object)
                                         break;
-                                }
-
-                                if (!activate_quest_object)
-                                {
-                                    for (auto quest_props : go_props->itemMap)
-                                    {
-                                        for (const auto item_pair : quest_props.second)
-                                        {
-                                            if (auto* const questLog = target->getQuestLogByQuestId(quest_props.first->id))
-                                            {
-                                                if (target->getItemInterface()->GetItemCount(item_pair.first) < item_pair.second)
-                                                {
-                                                    activate_quest_object = true;
-                                                    break;
-                                                }
-                                            }
-                                        }
-
-                                        if (activate_quest_object)
-                                            break;
-                                    }
                                 }
                             }
                         }

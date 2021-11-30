@@ -309,6 +309,16 @@ enum Item_Subclass
     ITEM_SUBCLASS_ARMOR_ENCHANTMENT         = 14,
     ITEM_SUBCLASS_WEAPON_ENCHANTMENT        = 15,
 
+    // Consumables
+    ITEM_SUBCLASS_CONSUMABLE                = 0,
+    ITEM_SUBCLASS_POTION                    = 1,
+    ITEM_SUBCLASS_ELIXIR                    = 2,
+    ITEM_SUBCLASS_FLASK                     = 3,
+    ITEM_SUBCLASS_SCROLL                    = 4,
+    ITEM_SUBCLASS_FOOD_DRINK                = 5,
+    ITEM_SUBCLASS_ITEM_ENHANCEMENT          = 6,
+    ITEM_SUBCLASS_BANDAGE                   = 7,
+
     // Recipe
     ITEM_SUBCLASS_RECIPE_BOOK               = 0,
     ITEM_SUBCLASS_RECIPE_LEATHERWORKING     = 1,
@@ -369,7 +379,7 @@ enum ITEM_FLAG
     ITEM_FLAG_THROWN                = 0x00400000,
     ITEM_FLAG_SHAPESHIFT_OK         = 0x00800000,
     ITEM_FLAG_UNKNOWN_25            = 0x01000000,
-    ITEM_FLAG_UNKNOWN_26            = 0x02000000,
+    ITEM_FLAG_SMART_LOOT            = 0x02000000, // Profession recipes: can only be looted if you meet requirements and don't already know it
     ITEM_FLAG_NOT_USEABLE_IN_ARENA  = 0x04000000,
     ITEM_FLAG_ACCOUNTBOUND          = 0x08000000,
     ITEM_FLAG_ENCHANT_SCROLL        = 0x10000000, // enchant scrolls
@@ -545,6 +555,11 @@ struct ItemProperties
         
         return false;
     }
+
+    bool isPotion() const { return Class == ITEM_CLASS_CONSUMABLE && SubClass == ITEM_SUBCLASS_POTION; }
+    bool isVellum() const { return Class == ITEM_CLASS_TRADEGOODS && SubClass == ITEM_SUBCLASS_ARMOR_ENCHANTMENT; }
+    bool isConjuredConsumable() const { return Class == ITEM_CLASS_CONSUMABLE && (Flags & ITEM_FLAG_CONJURED); }
+    bool isCurrencyToken() const { return BagFamily & ITEM_TYPE_CURRENCY; }
 
     bool isRangedWeapon() const
     {

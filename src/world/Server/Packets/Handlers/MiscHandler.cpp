@@ -534,7 +534,7 @@ void WorldSession::handleLootRollOpcode(WorldPacket& recvPacket)
     {
         case HighGuid::GameObject:
         {
-            auto gameObject = _player->GetMapMgr()->GetGameObject(srlPacket.objectGuid.getGuidLow());
+            auto gameObject = _player->GetMapMgr()->GetGameObject(srlPacket.objectGuid.getGuidLowPart());
             if (gameObject == nullptr)
                 return;
 
@@ -550,7 +550,7 @@ void WorldSession::handleLootRollOpcode(WorldPacket& recvPacket)
         } break;
         case HighGuid::Unit:
         {
-            auto creature = _player->GetMapMgr()->GetCreature(srlPacket.objectGuid.getGuidLow());
+            auto creature = _player->GetMapMgr()->GetCreature(srlPacket.objectGuid.getGuidLowPart());
             if (creature == nullptr)
                 return;
 
@@ -566,7 +566,7 @@ void WorldSession::handleLootRollOpcode(WorldPacket& recvPacket)
     if (lootRoll == nullptr)
         return;
 
-    lootRoll->PlayerRolled(_player, srlPacket.choice);
+    lootRoll->playerRolled(_player, srlPacket.choice);
 }
 
 void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
@@ -645,7 +645,7 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
     if (item->loot == nullptr)
     {
         item->loot = new Loot; //eeeeeek
-        sLootMgr.FillItemLoot(item->loot, item->getEntry());
+        sLootMgr.fillItemLoot(_player, item->loot, item->getEntry(), 0);
     }
     _player->SendLoot(item->getGuid(), LOOT_DISENCHANTING, _player->GetMapId());
 }

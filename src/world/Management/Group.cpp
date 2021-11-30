@@ -1284,10 +1284,10 @@ void Group::SendLootUpdates(Object* o)
 
         switch (m_LootMethod)
         {
-            case PARTY_LOOT_RR:
-            case PARTY_LOOT_FFA:
+            case PARTY_LOOT_ROUND_ROBIN:
+            case PARTY_LOOT_FREE_FOR_ALL:
             case PARTY_LOOT_GROUP:
-            case PARTY_LOOT_NBG:
+            case PARTY_LOOT_NEED_BEFORE_GREED:
             {
                 for (uint32 Index = 0; Index < GetSubGroupCount(); ++Index)
                 {
@@ -1305,7 +1305,7 @@ void Group::SendLootUpdates(Object* o)
                 break;
             }
 
-            case PARTY_LOOT_MASTER:
+            case PARTY_LOOT_MASTER_LOOTER:
             {
                 Player* pLooter = GetLooter() ? sObjectMgr.GetPlayer(GetLooter()->guid) : nullptr;
                 if (pLooter == nullptr)
@@ -1324,6 +1324,93 @@ void Group::SendLootUpdates(Object* o)
         }
 
         Unlock();
+    }
+}
+
+void Group::sendGroupLoot(Loot* loot, Object* object, Player* plr, uint32_t mapId)
+{
+    std::vector<LootItem>::iterator item;
+    uint8_t itemSlot = 0;
+
+    for (item = loot->items.begin(); item != loot->items.end(); ++item, ++itemSlot)
+    {
+        if (item->is_passed)
+            continue;
+
+        if (item->is_blocked)
+            continue;
+
+        if (item->is_ffa)
+            continue;
+
+        if (!item->itemproto)
+            continue;
+
+        //roll for over-threshold item if it's one-player loot
+        if (item->itemproto->Quality >= uint32_t(GetThreshold()))
+        {
+            int32_t ipid = 0;
+            uint32_t factor = 0;
+
+            if (item->iRandomProperty)
+            {
+                ipid = item->iRandomProperty->ID;
+            }
+            else if (item->iRandomSuffix)
+            {
+                ipid = -int32(item->iRandomSuffix->id);
+                factor = Item::GenerateRandomSuffixFactor(item->itemproto);
+            }
+
+            // Block the Item
+            loot->items[itemSlot].is_blocked = true;
+
+            // Init Roll
+            item->roll = new LootRoll(60000, MemberCount(), object->getGuid(), itemSlot, item->itemproto->ItemId, factor, uint32(ipid), object->GetMapMgr());
+
+            // Send Roll
+            WorldPacket data(32);
+            data.Initialize(SMSG_LOOT_START_ROLL);
+            data << object->getGuid();
+            data << uint32(mapId);
+            data << uint32(itemSlot);
+            data << uint32(item->itemproto->ItemId);
+            data << uint32(factor);
+
+            if (item->iRandomProperty)
+                data << uint32(item->iRandomProperty->ID);
+            else if (item->iRandomSuffix)
+                data << uint32(ipid);
+            else
+                data << uint32(0);
+
+            data << uint32(item->count);
+            data << uint32(60000); // countdown
+            data << uint8(7);      // some sort of flags that require research
+
+
+            Lock();
+            for (uint32_t i = 0; i < GetSubGroupCount(); ++i)
+            {
+                for (GroupMembersSet::iterator itr2 = GetSubGroup(i)->GetGroupMembersBegin(); itr2 != GetSubGroup(i)->GetGroupMembersEnd(); ++itr2)
+                {
+                    CachedCharacterInfo* pinfo = *itr2;
+                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer(pinfo->guid))
+                    {
+                        if (loggedInPlayer->getItemInterface()->CanReceiveItem(item->itemproto, item->count) == 0)
+                        {
+                            if (loggedInPlayer->m_passOnLoot)
+                                item->roll->playerRolled(loggedInPlayer, ROLL_PASS);
+                            else
+                                loggedInPlayer->SendPacket(&data);
+                        }
+                    }
+                }
+            }
+            Unlock();
+        }
+        else
+            item->is_underthreshold = true;
     }
 }
 
@@ -1457,4 +1544,132 @@ void Group::GoOffline(Player* p)
         }
         m_groupLock.Release();
     }
+}
+
+void Group::sendLooter(Creature* creature, Player* groupLooter)
+{
+    WorldPacket data(SMSG_LOOT_LIST, (8 + 8));
+    data << uint64_t(creature->getGuid());
+    data << uint8_t(0); // unk1
+
+    if (groupLooter)
+        data.append(groupLooter->getGuid());
+    else
+        data << uint8_t(0);
+
+    SendPacketToAll(&data);
+}
+
+void Group::updateLooterGuid(Object* pLootedObject)
+{
+    switch (GetMethod())
+    {
+    case PARTY_LOOT_MASTER_LOOTER:
+    case PARTY_LOOT_FREE_FOR_ALL:
+        return;
+    default:
+        // round robin style looting applies for all low
+        // quality items in each loot method except free for all and master loot
+        break;
+    }
+
+    CachedCharacterInfo* oldLooter = GetLooter();
+    if (!oldLooter)
+        oldLooter = GetLeader();
+
+    CachedCharacterInfo* pNewLooter = nullptr;
+
+    m_groupLock.Acquire();
+    for (uint8_t i = 0; i < m_SubGroupCount; i++)
+    {
+        auto start = m_SubGroups[i]->m_GroupMembers.begin();
+        auto member = m_SubGroups[i]->m_GroupMembers.find(oldLooter);
+
+        if (m_SubGroups[i]->m_GroupMembers.find(oldLooter) != m_SubGroups[i]->m_GroupMembers.end())
+        {
+            auto nextFromMember = std::next(member);
+
+            // try to get next member
+            if (nextFromMember != m_SubGroups[i]->m_GroupMembers.end())
+            {
+                if ((*nextFromMember))
+                {
+                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*nextFromMember)->guid))
+                    {
+                        if (loggedInPlayer->isAtGroupRewardDistance(pLootedObject))
+                        {
+                            pNewLooter = (*nextFromMember);
+                            break;
+                        }
+                    }
+                }
+            }
+            else // get member from start
+            {
+                if ((*start))
+                {
+                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*start)->guid))
+                    {
+                        if (loggedInPlayer->isAtGroupRewardDistance(pLootedObject))
+                        {
+                            if ((*start) != oldLooter)
+                            {
+                                pNewLooter = (*start);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (i < 7)
+                if (m_SubGroups[i + 1]->m_GroupMembers.begin() != m_SubGroups[i + 1]->m_GroupMembers.end())
+                    continue;
+                else
+                {
+                    if (m_SubGroups[i]->m_GroupMembers.begin() != m_SubGroups[i]->m_GroupMembers.end())
+                    {
+                        member = m_SubGroups[i]->m_GroupMembers.begin();
+                        if ((*member))
+                            if (Player const* loggedInPlayer = sObjectMgr.GetPlayer((*member)->guid))
+                                pNewLooter = (*member);
+                    }
+                }
+        }
+
+        // Get First member on a subGroup it coult be possible that group 1 is empty
+        if (!pNewLooter)
+        {
+            for (uint8_t x = 0; x < m_SubGroupCount; x++)
+            {
+                if (m_SubGroups[x]->m_GroupMembers.begin() != m_SubGroups[x]->m_GroupMembers.end())
+                {
+                    member = m_SubGroups[x]->m_GroupMembers.begin();
+                    if ((*member))
+                    {
+                        if (Player const* loggedInPlayer = sObjectMgr.GetPlayer((*member)->guid))
+                        {
+                            if ((*member) != oldLooter)
+                            {
+                                pNewLooter = (*member);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    m_groupLock.Release();
+
+    if (pNewLooter)
+    {
+        if (oldLooter != pNewLooter)
+            m_Looter = pNewLooter;
+    }
+
+    // Update Group
+    Update();
 }

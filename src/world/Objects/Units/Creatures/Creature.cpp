@@ -203,91 +203,6 @@ std::vector<CreatureItem>* Creature::getSellItems()
     return m_SellItems;
 }
 
-void Creature::generateLoot()
-{
-    if (!loot.items.empty())
-        return;
-
-    if (m_mapMgr)
-        sLootMgr.FillCreatureLoot(&loot, getEntry(), m_mapMgr->iInstanceMode);
-    else
-        sLootMgr.FillCreatureLoot(&loot, getEntry(), 0);
-
-    loot.gold = creature_properties->money;
-
-    if (getAIInterface()->getDifficultyType() != 0)
-    {
-        uint32_t creature_difficulty_entry = sMySQLStore.getCreatureDifficulty(getEntry(), getAIInterface()->getDifficultyType());
-        if (auto properties_difficulty = sMySQLStore.getCreatureProperties(creature_difficulty_entry))
-        {
-            if (properties_difficulty->money != creature_properties->money)
-                loot.gold = properties_difficulty->money;
-        }
-    }
-
-    // Master Looting Ninja Checker
-    if (worldConfig.player.deactivateMasterLootNinja)
-    {
-        Player* looter = sObjectMgr.GetPlayer(static_cast<uint32_t>(this->getTaggerGuid()));
-        if (looter && looter->getGroup() && looter->getGroup()->GetMethod() == PARTY_LOOT_MASTER)
-        {
-            uint16_t lootThreshold = looter->getGroup()->GetThreshold();
-
-            for (auto itr = loot.items.begin(); itr != loot.items.end(); ++itr)
-            {
-                if (itr->item.itemproto->Quality < lootThreshold)
-                    continue;
-
-                // Master Loot Stuff - Let the rest of the raid know what dropped..
-                ///\todo Shouldn't we move this array to a global position? Or maybe it already exists^^ (VirtualAngel) --- I can see (dead) talking pigs...^^
-                const char* itemColours[8] = { "9d9d9d", "ffffff", "1eff00", "0070dd", "a335ee", "ff8000", "e6cc80", "e6cc80" };
-                char buffer[256];
-                sprintf(buffer, "\174cff%s\174Hitem:%u:0:0:0:0:0:0:0\174h[%s]\174h\174r", itemColours[itr->item.itemproto->Quality], itr->item.itemproto->ItemId, itr->item.itemproto->Name.c_str());
-                this->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, buffer);
-            }
-        }
-    }
-
-    /// \brief If there's an amount given, take it as an expected value and generated a corresponding random value. The random value is
-    /// something similar to a normal distribution.
-    /// You'd get a ``better'' distribution if you called `rand()' for each copper individually. However, if the loot was 1G we'd call `rand()'
-    /// 15000 times, which is not ideal. So we use one call to `rand()' to (hopefully) get 24 random bits, which is then used to create a
-    /// normal distribution over 1/24th of the difference.
-    if (loot.gold >= 12)
-    {
-        // Split up the difference into 12 chunks..
-        double chunk_size = loot.gold / 12.0;
-
-        // Get 24 random bits. We use the low order bits, because we're too lazy to check how many random bits the system actually returned
-        uint32_t random_bits = rand() & 0x00ffffff;
-
-        double gold_fp = 0.0;
-        while (random_bits != 0)
-        {
-            // If last bit is one ..
-            if ((random_bits & 0x01) == 1)
-                // .. increase loot by 1/12th of expected value
-                gold_fp += chunk_size;
-
-            // Shift away the LSB
-            random_bits >>= 1;
-        }
-
-        // To hide your discrete values a bit, add another random amount between -(chunk_size/2) and +(chunk_size/2)
-        gold_fp += (chunk_size * (Util::getRandomFloat(1.0f) - 0.5f));
-
-        //\brief In theory we can end up with a negative amount. Give at least one chunk_size here to prevent this from happening. In
-        // case you're interested, the probability is around 2.98e-8.
-        if (gold_fp < chunk_size)
-            gold_fp = chunk_size;
-
-        // Convert the floating point gold value to an integer again and we're done
-        loot.gold = static_cast<uint32_t>(0.5 + gold_fp);
-    }
-
-    loot.gold = static_cast<uint32_t>(loot.gold * worldConfig.getFloatRate(RATE_MONEY));
-}
-
 void Creature::setDeathState(DeathState s)
 {
     if (s == ALIVE)
@@ -310,7 +225,7 @@ void Creature::setDeathState(DeathState s)
             interruptSpellWithSpellType(static_cast<CurrentSpellType>(i));
 
         // if it's not a Pet, and not a summon and it has skinningloot then we will allow skinning
-        if (getCreatedByGuid() == 0 && getSummonedByGuid() == 0 && sLootMgr.IsSkinnable(creature_properties->Id))
+        if (getCreatedByGuid() == 0 && getSummonedByGuid() == 0 && sLootMgr.isSkinnable(creature_properties->Id))
             addUnitFlags(UNIT_FLAG_SKINNABLE);
     }
     else
@@ -2065,24 +1980,37 @@ CreatureAIScript* Creature::GetScript()
 }
 
 bool Creature::HasLootForPlayer(Player* plr)
-{
-    if (loot.gold > 0)
-        return true;
+{   
+    if (loot.isLooted()) // nothing to loot or everything looted.
+        return false;
 
-    for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+    Group* thisGroup = plr->getGroup();
+    if (!thisGroup)
+        return  (getTaggerGuid() == plr->getGuid());
+
+    switch (thisGroup->GetMethod())
     {
-        ItemProperties const* proto = itr->item.itemproto;
-        if (proto != nullptr)
-        {
-            if (proto->Bonding == ITEM_BIND_QUEST || proto->Bonding == ITEM_BIND_QUEST2)
-            {
-                if (plr->HasQuestForItem(proto->ItemId))
-                    return true;
-            }
-            else if (itr->iItemsCount > 0)
+        case PARTY_LOOT_FREE_FOR_ALL:
+            return true;
+        case PARTY_LOOT_ROUND_ROBIN:
+        case PARTY_LOOT_MASTER_LOOTER:
+            // only loot if the player is Plunder Master or Round Robbin Player
+            if (loot.roundRobinPlayer == 0 || loot.roundRobinPlayer == plr->getGuid())
                 return true;
-        }
+            // or when it has Personal loot
+            return loot.hasItemFor(plr);
+        case PARTY_LOOT_GROUP:
+        case PARTY_LOOT_NEED_BEFORE_GREED:
+            // only loot when no Round Robbin or is Round Robber 
+            if (loot.roundRobinPlayer == 0 || loot.roundRobinPlayer == plr->getGuid())
+                return true;
+            // or if Items is under Group Threshold research this also grey items are under threshold which means free loot ?
+            if (loot.hasOverThresholdItem())
+                return true;
+            // or when it has Personal loot
+            return loot.hasItemFor(plr);
     }
+
     return false;
 }
 
@@ -2345,13 +2273,81 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     addUnitFlags(UNIT_FLAG_DEAD);
 
-    if ((getCreatedByGuid() == 0) && (getTaggerGuid() != 0))
+    Player* looter = nullptr;
+    if (getTaggerGuid())
     {
-        Unit* owner = m_mapMgr->GetUnit(getTaggerGuid());
-
-        if (owner != NULL)
-            generateLoot();
+        looter = m_mapMgr->GetUnit(getTaggerGuid())->ToPlayer();
     }
+    else if (pAttacker->isPlayer())
+    {
+        looter = pAttacker->ToPlayer();
+    }
+    else if (pAttacker->isCreature())
+    {
+        looter = pAttacker->getPlayerOwner();
+    }   
+    
+    // Setup Loot and Round Robin Player in group case
+    if (looter)
+    {
+        if (Group* group = looter->getGroup())
+        {
+            if (group->GetLooter())
+            {
+                // just incase he is not online
+                looter = sObjectMgr.GetPlayer(group->GetLooter()->guid);
+                if (looter)
+                {
+                    setTaggerGuid(looter->getGuid()); // set Tagger to the allowed looter.
+                    group->sendLooter(this, looter);
+                }
+                else
+                    group->sendLooter(this, nullptr);
+            }
+            else
+                group->sendLooter(this, nullptr);
+
+            group->updateLooterGuid(this);
+        }
+        else
+        {
+            looter->sendLooter(this);
+        }
+
+        // Generate Loot
+        sLootMgr.fillCreatureLoot(looter, &loot, getEntry(), m_mapMgr->iInstanceMode);
+
+        // Generate Gold
+        loot.generateGold(sMySQLStore.getCreatureProperties(getEntry()), getAIInterface()->getDifficultyType());
+
+        if (loot.items.empty())
+            return;
+
+        // Master Looting Ninja Checker
+        if (worldConfig.player.deactivateMasterLootNinja)
+        {
+            Player* looter = sObjectMgr.GetPlayer(static_cast<uint32_t>(this->getTaggerGuid()));
+            if (looter && looter->getGroup() && looter->getGroup()->GetMethod() == PARTY_LOOT_MASTER_LOOTER)
+            {
+                uint16_t lootThreshold = looter->getGroup()->GetThreshold();
+
+                for (auto itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+                {
+                    if (itr->itemproto->Quality < lootThreshold)
+                        continue;
+
+                    // Master Loot Stuff - Let the rest of the raid know what dropped..
+                    ///\todo Shouldn't we move this array to a global position? Or maybe it already exists^^ (VirtualAngel) --- I can see (dead) talking pigs...^^
+                    const char* itemColours[8] = { "9d9d9d", "ffffff", "1eff00", "0070dd", "a335ee", "ff8000", "e6cc80", "e6cc80" };
+                    char buffer[256];
+                    sprintf(buffer, "\174cff%s\174Hitem:%u:0:0:0:0:0:0:0\174h[%s]\174h\174r", itemColours[itr->itemproto->Quality], itr->itemproto->ItemId, itr->itemproto->Name.c_str());
+                    this->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, buffer);
+                }
+            }
+        }
+    }
+    else
+        sLogger.debug("no loot owner found loot will not be filled for creature %u", getEntry());
 
     if (getCharmedByGuid())
     {

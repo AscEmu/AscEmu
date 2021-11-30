@@ -570,19 +570,9 @@ void GameObject::OnPushToWorld()
 
     if (gameobject_properties->type == GAMEOBJECT_TYPE_CHEST)
     {
-        //restock on respwn
-        static_cast<GameObject_Lootable*>(this)->resetLoot();
-
         //close if open (happenes after respawn)
         if (this->getState() == GO_STATE_OPEN)
             this->setState(GO_STATE_CLOSED);
-
-        // set next loot reset time
-        time_t lootResetTime = 60 * 1000;
-        if (gameobject_properties->chest.restock_time > 60)
-            lootResetTime = gameobject_properties->chest.restock_time * 1000;
-
-        sEventMgr.AddEvent(static_cast<GameObject_Lootable*>(this), &GameObject_Lootable::resetLoot, EVENT_GO_CHEST_RESTOCK, lootResetTime, 0, 0);
     }
 }
 
@@ -914,17 +904,9 @@ void GameObject_Chest::InitAI()
 
 bool GameObject_Chest::HasLoot()
 {
-    if (loot.gold > 0)
+    if (!loot.isLooted())
         return true;
 
-    for (std::vector< __LootItem >::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
-    {
-        if ((itr->item.itemproto->Bonding == ITEM_BIND_QUEST) || (itr->item.itemproto->Bonding == ITEM_BIND_QUEST2))
-            continue;
-
-        if (itr->iItemsCount > 0)
-            return true;
-    }
     return false;
 }
 
@@ -1229,7 +1211,7 @@ void GameObject_FishingNode::OnPushToWorld()
     const uint32 zone = GetZoneId();
 
     // Only set a 'splash' if there is any loot in this area / zone
-    if (sLootMgr.IsFishable(zone))
+    if (sLootMgr.isFishable(zone))
     {
         uint32 seconds[] = { 0, 4, 10, 14 };
         uint32 rnd = Util::getRandomUInt(3);
@@ -1277,11 +1259,7 @@ void GameObject_FishingNode::onUse(Player* player)
 
         if (school != nullptr)
         {
-            if (school->GetMapMgr() != nullptr)
-                sLootMgr.FillGOLoot(&school->loot, school->GetGameObjectProperties()->raw.parameter_1, school->GetMapMgr()->iInstanceMode);
-            else
-                sLootMgr.FillGOLoot(&school->loot, school->GetGameObjectProperties()->raw.parameter_1, 0);
-
+            sLootMgr.fillGOLoot(player, &school->loot, school->GetGameObjectProperties()->raw.parameter_1, GetMapMgr()->iInstanceMode);
             player->SendLoot(school->getGuid(), LOOT_FISHING, school->GetMapId());
             EndFishing(false);
             school->CatchFish();
@@ -1289,7 +1267,7 @@ void GameObject_FishingNode::onUse(Player* player)
         }
         else if (maxskill != 0 && Util::checkChance(((player->_GetSkillLineCurrent(SKILL_FISHING, true) - minskill) * 100) / maxskill))
         {
-            sLootMgr.FillFishingLoot(&this->loot, zone);
+            sLootMgr.fillFishingLoot(player, &this->loot, zone, GetMapMgr()->iInstanceMode);
             player->SendLoot(getGuid(), LOOT_FISHING, GetMapId());
             EndFishing(false);
         }
@@ -1350,14 +1328,9 @@ void GameObject_FishingNode::EventFishHooked()
 
 bool GameObject_FishingNode::HasLoot()
 {
-    for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
-    {
-        if ((itr->item.itemproto->Bonding == ITEM_BIND_QUEST) || (itr->item.itemproto->Bonding == ITEM_BIND_QUEST2))
-            continue;
+    if (!loot.isLooted())
+        return true;
 
-        if (itr->iItemsCount > 0)
-            return true;
-    }
     return false;
 }
 
@@ -1625,14 +1598,9 @@ void GameObject_FishingHole::CalcFishRemaining(bool force)
 
 bool GameObject_FishingHole::HasLoot()
 {
-    for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
-    {
-        if (itr->item.itemproto->Bonding == ITEM_BIND_QUEST || itr->item.itemproto->Bonding == ITEM_BIND_QUEST2)
-            continue;
+    if (!loot.isLooted())
+        return true;
 
-        if (itr->iItemsCount > 0)
-            return true;
-    }
     return false;
 }
 

@@ -105,8 +105,6 @@ public:
 
     std::vector<CreatureItem>* getSellItems();
 
-    void generateLoot();
-
     uint32_t getWaypointPath() const { return _waypointPathId; }
     void loadPath(uint32_t pathid) { _waypointPathId = pathid; }
 

@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <list>
 
 class Player;
+class Item;
 
 namespace DBC::Structures
 {
@@ -1155,6 +1156,7 @@ typedef std::map<SpellInfo const*, std::pair<uint32_t, uint32_t> >StrikeSpellMap
 typedef std::map<uint32_t, OnHitSpell >               StrikeSpellDmgMap;
 typedef std::map<uint32_t, PlayerSkill>               SkillMap;
 typedef std::map<uint32_t, PlayerCooldown>            PlayerCooldownMap;
+typedef std::list<Item*>                              ItemDurationList;
 
 struct PlayerCheat
 {

@@ -263,7 +263,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
                 }
             }
 
-            if (tradeItem->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP || tradeItem->getItemProperties()->Bonding == ITEM_BIND_QUEST)
+            if (!tradeItem->isTradeableWith(tradeTarget))
             {
                 _player->cancelTrade(true);
                 return;
@@ -284,7 +284,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
                 }
             }
 
-            if (tradeItem->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP || tradeItem->getItemProperties()->Bonding == ITEM_BIND_QUEST)
+            if (!tradeItem->isTradeableWith(tradeTarget))
             {
                 tradeTarget->cancelTrade(true);
                 return;
@@ -394,11 +394,17 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
         {
             tradeItems[i]->setGiftCreatorGuid(_player->getGuid());
             _player->getItemInterface()->SafeRemoveAndRetreiveItemByGuid(tradeItems[i]->getGuid(), true);
+
+            if (tradeItems[i]->hasFlags(ITEM_FLAG_BOP_TRADEABLE))
+                tradeTarget->removeTradeableItem(tradeItems[i]);
         }
         if (targetTradeItems[i] != nullptr)
         {
             targetTradeItems[i]->setGiftCreatorGuid(tradeTarget->getGuid());
             tradeTarget->getItemInterface()->SafeRemoveAndRetreiveItemByGuid(targetTradeItems[i]->getGuid(), true);
+
+            if (targetTradeItems[i]->hasFlags(ITEM_FLAG_BOP_TRADEABLE))
+                tradeTarget->removeTradeableItem(targetTradeItems[i]);
         }
     }
 
@@ -410,12 +416,18 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
             tradeItems[i]->setOwner(tradeTarget);
             if (!tradeTarget->getItemInterface()->AddItemToFreeSlot(tradeItems[i]))
                 tradeItems[i]->DeleteMe();
+
+            if (tradeItems[i]->hasFlags(ITEM_FLAG_BOP_TRADEABLE))
+                tradeTarget->addTradeableItem(tradeItems[i]);
         }
         if (targetTradeItems[i] != nullptr)
         {
             targetTradeItems[i]->setOwner(_player);
             if (!_player->getItemInterface()->AddItemToFreeSlot(targetTradeItems[i]))
                 targetTradeItems[i]->DeleteMe();
+
+            if (targetTradeItems[i]->hasFlags(ITEM_FLAG_BOP_TRADEABLE))
+                _player->addTradeableItem(targetTradeItems[i]);
         }
     }
 
@@ -494,10 +506,12 @@ void WorldSession::handleSetTradeItem(WorldPacket& recvPacket)
         if (tradeItem->isAccountbound())
             return;
 
-        if (tradeItem->isSoulbound())
+        if (!tradeItem->isTradeableWith(tradeData->getTradeTarget()))
         {
             sCheatLog.writefromsession(this, "tried to cheat trade a soulbound item");
-            Disconnect();
+            // not a good idea since we can trade soulbound items if item flag is set. 
+            // Would Disconnect the Trader when the Trader is not on the allowedGuids list.
+            //Disconnect(); 
             return;
         }
     }

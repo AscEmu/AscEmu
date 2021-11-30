@@ -837,7 +837,7 @@ int LuaGameObject::AddLoot(lua_State* L, GameObject* ptr)
         WorldDatabase.Execute("REPLACE INTO loot_gameobjects VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
         delete result;
     }
-    sLootMgr.AddLoot(&lt->loot, itemid, mincount, maxcount);
+    //sLootMgr.AddLoot(&lt->loot, itemid, mincount, maxcount);
     return 0;
 }
 

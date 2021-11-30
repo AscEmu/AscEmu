@@ -514,6 +514,12 @@ public:
         void SetText(std::string &textString){ this->text = textString; }
         const std::string& GetText() const{ return this->text; }
 
+        // Soulbound trade system
+        void setSoulboundTradeable(LooterSet& allowedLooters);
+        void clearSoulboundTradeable(Player* currentOwner);
+        bool checkSoulboundTradeExpire();
+        bool isTradeableWith(Player* plr);
+
     protected:
 
         ItemProperties const* m_itemProperties = nullptr;
@@ -528,6 +534,7 @@ public:
         /// Enchant type 3 spellids, like engineering gadgets appliable to items.
         uint32 OnUseSpellIDs[3] = {0};
         std::string text;
+        LooterSet allowedGUIDs;
 };
 
 //\todo move these functions to ItemProperties/Player class.

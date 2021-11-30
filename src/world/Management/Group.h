@@ -229,6 +229,12 @@ public:
     void SetDungeonDifficulty(uint8 diff);
     void SetRaidDifficulty(uint8 diff);
     void SendLootUpdates(Object* o);
+    void sendLooter(Creature* creature, Player* pLooter);
+
+    void updateLooterGuid(Object* pLootedObject);
+
+    // checks for Loot Threshold to roll our Items
+    void sendGroupLoot(Loot* loot, Object* object, Player* plr, uint32_t mapId);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Player* GetRandomPlayerInRangeButSkip(Player* plr, float range, Player* plr_skip)

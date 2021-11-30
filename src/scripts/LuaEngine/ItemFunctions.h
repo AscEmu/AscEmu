@@ -251,7 +251,7 @@ namespace luaItem
                 WorldDatabase.Execute("REPLACE INTO loot_items VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
             delete result;
         }
-        sLootMgr.AddLoot(ptr->loot, itemid, mincount, maxcount);
+        //sLootMgr.AddLoot(ptr->loot, itemid, mincount, maxcount);
         return 1;
     }
 
