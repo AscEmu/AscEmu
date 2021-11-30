@@ -397,7 +397,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
 
 #if VERSION_STRING >= WotLK
             if (tradeItems[i]->hasFlags(ITEM_FLAG_BOP_TRADEABLE))
-                tradeTarget->removeTradeableItem(tradeItems[i]);
+                _player->removeTradeableItem(tradeItems[i]);
 #endif
         }
         if (targetTradeItems[i] != nullptr)
