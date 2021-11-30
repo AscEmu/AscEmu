@@ -27,6 +27,8 @@ mCreatureTimerCount(0), isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmot
     //new CreatureAISpell handling
     mCurrentSpellTarget = nullptr;
     mLastCastedSpell = nullptr;
+
+    m_oldAIUpdate.resetInterval(1000);
 }
 
 CreatureAIScript::~CreatureAIScript()
@@ -115,11 +117,21 @@ void CreatureAIScript::_internalAIUpdate(unsigned long time_passed)
         if (!_isTimerFinished(mCustomAIUpdateDelayTimerId))
             return;
 
+        AIUpdate();
+
         _resetTimer(mCustomAIUpdateDelayTimerId, mCustomAIUpdateDelay);
     }
+    else
+    {
+        m_oldAIUpdate.updateTimer(time_passed);
 
-    // old Timer AIUpdate
-    AIUpdate();
+        // old Timer AIUpdate
+        if (m_oldAIUpdate.isTimePassed())
+        {
+            AIUpdate();
+            m_oldAIUpdate.resetInterval(1000);
+        }
+    }
 }
 
 void CreatureAIScript::_internalOnScriptPhaseChange()

@@ -233,6 +233,8 @@ private:
     uint32_t mCustomAIUpdateDelayTimerId;
     uint32_t mCustomAIUpdateDelay;
 
+    SmallTimeTracker m_oldAIUpdate;
+
 public:
     //old stuff
     void SetAIUpdateFreq(uint32_t pUpdateFreq);
