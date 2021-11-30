@@ -599,8 +599,10 @@ void Player::Update(unsigned long time_passed)
     // Item Duration Timer maybe add Enchants and retradeable items also here ?
     if (time_passed >= m_durationUpdateTimer)
     {
-        // Soulbound
+#if VERSION_STRING >= WotLK
+        // Soulbound trade
         updateSoulboundTradeItems();
+#endif
 
         // Reset Timer
         m_durationUpdateTimer = 1000;

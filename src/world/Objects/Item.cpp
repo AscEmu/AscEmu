@@ -385,6 +385,7 @@ bool Item::isEquipped() const
     return !isInBag() && m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()) < EQUIPMENT_SLOT_END;
 }
 
+#if VERSION_STRING >= WotLK
 void Item::setSoulboundTradeable(LooterSet& allowedLooters)
 {
     addFlags(ITEM_FLAG_BOP_TRADEABLE);
@@ -416,6 +417,7 @@ bool Item::checkSoulboundTradeExpire()
 
     return false;
 }
+#endif
 
 bool Item::isTradeableWith(Player* plr)
 {

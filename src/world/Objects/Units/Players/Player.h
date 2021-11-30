@@ -790,11 +790,13 @@ public:
 
     bool hasItem(uint32_t itemId, uint32_t amount = 1, bool checkBankAlso = false) const;
 
+#if VERSION_STRING >= WotLK
     // Soulbound Tradeable
     void updateSoulboundTradeItems();
     void addTradeableItem(Item* item);
     void removeTradeableItem(Item* item);
     ItemDurationList m_itemSoulboundTradeable;
+#endif
 
     // Player's item storage
     ItemInterface* getItemInterface() const;

@@ -514,11 +514,14 @@ public:
         void SetText(std::string &textString){ this->text = textString; }
         const std::string& GetText() const{ return this->text; }
 
+#if VERSION_STRING >= WotLK
         // Soulbound trade system
         void setSoulboundTradeable(LooterSet& allowedLooters);
         void clearSoulboundTradeable(Player* currentOwner);
         bool checkSoulboundTradeExpire();
+#endif
         bool isTradeableWith(Player* plr);
+
 
     protected:
 

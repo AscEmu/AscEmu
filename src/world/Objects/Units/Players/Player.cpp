@@ -4539,6 +4539,7 @@ Item* Player::storeItem(LootItem const* lootItem)
             return nullptr;
         }
 
+#if VERSION_STRING >= WotLK
         // Soulbound Tradeable
         if (looters.size() > 1 && lootItem->itemproto->MaxCount == 1 && newItem->isSoulbound())
         {
@@ -4548,6 +4549,7 @@ Item* Player::storeItem(LootItem const* lootItem)
             newItem->setCreatePlayedTime(played[1]);
             addTradeableItem(newItem);
         }
+#endif
 
         return newItem;
     }
@@ -4622,6 +4624,7 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* loot)
     return newItem;
 }
 
+#if VERSION_STRING >= WotLK
 void Player::updateSoulboundTradeItems()
 {
     if (m_itemSoulboundTradeable.empty())
@@ -4657,6 +4660,7 @@ void Player::removeTradeableItem(Item* item)
 {
     m_itemSoulboundTradeable.remove(item);
 }
+#endif
 
 void Player::sendLooter(Creature* creature)
 {
