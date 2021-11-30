@@ -1388,7 +1388,6 @@ void Group::sendGroupLoot(Loot* loot, Object* object, Player* plr, uint32_t mapI
             data << uint32_t(60000); // countdown
             data << uint8_t(7);      // some sort of flags that require research
 
-
             Lock();
             for (uint32_t i = 0; i < GetSubGroupCount(); ++i)
             {
