@@ -80,6 +80,7 @@ public:
 
     bool doesEffectApplyAura(uint8_t effIndex) const;
 
+    bool isAreaAuraEffect(uint8_t effIndex) const;
     bool appliesAreaAura(uint32_t auraType) const;
     uint32_t getAreaAuraEffect() const;
 

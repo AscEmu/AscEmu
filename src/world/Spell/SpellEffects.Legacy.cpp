@@ -4494,7 +4494,7 @@ void Spell::SpellEffectWeapondamage(uint8_t /*effectIndex*/)   // Weapon damage 
             case 33983:
             case 48565:
             case 48566:
-                p_caster->AddComboPoints(unitTarget->getGuid(), 1);
+                p_caster->addComboPoints(unitTarget->getGuid(), 1);
                 break;
         }
     }
@@ -4915,18 +4915,7 @@ void Spell::SpellEffectAddComboPoints(uint8_t /*effectIndex*/) // Add Combo Poin
     if (!p_caster)
         return;
 
-    //if this is a procspell Ruthlessness (maybe others later)
-    if (pSpellId && (getSpellInfo()->getId() == 14157 || getSpellInfo()->getId() == 70802 || getSpellInfo()->getId() == 14181))
-    {
-        //it seems this combo adding procspell is going to change combopoint count before they will get reset. We add it after the reset
-        /* burlex - this is wrong, and exploitable.. :/ if someone uses this they will have unlimited combo points */
-        //re-enabled this by Zack. Explained why it is used + rechecked to make sure initialization is good ...
-        // while casting a spell talent will trigger upon the spell prepare faze
-        // the effect of the talent is to add 1 combo point but when triggering spell finishes it will clear the extra combo point
-        p_caster->m_spellcomboPoints += static_cast<int8>(damage);
-        return;
-    }
-    p_caster->AddComboPoints(p_caster->getTargetGuid(), static_cast<uint8>(damage));
+    p_caster->addComboPoints(p_caster->getTargetGuid(), static_cast<uint8>(damage));
 }
 
 void Spell::SpellEffectCreateHouse(uint8_t /*effectIndex*/) // Create House
@@ -5720,7 +5709,7 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
         {
             if (p_caster)   //warrior : overpower - let us clear the event and the combopoint count
             {
-                p_caster->NullComboPoints(); //some say that we should only remove 1 point per dodge. Due to cooldown you can't cast it twice anyway..
+                p_caster->clearComboPoints(); //some say that we should only remove 1 point per dodge. Due to cooldown you can't cast it twice anyway..
                 sEventMgr.RemoveEvents(p_caster, EVENT_COMBO_POINT_CLEAR_FOR_TARGET);
             }
         } break;
@@ -5821,7 +5810,7 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
         case 65954:
         {
             if (p_caster)
-                p_caster->AddComboPoints(p_caster->getTargetGuid(), 1);
+                p_caster->addComboPoints(p_caster->getTargetGuid(), 1);
         } break;
 
         // AMBUSH

@@ -597,7 +597,7 @@ uint32_t SpellInfo::getRequiredTargetMaskForEffectTarget(uint32_t implicitTarget
             targetMask = SPELL_TARGET_AREA;
             break;*/
         case EFF_TARGET_LOCATION_TO_SUMMON:
-            targetMask = SPELL_TARGET_AREA_SELF | SPELL_TARGET_NO_OBJECT;
+            targetMask = SPELL_TARGET_NO_OBJECT;
             break;
         case EFF_TARGET_ALL_PARTY_AROUND_CASTER:
             targetMask = SPELL_TARGET_AREA_PARTY;
@@ -676,7 +676,7 @@ uint32_t SpellInfo::getRequiredTargetMaskForEffectTarget(uint32_t implicitTarget
             targetMask = SPELL_TARGET_OBJECT_SELF;
             break;
         case EFF_TARGET_DYNAMIC_OBJECT:
-            targetMask = SPELL_TARGET_AREA_SELF | SPELL_TARGET_NO_OBJECT; //dont fill target map for this (fucks up some spell visuals)
+            targetMask = SPELL_TARGET_NO_OBJECT; //dont fill target map for this (fucks up some spell visuals)
             break;
         case EFF_TARGET_MULTIPLE_SUMMON_LOCATION:
             targetMask = SPELL_TARGET_OBJECT_SELF;
@@ -1054,12 +1054,7 @@ int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = n
     if (comboDamage > 0.0f && unitCaster != nullptr && unitCaster->isPlayer())
     {
         const auto plrCaster = static_cast<Player*>(unitCaster);
-        basePoints += static_cast<int32_t>(std::round(comboDamage * plrCaster->m_comboPoints));
-        // TODO: rewrite combo points, here's an old comment from legacy method:
-        //this is ugly so i will explain the case maybe someone ha a better idea :
-        // while casting a spell talent will trigger upon the spell prepare faze
-        // the effect of the talent is to add 1 combo point but when triggering spell finishes it will clear the extra combo point
-        plrCaster->m_spellcomboPoints = 0;
+        basePoints += static_cast<int32_t>(std::round(comboDamage * plrCaster->getComboPoints()));
     }
 
     return basePoints;
@@ -1070,9 +1065,16 @@ bool SpellInfo::doesEffectApplyAura(uint8_t effIndex) const
     if (effIndex >= MAX_SPELL_EFFECTS)
         return false;
 
+    return Effect[effIndex] == SPELL_EFFECT_APPLY_AURA || isAreaAuraEffect(effIndex);
+}
+
+bool SpellInfo::isAreaAuraEffect(uint8_t effIndex) const
+{
+    if (effIndex >= MAX_SPELL_EFFECTS)
+        return false;
+
     switch (Effect[effIndex])
     {
-        case SPELL_EFFECT_APPLY_AURA:
         case SPELL_EFFECT_PERSISTENT_AREA_AURA:
         case SPELL_EFFECT_APPLY_GROUP_AREA_AURA:
         case SPELL_EFFECT_APPLY_RAID_AREA_AURA:
@@ -1092,21 +1094,11 @@ bool SpellInfo::appliesAreaAura(uint32_t auraType) const
 {
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        switch (Effect[i])
-        {
-            case SPELL_EFFECT_PERSISTENT_AREA_AURA:
-            case SPELL_EFFECT_APPLY_GROUP_AREA_AURA:
-            case SPELL_EFFECT_APPLY_RAID_AREA_AURA:
-            case SPELL_EFFECT_APPLY_PET_AREA_AURA:
-            case SPELL_EFFECT_APPLY_FRIEND_AREA_AURA:
-            case SPELL_EFFECT_APPLY_ENEMY_AREA_AURA:
-            case SPELL_EFFECT_APPLY_OWNER_AREA_AURA:
-                if (EffectApplyAuraName[i] == auraType)
-                    return true;
-                break;
-            default:
-                break;
-        }
+        if (!isAreaAuraEffect(i))
+            continue;
+
+        if (EffectApplyAuraName[i] == auraType)
+            return true;
     }
 
     return false;
@@ -1116,12 +1108,7 @@ uint32_t SpellInfo::getAreaAuraEffect() const
 {
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        if (Effect[i] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA ||
-            Effect[i] == SPELL_EFFECT_APPLY_RAID_AREA_AURA ||
-            Effect[i] == SPELL_EFFECT_APPLY_PET_AREA_AURA ||
-            Effect[i] == SPELL_EFFECT_APPLY_FRIEND_AREA_AURA ||
-            Effect[i] == SPELL_EFFECT_APPLY_ENEMY_AREA_AURA ||
-            Effect[i] == SPELL_EFFECT_APPLY_OWNER_AREA_AURA)
+        if (isAreaAuraEffect(i))
             return Effect[i];
     }
 

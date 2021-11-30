@@ -7696,56 +7696,6 @@ void Player::EventPortToGM(Player* p)
     SafeTeleport(p->GetMapId(), p->GetInstanceID(), p->GetPosition());
 }
 
-void Player::AddComboPoints(uint64 target, int8 count)
-{
-    // getTimeLeft() checked in SpellAura, so we won't lose points
-    RemoveAllAuraType(SPELL_AURA_RETAIN_COMBO_POINTS);
-
-    if (m_comboTarget == target)
-    {
-        m_comboPoints += count;
-    }
-    else
-    {
-        m_comboTarget = target;
-        m_comboPoints = count;
-    }
-
-    UpdateComboPoints();
-}
-
-void Player::UpdateComboPoints()
-{
-    // fuck bytebuffers :D
-    unsigned char buffer[10];
-    uint16 c = 2;
-
-    // check for overflow
-    if (m_comboPoints > 5)
-        m_comboPoints = 5;
-
-    if (m_comboPoints < 0)
-        m_comboPoints = 0;
-
-    if (m_comboTarget != 0)
-    {
-        Unit* target = (m_mapMgr != nullptr) ? m_mapMgr->GetUnit(m_comboTarget) : NULL;
-        if (!target || target->isDead() || getTargetGuid() != m_comboTarget)
-        {
-            buffer[0] = buffer[1] = 0;
-        }
-        else
-        {
-            c = static_cast<uint16>(FastGUIDPack(m_comboTarget, buffer, 0));
-            buffer[c++] = m_comboPoints;
-        }
-    }
-    else
-        buffer[0] = buffer[1] = 0;
-
-    m_session->OutPacket(SMSG_UPDATE_COMBO_POINTS, c, buffer);
-}
-
 void Player::SendAreaTriggerMessage(const char* message, ...)
 {
     va_list ap;

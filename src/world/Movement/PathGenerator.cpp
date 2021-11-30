@@ -159,7 +159,7 @@ void PathGenerator::buildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 con
         waterPath = _source->ToPlayer()->canSwim();
     }
 
-    if (startPoly == INVALID_POLYREF || endPoly == INVALID_POLYREF || waterPath && _source->ToCreature()->isInWater() || path && _source->ToCreature()->IsFlying())
+    if (startPoly == INVALID_POLYREF || endPoly == INVALID_POLYREF || waterPath && _source->ToUnit()->isInWater() || path && _source->ToUnit()->IsFlying())
     {
         buildShortcut();
         

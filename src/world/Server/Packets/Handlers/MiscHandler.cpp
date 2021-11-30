@@ -212,7 +212,7 @@ void WorldSession::handleSetSelectionOpcode(WorldPacket& recvPacket)
     _player->setTargetGuid(srlPacket.guid);
 
     if (_player->m_comboPoints)
-        _player->UpdateComboPoints();
+        _player->updateComboPoints();
 
     if (srlPacket.guid == 0)
     {
@@ -1868,7 +1868,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
     _player->setTargetGuid(srlPacket.guid);
 
     if (_player->m_comboPoints)
-        _player->UpdateComboPoints();
+        _player->updateComboPoints();
 
     ByteBuffer packedGuid;
     WorldPacket data(SMSG_INSPECT_TALENT, 1000);

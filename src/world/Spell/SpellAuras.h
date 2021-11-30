@@ -647,7 +647,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraModBaseResistancePerc(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModResistanceExclusive(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraSafeFall(AuraEffectModifier* aurEff, bool apply);
-        void SpellAuraRetainComboPoints(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraResistPushback(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModShieldBlockPCT(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraTrackStealthed(AuraEffectModifier* aurEff, bool apply);

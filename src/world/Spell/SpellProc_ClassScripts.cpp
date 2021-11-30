@@ -486,9 +486,10 @@ public:
             return true;
         }
 
-        int32 value = aura->getEffectDamage(0);
+        SpellForcedBasePoints forcedBasePoints;
+        forcedBasePoints.basePoints[0] = aura->getEffectDamage(0);
 
-        caster->castSpell(getProcOwner(), 33110, value, true);
+        caster->castSpell(getProcOwner(), 33110, forcedBasePoints, true);
 
         int32 count = getProcOwner()->getAuraCountForId(getSpell()->getId());
 
@@ -506,7 +507,7 @@ public:
         getProcOwner()->removeAllAurasById(getSpell()->getId());
 
         if (new_plr != nullptr)
-            caster->castSpell(new_plr, getSpell(), value, count - 1, true);
+            caster->castSpell(new_plr, getSpell(), forcedBasePoints, count - 1, true);
 
         return true;
     }

@@ -2995,12 +2995,14 @@ void Unit::setDualWield(bool enable)
 
 void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, bool triggered)
 {
-    castSpell(targetGuid, spellId, 0, triggered);
+    const SpellForcedBasePoints forcedBasePoints;
+    castSpell(targetGuid, spellId, forcedBasePoints, triggered);
 }
 
 void Unit::castSpell(Unit* target, uint32_t spellId, bool triggered)
 {
-    castSpell(target, spellId, 0, triggered);
+    const SpellForcedBasePoints forcedBasePoints;
+    castSpell(target, spellId, forcedBasePoints, triggered);
 }
 
 void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, bool triggered)
@@ -3008,7 +3010,8 @@ void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, bool trigg
     if (spellInfo == nullptr)
         return;
 
-    castSpell(targetGuid, spellInfo, 0, triggered);
+    const SpellForcedBasePoints forcedBasePoints;
+    castSpell(targetGuid, spellInfo, forcedBasePoints, triggered);
 }
 
 void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered)
@@ -3016,10 +3019,11 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered)
     if (spellInfo == nullptr)
         return;
     
-    castSpell(target, spellInfo, 0, triggered);
+    const SpellForcedBasePoints forcedBasePoints;
+    castSpell(target, spellInfo, forcedBasePoints, triggered);
 }
 
-void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, uint32_t forcedBasepoints, bool triggered)
+void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
@@ -3028,7 +3032,7 @@ void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, uint32_t forcedBasep
     castSpell(targetGuid, spellInfo, forcedBasepoints, triggered);
 }
 
-void Unit::castSpell(Unit* target, uint32_t spellId, uint32_t forcedBasepoints, bool triggered)
+void Unit::castSpell(Unit* target, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
@@ -3037,13 +3041,16 @@ void Unit::castSpell(Unit* target, uint32_t spellId, uint32_t forcedBasepoints, 
     castSpell(target, spellInfo, forcedBasepoints, triggered);
 }
 
-void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, uint32_t forcedBasePoints, int32_t spellCharges, bool triggered)
+void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasePoints, int32_t spellCharges, bool triggered)
 {
     if (spellInfo == nullptr)
         return;
 
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
-    newSpell->forced_basepoints[0] = forcedBasePoints;
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        newSpell->forced_basepoints[i] = forcedBasePoints.basePoints[i];
+    }
     newSpell->m_charges = spellCharges;
 
     SpellCastTargets targets(0);
@@ -3081,13 +3088,14 @@ void Unit::castSpellLoc(const LocationVector location, SpellInfo const* spellInf
 
 void Unit::eventCastSpell(Unit* target, SpellInfo const* spellInfo)
 {
+    const SpellForcedBasePoints forcedBasePoints;
     if (spellInfo != nullptr)
-        castSpell(target, spellInfo, 0, true);
+        castSpell(target, spellInfo, forcedBasePoints, true);
     else
         sLogger.failure("Unit::eventCastSpell tried to cast invalid spell with no spellInfo (nullptr)");
 }
 
-void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, uint32_t forcedBasepoints, bool triggered)
+void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasepoints, bool triggered)
 {
     if (spellInfo == nullptr)
         return;
@@ -3095,7 +3103,7 @@ void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, uint32_t f
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        newSpell->forced_basepoints[i] = forcedBasepoints;
+        newSpell->forced_basepoints[i] = forcedBasepoints.basePoints[i];
     }
 
     SpellCastTargets targets(targetGuid);
@@ -3104,7 +3112,7 @@ void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, uint32_t f
     newSpell->prepare(&targets);
 }
 
-void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, uint32_t forcedBasepoints, bool triggered)
+void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasepoints, bool triggered)
 {
     if (spellInfo == nullptr)
         return;
@@ -3112,7 +3120,7 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, uint32_t forcedBa
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        newSpell->forced_basepoints[i] = forcedBasepoints;
+        newSpell->forced_basepoints[i] = forcedBasepoints.basePoints[i];
     }
 
     SpellCastTargets targets(0);
@@ -3336,7 +3344,8 @@ float_t Unit::applySpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg,
     if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_NOT_USING_DMG_BONUS)
         return floatDmg;
 
-    // Check for correct class
+    // Check if class can benefit from spell power
+    auto canBenefitFromSpellPower = true;
     if (isPlayer())
     {
         switch (this->getClass())
@@ -3350,7 +3359,8 @@ float_t Unit::applySpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg,
 #if VERSION_STRING >= WotLK
             case DEATHKNIGHT:
 #endif
-                return floatDmg;
+                canBenefitFromSpellPower = false;
+                break;
             default:
                 break;
         }
@@ -3359,74 +3369,86 @@ float_t Unit::applySpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg,
     float_t bonusDmg = 0.0f, bonusAp = 0.0f;
     const auto school = spellInfo->getFirstSchoolFromSchoolMask();
 
-    if (aur != nullptr)
+    if (canBenefitFromSpellPower)
     {
-        bonusDmg = static_cast<float_t>(aur->getSpellPowerBonus());
-        bonusAp = static_cast<float_t>(aur->getAttackPowerBonus());
-    }
-    else
-    {
-        bonusDmg = static_cast<float_t>(GetDamageDoneMod(school));
-        bonusAp = static_cast<float_t>(getAttackPower());
-    }
-
-    // Get spell coefficient value
-    if (bonusDmg > 0.0f)
-    {
-        if (!isPeriodic || spellInfo->isChanneled())
-        {
-            if (spellInfo->spell_coeff_direct > 0.0f)
-                bonusDmg *= spellInfo->spell_coeff_direct * effectPctModifier;
-            else
-                bonusDmg = 0.0f;
-        }
+        if (aur != nullptr)
+            bonusDmg = static_cast<float_t>(aur->getSpellPowerBonus());
         else
-        {
-            if (spellInfo->spell_coeff_overtime > 0.0f)
-                bonusDmg *= spellInfo->spell_coeff_overtime * effectPctModifier;
-            else
-                bonusDmg = 0.0f;
-        }
+            bonusDmg = static_cast<float_t>(GetDamageDoneMod(school));
 
-        // Apply general downranking penalty
-        // Level 20 penalty is already applied in SpellMgr::setSpellCoefficient
-        // This method only existed in late TBC and WotLK, in Cata spells lost their ranks
+        // Get spell coefficient value
+        if (bonusDmg > 0.0f)
+        {
+            if (!isPeriodic || spellInfo->isChanneled())
+            {
+                if (spellInfo->spell_coeff_direct > 0.0f)
+                    bonusDmg *= spellInfo->spell_coeff_direct * effectPctModifier;
+                else
+                    bonusDmg = 0.0f;
+            }
+            else
+            {
+                if (spellInfo->spell_coeff_overtime > 0.0f)
+                    bonusDmg *= spellInfo->spell_coeff_overtime * effectPctModifier;
+                else
+                    bonusDmg = 0.0f;
+            }
+
+            // Apply general downranking penalty
+            // Level 20 penalty is already applied in SpellMgr::setSpellCoefficient
+            // This method only existed in late TBC and WotLK, in Cata spells lost their ranks
 #if VERSION_STRING >= TBC
 #if VERSION_STRING <= WotLK
-        /*
-        If caster level is less than max caster level, then the penalty = 1.0.
-        If caster level is at or greater than max caster level, then the penalty = (22 + max level - caster level) / 20.
-        The penalty is capped at 0.
-        */
-        const auto maxLevel = spellInfo->getMaxLevel();
-        if (maxLevel != 0 && isPlayer())
-        {
-            float_t penalty = 1.0f;
-            if (maxLevel <= getLevel())
-                penalty = (22.0f + maxLevel - getLevel()) / 20.0f;
+            /*
+            If caster level is less than max caster level, then the penalty = 1.0.
+            If caster level is at or greater than max caster level, then the penalty = (22 + max level - caster level) / 20.
+            The penalty is capped at 0.
+            */
+            const auto maxLevel = spellInfo->getMaxLevel();
+            if (maxLevel != 0 && isPlayer())
+            {
+                float_t penalty = 1.0f;
+                if (maxLevel <= getLevel())
+                    penalty = (22.0f + maxLevel - getLevel()) / 20.0f;
 
-            if (penalty > 1.0f)
-                penalty = 1.0f;
-            if (penalty < 0.0f)
-                penalty = 0.0f;
+                if (penalty > 1.0f)
+                    penalty = 1.0f;
+                if (penalty < 0.0f)
+                    penalty = 0.0f;
 
-            bonusDmg *= penalty;
+                bonusDmg *= penalty;
+            }
+#endif
+#endif
         }
-#endif
-#endif
+
+        applySpellModifiers(SPELLMOD_PENALTY, &bonusDmg, spellInfo, castingSpell, aur);
     }
+
+    if (aur != nullptr)
+        bonusAp = static_cast<float_t>(aur->getAttackPowerBonus());
+    else
+        bonusAp = static_cast<float_t>(getAttackPower());
 
     if (bonusAp > 0.0f)
     {
         // Get attack power bonus
         if (isPeriodic || aur != nullptr)
-            bonusAp *= spellInfo->spell_ap_coeff_overtime * effectPctModifier;
+        {
+            if (spellInfo->spell_ap_coeff_overtime > 0.0f)
+                bonusAp *= spellInfo->spell_ap_coeff_overtime * effectPctModifier;
+            else
+                bonusAp = 0.0f;
+        }
         else
-            bonusAp *= spellInfo->spell_ap_coeff_direct * effectPctModifier;
+        {
+            if (spellInfo->spell_ap_coeff_direct > 0.0f)
+                bonusAp *= spellInfo->spell_ap_coeff_direct * effectPctModifier;
+            else
+                bonusAp = 0.0f;
+        }
     }
 
-
-    applySpellModifiers(SPELLMOD_PENALTY, &bonusDmg, spellInfo, castingSpell, aur);
     bonusDmg += bonusAp;
 
     if (isPeriodic && aur != nullptr)

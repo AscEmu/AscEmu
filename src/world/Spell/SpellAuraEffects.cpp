@@ -166,7 +166,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::spellAuraEffectNotImplemented,                                   // 145 SPELL_AURA_145
     &Aura::spellAuraEffectNotImplemented,                                   // 146 SPELL_AURA_146
     &Aura::spellAuraEffectNotImplemented,                                   // 147 SPELL_AURA_147
-    &Aura::SpellAuraRetainComboPoints,                                      // 148 SPELL_AURA_RETAIN_COMBO_POINTS
+    &Aura::spellAuraEffectRetainComboPoints,                                // 148 SPELL_AURA_RETAIN_COMBO_POINTS
     &Aura::SpellAuraResistPushback,                                         // 149 SPELL_AURA_RESIST_PUSHBACK
     &Aura::SpellAuraModShieldBlockPCT,                                      // 150 SPELL_AURA_MOD_SHIELD_BLOCK_PCT
     &Aura::SpellAuraTrackStealthed,                                         // 151 SPELL_AURA_TRACK_STEALTHED
@@ -1881,6 +1881,19 @@ void Aura::spellAuraEffectAddModifier(AuraEffectModifier* aurEff, bool apply)
                     break;
             }
         }
+    }
+}
+
+void Aura::spellAuraEffectRetainComboPoints(AuraEffectModifier* aurEff, bool apply)
+{
+    if (getPlayerOwner() == nullptr)
+        return;
+
+    if (!apply)
+    {
+        // Remove combo points created by this aura only if duration has expired
+        if (getTimeLeft() == 0)
+            getPlayerOwner()->addComboPoints(getPlayerOwner()->getTargetGuid(), static_cast<int8_t>(-aurEff->getEffectDamage()));
     }
 }
 

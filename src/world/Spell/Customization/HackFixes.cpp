@@ -841,10 +841,6 @@ void SpellMgr::applyHackFixes()
                 break;
         }
 
-        //shaman - shock, has no spellgroup.very dangerous move !
-
-        //mage - fireball. Only some of the spell has the flags
-
         switch (sp->getId())
         {
             // SPELL_HASH_SEAL_OF_COMMAND
@@ -921,31 +917,6 @@ void SpellMgr::applyHackFixes()
             } break;
 
             //////////////////////////////////////////////////////////////////////////////////////////
-            // SPELL_HASH_CONSECRATION
-            case 20116:     // Consecration Rank 2
-            case 20922:     // Consecration Rank 3
-            case 20923:     // Consecration Rank 4
-            case 20924:     // Consecration Rank 5
-            case 26573:     // Consecration Rank 1
-            case 27173:     // Consecration Rank 6
-            case 32773:
-            case 33559:
-            case 36946:
-            case 37553:
-            case 38385:
-            case 41541:
-            case 43429:
-            case 48818:     // Consecration Rank 7
-            case 48819:     // Consecration Rank 8
-            case 57798:
-            case 59998:
-            case 69930:
-            case 71122:
-            {
-                sp->setDmgClass(SPELL_DMG_TYPE_MAGIC); //Speaks for itself.
-            } break;
-
-            //////////////////////////////////////////////////////////////////////////////////////////
             // SPELL_HASH_SEALS_OF_THE_PURE
 #if VERSION_STRING < Cata
             case 20224:     // Seals of the Pure Rank 1
@@ -994,51 +965,6 @@ void SpellMgr::applyHackFixes()
             {
                 //sp->Effect[1] = SPELL_EFFECT_DUMMY;
                 sp->addAttributesExC(ATTRIBUTESEXC_NO_DONE_BONUS);
-            } break;
-
-            //////////////////////////////////////////////////////////////////////////////////////////
-            // SPELL_HASH_FLAMETONGUE_TOTEM
-            case 8227:      // Flametongue Totem
-            case 8249:
-            case 10526:
-            case 16387:
-            case 25557:
-            case 52109:
-            case 52110:
-            case 52111:
-            case 52112:
-            case 52113:
-            case 58649:
-            case 58651:
-            case 58652:
-            case 58654:
-            case 58655:
-            case 58656:
-            {
-                // Flametongue Totem passive target fix
-                sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0);
-                sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 0);
-                sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
-                sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 1);
-            } break;
-
-            //////////////////////////////////////////////////////////////////////////////////////////
-            // SPELL_HASH_FROSTBRAND_ATTACK
-            case 8034:      // Frostbrand Attack
-            case 8037:
-            case 10458:
-            case 16352:
-            case 16353:
-            case 25501:
-            case 38617:
-            case 54609:
-            case 58797:
-            case 58798:
-            case 58799:
-            case 64186:
-            {
-                // Attributes addition
-                sp->addAttributes(ATTRIBUTESEXC_NO_DONE_BONUS);
             } break;
 
             //////////////////////////////////////////////////////////////////////////////////////////
@@ -1157,22 +1083,13 @@ void SpellMgr::applyHackFixes()
 
 
     //////////////////////////////////////////////////////
-    // CLASS-SPECIFIC SPELL FIXES                        //
+    // CLASS-SPECIFIC SPELL FIXES                       //
     //////////////////////////////////////////////////////
 
     // Note: when applying spell hackfixes, please follow a template
 
     //////////////////////////////////////////
-    // Lord Marrowgar                      //
-    ////////////////////////////////////////
-
-    sp = getMutableSpellInfo(69075); // Bone Storm (Lord Marrowgar)
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(SPELL_TARGET_AREA, 0);
-
-
-    //////////////////////////////////////////
-    // WARRIOR                                //
+    // WARRIOR                              //
     //////////////////////////////////////////
 
     // Insert warrior spell fixes here
@@ -1218,6 +1135,18 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(25208);
     if (sp != nullptr)
         sp->setMechanicsType(MECHANIC_BLEEDING);
+
+    // Warrior - Improved Hamstring
+    // Blizzard uses attackable target for this talent which won't work in our spell system...
+    sp = getMutableSpellInfo(12289);
+    if (sp != nullptr)
+        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0);
+    sp = getMutableSpellInfo(12668);
+    if (sp != nullptr)
+        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0);
+    sp = getMutableSpellInfo(23695);
+    if (sp != nullptr)
+        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0);
 
     ////////////////////////////////////////////////////////////
     // Fury
@@ -1320,7 +1249,7 @@ void SpellMgr::applyHackFixes()
     }
 
     //////////////////////////////////////////
-    // PALADIN                                //
+    // PALADIN                              //
     //////////////////////////////////////////
 
     // Insert paladin spell fixes here
@@ -1429,7 +1358,7 @@ void SpellMgr::applyHackFixes()
     }
 
     //////////////////////////////////////////
-    // HUNTER                                //
+    // HUNTER                               //
     //////////////////////////////////////////
 
     // Insert hunter spell fixes here
@@ -1670,9 +1599,21 @@ void SpellMgr::applyHackFixes()
     if (sp != nullptr)
         sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
 
+    // Fan of knives
+    sp = getMutableSpellInfo(51723);
+    if (sp != nullptr)
+    {
+        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMY_IN_AREA, 0);
+        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 0);
+    }
+
+    // Rogue - Master of Subtlety
+    sp = getMutableSpellInfo(31665);
+    if (sp != nullptr)
+        sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
 
     //////////////////////////////////////////
-    // PRIEST                                //
+    // PRIEST                               //
     //////////////////////////////////////////
 
     // Insert priest spell fixes here
@@ -1832,12 +1773,11 @@ void SpellMgr::applyHackFixes()
 
 
     //////////////////////////////////////////
-    // SHAMAN                                //
+    // SHAMAN                               //
     //////////////////////////////////////////
 
     // Insert shaman spell fixes here
 
-    ////////////////////////////////////////////////////////////
     // Shamanistic Rage
     SpellInfo const*  parentsp = getMutableSpellInfo(30823);
     SpellInfo* triggersp = getMutableSpellInfo(30824);
@@ -1854,9 +1794,6 @@ void SpellMgr::applyHackFixes()
     if (sp != nullptr)
         sp->setEffectImplicitTargetA(EFF_TARGET_TOTEM_EARTH, 0); //remove this targeting. it is enough to get 1 target
 
-
-    ////////////////////////////////////////////////////////////
-    // Bloodlust
     //Bloodlust
     sp = getMutableSpellInfo(2825);
     if (sp != nullptr)
@@ -1869,8 +1806,6 @@ void SpellMgr::applyHackFixes()
         sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
     }
 
-    ////////////////////////////////////////////////////////////
-    // Heroism
     //Heroism
     sp = getMutableSpellInfo(32182);
     if (sp != nullptr)
@@ -1883,7 +1818,6 @@ void SpellMgr::applyHackFixes()
         sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
     }
 
-    ////////////////////////////////////////////////////////////
     // Purge
     sp = getMutableSpellInfo(370);
     if (sp != nullptr)
@@ -1974,7 +1908,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffectMiscValue(SPELLMOD_DAMAGE_DONE, 2);
     }
 
-    ////////////////////////////////////////////////////////////
     //  Unleashed Rage - LordLeeCH
     sp = getMutableSpellInfo(30802);
     if (sp != nullptr)
@@ -1992,7 +1925,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 0);
     }
 
-    ////////////////////////////////////////////////////////////
     // Ancestral healing proc spell
     sp = getMutableSpellInfo(16177);
     if (sp != nullptr)
@@ -2018,26 +1950,7 @@ void SpellMgr::applyHackFixes()
     }
 
     //////////////////////////////////////////
-    // SHAMAN WRATH OF AIR TOTEM            //
-    //////////////////////////////////////////
-    sp = getMutableSpellInfo(2895);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 2);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 0);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 1);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 2);
-    }
-
-    // Rogue - Master of Subtlety
-    sp = getMutableSpellInfo(31665);
-    if (sp != nullptr)
-        sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
-
-    //////////////////////////////////////////
-    // MAGE                                    //
+    // MAGE                                 //
     //////////////////////////////////////////
 
     // Insert mage spell fixes here
@@ -2147,34 +2060,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffectBasePoints(5 * (sp->calculateEffectValue(0)), 0);
     }
 
-    // cebernic: not for self?
-    // impact
-    sp = getMutableSpellInfo(12355);
-    if (sp != nullptr)
-    {
-        // passive rank: 11103, 12357, 12358 ,12359,12360 :D
-        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER, 0);
-        sp->setEffectImplicitTargetB(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER, 1);
-        sp->setEffectImplicitTargetB(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER, 2);
-        sp->setEffectImplicitTargetB(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER, 2);
-    }
-
-    //Mage - Invisibility
-    sp = getMutableSpellInfo(66);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_NULL, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_SPELL, 2);
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 2);
-        sp->setEffectAmplitude(3000, 2);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 2);
-        sp->setEffectDieSides(1, 2);
-        sp->setEffectTriggerSpell(32612, 2);
-        sp->setEffectBasePoints(-1, 2);
-    }
-
     //Arcane Potency procs
     sp = getMutableSpellInfo(57529);
     if (sp != nullptr)
@@ -2235,7 +2120,7 @@ void SpellMgr::applyHackFixes()
     }
 
     //////////////////////////////////////////
-    // WARLOCK                                //
+    // WARLOCK                              //
     //////////////////////////////////////////
 
     // Insert warlock spell fixes here
@@ -2300,7 +2185,6 @@ void SpellMgr::applyHackFixes()
     }
 #endif
 
-    ////////////////////////////////////////////////////////////
     // Demonic Knowledge
     sp = getMutableSpellInfo(35691);
     if (sp != nullptr)
@@ -2882,6 +2766,143 @@ void SpellMgr::applyHackFixes()
     if (sp != nullptr)
         sp->setDurationIndex(0);
 
+    //////////////////////////////////////////
+    // DEATH KNIGHT                         //
+    //////////////////////////////////////////
+
+    // Insert Death Knight spells here
+
+    // Unholy Aura - Ranks 1
+    sp = getMutableSpellInfo(50391);
+    if (sp != nullptr)
+    {
+        sp->setEffectApplyAuraName(SPELL_AURA_MOD_INCREASE_SPEED_ALWAYS, 0);
+        sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 0);
+        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
+        sp->setEffectTriggerSpell(50392, 1);
+        sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 1);
+        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
+    }
+    // Unholy Aura - Ranks 2
+    sp = getMutableSpellInfo(50392);
+    if (sp != nullptr)
+    {
+        sp->setEffectApplyAuraName(SPELL_AURA_MOD_INCREASE_SPEED_ALWAYS, 0);
+        sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 0);
+        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
+        sp->setEffectTriggerSpell(50392, 1);
+        sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 1);
+        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
+    }
+
+    //    Empower Rune Weapon
+    sp = getMutableSpellInfo(47568);
+    if (sp != nullptr)
+    {
+        sp->setEffect(SPELL_EFFECT_ACTIVATE_RUNES, 2);
+        sp->setEffectBasePoints(1, 2);
+        sp->setEffectMiscValue(RUNE_UNHOLY, 2);
+    }
+
+    // DEATH AND DECAY
+    sp = getMutableSpellInfo(49937);
+    if (sp != nullptr)
+    {
+        sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE, 0);
+        sp->setEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA, 0);
+    }
+
+    sp = getMutableSpellInfo(49936);
+    if (sp != nullptr)
+    {
+        sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE, 0);
+        sp->setEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA, 0);
+    }
+
+    sp = getMutableSpellInfo(49938);
+    if (sp != nullptr)
+    {
+        sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE, 0);
+        sp->setEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA, 0);
+    }
+
+    sp = getMutableSpellInfo(43265);
+    if (sp != nullptr)
+    {
+        sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE, 0);
+        sp->setEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA, 0);
+    }
+
+    // Vengeance
+    sp = getMutableSpellInfo(93099);
+    if (sp != nullptr)
+    {
+        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
+        sp->setEffectTriggerSpell(76691, 0);
+    }
+
+    // Path of Frost
+    sp = getMutableSpellInfo(3714);
+    if (sp != nullptr)
+    {
+        sp->setEffectApplyAuraName(SPELL_AURA_WATER_WALK, 0);
+        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
+    }
+
+    // Rune Strike
+    sp = getMutableSpellInfo(56815);
+    if (sp != nullptr)
+    {
+        sp->addAttributes(ATTRIBUTES_CANT_BE_DPB);
+    }
+
+    createDummySpell(56817);
+    sp = getMutableSpellInfo(56817);
+    if (sp != nullptr)
+    {
+        sp->setDurationIndex(28);
+        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
+        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);
+    }
+
+    //Frost Strike
+    sp = getMutableSpellInfo(49143);
+    if (sp != nullptr)
+    {
+        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
+    }
+    sp = getMutableSpellInfo(51416);
+    if (sp != nullptr)
+    {
+        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
+    }
+    sp = getMutableSpellInfo(51417);
+    if (sp != nullptr)
+    {
+        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
+    }
+    sp = getMutableSpellInfo(51418);
+    if (sp != nullptr)
+    {
+        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
+    }
+    sp = getMutableSpellInfo(51419);
+    if (sp != nullptr)
+    {
+        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
+    }
+    sp = getMutableSpellInfo(55268);
+    if (sp != nullptr)
+    {
+        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
+    }
+
+    //////////////////////////////////////////
+    // ITEMS                                //
+    //////////////////////////////////////////
+
+    // Insert items spell fixes here
+
     sp = getMutableSpellInfo(61177); // Northrend Inscription Research
     if (sp != nullptr)
     {
@@ -2994,11 +3015,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffectTriggerSpell(43729, 1); // Vengeful Gladiator's Totem of the Third Wind
     }
 #endif
-    //////////////////////////////////////////
-    // ITEMS                                //
-    //////////////////////////////////////////
-
-    // Insert items spell fixes here
 
     //Compact Harvest Reaper
     sp = getMutableSpellInfo(4078);
@@ -3292,10 +3308,15 @@ void SpellMgr::applyHackFixes()
     }
 
     //////////////////////////////////////////
-    // BOSSES                                //
+    // BOSSES                               //
     //////////////////////////////////////////
 
     // Insert boss spell fixes here
+
+    // Bone Storm (Lord Marrowgar)
+    sp = getMutableSpellInfo(69075);
+    if (sp != nullptr)
+        sp->setEffectImplicitTargetA(SPELL_TARGET_AREA, 0);
 
     // Major Domo - Magic Reflection
     sp = getMutableSpellInfo(20619);
@@ -3391,159 +3412,6 @@ void SpellMgr::applyHackFixes()
         sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
         sp->setEffectTriggerSpell(20511, 0); // cebernic: this just real spell
         sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 0);
-    }
-
-    //////////////////////////////////////////
-    // DEATH KNIGHT                            //
-    //////////////////////////////////////////
-
-    // Insert Death Knight spells here
-
-    // Unholy Aura - Ranks 1
-    sp = getMutableSpellInfo(50391);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_INCREASE_SPEED_ALWAYS, 0);
-        sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(50392, 1);
-        sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
-    }
-    // Unholy Aura - Ranks 2
-    sp = getMutableSpellInfo(50392);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_INCREASE_SPEED_ALWAYS, 0);
-        sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(50392, 1);
-        sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
-    }
-
-    //    Empower Rune Weapon
-    sp = getMutableSpellInfo(47568);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_ACTIVATE_RUNES, 2);
-        sp->setEffectBasePoints(1, 2);
-        sp->setEffectMiscValue(RUNE_UNHOLY, 2);
-    }
-
-    // Frost Presence
-    sp = getMutableSpellInfo(48263);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_BASE_RESISTANCE_PCT, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_INCREASE_HEALTH_PERCENT, 1);
-        sp->setEffectBasePoints(9, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_TAKEN, 2);
-    }
-
-    //    Unholy Presence
-    sp = getMutableSpellInfo(48265);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_HASTE, 0);
-        sp->setEffectBasePoints(14, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_INCREASE_SPEED, 1);
-        sp->setEffectBasePoints(14, 1);
-    }
-
-    // DEATH AND DECAY
-    sp = getMutableSpellInfo(49937);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE, 0);
-        sp->setEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA, 0);
-    }
-
-    sp = getMutableSpellInfo(49936);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE, 0);
-        sp->setEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA, 0);
-    }
-
-    sp = getMutableSpellInfo(49938);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE, 0);
-        sp->setEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA, 0);
-    }
-
-    sp = getMutableSpellInfo(43265);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE, 0);
-        sp->setEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA, 0);
-    }
-
-    // Vengeance
-    sp = getMutableSpellInfo(93099);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(76691, 0);
-    }
-
-    ///////////////////////////////////////////////////////////
-    //    Path of Frost
-    ///////////////////////////////////////////////////////////
-    sp = getMutableSpellInfo(3714);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_WATER_WALK, 0);
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-    }
-
-    // Rune Strike
-    sp = getMutableSpellInfo(56815);
-    if (sp != nullptr)
-    {
-        sp->addAttributes(ATTRIBUTES_CANT_BE_DPB);
-    }
-
-    createDummySpell(56817);
-    sp = getMutableSpellInfo(56817);
-    if (sp != nullptr)
-    {
-        sp->setDurationIndex(28);
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);
-    }
-
-    //Frost Strike
-    sp = getMutableSpellInfo(49143);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
-    }
-    sp = getMutableSpellInfo(51416);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
-    }
-    sp = getMutableSpellInfo(51417);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
-    }
-    sp = getMutableSpellInfo(51418);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
-    }
-    sp = getMutableSpellInfo(51419);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
-    }
-    sp = getMutableSpellInfo(55268);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
     }
 
     // Noggenfogger elixir - reduce size effect
@@ -3694,17 +3562,6 @@ void SpellMgr::applyHackFixes()
     sp = getMutableSpellInfo(20549);
     if (sp)
     {
-        sp->setEffectMechanic(MECHANIC_STUNNED, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMY_IN_AREA, 0);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 0);
-    }
-
-    // Fan of knives
-    sp = getMutableSpellInfo(51723);
-    if (sp != nullptr)
-    {
-
-        sp->setEffectMechanic(MECHANIC_SHACKLED, 0);
         sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMY_IN_AREA, 0);
         sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 0);
     }

@@ -791,6 +791,9 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
 
 uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell, DamageInfo damageInfo, bool isSpellTriggered, ProcEvents procEvent/* = PROC_EVENT_DO_ALL*/, Aura* triggeredFromAura/* = nullptr*/)
 {
+    if (flag == 0)
+        return 0;
+
     uint32 resisted_dmg = 0;
     bool can_delete = !bProcInUse; //if this is a nested proc then we should have this set to TRUE by the father proc
     bProcInUse = true; //locking the proc list
@@ -3850,12 +3853,6 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     //we need a finishing move for this
                     if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_FINISHING_MOVE) || victim == this)
                         continue;
-                    //should fix issue with combo points
-                    if (isPlayer())
-                    {
-                        static_cast<Player*>(this)->m_spellcomboPoints++;
-                        static_cast<Player*>(this)->UpdateComboPoints();
-                    }
                 }
                 break;
                 // rogue - T10 4P bonus
@@ -6512,8 +6509,6 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     uint32_t hit_status = HITSTATUS_NORMALSWING;
 
     VisualState vstate = VisualState::ATTACK;
-    uint32 aproc = 0;
-    uint32 vproc = 0;
 
     float hitmodifier = 0;
     float ArmorPctReduce = m_ignoreArmorPct;
@@ -6944,13 +6939,13 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
 
             if (this->isPlayer() && this->getClass() == WARRIOR)
             {
-                static_cast<Player*>(this)->AddComboPoints(pVictim->getGuid(), 1);
-                static_cast<Player*>(this)->UpdateComboPoints();
+                auto* const playerMe = dynamic_cast<Player*>(this);
+                playerMe->addComboPoints(pVictim->getGuid(), 1);
 
-                if (!sEventMgr.HasEvent(static_cast<Player*>(this), EVENT_COMBO_POINT_CLEAR_FOR_TARGET))
-                    sEventMgr.AddEvent(static_cast<Player*>(this), &Player::NullComboPoints, (uint32)EVENT_COMBO_POINT_CLEAR_FOR_TARGET, (uint32)5000, (uint32)1, (uint32)0);
+                if (!sEventMgr.HasEvent(playerMe, EVENT_COMBO_POINT_CLEAR_FOR_TARGET))
+                    sEventMgr.AddEvent(playerMe, &Player::clearComboPoints, (uint32)EVENT_COMBO_POINT_CLEAR_FOR_TARGET, (uint32)5000, (uint32)1, (uint32)0);
                 else
-                    sEventMgr.ModifyEventTimeLeft(static_cast<Player*>(this), EVENT_COMBO_POINT_CLEAR_FOR_TARGET, 5000, 0);
+                    sEventMgr.ModifyEventTimeLeft(playerMe, EVENT_COMBO_POINT_CLEAR_FOR_TARGET, 5000, 0);
             }
 
             // Rune strike
@@ -7009,37 +7004,37 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             {
                 //////////////////////////////////////////////////////////////////////////////////////////
                 //state proc initialization
-                vproc |= PROC_ON_TAKEN_ANY_DAMAGE;
+                dmg.victimProcFlags |= PROC_ON_TAKEN_ANY_DAMAGE;
                 if (dmg.weaponType == RANGED)
                 {
                     if (ability != nullptr)
                     {
-                        aproc |= PROC_ON_DONE_RANGED_SPELL_HIT;
-                        vproc |= PROC_ON_TAKEN_RANGED_SPELL_HIT;
+                        dmg.attackerProcFlags |= PROC_ON_DONE_RANGED_SPELL_HIT;
+                        dmg.victimProcFlags |= PROC_ON_TAKEN_RANGED_SPELL_HIT;
                     }
                     else
                     {
-                        aproc |= PROC_ON_DONE_RANGED_HIT;
-                        vproc |= PROC_ON_TAKEN_RANGED_HIT;
+                        dmg.attackerProcFlags |= PROC_ON_DONE_RANGED_HIT;
+                        dmg.victimProcFlags |= PROC_ON_TAKEN_RANGED_HIT;
                     }
                 }
                 else
                 {
                     if (ability != nullptr)
                     {
-                        aproc |= PROC_ON_DONE_MELEE_SPELL_HIT;
-                        vproc |= PROC_ON_TAKEN_MELEE_SPELL_HIT;
+                        dmg.attackerProcFlags |= PROC_ON_DONE_MELEE_SPELL_HIT;
+                        dmg.victimProcFlags |= PROC_ON_TAKEN_MELEE_SPELL_HIT;
                     }
                     else
                     {
-                        aproc |= PROC_ON_DONE_MELEE_HIT;
-                        vproc |= PROC_ON_TAKEN_MELEE_HIT;
+                        dmg.attackerProcFlags |= PROC_ON_DONE_MELEE_HIT;
+                        dmg.victimProcFlags |= PROC_ON_TAKEN_MELEE_HIT;
                     }
 
                     if (dmg.weaponType == OFFHAND)
                     {
-                        aproc |= PROC_ON_DONE_OFFHAND_ATTACK;
-                        vproc |= PROC_ON_TAKEN_OFFHAND_ATTACK;
+                        dmg.attackerProcFlags |= PROC_ON_DONE_OFFHAND_ATTACK;
+                        dmg.victimProcFlags |= PROC_ON_TAKEN_OFFHAND_ATTACK;
                     }
                 }
                 //////////////////////////////////////////////////////////////////////////////////////////
@@ -7357,8 +7352,8 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     //damage shield must come before handleproc to not loose 1 charge : spell gets removed before last charge
     if (dmg.realDamage > 0 && dmg.weaponType != OFFHAND)
     {
-        pVictim->HandleProcDmgShield(vproc, this);
-        HandleProcDmgShield(aproc, pVictim);
+        pVictim->HandleProcDmgShield(dmg.victimProcFlags, this);
+        HandleProcDmgShield(dmg.attackerProcFlags, pVictim);
     }
 
     dmg.isCritical = hit_status & HITSTATUS_CRICTICAL;
@@ -7612,8 +7607,12 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     //Post Damage Dealing Processing
     //////////////////////////////////////////////////////////////////////////////////////////
     // proc handling
-    HandleProc(aproc, pVictim, ability, dmg, isSpellTriggered);
-    pVictim->HandleProc(vproc, this, ability, dmg, isSpellTriggered);
+
+    // If called from spell class, handle caster's procs when spell has finished all targets
+    if (castingSpell == nullptr)
+        HandleProc(dmg.attackerProcFlags, pVictim, ability, dmg, isSpellTriggered);
+
+    pVictim->HandleProc(dmg.victimProcFlags, this, ability, dmg, isSpellTriggered);
 
     //durability processing
     if (pVictim->isPlayer())

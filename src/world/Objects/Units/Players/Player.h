@@ -663,6 +663,13 @@ public:
     void updateGlyphs();
 #endif
 
+    // Combo Points
+    uint64_t getComboPointTarget() const;
+    int8_t getComboPoints() const;
+    void addComboPoints(uint64_t targetGuid, int8_t points);
+    void updateComboPoints();
+    void clearComboPoints();
+
     bool m_FirstCastAutoRepeat = false;
 
 private:
@@ -670,6 +677,9 @@ private:
 
     uint32_t armorProficiency = 0;
     uint32_t weaponProficiency = 0;
+
+    uint64_t m_comboTarget = 0;
+    int8_t m_comboPoints = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Talents
@@ -1933,15 +1943,6 @@ public:
         bool resend_speed = false;
         uint32 login_flags = LOGIN_NO_FLAG;
 
-        uint64 m_comboTarget = 0;
-        int8 m_comboPoints = 0;
-        bool m_retainComboPoints = false;
-        int8 m_spellcomboPoints = 0;        // rogue talent Ruthlessness will change combopoints while consuming them. solutions 1) add post cast prochandling, 2) delay adding the CP
-        void UpdateComboPoints();
-
-        void AddComboPoints(uint64 target, int8 count);
-
-        void NullComboPoints() { if (!m_retainComboPoints) { m_comboTarget = 0; m_comboPoints = 0; m_spellcomboPoints = 0; } UpdateComboPoints(); }
         uint32 m_speedChangeCounter = 1;
 
         void SendAreaTriggerMessage(const char* message, ...);

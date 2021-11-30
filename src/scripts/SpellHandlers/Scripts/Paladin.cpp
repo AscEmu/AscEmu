@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
-#include "Spell/SpellMgr.hpp"
 
 #include "Spell/Definitions/SpellDamageType.hpp"
 
@@ -86,9 +85,18 @@ class EyeForAnEye : public SpellScript
 public:
     SpellScriptExecuteState onDoProcEffect(SpellProc* spellProc, Unit* victim, SpellInfo const* /*castingSpell*/, DamageInfo damageInfo) override
     {
-        const auto dmg = damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_0) / 100;
-        spellProc->getProcOwner()->castSpell(victim, spellProc->getSpell(), dmg, true);
-        return SpellScriptExecuteState::EXECUTE_PREVENT;
+        damage = damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_0) / 100;
+        if (damage == 0)
+            return SpellScriptExecuteState::EXECUTE_PREVENT;
+
+        return SpellScriptExecuteState::EXECUTE_OK;
+    }
+
+    SpellScriptExecuteState onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
+    {
+        spell->forced_basepoints[EFF_INDEX_0] = damage;
+        damage = 0;
+        return SpellScriptExecuteState::EXECUTE_OK;
     }
 
     SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t /*effIndex*/, int32_t* damage) override
@@ -103,6 +111,9 @@ public:
 
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
+
+private:
+    uint32_t damage = 0;
 };
 
 #if VERSION_STRING < Cata

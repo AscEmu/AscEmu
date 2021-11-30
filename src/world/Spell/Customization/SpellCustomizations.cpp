@@ -458,11 +458,7 @@ uint32_t SpellMgr::getDiminishingGroup(uint32_t id) const
         case 57094:
         case 58861:
         //SPELL_HASH_IMPACT
-        case 11103:
         case 12355:
-        case 12357:
-        case 12358:
-        case 64343:
         //SPELL_HASH_CHEAP_SHOT
         case 1833:
         case 6409:

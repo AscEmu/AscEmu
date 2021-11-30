@@ -103,7 +103,6 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
     bRadSet[1] = false;
     bRadSet[2] = false;
 
-    m_requiresCP = false;
     targetConstraintCreature = nullptr;
     targetConstraintGameObject = nullptr;
     add_damage = 0;
@@ -181,6 +180,8 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
     m_triggeredByAura = aur;
     if (getSpellInfo()->getAttributesExD() & ATTRIBUTESEXD_TRIGGERED)
         m_triggeredSpell = true;
+
+    m_requiresCP = getSpellInfo()->getAttributesEx() & (ATTRIBUTESEX_REQ_COMBO_POINTS1 | ATTRIBUTESEX_REQ_COMBO_POINTS2);
 
     uniqueHittedTargets.clear();
     missedTargets.clear();
@@ -1700,14 +1701,13 @@ uint32 Spell::GetDuration()
             //combo point lolerCopter? ;P
             if (p_caster)
             {
-                uint32 cp = p_caster->m_comboPoints;
+                uint32 cp = p_caster->getComboPoints();
                 if (cp)
                 {
                     uint32 bonus = (cp * (spell_duration->Duration3 - spell_duration->Duration1)) / 5;
                     if (bonus)
                     {
                         this->Dur += bonus;
-                        m_requiresCP = true;
                     }
                 }
             }
@@ -2297,7 +2297,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 71933:
         {
             if (p_caster != nullptr)
-                value += (uint32)(p_caster->GetAP() * 0.03f * p_caster->m_comboPoints);
+                value += (uint32)(p_caster->GetAP() * 0.03f * p_caster->getComboPoints());
         } break;
 
         // SPELL_HASH_FEROCIOUS_BITE:
@@ -2402,7 +2402,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             */
             if (p_caster != nullptr && i == 0)
             {
-                int8 cp = p_caster->m_comboPoints;
+                int8 cp = p_caster->getComboPoints();
                 value += (uint32)ceilf((u_caster->GetAP() * 0.04f * cp) / ((6 + (cp << 1)) >> 1));
             }
         } break;
@@ -2424,7 +2424,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 71926:
         {
             if (p_caster != nullptr)
-                value += float2int32(p_caster->GetAP() * 0.01f * p_caster->m_comboPoints);
+                value += float2int32(p_caster->GetAP() * 0.01f * p_caster->getComboPoints());
         } break;
 
         // SPELL_HASH_MONGOOSE_BITE:
@@ -2594,9 +2594,8 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         {
             if (p_caster != nullptr && i == 0)
             {
-                value *= p_caster->m_comboPoints;
-                value += (uint32)(p_caster->GetAP() * (0.09f * p_caster->m_comboPoints));
-                m_requiresCP = true;
+                value *= p_caster->getComboPoints();
+                value += (uint32)(p_caster->GetAP() * (0.09f * p_caster->getComboPoints()));
             }
         } break;
 

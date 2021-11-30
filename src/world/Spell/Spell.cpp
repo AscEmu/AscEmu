@@ -158,6 +158,10 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
     // Spells casted from items should not use any power
     m_powerCost = i_caster != nullptr ? 0 : calculatePowerCost();
 
+    // Item spells or triggered spells should not require combo points
+    if (m_triggeredSpell || i_caster != nullptr)
+        m_requiresCP = false;
+
     // Check if spell can be casted
     uint32_t parameter1 = 0, parameter2 = 0;
     cancastresult = canCast(false, &parameter1, &parameter2);
@@ -697,6 +701,12 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int3
         }
     }
 
+    // Check if target's procs have been handled in spell effects
+    // If not, they will be processed in Spell::finish
+    // Caster procs are also handled in Spell::finish
+    if (m_targetDamageInfo.victimProcFlags != PROC_NULL)
+        m_doneTargetProcs.insert(targetGuid);
+
     if (uniqueHittedTargets.size() == 1)
     {
         // If spell has only this target, use full DamageInfo for caster's DamageInfo
@@ -894,18 +904,13 @@ void Spell::finish(bool successful)
         if (getSpellInfo()->hasEffect(SPELL_EFFECT_SUMMON_OBJECT))
             getPlayerCaster()->SetSummonedObject(nullptr);
 
-        // Update combo points before spell procs
+        // Clear combo points before spell procs
         if (m_requiresCP && !GetSpellFailed())
         {
-            if (getPlayerCaster()->m_spellcomboPoints > 0)
-            {
-                p_caster->m_comboPoints = p_caster->m_spellcomboPoints;
-                getPlayerCaster()->UpdateComboPoints();
-            }
-            else
-            {
-                getPlayerCaster()->NullComboPoints();
-            }
+            // Save used combo point count for some proc spells
+            m_usedComboPoints = getPlayerCaster()->getComboPoints();
+
+            getPlayerCaster()->clearComboPoints();
         }
     }
 
@@ -916,33 +921,47 @@ void Spell::finish(bool successful)
         // Handle each target's procs to caster
         for (const auto& uniqueTarget : uniqueHittedTargets)
         {
+            // Check if this target has already handled procs
+            if (m_doneTargetProcs.find(uniqueTarget.first) != m_doneTargetProcs.end())
+                continue;
+
             targetUnit = getCaster()->GetMapMgrUnit(uniqueTarget.first);
             if (targetUnit == nullptr)
                 continue;
 
-            targetUnit->HandleProc(m_targetProcFlags, getUnitCaster(), getSpellInfo(), uniqueTarget.second, m_triggeredSpell, PROC_EVENT_DO_ALL, m_triggeredByAura);
+            const auto targetProcFlags = m_targetProcFlags | m_casterDamageInfo.victimProcFlags;
+            targetUnit->HandleProc(targetProcFlags, getUnitCaster(), getSpellInfo(), uniqueTarget.second, m_triggeredSpell, PROC_EVENT_DO_ALL, m_triggeredByAura);
         }
     }
 
     // Handle caster procs
+    targetUnit = nullptr;
     if (getUnitCaster() != nullptr && m_casterProcFlags != 0)
     {
         // Handle caster's procs to each target
         for (const auto& uniqueTarget : uniqueHittedTargets)
         {
+            auto casterProcFlags = m_casterProcFlags | m_casterDamageInfo.attackerProcFlags;
+            // If caster is target, remove following proc flags
+            if (uniqueTarget.first == m_caster->getGuid())
+                casterProcFlags &= ~(PROC_ON_DONE_MELEE_SPELL_HIT | PROC_ON_DONE_RANGED_SPELL_HIT);
+
             targetUnit = getCaster()->GetMapMgrUnit(uniqueTarget.first);
             if (targetUnit == nullptr)
                 continue;
 
-            getUnitCaster()->HandleProc(m_casterProcFlags, targetUnit, getSpellInfo(), uniqueTarget.second, m_triggeredSpell, PROC_EVENT_DO_TARGET_PROCS_ONLY, m_triggeredByAura);
+            getUnitCaster()->HandleProc(casterProcFlags, targetUnit, getSpellInfo(), uniqueTarget.second, m_triggeredSpell, PROC_EVENT_DO_TARGET_PROCS_ONLY, m_triggeredByAura);
         }
 
         // Use victim only if there was one target
-        if (uniqueHittedTargets.size() > 1)
+        if (uniqueHittedTargets.size() == 1)
+            targetUnit = getCaster()->GetMapMgrUnit(uniqueHittedTargets.front().first);
+        else
             targetUnit = nullptr;
 
         // Handle caster's self procs
-        getUnitCaster()->HandleProc(m_casterProcFlags, targetUnit, getSpellInfo(), m_casterDamageInfo, m_triggeredSpell, PROC_EVENT_DO_CASTER_PROCS_ONLY, m_triggeredByAura);
+        const auto casterProcFlags = m_casterProcFlags | m_casterDamageInfo.attackerProcFlags;
+        getUnitCaster()->HandleProc(casterProcFlags, targetUnit, getSpellInfo(), m_casterDamageInfo, m_triggeredSpell, PROC_EVENT_DO_CASTER_PROCS_ONLY, m_triggeredByAura);
     }
 
     // QuestMgr spell hooks
@@ -1462,11 +1481,13 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
     ////////////////////////////////////////////////////////
     // Target checks
 
+    const auto explicitTargetMask = getSpellInfo()->getRequiredTargetMask(true);
+
     // Check explicit gameobject target
     if (m_targets.getGameObjectTarget() != 0)
     {
         const auto objTarget = m_caster->GetMapMgrGameObject(m_targets.getGameObjectTarget());
-        const auto targetCheck = checkExplicitTarget(objTarget, getSpellInfo()->getRequiredTargetMask(true));
+        const auto targetCheck = checkExplicitTarget(objTarget, explicitTargetMask);
         if (targetCheck != SPELL_CAST_SUCCESS)
             return targetCheck;
     }
@@ -1479,7 +1500,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         // but skip spells with pet target here
         if (!getSpellInfo()->hasTargetType(EFF_TARGET_PET))
         {
-            const auto targetCheck = checkExplicitTarget(target, getSpellInfo()->getRequiredTargetMask(true));
+            const auto targetCheck = checkExplicitTarget(target, explicitTargetMask);
             if (targetCheck != SPELL_CAST_SUCCESS)
                 return targetCheck;
         }
@@ -1540,6 +1561,13 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         // Check for max level
         if (getSpellInfo()->getMaxTargetLevel() != 0 && getSpellInfo()->getMaxTargetLevel() < target->getLevel())
             return SPELL_FAILED_HIGHLEVEL;
+
+        // Check combo points
+        if (m_requiresCP && getPlayerCaster() != nullptr)
+        {
+            if (!(getPlayerCaster()->getComboPoints() > 0 && getPlayerCaster()->getComboPointTarget() == target->getGuid()))
+                return SPELL_FAILED_NO_COMBO_POINTS;
+        }
 
         if (m_caster != target)
         {
@@ -1748,9 +1776,9 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         }
     }
 
-    // Check if spell effect requires pet target
     if (p_caster != nullptr)
     {
+        // Check if spell requires a dead pet
         if (getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_REQ_DEAD_PET)
         {
             const auto pet = p_caster->GetSummon();
@@ -1760,6 +1788,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 return SPELL_FAILED_TARGET_NOT_DEAD;
         }
 
+        // Check if spell effect requires pet target
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
             if (getSpellInfo()->getEffectImplicitTargetA(i) == EFF_TARGET_PET)
@@ -5266,6 +5295,11 @@ Aura* Spell::getTriggeredByAura() const
     return m_triggeredByAura;
 }
 
+int8_t Spell::getUsedComboPoints() const
+{
+    return m_usedComboPoints;
+}
+
 void Spell::addUsedSpellModifier(AuraEffectModifier const* aurEff)
 {
     for (const auto& usedMod : m_usedModifiers)
@@ -5615,10 +5649,6 @@ float_t Spell::_getSpellTravelTimeForTarget(uint64_t guid) const
 
 void Spell::_prepareProcFlags()
 {
-    // Skip melee spells
-    if (getSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_MELEE || getSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_RANGED)
-        return;
-
     // Setup spell target mask
     uint32_t spellTargetMask = 0;
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -5640,6 +5670,7 @@ void Spell::_prepareProcFlags()
     if (spellTargetMask == 0)
         return;
 
+    // Set initial proc flags here, correct flags are set in Object::doSpellDamage and ::doSpellHealing
     // Consider the spell negative if it requires an attackable target
     const auto spellDamageType = getSpellInfo()->getDmgClass();
     if (spellTargetMask & SPELL_TARGET_REQUIRE_ATTACKABLE)
@@ -5666,6 +5697,26 @@ void Spell::_prepareProcFlags()
         {
             m_casterProcFlags = PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_MAGIC;
             m_targetProcFlags = PROC_ON_TAKEN_POSITIVE_SPELL_DAMAGE_CLASS_MAGIC;
+        }
+    }
+
+    auto isCasterOnlyTarget = false;
+    if (uniqueHittedTargets.size() == 1)
+        isCasterOnlyTarget = m_caster->getGuid() == uniqueHittedTargets.front().first;
+
+    // These proc flags should not be applied if spell has no targets or is only targeting caster
+    if (!(spellTargetMask & SPELL_TARGET_OBJECT_SELF) && uniqueHittedTargets.size() > 0 && !isCasterOnlyTarget)
+    {
+        // Set initial flags here, correct flags are set in Unit::Strike
+        if (spellDamageType == SPELL_DMG_TYPE_MELEE)
+        {
+            m_casterProcFlags = PROC_ON_DONE_MELEE_SPELL_HIT;
+            m_targetProcFlags = PROC_ON_TAKEN_MELEE_SPELL_HIT;
+        }
+        else if (spellDamageType == SPELL_DMG_TYPE_RANGED)
+        {
+            m_casterProcFlags = PROC_ON_DONE_RANGED_SPELL_HIT;
+            m_targetProcFlags = PROC_ON_TAKEN_RANGED_SPELL_HIT;
         }
     }
 }

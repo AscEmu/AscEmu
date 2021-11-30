@@ -25,7 +25,6 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
-#include "Spell/SpellMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 
