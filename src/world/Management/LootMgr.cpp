@@ -308,7 +308,7 @@ void LootMgr::loadLootTables(const char* szTableName, LootTemplateMap* LootTable
         chance.push_back(fields[3].GetFloat());
         chance.push_back(fields[4].GetFloat());
         chance.push_back(fields[5].GetFloat());
-        uint32_t  mincount = fields[6].GetInt32();
+        uint32_t  mincount = fields[6].GetUInt32();
         uint32_t  maxcount = fields[7].GetUInt8();
 
         ItemProperties const* itemProto = sMySQLStore.getItemProperties(itemId);
@@ -608,13 +608,10 @@ bool LootItem::allowedForPlayer(Player* player) const
     if ((itemproto->Flags2 & ITEM_FLAG2_ALLIANCE_ONLY) && player->GetTeam() != TEAM_ALLIANCE)
         return false;
 
-    bool test = player->HasQuestForItem(itemId);
-    bool test2 = player->hasQuestInQuestLog(itemproto->QuestId);
-
     // check quest requirements
     if (needs_quest && itemproto->QuestId)
-        if(!player->HasQuestForItem(itemId) || !player->hasQuestInQuestLog(itemproto->QuestId))
-        return false;
+        if (!player->HasQuestForItem(itemId) || !player->hasQuestInQuestLog(itemproto->QuestId))
+            return false;
 
     return true;
 }
@@ -718,7 +715,6 @@ bool Loot::fillLoot(uint32_t lootId, LootTemplateMap const& tempelateStore, Play
     if (!lootOwner)
         return false;
 
-
     auto temp = tempelateStore.find(lootId);
     if (temp == tempelateStore.end())
         tempelate = nullptr;
@@ -766,7 +762,9 @@ bool Loot::fillLoot(uint32_t lootId, LootTemplateMap const& tempelateStore, Play
     }
     // ... for personal loot
     else
+    {
         fillNotNormalLootFor(lootOwner, true);
+    }
 
     return true;
 }
@@ -1062,6 +1060,8 @@ void Loot::moneyRemoved()
             player->GetSession()->SendPacket(&data);
         }
         else
+        {
             removeLooter(playerGuid);
+        }
     }
 }

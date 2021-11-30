@@ -10416,7 +10416,9 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
         }
     }
     else
+    {
         loot_method = PARTY_LOOT_FREE_FOR_ALL;
+    }
 
     m_lootGuid = guid;
 
@@ -10527,25 +10529,25 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
             LootItem &item = pLoot->quest_items[qi->index];
             if (!qi->is_looted && !item.is_looted && item.allowedForPlayer(this))
             {
-                data << uint8(pLoot->items.size() + (qi - q_list->begin()));
-                data << uint32(item.itemproto->ItemId);
-                data << uint32(item.count);  //nr of items of this type
-                data << uint32(item.itemproto->DisplayInfoID);
+                data << uint8_t(pLoot->items.size() + (qi - q_list->begin()));
+                data << uint32_t(item.itemproto->ItemId);
+                data << uint32_t(item.count);  //nr of items of this type
+                data << uint32_t(item.itemproto->DisplayInfoID);
 
                 if (item.iRandomSuffix)
                 {
-                    data << uint32(Item::GenerateRandomSuffixFactor(item.itemproto));
-                    data << uint32(-int32(item.iRandomSuffix->id));
+                    data << uint32_t(Item::GenerateRandomSuffixFactor(item.itemproto));
+                    data << uint32_t(-int32_t(item.iRandomSuffix->id));
                 }
                 else if (item.iRandomProperty)
                 {
-                    data << uint32(0);
-                    data << uint32(item.iRandomProperty->ID);
+                    data << uint32_t(0);
+                    data << uint32_t(item.iRandomProperty->ID);
                 }
                 else
                 {
-                    data << uint32(0);
-                    data << uint32(0);
+                    data << uint32_t(0);
+                    data << uint32_t(0);
                 }
 
                 data << slottype;   // "still being rolled for" flag

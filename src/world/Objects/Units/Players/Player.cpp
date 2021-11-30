@@ -4612,7 +4612,9 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* loot)
             GetSession()->SendPacket(SmsgLootRemoved(slot).serialise().get());
         }
         else
+        {
             loot->itemRemoved(slot);
+        }
     }
 
     //if only one person is supposed to loot the item, then set it to looted
@@ -4647,7 +4649,9 @@ void Player::updateSoulboundTradeItems()
             ++itemSoulbound;
         }
         else
+        {
             m_itemSoulboundTradeable.erase(itemSoulbound++);
+        }
     }
 }
 

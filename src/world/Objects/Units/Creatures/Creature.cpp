@@ -2302,10 +2302,14 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
                     group->sendLooter(this, looter);
                 }
                 else
+                {
                     group->sendLooter(this, nullptr);
+                }
             }
             else
+            {
                 group->sendLooter(this, nullptr);
+            }
 
             group->updateLooterGuid(this);
         }
@@ -2347,7 +2351,9 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         }
     }
     else
+    {
         sLogger.debug("no loot owner found loot will not be filled for creature %u", getEntry());
+    }
 
     if (getCharmedByGuid())
     {

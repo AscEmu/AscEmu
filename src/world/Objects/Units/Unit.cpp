@@ -6118,7 +6118,9 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                     }
                 }
                 else if (ToCreature()->HasLootForPlayer(tagger))    // Player case
+                {
                     tagger->SendLootUpdate(this);
+                }
             }
         }
 

@@ -1358,7 +1358,7 @@ void Group::sendGroupLoot(Loot* loot, Object* object, Player* plr, uint32_t mapI
             }
             else if (item->iRandomSuffix)
             {
-                ipid = -int32(item->iRandomSuffix->id);
+                ipid = -int32_t(item->iRandomSuffix->id);
                 factor = Item::GenerateRandomSuffixFactor(item->itemproto);
             }
 
@@ -1366,27 +1366,27 @@ void Group::sendGroupLoot(Loot* loot, Object* object, Player* plr, uint32_t mapI
             loot->items[itemSlot].is_blocked = true;
 
             // Init Roll
-            item->roll = new LootRoll(60000, MemberCount(), object->getGuid(), itemSlot, item->itemproto->ItemId, factor, uint32(ipid), object->GetMapMgr());
+            item->roll = new LootRoll(60000, MemberCount(), object->getGuid(), itemSlot, item->itemproto->ItemId, factor, uint32_t(ipid), object->GetMapMgr());
 
             // Send Roll
             WorldPacket data(32);
             data.Initialize(SMSG_LOOT_START_ROLL);
             data << object->getGuid();
-            data << uint32(mapId);
-            data << uint32(itemSlot);
-            data << uint32(item->itemproto->ItemId);
-            data << uint32(factor);
+            data << uint32_t(mapId);
+            data << uint32_t(itemSlot);
+            data << uint32_t(item->itemproto->ItemId);
+            data << uint32_t(factor);
 
             if (item->iRandomProperty)
-                data << uint32(item->iRandomProperty->ID);
+                data << uint32_t(item->iRandomProperty->ID);
             else if (item->iRandomSuffix)
-                data << uint32(ipid);
+                data << uint32_t(ipid);
             else
-                data << uint32(0);
+                data << uint32_t(0);
 
-            data << uint32(item->count);
-            data << uint32(60000); // countdown
-            data << uint8(7);      // some sort of flags that require research
+            data << uint32_t(item->count);
+            data << uint32_t(60000); // countdown
+            data << uint8_t(7);      // some sort of flags that require research
 
 
             Lock();
@@ -1410,7 +1410,9 @@ void Group::sendGroupLoot(Loot* loot, Object* object, Player* plr, uint32_t mapI
             Unlock();
         }
         else
+        {
             item->is_underthreshold = true;
+        }
     }
 }
 
