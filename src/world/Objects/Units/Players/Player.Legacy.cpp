@@ -6833,6 +6833,9 @@ void Player::ResetPvPTimer()
 
 void Player::CompleteLoading()
 {
+    // Must be called when fully logged into world
+    setGuildAndGroupInfo();
+
     SpellCastTargets targets(getGuid());
 
     // warrior has to have battle stance
