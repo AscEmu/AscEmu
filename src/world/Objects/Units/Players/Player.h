@@ -928,6 +928,12 @@ private:
     uint32_t m_GroupInviter = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Channels
+public:
+
+    void updateChannels(uint32_t oldZoneId);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // ArenaTeam
 public:
 
@@ -1589,7 +1595,6 @@ public:
         void JoinedChannel(Channel* c);
         void LeftChannel(Channel* c);
         void CleanupChannels();
-        void UpdateChannels(uint16 AreaID);
         void PartLFGChannel();
 protected:
         std::set<Channel*> m_channels;

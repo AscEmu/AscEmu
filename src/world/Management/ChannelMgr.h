@@ -31,6 +31,7 @@ public:
 
     Channel* getChannel(std::string name, Player* player);
     Channel* getChannel(std::string name, uint32_t team);
+    std::vector<Channel*> getAllCityChannels(Player const* player);
 
     Mutex m_confSettingLock;
     std::vector<std::string> m_bannedChannels;

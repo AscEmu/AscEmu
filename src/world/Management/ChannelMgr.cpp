@@ -86,6 +86,14 @@ Channel* ChannelMgr::getOrCreateChannel(std::string name, Player* player, uint32
         }
     }
 
+    // Correct trade and guild recruitment channel names
+    // As of patch 1.9 these channels are linked across all capital cities
+    // TODO: replace this with DBC data to fix non english clients
+    if (strstr(name.c_str(), "Trade"))
+        name = "Trade - City";
+    else if (strstr(name.c_str(), "GuildRecruitment"))
+        name = "GuildRecruitment - City";
+
     auto channel = new Channel(name.c_str(), (m_seperateChannels && player) ? player->getTeam() : TEAM_ALLIANCE, typeId);
 
     m_confSettingLock.Release();
@@ -166,4 +174,28 @@ Channel* ChannelMgr::getChannel(std::string name, uint32_t team)
     m_lock.Release();
 
     return nullptr;
+}
+
+std::vector<Channel*> ChannelMgr::getAllCityChannels(Player const* player)
+{
+    auto channelList = &m_channelList[0];
+    if (m_seperateChannels && player != nullptr)
+        channelList = &m_channelList[player->getTeam()];
+
+    m_lock.Acquire();
+
+    std::vector<Channel*> cityChannels;
+    for (const auto& channels : *channelList)
+    {
+        auto* const channel = channels.second;
+        if (channel == nullptr)
+            continue;
+
+        if (channel->m_flags & CHANNEL_FLAGS_CITY)
+            cityChannels.push_back(channel);
+    }
+
+    m_lock.Release();
+
+    return cityChannels;
 }

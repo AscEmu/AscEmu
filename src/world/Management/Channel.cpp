@@ -19,9 +19,9 @@
  *
  */
 
-
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
+#include "Map/Area/AreaManagementGlobals.hpp"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
 #include "Chat/ChatDefines.hpp"
@@ -94,6 +94,17 @@ Channel::Channel(const char* name, uint32 team, uint32 type_id)
 
 void Channel::AttemptJoin(Player* plr, const char* password)
 {
+    // Check if channel requires to be in a city
+    if (m_flags & CHANNEL_FLAGS_CITY)
+    {
+        const auto areaEntry = plr->IsInWorld() ?
+            plr->GetMapMgr()->GetArea(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ()) :
+            nullptr;
+
+        if (areaEntry == nullptr || !(areaEntry->flags & MapManagement::AreaManagement::AREA_CITY_AREA))
+            return;
+    }
+
     m_lock.Acquire();
     uint8_t flags = CHANNEL_MEMBER_FLAG_NONE;
 
