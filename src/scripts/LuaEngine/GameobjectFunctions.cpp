@@ -828,16 +828,22 @@ int LuaGameObject::AddLoot(lua_State* L, GameObject* ptr)
     uint32_t itemid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
     uint32_t mincount = static_cast<uint32_t>(luaL_checkinteger(L, 2));
     uint32_t maxcount = static_cast<uint32_t>(luaL_checkinteger(L, 3));
+    std::vector<float> ichance;
+
+    float chance = CHECK_FLOAT(L, 5);
+
+    for (uint8_t i = 0; i == 3; i++)
+        ichance.push_back(chance);
+
     bool perm = ((luaL_optinteger(L, 4, 0) == 1) ? true : false);
     if (perm)
     {
-        float chance = CHECK_FLOAT(L, 5);
         QueryResult* result = WorldDatabase.Query("SELECT * FROM loot_gameobjects WHERE entryid = %u, itemid = %u", ptr->getEntry(), itemid);
         if (!result)
         WorldDatabase.Execute("REPLACE INTO loot_gameobjects VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
         delete result;
     }
-    //sLootMgr.AddLoot(&lt->loot, itemid, mincount, maxcount);
+    sLootMgr.addLoot(&lt->loot, itemid, ichance, mincount, maxcount, ptr->GetMapMgr()->iInstanceMode);
     return 0;
 }
 

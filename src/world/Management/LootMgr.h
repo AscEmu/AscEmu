@@ -244,6 +244,7 @@ class SERVER_DECL LootMgr
         void loadLootProp();
         void loadLootTables(const char* szTableName, LootTemplateMap* LootTable);
         void loadAndGenerateLoot(uint8_t type);
+        void addLoot(Loot* loot, uint32_t itemid, std::vector<float> chance, uint32_t mincount, uint32_t maxcount, uint8_t lootDifficulty);
 
         DBC::Structures::ItemRandomPropertiesEntry const* GetRandomProperties(ItemProperties const* proto);
         DBC::Structures::ItemRandomSuffixEntry const* GetRandomSuffix(ItemProperties const* proto);

@@ -661,6 +661,39 @@ void LootTemplate::generateLoot(Loot& loot, uint8_t lootDifficulty) const
     }
 }
 
+void LootMgr::addLoot(Loot* loot, uint32_t itemid, std::vector<float> chance, uint32_t mincount, uint32_t maxcount, uint8_t lootDifficulty)
+{
+    if (loot->items.size() > 16)
+    {
+        sLogger.debug("LootMgr::addLoot cannot add item %u to Loot, Maximum drops reached", itemid);
+        return;
+    }
+
+    ItemProperties const* itemprop = sMySQLStore.getItemProperties(itemid);
+
+    if (!itemprop)
+        return;
+
+    LootStoreItem item = LootStoreItem(itemprop, chance, mincount, maxcount);
+
+    // check difficulty level
+    if (item.chance[lootDifficulty] < 0.0f)
+    {
+        delete &item;
+        return;
+    }
+
+    // Bad luck for the entry
+    if (!item.roll(0))
+    {
+        delete &item;
+        return;
+    }
+
+    // add the Item to our Loot List
+    loot->addLootItem(item);
+}
+
 bool LootTemplate::hasQuestDrop(LootTemplateMap const& store) const
 {
     for (LootStoreItemList::const_iterator i = Entries.begin(); i != Entries.end(); ++i)
