@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatDefines.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Data/WoWPlayer.hpp"
+#include "Management/Channel.h"
+#include "Management/ChannelMgr.h"
 #include "Management/Battleground/Battleground.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/ItemInterface.h"
@@ -3205,6 +3207,105 @@ bool Player::isGroupLeader() const
 }
 
 int8_t Player::getSubGroupSlot() const { return m_playerInfo->subGroup; }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Channels
+void Player::updateChannels(uint32_t oldZoneId)
+{
+    auto areaEntry = GetMapMgr()->GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
+
+#if VERSION_STRING < WotLK
+    // Correct zone for Hall of Legends
+    if (GetMapId() == 450)
+        areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(2917);
+    // Correct zone for Champions' Hall
+    else if (GetMapId() == 449)
+        areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(2918);
+#endif
+
+    // Update existing channels
+    if (!m_channels.empty())
+    {
+        for (std::set<Channel*>::const_iterator itr = m_channels.begin(), nextItr; itr != m_channels.end(); itr = nextItr)
+        {
+            nextItr = itr;
+            ++nextItr;
+
+            auto* const channel = (*itr);
+
+            // Check if this is a custom channel (i.e. global)
+            if (channel->m_flags & CHANNEL_FLAGS_CUSTOM)
+                continue;
+
+            // Check if this is LookingForGroup channel
+            if (channel->m_flags & CHANNEL_FLAGS_LFG)
+                continue;
+
+            // City specific channels
+            if (channel->m_flags & CHANNEL_FLAGS_CITY)
+            {
+                if (areaEntry == nullptr || !(areaEntry->flags & MapManagement::AreaManagement::AREA_CITY_AREA))
+                {
+                    // Player is no longer in city, leave channel
+                    channel->Part(this);
+                    continue;
+                }
+            }
+
+            const auto channelDbc = sChatChannelsStore.LookupEntry(channel->m_id);
+            if (channelDbc == nullptr)
+            {
+                sLogger.failure("Player::updateChannels : Invalid channel entry %u for %s", channel->m_id, channel->m_name.c_str());
+                continue;
+            }
+
+            // Get name for new zone
+            char updatedName[95];
+            if (areaEntry != nullptr)
+            {
+#if VERSION_STRING < Cata
+                snprintf(updatedName, 95, channelDbc->name_pattern[0], areaEntry->area_name[0]);
+#else
+                snprintf(updatedName, 95, channelDbc->name_pattern, areaEntry->area_name);
+#endif
+            }
+            else
+            {
+#if VERSION_STRING < Cata
+                snprintf(updatedName, 95, channelDbc->name_pattern[0], "City");
+#else
+                snprintf(updatedName, 95, channelDbc->name_pattern, "City");
+#endif
+            }
+
+            auto* const newChannel = sChannelMgr.getOrCreateChannel(updatedName, this, channel->m_id);
+            if (newChannel == nullptr)
+            {
+                // should not happen
+                sLogger.failure("Player::updateChannels : Could not create new channel %u with name %s", channel->m_id, channel->m_name.c_str());
+                continue;
+            }
+
+            if (newChannel != channel && !newChannel->HasMember(this))
+            {
+                // Join new channel
+                newChannel->AttemptJoin(this, nullptr);
+                // Leave old channel
+                channel->Part(this, false);
+            }
+            }
+    }
+
+    // Join city specific channels when entering to city
+    if (oldZoneId != GetZoneId() && areaEntry != nullptr && areaEntry->flags & MapManagement::AreaManagement::AREA_CITY_AREA)
+    {
+        for (const auto& channel : sChannelMgr.getAllCityChannels(this))
+        {
+            if (channel != nullptr && !channel->HasMember(this))
+                channel->AttemptJoin(this, nullptr);
+        }
+    }
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // ArenaTeam
