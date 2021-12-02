@@ -1283,21 +1283,19 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
         {
             if (Util::checkChance(loot_ptr->Chance * worldConfig.getFloatRate(RATE_DROP0)))
             {
-                __LootItem li;
+                LootItem li;
                 ItemProperties const* pProto = sMySQLStore.getItemProperties(loot_ptr->ItemId);
                 if (pProto != nullptr)
                 {
-                    li.ffa_loot = 0;
-                    li.item.displayid = pProto->DisplayInfoID;
-                    li.item.itemproto = pProto;
+                    li.is_ffa = 0;
+                    li.itemproto = pProto;
                     if (loot_ptr->MinCount != loot_ptr->MaxCount)
-                        li.iItemsCount = Util::getRandomUInt(loot_ptr->MaxCount - loot_ptr->MinCount) + loot_ptr->MinCount;
+                        li.count = Util::getRandomUInt(loot_ptr->MaxCount - loot_ptr->MinCount) + loot_ptr->MinCount;
                     else
-                        li.iItemsCount = loot_ptr->MinCount;
+                        li.count = loot_ptr->MinCount;
 
                     li.iRandomProperty = nullptr;
                     li.iRandomSuffix = nullptr;
-                    li.passed = false;
                     li.roll = nullptr;
 
                     // push to vector

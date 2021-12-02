@@ -385,6 +385,55 @@ bool Item::isEquipped() const
     return !isInBag() && m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()) < EQUIPMENT_SLOT_END;
 }
 
+#if VERSION_STRING >= WotLK
+void Item::setSoulboundTradeable(LooterSet& allowedLooters)
+{
+    addFlags(ITEM_FLAG_BOP_TRADEABLE);
+    allowedGUIDs = allowedLooters;
+
+    // todo database
+}
+
+void Item::clearSoulboundTradeable(Player* currentOwner)
+{
+    removeFlags(ITEM_FLAG_BOP_TRADEABLE);
+    if (allowedGUIDs.empty())
+        return;
+
+    allowedGUIDs.clear();
+
+    // todo database
+}
+
+bool Item::checkSoulboundTradeExpire()
+{
+    uint32_t* time = getOwner()->GetPlayedtime();
+
+    if (getCreatePlayedTime() + 2 * HOUR < time[1])
+    {
+        clearSoulboundTradeable(getOwner());
+        return true; // remove from tradeable list
+    }
+
+    return false;
+}
+#endif
+
+bool Item::isTradeableWith(Player* plr)
+{
+    if (hasFlags(ITEM_FLAG_BOP_TRADEABLE))
+        if (allowedGUIDs.find(plr->getGuidLow()) != allowedGUIDs.end())
+            return true;
+
+    if (isSoulbound())
+        return false;
+
+    if (getItemProperties()->Bonding == ITEM_BIND_QUEST)
+        return false;
+
+    return true;
+}
+
 #if VERSION_STRING == Cata
 int32_t Item::getReforgableStat(ItemModType statType) const
 {

@@ -712,7 +712,7 @@ bool World::setInitialWorldSettings()
 
     sLogger.info("World : Loading loot data...");
     sLootMgr.initialize();
-    sLootMgr.LoadLoot();
+    sLootMgr.loadLoot();
 
     loadMySQLTablesByTask();
     logEntitySize();

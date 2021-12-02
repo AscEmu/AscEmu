@@ -283,7 +283,7 @@ void WorldSession::LogoutPlayer(bool Save)
                     case TYPEID_UNIT:
                     {
                         if (const auto creature = dynamic_cast<Creature*>(obj))
-                            creature->loot.looters.erase(_player->getGuidLow());
+                            creature->loot.removeLooter(_player->getGuidLow());
                     } break;
                     case TYPEID_GAMEOBJECT:
                     {
@@ -293,7 +293,7 @@ void WorldSession::LogoutPlayer(bool Save)
                                 break;
 
                             if (const auto pLGO = dynamic_cast<GameObject_Lootable*>(go))
-                                pLGO->loot.looters.erase(_player->getGuidLow());
+                                pLGO->loot.removeLooter(_player->getGuidLow());
                         }
                     } break;
                 }

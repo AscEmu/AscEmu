@@ -2462,9 +2462,7 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
                     unitTarget->setPower(POWER_TYPE_MANA, mana);
                     unitTarget->setTaggerGuid(0);
                     unitTarget->setDeathState(ALIVE);
-                    unitTarget->loot.gold = 0;
-                    unitTarget->loot.looters.clear();
-                    unitTarget->loot.items.clear();
+                    unitTarget->loot.clear();
                     static_cast< Creature* >(unitTarget)->SetLimboState(false); // we can regenerate health now
                 }
             }
@@ -3631,9 +3629,9 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
                             if (pLGO->loot.items.size() == 0)
                             {
                                 if (gameObjTarget->GetMapMgr() != nullptr)
-                                    sLootMgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                                    sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
                                 else
-                                    sLootMgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
+                                    sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
 
                                 DetermineSkillUp(SKILL_LOCKPICKING, v / 5);     //to prevent free skill up
                             }
@@ -3668,9 +3666,9 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
                     if (pLGO->loot.items.size() == 0)
                     {
                         if (gameObjTarget->GetMapMgr() != nullptr)
-                            sLootMgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                            sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
                         else
-                            sLootMgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
+                            sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
                     }
                     else
                     {
@@ -3704,9 +3702,9 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
                 if (pLGO->loot.items.size() == 0)
                 {
                     if (gameObjTarget->GetMapMgr() != nullptr)
-                        sLootMgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                        sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
                     else
-                        sLootMgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
+                        sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
                 }
             }
             else
@@ -3780,9 +3778,9 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
                 if (pLGO->loot.items.size() == 0)
                 {
                     if (gameObjTarget->GetMapMgr() != nullptr)
-                        sLootMgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                        sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
                     else
-                        sLootMgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
+                        sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
                 }
             }
             loottype = LOOT_CORPSE;
@@ -4773,7 +4771,7 @@ void Spell::SpellEffectPickpocket(uint8_t /*effectIndex*/) // pickpocket
         return;
     }
 
-    sLootMgr.FillPickpocketingLoot(&unitTarget->loot, unitTarget->getEntry());
+    sLootMgr.fillPickpocketingLoot(p_caster, &unitTarget->loot, unitTarget->getEntry(), 0);
 
     uint32 _rank = static_cast< Creature* >(unitTarget)->GetCreatureProperties()->Rank;
     unitTarget->loot.gold = float2int32((_rank + 1) * unitTarget->getLevel() * (Util::getRandomUInt(5) + 1) * worldConfig.getFloatRate(RATE_MONEY));
@@ -5160,7 +5158,7 @@ void Spell::SpellEffectSkinning(uint8_t /*effectIndex*/)
     if ((sk >= lvl * 5) || ((sk + 100) >= lvl * 10))
     {
         //Fill loot for Skinning
-        sLootMgr.FillSkinningLoot(&cr->loot, unitTarget->getEntry());
+        sLootMgr.fillSkinningLoot(p_caster, &cr->loot, unitTarget->getEntry(), 0);
         static_cast<Player*>(m_caster)->SendLoot(unitTarget->getGuid(), LOOT_SKINNING, unitTarget->GetMapId());
 
         //Not skinable again
@@ -5280,7 +5278,7 @@ void Spell::SpellEffectDisenchant(uint8_t /*effectIndex*/)
     if (!it->loot)
     {
         it->loot = new Loot;
-        sLootMgr.FillItemLoot(it->loot, it->getEntry());
+        sLootMgr.fillItemLoot(p_caster, it->loot, it->getEntry(), 0);
     }
 
     sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Successfully disenchanted item %d", uint32(it->getEntry()));
@@ -5541,9 +5539,7 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
                     unitTarget->setPower(POWER_TYPE_MANA, mana);
                     unitTarget->setTaggerGuid(0);
                     unitTarget->setDeathState(ALIVE);
-                    unitTarget->loot.gold = 0;
-                    unitTarget->loot.looters.clear();
-                    unitTarget->loot.items.clear();
+                    unitTarget->loot.clear();
                 }
             }
 
@@ -6126,7 +6122,7 @@ void Spell::SpellEffectProspecting(uint8_t /*effectIndex*/)
     if (!itemTarget->loot)
     {
         itemTarget->loot = new Loot;
-        sLootMgr.FillItemLoot(itemTarget->loot, itemTarget->getEntry());
+        sLootMgr.fillItemLoot(p_caster, itemTarget->loot, itemTarget->getEntry(), 0);
     }
 
     if (itemTarget->loot->items.size() > 0)
@@ -6350,7 +6346,7 @@ void Spell::SpellEffectMilling(uint8_t /*effectIndex*/)
     if (!itemTarget->loot)
     {
         itemTarget->loot = new Loot;
-        sLootMgr.FillItemLoot(itemTarget->loot, itemTarget->getEntry());
+        sLootMgr.fillItemLoot(p_caster, itemTarget->loot, itemTarget->getEntry(), 0);
     }
 
     if (itemTarget->loot->items.size() > 0)

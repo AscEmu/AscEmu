@@ -4202,19 +4202,20 @@ public:
         {
             Unit* pUnit = plr->GetMapMgr()->GetUnit(guid);
             CreatureProperties const* creature_properties = static_cast<Creature*>(pUnit)->GetCreatureProperties();
+            const auto lootType = pUnit->GetMapMgr() ? (pUnit->GetMapMgr()->iInstanceMode ? true : false) : false;
             switch (loot_type)
             {
                 default:
-                    sLootMgr.FillCreatureLoot(&pUnit->loot, pUnit->getEntry(), pUnit->GetMapMgr() ? (pUnit->GetMapMgr()->iInstanceMode ? true : false) : false);
+                    sLootMgr.fillCreatureLoot(plr, &pUnit->loot, pUnit->getEntry(), lootType);
                     pUnit->loot.gold = creature_properties ? creature_properties->money : 0;
                     loot_type2 = 1;
                     break;
                 case 2:
-                    sLootMgr.FillSkinningLoot(&pUnit->loot, pUnit->getEntry());
+                    sLootMgr.fillSkinningLoot(plr, &pUnit->loot, pUnit->getEntry(), lootType);
                     loot_type2 = 2;
                     break;
                 case 3:
-                    sLootMgr.FillPickpocketingLoot(&pUnit->loot, pUnit->getEntry());
+                    sLootMgr.fillPickpocketingLoot(plr, &pUnit->loot, pUnit->getEntry(), lootType);
                     loot_type2 = 2;
                     break;
             }
@@ -4225,14 +4226,15 @@ public:
             if (pGO != nullptr && pGO->IsLootable())
             {
                 GameObject_Lootable* lt = static_cast<GameObject_Lootable*>(pGO);
+                const auto lootType = pGO->GetMapMgr() ? (pGO->GetMapMgr()->iInstanceMode ? true : false) : false;
                 switch (loot_type)
                 {
                     default:
-                        sLootMgr.FillGOLoot(&lt->loot, pGO->getEntry(), pGO->GetMapMgr() ? (pGO->GetMapMgr()->iInstanceMode ? true : false) : false);
+                        sLootMgr.fillGOLoot(plr, &lt->loot, pGO->getEntry(), lootType);
                         loot_type2 = 1;
                         break;
                     case 5:
-                        sLootMgr.FillSkinningLoot(&lt->loot, pGO->getEntry());
+                        sLootMgr.fillSkinningLoot(plr, &lt->loot, pGO->getEntry(), lootType);
                         loot_type2 = 2;
                         break;
                 }
@@ -4244,7 +4246,7 @@ public:
             switch (loot_type)
             {
                 case 6:
-                    sLootMgr.FillItemLoot(pItem->loot, pItem->getEntry());
+                    sLootMgr.fillItemLoot(plr, pItem->loot, pItem->getEntry(), plr->GetMapMgr() ? (plr->GetMapMgr()->iInstanceMode ? true : false) : false);
                     loot_type2 = 1;
                     break;
                 default:
@@ -4264,16 +4266,22 @@ public:
         uint32_t itemid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         uint32_t mincount = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         uint32_t maxcount = static_cast<uint32_t>(luaL_checkinteger(L, 3));
+        std::vector<float> ichance;
+
+        float chance = CHECK_FLOAT(L, 5);
+
+        for (uint8_t i = 0; i == 3; i++)
+            ichance.push_back(chance);
+
         bool perm = ((luaL_optinteger(L, 4, 0) == 1) ? true : false);
         if (perm)
         {
-            float chance = CHECK_FLOAT(L, 5);
             QueryResult* result = WorldDatabase.Query("SELECT * FROM loot_creatures WHERE entryid = %u, itemid = %u", ptr->getEntry(), itemid);
             if (!result)
                 WorldDatabase.Execute("REPLACE INTO loot_creatures VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
             delete result;
         }
-        sLootMgr.AddLoot(&ptr->loot, itemid, mincount, maxcount);
+        sLootMgr.addLoot(&ptr->loot, itemid, ichance, mincount, maxcount, ptr->GetMapMgr()->iInstanceMode);
         return 0;
     }
 

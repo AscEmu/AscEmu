@@ -75,7 +75,6 @@ class Aura;
 struct OnHitSpell;
 class CachedCharacterInfo;
 
-
 //\todo: everything above this comment, does not belong in this file. Refactor this file to hold only the player class ;-)
 // Everything below this line is bloated (seems we need some new concepts like RAII and a lot of refactoring to shrink it to a manageable class.
 // Group all related members to a struct/class. Follow the "modern" way of C++ and leave the C way behind.
@@ -801,6 +800,14 @@ public:
 
     bool hasItem(uint32_t itemId, uint32_t amount = 1, bool checkBankAlso = false) const;
 
+#if VERSION_STRING >= WotLK
+    // Soulbound Tradeable
+    void updateSoulboundTradeItems();
+    void addTradeableItem(Item* item);
+    void removeTradeableItem(Item* item);
+    ItemDurationList m_itemSoulboundTradeable;
+#endif
+
     // Player's item storage
     ItemInterface* getItemInterface() const;
 private:
@@ -1089,10 +1096,13 @@ public:
     void removeFromGMTargetList(uint32_t guid);
     bool isOnGMTargetList(uint32_t guid) const;
 
+    bool isAtGroupRewardDistance(Object* pRewardSource);
+
 private:
     uint16_t m_spellAreaUpdateTimer = 1000;
     uint16_t m_pendingPacketTimer = 100;
     uint16_t m_partyUpdateTimer = 1000;
+    uint16_t m_durationUpdateTimer = 1000;
 
     std::string afkReason;
 
@@ -1484,6 +1494,7 @@ public:
     public:
         const uint64 & GetLootGUID() const { return m_lootGuid; }
         void SetLootGUID(const uint64 & guid) { m_lootGuid = guid; }
+        void sendLooter(Creature* creature);
         void SendLoot(uint64 guid, uint8 loot_type, uint32 mapid);
         void SendLootUpdate(Object* o);
         void TagUnit(Object* o);
@@ -1492,6 +1503,9 @@ public:
         uint64 m_lootGuid = 0;
         uint64 m_currentLoot = 0;
         bool bShouldHaveLootableOnCorpse = false;
+
+        Item* storeNewLootItem(uint8_t slot, Loot* loot);
+        Item* storeItem(LootItem const* lootItem);
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // World Session

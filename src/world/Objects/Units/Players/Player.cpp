@@ -53,6 +53,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgRaidGroupOnly.h"
 #include "Server/Packets/SmsgAuctionCommandResult.h"
 #include "Server/Packets/SmsgClearCooldown.h"
+#include "Server/Packets/SmsgLootReleaseResponse.h"
+#include "Server/Packets/SmsgLootRemoved.h"
 #include "Server/World.h"
 #include "Server/WorldSocket.h"
 #include "Server/Packets/SmsgContactList.h"
@@ -4541,3 +4543,210 @@ void Player::saveVoidStorage()
     }
 }
 #endif
+
+bool Player::isAtGroupRewardDistance(Object* pRewardSource)
+{
+    if (!pRewardSource)
+        return false;
+
+    Object* player = sObjectMgr.GetCorpseByOwner(getGuidLow());
+    if (!player || isAlive())
+        player = this;
+
+    if (player->GetMapId() != pRewardSource->GetMapId() || player->GetInstanceID() != pRewardSource->GetInstanceID())
+        return false;
+
+    return pRewardSource->getDistance(player) <= 75.0f;
+}
+
+Item* Player::storeItem(LootItem const* lootItem)
+{
+    auto add = getItemInterface()->FindItemLessMax(lootItem->itemId, lootItem->count, false);
+
+    // Can we Store our New item?
+    if (const uint8_t error = getItemInterface()->CanReceiveItem(lootItem->itemproto, lootItem->count) && !add)
+    {
+        getItemInterface()->buildInventoryChangeError(nullptr, nullptr, error, lootItem->itemId);
+        return nullptr;
+    }
+
+    const auto slotResult = getItemInterface()->FindFreeInventorySlot(lootItem->itemproto);
+    if (!slotResult.Result && !add)
+    {
+        getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
+        return nullptr;
+    }
+
+    // Players which should be able to receive the item after its looted while tradeable
+    LooterSet looters = lootItem->getAllowedLooters();
+
+    if (add == nullptr)
+    {
+        // Create the Item
+        auto newItem = sObjectMgr.CreateItem(lootItem->itemId, this);
+        if (newItem == nullptr)
+            return nullptr;
+
+        newItem->setStackCount(lootItem->count);
+        newItem->setOwnerGuid(getGuid());
+
+        if (lootItem->iRandomProperty != nullptr)
+        {
+            newItem->setRandomPropertiesId(lootItem->iRandomProperty->ID);
+            newItem->ApplyRandomProperties(false);
+        }
+        else if (lootItem->iRandomSuffix != nullptr)
+        {
+            newItem->SetRandomSuffix(lootItem->iRandomSuffix->id);
+            newItem->ApplyRandomProperties(false);
+        }
+
+        if (getItemInterface()->SafeAddItem(newItem, slotResult.ContainerSlot, slotResult.Slot))
+        {
+            sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, lootItem->count, newItem->getEntry(), newItem->getPropertySeed(), newItem->getRandomPropertiesId(), newItem->getStackCount());
+            sQuestMgr.OnPlayerItemPickup(this, newItem);
+#if VERSION_STRING > TBC
+            GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, newItem->getEntry(), 1, 0);
+#endif
+        }
+        else
+        {
+            newItem->DeleteMe();
+            return nullptr;
+        }
+
+#if VERSION_STRING >= WotLK
+        // Soulbound Tradeable
+        if (looters.size() > 1 && lootItem->itemproto->MaxCount == 1 && newItem->isSoulbound())
+        {
+            newItem->setSoulboundTradeable(looters);
+
+            uint32_t* played = GetPlayedtime();
+            newItem->setCreatePlayedTime(played[1]);
+            addTradeableItem(newItem);
+        }
+#endif
+
+        return newItem;
+    }
+    else
+    {
+        add->setStackCount(add->getStackCount() + lootItem->count);
+        add->m_isDirty = true;
+        add->setOwnerGuid(getGuid());
+
+        sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, lootItem->count, add->getEntry(), add->getPropertySeed(), add->getRandomPropertiesId(), add->getStackCount());
+        sQuestMgr.OnPlayerItemPickup(this, add);
+#if VERSION_STRING > TBC
+        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->getEntry(), 1, 0);
+#endif
+        return add;
+    }
+}
+
+Item* Player::storeNewLootItem(uint8_t slot, Loot* loot)
+{
+    Personaltem* questItem = nullptr;
+    Personaltem* ffaItem = nullptr;
+
+    // Pick our loot from Loot Store
+    LootItem* item = loot->lootItemInSlot(slot, this, &questItem, &ffaItem);
+
+    if (!item)
+    {
+        getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_ALREADY_LOOTED);
+        return nullptr;
+    }
+
+    // questitems use the blocked field for other purposes
+    if (!questItem && item->is_blocked)
+    {
+        SendPacket(SmsgLootReleaseResponse(GetLootGUID(), 1).serialise().get());
+        return nullptr;
+    }
+
+    // Add our Item
+    Item* newItem = storeItem(item);
+    if (!newItem)
+        return nullptr;
+
+    if (questItem)
+    {
+        questItem->is_looted = true;
+        //freeforall is 1 if everyone's supposed to get the quest item.
+        if (item->is_ffa || loot->getPlayerQuestItems().size() == 1)
+            GetSession()->SendPacket(SmsgLootRemoved(slot).serialise().get());
+        else
+            loot->itemRemoved(questItem->index);
+    }
+    else
+    {
+        if (ffaItem)
+        {
+            //freeforall case, notify only one player of the removal
+            ffaItem->is_looted = true;
+            GetSession()->SendPacket(SmsgLootRemoved(slot).serialise().get());
+        }
+        else
+        {
+            loot->itemRemoved(slot);
+        }
+    }
+
+    //if only one person is supposed to loot the item, then set it to looted
+    if (!item->is_ffa)
+        item->is_looted = true;
+
+    --loot->unlootedCount;
+
+    return newItem;
+}
+
+#if VERSION_STRING >= WotLK
+void Player::updateSoulboundTradeItems()
+{
+    if (m_itemSoulboundTradeable.empty())
+        return;
+
+    for (ItemDurationList::iterator itemSoulbound = m_itemSoulboundTradeable.begin(); itemSoulbound != m_itemSoulboundTradeable.end();)
+    {
+        if (!(*itemSoulbound)->m_isDirty)
+        {
+            if ((*itemSoulbound)->getOwner()->getGuid() != getGuid())
+            {
+                m_itemSoulboundTradeable.erase(itemSoulbound++);
+                continue;
+            }
+            if ((*itemSoulbound)->checkSoulboundTradeExpire())
+            {
+                m_itemSoulboundTradeable.erase(itemSoulbound++);
+                continue;
+            }
+            ++itemSoulbound;
+        }
+        else
+        {
+            m_itemSoulboundTradeable.erase(itemSoulbound++);
+        }
+    }
+}
+
+void Player::addTradeableItem(Item* item)
+{
+    m_itemSoulboundTradeable.push_back(item);
+}
+
+void Player::removeTradeableItem(Item* item)
+{
+    m_itemSoulboundTradeable.remove(item);
+}
+#endif
+
+void Player::sendLooter(Creature* creature)
+{
+    WorldPacket data(SMSG_LOOT_LIST, 8 + 1 + 1);
+    data << uint64_t(creature->getGuid());
+    data << uint8_t(0); // unk1
+    data << uint8_t(0); // no group looter
+    SendMessageToSet(&data, true);
+}

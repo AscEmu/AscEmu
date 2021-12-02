@@ -2523,7 +2523,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_TARGET_UNSKINNABLE;
 
                 // Check if creature is looted
-                if (creatureTarget->loot.any() && creatureTarget->isTagged())
+                if (creatureTarget->loot.isLooted() && creatureTarget->isTagged())
                 {
                     const auto taggerPlayer = creatureTarget->GetMapMgrPlayer(creatureTarget->getTaggerGuid());
                     if (taggerPlayer != nullptr && creatureTarget->HasLootForPlayer(taggerPlayer))

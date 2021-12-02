@@ -595,6 +595,20 @@ void Player::Update(unsigned long time_passed)
     {
         m_partyUpdateTimer -= static_cast<uint16_t>(time_passed);
     }
+
+    // Item Duration Timer maybe add Enchants and retradeable items also here ?
+    if (time_passed >= m_durationUpdateTimer)
+    {
+#if VERSION_STRING >= WotLK
+        // Soulbound trade
+        updateSoulboundTradeItems();
+#endif
+
+        // Reset Timer
+        m_durationUpdateTimer = 1000;
+    }
+    else
+        m_durationUpdateTimer -= static_cast<uint16_t>(time_passed);
 }
 
 void Player::EventDismount(uint32 money, float x, float y, float z)
@@ -9008,12 +9022,12 @@ void Player::SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* sh
 void Player::HandleSpellLoot(uint32 itemid)
 {
     Loot loot1;
-    sLootMgr.FillItemLoot(&loot1, itemid);
+    sLootMgr.fillItemLoot(this, &loot1, itemid, 0);
 
-    for (std::vector<__LootItem>::iterator itr = loot1.items.begin(); itr != loot1.items.end(); ++itr)
+    for (auto item : loot1.items)
     {
-        uint32 looteditemid = itr->item.itemproto->ItemId;
-        uint32 count = itr->iItemsCount;
+        uint32 looteditemid = item.itemproto->ItemId;
+        uint32 count = item.count;
 
         getItemInterface()->AddItemById(looteditemid, count, 0);
     }
@@ -10269,18 +10283,10 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     if (!IsInWorld())
         return;
 
-    Loot* pLoot = NULL;
+    Loot* pLoot = nullptr;
 
     WoWGuid wowGuid;
     wowGuid.Init(guid);
-
-    int8 loot_method;
-
-    Group* m_Group = m_playerInfo->m_Group;
-    if (m_Group != NULL)
-        loot_method = m_Group->GetMethod();
-    else
-        loot_method = PARTY_LOOT_FFA;
 
     if (wowGuid.isUnit())
     {
@@ -10338,219 +10344,212 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     }
 
     // add to looter set
-    pLoot->looters.insert(getGuidLow());
+    pLoot->addLooter(getGuidLow());
 
-    WorldPacket data, data2(32);
-    data.SetOpcode(SMSG_LOOT_RESPONSE);
+    // Group case
+    PartyLootMethod loot_method;
+
+    // Send Roll packets
+    if (getGroup())
+    {
+        loot_method = PartyLootMethod(getGroup()->GetMethod());
+
+        switch (loot_method)
+        {
+        case PARTY_LOOT_GROUP:
+            getGroup()->sendGroupLoot(pLoot, GetMapMgr()->_GetObject(m_currentLoot), this, mapid);
+            break;
+        case PARTY_LOOT_NEED_BEFORE_GREED:
+            break;
+        case PARTY_LOOT_MASTER_LOOTER:
+            break;
+        }
+    }
+    else
+    {
+        loot_method = PARTY_LOOT_FREE_FOR_ALL;
+    }
 
     m_lootGuid = guid;
 
-    data << uint64(guid);
-    data << uint8(loot_type);  //loot_type;
-    data << uint32(pLoot->gold);
-    data << uint8(0);   //loot size reserve
+    WorldPacket data;
+    data.SetOpcode(SMSG_LOOT_RESPONSE);
+    data << uint64_t(guid);
+    data << uint8_t(loot_type);     //loot_type;
+
+
+    data << uint32_t(pLoot->gold);  // gold
+    data << uint8_t(0);             //loot size reserve
 #if VERSION_STRING >= Cata
-    data << uint8(0);
+    data << uint8_t(0);             // currency count reserve
 #endif
 
-    std::vector<__LootItem>::iterator iter = pLoot->items.begin();
-    uint32 count = 0;
-    uint8 slottype = 0;
+    uint32_t maxItemsCount = 0;
 
-    for (uint32 x = 0; iter != pLoot->items.end(); ++iter, x++)
+    // Non Personal Items
+    auto item = pLoot->items.begin();
+    for (uint32_t nonpersonalItemsCount = 0; item != pLoot->items.end(); ++item, nonpersonalItemsCount++)
     {
-        if (iter->iItemsCount == 0)
+        if (item->is_looted)
             continue;
 
-        LooterSet::iterator itr = iter->has_looted.find(getGuidLow());
-        if (iter->has_looted.end() != itr)
+        if (item->is_ffa)
             continue;
 
-        ItemProperties const* itemProto = iter->item.itemproto;
-        if (!itemProto)
-            continue;
-
-        // check if it's on ML if so only quest items and ffa loot should be shown based on mob
-        if (loot_method == PARTY_LOOT_MASTER && m_Group && m_Group->GetLooter() != m_playerInfo)
-            // pass on all ffa_loot and the grey / white items
-            if (!iter->ffa_loot && !(itemProto->Quality < m_Group->GetThreshold()))
-                continue;
-
-        // team check
-        if (itemProto->HasFlag2(ITEM_FLAG2_HORDE_ONLY) && isTeamAlliance())
-            continue;
-
-        if (itemProto->HasFlag2(ITEM_FLAG2_ALLIANCE_ONLY) && isTeamHorde())
-            continue;
-
-        //quest items check. type 4/5
-        //quest items that don't start quests.
-        if ((itemProto->Bonding == ITEM_BIND_QUEST) && !(itemProto->QuestId) && !HasQuestForItem(itemProto->ItemId))
-            continue;
-        if ((itemProto->Bonding == ITEM_BIND_QUEST2) && !(itemProto->QuestId) && !HasQuestForItem(itemProto->ItemId))
-            continue;
-
-        //quest items that start quests need special check to avoid drops all the time.
-        if ((itemProto->Bonding == ITEM_BIND_QUEST) && (itemProto->QuestId) && hasQuestInQuestLog(itemProto->QuestId))
-            continue;
-        if ((itemProto->Bonding == ITEM_BIND_QUEST2) && (itemProto->QuestId) && hasQuestInQuestLog(itemProto->QuestId))
-            continue;
-
-        if ((itemProto->Bonding == ITEM_BIND_QUEST) && (itemProto->QuestId) && HasFinishedQuest(itemProto->QuestId))
-            continue;
-        if ((itemProto->Bonding == ITEM_BIND_QUEST2) && (itemProto->QuestId) && HasFinishedQuest(itemProto->QuestId))
-            continue;
-
-        //check for starting item quests that need questlines.
-        if ((itemProto->QuestId && itemProto->Bonding != ITEM_BIND_QUEST && itemProto->Bonding != ITEM_BIND_QUEST2))
-        {
-            QuestProperties const* pQuest = sMySQLStore.getQuestProperties(itemProto->QuestId);
-            if (pQuest)
-            {
-                uint32 finishedCount = 0;
-
-                //check if its a questline.
-                for (uint32 i = 0; i < pQuest->count_requiredquests; ++i)
-                {
-                    if (pQuest->required_quests[i])
-                    {
-                        if (!HasFinishedQuest(pQuest->required_quests[i]) || hasQuestInQuestLog(pQuest->required_quests[i]))
-                        {
-
-                        }
-                        else
-                        {
-                            finishedCount++;
-                        }
-                    }
-                }
-            }
-        }
-
-        slottype = 0;
-        if (m_Group != NULL && loot_type < 2)
+        uint8_t slottype = LOOT_SLOT_TYPE_ALLOW_LOOT;
+        if (loot_type < 2)
         {
             switch (loot_method)
             {
-                case PARTY_LOOT_MASTER:
-                    slottype = 2;
+                case PARTY_LOOT_MASTER_LOOTER:
+                {
+                    if (!item->is_looted && !item->is_ffa && item->allowedForPlayer(this))
+                        slottype = LOOT_SLOT_TYPE_MASTER;
+                    else
+                        // dont show item
+                        continue;
+                }
                     break;
+                case PARTY_LOOT_NEED_BEFORE_GREED:
                 case PARTY_LOOT_GROUP:
-                case PARTY_LOOT_RR:
-                case PARTY_LOOT_NBG:
-                    slottype = 1;
+                {
+                    if (item->is_blocked)
+                        slottype = LOOT_SLOT_TYPE_ROLL_ONGOING;
+                    else if (pLoot->roundRobinPlayer == 0 || !item->is_underthreshold || getGuid() == pLoot->roundRobinPlayer)
+                        slottype = LOOT_SLOT_TYPE_ALLOW_LOOT;
+                    else
+                        // dont show Item.
+                        continue;
+                }
+                    break;
+                case PARTY_LOOT_ROUND_ROBIN:
+                {
+                    if (!item->is_looted && !item->is_ffa && item->allowedForPlayer(this))
+                    {
+                        if (pLoot->roundRobinPlayer != 0 && getGuid() != pLoot->roundRobinPlayer)
+                            // dont show Item.
+                            continue;
+                    }
+                }
                     break;
                 default:
-                    slottype = 0;
+                    slottype = LOOT_SLOT_TYPE_ALLOW_LOOT;
                     break;
-            }
-            // only quality items are distributed
-            if (itemProto->Quality < m_Group->GetThreshold())
-                slottype = 0;
-
-            // if all people passed anyone can loot it? :P
-            if (iter->passed)
-                slottype = 0; // All players passed on the loot
-
-            //if it is ffa loot and not an masterlooter
-            if (iter->ffa_loot)
-                slottype = 0;
+            }            
         }
 
-        data << uint8(x);
-        data << uint32(itemProto->ItemId);
-        data << uint32(iter->iItemsCount);  //nr of items of this type
-        data << uint32(iter->item.displayid);
+        data << uint8_t(nonpersonalItemsCount);
+        data << uint32_t(item->itemproto->ItemId);
+        data << uint32_t(item->count);  //nr of items of this type
+        data << uint32_t(item->itemproto->DisplayInfoID);
 
-        if (iter->iRandomSuffix)
+        if (item->iRandomSuffix)
         {
-            data << uint32(Item::GenerateRandomSuffixFactor(itemProto));
-            data << uint32(-int32(iter->iRandomSuffix->id));
+            data << uint32_t(Item::GenerateRandomSuffixFactor(item->itemproto));
+            data << uint32_t(-int32_t(item->iRandomSuffix->id));
         }
-        else if (iter->iRandomProperty)
+        else if (item->iRandomProperty)
         {
-            data << uint32(0);
-            data << uint32(iter->iRandomProperty->ID);
+            data << uint32_t(0);
+            data << uint32_t(item->iRandomProperty->ID);
         }
         else
         {
-            data << uint32(0);
-            data << uint32(0);
+            data << uint32_t(0);
+            data << uint32_t(0);
         }
 
         data << slottype;   // "still being rolled for" flag
 
-        if (slottype == 1)
+        maxItemsCount++;
+    }
+
+    uint32_t personalItemsCount = maxItemsCount;
+
+    // Quest Loot
+    PersonaltemMap const& lootPlayerQuestItems = pLoot->getPlayerQuestItems();
+    PersonaltemMap::const_iterator q_itr = lootPlayerQuestItems.find(getGuidLow());
+    if (q_itr != lootPlayerQuestItems.end())
+    {
+        PersonaltemList* q_list = q_itr->second;
+        for (PersonaltemList::const_iterator qi = q_list->begin(); qi != q_list->end(); ++qi, personalItemsCount++)
         {
-            if (iter->roll == NULL && !iter->passed)
+            uint8_t slottype = LOOT_SLOT_TYPE_ALLOW_LOOT;
+
+            LootItem &item = pLoot->quest_items[qi->index];
+            if (!qi->is_looted && !item.is_looted && item.allowedForPlayer(this))
             {
-                int32 ipid = 0;
-                uint32 factor = 0;
-                if (iter->iRandomProperty)
+                data << uint8_t(pLoot->items.size() + (qi - q_list->begin()));
+                data << uint32_t(item.itemproto->ItemId);
+                data << uint32_t(item.count);  //nr of items of this type
+                data << uint32_t(item.itemproto->DisplayInfoID);
+
+                if (item.iRandomSuffix)
                 {
-                    ipid = iter->iRandomProperty->ID;
+                    data << uint32_t(Item::GenerateRandomSuffixFactor(item.itemproto));
+                    data << uint32_t(-int32_t(item.iRandomSuffix->id));
                 }
-                else if (iter->iRandomSuffix)
+                else if (item.iRandomProperty)
                 {
-                    ipid = -int32(iter->iRandomSuffix->id);
-                    factor = Item::GenerateRandomSuffixFactor(iter->item.itemproto);
-                }
-
-                if (iter->item.itemproto)
-                {
-                    iter->roll = new LootRoll(60000, m_Group->MemberCount(), guid, x, itemProto->ItemId, factor, uint32(ipid), GetMapMgr());
-
-                    data2.Initialize(SMSG_LOOT_START_ROLL);
-                    data2 << guid;
-                    data2 << uint32(mapid);
-                    data2 << uint32(x);
-                    data2 << uint32(itemProto->ItemId);
-                    data2 << uint32(factor);
-
-                    if (iter->iRandomProperty)
-                        data2 << uint32(iter->iRandomProperty->ID);
-                    else if (iter->iRandomSuffix)
-                        data2 << uint32(ipid);
-                    else
-                        data2 << uint32(0);
-
-                    data2 << uint32(iter->iItemsCount);
-                    data2 << uint32(60000); // countdown
-                    data2 << uint8(7);      // some sort of flags that require research
-                }
-
-                if (Group* pGroup = m_playerInfo->m_Group)
-                {
-                    pGroup->Lock();
-                    for (uint32 i = 0; i < pGroup->GetSubGroupCount(); ++i)
-                    {
-                        for (GroupMembersSet::iterator itr2 = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr2 != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr2)
-                        {
-                            CachedCharacterInfo* pinfo = *itr2;
-                            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(pinfo->guid))
-                            {
-                                if (loggedInPlayer->getItemInterface()->CanReceiveItem(itemProto, iter->iItemsCount) == 0)
-                                {
-                                    if (loggedInPlayer->m_passOnLoot)
-                                        iter->roll->PlayerRolled(loggedInPlayer, 3); // passed
-                                    else
-                                        loggedInPlayer->SendPacket(&data2);
-                                }
-                            }
-                        }
-                    }
-                    pGroup->Unlock();
+                    data << uint32_t(0);
+                    data << uint32_t(item.iRandomProperty->ID);
                 }
                 else
                 {
-                    m_session->SendPacket(&data2);
+                    data << uint32_t(0);
+                    data << uint32_t(0);
                 }
+
+                data << slottype;   // "still being rolled for" flag
             }
+            maxItemsCount++;
         }
-        count++;
     }
+
+    uint32_t ffaItemsCount = maxItemsCount;
+
+    // Free for All
+    PersonaltemMap const& lootPlayerFFAItems = pLoot->getPlayerFFAItems();
+    PersonaltemMap::const_iterator ffa_itr = lootPlayerFFAItems.find(getGuidLow());
+    if (ffa_itr != lootPlayerFFAItems.end())
+    {
+        PersonaltemList* ffa_list = ffa_itr->second;
+        for (PersonaltemList::const_iterator fi = ffa_list->begin(); fi != ffa_list->end(); ++fi, ffaItemsCount++)
+        {
+            uint8_t slottype = LOOT_SLOT_TYPE_ALLOW_LOOT;
+
+            LootItem &item = pLoot->items[fi->index];
+            if (!fi->is_looted && !item.is_looted && item.allowedForPlayer(this))
+            {
+                data << uint8_t(fi->index);
+                data << uint32_t(item.itemproto->ItemId);
+                data << uint32_t(item.count);  //nr of items of this type
+                data << uint32_t(item.itemproto->DisplayInfoID);
+
+                if (item.iRandomSuffix)
+                {
+                    data << uint32_t(Item::GenerateRandomSuffixFactor(item.itemproto));
+                    data << uint32_t(-int32(item.iRandomSuffix->id));
+                }
+                else if (item.iRandomProperty)
+                {
+                    data << uint32_t(0);
+                    data << uint32_t(item.iRandomProperty->ID);
+                }
+                else
+                {
+                    data << uint32_t(0);
+                    data << uint32_t(0);
+                }
+
+                data << slottype;   // "still being rolled for" flag
+            }
+            maxItemsCount++;
+        }
+    }
+
     data.wpos(13);
-    data << uint8(count);
+    data << uint8_t(maxItemsCount);
 
     m_session->SendPacket(&data);
 
