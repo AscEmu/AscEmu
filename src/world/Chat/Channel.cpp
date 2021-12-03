@@ -65,7 +65,7 @@ Channel::~Channel()
     std::lock_guard<std::mutex> guard(m_mutexChannel);
 
     for (const auto& member : m_members)
-        member.first->LeftChannel(this);
+        member.first->leftChannel(this);
 }
 
 std::string Channel::getChannelName() const { return m_channelName; }
@@ -127,7 +127,7 @@ void Channel::attemptJoin(Player* plr, std::string password, bool skipCheck/* = 
     m_members.insert(std::make_pair(plr, memberFlags));
     m_mutexChannel.unlock();
 
-    plr->JoinedChannel(this);
+    plr->joinedChannel(this);
 
     // Announce player join to other members in channel
     if (m_announcePlayers)
@@ -153,7 +153,7 @@ void Channel::leaveChannel(Player* plr, bool sendPacket/* = true*/)
     m_members.erase(itr);
     m_mutexChannel.unlock();
 
-    plr->LeftChannel(this);
+    plr->leftChannel(this);
 
     // If player is channel owner, find new owner for channel
     if (memberFlags & CHANNEL_MEMBER_FLAG_OWNER)

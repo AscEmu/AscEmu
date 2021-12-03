@@ -3210,11 +3210,30 @@ int8_t Player::getSubGroupSlot() const { return m_playerInfo->subGroup; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Channels
-void Player::updateChannels(uint32_t oldZoneId)
+void Player::joinedChannel(Channel* channel)
+{
+    if (channel == nullptr)
+        return;
+
+    std::lock_guard<std::mutex> guard(m_mutexChannel);
+    m_channels.insert(channel);
+}
+
+void Player::leftChannel(Channel* channel)
+{
+    if (channel == nullptr)
+        return;
+
+    std::lock_guard<std::mutex> guard(m_mutexChannel);
+    m_channels.erase(channel);
+}
+
+void Player::updateChannels()
 {
     auto areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(GetZoneId());
 
 #if VERSION_STRING < WotLK
+    // TODO: verify if this is needed anymore in < wotlk
     // Correct zone for Hall of Legends
     if (GetMapId() == 450)
         areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(2917);
@@ -3231,7 +3250,8 @@ void Player::updateChannels(uint32_t oldZoneId)
             continue;
 
         Channel* oldChannel = nullptr;
-        Channel* newChannel = nullptr;
+
+        m_mutexChannel.lock();
         for (const auto& _channel : m_channels)
         {
             if (_channel->getChannelId() == i)
@@ -3241,6 +3261,7 @@ void Player::updateChannels(uint32_t oldZoneId)
                 break;
             }
         }
+        m_mutexChannel.unlock();
 
         if (sChannelMgr.canPlayerJoinDefaultChannel(this, areaEntry, channelDbc))
         {
@@ -3269,6 +3290,24 @@ void Player::updateChannels(uint32_t oldZoneId)
             if (oldChannel != nullptr)
                 oldChannel->leaveChannel(this);
         }
+    }
+}
+
+void Player::removeAllChannels()
+{
+    std::set<Channel*> removeList;
+    m_mutexChannel.lock();
+
+    for (const auto& channel : m_channels)
+        removeList.insert(channel);
+
+    m_mutexChannel.unlock();
+
+    auto itr = removeList.begin();
+    while (itr != removeList.end())
+    {
+        (*itr)->leaveChannel(this);
+        itr = removeList.erase(itr);
     }
 }
 
