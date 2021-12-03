@@ -781,7 +781,7 @@ uint32_t SpellInfo::getRequiredTargetMaskForEffect(uint8_t effectIndex, bool get
             if (rangeEntry->maxRange == 0.0f)
 #endif
             {
-                targetMask &= ~(SPELL_TARGET_REQUIRE_GAMEOBJECT | SPELL_TARGET_REQUIRE_ATTACKABLE | SPELL_TARGET_REQUIRE_FRIENDLY);
+                targetMask &= ~(SPELL_TARGET_REQUIRE_GAMEOBJECT | SPELL_TARGET_REQUIRE_UNIT);
             }
         }
     }
@@ -1118,7 +1118,7 @@ uint32_t SpellInfo::getAreaAuraEffect() const
 bool SpellInfo::isTriggerSpellCastedByCaster(SpellInfo const* triggeringSpell) const
 {
     const auto targetMask = getRequiredTargetMask(true);
-    if (targetMask & (SPELL_TARGET_REQUIRE_ATTACKABLE | SPELL_TARGET_REQUIRE_FRIENDLY))
+    if (targetMask & SPELL_TARGET_REQUIRE_UNIT)
         return true;
 
     if (triggeringSpell != nullptr && triggeringSpell->isChanneled())
@@ -1138,7 +1138,7 @@ bool SpellInfo::isTriggerSpellCastedByCaster(SpellInfo const* triggeringSpell) c
             mask |= getRequiredTargetMaskForEffect(i);
         }
 
-        if (mask & (SPELL_TARGET_REQUIRE_ATTACKABLE | SPELL_TARGET_REQUIRE_FRIENDLY))
+        if (mask & SPELL_TARGET_REQUIRE_UNIT)
             return true;
     }
 
