@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Macros/ScriptMacros.hpp"
 #include "Management/WordFilter.h"
-#include "Management/Channel.h"
-#include "Management/ChannelMgr.h"
+#include "Chat/Channel.hpp"
+#include "Chat/ChannelMgr.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Map/MapMgr.h"
 #include "Objects/Units/Creatures/Pet.h"
@@ -346,7 +346,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         case CHAT_MSG_CHANNEL:
         {
             if (auto* const channel = sChannelMgr.getChannel(srlPacket.destination, _player))
-                channel->Say(_player, srlPacket.message.c_str(), nullptr, false);
+                channel->say(_player, srlPacket.message.c_str(), nullptr, false);
 
         } break;
         case CHAT_MSG_AFK:

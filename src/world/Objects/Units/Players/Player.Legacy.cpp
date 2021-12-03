@@ -38,8 +38,8 @@
 #include "Management/WeatherMgr.h"
 #include "Management/ItemInterface.h"
 #include "Objects/Units/Stats.h"
-#include "Management/Channel.h"
-#include "Management/ChannelMgr.h"
+#include "Chat/Channel.hpp"
+#include "Chat/ChannelMgr.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Management/ArenaTeam.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
@@ -4228,7 +4228,7 @@ void Player::CleanupChannels()
         Channel* c = *i;
         ++i;
 
-        c->Part(this);
+        c->leaveChannel(this);
     }
 }
 
@@ -8323,7 +8323,7 @@ void Player::PartLFGChannel()
     if (m_channels.find(pChannel) == m_channels.end())
         return;
 
-    pChannel->Part(this);
+    pChannel->leaveChannel(this);
 }
 
 //if we charmed or simply summoned a pet, this function should get called

@@ -20,8 +20,8 @@
  */
 
 
-#include "Management/Channel.h"
-#include "Management/ChannelMgr.h"
+#include "Chat/Channel.hpp"
+#include "Chat/ChannelMgr.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Server/World.h"
 #include "Management/ObjectMgr.h"
@@ -41,7 +41,7 @@ bool ChatHandler::HandleGMTicketListCommand(const char* /*args*/, WorldSession* 
     if (!chn)
         return false;
 
-    chn->Say(cplr, "GmTicket 2", cplr, true);
+    chn->say(cplr, "GmTicket 2", cplr, true);
 
     for (GmTicketList::iterator itr = sTicketMgr.m_ticketList.begin(); itr != sTicketMgr.m_ticketList.end(); ++itr)
     {
@@ -63,7 +63,7 @@ bool ChatHandler::HandleGMTicketListCommand(const char* /*args*/, WorldSession* 
             zone = plr->GetZoneId();
         }
         ss << "GmTicket 0," << (*itr)->name << "," << (*itr)->level << ",0," << zone;
-        chn->Say(cplr, ss.str().c_str(), cplr, true);
+        chn->say(cplr, ss.str().c_str(), cplr, true);
     }
 
     return true;
@@ -106,7 +106,7 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
 
         std::stringstream ss;
         ss << "GmTicket " << (firstLine ? "3" : "4") << "," << ticket->name << "," << start;
-        chn->Say(cplr, ss.str().c_str(), cplr, true);
+        chn->say(cplr, ss.str().c_str(), cplr, true);
 
         firstLine = false;
 
@@ -116,7 +116,7 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
     {
         std::stringstream ss;
         ss << "GmTicket " << (firstLine ? "3" : "4") << "," << ticket->name << "," << start;
-        chn->Say(cplr, ss.str().c_str(), cplr, true);
+        chn->say(cplr, ss.str().c_str(), cplr, true);
     }
     delete[] msg;
 
@@ -148,7 +148,7 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
 
     std::stringstream ss;
     ss << "GmTicket 1," << ticket->name;
-    chn->Say(cplr, ss.str().c_str(), NULL, true);
+    chn->say(cplr, ss.str().c_str(), NULL, true);
 
     sTicketMgr.removeGMTicket(ticket->guid);
 
@@ -179,7 +179,7 @@ bool ChatHandler::HandleGMTicketListCommand(const char* args, WorldSession* m_se
 
     std::stringstream ss0;
     ss0 << "GmTicket:" << GM_TICKET_CHAT_OPCODE_LISTSTART;
-    chn->Say(cplr, ss0.str().c_str(), cplr, true);
+    chn->say(cplr, ss0.str().c_str(), cplr, true);
 
     for (GmTicketList::iterator itr = sTicketMgr.m_ticketList.begin(); itr != sTicketMgr.m_ticketList.end(); itr++)
     {
@@ -205,7 +205,7 @@ bool ChatHandler::HandleGMTicketListCommand(const char* args, WorldSession* m_se
         ss << ":" << (aplr == NULL ? (aplri == NULL ? "" : aplri->name) : aplr->GetName());
         ss << ":" << (plr == NULL ? (*itr)->name : plr->GetName());
         ss << ":" << (*itr)->comment;
-        chn->Say(cplr, ss.str().c_str(), cplr, true);
+        chn->say(cplr, ss.str().c_str(), cplr, true);
     }
 
     return true;
@@ -228,7 +228,7 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
     GM_Ticket* ticket = sTicketMgr.getGMTicket(ticketGuid);
     if (ticket == NULL || ticket->deleted)
     {
-        chn->Say(cplr, "GmTicket:0:Ticket not found.", cplr, true);
+        chn->say(cplr, "GmTicket:0:Ticket not found.", cplr, true);
         return true;
     }
 
@@ -248,7 +248,7 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
         ss << "GmTicket:" << (firstLine ? GM_TICKET_CHAT_OPCODE_CONTENT : GM_TICKET_CHAT_OPCODE_APPENDCONTENT);
         ss << ":" << ticket->guid;
         ss << ":" << start;
-        chn->Say(cplr, ss.str().c_str(), cplr, true);
+        chn->say(cplr, ss.str().c_str(), cplr, true);
 
         firstLine = false;
 
@@ -260,7 +260,7 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
         ss << "GmTicket:" << (firstLine ? GM_TICKET_CHAT_OPCODE_CONTENT : GM_TICKET_CHAT_OPCODE_APPENDCONTENT);
         ss << ":" << ticket->guid;
         ss << ":" << start;
-        chn->Say(cplr, ss.str().c_str(), cplr, true);
+        chn->say(cplr, ss.str().c_str(), cplr, true);
     }
     delete[] msg;
 
@@ -284,13 +284,13 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
     GM_Ticket* ticket = sTicketMgr.getGMTicket(ticketGuid);
     if (ticket == NULL || ticket->deleted)
     {
-        chn->Say(cplr, "GmTicket:0:Ticket not found.", cplr, true);
+        chn->say(cplr, "GmTicket:0:Ticket not found.", cplr, true);
         return true;
     }
 
     if (ticket->assignedToPlayer != 0 && ticket->assignedToPlayer != cplr->getGuid() && !cplr->GetSession()->CanUseCommand('z'))
     {
-        chn->Say(cplr, "GmTicket:0:Ticket is assigned to another GM.", cplr, true);
+        chn->say(cplr, "GmTicket:0:Ticket is assigned to another GM.", cplr, true);
         return true;
     }
 
@@ -299,7 +299,7 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
     std::stringstream ss;
     ss << "GmTicket:" << GM_TICKET_CHAT_OPCODE_REMOVED;
     ss << ":" << ticket->guid;
-    chn->Say(cplr, ss.str().c_str(), NULL, true);
+    chn->say(cplr, ss.str().c_str(), NULL, true);
 
     sTicketMgr.removeGMTicket(ticket->guid);
 
@@ -343,7 +343,7 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* 
 
     if (ticket == NULL || ticket->deleted)
     {
-        chn->Say(cplr, "GmTicket:0:Ticket not found.", cplr, true);
+        chn->say(cplr, "GmTicket:0:Ticket not found.", cplr, true);
         return true;
     }
 
@@ -351,25 +351,25 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* 
     Player* plr = (argc == 1 ? cplr : sObjectMgr.GetPlayer(name, false));
     if (plr == NULL)
     {
-        chn->Say(cplr, "GmTicket:0:Player not found.", cplr, true);
+        chn->say(cplr, "GmTicket:0:Player not found.", cplr, true);
         return true;
     }
 
     if (!plr->IsInWorld())
     {
-        chn->Say(cplr, "GmTicket:0:Player isn't online.", cplr, true);
+        chn->say(cplr, "GmTicket:0:Player isn't online.", cplr, true);
         return true;
     }
 
     if (plr->GetSession()->GetPermissionCount() == 0)
     {
-        chn->Say(cplr, "GmTicket:0:Player is not a GM.", cplr, true);
+        chn->say(cplr, "GmTicket:0:Player is not a GM.", cplr, true);
         return true;
     }
 
     if (ticket->assignedToPlayer == plr->getGuid())
     {
-        chn->Say(cplr, "GmTicket:0:Ticket already assigned to this GM.", cplr, true);
+        chn->say(cplr, "GmTicket:0:Ticket already assigned to this GM.", cplr, true);
         return true;
     }
 
@@ -378,7 +378,7 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* 
         Player* aplr = sObjectMgr.GetPlayer((uint32)ticket->assignedToPlayer);
         if (aplr != NULL && aplr->IsInWorld() && !cplr->GetSession()->CanUseCommand('z'))
         {
-            chn->Say(cplr, "GmTicket:0:Ticket already assigned to another GM.", cplr, true);
+            chn->say(cplr, "GmTicket:0:Ticket already assigned to another GM.", cplr, true);
             return true;
         }
     }
@@ -390,7 +390,7 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* 
     ss << "GmTicket:" << GM_TICKET_CHAT_OPCODE_ASSIGNED;
     ss << ":" << ticket->guid;
     ss << ":" << plr->GetName();
-    chn->Say(cplr, ss.str().c_str(), NULL, true);
+    chn->say(cplr, ss.str().c_str(), NULL, true);
     //Send Response Packet to update Ticket
     //WorldPacket data(SMSG_GMTICKET_GETTICKET, 400);
     //data << uint32(6); // Packet Status
@@ -423,20 +423,20 @@ bool ChatHandler::HandleGMTicketReleaseCommand(const char* args, WorldSession* m
     GM_Ticket* ticket = sTicketMgr.getGMTicket(ticketGuid);
     if (ticket == NULL || ticket->deleted)
     {
-        chn->Say(cplr, "GmTicket:0:Ticket not found.", cplr, true);
+        chn->say(cplr, "GmTicket:0:Ticket not found.", cplr, true);
         return true;
     }
 
     if (ticket->assignedToPlayer == 0)
     {
-        chn->Say(cplr, "GmTicket:0:Ticket not assigned to a GM.", cplr, true);
+        chn->say(cplr, "GmTicket:0:Ticket not assigned to a GM.", cplr, true);
         return true;
     }
 
     Player* plr = sObjectMgr.GetPlayer((uint32)ticket->assignedToPlayer);
     if (!cplr->GetSession()->CanUseCommand('z') && plr != NULL && plr->IsInWorld() && plr->GetSession()->CanUseCommand('z'))
     {
-        chn->Say(cplr, "GmTicket:0:You can not release tickets from Senior Game Masters.", cplr, true);
+        chn->say(cplr, "GmTicket:0:You can not release tickets from Senior Game Masters.", cplr, true);
         return true;
     }
 
@@ -446,7 +446,7 @@ bool ChatHandler::HandleGMTicketReleaseCommand(const char* args, WorldSession* m
     std::stringstream ss;
     ss << "GmTicket:" << GM_TICKET_CHAT_OPCODE_RELEASED;
     ss << ":" << ticket->guid;
-    chn->Say(cplr, ss.str().c_str(), NULL, true);
+    chn->say(cplr, ss.str().c_str(), NULL, true);
 
     return true;
 }
@@ -482,13 +482,13 @@ bool ChatHandler::HandleGMTicketCommentCommand(const char* args, WorldSession* m
     GM_Ticket* ticket = sTicketMgr.getGMTicket(ticketGuid);
     if (ticket == NULL || ticket->deleted)
     {
-        chn->Say(cplr, "GmTicket:0:Ticket not found.", cplr, true);
+        chn->say(cplr, "GmTicket:0:Ticket not found.", cplr, true);
         return true;
     }
 
     if (ticket->assignedToPlayer != 0 && ticket->assignedToPlayer != cplr->getGuid() && !cplr->GetSession()->CanUseCommand('z'))
     {
-        chn->Say(cplr, "GmTicket:0:Ticket is assigned to another GM.", cplr, true);
+        chn->say(cplr, "GmTicket:0:Ticket is assigned to another GM.", cplr, true);
         return true;
     }
 
@@ -500,7 +500,7 @@ bool ChatHandler::HandleGMTicketCommentCommand(const char* args, WorldSession* m
     ss << ":" << ticket->guid;
     ss << ":" << cplr->GetName();
     ss << ":" << ticket->comment;
-    chn->Say(cplr, ss.str().c_str(), NULL, true);
+    chn->say(cplr, ss.str().c_str(), NULL, true);
 
     return true;
 }
@@ -522,7 +522,7 @@ bool ChatHandler::HandleGMTicketDeletePermanentCommand(const char* args, WorldSe
     GM_Ticket* ticket = sTicketMgr.getGMTicket(ticketGuid);
     if (ticket == NULL)
     {
-        chn->Say(cplr, "GmTicket:0:Ticket not found.", cplr, true);
+        chn->say(cplr, "GmTicket:0:Ticket not found.", cplr, true);
         return true;
     }
 
@@ -535,7 +535,7 @@ bool ChatHandler::HandleGMTicketDeletePermanentCommand(const char* args, WorldSe
         std::stringstream ss;
         ss << "GmTicket:" << GM_TICKET_CHAT_OPCODE_REMOVED;
         ss << ":" << ticket->guid;
-        chn->Say(cplr, ss.str().c_str(), NULL, true);
+        chn->say(cplr, ss.str().c_str(), NULL, true);
 
         sTicketMgr.removeGMTicket(ticket->guid);
     }

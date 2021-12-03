@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <utility>
 
 #include "ManagedPacket.h"
+#include "Chat/ChannelDefines.hpp"
 
 namespace AscEmu::Packets
 {
@@ -23,13 +24,17 @@ namespace AscEmu::Packets
         uint32_t channelId;
         uint8_t extraFlags2;
 
+        std::string playerName;
+        uint64_t sourceGuid;
+
         SmsgChannelNotify() : SmsgChannelNotify(0, "", 0, 0, 0)
         {
         }
 
-        SmsgChannelNotify(uint8_t flag, std::string channelName, uint64_t guid = 0, uint8_t extraFlag = 0, uint32_t channelId = 0, uint8_t extraFlags2 = 0) :
+        SmsgChannelNotify(uint8_t flag, std::string channelName, uint64_t guid = 0, uint8_t extraFlag = 0, uint32_t channelId = 0, uint8_t extraFlags2 = 0, std::string playerName = std::string(), uint64_t sourceGuid = 0) :
             ManagedPacket(SMSG_CHANNEL_NOTIFY, 0),
-            flag(flag), channelName(std::move(channelName)), guid(guid), extraFlag(extraFlag), channelId(channelId), extraFlags2(extraFlags2)
+            flag(flag), channelName(std::move(channelName)), guid(guid), extraFlag(extraFlag), channelId(channelId), extraFlags2(extraFlags2),
+            playerName(std::move(playerName)), sourceGuid(sourceGuid)
         {
         }
 
@@ -46,32 +51,38 @@ namespace AscEmu::Packets
 
             switch (flag)
             {
-                case 0:     //joined
-                case 1:     //left
-                case 7:     //setpass
-                case 8:     //owner
-                case 9:     //noton2
-                case 11:    //whoowner
-                case 13:    //enableannounce
-                case 14:    //disableannounce
-                case 15:    //moderated
-                case 16:    //unmoderated
-                case 18:    //kicked
-                case 20:    //banned
-                case 21:    //unbanned
-                case 23:    //alreadyon
-                case 24:    //invited
-                case 29:    //youinvited
+                case CHANNEL_NOTIFY_FLAG_JOINED:
+                case CHANNEL_NOTIFY_FLAG_LEFT:
+                case CHANNEL_NOTIFY_FLAG_SETPASS:
+                case CHANNEL_NOTIFY_FLAG_CHGOWNER:
+                case CHANNEL_NOTIFY_FLAG_ENABLE_ANN:
+                case CHANNEL_NOTIFY_FLAG_DISABLE_ANN:
+                case CHANNEL_NOTIFY_FLAG_MODERATED:
+                case CHANNEL_NOTIFY_FLAG_UNMODERATED:
+                case CHANNEL_NOTIFY_FLAG_ALREADY_ON:
+                case CHANNEL_NOTIFY_FLAG_INVITED:
                     packet << guid;
                 break;
-                case 2:     //youjoined
+                case CHANNEL_NOTIFY_FLAG_NOT_ON_2:
+                case CHANNEL_NOTIFY_FLAG_WHO_OWNER:
+                case CHANNEL_NOTIFY_FLAG_NOT_BANNED:
+                case CHANNEL_NOTIFY_FLAG_YOU_INVITED:
+                case CHANNEL_NOTIFY_FLAG_INVITED_BANNED:
+                    packet << playerName;
+                break;
+                case CHANNEL_NOTIFY_FLAG_YOUJOINED:
                     packet << extraFlag << channelId << uint32_t(0);
                 break;
-                case 3:     //youleft
-                    packet << channelId << uint32_t(0) << uint8_t(0);
+                case CHANNEL_NOTIFY_FLAG_YOULEFT:
+                    packet << channelId << uint8_t(0);
                 break;
-                case 12:    //mode
+                case CHANNEL_NOTIFY_FLAG_MODE_CHG:
                     packet << guid << extraFlag << extraFlags2;
+                break;
+                case CHANNEL_NOTIFY_FLAG_KICKED:
+                case CHANNEL_NOTIFY_FLAG_BANNED:
+                case CHANNEL_NOTIFY_FLAG_UNBANNED:
+                    packet << guid << sourceGuid;
                 break;
                 default:
                 break;

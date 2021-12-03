@@ -121,7 +121,7 @@ public:
     virtual void RemoveFromWorld(bool free_guid);
 
     // True if object exists in world, else false
-    bool IsInWorld() { return m_mapMgr != NULL; }
+    bool IsInWorld() const { return m_mapMgr != NULL; }
 
     // is called BEFORE pushing the Object in the game world
     virtual void OnPrePushToWorld() {}

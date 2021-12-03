@@ -908,7 +908,7 @@ public:
     void setInvitedByGuildId(uint32_t GuildId);
     uint32_t getInvitedByGuildId() const;
 
-    Guild* getGuild();
+    Guild* getGuild() const;
     bool isInGuild();
 
     uint32_t getGuildRankFromDB();

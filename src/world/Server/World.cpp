@@ -15,8 +15,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/WeatherMgr.h"
 #include "Management/TaxiMgr.h"
 #include "Management/ItemInterface.h"
-#include "Management/Channel.h"
-#include "Management/ChannelMgr.h"
+#include "Chat/Channel.hpp"
+#include "Chat/ChannelMgr.hpp"
 #include "WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include <CrashHandler.h>
