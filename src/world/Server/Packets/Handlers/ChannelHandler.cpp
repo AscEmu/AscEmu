@@ -78,7 +78,7 @@ void WorldSession::handleChannelList(WorldPacket& recvPacket)
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     if (channel)
-        channel->listMembers(_player);
+        channel->listMembers(_player, true);
 }
 
 void WorldSession::handleChannelPassword(WorldPacket& recvPacket)
@@ -241,5 +241,5 @@ void WorldSession::handleChannelRosterQuery(WorldPacket& recvPacket)
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     if (channel)
-        channel->listMembers(_player);
+        channel->listMembers(_player, false);
 }

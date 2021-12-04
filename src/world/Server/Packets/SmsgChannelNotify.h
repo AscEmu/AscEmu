@@ -71,11 +71,17 @@ namespace AscEmu::Packets
                     packet << playerName;
                 break;
                 case CHANNEL_NOTIFY_FLAG_YOUJOINED:
+#if VERSION_STRING == Classic
+                    packet << extraFlag << uint32_t(0);
+#else
                     packet << extraFlag << channelId << uint32_t(0);
+#endif
                 break;
+#if VERSION_STRING >= TBC
                 case CHANNEL_NOTIFY_FLAG_YOULEFT:
                     packet << channelId << uint8_t(0);
                 break;
+#endif
                 case CHANNEL_NOTIFY_FLAG_MODE_CHG:
                     packet << guid << extraFlag << extraFlags2;
                 break;

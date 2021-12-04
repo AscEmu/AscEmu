@@ -60,7 +60,7 @@ public:
     void getOwner(Player* plr);
     void setOwner(Player* plr, Player const* newOwner);
 
-    void listMembers(Player* plr);
+    void listMembers(Player* plr, bool chatQuery);
 
     // Packets
     void sendToAll(WorldPacket* data);

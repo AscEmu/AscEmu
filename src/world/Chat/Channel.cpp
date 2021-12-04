@@ -757,7 +757,7 @@ void Channel::setOwner(Player* plr, Player const* newOwner)
     sendToAll(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_MODE_CHG, m_channelName, owner->getGuid(), oldMemberFlags, 0, (oldMemberFlags |= CHANNEL_MEMBER_FLAG_OWNER)).serialise().get());
 }
 
-void Channel::listMembers(Player* plr)
+void Channel::listMembers(Player* plr, bool chatQuery)
 {
     std::lock_guard<std::mutex> guard(m_mutexChannel);
 
@@ -769,9 +769,20 @@ void Channel::listMembers(Player* plr)
         return;
     }
 
+    const auto isPlayerGm = plr->GetSession()->CanUseCommand('a');
     std::vector<SmsgChannelListMembers> members;
     for (const auto& member : m_members)
     {
+        if (member.first->GetSession() == nullptr)
+            continue;
+
+        if (!isPlayerGm)
+        {
+            // Players should not be able to see GMs in chat lists
+            if (member.first->GetSession()->CanUseCommand('a'))
+                continue;
+        }
+
         uint8_t memberFlags = CHANNEL_MEMBER_FLAG_NONE;
         if (!(member.second & CHANNEL_MEMBER_FLAG_MUTED))
             memberFlags |= CHANNEL_MEMBER_FLAG_VOICED;
@@ -788,7 +799,7 @@ void Channel::listMembers(Player* plr)
         members.push_back({ member.first->getGuid(), memberFlags });
     }
 
-    plr->SendPacket(SmsgChannelList(m_channelName, members).serialise().get());
+    plr->SendPacket(SmsgChannelList(chatQuery, m_channelName, m_channelFlags, members).serialise().get());
 }
 
 void Channel::sendToAll(WorldPacket* data)
