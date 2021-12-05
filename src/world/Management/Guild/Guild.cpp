@@ -768,7 +768,7 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
             }
             else
             {
-                if (member->isRankNotLower(rankId + 1))
+                if (member->isRankNotLower(rankId + 1U))
                 {
                     session->SendPacket(SmsgGuildCommandResult(type, name, GC_ERROR_RANK_TOO_HIGH_S).serialise().get());
                     return;
@@ -2586,8 +2586,8 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlo
 }
 
 Guild::GuildMember::GuildMember(uint32_t guildId, uint64_t guid, uint8_t rankId) : mGuildId(guildId), mGuid(guid), mZoneId(0), mLevel(0), mClass(0),
-mFlags(GEM_STATUS_NONE), mLogoutTime(::time(nullptr)), mAccountId(0), mRankId(rankId), mAchievementPoints(0),
-mTotalActivity(0), mWeekActivity(0), mTotalReputation(0), mBankWithdraw{ 0 }, mWeekReputation(0)
+mFlags(GEM_STATUS_NONE), mLogoutTime(::time(nullptr)), mAccountId(0), mRankId(rankId), mBankWithdraw{ 0 }, mAchievementPoints(0),
+mTotalActivity(0), mWeekActivity(0), mTotalReputation(0), mWeekReputation(0)
 {
     memset(mBankWithdraw, 0, (MAX_GUILD_BANK_TABS + 1) * sizeof(int32_t));
 }

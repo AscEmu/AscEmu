@@ -267,7 +267,7 @@ void MySQLDataStore::loadItemPropertiesTable()
             for (uint8_t i = 0; i < itemProperties.itemstatscount; ++i)
             {
                 itemProperties.Stats[i].Type = fields[28 + i * 2].GetUInt32();
-                itemProperties.Stats[i].Value = fields[29 + i * 2].GetUInt32();
+                itemProperties.Stats[i].Value = fields[29 + i * 2].GetInt32();
             }
 
             itemProperties.ScalingStatsEntry = fields[48].GetUInt32();
@@ -691,10 +691,9 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             creatureProperties.Scale = fields[24].GetFloat();
             creatureProperties.NPCFLags = fields[25].GetUInt32();
             creatureProperties.AttackTime = fields[26].GetUInt32();
-            creatureProperties.attackSchool = fields[27].GetUInt32();
-            if (fields[27].GetUInt32() <= SCHOOL_ARCANE)
+            if (fields[27].GetUInt8() <= SCHOOL_ARCANE)
             {
-                creatureProperties.attackSchool = fields[27].GetUInt32();
+                creatureProperties.attackSchool = fields[27].GetUInt8();
             }
             else
             {
@@ -1106,7 +1105,7 @@ void MySQLDataStore::loadQuestPropertiesTable()
             questInfo.quest_sort = fields[2].GetUInt32();
             questInfo.quest_flags = fields[3].GetUInt32();
             questInfo.min_level = fields[4].GetUInt32();
-            questInfo.questlevel = fields[5].GetUInt32();
+            questInfo.questlevel = fields[5].GetInt32();
             questInfo.type = fields[6].GetUInt32();
             questInfo.required_races = fields[7].GetUInt32();
             questInfo.required_class = fields[8].GetUInt32();
@@ -1189,12 +1188,12 @@ void MySQLDataStore::loadQuestPropertiesTable()
             for (uint8_t i = 0; i < 6; ++i)
             {
                 questInfo.reward_repfaction[i] = fields[77 + i].GetUInt32();
-                questInfo.reward_repvalue[i] = fields[83 + i].GetUInt32();
+                questInfo.reward_repvalue[i] = fields[83 + i].GetInt32();
             }
 
             questInfo.reward_replimit = fields[89].GetUInt32();
 
-            questInfo.reward_money = fields[90].GetUInt32();
+            questInfo.reward_money = fields[90].GetInt32();
             questInfo.reward_xp = fields[91].GetUInt32();
             questInfo.reward_spell = fields[92].GetUInt32();
             questInfo.effect_on_player = fields[93].GetUInt32();
@@ -1231,14 +1230,14 @@ void MySQLDataStore::loadQuestPropertiesTable()
             }
 
             questInfo.is_repeatable = fields[120].GetInt32();
-            questInfo.bonushonor = fields[121].GetInt32();
-            questInfo.bonusarenapoints = fields[122].GetInt32();
-            questInfo.rewardtitleid = fields[123].GetInt32();
-            questInfo.rewardtalents = fields[124].GetInt32();
-            questInfo.suggestedplayers = fields[125].GetInt32();
+            questInfo.bonushonor = fields[121].GetUInt32();
+            questInfo.bonusarenapoints = fields[122].GetUInt32();
+            questInfo.rewardtitleid = fields[123].GetUInt32();
+            questInfo.rewardtalents = fields[124].GetUInt32();
+            questInfo.suggestedplayers = fields[125].GetUInt32();
 
             // emotes
-            questInfo.detailemotecount = fields[126].GetInt32();
+            questInfo.detailemotecount = fields[126].GetUInt32();
 
             for (uint8_t i = 0; i < 4; ++i)
             {
@@ -1246,7 +1245,7 @@ void MySQLDataStore::loadQuestPropertiesTable()
                 questInfo.detailemotedelay[i] = fields[131 + i].GetUInt32();
             }
 
-            questInfo.completionemotecount = fields[135].GetInt32();
+            questInfo.completionemotecount = fields[135].GetUInt32();
 
             for (uint8_t i = 0; i < 4; ++i)
             {
@@ -1254,11 +1253,10 @@ void MySQLDataStore::loadQuestPropertiesTable()
                 questInfo.completionemotedelay[i] = fields[140 + i].GetUInt32();
             }
 
-            questInfo.completeemote = fields[144].GetInt32();
-            questInfo.incompleteemote = fields[145].GetInt32();
-            questInfo.iscompletedbyspelleffect = fields[146].GetInt32();
-            questInfo.RewXPId = fields[147].GetInt32();
-
+            questInfo.completeemote = fields[144].GetUInt32();
+            questInfo.incompleteemote = fields[145].GetUInt32();
+            questInfo.iscompletedbyspelleffect = fields[146].GetUInt32();
+            questInfo.RewXPId = fields[147].GetUInt32();
 
             ++quest_count;
         } while (quest_result->NextRow());
@@ -2689,7 +2687,7 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
                 if (info->level_stats[level].strength == 0)
                 {
                     sLogger.info("Race %i Class %i Level %i does not have stats data. Using stats data of level % i.", _race, _class, level + 1, level);
-                    info->level_stats[level] = info->level_stats[level - 1];
+                    info->level_stats[level] = info->level_stats[level - 1U];
                 }
             }
         }
@@ -2971,7 +2969,7 @@ void MySQLDataStore::loadPetLevelAbilitiesTable()
     {
         Field* fields = pet_level_abilities_result->Fetch();
 
-        uint32_t entry = fields[0].GetInt32();
+        uint32_t entry = fields[0].GetUInt32();
 
         MySQLStructure::PetLevelAbilities& petAbilities = _petLevelAbilitiesStore[entry];
 
@@ -3025,7 +3023,7 @@ void MySQLDataStore::loadBroadcastTable()
     {
         Field* fields = broadcast_result->Fetch();
 
-        uint32_t entry = fields[0].GetInt32();
+        uint32_t entry = fields[0].GetUInt32();
 
         MySQLStructure::WorldBroadCast& broadcast = _worldBroadcastStore[entry];
 
@@ -3265,7 +3263,7 @@ void MySQLDataStore::loadLocalesCreature()
 
         MySQLStructure::LocalesCreature& localCreature = _localesCreatureStore[i];
 
-        localCreature.entry = fields[0].GetInt32();
+        localCreature.entry = fields[0].GetUInt32();
         std::string locString = fields[1].GetString();
         localCreature.languageCode = Util::getLanguagesIdFromString(locString);
         localCreature.name = strdup(fields[2].GetString());
@@ -3319,7 +3317,7 @@ void MySQLDataStore::loadLocalesGameobject()
 
         MySQLStructure::LocalesGameobject& localGameobject = _localesGameobjectStore[i];
 
-        localGameobject.entry = fields[0].GetInt32();
+        localGameobject.entry = fields[0].GetUInt32();
         std::string locString = fields[1].GetString();
         localGameobject.languageCode = Util::getLanguagesIdFromString(locString);
         localGameobject.name = strdup(fields[2].GetString());
@@ -3372,7 +3370,7 @@ void MySQLDataStore::loadLocalesGossipMenuOption()
 
         MySQLStructure::LocalesGossipMenuOption& localGossipMenuOption = _localesGossipMenuOptionStore[1];
 
-        localGossipMenuOption.entry = fields[0].GetInt32();
+        localGossipMenuOption.entry = fields[0].GetUInt32();
         std::string locString = fields[1].GetString();
         localGossipMenuOption.languageCode = Util::getLanguagesIdFromString(locString);
         localGossipMenuOption.name = strdup(fields[2].GetString());
@@ -3425,7 +3423,7 @@ void MySQLDataStore::loadLocalesItem()
 
         MySQLStructure::LocalesItem& localItem = _localesItemStore[i];
 
-        localItem.entry = fields[0].GetInt32();
+        localItem.entry = fields[0].GetUInt32();
         std::string locString = fields[1].GetString();
         localItem.languageCode = Util::getLanguagesIdFromString(locString);
         localItem.name = strdup(fields[2].GetString());
@@ -3495,7 +3493,7 @@ void MySQLDataStore::loadLocalesItemPages()
 
         MySQLStructure::LocalesItemPages& localesItemPages = _localesItemPagesStore[i];
 
-        localesItemPages.entry = fields[0].GetInt32();
+        localesItemPages.entry = fields[0].GetUInt32();
         std::string locString = fields[1].GetString();
         localesItemPages.languageCode = Util::getLanguagesIdFromString(locString);
         localesItemPages.text = strdup(fields[2].GetString());
@@ -3548,7 +3546,7 @@ void MySQLDataStore::loadLocalesNpcScriptText()
 
         MySQLStructure::LocalesNpcScriptText& localNpcScriptText = _localesNpcScriptTextStore[i];
 
-        localNpcScriptText.entry = fields[0].GetInt32();
+        localNpcScriptText.entry = fields[0].GetUInt32();
         std::string locString = fields[1].GetString();
         localNpcScriptText.languageCode = Util::getLanguagesIdFromString(locString);
         localNpcScriptText.text = strdup(fields[2].GetString());
@@ -3601,7 +3599,7 @@ void MySQLDataStore::loadLocalesNpcText()
 
         MySQLStructure::LocalesNpcGossipText& localNpcGossipText = _localesNpcGossipTextStore[i];
 
-        localNpcGossipText.entry = fields[0].GetInt32();
+        localNpcGossipText.entry = fields[0].GetUInt32();
         std::string locString = fields[1].GetString();
         localNpcGossipText.languageCode = Util::getLanguagesIdFromString(locString);
 
@@ -3659,7 +3657,7 @@ void MySQLDataStore::loadLocalesQuest()
 
         MySQLStructure::LocalesQuest& localQuest = _localesQuestStore[i];
 
-        localQuest.entry = fields[0].GetInt32();
+        localQuest.entry = fields[0].GetUInt32();
         std::string locString = fields[1].GetString();
         localQuest.languageCode = Util::getLanguagesIdFromString(locString);
         localQuest.title = strdup(fields[2].GetString());
@@ -3721,7 +3719,7 @@ void MySQLDataStore::loadLocalesWorldbroadcast()
 
         MySQLStructure::LocalesWorldbroadcast& localWorldbroadcast = _localesWorldbroadcastStore[i];
 
-        localWorldbroadcast.entry = fields[0].GetInt32();
+        localWorldbroadcast.entry = fields[0].GetUInt32();
         std::string locString = fields[1].GetString();
         localWorldbroadcast.languageCode = Util::getLanguagesIdFromString(locString);
         localWorldbroadcast.text = strdup(fields[2].GetString());
@@ -3774,7 +3772,7 @@ void MySQLDataStore::loadLocalesWorldmapInfo()
 
         MySQLStructure::LocalesWorldmapInfo& localWorldmapInfo = _localesWorldmapInfoStore[i];
 
-        localWorldmapInfo.entry = fields[0].GetInt32();
+        localWorldmapInfo.entry = fields[0].GetUInt32();
         std::string locString = fields[1].GetString();
         localWorldmapInfo.languageCode = Util::getLanguagesIdFromString(locString);
         localWorldmapInfo.text = strdup(fields[2].GetString());
@@ -3827,7 +3825,7 @@ void MySQLDataStore::loadLocalesWorldStringTable()
 
         MySQLStructure::LocalesWorldStringTable& localWorldStringTable = _localesWorldStringTableStore[i];
 
-        localWorldStringTable.entry = fields[0].GetInt32();
+        localWorldStringTable.entry = fields[0].GetUInt32();
         std::string locString = fields[1].GetString();
         localWorldStringTable.languageCode = Util::getLanguagesIdFromString(locString);
         localWorldStringTable.text = strdup(fields[2].GetString());

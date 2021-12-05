@@ -89,8 +89,8 @@ AuctionHouse::AuctionHouse(uint32_t id)
     auctionHouseEntryDbc = sAuctionHouseStore.LookupEntry(id);
     if (auctionHouseEntryDbc)
     {
-        cutPercent = auctionHouseEntryDbc->tax / 100.0f;
-        depositPercent = auctionHouseEntryDbc->fee / 100.0f;
+        cutPercent = static_cast<float_t>(auctionHouseEntryDbc->tax) / 100.0f;
+        depositPercent = static_cast<float_t>(auctionHouseEntryDbc->fee) / 100.0f;
         isEnabled = true;
     }
     else
@@ -221,7 +221,7 @@ void AuctionHouse::removeAuction(Auction* auction)
             sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, auctionHouseEntryDbc->id, auction->highestBidderGuid, subject, body, 0, 0, auction->auctionItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 
             // Send a mail to the owner with his cut of the price.
-            const uint32_t auction_cut = float2int32(cutPercent * auction->highestBid);
+            const auto auction_cut = float2int32(cutPercent * static_cast<float_t>(auction->highestBid));
             auto amount = auction->highestBid - auction_cut + auction->depositAmount;
 
             // ItemEntry:0:2
@@ -246,10 +246,10 @@ void AuctionHouse::removeAuction(Auction* auction)
         case AUCTION_REMOVE_CANCELLED:
         {
             snprintf(subject, 100, "%u:0:5", auction->auctionItem->getEntry());
-            const uint32_t cut = float2int32(cutPercent * auction->highestBid);
+            const auto cut = float2int32(cutPercent * static_cast<float_t>(auction->highestBid));
             Player* plr = sObjectMgr.GetPlayer(auction->ownerGuid.getGuidLow());
-            if (cut && plr && plr->hasEnoughCoinage(cut))
-                plr->modCoinage(-(int32)cut);
+            if (cut && plr && plr->hasEnoughCoinage(static_cast<uint32_t>(cut)))
+                plr->modCoinage(-cut);
 
             sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, getId(), auction->ownerGuid, subject, "", 0, 0, auction->auctionItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 

@@ -410,7 +410,7 @@ uint16_t Aura::getPeriodicTickCountForEffect(uint8_t effIndex) const
 
 void Aura::refresh([[maybe_unused]]bool saveMods/* = false*/, int16_t modifyStacks/* = 0*/)
 {
-    int32_t maxStacks = getSpellInfo()->getMaxstack() == 0 ? 1 : getSpellInfo()->getMaxstack();
+    int32_t maxStacks = getSpellInfo()->getMaxstack() == 0 ? 1 : static_cast<int32_t>(getSpellInfo()->getMaxstack());
 
     // Check for aura stack cheat
     const auto plrHolder = getPlayerOwner();
@@ -468,7 +468,8 @@ void Aura::refresh([[maybe_unused]]bool saveMods/* = false*/, int16_t modifyStac
     }
 
     m_updatingModifiers = true;
-    m_stackCount = static_cast<uint8_t>(newStackCount);
+    const auto unsignedStackCount = static_cast<uint8_t>(newStackCount);
+    m_stackCount = unsignedStackCount;
 
     // Reapply modifiers
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -485,7 +486,7 @@ void Aura::refresh([[maybe_unused]]bool saveMods/* = false*/, int16_t modifyStac
     takeUsedSpellModifiers();
 
     // Call script hook
-    sScriptMgr.callScriptedAuraOnRefreshOrGainNewStack(this, newStackCount, curStackCount);
+    sScriptMgr.callScriptedAuraOnRefreshOrGainNewStack(this, unsignedStackCount, curStackCount);
 
 #if VERSION_STRING < WotLK
     getOwner()->setAuraApplication(this);
@@ -815,7 +816,7 @@ void Aura::_calculateSpellHaste()
 
 void Aura::_calculateEffectAmplitude(uint8_t effIndex)
 {
-    int32_t amplitude = getSpellInfo()->getEffectAmplitude(effIndex);
+    int32_t amplitude = static_cast<int32_t>(getSpellInfo()->getEffectAmplitude(effIndex));
 
     const auto caster = GetUnitCaster();
     if (caster != nullptr)
@@ -858,7 +859,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
     if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
         return;
 
-    uint32_t customDamage = 0;
+    int32_t customDamage = 0;
     auto effectIntValue = static_cast<int32_t>(std::ceil(effectFloatValue));
 
     switch (aurEff->getAuraEffectType())
@@ -908,8 +909,8 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                             sdmg.fullDamage = aurEff->getEffectDamage();
                             sdmg.resistedDamage = 0;
                             sdmg.schoolMask = SchoolMask(getSpellInfo()->getSchoolMask());
-                            casterUnit->dealDamage(casterUnit, aurEff->getEffectDamage(), 0);
-                            casterUnit->sendAttackerStateUpdate(casterUnit->GetNewGUID(), casterUnit->GetNewGUID(), HITSTATUS_NORMALSWING, aurEff->getEffectDamage(), 0, sdmg, 0, VisualState::ATTACK, 0, 0);
+                            casterUnit->dealDamage(casterUnit, static_cast<uint32_t>(aurEff->getEffectDamage()), 0);
+                            casterUnit->sendAttackerStateUpdate(casterUnit->GetNewGUID(), casterUnit->GetNewGUID(), HITSTATUS_NORMALSWING, static_cast<uint32_t>(aurEff->getEffectDamage()), 0, sdmg, 0, VisualState::ATTACK, 0, 0);
                         } break;
                         default:
                             break;
@@ -940,12 +941,13 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             const auto casterUnit = GetUnitCaster();
 
             // Send packet first
-            getOwner()->sendPeriodicAuraLog(m_casterGuid, getOwner()->GetNewGUID(), getSpellInfo(), effectIntValue, 0, 0, 0, aurEff->getAuraEffectType(), false, powerType);
+            const auto unsignedValue = static_cast<uint32_t>(effectIntValue);
+            getOwner()->sendPeriodicAuraLog(m_casterGuid, getOwner()->GetNewGUID(), getSpellInfo(), unsignedValue, 0, 0, 0, aurEff->getAuraEffectType(), false, powerType);
 
             if (casterUnit != nullptr)
-                casterUnit->energize(getOwner(), spellId, effectIntValue, powerType, false);
+                casterUnit->energize(getOwner(), spellId, unsignedValue, powerType, false);
             else
-                getOwner()->energize(getOwner(), spellId, effectIntValue, powerType, false);
+                getOwner()->energize(getOwner(), spellId, unsignedValue, powerType, false);
         } break;
         case SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE:
         {
@@ -1007,12 +1009,13 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             const auto casterUnit = GetUnitCaster();
 
             // Send packet first
-            getOwner()->sendPeriodicAuraLog(m_casterGuid, getOwner()->GetNewGUID(), getSpellInfo(), effectIntValue, 0, 0, 0, aurEff->getAuraEffectType(), false, powerType);
+            const auto unsignedValue = static_cast<uint32_t>(effectIntValue);
+            getOwner()->sendPeriodicAuraLog(m_casterGuid, getOwner()->GetNewGUID(), getSpellInfo(), unsignedValue, 0, 0, 0, aurEff->getAuraEffectType(), false, powerType);
 
             if (casterUnit != nullptr)
-                casterUnit->energize(getOwner(), getSpellId(), effectIntValue, powerType, false);
+                casterUnit->energize(getOwner(), getSpellId(), unsignedValue, powerType, false);
             else
-                getOwner()->energize(getOwner(), getSpellId(), effectIntValue, powerType, false);
+                getOwner()->energize(getOwner(), getSpellId(), unsignedValue, powerType, false);
         } break;
         case SPELL_AURA_PERIODIC_LEECH:
         case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
@@ -1060,7 +1063,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             else
                 casterUnit->modPower(POWER_TYPE_MANA, manaReturn);
 
-            getOwner()->sendPeriodicAuraLog(m_casterGuid, getOwner()->GetNewGUID(), getSpellInfo(), manaReturn, 0, 0, 0, aurEff->getAuraEffectType(), false, POWER_TYPE_MANA, manaMultiplier);
+            getOwner()->sendPeriodicAuraLog(m_casterGuid, getOwner()->GetNewGUID(), getSpellInfo(), static_cast<uint32_t>(manaReturn), 0, 0, 0, aurEff->getAuraEffectType(), false, POWER_TYPE_MANA, manaMultiplier);
         } break;
         case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
         {
@@ -1107,7 +1110,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
 #if VERSION_STRING != Classic
             // Drink spells use periodic dummy trigger since TBC
             const auto effIndex = aurEff->getEffectIndex();
-            if (effIndex > 0 && getAuraEffect(effIndex - 1).getAuraEffectType() == SPELL_AURA_MOD_POWER_REGEN)
+            if (effIndex > 0 && getAuraEffect(effIndex - 1U).getAuraEffectType() == SPELL_AURA_MOD_POWER_REGEN)
             {
                 if (getPlayerOwner() == nullptr)
                     return;
@@ -1186,7 +1189,11 @@ uint32_t AbsorbAura::absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool che
     }
     else
     {
-        m_absorbValue -= m_absorbDamageBatch;
+        if (m_absorbValue > m_absorbDamageBatch)
+            m_absorbValue -= m_absorbDamageBatch;
+        else
+            m_absorbValue = 0;
+
         m_absorbDamageBatch = 0;
 
         if (m_absorbValue <= 0)
@@ -1198,13 +1205,13 @@ uint32_t AbsorbAura::absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool che
 
 uint32_t AbsorbAura::getRemainingAbsorbAmount() const
 {
-    if (m_absorbValue < 0 || m_absorbDamageBatch > static_cast<uint32_t>(m_absorbValue))
+    if (m_absorbValue == 0 || m_absorbDamageBatch > m_absorbValue)
         return 0;
     else
         return m_absorbValue - m_absorbDamageBatch;
 }
 
-int32_t AbsorbAura::getTotalAbsorbAmount() const
+uint32_t AbsorbAura::getTotalAbsorbAmount() const
 {
     return m_totalAbsorbValue;
 }
@@ -1227,7 +1234,7 @@ bool AbsorbAura::isAbsorbAura() const
     return true;
 }
 
-int32_t AbsorbAura::calcAbsorbAmount(AuraEffectModifier* aurEff)
+uint32_t AbsorbAura::calcAbsorbAmount(AuraEffectModifier* aurEff)
 {
     // Call for legacy script hook
     auto val = CalcAbsorbAmount(aurEff);
@@ -1239,6 +1246,6 @@ int32_t AbsorbAura::calcAbsorbAmount(AuraEffectModifier* aurEff)
         val = static_cast<int32_t>(std::ceil(unitCaster->applySpellDamageBonus(getSpellInfo(), val, aurEff->getEffectPercentModifier(), false, nullptr, aurEff->getAura())));
     }
 
-    return val;
+    return static_cast<uint32_t>(val);
 }
 

@@ -58,7 +58,7 @@ WorldSession::WorldSession(uint32 id, std::string name, WorldSocket* sock) :
     _accountName(name),
     has_level_55_char(false),
     has_dk(false),
-    _side(-1),
+    _side(255),
     m_MoverGuid(0),
     _logoutTime(0),
     permissions(nullptr),

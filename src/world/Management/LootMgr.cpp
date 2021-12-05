@@ -278,7 +278,6 @@ void LootMgr::loadLootTables(const char* szTableName, LootTemplateMap* LootTable
     }
 
     LootTemplateMap::const_iterator tab;
-    uint32_t last_entry = 0;
     uint32_t count = 0;
     do
     {
@@ -411,12 +410,14 @@ void LootRoll::finalize()
 
     if (wowGuid.isUnit())
     {
-        if (creature = _mgr->GetCreature(wowGuid.getGuidLowPart()))
+        creature = _mgr->GetCreature(wowGuid.getGuidLowPart());
+        if (creature)
             pLoot = &creature->loot;
     }
     else if (wowGuid.isGameObject())
     {
-        if (gameObject = _mgr->GetGameObject(wowGuid.getGuidLowPart()))
+        gameObject = _mgr->GetGameObject(wowGuid.getGuidLowPart());
+        if (gameObject)
         {
             if (gameObject->IsLootable())
             {
@@ -439,7 +440,6 @@ void LootRoll::finalize()
     }
 
     pLoot->items.at(_slotid).roll = nullptr;
-    uint32_t itemid = pLoot->items.at(_slotid).itemproto->ItemId;
     uint32_t amt = pLoot->items.at(_slotid).count;
     if (!amt)
     {
@@ -562,7 +562,7 @@ LootItem::LootItem(LootStoreItem const& li)
 {
     itemId = li.itemId;
     itemproto = li.itemproto;
-    count = Util::getRandomInt(li.mincount, li.maxcount);
+    count = Util::getRandomUInt(li.mincount, li.maxcount);
     iRandomProperty = sLootMgr.GetRandomProperties(itemproto);
     iRandomSuffix = sLootMgr.GetRandomSuffix(itemproto);
 
@@ -694,7 +694,7 @@ void LootMgr::addLoot(Loot* loot, uint32_t itemid, std::vector<float> chance, ui
     loot->addLootItem(item);
 }
 
-bool LootTemplate::hasQuestDrop(LootTemplateMap const& store) const
+bool LootTemplate::hasQuestDrop(LootTemplateMap const& /*store*/) const
 {
     for (LootStoreItemList::const_iterator i = Entries.begin(); i != Entries.end(); ++i)
     {
@@ -705,7 +705,7 @@ bool LootTemplate::hasQuestDrop(LootTemplateMap const& store) const
     return false;
 }
 
-bool LootTemplate::hasQuestDropForPlayer(LootTemplateMap const& store, Player* player) const
+bool LootTemplate::hasQuestDropForPlayer(LootTemplateMap const& /*store*/, Player* player) const
 {
     for (LootStoreItemList::const_iterator i = Entries.begin(); i != Entries.end(); ++i)
     {
@@ -724,7 +724,7 @@ uint32_t Loot::getMaxSlotInLootFor(Player* player) const
     return items.size() + (itr != PlayerQuestItems.end() ? itr->second->size() : 0);
 }
 
-bool Loot::fillLoot(uint32_t lootId, LootTemplateMap const& tempelateStore, Player* lootOwner, bool personal, uint32_t lootMode /*= InstanceDifficulty::DUNGEON_NORMAL*/)
+bool Loot::fillLoot(uint32_t lootId, LootTemplateMap const& tempelateStore, Player* lootOwner, bool personal, uint8_t lootMode /*= InstanceDifficulty::DUNGEON_NORMAL*/)
 {
     LootTemplate const* tempelate;
 
@@ -904,7 +904,7 @@ void Loot::generateGold(CreatureProperties const* property, uint8_t difficulty)
     }
 
     // Gold rates
-    amount = uint32_t(amount* worldConfig.getFloatRate(RATE_MONEY));
+    amount = static_cast<uint32_t>(amount * worldConfig.getFloatRate(RATE_MONEY));
 
     if (amount)
         gold = amount;
@@ -994,7 +994,6 @@ LootItem* Loot::lootItemInSlot(uint32_t lootSlot, Player* player, Personaltem* *
 LootItem* Loot::getlootItemInSlot(uint32_t lootSlot, Player* player)
 {
     LootItem* item = nullptr;
-    bool is_looted = true;
     if (lootSlot >= items.size())
     {
         uint32_t questSlot = lootSlot - items.size();

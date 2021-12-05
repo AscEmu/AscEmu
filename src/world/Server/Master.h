@@ -43,7 +43,7 @@ class SERVER_DECL Master
         bool m_restartEvent;
 
         //lib Log
-        void libLog(const char* format, ...)
+        inline void libLog(const char* format, ...)
         {
             char message_buffer[32768];
             va_list ap;

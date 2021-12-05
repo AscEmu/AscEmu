@@ -230,7 +230,7 @@ public:
 
         bool m_canRegenerateHP = true;
         void RegenerateHealth();
-        int BaseAttackType = SCHOOL_NORMAL;
+        uint8_t BaseAttackType = SCHOOL_NORMAL;
 
         // Looting
         bool HasLootForPlayer(Player* plr);

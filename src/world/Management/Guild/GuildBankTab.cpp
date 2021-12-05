@@ -199,7 +199,7 @@ bool GuildBankTab::setItem(uint8_t slotId, Item* item)
         uint32_t slot_id = 0;
         if (slotId == 0 || slotId == UNDEFINED_TAB_SLOT)
         {
-            for (int i = 0; i < MAX_GUILD_BANK_SLOTS; ++i)
+            for (uint8_t i = 0; i < MAX_GUILD_BANK_SLOTS; ++i)
             {
                 if (mItems[i] == nullptr)
                 {

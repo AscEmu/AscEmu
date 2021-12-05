@@ -130,7 +130,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // wp movement
-    WaypointNode createWaypoint(int pId, uint32_t pWaittime, uint32_t pMoveType, LocationVector pCoords);
+    WaypointNode createWaypoint(uint32_t pId, uint32_t pWaittime, uint32_t pMoveType, LocationVector pCoords);
     void addWaypoint(uint32_t pathid, WaypointNode pWayPoint);
     WaypointPath* getCustomPath(uint32_t pathId);
 
@@ -154,7 +154,7 @@ public:
     bool canEnterCombat();
     void setCanEnterCombat(bool enterCombat);
     bool _isInCombat();
-    void _delayNextAttack(int32_t milliseconds);
+    void _delayNextAttack(uint32_t milliseconds);
 
     void _setMeleeDisabled(bool disable);
     bool _isMeleeDisabled();

@@ -469,7 +469,7 @@ void GuildMgr::loadGuildXpForLevelFromDB()
         if (!GuildXPperLevel[level])
         {
             sLogger.failure("Level %i does not have XP for guild level data. Using data of level [%i] + 1660000.", level + 1, level);
-            GuildXPperLevel[level] = GuildXPperLevel[level - 1] + 1660000;
+            GuildXPperLevel[level] = GuildXPperLevel[level - 1U] + 1660000;
         }
     }
 

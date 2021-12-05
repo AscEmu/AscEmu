@@ -194,7 +194,7 @@ class SERVER_DECL Spell
         SpellInfo const* getSpellInfo() const;
 
         // Some spells inherit base points from the mother spell
-        uint32_t forced_basepoints[MAX_SPELL_EFFECTS];
+        int32_t forced_basepoints[MAX_SPELL_EFFECTS];
 
         Aura* getTriggeredByAura() const;
 
@@ -678,7 +678,7 @@ class SERVER_DECL Spell
 
         bool m_IsCastedOnSelf;
 
-        int64 m_magnetTarget;
+        uint64_t m_magnetTarget;
 
         // Current Targets to be used in effect handler
         Creature* targetConstraintCreature;

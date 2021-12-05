@@ -31,12 +31,7 @@ static void arcAssertFailed(const char* fname, int line, const char* expr)
 
 ///\todo handle errors better
 
-#if CODE_ANALYSIS
-#include<codeanalysis\sourceannotations.h>
-#define ANALYSIS_ASSUME(EXPR) __analysis_assume(EXPR)
-#else
 #define ANALYSIS_ASSUME(EXPR)
-#endif
 
 // An assert isn't necessarily fatal, but we want to stop anyways
 #define WPAssert(EXPR) if (!(EXPR)) { arcAssertFailed(__FILE__,__LINE__,#EXPR); ((void(*)())0)(); } ANALYSIS_ASSUME(EXPR)

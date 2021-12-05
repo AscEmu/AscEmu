@@ -26,8 +26,8 @@ namespace AscEmu::Packets
 
         SmsgCharEnum(uint8_t char_count, _charEnumData enum_data) :
             ManagedPacket(SMSG_CHAR_ENUM, 1 + char_count * 200),
-            char_count(char_count),
             enum_data(enum_data),
+            char_count(char_count),
             unk1(0)
         {
         }

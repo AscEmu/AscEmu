@@ -534,6 +534,8 @@ public:
 
     uint8_t getPvpFlags() const;
     void setPvpFlags(uint8_t pvpFlags);
+    void addPvpFlags(uint8_t pvpFlags);
+    void removePvpFlags(uint8_t pvpFlags);
 
     uint8_t getPetFlags() const;
     void setPetFlags(uint8_t petFlags);
@@ -989,7 +991,7 @@ public:
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
-    void setAttackTimer(WeaponDamageType type, int32_t time);
+    void setAttackTimer(WeaponDamageType type, uint32_t time);
     uint32_t getAttackTimer(WeaponDamageType type) const;
     bool isAttackReady(WeaponDamageType type) const;
     void resetAttackTimer(WeaponDamageType type);

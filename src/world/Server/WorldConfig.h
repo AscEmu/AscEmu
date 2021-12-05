@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <string>
 #include <cstdint>
 
-enum WorldConfigRates
+enum WorldConfigRates : uint8_t
 {
     RATE_HEALTH = 0,    // health
     RATE_POWER1,        // mana

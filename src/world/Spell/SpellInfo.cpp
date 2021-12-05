@@ -907,7 +907,7 @@ bool SpellInfo::isProfession() const
     {
         if (Effect[i] == SPELL_EFFECT_SKILL)
         {
-            const auto skill = EffectMiscValue[i];
+            const auto skill = static_cast<uint32_t>(EffectMiscValue[i]);
 
             //Profession skill
             if (skill == SKILL_FISHING || skill == SKILL_COOKING || skill == SKILL_FIRST_AID)
@@ -926,7 +926,7 @@ bool SpellInfo::isPrimaryProfession() const
     {
         if (Effect[i] == SPELL_EFFECT_SKILL)
         {
-            const auto skill = EffectMiscValue[i];
+            const auto skill = static_cast<uint32_t>(EffectMiscValue[i]);
             if (isPrimaryProfessionSkill(skill))
                 return true;
         }
@@ -965,7 +965,7 @@ bool SpellInfo::isOnNextMeleeAttack() const
     return (Attributes & (ATTRIBUTES_ON_NEXT_ATTACK | ATTRIBUTES_ON_NEXT_SWING_2)) != 0;
 }
 
-int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = nullptr*/, Item* itemCaster/* = nullptr*/, uint32_t forcedBasePoints/* = 0*/) const
+int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = nullptr*/, Item* itemCaster/* = nullptr*/, int32_t forcedBasePoints/* = 0*/) const
 {
     if (effIndex >= MAX_SPELL_EFFECTS)
         return 0;
@@ -1018,7 +1018,7 @@ int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = n
         }
     }
 
-    if (forcedBasePoints > 0)
+    if (forcedBasePoints != 0)
     {
         basePoints = forcedBasePoints;
     }
@@ -1047,7 +1047,7 @@ int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = n
     }
 
     if (randomPoints > 1)
-        basePoints += Util::getRandomUInt(randomPoints);
+        basePoints += Util::getRandomInt(randomPoints);
 
     // Check if value increases with combo points
     const auto comboDamage = getEffectPointsPerComboPoint(effIndex);

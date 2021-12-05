@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 struct scriptEvent
 {
-    int32_t timer;
+    uint32_t timer;
     uint32_t bossPhase;
 };
 
@@ -27,7 +27,7 @@ public:
         bossPhase = 0;
     }
 
-    void updateEvents(int32_t diff, uint32_t phase)
+    void updateEvents(uint32_t diff, uint32_t phase)
     {
         bossPhase = phase;
 
@@ -35,17 +35,20 @@ public:
         {
             for (eventMap::iterator itr = eventMapStore.begin(); itr != eventMapStore.end();)
             {
-                if (itr->second.bossPhase == bossPhase)
-                    itr->second.timer = itr->second.timer - diff;
-                else if (itr->second.bossPhase == 0)
-                    itr->second.timer = itr->second.timer - diff;
+                if (itr->second.bossPhase == 0 || itr->second.bossPhase == bossPhase)
+                {
+                    if (itr->second.timer > diff)
+                        itr->second.timer -= diff;
+                    else
+                        itr->second.timer = 0;
+                }
 
                 ++itr;
             }
         }
     }
 
-    void addEvent(uint32_t eventId, int32_t time, uint32_t phase = 0)
+    void addEvent(uint32_t eventId, uint32_t time, uint32_t phase = 0)
     {
         scriptEventData.timer = time;
         scriptEventData.bossPhase = phase;
@@ -83,26 +86,22 @@ public:
         {
             for (eventMap::const_iterator itr = eventMapStore.begin(); itr != eventMapStore.end();)
             {
-                if (itr->second.bossPhase == bossPhase && itr->second.timer <= 0)
-                {
-                    scriptEventId = itr->first;
-                    eventMapStore.erase(itr);
-                    return scriptEventId;
-                }
-                else if (itr->second.bossPhase == 0 && itr->second.timer <= 0)
+                if ((itr->second.bossPhase == 0 || itr->second.bossPhase == bossPhase) && itr->second.timer == 0)
                 {
                     scriptEventId = itr->first;
                     eventMapStore.erase(itr);
                     return scriptEventId;
                 }
                 else
+                {
                     ++itr;
+                }
             }
         }
         return scriptEventId;
     }
 
-    void delayEvent(uint32_t eventId, int32_t delay)
+    void delayEvent(uint32_t eventId, uint32_t delay)
     {
         if (!eventMapStore.empty())
         {
@@ -119,16 +118,14 @@ public:
         }
     }
 
-    void delayAllEvents(int32_t delay, uint32_t phase = 0)
+    void delayAllEvents(uint32_t delay, uint32_t phase = 0)
     {
         if (!eventMapStore.empty())
         {
             for (auto itr = eventMapStore.begin(); itr != eventMapStore.end();)
             {
                 // Only Delay Timers that are not Finished and in our Current Phase
-                if (itr->second.timer > 0 && itr->second.bossPhase == phase)
-                    itr->second.timer = itr->second.timer + delay;
-                else if (itr->second.timer > 0 && itr->second.bossPhase == 0)
+                if (itr->second.timer > 0 && (itr->second.bossPhase == 0 || itr->second.bossPhase == phase))
                     itr->second.timer = itr->second.timer + delay;
 
                 ++itr;

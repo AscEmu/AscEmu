@@ -684,7 +684,7 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
                 return;
         }
 
-        if (_player->getArenaTeam(charter->CharterType - 1) != nullptr)
+        if (_player->getArenaTeam(charter->CharterType - 1U) != nullptr)
         {
             sChatHandler.SystemMessage(this, LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));
             return;

@@ -50,7 +50,8 @@ bool SpellArea::fitsToRequirements(Player* player, uint32_t newZone, uint32_t ne
 
     if (auraSpell != 0)
     {
-        if (player == nullptr || (auraSpell > 0 && !player->hasAurasWithId(auraSpell)) || (auraSpell < 0 && player->hasAurasWithId(-auraSpell)))
+        const auto auraId = static_cast<uint32_t>(std::abs(auraSpell));
+        if (player == nullptr || (auraSpell > 0 && !player->hasAurasWithId(auraId)) || (auraSpell < 0 && player->hasAurasWithId(auraId)))
             return false;
     }
 
@@ -283,7 +284,7 @@ SpellInfo const* SpellMgr::getSpellInfoByDifficulty([[maybe_unused]]const uint32
     if (spellDifficulty->SpellId[difficulty] <= 0)
         return nullptr;
 
-    return getSpellInfo(spellDifficulty->SpellId[difficulty]);
+    return getSpellInfo(static_cast<uint32_t>(spellDifficulty->SpellId[difficulty]));
 #else
     return nullptr;
 #endif
@@ -1166,7 +1167,7 @@ void SpellMgr::loadSpellAreas()
         spellArea.questStart = fields[2].GetUInt32();
         spellArea.questStartCanActive = fields[3].GetBool();
         spellArea.questEnd = fields[4].GetUInt32();
-        spellArea.auraSpell = fields[5].GetUInt32();
+        spellArea.auraSpell = fields[5].GetInt32();
         spellArea.raceMask = fields[6].GetUInt32();
         spellArea.gender = Gender(fields[7].GetUInt32());
         spellArea.autoCast = fields[8].GetBool();
@@ -1240,16 +1241,17 @@ void SpellMgr::loadSpellAreas()
         }
 
         // Check for auraspell
+        const auto auraId = static_cast<uint32_t>(std::abs(spellArea.auraSpell));
         if (spellArea.auraSpell != 0)
         {
-            const auto spellInfo = getSpellInfo(abs(spellArea.auraSpell));
+            const auto spellInfo = getSpellInfo(auraId);
             if (spellInfo == nullptr)
             {
-                sLogger.failure("Table `spell_area` has invalid aura spell entry %u for spell %u, skipped", abs(spellArea.auraSpell), spellId);
+                sLogger.failure("Table `spell_area` has invalid aura spell entry %u for spell %u, skipped", auraId, spellId);
                 continue;
             }
 
-            if (static_cast<uint32_t>(abs(spellArea.auraSpell)) == spellArea.spellId)
+            if (auraId == spellArea.spellId)
             {
                 sLogger.failure("Table `spell_area` has aura spell requirements for itself (id %u), skipped", spellId);
                 continue;
@@ -1274,7 +1276,7 @@ void SpellMgr::loadSpellAreas()
                     continue;
                 }
 
-                const auto spellAreaMapBounds2 = getSpellAreaMapBounds(spellArea.auraSpell);
+                const auto spellAreaMapBounds2 = getSpellAreaMapBounds(auraId);
                 for (SpellAreaMap::const_iterator itr = spellAreaMapBounds2.first; itr != spellAreaMapBounds2.second; ++itr)
                 {
                     if (itr->second.autoCast && itr->second.auraSpell > 0)
@@ -1322,7 +1324,7 @@ void SpellMgr::loadSpellAreas()
             mSpellAreaForQuestEndMap.insert(SpellAreaForQuestMap::value_type(spellArea.questEnd, spellArea2));
 
         if (spellArea.auraSpell > 0)
-            mSpellAreaForAuraMap.insert(SpellAreaForAuraMap::value_type(static_cast<uint32_t>(abs(spellArea.auraSpell)), spellArea2));
+            mSpellAreaForAuraMap.insert(SpellAreaForAuraMap::value_type(auraId, spellArea2));
 
         ++areaCount;
     } while (result->NextRow());

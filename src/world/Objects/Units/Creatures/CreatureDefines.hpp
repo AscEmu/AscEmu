@@ -182,7 +182,7 @@ struct CreatureProperties
     float Scale;
     uint32 NPCFLags;
     uint32 AttackTime;
-    uint32 attackSchool;
+    uint8_t attackSchool;
     float MinDamage;
     float MaxDamage;
     uint32 CanRanged;
@@ -234,7 +234,7 @@ struct CreatureProperties
             if (models[res])
             {
                 *des = models[res];
-                return res < 2 ? 0 : 1;
+                return res < 2 ? 0U : 1U;
             }
         }
     }
@@ -254,7 +254,7 @@ struct CreatureProperties
             model_ids[counter++] = Female_DisplayID2;
 
         if (counter > 0)
-            return model_ids[Util::getRandomUInt(0, counter - 1)];
+            return model_ids[Util::getRandomUInt(0U, counter - 1U)];
 
         DLLLogDetail("CreatureProperties : No random display_id found for entry %u", Id);
         return 0;

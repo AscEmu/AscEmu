@@ -795,18 +795,18 @@ class AbsorbAura : public Aura
 
         virtual uint32_t absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly);
         uint32_t getRemainingAbsorbAmount() const;
-        int32_t getTotalAbsorbAmount() const;
+        uint32_t getTotalAbsorbAmount() const;
 
         void spellAuraEffectSchoolAbsorb(AuraEffectModifier* aurEff, bool apply);
 
         bool isAbsorbAura() const override;
 
     protected:
-        int32_t calcAbsorbAmount(AuraEffectModifier* aurEff);
+        uint32_t calcAbsorbAmount(AuraEffectModifier* aurEff);
 
-        int32_t m_totalAbsorbValue = 0;
+        uint32_t m_totalAbsorbValue = 0;
         // Remaining absorb value
-        int32_t m_absorbValue = 0;
+        uint32_t m_absorbValue = 0;
         // How many percentages of the damage is absorbed
         uint8_t m_pctAbsorbValue = 100;
         SchoolMask m_absorbSchoolMask = SCHOOL_MASK_NONE;

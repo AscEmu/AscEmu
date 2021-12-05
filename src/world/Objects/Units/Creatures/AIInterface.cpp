@@ -70,47 +70,50 @@ float spellChanceModifierType[12] =
 
 AIInterface::AIInterface()
     :
-    canEnterCombat(true),
-    m_isEngaged(false),
-    m_Unit(nullptr),
-    m_PetOwner(nullptr),
-    m_target(nullptr),
-    m_UnitToFollow(nullptr),
-    m_AiState(AI_STATE_IDLE),
-    m_AiScriptType(AI_SCRIPT_LONER),
-    m_AiCurrentAgent(AGENT_NULL),
-    internalPhase(0),
-
-    m_reactState(REACT_AGGRESSIVE),
-    m_lasttargetPosition(0, 0, 0, 0),
-    m_AlreadyCallAssistance(false),
-    m_AlreadySearchedAssistance(false),
-    faction_visibility(0),
-    m_boundaryCheckTime(2500),
-    _negateBoundary(false),
-
-    m_totemspelltimer(0),
-    m_totemspelltime(0),
-    totemspell(nullptr),
-
-    m_CallForHelpHealth(0.0f),
+    m_canRangedAttack(false),
+    m_canFlee(false),
     m_FleeHealth(0.0f),
     m_FleeDuration(0),
-    m_canFlee(false),
-    m_hasFleed(false),
     m_canCallForHelp(false),
+    m_CallForHelpHealth(0.0f),
 
-    mShowWayPoints(false),
+    m_AiCurrentAgent(AGENT_NULL),
+    m_hasFleed(false),
+    m_AlreadyCallAssistance(false),
+    m_AlreadySearchedAssistance(false),
+    m_AiScriptType(AI_SCRIPT_LONER),
+    m_AiState(AI_STATE_IDLE),
+    m_isEngaged(false),
+    m_reactState(REACT_AGGRESSIVE),
 
-    m_isNeutralGuard(false),
     mIsCombatDisabled(false),
     mIsMeleeDisabled(false),
     mIsRangedDisabled(false),
     mIsCastDisabled(false),
     mIsTargetingDisabled(false),
-    m_canRangedAttack(false),
-    m_is_in_instance(false),
+    m_lasttargetPosition(0, 0, 0, 0),
+
     timed_emotes(nullptr),
+
+    m_Unit(nullptr),
+    m_PetOwner(nullptr),
+    m_target(nullptr),
+    m_isNeutralGuard(false),
+    faction_visibility(0),
+    m_is_in_instance(false),
+    internalPhase(0),
+
+    m_boundaryCheckTime(2500),
+    _negateBoundary(false),
+
+    mShowWayPoints(false),
+    m_UnitToFollow(nullptr),
+
+    m_totemspelltimer(0),
+    m_totemspelltime(0),
+    totemspell(nullptr),
+
+    canEnterCombat(true),
     timed_emote_expire(0xFFFFFFFF)
 {
     _boundary.clear();
@@ -472,7 +475,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 if (onCombatStartScript.chance)
                     castChance = onCombatStartScript.chance;
                 else
-                    castChance = ((75.0f / spellcountOnCombatStart) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[onCombatStartScript.spell_type]);
+                    castChance = ((75.0f / static_cast<float_t>(spellcountOnCombatStart)) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[onCombatStartScript.spell_type]);
 
                 sLogger.debug("spell %u chance %f", onCombatStartScript.spellId, castChance);
 
@@ -510,7 +513,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 if (onAIUpdateScript.chance)
                     castChance = onAIUpdateScript.chance;
                 else
-                    castChance = ((75.0f / spellcountOnAIUpdate) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[onAIUpdateScript.spell_type]);
+                    castChance = ((75.0f / static_cast<float_t>(spellcountOnAIUpdate)) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[onAIUpdateScript.spell_type]);
 
                 sLogger.debug("spell %u chance %f", onAIUpdateScript.spellId, castChance);
 
@@ -747,7 +750,7 @@ void AIInterface::UpdateAgent(unsigned long time_passed)
                 {
                     internalPhase = static_cast<uint8_t>(itr->misc1);
 
-                    itr->maxCount = itr->maxCount - 1;
+                    itr->maxCount = itr->maxCount - 1U;
 
                     MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(itr->textId);
                     if (npcScriptText != nullptr)
@@ -1266,7 +1269,7 @@ void AIInterface::updateCombat(uint32_t p_time)
             }
         }
         uint32_t casttime = (GetCastTime(sSpellCastTimesStore.LookupEntry(AIspell->spell->getCastingTimeIndex())) ? GetCastTime(sSpellCastTimesStore.LookupEntry(AIspell->spell->getCastingTimeIndex())) : 500);
-        uint32_t cooldown = (AIspell->cooldown ? AIspell->cooldown : 500);
+        const auto cooldown = static_cast<int32_t>(AIspell->cooldown ? AIspell->cooldown : 500);
         // Delay all Spells by our casttime
         spellEvents.delayAllEvents(casttime, AGENT_SPELL);
         // Re add Spell to scheduler
@@ -1572,7 +1575,7 @@ void AIInterface::initializeSpells()
     {
         for (auto itr = m_spells.begin(); itr != m_spells.end(); ++itr)
         {
-            uint32_t cooldown = (*itr)->cooldown;
+            const auto cooldown = static_cast<int32_t>((*itr)->cooldown);
             uint32_t spellid = (*itr)->spell->getId();
             spellEvents.addEvent(spellid, cooldown, AGENT_SPELL);
         }
@@ -1918,7 +1921,7 @@ float AIInterface::calcAggroRange(Unit* target)
     // Lvl Diff -8 -7 -6 -5 -4 -3 -2 -1 +0 +1 +2  +3  +4  +5  +6  +7  +8
     // Arr Pos   0  1  2  3  4  5  6  7  8  9 10  11  12  13  14  15  16
     int8_t lvlDiff = static_cast<int8_t>(target->getLevel() - m_Unit->getLevel());
-    uint8_t realLvlDiff = lvlDiff;
+    const auto realLvlDiff = lvlDiff;
     if (lvlDiff > 8)
     {
         lvlDiff = 8;
@@ -1953,13 +1956,13 @@ float AIInterface::calcAggroRange(Unit* target)
     // If the target is of a much higher level the aggro range must be scaled down, unless the target is mining a nearby resource node
     if (realLvlDiff > 8 && !isMining)
     {
-        AggroRange += AggroRange * ((lvlDiff - 8) * 5 / 100);
+        AggroRange += AggroRange * static_cast<float_t>((lvlDiff - 8) * 5 / 100);
     }
 
     // Multiply by elite value
-    if (m_Unit->isCreature() && static_cast<Creature*>(m_Unit)->GetCreatureProperties()->Rank > 0)
+    if (m_Unit->isCreature() && dynamic_cast<Creature*>(m_Unit)->GetCreatureProperties()->Rank > 0)
     {
-        AggroRange *= (static_cast<Creature*>(m_Unit)->GetCreatureProperties()->Rank) * 1.50f;
+        AggroRange *= static_cast<float_t>(dynamic_cast<Creature*>(m_Unit)->GetCreatureProperties()->Rank) * 1.50f;
     }
 
     // Cap Aggro range at 40.0f
@@ -1969,11 +1972,11 @@ float AIInterface::calcAggroRange(Unit* target)
     }
 
     // SPELL_AURA_MOD_DETECT_RANGE
-    int32_t modDetectRange = target->getDetectRangeMod(m_Unit->getGuid());
+    const auto modDetectRange = static_cast<float_t>(target->getDetectRangeMod(m_Unit->getGuid()));
     AggroRange += modDetectRange;
     if (target->isPlayer())
     {
-        AggroRange += static_cast<Player*>(target)->DetectedRange;
+        AggroRange += static_cast<float_t>(dynamic_cast<Player*>(target)->DetectedRange);
     }
 
     // Re-check if aggro range exceeds Minimum/Maximum caps
@@ -2696,7 +2699,7 @@ void AIInterface::eventOnTargetDied(Object* /*pKiller*/)
                     {
                         internalPhase = static_cast<uint8_t>(onKilledScript.misc1);
 
-                        onKilledScript.maxCount = onKilledScript.maxCount - 1;
+                        onKilledScript.maxCount = onKilledScript.maxCount - 1U;
 
                         MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(onKilledScript.textId);
                         if (npcScriptText != nullptr)
@@ -3095,7 +3098,7 @@ bool AIInterface::canCreatePath(float x, float y, float z)
         return false;
 
     float points[MAX_PATH_LENGTH * 3];
-    int32 pointcount;
+    uint32_t pointcount;
     bool usedoffmesh;
 
     if (dtStatusFailed(findSmoothPath(start, end, path, pathcount, points, &pointcount, usedoffmesh, MAX_PATH_LENGTH, nav, nav_query, filter)))
@@ -3104,7 +3107,7 @@ bool AIInterface::canCreatePath(float x, float y, float z)
     return true;
 }
 
-dtStatus AIInterface::findSmoothPath(const float* startPos, const float* endPos, const dtPolyRef* polyPath, const uint32 polyPathSize, float* smoothPath, int* smoothPathSize, bool & usedOffmesh, const uint32 maxSmoothPathSize, dtNavMesh* mesh, dtNavMeshQuery* query, dtQueryFilter & filter)
+dtStatus AIInterface::findSmoothPath(const float* startPos, const float* endPos, const dtPolyRef* polyPath, const uint32 polyPathSize, float* smoothPath, uint32_t* smoothPathSize, bool & usedOffmesh, const uint32 maxSmoothPathSize, dtNavMesh* mesh, dtNavMeshQuery* query, dtQueryFilter & filter)
 {
     *smoothPathSize = 0;
     uint32 nsmoothPath = 0;
@@ -3231,12 +3234,12 @@ dtStatus AIInterface::findSmoothPath(const float* startPos, const float* endPos,
 bool AIInterface::getSteerTarget(const float* startPos, const float* endPos, const float minTargetDist, const dtPolyRef* path, const uint32 pathSize, float* steerPos, unsigned char & steerPosFlag, dtPolyRef & steerPosRef, dtNavMeshQuery* query)
 {
     // Find steer target.
-    static const uint32 MAX_STEER_POINTS = 3;
+    static const int32_t MAX_STEER_POINTS = 3;
     float steerPath[MAX_STEER_POINTS * VERTEX_SIZE];
     unsigned char steerPathFlags[MAX_STEER_POINTS];
     dtPolyRef steerPathPolys[MAX_STEER_POINTS];
     uint32 nsteerPath = 0;
-    dtStatus dtResult = query->findStraightPath(startPos, endPos, path, pathSize,
+    dtStatus dtResult = query->findStraightPath(startPos, endPos, path, static_cast<int32_t>(pathSize),
         steerPath, steerPathFlags, steerPathPolys, (int*)&nsteerPath, MAX_STEER_POINTS);
     if (!nsteerPath || dtStatusFailed(dtResult))
         return false;
@@ -3271,10 +3274,10 @@ uint32 AIInterface::fixupCorridor(dtPolyRef* path, const uint32 npath, const uin
     int32 furthestVisited = -1;
 
     // Find furthest common polygon.
-    for (int32 i = npath - 1; i >= 0; --i)
+    for (auto i = static_cast<int32_t>(npath) - 1; i >= 0; --i)
     {
         bool found = false;
-        for (int32 j = nvisited - 1; j >= 0; --j)
+        for (auto j = static_cast<int32_t>(nvisited) - 1; j >= 0; --j)
         {
             if (path[i] == visited[j])
             {

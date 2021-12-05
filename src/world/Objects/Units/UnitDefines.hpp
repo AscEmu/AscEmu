@@ -822,7 +822,7 @@ enum UnitBytes2_SheathState
 };
 
 // UNIT_FIELD_BYTES_2, 1
-enum UnitBytes2_PvPFlags
+enum UnitBytes2_PvPFlags : uint8_t
 {
     U_FIELD_BYTES_FLAG_PVP          = 0x01,
     U_FIELD_BYTES_FLAG_UNK1         = 0x02,
@@ -842,7 +842,7 @@ enum UnitBytes2_PetFlags
 };
 
 // byte value (UNIT_FIELD_BYTES_2,3)
-enum ShapeshiftForm
+enum ShapeshiftForm : uint8_t
 {
     FORM_NORMAL             = 0x00,
     FORM_CAT                = 0x01,

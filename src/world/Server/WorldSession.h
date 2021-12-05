@@ -992,7 +992,7 @@ class SERVER_DECL WorldSession
         bool has_dk;
 
         //uint16 _TEMP_ERR_CREATE_CODE; // increments
-        int8 _side;
+        uint8_t _side;
 
         WoWGuid m_MoverWoWGuid;
         uint64 m_MoverGuid;
