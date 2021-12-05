@@ -613,6 +613,13 @@ void Unit::Update(unsigned long time_passed)
                 m_diminishActive = false;
         }
     }
+    else
+    {
+        // Small chance that aura states are readded after they have been cleared in ::Die
+        // so make sure they are removed when unit is dead
+        if (getAuraState() != 0)
+            setAuraState(0);
+    }
 }
 
 bool Unit::canReachWithAttack(Unit* pVictim)
