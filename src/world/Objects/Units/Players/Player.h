@@ -908,7 +908,7 @@ public:
     void setInvitedByGuildId(uint32_t GuildId);
     uint32_t getInvitedByGuildId() const;
 
-    Guild* getGuild();
+    Guild* getGuild() const;
     bool isInGuild();
 
     uint32_t getGuildRankFromDB();
@@ -938,7 +938,16 @@ private:
     // Channels
 public:
 
-    void updateChannels(uint32_t oldZoneId);
+    void joinedChannel(Channel* channel);
+    void leftChannel(Channel* channel);
+
+    void updateChannels();
+    void removeAllChannels();
+
+private:
+
+    std::set<Channel*> m_channels;
+    mutable std::mutex m_mutexChannel;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // ArenaTeam
@@ -1602,16 +1611,6 @@ public:
 #if VERSION_STRING > TBC
         uint32 GetGlyph(uint32 spec, uint32 slot) const { return m_specs[spec].glyphs[slot]; }
 #endif
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Channel stuff
-        /////////////////////////////////////////////////////////////////////////////////////////
-        void JoinedChannel(Channel* c);
-        void LeftChannel(Channel* c);
-        void CleanupChannels();
-        void PartLFGChannel();
-protected:
-        std::set<Channel*> m_channels;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Attack stuff

@@ -38,8 +38,8 @@
 #include "Management/WeatherMgr.h"
 #include "Management/ItemInterface.h"
 #include "Objects/Units/Stats.h"
-#include "Management/Channel.h"
-#include "Management/ChannelMgr.h"
+#include "Chat/Channel.hpp"
+#include "Chat/ChannelMgr.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Management/ArenaTeam.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
@@ -4209,29 +4209,6 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
     //\todo Generate error message here, compensate for failed teleport.
 }
 
-void Player::JoinedChannel(Channel* c)
-{
-    if (c != nullptr)
-        m_channels.insert(c);
-}
-
-void Player::LeftChannel(Channel* c)
-{
-    if (c != nullptr)
-        m_channels.erase(c);
-}
-
-void Player::CleanupChannels()
-{
-    for (std::set<Channel*>::iterator i = m_channels.begin(); i != m_channels.end();)
-    {
-        Channel* c = *i;
-        ++i;
-
-        c->Part(this);
-    }
-}
-
 void Player::AddToFinishedQuests(uint32 quest_id)
 {
     if (m_finishedQuests.find(quest_id) != m_finishedQuests.end())
@@ -6001,7 +5978,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
 
     SendInitialWorldstates();
 
-    updateChannels(oldzone);
+    updateChannels();
 }
 
 void Player::RequestDuel(Player* pTarget)
@@ -8312,18 +8289,6 @@ CachedCharacterInfo::~CachedCharacterInfo()
 void Player::CopyAndSendDelayedPacket(WorldPacket* data)
 {
     getUpdateMgr().queueDelayedPacket(new WorldPacket(*data));
-}
-
-void Player::PartLFGChannel()
-{
-    Channel* pChannel = sChannelMgr.getChannel("LookingForGroup", this);
-    if (pChannel == nullptr)
-        return;
-
-    if (m_channels.find(pChannel) == m_channels.end())
-        return;
-
-    pChannel->Part(this);
 }
 
 //if we charmed or simply summoned a pet, this function should get called

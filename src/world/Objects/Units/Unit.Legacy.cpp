@@ -31,6 +31,7 @@
 #include "Map/MapMgr.h"
 #include "Management/Faction.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/SpellTarget.h"
 #include "Spell/Definitions/SpellLog.hpp"
 #include "Spell/Definitions/ProcFlags.hpp"
 #include <Spell/Definitions/AuraInterruptFlags.hpp>
@@ -611,6 +612,13 @@ void Unit::Update(unsigned long time_passed)
             if (!count)
                 m_diminishActive = false;
         }
+    }
+    else
+    {
+        // Small chance that aura states are readded after they have been cleared in ::Die
+        // so make sure they are removed when unit is dead
+        if (getAuraState() != 0)
+            setAuraState(0);
     }
 }
 
@@ -6479,13 +6487,16 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     if (!pVictim || !pVictim->isAlive() || !isAlive() || IsStunned() || IsPacified() || IsFeared())
         return DamageInfo();
 
-    if (!(ability && ability->getAttributesEx() & ATTRIBUTESEX_IGNORE_IN_FRONT) && !isInFront(pVictim))
+    if (!isInFront(pVictim))
     {
-        if (isPlayer())
+        const auto spellTargetMask = ability != nullptr ? ability->getRequiredTargetMask(true) : 0;
+        if (!(ability && ability->getAttributesEx() & ATTRIBUTESEX_IGNORE_IN_FRONT) && !(spellTargetMask & SPELL_TARGET_AREA_MASK))
         {
 #if VERSION_STRING < Mop
-            static_cast<Player*>(this)->SendPacket(SmsgAttackSwingBadFacing().serialise().get());
+            if (isPlayer())
+                dynamic_cast<Player*>(this)->SendPacket(SmsgAttackSwingBadFacing().serialise().get());
 #endif
+
             return DamageInfo();
         }
     }

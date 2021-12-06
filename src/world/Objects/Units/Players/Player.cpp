@@ -8,8 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatDefines.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Data/WoWPlayer.hpp"
-#include "Management/Channel.h"
-#include "Management/ChannelMgr.h"
+#include "Chat/Channel.hpp"
+#include "Chat/ChannelMgr.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/ItemInterface.h"
@@ -3173,7 +3173,7 @@ void Player::initialiseCharters()
 // Guild
 void Player::setInvitedByGuildId(uint32_t GuildId) { m_invitedByGuildId = GuildId; }
 uint32_t Player::getInvitedByGuildId() const { return m_invitedByGuildId; }
-Guild* Player::getGuild() { return getGuildId() ? sGuildMgr.getGuildById(getGuildId()) : nullptr; }
+Guild* Player::getGuild() const { return getGuildId() ? sGuildMgr.getGuildById(getGuildId()) : nullptr; }
 bool Player::isInGuild() { return getGuild() != nullptr; }
 
 uint32_t Player::getGuildRankFromDB()
@@ -3210,11 +3210,30 @@ int8_t Player::getSubGroupSlot() const { return m_playerInfo->subGroup; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Channels
-void Player::updateChannels(uint32_t oldZoneId)
+void Player::joinedChannel(Channel* channel)
 {
-    auto areaEntry = GetMapMgr()->GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
+    if (channel == nullptr)
+        return;
+
+    std::lock_guard<std::mutex> guard(m_mutexChannel);
+    m_channels.insert(channel);
+}
+
+void Player::leftChannel(Channel* channel)
+{
+    if (channel == nullptr)
+        return;
+
+    std::lock_guard<std::mutex> guard(m_mutexChannel);
+    m_channels.erase(channel);
+}
+
+void Player::updateChannels()
+{
+    auto areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(GetZoneId());
 
 #if VERSION_STRING < WotLK
+    // TODO: verify if this is needed anymore in < wotlk
     // Correct zone for Hall of Legends
     if (GetMapId() == 450)
         areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(2917);
@@ -3223,87 +3242,72 @@ void Player::updateChannels(uint32_t oldZoneId)
         areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(2918);
 #endif
 
-    // Update existing channels
-    if (!m_channels.empty())
+    // Update only default channels
+    for (uint8_t i = 0; i < sChatChannelsStore.GetNumRows(); ++i)
     {
-        for (std::set<Channel*>::const_iterator itr = m_channels.begin(), nextItr; itr != m_channels.end(); itr = nextItr)
+        const auto channelDbc = sChatChannelsStore.LookupEntry(i);
+        if (channelDbc == nullptr)
+            continue;
+
+        Channel* oldChannel = nullptr;
+
+        m_mutexChannel.lock();
+        for (const auto& _channel : m_channels)
         {
-            nextItr = itr;
-            ++nextItr;
-
-            auto* const channel = (*itr);
-
-            // Check if this is a custom channel (i.e. global)
-            if (channel->m_flags & CHANNEL_FLAGS_CUSTOM)
-                continue;
-
-            // Check if this is LookingForGroup channel
-            if (channel->m_flags & CHANNEL_FLAGS_LFG)
-                continue;
-
-            // City specific channels
-            if (channel->m_flags & CHANNEL_FLAGS_CITY)
+            if (_channel->getChannelId() == i)
             {
-                if (areaEntry == nullptr || !(areaEntry->flags & MapManagement::AreaManagement::AREA_CITY_AREA))
-                {
-                    // Player is no longer in city, leave channel
-                    channel->Part(this);
-                    continue;
-                }
+                // Found same channel
+                oldChannel = _channel;
+                break;
             }
+        }
+        m_mutexChannel.unlock();
 
-            const auto channelDbc = sChatChannelsStore.LookupEntry(channel->m_id);
-            if (channelDbc == nullptr)
-            {
-                sLogger.failure("Player::updateChannels : Invalid channel entry %u for %s", channel->m_id, channel->m_name.c_str());
-                continue;
-            }
+        if (sChannelMgr.canPlayerJoinDefaultChannel(this, areaEntry, channelDbc))
+        {
+            const auto channelName = sChannelMgr.generateChannelName(channelDbc, areaEntry);
 
-            // Get name for new zone
-            char updatedName[95];
-            if (areaEntry != nullptr)
-            {
-#if VERSION_STRING < Cata
-                snprintf(updatedName, 95, channelDbc->name_pattern[0], areaEntry->area_name[0]);
-#else
-                snprintf(updatedName, 95, channelDbc->name_pattern, areaEntry->area_name);
-#endif
-            }
-            else
-            {
-#if VERSION_STRING < Cata
-                snprintf(updatedName, 95, channelDbc->name_pattern[0], "City");
-#else
-                snprintf(updatedName, 95, channelDbc->name_pattern, "City");
-#endif
-            }
-
-            auto* const newChannel = sChannelMgr.getOrCreateChannel(updatedName, this, channel->m_id);
+            auto* const newChannel = sChannelMgr.getOrCreateChannel(channelName, this, channelDbc->id);
             if (newChannel == nullptr)
             {
                 // should not happen
-                sLogger.failure("Player::updateChannels : Could not create new channel %u with name %s", channel->m_id, channel->m_name.c_str());
+                sLogger.failure("Player::updateChannels : Could not create new channel %u with name %s", channelDbc->id, channelName.c_str());
                 continue;
             }
 
-            if (newChannel != channel && !newChannel->HasMember(this))
+            if (newChannel != oldChannel && !newChannel->hasMember(this))
             {
                 // Join new channel
-                newChannel->AttemptJoin(this, nullptr);
-                // Leave old channel
-                channel->Part(this, false);
+                newChannel->attemptJoin(this, "", true);
+                // Leave old channel if it exists
+                if (oldChannel != nullptr)
+                    oldChannel->leaveChannel(this, false);
             }
-            }
-    }
-
-    // Join city specific channels when entering to city
-    if (oldZoneId != GetZoneId() && areaEntry != nullptr && areaEntry->flags & MapManagement::AreaManagement::AREA_CITY_AREA)
-    {
-        for (const auto& channel : sChannelMgr.getAllCityChannels(this))
-        {
-            if (channel != nullptr && !channel->HasMember(this))
-                channel->AttemptJoin(this, nullptr);
         }
+        else
+        {
+            // Leave old channel if it exists
+            if (oldChannel != nullptr)
+                oldChannel->leaveChannel(this);
+        }
+    }
+}
+
+void Player::removeAllChannels()
+{
+    std::set<Channel*> removeList;
+    m_mutexChannel.lock();
+
+    for (const auto& channel : m_channels)
+        removeList.insert(channel);
+
+    m_mutexChannel.unlock();
+
+    auto itr = removeList.begin();
+    while (itr != removeList.end())
+    {
+        (*itr)->leaveChannel(this);
+        itr = removeList.erase(itr);
     }
 }
 

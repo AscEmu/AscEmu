@@ -25,8 +25,8 @@
 #include "git_version.h"
 #include "Chat/CommandTableStorage.hpp"
 #include "Management/TaxiMgr.h"
-#include "Management/Channel.h"
-#include "Management/ChannelMgr.h"
+#include "Chat/Channel.hpp"
+#include "Chat/ChannelMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Management/Guild/Guild.hpp"
@@ -622,7 +622,7 @@ namespace luaGlobalFunctions
         if (!channel || !pack)
             return 0;
 
-        channel->SendToAll(pack);
+        channel->sendToAll(pack);
 
         return 1;
     }

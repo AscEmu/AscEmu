@@ -318,7 +318,7 @@ void WorldSession::LogoutPlayer(bool Save)
 #endif
 
         // part channels
-        _player->CleanupChannels();
+        _player->removeAllChannels();
 
         auto transport = _player->GetTransport();
         if (transport != nullptr)

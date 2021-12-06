@@ -15,8 +15,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/AreaBoundary.h"
 #include "Map/MapMgr.h"
 #include "Objects/Units/Stats.h"
-#include "Management/ChannelMgr.h"
-#include "Management/Channel.h"
+#include "Chat/ChannelMgr.hpp"
+#include "Chat/Channel.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Management/Group.h"
@@ -4991,7 +4991,7 @@ public:
 
         Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
         // Channels: "General", "Trade", "LocalDefense", "GuildRecruitment", "LookingForGroup", (or any custom channel)
-        if (channel->HasMember(dynamic_cast<Player*>(ptr)))
+        if (channel->hasMember(dynamic_cast<Player*>(ptr)))
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -5008,12 +5008,12 @@ public:
         if (!channel)
             return 0;
 
-        const char* password = luaL_optstring(L, 2, channel->m_password.c_str());
+        const char* password = luaL_optstring(L, 2, channel->getChannelPassword().c_str());
 
-        if (channel->HasMember(dynamic_cast<Player*>(ptr)))
+        if (channel->hasMember(dynamic_cast<Player*>(ptr)))
             return 0;
 
-        channel->AttemptJoin(dynamic_cast<Player*>(ptr), password);
+        channel->attemptJoin(dynamic_cast<Player*>(ptr), password);
 
         return 1;
     }
@@ -5024,10 +5024,10 @@ public:
 
         const char* channelName = luaL_checkstring(L, 1);
         Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
-        if (!channelName || !channel || !channel->HasMember(dynamic_cast<Player*>(ptr)))
+        if (!channelName || !channel || !channel->hasMember(dynamic_cast<Player*>(ptr)))
             return 0;
 
-        channel->Part(dynamic_cast<Player*>(ptr), true);
+        channel->leaveChannel(dynamic_cast<Player*>(ptr), true);
 
         return 1;
     }
@@ -5039,10 +5039,10 @@ public:
         const char* currentName = luaL_checkstring(L, 1);
         const char* newName = luaL_checkstring(L, 2);
         Channel* channel = sChannelMgr.getChannel(currentName, dynamic_cast<Player*>(ptr));
-        if (!currentName || !newName || !channel || channel->m_name == newName)
+        if (!currentName || !newName || !channel || channel->getChannelName() == newName)
             return 0;
 
-        channel->m_name = newName;
+        channel->setChannelName(newName);
         return 1;
     }
 
@@ -5053,10 +5053,10 @@ public:
         const char* channelName = luaL_checkstring(L, 1);
         const char* password = luaL_checkstring(L, 2);
         Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
-        if (!password || !channel || channel->m_password == password)
+        if (!password || !channel || channel->getChannelPassword() == password)
             return 0;
 
-        channel->Password(dynamic_cast<Player*>(ptr), password);
+        channel->setPassword(dynamic_cast<Player*>(ptr), password);
         return 1;
     }
 
@@ -5068,7 +5068,7 @@ public:
         if (!channel)
             return 0;
 
-        lua_pushstring(L, channel->m_password.c_str());
+        lua_pushstring(L, channel->getChannelPassword().c_str());
 
         return 1;
     }
@@ -5082,7 +5082,7 @@ public:
         if (!channel)
             return 0;
 
-        channel->Kick(player, player, false);
+        channel->kickOrBanPlayer(player, player, false);
         return 1;
     }
 
@@ -5095,7 +5095,7 @@ public:
         if (!channel)
             return 0;
 
-        channel->Kick(player, player, true);
+        channel->kickOrBanPlayer(player, player, true);
         return 1;
     }
 
@@ -5108,7 +5108,7 @@ public:
         if (!channel)
             return 0;
 
-        channel->Unban(player, player->getPlayerInfo());
+        channel->unBanPlayer(player, player->getPlayerInfo());
         return 1;
     }
 
@@ -5119,7 +5119,7 @@ public:
         if (!channelName)
             return 0;
 
-        lua_pushnumber(L, static_cast<lua_Number>(sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr))->GetNumMembers()));
+        lua_pushnumber(L, static_cast<lua_Number>(sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr))->getMemberCount()));
         return 1;
     }
 
