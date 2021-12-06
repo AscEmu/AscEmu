@@ -33,7 +33,7 @@ class GuildRankInfo
         uint32_t getRights() const;
         void setRights(uint32_t rights);
 
-        int32_t getBankMoneyPerDay() const;
+        uint32_t getBankMoneyPerDay() const;
         void setBankMoneyPerDay(uint32_t money);
 
         int8_t getBankTabRights(uint8_t tabId) const;

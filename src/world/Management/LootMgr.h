@@ -69,7 +69,7 @@ class LootRoll : public EventableObject
         std::map<uint32_t, uint8_t> m_GreedRolls;
         std::set<uint32_t> m_passRolls;
         uint32_t _groupcount;
-        uint32_t _slotid;
+        uint8_t _slotid;
         uint32_t _itemid;
         uint32_t _randomsuffixid;
         uint32_t _randompropertyid;
@@ -279,7 +279,7 @@ struct Loot
     ~Loot() { clear(); }
 
     // fill Current Loot Store for xx Items
-    bool fillLoot(uint32_t lootId, LootTemplateMap const& tempelateStore, Player* lootOwner, bool personal, uint32_t lootMode = InstanceDifficulty::DUNGEON_NORMAL);
+    bool fillLoot(uint32_t lootId, LootTemplateMap const& tempelateStore, Player* lootOwner, bool personal, uint8_t lootMode = InstanceDifficulty::DUNGEON_NORMAL);
     
     // fill Current loot Store for xx money
     void generateGold(CreatureProperties const* property, uint8_t difficulty);

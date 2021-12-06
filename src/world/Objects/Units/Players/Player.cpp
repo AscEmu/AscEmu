@@ -1530,7 +1530,7 @@ void Player::setInitialPlayerData()
 
     setMaxLevel(worldConfig.player.playerLevelCap);
 
-    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
+    addPvpFlags(U_FIELD_BYTES_FLAG_PVP);
     addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
 #if VERSION_STRING >= TBC
     addUnitFlags2(UNIT_FLAG2_ENABLE_POWER_REGEN);
@@ -2639,7 +2639,7 @@ void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
             m_talentSpecsCount = MAX_SPEC_COUNT;
 
         // Loop through specs
-        for (auto specId = 0; specId < m_talentSpecsCount; ++specId)
+        for (uint8_t specId = 0; specId < m_talentSpecsCount; ++specId)
         {
             PlayerSpec spec = m_specs[specId];
 
@@ -3151,7 +3151,7 @@ bool Player::canSignCharter(Charter* charter, Player* requester)
     if (charter == nullptr || requester == nullptr)
         return false;
 
-    if (charter->CharterType >= CHARTER_TYPE_ARENA_2V2 && getArenaTeam(charter->CharterType - 1) != nullptr)
+    if (charter->CharterType >= CHARTER_TYPE_ARENA_2V2 && getArenaTeam(charter->CharterType - 1U) != nullptr)
         return false;
 
     if (charter->CharterType == CHARTER_TYPE_GUILD && isInGuild())
@@ -4124,7 +4124,7 @@ void Player::setPvpFlag()
 {
     StopPvPTimer();
 #if VERSION_STRING > TBC
-    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
+    addPvpFlags(U_FIELD_BYTES_FLAG_PVP);
 #else
     addUnitFlags(UNIT_FLAG_PVP);
 #endif
@@ -4143,7 +4143,7 @@ void Player::removePvpFlag()
 {
     StopPvPTimer();
 #if VERSION_STRING > TBC
-    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_PVP);
+    removePvpFlags(U_FIELD_BYTES_FLAG_PVP);
 #else
     removeUnitFlags(UNIT_FLAG_PVP);
 #endif
@@ -4163,7 +4163,7 @@ bool Player::isFfaPvpFlagSet()
 void Player::setFfaPvpFlag()
 {
     StopPvPTimer();
-    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_FFA_PVP);
+    addPvpFlags(U_FIELD_BYTES_FLAG_FFA_PVP);
     addPlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
     getSummonInterface()->setFFAPvPFlags(true);
@@ -4174,7 +4174,7 @@ void Player::setFfaPvpFlag()
 void Player::removeFfaPvpFlag()
 {
     StopPvPTimer();
-    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_FFA_PVP);
+    removePvpFlags(U_FIELD_BYTES_FLAG_FFA_PVP);
     removePlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
     getSummonInterface()->setFFAPvPFlags(false);
@@ -4189,7 +4189,7 @@ bool Player::isSanctuaryFlagSet()
 
 void Player::setSanctuaryFlag()
 {
-    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_SANCTUARY);
+    addPvpFlags(U_FIELD_BYTES_FLAG_SANCTUARY);
     addPlayerFlags(PLAYER_FLAG_SANCTUARY);
 
     getSummonInterface()->setSanctuaryFlags(true);
@@ -4199,7 +4199,7 @@ void Player::setSanctuaryFlag()
 
 void Player::removeSanctuaryFlag()
 {
-    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_SANCTUARY);
+    removePvpFlags(U_FIELD_BYTES_FLAG_SANCTUARY);
     removePlayerFlags(PLAYER_FLAG_SANCTUARY);
 
     getSummonInterface()->setSanctuaryFlags(false);
@@ -4749,13 +4749,13 @@ Item* Player::storeItem(LootItem const* lootItem)
     }
 }
 
-Item* Player::storeNewLootItem(uint8_t slot, Loot* loot)
+Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
 {
     Personaltem* questItem = nullptr;
     Personaltem* ffaItem = nullptr;
 
     // Pick our loot from Loot Store
-    LootItem* item = loot->lootItemInSlot(slot, this, &questItem, &ffaItem);
+    LootItem* item = _loot->lootItemInSlot(slot, this, &questItem, &ffaItem);
 
     if (!item)
     {
@@ -4779,10 +4779,10 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* loot)
     {
         questItem->is_looted = true;
         //freeforall is 1 if everyone's supposed to get the quest item.
-        if (item->is_ffa || loot->getPlayerQuestItems().size() == 1)
+        if (item->is_ffa || _loot->getPlayerQuestItems().size() == 1)
             GetSession()->SendPacket(SmsgLootRemoved(slot).serialise().get());
         else
-            loot->itemRemoved(questItem->index);
+            _loot->itemRemoved(questItem->index);
     }
     else
     {
@@ -4794,7 +4794,7 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* loot)
         }
         else
         {
-            loot->itemRemoved(slot);
+            _loot->itemRemoved(slot);
         }
     }
 
@@ -4802,7 +4802,7 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* loot)
     if (!item->is_ffa)
         item->is_looted = true;
 
-    --loot->unlootedCount;
+    --_loot->unlootedCount;
 
     return newItem;
 }

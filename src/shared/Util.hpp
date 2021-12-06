@@ -201,7 +201,7 @@ struct SmallTimeTracker
 
         SmallTimeTracker(uint32_t expired = 0) : mExpireTime(expired) {}
 
-        void updateTimer(int32_t diffTime) { mExpireTime -= diffTime; }
+        void updateTimer(uint32_t diffTime) { mExpireTime -= diffTime; }
         void resetInterval(uint32_t intervalTime) { mExpireTime = intervalTime; }
 
         int32_t getExpireTime() const { return mExpireTime; }

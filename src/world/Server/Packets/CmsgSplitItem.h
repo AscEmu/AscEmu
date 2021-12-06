@@ -27,10 +27,10 @@ namespace AscEmu::Packets
 
         CmsgSplitItem(int8_t srcInventorySlot, int8_t srcSlot, int8_t destInventorySlot, int8_t destSlot, uint32_t itemCount) :
             ManagedPacket(CMSG_SPLIT_ITEM, 8),
-            srcInventorySlot(srcInventorySlot),
-            srcSlot(srcSlot),
             destInventorySlot(destInventorySlot),
             destSlot(destSlot),
+            srcInventorySlot(srcInventorySlot),
+            srcSlot(srcSlot),
             itemCount(itemCount)
         {
         }

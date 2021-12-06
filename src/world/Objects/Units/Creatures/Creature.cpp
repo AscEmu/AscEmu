@@ -110,13 +110,13 @@ bool Creature::isPvpFlagSet()
 
 void Creature::setPvpFlag()
 {
-    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
+    addPvpFlags(U_FIELD_BYTES_FLAG_PVP);
     getSummonInterface()->setPvPFlags(true);
 }
 
 void Creature::removePvpFlag()
 {
-    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_PVP);
+    removePvpFlags(U_FIELD_BYTES_FLAG_PVP);
     getSummonInterface()->setPvPFlags(false);
 }
 
@@ -127,13 +127,13 @@ bool Creature::isFfaPvpFlagSet()
 
 void Creature::setFfaPvpFlag()
 {
-    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_FFA_PVP);
+    addPvpFlags(U_FIELD_BYTES_FLAG_FFA_PVP);
     getSummonInterface()->setFFAPvPFlags(true);
 }
 
 void Creature::removeFfaPvpFlag()
 {
-    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_FFA_PVP);
+    removePvpFlags(U_FIELD_BYTES_FLAG_FFA_PVP);
     getSummonInterface()->setFFAPvPFlags(false);
 }
 
@@ -144,13 +144,13 @@ bool Creature::isSanctuaryFlagSet()
 
 void Creature::setSanctuaryFlag()
 {
-    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_SANCTUARY);
+    addPvpFlags(U_FIELD_BYTES_FLAG_SANCTUARY);
     getSummonInterface()->setSanctuaryFlags(true);
 }
 
 void Creature::removeSanctuaryFlag()
 {
-    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_SANCTUARY);
+    removePvpFlags(U_FIELD_BYTES_FLAG_SANCTUARY);
     getSummonInterface()->setSanctuaryFlags(false);
 }
 

@@ -1071,6 +1071,16 @@ void Unit::setPvpFlags(uint8_t pvpFlags)
 
     plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_STATUS : 0);
 }
+void Unit::addPvpFlags(uint8_t pvpFlags)
+{
+    auto flags = getPvpFlags();
+    setPvpFlags(flags |= pvpFlags);
+}
+void Unit::removePvpFlags(uint8_t pvpFlags)
+{
+    auto flags = getPvpFlags();
+    setPvpFlags(flags &= ~pvpFlags);
+}
 
 uint8_t Unit::getPetFlags() const { return unitData()->field_bytes_2.s.pet_flag; }
 void Unit::setPetFlags(uint8_t petFlags) { write(unitData()->field_bytes_2.s.pet_flag, petFlags); }
@@ -5703,7 +5713,7 @@ void Unit::sendChatMessageAlternateEntry(uint32_t entry, uint8_t type, uint32_t 
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
-void Unit::setAttackTimer(WeaponDamageType type, int32_t time)
+void Unit::setAttackTimer(WeaponDamageType type, uint32_t time)
 {
     m_attackTimer[type] = Util::getMSTime() + time;
 }
@@ -5720,7 +5730,7 @@ bool Unit::isAttackReady(WeaponDamageType type) const
 
 void Unit::resetAttackTimer(WeaponDamageType type)
 {
-    setAttackTimer(type, static_cast<int32_t>(getBaseAttackTime(type) * m_attackSpeed[type]));
+    setAttackTimer(type, static_cast<uint32_t>(getBaseAttackTime(type) * m_attackSpeed[type]));
 }
 
 void Unit::modAttackSpeedModifier(WeaponDamageType type, int32_t amount)

@@ -15,8 +15,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Movement/WaypointManager.h"
 
-CreatureAIScript::CreatureAIScript(Creature* creature) : _creature(creature), linkedCreatureAI(nullptr), mScriptPhase(0), mAIUpdateFrequency(defaultUpdateFrequency),
-mCreatureTimerCount(0), isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmoteTimeMin(0), idleEmoteTimeMax(0)
+CreatureAIScript::CreatureAIScript(Creature* creature) : mScriptPhase(0), mCreatureTimerCount(0), mAIUpdateFrequency(defaultUpdateFrequency),
+isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmoteTimeMin(0), idleEmoteTimeMax(0), _creature(creature), linkedCreatureAI(nullptr)
 {
     mCreatureTimerIds.clear();
     mCreatureTimer.clear();
@@ -350,7 +350,7 @@ void CreatureAIScript::loadCustomWaypoins(uint32_t pathid)
     }
 }
 
-WaypointNode CreatureAIScript::createWaypoint(int pId, uint32_t pWaittime, uint32_t pMoveType, LocationVector pCoords)
+WaypointNode CreatureAIScript::createWaypoint(uint32_t pId, uint32_t pWaittime, uint32_t pMoveType, LocationVector pCoords)
 {
     WaypointNode waypoint;
     waypoint.id = pId;
@@ -476,7 +476,7 @@ bool CreatureAIScript::_isInCombat()
     return _creature->m_combatStatusHandler.IsInCombat();
 }
 
-void CreatureAIScript::_delayNextAttack(int32_t milliseconds)
+void CreatureAIScript::_delayNextAttack(uint32_t milliseconds)
 {
     _creature->setAttackTimer(MELEE, milliseconds);
 }
@@ -707,8 +707,7 @@ void CreatureAIScript::updateAITimers(unsigned long time_passed)
     {
         if (TimerIter.second > 0)
         {
-            int leftTime = TimerIter.second - time_passed;
-            if (leftTime > 0)
+            if (TimerIter.second > time_passed)
                 TimerIter.second -= time_passed;
             else
                 TimerIter.second = 0;

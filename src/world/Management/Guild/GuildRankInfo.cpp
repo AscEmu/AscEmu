@@ -89,7 +89,7 @@ void GuildRankInfo::setRights(uint32_t rights)
     CharacterDatabase.Execute("UPDATE guild_ranks SET rankRights = %u WHERE guildId = %u AND rankId = %u", mRights, mGuildId, static_cast<uint32_t>(mRankId));
 }
 
-int32_t GuildRankInfo::getBankMoneyPerDay() const
+uint32_t GuildRankInfo::getBankMoneyPerDay() const
 {
     return mBankMoneyPerDay;
 }

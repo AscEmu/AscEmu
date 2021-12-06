@@ -24,8 +24,8 @@ namespace AscEmu::Packets
 
         MsgRaidReadyCheck(uint64_t guid, uint8_t isReady, bool isRequest) :
             ManagedPacket(MSG_RAID_READY_CHECK, 9),
-            guid(guid),
             isReady(isReady),
+            guid(guid),
             isRequest(isRequest)
         {
         }

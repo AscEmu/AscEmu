@@ -123,7 +123,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
     m_castTime = 0;
     if (!(m_triggeredByAura != nullptr || m_triggeredSpell && (getSpellInfo()->getManaCost() > 0 || getSpellInfo()->getManaCostPercentage() > 0)))
     {
-        m_castTime = GetCastTime(sSpellCastTimesStore.LookupEntry(getSpellInfo()->getCastingTimeIndex()));
+        m_castTime = static_cast<int32_t>(GetCastTime(sSpellCastTimesStore.LookupEntry(getSpellInfo()->getCastingTimeIndex())));
         if (m_castTime > 0 && u_caster != nullptr)
         {
             // Apply cast time modifiers
@@ -2418,7 +2418,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (p_caster == nullptr)
                     return SPELL_FAILED_SPELL_UNAVAILABLE;
 
-                const auto glyphId = getSpellInfo()->getEffectMiscValue(i);
+                const auto glyphId = static_cast<uint32_t>(getSpellInfo()->getEffectMiscValue(i));
                 const auto glyphEntry = sGlyphPropertiesStore.LookupEntry(glyphId);
                 if (glyphEntry == nullptr)
                     return SPELL_FAILED_INVALID_GLYPH;
@@ -3241,8 +3241,8 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
 
         if (!hasItemWithProperType)
         {
-            *parameter1 = getSpellInfo()->getEquippedItemClass();
-            *parameter2 = getSpellInfo()->getEquippedItemSubClass();
+            *parameter1 = static_cast<uint32_t>(getSpellInfo()->getEquippedItemClass());
+            *parameter2 = static_cast<uint32_t>(getSpellInfo()->getEquippedItemSubClass());
             return SPELL_FAILED_EQUIPPED_ITEM_CLASS;
         }
 
@@ -3482,7 +3482,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                     }
                 }
 
-                const auto enchantEntry = sSpellItemEnchantmentStore.LookupEntry(getSpellInfo()->getEffectMiscValue(i));
+                const auto enchantEntry = sSpellItemEnchantmentStore.LookupEntry(static_cast<uint32_t>(getSpellInfo()->getEffectMiscValue(i)));
                 if (enchantEntry == nullptr)
                 {
                     sLogger.failure("Spell::checkItems: Spell entry %u has no valid enchantment (%u)", getSpellInfo()->getId(), getSpellInfo()->getEffectMiscValue(i));
@@ -3556,7 +3556,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 if (targetItem == nullptr)
                     return SPELL_FAILED_ITEM_NOT_FOUND;
 
-                const auto enchantmentEntry = sSpellItemEnchantmentStore.LookupEntry(getSpellInfo()->getEffectMiscValue(i));
+                const auto enchantmentEntry = sSpellItemEnchantmentStore.LookupEntry(static_cast<uint32_t>(getSpellInfo()->getEffectMiscValue(i)));
                 if (enchantmentEntry == nullptr)
                 {
                     sLogger.failure("Spell::checkItems: Spell entry %u has no valid enchantment (%u)", getSpellInfo()->getId(), getSpellInfo()->getEffectMiscValue(i));
@@ -4095,7 +4095,7 @@ SpellCastResult Spell::checkRunes(bool takeRunes)
         const auto spellRuneCost = sSpellRuneCostStore.LookupEntry(getSpellInfo()->getRuneCostID());
         if (spellRuneCost != nullptr && (spellRuneCost->bloodRuneCost > 0 || spellRuneCost->frostRuneCost > 0 || spellRuneCost->unholyRuneCost > 0))
         {
-            int32_t runeCost[3];
+            uint32_t runeCost[3];
             runeCost[RUNE_BLOOD] = spellRuneCost->bloodRuneCost;
             runeCost[RUNE_FROST] = spellRuneCost->frostRuneCost;
             runeCost[RUNE_UNHOLY] = spellRuneCost->unholyRuneCost;
@@ -4147,7 +4147,7 @@ SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_
         for (uint8_t i = 0; i < 5; ++i)
         {
             if (talentInfo->RankID[i] != 0)
-                talentRank = i + 1;
+                talentRank = i + 1U;
         }
     }
 
@@ -4155,7 +4155,7 @@ SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_
     if (talentRank > 0 && spellInfo->hasEffect(SPELL_EFFECT_LEARN_SPELL))
         return SPELL_CAST_SUCCESS;
 
-    const uint32_t stanceMask = shapeshiftForm ? 1 << (shapeshiftForm - 1) : 0;
+    const uint32_t stanceMask = shapeshiftForm ? 1 << (shapeshiftForm - 1U) : 0U;
 
     // Cannot explicitly be casted in this stance/form
     if (spellInfo->getShapeshiftExclude() > 0 && spellInfo->getShapeshiftExclude() & stanceMask)
@@ -4887,7 +4887,7 @@ void Spell::sendSpellGo()
         data << uint8_t(currentRunes);
         for (uint8_t i = 0; i < MAX_RUNES; ++i)
         {
-            const uint8_t runeMask = 1 << i;
+            const uint8_t runeMask = 1U << i;
             if ((runeMask & m_rune_avail_before) != (runeMask & currentRunes))
                 data << uint8_t(0); // Value of the rune converted into byte. We just think it is 0 but maybe it is not
         }
@@ -4964,7 +4964,7 @@ void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult re
                 parameter1 = getSpellInfo()->getRequiresAreaId();
 #elif VERSION_STRING >= WotLK
                 // Send the first area id from areagroup to player
-                auto areaGroup = sAreaGroupStore.LookupEntry(getSpellInfo()->getRequiresAreaId());
+                auto areaGroup = sAreaGroupStore.LookupEntry(static_cast<uint32_t>(getSpellInfo()->getRequiresAreaId()));
                 for (const auto& areaId : areaGroup->AreaId)
                 {
                     if (areaId != 0)
@@ -4980,8 +4980,8 @@ void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult re
         case SPELL_FAILED_EQUIPPED_ITEM_CLASS_OFFHAND:
             if (parameter1 == 0 && parameter2 == 0)
             {
-                parameter1 = getSpellInfo()->getEquippedItemClass();
-                parameter2 = getSpellInfo()->getEquippedItemSubClass();
+                parameter1 = static_cast<uint32_t>(getSpellInfo()->getEquippedItemClass());
+                parameter2 = static_cast<uint32_t>(getSpellInfo()->getEquippedItemSubClass());
             } break;
 #if VERSION_STRING >= TBC
         case SPELL_FAILED_REAGENTS:
@@ -4991,9 +4991,11 @@ void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult re
                 {
                     if (getSpellInfo()->getReagent(i) == 0)
                         continue;
-                    if (!caster->hasItem(getSpellInfo()->getReagent(i), getSpellInfo()->getReagentCount(i)))
+
+                    const auto itemId = static_cast<uint32_t>(getSpellInfo()->getReagent(i));
+                    if (!caster->hasItem(itemId, getSpellInfo()->getReagentCount(i)))
                     {
-                        parameter1 = getSpellInfo()->getReagent(i);
+                        parameter1 = itemId;
                         break;
                     }
                 }
@@ -5438,7 +5440,8 @@ void Spell::removeReagents()
             if (getSpellInfo()->getReagent(i) == 0)
                 continue;
 
-            p_caster->getItemInterface()->RemoveItemAmt_ProtectPointer(getSpellInfo()->getReagent(i), getSpellInfo()->getReagentCount(i), &i_caster);
+            const auto itemId = static_cast<uint32_t>(getSpellInfo()->getReagent(i));
+            p_caster->getItemInterface()->RemoveItemAmt_ProtectPointer(itemId, getSpellInfo()->getReagentCount(i), &i_caster);
         }
     }
 }

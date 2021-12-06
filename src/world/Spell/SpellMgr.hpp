@@ -30,7 +30,7 @@ struct SpellArea
 
 struct SpellForcedBasePoints
 {
-    uint32_t basePoints[MAX_SPELL_EFFECTS] = { 0 };
+    int32_t basePoints[MAX_SPELL_EFFECTS] = { 0 };
 };
 
 typedef std::unordered_map<uint32_t, SpellInfo> SpellInfoMap;

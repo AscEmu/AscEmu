@@ -442,7 +442,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     }
 
     const auto realmType = sLogonCommHandler.getRealmType();
-    if (!HasGMPermissions() && realmType == REALMTYPE_PVP && _side >= 0 && !worldConfig.player.isCrossoverCharsCreationEnabled)
+    if (!HasGMPermissions() && realmType == REALMTYPE_PVP && _side != 255 && !worldConfig.player.isCrossoverCharsCreationEnabled)
     {
         if ((newPlayer->isTeamAlliance() && _side == 1) || (newPlayer->isTeamHorde() && _side == 0))
         {
@@ -762,7 +762,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
     std::vector<CharEnumData> enumData;
 
     has_dk = false;
-    _side = -1;
+    _side = 255;
 
     uint8_t charRealCount = 0;
 
@@ -804,7 +804,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
             charEnum.flags = fields[17].GetUInt32();
             charEnum.guildId = fields[18].GetUInt32();
 
-            if (_side < 0)
+            if (_side == 255)
                 _side = getSideByRace(charEnum.race);
 
 #if VERSION_STRING >= WotLK

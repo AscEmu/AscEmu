@@ -24,7 +24,7 @@
 #include "CallBack.h"
 #include <map>
 
-enum EventTypes
+enum EventTypes : uint16_t
 {
     EVENT_UNK = 0,
     EVENT_MAPMGR_UPDATEOBJECTS,
@@ -245,7 +245,7 @@ enum EventTypes
     NUM_EVENT_TYPES
 };
 
-enum EventFlags
+enum EventFlags : uint8_t
 {
     EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT = 0x1,
     EVENT_FLAG_DELETES_OBJECT = 0x2,

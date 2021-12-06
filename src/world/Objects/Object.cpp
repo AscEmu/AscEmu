@@ -831,7 +831,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     }
     else
     {
-        damage += victim->DamageTakenMod[school];
+        damage += static_cast<float_t>(victim->DamageTakenMod[school]);
     }
 
     // Resilience
@@ -855,19 +855,19 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
         damage += aurEff->getEffectDamageFraction();
         if (aur->getTimeLeft() >= aurEff->getEffectAmplitude())
         {
-            dmgInfo.fullDamage = static_cast<uint32_t>(damage);
+            dmgInfo.fullDamage = static_cast<int32_t>(damage);
             aurEff->setEffectDamageFraction(damage - dmgInfo.fullDamage);
         }
         else
         {
             // In case this is the last tick, just round the value
-            dmgInfo.fullDamage = static_cast<uint32_t>(std::round(damage));
+            dmgInfo.fullDamage = static_cast<int32_t>(std::round(damage));
         }
     }
     else
     {
         // If this is a direct damage spell just round the value
-        dmgInfo.fullDamage = static_cast<uint32_t>(std::round(damage));
+        dmgInfo.fullDamage = static_cast<int32_t>(std::round(damage));
     }
 
     dmgInfo.realDamage = dmgInfo.fullDamage;
@@ -920,8 +920,8 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
             else if (pl->hasAurasWithId(44396))
                 pctmod = 0.15f;
 
-            const auto hp = static_cast<uint32_t>(0.05f * pl->getMaxHealth());
-            auto spellpower = static_cast<uint32_t>(pctmod * pl->getModDamageDonePositive(SCHOOL_NORMAL));
+            const auto hp = static_cast<int32_t>(0.05f * pl->getMaxHealth());
+            auto spellpower = static_cast<int32_t>(pctmod * pl->getModDamageDonePositive(SCHOOL_NORMAL));
 
             if (spellpower > hp)
                 spellpower = hp;
@@ -1259,19 +1259,19 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
         heal += aurEff->getEffectDamageFraction();
         if (aur->getTimeLeft() >= aurEff->getEffectAmplitude())
         {
-            dmgInfo.fullDamage = static_cast<uint32_t>(heal);
+            dmgInfo.fullDamage = static_cast<int32_t>(heal);
             aurEff->setEffectDamageFraction(heal - dmgInfo.fullDamage);
         }
         else
         {
             // In case this is the last tick, just round the value
-            dmgInfo.fullDamage = static_cast<uint32_t>(std::round(heal));
+            dmgInfo.fullDamage = static_cast<int32_t>(std::round(heal));
         }
     }
     else
     {
         // If this is a direct heal spell just round the value
-        dmgInfo.fullDamage = static_cast<uint32_t>(std::round(heal));
+        dmgInfo.fullDamage = static_cast<int32_t>(std::round(heal));
     }
 
     dmgInfo.realDamage = dmgInfo.fullDamage;

@@ -76,7 +76,7 @@ public:
     bool isRangedAutoRepeat() const;
     bool isOnNextMeleeAttack() const;
 
-    int32_t calculateEffectValue(uint8_t effIndex, Unit* unitCaster = nullptr, Item* itemCaster = nullptr, uint32_t forcedBasePoints = 0) const;
+    int32_t calculateEffectValue(uint8_t effIndex, Unit* unitCaster = nullptr, Item* itemCaster = nullptr, int32_t forcedBasePoints = 0) const;
 
     bool doesEffectApplyAura(uint8_t effIndex) const;
 
@@ -464,7 +464,7 @@ public:
     uint32_t getCustom_BGR_one_buff_on_target() const { return custom_BGR_one_buff_on_target; }
     uint32_t getCustom_c_is_flags() const { return custom_c_is_flags; }
     uint32_t getCustom_RankNumber() const { return custom_RankNumber; }
-    uint32_t getCustom_ThreatForSpell() const { return custom_ThreatForSpell; }
+    int32_t getCustom_ThreatForSpell() const { return custom_ThreatForSpell; }
     float getCustom_ThreatForSpellCoef() const { return custom_ThreatForSpellCoef; }
 
     float getCustom_base_range_or_radius_sqr() const { return custom_base_range_or_radius_sqr; }

@@ -44,8 +44,8 @@ namespace AscEmu::Packets
         SmsgAuraUpdate(WoWGuid guid, AuraUpdate aura_updates, bool remove = false) :
             ManagedPacket(SMSG_AURA_UPDATE, 30),
             guid(guid),
-            aura_updates(aura_updates),
-            remove(remove)
+            remove(remove),
+            aura_updates(aura_updates)
         {
         }
 

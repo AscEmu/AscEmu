@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "QuestMgr.h"
 
 
-QuestLogEntry::QuestLogEntry(QuestProperties const* questProperties, Player* player, uint8_t slot) : m_questProperties(questProperties), m_player(player), m_slot(slot)
+QuestLogEntry::QuestLogEntry(QuestProperties const* questProperties, Player* player, uint8_t slot) : m_slot(slot), m_questProperties(questProperties), m_player(player)
 {
     if (m_questProperties->time > 0)
         m_expirytime = static_cast<uint32_t>(UNIXTIME + m_questProperties->time / 1000);

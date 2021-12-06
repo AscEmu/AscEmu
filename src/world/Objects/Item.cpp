@@ -394,7 +394,7 @@ void Item::setSoulboundTradeable(LooterSet& allowedLooters)
     // todo database
 }
 
-void Item::clearSoulboundTradeable(Player* currentOwner)
+void Item::clearSoulboundTradeable(Player* /*currentOwner*/)
 {
     removeFlags(ITEM_FLAG_BOP_TRADEABLE);
     if (allowedGUIDs.empty())

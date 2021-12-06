@@ -1208,7 +1208,7 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
         }
     }
 
-    const auto shapeshiftForm = sSpellShapeshiftFormStore.LookupEntry(aurEff->getEffectMiscValue());
+    const auto shapeshiftForm = sSpellShapeshiftFormStore.LookupEntry(static_cast<uint32_t>(aurEff->getEffectMiscValue()));
     if (shapeshiftForm == nullptr)
         return;
 
@@ -1482,8 +1482,8 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
         {
             if (oldForm != FORM_NORMAL && oldForm != FORM_SHADOW && oldForm != FORM_STEALTH)
             {
-                const uint32_t oldFormMask = 1 << (oldForm - 1);
-                const uint32_t newFormMask = 1 << (newForm - 1);
+                const uint32_t oldFormMask = 1U << (oldForm - 1);
+                const uint32_t newFormMask = 1U << (newForm - 1);
                 // Check if the aura is usable in new form
                 if (oldFormMask & requiredForm && !(newFormMask & requiredForm))
                 {
@@ -1505,7 +1505,7 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
 
             if (spellInfo->isPassive() && spellInfo->getRequiredShapeShift() > 0)
             {
-                const uint32_t newFormMask = 1 << (newForm - 1);
+                const uint32_t newFormMask = 1U << (newForm - 1);
                 if (newFormMask & spellInfo->getRequiredShapeShift())
                     getPlayerOwner()->castSpell(getPlayerOwner(), spellInfo, true);
             }
@@ -1531,7 +1531,7 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
             if (spellInfo == nullptr)
                 continue;
 
-            const uint32_t newFormMask = 1 << (newForm - 1);
+            const uint32_t newFormMask = 1U << (newForm - 1);
             if (spellInfo->getRequiredShapeShift() > 0 && (newFormMask & spellInfo->getRequiredShapeShift()))
                 getPlayerOwner()->castSpell(getPlayerOwner(), spellInfo, true);
         }
@@ -1637,7 +1637,7 @@ void Aura::spellAuraEffectTransform(AuraEffectModifier* aurEff, bool apply)
     {
         uint32_t displayId = 0;
         std::vector<uint32_t> displayIds;
-        const auto properties = sMySQLStore.getCreatureProperties(aurEff->getEffectMiscValue());
+        const auto properties = sMySQLStore.getCreatureProperties(static_cast<uint32_t>(aurEff->getEffectMiscValue()));
         if (properties == nullptr)
         {
             sLogger.debugFlag(AscEmu::Logging::LF_AURA_EFF, "Aura::spellAuraEffectTransform : Unknown creature entry %u in misc value for spell %u", aurEff->getEffectMiscValue(), getSpellId());
