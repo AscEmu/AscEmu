@@ -7,11 +7,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Guild.hpp"
 #include "GuildMgr.hpp"
-#if VERSION_STRING == Cata
-#include "GameCata/Management/GuildFinderMgr.h"
-#elif VERSION_STRING == Mop
-#include "GameMop/Management/GuildFinderMgr.h"
+
+#if VERSION_STRING >= Cata
+#include "Management/Guild/GuildFinderMgr.hpp"
 #endif
+
 #include "GuildBankEventLog.hpp"
 #include "GuildEventLog.hpp"
 #include "GuildNewsLog.hpp"

@@ -16,6 +16,8 @@ set(SRC_MANAGEMENT_GUILD_FILES
     ${PATH_PREFIX}/GuildEventLog.hpp
     ${PATH_PREFIX}/GuildEmblemInfo.cpp
     ${PATH_PREFIX}/GuildEmblemInfo.hpp
+    ${PATH_PREFIX}/GuildFinderMgr.cpp
+    ${PATH_PREFIX}/GuildFinderMgr.hpp
     ${PATH_PREFIX}/GuildLog.cpp
     ${PATH_PREFIX}/GuildLog.hpp
     ${PATH_PREFIX}/GuildLogHolder.cpp

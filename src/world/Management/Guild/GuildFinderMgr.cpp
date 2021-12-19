@@ -3,9 +3,9 @@ Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#if VERSION_STRING >= Cata
 
-#if VERSION_STRING == Cata
-#include "GuildFinderMgr.h"
+#include "GuildFinderMgr.hpp"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/Guild/Guild.hpp"
 #include "Management/ObjectMgr.h"

@@ -38,10 +38,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/WaypointManager.h"
 #include "Packets/SmsgMessageChat.h"
 
-#if VERSION_STRING == Cata
-#include "GameCata/Management/GuildFinderMgr.h"
-#elif VERSION_STRING == Mop
-#include "GameMop/Management/GuildFinderMgr.h"
+#if VERSION_STRING >= Cata
+#include "Management/Guild/GuildFinderMgr.hpp"
 #endif
 
 std::unique_ptr<DayWatcherThread> dw = nullptr;

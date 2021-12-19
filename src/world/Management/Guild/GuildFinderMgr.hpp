@@ -5,13 +5,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#if VERSION_STRING >= Cata
+
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Management/Guild/Guild.hpp"
 #include <string>
 #include <map>
 #include <vector>
 
-#if VERSION_STRING == Cata
 enum GuildFinderOptionsInterest
 {
     INTEREST_QUESTING        = 0x01,
