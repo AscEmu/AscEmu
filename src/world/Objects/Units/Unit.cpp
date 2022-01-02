@@ -5219,20 +5219,24 @@ void Unit::regenerateHealthAndPowers(uint16_t timePassed)
     if (!isAlive())
         return;
 
-    if (isCreature() && getNpcFlags() & UNIT_NPC_FLAG_DISABLE_REGEN)
-        return;
-
     // Health
     m_healthRegenerateTimer += timePassed;
     if ((hasUnitStateFlag(UNIT_STATE_POLYMORPHED) && m_healthRegenerateTimer >= REGENERATION_INTERVAL_HEALTH_POLYMORPHED) ||
         (!hasUnitStateFlag(UNIT_STATE_POLYMORPHED) && m_healthRegenerateTimer >= REGENERATION_INTERVAL_HEALTH))
     {
         if (isPlayer())
+        {
             static_cast<Player*>(this)->RegenerateHealth(m_combatStatusHandler.IsInCombat());
+            m_healthRegenerateTimer = 0;
+        }
         else
-            static_cast<Creature*>(this)->RegenerateHealth();
+        {
+            m_healthRegenerateTimer = 0;
+            if (isCreature() && getNpcFlags() & UNIT_NPC_FLAG_DISABLE_REGEN)
+                return;
 
-        m_healthRegenerateTimer = 0;
+            static_cast<Creature*>(this)->RegenerateHealth();
+        }
     }
 
     // Mana and Energy
@@ -5251,9 +5255,12 @@ void Unit::regenerateHealthAndPowers(uint16_t timePassed)
     {
         if (m_manaEnergyRegenerateTimer >= CREATURE_REGENERATION_INTERVAL_MANA_ENERGY)
         {
-            regeneratePower(POWER_TYPE_MANA);
-            regeneratePower(POWER_TYPE_ENERGY);
             m_manaEnergyRegenerateTimer = 0;
+            if (isCreature() && getNpcFlags() & UNIT_NPC_FLAG_DISABLE_PWREGEN)
+                return;
+
+                regeneratePower(POWER_TYPE_MANA);
+                regeneratePower(POWER_TYPE_ENERGY);
         }
     }
 

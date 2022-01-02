@@ -846,6 +846,8 @@ void Spell::finish(bool successful)
 
                 if (target->GetScript())
                     CALL_SCRIPT_EVENT(target, OnHitBySpell)(getSpellInfo()->getId(), getUnitCaster());
+
+                CALL_SCRIPT_EVENT(getCaster(), OnSpellHitTarget)(target, getSpellInfo());
             }
         }
 

@@ -19,6 +19,78 @@ This file is released under the MIT license. See README-MIT for more information
 
 class Creature;
 
+class SERVER_DECL SummonList
+{
+public:
+    typedef std::list<uint64_t> StorageType;
+    typedef StorageType::iterator iterator;
+    typedef StorageType::const_iterator const_iterator;
+    typedef StorageType::size_type size_type;
+    typedef StorageType::value_type value_type;
+
+    explicit SummonList(Creature* creature) : _creature(creature) { }
+
+    iterator begin()
+    {
+        return _storage.begin();
+    }
+
+    const_iterator begin() const
+    {
+        return _storage.begin();
+    }
+
+    iterator end()
+    {
+        return _storage.end();
+    }
+
+    const_iterator end() const
+    {
+        return _storage.end();
+    }
+
+    iterator erase(iterator i)
+    {
+        return _storage.erase(i);
+    }
+
+    bool empty() const
+    {
+        return _storage.empty();
+    }
+
+    size_type size() const
+    {
+        return _storage.size();
+    }
+
+    void clear()
+    {
+        _storage.clear();
+    }
+
+    void summon(Creature const* summon);
+    void despawn(Creature const* summon);
+    void despawnEntry(uint32_t entry);
+    void despawnAll();
+
+    template <typename T>
+    void despawnIf(T const& predicate)
+    {
+        _storage.remove_if(predicate);
+    }
+
+    void removeNotExisting();
+    bool hasEntry(uint32_t entry) const;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // basic
+private:
+    Creature* _creature;
+    StorageType _storage;
+};
+
 class SERVER_DECL CreatureAIScript
 {
 public:
@@ -30,6 +102,7 @@ public:
     virtual void OnDamageTaken(Unit* /*_attacker*/, uint32_t /*_amount*/) {}
     virtual void DamageTaken(Unit* /*_attacker*/, uint32_t* /*damage*/) {} // Warning triggers before dmg applied, you can modify the damage done here
     virtual void OnCastSpell(uint32_t /*_spellId*/) {}
+    virtual void OnSpellHitTarget(Object* target, SpellInfo const* info) {} // Triggers when a casted Spell Hits a Target
     virtual void OnTargetParried(Unit* /*_target*/) {}
     virtual void OnTargetDodged(Unit* /*_target*/) {}
     virtual void OnTargetBlocked(Unit* /*_target*/, int32 /*_amount*/) {}
@@ -53,7 +126,9 @@ public:
     virtual void AIUpdate(unsigned long /*time_passed*/) {}
     virtual void OnEmote(Player* /*_player*/, EmoteType /*_emote*/) {}
     virtual void StringFunctionCall(int) {}
+    virtual void onSummonedCreature(Creature* /*summon*/) {}
     virtual void OnSummon(Unit* /*summoner*/) {}
+    virtual void OnSummonDies(Creature* summon, Unit* /*killer*/) {}
 
     virtual void OnEnterVehicle() {}
     virtual void OnExitVehicle() {}
@@ -190,6 +265,7 @@ public:
      // \brief: 
 protected:
     scriptEventMap scriptEvents;
+    SummonList summons;    
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // timers

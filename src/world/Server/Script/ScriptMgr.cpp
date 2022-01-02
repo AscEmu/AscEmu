@@ -1293,6 +1293,12 @@ CreatureSet InstanceScript::getCreatureSetForEntries(std::vector<uint32_t> entry
     return creatureSet;
 }
 
+Creature* InstanceScript::findNearestCreature(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/)
+{
+    Creature* pCreature = mInstance->GetInterface()->findNearestCreature(pObject, entry, maxSearchRange);
+    return pCreature;
+}
+
 GameObject* InstanceScript::spawnGameObject(uint32_t entry, float posX, float posY, float posZ, float posO, bool addToWorld /*= true*/, uint32_t misc1 /*= 0*/, uint32_t phase /*= 0*/)
 {
     GameObject* spawnedGameObject = mInstance->GetInterface()->SpawnGameObject(entry, posX, posY, posZ, posO, addToWorld, misc1, phase);

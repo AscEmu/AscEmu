@@ -15,7 +15,68 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Movement/WaypointManager.h"
 
-CreatureAIScript::CreatureAIScript(Creature* creature) : mScriptPhase(0), mCreatureTimerCount(0), mAIUpdateFrequency(defaultUpdateFrequency),
+void SummonList::summon(Creature const* summon)
+{
+    _storage.push_back(summon->getGuid());
+}
+
+void SummonList::despawn(Creature const* summon)
+{
+    _storage.remove(summon->getGuid());
+}
+
+void SummonList::despawnEntry(uint32_t entry)
+{
+    for (StorageType::iterator i = _storage.begin(); i != _storage.end();)
+    {
+        Creature* summon = _creature->GetMapMgrCreature(*i);
+        if (!summon)
+            i = _storage.erase(i);
+        else if (summon->getEntry() == entry)
+        {
+            i = _storage.erase(i);
+            summon->Despawn(1000, 0);
+        }
+        else
+            ++i;
+    }
+}
+
+void SummonList::despawnAll()
+{
+    while (!_storage.empty())
+    {
+        Creature* summon = _creature->GetMapMgrCreature(_storage.front());
+        _storage.pop_front();
+        if (summon)
+            summon->Despawn(1000, 0);
+    }
+}
+
+void SummonList::removeNotExisting()
+{
+    for (StorageType::iterator i = _storage.begin(); i != _storage.end();)
+    {
+        if (_creature->GetMapMgrCreature(*i))
+            ++i;
+        else
+            i = _storage.erase(i);
+    }
+}
+
+bool SummonList::hasEntry(uint32_t entry) const
+{
+    for (uint64_t const& guid : _storage)
+    {
+        Creature* summon = _creature->GetMapMgrCreature(guid);
+        if (summon && summon->getEntry() == entry)
+            return true;
+    }
+
+    return false;
+}
+
+CreatureAIScript::CreatureAIScript(Creature* creature) : mScriptPhase(0), summons(creature), mCreatureTimerCount(0), mAIUpdateFrequency(defaultUpdateFrequency),
 isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmoteTimeMin(0), idleEmoteTimeMax(0), _creature(creature), linkedCreatureAI(nullptr)
 {
     mCreatureTimerIds.clear();
@@ -54,6 +115,17 @@ void CreatureAIScript::_internalOnDied(Unit* killer)
     RemoveAIUpdateEvent();
     sendRandomDBChatMessage(mEmotesOnDied, killer);
 
+    // Reset Events
+    scriptEvents.resetEvents();
+
+    // Remove Summons
+    summons.despawnAll();
+
+    // Finish Encounter
+    getInstanceScript()->setData(getCreature()->getEntry(), Finished);
+#if VERSION_STRING >= WotLK
+    getInstanceScript()->UpdateEncountersStateForCreature(getCreature()->getEntry(), getCreature()->GetMapMgr()->pInstance->m_difficulty);
+#endif
     resetScriptPhase();
 }
 

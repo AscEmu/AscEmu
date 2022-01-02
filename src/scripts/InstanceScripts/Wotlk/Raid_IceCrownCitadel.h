@@ -377,12 +377,15 @@ enum IceCrownCitadelGOs
     GO_CAPITAN_CHEST_H_25H                      = 202180,
 
     // Deathbringer Saurfang
-    GO_SAURFANG_S_DOOR = 201825,
+    GO_SAURFANG_S_DOOR                          = 201825,
     GO_DEATHBRINGER_S_CACHE_10N                 = 202239,
     GO_DEATHBRINGER_S_CACHE_25N                 = 202240,
     GO_DEATHBRINGER_S_CACHE_10H                 = 202238,
     GO_DEATHBRINGER_S_CACHE_25H                 = 202241,
     GO_SCOURGE_TRANSPORTER_SAURFANG             = 202244,
+    GO_MIGHTY_WIND                              = 201834,
+    GO_PORTAL_TO_STORMWIND                      = 193956,
+    GO_PORTAL_TO_UNDERCITY                      = 193955,
 
     // Professor Putricide
     GO_ORANGE_PLAGUE_MONSTER_ENTRANCE           = 201371,
@@ -444,6 +447,11 @@ enum IceCrownCitadelGOs
 
 enum IceCrownCitadelNpcEntrys
 {
+    // Intro
+    NPC_INTRO_LICH_KING                         = 37181,
+    NPC_INTRO_TIRION                            = 37119,
+    NPC_INTRO_BOLVAR                            = 37183,
+
     // Lord Marrowgar
     NPC_COLDFLAME                               = 36672,
     NPC_BONE_SPIKE                              = 36619,
@@ -628,6 +636,33 @@ enum IceCrownCitadelCNentry
    CN_THE_LICH_KING                             = 36597,
 };
 
+enum EventsIccIntro
+{
+    EVENT_INTRO01 = 1025, // tirion
+    EVENT_INTRO02 = 1026,
+    EVENT_INTRO03 = 1027,
+    EVENT_INTRO04 = 1070, // arthas
+    EVENT_INTRO05 = 1028, // tirion
+    EVENT_INTRO06 = 1071, // arthas
+    EVENT_INTRO07 = 1072,
+    EVENT_INTRO08 = 1073,
+    EVENT_INTRO09 = 1075, // bolvar 37183
+    EVENT_INTRO10 = 1074, // arthas
+
+    // Alliance
+    EVENT_INTRO20 = 1110, // Muradin 37200
+    EVENT_INTRO21 = 1029, // Tirion
+    EVENT_INTRO22 = 1111, // Muradin
+    EVENT_INTRO23 = 1112,
+
+    // Horde
+    EVENT_INTRO30 = 1091, // Saurfang 37187
+    EVENT_INTRO31 = 1029, // Tirion
+    EVENT_INTRO32 = 1092, // Suarfang
+    EVENT_INTRO33 = 1093,
+    EVENT_INTRO34 = 1094,
+};
+
 enum EventsMarrowgar
 {
     EVENT_BONE_SPIKE_GRAVEYARD                  = 1,
@@ -805,6 +840,7 @@ enum GunshipBattleActions
     EVENT_PLAYERS_GUNSHIP_SAURFANG              = 22665,
     EVENT_ENEMY_GUNSHIP_COMBAT                  = 22860,
     EVENT_ENEMY_GUNSHIP_DESPAWN                 = 22861,
+    EVENT_SAURFANG_MIGHTYWIND                   = 22971,
 };
 
 enum EventsGunshipBattle
@@ -956,12 +992,19 @@ enum DeathbringerSaurfangActions
     ACTION_CHARGE                               = 4,
     ACTION_START_OUTRO                          = 5,
     ACTION_DESPAWN                              = 6,
-    ACTION_INTERRUPT_INTRO                      = 7,
-    ACTION_MARK_OF_THE_FALLEN_CHAMPION          = 8,
+    ACTION_MARK_OF_THE_FALLEN_CHAMPION          = 7,
+    ACTION_SPAWN_TRANSPORT                      = 8,
+    ACTION_DEFEND_TRANSPORT                     = 9,
+    ACTION_TRANSPORT_FLY                        = 10,
+    ACTION_CONTINUE_OUTRO                       = 11,
+    ACTION_CONTINUE_OUTRO2                      = 12,
+    ACTION_MOVE_AWAY                            = 13,
+    ACTION_SPAWN_GOS                            = 14,
 };
 
 enum DeathbringerSaurfangPhases
 {
+    EVENT_WIPE                                  = 0,
     PHASE_INTRO_A                               = 1,
     PHASE_INTRO_H                               = 2,
     PHASE_COMBAT                                = 3,
@@ -1028,6 +1071,8 @@ enum EventsDeathbringerSaurfang
     EVENT_OUTRO_HORDE_6_SE                      = 49,
     EVENT_OUTRO_HORDE_7_SE                      = 50,
     EVENT_OUTRO_HORDE_8_SE                      = 51,
+
+    EVENT_SPAWN_ZEPPELIN_ALLIANCE               = 52,
 };
 
 enum DeathbringerSaurfangTextIds
@@ -1048,11 +1093,22 @@ enum DeathbringerSaurfangTextIds
     SAY_OUTRO_ALLIANCE_10_SE                    = 1108,
     SAY_OUTRO_ALLIANCE_21_SE                    = 1109,
 
-    SAY_OUTRO_ALLIANCE_8_HORDE_SE               = 1082,
-    SAY_OUTRO_ALLIANCE_12_HORDE_SE              = 1083,
-    SAY_OUTRO_ALLIANCE_13_HORDE_SE              = 1084,
-    SAY_OUTRO_ALLIANCE_14_HORDE_SE              = 1085,
-    SAY_OUTRO_ALLIANCE_15_HORDE_SE              = 1086,
+    // High Overlord Saurfang
+    SAY_OUTRO_ALLIANCE_8_SE                     = 1082,
+    SAY_OUTRO_ALLIANCE_12_SE                    = 1083,
+    SAY_OUTRO_ALLIANCE_13_SE                    = 1084,
+    SAY_OUTRO_ALLIANCE_14_SE                    = 1085,
+    SAY_OUTRO_ALLIANCE_15_SE                    = 1086,
+
+    // Lady Jaina Proudmoore
+    SAY_OUTRO_ALLIANCE_17_SE                    = 1095,
+    SAY_OUTRO_ALLIANCE_19_SE                    = 1096,
+
+    // King Varian Wrynn
+    SAY_OUTRO_ALLIANCE_11_SE                    = 1141,
+    SAY_OUTRO_ALLIANCE_16_SE                    = 1142,
+    SAY_OUTRO_ALLIANCE_18_SE                    = 1143,
+    SAY_OUTRO_ALLIANCE_20_SE                    = 1144,
 
     SAY_SAURFANG_INTRO_2_ALLIANCE_SE            = 1110,
     SAY_SAURFANG_INTRO_3_ALLIANCE_SE            = 1111,
@@ -1136,10 +1192,19 @@ enum MovePoints
     POINT_FIRST_STEP                            = 2,
     POINT_CHARGE                                = 3,
     POINT_CHOKE                                 = 4,
-    POINT_CORPSE                                = 5,
-    POINT_FINAL                                 = 6,
-    POINT_EXIT                                  = 7,        // waypoint id
+    POINT_LAND                                  = 5,
+    POINT_CORPSE                                = 6,
+    POINT_TRANSPORT                             = 7,
+    POINT_AWAY                                  = 8,
+    POINT_VARIAN                                = 9,
+    POINT_FINAL                                 = 10,
+    POINT_EXIT                                  = 11,        // waypoint id
 };
+
+LocationVector const portalSpawn = { -532.3045f, 2224.33f, 539.1138f, 0.0f };
+LocationVector const varianSpawn = { -529.3542f, 2225.33f, 539.1138f, 6.14f };
+LocationVector const jainaSpawn = { -530.3542f, 2222.33f, 539.1138f, 6.14f };
+
 
 LocationVector const deathbringerPos = { -496.3542f, 2211.33f, 541.1138f, 0.0f };
 LocationVector const firstStepPos = { -541.3177f, 2211.365f, 539.2921f, 0.0f };
@@ -1164,6 +1229,29 @@ LocationVector const chokePos[6] =
     {-510.7041f, 2211.069f, 546.5298f, 6.27f}  // back right
 };
 
+LocationVector const alliTransPos[6] =
+{
+    {-522.4834f, 2221.334f, 539.2887f, 1.52f}, // Muradin Bronzebeard
+    {-525.3438f, 2218.961f, 539.2887f, 1.52f}, // front left
+    {-520.1768f, 2218.396f, 539.2887f, 1.52f}, // front right
+    {-522.3684f, 2216.353f, 539.2887f, 1.52f}, // back middle
+    {-526.0486f, 2215.999f, 539.2887f, 1.52f}, // back left
+    {-519.7041f, 2215.069f, 539.2887f, 1.52f}  // back right
+};
+
+LocationVector const alliAwayPos[6] =
+{
+    {-531.4834f, 2218.334f, 539.2887f, 0.24f}, // Muradin Bronzebeard
+    {-540.3438f, 2224.961f, 539.2887f, 0.24f}, // front left
+    {-540.1768f, 2221.396f, 539.2887f, 0.24f}, // front right
+    {-540.3684f, 2218.353f, 539.2887f, 0.24f}, // back middle
+    {-540.0486f, 2215.999f, 539.2887f, 0.24f}, // back left
+    {-540.7041f, 2212.069f, 539.2887f, 0.24f}  // back right
+};
+
+LocationVector const unboardMightylPos = { -520.7552f, 2246.328f, 539.7848f, 5.20f };
+LocationVector const faceMuradinPos = { -522.7552f, 2226.328f, 539.7848f, 4.65f };
+LocationVector const faceVarianPos = { -525.7552f, 2224.328f, 539.7848f, 3.02f };
 LocationVector const finalPos = { -563.7552f, 2211.328f, 538.7848f, 0.0f };
 
 LocationVector const FrostWyrmPosH = { -435.429f, 2077.556f, 219.1148f, 4.767166f };
@@ -1181,8 +1269,10 @@ enum MiscInfo
     DATA_COLDFLAME_GUID                 = 0,
     DATA_SPIKE_IMMUNE                   = 1,
     DATA_CULTIST_GUID                   = 2,
+    DATA_MADE_A_MESS                    = 45374613, // 4537, 4613 are achievement IDs
 
     // Actions
+    ACTION_STARTINTRO                   = 0,
     ACTION_CLEAR_SPIKE_IMMUNITIES       = 1,
     ACTION_MARROWGAR_INTRO_START        = 2,
 

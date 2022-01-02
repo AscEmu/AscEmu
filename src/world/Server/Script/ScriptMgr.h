@@ -703,6 +703,7 @@ class SERVER_DECL InstanceScript
         Creature* spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0);
         Creature* getCreatureBySpawnId(uint32_t entry);
         Creature* GetCreatureByGuid(uint32_t guid);
+        Creature* findNearestCreature(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/);
 
         CreatureSet getCreatureSetForEntry(uint32_t entry, bool debug = false, Player* player = nullptr);
         CreatureSet getCreatureSetForEntries(std::vector<uint32_t> entryVector);

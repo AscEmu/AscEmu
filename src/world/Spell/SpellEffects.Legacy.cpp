@@ -3138,9 +3138,6 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
 
             if (p->GetCreatureProperties()->Faction == 35)
             {
-                p->setSummonedByGuid(m_caster->getGuid());
-                p->setCreatedByGuid(m_caster->getGuid());
-
                 if (m_caster->isGameObject())
                     p->setFaction(static_cast<GameObject*>(m_caster)->getFactionTemplate());
                 else
@@ -3150,10 +3147,15 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
             {
                 p->setFaction(properties->Faction);
             }
+
+            p->setSummonedByGuid(m_caster->getGuid());
+            p->setCreatedByGuid(m_caster->getGuid());
+
             p->PushToWorld(m_caster->GetMapMgr());
 
-            if (p->GetScript() != nullptr)
-                p->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
+            // Delay this a bit to make sure its Spawned
+            sEventMgr.AddEvent(p, &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+
             //make sure they will be desummoned (roxor)
             sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
@@ -3190,10 +3192,10 @@ void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPrope
             return;
 
         s->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
-
-        if (s->GetScript() != nullptr)
-            s->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
         s->PushToWorld(u_caster->GetMapMgr());
+
+        // Delay this a bit to make sure its Spawned
+        sEventMgr.AddEvent(s->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
         if ((p_caster != nullptr) && (spe->Slot != 0))
             p_caster->sendTotemCreatedPacket(static_cast<uint8_t>(spe->Slot - 1), s->getGuid(), GetDuration(), m_spellInfo->getId());
@@ -3247,8 +3249,8 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 /*i*/, DBC::Structures::SummonP
             break;
         }
 
-        if (pet->GetScript() != nullptr)
-            pet->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
+        // Delay this a bit to make sure its Spawned
+        sEventMgr.AddEvent(pet->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
 
@@ -3269,9 +3271,10 @@ void Spell::SpellEffectSummonPossessed(uint32 /*i*/, DBC::Structures::SummonProp
 
     s->Load(properties_, p_caster, v, m_spellInfo->getId(), spe->Slot - 1);
     s->setCreatedBySpellId(m_spellInfo->getId());
-    if (s->GetScript() != nullptr)
-        s->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
     s->PushToWorld(p_caster->GetMapMgr());
+
+    // Delay this a bit to make sure its Spawned
+    sEventMgr.AddEvent(s->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     p_caster->Possess(s, 1000);
 }
@@ -3307,10 +3310,11 @@ void Spell::SpellEffectSummonCompanion(uint32 /*i*/, DBC::Structures::SummonProp
 
     summon->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
     summon->setCreatedBySpellId(m_spellInfo->getId());
-
-    if (summon->GetScript() != nullptr)
-        summon->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
     summon->PushToWorld(u_caster->GetMapMgr());
+
+    // Delay this a bit to make sure its Spawned
+    sEventMgr.AddEvent(summon->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+
     u_caster->setCritterGuid(summon->getGuid());
 #endif
 }
@@ -3330,10 +3334,11 @@ void Spell::SpellEffectSummonVehicle(uint32 /*i*/, DBC::Structures::SummonProper
     c->setCreatedBySpellId(m_spellInfo->getId());
     c->setCreatedByGuid(u_caster->getGuid());
     c->setSummonedByGuid(u_caster->getGuid());
-    if (c->GetScript() != nullptr)
-        c->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
     c->removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
     c->PushToWorld(u_caster->GetMapMgr());
+
+    // Delay this a bit to make sure its Spawned
+    sEventMgr.AddEvent(c->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     // Need to delay this a bit since first the client needs to see the vehicle
     u_caster->addPassengerToVehicle(c->getGuid(), 1 * 1000);
