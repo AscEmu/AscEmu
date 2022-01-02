@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 
 # we have our own custom modules and dep modules that we use. This tells cmakes where to find them.
 list(APPEND CMAKE_MODULE_PATH 
