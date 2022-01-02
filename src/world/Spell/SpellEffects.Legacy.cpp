@@ -565,7 +565,7 @@ void Spell::ApplyAreaAura(uint8_t effectIndex)
     {
         pAura = sSpellMgr.newAura(getSpellInfo(), GetDuration(), m_caster, unitTarget);
 
-        float r = GetRadius(effectIndex);
+        float r = getEffectRadius(effectIndex);
 
         uint32 eventtype = 0;
 
@@ -2893,7 +2893,7 @@ void Spell::SpellEffectPersistentAA(uint8_t effectIndex) // Persistent Area Aura
         return;
     //create only 1 dyn object
     uint32 dur = GetDuration();
-    float r = GetRadius(effectIndex);
+    float r = getEffectRadius(effectIndex);
 
     //Note: this code seems to be useless
     //this must be only source point or dest point
@@ -3128,8 +3128,8 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
     for (int j = 0; j<damage; j++)
     {
         float m_fallowAngle = -((float(M_PI) / 2) * j);
-        float tempx = x + (GetRadius(effectIndex) * (cosf(m_fallowAngle + m_caster->GetOrientation())));
-        float tempy = y + (GetRadius(effectIndex) * (sinf(m_fallowAngle + m_caster->GetOrientation())));
+        float tempx = x + (getEffectRadius(effectIndex) * (cosf(m_fallowAngle + m_caster->GetOrientation())));
+        float tempy = y + (getEffectRadius(effectIndex) * (sinf(m_fallowAngle + m_caster->GetOrientation())));
 
         if (Creature* p = m_caster->GetMapMgr()->CreateCreature(cr_entry))
         {
@@ -3349,7 +3349,7 @@ void Spell::SpellEffectLeap(uint8_t effectIndex) // Leap
     if (unitTarget == nullptr)
         return;
 
-    float radius = GetRadius(effectIndex);
+    float radius = getEffectRadius(effectIndex);
     unitTarget->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN);
 
     MMAP::MMapManager* mmap = MMAP::MMapFactory::createOrGetMMapManager();
@@ -3543,7 +3543,7 @@ void Spell::SpellEffectTriggerMissile(uint8_t effectIndex) // Trigger Missile
         return;
     }
 
-    float spellRadius = GetRadius(effectIndex);
+    float spellRadius = getEffectRadius(effectIndex);
 
     //\todo Following should be / is probably in SpellTarget code
     for (const auto& itr : m_caster->getInRangeObjectsSet())
@@ -4797,7 +4797,7 @@ void Spell::SpellEffectAddFarsight(uint8_t effectIndex) // Add Farsight
     }
 
     DynamicObject* dynObj = p_caster->GetMapMgr()->CreateDynamicObject();
-    dynObj->Create(u_caster, this, lv, GetDuration(), GetRadius(effectIndex), DYNAMIC_OBJECT_FARSIGHT_FOCUS);
+    dynObj->Create(u_caster, this, lv, GetDuration(), getEffectRadius(effectIndex), DYNAMIC_OBJECT_FARSIGHT_FOCUS);
     dynObj->SetInstanceID(p_caster->GetInstanceID());
     p_caster->setFarsightGuid(dynObj->getGuid());
 

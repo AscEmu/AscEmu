@@ -209,6 +209,8 @@ class SERVER_DECL Spell
         // doBeforeEffectHit, doCalculateEffect or beforeSpellEffect script hooks to have any effect
         void setForceCritOnTarget(Unit const* target);
 
+        float_t getEffectRadius(uint8_t effectIndex);
+
         // used by spells that should have dynamic variables in spellentry
         // seems to be used only by LuaEngine -Appled
         SpellInfo const* m_spellInfo_override = nullptr;
@@ -245,6 +247,9 @@ class SERVER_DECL Spell
 
         bool m_requiresCP = false;
         int8_t m_usedComboPoints = 0;
+
+        float_t m_effectRadius[MAX_SPELL_EFFECTS] = {0.0f};
+        bool m_isEffectRadiusSet[MAX_SPELL_EFFECTS] = {false};
 
         // Spell proc
         DamageInfo m_casterDamageInfo = DamageInfo();
@@ -637,8 +642,6 @@ class SERVER_DECL Spell
 
         uint32 GetDuration();
 
-        float GetRadius(uint32 i);
-
         static uint32 GetBaseThreat(uint32 dmg);
 
         static uint32 GetMechanic(SpellInfo const* sp);
@@ -687,8 +690,6 @@ class SERVER_DECL Spell
 
         uint32 Dur;
         bool bDurSet;
-        float Rad[3];
-        bool bRadSet[3];
         bool m_isCasting;
         uint8 m_rune_avail_before;
         //void _DamageRangeUpdate();

@@ -142,7 +142,7 @@ bool HolidayCheer(uint8_t effectIndex, Spell* pSpell)
         return true;
 
     Unit* target;
-    float dist = pSpell->GetRadius(effectIndex);
+    float dist = pSpell->getEffectRadius(effectIndex);
 
     for (const auto& itr : pSpell->getCaster()->getInRangeObjectsSet())
     {

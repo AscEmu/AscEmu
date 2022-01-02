@@ -99,9 +99,6 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
 
     m_Spell_Failed = false;
     bDurSet = false;
-    bRadSet[0] = false;
-    bRadSet[1] = false;
-    bRadSet[2] = false;
 
     targetConstraintCreature = nullptr;
     targetConstraintGameObject = nullptr;
@@ -290,7 +287,7 @@ bool Spell::IsInvisibilitySpell()
 
 void Spell::FillSpecifiedTargetsInArea(float srcx, float srcy, float srcz, uint32 ind, uint32 specification)
 {
-    FillSpecifiedTargetsInArea(ind, srcx, srcy, srcz, GetRadius(ind), specification);
+    FillSpecifiedTargetsInArea(ind, srcx, srcy, srcz, getEffectRadius(ind), specification);
 }
 
 // for the moment we do invisible targets
@@ -354,12 +351,12 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
 }
 void Spell::FillAllTargetsInArea(LocationVector & location, uint32 ind)
 {
-    FillAllTargetsInArea(ind, location.x, location.y, location.z, GetRadius(ind));
+    FillAllTargetsInArea(ind, location.x, location.y, location.z, getEffectRadius(ind));
 }
 
 void Spell::FillAllTargetsInArea(float srcx, float srcy, float srcz, uint32 ind)
 {
-    FillAllTargetsInArea(ind, srcx, srcy, srcz, GetRadius(ind));
+    FillAllTargetsInArea(ind, srcx, srcy, srcz, getEffectRadius(ind));
 }
 
 // We fill all the targets in the area, including the stealth ed one's
@@ -1728,20 +1725,6 @@ uint32 Spell::GetDuration()
     }
 
     return this->Dur;
-}
-
-float Spell::GetRadius(uint32 i)
-{
-    if (bRadSet[i])
-        return Rad[i];
-    bRadSet[i] = true;
-    Rad[i] = ::GetRadius(sSpellRadiusStore.LookupEntry(getSpellInfo()->getEffectRadiusIndex(static_cast<uint8_t>(i))));
-    if (u_caster != nullptr)
-    {
-        u_caster->applySpellModifiers(SPELLMOD_RADIUS, &Rad[i], getSpellInfo(), this);
-    }
-
-    return Rad[i];
 }
 
 uint32 Spell::GetBaseThreat(uint32 dmg)

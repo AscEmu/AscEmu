@@ -88,7 +88,7 @@ bool Cannibalize(uint8_t effectIndex, Spell* s)
         return false;
 
     bool check = false;
-    float rad = s->GetRadius(effectIndex);
+    float rad = s->getEffectRadius(effectIndex);
     rad *= rad;
 
     for (const auto& itr : s->getPlayerCaster()->getInRangeObjectsSet())

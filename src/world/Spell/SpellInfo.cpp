@@ -390,7 +390,7 @@ bool SpellInfo::isNegativeAura() const
     if (getAttributes() & ATTRIBUTES_NEGATIVE)
         return true;
 
-    // Custom checks to override default result from below
+    // Custom checks based on spell family name to override default result from below
     switch (getSpellFamilyName())
     {
         case SPELLFAMILY_WARRIOR:
@@ -414,6 +414,17 @@ bool SpellInfo::isNegativeAura() const
             if (getSpellFamilyFlags(0) == 0x80000)
                 return true;
         } break;
+        default:
+            break;
+    }
+
+    // Custom checks based on spell id to override default result from below
+    // Use id only if spell has no family flags
+    switch (getId())
+    {
+        // Deathbringer Saurfang - Rune of Blood should be negative
+        case 72410:
+            return true;
         default:
             break;
     }

@@ -3816,8 +3816,9 @@ public:
 
         auto it = std::begin(*effectTargets);
         std::advance(it, Util::getRandomUInt(0, uint32_t(std::size(*effectTargets)) - 1));
+        const auto guid = *it;
         effectTargets->clear();
-        effectTargets->push_back(*it);
+        effectTargets->push_back(guid);
     }
 };
 

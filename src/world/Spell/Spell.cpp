@@ -5363,6 +5363,36 @@ void Spell::setForceCritOnTarget(Unit const* target)
     m_critTargets.push_back(target->getGuid());
 }
 
+float_t Spell::getEffectRadius(uint8_t effectIndex)
+{
+    if (m_isEffectRadiusSet[effectIndex])
+        return m_effectRadius[effectIndex];
+
+    m_isEffectRadiusSet[effectIndex] = true;
+
+    m_effectRadius[effectIndex] = ::GetRadius(sSpellRadiusStore.LookupEntry(getSpellInfo()->getEffectRadiusIndex(effectIndex)));
+    if (G3D::fuzzyEq(m_effectRadius[effectIndex], 0.f))
+    {
+        // If spell has no effect radius set, use spell range instead
+        const auto rangeEntry = sSpellRangeStore.LookupEntry(getSpellInfo()->getRangeIndex());
+        if (rangeEntry != nullptr)
+        {
+#if VERSION_STRING < WotLK
+            m_effectRadius[effectIndex] = rangeEntry->maxRange;
+#else
+            const auto effectTargetMask = getSpellInfo()->getRequiredTargetMaskForEffect(effectIndex);
+            m_effectRadius[effectIndex] = effectTargetMask & SPELL_TARGET_REQUIRE_ATTACKABLE ? rangeEntry->maxRange : rangeEntry->maxRangeFriendly;
+#endif
+        }
+    }
+
+    // Apply radius modifiers
+    if (getUnitCaster() != nullptr)
+        getUnitCaster()->applySpellModifiers(SPELLMOD_RADIUS, &m_effectRadius[effectIndex], getSpellInfo(), this);
+
+    return m_effectRadius[effectIndex];
+}
+
 bool Spell::canAttackCreatureType(Creature* target) const
 {
     // Skip check for Grounding Totem
