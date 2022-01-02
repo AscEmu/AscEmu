@@ -112,7 +112,7 @@ void WorldSession::sendAuctionList(Creature* creature)
     if (auctionHouse == nullptr)
         return;
 
-    SendPacket(MsgAuctionHello(creature->getGuid(), auctionHouse->getId(), auctionHouse->isEnabled ? 1 : 0).serialise().get());
+    SendPacket(MsgAuctionHello(creature->getGuid(), auctionHouse->getId(), auctionHouse->isEnabled ? 1U : 0U).serialise().get());
 }
 
 //helper
@@ -138,7 +138,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
         return;
 
     TrainerSpell const* trainerSpell = nullptr;
-    for (const auto itr : trainer->Spells)
+    for (const auto& itr : trainer->Spells)
     {
         if ((itr.castSpell && itr.castSpell->getId() == srlPacket.spellId) ||
             (itr.learnSpell && itr.learnSpell->getId() == srlPacket.spellId))
@@ -418,7 +418,7 @@ void WorldSession::sendTrainerList(Creature* creature)
     data << uint32_t(trainer->Spells.size());
 
     uint32_t count = 0;
-    for (const auto spellItr : trainer->Spells)
+    for (const auto& spellItr : trainer->Spells)
     {
         auto* const trainerSpell = &spellItr;
 
@@ -443,21 +443,21 @@ void WorldSession::sendTrainerList(Creature* creature)
         // Get the required spells to learn this spell
         uint8_t requiredSpellCount = 0;
         const auto maxRequiredCount = TrainerSpell::getMaxRequiredSpellCount();
-        for (uint8_t i = 0; i < maxRequiredCount; ++i)
+        for (const auto requiredSpell : trainerSpell->requiredSpell)
         {
-            if (trainerSpell->requiredSpell[i] == 0)
+            if (requiredSpell == 0)
                 continue;
 
-            data << uint32_t(trainerSpell->requiredSpell[i]);
+            data << uint32_t(requiredSpell);
             ++requiredSpellCount;
 
             if (requiredSpellCount >= maxRequiredCount)
                 break;
 
-            const auto requiredSpells = sObjectMgr.GetSpellsRequiredForSpellBounds(trainerSpell->requiredSpell[i]);
-            for (auto itr2 = requiredSpells.first; itr2 != requiredSpells.second && requiredSpellCount <= maxRequiredCount; ++itr2)
+            const auto requiredSpells = sObjectMgr.GetSpellsRequiredForSpellBounds(requiredSpell);
+            for (auto itr = requiredSpells.first; itr != requiredSpells.second && requiredSpellCount <= maxRequiredCount; ++itr)
             {
-                data << uint32_t(itr2->second);
+                data << uint32_t(itr->second);
                 ++requiredSpellCount;
             }
 
@@ -515,6 +515,9 @@ TrainerSpellState WorldSession::trainerGetSpellStatus(TrainerSpell const* traine
         if (spellId == 0)
             continue;
 
+        if (!_player->HasSpell(spellId))
+            return TRAINER_SPELL_RED;
+
         const auto spellsRequired = sObjectMgr.GetSpellsRequiredForSpellBounds(spellId);
         for (auto itr = spellsRequired.first; itr != spellsRequired.second; ++itr)
         {
@@ -545,7 +548,7 @@ void WorldSession::handleSpiritHealerActivateOpcode(WorldPacket& /*recvPacket*/)
             spell->prepare(&targets);
         }
 
-        int32_t duration = 600000;
+        uint32_t duration = 600000;
 
         if (_player->getLevel() < 20)
             duration = (_player->getLevel() - 10) * 60000;
@@ -657,8 +660,8 @@ void WorldSession::handleBuyBankSlotOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const uint8_t slots = _player->getBankSlots();
-    const auto bank_bag_slot_prices = sBankBagSlotPricesStore.LookupEntry(slots + 1);
+    const uint8_t slots = _player->getBankSlots() + 1U;
+    const auto bank_bag_slot_prices = sBankBagSlotPricesStore.LookupEntry(slots);
     if (bank_bag_slot_prices == nullptr)
     {
         SendPacket(SmsgBuyBankSlotResult(BankslotError::TooMany).serialise().get());
@@ -672,7 +675,7 @@ void WorldSession::handleBuyBankSlotOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    _player->setBankSlots(slots + 1);
+    _player->setBankSlots(slots);
     _player->modCoinage(-static_cast<int32_t>(price));
 #if VERSION_STRING > TBC
     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT, 1, 0, 0);

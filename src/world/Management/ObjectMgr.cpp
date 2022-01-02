@@ -1576,10 +1576,6 @@ void ObjectMgr::loadTrainers()
 
             ts.cost = fields2[3].GetUInt32();
             ts.requiredSpell[0] = fields2[4].GetUInt32();
-            // todo: add to database
-            ts.requiredSpell[1] = 0;
-            // todo: add to database
-            ts.requiredSpell[2] = 0;
             ts.requiredSkillLine = fields2[5].GetUInt32();
             ts.requiredSkillLineValue = fields2[6].GetUInt32();
             ts.requiredLevel = fields2[7].GetUInt32();
@@ -1588,6 +1584,24 @@ void ObjectMgr::loadTrainers()
             // Check if spell teaches a primary profession skill
             if (ts.requiredSkillLine == 0 && ts.castRealSpell != nullptr)
                 ts.isPrimaryProfession = ts.castRealSpell->isPrimaryProfession();
+
+            // Add all required spells
+            const auto spellInfo = ts.castRealSpell != nullptr ? ts.castSpell : ts.learnSpell;
+            const auto requiredSpells = GetSpellsRequiredForSpellBounds(spellInfo->getId());
+            for (auto itr = requiredSpells.first; itr != requiredSpells.second; ++itr)
+            {
+                for (uint8_t i = 0; i < 3; ++i)
+                {
+                    if (ts.requiredSpell[i] == itr->second)
+                        break;
+
+                    if (ts.requiredSpell[i] != 0)
+                        continue;
+
+                    ts.requiredSpell[i] = itr->second;
+                    break;
+                }
+            }
 
             tr->Spells.push_back(ts);
         } while (result2->NextRow());
