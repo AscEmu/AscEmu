@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 
 set(OPENSSL_EXPECTED_VERSION 1.1.0)
 
