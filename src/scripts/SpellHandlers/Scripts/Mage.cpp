@@ -273,13 +273,13 @@ public:
             for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
             {
                 const auto aurEff = originalAura->getAuraEffect(i);
-                if (aurEff.getAuraEffectType() == SPELL_AURA_NONE)
+                if (aurEff->getAuraEffectType() == SPELL_AURA_NONE)
                     continue;
 
-                if (aurEff.getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
-                    aurEff.getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
+                if (aurEff->getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
+                    aurEff->getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
                 {
-                    ticks = originalAura->getPeriodicTickCountForEffect(aurEff.getEffectIndex());
+                    ticks = originalAura->getPeriodicTickCountForEffect(aurEff->getEffectIndex());
                     break;
                 }
             }

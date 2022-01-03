@@ -6086,7 +6086,7 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
                     {
                         if (aura->getSpellInfo()->getEffect(j))
                         {
-                            aura->addAuraEffect(static_cast<AuraEffect>(aura->getSpellInfo()->getEffectApplyAuraName(j)), aura->getSpellInfo()->getEffectBasePoints(j) + 1, aura->getSpellInfo()->getEffectMiscValue(j), aur->getAuraEffect(j).getEffectPercentModifier(), true, j);
+                            aura->addAuraEffect(static_cast<AuraEffect>(aura->getSpellInfo()->getEffectApplyAuraName(j)), aura->getSpellInfo()->getEffectBasePoints(j) + 1, aura->getSpellInfo()->getEffectMiscValue(j), aur->getAuraEffect(j)->getEffectPercentModifier(), true, j);
                         }
                     }
                     u_caster->addAura(aura);

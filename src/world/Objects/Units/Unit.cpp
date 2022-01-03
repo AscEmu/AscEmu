@@ -4536,13 +4536,13 @@ void Unit::removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell/* = 
         const auto aur = m_auras[i];
         for (uint8_t x = 0; x < MAX_SPELL_EFFECTS; ++x)
         {
-            if (aur->getAuraEffect(x).getAuraEffectType() == SPELL_AURA_NONE)
+            if (aur->getAuraEffect(x)->getAuraEffectType() == SPELL_AURA_NONE)
                 continue;
 
             if (skipSpell == aur->getSpellId())
                 continue;
 
-            if (aur->getAuraEffect(x).getAuraEffectType() == effect)
+            if (aur->getAuraEffect(x)->getAuraEffectType() == effect)
             {
                 if (removeOnlyEffect)
                 {
@@ -5819,10 +5819,10 @@ void Unit::restoreDisplayId()
         // Get display id from aura
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (forcedTransform->getAuraEffect(i).getAuraEffectType() != SPELL_AURA_TRANSFORM)
+            if (forcedTransform->getAuraEffect(i)->getAuraEffectType() != SPELL_AURA_TRANSFORM)
                 continue;
 
-            const auto displayId = forcedTransform->getAuraEffect(i).getEffectFixedDamage();
+            const auto displayId = forcedTransform->getAuraEffect(i)->getEffectFixedDamage();
             if (displayId != 0)
             {
                 setDisplayId(displayId);
@@ -5840,10 +5840,10 @@ void Unit::restoreDisplayId()
         // Get display id from aura
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (shapeshift->getAuraEffect(i).getAuraEffectType() != SPELL_AURA_MOD_SHAPESHIFT)
+            if (shapeshift->getAuraEffect(i)->getAuraEffectType() != SPELL_AURA_MOD_SHAPESHIFT)
                 continue;
 
-            const auto displayId = shapeshift->getAuraEffect(i).getEffectFixedDamage();
+            const auto displayId = shapeshift->getAuraEffect(i)->getEffectFixedDamage();
             if (displayId != 0)
             {
                 setDisplayId(displayId);
@@ -5858,10 +5858,10 @@ void Unit::restoreDisplayId()
         // Get display id from aura
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (transform->getAuraEffect(i).getAuraEffectType() != SPELL_AURA_TRANSFORM)
+            if (transform->getAuraEffect(i)->getAuraEffectType() != SPELL_AURA_TRANSFORM)
                 continue;
 
-            const auto displayId = transform->getAuraEffect(i).getEffectFixedDamage();
+            const auto displayId = transform->getAuraEffect(i)->getEffectFixedDamage();
             if (displayId != 0)
             {
                 setDisplayId(displayId);

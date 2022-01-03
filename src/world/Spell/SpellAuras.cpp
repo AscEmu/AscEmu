@@ -61,9 +61,14 @@ uint8_t AuraEffectModifier::getEffectIndex() const { return effIndex; }
 void AuraEffectModifier::setAura(Aura* aur) { mAura = aur; }
 Aura* AuraEffectModifier::getAura() const { return mAura; }
 
-AuraEffectModifier Aura::getAuraEffect(uint8_t effIndex) const
+AuraEffectModifier const* Aura::getAuraEffect(uint8_t effIndex) const
 {
-    return m_auraEffects[effIndex];
+    return &m_auraEffects[effIndex];
+}
+
+AuraEffectModifier* Aura::getModifiableAuraEffect(uint8_t effIndex)
+{
+    return &m_auraEffects[effIndex];
 }
 
 bool Aura::hasAuraEffect(AuraEffect auraEffect) const
@@ -750,10 +755,10 @@ void Aura::_calculateCritChance()
     auto usesHealing = false;
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        if (getAuraEffect(i).getAuraEffectType() == SPELL_AURA_NONE)
+        if (getAuraEffect(i)->getAuraEffectType() == SPELL_AURA_NONE)
             continue;
 
-        switch (getAuraEffect(i).getAuraEffectType())
+        switch (getAuraEffect(i)->getAuraEffectType())
         {
             case SPELL_AURA_PERIODIC_HEAL:
             case SPELL_AURA_PERIODIC_HEAL_PCT:
@@ -1110,7 +1115,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
 #if VERSION_STRING != Classic
             // Drink spells use periodic dummy trigger since TBC
             const auto effIndex = aurEff->getEffectIndex();
-            if (effIndex > 0 && getAuraEffect(effIndex - 1U).getAuraEffectType() == SPELL_AURA_MOD_POWER_REGEN)
+            if (effIndex > 0 && getAuraEffect(effIndex - 1U)->getAuraEffectType() == SPELL_AURA_MOD_POWER_REGEN)
             {
                 if (getPlayerOwner() == nullptr)
                     return;
