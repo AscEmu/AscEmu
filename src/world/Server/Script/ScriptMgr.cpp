@@ -279,7 +279,7 @@ SpellScript* ScriptMgr::getSpellScript(uint32_t spellId) const
     return nullptr;
 }
 
-void ScriptMgr::register_spell_script(uint32_t spellId, SpellScript* ss)
+void ScriptMgr::register_spell_script(uint32_t spellId, SpellScript* ss, bool registerAllDifficulties/* = true*/)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
@@ -288,13 +288,28 @@ void ScriptMgr::register_spell_script(uint32_t spellId, SpellScript* ss)
         return;
     }
 
-    if (_spellscripts.find(spellId) != _spellscripts.end())
+    if (registerAllDifficulties)
     {
-        sLogger.debug("ScriptMgr tried to register a script for spell id %u but this spell has already one.", spellId);
-        return;
+        if (spellInfo->getSpellDifficultyID() != 0)
+        {
+            uint8_t registeredSpells = 0;
+            for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
+            {
+                const auto spellDifficultyInfo = sSpellMgr.getSpellInfoByDifficulty(spellInfo->getSpellDifficultyID(), i);
+                if (spellDifficultyInfo == nullptr)
+                    continue;
+
+                _register_spell_script(spellDifficultyInfo->getId(), ss);
+                ++registeredSpells;
+            }
+
+            // Make sure to register at least the original spell
+            if (registeredSpells > 0)
+                return;
+        }
     }
 
-    _spellscripts[spellId] = ss;
+    _register_spell_script(spellId, ss);
 }
 
 void ScriptMgr::register_spell_script(uint32_t* spellIds, SpellScript* ss)
@@ -303,6 +318,17 @@ void ScriptMgr::register_spell_script(uint32_t* spellIds, SpellScript* ss)
     {
         register_spell_script(spellIds[i], ss);
     }
+}
+
+void ScriptMgr::_register_spell_script(uint32_t spellId, SpellScript* ss)
+{
+    if (_spellscripts.find(spellId) != _spellscripts.end())
+    {
+        sLogger.debug("ScriptMgr tried to register a script for spell id %u but this spell has already one.", spellId);
+        return;
+    }
+
+    _spellscripts[spellId] = ss;
 }
 
 // MIT End

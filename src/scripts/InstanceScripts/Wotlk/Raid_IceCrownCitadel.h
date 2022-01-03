@@ -75,9 +75,6 @@ enum Spells
     // Lord Marrowgar
     SPELL_BONE_SLICE                            = 69055,
     SPELL_BONE_STORM                            = 69076,
-    SPELL_BONE_STORM_25                         = 70834,
-    SPELL_BONE_STORM_Heroic                     = 70835,
-    SPELL_BONE_STORM_Heroic_25                  = 70836,
     SPELL_BONE_STORM_EFFECT                     = 69075,
     SPELL_BONE_SPIKE_GRAVEYARD                  = 69057,
     SPELL_COLDFLAME_NORMAL                      = 69140,
@@ -1283,15 +1280,6 @@ enum MiscInfo
 uint32 const SummonEntries[2] = { NPC_CULT_FANATIC, NPC_CULT_ADHERENT };
 
 uint32 const BoneSpikeSummonId[3] = { 69062, 72669, 72670 };
-
-uint32_t boneStormIds[] =
-{
-    SPELL_BONE_STORM_EFFECT,
-    SPELL_BONE_STORM_25,
-    SPELL_BONE_STORM_Heroic,
-    SPELL_BONE_STORM_Heroic_25,
-    0
-};
 
 uint32_t gunshipIds[] =
 {

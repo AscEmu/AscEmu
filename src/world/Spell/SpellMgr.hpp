@@ -89,7 +89,7 @@ public:
     uint32_t getDiminishingGroup(uint32_t id) const;
 
     SpellInfo const* getSpellInfo(const uint32_t spellId) const;
-    SpellInfo const* getSpellInfoByDifficulty(const uint32_t spellId, const uint8_t difficulty) const;
+    SpellInfo const* getSpellInfoByDifficulty(const uint32_t spellDifficultyId, const uint8_t difficulty) const;
     SpellInfoMap const* getSpellInfoMap() const { return &mSpellInfoMapStore; }
 
     SkillRangeType getSkillRangeType(DBC::Structures::SkillLineEntry const* skill, bool racial) const;

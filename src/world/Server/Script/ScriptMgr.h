@@ -159,60 +159,64 @@ typedef std::map<uint32_t, SpellScript*> SpellScripts;
 typedef std::set<void*> ServerHookList;
 typedef std::list< Arcemu::DynLib* > DynamicLibraryMap;
 
-
 class SERVER_DECL ScriptMgr
 {
-    private:
-        // APGL End
-        // MIT Start
-        ScriptMgr() = default;
-        ~ScriptMgr() = default;
+private:
+    // APGL End
+    // MIT Start
+    ScriptMgr() = default;
+    ~ScriptMgr() = default;
 
-    public:
-        static ScriptMgr& getInstance();
+public:
+    static ScriptMgr& getInstance();
 
-        ScriptMgr(ScriptMgr&&) = delete;
-        ScriptMgr(ScriptMgr const&) = delete;
-        ScriptMgr& operator=(ScriptMgr&&) = delete;
-        ScriptMgr& operator=(ScriptMgr const&) = delete;
+    ScriptMgr(ScriptMgr&&) = delete;
+    ScriptMgr(ScriptMgr const&) = delete;
+    ScriptMgr& operator=(ScriptMgr&&) = delete;
+    ScriptMgr& operator=(ScriptMgr const&) = delete;
 
-        // Spell script hooks
-        SpellCastResult callScriptedSpellCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) const;
-        void callScriptedSpellAtStartCasting(Spell* spell);
-        void callScriptedSpellFilterTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets);
-        void callScriptedSpellBeforeHit(Spell* spell, uint8_t effectIndex);
-        void callScriptedSpellAfterMiss(Spell* spell, Unit* unitTarget);
-        SpellScriptEffectDamage callScriptedSpellDoCalculateEffect(Spell* spell, uint8_t effectIndex, int32_t* damage) const;
-        SpellScriptExecuteState callScriptedSpellBeforeSpellEffect(Spell* spell, uint8_t effectIndex) const;
-        void callScriptedSpellAfterSpellEffect(Spell* spell, uint8_t effectIndex);
+    // Spell script hooks
+    SpellCastResult callScriptedSpellCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) const;
+    void callScriptedSpellAtStartCasting(Spell* spell);
+    void callScriptedSpellFilterTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets);
+    void callScriptedSpellBeforeHit(Spell* spell, uint8_t effectIndex);
+    void callScriptedSpellAfterMiss(Spell* spell, Unit* unitTarget);
+    SpellScriptEffectDamage callScriptedSpellDoCalculateEffect(Spell* spell, uint8_t effectIndex, int32_t* damage) const;
+    SpellScriptExecuteState callScriptedSpellBeforeSpellEffect(Spell* spell, uint8_t effectIndex) const;
+    void callScriptedSpellAfterSpellEffect(Spell* spell, uint8_t effectIndex);
 
-        // Aura script hooks
-        void callScriptedAuraOnCreate(Aura* aur);
-        void callScriptedAuraOnApply(Aura* aur);
-        void callScriptedAuraOnRemove(Aura* aur, AuraRemoveMode mode);
-        void callScriptedAuraOnRefreshOrGainNewStack(Aura* aur, uint32_t newStackCount, uint32_t oldStackCount);
-        SpellScriptExecuteState callScriptedAuraBeforeAuraEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) const;
-        SpellScriptCheckDummy callScriptedAuraOnDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) const;
-        SpellScriptExecuteState callScriptedAuraOnPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, float_t* damage) const;
+    // Aura script hooks
+    void callScriptedAuraOnCreate(Aura* aur);
+    void callScriptedAuraOnApply(Aura* aur);
+    void callScriptedAuraOnRemove(Aura* aur, AuraRemoveMode mode);
+    void callScriptedAuraOnRefreshOrGainNewStack(Aura* aur, uint32_t newStackCount, uint32_t oldStackCount);
+    SpellScriptExecuteState callScriptedAuraBeforeAuraEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) const;
+    SpellScriptCheckDummy callScriptedAuraOnDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) const;
+    SpellScriptExecuteState callScriptedAuraOnPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, float_t* damage) const;
 
-        // Spell proc script hooks
-        void callScriptedSpellProcCreate(SpellProc* spellProc, Object* obj);
-        bool callScriptedSpellCanProc(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, DamageInfo damageInfo) const;
-        bool callScriptedSpellCheckProcFlags(SpellProc* spellProc, SpellProcFlags procFlags) const;
-        bool callScriptedSpellProcCanDelete(SpellProc* spellProc, uint32_t spellId, uint64_t casterGuid, uint64_t misc) const;
-        SpellScriptExecuteState callScriptedSpellProcDoEffect(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, DamageInfo damageInfo) const;
-        uint32_t callScriptedSpellCalcProcChance(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell) const;
-        bool callScriptedSpellCanProcOnTriggered(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, Aura* triggeredFromAura) const;
-        SpellScriptExecuteState callScriptedSpellProcCastSpell(SpellProc* spellProc, Unit* caster, Unit* victim, Spell* spellToProc);
+    // Spell proc script hooks
+    void callScriptedSpellProcCreate(SpellProc* spellProc, Object* obj);
+    bool callScriptedSpellCanProc(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, DamageInfo damageInfo) const;
+    bool callScriptedSpellCheckProcFlags(SpellProc* spellProc, SpellProcFlags procFlags) const;
+    bool callScriptedSpellProcCanDelete(SpellProc* spellProc, uint32_t spellId, uint64_t casterGuid, uint64_t misc) const;
+    SpellScriptExecuteState callScriptedSpellProcDoEffect(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, DamageInfo damageInfo) const;
+    uint32_t callScriptedSpellCalcProcChance(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell) const;
+    bool callScriptedSpellCanProcOnTriggered(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, Aura* triggeredFromAura) const;
+    SpellScriptExecuteState callScriptedSpellProcCastSpell(SpellProc* spellProc, Unit* caster, Unit* victim, Spell* spellToProc);
 
-        SpellScript* getSpellScript(uint32_t spellId) const;
-        void register_spell_script(uint32_t spellId, SpellScript* ss);
-        void register_spell_script(uint32_t* spellIds, SpellScript* ss);
+    SpellScript* getSpellScript(uint32_t spellId) const;
+    // By default this will register spell script to spell's all different difficulties (if they exist)
+    void register_spell_script(uint32_t spellId, SpellScript* ss, bool registerAllDifficulties = true);
+    void register_spell_script(uint32_t* spellIds, SpellScript* ss);
 
-        // Creature AI script hooks
-        void DamageTaken(Creature* pCreature, Unit* attacker, uint32_t* damage) const;
-        CreatureAIScript* getCreatureAIScript(Creature* pCreature) const;
+    // Creature AI script hooks
+    void DamageTaken(Creature* pCreature, Unit* attacker, uint32_t* damage) const;
+    CreatureAIScript* getCreatureAIScript(Creature* pCreature) const;
 
+private:
+    void _register_spell_script(uint32_t spellId, SpellScript* ss);
+
+public:
         // MIT End
         // APGL Start
 

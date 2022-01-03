@@ -3855,7 +3855,7 @@ void SetupICC(ScriptMgr* mgr)
     mgr->register_creature_script(gunshipIds, &GunshipAI::Create);
 
     //Spell Bone Storm
-    mgr->register_spell_script(boneStormIds, new BoneStormDamage);
+    mgr->register_spell_script(SPELL_BONE_STORM_EFFECT, new BoneStormDamage);
     mgr->register_spell_script(SPELL_BONE_STORM, new BoneStorm);
 
     // Spell Bone Spike Graveyard
