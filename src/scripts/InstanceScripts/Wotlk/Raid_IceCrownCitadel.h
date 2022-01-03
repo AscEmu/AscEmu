@@ -383,6 +383,12 @@ enum IceCrownCitadelGOs
     GO_MIGHTY_WIND                              = 201834,
     GO_PORTAL_TO_STORMWIND                      = 193956,
     GO_PORTAL_TO_UNDERCITY                      = 193955,
+    GO_ALLIANCE_TELEPORTER                      = 201858,
+    GO_HORDE_TELEPORTER                         = 201880,
+    GO_ALLIANCE_TENT                            = 201868,
+    GO_ALLIANCE_BANNER                          = 201869,
+    GO_HORDE_TENT1                              = 201886,
+    GO_HORDE_TENT2                              = 201887,
 
     // Professor Putricide
     GO_ORANGE_PLAGUE_MONSTER_ENTRANCE           = 201371,
@@ -500,6 +506,12 @@ enum IceCrownCitadelNpcEntrys
     NPC_SE_KOR_KRON_REAVER                      = 37920,
     NPC_SE_SKYBREAKER_MARINE                    = 37830,
     NPC_FROST_FREEZE_TRAP                       = 37744,
+    NPC_BRAZIE                                  = 37904,
+    NPC_SHELY                                   = 37903,
+    NPC_CANDI                                   = 37935,
+    NPC_MORGAN                                  = 37936,
+    NPC_ALLIANCE_WORKER                         = 37902,
+    NPC_HORDE_WORKER                            = 37930,
 
     // Festergut
     NPC_GAS_DUMMY                               = 36659,
@@ -1205,6 +1217,24 @@ LocationVector const jainaSpawn = { -530.3542f, 2222.33f, 539.1138f, 6.14f };
 
 LocationVector const deathbringerPos = { -496.3542f, 2211.33f, 541.1138f, 0.0f };
 LocationVector const firstStepPos = { -541.3177f, 2211.365f, 539.2921f, 0.0f };
+
+LocationVector const deathbringerAllianceGOs[5] =
+{
+    {-560.6505f, 2220.377f, 539.2872f, 6.27f}, // Teleporter left
+    {-560.7480f, 2200.897f, 539.2870f, 5.51f}, // Teleporter Right
+    {-532.1137f, 2231.306f, 539.2870f, 5.51f}, // Alliance Tent1
+    {-528.0040f, 2235.743f, 539.2870f, 5.51f}, // Alliance Tent2
+    {-532.0040f, 2235.743f, 539.2870f, 5.51f}  // Alliance Banner
+};
+
+LocationVector const deathbringerHordeGOs[5] =
+{
+    {-560.6505f, 2220.377f, 539.2872f, 6.27f}, // Teleporter left
+    {-560.7480f, 2200.897f, 539.2870f, 5.51f}, // Teleporter Right
+    {-532.1137f, 2231.306f, 539.2870f, 5.51f}, // Horde Tent 1
+    {-523.0040f, 2241.743f, 539.2870f, 5.51f}, // Horde Tent 2
+    {-523.0040f, 2241.743f, 539.2870f, 5.51f} // Horde Banner
+};
 
 LocationVector const chargePos[6] =
 {

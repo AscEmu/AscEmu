@@ -604,7 +604,36 @@ public:
                     return;
 
                 deathbringerGoSpawned = true;
-                // todo spawn gos at deathbringers rise
+                GameObject* teleporter1 = nullptr;
+                GameObject* teleporter2 = nullptr;
+
+                if (TeamInInstance == TEAM_HORDE)
+                {
+                    teleporter1 = spawnGameObject(GO_HORDE_TELEPORTER, deathbringerHordeGOs[0].x, deathbringerHordeGOs[0].y, deathbringerHordeGOs[0].z, deathbringerHordeGOs[0].o);
+                    teleporter2 = spawnGameObject(GO_HORDE_TELEPORTER, deathbringerHordeGOs[1].x, deathbringerHordeGOs[1].y, deathbringerHordeGOs[1].z, deathbringerHordeGOs[1].o);
+                    spawnGameObject(GO_HORDE_TENT1, deathbringerHordeGOs[2].x, deathbringerHordeGOs[2].y, deathbringerHordeGOs[2].z, deathbringerHordeGOs[2].o);
+                    spawnGameObject(GO_HORDE_TENT2, deathbringerHordeGOs[3].x, deathbringerHordeGOs[3].y, deathbringerHordeGOs[3].z, deathbringerHordeGOs[3].o);
+
+                    spawnCreature(NPC_CANDI, -530.0f, 2229.0f, 539.29f, 2.33f);
+                    spawnCreature(NPC_MORGAN, -526.0f, 2233.0f, 539.29f, 2.33f);
+                }
+                else
+                {
+                    teleporter1 = spawnGameObject(GO_ALLIANCE_TELEPORTER, deathbringerAllianceGOs[0].x, deathbringerAllianceGOs[0].y, deathbringerAllianceGOs[0].z, deathbringerAllianceGOs[0].o);
+                    teleporter2 = spawnGameObject(GO_ALLIANCE_TELEPORTER, deathbringerAllianceGOs[1].x, deathbringerAllianceGOs[1].y, deathbringerAllianceGOs[1].z, deathbringerAllianceGOs[1].o);
+                    spawnGameObject(GO_ALLIANCE_TENT, deathbringerAllianceGOs[2].x, deathbringerAllianceGOs[2].y, deathbringerAllianceGOs[2].z, deathbringerAllianceGOs[2].o);
+                    spawnGameObject(GO_ALLIANCE_TENT, deathbringerAllianceGOs[3].x, deathbringerAllianceGOs[3].y, deathbringerAllianceGOs[3].z, deathbringerAllianceGOs[3].o);
+                    spawnGameObject(GO_ALLIANCE_BANNER, deathbringerAllianceGOs[4].x, deathbringerAllianceGOs[4].y, deathbringerAllianceGOs[4].z, deathbringerAllianceGOs[4].o);
+
+                    spawnCreature(NPC_BRAZIE, -530.0f, 2229.0f, 539.29f, 2.33f);
+                    spawnCreature(NPC_SHELY, -526.0f, 2233.0f, 539.29f, 2.33f);
+                }
+
+                if (teleporter1 && teleporter2)
+                {
+                    teleporter1->setState(GO_STATE_OPEN);
+                    teleporter2->setState(GO_STATE_OPEN);
+                }
                 break;
             }
         }
@@ -1191,7 +1220,7 @@ public:
         getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_AGRO);
 
         getCreature()->castSpell(summoner, SPELL_IMPALED, false);
-        summoner->castSpell(getCreature(), SPELL_RIDE_VEHICLE, true);
+        summoner->castSpell(getCreature(), SPELL_RIDE_VEHICLE_SE, true);
         scriptEvents.addEvent(EVENT_FAIL_BONED, 8000);
         hasTrappedUnit = true;
     }
@@ -3313,8 +3342,8 @@ public:
         mInstance = (IceCrownCitadelScript*)getInstanceScript();
         getCreature()->setAItoUse(true);
         getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
-
         getCreature()->setPower(POWER_TYPE_ENERGY, 0);
+
         // disable Power regen
         getCreature()->addNpcFlags(UNIT_NPC_FLAG_DISABLE_PWREGEN);
 
@@ -3500,6 +3529,12 @@ public:
             {
                 _introDone = true;
                 _fallenChampionCastCount = 0;
+
+                _castAISpell(ZeroPowerSpell);
+                _castAISpell(BloodLinkSpell);
+                _castAISpell(BloodPowerSpell);
+                _castAISpell(MarkOfTheFallenSpell);
+                _castAISpell(RuneOfBloodSSpell);
 
                 scriptEvents.addEvent(EVENT_SUMMON_BLOOD_BEAST_SE, 30000, PHASE_COMBAT);
                 break;
@@ -3810,6 +3845,11 @@ class BoilingBlood : public SpellScript
 public:
     void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) override
     {
+        effectTargets->erase(std::remove_if(effectTargets->begin(), effectTargets->end(), [&](uint64_t guid) {
+            if (Unit* target = spell->getUnitCaster()->GetMapMgrUnit(guid))
+                return spell->getUnitCaster()->CalcDistance(target) > 100.0f;
+            }), effectTargets->end());
+
         effectTargets->erase(std::remove(effectTargets->begin(), effectTargets->end(), spell->getUnitCaster()->getTargetGuid()), effectTargets->end());
         if (effectTargets->empty())
             return;
