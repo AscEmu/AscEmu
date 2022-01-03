@@ -45,6 +45,7 @@ public:
 
         return SpellScriptCheckDummy::DUMMY_OK;
     }
+
 private:
     bool _preventChatEmotes = true;
     bool _withDynamicFlag = true;

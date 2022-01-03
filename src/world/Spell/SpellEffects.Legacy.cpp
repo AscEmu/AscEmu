@@ -88,7 +88,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectApplyAura,               //   6 SPELL_EFFECT_APPLY_AURA
     &Spell::SpellEffectEnvironmentalDamage,     //   7 SPELL_EFFECT_ENVIRONMENTAL_DAMAGE
     &Spell::SpellEffectPowerDrain,              //   8 SPELL_EFFECT_POWER_DRAIN
-    &Spell::SpellEffectHealthLeech,             //   9 SPELL_EFFECT_HEALTH_LEECH
+    &Spell::spellEffectHealthLeech,             //   9 SPELL_EFFECT_HEALTH_LEECH
     &Spell::SpellEffectHeal,                    //  10 SPELL_EFFECT_NULL_10
     &Spell::SpellEffectBind,                    //  11 SPELL_EFFECT_NULL_11
     &Spell::spellEffectNotImplemented,          //  12 SPELL_EFFECT_NULL_12
@@ -462,6 +462,15 @@ void Spell::spellEffectNotImplemented(uint8_t effIndex)
 void Spell::spellEffectNotUsed(uint8_t /*effIndex*/)
 {
     // Handled elsewhere or not used, so do nothing
+}
+
+void Spell::spellEffectHealthLeech(uint8_t effIndex)
+{
+    if (unitTarget == nullptr || !unitTarget->isAlive())
+        return;
+
+    m_targetDamageInfo = m_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), static_cast<float_t>(damage), effIndex, m_triggeredSpell, false, true, isForcedCrit, this);
+    isTargetDamageInfoSet = true;
 }
 
 void Spell::spellEffectSummonTotem(uint8_t summonSlot, CreatureProperties const* properties, LocationVector& v)
@@ -1988,36 +1997,6 @@ void Spell::SpellEffectPowerDrain(uint8_t effectIndex)  // Power Drain
         amt = curPower;
     unitTarget->setPower(powerField, curPower - amt);
     u_caster->energize(u_caster, getSpellInfo()->getId(), amt, powerField);
-}
-
-void Spell::SpellEffectHealthLeech(uint8_t /*effectIndex*/) // Health Leech
-{
-    if (!unitTarget || !unitTarget->isAlive())
-        return;
-
-    uint32 curHealth = unitTarget->getHealth();
-    uint32 amt = damage;
-    if (amt > curHealth)
-    {
-        amt = curHealth;
-    }
-
-    if (!u_caster)
-        return;
-
-    u_caster->dealDamage(unitTarget, damage, getSpellInfo()->getId());
-
-    uint32 playerCurHealth = u_caster->getHealth();
-    uint32 playerMaxHealth = u_caster->getMaxHealth();
-
-    if (playerCurHealth + amt > playerMaxHealth)
-    {
-        u_caster->setHealth(playerMaxHealth);
-    }
-    else
-    {
-        u_caster->modHealth(amt);
-    }
 }
 
 void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal

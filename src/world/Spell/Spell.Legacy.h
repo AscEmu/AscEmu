@@ -503,7 +503,6 @@ class SERVER_DECL Spell
         void SpellEffectApplyAura(uint8_t effectIndex);
         void SpellEffectEnvironmentalDamage(uint8_t effectIndex);
         void SpellEffectPowerDrain(uint8_t effectIndex);
-        void SpellEffectHealthLeech(uint8_t effectIndex);
         void SpellEffectHeal(uint8_t effectIndex);
         void SpellEffectBind(uint8_t effectIndex);
         void SpellEffectQuestComplete(uint8_t effectIndex);
