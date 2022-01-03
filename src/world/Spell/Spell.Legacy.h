@@ -498,7 +498,6 @@ class SERVER_DECL Spell
 
         void SpellEffectInstantKill(uint8_t effectIndex);
         void SpellEffectSchoolDMG(uint8_t effectIndex);
-        void SpellEffectDummy(uint8_t effectIndex);
         void SpellEffectTeleportUnits(uint8_t effectIndex);
         void SpellEffectApplyAura(uint8_t effectIndex);
         void SpellEffectEnvironmentalDamage(uint8_t effectIndex);
@@ -560,7 +559,6 @@ class SERVER_DECL Spell
         void SpellEffectUseGlyph(uint8_t effectIndex);
         void SpellEffectHealMechanical(uint8_t effectIndex);
         void SpellEffectSummonObjectWild(uint8_t effectIndex);
-        void SpellEffectScriptEffect(uint8_t effectIndex);
         void SpellEffectSanctuary(uint8_t effectIndex);
         void SpellEffectAddComboPoints(uint8_t effectIndex);
         void SpellEffectCreateHouse(uint8_t effectIndex);

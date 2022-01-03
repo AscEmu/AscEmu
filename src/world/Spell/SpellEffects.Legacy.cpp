@@ -82,7 +82,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::spellEffectNotImplemented,          //   0 SPELL_EFFECT_NULL_0
     &Spell::SpellEffectInstantKill,             //   1 SPELL_EFFECT_INSTANT_KILL
     &Spell::SpellEffectSchoolDMG,               //   2 SPELL_EFFECT_SCHOOL_DMG
-    &Spell::SpellEffectDummy,                   //   3 SPELL_EFFECT_DUMMY
+    &Spell::spellEffectDummy,                   //   3 SPELL_EFFECT_DUMMY
     &Spell::spellEffectNotImplemented,          //   4 SPELL_EFFECT_NULL_4
     &Spell::SpellEffectTeleportUnits,           //   5 SPELL_EFFECT_TELEPORT_UNITS
     &Spell::SpellEffectApplyAura,               //   6 SPELL_EFFECT_APPLY_AURA
@@ -156,7 +156,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectUseGlyph,                //  74 SPELL_EFFECT_USE_GLYPH
     &Spell::SpellEffectHealMechanical,          //  75 SPELL_EFFECT_HEAL_MECHANICAL
     &Spell::SpellEffectSummonObjectWild,        //  76 SPELL_EFFECT_SUMMON_OBJECT_WILD
-    &Spell::SpellEffectScriptEffect,            //  77 SPELL_EFFECT_SCRIPT_EFFECT
+    &Spell::spellEffectScriptEffect,            //  77 SPELL_EFFECT_SCRIPT_EFFECT
     &Spell::spellEffectNotImplemented,          //  78 SPELL_EFFECT_NULL_78
     &Spell::SpellEffectSanctuary,               //  79 SPELL_EFFECT_SANCTUARY
     &Spell::SpellEffectAddComboPoints,          //  80 SPELL_EFFECT_ADD_COMBO_POINTS
@@ -464,6 +464,23 @@ void Spell::spellEffectNotUsed(uint8_t /*effIndex*/)
     // Handled elsewhere or not used, so do nothing
 }
 
+void Spell::spellEffectDummy(uint8_t effectIndex)
+{
+    // Check that the dummy effect is handled properly in spell script
+    // In case it's not, generate warning to debug log
+    const auto scriptResult = sScriptMgr.callScriptedSpellOnDummyOrScriptedEffect(this, effectIndex);
+    if (scriptResult == SpellScriptCheckDummy::DUMMY_OK)
+        return;
+
+    if (sObjectMgr.CheckforDummySpellScripts(static_cast<Player*>(u_caster), m_spellInfo->getId()))
+        return;
+
+    if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), effectIndex, this))
+        return;
+
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Spell::spellEffectDummy : Spell %u (%s) has a dummy effect index (%hhu), but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), effectIndex);
+}
+
 void Spell::spellEffectHealthLeech(uint8_t effIndex)
 {
     if (unitTarget == nullptr || !unitTarget->isAlive())
@@ -558,6 +575,23 @@ void Spell::spellEffectProficiency(uint8_t /*effectIndex*/)
         playerTarget->addWeaponProficiency(subclass);
         playerTarget->sendSetProficiencyPacket(ITEM_CLASS_WEAPON, playerTarget->getWeaponProficiency());
     }
+}
+
+void Spell::spellEffectScriptEffect(uint8_t effectIndex)
+{
+    // Check that the scripted effect is handled properly in spell script
+    // In case it's not, send error log
+    const auto scriptResult = sScriptMgr.callScriptedSpellOnDummyOrScriptedEffect(this, effectIndex);
+    if (scriptResult == SpellScriptCheckDummy::DUMMY_OK)
+        return;
+
+    if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), effectIndex, this))
+        return;
+
+    if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->getId(), effectIndex, this))
+        return;
+
+    sLogger.failure("Spell::spellEffectScriptEffect : Spell %u (%s) has a scripted effect index (%hhu), but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), effectIndex);
 }
 
 // MIT End
@@ -1567,17 +1601,6 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             }
         }
     }
-}
-
-void Spell::SpellEffectDummy(uint8_t effectIndex) // Dummy(Scripted events)
-{
-    if (sObjectMgr.CheckforDummySpellScripts(static_cast<Player*>(u_caster), m_spellInfo->getId()))
-        return;
-
-    if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), effectIndex, this))
-        return;
-
-    sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Spell ID: %u (%s) has a dummy effect index (%hhu) but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), effectIndex);
 }
 
 void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
@@ -4863,18 +4886,6 @@ void Spell::SpellEffectSummonObjectWild(uint8_t effectIndex)
     GoSummon->SetSummoned(u_caster);
 
     sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-}
-
-void Spell::SpellEffectScriptEffect(uint8_t effectIndex) // Script Effect
-{
-    // Try a dummy SpellHandler
-    if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), effectIndex, this))
-        return;
-
-    if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->getId(), effectIndex, this))
-        return;
-
-    sLogger.failure("Spell ID: %u (%s) has a scripted effect index (%hhu) but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), effectIndex);
 }
 
 void Spell::SpellEffectSanctuary(uint8_t /*effectIndex*/) // Stop all attacks made to you

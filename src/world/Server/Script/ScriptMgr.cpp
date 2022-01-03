@@ -114,6 +114,15 @@ SpellScriptExecuteState ScriptMgr::callScriptedSpellBeforeSpellEffect(Spell* spe
     return spellScript->beforeSpellEffect(spell, effectIndex);
 }
 
+SpellScriptCheckDummy ScriptMgr::callScriptedSpellOnDummyOrScriptedEffect(Spell* spell, uint8_t effectIndex) const
+{
+    const auto spellScript = getSpellScript(spell->getSpellInfo()->getId());
+    if (spellScript == nullptr)
+        return SpellScriptCheckDummy::DUMMY_NOT_HANDLED;
+
+    return spellScript->onDummyOrScriptedEffect(spell, effectIndex);
+}
+
 void ScriptMgr::callScriptedSpellAfterSpellEffect(Spell* spell, uint8_t effectIndex)
 {
     const auto spellScript = getSpellScript(spell->getSpellInfo()->getId());
