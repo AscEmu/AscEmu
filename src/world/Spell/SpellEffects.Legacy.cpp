@@ -620,8 +620,8 @@ void Spell::spellEffectForceCast(uint8_t effectIndex)
     Unit* target = nullptr;
     switch (getSpellInfo()->getId())
     {
-        case 72378:
-        case 73058:
+        case 72378: // Deathbringer Saurfang - Blood Nova 10m
+        case 73058: // Deathbringer Saurfang - Blood Nova 25m
             target = unitTarget;
             break;
         default:

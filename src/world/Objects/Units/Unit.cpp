@@ -3003,19 +3003,19 @@ void Unit::setDualWield(bool enable)
     }
 }
 
-void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, bool triggered)
+void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, bool triggered/* = false*/)
 {
     const SpellForcedBasePoints forcedBasePoints;
     castSpell(targetGuid, spellId, forcedBasePoints, triggered);
 }
 
-void Unit::castSpell(Unit* target, uint32_t spellId, bool triggered)
+void Unit::castSpell(Unit* target, uint32_t spellId, bool triggered/* = false*/)
 {
     const SpellForcedBasePoints forcedBasePoints;
     castSpell(target, spellId, forcedBasePoints, triggered);
 }
 
-void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, bool triggered)
+void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, bool triggered/* = false*/)
 {
     if (spellInfo == nullptr)
         return;
@@ -3024,7 +3024,7 @@ void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, bool trigg
     castSpell(targetGuid, spellInfo, forcedBasePoints, triggered);
 }
 
-void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered)
+void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered/* = false*/)
 {
     if (spellInfo == nullptr)
         return;
@@ -3033,7 +3033,7 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered)
     castSpell(target, spellInfo, forcedBasePoints, triggered);
 }
 
-void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered)
+void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered/* = false*/)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
@@ -3042,7 +3042,7 @@ void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, SpellForcedBasePoint
     castSpell(targetGuid, spellInfo, forcedBasepoints, triggered);
 }
 
-void Unit::castSpell(Unit* target, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered)
+void Unit::castSpell(Unit* target, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered/* = false*/)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
@@ -3051,7 +3051,7 @@ void Unit::castSpell(Unit* target, uint32_t spellId, SpellForcedBasePoints force
     castSpell(target, spellInfo, forcedBasepoints, triggered);
 }
 
-void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasePoints, int32_t spellCharges, bool triggered)
+void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasePoints, int32_t spellCharges, bool triggered/* = false*/)
 {
     if (spellInfo == nullptr)
         return;
@@ -3076,13 +3076,28 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePo
     newSpell->prepare(&targets);
 }
 
-void Unit::castSpellLoc(const LocationVector location, uint32_t spellId, bool triggered)
+void Unit::castSpell(SpellCastTargets targets, uint32_t spellId, bool triggered/* = false*/)
+{
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
+    castSpell(targets, spellInfo, triggered);
+}
+
+void Unit::castSpell(SpellCastTargets targets, SpellInfo const* spellInfo, bool triggered/* = false*/)
+{
+    if (spellInfo == nullptr)
+        return;
+
+    Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
+    newSpell->prepare(&targets);
+}
+
+void Unit::castSpellLoc(const LocationVector location, uint32_t spellId, bool triggered/* = false*/)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     castSpellLoc(location, spellInfo, triggered);
 }
 
-void Unit::castSpellLoc(const LocationVector location, SpellInfo const* spellInfo, bool triggered)
+void Unit::castSpellLoc(const LocationVector location, SpellInfo const* spellInfo, bool triggered/* = false*/)
 {
     if (spellInfo == nullptr)
         return;

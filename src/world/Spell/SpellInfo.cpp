@@ -422,8 +422,11 @@ bool SpellInfo::isNegativeAura() const
     // Use id only if spell has no family flags
     switch (getId())
     {
-        // Deathbringer Saurfang - Rune of Blood should be negative
+        // Deathbringer Saurfang - Mark of the Fallen Champion
+        case 72293:
+        // Deathbringer Saurfang - Rune of Blood
         case 72410:
+            // These should be negative
             return true;
         default:
             break;

@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <vector>
 #include <string>
 #include <sstream>
-#include <random>
 
 #include <fstream>
 #include "utf8.h"

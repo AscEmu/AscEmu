@@ -1176,13 +1176,14 @@ enum SpellsDeathbringerSaurfang
     SPELL_SUMMON_BLOOD_BEAST_25_MAN             = 72356, // Additional cast, does not replace
     SPELL_FRENZY                                = 72737,
     SPELL_BLOOD_NOVA_TRIGGER                    = 72378,
-    SPELL_BLOOD_NOVA                            = 72380,
+    SPELL_BLOOD_NOVA_DAMAGE                     = 72380,
     SPELL_BLOOD_POWER                           = 72371,
     SPELL_BLOOD_LINK_POWER                      = 72195,
     SPELL_BLOOD_LINK_DUMMY                      = 72202,
     SPELL_MARK_OF_THE_FALLEN_CHAMPION           = 72293,
     SPELL_BOILING_BLOOD                         = 72385,
     SPELL_RUNE_OF_BLOOD                         = 72410,
+    SPELL_RUNE_OF_BLOOD_LEECH                   = 72409,
 
     // Blood Beast
     SPELL_BLOOD_LINK_BEAST                      = 72176,

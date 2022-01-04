@@ -697,16 +697,16 @@ public:
     void TransportBoarded(Unit* pUnit, Transporter* transport)
     {
         if (transport->getEntry() == GO_THE_SKYBREAKER_ALLIANCE_ICC)
-            pUnit->castSpell(pUnit, SPELL_ON_SKYBREAKER_DECK, false);
+            pUnit->castSpell(pUnit, SPELL_ON_SKYBREAKER_DECK);
 
         if (transport->getEntry() == GO_THE_SKYBREAKER_HORDE_ICC)
-            pUnit->castSpell(pUnit, SPELL_ON_SKYBREAKER_DECK, false);
+            pUnit->castSpell(pUnit, SPELL_ON_SKYBREAKER_DECK);
 
         if (transport->getEntry() == GO_ORGRIM_S_HAMMER_HORDE_ICC)
-            pUnit->castSpell(pUnit, SPELL_ON_ORGRIMS_HAMMER_DECK, false);
+            pUnit->castSpell(pUnit, SPELL_ON_ORGRIMS_HAMMER_DECK);
 
         if (transport->getEntry() == GO_ORGRIM_S_HAMMER_ALLIANCE_ICC)
-            pUnit->castSpell(pUnit, SPELL_ON_ORGRIMS_HAMMER_DECK, false);
+            pUnit->castSpell(pUnit, SPELL_ON_ORGRIMS_HAMMER_DECK);
     }
 
     void TransportUnboarded(Unit* pUnit, Transporter* transport)
@@ -1219,7 +1219,7 @@ public:
         // Make our Creature in Combat otherwise on Died Script wont trigger
         getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_AGRO);
 
-        getCreature()->castSpell(summoner, SPELL_IMPALED, false);
+        getCreature()->castSpell(summoner, SPELL_IMPALED);
         summoner->castSpell(getCreature(), SPELL_RIDE_VEHICLE_SE, true);
         scriptEvents.addEvent(EVENT_FAIL_BONED, 8000);
         hasTrappedUnit = true;
@@ -2781,11 +2781,11 @@ public:
                     if (varian)
                     {
                         varian->SendTimedScriptTextChatMessage(SAY_OUTRO_ALLIANCE_11_SE, 2000);
-                        varian->castSpell(nullptr, SPELL_TELEPORT_VISUAL_GB, false);    // maybe not the correct spell
+                        varian->castSpell(nullptr, SPELL_TELEPORT_VISUAL_GB);    // maybe not the correct spell
                     }
                     
                     if (jaina)
-                        jaina->castSpell(nullptr, SPELL_TELEPORT_VISUAL_GB, false);     // maybe not the correct spell
+                        jaina->castSpell(nullptr, SPELL_TELEPORT_VISUAL_GB);     // maybe not the correct spell
 
                     scriptEvents.addEvent(EVENT_OUTRO_ALLIANCE_12_SE, 6000);
                     break;
@@ -2832,14 +2832,14 @@ public:
                     Creature* varian = findNearestCreature(NPC_SE_KING_VARIAN_WRYNN, 100.0f);
                     if (varian)
                     {
-                        varian->castSpell(nullptr, SPELL_TELEPORT_VISUAL_GB, false);     // maybe not the correct spell
+                        varian->castSpell(nullptr, SPELL_TELEPORT_VISUAL_GB);     // maybe not the correct spell
                         varian->Despawn(1000, 0);
                     }
 
                     Creature* jaina = findNearestCreature(NPC_SE_JAINA_PROUDMOORE, 100.0f);
                     if (jaina)
                     {
-                        jaina->castSpell(nullptr, SPELL_TELEPORT_VISUAL_GB, false);     // maybe not the correct spell
+                        jaina->castSpell(nullptr, SPELL_TELEPORT_VISUAL_GB);     // maybe not the correct spell
                         jaina->Despawn(1000, 0);
                     }
 
@@ -3332,6 +3332,20 @@ protected:
     std::list<Creature*> _guardList;
 };
 
+void updateBloodPowerAura(Aura* aur, int32_t value)
+{
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        auto aurEff = aur->getModifiableAuraEffect(i);
+        if (aurEff->getAuraEffectType() == SPELL_AURA_NONE)
+            continue;
+
+        aurEff->setEffectBaseDamage(value);
+    }
+
+    aur->refresh();
+}
+
 class DeathbringerSaurfangAI : public CreatureAIScript
 {
 public:
@@ -3366,7 +3380,7 @@ public:
 
         BoilingBloodSpell = addAISpell(SPELL_BOILING_BLOOD, 15.0f, TARGET_SELF, 0, 15);
         BoilingBloodSpell->setAvailableForScriptPhase({ PHASE_COMBAT });
-        BloodNovaSpell = addAISpell(SPELL_BLOOD_NOVA_TRIGGER, 15.0f, TARGET_SOURCE, 0, 17);
+        BloodNovaSpell = addAISpell(SPELL_BLOOD_NOVA_TRIGGER, 15.0f, TARGET_SELF, 0, 17);
         BloodNovaSpell->setAvailableForScriptPhase({ PHASE_COMBAT });
         RuneOfBloodSpell = addAISpell(SPELL_RUNE_OF_BLOOD, 15.0f, TARGET_ATTACKING, 0, 20);
         RuneOfBloodSpell->setAvailableForScriptPhase({ PHASE_COMBAT });
@@ -3385,7 +3399,9 @@ public:
         ZeroPowerSpell = addAISpell(SPELL_ZERO_POWER, 0.0f, TARGET_SELF, 0, 0, false, true);
         BloodLinkSpell = addAISpell(SPELL_BLOOD_LINK, 0.0f, TARGET_SELF, 0, 0, false, true);
         BloodPowerSpell = addAISpell(SPELL_BLOOD_POWER, 0.0f, TARGET_SELF, 0, 0, false, true);
-        MarkOfTheFallenSpell = addAISpell(SPELL_MARK_OF_THE_FALLEN_CHAMPION_S, 0.0f, TARGET_SELF, 0, 0, false, true);
+        MarkOfTheFallenSpell_Self = addAISpell(SPELL_MARK_OF_THE_FALLEN_CHAMPION_S, 0.0f, TARGET_SELF, 0, 0, false, true);
+        MarkOfTheFallenSpell = addAISpell(SPELL_MARK_OF_THE_FALLEN_CHAMPION, 0.0f, TARGET_CUSTOM, 0, 0);
+        // todo aaron, spell is casted but this db emote is not happening :/
         MarkOfTheFallenSpell->addDBEmote(SAY_DEATHBRINGER_MARK);
         RuneOfBloodSSpell = addAISpell(SPELL_RUNE_OF_BLOOD_S, 0.0f, TARGET_SELF, 0, 0, false, true);
         RemoveMarksSpell = addAISpell(SPELL_REMOVE_MARKS_OF_THE_FALLEN_CHAMPION, 0.0f, TARGET_SOURCE);
@@ -3423,7 +3439,7 @@ public:
         _castAISpell(ZeroPowerSpell);
         _castAISpell(BloodLinkSpell);
         _castAISpell(BloodPowerSpell);
-        _castAISpell(MarkOfTheFallenSpell);
+        _castAISpell(MarkOfTheFallenSpell_Self);
         _castAISpell(RuneOfBloodSSpell);
         _removeAura(SPELL_BERSERK);
         _removeAura(SPELL_FRENZY);
@@ -3533,7 +3549,7 @@ public:
                 _castAISpell(ZeroPowerSpell);
                 _castAISpell(BloodLinkSpell);
                 _castAISpell(BloodPowerSpell);
-                _castAISpell(MarkOfTheFallenSpell);
+                _castAISpell(MarkOfTheFallenSpell_Self);
                 _castAISpell(RuneOfBloodSSpell);
 
                 scriptEvents.addEvent(EVENT_SUMMON_BLOOD_BEAST_SE, 30000, PHASE_COMBAT);
@@ -3616,14 +3632,20 @@ public:
             }
             case ACTION_MARK_OF_THE_FALLEN_CHAMPION:
             {
-                /*if (Unit* target = SelectTarget(SelectTargetMethod::Random, 1, 0.0f, true, true, -SPELL_MARK_OF_THE_FALLEN_CHAMPION))
+                // todo aaron, fix this xD
+                if (Unit* target = getCreature()->getAIInterface()->getCurrentTarget())
+                //if (Unit* target = SelectTarget(SelectTargetMethod::Random, 1, 0.0f, true, true, -SPELL_MARK_OF_THE_FALLEN_CHAMPION))
                 {
                     ++_fallenChampionCastCount;
-                    DoCast(target, SPELL_MARK_OF_THE_FALLEN_CHAMPION);
-                    me->SetPower(POWER_ENERGY, 0);
-                    if (Aura* bloodPower = me->GetAura(SPELL_BLOOD_POWER))
-                        bloodPower->RecalculateAmountOfEffects();
-                }*/
+                    MarkOfTheFallenSpell->setCustomTarget(target);
+                    _castAISpell(MarkOfTheFallenSpell);
+
+                    getCreature()->setPower(POWER_TYPE_ENERGY, 0);
+
+                    // Reset Blood Power aura values
+                    if (Aura* bloodPower = getCreature()->getAuraWithId(SPELL_BLOOD_POWER))
+                        updateBloodPowerAura(bloodPower, 1);
+                }
                 break;
             }
         }
@@ -3710,6 +3732,7 @@ protected:
     CreatureAISpells* BloodLinkSpell;
     CreatureAISpells* BloodPowerSpell;
     CreatureAISpells* MarkOfTheFallenSpell;
+    CreatureAISpells* MarkOfTheFallenSpell_Self;
     CreatureAISpells* RuneOfBloodSSpell;
     CreatureAISpells* FrenzySpell;
     CreatureAISpells* RemoveMarksSpell;
@@ -3840,25 +3863,185 @@ public:
     }
 };
 
+// Blood Nova and Rune of Blood should cast Blood Link dummy on Saurfang
+class GenericBloodLinkTrigger : public SpellScript
+{
+public:
+    SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* spell, uint8_t effIndex) override
+    {
+        if (effIndex != EFF_INDEX_1)
+            return SpellScriptCheckDummy::DUMMY_NOT_HANDLED;
+
+        auto* const saurfang = spell->getUnitCaster();
+        auto* const unitTarget = spell->GetUnitTarget();
+        const auto spellId = spell->getSpellInfo()->calculateEffectValue(EFF_INDEX_1);
+        if (saurfang != nullptr && unitTarget != nullptr)
+            unitTarget->castSpell(saurfang, spellId, true);
+
+        return SpellScriptCheckDummy::DUMMY_OK;
+    }
+};
+
 class BoilingBlood : public SpellScript
 {
 public:
-    void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) override
+    void filterEffectTargets(Spell* spell, uint8_t /*effectIndex*/, std::vector<uint64_t>* effectTargets) override
     {
-        effectTargets->erase(std::remove_if(effectTargets->begin(), effectTargets->end(), [&](uint64_t guid) {
-            if (Unit* target = spell->getUnitCaster()->GetMapMgrUnit(guid))
-                return spell->getUnitCaster()->CalcDistance(target) > 100.0f;
-            }), effectTargets->end());
-
+        // Should not be casted on current target
         effectTargets->erase(std::remove(effectTargets->begin(), effectTargets->end(), spell->getUnitCaster()->getTargetGuid()), effectTargets->end());
         if (effectTargets->empty())
             return;
 
-        auto it = std::begin(*effectTargets);
-        std::advance(it, Util::getRandomUInt(0, uint32_t(std::size(*effectTargets)) - 1));
-        const auto guid = *it;
+        // Should be casted on 3 random targets
+        if (effectTargets->size() > 3)
+        {
+            Util::randomShuffleVector(effectTargets);
+            effectTargets->erase(effectTargets->begin() + 3, effectTargets->end());
+        }
+    }
+
+    SpellScriptExecuteState onAuraPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, float_t* damage) override
+    {
+        // On periodic damage, cast Blood Link on Saurfang
+        if (aur->GetUnitCaster() != nullptr)
+            aur->getOwner()->castSpell(aur->GetUnitCaster(), sSpellMgr.getSpellInfo(SPELL_BLOOD_LINK_DUMMY), true);
+
+        return SpellScriptExecuteState::EXECUTE_OK;
+    }
+};
+
+class BloodNova : public SpellScript
+{
+public:
+    void filterEffectTargets(Spell* spell, uint8_t effIndex, std::vector<uint64_t>* effectTargets) override
+    {
+        if (effIndex == EFF_INDEX_0)
+        {
+            randomTargetGuid = 0;
+
+            // Remove non players from target vector
+            effectTargets->erase(std::remove_if(effectTargets->begin(), effectTargets->end(), [&](uint64_t guid) {
+                const auto* const target = spell->getCaster()->GetMapMgrUnit(guid);
+                return target == nullptr || !target->isPlayer();
+                }), effectTargets->end());
+        }
+
+        if (effectTargets->empty())
+            return;
+
+        // Same target for all effects
+        if (effIndex != EFF_INDEX_0)
+        {
+            effectTargets->clear();
+            if (randomTargetGuid == 0)
+                return;
+
+            effectTargets->push_back(randomTargetGuid);
+            return;
+        }
+
+        // Find single random player target and prefer a ranged target
+
+        // Get 10 possible targets in 25m and 4 targets in 10m
+        const uint8_t minTargetCount = spell->getSpellInfo()->getId() != SPELL_BLOOD_NOVA_TRIGGER ? 10 : 4;
+
+        std::vector<uint64_t> rangedTargetGuids;
+        uint32_t rangedTargetCount = 0;
+        for (auto guid : *effectTargets)
+        {
+            auto* const unitTarget = spell->getCaster()->GetMapMgrUnit(guid);
+            if (unitTarget == nullptr)
+                continue;
+
+            if (spell->getCaster()->CalcDistance(unitTarget) >= 10.0f)
+            {
+                rangedTargetGuids.push_back(guid);
+                ++rangedTargetCount;
+            }
+        }
+
+        // If there are no enough ranged targets, pick any target
+        if (rangedTargetCount < minTargetCount)
+        {
+            auto itr = std::begin(*effectTargets);
+            std::advance(itr, Util::getRandomUInt(0, static_cast<uint32_t>(std::size(*effectTargets)) - 1));
+            randomTargetGuid = *itr;
+        }
+        else
+        {
+            auto itr = std::begin(rangedTargetGuids);
+            std::advance(itr, Util::getRandomUInt(0, static_cast<uint32_t>(std::size(rangedTargetGuids)) - 1));
+            randomTargetGuid = *itr;
+        }
+
         effectTargets->clear();
-        effectTargets->push_back(guid);
+        effectTargets->push_back(randomTargetGuid);
+    }
+
+    SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* spell, uint8_t /*effIndex*/) override
+    {
+        if (spell->getUnitCaster() != nullptr && spell->GetUnitTarget() != nullptr)
+            spell->getUnitCaster()->castSpell(spell->GetUnitTarget(), SPELL_BLOOD_NOVA_DAMAGE, true);
+
+        return SpellScriptCheckDummy::DUMMY_OK;
+    }
+
+private:
+    uint64_t randomTargetGuid = 0;
+};
+
+class BloodLink : public SpellScript
+{
+public:
+    SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* /*aurEff*/, bool /*apply*/) override
+    {
+        // On periodic dummy effect, check if Mark of the Fallen Champion can be casted
+        // but if Saurfang is casting spell, try again on next tick
+        if (aur->getOwner()->isCastingSpell())
+            return SpellScriptCheckDummy::DUMMY_OK;
+
+        if (aur->getOwner()->isCreature() && aur->getOwner()->getPower(POWER_TYPE_ENERGY) == aur->getOwner()->getMaxPower(POWER_TYPE_ENERGY))
+            dynamic_cast<Creature*>(aur->getOwner())->GetScript()->DoAction(ACTION_MARK_OF_THE_FALLEN_CHAMPION);
+
+        return SpellScriptCheckDummy::DUMMY_OK;
+    }
+};
+
+class BloodLinkDummy : public SpellScript
+{
+public:
+    SpellScriptExecuteState onDoProcEffect(SpellProc* spellProc, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo /*damageInfo*/) override
+    {
+        auto* const saurfang = spellProc->getProcOwner()->GetMapMgrCreature(spellProc->getProcOwner()->getSummonedByGuid());
+        if (saurfang == nullptr)
+            return SpellScriptExecuteState::EXECUTE_PREVENT;
+
+        spellProc->getProcOwner()->castSpell(saurfang, spellProc->getSpell(), true);
+        return SpellScriptExecuteState::EXECUTE_PREVENT;
+    }
+
+    SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* spell, uint8_t /*effIndex*/) override
+    {
+        // On dummy effect, cast 72195 on spell target
+        if (spell->GetUnitTarget() != nullptr)
+            spell->GetUnitTarget()->castSpell(spell->GetUnitTarget(), SPELL_BLOOD_LINK_POWER, true);
+
+        return SpellScriptCheckDummy::DUMMY_OK;
+    }
+};
+
+class BloodLinkEnergize : public SpellScript
+{
+public:
+    SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* spell, uint8_t /*effIndex*/) override
+    {
+        // On scripted effect, update Saurfang's Blood Power aura
+        auto aur = spell->getUnitCaster()->getAuraWithId(SPELL_BLOOD_POWER);
+        if (aur == nullptr)
+            return SpellScriptCheckDummy::DUMMY_OK;
+
+        updateBloodPowerAura(aur, spell->getUnitCaster()->getPower(POWER_TYPE_ENERGY));
+        return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
 
@@ -3918,8 +4101,23 @@ void SetupICC(ScriptMgr* mgr)
     // Spell Grip Of Agony
     mgr->register_spell_script(SPELL_GRIP_OF_AGONY, new GripOfAgony);
 
+    // Generic Blood Link spell script
+    uint32_t bloodLinkTriggerIds[] =
+    {
+        SPELL_BLOOD_NOVA_DAMAGE,
+        SPELL_RUNE_OF_BLOOD_LEECH,
+        0
+    };
+    mgr->register_spell_script(bloodLinkTriggerIds, new GenericBloodLinkTrigger);
+
     // Boiling Blood Spell
     mgr->register_spell_script(SPELL_BOILING_BLOOD, new BoilingBlood);
+
+    mgr->register_spell_script(SPELL_BLOOD_NOVA_TRIGGER, new BloodNova);
+
+    mgr->register_spell_script(SPELL_BLOOD_LINK, new BloodLink);
+    mgr->register_spell_script(SPELL_BLOOD_LINK_DUMMY, new BloodLinkDummy);
+    mgr->register_spell_script(SPELL_BLOOD_LINK_POWER, new BloodLinkEnergize);
 
     //Gossips
     GossipScript* MuradinGossipScript = new MuradinGossip();
