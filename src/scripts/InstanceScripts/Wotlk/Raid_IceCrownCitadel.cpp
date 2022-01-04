@@ -3411,6 +3411,7 @@ public:
         PermanentFeignSpell = addAISpell(SPELL_PERMANENT_FEIGN_DEATH, 0.0f, TARGET_SELF);
 
         addEmoteForEvent(Event_OnCombatStart, SAY_DEATHBRINGER_AGGRO);
+        addEmoteForEvent(Event_OnTargetDied, SAY_DEATHBRINGER_KILL);
         addEmoteForEvent(Event_OnDied, SAY_DEATHBRINGER_DEATH);
     }
 
