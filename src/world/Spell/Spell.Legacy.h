@@ -346,6 +346,7 @@ class SERVER_DECL Spell
         void spellEffectPowerBurn(uint8_t effectIndex);
         void spellEffectThreat(uint8_t effectIndex);
         void spellEffectClearQuest(uint8_t effectIndex);
+        void spellEffectForceCast(uint8_t effectIndex);
         void spellEffectTriggerSpell(uint8_t effectIndex);
         void spellEffectApplyRaidAA(uint8_t effectIndex);
         void spellEffectPowerFunnel(uint8_t effectIndex);
@@ -548,7 +549,6 @@ class SERVER_DECL Spell
         void SpellEffectPowerBurn(uint8_t effectIndex);
         void SpellEffectThreat(uint8_t effectIndex);
         void SpellEffectClearQuest(uint8_t effectIndex);
-        void SpellEffectTriggerSpell(uint8_t effectIndex);
         void SpellEffectApplyRaidAA(uint8_t effectIndex);
         void SpellEffectPowerFunnel(uint8_t effectIndex);
         void SpellEffectHealMaxHealth(uint8_t effectIndex);

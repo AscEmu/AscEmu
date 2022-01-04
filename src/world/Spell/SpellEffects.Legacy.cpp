@@ -143,7 +143,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectSendEvent,               //  61 SPELL_EFFECT_SEND_EVENT
     &Spell::SpellEffectPowerBurn,               //  62 SPELL_EFFECT_POWER_BURN
     &Spell::SpellEffectThreat,                  //  63 SPELL_EFFECT_THREAT
-    &Spell::SpellEffectTriggerSpell,            //  64 SPELL_EFFECT_TRIGGER_SPELL
+    &Spell::spellEffectTriggerSpell,            //  64 SPELL_EFFECT_TRIGGER_SPELL
     &Spell::SpellEffectApplyRaidAA,             //  65 SPELL_EFFECT_APPLY_RAID_AA
     &Spell::SpellEffectPowerFunnel,             //  66 SPELL_EFFECT_POWER_FUNNEL
     &Spell::SpellEffectHealMaxHealth,           //  67 SPELL_EFFECT_HEALMAX_HEALTH
@@ -219,7 +219,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectRestorePowerPct,         // 137 SPELL_EFFECT_RESTORE_POWER_PCT
     &Spell::SpellEffectKnockBack2,              // 138 SPELL_EFFECT_KNOCK_BACK2
     &Spell::SpellEffectClearQuest,              // 139 SPELL_EFFECT_CLEAR_QUEST
-    &Spell::SpellEffectTriggerSpell,            // 140 SPELL_EFFECT_TRIGGER_SPELL
+    &Spell::spellEffectForceCast,               // 140 SPELL_EFFECT_TRIGGER_SPELL
     &Spell::spellEffectNotImplemented,          // 141 SPELL_EFFECT_NULL_141
     &Spell::SpellEffectTriggerSpellWithValue,   // 142 SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE
     &Spell::SpellEffectApplyOwnerAA,            // 143 SPELL_EFFECT_APPLY_OWNER_AA
@@ -230,7 +230,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::spellEffectNotImplemented,          // 148 SPELL_EFFECT_NULL_148
     &Spell::spellEffectNotImplemented,          // 149 SPELL_EFFECT_NULL_149
     &Spell::spellEffectNotImplemented,          // 150 SPELL_EFFECT_NULL_150
-    &Spell::SpellEffectTriggerSpell,            // 151 SPELL_EFFECT_TRIGGER_SPELL
+    &Spell::spellEffectTriggerSpell,            // 151 SPELL_EFFECT_TRIGGER_SPELL
     &Spell::spellEffectNotImplemented,          // 152 SPELL_EFFECT_NULL_152
     &Spell::SpellEffectCreatePet,               // 153 SPELL_EFFECT_CREATE_PET
     &Spell::SpellEffectTeachTaxiPath,           // 154 SPELL_EFFECT_TEACH_TAXI_PATH
@@ -577,6 +577,18 @@ void Spell::spellEffectProficiency(uint8_t /*effectIndex*/)
     }
 }
 
+void Spell::spellEffectTriggerSpell(uint8_t effectIndex)
+{
+    const auto triggerInfo = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex));
+    if (triggerInfo == nullptr)
+        return;
+
+    SpellCastTargets targets = m_targets;
+    Spell* triggerSpell = sSpellMgr.newSpell(m_caster, triggerInfo, true, nullptr);
+    triggerSpell->ProcedOnSpell = getSpellInfo();
+    triggerSpell->prepare(&targets);
+}
+
 void Spell::spellEffectScriptEffect(uint8_t effectIndex)
 {
     // Check that the scripted effect is handled properly in spell script
@@ -592,6 +604,33 @@ void Spell::spellEffectScriptEffect(uint8_t effectIndex)
         return;
 
     sLogger.failure("Spell::spellEffectScriptEffect : Spell %u (%s) has a scripted effect index (%hhu), but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), effectIndex);
+}
+
+void Spell::spellEffectForceCast(uint8_t effectIndex)
+{
+    if (unitTarget == nullptr || getUnitCaster() == nullptr)
+        return;
+
+    const auto triggerInfo = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex));
+    if (triggerInfo == nullptr)
+        return;
+
+    // TODO: figure the logic here, sometimes target should be original caster and sometimes effect target
+    // hackfixing for now -Appled
+    Unit* target = nullptr;
+    switch (getSpellInfo()->getId())
+    {
+        case 72378:
+        case 73058:
+            target = unitTarget;
+            break;
+        default:
+            target = getUnitCaster();
+            break;
+    }
+
+    // TODO: original caster can also be gameobject
+    unitTarget->castSpell(target, triggerInfo, true);
 }
 
 // MIT End
@@ -4609,18 +4648,6 @@ void Spell::SpellEffectClearQuest(uint8_t effectIndex)
 
     playerTarget->ClearQuest(questid1);
     playerTarget->ClearQuest(questid2);
-}
-
-void Spell::SpellEffectTriggerSpell(uint8_t effectIndex) // Trigger Spell
-{
-    SpellInfo const* entry = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex));
-    if (entry == nullptr)
-        return;
-
-    SpellCastTargets targets = m_targets;
-    Spell* sp = sSpellMgr.newSpell(m_caster, entry, true, nullptr);
-    sp->ProcedOnSpell = getSpellInfo();
-    sp->prepare(&targets);
 }
 
 void Spell::SpellEffectApplyRaidAA(uint8_t effectIndex)
