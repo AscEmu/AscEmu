@@ -3368,7 +3368,7 @@ public:
         summons.clear();
 
         // Spells Auto Casted
-        BerserkSpell = addAISpell(SPELL_BERSERK, 50.0f, TARGET_SELF, 0, 360);
+        BerserkSpell = addAISpell(SPELL_BERSERK, 66.0f, TARGET_SELF, 0, 360);
         BerserkSpell->addDBEmote(SAY_DEATHBRINGER_BERSERK);
         BerserkSpell->setAvailableForScriptPhase({ PHASE_COMBAT });
 
@@ -3378,11 +3378,11 @@ public:
             BerserkSpell->setCooldownTimer(480000);
         }
 
-        BoilingBloodSpell = addAISpell(SPELL_BOILING_BLOOD, 15.0f, TARGET_SELF, 0, 15);
+        BoilingBloodSpell = addAISpell(SPELL_BOILING_BLOOD, 66.0f, TARGET_SELF, 0, 15);
         BoilingBloodSpell->setAvailableForScriptPhase({ PHASE_COMBAT });
-        BloodNovaSpell = addAISpell(SPELL_BLOOD_NOVA_TRIGGER, 15.0f, TARGET_SELF, 0, 17);
+        BloodNovaSpell = addAISpell(SPELL_BLOOD_NOVA_TRIGGER, 66.0f, TARGET_SELF, 0, 17);
         BloodNovaSpell->setAvailableForScriptPhase({ PHASE_COMBAT });
-        RuneOfBloodSpell = addAISpell(SPELL_RUNE_OF_BLOOD, 15.0f, TARGET_ATTACKING, 0, 20);
+        RuneOfBloodSpell = addAISpell(SPELL_RUNE_OF_BLOOD, 66.0f, TARGET_ATTACKING, 0, 20);
         RuneOfBloodSpell->setAvailableForScriptPhase({ PHASE_COMBAT });
         FrenzySpell = addAISpell(SPELL_FRENZY, 100.0f, TARGET_SELF);
         FrenzySpell->mIsTriggered = true;
@@ -3401,7 +3401,6 @@ public:
         BloodPowerSpell = addAISpell(SPELL_BLOOD_POWER, 0.0f, TARGET_SELF, 0, 0, false, true);
         MarkOfTheFallenSpell_Self = addAISpell(SPELL_MARK_OF_THE_FALLEN_CHAMPION_S, 0.0f, TARGET_SELF, 0, 0, false, true);
         MarkOfTheFallenSpell = addAISpell(SPELL_MARK_OF_THE_FALLEN_CHAMPION, 0.0f, TARGET_CUSTOM, 0, 0);
-        // todo aaron, spell is casted but this db emote is not happening :/
         MarkOfTheFallenSpell->addDBEmote(SAY_DEATHBRINGER_MARK);
         RuneOfBloodSSpell = addAISpell(SPELL_RUNE_OF_BLOOD_S, 0.0f, TARGET_SELF, 0, 0, false, true);
         RemoveMarksSpell = addAISpell(SPELL_REMOVE_MARKS_OF_THE_FALLEN_CHAMPION, 0.0f, TARGET_SOURCE);
@@ -3632,9 +3631,7 @@ public:
             }
             case ACTION_MARK_OF_THE_FALLEN_CHAMPION:
             {
-                // todo aaron, fix this xD
-                if (Unit* target = getCreature()->getAIInterface()->getCurrentTarget())
-                //if (Unit* target = SelectTarget(SelectTargetMethod::Random, 1, 0.0f, true, true, -SPELL_MARK_OF_THE_FALLEN_CHAMPION))
+                if (Unit* target = getBestPlayerTarget(TargetFilter_NotCurrent, 0.0f, 0.0f, -SPELL_MARK_OF_THE_FALLEN_CHAMPION))
                 {
                     ++_fallenChampionCastCount;
                     MarkOfTheFallenSpell->setCustomTarget(target);

@@ -352,9 +352,6 @@ public:
     void _unsetTargetToChannel();
     Unit* _getTargetToChannel();
 
-    Unit* mCurrentSpellTarget;
-    CreatureAISpells* mLastCastedSpell;
-
     // only for internal use
     void castSpellOnRandomTarget(CreatureAISpells* AiSpell);
 
@@ -461,10 +458,10 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // target
-    Unit* getBestPlayerTarget(TargetFilter pFilter = TargetFilter_None, float pMinRange = 0.0f, float pMaxRange = 0.0f);
-    Unit* getBestUnitTarget(TargetFilter pFilter = TargetFilter_None, float pMinRange = 0.0f, float pMaxRange = 0.0f);
+    Unit* getBestPlayerTarget(TargetFilter pFilter = TargetFilter_None, float pMinRange = 0.0f, float pMaxRange = 0.0f, int32_t auraId = 0);
+    Unit* getBestUnitTarget(TargetFilter pFilter = TargetFilter_None, float pMinRange = 0.0f, float pMaxRange = 0.0f, int32_t auraid = 0);
     Unit* getBestTargetInArray(UnitArray& pTargetArray, TargetFilter pFilter);
     Unit* getNearestTargetInArray(UnitArray& pTargetArray);
     Unit* getSecondMostHatedTargetInArray(UnitArray& pTargetArray);
-    bool isValidUnitTarget(Object* pObject, TargetFilter pFilter, float pMinRange = 0.0f, float pMaxRange = 0.0f);
+    bool isValidUnitTarget(Object* pObject, TargetFilter pFilter, float pMinRange = 0.0f, float pMaxRange = 0.0f, int32_t auraId = 0);
 };

@@ -822,8 +822,13 @@ void AIInterface::castAISpell(CreatureAISpells* aiSpell)
     } break;
     case TARGET_CUSTOM:
     {
+        // nos custom target set, no spell cast.
         if (aiSpell->getCustomTarget() != nullptr)
-            getUnit()->castSpell(aiSpell->getCustomTarget(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        {
+            mCurrentSpellTarget = aiSpell->getCustomTarget();
+            mLastCastedSpell = aiSpell;
+            getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        }
     } break;
     default:
         break;
@@ -3499,6 +3504,7 @@ void AIInterface::UpdateAISpells()
                         sLogger.debugFlag(AscEmu::Logging::LF_SCRIPT_MGR, "Target outside of spell range (%u)! Min: %f Max: %f, distance to Target: %f", mLastCastedSpell->mSpellInfo->getId(), mLastCastedSpell->mMinPositionRangeToCast, mLastCastedSpell->mMaxPositionRangeToCast, targetDistance);
                         getUnit()->interruptSpell();
                         mLastCastedSpell = nullptr;
+                        mCurrentSpellTarget = nullptr;
                     }
                 }
             }
@@ -3516,6 +3522,7 @@ void AIInterface::UpdateAISpells()
                 getUnit()->setAttackTimer(MELEE, mLastCastedSpell->getAttackStopTimer());
 
             mLastCastedSpell = nullptr;
+            mCurrentSpellTarget = nullptr;
         }
     }
 
@@ -3656,7 +3663,11 @@ void AIInterface::UpdateAISpells()
             {
                 // nos custom target set, no spell cast.
                 if (usedSpell->getCustomTarget() != nullptr)
-                    getUnit()->castSpell(usedSpell->getCustomTarget(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+                {
+                    mCurrentSpellTarget = usedSpell->getCustomTarget();
+                    mLastCastedSpell = usedSpell;
+                    getUnit()->castSpell(mCurrentSpellTarget, usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+                }
             } break;
             default:
                 break;
