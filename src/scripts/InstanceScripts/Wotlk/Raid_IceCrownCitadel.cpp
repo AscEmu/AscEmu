@@ -78,13 +78,21 @@ public:
     {
         switch (type)
         {
-            // Deathbringer Suarfang
-        case DATA_SAURFANG_DOOR:
-            return DeathbringerDoorGUID;
-        case DATA_TEAM_IN_INSTANCE:
-            return TeamInInstance;
-        case DATA_BONED_ACHIEVEMENT:
-            return bonedAchievement;
+                // Deathbringer Suarfang
+            case DATA_SAURFANG_DOOR:
+            {
+                return DeathbringerDoorGUID;
+            }
+            case DATA_TEAM_IN_INSTANCE:
+            {
+                return TeamInInstance;
+            }
+            case DATA_BONED_ACHIEVEMENT:
+            {
+                return bonedAchievement;
+            }
+            default:
+                return 0;
         }
         return 0;
     }
@@ -95,33 +103,57 @@ public:
 
         switch (type)
         {
-            // Intro
-        case NPC_INTRO_TIRION:
-            return script->GetCreatureByGuid(HighlordEntranceGUID);
-        case NPC_INTRO_LICH_KING:
-            return script->GetCreatureByGuid(LichKingEntranceGUID);
-        case NPC_INTRO_BOLVAR:
-            return script->GetCreatureByGuid(BolvarEntranceGUID);
-            // Marrowgar
-        case CN_LORD_MARROWGAR:
-            return script->GetCreatureByGuid(LordMarrowgarGUID);
-            // Lady Deathwhisper
-        case CN_LADY_DEATHWHISPER:
-            return script->GetCreatureByGuid(LadyDeathwisperGUID);
-            // Gunshipbattle
-        case DATA_SKYBREAKER_BOSS:
-            return script->GetCreatureByGuid(SkybreakerBossGUID);
-        case DATA_ORGRIMMAR_HAMMER_BOSS:
-            return script->GetCreatureByGuid(OrgrimmarBossGUID);
-        case DATA_GB_HIGH_OVERLORD_SAURFANG:
-            return script->GetCreatureByGuid(DeathbringerSaurfangGbGUID);
-        case DATA_GB_MURADIN_BRONZEBEARD:
-            return script->GetCreatureByGuid(MuradinBronzebeardGbGUID);
-        case DATA_GB_BATTLE_MAGE:
-            return script->GetCreatureByGuid(GbBattleMageGUID);
-            // Deathbringer Saurfang
-        case DATA_DEATHBRINGER_SAURFANG:
-            return script->GetCreatureByGuid(DeathbringerSaurfangGUID);
+                // Intro
+            case NPC_INTRO_TIRION:
+            {
+                return script->GetCreatureByGuid(HighlordEntranceGUID);
+            }
+            case NPC_INTRO_LICH_KING:
+            {
+                return script->GetCreatureByGuid(LichKingEntranceGUID);
+            }
+            case NPC_INTRO_BOLVAR:
+            {
+                return script->GetCreatureByGuid(BolvarEntranceGUID);
+            }
+                // Marrowgar
+            case CN_LORD_MARROWGAR:
+            {
+                return script->GetCreatureByGuid(LordMarrowgarGUID);
+            }
+                // Lady Deathwhisper
+            case CN_LADY_DEATHWHISPER:
+            {
+                return script->GetCreatureByGuid(LadyDeathwisperGUID);
+            }
+                // Gunshipbattle
+            case DATA_SKYBREAKER_BOSS:
+            {
+                return script->GetCreatureByGuid(SkybreakerBossGUID);
+            }
+            case DATA_ORGRIMMAR_HAMMER_BOSS:
+            {
+                return script->GetCreatureByGuid(OrgrimmarBossGUID);
+            }
+            case DATA_GB_HIGH_OVERLORD_SAURFANG:
+            {
+                return script->GetCreatureByGuid(DeathbringerSaurfangGbGUID);
+            }
+            case DATA_GB_MURADIN_BRONZEBEARD:
+            {
+                return script->GetCreatureByGuid(MuradinBronzebeardGbGUID);
+            }
+            case DATA_GB_BATTLE_MAGE:
+            {
+                return script->GetCreatureByGuid(GbBattleMageGUID);
+            }
+                // Deathbringer Saurfang
+            case DATA_DEATHBRINGER_SAURFANG:
+            {
+                return script->GetCreatureByGuid(DeathbringerSaurfangGUID);
+            }
+            default:
+                return nullptr;
         }
         return nullptr;
     }
@@ -132,45 +164,69 @@ public:
 
         switch (pCreature->getEntry())
         {
-            // Intro
-        case NPC_INTRO_TIRION:
-            HighlordEntranceGUID = guid.getGuidLowPart();
-            break;
-        case NPC_INTRO_LICH_KING:
-            LichKingEntranceGUID = guid.getGuidLowPart();
-            break;
-        case NPC_INTRO_BOLVAR:
-            BolvarEntranceGUID = guid.getGuidLowPart();
-            break;
-            // Lord Marrowgar
-        case CN_LORD_MARROWGAR:
-            LordMarrowgarGUID = guid.getGuidLowPart();
-            break;
-            // Lady Deathwisper
-        case CN_LADY_DEATHWHISPER:
-            LadyDeathwisperGUID = guid.getGuidLowPart();
-            break;
-            // Gunship
-        case NPC_GB_SKYBREAKER:
-            SkybreakerBossGUID = guid.getGuidLowPart();
-            break;
-        case NPC_GB_ORGRIMS_HAMMER:
-            OrgrimmarBossGUID = guid.getGuidLowPart();
-            break;
-        case NPC_GB_HIGH_OVERLORD_SAURFANG:
-            DeathbringerSaurfangGbGUID = guid.getGuidLowPart();
-            break;
-        case NPC_GB_MURADIN_BRONZEBEARD:
-            MuradinBronzebeardGbGUID = guid.getGuidLowPart();
-            break;
-        case NPC_GB_SKYBREAKER_SORCERERS:
-        case NPC_GB_KORKRON_BATTLE_MAGE:
-            GbBattleMageGUID = guid.getGuidLowPart();
-            break;
-            // Deathbringer Suarfang
-        case CN_DEATHBRINGER_SAURFANG:
-            DeathbringerSaurfangGUID = guid.getGuidLowPart();
-            break;
+                // Intro
+            case NPC_INTRO_TIRION:
+            {
+                HighlordEntranceGUID = guid.getGuidLowPart();
+                break;
+            }
+            case NPC_INTRO_LICH_KING:
+            {
+                LichKingEntranceGUID = guid.getGuidLowPart();
+                break;
+            }
+            case NPC_INTRO_BOLVAR:
+            {
+                BolvarEntranceGUID = guid.getGuidLowPart();
+                break;
+            }
+                // Lord Marrowgar
+            case CN_LORD_MARROWGAR:
+            {
+                LordMarrowgarGUID = guid.getGuidLowPart();
+                break;
+            }
+                // Lady Deathwisper
+            case CN_LADY_DEATHWHISPER:
+            {
+                LadyDeathwisperGUID = guid.getGuidLowPart();
+                break;
+            }
+                // Gunship
+            case NPC_GB_SKYBREAKER:
+            {
+                SkybreakerBossGUID = guid.getGuidLowPart();
+                break;
+            }
+            case NPC_GB_ORGRIMS_HAMMER:
+            {
+                OrgrimmarBossGUID = guid.getGuidLowPart();
+                break;
+            }
+            case NPC_GB_HIGH_OVERLORD_SAURFANG:
+            {
+                DeathbringerSaurfangGbGUID = guid.getGuidLowPart();
+                break;
+            }
+            case NPC_GB_MURADIN_BRONZEBEARD:
+            {
+                MuradinBronzebeardGbGUID = guid.getGuidLowPart();
+                break;
+            }
+            case NPC_GB_SKYBREAKER_SORCERERS:
+            case NPC_GB_KORKRON_BATTLE_MAGE:
+            {
+                GbBattleMageGUID = guid.getGuidLowPart();
+                break;
+            }
+                // Deathbringer Suarfang
+            case CN_DEATHBRINGER_SAURFANG:
+            {
+                DeathbringerSaurfangGUID = guid.getGuidLowPart();
+                break;
+            }
+            default:
+                break;
         }
     }
 
@@ -178,31 +234,47 @@ public:
     {
         switch (pGameObject->getEntry())
         {
-        case GO_MARROWGAR_ICEWALL_1:
-            MarrowgarIcewall1GUID = pGameObject->getGuidLow();
-            break;
-        case GO_MARROWGAR_ICEWALL_2:
-            MarrowgarIcewall2GUID = pGameObject->getGuidLow();
-            break;
-        case GO_MARROWGAR_DOOR:
-            MarrowgarEntranceDoorGUID = pGameObject->getGuidLow();
-            break;
-        case GO_ORATORY_OF_THE_DAMNED_ENTRANCE:
-            LadyDeathwisperEntranceDoorGUID = pGameObject->getGuidLow();
-            break;
-        case GO_LADY_DEATHWHISPER_ELEVATOR:
-            LadyDeathwisperElevatorGUID = pGameObject->getGuidLow();
-            break;
-        case GO_TELE_1:
-        case GO_TELE_2:
-        case GO_TELE_3:
-        case GO_TELE_4:
-        case GO_TELE_5:
-            pGameObject->setFlags(GO_FLAG_NONE);
-            break;
-        case GO_SAURFANG_S_DOOR:
-            DeathbringerDoorGUID = pGameObject->getGuidLow();
-            break;
+            case GO_MARROWGAR_ICEWALL_1:
+            {
+                MarrowgarIcewall1GUID = pGameObject->getGuidLow();
+                break;
+            }
+            case GO_MARROWGAR_ICEWALL_2:
+            {
+                MarrowgarIcewall2GUID = pGameObject->getGuidLow();
+                break;
+            }
+            case GO_MARROWGAR_DOOR:
+            {
+                MarrowgarEntranceDoorGUID = pGameObject->getGuidLow();
+                break;
+            }
+            case GO_ORATORY_OF_THE_DAMNED_ENTRANCE:
+            {
+                LadyDeathwisperEntranceDoorGUID = pGameObject->getGuidLow();
+                break;
+            }
+            case GO_LADY_DEATHWHISPER_ELEVATOR:
+            {
+                LadyDeathwisperElevatorGUID = pGameObject->getGuidLow();
+                break;
+            }
+            case GO_TELE_1:
+            case GO_TELE_2:
+            case GO_TELE_3:
+            case GO_TELE_4:
+            case GO_TELE_5:
+            {
+                pGameObject->setFlags(GO_FLAG_NONE);
+                break;
+            }
+            case GO_SAURFANG_S_DOOR:
+            {
+                DeathbringerDoorGUID = pGameObject->getGuidLow();
+                break;
+            }
+            default:
+                break;
         }
 
         // State also must changes for Objects out of range so change state on spawning them :)
@@ -215,47 +287,47 @@ public:
         if (getData(CN_LORD_MARROWGAR) == Finished)
         {
             if (MarrowgarIcewall1GUID)
-                if(GetGameObjectByGuid(MarrowgarIcewall1GUID))
+                if (GetGameObjectByGuid(MarrowgarIcewall1GUID))
                     GetGameObjectByGuid(MarrowgarIcewall1GUID)->setState(GO_STATE_OPEN);        // Icewall 1
 
             if (MarrowgarIcewall2GUID)
-                if(GetGameObjectByGuid(MarrowgarIcewall2GUID))
+                if (GetGameObjectByGuid(MarrowgarIcewall2GUID))
                     GetGameObjectByGuid(MarrowgarIcewall2GUID)->setState(GO_STATE_OPEN);        // Icewall 2
 
             if (MarrowgarEntranceDoorGUID)
-                if(GetGameObjectByGuid(MarrowgarEntranceDoorGUID))
+                if (GetGameObjectByGuid(MarrowgarEntranceDoorGUID))
                     GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);    // Door  
         }
 
         if (getData(CN_LADY_DEATHWHISPER) == Finished)
         {
             if (LadyDeathwisperEntranceDoorGUID)
-                if(GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
+                if (GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
                     GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
 
             if (LadyDeathwisperElevatorGUID)
-                if(GetGameObjectByGuid(LadyDeathwisperElevatorGUID))
+                if (GetGameObjectByGuid(LadyDeathwisperElevatorGUID))
                 GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_OPEN);
         }
 
         if (getData(CN_LADY_DEATHWHISPER) == NotStarted)
         {
             if (LadyDeathwisperEntranceDoorGUID)
-                if(GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
+                if (GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
                 GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
         }
 
         if (getData(CN_DEATHBRINGER_SAURFANG) == NotStarted)
         {
             if (DeathbringerDoorGUID)
-                if(GetGameObjectByGuid(DeathbringerDoorGUID))
+                if (GetGameObjectByGuid(DeathbringerDoorGUID))
                 GetGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_CLOSED);
         }
 
         if (getData(CN_DEATHBRINGER_SAURFANG) == Finished)
         {
             if (DeathbringerDoorGUID)
-                if(GetGameObjectByGuid(DeathbringerDoorGUID))
+                if (GetGameObjectByGuid(DeathbringerDoorGUID))
                 GetGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_OPEN);
 
             if (!getLocalCreatureData(DATA_DEATHBRINGER_SAURFANG))
@@ -331,7 +403,7 @@ public:
                 {
                     if (DeathbringerDoorGUID)
                         if (GetGameObjectByGuid(DeathbringerDoorGUID))
-                            if(GetGameObjectByGuid(DeathbringerDoorGUID))
+                            if (GetGameObjectByGuid(DeathbringerDoorGUID))
                         GetGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_CLOSED);
                 }
 
@@ -355,6 +427,8 @@ public:
                 }
                 break;
             }
+            default:
+                break;
         }      
     }
 
@@ -362,24 +436,34 @@ public:
     {
         switch(pAreaId)
         {
-        case ICC_ENTRANCE:
-            if(!introDone)
-                DoAction(ACTION_STARTINTRO);
-            break;
-        case ICC_LORD_MARROWGAR_ENTRANCE:
-            if (getLocalCreatureData(CN_LORD_MARROWGAR))
-                getLocalCreatureData(CN_LORD_MARROWGAR)->GetScript()->DoAction(ACTION_MARROWGAR_INTRO_START);
-            break;
-        case ICC_LADY_DEATHWHISPER_ENTRANCE:
-            if (getLocalCreatureData(CN_LADY_DEATHWHISPER))
-                getLocalCreatureData(CN_LADY_DEATHWHISPER)->GetScript()->DoAction(ACTION_LADY_INTRO_START);
-            break;
-        case ICC_DRAGON_ALLIANCE:
-            break;
-        case ICC_DRAGON_HORDE:
-            break;
-        default:
-            printf("Unknown %u \n", pAreaId);
+            case ICC_ENTRANCE:
+            {
+                if (!introDone)
+                    DoAction(ACTION_STARTINTRO);
+                break;
+            }
+            case ICC_LORD_MARROWGAR_ENTRANCE:
+            {
+                if (getLocalCreatureData(CN_LORD_MARROWGAR))
+                    getLocalCreatureData(CN_LORD_MARROWGAR)->GetScript()->DoAction(ACTION_MARROWGAR_INTRO_START);
+                break;
+            }
+            case ICC_LADY_DEATHWHISPER_ENTRANCE:
+            {
+                if (getLocalCreatureData(CN_LADY_DEATHWHISPER))
+                    getLocalCreatureData(CN_LADY_DEATHWHISPER)->GetScript()->DoAction(ACTION_LADY_INTRO_START);
+                break;
+            }
+            case ICC_DRAGON_ALLIANCE:
+            {
+                break;
+            }
+            case ICC_DRAGON_HORDE:
+            {
+                break;
+            }
+            default:
+                break;
         }
     }
 
@@ -412,12 +496,18 @@ public:
             switch (TeamInInstance)
             {
                 case TEAM_ALLIANCE:
+                {
                     for (uint8_t i = 0; i < 18; i++)
                         spawnCreature(AllySpawns[i].entry, AllySpawns[i].x, AllySpawns[i].y, AllySpawns[i].z, AllySpawns[i].o, AllySpawns[i].faction);
                     break;
+                }
                 case TEAM_HORDE:
+                {
                     for (uint8_t i = 0; i < 18; i++)
                         spawnCreature(HordeSpawns[i].entry, HordeSpawns[i].x, HordeSpawns[i].y, HordeSpawns[i].z, HordeSpawns[i].o, HordeSpawns[i].faction);
+                    break;
+                }
+                default:
                     break;
             }
             setSpawnsCreated();
@@ -432,7 +522,7 @@ public:
         }
 
         // Spawning the Gunships at the same moment a player enters causes them to bug the npcs sometimes
-        if(!isPrepared)
+        if (!isPrepared)
             scriptEvents.addEvent(EVENT_SPAWN_GUNSHIPS, 5000);
     }    
 
@@ -496,6 +586,8 @@ public:
                         orgrimmar->EnableMovement(true, mInstance);
                     break;
                 }
+                default:
+                    break;
             }
         }
     }
@@ -636,6 +728,8 @@ public:
                 }
                 break;
             }
+            default:
+                break;
         }
     }
 
@@ -643,33 +737,41 @@ public:
     {
         switch (eventId)
         {
-        case EVENT_ENEMY_GUNSHIP_DESPAWN:
-            if (getData(DATA_GUNSHIP_EVENT) == Finished)
+            case EVENT_ENEMY_GUNSHIP_DESPAWN:
             {
-                transport->UnloadStaticPassengers();
-                transport->GetMapMgr()->RemoveFromMapMgr(transport, true);
+                if (getData(DATA_GUNSHIP_EVENT) == Finished)
+                {
+                    transport->UnloadStaticPassengers();
+                    transport->GetMapMgr()->RemoveFromMapMgr(transport, true);
+                }
+                break;
             }
-            break;
-        case EVENT_ENEMY_GUNSHIP_COMBAT:
-            if (Creature* captain = getLocalData(DATA_TEAM_IN_INSTANCE) == TEAM_HORDE ? getLocalCreatureData(DATA_GB_HIGH_OVERLORD_SAURFANG) : getLocalCreatureData(DATA_GB_MURADIN_BRONZEBEARD))
-                captain->GetScript()->DoAction(ACTION_BATTLE_EVENT);
-            // Instance
-            transport->GetMapMgr()->GetScript()->DoAction(ACTION_BATTLE_EVENT);
-            [[fallthrough]];
-        case EVENT_PLAYERS_GUNSHIP_SPAWN:
-        case EVENT_PLAYERS_GUNSHIP_COMBAT:
-            transport->EnableMovement(false, mInstance);
-            break;
-        case EVENT_PLAYERS_GUNSHIP_SAURFANG:
-            transport->EnableMovement(false, mInstance);
-            break;
-        case EVENT_SAURFANG_MIGHTYWIND:
-        {
-            transport->EnableMovement(false, mInstance);
-            break;
-        }
-        default:
-            printf("event transport %u \n", eventId);
+            case EVENT_ENEMY_GUNSHIP_COMBAT:
+            {
+                if (Creature* captain = getLocalData(DATA_TEAM_IN_INSTANCE) == TEAM_HORDE ? getLocalCreatureData(DATA_GB_HIGH_OVERLORD_SAURFANG) : getLocalCreatureData(DATA_GB_MURADIN_BRONZEBEARD))
+                    captain->GetScript()->DoAction(ACTION_BATTLE_EVENT);
+                // Instance
+                transport->GetMapMgr()->GetScript()->DoAction(ACTION_BATTLE_EVENT);
+            }
+                [[fallthrough]];
+            case EVENT_PLAYERS_GUNSHIP_SPAWN:
+            case EVENT_PLAYERS_GUNSHIP_COMBAT:
+            {
+                transport->EnableMovement(false, mInstance);
+                break;
+            }
+            case EVENT_PLAYERS_GUNSHIP_SAURFANG:
+            {
+                transport->EnableMovement(false, mInstance);
+                break;
+            }
+            case EVENT_SAURFANG_MIGHTYWIND:
+            {
+                transport->EnableMovement(false, mInstance);
+                break;
+            }
+            default:
+                break;
         }
     }
 
@@ -926,76 +1028,94 @@ public:
         {
             switch (eventId)
             {
-            case EVENT_BONE_SPIKE_GRAVEYARD:
-                if (_isHeroic() || !getCreature()->hasAurasWithId(SPELL_BONE_STORM))
-                    _castAISpell(boneSpikeGraveyardSpell);
-
-                scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(15000, 20000));
-                break;
-            case EVENT_COLDFLAME:
-                coldflameLastPos = getCreature()->GetPosition();
-
-                if (!getCreature()->hasAurasWithId(SPELL_BONE_STORM))
-                    _castAISpell(coldflameNormalSpell);
-                else
-                    _castAISpell(coldflameBoneStormSpell);
-                
-                scriptEvents.addEvent(EVENT_COLDFLAME, 5000);
-                break;
-            case EVENT_WARN_BONE_STORM:
-                boneSlice = false;
-                _castAISpell(boneStormSpell);
-
-                scriptEvents.delayEvent(EVENT_BONE_SPIKE_GRAVEYARD, 3000);
-                scriptEvents.delayEvent(EVENT_COLDFLAME, 3000);
-
-                scriptEvents.addEvent(EVENT_BONE_STORM_BEGIN, 3050);
-                scriptEvents.addEvent(EVENT_WARN_BONE_STORM, Util::getRandomInt(90000, 95000));
-            case EVENT_BONE_STORM_BEGIN:
-                getCreature()->setSpeedRate(TYPE_RUN, baseSpeed*3.0f, true);
-                sendDBChatMessage(SAY_MARR_BONE_STORM); // BONE STORM!
-                
-                scriptEvents.addEvent(EVENT_BONE_STORM_END, boneStormDuration + 1);
-            case EVENT_BONE_STORM_MOVE:
-            {
-                scriptEvents.addEvent(EVENT_BONE_STORM_MOVE, boneStormDuration / 3);
-
-                boneStormtarget= getBestPlayerTarget(TargetFilter_NotCurrent);
-                if (!boneStormtarget)
-                    boneStormtarget = getBestPlayerTarget(TargetFilter_Current);
-                
-                if (boneStormtarget)
-                    getCreature()->getMovementManager()->movePoint(POINT_TARGET_BONESTORM_PLAYER, boneStormtarget->GetPosition());
-
-                break;
-            }
-            case EVENT_BONE_STORM_END:
-                if (MovementGenerator* movement = getCreature()->getMovementManager()->getMovementGenerator([](MovementGenerator const* a) -> bool
+                case EVENT_BONE_SPIKE_GRAVEYARD:
                 {
-                    if (a->getMovementGeneratorType() == POINT_MOTION_TYPE)
-                    {
-                        PointMovementGenerator<Creature> const* pointMovement = dynamic_cast<PointMovementGenerator<Creature> const*>(a);
-                        return pointMovement && pointMovement->getId() == POINT_TARGET_BONESTORM_PLAYER;
-                    }
-                    return false;
-                }))
+                    if (_isHeroic() || !getCreature()->hasAurasWithId(SPELL_BONE_STORM))
+                        _castAISpell(boneSpikeGraveyardSpell);
+
+                    scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(15000, 20000));
+                    break;
+                }
+                case EVENT_COLDFLAME:
+                {
+                    coldflameLastPos = getCreature()->GetPosition();
+
+                    if (!getCreature()->hasAurasWithId(SPELL_BONE_STORM))
+                        _castAISpell(coldflameNormalSpell);
+                    else
+                        _castAISpell(coldflameBoneStormSpell);
+
+                    scriptEvents.addEvent(EVENT_COLDFLAME, 5000);
+                    break;
+                }
+                case EVENT_WARN_BONE_STORM:
+                {
+                    boneSlice = false;
+                    _castAISpell(boneStormSpell);
+
+                    scriptEvents.delayEvent(EVENT_BONE_SPIKE_GRAVEYARD, 3000);
+                    scriptEvents.delayEvent(EVENT_COLDFLAME, 3000);
+
+                    scriptEvents.addEvent(EVENT_BONE_STORM_BEGIN, 3050);
+                    scriptEvents.addEvent(EVENT_WARN_BONE_STORM, Util::getRandomInt(90000, 95000));
+                }
+                case EVENT_BONE_STORM_BEGIN:
+                {
+                    getCreature()->setSpeedRate(TYPE_RUN, baseSpeed * 3.0f, true);
+                    sendDBChatMessage(SAY_MARR_BONE_STORM); // BONE STORM!
+
+                    scriptEvents.addEvent(EVENT_BONE_STORM_END, boneStormDuration + 1);
+                }
+                [[falltrough]]
+                case EVENT_BONE_STORM_MOVE:
+                {
+                    scriptEvents.addEvent(EVENT_BONE_STORM_MOVE, boneStormDuration / 3);
+
+                    boneStormtarget= getBestPlayerTarget(TargetFilter_NotCurrent);
+                    if (!boneStormtarget)
+                        boneStormtarget = getBestPlayerTarget(TargetFilter_Current);
+                
+                    if (boneStormtarget)
+                        getCreature()->getMovementManager()->movePoint(POINT_TARGET_BONESTORM_PLAYER, boneStormtarget->GetPosition());
+
+                    break;
+                }
+                case EVENT_BONE_STORM_END:
+                {
+                    if (MovementGenerator* movement = getCreature()->getMovementManager()->getMovementGenerator([](MovementGenerator const* a) -> bool
+                        {
+                            if (a->getMovementGeneratorType() == POINT_MOTION_TYPE)
+                            {
+                                PointMovementGenerator<Creature> const* pointMovement = dynamic_cast<PointMovementGenerator<Creature> const*>(a);
+                                return pointMovement && pointMovement->getId() == POINT_TARGET_BONESTORM_PLAYER;
+                            }
+                            return false;
+                        }))
+
                     getCreature()->getMovementManager()->remove(movement);
 
-                getCreature()->getMovementManager()->moveChase(getCreature()->getAIInterface()->getCurrentTarget());
+                    getCreature()->getMovementManager()->moveChase(getCreature()->getAIInterface()->getCurrentTarget());
 
-                getCreature()->setSpeedRate(TYPE_RUN, baseSpeed, true);
-                scriptEvents.removeEvent(EVENT_BONE_STORM_MOVE);
-                scriptEvents.addEvent(EVENT_ENABLE_BONE_SLICE, 10000);
+                    getCreature()->setSpeedRate(TYPE_RUN, baseSpeed, true);
+                    scriptEvents.removeEvent(EVENT_BONE_STORM_MOVE);
+                    scriptEvents.addEvent(EVENT_ENABLE_BONE_SLICE, 10000);
 
-                if (!_isHeroic())
-                    scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(15000, 20000));
-                break;
-            case EVENT_ENABLE_BONE_SLICE:
-                boneSlice = true;
-                break;
-            case EVENT_ENRAGE:
-                _castAISpell(berserkSpell);
-                break;
+                    if (!_isHeroic())
+                        scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(15000, 20000));
+                    break;
+                }
+                case EVENT_ENABLE_BONE_SLICE:
+                {
+                    boneSlice = true;
+                    break;
+                }
+                case EVENT_ENRAGE:
+                {
+                    _castAISpell(berserkSpell);
+                    break;
+                }
+                default:
+                    break;
             }
         }
      
@@ -1035,35 +1155,43 @@ public:
         coldflameLastPos = pos;
     }
 
-    void SetCreatureData64(uint32 Type, uint64 Data) override
+    void SetCreatureData64(uint32_t Type, uint64 Data) override
     {
         switch (Type)
         {
-        case DATA_COLDFLAME_GUID:
-            coldflameTarget = Data;
-            break;
-        case DATA_SPIKE_IMMUNE:
-            boneSpikeImmune.push_back(Data);
-            break;
+            case DATA_COLDFLAME_GUID:
+            {
+                coldflameTarget = Data;
+                break;
+            }
+            case DATA_SPIKE_IMMUNE:
+            {
+                boneSpikeImmune.push_back(Data);
+                break;
+            }
+            default:
+                break;
         }
     }
 
-    uint64 GetCreatureData64(uint32 Type) const
+    uint64 GetCreatureData64(uint32_t Type) const
     { 
         switch (Type)
         {
-        case DATA_COLDFLAME_GUID:
-            return coldflameTarget;
-        case DATA_SPIKE_IMMUNE + 0:
-        case DATA_SPIKE_IMMUNE + 1:
-        case DATA_SPIKE_IMMUNE + 2:
-        {
-            uint32_t index = Type - DATA_SPIKE_IMMUNE;
-            if (index < boneSpikeImmune.size())
-                return boneSpikeImmune[index];
+            case DATA_COLDFLAME_GUID:
+                return coldflameTarget;
+            case DATA_SPIKE_IMMUNE + 0:
+            case DATA_SPIKE_IMMUNE + 1:
+            case DATA_SPIKE_IMMUNE + 2:
+            {
+                uint32_t index = Type - DATA_SPIKE_IMMUNE;
+                if (index < boneSpikeImmune.size())
+                    return boneSpikeImmune[index];
 
-            break;
-        }
+                break;
+            }
+            default:
+                return 0;
         }
 
         return 0;
@@ -1270,7 +1398,7 @@ public:
     {
         // set duration here
         int32_t duration = 20000;
-        if(aur->GetUnitCaster()->isCreature())
+        if (aur->GetUnitCaster()->isCreature())
             duration = static_cast<Creature*>(aur->GetUnitCaster())->GetScript()->RAID_MODE<uint32_t>(20000, 30000, 20000, 30000);
 
         aur->setOriginalDuration(duration);
@@ -1325,7 +1453,7 @@ public:
             if (targets.empty())
                 return;
 
-            uint32 i = 0;
+            uint32_t i = 0;
             for (std::list<Unit*>::const_iterator itr = targets.begin(); itr != targets.end(); ++itr, ++i)
             {
                 Unit* target = *itr;
@@ -1384,7 +1512,7 @@ public:
             return false;
 
         // Check if it is one of the tanks soaking Bone Slice
-        for (uint32 i = 0; i < MAX_BONE_SPIKE_IMMUNE; ++i)
+        for (uint32_t i = 0; i < MAX_BONE_SPIKE_IMMUNE; ++i)
             if (target->getGuid() == creatureAI->GetCreatureData64(DATA_SPIKE_IMMUNE + i))
                 return false;
 
@@ -1446,7 +1574,7 @@ public:
         if (effectIndex != EFF_INDEX_0)
             return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
 
-        for (uint8 i = 0; i < 4; ++i)
+        for (uint8_t i = 0; i < 4; ++i)
             spell->getUnitCaster()->castSpell(spell->GetUnitTarget(), (spell->damage + i), true);
 
         return SpellScriptExecuteState::EXECUTE_PREVENT;
@@ -1694,91 +1822,129 @@ public:
         {
             switch (eventId)
             {
-            case EVENT_INTRO_2:
-                sendDBChatMessage(SAY_LADY_INTRO_2);
-                break;
-            case EVENT_INTRO_3:
-                sendDBChatMessage(SAY_LADY_INTRO_3);
-                break;
-            case EVENT_INTRO_4:
-                sendDBChatMessage(SAY_LADY_INTRO_4);
-                break;
-            case EVENT_INTRO_5:
-                sendDBChatMessage(SAY_LADY_INTRO_5);
-                break;
-            case EVENT_INTRO_6:
-                sendDBChatMessage(SAY_LADY_INTRO_6);
-                break;
-            case EVENT_INTRO_7:
-                sendDBChatMessage(SAY_LADY_INTRO_7);
-                setScriptPhase(PHASE_ONE);
-                break;
-            case EVENT_DEATH_AND_DECAY:
-                if (Unit* target = getBestPlayerTarget())
+                case EVENT_INTRO_2:
                 {
-                    deathAndDecaySpell->setCustomTarget(target);
-                    _castAISpell(deathAndDecaySpell);
+                    sendDBChatMessage(SAY_LADY_INTRO_2);
+                    break;
                 }
-                scriptEvents.addEvent(EVENT_DEATH_AND_DECAY, Util::getRandomUInt(22000, 30000));
-                break;
-            case EVENT_DOMINATE_MIND_H:
-                sendDBChatMessage(SAY_LADY_DOMINATE_MIND);
-                for (uint8 i = 0; i < dominateMindCount; i++)
-                    if (Unit* target = getBestPlayerTarget(TargetFilter_NotCurrent))
+                case EVENT_INTRO_3:
+                {
+                    sendDBChatMessage(SAY_LADY_INTRO_3);
+                    break;
+                }
+                case EVENT_INTRO_4:
+                {
+                    sendDBChatMessage(SAY_LADY_INTRO_4);
+                    break;
+                }
+                case EVENT_INTRO_5:
+                {
+                    sendDBChatMessage(SAY_LADY_INTRO_5);
+                    break;
+                }
+                case EVENT_INTRO_6:
+                {
+                    sendDBChatMessage(SAY_LADY_INTRO_6);
+                    break;
+                }
+                case EVENT_INTRO_7:
+                {
+                    sendDBChatMessage(SAY_LADY_INTRO_7);
+                    setScriptPhase(PHASE_ONE);
+                    break;
+                }
+                case EVENT_DEATH_AND_DECAY:
+                {
+                    if (Unit* target = getBestPlayerTarget())
                     {
-                        dominateMindHeroSpell->setCustomTarget(target);
-                        _castAISpell(dominateMindHeroSpell);
+                        deathAndDecaySpell->setCustomTarget(target);
+                        _castAISpell(deathAndDecaySpell);
                     }
-                scriptEvents.addEvent(EVENT_DOMINATE_MIND_H, Util::getRandomUInt(40000, 45000));
-                break;
-            case EVENT_P1_SUMMON_WAVE:
-                SummonWavePhaseOne();
-                scriptEvents.addEvent(EVENT_P1_SUMMON_WAVE, _isHeroic() ? 45000 : 60000, PHASE_ONE);
-                break;
-            case EVENT_P1_SHADOW_BOLT:
-                if (Unit* target = getBestPlayerTarget())
-                {
-                    shadowBoltSpell->setCustomTarget(target);
-                    _castAISpell(shadowBoltSpell);
+                    scriptEvents.addEvent(EVENT_DEATH_AND_DECAY, Util::getRandomUInt(22000, 30000));
+                    break;
                 }
-                scriptEvents.addEvent(EVENT_P1_SHADOW_BOLT, Util::getRandomUInt(5000, 8000), PHASE_ONE);
-                break;
-            case EVENT_P1_REANIMATE_CULTIST:
-                ReanimateCultist();
-                break;
-            case EVENT_P1_EMPOWER_CULTIST:
-                EmpowerCultist();
-                scriptEvents.addEvent(EVENT_P1_EMPOWER_CULTIST, Util::getRandomUInt(18000, 25000));
-                break;
-            case EVENT_P2_FROSTBOLT:
-                _castAISpell(frostBoltSpell);
-                scriptEvents.addEvent(EVENT_P2_FROSTBOLT, Util::getRandomUInt(10000, 11000), PHASE_TWO);
-                break;
-            case EVENT_P2_FROSTBOLT_VOLLEY:
-                _castAISpell(frostBoltVolleySpell);
-                scriptEvents.addEvent(EVENT_P2_FROSTBOLT_VOLLEY, Util::getRandomUInt(13000, 15000), PHASE_TWO);
-                break;
-            case EVENT_P2_TOUCH_OF_INSIGNIFICANCE:
-                _castAISpell(touchOfInsignifcanceSpell);
-                scriptEvents.addEvent(EVENT_P2_TOUCH_OF_INSIGNIFICANCE, Util::getRandomUInt(9000, 13000), PHASE_TWO);
-                break;
-            case EVENT_P2_SUMMON_SHADE:
-                if (Unit* shadeTarget = getBestPlayerTarget(TargetFilter_NotCurrent))
+                case EVENT_DOMINATE_MIND_H:
                 {
-                    summonShadeSpell->setCustomTarget(shadeTarget);
-                    nextVengefulShadeTargetGUID = shadeTarget->getGuid();
-                    _castAISpell(summonShadeSpell);
+                    sendDBChatMessage(SAY_LADY_DOMINATE_MIND);
+                    for (uint8_t i = 0; i < dominateMindCount; i++)
+                        if (Unit* target = getBestPlayerTarget(TargetFilter_NotCurrent))
+                        {
+                            dominateMindHeroSpell->setCustomTarget(target);
+                            _castAISpell(dominateMindHeroSpell);
+                        }
+                    scriptEvents.addEvent(EVENT_DOMINATE_MIND_H, Util::getRandomUInt(40000, 45000));
+                    break;
                 }
-                scriptEvents.addEvent(EVENT_P2_SUMMON_SHADE, Util::getRandomUInt(18000, 23000), PHASE_TWO);
-                break;
-            case EVENT_P2_SUMMON_WAVE:
-                SummonWavePhaseTwo();
-                scriptEvents.addEvent(EVENT_P2_SUMMON_WAVE, 45000, PHASE_TWO);
-                break;
-            case EVENT_BERSERK:
-                _castAISpell(berserkSpell);
-                sendDBChatMessage(SAY_LADY_BERSERK);
-                break;
+                case EVENT_P1_SUMMON_WAVE:
+                {
+                    SummonWavePhaseOne();
+                    scriptEvents.addEvent(EVENT_P1_SUMMON_WAVE, _isHeroic() ? 45000 : 60000, PHASE_ONE);
+                    break;
+                }
+                case EVENT_P1_SHADOW_BOLT:
+                {
+                    if (Unit* target = getBestPlayerTarget())
+                    {
+                        shadowBoltSpell->setCustomTarget(target);
+                        _castAISpell(shadowBoltSpell);
+                    }
+                    scriptEvents.addEvent(EVENT_P1_SHADOW_BOLT, Util::getRandomUInt(5000, 8000), PHASE_ONE);
+                    break;
+                }
+                case EVENT_P1_REANIMATE_CULTIST:
+                {
+                    ReanimateCultist();
+                    break;
+                }
+                case EVENT_P1_EMPOWER_CULTIST:
+                {
+                    EmpowerCultist();
+                    scriptEvents.addEvent(EVENT_P1_EMPOWER_CULTIST, Util::getRandomUInt(18000, 25000));
+                    break;
+                }
+                case EVENT_P2_FROSTBOLT:
+                {
+                    _castAISpell(frostBoltSpell);
+                    scriptEvents.addEvent(EVENT_P2_FROSTBOLT, Util::getRandomUInt(10000, 11000), PHASE_TWO);
+                    break;
+                }
+                case EVENT_P2_FROSTBOLT_VOLLEY:
+                {
+                    _castAISpell(frostBoltVolleySpell);
+                    scriptEvents.addEvent(EVENT_P2_FROSTBOLT_VOLLEY, Util::getRandomUInt(13000, 15000), PHASE_TWO);
+                    break;
+                }
+                case EVENT_P2_TOUCH_OF_INSIGNIFICANCE:
+                {
+                    _castAISpell(touchOfInsignifcanceSpell);
+                    scriptEvents.addEvent(EVENT_P2_TOUCH_OF_INSIGNIFICANCE, Util::getRandomUInt(9000, 13000), PHASE_TWO);
+                    break;
+                }
+                case EVENT_P2_SUMMON_SHADE:
+                {
+                    if (Unit* shadeTarget = getBestPlayerTarget(TargetFilter_NotCurrent))
+                    {
+                        summonShadeSpell->setCustomTarget(shadeTarget);
+                        nextVengefulShadeTargetGUID = shadeTarget->getGuid();
+                        _castAISpell(summonShadeSpell);
+                    }
+                    scriptEvents.addEvent(EVENT_P2_SUMMON_SHADE, Util::getRandomUInt(18000, 23000), PHASE_TWO);
+                    break;
+                }
+                case EVENT_P2_SUMMON_WAVE:
+                {
+                    SummonWavePhaseTwo();
+                    scriptEvents.addEvent(EVENT_P2_SUMMON_WAVE, 45000, PHASE_TWO);
+                    break;
+                }
+                case EVENT_BERSERK:
+                {
+                    _castAISpell(berserkSpell);
+                    sendDBChatMessage(SAY_LADY_BERSERK);
+                    break;
+                }
+                default:
+                    break;
             }
         }
 
@@ -1795,8 +1961,8 @@ public:
     // summoning function for first phase
     void SummonWavePhaseOne()
     {    
-        uint8 addIndex1 = waveCounter & 1;
-        uint8 addIndex2 = uint8(addIndex1 ^ 1);
+        uint8_t addIndex1 = waveCounter & 1;
+        uint8_t addIndex2 = uint8(addIndex1 ^ 1);
 
         // Todo summon Darnavan when weekly quest is active
         if (waveCounter)
@@ -1820,7 +1986,7 @@ public:
     {       
         if (mInstance->GetDifficulty() == InstanceDifficulty::RAID_25MAN_NORMAL || mInstance->GetDifficulty() == InstanceDifficulty::RAID_25MAN_HEROIC)
         {
-            uint8 addIndex1 = waveCounter & 1;
+            uint8_t addIndex1 = waveCounter & 1;
             Summon(SummonEntries[addIndex1], LadyDeathwhisperSummonPositions[addIndex1 * 3]);
             Summon(SummonEntries[addIndex1 ^ 1], LadyDeathwhisperSummonPositions[addIndex1 * 3 + 1]);
             Summon(SummonEntries[addIndex1], LadyDeathwhisperSummonPositions[addIndex1 * 3 + 2]);
@@ -1830,7 +1996,7 @@ public:
         ++waveCounter;
     }
 
-    void Summon(uint32 entry, const LocationVector& pos)
+    void Summon(uint32_t entry, const LocationVector& pos)
     {
         Creature* summon = spawnCreature(entry, pos);
 
@@ -1901,14 +2067,18 @@ public:
         }
     }
 
-    void SetCreatureData64(uint32 Type, uint64 Data) override
+    void SetCreatureData64(uint32_t Type, uint64 Data) override
     {
         switch (Type)
         {
-        case DATA_CULTIST_GUID:
-            reanimationQueue.push_back(Data);
-            scriptEvents.addEvent(EVENT_P1_REANIMATE_CULTIST, 3000, PHASE_ONE);
-            break;
+            case DATA_CULTIST_GUID:
+            {
+                reanimationQueue.push_back(Data);
+                scriptEvents.addEvent(EVENT_P1_REANIMATE_CULTIST, 3000, PHASE_ONE);
+                break;
+            }
+            default:
+                break;
         }
     }
 
@@ -2149,51 +2319,83 @@ public:
         {
             switch (eventId)
             {
-            case EVENT_INTRO_ALLIANCE_1:
-                sendDBChatMessage(SAY_INTRO_ALLIANCE_0);
-                break;
-            case EVENT_INTRO_ALLIANCE_2:
-                sendDBChatMessage(SAY_INTRO_ALLIANCE_1);
-                break;
-            case EVENT_INTRO_ALLIANCE_3:
-                sendDBChatMessage(SAY_INTRO_ALLIANCE_2);
-                mInstance->SpawnEnemyGunship();
-                break;
-            case EVENT_INTRO_ALLIANCE_4:
-                sendDBChatMessage(SAY_INTRO_ALLIANCE_3);
-                break;
-            case EVENT_INTRO_ALLIANCE_5:
-                sendDBChatMessage(SAY_INTRO_ALLIANCE_4);
-                break;
-            case EVENT_INTRO_ALLIANCE_6:
-                sendDBChatMessage(SAY_INTRO_ALLIANCE_5);
-                break;
-            case EVENT_INTRO_ALLIANCE_7:
-                if (Creature* pSaurfang = mInstance->getLocalCreatureData(DATA_GB_HIGH_OVERLORD_SAURFANG))
-                    pSaurfang->GetScript()->sendDBChatMessage(SAY_BOARDING_SKYBREAKER_0);
-                break;
-            case EVENT_INTRO_ALLIANCE_8:
-                sendDBChatMessage(SAY_INTRO_ALLIANCE_7);
-                break;
-            case EVENT_KEEP_PLAYER_IN_COMBAT:
-                if (mInstance->getData(DATA_GUNSHIP_EVENT) == InProgress)
+                case EVENT_INTRO_ALLIANCE_1:
                 {
-                    //SPELL_LOCK_PLAYERS_AND_TAP_CHEST maybe not needed to cast it but prepared
-                    scriptEvents.addEvent(EVENT_KEEP_PLAYER_IN_COMBAT, 5000);
+                    sendDBChatMessage(SAY_INTRO_ALLIANCE_0);
+                    break;
                 }
-                break;
-            case EVENT_SUMMON_MAGE:
-                break;
-            case EVENT_ADDS:
-                break;
-            case EVENT_ADDS_BOARD_YELL:
-                break;
-            case EVENT_CHECK_RIFLEMAN:
-                break;
-            case EVENT_CHECK_MORTAR:
-                break;
-            case EVENT_CLEAVE:
-                break;
+                case EVENT_INTRO_ALLIANCE_2:
+                {
+                    sendDBChatMessage(SAY_INTRO_ALLIANCE_1);
+                    break;
+                }
+                case EVENT_INTRO_ALLIANCE_3:
+                {
+                    sendDBChatMessage(SAY_INTRO_ALLIANCE_2);
+                    mInstance->SpawnEnemyGunship();
+                    break;
+                }
+                case EVENT_INTRO_ALLIANCE_4:
+                {
+                    sendDBChatMessage(SAY_INTRO_ALLIANCE_3);
+                    break;
+                }
+                case EVENT_INTRO_ALLIANCE_5:
+                {
+                    sendDBChatMessage(SAY_INTRO_ALLIANCE_4);
+                    break;
+                }
+                case EVENT_INTRO_ALLIANCE_6:
+                {
+                    sendDBChatMessage(SAY_INTRO_ALLIANCE_5);
+                    break;
+                }
+                case EVENT_INTRO_ALLIANCE_7:
+                {
+                    if (Creature* pSaurfang = mInstance->getLocalCreatureData(DATA_GB_HIGH_OVERLORD_SAURFANG))
+                        pSaurfang->GetScript()->sendDBChatMessage(SAY_BOARDING_SKYBREAKER_0);
+                    break;
+                }
+                case EVENT_INTRO_ALLIANCE_8:
+                {
+                    sendDBChatMessage(SAY_INTRO_ALLIANCE_7);
+                    break;
+                }
+                case EVENT_KEEP_PLAYER_IN_COMBAT:
+                {
+                    if (mInstance->getData(DATA_GUNSHIP_EVENT) == InProgress)
+                    {
+                        //SPELL_LOCK_PLAYERS_AND_TAP_CHEST maybe not needed to cast it but prepared
+                        scriptEvents.addEvent(EVENT_KEEP_PLAYER_IN_COMBAT, 5000);
+                    }
+                    break;
+                }
+                case EVENT_SUMMON_MAGE:
+                {
+                    break;
+                }
+                case EVENT_ADDS:
+                {
+                    break;
+                }
+                case EVENT_ADDS_BOARD_YELL:
+                {
+                    break;
+                }
+                case EVENT_CHECK_RIFLEMAN:
+                {
+                    break;
+                }
+                case EVENT_CHECK_MORTAR:
+                {
+                    break;
+                }
+                case EVENT_CLEAVE:
+                {
+                    break;
+                }
+                default:
+                    break;
             }
         }
     }
@@ -2202,31 +2404,40 @@ public:
     {
         switch (action)
         {
-        case ACTION_INTRO_START:
-            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_1, 5000);
-            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_2, 10000);
-            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_3, 28000);
-            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_4, 33000);
-            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_5, 39000);
-            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_6, 45000);
-            break;
-        case ACTION_BATTLE_EVENT:
-            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_7, 5000);
-            scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_8, 11000);
-            scriptEvents.addEvent(EVENT_KEEP_PLAYER_IN_COMBAT, 1);
+            case ACTION_INTRO_START:
+            {
+                scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_1, 5000);
+                scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_2, 10000);
+                scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_3, 28000);
+                scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_4, 33000);
+                scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_5, 39000);
+                scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_6, 45000);
+                break;
+            }
+            case ACTION_BATTLE_EVENT:
+            {
+                scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_7, 5000);
+                scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_8, 11000);
+                scriptEvents.addEvent(EVENT_KEEP_PLAYER_IN_COMBAT, 1);
 
-            mInstance->setZoneMusic(4812, 17289);
+                mInstance->setZoneMusic(4812, 17289);
 
-            // Combat starts now
-            if (Creature* orgrimsHammer = mInstance->getLocalCreatureData(DATA_ORGRIMMAR_HAMMER_BOSS))
-                mInstance->sendUnitEncounter(EncounterFrameEngage, orgrimsHammer, 1);
+                // Combat starts now
+                if (Creature* orgrimsHammer = mInstance->getLocalCreatureData(DATA_ORGRIMMAR_HAMMER_BOSS))
+                    mInstance->sendUnitEncounter(EncounterFrameEngage, orgrimsHammer, 1);
 
-            if (Creature* skybreaker = mInstance->getLocalCreatureData(DATA_SKYBREAKER_BOSS))
-                mInstance->sendUnitEncounter(EncounterFrameEngage, skybreaker, 2);
+                if (Creature* skybreaker = mInstance->getLocalCreatureData(DATA_SKYBREAKER_BOSS))
+                    mInstance->sendUnitEncounter(EncounterFrameEngage, skybreaker, 2);
 
-            break;
-        case ACTION_SPAWN_MAGE:
-            break;
+                break;
+            }
+            case ACTION_SPAWN_MAGE:
+            {
+                // ToDo
+                break;
+            }
+            default:
+                break;
         }     
     }
 
@@ -2297,46 +2508,74 @@ public:
         {
             switch (eventId)
             {
-            case EVENT_INTRO_HORDE_1:
-                sendDBChatMessage(SAY_INTRO_HORDE_0);
-                break;
-            case EVENT_INTRO_HORDE_1_1:
-                sendDBChatMessage(SAY_INTRO_HORDE_0_1);
-                break;
-            case EVENT_INTRO_HORDE_2:
-                sendDBChatMessage(SAY_INTRO_HORDE_1);
-                mInstance->SpawnEnemyGunship();
-                break;
-            case EVENT_INTRO_HORDE_3:
-                sendDBChatMessage(SAY_INTRO_HORDE_2);
-                break;
-            case EVENT_INTRO_HORDE_4:
-                sendDBChatMessage(SAY_BOARDING_SKYBREAKER_0);
-                if (Creature* pMuradin = mInstance->getLocalCreatureData(DATA_GB_MURADIN_BRONZEBEARD))
-                    pMuradin->GetScript()->sendDBChatMessage(SAY_INTRO_ALLIANCE_7);
-                break;
-            case EVENT_INTRO_HORDE_5:
-                sendDBChatMessage(SAY_INTRO_HORDE_4);
-                break;
-            case EVENT_KEEP_PLAYER_IN_COMBAT:
-                if (mInstance->getData(DATA_GUNSHIP_EVENT) == InProgress)
+                case EVENT_INTRO_HORDE_1:
                 {
-                    //SPELL_LOCK_PLAYERS_AND_TAP_CHEST maybe not needed to cast it but prepared
-                    scriptEvents.addEvent(EVENT_KEEP_PLAYER_IN_COMBAT, 5000);
+                    sendDBChatMessage(SAY_INTRO_HORDE_0);
+                    break;
                 }
-                break;
-            case EVENT_SUMMON_MAGE:
-                break;
-            case EVENT_ADDS:
-                break;
-            case EVENT_ADDS_BOARD_YELL:
-                break;
-            case EVENT_CHECK_RIFLEMAN:
-                break;
-            case EVENT_CHECK_MORTAR:
-                break;
-            case EVENT_CLEAVE:
-                break;
+                case EVENT_INTRO_HORDE_1_1:
+                {
+                    sendDBChatMessage(SAY_INTRO_HORDE_0_1);
+                    break;
+                }
+                case EVENT_INTRO_HORDE_2:
+                {
+                    sendDBChatMessage(SAY_INTRO_HORDE_1);
+                    mInstance->SpawnEnemyGunship();
+                    break;
+                }
+                case EVENT_INTRO_HORDE_3:
+                {
+                    sendDBChatMessage(SAY_INTRO_HORDE_2);
+                    break;
+                }
+                case EVENT_INTRO_HORDE_4:
+                {
+                    sendDBChatMessage(SAY_BOARDING_SKYBREAKER_0);
+                    if (Creature* pMuradin = mInstance->getLocalCreatureData(DATA_GB_MURADIN_BRONZEBEARD))
+                        pMuradin->GetScript()->sendDBChatMessage(SAY_INTRO_ALLIANCE_7);
+                    break;
+                }
+                case EVENT_INTRO_HORDE_5:
+                {
+                    sendDBChatMessage(SAY_INTRO_HORDE_4);
+                    break;
+                }
+                case EVENT_KEEP_PLAYER_IN_COMBAT:
+                {
+                    if (mInstance->getData(DATA_GUNSHIP_EVENT) == InProgress)
+                    {
+                        //SPELL_LOCK_PLAYERS_AND_TAP_CHEST maybe not needed to cast it but prepared
+                        scriptEvents.addEvent(EVENT_KEEP_PLAYER_IN_COMBAT, 5000);
+                    }
+                    break;
+                }
+                case EVENT_SUMMON_MAGE:
+                {
+                    break;
+                }
+                case EVENT_ADDS:
+                {
+                    break;
+                }
+                case EVENT_ADDS_BOARD_YELL:
+                {
+                    break;
+                }
+                case EVENT_CHECK_RIFLEMAN:
+                {
+                    break;
+                }
+                case EVENT_CHECK_MORTAR:
+                {
+                    break;
+                }
+                case EVENT_CLEAVE:
+                {
+                    break;
+                }
+                default:
+                    break;
             }
         }
     }
@@ -2345,28 +2584,37 @@ public:
     {
         switch (action)
         {
-        case ACTION_INTRO_START:
-            scriptEvents.addEvent(EVENT_INTRO_HORDE_1, 5000);
-            scriptEvents.addEvent(EVENT_INTRO_HORDE_1_1, 16000);
-            scriptEvents.addEvent(EVENT_INTRO_HORDE_2, 24600);
-            scriptEvents.addEvent(EVENT_INTRO_HORDE_3, 29600);
-            scriptEvents.addEvent(EVENT_INTRO_HORDE_4, 39200);
-            break;
-        case ACTION_BATTLE_EVENT:
-            scriptEvents.addEvent(EVENT_INTRO_HORDE_5, 5000);
+            case ACTION_INTRO_START:
+            {
+                scriptEvents.addEvent(EVENT_INTRO_HORDE_1, 5000);
+                scriptEvents.addEvent(EVENT_INTRO_HORDE_1_1, 16000);
+                scriptEvents.addEvent(EVENT_INTRO_HORDE_2, 24600);
+                scriptEvents.addEvent(EVENT_INTRO_HORDE_3, 29600);
+                scriptEvents.addEvent(EVENT_INTRO_HORDE_4, 39200);
+                break;
+            }
+            case ACTION_BATTLE_EVENT:
+            {
+                scriptEvents.addEvent(EVENT_INTRO_HORDE_5, 5000);
 
-            mInstance->setZoneMusic(4812, 17289);
+                mInstance->setZoneMusic(4812, 17289);
 
-            // Combat starts now
-            if (Creature* skybreaker = mInstance->getLocalCreatureData(DATA_SKYBREAKER_BOSS))
-                mInstance->sendUnitEncounter(EncounterFrameEngage, skybreaker, 1);
+                // Combat starts now
+                if (Creature* skybreaker = mInstance->getLocalCreatureData(DATA_SKYBREAKER_BOSS))
+                    mInstance->sendUnitEncounter(EncounterFrameEngage, skybreaker, 1);
 
-            if (Creature* orgrimsHammer = mInstance->getLocalCreatureData(DATA_ORGRIMMAR_HAMMER_BOSS))
-                mInstance->sendUnitEncounter(EncounterFrameEngage, orgrimsHammer, 2);
+                if (Creature* orgrimsHammer = mInstance->getLocalCreatureData(DATA_ORGRIMMAR_HAMMER_BOSS))
+                    mInstance->sendUnitEncounter(EncounterFrameEngage, orgrimsHammer, 2);
 
-            break;
-        case ACTION_SPAWN_MAGE:
-            break;
+                break;
+            }
+            case ACTION_SPAWN_MAGE:
+            {
+                // ToDo
+                break;
+            }
+            default:
+                break;
         }
     }
 
@@ -2541,12 +2789,14 @@ public:
     {
         switch (action)
         {
-        case ACTION_BATTLE_DONE:    // Enemy Ship Explodes
-            _castAISpell(ExplosionVictory);
-            break;
-        case ACTION_FAIL:   // Our Ship Explodes
-            _castAISpell(ExplosionWipe);
-            break;
+            case ACTION_BATTLE_DONE:    // Enemy Ship Explodes
+                _castAISpell(ExplosionVictory);
+                break;
+            case ACTION_FAIL:   // Our Ship Explodes
+                _castAISpell(ExplosionWipe);
+                break;
+            default:
+                break;
         }
     }
 
@@ -2578,12 +2828,14 @@ public:
     {
         switch (action)
         {
-        case ACTION_BATTLE_DONE:    // Enemy Ship Explodes
-            _castAISpell(EjectBelowZero);
-            break;
-        case ACTION_FAIL:   // Our Ship Explodes
-            _castAISpell(EcectWipe);
-            break;
+            case ACTION_BATTLE_DONE:    // Enemy Ship Explodes
+                _castAISpell(EjectBelowZero);
+                break;
+            case ACTION_FAIL:           // Our Ship Explodes
+                _castAISpell(EcectWipe);
+                break;
+            default:
+                break;
         }
     }
 
@@ -2845,6 +3097,8 @@ public:
 
                     break;
                 }
+                default:
+                    break;
             }
         }
     }
@@ -2926,7 +3180,7 @@ public:
                     return;
 
                 // Guards
-                uint32 x = 1;
+                uint32_t x = 1;
                 GetCreatureListWithEntryInGrid(_guardList, NPC_SE_SKYBREAKER_MARINE, 20.0f);
                 for (auto itr = _guardList.begin(); itr != _guardList.end(); ++x, ++itr)
                     (*itr)->GetScript()->SetCreatureData(0, x);
@@ -2967,6 +3221,8 @@ public:
                 scriptEvents.addEvent(EVENT_OUTRO_ALLIANCE_15_SE, 1000);
                 break;
             }
+            default:
+                break;
         }
     }
 
@@ -3158,6 +3414,8 @@ public:
                     getCreature()->getMovementManager()->movePoint(POINT_FINAL, unboardMightylPos);
                     break;
                 }
+                default:
+                    break;
             }
         }
     }
@@ -3276,7 +3534,7 @@ public:
                     return;
 
                 // Guards
-                uint32 x = 1;
+                uint32_t x = 1;
                 GetCreatureListWithEntryInGrid(_guardList, NPC_SE_KOR_KRON_REAVER, 20.0f);
                 for (auto itr = _guardList.begin(); itr != _guardList.end(); ++x, ++itr)
                     (*itr)->GetScript()->SetCreatureData(0, x);
@@ -3323,6 +3581,8 @@ public:
                 }
                 break;
             }
+            default:
+                break;
         }
     }
 
@@ -3481,79 +3741,81 @@ public:
         {
             switch (eventId)
             {
-            case EVENT_INTRO_ALLIANCE_2_SE:
-            {
-                getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-                getCreature()->setFaction(974);
-                sendDBChatMessage(SAY_DEATHBRINGER_INTRO_ALLIANCE_2);
-                break;
-            }
-            case EVENT_INTRO_ALLIANCE_3_SE:
-            {
-                sendDBChatMessage(SAY_DEATHBRINGER_INTRO_ALLIANCE_3);
-                break;
-            }
-            case EVENT_INTRO_ALLIANCE_6_SE:
-            {
-                sendDBChatMessage(SAY_DEATHBRINGER_INTRO_ALLIANCE_6);
-                sendDBChatMessage(SAY_DEATHBRINGER_INTRO_ALLIANCE_7);
-                _castAISpell(GripOfAgonySpell);
-                setCanEnterCombat(true);
-                getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
-                getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_LONER);
-                break;
-            }
-            case EVENT_INTRO_HORDE_2_SE:
-            {
-                getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-                getCreature()->setFaction(974);
-                sendDBChatMessage(SAY_DEATHBRINGER_INTRO_HORDE_2);
-                break;
-            }
-            case EVENT_INTRO_HORDE_4_SE:
-            {
-                sendDBChatMessage(SAY_DEATHBRINGER_INTRO_HORDE_4);
-                break;
-            }
-            case EVENT_INTRO_HORDE_9_SE:
-            {
-                sendDBChatMessage(SAY_DEATHBRINGER_INTRO_HORDE_9);
-                _castAISpell(GripOfAgonySpell);
-                setCanEnterCombat(true);
-                getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
-                getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_LONER);
-                break;
-            }
-            case EVENT_INTRO_FINISH_SE:
-            {
-                setScriptPhase(PHASE_COMBAT);
-                break;
-            }
-            case EVENT_SUMMON_BLOOD_BEAST_SE:
-            {
-                for (uint32_t i10 = 0; i10 < 2; ++i10)
-                    _castAISpell(SummonBloodBeast);
-
-                if (mInstance->GetDifficulty() == InstanceDifficulty::RAID_25MAN_NORMAL || mInstance->GetDifficulty() == InstanceDifficulty::RAID_25MAN_HEROIC)
-                    for (uint32_t i25 = 0; i25 < 3; ++i25)
-                        _castAISpell(SummonBloodBeast25);
-
-                sendDBChatMessage(SAY_DEATHBRINGER_BLOOD_BEASTS);
-
-                scriptEvents.addEvent(EVENT_SUMMON_BLOOD_BEAST_SE, 40000,PHASE_COMBAT);
-
-                if (_isHeroic())
-                    scriptEvents.addEvent(EVENT_SCENT_OF_BLOOD_SE, 10000, PHASE_COMBAT);
-                break;
-            }
-            case EVENT_SCENT_OF_BLOOD_SE:
-            {
-                if (!summons.empty())
+                case EVENT_INTRO_ALLIANCE_2_SE:
                 {
-                    _castAISpell(ScentOfBloodSpell);
+                    getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
+                    getCreature()->setFaction(974);
+                    sendDBChatMessage(SAY_DEATHBRINGER_INTRO_ALLIANCE_2);
+                    break;
                 }
-                break;
-            }
+                case EVENT_INTRO_ALLIANCE_3_SE:
+                {
+                    sendDBChatMessage(SAY_DEATHBRINGER_INTRO_ALLIANCE_3);
+                    break;
+                }
+                case EVENT_INTRO_ALLIANCE_6_SE:
+                {
+                    sendDBChatMessage(SAY_DEATHBRINGER_INTRO_ALLIANCE_6);
+                    sendDBChatMessage(SAY_DEATHBRINGER_INTRO_ALLIANCE_7);
+                    _castAISpell(GripOfAgonySpell);
+                    setCanEnterCombat(true);
+                    getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+                    getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_LONER);
+                    break;
+                }
+                case EVENT_INTRO_HORDE_2_SE:
+                {
+                    getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
+                    getCreature()->setFaction(974);
+                    sendDBChatMessage(SAY_DEATHBRINGER_INTRO_HORDE_2);
+                    break;
+                }
+                case EVENT_INTRO_HORDE_4_SE:
+                {
+                    sendDBChatMessage(SAY_DEATHBRINGER_INTRO_HORDE_4);
+                    break;
+                }
+                case EVENT_INTRO_HORDE_9_SE:
+                {
+                    sendDBChatMessage(SAY_DEATHBRINGER_INTRO_HORDE_9);
+                    _castAISpell(GripOfAgonySpell);
+                    setCanEnterCombat(true);
+                    getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+                    getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_LONER);
+                    break;
+                }
+                case EVENT_INTRO_FINISH_SE:
+                {
+                    setScriptPhase(PHASE_COMBAT);
+                    break;
+                }
+                case EVENT_SUMMON_BLOOD_BEAST_SE:
+                {
+                    for (uint32_t i10 = 0; i10 < 2; ++i10)
+                        _castAISpell(SummonBloodBeast);
+
+                    if (mInstance->GetDifficulty() == InstanceDifficulty::RAID_25MAN_NORMAL || mInstance->GetDifficulty() == InstanceDifficulty::RAID_25MAN_HEROIC)
+                        for (uint32_t i25 = 0; i25 < 3; ++i25)
+                            _castAISpell(SummonBloodBeast25);
+
+                    sendDBChatMessage(SAY_DEATHBRINGER_BLOOD_BEASTS);
+
+                    scriptEvents.addEvent(EVENT_SUMMON_BLOOD_BEAST_SE, 40000,PHASE_COMBAT);
+
+                    if (_isHeroic())
+                        scriptEvents.addEvent(EVENT_SCENT_OF_BLOOD_SE, 10000, PHASE_COMBAT);
+                    break;
+                }
+                case EVENT_SCENT_OF_BLOOD_SE:
+                {
+                    if (!summons.empty())
+                    {
+                        _castAISpell(ScentOfBloodSpell);
+                    }
+                    break;
+                }
+                default:
+                    break;
             }
         }
     }
@@ -3667,6 +3929,8 @@ public:
                 }
                 break;
             }
+            default:
+                break;
         }
     }
 
@@ -3697,8 +3961,12 @@ public:
         switch (_spellId)
         {
             case  SPELL_FRENZY:
+            {
                 _frenzied = true;
-            break;
+                break;
+            }
+            default:
+                break;
         }
     }
 
@@ -3706,20 +3974,22 @@ public:
     {
         switch (info->getId())
         {
-        case 72255: // Mark of the Fallen Champion, triggered id
-        case 72444:
-        case 72445:
-        case 72446:
-            dynamic_cast<Unit*>(target)->castSpell(getCreature(), SPELL_BLOOD_LINK_DUMMY, true);
-            break;
-        default:
-            break;
+            case 72255: // Mark of the Fallen Champion, triggered id
+            case 72444:
+            case 72445:
+            case 72446:
+            {
+                dynamic_cast<Unit*>(target)->castSpell(getCreature(), SPELL_BLOOD_LINK_DUMMY, true);
+                break;
+            }
+            default:
+                break;
         }
     }
 
     uint32_t GetCreatureData(uint32_t type) const override
     {
-        if (type == DATA_MADE_A_MESS)
+        if (type == DATA_MADE_A_MESS && _dead)
             if (_markedTargetGuids.size() < RAID_MODE<uint32_t>(3, 5, 3, 5))
                 return 1;
 
@@ -3848,6 +4118,8 @@ public:
                 getCreature()->Despawn(2000, 2000);
                 break;
             }
+            default:
+                break;
         }
     }
 
@@ -4082,6 +4354,50 @@ public:
     }
 };
 
+class achievement_ive_gone_and_made_a_mess_script : public AchievementCriteriaScript
+{
+public:
+    bool CheckRequirements(Player* /*pPlayer*/, Object* target, uint32_t criteriaID) override
+    {
+        if (target)
+            if (Creature* saurfang = target->ToCreature())
+                if (saurfang->GetScript()->GetCreatureData(DATA_MADE_A_MESS))
+                {
+                    switch (saurfang->GetMapMgr()->pInstance->m_difficulty)
+                    {
+                        case InstanceDifficulty::RAID_10MAN_NORMAL:
+                        {
+                            if (criteriaID == 12778)
+                                return true;
+                            break;
+                        }
+                        case InstanceDifficulty::RAID_25MAN_NORMAL:
+                        {
+                            if (criteriaID == 13036)
+                                return true;
+                            break;
+                        }
+                        case InstanceDifficulty::RAID_10MAN_HEROIC:
+                        {
+                            if (criteriaID == 13035)
+                                return true;
+                            break;
+                        }
+                        case InstanceDifficulty::RAID_25MAN_HEROIC:
+                        {
+                            if (criteriaID == 13037)
+                                return true;
+                            break;
+                        }
+                        default:
+                            break;
+                    }
+                }
+
+        return false;
+    }
+};
+
 void SetupICC(ScriptMgr* mgr)
 {
     //Instance
@@ -4185,4 +4501,16 @@ void SetupICC(ScriptMgr* mgr)
     mgr->register_creature_script(NPC_GB_GUNSHIP_HULL, GunshipHullAI::Create);
 
     mgr->register_creature_script(canonIds, GunshipCanonAI::Create);
+
+    uint32_t achievementCriteriaIds[] =
+    {
+        12778,  // 10 nhc
+        13036,  // 25 nhc
+        13035,  // 10 hc
+        13037,  // 25 hc
+        0
+    };
+
+    AchievementCriteriaScript* achievement_ive_gone_and_made_a_mess = new achievement_ive_gone_and_made_a_mess_script();
+    mgr->register_achievement_criteria_script(achievementCriteriaIds, achievement_ive_gone_and_made_a_mess);
 }

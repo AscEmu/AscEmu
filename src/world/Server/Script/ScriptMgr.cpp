@@ -474,6 +474,8 @@ void ScriptMgr::UnloadScripts()
         delete *itr;
     _questscripts.clear();
 
+    _achievementscripts.clear();
+
     //todo zyres: this is the wrong way to delete spellscripts
     /*for (auto& itr : _spellscripts)
         delete itr.second;*/
@@ -744,6 +746,37 @@ void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect ca
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr registered a script effect handler for Spell ID: %u (%s), but spell has no scripted effect!", entry, sp->getName().c_str());
 
     SpellScriptEffects.insert(std::pair< uint32, exp_handle_script_effect >(entry, callback));
+}
+
+void ScriptMgr::register_achievement_criteria_script(uint32_t* entry, AchievementCriteriaScript* as)
+{
+    for (uint32 y = 0; entry[y] != 0; y++)
+    {
+        register_achievement_criteria_script(entry[y], as);
+    }
+}
+
+void ScriptMgr::register_achievement_criteria_script(uint32_t entry, AchievementCriteriaScript* as)
+{
+    if (_achievementscripts.find(entry) != _achievementscripts.end())
+    {
+        sLogger.debug("ScriptMgr tried to register a script for Achievement Criteria ID: %u but there is already one.");
+    }
+    else
+    {
+        _achievementscripts.insert(std::make_pair(entry, as));
+    }
+}
+
+AchievementCriteriaScript* ScriptMgr::getachievementCriteriaScript(uint32_t entry) const
+{
+    for (const auto& itr : _achievementscripts)
+    {
+        if (itr.first == entry)
+            return itr.second;
+    }
+
+    return nullptr;
 }
 
 CreatureAIScript* ScriptMgr::CreateAIScriptClassForEntry(Creature* pCreature)
@@ -1474,6 +1507,11 @@ bool ScriptMgr::has_quest_script(uint32 entry) const
 {
     QuestProperties const* q = sMySQLStore.getQuestProperties(entry);
     return (q == NULL || q->pQuestScript != NULL);
+}
+
+bool ScriptMgr::has_achievement_criteria_script(uint32_t entry) const
+{
+    return (_achievementscripts.find(entry) != _achievementscripts.end());
 }
 
 void ScriptMgr::register_creature_gossip(uint32 entry, GossipScript* script)

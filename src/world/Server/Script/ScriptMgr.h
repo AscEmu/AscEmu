@@ -127,6 +127,7 @@ class ScriptMgr;
 struct ItemProperties;
 class QuestLogEntry;
 class QuestScript;
+class AchievementCriteriaScript;
 
 // Factory Imports (from script lib)
 typedef CreatureAIScript* (*exp_create_creature_ai)(Creature* pCreature);
@@ -158,6 +159,7 @@ typedef std::set<QuestScript*> QuestScripts;
 typedef std::map<uint32_t, SpellScript*> SpellScripts;
 typedef std::set<void*> ServerHookList;
 typedef std::list< Arcemu::DynLib* > DynamicLibraryMap;
+typedef std::unordered_map<uint32_t, AchievementCriteriaScript*> AchievementCriteriaScripts;
 
 class SERVER_DECL ScriptMgr
 {
@@ -214,6 +216,8 @@ public:
     void DamageTaken(Creature* pCreature, Unit* attacker, uint32_t* damage) const;
     CreatureAIScript* getCreatureAIScript(Creature* pCreature) const;
 
+    AchievementCriteriaScript* getachievementCriteriaScript(uint32_t entry) const;
+
 private:
     void _register_spell_script(uint32_t spellId, SpellScript* ss);
 
@@ -254,6 +258,8 @@ public:
         void register_hook(ServerHookEvents event, void* function_pointer);
         void register_quest_script(uint32 entry, QuestScript* qs);
         void register_event_script(uint32 entry, EventScript* es);
+        void register_achievement_criteria_script(uint32_t* entry, AchievementCriteriaScript* as);
+        void register_achievement_criteria_script(uint32_t entry, AchievementCriteriaScript* as);
 
         // GOSSIP INTERFACE REGISTRATION
         void register_creature_gossip(uint32, GossipScript*);
@@ -318,6 +324,7 @@ public:
         // Parameter: uint32 - the quest id to search for
         //////////////////////////////////////////////////////////////////////////////////////////
         bool has_quest_script(uint32) const;
+        bool has_achievement_criteria_script(uint32_t) const;
 
         bool has_creature_gossip(uint32) const;
         bool has_item_gossip(uint32) const;
@@ -359,6 +366,7 @@ public:
         QuestScripts _questscripts;
         SpellScripts _spellscripts;
         GossipMap creaturegossip_, gogossip_, itemgossip_;
+        AchievementCriteriaScripts _achievementscripts;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -516,6 +524,16 @@ class SERVER_DECL QuestScript
         virtual void OnCreatureKill(uint32 /*entry*/, Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
         virtual void OnExploreArea(uint32 /*areaId*/, Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
         virtual void OnPlayerItemPickup(uint32 /*itemId*/, uint32 /*totalCount*/, Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
+};
+
+class SERVER_DECL AchievementCriteriaScript
+{
+    public:
+
+        AchievementCriteriaScript() {};
+        virtual ~AchievementCriteriaScript() {};
+
+        virtual bool CheckRequirements(Player* /*pPlayer*/, Object* /*target*/, uint32_t criteriaID) { return false; }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

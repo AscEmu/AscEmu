@@ -151,6 +151,7 @@ enum AchievementCriteriaTypes
     ACHIEVEMENT_CRITERIA_TYPE_VISIT_BARBER_SHOP                 = 48,
     ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM                   = 49,
     ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED_ON_LOOT                 = 50,
+    ACHIEVEMENT_CRITERIA_TYPE_ROLL_GREED_ON_LOOT                = 51,
     ACHIEVEMENT_CRITERIA_TYPE_HK_CLASS                          = 52,
     ACHIEVEMENT_CRITERIA_TYPE_HK_RACE                           = 53,
     ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE                          = 54,
@@ -295,7 +296,7 @@ public:
 #if VERSION_STRING >= Cata
     void sendRespondInspectAchievements(Player* player); // Used when Inspecting a Player
 #endif
-    void UpdateAchievementCriteria(AchievementCriteriaTypes type, int32_t miscvalue1, int32_t miscvalue2, uint32_t time);
+    void UpdateAchievementCriteria(AchievementCriteriaTypes type, int32_t miscvalue1, int32_t miscvalue2, uint32_t time, Object* reference = nullptr);
     void UpdateAchievementCriteria(AchievementCriteriaTypes type);
     bool UpdateAchievementCriteria(Player* player, int32_t criteriaID, uint32_t count);
     bool GMCompleteAchievement(WorldSession* gmSession, uint32_t achievementID, bool finishAll = false);

@@ -835,6 +835,18 @@ void Spell::finish(bool successful)
         return;
     }
 
+    // Achievements
+    if (Player* player = GetPlayerTarget())
+    {
+        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, m_spellInfo->getId(),0, 0, m_caster);
+        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2, m_spellInfo->getId(), 0, 0, m_caster);
+    }
+
+    if (Player* player = getPlayerCaster())
+    {
+        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2, m_spellInfo->getId(), 0, 0, m_caster);
+    }
+
     // Unit spell script hooks
     if (getUnitCaster() != nullptr)
     {

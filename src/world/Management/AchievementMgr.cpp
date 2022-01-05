@@ -505,7 +505,7 @@ void AchievementMgr::CheckAllAchievementCriteria()
 /// monster, or looting an object, or completing a quest, etc.). miscvalue1, miscvalue2
 /// depend on the achievement type. Generally, miscvalue1 is an ID of some type (quest ID,
 /// item ID, faction ID, etc.), and miscvalue2 is the amount to increase the progress.
-void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, int32_t miscvalue1, int32_t miscvalue2, uint32_t /*time*/)
+void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, int32_t miscvalue1, int32_t miscvalue2, uint32_t /*time*/, Object* reference /*nullptr*/)
 {
     if (m_player->GetSession()->HasGMPermissions() && worldConfig.gm.disableAchievements)
         return;
@@ -544,6 +544,23 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
         {
             // achievement requires a faction of which the player is not a member
             continue;
+        }
+
+        switch (type)
+        {
+            // special cases, db data is checked later
+        case ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA:
+        case ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED_ON_LOOT:
+        case ACHIEVEMENT_CRITERIA_TYPE_ROLL_GREED_ON_LOOT:
+            break;
+        default:
+            if (sScriptMgr.has_achievement_criteria_script(achievementCriteria->ID))
+            {
+                auto script = sScriptMgr.getachievementCriteriaScript(achievementCriteria->ID);
+                if (!script->CheckRequirements(GetPlayer(), reference, achievementCriteria->ID))
+                    continue;
+            }
+            break;
         }
 
         switch (type)
@@ -1192,6 +1209,23 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
             || (achievement->factionFlag == ACHIEVEMENT_FACTION_FLAG_ALLIANCE && !m_player->isTeamAlliance()))
         {
             continue;
+        }
+
+        switch (type)
+        {
+            // special cases, db data is checked later
+        case ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA:
+        case ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED_ON_LOOT:
+        case ACHIEVEMENT_CRITERIA_TYPE_ROLL_GREED_ON_LOOT:
+            break;
+        default:
+            if (sScriptMgr.has_achievement_criteria_script(achievementCriteria->ID))
+            {
+                auto script = sScriptMgr.getachievementCriteriaScript(achievementCriteria->ID);
+                if (!script->CheckRequirements(GetPlayer(), nullptr, achievementCriteria->ID))
+                    continue;
+            }
+            break;
         }
 
         switch (type)
