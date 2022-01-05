@@ -3403,8 +3403,8 @@ public:
         MarkOfTheFallenSpell = addAISpell(SPELL_MARK_OF_THE_FALLEN_CHAMPION, 0.0f, TARGET_CUSTOM, 0, 0);
         MarkOfTheFallenSpell->addDBEmote(SAY_DEATHBRINGER_MARK);
         RuneOfBloodSSpell = addAISpell(SPELL_RUNE_OF_BLOOD_S, 0.0f, TARGET_SELF, 0, 0, false, true);
-        RemoveMarksSpell = addAISpell(SPELL_REMOVE_MARKS_OF_THE_FALLEN_CHAMPION, 0.0f, TARGET_SOURCE);
-        AchievementSpell = addAISpell(SPELL_ACHIEVEMENT, 0.0f, TARGET_SELF);
+        RemoveMarksSpell = addAISpell(SPELL_REMOVE_MARKS_OF_THE_FALLEN_CHAMPION, 0.0f, TARGET_SELF);
+        AchievementSpell = addAISpell(SPELL_ACHIEVEMENT_SE, 0.0f, TARGET_SELF);
         AchievementSpell->mIsTriggered = true;
         ReputationBossSpell = addAISpell(SPELL_AWARD_REPUTATION_BOSS_KILL, 0.0f, TARGET_SELF);
         ReputationBossSpell->mIsTriggered = true;
@@ -3413,6 +3413,25 @@ public:
         addEmoteForEvent(Event_OnCombatStart, SAY_DEATHBRINGER_AGGRO);
         addEmoteForEvent(Event_OnTargetDied, SAY_DEATHBRINGER_KILL);
         addEmoteForEvent(Event_OnDied, SAY_DEATHBRINGER_DEATH);
+    }
+
+    void clearMarksFromTargets()
+    {
+        // Spell SPELL_REMOVE_MARKS_OF_THE_FALLEN_CHAMPION removes marks from alive units
+        // If player resurrects spirit and spawns at graveyard, mark is also removed because marks are bound to ICC map
+        _castAISpell(RemoveMarksSpell);
+
+        // However if a marked player dies and he's resurrected by his friend after killing boss, he would still have a mark
+        // so make sure all marked units lose the aura
+        auto itr = _markedTargetGuids.begin();
+        while (itr != _markedTargetGuids.end())
+        {
+            auto* const markedUnit = getCreature()->GetMapMgrUnit(*itr);
+            if (markedUnit != nullptr && markedUnit->IsInWorld())
+                markedUnit->removeAllAurasById(SPELL_MARK_OF_THE_FALLEN_CHAMPION);
+
+            itr = _markedTargetGuids.erase(itr);
+        }
     }
 
     void OnCombatStop(Unit* /*_target*/) override
@@ -3443,6 +3462,8 @@ public:
         _castAISpell(RuneOfBloodSSpell);
         _removeAura(SPELL_BERSERK);
         _removeAura(SPELL_FRENZY);
+
+        clearMarksFromTargets();
 
         Creature* Commander = mInstance->GetInstance()->GetInterface()->findNearestCreature(getCreature(), mInstance->getLocalData(DATA_TEAM_IN_INSTANCE) ? NPC_SE_HIGH_OVERLORD_SAURFANG : NPC_SE_MURADIN_BRONZEBEARD, 90.0f);
         if (Commander)
@@ -3544,7 +3565,6 @@ public:
             case PHASE_COMBAT:
             {
                 _introDone = true;
-                _fallenChampionCastCount = 0;
 
                 _castAISpell(ZeroPowerSpell);
                 _castAISpell(BloodLinkSpell);
@@ -3573,10 +3593,11 @@ public:
             getCreature()->getAIInterface()->eventUnitDied(_attacker, 0);
             getCreature()->getAIInterface()->engagementOver();
 
-            _castAISpell(RemoveMarksSpell);
             _castAISpell(AchievementSpell);
             _castAISpell(ReputationBossSpell);
             _castAISpell(PermanentFeignSpell);
+
+            clearMarksFromTargets();
 
             // Prepare for Outro
             getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -3634,7 +3655,7 @@ public:
             {
                 if (Unit* target = getBestPlayerTarget(TargetFilter_NotCurrent, 0.0f, 0.0f, -SPELL_MARK_OF_THE_FALLEN_CHAMPION))
                 {
-                    ++_fallenChampionCastCount;
+                    _markedTargetGuids.push_back(target->getGuid());
                     MarkOfTheFallenSpell->setCustomTarget(target);
                     _castAISpell(MarkOfTheFallenSpell);
 
@@ -3689,10 +3710,7 @@ public:
         case 72444:
         case 72445:
         case 72446:
-            if (getCreature()->getPower(POWER_TYPE_ENERGY) != getCreature()->getMaxPower(POWER_TYPE_ENERGY))
-            {
-                target->ToUnit()->castSpell(nullptr, SPELL_BLOOD_LINK_DUMMY, true);
-            }
+            dynamic_cast<Unit*>(target)->castSpell(getCreature(), SPELL_BLOOD_LINK_DUMMY, true);
             break;
         default:
             break;
@@ -3702,7 +3720,7 @@ public:
     uint32_t GetCreatureData(uint32_t type) const override
     {
         if (type == DATA_MADE_A_MESS)
-            if (_fallenChampionCastCount < RAID_MODE<uint32_t>(3, 5, 3, 5))
+            if (_markedTargetGuids.size() < RAID_MODE<uint32_t>(3, 5, 3, 5))
                 return 1;
 
         return 0;
@@ -3715,7 +3733,8 @@ protected:
     bool _frenzied;
     bool _dead;
     uint32_t FightWonValue;
-    uint32_t _fallenChampionCastCount;
+
+    std::vector<uint64_t> _markedTargetGuids;
 
     // Spells
     CreatureAISpells* GripOfAgonySpell;
@@ -3872,7 +3891,7 @@ public:
 
         auto* const saurfang = spell->getUnitCaster();
         auto* const unitTarget = spell->GetUnitTarget();
-        const auto spellId = spell->getSpellInfo()->calculateEffectValue(EFF_INDEX_1);
+        const auto spellId = spell->getSpellInfo()->calculateEffectValue(effIndex);
         if (saurfang != nullptr && unitTarget != nullptr)
             unitTarget->castSpell(saurfang, spellId, true);
 
@@ -3898,7 +3917,7 @@ public:
         }
     }
 
-    SpellScriptExecuteState onAuraPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, float_t* damage) override
+    SpellScriptExecuteState onAuraPeriodicTick(Aura* aur, AuraEffectModifier* /*aurEff*/, float_t* /*damage*/) override
     {
         // On periodic damage, cast Blood Link on Saurfang
         if (aur->GetUnitCaster() != nullptr)
@@ -3914,15 +3933,7 @@ public:
     void filterEffectTargets(Spell* spell, uint8_t effIndex, std::vector<uint64_t>* effectTargets) override
     {
         if (effIndex == EFF_INDEX_0)
-        {
             randomTargetGuid = 0;
-
-            // Remove non players from target vector
-            effectTargets->erase(std::remove_if(effectTargets->begin(), effectTargets->end(), [&](uint64_t guid) {
-                const auto* const target = spell->getCaster()->GetMapMgrUnit(guid);
-                return target == nullptr || !target->isPlayer();
-                }), effectTargets->end());
-        }
 
         if (effectTargets->empty())
             return;
@@ -3941,7 +3952,7 @@ public:
         // Find single random player target and prefer a ranged target
 
         // Get 10 possible targets in 25m and 4 targets in 10m
-        const uint8_t minTargetCount = spell->getSpellInfo()->getId() != SPELL_BLOOD_NOVA_TRIGGER ? 10 : 4;
+        const uint8_t minTargetCount = spell->getSpellInfo()->getId() != SPELL_BLOOD_NOVA_TRIGGER ? 10U : 4U;
 
         std::vector<uint64_t> rangedTargetGuids;
         uint32_t rangedTargetCount = 0;
@@ -4018,6 +4029,19 @@ public:
         return SpellScriptExecuteState::EXECUTE_PREVENT;
     }
 
+    SpellCastResult onCanCast(Spell* spell, uint32_t* /*parameter1*/, uint32_t* /*parameter2*/) override
+    {
+        const auto* const target = spell->GetUnitTarget();
+        if (target == nullptr)
+            return SPELL_FAILED_BAD_TARGETS;
+
+        // Should not be casted if target is at full energy
+        if (target->getPower(POWER_TYPE_ENERGY) == target->getMaxPower(POWER_TYPE_ENERGY))
+            return SPELL_FAILED_DONT_REPORT;
+
+        return SPELL_CAST_SUCCESS;
+    }
+
     SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* spell, uint8_t /*effIndex*/) override
     {
         // On dummy effect, cast 72195 on spell target
@@ -4039,6 +4063,21 @@ public:
             return SpellScriptCheckDummy::DUMMY_OK;
 
         updateBloodPowerAura(aur, spell->getUnitCaster()->getPower(POWER_TYPE_ENERGY));
+        return SpellScriptCheckDummy::DUMMY_OK;
+    }
+};
+
+class RemoveMarksOfTheFallen : public SpellScript
+{
+public:
+    SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* spell, uint8_t effIndex) override
+    {
+        if (spell->GetUnitTarget() != nullptr)
+        {
+            const auto spellId = spell->getSpellInfo()->calculateEffectValue(effIndex);
+            spell->GetUnitTarget()->removeAllAurasById(spellId);
+        }
+
         return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
@@ -4116,6 +4155,8 @@ void SetupICC(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_BLOOD_LINK, new BloodLink);
     mgr->register_spell_script(SPELL_BLOOD_LINK_DUMMY, new BloodLinkDummy);
     mgr->register_spell_script(SPELL_BLOOD_LINK_POWER, new BloodLinkEnergize);
+
+    mgr->register_spell_script(SPELL_REMOVE_MARKS_OF_THE_FALLEN_CHAMPION, new RemoveMarksOfTheFallen);
 
     //Gossips
     GossipScript* MuradinGossipScript = new MuradinGossip();

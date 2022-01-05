@@ -240,6 +240,9 @@ class SERVER_DECL Spell
 
         void _updateCasterPointers(Object* caster);
         void _updateTargetPointers(const uint64_t targetGuid);
+        // Loads initial target pointers from spell's SpellCastTargets
+        // Used only in spell cast check phase, proper targets are set in spell cast phase
+        void _loadInitialTargetPointers(bool reset = false);
         float_t _getSpellTravelTimeForTarget(uint64_t guid) const;
 
         // Spell reflect stuff

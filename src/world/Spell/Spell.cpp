@@ -162,6 +162,8 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
     if (m_triggeredSpell || i_caster != nullptr)
         m_requiresCP = false;
 
+    _loadInitialTargetPointers();
+
     // Check if spell can be casted
     uint32_t parameter1 = 0, parameter2 = 0;
     cancastresult = canCast(false, &parameter1, &parameter2);
@@ -186,6 +188,8 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
     }
 
     m_timer = m_castTime;
+
+    _loadInitialTargetPointers(true);
 
     if (!m_triggeredSpell || getSpellInfo()->isChanneled())
         m_caster->setCurrentSpell(this);
@@ -831,7 +835,7 @@ void Spell::finish(bool successful)
         return;
     }
 
-    // Lua spell hooks
+    // Unit spell script hooks
     if (getUnitCaster() != nullptr)
     {
         CALL_SCRIPT_EVENT(getUnitCaster(), OnCastSpell)(getSpellInfo()->getId());
@@ -840,14 +844,18 @@ void Spell::finish(bool successful)
         {
             for (const auto& uniqueTarget : uniqueHittedTargets)
             {
-                const auto target = getUnitCaster()->GetMapMgrCreature(uniqueTarget.first);
-                if (target == nullptr)
+                auto* const targetUnit = getUnitCaster()->GetMapMgrUnit(uniqueTarget.first);
+                if (targetUnit == nullptr)
                     continue;
 
-                if (target->GetScript())
-                    CALL_SCRIPT_EVENT(target, OnHitBySpell)(getSpellInfo()->getId(), getUnitCaster());
+                CALL_SCRIPT_EVENT(getUnitCaster(), OnSpellHitTarget)(targetUnit, getSpellInfo());
 
-                CALL_SCRIPT_EVENT(getCaster(), OnSpellHitTarget)(target, getSpellInfo());
+                if (!targetUnit->isCreature())
+                    continue;
+
+                auto* const targetCreature = dynamic_cast<Creature*>(targetUnit);
+                if (targetCreature->GetScript())
+                    CALL_SCRIPT_EVENT(targetCreature, OnHitBySpell)(getSpellInfo()->getId(), getUnitCaster());
             }
         }
 
@@ -1686,8 +1694,8 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             if (u_caster != nullptr)
             {
                 // Target must be in front of caster
-                // Check for generic ranged spells as well
-                if (getSpellInfo()->getFacingCasterFlags() == SPELL_INFRONT_STATUS_REQUIRE_INFRONT || getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_REQ_FACING_TARGET || getSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_RANGED)
+                // Check for generic ranged spells as well, if caster is player
+                if (getSpellInfo()->getFacingCasterFlags() == SPELL_INFRONT_STATUS_REQUIRE_INFRONT || getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_REQ_FACING_TARGET || (getPlayerCaster() != nullptr && getSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_RANGED))
                 {
                     if (!u_caster->isInFront(target))
                         return SPELL_FAILED_UNIT_NOT_INFRONT;
@@ -1764,7 +1772,12 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_BAD_TARGETS;
             }
             else if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TARGET_ONLY_PLAYERS)
-                return SPELL_FAILED_TARGET_NOT_PLAYER;
+            {
+                // Check only single target spells here
+                // Spell target system handles this for area spells
+                if (!(explicitTargetMask & SPELL_TARGET_AREA_MASK))
+                    return SPELL_FAILED_TARGET_NOT_PLAYER;
+            }
 
             // Check if target has stronger aura active
             const AuraCheckResponse auraCheckResponse = target->AuraCheck(getSpellInfo(), m_caster);
@@ -5624,6 +5637,43 @@ void Spell::_updateTargetPointers(const uint64_t targetGuid)
                     break;
             }
         }
+    }
+}
+
+void Spell::_loadInitialTargetPointers(bool reset/* = false*/)
+{
+    unitTarget = nullptr;
+    itemTarget = nullptr;
+    gameObjTarget = nullptr;
+    playerTarget = nullptr;
+    corpseTarget = nullptr;
+
+    if (reset)
+        return;
+
+    if (m_targets.getGameObjectTarget() != 0)
+        gameObjTarget = m_caster->GetMapMgrGameObject(m_targets.getGameObjectTarget());
+
+    if (m_targets.getItemTarget() != 0 && getPlayerCaster() != nullptr)
+    {
+        if (m_targets.isTradeItem())
+        {
+            const auto* const playerTrader = getPlayerCaster()->getTradeTarget();
+            if (playerTrader != nullptr)
+                itemTarget = playerTrader->getTradeData()->getTradeItem(TradeSlots(m_targets.getItemTarget()));
+        }
+        else
+        {
+            itemTarget = getPlayerCaster()->getItemInterface()->GetItemByGUID(m_targets.getItemTarget());
+        }
+    }
+
+    if (m_targets.getUnitTarget() != 0)
+    {
+        unitTarget = m_caster->GetMapMgrUnit(m_targets.getUnitTarget());
+
+        if (unitTarget != nullptr && unitTarget->isPlayer())
+            playerTarget = dynamic_cast<Player*>(unitTarget);
     }
 }
 

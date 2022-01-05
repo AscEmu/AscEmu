@@ -429,10 +429,14 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
     if (targetCheck != SPELL_CAST_SUCCESS)
         return false;
 
-    std::vector<uint64_t>* t = &m_effectTargets[i];
+    // If checked in checkExplicitTarget, initial aoe spell cast check can fail
+    if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TARGET_ONLY_PLAYERS && !obj->isPlayer())
+        return false;
 
     if (u_caster != nullptr && u_caster->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT) && ((obj->isPlayer() || obj->isPet()) || (p_caster != nullptr || m_caster->isPet())))
         return false;
+
+    std::vector<uint64_t>* t = &m_effectTargets[i];
 
     SpellDidHitResult hitresult = (TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE && obj->isCreatureOrPlayer()) ? static_cast<SpellDidHitResult>(DidHit(i, static_cast<Unit*>(obj))) : SPELL_DID_HIT_SUCCESS;
     if (hitresult != SPELL_DID_HIT_SUCCESS)
