@@ -549,18 +549,15 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
         switch (type)
         {
             // special cases, db data is checked later
-        case ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA:
-        case ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED_ON_LOOT:
-        case ACHIEVEMENT_CRITERIA_TYPE_ROLL_GREED_ON_LOOT:
-            break;
-        default:
-            if (sScriptMgr.has_achievement_criteria_script(achievementCriteria->ID))
-            {
-                auto script = sScriptMgr.getachievementCriteriaScript(achievementCriteria->ID);
-                if (!script->CheckRequirements(GetPlayer(), reference, achievementCriteria->ID))
+            case ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA:
+            case ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED_ON_LOOT:
+            case ACHIEVEMENT_CRITERIA_TYPE_ROLL_GREED_ON_LOOT:
+                break;
+            default:
+                const auto scriptResult = sScriptMgr.callScriptedAchievementCriteriaCanComplete(achievementCriteria->ID, GetPlayer(), reference);
+                if (!scriptResult)
                     continue;
-            }
-            break;
+                break;
         }
 
         switch (type)
@@ -1214,18 +1211,15 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
         switch (type)
         {
             // special cases, db data is checked later
-        case ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA:
-        case ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED_ON_LOOT:
-        case ACHIEVEMENT_CRITERIA_TYPE_ROLL_GREED_ON_LOOT:
-            break;
-        default:
-            if (sScriptMgr.has_achievement_criteria_script(achievementCriteria->ID))
-            {
-                auto script = sScriptMgr.getachievementCriteriaScript(achievementCriteria->ID);
-                if (!script->CheckRequirements(GetPlayer(), nullptr, achievementCriteria->ID))
+            case ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA:
+            case ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED_ON_LOOT:
+            case ACHIEVEMENT_CRITERIA_TYPE_ROLL_GREED_ON_LOOT:
+                break;
+            default:
+                const auto scriptResult = sScriptMgr.callScriptedAchievementCriteriaCanComplete(achievementCriteria->ID, GetPlayer(), nullptr);
+                if (!scriptResult)
                     continue;
-            }
-            break;
+                break;
         }
 
         switch (type)

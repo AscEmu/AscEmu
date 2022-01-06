@@ -835,18 +835,6 @@ void Spell::finish(bool successful)
         return;
     }
 
-    // Achievements
-    if (Player* player = GetPlayerTarget())
-    {
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, m_spellInfo->getId(),0, 0, m_caster);
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2, m_spellInfo->getId(), 0, 0, m_caster);
-    }
-
-    if (Player* player = getPlayerCaster())
-    {
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2, m_spellInfo->getId(), 0, 0, m_caster);
-    }
-
     // Unit spell script hooks
     if (getUnitCaster() != nullptr)
     {
@@ -986,11 +974,11 @@ void Spell::finish(bool successful)
         getUnitCaster()->HandleProc(casterProcFlags, targetUnit, getSpellInfo(), m_casterDamageInfo, m_triggeredSpell, PROC_EVENT_DO_CASTER_PROCS_ONLY, m_triggeredByAura);
     }
 
-    // QuestMgr spell hooks
-    if (getPlayerCaster() != nullptr && getPlayerCaster()->IsInWorld())
+    // QuestMgr spell hooks and achievement calls
+    if (getUnitCaster() != nullptr)
     {
-        // Do not call QuestMgr::OnPlayerCast for 'on next attack' spells
-        // It will be called on the actual spell cast
+        // Skip 'on next attack' spells if spell is not triggered
+        // this will be handled on the actual spell cast
         if (!(getSpellInfo()->isOnNextMeleeAttack() && !m_triggeredSpell))
         {
             uint32_t targetCount = 0;
@@ -998,17 +986,41 @@ void Spell::finish(bool successful)
             {
                 WoWGuid wowGuid;
                 wowGuid.Init(target.first);
-                if (wowGuid.isUnit())
+                // If target is creature
+                if (wowGuid.isUnit() && getPlayerCaster() != nullptr && getPlayerCaster()->IsInWorld())
                 {
                     ++targetCount;
                     sQuestMgr.OnPlayerCast(getPlayerCaster(), getSpellInfo()->getId(), target.first);
                 }
+#ifdef FT_ACHIEVEMENTS
+                else if (wowGuid.isPlayer())
+                {
+                    auto* const targetPlayer = getUnitCaster()->GetMapMgrPlayer(target.first);
+                    if (targetPlayer != nullptr)
+                    {
+                        targetPlayer->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, getSpellInfo()->getId(), 0, 0, getCaster());
+                        targetPlayer->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2, getSpellInfo()->getId(), 0, 0, getCaster());
+                    }
+                }
+#endif
             }
 
-            if (targetCount == 0)
+            if (getPlayerCaster() != nullptr && getPlayerCaster()->IsInWorld())
             {
-                auto guid = getPlayerCaster()->getTargetGuid();
-                sQuestMgr.OnPlayerCast(getPlayerCaster(), getSpellInfo()->getId(), guid);
+                if (targetCount == 0)
+                {
+                    auto guid = getPlayerCaster()->getTargetGuid();
+                    sQuestMgr.OnPlayerCast(getPlayerCaster(), getSpellInfo()->getId(), guid);
+                }
+
+#ifdef FT_ACHIEVEMENTS
+                // Set target for spell cast achievement only if spell had one target
+                Object* spellTarget = nullptr;
+                if (uniqueHittedTargets.size() == 1)
+                    spellTarget = getPlayerCaster()->GetMapMgrObject(uniqueHittedTargets.front().first);
+
+                getPlayerCaster()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2, getSpellInfo()->getId(), 0, 0, spellTarget);
+#endif
             }
         }
     }

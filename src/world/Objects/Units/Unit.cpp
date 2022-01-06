@@ -4707,8 +4707,8 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
     {
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (aur->getAuraEffect(i).getAuraEffectType() != SPELL_AURA_NONE)
-                auraUpdate.effAmount[i] = aur->getAuraEffect(i).getEffectDamage();
+            if (aur->getAuraEffect(i)->getAuraEffectType() != SPELL_AURA_NONE)
+                auraUpdate.effAmount[i] = aur->getAuraEffect(i)->getEffectDamage();
             else
                 auraUpdate.effAmount[i] = 0;
         }
@@ -4764,8 +4764,8 @@ void Unit::sendFullAuraUpdate()
         {
             for (uint8_t x = 0; x < MAX_SPELL_EFFECTS; ++x)
             {
-                if (aur->getAuraEffect(x).getAuraEffectType() != SPELL_AURA_NONE)
-                    auraUpdate.effAmount[x] = aur->getAuraEffect(x).getEffectDamage();
+                if (aur->getAuraEffect(x)->getAuraEffectType() != SPELL_AURA_NONE)
+                    auraUpdate.effAmount[x] = aur->getAuraEffect(x)->getEffectDamage();
                 else
                     auraUpdate.effAmount[x] = 0;
             }

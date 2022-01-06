@@ -129,7 +129,7 @@ public:
             if (!isUnholyPresence())
             {
                 SpellForcedBasePoints forcedBasePoints;
-                forcedBasePoints.basePoints[EFF_INDEX_0] = improvedUnholyPresence->getAuraEffect(EFF_INDEX_0).getEffectDamage();
+                forcedBasePoints.basePoints[EFF_INDEX_0] = improvedUnholyPresence->getAuraEffect(EFF_INDEX_0)->getEffectDamage();
                 aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_IMPROVED_UNHOLY_PRESENCE_DUMMY), forcedBasePoints, true);
             }
 #endif

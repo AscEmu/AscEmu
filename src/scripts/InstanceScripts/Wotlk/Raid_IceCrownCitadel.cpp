@@ -92,7 +92,7 @@ public:
                 return bonedAchievement;
             }
             default:
-                return 0;
+                break;
         }
         return 0;
     }
@@ -153,7 +153,7 @@ public:
                 return script->GetCreatureByGuid(DeathbringerSaurfangGUID);
             }
             default:
-                return nullptr;
+                break;
         }
         return nullptr;
     }
@@ -4354,13 +4354,15 @@ public:
     }
 };
 
-class achievement_ive_gone_and_made_a_mess_script : public AchievementCriteriaScript
+class achievement_ive_gone_and_made_a_mess : public AchievementCriteriaScript
 {
 public:
-    bool CheckRequirements(Player* /*pPlayer*/, Object* target, uint32_t criteriaID) override
+    bool canCompleteCriteria(uint32_t criteriaID, Player* /*pPlayer*/, Object* target) override
     {
         if (target)
+        {
             if (Creature* saurfang = target->ToCreature())
+            {
                 if (saurfang->GetScript()->GetCreatureData(DATA_MADE_A_MESS))
                 {
                     switch (saurfang->GetMapMgr()->pInstance->m_difficulty)
@@ -4369,30 +4371,28 @@ public:
                         {
                             if (criteriaID == 12778)
                                 return true;
-                            break;
-                        }
+                        } break;
                         case InstanceDifficulty::RAID_25MAN_NORMAL:
                         {
                             if (criteriaID == 13036)
                                 return true;
-                            break;
-                        }
+                        } break;
                         case InstanceDifficulty::RAID_10MAN_HEROIC:
                         {
                             if (criteriaID == 13035)
                                 return true;
-                            break;
-                        }
+                        } break;
                         case InstanceDifficulty::RAID_25MAN_HEROIC:
                         {
                             if (criteriaID == 13037)
                                 return true;
-                            break;
-                        }
+                        } break;
                         default:
                             break;
                     }
                 }
+            }
+        }
 
         return false;
     }
@@ -4511,6 +4511,5 @@ void SetupICC(ScriptMgr* mgr)
         0
     };
 
-    AchievementCriteriaScript* achievement_ive_gone_and_made_a_mess = new achievement_ive_gone_and_made_a_mess_script();
-    mgr->register_achievement_criteria_script(achievementCriteriaIds, achievement_ive_gone_and_made_a_mess);
+    mgr->register_achievement_criteria_script(achievementCriteriaIds, new achievement_ive_gone_and_made_a_mess);
 }

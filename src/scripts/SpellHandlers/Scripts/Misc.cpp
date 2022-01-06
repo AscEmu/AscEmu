@@ -28,7 +28,9 @@ public:
     {
         if (apply)
         {
+#if VERSION_STRING >= TBC
             aur->getOwner()->addUnitFlags2(UNIT_FLAG2_FEIGN_DEATH);
+#endif
             if (_withDynamicFlag)
                 aur->getOwner()->addDynamicFlags(U_DYN_FLAG_DEAD);
             if (_preventChatEmotes)
@@ -36,7 +38,9 @@ public:
         }
         else
         {
+#if VERSION_STRING >= TBC
             aur->getOwner()->removeUnitFlags2(UNIT_FLAG2_FEIGN_DEATH);
+#endif
             if (_withDynamicFlag)
                 aur->getOwner()->removeDynamicFlags(U_DYN_FLAG_DEAD);
             if (_preventChatEmotes)

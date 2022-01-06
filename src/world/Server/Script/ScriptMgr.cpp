@@ -51,6 +51,17 @@ ScriptMgr& ScriptMgr::getInstance()
     return mInstance;
 }
 
+#ifdef FT_ACHIEVEMENTS
+bool ScriptMgr::callScriptedAchievementCriteriaCanComplete(uint32_t criteriaId, Player* player, Object* target) const
+{
+    const auto achievementCriteriaScript = getAchievementCriteriaScript(criteriaId);
+    if (achievementCriteriaScript == nullptr)
+        return true;
+
+    return achievementCriteriaScript->canCompleteCriteria(criteriaId, player, target);
+}
+#endif
+
 SpellCastResult ScriptMgr::callScriptedSpellCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) const
 {
     const auto spellScript = getSpellScript(spell->getSpellInfo()->getId());
@@ -277,9 +288,48 @@ SpellScriptExecuteState ScriptMgr::callScriptedSpellProcCastSpell(SpellProc* spe
     return spellScript->onCastProcSpell(spellProc, caster, victim, spellToProc);
 }
 
+#ifdef FT_ACHIEVEMENTS
+AchievementCriteriaScript* ScriptMgr::getAchievementCriteriaScript(uint32_t criteriaId) const
+{
+    for (const auto& itr : _achievementCriteriaScripts)
+    {
+        if (itr.first == criteriaId)
+            return itr.second;
+    }
+
+    return nullptr;
+}
+
+void ScriptMgr::register_achievement_criteria_script(uint32_t criteriaId, AchievementCriteriaScript* acs)
+{
+    const auto criteriaEntry = sAchievementCriteriaStore.LookupEntry(criteriaId);
+    if (criteriaEntry == nullptr)
+    {
+        sLogger.failure("ScriptMgr tried to register a script for achievement criteria id %u but criteria does not exist!", criteriaId);
+        return;
+    }
+
+    if (_achievementCriteriaScripts.find(criteriaId) != _achievementCriteriaScripts.end())
+    {
+        sLogger.debug("ScriptMgr tried to register a script for achievement criteria id %u but this criteria has already one.", criteriaId);
+        return;
+    }
+
+    _achievementCriteriaScripts[criteriaId] = acs;
+}
+
+void ScriptMgr::register_achievement_criteria_script(uint32_t* criteriaIds, AchievementCriteriaScript* acs)
+{
+    for (uint32_t i = 0; criteriaIds[i] != 0; ++i)
+    {
+        register_achievement_criteria_script(criteriaIds[i], acs);
+    }
+}
+#endif
+
 SpellScript* ScriptMgr::getSpellScript(uint32_t spellId) const
 {
-    for (const auto& itr : _spellscripts)
+    for (const auto& itr : _spellScripts)
     {
         if (itr.first == spellId)
             return itr.second;
@@ -331,13 +381,13 @@ void ScriptMgr::register_spell_script(uint32_t* spellIds, SpellScript* ss)
 
 void ScriptMgr::_register_spell_script(uint32_t spellId, SpellScript* ss)
 {
-    if (_spellscripts.find(spellId) != _spellscripts.end())
+    if (_spellScripts.find(spellId) != _spellScripts.end())
     {
         sLogger.debug("ScriptMgr tried to register a script for spell id %u but this spell has already one.", spellId);
         return;
     }
 
-    _spellscripts[spellId] = ss;
+    _spellScripts[spellId] = ss;
 }
 
 // MIT End
@@ -474,12 +524,19 @@ void ScriptMgr::UnloadScripts()
         delete *itr;
     _questscripts.clear();
 
-    _achievementscripts.clear();
+#ifdef FT_ACHIEVEMENTS
+    for (auto itr = _achievementCriteriaScripts.begin(); itr != _achievementCriteriaScripts.end();)
+    {
+        delete itr->second;
+        itr = _achievementCriteriaScripts.erase(itr);
+    }
+#endif
 
-    //todo zyres: this is the wrong way to delete spellscripts
-    /*for (auto& itr : _spellscripts)
-        delete itr.second;*/
-    _spellscripts.clear();
+    for (auto itr = _spellScripts.begin(); itr != _spellScripts.end();)
+    {
+        delete itr->second;
+        itr = _spellScripts.erase(itr);
+    }
 
     UnloadScriptEngines();
 
@@ -746,37 +803,6 @@ void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect ca
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr registered a script effect handler for Spell ID: %u (%s), but spell has no scripted effect!", entry, sp->getName().c_str());
 
     SpellScriptEffects.insert(std::pair< uint32, exp_handle_script_effect >(entry, callback));
-}
-
-void ScriptMgr::register_achievement_criteria_script(uint32_t* entry, AchievementCriteriaScript* as)
-{
-    for (uint32 y = 0; entry[y] != 0; y++)
-    {
-        register_achievement_criteria_script(entry[y], as);
-    }
-}
-
-void ScriptMgr::register_achievement_criteria_script(uint32_t entry, AchievementCriteriaScript* as)
-{
-    if (_achievementscripts.find(entry) != _achievementscripts.end())
-    {
-        sLogger.debug("ScriptMgr tried to register a script for Achievement Criteria ID: %u but there is already one.");
-    }
-    else
-    {
-        _achievementscripts.insert(std::make_pair(entry, as));
-    }
-}
-
-AchievementCriteriaScript* ScriptMgr::getachievementCriteriaScript(uint32_t entry) const
-{
-    for (const auto& itr : _achievementscripts)
-    {
-        if (itr.first == entry)
-            return itr.second;
-    }
-
-    return nullptr;
 }
 
 CreatureAIScript* ScriptMgr::CreateAIScriptClassForEntry(Creature* pCreature)
@@ -1507,11 +1533,6 @@ bool ScriptMgr::has_quest_script(uint32 entry) const
 {
     QuestProperties const* q = sMySQLStore.getQuestProperties(entry);
     return (q == NULL || q->pQuestScript != NULL);
-}
-
-bool ScriptMgr::has_achievement_criteria_script(uint32_t entry) const
-{
-    return (_achievementscripts.find(entry) != _achievementscripts.end());
 }
 
 void ScriptMgr::register_creature_gossip(uint32 entry, GossipScript* script)
