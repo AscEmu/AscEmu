@@ -1066,12 +1066,12 @@ public:
 
                     scriptEvents.addEvent(EVENT_BONE_STORM_END, boneStormDuration + 1);
                 }
-                [[falltrough]]
+                    [[fallthrough]];
                 case EVENT_BONE_STORM_MOVE:
                 {
                     scriptEvents.addEvent(EVENT_BONE_STORM_MOVE, boneStormDuration / 3);
 
-                    boneStormtarget= getBestPlayerTarget(TargetFilter_NotCurrent);
+                    boneStormtarget = getBestPlayerTarget(TargetFilter_NotCurrent);
                     if (!boneStormtarget)
                         boneStormtarget = getBestPlayerTarget(TargetFilter_Current);
                 
@@ -1155,7 +1155,7 @@ public:
         coldflameLastPos = pos;
     }
 
-    void SetCreatureData64(uint32_t Type, uint64 Data) override
+    void SetCreatureData64(uint32_t Type, uint64_t Data) override
     {
         switch (Type)
         {
@@ -1174,7 +1174,7 @@ public:
         }
     }
 
-    uint64 GetCreatureData64(uint32_t Type) const
+    uint64_t GetCreatureData64(uint32_t Type) const
     { 
         switch (Type)
         {
@@ -2026,7 +2026,7 @@ public:
         if (reanimationQueue.empty())
             return;
 
-        uint64 cultistGUID = reanimationQueue.front();
+        uint64_t cultistGUID = reanimationQueue.front();
         Creature* cultist = mInstance->GetCreatureByGuid(static_cast<uint32_t>(cultistGUID));
         reanimationQueue.pop_front();
         if (!cultist)
@@ -2067,7 +2067,7 @@ public:
         }
     }
 
-    void SetCreatureData64(uint32_t Type, uint64 Data) override
+    void SetCreatureData64(uint32_t Type, uint64_t Data) override
     {
         switch (Type)
         {

@@ -31,14 +31,18 @@ void SummonList::despawnEntry(uint32_t entry)
     {
         Creature* summon = _creature->GetMapMgrCreature(*i);
         if (!summon)
+        {
             i = _storage.erase(i);
+        }
         else if (summon->getEntry() == entry)
         {
             i = _storage.erase(i);
             summon->Despawn(1000, 0);
         }
         else
+        {
             ++i;
+        }
     }
 }
 
