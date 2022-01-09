@@ -809,7 +809,7 @@ public:
 #endif
 
 #if VERSION_STRING > TBC
-    void calculateHeirlroomBonus(ItemProperties const* proto, int16_t slot, bool apply);
+    void calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, bool apply);
     DBC::Structures::ScalingStatDistributionEntry const* getScalingStatDistributionFor(ItemProperties const& itemProto) const;
     DBC::Structures::ScalingStatValuesEntry const* getScalingStatValuesFor(ItemProperties const& itemProto) const;
 #endif

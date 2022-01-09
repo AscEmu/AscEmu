@@ -3541,7 +3541,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         /* Heirloom scaling items */
     if (proto->ScalingStatsEntry != 0)
     {
-        calculateHeirlroomBonus(proto, slot, apply);
+        calculateHeirloomBonus(proto, slot, apply);
     }
     else
         /* Normal items */

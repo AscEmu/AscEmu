@@ -4892,7 +4892,7 @@ DBC::Structures::ScalingStatValuesEntry const* Player::getScalingStatValuesFor(I
 #endif
 
 #if VERSION_STRING == WotLK
-void Player::calculateHeirlroomBonus(ItemProperties const* proto, int16_t slot, bool apply)
+void Player::calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, bool apply)
 {
     DBC::Structures::ScalingStatDistributionEntry const* ssd = getScalingStatDistributionFor(*proto);
     DBC::Structures::ScalingStatValuesEntry const* ssvrow = getScalingStatValuesFor(*proto);
@@ -5129,7 +5129,7 @@ void Player::calculateHeirlroomBonus(ItemProperties const* proto, int16_t slot, 
 #endif
 
 #if VERSION_STRING > WotLK
-void Player::calculateHeirlroomBonus(ItemProperties const* proto, int16_t slot, bool apply)
+void Player::calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, bool apply)
 {
     // Todo CATA/MOP
 }
