@@ -495,6 +495,7 @@ public:
     bool canUnitEvade(unsigned long time_passed);
     void enterEvadeMode();
     bool _enterEvadeMode();
+    void engagementOver();
 
     void initGroupThreat(Unit* target);
     void instanceCombatProgress(bool activate);

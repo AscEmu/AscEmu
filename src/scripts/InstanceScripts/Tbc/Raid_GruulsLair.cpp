@@ -635,7 +635,7 @@ public:
         if (effIndex != EFF_INDEX_0 || spell->GetUnitTarget() == nullptr)
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
-        float radius = spell->GetRadius(EFF_INDEX_0);
+        float radius = spell->getEffectRadius(EFF_INDEX_0);
         auto distance = spell->GetUnitTarget()->GetDistance2dSq(spell->getCaster());
 
         if (distance < 1.0f)

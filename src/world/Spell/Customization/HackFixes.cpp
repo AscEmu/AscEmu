@@ -3313,6 +3313,28 @@ void SpellMgr::applyHackFixes()
 
     // Insert boss spell fixes here
 
+    // Blood Nova (Deathbringer Saurfang) - limit range to 100 yards
+    sp = getMutableSpellInfo(72378);
+    if (sp != nullptr)
+        sp->setRangeIndex(6);
+    sp = getMutableSpellInfo(73058);
+    if (sp != nullptr)
+        sp->setRangeIndex(6);
+
+    // Boiling Blood (Deathbringer Saurfang) - limit range to 100 yards
+    sp = getMutableSpellInfo(72385);
+    if (sp != nullptr)
+        sp->setRangeIndex(6);
+    sp = getMutableSpellInfo(72441);
+    if (sp != nullptr)
+        sp->setRangeIndex(6);
+    sp = getMutableSpellInfo(72442);
+    if (sp != nullptr)
+        sp->setRangeIndex(6);
+    sp = getMutableSpellInfo(72443);
+    if (sp != nullptr)
+        sp->setRangeIndex(6);
+
     // Bone Storm (Lord Marrowgar)
     sp = getMutableSpellInfo(69075);
     if (sp != nullptr)

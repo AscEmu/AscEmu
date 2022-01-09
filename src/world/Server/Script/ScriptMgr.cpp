@@ -51,6 +51,17 @@ ScriptMgr& ScriptMgr::getInstance()
     return mInstance;
 }
 
+#ifdef FT_ACHIEVEMENTS
+bool ScriptMgr::callScriptedAchievementCriteriaCanComplete(uint32_t criteriaId, Player* player, Object* target) const
+{
+    const auto achievementCriteriaScript = getAchievementCriteriaScript(criteriaId);
+    if (achievementCriteriaScript == nullptr)
+        return true;
+
+    return achievementCriteriaScript->canCompleteCriteria(criteriaId, player, target);
+}
+#endif
+
 SpellCastResult ScriptMgr::callScriptedSpellCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) const
 {
     const auto spellScript = getSpellScript(spell->getSpellInfo()->getId());
@@ -112,6 +123,15 @@ SpellScriptExecuteState ScriptMgr::callScriptedSpellBeforeSpellEffect(Spell* spe
         return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
 
     return spellScript->beforeSpellEffect(spell, effectIndex);
+}
+
+SpellScriptCheckDummy ScriptMgr::callScriptedSpellOnDummyOrScriptedEffect(Spell* spell, uint8_t effectIndex) const
+{
+    const auto spellScript = getSpellScript(spell->getSpellInfo()->getId());
+    if (spellScript == nullptr)
+        return SpellScriptCheckDummy::DUMMY_NOT_HANDLED;
+
+    return spellScript->onDummyOrScriptedEffect(spell, effectIndex);
 }
 
 void ScriptMgr::callScriptedSpellAfterSpellEffect(Spell* spell, uint8_t effectIndex)
@@ -268,9 +288,48 @@ SpellScriptExecuteState ScriptMgr::callScriptedSpellProcCastSpell(SpellProc* spe
     return spellScript->onCastProcSpell(spellProc, caster, victim, spellToProc);
 }
 
+#ifdef FT_ACHIEVEMENTS
+AchievementCriteriaScript* ScriptMgr::getAchievementCriteriaScript(uint32_t criteriaId) const
+{
+    for (const auto& itr : _achievementCriteriaScripts)
+    {
+        if (itr.first == criteriaId)
+            return itr.second;
+    }
+
+    return nullptr;
+}
+
+void ScriptMgr::register_achievement_criteria_script(uint32_t criteriaId, AchievementCriteriaScript* acs)
+{
+    const auto criteriaEntry = sAchievementCriteriaStore.LookupEntry(criteriaId);
+    if (criteriaEntry == nullptr)
+    {
+        sLogger.failure("ScriptMgr tried to register a script for achievement criteria id %u but criteria does not exist!", criteriaId);
+        return;
+    }
+
+    if (_achievementCriteriaScripts.find(criteriaId) != _achievementCriteriaScripts.end())
+    {
+        sLogger.debug("ScriptMgr tried to register a script for achievement criteria id %u but this criteria has already one.", criteriaId);
+        return;
+    }
+
+    _achievementCriteriaScripts[criteriaId] = acs;
+}
+
+void ScriptMgr::register_achievement_criteria_script(uint32_t* criteriaIds, AchievementCriteriaScript* acs)
+{
+    for (uint32_t i = 0; criteriaIds[i] != 0; ++i)
+    {
+        register_achievement_criteria_script(criteriaIds[i], acs);
+    }
+}
+#endif
+
 SpellScript* ScriptMgr::getSpellScript(uint32_t spellId) const
 {
-    for (const auto& itr : _spellscripts)
+    for (const auto& itr : _spellScripts)
     {
         if (itr.first == spellId)
             return itr.second;
@@ -279,7 +338,7 @@ SpellScript* ScriptMgr::getSpellScript(uint32_t spellId) const
     return nullptr;
 }
 
-void ScriptMgr::register_spell_script(uint32_t spellId, SpellScript* ss)
+void ScriptMgr::register_spell_script(uint32_t spellId, SpellScript* ss, bool registerAllDifficulties/* = true*/)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
@@ -288,13 +347,28 @@ void ScriptMgr::register_spell_script(uint32_t spellId, SpellScript* ss)
         return;
     }
 
-    if (_spellscripts.find(spellId) != _spellscripts.end())
+    if (registerAllDifficulties)
     {
-        sLogger.debug("ScriptMgr tried to register a script for spell id %u but this spell has already one.", spellId);
-        return;
+        if (spellInfo->getSpellDifficultyID() != 0)
+        {
+            uint8_t registeredSpells = 0;
+            for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
+            {
+                const auto spellDifficultyInfo = sSpellMgr.getSpellInfoByDifficulty(spellInfo->getSpellDifficultyID(), i);
+                if (spellDifficultyInfo == nullptr)
+                    continue;
+
+                _register_spell_script(spellDifficultyInfo->getId(), ss);
+                ++registeredSpells;
+            }
+
+            // Make sure to register at least the original spell
+            if (registeredSpells > 0)
+                return;
+        }
     }
 
-    _spellscripts[spellId] = ss;
+    _register_spell_script(spellId, ss);
 }
 
 void ScriptMgr::register_spell_script(uint32_t* spellIds, SpellScript* ss)
@@ -303,6 +377,17 @@ void ScriptMgr::register_spell_script(uint32_t* spellIds, SpellScript* ss)
     {
         register_spell_script(spellIds[i], ss);
     }
+}
+
+void ScriptMgr::_register_spell_script(uint32_t spellId, SpellScript* ss)
+{
+    if (_spellScripts.find(spellId) != _spellScripts.end())
+    {
+        sLogger.debug("ScriptMgr tried to register a script for spell id %u but this spell has already one.", spellId);
+        return;
+    }
+
+    _spellScripts[spellId] = ss;
 }
 
 // MIT End
@@ -439,10 +524,19 @@ void ScriptMgr::UnloadScripts()
         delete *itr;
     _questscripts.clear();
 
-    //todo zyres: this is the wrong way to delete spellscripts
-    /*for (auto& itr : _spellscripts)
-        delete itr.second;*/
-    _spellscripts.clear();
+#ifdef FT_ACHIEVEMENTS
+    for (auto itr = _achievementCriteriaScripts.begin(); itr != _achievementCriteriaScripts.end();)
+    {
+        delete itr->second;
+        itr = _achievementCriteriaScripts.erase(itr);
+    }
+#endif
+
+    for (auto itr = _spellScripts.begin(); itr != _spellScripts.end();)
+    {
+        delete itr->second;
+        itr = _spellScripts.erase(itr);
+    }
 
     UnloadScriptEngines();
 
@@ -1291,6 +1385,12 @@ CreatureSet InstanceScript::getCreatureSetForEntries(std::vector<uint32_t> entry
     }
 
     return creatureSet;
+}
+
+Creature* InstanceScript::findNearestCreature(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/)
+{
+    Creature* pCreature = mInstance->GetInterface()->findNearestCreature(pObject, entry, maxSearchRange);
+    return pCreature;
 }
 
 GameObject* InstanceScript::spawnGameObject(uint32_t entry, float posX, float posY, float posZ, float posO, bool addToWorld /*= true*/, uint32_t misc1 /*= 0*/, uint32_t phase /*= 0*/)

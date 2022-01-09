@@ -331,6 +331,7 @@ enum NPCFlags
     UNIT_NPC_FLAG_TRANSMOGRIFIER        = 0x10000000,       // transmogrification
     UNIT_NPC_FLAG_VAULTKEEPER           = 0x20000000,       // void storage
     UNIT_NPC_FLAG_DISABLE_REGEN         = 0x40000000,       // custom Disable Creature Health reg
+    UNIT_NPC_FLAG_DISABLE_PWREGEN       = 0x80000000,       // custom Disable Creature Power reg
 };
 
 enum CreatureFlag1

@@ -390,7 +390,7 @@ bool SpellInfo::isNegativeAura() const
     if (getAttributes() & ATTRIBUTES_NEGATIVE)
         return true;
 
-    // Custom checks to override default result from below
+    // Custom checks based on spell family name to override default result from below
     switch (getSpellFamilyName())
     {
         case SPELLFAMILY_WARRIOR:
@@ -414,6 +414,20 @@ bool SpellInfo::isNegativeAura() const
             if (getSpellFamilyFlags(0) == 0x80000)
                 return true;
         } break;
+        default:
+            break;
+    }
+
+    // Custom checks based on spell id to override default result from below
+    // Use id only if spell has no family flags
+    switch (getId())
+    {
+        // Deathbringer Saurfang - Mark of the Fallen Champion
+        case 72293:
+        // Deathbringer Saurfang - Rune of Blood
+        case 72410:
+            // These should be negative
+            return true;
         default:
             break;
     }

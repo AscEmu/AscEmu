@@ -163,6 +163,7 @@ public:
         uint32 GetItemAmountBySlot(uint32 slot) { return m_SellItems->at(slot).amount; }
 
         bool HasItems();
+        void InitSummon(Object* summoner);
         void SummonExpire()
         {
             DeleteMe();

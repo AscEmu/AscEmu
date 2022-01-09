@@ -617,7 +617,14 @@ bool ChatHandler::HandleCharAddItemCommand(const char* args, WorldSession* m_ses
     int32 randomprop = 0;
     int32 numadded = 0;
 
-    if (sscanf(args, "%u %u %d", &itemid, &count, &randomprop) < 1)
+    // check for item link
+    uint16_t ofs = GetItemIDFromLink(args, &itemid);
+
+    if (itemid)
+    {
+        sscanf(args + ofs, "%u %d", &count, &randomprop); // these may be empty
+    }
+    else if (sscanf(args, "%u %u %d", &itemid, &count, &randomprop) < 1)
     {
         RedSystemMessage(m_session, "Command must be at least in format: .character add item <itemID>.");
         RedSystemMessage(m_session, "Optional: .character add item <itemID> <amount> <randomprop>");

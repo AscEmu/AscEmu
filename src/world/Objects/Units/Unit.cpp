@@ -3003,19 +3003,19 @@ void Unit::setDualWield(bool enable)
     }
 }
 
-void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, bool triggered)
+void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, bool triggered/* = false*/)
 {
     const SpellForcedBasePoints forcedBasePoints;
     castSpell(targetGuid, spellId, forcedBasePoints, triggered);
 }
 
-void Unit::castSpell(Unit* target, uint32_t spellId, bool triggered)
+void Unit::castSpell(Unit* target, uint32_t spellId, bool triggered/* = false*/)
 {
     const SpellForcedBasePoints forcedBasePoints;
     castSpell(target, spellId, forcedBasePoints, triggered);
 }
 
-void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, bool triggered)
+void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, bool triggered/* = false*/)
 {
     if (spellInfo == nullptr)
         return;
@@ -3024,7 +3024,7 @@ void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, bool trigg
     castSpell(targetGuid, spellInfo, forcedBasePoints, triggered);
 }
 
-void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered)
+void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered/* = false*/)
 {
     if (spellInfo == nullptr)
         return;
@@ -3033,7 +3033,7 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered)
     castSpell(target, spellInfo, forcedBasePoints, triggered);
 }
 
-void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered)
+void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered/* = false*/)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
@@ -3042,7 +3042,7 @@ void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, SpellForcedBasePoint
     castSpell(targetGuid, spellInfo, forcedBasepoints, triggered);
 }
 
-void Unit::castSpell(Unit* target, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered)
+void Unit::castSpell(Unit* target, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered/* = false*/)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
@@ -3051,7 +3051,7 @@ void Unit::castSpell(Unit* target, uint32_t spellId, SpellForcedBasePoints force
     castSpell(target, spellInfo, forcedBasepoints, triggered);
 }
 
-void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasePoints, int32_t spellCharges, bool triggered)
+void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasePoints, int32_t spellCharges, bool triggered/* = false*/)
 {
     if (spellInfo == nullptr)
         return;
@@ -3076,13 +3076,28 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePo
     newSpell->prepare(&targets);
 }
 
-void Unit::castSpellLoc(const LocationVector location, uint32_t spellId, bool triggered)
+void Unit::castSpell(SpellCastTargets targets, uint32_t spellId, bool triggered/* = false*/)
+{
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
+    castSpell(targets, spellInfo, triggered);
+}
+
+void Unit::castSpell(SpellCastTargets targets, SpellInfo const* spellInfo, bool triggered/* = false*/)
+{
+    if (spellInfo == nullptr)
+        return;
+
+    Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
+    newSpell->prepare(&targets);
+}
+
+void Unit::castSpellLoc(const LocationVector location, uint32_t spellId, bool triggered/* = false*/)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     castSpellLoc(location, spellInfo, triggered);
 }
 
-void Unit::castSpellLoc(const LocationVector location, SpellInfo const* spellInfo, bool triggered)
+void Unit::castSpellLoc(const LocationVector location, SpellInfo const* spellInfo, bool triggered/* = false*/)
 {
     if (spellInfo == nullptr)
         return;
@@ -4536,13 +4551,13 @@ void Unit::removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell/* = 
         const auto aur = m_auras[i];
         for (uint8_t x = 0; x < MAX_SPELL_EFFECTS; ++x)
         {
-            if (aur->getAuraEffect(x).getAuraEffectType() == SPELL_AURA_NONE)
+            if (aur->getAuraEffect(x)->getAuraEffectType() == SPELL_AURA_NONE)
                 continue;
 
             if (skipSpell == aur->getSpellId())
                 continue;
 
-            if (aur->getAuraEffect(x).getAuraEffectType() == effect)
+            if (aur->getAuraEffect(x)->getAuraEffectType() == effect)
             {
                 if (removeOnlyEffect)
                 {
@@ -4692,8 +4707,8 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
     {
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (aur->getAuraEffect(i).getAuraEffectType() != SPELL_AURA_NONE)
-                auraUpdate.effAmount[i] = aur->getAuraEffect(i).getEffectDamage();
+            if (aur->getAuraEffect(i)->getAuraEffectType() != SPELL_AURA_NONE)
+                auraUpdate.effAmount[i] = aur->getAuraEffect(i)->getEffectDamage();
             else
                 auraUpdate.effAmount[i] = 0;
         }
@@ -4749,8 +4764,8 @@ void Unit::sendFullAuraUpdate()
         {
             for (uint8_t x = 0; x < MAX_SPELL_EFFECTS; ++x)
             {
-                if (aur->getAuraEffect(x).getAuraEffectType() != SPELL_AURA_NONE)
-                    auraUpdate.effAmount[x] = aur->getAuraEffect(x).getEffectDamage();
+                if (aur->getAuraEffect(x)->getAuraEffectType() != SPELL_AURA_NONE)
+                    auraUpdate.effAmount[x] = aur->getAuraEffect(x)->getEffectDamage();
                 else
                     auraUpdate.effAmount[x] = 0;
             }
@@ -5219,20 +5234,24 @@ void Unit::regenerateHealthAndPowers(uint16_t timePassed)
     if (!isAlive())
         return;
 
-    if (isCreature() && getNpcFlags() & UNIT_NPC_FLAG_DISABLE_REGEN)
-        return;
-
     // Health
     m_healthRegenerateTimer += timePassed;
     if ((hasUnitStateFlag(UNIT_STATE_POLYMORPHED) && m_healthRegenerateTimer >= REGENERATION_INTERVAL_HEALTH_POLYMORPHED) ||
         (!hasUnitStateFlag(UNIT_STATE_POLYMORPHED) && m_healthRegenerateTimer >= REGENERATION_INTERVAL_HEALTH))
     {
         if (isPlayer())
+        {
             static_cast<Player*>(this)->RegenerateHealth(m_combatStatusHandler.IsInCombat());
+            m_healthRegenerateTimer = 0;
+        }
         else
-            static_cast<Creature*>(this)->RegenerateHealth();
+        {
+            m_healthRegenerateTimer = 0;
+            if (isCreature() && getNpcFlags() & UNIT_NPC_FLAG_DISABLE_REGEN)
+                return;
 
-        m_healthRegenerateTimer = 0;
+            static_cast<Creature*>(this)->RegenerateHealth();
+        }
     }
 
     // Mana and Energy
@@ -5251,9 +5270,12 @@ void Unit::regenerateHealthAndPowers(uint16_t timePassed)
     {
         if (m_manaEnergyRegenerateTimer >= CREATURE_REGENERATION_INTERVAL_MANA_ENERGY)
         {
-            regeneratePower(POWER_TYPE_MANA);
-            regeneratePower(POWER_TYPE_ENERGY);
             m_manaEnergyRegenerateTimer = 0;
+            if (isCreature() && getNpcFlags() & UNIT_NPC_FLAG_DISABLE_PWREGEN)
+                return;
+
+                regeneratePower(POWER_TYPE_MANA);
+                regeneratePower(POWER_TYPE_ENERGY);
         }
     }
 
@@ -5812,10 +5834,10 @@ void Unit::restoreDisplayId()
         // Get display id from aura
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (forcedTransform->getAuraEffect(i).getAuraEffectType() != SPELL_AURA_TRANSFORM)
+            if (forcedTransform->getAuraEffect(i)->getAuraEffectType() != SPELL_AURA_TRANSFORM)
                 continue;
 
-            const auto displayId = forcedTransform->getAuraEffect(i).getEffectFixedDamage();
+            const auto displayId = forcedTransform->getAuraEffect(i)->getEffectFixedDamage();
             if (displayId != 0)
             {
                 setDisplayId(displayId);
@@ -5833,10 +5855,10 @@ void Unit::restoreDisplayId()
         // Get display id from aura
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (shapeshift->getAuraEffect(i).getAuraEffectType() != SPELL_AURA_MOD_SHAPESHIFT)
+            if (shapeshift->getAuraEffect(i)->getAuraEffectType() != SPELL_AURA_MOD_SHAPESHIFT)
                 continue;
 
-            const auto displayId = shapeshift->getAuraEffect(i).getEffectFixedDamage();
+            const auto displayId = shapeshift->getAuraEffect(i)->getEffectFixedDamage();
             if (displayId != 0)
             {
                 setDisplayId(displayId);
@@ -5851,10 +5873,10 @@ void Unit::restoreDisplayId()
         // Get display id from aura
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (transform->getAuraEffect(i).getAuraEffectType() != SPELL_AURA_TRANSFORM)
+            if (transform->getAuraEffect(i)->getAuraEffectType() != SPELL_AURA_TRANSFORM)
                 continue;
 
-            const auto displayId = transform->getAuraEffect(i).getEffectFixedDamage();
+            const auto displayId = transform->getAuraEffect(i)->getEffectFixedDamage();
             if (displayId != 0)
             {
                 setDisplayId(displayId);

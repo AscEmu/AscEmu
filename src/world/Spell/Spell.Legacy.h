@@ -209,6 +209,8 @@ class SERVER_DECL Spell
         // doBeforeEffectHit, doCalculateEffect or beforeSpellEffect script hooks to have any effect
         void setForceCritOnTarget(Unit const* target);
 
+        float_t getEffectRadius(uint8_t effectIndex);
+
         // used by spells that should have dynamic variables in spellentry
         // seems to be used only by LuaEngine -Appled
         SpellInfo const* m_spellInfo_override = nullptr;
@@ -238,6 +240,9 @@ class SERVER_DECL Spell
 
         void _updateCasterPointers(Object* caster);
         void _updateTargetPointers(const uint64_t targetGuid);
+        // Loads initial target pointers from spell's SpellCastTargets
+        // Used only in spell cast check phase, proper targets are set in spell cast phase
+        void _loadInitialTargetPointers(bool reset = false);
         float_t _getSpellTravelTimeForTarget(uint64_t guid) const;
 
         // Spell reflect stuff
@@ -245,6 +250,9 @@ class SERVER_DECL Spell
 
         bool m_requiresCP = false;
         int8_t m_usedComboPoints = 0;
+
+        float_t m_effectRadius[MAX_SPELL_EFFECTS] = {0.0f};
+        bool m_isEffectRadiusSet[MAX_SPELL_EFFECTS] = {false};
 
         // Spell proc
         DamageInfo m_casterDamageInfo = DamageInfo();
@@ -341,6 +349,7 @@ class SERVER_DECL Spell
         void spellEffectPowerBurn(uint8_t effectIndex);
         void spellEffectThreat(uint8_t effectIndex);
         void spellEffectClearQuest(uint8_t effectIndex);
+        void spellEffectForceCast(uint8_t effectIndex);
         void spellEffectTriggerSpell(uint8_t effectIndex);
         void spellEffectApplyRaidAA(uint8_t effectIndex);
         void spellEffectPowerFunnel(uint8_t effectIndex);
@@ -493,12 +502,10 @@ class SERVER_DECL Spell
 
         void SpellEffectInstantKill(uint8_t effectIndex);
         void SpellEffectSchoolDMG(uint8_t effectIndex);
-        void SpellEffectDummy(uint8_t effectIndex);
         void SpellEffectTeleportUnits(uint8_t effectIndex);
         void SpellEffectApplyAura(uint8_t effectIndex);
         void SpellEffectEnvironmentalDamage(uint8_t effectIndex);
         void SpellEffectPowerDrain(uint8_t effectIndex);
-        void SpellEffectHealthLeech(uint8_t effectIndex);
         void SpellEffectHeal(uint8_t effectIndex);
         void SpellEffectBind(uint8_t effectIndex);
         void SpellEffectQuestComplete(uint8_t effectIndex);
@@ -545,7 +552,6 @@ class SERVER_DECL Spell
         void SpellEffectPowerBurn(uint8_t effectIndex);
         void SpellEffectThreat(uint8_t effectIndex);
         void SpellEffectClearQuest(uint8_t effectIndex);
-        void SpellEffectTriggerSpell(uint8_t effectIndex);
         void SpellEffectApplyRaidAA(uint8_t effectIndex);
         void SpellEffectPowerFunnel(uint8_t effectIndex);
         void SpellEffectHealMaxHealth(uint8_t effectIndex);
@@ -556,7 +562,6 @@ class SERVER_DECL Spell
         void SpellEffectUseGlyph(uint8_t effectIndex);
         void SpellEffectHealMechanical(uint8_t effectIndex);
         void SpellEffectSummonObjectWild(uint8_t effectIndex);
-        void SpellEffectScriptEffect(uint8_t effectIndex);
         void SpellEffectSanctuary(uint8_t effectIndex);
         void SpellEffectAddComboPoints(uint8_t effectIndex);
         void SpellEffectCreateHouse(uint8_t effectIndex);
@@ -637,8 +642,6 @@ class SERVER_DECL Spell
 
         uint32 GetDuration();
 
-        float GetRadius(uint32 i);
-
         static uint32 GetBaseThreat(uint32 dmg);
 
         static uint32 GetMechanic(SpellInfo const* sp);
@@ -687,8 +690,6 @@ class SERVER_DECL Spell
 
         uint32 Dur;
         bool bDurSet;
-        float Rad[3];
-        bool bRadSet[3];
         bool m_isCasting;
         uint8 m_rune_avail_before;
         //void _DamageRangeUpdate();

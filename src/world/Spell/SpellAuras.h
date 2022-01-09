@@ -156,7 +156,8 @@ class SERVER_DECL Aura : public EventableObject
     friend class AbsorbAura;
 
     public:
-        AuraEffectModifier getAuraEffect(uint8_t effIndex) const;
+        AuraEffectModifier const* getAuraEffect(uint8_t effIndex) const;
+        AuraEffectModifier* getModifiableAuraEffect(uint8_t effIndex);
         bool hasAuraEffect(AuraEffect auraEffect) const;
         void addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValue, float_t effectPctModifier, bool isStaticDamage, uint8_t effIndex);
         void removeAuraEffect(uint8_t effIndex);

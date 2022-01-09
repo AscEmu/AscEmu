@@ -142,7 +142,7 @@ bool HolidayCheer(uint8_t effectIndex, Spell* pSpell)
         return true;
 
     Unit* target;
-    float dist = pSpell->GetRadius(effectIndex);
+    float dist = pSpell->getEffectRadius(effectIndex);
 
     for (const auto& itr : pSpell->getCaster()->getInRangeObjectsSet())
     {
@@ -594,8 +594,8 @@ bool BrittleArmor(uint8_t /*effectIndex*/, Spell* s)
 
 bool RequiresNoAmmo(uint8_t effectIndex, Aura* a, bool apply)
 {
-    auto aurEff = a->getAuraEffect(effectIndex);
-    a->SpellAuraConsumeNoAmmo(&aurEff, apply);
+    auto aurEff = a->getModifiableAuraEffect(effectIndex);
+    a->SpellAuraConsumeNoAmmo(aurEff, apply);
 
     return true;
 }

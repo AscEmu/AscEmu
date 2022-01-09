@@ -611,9 +611,13 @@ bool AIInterface::_enterEvadeMode()
 
     if (!getUnit()->isAlive())
     {
+        engagementOver();
         handleEvent(EVENT_UNITDIED, getUnit(), 0);
         return false;
     }
+
+    engagementOver();
+
     handleEvent(EVENT_LEAVECOMBAT, getUnit(), 0);
     return true;
 }
@@ -818,8 +822,13 @@ void AIInterface::castAISpell(CreatureAISpells* aiSpell)
     } break;
     case TARGET_CUSTOM:
     {
+        // nos custom target set, no spell cast.
         if (aiSpell->getCustomTarget() != nullptr)
-            getUnit()->castSpell(aiSpell->getCustomTarget(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        {
+            mCurrentSpellTarget = aiSpell->getCustomTarget();
+            mLastCastedSpell = aiSpell;
+            getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        }
     } break;
     default:
         break;
@@ -2428,7 +2437,7 @@ void AIInterface::initGroupThreat(Unit* target)
     }
 }
 
-void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
+void AIInterface::engagementOver()
 {
     m_isEngaged = false;
     internalPhase = 0;
@@ -2439,15 +2448,29 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
     setCurrentTarget(nullptr);
     getUnit()->setTargetGuid(0);
 
-    if (pUnit == nullptr)
-        return;
+    m_hasFleed = false;
+    m_fleeTimer.resetInterval(0);
+    setCurrentAgent(AGENT_NULL);
 
-    if (pUnit->isCreature())
+    m_Unit->m_combatStatusHandler.Vanished();
+    m_Unit->getThreatManager().clearAllThreat();
+    m_Unit->getThreatManager().removeMeFromThreatLists();
+
+    if (!m_disableDynamicBoundary)
+        clearBoundary();
+
+    // Remove Instance Combat
+    instanceCombatProgress(false);
+}
+
+void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
+{
+    if (m_Unit->isCreature())
     {
-        if (pUnit->isDead())
-            pUnit->RemoveAllAuras();
+        if (m_Unit->isDead())
+            m_Unit->RemoveAllAuras();
         else
-            pUnit->RemoveNegativeAuras();
+            m_Unit->RemoveNegativeAuras();
     }
 
     // restart emote
@@ -2482,15 +2505,6 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
         sendStoredText(mEmotesOnLeaveCombat, nullptr);
     }
 
-    initialiseScripts(getUnit()->getEntry());
-
-    m_Unit->m_combatStatusHandler.Vanished();
-    m_Unit->getThreatManager().clearAllThreat();
-    m_Unit->getThreatManager().removeMeFromThreatLists();
-
-    CALL_SCRIPT_EVENT(m_Unit, _internalOnCombatStop)();
-    CALL_SCRIPT_EVENT(m_Unit, OnCombatStop)(getUnit());
-
     if (m_Unit->isCreature() && m_Unit->isAlive())
     {
         // Reset Instance Data
@@ -2514,34 +2528,18 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
             m_Unit->setMountDisplayId(creature->m_spawn->MountedDisplayID);
     }
 
-    m_hasFleed = false;
-    m_fleeTimer.resetInterval(0);
-    setCurrentAgent(AGENT_NULL);
+    initialiseScripts(getUnit()->getEntry());
 
-    if (!m_disableDynamicBoundary)
-        clearBoundary();
-
-    // Remove Instance Combat
-    instanceCombatProgress(false);
-
-    m_Unit->smsg_AttackStop(pUnit);
+    CALL_SCRIPT_EVENT(m_Unit, _internalOnCombatStop)();
+    CALL_SCRIPT_EVENT(m_Unit, OnCombatStop)(getUnit());
 }
 
 void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
 {
-    m_isEngaged = false;
-    internalPhase = 0;
-    spellEvents.resetEvents();
-    setUnitToFollow(nullptr);
-    setCannotReachTarget(false);
-    setNoCallAssistance(false);
-    setCurrentTarget(nullptr);
-    getUnit()->setTargetGuid(0);
-
     if (pUnit == nullptr)
         return;
 
-     pUnit->RemoveAllAuras();
+     pUnit->RemoveNegativeAuras();
 
     CALL_SCRIPT_EVENT(m_Unit, _internalOnDied)(pUnit);
     CALL_SCRIPT_EVENT(m_Unit, OnDied)(pUnit);
@@ -2559,22 +2557,16 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
 
         initialiseScripts(getUnit()->getEntry());
 
+        if (getUnit()->getSummonedByGuid())
+        {
+            Unit* summoner = getUnit()->GetMapMgr()->GetUnit(getUnit()->getSummonedByGuid());
+
+            if (summoner)
+                CALL_SCRIPT_EVENT(summoner, OnSummonDies)(m_Unit->ToCreature(), pUnit);
+        }
+
         CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), OnCreatureDeath)(static_cast<Creature*>(m_Unit), pUnit);
-
-        // set encounter state to finished
-        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(m_Unit->getEntry(), Finished);
-
-#if VERSION_STRING >= WotLK
-        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), UpdateEncountersStateForCreature)(m_Unit->getEntry(), m_Unit->GetMapMgr()->pInstance->m_difficulty);
-#endif
     }
-
-    m_hasFleed = false;
-    m_fleeTimer.resetInterval(0);
-    setCurrentAgent(AGENT_NULL);
-
-    if (!m_disableDynamicBoundary)
-        clearBoundary();
 
     setAiState(AI_STATE_IDLE);
 
@@ -3512,6 +3504,7 @@ void AIInterface::UpdateAISpells()
                         sLogger.debugFlag(AscEmu::Logging::LF_SCRIPT_MGR, "Target outside of spell range (%u)! Min: %f Max: %f, distance to Target: %f", mLastCastedSpell->mSpellInfo->getId(), mLastCastedSpell->mMinPositionRangeToCast, mLastCastedSpell->mMaxPositionRangeToCast, targetDistance);
                         getUnit()->interruptSpell();
                         mLastCastedSpell = nullptr;
+                        mCurrentSpellTarget = nullptr;
                     }
                 }
             }
@@ -3529,6 +3522,7 @@ void AIInterface::UpdateAISpells()
                 getUnit()->setAttackTimer(MELEE, mLastCastedSpell->getAttackStopTimer());
 
             mLastCastedSpell = nullptr;
+            mCurrentSpellTarget = nullptr;
         }
     }
 
@@ -3669,7 +3663,11 @@ void AIInterface::UpdateAISpells()
             {
                 // nos custom target set, no spell cast.
                 if (usedSpell->getCustomTarget() != nullptr)
-                    getUnit()->castSpell(usedSpell->getCustomTarget(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+                {
+                    mCurrentSpellTarget = usedSpell->getCustomTarget();
+                    mLastCastedSpell = usedSpell;
+                    getUnit()->castSpell(mCurrentSpellTarget, usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+                }
             } break;
             default:
                 break;

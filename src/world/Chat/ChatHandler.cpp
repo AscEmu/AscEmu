@@ -592,7 +592,7 @@ bool ChatHandler::HandleCommandsCommand(const char* args, WorldSession* m_sessio
     return true;
 }
 
-uint16 GetItemIDFromLink(const char* itemlink, uint32* itemid)
+uint16_t GetItemIDFromLink(const char* itemlink, uint32* itemid)
 {
     if (itemlink == NULL)
     {

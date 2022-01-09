@@ -5159,9 +5159,9 @@ void Player::CalcResistance(uint8_t type)
             {
                 for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
                 {
-                    auto aurEff = m_auras[x]->getAuraEffect(i);
-                    if (aurEff.getAuraEffectType() == SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR)
-                        m_auras[x]->SpellAuraModAttackPowerOfArmor(&aurEff, false);
+                    auto aurEff = m_auras[x]->getModifiableAuraEffect(i);
+                    if (aurEff->getAuraEffectType() == SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR)
+                        m_auras[x]->SpellAuraModAttackPowerOfArmor(aurEff, false);
                 }
             }
         }
@@ -5186,9 +5186,9 @@ void Player::CalcResistance(uint8_t type)
             {
                 for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
                 {
-                    auto aurEff = m_auras[x]->getAuraEffect(i);
-                    if (aurEff.getAuraEffectType() == SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR)
-                        m_auras[x]->SpellAuraModAttackPowerOfArmor(&aurEff, true);
+                    auto aurEff = m_auras[x]->getModifiableAuraEffect(i);
+                    if (aurEff->getAuraEffectType() == SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR)
+                        m_auras[x]->SpellAuraModAttackPowerOfArmor(aurEff, true);
                 }
             }
         }
@@ -5607,11 +5607,11 @@ void Player::RegenerateHealth(bool inCombat)
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
             const auto aurEff = aur->getAuraEffect(i);
-            if (aurEff.getAuraEffectType() != SPELL_AURA_MOD_REGEN)
+            if (aurEff->getAuraEffectType() != SPELL_AURA_MOD_REGEN)
                 continue;
 
             // The value is stored as per 5 seconds
-            amt += aurEff.getEffectDamage() * (static_cast<float_t>(m_healthRegenerateTimer / 1000) / 5.0f);
+            amt += aurEff->getEffectDamage() * (static_cast<float_t>(m_healthRegenerateTimer / 1000) / 5.0f);
         }
     }
 

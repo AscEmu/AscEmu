@@ -30,6 +30,11 @@ SpellScriptExecuteState SpellScript::beforeSpellEffect(Spell* /*spell*/, uint8_t
     return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
 }
 
+SpellScriptCheckDummy SpellScript::onDummyOrScriptedEffect(Spell* /*spell*/, uint8_t /*effectIndex*/)
+{
+    return SpellScriptCheckDummy::DUMMY_NOT_HANDLED;
+}
+
 void SpellScript::afterSpellEffect(Spell* /*spell*/, uint8_t /*effectIndex*/) {}
 
 // Aura hooks

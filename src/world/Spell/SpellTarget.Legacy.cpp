@@ -55,7 +55,7 @@ SpellCastResult Spell::checkExplicitTarget(Object* target, uint32_t requiredTarg
         return SPELL_FAILED_BAD_TARGETS;
 
     // Check if spell can target attackable unit
-    if (requiredTargetMask & SPELL_TARGET_REQUIRE_ATTACKABLE && !isAttackable(m_caster, target, false))
+    if (requiredTargetMask & SPELL_TARGET_REQUIRE_ATTACKABLE && !(requiredTargetMask & SPELL_TARGET_AREA_SELF && m_caster == target) && !isAttackable(m_caster, target, false))
         return SPELL_FAILED_BAD_TARGETS;
 
     if (requiredTargetMask & SPELL_TARGET_OBJECT_TARCLASS)
@@ -133,7 +133,7 @@ void Spell::FillTargetMap(uint32 i)
     if (TargetType & SPELL_TARGET_OBJECT_SELF)
         AddTarget(i, TargetType, m_caster);
     if (TargetType & (SPELL_TARGET_AREA | SPELL_TARGET_AREA_SELF))  //targetted aoe
-        AddAOETargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets());
+        AddAOETargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets());
     ///\todo arcemu, doesn't support summon slots?
     /*if (TargetType & SPELL_TARGET_OBJECT_CURTOTEMS && u_caster != NULL)
         for (uint32 i=1; i<5; ++i) //totem slots are 1, 2, 3, 4
@@ -155,25 +155,25 @@ void Spell::FillTargetMap(uint32 i)
     if ((TargetType & SPELL_TARGET_AREA_PARTY) && !(TargetType & SPELL_TARGET_AREA_RAID))
     {
         if (p_caster == nullptr && !m_caster->isPet() && (!m_caster->isCreature() || !m_caster->isTotem()))
-            AddAOETargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets()); //npcs
+            AddAOETargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets()); //npcs
         else
-            AddPartyTargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets()); //players/pets/totems
+            AddPartyTargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets()); //players/pets/totems
     }
     if (TargetType & SPELL_TARGET_AREA_RAID)
     {
         if (p_caster == nullptr && !m_caster->isPet() && (!m_caster->isCreature() || !m_caster->isTotem()))
-            AddAOETargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets()); //npcs
+            AddAOETargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets()); //npcs
         else
-            AddRaidTargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets(), (TargetType & SPELL_TARGET_AREA_PARTY) ? true : false); //players/pets/totems
+            AddRaidTargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets(), (TargetType & SPELL_TARGET_AREA_PARTY) ? true : false); //players/pets/totems
     }
     if (TargetType & SPELL_TARGET_AREA_CHAIN)
-        AddChainTargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets());
+        AddChainTargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets());
     //target cone
     if (TargetType & SPELL_TARGET_AREA_CONE)
-        AddConeTargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets());
+        AddConeTargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets());
 
     if (TargetType & SPELL_TARGET_OBJECT_SCRIPTED)
-        AddScriptedOrSpellFocusTargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets());
+        AddScriptedOrSpellFocusTargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets());
 }
 
 void Spell::AddScriptedOrSpellFocusTargets(uint32 i, uint32 targetType, float r, uint32 /*maxtargets*/)
@@ -207,7 +207,7 @@ void Spell::AddConeTargets(uint32 i, uint32 targetType, float /*r*/, uint32 maxt
             continue;
 
         //is Creature in range
-        if (m_caster->isInRange(itr, GetRadius(i)))
+        if (m_caster->isInRange(itr, getEffectRadius(i)))
         {
             if (m_spellInfo->cone_width ? m_caster->isInArc(itr, m_spellInfo->cone_width) : m_caster->isInFront(itr))  // !!! is the target within our cone ?
             {
@@ -429,10 +429,14 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
     if (targetCheck != SPELL_CAST_SUCCESS)
         return false;
 
-    std::vector<uint64_t>* t = &m_effectTargets[i];
+    // If checked in checkExplicitTarget, initial aoe spell cast check can fail
+    if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TARGET_ONLY_PLAYERS && !obj->isPlayer())
+        return false;
 
     if (u_caster != nullptr && u_caster->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT) && ((obj->isPlayer() || obj->isPet()) || (p_caster != nullptr || m_caster->isPet())))
         return false;
+
+    std::vector<uint64_t>* t = &m_effectTargets[i];
 
     SpellDidHitResult hitresult = (TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE && obj->isCreatureOrPlayer()) ? static_cast<SpellDidHitResult>(DidHit(i, static_cast<Unit*>(obj))) : SPELL_DID_HIT_SUCCESS;
     if (hitresult != SPELL_DID_HIT_SUCCESS)
@@ -464,7 +468,7 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
     auto spell_range = sSpellRangeStore.LookupEntry(m_spellInfo->getRangeIndex());
     if (spell_range != nullptr)
     {
-        if (worldConfig.terrainCollision.isCollisionEnabled && spell_range->maxRange < 50000 && GetRadius(i) < 50000 && !obj->isItem())
+        if (worldConfig.terrainCollision.isCollisionEnabled && spell_range->maxRange < 50000 && getEffectRadius(i) < 50000 && !obj->isItem())
         {
             float x = m_caster->GetPositionX(), y = m_caster->GetPositionY(), z = m_caster->GetPositionZ() + 0.5f;
 
@@ -642,7 +646,7 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
                 if (attempts > 10)
                     return false;
 
-                float r = Util::getRandomFloat(GetRadius(0));
+                float r = Util::getRandomFloat(getEffectRadius(0));
                 float ang = Util::getRandomFloat(M_PI_FLOAT * 2);
                 auto lv = LocationVector();
                 lv.x = m_caster->GetPositionX() + (cosf(ang) * r);

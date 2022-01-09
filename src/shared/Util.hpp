@@ -6,11 +6,12 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Common.hpp"
+#include <algorithm>
 #include <chrono>
 #include <iomanip>
 #include <iostream>
+#include <random>
 #include <utility>
-
 
 namespace Util
 {
@@ -143,6 +144,18 @@ namespace Util
 
     template <class T>
     inline T square(T x) { return x * x; }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Container helper functions
+
+    template<typename T>
+    inline void randomShuffleVector(std::vector<T>* vector)
+    {
+        std::random_device rd;
+        std::mt19937 mt(rd());
+
+        std::shuffle(vector->begin(), vector->end(), mt);
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // C++17 filesystem dependent functions

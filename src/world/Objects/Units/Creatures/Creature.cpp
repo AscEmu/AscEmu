@@ -2456,4 +2456,13 @@ CreatureMovementData const& Creature::getMovementTemplate()
     return GetCreatureProperties()->Movement;
 }
 
+void Creature::InitSummon(Object* summoner)
+{
+    if (summoner->isCreature())
+        CALL_SCRIPT_EVENT(summoner, onSummonedCreature)(this);
+
+    if (GetScript() != nullptr)
+        GetScript()->OnSummon(static_cast<Unit*>(summoner));
+}
+
 

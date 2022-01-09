@@ -82,13 +82,13 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::spellEffectNotImplemented,          //   0 SPELL_EFFECT_NULL_0
     &Spell::SpellEffectInstantKill,             //   1 SPELL_EFFECT_INSTANT_KILL
     &Spell::SpellEffectSchoolDMG,               //   2 SPELL_EFFECT_SCHOOL_DMG
-    &Spell::SpellEffectDummy,                   //   3 SPELL_EFFECT_DUMMY
+    &Spell::spellEffectDummy,                   //   3 SPELL_EFFECT_DUMMY
     &Spell::spellEffectNotImplemented,          //   4 SPELL_EFFECT_NULL_4
     &Spell::SpellEffectTeleportUnits,           //   5 SPELL_EFFECT_TELEPORT_UNITS
     &Spell::SpellEffectApplyAura,               //   6 SPELL_EFFECT_APPLY_AURA
     &Spell::SpellEffectEnvironmentalDamage,     //   7 SPELL_EFFECT_ENVIRONMENTAL_DAMAGE
     &Spell::SpellEffectPowerDrain,              //   8 SPELL_EFFECT_POWER_DRAIN
-    &Spell::SpellEffectHealthLeech,             //   9 SPELL_EFFECT_HEALTH_LEECH
+    &Spell::spellEffectHealthLeech,             //   9 SPELL_EFFECT_HEALTH_LEECH
     &Spell::SpellEffectHeal,                    //  10 SPELL_EFFECT_NULL_10
     &Spell::SpellEffectBind,                    //  11 SPELL_EFFECT_NULL_11
     &Spell::spellEffectNotImplemented,          //  12 SPELL_EFFECT_NULL_12
@@ -143,7 +143,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectSendEvent,               //  61 SPELL_EFFECT_SEND_EVENT
     &Spell::SpellEffectPowerBurn,               //  62 SPELL_EFFECT_POWER_BURN
     &Spell::SpellEffectThreat,                  //  63 SPELL_EFFECT_THREAT
-    &Spell::SpellEffectTriggerSpell,            //  64 SPELL_EFFECT_TRIGGER_SPELL
+    &Spell::spellEffectTriggerSpell,            //  64 SPELL_EFFECT_TRIGGER_SPELL
     &Spell::SpellEffectApplyRaidAA,             //  65 SPELL_EFFECT_APPLY_RAID_AA
     &Spell::SpellEffectPowerFunnel,             //  66 SPELL_EFFECT_POWER_FUNNEL
     &Spell::SpellEffectHealMaxHealth,           //  67 SPELL_EFFECT_HEALMAX_HEALTH
@@ -156,7 +156,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectUseGlyph,                //  74 SPELL_EFFECT_USE_GLYPH
     &Spell::SpellEffectHealMechanical,          //  75 SPELL_EFFECT_HEAL_MECHANICAL
     &Spell::SpellEffectSummonObjectWild,        //  76 SPELL_EFFECT_SUMMON_OBJECT_WILD
-    &Spell::SpellEffectScriptEffect,            //  77 SPELL_EFFECT_SCRIPT_EFFECT
+    &Spell::spellEffectScriptEffect,            //  77 SPELL_EFFECT_SCRIPT_EFFECT
     &Spell::spellEffectNotImplemented,          //  78 SPELL_EFFECT_NULL_78
     &Spell::SpellEffectSanctuary,               //  79 SPELL_EFFECT_SANCTUARY
     &Spell::SpellEffectAddComboPoints,          //  80 SPELL_EFFECT_ADD_COMBO_POINTS
@@ -219,7 +219,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectRestorePowerPct,         // 137 SPELL_EFFECT_RESTORE_POWER_PCT
     &Spell::SpellEffectKnockBack2,              // 138 SPELL_EFFECT_KNOCK_BACK2
     &Spell::SpellEffectClearQuest,              // 139 SPELL_EFFECT_CLEAR_QUEST
-    &Spell::SpellEffectTriggerSpell,            // 140 SPELL_EFFECT_TRIGGER_SPELL
+    &Spell::spellEffectForceCast,               // 140 SPELL_EFFECT_TRIGGER_SPELL
     &Spell::spellEffectNotImplemented,          // 141 SPELL_EFFECT_NULL_141
     &Spell::SpellEffectTriggerSpellWithValue,   // 142 SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE
     &Spell::SpellEffectApplyOwnerAA,            // 143 SPELL_EFFECT_APPLY_OWNER_AA
@@ -230,7 +230,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::spellEffectNotImplemented,          // 148 SPELL_EFFECT_NULL_148
     &Spell::spellEffectNotImplemented,          // 149 SPELL_EFFECT_NULL_149
     &Spell::spellEffectNotImplemented,          // 150 SPELL_EFFECT_NULL_150
-    &Spell::SpellEffectTriggerSpell,            // 151 SPELL_EFFECT_TRIGGER_SPELL
+    &Spell::spellEffectTriggerSpell,            // 151 SPELL_EFFECT_TRIGGER_SPELL
     &Spell::spellEffectNotImplemented,          // 152 SPELL_EFFECT_NULL_152
     &Spell::SpellEffectCreatePet,               // 153 SPELL_EFFECT_CREATE_PET
     &Spell::SpellEffectTeachTaxiPath,           // 154 SPELL_EFFECT_TEACH_TAXI_PATH
@@ -464,6 +464,32 @@ void Spell::spellEffectNotUsed(uint8_t /*effIndex*/)
     // Handled elsewhere or not used, so do nothing
 }
 
+void Spell::spellEffectDummy(uint8_t effectIndex)
+{
+    // Check that the dummy effect is handled properly in spell script
+    // In case it's not, generate warning to debug log
+    const auto scriptResult = sScriptMgr.callScriptedSpellOnDummyOrScriptedEffect(this, effectIndex);
+    if (scriptResult == SpellScriptCheckDummy::DUMMY_OK)
+        return;
+
+    if (sObjectMgr.CheckforDummySpellScripts(static_cast<Player*>(u_caster), m_spellInfo->getId()))
+        return;
+
+    if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), effectIndex, this))
+        return;
+
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Spell::spellEffectDummy : Spell %u (%s) has a dummy effect index (%hhu), but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), effectIndex);
+}
+
+void Spell::spellEffectHealthLeech(uint8_t effIndex)
+{
+    if (unitTarget == nullptr || !unitTarget->isAlive())
+        return;
+
+    m_targetDamageInfo = m_caster->doSpellDamage(unitTarget, getSpellInfo()->getId(), static_cast<float_t>(damage), effIndex, m_triggeredSpell, false, true, isForcedCrit, this);
+    isTargetDamageInfoSet = true;
+}
+
 void Spell::spellEffectSummonTotem(uint8_t summonSlot, CreatureProperties const* properties, LocationVector& v)
 {
     if (u_caster == nullptr)
@@ -551,6 +577,62 @@ void Spell::spellEffectProficiency(uint8_t /*effectIndex*/)
     }
 }
 
+void Spell::spellEffectTriggerSpell(uint8_t effectIndex)
+{
+    const auto triggerInfo = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex));
+    if (triggerInfo == nullptr)
+        return;
+
+    SpellCastTargets targets = m_targets;
+    Spell* triggerSpell = sSpellMgr.newSpell(m_caster, triggerInfo, true, nullptr);
+    triggerSpell->ProcedOnSpell = getSpellInfo();
+    triggerSpell->prepare(&targets);
+}
+
+void Spell::spellEffectScriptEffect(uint8_t effectIndex)
+{
+    // Check that the scripted effect is handled properly in spell script
+    // In case it's not, send error log
+    const auto scriptResult = sScriptMgr.callScriptedSpellOnDummyOrScriptedEffect(this, effectIndex);
+    if (scriptResult == SpellScriptCheckDummy::DUMMY_OK)
+        return;
+
+    if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), effectIndex, this))
+        return;
+
+    if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->getId(), effectIndex, this))
+        return;
+
+    sLogger.failure("Spell::spellEffectScriptEffect : Spell %u (%s) has a scripted effect index (%hhu), but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), effectIndex);
+}
+
+void Spell::spellEffectForceCast(uint8_t effectIndex)
+{
+    if (unitTarget == nullptr || getUnitCaster() == nullptr)
+        return;
+
+    const auto triggerInfo = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex));
+    if (triggerInfo == nullptr)
+        return;
+
+    // TODO: figure the logic here, sometimes target should be original caster and sometimes effect target
+    // hackfixing for now -Appled
+    Unit* target = nullptr;
+    switch (getSpellInfo()->getId())
+    {
+        case 72378: // Deathbringer Saurfang - Blood Nova 10m
+        case 73058: // Deathbringer Saurfang - Blood Nova 25m
+            target = unitTarget;
+            break;
+        default:
+            target = getUnitCaster();
+            break;
+    }
+
+    // TODO: original caster can also be gameobject
+    unitTarget->castSpell(target, triggerInfo, true);
+}
+
 // MIT End
 // APGL Start
 
@@ -565,7 +647,7 @@ void Spell::ApplyAreaAura(uint8_t effectIndex)
     {
         pAura = sSpellMgr.newAura(getSpellInfo(), GetDuration(), m_caster, unitTarget);
 
-        float r = GetRadius(effectIndex);
+        float r = getEffectRadius(effectIndex);
 
         uint32 eventtype = 0;
 
@@ -1560,17 +1642,6 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
     }
 }
 
-void Spell::SpellEffectDummy(uint8_t effectIndex) // Dummy(Scripted events)
-{
-    if (sObjectMgr.CheckforDummySpellScripts(static_cast<Player*>(u_caster), m_spellInfo->getId()))
-        return;
-
-    if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), effectIndex, this))
-        return;
-
-    sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Spell ID: %u (%s) has a dummy effect index (%hhu) but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), effectIndex);
-}
-
 void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
 {
     if (unitTarget == nullptr || m_caster == nullptr)
@@ -1988,36 +2059,6 @@ void Spell::SpellEffectPowerDrain(uint8_t effectIndex)  // Power Drain
         amt = curPower;
     unitTarget->setPower(powerField, curPower - amt);
     u_caster->energize(u_caster, getSpellInfo()->getId(), amt, powerField);
-}
-
-void Spell::SpellEffectHealthLeech(uint8_t /*effectIndex*/) // Health Leech
-{
-    if (!unitTarget || !unitTarget->isAlive())
-        return;
-
-    uint32 curHealth = unitTarget->getHealth();
-    uint32 amt = damage;
-    if (amt > curHealth)
-    {
-        amt = curHealth;
-    }
-
-    if (!u_caster)
-        return;
-
-    u_caster->dealDamage(unitTarget, damage, getSpellInfo()->getId());
-
-    uint32 playerCurHealth = u_caster->getHealth();
-    uint32 playerMaxHealth = u_caster->getMaxHealth();
-
-    if (playerCurHealth + amt > playerMaxHealth)
-    {
-        u_caster->setHealth(playerMaxHealth);
-    }
-    else
-    {
-        u_caster->modHealth(amt);
-    }
 }
 
 void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
@@ -2893,7 +2934,7 @@ void Spell::SpellEffectPersistentAA(uint8_t effectIndex) // Persistent Area Aura
         return;
     //create only 1 dyn object
     uint32 dur = GetDuration();
-    float r = GetRadius(effectIndex);
+    float r = getEffectRadius(effectIndex);
 
     //Note: this code seems to be useless
     //this must be only source point or dest point
@@ -3128,8 +3169,8 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
     for (int j = 0; j<damage; j++)
     {
         float m_fallowAngle = -((float(M_PI) / 2) * j);
-        float tempx = x + (GetRadius(effectIndex) * (cosf(m_fallowAngle + m_caster->GetOrientation())));
-        float tempy = y + (GetRadius(effectIndex) * (sinf(m_fallowAngle + m_caster->GetOrientation())));
+        float tempx = x + (getEffectRadius(effectIndex) * (cosf(m_fallowAngle + m_caster->GetOrientation())));
+        float tempy = y + (getEffectRadius(effectIndex) * (sinf(m_fallowAngle + m_caster->GetOrientation())));
 
         if (Creature* p = m_caster->GetMapMgr()->CreateCreature(cr_entry))
         {
@@ -3138,9 +3179,6 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
 
             if (p->GetCreatureProperties()->Faction == 35)
             {
-                p->setSummonedByGuid(m_caster->getGuid());
-                p->setCreatedByGuid(m_caster->getGuid());
-
                 if (m_caster->isGameObject())
                     p->setFaction(static_cast<GameObject*>(m_caster)->getFactionTemplate());
                 else
@@ -3150,10 +3188,15 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
             {
                 p->setFaction(properties->Faction);
             }
+
+            p->setSummonedByGuid(m_caster->getGuid());
+            p->setCreatedByGuid(m_caster->getGuid());
+
             p->PushToWorld(m_caster->GetMapMgr());
 
-            if (p->GetScript() != nullptr)
-                p->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
+            // Delay this a bit to make sure its Spawned
+            sEventMgr.AddEvent(p, &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+
             //make sure they will be desummoned (roxor)
             sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
@@ -3190,10 +3233,10 @@ void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPrope
             return;
 
         s->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
-
-        if (s->GetScript() != nullptr)
-            s->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
         s->PushToWorld(u_caster->GetMapMgr());
+
+        // Delay this a bit to make sure its Spawned
+        sEventMgr.AddEvent(s->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
         if ((p_caster != nullptr) && (spe->Slot != 0))
             p_caster->sendTotemCreatedPacket(static_cast<uint8_t>(spe->Slot - 1), s->getGuid(), GetDuration(), m_spellInfo->getId());
@@ -3247,8 +3290,8 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 /*i*/, DBC::Structures::SummonP
             break;
         }
 
-        if (pet->GetScript() != nullptr)
-            pet->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
+        // Delay this a bit to make sure its Spawned
+        sEventMgr.AddEvent(pet->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
 
@@ -3269,9 +3312,10 @@ void Spell::SpellEffectSummonPossessed(uint32 /*i*/, DBC::Structures::SummonProp
 
     s->Load(properties_, p_caster, v, m_spellInfo->getId(), spe->Slot - 1);
     s->setCreatedBySpellId(m_spellInfo->getId());
-    if (s->GetScript() != nullptr)
-        s->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
     s->PushToWorld(p_caster->GetMapMgr());
+
+    // Delay this a bit to make sure its Spawned
+    sEventMgr.AddEvent(s->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     p_caster->Possess(s, 1000);
 }
@@ -3307,10 +3351,11 @@ void Spell::SpellEffectSummonCompanion(uint32 /*i*/, DBC::Structures::SummonProp
 
     summon->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
     summon->setCreatedBySpellId(m_spellInfo->getId());
-
-    if (summon->GetScript() != nullptr)
-        summon->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
     summon->PushToWorld(u_caster->GetMapMgr());
+
+    // Delay this a bit to make sure its Spawned
+    sEventMgr.AddEvent(summon->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+
     u_caster->setCritterGuid(summon->getGuid());
 #endif
 }
@@ -3330,10 +3375,11 @@ void Spell::SpellEffectSummonVehicle(uint32 /*i*/, DBC::Structures::SummonProper
     c->setCreatedBySpellId(m_spellInfo->getId());
     c->setCreatedByGuid(u_caster->getGuid());
     c->setSummonedByGuid(u_caster->getGuid());
-    if (c->GetScript() != nullptr)
-        c->GetScript()->OnSummon(static_cast<Unit*>(m_caster));
     c->removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
     c->PushToWorld(u_caster->GetMapMgr());
+
+    // Delay this a bit to make sure its Spawned
+    sEventMgr.AddEvent(c->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     // Need to delay this a bit since first the client needs to see the vehicle
     u_caster->addPassengerToVehicle(c->getGuid(), 1 * 1000);
@@ -3344,7 +3390,7 @@ void Spell::SpellEffectLeap(uint8_t effectIndex) // Leap
     if (unitTarget == nullptr)
         return;
 
-    float radius = GetRadius(effectIndex);
+    float radius = getEffectRadius(effectIndex);
     unitTarget->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN);
 
     MMAP::MMapManager* mmap = MMAP::MMapFactory::createOrGetMMapManager();
@@ -3538,7 +3584,7 @@ void Spell::SpellEffectTriggerMissile(uint8_t effectIndex) // Trigger Missile
         return;
     }
 
-    float spellRadius = GetRadius(effectIndex);
+    float spellRadius = getEffectRadius(effectIndex);
 
     //\todo Following should be / is probably in SpellTarget code
     for (const auto& itr : m_caster->getInRangeObjectsSet())
@@ -4604,18 +4650,6 @@ void Spell::SpellEffectClearQuest(uint8_t effectIndex)
     playerTarget->ClearQuest(questid2);
 }
 
-void Spell::SpellEffectTriggerSpell(uint8_t effectIndex) // Trigger Spell
-{
-    SpellInfo const* entry = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex));
-    if (entry == nullptr)
-        return;
-
-    SpellCastTargets targets = m_targets;
-    Spell* sp = sSpellMgr.newSpell(m_caster, entry, true, nullptr);
-    sp->ProcedOnSpell = getSpellInfo();
-    sp->prepare(&targets);
-}
-
 void Spell::SpellEffectApplyRaidAA(uint8_t effectIndex)
 {
     ApplyAreaAura(effectIndex);
@@ -4792,7 +4826,7 @@ void Spell::SpellEffectAddFarsight(uint8_t effectIndex) // Add Farsight
     }
 
     DynamicObject* dynObj = p_caster->GetMapMgr()->CreateDynamicObject();
-    dynObj->Create(u_caster, this, lv, GetDuration(), GetRadius(effectIndex), DYNAMIC_OBJECT_FARSIGHT_FOCUS);
+    dynObj->Create(u_caster, this, lv, GetDuration(), getEffectRadius(effectIndex), DYNAMIC_OBJECT_FARSIGHT_FOCUS);
     dynObj->SetInstanceID(p_caster->GetInstanceID());
     p_caster->setFarsightGuid(dynObj->getGuid());
 
@@ -4879,18 +4913,6 @@ void Spell::SpellEffectSummonObjectWild(uint8_t effectIndex)
     GoSummon->SetSummoned(u_caster);
 
     sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-}
-
-void Spell::SpellEffectScriptEffect(uint8_t effectIndex) // Script Effect
-{
-    // Try a dummy SpellHandler
-    if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), effectIndex, this))
-        return;
-
-    if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->getId(), effectIndex, this))
-        return;
-
-    sLogger.failure("Spell ID: %u (%s) has a scripted effect index (%hhu) but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), effectIndex);
 }
 
 void Spell::SpellEffectSanctuary(uint8_t /*effectIndex*/) // Stop all attacks made to you
@@ -6091,7 +6113,7 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
                     {
                         if (aura->getSpellInfo()->getEffect(j))
                         {
-                            aura->addAuraEffect(static_cast<AuraEffect>(aura->getSpellInfo()->getEffectApplyAuraName(j)), aura->getSpellInfo()->getEffectBasePoints(j) + 1, aura->getSpellInfo()->getEffectMiscValue(j), aur->getAuraEffect(j).getEffectPercentModifier(), true, j);
+                            aura->addAuraEffect(static_cast<AuraEffect>(aura->getSpellInfo()->getEffectApplyAuraName(j)), aura->getSpellInfo()->getEffectBasePoints(j) + 1, aura->getSpellInfo()->getEffectMiscValue(j), aur->getAuraEffect(j)->getEffectPercentModifier(), true, j);
                         }
                     }
                     u_caster->addAura(aura);

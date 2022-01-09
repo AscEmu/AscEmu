@@ -3,6 +3,8 @@
 set(PATH_PREFIX Server/Script)
 
 set(SRC_SERVER_SCRIPT_FILES
+    ${PATH_PREFIX}/AchievementScript.cpp
+    ${PATH_PREFIX}/AchievementScript.hpp
     ${PATH_PREFIX}/CreatureAIScript.cpp
     ${PATH_PREFIX}/CreatureAIScript.h
     ${PATH_PREFIX}/ScriptEvent.cpp

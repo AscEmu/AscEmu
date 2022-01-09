@@ -55,7 +55,7 @@ bool Pestilence(uint8_t effectIndex, Spell* pSpell)
             if (Main->getGuid() == Target->getGuid() && !u_caster->hasAurasWithId(63334))
                 continue;
 
-            if (isAttackable(Target, u_caster) && u_caster->CalcDistance(itr) <= (pSpell->GetRadius(effectIndex) + inc))
+            if (isAttackable(Target, u_caster) && u_caster->CalcDistance(itr) <= (pSpell->getEffectRadius(effectIndex) + inc))
             {
                 if (blood)
                     u_caster->castSpell(Target, BLOOD_PLAGUE, true);

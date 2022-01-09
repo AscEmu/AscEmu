@@ -15,7 +15,72 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Movement/WaypointManager.h"
 
-CreatureAIScript::CreatureAIScript(Creature* creature) : mScriptPhase(0), mCreatureTimerCount(0), mAIUpdateFrequency(defaultUpdateFrequency),
+void SummonList::summon(Creature const* summon)
+{
+    _storage.push_back(summon->getGuid());
+}
+
+void SummonList::despawn(Creature const* summon)
+{
+    _storage.remove(summon->getGuid());
+}
+
+void SummonList::despawnEntry(uint32_t entry)
+{
+    for (StorageType::iterator i = _storage.begin(); i != _storage.end();)
+    {
+        Creature* summon = _creature->GetMapMgrCreature(*i);
+        if (!summon)
+        {
+            i = _storage.erase(i);
+        }
+        else if (summon->getEntry() == entry)
+        {
+            i = _storage.erase(i);
+            summon->Despawn(1000, 0);
+        }
+        else
+        {
+            ++i;
+        }
+    }
+}
+
+void SummonList::despawnAll()
+{
+    while (!_storage.empty())
+    {
+        Creature* summon = _creature->GetMapMgrCreature(_storage.front());
+        _storage.pop_front();
+        if (summon)
+            summon->Despawn(1000, 0);
+    }
+}
+
+void SummonList::removeNotExisting()
+{
+    for (StorageType::iterator i = _storage.begin(); i != _storage.end();)
+    {
+        if (_creature->GetMapMgrCreature(*i))
+            ++i;
+        else
+            i = _storage.erase(i);
+    }
+}
+
+bool SummonList::hasEntry(uint32_t entry) const
+{
+    for (uint64_t const& guid : _storage)
+    {
+        Creature* summon = _creature->GetMapMgrCreature(guid);
+        if (summon && summon->getEntry() == entry)
+            return true;
+    }
+
+    return false;
+}
+
+CreatureAIScript::CreatureAIScript(Creature* creature) : mScriptPhase(0), summons(creature), mCreatureTimerCount(0), mAIUpdateFrequency(defaultUpdateFrequency),
 isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmoteTimeMin(0), idleEmoteTimeMax(0), _creature(creature), linkedCreatureAI(nullptr)
 {
     mCreatureTimerIds.clear();
@@ -23,10 +88,6 @@ isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmoteTimeMin(0), idleEmoteTi
 
     mCustomAIUpdateDelayTimerId = 0;
     mCustomAIUpdateDelay = 0;
-
-    //new CreatureAISpell handling
-    mCurrentSpellTarget = nullptr;
-    mLastCastedSpell = nullptr;
 
     m_oldAIUpdate.resetInterval(1000);
 }
@@ -54,6 +115,17 @@ void CreatureAIScript::_internalOnDied(Unit* killer)
     RemoveAIUpdateEvent();
     sendRandomDBChatMessage(mEmotesOnDied, killer);
 
+    // Reset Events
+    scriptEvents.resetEvents();
+
+    // Remove Summons
+    summons.despawnAll();
+
+    // Finish Encounter
+    getInstanceScript()->setData(getCreature()->getEntry(), Finished);
+#if VERSION_STRING >= WotLK
+    getInstanceScript()->UpdateEncountersStateForCreature(getCreature()->getEntry(), getCreature()->GetMapMgr()->pInstance->m_difficulty);
+#endif
     resetScriptPhase();
 }
 
@@ -893,56 +965,18 @@ void CreatureAIScript::_castAISpell(CreatureAISpells* aiSpell)
         return;
     }
 
-    Unit* target = getCreature()->getAIInterface()->getCurrentTarget();
-    switch (aiSpell->mTargetType)
+    getCreature()->getAIInterface()->castAISpell(aiSpell);
+}
+
+void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
+{
+    if (!AiSpell)
     {
-        case TARGET_SELF:
-        case TARGET_VARIOUS:
-        {
-            getCreature()->castSpell(getCreature(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-            mLastCastedSpell = aiSpell;
-        } break;
-        case TARGET_ATTACKING:
-        {
-            getCreature()->castSpell(target, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-            mCurrentSpellTarget = target;
-            mLastCastedSpell = aiSpell;
-        } break;
-        case TARGET_SOURCE:
-            getCreature()->castSpellLoc(getCreature()->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-            mLastCastedSpell = aiSpell;
-            break;
-        case TARGET_DESTINATION:
-        {
-            getCreature()->castSpellLoc(target->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-            mCurrentSpellTarget = target;
-            mLastCastedSpell = aiSpell;
-        } break;
-        case TARGET_RANDOM_FRIEND:
-        case TARGET_RANDOM_SINGLE:
-        case TARGET_RANDOM_DESTINATION:
-        {
-            castSpellOnRandomTarget(aiSpell);
-            mLastCastedSpell = aiSpell;
-        } break;
-        case TARGET_CLOSEST:
-        {
-            mCurrentSpellTarget = getBestUnitTarget(TargetFilter_Closest);
-            mLastCastedSpell = aiSpell;
-            getCreature()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-        } break;
-        case TARGET_FURTHEST:
-        {
-            mCurrentSpellTarget = getBestUnitTarget(TargetFilter_InRangeOnly, 0.0f, 30.0f);
-            mLastCastedSpell = aiSpell;
-            getCreature()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-        } break;
-        case TARGET_CUSTOM:
-        {
-            if (aiSpell->getCustomTarget() != nullptr)
-                getCreature()->castSpell(aiSpell->getCustomTarget(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-        } break;
+        sLogger.failure("CreatureAISpells tried to cast nonexistant Spell");
+        return;
     }
+
+    getCreature()->getAIInterface()->castSpellOnRandomTarget(AiSpell);
 }
 
 void CreatureAIScript::_setTargetToChannel(Unit* target, uint32_t spellId)
@@ -967,70 +1001,6 @@ void CreatureAIScript::_unsetTargetToChannel()
 Unit* CreatureAIScript::_getTargetToChannel()
 {
     return _creature->GetMapMgr()->GetUnit(_creature->getChannelObjectGuid());
-}
-
-void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
-{
-    if (AiSpell == nullptr)
-        return;
-
-    // helper for following code
-    bool isTargetRandFriend = (AiSpell->mTargetType == TARGET_RANDOM_FRIEND ? true : false);
-
-    // if we already cast a spell, do not set/cast another one!
-    if (!getCreature()->isCastingSpell()
-        && getCreature()->getAIInterface()->getCurrentTarget())
-    {
-        // set up targets in range by position, relation and hp range
-        std::vector<Unit*> possibleUnitTargets;
-
-        for (const auto& inRangeObject : getCreature()->getInRangeObjectsSet())
-        {
-            if (((isTargetRandFriend && isFriendly(getCreature(), inRangeObject))
-                || (!isTargetRandFriend && isHostile(getCreature(), inRangeObject) && inRangeObject != getCreature())) && inRangeObject->isCreatureOrPlayer())
-            {
-                Unit* inRangeTarget = static_cast<Unit*>(inRangeObject);
-
-                if (
-                    inRangeTarget->isAlive() && AiSpell->isDistanceInRange(getCreature()->GetDistance2dSq(inRangeTarget))
-                    && ((AiSpell->isHpInPercentRange(inRangeTarget->getHealthPct()) && isTargetRandFriend)
-                    || (getCreature()->getThreatManager().getThreat(inRangeTarget) > 0 && isHostile(getCreature(), inRangeTarget))))
-                {
-                    possibleUnitTargets.push_back(inRangeTarget);
-                }
-            }
-        }
-
-        // add us as a friendly target.
-        if (AiSpell->isHpInPercentRange(getCreature()->getHealthPct()) && isTargetRandFriend)
-            possibleUnitTargets.push_back(getCreature());
-
-        // no targets in our range for hp range and firendly targets
-        if (possibleUnitTargets.empty())
-            return;
-
-        // get a random target
-        uint32_t randomIndex = Util::getRandomUInt(0, static_cast<uint32_t>(possibleUnitTargets.size() - 1));
-        Unit* randomTarget = possibleUnitTargets[randomIndex];
-
-        if (randomTarget == nullptr)
-            return;
-
-        switch (AiSpell->mTargetType)
-        {
-            case TARGET_RANDOM_FRIEND:
-            case TARGET_RANDOM_SINGLE:
-            {
-                getCreature()->castSpell(randomTarget, AiSpell->mSpellInfo, AiSpell->mIsTriggered);
-                mCurrentSpellTarget = randomTarget;
-            } break;
-            case TARGET_RANDOM_DESTINATION:
-                getCreature()->castSpellLoc(randomTarget->GetPosition(), AiSpell->mSpellInfo, AiSpell->mIsTriggered);
-                break;
-        }
-
-        possibleUnitTargets.clear();
-    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1201,20 +1171,20 @@ void CreatureAIScript::setLinkedCreatureAIScript(CreatureAIScript* creatureAI)
 //////////////////////////////////////////////////////////////////////////////////////////
 // target
 
-Unit* CreatureAIScript::getBestPlayerTarget(TargetFilter pTargetFilter, float pMinRange, float pMaxRange)
+Unit* CreatureAIScript::getBestPlayerTarget(TargetFilter pTargetFilter, float pMinRange, float pMaxRange, int32_t auraId)
 {
     //Build potential target list
     UnitArray TargetArray;
     for (const auto& PlayerIter : getCreature()->getInRangePlayersSet())
     {
-        if (PlayerIter && isValidUnitTarget(PlayerIter, pTargetFilter, pMinRange, pMaxRange))
+        if (PlayerIter && isValidUnitTarget(PlayerIter, pTargetFilter, pMinRange, pMaxRange, auraId))
             TargetArray.push_back(static_cast<Unit*>(PlayerIter));
     }
 
     return getBestTargetInArray(TargetArray, pTargetFilter);
 }
 
-Unit* CreatureAIScript::getBestUnitTarget(TargetFilter pTargetFilter, float pMinRange, float pMaxRange)
+Unit* CreatureAIScript::getBestUnitTarget(TargetFilter pTargetFilter, float pMinRange, float pMaxRange, int32_t auraId)
 {
     //potential target list
     UnitArray TargetArray;
@@ -1222,18 +1192,18 @@ Unit* CreatureAIScript::getBestUnitTarget(TargetFilter pTargetFilter, float pMin
     {
         for (const auto& ObjectIter : getCreature()->getInRangeObjectsSet())
         {
-            if (ObjectIter && isValidUnitTarget(ObjectIter, pTargetFilter, pMinRange, pMaxRange))
+            if (ObjectIter && isValidUnitTarget(ObjectIter, pTargetFilter, pMinRange, pMaxRange, auraId))
                 TargetArray.push_back(static_cast<Unit*>(ObjectIter));
         }
 
-        if (isValidUnitTarget(getCreature(), pTargetFilter))
+        if (isValidUnitTarget(getCreature(), pTargetFilter, 0.0f, 0.0f, auraId))
             TargetArray.push_back(getCreature());    //add self as possible friendly target
     }
     else
     {
         for (const auto& ObjectIter : getCreature()->getInRangeOppositeFactionSet())
         {
-            if (ObjectIter && isValidUnitTarget(ObjectIter, pTargetFilter, pMinRange, pMaxRange))
+            if (ObjectIter && isValidUnitTarget(ObjectIter, pTargetFilter, pMinRange, pMaxRange, auraId))
                 TargetArray.push_back(static_cast<Unit*>(ObjectIter));
         }
     }
@@ -1308,7 +1278,7 @@ Unit* CreatureAIScript::getSecondMostHatedTargetInArray(UnitArray & pTargetArray
     return MostHatedUnit;
 }
 
-bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, float pMinRange, float pMaxRange)
+bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, float pMinRange, float pMaxRange, int32_t auraId)
 {
     if (!pObject->isCreatureOrPlayer())
         return false;
@@ -1331,6 +1301,18 @@ bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, 
 
     if (UnitTarget->hasUnitFlags(UNIT_FLAG_FEIGN_DEATH))
         return false;
+
+    // Required Aura
+    if (auraId > 0)
+    {
+        if (!UnitTarget->hasAurasWithId(abs(auraId)))
+            return false;
+    }
+    else
+    {
+        if (UnitTarget->hasAurasWithId(abs(auraId)))
+            return false;
+    }
 
     // if we apply target filtering
     if (pFilter != TargetFilter_None)

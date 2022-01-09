@@ -67,6 +67,8 @@ public:
     virtual SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* damage);
     // Called before spell effect is handled
     virtual SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effIndex);
+    // Called on a dummy or scripted spell effect
+    virtual SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* spell, uint8_t effIndex);
     // Called after spell effect is handled
     virtual void afterSpellEffect(Spell* spell, uint8_t effIndex);
 

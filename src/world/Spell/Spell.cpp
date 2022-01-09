@@ -162,6 +162,8 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
     if (m_triggeredSpell || i_caster != nullptr)
         m_requiresCP = false;
 
+    _loadInitialTargetPointers();
+
     // Check if spell can be casted
     uint32_t parameter1 = 0, parameter2 = 0;
     cancastresult = canCast(false, &parameter1, &parameter2);
@@ -186,6 +188,8 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
     }
 
     m_timer = m_castTime;
+
+    _loadInitialTargetPointers(true);
 
     if (!m_triggeredSpell || getSpellInfo()->isChanneled())
         m_caster->setCurrentSpell(this);
@@ -831,7 +835,7 @@ void Spell::finish(bool successful)
         return;
     }
 
-    // Lua spell hooks
+    // Unit spell script hooks
     if (getUnitCaster() != nullptr)
     {
         CALL_SCRIPT_EVENT(getUnitCaster(), OnCastSpell)(getSpellInfo()->getId());
@@ -840,12 +844,18 @@ void Spell::finish(bool successful)
         {
             for (const auto& uniqueTarget : uniqueHittedTargets)
             {
-                const auto target = getUnitCaster()->GetMapMgrCreature(uniqueTarget.first);
-                if (target == nullptr)
+                auto* const targetUnit = getUnitCaster()->GetMapMgrUnit(uniqueTarget.first);
+                if (targetUnit == nullptr)
                     continue;
 
-                if (target->GetScript())
-                    CALL_SCRIPT_EVENT(target, OnHitBySpell)(getSpellInfo()->getId(), getUnitCaster());
+                CALL_SCRIPT_EVENT(getUnitCaster(), OnSpellHitTarget)(targetUnit, getSpellInfo());
+
+                if (!targetUnit->isCreature())
+                    continue;
+
+                auto* const targetCreature = dynamic_cast<Creature*>(targetUnit);
+                if (targetCreature->GetScript())
+                    CALL_SCRIPT_EVENT(targetCreature, OnHitBySpell)(getSpellInfo()->getId(), getUnitCaster());
             }
         }
 
@@ -964,11 +974,11 @@ void Spell::finish(bool successful)
         getUnitCaster()->HandleProc(casterProcFlags, targetUnit, getSpellInfo(), m_casterDamageInfo, m_triggeredSpell, PROC_EVENT_DO_CASTER_PROCS_ONLY, m_triggeredByAura);
     }
 
-    // QuestMgr spell hooks
-    if (getPlayerCaster() != nullptr && getPlayerCaster()->IsInWorld())
+    // QuestMgr spell hooks and achievement calls
+    if (getUnitCaster() != nullptr)
     {
-        // Do not call QuestMgr::OnPlayerCast for 'on next attack' spells
-        // It will be called on the actual spell cast
+        // Skip 'on next attack' spells if spell is not triggered
+        // this will be handled on the actual spell cast
         if (!(getSpellInfo()->isOnNextMeleeAttack() && !m_triggeredSpell))
         {
             uint32_t targetCount = 0;
@@ -976,17 +986,41 @@ void Spell::finish(bool successful)
             {
                 WoWGuid wowGuid;
                 wowGuid.Init(target.first);
-                if (wowGuid.isUnit())
+                // If target is creature
+                if (wowGuid.isUnit() && getPlayerCaster() != nullptr && getPlayerCaster()->IsInWorld())
                 {
                     ++targetCount;
                     sQuestMgr.OnPlayerCast(getPlayerCaster(), getSpellInfo()->getId(), target.first);
                 }
+#ifdef FT_ACHIEVEMENTS
+                else if (wowGuid.isPlayer())
+                {
+                    auto* const targetPlayer = getUnitCaster()->GetMapMgrPlayer(target.first);
+                    if (targetPlayer != nullptr)
+                    {
+                        targetPlayer->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, getSpellInfo()->getId(), 0, 0, getCaster());
+                        targetPlayer->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2, getSpellInfo()->getId(), 0, 0, getCaster());
+                    }
+                }
+#endif
             }
 
-            if (targetCount == 0)
+            if (getPlayerCaster() != nullptr && getPlayerCaster()->IsInWorld())
             {
-                auto guid = getPlayerCaster()->getTargetGuid();
-                sQuestMgr.OnPlayerCast(getPlayerCaster(), getSpellInfo()->getId(), guid);
+                if (targetCount == 0)
+                {
+                    auto guid = getPlayerCaster()->getTargetGuid();
+                    sQuestMgr.OnPlayerCast(getPlayerCaster(), getSpellInfo()->getId(), guid);
+                }
+
+#ifdef FT_ACHIEVEMENTS
+                // Set target for spell cast achievement only if spell had one target
+                Object* spellTarget = nullptr;
+                if (uniqueHittedTargets.size() == 1)
+                    spellTarget = getPlayerCaster()->GetMapMgrObject(uniqueHittedTargets.front().first);
+
+                getPlayerCaster()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2, getSpellInfo()->getId(), 0, 0, spellTarget);
+#endif
             }
         }
     }
@@ -1684,8 +1718,8 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             if (u_caster != nullptr)
             {
                 // Target must be in front of caster
-                // Check for generic ranged spells as well
-                if (getSpellInfo()->getFacingCasterFlags() == SPELL_INFRONT_STATUS_REQUIRE_INFRONT || getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_REQ_FACING_TARGET || getSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_RANGED)
+                // Check for generic ranged spells as well, if caster is player
+                if (getSpellInfo()->getFacingCasterFlags() == SPELL_INFRONT_STATUS_REQUIRE_INFRONT || getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_REQ_FACING_TARGET || (getPlayerCaster() != nullptr && getSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_RANGED))
                 {
                     if (!u_caster->isInFront(target))
                         return SPELL_FAILED_UNIT_NOT_INFRONT;
@@ -1762,7 +1796,12 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_BAD_TARGETS;
             }
             else if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TARGET_ONLY_PLAYERS)
-                return SPELL_FAILED_TARGET_NOT_PLAYER;
+            {
+                // Check only single target spells here
+                // Spell target system handles this for area spells
+                if (!(explicitTargetMask & SPELL_TARGET_AREA_MASK))
+                    return SPELL_FAILED_TARGET_NOT_PLAYER;
+            }
 
             // Check if target has stronger aura active
             const AuraCheckResponse auraCheckResponse = target->AuraCheck(getSpellInfo(), m_caster);
@@ -5361,6 +5400,36 @@ void Spell::setForceCritOnTarget(Unit const* target)
     m_critTargets.push_back(target->getGuid());
 }
 
+float_t Spell::getEffectRadius(uint8_t effectIndex)
+{
+    if (m_isEffectRadiusSet[effectIndex])
+        return m_effectRadius[effectIndex];
+
+    m_isEffectRadiusSet[effectIndex] = true;
+
+    m_effectRadius[effectIndex] = ::GetRadius(sSpellRadiusStore.LookupEntry(getSpellInfo()->getEffectRadiusIndex(effectIndex)));
+    if (G3D::fuzzyEq(m_effectRadius[effectIndex], 0.f))
+    {
+        // If spell has no effect radius set, use spell range instead
+        const auto rangeEntry = sSpellRangeStore.LookupEntry(getSpellInfo()->getRangeIndex());
+        if (rangeEntry != nullptr)
+        {
+#if VERSION_STRING < WotLK
+            m_effectRadius[effectIndex] = rangeEntry->maxRange;
+#else
+            const auto effectTargetMask = getSpellInfo()->getRequiredTargetMaskForEffect(effectIndex);
+            m_effectRadius[effectIndex] = effectTargetMask & SPELL_TARGET_REQUIRE_ATTACKABLE ? rangeEntry->maxRange : rangeEntry->maxRangeFriendly;
+#endif
+        }
+    }
+
+    // Apply radius modifiers
+    if (getUnitCaster() != nullptr)
+        getUnitCaster()->applySpellModifiers(SPELLMOD_RADIUS, &m_effectRadius[effectIndex], getSpellInfo(), this);
+
+    return m_effectRadius[effectIndex];
+}
+
 bool Spell::canAttackCreatureType(Creature* target) const
 {
     // Skip check for Grounding Totem
@@ -5592,6 +5661,43 @@ void Spell::_updateTargetPointers(const uint64_t targetGuid)
                     break;
             }
         }
+    }
+}
+
+void Spell::_loadInitialTargetPointers(bool reset/* = false*/)
+{
+    unitTarget = nullptr;
+    itemTarget = nullptr;
+    gameObjTarget = nullptr;
+    playerTarget = nullptr;
+    corpseTarget = nullptr;
+
+    if (reset)
+        return;
+
+    if (m_targets.getGameObjectTarget() != 0)
+        gameObjTarget = m_caster->GetMapMgrGameObject(m_targets.getGameObjectTarget());
+
+    if (m_targets.getItemTarget() != 0 && getPlayerCaster() != nullptr)
+    {
+        if (m_targets.isTradeItem())
+        {
+            const auto* const playerTrader = getPlayerCaster()->getTradeTarget();
+            if (playerTrader != nullptr)
+                itemTarget = playerTrader->getTradeData()->getTradeItem(TradeSlots(m_targets.getItemTarget()));
+        }
+        else
+        {
+            itemTarget = getPlayerCaster()->getItemInterface()->GetItemByGUID(m_targets.getItemTarget());
+        }
+    }
+
+    if (m_targets.getUnitTarget() != 0)
+    {
+        unitTarget = m_caster->GetMapMgrUnit(m_targets.getUnitTarget());
+
+        if (unitTarget != nullptr && unitTarget->isPlayer())
+            playerTarget = dynamic_cast<Player*>(unitTarget);
     }
 }
 

@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/School.hpp"
 #include "Spell/Definitions/SpellModifierType.hpp"
+#include "Spell/SpellCastTargets.hpp"
 #include "Spell/SpellDefines.hpp"
 #include "Spell/SpellProc.hpp"
 #include "Storage/MySQLStructures.h"
@@ -791,15 +792,17 @@ public:
     bool canDualWield() const;
     void setDualWield(bool enable);
 
-    void castSpell(uint64_t targetGuid, uint32_t spellId, bool triggered);
-    void castSpell(Unit* target, uint32_t spellId, bool triggered);
-    void castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, bool triggered);
-    void castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered);
-    void castSpell(uint64_t targetGuid, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered);
-    void castSpell(Unit* target, uint32_t spellId, SpellForcedBasePoints forcedBasePoints, bool triggered);
-    void castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasePoints, int32_t spellCharges, bool triggered);
-    void castSpellLoc(const LocationVector location, uint32_t spellId, bool triggered);
-    void castSpellLoc(const LocationVector location, SpellInfo const* spellInfo, bool triggered);
+    void castSpell(uint64_t targetGuid, uint32_t spellId, bool triggered = false);
+    void castSpell(Unit* target, uint32_t spellId, bool triggered = false);
+    void castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, bool triggered = false);
+    void castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered = false);
+    void castSpell(uint64_t targetGuid, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered = false);
+    void castSpell(Unit* target, uint32_t spellId, SpellForcedBasePoints forcedBasePoints, bool triggered = false);
+    void castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasePoints, int32_t spellCharges, bool triggered = false);
+    void castSpell(SpellCastTargets targets, uint32_t spellId, bool triggered = false);
+    void castSpell(SpellCastTargets targets, SpellInfo const* spellInfo, bool triggered = false);
+    void castSpellLoc(const LocationVector location, uint32_t spellId, bool triggered = false);
+    void castSpellLoc(const LocationVector location, SpellInfo const* spellInfo, bool triggered = false);
     void eventCastSpell(Unit* target, SpellInfo const* spellInfo);
 
     void castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasepoints, bool triggered);
