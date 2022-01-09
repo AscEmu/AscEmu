@@ -1244,6 +1244,18 @@ void Player::applyLevelInfo(uint32_t newLevel)
             BaseStats[i] = lvlinfo->Stat[i];
             CalcStat(i);
         }
+
+#if VERSION_STRING >= WotLK
+        // Recalculate Heilrooms
+        for (uint8_t i = 0; i < CURRENCYTOKEN_SLOT_END; ++i)
+        {
+            if (Item* pItem = getItemInterface()->GetInventoryItem(i))
+            {
+                if (i < INVENTORY_SLOT_BAG_END)      // only equipment slots get mods.
+                    _ApplyItemMods(pItem, i, true, false, true);
+            }
+        }
+#endif
         UpdateStats();
 
         // Set current health
@@ -4855,3 +4867,267 @@ void Player::sendLooter(Creature* creature)
     data << uint8_t(0); // no group looter
     SendMessageToSet(&data, true);
 }
+
+DBC::Structures::ScalingStatDistributionEntry const* Player::getScalingStatDistributionFor(ItemProperties const& itemProto) const
+{
+    if (!itemProto.ScalingStatsEntry)
+        return nullptr;
+
+    return sScalingStatDistributionStore.LookupEntry(itemProto.ScalingStatsEntry);
+}
+
+DBC::Structures::ScalingStatValuesEntry const* Player::getScalingStatValuesFor(ItemProperties const& itemProto) const
+{
+    if (!itemProto.ScalingStatsFlag)
+        return nullptr;
+
+    DBC::Structures::ScalingStatDistributionEntry const* ssd = getScalingStatDistributionFor(itemProto);
+    if (!ssd)
+        return nullptr;
+
+    // req. check at equip, but allow use for extended range if range limit max level, set proper level
+    uint32_t const ssd_level = std::min(uint32_t(getLevel()), ssd->maxlevel);
+    return sScalingStatValuesStore.LookupEntry(ssd_level);
+}
+
+#if VERSION_STRING == WotLK
+void Player::calculateHeilroomBonus(ItemProperties const* proto, int16_t slot, bool apply)
+{
+    DBC::Structures::ScalingStatDistributionEntry const* ssd = getScalingStatDistributionFor(*proto);
+    DBC::Structures::ScalingStatValuesEntry const* ssvrow = getScalingStatValuesFor(*proto);
+
+    if (!ssd || !ssvrow)
+        return;
+
+    for (uint32_t id = 0; id < MAX_ITEM_PROTO_STATS; ++id)
+    {
+        uint32_t statType = 0;
+        int32_t  val = 0;
+
+        if (ssd && ssvrow)
+        {
+            if (ssd->stat[id] < 0)
+                continue;
+            statType = ssd->stat[id];
+            val = (ssvrow->getScalingStatDistributionMultiplier(proto->ScalingStatsFlag) * ssd->statmodifier[id]) / 10000;
+        }
+        else
+        {
+            if (id >= proto->itemstatscount)
+                continue;
+
+            statType = proto->Stats[id].Type;
+            val = proto->Stats[id].Value;
+        }
+
+        if (val == 0)
+            continue;
+
+        switch (statType)
+        {
+        case ITEM_MOD_MANA:
+            ModifyBonuses(ITEM_MOD_MANA, val, apply);
+            break;
+        case ITEM_MOD_HEALTH:                           // modify HP
+            ModifyBonuses(ITEM_MOD_HEALTH, val, apply);
+            break;
+        case ITEM_MOD_AGILITY:                          // modify agility
+            ModifyBonuses(ITEM_MOD_AGILITY, val, apply);
+            break;
+        case ITEM_MOD_STRENGTH:                         //modify strength
+            ModifyBonuses(ITEM_MOD_STRENGTH, val, apply);
+            break;
+        case ITEM_MOD_INTELLECT:                        //modify intellect
+            ModifyBonuses(ITEM_MOD_INTELLECT, val, apply);
+            break;
+        case ITEM_MOD_SPIRIT:                           //modify spirit
+            ModifyBonuses(ITEM_MOD_SPIRIT, val, apply);
+            break;
+        case ITEM_MOD_STAMINA:                          //modify stamina
+            ModifyBonuses(ITEM_MOD_STAMINA, val, apply);
+            break;
+        case ITEM_MOD_DEFENSE_RATING:
+            ModifyBonuses(ITEM_MOD_DEFENSE_RATING, val, apply);
+            break;
+        case ITEM_MOD_DODGE_RATING:
+            ModifyBonuses(ITEM_MOD_DODGE_RATING, val, apply);
+            break;
+        case ITEM_MOD_PARRY_RATING:
+            ModifyBonuses(ITEM_MOD_PARRY_RATING, val, apply);
+            break;
+        case ITEM_MOD_SHIELD_BLOCK_RATING:
+            ModifyBonuses(ITEM_MOD_SHIELD_BLOCK_RATING, val, apply);
+            break;
+        case ITEM_MOD_MELEE_HIT_RATING:
+            ModifyBonuses(ITEM_MOD_MELEE_HIT_RATING, val, apply);
+            break;
+        case ITEM_MOD_RANGED_HIT_RATING:
+            ModifyBonuses(ITEM_MOD_RANGED_HIT_RATING, val, apply);
+            break;
+        case ITEM_MOD_SPELL_HIT_RATING:
+            ModifyBonuses(ITEM_MOD_SPELL_HIT_RATING, val, apply);
+            break;
+        case ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING:
+            ModifyBonuses(ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING, val, apply);
+            break;
+        case ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING:
+            ModifyBonuses(ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING, val, apply);
+            break;
+        case ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING:
+            ModifyBonuses(ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING, val, apply);
+            break;
+        case ITEM_MOD_MELEE_HIT_AVOIDANCE_RATING:
+            ModifyBonuses(ITEM_MOD_MELEE_HIT_AVOIDANCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_RANGED_HIT_AVOIDANCE_RATING:
+            ModifyBonuses(ITEM_MOD_RANGED_HIT_AVOIDANCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_SPELL_HIT_AVOIDANCE_RATING:
+            ModifyBonuses(ITEM_MOD_SPELL_HIT_AVOIDANCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_MELEE_CRITICAL_AVOIDANCE_RATING:
+            ModifyBonuses(ITEM_MOD_MELEE_CRITICAL_AVOIDANCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_RANGED_CRITICAL_AVOIDANCE_RATING:
+            ModifyBonuses(ITEM_MOD_RANGED_CRITICAL_AVOIDANCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_SPELL_CRITICAL_AVOIDANCE_RATING:
+            ModifyBonuses(ITEM_MOD_SPELL_CRITICAL_AVOIDANCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_MELEE_HASTE_RATING:
+            ModifyBonuses(ITEM_MOD_MELEE_HASTE_RATING, val, apply);
+            break;
+        case ITEM_MOD_RANGED_HASTE_RATING:
+            ModifyBonuses(ITEM_MOD_RANGED_HASTE_RATING, val, apply);
+            break;
+        case ITEM_MOD_SPELL_HASTE_RATING:
+            ModifyBonuses(ITEM_MOD_SPELL_HASTE_RATING, val, apply);
+            break;
+        case ITEM_MOD_HIT_RATING:
+            ModifyBonuses(ITEM_MOD_HIT_RATING, val, apply);
+            break;
+        case ITEM_MOD_CRITICAL_STRIKE_RATING:
+            ModifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, val, apply);
+            break;
+        case ITEM_MOD_HIT_AVOIDANCE_RATING:
+            ModifyBonuses(ITEM_MOD_HIT_AVOIDANCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_CRITICAL_AVOIDANCE_RATING:
+            ModifyBonuses(ITEM_MOD_CRITICAL_AVOIDANCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_RESILIENCE_RATING:
+            ModifyBonuses(ITEM_MOD_RESILIENCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_HASTE_RATING:
+            ModifyBonuses(ITEM_MOD_HASTE_RATING, val, apply);
+            break;
+        case ITEM_MOD_EXPERTISE_RATING:
+            ModifyBonuses(ITEM_MOD_EXPERTISE_RATING, val, apply);
+            break;
+        case ITEM_MOD_ATTACK_POWER:
+            ModifyBonuses(ITEM_MOD_ATTACK_POWER, val, apply);
+            break;
+        case ITEM_MOD_RANGED_ATTACK_POWER:
+            ModifyBonuses(ITEM_MOD_RANGED_ATTACK_POWER, val, apply);
+            break;
+        case ITEM_MOD_MANA_REGENERATION:
+            ModifyBonuses(ITEM_MOD_MANA_REGENERATION, val, apply);
+            break;
+        case ITEM_MOD_ARMOR_PENETRATION_RATING:
+            ModifyBonuses(ITEM_MOD_ARMOR_PENETRATION_RATING, val, apply);
+            break;
+        case ITEM_MOD_SPELL_POWER:
+            ModifyBonuses(ITEM_MOD_SPELL_POWER, val, apply);
+            break;
+        case ITEM_MOD_HEALTH_REGEN:
+            ModifyBonuses(ITEM_MOD_HEALTH_REGEN, val, apply);
+            break;
+        case ITEM_MOD_SPELL_PENETRATION:
+            ModifyBonuses(ITEM_MOD_SPELL_PENETRATION, val, apply);
+            break;
+        case ITEM_MOD_BLOCK_VALUE:
+            ModifyBonuses(ITEM_MOD_BLOCK_VALUE, val, apply);
+            break;
+            // deprecated item mods
+        case ITEM_MOD_SPELL_HEALING_DONE:
+        case ITEM_MOD_SPELL_DAMAGE_DONE:
+            ModifyBonuses(ITEM_MOD_SPELL_HEALING_DONE, val, apply);
+            ModifyBonuses(ITEM_MOD_SPELL_DAMAGE_DONE, val, apply);
+            break;
+        default:
+            break;
+        }
+    }
+
+    // Apply Spell Power from ScalingStatValue if set
+    if (ssvrow)
+        if (int32_t spellbonus = ssvrow->getSpellBonus(proto->ScalingStatsEntry))
+            ModifyBonuses(ITEM_MOD_SPELL_POWER, spellbonus, apply);
+
+    // If set ScalingStatValue armor get it or use item armor
+    uint32_t armor = proto->Armor;
+    if (ssvrow)
+    {
+        if (uint32_t ssvarmor = ssvrow->getArmorMod(proto->ScalingStatsEntry))
+            armor = ssvarmor;
+    }
+    else if (armor && proto->ArmorDamageModifier)
+        armor -= uint32_t(proto->ArmorDamageModifier);
+
+    if (armor)
+    {
+        if (apply)
+            BaseResistance[0] += armor;
+        else
+            BaseResistance[0] -= armor;
+    }
+
+    /* Calculating the damages correct for our level and applying it */
+    if (ssvrow)
+    {
+        for (uint8_t i = 0; i < MAX_ITEM_PROTO_DAMAGES; ++i)
+        {
+            float minDamage = proto->Damage[i].Min;
+            float maxDamage = proto->Damage[i].Max;
+
+            // If set dpsMod in ScalingStatValue use it for min (70% from average), max (130% from average) damage
+            if (ssvrow && i == 0) // scaling stats only for first damage
+            {
+                int32_t extraDPS = ssvrow->getDPSMod(proto->ScalingStatsFlag);
+                if (extraDPS)
+                {
+                    float average = extraDPS * proto->Delay / 1000.0f;
+                    minDamage = 0.7f * average;
+                    maxDamage = 1.3f * average;
+                }
+
+                if (proto->InventoryType == INVTYPE_RANGED || proto->InventoryType == INVTYPE_RANGEDRIGHT || proto->InventoryType == INVTYPE_THROWN)
+                {
+                    BaseRangedDamage[0] += apply ? minDamage : -minDamage;
+                    BaseRangedDamage[1] += apply ? maxDamage : -maxDamage;
+                }
+                else
+                {
+                    if (slot == EQUIPMENT_SLOT_OFFHAND)
+                    {
+                        BaseOffhandDamage[0] = apply ? minDamage : 0;
+                        BaseOffhandDamage[1] = apply ? maxDamage : 0;
+                    }
+                    else
+                    {
+                        BaseDamage[0] = apply ? minDamage : 0;
+                        BaseDamage[1] = apply ? maxDamage : 0;
+                    }
+                }
+            }
+        }
+    }
+}
+#endif
+
+#if VERSION_STRING > WotLK
+void Player::calculateHeilroomBonus(ItemProperties const* proto, int16_t slot, bool apply)
+{
+    // Todo CATA/MOP
+}
+#endif

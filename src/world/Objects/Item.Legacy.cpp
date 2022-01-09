@@ -974,69 +974,6 @@ std::string GetItemLinkByProto(ItemProperties const* iProto, uint32 language = 0
     return ItemLink;
 }
 
-int32 GetStatScalingStatValueColumn(ItemProperties const* proto, uint32 type)
-{
-    switch (type)
-    {
-        case SCALINGSTATSTAT:
-        {
-            if (proto->ScalingStatsFlag & 1)
-                return 0;
-            if (proto->ScalingStatsFlag & 2)
-                return 1;
-            if (proto->ScalingStatsFlag & 4)
-                return 2;
-            if (proto->ScalingStatsFlag & 8)
-                return 3;
-            if (proto->ScalingStatsFlag & 16)
-                return 4;
-            break;
-        }
-
-        case SCALINGSTATARMOR:
-        {
-            if (proto->ScalingStatsFlag & 32)
-                return 5;
-            if (proto->ScalingStatsFlag & 64)
-                return 6;
-            if (proto->ScalingStatsFlag & 128)
-                return 7;
-            if (proto->ScalingStatsFlag & 256)
-                return 8;
-            break;
-        }
-
-        case SCALINGSTATDAMAGE:
-        {
-            if (proto->ScalingStatsFlag & 512)
-                return 9;
-            if (proto->ScalingStatsFlag & 1024)
-                return 10;
-            if (proto->ScalingStatsFlag & 2048)
-                return 11;
-            if (proto->ScalingStatsFlag & 4096)
-                return 12;
-            if (proto->ScalingStatsFlag & 8192)
-                return 13;
-            if (proto->ScalingStatsFlag & 16384)
-                return 14;
-            break;
-        }
-
-        case SCALINGSTATSPELLPOWER:
-        {
-            if (proto->ScalingStatsFlag & 32768)
-                return 15;
-            break;
-        }
-
-        default:
-            break;
-    }
-
-    return 1;
-}
-
 uint32 Item::CountGemsWithLimitId(uint32 LimitId)
 {
 #if VERSION_STRING > Classic

@@ -1239,6 +1239,8 @@ public:
 
         void GiveXP(uint32 xp, const uint64 & guid, bool allowbonus);       /// to stop rest xp being given
         void ModifyBonuses(uint32 type, int32 val, bool apply);
+        DBC::Structures::ScalingStatDistributionEntry const* getScalingStatDistributionFor(ItemProperties const& itemProto) const;
+        DBC::Structures::ScalingStatValuesEntry const* getScalingStatValuesFor(ItemProperties const& itemProto) const;
         void CalcExpertise();
         std::map<uint32, uint32> m_wratings;
 
@@ -1502,6 +1504,9 @@ public:
         void ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedown = false) { _ApplyItemMods(item, slot, apply, justdrokedown); }
     protected:
         void _ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedown = false, bool skip_stat_apply = false);
+#if VERSION_STRING > TBC
+        void calculateHeilroomBonus(ItemProperties const* proto, int16_t slot, bool apply);
+#endif
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Loot
