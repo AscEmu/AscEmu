@@ -4868,6 +4868,7 @@ void Player::sendLooter(Creature* creature)
     SendMessageToSet(&data, true);
 }
 
+#if VERSION_STRING > TBC
 DBC::Structures::ScalingStatDistributionEntry const* Player::getScalingStatDistributionFor(ItemProperties const& itemProto) const
 {
     if (!itemProto.ScalingStatsEntry)
@@ -4889,6 +4890,7 @@ DBC::Structures::ScalingStatValuesEntry const* Player::getScalingStatValuesFor(I
     uint32_t const ssd_level = std::min(uint32_t(getLevel()), ssd->maxlevel);
     return sScalingStatValuesStore.LookupEntry(ssd_level);
 }
+#endif
 
 #if VERSION_STRING == WotLK
 void Player::calculateHeilroomBonus(ItemProperties const* proto, int16_t slot, bool apply)

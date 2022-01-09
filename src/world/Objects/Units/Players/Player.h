@@ -1239,8 +1239,10 @@ public:
 
         void GiveXP(uint32 xp, const uint64 & guid, bool allowbonus);       /// to stop rest xp being given
         void ModifyBonuses(uint32 type, int32 val, bool apply);
+#if VERSION_STRING > TBC
         DBC::Structures::ScalingStatDistributionEntry const* getScalingStatDistributionFor(ItemProperties const& itemProto) const;
         DBC::Structures::ScalingStatValuesEntry const* getScalingStatValuesFor(ItemProperties const& itemProto) const;
+#endif
         void CalcExpertise();
         std::map<uint32, uint32> m_wratings;
 
