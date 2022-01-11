@@ -808,6 +808,12 @@ public:
     ItemDurationList m_itemSoulboundTradeable;
 #endif
 
+#if VERSION_STRING > TBC
+    void calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, bool apply);
+    DBC::Structures::ScalingStatDistributionEntry const* getScalingStatDistributionFor(ItemProperties const& itemProto) const;
+    DBC::Structures::ScalingStatValuesEntry const* getScalingStatValuesFor(ItemProperties const& itemProto) const;
+#endif
+
     // Player's item storage
     ItemInterface* getItemInterface() const;
 private:
@@ -1112,6 +1118,7 @@ public:
     bool isOnGMTargetList(uint32_t guid) const;
 
     bool isAtGroupRewardDistance(Object* pRewardSource);
+
 
 private:
     uint16_t m_spellAreaUpdateTimer = 1000;

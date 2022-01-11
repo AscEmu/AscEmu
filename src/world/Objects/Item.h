@@ -157,14 +157,6 @@ const static double SuffixMods[NUM_INVENTORY_TYPES] =
 
 typedef std::map<uint32, EnchantmentInstance> EnchantmentMap;
 
-enum scalingstatmodtypes
-{
-    SCALINGSTATSTAT,
-    SCALINGSTATARMOR,
-    SCALINGSTATDAMAGE,
-    SCALINGSTATSPELLPOWER
-};
-
 /// -1 from client enchantment slot number
 enum EnchantmentSlot
 {
@@ -547,7 +539,5 @@ uint32 GetSellPriceForItem(ItemProperties const* proto, uint32 count);
 uint32 GetBuyPriceForItem(ItemProperties const* proto, uint32 count, Player* plr, Creature* vendor);
 
 std::string GetItemLinkByProto(ItemProperties const* iProto, uint32 language);
-
-int32 GetStatScalingStatValueColumn(ItemProperties const* proto, uint32 type);
 
 #endif // WOWSERVER_ITEM_H

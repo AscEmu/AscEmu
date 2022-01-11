@@ -3538,129 +3538,13 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     }
 
 #if VERSION_STRING > TBC
-    /* Heirloom scaling items */
+        /* Heirloom scaling items */
     if (proto->ScalingStatsEntry != 0)
     {
-        int i = 0;
-        auto scaling_stat_distribution = sScalingStatDistributionStore.LookupEntry(proto->ScalingStatsEntry);
-        DBC::Structures::ScalingStatValuesEntry const* ssvrow = nullptr;
-        uint32 StatType;
-        uint32 StatMod;
-        uint32 plrLevel = getLevel();
-        int32 StatMultiplier;
-        int32 StatValue;
-        int32 col = 0;
-
-        // this is needed because the heirloom items don't scale over lvl80
-        if (plrLevel > DBC_PLAYER_LEVEL_CAP)
-            plrLevel = DBC_PLAYER_LEVEL_CAP;
-
-        for (uint32 id = 0; id < sScalingStatValuesStore.GetNumRows(); ++id)
-        {
-            auto scaling_stat_values = sScalingStatValuesStore.LookupEntry(id);
-            if (scaling_stat_values == nullptr)
-                continue;
-
-            if (scaling_stat_values->level == plrLevel)
-            {
-                ssvrow = scaling_stat_values;
-                break;
-            }
-        }
-        // Not going to put a check here since unless you put a random id/flag in the tables these should never return NULL
-
-        // Calculating the stats correct for our level and applying them
-        for (i = 0; scaling_stat_distribution->stat[i] != -1; ++i)
-        {
-            StatType = scaling_stat_distribution->stat[i];
-            StatMod = scaling_stat_distribution->statmodifier[i];
-            col = GetStatScalingStatValueColumn(proto, SCALINGSTATSTAT);
-            if (col == -1)
-                continue;
-
-            if (ssvrow == nullptr)
-                continue;
-
-            StatMultiplier = ssvrow->multiplier[col];
-            StatValue = StatMod * StatMultiplier / 10000;
-            ModifyBonuses(StatType, StatValue, apply);
-        }
-
-        if (proto->ScalingStatsFlag & 32768 && i < 10)
-        {
-            StatType = scaling_stat_distribution->stat[i];
-            StatMod = scaling_stat_distribution->statmodifier[i];
-            col = GetStatScalingStatValueColumn(proto, SCALINGSTATSPELLPOWER);
-            if (col != -1)
-            {
-                if (ssvrow != nullptr)
-                {
-                    StatMultiplier = ssvrow->multiplier[col];
-                    StatValue = StatMod * StatMultiplier / 10000;
-                    ModifyBonuses(45, StatValue, apply);
-                }
-            }
-        }
-
-        /* Calculating the Armor correct for our level and applying it */
-        col = GetStatScalingStatValueColumn(proto, SCALINGSTATARMOR);
-        if (col != -1)
-        {
-            if (ssvrow != nullptr)
-            {
-                uint32 scaledarmorval = ssvrow->multiplier[col];
-
-                if (apply)
-                    BaseResistance[0] += scaledarmorval;
-                else
-                    BaseResistance[0] -= scaledarmorval;
-
-                CalcResistance(0);
-            }
-        }
-
-        /* Calculating the damages correct for our level and applying it */
-        col = GetStatScalingStatValueColumn(proto, SCALINGSTATDAMAGE);
-        if (col != -1)
-        {
-            uint32 scaleddps = 1;
-
-            if (ssvrow != nullptr)
-                scaleddps = ssvrow->multiplier[col];
-
-            float dpsmod;
-
-            if (proto->ScalingStatsFlag & 0x1400)
-                dpsmod = 0.2f;
-            else
-                dpsmod = 0.3f;
-
-            float scaledmindmg = (scaleddps - (scaleddps * dpsmod)) * (proto->Delay / 1000);
-            float scaledmaxdmg = (scaleddps * (dpsmod + 1.0f)) * (proto->Delay / 1000);
-
-            if (proto->InventoryType == INVTYPE_RANGED || proto->InventoryType == INVTYPE_RANGEDRIGHT || proto->InventoryType == INVTYPE_THROWN)
-            {
-                BaseRangedDamage[0] += apply ? scaledmindmg : -scaledmindmg;
-                BaseRangedDamage[1] += apply ? scaledmaxdmg : -scaledmaxdmg;
-            }
-            else
-            {
-                if (slot == EQUIPMENT_SLOT_OFFHAND)
-                {
-                    BaseOffhandDamage[0] = apply ? scaledmindmg : 0;
-                    BaseOffhandDamage[1] = apply ? scaledmaxdmg : 0;
-                }
-                else
-                {
-                    BaseDamage[0] = apply ? scaledmindmg : 0;
-                    BaseDamage[1] = apply ? scaledmaxdmg : 0;
-                }
-            }
-        }
-
-        /* Normal items */
+        calculateHeirloomBonus(proto, slot, apply);
     }
     else
+        /* Normal items */
 #endif
     {
         // Stats

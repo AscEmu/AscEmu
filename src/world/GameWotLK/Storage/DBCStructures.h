@@ -1135,9 +1135,80 @@ namespace DBC::Structures
     {
         uint32_t id;                                                // 0
         uint32_t level;                                             // 1
-        uint32_t multiplier[16];                                    // 2-17 ///\todo split this
-        uint32_t unk1;                                              // 18
-        uint32_t amor_mod[5];                                       // 19-23
+        uint32_t shoulderBudget;                                    // 2
+        uint32_t trinketBudget;                                     // 3
+        uint32_t weaponBudget1H;                                    // 4
+        uint32_t rangedBudget;                                      // 5
+        uint32_t clothShoulderArmor;                                // 6
+        uint32_t leatherShoulderArmor;                              // 7
+        uint32_t mailShoulderArmor;                                 // 8
+        uint32_t plateShoulderArmor;                                // 9
+        uint32_t weaponDPS1H;                                       // 10
+        uint32_t weaponDPS2H;                                       // 11
+        uint32_t spellcasterDPS1H;                                  // 12
+        uint32_t spellcasterDPS2H;                                  // 13
+        uint32_t rangedDPS;                                         // 14
+        uint32_t wandDPS;                                           // 15
+        uint32_t spellPower;                                        // 16
+        uint32_t primaryBudget;                                     // 17
+        uint32_t tertiaryBudget;                                    // 18
+        uint32_t clothCloakArmor;                                   // 19
+        uint32_t clothChestArmor;                                   // 20
+        uint32_t leatherChestArmor;                                 // 21
+        uint32_t mailChestArmor;                                    // 22
+        uint32_t plateChestArmor;                                   // 23
+
+        uint32_t getScalingStatDistributionMultiplier(uint32_t mask) const
+        {
+            if (mask & 0x4001F)
+            {
+                if (mask & 0x00000001) return shoulderBudget;
+                if (mask & 0x00000002) return trinketBudget;
+                if (mask & 0x00000004) return weaponBudget1H;
+                if (mask & 0x00000008) return primaryBudget;
+                if (mask & 0x00000010) return rangedBudget;
+                if (mask & 0x00040000) return tertiaryBudget;
+            }
+            return 0;
+        }
+
+        uint32_t getArmorMod(uint32_t mask) const
+        {
+            if (mask & 0x00F001E0)
+            {
+                if (mask & 0x00000020) return clothShoulderArmor;
+                if (mask & 0x00000040) return leatherShoulderArmor;
+                if (mask & 0x00000080) return mailShoulderArmor;
+                if (mask & 0x00000100) return plateShoulderArmor;
+
+                if (mask & 0x00080000) return clothCloakArmor;
+                if (mask & 0x00100000) return clothChestArmor;
+                if (mask & 0x00200000) return leatherChestArmor;
+                if (mask & 0x00400000) return mailChestArmor;
+                if (mask & 0x00800000) return plateChestArmor;
+            }
+            return 0;
+        }
+
+        uint32_t getDPSMod(uint32_t mask) const
+        {
+            if (mask & 0x7E00)
+            {
+                if (mask & 0x00000200) return weaponDPS1H;
+                if (mask & 0x00000400) return weaponDPS2H;
+                if (mask & 0x00000800) return spellcasterDPS1H;
+                if (mask & 0x00001000) return spellcasterDPS2H;
+                if (mask & 0x00002000) return rangedDPS;
+                if (mask & 0x00004000) return wandDPS;
+            }
+            return 0;
+        }
+
+        uint32_t getSpellBonus(uint32_t mask) const
+        {
+            if (mask & 0x00008000) return spellPower;
+            return 0;
+        }
     };
 
     struct SkillLineEntry
