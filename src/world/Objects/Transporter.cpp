@@ -332,10 +332,10 @@ void Transporter::UnloadStaticPassengers()
     while (!_staticPassengers.empty())
     {
         Object* obj = *_staticPassengers.begin();
+        RemovePassenger(obj);
+
         if (obj->IsInWorld())
             obj->Delete();
-
-        RemovePassenger(obj);
     }
 }
 
