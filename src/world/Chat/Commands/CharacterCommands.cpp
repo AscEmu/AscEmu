@@ -135,11 +135,11 @@ bool ChatHandler::HandleCharUnlearnCommand(const char* args, WorldSession* m_ses
 //.character learnskill
 bool ChatHandler::HandleCharLearnSkillCommand(const char* args, WorldSession* m_session)
 {
-    uint32 skill;
-    uint32 min;
-    uint32 max;
+    uint16_t skill;
+    uint16_t min;
+    uint16_t max;
 
-    if (sscanf(args, "%u %u %u", &skill, &min, &max) < 1)
+    if (sscanf(args, "%hu %hu %hu", &skill, &min, &max) < 1)
     {
         RedSystemMessage(m_session, "Command must be at least in format: .character learnskill <skillid>.");
         RedSystemMessage(m_session, "Optional: .character learnskill <skillid> <min> <max>");
@@ -156,7 +156,17 @@ bool ChatHandler::HandleCharLearnSkillCommand(const char* args, WorldSession* m_
     if (player_target == nullptr)
         return true;
 
-    player_target->_AddSkillLine(skill, min, max);
+    if (player_target->hasSkillLine(skill))
+    {
+        if (player_target == m_session->GetPlayer())
+            RedSystemMessage(m_session, "You already know this skill line");
+        else
+            RedSystemMessage(m_session, "Player already knows this skill line");
+
+        return true;
+    }
+
+    player_target->addSkillLine(skill, min, max);
 
     if (player_target == m_session->GetPlayer())
     {
@@ -175,10 +185,10 @@ bool ChatHandler::HandleCharLearnSkillCommand(const char* args, WorldSession* m_
 //.character advanceskill
 bool ChatHandler::HandleCharAdvanceSkillCommand(const char* args, WorldSession* m_session)
 {
-    uint32 skill;
-    uint32 amount;
+    uint16_t skill;
+    uint16_t amount;
 
-    if (sscanf(args, "%u %u", &skill, &amount) < 1)
+    if (sscanf(args, "%hu %hu", &skill, &amount) < 1)
     {
         RedSystemMessage(m_session, "Command must be at least in format: .character advanceskill <skillid>.");
         RedSystemMessage(m_session, "Optional: .character advanceskill <skillid> <amount>");
@@ -195,18 +205,14 @@ bool ChatHandler::HandleCharAdvanceSkillCommand(const char* args, WorldSession* 
     BlueSystemMessage(m_session, "Modifying skill line %u. Advancing %u times.", skill, amount);
     sGMLog.writefromsession(m_session, "used modify skill of %u %u on %s", skill, amount, player_target->getName().c_str());
 
-    if (!player_target->_HasSkillLine(skill))
+    if (!player_target->hasSkillLine(skill))
     {
         SystemMessage(m_session, "Does not have skill line, adding.");
-#if VERSION_STRING < Cata
-        player_target->_AddSkillLine(skill, 1, 300);
-#else
-        player_target->_AddSkillLine(skill, 1, 525);
-#endif
+        player_target->addSkillLine(skill, amount, 0);
     }
     else
     {
-        player_target->_AdvanceSkillLine(skill, amount);
+        player_target->advanceSkillLine(skill, amount);
     }
 
     return true;
@@ -221,7 +227,7 @@ bool ChatHandler::HandleCharRemoveSkillCommand(const char* args, WorldSession* m
         return true;
     }
 
-    uint32 skill = atoi(args);
+    auto skill = static_cast<uint16_t>(std::stoul(args));
     if (skill == 0)
     {
         RedSystemMessage(m_session, "%u is not a valid skill!", skill);
@@ -232,9 +238,9 @@ bool ChatHandler::HandleCharRemoveSkillCommand(const char* args, WorldSession* m
     if (player_target == nullptr)
         return true;
 
-    if (player_target->_HasSkillLine(skill))
+    if (player_target->hasSkillLine(skill))
     {
-        player_target->_RemoveSkillLine(skill);
+        player_target->removeSkillLine(skill);
 
         BlueSystemMessage(m_session, "Removing skill line %u", skill);
         sGMLog.writefromsession(m_session, "used remove skill of %u on %s", skill, player_target->getName().c_str());
@@ -931,26 +937,12 @@ bool ChatHandler::HandleCharResetSkillsCommand(const char* /*args*/, WorldSessio
     if (selected_player == nullptr)
         return true;
 
-    selected_player->_RemoveAllSkills();
-
-    PlayerCreateInfo const* player_info = sMySQLStore.getPlayerCreateInfo(selected_player->getRace(), selected_player->getClass());
-    if (player_info == nullptr)
-        return true;
-
-    for (std::list<CreateInfo_SkillStruct>::const_iterator ss = player_info->skills.begin(); ss != player_info->skills.end(); ++ss)
-    {
-        auto skill_line = sSkillLineStore.LookupEntry(ss->skillid);
-        if (skill_line == nullptr)
-            continue;
-
-        if (skill_line->type != SKILL_TYPE_LANGUAGE && ss->skillid && ss->currentval && ss->maxval)
-            selected_player->_AddSkillLine(ss->skillid, ss->currentval, ss->maxval);
-    }
+    selected_player->removeAllSkills();
+    selected_player->learnInitialSkills();
 
     selected_player->UpdateStats();
     selected_player->UpdateChances();
-    selected_player->_UpdateMaxSkillCounts();
-    selected_player->setInitialLanguages();
+    selected_player->updateSkillMaximumValues();
 
     if (selected_player != m_session->GetPlayer())
     {
@@ -1046,7 +1038,7 @@ bool ChatHandler::HandleCharResetTalentsCommand(const char* /*args*/, WorldSessi
 //.character advanceallskills
 bool ChatHandler::HandleAdvanceAllSkillsCommand(const char* args, WorldSession* m_session)
 {
-    uint32 amt = args ? atol(args) : 0;
+    auto amt = static_cast<uint16_t>(std::stoul(args));
     if (!amt)
     {
         RedSystemMessage(m_session, "An amount to increment is required.");
@@ -1057,7 +1049,7 @@ bool ChatHandler::HandleAdvanceAllSkillsCommand(const char* args, WorldSession* 
     if (selected_player == nullptr)
         return true;
 
-    selected_player->_AdvanceAllSkills(amt);
+    selected_player->advanceAllSkills(amt);
 
     if (selected_player != m_session->GetPlayer())
     {
@@ -1076,17 +1068,17 @@ bool ChatHandler::HandleAdvanceAllSkillsCommand(const char* args, WorldSession* 
 bool ChatHandler::HandleCharIncreaseWeaponSkill(const char* args, WorldSession* m_session)
 {
     char* pMin = strtok((char*)args, " ");
-    uint32 cnt = 0;
+    uint16_t cnt = 0;
     if (!pMin)
         cnt = 1;
     else
-        cnt = atol(pMin);
+        cnt = static_cast<uint16_t>(std::stoul(pMin));
 
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
         return true;
 
-    uint32 SubClassSkill = 0;
+    uint16_t SubClassSkill = 0;
 
     Item* item = selected_player->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
     ItemProperties const* proto = nullptr;
@@ -1173,7 +1165,7 @@ bool ChatHandler::HandleCharIncreaseWeaponSkill(const char* args, WorldSession* 
         return false;
     }
 
-    uint32 skill = SubClassSkill;
+    auto skill = SubClassSkill;
 
     if (selected_player != m_session->GetPlayer())
     {
@@ -1186,14 +1178,14 @@ bool ChatHandler::HandleCharIncreaseWeaponSkill(const char* args, WorldSession* 
         BlueSystemMessage(m_session, "Modifying skill line %d. Advancing %d times.", skill, cnt);
     }
 
-    if (!selected_player->_HasSkillLine(skill))
+    if (!selected_player->hasSkillLine(skill))
     {
         SystemMessage(m_session, "Does not have skill line %u, adding.", skill);
-        selected_player->_AddSkillLine(skill, 1, 450);
+        selected_player->addSkillLine(skill, cnt, 0);
     }
     else
     {
-        selected_player->_AdvanceSkillLine(skill, cnt);
+        selected_player->advanceSkillLine(skill, cnt);
     }
 
     return true;
@@ -1838,15 +1830,15 @@ bool ChatHandler::HandleCharListSkillsCommand(const char* /*args*/, WorldSession
     if (player_target == nullptr)
         return true;
 
-    uint32 nobonus = 0;
-    int32 bonus = 0;
-    uint32 max = 0;
+    uint16_t nobonus = 0;
+    int16_t bonus = 0;
+    uint16_t max = 0;
 
     BlueSystemMessage(m_session, "===== %s has skills =====", player_target->getName().c_str());
 
-    for (uint32 SkillId = 0; SkillId <= SkillNameManager->maxskill; SkillId++)
+    for (uint16_t SkillId = 0; SkillId <= SkillNameManager->maxskill; SkillId++)
     {
-        if (player_target->_HasSkillLine(SkillId))
+        if (player_target->hasSkillLine(SkillId))
         {
             char* SkillName = SkillNameManager->SkillNames[SkillId];
             if (!SkillName)
@@ -1854,9 +1846,9 @@ bool ChatHandler::HandleCharListSkillsCommand(const char* /*args*/, WorldSession
                 RedSystemMessage(m_session, "Invalid skill: %u", SkillId);
                 continue;
             }
-            nobonus = player_target->_GetSkillLineCurrent(SkillId, false);
-            bonus = player_target->_GetSkillLineCurrent(SkillId, true) - nobonus;
-            max = player_target->_GetSkillLineMax(SkillId);
+            nobonus = player_target->getSkillLineCurrent(SkillId, false);
+            bonus = player_target->getSkillLineCurrent(SkillId, true) - nobonus;
+            max = player_target->getSkillLineMax(SkillId);
             BlueSystemMessage(m_session, " %s: Value: %u, MaxValue: %u. (+ %d bonus)", SkillName, nobonus, max, bonus);
         }
     }

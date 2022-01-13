@@ -1748,7 +1748,7 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
     }
     if (itemProperties->RequiredSkill)
     {
-        if (!_player->_HasSkillLine(itemProperties->RequiredSkill))
+        if (!_player->hasSkillLine(itemProperties->RequiredSkill))
         {
             _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
 #if VERSION_STRING < Cata
@@ -1760,7 +1760,7 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
 
         if (itemProperties->RequiredSkillRank)
         {
-            if (_player->_GetSkillLineCurrent(itemProperties->RequiredSkill, false) < itemProperties->RequiredSkillRank)
+            if (_player->getSkillLineCurrent(itemProperties->RequiredSkill, false) < itemProperties->RequiredSkillRank)
             {
                 _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_RANK_NOT_ENOUGH);
 #if VERSION_STRING < Cata

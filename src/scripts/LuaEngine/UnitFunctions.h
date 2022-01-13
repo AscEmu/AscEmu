@@ -3552,8 +3552,8 @@ public:
             max = 475;
         if (current > max)
             return 0;
-        plr->_AddSkillLine(skill, current, max);
-        plr->_UpdateMaxSkillCounts();
+        if (!plr->hasSkillLine(skill))
+            plr->addSkillLine(skill, current, max);
         return 0;
     }
 
@@ -3564,8 +3564,7 @@ public:
         if (!skill)
             return 0;
         Player* plr = static_cast<Player*>(ptr);
-        plr->_RemoveSkillLine(skill);
-        plr->_UpdateMaxSkillCounts();
+        plr->removeSkillLine(skill);
         return 0;
     }
 
@@ -3585,8 +3584,8 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         if (skill && count)
         {
-            if (plr->_HasSkillLine(skill))
-                plr->_AdvanceSkillLine(skill, count);
+            if (plr->hasSkillLine(skill))
+                plr->advanceSkillLine(skill, count);
         }
         return 0;
     }
@@ -3963,7 +3962,7 @@ public:
     {
         TEST_PLAYER()
         uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        lua_pushinteger(L, static_cast<Player*>(ptr)->_GetSkillLineMax(skill));
+        lua_pushinteger(L, static_cast<Player*>(ptr)->getSkillLineMax(skill));
         return 1;
     }
 
@@ -3971,7 +3970,7 @@ public:
     {
         TEST_PLAYER()
         uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        lua_pushinteger(L, static_cast<Player*>(ptr)->_GetSkillLineCurrent(skill));
+        lua_pushinteger(L, static_cast<Player*>(ptr)->getSkillLineCurrent(skill));
         return 1;
     }
 
@@ -3979,7 +3978,7 @@ public:
     {
         TEST_PLAYER()
         uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        lua_pushboolean(L, (static_cast<Player*>(ptr)->_HasSkillLine(skill)) ? 1 : 0);
+        lua_pushboolean(L, (static_cast<Player*>(ptr)->hasSkillLine(skill)) ? 1 : 0);
         return 1;
     }
 
@@ -4374,7 +4373,7 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         uint32_t skillvalue = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        plr->_AdvanceAllSkills(skillvalue);
+        plr->advanceAllSkills(skillvalue);
         return 0;
     }
 

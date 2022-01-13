@@ -412,25 +412,29 @@ uint16_t Player::getSkillInfoId(uint32_t index) const { return playerData()->ski
 uint16_t Player::getSkillInfoStep(uint32_t index) const { return playerData()->skill_info[index].step; }
 uint16_t Player::getSkillInfoCurrentValue(uint32_t index) const { return playerData()->skill_info[index].current_value; }
 uint16_t Player::getSkillInfoMaxValue(uint32_t index) const { return playerData()->skill_info[index].max_value; }
-int16_t Player::getSkillInfoBonusTemporary(uint32_t index) const { return playerData()->skill_info[index].bonus_temporary; }
-int16_t Player::getSkillInfoBonusPermanent(uint32_t index) const { return playerData()->skill_info[index].bonus_permanent; }
+uint16_t Player::getSkillInfoBonusTemporary(uint32_t index) const { return playerData()->skill_info[index].bonus_temporary; }
+uint16_t Player::getSkillInfoBonusPermanent(uint32_t index) const { return playerData()->skill_info[index].bonus_permanent; }
 void Player::setSkillInfoId(uint32_t index, uint16_t id) { write(playerData()->skill_info[index].id, id); }
 void Player::setSkillInfoStep(uint32_t index, uint16_t step) { write(playerData()->skill_info[index].step, step); }
 void Player::setSkillInfoCurrentValue(uint32_t index, uint16_t current) { write(playerData()->skill_info[index].current_value, current); }
 void Player::setSkillInfoMaxValue(uint32_t index, uint16_t max) { write(playerData()->skill_info[index].max_value, max); }
-void Player::setSkillInfoBonusTemporary(uint32_t index, int16_t bonus) { write(playerData()->skill_info[index].bonus_temporary, bonus); }
-void Player::setSkillInfoBonusPermanent(uint32_t index, int16_t bonus) { write(playerData()->skill_info[index].bonus_permanent, bonus); }
+void Player::setSkillInfoBonusTemporary(uint32_t index, uint16_t bonus) { write(playerData()->skill_info[index].bonus_temporary, bonus); }
+void Player::setSkillInfoBonusPermanent(uint32_t index, uint16_t bonus) { write(playerData()->skill_info[index].bonus_permanent, bonus); }
 #else
-void Player::setSkillLineId(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_line[index], value); }
-void Player::setSkillStep(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_step[index], value); }
-void Player::setSkillCurrentValue(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_rank[index], value); }
-void Player::setSkillMaximumValue(uint32_t index, uint32_t value) { write(playerData()->skill_info_parts.skill_max_rank[index], value); }
-void Player::setProfessionSkillLine(uint32_t index, uint32_t value) { write(playerData()->profession_skill_line[index], value); }
-uint16_t Player::getSkillLineId(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_line[index]) + offset); }
-uint16_t Player::getSkillStep(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_step[index]) + offset); }
-uint16_t Player::getSkillCurrentValue(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_rank[index]) + offset); }
-uint16_t Player::getSkillMaximumValue(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_max_rank[index]) + offset); }
+uint16_t Player::getSkillInfoId(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_line[index]) + offset); }
+uint16_t Player::getSkillInfoStep(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_step[index]) + offset); }
+uint16_t Player::getSkillInfoCurrentValue(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_rank[index]) + offset); }
+uint16_t Player::getSkillInfoMaxValue(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_max_rank[index]) + offset); }
+uint16_t Player::getSkillInfoBonusTemporary(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_mod[index]) + offset); }
+uint16_t Player::getSkillInfoBonusPermanent(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->skill_info_parts.skill_talent[index]) + offset); }
 uint32_t Player::getProfessionSkillLine(uint32_t index) const { return playerData()->profession_skill_line[index]; }
+void Player::setSkillInfoId(uint32_t index, uint8_t offset, uint16_t id) { write(*(((uint16_t*)&playerData()->skill_info_parts.skill_line[index]) + offset), id); }
+void Player::setSkillInfoStep(uint32_t index, uint8_t offset, uint16_t step) { write(*(((uint16_t*)&playerData()->skill_info_parts.skill_step[index]) + offset), step); }
+void Player::setSkillInfoCurrentValue(uint32_t index, uint8_t offset, uint16_t current) { write(*(((uint16_t*)&playerData()->skill_info_parts.skill_rank[index]) + offset), current); }
+void Player::setSkillInfoMaxValue(uint32_t index, uint8_t offset, uint16_t max) { write(*(((uint16_t*)&playerData()->skill_info_parts.skill_max_rank[index]) + offset), max); }
+void Player::setSkillInfoBonusTemporary(uint32_t index, uint8_t offset, uint16_t bonus) { write(*(((uint16_t*)&playerData()->skill_info_parts.skill_mod[index]) + offset), bonus); }
+void Player::setSkillInfoBonusPermanent(uint32_t index, uint8_t offset, uint16_t bonus) { write(*(((uint16_t*)&playerData()->skill_info_parts.skill_talent[index]) + offset), bonus); }
+void Player::setProfessionSkillLine(uint32_t index, uint32_t value) { write(playerData()->profession_skill_line[index], value); }
 #endif
 
 uint32_t Player::getFreeTalentPoints() const
@@ -1280,7 +1284,7 @@ void Player::applyLevelInfo(uint32_t newLevel)
     }
 
     // Update max skill level
-    _UpdateMaxSkillCounts();
+    updateSkillMaximumValues();
 
     if (newLevel > previousLevel || m_FirstLogin)
     {
@@ -1646,7 +1650,7 @@ bool Player::loadSpells(QueryResult* result)
     if (m_FirstLogin)
     {
         for (const auto& spellId : info->spell_list)
-            mSpells.insert(spellId);
+            addSpell(spellId);
 
         return true;
     }
@@ -1663,7 +1667,26 @@ bool Player::loadSpells(QueryResult* result)
         if (spellInfo == nullptr)
             continue;
 
-        mSpells.insert(spellId);
+        addSpell(spellId);
+    } while (result->NextRow());
+
+    return true;
+}
+
+bool Player::loadSkills(QueryResult* result)
+{
+    if (result == nullptr)
+        return false;
+
+    do
+    {
+        const auto fields = result->Fetch();
+
+        const auto skillid = fields[0].GetUInt16();
+        const auto currval = fields[1].GetUInt16();
+        const auto maxval = fields[2].GetUInt16();
+
+        addSkillLine(skillid, currval, maxval);
     } while (result->NextRow());
 
     return true;
@@ -1711,11 +1734,9 @@ bool Player::loadReputations(QueryResult* result)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spells
-void Player::setInitialPlayerSkills()
+#if VERSION_STRING >= Cata
+void Player::setInitialPlayerProfessions()
 {
-#if VERSION_STRING < Cata
-    return;
-#else
     // Since cata player must have profession skills initialized even if the player does not have them
 #if VERSION_STRING == Cata
     for (uint16_t skillId = SKILL_FROST; skillId != SKILL_PET_HYDRA; ++skillId)
@@ -1727,27 +1748,14 @@ void Player::setInitialPlayerSkills()
         if (skillLine == nullptr)
             continue;
 
-        if (//skillLine->type != SKILL_TYPE_WEAPON &&
-            //skillLine->type != SKILL_TYPE_ARMOR &&
-            skillLine->type != SKILL_TYPE_SECONDARY &&
-            //skillLine->type != SKILL_TYPE_LANGUAGE &&
-            skillLine->type != SKILL_TYPE_PROFESSION)
+        if (skillLine->type != SKILL_TYPE_PROFESSION && skillLine->type != SKILL_TYPE_SECONDARY)
             continue;
 
-        if (!_HasSkillLine(skillLine->id))
-        {
-            PlayerSkill skill;
-            skill.Skill = skillLine;
-            skill.MaximumValue = 0;
-            skill.CurrentValue = 0;
-            skill.BonusValue = 0;
-            m_skills.insert(std::make_pair(skillLine->id, skill));
-        }
+        if (!hasSkillLine(skillId, true))
+            addSkillLine(skillId, 0, 0, false, true);
     }
-
-    _UpdateSkillFields();
-#endif
 }
+#endif
 
 void Player::updateAutoRepeatSpell()
 {
@@ -1856,27 +1864,37 @@ void Player::setDualWield2H(bool enable)
 
 bool Player::isSpellFitByClassAndRace(uint32_t spell_id) const
 {
-    const auto racemask = getRaceMask();
-    const auto classmask = getClassMask();
-
-    const auto bounds = sObjectMgr.GetSkillLineAbilityMapBounds(spell_id);
-    if (bounds.first == bounds.second)
-        return true;
-
-    for (auto _spell_idx = bounds.first; _spell_idx != bounds.second; ++_spell_idx)
+    const auto spellSkillBounds = sSpellMgr.getSkillEntryForSpellBounds(spell_id);
+    for (auto spellSkillItr = spellSkillBounds.first; spellSkillItr != spellSkillBounds.second; ++spellSkillItr)
     {
-        // skip wrong race skills
-        if (_spell_idx->second->race_mask && (_spell_idx->second->race_mask & racemask) == 0)
+        const auto skillEntry = spellSkillItr->second;
+        if (skillEntry == nullptr)
             continue;
 
-        // skip wrong class skills
-        if (_spell_idx->second->class_mask && (_spell_idx->second->class_mask & classmask) == 0)
+        const auto bounds = sSpellMgr.getSkillLineAbilityMapBounds(skillEntry->Id);
+        if (bounds.first == bounds.second)
             continue;
 
-        return true;
+        const auto raceMask = getRaceMask();
+        const auto classMask = getClassMask();
+
+        for (auto _spell_idx = bounds.first; _spell_idx != bounds.second; ++_spell_idx)
+        {
+            // skip wrong race skills
+            if (_spell_idx->second->race_mask && !(_spell_idx->second->race_mask & raceMask))
+                continue;
+
+            // skip wrong class skills
+            if (_spell_idx->second->class_mask && !(_spell_idx->second->class_mask & classMask))
+                continue;
+
+            return true;
+        }
+
+        return false;
     }
 
-    return false;
+    return true;
 }
 
 bool Player::hasSpellOnCooldown(SpellInfo const* spellInfo)
@@ -2059,25 +2077,524 @@ void Player::resetAllCooldowns()
     clearProcCooldowns();
 }
 
-void Player::setInitialLanguages()
+void Player::advanceAllSkills(uint16_t amount/* = 1*/)
 {
-    for (const auto& skillStruct : info->skills)
+    for (const auto& itr : m_skills)
     {
-        const auto skillLine = sSkillLineStore.LookupEntry(skillStruct.skillid);
-        if (skillLine == nullptr || skillLine->type != SKILL_TYPE_LANGUAGE)
-            continue;
+        advanceSkillLine(itr.first, amount);
+    }
+}
 
-        PlayerSkill lang;
-        lang.Reset(skillStruct.skillid);
-        lang.MaximumValue = lang.CurrentValue = 300;
-        m_skills.insert(std::make_pair(skillStruct.skillid, lang));
+void Player::advanceSkillLine(uint16_t skillLine, uint16_t amount/* = 1*/)
+{
+    if (skillLine == 0)
+        return;
 
-        const auto spellId = getSpellIdForLanguage(skillStruct.skillid);
-        if (spellId != 0)
-            addSpell(spellId);
+    auto itr = m_skills.find(skillLine);
+    if (itr == m_skills.end() || itr->second.CurrentValue == 0)
+    {
+        // Add the skill line to player
+        // addSkillLine will set correct maximum value
+        addSkillLine(skillLine, amount, 0);
+        sHookInterface.OnAdvanceSkillLine(this, skillLine, amount);
+        return;
     }
 
-    _UpdateSkillFields();
+    uint16_t skillStep = 0;
+    const auto currentValue = itr->second.CurrentValue;
+
+    const uint16_t newValue = currentValue + amount;
+    itr->second.CurrentValue = std::min(newValue, itr->second.MaximumValue);
+
+    // Skill value did not change
+    if (itr->second.CurrentValue == currentValue)
+        return;
+
+    // Get skill step
+    if (itr->second.Skill->type == SKILL_TYPE_PROFESSION || itr->second.Skill->type == SKILL_TYPE_SECONDARY)
+        skillStep = itr->second.MaximumValue / 75U;
+
+    // Update skill fields
+#if VERSION_STRING >= Cata
+    if (itr->second.Skill->type != SKILL_TYPE_WEAPON)
+#endif
+    {
+        _updateSkillFieldOnValueChange(itr->second.FieldPosition, skillStep, itr->second.CurrentValue, itr->second.MaximumValue);
+    }
+
+    sHookInterface.OnAdvanceSkillLine(this, skillLine, itr->second.CurrentValue);
+
+#ifdef FT_ACHIEVEMENTS
+    GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep, 0);
+    GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, itr->second.CurrentValue, 0);
+#endif
+
+    learnSkillSpells(skillLine, itr->second.CurrentValue);
+}
+
+void Player::addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t maxValue, bool noSpellLearning/* = false*/, bool initializeProfession/* = false*/)
+{
+    if (skillLine == 0)
+        return;
+
+    const auto skillEntry = sSkillLineStore.LookupEntry(skillLine);
+    if (skillEntry == nullptr)
+        return;
+
+    uint16_t skillStep = 0;
+    currentValue = currentValue > DBC_PLAYER_SKILL_MAX ? DBC_PLAYER_SKILL_MAX : currentValue;
+    maxValue = maxValue > DBC_PLAYER_SKILL_MAX ? DBC_PLAYER_SKILL_MAX : maxValue;
+
+    if (!initializeProfession)
+        currentValue = currentValue < 1 ? 1U : currentValue;
+
+    const auto onLearnedNewSkill = [&](uint16_t curVal, uint16_t skillStep, bool isPrimaryProfession) -> void
+    {
+#if VERSION_STRING >= Cata
+        // Profession skill line
+        if (isPrimaryProfession)
+        {
+            if (getProfessionSkillLine(0) == 0 && getProfessionSkillLine(1) != skillLine)
+                setProfessionSkillLine(0, skillLine);
+            else if (getProfessionSkillLine(1) == 0 && getProfessionSkillLine(0) != skillLine)
+                setProfessionSkillLine(1, skillLine);
+        }
+#endif
+        // Set profession points
+        if (isPrimaryProfession)
+            modFreePrimaryProfessionPoints(-1);
+
+        // Reapply skill passive auras
+        for (const auto& aura : m_auras)
+        {
+            if (aura == nullptr)
+                continue;
+
+            for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+            {
+                const auto aurEff = aura->getAuraEffect(i);
+                if (aurEff->getAuraEffectType() == SPELL_AURA_NONE)
+                    continue;
+
+                if (aurEff->getAuraEffectType() != SPELL_AURA_MOD_SKILL &&
+                    aurEff->getAuraEffectType() != SPELL_AURA_MOD_SKILL_TALENT &&
+                    aurEff->getAuraEffectType() != SPELL_AURA_MOD_ALL_WEAPON_SKILLS)
+                    continue;
+
+                const auto effType = aurEff->getAuraEffectType();
+                if (aurEff->getEffectMiscValue() == skillLine)
+                    aura->applyModifiers(true, effType);
+            }
+        }
+
+        if (!noSpellLearning)
+            learnSkillSpells(skillLine, curVal);
+
+#ifdef FT_ACHIEVEMENTS
+        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep, 0);
+        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, currentValue, 0);
+#endif
+    };
+
+    auto itr = m_skills.find(skillLine);
+    if (itr != m_skills.end())
+    {
+        _verifySkillValues(skillEntry, &currentValue, &maxValue, &skillStep);
+
+        if (!((currentValue > itr->second.CurrentValue && maxValue >= itr->second.MaximumValue) || (currentValue == itr->second.CurrentValue && maxValue > itr->second.MaximumValue)))
+            return;
+
+        itr->second.CurrentValue = currentValue;
+        itr->second.MaximumValue = maxValue;
+
+        // Update skill fields
+        _updateSkillFieldOnValueChange(itr->second.FieldPosition, skillStep, itr->second.CurrentValue, itr->second.MaximumValue);
+
+        if (itr->second.CurrentValue > 0)
+            onLearnedNewSkill(itr->second.CurrentValue, skillStep, itr->second.Skill->type == SKILL_TYPE_PROFESSION);
+    }
+    else
+    {
+        // Find a skill field position for skill
+        auto foundPosition = false;
+        PlayerSkillFieldPosition fieldPosition;
+        for (uint16_t i = 0; i < WOWPLAYER_SKILL_INFO_COUNT; ++i)
+        {
+#if VERSION_STRING >= Cata
+            const uint16_t field = i / 2;
+            const uint8_t offset = i & 1;
+            if (getSkillInfoId(field, offset) == 0)
+            {
+                fieldPosition.field = field;
+                fieldPosition.offset = offset;
+                foundPosition = true;
+                break;
+            }
+#else
+            if (getSkillInfoId(i) == 0)
+            {
+                fieldPosition.index = i;
+                foundPosition = true;
+                break;
+            }
+#endif
+        }
+
+        if (!foundPosition)
+        {
+            sLogger.failure("Player::addSkillLine : Could not add skill line %u to player (guid %u), skill fields are full!", skillLine, getGuidLow());
+            return;
+        }
+
+        PlayerSkill newSkill;
+        newSkill.Skill = skillEntry;
+        newSkill.CurrentValue = currentValue;
+        newSkill.MaximumValue = maxValue;
+        newSkill.FieldPosition = fieldPosition;
+
+        if (!initializeProfession)
+            _verifySkillValues(skillEntry, &newSkill.CurrentValue, &newSkill.MaximumValue, &skillStep);
+
+        m_skills.insert(std::make_pair(skillLine, newSkill));
+
+        // Update skill fields
+#if VERSION_STRING < Cata
+        // field 0
+        setSkillInfoId(fieldPosition.index, skillLine);
+        setSkillInfoStep(fieldPosition.index, skillStep);
+        // field 1
+        setSkillInfoCurrentValue(fieldPosition.index, newSkill.CurrentValue);
+        setSkillInfoMaxValue(fieldPosition.index, newSkill.MaximumValue);
+#else
+        // field 0
+        setSkillInfoId(fieldPosition.field, fieldPosition.offset, skillLine);
+        setSkillInfoStep(fieldPosition.field, fieldPosition.offset, skillStep);
+        // field 1
+        setSkillInfoCurrentValue(fieldPosition.field, fieldPosition.offset, newSkill.CurrentValue);
+        setSkillInfoMaxValue(fieldPosition.field, fieldPosition.offset, newSkill.MaximumValue);
+#endif
+        // field 2
+        _updateSkillBonusFields(fieldPosition, 0, 0);
+
+        if (newSkill.CurrentValue > 0)
+            onLearnedNewSkill(newSkill.CurrentValue, skillStep, newSkill.Skill->type == SKILL_TYPE_PROFESSION);
+    }
+}
+
+bool Player::hasSkillLine(uint16_t skillLine, bool strict/* = false*/) const
+{
+    if (skillLine == 0)
+        return false;
+
+    const auto itr = m_skills.find(skillLine);
+    if (itr == m_skills.end())
+        return false;
+
+    // Skip initialized only skills
+    if (itr->second.CurrentValue == 0 && !strict)
+        return false;
+
+    return true;
+}
+
+uint16_t Player::getSkillLineCurrent(uint16_t skillLine, bool includeBonus/* = true*/) const
+{
+    if (skillLine == 0)
+        return 0;
+
+    const auto itr = m_skills.find(skillLine);
+    if (itr == m_skills.end())
+        return 0;
+
+    if (!includeBonus)
+        return itr->second.CurrentValue;
+
+    const auto result = static_cast<int32_t>(itr->second.CurrentValue) + itr->second.PermanentBonusValue + itr->second.TemporaryBonusValue;
+    return result < 0 ? 0U : static_cast<uint16_t>(result);
+}
+
+uint16_t Player::getSkillLineMax(uint16_t skillLine) const
+{
+    if (skillLine == 0)
+        return 0;
+
+    const auto itr = m_skills.find(skillLine);
+    if (itr == m_skills.end())
+        return 0;
+
+    return itr->second.MaximumValue;
+}
+
+void Player::learnInitialSkills()
+{
+    for (const auto& skill : info->skills)
+    {
+        if (skill.skillid == 0)
+            continue;
+
+        const auto skillLine = sSkillLineStore.LookupEntry(skill.skillid);
+        if (skillLine == nullptr)
+            continue;
+
+        // Set current skill values for Death Knight's weapon skills
+        auto curVal = skill.currentval;
+        if (isClassDeathKnight() && skillLine->type == SKILL_TYPE_WEAPON && skillLine->id != SKILL_DUAL_WIELD)
+            curVal = static_cast<uint16_t>((std::min(55U, getLevel()) - 1) * 5);
+
+        addSkillLine(skill.skillid, curVal, 0);
+    }
+}
+
+void Player::learnSkillSpells(uint16_t skillLine, uint16_t currentValue)
+{
+    const auto raceMask = getRaceMask();
+    const auto classMask = getClassMask();
+
+    for (uint32_t i = 0; i < sSkillLineAbilityStore.GetNumRows(); ++i)
+    {
+        const auto skillEntry = sSkillLineAbilityStore.LookupEntry(i);
+        if (skillEntry == nullptr || skillEntry->skilline != skillLine)
+            continue;
+
+        if (skillEntry->acquireMethod != 1 && skillEntry->acquireMethod != 2)
+            continue;
+
+        // Check race mask
+        if (skillEntry->race_mask != 0 && !(skillEntry->race_mask & raceMask))
+            continue;
+
+        // Check class mask
+        if (skillEntry->class_mask != 0 && !(skillEntry->class_mask & classMask))
+            continue;
+
+        // Check skill value
+        if (currentValue < skillEntry->minSkillLineRank)
+            continue;
+
+        const auto spellInfo = sSpellMgr.getSpellInfo(skillEntry->spell);
+        if (spellInfo == nullptr)
+            continue;
+
+        // TODO: rewrite this when spell ranking is properly supported, now copied mostly from legacy method
+
+        // Add automatically acquired spells
+        // Player is able to learn this spell; check if they already have it, or a higher rank (shouldn't, but just in case)
+        auto learnThisSpell = true;
+        for (const auto& plrSpell : mSpells)
+        {
+            const auto oldSpell = sSpellMgr.getSpellInfo(plrSpell);
+            // Very hacky way to check if spell is same but different rank
+            // It's better than nothing until better solution is implemented -Appled
+            const bool sameSpell = oldSpell->custom_NameHash == spellInfo->custom_NameHash &&
+                oldSpell->getSpellVisual(0) == spellInfo->getSpellVisual(0) &&
+                oldSpell->getSpellIconID() == spellInfo->getSpellIconID() &&
+                oldSpell->getName() == spellInfo->getName();
+
+            if (sameSpell && oldSpell->custom_RankNumber >= spellInfo->custom_RankNumber)
+            {
+                // Stupid profession related spells for "skinning" having the same namehash and not ranked
+                if (spellInfo->getId() != 32605 && spellInfo->getId() != 32606 && spellInfo->getId() != 49383)
+                {
+                    // Player already has this spell, or a higher rank. Don't add it.
+                    learnThisSpell = false;
+                    break;
+                }
+            }
+        }
+
+        if (learnThisSpell)
+        {
+            // Player can learn this spell, now check if player has previous rank of this spell
+            uint32_t removeSpellId = 0;
+            for (uint32_t j = 0; j < sSkillLineAbilityStore.GetNumRows(); ++j)
+            {
+                const auto previousSkillEntry = sSkillLineAbilityStore.LookupEntry(j);
+                if (previousSkillEntry == nullptr)
+                    continue;
+
+                if (previousSkillEntry->skilline == skillLine && previousSkillEntry->next == skillEntry->spell)
+                {
+                    removeSpellId = previousSkillEntry->spell;
+                    break;
+                }
+            }
+
+            if (removeSpellId != 0)
+                removeSpell(removeSpellId, true, true, skillEntry->spell);
+
+            addSpell(skillEntry->spell, skillLine);
+        }
+    }
+}
+
+void Player::modifySkillBonus(uint16_t skillLine, int16_t amount, bool permanentBonus)
+{
+    if (skillLine == 0)
+        return;
+
+    auto itr = m_skills.find(skillLine);
+    if (itr == m_skills.end() || itr->second.CurrentValue == 0)
+        return;
+
+    if (permanentBonus)
+        itr->second.PermanentBonusValue += amount;
+    else
+        itr->second.TemporaryBonusValue += amount;
+
+    // Bonuses can be negative but client still wants them in unsigned
+    _updateSkillBonusFields(itr->second.FieldPosition, static_cast<uint16_t>(itr->second.TemporaryBonusValue), static_cast<uint16_t>(itr->second.PermanentBonusValue));
+}
+
+void Player::modifySkillMaximum(uint16_t skillLine, uint16_t maxValue)
+{
+    if (skillLine == 0)
+        return;
+
+    auto itr = m_skills.find(skillLine);
+    if (itr == m_skills.end())
+        return;
+
+    const auto oldCurValue = itr->second.CurrentValue;
+    const auto oldMaxValue = itr->second.MaximumValue;
+    itr->second.MaximumValue = maxValue;
+
+    auto valuesChanged = false;
+    uint16_t skillStep = 0;
+
+    _verifySkillValues(itr->second.Skill, &itr->second.CurrentValue, &itr->second.MaximumValue, &skillStep, &valuesChanged);
+
+    if (oldMaxValue != itr->second.MaximumValue || valuesChanged)
+    {
+        // Update skill fields
+#if VERSION_STRING >= Cata
+        if (itr->second.Skill->type != SKILL_TYPE_WEAPON)
+#endif
+        {
+            _updateSkillFieldOnValueChange(itr->second.FieldPosition, skillStep, itr->second.CurrentValue, itr->second.MaximumValue);
+        }
+
+#ifdef FT_ACHIEVEMENTS
+        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep, 0);
+#endif
+
+        // Current skill value did not change
+        if (oldCurValue == itr->second.CurrentValue)
+            return;
+
+        sHookInterface.OnAdvanceSkillLine(this, skillLine, itr->second.CurrentValue);
+
+#ifdef FT_ACHIEVEMENTS
+        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, itr->second.CurrentValue, 0);
+#endif
+
+        learnSkillSpells(skillLine, itr->second.CurrentValue);
+    }
+}
+
+void Player::removeSkillLine(uint16_t skillLine)
+{
+    if (skillLine == 0)
+        return;
+
+    auto itr = m_skills.find(skillLine);
+    if (itr == m_skills.end())
+        return;
+
+    const auto fieldPosition = itr->second.FieldPosition;
+
+    if (itr->second.Skill->type == SKILL_TYPE_PROFESSION)
+        modFreePrimaryProfessionPoints(1);
+
+#if VERSION_STRING >= Cata
+    // Clear profession skill line
+    if (getProfessionSkillLine(0) == itr->second.Skill->id)
+        setProfessionSkillLine(0, 0);
+    else if (getProfessionSkillLine(1) == itr->second.Skill->id)
+        setProfessionSkillLine(1, 0);
+
+    // Since cata, profession skills are never actually removed, they are only "deactivated"
+    if (itr->second.Skill->type == SKILL_TYPE_PROFESSION || itr->second.Skill->type == SKILL_TYPE_SECONDARY)
+    {
+        itr->second.MaximumValue = 75;
+        itr->second.CurrentValue = 0;
+        itr->second.TemporaryBonusValue = 0;
+        itr->second.PermanentBonusValue = 0;
+    }
+    else
+#endif
+    {
+        m_skills.erase(itr);
+    }
+
+    // Update skill fields
+#if VERSION_STRING < Cata
+    // field 0
+    setSkillInfoId(fieldPosition.index, 0);
+    setSkillInfoStep(fieldPosition.index, 0);
+    // field 1
+    setSkillInfoCurrentValue(fieldPosition.index, 0);
+    setSkillInfoMaxValue(fieldPosition.index, 0);
+#else
+    // field 0
+    setSkillInfoStep(fieldPosition.field, fieldPosition.offset, 0);
+    // field 1
+    setSkillInfoCurrentValue(fieldPosition.field, fieldPosition.offset, 0);
+    setSkillInfoMaxValue(fieldPosition.field, fieldPosition.offset, 0);
+#endif
+    // field 2
+    _updateSkillBonusFields(fieldPosition, 0, 0);
+
+    // Remove skill spells
+    removeSkillSpells(skillLine);
+}
+
+void Player::removeSkillSpells(uint16_t skillLine)
+{
+    for (uint32_t i = 0; i < sSkillLineAbilityStore.GetNumRows(); ++i)
+    {
+        const auto skillEntry = sSkillLineAbilityStore.LookupEntry(i);
+        if (skillEntry == nullptr || skillEntry->skilline != skillLine)
+            continue;
+
+        // Check also from deleted spells
+        if (!removeSpell(skillEntry->spell, false, false, 0))
+            removeDeletedSpell(skillEntry->spell);
+    }
+}
+
+void Player::removeAllSkills()
+{
+    for (auto itr = m_skills.cbegin(); itr != m_skills.cend();)
+    {
+        const auto itr2 = itr;
+        ++itr;
+
+        // Skill is not necessarily erased from skill map
+        removeSkillLine(itr2->first);
+    }
+}
+
+void Player::updateSkillMaximumValues()
+{
+    for (auto& itr : m_skills)
+    {
+        // Skip initialized only values
+        if (itr.second.CurrentValue == 0)
+            continue;
+
+        auto valuesChanged = false;
+        uint16_t skillStep = 0;
+
+        _verifySkillValues(itr.second.Skill, &itr.second.CurrentValue, &itr.second.MaximumValue, &skillStep, &valuesChanged);
+
+        // Update skill fields
+#if VERSION_STRING < Cata
+        if (valuesChanged)
+#else
+        if (valuesChanged && itr.second.Skill->type != SKILL_TYPE_WEAPON)
+#endif
+            _updateSkillFieldOnValueChange(itr.second.FieldPosition, skillStep, itr.second.CurrentValue, itr.second.MaximumValue);
+    }
 }
 
 uint32_t Player::getArmorProficiency() const
@@ -2090,6 +2607,11 @@ void Player::addArmorProficiency(uint32_t proficiency)
     armorProficiency |= proficiency;
 }
 
+void Player::removeArmorProficiency(uint32_t proficiency)
+{
+    armorProficiency &= ~proficiency;
+}
+
 uint32_t Player::getWeaponProficiency() const
 {
     return weaponProficiency;
@@ -2098,6 +2620,62 @@ uint32_t Player::getWeaponProficiency() const
 void Player::addWeaponProficiency(uint32_t proficiency)
 {
     weaponProficiency |= proficiency;
+}
+
+void Player::removeWeaponProficiency(uint32_t proficiency)
+{
+    weaponProficiency &= ~proficiency;
+}
+
+void Player::applyItemProficienciesFromSpell(SpellInfo const* spellInfo, bool apply)
+{
+    if (spellInfo == nullptr)
+        return;
+
+    uint16_t skillId = 0;
+    const auto skill_line_ability = sSpellMgr.getFirstSkillEntryForSpell(spellInfo->getId());
+    if (skill_line_ability != nullptr)
+        skillId = static_cast<uint16_t>(skill_line_ability->skilline);
+
+    const auto skill_line = sSkillLineStore.LookupEntry(skillId);
+    if (skill_line == nullptr)
+        return;
+
+    const auto subclass = spellInfo->getEquippedItemSubClass();
+    if (apply)
+    {
+        // Add the skill to player if player does not have it
+        // addSkillLine will set correct maximum skill value
+        if (!hasSkillLine(skillId))
+            addSkillLine(skillId, 1, 0);
+
+        if (spellInfo->getEquippedItemClass() == ITEM_CLASS_ARMOR && !(getArmorProficiency() & subclass))
+        {
+            addArmorProficiency(subclass);
+            sendSetProficiencyPacket(ITEM_CLASS_ARMOR, getArmorProficiency());
+        }
+        else if (spellInfo->getEquippedItemClass() == ITEM_CLASS_WEAPON && !(getWeaponProficiency() & subclass))
+        {
+            addWeaponProficiency(subclass);
+            sendSetProficiencyPacket(ITEM_CLASS_WEAPON, getWeaponProficiency());
+        }
+    }
+    else
+    {
+        if (hasSkillLine(skillId))
+            removeSkillLine(skillId);
+
+        if (spellInfo->getEquippedItemClass() == ITEM_CLASS_ARMOR && getArmorProficiency() & subclass)
+        {
+            removeArmorProficiency(subclass);
+            sendSetProficiencyPacket(ITEM_CLASS_ARMOR, getArmorProficiency());
+        }
+        else if (spellInfo->getEquippedItemClass() == ITEM_CLASS_WEAPON && getWeaponProficiency() & subclass)
+        {
+            removeWeaponProficiency(subclass);
+            sendSetProficiencyPacket(ITEM_CLASS_WEAPON, getWeaponProficiency());
+        }
+    }
 }
 
 #ifdef FT_GLYPHS
@@ -2227,6 +2805,119 @@ void Player::clearComboPoints()
     updateComboPoints();
 }
 
+void Player::_verifySkillValues(DBC::Structures::SkillLineEntry const* skillEntry, uint16_t* currentValue, uint16_t* maxValue, uint16_t* skillStep, bool* requireUpdate)
+{
+    auto level_bound_skill = skillEntry->type == SKILL_TYPE_WEAPON && skillEntry->id != SKILL_DUAL_WIELD;
+#if VERSION_STRING <= WotLK
+    level_bound_skill = level_bound_skill || skillEntry->id == SKILL_LOCKPICKING;
+#endif
+#if VERSION_STRING <= TBC
+    level_bound_skill = level_bound_skill || skillEntry->id == SKILL_POISONS;
+#endif
+
+    uint16_t newMaximum = 0;
+    auto isCurrentValueMaxed = false;
+    *requireUpdate = false;
+
+    if (level_bound_skill)
+    {
+        newMaximum = static_cast<uint16_t>(5 * getLevel());
+#if VERSION_STRING >= Cata
+        // In cata all weapon skills are always maxed
+        isCurrentValueMaxed = true;
+#endif
+    }
+    else if (skillEntry->type == SKILL_TYPE_LANGUAGE)
+    {
+        newMaximum = 300;
+        isCurrentValueMaxed = true;
+    }
+    else if (skillEntry->type == SKILL_TYPE_PROFESSION || skillEntry->type == SKILL_TYPE_SECONDARY)
+    {
+        newMaximum = *maxValue;
+
+        if (newMaximum == 0)
+        {
+            newMaximum = 75;
+            while (newMaximum < *currentValue && newMaximum < DBC_PLAYER_SKILL_MAX)
+            {
+                newMaximum += 75;
+            }
+        }
+
+        if (skillEntry->id == SKILL_RIDING)
+            isCurrentValueMaxed = true;
+    }
+    else
+    {
+        newMaximum = 1;
+        isCurrentValueMaxed = true;
+    }
+
+    // force to be within limits
+    if (newMaximum > DBC_PLAYER_SKILL_MAX)
+        newMaximum = DBC_PLAYER_SKILL_MAX;
+
+    if (*maxValue != newMaximum)
+    {
+        *requireUpdate = true;
+        *maxValue = newMaximum;
+    }
+    if (*currentValue > newMaximum)
+    {
+        *requireUpdate = true;
+        *currentValue = newMaximum;
+    }
+
+    // These are at max value all the time
+    if (isCurrentValueMaxed && *currentValue != newMaximum)
+    {
+        *requireUpdate = true;
+        *currentValue = newMaximum;
+    }
+
+    if (skillEntry->type == SKILL_TYPE_PROFESSION || skillEntry->type == SKILL_TYPE_SECONDARY)
+        *skillStep = *maxValue / 75U;
+    else
+        *skillStep = 0;
+}
+
+void Player::_verifySkillValues(DBC::Structures::SkillLineEntry const* skillEntry, uint16_t* currentValue, uint16_t* maxValue, uint16_t* skillStep)
+{
+    auto requireUpdate = false;
+    _verifySkillValues(skillEntry, currentValue, maxValue, skillStep, &requireUpdate);
+}
+
+void Player::_updateSkillFieldOnValueChange(const PlayerSkillFieldPosition fieldPosition, uint16_t skillStep, uint16_t currentValue, uint16_t maxValue)
+{
+#if VERSION_STRING < Cata
+    // field 0
+    setSkillInfoStep(fieldPosition.index, skillStep);
+    // field 1
+    setSkillInfoCurrentValue(fieldPosition.index, currentValue);
+    setSkillInfoMaxValue(fieldPosition.index, maxValue);
+#else
+    // field 0
+    setSkillInfoStep(fieldPosition.field, fieldPosition.offset, skillStep);
+    // field 1
+    setSkillInfoCurrentValue(fieldPosition.field, fieldPosition.offset, currentValue);
+    setSkillInfoMaxValue(fieldPosition.field, fieldPosition.offset, maxValue);
+#endif
+}
+
+void Player::_updateSkillBonusFields(const PlayerSkillFieldPosition fieldPosition, uint16_t tempBonus, uint16_t permBonus)
+{
+#if VERSION_STRING < Cata
+    // field 2
+    setSkillInfoBonusTemporary(fieldPosition.index, tempBonus);
+    setSkillInfoBonusPermanent(fieldPosition.index, permBonus);
+#else
+    // field 2
+    setSkillInfoBonusTemporary(fieldPosition.field, fieldPosition.offset, tempBonus);
+    setSkillInfoBonusPermanent(fieldPosition.field, fieldPosition.offset, permBonus);
+#endif
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Talents
 void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
@@ -2242,7 +2933,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     if (talentInfo == nullptr)
         return;
 #if VERSION_STRING < Mop
-    if (sObjectMgr.IsSpellDisabled(talentInfo->RankID[talentRank]))
+    if (sSpellMgr.isSpellDisabled(talentInfo->RankID[talentRank]))
     {
         if (IsInWorld())
             sendCastFailedPacket(talentInfo->RankID[talentRank], SPELL_FAILED_SPELL_UNAVAILABLE, 0, 0);

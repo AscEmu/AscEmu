@@ -187,6 +187,8 @@ bool Group::AddMember(CachedCharacterInfo* info, int32 subgroupid/* =-1 */)
         m_groupLock.Release();
         return false;
     }
+
+    return false;
 }
 
 //\TODO bool silent is not used - remove it!
@@ -1327,7 +1329,7 @@ void Group::SendLootUpdates(Object* o)
     }
 }
 
-void Group::sendGroupLoot(Loot* loot, Object* object, Player* plr, uint32_t mapId)
+void Group::sendGroupLoot(Loot* loot, Object* object, Player* /*plr*/, uint32_t mapId)
 {
     std::vector<LootItem>::iterator item;
     uint8_t itemSlot = 0;

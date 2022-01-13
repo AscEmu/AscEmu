@@ -19,16 +19,7 @@ void WorldSession::handleUnlearnSkillOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    _player->RemoveSpellsFromLine(srlPacket.skillLineId);
-    _player->_RemoveSkillLine(srlPacket.skillLineId);
-
-    const auto skillLineEntry = sSkillLineStore.LookupEntry(srlPacket.skillLineId);
-    if (!skillLineEntry)
-        return;
-
-    const auto remainingPoints = _player->getFreePrimaryProfessionPoints();
-    if (skillLineEntry->type == SKILL_TYPE_PROFESSION && remainingPoints < worldConfig.player.maxProfessions)
-        _player->modFreePrimaryProfessionPoints(1);
+    _player->removeSkillLine(static_cast<uint16_t>(srlPacket.skillLineId));
 }
 
 void WorldSession::handleLearnTalentOpcode(WorldPacket& recvPacket)

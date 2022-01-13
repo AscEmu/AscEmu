@@ -69,7 +69,7 @@ enum ItemEnchantmentType
     ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET  = 8
 };
 
-const static uint32 arm_skills[7] =
+const static uint16_t arm_skills[7] =
 {
     0,
     SKILL_CLOTH,
@@ -80,7 +80,7 @@ const static uint32 arm_skills[7] =
     SKILL_SHIELD
 };
 
-const static uint32 weap_skills[21] =
+const static uint16_t weap_skills[21] =
 {
     SKILL_AXES,
     SKILL_2H_AXES,
@@ -533,7 +533,7 @@ public:
 };
 
 //\todo move these functions to ItemProperties/Player class.
-uint32 GetSkillByProto(uint32, uint32);
+uint16_t GetSkillByProto(uint32, uint32);
 
 uint32 GetSellPriceForItem(ItemProperties const* proto, uint32 count);
 uint32 GetBuyPriceForItem(ItemProperties const* proto, uint32 count, Player* plr, Creature* vendor);

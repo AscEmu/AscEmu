@@ -83,13 +83,6 @@ struct DungeonEncounter
 typedef std::list<DungeonEncounter const*> DungeonEncounterList;
 typedef std::unordered_map<uint32_t, DungeonEncounterList> DungeonEncounterContainer;
 
-// why is this here?
-struct SpellReplacement
-{
-    uint32 count;
-    uint32* spells;
-};
-
 class Group;
 class SpellInfo;
 
@@ -113,7 +106,7 @@ struct TrainerSpell
     uint32_t deleteSpell;
     uint32_t requiredLevel;
     uint32_t requiredSpell[3];
-    uint32_t requiredSkillLine;
+    uint16_t requiredSkillLine;
     uint32_t requiredSkillLineValue;
     bool isPrimaryProfession;
     uint32_t cost;
@@ -134,7 +127,7 @@ struct Trainer
     uint32 SpellCount;
     std::vector<TrainerSpell> Spells;
     char* UIMessage;
-    uint32 RequiredSkill;
+    uint16_t RequiredSkill;
     uint32 RequiredSkillLine;
     uint32 RequiredClass;
     uint32 RequiredRace;
@@ -196,25 +189,7 @@ typedef std::unordered_map<uint32, Player*> PlayerStorageMap;
 typedef std::list<DBC::Structures::AchievementCriteriaEntry const*> AchievementCriteriaEntryList;
 #endif
 
-//\TODO is this really needed since c++11?
-#ifndef WIN32
-typedef std::map<std::string, CachedCharacterInfo*> PlayerNameStringIndexMap;
-#else
-/// vc++ has the type for a string hash already, so we don't need to do anything special
 typedef std::unordered_map<std::string, CachedCharacterInfo*> PlayerNameStringIndexMap;
-#endif
-
-// spell_id  req_spell
-typedef std::multimap<uint32_t, uint32_t> SpellRequiredMap;
-typedef std::pair<SpellRequiredMap::const_iterator, SpellRequiredMap::const_iterator> SpellRequiredMapBounds;
-
-// req_spell spell_id
-typedef std::multimap<uint32_t, uint32_t> SpellsRequiringSpellMap;
-typedef std::pair<SpellsRequiringSpellMap::const_iterator, SpellsRequiringSpellMap::const_iterator> SpellsRequiringSpellMapBounds;
-
-// skill line ability
-typedef std::multimap<uint32_t, DBC::Structures::SkillLineAbilityEntry const*> SkillLineAbilityMap;
-typedef std::pair<SkillLineAbilityMap::const_iterator, SkillLineAbilityMap::const_iterator> SkillLineAbilityMapBounds;
 
 // finally we are here, the base class of this file ;)
 class SERVER_DECL ObjectMgr : public EventableObject
@@ -252,7 +227,6 @@ public:
 
         // Set typedef's
         typedef std::unordered_map<uint32, Group*>                                                  GroupMap;
-        typedef std::unordered_map<uint32, DBC::Structures::SkillLineAbilityEntry const*>           SLMap;
         typedef std::unordered_map<uint32, std::vector<CreatureItem>*>                              VendorMap;
         typedef std::unordered_map<uint32, Trainer*>                                                TrainerMap;
         typedef std::unordered_map<uint32, ReputationModifier*>                                     ReputationModMap;
@@ -264,7 +238,6 @@ public:
 
         typedef std::map<uint32, uint32>                                                            PetSpellCooldownMap;
         typedef std::multimap <uint32, uint32>                                                      BCEntryStorage;
-        typedef std::map<uint32, SpellTargetConstraint*>                                            SpellTargetConstraintMap;
 
         Player* GetPlayer(const char* name, bool caseSensitive = true);
         Player* GetPlayer(uint32 guid);
@@ -316,9 +289,6 @@ public:
         void RemoveCorpse(Corpse*);
         Corpse* GetCorpse(uint32 corpseguid);
 
-        DBC::Structures::SkillLineAbilityEntry const* GetSpellSkill(uint32 id);
-        SpellInfo const* GetNextSpellRank(SpellInfo const* sp, uint32 level);
-
         //Vendors
         std::vector<CreatureItem> *GetVendorList(uint32 entry);
         void SetVendorList(uint32 Entry, std::vector<CreatureItem>* list_);
@@ -355,7 +325,6 @@ public:
 
         Corpse* LoadCorpse(uint32 guid);
         void LoadCorpses(MapMgr* mgr);
-        void LoadSpellSkills();
         void LoadVendors();
         void ReloadVendors();
 
@@ -372,17 +341,6 @@ public:
 #if VERSION_STRING > WotLK
         uint64_t generateVoidStorageItemId();
 #endif
-
-        // Spell Required table
-        SpellRequiredMapBounds GetSpellsRequiredForSpellBounds(uint32_t spell_id) const;
-        SpellsRequiringSpellMapBounds GetSpellsRequiringSpellBounds(uint32_t spell_id) const;
-        bool IsSpellRequiringSpell(uint32_t spellid, uint32_t req_spellid) const;
-        const SpellsRequiringSpellMap GetSpellsRequiringSpell();
-        uint32_t GetSpellRequired(uint32_t spell_id) const;
-        void LoadSpellRequired();
-
-        void LoadSkillLineAbilityMap();
-        SkillLineAbilityMapBounds GetSkillLineAbilityMapBounds(uint32_t spell_id) const;
 
         Trainer* GetTrainer(uint32 Entry);
 
@@ -455,18 +413,6 @@ public:
         }
 #endif
 
-        inline bool IsSpellDisabled(uint32 spellid)
-        {
-            if (m_disabled_spells.find(spellid) != m_disabled_spells.end())
-                return true;
-            return false;
-        }
-
-        void LoadDisabledSpells();
-        void ReloadDisabledSpells();
-        void LoadSpellTargetConstraints();
-        SpellTargetConstraint* GetSpellTargetConstraintForSpell(uint32 spellid);
-
         //////////////////////////////////////////////////////////////////////////////////////////
         // Event Scripts
         void LoadEventScripts();
@@ -494,10 +440,6 @@ public:
         SpellEffectMaps mSpellEffectMaps;
         DungeonEncounterContainer _dungeonEncounterStore;
         std::unordered_map<uint32_t, CreatureMovementData> _creatureMovementOverrides;
-
-        SpellsRequiringSpellMap mSpellsReqSpell;
-        SpellRequiredMap mSpellReq;
-        SkillLineAbilityMap mSkillLineAbilityMap;
 
     protected:
 
@@ -542,12 +484,9 @@ public:
         /// Map of all vendor goods
         VendorMap mVendors;
 
-        SLMap mSpellSkills;
-
         TrainerMap mTrainers;
         LevelInfoMap mLevelInfo;
         PetSpellCooldownMap mPetSpellCooldowns;
-        SpellTargetConstraintMap m_spelltargetconstraints;
 #if VERSION_STRING > TBC
         AchievementCriteriaEntryList m_AchievementCriteriasByType[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
 #endif

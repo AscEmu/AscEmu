@@ -1244,8 +1244,8 @@ void GameObject_FishingNode::onUse(Player* player)
         const uint32 maxskill = entry->maxSkill;
         const uint32 minskill = entry->minSkill;
 
-        if (player->_GetSkillLineCurrent(SKILL_FISHING, false) < maxskill)
-            player->_AdvanceSkillLine(SKILL_FISHING, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
+        if (player->getSkillLineCurrent(SKILL_FISHING, false) < maxskill)
+            player->advanceSkillLine(SKILL_FISHING, static_cast<uint16_t>(float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
 
         GameObject_FishingHole* school = nullptr;
         GameObject* go = GetMapMgr()->FindNearestGoWithType(this, GAMEOBJECT_TYPE_FISHINGHOLE);
@@ -1265,7 +1265,7 @@ void GameObject_FishingNode::onUse(Player* player)
             school->CatchFish();
 
         }
-        else if (maxskill != 0 && Util::checkChance(((player->_GetSkillLineCurrent(SKILL_FISHING, true) - minskill) * 100) / maxskill))
+        else if (maxskill != 0 && Util::checkChance(((player->getSkillLineCurrent(SKILL_FISHING, true) - minskill) * 100) / maxskill))
         {
             sLootMgr.fillFishingLoot(player, &this->loot, zone, GetMapMgr()->iInstanceMode);
             player->SendLoot(getGuid(), LOOT_FISHING, GetMapId());

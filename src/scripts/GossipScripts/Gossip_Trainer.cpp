@@ -27,7 +27,7 @@ public:
         uint32_t textid;
         if (1 == Id)
         {
-            if (!plr->_HasSkillLine(164) || plr->_GetSkillLineCurrent(164, false) < 300)
+            if (!plr->hasSkillLine(164) || plr->getSkillLineCurrent(164, false) < 300)
                 textid = 20001;
             else if (!plr->HasSpell(9787))
                 textid = 20002;
@@ -93,7 +93,7 @@ public:
         uint32_t textid;
         if (1 == Id)
         {
-            if (!plr->_HasSkillLine(164) || plr->_GetSkillLineCurrent(164, false) < 300)
+            if (!plr->hasSkillLine(164) || plr->getSkillLineCurrent(164, false) < 300)
                 textid = 20001;
             else if (!plr->HasSpell(9787))
                 textid = 20002;
@@ -156,7 +156,7 @@ public:
         uint32_t textid;
         if (1 == Id)
         {
-            if (!plr->_HasSkillLine(164) || plr->_GetSkillLineCurrent(164, false) < 300)
+            if (!plr->hasSkillLine(164) || plr->getSkillLineCurrent(164, false) < 300)
                 textid = 20001;
             else if (!plr->HasSpell(9787))
                 textid = 20002;

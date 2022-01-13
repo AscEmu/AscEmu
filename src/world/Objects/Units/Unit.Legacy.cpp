@@ -2266,11 +2266,25 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                         continue;//this should not occur unless we made a fuckup somewhere
 
                     //only trigger effect for specified spells
-                    auto skill_line_ability = sObjectMgr.GetSpellSkill(CastingSpell->getId());
-                    if (!skill_line_ability)
-                        continue;
+                    auto _continue = false;
+                    const auto spellSkillBounds = sSpellMgr.getSkillEntryForSpellBounds(CastingSpell->getId());
+                    for (auto spellSkillItr = spellSkillBounds.first; spellSkillItr != spellSkillBounds.second; ++spellSkillItr)
+                    {
+                        auto skill_line_ability = spellSkillItr->second;
+                        if (!skill_line_ability)
+                        {
+                            _continue = true;
+                            break;
+                        }
 
-                    if (skill_line_ability->skilline != SKILL_DESTRUCTION)
+                        if (skill_line_ability->skilline != SKILL_DESTRUCTION)
+                        {
+                            _continue = true;
+                            break;
+                        }
+                    }
+
+                    if (_continue)
                         continue;
                 }
                 break;
@@ -6262,7 +6276,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
     float hitmodifier = 0;
     int32 self_skill;
     int32 victim_skill;
-    uint32 SubClassSkill = SKILL_UNARMED;
+    uint16_t SubClassSkill = SKILL_UNARMED;
     const auto ability = castingSpell->getSpellInfo();
 
     bool backAttack = !pVictim->isInFront(this);   // isInBack is bugged!
@@ -6272,7 +6286,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
     //Victim Skill Base Calculation
     if (pVictim->isPlayer())
     {
-        vskill = static_cast<Player*>(pVictim)->_GetSkillLineCurrent(SKILL_DEFENSE);
+        vskill = static_cast<Player*>(pVictim)->getSkillLineCurrent(SKILL_DEFENSE);
         if (weapon_damage_type != RANGED && !backAttack)                // block chance
         {
             block = static_cast<Player*>(pVictim)->getBlockPercentage(); //shield check already done in Update chances
@@ -6384,7 +6398,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
         }
 
 
-        self_skill += pr->_GetSkillLineCurrent(SubClassSkill);
+        self_skill += pr->getSkillLineCurrent(SubClassSkill);
     }
     else
     {
@@ -6525,7 +6539,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     float ArmorPctReduce = m_ignoreArmorPct;
     int32 self_skill;
     int32 victim_skill;
-    uint32 SubClassSkill = SKILL_UNARMED;
+    uint16_t SubClassSkill = SKILL_UNARMED;
 
     bool backAttack = !pVictim->isInFront(this);
     uint32 vskill = 0;
@@ -6546,7 +6560,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     if (pVictim->isPlayer())
     {
         Player* plr = static_cast<Player*>(pVictim);
-        vskill = plr->_GetSkillLineCurrent(SKILL_DEFENSE);
+        vskill = plr->getSkillLineCurrent(SKILL_DEFENSE);
 
         if (!backAttack)
         {
@@ -6680,7 +6694,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             }
         }
 
-        self_skill += pr->_GetSkillLineCurrent(SubClassSkill);
+        self_skill += pr->getSkillLineCurrent(SubClassSkill);
         crit = static_cast<Player*>(this)->getMeleeCritPercentage();
     }
     else
@@ -6701,7 +6715,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     //http://www.wowwiki.com/Crushing_blow
     if (pVictim->isPlayer() && !this->isPlayer() && !ability && dmg.schoolMask == SCHOOL_MASK_NORMAL)
     {
-        int32 baseDefense = static_cast<Player*>(pVictim)->_GetSkillLineCurrent(SKILL_DEFENSE, false);
+        int32 baseDefense = static_cast<Player*>(pVictim)->getSkillLineCurrent(SKILL_DEFENSE, false);
         int32 skillDiff = self_skill - baseDefense;
         if (skillDiff >= 15)
             crush = -15.0f + 2.0f * skillDiff;
@@ -7634,7 +7648,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             Player* pr = static_cast<Player*>(pVictim);
             if (Util::checkChance(pr->GetSkillUpChance(SKILL_DEFENSE) * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
             {
-                pr->_AdvanceSkillLine(SKILL_DEFENSE, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
+                pr->advanceSkillLine(SKILL_DEFENSE, static_cast<uint16_t>(float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
                 pr->UpdateChances();
             }
         }
@@ -7651,7 +7665,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             Player* pr = static_cast<Player*>(this);
             if (Util::checkChance(pr->GetSkillUpChance(SubClassSkill) * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
             {
-                pr->_AdvanceSkillLine(SubClassSkill, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
+                pr->advanceSkillLine(SubClassSkill, static_cast<uint16_t>(float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
                 //pr->UpdateChances();
             }
         }
@@ -8462,7 +8476,7 @@ float Unit::get_chance_to_daze(Unit* target)
     float attack_skill = getLevel() * 5.0f;
     float defense_skill;
     if (target->isPlayer())
-        defense_skill = float(static_cast<Player*>(target)->_GetSkillLineCurrent(SKILL_DEFENSE, false));
+        defense_skill = float(static_cast<Player*>(target)->getSkillLineCurrent(SKILL_DEFENSE, false));
     else
         defense_skill = target->getLevel() * 5.0f;
 

@@ -161,6 +161,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
 
     // teach the spell
     _player->modCoinage(-static_cast<int32_t>(trainerSpell->cost));
+    creature->playSpellVisual(179, 0);
 
     if (trainerSpell->castSpell != nullptr)
     {
@@ -168,7 +169,6 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        creature->playSpellVisual(179, 0);
         _player->playSpellVisual(362, 1);
 
         if (trainerSpell->learnSpell != nullptr)
@@ -454,7 +454,7 @@ void WorldSession::sendTrainerList(Creature* creature)
             if (requiredSpellCount >= maxRequiredCount)
                 break;
 
-            const auto requiredSpells = sObjectMgr.GetSpellsRequiredForSpellBounds(requiredSpell);
+            const auto requiredSpells = sSpellMgr.getSpellsRequiredForSpellBounds(requiredSpell);
             for (auto itr = requiredSpells.first; itr != requiredSpells.second && requiredSpellCount <= maxRequiredCount; ++itr)
             {
                 data << uint32_t(itr->second);
@@ -504,7 +504,7 @@ TrainerSpellState WorldSession::trainerGetSpellStatus(TrainerSpell const* traine
     if (trainerSpell->requiredLevel && _player->getLevel() < trainerSpell->requiredLevel)
         return TRAINER_SPELL_RED;
 
-    if (trainerSpell->requiredSkillLine && _player->_GetSkillLineCurrent(trainerSpell->requiredSkillLine, true) < trainerSpell->requiredSkillLineValue)
+    if (trainerSpell->requiredSkillLine && _player->getSkillLineCurrent(trainerSpell->requiredSkillLine, true) < trainerSpell->requiredSkillLineValue)
         return TRAINER_SPELL_RED;
 
     if (trainerSpell->cost != 0 && !_player->hasEnoughCoinage(trainerSpell->cost))
@@ -518,7 +518,7 @@ TrainerSpellState WorldSession::trainerGetSpellStatus(TrainerSpell const* traine
         if (!_player->HasSpell(spellId))
             return TRAINER_SPELL_RED;
 
-        const auto spellsRequired = sObjectMgr.GetSpellsRequiredForSpellBounds(spellId);
+        const auto spellsRequired = sSpellMgr.getSpellsRequiredForSpellBounds(spellId);
         for (auto itr = spellsRequired.first; itr != spellsRequired.second; ++itr)
         {
             if (!_player->HasSpell(itr->second))

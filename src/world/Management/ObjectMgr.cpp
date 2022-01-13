@@ -182,12 +182,6 @@ void ObjectMgr::finalize()
         delete(*itr).second;
     }
 
-    sLogger.info("ObjectMgr : Cleaning up spell target constraints...");
-    for (SpellTargetConstraintMap::iterator itr = m_spelltargetconstraints.begin(); itr != m_spelltargetconstraints.end(); ++itr)
-        delete itr->second;
-
-    m_spelltargetconstraints.clear();
-
     sLogger.info("ObjectMgr : Cleaning up vehicle accessories...");
     for (std::map< uint32, std::vector< VehicleAccessoryEntry* >* >::iterator itr = vehicle_accessories.begin(); itr != vehicle_accessories.end(); ++itr)
     {
@@ -465,44 +459,6 @@ void ObjectMgr::RenamePlayerInfo(CachedCharacterInfo* pn, std::string oldname, s
         m_playersInfoByName.erase(itr);
         m_playersInfoByName[newn] = pn;
     }
-}
-
-void ObjectMgr::LoadSpellSkills()
-{
-    for (uint32 i = 0; i < sSkillLineAbilityStore.GetNumRows(); i++)
-    {
-        auto skill_line_ability = sSkillLineAbilityStore.LookupEntry(i);
-        if (skill_line_ability)
-        {
-            mSpellSkills[skill_line_ability->spell] = skill_line_ability;
-        }
-    }
-    sLogger.info("ObjectMgr : %u spell skills loaded.", static_cast<uint32_t>(mSpellSkills.size()));
-}
-
-DBC::Structures::SkillLineAbilityEntry const* ObjectMgr::GetSpellSkill(uint32 id)
-{
-    return mSpellSkills[id];
-}
-
-SpellInfo const* ObjectMgr::GetNextSpellRank(SpellInfo const* sp, uint32 level)
-{
-    // Looks for next spell rank
-    if (sp == nullptr)
-    {
-        return nullptr;
-    }
-
-    auto skill_line_ability = GetSpellSkill(sp->getId());
-    if (skill_line_ability != nullptr && skill_line_ability->next > 0)
-    {
-        SpellInfo const* sp1 = sSpellMgr.getSpellInfo(skill_line_ability->next);
-        if (sp1 && sp1->getBaseLevel() <= level)   // check level
-        {
-            return GetNextSpellRank(sp1, level);   // recursive for higher ranks
-        }
-    }
-    return sp;
 }
 
 void ObjectMgr::LoadPlayersInfo()
@@ -1191,123 +1147,6 @@ void ObjectMgr::CorpseCollectorUnload()
     _corpseslock.Release();
 }
 
-//move to spellmgr or mysqldatastore todo danko
-void ObjectMgr::LoadSkillLineAbilityMap()
-{
-    auto startTime = Util::TimeNow();
-
-    mSkillLineAbilityMap.clear();
-
-    uint32_t count = 0;
-    for (uint32_t i = 0; i < sSkillLineAbilityStore.GetNumRows(); ++i)
-    {
-        DBC::Structures::SkillLineAbilityEntry const* SkillInfo = sSkillLineAbilityStore.LookupEntry(i);
-        if (!SkillInfo)
-            continue;
-
-        mSkillLineAbilityMap.insert(SkillLineAbilityMap::value_type(SkillInfo->Id, SkillInfo));
-        ++count;
-    }
-
-    sLogger.info("ObjectMgr : Loaded %u SkillLineAbility MultiMap Data in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-}
-
-SkillLineAbilityMapBounds ObjectMgr::GetSkillLineAbilityMapBounds(uint32_t spell_id) const
-{
-    return mSkillLineAbilityMap.equal_range(spell_id);
-}
-
-void ObjectMgr::LoadSpellRequired()
-{
-    auto startTime = Util::TimeNow();
-
-    mSpellsReqSpell.clear();    // need for reload case
-    mSpellReq.clear();          // need for reload case
-
-    //                                                   0         1
-    QueryResult* result = WorldDatabase.Query("SELECT spell_id, req_spell FROM spell_required");
-
-    if (!result)
-    {
-        sLogger.debug("ObjectMgr : Loaded 0 spell required records. DB table `spell_required` is empty.");
-        return;
-    }
-
-    uint32 count = 0;
-    do
-    {
-        Field* fields = result->Fetch();
-
-        uint32_t spell_id = fields[0].GetUInt32();
-        uint32_t spell_req = fields[1].GetUInt32();
-
-        // check if chain is made with valid first spell
-        DBC::Structures::SpellEntry const* spell = sSpellStore.LookupEntry(spell_id);
-        if (!spell)
-        {
-            sLogger.debug("ObjectMgr : spell_id %u in `spell_required` table is not found in dbcs, skipped", spell_id);
-            continue;
-        }
-
-        DBC::Structures::SpellEntry const* req_spell = sSpellStore.LookupEntry(spell_req);
-        if (!req_spell)
-        {
-            sLogger.debug("ObjectMgr : req_spell %u in `spell_required` table is not found in dbcs, skipped", spell_req);
-            continue;
-        }
-
-        if (IsSpellRequiringSpell(spell_id, spell_req))
-        {
-            sLogger.debug("ObjectMgr : duplicated entry of req_spell %u and spell_id %u in `spell_required`, skipped", spell_req, spell_id);
-            continue;
-        }
-
-        mSpellReq.insert(std::pair<uint32_t, uint32_t>(spell_id, spell_req));
-        mSpellsReqSpell.insert(std::pair<uint32_t, uint32_t>(spell_req, spell_id));
-        ++count;
-
-    } while (result->NextRow());
-
-    sLogger.info("ObjectMgr: Loaded %u spell required records in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-}
-
-
-SpellRequiredMapBounds ObjectMgr::GetSpellsRequiredForSpellBounds(uint32_t spell_id) const
-{
-    return mSpellReq.equal_range(spell_id);
-}
-
-SpellsRequiringSpellMapBounds ObjectMgr::GetSpellsRequiringSpellBounds(uint32_t spell_id) const
-{
-    return mSpellsReqSpell.equal_range(spell_id);
-}
-
-bool ObjectMgr::IsSpellRequiringSpell(uint32_t spellid, uint32_t req_spellid) const
-{
-    SpellsRequiringSpellMapBounds spellsRequiringSpell = GetSpellsRequiringSpellBounds(req_spellid);
-    for (SpellsRequiringSpellMap::const_iterator itr = spellsRequiringSpell.first; itr != spellsRequiringSpell.second; ++itr)
-    {
-        if (itr->second == spellid)
-            return true;
-    }
-    return false;
-}
-
-const SpellsRequiringSpellMap ObjectMgr::GetSpellsRequiringSpell()
-{
-    return this->mSpellsReqSpell;
-}
-
-uint32_t ObjectMgr::GetSpellRequired(uint32_t spell_id) const
-{
-    SpellRequiredMap::const_iterator itr = mSpellReq.find(spell_id);
-
-    if (itr == mSpellReq.end())
-        return 0;
-
-    return itr->second;
-}
-
 //MIT
 void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId /*= 0*/)
 {
@@ -1466,7 +1305,6 @@ void ObjectMgr::loadTrainers()
 {
 #if VERSION_STRING > TBC    //todo: tbc
     auto* const result = WorldDatabase.Query("SELECT * FROM trainer_defs");
-    LoadDisabledSpells();
 
     if (result == nullptr)
         return;
@@ -1477,7 +1315,7 @@ void ObjectMgr::loadTrainers()
         const auto entry = fields[0].GetUInt32();
 
         Trainer* tr = new Trainer;
-        tr->RequiredSkill = fields[1].GetUInt32();
+        tr->RequiredSkill = fields[1].GetUInt16();
         tr->RequiredSkillLine = fields[2].GetUInt32();
         tr->RequiredClass = fields[3].GetUInt32();
         tr->RequiredRace = fields[4].GetUInt32();
@@ -1576,7 +1414,7 @@ void ObjectMgr::loadTrainers()
 
             ts.cost = fields2[3].GetUInt32();
             ts.requiredSpell[0] = fields2[4].GetUInt32();
-            ts.requiredSkillLine = fields2[5].GetUInt32();
+            ts.requiredSkillLine = fields2[5].GetUInt16();
             ts.requiredSkillLineValue = fields2[6].GetUInt32();
             ts.requiredLevel = fields2[7].GetUInt32();
             ts.deleteSpell = fields2[8].GetUInt32();
@@ -1587,7 +1425,7 @@ void ObjectMgr::loadTrainers()
 
             // Add all required spells
             const auto spellInfo = ts.castRealSpell != nullptr ? ts.castSpell : ts.learnSpell;
-            const auto requiredSpells = GetSpellsRequiredForSpellBounds(spellInfo->getId());
+            const auto requiredSpells = sSpellMgr.getSpellsRequiredForSpellBounds(spellInfo->getId());
             for (auto itr = requiredSpells.first; itr != requiredSpells.second; ++itr)
             {
                 for (uint8_t i = 0; i < 3; ++i)
@@ -2264,29 +2102,6 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim
     return true;
 }
 
-void ObjectMgr::LoadDisabledSpells()
-{
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM spell_disable");
-    if (result)
-    {
-        do
-        {
-            m_disabled_spells.insert(result->Fetch()[0].GetUInt32());
-
-        } while (result->NextRow());
-
-        delete result;
-    }
-
-    sLogger.info("ObjectMgr : %u disabled spells.", static_cast<uint32_t>(m_disabled_spells.size()));
-}
-
-void ObjectMgr::ReloadDisabledSpells()
-{
-    m_disabled_spells.clear();
-    LoadDisabledSpells();
-}
-
 void ObjectMgr::LoadGroups()
 {
     QueryResult* result = CharacterDatabase.Query("SELECT * FROM `groups`");
@@ -2496,86 +2311,6 @@ void ObjectMgr::ResetDailies()
         if (Player* pPlayer = itr.second)
             pPlayer->resetFinishedDailies();
     }
-}
-
-void ObjectMgr::LoadSpellTargetConstraints()
-{
-    sLogger.info("ObjectMgr : Loading spell target constraints...");
-
-    // Let's try to be idiot proof :/
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM spelltargetconstraints WHERE SpellID > 0 ORDER BY SpellID");
-    if (result != nullptr)
-    {
-        uint32 oldspellid = 0;
-        SpellTargetConstraint* stc = nullptr;
-
-        do
-        {
-            Field* fields = result->Fetch();
-
-            if (fields != nullptr)
-            {
-                uint32 spellid = fields[0].GetUInt32();
-
-                if (oldspellid != spellid)
-                {
-                    stc = new SpellTargetConstraint;
-
-                    m_spelltargetconstraints.insert(std::pair< uint32, SpellTargetConstraint* >(spellid, stc));
-                }
-
-                uint8_t type = fields[1].GetUInt8();
-                uint32 value = fields[2].GetUInt32();
-
-                if (type == SPELL_CONSTRAINT_EXPLICIT_CREATURE)
-                {
-                    if (stc != nullptr)
-                    {
-                        stc->addCreature(value);
-                        stc->addExplicitTarget(value);
-                    }
-                }
-                else if (type == SPELL_CONSTRAINT_EXPLICIT_GAMEOBJECT)
-                {
-                    if (stc != nullptr)
-                    {
-                        stc->addGameObject(value);
-                        stc->addExplicitTarget(value);
-                    }
-                }
-                else if (type == SPELL_CONSTRAINT_IMPLICIT_CREATURE)
-                {
-                    if (stc != nullptr)
-                    {
-                        stc->addCreature(value);
-                    }
-                }
-                else if (type == SPELL_CONSTRAINT_IMPLICIT_GAMEOBJECT)
-                {
-                    if (stc != nullptr)
-                    {
-                        stc->addGameObject(value);
-                    }
-                }
-
-                oldspellid = spellid;
-            }
-        } while (result->NextRow());
-    }
-
-    delete result;
-
-    sLogger.info("ObjectMgr : Loaded constraints for %u spells...", static_cast<uint32_t>(m_spelltargetconstraints.size()));
-}
-
-SpellTargetConstraint* ObjectMgr::GetSpellTargetConstraintForSpell(uint32 spellid)
-{
-    SpellTargetConstraintMap::const_iterator itr = m_spelltargetconstraints.find(spellid);
-
-    if (itr != m_spelltargetconstraints.end())
-        return itr->second;
-    else
-        return nullptr;
 }
 
 uint32 ObjectMgr::GenerateArenaTeamId()

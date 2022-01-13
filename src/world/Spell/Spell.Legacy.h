@@ -516,7 +516,6 @@ class SERVER_DECL Spell
         void SpellEffectParry(uint8_t effectIndex);
         void SpellEffectBlock(uint8_t effectIndex);
         void SpellEffectCreateItem(uint8_t effectIndex);
-        void SpellEffectWeapon(uint8_t effectIndex);
         void SpellEffectPersistentAA(uint8_t effectIndex);
 
         virtual void SpellEffectSummon(uint8_t effectIndex);
@@ -536,8 +535,6 @@ class SERVER_DECL Spell
         void SpellEffectLearnSpell(uint8_t effectIndex);
         void SpellEffectSpellDefense(uint8_t effectIndex);
         void SpellEffectDispel(uint8_t effectIndex);
-        void SpellEffectDualWield(uint8_t effectIndex);
-        void SpellEffectSkillStep(uint8_t effectIndex);
         void SpellEffectAddHonor(uint8_t effectIndex);
         void SpellEffectSpawn(uint8_t effectIndex);
         void SpellEffectSummonObject(uint8_t effectIndex);
@@ -592,7 +589,6 @@ class SERVER_DECL Spell
         void SpellEffectResurrectNew(uint8_t effectIndex);
         void SpellEffectAttackMe(uint8_t effectIndex);
         void SpellEffectSkinPlayerCorpse(uint8_t effectIndex);
-        void SpellEffectSkill(uint8_t effectIndex);
         void SpellEffectApplyPetAA(uint8_t effectIndex);
         void SpellEffectDummyMelee(uint8_t effectIndex);
         void SpellEffectStartTaxi(uint8_t effectIndex);
@@ -709,8 +705,8 @@ class SERVER_DECL Spell
         void SafeAddTarget(std::vector<uint64_t>* tgt, uint64 guid);
 
         friend class DynamicObject;
-        void DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multiplicator = 1);
-        void DetermineSkillUp(uint32 skillid);
+        void DetermineSkillUp(uint16_t skillid, uint32 targetlevel, uint32 multiplicator = 1);
+        void DetermineSkillUp(uint16_t skillid);
 
         bool AddTarget(uint32 i, uint32 TargetType, Object* obj);
         void AddAOETargets(uint32 i, uint32 TargetType, float r, uint32 maxtargets);

@@ -257,24 +257,28 @@ public:
     uint16_t getSkillInfoStep(uint32_t index) const;
     uint16_t getSkillInfoCurrentValue(uint32_t index) const;
     uint16_t getSkillInfoMaxValue(uint32_t index) const;
-    int16_t getSkillInfoBonusTemporary(uint32_t index) const;
-    int16_t getSkillInfoBonusPermanent(uint32_t index) const;
+    uint16_t getSkillInfoBonusTemporary(uint32_t index) const;
+    uint16_t getSkillInfoBonusPermanent(uint32_t index) const;
     void setSkillInfoId(uint32_t index, uint16_t id);
     void setSkillInfoStep(uint32_t index, uint16_t step);
     void setSkillInfoCurrentValue(uint32_t index, uint16_t current);
     void setSkillInfoMaxValue(uint32_t index, uint16_t max);
-    void setSkillInfoBonusTemporary(uint32_t index, int16_t bonus);
-    void setSkillInfoBonusPermanent(uint32_t index, int16_t bonus);
+    void setSkillInfoBonusTemporary(uint32_t index, uint16_t bonus);
+    void setSkillInfoBonusPermanent(uint32_t index, uint16_t bonus);
 #else
-    uint16_t getSkillLineId(uint32_t index, uint8_t offset) const;
-    uint16_t getSkillStep(uint32_t index, uint8_t offset) const;
-    uint16_t getSkillCurrentValue(uint32_t index, uint8_t offset) const;
-    uint16_t getSkillMaximumValue(uint32_t index, uint8_t offset) const;
+    uint16_t getSkillInfoId(uint32_t index, uint8_t offset) const;
+    uint16_t getSkillInfoStep(uint32_t index, uint8_t offset) const;
+    uint16_t getSkillInfoCurrentValue(uint32_t index, uint8_t offset) const;
+    uint16_t getSkillInfoMaxValue(uint32_t index, uint8_t offset) const;
+    uint16_t getSkillInfoBonusTemporary(uint32_t index, uint8_t offset) const;
+    uint16_t getSkillInfoBonusPermanent(uint32_t index, uint8_t offset) const;
     uint32_t getProfessionSkillLine(uint32_t index) const;
-    void setSkillLineId(uint32_t index, uint32_t value);
-    void setSkillStep(uint32_t index, uint32_t value);
-    void setSkillCurrentValue(uint32_t index, uint32_t value);
-    void setSkillMaximumValue(uint32_t index, uint32_t value);
+    void setSkillInfoId(uint32_t index, uint8_t offset, uint16_t id);
+    void setSkillInfoStep(uint32_t index, uint8_t offset, uint16_t step);
+    void setSkillInfoCurrentValue(uint32_t index, uint8_t offset, uint16_t current);
+    void setSkillInfoMaxValue(uint32_t index, uint8_t offset, uint16_t max);
+    void setSkillInfoBonusTemporary(uint32_t index, uint8_t offset, uint16_t bonus);
+    void setSkillInfoBonusPermanent(uint32_t index, uint8_t offset, uint16_t bonus);
     void setProfessionSkillLine(uint32_t index, uint32_t value);
 #endif
 
@@ -624,11 +628,14 @@ private:
 public:
 
     bool loadSpells(QueryResult* result);
+    bool loadSkills(QueryResult* result);
     bool loadReputations(QueryResult* result);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells and skills
-    void setInitialPlayerSkills();
+#if VERSION_STRING >= Cata
+    void setInitialPlayerProfessions();
+#endif
 
     void updateAutoRepeatSpell();
     bool canUseFlyingMountHere();
@@ -649,12 +656,29 @@ public:
     void clearGlobalCooldown();
     void resetAllCooldowns();
 
-    void setInitialLanguages();
+    // Skills
+    void advanceAllSkills(uint16_t amount = 1);
+    void advanceSkillLine(uint16_t skillLine, uint16_t amount = 1);
+    void addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t maxValue, bool noSpellLearning = false, bool initializeProfession = false);
+    bool hasSkillLine(uint16_t skillLine, bool strict = false) const;
+    uint16_t getSkillLineCurrent(uint16_t skillLine, bool includeBonus = true) const;
+    uint16_t getSkillLineMax(uint16_t skillLine) const;
+    void learnInitialSkills();
+    void learnSkillSpells(uint16_t skillLine, uint16_t currentValue);
+    void modifySkillBonus(uint16_t skillLine, int16_t amount, bool permanentBonus);
+    void modifySkillMaximum(uint16_t skillLine, uint16_t maxValue);
+    void removeSkillLine(uint16_t skillLine);
+    void removeSkillSpells(uint16_t skillLine);
+    void removeAllSkills();
+    void updateSkillMaximumValues();
 
     uint32_t getArmorProficiency() const;
     void addArmorProficiency(uint32_t proficiency);
+    void removeArmorProficiency(uint32_t proficiency);
     uint32_t getWeaponProficiency() const;
     void addWeaponProficiency(uint32_t proficiency);
+    void removeWeaponProficiency(uint32_t proficiency);
+    void applyItemProficienciesFromSpell(SpellInfo const* spellInfo, bool apply);
 
 #ifdef FT_GLYPHS
     // Glyphs
@@ -673,6 +697,13 @@ public:
 
 private:
     bool m_canDualWield2H = false;
+
+    // Skills
+    void _verifySkillValues(DBC::Structures::SkillLineEntry const* skillEntry, uint16_t* currentValue, uint16_t* maxValue, uint16_t* skillStep, bool* requireUpdate);
+    void _verifySkillValues(DBC::Structures::SkillLineEntry const* skillEntry, uint16_t* currentValue, uint16_t* maxValue, uint16_t* skillStep);
+    void _updateSkillFieldOnValueChange(const PlayerSkillFieldPosition fieldPosition, uint16_t skillStep, uint16_t currentValue, uint16_t maxValue);
+    void _updateSkillBonusFields(const PlayerSkillFieldPosition fieldPosition, uint16_t tempBonus, uint16_t permBonus);
+    SkillMap m_skills;
 
     uint32_t armorProficiency = 0;
     uint32_t weaponProficiency = 0;
@@ -1165,31 +1196,11 @@ public:
 
         void EventGroupFullUpdate();
 
-        // Skill System
-        void _AdvanceSkillLine(uint32 SkillLine, uint32 Count = 1);
-        void _AddSkillLine(uint32 SkillLine, uint32 Current, uint32 Max);
-        uint32 _GetSkillLineMax(uint32 SkillLine);
-        uint32 _GetSkillLineCurrent(uint32 SkillLine, bool IncludeBonus = true);
-        void _RemoveSkillLine(uint32 SkillLine);
-        void _UpdateMaxSkillCounts();
-        void _ModifySkillBonus(uint32 SkillLine, int32 Delta);
-        void _ModifySkillBonusByType(uint32 SkillType, int32 Delta);
-        bool _HasSkillLine(uint32 SkillLine);
-        void RemoveSpellsFromLine(uint32 skill_line);
-        void _RemoveAllSkills();
-        void _RemoveLanguages();
-        void _AdvanceAllSkills(uint32 count);
-        void _ModifySkillMaximum(uint32 SkillLine, uint32 NewMax);
-        void _LearnSkillSpells(uint32 SkillLine, uint32 Current);
-
         void UpdatePvPCurrencies();
         void FillRandomBattlegroundReward(bool wonBattleground, uint32 &honorPoints, uint32 &arenaPoints);
         void ApplyRandomBattlegroundReward(bool wonBattleground);
 
     protected:
-        void _UpdateSkillFields();
-
-        SkillMap m_skills;
 
         // COOLDOWNS
         uint32 m_lastPotionId = 0;
@@ -1323,7 +1334,7 @@ public:
         bool HasSpell(uint32 spell);
         bool HasDeletedSpell(uint32 spell);
         void smsg_InitialSpells();
-        void addSpell(uint32 spell_idy);
+        void addSpell(uint32 spell_idy, uint16_t fromSkill = 0);
         bool removeSpell(uint32 SpellID, bool MoveToDeleted, bool SupercededSpell, uint32 SupercededSpellID);
         bool removeDeletedSpell(uint32 SpellID);
         void SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs);
@@ -1562,8 +1573,6 @@ public:
         bool SaveDeletedSpells(bool NewCharacter, QueryBuffer* buf);
 
         bool SaveReputations(bool NewCharacter, QueryBuffer *buf);
-
-        bool LoadSkills(QueryResult* result);
         bool SaveSkills(bool NewCharacter, QueryBuffer* buf);
 
         bool m_FirstLogin = false;
@@ -1705,7 +1714,7 @@ public:
 
 
         //Note:ModSkillLine -> value+=amt;ModSkillMax -->value=amt; --weird
-        float GetSkillUpChance(uint32 id);
+        float GetSkillUpChance(uint16_t id);
 
         float SpellHasteRatingBonus = 1.0f;
         void UpdateAttackSpeed();

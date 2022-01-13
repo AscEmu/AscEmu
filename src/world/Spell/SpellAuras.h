@@ -172,7 +172,7 @@ class SERVER_DECL Aura : public EventableObject
 
         bool canPeriodicEffectCrit();
 
-        void applyModifiers(bool apply);
+        void applyModifiers(bool apply, AuraEffect applyOnlyFor = SPELL_AURA_NONE);
         void updateModifiers();
 
         int32_t getTimeLeft() const;

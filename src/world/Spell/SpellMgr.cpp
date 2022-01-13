@@ -78,7 +78,7 @@ SpellMgr& SpellMgr::getInstance()
     return mInstance;
 }
 
-void SpellMgr::startSpellMgr()
+void SpellMgr::initialize()
 {
     // Load spell data from DBC
     loadSpellInfoData();
@@ -97,6 +97,15 @@ void SpellMgr::startSpellMgr()
     applyHackFixes();
 }
 
+void SpellMgr::finalize()
+{
+    sLogger.info("SpellMgr : Cleaning up SpellMgr...");
+    for (auto itr = mSpellTargetConstraintMap.begin(); itr != mSpellTargetConstraintMap.end(); ++itr)
+        delete itr->second;
+
+    mSpellTargetConstraintMap.clear();
+}
+
 void SpellMgr::loadSpellDataFromDatabase()
 {
     // Load spell related SQL tables
@@ -105,6 +114,12 @@ void SpellMgr::loadSpellDataFromDatabase()
     loadSpellAIThreat();
     loadSpellEffectOverride();
     loadSpellAreas();
+    loadSpellRequired();
+    loadSpellTargetConstraints();
+    loadSpellDisabled();
+
+    // Load skill DBC files
+    loadSkillLineAbilityMap();
 }
 
 void SpellMgr::calculateSpellCoefficients()
@@ -179,6 +194,99 @@ void SpellMgr::addAuraById(const uint32_t spellId, AuraScriptLinker auraScript)
         return;
     }
     addAuraBySpellInfo(spellInfo, auraScript);
+}
+
+SpellRequiredMapBounds SpellMgr::getSpellsRequiredForSpellBounds(uint32_t spellId) const
+{
+    return mSpellRequired.equal_range(spellId);
+}
+
+SpellsRequiringSpellMap SpellMgr::getSpellsRequiringSpell() const
+{
+    return mSpellsRequiringSpell;
+}
+
+SpellsRequiringSpellMapBounds SpellMgr::getSpellsRequiringSpellBounds(uint32_t spellId) const
+{
+    return mSpellsRequiringSpell.equal_range(spellId);
+}
+
+bool SpellMgr::isSpellRequiringSpell(uint32_t spellId, uint32_t requiredSpellId) const
+{
+    auto spellsRequiringSpell = getSpellsRequiringSpellBounds(requiredSpellId);
+    for (auto itr = spellsRequiringSpell.first; itr != spellsRequiringSpell.second; ++itr)
+    {
+        if (itr->second == spellId)
+            return true;
+    }
+
+    return false;
+}
+
+uint32_t SpellMgr::getSpellRequired(uint32_t spellId) const
+{
+    auto itr = mSpellRequired.find(spellId);
+    if (itr == mSpellRequired.end())
+        return 0;
+
+    return itr->second;
+}
+
+bool SpellMgr::isSpellDisabled(uint32_t spellId) const
+{
+    return mDisabledSpells.find(spellId) != mDisabledSpells.end();
+}
+
+void SpellMgr::reloadSpellDisabled()
+{
+    mDisabledSpells.clear();
+    loadSpellDisabled();
+}
+
+SpellSkillMapBounds SpellMgr::getSkillEntryForSpellBounds(uint32_t spellId) const
+{
+    return mSpellSkillsMap.equal_range(spellId);
+}
+
+DBC::Structures::SkillLineAbilityEntry const* SpellMgr::getFirstSkillEntryForSpell(uint32_t spellId, Player const* forPlayer/* = nullptr*/) const
+{
+    DBC::Structures::SkillLineAbilityEntry const* skillLineAbility = nullptr;
+
+    const auto spellSkillBounds = getSkillEntryForSpellBounds(spellId);
+    for (auto spellSkillItr = spellSkillBounds.first; spellSkillItr != spellSkillBounds.second; ++spellSkillItr)
+    {
+        const auto skillEntry = spellSkillItr->second;
+        if (skillEntry == nullptr)
+            continue;
+
+        if (forPlayer != nullptr)
+        {
+            if (skillEntry->race_mask != 0 && !(skillEntry->race_mask & forPlayer->getRaceMask()))
+                continue;
+
+            if (skillEntry->class_mask != 0 && !(skillEntry->class_mask & forPlayer->getClassMask()))
+                continue;
+        }
+
+        skillLineAbility = skillEntry;
+        break;
+    }
+
+    return skillLineAbility;
+}
+
+SkillLineAbilityMapBounds SpellMgr::getSkillLineAbilityMapBounds(uint32_t skillId) const
+{
+    return mSkillLineAbilityMap.equal_range(skillId);
+}
+
+SpellTargetConstraint* SpellMgr::getSpellTargetConstraintForSpell(uint32_t spellId) const
+{
+    const auto itr = mSpellTargetConstraintMap.find(spellId);
+    if (itr == mSpellTargetConstraintMap.end())
+        return nullptr;
+
+    return itr->second;
 }
 
 SpellAreaMapBounds SpellMgr::getSpellAreaMapBounds(uint32_t spellId) const
@@ -288,58 +396,6 @@ SpellInfo const* SpellMgr::getSpellInfoByDifficulty([[maybe_unused]]const uint32
 #else
     return nullptr;
 #endif
-}
-
-SkillRangeType SpellMgr::getSkillRangeType(DBC::Structures::SkillLineEntry const* skill, bool racial) const
-{
-    if (skill == nullptr)
-        return SKILL_RANGE_NONE;
-
-    // Helper lambda
-    const auto isProfessionSkill = [](uint32_t skillId) -> bool
-    {
-        auto* const skillLine = sSkillLineStore.LookupEntry(skillId);
-        const auto isPrimaryProfessionSkill = skillLine != nullptr && skillLine->type == SKILL_TYPE_PROFESSION;
-
-        return isPrimaryProfessionSkill || skillId == SKILL_FISHING || skillId == SKILL_COOKING || skillId == SKILL_FIRST_AID;
-    };
-
-    switch (skill->type)
-    {
-        case SKILL_TYPE_LANGUAGE:
-        {
-            return SKILL_RANGE_LANGUAGE;
-        }
-        case SKILL_TYPE_WEAPON:
-        {
-            return SKILL_RANGE_LEVEL;
-        }
-        case SKILL_TYPE_ARMOR:
-        case SKILL_TYPE_CLASS:
-        {
-#if VERSION_STRING <= WotLK
-            if (skill->id != SKILL_LOCKPICKING)
-                return SKILL_RANGE_MONO;
-            else
-#endif
-                return SKILL_RANGE_LEVEL;
-        }
-        case SKILL_TYPE_SECONDARY:
-        case SKILL_TYPE_PROFESSION:
-        {
-            // not set skills for professions and racial abilities
-            if (isProfessionSkill(skill->id))
-                return SKILL_RANGE_RANK;
-            else if (racial)
-                return SKILL_RANGE_NONE;
-            else
-                return SKILL_RANGE_MONO;
-        }
-        default:
-            break;
-    }
-
-    return SKILL_RANGE_NONE;
 }
 
 // Private methods
@@ -899,6 +955,27 @@ void SpellMgr::loadSpellInfoData()
 #endif
 }
 
+void SpellMgr::loadSkillLineAbilityMap()
+{
+    const auto startTime = Util::TimeNow();
+    mSkillLineAbilityMap.clear();
+    mSpellSkillsMap.clear();
+
+    uint32_t count = 0;
+    for (uint32_t i = 0; i < sSkillLineAbilityStore.GetNumRows(); ++i)
+    {
+        const auto skillAbilityEntry = sSkillLineAbilityStore.LookupEntry(i);
+        if (skillAbilityEntry == nullptr)
+            continue;
+
+        mSkillLineAbilityMap.insert(SkillLineAbilityMap::value_type(skillAbilityEntry->Id, skillAbilityEntry));
+        mSpellSkillsMap.insert(std::make_pair(skillAbilityEntry->spell, skillAbilityEntry));
+        ++count;
+    }
+
+    sLogger.info("SpellMgr : Loaded %u skill abilities in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
 void SpellMgr::loadSpellCoefficientOverride()
 {
     //                                                  0           1                     2
@@ -1065,7 +1142,7 @@ void SpellMgr::loadSpellAIThreat()
     } while (result->NextRow());
     delete result;
 
-    sLogger.info("Loaded %u spell ai threat", threatCount);
+    sLogger.info("SpellMgr : Loaded %u spell ai threat", threatCount);
 }
 
 void SpellMgr::loadSpellEffectOverride()
@@ -1135,7 +1212,7 @@ void SpellMgr::loadSpellEffectOverride()
     } while (result->NextRow());
     delete result;
 
-    sLogger.info("Loaded %u spell effect overrides", overridenEffects);
+    sLogger.info("SpellMgr : Loaded %u spell effect overrides", overridenEffects);
 }
 
 void SpellMgr::loadSpellAreas()
@@ -1330,7 +1407,137 @@ void SpellMgr::loadSpellAreas()
     } while (result->NextRow());
     delete result;
 
-    sLogger.info("Loaded %u spell area requirements", areaCount);
+    sLogger.info("SpellMgr : Loaded %u spell area requirements", areaCount);
+}
+
+void SpellMgr::loadSpellRequired()
+{
+    const auto startTime = Util::TimeNow();
+
+    mSpellsRequiringSpell.clear();
+    mSpellRequired.clear();
+
+    //                                                   0         1
+    const auto result = WorldDatabase.Query("SELECT spell_id, req_spell FROM spell_required");
+    if (result == nullptr)
+    {
+        sLogger.debug("SpellMgr : Loaded 0 spell required records. DB table `spell_required` is empty.");
+        return;
+    }
+
+    uint32_t count = 0;
+    do
+    {
+        auto fields = result->Fetch();
+
+        auto spell_id = fields[0].GetUInt32();
+        auto spell_req = fields[1].GetUInt32();
+
+        // Check for valid spells
+        const auto spellInfo = getSpellInfo(spell_id);
+        if (spellInfo == nullptr)
+        {
+            sLogger.debug("SpellMgr : spell_id %u in `spell_required` table is not found, skipped", spell_id);
+            continue;
+        }
+
+        const auto requiredInfo = getSpellInfo(spell_req);
+        if (requiredInfo == nullptr)
+        {
+            sLogger.debug("SpellMgr : req_spell %u in `spell_required` table is not found, skipped", spell_req);
+            continue;
+        }
+
+        if (isSpellRequiringSpell(spell_id, spell_req))
+        {
+            sLogger.debug("SpellMgr : duplicated entry of req_spell %u and spell_id %u in `spell_required`, skipped", spell_req, spell_id);
+            continue;
+        }
+
+        mSpellRequired.insert(std::pair<uint32_t, uint32_t>(spell_id, spell_req));
+        mSpellsRequiringSpell.insert(std::pair<uint32_t, uint32_t>(spell_req, spell_id));
+        ++count;
+    } while (result->NextRow());
+
+    delete result;
+    sLogger.info("SpellMgr : Loaded %u spell required records in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
+void SpellMgr::loadSpellTargetConstraints()
+{
+    const auto result = WorldDatabase.Query("SELECT * FROM spelltargetconstraints WHERE SpellID > 0 ORDER BY SpellID");
+    if (result != nullptr)
+    {
+        uint32_t oldspellId = 0;
+        SpellTargetConstraint* stc = nullptr;
+
+        do
+        {
+            auto fields = result->Fetch();
+
+            if (fields != nullptr)
+            {
+                const auto spellId = fields[0].GetUInt32();
+                if (oldspellId != spellId)
+                {
+                    stc = new SpellTargetConstraint;
+
+                    mSpellTargetConstraintMap.insert(std::pair(spellId, stc));
+                }
+
+                const auto type = fields[1].GetUInt8();
+                const auto value = fields[2].GetUInt32();
+
+                if (type == SPELL_CONSTRAINT_EXPLICIT_CREATURE)
+                {
+                    if (stc != nullptr)
+                    {
+                        stc->addCreature(value);
+                        stc->addExplicitTarget(value);
+                    }
+                }
+                else if (type == SPELL_CONSTRAINT_EXPLICIT_GAMEOBJECT)
+                {
+                    if (stc != nullptr)
+                    {
+                        stc->addGameObject(value);
+                        stc->addExplicitTarget(value);
+                    }
+                }
+                else if (type == SPELL_CONSTRAINT_IMPLICIT_CREATURE)
+                {
+                    if (stc != nullptr)
+                        stc->addCreature(value);
+                }
+                else if (type == SPELL_CONSTRAINT_IMPLICIT_GAMEOBJECT)
+                {
+                    if (stc != nullptr)
+                        stc->addGameObject(value);
+                }
+
+                oldspellId = spellId;
+            }
+        } while (result->NextRow());
+        delete result;
+    }
+
+    sLogger.info("SpellMgr : Loaded constraints for %u spells...", static_cast<uint32_t>(mSpellTargetConstraintMap.size()));
+}
+
+void SpellMgr::loadSpellDisabled()
+{
+    const auto result = WorldDatabase.Query("SELECT * FROM spell_disable");
+    if (result != nullptr)
+    {
+        do
+        {
+            mDisabledSpells.insert(result->Fetch()[0].GetUInt32());
+        } while (result->NextRow());
+
+        delete result;
+    }
+
+    sLogger.info("SpellMgr : Loaded %u disabled spells.", static_cast<uint32_t>(mDisabledSpells.size()));
 }
 
 void SpellMgr::setSpellCoefficient(SpellInfo* sp)

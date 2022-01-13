@@ -54,7 +54,7 @@ class LootRoll : public EventableObject
 {
     public:
 
-        LootRoll(uint32_t timer, uint32_t groupcount, uint64_t guid, uint32_t slotid, uint32_t itemid, uint32_t itemunk1, uint32_t itemunk2, MapMgr* mgr);
+        LootRoll(uint32_t timer, uint32_t groupcount, uint64_t guid, uint8_t slotid, uint32_t itemid, uint32_t itemunk1, uint32_t itemunk2, MapMgr* mgr);
         ~LootRoll();
 
         // player rolled on the item

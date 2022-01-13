@@ -40,7 +40,7 @@ struct QuestProperties
     uint32_t type;
     uint32_t required_races;
     uint32_t required_class;
-    uint32_t required_tradeskill;
+    uint16_t required_tradeskill;
     uint32_t required_tradeskill_value;
     uint32_t required_rep_faction;
     uint32_t required_rep_value;

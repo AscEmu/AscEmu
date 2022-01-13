@@ -95,7 +95,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
     }
 
     // Check if spell is disabled
-    if (sObjectMgr.IsSpellDisabled(getSpellInfo()->getId()))
+    if (sSpellMgr.isSpellDisabled(getSpellInfo()->getId()))
     {
         sendCastResult(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_SPELL_UNAVAILABLE);
         finish(false);
@@ -2309,7 +2309,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                             continue;
 
                         // Get required skill line
-                        uint32_t skillId = 0;
+                        uint16_t skillId = 0;
                         switch (lockInfo->lockmisc[x])
                         {
 #if VERSION_STRING <= WotLK
@@ -2338,7 +2338,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                         if (skillId != 0 || lockInfo->lockmisc[x] == LOCKTYPE_BLASTING)
                         {
                             // If item is used for opening, do not use player's skill level
-                            uint32_t skillLevel = i_caster != nullptr || p_caster == nullptr ? 0 : p_caster->_GetSkillLineCurrent(skillId);
+                            uint32_t skillLevel = i_caster != nullptr || p_caster == nullptr ? 0 : p_caster->getSkillLineCurrent(skillId);
                             // Add skill bonuses from the spell
                             skillLevel += getSpellInfo()->calculateEffectValue(i);;
 
@@ -2570,7 +2570,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 }
 
                 // Check if caster has required skinning level for target
-                const auto skillLevel = p_caster->_GetSkillLineCurrent(creatureTarget->GetRequiredLootSkill());
+                const auto skillLevel = p_caster->getSkillLineCurrent(creatureTarget->GetRequiredLootSkill());
                 // Required skinning level is calculated by multiplying the target's level by 5
                 // but if player's skill level is below 100, then player's skill level is incremented by 100 and target's level is multiplied by 10
                 const int32_t skillDiff = skillLevel >= 100 ? skillLevel - (creatureTarget->getLevel() * 5) : (skillLevel + 100) - (creatureTarget->getLevel() * 10);
@@ -3634,7 +3634,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                     return SPELL_FAILED_CANT_BE_DISENCHANTED;
 #if VERSION_STRING >= TBC
                 // As of patch 2.0.1 disenchanting an item requires minimum skill level
-                if (static_cast<uint32_t>(itemProperties->DisenchantReqSkill) > p_caster->_GetSkillLineCurrent(SKILL_ENCHANTING))
+                if (static_cast<uint32_t>(itemProperties->DisenchantReqSkill) > p_caster->getSkillLineCurrent(SKILL_ENCHANTING))
                     return SPELL_FAILED_CANT_BE_DISENCHANTED_SKILL;
 #endif
                 // TODO: check does the item even have disenchant loot
@@ -3658,7 +3658,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 if (!(itemProperties->Flags & ITEM_FLAG_PROSPECTABLE))
                     return SPELL_FAILED_CANT_BE_PROSPECTED;
                 // Check if player has enough skill in Jewelcrafting
-                if (itemProperties->RequiredSkillRank > p_caster->_GetSkillLineCurrent(SKILL_JEWELCRAFTING))
+                if (itemProperties->RequiredSkillRank > p_caster->getSkillLineCurrent(SKILL_JEWELCRAFTING))
                 {
                     *parameter1 = itemProperties->RequiredSkill;
                     *parameter2 = itemProperties->RequiredSkillRank;
@@ -3698,7 +3698,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 if (!(itemProperties->Flags & ITEM_FLAG_MILLABLE))
                     return SPELL_FAILED_CANT_BE_MILLED;
                 // Check if player has enough skill in Inscription
-                if (itemProperties->RequiredSkillRank > p_caster->_GetSkillLineCurrent(SKILL_INSCRIPTION))
+                if (itemProperties->RequiredSkillRank > p_caster->getSkillLineCurrent(SKILL_INSCRIPTION))
                 {
                     *parameter1 = itemProperties->RequiredSkill;
                     *parameter2 = itemProperties->RequiredSkillRank;
