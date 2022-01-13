@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ChannelMgr.hpp"
 
 #include "Map/Area/AreaManagementGlobals.hpp"
+#include "Map/Area/AreaStorage.hpp"
 #include "Objects/Units/Players/Player.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
@@ -180,12 +181,21 @@ std::string ChannelMgr::generateChannelName(DBC::Structures::ChatChannelsEntry c
         return std::string(channelNameDbc);
 
     char channelName[95];
+    char const* defaultAreaName = "City";
+
+    if (const auto defaultArea = MapManagement::AreaManagement::AreaStorage::GetAreaById(3459))
+    {
+#if VERSION_STRING < Cata
+        defaultAreaName = defaultArea->area_name[0];
+#else
+        defaultAreaName = defaultArea->area_name;
+#endif
+    }
 
     // City specific channels
     if (channelDbc->flags & (CHANNEL_DBC_CITY_ONLY_1 | CHANNEL_DBC_CITY_ONLY_2))
     {
-        // TODO: add localization for "City"
-        std::snprintf(channelName, 95, channelNameDbc, "City");
+        std::snprintf(channelName, 95, channelNameDbc, defaultAreaName);
     }
     else
     {
@@ -199,8 +209,7 @@ std::string ChannelMgr::generateChannelName(DBC::Structures::ChatChannelsEntry c
         }
         else
         {
-            // TODO: not sure of this
-            std::snprintf(channelName, 95, channelNameDbc, "City");
+            std::snprintf(channelName, 95, channelNameDbc, defaultAreaName);
         }
     }
 
