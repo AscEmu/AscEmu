@@ -1059,7 +1059,6 @@ public:
     void exitVehicle(LocationVector const* exitPosition = nullptr);
     void changeSeat(int8_t seatId, bool next = true);
 
-    // Should only be called by AuraEffect::HandleAuraControlVehicle(AuraApplication const* auraApp, uint8 mode, bool apply) const;
     void _exitVehicle(LocationVector const* exitPosition = nullptr);
     void _enterVehicle(Vehicle* vehicle, int8_t seatId);
 
@@ -1124,7 +1123,6 @@ public:
 
     friend class AIInterface;
     friend class Aura;
-    TransportData m_transportData;
 
     virtual bool Teleport(const LocationVector& vec, MapMgr* map) = 0;
 

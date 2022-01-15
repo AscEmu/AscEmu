@@ -182,10 +182,10 @@ struct IOCVehicle
         if (creature == nullptr)
             return true;
 
-        if (creature->getVehicleComponent() == nullptr)
+        if (creature->getVehicle() == nullptr)
             return true;
 
-        if (creature->getVehicleComponent()->GetPassengerCount() > 0)
+        if (creature->getVehicle()->getAvailableSeatCount() != creature->getVehicle()->Seats.size())
             return false;
 
         return true;

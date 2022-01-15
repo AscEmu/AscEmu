@@ -5763,6 +5763,9 @@ void Aura::SpellAuraReduceEffectDuration(AuraEffectModifier* aurEff, bool apply)
 // Target = vehicle
 void Aura::HandleAuraControlVehicle(AuraEffectModifier* aurEff, bool apply)
 {
+    if (!getCaster())
+        return;
+
     if (!getCaster()->isCreatureOrPlayer())
         return;
 
@@ -5770,8 +5773,8 @@ void Aura::HandleAuraControlVehicle(AuraEffectModifier* aurEff, bool apply)
         return;
 
     Unit* caster = static_cast<Unit*>(getCaster());
-    int8_t seatId = aurEff->getEffectBaseDamage();
-    printf("Aura SeatID %u \n", seatId);
+    int8_t seatId = aurEff->getEffectBaseDamage() - 1;
+
     if (apply)
     {
         caster->_enterVehicle(m_target->getVehicleKit(), seatId);
@@ -5784,7 +5787,12 @@ void Aura::HandleAuraControlVehicle(AuraEffectModifier* aurEff, bool apply)
                 caster->ToCreature()->Despawn(0, 0);
         }
 
-        caster->_exitVehicle();
+        if (seatId == m_target->getVehicleKit()->getSeatForNumberPassenger(caster))
+            caster->_exitVehicle();
+        else if (seatId >= 0)
+            m_target->getVehicleKit()->removePassenger(caster);
+        else
+            caster->_exitVehicle();
 
         // some SPELL_AURA_CONTROL_VEHICLE auras have a dummy effect on the player - remove them
         caster->removeAllAurasById(getSpellId());

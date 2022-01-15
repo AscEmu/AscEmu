@@ -8204,7 +8204,7 @@ void Unit::OnPushToWorld()
     if (isVehicle())
         getVehicleKit()->install();
 
-    if (getVehicleKit() != NULL)
+    if (getVehicleKit() != nullptr)
         getVehicleKit()->installAllAccessories(false);
 
     m_zAxisPosition = 0.0f;

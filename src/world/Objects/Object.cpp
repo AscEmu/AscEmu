@@ -3190,6 +3190,9 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
 {
     bool updateMap = false, result = true;
 
+    if (!(std::isfinite(newX) && (std::fabs(newX) <= MAP_HALFSIZE - 0.5f)) && !(std::isfinite(newY) && (std::fabs(newY) <= MAP_HALFSIZE - 0.5f)) && !(std::isfinite(newZ) && (std::fabs(newZ) <= MAP_HALFSIZE - 0.5f)) && !(std::isfinite(newOrientation)))
+        return false;
+
     if (!std::isnan(newX) && !std::isnan(newY) && !std::isnan(newOrientation))
     {
         //It's a good idea to push through EVERY transport position change, no matter how small they are. By: VLack aka. VLsoft
@@ -3226,9 +3229,10 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
 
         if (isCreatureOrPlayer())
         {
-            Unit* u = static_cast<Unit*>(this);
-            //if (u->getVehicle() != nullptr)
-            //    u->getVehicle()->MovePassengers(newX, newY, newZ, newOrientation);
+            if (ToUnit()->getVehicle() != nullptr)
+            {
+                ToUnit()->getVehicle()->relocatePassengers();
+            }
         }
 
         return result;
@@ -3875,6 +3879,19 @@ void Object::SendMessageToSet(WorldPacket* data, bool /*bToSelf*/, bool /*myteam
     for (const auto& itr : mInRangePlayersSet)
     {
         if (itr && (itr->GetPhase() & myphase) != 0)
+            itr->SendPacket(data);
+    }
+}
+
+void Object::SendMessageToSet(WorldPacket* data, Player const* skipp)
+{
+    if (!IsInWorld())
+        return;
+
+    uint32 myphase = GetPhase();
+    for (const auto& itr : mInRangePlayersSet)
+    {
+        if (itr && (itr->GetPhase() & myphase) != 0 && itr != skipp)
             itr->SendPacket(data);
     }
 }

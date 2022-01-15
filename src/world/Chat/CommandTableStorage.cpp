@@ -865,7 +865,6 @@ void CommandTableStorage::Init()
         { "ejectpassenger",     'm', &ChatHandler::HandleVehicleEjectPassengerCommand,      "Ejects the passenger from the specified seat",         nullptr },
         { "ejectallpassengers", 'm', &ChatHandler::HandleVehicleEjectAllPassengersCommand,  "Ejects all passengers from the vehicle",               nullptr },
         { "installaccessories", 'm', &ChatHandler::HandleVehicleInstallAccessoriesCommand,  "Installs the accessories for the selected vehicle",    nullptr },
-        { "removeaccessories",  'm', &ChatHandler::HandleVehicleRemoveAccessoriesCommand,   "Removes the accessories of the selected vehicle",      nullptr },
         { "addpassenger",       'm', &ChatHandler::HandleVehicleAddPassengerCommand,        "Adds a new NPC passenger to the vehicle",              nullptr },
         { nullptr,              '0', nullptr,                                               "",                                                     nullptr }
     };

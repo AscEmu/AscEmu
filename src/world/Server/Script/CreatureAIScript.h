@@ -130,11 +130,13 @@ public:
     virtual void OnSummon(Unit* /*summoner*/) {}
     virtual void OnSummonDies(Creature* summon, Unit* /*killer*/) {}
 
-    virtual void OnEnterVehicle() {}
-    virtual void OnExitVehicle() {}
-    virtual void OnFirstPassengerEntered(Unit* /*_passenger*/) {}
-    virtual void OnVehicleFull() {}
-    virtual void OnLastPassengerLeft(Unit* /*_passenger*/) {}
+    // Vehicles
+    virtual void OnSpellClick(Unit* /*_clicker*/, bool /*spellClickHandled*/) { }
+    virtual void OnInstall() { }
+    virtual void OnUninstall() { }
+    virtual void OnInstallAccessory(Creature* /*_accessory*/) { }
+    virtual void OnAddPassenger(Unit* /*_passenger*/, int8_t /*_seatId*/) { }
+    virtual void OnRemovePassenger(Unit* /*_passenger*/) { }
 
     virtual void OnScriptPhaseChange(uint32_t /*_phaseId*/) {}
     virtual void OnHitBySpell(uint32_t /*_spellId*/, Unit* /*_caster*/) {}

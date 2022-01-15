@@ -2157,15 +2157,11 @@ bool Creature::isCritter()
 
 void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 {
-    /*if (getVehicleComponent() != NULL)
-    {
-        getVehicleComponent()->RemoveAccessories();
-        getVehicleComponent()->EjectAllPassengers();
-    }
+    // Exit Vehicle
+    exitVehicle();
 
-    // Creature falls off vehicle on death
-    if ((m_currentVehicle != NULL))
-        m_currentVehicle->EjectPassenger(this);*/
+    if (getVehicleKit())
+        getVehicleKit()->removeAllPassengers();
 
     //general hook for die
     if (!sHookInterface.OnPreUnitDie(pAttacker, this))

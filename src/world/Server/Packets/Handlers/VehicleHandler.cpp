@@ -76,12 +76,11 @@ void WorldSession::handleRequestVehicleSwitchSeat(WorldPacket& recvPacket)
         if (!seat->canSwitchFromSeat())
             return;
 
-    CmsgRequestVehicleSwitchSeat srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
-        return;
+    WoWGuid guid;
+    int8_t seatId;
 
-    WoWGuid guid = srlPacket.guid;
-    int8_t seatId = srlPacket.seat;
+    recvPacket >> guid;
+    recvPacket >> seatId;
 
     if (vehicle_base->getGuid() == guid.getRawGuid())
     {
@@ -90,16 +89,6 @@ void WorldSession::handleRequestVehicleSwitchSeat(WorldPacket& recvPacket)
     else if (Unit* vehUnit = GetPlayer()->GetMapMgr()->GetUnit(guid.getRawGuid()))
     {
         if (Vehicle* vehicle = vehUnit->getVehicleKit())
-        {
-            if (vehicle->hasEmptySeat(seatId))
-            {
-                vehUnit->handleSpellClick(GetPlayer(), seatId);
-            }
-        }
-    }
-    else
-    {
-        if (Vehicle* vehicle = vehUnit->getVehicle())
         {
             if (vehicle->hasEmptySeat(seatId))
             {

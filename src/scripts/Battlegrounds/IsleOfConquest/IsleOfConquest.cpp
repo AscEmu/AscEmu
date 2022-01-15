@@ -791,7 +791,7 @@ void IsleOfConquest::HookOnUnitDied(Unit *victim)
 
             }
 
-        if (c->getVehicleComponent() != nullptr)
+        if (c->getVehicle() != nullptr)
         {
             // Was it a workshop vehicle?
             for (uint8_t i = 0; i < MAX_PLAYER_TEAMS; i++)

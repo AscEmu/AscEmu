@@ -50,6 +50,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMoveKnockBack.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Creatures/CreatureGroups.h"
+#include "Server/Script/CreatureAIScript.h"
 
 #if VERSION_STRING <= TBC
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
@@ -7088,7 +7089,7 @@ void Unit::handleSpellClick(Unit* clicker, int8_t seatId /*= -1*/)
                 */
 
                 SpellForcedBasePoints bp;
-                bp.basePoints[i] = seatId;
+                bp.set(i, seatId + 1);
                 caster->castSpell(target, clickPair.second.spellId, bp, true);
             }
         }
@@ -7100,6 +7101,14 @@ void Unit::handleSpellClick(Unit* clicker, int8_t seatId /*= -1*/)
         }
 
         spellClickHandled = true;
+    }
+
+    if (isCreature())
+    {
+        if (CreatureAIScript* ai = ToCreature()->GetScript())
+        {
+            ai->OnSpellClick(clicker, spellClickHandled);
+        }
     }
 }
 
@@ -7146,7 +7155,7 @@ void Unit::enterVehicle(Unit* base, int8_t seatId /*= -1*/)
     */
 
     SpellForcedBasePoints bp;
-    bp.basePoints[0] = seatId;
+    bp.set(0, seatId + 1);
     castSpell(base, VEHICLE_SPELL_RIDE_HARDCODED, bp, true);
 }
 
@@ -7224,6 +7233,9 @@ void Unit::changeSeat(int8_t seatId, bool next)
     // Unit riding a vehicle must always have control vehicle aura on target
     for (const auto& aur : m_vehicle->getBase()->m_auras)
     {
+        if (!aur)
+            continue;
+
         if (!aur->hasAuraEffect(SPELL_AURA_CONTROL_VEHICLE))
             continue;
 
@@ -7234,7 +7246,7 @@ void Unit::changeSeat(int8_t seatId, bool next)
         {
             auto aurEff = aur->getModifiableAuraEffect(i);
             if (aurEff->getAuraEffectType() == SPELL_AURA_CONTROL_VEHICLE)
-                aurEff->setEffectBaseDamage(seatId);
+                aurEff->setEffectBaseDamage(seatId + 1);
         }
 
         aur->refresh();
@@ -7308,9 +7320,7 @@ void Unit::_exitVehicle(LocationVector const* exitPosition)
     getMovementManager()->launchMoveSpline(std::move(init), EVENT_VEHICLE_EXIT, MOTION_PRIORITY_HIGHEST);
 
     if (player)
-    {
-        // Todo Resummon Pets if Player had any before he mounted
-    }
+        player->SpawnActivePet();
 
     // Despawn Accessories
     if (vehicle->getBase()->hasUnitStateFlag(UNIT_STATE_ACCESSORY) && vehicle->getBase()->getObjectTypeId() == TYPEID_UNIT)

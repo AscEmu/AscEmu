@@ -5695,7 +5695,7 @@ public:
     static int IsOnVehicle(lua_State *L, Unit *ptr)
     {
         TEST_UNITPLAYER()
-        if ((ptr->getCurrentVehicle() != nullptr) || (ptr->isPlayer() && ptr->isVehicle()))
+        if ((ptr->getVehicleKit() != nullptr) || (ptr->isPlayer() && ptr->isVehicle()))
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -5721,7 +5721,7 @@ public:
         if (creature_entry == 0)
             return 0;
 
-        if ((ptr->getCurrentVehicle() != nullptr) && (!ptr->isPlayer() || !ptr->isVehicle()))
+        if ((ptr->getVehicleKit() != nullptr) && (!ptr->isPlayer() || !ptr->isVehicle()))
             return 0;
 
         CreatureProperties const* cp = sMySQLStore.getCreatureProperties(creature_entry);
@@ -5741,9 +5741,7 @@ public:
         c->Load(cp, v.x, v.y, v.z, v.o);
         c->removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
         c->PushToWorld(ptr->GetMapMgr());
-
-        // Need to delay this a bit since first the client needs to see the vehicle
-        ptr->addPassengerToVehicle(c->getGuid(), delay);
+        c->enterVehicle(ptr);;
         return 0;
     }
 
@@ -5751,22 +5749,22 @@ public:
     {
         TEST_UNITPLAYER()
         Vehicle* v = nullptr;
-        if (ptr->getCurrentVehicle() != nullptr)
+        if (ptr->getVehicleKit() != nullptr)
         {
-            v = ptr->getCurrentVehicle();
+            v = ptr->getVehicleKit();
         }
         else
         {
-            if (ptr->isPlayer() && (ptr->getVehicleComponent() != nullptr))
-                v = ptr->getVehicleComponent();
+            if (ptr->isPlayer() && (ptr->getVehicle() != nullptr))
+                v = ptr->getVehicle();
         }
 
         if (v == nullptr)
             return 0;
 
-        v->EjectAllPassengers();
+        v->removeAllPassengers();
 
-        Unit* o = v->GetOwner();
+        Unit* o = v->getBase();
 
         if (o->isPlayer())
             o->RemoveAllAuraType(SPELL_AURA_MOUNTED);
@@ -5781,16 +5779,16 @@ public:
         TEST_UNITPLAYER()
         Vehicle *v = nullptr;
 
-        if (ptr->getCurrentVehicle() != nullptr)
-            v = ptr->getCurrentVehicle();
+        if (ptr->getVehicleKit() != nullptr)
+            v = ptr->getVehicleKit();
         else
-            if (ptr->isPlayer() && (ptr->getVehicleComponent() != nullptr))
-                v = ptr->getVehicleComponent();
+            if (ptr->isPlayer() && (ptr->getVehicle() != nullptr))
+                v = ptr->getVehicle();
 
         if (v == nullptr)
             return 0;
 
-        if (!v->HasEmptySeat())
+        if (!v->hasEmptySeat())
             return 0;
 
         if (lua_gettop(L) != 1)
@@ -5802,12 +5800,12 @@ public:
         if (cp == nullptr)
             return 0;
 
-        Unit* u = v->GetOwner();
+        Unit* u = v->getBase();
 
         Creature* c = u->GetMapMgr()->CreateCreature(creature_entry);
         c->Load(cp, u->GetPositionX(), u->GetPositionY(), u->GetPositionZ(), u->GetOrientation());
         c->PushToWorld(u->GetMapMgr());
-        c->addPassengerToVehicle(u->getGuid(), 1);
+        c->enterVehicle(u);
 
         return 0;
     }
@@ -5817,16 +5815,16 @@ public:
         TEST_UNITPLAYER()
         Vehicle *v = nullptr;
 
-        if (ptr->getCurrentVehicle() != nullptr)
-            v = ptr->getCurrentVehicle();
+        if (ptr->getVehicleKit() != nullptr)
+            v = ptr->getVehicleKit();
         else
-            if (ptr->isPlayer() && (ptr->getVehicleComponent() != nullptr))
-                v = ptr->getVehicleComponent();
+            if (ptr->isPlayer() && (ptr->getVehicle() != nullptr))
+                v = ptr->getVehicle();
 
         if (v == nullptr)
             return 0;
 
-        if (v->HasEmptySeat())
+        if (v->hasEmptySeat())
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -5843,7 +5841,10 @@ public:
         uint64_t guid = CHECK_GUID(L, 1);
         uint32_t delay = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 
-        ptr->addPassengerToVehicle(guid, delay);
+        Unit* _unit = ptr->GetMapMgrUnit(guid);
+
+        if (_unit)
+            _unit->enterVehicle(ptr);
 
         return 0;
     }
@@ -5851,13 +5852,13 @@ public:
     static int ExitVehicle(lua_State* /*L*/, Unit* ptr)
     {
         TEST_UNITPLAYER()
-        if (ptr->getCurrentVehicle() != nullptr)
+        if (ptr->getVehicleKit() != nullptr)
         {
-            ptr->getCurrentVehicle()->EjectPassenger(ptr);
+            ptr->exitVehicle();
         }
         else
         {
-            if (ptr->isPlayer() && ptr->getVehicleComponent() != nullptr)
+            if (ptr->isPlayer() && ptr->getVehicle() != nullptr)
                 ptr->RemoveAllAuraType(SPELL_AURA_MOUNTED);
         }
         return 0;
@@ -5883,7 +5884,7 @@ public:
         if (u == nullptr)
             return 0;
 
-        u->getVehicleComponent()->EjectAllPassengers();
+        u->getVehicle()->removeAllPassengers();
         return 0;
     }
 
@@ -5894,12 +5895,17 @@ public:
         if (u == nullptr)
             return 0;
 
+        if (u->getVehicle() == nullptr)
+            return 0;
+
         if (lua_gettop(L) != 1)
             return 0;
 
-        uint32_t seat = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        int8_t seat = static_cast<int8_t>(luaL_checkinteger(L, 1));
 
-        u->getVehicleComponent()->EjectPassengerFromSeat(seat);
+        if (Unit* passenger = u->getVehicle()->getPassenger(seat))
+            passenger->exitVehicle();
+
         return 0;
     }
 
@@ -5919,7 +5925,7 @@ public:
         if (passenger == nullptr)
             return 0;
 
-        u->getVehicleComponent()->MovePassengerToSeat(passenger, seat);
+        passenger->changeSeat(seat);
         return 0;
     }
 

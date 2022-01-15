@@ -995,7 +995,6 @@ class SERVER_DECL WorldSession
         uint8_t _side;
 
         WoWGuid m_MoverWoWGuid;
-        uint64 m_MoverGuid;
 
         uint32 _logoutTime; // time we received a logout request -- wait 20 seconds, and quit
 

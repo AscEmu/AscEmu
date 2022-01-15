@@ -1,25 +1,9 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-
-#ifndef VEHICLE_H
-#define VEHICLE_H
+#pragma once
 
 #include "Objects/Transporter.h"
 #include <array>
@@ -154,14 +138,16 @@ public:
     uint32_t getEntry() const { return _creatureEntry; }
 
     bool hasEmptySeat(int8_t seatId) const;
+    bool hasEmptySeat() const;
     Unit* getPassenger(int8_t seatId) const;
     SeatMap::const_iterator getNextEmptySeat(int8_t seatId, bool next) const;
     VehicleSeatAddon const* getSeatAddonForSeatOfPassenger(Unit const* passenger) const;
     uint8_t getAvailableSeatCount() const;
 
     bool addPassenger(Unit* passenger, int8_t seatId = -1);
-    bool tryAddPassenger(Unit* passenger, SeatMap::iterator Seat);
+    bool tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat);
     Vehicle* removePassenger(Unit* passenger);
+    void movePassengers(float x, float y, float z, float o);
     void relocatePassengers();
     void removeAllPassengers();
     bool isVehicleInUse() const;
@@ -173,6 +159,7 @@ public:
     SeatMap Seats;
 
     DBC::Structures::VehicleSeatEntry const* getSeatForPassenger(Unit const* passenger) const;
+    int8_t getSeatForNumberPassenger(Unit const* passenger) const;
 
 protected:
     friend class VehicleJoinEvent;
@@ -206,5 +193,3 @@ private:
         VehicleStatus _status;
         LocationVector _lastShootPos;
 };
-
-#endif      // _VEHICLE_H

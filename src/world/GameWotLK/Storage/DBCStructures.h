@@ -1612,7 +1612,7 @@ namespace DBC::Structures
         VEHICLE_SEAT_FLAG_UNK8                                                  = 0x00000080,
         VEHICLE_SEAT_FLAG_UNK9                                                  = 0x00000100,
         VEHICLE_SEAT_FLAG_HIDE_PASSENGER                                        = 0x00000200,           // Passenger is hidden
-        VEHICLE_SEAT_FLAG_UNK11                                                 = 0x00000400,
+        VEHICLE_SEAT_FLAG_ALLOW_TURNING                                         = 0x00000400,
         VEHICLE_SEAT_FLAG_CAN_CONTROL                                           = 0x00000800,           // Lua_UnitInVehicleControlSeat
         VEHICLE_SEAT_FLAG_CAN_CAST_MOUNT_SPELL                                  = 0x00001000,           // Can cast spells with SPELL_AURA_MOUNTED from seat (possibly 4.x only, 0 seats on 3.3.5a)
         VEHICLE_SEAT_FLAG_UNCONTROLLED                                          = 0x00002000,           // can override !& VEHICLE_SEAT_FLAG_CAN_ENTER_OR_EXIT

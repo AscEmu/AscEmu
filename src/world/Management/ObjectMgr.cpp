@@ -183,19 +183,8 @@ void ObjectMgr::finalize()
     }
 
     sLogger.info("ObjectMgr : Cleaning up vehicle accessories...");
-    /*for (std::map< uint32, std::vector< VehicleAccessoryEntry* >* >::iterator itr = vehicle_accessories.begin(); itr != vehicle_accessories.end(); ++itr)
-    {
-        std::vector< VehicleAccessoryEntry* > *v = itr->second;
-
-        for (std::vector< VehicleAccessoryEntry* >::iterator itr2 = v->begin(); itr2 != v->end(); ++itr2)
-            delete *itr2;
-        v->clear();
-
-        delete v;
-    }
-
-    vehicle_accessories.clear();*/
-
+    _vehicleAccessoryStore.clear();
+    _vehicleSeatAddonStore.clear();
 
     sLogger.info("ObjectMgr : Cleaning up worldstate templates...");
     for (std::map< uint32, std::multimap< uint32, WorldState >* >::iterator itr = worldstate_templates.begin(); itr != worldstate_templates.end(); ++itr)
