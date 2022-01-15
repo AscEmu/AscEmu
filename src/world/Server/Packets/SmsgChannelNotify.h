@@ -79,7 +79,7 @@ namespace AscEmu::Packets
                 break;
 #if VERSION_STRING >= TBC
                 case CHANNEL_NOTIFY_FLAG_YOULEFT:
-                    packet << channelId << uint8_t(0);
+                    packet << channelId << uint8_t(channelId != 0);
                 break;
 #endif
                 case CHANNEL_NOTIFY_FLAG_MODE_CHG:
