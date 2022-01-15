@@ -213,7 +213,7 @@ namespace luaGlobalFunctions
         const char* TableName = luaL_checkstring(L, 1);
         if (!stricmp(TableName, "spell_disable"))
         {
-            sObjectMgr.ReloadDisabledSpells();
+            sSpellMgr.reloadSpellDisabled();
         }
         else if (!stricmp(TableName, "vendors"))
         {

@@ -365,7 +365,7 @@ void Item::DeleteMe()
     delete this;
 }
 
-uint32 GetSkillByProto(uint32 Class, uint32 SubClass)
+uint16_t GetSkillByProto(uint32 Class, uint32 SubClass)
 {
     if (Class == 4 && SubClass < 7)
     {

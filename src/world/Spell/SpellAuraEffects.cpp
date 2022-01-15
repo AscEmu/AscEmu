@@ -1578,8 +1578,19 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
                     if (aura->getSpellInfo()->getSpellFamilyName() != 5)
                         continue;
 
-                    auto skill_line_ability = sObjectMgr.GetSpellSkill(aura->getSpellId());
-                    if (skill_line_ability == nullptr || skill_line_ability->skilline != SKILL_AFFLICTION)
+                    auto _continue = false;
+                    const auto spellSkillBounds = sSpellMgr.getSkillEntryForSpellBounds(aura->getSpellId());
+                    for (auto spellSkillItr = spellSkillBounds.first; spellSkillItr != spellSkillBounds.second; ++spellSkillItr)
+                    {
+                        auto skill_line_ability = spellSkillItr->second;
+                        if (skill_line_ability == nullptr || skill_line_ability->skilline != SKILL_AFFLICTION)
+                        {
+                            _continue = true;
+                            break;
+                        }
+                    }
+
+                    if (_continue)
                         continue;
 
                     itx = auras.find(aura->getCasterGuid());

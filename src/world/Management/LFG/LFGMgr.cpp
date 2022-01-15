@@ -478,7 +478,6 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
     uint64 gguid = grp ? grp->GetID() : guid;
     LfgJoinResultData joinData;
     PlayerSet players;
-    Player* plr = nullptr;
     uint32 rDungeonId = 0;
     bool isContinue = grp && grp->isLFGGroup() && GetState(gguid) != LFG_STATE_FINISHED_DUNGEON;
     LfgDungeonSet dungeons = selectedDungeons;

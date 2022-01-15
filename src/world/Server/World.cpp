@@ -128,6 +128,9 @@ void World::finalize()
     sLogger.info("WordFilter : ~WordFilter()");
     delete g_chatFilter;
 
+    sLogger.info("SpellMgr : ~SpellMgr()");
+    sSpellMgr.finalize();
+
     sLogger.info("MySQLDataStore : ~MySQLDataStore()");
     sMySQLStore.finalize();
 
@@ -697,7 +700,7 @@ bool World::setInitialWorldSettings()
     sWorldPacketLog.initWorldPacketLog(worldConfig.logger.enableWorldPacketLog);
 
     sLogger.info("World : Loading SpellInfo data...");
-    sSpellMgr.startSpellMgr();
+    sSpellMgr.initialize();
 
     if (worldConfig.terrainCollision.isCollisionEnabled)
     {
@@ -893,11 +896,7 @@ void World::loadMySQLTablesByTask()
 
     sObjectMgr.LoadInstanceEncounters();
     sObjectMgr.LoadCreatureTimedEmotes();
-    sObjectMgr.LoadSpellSkills();
     sObjectMgr.LoadVendors();
-    sObjectMgr.LoadSpellTargetConstraints();
-    sObjectMgr.LoadSpellRequired();
-    sObjectMgr.LoadSkillLineAbilityMap();
     sObjectMgr.loadTrainers();
     sObjectMgr.LoadPetSpellCooldowns();
     sObjectMgr.LoadGuildCharters();

@@ -117,7 +117,7 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
     else
         m_rune_avail_before = 0;
 
-    m_target_constraint = sObjectMgr.GetSpellTargetConstraintForSpell(info->getId());
+    m_target_constraint = sSpellMgr.getSpellTargetConstraintForSpell(info->getId());
 
     m_missilePitch = 0;
     m_missileTravelTime = 0;
@@ -1588,16 +1588,17 @@ void Spell::DetermineSkillUp()
     if (p_caster == nullptr)
         return;
 
-    auto skill_line_ability = sObjectMgr.GetSpellSkill(getSpellInfo()->getId());
+    auto skill_line_ability = sSpellMgr.getFirstSkillEntryForSpell(getSpellInfo()->getId());
     if (skill_line_ability == nullptr)
         return;
 
     float chance = 0.0f;
 
-    if (p_caster->_HasSkillLine(skill_line_ability->skilline))
+    const auto skillLine = static_cast<uint16_t>(skill_line_ability->skilline);
+    if (p_caster->hasSkillLine(skillLine))
     {
-        uint32 amt = p_caster->_GetSkillLineCurrent(skill_line_ability->skilline, false);
-        uint32 max = p_caster->_GetSkillLineMax(skill_line_ability->skilline);
+        uint32 amt = p_caster->getSkillLineCurrent(skillLine, false);
+        uint32 max = p_caster->getSkillLineMax(skillLine);
         if (amt >= max)
             return;
         if (amt >= skill_line_ability->grey)   //grey
@@ -1610,7 +1611,7 @@ void Spell::DetermineSkillUp()
             chance = 100.0f;
     }
     if (Util::checkChance(chance * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
-        p_caster->_AdvanceSkillLine(skill_line_ability->skilline, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
+        p_caster->advanceSkillLine(skillLine, static_cast<uint16_t>(float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
 }
 
 bool Spell::IsAspect()
@@ -2859,7 +2860,7 @@ Corpse* Spell::GetCorpseTarget() const
     return corpseTarget;
 }
 
-void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multiplicator)
+void Spell::DetermineSkillUp(uint16_t skillid, uint32 targetlevel, uint32 multiplicator)
 {
     if (p_caster == nullptr)
         return;
@@ -2867,7 +2868,7 @@ void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multipli
     if (p_caster->GetSkillUpChance(skillid) < 0.01)
         return;//to prevent getting higher skill than max
 
-    int32 diff = p_caster->_GetSkillLineCurrent(skillid, false) / 5 - targetlevel;
+    int32 diff = p_caster->getSkillLineCurrent(skillid, false) / 5 - targetlevel;
 
     if (diff < 0)
         diff = -diff;
@@ -2887,9 +2888,9 @@ void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multipli
 
     if (Util::checkChance((chance * worldConfig.getFloatRate(RATE_SKILLCHANCE)) * multiplicator))
     {
-        p_caster->_AdvanceSkillLine(skillid, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
+        p_caster->advanceSkillLine(skillid, static_cast<uint16_t>(float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
 
-        uint32 value = p_caster->_GetSkillLineCurrent(skillid, true);
+        uint32 value = p_caster->getSkillLineCurrent(skillid, true);
         uint32 spellid = 0;
 
         // Lifeblood
@@ -2981,23 +2982,22 @@ void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multipli
         }
 
         if (spellid != 0)
-            p_caster->addSpell(spellid);
+            p_caster->addSpell(spellid, skillid);
     }
 }
 
-void Spell::DetermineSkillUp(uint32 skillid)
+void Spell::DetermineSkillUp(uint16_t skillid)
 {
     //This code is wrong for creating items and disenchanting.
     if (p_caster == nullptr)
         return;
 
-    float chance = 0.0f;
-
-    auto skill_line_ability = sObjectMgr.GetSpellSkill(getSpellInfo()->getId());
-    if (skill_line_ability != nullptr && skillid == skill_line_ability->skilline && p_caster->_HasSkillLine(skillid))
+    auto skill_line_ability = sSpellMgr.getFirstSkillEntryForSpell(getSpellInfo()->getId());
+    if (skill_line_ability != nullptr && skillid == skill_line_ability->skilline && p_caster->hasSkillLine(skillid))
     {
-        uint32 amt = p_caster->_GetSkillLineCurrent(skillid, false);
-        uint32 max = p_caster->_GetSkillLineMax(skillid);
+        float chance = 0.0f;
+        uint32 amt = p_caster->getSkillLineCurrent(skillid, false);
+        uint32 max = p_caster->getSkillLineMax(skillid);
         if (amt >= max)
             return;
         if (amt >= skill_line_ability->grey)   //grey
@@ -3008,9 +3008,10 @@ void Spell::DetermineSkillUp(uint32 skillid)
             chance = 66.0f;
         else //brown
             chance = 100.0f;
+
+        if (Util::checkChance(chance * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
+            p_caster->advanceSkillLine(skillid, static_cast<uint16_t>(float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
     }
-    if (Util::checkChance(chance * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
-        p_caster->_AdvanceSkillLine(skillid, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
 }
 
 void Spell::SafeAddTarget(std::vector<uint64_t>* tgt, uint64 guid)

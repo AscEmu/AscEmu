@@ -134,8 +134,8 @@ struct WoWPlayer_SkillInfo
     uint16_t step;
     uint16_t current_value;
     uint16_t max_value;
-    int16_t bonus_temporary;
-    int16_t bonus_permanent;
+    uint16_t bonus_temporary;
+    uint16_t bonus_permanent;
 };
 
 struct WoWPlayer : WoWUnit
@@ -255,8 +255,8 @@ struct WoWPlayer_SkillInfo
     uint16_t step;
     uint16_t current_value;
     uint16_t max_value;
-    int16_t bonus_temporary;
-    int16_t bonus_permanent;
+    uint16_t bonus_temporary;
+    uint16_t bonus_permanent;
 };
 
 struct WoWPlayer : WoWUnit
@@ -399,8 +399,8 @@ struct WoWPlayer_SkillInfo
     uint16_t step;
     uint16_t current_value;
     uint16_t max_value;
-    int16_t bonus_temporary;
-    int16_t bonus_permanent;
+    uint16_t bonus_temporary;
+    uint16_t bonus_permanent;
 };
 
 struct WoWPlayer : WoWUnit

@@ -1312,10 +1312,10 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
             }
             break;
             case ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL:
-                SetCriteriaProgress(achievementCriteria, GetPlayer()->_GetSkillLineCurrent(achievementCriteria->reach_skill_level.skillID, true));
+                SetCriteriaProgress(achievementCriteria, GetPlayer()->getSkillLineCurrent(static_cast<uint16_t>(achievementCriteria->reach_skill_level.skillID), true));
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL:
-                SetCriteriaProgress(achievementCriteria, GetPlayer()->_GetSkillLineMax(achievementCriteria->learn_skill_level.skillID) / 75);
+                SetCriteriaProgress(achievementCriteria, GetPlayer()->getSkillLineMax(static_cast<uint16_t>(achievementCriteria->learn_skill_level.skillID) / 75));
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT:
                 SetCriteriaProgress(achievementCriteria, GetPlayer()->getBankSlots());

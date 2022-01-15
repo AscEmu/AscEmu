@@ -122,10 +122,14 @@ void CreatureAIScript::_internalOnDied(Unit* killer)
     summons.despawnAll();
 
     // Finish Encounter
-    getInstanceScript()->setData(getCreature()->getEntry(), Finished);
+    if (getInstanceScript() != nullptr)
+    {
+        getInstanceScript()->setData(getCreature()->getEntry(), Finished);
 #if VERSION_STRING >= WotLK
-    getInstanceScript()->UpdateEncountersStateForCreature(getCreature()->getEntry(), getCreature()->GetMapMgr()->pInstance->m_difficulty);
+        getInstanceScript()->UpdateEncountersStateForCreature(getCreature()->getEntry(), getCreature()->GetMapMgr()->pInstance->m_difficulty);
 #endif
+    }
+
     resetScriptPhase();
 }
 

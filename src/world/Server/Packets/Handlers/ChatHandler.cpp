@@ -74,7 +74,7 @@ bool WorldSession::isFloodProtectionTriggered()
     return false;
 }
 
-static const uint32_t LanguageSkills[NUM_LANGUAGES] =
+static const uint16_t LanguageSkills[NUM_LANGUAGES] =
 {
     0,          // UNIVERSAL        0x00
     109,        // ORCISH           0x01
@@ -135,7 +135,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
     if (messageLanguage != LANG_ADDON)
     {
         if (const auto language_skill = LanguageSkills[messageLanguage])
-            player_can_speak_language = _player->_HasSkillLine(language_skill);
+            player_can_speak_language = _player->hasSkillLine(language_skill);
 
         if (worldConfig.player.isInterfactionChatEnabled)
         {

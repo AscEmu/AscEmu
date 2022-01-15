@@ -351,7 +351,7 @@ DBC::Structures::ItemRandomSuffixEntry const* LootMgr::GetRandomSuffix(ItemPrope
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Loot Roll
-LootRoll::LootRoll(uint32_t /*timer*/, uint32_t groupcount, uint64_t guid, uint32_t slotid, uint32_t itemid, uint32_t randomsuffixid, uint32_t randompropertyid, MapMgr* mgr) : EventableObject()
+LootRoll::LootRoll(uint32_t /*timer*/, uint32_t groupcount, uint64_t guid, uint8_t slotid, uint32_t itemid, uint32_t randomsuffixid, uint32_t randompropertyid, MapMgr* mgr) : EventableObject()
 {
     _mgr = mgr;
     sEventMgr.AddEvent(this, &LootRoll::finalize, EVENT_LOOT_ROLL_FINALIZE, 60000, 1, 0);
@@ -582,7 +582,7 @@ bool LootItem::allowedForPlayer(Player* player) const
         return false;
 
     // not show loot for players without profession or those who already know the recipe
-    if ((itemproto->Flags & ITEM_FLAG_SMART_LOOT) && (!player->_HasSkillLine(itemproto->RequiredSkill) || player->HasSpell(itemproto->Spells[1].Id)))
+    if ((itemproto->Flags & ITEM_FLAG_SMART_LOOT) && (!player->hasSkillLine(itemproto->RequiredSkill) || player->HasSpell(itemproto->Spells[1].Id)))
         return false;
 
     // not show loot for not own team

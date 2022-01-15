@@ -98,7 +98,7 @@ class Wormhole : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        if (plr->_GetSkillLineCurrent(202, false) >= 415)
+        if (plr->getSkillLineCurrent(202, false) >= 415)
         {
             GossipMenu menu(pObject->getGuid(), 14785);
             menu.addItem(GOSSIP_ICON_CHAT, 447, 1);     // Borean Tundra

@@ -104,7 +104,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectParry,                   //  22 SPELL_EFFECT_PARRY
     &Spell::SpellEffectBlock,                   //  23 SPELL_EFFECT_BLOCK
     &Spell::SpellEffectCreateItem,              //  24 SPELL_EFFECT_CREATE_ITEM
-    &Spell::SpellEffectWeapon,                  //  25 SPELL_EFFECT_WEAPON
+    &Spell::spellEffectWeapon,                  //  25 SPELL_EFFECT_WEAPON
     &Spell::spellEffectDefense,                 //  26 SPELL_EFFECT_DEFENSE
     &Spell::SpellEffectPersistentAA,            //  27 SPELL_EFFECT_PERSISTENT_AA
     &Spell::SpellEffectSummon,                  //  28 SPELL_EFFECT_SUMMON
@@ -119,11 +119,11 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectSpellDefense,            //  37 SPELL_EFFECT_SPELL_DEFENSE
     &Spell::SpellEffectDispel,                  //  38 SPELL_EFFECT_DISPEL
     &Spell::spellEffectNotUsed,                 //  39 SPELL_EFFECT_LANGUAGE
-    &Spell::SpellEffectDualWield,               //  40 SPELL_EFFECT_DUAL_WIELD
+    &Spell::spellEffectDualWield,               //  40 SPELL_EFFECT_DUAL_WIELD
     &Spell::SpellEffectJumpTarget,              //  41 SPELL_EFFECT_JUMP_TARGET
     &Spell::SpellEffectJumpBehindTarget,        //  42 SPELL_EFFECT_JUMP_BEHIND_TARGET
     &Spell::spellEffectNotImplemented,          //  43 SPELL_EFFECT_NULL_43
-    &Spell::SpellEffectSkillStep,               //  44 SPELL_EFFECT_SKILL_STEP
+    &Spell::spellEffectSkillStep,               //  44 SPELL_EFFECT_SKILL_STEP
     &Spell::SpellEffectAddHonor,                //  45 SPELL_EFFECT_ADD_HONOR
     &Spell::SpellEffectSpawn,                   //  46 SPELL_EFFECT_SPAWN
     &Spell::spellEffectNotImplemented,          //  47 SPELL_EFFECT_NULL_47
@@ -197,7 +197,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectDurabilityDamagePCT,     // 115 SPELL_EFFECT_DURABILITY_DAMAGE_PCT
     &Spell::SpellEffectSkinPlayerCorpse,        // 116 SPELL_EFFECT_SKIN_PLAYER_CORPSE
     &Spell::spellEffectNotImplemented,          // 117 SPELL_EFFECT_NULL_117
-    &Spell::SpellEffectSkill,                   // 118 SPELL_EFFECT_SKILL
+    &Spell::spellEffectSkill,                   // 118 SPELL_EFFECT_SKILL
     &Spell::SpellEffectApplyPetAA,              // 119 SPELL_EFFECT_APPLY_PET_AA
     &Spell::spellEffectNotImplemented,          // 120 SPELL_EFFECT_NULL_120
     &Spell::SpellEffectDummyMelee,              // 121 SPELL_EFFECT_DUMMY_MELEE
@@ -532,13 +532,68 @@ void Spell::spellEffectSummonTotem(uint8_t summonSlot, CreatureProperties const*
     totem->PushToWorld(u_caster->GetMapMgr());
 }
 
+void Spell::spellEffectWeapon(uint8_t /*effectIndex*/)
+{
+    if (playerTarget == nullptr)
+        return;
+
+    uint16_t skillId = 0;
+    const auto skillLineAbility = sSpellMgr.getFirstSkillEntryForSpell(getSpellInfo()->getId());
+    if (skillLineAbility != nullptr)
+        skillId = static_cast<uint16_t>(skillLineAbility->skilline);
+
+    const auto skillLine = sSkillLineStore.LookupEntry(skillId);
+    if (skillLine == nullptr)
+        return;
+
+    if (!playerTarget->hasSkillLine(skillId))
+        playerTarget->addSkillLine(skillId, 1, 0);
+}
+
 void Spell::spellEffectDefense(uint8_t /*effectIndex*/)
 {
     if (playerTarget == nullptr)
         return;
 
-    if (!playerTarget->_HasSkillLine(SKILL_DEFENSE))
-        playerTarget->_AddSkillLine(SKILL_DEFENSE, 1, playerTarget->getLevel() * 5);
+    if (!playerTarget->hasSkillLine(SKILL_DEFENSE))
+        playerTarget->addSkillLine(SKILL_DEFENSE, 1, 0);
+}
+
+void Spell::spellEffectDualWield(uint8_t /*effectIndex*/)
+{
+    if (unitTarget == nullptr)
+        return;
+
+    unitTarget->setDualWield(true);
+}
+
+void Spell::spellEffectSkillStep(uint8_t effectIndex)
+{
+    if (playerTarget == nullptr)
+        return;
+
+    auto skillId = static_cast<uint16_t>(getSpellInfo()->getEffectMiscValue(effectIndex));
+#if VERSION_STRING <= WotLK
+    // TODO: check if this is needed anymore
+    // Legacy comment: somehow for lockpicking misc is different than the skill :s
+    if (skillId == 242)
+        skillId = SKILL_LOCKPICKING;
+#endif
+
+    const auto skillLine = sSkillLineStore.LookupEntry(skillId);
+    if (skillLine == nullptr)
+        return;
+
+    // Set new skill maximum value for professions only
+    // Other types will be handled on skill apply
+    uint16_t max = 0;
+    if (skillLine->type == SKILL_TYPE_PROFESSION || skillLine->type == SKILL_TYPE_SECONDARY)
+        max = static_cast<uint16_t>(damage * 75);
+
+    if (playerTarget->hasSkillLine(skillId))
+        playerTarget->modifySkillMaximum(skillId, max);
+    else
+        playerTarget->addSkillLine(skillId, 1, max);
 }
 
 void Spell::spellEffectProficiency(uint8_t /*effectIndex*/)
@@ -546,35 +601,7 @@ void Spell::spellEffectProficiency(uint8_t /*effectIndex*/)
     if (playerTarget == nullptr)
         return;
 
-    uint32_t skillId = 0;
-    const auto skill_line_ability = sObjectMgr.GetSpellSkill(getSpellInfo()->getId());
-    if (skill_line_ability != nullptr)
-        skillId = skill_line_ability->skilline;
-
-    const auto skill_line = sSkillLineStore.LookupEntry(skillId);
-    if (skill_line == nullptr)
-        return;
-
-    // Add the skill to player if player does not have it
-    if (!playerTarget->_HasSkillLine(skillId))
-    {
-        if (skill_line->type == SKILL_TYPE_WEAPON)
-            playerTarget->_AddSkillLine(skillId, 1, 5 * playerTarget->getLevel());
-        else
-            playerTarget->_AddSkillLine(skillId, 1, 1);
-    }
-
-    const auto subclass = getSpellInfo()->getEquippedItemSubClass();
-    if (getSpellInfo()->getEquippedItemClass() == ITEM_CLASS_ARMOR && !(playerTarget->getArmorProficiency() & subclass))
-    {
-        playerTarget->addArmorProficiency(subclass);
-        playerTarget->sendSetProficiencyPacket(ITEM_CLASS_ARMOR, playerTarget->getArmorProficiency());
-    }
-    else if (getSpellInfo()->getEquippedItemClass() == ITEM_CLASS_WEAPON && !(playerTarget->getWeaponProficiency() & subclass))
-    {
-        playerTarget->addWeaponProficiency(subclass);
-        playerTarget->sendSetProficiencyPacket(ITEM_CLASS_WEAPON, playerTarget->getWeaponProficiency());
-    }
+    playerTarget->applyItemProficienciesFromSpell(getSpellInfo(), true);
 }
 
 void Spell::spellEffectTriggerSpell(uint8_t effectIndex)
@@ -597,13 +624,34 @@ void Spell::spellEffectScriptEffect(uint8_t effectIndex)
     if (scriptResult == SpellScriptCheckDummy::DUMMY_OK)
         return;
 
+    // Legacy scripts
     if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), effectIndex, this))
         return;
 
+    // Legacy scripts
     if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->getId(), effectIndex, this))
         return;
 
     sLogger.failure("Spell::spellEffectScriptEffect : Spell %u (%s) has a scripted effect index (%hhu), but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), effectIndex);
+}
+
+void Spell::spellEffectSkill(uint8_t effectIndex)
+{
+    if (playerTarget == nullptr)
+        return;
+
+    const auto skillLine = static_cast<uint16_t>(getSpellInfo()->getEffectMiscValue(effectIndex));
+    const auto amount = static_cast<uint16_t>(damage * 75);
+
+    if (playerTarget->hasSkillLine(skillLine))
+    {
+        if (amount > playerTarget->getSkillLineMax(skillLine))
+            playerTarget->modifySkillMaximum(skillLine, amount);
+    }
+    else
+    {
+        playerTarget->addSkillLine(skillLine, 1, amount);
+    }
 }
 
 void Spell::spellEffectForceCast(uint8_t effectIndex)
@@ -2620,7 +2668,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
 
     if (p_caster != nullptr)
     {
-        auto skill_line_ability = sObjectMgr.GetSpellSkill(spellid);
+        auto skill_line_ability = sSpellMgr.getFirstSkillEntryForSpell(spellid);
 
         // potions learned by discovery variables
         uint32 cast_chance = 5;
@@ -2629,7 +2677,6 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
         // tailoring specializations get +1 cloth bonus
         switch (spellid)
         {
-
             case 36686: //Shadowcloth
                 if (p_caster->HasSpell(26801)) count++;
                 break;
@@ -2701,11 +2748,9 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
 
         if (p_caster != nullptr)
         {
-
             //random discovery by crafter item id
             switch (itemid)
             {
-
                 case 22845: //Major Arcane Protection Potion
                     cast_chance = 20;
                     learn_spell = 41458;
@@ -2754,14 +2799,15 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
 
         if (skill_line_ability != nullptr)
         {
-            DetermineSkillUp(skill_line_ability->skilline);
+            const auto skillLine = static_cast<uint16_t>(skill_line_ability->skilline);
+            DetermineSkillUp(skillLine);
 
             uint32 discovered_recipe = 0;
 
             for (std::set<MySQLStructure::ProfessionDiscovery*>::iterator itr = sMySQLStore._professionDiscoveryStore.begin(); itr != sMySQLStore._professionDiscoveryStore.end(); ++itr)
             {
                 MySQLStructure::ProfessionDiscovery* pf = *itr;
-                if (spellid == pf->SpellId && p_caster->_GetSkillLineCurrent(skill_line_ability->skilline) >= pf->SkillValue && !p_caster->HasSpell(pf->SpellToDiscover) && Util::checkChance(pf->Chance))
+                if (spellid == pf->SpellId && p_caster->getSkillLineCurrent(skillLine) >= pf->SkillValue && !p_caster->HasSpell(pf->SpellToDiscover) && Util::checkChance(pf->Chance))
                 {
                     discovered_recipe = pf->SpellToDiscover;
                     break;
@@ -2793,138 +2839,6 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
     {
         if (!playerTarget->getItemInterface()->AddItemById(itemid, count, 0))
             sendCastResult(SPELL_FAILED_TOO_MANY_OF_ITEM);
-    }
-}
-
-void Spell::SpellEffectWeapon(uint8_t /*effectIndex*/)
-{
-    if (!playerTarget)
-        return;
-
-    uint32 skill = 0;
-    uint32 spell = 0;
-
-    switch (this->getSpellInfo()->getId())
-    {
-        case 201:    // one-handed swords
-        {
-            skill = SKILL_SWORDS;
-        }
-        break;
-        case 202:   // two-handed swords
-        {
-            skill = SKILL_2H_SWORDS;
-        }
-        break;
-        case 203:   // Unarmed
-        {
-            skill = SKILL_UNARMED;
-        }
-        break;
-        case 199:   // two-handed maces
-        {
-            skill = SKILL_2H_MACES;
-        }
-        break;
-        case 198:   // one-handed maces
-        {
-            skill = SKILL_MACES;
-        }
-        break;
-        case 197:   // two-handed axes
-        {
-            skill = SKILL_2H_AXES;
-        }
-        break;
-        case 196:   // one-handed axes
-        {
-            skill = SKILL_AXES;
-        }
-        break;
-        case 5011: // crossbows
-        {
-            skill = SKILL_CROSSBOWS;
-
-            if (!playerTarget->isClassHunter())
-                spell = SPELL_RANGED_GENERAL;
-        }
-        break;
-        case 227:   // staves
-        {
-            skill = SKILL_STAVES;
-        }
-        break;
-        case 1180:  // daggers
-        {
-            skill = SKILL_DAGGERS;
-        }
-        break;
-        case 200:   // polearms
-        {
-            skill = SKILL_POLEARMS;
-        }
-        break;
-        case 15590: // fist weapons
-        {
-            skill = SKILL_UNARMED;
-        }
-        break;
-        case 264:   // bows
-        {
-            skill = SKILL_BOWS;
-
-            if (!playerTarget->isClassHunter())
-                spell = SPELL_RANGED_GENERAL;
-        }
-        break;
-        case 266: // guns
-        {
-            skill = SKILL_GUNS;
-
-            if (!playerTarget->isClassHunter())
-                spell = SPELL_RANGED_GENERAL;
-        }
-        break;
-#if VERSION_STRING <= Cata
-        case 2567:  // thrown
-        {
-            skill = SKILL_THROWN;
-            spell = SPELL_RANGED_THROW;
-        }
-        break;
-#endif
-        case 5009:  // wands
-        {
-            skill = SKILL_WANDS;
-            spell = SPELL_RANGED_WAND;
-        }
-        break;
-        case 2382:  // Generic
-        {
-            // Passiv Spell, Aura hidden
-        }
-        break;
-        default:
-        {
-            skill = 0;
-            sLogger.debug("WARNING: Could not determine skill for spell id %d (SPELL_EFFECT_WEAPON)", this->getSpellInfo()->getId());
-        }
-        break;
-    }
-
-    if (skill)
-    {
-        if (spell)
-            playerTarget->addSpell(spell);
-
-        // if we do not have the skill line
-        if (!playerTarget->_HasSkillLine(skill))
-        {
-            playerTarget->_AddSkillLine(skill, 1, playerTarget->getLevel() * 5);
-        }
-        else // unhandled.... if we have the skill line
-        {
-        }
     }
 }
 
@@ -3628,7 +3542,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
         case LOCKTYPE_PICKLOCK:
         {
             uint32 v = 0;
-            uint32 lockskill = p_caster->_GetSkillLineCurrent(SKILL_LOCKPICKING);
+            uint32 lockskill = p_caster->getSkillLineCurrent(SKILL_LOCKPICKING);
 
             if (itemTarget)
             {
@@ -3698,7 +3612,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
             uint32 v = gameObjTarget->GetGOReqSkill();
             bool bAlreadyUsed = false;
 
-            if (static_cast<Player*>(m_caster)->_GetSkillLineCurrent(SKILL_HERBALISM) < v)
+            if (static_cast<Player*>(m_caster)->getSkillLineCurrent(SKILL_HERBALISM) < v)
             {
                 //sendCastResult(SPELL_FAILED_LOW_CASTLEVEL);
                 return;
@@ -3737,7 +3651,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
             uint32 v = gameObjTarget->GetGOReqSkill();
             bool bAlreadyUsed = false;
 
-            if (static_cast<Player*>(m_caster)->_GetSkillLineCurrent(SKILL_MINING) < v)
+            if (static_cast<Player*>(m_caster)->getSkillLineCurrent(SKILL_MINING) < v)
             {
                 //sendCastResult(SPELL_FAILED_LOW_CASTLEVEL);
                 return;
@@ -4114,73 +4028,6 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
     }
 }
 
-void Spell::SpellEffectDualWield(uint8_t /*effectIndex*/)
-{
-    if (u_caster == nullptr)
-        return;
-
-    u_caster->setDualWield(true);
-}
-
-void Spell::SpellEffectSkillStep(uint8_t effectIndex) // Skill Step
-{
-    Player* target;
-    if (p_caster == nullptr)
-    {
-        // Check targets
-        if (m_targets.getUnitTarget())
-        {
-            target = sObjectMgr.GetPlayer((uint32)m_targets.getUnitTarget());
-            if (!target)
-                return;
-        }
-        else return;
-    }
-    else
-    {
-        target = p_caster;
-    }
-
-    uint32 skill = getSpellInfo()->getEffectMiscValue(effectIndex);
-#if VERSION_STRING <= WotLK
-    if (skill == 242)
-        skill = SKILL_LOCKPICKING; // somehow for lockpicking misc is different than the skill :s
-#endif
-
-    auto skill_line = sSkillLineStore.LookupEntry(skill);
-
-    if (!skill_line)
-        return;
-
-    uint32 max = 1;
-    switch (skill_line->type)
-    {
-        case SKILL_TYPE_PROFESSION:
-        case SKILL_TYPE_SECONDARY:
-            max = damage * 75;
-            break;
-        case SKILL_TYPE_WEAPON:
-            max = 5 * target->getLevel();
-            break;
-        case SKILL_TYPE_CLASS:
-        case SKILL_TYPE_ARMOR:
-#if VERSION_STRING <= WotLK
-            if (skill == SKILL_LOCKPICKING)
-                max = damage * 75;
-            else
-#endif
-                max = 1;
-            break;
-        default: //u cant learn other types in game
-            return;
-    };
-
-    if (target->_HasSkillLine(skill))
-    {
-        target->_ModifySkillMaximum(skill, max);
-    }
-}
-
 void Spell::SpellEffectAddHonor(uint8_t effectIndex)
 {
     if (!playerTarget) return;
@@ -4406,9 +4253,9 @@ void Spell::SpellEffectEnchantItemTemporary(uint8_t effectIndex)  // Enchant Ite
     if (Slot < 0)
         return; // Apply failed
 
-    auto skill_line_ability = sObjectMgr.GetSpellSkill(getSpellInfo()->getId());
+    auto skill_line_ability = sSpellMgr.getFirstSkillEntryForSpell(getSpellInfo()->getId());
     if (skill_line_ability != nullptr)
-        DetermineSkillUp(skill_line_ability->skilline, itemTarget->getItemProperties()->ItemLevel);
+        DetermineSkillUp(static_cast<uint16_t>(skill_line_ability->skilline), itemTarget->getItemProperties()->ItemLevel);
 }
 
 void Spell::SpellEffectTameCreature(uint8_t /*effectIndex*/)
@@ -5173,11 +5020,11 @@ void Spell::SpellEffectSkinning(uint8_t /*effectIndex*/)
         return;
 
     Creature* cr = static_cast<Creature*>(unitTarget);
-    uint32 skill = cr->GetRequiredLootSkill();
-    uint32 sk = static_cast<Player*>(m_caster)->_GetSkillLineCurrent(skill);
+    auto skill = cr->GetRequiredLootSkill();
+    auto sk = static_cast<Player*>(m_caster)->getSkillLineCurrent(skill);
     uint32 lvl = cr->getLevel();
 
-    if ((sk >= lvl * 5) || ((sk + 100) >= lvl * 10))
+    if ((sk >= lvl * 5) || ((sk + 100U) >= lvl * 10))
     {
         //Fill loot for Skinning
         sLootMgr.fillSkinningLoot(p_caster, &cr->loot, unitTarget->getEntry(), 0);
@@ -5307,16 +5154,16 @@ void Spell::SpellEffectDisenchant(uint8_t /*effectIndex*/)
     p_caster->SendLoot(it->getGuid(), LOOT_DISENCHANTING, p_caster->GetMapId());
 
     //We can increase Enchanting skill up to 60
-    uint32 skill = p_caster->_GetSkillLineCurrent(SKILL_ENCHANTING);
+    auto skill = p_caster->getSkillLineCurrent(SKILL_ENCHANTING);
     if (skill && skill < 60)
     {
         if (Util::checkChance(100.0f - skill * 0.75f))
         {
-            uint32 SkillUp = float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE));
+            auto SkillUp = static_cast<uint16_t>(float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
             if (skill + SkillUp > 60)
                 SkillUp = 60 - skill;
 
-            p_caster->_AdvanceSkillLine(SKILL_ENCHANTING, SkillUp);
+            p_caster->advanceSkillLine(SKILL_ENCHANTING, SkillUp);
         }
     }
     if (it == i_caster)
@@ -5681,20 +5528,6 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
         corpse->DeleteFromDB();
         sObjectMgr.CorpseAddEventDespawn(corpse);
     }
-}
-
-void Spell::SpellEffectSkill(uint8_t effectIndex)
-{
-    // Used by professions only
-    // Effect should be renamed in RequireSkill
-
-    if (!p_caster || p_caster->_GetSkillLineMax(getSpellInfo()->getEffectMiscValue(effectIndex)) >= uint32(damage * 75))
-        return;
-
-    if (p_caster->_HasSkillLine(getSpellInfo()->getEffectMiscValue(effectIndex)))
-        p_caster->_ModifySkillMaximum(getSpellInfo()->getEffectMiscValue(effectIndex), uint32(damage * 75));
-    else
-        p_caster->_AddSkillLine(getSpellInfo()->getEffectMiscValue(effectIndex), 1, uint32(damage * 75));
 }
 
 void Spell::SpellEffectApplyPetAA(uint8_t effectIndex)
@@ -6439,6 +6272,7 @@ void Spell::SpellEffectActivateSpec(uint8_t /*effectIndex*/)
         }
     }
 
+    // TODO: check if player even have learnt secondary spec
     uint8 NewSpec = p_caster->m_talentActiveSpec == SPEC_PRIMARY ? SPEC_SECONDARY : SPEC_PRIMARY; // Check if primary spec is on or not
     p_caster->activateTalentSpec(NewSpec);
 #endif

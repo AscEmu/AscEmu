@@ -317,11 +317,14 @@ bool Aura::canPeriodicEffectCrit()
 #endif
 }
 
-void Aura::applyModifiers(bool apply)
+void Aura::applyModifiers(bool apply, AuraEffect applyOnlyFor/* = SPELL_AURA_NONE*/)
 {
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (m_auraEffects[i].getAuraEffectType() == SPELL_AURA_NONE)
+            continue;
+
+        if (applyOnlyFor != SPELL_AURA_NONE && m_auraEffects[i].getAuraEffectType() != applyOnlyFor)
             continue;
 
         if (apply)

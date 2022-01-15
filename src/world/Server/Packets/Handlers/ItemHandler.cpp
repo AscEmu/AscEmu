@@ -116,12 +116,12 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
 
     if (itemProto->RequiredSkill)
     {
-        if (!_player->_HasSkillLine(itemProto->RequiredSkill))
+        if (!_player->hasSkillLine(itemProto->RequiredSkill))
         {
             _player->getItemInterface()->buildInventoryChangeError(tmpItem, nullptr, INV_ERR_NO_REQUIRED_PROFICIENCY);
             return;
         }
-        else if (_player->_GetSkillLineCurrent(itemProto->RequiredSkill) < itemProto->RequiredSkillRank)
+        else if (_player->getSkillLineCurrent(itemProto->RequiredSkill) < itemProto->RequiredSkillRank)
         {
             _player->getItemInterface()->buildInventoryChangeError(tmpItem, nullptr, INV_ERR_SKILL_ISNT_HIGH_ENOUGH);
             return;
@@ -1556,7 +1556,7 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
     data << itemProto->AllowableRace;
     data << itemProto->ItemLevel;
     data << itemProto->RequiredLevel;
-    data << itemProto->RequiredSkill;
+    data << uint32_t(itemProto->RequiredSkill);
     data << itemProto->RequiredSkillRank;
     data << itemProto->RequiredSkillSubRank;
     data << itemProto->RequiredPlayerRank1;
@@ -1697,7 +1697,7 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
     data << itemProperties->AllowableRace;
     data << itemProperties->ItemLevel;
     data << itemProperties->RequiredLevel;
-    data << itemProperties->RequiredSkill;
+    data << uint32_t(itemProperties->RequiredSkill);
     data << itemProperties->RequiredSkillRank;
     data << itemProperties->RequiredSkillSubRank;
     data << itemProperties->RequiredPlayerRank1;
@@ -2844,7 +2844,7 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
                 // Skill requirement
                 if (ip->RequiredSkill)
                 {
-                    if (ip->RequiredSkillRank > _player->_GetSkillLineCurrent(ip->RequiredSkill, true))
+                    if (ip->RequiredSkillRank > _player->getSkillLineCurrent(ip->RequiredSkill, true))
                     {
                         itemi->buildInventoryChangeError(it, TargetItem, INV_ERR_SKILL_ISNT_HIGH_ENOUGH);
                         continue;

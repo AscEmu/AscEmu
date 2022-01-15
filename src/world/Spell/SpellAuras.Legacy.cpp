@@ -1983,13 +1983,15 @@ void Aura::SpellAuraModSkill(AuraEffectModifier* aurEff, bool apply)
 {
     if (m_target->isPlayer())
     {
+        const auto skillLine = static_cast<uint16_t>(aurEff->getEffectMiscValue());
+        const auto amount = static_cast<int16_t>(aurEff->getEffectDamage());
         if (apply)
         {
             mPositive = true;
-            static_cast< Player* >(m_target)->_ModifySkillBonus(aurEff->getEffectMiscValue(), aurEff->getEffectDamage());
+            static_cast< Player* >(m_target)->modifySkillBonus(skillLine, amount, false);
         }
         else
-            static_cast< Player* >(m_target)->_ModifySkillBonus(aurEff->getEffectMiscValue(), -aurEff->getEffectDamage());
+            static_cast< Player* >(m_target)->modifySkillBonus(skillLine, -amount, false);
 
         static_cast< Player* >(m_target)->UpdateStats();
     }
@@ -2011,9 +2013,9 @@ void Aura::SpellAuraModIncreaseMountedSpeed(AuraEffectModifier* aurEff, bool app
     {
         int32 newspeed = 0;
 
-        if (p_target->_GetSkillLineCurrent(SKILL_RIDING, true) >= 150)
+        if (p_target->getSkillLineCurrent(SKILL_RIDING, true) >= 150)
             newspeed = 100;
-        else if (p_target->_GetSkillLineCurrent(SKILL_RIDING, true) >= 75)
+        else if (p_target->getSkillLineCurrent(SKILL_RIDING, true) >= 75)
             newspeed = 60;
 
         aurEff->setEffectDamage(newspeed); // EffectBasePoints + 1 (59+1 and 99+1)
@@ -3637,13 +3639,16 @@ void Aura::SpellAuraSkillTalent(AuraEffectModifier* aurEff, bool apply)
 {
     if (p_target != nullptr)
     {
+        const auto skillLine = static_cast<uint16_t>(aurEff->getEffectMiscValue());
+        const auto amount = static_cast<int16_t>(aurEff->getEffectDamage());
+
         if (apply)
         {
             mPositive = true;
-            p_target->_ModifySkillBonus(aurEff->getEffectMiscValue(), aurEff->getEffectDamage());
+            p_target->modifySkillBonus(skillLine, amount, true);
         }
         else
-            p_target->_ModifySkillBonus(aurEff->getEffectMiscValue(), -aurEff->getEffectDamage());
+            p_target->modifySkillBonus(skillLine, -amount, true);
 
         p_target->UpdateStats();
     }
@@ -5277,41 +5282,42 @@ void Aura::SpellAuraIncreaseAllWeaponSkill(AuraEffectModifier* aurEff, bool appl
 {
     if (m_target->isPlayer())
     {
+        const auto amount = static_cast<int16_t>(aurEff->getEffectDamage());
         if (apply)
         {
             mPositive = true;
             // TO< Player* >(m_target)->ModSkillBonusType(SKILL_TYPE_WEAPON, aurEff->getEffectDamage());
             //since the frikkin above line does not work we have to do it manually
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_SWORDS, aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_AXES, aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_BOWS, aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_GUNS, aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_MACES, aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_2H_SWORDS, aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_STAVES, aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_2H_MACES, aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_2H_AXES, aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_DAGGERS, aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_CROSSBOWS, aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_WANDS, aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_POLEARMS, aurEff->getEffectDamage());
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_SWORDS, amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_AXES, amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_BOWS, amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_GUNS, amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_MACES, amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_2H_SWORDS, amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_STAVES, amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_2H_MACES, amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_2H_AXES, amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_DAGGERS, amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_CROSSBOWS, amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_WANDS, amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_POLEARMS, amount, true);
         }
         else
         {
             //  TO< Player* >(m_target)->ModSkillBonusType(SKILL_TYPE_WEAPON, -aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_SWORDS, -aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_AXES, -aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_BOWS, -aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_GUNS, -aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_MACES, -aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_2H_SWORDS, -aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_STAVES, -aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_2H_MACES, -aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_2H_AXES, -aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_DAGGERS, -aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_CROSSBOWS, -aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_WANDS, -aurEff->getEffectDamage());
-            static_cast< Player* >(m_target)->_ModifySkillBonus(SKILL_POLEARMS, -aurEff->getEffectDamage());
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_SWORDS, -amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_AXES, -amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_BOWS, -amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_GUNS, -amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_MACES, -amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_2H_SWORDS, -amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_STAVES, -amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_2H_MACES, -amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_2H_AXES, -amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_DAGGERS, -amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_CROSSBOWS, -amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_WANDS, -amount, true);
+            static_cast< Player* >(m_target)->modifySkillBonus(SKILL_POLEARMS, -amount, true);
         }
 
         static_cast< Player* >(m_target)->UpdateStats();

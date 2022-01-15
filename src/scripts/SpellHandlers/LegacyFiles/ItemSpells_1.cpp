@@ -404,7 +404,7 @@ bool BigBlizzardBear(uint8_t /*effectIndex*/, Spell* pSpell)
     if (Player* plr = pSpell->GetPlayerTarget())
     {
         uint32_t newspell = 58997;
-        if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 150)
+        if (plr->getSkillLineCurrent(SKILL_RIDING, true) >= 150)
             plr->castSpell(plr, newspell, true);
     }
 
@@ -416,7 +416,7 @@ bool WingedSteed(uint8_t /*effectIndex*/, Spell* pSpell)
     if (Player* plr = pSpell->GetPlayerTarget())
     {
         uint32_t newspell = 54726;
-        if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) == 300)
+        if (plr->getSkillLineCurrent(SKILL_RIDING, true) == 300)
             newspell = 54727;
         plr->castSpell(plr, newspell, true);
     }
@@ -430,16 +430,16 @@ bool HeadlessHorsemanMount(uint8_t /*effectIndex*/, Spell* pSpell)
     {
         uint32_t newspell = 51621;
         auto pArea = plr->GetArea();
-        if (pArea && (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 225 && ((pArea->flags & 1024 && plr->GetMapId() != 571) ||
+        if (pArea && (plr->getSkillLineCurrent(SKILL_RIDING, true) >= 225 && ((pArea->flags & 1024 && plr->GetMapId() != 571) ||
             (pArea->flags & 1024 && plr->GetMapId() == 571 && plr->HasSpell(54197)))))
 
         {
-            if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) == 300)
+            if (plr->getSkillLineCurrent(SKILL_RIDING, true) == 300)
                 newspell = 48023;
             else
                 newspell = 51617;
         }
-        else if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 150)
+        else if (plr->getSkillLineCurrent(SKILL_RIDING, true) >= 150)
             newspell = 48024;
         plr->castSpell(plr, newspell, true);
     }
@@ -453,16 +453,16 @@ bool MagicBroomMount(uint8_t /*effectIndex*/, Spell* pSpell)
     {
         uint32_t newspell = 42680;
         auto pArea = plr->GetArea();
-        if (pArea && (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 225 &&
+        if (pArea && (plr->getSkillLineCurrent(SKILL_RIDING, true) >= 225 &&
             ((pArea->flags & 1024 && plr->GetMapId() != 571) ||
             (pArea->flags & 1024 && plr->GetMapId() == 571 && plr->HasSpell(54197)))))
         {
-            if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) == 300)
+            if (plr->getSkillLineCurrent(SKILL_RIDING, true) == 300)
                 newspell = 42668;
             else
                 newspell = 42667;
         }
-        else if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 150)
+        else if (plr->getSkillLineCurrent(SKILL_RIDING, true) >= 150)
             newspell = 42683;
         plr->castSpell(plr, newspell, true);
     }
@@ -485,15 +485,15 @@ bool Invincible(uint8_t /*effectIndex*/, Spell* pSpell)
     {
         uint32_t newspell = 72281;
         auto pArea = plr->GetArea();
-        if (pArea && (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 225 && ((pArea->flags & 1024 && plr->GetMapId() != 571) ||
+        if (pArea && (plr->getSkillLineCurrent(SKILL_RIDING, true) >= 225 && ((pArea->flags & 1024 && plr->GetMapId() != 571) ||
             (pArea->flags & 1024 && plr->GetMapId() == 571 && plr->HasSpell(54197)))))
         {
-            if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) == 300)
+            if (plr->getSkillLineCurrent(SKILL_RIDING, true) == 300)
                 newspell = 72284;
             else
                 newspell = 72283;
         }
-        else if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 150)
+        else if (plr->getSkillLineCurrent(SKILL_RIDING, true) >= 150)
             newspell = 72282;
 
         plr->castSpell(plr, newspell, true);
@@ -616,7 +616,7 @@ bool NitroBoosts(uint8_t /*effectIndex*/, Spell* s)
     if (s->getPlayerCaster() == NULL)
         return true;
 
-    uint32_t engineeringskill = s->getPlayerCaster()->_GetSkillLineCurrent(SKILL_ENGINEERING);
+    uint32_t engineeringskill = s->getPlayerCaster()->getSkillLineCurrent(SKILL_ENGINEERING);
 
     if (engineeringskill >= 400)
         s->getPlayerCaster()->castSpell(s->getPlayerCaster(), 54861, true);
@@ -873,7 +873,7 @@ bool X53Mount(uint8_t /*effectIndex*/, Aura *a, bool apply)
         {
             if (auto area = p->GetArea())
             {
-                uint32_t skill = p->_GetSkillLineCurrent(SKILL_RIDING, true);
+                uint32_t skill = p->getSkillLineCurrent(SKILL_RIDING, true);
 
                 if (skill >= 225 && (((area->flags & 1024) && p->GetMapId() != 571) ||
                     ((area->flags & 1024) && p->GetMapId() == 571 && p->HasSpell(54197))))

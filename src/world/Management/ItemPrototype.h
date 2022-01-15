@@ -483,7 +483,7 @@ struct ItemProperties
     uint32_t AllowableRace;
     uint32_t ItemLevel;
     uint32_t RequiredLevel;
-    uint32_t RequiredSkill;
+    uint16_t RequiredSkill;
     uint32_t RequiredSkillRank;
     uint32_t RequiredSkillSubRank;    /// required spell
     uint32_t RequiredPlayerRank1;

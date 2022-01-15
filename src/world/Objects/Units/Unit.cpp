@@ -2991,15 +2991,15 @@ void Unit::setDualWield(bool enable)
     auto plrUnit = static_cast<Player*>(this);
     if (enable)
     {
-        if (!plrUnit->_HasSkillLine(SKILL_DUAL_WIELD))
-            plrUnit->_AddSkillLine(SKILL_DUAL_WIELD, 1, 1);
+        if (!plrUnit->hasSkillLine(SKILL_DUAL_WIELD))
+            plrUnit->addSkillLine(SKILL_DUAL_WIELD, 1, 1);
     }
     else
     {
         if (plrUnit->canDualWield2H())
             plrUnit->setDualWield2H(false);
 
-        plrUnit->_RemoveSkillLine(SKILL_DUAL_WIELD);
+        plrUnit->removeSkillLine(SKILL_DUAL_WIELD);
     }
 }
 
@@ -7050,7 +7050,7 @@ DBC::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t m
 
     uint32_t ridingSkill = 5000;
     if (GetTypeFromGUID() == TYPEID_PLAYER)
-        ridingSkill = ToPlayer()->_GetSkillLineCurrent(SKILL_RIDING);
+        ridingSkill = ToPlayer()->getSkillLineCurrent(SKILL_RIDING);
 
     for (uint32_t i = MAX_MOUNT_CAPABILITIES; i > 0; --i)
     {

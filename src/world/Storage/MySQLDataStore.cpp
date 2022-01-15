@@ -252,7 +252,7 @@ void MySQLDataStore::loadItemPropertiesTable()
             itemProperties.AllowableRace = fields[14].GetUInt32();
             itemProperties.ItemLevel = fields[15].GetUInt32();
             itemProperties.RequiredLevel = fields[16].GetUInt32();
-            itemProperties.RequiredSkill = fields[17].GetUInt32();
+            itemProperties.RequiredSkill = fields[17].GetUInt16();
             itemProperties.RequiredSkillRank = fields[18].GetUInt32();
             itemProperties.RequiredSkillSubRank = fields[19].GetUInt32();
             itemProperties.RequiredPlayerRank1 = fields[20].GetUInt32();
@@ -1109,7 +1109,7 @@ void MySQLDataStore::loadQuestPropertiesTable()
             questInfo.type = fields[6].GetUInt32();
             questInfo.required_races = fields[7].GetUInt32();
             questInfo.required_class = fields[8].GetUInt32();
-            questInfo.required_tradeskill = fields[9].GetUInt32();
+            questInfo.required_tradeskill = fields[9].GetUInt16();
             questInfo.required_tradeskill_value = fields[10].GetUInt32();
             questInfo.required_rep_faction = fields[11].GetUInt32();
             questInfo.required_rep_value = fields[12].GetUInt32();
@@ -2472,7 +2472,7 @@ void MySQLDataStore::loadPlayerCreateInfoSkills()
 
         uint32_t raceMask = fields[0].GetUInt32();
         uint32_t classMask = fields[1].GetUInt32();
-        uint32_t skill_id = fields[2].GetUInt32();
+        auto skill_id = fields[2].GetUInt16();
 
         auto player_skill = sSkillLineStore.LookupEntry(skill_id);
         if (player_skill == nullptr)
@@ -2483,7 +2483,7 @@ void MySQLDataStore::loadPlayerCreateInfoSkills()
 
         CreateInfo_SkillStruct tsk;
         tsk.skillid = skill_id;
-        tsk.currentval = fields[3].GetUInt32();
+        tsk.currentval = fields[3].GetUInt16();
 
         for (uint32_t raceIndex = RACE_HUMAN; raceIndex < DBC_NUM_RACES; ++raceIndex)
         {

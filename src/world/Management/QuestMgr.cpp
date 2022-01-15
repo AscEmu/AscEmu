@@ -94,9 +94,9 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
 
     if (qst->required_tradeskill)
     {
-        if (!plr->_HasSkillLine(qst->required_tradeskill))
+        if (!plr->hasSkillLine(qst->required_tradeskill))
             return QuestStatus::NotAvailable;
-        if (qst->required_tradeskill_value && plr->_GetSkillLineCurrent(qst->required_tradeskill) < qst->required_tradeskill_value)
+        if (qst->required_tradeskill_value && plr->getSkillLineCurrent(qst->required_tradeskill) < qst->required_tradeskill_value)
             return QuestStatus::NotAvailable;
     }
 

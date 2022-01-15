@@ -2014,7 +2014,7 @@ bool Creature::HasLootForPlayer(Player* plr)
     return false;
 }
 
-uint32 Creature::GetRequiredLootSkill()
+uint16_t Creature::GetRequiredLootSkill()
 {
     if (GetCreatureProperties()->typeFlags & CREATURE_FLAG1_HERBLOOT)
         return SKILL_HERBALISM;     // herbalism

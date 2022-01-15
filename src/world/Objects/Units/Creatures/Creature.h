@@ -237,7 +237,7 @@ public:
         bool HasLootForPlayer(Player* plr);
 
         bool Skinned = false;
-        uint32 GetRequiredLootSkill();
+        uint16_t GetRequiredLootSkill();
 
         // Misc
         uint32 GetSQL_id();

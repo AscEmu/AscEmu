@@ -853,60 +853,6 @@ static inline uint8_t getSideByRace(uint8_t race)
     }
 }
 
-// TODO: move this to Player.cpp when this is no longer needed in Player.Legacy.cpp!
-static inline uint32_t getSpellIdForLanguage(uint32_t skillId)
-{
-    switch (skillId)
-    {
-        case SKILL_LANG_COMMON:
-            return 668;
-        case SKILL_LANG_ORCISH:
-            return 669;
-        case SKILL_LANG_TAURAHE:
-            return 670;
-        case SKILL_LANG_DARNASSIAN:
-            return 671;
-        case SKILL_LANG_DWARVEN:
-            return 672;
-        case SKILL_LANG_THALASSIAN:
-            return 813;
-        case SKILL_LANG_DRACONIC:
-            return 814;
-        case SKILL_LANG_DEMON_TONGUE:
-            return 815;
-        case SKILL_LANG_TITAN:
-            return 816;
-        case SKILL_LANG_OLD_TONGUE:
-            return 817;
-        case SKILL_LANG_GNOMISH:
-            return 7340;
-        case SKILL_LANG_TROLL:
-            return 7341;
-        case SKILL_LANG_GUTTERSPEAK:
-            return 17737;
-#if VERSION_STRING >= TBC
-        case SKILL_LANG_DRAENEI:
-            return 29932;
-#endif
-#if VERSION_STRING >= Cata
-        case SKILL_LANG_GOBLIN:
-            return 69269;
-        case SKILL_LANG_GILNEAN:
-            return 69270;
-#endif
-#if VERSION_STRING >= Mop
-        case SKILL_LANG_PANDAREN_NEUTRAL:
-            return 108127;
-        case SKILL_LANG_PANDAREN_ALLIANCE:
-            return 108130;
-        case SKILL_LANG_PANDAREN_HORDE:
-            return 108131;
-#endif
-    }
-
-    return 0;
-}
-
 enum FactionFlags
 {
     FACTION_FLAG_VISIBLE            = 0x01,
@@ -938,9 +884,8 @@ struct CreateInfo_ItemStruct
 
 struct CreateInfo_SkillStruct
 {
-    uint32_t skillid;
-    uint32_t currentval;
-    uint32_t maxval;
+    uint16_t skillid;
+    uint16_t currentval;
 };
 
 struct CreateInfo_ActionBarStruct
@@ -1079,14 +1024,29 @@ struct classScriptOverride
     bool percent;
 };
 
+struct PlayerSkillFieldPosition
+{
+#if VERSION_STRING < Cata
+    uint16_t index = 0;
+#else
+    uint16_t field = 0;
+    uint8_t offset = 0;
+#endif
+};
+
 struct PlayerSkill
 {
-    DBC::Structures::SkillLineEntry const* Skill;
-    uint32_t CurrentValue;
-    uint32_t MaximumValue;
-    uint32_t BonusValue;
+    DBC::Structures::SkillLineEntry const* Skill = nullptr;
+
+    uint16_t CurrentValue = 0;
+    uint16_t MaximumValue = 0;
+    int16_t TemporaryBonusValue = 0;
+    int16_t PermanentBonusValue = 0;
+
+    // the skill position in skill fields in player data
+    PlayerSkillFieldPosition FieldPosition;
+
     float GetSkillUpChance();
-    void Reset(uint32_t Id);
 };
 
 struct PlayerCooldown
@@ -1154,7 +1114,7 @@ typedef std::map<uint32_t, ScriptOverrideList* >      SpellOverrideMap;
 typedef std::map<uint32_t, FactionReputation*>        ReputationMap;
 typedef std::map<SpellInfo const*, std::pair<uint32_t, uint32_t> >StrikeSpellMap;
 typedef std::map<uint32_t, OnHitSpell >               StrikeSpellDmgMap;
-typedef std::map<uint32_t, PlayerSkill>               SkillMap;
+typedef std::map<uint16_t, PlayerSkill>               SkillMap;
 typedef std::map<uint32_t, PlayerCooldown>            PlayerCooldownMap;
 typedef std::list<Item*>                              ItemDurationList;
 
