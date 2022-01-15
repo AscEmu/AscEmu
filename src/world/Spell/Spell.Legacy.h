@@ -194,7 +194,7 @@ class SERVER_DECL Spell
         SpellInfo const* getSpellInfo() const;
 
         // Some spells inherit base points from the mother spell
-        int32_t forced_basepoints[MAX_SPELL_EFFECTS];
+        SpellForcedBasePoints forced_basepoints = SpellForcedBasePoints();
 
         Aura* getTriggeredByAura() const;
 

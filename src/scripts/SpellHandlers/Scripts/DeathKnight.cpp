@@ -92,7 +92,7 @@ public:
         if (!isBloodPresence() && improvedBloodPresence != nullptr)
         {
             SpellForcedBasePoints forcedBasePoints;
-            forcedBasePoints.basePoints[EFF_INDEX_0] = improvedBloodPresence->getAuraEffect(EFF_INDEX_0)->getEffectDamage();
+            forcedBasePoints.set(EFF_INDEX_0, improvedBloodPresence->getAuraEffect(EFF_INDEX_0)->getEffectDamage());
             aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY), forcedBasePoints, true);
         }
 
@@ -100,7 +100,7 @@ public:
         if (!isFrostPresence() && improvedFrostPresence != nullptr)
         {
             SpellForcedBasePoints forcedBasePoints;
-            forcedBasePoints.basePoints[EFF_INDEX_0] = improvedFrostPresence->getAuraEffect(EFF_INDEX_0)->getEffectDamage();
+            forcedBasePoints.set(EFF_INDEX_0, improvedFrostPresence->getAuraEffect(EFF_INDEX_0)->getEffectDamage());
             aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_IMPROVED_FROST_PRESENCE_DUMMY), forcedBasePoints, true);
         }
 
@@ -111,7 +111,7 @@ public:
             if (!isUnholyPresence())
             {
                 SpellForcedBasePoints forcedBasePoints;
-                forcedBasePoints.basePoints[EFF_INDEX_0] = improvedUnholyPresence->getAuraEffect(EFF_INDEX_0)->getEffectDamage();
+                forcedBasePoints.set(EFF_INDEX_0, improvedUnholyPresence->getAuraEffect(EFF_INDEX_0)->getEffectDamage());
                 aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_UNHOLY_PRESENCE_MOVE_SPEED), forcedBasePoints, true);
             }
             // Cast Improved Unholy Presence in Unholy Presence
@@ -120,7 +120,7 @@ public:
                 SpellForcedBasePoints forcedBasePoints;
                 const auto basePoints = improvedUnholyPresence->getSpellInfo()->calculateEffectValue(EFF_INDEX_1);
                 for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                    forcedBasePoints.basePoints[i] = basePoints;
+                    forcedBasePoints.set(i, basePoints);
 
                 aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_IMPROVED_UNHOLY_PRESENCE_DUMMY), forcedBasePoints, true);
             }
@@ -129,7 +129,7 @@ public:
             if (!isUnholyPresence())
             {
                 SpellForcedBasePoints forcedBasePoints;
-                forcedBasePoints.basePoints[EFF_INDEX_0] = improvedUnholyPresence->getAuraEffect(EFF_INDEX_0)->getEffectDamage();
+                forcedBasePoints.set(EFF_INDEX_0, improvedUnholyPresence->getAuraEffect(EFF_INDEX_0)->getEffectDamage());
                 aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_IMPROVED_UNHOLY_PRESENCE_DUMMY), forcedBasePoints, true);
             }
 #endif
@@ -189,7 +189,7 @@ public:
 
     SpellScriptExecuteState onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
     {
-        spell->forced_basepoints[EFF_INDEX_0] = heal;
+        spell->forced_basepoints.set(EFF_INDEX_0, heal);
         heal = 0;
         return SpellScriptExecuteState::EXECUTE_OK;
     }

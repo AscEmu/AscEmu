@@ -28,11 +28,6 @@ struct SpellArea
     bool fitsToRequirements(Player* player, uint32_t newZone, uint32_t newArea) const;
 };
 
-struct SpellForcedBasePoints
-{
-    int32_t basePoints[MAX_SPELL_EFFECTS] = { 0 };
-};
-
 typedef std::unordered_map<uint32_t, SpellInfo> SpellInfoMap;
 
 typedef Spell* (*SpellScriptLinker)(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);

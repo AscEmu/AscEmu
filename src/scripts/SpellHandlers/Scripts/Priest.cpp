@@ -187,7 +187,7 @@ public:
 
     SpellScriptExecuteState onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
     {
-        spell->forced_basepoints[EFF_INDEX_0] = absorbAmount;
+        spell->forced_basepoints.set(EFF_INDEX_0, absorbAmount);
         absorbAmount = 0;
         return SpellScriptExecuteState::EXECUTE_OK;
     }
@@ -458,10 +458,10 @@ public:
     {
 #if VERSION_STRING < WotLK
         // Same amount for party and self in Classic and TBC
-        spell->forced_basepoints[EFF_INDEX_0] = selfHeal;
+        spell->forced_basepoints.set(EFF_INDEX_0, selfHeal);
 #else
-        spell->forced_basepoints[EFF_INDEX_0] = partyHeal;
-        spell->forced_basepoints[EFF_INDEX_1] = selfHeal;
+        spell->forced_basepoints.set(EFF_INDEX_0, partyHeal);
+        spell->forced_basepoints.set(EFF_INDEX_1, selfHeal);
 #endif
         selfHeal = 0;
         partyHeal = 0;
@@ -527,7 +527,7 @@ public:
 
         // Create backfire damage on dispel
         SpellForcedBasePoints forcedBasePoints;
-        forcedBasePoints.basePoints[EFF_INDEX_0] = aur->getAuraEffect(EFF_INDEX_1)->getEffectDamage() * 8;
+        forcedBasePoints.set(EFF_INDEX_0, aur->getAuraEffect(EFF_INDEX_1)->getEffectDamage() * 8);
         const auto caster = aur->GetUnitCaster();
         if (caster != nullptr)
             caster->castSpell(aur->getOwner(), SPELL_VAMPIRIC_TOUCH_DISPEL, forcedBasePoints, true);

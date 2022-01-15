@@ -19,6 +19,45 @@ class Item;
 class Player;
 class Unit;
 
+struct SpellForcedBasePoints
+{
+public:
+    inline void set(uint8_t effIndex, int32_t value)
+    {
+        if (effIndex >= MAX_SPELL_EFFECTS)
+            return;
+
+        for (auto& values : m_forcedBasePoints)
+        {
+            if (values.first == effIndex)
+            {
+                values.second = value;
+                return;
+            }
+        }
+
+        m_forcedBasePoints.push_back(std::make_pair(effIndex, value));
+    }
+
+    inline void get(uint8_t effIndex, int32_t* basePoints)
+    {
+        if (effIndex >= MAX_SPELL_EFFECTS)
+            return;
+
+        for (const auto& values : m_forcedBasePoints)
+        {
+            if (values.first == effIndex)
+            {
+                *basePoints = values.second;
+                break;
+            }
+        }
+    }
+
+private:
+    std::vector<std::pair<uint8_t, int32_t>> m_forcedBasePoints;
+};
+
 class SERVER_DECL SpellInfo
 {
 public:
@@ -76,7 +115,7 @@ public:
     bool isRangedAutoRepeat() const;
     bool isOnNextMeleeAttack() const;
 
-    int32_t calculateEffectValue(uint8_t effIndex, Unit* unitCaster = nullptr, Item* itemCaster = nullptr, int32_t forcedBasePoints = 0) const;
+    int32_t calculateEffectValue(uint8_t effIndex, Unit* unitCaster = nullptr, Item* itemCaster = nullptr, SpellForcedBasePoints forcedBasePoints = SpellForcedBasePoints()) const;
 
     bool doesEffectApplyAura(uint8_t effIndex) const;
 

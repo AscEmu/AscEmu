@@ -3184,7 +3184,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                         continue;
                     int32 val = parentproc->calculateEffectValue(0);
                     Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, NULL);
-                    spell->forced_basepoints[0] = (val * damageInfo.realDamage) / 300; //per tick
+                    spell->forced_basepoints.set(0, (val * damageInfo.realDamage) / 300); //per tick
                     SpellCastTargets targets(getGuid());
                     spell->prepare(&targets);
                     continue;

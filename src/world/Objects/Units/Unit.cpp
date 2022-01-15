@@ -3034,10 +3034,7 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePo
         return;
 
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
-    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-    {
-        newSpell->forced_basepoints[i] = forcedBasePoints.basePoints[i];
-    }
+    newSpell->forced_basepoints = forcedBasePoints;
     newSpell->m_charges = spellCharges;
 
     SpellCastTargets targets(0);
@@ -3103,10 +3100,7 @@ void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, SpellForce
         return;
 
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
-    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-    {
-        newSpell->forced_basepoints[i] = forcedBasepoints.basePoints[i];
-    }
+    newSpell->forced_basepoints = forcedBasepoints;
 
     SpellCastTargets targets(targetGuid);
 
@@ -3120,10 +3114,7 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePo
         return;
 
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
-    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-    {
-        newSpell->forced_basepoints[i] = forcedBasepoints.basePoints[i];
-    }
+    newSpell->forced_basepoints = forcedBasepoints;
 
     SpellCastTargets targets(0);
     if (target != nullptr)

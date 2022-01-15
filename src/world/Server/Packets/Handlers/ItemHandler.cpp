@@ -325,7 +325,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     spell->setItemCaster(tmpItem);
 
     if (spellToLearn != 0)
-        spell->forced_basepoints[0] = spellToLearn;
+        spell->forced_basepoints.set(0, spellToLearn);
 
 #if VERSION_STRING >= WotLK
     spell->m_glyphslot = srlPacket.glyphIndex;

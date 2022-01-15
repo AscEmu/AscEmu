@@ -94,7 +94,7 @@ public:
 
     SpellScriptExecuteState onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
     {
-        spell->forced_basepoints[EFF_INDEX_0] = damage;
+        spell->forced_basepoints.set(EFF_INDEX_0, damage);
         damage = 0;
         return SpellScriptExecuteState::EXECUTE_OK;
     }

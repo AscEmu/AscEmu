@@ -983,7 +983,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 Spell* triggerSpell = sSpellMgr.newSpell(casterUnit, triggerInfo, true, this);
                 for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
                 {
-                    triggerSpell->forced_basepoints[i] = customDamage;
+                    triggerSpell->forced_basepoints.set(i, customDamage);
                 }
 
                 SpellCastTargets spellTargets(0);

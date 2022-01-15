@@ -185,7 +185,6 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
 
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        forced_basepoints[i] = 0;
         isEffectDamageStatic[i] = false;
         effectPctModifier[i] = 1.0f;
 
@@ -1445,7 +1444,7 @@ void Spell::HandleAddAura(uint64 guid)
                     Spell* spell = sSpellMgr.newSpell(p_caster, spellInfo, true, nullptr);
 
 
-                    spell->forced_basepoints[0] = p_caster->getAuraWithId(kingOfTheJungle)->getSpellInfo()->custom_RankNumber * 5;
+                    spell->forced_basepoints.set(0, p_caster->getAuraWithId(kingOfTheJungle)->getSpellInfo()->custom_RankNumber * 5);
                     SpellCastTargets targets(p_caster->getGuid());
                     spell->prepare(&targets);
                 }
@@ -1549,7 +1548,7 @@ void Spell::HandleAddAura(uint64 guid)
         };
 
         if (spellid == 31665 && Target->hasAurasWithId(masterOfSubtlety))
-            spell->forced_basepoints[0] = Target->getAuraWithId(masterOfSubtlety)->getSpellInfo()->getEffectBasePoints(0);
+            spell->forced_basepoints.set(0, Target->getAuraWithId(masterOfSubtlety)->getSpellInfo()->getEffectBasePoints(0));
 
         SpellCastTargets targets(Target->getGuid());
         spell->prepare(&targets);
