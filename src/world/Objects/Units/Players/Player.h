@@ -1847,10 +1847,6 @@ public:
             return false;
         }
 
-        void addVehicleComponent(uint32 creature_entry, uint32 vehicleid);
-
-        void removeVehicleComponent();
-
         uint32 TrackingSpell = 0;
         void _EventCharmAttack();
         

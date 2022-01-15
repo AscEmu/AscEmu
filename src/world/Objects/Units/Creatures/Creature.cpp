@@ -180,24 +180,6 @@ void Creature::setMaxWanderDistance(float_t dist)
     m_wanderDistance = dist;
 }
 
-void Creature::addVehicleComponent(uint32_t creature_entry, uint32_t vehicleid)
-{
-    if (m_vehicle != nullptr)
-    {
-        sLogger.failure("Creature %u (%s) with GUID %u already has a vehicle component.", creature_properties->Id, creature_properties->Name.c_str(), GetUIdFromGUID());
-        return;
-    }
-
-    m_vehicle = new Vehicle();
-    m_vehicle->Load(this, creature_entry, vehicleid);
-}
-
-void Creature::removeVehicleComponent()
-{
-    delete m_vehicle;
-    m_vehicle = nullptr;
-}
-
 std::vector<CreatureItem>* Creature::getSellItems()
 {
     return m_SellItems;
@@ -1600,7 +1582,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
 
     if (isVehicle())
     {
-        addVehicleComponent(creature_properties->Id, creature_properties->vehicleid);
+        createVehicleKit(creature_properties->vehicleid, creature_properties->Id);
         addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
         setAItoUse(false);
     }
@@ -1767,7 +1749,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 
     if (isVehicle())
     {
-        addVehicleComponent(creature_properties->Id, creature_properties->vehicleid);
+        createVehicleKit(creature_properties->vehicleid, creature_properties->Id);
         addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
         setAItoUse(false);
     }
@@ -2175,7 +2157,7 @@ bool Creature::isCritter()
 
 void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 {
-    if (getVehicleComponent() != NULL)
+    /*if (getVehicleComponent() != NULL)
     {
         getVehicleComponent()->RemoveAccessories();
         getVehicleComponent()->EjectAllPassengers();
@@ -2183,7 +2165,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     // Creature falls off vehicle on death
     if ((m_currentVehicle != NULL))
-        m_currentVehicle->EjectPassenger(this);
+        m_currentVehicle->EjectPassenger(this);*/
 
     //general hook for die
     if (!sHookInterface.OnPreUnitDie(pAttacker, this))

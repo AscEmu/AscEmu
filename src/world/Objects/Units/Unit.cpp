@@ -49,6 +49,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Creatures/CreatureGroups.h"
 
 #if VERSION_STRING <= TBC
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
@@ -2633,7 +2634,7 @@ void Unit::updateSplinePosition()
         pos.z = loc.z;
         pos.o = normalizeOrientation(loc.orientation);
 
-        if (TransportBase* vehicle = getCurrentVehicle())
+        if (TransportBase* vehicle = getVehicle())
         {
             vehicle->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
         }
@@ -4500,7 +4501,7 @@ uint32_t Unit::removeAllAurasByIdReturnCount(uint32_t auraId) const
     return res;
 }
 
-void Unit::removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell/* = 0*/, bool removeOnlyEffect/* = false*/)
+void Unit::removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell/* = 0*/, bool removeOnlyEffect/* = false*/, uint64_t casterGuid/* = 0*/)
 {
     for (auto i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
     {
@@ -4524,7 +4525,8 @@ void Unit::removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell/* = 
                 }
                 else
                 {
-                    RemoveAura(aur);
+                    if (!casterGuid || aur->getCasterGuid() == casterGuid)
+                        RemoveAura(aur);
                     break;
                 }
             }
@@ -6742,80 +6744,6 @@ SummonHandler* Unit::getSummonInterface() const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Vehicle
-
-Vehicle* Unit::getCurrentVehicle() const { return m_currentVehicle; }
-
-void Unit::setCurrentVehicle(Vehicle* vehicle) { m_currentVehicle = vehicle; }
-
-void Unit::addPassengerToVehicle(uint64_t vehicleGuid, uint32_t delay)
-{
-    if (delay > 0)
-    {
-        sEventMgr.AddEvent(this, &Unit::addPassengerToVehicle, vehicleGuid, static_cast<uint32_t>(0), 0, delay, 1, 0);
-        return;
-    }
-
-    if (const auto unit = m_mapMgr->GetUnit(vehicleGuid))
-    {
-        if (unit->getVehicleComponent() == nullptr)
-            return;
-
-        if (m_currentVehicle != nullptr)
-            return;
-
-        unit->getVehicleComponent()->AddPassenger(this);
-    }
-}
-
-Vehicle* Unit::getVehicleComponent() const
-{
-    return m_vehicle;
-}
-
-Unit* Unit::getVehicleBase()
-{
-    if (m_currentVehicle != nullptr)
-        return m_currentVehicle->GetOwner();
-
-    if (m_vehicle != nullptr)
-        return this;
-
-    return nullptr;
-}
-
-void Unit::sendHopOnVehicle(Unit* vehicleOwner, uint32_t seat)
-{
-    SendMessageToSet(SmsgMonsterMoveTransport(GetNewGUID(), vehicleOwner->GetNewGUID(), static_cast<uint8_t>(seat), GetPosition()).serialise().get(), true);
-}
-
-void Unit::sendHopOffVehicle(Unit* vehicleOwner, LocationVector& /*landPosition*/)
-{
-    WorldPacket data(SMSG_MONSTER_MOVE, 1 + 12 + 4 + 1 + 4 + 4 + 4 + 12 + 8);
-    data << GetNewGUID();
-
-    if (isPlayer())
-        data << uint8(1);
-    else
-        data << uint8(0);
-
-    data << float(GetPositionX());
-    data << float(GetPositionY());
-    data << float(GetPositionZ());
-    data << uint32(Util::getMSTime());
-    data << uint8(4);                            // SPLINETYPE_FACING_ANGLE
-    data << float(GetOrientation());             // guess
-    data << uint32(0x01000000);                  // SPLINEFLAG_EXIT_VEHICLE
-    data << uint32(0);                           // Time in between points
-    data << uint32(1);                           // 1 single waypoint
-    data << float(vehicleOwner->GetPositionX());
-    data << float(vehicleOwner->GetPositionY());
-    data << float(vehicleOwner->GetPositionZ());
-
-    SendMessageToSet(&data, true);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
 // Unit Owner
 bool Unit::isUnitOwnerInParty(Unit* unit)
 {
@@ -6862,7 +6790,7 @@ bool Unit::isUnitOwnerInRaid(Unit* unit)
 
 uint64_t Unit::getTransGuid()
 {
-    if (getCurrentVehicle())
+    if (getVehicle())
         return getVehicleBase()->getGuid();
     if (GetTransport())
         return GetTransport()->getGuid();
@@ -7024,4 +6952,391 @@ bool Unit::isLootable()
     }
 
     return false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Vehicle
+
+void Unit::sendHopOnVehicle(Unit* vehicleOwner, uint32_t seat)
+{
+    SendMessageToSet(SmsgMonsterMoveTransport(GetNewGUID(), vehicleOwner->GetNewGUID(), static_cast<uint8_t>(seat), GetPosition()).serialise().get(), true);
+}
+
+void Unit::sendHopOffVehicle(Unit* vehicleOwner, LocationVector& /*landPosition*/)
+{
+    WorldPacket data(SMSG_MONSTER_MOVE, 1 + 12 + 4 + 1 + 4 + 4 + 4 + 12 + 8);
+    data << GetNewGUID();
+
+    if (isPlayer())
+        data << uint8(1);
+    else
+        data << uint8(0);
+
+    data << float(GetPositionX());
+    data << float(GetPositionY());
+    data << float(GetPositionZ());
+    data << uint32(Util::getMSTime());
+    data << uint8(4);                            // SPLINETYPE_FACING_ANGLE
+    data << float(GetOrientation());             // guess
+    data << uint32(0x01000000);                  // SPLINEFLAG_EXIT_VEHICLE
+    data << uint32(0);                           // Time in between points
+    data << uint32(1);                           // 1 single waypoint
+    data << float(vehicleOwner->GetPositionX());
+    data << float(vehicleOwner->GetPositionY());
+    data << float(vehicleOwner->GetPositionZ());
+
+    SendMessageToSet(&data, true);
+}
+
+bool Unit::createVehicleKit(uint32_t id, uint32_t creatureEntry)
+{
+    auto vehInfo = sVehicleStore.LookupEntry(id);
+    if (!vehInfo)
+        return false;
+
+    m_vehicleKit = new Vehicle(this, vehInfo, creatureEntry);
+    m_updateFlag |= UPDATEFLAG_VEHICLE;
+    return true;
+}
+
+void Unit::removeVehicleKit()
+{
+    if (!m_vehicleKit)
+        return;
+
+    m_vehicleKit->uninstall();
+    delete m_vehicleKit;
+
+    m_vehicleKit = nullptr;
+
+    m_updateFlag &= ~UPDATEFLAG_VEHICLE;
+    removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK | UNIT_NPC_FLAG_PLAYER_VEHICLE);
+}
+
+bool Unit::isOnVehicle(Unit const* vehicle) const
+{
+    return m_vehicle && m_vehicle == vehicle->getVehicleKit();
+}
+
+Unit* Unit::getVehicleBase() const
+{
+    return m_vehicle ? m_vehicle->getBase() : nullptr;
+}
+
+Unit* Unit::getVehicleRoot() const
+{
+    Unit* vehicleRoot = getVehicleBase();
+
+    if (!vehicleRoot)
+        return nullptr;
+
+    for (;;)
+    {
+        if (!vehicleRoot->getVehicleBase())
+            return vehicleRoot;
+
+        vehicleRoot = vehicleRoot->getVehicleBase();
+    }
+}
+
+Creature* Unit::getVehicleCreatureBase() const
+{
+    if (Unit* veh = getVehicleBase())
+        if (Creature* c = veh->ToCreature())
+            return c;
+
+    return nullptr;
+}
+
+void Unit::handleSpellClick(Unit* clicker, int8_t seatId /*= -1*/)
+{
+    bool spellClickHandled = false;
+    uint32_t spellClickEntry = getVehicleKit() ? getVehicleKit()->getEntry() : getEntry();
+    
+    auto clickBounds = sMySQLStore.getSpellClickInfoMapBounds(spellClickEntry);
+    for (auto clickPair : clickBounds)
+    {
+        //! First check simple relations from clicker to clickee
+        if (!clickPair.second.isFitToRequirements(clicker, this))
+            continue;
+
+        Unit* caster = (clickPair.second.castFlags & NPC_CLICK_CAST_CASTER_CLICKER) ? clicker : this;
+        Unit* target = (clickPair.second.castFlags & NPC_CLICK_CAST_TARGET_CLICKER) ? clicker : this;
+        uint64_t origCasterGUID = (clickPair.second.castFlags & NPC_CLICK_CAST_ORIG_CASTER_OWNER) ? getOwnerGUID() : clicker->getGuid();
+
+        SpellInfo const* spellEntry = sSpellMgr.getSpellInfo(clickPair.second.spellId);
+
+        // Vehicle Handling
+        if (seatId > -1)
+        {
+            uint8_t i = 0;
+            bool valid = false;
+            while (i < MAX_SPELL_EFFECTS)
+            {
+                if (spellEntry->getEffectApplyAuraName(i) == SPELL_AURA_CONTROL_VEHICLE)
+                {
+                    valid = true;
+                    break;
+                }
+                ++i;
+            }
+
+            if (!valid)
+            {
+                sLogger.failure("Spell %u specified in npc_spellclick_spells is not a valid vehicle enter aura!", clickPair.second.spellId);
+                continue;
+            }
+
+            if (IsInMap(caster))
+            {
+                /*
+                *   VEHICLE_SPELL_RIDE_HARDCODED gets Casted on the Target
+                *   We pass trough seatId trough EffectBaseDamage for further use
+                *   The Aura Handler "HANDLE_AURA_CONTROL_VEHICLE" takes care of us.
+                *   HANDLE_AURA_CONTROL_VEHICLE will call _enterVehicle or _exitVehicle
+                */
+
+                SpellForcedBasePoints bp;
+                bp.basePoints[i] = seatId;
+                caster->castSpell(target, clickPair.second.spellId, bp, true);
+            }
+        }
+        else
+        {
+            // Creatures like Lightwell...
+            if (IsInMap(caster))
+                caster->castSpell(target, spellEntry->getId(), true);
+        }
+
+        spellClickHandled = true;
+    }
+}
+
+bool SpellClickInfo::isFitToRequirements(Unit* clicker, Unit* clickee)
+{
+    Player* playerClicker = clicker->ToPlayer();
+    if (!playerClicker)
+        return true;
+
+    Unit* summoner = nullptr;
+    // Check summoners for party
+    if (clickee->isSummon())
+        summoner = clickee->GetMapMgrUnit(clickee->getSummonedByGuid());
+
+    if (!summoner)
+        summoner = clickee;
+
+    // This only applies to players
+    switch (userType)
+    {
+    case SPELL_CLICK_USER_FRIEND:
+        if (!isFriendly(playerClicker, summoner))
+            return false;
+        break;
+    case SPELL_CLICK_USER_RAID:
+    case SPELL_CLICK_USER_PARTY:
+        if (!playerClicker->getGroup()->GetID() == summoner->ToPlayer()->getGroup()->GetID())
+            return false;
+        break;
+    default:
+        break;
+    }
+
+    return true;
+}
+
+void Unit::enterVehicle(Unit* base, int8_t seatId /*= -1*/)
+{
+    /*
+    *   VEHICLE_SPELL_RIDE_HARDCODED gets Casted on the Target
+    *   We pass trough seatId trough EffectBaseDamage for further use
+    *   The Aura Handler "HANDLE_AURA_CONTROL_VEHICLE" takes care of us.
+    *   HANDLE_AURA_CONTROL_VEHICLE will call _enterVehicle or _exitVehicle
+    */
+
+    SpellForcedBasePoints bp;
+    bp.basePoints[0] = seatId;
+    castSpell(base, VEHICLE_SPELL_RIDE_HARDCODED, bp, true);
+}
+
+void Unit::_enterVehicle(Vehicle* vehicle, int8_t seatId)
+{
+    if (!isAlive() || getVehicleKit() == vehicle || vehicle->getBase()->isOnVehicle(this))
+        return;
+
+    if (m_vehicle)
+    {
+        if (m_vehicle != vehicle)
+        {
+            exitVehicle();
+        }
+        else if (seatId >= 0 && seatId == GetTransSeat())
+        {
+            return;
+        }
+        else
+        {
+            //Exit the current vehicle because unit will reenter in a new seat.
+            m_vehicle->getBase()->removeAllAurasByAuraEffect(SPELL_AURA_CONTROL_VEHICLE, 0, false, getGuid());
+        }
+    }
+
+    if (Player* player = ToPlayer())
+    {
+        if (vehicle->getBase()->getObjectTypeId() == TYPEID_PLAYER && player->isInCombat())
+        {
+            vehicle->getBase()->removeAllAurasByAuraEffect(SPELL_AURA_CONTROL_VEHICLE);
+            return;
+        }
+
+        if (vehicle->getBase()->getObjectTypeId() == TYPEID_UNIT)
+        {
+            // If a player entered a vehicle that is part of a formation, remove it from the formation
+            if (CreatureGroup* creatureGroup = vehicle->getBase()->ToCreature()->getFormation())
+                creatureGroup->removeMember(vehicle->getBase()->ToCreature());
+        }
+    }
+
+    // If vehicle flag for fixed position set (cannons), or if the following hardcoded units, then set state rooted
+    //  30236 | Argent Cannon
+    //  39759 | Tankbuster Cannon
+    if ((vehicle->getVehicleInfo()->flags & VEHICLE_FLAG_FIXED_POSITION) || vehicle->getBase()->getEntry() == 30236 || vehicle->getBase()->getEntry() == 39759)
+        setControlled(true, UNIT_STATE_ROOTED);
+
+    if (!vehicle->addPassenger(this, seatId))
+    {
+        if (isCreature())
+            ToCreature()->Despawn(2000, 0);
+    }
+}
+
+void Unit::changeSeat(int8_t seatId, bool next)
+{
+    if (!m_vehicle)
+        return;
+
+    // Don't change if current and new seat are identical
+    if (seatId == GetTransSeat())
+        return;
+
+    SeatMap::const_iterator seat = (seatId < 0 ? m_vehicle->getNextEmptySeat(GetTransSeat(), next) : m_vehicle->Seats.find(seatId));
+    if (seat == m_vehicle->Seats.end() || !seat->second.isEmpty())
+        return;
+
+    /*
+    *   VEHICLE_SPELL_RIDE_HARDCODED gets Casted on the Target
+    *   We pass trough seatId trough EffectBaseDamage for further use
+    *   The Aura Handler "HANDLE_AURA_CONTROL_VEHICLE" takes care of us.
+    *   HANDLE_AURA_CONTROL_VEHICLE will call _enterVehicle or _exitVehicle
+    */
+
+    // Unit riding a vehicle must always have control vehicle aura on target
+    for (const auto& aur : m_vehicle->getBase()->m_auras)
+    {
+        if (!aur->hasAuraEffect(SPELL_AURA_CONTROL_VEHICLE))
+            continue;
+
+        if (aur->getCasterGuid() != getGuid())
+            continue;
+
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            auto aurEff = aur->getModifiableAuraEffect(i);
+            if (aurEff->getAuraEffectType() == SPELL_AURA_CONTROL_VEHICLE)
+                aurEff->setEffectBaseDamage(seatId);
+        }
+
+        aur->refresh();
+        break;
+    }
+}
+
+void Unit::exitVehicle(LocationVector const* /*exitPosition*/)
+{
+    /*
+    *   VEHICLE_SPELL_RIDE_HARDCODED gets Casted on the Target
+    *   We pass trough seatId trough EffectBaseDamage for further use
+    *   The Aura Handler "HANDLE_AURA_CONTROL_VEHICLE" takes care of us.
+    *   HANDLE_AURA_CONTROL_VEHICLE will call _enterVehicle or _exitVehicle
+    */
+
+    if (!m_vehicle)
+        return;
+
+    getVehicleBase()->removeAllAurasByAuraEffect(SPELL_AURA_CONTROL_VEHICLE, 0, false, getGuid());
+}
+
+void Unit::_exitVehicle(LocationVector const* exitPosition)
+{
+    if (!m_vehicle)
+        return;
+
+    VehicleSeatAddon const* seatAddon = m_vehicle->getSeatAddonForSeatOfPassenger(this);
+    Vehicle* vehicle = m_vehicle->removePassenger(this);
+
+    Player* player = ToPlayer();
+
+    // Unroot the Passenger
+    setControlled(false, UNIT_STATE_ROOTED);
+
+    addUnitStateFlag(UNIT_STATE_MOVE);
+
+    // Unroot the Passenger when the Above code fails
+    if (hasUnitMovementFlag(MOVEFLAG_ROOTED))
+    {
+        WorldPacket data(SMSG_SPLINE_MOVE_UNROOT, 8);
+        data << GetNewGUID();
+        SendMessageToSet(&data, false);
+    }
+
+    LocationVector pos;
+    // If we ask for a specific exit position, use that one. Otherwise allow scripts to modify it
+    if (exitPosition)
+        pos = *exitPosition;
+    else
+    {
+        // Set exit position to vehicle position and use the current orientation
+        pos = vehicle->getBase()->GetPosition();
+        pos.o = GetOrientation();
+
+        // Change exit position based on seat entry addon data
+        if (seatAddon)
+        {
+            if (seatAddon->ExitParameter == VehicleExitParameters::VehicleExitParamOffset)
+                pos.ChangeCoordsOffset({ seatAddon->ExitParameterX, seatAddon->ExitParameterY, seatAddon->ExitParameterZ, seatAddon->ExitParameterO });
+            else if (seatAddon->ExitParameter == VehicleExitParameters::VehicleExitParamDest)
+                pos.ChangeCoords({ seatAddon->ExitParameterX, seatAddon->ExitParameterY, seatAddon->ExitParameterZ, seatAddon->ExitParameterO });
+        }
+    }
+
+    // Send movement Spline
+    MovementNew::MoveSplineInit init(this);
+    init.MoveTo(pos.getPositionX(), pos.getPositionY(), pos.getPositionZ(), false);
+    init.SetFacing(pos.getOrientation());
+    init.SetTransportExit();
+    getMovementManager()->launchMoveSpline(std::move(init), EVENT_VEHICLE_EXIT, MOTION_PRIORITY_HIGHEST);
+
+    if (player)
+    {
+        // Todo Resummon Pets if Player had any before he mounted
+    }
+
+    // Despawn Accessories
+    if (vehicle->getBase()->hasUnitStateFlag(UNIT_STATE_ACCESSORY) && vehicle->getBase()->getObjectTypeId() == TYPEID_UNIT)
+        if ((vehicle->getBase())->getVehicleKit()->getBase() == this)
+            vehicle->getBase()->ToCreature()->Despawn(2000, 0);
+
+    if (hasUnitStateFlag(UNIT_STATE_ACCESSORY))
+    {
+        // Vehicle just died, we die too
+        if (vehicle->getBase()->getDeathState() == JUST_DIED)
+        {
+            setDeathState(JUST_DIED);
+        }
+        else
+        {
+            // If for other reason we as minion are exiting the vehicle (ejected, master dismounted) - unsummon
+            ToCreature()->Despawn(2000, 0);
+        }
+    }
 }

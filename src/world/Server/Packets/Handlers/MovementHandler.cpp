@@ -40,8 +40,8 @@ void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
     if (_player->getCharmGuid() != srlPacket.guid.getRawGuid() || _player->getGuid() != srlPacket.guid.getRawGuid())
     {
         auto bad_packet = true;
-        if (const auto vehicle = _player->getCurrentVehicle())
-            if (const auto owner = vehicle->GetOwner())
+        if (const auto vehicle = _player->getVehicle())
+            if (const auto owner = vehicle->getBase())
                 if (owner->getGuid() == srlPacket.guid.getRawGuid())
                     bad_packet = false;
 

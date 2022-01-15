@@ -2090,9 +2090,10 @@ MySQLStructure::TotemDisplayIds const* MySQLDataStore::getTotemDisplayId(uint8_t
 void MySQLDataStore::loadSpellClickSpellsTable()
 {
     auto startTime = Util::TimeNow();
+    _spellClickInfoStore.clear();
 
-    //                                                                      0         1
-    QueryResult* spellclickspells_result = WorldDatabase.Query("SELECT CreatureID, SpellID FROM spellclickspells");
+    //                                                0          1         2            3
+    QueryResult* spellclickspells_result = WorldDatabase.Query("SELECT npc_entry, spell_id, cast_flags, user_type FROM npc_spellclick_spells");
     if (spellclickspells_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `spellclickspells` is empty!");
@@ -2101,35 +2102,43 @@ void MySQLDataStore::loadSpellClickSpellsTable()
 
     sLogger.info("MySQLDataLoads : Table `spellclickspells` has %u columns", spellclickspells_result->GetFieldCount());
 
-    _spellClickSpellsStore.rehash(spellclickspells_result->GetRowCount());
-
     uint32_t spellclickspells_count = 0;
     do
     {
         Field* fields = spellclickspells_result->Fetch();
 
-        uint32_t entry = fields[0].GetUInt32();
+        uint32_t npc_entry = fields[0].GetUInt32();
+        CreatureProperties const* cInfo = sMySQLStore.getCreatureProperties(npc_entry);
+        if (!cInfo)
+        {
+            sLogger.failure("Table npc_spellclick_spells references unknown creature_properties %u. Skipping entry.", npc_entry);
+            continue;
+        }
 
-        SpellClickSpell& spellClickSpells = _spellClickSpellsStore[entry];
+        uint32_t spellid = fields[1].GetUInt32();
+        SpellInfo const* spellinfo = sSpellMgr.getSpellInfo(spellid);
+        if (!spellinfo)
+        {
+            sLogger.failure("Table npc_spellclick_spells creature: %u references unknown spellid %u. Skipping entry.", npc_entry, spellid);
+            continue;
+        }
 
-        spellClickSpells.CreatureID = entry;
-        spellClickSpells.SpellID = fields[1].GetUInt32();
+        uint8_t userType = fields[3].GetUInt16();
+        if (userType >= SPELL_CLICK_USER_MAX)
+            sLogger.failure("Table npc_spellclick_spells creature: %u references unknown user type %u. Skipping entry.", npc_entry, uint32(userType));
 
-        ++spellclickspells_count;
+        uint8_t castFlags = fields[2].GetUInt8();
+
+        SpellClickInfo info;
+        info.spellId = spellid;
+        info.castFlags = castFlags;
+        info.userType = SpellClickUserTypes(userType);
+        _spellClickInfoStore.insert(SpellClickInfoContainer::value_type(npc_entry, info));
     } while (spellclickspells_result->NextRow());
 
     delete spellclickspells_result;
 
     sLogger.info("MySQLDataLoads : Loaded %u rows from `spellclickspells` table in %u ms!", spellclickspells_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-}
-
-SpellClickSpell const* MySQLDataStore::getSpellClickSpell(uint32_t entry)
-{
-    SpellClickSpellContainer::const_iterator itr = _spellClickSpellsStore.find(entry);
-    if (itr != _spellClickSpellsStore.end())
-        return &(itr->second);
-
-    return nullptr;
 }
 
 void MySQLDataStore::loadWorldStringsTable()

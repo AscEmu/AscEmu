@@ -183,7 +183,7 @@ void ObjectMgr::finalize()
     }
 
     sLogger.info("ObjectMgr : Cleaning up vehicle accessories...");
-    for (std::map< uint32, std::vector< VehicleAccessoryEntry* >* >::iterator itr = vehicle_accessories.begin(); itr != vehicle_accessories.end(); ++itr)
+    /*for (std::map< uint32, std::vector< VehicleAccessoryEntry* >* >::iterator itr = vehicle_accessories.begin(); itr != vehicle_accessories.end(); ++itr)
     {
         std::vector< VehicleAccessoryEntry* > *v = itr->second;
 
@@ -194,7 +194,7 @@ void ObjectMgr::finalize()
         delete v;
     }
 
-    vehicle_accessories.clear();
+    vehicle_accessories.clear();*/
 
 
     sLogger.info("ObjectMgr : Cleaning up worldstate templates...");
@@ -2355,29 +2355,42 @@ uint32 ObjectMgr::GenerateGameObjectSpawnID()
 
 void ObjectMgr::LoadVehicleAccessories()
 {
-    QueryResult* result = WorldDatabase.Query("SELECT creature_entry, accessory_entry, seat FROM vehicle_accessories;");
+    _vehicleAccessoryStore.clear();
+
+    QueryResult* result = WorldDatabase.Query("SELECT entry, accessory_entry, seat_id , minion, summontype, summontimer FROM vehicle_accessories;");
     if (result != nullptr)
     {
         do
         {
-            Field* row = result->Fetch();
-            VehicleAccessoryEntry* entry = new VehicleAccessoryEntry();
-            uint32 creature_entry = row[0].GetUInt32();
-            entry->accessory_entry = row[1].GetUInt32();
-            entry->seat = row[2].GetUInt32();
+            Field* fields = result->Fetch();
 
-            std::map< uint32, std::vector< VehicleAccessoryEntry* >* >::iterator itr = vehicle_accessories.find(creature_entry);
+            uint32_t entry = fields[0].GetUInt32();
+            uint32_t accessory = fields[1].GetUInt32();
+            int8   seatId = fields[2].GetInt8();
+            bool   isMinion = fields[3].GetBool();
+            uint8_t  summonType = fields[4].GetUInt8();
+            uint32_t summonTimer = fields[5].GetUInt32();
 
-            if (itr != vehicle_accessories.end())
+            if (!sMySQLStore.getCreatureProperties(entry))
             {
-                itr->second->push_back(entry);
+                sLogger.failure("Table `vehicle_accessories`: creature template entry %u does not exist.", entry);
+                continue;
             }
-            else
+
+            if (!sMySQLStore.getCreatureProperties(accessory))
             {
-                std::vector< VehicleAccessoryEntry* >* v = new std::vector< VehicleAccessoryEntry* >();
-                v->push_back(entry);
-                vehicle_accessories.insert(std::make_pair(creature_entry, v));
+                sLogger.failure("Table `vehicle_accessories`: Accessory %u does not exist.", accessory);
+                continue;
             }
+
+            auto _spellClickInfoStore = sMySQLStore.getSpellClickSpellsStore();
+            if (_spellClickInfoStore->find(entry) == _spellClickInfoStore->end())
+            {
+                sLogger.failure("Table `vehicle_accessories`: creature template entry %u has no data in npc_spellclick_spells", entry);
+                continue;
+            }
+
+            _vehicleAccessoryStore[entry].push_back(VehicleAccessory(accessory, seatId, isMinion, summonType, summonTimer));
 
         } while (result->NextRow());
 
@@ -2385,14 +2398,39 @@ void ObjectMgr::LoadVehicleAccessories()
     }
 }
 
-std::vector< VehicleAccessoryEntry* >* ObjectMgr::GetVehicleAccessories(uint32 creature_entry)
+void ObjectMgr::loadVehicleSeatAddon()
 {
-    std::map< uint32, std::vector< VehicleAccessoryEntry* >* >::iterator itr = vehicle_accessories.find(creature_entry);
+    _vehicleSeatAddonStore.clear();
 
-    if (itr == vehicle_accessories.end())
-        return nullptr;
-    else
-        return itr->second;
+    QueryResult* result = WorldDatabase.Query("SELECT SeatEntry, SeatOrientation, ExitParamX , ExitParamY, ExitParamZ, ExitParamO, ExitParamValue FROM vehicle_seat_addon;");
+    if (result != nullptr)
+    {
+        do
+        {
+            Field* fields = result->Fetch();
+
+            uint32 seatID = fields[0].GetUInt32();
+            float orientation = fields[1].GetFloat();
+            float exitX = fields[2].GetFloat();
+            float exitY = fields[3].GetFloat();
+            float exitZ = fields[4].GetFloat();
+            float exitO = fields[5].GetFloat();
+            uint8 exitParam = fields[6].GetUInt8();
+
+            _vehicleSeatAddonStore[seatID] = VehicleSeatAddon(orientation, exitX, exitY, exitZ, exitO, exitParam);
+
+        } while (result->NextRow());
+
+        delete result;
+    }
+}
+
+VehicleAccessoryList const* ObjectMgr::getVehicleAccessories(Vehicle* vehicle)
+{
+    VehicleAccessoryContainer::const_iterator itr = _vehicleAccessoryStore.find(vehicle->getEntry());
+    if (itr != _vehicleAccessoryStore.end())
+        return &itr->second;
+    return nullptr;
 }
 
 void ObjectMgr::LoadWorldStateTemplates()

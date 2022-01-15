@@ -809,7 +809,7 @@ public:
     void removeAllAurasByIdForGuid(uint32_t auraId, uint64_t guid);
     uint32_t removeAllAurasByIdReturnCount(uint32_t auraId) const;
     // Can remove only the effect from aura, or (by default) entire aura
-    void removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell = 0, bool removeOnlyEffect = false);
+    void removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell = 0, bool removeOnlyEffect = false, uint64_t casterGuid = 0);
 
     uint64_t getSingleTargetGuidForAura(uint32_t spellId);
     uint64_t getSingleTargetGuidForAura(uint32_t* spellIds, uint32_t* index);
@@ -1037,22 +1037,31 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Vehicle
 protected:
-    Vehicle* m_currentVehicle = nullptr;    // The vehicle the unit is attached to
     Vehicle* m_vehicle = nullptr;           // The Unit's own vehicle component
+    Vehicle* m_vehicleKit = nullptr;        // The vehicle the unit is attached to
 
 public:
-    Vehicle* getCurrentVehicle() const;
-    void setCurrentVehicle(Vehicle* vehicle);
-    void addPassengerToVehicle(uint64_t vehicleGuid, uint32_t delay);
-
-    Vehicle* getVehicleComponent() const;
-    Unit* getVehicleBase();
-
-    virtual void addVehicleComponent(uint32 /*creatureEntry*/, uint32 /*vehicleId*/) {}
-    virtual void removeVehicleComponent() {}
-
     void sendHopOnVehicle(Unit* vehicleOwner, uint32_t seat);
     void sendHopOffVehicle(Unit* vehicleOwner, LocationVector& /*landPosition*/);
+
+    bool createVehicleKit(uint32_t id, uint32_t creatureEntry);
+    void removeVehicleKit();
+    Vehicle* getVehicleKit() const { return m_vehicleKit; }
+    Vehicle* getVehicle() const { return m_vehicle; }
+    void setVehicle(Vehicle* vehicle) { m_vehicle = vehicle; }
+    bool isOnVehicle(Unit const* vehicle) const;
+    Unit* getVehicleBase() const;
+    Unit* getVehicleRoot() const;
+    Creature* getVehicleCreatureBase() const;
+
+    void handleSpellClick(Unit* clicker, int8_t seatId = -1);
+    void enterVehicle(Unit* base, int8_t seatId = -1);
+    void exitVehicle(LocationVector const* exitPosition = nullptr);
+    void changeSeat(int8_t seatId, bool next = true);
+
+    // Should only be called by AuraEffect::HandleAuraControlVehicle(AuraApplication const* auraApp, uint8 mode, bool apply) const;
+    void _exitVehicle(LocationVector const* exitPosition = nullptr);
+    void _enterVehicle(Vehicle* vehicle, int8_t seatId);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Unit Owner

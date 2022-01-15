@@ -32,7 +32,7 @@ enum PowerType : int16_t
     POWER_TYPE_DEMONIC_FURY     = 15,
 #endif
     TOTAL_PLAYER_POWER_TYPES,
-    // Vehicle power types?
+    // Vehicle power types
     POWER_TYPE_STEAM            = 61,
     POWER_TYPE_PYRITE           = 41,
     POWER_TYPE_HEAT             = 101,

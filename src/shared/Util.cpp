@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Util.hpp"
 #include "Util/Strings.hpp"
+#include "Util/IteratorPair.hpp"
 #include <iostream>
 #include <vector>
 #include <string>

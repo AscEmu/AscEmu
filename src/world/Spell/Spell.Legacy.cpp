@@ -3093,7 +3093,7 @@ void Spell::SpellEffectJumpTarget(uint8_t effectIndex)
     if (u_caster == nullptr)
         return;
 
-    if (u_caster->getCurrentVehicle() || u_caster->isTrainingDummy())
+    if (u_caster->getVehicleKit() || u_caster->isTrainingDummy())
         return;
 
     float x = 0;

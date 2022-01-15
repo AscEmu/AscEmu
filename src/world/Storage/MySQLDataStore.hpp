@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Management/ObjectMgr.h"
+#include "Util/IteratorPair.hpp"
 #include "Spell/Definitions/SpellClickSpell.hpp"
 #include "Spell/Definitions/TeleportCoords.hpp"
 #include "MySQLStructures.h"
@@ -67,7 +68,7 @@ public:
     typedef std::unordered_map<uint32_t, MySQLStructure::ZoneGuards> ZoneGuardsContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::Battlemasters> BattleMastersContainer;
     typedef std::vector<MySQLStructure::TotemDisplayIds> TotemDisplayIdContainer;
-    typedef std::unordered_map<uint32_t, SpellClickSpell> SpellClickSpellContainer;
+    typedef std::multimap<uint32, SpellClickInfo> SpellClickInfoContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::WorldStringTable> WorldStringContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::PointsOfInterest> PointsOfInterestContainer;
 
@@ -177,8 +178,11 @@ public:
     MySQLStructure::TotemDisplayIds const* getTotemDisplayId(uint8_t race, uint32_t entry);
     TotemDisplayIdContainer const* getTotemDisplayIdsStore() { return &_totemDisplayIdsStore; }
 
-    SpellClickSpell const* getSpellClickSpell(uint32_t entry);
-    SpellClickSpellContainer const* getSpellClickSpellsStore() { return &_spellClickSpellsStore; }
+    AscEmu::Util::IteratorPair<SpellClickInfoContainer::const_iterator> getSpellClickInfoMapBounds(uint32_t creature_id) const
+    {
+        return AscEmu::Util::Containers::MapEqualRange(_spellClickInfoStore, creature_id);
+    }
+    SpellClickInfoContainer const* getSpellClickSpellsStore() { return &_spellClickInfoStore; }
 
     MySQLStructure::WorldStringTable const* getWorldString(uint32_t entry);
     WorldStringContainer const* getWorldStringsStore() { return &_worldStringsStore; }
@@ -365,7 +369,7 @@ public:
     ZoneGuardsContainer _zoneGuardsStore;
     BattleMastersContainer _battleMastersStore;
     TotemDisplayIdContainer _totemDisplayIdsStore;
-    SpellClickSpellContainer _spellClickSpellsStore;
+    SpellClickInfoContainer _spellClickInfoStore;
 
     WorldStringContainer _worldStringsStore;
 

@@ -50,7 +50,7 @@ int32_t MoveSplineInit::Launch()
     MoveSpline& move_spline = *unit->movespline;
 
     // Elevators also use MOVEFLAG_TRANSPORT but we do not keep track of their position changes
-    bool transport = unit->hasUnitMovementFlag(MOVEFLAG_TRANSPORT) && unit->GetTransport();
+    bool transport = unit->hasUnitMovementFlag(MOVEFLAG_TRANSPORT) && unit->getTransGuid();
     Location real_position;
     // there is a big chance that current position is unknown if current state is not finalized, need compute it
     // this also allows CalculatePath spline position and update map position in much greater intervals
@@ -261,7 +261,7 @@ Vector3 TransportPathTransform::operator()(Vector3 input)
 {
     if (_transformForTransport)
     {
-        if (TransportBase* vehicle = _owner->getCurrentVehicle())
+        if (TransportBase* vehicle = _owner->getVehicle())
         {
             vehicle->CalculatePassengerOffset(input.x, input.y, input.z);
         }

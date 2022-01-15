@@ -3227,8 +3227,8 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
         if (isCreatureOrPlayer())
         {
             Unit* u = static_cast<Unit*>(this);
-            if (u->getVehicleComponent() != nullptr)
-                u->getVehicleComponent()->MovePassengers(newX, newY, newZ, newOrientation);
+            //if (u->getVehicle() != nullptr)
+            //    u->getVehicle()->MovePassengers(newX, newY, newZ, newOrientation);
         }
 
         return result;

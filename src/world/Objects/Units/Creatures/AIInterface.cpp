@@ -2288,7 +2288,7 @@ void AIInterface::setCreatureProtoDifficulty(uint32_t entry)
 
             if (getUnit()->isVehicle())
             {
-                getUnit()->addVehicleComponent(properties_difficulty->Id, properties_difficulty->vehicleid);
+                getUnit()->createVehicleKit(properties_difficulty->Id, properties_difficulty->vehicleid);
                 getUnit()->addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
                 getUnit()->setAItoUse(false);
             }
