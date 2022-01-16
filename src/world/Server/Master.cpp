@@ -57,7 +57,7 @@ SERVER_DECL SessionLog* Player_Log;
 ConfigMgr Config;
 
 // DB version
-static const char* REQUIRED_CHAR_DB_VERSION = "20211123-00_character_void_storage";
+static const char* REQUIRED_CHAR_DB_VERSION = "20220116-00_characters";
 static const char* REQUIRED_WORLD_DB_VERSION = "20220113-01_playercreateinfo_spell_learn";
 
 void Master::_OnSignal(int s)

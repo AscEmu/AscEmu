@@ -471,7 +471,7 @@ class SERVER_DECL Spell
         bool hasAttributeExG(SpellAttributesExG attribute);
 
         // Handles Teleport function
-        void HandleTeleport(float x, float y, float z, uint32 mapid, Unit* Target);
+        void HandleTeleport(LocationVector position, uint32 mapid, Unit* Target);
         // Determines how much skill caster going to gain
         void DetermineSkillUp();
         // Increases cast time of the spell

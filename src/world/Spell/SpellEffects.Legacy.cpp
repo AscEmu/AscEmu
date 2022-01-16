@@ -1707,7 +1707,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
             return;
         }
 
-        HandleTeleport(teleport_coord->x, teleport_coord->y, teleport_coord->z, teleport_coord->mapId, unitTarget);
+        HandleTeleport(LocationVector(teleport_coord->x, teleport_coord->y, teleport_coord->z), teleport_coord->mapId, unitTarget);
         return;
     }
 
@@ -1718,7 +1718,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
         {
             Player* p = static_cast<Player*>(unitTarget);
 
-            HandleTeleport(p->getBindPosition().x, p->getBindPosition().y, p->getBindPosition().z, p->getBindMapId(), p);
+            HandleTeleport(p->getBindPosition(), p->getBindMapId(), p);
         }
         return;
     }
@@ -1729,7 +1729,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
         if (u_caster == nullptr)
             return;
 
-        HandleTeleport(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_caster->GetMapId(), unitTarget);
+        HandleTeleport(m_caster->GetPosition(), m_caster->GetMapId(), unitTarget);
         return;
     }
 
@@ -2494,7 +2494,7 @@ void Spell::SpellEffectBind(uint8_t effectIndex)
         mapid = at->map_id;
     }
 
-    playerTarget->setBindPoint(playerTarget->GetPositionX(), playerTarget->GetPositionY(), playerTarget->GetPositionZ(), mapid, areaid);
+    playerTarget->setBindPoint(playerTarget->GetPositionX(), playerTarget->GetPositionY(), playerTarget->GetPositionZ(), playerTarget->GetOrientation(), mapid, areaid);
 
     playerTarget->GetSession()->SendPacket(SmsgBindPointUpdate(playerTarget->getBindPosition(), playerTarget->getBindMapId(), playerTarget->getBindZoneId()).serialise().get());
 
@@ -4842,8 +4842,8 @@ void Spell::SpellEffectStuck(uint8_t /*effectIndex*/)
     if (!playerTarget || playerTarget != p_caster)
         return;
 
-    sEventMgr.AddEvent(playerTarget, &Player::EventTeleport, playerTarget->getBindMapId(), playerTarget->getBindPosition().x, playerTarget->getBindPosition().y,
-                       playerTarget->getBindPosition().z, EVENT_PLAYER_TELEPORT, 50, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(playerTarget, &Player::EventTeleport, playerTarget->getBindMapId(), LocationVector(playerTarget->getBindPosition().x, playerTarget->getBindPosition().y,
+                       playerTarget->getBindPosition().z, playerTarget->getBindPosition().o), EVENT_PLAYER_TELEPORT, 50, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     /*
     playerTarget->SafeTeleport(playerTarget->getBindMapId(), 0, playerTarget->GetBindPositionX(), playerTarget->GetBindPositionY(), playerTarget->GetBindPositionZ(), 3.14f);*/
 }

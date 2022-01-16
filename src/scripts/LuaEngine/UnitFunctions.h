@@ -3221,11 +3221,12 @@ public:
         float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
-        uint32_t map = CHECK_ULONG(L, 4);
-        uint32_t zone = CHECK_ULONG(L, 5);
-        if (!x || !y || !z || !zone)
+        float o = CHECK_FLOAT(L, 4);
+        uint32_t map = CHECK_ULONG(L, 5);
+        uint32_t zone = CHECK_ULONG(L, 6);
+        if (!x || !y || !z || !o || !zone)
             return 0;
-        plr->setBindPoint(x, y, z, map, zone);
+        plr->setBindPoint(x, y, z, o, map, zone);
         return 0;
     }
 

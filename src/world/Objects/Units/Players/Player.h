@@ -889,7 +889,7 @@ private:
     // Bind
 public:
 
-    void setBindPoint(float x, float y, float z, uint32_t mapId, uint32_t zoneId);
+    void setBindPoint(float x, float y, float z, float o, uint32_t mapId, uint32_t zoneId);
 
     LocationVector getBindPosition() const;
     uint32_t getBindMapId() const;
@@ -900,7 +900,7 @@ public:
 private:
     struct BindData
     {
-        LocationVector location = { 0, 0, 0 };
+        LocationVector location = { 0, 0, 0, 0 };
         uint32_t mapId = 0;
         uint32_t zoneId = 0;
     };
@@ -1916,7 +1916,7 @@ public:
         uint32 m_honorless = 0;
         uint32 m_lastSeenWeather = 0;
         std::set<Object*> m_visibleFarsightObjects;
-        void EventTeleport(uint32 mapid, float x, float y, float z);
+        void EventTeleport(uint32 mapid, LocationVector position);
         void EventTeleportTaxi(uint32 mapid, float x, float y, float z);
         void BroadcastMessage(const char* Format, ...);
         std::map<uint32, std::set<uint32> > SummonSpells;
