@@ -286,6 +286,13 @@ class SERVER_DECL AchievementMgr
 {
 
 public:
+    // APGL End
+    // MIT Start
+    bool canCompleteCriteria(DBC::Structures::AchievementCriteriaEntry const* achievementCriteria, AchievementCriteriaTypes type, Player* player) const;
+    bool canCompleteCriteria(DBC::Structures::AchievementCriteriaEntry const* achievementCriteria, AchievementCriteriaTypes type, int32_t miscValue1, int32_t miscValue2, Player* player) const;
+
+    // MIT End
+    // APGL Start
 
     AchievementMgr(Player* pl);
     ~AchievementMgr();

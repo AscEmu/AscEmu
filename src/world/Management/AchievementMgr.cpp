@@ -26,6 +26,113 @@ This file is released under the MIT license. See README-MIT for more information
 using namespace AscEmu::Packets;
 
 #if VERSION_STRING > TBC
+// APGL End
+// MIT Start
+bool AchievementMgr::canCompleteCriteria(DBC::Structures::AchievementCriteriaEntry const* achievementCriteria, AchievementCriteriaTypes type, Player* player) const
+{
+    switch (type)
+    {
+        case ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL:
+        case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT:
+        case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE:
+        case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST:
+        case ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION:
+        case ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION:
+        case ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS:
+        case ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL:
+        case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL:
+        case ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT:
+        case ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA:
+        case ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED_ON_LOOT:
+        case ACHIEVEMENT_CRITERIA_TYPE_ROLL_GREED_ON_LOOT:
+            return true;
+        case ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA:
+            return player->HasOverlayUncovered(achievementCriteria->explore_area.areaReference);
+        case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_ACHIEVEMENT:
+            return m_completedAchievements.find(achievementCriteria->complete_achievement.linkedAchievement) != m_completedAchievements.end();
+        case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SPELL:
+            return player->HasSpell(achievementCriteria->learn_spell.spellID);
+        default:
+            break;
+    }
+
+    return false;
+}
+
+bool AchievementMgr::canCompleteCriteria(DBC::Structures::AchievementCriteriaEntry const* achievementCriteria, AchievementCriteriaTypes type, int32_t miscValue1, int32_t /*miscValue2*/, Player* player) const
+{
+    switch (type)
+    {
+        case ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL:
+        case ACHIEVEMENT_CRITERIA_TYPE_KILLING_BLOW:
+        case ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE:
+        case ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING:
+        case ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD:
+        case ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY:
+        case ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION:
+        case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT:
+        case ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT:
+        case ACHIEVEMENT_CRITERIA_TYPE_VISIT_BARBER_SHOP:
+        case ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_AT_BARBER:
+        case ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL:
+        case ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_PLAYER:
+        case ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_CREATURE:
+        case ACHIEVEMENT_CRITERIA_TYPE_DEATH:
+        case ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA:
+        case ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED_ON_LOOT:
+        case ACHIEVEMENT_CRITERIA_TYPE_ROLL_GREED_ON_LOOT:
+            return true;
+        case ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM:
+        case ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM:
+            return achievementCriteria->loot_item.itemID == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA:
+            return player->HasOverlayUncovered(achievementCriteria->explore_area.areaReference);
+        case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE:
+            return achievementCriteria->complete_quests_in_zone.zoneID == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST:
+            return achievementCriteria->complete_quest.questID == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION:
+            return achievementCriteria->gain_reputation.factionID == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SPELL:
+            return achievementCriteria->learn_spell.spellID == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS:
+            return achievementCriteria->number_of_mounts.unknown == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET:
+        case ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2:
+            return achievementCriteria->be_spell_target.spellID == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE:
+            return achievementCriteria->kill_creature.creatureID == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL:
+            return achievementCriteria->reach_skill_level.skillID == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL:
+            return achievementCriteria->learn_skill_level.skillID == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM:
+            return achievementCriteria->equip_item.itemID == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM:
+            return achievementCriteria->equip_epic_item.itemSlot == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE:
+            return achievementCriteria->do_emote.emoteID == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_USE_ITEM:
+            return achievementCriteria->use_item.itemID == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT:
+            return achievementCriteria->use_gameobject.goEntry == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA:
+            return achievementCriteria->honorable_kill_at_area.areaID == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_HK_CLASS:
+            return achievementCriteria->hk_class.classID == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_HK_RACE:
+            return achievementCriteria->hk_race.raceID == static_cast<uint32_t>(miscValue1);
+        case ACHIEVEMENT_CRITERIA_TYPE_DEATH_AT_MAP:
+            return achievementCriteria->death_at_map.mapID == static_cast<uint32_t>(miscValue1);
+        default:
+            break;
+    }
+
+    return false;
+}
+
+// MIT End
+// APGL Start
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Takes achievementlink c-string
 /// \return c-string ID value
@@ -546,19 +653,13 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
             continue;
         }
 
-        switch (type)
-        {
-            // special cases, db data is checked later
-            case ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA:
-            case ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED_ON_LOOT:
-            case ACHIEVEMENT_CRITERIA_TYPE_ROLL_GREED_ON_LOOT:
-                break;
-            default:
-                const auto scriptResult = sScriptMgr.callScriptedAchievementCriteriaCanComplete(achievementCriteria->ID, GetPlayer(), reference);
-                if (!scriptResult)
-                    continue;
-                break;
-        }
+        if (!canCompleteCriteria(achievementCriteria, type, miscvalue1, miscvalue2, GetPlayer()))
+            continue;
+
+        // Check scripted criteria checks
+        const auto scriptResult = sScriptMgr.callScriptedAchievementCriteriaCanComplete(achievementCriteria->ID, GetPlayer(), reference);
+        if (!scriptResult)
+            continue;
 
         switch (type)
         {
@@ -568,280 +669,252 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM:
             case ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM:
-                if (achievementCriteria->loot_item.itemID == static_cast<uint32_t>(miscvalue1))
-                {
-                    UpdateCriteriaProgress(achievementCriteria, miscvalue2);
-                }
+                UpdateCriteriaProgress(achievementCriteria, miscvalue2);
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA:
-                if (GetPlayer()->HasOverlayUncovered(achievementCriteria->explore_area.areaReference))
-                {
-                    SetCriteriaProgress(achievementCriteria, 1);
-                }
+            case ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM:
+                SetCriteriaProgress(achievementCriteria, 1);
                 break;
+            case ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA:
+            case ACHIEVEMENT_CRITERIA_TYPE_HK_CLASS:
+            case ACHIEVEMENT_CRITERIA_TYPE_HK_RACE:
+            case ACHIEVEMENT_CRITERIA_TYPE_DEATH_AT_MAP:
             case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE:
-                if (achievementCriteria->complete_quests_in_zone.zoneID == static_cast<uint32_t>(miscvalue1))
-                {
-                    UpdateCriteriaProgress(achievementCriteria, 1);
-                }
-                break;
             case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST:
-                if (achievementCriteria->complete_quest.questID == static_cast<uint32_t>(miscvalue1))
-                {
-                    UpdateCriteriaProgress(achievementCriteria, 1);
-                }
-                break;
-            case ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION:
-                if (achievementCriteria->gain_reputation.factionID == static_cast<uint32_t>(miscvalue1))
-                {
-                    SetCriteriaProgress(achievementCriteria, miscvalue2);
-                }
-                break;
-            case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SPELL:
-                if (achievementCriteria->learn_spell.spellID == static_cast<uint32_t>(miscvalue1))
-                {
-                    SetCriteriaProgress(achievementCriteria, miscvalue2);
-                }
+            case ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET:
+            case ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2:
+            case ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT:
+                UpdateCriteriaProgress(achievementCriteria, 1);
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS:
                 // Vanity pets owned - miscvalue1==778
                 // Number of mounts  - miscvalue1==777
-                if (achievementCriteria->number_of_mounts.unknown == static_cast<uint32_t>(miscvalue1))
-                {
-                    UpdateCriteriaProgress(achievementCriteria, 1);
-                }
+                UpdateCriteriaProgress(achievementCriteria, 1);
                 break;
-            case ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET:
-            case ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2:
-                if (achievementCriteria->be_spell_target.spellID == static_cast<uint32_t>(miscvalue1))
-                {
-                    UpdateCriteriaProgress(achievementCriteria, 1);
-                }
-                break;
-            case ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE:
-                if (achievementCriteria->kill_creature.creatureID == static_cast<uint32_t>(miscvalue1))
-                {
-                    switch (achievement->ID)
-                    {
-                        case 2556: // Pest Control
-                            if ((miscvalue1 == 3300 && achievementCriteria->index == 1)       // Adder
-                                || (miscvalue1 == 32261 && achievementCriteria->index == 2)   // Crystal Spider
-                                || (miscvalue1 == 24270 && achievementCriteria->index == 3)   // Devouring Maggot
-                                || (miscvalue1 == 9699 && achievementCriteria->index == 4)    // Fire Beetle
-                                || (miscvalue1 == 24174 && achievementCriteria->index == 5)   // Fjord Rat
-                                || (miscvalue1 == 32258 && achievementCriteria->index == 6)   // Gold Beetle
-                                || (miscvalue1 == 16068 && achievementCriteria->index == 7)   // Larva
-                                || (miscvalue1 == 16030 && achievementCriteria->index == 8)   // Maggot
-                                || (miscvalue1 == 4953 && achievementCriteria->index == 9)    // Moccasin
-                                || (miscvalue1 == 6271 && achievementCriteria->index == 10)   // Mouse
-                                || (miscvalue1 == 4075 && achievementCriteria->index == 11)   // Rat
-                                || (miscvalue1 == 4076 && achievementCriteria->index == 12)   // Roach
-                                || (miscvalue1 == 15476 && achievementCriteria->index == 13)  // Scorpion
-                                || (miscvalue1 == 2914 && achievementCriteria->index == 14)   // Snake
-                                || (miscvalue1 == 14881 && achievementCriteria->index == 15)  // Spider
-                                || (miscvalue1 == 32428 && achievementCriteria->index == 16)  // Underbelly Rat
-                                || (miscvalue1 == 28202 && achievementCriteria->index == 17)) // Zul'Drak Rat
-                            {
-                                SetCriteriaProgress(achievementCriteria, 1);
-                            }
-                            break;
-                            // Kill creature X in Heroic dungeon
-                        case 489: // Heroic: Utgarde Keep
-                        case 490: // Heroic: The Nexus
-                        case 491: // Heroic: Azjol-Nerub
-                        case 492: // Heroic: Ahn'kahet: The Old Kingdom
-                        case 493: // Heroic: Drak'Tharon Keep
-                        case 494: // Heroic: The Violet Hold
-                        case 495: // Heroic: Gundrak
-                        case 496: // Heroic: Halls of Stone
-                        case 497: // Heroic: Halls of Lightning
-                        case 498: // Heroic: The Oculus
-                        case 499: // Heroic: Utgarde Pinnacle
-                        case 500: // Heroic: The Culling of Stratholme
-                        case 563: // Heroic: The Arachnid Quarter
-                        case 565: // Heroic: The Construct Quarter
-                        case 567: // Heroic: The Plague Quarter
-                        case 569: // Heroic: The Military Quarter
-                        case 573: // Heroic: Sapphiron's Demise
-                        case 575: // Heroic: Kel'Thuzad's Defeat
-                        case 577: // Heroic: The Fall of Naxxramas
-                        case 623: // Heroic: The Spellweaver's Downfall
-                        case 625: // Heroic: Besting the Black Dragonflight
-                        case 667: // Heroic: Hellfire Ramparts
-                        case 668: // Heroic: The Blood Furnace
-                        case 669: // Heroic: The Slave Pens
-                        case 670: // Heroic: Underbog
-                        case 671: // Heroic: Mana-Tombs
-                        case 672: // Heroic: Auchenai Crypts
-                        case 673: // Heroic: The Escape From Durnholde
-                        case 674: // Heroic: Sethekk Halls
-                        case 675: // Heroic: Shadow Labyrinth
-                        case 676: // Heroic: Opening of the Dark Portal
-                        case 677: // Heroic: The Steamvault
-                        case 678: // Heroic: The Shattered Halls
-                        case 679: // Heroic: The Mechanar
-                        case 680: // Heroic: The Botanica
-                        case 681: // Heroic: The Arcatraz
-                        case 682: // Heroic: Magister's Terrace
-                        case 1312: // Utgarde Keep bosses on Heroic Difficulty.
-                        case 1504: // Ingvar the Plunderer kills (Heroic Utgarde Keep)
-                        case 1505: // Keristrasza kills (Heroic Nexus)
-                        case 1506: // Anub'arak kills (Heroic Azjol-Nerub)
-                        case 1507: // Herald Volazj kills (Heroic Ahn'kahet)
-                        case 1508: // The Prophet Tharon'ja kills (Heroic Drak'Tharon Keep)
-                        case 1509: // Cyanigosa kills (Heroic Violet Hold)
-                        case 1510: // Gal'darah kills (Heroic Gundrak)
-                        case 1511: // Sjonnir the Ironshaper kills (Heroic Halls of Stone)
-                        case 1512: // Loken kills (Heroic Halls of Lightning)
-                        case 1513: // Ley-Guardian Eregos kills (Heroic Oculus)
-                        case 1514: // King Ymiron kills (Heroic Utgarde Pinnacle)
-                        case 1515: // Mal'Ganis defeated (Heroic CoT: Stratholme)
-                        case 1721: // Heroic: Archavon the Stone Watcher
-                        case 1817: // The Culling of Time
-                        case 1865: // Lockdown!
-                            if (GetPlayer()->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC)
-                            {
-                                UpdateCriteriaProgress(achievementCriteria, 1);
-                            }
-                            break;
-                            ///\todo More complicated achievements: time limits, group size limits, other criteria...
-                        case 1870: // Heroic: A Poke In The Eye
-                            // Defeat Malygos on Heroic Difficulty with fewer than 21.
-                        case 2056: // Volunteer Work
-                            // Defeat Jedoga Shadowseeker in Ahn'kahet on Heroic Difficulty without killing any Twilight Volunteers.
-                        case 1875: // Heroic: You Don't Have An Eternity
-                            // Defeat Malygos in 6 minutes or less on Heroic Difficulty.
-                        case 2185: // Heroic: Just Can't Get Enough
-                            // Defeat Kel'Thuzad on Heroic Difficulty in Naxxramas while killing at least 18 abominations in his chamber.
-                        case 1862: // Volazj's Quick Demise
-                            // Defeat Herald Volazj in Ahn'kahet on Heroic Difficulty in 2 minutes or less.
-                        case 2186: // The Immortal
-                            // Within one raid lockout period, defeat every boss in Naxxramas on Heroic Difficulty without allowing any raid member to die during any of the boss encounters.
-                        case 2038: // Respect Your Elders
-                            // Defeat Elder Nadox in Ahn'kahet on Heroic Difficulty without killing any Ahn'kahar Guardians.
-                        case 2183: // Heroic: Spore Loser
-                            // Defeat Loatheb in Naxxramas on Heroic Difficulty without killing any spores.
-                        case 1297: // Hadronox Denied
-                            // Defeat Hadronox in Azjol-Nerub on Heroic Difficulty before he webs the top doors and prevents more creatures from spawning.
-                        case 2177: // Heroic: And They Would All Go Down Together
-                            // Defeat the 4 Horsemen in Naxxramas on Heroic Difficulty, ensuring that they all die within 15 seconds of each other.
-                        case 1860: // Gotta Go!
-                            // Defeat Anub'arak in Azjol-Nerub on Heroic Difficulty in 2 minutes or less.
-                        case 2147: // Heroic: The Hundred Club
-                            // Defeat Sapphiron on Heroic Difficulty in Naxxramas without any member of the raid having a frost resist value over 100.
-                        case 1861: // The Party's Over
-                            // Defeat Prince Taldaram in Ahn'kahet on Heroic Difficulty with less than 5 people.
-                        case 2181: // Heroic: Subtraction
-                            // Defeat Thaddius in Naxxramas on Heroic Difficulty with less than 21 people.
-                        case 579: // Heroic: The Dedicated Few
-                            // Defeat the bosses of Naxxramas with less than 21 people in the zone on Heroic Difficulty.
-                        case 1296: // Watch Him Die
-                            // Defeat Krik'thir the Gatewatcher in Azjol-Nerub on Heroic Difficulty while Watcher Gashra, Watcher Narjil and Watcher Silthik are still alive.
-                        case 1589: // Heroic: Arachnophobia
-                            // Kill Maexxna in Naxxramas within 20 minutes of Anub'Rekhan's death on Heroic Difficulty.
-                        case 1857: // Heroic: Make Quick Werk Of Him
-                            // Kill Patchwerk in Naxxramas in 3 minutes or less on Heroic Difficulty.
-                        case 1877: // Heroic: Less Is More
-                            // Defeat Sartharion the Onyx Guardian and the Twilight Drakes on Heroic Difficulty with fewer than 21.
-                        case 1919: // On The Rocks
-                            // Defeat Prince Keleseth in Utgarde Keep on Heroic Difficulty without shattering any Frost Tombs.
-                        case 2036: // Intense Cold
-                            // Defeat Keristrasza in The Nexus on Heroic Difficulty without allowing Intense Cold to reach more than two stacks.
-                        case 2139: // Heroic: The Safety Dance
-                            // Defeat Heigan the Unclean in Naxxramas on Heroic Difficulty without anyone in the raid dying.
-                        case 2140: // Heroic: Momma Said Knock You Out
-                            // Defeat Grand Widow Faerlina in Naxxramas on Heroic Difficulty without dispelling frenzy.
-                        case 2150: // Split Personality
-                            // Defeat Grand Magus Telestra in The Nexus on Heroic Difficulty after having killed her images within 5 seconds of each other during both splits.
-                        case 2151: // Consumption Junction
-                            // Defeat Trollgore in Drak'Tharon Keep on Heroic Difficulty before Consume reaches ten stacks.
-                        case 2179: // Heroic: Shocking!
-                            // Defeat Thaddius in Naxxramas on Heroic Difficulty without anyone in the raid crossing the negative and positive charges.
-                        case 2037: // Chaos Theory
-                            // Defeat Anomalus in The Nexus on Heroic Difficulty without destroying any Chaotic Rifts.
-                        case 2039: // Better Off Dred
-                            // Engage King Dred in Drak'Tharon Keep on Heroic Difficulty and slay 6 Drakkari Gutrippers or Drakkari Scytheclaw during his defeat.
-                        case 2048: // Heroic: Gonna Go When the Volcano Blows
-                            // Defeat Sartharion the Onyx Guardian on Heroic Difficulty without getting hit by Lava Strike.
-                        case 2057: // Oh Novos!
-                            // Defeat Novos the Summoner in Drak'Tharon Keep on Heroic Difficulty without allowing any undead minions to reach the floor.
-                        case 1816: // Defenseless
-                            // Defeat Cyanigosa in The Violet Hold without using Defense Control Crystals and with Prison Seal Integrity at 100% while in Heroic Difficulty.
-                        case 2052: // Heroic: Twilight Assist
-                            // With at least one Twilight Drake still alive, engage and defeat Sartharion the Onyx Guardian on Heroic Difficulty.
-                        case 2053: // Heroic: Twilight Duo
-                            // With at least two Twilight Drakes still alive, engage and defeat Sartharion the Onyx Guardian on Heroic Difficulty.
-                        case 2041: // Dehydration
-                            // Defeat Ichoron in the Violet Hold on Heroic Difficulty without allowing any Ichor Globules to merge.
-                        case 2054: // Heroic: The Twilight Zone
-                            // With all three Twilight Drakes still alive, engage and defeat Sartharion the Onyx Guardian on Heroic Difficulty.
-                        case 1864: // What the Eck?
-                            // Defeat Gal'darah in Gundrak on Heroic Difficulty while under the effects of Eck Residue.
-                        case 2152: // Share The Love
-                            // Defeat Gal'darah in Gundrak on Heroic Difficulty and have 5 unique party members get impaled throughout the fight.
-                        case 2040: // Less-rabi
-                            // Defeat Moorabi in Gundrak on Heroic Difficulty while preventing him from transforming into a mammoth at any point during the encounter.
-                        case 2058: // Snakes. Why'd It Have To Be Snakes?
-                            // Defeat Slad'ran in Gundrak on Heroic Difficulty without getting snake wrapped.
-                        case 1866: // Good Grief
-                            // Defeat the Maiden of Grief in the Halls of Stone on Heroic Difficulty in 1 minute or less.
-                        case 2155: // Abuse the Ooze
-                            // Defeat Sjonnir the Ironshaper in the Halls of Stone on Heroic Difficulty and kill 5 Iron Sludges during the encounter.
-                        case 2154: // Brann Spankin' New
-                            // Defeat the Tribunal of Ages encounter in the Halls of Stone on Heroic Difficulty without allowing Brann Bronzebeard to take any damage.
-                        case 1867: // Timely Death
-                            // Defeat Loken in the Halls of Lightning on Heroic Difficulty in 2 minutes or less.
-                        case 1834: //Lightning Struck
-                            // Defeat General Bjarngrim in the Halls of Lightning on Heroic Difficulty while he has a Temporary Electrical Charge.
-                        case 2042: // Shatter Resistant
-                            // Defeat Volkhan in the Halls of Lightning on Heroic Difficulty without allowing him to shatter more than 4 Brittle Golems.
-                        case 1872: // Zombiefest!
-                            // Kill 100 Risen Zombies in 1 minute in The Culling of Stratholme on Heroic Difficulty.
-                        case 2043: // The Incredible Hulk
-                            // Force Svala Sorrowgrave to kill a Scourge Hulk on Heroic Difficulty in Utgarde Pinnacle.
-                        case 1873: // Lodi Dodi We Loves the Skadi
-                            // Defeat Skadi the Ruthless in Utgarde Pinnacle on Heroic Difficulty within 3 minutes of starting the gauntlet event.
-                        case 2156: // My Girl Loves to Skadi All the Time
-                            // Defeat Skadi the Ruthless in Utgarde Pinnacle on Heroic Difficulty after having killed Grauf from 100% to dead in a single pass.
-                        case 2157: // King's Bane
-                            // Defeat King Ymiron in Utgarde Pinnacle on Heroic Difficulty without anyone in the party triggering Bane.
-                        case 1871: // Experienced Drake Rider
-                            // On three different visits to The Oculus, get credit for defeating Ley-Guardian Eregos while riding an Amber, Emerald, and Ruby drake on Heroic Difficulty.
-                        case 1868: // Make It Count
-                            // Defeat Ley-Guardian Eregos in The Oculus on Heroic Difficulty within 20 minutes of Drakos the Interrogator's death.
-                        case 2044: // Ruby Void
-                            // Defeat Ley-Guardian Eregos in The Oculus on Heroic Difficulty without anyone in your party using a Ruby Drake.
-                        case 2045: // Emerald Void
-                            // Defeat Ley-Guardian Eregos in The Oculus on Heroic Difficulty without anyone in your party using an Emerald Drake.
-                        case 2046: // Amber Void
-                            // Defeat Ley-Guardian Eregos in The Oculus on Heroic Difficulty without anyone in your party using an Amber Drake.
-                            break;
-                        default:
-                            if (!IS_INSTANCE(GetPlayer()->GetMapId()) || (GetPlayer()->getDungeonDifficulty() == InstanceDifficulty::DUNGEON_NORMAL))
-                            {
-                                // already tested heroic achievements above, the rest should be normal or non-dungeon
-                                UpdateCriteriaProgress(achievementCriteria, 1);
-                            }
-                            break;
-                    }
-                }
-                break;
+            case ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION:
+            case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SPELL:
             case ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL:
-                if (achievementCriteria->reach_skill_level.skillID == static_cast<uint32_t>(miscvalue1))
-                {
-                    SetCriteriaProgress(achievementCriteria, miscvalue2);
-                }
-                break;
             case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL:
-                if (achievementCriteria->learn_skill_level.skillID == static_cast<uint32_t>(miscvalue1))
-                {
-                    SetCriteriaProgress(achievementCriteria, miscvalue2);
-                }
+                SetCriteriaProgress(achievementCriteria, miscvalue2);
                 break;
-            case ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM:
-                if (achievementCriteria->equip_item.itemID == static_cast<uint32_t>(miscvalue1))
+            case ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD:
+            case ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY:
+            case ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION:
+            case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT:
+            case ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT:
+            case ACHIEVEMENT_CRITERIA_TYPE_VISIT_BARBER_SHOP:
+            case ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_AT_BARBER:
+            case ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL:
+            case ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_PLAYER:
+            case ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_CREATURE:
+            case ACHIEVEMENT_CRITERIA_TYPE_DEATH:
+                UpdateCriteriaProgress(achievementCriteria, miscvalue1);
+                break;
+
+            // TODO: add achievement scripts for following cases
+            case ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE:
+                switch (achievement->ID)
                 {
-                    SetCriteriaProgress(achievementCriteria, 1);
+                    case 2556: // Pest Control
+                        if ((miscvalue1 == 3300 && achievementCriteria->index == 1)       // Adder
+                            || (miscvalue1 == 32261 && achievementCriteria->index == 2)   // Crystal Spider
+                            || (miscvalue1 == 24270 && achievementCriteria->index == 3)   // Devouring Maggot
+                            || (miscvalue1 == 9699 && achievementCriteria->index == 4)    // Fire Beetle
+                            || (miscvalue1 == 24174 && achievementCriteria->index == 5)   // Fjord Rat
+                            || (miscvalue1 == 32258 && achievementCriteria->index == 6)   // Gold Beetle
+                            || (miscvalue1 == 16068 && achievementCriteria->index == 7)   // Larva
+                            || (miscvalue1 == 16030 && achievementCriteria->index == 8)   // Maggot
+                            || (miscvalue1 == 4953 && achievementCriteria->index == 9)    // Moccasin
+                            || (miscvalue1 == 6271 && achievementCriteria->index == 10)   // Mouse
+                            || (miscvalue1 == 4075 && achievementCriteria->index == 11)   // Rat
+                            || (miscvalue1 == 4076 && achievementCriteria->index == 12)   // Roach
+                            || (miscvalue1 == 15476 && achievementCriteria->index == 13)  // Scorpion
+                            || (miscvalue1 == 2914 && achievementCriteria->index == 14)   // Snake
+                            || (miscvalue1 == 14881 && achievementCriteria->index == 15)  // Spider
+                            || (miscvalue1 == 32428 && achievementCriteria->index == 16)  // Underbelly Rat
+                            || (miscvalue1 == 28202 && achievementCriteria->index == 17)) // Zul'Drak Rat
+                        {
+                            SetCriteriaProgress(achievementCriteria, 1);
+                        }
+                        break;
+                        // Kill creature X in Heroic dungeon
+                    case 489: // Heroic: Utgarde Keep
+                    case 490: // Heroic: The Nexus
+                    case 491: // Heroic: Azjol-Nerub
+                    case 492: // Heroic: Ahn'kahet: The Old Kingdom
+                    case 493: // Heroic: Drak'Tharon Keep
+                    case 494: // Heroic: The Violet Hold
+                    case 495: // Heroic: Gundrak
+                    case 496: // Heroic: Halls of Stone
+                    case 497: // Heroic: Halls of Lightning
+                    case 498: // Heroic: The Oculus
+                    case 499: // Heroic: Utgarde Pinnacle
+                    case 500: // Heroic: The Culling of Stratholme
+                    case 563: // Heroic: The Arachnid Quarter
+                    case 565: // Heroic: The Construct Quarter
+                    case 567: // Heroic: The Plague Quarter
+                    case 569: // Heroic: The Military Quarter
+                    case 573: // Heroic: Sapphiron's Demise
+                    case 575: // Heroic: Kel'Thuzad's Defeat
+                    case 577: // Heroic: The Fall of Naxxramas
+                    case 623: // Heroic: The Spellweaver's Downfall
+                    case 625: // Heroic: Besting the Black Dragonflight
+                    case 667: // Heroic: Hellfire Ramparts
+                    case 668: // Heroic: The Blood Furnace
+                    case 669: // Heroic: The Slave Pens
+                    case 670: // Heroic: Underbog
+                    case 671: // Heroic: Mana-Tombs
+                    case 672: // Heroic: Auchenai Crypts
+                    case 673: // Heroic: The Escape From Durnholde
+                    case 674: // Heroic: Sethekk Halls
+                    case 675: // Heroic: Shadow Labyrinth
+                    case 676: // Heroic: Opening of the Dark Portal
+                    case 677: // Heroic: The Steamvault
+                    case 678: // Heroic: The Shattered Halls
+                    case 679: // Heroic: The Mechanar
+                    case 680: // Heroic: The Botanica
+                    case 681: // Heroic: The Arcatraz
+                    case 682: // Heroic: Magister's Terrace
+                    case 1312: // Utgarde Keep bosses on Heroic Difficulty.
+                    case 1504: // Ingvar the Plunderer kills (Heroic Utgarde Keep)
+                    case 1505: // Keristrasza kills (Heroic Nexus)
+                    case 1506: // Anub'arak kills (Heroic Azjol-Nerub)
+                    case 1507: // Herald Volazj kills (Heroic Ahn'kahet)
+                    case 1508: // The Prophet Tharon'ja kills (Heroic Drak'Tharon Keep)
+                    case 1509: // Cyanigosa kills (Heroic Violet Hold)
+                    case 1510: // Gal'darah kills (Heroic Gundrak)
+                    case 1511: // Sjonnir the Ironshaper kills (Heroic Halls of Stone)
+                    case 1512: // Loken kills (Heroic Halls of Lightning)
+                    case 1513: // Ley-Guardian Eregos kills (Heroic Oculus)
+                    case 1514: // King Ymiron kills (Heroic Utgarde Pinnacle)
+                    case 1515: // Mal'Ganis defeated (Heroic CoT: Stratholme)
+                    case 1721: // Heroic: Archavon the Stone Watcher
+                    case 1817: // The Culling of Time
+                    case 1865: // Lockdown!
+                        if (GetPlayer()->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC)
+                        {
+                            UpdateCriteriaProgress(achievementCriteria, 1);
+                        }
+                        break;
+                        ///\todo More complicated achievements: time limits, group size limits, other criteria...
+                    case 1870: // Heroic: A Poke In The Eye
+                        // Defeat Malygos on Heroic Difficulty with fewer than 21.
+                    case 2056: // Volunteer Work
+                        // Defeat Jedoga Shadowseeker in Ahn'kahet on Heroic Difficulty without killing any Twilight Volunteers.
+                    case 1875: // Heroic: You Don't Have An Eternity
+                        // Defeat Malygos in 6 minutes or less on Heroic Difficulty.
+                    case 2185: // Heroic: Just Can't Get Enough
+                        // Defeat Kel'Thuzad on Heroic Difficulty in Naxxramas while killing at least 18 abominations in his chamber.
+                    case 1862: // Volazj's Quick Demise
+                        // Defeat Herald Volazj in Ahn'kahet on Heroic Difficulty in 2 minutes or less.
+                    case 2186: // The Immortal
+                        // Within one raid lockout period, defeat every boss in Naxxramas on Heroic Difficulty without allowing any raid member to die during any of the boss encounters.
+                    case 2038: // Respect Your Elders
+                        // Defeat Elder Nadox in Ahn'kahet on Heroic Difficulty without killing any Ahn'kahar Guardians.
+                    case 2183: // Heroic: Spore Loser
+                        // Defeat Loatheb in Naxxramas on Heroic Difficulty without killing any spores.
+                    case 1297: // Hadronox Denied
+                        // Defeat Hadronox in Azjol-Nerub on Heroic Difficulty before he webs the top doors and prevents more creatures from spawning.
+                    case 2177: // Heroic: And They Would All Go Down Together
+                        // Defeat the 4 Horsemen in Naxxramas on Heroic Difficulty, ensuring that they all die within 15 seconds of each other.
+                    case 1860: // Gotta Go!
+                        // Defeat Anub'arak in Azjol-Nerub on Heroic Difficulty in 2 minutes or less.
+                    case 2147: // Heroic: The Hundred Club
+                        // Defeat Sapphiron on Heroic Difficulty in Naxxramas without any member of the raid having a frost resist value over 100.
+                    case 1861: // The Party's Over
+                        // Defeat Prince Taldaram in Ahn'kahet on Heroic Difficulty with less than 5 people.
+                    case 2181: // Heroic: Subtraction
+                        // Defeat Thaddius in Naxxramas on Heroic Difficulty with less than 21 people.
+                    case 579: // Heroic: The Dedicated Few
+                        // Defeat the bosses of Naxxramas with less than 21 people in the zone on Heroic Difficulty.
+                    case 1296: // Watch Him Die
+                        // Defeat Krik'thir the Gatewatcher in Azjol-Nerub on Heroic Difficulty while Watcher Gashra, Watcher Narjil and Watcher Silthik are still alive.
+                    case 1589: // Heroic: Arachnophobia
+                        // Kill Maexxna in Naxxramas within 20 minutes of Anub'Rekhan's death on Heroic Difficulty.
+                    case 1857: // Heroic: Make Quick Werk Of Him
+                        // Kill Patchwerk in Naxxramas in 3 minutes or less on Heroic Difficulty.
+                    case 1877: // Heroic: Less Is More
+                        // Defeat Sartharion the Onyx Guardian and the Twilight Drakes on Heroic Difficulty with fewer than 21.
+                    case 1919: // On The Rocks
+                        // Defeat Prince Keleseth in Utgarde Keep on Heroic Difficulty without shattering any Frost Tombs.
+                    case 2036: // Intense Cold
+                        // Defeat Keristrasza in The Nexus on Heroic Difficulty without allowing Intense Cold to reach more than two stacks.
+                    case 2139: // Heroic: The Safety Dance
+                        // Defeat Heigan the Unclean in Naxxramas on Heroic Difficulty without anyone in the raid dying.
+                    case 2140: // Heroic: Momma Said Knock You Out
+                        // Defeat Grand Widow Faerlina in Naxxramas on Heroic Difficulty without dispelling frenzy.
+                    case 2150: // Split Personality
+                        // Defeat Grand Magus Telestra in The Nexus on Heroic Difficulty after having killed her images within 5 seconds of each other during both splits.
+                    case 2151: // Consumption Junction
+                        // Defeat Trollgore in Drak'Tharon Keep on Heroic Difficulty before Consume reaches ten stacks.
+                    case 2179: // Heroic: Shocking!
+                        // Defeat Thaddius in Naxxramas on Heroic Difficulty without anyone in the raid crossing the negative and positive charges.
+                    case 2037: // Chaos Theory
+                        // Defeat Anomalus in The Nexus on Heroic Difficulty without destroying any Chaotic Rifts.
+                    case 2039: // Better Off Dred
+                        // Engage King Dred in Drak'Tharon Keep on Heroic Difficulty and slay 6 Drakkari Gutrippers or Drakkari Scytheclaw during his defeat.
+                    case 2048: // Heroic: Gonna Go When the Volcano Blows
+                        // Defeat Sartharion the Onyx Guardian on Heroic Difficulty without getting hit by Lava Strike.
+                    case 2057: // Oh Novos!
+                        // Defeat Novos the Summoner in Drak'Tharon Keep on Heroic Difficulty without allowing any undead minions to reach the floor.
+                    case 1816: // Defenseless
+                        // Defeat Cyanigosa in The Violet Hold without using Defense Control Crystals and with Prison Seal Integrity at 100% while in Heroic Difficulty.
+                    case 2052: // Heroic: Twilight Assist
+                        // With at least one Twilight Drake still alive, engage and defeat Sartharion the Onyx Guardian on Heroic Difficulty.
+                    case 2053: // Heroic: Twilight Duo
+                        // With at least two Twilight Drakes still alive, engage and defeat Sartharion the Onyx Guardian on Heroic Difficulty.
+                    case 2041: // Dehydration
+                        // Defeat Ichoron in the Violet Hold on Heroic Difficulty without allowing any Ichor Globules to merge.
+                    case 2054: // Heroic: The Twilight Zone
+                        // With all three Twilight Drakes still alive, engage and defeat Sartharion the Onyx Guardian on Heroic Difficulty.
+                    case 1864: // What the Eck?
+                        // Defeat Gal'darah in Gundrak on Heroic Difficulty while under the effects of Eck Residue.
+                    case 2152: // Share The Love
+                        // Defeat Gal'darah in Gundrak on Heroic Difficulty and have 5 unique party members get impaled throughout the fight.
+                    case 2040: // Less-rabi
+                        // Defeat Moorabi in Gundrak on Heroic Difficulty while preventing him from transforming into a mammoth at any point during the encounter.
+                    case 2058: // Snakes. Why'd It Have To Be Snakes?
+                        // Defeat Slad'ran in Gundrak on Heroic Difficulty without getting snake wrapped.
+                    case 1866: // Good Grief
+                        // Defeat the Maiden of Grief in the Halls of Stone on Heroic Difficulty in 1 minute or less.
+                    case 2155: // Abuse the Ooze
+                        // Defeat Sjonnir the Ironshaper in the Halls of Stone on Heroic Difficulty and kill 5 Iron Sludges during the encounter.
+                    case 2154: // Brann Spankin' New
+                        // Defeat the Tribunal of Ages encounter in the Halls of Stone on Heroic Difficulty without allowing Brann Bronzebeard to take any damage.
+                    case 1867: // Timely Death
+                        // Defeat Loken in the Halls of Lightning on Heroic Difficulty in 2 minutes or less.
+                    case 1834: //Lightning Struck
+                        // Defeat General Bjarngrim in the Halls of Lightning on Heroic Difficulty while he has a Temporary Electrical Charge.
+                    case 2042: // Shatter Resistant
+                        // Defeat Volkhan in the Halls of Lightning on Heroic Difficulty without allowing him to shatter more than 4 Brittle Golems.
+                    case 1872: // Zombiefest!
+                        // Kill 100 Risen Zombies in 1 minute in The Culling of Stratholme on Heroic Difficulty.
+                    case 2043: // The Incredible Hulk
+                        // Force Svala Sorrowgrave to kill a Scourge Hulk on Heroic Difficulty in Utgarde Pinnacle.
+                    case 1873: // Lodi Dodi We Loves the Skadi
+                        // Defeat Skadi the Ruthless in Utgarde Pinnacle on Heroic Difficulty within 3 minutes of starting the gauntlet event.
+                    case 2156: // My Girl Loves to Skadi All the Time
+                        // Defeat Skadi the Ruthless in Utgarde Pinnacle on Heroic Difficulty after having killed Grauf from 100% to dead in a single pass.
+                    case 2157: // King's Bane
+                        // Defeat King Ymiron in Utgarde Pinnacle on Heroic Difficulty without anyone in the party triggering Bane.
+                    case 1871: // Experienced Drake Rider
+                        // On three different visits to The Oculus, get credit for defeating Ley-Guardian Eregos while riding an Amber, Emerald, and Ruby drake on Heroic Difficulty.
+                    case 1868: // Make It Count
+                        // Defeat Ley-Guardian Eregos in The Oculus on Heroic Difficulty within 20 minutes of Drakos the Interrogator's death.
+                    case 2044: // Ruby Void
+                        // Defeat Ley-Guardian Eregos in The Oculus on Heroic Difficulty without anyone in your party using a Ruby Drake.
+                    case 2045: // Emerald Void
+                        // Defeat Ley-Guardian Eregos in The Oculus on Heroic Difficulty without anyone in your party using an Emerald Drake.
+                    case 2046: // Amber Void
+                        // Defeat Ley-Guardian Eregos in The Oculus on Heroic Difficulty without anyone in your party using an Amber Drake.
+                        break;
+                    default:
+                        if (!IS_INSTANCE(GetPlayer()->GetMapId()) || (GetPlayer()->getDungeonDifficulty() == InstanceDifficulty::DUNGEON_NORMAL))
+                        {
+                            // already tested heroic achievements above, the rest should be normal or non-dungeon
+                            UpdateCriteriaProgress(achievementCriteria, 1);
+                        }
+                        break;
                 }
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM:
@@ -852,120 +925,115 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                 // AchievementType for both Achievement ID:556 (Equip epic items) and ID:557 (Equip superior items)
                 //    is the same (47) ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM
                 // Going to send item slot in miscvalue1 and item quality in miscvalue2 when calling UpdateAchievementCriteria.
-                if (achievementCriteria->equip_epic_item.itemSlot == static_cast<uint32_t>(miscvalue1))
+                if ((achievementCriteria->referredAchievement == 556) && (miscvalue2 == ITEM_QUALITY_EPIC_PURPLE))
                 {
-                    if ((achievementCriteria->referredAchievement == 556) && (miscvalue2 == ITEM_QUALITY_EPIC_PURPLE))
-                    {
-                        SetCriteriaProgress(achievementCriteria, 1);
-                    }
-                    else if ((achievementCriteria->referredAchievement == 557) && (miscvalue2 == ITEM_QUALITY_RARE_BLUE))
-                    {
-                        SetCriteriaProgress(achievementCriteria, 1);
-                    }
+                    SetCriteriaProgress(achievementCriteria, 1);
+                }
+                else if ((achievementCriteria->referredAchievement == 557) && (miscvalue2 == ITEM_QUALITY_RARE_BLUE))
+                {
+                    SetCriteriaProgress(achievementCriteria, 1);
                 }
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE:
-                if (achievementCriteria->do_emote.emoteID == static_cast<uint32_t>(miscvalue1))
+                // emote matches, check the achievement target ... (if required)
+                switch (achievement->ID)
                 {
-                    // emote matches, check the achievement target ... (if required)
-                    Unit* pUnit = GetPlayer()->GetMapMgr()->GetUnit(selectedGUID);
-                    switch (achievement->ID)
+                    case 1206: // To All The Squirrels I've Loved Before
                     {
-                        case 1206: // To All The Squirrels I've Loved Before
-                            // requires a target
-                            if (pUnit)
-                            {
-                                uint32_t ent = pUnit->getEntry();
-                                if ((ent == 1412 && achievementCriteria->index == 1)      // Squirrel
-                                    || (ent == 25679 && achievementCriteria->index == 2)  // Steam Frog
-                                    || (ent == 25677 && achievementCriteria->index == 3)  // Borean Frog
-                                    || (ent == 6368 && achievementCriteria->index == 4)   // Cat
-                                    || (ent == 620 && achievementCriteria->index == 5)    // Chicken
-                                    || (ent == 2442 && achievementCriteria->index == 6)   // Cow
-                                    || (ent == 6827 && achievementCriteria->index == 7)   // Crab
-                                    || (ent == 883 && achievementCriteria->index == 8)    // Deer
-                                    || (ent == 19665 && achievementCriteria->index == 9)  // Ewe
-                                    || (ent == 890 && achievementCriteria->index == 10)   // Fawn
-                                    || (ent == 13321 && achievementCriteria->index == 11) // Frog
-                                    || (ent == 4166 && achievementCriteria->index == 12)  // Gazelle
-                                    || (ent == 5951 && achievementCriteria->index == 13)  // Hare
-                                    || (ent == 9600 && achievementCriteria->index == 14)  // Parrot
-                                    || (ent == 721 && achievementCriteria->index == 15)   // Rabbit
-                                    || (ent == 2098 && achievementCriteria->index == 16)  // Ram
-                                    || (ent == 1933 && achievementCriteria->index == 17)  // Sheep
-                                    || (ent == 17467 && achievementCriteria->index == 18) // Skunk
-                                    || (ent == 10685 && achievementCriteria->index == 19) // Swine
-                                    || (ent == 1420 && achievementCriteria->index == 20)  // Toad
-                                    || (ent == 2620 && achievementCriteria->index == 21)) // Prairie Dog
-                                {
-                                    SetCriteriaProgress(achievementCriteria, 1);
-                                }
-                            }
-                            break;
-                        case 2557: // To All The Squirrels Who Shared My Life
-                            // requires a target
-                            if (pUnit)
-                            {
-                                uint32_t ent = pUnit->getEntry();
-                                if ((ent == 29328 && achievementCriteria->index == 1)      // Arctic Hare
-                                    || (ent == 31685 && achievementCriteria->index == 2)   // Borean Marmot
-                                    || (ent == 28407 && achievementCriteria->index == 3)   // Fjord Penguin
-                                    || (ent == 24746 && achievementCriteria->index == 4)   // Fjord Turkey
-                                    || (ent == 32498 && achievementCriteria->index == 5)   // Glacier Penguin (not in db?)
-                                    || (ent == 31889 && achievementCriteria->index == 6)   // Grizzly Squirrel
-                                    || (ent == 6653 && achievementCriteria->index == 7)    // Huge Toad
-                                    || (ent == 9700 && achievementCriteria->index == 8)    // Lava Crab
-                                    || (ent == 31890 && achievementCriteria->index == 9)   // Mountain Skunk
-                                    || (ent == 26503 && achievementCriteria->index == 10)  // Scalawag Frog
-                                    || (ent == 28093 && achievementCriteria->index == 11)  // Sholazar Tickbird
-                                    || (ent == 28440 && achievementCriteria->index == 12)) // Tundra Penguin
-                                {
-                                    SetCriteriaProgress(achievementCriteria, 1);
-                                }
-                            }
-                            break;
-                        case 247: // Make Love, Not Warcraft
+                        // requires a target
+                        if (Unit* pUnit = GetPlayer()->GetMapMgr()->GetUnit(selectedGUID))
                         {
-                            Player* pTarget = sObjectMgr.GetPlayer((uint32_t)selectedGUID);
-                            if (pTarget && pTarget->isDead() && isHostile(pTarget, GetPlayer()))
+                            uint32_t ent = pUnit->getEntry();
+                            if ((ent == 1412 && achievementCriteria->index == 1)      // Squirrel
+                                || (ent == 25679 && achievementCriteria->index == 2)  // Steam Frog
+                                || (ent == 25677 && achievementCriteria->index == 3)  // Borean Frog
+                                || (ent == 6368 && achievementCriteria->index == 4)   // Cat
+                                || (ent == 620 && achievementCriteria->index == 5)    // Chicken
+                                || (ent == 2442 && achievementCriteria->index == 6)   // Cow
+                                || (ent == 6827 && achievementCriteria->index == 7)   // Crab
+                                || (ent == 883 && achievementCriteria->index == 8)    // Deer
+                                || (ent == 19665 && achievementCriteria->index == 9)  // Ewe
+                                || (ent == 890 && achievementCriteria->index == 10)   // Fawn
+                                || (ent == 13321 && achievementCriteria->index == 11) // Frog
+                                || (ent == 4166 && achievementCriteria->index == 12)  // Gazelle
+                                || (ent == 5951 && achievementCriteria->index == 13)  // Hare
+                                || (ent == 9600 && achievementCriteria->index == 14)  // Parrot
+                                || (ent == 721 && achievementCriteria->index == 15)   // Rabbit
+                                || (ent == 2098 && achievementCriteria->index == 16)  // Ram
+                                || (ent == 1933 && achievementCriteria->index == 17)  // Sheep
+                                || (ent == 17467 && achievementCriteria->index == 18) // Skunk
+                                || (ent == 10685 && achievementCriteria->index == 19) // Swine
+                                || (ent == 1420 && achievementCriteria->index == 20)  // Toad
+                                || (ent == 2620 && achievementCriteria->index == 21)) // Prairie Dog
                             {
-                                UpdateCriteriaProgress(achievementCriteria, 1);
+                                SetCriteriaProgress(achievementCriteria, 1);
                             }
                         }
-                        break;
-                        case 293: ///\todo Disturbing the Peace
-                            // While wearing 3 pieces of Brewfest clothing, get completely smashed and dance in Dalaran.
-                            break;
-                        case 1280: ///\todo Flirt With Disaster
-                            // Get completely smashed, put on your best perfume, throw a handful of rose petals on Jeremiah Payson and then kiss him. You'll regret it in the morning.
-                            break;
-                        case 1279: ///\todo Flirt With Disaster
-                            // Get completely smashed, put on your best perfume, throw a handful of rose petals on Sraaz and then kiss him. You'll regret it in the morning.
-                            break;
-                        case 1690: ///\todo A Frosty Shake
-                            // During the Feast of Winter Veil, use your Winter Veil Disguise kit to become a snowman and then dance with another snowman in Dalaran.
-                            break;
-                        case 1704: ///\todo I Pitied The Fool
-                            // Pity the Love Fool in the locations specified below.
-                            // Wintergrasp (achievementCriteria->index==1)
-                            // Battle Ring of Gurubashi Arena (achievementCriteria->index==2)
-                            // Arathi Basin Blacksmith (achievementCriteria->index==3)
-                            // The Culling of Stratholme (achievementCriteria->index==4)
-                            // Naxxramas (achievementCriteria->index==5)
-                            break;
-
-                            // Statistics for emotes
-                        case 1042: // Number of Hugs
-                        case 1045: // Total cheers
-                        case 1047: // Total facepalms
-                        case 1065: // Total waves
-                        case 1066: // Total times LOL'd (laugh, guffaw, rofl, giggle, chuckle)
-                        case 1067: // Total times playing world's smallest violin
+                    } break;
+                    case 2557: // To All The Squirrels Who Shared My Life
+                    {
+                        // requires a target
+                        if (Unit* pUnit = GetPlayer()->GetMapMgr()->GetUnit(selectedGUID))
+                        {
+                            uint32_t ent = pUnit->getEntry();
+                            if ((ent == 29328 && achievementCriteria->index == 1)      // Arctic Hare
+                                || (ent == 31685 && achievementCriteria->index == 2)   // Borean Marmot
+                                || (ent == 28407 && achievementCriteria->index == 3)   // Fjord Penguin
+                                || (ent == 24746 && achievementCriteria->index == 4)   // Fjord Turkey
+                                || (ent == 32498 && achievementCriteria->index == 5)   // Glacier Penguin (not in db?)
+                                || (ent == 31889 && achievementCriteria->index == 6)   // Grizzly Squirrel
+                                || (ent == 6653 && achievementCriteria->index == 7)    // Huge Toad
+                                || (ent == 9700 && achievementCriteria->index == 8)    // Lava Crab
+                                || (ent == 31890 && achievementCriteria->index == 9)   // Mountain Skunk
+                                || (ent == 26503 && achievementCriteria->index == 10)  // Scalawag Frog
+                                || (ent == 28093 && achievementCriteria->index == 11)  // Sholazar Tickbird
+                                || (ent == 28440 && achievementCriteria->index == 12)) // Tundra Penguin
+                            {
+                                SetCriteriaProgress(achievementCriteria, 1);
+                            }
+                        }
+                    } break;
+                    case 247: // Make Love, Not Warcraft
+                    {
+                        Player* pTarget = sObjectMgr.GetPlayer((uint32_t)selectedGUID);
+                        if (pTarget && pTarget->isDead() && isHostile(pTarget, GetPlayer()))
+                        {
                             UpdateCriteriaProgress(achievementCriteria, 1);
-                            break;
-                        default:
-                            break;
+                        }
                     }
+                    break;
+                    case 293: ///\todo Disturbing the Peace
+                        // While wearing 3 pieces of Brewfest clothing, get completely smashed and dance in Dalaran.
+                        break;
+                    case 1280: ///\todo Flirt With Disaster
+                        // Get completely smashed, put on your best perfume, throw a handful of rose petals on Jeremiah Payson and then kiss him. You'll regret it in the morning.
+                        break;
+                    case 1279: ///\todo Flirt With Disaster
+                        // Get completely smashed, put on your best perfume, throw a handful of rose petals on Sraaz and then kiss him. You'll regret it in the morning.
+                        break;
+                    case 1690: ///\todo A Frosty Shake
+                        // During the Feast of Winter Veil, use your Winter Veil Disguise kit to become a snowman and then dance with another snowman in Dalaran.
+                        break;
+                    case 1704: ///\todo I Pitied The Fool
+                        // Pity the Love Fool in the locations specified below.
+                        // Wintergrasp (achievementCriteria->index==1)
+                        // Battle Ring of Gurubashi Arena (achievementCriteria->index==2)
+                        // Arathi Basin Blacksmith (achievementCriteria->index==3)
+                        // The Culling of Stratholme (achievementCriteria->index==4)
+                        // Naxxramas (achievementCriteria->index==5)
+                        break;
+
+                        // Statistics for emotes
+                    case 1042: // Number of Hugs
+                    case 1045: // Total cheers
+                    case 1047: // Total facepalms
+                    case 1065: // Total waves
+                    case 1066: // Total times LOL'd (laugh, guffaw, rofl, giggle, chuckle)
+                    case 1067: // Total times playing world's smallest violin
+                        UpdateCriteriaProgress(achievementCriteria, 1);
+                        break;
+                    default:
+                        break;
                 }
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_KILLING_BLOW:
@@ -1061,20 +1129,17 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                 }
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_USE_ITEM: // itemID in miscvalue1
-                if (achievementCriteria->use_item.itemID == static_cast<uint32_t>(miscvalue1))
+                switch (achievementCriteria->referredAchievement)
                 {
-                    switch (achievementCriteria->referredAchievement)
-                    {
-                        case 1281: // Shoot off 10 Red Rocket Clusters in 25 seconds or less
-                        case 1552: // Shoot off 10 Festival Firecrackers in 30 seconds or less
-                        case 1696: // Shoot off 10 Love Rockets in 20 seconds or less
-                        case 1781: // Get 10 critters in 3 minutes
-                        case 1791: // Hearthstone with kid out
-                            break;
-                        default:
-                            UpdateCriteriaProgress(achievementCriteria, 1);
-                            break;
-                    }
+                    case 1281: // Shoot off 10 Red Rocket Clusters in 25 seconds or less
+                    case 1552: // Shoot off 10 Festival Firecrackers in 30 seconds or less
+                    case 1696: // Shoot off 10 Love Rockets in 20 seconds or less
+                    case 1781: // Get 10 critters in 3 minutes
+                    case 1791: // Hearthstone with kid out
+                        break;
+                    default:
+                        UpdateCriteriaProgress(achievementCriteria, 1);
+                        break;
                 }
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE:
@@ -1115,12 +1180,6 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                 }
             }
             break;
-            case ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT:
-                if (achievementCriteria->use_gameobject.goEntry == static_cast<uint32_t>(miscvalue1))
-                {
-                    UpdateCriteriaProgress(achievementCriteria, 1);
-                }
-                break;
             case ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING:
                 // fall distance (>=65) has been checked before UpdateAchievementCriteria() call, but it is sent in miscvalue1 just in case "they" add more...
                 if (achievement->ID == 1260)
@@ -1139,46 +1198,8 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                     UpdateCriteriaProgress(achievementCriteria, 1);
                 }
                 break;
-            case ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA:
-                if (achievementCriteria->honorable_kill_at_area.areaID == static_cast<uint32_t>(miscvalue1))
-                {
-                    UpdateCriteriaProgress(achievementCriteria, 1);
-                }
-                break;
-            case ACHIEVEMENT_CRITERIA_TYPE_HK_CLASS:
-                if (achievementCriteria->hk_class.classID == static_cast<uint32_t>(miscvalue1))
-                {
-                    UpdateCriteriaProgress(achievementCriteria, 1);
-                }
-                break;
-            case ACHIEVEMENT_CRITERIA_TYPE_HK_RACE:
-                if (achievementCriteria->hk_race.raceID == static_cast<uint32_t>(miscvalue1))
-                {
-                    UpdateCriteriaProgress(achievementCriteria, 1);
-                }
-                break;
-            case ACHIEVEMENT_CRITERIA_TYPE_DEATH_AT_MAP:
-                if (achievementCriteria->death_at_map.mapID == static_cast<uint32_t>(miscvalue1))
-                {
-                    UpdateCriteriaProgress(achievementCriteria, 1);
-                }
-                break;
 
-                // these achievement criteria types simply update the progress by the value passed in miscvalue1
-            case ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD:
-            case ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY:
-            case ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION:
-            case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT:
-            case ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT:
-            case ACHIEVEMENT_CRITERIA_TYPE_VISIT_BARBER_SHOP:
-            case ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_AT_BARBER:
-            case ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL:
-            case ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_PLAYER:
-            case ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_CREATURE:
-            case ACHIEVEMENT_CRITERIA_TYPE_DEATH:
-                UpdateCriteriaProgress(achievementCriteria, miscvalue1);
-                break;
-                //End of Achievement List
+            //End of Achievement List
             default:
                 return;
         }
@@ -1208,19 +1229,13 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
             continue;
         }
 
-        switch (type)
-        {
-            // special cases, db data is checked later
-            case ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA:
-            case ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED_ON_LOOT:
-            case ACHIEVEMENT_CRITERIA_TYPE_ROLL_GREED_ON_LOOT:
-                break;
-            default:
-                const auto scriptResult = sScriptMgr.callScriptedAchievementCriteriaCanComplete(achievementCriteria->ID, GetPlayer(), nullptr);
-                if (!scriptResult)
-                    continue;
-                break;
-        }
+        if (!canCompleteCriteria(achievementCriteria, type, GetPlayer()))
+            continue;
+
+        // Check scripted criteria checks
+        const auto scriptResult = sScriptMgr.callScriptedAchievementCriteriaCanComplete(achievementCriteria->ID, GetPlayer(), nullptr);
+        if (!scriptResult)
+            continue;
 
         switch (type)
         {
@@ -1229,19 +1244,29 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                 SetCriteriaProgress(achievementCriteria, GetPlayer()->getLevel());
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA:
-                if (GetPlayer()->HasOverlayUncovered(achievementCriteria->explore_area.areaReference))
-                {
-                    SetCriteriaProgress(achievementCriteria, 1);
-                }
+            case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SPELL:
+                SetCriteriaProgress(achievementCriteria, 1);
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_ACHIEVEMENT:
-                if (m_completedAchievements.find(achievementCriteria->complete_achievement.linkedAchievement) != m_completedAchievements.end())
-                {
-                    SetCriteriaProgress(achievementCriteria, 1, true);
-                }
+                SetCriteriaProgress(achievementCriteria, 1, true);
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT:
                 SetCriteriaProgress(achievementCriteria, (int32_t)GetPlayer()->m_finishedQuests.size());
+                break;
+            case ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION:
+                SetCriteriaProgress(achievementCriteria, GetPlayer()->GetStanding(achievementCriteria->gain_reputation.factionID));
+                break;
+            case ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION:
+                SetCriteriaProgress(achievementCriteria, GetPlayer()->GetExaltedCount());
+                break;
+            case ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL:
+                SetCriteriaProgress(achievementCriteria, GetPlayer()->getSkillLineCurrent(static_cast<uint16_t>(achievementCriteria->reach_skill_level.skillID), true));
+                break;
+            case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL:
+                SetCriteriaProgress(achievementCriteria, GetPlayer()->getSkillLineMax(static_cast<uint16_t>(achievementCriteria->learn_skill_level.skillID) / 75U));
+                break;
+            case ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT:
+                SetCriteriaProgress(achievementCriteria, GetPlayer()->getBankSlots());
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE:
             {
@@ -1256,8 +1281,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                     }
                 }
                 SetCriteriaProgress(achievementCriteria, qcinzone);
-            }
-            break;
+            } break;
             case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST:
             {
                 uint32_t completed = 0;
@@ -1267,23 +1291,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                     ++completed;
                 }
                 SetCriteriaProgress(achievementCriteria, completed);
-            }
-            break;
-            case ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION:
-            {
-                int32_t rep = GetPlayer()->GetStanding(achievementCriteria->gain_reputation.factionID);
-                SetCriteriaProgress(achievementCriteria, rep);
-            }
-            break;
-            case ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION:
-                SetCriteriaProgress(achievementCriteria, GetPlayer()->GetExaltedCount());
-                break;
-            case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SPELL:
-                if (GetPlayer()->HasSpell(achievementCriteria->learn_spell.spellID))
-                {
-                    SetCriteriaProgress(achievementCriteria, 1);
-                }
-                break;
+            } break;
             case ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS:
             {
                 // achievementCriteria field4 = 777 for mounts, 778 for companion pets
@@ -1309,18 +1317,8 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                     ++sl;
                 }
                 SetCriteriaProgress(achievementCriteria, nm);
-            }
-            break;
-            case ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL:
-                SetCriteriaProgress(achievementCriteria, GetPlayer()->getSkillLineCurrent(static_cast<uint16_t>(achievementCriteria->reach_skill_level.skillID), true));
-                break;
-            case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL:
-                SetCriteriaProgress(achievementCriteria, GetPlayer()->getSkillLineMax(static_cast<uint16_t>(achievementCriteria->learn_skill_level.skillID) / 75));
-                break;
-            case ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT:
-                SetCriteriaProgress(achievementCriteria, GetPlayer()->getBankSlots());
-                break;
-                //End of Achievement List
+            } break;
+            //End of Achievement List
             default:
                 break;
         }
