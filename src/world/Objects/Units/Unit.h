@@ -774,12 +774,18 @@ public:
     template <typename T> void applySpellModifiers(SpellModifierType modType, T* value, SpellInfo const* spellInfo, Spell* castingSpell = nullptr, Aura* castingAura = nullptr);
     template <typename T> void getTotalSpellModifiers(SpellModifierType modType, T baseValue, int32_t* flatMod, int32_t* pctMod, SpellInfo const* spellInfo, Spell* castingSpell = nullptr, Aura* castingAura = nullptr, bool checkOnly = false);
 
+    void addSpellImmunity(SpellImmunityMask immunityMask, bool apply);
+    uint32_t getSpellImmunity() const;
+    bool hasSpellImmunity(SpellImmunityMask immunityMask) const;
+
 private:
     bool m_canDualWield = false;
 
     std::list<SpellProc*> m_procSpells;
 
     std::list<AuraEffectModifier const*> m_spellModifiers[MAX_SPELLMOD_TYPE];
+
+    uint32_t m_spellImmunityMask = SPELL_IMMUNITY_NONE;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////

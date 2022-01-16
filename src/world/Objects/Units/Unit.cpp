@@ -3933,6 +3933,24 @@ template void Unit::getTotalSpellModifiers<int32_t>(SpellModifierType modType, i
 template void Unit::getTotalSpellModifiers<uint32_t>(SpellModifierType modType, uint32_t baseValue, int32_t* flatMod, int32_t* pctMod, SpellInfo const* spellInfo, Spell* castingSpell, Aura* castingAura, bool checkOnly);
 template void Unit::getTotalSpellModifiers<float_t>(SpellModifierType modType, float_t baseValue, int32_t* flatMod, int32_t* pctMod, SpellInfo const* spellInfo, Spell* castingSpell, Aura* castingAura, bool checkOnly);
 
+void Unit::addSpellImmunity(SpellImmunityMask immunityMask, bool apply)
+{
+    if (apply)
+        m_spellImmunityMask |= immunityMask;
+    else
+        m_spellImmunityMask &= ~immunityMask;
+}
+
+uint32_t Unit::getSpellImmunity() const
+{
+    return m_spellImmunityMask;
+}
+
+bool Unit::hasSpellImmunity(SpellImmunityMask immunityMask) const
+{
+    return m_spellImmunityMask & immunityMask;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Aura
 

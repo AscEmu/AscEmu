@@ -1580,6 +1580,13 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     this->m_position.z = spawn->z;
     this->m_position.o = spawn->o;
 
+    // Set spell immunities
+    if (creature_properties->modImmunities != 0)
+    {
+        const auto immunityMask = static_cast<SpellImmunityMask>(creature_properties->modImmunities);
+        addSpellImmunity(immunityMask, true);
+    }
+
     if (isVehicle())
     {
         createVehicleKit(creature_properties->vehicleid, creature_properties->Id);
@@ -1746,6 +1753,13 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         // TODO: currently only invisibility type 15 is used for invisible trigger NPCs
         // these are always invisible to players
         modInvisibilityLevel(InvisibilityFlag(creature_properties->invisibility_type), 1);
+
+    // Set spell immunities
+    if (creature_properties->modImmunities != 0)
+    {
+        const auto immunityMask = static_cast<SpellImmunityMask>(creature_properties->modImmunities);
+        addSpellImmunity(immunityMask, true);
+    }
 
     if (isVehicle())
     {
