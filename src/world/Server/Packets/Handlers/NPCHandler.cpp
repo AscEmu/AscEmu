@@ -308,7 +308,8 @@ void WorldSession::handleBinderActivateOpcode(WorldPacket& recvPacket)
 void WorldSession::sendInnkeeperBind(Creature* creature)
 {
     // Check if the bind position is same as old bind position
-    if (_player->isInRange(_player->getBindPosition(), 10.0f * 10.0f))
+    // but do not send error if player has no Hearthstone
+    if (_player->hasItem(6948) && _player->isInRange(_player->getBindPosition(), 10.0f * 10.0f))
     {
         SendPacket(SmsgGossipComplete().serialise().get());
 

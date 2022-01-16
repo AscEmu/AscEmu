@@ -3819,9 +3819,9 @@ bool Player::isAllowedToCreateCorpse() const
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Bind
-void Player::setBindPoint(float x, float y, float z, uint32_t mapId, uint32_t zoneId)
+void Player::setBindPoint(float x, float y, float z, float o, uint32_t mapId, uint32_t zoneId)
 {
-    m_bindData.location = { x, y, z };
+    m_bindData.location = { x, y, z, o };
     m_bindData.mapId = mapId;
     m_bindData.zoneId = zoneId;
 }
@@ -3839,9 +3839,9 @@ void Player::setBGEntryPoint(float x, float y, float z, float o, uint32_t mapId,
     m_bgEntryData.instanceId = instanceId;
 }
 
-LocationVector Player::getBGEntryPosition() const { return m_bindData.location; }
-uint32_t Player::getBGEntryMapId() const { return m_bindData.mapId; }
-int32_t Player::getBGEntryInstanceId() const { return m_bindData.zoneId; }
+LocationVector Player::getBGEntryPosition() const { return m_bgEntryData.location; }
+uint32_t Player::getBGEntryMapId() const { return m_bgEntryData.mapId; }
+int32_t Player::getBGEntryInstanceId() const { return m_bgEntryData.instanceId; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Charter
@@ -4559,7 +4559,7 @@ void Player::setLoginPosition()
         m_position.ChangeCoords({ position_x, position_y, position_z, orientation });
         m_mapId = mapId;
 
-        setBindPoint(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId(), GetZoneId());
+        setBindPoint(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation(), GetMapId(), GetZoneId());
     }
     else
     {

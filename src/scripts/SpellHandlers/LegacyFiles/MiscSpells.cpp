@@ -492,7 +492,7 @@ bool TeleportToCoordinates(uint8_t /*effectIndex*/, Spell* s)
         return true;
     }
 
-    s->HandleTeleport(teleport_coord->x, teleport_coord->y, teleport_coord->z, teleport_coord->mapId, s->getPlayerCaster());
+    s->HandleTeleport(LocationVector(teleport_coord->x, teleport_coord->y, teleport_coord->z), teleport_coord->mapId, s->getPlayerCaster());
     return true;
 }
 

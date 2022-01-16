@@ -2776,11 +2776,10 @@ void Spell::DoAfterHandleEffect(Unit* /*target*/, uint32 /*i*/)
 {
 }
 
-void Spell::HandleTeleport(float x, float y, float z, uint32 mapid, Unit* Target)
+void Spell::HandleTeleport(LocationVector pos, uint32 mapid, Unit* Target)
 {
     if (Target->isPlayer())
     {
-
         Player* pTarget = static_cast<Player*>(Target);
         pTarget->EventAttackStop();
         pTarget->setTargetGuid(0);
@@ -2791,9 +2790,8 @@ void Spell::HandleTeleport(float x, float y, float z, uint32 mapid, Unit* Target
 
         if (!sEventMgr.HasEvent(pTarget, EVENT_PLAYER_TELEPORT))
         {
-            sEventMgr.AddEvent(pTarget, &Player::EventTeleport, mapid, x, y, z, EVENT_PLAYER_TELEPORT, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(pTarget, &Player::EventTeleport, mapid, pos, EVENT_PLAYER_TELEPORT, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
-
     }
     else
     {
@@ -2815,12 +2813,12 @@ void Spell::HandleTeleport(float x, float y, float z, uint32 mapid, Unit* Target
         data << uint32(256);
         data << uint32(1);
         data << uint32(1);
-        data << float(x);
-        data << float(y);
-        data << float(z);
+        data << float(pos.x);
+        data << float(pos.y);
+        data << float(pos.z);
 
         Target->SendMessageToSet(&data, true);
-        Target->SetPosition(x, y, z, 0.5f);   // need correct orentation
+        Target->SetPosition(pos.x, pos.y, pos.z, pos.o);
     }
 }
 
