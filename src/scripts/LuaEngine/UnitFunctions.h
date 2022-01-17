@@ -5694,17 +5694,19 @@ public:
 
     static int IsOnVehicle(lua_State *L, Unit *ptr)
     {
+#ifdef FT_VEHICLES
         TEST_UNITPLAYER()
         if ((ptr->getVehicleKit() != nullptr) || (ptr->isPlayer() && ptr->isVehicle()))
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
-
+#endif
         return 1;
     }
 
     static int SpawnAndEnterVehicle(lua_State *L, Unit *ptr)
     {
+#ifdef FT_VEHICLES
         TEST_UNITPLAYER()
         uint32_t creature_entry = 0;
         uint32_t delay = 0;
@@ -5741,12 +5743,14 @@ public:
         c->Load(cp, v.x, v.y, v.z, v.o);
         c->removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
         c->PushToWorld(ptr->GetMapMgr());
-        c->callEnterVehicle(ptr);;
+        c->callEnterVehicle(ptr);
+#endif
         return 0;
     }
 
     static int DismissVehicle(lua_State* /*L*/, Unit* ptr)
     {
+#ifdef FT_VEHICLES
         TEST_UNITPLAYER()
         Vehicle* v = nullptr;
         if (ptr->getVehicleKit() != nullptr)
@@ -5770,12 +5774,13 @@ public:
             o->RemoveAllAuraType(SPELL_AURA_MOUNTED);
         else
             o->Delete();
-
+#endif
         return 0;
     }
 
     static int AddVehiclePassenger(lua_State *L, Unit *ptr)
     {
+#ifdef FT_VEHICLES
         TEST_UNITPLAYER()
         Vehicle *v = nullptr;
 
@@ -5806,12 +5811,13 @@ public:
         c->Load(cp, u->GetPositionX(), u->GetPositionY(), u->GetPositionZ(), u->GetOrientation());
         c->PushToWorld(u->GetMapMgr());
         c->callEnterVehicle(u);
-
+#endif
         return 0;
     }
 
     static int HasEmptyVehicleSeat(lua_State *L, Unit *ptr)
     {
+#ifdef FT_VEHICLES
         TEST_UNITPLAYER()
         Vehicle *v = nullptr;
 
@@ -5828,12 +5834,13 @@ public:
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
-
+#endif
         return 1;
     }
 
     static int EnterVehicle(lua_State *L, Unit *ptr)
     {
+#ifdef FT_VEHICLES
         TEST_UNITPLAYER()
         if (lua_gettop(L) != 2)
             return 0;
@@ -5845,12 +5852,13 @@ public:
 
         if (_unit)
             _unit->callEnterVehicle(ptr);
-
+#endif
         return 0;
     }
 
     static int ExitVehicle(lua_State* /*L*/, Unit* ptr)
     {
+#ifdef FT_VEHICLES
         TEST_UNITPLAYER()
         if (ptr->getVehicleKit() != nullptr)
         {
@@ -5861,11 +5869,13 @@ public:
             if (ptr->isPlayer() && ptr->getVehicle() != nullptr)
                 ptr->RemoveAllAuraType(SPELL_AURA_MOUNTED);
         }
+#endif
         return 0;
     }
 
     static int GetVehicleBase(lua_State *L, Unit *ptr)
     {
+#ifdef FT_VEHICLES
         TEST_UNITPLAYER()
         Unit *u = ptr->getVehicleBase();
 
@@ -5873,23 +5883,26 @@ public:
             PUSH_UNIT(L, u);
         else
             lua_pushnil(L);
-
+#endif
         return 1;
     }
 
     static int EjectAllVehiclePassengers(lua_State* /*L*/, Unit* ptr)
     {
+#ifdef FT_VEHICLES
         TEST_UNITPLAYER()
         Unit* u = ptr->getVehicleBase();
         if (u == nullptr)
             return 0;
 
         u->getVehicle()->removeAllPassengers();
+#endif
         return 0;
     }
 
     static int EjectVehiclePassengerFromSeat(lua_State *L, Unit *ptr)
     {
+#ifdef FT_VEHICLES
         TEST_UNITPLAYER()
         Unit *u = ptr->getVehicleBase();
         if (u == nullptr)
@@ -5905,12 +5918,13 @@ public:
 
         if (Unit* passenger = u->getVehicle()->getPassenger(seat))
             passenger->callExitVehicle();
-
+#endif
         return 0;
     }
 
     static int MoveVehiclePassengerToSeat(lua_State *L, Unit *ptr)
     {
+#ifdef FT_VEHICLES
         TEST_UNITPLAYER()
         Unit *u = ptr->getVehicleBase();
         if (u == nullptr)
@@ -5926,6 +5940,7 @@ public:
             return 0;
 
         passenger->callChangeSeat(seat);
+#endif
         return 0;
     }
 

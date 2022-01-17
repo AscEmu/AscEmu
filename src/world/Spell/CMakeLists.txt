@@ -14,6 +14,8 @@ set(SRC_SPELL_FILES
     ${PATH_PREFIX}/SpellAuras.h
     ${PATH_PREFIX}/SpellCastTargets.hpp
     ${PATH_PREFIX}/SpellCastTargets.cpp
+    ${PATH_PREFIX}/SpellClickInfo.cpp
+    ${PATH_PREFIX}/SpellClickInfo.hpp
     ${PATH_PREFIX}/SpellDefines.hpp
     ${PATH_PREFIX}/SpellEffects.Legacy.cpp
     ${PATH_PREFIX}/SpellHelpers.h

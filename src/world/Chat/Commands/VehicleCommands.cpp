@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 
+#ifdef FT_VEHICLES
 //.vehicle ejectpassenger
 bool ChatHandler::HandleVehicleEjectPassengerCommand(const char* args, WorldSession* session)
 {
@@ -134,3 +135,4 @@ bool ChatHandler::HandleVehicleAddPassengerCommand(const char* args, WorldSessio
     c->callEnterVehicle(u);
     return true;
 }
+#endif

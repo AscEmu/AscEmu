@@ -181,10 +181,11 @@ void ObjectMgr::finalize()
     {
         delete(*itr).second;
     }
-
+#ifdef FT_VEHICLES
     sLogger.info("ObjectMgr : Cleaning up vehicle accessories...");
     _vehicleAccessoryStore.clear();
     _vehicleSeatAddonStore.clear();
+#endif
 
     sLogger.info("ObjectMgr : Cleaning up worldstate templates...");
     for (std::map< uint32, std::multimap< uint32, WorldState >* >::iterator itr = worldstate_templates.begin(); itr != worldstate_templates.end(); ++itr)
@@ -2341,7 +2342,7 @@ uint32 ObjectMgr::GenerateGameObjectSpawnID()
 
     return r;
 }
-
+#ifdef FT_VEHICLES
 void ObjectMgr::LoadVehicleAccessories()
 {
     _vehicleAccessoryStore.clear();
@@ -2355,9 +2356,9 @@ void ObjectMgr::LoadVehicleAccessories()
 
             uint32_t entry = fields[0].GetUInt32();
             uint32_t accessory = fields[1].GetUInt32();
-            int8   seatId = fields[2].GetInt8();
-            bool   isMinion = fields[3].GetBool();
-            uint8_t  summonType = fields[4].GetUInt8();
+            int8_t seatId = fields[2].GetInt8();
+            bool isMinion = fields[3].GetBool();
+            uint8_t summonType = fields[4].GetUInt8();
             uint32_t summonTimer = fields[5].GetUInt32();
 
             if (!sMySQLStore.getCreatureProperties(entry))
@@ -2398,13 +2399,13 @@ void ObjectMgr::loadVehicleSeatAddon()
         {
             Field* fields = result->Fetch();
 
-            uint32 seatID = fields[0].GetUInt32();
+            uint32_t seatID = fields[0].GetUInt32();
             float orientation = fields[1].GetFloat();
             float exitX = fields[2].GetFloat();
             float exitY = fields[3].GetFloat();
             float exitZ = fields[4].GetFloat();
             float exitO = fields[5].GetFloat();
-            uint8 exitParam = fields[6].GetUInt8();
+            uint8_t exitParam = fields[6].GetUInt8();
 
             _vehicleSeatAddonStore[seatID] = VehicleSeatAddon(orientation, exitX, exitY, exitZ, exitO, exitParam);
 
@@ -2421,7 +2422,7 @@ VehicleAccessoryList const* ObjectMgr::getVehicleAccessories(Vehicle* vehicle)
         return &itr->second;
     return nullptr;
 }
-
+#endif
 void ObjectMgr::LoadWorldStateTemplates()
 {
     QueryResult* result = WorldDatabase.QueryNA("SELECT DISTINCT map FROM worldstate_templates ORDER BY map;");

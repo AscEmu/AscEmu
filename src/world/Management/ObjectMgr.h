@@ -429,6 +429,7 @@ public:
         std::set<uint32> allCompletedAchievements;
 #endif
 
+#ifdef FT_VEHICLES
         void LoadVehicleAccessories();
         VehicleAccessoryList const* getVehicleAccessories(Vehicle* vehicle);
         void loadVehicleSeatAddon();
@@ -441,6 +442,7 @@ public:
 
             return &itr->second;
         }
+#endif
 
         void LoadWorldStateTemplates();
         std::multimap< uint32, WorldState >* GetWorldStatesForMap(uint32 map) const;
@@ -504,8 +506,10 @@ public:
 #if VERSION_STRING > WotLK
         AchievementCriteriaEntryList m_GuildAchievementCriteriasByType[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
 #endif
+#ifdef FT_VEHICLES
         VehicleAccessoryContainer _vehicleAccessoryStore;
         VehicleSeatAddonContainer _vehicleSeatAddonStore;
+#endif
         std::map< uint32, std::multimap<uint32, WorldState>* > worldstate_templates;
 };
 

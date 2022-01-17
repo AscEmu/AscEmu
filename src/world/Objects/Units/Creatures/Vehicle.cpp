@@ -15,6 +15,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Pet.h"
 
+#ifdef FT_VEHICLES
+
 Vehicle::Vehicle(Unit* unit, DBC::Structures::VehicleEntry const* vehInfo, uint32_t creatureEntry) :
     usableSeatNum(0), _owner(unit), _vehicleInfo(vehInfo), _creatureEntry(creatureEntry), _status(STATUS_NONE), _lastShootPos()
 {
@@ -167,7 +169,7 @@ void Vehicle::installAccessory(uint32_t entry, int8_t seatId, bool minion, uint8
     if (minion)
         accessory->addUnitStateFlag(UNIT_STATE_ACCESSORY);
 
-    // Delay for a bit so Accessory has time to get Pushed
+    // Delay for a bit so Accessory has time to get Pushed to World
     sEventMgr.AddEvent(getBase()->ToUnit(), &Unit::handleSpellClick, accessory->ToUnit(), seatId, 0, 50, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
@@ -179,33 +181,27 @@ void Vehicle::applyAllImmunities()
     // Mechanical units & vehicles ( which are not Bosses, they SHOULD have own immunities in DATABASE ) should be also immune on healing ( exceptions in switch below )
     if (getBase()->ToCreature() && getBase()->ToCreature()->GetCreatureProperties()->Type == UNIT_TYPE_MECHANICAL && !getBase()->ToCreature()->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
     {
-        // Heal & dispel ...
-        /*
-        *   Not Supported atm
-        getBase()->addSpellImmunity(SPELL_EFFECT_HEAL, true);
-        getBase()->addSpellImmunity(SPELL_EFFECT_HEAL_PCT, true);
-        getBase()->addSpellImmunity(SPELL_EFFECT_DISPEL, true);
-        getBase()->addSpellImmunity(SPELL_AURA_PERIODIC_HEAL, true);
-        */
+        //  Heal & dispel ...
+        //  Not Supported at the moment for
+        //  getBase()->addSpellImmunity(SPELL_EFFECT_HEAL, true);
+        //  getBase()->addSpellImmunity(SPELL_EFFECT_HEAL_PCT, true);
+        //  getBase()->addSpellImmunity(SPELL_EFFECT_DISPEL, true);
+        //  getBase()->addSpellImmunity(SPELL_AURA_PERIODIC_HEAL, true);
 
-        // ... Shield & Immunity grant spells ...
-        /*
-        *   Not Supported atm
-        getBase()->addSpellImmunity(SPELL_AURA_SCHOOL_IMMUNITY, true);
-        getBase()->addSpellImmunity(SPELL_AURA_MOD_UNATTACKABLE, true);
-        getBase()->addSpellImmunity(SPELL_AURA_SCHOOL_ABSORB, true);
-        */
+        //  ... Shield & Immunity grant spells ...
+        //  Not Supported at the momentm for
+        //  getBase()->addSpellImmunity(SPELL_AURA_SCHOOL_IMMUNITY, true);
+        //  getBase()->addSpellImmunity(SPELL_AURA_MOD_UNATTACKABLE, true);
+        //  getBase()->addSpellImmunity(SPELL_AURA_SCHOOL_ABSORB, true);
         getBase()->addSpellImmunity(SPELL_IMMUNITY_BANISH, true);
 
-        // ... Resistance, Split damage, Change stats ...
-        /*
-        *   Not Supported atm
-        getBase()->addSpellImmunity(SPELL_AURA_DAMAGE_SHIELD, true);
-        getBase()->addSpellImmunity(SPELL_AURA_SPLIT_DAMAGE_PCT, true);
-        getBase()->addSpellImmunity(SPELL_AURA_MOD_RESISTANCE, true);
-        getBase()->addSpellImmunity(SPELL_AURA_MOD_STAT, true);
-        getBase()->addSpellImmunity(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, true);
-        */
+        //  ... Resistance, Split damage, Change stats ...
+        //  Not Supported at the moment for
+        //  getBase()->addSpellImmunity(SPELL_AURA_DAMAGE_SHIELD, true);
+        //  getBase()->addSpellImmunity(SPELL_AURA_SPLIT_DAMAGE_PCT, true);
+        //  getBase()->addSpellImmunity(SPELL_AURA_MOD_RESISTANCE, true);
+        //  getBase()->addSpellImmunity(SPELL_AURA_MOD_STAT, true);
+        //  getBase()->addSpellImmunity(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, true);
     }
 
     // If vehicle flag for fixed position set (cannons), or if the following hardcoded units, then set state rooted
@@ -238,10 +234,8 @@ void Vehicle::applyAllImmunities()
         case 335: // Salvaged Chopper
         case 336: // Salvaged Siege Engine
         case 338: // Salvaged Demolisher
-            /*
-            *   Not Supported atm
-            getBase()->addSpellImmunity(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, false); // Battering Ram
-            */
+            //  Not Supported at the moment for
+            //  getBase()->addSpellImmunity(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, false); // Battering Ram
             break;
         default:
             break;
@@ -251,6 +245,7 @@ void Vehicle::applyAllImmunities()
 void Vehicle::removeAllPassengers()
 {
     // Passengers always cast an aura with SPELL_AURA_CONTROL_VEHICLE on the vehicle
+    // Lets remove the Aura
     getBase()->removeAllAurasByAuraEffect(SPELL_AURA_CONTROL_VEHICLE);
 }
 
@@ -264,7 +259,7 @@ bool Vehicle::hasEmptySeat(int8_t seatId) const
 
 bool Vehicle::hasEmptySeat() const
 {
-    for (auto& const seat : Seats)
+    for (const auto& seat : Seats)
     {
         if (seat.second.isEmpty())
             return true;
@@ -308,6 +303,16 @@ SeatMap::const_iterator Vehicle::getNextEmptySeat(int8_t seatId, bool next) cons
     }
 
     return seat;
+}
+
+bool Vehicle::isControler(Unit* _unit)
+{
+    for (const auto& seats : Seats)
+        if (seats.second._passenger.guid == _unit->getGuid())
+            if (seats.second._seatInfo->IsController())
+                return true;
+
+    return false;
 }
 
 VehicleSeatAddon const* Vehicle::getSeatAddonForSeatOfPassenger(Unit const* passenger) const
@@ -383,7 +388,6 @@ Vehicle* Vehicle::removePassenger(Unit* unit)
         static_cast<Player*>(unit)->setFarsightGuid(0);
         getBase()->removeUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
 
-        unit->mControledUnit = unit;
         static_cast<Player*>(unit)->sendClientControlPacket(getBase(), 0);
 
         // send null spells if needed
@@ -429,20 +433,6 @@ Vehicle* Vehicle::removePassenger(Unit* unit)
 
     unit->setVehicle(nullptr);
     return this;
-}
-
-void Vehicle::movePassengers(float x, float y, float z, float o)
-{
-    for (SeatMap::const_iterator itr = Seats.begin(); itr != Seats.end(); ++itr)
-    {
-        if (Unit* passenger = getBase()->GetMapMgrUnit(itr->second._passenger.guid))
-        {
-            if (passenger == nullptr)
-                continue;
-
-            passenger->SetPosition(x, y, z, o);
-        }
-    }
 }
 
 void Vehicle::relocatePassengers()
@@ -605,7 +595,6 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
         passenger->setCharmGuid(getBase()->getGuid());
         getBase()->setCharmedByGuid(passenger->getGuid());
         getBase()->addUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE);
-        passenger->mControledUnit = getBase();
 
         WorldPacket spells(SMSG_PET_SPELLS, 100);
         getBase()->BuildPetSpellList(spells);
@@ -621,7 +610,6 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
         }
     }
 
-    // Remove Target and set UNIT_STATE_ROOTED
     passenger->setTargetGuid(0);
     passenger->setControlled(true, UNIT_STATE_ROOTED);
     
@@ -651,3 +639,4 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
 
     return true;
 }
+#endif

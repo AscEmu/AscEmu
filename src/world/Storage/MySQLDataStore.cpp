@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Storage/MySQLDataStore.hpp"
+#include "Spell/SpellClickInfo.hpp"
 #include "Server/MainServerDefines.h"
 #include "Spell/SpellMgr.hpp"
 #include "Util/Strings.hpp"
@@ -2139,6 +2140,18 @@ void MySQLDataStore::loadSpellClickSpellsTable()
     delete spellclickspells_result;
 
     sLogger.info("MySQLDataLoads : Loaded %u rows from `spellclickspells` table in %u ms!", spellclickspells_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
+std::vector<SpellClickInfo> const MySQLDataStore::getSpellClickInfo(uint32_t creature_id)
+{
+    std::vector<SpellClickInfo> list;
+    for (auto const& itr : _spellClickInfoStore)
+    {
+        if (itr.first == creature_id)
+            list.emplace_back(itr.second);
+    }
+
+    return list;
 }
 
 void MySQLDataStore::loadWorldStringsTable()

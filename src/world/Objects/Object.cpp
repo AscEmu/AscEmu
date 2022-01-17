@@ -2301,7 +2301,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         movementFlagsExtra = obj_movement_info.getMovementFlags2();
 
         hasTransportTime2 = obj_movement_info.transport_guid != 0 && obj_movement_info.transport_time2 != 0;
-        hasVehicleId = unit->getCurrentVehicle() && unit->getCurrentVehicle()->GetVehicleInfo();
+        hasVehicleId = unit->getVehicleKit() && unit->getVehicleKit()->getVehicleInfo();
         hasPitch = obj_movement_info.hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || obj_movement_info.hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING);
         hasFallDirection = obj_movement_info.hasMovementFlag2(MOVEFLAG2_INTERPOLATED_TURN);
         hasFallData = hasFallDirection || obj_movement_info.fall_time != 0;
@@ -2463,7 +2463,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
             data->WriteByteSeq(tGuid[0]);
 
             if (hasVehicleId)
-                *data << uint32_t(unit->getCurrentVehicle()->GetVehicleInfo()->ID);
+                *data << uint32_t(unit->getVehicleKit()->getVehicleInfo()->ID);
 
             *data << int8_t(obj_movement_info.transport_seat);
 
@@ -3190,7 +3190,7 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
 {
     bool updateMap = false, result = true;
 
-    if (!(std::isfinite(newX) && (std::fabs(newX) <= MAP_HALFSIZE - 0.5f)) && !(std::isfinite(newY) && (std::fabs(newY) <= MAP_HALFSIZE - 0.5f)) && !(std::isfinite(newZ) && (std::fabs(newZ) <= MAP_HALFSIZE - 0.5f)) && !(std::isfinite(newOrientation)))
+    if (!isValidMapCoord(newX, newY, newZ, newOrientation))
         return false;
 
     if (!std::isnan(newX) && !std::isnan(newY) && !std::isnan(newOrientation))
@@ -3227,6 +3227,7 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
             }
         }
 
+#ifdef FT_VEHICLES
         if (isCreatureOrPlayer())
         {
             if (ToUnit()->getVehicle() != nullptr)
@@ -3234,6 +3235,7 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
                 ToUnit()->getVehicle()->relocatePassengers();
             }
         }
+#endif
 
         return result;
     }
@@ -4493,7 +4495,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t o
     MovementStatusElements* sequence = GetMovementStatusElementsSequence(sOpcodeTables.getInternalIdForHex(opcode));
     if (!sequence)
     {
-        sLogger.failure("Unsupported MovementInfo::Read for 0x%X (%s)!", opcode);
+        sLogger.failure("Unsupported MovementInfo::Read for 0x%X (%u)!", opcode);
         return;
     }
 

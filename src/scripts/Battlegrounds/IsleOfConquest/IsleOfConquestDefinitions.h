@@ -181,12 +181,13 @@ struct IOCVehicle
     {
         if (creature == nullptr)
             return true;
-
+#ifdef FT_VEHICLES
         if (creature->getVehicle() == nullptr)
             return true;
 
         if (creature->getVehicle()->getAvailableSeatCount() != creature->getVehicle()->Seats.size())
             return false;
+#endif
 
         return true;
     }

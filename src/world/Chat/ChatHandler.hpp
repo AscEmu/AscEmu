@@ -522,11 +522,13 @@ public:
     bool HandleRecallPortPlayerCommand(const char* args, WorldSession* m_session);
     bool HandleRecallPortUsCommand(const char* args, WorldSession* m_session);
 
+#ifdef FT_VEHICLES
     // Vehicle
     bool HandleVehicleEjectPassengerCommand(const char* args, WorldSession* session);
     bool HandleVehicleEjectAllPassengersCommand(const char* /*args*/, WorldSession* session);
     bool HandleVehicleInstallAccessoriesCommand(const char* /*args*/, WorldSession* session);
     bool HandleVehicleAddPassengerCommand(const char* args, WorldSession* session);
+#endif
 
     // Waypoint
     bool HandleWayPointAddCommand(const char* args, WorldSession* m_session);

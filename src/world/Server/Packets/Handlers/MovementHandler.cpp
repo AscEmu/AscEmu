@@ -309,14 +309,16 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
             {
                 /* set variables */
                 mover->obj_movement_info.transport_time = sessionMovementInfo.transport_time;
+#if VERSION_STRING > TBC
                 mover->obj_movement_info.transport_seat = movementInfo.transport_seat;
+#endif
                 mover->obj_movement_info.transport_position.x = sessionMovementInfo.transport_position.x;
                 mover->obj_movement_info.transport_position.y = sessionMovementInfo.transport_position.y;
                 mover->obj_movement_info.transport_position.z = sessionMovementInfo.transport_position.z;
                 mover->obj_movement_info.transport_position.o = sessionMovementInfo.transport_position.o;
             }
         }
-
+#ifdef FT_VEHICLES
         // Transports like Elevators
         if (!mover->GetTransport() && !mover->getVehicle())
         {
@@ -324,6 +326,15 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
             if (!go || go->getOType() != GAMEOBJECT_TYPE_TRANSPORT)
                 movementInfo.removeMovementFlag(MOVEFLAG_TRANSPORT);
         }
+#else
+        // Transports like Elevators
+        if (!mover->GetTransport())
+        {
+            GameObject* go = mover->GetMapMgrGameObject(movementInfo.transport_guid);
+            if (!go || go->getOType() != GAMEOBJECT_TYPE_TRANSPORT)
+                movementInfo.removeMovementFlag(MOVEFLAG_TRANSPORT);
+        }
+#endif
     }
     else if (mover->ToPlayer() && mover->GetTransport()) // if we were on a transport, leave
     {
@@ -366,6 +377,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
 #endif
 
+#ifdef FT_VEHICLES
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Some vehicles allow the passenger to turn by himself
     if (Vehicle* vehicle = mover->getVehicle())
@@ -383,6 +395,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
         }
         return;
     }
+#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Update our Server position

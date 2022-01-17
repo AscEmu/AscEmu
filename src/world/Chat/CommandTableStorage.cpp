@@ -862,10 +862,12 @@ void CommandTableStorage::Init()
     dupe_command_table(achievementCommandTable, _achievementCommandTable);
 
     static ChatCommand vehicleCommandTable[] = {
+#ifdef FT_VEHICLES
         { "ejectpassenger",     'm', &ChatHandler::HandleVehicleEjectPassengerCommand,      "Ejects the passenger from the specified seat",         nullptr },
         { "ejectallpassengers", 'm', &ChatHandler::HandleVehicleEjectAllPassengersCommand,  "Ejects all passengers from the vehicle",               nullptr },
         { "installaccessories", 'm', &ChatHandler::HandleVehicleInstallAccessoriesCommand,  "Installs the accessories for the selected vehicle",    nullptr },
         { "addpassenger",       'm', &ChatHandler::HandleVehicleAddPassengerCommand,        "Adds a new NPC passenger to the vehicle",              nullptr },
+#endif
         { nullptr,              '0', nullptr,                                               "",                                                     nullptr }
     };
 

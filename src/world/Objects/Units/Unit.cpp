@@ -2635,6 +2635,7 @@ void Unit::updateSplinePosition()
         pos.z = loc.z;
         pos.o = normalizeOrientation(loc.orientation);
 
+#ifdef FT_VEHICLES
         if (TransportBase* vehicle = getVehicle())
         {
             vehicle->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
@@ -2647,6 +2648,16 @@ void Unit::updateSplinePosition()
         {
             return;
         }
+#else
+        if (TransportBase* transport = GetTransport())
+        {
+            transport->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
+        }
+        else
+        {
+            return;
+        }
+#endif
     }
 
     if (hasUnitStateFlag(UNIT_STATE_CANNOT_TURN))
@@ -6800,8 +6811,10 @@ bool Unit::isUnitOwnerInRaid(Unit* unit)
 
 uint64_t Unit::getTransGuid()
 {
+#ifdef FT_VEHICLES
     if (getVehicle())
         return getVehicleBase()->getGuid();
+#endif
     if (GetTransport())
         return GetTransport()->getGuid();
 
@@ -6823,8 +6836,14 @@ DBC::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t m
     if (!mountTypeEntry)
         return nullptr;
 
-    uint32_t zoneId = GetZoneId();
-    uint32_t areaId = GetArea()->id;
+    uint32_t zoneId = 0;
+    uint32_t areaId = 0;
+
+    if (GetZoneId())
+        zoneId = GetZoneId();
+
+    if (GetArea())
+        areaId = GetArea()->id;
 
     uint32_t ridingSkill = 5000;
     if (GetTypeFromGUID() == TYPEID_PLAYER)
@@ -6966,7 +6985,7 @@ bool Unit::isLootable()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Vehicle
-
+#ifdef FT_VEHICLES
 bool Unit::createVehicleKit(uint32_t id, uint32_t creatureEntry)
 {
     auto vehInfo = sVehicleStore.LookupEntry(id);
@@ -7032,121 +7051,84 @@ void Unit::handleSpellClick(Unit* clicker, int8_t seatId /*= -1*/)
     bool spellClickHandled = false;
     uint32_t spellClickEntry = getVehicleKit() ? getVehicleKit()->getEntry() : getEntry();
     
-    auto clickBounds = sMySQLStore.getSpellClickInfoMapBounds(spellClickEntry);
+    std::vector<SpellClickInfo> clickBounds = sMySQLStore.getSpellClickInfo(spellClickEntry);
     for (auto clickPair : clickBounds)
     {
-        //! First check simple relations from clicker to clickee
-        if (!clickPair.second.isFitToRequirements(clicker, this))
-            continue;
-
-        Unit* caster = (clickPair.second.castFlags & NPC_CLICK_CAST_CASTER_CLICKER) ? clicker : this;
-        Unit* target = (clickPair.second.castFlags & NPC_CLICK_CAST_TARGET_CLICKER) ? clicker : this;
-        uint64_t origCasterGUID = (clickPair.second.castFlags & NPC_CLICK_CAST_ORIG_CASTER_OWNER) ? getOwnerGUID() : clicker->getGuid();
-
-        SpellInfo const* spellEntry = sSpellMgr.getSpellInfo(clickPair.second.spellId);
-
-        // Vehicle Handling
-        if (seatId > -1)
-        {
-            uint8_t i = 0;
-            bool valid = false;
-            while (i < MAX_SPELL_EFFECTS)
-            {
-                if (spellEntry->getEffectApplyAuraName(i) == SPELL_AURA_CONTROL_VEHICLE)
-                {
-                    valid = true;
-                    break;
-                }
-                ++i;
-            }
-
-            if (!valid)
-            {
-                sLogger.failure("Spell %u specified in npc_spellclick_spells is not a valid vehicle enter aura!", clickPair.second.spellId);
+            // First check simple relations from clicker to clickee
+            if (!clickPair.isFitToRequirements(clicker, this))
                 continue;
-            }
 
-            if (IsInMap(caster))
+            Unit* caster = (clickPair.castFlags & NPC_CLICK_CAST_CASTER_CLICKER) ? clicker : this;
+            Unit* target = (clickPair.castFlags & NPC_CLICK_CAST_TARGET_CLICKER) ? clicker : this;
+            uint64_t origCasterGUID = (clickPair.castFlags & NPC_CLICK_CAST_ORIG_CASTER_OWNER) ? getOwnerGUID() : clicker->getGuid();
+
+            SpellInfo const* spellEntry = sSpellMgr.getSpellInfo(clickPair.spellId);
+
+            // Vehicle Handling
+            if (seatId > -1)
             {
-                /*
-                *   VEHICLE_SPELL_RIDE_HARDCODED gets Casted on the Target
-                *   We pass trough seatId trough EffectBaseDamage for further use
-                *   The Aura Handler "HANDLE_AURA_CONTROL_VEHICLE" takes care of us.
-                *   HANDLE_AURA_CONTROL_VEHICLE will call _enterVehicle or _exitVehicle
-                */
+                uint8_t i = 0;
+                bool valid = false;
+                while (i < MAX_SPELL_EFFECTS)
+                {
+                    if (spellEntry->getEffectApplyAuraName(i) == SPELL_AURA_CONTROL_VEHICLE)
+                    {
+                        valid = true;
+                        break;
+                    }
+                    ++i;
+                }
 
-                SpellForcedBasePoints bp;
-                bp.set(i, seatId + 1);
-                caster->castSpell(target, clickPair.second.spellId, bp, true);
+                if (!valid)
+                {
+                    sLogger.failure("Spell %u specified in npc_spellclick_spells is not a valid vehicle enter aura!", clickPair.spellId);
+                    continue;
+                }
+
+                if (IsInMap(caster))
+                {
+                    //   VEHICLE_SPELL_RIDE_HARDCODED gets Casted on the Target
+                    //   We pass trough seatId trough EffectBaseDamage for further use
+                    //   The Aura Handler "HANDLE_AURA_CONTROL_VEHICLE" takes care of us.
+                    //   HANDLE_AURA_CONTROL_VEHICLE will call enterVehicle or exitVehicle
+
+                    SpellForcedBasePoints bp;
+                    bp.set(i, seatId + 1);
+                    caster->castSpell(target, clickPair.spellId, bp, true);
+                }
             }
+            else
+            {
+                // Creatures like Lightwell...
+                if (IsInMap(caster))
+                    caster->castSpell(target, spellEntry->getId(), true);
+            }
+
+            spellClickHandled = true;
         }
-        else
+
+        if (isCreature())
         {
-            // Creatures like Lightwell...
-            if (IsInMap(caster))
-                caster->castSpell(target, spellEntry->getId(), true);
-        }
-
-        spellClickHandled = true;
-    }
-
-    if (isCreature())
-    {
-        if (CreatureAIScript* ai = ToCreature()->GetScript())
-        {
-            ai->OnSpellClick(clicker, spellClickHandled);
-        }
-    }
-}
-
-bool SpellClickInfo::isFitToRequirements(Unit* clicker, Unit* clickee)
-{
-    Player* playerClicker = clicker->ToPlayer();
-    if (!playerClicker)
-        return true;
-
-    Unit* summoner = nullptr;
-    // Check summoners for party
-    if (clickee->isSummon())
-        summoner = clickee->GetMapMgrUnit(clickee->getSummonedByGuid());
-
-    if (!summoner)
-        summoner = clickee;
-
-    // This only applies to players
-    switch (userType)
-    {
-        case SPELL_CLICK_USER_FRIEND:
-            if (!isFriendly(playerClicker, summoner))
-                return false;
-            break;
-        case SPELL_CLICK_USER_RAID:
-        case SPELL_CLICK_USER_PARTY:
-            if (!playerClicker->getGroup()->GetID() == summoner->ToPlayer()->getGroup()->GetID())
-                return false;
-            break;
-        default:
-            break;
-    }
-
-    return true;
+            if (CreatureAIScript* ai = ToCreature()->GetScript())
+            {
+                ai->OnSpellClick(clicker, spellClickHandled);
+            }
+        }  
 }
 
 void Unit::callEnterVehicle(Unit* base, int8_t seatId /*= -1*/)
 {
-    /*
-    *   VEHICLE_SPELL_RIDE_HARDCODED gets Casted on the Target
-    *   We pass trough seatId trough EffectBaseDamage for further use
-    *   The Aura Handler "HANDLE_AURA_CONTROL_VEHICLE" takes care of us.
-    *   HANDLE_AURA_CONTROL_VEHICLE will call _enterVehicle or _exitVehicle
-    */
+    //   VEHICLE_SPELL_RIDE_HARDCODED gets Casted on the Target
+    //   We pass trough seatId trough EffectBaseDamage for further use
+    //   The Aura Handler "HANDLE_AURA_CONTROL_VEHICLE" takes care of us.
+    //   HANDLE_AURA_CONTROL_VEHICLE will call enterVehicle or exitVehicle
 
     SpellForcedBasePoints bp;
     bp.set(0, seatId + 1);
     castSpell(base, VEHICLE_SPELL_RIDE_HARDCODED, bp, true);
 }
 
-void Unit::_enterVehicle(Vehicle* vehicle, int8_t seatId)
+void Unit::enterVehicle(Vehicle* vehicle, int8_t seatId)
 {
     if (!isAlive() || getVehicleKit() == vehicle || vehicle->getBase()->isOnVehicle(this))
         return;
@@ -7210,12 +7192,10 @@ void Unit::callChangeSeat(int8_t seatId, bool next)
     if (seat == m_vehicle->Seats.end() || !seat->second.isEmpty())
         return;
 
-    /*
-    *   VEHICLE_SPELL_RIDE_HARDCODED gets Casted on the Target
-    *   We pass trough seatId trough EffectBaseDamage for further use
-    *   The Aura Handler "HANDLE_AURA_CONTROL_VEHICLE" takes care of us.
-    *   HANDLE_AURA_CONTROL_VEHICLE will call _enterVehicle or _exitVehicle
-    */
+    //   VEHICLE_SPELL_RIDE_HARDCODED gets Casted on the Target
+    //   We pass trough seatId trough EffectBaseDamage for further use
+    //   The Aura Handler "HANDLE_AURA_CONTROL_VEHICLE" takes care of us.
+    //   HANDLE_AURA_CONTROL_VEHICLE will call enterVehicle or exitVehicle
 
     // Unit riding a vehicle must always have control vehicle aura on target
     for (const auto& aur : m_vehicle->getBase()->m_auras)
@@ -7243,12 +7223,10 @@ void Unit::callChangeSeat(int8_t seatId, bool next)
 
 void Unit::callExitVehicle(LocationVector const* /*exitPosition*/)
 {
-    /*
-    *   VEHICLE_SPELL_RIDE_HARDCODED gets Casted on the Target
-    *   We pass trough seatId trough EffectBaseDamage for further use
-    *   The Aura Handler "HANDLE_AURA_CONTROL_VEHICLE" takes care of us.
-    *   HANDLE_AURA_CONTROL_VEHICLE will call _enterVehicle or _exitVehicle
-    */
+    //   VEHICLE_SPELL_RIDE_HARDCODED gets Casted on the Target
+    //   We pass trough seatId trough EffectBaseDamage for further use
+    //   The Aura Handler "HANDLE_AURA_CONTROL_VEHICLE" takes care of us.
+    //   HANDLE_AURA_CONTROL_VEHICLE will call enterVehicle or exitVehicle
 
     if (!m_vehicle)
         return;
@@ -7256,7 +7234,7 @@ void Unit::callExitVehicle(LocationVector const* /*exitPosition*/)
     getVehicleBase()->removeAllAurasByAuraEffect(SPELL_AURA_CONTROL_VEHICLE, 0, false, getGuid());
 }
 
-void Unit::_exitVehicle(LocationVector const* exitPosition)
+void Unit::exitVehicle(LocationVector const* exitPosition)
 {
     if (!m_vehicle)
         return;
@@ -7306,6 +7284,7 @@ void Unit::_exitVehicle(LocationVector const* exitPosition)
     init.SetTransportExit();
     getMovementManager()->launchMoveSpline(std::move(init), EVENT_VEHICLE_EXIT, MOTION_PRIORITY_HIGHEST);
 
+    // Spawn active Pets
     if (player)
         player->SpawnActivePet();
 
@@ -7323,8 +7302,45 @@ void Unit::_exitVehicle(LocationVector const* exitPosition)
         }
         else
         {
-            // If for other reason we as minion are exiting the vehicle (ejected, master dismounted) - unsummon
+            // If for other reason we as Accessories are exiting the vehicle 
+            // (ejected, master dismounted) despawn.
             ToCreature()->Despawn(2000, 0);
         }
     }
 }
+#else
+void Unit::handleSpellClick(Unit* clicker)
+{
+    bool spellClickHandled = false;
+    uint32_t spellClickEntry = getEntry();
+
+    std::vector<SpellClickInfo> clickBounds = sMySQLStore.getSpellClickInfo(spellClickEntry);
+    for (auto clickPair : clickBounds)
+    {
+        //! First check simple relations from clicker to clickee
+        if (!clickPair.isFitToRequirements(clicker, this))
+            continue;
+
+        Unit* caster = (clickPair.castFlags & NPC_CLICK_CAST_CASTER_CLICKER) ? clicker : this;
+        Unit* target = (clickPair.castFlags & NPC_CLICK_CAST_TARGET_CLICKER) ? clicker : this;
+        uint64_t origCasterGUID = (clickPair.castFlags & NPC_CLICK_CAST_ORIG_CASTER_OWNER) ? getOwnerGUID() : clicker->getGuid();
+
+        SpellInfo const* spellEntry = sSpellMgr.getSpellInfo(clickPair.spellId);
+
+
+        // Creatures like Lightwell...
+        if (IsInMap(caster))
+            caster->castSpell(target, spellEntry->getId(), true);
+
+        spellClickHandled = true;
+    }
+
+    if (isCreature())
+    {
+        if (CreatureAIScript* ai = ToCreature()->GetScript())
+        {
+            ai->OnSpellClick(clicker, spellClickHandled);
+        }
+    }
+}
+#endif

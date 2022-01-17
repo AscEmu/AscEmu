@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Transporter.h"
 #include <array>
 
+#ifdef FT_VEHICLES
+
 enum VehicleStatus
 {
     STATUS_NONE             = 0,
@@ -146,11 +148,11 @@ public:
 
     bool addPassenger(Unit* passenger, int8_t seatId = -1);
     Vehicle* removePassenger(Unit* passenger);
-    void movePassengers(float x, float y, float z, float o);
     void relocatePassengers();
     void removeAllPassengers();
     bool isVehicleInUse() const;
     bool isControllableVehicle() const;
+    bool isControler(Unit* _unit);
 
     void setLastShootPos(LocationVector const& pos) { _lastShootPos.ChangeCoords(pos); }
     LocationVector const& getLastShootPos() const { return _lastShootPos; }
@@ -193,3 +195,4 @@ private:
         VehicleStatus _status;
         LocationVector _lastShootPos;
 };
+#endif

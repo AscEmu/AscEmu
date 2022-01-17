@@ -379,10 +379,11 @@ void Transporter::UpdatePassengerPositions(PassengerSet& passengers)
             default:
                 break;
         }
-
+#ifdef FT_VEHICLES
         if (Unit* unit = passenger->ToUnit())
             if (Vehicle* vehicle = unit->getVehicleKit())
                 vehicle->relocatePassengers();
+#endif
     }
 }
 

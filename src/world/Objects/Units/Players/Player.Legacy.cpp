@@ -3914,9 +3914,10 @@ void Player::KillPlayer()
     getSummonInterface()->removeAllSummons();
     DismissActivePets();
 
+#ifdef FT_VEHICLES
     // Player falls off vehicle on death
-    /*if (m_vehicle != nullptr)
-        m_vehicle->EjectPassenger(this);*/
+    callExitVehicle();
+#endif
 
     sHookInterface.OnDeath(this);
 }
@@ -5219,8 +5220,9 @@ void Player::TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node)
 
     Dismount();
 
-    /*if (m_currentVehicle != nullptr)
-        m_currentVehicle->EjectPassenger(this);*/
+#ifdef FT_VEHICLES
+    callExitVehicle();
+#endif
 
     //also remove morph spells
     if (getDisplayId() != getNativeDisplayId())
@@ -6267,8 +6269,10 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         flying_aura = 0;
     }
 
+#ifdef FT_VEHICLES
     // Exit vehicle before teleporting
     callExitVehicle();
+#endif
 
     // Lookup map info
     if (mi && mi->flags & WMI_INSTANCE_XPACK_01 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
@@ -8430,7 +8434,9 @@ uint32 Player::CheckDamageLimits(uint32 dmg, uint32 spellid)
 
 void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 {
+#ifdef FT_VEHICLES
     callExitVehicle();
+#endif
 
 #if VERSION_STRING > TBC
     // A Player has died
@@ -9385,6 +9391,32 @@ void Player::RemoteRevive()
 void Player::SetMover(Unit* target)
 {
     GetSession()->m_MoverWoWGuid.Init(target->getGuid());
+    mControledUnit = target;
+
+#if VERSION_STRING > WotLk
+    ObjectGuid guid = target->getGuid();
+
+    WorldPacket data(SMSG_MOVE_SET_ACTIVE_MOVER, 9);
+    data.writeBit(guid[5]);
+    data.writeBit(guid[7]);
+    data.writeBit(guid[3]);
+    data.writeBit(guid[6]);
+    data.writeBit(guid[0]);
+    data.writeBit(guid[4]);
+    data.writeBit(guid[1]);
+    data.writeBit(guid[2]);
+
+    data.WriteByteSeq(guid[6]);
+    data.WriteByteSeq(guid[2]);
+    data.WriteByteSeq(guid[3]);
+    data.WriteByteSeq(guid[0]);
+    data.WriteByteSeq(guid[5]);
+    data.WriteByteSeq(guid[7]);
+    data.WriteByteSeq(guid[1]);
+    data.WriteByteSeq(guid[4]);
+
+    SendPacket(&data);
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

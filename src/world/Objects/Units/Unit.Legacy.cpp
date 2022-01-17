@@ -8219,8 +8219,9 @@ void Unit::OnPushToWorld()
 //! Remove Unit from world
 void Unit::RemoveFromWorld(bool free_guid)
 {
+#ifdef FT_VEHICLES
     removeVehicleKit();
-
+#endif
     removeAllFollowers();
 
     getCombatHandler().onRemoveFromWorld();
@@ -8951,8 +8952,10 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
                 obj_movement_info.transport_guid = plr->obj_movement_info.transport_guid;
             }
         }
+#ifdef FT_VEHICLES
         if (Unit* u = getVehicleBase())
             obj_movement_info.transport_guid = u->getGuid();
+#endif
         *data << obj_movement_info.transport_guid;
         *data << obj_movement_info.transport_guid;
         *data << GetTransOffsetX();

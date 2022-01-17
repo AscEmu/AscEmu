@@ -3158,8 +3158,10 @@ void Spell::SpellEffectSummonVehicle(uint32 /*i*/, DBC::Structures::SummonProper
     // Delay this a bit to make sure its Spawned
     sEventMgr.AddEvent(c->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
+#ifdef FT_VEHICLES
     // Need to delay this a bit since first the client needs to see the vehicle
-    //u_caster->addPassengerToVehicle(c->getGuid(), 1 * 1000);
+    u_caster->callEnterVehicle(c);
+#endif
 }
 
 void Spell::SpellEffectLeap(uint8_t effectIndex) // Leap
@@ -4748,9 +4750,10 @@ void Spell::SpellEffectBuildingDamage(uint8_t effectIndex)
 
     uint32 spellDamage = m_spellInfo->getEffectBasePoints(effectIndex) + 1;
     Unit* controller = nullptr;
-
+#ifdef FT_VEHICLES
     if (u_caster->getVehicle() != nullptr)
         controller = u_caster->GetMapMgr()->GetUnit(u_caster->getCharmedByGuid());
+#endif
 
     if (controller == nullptr)
         controller = u_caster;

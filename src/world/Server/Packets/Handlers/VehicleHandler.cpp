@@ -108,7 +108,7 @@ void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]]WorldPac
     if (!seat->canSwitchFromSeat())
         return;
 
-#if VERSION_STRING == WotLK
+#if VERSION_STRING < Cata
     CmsgChangeSeatsOnControlledVehicle srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -127,6 +127,51 @@ void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]]WorldPac
         GetPlayer()->callChangeSeat(-1, seatId > 0); // prev/next
     }
     else if (Unit* vehUnit = GetPlayer()->GetMapMgrUnit(accessory))
+    {
+        if (Vehicle* vehicle = vehUnit->getVehicleKit())
+            if (vehicle->hasEmptySeat(seatId))
+                vehUnit->handleSpellClick(GetPlayer(), seatId);
+    }
+    else
+    {
+        if (vehicle_base->getVehicle())
+            if (vehicle_base->getVehicle()->hasEmptySeat(seatId))
+                vehicle_base->getVehicleBase()->handleSpellClick(GetPlayer(), seatId);
+    }
+
+#else
+    MovementInfo movementInfo; 
+    movementInfo.readMovementInfo(recvPacket, CMSG_CHANGE_SEATS_ON_CONTROLLED_VEHICLE);
+    vehicle_base->obj_movement_info = movementInfo;
+
+    ObjectGuid guid;
+    int8_t seatId;
+    recvPacket >> seatId;
+
+    guid[2] = recvPacket.readBit();
+    guid[4] = recvPacket.readBit();
+    guid[7] = recvPacket.readBit();
+    guid[6] = recvPacket.readBit();
+    guid[5] = recvPacket.readBit();
+    guid[0] = recvPacket.readBit();
+    guid[1] = recvPacket.readBit();
+    guid[3] = recvPacket.readBit();
+    
+    recvPacket.ReadByteSeq(guid[6]);
+    recvPacket.ReadByteSeq(guid[1]);
+    recvPacket.ReadByteSeq(guid[2]);
+    recvPacket.ReadByteSeq(guid[5]);
+    recvPacket.ReadByteSeq(guid[3]);
+    recvPacket.ReadByteSeq(guid[0]);
+    recvPacket.ReadByteSeq(guid[4]);
+    recvPacket.ReadByteSeq(guid[7]);
+
+    if (vehicle_base->getGuid() != movementInfo.guid)
+        return;
+
+    if (!guid)
+        GetPlayer()->callChangeSeat(-1, seatId > 0); // prev/next
+    else if (Unit* vehUnit = GetPlayer()->GetMapMgrUnit(guid))
     {
         if (Vehicle* vehicle = vehUnit->getVehicleKit())
             if (vehicle->hasEmptySeat(seatId))

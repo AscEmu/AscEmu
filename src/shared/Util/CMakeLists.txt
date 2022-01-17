@@ -5,7 +5,6 @@ set(PATH_PREFIX Util)
 set(SRC_UTIL_FILES
     ${PATH_PREFIX}/Strings.cpp
     ${PATH_PREFIX}/Strings.hpp
-	${PATH_PREFIX}/IteratorPair.hpp
 )
 
 source_group(Util FILES ${SRC_UTIL_FILES})

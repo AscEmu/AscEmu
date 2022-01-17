@@ -1041,6 +1041,7 @@ public:
 private:
     SummonHandler* m_summonInterface = nullptr;
 
+#ifdef FT_VEHICLES
     //////////////////////////////////////////////////////////////////////////////////////////
     // Vehicle
 protected:
@@ -1057,19 +1058,22 @@ public:
     Unit* getVehicleBase() const;
     Unit* getVehicleRoot() const;
     Creature* getVehicleCreatureBase() const;
-
     void handleSpellClick(Unit* clicker, int8_t seatId = -1);
     void callEnterVehicle(Unit* base, int8_t seatId = -1);
     void callExitVehicle(LocationVector const* exitPosition = nullptr);
     void callChangeSeat(int8_t seatId, bool next = true);
 
     // shouldnt be called directly always use the functions above
-    void _exitVehicle(LocationVector const* exitPosition = nullptr);
-    void _enterVehicle(Vehicle* vehicle, int8_t seatId);
+    void exitVehicle(LocationVector const* exitPosition = nullptr);
+    void enterVehicle(Vehicle* vehicle, int8_t seatId);
+#else
+public:
+    void handleSpellClick(Unit* clicker);
+#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Unit Owner
-
+public:
     bool isUnitOwnerInParty(Unit* unit);
     bool isUnitOwnerInRaid(Unit* unit);
 
