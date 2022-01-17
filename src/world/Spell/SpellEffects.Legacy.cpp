@@ -4925,7 +4925,7 @@ void Spell::SpellEffectKnockBack(uint8_t effectIndex)
         return;
 
     float x, y;
-    if (m_spellInfo->getEffect(effectIndex) == 144)
+    if (m_spellInfo->getEffect(effectIndex) == SPELL_EFFECT_KNOCK_BACK_DEST)
     {
         if (m_targets.hasDestination())
         {

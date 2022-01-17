@@ -285,7 +285,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
                     mover->obj_movement_info.transport_position.o = sessionMovementInfo.transport_position.o;
                 }
             }
-            else if (mover->GetTransport()->getGuid() != movementInfo.transport_guid)
+            else if (mover->GetTransport() != sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(movementInfo.transport_guid)))
             {
                 mover->GetTransport()->RemovePassenger(mover);
                 if (Transporter* transport = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(movementInfo.transport_guid)))
@@ -304,6 +304,16 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
                     movementInfo.clearTransportData();
                     mover->obj_movement_info.clearTransportData();
                 }
+            }
+            else
+            {
+                /* set variables */
+                mover->obj_movement_info.transport_time = sessionMovementInfo.transport_time;
+                mover->obj_movement_info.transport_seat = movementInfo.transport_seat;
+                mover->obj_movement_info.transport_position.x = sessionMovementInfo.transport_position.x;
+                mover->obj_movement_info.transport_position.y = sessionMovementInfo.transport_position.y;
+                mover->obj_movement_info.transport_position.z = sessionMovementInfo.transport_position.z;
+                mover->obj_movement_info.transport_position.o = sessionMovementInfo.transport_position.o;
             }
         }
 

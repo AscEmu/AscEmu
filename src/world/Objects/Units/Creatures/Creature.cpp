@@ -47,7 +47,7 @@ Creature::Creature(uint64_t guid)
     setRangedAttackPowerMultiplier(0.0f);
 
     //override class "Unit" initialisation
-    m_useAI = true;
+    setAItoUse(true);
 
     // Override initialization from Unit class
     getThreatManager().initialize();
@@ -639,6 +639,9 @@ void Creature::OnRespawn(MapMgr* m)
 
     // Re-initialize reactstate that could be altered by movementgenerators
     getAIInterface()->initializeReactState();
+
+    // Init Vehicle
+    createVehicleKit(GetCreatureProperties()->vehicleid, getEntry());
 
     m_PickPocketed = false;
     PushToWorld(m);
@@ -1532,7 +1535,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         getDisplayId() == 15435 ||
         (creature_properties->Family == UNIT_TYPE_MISC))
     {
-        m_useAI = false;
+        setAItoUse(false);
     }
 
     // more hacks!
@@ -1733,7 +1736,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         getDisplayId() == 15435 ||
         creature_properties->Type == UNIT_TYPE_MISC)
     {
-        m_useAI = false;
+        setAItoUse(false);
     }
 
     setPowerType(POWER_TYPE_MANA);
@@ -2172,10 +2175,8 @@ bool Creature::isCritter()
 void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 {
     // Exit Vehicle
-    exitVehicle();
-
-    if (getVehicleKit())
-        getVehicleKit()->removeAllPassengers();
+    removeVehicleKit();
+    callExitVehicle();
 
     //general hook for die
     if (!sHookInterface.OnPreUnitDie(pAttacker, this))

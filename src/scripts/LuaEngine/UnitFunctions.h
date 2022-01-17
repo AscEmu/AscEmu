@@ -5741,7 +5741,7 @@ public:
         c->Load(cp, v.x, v.y, v.z, v.o);
         c->removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
         c->PushToWorld(ptr->GetMapMgr());
-        c->enterVehicle(ptr);;
+        c->callEnterVehicle(ptr);;
         return 0;
     }
 
@@ -5805,7 +5805,7 @@ public:
         Creature* c = u->GetMapMgr()->CreateCreature(creature_entry);
         c->Load(cp, u->GetPositionX(), u->GetPositionY(), u->GetPositionZ(), u->GetOrientation());
         c->PushToWorld(u->GetMapMgr());
-        c->enterVehicle(u);
+        c->callEnterVehicle(u);
 
         return 0;
     }
@@ -5844,7 +5844,7 @@ public:
         Unit* _unit = ptr->GetMapMgrUnit(guid);
 
         if (_unit)
-            _unit->enterVehicle(ptr);
+            _unit->callEnterVehicle(ptr);
 
         return 0;
     }
@@ -5854,7 +5854,7 @@ public:
         TEST_UNITPLAYER()
         if (ptr->getVehicleKit() != nullptr)
         {
-            ptr->exitVehicle();
+            ptr->callExitVehicle();
         }
         else
         {
@@ -5904,7 +5904,7 @@ public:
         int8_t seat = static_cast<int8_t>(luaL_checkinteger(L, 1));
 
         if (Unit* passenger = u->getVehicle()->getPassenger(seat))
-            passenger->exitVehicle();
+            passenger->callExitVehicle();
 
         return 0;
     }
@@ -5925,7 +5925,7 @@ public:
         if (passenger == nullptr)
             return 0;
 
-        passenger->changeSeat(seat);
+        passenger->callChangeSeat(seat);
         return 0;
     }
 

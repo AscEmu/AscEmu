@@ -590,7 +590,7 @@ void MovementManager::moveFollow(Unit* target, float dist, ChaseAngle angle, Mov
 void MovementManager::moveChase(Unit* target, Optional<ChaseRange> dist, Optional<ChaseAngle> angle)
 {
     // Ignore movement request if target not exist
-    if (!target || target == _owner)
+    if (!target || target == _owner || !_owner->isAIEnabled())
         return;
 
     add(new ChaseMovementGenerator(target, dist, angle));

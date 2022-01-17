@@ -6268,7 +6268,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     }
 
     // Exit vehicle before teleporting
-    exitVehicle();
+    callExitVehicle();
 
     // Lookup map info
     if (mi && mi->flags & WMI_INSTANCE_XPACK_01 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
@@ -8430,7 +8430,7 @@ uint32 Player::CheckDamageLimits(uint32 dmg, uint32 spellid)
 
 void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 {
-    exitVehicle();
+    callExitVehicle();
 
 #if VERSION_STRING > TBC
     // A Player has died

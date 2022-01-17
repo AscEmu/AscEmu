@@ -699,6 +699,7 @@ public:
     AIInterface* getAIInterface() const { return m_aiInterface; }
 
     void setAItoUse(bool value) { m_useAI = value; }
+    bool isAIEnabled() { return m_useAI; }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Internal States
@@ -1047,9 +1048,6 @@ protected:
     Vehicle* m_vehicleKit = nullptr;        // The vehicle the unit is attached to
 
 public:
-    void sendHopOnVehicle(Unit* vehicleOwner, uint32_t seat);
-    void sendHopOffVehicle(Unit* vehicleOwner, LocationVector& /*landPosition*/);
-
     bool createVehicleKit(uint32_t id, uint32_t creatureEntry);
     void removeVehicleKit();
     Vehicle* getVehicleKit() const { return m_vehicleKit; }
@@ -1061,10 +1059,11 @@ public:
     Creature* getVehicleCreatureBase() const;
 
     void handleSpellClick(Unit* clicker, int8_t seatId = -1);
-    void enterVehicle(Unit* base, int8_t seatId = -1);
-    void exitVehicle(LocationVector const* exitPosition = nullptr);
-    void changeSeat(int8_t seatId, bool next = true);
+    void callEnterVehicle(Unit* base, int8_t seatId = -1);
+    void callExitVehicle(LocationVector const* exitPosition = nullptr);
+    void callChangeSeat(int8_t seatId, bool next = true);
 
+    // shouldnt be called directly always use the functions above
     void _exitVehicle(LocationVector const* exitPosition = nullptr);
     void _enterVehicle(Vehicle* vehicle, int8_t seatId);
 

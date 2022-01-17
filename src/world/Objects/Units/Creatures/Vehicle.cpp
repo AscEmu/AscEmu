@@ -37,6 +37,7 @@ Vehicle::Vehicle(Unit* unit, DBC::Structures::VehicleEntry const* vehInfo, uint3
         getBase()->removeNpcFlags((getBase()->getObjectTypeId() == TYPEID_PLAYER ? UNIT_NPC_FLAG_PLAYER_VEHICLE : UNIT_NPC_FLAG_SPELLCLICK));
 
 
+    // Set Correct Power Type
     switch (vehInfo->powerType)
     {
         case POWER_TYPE_STEAM:
@@ -53,6 +54,15 @@ Vehicle::Vehicle(Unit* unit, DBC::Structures::VehicleEntry const* vehInfo, uint3
             _owner->setPowerType(POWER_TYPE_ENERGY);
             _owner->setMaxPower(POWER_TYPE_ENERGY, 50);
             _owner->setPower(POWER_TYPE_ENERGY, 50);
+            break;
+    }
+
+    // Disable Power Regen by Default
+    // when there will be exceptions add them here
+    switch (getEntry())
+    {
+        default:
+            getBase()->addNpcFlags(UNIT_NPC_FLAG_DISABLE_PWREGEN);
             break;
     }
 
@@ -101,7 +111,7 @@ void Vehicle::install()
 
 void Vehicle::uninstall()
 {
-    if (_status == STATUS_UNINSTALLING)
+    if (_status == STATUS_UNINSTALLING && !getBase()->hasUnitStateFlag(UNIT_STATE_ACCESSORY))
     {
         sLogger.failure("Vehicle %s attempts to uninstall, but already has STATUS_UNINSTALLING! ", getBase()->getGuid());
         return;
@@ -157,27 +167,45 @@ void Vehicle::installAccessory(uint32_t entry, int8_t seatId, bool minion, uint8
     if (minion)
         accessory->addUnitStateFlag(UNIT_STATE_ACCESSORY);
 
-    getBase()->handleSpellClick(accessory, seatId);
+    // Delay for a bit so Accessory has time to get Pushed
+    sEventMgr.AddEvent(getBase()->ToUnit(), &Unit::handleSpellClick, accessory->ToUnit(), seatId, 0, 50, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void Vehicle::applyAllImmunities()
 {
-    // This couldn't be done in DB, because some spells have MECHANIC_NONE
-
     // Vehicles should be immune on Knockback ...
-    // toDo
+    getBase()->addSpellImmunity(SPELL_IMMUNITY_KNOCKBACK, true);
 
-    // Mechanical units & vehicles ( which are not Bosses, they have own immunities in DB ) should be also immune on healing ( exceptions in switch below )
+    // Mechanical units & vehicles ( which are not Bosses, they SHOULD have own immunities in DATABASE ) should be also immune on healing ( exceptions in switch below )
     if (getBase()->ToCreature() && getBase()->ToCreature()->GetCreatureProperties()->Type == UNIT_TYPE_MECHANICAL && !getBase()->ToCreature()->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
     {
         // Heal & dispel ...
-        // toDo
+        /*
+        *   Not Supported atm
+        getBase()->addSpellImmunity(SPELL_EFFECT_HEAL, true);
+        getBase()->addSpellImmunity(SPELL_EFFECT_HEAL_PCT, true);
+        getBase()->addSpellImmunity(SPELL_EFFECT_DISPEL, true);
+        getBase()->addSpellImmunity(SPELL_AURA_PERIODIC_HEAL, true);
+        */
 
         // ... Shield & Immunity grant spells ...
-        // toDo
+        /*
+        *   Not Supported atm
+        getBase()->addSpellImmunity(SPELL_AURA_SCHOOL_IMMUNITY, true);
+        getBase()->addSpellImmunity(SPELL_AURA_MOD_UNATTACKABLE, true);
+        getBase()->addSpellImmunity(SPELL_AURA_SCHOOL_ABSORB, true);
+        */
+        getBase()->addSpellImmunity(SPELL_IMMUNITY_BANISH, true);
 
         // ... Resistance, Split damage, Change stats ...
-        // toDo
+        /*
+        *   Not Supported atm
+        getBase()->addSpellImmunity(SPELL_AURA_DAMAGE_SHIELD, true);
+        getBase()->addSpellImmunity(SPELL_AURA_SPLIT_DAMAGE_PCT, true);
+        getBase()->addSpellImmunity(SPELL_AURA_MOD_RESISTANCE, true);
+        getBase()->addSpellImmunity(SPELL_AURA_MOD_STAT, true);
+        getBase()->addSpellImmunity(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, true);
+        */
     }
 
     // If vehicle flag for fixed position set (cannons), or if the following hardcoded units, then set state rooted
@@ -199,21 +227,24 @@ void Vehicle::applyAllImmunities()
     switch (getVehicleInfo()->ID)
     {
         // code below prevents a bug with movable cannons
-    case 160: // Strand of the Ancients
-    case 244: // Wintergrasp
-    case 510: // Isle of Conquest
-    case 452: // Isle of Conquest
-    case 543: // Isle of Conquest
-        getBase()->setControlled(true, UNIT_STATE_ROOTED);
-        // toDo
-        break;
-    case 335: // Salvaged Chopper
-    case 336: // Salvaged Siege Engine
-    case 338: // Salvaged Demolisher
-        // toDo
-        break;
-    default:
-        break;
+        case 160: // Strand of the Ancients
+        case 244: // Wintergrasp
+        case 510: // Isle of Conquest
+        case 452: // Isle of Conquest
+        case 543: // Isle of Conquest
+            getBase()->setControlled(true, UNIT_STATE_ROOTED);
+            getBase()->addSpellImmunity(SPELL_IMMUNITY_SLOW, true);
+            break;
+        case 335: // Salvaged Chopper
+        case 336: // Salvaged Siege Engine
+        case 338: // Salvaged Demolisher
+            /*
+            *   Not Supported atm
+            getBase()->addSpellImmunity(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, false); // Battering Ram
+            */
+            break;
+        default:
+            break;
     }
 }
 
@@ -271,7 +302,7 @@ SeatMap::const_iterator Vehicle::getNextEmptySeat(int8_t seatId, bool next) cons
             --seat;
         }
 
-        // Make sure we don't loop infinity
+        // Make sure we don't loop infinitly
         if (seat->first == seatId)
             return Seats.end();
     }
@@ -306,7 +337,7 @@ bool Vehicle::addPassenger(Unit* unit, int8_t seatId)
         if (seat == Seats.end()) // no available seat
             return false;
 
-        tryAddPassenger(unit, seat);
+        return tryAddPassenger(unit, seat);
     }
     else
     {
@@ -319,13 +350,13 @@ bool Vehicle::addPassenger(Unit* unit, int8_t seatId)
         {
             Unit* passenger = getBase()->GetMapMgrUnit(seat->second._passenger.guid);
             if (passenger)
-                passenger->exitVehicle();
+                passenger->callExitVehicle();
         }
 
-        tryAddPassenger(unit, seat);
+        return tryAddPassenger(unit, seat);
     }
 
-    return true;
+    return false;
 }
 
 Vehicle* Vehicle::removePassenger(Unit* unit)
@@ -485,7 +516,7 @@ SeatMap::iterator Vehicle::getSeatIteratorForPassenger(Unit* passenger)
 
 uint8_t Vehicle::getAvailableSeatCount() const
 {
-    uint8 ret = 0;
+    uint8_t ret = 0;
     SeatMap::const_iterator itr;
     for (itr = Seats.begin(); itr != Seats.end(); ++itr)
         if (itr->second.isEmpty() && (itr->second._seatInfo->canEnterOrExit() || itr->second._seatInfo->isUsableByOverride()))
@@ -499,12 +530,12 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
     if (!passenger->IsInWorld() || !getBase()->IsInWorld())
         return false;
 
-    // Passenger might've died in the meantime - abort if this is the case
+    // Passenger might've died in the meantime
     if (!passenger->isAlive())
         return false;
 
     if (passenger->getVehicle())
-        passenger->exitVehicle();
+        passenger->callExitVehicle();
 
     passenger->setVehicle(this);
     Seat->second._passenger.guid = passenger->getGuid();

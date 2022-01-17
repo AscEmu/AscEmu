@@ -6967,37 +6967,6 @@ bool Unit::isLootable()
 //////////////////////////////////////////////////////////////////////////////////////////
 // Vehicle
 
-void Unit::sendHopOnVehicle(Unit* vehicleOwner, uint32_t seat)
-{
-    SendMessageToSet(SmsgMonsterMoveTransport(GetNewGUID(), vehicleOwner->GetNewGUID(), static_cast<uint8_t>(seat), GetPosition()).serialise().get(), true);
-}
-
-void Unit::sendHopOffVehicle(Unit* vehicleOwner, LocationVector& /*landPosition*/)
-{
-    WorldPacket data(SMSG_MONSTER_MOVE, 1 + 12 + 4 + 1 + 4 + 4 + 4 + 12 + 8);
-    data << GetNewGUID();
-
-    if (isPlayer())
-        data << uint8(1);
-    else
-        data << uint8(0);
-
-    data << float(GetPositionX());
-    data << float(GetPositionY());
-    data << float(GetPositionZ());
-    data << uint32(Util::getMSTime());
-    data << uint8(4);                            // SPLINETYPE_FACING_ANGLE
-    data << float(GetOrientation());             // guess
-    data << uint32(0x01000000);                  // SPLINEFLAG_EXIT_VEHICLE
-    data << uint32(0);                           // Time in between points
-    data << uint32(1);                           // 1 single waypoint
-    data << float(vehicleOwner->GetPositionX());
-    data << float(vehicleOwner->GetPositionY());
-    data << float(vehicleOwner->GetPositionZ());
-
-    SendMessageToSet(&data, true);
-}
-
 bool Unit::createVehicleKit(uint32_t id, uint32_t creatureEntry)
 {
     auto vehInfo = sVehicleStore.LookupEntry(id);
@@ -7147,23 +7116,23 @@ bool SpellClickInfo::isFitToRequirements(Unit* clicker, Unit* clickee)
     // This only applies to players
     switch (userType)
     {
-    case SPELL_CLICK_USER_FRIEND:
-        if (!isFriendly(playerClicker, summoner))
-            return false;
-        break;
-    case SPELL_CLICK_USER_RAID:
-    case SPELL_CLICK_USER_PARTY:
-        if (!playerClicker->getGroup()->GetID() == summoner->ToPlayer()->getGroup()->GetID())
-            return false;
-        break;
-    default:
-        break;
+        case SPELL_CLICK_USER_FRIEND:
+            if (!isFriendly(playerClicker, summoner))
+                return false;
+            break;
+        case SPELL_CLICK_USER_RAID:
+        case SPELL_CLICK_USER_PARTY:
+            if (!playerClicker->getGroup()->GetID() == summoner->ToPlayer()->getGroup()->GetID())
+                return false;
+            break;
+        default:
+            break;
     }
 
     return true;
 }
 
-void Unit::enterVehicle(Unit* base, int8_t seatId /*= -1*/)
+void Unit::callEnterVehicle(Unit* base, int8_t seatId /*= -1*/)
 {
     /*
     *   VEHICLE_SPELL_RIDE_HARDCODED gets Casted on the Target
@@ -7186,7 +7155,7 @@ void Unit::_enterVehicle(Vehicle* vehicle, int8_t seatId)
     {
         if (m_vehicle != vehicle)
         {
-            exitVehicle();
+            callExitVehicle();
         }
         else if (seatId >= 0 && seatId == GetTransSeat())
         {
@@ -7228,7 +7197,7 @@ void Unit::_enterVehicle(Vehicle* vehicle, int8_t seatId)
     }
 }
 
-void Unit::changeSeat(int8_t seatId, bool next)
+void Unit::callChangeSeat(int8_t seatId, bool next)
 {
     if (!m_vehicle)
         return;
@@ -7272,7 +7241,7 @@ void Unit::changeSeat(int8_t seatId, bool next)
     }
 }
 
-void Unit::exitVehicle(LocationVector const* /*exitPosition*/)
+void Unit::callExitVehicle(LocationVector const* /*exitPosition*/)
 {
     /*
     *   VEHICLE_SPELL_RIDE_HARDCODED gets Casted on the Target

@@ -36,7 +36,7 @@ bool ChatHandler::HandleVehicleEjectPassengerCommand(const char* args, WorldSess
     if (u->getVehicleKit())
     {
         if (Unit* passenger = u->getVehicleKit()->getPassenger(seat))
-            passenger->exitVehicle();
+            passenger->callExitVehicle();
     }
     return true;
 }
@@ -131,6 +131,6 @@ bool ChatHandler::HandleVehicleAddPassengerCommand(const char* args, WorldSessio
     Creature* c = u->GetMapMgr()->CreateCreature(creature_entry);
     c->Load(cp, u->GetPositionX(), u->GetPositionY(), u->GetPositionZ(), u->GetOrientation());
     c->PushToWorld(u->GetMapMgr());
-    c->enterVehicle(u);
+    c->callEnterVehicle(u);
     return true;
 }

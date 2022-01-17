@@ -145,7 +145,6 @@ public:
     uint8_t getAvailableSeatCount() const;
 
     bool addPassenger(Unit* passenger, int8_t seatId = -1);
-    bool tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat);
     Vehicle* removePassenger(Unit* passenger);
     void movePassengers(float x, float y, float z, float o);
     void relocatePassengers();
@@ -168,6 +167,7 @@ protected:
 private:
     SeatMap::iterator getSeatIteratorForPassenger(Unit* passenger);
     void initMovementInfoForBase();
+    bool tryAddPassenger(Unit* passenger, SeatMap::iterator& Seat);
 
         /// This method transforms supplied transport offsets into global coordinates
         void CalculatePassengerPosition(float& x, float& y, float& z, float* o /*= nullptr*/) const override

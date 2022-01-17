@@ -8202,10 +8202,13 @@ void Unit::OnPushToWorld()
 
 #if VERSION_STRING >= WotLK
     if (isVehicle())
-        getVehicleKit()->install();
-
-    if (getVehicleKit() != nullptr)
-        getVehicleKit()->installAllAccessories(false);
+    {
+        if (getVehicleKit() != nullptr)
+        {
+            getVehicleKit()->install();
+            getVehicleKit()->installAllAccessories(false);
+        }
+    }
 
     m_zAxisPosition = 0.0f;
 #endif
@@ -8216,16 +8219,6 @@ void Unit::OnPushToWorld()
 //! Remove Unit from world
 void Unit::RemoveFromWorld(bool free_guid)
 {
-    /*
-    if (getVehicleKit() != NULL)
-        getVehicleKit()->EjectPassenger(this);
-
-    if (getVehicle() != NULL)
-    {
-        getVehicle()->RemoveAccessories();
-        getVehicle()->EjectAllPassengers();
-    }*/
-
     removeVehicleKit();
 
     removeAllFollowers();
