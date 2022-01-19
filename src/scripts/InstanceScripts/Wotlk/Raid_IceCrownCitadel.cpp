@@ -3601,7 +3601,7 @@ void updateBloodPowerAura(Aura* aur, int32_t value)
         aurEff->setEffectBaseDamage(value);
     }
 
-    aur->refresh();
+    aur->refreshOrModifyStack();
 }
 
 class DeathbringerSaurfangAI : public CreatureAIScript

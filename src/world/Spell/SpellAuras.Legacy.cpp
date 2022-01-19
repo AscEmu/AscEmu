@@ -1376,7 +1376,7 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
             {
                 // Spell Overkill - in stealth and 20 seconds after stealth +30% energy regeneration - -1 duration => hacky infinity
                 buff->setMaxDuration(-1);
-                buff->refresh();
+                buff->refreshOrModifyStack();
             }
             else
                 m_target->castSpell(m_target, 58427, true);
@@ -1628,7 +1628,7 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
                         if (tmp_duration != 0)
                         {
                             m_target->m_auras[x]->setTimeLeft(tmp_duration);
-                            m_target->m_auras[x]->refresh();
+                            m_target->m_auras[x]->refreshOrModifyStack();
 
                             sEventMgr.ModifyEventTimeLeft(m_target->m_auras[x], EVENT_AURA_REMOVE, tmp_duration);
                             sEventMgr.AddEvent(m_target->m_auras[x], &Aura::removeAura, AURA_REMOVE_ON_EXPIRE, EVENT_AURA_REMOVE, tmp_duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);

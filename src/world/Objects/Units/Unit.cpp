@@ -4067,8 +4067,22 @@ void Unit::addAura(Aura* aur)
                 if (_aura->getCasterGuid() != aur->getCasterGuid())
                     continue;
 
-                // The auras are casted by same unit, refresh duration and apply new stack if stackable
-                _aura->refresh(false, 1);
+                // The auras are casted by same unit, reapply all effects
+                // Old aura will never have more effects than new aura and all effects have same indexes
+                // but old aura can have less effects if certain effects have been removed by i.e. pvp trinket
+                for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                {
+                    _aura->removeAuraEffect(i, true);
+
+                    // Do not add empty effects
+                    if (aur->getAuraEffect(i)->getAuraEffectType() == SPELL_AURA_NONE)
+                        continue;
+
+                    _aura->addAuraEffect(aur->getAuraEffect(i));
+                }
+
+                // Refresh duration and apply new stack if stackable
+                _aura->refreshOrModifyStack(false, 1);
 
                 deleteAur = true;
                 break;
@@ -7216,7 +7230,7 @@ void Unit::callChangeSeat(int8_t seatId, bool next)
                 aurEff->setEffectBaseDamage(seatId + 1);
         }
 
-        aur->refresh();
+        aur->refreshOrModifyStack();
         break;
     }
 }

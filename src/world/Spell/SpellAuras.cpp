@@ -107,15 +107,27 @@ void Aura::addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValu
     _calculateEffectAmplitude(effIndex);
 }
 
-void Aura::removeAuraEffect(uint8_t effIndex)
+void Aura::addAuraEffect(AuraEffectModifier const* auraEffect)
+{
+    if (auraEffect == nullptr)
+        return;
+
+    addAuraEffect(auraEffect->getAuraEffectType(), auraEffect->getEffectBaseDamage(), auraEffect->getEffectMiscValue(),
+        auraEffect->getEffectPercentModifier(), auraEffect->isEffectDamageStatic(), auraEffect->getEffectIndex());
+}
+
+void Aura::removeAuraEffect(uint8_t effIndex, bool reapplying/* = false*/)
 {
     if (effIndex >= MAX_SPELL_EFFECTS)
         return;
 
-    // Unapply the modifier
-    const auto scriptResult = sScriptMgr.callScriptedAuraBeforeAuraEffect(this, &m_auraEffects[effIndex], false);
-    if (scriptResult != SpellScriptExecuteState::EXECUTE_PREVENT)
-        (*this.*SpellAuraHandler[m_auraEffects[effIndex].getAuraEffectType()])(&m_auraEffects[effIndex], false);
+    if (!reapplying)
+    {
+        // Unapply the modifier
+        const auto scriptResult = sScriptMgr.callScriptedAuraBeforeAuraEffect(this, &m_auraEffects[effIndex], false);
+        if (scriptResult != SpellScriptExecuteState::EXECUTE_PREVENT)
+            (*this.*SpellAuraHandler[m_auraEffects[effIndex].getAuraEffectType()])(&m_auraEffects[effIndex], false);
+    }
 
     m_auraEffects[effIndex].setAuraEffectType(SPELL_AURA_NONE);
     m_auraEffects[effIndex].setEffectDamage(0.0f);
@@ -130,8 +142,11 @@ void Aura::removeAuraEffect(uint8_t effIndex)
     m_auraEffects[effIndex].setAura(nullptr);
     --m_auraEffectCount;
 
-    // Check aura effects on next update
-    m_checkAuraEffects = true;
+    if (!reapplying)
+    {
+        // Check aura effects on next update
+        m_checkAuraEffects = true;
+    }
 }
 
 uint8_t Aura::getAppliedEffectCount() const
@@ -404,7 +419,7 @@ uint16_t Aura::getPeriodicTickCountForEffect(uint8_t effIndex) const
     return std::max(static_cast<uint16_t>(1), static_cast<uint16_t>(getMaxDuration() / m_auraEffects[effIndex].getEffectAmplitude()));
 }
 
-void Aura::refresh([[maybe_unused]]bool saveMods/* = false*/, int16_t modifyStacks/* = 0*/)
+void Aura::refreshOrModifyStack([[maybe_unused]]bool saveMods/* = false*/, int16_t modifyStackAmount/* = 0*/)
 {
     int32_t maxStacks = getSpellInfo()->getMaxstack() == 0 ? 1 : static_cast<int32_t>(getSpellInfo()->getMaxstack());
 
@@ -414,9 +429,9 @@ void Aura::refresh([[maybe_unused]]bool saveMods/* = false*/, int16_t modifyStac
         maxStacks = 255;
 
     const auto curStackCount = getStackCount();
-    int32_t newStackCount = curStackCount + modifyStacks;
+    int32_t newStackCount = curStackCount + modifyStackAmount;
 
-    if (modifyStacks < 0)
+    if (modifyStackAmount < 0)
     {
         // If stack count reaches zero, remove aura
         if (newStackCount <= 0)
@@ -432,7 +447,7 @@ void Aura::refresh([[maybe_unused]]bool saveMods/* = false*/, int16_t modifyStac
 
         // Recalculate aura modifiers on reapply or when stack count increases
 #if VERSION_STRING < Cata
-        // Before cata, aura's crit chance, attack power bonus and damage bonuses (NYI) were saved on aura refresh
+        // Before cata, aura's crit chance, attack power bonus and damage bonuses (NYI) were saved on aura refresh in special situations
         if (!saveMods)
         {
             _calculateAttackPowerBonus();

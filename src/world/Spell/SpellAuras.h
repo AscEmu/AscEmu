@@ -160,7 +160,8 @@ class SERVER_DECL Aura : public EventableObject
         AuraEffectModifier* getModifiableAuraEffect(uint8_t effIndex);
         bool hasAuraEffect(AuraEffect auraEffect) const;
         void addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValue, float_t effectPctModifier, bool isStaticDamage, uint8_t effIndex);
-        void removeAuraEffect(uint8_t effIndex);
+        void addAuraEffect(AuraEffectModifier const* auraEffect);
+        void removeAuraEffect(uint8_t effIndex, bool reapplying = false);
         // Returns how many active aura effects the aura has
         uint8_t getAppliedEffectCount() const;
 
@@ -186,7 +187,10 @@ class SERVER_DECL Aura : public EventableObject
         // Does not return 0 to avoid division by zero
         // Returns 1 with permanent auras or with invalid effindex
         uint16_t getPeriodicTickCountForEffect(uint8_t effIndex) const;
-        void refresh([[maybe_unused]]bool saveMods = false, int16_t modifyStacks = 0);
+
+        // Refresh resets aura's duration and charges to max and recalculates modifiers
+        // Mods are saved only in special situations
+        void refreshOrModifyStack([[maybe_unused]]bool saveMods = false, int16_t modifyStackAmount = 0);
 
         uint8_t getStackCount() const;
         uint16_t getCharges() const;
