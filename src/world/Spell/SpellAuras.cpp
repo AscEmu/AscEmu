@@ -179,13 +179,6 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
     const auto caster = GetUnitCaster();
     if (caster != nullptr)
     {
-        // Remove attacker
-        if (caster != getOwner())
-        {
-            caster->m_combatStatusHandler.RemoveAttackTarget(getOwner());
-            getOwner()->m_combatStatusHandler.RemoveAttacker(caster, caster->getGuid());
-        }
-
         /**********************Cooldown**************************
         * this is only needed for some spells
         * for now only spells that have:
@@ -229,11 +222,6 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
             if (charm != nullptr && charm->getCreatedBySpellId() == getSpellInfo()->getId())
                 caster->UnPossess();
         }
-    }
-    else
-    {
-        // Remove attacker
-        getOwner()->m_combatStatusHandler.RemoveAttacker(nullptr, m_casterGuid);
     }
 
     // Remove aura from unit before removing modifiers

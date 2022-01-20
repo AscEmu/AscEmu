@@ -609,6 +609,9 @@ bool AIInterface::_enterEvadeMode()
     if (getUnit()->isInEvadeMode())
         return false;
 
+    if (getUnit()->isPet())
+        return false;
+
     if (!getUnit()->isAlive())
     {
         engagementOver();
@@ -628,6 +631,10 @@ void AIInterface::enterEvadeMode()
         return;
 
     setNoCallAssistance(false);
+
+    // Clear tagger on evade
+    // Reset it here instead of engagementOver so it's not called on unit death
+    m_Unit->setTaggerGuid(0);
 
     if (m_Unit->isAlive())
     {
@@ -1022,7 +1029,7 @@ void AIInterface::updateTargets(unsigned long time_passed)
             {
                 auto i2 = i++;
                 if ((*i2) == NULL || (*i2)->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
-                    !(*i2)->isAlive() || m_Unit->getDistanceSq((*i2)) >= 2500.0f || !(*i2)->m_combatStatusHandler.IsInCombat() || !((*i2)->m_phase & m_Unit->m_phase))
+                    !(*i2)->isAlive() || m_Unit->getDistanceSq((*i2)) >= 2500.0f || !(*i2)->getCombatHandler().isInCombat() || !((*i2)->m_phase & m_Unit->m_phase))
                 {
                     m_assistTargets.erase(i2);
                 }
@@ -1033,6 +1040,20 @@ void AIInterface::updateTargets(unsigned long time_passed)
     // set the target first
     if (getCurrentTarget())
     {
+        // can happen if target teleports to other map
+        if (!getCurrentTarget()->IsInWorld())
+        {
+            setCurrentTarget(nullptr);
+            return;
+        }
+
+        // If unit has target but does not have threat with it, evade
+        if (getUnit()->getThreatManager().canHaveThreatList() && !getUnit()->getThreatManager().isThreatenedBy(getCurrentTarget()))
+        {
+            enterEvadeMode();
+            return;
+        }
+
         if (getCurrentTarget()->isAlive())
         {
             if (getCurrentTarget()->GetInstanceID() == getUnit()->GetInstanceID())
@@ -2131,6 +2152,15 @@ void AIInterface::onHostileAction(Unit* pUnit, SpellInfo const* spellInfo/* = nu
     if (getUnit()->getThreatManager().canHaveThreatList())
         getUnit()->getThreatManager().addThreat(pUnit, 0.0f, spellInfo, true, ignoreThreatRedirects);
 
+    // Update combat for pure creatures only
+    if (getUnit()->getPlayerOwner() == nullptr)
+        getUnit()->getCombatHandler().onHostileAction(pUnit);
+
+    // Let players know that creature has aggroed them
+    // Pure creature targets do not need this
+    if (pUnit->isPlayer() || pUnit->getPlayerOwner() != nullptr)
+        pUnit->getCombatHandler().takeCombatAction(getUnit());
+
     // Send hostile action event if unit was already engaged
     // no need to send this if unit just started combat
     if (wasEngaged)
@@ -2336,7 +2366,6 @@ void AIInterface::eventDamageTaken(Unit* pUnit, uint32_t misc1)
     pUnit->RemoveAura(24575);
 
     CALL_SCRIPT_EVENT(m_Unit, OnDamageTaken)(pUnit, misc1);
-    pUnit->m_combatStatusHandler.OnDamageDealt(m_Unit);
 }
 
 void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
@@ -2452,7 +2481,8 @@ void AIInterface::engagementOver()
     m_fleeTimer.resetInterval(0);
     setCurrentAgent(AGENT_NULL);
 
-    m_Unit->m_combatStatusHandler.Vanished();
+    m_Unit->smsg_AttackStop(nullptr);
+
     m_Unit->getThreatManager().clearAllThreat();
     m_Unit->getThreatManager().removeMeFromThreatLists();
 
@@ -2559,7 +2589,7 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
 
         if (getUnit()->getSummonedByGuid())
         {
-            Unit* summoner = getUnit()->GetMapMgr()->GetUnit(getUnit()->getSummonedByGuid());
+            Unit* summoner = getUnit()->GetMapMgrUnit(getUnit()->getSummonedByGuid());
 
             if (summoner)
                 CALL_SCRIPT_EVENT(summoner, OnSummonDies)(m_Unit->ToCreature(), pUnit);
@@ -3856,7 +3886,7 @@ bool AIInterface::isValidUnitTarget(Object* pObject, TargetFilter pFilter, float
         // hostile/friendly
         if ((~pFilter & TargetFilter_Corpse) && (pFilter & TargetFilter_Friendly))
         {
-            if (!UnitTarget->m_combatStatusHandler.IsInCombat())
+            if (!UnitTarget->getCombatHandler().isInCombat())
                 return false; // not-in-combat targets if friendly
 
             if (isHostile(getUnit(), UnitTarget) || getUnit()->getThreatManager().getThreat(UnitTarget) > 0)

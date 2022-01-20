@@ -407,7 +407,7 @@ void ThreatManager::removeMeFromThreatLists()
     }
 }
 
-/*static*/ float ThreatManager::calculateModifiedThreat(float threat, Unit* victim, SpellInfo const* spell)
+/*static*/ float ThreatManager::calculateModifiedThreat(Unit* owner, float threat, Unit* victim, SpellInfo const* spell, Spell* castingSpell/* = nullptr*/)
 {
     // modifiers by spell
     if (spell)
@@ -416,6 +416,9 @@ void ThreatManager::removeMeFromThreatLists()
             if (spell->custom_ThreatForSpellCoef != 1.0f)
                 threat *= spell->custom_ThreatForSpellCoef;
     }
+
+    if (castingSpell != nullptr)
+        owner->applySpellModifiers(SPELLMOD_THREAT_REDUCED, &threat, castingSpell->getSpellInfo(), castingSpell);
 
     // modifiers by effect school
     ThreatManager const& victimMgr = victim->getThreatManager();
@@ -497,7 +500,7 @@ void ThreatManager::evaluateSuppressed(bool canExpire)
     }
 }
 
-void ThreatManager::addThreat(Unit* target, float amount, SpellInfo const* spell, bool ignoreModifiers, bool ignoreRedirects)
+void ThreatManager::addThreat(Unit* target, float amount, SpellInfo const* spell, bool ignoreModifiers, bool ignoreRedirects, Spell* castingSpell/* = nullptr*/)
 {
     // Can we even have a Threat List if not return
     if (!canHaveThreatList())
@@ -526,7 +529,7 @@ void ThreatManager::addThreat(Unit* target, float amount, SpellInfo const* spell
 
     // apply threat modifiers to the amount
     if (!ignoreModifiers)
-        amount = calculateModifiedThreat(amount, target, spell);
+        amount = calculateModifiedThreat(getOwner(), amount, target, spell, castingSpell);
 
     // if we're increasing threat, send some/all of it to redirection targets instead if applicable
     if (!ignoreRedirects && amount > 0.0f)

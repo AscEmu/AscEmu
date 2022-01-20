@@ -1197,7 +1197,7 @@ void Creature::RegenerateHealth()
     {
         amt = getMaxHealth() * 0.10f;
     }
-    else if (!m_combatStatusHandler.IsInCombat())
+    else if (!getCombatHandler().isInCombat())
     {
         // 25% of max health per tick
         amt = getMaxHealth() * 0.25f;
@@ -2243,9 +2243,6 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     smsg_AttackStop(this);
     setHealth(0);
 
-    // Wipe our attacker set on death
-    m_combatStatusHandler.Vanished();
-
     RemoveAllNonPersistentAuras();
 
     CALL_SCRIPT_EVENT(pAttacker, _internalOnTargetDied)(this);
@@ -2259,6 +2256,8 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     // Clear Threat
     getThreatManager().clearAllThreat();
     getThreatManager().removeMeFromThreatLists();
+
+    getCombatHandler().clearCombat();
 
     // Add Kills if Player is in Vehicle
     if (pAttacker->isVehicle())

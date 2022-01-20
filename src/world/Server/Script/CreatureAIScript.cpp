@@ -549,7 +549,7 @@ void CreatureAIScript::setCanEnterCombat(bool enterCombat)
 
 bool CreatureAIScript::_isInCombat()
 {
-    return _creature->m_combatStatusHandler.IsInCombat();
+    return _creature->getCombatHandler().isInCombat();
 }
 
 void CreatureAIScript::_delayNextAttack(uint32_t milliseconds)
@@ -1355,7 +1355,7 @@ bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, 
         // hostile/friendly
         if ((~pFilter & TargetFilter_Corpse) && (pFilter & TargetFilter_Friendly))
         {
-            if (!UnitTarget->m_combatStatusHandler.IsInCombat())
+            if (!UnitTarget->getCombatHandler().isInCombat())
                 return false; // not-in-combat targets if friendly
 
             if (isHostile(getCreature(), UnitTarget) || getCreature()->getThreatManager().getThreat(UnitTarget) > 0)

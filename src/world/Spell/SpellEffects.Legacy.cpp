@@ -6250,7 +6250,7 @@ void Spell::SpellEffectActivateSpec(uint8_t /*effectIndex*/)
     if (p_caster == nullptr)
         return;
 
-    if (p_caster->m_combatStatusHandler.IsInCombat())
+    if (p_caster->getCombatHandler().isInCombat())
     {
         sendCastResult(SPELL_FAILED_AFFECTING_COMBAT);
         return;

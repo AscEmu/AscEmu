@@ -3,6 +3,8 @@
 set(PATH_PREFIX Objects/Units)
 
 set(SRC_UNITS_FILES
+    ${PATH_PREFIX}/CombatHandler.cpp
+    ${PATH_PREFIX}/CombatHandler.hpp
     ${PATH_PREFIX}/Stats.cpp
     ${PATH_PREFIX}/Stats.h
     ${PATH_PREFIX}/Unit.cpp

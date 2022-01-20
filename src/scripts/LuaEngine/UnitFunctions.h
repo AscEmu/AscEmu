@@ -401,7 +401,7 @@ public:
     {
         TEST_UNIT()
         // If Pointer isn't in combat skip everything
-        if (!ptr->m_combatStatusHandler.IsInCombat())
+        if (!ptr->getCombatHandler().isInCombat())
             return 0;
 
         Unit* pTarget = ptr->getAIInterface()->getCurrentTarget();
@@ -756,7 +756,7 @@ public:
     {
         if (ptr == nullptr || !ptr->IsInWorld())
             RET_NIL()
-            if (ptr->m_combatStatusHandler.IsInCombat())
+            if (ptr->getCombatHandler().isInCombat())
                 lua_pushboolean(L, 1);
             else
                 lua_pushboolean(L, 0);
@@ -1251,21 +1251,6 @@ public:
         TEST_PLAYER()
         uint32_t itemid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         lua_pushinteger(L, static_cast<Player*>(ptr)->getItemInterface()->GetItemCount(itemid, false));
-        return 1;
-    }
-
-    static int GetPrimaryCombatTarget(lua_State* L, Unit* ptr)
-    {
-        TEST_PLAYER()
-
-        if (!ptr->m_combatStatusHandler.IsInCombat())
-        {
-            lua_pushinteger(L, 0);
-            return 1;
-        }
-
-        PUSH_UNIT(L, ptr->GetMapMgr()->GetUnit(dynamic_cast<Player*>(ptr)->m_combatStatusHandler.GetPrimaryAttackTarget()));
-
         return 1;
     }
 

@@ -340,7 +340,6 @@ RegType<Unit> UnitMethods[] =
     { "PhaseDelete", &LuaUnit::PhaseDelete},
     { "GetPhase", &LuaUnit::GetPhase},
     { "AggroWithInRangeFriends", &LuaUnit::AggroWithInRangeFriends},
-    { "GetPrimaryCombatTarget", &LuaUnit::GetPrimaryCombatTarget},
     { "MoveRandomArea", &LuaUnit::MoveRandomArea},
     { "SendLootWindow", &LuaUnit::SendLootWindow},
     { "AddLoot", &LuaUnit::AddLoot},
