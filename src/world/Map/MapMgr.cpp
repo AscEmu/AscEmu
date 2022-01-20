@@ -1174,8 +1174,11 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
             else
             {
                 //Cell is now active
-                if (_CellActive(posX, posY) && !objCell->IsActive())
+                if (_CellActive(posX, posY) && (!objCell->IsActive() || (objCell->IsActive() && objCell->isIdlePending())))
                 {
+                    if (objCell->isIdlePending())
+                        objCell->cancelPendingIdle();
+
                     sLogger.debug("Cell [%u,%u] on map %u (instance %u) is now active.", posX, posY, this->_mapId, m_instanceID);
 
                     _terrain->LoadTile((int32)posX / 8, (int32)posY / 8);
@@ -1190,12 +1193,9 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
                     }
                 }
                 //Cell is no longer active
-                else if (!_CellActive(posX, posY) && objCell->IsActive())
+                else if (!_CellActive(posX, posY) && objCell->IsActive() && !objCell->isIdlePending())
                 {
-                    sLogger.debug("Cell [%u,%u] on map %u (instance %u) is now idle.", posX, posY, _mapId, m_instanceID);
-                    objCell->SetActivity(false);
-
-                    _terrain->UnloadTile((int32)posX / 8, (int32)posY / 8);
+                    objCell->scheduleCellIdleState();
                 }
             }
         }
@@ -1954,6 +1954,14 @@ void MapMgr::UnloadCell(uint32 x, uint32 y)
     sLogger.debug("Unloading Cell [%u][%u] on map %u (instance %u)...", x, y, _mapId, m_instanceID);
 
     c->Unload();
+}
+
+void MapMgr::setCellIdle(uint16_t x, uint16_t y, MapCell* cell)
+{
+    sLogger.debug("Cell [%u,%u] on map %u (instance %u) is now idle.", x, y, _mapId, m_instanceID);
+    cell->SetActivity(false);
+
+    _terrain->UnloadTile(static_cast<int32_t>(x) / 8, static_cast<int32_t>(y) / 8);
 }
 
 void MapMgr::EventRespawnCreature(Creature* c, uint16 x, uint16 y)

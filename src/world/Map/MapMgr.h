@@ -221,6 +221,7 @@ public:
     uint8 iInstanceMode;
 
     void UnloadCell(uint32 x, uint32 y);
+    void setCellIdle(uint16_t x, uint16_t y, MapCell* cell);
     void EventRespawnCreature(Creature* c, uint16 x, uint16 y);
     void EventRespawnGameObject(GameObject* o, uint16 x, uint16 y);
     void SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint32 cell_radius, uint32 langpos, int32 lang, WorldSession* originator);
