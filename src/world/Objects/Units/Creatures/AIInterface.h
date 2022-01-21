@@ -696,5 +696,6 @@ protected:
     bool m_cannotReachTarget;
     SmallTimeTracker m_noTargetTimer;
     SmallTimeTracker m_cannotReachTimer;
-    SmallTimeTracker m_updateTargetsTimer;
+    SmallTimeTracker m_updateTargetTimer;
+    SmallTimeTracker m_updateCreatureTargetTimer;
 };

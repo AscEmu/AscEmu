@@ -578,10 +578,14 @@ void Unit::Update(unsigned long time_passed)
         }
 #endif
 
-        if (m_aiInterface != NULL)
+        if (m_aiInterface != NULL && m_useAI)
         {
-            if (m_useAI)
-                m_aiInterface->Update(time_passed);
+            diff = msTime - m_lastAiInterfaceUpdateTime;
+            if (diff >= 100)
+            {
+                m_aiInterface->Update(diff);
+                m_lastAiInterfaceUpdateTime = msTime;
+            }
         }
         getThreatManager().update(time_passed);
         getCombatHandler().updateCombat(msTime);

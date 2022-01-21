@@ -320,7 +320,7 @@ public:
     bool hasUnitFlags(uint32_t unitFlags) const;
 
     // helper
-    bool isInCombat() const { return hasUnitFlags(UNIT_FLAG_COMBAT); }
+    bool isInCombat() const { return getCombatHandler().isInCombat(); }
     virtual bool canSwim();
 
 #if VERSION_STRING > Classic
@@ -693,6 +693,7 @@ public:
 protected:
     AIInterface* m_aiInterface;
     bool m_useAI = false;
+    uint32_t m_lastAiInterfaceUpdateTime = 0;
 
 public:
     AIInterface* getAIInterface() const { return m_aiInterface; }
