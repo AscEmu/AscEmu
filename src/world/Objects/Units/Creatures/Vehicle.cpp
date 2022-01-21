@@ -19,6 +19,50 @@ This file is released under the MIT license. See README-MIT for more information
 
 Vehicle::Vehicle(Unit* unit, DBC::Structures::VehicleEntry const* vehInfo, uint32_t creatureEntry) :
     usableSeatNum(0), _owner(unit), _vehicleInfo(vehInfo), _creatureEntry(creatureEntry), _status(STATUS_NONE), _lastShootPos()
+{}
+
+Vehicle::~Vehicle()
+{
+    if (_status == STATUS_DEACTIVATED)
+    {
+        for (SeatMap::const_iterator itr = Seats.begin(); itr != Seats.end(); ++itr)
+            if (!itr->second.isEmpty())
+                sLogger.failure("Vehicle is not Empty");
+    }
+    else
+        sLogger.failure("Vehicle Accessory Status is not on STATUS_DEACTIVATED");
+}
+
+void Vehicle::initialize()
+{
+    // Initialize our Vehicle
+    initSeats();
+    initVehiclePowerTypes();
+    initMovementFlags();
+    applyAllImmunities();
+    
+    // Script Hooks
+    CALL_SCRIPT_EVENT(getBase(), OnVehicleInitialize());
+
+    _status = STATUS_INITALIZED;
+}
+
+void Vehicle::deactivate()
+{
+    if (_status == STATUS_DEACTIVATED && !getBase()->hasUnitStateFlag(UNIT_STATE_ACCESSORY))
+    {
+        sLogger.failure("Vehicle %s attempts to deactivate, but already has STATUS_DEACTIVATED! ", getBase()->getGuid());
+        return;
+    }
+
+    _status = STATUS_DEACTIVATED;
+    removeAllPassengers();
+
+    // Script Hooks
+    CALL_SCRIPT_EVENT(getBase(), OnVehicleDeactivate());
+}
+
+void Vehicle::initSeats()
 {
     for (uint32_t i = 0; i < MAX_VEHICLE_SEATS; ++i)
     {
@@ -32,15 +76,32 @@ Vehicle::Vehicle(Unit* unit, DBC::Structures::VehicleEntry const* vehInfo, uint3
             }
     }
 
-    // Set or remove correct flags based on available seats. Will overwrite db data (if wrong).
+    // Set correct Flags to make the Vehicle clickable dependant on if its a Player or a Creature
+    // to prevent any mistakes overwrited Database Data
     if (usableSeatNum)
-        getBase()->setNpcFlags((getBase()->getObjectTypeId() == TYPEID_PLAYER ? UNIT_NPC_FLAG_PLAYER_VEHICLE : UNIT_NPC_FLAG_SPELLCLICK));
+        getBase()->setNpcFlags((getBase()->isPlayer() ? UNIT_NPC_FLAG_PLAYER_VEHICLE : UNIT_NPC_FLAG_SPELLCLICK));
     else
-        getBase()->removeNpcFlags((getBase()->getObjectTypeId() == TYPEID_PLAYER ? UNIT_NPC_FLAG_PLAYER_VEHICLE : UNIT_NPC_FLAG_SPELLCLICK));
+        getBase()->removeNpcFlags((getBase()->isPlayer() ? UNIT_NPC_FLAG_PLAYER_VEHICLE : UNIT_NPC_FLAG_SPELLCLICK));
+}
 
+void Vehicle::initMovementFlags()
+{
+    if (hasVehicleFlags(VEHICLE_FLAG_NO_STRAFE))
+        getBase()->addExtraUnitMovementFlag(MOVEFLAG2_NO_STRAFING);
+    if (hasVehicleFlags(VEHICLE_FLAG_NO_JUMPING))
+        getBase()->addExtraUnitMovementFlag(MOVEFLAG2_NO_JUMPING);
+    if (hasVehicleFlags(VEHICLE_FLAG_FULLSPEEDTURNING))
+        getBase()->addExtraUnitMovementFlag(MOVEFLAG2_FULLSPEED_TURNING);
+    if (hasVehicleFlags(VEHICLE_FLAG_ALLOW_PITCHING))
+        getBase()->addExtraUnitMovementFlag(MOVEFLAG2_ALLOW_PITCHING);
+    if (hasVehicleFlags(VEHICLE_FLAG_FULLSPEEDPITCHING))
+        getBase()->addExtraUnitMovementFlag(MOVEFLAG2_FULLSPEED_PITCHING);
+}
 
+void Vehicle::initVehiclePowerTypes()
+{
     // Set Correct Power Type
-    switch (vehInfo->powerType)
+    switch (_vehicleInfo->powerType)
     {
         case POWER_TYPE_STEAM:
         case POWER_TYPE_HEAT:
@@ -51,11 +112,12 @@ Vehicle::Vehicle(Unit* unit, DBC::Structures::VehicleEntry const* vehInfo, uint3
             _owner->setMaxPower(POWER_TYPE_ENERGY, 100);
             _owner->setPower(POWER_TYPE_ENERGY, 100);
             break;
-
         case POWER_TYPE_PYRITE:
             _owner->setPowerType(POWER_TYPE_ENERGY);
             _owner->setMaxPower(POWER_TYPE_ENERGY, 50);
             _owner->setPower(POWER_TYPE_ENERGY, 50);
+            break;
+        default:
             break;
     }
 
@@ -67,118 +129,15 @@ Vehicle::Vehicle(Unit* unit, DBC::Structures::VehicleEntry const* vehInfo, uint3
             getBase()->addNpcFlags(UNIT_NPC_FLAG_DISABLE_PWREGEN);
             break;
     }
-
-    initMovementInfoForBase();
-}
-
-void Vehicle::initMovementInfoForBase()
-{
-    uint32_t vehicleFlags = getVehicleInfo()->flags;
-
-    if (vehicleFlags & VEHICLE_FLAG_NO_STRAFE)
-        getBase()->addExtraUnitMovementFlag(MOVEFLAG2_NO_STRAFING);
-    if (vehicleFlags & VEHICLE_FLAG_NO_JUMPING)
-        getBase()->addExtraUnitMovementFlag(MOVEFLAG2_NO_JUMPING);
-    if (vehicleFlags & VEHICLE_FLAG_FULLSPEEDTURNING)
-        getBase()->addExtraUnitMovementFlag(MOVEFLAG2_FULLSPEED_TURNING);
-    if (vehicleFlags & VEHICLE_FLAG_ALLOW_PITCHING)
-        getBase()->addExtraUnitMovementFlag(MOVEFLAG2_ALLOW_PITCHING);
-    if (vehicleFlags & VEHICLE_FLAG_FULLSPEEDPITCHING)
-        getBase()->addExtraUnitMovementFlag(MOVEFLAG2_FULLSPEED_PITCHING);
-}
-
-Vehicle::~Vehicle()
-{
-    if (_status == STATUS_UNINSTALLING)
-    {
-        for (SeatMap::const_iterator itr = Seats.begin(); itr != Seats.end(); ++itr)
-            if (!itr->second.isEmpty())
-                sLogger.failure("Vehicle is not Empty");
-    }
-    else
-        sLogger.failure("Vehicle Accessory Status is not on STATUS_UNINSTALLING");
-}
-
-void Vehicle::install()
-{
-    _status = STATUS_INSTALLED;
-    if (getBase()->isCreature())
-    {
-        if (CreatureAIScript* ai = getBase()->ToCreature()->GetScript())
-        {
-            ai->OnInstall();
-        }
-    }
-}
-
-void Vehicle::uninstall()
-{
-    if (_status == STATUS_UNINSTALLING && !getBase()->hasUnitStateFlag(UNIT_STATE_ACCESSORY))
-    {
-        sLogger.failure("Vehicle %s attempts to uninstall, but already has STATUS_UNINSTALLING! ", getBase()->getGuid());
-        return;
-    }
-
-    _status = STATUS_UNINSTALLING;
-    removeAllPassengers();
-
-    if (getBase()->isCreature())
-    {
-        if (CreatureAIScript* ai = getBase()->ToCreature()->GetScript())
-        {
-            ai->OnUninstall();
-        }
-    }
-}
-
-void Vehicle::installAllAccessories(bool evading)
-{
-    if (getBase()->getObjectTypeId() == TYPEID_PLAYER || !evading)
-        removeAllPassengers();
-
-    VehicleAccessoryList const* accessories = sObjectMgr.getVehicleAccessories(this);
-    if (!accessories)
-        return;
-
-    for (VehicleAccessoryList::const_iterator itr = accessories->begin(); itr != accessories->end(); ++itr)
-        if (!evading || itr->isMinion)  // only install minions on evade mode
-            installAccessory(itr->accessoryEntry, itr->seatId, itr->isMinion, itr->summonedType, itr->summonTime);
-}
-
-void Vehicle::installAccessory(uint32_t entry, int8_t seatId, bool minion, uint8_t type, uint32_t summonTime)
-{
-    if (_status == STATUS_UNINSTALLING)
-    {
-        sLogger.failure("Vehicle (%s, Entry: %u) attempts to install accessory (Entry: %u) on seat %d with STATUS_UNINSTALLING! ", getBase()->getGuid(), getEntry(), entry, (int32_t)seatId);
-        return;
-    }
-
-    CreatureProperties const* cp = sMySQLStore.getCreatureProperties(entry);
-    if (cp == nullptr)
-        return;
-
-    Creature* accessory = getBase()->GetMapMgr()->CreateCreature(entry);
-    accessory->Load(cp, getBase()->GetPositionX(), getBase()->GetPositionY(), getBase()->GetPositionZ(), getBase()->GetOrientation());
-    accessory->setPhase(PHASE_SET, getBase()->GetPhase());
-    accessory->setFaction(getBase()->getFactionTemplate());
-    accessory->PushToWorld(getBase()->GetMapMgr());
-
-    accessory->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
-    accessory->addUnitMovementFlag(MOVEFLAG_TRANSPORT);
-
-    if (minion)
-        accessory->addUnitStateFlag(UNIT_STATE_ACCESSORY);
-
-    // Delay for a bit so Accessory has time to get Pushed to World
-    sEventMgr.AddEvent(getBase()->ToUnit(), &Unit::handleSpellClick, accessory->ToUnit(), seatId, 0, 50, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void Vehicle::applyAllImmunities()
 {
-    // Vehicles should be immune on Knockback ...
+    // Vehicles should be immune to Knockback effects
     getBase()->addSpellImmunity(SPELL_IMMUNITY_KNOCKBACK, true);
 
-    // Mechanical units & vehicles ( which are not Bosses, they SHOULD have own immunities in DATABASE ) should be also immune on healing ( exceptions in switch below )
+    // Mechanical units & vehicles (which are not Bosses) 
+    // should also be immune on healing ( exceptions in switch below )
     if (getBase()->ToCreature() && getBase()->ToCreature()->GetCreatureProperties()->Type == UNIT_TYPE_MECHANICAL && !getBase()->ToCreature()->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
     {
         //  Heal & dispel ...
@@ -204,19 +163,18 @@ void Vehicle::applyAllImmunities()
         //  getBase()->addSpellImmunity(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, true);
     }
 
-    // If vehicle flag for fixed position set (cannons), or if the following hardcoded units, then set state rooted
-    //  30236 | Argent Cannon
-    //  39759 | Tankbuster Cannon
-    if ((getVehicleInfo()->flags & VEHICLE_FLAG_FIXED_POSITION))
+    // When Flag VEHICLE_FLAG_FIXED_POSITION is set or one of the followed Hardcoded units is set then set them to rooted
+    if (hasVehicleFlags(VEHICLE_FLAG_FIXED_POSITION))
         getBase()->setControlled(true, UNIT_STATE_ROOTED);
 
     switch (getBase()->getEntry())
     {
-        case 30236:
-        case 39759:
+        case 30236: //  | Argent Cannon
+        case 39759: //  | Tankbuster Cannon
             getBase()->setControlled(true, UNIT_STATE_ROOTED);
-        break;
-
+            break;
+        default:
+            break;
     }
 
     // Different immunities for vehicles goes below
@@ -240,6 +198,48 @@ void Vehicle::applyAllImmunities()
         default:
             break;
     }
+}
+
+void Vehicle::loadAllAccessories(bool evading)
+{
+    if (getBase()->getObjectTypeId() == TYPEID_PLAYER || !evading)
+        removeAllPassengers();
+
+    VehicleAccessoryList const* accessories = sObjectMgr.getVehicleAccessories(this);
+    if (!accessories)
+        return;
+
+    for (VehicleAccessoryList::const_iterator itr = accessories->begin(); itr != accessories->end(); ++itr)
+        if (!evading || itr->isMinion)  // only install minions on evade mode
+            loadAccessory(itr->accessoryEntry, itr->seatId, itr->isMinion, itr->summonedType, itr->summonTime);
+}
+
+void Vehicle::loadAccessory(uint32_t entry, int8_t seatId, bool minion, uint8_t type, uint32_t summonTime)
+{
+    if (_status == STATUS_DEACTIVATED)
+    {
+        sLogger.failure("Vehicle (%s, Entry: %u) attempts to load accessory (Entry: %u) on seat %d with STATUS_DEACTIVATED! ", getBase()->getGuid(), getEntry(), entry, (int32_t)seatId);
+        return;
+    }
+
+    CreatureProperties const* cp = sMySQLStore.getCreatureProperties(entry);
+    if (cp == nullptr)
+        return;
+
+    Creature* accessory = getBase()->GetMapMgr()->CreateCreature(entry);
+    accessory->Load(cp, getBase()->GetPositionX(), getBase()->GetPositionY(), getBase()->GetPositionZ(), getBase()->GetOrientation());
+    accessory->setPhase(PHASE_SET, getBase()->GetPhase());
+    accessory->setFaction(getBase()->getFactionTemplate());
+    accessory->PushToWorld(getBase()->GetMapMgr());
+
+    accessory->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
+    accessory->addUnitMovementFlag(MOVEFLAG_TRANSPORT);
+
+    if (minion)
+        accessory->addUnitStateFlag(UNIT_STATE_ACCESSORY);
+
+    // Delay for a bit so Accessory has time to get Pushed to World
+    sEventMgr.AddEvent(getBase()->ToUnit(), &Unit::handleSpellClick, accessory->ToUnit(), seatId, 0, 50, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void Vehicle::removeAllPassengers()
@@ -326,20 +326,21 @@ VehicleSeatAddon const* Vehicle::getSeatAddonForSeatOfPassenger(Unit const* pass
 
 bool Vehicle::addPassenger(Unit* unit, int8_t seatId)
 {
-    if (_status == STATUS_UNINSTALLING)
+    if (_status == STATUS_DEACTIVATED)
     {
-        sLogger.failure("Passenger %s, attempting to board vehicle %s during uninstall! SeatId: %d", unit->getGuid(), getBase()->getGuidHigh(), (int32_t)seatId);
+        sLogger.failure("Passenger %s, attempting to board vehicle %s during deactivating! SeatId: %d", unit->getGuid(), getBase()->getGuidHigh(), (int32_t)seatId);
         return false;
     }
 
     SeatMap::iterator seat;
-    if (seatId < 0) // no specific seat requirement
+    if (seatId < 0)
     {
         for (seat = Seats.begin(); seat != Seats.end(); ++seat)
             if (seat->second.isEmpty() && (seat->second._seatInfo->canEnterOrExit() || seat->second._seatInfo->isUsableByOverride()))
                 break;
 
-        if (seat == Seats.end()) // no available seat
+        // no seat available
+        if (seat == Seats.end())
             return false;
 
         return tryAddPassenger(unit, seat);
@@ -423,13 +424,7 @@ Vehicle* Vehicle::removePassenger(Unit* unit)
         getBase()->castSpell(unit, VEHICLE_SPELL_PARACHUTE, true);
 
     // Script Hooks
-    if (getBase()->isCreature())
-    {
-        if (CreatureAIScript* ai = getBase()->ToCreature()->GetScript())
-        {
-            ai->OnRemovePassenger(unit);
-        }
-    }
+    CALL_SCRIPT_EVENT(getBase(), OnRemovePassenger(unit));
 
     unit->setVehicle(nullptr);
     return this;
@@ -520,7 +515,7 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
     if (!passenger->IsInWorld() || !getBase()->IsInWorld())
         return false;
 
-    // Passenger might've died in the meantime
+    // we cannot mount as a corpse
     if (!passenger->isAlive())
         return false;
 
@@ -626,16 +621,10 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
         threatRef->getOwner()->getThreatManager().addThreat(getBase(), threatRef->getThreat(), nullptr, true, true);
 
     // Script Hooks
-    if (getBase()->isCreature())
-    {
-        if (CreatureAIScript* ai = getBase()->ToCreature()->GetScript())
-        {
-            ai->OnAddPassenger(passenger, Seat->first);
+    CALL_SCRIPT_EVENT(getBase(), OnAddPassenger(passenger, Seat->first));
 
-            if (passenger->hasUnitStateFlag(UNIT_STATE_ACCESSORY))
-                ai->OnInstallAccessory(passenger->ToCreature());
-        }
-    }
+    if (passenger->hasUnitStateFlag(UNIT_STATE_ACCESSORY))
+        CALL_SCRIPT_EVENT(getBase(), OnInstallAccessory(passenger->ToCreature()));
 
     return true;
 }

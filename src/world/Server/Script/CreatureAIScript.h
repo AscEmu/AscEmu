@@ -132,8 +132,8 @@ public:
 
     // Vehicles
     virtual void OnSpellClick(Unit* /*_clicker*/, bool /*spellClickHandled*/) { }
-    virtual void OnInstall() { }
-    virtual void OnUninstall() { }
+    virtual void OnVehicleInitialize() { }
+    virtual void OnVehicleDeactivate() { }
     virtual void OnInstallAccessory(Creature* /*_accessory*/) { }
     virtual void OnAddPassenger(Unit* /*_passenger*/, int8_t /*_seatId*/) { }
     virtual void OnRemovePassenger(Unit* /*_passenger*/) { }

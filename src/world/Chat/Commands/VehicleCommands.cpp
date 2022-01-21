@@ -86,7 +86,7 @@ bool ChatHandler::HandleVehicleInstallAccessoriesCommand(const char* /*args*/, W
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    u->getVehicleKit()->installAllAccessories(false);
+    u->getVehicleKit()->loadAllAccessories(false);
     return true;
 }
 

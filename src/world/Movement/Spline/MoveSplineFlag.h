@@ -162,7 +162,7 @@ public:
     };
 
     inline uint32_t& raw() { return (uint32_t&)*this; }
-    inline uint32 const& raw() const { return (uint32_t const&)*this; }
+    inline uint32_t const& raw() const { return (uint32_t const&)*this; }
 
     MoveSplineFlag() { raw() = 0; }
     MoveSplineFlag(uint32_t f) { raw() = f; }

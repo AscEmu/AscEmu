@@ -197,14 +197,14 @@ void WorldSession::handleRemoveVehiclePassenger(WorldPacket& recvPacket)
         return;
 
     const auto passengerUnit = _player->GetMapMgr()->GetUnit(srlPacket.guid);
-    if(!passengerUnit)
+    if (!passengerUnit)
         return;
 
     if (!passengerUnit->isOnVehicle(vehicle->getBase()))
         return;
 
     auto seat = vehicle->getSeatForPassenger(passengerUnit);
-    if(seat)
+    if (seat)
         if (seat->isEjectable())
             passengerUnit->callExitVehicle();
 }

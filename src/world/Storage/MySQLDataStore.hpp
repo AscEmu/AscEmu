@@ -67,7 +67,7 @@ public:
     typedef std::unordered_map<uint32_t, MySQLStructure::ZoneGuards> ZoneGuardsContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::Battlemasters> BattleMastersContainer;
     typedef std::vector<MySQLStructure::TotemDisplayIds> TotemDisplayIdContainer;
-    typedef std::unordered_map<uint32, SpellClickInfo> SpellClickInfoContainer;
+    typedef std::unordered_map<uint32_t, SpellClickInfo> SpellClickInfoContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::WorldStringTable> WorldStringContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::PointsOfInterest> PointsOfInterestContainer;
 

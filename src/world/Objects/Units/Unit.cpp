@@ -7016,7 +7016,7 @@ void Unit::removeVehicleKit()
     if (!m_vehicleKit)
         return;
 
-    m_vehicleKit->uninstall();
+    m_vehicleKit->deactivate();
     delete m_vehicleKit;
 
     m_vehicleKit = nullptr;
@@ -7066,7 +7066,7 @@ void Unit::handleSpellClick(Unit* clicker, int8_t seatId /*= -1*/)
     uint32_t spellClickEntry = getVehicleKit() ? getVehicleKit()->getEntry() : getEntry();
     
     std::vector<SpellClickInfo> clickBounds = sMySQLStore.getSpellClickInfo(spellClickEntry);
-    for (auto clickPair : clickBounds)
+    for (const auto& clickPair : clickBounds)
     {
             // First check simple relations from clicker to clickee
             if (!clickPair.isFitToRequirements(clicker, this))
@@ -7274,7 +7274,9 @@ void Unit::exitVehicle(LocationVector const* exitPosition)
     LocationVector pos;
     // If we ask for a specific exit position, use that one. Otherwise allow scripts to modify it
     if (exitPosition)
+    {
         pos = *exitPosition;
+    }
     else
     {
         // Set exit position to vehicle position and use the current orientation
@@ -7329,7 +7331,7 @@ void Unit::handleSpellClick(Unit* clicker)
     uint32_t spellClickEntry = getEntry();
 
     std::vector<SpellClickInfo> clickBounds = sMySQLStore.getSpellClickInfo(spellClickEntry);
-    for (auto clickPair : clickBounds)
+    for (const auto& clickPair : clickBounds)
     {
         //! First check simple relations from clicker to clickee
         if (!clickPair.isFitToRequirements(clicker, this))

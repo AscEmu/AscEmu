@@ -3877,7 +3877,7 @@ void Object::SendMessageToSet(WorldPacket* data, bool /*bToSelf*/, bool /*myteam
     if (!IsInWorld())
         return;
 
-    uint32 myphase = GetPhase();
+    uint32_t myphase = GetPhase();
     for (const auto& itr : mInRangePlayersSet)
     {
         if (itr && (itr->GetPhase() & myphase) != 0)
@@ -3890,7 +3890,7 @@ void Object::SendMessageToSet(WorldPacket* data, Player const* skipp)
     if (!IsInWorld())
         return;
 
-    uint32 myphase = GetPhase();
+    uint32_t myphase = GetPhase();
     for (const auto& itr : mInRangePlayersSet)
     {
         if (itr && (itr->GetPhase() & myphase) != 0 && itr != skipp)
@@ -3900,7 +3900,7 @@ void Object::SendMessageToSet(WorldPacket* data, Player const* skipp)
 
 void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId, Unit* target/* = nullptr*/)
 {
-    uint32 myphase = GetPhase();
+    uint32_t myphase = GetPhase();
     for (const auto& itr : mInRangePlayersSet)
     {
         Object* object = itr;

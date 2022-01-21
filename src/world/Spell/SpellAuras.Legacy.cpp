@@ -3179,7 +3179,7 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
                 p_target->SendPacket(SmsgControlVehicle().serialise().get());
 
                 // mounts can also have accessories
-                p_target->getVehicleKit()->installAllAccessories(false);
+                p_target->getVehicleKit()->loadAllAccessories(false);
             }
 #endif
         }

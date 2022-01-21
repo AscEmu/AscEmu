@@ -8205,8 +8205,8 @@ void Unit::OnPushToWorld()
     {
         if (getVehicleKit() != nullptr)
         {
-            getVehicleKit()->install();
-            getVehicleKit()->installAllAccessories(false);
+            getVehicleKit()->initialize();
+            getVehicleKit()->loadAllAccessories(false);
         }
     }
 

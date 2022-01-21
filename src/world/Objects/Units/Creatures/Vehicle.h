@@ -12,9 +12,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 enum VehicleStatus
 {
-    STATUS_NONE             = 0,
-    STATUS_INSTALLED        = 1,
-    STATUS_UNINSTALLING     = 2
+    STATUS_NONE                     = 0,
+    STATUS_INITALIZED               = 1,
+    STATUS_DEACTIVATED              = 2
 };
 
 enum VehicleFlags
@@ -32,8 +32,8 @@ enum VehicleFlags
 
 enum VehicleSpells
 {
-    VEHICLE_SPELL_RIDE_HARDCODED = 46598,
-    VEHICLE_SPELL_PARACHUTE = 45472
+    VEHICLE_SPELL_RIDE_HARDCODED    = 46598,
+    VEHICLE_SPELL_PARACHUTE         = 45472
 };
 
 enum class VehicleExitParameters
@@ -129,11 +129,10 @@ protected:
         ~Vehicle();
 
 public:
-    void install();
-    void uninstall();
-    void installAllAccessories(bool evading);
-    void installAccessory(uint32_t entry, int8_t seatId, bool minion, uint8_t type, uint32_t summonTime);
-    void applyAllImmunities();
+    void initialize();
+    void deactivate();
+    void loadAllAccessories(bool evading);
+    void loadAccessory(uint32_t entry, int8_t seatId, bool minion, uint8_t type, uint32_t summonTime);
 
     Unit* getBase() const { return _owner; }
     DBC::Structures::VehicleEntry const* getVehicleInfo() const { return _vehicleInfo; }
@@ -162,13 +161,18 @@ public:
     DBC::Structures::VehicleSeatEntry const* getSeatForPassenger(Unit const* passenger) const;
     int8_t getSeatForNumberPassenger(Unit const* passenger) const;
 
+    bool hasVehicleFlags(uint32_t flags) { return getVehicleInfo()->flags & flags; }
+
 protected:
-    friend class VehicleJoinEvent;
     uint32_t usableSeatNum;
 
 private:
     SeatMap::iterator getSeatIteratorForPassenger(Unit* passenger);
-    void initMovementInfoForBase();
+    void initSeats();
+    void initMovementFlags();
+    void initVehiclePowerTypes();
+    void applyAllImmunities();
+
     bool tryAddPassenger(Unit* passenger, SeatMap::iterator& Seat);
 
         /// This method transforms supplied transport offsets into global coordinates

@@ -30,7 +30,7 @@ class Unit;
 struct SERVER_DECL SpellClickInfo
 {
     // helpers
-    bool isFitToRequirements(Unit* clicker, Unit* clickee);
+    bool isFitToRequirements(Unit* clicker, Unit* clickee) const;
 
     uint32_t spellId;
     uint8_t castFlags;
