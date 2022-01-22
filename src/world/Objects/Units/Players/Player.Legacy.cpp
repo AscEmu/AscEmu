@@ -6090,7 +6090,7 @@ void Player::EndDuel(uint8 WinCondition)
     std::list<Pet*> summons = GetSummons();
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
     {
-        (*itr)->m_combatStatusHandler.Vanished();
+        (*itr)->getCombatHandler().clearCombat();
         (*itr)->getAIInterface()->setPetOwner(this);
         (*itr)->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, *itr, 0);
         (*itr)->getThreatManager().clearAllThreat();
@@ -6100,7 +6100,7 @@ void Player::EndDuel(uint8 WinCondition)
     std::list<Pet*> duelingWithSummons = DuelingWith->GetSummons();
     for (std::list<Pet*>::iterator itr = duelingWithSummons.begin(); itr != duelingWithSummons.end(); ++itr)
     {
-        (*itr)->m_combatStatusHandler.Vanished();
+        (*itr)->getCombatHandler().clearCombat();
         (*itr)->getAIInterface()->setPetOwner(this);
         (*itr)->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, *itr, 0);
         (*itr)->getThreatManager().clearAllThreat();
@@ -6839,7 +6839,6 @@ void Player::CompleteLoading()
     }
 
     sInstanceMgr.BuildSavedInstancesForPlayer(this);
-    m_combatStatusHandler.UpdateFlag();
 
 #if VERSION_STRING > TBC
     // add glyphs
@@ -7706,7 +7705,7 @@ void Player::RemoveShapeShiftSpell(uint32 id)
 // COOLDOWNS
 void Player::UpdatePotionCooldown()
 {
-    if (m_lastPotionId == 0 || m_combatStatusHandler.IsInCombat())
+    if (m_lastPotionId == 0 || getCombatHandler().isInCombat())
         return;
 
     if (ItemProperties const* proto = sMySQLStore.getItemProperties(m_lastPotionId))
@@ -8536,12 +8535,11 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         setMountDisplayId(0);
     }
 
-    // Wipe our attacker set on death
-    m_combatStatusHandler.Vanished();
-
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
     pAttacker->getAIInterface()->eventOnTargetDied(this);
     pAttacker->smsg_AttackStop(this);
+
+    getCombatHandler().clearCombat();
 
     m_underwaterTime = 0;
     m_underwaterState = 0;

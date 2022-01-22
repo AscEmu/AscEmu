@@ -68,7 +68,7 @@ class SERVER_DECL Spell
         void handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int32_t effDamage, bool reCheckTarget = false);
         // Handles missed targets and effects
         void handleMissedTarget(SpellTargetMod const missedTarget);
-        void handleMissedEffect(const uint64_t targetGuid);
+        void handleMissedEffect(SpellTargetMod const missedTarget, bool reCheckTarget = false);
         // Finishes the casted spell
         void finish(bool successful = true);
 
@@ -229,6 +229,12 @@ class SERVER_DECL Spell
             Aura* aur = nullptr;
         };
 
+        struct MissSpellEffect
+        {
+            uint32_t travelTime = 0;
+            SpellTargetMod missInfo = SpellTargetMod(0, SPELL_DID_HIT_SUCCESS, SPELL_DID_HIT_SUCCESS);
+        };
+
         bool canAttackCreatureType(Creature* target) const;
 
         // Removes used item and/or item charges
@@ -266,8 +272,7 @@ class SERVER_DECL Spell
 
         std::map<uint64_t, HitAuraEffect> m_pendingAuras;
         std::map<uint64_t, HitSpellEffect> m_hitEffects;
-        // <targetGuid, travelTime>
-        std::map<uint64_t, uint32_t> m_missEffects;
+        std::map<uint64_t, MissSpellEffect> m_missEffects;
         std::vector<uint64_t> m_critTargets;
 
         bool isForcedCrit = false;

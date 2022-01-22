@@ -80,6 +80,13 @@ enum HealthAndPowerIntervals : uint16_t
     CREATURE_REGENERATION_INTERVAL_MANA_ENERGY  = 2000
 };
 
+enum UnitBatchTimers : uint16_t
+{
+    COMBAT_BATCH_INTERVAL                       = 500,  // Combat batch timer
+    PVP_COMBAT_TIMER_PULSE                      = 2000, // How often pvp combat is updated
+    PVP_COMBAT_LEAVE_MIN_TIME                   = 4500, // Minimum timer player can leave pvp combat
+};
+
 enum PowerFieldIndexes : uint8_t
 {
     POWER_FIELD_INDEX_1 = 1,

@@ -147,8 +147,9 @@ AIInterface::AIInterface()
     m_fleeTimer.resetInterval(0);
     mSpellWaitTimer.resetInterval(1500);
     m_cannotReachTimer.resetInterval(500);
-    m_updateAssistTimer.resetInterval(1000);
-    m_updateTargetsTimer.resetInterval(TARGET_UPDATE_INTERVAL);
+    m_updateAssistTimer.resetInterval(1500);
+    m_updateTargetTimer.resetInterval(1500);
+    m_updateCreatureTargetTimer.resetInterval(TARGET_UPDATE_INTERVAL);
 };
 
 AIInterface::~AIInterface()
@@ -609,6 +610,9 @@ bool AIInterface::_enterEvadeMode()
     if (getUnit()->isInEvadeMode())
         return false;
 
+    if (getUnit()->isPet())
+        return false;
+
     if (!getUnit()->isAlive())
     {
         engagementOver();
@@ -628,6 +632,10 @@ void AIInterface::enterEvadeMode()
         return;
 
     setNoCallAssistance(false);
+
+    // Clear tagger on evade
+    // Reset it here instead of engagementOver so it's not called on unit death
+    m_Unit->setTaggerGuid(0);
 
     if (m_Unit->isAlive())
     {
@@ -665,8 +673,10 @@ void AIInterface::Update(unsigned long time_passed)
     UpdateAgent(time_passed);
 
     if (isEngaged() || getUnit()->isInCombat())
-        if(canUnitEvade(time_passed))
+    {
+        if (canUnitEvade(time_passed))
             enterEvadeMode();
+    }
 
     if (getUnit()->isCastingSpell() && !getUnit()->isInEvadeMode())
         setAiState(AI_STATE_CASTING);
@@ -678,33 +688,33 @@ void AIInterface::Update(unsigned long time_passed)
         // Handle Different Script Types
         switch (getAiScriptType())
         {
-        case AI_SCRIPT_LONER:
-            updateTargets(time_passed);
-            updateCombat(time_passed);
-            break;
-        case AI_SCRIPT_AGRO:
-            updateTargets(time_passed);
-            updateCombat(time_passed);
-            break;
-        case AI_SCRIPT_SOCIAL:
-            updateTargets(time_passed);
-            updateCombat(time_passed);
-            break;
-        case AI_SCRIPT_PET:
-            updateTargets(time_passed);
-            updateCombat(time_passed);
-            break;
-        case AI_SCRIPT_TOTEM:
-            updateTargets(time_passed);
-            updateTotem(time_passed);
-            break;
-        case AI_SCRIPT_GUARDIAN:
-            updateTargets(time_passed);
-            updateCombat(time_passed);
-            break;
-        case AI_SCRIPT_PASSIVE:
-            //Nothing here
-            break;
+            case AI_SCRIPT_LONER:
+                updateTargets(time_passed);
+                updateCombat(time_passed);
+                break;
+            case AI_SCRIPT_AGRO:
+                updateTargets(time_passed);
+                updateCombat(time_passed);
+                break;
+            case AI_SCRIPT_SOCIAL:
+                updateTargets(time_passed);
+                updateCombat(time_passed);
+                break;
+            case AI_SCRIPT_PET:
+                updateTargets(time_passed);
+                updateCombat(time_passed);
+                break;
+            case AI_SCRIPT_TOTEM:
+                updateTargets(time_passed);
+                updateTotem(time_passed);
+                break;
+            case AI_SCRIPT_GUARDIAN:
+                updateTargets(time_passed);
+                updateCombat(time_passed);
+                break;
+            case AI_SCRIPT_PASSIVE:
+                //Nothing here
+                break;
         }
     }
     else
@@ -989,42 +999,51 @@ void AIInterface::updateTargets(unsigned long time_passed)
     if (getUnit()->hasUnitStateFlag(UNIT_STATE_CONFUSED | UNIT_STATE_FLEEING))
         return;
 
-    //Find Target on Threat List
+    // Find Target on Threat List
     if (getUnit()->getThreatManager().getCurrentVictim())
         setCurrentTarget(getUnit()->getThreatManager().getCurrentVictim());
 
-    //Find Target when no Threat List is available
-    if (!getCurrentTarget() && !(isAiScriptType(AI_SCRIPT_PET)))
+    // Hostile NPCs look for attackable unit every 1.5s when out of combat
+    // When in combat they look for friendly units to assist it every 1.5s
+    // TODO: in instances mobs should keep looking for hostile targets even when in evade mode
+
+    // Find Target when no Threat List is available
+    if (!getCurrentTarget() &&
+        (!isAiScriptType(AI_SCRIPT_PET) || (isAiScriptType(AI_SCRIPT_PET) && m_Unit->isPet() && static_cast<Pet*>(m_Unit)->GetPetState() == PET_STATE_AGGRESSIVE)))
     {
-        m_updateTargetsTimer.updateTimer(time_passed);
-        setCurrentTarget(findTarget());
-    }
-    else if (!getCurrentTarget() && (isAiScriptType(AI_SCRIPT_PET) && (m_Unit->isPet() && static_cast<Pet*>(m_Unit)->GetPetState() == PET_STATE_AGGRESSIVE)))
-    {
-        m_updateTargetsTimer.updateTimer(time_passed);
-        setCurrentTarget(findTarget());
-    }
-
-    m_updateAssistTimer.updateTimer(time_passed);
-
-    // Find Assist Targets to assist us in our Fight
-    if (m_updateAssistTimer.isTimePassed())
-    {
-        m_updateAssistTimer.resetInterval(1000);
-
-        // find nearby allies
-        findAssistance();
-
-        // Clear Assist Targets
-        if (m_assistTargets.size())
+        m_updateTargetTimer.updateTimer(time_passed);
+        if (m_updateTargetTimer.isTimePassed())
         {
-            for (auto i = m_assistTargets.begin(); i != m_assistTargets.end();)
+            m_updateTargetTimer.resetInterval(1500);
+
+            m_updateCreatureTargetTimer.updateTimer(1500);
+            setCurrentTarget(findTarget());
+        }
+    }
+
+    if (isEngaged())
+    {
+        m_updateAssistTimer.updateTimer(time_passed);
+
+        // Find Assist Targets to assist us in our Fight
+        if (m_updateAssistTimer.isTimePassed())
+        {
+            m_updateAssistTimer.resetInterval(1500);
+
+            // find nearby allies
+            findAssistance();
+
+            // Clear Assist Targets
+            if (m_assistTargets.size())
             {
-                auto i2 = i++;
-                if ((*i2) == NULL || (*i2)->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
-                    !(*i2)->isAlive() || m_Unit->getDistanceSq((*i2)) >= 2500.0f || !(*i2)->m_combatStatusHandler.IsInCombat() || !((*i2)->m_phase & m_Unit->m_phase))
+                for (auto i = m_assistTargets.begin(); i != m_assistTargets.end();)
                 {
-                    m_assistTargets.erase(i2);
+                    auto i2 = i++;
+                    if ((*i2) == NULL || (*i2)->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
+                        !(*i2)->isAlive() || m_Unit->getDistanceSq((*i2)) >= 2500.0f || !(*i2)->getCombatHandler().isInCombat() || !((*i2)->m_phase & m_Unit->m_phase))
+                    {
+                        m_assistTargets.erase(i2);
+                    }
                 }
             }
         }
@@ -1033,6 +1052,20 @@ void AIInterface::updateTargets(unsigned long time_passed)
     // set the target first
     if (getCurrentTarget())
     {
+        // can happen if target teleports to other map
+        if (!getCurrentTarget()->IsInWorld())
+        {
+            setCurrentTarget(nullptr);
+            return;
+        }
+
+        // If unit has target but does not have threat with it, evade
+        if (getUnit()->getThreatManager().canHaveThreatList() && !getUnit()->getThreatManager().isThreatenedBy(getCurrentTarget()))
+        {
+            enterEvadeMode();
+            return;
+        }
+
         if (getCurrentTarget()->isAlive())
         {
             if (getCurrentTarget()->GetInstanceID() == getUnit()->GetInstanceID())
@@ -1858,9 +1891,9 @@ Unit* AIInterface::findTarget()
     Unit* critterTarget = nullptr;
 
     //a lot less times are check inter faction mob wars :)
-    if (m_updateTargetsTimer.isTimePassed())
+    if (m_updateCreatureTargetTimer.isTimePassed())
     {
-        m_updateTargetsTimer.resetInterval(TARGET_UPDATE_INTERVAL);
+        m_updateCreatureTargetTimer.resetInterval(TARGET_UPDATE_INTERVAL);
 
         for (const auto& itr2 : m_Unit->getInRangeObjectsSet())
         {
@@ -2131,6 +2164,15 @@ void AIInterface::onHostileAction(Unit* pUnit, SpellInfo const* spellInfo/* = nu
     if (getUnit()->getThreatManager().canHaveThreatList())
         getUnit()->getThreatManager().addThreat(pUnit, 0.0f, spellInfo, true, ignoreThreatRedirects);
 
+    // Update combat for pure creatures only
+    if (getUnit()->getPlayerOwner() == nullptr)
+        getUnit()->getCombatHandler().onHostileAction(pUnit);
+
+    // Let players know that creature has aggroed them
+    // Pure creature targets do not need this
+    if (pUnit->isPlayer() || pUnit->getPlayerOwner() != nullptr)
+        pUnit->getCombatHandler().takeCombatAction(getUnit());
+
     // Send hostile action event if unit was already engaged
     // no need to send this if unit just started combat
     if (wasEngaged)
@@ -2336,7 +2378,6 @@ void AIInterface::eventDamageTaken(Unit* pUnit, uint32_t misc1)
     pUnit->RemoveAura(24575);
 
     CALL_SCRIPT_EVENT(m_Unit, OnDamageTaken)(pUnit, misc1);
-    pUnit->m_combatStatusHandler.OnDamageDealt(m_Unit);
 }
 
 void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
@@ -2452,7 +2493,8 @@ void AIInterface::engagementOver()
     m_fleeTimer.resetInterval(0);
     setCurrentAgent(AGENT_NULL);
 
-    m_Unit->m_combatStatusHandler.Vanished();
+    m_Unit->smsg_AttackStop(nullptr);
+
     m_Unit->getThreatManager().clearAllThreat();
     m_Unit->getThreatManager().removeMeFromThreatLists();
 
@@ -2559,7 +2601,7 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
 
         if (getUnit()->getSummonedByGuid())
         {
-            Unit* summoner = getUnit()->GetMapMgr()->GetUnit(getUnit()->getSummonedByGuid());
+            Unit* summoner = getUnit()->GetMapMgrUnit(getUnit()->getSummonedByGuid());
 
             if (summoner)
                 CALL_SCRIPT_EVENT(summoner, OnSummonDies)(m_Unit->ToCreature(), pUnit);
@@ -3856,7 +3898,7 @@ bool AIInterface::isValidUnitTarget(Object* pObject, TargetFilter pFilter, float
         // hostile/friendly
         if ((~pFilter & TargetFilter_Corpse) && (pFilter & TargetFilter_Friendly))
         {
-            if (!UnitTarget->m_combatStatusHandler.IsInCombat())
+            if (!UnitTarget->getCombatHandler().isInCombat())
                 return false; // not-in-combat targets if friendly
 
             if (isHostile(getUnit(), UnitTarget) || getUnit()->getThreatManager().getThreat(UnitTarget) > 0)

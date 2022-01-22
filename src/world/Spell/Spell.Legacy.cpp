@@ -1273,14 +1273,24 @@ void Spell::HandleAddAura(uint64 guid)
         return;
     }
 
-    // call script
-    if (Target->isCreature())
+    if (getUnitCaster() != nullptr)
     {
-        auto creature = static_cast<Creature*>(Target);
-        if (creature->GetScript())
+        if (isFriendly(getUnitCaster(), Target))
         {
-            if (m_caster->isCreatureOrPlayer())
-                CALL_SCRIPT_EVENT(creature, OnHitBySpell)(getSpellInfo()->getId(), static_cast<Unit*>(m_caster));
+            Target->getCombatHandler().takeCombatAction(getUnitCaster(), true);
+        }
+        else if (!(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
+        {
+            // Send initial threat
+            if (Target->isCreature())
+                Target->getAIInterface()->onHostileAction(getUnitCaster());
+
+            // Target should enter combat when aura is added on target
+            Target->getCombatHandler().takeCombatAction(getUnitCaster());
+
+            // Add real threat
+            if (Target->getThreatManager().canHaveThreatList())
+                Target->getThreatManager().addThreat(getUnitCaster(), 1.f, getSpellInfo(), false, false, this);
         }
     }
 

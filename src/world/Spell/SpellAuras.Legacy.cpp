@@ -889,9 +889,6 @@ void Aura::SpellAuraModConfuse(AuraEffectModifier* aurEff, bool apply)
             p_target->sendClientControlPacket(m_target, 1);
 
             m_target->setAItoUse(false);
-
-            if (u_caster != nullptr)
-                sHookInterface.OnEnterCombat(p_target, u_caster);
         }
         else
         {
@@ -1024,9 +1021,6 @@ void Aura::SpellAuraModFear(AuraEffectModifier* aurEff, bool apply)
                 p_target->sendClientControlPacket(m_target, 1);
 
                 m_target->setAItoUse(false);
-
-                if (u_caster != nullptr)
-                    sHookInterface.OnEnterCombat(p_target, u_caster);
                 p_target->SpeedCheatReset();
             }
             else
@@ -1490,6 +1484,8 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
                             _unit->getThreatManager().clearThreat(m_target);
 
                     }
+
+                    m_target->getCombatHandler().clearCombat();
 
                     for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
                     {

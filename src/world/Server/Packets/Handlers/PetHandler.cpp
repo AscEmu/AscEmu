@@ -105,12 +105,12 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
                             summonedPet->SendActionFeedback(PET_FEEDBACK_CANT_ATTACK_TARGET);
                             return;
                         }
-                        summonedPet->getThreatManager().clearAllThreat();
-                        summonedPet->getThreatManager().removeMeFromThreatLists();
 
                         summonedPet->getAIInterface()->setPetOwner(_player);
 
+                        summonedPet->getMovementManager()->remove(FOLLOW_MOTION_TYPE);
                         summonedPet->getAIInterface()->onHostileAction(unitTarget, nullptr, true);
+                        summonedPet->getAIInterface()->updateVictim(unitTarget);
                     }
                     break;
                     case PET_ACTION_FOLLOW:
@@ -118,17 +118,13 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
                         if (summonedPet->hasUnitStateFlag(UNIT_STATE_CHASING))
                             summonedPet->getMovementManager()->remove(CHASE_MOTION_TYPE);
 
-                        summonedPet->getThreatManager().clearAllThreat();
-                        summonedPet->getThreatManager().removeMeFromThreatLists();
-
                         summonedPet->getAIInterface()->setPetOwner(_player);
+                        summonedPet->getAIInterface()->setCurrentTarget(nullptr);
                         summonedPet->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, summonedPet, 0);
                     }
                     break;
                     case PET_ACTION_STAY:
                     {
-                        summonedPet->getThreatManager().clearAllThreat();
-                        summonedPet->getThreatManager().removeMeFromThreatLists();
                         summonedPet->getMovementManager()->remove(FOLLOW_MOTION_TYPE);
                     }
                     break;

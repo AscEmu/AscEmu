@@ -44,6 +44,10 @@ public:
     void LoadObjects(CellSpawns* sp);
     inline uint32_t GetPlayerCount() { return _playerCount; }
 
+    bool isIdlePending() const;
+    void scheduleCellIdleState();
+    void cancelPendingIdle();
+
     inline bool IsUnloadPending() { return _unloadpending; }
     inline void SetUnloadPending(bool up) { _unloadpending = up; }
     void QueueUnloadPending();
@@ -66,6 +70,7 @@ private:
     bool _active;
     bool _loaded;
     bool _unloadpending;
+    bool _idlepending = false;
 
     uint16_t _playerCount;
 

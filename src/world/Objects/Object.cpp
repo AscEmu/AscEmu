@@ -980,10 +980,32 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
         plrOwner->TagUnit(victim);
     }
 
-    // Handle procs
     if (isCreatureOrPlayer())
     {
-        const auto casterUnit = static_cast<Unit*>(this);
+        const auto casterUnit = dynamic_cast<Unit*>(this);
+        if (casterUnit != victim)
+        {
+            if (spell == nullptr && !isPeriodic)
+            {
+                // Send initial threat
+                if (victim->isCreature())
+                    victim->getAIInterface()->onHostileAction(casterUnit);
+
+                // Handle combat for both caster and target
+                casterUnit->getCombatHandler().onHostileAction(victim);
+                victim->getCombatHandler().takeCombatAction(casterUnit);
+            }
+
+            // Add real threat
+            if (victim->getThreatManager().canHaveThreatList())
+            {
+                const auto threat = dmgInfo.realDamage == 0 ? 1 : dmgInfo.realDamage;
+                const auto _spellInfo = spell != nullptr ? spell->getSpellInfo() : spellInfo;
+                victim->getThreatManager().addThreat(casterUnit, static_cast<float>(threat), _spellInfo, false, false, spell);
+            }
+        }
+
+        // Handle procs
         victim->HandleProc(dmgInfo.victimProcFlags, casterUnit, spellInfo, dmgInfo, isTriggered);
         // If called from spell class, handle caster's procs when spell has finished all targets
         if (spell == nullptr)
@@ -1023,12 +1045,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
 
                 pVictim->energize(pVictim, 29442, amount, POWER_TYPE_MANA);
             }
-
-            pVictim->combatResetPvPTimeout();
         }
-
-        if (isPlayer())
-            static_cast<Player*>(this)->combatResetPvPTimeout();
     }
 
     // Hackfix from legacy method
@@ -1307,10 +1324,25 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
 
     victim->addHealthBatchEvent(healthBatch);
 
-    // Handle procs
     if (isCreatureOrPlayer())
     {
-        const auto casterUnit = static_cast<Unit*>(this);
+        const auto casterUnit = dynamic_cast<Unit*>(this);
+
+        if (casterUnit != victim)
+        {
+            // Caster should enter combat if target is in combat
+            // Periodic healing can also put caster in combat
+            if (spell == nullptr)
+            {
+                casterUnit->getCombatHandler().onFriendlyAction(victim);
+                victim->getCombatHandler().takeCombatAction(casterUnit, true);
+            }
+
+            const auto _spellInfo = spell != nullptr ? spell->getSpellInfo() : spellInfo;
+            victim->getThreatManager().forwardThreatForAssistingMe(casterUnit, static_cast<float_t>(dmgInfo.realDamage / 2), _spellInfo);
+        }
+
+        // Handle procs
         victim->HandleProc(dmgInfo.victimProcFlags, casterUnit, spellInfo, dmgInfo, isTriggered);
         // If called from spell class, handle caster's procs when spell has finished all targets
         if (spell == nullptr)

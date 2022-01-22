@@ -88,6 +88,9 @@ void MapCell::SetActivity(bool state)
     uint32 tileX = _x / 8;
     uint32 tileY = _y / 8;
 
+    if (!state)
+        _idlepending = false;
+
     if (!_active && state)
     {
         // Move all objects to active set.
@@ -367,11 +370,38 @@ void MapCell::LoadObjects(CellSpawns* sp)
     }
 }
 
+bool MapCell::isIdlePending() const
+{
+    return _idlepending;
+}
+
+void MapCell::scheduleCellIdleState()
+{
+    if (isIdlePending() || _unloadpending)
+        return;
+
+    _idlepending = true;
+    sLogger.debug("Queueing pending idle of cell %u %u", _x, _y);
+    sEventMgr.AddEvent(_mapmgr, &MapMgr::setCellIdle, _x, _y, this, MAKE_CELL_EVENT(_x, _y), 30000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+}
+
+void MapCell::cancelPendingIdle()
+{
+    if (!isIdlePending() || _unloadpending)
+        return;
+
+    sLogger.debug("Cancelling pending idle of cell %u %u", _x, _y);
+    sEventMgr.RemoveEvents(_mapmgr, MAKE_CELL_EVENT(_x, _y));
+    _idlepending = false;
+}
 
 void MapCell::QueueUnloadPending()
 {
     if (_unloadpending)
         return;
+
+    if (isIdlePending())
+        cancelPendingIdle();
 
     _unloadpending = true;
     sLogger.debug("Queueing pending unload of cell %u %u", _x, _y);
@@ -383,6 +413,9 @@ void MapCell::CancelPendingUnload()
     sLogger.debug("Cancelling pending unload of cell %u %u", _x, _y);
     if (!_unloadpending)
         return;
+
+    if (isIdlePending())
+        cancelPendingIdle();
 
     sEventMgr.RemoveEvents(_mapmgr, MAKE_CELL_EVENT(_x, _y));
     _unloadpending = false;

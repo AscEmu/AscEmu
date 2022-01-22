@@ -1521,7 +1521,7 @@ bool CenarionMoondust(uint8_t /*effectIndex*/, Spell* pSpell) // Body And Heart 
     }
 
     // Make sure that creature will attack player
-    if (!lunaclaw->m_combatStatusHandler.IsInCombat())
+    if (!lunaclaw->getCombatHandler().isInCombat())
     {
         lunaclaw->getAIInterface()->setCurrentTarget(p_caster);
     }
@@ -1564,7 +1564,7 @@ bool CenarionLunardust(uint8_t /*effectIndex*/, Spell* pSpell)  // Body And Hear
     }
 
     // Make sure that creature will attack player
-    if (!lunaclaw->m_combatStatusHandler.IsInCombat())
+    if (!lunaclaw->getCombatHandler().isInCombat())
     {
         lunaclaw->getAIInterface()->setCurrentTarget(p_caster);
     }

@@ -47,6 +47,7 @@ public:
     bool isThreatenedBy(uint64_t const& who, bool includeOffline = false) const;
     // is there a threat list entry on owner's threat list with victim == who?
     bool isThreatenedBy(Unit const* who, bool includeOffline = false) const;
+    inline auto const& getThreatenedByMeList() const { return _threatenedByMe; }
 
     // returns ThreatReference amount if a ref exists, 0.0f otherwise
     float getThreat(Unit const* who, bool includeOffline = false) const;
@@ -57,7 +58,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Affect my threat list
-    void addThreat(Unit* target, float amount, SpellInfo const* spell = nullptr, bool ignoreModifiers = false, bool ignoreRedirects = false);
+    void addThreat(Unit* target, float amount, SpellInfo const* spell = nullptr, bool ignoreModifiers = false, bool ignoreRedirects = false, Spell* castingSpell = nullptr);
 
     void scaleThreat(Unit* target, float factor);
 
@@ -109,7 +110,7 @@ private:
     bool _ownerCanHaveThreatList;
 
     static bool compareReferencesLT(ThreatReference const* a, ThreatReference const* b, float aWeight);
-    static float calculateModifiedThreat(float threat, Unit* victim, SpellInfo const* spell);
+    static float calculateModifiedThreat(Unit* owner, float threat, Unit* victim, SpellInfo const* spell, Spell* castingSpell = nullptr);
 
     // Attacking me
     void putThreatListRef(uint64_t const& guid, ThreatReference* ref);

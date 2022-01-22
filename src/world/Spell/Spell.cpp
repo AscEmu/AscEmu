@@ -501,7 +501,7 @@ void Spell::castMe(const bool doReCheck)
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         const auto spellEffect = getSpellInfo()->getEffect(i);
-        if (spellEffect == 0)
+        if (spellEffect == SPELL_EFFECT_NULL)
             continue;
 
         // Call for scripted before hit hook
@@ -610,6 +610,21 @@ void Spell::handleHittedTarget(const uint64_t targetGuid, uint8_t effIndex)
     _updateTargetPointers(targetGuid);
     const auto effDamage = calculateEffect(effIndex);
 
+    // Enter combat or keep combat alive if spell had at least one target that was either
+    // a) hostile
+    // b) friendly who was in combat
+    // TODO: confirm if instant kill spells should skip combat (atm needed for .kill command)
+    if (getUnitCaster() != nullptr && GetUnitTarget() != nullptr && getUnitCaster()->getGuid() != GetUnitTarget()->getGuid()
+        && getSpellInfo()->getEffect(effIndex) != SPELL_EFFECT_INSTANT_KILL)
+    {
+        // Combat is applied instantly to caster if spell had cast time and target is hostile
+        // Instant spells on hostile targets and all spells on friendly targets will have combat delayed
+        if (isFriendly(getUnitCaster(), GetUnitTarget()))
+            getUnitCaster()->getCombatHandler().onFriendlyAction(GetUnitTarget());
+        else if (!(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
+            getUnitCaster()->getCombatHandler().onHostileAction(GetUnitTarget(), getFullCastTime() > 0);
+    }
+
     // If effect applies an aura, create it instantly but add it later to target
     if (getSpellInfo()->doesEffectApplyAura(effIndex))
     {
@@ -649,16 +664,28 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int3
     if (reCheckTarget)
         _updateTargetPointers(targetGuid);
 
-    const auto targetType = getSpellInfo()->getRequiredTargetMaskForEffect(effIndex);
     // TODO: in the future, consider having two damage variables; one for integer and one for float
     damage = effDamage;
 
-    // Add initial threat
-    // Real threat is sent in damage code, in heal code or in apply aura code
-    if (getUnitCaster() != nullptr && GetUnitTarget() != nullptr && GetUnitTarget()->isCreature()
-        && targetType & SPELL_TARGET_REQUIRE_ATTACKABLE && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
+    // Skip auras here
+    // TODO: confirm if instant kill spells should skip combat (atm needed for .kill command)
+    if (!getSpellInfo()->doesEffectApplyAura(effIndex) && getUnitCaster() != nullptr && GetUnitTarget() != nullptr && getUnitCaster() != GetUnitTarget()
+        && getSpellInfo()->getEffect(effIndex) != SPELL_EFFECT_INSTANT_KILL)
     {
-        GetUnitTarget()->getAIInterface()->onHostileAction(getUnitCaster());
+        if (isFriendly(getUnitCaster(), GetUnitTarget()))
+        {
+            GetUnitTarget()->getCombatHandler().takeCombatAction(getUnitCaster(), true);
+        }
+        else if (!(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
+        {
+            // Add initial threat
+            // Real threat is sent in damage code, in heal code or in apply aura code
+            if (GetUnitTarget()->isCreature())
+                GetUnitTarget()->getAIInterface()->onHostileAction(getUnitCaster());
+
+            // Target should enter combat when spell lands on target
+            GetUnitTarget()->getCombatHandler().takeCombatAction(getUnitCaster());
+        }
     }
 
     // Clear DamageInfo before effect
@@ -740,6 +767,21 @@ void Spell::handleMissedTarget(SpellTargetMod const missedTarget)
     if (travelTime < 0)
         return;
 
+    _updateTargetPointers(missedTarget.targetGuid);
+
+    // Enter combat or keep combat alive if spell had at least one target that was either
+    // a) hostile
+    // b) friendly who was in combat
+    if (getUnitCaster() != nullptr && GetUnitTarget() != nullptr)
+    {
+        // Combat is applied instantly to caster if spell had cast time and target is hostile
+        // Instant spells on hostile targets and all spells on friendly targets will have combat delayed
+        if (isFriendly(getUnitCaster(), GetUnitTarget()))
+            getUnitCaster()->getCombatHandler().onFriendlyAction(GetUnitTarget());
+        else if (!(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
+            getUnitCaster()->getCombatHandler().onHostileAction(GetUnitTarget(), getFullCastTime() > 0);
+    }
+
     // If there is no distance between caster and target, handle effect instantly
     if (travelTime == 0.0f)
     {
@@ -758,7 +800,7 @@ void Spell::handleMissedTarget(SpellTargetMod const missedTarget)
         else
         {
             // Spell was not reflected and it did not hit target
-            handleMissedEffect(missedTarget.targetGuid);
+            handleMissedEffect(missedTarget);
         }
     }
     else
@@ -788,25 +830,42 @@ void Spell::handleMissedTarget(SpellTargetMod const missedTarget)
         else
         {
             // Spell was not reflected and it did not hit target
-            m_missEffects.insert(std::make_pair(missedTarget.targetGuid, float2int32(travelTime)));
+            MissSpellEffect missEffect;
+            missEffect.missInfo = missedTarget;
+            missEffect.travelTime = float2int32(travelTime);
+
+            m_missEffects.insert(std::make_pair(missedTarget.targetGuid, missEffect));
         }
     }
 }
 
-void Spell::handleMissedEffect(const uint64_t targetGuid)
+void Spell::handleMissedEffect(SpellTargetMod const missedTarget, bool reCheckTarget/* = false*/)
 {
+    if (reCheckTarget)
+        _updateTargetPointers(missedTarget.targetGuid);
+
     // Spell was not reflected and it did not hit target
-    const auto targetUnit = m_caster->GetMapMgrUnit(targetGuid);
-    if (targetUnit != nullptr)
+    if (GetUnitTarget() != nullptr)
     {
-        if (u_caster != nullptr && targetUnit->isCreature() && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
+        if (getUnitCaster() != nullptr)
         {
-            // Let target creature know that someone tried to cast spell on it
-            targetUnit->getAIInterface()->onHostileAction(u_caster);
+            if (isFriendly(getUnitCaster(), GetUnitTarget()))
+            {
+                GetUnitTarget()->getCombatHandler().takeCombatAction(getUnitCaster(), true);
+            }
+            else if (!(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
+            {
+                // Let target creature know that someone tried to cast spell on it
+                if (GetUnitTarget()->isCreature())
+                    GetUnitTarget()->getAIInterface()->onHostileAction(getUnitCaster());
+
+                // Target should enter combat when spell lands on target
+                GetUnitTarget()->getCombatHandler().takeCombatAction(getUnitCaster());
+            }
         }
 
         // Call scripted after spell missed hook
-        sScriptMgr.callScriptedSpellAfterMiss(this, targetUnit);
+        sScriptMgr.callScriptedSpellAfterMiss(this, GetUnitTarget());
     }
 }
 
@@ -882,7 +941,7 @@ void Spell::finish(bool successful)
         if (getItemCaster()->getItemProperties()->Class == ITEM_CLASS_CONSUMABLE && getItemCaster()->getItemProperties()->SubClass == 1)
         {
             getItemCaster()->getOwner()->SetLastPotion(getItemCaster()->getItemProperties()->ItemId);
-            if (!getItemCaster()->getOwner()->m_combatStatusHandler.IsInCombat())
+            if (!getItemCaster()->getOwner()->getCombatHandler().isInCombat())
                 getItemCaster()->getOwner()->UpdatePotionCooldown();
         }
         else
@@ -1115,14 +1174,14 @@ void Spell::update(unsigned long timePassed)
             for (auto missItr = m_missEffects.begin(); missItr != m_missEffects.end();)
             {
                 auto& missEff = *missItr;
-                if (missEff.second > timePassed)
+                if (missEff.second.travelTime > timePassed)
                 {
-                    missEff.second -= timePassed;
+                    missEff.second.travelTime -= timePassed;
                     ++missItr;
                     continue;
                 }
 
-                handleMissedEffect(missEff.first);
+                handleMissedEffect(missEff.second.missInfo, true);
                 missItr = m_missEffects.erase(missItr);
             }
 
@@ -1407,7 +1466,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         }
 
         // Check if spell requires caster to be in combat
-        if (getSpellInfo()->getAttributes() & ATTRIBUTES_STOP_ATTACK && getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_UNAFFECTED_BY_SCHOOL_IMMUNITY && !u_caster->m_combatStatusHandler.IsInCombat())
+        if (getSpellInfo()->getAttributes() & ATTRIBUTES_STOP_ATTACK && getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_UNAFFECTED_BY_SCHOOL_IMMUNITY && !u_caster->getCombatHandler().isInCombat())
             return SPELL_FAILED_CASTER_AURASTATE;
 
         auto requireCombat = true;
@@ -1464,7 +1523,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         if (!m_triggeredSpell)
         {
             // Out of combat spells should not be able to be casted in combat
-            if (requireCombat && (getSpellInfo()->getAttributes() & ATTRIBUTES_REQ_OOC) && u_caster->m_combatStatusHandler.IsInCombat())
+            if (requireCombat && (getSpellInfo()->getAttributes() & ATTRIBUTES_REQ_OOC) && u_caster->getCombatHandler().isInCombat())
                 return SPELL_FAILED_AFFECTING_COMBAT;
 
             if (!secondCheck)
@@ -1575,7 +1634,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             return SPELL_FAILED_BAD_TARGETS;
 
         // Check if spell requires target to be out of combat
-        if (getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_REQ_OOC_TARGET && target->m_combatStatusHandler.IsInCombat())
+        if (getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_REQ_OOC_TARGET && target->getCombatHandler().isInCombat())
             return SPELL_FAILED_TARGET_AFFECTING_COMBAT;
 
         if (!(getSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_CAN_TARGET_INVISIBLE) && (u_caster != nullptr && !u_caster->canSee(target)))
@@ -3031,7 +3090,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
 
         if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
         {
-            if (p_caster->m_combatStatusHandler.IsInCombat())
+            if (p_caster->getCombatHandler().isInCombat())
             {
                 p_caster->getItemInterface()->buildInventoryChangeError(i_caster, nullptr, INV_ERR_CANT_DO_IN_COMBAT);
                 return SPELL_FAILED_DONT_REPORT;
@@ -5175,13 +5234,6 @@ void Spell::writeSpellMissedTargets(WorldPacket *data)
             // Need to send hit result for the reflected spell
             if (target.hitResult == SPELL_DID_HIT_REFLECT)
                 *data << uint8_t(target.extendedHitResult);
-
-            const auto targetUnit = u_caster->GetMapMgrUnit(target.targetGuid);
-            if (targetUnit != nullptr && targetUnit->isAlive())
-            {
-                targetUnit->combatResetPvPTimeout(); // aaa
-                u_caster->combatResetPvPTimeout(); // bbb
-            }
         }
     }
     else

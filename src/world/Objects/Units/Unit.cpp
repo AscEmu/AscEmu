@@ -61,7 +61,7 @@ Unit::Unit() :
     movespline(new MovementNew::MoveSpline()),
     i_movementManager(new MovementManager(this)),
     m_summonInterface(new SummonHandler),
-    m_combatStatusHandler(this),
+    m_combatHandler(this),
     m_aiInterface(new AIInterface())
 {
     m_objectType |= TYPE_UNIT;
@@ -1328,38 +1328,14 @@ bool Unit::isInAccessiblePlaceFor(Creature* c) const
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Combat
-void Unit::combatUpdatePvPTimeout()
+CombatHandler& Unit::getCombatHandler()
 {
-    m_combatStatusHandler.TryToClearAttackTargets();
+    return m_combatHandler;
 }
 
-void Unit::combatResetPvPTimeout()
+CombatHandler const& Unit::getCombatHandler() const
 {
-    if (!isPlayer())
-        return;
-
-    m_lock.Acquire();
-    EventMap::iterator itr = m_events.find(EVENT_ATTACK_TIMEOUT);
-    if (itr != m_events.end())
-    {
-        for (; itr != m_events.upper_bound(EVENT_ATTACK_TIMEOUT); ++itr)
-        {
-            if (!itr->second->deleted)
-            {
-                itr->second->currTime = 5000;
-                m_lock.Release();
-                return;
-            }
-        }
-    }
-
-    sEventMgr.AddEvent(this, &Unit::combatUpdatePvPTimeout, EVENT_ATTACK_TIMEOUT, 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    m_lock.Release();
-}
-
-void Unit::eventUpdateCombatFlag()
-{
-    m_combatStatusHandler.UpdateFlag();
+    return m_combatHandler;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -4165,23 +4141,6 @@ void Unit::addAura(Aura* aur)
     if (aur->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP && !isSitting())
         setStandState(STANDSTATE_SIT);
 
-    // Possibly a hackfix from legacy method
-    // Reaction from enemy AI
-    if (aur->isNegative() && aur->IsCombatStateAffecting()) // Creature
-    {
-        const auto pCaster = aur->GetUnitCaster();
-        if (pCaster && pCaster->isAlive() && isAlive())
-        {
-            pCaster->m_combatStatusHandler.OnDamageDealt(this);
-
-            if (isCreature())
-            {
-                // Start Combat
-                m_aiInterface->onHostileAction(pCaster);
-            }
-        }
-    }
-
     // Hackfix from legacy method
     if (aur->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_INVINCIBLE)
     {
@@ -5241,7 +5200,7 @@ void Unit::regenerateHealthAndPowers(uint16_t timePassed)
     {
         if (isPlayer())
         {
-            static_cast<Player*>(this)->RegenerateHealth(m_combatStatusHandler.IsInCombat());
+            static_cast<Player*>(this)->RegenerateHealth(getCombatHandler().isInCombat());
             m_healthRegenerateTimer = 0;
         }
         else
@@ -5340,7 +5299,7 @@ void Unit::regeneratePower(PowerType type)
                     amount = static_cast<Player*>(this)->getManaRegeneration();
 #else
                 // Check for combat (5 second rule was removed in cata)
-                if (m_combatStatusHandler.IsInCombat())
+                if (getCombatHandler().isInCombat())
                     amount = getManaRegenerationWhileCasting();
                 else
                     amount = getManaRegeneration();
@@ -5353,7 +5312,7 @@ void Unit::regeneratePower(PowerType type)
             else
             {
                 //\ todo: this creature mana regeneration is not correct, rewrite it
-                if (m_combatStatusHandler.IsInCombat())
+                if (getCombatHandler().isInCombat())
                 {
                     amount = (getLevel() + 10) * PctPowerRegenModifier[POWER_TYPE_MANA];
                 }
@@ -5383,7 +5342,7 @@ void Unit::regeneratePower(PowerType type)
 #endif
         {
             // Rage and Runic Power do not decay while in combat
-            if (m_combatStatusHandler.IsInCombat())
+            if (getCombatHandler().isInCombat())
                 return;
 
             // TODO: fix this hackfix when aura system supports this
@@ -5444,7 +5403,7 @@ void Unit::regeneratePower(PowerType type)
 #if VERSION_STRING >= Cata
         case POWER_TYPE_HOLY_POWER:
         {
-            if (m_combatStatusHandler.IsInCombat())
+            if (getCombatHandler().isInCombat())
                 return;
 
             amount = -1.0f;
@@ -5946,22 +5905,11 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
             const auto plr = static_cast<Player*>(this);
             if (!plr->GetSession()->HasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
                 damage = plr->CheckDamageLimits(damage, spellId);
-
-            if (plr->m_combatStatusHandler.IsInCombat())
-                sHookInterface.OnEnterCombat(plr, victim);
         }
-
-        m_combatStatusHandler.OnDamageDealt(victim);
 
         const auto plrOwner = getPlayerOwner();
         if (plrOwner != nullptr)
         {
-            if (victim->isCreature() && victim->isTaggable())
-            {
-                victim->setTaggerGuid(plrOwner->getGuid());
-                plrOwner->TagUnit(victim);
-            }
-
             // Battleground damage score
             if (plrOwner->m_bg != nullptr && GetMapMgr() == victim->GetMapMgr())
             {
@@ -5985,17 +5933,6 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
                 }
             }
         }
-        else
-        {
-            // Start Combat
-            victim->getAIInterface()->onHostileAction(this);
-            // Add Threat
-            if (victim->getThreatManager().canHaveThreatList())
-                victim->getThreatManager().addThreat(this, static_cast<float>(damage), sSpellMgr.getSpellInfo(spellId), true, true);
-
-            // todo: remove this here when all damage is batched
-            sScriptMgr.DamageTaken(static_cast<Creature*>(victim), this, &damage);
-        }
     }
 
     victim->setStandState(STANDSTATE_STAND);
@@ -6007,28 +5944,6 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
         victim->setTaggerGuid(getGuid());
         plrOwner->TagUnit(victim);
     }
-
-    if (victim->isPvpFlagSet())
-    {
-        if (isPet())
-        {
-            if (!isPvpFlagSet())
-                plrOwner->PvPToggle();
-
-            plrOwner->AggroPvPGuards();
-        }
-        else if (plrOwner != nullptr)
-        {
-            if (!plrOwner->isPvpFlagSet())
-                plrOwner->PvPToggle();
-
-            plrOwner->AggroPvPGuards();
-        }
-    }
-
-    // Hackfix - Ardent Defender
-    if (victim->DamageTakenPctModOnHP35 && victim->hasAuraState(AURASTATE_FLAG_HEALTH35))
-        damage = damage - float2int32(damage * victim->DamageTakenPctModOnHP35) / 100;
 
     if (removeAuras)
     {
@@ -6055,6 +5970,14 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
 
 void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
 {
+    // Call damage taken creature script hook on entire batch
+    if (attacker != nullptr && isCreature())
+        sScriptMgr.DamageTaken(dynamic_cast<Creature*>(this), attacker, &damage);
+
+    // Hackfix - Ardent Defender
+    if (DamageTakenPctModOnHP35 && hasAuraState(AURASTATE_FLAG_HEALTH35))
+        damage = damage - float2int32(damage * DamageTakenPctModOnHP35) / 100;
+
     if (damage >= getHealth())
     {
         if (isTrainingDummy())
@@ -6243,12 +6166,6 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
     if (isPlayer())
     {
         const auto plr = static_cast<Player*>(this);
-
-        // todo: this should be moved to combat handler...
-        // atm its called every time player takes damage -Appled
-        if (m_combatStatusHandler.IsInCombat())
-            sHookInterface.OnEnterCombat(dynamic_cast<Player*>(this), attacker);
-
         // todo: remove this hackfix...
         if (plr->cannibalize)
         {
@@ -6446,26 +6363,6 @@ void Unit::smsg_AttackStop(Unit* pVictim)
         SendMessageToSet(SmsgAttackStop(GetNewGUID(), pVictim->GetNewGUID()).serialise().get(), true);
     else
         SendMessageToSet(SmsgAttackStop(GetNewGUID(), WoWGuid()).serialise().get(), true);
-
-    if (pVictim)
-    {
-        if (pVictim->isPlayer())
-        {
-            pVictim->combatResetPvPTimeout();
-            combatResetPvPTimeout();
-        }
-        else
-        {
-            if (!isPlayer() || getClass() == ROGUE)
-            {
-                m_cTimer = Util::getMSTime() + 8000;
-                sEventMgr.RemoveEvents(this, EVENT_COMBAT_TIMER);
-                sEventMgr.AddEvent(this, &Unit::eventUpdateCombatFlag, EVENT_COMBAT_TIMER, 8000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-                if (pVictim->isCreatureOrPlayer())   // there could be damage coming from objects/enviromental
-                    sEventMgr.AddEvent(pVictim, &Unit::eventUpdateCombatFlag, EVENT_COMBAT_TIMER, 8000, 1, 0);
-            }
-        }
-    }
 }
 
 void Unit::smsg_AttackStart(Unit* pVictim)
@@ -6597,6 +6494,8 @@ void Unit::_updateHealth()
     int32_t totalRageGenerated = 0;
 
     Unit* killer = nullptr;
+    // Get single damager from entire batch for creature scripts
+    Unit* singleDamager = nullptr;
 
     // Process through health batch
     auto batchItr = m_healthBatch.begin();
@@ -6624,6 +6523,8 @@ void Unit::_updateHealth()
             const auto damage = _handleBatchDamage(batch, &rageGenerated);
             healthVal -= damage;
 
+            singleDamager = batch->caster;
+
             totalAbsorbDamage += batch->damageInfo.absorbedDamage;
             totalRageGenerated += rageGenerated;
 
@@ -6645,7 +6546,7 @@ void Unit::_updateHealth()
 
     // If the value is negative, then damage in the batch exceeds healing and unit takes damage
     if (healthVal < 0)
-        takeDamage(killer, static_cast<uint32_t>(std::abs(healthVal)), 0);
+        takeDamage(killer != nullptr ? killer : singleDamager, static_cast<uint32_t>(std::abs(healthVal)), 0);
     else
         setHealth(curHealth + healthVal);
 
@@ -6696,10 +6597,6 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
             const auto plr = static_cast<Player*>(attacker);
             if (!plr->GetSession()->HasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
                 damage = plr->CheckDamageLimits(damage, spellId);
-
-            //\ todo: this hook is called here and in takeDamage... sort this out
-            if (plr->m_combatStatusHandler.IsInCombat())
-                sHookInterface.OnEnterCombat(plr, this);
         }
 
         // Rage generation for victim
@@ -6719,8 +6616,6 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
             *rageGenerated = float2int32(val);
         }
 
-        attacker->m_combatStatusHandler.OnDamageDealt(this);
-
         const auto plrOwner = attacker->getPlayerOwner();
         if (plrOwner != nullptr)
         {
@@ -6729,24 +6624,6 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
             {
                 plrOwner->m_bgScore.DamageDone += damage;
                 plrOwner->m_bg->UpdatePvPData();
-            }
-        }
-
-        if (isPvpFlagSet())
-        {
-            if (attacker->isPet())
-            {
-                if (!attacker->isPvpFlagSet())
-                    plrOwner->PvPToggle();
-
-                plrOwner->AggroPvPGuards();
-            }
-            else if (plrOwner != nullptr)
-            {
-                if (!plrOwner->isPvpFlagSet())
-                    plrOwner->PvPToggle();
-
-                plrOwner->AggroPvPGuards();
             }
         }
 
@@ -6760,28 +6637,12 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
                 if (pet->GetPetState() != PET_STATE_PASSIVE)
                 {
                     // Start Combat
-                    // todo: move this to ::Strike and ::doSpellDamage
+                    // todo: handle this in pet system
                     pet->getAIInterface()->onHostileAction(attacker);
                     pet->HandleAutoCastEvent(AUTOCAST_EVENT_OWNER_ATTACKED);
                 }
             }
         }
-        else
-        {
-            // Start Combat
-            // todo: move this to ::Strike and ::doSpellDamage
-            getAIInterface()->onHostileAction(attacker);
-            // Add Threat
-            if (getThreatManager().canHaveThreatList())
-                getThreatManager().addThreat(attacker, static_cast<float>(damage), sSpellMgr.getSpellInfo(spellId), true, true);
-
-            // todo: this should happen on entire batch damage, not on every batch event
-            sScriptMgr.DamageTaken(static_cast<Creature*>(this), attacker, &damage);
-        }
-
-        // Hackfix - Ardent Defender
-        if (DamageTakenPctModOnHP35 && hasAuraState(AURASTATE_FLAG_HEALTH35))
-            damage = damage - float2int32(damage * DamageTakenPctModOnHP35) / 100;
     }
 
     // Create heal effect for leech effects
@@ -6833,33 +6694,12 @@ uint32_t Unit::_handleBatchHealing(HealthBatchEvent const* batch, uint32_t* abso
     {
         const auto plrOwner = healer->getPlayerOwner();
 
-        // Healing a flagged unit will flag the caster
-        if (isPvpFlagSet())
-        {
-            if (healer->isPet())
-            {
-                if (!healer->isPvpFlagSet())
-                    plrOwner->PvPToggle();
-            }
-            else if (plrOwner != nullptr)
-            {
-                if (!plrOwner->isPvpFlagSet())
-                    plrOwner->PvPToggle();
-            }
-        }
-
         // Update battleground score
         if (plrOwner != nullptr && plrOwner->m_bg != nullptr && plrOwner->GetMapMgr() == GetMapMgr())
         {
             plrOwner->m_bgScore.HealingDone += healing;
             plrOwner->m_bg->UpdatePvPData();
         }
-
-        // Handle threat
-        getThreatManager().forwardThreatForAssistingMe(healer, static_cast<float_t>(healing), batch->spellInfo);
-
-        if (IsInWorld() && healer->IsInWorld())
-            healer->m_combatStatusHandler.WeHealed(this);
     }
 
     RemoveAurasByHeal();
