@@ -30,7 +30,9 @@ Vehicle::~Vehicle()
                 sLogger.failure("Vehicle is not Empty");
     }
     else
+    {
         sLogger.failure("Vehicle Accessory Status is not on STATUS_DEACTIVATED");
+    }
 }
 
 void Vehicle::initialize()
@@ -86,15 +88,15 @@ void Vehicle::initSeats()
 
 void Vehicle::initMovementFlags()
 {
-    if (hasVehicleFlags(VEHICLE_FLAG_NO_STRAFE))
+    if (hasVehicleFlags(VEHICLE_FLAG_NO_STRAFING))
         getBase()->addExtraUnitMovementFlag(MOVEFLAG2_NO_STRAFING);
     if (hasVehicleFlags(VEHICLE_FLAG_NO_JUMPING))
         getBase()->addExtraUnitMovementFlag(MOVEFLAG2_NO_JUMPING);
-    if (hasVehicleFlags(VEHICLE_FLAG_FULLSPEEDTURNING))
+    if (hasVehicleFlags(VEHICLE_FLAG_FULLSPEED_TURNING))
         getBase()->addExtraUnitMovementFlag(MOVEFLAG2_FULLSPEED_TURNING);
     if (hasVehicleFlags(VEHICLE_FLAG_ALLOW_PITCHING))
         getBase()->addExtraUnitMovementFlag(MOVEFLAG2_ALLOW_PITCHING);
-    if (hasVehicleFlags(VEHICLE_FLAG_FULLSPEEDPITCHING))
+    if (hasVehicleFlags(VEHICLE_FLAG_FULLSPEED_PITCHING))
         getBase()->addExtraUnitMovementFlag(MOVEFLAG2_FULLSPEED_PITCHING);
 }
 
@@ -141,30 +143,18 @@ void Vehicle::applyAllImmunities()
     if (getBase()->ToCreature() && getBase()->ToCreature()->GetCreatureProperties()->Type == UNIT_TYPE_MECHANICAL && !getBase()->ToCreature()->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
     {
         //  Heal & dispel ...
-        //  Not Supported at the moment for
-        //  getBase()->addSpellImmunity(SPELL_EFFECT_HEAL, true);
-        //  getBase()->addSpellImmunity(SPELL_EFFECT_HEAL_PCT, true);
-        //  getBase()->addSpellImmunity(SPELL_EFFECT_DISPEL, true);
-        //  getBase()->addSpellImmunity(SPELL_AURA_PERIODIC_HEAL, true);
+        //  ToDo missing
 
         //  ... Shield & Immunity grant spells ...
-        //  Not Supported at the momentm for
-        //  getBase()->addSpellImmunity(SPELL_AURA_SCHOOL_IMMUNITY, true);
-        //  getBase()->addSpellImmunity(SPELL_AURA_MOD_UNATTACKABLE, true);
-        //  getBase()->addSpellImmunity(SPELL_AURA_SCHOOL_ABSORB, true);
+        //  ToDo add more
         getBase()->addSpellImmunity(SPELL_IMMUNITY_BANISH, true);
 
-        //  ... Resistance, Split damage, Change stats ...
-        //  Not Supported at the moment for
-        //  getBase()->addSpellImmunity(SPELL_AURA_DAMAGE_SHIELD, true);
-        //  getBase()->addSpellImmunity(SPELL_AURA_SPLIT_DAMAGE_PCT, true);
-        //  getBase()->addSpellImmunity(SPELL_AURA_MOD_RESISTANCE, true);
-        //  getBase()->addSpellImmunity(SPELL_AURA_MOD_STAT, true);
-        //  getBase()->addSpellImmunity(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, true);
+        //  ... Resistance, Split damage, Change stats
+        //  ToDo missing
     }
 
-    // When Flag VEHICLE_FLAG_FIXED_POSITION is set or one of the followed Hardcoded units is set then set them to rooted
-    if (hasVehicleFlags(VEHICLE_FLAG_FIXED_POSITION))
+    // When Flag VEHICLE_FLAG_POSITION_FIXED is set or one of the followed Hardcoded units is set then set them to rooted
+    if (hasVehicleFlags(VEHICLE_FLAG_POSITION_FIXED))
         getBase()->setControlled(true, UNIT_STATE_ROOTED);
 
     switch (getBase()->getEntry())
@@ -177,10 +167,9 @@ void Vehicle::applyAllImmunities()
             break;
     }
 
-    // Different immunities for vehicles goes below
+    // More Hardcoded Immunities
     switch (getVehicleInfo()->ID)
     {
-        // code below prevents a bug with movable cannons
         case 160: // Strand of the Ancients
         case 244: // Wintergrasp
         case 510: // Isle of Conquest
@@ -193,7 +182,7 @@ void Vehicle::applyAllImmunities()
         case 336: // Salvaged Siege Engine
         case 338: // Salvaged Demolisher
             //  Not Supported at the moment for
-            //  getBase()->addSpellImmunity(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, false); // Battering Ram
+            //  SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN
             break;
         default:
             break;
@@ -210,7 +199,7 @@ void Vehicle::loadAllAccessories(bool evading)
         return;
 
     for (VehicleAccessoryList::const_iterator itr = accessories->begin(); itr != accessories->end(); ++itr)
-        if (!evading || itr->isMinion)  // only install minions on evade mode
+        if (!evading || itr->isMinion)  // only install accessories on evade mode
             loadAccessory(itr->accessoryEntry, itr->seatId, itr->isMinion, itr->summonedType, itr->summonTime);
 }
 
@@ -297,7 +286,7 @@ SeatMap::const_iterator Vehicle::getNextEmptySeat(int8_t seatId, bool next) cons
             --seat;
         }
 
-        // Make sure we don't loop infinitly
+        // don't loop infinitly
         if (seat->first == seatId)
             return Seats.end();
     }
@@ -419,7 +408,7 @@ Vehicle* Vehicle::removePassenger(Unit* unit)
         }
     }
 
-    // only for flyable vehicles
+    // give us a Parachute when we leave a flyable Vehicle
     if (unit->IsFlying())
         getBase()->castSpell(unit, VEHICLE_SPELL_PARACHUTE, true);
 

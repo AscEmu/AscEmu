@@ -7183,7 +7183,7 @@ void Unit::enterVehicle(Vehicle* vehicle, int8_t seatId)
     // If vehicle flag for fixed position set (cannons), or if the following hardcoded units, then set state rooted
     //  30236 | Argent Cannon
     //  39759 | Tankbuster Cannon
-    if ((vehicle->getVehicleInfo()->flags & VEHICLE_FLAG_FIXED_POSITION) || vehicle->getBase()->getEntry() == 30236 || vehicle->getBase()->getEntry() == 39759)
+    if ((vehicle->getVehicleInfo()->flags & VEHICLE_FLAG_POSITION_FIXED) || vehicle->getBase()->getEntry() == 30236 || vehicle->getBase()->getEntry() == 39759)
         setControlled(true, UNIT_STATE_ROOTED);
 
     if (!vehicle->addPassenger(this, seatId))
@@ -7286,9 +7286,9 @@ void Unit::exitVehicle(LocationVector const* exitPosition)
         // Change exit position based on seat entry addon data
         if (seatAddon)
         {
-            if (seatAddon->ExitParameter == VehicleExitParameters::VehicleExitParamOffset)
+            if (seatAddon->ExitParameter == VehicleExitParameters::Offset)
                 pos.ChangeCoordsOffset({ seatAddon->ExitParameterX, seatAddon->ExitParameterY, seatAddon->ExitParameterZ, seatAddon->ExitParameterO });
-            else if (seatAddon->ExitParameter == VehicleExitParameters::VehicleExitParamDest)
+            else if (seatAddon->ExitParameter == VehicleExitParameters::Destination)
                 pos.ChangeCoords({ seatAddon->ExitParameterX, seatAddon->ExitParameterY, seatAddon->ExitParameterZ, seatAddon->ExitParameterO });
         }
     }

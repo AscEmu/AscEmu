@@ -170,7 +170,9 @@ void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]]WorldPac
         return;
 
     if (!guid)
+    {
         GetPlayer()->callChangeSeat(-1, seatId > 0); // prev/next
+    }
     else if (Unit* vehUnit = GetPlayer()->GetMapMgrUnit(guid))
     {
         if (Vehicle* vehicle = vehUnit->getVehicleKit())
