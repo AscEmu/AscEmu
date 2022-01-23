@@ -94,7 +94,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
                 if (lookupname)
                 {
 #if VERSION_STRING < Cata
-                    y = std::string(achievement->name[0]);
+                    y = std::string(achievement->name[sWorld.getDbcLocaleLanguageId()]);
 #else
                     y = std::string(achievement->name);
 #endif
@@ -104,7 +104,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
                 if (!foundmatch && lookupdesc)
                 {
 #if VERSION_STRING < Cata
-                    y = std::string(achievement->description[0]);
+                    y = std::string(achievement->description[sWorld.getDbcLocaleLanguageId()]);
 #else
                     y = std::string(achievement->description);
 #endif
@@ -114,7 +114,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
                 if (!foundmatch && lookupreward)
                 {
 #if VERSION_STRING < Cata
-                    y = std::string(achievement->rewardName[0]);
+                    y = std::string(achievement->rewardName[sWorld.getDbcLocaleLanguageId()]);
 #else
                     y = std::string(achievement->rewardName);
 #endif
@@ -150,7 +150,11 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
                     // achievement is not completed
                     recout += ":0:0:0:-1:0:0:0:0|h[";
                 }
-                recout += achievement->name[0];
+#if VERSION_STRING < Cata
+                recout += achievement->name[sWorld.getDbcLocaleLanguageId()];
+#else
+                recout += achievement->name;
+#endif
                 if (!lookupreward)
                 {
                     recout += "]|h|r";
@@ -158,7 +162,11 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
                 else
                 {
                     recout += "]|h |cffffffff";
-                    recout += achievement->rewardName[0];
+#if VERSION_STRING < Cata
+                    recout += achievement->rewardName[sWorld.getDbcLocaleLanguageId()];
+#else
+                    recout += achievement->rewardName;
+#endif
                     recout += "|r";
                 }
                 strm.str("");
@@ -186,7 +194,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
                     continue;
                 }
 #if VERSION_STRING < Cata
-                y = std::string(criteria->name[0]);
+                y = std::string(criteria->name[sWorld.getDbcLocaleLanguageId()]);
 #else
                 y = std::string(criteria->name);
 #endif
@@ -202,7 +210,11 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
                 recout = "|cffffffffCriteria ";
                 recout += strm.str();
                 recout += ": |cfffff000";
-                recout += criteria->name[0];
+#if VERSION_STRING < Cata
+                recout += criteria->name[sWorld.getDbcLocaleLanguageId()];
+#else
+                recout += criteria->name;
+#endif
                 strm.str("");
                 auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
                 if (achievement)
@@ -230,7 +242,11 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
                         // achievement is not completed
                         recout += ":0:0:0:-1:0:0:0:0|h[";
                     }
-                    recout += achievement->name[0];
+#if VERSION_STRING < Cata
+                    recout += achievement->name[sWorld.getDbcLocaleLanguageId()];
+#else
+                    recout += achievement->name;
+#endif
                     if (!lookupreward)
                     {
                         recout += "]|h|r";
@@ -238,7 +254,11 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
                     else
                     {
                         recout += "]|h |cffffffff";
-                        recout += achievement->rewardName[0];
+#if VERSION_STRING < Cata
+                        recout += achievement->rewardName[sWorld.getDbcLocaleLanguageId()];
+#else
+                        recout += achievement->rewardName;
+#endif
                         recout += "|r";
                     }
                     strm.str("");
@@ -342,7 +362,7 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
         if (faction != nullptr)
         {
 #if VERSION_STRING < Cata
-            std::string y = std::string(faction->Name[0]);
+            std::string y = std::string(faction->Name[sWorld.getDbcLocaleLanguageId()]);
 #else
             std::string y = std::string(faction->Name);
 #endif
@@ -350,7 +370,7 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
             if (AscEmu::Util::Strings::contains(x, y))
             {
 #if VERSION_STRING < Cata
-                SendHighlightedName(m_session, "Faction", faction->Name[0], y, x, faction->ID);
+                SendHighlightedName(m_session, "Faction", faction->Name[sWorld.getDbcLocaleLanguageId()], y, x, faction->ID);
 #else
                 SendHighlightedName(m_session, "Faction", faction->Name, y, x, faction->ID);
 #endif
@@ -633,7 +653,7 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
             continue;
 
 #if VERSION_STRING < Cata
-        std::string y = std::string(skill_line->Name[0]);
+        std::string y = std::string(skill_line->Name[sWorld.getDbcLocaleLanguageId()]);
 #else
         std::string y = std::string(skill_line->Name);
 #endif
@@ -641,7 +661,7 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
         if (AscEmu::Util::Strings::contains(x, y))
         {
 #if VERSION_STRING < Cata
-            SendHighlightedName(m_session, "Skill", skill_line->Name[0], y, x, skill_line->id);
+            SendHighlightedName(m_session, "Skill", skill_line->Name[sWorld.getDbcLocaleLanguageId()], y, x, skill_line->id);
 #else
             SendHighlightedName(m_session, "Skill", skill_line->Name, y, x, skill_line->id);
 #endif

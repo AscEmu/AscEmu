@@ -2673,7 +2673,7 @@ void ObjectMgr::LoadInstanceEncounters()
         }
 
 #if VERSION_STRING == WotLK
-        dungeonEncounterName = dungeonEncounter->encounterName[0];
+        dungeonEncounterName = dungeonEncounter->encounterName[sWorld.getDbcLocaleLanguageId()];
 #else
         dungeonEncounterName = dungeonEncounter->encounterName;
 #endif
@@ -2692,7 +2692,7 @@ void ObjectMgr::LoadInstanceEncounters()
             if (itr != dungeonLastBosses.end())
             {
 #if VERSION_STRING == WotLK
-                const auto itrEncounterName = itr->second->encounterName[0];
+                const auto itrEncounterName = itr->second->encounterName[sWorld.getDbcLocaleLanguageId()];
 #else
                 const auto itrEncounterName = itr->second->encounterName;
 #endif

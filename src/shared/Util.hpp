@@ -19,7 +19,10 @@ namespace Util
     // WoW String functions
 
     /*! \brief Returns wow specific language string to id*/
-    uint32_t getLanguagesIdFromString(std::string langstr);
+    uint8_t getLanguagesIdFromString(std::string langstr);
+
+    /*! \brief Returns wow specific language id to string*/
+    std::string getLanguagesStringFromId(uint8_t id);
 
     /*! \brief Returns an uint32_t from a string between start/endcharacter */
     uint32_t getNumberFromStringByRange(std::string string, int startCharacter, int endCharacter);

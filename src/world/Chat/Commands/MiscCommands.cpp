@@ -562,7 +562,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
     auto out_z = obj->GetPositionZ();
     auto out_o = obj->GetOrientation();
 #if VERSION_STRING < Cata
-    auto out_area_name = at->area_name[0]; // enUS, hardcoded until locale is implemented properly
+    auto out_area_name = at->area_name[sWorld.getDbcLocaleLanguageId()];
 #else
     auto out_area_name = at->area_name;
 #endif

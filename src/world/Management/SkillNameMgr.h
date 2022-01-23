@@ -21,6 +21,7 @@
 #define SKILLNAMEMGR_H
 
 #include "Storage/DBC/DBCStores.h"
+#include "Server/World.h"
 
 enum SpellTreeName
 {
@@ -89,7 +90,7 @@ class SkillNameMgr
 
                 uint32 SkillID = skill_line->id;
 #if VERSION_STRING < Cata
-                char* SkillName = skill_line->Name[0];
+                char* SkillName = skill_line->Name[sWorld.getDbcLocaleLanguageId()];
 #else
                 char* SkillName = skill_line->Name;
 #endif
