@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 class DeadminesInstanceScript : public InstanceScript
 {
 public:
-    explicit DeadminesInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit DeadminesInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
     {
         mFactoryDoor_GUID = 0;
         mDefiasCannon_GUID = 0;
@@ -20,18 +20,18 @@ public:
         mIronCladDoor_GUID = 0;
         InstanceEncounter = 0;
 
-        if (getData(Deadmines::NPC_RHAHK_ZOR) == Finished)
+        if (getBossState(Deadmines::BOSS_RHAHKZOR) == Performed)
         {
             setGameObjectStateForEntry(Deadmines::GO_FACTORY_DOOR, GO_STATE_OPEN);
         }
 
-        if (getData(Deadmines::NPC_MR_SMITE) == Finished)
+        if (getBossState(Deadmines::BOSS_MR_SMITE) == Performed)
         {
             setGameObjectStateForEntry(Deadmines::GO_IRONCLAD_DOOR, GO_STATE_OPEN);
         }
     }
 
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new DeadminesInstanceScript(pMapMgr); }
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new DeadminesInstanceScript(pMapMgr); }
 
     void OnGameObjectPushToWorld(GameObject* pGameObject) override
     {

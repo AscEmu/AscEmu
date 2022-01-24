@@ -16,7 +16,7 @@ public:
     uint32_t mIonarDoors1GUID;
     uint32_t mIonarDoors2GUID;
 
-    explicit HallsOfLightningScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit HallsOfLightningScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
     {
         mGeneralDoorsGUID = 0;
         mVolkhanDoorsGUID = 0;
@@ -25,7 +25,7 @@ public:
         mIonarDoors2GUID = 0;
     }
 
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new HallsOfLightningScript(pMapMgr); }
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new HallsOfLightningScript(pMapMgr); }
 
     void OnLoad() override
     {

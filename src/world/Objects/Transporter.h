@@ -49,7 +49,7 @@ protected:
 
 class SERVER_DECL Transporter : public GameObject, public TransportBase
 {
-    friend Transporter* TransportHandler::createTransport(uint32_t, MapMgr*);
+    friend Transporter* TransportHandler::createTransport(uint32_t, WorldMap*);
     Transporter(uint64_t guid);
 
 public:
@@ -80,7 +80,7 @@ public:
 
     // Build Update for Player
     uint32  buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
-    void UpdateForMap(MapMgr* map);
+    void UpdateForMap(WorldMap* map);
 
     // This method transforms supplied transport offsets into global coordinates
     void CalculatePassengerPosition(float& x, float& y, float& z, float* o = nullptr) const override
@@ -102,11 +102,15 @@ public:
 
     void UpdatePosition(float x, float y, float z, float o);
 
-    void EnableMovement(bool enabled, MapMgr* instance);
+    void EnableMovement(bool enabled, WorldMap* instance);
+
+    void SetDelayedAddModelToMap() { _delayedAddModel = true; }
 
     TransportTemplate const* GetTransportTemplate() const { return _transportInfo; }
 
     uint32_t getCurrentFrame() { return _currentFrame->Index; }
+
+    bool isTransporter() const override { return true; }
 
 private:
     void MoveToNextWaypoint();
@@ -114,7 +118,7 @@ private:
 
     // Occours when Transport reaches Teleport Frame
     bool TeleportTransport(uint32_t newMapId, float x, float y, float z, float o);
-    void DelayedTeleportTransport(MapMgr* oldMap);
+    void DelayedTeleportTransport(WorldMap* oldMap);
 
     // Helper to Port Players
     void TeleportPlayers(float x, float y, float z, float o, uint32_t newMapId, uint32_t oldMapId, bool newMap);
@@ -131,6 +135,7 @@ private:
     bool IsMoving() const { return _isMoving; }
     void SetMoving(bool val) { _isMoving = val; }
 
+    bool _delayedAddModel = false;
     TransportTemplate const* _transportInfo = nullptr;
 
     KeyFrameVec::const_iterator _currentFrame;

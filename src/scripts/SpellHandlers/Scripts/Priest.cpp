@@ -563,7 +563,7 @@ public:
         manaReturn = static_cast<uint32_t>(std::ceil(damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_0) / 100.0f));
         return SpellScriptExecuteState::EXECUTE_OK;
 #elif VERSION_STRING < Mop
-        const auto caster = spellProc->getProcOwner()->GetMapMgrUnit(spellProc->getCasterGuid());
+        const auto caster = spellProc->getProcOwner()->getWorldMapUnit(spellProc->getCasterGuid());
         if (caster == nullptr)
             return SpellScriptExecuteState::EXECUTE_PREVENT;
 

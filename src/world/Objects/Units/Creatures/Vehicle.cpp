@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Storage/MySQLDataStore.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Server/Packets/SmsgControlVehicle.h"
@@ -215,11 +215,11 @@ void Vehicle::loadAccessory(uint32_t entry, int8_t seatId, bool minion, uint8_t 
     if (cp == nullptr)
         return;
 
-    Creature* accessory = getBase()->GetMapMgr()->CreateCreature(entry);
+    Creature* accessory = getBase()->getWorldMap()->createCreature(entry);
     accessory->Load(cp, getBase()->GetPositionX(), getBase()->GetPositionY(), getBase()->GetPositionZ(), getBase()->GetOrientation());
     accessory->setPhase(PHASE_SET, getBase()->GetPhase());
     accessory->setFaction(getBase()->getFactionTemplate());
-    accessory->PushToWorld(getBase()->GetMapMgr());
+    accessory->PushToWorld(getBase()->getWorldMap());
 
     accessory->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
     accessory->addUnitMovementFlag(MOVEFLAG_TRANSPORT);
@@ -263,7 +263,7 @@ Unit* Vehicle::getPassenger(int8_t seatId) const
     if (seat == Seats.end())
         return nullptr;
 
-    return getBase()->GetMapMgrUnit(seat->second._passenger.guid);
+    return getBase()->getWorldMapUnit(seat->second._passenger.guid);
 }
 
 SeatMap::const_iterator Vehicle::getNextEmptySeat(int8_t seatId, bool next) const
@@ -343,7 +343,7 @@ bool Vehicle::addPassenger(Unit* unit, int8_t seatId)
         // when there is already an Unit in the requested seat remove him
         if (!seat->second.isEmpty())
         {
-            Unit* passenger = getBase()->GetMapMgrUnit(seat->second._passenger.guid);
+            Unit* passenger = getBase()->getWorldMapUnit(seat->second._passenger.guid);
             if (passenger)
                 passenger->callExitVehicle();
         }
@@ -430,7 +430,7 @@ void Vehicle::relocatePassengers()
     // not sure that absolute position calculation is correct, it must depend on vehicle pitch angle
     for (SeatMap::const_iterator itr = Seats.begin(); itr != Seats.end(); ++itr)
     {
-        if (Unit* passenger = getBase()->GetMapMgrUnit(itr->second._passenger.guid))
+        if (Unit* passenger = getBase()->getWorldMapUnit(itr->second._passenger.guid))
         {
             if (passenger && passenger->IsInWorld())
             {

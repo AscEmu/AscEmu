@@ -5,6 +5,27 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <cstdint>
+#include <map>
+#include <string>
+
+class Creature;
+
+enum SpawnObjectType
+{
+    SPAWN_TYPE_CREATURE                     = 0,
+    SPAWN_TYPE_GAMEOBJECT                   = 1,
+    NUM_SPAWN_TYPES_WITH_DATA                  ,
+};
+
+enum SpawnObjectTypeMask
+{
+    SPAWN_TYPEMASK_CREATURE = (1 << SPAWN_TYPE_CREATURE),
+    SPAWN_TYPEMASK_GAMEOBJECT = (1 << SPAWN_TYPE_GAMEOBJECT),
+
+    SPAWN_TYPEMASK_WITH_DATA = (1 << NUM_SPAWN_TYPES_WITH_DATA) - 1,
+};
+
 enum SpawnFlags
 {
     SPAWFLAG_FLAG_NONE                      = 0x00,             // Creatures always Respawns if no BossId is set

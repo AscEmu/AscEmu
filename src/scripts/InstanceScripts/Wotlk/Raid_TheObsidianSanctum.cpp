@@ -12,12 +12,12 @@ class ObsidianSanctumScript : public InstanceScript
 public:
     uint32_t m_creatureGuid[OS_DATA_END];
 
-    explicit ObsidianSanctumScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit ObsidianSanctumScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
     {
         memset(m_creatureGuid, 0, sizeof(m_creatureGuid));
     }
 
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new ObsidianSanctumScript(pMapMgr); }
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new ObsidianSanctumScript(pMapMgr); }
 
     void OnLoad() override
     {
@@ -76,7 +76,7 @@ public:
                 break;
         }
 
-        Creature* pSartharion = GetCreature(BOSS_SARTHARION);
+        Creature* pSartharion = getCreature(BOSS_SARTHARION);
         if (pSartharion == NULL)
             return;
 
@@ -84,7 +84,7 @@ public:
         pSartharion->RemoveAura(pSpellEntry);   // unproper hackfix
     }
 
-    Creature* GetCreature(uint8_t pData)
+    Creature* getCreature(uint8_t pData)
     {
         if (pData >= OS_DATA_END)   // impossible tho
             return NULL;
@@ -242,7 +242,7 @@ public:
 
         for (uint8_t i = 0; i < (OS_DATA_END - 1); ++i)
         {
-            m_cDrakes[i] = mInstance->GetCreature(i);
+            m_cDrakes[i] = mInstance->getCreature(i);
             if (m_cDrakes[i] != NULL && m_cDrakes[i]->isAlive())
             {
                 m_bDrakes[i] = true;

@@ -190,8 +190,8 @@ public: //\todo Zyres: public fpr LuaEngine, sort out why
 
     void Update(unsigned long time_passed);             // hides function Object::Update
     // void AddToWorld();                               // not used
-    // void AddToWorld(MapMgr* pMapMgr);                // not used
-    // void PushToWorld(MapMgr*);                       // not used
+    // void AddToWorld(WorldMap* pMapMgr);                // not used
+    // void PushToWorld(WorldMap*);                       // not used
     virtual void RemoveFromWorld(bool free_guid);       // hides virtual function Object::RemoveFromWorld
     // void OnPrePushToWorld();                         // not used
     virtual void OnPushToWorld();                       // hides virtual function Object::OnPushToWorld
@@ -1442,6 +1442,7 @@ public:
 
     void EventModelChange();
     inline float GetModelHalfSize() { return m_modelhalfsize * getScale(); }
+    float getCollisionHeight() const override;
 
     void RemoveFieldSummon();
 

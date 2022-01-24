@@ -18,11 +18,11 @@
  */
 
 #include "RuinsOfLordaeron.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Objects/GameObject.h"
 #include "Server/Master.h"
 
-RuinsOfLordaeron::RuinsOfLordaeron(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :
+RuinsOfLordaeron::RuinsOfLordaeron(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :
     Arena(mgr, id, lgroup, t, players_per_side)
 {}
 
@@ -90,6 +90,6 @@ bool RuinsOfLordaeron::HookHandleRepop(Player* plr)
 {
     LocationVector dest(0, 0, 0, 0);
     dest.ChangeCoords({ 1286.112061f, 1668.334961f, 39.289127f });
-    plr->safeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);
+    plr->safeTeleport(m_mapMgr->getBaseMap()->getMapId(), m_mapMgr->getInstanceId(), dest);
     return true;
 }

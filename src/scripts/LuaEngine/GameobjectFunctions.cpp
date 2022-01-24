@@ -6,17 +6,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GameobjectFunctions.h"
 #include "LuaMacros.h"
 #include <Objects/GameObject.h>
-#include <Map/MapMgr.h>
+#include <Map/Management/MapMgr.hpp>
 #include "LuaGlobal.h"
 #include "LUAEngine.h"
-#include <Map/MapScriptInterface.h>
+#include <Map/Maps/MapScriptInterface.h>
 #include <Objects/Units/Creatures/Creature.h>
 #include <Storage/MySQLDataStore.hpp>
-#include <Map/WorldCreatorDefines.hpp>
 #include <Spell/SpellMgr.hpp>
 #include <Server/MainServerDefines.h>
 #include "LuaHelpers.h"
-#include <Map/WorldCreator.h>
 #include "Management/WeatherMgr.h"
 
 extern "C"
@@ -185,7 +183,7 @@ int LuaGameObject::GetCreatureNearestCoords(lua_State* L, GameObject* ptr)
     float y = CHECK_FLOAT(L, 2);
     float z = CHECK_FLOAT(L, 3);
     uint32_t entryid = CHECK_ULONG(L, 4);
-    Creature* crc = ptr->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(x, y, z, entryid);
+    Creature* crc = ptr->getWorldMap()->getInterface()->GetCreatureNearestCoords(x, y, z, entryid);
     if (crc && crc->isCreatureOrPlayer())
     {
         PUSH_UNIT(L, crc);
@@ -204,7 +202,7 @@ int LuaGameObject::GetGameObjectNearestCoords(lua_State* L, GameObject* ptr)
     float y = CHECK_FLOAT(L, 2);
     float z = CHECK_FLOAT(L, 3);
     uint32_t entryid = CHECK_ULONG(L, 4);
-    GameObject* go = ptr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(x, y, z, entryid);
+    GameObject* go = ptr->getWorldMap()->getInterface()->GetGameObjectNearestCoords(x, y, z, entryid);
     if (go != NULL)
     PUSH_GO(L, go);
     else
@@ -303,7 +301,7 @@ int LuaGameObject::SpawnCreature(lua_State* L, GameObject* ptr)
         lua_pushnil(L);
         return 1;
     }
-    Creature* pCreature = ptr->GetMapMgr()->CreateCreature(entry);
+    Creature* pCreature = ptr->getWorldMap()->createCreature(entry);
     if (pCreature == nullptr)
     {
         lua_pushnil(L);
@@ -317,7 +315,7 @@ int LuaGameObject::SpawnCreature(lua_State* L, GameObject* ptr)
     pCreature->setVirtualItemSlotId(RANGED, equip3);
     pCreature->setPhase(PHASE_SET, phase);
     pCreature->m_noRespawn = true;
-    pCreature->PushToWorld(ptr->GetMapMgr());
+    pCreature->PushToWorld(ptr->getWorldMap());
     if (duration)
         pCreature->Despawn(duration, 0);
     if (save)
@@ -341,12 +339,12 @@ int LuaGameObject::SpawnGameObject(lua_State* L, GameObject* ptr)
     if (!entry_id)
         return 0;
 
-    GameObject* go = ptr->GetMapMgr()->CreateGameObject(entry_id);
+    GameObject* go = ptr->getWorldMap()->createGameObject(entry_id);
     uint32_t mapid = ptr->GetMapId();
     go->CreateFromProto(entry_id, mapid, x, y, z, o);
     go->Phase(PHASE_SET, phase);
     go->setScale(scale);
-    go->AddToWorld(ptr->GetMapMgr());
+    go->AddToWorld(ptr->getWorldMap());
 
     if (duration)
     sEventMgr.AddEvent(go, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_UPDATE, duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -451,7 +449,7 @@ int LuaGameObject::CalcRadAngle(lua_State* L, GameObject* ptr)
 int LuaGameObject::GetInstanceID(lua_State* L, GameObject* ptr)
 {
     TEST_GO_RET();
-    if (ptr->GetMapMgr()->GetMapInfo()->isNonInstanceMap())
+    if (ptr->getWorldMap()->getBaseMap()->getMapInfo()->isNonInstanceMap())
         lua_pushnil(L);
     else
         lua_pushinteger(L, ptr->GetInstanceID());
@@ -614,8 +612,8 @@ int LuaGameObject::Update(lua_State* /*L*/, GameObject* ptr)
     //just despawns/respawns to update GO visuals
     //credits: Sadikum
     TEST_GO()
-    MapMgr* mapmgr = ptr->GetMapMgr();
-    uint32_t NewGuid = mapmgr->GenerateGameobjectGuid();
+    auto* mapmgr = ptr->getWorldMap();
+    uint32_t NewGuid = mapmgr->generateGameobjectGuid();
     ptr->RemoveFromWorld(true);
     ptr->SetNewGuid(NewGuid);
     ptr->PushToWorld(mapmgr);
@@ -677,7 +675,7 @@ int LuaGameObject::GetLandHeight(lua_State* L, GameObject* ptr)
         lua_pushnil(L);
     else
     {
-        float lH = ptr->GetMapMgr()->GetADTLandHeight(x, y);
+        float lH = ptr->getWorldMap()->getGridHeight(x, y);
         lua_pushnumber(L, lH);
     }
     return 1;
@@ -843,54 +841,8 @@ int LuaGameObject::AddLoot(lua_State* L, GameObject* ptr)
         WorldDatabase.Execute("REPLACE INTO loot_gameobjects VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
         delete result;
     }
-    sLootMgr.addLoot(&lt->loot, itemid, ichance, mincount, maxcount, ptr->GetMapMgr()->iInstanceMode);
+    sLootMgr.addLoot(&lt->loot, itemid, ichance, mincount, maxcount, ptr->getWorldMap()->getDifficulty());
     return 0;
-}
-
-int LuaGameObject::GetInstanceOwner(lua_State* L, GameObject* ptr)
-{
-    MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(ptr->GetMapId());
-    if (pMapinfo) //this block = IsInInstace()
-    {
-        if (!pMapinfo->isNonInstanceMap())
-        {
-            lua_pushboolean(L, 0);
-            return 1;
-        }
-    }
-    Instance* pInstance = sInstanceMgr.GetInstanceByIds(ptr->GetMapId(), ptr->GetInstanceID());
-    if (pInstance == nullptr)
-        return 0;
-
-    if (pInstance->m_creatorGuid != 0) // creator guid is 0 if its owned by a group.
-    {
-        Player* owner = pInstance->m_mapMgr->GetPlayer(pInstance->m_creatorGuid);
-        PUSH_UNIT(L, owner);
-    }
-    else
-    {
-        uint32_t group_id = pInstance->m_creatorGroup;
-        if (group_id == 0)
-        {
-            DLLLogDetail("Instance is not not owned by a group or a guid!");
-            return 0;
-        }
-
-        auto get_group_id = sObjectMgr.GetGroupById(group_id);
-        if (get_group_id == nullptr)
-            return 0;
-
-        auto group_leader = get_group_id->GetLeader();
-        if (group_leader == nullptr)
-            return 0;
-
-        auto group_leader_online = sObjectMgr.GetPlayer(group_leader->guid);
-        if (group_leader_online == nullptr)
-            return 0;
-
-        PUSH_UNIT(L, group_leader_online);
-    }
-    return 1;
 }
 
 int LuaGameObject::GetDungeonDifficulty(lua_State* L, GameObject* ptr)
@@ -904,10 +856,10 @@ int LuaGameObject::GetDungeonDifficulty(lua_State* L, GameObject* ptr)
             return 1;
         }
     }
-    Instance* pInstance = sInstanceMgr.GetInstanceByIds(ptr->GetMapId(), ptr->GetInstanceID());
+    WorldMap* pInstance = sMapMgr.findWorldMap(ptr->GetMapId(), ptr->GetInstanceID());
     if (pInstance != nullptr)
     {
-        lua_pushnumber(L, pInstance->m_difficulty);
+        lua_pushnumber(L, pInstance->getDifficulty());
         return 1;
     }
     return 0;
@@ -925,10 +877,10 @@ int LuaGameObject::SetDungeonDifficulty(lua_State* L, GameObject* ptr)
             return 1;
         }
     }
-    Instance* pInstance = sInstanceMgr.GetInstanceByIds(ptr->GetMapId(), ptr->GetInstanceID());
+    WorldMap* pInstance = sMapMgr.findWorldMap(ptr->GetMapId(), ptr->GetInstanceID());
     if (pInstance != nullptr)
     {
-        pInstance->m_difficulty = difficulty;
+        pInstance->setSpawnMode(difficulty);
         lua_pushboolean(L, 1);
         return 1;
     }
@@ -971,8 +923,8 @@ int LuaGameObject::GetAreaId(lua_State* L, GameObject* ptr)
 int LuaGameObject::SetPosition(lua_State* L, GameObject* ptr)
 {
     TEST_GO_RET();
-    MapMgr* mapMgr = ptr->GetMapMgr();
-    uint32_t NewGuid = mapMgr->GenerateGameobjectGuid();
+    auto* mapMgr = ptr->getWorldMap();
+    uint32_t NewGuid = mapMgr->generateGameobjectGuid();
     ptr->RemoveFromWorld(true);
     ptr->SetNewGuid(NewGuid);
     float x = CHECK_FLOAT(L, 1);
@@ -1002,8 +954,8 @@ int LuaGameObject::ChangeScale(lua_State* L, GameObject* ptr)
     ptr->setScale(nScale);
     if (updateNow)
     {
-        MapMgr* mapMgr = ptr->GetMapMgr();
-        uint32_t nguid = mapMgr->GenerateGameobjectGuid();
+        auto* mapMgr = ptr->getWorldMap();
+        uint32_t nguid = mapMgr->generateGameobjectGuid();
         ptr->RemoveFromWorld(true);
         ptr->SetNewGuid(nguid);
         ptr->PushToWorld(mapMgr);
@@ -1095,7 +1047,7 @@ int LuaGameObject::GetWoWObject(lua_State* L, GameObject* ptr)
 {
     TEST_GO();
     uint64_t guid = CHECK_GUID(L, 1);
-    Object* obj = ptr->GetMapMgr()->_GetObject(guid);
+    Object* obj = ptr->getWorldMap()->getObject(guid);
     if (obj != NULL && obj->isCreatureOrPlayer())
     PUSH_UNIT(L, obj);
     else if (obj != NULL && obj->isGameObject())
@@ -1265,20 +1217,22 @@ int LuaGameObject::GetWorldStateForZone(lua_State* L, GameObject* ptr)
 
     uint32_t field = static_cast<uint32_t>(luaL_checkinteger(L, 1));
 
-    auto a = ptr->GetMapMgr()->GetArea(ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
-    if (a == NULL)
-        return 0;
+    uint32_t zoneId;
+    uint32_t areaId;
+    uint32_t entry = 0;
 
-    uint32_t zone = a->zone;
+   ptr->getWorldMap()->getZoneAndAreaId(ptr->GetPhase(), zoneId, areaId, ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
 
-    if (zone == 0)
-        zone = a->id;
+   if (zoneId == 0)
+       entry = areaId;
+   else
+       entry = zoneId;
 
-    if (zone == 0)
+    if (entry == 0)
         return 0;
 
     uint32_t value
-            = ptr->GetMapMgr()->GetWorldStatesHandler().GetWorldStateForZone(zone, 0, field);
+            = ptr->getWorldMap()->getWorldStatesHandler().GetWorldStateForZone(entry, 0, field);
 
     lua_pushinteger(L, value);
 
@@ -1295,19 +1249,21 @@ int LuaGameObject::SetWorldStateForZone(lua_State* L, GameObject* ptr)
     uint32_t field = static_cast<uint32_t>(luaL_checkinteger(L, 1));
     uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 
-    auto a = ptr->GetMapMgr()->GetArea(ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
-    if (a == NULL)
+    uint32_t zoneId;
+    uint32_t areaId;
+    uint32_t entry = 0;
+
+    ptr->getWorldMap()->getZoneAndAreaId(ptr->GetPhase(), zoneId, areaId, ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
+
+    if (zoneId == 0)
+        entry = areaId;
+    else
+        entry = zoneId;
+
+    if (entry == 0)
         return 0;
 
-    uint32_t zone = a->zone;
-
-    if (zone == 0)
-        zone = a->id;
-
-    if (zone == 0)
-        return 0;
-
-    ptr->GetMapMgr()->GetWorldStatesHandler().SetWorldStateForZone(zone, 0, field, value);
+    ptr->getWorldMap()->getWorldStatesHandler().SetWorldStateForZone(entry, 0, field, value);
 
     return 0;
 }

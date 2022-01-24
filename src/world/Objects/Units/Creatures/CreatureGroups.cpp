@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CreatureGroups.h"
 #include "Creature.h"
 #include "AIInterface.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 
 #include "Movement/MovementManager.h"
 #include "Management/ObjectMgr.h"
@@ -21,7 +21,7 @@ FormationMgr* FormationMgr::getInstance()
 
 void FormationMgr::addCreatureToGroup(uint32_t leaderSpawnId, Creature* creature)
 {
-    MapMgr* map = creature->GetMapMgr();
+    WorldMap* map = creature->getWorldMap();
 
     auto itr = map->CreatureGroupHolder.find(leaderSpawnId);
     if (itr != map->CreatureGroupHolder.end())
@@ -62,7 +62,7 @@ void FormationMgr::removeCreatureFromGroup(CreatureGroup* group, Creature* membe
 
     if (group->isEmpty())
     {
-        MapMgr* map = member->GetMapMgr();
+        WorldMap* map = member->getWorldMap();
 
         sLogger.debug("FormationMgr : Deleting group with InstanceID %u", member->GetInstanceID());
         auto itr = map->CreatureGroupHolder.find(group->getLeaderSpawnId());

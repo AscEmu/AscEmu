@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgEjectPassenger.h"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Players/Player.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Objects/Units/Creatures/Vehicle.h"
 
 using namespace AscEmu::Packets;
@@ -86,7 +86,7 @@ void WorldSession::handleRequestVehicleSwitchSeat(WorldPacket& recvPacket)
     {
         GetPlayer()->callChangeSeat(seatId);
     }
-    else if (Unit* vehUnit = GetPlayer()->GetMapMgr()->GetUnit(guid.getRawGuid()))
+    else if (Unit* vehUnit = GetPlayer()->getWorldMap()->getUnit(guid.getRawGuid()))
     {
         if (Vehicle* vehicle = vehUnit->getVehicleKit())
         {
@@ -126,7 +126,7 @@ void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]]WorldPac
     {
         GetPlayer()->callChangeSeat(seatId, seatId > 0); // prev/next
     }
-    else if (Unit* vehUnit = GetPlayer()->GetMapMgrUnit(accessory))
+    else if (Unit* vehUnit = GetPlayer()->getWorldMapUnit(accessory))
     {
         if (Vehicle* vehicle = vehUnit->getVehicleKit())
             if (vehicle->hasEmptySeat(seatId))
@@ -176,7 +176,7 @@ void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]]WorldPac
     {
         GetPlayer()->callChangeSeat(seatId, seatId > 0); // prev/next
     }
-    else if (Unit* vehUnit = GetPlayer()->GetMapMgrUnit(accessory))
+    else if (Unit* vehUnit = GetPlayer()->getWorldMapUnit(guid))
     {
         if (Vehicle* vehicle = vehUnit->getVehicleKit())
             if (vehicle->hasEmptySeat(seatId))
@@ -207,7 +207,7 @@ void WorldSession::handleRemoveVehiclePassenger(WorldPacket& recvPacket)
     if (srlPacket.guid == 0)
         return;
 
-    const auto passengerUnit = _player->GetMapMgr()->GetUnit(srlPacket.guid);
+    const auto passengerUnit = _player->getWorldMap()->getUnit(srlPacket.guid);
     if (!passengerUnit)
         return;
 
@@ -238,7 +238,7 @@ void WorldSession::handleEnterVehicle(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto unit = _player->GetMapMgr()->GetUnit(srlPacket.guid);
+    const auto unit = _player->getWorldMap()->getUnit(srlPacket.guid);
     if (unit == nullptr)
         return;
 

@@ -35,7 +35,7 @@ class ShadowfangKeepInstance : public InstanceScript
     uint32_t m_encounterData[ShadowfangKeep::INDEX_MAX];
 
 public:
-    explicit ShadowfangKeepInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr),
+    explicit ShadowfangKeepInstance(WorldMap* pMapMgr) : InstanceScript(pMapMgr),
 
     // Gameobjects low guids
     go_leftCell_GUID(0),
@@ -59,7 +59,7 @@ public:
         memset(m_encounterData, NotStarted, sizeof(m_encounterData));
     }
 
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new ShadowfangKeepInstance(pMapMgr); }
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new ShadowfangKeepInstance(pMapMgr); }
 
     void SetLocaleInstanceData(uint32_t /*pType*/, uint32_t pIndex, uint32_t pData)
     {
@@ -87,11 +87,11 @@ public:
             case ShadowfangKeep::INDEX_NANDOS:
             {
                 // Despawn all summons on fail or on boos death
-                if (pData == InvalidState || pData == Finished)
+                if (pData == InvalidState || pData == Performed)
                 {
                     for (std::list<uint32_t>::iterator itr = nandos_summons.begin(); itr != nandos_summons.end();)
                     {
-                        if (Creature* pCreature = GetInstance()->GetCreature(*itr))
+                        if (Creature* pCreature = GetInstance()->getCreature(*itr))
                         {
                             pCreature->Despawn(1000, 0);
                         }
@@ -100,7 +100,7 @@ public:
                     // Despawn creatures
                 }
 
-                if (pData == Finished)
+                if (pData == Performed)
                 {
                     GameObject* pGate = GetGameObjectByGuid(go_arugalsLair_GUID);
                     if (pGate != nullptr && pGate->getState() == GO_STATE_CLOSED)
@@ -112,10 +112,10 @@ public:
             case ShadowfangKeep::INDEX_RETHILGORE:
             {
                 // Add gossip flag to prisoners
-                if (pData == Finished)
+                if (pData == Performed)
                 {
                     // Set gossip flags for both prisoners and push texts
-                    if (Creature* pCreature = GetInstance()->GetCreature(npc_adamant_GUID))
+                    if (Creature* pCreature = GetInstance()->getCreature(npc_adamant_GUID))
                     {
                         if (pCreature->isAlive())
                         {
@@ -124,7 +124,7 @@ public:
                         }
                     }
 
-                    if (Creature* pCreature = GetInstance()->GetCreature(npc_ashcrombe_GUID))
+                    if (Creature* pCreature = GetInstance()->getCreature(npc_ashcrombe_GUID))
                     {
                         if (pCreature->isAlive())
                         {
@@ -157,7 +157,7 @@ public:
             case ShadowfangKeep::INDEX_PRISONER_EVENT:
             {
                 // Open doors in any case
-                if (pData == Finished || pData == Performed)
+                if (pData == Performed)
                 {
                     if (GameObject* pGO = GetGameObjectByGuid(go_courtyarDoor_GUID))
                     {
@@ -168,7 +168,7 @@ public:
             }break;
             case ShadowfangKeep::INDEX_FENRUS:
             {
-                if (pData == Finished)
+                if (pData == Performed)
                 {
                     SetLocaleInstanceData(0, ShadowfangKeep::INDEX_VOIDWALKER, InProgress);
                     GameObject* pGate = GetGameObjectByGuid(go_sorcererGate_GUID);
@@ -210,7 +210,7 @@ public:
             case ShadowfangKeep::GO_ARUGALS_LAIR_GATE:
             {
                 go_arugalsLair_GUID = pGameObject->getGuidLow();
-                if (GetInstanceData(0, ShadowfangKeep::INDEX_NANDOS) == Finished && pGameObject->getState() == GO_STATE_CLOSED)
+                if (GetInstanceData(0, ShadowfangKeep::INDEX_NANDOS) == Performed && pGameObject->getState() == GO_STATE_CLOSED)
                 {
                     pGameObject->setState(GO_STATE_OPEN);
                 }
@@ -218,7 +218,7 @@ public:
             case ShadowfangKeep::GO_SORCERER_GATE:
             {
                 go_sorcererGate_GUID = pGameObject->getGuidLow();
-                if (GetInstanceData(0, ShadowfangKeep::INDEX_FENRUS) == Finished && pGameObject->getState() == GO_STATE_CLOSED)
+                if (GetInstanceData(0, ShadowfangKeep::INDEX_FENRUS) == Performed && pGameObject->getState() == GO_STATE_CLOSED)
                 {
                     pGameObject->setState(GO_STATE_OPEN);
                 }
@@ -226,7 +226,7 @@ public:
             case ShadowfangKeep::GO_LEFT_LEVER:
             {
                 go_leftCellLever_GUID = pGameObject->getGuidLow();
-                if (GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) != Finished)
+                if (GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) != Performed)
                 {
                     pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                 }
@@ -234,7 +234,7 @@ public:
             case ShadowfangKeep::GO_RIGHT_LEVER:
             {
                 go_rightCellLever_GUID = pGameObject->getGuidLow();
-                if (GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) != Finished)
+                if (GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) != Performed)
                 {
                     pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                 }
@@ -242,7 +242,7 @@ public:
             case ShadowfangKeep::GO_MIDDLE_LEVER:
             {
                 go_middleCellLever_GUID = pGameObject->getGuidLow();
-                if (GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) != Finished)
+                if (GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) != Performed)
                 {
                     pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
                 }
@@ -250,7 +250,7 @@ public:
             case ShadowfangKeep::GO_COURTYARD_DOOR:
             {
                 go_courtyarDoor_GUID = pGameObject->getGuidLow();
-                if (GetInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT) == Finished && pGameObject->getState() == GO_STATE_CLOSED)
+                if (GetInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT) == Performed && pGameObject->getState() == GO_STATE_CLOSED)
                 {
                     pGameObject->setState(GO_STATE_OPEN);
                 }
@@ -299,15 +299,15 @@ public:
         {
             case ShadowfangKeep::CN_NANDOS:
             {
-                SetLocaleInstanceData(0, ShadowfangKeep::INDEX_NANDOS, Finished);
+                SetLocaleInstanceData(0, ShadowfangKeep::INDEX_NANDOS, Performed);
             }break;
             case ShadowfangKeep::CN_RETHILGORE:
             {
-                SetLocaleInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE, Finished);
+                SetLocaleInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE, Performed);
             }break;
             case ShadowfangKeep::CN_FENRUS:
             {
-                SetLocaleInstanceData(0, ShadowfangKeep::INDEX_FENRUS, Finished);
+                SetLocaleInstanceData(0, ShadowfangKeep::INDEX_FENRUS, Performed);
             }break;
             default:
                 break;
@@ -356,7 +356,7 @@ public:
             }break;
             case ShadowfangKeep::CN_DEATHSTALKER_VINCENT:
             {
-                if (GetInstanceData(0, ShadowfangKeep::INDEX_ARUGAL_INTRO) == Finished)
+                if (GetInstanceData(0, ShadowfangKeep::INDEX_ARUGAL_INTRO) == Performed)
                 {
                     // Make him look like dead
                     pCreature->setStandState(STANDSTATE_DEAD);
@@ -384,7 +384,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new ArugalAI(c); }
     ArugalAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0)
     {
-        SFK_Instance = static_cast<ShadowfangKeepInstance*>(pCreature->GetMapMgr()->GetScript());
+        SFK_Instance = static_cast<ShadowfangKeepInstance*>(pCreature->getWorldMap()->getScript());
         if (SFK_Instance && SFK_Instance->GetInstanceData(0, ShadowfangKeep::INDEX_ARUGAL_INTRO) == NotStarted)
         {
             RegisterAIUpdateEvent(500);
@@ -435,7 +435,7 @@ public:
                 }break;
                 case 7:
                 {
-                    if (Creature* pVincent = getCreature()->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), ShadowfangKeep::CN_DEATHSTALKER_VINCENT))
+                    if (Creature* pVincent = getCreature()->getWorldMap()->getInterface()->GetCreatureNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), ShadowfangKeep::CN_DEATHSTALKER_VINCENT))
                     {
                         // Make him look like dead
                         pVincent->SendScriptTextChatMessage(ShadowfangKeep::SAY_VINCENT_DEATH);
@@ -452,7 +452,7 @@ public:
                 case 9:
                 {
                     getCreature()->castSpell(getCreature(), ShadowfangKeep::SPELL_ARUGAL_SPAWN, true);
-                    SFK_Instance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_ARUGAL_INTRO, Finished);
+                    SFK_Instance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_ARUGAL_INTRO, Performed);
                     getCreature()->setVisible(false);
                     RemoveAIUpdateEvent();
                 }break;
@@ -474,7 +474,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new AdamantAI(c); }
     AdamantAI(Creature* pCreature) : CreatureAIScript(pCreature), eventStarted(false)
     {
-        SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->GetMapMgr()->GetScript());
+        SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->getWorldMap()->getScript());
 
         loadCustomWaypoins(1);
 
@@ -559,7 +559,7 @@ public:
                         break;
                     case 5:
                     {
-                        SFK_instance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT, Finished);
+                        SFK_instance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT, Performed);
                         setWaypointToMove(1, 12);  // Lets run
                     }
                         break;
@@ -585,8 +585,8 @@ public:
         //TODO: correct text id
         GossipMenu menu(pObject->getGuid(), sMySQLStore.getGossipTextIdForNpc(pObject->getEntry()));
 
-        ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript());
-        if (pInstance != nullptr && pInstance->GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) == Finished && pInstance->GetInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT) == NotStarted)
+        ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->getWorldMap()->getScript());
+        if (pInstance != nullptr && pInstance->GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) == Performed && pInstance->GetInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT) == NotStarted)
         {
             //TODO: move this to database
             menu.addItem(GOSSIP_ICON_CHAT, ShadowfangKeep::prisonerGossipOptionID, 1);
@@ -607,7 +607,7 @@ public:
                 pPrisoner->getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
                 pPrisoner->getCreature()->eventAddEmote(EMOTE_ONESHOT_CHEER, 4000);
                 pPrisoner->eventStarted = true;
-                if (ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript()))
+                if (ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->getWorldMap()->getScript()))
                     pInstance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT, InProgress);
             }
         }
@@ -622,7 +622,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new AshcrombeAI(c); }
     AshcrombeAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0), argued(false), eventStarted(false)
     {
-        SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->GetMapMgr()->GetScript());
+        SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->getWorldMap()->getScript());
 
         for (uint8_t i = 0; i < ShadowfangKeep::ashcrombeWpCount; ++i)
         {
@@ -714,7 +714,7 @@ public:
                     {
                         getCreature()->castSpell(getCreature(), ShadowfangKeep::SPELL_ASHCROMBE_FIRE, true);
                         getCreature()->SendScriptTextChatMessage(ShadowfangKeep::SAY_ASHCROMBE_VANISH);
-                        SFK_instance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT, Finished);
+                        SFK_instance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT, Performed);
                         RemoveAIUpdateEvent();
                     }break;
                     default:
@@ -751,8 +751,8 @@ public:
     {
         GossipMenu menu(pObject->getGuid(), sMySQLStore.getGossipTextIdForNpc(pObject->getEntry()));
 
-        ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript());
-        if (pInstance != nullptr && pInstance->GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) == Finished && pInstance->GetInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT) == NotStarted)
+        ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->getWorldMap()->getScript());
+        if (pInstance != nullptr && pInstance->GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) == Performed && pInstance->GetInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT) == NotStarted)
         {
             menu.addItem(GOSSIP_ICON_CHAT, ShadowfangKeep::prisonerGossipOptionID, 1);
         }
@@ -772,7 +772,7 @@ public:
                 pPrisoner->getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
                 pPrisoner->getCreature()->emote(EMOTE_ONESHOT_POINT);
                 pPrisoner->eventStarted = true;
-                if (ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript()))
+                if (ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->getWorldMap()->getScript()))
                     pInstance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT, InProgress);
             }
         }
@@ -864,7 +864,7 @@ public:
 
     explicit NandosAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        SFK_instance = static_cast<ShadowfangKeepInstance*>(pCreature->GetMapMgr()->GetScript());
+        SFK_instance = static_cast<ShadowfangKeepInstance*>(pCreature->getWorldMap()->getScript());
 
         sCallBleakWord = addAISpell(SPELL_CALL_BLEAK_WORG, 0.0f, TARGET_SELF);
         sCallSlaveringWorg = addAISpell(SPELL_CALL_SLAVERING_WORG, 0.0f, TARGET_SELF);
@@ -1055,7 +1055,7 @@ public:
 
     ArugalBossAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0), arugalPosition(ARUGAL_LOC_LEDGE)
     {
-        SFK_instance = static_cast<ShadowfangKeepInstance*>(pCreature->GetMapMgr()->GetScript());
+        SFK_instance = static_cast<ShadowfangKeepInstance*>(pCreature->getWorldMap()->getScript());
 
         sVoidBolt = addAISpell(SPELL_VOID_BOLT, 0.0f, TARGET_ATTACKING);
 
@@ -1133,7 +1133,7 @@ public:
 
                 // sanctum32: not sure if it is correct spell id
                 getCreature()->castSpell(getCreature(), ShadowfangKeep::SPELL_ASHCROMBE_FIRE, true);
-                SFK_instance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_VOIDWALKER, Finished);
+                SFK_instance->SetLocaleInstanceData(0, ShadowfangKeep::INDEX_VOIDWALKER, Performed);
                 RemoveAIUpdateEvent();
             }break;
         }
@@ -1224,7 +1224,7 @@ bool ashrombeUnlockDummySpell(uint8_t /*effectIndex*/, Spell* pSpell)
         return false;
     }
 
-    if (GameObject* pGameObject = target->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), ShadowfangKeep::GO_COURTYARD_DOOR))
+    if (GameObject* pGameObject = target->getWorldMap()->getInterface()->GetGameObjectNearestCoords(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), ShadowfangKeep::GO_COURTYARD_DOOR))
     {
         pGameObject->setState(GO_STATE_OPEN);
         return true;

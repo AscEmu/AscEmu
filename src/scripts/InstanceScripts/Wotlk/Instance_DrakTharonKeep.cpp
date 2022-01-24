@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 class DrakTharonKeepInstanceScript : public InstanceScript
 {
 public:
-    explicit DrakTharonKeepInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new DrakTharonKeepInstanceScript(pMapMgr); }
+    explicit DrakTharonKeepInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new DrakTharonKeepInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {
@@ -70,12 +70,12 @@ public:
                 CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_DRAKKARI_INVADER);
                 if (cp != nullptr)
                 {
-                    Creature* c = getCreature()->GetMapMgr()->CreateCreature(CN_DRAKKARI_INVADER);
+                    Creature* c = getCreature()->getWorldMap()->createCreature(CN_DRAKKARI_INVADER);
                     if (c)
                     {
                         //position is guessed
                         c->Load(cp, -259.532f, -618.976f, 26.669f, 0.0f);
-                        c->PushToWorld(getCreature()->GetMapMgr());
+                        c->PushToWorld(getCreature()->getWorldMap());
                         //path finding would be usefull :)
                         //c->getAIInterface()->SetRun();
                         c->getAIInterface()->moveTo(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ());
@@ -160,7 +160,7 @@ public:
         {
             if (getCreature()->m_ObjectSlots[i])
             {
-                GameObject* Crystal = getCreature()->GetMapMgr()->GetGameObject(getCreature()->m_ObjectSlots[i]);
+                GameObject* Crystal = getCreature()->getWorldMap()->getGameObject(getCreature()->m_ObjectSlots[i]);
                 if (Crystal && Crystal->IsInWorld())
                     Crystal->Despawn(0, 0);
             }
@@ -191,7 +191,7 @@ public:
             {
                 if (getCreature()->m_ObjectSlots[i])
                 {
-                    GameObject* Crystal = getCreature()->GetMapMgr()->GetGameObject(getCreature()->m_ObjectSlots[i]);
+                    GameObject* Crystal = getCreature()->getWorldMap()->getGameObject(getCreature()->m_ObjectSlots[i]);
                     if (Crystal && Crystal->IsInWorld())
                         new_phase = false;
                 }
@@ -228,7 +228,7 @@ public:
         if (possible_targets.size() > 0)
         {
             uint32_t random_player = possible_targets[Util::checkChance(uint32_t(possible_targets.size() - 1))];
-            return getCreature()->GetMapMgr()->GetPlayer(random_player);
+            return getCreature()->getWorldMap()->getPlayer(random_player);
         }
         return nullptr;
     }
@@ -247,12 +247,12 @@ public:
             CreatureProperties const* cp = sMySQLStore.getCreatureProperties(mob_entry);
             if (cp != nullptr)
             {
-                Creature* c = getCreature()->GetMapMgr()->CreateCreature(mob_entry);
+                Creature* c = getCreature()->getWorldMap()->createCreature(mob_entry);
                 if (c)
                 {
                     //position is guessed
                     c->Load(cp, -379.101227f, -824.835449f, 60.0f, 0.0f);
-                    c->PushToWorld(getCreature()->GetMapMgr());
+                    c->PushToWorld(getCreature()->getWorldMap());
                     c->setSummonedByGuid(getCreature()->getGuid());
                     //path finding would be usefull :)
                     Player* p_target = GetRandomPlayerTarget();
@@ -278,12 +278,12 @@ public:
                 CreatureProperties const* cp = sMySQLStore.getCreatureProperties(mob_entry);
                 if (cp != nullptr)
                 {
-                    Creature* c = getCreature()->GetMapMgr()->CreateCreature(mob_entry);
+                    Creature* c = getCreature()->getWorldMap()->createCreature(mob_entry);
                     if (c)
                     {
                         //position is guessed
                         c->Load(cp, -379.101227f, -824.835449f, 60.0f, 0.0f);
-                        c->PushToWorld(getCreature()->GetMapMgr());
+                        c->PushToWorld(getCreature()->getWorldMap());
                         //path finding would be usefull :)
                         Player* p_target = GetRandomPlayerTarget();
                         if (p_target)
@@ -338,9 +338,9 @@ public:
             }
             break;
         }
-        GameObject* go = getCreature()->GetMapMgr()->CreateGameObject(entry);
-        go->CreateFromProto(entry, getCreature()->GetMapMgr()->GetMapId(), x, y, z, o, 0.0f, 0.0f, 0.0f, 0.0f);
-        go->PushToWorld(getCreature()->GetMapMgr());
+        GameObject* go = getCreature()->getWorldMap()->createGameObject(entry);
+        go->CreateFromProto(entry, getCreature()->getWorldMap()->getBaseMap()->getMapId(), x, y, z, o, 0.0f, 0.0f, 0.0f, 0.0f);
+        go->PushToWorld(getCreature()->getWorldMap());
         getCreature()->m_ObjectSlots[id] = go->GetUIdFromGUID();
     }
 
@@ -363,14 +363,14 @@ public:
 
     void OnDied(Unit* /*mKiller*/) override
     {
-        Unit* Novos = getCreature()->GetMapMgr()->GetUnit(getCreature()->getSummonedByGuid());
+        Unit* Novos = getCreature()->getWorldMap()->getUnit(getCreature()->getSummonedByGuid());
         if (Novos)
         {
             for (uint8_t i = 0; i < 4; i++)
             {
                 if (Novos->m_ObjectSlots[i])
                 {
-                    GameObject* Crystal = Novos->GetMapMgr()->GetGameObject(Novos->m_ObjectSlots[i]);
+                    GameObject* Crystal = Novos->getWorldMap()->getGameObject(Novos->m_ObjectSlots[i]);
                     if (Crystal && Crystal->IsInWorld())
                     {
                         Crystal->Despawn(0, 0);

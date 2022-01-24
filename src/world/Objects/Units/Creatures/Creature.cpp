@@ -14,9 +14,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
-#include "Map/MapCell.h"
-#include "Map/MapMgr.h"
-#include "Map/WorldCreator.h"
+#include "Map/Cells/MapCell.hpp"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Pet.h"
 #include "Spell/Definitions/SpellEffects.hpp"
@@ -160,7 +159,7 @@ Player* Creature::getPlayerOwner()
 {
     if (getCharmedByGuid() != 0)
     {
-        const auto charmerUnit = GetMapMgrUnit(getCharmedByGuid());
+        const auto charmerUnit = getWorldMapUnit(getCharmedByGuid());
         if (charmerUnit != nullptr && charmerUnit->isPlayer())
             return dynamic_cast<Player*>(charmerUnit);
     }
@@ -195,6 +194,21 @@ void Creature::setDeathState(DeathState s)
         stopMoving();
         m_deathState = CORPSE;
         m_corpseEvent = true;
+
+        // Respawn Handling
+        const auto now_c = std::chrono::system_clock::now();
+        const auto now = std::chrono::system_clock::to_time_t(now_c);
+
+        m_corpseRemoveTime = now + m_corpseDelay;
+
+        uint32_t respawnDelay = m_respawnDelay;
+
+        if (isDungeonBoss() && !m_respawnDelay)
+            m_respawnTime = std::numeric_limits<time_t>::max(); // never respawn in this instance
+        else
+            m_respawnTime = now + respawnDelay + m_corpseDelay;
+
+        saveRespawnTime();
 
         if (m_enslaveSpell)
             RemoveEnslave();
@@ -349,7 +363,7 @@ void Creature::updateMovementFlags()
         return;
 
     // Set the movement flags if the creature is in that mode. (Only fly if actually in air, only swim if in water, etc)
-    const float ground = GetMapMgr()->GetLandHeight(GetPositionX(), GetPositionY(), GetPositionZ());
+    const float ground = getFloorZ();
 
     bool isInAir;
 
@@ -450,32 +464,7 @@ void Creature::Update(unsigned long time_passed)
     if (m_corpseEvent)
     {
         sEventMgr.RemoveEvents(this, EVENT_CREATURE_REMOVE_CORPSE);
-
-        if (loot.gold > 0 || !loot.items.empty())
-        {
-            switch (this->creature_properties->Rank)
-            {
-                case ELITE_ELITE:
-                    sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, worldConfig.corpseDecay.eliteTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-                    break;
-                case ELITE_RAREELITE:
-                    sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, worldConfig.corpseDecay.rareEliteTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-                    break;
-                case ELITE_WORLDBOSS:
-                    sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, worldConfig.corpseDecay.worldbossTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-                    break;
-                case ELITE_RARE:
-                    sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, worldConfig.corpseDecay.rareTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-                    break;
-                default:
-                    sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, worldConfig.corpseDecay.normalTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-                    break;
-            }
-        }
-        else
-        {
-            sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, worldConfig.corpseDecay.normalTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        }
+        sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, m_corpseDelay * IN_MILLISECONDS, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
         m_corpseEvent = false;
     }
@@ -499,12 +488,17 @@ void Creature::DeleteMe()
 void Creature::OnRemoveCorpse()
 {
     // time to respawn!
-    if (IsInWorld() && (int32)m_mapMgr->GetInstanceID() == m_instanceId)
+    if (IsInWorld() && (int32)m_WorldMap->getInstanceId() == m_instanceId)
     {
         sLogger.info("Removing corpse of " I64FMT "...", getGuid());
 
         setDeathState(DEAD);
         m_position = m_spawnLocation;
+
+        // Respawn Handling
+        const auto now_c = std::chrono::system_clock::now();
+        const auto now = std::chrono::system_clock::to_time_t(now_c);
+        m_corpseRemoveTime = now;
 
         // if corpse was removed during falling, the falling will continue and override relocation to respawn position
         if (IsFalling())
@@ -514,13 +508,13 @@ void Creature::OnRemoveCorpse()
 
         getMovementManager()->clear();
 
-        if ((GetMapMgr()->GetMapInfo() && GetMapMgr()->GetMapInfo()->isRaid() && creature_properties->isBoss) || m_noRespawn)
+        if ((getWorldMap()->getBaseMap()->getMapInfo() && getWorldMap()->getBaseMap()->getMapInfo()->isRaid() && creature_properties->isBoss) || m_noRespawn)
         {
             RemoveFromWorld(false, true);
         }
         else
         {
-            if (creature_properties->RespawnTime || m_respawnTimeOverride)
+            if (m_respawnTime)
                 RemoveFromWorld(true, false);
             else
                 RemoveFromWorld(false, true);
@@ -532,7 +526,7 @@ void Creature::OnRemoveCorpse()
     }
 }
 
-void Creature::OnRespawn(MapMgr* m)
+void Creature::OnRespawn(WorldMap* m)
 {
     if (m_noRespawn)
         return;
@@ -542,67 +536,6 @@ void Creature::OnRespawn(MapMgr* m)
         stopMoving();
 
     getMovementManager()->clear();
-
-    if (m->pInstance)
-    {
-        auto encounters = sObjectMgr.GetDungeonEncounterList(m->GetMapId(), m->pInstance->m_difficulty);
-
-        if (Instance* pInstance = m->pInstance)
-        {
-            if (encounters != NULL)
-            {
-                bool skip = false;
-                for (auto killedNpc : pInstance->m_killedNpcs)
-                {
-                    // is Killed add?
-                    if (killedNpc == getSpawnId())
-                    {
-                        auto data = sMySQLStore.getSpawnGroupDataBySpawn(killedNpc);
-
-                        // When Our Add is bound to a Boss thats not killed Respawn it
-                        if (data && data->bossId)
-                        {
-                            if (pInstance->m_killedNpcs.find(data->bossId) != pInstance->m_killedNpcs.end())
-                            {
-                                skip = true;
-                                break;
-                            }
-                            else
-                            {
-                                skip = false;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Is killed boss?
-                    if (killedNpc == getEntry())
-                    {
-                        for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
-                        {
-                            DungeonEncounter const* encounter = *itr;
-                            if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == killedNpc)
-                            {
-                                skip = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (skip)
-                {
-                    m_noRespawn = true;
-                    DeleteMe();
-                    return;
-                }
-            }
-
-            // Remove from Killed Npcs
-            pInstance->m_killedNpcs.erase(getSpawnId());
-            sInstanceMgr.SaveInstanceToDB(pInstance);
-        }
-    }
 
     sLogger.info("Respawning " I64FMT "...", getGuid());
     setHealth(getMaxHealth());
@@ -705,11 +638,11 @@ void Creature::SaveToDB()
 
         m_spawn->phase = m_phase;
 
-        uint32 x = GetMapMgr()->GetPosX(GetPositionX());
-        uint32 y = GetMapMgr()->GetPosY(GetPositionY());
+        uint32 x = getWorldMap()->getPosX(GetPositionX());
+        uint32 y = getWorldMap()->getPosY(GetPositionY());
 
         // Add spawn to map
-        GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(x, y)->CreatureSpawns.push_back(m_spawn);
+        getWorldMap()->getBaseMap()->getSpawnsListAndCreate(x, y)->CreatureSpawns.push_back(m_spawn);
     }
 
     std::stringstream ss;
@@ -913,7 +846,7 @@ void Creature::AddToWorld()
         setControlled(true, UNIT_STATE_ROOTED);
 }
 
-void Creature::AddToWorld(MapMgr* pMapMgr)
+void Creature::AddToWorld(WorldMap* pMapMgr)
 {
     // force set faction
     if (m_factionTemplate == NULL || m_factionEntry == NULL)
@@ -951,8 +884,8 @@ bool Creature::CanAddToWorld()
 void Creature::RemoveFromWorld(bool addrespawnevent, bool /*free_guid*/)
 {
     uint32 delay = 0;
-    if (addrespawnevent && (m_respawnTimeOverride > 0 || creature_properties->RespawnTime > 0))
-        delay = m_respawnTimeOverride > 0 ? m_respawnTimeOverride : creature_properties->RespawnTime;
+    if (addrespawnevent && m_respawnTime > 0)
+        delay = m_respawnDelay;
 
     Despawn(0, delay);
 }
@@ -1294,10 +1227,10 @@ void Creature::UpdateItemAmount(uint32 itemid)
 
 void Creature::ChannelLinkUpGO(uint32 SqlId)
 {
-    if (!m_mapMgr)        // shouldn't happen
+    if (!m_WorldMap)        // shouldn't happen
         return;
 
-    GameObject* go = m_mapMgr->GetSqlIdGameObject(SqlId);
+    GameObject* go = m_WorldMap->getSqlIdGameObject(SqlId);
     if (go != nullptr)
     {
         event_RemoveEvents(EVENT_CREATURE_CHANNEL_LINKUP);
@@ -1308,10 +1241,10 @@ void Creature::ChannelLinkUpGO(uint32 SqlId)
 
 void Creature::ChannelLinkUpCreature(uint32 SqlId)
 {
-    if (!m_mapMgr)        // shouldn't happen
+    if (!m_WorldMap)        // shouldn't happen
         return;
 
-    Creature* creature = m_mapMgr->GetSqlIdCreature(SqlId);
+    Creature* creature = m_WorldMap->getSqlIdCreature(SqlId);
     if (creature != nullptr)
     {
         event_RemoveEvents(EVENT_CREATURE_CHANNEL_LINKUP);
@@ -1344,12 +1277,12 @@ uint8 get_byte(uint32 buffer, uint32 index)
     return (uint8)buffer;
 }
 
-bool Creature::teleport(const LocationVector& vec, MapMgr* map)
+bool Creature::teleport(const LocationVector& vec, WorldMap* map)
 {
     if (map == nullptr)
         return false;
 
-    if (map->GetCreature(this->getGuidLow()))
+    if (map->getCreature(this->getGuidLow()))
     {
         this->SetPosition(vec);
         return true;
@@ -1606,6 +1539,31 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     if (getMovementTemplate().isRooted())
         setControlled(true, UNIT_STATE_ROOTED);
 
+    // Respawn
+    m_respawnDelay = creature_properties->RespawnTime / IN_MILLISECONDS;
+
+    if (isDungeonBoss())
+        m_respawnDelay = 0; // special value, prevents respawn for dungeon bosses unless overridden
+
+    switch (this->creature_properties->Rank)
+    {
+        case ELITE_ELITE:
+            m_corpseDelay = worldConfig.corpseDecay.eliteTimeInSeconds;
+            break;
+        case ELITE_RAREELITE:
+            m_corpseDelay = worldConfig.corpseDecay.rareEliteTimeInSeconds;
+            break;
+        case ELITE_WORLDBOSS:
+            m_corpseDelay = worldConfig.corpseDecay.worldbossTimeInSeconds;
+            break;
+        case ELITE_RARE:
+            m_corpseDelay = worldConfig.corpseDecay.rareTimeInSeconds;
+            break;
+        default:
+            m_corpseDelay = worldConfig.corpseDecay.normalTimeInSeconds;
+            break;
+    }
+
     return true;
 }
 
@@ -1781,6 +1739,31 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 
     if (getMovementTemplate().isRooted())
         setControlled(true, UNIT_STATE_ROOTED);
+
+    // Respawn
+    m_respawnDelay = creature_properties->RespawnTime / IN_MILLISECONDS;
+
+    if (isDungeonBoss())
+        m_respawnDelay = 0; // special value, prevents respawn for dungeon bosses unless overridden
+
+    switch (this->creature_properties->Rank)
+    {
+    case ELITE_ELITE:
+        m_corpseDelay = worldConfig.corpseDecay.eliteTimeInSeconds;
+        break;
+    case ELITE_RAREELITE:
+        m_corpseDelay = worldConfig.corpseDecay.rareEliteTimeInSeconds;
+        break;
+    case ELITE_WORLDBOSS:
+        m_corpseDelay = worldConfig.corpseDecay.worldbossTimeInSeconds;
+        break;
+    case ELITE_RARE:
+        m_corpseDelay = worldConfig.corpseDecay.rareTimeInSeconds;
+        break;
+    default:
+        m_corpseDelay = worldConfig.corpseDecay.normalTimeInSeconds;
+        break;
+    }
 }
 
 void Creature::OnPushToWorld()
@@ -1813,10 +1796,6 @@ void Creature::OnPushToWorld()
     searchFormation();
     motion_Initialize();
 
-    // Reset Instance Data
-    // set encounter state back to NotStarted
-    CALL_INSTANCE_SCRIPT_EVENT(GetMapMgr(), setData)(getEntry(), NotStarted);
-
     Unit::OnPushToWorld();
 
     if (_myScriptClass)
@@ -1835,7 +1814,7 @@ void Creature::OnPushToWorld()
         }
     }
 
-    m_aiInterface->m_is_in_instance = (!m_mapMgr->GetMapInfo()->isNonInstanceMap()) ? true : false;
+    m_aiInterface->m_is_in_instance = (!m_WorldMap->getBaseMap()->getMapInfo()->isNonInstanceMap()) ? true : false;
 
     if (this->HasItems())
     {
@@ -1858,7 +1837,7 @@ void Creature::OnPushToWorld()
             mEvent->mEventScript->OnCreaturePushToWorld(mEvent, this);
         }
     }
-    CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnCreaturePushToWorld)(this);
+    CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnCreaturePushToWorld)(this);
 }
 
 void Creature::Despawn(uint32 delay, uint32 respawntime)
@@ -1878,9 +1857,9 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
             _myScriptClass->OnDespawn();
 
         if (respawntime && !m_noRespawn)
-        {
+        {           
             // get the cell with our SPAWN location. if we've moved cell this might break :P
-            MapCell* pCell = m_mapMgr->GetCellByCoords(m_spawnLocation.x, m_spawnLocation.y);
+            MapCell* pCell = m_WorldMap->getCellByCoords(m_spawnLocation.x, m_spawnLocation.y);
             if (pCell == nullptr)
                 pCell = GetMapCell();
 
@@ -1889,12 +1868,12 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
                 pCell->_respawnObjects.insert(this);
 
                 sEventMgr.RemoveEvents(this);
-                sEventMgr.AddEvent(m_mapMgr, &MapMgr::EventRespawnCreature, this, pCell->GetPositionX(), pCell->GetPositionY(), EVENT_CREATURE_RESPAWN, respawntime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-
-                Unit::RemoveFromWorld(false);
 
                 m_position = m_spawnLocation;
                 m_respawnCell = pCell;
+
+                saveRespawnTime(respawntime);
+                Unit::RemoveFromWorld(false);
             }
             else
             {
@@ -1907,6 +1886,36 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
             SafeDelete();
         }
     }
+}
+
+void Creature::saveRespawnTime(uint32_t forceDelay)
+{
+    if (isSummon() || !getSpawnId() || !getWorldMap())
+        return;
+
+    const auto now_c = std::chrono::system_clock::now();
+    const auto now = std::chrono::system_clock::to_time_t(now_c);
+
+    // do this for now delete the part when we are only respawning with spawnid
+    if (true)
+    {
+        RespawnInfo ri;
+        ri.type = SPAWN_TYPE_CREATURE;
+        ri.spawnId = getSpawnId();
+        ri.entry = getEntry();
+        ri.time = forceDelay ? now + forceDelay / IN_MILLISECONDS : m_respawnTime;
+        ri.cellX = m_spawnLocation.x;
+        ri.cellY = m_spawnLocation.y;
+        ri.obj = this;
+
+        bool success = getWorldMap()->addRespawn(ri);
+        if (success)
+            getWorldMap()->saveRespawnDB(ri);
+        return;
+    }
+
+    time_t thisRespawnTime = forceDelay ? now + forceDelay / IN_MILLISECONDS : m_respawnTime;
+    getWorldMap()->saveRespawnTime(SPAWN_TYPE_CREATURE, getSpawnId(), getEntry(), thisRespawnTime, m_respawnCell->getPositionX(), m_respawnCell->getPositionY());
 }
 
 void Creature::TriggerScriptEvent(int fRef)
@@ -2142,7 +2151,7 @@ void Creature::PrepareForRemove()
     if (getCreatedByGuid() != 0)
     {
 
-        Unit* summoner = GetMapMgrUnit(getCreatedByGuid());
+        Unit* summoner = getWorldMapUnit(getCreatedByGuid());
         if (summoner != NULL)
         {
 #if VERSION_STRING > TBC
@@ -2155,11 +2164,11 @@ void Creature::PrepareForRemove()
         }
     }
 
-    if (GetMapMgr()->GetMapInfo() && GetMapMgr()->GetMapInfo()->isRaid())
+    if (getWorldMap()->getBaseMap()->getMapInfo() && getWorldMap()->getBaseMap()->getMapInfo()->isRaid())
     {
         if (GetCreatureProperties()->Rank == 3)
         {
-            GetMapMgr()->RemoveCombatInProgress(getGuid());
+            getWorldMap()->removeCombatInProgress(getGuid());
         }
     }
 }
@@ -2215,7 +2224,7 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
                 if (spl->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
                     uint64 guid = getChannelObjectGuid();
-                    DynamicObject* dObj = GetMapMgr()->GetDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
+                    DynamicObject* dObj = getWorldMap()->getDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
                     if (!dObj)
                         return;
 
@@ -2265,7 +2274,7 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     // Add Kills if Player is in Vehicle
     if (pAttacker->isVehicle())
     {
-        Unit* vehicle_owner = GetMapMgr()->GetUnit(pAttacker->getCharmedByGuid());
+        Unit* vehicle_owner = getWorldMap()->getUnit(pAttacker->getCharmedByGuid());
 
         if (vehicle_owner != nullptr && vehicle_owner->isPlayer())
         {
@@ -2278,7 +2287,7 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     Player* looter = nullptr;
     if (getTaggerGuid())
     {
-        looter = m_mapMgr->GetUnit(getTaggerGuid())->ToPlayer();
+        looter = m_WorldMap->getUnit(getTaggerGuid())->ToPlayer();
     }
     else if (pAttacker->isPlayer())
     {
@@ -2321,7 +2330,7 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         }
 
         // Generate Loot
-        sLootMgr.fillCreatureLoot(looter, &loot, getEntry(), m_mapMgr->iInstanceMode);
+        sLootMgr.fillCreatureLoot(looter, &loot, getEntry(), m_WorldMap->getDifficulty());
 
         // Generate Gold
         loot.generateGold(sMySQLStore.getCreatureProperties(getEntry()), getAIInterface()->getDifficultyType());
@@ -2360,7 +2369,7 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     if (getCharmedByGuid())
     {
         //remove owner warlock soul link from caster
-        Unit* owner = GetMapMgr()->GetUnit(getCharmedByGuid());
+        Unit* owner = getWorldMap()->getUnit(getCharmedByGuid());
 
         if (owner != NULL && owner->isPlayer())
             static_cast<Player*>(owner)->eventDismissPet();
@@ -2368,7 +2377,7 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     if (getCharmedByGuid() != 0)
     {
-        Unit* charmer = m_mapMgr->GetUnit(getCharmedByGuid());
+        Unit* charmer = m_WorldMap->getUnit(getCharmedByGuid());
         if (charmer != NULL)
             charmer->UnPossess();
     }
@@ -2379,8 +2388,8 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     // Update movement flags on death
     immediateMovementFlagsUpdate();
 
-    if (m_mapMgr->m_battleground != NULL)
-        m_mapMgr->m_battleground->HookOnUnitDied(this);
+    if (m_WorldMap->getBaseMap()->isBattlegroundOrArena() && reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground())
+        reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground()->HookOnUnitDied(this);
 }
 
 /// \todo implement localization support

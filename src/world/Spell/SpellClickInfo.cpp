@@ -16,7 +16,7 @@ bool SpellClickInfo::isFitToRequirements(Unit* clicker, Unit* clickee) const
     Unit* summoner = nullptr;
     // Check summoners for party
     if (clickee->isSummon())
-        summoner = clickee->GetMapMgrUnit(clickee->getSummonedByGuid());
+        summoner = clickee->getWorldMapUnit(clickee->getSummonedByGuid());
 
     if (!summoner)
         summoner = clickee;

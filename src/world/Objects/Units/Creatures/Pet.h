@@ -133,8 +133,8 @@ public:
 
     void Update(unsigned long /*time_passed*/);         // hides function Creature::Update
     // void AddToWorld();                               // not used
-    // void AddToWorld(MapMgr* pMapMgr);                // not used
-    // void PushToWorld(MapMgr*);                       // not used
+    // void AddToWorld(WorldMap* pMapMgr);                // not used
+    // void PushToWorld(WorldMap*);                       // not used
     void RemoveFromWorld(bool free_guid);               // hides function Creature::RemoveFromWorld
     // void OnPrePushToWorld();                         // not used
     void OnPushToWorld();                               // hides function Creature::OnPushToWorld

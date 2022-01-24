@@ -46,10 +46,10 @@
 #include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
 #include "Map/Area/AreaStorage.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/InstanceMgr.hpp"
 #include "Management/Faction.h"
 #include "Spell/SpellAuras.h"
-#include "Map/WorldCreator.h"
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/SpellIsFlags.hpp"
 #include "Spell/Definitions/SpellMechanics.hpp"
@@ -89,7 +89,6 @@ using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;
 
 UpdateMask Player::m_visibleUpdateMask;
-
 
 void Player::CharChange_Looks(uint64 GUID, uint8 gender, uint8 skin, uint8 face, uint8 hairStyle, uint8 hairColor, uint8 facialHair)
 {
@@ -563,6 +562,20 @@ void Player::Update(unsigned long time_passed)
             handleSobering();
     }
 
+    // Instance Binds
+    if (hasPendingBind())
+    {
+        if (_pendingBindTimer <= time_passed)
+        {
+            // Player left the instance
+            if (_pendingBindId == GetInstanceID())
+                bindToInstance();
+            setPendingBind(0, 0);
+        }
+        else
+            _pendingBindTimer -= time_passed;
+    }
+
     if (m_timeSyncTimer > 0)
     {
         if (time_passed >= m_timeSyncTimer)
@@ -611,7 +624,7 @@ void Player::_EventAttack(bool offhand)
 
     Unit* pVictim = nullptr;
     if (getTargetGuid())
-        pVictim = GetMapMgr()->GetUnit(getTargetGuid());
+        pVictim = getWorldMap()->getUnit(getTargetGuid());
 
     //Can't find victim, stop attacking
     if (!pVictim)
@@ -701,7 +714,7 @@ void Player::_EventCharmAttack()
         return;
     }
 
-    Unit* pVictim = GetMapMgr()->GetUnit(getTargetGuid());
+    Unit* pVictim = getWorldMap()->getUnit(getTargetGuid());
     if (!pVictim)
     {
         sLogger.failure("WORLD: " I64FMT " doesn't exist.", getTargetGuid());
@@ -713,7 +726,7 @@ void Player::_EventCharmAttack()
     }
     else
     {
-        Unit* currentCharm = GetMapMgr()->GetUnit(getCharmGuid());
+        Unit* currentCharm = getWorldMap()->getUnit(getCharmGuid());
         if (!currentCharm)
             return;
 
@@ -2153,6 +2166,17 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     m_mailBox.Load(results[PlayerQuery::Mailbox].result);
 
+    // Saved Instances
+    loadBoundInstances();
+
+    // Create Instance when needed
+    if (sMapMgr.findBaseMap(GetMapId()) && sMapMgr.findBaseMap(GetMapId())->instanceable())
+    {
+        // No Instance Found Lets Create it
+        if (!sMapMgr.findWorldMap(GetMapId(), GetInstanceID()))
+            sMapMgr.createInstanceForPlayer(GetMapId(), this, GetInstanceID());
+    }
+
     // SOCIAL
     loadFriendList();
     loadFriendedByOthersList();
@@ -2285,7 +2309,7 @@ void Player::AddToWorld()
     Object::AddToWorld();
 
     // Add failed.
-    if (m_mapMgr == nullptr)
+    if (m_WorldMap == nullptr)
     {
         // eject from instance
         m_beingPushed = false;
@@ -2294,14 +2318,14 @@ void Player::AddToWorld()
     }
 
     if (m_session)
-        m_session->SetInstance(m_mapMgr->GetInstanceID());
+        m_session->SetInstance(m_WorldMap->getInstanceId());
 
 #if VERSION_STRING > TBC
-    sendInstanceDifficultyPacket(m_mapMgr->iInstanceMode);
+    sendInstanceDifficultyPacket(m_WorldMap->getDifficulty());
 #endif
 }
 
-void Player::AddToWorld(MapMgr* pMapMgr)
+void Player::AddToWorld(WorldMap* pMapMgr)
 {
     // check transporter
     auto transport = this->GetTransport();
@@ -2322,7 +2346,7 @@ void Player::AddToWorld(MapMgr* pMapMgr)
     Object::AddToWorld(pMapMgr);
 
     // Add failed.
-    if (m_mapMgr == nullptr)
+    if (m_WorldMap == nullptr)
     {
         // eject from instance
         m_beingPushed = false;
@@ -2331,10 +2355,10 @@ void Player::AddToWorld(MapMgr* pMapMgr)
     }
 
     if (m_session)
-        m_session->SetInstance(m_mapMgr->GetInstanceID());
+        m_session->SetInstance(m_WorldMap->getInstanceId());
 
 #if VERSION_STRING > TBC
-    sendInstanceDifficultyPacket(m_mapMgr->iInstanceMode);
+    sendInstanceDifficultyPacket(m_WorldMap->getDifficulty());
 #endif
 }
 
@@ -2377,8 +2401,8 @@ void Player::OnPushToWorld()
 
 
     sHookInterface.OnEnterWorld(this);
-    CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnZoneChange)(this, m_zoneId, 0);
-    CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnPlayerEnter)(this);
+    CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnZoneChange)(this, m_zoneId, 0);
+    CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnPlayerEnter)(this);
 
     if (m_teleportState == 1)        // First world enter
         CompleteLoading();
@@ -2456,8 +2480,11 @@ void Player::OnPushToWorld()
     if (!getSession()->HasGMPermissions())
         getItemInterface()->CheckAreaItems();
 
-    if (m_mapMgr && m_mapMgr->m_battleground != nullptr && m_bg != m_mapMgr->m_battleground)
-        m_mapMgr->m_battleground->PortPlayer(this, true);
+    if (m_WorldMap->getBaseMap()->isBattlegroundOrArena())
+    {
+        if (m_WorldMap && reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground() != nullptr && m_bg != reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground())
+            reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground()->PortPlayer(this, true);
+    }
 
     if (m_bg != nullptr)
     {

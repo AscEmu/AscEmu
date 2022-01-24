@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 class RagefireChasmInstanceScript : public InstanceScript
 {
 public:
-    explicit RagefireChasmInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new RagefireChasmInstanceScript(pMapMgr); }
+    explicit RagefireChasmInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new RagefireChasmInstanceScript(pMapMgr); }
 };
 
 class BloodFilledOrb : public GameObjectAIScript
@@ -29,12 +29,12 @@ public:
             return;
         }
 
-        Creature* Zelemar = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-370.133f, 162.519f, -21.1299f, RagefireChasm::CN_ZELMAR);
+        Creature* Zelemar = _gameobject->getWorldMap()->getInterface()->GetCreatureNearestCoords(-370.133f, 162.519f, -21.1299f, RagefireChasm::CN_ZELMAR);
         if (Zelemar)
             return;
 
         // Spawn Zelemar the Wrathful
-        Zelemar = _gameobject->GetMapMgr()->GetInterface()->SpawnCreature(17830, -370.133f, 162.519f, -21.1299f, -1.29154f, true, false, 0, 0);
+        Zelemar = _gameobject->getWorldMap()->getInterface()->SpawnCreature(17830, -370.133f, 162.519f, -21.1299f, -1.29154f, true, false, 0, 0);
         if (Zelemar)
         {
             Zelemar->m_noRespawn = true;

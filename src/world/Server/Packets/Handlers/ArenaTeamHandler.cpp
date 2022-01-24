@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Management/ObjectMgr.h"
 #include "Server/Packets/MsgInspectArenaTeams.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Server/Packets/CmsgArenaTeamQuery.h"
 #include "Server/Packets/CmsgArenaTeamInvite.h"
 #include "Server/Packets/CmsgArenaTeamRemove.h"
@@ -355,7 +355,7 @@ void WorldSession::handleInspectArenaStatsOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_INSPECT_ARENA_STATS: %u (guidLow)", srlPacket.guid.getGuidLow());
 
-    const auto player = _player->GetMapMgr()->GetPlayer(srlPacket.guid.getGuidLow());
+    const auto player = _player->getWorldMap()->getPlayer(srlPacket.guid.getGuidLow());
     if (player == nullptr)
         return;
 

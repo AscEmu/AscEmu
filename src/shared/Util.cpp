@@ -313,6 +313,24 @@ namespace Util
         return gameTimeValue;
     }
 
+    time_t getLocalHourTimestamp(time_t time, uint8_t hour, bool onlyAfterTime)
+    {
+        const auto now = std::chrono::system_clock::now();
+        const auto now_t = std::chrono::system_clock::to_time_t(now);
+
+        auto date = std::localtime(&now_t);
+        date->tm_hour = 0;
+        date->tm_min = 0;
+        date->tm_sec = 0;
+        const auto midnightLocal = std::mktime(date);
+        time_t hourLocal = midnightLocal + hour * 3600;
+
+        if (onlyAfterTime && hourLocal <= time)
+            hourLocal += 86400;
+
+        return hourLocal;
+    }
+
     std::string ByteArrayToHexString(uint8_t const* bytes, uint32_t arrayLength, bool reverseArray)
     {
         int32_t initPos = 0;

@@ -691,7 +691,6 @@ class SERVER_DECL Spell
 
         uint32 Dur;
         bool bDurSet;
-        bool m_isCasting;
         uint8 m_rune_avail_before;
         //void _DamageRangeUpdate();
 

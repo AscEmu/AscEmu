@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Map/InstanceDefines.hpp"
+#include "Map/Maps/InstanceDefines.hpp"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 
 #define MAX_NR_LOOT_ITEMS 16
@@ -50,14 +50,14 @@ enum LootRollType
 #include <set>
 
 struct ItemProperties;
-class MapMgr;
+class WorldMap;
 class Player;
 
 class LootRoll : public EventableObject
 {
     public:
 
-        LootRoll(uint32_t timer, uint32_t groupcount, uint64_t guid, uint8_t slotid, uint32_t itemid, uint32_t itemunk1, uint32_t itemunk2, MapMgr* mgr);
+        LootRoll(uint32_t timer, uint32_t groupcount, uint64_t guid, uint8_t slotid, uint32_t itemid, uint32_t itemunk1, uint32_t itemunk2, WorldMap* mgr);
         ~LootRoll();
 
         // player rolled on the item
@@ -78,7 +78,7 @@ class LootRoll : public EventableObject
         uint32_t _randompropertyid;
         uint32_t _remaining;
         uint64_t _guid;
-        MapMgr* _mgr;
+        WorldMap* _mgr;
 };
 
 typedef std::vector<std::pair<DBC::Structures::ItemRandomPropertiesEntry const*, float>> RandomPropertyVector;

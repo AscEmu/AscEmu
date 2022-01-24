@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldConf.h"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
-#include "Map/MapCell.h"
+#include "Map/Cells/MapCell.hpp"
 //#include "Server/WorldSocket.h"
 #include "Logging/Logger.hpp"
 #include "Macros/PlayerMacros.hpp"

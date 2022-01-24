@@ -32,7 +32,8 @@ namespace VMAP
 
     struct LocationInfo
     {
-        LocationInfo(): hitInstance(nullptr), hitModel(nullptr), ground_Z(-G3D::finf()) { }
+        LocationInfo(): rootId(-1), hitInstance(nullptr), hitModel(nullptr), ground_Z(-G3D::finf()) { }
+        int32_t rootId;
         const ModelInstance* hitInstance;
         const GroupModel* hitModel;
         float ground_Z;

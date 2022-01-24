@@ -11,12 +11,12 @@ This file is released under the MIT license. See README-MIT for more information
 class MountHyjalScript : public InstanceScript
 {
 public:
-    explicit MountHyjalScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit MountHyjalScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
     {
         InstanceData[HYJAL_TYPE_BASIC][0] = HYJAL_PHASE_NOT_STARTED;
     }
 
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new MountHyjalScript(pMapMgr); }
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new MountHyjalScript(pMapMgr); }
 
     void OnLoad() override
     {
@@ -61,11 +61,11 @@ class JainaProudmooreGS : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
+        if (pObject->getWorldMap()->getBaseMap()->getMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
             return;
 
         GossipMenu menu(pObject->getGuid(), 2);
-        switch (static_cast<MountHyjalScript*>(pObject->GetMapMgr()->GetScript())->GetLocaleInstanceData(HYJAL_TYPE_BASIC, 0))
+        switch (static_cast<MountHyjalScript*>(pObject->getWorldMap()->getScript())->GetLocaleInstanceData(HYJAL_TYPE_BASIC, 0))
         {
             case HYJAL_PHASE_NOT_STARTED:
                 menu.addItem(GOSSIP_ICON_CHAT, 435, 1);     // We are ready to defend the Alliance base.
@@ -83,10 +83,10 @@ public:
 
     void onSelectOption(Object* pObject, Player* /*Plr*/, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
-        if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
+        if (pObject->getWorldMap()->getBaseMap()->getMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
             return;
 
-        switch (static_cast<MountHyjalScript*>(pObject->GetMapMgr()->GetScript())->GetLocaleInstanceData(HYJAL_TYPE_BASIC, 0))
+        switch (static_cast<MountHyjalScript*>(pObject->getWorldMap()->getScript())->GetLocaleInstanceData(HYJAL_TYPE_BASIC, 0))
         {
             case HYJAL_PHASE_NOT_STARTED:
             case HYJAL_PHASE_RAGE_WINTERCHILL_COMPLETE:
@@ -113,11 +113,11 @@ class ThrallGS : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
+        if (pObject->getWorldMap()->getBaseMap()->getMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
             return;
 
         GossipMenu menu(pObject->getGuid(), 2);
-        switch (static_cast<MountHyjalScript*>(pObject->GetMapMgr()->GetScript())->GetLocaleInstanceData(HYJAL_TYPE_BASIC, 0))
+        switch (static_cast<MountHyjalScript*>(pObject->getWorldMap()->getScript())->GetLocaleInstanceData(HYJAL_TYPE_BASIC, 0))
         {
             case HYJAL_PHASE_ANETHERON_COMPLETE:
                 menu.addItem(GOSSIP_ICON_CHAT, 437, 1);     // We're here to help! The Alliance are overrun.
@@ -132,10 +132,10 @@ public:
 
     void onSelectOption(Object* pObject, Player* /*Plr*/, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
-        if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
+        if (pObject->getWorldMap()->getBaseMap()->getMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
             return;
 
-        switch (static_cast<MountHyjalScript*>(pObject->GetMapMgr()->GetScript())->GetLocaleInstanceData(HYJAL_TYPE_BASIC, 0))
+        switch (static_cast<MountHyjalScript*>(pObject->getWorldMap()->getScript())->GetLocaleInstanceData(HYJAL_TYPE_BASIC, 0))
         {
             case HYJAL_PHASE_ANETHERON_COMPLETE:
             case HYJAL_PHASE_KAZROGAL_COMPLETE:

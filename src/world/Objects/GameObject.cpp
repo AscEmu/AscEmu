@@ -24,8 +24,8 @@
 #include "Server/MainServerDefines.h"
 #include <G3D/Quat.h>
 #include "Macros/ScriptMacros.hpp"
-#include "Map/MapCell.h"
-#include "Map/MapMgr.h"
+#include "Map/Cells/MapCell.hpp"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/SpellEffectTarget.hpp"
@@ -40,6 +40,8 @@
 #include "Server/Packets/SmsgEnableBarberShop.h"
 #include "Server/Packets/SmsgDestructibleBuildingDamage.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Map/Maps/MapScriptInterface.h"
+#include "GameObjectModel.h"
 
 // MIT
 
@@ -86,6 +88,8 @@ GameObject::~GameObject()
 {
     sEventMgr.RemoveEvents(this);
 
+    delete m_model;
+
     if (myScript)
     {
         myScript->Destroy();
@@ -118,7 +122,11 @@ uint64_t GameObject::getCreatedByGuid() const { return gameObjectData()->object_
 void GameObject::setCreatedByGuid(uint64_t guid) { write(gameObjectData()->object_field_created_by.guid, guid); }
 
 uint32_t GameObject::getDisplayId() const { return gameObjectData()->display_id; }
-void GameObject::setDisplayId(uint32_t id) { write(gameObjectData()->display_id, id); }
+void GameObject::setDisplayId(uint32_t id)
+{
+    write(gameObjectData()->display_id, id);
+    updateModel();
+}
 
 uint32_t GameObject::getFlags() const { return gameObjectData()->flags; }
 void GameObject::setFlags(uint32_t flags) { write(gameObjectData()->flags, flags); }
@@ -311,6 +319,8 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
 
     InitAI();
 
+    m_model = createModel();
+
     return true;
 }
 
@@ -331,7 +341,7 @@ void GameObject::Update(unsigned long time_passed)
     _UpdateSpells(time_passed);
 }
 
-void GameObject::Spawn(MapMgr* m)
+void GameObject::Spawn(WorldMap* m)
 {
     PushToWorld(m);
 }
@@ -363,9 +373,10 @@ void GameObject::Despawn(uint32 delay, uint32 respawntime)
         {
             pCell->_respawnObjects.insert(this);
             sEventMgr.RemoveEvents(this);
-            sEventMgr.AddEvent(m_mapMgr, &MapMgr::EventRespawnGameObject, this, pCell->GetPositionX(), pCell->GetPositionY(), EVENT_GAMEOBJECT_ITEM_SPAWN, respawntime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-            Object::RemoveFromWorld(false);
+
             m_respawnCell = pCell;
+            saveRespawnTime(respawntime);
+            Object::RemoveFromWorld(false);
         }
         else
         {
@@ -377,6 +388,36 @@ void GameObject::Despawn(uint32 delay, uint32 respawntime)
         Object::RemoveFromWorld(true);
         ExpireAndDelete();
     }
+}
+
+void GameObject::saveRespawnTime(uint32_t forceDelay)
+{
+    if (!m_spawn->id)
+        return;
+
+    const auto now_c = std::chrono::system_clock::now();
+    const auto now = std::chrono::system_clock::to_time_t(now_c);
+
+    // do this for now delete the part when we are only respawning with spawnid
+    if (true)
+    {
+        RespawnInfo ri;
+        ri.type = SPAWN_TYPE_GAMEOBJECT;
+        ri.spawnId = m_spawn->id;
+        ri.entry = getEntry();
+        ri.time = now + forceDelay / IN_MILLISECONDS;
+        ri.cellX = m_spawnLocation.x;
+        ri.cellY = m_spawnLocation.y;
+        ri.obj = this;
+
+        bool success = getWorldMap()->addRespawn(ri);
+        if (success)
+            getWorldMap()->saveRespawnDB(ri);
+        return;
+    }
+
+    time_t thisRespawnTime = forceDelay ? now + forceDelay / IN_MILLISECONDS : 0;
+    getWorldMap()->saveRespawnTime(SPAWN_TYPE_GAMEOBJECT, m_spawn->id, getEntry(), thisRespawnTime, m_respawnCell->getPositionX(), m_respawnCell->getPositionY());
 }
 
 void GameObject::SaveToDB()
@@ -404,10 +445,10 @@ void GameObject::SaveToDB()
         m_spawn->phase = GetPhase();
         m_spawn->overrides = GetOverrides();
 
-        uint32 cx = GetMapMgr()->GetPosX(GetPositionX());
-        uint32 cy = GetMapMgr()->GetPosY(GetPositionY());
+        uint32 cx = getWorldMap()->getPosX(GetPositionX());
+        uint32 cy = getWorldMap()->getPosY(GetPositionY());
 
-        GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(m_spawn);
+        getWorldMap()->getBaseMap()->getSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(m_spawn);
     }
     std::stringstream ss;
 
@@ -555,6 +596,14 @@ void GameObject::CallScriptUpdate()
 
 void GameObject::OnPushToWorld()
 {
+    if (m_model)
+    {
+        if (Transporter* trans = ToTransport())
+            trans->SetDelayedAddModelToMap();
+        else
+            getWorldMap()->insertGameObjectModel(*m_model);
+    }
+
     Object::OnPushToWorld();
     if (mEvent != nullptr)
     {
@@ -566,7 +615,7 @@ void GameObject::OnPushToWorld()
 
     CALL_GO_SCRIPT_EVENT(this, OnCreate)();
     CALL_GO_SCRIPT_EVENT(this, OnSpawn)();
-    CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnGameObjectPushToWorld)(this);
+    CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnGameObjectPushToWorld)(this);
 
     if (gameobject_properties->type == GAMEOBJECT_TYPE_CHEST)
     {
@@ -593,6 +642,10 @@ void GameObject::onRemoveInRangeObject(Object* pObj)
 void GameObject::RemoveFromWorld(bool free_guid)
 {
     sendGameobjectDespawnAnim();
+
+    if (m_model)
+        if (getWorldMap()->containsGameObjectModel(*m_model))
+            getWorldMap()->removeGameObjectModel(*m_model);
 
     sEventMgr.RemoveEvents(this);
     Object::RemoveFromWorld(free_guid);
@@ -1111,7 +1164,7 @@ void GameObject_SpellFocus::SpawnLinkedTrap()
     if (trapid == 0)
         return;
 
-    GameObject* go = m_mapMgr->CreateGameObject(trapid);
+    GameObject* go = m_WorldMap->createGameObject(trapid);
     if (go == nullptr)
     {
         sLogger.failure("Failed to create linked trap (entry: %u) for GameObject %u ( %s ). Missing GOProperties!", trapid, gameobject_properties->entry, gameobject_properties->name.c_str());
@@ -1126,7 +1179,7 @@ void GameObject_SpellFocus::SpawnLinkedTrap()
 
     go->SetFaction(getFactionTemplate());
     go->setCreatedByGuid(getGuid());
-    go->PushToWorld(m_mapMgr);
+    go->PushToWorld(m_WorldMap);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1248,7 +1301,7 @@ void GameObject_FishingNode::onUse(Player* player)
             player->advanceSkillLine(SKILL_FISHING, static_cast<uint16_t>(float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
 
         GameObject_FishingHole* school = nullptr;
-        GameObject* go = GetMapMgr()->FindNearestGoWithType(this, GAMEOBJECT_TYPE_FISHINGHOLE);
+        GameObject* go = getWorldMap()->getInterface()->FindNearestGoWithType(this, GAMEOBJECT_TYPE_FISHINGHOLE);
         if (go != nullptr)
         {
             school = dynamic_cast<GameObject_FishingHole*>(go);
@@ -1259,7 +1312,7 @@ void GameObject_FishingNode::onUse(Player* player)
 
         if (school != nullptr)
         {
-            sLootMgr.fillGOLoot(player, &school->loot, school->GetGameObjectProperties()->raw.parameter_1, GetMapMgr()->iInstanceMode);
+            sLootMgr.fillGOLoot(player, &school->loot, school->GetGameObjectProperties()->raw.parameter_1, getWorldMap()->getDifficulty());
             player->sendLoot(school->getGuid(), LOOT_FISHING, school->GetMapId());
             EndFishing(false);
             school->CatchFish();
@@ -1267,7 +1320,7 @@ void GameObject_FishingNode::onUse(Player* player)
         }
         else if (maxskill != 0 && Util::checkChance(((player->getSkillLineCurrent(SKILL_FISHING, true) - minskill) * 100) / maxskill))
         {
-            sLootMgr.fillFishingLoot(player, &this->loot, zone, GetMapMgr()->iInstanceMode);
+            sLootMgr.fillFishingLoot(player, &this->loot, zone, getWorldMap()->getDifficulty());
             player->sendLoot(getGuid(), LOOT_FISHING, GetMapId());
             EndFishing(false);
         }
@@ -1384,7 +1437,7 @@ void GameObject_Ritual::onUse(Player* player)
         unsigned long MaxMembers = GetRitual()->GetMaxMembers();
         for (unsigned long i = 0; i < MaxMembers; i++)
         {
-            plr = player->GetMapMgr()->GetPlayer(GetRitual()->GetMemberGUIDBySlot(i));
+            plr = player->getWorldMap()->getPlayer(GetRitual()->GetMemberGUIDBySlot(i));
             if (plr != nullptr)
             {
                 plr->setChannelObjectGuid(0);
@@ -1405,7 +1458,7 @@ void GameObject_Ritual::onUse(Player* player)
             if (target == nullptr || !target->IsInWorld())
                 return;
 
-            spell = sSpellMgr.newSpell(player->GetMapMgr()->GetPlayer(GetRitual()->GetCasterGUID()), info, true, nullptr);
+            spell = sSpellMgr.newSpell(player->getWorldMap()->getPlayer(GetRitual()->GetCasterGUID()), info, true, nullptr);
             targets.setUnitTarget(target->getGuid());
             spell->prepare(&targets);
         }
@@ -1414,8 +1467,8 @@ void GameObject_Ritual::onUse(Player* player)
             uint32 victimid = Util::getRandomUInt(GetRitual()->GetMaxMembers() - 1);
 
             // kill the sacrifice player
-            Player* psacrifice = player->GetMapMgr()->GetPlayer(GetRitual()->GetMemberGUIDBySlot(victimid));
-            Player* pCaster = GetMapMgr()->GetPlayer(GetRitual()->GetCasterGUID());
+            Player* psacrifice = player->getWorldMap()->getPlayer(GetRitual()->GetMemberGUIDBySlot(victimid));
+            Player* pCaster = getWorldMap()->getPlayer(GetRitual()->GetCasterGUID());
             if (!psacrifice || !pCaster)
                 return;
 
@@ -1436,11 +1489,11 @@ void GameObject_Ritual::onUse(Player* player)
         }
         else if (gameobject_properties->entry == 179944)    // Summoning portal for meeting stones
         {
-            plr = player->GetMapMgr()->GetPlayer(GetRitual()->GetTargetGUID());
+            plr = player->getWorldMap()->getPlayer(GetRitual()->GetTargetGUID());
             if (!plr)
                 return;
 
-            Player* pleader = player->GetMapMgr()->GetPlayer(GetRitual()->GetCasterGUID());
+            Player* pleader = player->getWorldMap()->getPlayer(GetRitual()->GetCasterGUID());
             if (!pleader)
                 return;
 
@@ -1458,7 +1511,7 @@ void GameObject_Ritual::onUse(Player* player)
             if (info == NULL)
                 return;
 
-            spell = sSpellMgr.newSpell(player->GetMapMgr()->GetPlayer(GetRitual()->GetCasterGUID()), info, true, nullptr);
+            spell = sSpellMgr.newSpell(player->getWorldMap()->getPlayer(GetRitual()->GetCasterGUID()), info, true, nullptr);
             SpellCastTargets targets2(GetRitual()->GetCasterGUID());
             spell->prepare(&targets2);
             ExpireAndDelete();
@@ -1534,7 +1587,7 @@ void GameObject_Meetingstone::onUse(Player* player)
         return;
 
     // Create the summoning portal
-    GameObject* pGo = player->GetMapMgr()->CreateGameObject(179944);
+    GameObject* pGo = player->getWorldMap()->createGameObject(179944);
     if (pGo == nullptr)
         return;
 
@@ -1542,7 +1595,7 @@ void GameObject_Meetingstone::onUse(Player* player)
 
     rGo->CreateFromProto(179944, player->GetMapId(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), 0);
     rGo->GetRitual()->Setup(player->getGuidLow(), pPlayer->getGuidLow(), 18540);
-    rGo->PushToWorld(player->GetMapMgr());
+    rGo->PushToWorld(player->getWorldMap());
 
     player->setChannelObjectGuid(rGo->getGuid());
     player->setChannelSpellId(rGo->GetRitual()->GetSpellID());
@@ -1721,4 +1774,52 @@ uint32_t GameObject::getTransportPeriod() const
         return GetTransValues()->AnimationInfo->TotalTime;
 
     return 0;
+}
+
+class GameObjectModelOwnerImpl : public GameObjectModelOwnerBase
+{
+public:
+    explicit GameObjectModelOwnerImpl(GameObject const* owner) : _owner(owner) { }
+
+    bool IsSpawned() const override { return true; }
+    uint32 GetDisplayId() const override { return _owner->getDisplayId(); }
+    uint32 GetPhaseMask() const override { return 1; }       // todo our gameobjects dont support phases?
+    G3D::Vector3 GetPosition() const override { return G3D::Vector3(_owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ()); }
+    float GetOrientation() const override { return _owner->GetOrientation(); }
+    float GetScale() const override { return _owner->getScale(); }
+    void DebugVisualizeCorner(G3D::Vector3 const& corner) const override { const_cast<GameObject*>(_owner)->getWorldMap()->createAndSpawnCreature(1, corner.x, corner.y, corner.z, 0); }
+
+private:
+    GameObject const* _owner;
+};
+
+GameObjectModel* GameObject::createModel()
+{
+    return GameObjectModel::Create(std::make_unique<GameObjectModelOwnerImpl>(this), worldConfig.server.dataDir);
+}
+
+void GameObject::updateModelPosition()
+{
+    if (!m_model)
+        return;
+
+    if (getWorldMap()->containsGameObjectModel(*m_model))
+    {
+        getWorldMap()->removeGameObjectModel(*m_model);
+        m_model->UpdatePosition();
+        getWorldMap()->insertGameObjectModel(*m_model);
+    }
+}
+
+void GameObject::updateModel()
+{
+    if (!IsInWorld())
+        return;
+    if (m_model)
+        if (getWorldMap()->containsGameObjectModel(*m_model))
+            getWorldMap()->removeGameObjectModel(*m_model);
+    delete m_model;
+    m_model = createModel();
+    if (m_model)
+        getWorldMap()->insertGameObjectModel(*m_model);
 }

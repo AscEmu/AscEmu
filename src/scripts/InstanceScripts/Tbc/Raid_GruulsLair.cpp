@@ -10,9 +10,9 @@ This file is released under the MIT license. See README-MIT for more information
 class GruulsLairInstanceScript : public InstanceScript
 {
 public:
-    explicit GruulsLairInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit GruulsLairInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
     {
-        Instance = (GruulsLairInstanceScript*)pMapMgr->GetScript();
+        Instance = (GruulsLairInstanceScript*)pMapMgr->getScript();
         mDoorMaulgar = nullptr;
         mDoorGruul = nullptr;
         mKrosh = nullptr;
@@ -23,7 +23,7 @@ public:
         mGruul = nullptr;
     }
 
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new GruulsLairInstanceScript(pMapMgr); }
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new GruulsLairInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {
@@ -104,7 +104,7 @@ public:
                 case InProgress:
                     setLocalData(DATA_DOOR_MAULGAR, ACTION_DISABLE);
                     break;
-                case Finished:
+                case Performed:
                     setLocalData(DATA_DOOR_MAULGAR, ACTION_ENABLE);
                     break;
                 default:
@@ -122,7 +122,7 @@ public:
                 case InProgress:
                     setLocalData(DATA_DOOR_GRUUL, ACTION_DISABLE);
                     break;
-                case Finished:
+                case Performed:
                     setLocalData(DATA_DOOR_GRUUL, ACTION_DISABLE);
                     break;
                 default:
@@ -137,7 +137,7 @@ public:
 
     void SetGameobjectStates()
     {
-        switch (getData(NPC_MAULGAR))
+        switch (getBossState(DATA_MAULGAR))
         {
             case NotStarted:
                 setLocalData(DATA_DOOR_MAULGAR, ACTION_DISABLE);
@@ -145,14 +145,14 @@ public:
             case InProgress:
                 setLocalData(DATA_DOOR_MAULGAR, ACTION_DISABLE);
                 break;
-            case Finished:
+            case Performed:
                 setLocalData(DATA_DOOR_MAULGAR, ACTION_ENABLE);
                 break;
             default:
                 break;
         }
 
-        switch (getData(NPC_GRUUL_THE_DRAGONKILLER))
+        switch (getBossState(DATA_GRUUL))
         {
             case NotStarted:
                 setLocalData(DATA_DOOR_GRUUL, ACTION_ENABLE);
@@ -160,7 +160,7 @@ public:
             case InProgress:
                 setLocalData(DATA_DOOR_MAULGAR, ACTION_DISABLE);
                 break;
-            case Finished:
+            case Performed:
                 setLocalData(DATA_DOOR_GRUUL, ACTION_DISABLE);
                 break;
             default:

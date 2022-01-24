@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 class UtgardePinnacleInstanceScript : public InstanceScript
 {
 public:
-    explicit UtgardePinnacleInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new UtgardePinnacleInstanceScript(pMapMgr); }
+    explicit UtgardePinnacleInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr) {}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new UtgardePinnacleInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {

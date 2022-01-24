@@ -71,7 +71,7 @@ public:
             float SSY = pPlayer->GetPositionY();
             float SSZ = pPlayer->GetPositionZ();
 
-            Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ);
+            Creature* pCreature = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ);
             if (!pCreature || !pCreature->isAlive())
                 return;
 

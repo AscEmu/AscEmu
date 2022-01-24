@@ -34,7 +34,7 @@ class TheSummoning : public QuestScript
 public:
     void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* windwatcher = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 6176);
+        Creature* windwatcher = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 6176);
         if (windwatcher == nullptr)
             return;
 
@@ -58,10 +58,10 @@ public:
         windwatcher->Despawn(15 * 60 * 1000, 0);
 
         // spawn cyclonian if not spawned already
-        Creature* cyclonian = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(323.947f, -1483.68f, 43.1363f, 6239);
+        Creature* cyclonian = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(323.947f, -1483.68f, 43.1363f, 6239);
         if (cyclonian == nullptr)
         {
-            cyclonian = pPlayer->GetMapMgr()->CreateAndSpawnCreature(6239, 323.947f, -1483.68f, 43.1363f, 0.682991f);
+            cyclonian = pPlayer->getWorldMap()->createAndSpawnCreature(6239, 323.947f, -1483.68f, 43.1363f, 0.682991f);
 
             // if spawning cyclonian failed, we have to return.
             if (cyclonian == nullptr)
@@ -128,7 +128,7 @@ public:
         float SSY = mTarget->GetPositionY();
         float SSZ = mTarget->GetPositionZ();
 
-        Creature* Bartleby = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 6090);
+        Creature* Bartleby = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 6090);
 
         if (Bartleby == nullptr)
             return;
@@ -203,7 +203,7 @@ public:
         case 1:
             if (!eventInProgress)
             {
-                Player* warrior = getCreature()->GetMapMgrPlayer(Data);
+                Player* warrior = getCreature()->getWorldMapPlayer(Data);
 
                 if (warrior)
                     pPlayer = warrior;

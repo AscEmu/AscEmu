@@ -257,7 +257,7 @@ namespace luaItem
                 WorldDatabase.Execute("REPLACE INTO loot_items VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
             delete result;
         }
-        sLootMgr.addLoot(ptr->loot, itemid, ichance, mincount, maxcount, ptr->GetMapMgr()->iInstanceMode);
+        sLootMgr.addLoot(ptr->loot, itemid, ichance, mincount, maxcount, ptr->getWorldMap()->getDifficulty());
         return 1;
     }
 

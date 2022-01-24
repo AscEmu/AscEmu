@@ -26,7 +26,7 @@
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 
 class ChatHandler;
 
@@ -306,7 +306,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                     // I need some way to get the guid without targeting the creature or looking through all the spawns...
                     Object* questGiver = nullptr;
 
-                    for (auto* pCreature: plr->GetMapMgr()->CreatureStorage)
+                    for (auto* pCreature: plr->getWorldMap()->getCreatures())
                     {
                         if (pCreature)
                         {
@@ -697,7 +697,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
             return true;
         }
 
-        Creature* unit = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+        Creature* unit = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
         if (unit)
         {
             if (!unit->isQuestGiver())
@@ -791,7 +791,7 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
         return false;
     }
 
-    Creature* unit = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+    Creature* unit = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (!unit)
     {
         SystemMessage(m_session, "You must target an npc.");
@@ -877,7 +877,7 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
         return false;
     }
 
-    Creature* unit = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+    Creature* unit = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (!unit)
     {
         SystemMessage(m_session, "You must target an npc.");
@@ -976,7 +976,7 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
         return false;
     }
 
-    Creature* unit = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+    Creature* unit = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (!unit)
     {
         SystemMessage(m_session, "You must target an npc.");
@@ -1060,7 +1060,7 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
         return false;
     }
 
-    Creature* unit = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+    Creature* unit = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (!unit)
     {
         SystemMessage(m_session, "You must target an npc.");
@@ -1421,7 +1421,7 @@ bool ChatHandler::HandleQuestLoadCommand(const char* /*args*/, WorldSession* m_s
     if (wowGuid.getRawGuid() == 0)
         return true;
 
-    Creature* unit = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+    Creature* unit = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (!unit)
         return true;
 

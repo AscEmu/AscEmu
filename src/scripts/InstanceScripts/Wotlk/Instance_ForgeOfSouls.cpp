@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 class InstanceForgeOfSoulsScript : public InstanceScript
 {
 public:
-    explicit InstanceForgeOfSoulsScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceForgeOfSoulsScript(pMapMgr); }
+    explicit InstanceForgeOfSoulsScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new InstanceForgeOfSoulsScript(pMapMgr); }
 
     void OnLoad() override
     {

@@ -7,14 +7,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Item.h"
-#include "Map/InstanceDefines.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Maps/InstanceDefines.hpp"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/QuestLogEntry.hpp"
-#include "Map/MapScriptInterface.h"
+#include "Map/Maps/MapScriptInterface.h"
 #include "Spell/SpellMgr.hpp"
-#include "Map/WorldCreatorDefines.hpp"
 
 void SetupGoHandlers(ScriptMgr* mgr);
 void SetupQDGoHandlers(ScriptMgr* mgr);

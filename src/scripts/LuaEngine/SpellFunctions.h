@@ -273,7 +273,7 @@ namespace LuaSpell
 
             if (sp->m_targets.getUnitTarget())
             {
-                PUSH_UNIT(L, sp->getCaster()->GetMapMgr()->GetUnit(sp->m_targets.getUnitTarget()));
+                PUSH_UNIT(L, sp->getCaster()->getWorldMap()->getUnit(sp->m_targets.getUnitTarget()));
                 return 1;
             }
             else if (sp->m_targets.getItemTarget())

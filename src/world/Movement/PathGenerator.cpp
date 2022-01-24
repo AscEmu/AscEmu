@@ -4,8 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "PathGenerator.h"
-#include "Map/Map.h"
-#include "Map/MapMgr.h"
+#include "Map/Maps/BaseMap.hpp"
+#include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "MMapFactory.h"
 #include "MMapManager.h"
@@ -168,26 +168,14 @@ void PathGenerator::buildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 con
             // Check both start and end points, if they're both in water, then we can *safely* let the creature move
             for (uint32_t i = 0; i < _pathPoints.size(); ++i)
             {
-                float outx = _pathPoints[i].x + 3.5f * cos(_source->GetOrientation());
-                float outy = _pathPoints[i].y + 3.5f * sin(_source->GetOrientation());
-                float outz = _source->GetMapMgr()->GetLandHeight(outx, outy, _pathPoints[i].z + 2);
-                float waterz;
-                uint32_t watertype;
-                _source->GetMapMgr()->GetLiquidInfo(outx, outy, outz, waterz, watertype);
-                outz = std::max(waterz, outz);
-
-                ZLiquidStatus liquidStatus = _source->GetMapMgr()->getLiquidStatus(_source->GetPhase(), _pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z, MAP_ALL_LIQUIDS, nullptr);
+                ZLiquidStatus liquidStatus = _source->getWorldMap()->getLiquidStatus(_source->GetPhase(), _pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z, MAP_ALL_LIQUIDS, nullptr, _source->getCollisionHeight());
 
                 // One of the points is not in the water, cancel movement.
-                if (waterz >= outz || liquidStatus == LIQUID_MAP_IN_WATER)
+                if (liquidStatus == LIQUID_MAP_NO_WATER)
                 {
-                    if (_source->ToUnit()->getAIInterface()->getCurrentTarget())
-                        _pathPoints[i].z = _source->ToUnit()->getAIInterface()->getCurrentTarget()->GetPositionZ();
-                    else
-                        _pathPoints[i].z = _source->GetPositionZ();
-                }
-                else
                     waterPath = false;
+                    break;
+                }
             }
         }
 
@@ -213,7 +201,7 @@ void PathGenerator::buildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 con
         bool buildShotrcut = false;
 
         G3D::Vector3 const& p = (distToStartPoly > 7.0f) ? startPos : endPos;
-        if (_source->GetMapMgr()->isUnderWater(p.x, p.y, p.z))
+        if (_source->getWorldMap()->isUnderWater(_source->GetPhase(), p.x, p.y, p.z))
         {
             if (Unit* _sourceUnit = _source->ToUnit())
                 if (_sourceUnit->canSwim())
@@ -664,7 +652,7 @@ void PathGenerator::updateFilter()
 NavTerrainFlag PathGenerator::getNavTerrain(float x, float y, float z)
 {
     LiquidData data;
-    ZLiquidStatus liquidStatus = _source->GetMapMgr()->getLiquidStatus(_source->GetPhase(), x, y, z, MAP_ALL_LIQUIDS, &data);
+    ZLiquidStatus liquidStatus = _source->getWorldMap()->getLiquidStatus(_source->GetPhase(), x, y, z, MAP_ALL_LIQUIDS, &data, _source->getCollisionHeight());
     if (liquidStatus == LIQUID_MAP_NO_WATER)
         return NAV_GROUND;
 
@@ -951,7 +939,7 @@ void PathGenerator::shortenPathUntilDist(G3D::Vector3 const& target, float dist)
         return;
 
     size_t i = _pathPoints.size()-1;
-    float x, y, z, collisionHeight = 2.0f;
+    float x, y, z, collisionHeight = _source->getCollisionHeight();
     // find the first i s.t.:
     //  - _pathPoints[i] is still too close
     //  - _pathPoints[i-1] is too far away
@@ -964,7 +952,7 @@ void PathGenerator::shortenPathUntilDist(G3D::Vector3 const& target, float dist)
 
         // check if the shortened path is still in LoS with the target
         _source->getHitSpherePointFor({ _pathPoints[i - 1].x, _pathPoints[i - 1].y, _pathPoints[i - 1].z + collisionHeight }, x, y, z);
-        if (!_source->GetMapMgr()->isInLineOfSight(x, y, z, _pathPoints[i - 1].x, _pathPoints[i - 1].y, _pathPoints[i - 1].z + collisionHeight))
+        if (!_source->getWorldMap()->isInLineOfSight(x, y, z, _pathPoints[i - 1].x, _pathPoints[i - 1].y, _pathPoints[i - 1].z + collisionHeight, _source->GetPhase(), LINEOFSIGHT_ALL_CHECKS))
         {
             // whenver we find a point that is not in LoS anymore, simply use last valid path
             _pathPoints.resize(i + 1);

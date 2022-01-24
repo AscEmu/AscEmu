@@ -57,7 +57,7 @@ SERVER_DECL SessionLog* Player_Log;
 ConfigMgr Config;
 
 // DB version
-static const char* REQUIRED_CHAR_DB_VERSION = "20220116-00_characters";
+static const char* REQUIRED_CHAR_DB_VERSION = "20220202-00_instances";
 static const char* REQUIRED_WORLD_DB_VERSION = "20220405-00_locales_creature";
 
 void Master::_OnSignal(int s)

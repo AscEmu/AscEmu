@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 class HallsOfStoneInstanceScript : public InstanceScript
 {
 public:
-    explicit HallsOfStoneInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new HallsOfStoneInstanceScript(pMapMgr); }
+    explicit HallsOfStoneInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr) {}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new HallsOfStoneInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {

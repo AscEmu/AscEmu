@@ -27,6 +27,7 @@
 #include "Management/MailMgr.h"
 #include "Management/ItemPrototype.h"
 #include "Management/AchievementMgr.h"
+#include "Map/Maps/InstanceMgr.hpp"
 #include "Objects/Units/Unit.h" 
 #include "Storage/MySQLStructures.h"
 #include "Macros/PlayerMacros.hpp"
@@ -65,6 +66,7 @@ struct QuestProperties;
 struct SpellShapeshiftForm;
 class CBattleground;
 class Instance;
+class InstanceSaved;
 struct CharRaceEntry;
 struct CharClassEntry;
 struct Trainer;
@@ -97,8 +99,8 @@ public:
 
     void Update(unsigned long time_passed);             // hides function Unit::Update
     void AddToWorld();                                  // hides virtual function Object::AddToWorld
-    void AddToWorld(MapMgr* pMapMgr);                   // hides virtual function Object::AddToWorld
-    // void PushToWorld(MapMgr*);                       // not used
+    void AddToWorld(WorldMap* pMapMgr);                   // hides virtual function Object::AddToWorld
+    // void PushToWorld(WorldMap*);                       // not used
     // void RemoveFromWorld(bool free_guid);            // not used
     void OnPrePushToWorld() override;                   // overrides virtual function  Object::OnPrePushToWorld
     void OnPushToWorld() override;                      // overrides virtual function  Object::OnPushToWorld
@@ -531,13 +533,13 @@ public:
 
     void handleKnockback(Object* caster, float horizontal, float vertical) override;
 
-    bool teleport(const LocationVector& vec, MapMgr* map);
+    bool teleport(const LocationVector& vec, WorldMap* map);
     void eventTeleport(uint32_t mapId, LocationVector position, uint32_t instanceId = 0);
 
     bool safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVector& vec);
 
     //\Todo: this function is not as "safe" as the one above, reduce it to one function.
-    void safeTeleport(MapMgr* mgr, const LocationVector& vec);
+    void safeTeleport(WorldMap* mgr, const LocationVector& vec);
 
     void setTransferStatus(uint8_t status);
     uint8_t getTransferStatus() const;
@@ -1000,6 +1002,8 @@ protected:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Difficulty
 public:
+    InstanceDifficulty::Difficulties getDifficulty(bool isRaid) const { return isRaid ? InstanceDifficulty::Difficulties(m_raidDifficulty) : InstanceDifficulty::Difficulties(m_dungeonDifficulty); }
+
     void setDungeonDifficulty(uint8_t diff);
     uint8_t getDungeonDifficulty();
 
@@ -1442,6 +1446,7 @@ public:
     void sendPetUnlearnConfirmPacket();
     void sendDungeonDifficultyPacket();
     void sendRaidDifficultyPacket();
+    void sendResetFailedNotify(uint32_t mapid);
     void sendInstanceDifficultyPacket(uint8_t difficulty);
     void sendNewDrunkStatePacket(uint32_t state, uint32_t itemId);
     void sendSetProficiencyPacket(uint8_t itemClass, uint32_t proficiency);
@@ -2085,6 +2090,39 @@ public:
     // PVP/BG
         uint32 GetMaxPersonalRating();
 
+        // Instance IDs
+        typedef std::unordered_map<uint32_t /*mapId*/, InstancePlayerBind > BoundInstancesMap;
+        void loadBoundInstances();
+
+        // permanent binds and solo binds by difficulty
+        BoundInstancesMap m_boundInstances[InstanceDifficulty::MAX_DIFFICULTY];
+        InstancePlayerBind* getBoundInstance(uint32_t mapid, InstanceDifficulty::Difficulties difficulty, bool withExpired = false);
+        BoundInstancesMap& getBoundInstances(InstanceDifficulty::Difficulties difficulty) { return m_boundInstances[difficulty]; }
+        InstanceSaved* getInstanceSave(uint32_t mapid, bool raid);
+
+        void unbindInstance(uint32_t mapid, InstanceDifficulty::Difficulties difficulty, bool unload = false);
+        void unbindInstance(BoundInstancesMap::iterator& itr, InstanceDifficulty::Difficulties difficulty, bool unload = false);
+
+        InstancePlayerBind* bindToInstance(InstanceSaved* save, bool permanent, BindExtensionState extendState = EXTEND_STATE_NORMAL, bool load = false);
+        void bindToInstance();
+
+        void setPendingBind(uint32_t instanceId, uint32_t bindTimer);
+        bool hasPendingBind() const { return _pendingBindId > 0; }
+
+        void sendRaidInfo();
+        void sendSavedInstances();
+
+        void resetInstances(uint8_t method, bool isRaid);
+
+        void sendResetInstanceFailed(uint32_t reason, uint32_t MapId);
+
+        void sendInstanceResetWarning(uint32_t mapid, InstanceDifficulty::Difficulties difficulty, uint32_t time, bool welcome);
+
+    private:
+        uint32_t _pendingBindId = 0;
+        uint32_t _pendingBindTimer = 0;
+
+    public:
     //movement/position
         void _Relocate(uint32 mapid, const LocationVector& v, bool sendpending, bool force_new_world, uint32 instance_id);
 

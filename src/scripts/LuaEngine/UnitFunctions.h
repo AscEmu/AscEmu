@@ -12,8 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Summons/Summon.h"
 #include "Objects/Item.h"
 #include "Objects/Container.h"
-#include "Map/AreaBoundary.h"
-#include "Map/MapMgr.h"
+#include "Map/AreaBoundary.hpp"
+#include "Map/Management/MapMgr.hpp"
 #include "Objects/Units/Stats.h"
 #include "Chat/ChannelMgr.hpp"
 #include "Chat/Channel.hpp"
@@ -26,7 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Object.h"
 #include "LuaGlobal.h"
 #include <Spell/Definitions/PowerType.hpp>
-#include <Map/MapScriptInterface.h>
+#include <Map/Maps/MapScriptInterface.h>
 #include <Objects/Units/Creatures/Pet.h>
 
 #include "Management/ItemInterface.h"
@@ -560,7 +560,7 @@ public:
             lua_pushnil(L);
             return 1;
         }
-        Creature* pCreature = ptr->GetMapMgr()->CreateCreature(entry);
+        Creature* pCreature = ptr->getWorldMap()->createCreature(entry);
         if (pCreature == nullptr)
         {
             lua_pushnil(L);
@@ -573,7 +573,7 @@ public:
         pCreature->setVirtualItemSlotId(RANGED, equip3);
         pCreature->setPhase(PHASE_SET, phase);
         pCreature->m_noRespawn = true;
-        pCreature->AddToWorld(ptr->GetMapMgr());
+        pCreature->AddToWorld(ptr->getWorldMap());
         if (duration)
             pCreature->Despawn(duration, 0);
         if (save)
@@ -605,12 +605,12 @@ public:
                 return 1;
             }
 
-            GameObject* go = ptr->GetMapMgr()->CreateGameObject(entry_id);
+            GameObject* go = ptr->getWorldMap()->createGameObject(entry_id);
             uint32_t mapid = ptr->GetMapId();
             go->CreateFromProto(entry_id, mapid, x, y, z, o);
             go->Phase(PHASE_SET, phase);
             go->setScale(scale);
-            go->AddToWorld(ptr->GetMapMgr());
+            go->AddToWorld(ptr->getWorldMap());
 
             if (duration)
                 sEventMgr.AddEvent(go, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_UPDATE, duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -849,7 +849,7 @@ public:
     static int GetInstanceID(lua_State* L, Unit* ptr)
     {
         //TEST_UNIT()
-        if (!ptr || ptr->GetMapMgr() == nullptr || ptr->GetMapMgr()->GetMapInfo()->isNonInstanceMap())
+        if (!ptr || ptr->getWorldMap() == nullptr || ptr->getWorldMap()->getBaseMap()->getMapInfo()->isNonInstanceMap())
             lua_pushnil(L);
         else
             lua_pushinteger(L, ptr->GetInstanceID());
@@ -1095,7 +1095,7 @@ public:
         uint32_t sqlid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (!ptr || !sqlid)
             return 0;
-        PUSH_UNIT(L, ptr->GetMapMgr()->GetSqlIdCreature(sqlid));
+        PUSH_UNIT(L, ptr->getWorldMap()->getSqlIdCreature(sqlid));
         return 1;
     }
 
@@ -1792,7 +1792,7 @@ public:
         float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
-        PUSH_UNIT(L, ptr->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(x, y, z, entryid));
+        PUSH_UNIT(L, ptr->getWorldMap()->getInterface()->GetCreatureNearestCoords(x, y, z, entryid));
         return 1;
     }
 
@@ -1804,7 +1804,7 @@ public:
         float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
-        PUSH_GO(L, ptr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(x, y, z, entryid));
+        PUSH_GO(L, ptr->getWorldMap()->getInterface()->GetGameObjectNearestCoords(x, y, z, entryid));
         return 1;
     }
 
@@ -1841,7 +1841,7 @@ public:
         float y = CHECK_FLOAT(L, 2);
         if (!ptr || !x || !y)
             return 0;
-        float lH = ptr->GetMapMgr()->GetADTLandHeight(x, y);
+        float lH = ptr->getWorldMap()->getGridHeight(x, y);
         lua_pushnumber(L, lH);
         return 1;
     }
@@ -2745,12 +2745,12 @@ public:
         v.x += (3 * (cosf(angle + v.o)));
         v.y += (3 * (sinf(angle + v.o)));
 
-        Summon* guardian = ptr->GetMapMgr()->CreateSummon(entry, SUMMONTYPE_GUARDIAN, 0);
+        Summon* guardian = ptr->getWorldMap()->createSummon(entry, SUMMONTYPE_GUARDIAN, 0);
         if (guardian == nullptr)
             return 0;
 
         guardian->Load(cp, ptr, v, 0, -1);
-        guardian->PushToWorld(ptr->GetMapMgr());
+        guardian->PushToWorld(ptr->getWorldMap());
 
         PUSH_UNIT(L, guardian);
 
@@ -2796,7 +2796,7 @@ public:
     {
         uint64_t guid = CHECK_GUID(L, 1);
         if (ptr && guid)
-        PUSH_UNIT(L, ptr->GetMapMgr()->GetUnit(guid));
+        PUSH_UNIT(L, ptr->getWorldMap()->getUnit(guid));
         return 1;
     }
 
@@ -2808,7 +2808,7 @@ public:
         int count = 0;
         for (ThreatReference* ref : ptr->getThreatManager().getModifiableThreatList())
         {
-            ret = ptr->GetMapMgr()->GetUnit(ref->getOwner()->getGuid());
+            ret = ptr->getWorldMap()->getUnit(ref->getOwner()->getGuid());
             count++;
             lua_pushvalue(L, count);
             PUSH_UNIT(L, ret);
@@ -2897,8 +2897,8 @@ public:
             {
                 if (!plr->isInInstance())
                     return 0;
-                Instance* pInstance = sInstanceMgr.GetInstanceByIds(plr->GetMapId(), plr->GetInstanceID());
-                lua_pushinteger(L, pInstance->m_difficulty);
+                WorldMap* pInstance = sMapMgr.findWorldMap(plr->GetMapId(), plr->GetInstanceID());
+                lua_pushinteger(L, pInstance->getDifficulty());
             }
             return 1;
         }
@@ -2909,43 +2909,8 @@ public:
                 lua_pushboolean(L, 0);
                 return 1;
             }
-            Instance* pInstance = sInstanceMgr.GetInstanceByIds(ptr->GetMapId(), ptr->GetInstanceID());
-            lua_pushinteger(L, pInstance->m_difficulty);
-        }
-        return 1;
-    }
-
-    static int GetInstanceOwner(lua_State* L, Unit* ptr)
-    {
-        if (!ptr)
-            return 0;
-
-        if (!ptr->isInInstance())
-        {
-            lua_pushnil(L);
-        }
-        else
-        {
-            Instance* pInstance = sInstanceMgr.GetInstanceByIds(ptr->GetMapId(), ptr->GetInstanceID());
-            if (pInstance->m_creatorGuid != 0)  // creator guid is 0 if its owned by a group.
-            {
-                Player* owner = pInstance->m_mapMgr->GetPlayer(pInstance->m_creatorGuid);
-                PUSH_UNIT(L, owner);
-            }
-            else
-            {
-                uint32_t gId = pInstance->m_creatorGroup;
-                auto group_id = sObjectMgr.GetGroupById(gId);
-
-                if (group_id == nullptr)
-                    return 0;
-
-                if (!group_id->GetLeader())
-                    return 0;
-
-                if (Player* leader = sObjectMgr.GetPlayer(group_id->GetLeader()->guid))
-                PUSH_UNIT(L, leader);
-            }
+            WorldMap* pInstance = sMapMgr.findWorldMap(ptr->GetMapId(), ptr->GetInstanceID());
+            lua_pushinteger(L, pInstance->getDifficulty());
         }
         return 1;
     }
@@ -3010,14 +2975,14 @@ public:
                     (difficulty > 1 ? plr->getGroup()->m_difficulty : plr->getGroup()->m_raiddifficulty) = difficulty;
                 else
                 {
-                    Instance* pInstance = sInstanceMgr.GetInstanceByIds(plr->GetMapId(), plr->GetInstanceID());
-                    pInstance->m_difficulty = difficulty;
+                    WorldMap* pInstance = sMapMgr.findWorldMap(plr->GetMapId(), plr->GetInstanceID());
+                    pInstance->setSpawnMode(difficulty);
                 }
             }
             else
             {
-                Instance* pInstance = sInstanceMgr.GetInstanceByIds(ptr->GetMapId(), ptr->GetInstanceID());
-                pInstance->m_difficulty = difficulty;
+                WorldMap* pInstance = sMapMgr.findWorldMap(ptr->GetMapId(), ptr->GetInstanceID());
+                pInstance->setSpawnMode(difficulty);
             }
         }
         return 0;
@@ -3246,12 +3211,12 @@ public:
         {
             if (unit->m_spawn)
             {
-                uint32_t cellx = uint32_t(((_maxX - unit->m_spawn->x) / _cellSize));
-                uint32_t celly = uint32_t(((_maxY - unit->m_spawn->y) / _cellSize));
+                uint32_t cellx = uint32_t(((Map::Terrain::_maxX - unit->m_spawn->x) / Map::Cell::cellSize));
+                uint32_t celly = uint32_t(((Map::Terrain::_maxY - unit->m_spawn->y) / Map::Cell::cellSize));
 
-                if (cellx <= _sizeX && celly <= _sizeY)
+                if (cellx <= Map::Cell::_sizeX && celly <= Map::Cell::_sizeY)
                 {
-                    CellSpawns* sp = unit->GetMapMgr()->GetBaseMap()->GetSpawnsList(cellx, celly);
+                    CellSpawns* sp = unit->getWorldMap()->getBaseMap()->getSpawnsList(cellx, celly);
                     if (sp != nullptr)
                     {
                         for (CreatureSpawnList::iterator itr = sp->CreatureSpawns.begin(); itr != sp->CreatureSpawns.end(); ++itr)
@@ -3798,7 +3763,7 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        Unit* selection = plr->GetMapMgr()->GetUnit(plr->getTargetGuid());
+        Unit* selection = plr->getWorldMap()->getUnit(plr->getTargetGuid());
         if (selection)
             PUSH_UNIT(L, selection);
         else
@@ -4174,9 +4139,9 @@ public:
 
         if (wowGuid.isUnit())
         {
-            Unit* pUnit = plr->GetMapMgr()->GetUnit(guid);
+            Unit* pUnit = plr->getWorldMap()->getUnit(guid);
             CreatureProperties const* creature_properties = static_cast<Creature*>(pUnit)->GetCreatureProperties();
-            const auto lootType = pUnit->GetMapMgr() ? (pUnit->GetMapMgr()->iInstanceMode ? true : false) : false;
+            const auto lootType = pUnit->getWorldMap() ? (pUnit->getWorldMap()->getDifficulty() ? true : false) : false;
             switch (loot_type)
             {
                 default:
@@ -4196,11 +4161,11 @@ public:
         }
         else if (wowGuid.isGameObject())
         {
-            GameObject* pGO = plr->GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
+            GameObject* pGO = plr->getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
             if (pGO != nullptr && pGO->IsLootable())
             {
                 GameObject_Lootable* lt = static_cast<GameObject_Lootable*>(pGO);
-                const auto lootType = pGO->GetMapMgr() ? (pGO->GetMapMgr()->iInstanceMode ? true : false) : false;
+                const auto lootType = pGO->getWorldMap() ? (pGO->getWorldMap()->getDifficulty() ? true : false) : false;
                 switch (loot_type)
                 {
                     default:
@@ -4220,7 +4185,7 @@ public:
             switch (loot_type)
             {
                 case 6:
-                    sLootMgr.fillItemLoot(plr, pItem->loot, pItem->getEntry(), plr->GetMapMgr() ? (plr->GetMapMgr()->iInstanceMode ? true : false) : false);
+                    sLootMgr.fillItemLoot(plr, pItem->loot, pItem->getEntry(), plr->getWorldMap() ? (plr->getWorldMap()->getDifficulty() ? true : false) : false);
                     loot_type2 = 1;
                     break;
                 default:
@@ -4255,7 +4220,7 @@ public:
                 WorldDatabase.Execute("REPLACE INTO loot_creatures VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
             delete result;
         }
-        sLootMgr.addLoot(&ptr->loot, itemid, ichance, mincount, maxcount, ptr->GetMapMgr()->iInstanceMode);
+        sLootMgr.addLoot(&ptr->loot, itemid, ichance, mincount, maxcount, ptr->getWorldMap()->getDifficulty());
         return 0;
     }
 
@@ -4476,7 +4441,7 @@ public:
         if(!zone || !index || !value)
             lua_pushnil(L);
 
-        ptr->GetMapMgr()->SetWorldState(zone, index, value);
+        ptr->getWorldMap()->SetWorldState(zone, index, value);
         lua_pushboolean(L, 1);
         return 1;
     }
@@ -5513,7 +5478,7 @@ public:
     {
         TEST_UNIT()
         uint64_t guid = CHECK_GUID(L, 1);
-        Object* obj = ptr->GetMapMgr()->_GetObject(guid);
+        Object* obj = ptr->getWorldMap()->getObject(guid);
         if (obj != nullptr && obj->isCreatureOrPlayer())
             PUSH_UNIT(L, obj);
         else if (obj != nullptr && obj->isGameObject())
@@ -5528,15 +5493,6 @@ public:
         TEST_UNIT()
         PUSH_UNIT(L, ptr->getThreatManager().getSecondMostHated());
         return 1;
-    }
-
-    static int SaveToInstance(lua_State* /*L*/, Unit* ptr)
-    {
-        TEST_PLAYER()
-        Instance* dungeon = sInstanceMgr.GetInstanceByIds(ptr->GetMapId(), ptr->GetInstanceID());
-        sInstanceMgr.SaveInstanceToDB(dungeon);
-        sInstanceMgr.BuildRaidSavedInstancesForPlayer(static_cast<Player*>(ptr));
-        return 0;
     }
 
     static int UseAI(lua_State* L, Unit* ptr)
@@ -5585,7 +5541,7 @@ public:
     static int IsInDungeon(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET()
-        if (ptr->GetMapMgr()->GetMapInfo() && ptr->GetMapMgr()->GetMapInfo()->isMultimodeDungeon())
+        if (ptr->getWorldMap()->getBaseMap()->getMapInfo() && ptr->getWorldMap()->getBaseMap()->getMapInfo()->isMultimodeDungeon())
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -5595,7 +5551,7 @@ public:
     static int IsInRaid(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET()
-        if (ptr->GetMapMgr()->GetMapInfo() && ptr->GetMapMgr()->GetMapInfo()->isRaid())
+        if (ptr->getWorldMap()->getBaseMap()->getMapInfo() && ptr->getWorldMap()->getBaseMap()->getMapInfo()->isRaid())
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -5657,7 +5613,7 @@ public:
     static int StopPlayerAttack(lua_State* /*L*/, Unit* ptr)
     {
         TEST_PLAYER()
-        ptr->smsg_AttackStop(ptr->GetMapMgr()->GetUnit(static_cast<Player*>(ptr)->getTargetGuid()));
+        ptr->smsg_AttackStop(ptr->getWorldMap()->getUnit(static_cast<Player*>(ptr)->getTargetGuid()));
         return 0;
     }
 
@@ -5722,10 +5678,10 @@ public:
 
         LocationVector v(ptr->GetPosition());
 
-        Creature* c = ptr->GetMapMgr()->CreateCreature(cp->Id);
+        Creature* c = ptr->getWorldMap()->createCreature(cp->Id);
         c->Load(cp, v.x, v.y, v.z, v.o);
         c->removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
-        c->PushToWorld(ptr->GetMapMgr());
+        c->PushToWorld(ptr->getWorldMap());
         c->callEnterVehicle(ptr);
 #endif
         return 0;
@@ -5790,9 +5746,9 @@ public:
 
         Unit* u = v->getBase();
 
-        Creature* c = u->GetMapMgr()->CreateCreature(creature_entry);
+        Creature* c = u->getWorldMap()->createCreature(creature_entry);
         c->Load(cp, u->GetPositionX(), u->GetPositionY(), u->GetPositionZ(), u->GetOrientation());
-        c->PushToWorld(u->GetMapMgr());
+        c->PushToWorld(u->getWorldMap());
         c->callEnterVehicle(u);
 #endif
         return 0;
@@ -5831,7 +5787,7 @@ public:
         uint64_t guid = CHECK_GUID(L, 1);
         uint32_t delay = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 
-        Unit* _unit = ptr->GetMapMgrUnit(guid);
+        Unit* _unit = ptr->getWorldMapUnit(guid);
 
         if (_unit)
             _unit->callEnterVehicle(ptr);
@@ -5942,20 +5898,21 @@ public:
             return 0;
 
         uint32_t field = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        uint32_t zoneId;
+        uint32_t areaId;
+        uint32_t entry = 0;
 
-        auto a = ptr->GetMapMgr()->GetArea(ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
-        if (a == nullptr)
+        ptr->getWorldMap()->getZoneAndAreaId(ptr->GetPhase(), zoneId, areaId, ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
+
+        if (zoneId == 0)
+            entry = areaId;
+        else
+            entry = zoneId;
+
+        if (entry == 0)
             return 0;
 
-        uint32_t zone = a->zone;
-
-        if (zone == 0)
-            zone = a->id;
-
-        if (zone == 0)
-            return 0;
-
-        uint32_t value = ptr->GetMapMgr()->GetWorldStatesHandler().GetWorldStateForZone(zone, 0, field);
+        uint32_t value = ptr->getWorldMap()->getWorldStatesHandler().GetWorldStateForZone(entry, 0, field);
 
         lua_pushinteger(L, value);
         return 1;
@@ -5970,18 +5927,21 @@ public:
         uint32_t field = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 
-        auto a = ptr->GetMapMgr()->GetArea(ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
-        if (a == nullptr)
+        uint32_t zoneId;
+        uint32_t areaId;
+        uint32_t entry = 0;
+
+        ptr->getWorldMap()->getZoneAndAreaId(ptr->GetPhase(), zoneId, areaId, ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
+
+        if (zoneId == 0)
+            entry = areaId;
+        else
+            entry = zoneId;
+
+        if (entry == 0)
             return 0;
 
-        uint32_t zone = a->zone;
-        if (zone == 0)
-            zone = a->id;
-
-        if (zone == 0)
-            return 0;
-
-        ptr->GetMapMgr()->GetWorldStatesHandler().SetWorldStateForZone(zone, 0, field, value);
+        ptr->getWorldMap()->getWorldStatesHandler().SetWorldStateForZone(entry, 0, field, value);
         return 0;
     }
 

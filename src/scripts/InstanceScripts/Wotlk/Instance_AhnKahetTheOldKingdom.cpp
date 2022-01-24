@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 class AhnKahetTheOldKingdomInstanceScript : public InstanceScript
 {
 public:
-    explicit AhnKahetTheOldKingdomInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new AhnKahetTheOldKingdomInstanceScript(pMapMgr); }
+    explicit AhnKahetTheOldKingdomInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new AhnKahetTheOldKingdomInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {

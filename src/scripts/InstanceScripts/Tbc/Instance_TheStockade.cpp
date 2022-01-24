@@ -11,8 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 class InstanceStormwindStockadeScript : public InstanceScript
 {
 public:
-    explicit InstanceStormwindStockadeScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceStormwindStockadeScript(pMapMgr); }
+    explicit InstanceStormwindStockadeScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new InstanceStormwindStockadeScript(pMapMgr); }
 };
 
 class DeepfuryAI : public CreatureAIScript

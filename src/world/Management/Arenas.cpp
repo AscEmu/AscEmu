@@ -23,7 +23,7 @@
 #include "Management/Arenas.h"
 #include "Management/ArenaTeam.h"
 #include "Management/WorldStates.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.h"
@@ -35,7 +35,7 @@ const uint32 ARENA_PREPARATION = 32727;
 const uint32 GREEN_TEAM = 0;
 const uint32 GOLD_TEAM = 1;
 
-Arena::Arena(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) : CBattleground(mgr, id, lgroup, t)
+Arena::Arena(WorldMap* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) : CBattleground(mgr, id, lgroup, t)
 {
 
     for (uint8 i = 0; i < 2; i++)
@@ -70,7 +70,7 @@ Arena::Arena(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per
     }
     rated_match = false;
 
-    switch (m_mapMgr->GetMapId())
+    switch (m_mapMgr->getBaseMap()->getMapId())
     {
         case 559:
             m_zoneid = 3698;

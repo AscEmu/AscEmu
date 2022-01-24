@@ -270,7 +270,7 @@ public:
 
         if (mInstance)
         {
-            mInstance->setData(NEXUS_TELESTRA, Finished);
+            mInstance->setBossState(DATA_MAGUS_TELESTRA, Performed);
             GameObjectSet sphereSet = mInstance->getGameObjectsSetForEntry(TELESTRA_CS);
             for (auto goSphere : sphereSet)
             {
@@ -502,9 +502,7 @@ public:
 
     uint8_t mCSCount;
 
-    uint32_t m_uiEncounters[NEXUS_END];
-
-    explicit NexusScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit NexusScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
     {
         mAnomalusGUID = 0;
         mTelestraGUID = 0;
@@ -513,13 +511,10 @@ public:
 
         mCSCount = 0;
 
-        for (uint8_t i = 0; i < NEXUS_END; ++i)
-            m_uiEncounters[i] = NotStarted;
-
         PrepareGameObjectsForState();
     }
 
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new NexusScript(pMapMgr); }
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new NexusScript(pMapMgr); }
 
     void OnLoad() override
     {
@@ -529,7 +524,7 @@ public:
 
     void PrepareGameObjectsForState()
     {
-        if (getData(NEXUS_ANOMALUS) == Finished)
+        if (getBossState(DATA_ANOMALUS) == Performed)
         {
             GameObjectSet sphereSet = getGameObjectsSetForEntry(ANOMALUS_CS);
             for (auto goSphere : sphereSet)
@@ -539,7 +534,7 @@ public:
             }
         }
 
-        if (getData(NEXUS_TELESTRA) == Finished)
+        if (getBossState(DATA_MAGUS_TELESTRA) == Performed)
         {
             GameObjectSet sphereSet = getGameObjectsSetForEntry(TELESTRA_CS);
             for (auto goSphere : sphereSet)
@@ -549,7 +544,7 @@ public:
             }
         }
 
-        if (getData(NEXUS_ORMOROK) == Finished)
+        if (getBossState(DATA_ORMOROK) == Performed)
         {
             GameObjectSet sphereSet = getGameObjectsSetForEntry(ORMOROK_CS);
             for (auto goSphere : sphereSet)

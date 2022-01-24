@@ -45,7 +45,7 @@ class SERVER_DECL CBattleground : public EventableObject
 
         time_t m_nextPvPUpdateTime;
 
-        MapMgr* m_mapMgr;
+        WorldMap* m_mapMgr;
 
         uint32 m_id;
         uint32 m_type;
@@ -152,10 +152,10 @@ class SERVER_DECL CBattleground : public EventableObject
         // Retrieval Functions
         uint32 GetId();
         uint32 GetLevelGroup();
-        MapMgr* GetMapMgr();
+        WorldMap* getWorldMap();
 
         // Creating a battleground requires a pre-existing map manager
-        CBattleground(MapMgr* mgr, uint32 id, uint32 levelgroup, uint32 type);
+        CBattleground(WorldMap* mgr, uint32 id, uint32 levelgroup, uint32 type);
         virtual ~CBattleground();
 
         // Send the pvp log data of all players to this player

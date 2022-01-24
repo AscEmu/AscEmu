@@ -12,10 +12,10 @@ This file is released under the MIT license. See README-MIT for more information
 class IsleOfConquest : public CBattleground
 {
 public:
-    IsleOfConquest(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
+    IsleOfConquest(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
     ~IsleOfConquest();
 
-    static CBattleground* Create(MapMgr* m, uint32_t i, uint32_t l, uint32_t t) { return new IsleOfConquest(m, i, l, t); }
+    static CBattleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new IsleOfConquest(m, i, l, t); }
 
     void Init();
     void OnCreate() override;

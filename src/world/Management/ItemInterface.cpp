@@ -497,7 +497,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
 
             if (m_pOwner->IsInWorld() && !item->IsInWorld())
             {
-                item->PushToWorld(m_pOwner->GetMapMgr());
+                item->PushToWorld(m_pOwner->getWorldMap());
                 ByteBuffer buf(2500);
                 uint32 count = item->buildCreateUpdateBlockForPlayer(&buf, m_pOwner);
                 m_pOwner->getUpdateMgr().pushCreationData(&buf, count);

@@ -18,7 +18,7 @@
 #pragma once
 
 #include "Server/Script/ScriptMgr.h"
-#include "Map/InstanceDefines.hpp"
+#include "Map/Maps/InstanceDefines.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "WorldConf.h"
 

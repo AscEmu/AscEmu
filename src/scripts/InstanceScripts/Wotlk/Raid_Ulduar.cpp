@@ -9,8 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 class UlduarInstanceScript : public InstanceScript
 {
 public:
-    explicit UlduarInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new UlduarInstanceScript(pMapMgr); }
+    explicit UlduarInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr) {}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new UlduarInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {
@@ -26,7 +26,7 @@ class UlduarTeleporterGossip : public GossipScript
 public:
     //void OnHello(Object* object, Player* player)
     //{
-    //    UlduarScript* pInstance = (UlduarScript*)player->GetMapMgr()->GetScript();
+    //    UlduarScript* pInstance = (UlduarScript*)player->getWorldMap()->GetScript();
     //    if (!pInstance)
     //        return;
 

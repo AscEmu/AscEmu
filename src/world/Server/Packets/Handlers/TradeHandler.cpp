@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/UnitDefines.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/ObjectMgr.h"
 #include "Objects/Container.h"
 #include "Management/ItemInterface.h"
@@ -32,7 +32,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto playerTarget = _player->GetMapMgrPlayer(srlPacket.guid.getGuidLow());
+    const auto playerTarget = _player->getWorldMapPlayer(srlPacket.guid.getGuidLow());
 #else
     ObjectGuid targetGuid;
 
@@ -54,7 +54,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
     recvPacket.ReadByteSeq(targetGuid[6]);
     recvPacket.ReadByteSeq(targetGuid[0]);
 
-    const auto playerTarget = _player->GetMapMgrPlayer(static_cast<uint32_t>(targetGuid));
+    const auto playerTarget = _player->getWorldMapPlayer(static_cast<uint32_t>(targetGuid));
 #endif
 
     if (_player->m_TradeData != nullptr)

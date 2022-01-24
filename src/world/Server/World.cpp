@@ -22,8 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <CrashHandler.h>
 #include "Server/MainServerDefines.h"
 //#include "Config/Config.h"
-//#include "Map/MapCell.h"
-#include "Map/WorldCreator.h"
+//#include "Map/MapCell.hpp"
 #include "Storage/DayWatcherThread.h"
 #include "BroadcastMgr.h"
 #include "Spell/SpellMgr.hpp"
@@ -123,7 +122,8 @@ void World::finalize()
 #endif
 
     sLogger.info("InstanceMgr : ~InstanceMgr()");
-    sInstanceMgr.Shutdown();
+    //sInstanceMgr.Shutdown();
+    sMapMgr.shutdown();
 
     sLogger.info("WordFilter : ~WordFilter()");
     delete g_chatFilter;
@@ -718,6 +718,7 @@ bool World::setInitialWorldSettings()
         LoadGameObjectModelList(vmapPath);
     }
 
+    sInstanceMgr.loadInstances();
     loadMySQLStores();
 
     sLogger.info("World : Loading loot data...");
@@ -725,6 +726,9 @@ bool World::setInitialWorldSettings()
     sLootMgr.loadLoot();
 
     loadMySQLTablesByTask();
+
+    sMapMgr.initialize();
+
     logEntitySize();
 
     sSpellMgr.loadSpellDataFromDatabase();
@@ -939,6 +943,7 @@ void World::loadMySQLTablesByTask()
     sObjectMgr.SetHighestGuids();
     sObjectMgr.LoadReputationModifiers();
     sObjectMgr.LoadGroups();
+    sObjectMgr.loadGroupInstances();
     sObjectMgr.LoadArenaTeams();
 #ifdef FT_VEHICLES
     sObjectMgr.LoadVehicleAccessories();
@@ -970,9 +975,6 @@ void World::loadMySQLTablesByTask()
     g_chatFilter = new WordFilter();
 
     sLogger.info("Done. Database loaded in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-
-    // calling this puts all maps into our task list.
-    sInstanceMgr.Load();
 }
 
 void World::logEntitySize()
@@ -990,7 +992,8 @@ void World::Update(unsigned long timePassed)
     mEventableObjectHolder->Update(static_cast<uint32_t>(timePassed));
     sAuctionMgr.Update();
     updateQueuedSessions(static_cast<uint32_t>(timePassed));
-
+    sMapMgr.update(static_cast<uint32_t>(timePassed));
+    sInstanceMgr.update();
     sGuildMgr.update(static_cast<uint32>(timePassed));
 }
 
@@ -1047,7 +1050,7 @@ void World::logoutAllPlayers()
 
 void World::checkForExpiredInstances()
 {
-    sInstanceMgr.CheckForExpiredInstances();
+    //sInstanceMgr.CheckForExpiredInstances();
 }
 
 void World::deleteObject(Object* object)

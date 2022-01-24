@@ -22,7 +22,7 @@ public:
 
     uint32_t mUtgardeData[UTGARDE_DATA_END];
 
-    explicit UtgardeKeepScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit UtgardeKeepScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
     {
         mKelesethGUID = 0;
         mSkarvaldGUID = 0;
@@ -47,7 +47,7 @@ public:
         }
     }
 
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new UtgardeKeepScript(pMapMgr); }
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new UtgardeKeepScript(pMapMgr); }
 
     void OnLoad() override
     {
@@ -130,7 +130,7 @@ public:
             {
                 mUtgardeData[UTGARDE_INGVAR] = pData;
 
-                if (pData == Finished)
+                if (pData == Performed)
                 {
                     GameObject* pGO = nullptr;
                     for (uint8_t i = 0; i < 2; ++i)
@@ -175,7 +175,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new DragonflayerForgeMasterAI(c); }
     explicit DragonflayerForgeMasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        pInstance = static_cast<UtgardeKeepScript*>(getCreature()->GetMapMgr()->GetScript());
+        pInstance = static_cast<UtgardeKeepScript*>(getCreature()->getWorldMap()->getScript());
 
         addAISpell(DRAGONFLAYER_FORGE_MASTER_BURNING_BRAND, 8.0f, TARGET_ATTACKING, 0, 40);
     }

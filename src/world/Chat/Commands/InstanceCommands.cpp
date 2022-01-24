@@ -21,10 +21,8 @@
 
 
 #include "Server/MainServerDefines.h"
-#include "Map/InstanceDefines.hpp"
-#include "Map/MapMgr.h"
-#include "Map/WorldCreatorDefines.hpp"
-#include "Map/WorldCreator.h"
+#include "Map/Maps/InstanceDefines.hpp"
+#include "Map/Management/MapMgr.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Management/ObjectMgr.h"
 #include "Server/Packets/SmsgInstanceReset.h"
@@ -46,7 +44,7 @@ bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_
         return false;
 
     // Create Map Manager
-    MapMgr* mgr = sInstanceMgr.CreateInstance(INSTANCE_DUNGEON, mapid);
+    WorldMap* mgr = sMapMgr.createInstanceForPlayer(mapid, m_session->GetPlayer());
     if (mgr == nullptr)
     {
         sLogger.failure("call failed for map %u", mapid);
@@ -63,6 +61,7 @@ bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_
 //.instance countcreature
 bool ChatHandler::HandleCountCreaturesCommand(const char* args, WorldSession* m_session)
 {
+    /*
     Player* plr = m_session->GetPlayer();
     if (plr == nullptr)
         return true;
@@ -71,12 +70,12 @@ bool ChatHandler::HandleCountCreaturesCommand(const char* args, WorldSession* m_
     if (sscanf(args, "%u", &entry) != 1)
         return false;
 
-    Instance* instance = sInstanceMgr.GetInstanceByIds(MAX_NUM_MAPS, plr->GetInstanceID());
+    WorldMap* instance = sMapMgr.findInstanceMap(plr->GetInstanceID());
     if (instance == nullptr)
         return true;
 
     instance->m_mapMgr->GetScript()->getCreatureSetForEntry(entry, true, plr);
-
+*/
     return true;
 }
 
@@ -111,7 +110,7 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
             return false;
     }
 
-    Instance* instance = sInstanceMgr.GetInstanceByIds(MAX_NUM_MAPS, instanceId);
+    InstanceMap* instance = sMapMgr.findInstanceMap(instanceId);
     if (instance == nullptr)
     {
         if (userInput)
@@ -122,54 +121,58 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
         return false;
     }
 
-    std::stringstream ss;
-    ss << "Instance ID: " << MSG_COLOR_CYAN << instance->m_instanceId << "|r (" << MSG_COLOR_CYAN;
-    if (instance->m_mapInfo == nullptr)
-        ss << instance->m_mapId;
-    else
-        ss << instance->m_mapInfo->name;
-    ss << "|r)\n";
-    ss << "Persistent: " << MSG_COLOR_CYAN << (instance->m_persistent ? "Yes" : "No") << "|r\n";
-    if (instance->m_mapInfo != nullptr)
-    {
-        ss << "Type: " << MSG_COLOR_CYAN << GetMapTypeString(static_cast<uint8>(instance->m_mapInfo->type)) << "|r";
+    InstanceSaved* save = sInstanceMgr.getInstanceSave(instanceId);
 
-        if (instance->m_mapInfo->isMultimodeDungeon())
+    std::stringstream ss;
+    ss << "Instance ID: " << MSG_COLOR_CYAN << instance->getInstanceId() << "|r (" << MSG_COLOR_CYAN;
+    if (instance->getBaseMap()->getMapInfo() == nullptr)
+        ss << instance->getBaseMap()->getMapId();
+    else
+        ss << instance->getBaseMap()->getMapInfo()->name;
+    ss << "|r)\n";
+    ss << "Persistent: " << MSG_COLOR_CYAN << (save->canReset() ? "No" : "Yes") << "|r\n";
+    if (instance->getBaseMap()->getMapInfo() != nullptr)
+    {
+        ss << "Type: " << MSG_COLOR_CYAN << GetMapTypeString(static_cast<uint8>(instance->getBaseMap()->getMapInfo()->type)) << "|r";
+
+        if (instance->getBaseMap()->getMapInfo()->isMultimodeDungeon())
         {
-            ss << " (" << MSG_COLOR_CYAN << GetDifficultyString(instance->m_difficulty) << "|r)";
+            ss << " (" << MSG_COLOR_CYAN << GetDifficultyString(instance->getDifficulty()) << "|r)";
         }
 
-        if (instance->m_mapInfo->isRaid())
+        if (instance->getBaseMap()->getMapInfo()->isRaid())
         {
-            ss << " (" << MSG_COLOR_CYAN << GetRaidDifficultyString(instance->m_difficulty) << "|r)";
+            ss << " (" << MSG_COLOR_CYAN << GetRaidDifficultyString(instance->getDifficulty()) << "|r)";
         }
 
         ss << "\n";
     }
-    ss << "Created: " << MSG_COLOR_CYAN << Util::GetDateTimeStringFromTimeStamp(instance->m_creation) << "|r\n";
-    if (instance->m_expiration != 0)
-        ss << "Expires: " << MSG_COLOR_CYAN << Util::GetDateTimeStringFromTimeStamp((uint32)instance->m_expiration) << "|r\n";
+    //ss << "Created: " << MSG_COLOR_CYAN << Util::GetDateTimeStringFromTimeStamp(0) << "|r\n";
+    if (save->getResetTime() != 0)
+        ss << "Expires: " << MSG_COLOR_CYAN << Util::GetDateTimeStringFromTimeStamp((uint32)save->getResetTime()) << "|r\n";
 
-    if (instance->m_mapMgr == NULL)
+    if (instance == NULL)
     {
         ss << "Status: " << MSG_COLOR_LIGHTRED << "Shut Down|r\n";
     }
-    else if (!instance->m_mapMgr->HasPlayers())
+    else if (!instance->hasPlayers())
     {
-        ss << "Status: " << MSG_COLOR_LIGHTRED << "Idle|r";
+        /*ss << "Status: " << MSG_COLOR_LIGHTRED << "Idle|r";
         if (instance->m_mapMgr->InactiveMoveTime && !instance->m_mapMgr->GetMapInfo()->isNonInstanceMap())
             ss << " (" << MSG_COLOR_CYAN << "Shutdown in " << MSG_COLOR_LIGHTRED << (((long)instance->m_mapMgr->InactiveMoveTime - UNIXTIME) / 60) << MSG_COLOR_CYAN << " minutes|r)";
-        ss << "\n";
+        ss << "\n";*/
     }
     else
     {
-        ss << "Status: " << MSG_COLOR_GREEN << "In use|r (" << MSG_COLOR_GREEN << instance->m_mapMgr->GetPlayerCount() << MSG_COLOR_CYAN << " players inside|r)\n";
+        ss << "Status: " << MSG_COLOR_GREEN << "In use|r (" << MSG_COLOR_GREEN << instance->getPlayerCount() << MSG_COLOR_CYAN << " players inside|r)\n";
 
     }
     SendMultilineMessage(m_session, ss.str().c_str());
 
-    if (instance->m_mapMgr != nullptr && instance->m_mapMgr->GetScript() != nullptr)
-        instance->m_mapMgr->GetScript()->displayDataStateList(plr);
+    if (instance != nullptr && instance->getScript() != nullptr)
+        instance->getScript()->displayDataStateList(plr);
+    else
+        plr->BroadcastMessage("NO INSTANCE SCRIPT FOUND NO BOSS DATA AVAILABLE");
 
     return true;
 }
@@ -177,7 +180,7 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
 //.instance reset
 bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_session)
 {
-
+    /*
     uint32 instanceId;
     int argc = 1;
     char* playername = NULL;
@@ -274,13 +277,14 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
     // shut down instance
     sInstanceMgr.DeleteBattlegroundInstance(instance->m_mapId, instance->m_instanceId);
     //    RedSystemMessage(m_session, "Resetting single non-persistent instances is not available yet.");
-    sGMLog.writefromsession(m_session, "used reset instance command on %s, instance %u,", plr->getName().c_str(), instanceId);
+    sGMLog.writefromsession(m_session, "used reset instance command on %s, instance %u,", plr->getName().c_str(), instanceId);*/
     return true;
 }
 
 //.instance resetall
 bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession* m_session)
 {
+    /*
     bool is_name_set = false;
     Player* player;
 
@@ -307,13 +311,14 @@ bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession*
     sInstanceMgr.ResetSavedInstances(player);
     SystemMessage(m_session, "...done");
 
-    sGMLog.writefromsession(m_session, "used reset all instances command on %s,", player->getName().c_str());
+    sGMLog.writefromsession(m_session, "used reset all instances command on %s,", player->getName().c_str());*/
     return true;
 }
 
 //.instance shutdown
 bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* m_session)
 {
+    /*
     uint32 instanceId = (args ? atoi(args) : 0);
     if (instanceId == 0)
         return false;
@@ -340,13 +345,14 @@ bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* 
     SystemMessage(m_session, "...done");
 
     sGMLog.writefromsession(m_session, "used shutdown instance command on instance %u,", instanceId);
-
+*/
     return true;
 }
 
 //.instance showtimers
 bool ChatHandler::HandleShowTimersCommand(const char* /*args*/, WorldSession* m_session)
 {
+    /*
     Player* player = m_session->GetPlayer();
     if (player == nullptr)
         return true;
@@ -359,6 +365,6 @@ bool ChatHandler::HandleShowTimersCommand(const char* /*args*/, WorldSession* m_
 
     if (instance && instance->m_mapMgr != nullptr && instance->m_mapMgr->GetScript() != nullptr)
         instance->m_mapMgr->GetScript()->displayTimerList(player);
-
+*/
     return true;
 }

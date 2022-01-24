@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 class DireMaulInstanceScript : public InstanceScript
 {
 public:
-    explicit DireMaulInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new DireMaulInstanceScript(pMapMgr); }
+    explicit DireMaulInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new DireMaulInstanceScript(pMapMgr); }
 };
 
 void SetupDireMaul(ScriptMgr* mgr)

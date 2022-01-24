@@ -23,8 +23,8 @@
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Map/MapMgr.h"
-#include "Map/MapScriptInterface.h"
+#include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/MapScriptInterface.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 
@@ -294,7 +294,7 @@ bool WaitingToResurrect(uint8_t /*effectIndex*/, Aura* a, bool apply)
     WoWGuid wowGuid;
     wowGuid.Init(crtguid);
 
-    Creature* pCreature = p_target->IsInWorld() ? p_target->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart()) : nullptr;
+    Creature* pCreature = p_target->IsInWorld() ? p_target->getWorldMap()->getCreature(wowGuid.getGuidLowPart()) : nullptr;
 
     if (pCreature == nullptr || p_target->getBattleground() == nullptr)
         return true;
@@ -363,7 +363,7 @@ bool Temper(uint8_t /*effectIndex*/, Spell* pSpell)
 
     Unit* pHated = pSpell->getUnitCaster()->getThreatManager().getCurrentVictim();
 
-    MapScriptInterface* pMap = pSpell->getUnitCaster()->GetMapMgr()->GetInterface();
+    MapScriptInterface* pMap = pSpell->getUnitCaster()->getWorldMap()->getInterface();
     Creature* pCreature1 = pMap->SpawnCreature(28695, 1335.296265f, -89.237503f, 56.717800f, 1.994538f, true, true, 0, 0, 1);
     if (pCreature1)
         pCreature1->getAIInterface()->onHostileAction(pHated);
@@ -426,22 +426,22 @@ bool CrystalSpikes(uint8_t /*effectIndex*/, Spell* pSpell)
 
     for (uint8_t i = 1; i < 6; ++i)
     {
-        pCaster->GetMapMgr()->GetInterface()->SpawnCreature(CN_CRYSTAL_SPIKE, pCaster->GetPositionX() + (3 * i) + Util::getRandomUInt(2), pCaster->GetPositionY() + (3 * i) + Util::getRandomUInt(2), pCaster->GetPositionZ(), pCaster->GetOrientation(), true, false, 0, 0);
+        pCaster->getWorldMap()->getInterface()->SpawnCreature(CN_CRYSTAL_SPIKE, pCaster->GetPositionX() + (3 * i) + Util::getRandomUInt(2), pCaster->GetPositionY() + (3 * i) + Util::getRandomUInt(2), pCaster->GetPositionZ(), pCaster->GetOrientation(), true, false, 0, 0);
     }
 
     for (uint8_t i = 1; i < 6; ++i)
     {
-        pCaster->GetMapMgr()->GetInterface()->SpawnCreature(CN_CRYSTAL_SPIKE, pCaster->GetPositionX() - (3 * i) - Util::getRandomUInt(2), pCaster->GetPositionY() + (3 * i) + Util::getRandomUInt(2), pCaster->GetPositionZ(), pCaster->GetOrientation(), true, false, 0, 0);
+        pCaster->getWorldMap()->getInterface()->SpawnCreature(CN_CRYSTAL_SPIKE, pCaster->GetPositionX() - (3 * i) - Util::getRandomUInt(2), pCaster->GetPositionY() + (3 * i) + Util::getRandomUInt(2), pCaster->GetPositionZ(), pCaster->GetOrientation(), true, false, 0, 0);
     }
 
     for (uint8_t i = 1; i < 6; ++i)
     {
-        pCaster->GetMapMgr()->GetInterface()->SpawnCreature(CN_CRYSTAL_SPIKE, pCaster->GetPositionX() + (3 * i) + Util::getRandomUInt(2), pCaster->GetPositionY() - (3 * i) - Util::getRandomUInt(2), pCaster->GetPositionZ(), pCaster->GetOrientation(), true, false, 0, 0);
+        pCaster->getWorldMap()->getInterface()->SpawnCreature(CN_CRYSTAL_SPIKE, pCaster->GetPositionX() + (3 * i) + Util::getRandomUInt(2), pCaster->GetPositionY() - (3 * i) - Util::getRandomUInt(2), pCaster->GetPositionZ(), pCaster->GetOrientation(), true, false, 0, 0);
     }
 
     for (uint8_t i = 1; i < 6; ++i)
     {
-        pCaster->GetMapMgr()->GetInterface()->SpawnCreature(CN_CRYSTAL_SPIKE, pCaster->GetPositionX() - (3 * i) - Util::getRandomUInt(2), pCaster->GetPositionY() - (3 * i) - Util::getRandomUInt(2), pCaster->GetPositionZ(), pCaster->GetOrientation(), true, false, 0, 0);
+        pCaster->getWorldMap()->getInterface()->SpawnCreature(CN_CRYSTAL_SPIKE, pCaster->GetPositionX() - (3 * i) - Util::getRandomUInt(2), pCaster->GetPositionY() - (3 * i) - Util::getRandomUInt(2), pCaster->GetPositionZ(), pCaster->GetOrientation(), true, false, 0, 0);
     }
 
     return true;

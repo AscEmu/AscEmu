@@ -46,6 +46,7 @@ class WorldSession;
 class MapMgr;
 class Creature;
 struct TrainerSpell;
+class InstanceSaved;
 
 template<class T, class LOCK>
 
@@ -359,7 +360,12 @@ class SERVER_DECL WorldSession
         void handleCalendarEventRemoveInvite(WorldPacket& recvPacket);
         void handleCalendarEventStatus(WorldPacket& recvPacket);
         void handleCalendarEventModeratorStatus(WorldPacket& recvPacket);
+
+public:
+        void sendCalendarRaidLockout(InstanceSaved const* save, bool add);
+        void sendCalendarRaidLockoutUpdated(InstanceSaved const* save);
 #endif
+protected:
         //////////////////////////////////////////////////////////////////////////////////////////
         // ChannelHandler.cpp
         void handleChannelJoin(WorldPacket& recvPacket);

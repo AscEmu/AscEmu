@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Summons/Summon.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Server/Script/CreatureAIScript.h"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
@@ -103,7 +103,7 @@ bool ChatHandler::HandleNpcAppearCommand(const char* /*_*/, WorldSession* sessio
         return true;
     }
 
-    session->GetPlayer()->teleport(target->GetPosition(), target->GetMapMgr());
+    session->GetPlayer()->teleport(target->GetPosition(), target->getWorldMap());
     return true;
 }
 
@@ -246,12 +246,12 @@ bool ChatHandler::HandleNpcDeleteCommand(const char* args, WorldSession* m_sessi
 
         if (creature_target->m_spawn)
         {
-            uint32 cellx = uint32(((_maxX - creature_target->m_spawn->x) / _cellSize));
-            uint32 celly = uint32(((_maxY - creature_target->m_spawn->y) / _cellSize));
+            uint32 cellx = uint32(((Map::Terrain::_maxX - creature_target->m_spawn->x) / Map::Cell::cellSize));
+            uint32 celly = uint32(((Map::Terrain::_maxY - creature_target->m_spawn->y) / Map::Cell::cellSize));
 
-            if (cellx <= _sizeX && celly <= _sizeY)
+            if (cellx <= Map::Cell::_sizeX && celly <= Map::Cell::_sizeY)
             {
-                CellSpawns* sp = creature_target->GetMapMgr()->GetBaseMap()->GetSpawnsList(cellx, celly);
+                CellSpawns* sp = creature_target->getWorldMap()->getBaseMap()->getSpawnsList(cellx, celly);
                 if (sp != nullptr)
                 {
                     for (CreatureSpawnList::iterator itr = sp->CreatureSpawns.begin(); itr != sp->CreatureSpawns.end(); ++itr)
@@ -631,15 +631,16 @@ bool ChatHandler::HandleNpcRespawnCommand(const char* /*args*/, WorldSession* m_
         sEventMgr.RemoveEvents(creature_target, EVENT_CREATURE_RESPAWN);
 
         BlueSystemMessage(m_session, "Respawning Creature: `%s` with entry: %u on map: %u spawnid: %u", creature_target->GetCreatureProperties()->Name.c_str(),
-            creature_target->getEntry(), creature_target->GetMapMgr()->GetMapId(), creature_target->spawnid);
+            creature_target->getEntry(), creature_target->getWorldMap()->getBaseMap()->getMapId(), creature_target->spawnid);
         sGMLog.writefromsession(m_session, "respawned Creature: `%s` with entry: %u on map: %u sqlid: %u", creature_target->GetCreatureProperties()->Name.c_str(),
-            creature_target->getEntry(), creature_target->GetMapMgr()->GetMapId(), creature_target->spawnid);
+            creature_target->getEntry(), creature_target->getWorldMap()->getBaseMap()->getMapId(), creature_target->spawnid);
 
-        if (creature_target->GetMapMgr()->pInstance != nullptr)
+        /*
+        if (creature_target->getWorldMap()->pInstance != nullptr)
         {
-            creature_target->GetMapMgr()->pInstance->m_killedNpcs.erase(creature_target->getSpawnId());
-            creature_target->GetMapMgr()->pInstance->m_killedNpcs.erase(creature_target->getEntry());
-        }
+            creature_target->getWorldMap()->pInstance->m_killedNpcs.erase(creature_target->getSpawnId());
+            creature_target->getWorldMap()->pInstance->m_killedNpcs.erase(creature_target->getEntry());
+        }*/
 
         creature_target->Despawn(0, 1000);
     }
@@ -758,19 +759,19 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
     creature_spawn->CanFly = 0;
     creature_spawn->phase = m_session->GetPlayer()->GetPhase();
 
-    if (auto creature = m_session->GetPlayer()->GetMapMgr()->CreateCreature(entry))
+    if (auto creature = m_session->GetPlayer()->getWorldMap()->createCreature(entry))
     {
         creature->Load(creature_spawn, 0, nullptr);
         creature->m_loadedFromDB = true;
-        creature->PushToWorld(m_session->GetPlayer()->GetMapMgr());
+        creature->PushToWorld(m_session->GetPlayer()->getWorldMap());
 
         // Add to map
-        uint32 x = m_session->GetPlayer()->GetMapMgr()->GetPosX(m_session->GetPlayer()->GetPositionX());
-        uint32 y = m_session->GetPlayer()->GetMapMgr()->GetPosY(m_session->GetPlayer()->GetPositionY());
-        m_session->GetPlayer()->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(x, y)->CreatureSpawns.push_back(creature_spawn);
-        MapCell* map_cell = m_session->GetPlayer()->GetMapMgr()->GetCell(x, y);
+        uint32 x = m_session->GetPlayer()->getWorldMap()->getPosX(m_session->GetPlayer()->GetPositionX());
+        uint32 y = m_session->GetPlayer()->getWorldMap()->getPosY(m_session->GetPlayer()->GetPositionY());
+        m_session->GetPlayer()->getWorldMap()->getBaseMap()->getSpawnsListAndCreate(x, y)->CreatureSpawns.push_back(creature_spawn);
+        MapCell* map_cell = m_session->GetPlayer()->getWorldMap()->getCell(x, y);
         if (map_cell != nullptr)
-            map_cell->SetLoaded();
+            map_cell->setLoaded();
 
         creature->SaveToDB();
 
@@ -853,7 +854,7 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
         return true;
     }
 
-    Creature* selected_creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+    Creature* selected_creature = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (selected_creature == nullptr)
     {
         SystemMessage(m_session, "You should select a creature.");
@@ -933,7 +934,7 @@ bool ChatHandler::HandleNpcVendorRemoveItemCommand(const char* args, WorldSessio
         return true;
     }
 
-    Creature* selected_creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+    Creature* selected_creature = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (selected_creature == nullptr)
     {
         SystemMessage(m_session, "You should select a creature.");

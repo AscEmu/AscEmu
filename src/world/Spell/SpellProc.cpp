@@ -70,7 +70,7 @@ bool SpellProc::checkClassMask(SpellInfo const* castingSpell) const
     return false;
 }
 
-bool SpellProc::doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32_t /*flag*/, uint32_t /*dmg*/, uint32_t /*abs*/, int* /*dmgOverwrite*/, uint32_t /*weaponDamageType*/)
+bool SpellProc::doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32_t /*flag*/, uint32_t /*dmg*/, uint32_t /*abs*/, uint32_t /*weaponDamageType*/)
 {
     return false;
 }
@@ -98,7 +98,7 @@ void SpellProc::castSpell(Unit* victim, SpellInfo const* castingSpell)
         if (getCasterGuid() == getProcOwner()->getGuid())
             caster = getProcOwner();
         else
-            caster = getProcOwner()->GetMapMgrUnit(getCasterGuid());
+            caster = getProcOwner()->getWorldMapUnit(getCasterGuid());
     }
 
     if (caster == nullptr)
@@ -107,10 +107,7 @@ void SpellProc::castSpell(Unit* victim, SpellInfo const* castingSpell)
     SpellCastTargets targets(victim->getGuid());
     Spell* spell = sSpellMgr.newSpell(caster, mSpell, true, nullptr);
 
-    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-    {
-        spell->forced_basepoints.set(i, getOverrideEffectDamage(i));
-    }
+    spell->forced_basepoints = mOverrideEffectDamage;
 
     spell->ProcedOnSpell = castingSpell;
     if (mOrigSpell != nullptr)
@@ -172,20 +169,14 @@ void SpellProc::setCastedOnProcOwner(bool enable) { m_castOnProcOwner = enable; 
 
 int32_t SpellProc::getOverrideEffectDamage(uint8_t effIndex) const
 {
-    if (effIndex >= MAX_SPELL_EFFECTS)
-        return 0;
-
-    return mOverrideEffectDamage[effIndex];
+    int32_t overrideValue = 0;
+    mOverrideEffectDamage.get(effIndex, &overrideValue);
+    return overrideValue;
 }
-
-int32_t* SpellProc::getOverrideEffectDamages() { return mOverrideEffectDamage; }
 
 void SpellProc::setOverrideEffectDamage(uint8_t effIndex, int32_t damage)
 {
-    if (effIndex >= MAX_SPELL_EFFECTS)
-        return;
-
-    mOverrideEffectDamage[effIndex] = damage;
+    mOverrideEffectDamage.set(effIndex, damage);
 }
 
 Aura* SpellProc::getCreatedByAura() const { return m_createdByAura; }
@@ -281,11 +272,6 @@ SpellProc* SpellProcMgr::newSpellProc(Unit* owner, SpellInfo const* spellInfo, S
         result->mProcClassMask[0] = 0;
         result->mProcClassMask[1] = 0;
         result->mProcClassMask[2] = 0;
-    }
-
-    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-    {
-        result->mOverrideEffectDamage[i] = 0;
     }
 
     if (sScriptMgr.getSpellScript(spellInfo->getId()) != nullptr)

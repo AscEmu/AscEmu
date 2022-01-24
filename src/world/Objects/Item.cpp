@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Container.h"
 #include "Data/WoWItem.hpp"
 #include "Item.h"
-#include "Map/MapMgrDefines.hpp"
+#include "Map/Management/MapMgrDefines.hpp"
 #include "Server/Packets/SmsgEnchantmentLog.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLDataStore.hpp"

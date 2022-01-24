@@ -21,11 +21,12 @@
 
 
 #include "VMapFactory.h"
+#include "VMapManager2.h"
 #include "Chat/ChatHandler.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Map/Area/AreaStorage.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/SpellCastTargetFlags.hpp"
 #include "Spell/SpellMgr.hpp"
@@ -60,7 +61,7 @@ bool ChatHandler::HandleDebugInFrontCommand(const char* /*args*/, WorldSession* 
     uint64 guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
-        if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
+        if ((obj = m_session->GetPlayer()->getWorldMap()->getUnit(guid)) == 0)
         {
             SystemMessage(m_session, "You should select a character or a creature.");
             return true;
@@ -88,7 +89,7 @@ bool ChatHandler::HandleShowReactionCommand(const char* args, WorldSession* m_se
 
     if (wowGuid.getRawGuid() != 0)
     {
-        obj = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+        obj = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     }
 
     if (!obj)
@@ -120,7 +121,7 @@ bool ChatHandler::HandleDistanceCommand(const char* /*args*/, WorldSession* m_se
     uint64 guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
-        if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
+        if ((obj = m_session->GetPlayer()->getWorldMap()->getUnit(guid)) == 0)
         {
             SystemMessage(m_session, "You should select a character or a creature.");
             return true;
@@ -148,7 +149,7 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
     wowGuid.Init(player->getTargetGuid());
     if (wowGuid.getRawGuid() != 0)
     {
-        creature = player->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+        creature = player->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     }
 
     if (creature == nullptr)
@@ -269,7 +270,7 @@ bool ChatHandler::HandleFaceCommand(const char* args, WorldSession* m_session)
 
     if (wowGuid.getRawGuid() != 0)
     {
-        obj = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+        obj = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     }
 
     if (obj == nullptr)
@@ -301,7 +302,7 @@ bool ChatHandler::HandleSetBytesCommand(const char* /*args*/, WorldSession* m_se
     uint64 guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
-        if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
+        if ((obj = m_session->GetPlayer()->getWorldMap()->getUnit(guid)) == 0)
         {
             SystemMessage(m_session, "You should select a character or a creature.");
             return true;
@@ -364,7 +365,7 @@ bool ChatHandler::HandleGetBytesCommand(const char* /*args*/, WorldSession* m_se
     uint64 guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
-        if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == nullptr)
+        if ((obj = m_session->GetPlayer()->getWorldMap()->getUnit(guid)) == nullptr)
         {
             SystemMessage(m_session, "You should select a character or a creature.");
             return true;
@@ -432,7 +433,7 @@ bool ChatHandler::HandleKnockBackCommand(const char* args, WorldSession* m_sessi
 
 bool ChatHandler::HandleFadeCommand(const char* args, WorldSession* m_session)
 {
-    Unit* target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->getTargetGuid());
+    Unit* target = m_session->GetPlayer()->getWorldMap()->getUnit(m_session->GetPlayer()->getTargetGuid());
     if (!target)
         target = m_session->GetPlayer();
     char* v = strtok((char*)args, " ");
@@ -450,7 +451,7 @@ bool ChatHandler::HandleFadeCommand(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleThreatModCommand(const char* args, WorldSession* m_session)
 {
-    Unit* target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->getTargetGuid());
+    Unit* target = m_session->GetPlayer()->getWorldMap()->getUnit(m_session->GetPlayer()->getTargetGuid());
     if (!target)
         target = m_session->GetPlayer();
     char* v = strtok((char*)args, " ");
@@ -468,7 +469,7 @@ bool ChatHandler::HandleThreatModCommand(const char* args, WorldSession* m_sessi
 
 bool ChatHandler::HandleMoveFallCommand(const char* /*args*/, WorldSession* m_session)
 {
-    Unit* target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->getTargetGuid());
+    Unit* target = m_session->GetPlayer()->getWorldMap()->getUnit(m_session->GetPlayer()->getTargetGuid());
     if (!target)
         return true;
 
@@ -485,7 +486,7 @@ bool ChatHandler::HandleMoveFallCommand(const char* /*args*/, WorldSession* m_se
 bool ChatHandler::HandleThreatListCommand(const char* /*args*/, WorldSession* m_session)
 {
     Unit* target = nullptr;
-    target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->getTargetGuid());
+    target = m_session->GetPlayer()->getWorldMap()->getUnit(m_session->GetPlayer()->getTargetGuid());
     if (!target)
     {
         SystemMessage(m_session, "You should select a creature.");
@@ -552,7 +553,7 @@ bool ChatHandler::HandleModifyBitCommand(const char* /*args*/, WorldSession* m_s
     uint64 guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
-        if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
+        if ((obj = m_session->GetPlayer()->getWorldMap()->getUnit(guid)) == 0)
         {
             SystemMessage(m_session, "You should select a character or a creature.");
             return true;
@@ -612,7 +613,7 @@ bool ChatHandler::HandleModifyValueCommand(const char* /*args*/, WorldSession* m
     uint64 guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
-        if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
+        if ((obj = m_session->GetPlayer()->getWorldMap()->getUnit(guid)) == 0)
         {
             SystemMessage(m_session, "You should select a character or a creature.");
             return true;
@@ -691,10 +692,10 @@ bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_s
         return false;
     }
 
-    MapMgr* m = m_session->GetPlayer()->GetMapMgr();
+    WorldMap* m = m_session->GetPlayer()->getWorldMap();
 
     // if we have selected unit, use its position
-    Unit* unit = m->GetUnit(m_session->GetPlayer()->getTargetGuid());
+    Unit* unit = m->getUnit(m_session->GetPlayer()->getTargetGuid());
     if (unit == nullptr)
     {
         unit = m_session->GetPlayer(); // otherwise ours
@@ -711,9 +712,9 @@ bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_s
         // spawn in spiral
         x = r * sinf(angle);
         y = r * cosf(angle);
-        z = m->GetLandHeight(bx + x, by + y, unit->GetPositionZ() + 2);
+        z = unit->getMapHeight(bx + x, by + y, unit->GetPositionZ() + 2);
 
-        Creature* c = m->CreateCreature(npcid);
+        Creature* c = m->createCreature(npcid);
         c->Load(cp, bx + x, by + y, z, 0.0f);
         if (health != 0)
         {
@@ -870,7 +871,7 @@ bool ChatHandler::HandleSimpleDistanceCommand(const char* args, WorldSession* m_
     if (sscanf(args, "%f %f %f", &toX, &toY, &toZ) != 3)
         return false;
 
-    if (toX >= _maxX || toX <= _minX || toY <= _minY || toY >= _maxY)
+    if (toX >= Map::Terrain::_maxX || toX <= Map::Terrain::_minX || toY <= Map::Terrain::_minY || toY >= Map::Terrain::_maxY)
         return false;
 
     float distance = CalculateDistance(
@@ -894,7 +895,7 @@ bool ChatHandler::HandleRangeCheckCommand(const char* /*args*/, WorldSession* m_
         return true;
     }
 
-    Unit* unit = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid);
+    Unit* unit = m_session->GetPlayer()->getWorldMap()->getUnit(guid);
     if (!unit)
     {
         m_session->SystemMessage("Invalid selection.");
@@ -945,13 +946,12 @@ bool ChatHandler::HandleCollisionTestLOS(const char* /*args*/, WorldSession* m_s
             return true;
         }
 
-        VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+        const auto mgr = VMAP::VMapFactory::createOrGetVMapManager();
         const LocationVector & loc2 = pObj->GetPosition();
         const LocationVector & loc1 = m_session->GetPlayer()->GetPosition();
-        bool res = mgr->isInLineOfSight(pObj->GetMapId(), loc1.x, loc1.y, loc1.z, loc2.x, loc2.y, loc2.z);
-        bool res2 = mgr->isInLineOfSight(pObj->GetMapId(), loc1.x, loc1.y, loc1.z + 2.0f, loc2.x, loc2.y, loc2.z + 2.0f);
-        bool res3 = mgr->isInLineOfSight(pObj->GetMapId(), loc1.x, loc1.y, loc1.z + 5.0f, loc2.x, loc2.y, loc2.z + 5.0f);
-        SystemMessage(m_session, "Result was: %s %s %s.", res ? "in LOS" : "not in LOS", res2 ? "in LOS" : "not in LOS", res3 ? "in LOS" : "not in LOS");
+        bool res = pObj->IsWithinLOSInMap(m_session->GetPlayer());
+
+        SystemMessage(m_session, "Result was: %s.", res ? "in LOS" : "not in LOS");
         return true;
     }
     else
@@ -978,11 +978,11 @@ bool ChatHandler::HandleCollisionGetHeight(const char* /*args*/, WorldSession* m
         LocationVector dest(posX + (radius * (cosf(ori))), posY + (radius * (sinf(ori))), posZ);
         //LocationVector destest(posX+(radius*(cosf(ori))),posY+(radius*(sinf(ori))),posZ);
 
-        VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+        const auto mgr = VMAP::VMapFactory::createOrGetVMapManager();
         float z = mgr->getHeight(plr->GetMapId(), posX, posY, posZ + 2.0f, 10000.0f);
         float z2 = mgr->getHeight(plr->GetMapId(), posX, posY, posZ + 5.0f, 10000.0f);
         float z3 = mgr->getHeight(plr->GetMapId(), posX, posY, posZ, 10000.0f);
-        float z4 = plr->GetMapMgr()->GetADTLandHeight(plr->GetPositionX(), plr->GetPositionY());
+        float z4 = plr->getWorldMap()->getGridHeight(plr->GetPositionX(), plr->GetPositionY());
         bool fp = mgr->getObjectHitPos(plr->GetMapId(), src.x, src.y, src.z, dest.x, dest.y, dest.z, dest.x, dest.y, dest.z, -1.5f);
 
         SystemMessage(m_session, "Results were: %f(offset2.0f) | %f(offset5.0f) | %f(org) | landheight:%f | target radius5 FP:%d", z, z2, z3, z4, fp);

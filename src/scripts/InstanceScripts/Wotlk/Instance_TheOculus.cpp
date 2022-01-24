@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 class TheOculusInstanceScript : public InstanceScript
 {
 public:
-    explicit TheOculusInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new TheOculusInstanceScript(pMapMgr); }
+    explicit TheOculusInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new TheOculusInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {

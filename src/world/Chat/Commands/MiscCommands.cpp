@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellMgr.hpp"
 
 //.mount
@@ -515,7 +515,7 @@ bool ChatHandler::HandleWorldPortCommand(const char* args, WorldSession* m_sessi
         return true;
     }
 
-    if (x >= _maxX || x <= _minX || y <= _minY || y >= _maxY)
+    if (x >= Map::Terrain::_maxX || x <= Map::Terrain::_minX || y <= Map::Terrain::_minY || y >= Map::Terrain::_maxY)
     {
         RedSystemMessage(m_session, "<x> <y> value is out of range!");
         return true;
@@ -534,7 +534,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
     uint64 guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
-        if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
+        if ((obj = m_session->GetPlayer()->getWorldMap()->getUnit(guid)) == 0)
         {
             SystemMessage(m_session, "You should select a character or a creature.");
             return true;
@@ -789,7 +789,7 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession* m_session)
             SystemMessage(m_session, "%s has blocked other GMs from appearing to them.", chr->getName().c_str());
             return true;
         }
-        if (chr->GetMapMgr() == NULL)
+        if (chr->getWorldMap() == NULL)
         {
             SystemMessage(m_session, "%s is already being teleported.", chr->getName().c_str());
             return true;
@@ -804,7 +804,7 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession* m_session)
         if (m_session->GetPlayer()->GetMapId() == chr->GetMapId() && m_session->GetPlayer()->GetInstanceID() == chr->GetInstanceID())
             m_session->GetPlayer()->safeTeleport(chr->GetMapId(), chr->GetInstanceID(), chr->GetPosition());
         else
-            m_session->GetPlayer()->safeTeleport(chr->GetMapMgr(), chr->GetPosition());
+            m_session->GetPlayer()->safeTeleport(chr->getWorldMap(), chr->GetPosition());
 #else
         m_session->GetPlayer()->safeTeleport(chr->GetMapId(), 0, chr->GetPosition());
 #endif
@@ -868,7 +868,7 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
             SystemMessage(m_session, buf);
             return true;
         }
-        if (chr->GetMapMgr() == NULL)
+        if (chr->getWorldMap() == NULL)
         {
             snprintf((char*)buf, 256, "%s is already being teleported.", chr->getName().c_str());
             SystemMessage(m_session, buf);
@@ -882,7 +882,7 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
             SystemMessage(chr->getSession(), "You are being summoned by %s.", m_session->GetPlayer()->getName().c_str());
         }
         Player* plr = m_session->GetPlayer();
-        if (plr->GetMapMgr() == chr->GetMapMgr())
+        if (plr->getWorldMap() == chr->getWorldMap())
             chr->_Relocate(plr->GetMapId(), plr->GetPosition(), false, false, plr->GetInstanceID());
         else
         {

@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/HonorHandler.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/WorldStates.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Server/Packets/SmsgMessageChat.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -468,9 +468,9 @@ AlteracValley::AVNode::AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint3
 
         while (spi->x != 0.0f)
         {
-            sp = m_bg->GetMapMgr()->CreateCreature(cp->Id);
+            sp = m_bg->getWorldMap()->createCreature(cp->Id);
             sp->Load(cp, spi->x, spi->y, spi->z, spi->o);
-            sp->PushToWorld(m_bg->GetMapMgr());
+            sp->PushToWorld(m_bg->getWorldMap());
             ++spi;
         }
     }
@@ -576,11 +576,11 @@ void AlteracValley::AVNode::Spawn()
         if (m_flag == nullptr)
         {
             // initial spawn
-            m_flag = m_bg->SpawnGameObject(g->id[m_state], m_bg->GetMapMgr()->GetMapId(), g->x, g->y, g->z, g->o, 0, 0, 1.0f);
+            m_flag = m_bg->SpawnGameObject(g->id[m_state], m_bg->getWorldMap()->getBaseMap()->getMapId(), g->x, g->y, g->z, g->o, 0, 0, 1.0f);
             m_flag->SetFaction(g_gameObjectFactions[m_state]);
             m_flag->setAnimationProgress(100);
             m_flag->setDynamic(1);
-            m_flag->PushToWorld(m_bg->GetMapMgr());
+            m_flag->PushToWorld(m_bg->getWorldMap());
         }
         else
         {
@@ -590,14 +590,14 @@ void AlteracValley::AVNode::Spawn()
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(g->id[m_state]);
                 m_flag->RemoveFromWorld(false);
                 m_flag->setEntry(g->id[m_state]);
-                m_flag->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
+                m_flag->SetNewGuid(m_bg->getWorldMap()->generateGameobjectGuid());
                 m_flag->SetGameObjectProperties(gameobject_info);
                 m_flag->setDisplayId(gameobject_info->display_id);
                 m_flag->setGoType(static_cast<uint8_t>(gameobject_info->type));
                 m_flag->SetFaction(g_gameObjectFactions[m_state]);
                 m_flag->setAnimationProgress(100);
                 m_flag->setDynamic(1);
-                m_flag->PushToWorld(m_bg->GetMapMgr());
+                m_flag->PushToWorld(m_bg->getWorldMap());
             }
         }
     }
@@ -621,12 +621,12 @@ void AlteracValley::AVNode::Spawn()
         if (m_aura == nullptr)
         {
             // initial spawn
-            m_aura = m_bg->SpawnGameObject(g->id[m_state], m_bg->GetMapMgr()->GetMapId(), g->x, g->y, g->z, g->o, 0, 0, 3.0f);
+            m_aura = m_bg->SpawnGameObject(g->id[m_state], m_bg->getWorldMap()->getBaseMap()->getMapId(), g->x, g->y, g->z, g->o, 0, 0, 3.0f);
             m_aura->SetFaction(g_gameObjectFactions[m_state]);
             m_aura->setAnimationProgress(100);
             m_aura->setFlags(GO_FLAG_NONSELECTABLE);
             m_aura->setState(GO_STATE_CLOSED);
-            m_aura->PushToWorld(m_bg->GetMapMgr());
+            m_aura->PushToWorld(m_bg->getWorldMap());
         }
         else
         {
@@ -636,7 +636,7 @@ void AlteracValley::AVNode::Spawn()
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(g->id[m_state]);
                 m_aura->RemoveFromWorld(false);
                 m_aura->setEntry(g->id[m_state]);
-                m_aura->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
+                m_aura->SetNewGuid(m_bg->getWorldMap()->generateGameobjectGuid());
                 m_aura->SetGameObjectProperties(gameobject_info);
                 m_aura->setDisplayId(gameobject_info->display_id);
                 m_aura->setGoType(static_cast<uint8_t>(gameobject_info->type));
@@ -644,7 +644,7 @@ void AlteracValley::AVNode::Spawn()
                 m_aura->setAnimationProgress(100);
                 m_aura->setFlags(GO_FLAG_NONSELECTABLE);
                 m_aura->setState(GO_STATE_CLOSED);
-                m_aura->PushToWorld(m_bg->GetMapMgr());
+                m_aura->PushToWorld(m_bg->getWorldMap());
             }
         }
     }
@@ -668,7 +668,7 @@ void AlteracValley::AVNode::Spawn()
         if (m_glow == nullptr)
         {
             // initial spawn
-            m_glow = m_bg->SpawnGameObject(g->id[m_state], m_bg->GetMapMgr()->GetMapId(), g->x, g->y, g->z, g->o, 0, 0, 1.0f);
+            m_glow = m_bg->SpawnGameObject(g->id[m_state], m_bg->getWorldMap()->getBaseMap()->getMapId(), g->x, g->y, g->z, g->o, 0, 0, 1.0f);
             m_glow->SetFaction(g_gameObjectFactions[m_state]);
             m_glow->setAnimationProgress(100);
             m_glow->setFlags(GO_FLAG_NONSELECTABLE);
@@ -677,7 +677,7 @@ void AlteracValley::AVNode::Spawn()
                 m_glow->setScale(10.0f);
             else
                 m_glow->setScale(2.0f);
-            m_glow->PushToWorld(m_bg->GetMapMgr());
+            m_glow->PushToWorld(m_bg->getWorldMap());
         }
         else
         {
@@ -687,7 +687,7 @@ void AlteracValley::AVNode::Spawn()
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(g->id[m_state]);
                 m_glow->RemoveFromWorld(false);
                 m_glow->setEntry(g->id[m_state]);
-                m_glow->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
+                m_glow->SetNewGuid(m_bg->getWorldMap()->generateGameobjectGuid());
                 m_glow->SetGameObjectProperties(gameobject_info);
                 m_glow->setDisplayId(gameobject_info->display_id);
                 m_glow->setGoType(static_cast<uint8_t>(gameobject_info->type));
@@ -699,7 +699,7 @@ void AlteracValley::AVNode::Spawn()
                     m_glow->setScale(10.0f);
                 else
                     m_glow->setScale(2.0f);
-                m_glow->PushToWorld(m_bg->GetMapMgr());
+                m_glow->PushToWorld(m_bg->getWorldMap());
             }
         }
     }
@@ -729,7 +729,7 @@ void AlteracValley::AVNode::Spawn()
             {
                 float x = Util::getRandomInt(10) * cos(Util::getRandomFloat(6.28f)) + m_template->m_flagLocation.x;
                 float y = Util::getRandomInt(10) * cos(Util::getRandomFloat(6.28f)) + m_template->m_flagLocation.y;
-                float z = m_bg->GetMapMgr()->GetADTLandHeight(x, y);
+                float z = m_bg->getWorldMap()->getHeight(x, y, m_template->m_flagLocation.z);
                 m_guards.push_back(m_bg->SpawnCreature(m_template->m_guardId[t], x, y, z, 0.0f));
             }
         }
@@ -752,7 +752,7 @@ void AlteracValley::AVNode::Spawn()
                 for (std::set<uint32_t>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
                 {
                     // repop him at a new GY
-                    Player* plr_tmp = m_bg->GetMapMgr()->GetPlayer(*it2);
+                    Player* plr_tmp = m_bg->getWorldMap()->getPlayer(*it2);
                     if (plr_tmp != nullptr)
                     {
                         m_bg->HookHandleRepop(plr_tmp);
@@ -833,8 +833,8 @@ void AlteracValley::AVNode::Capture()
             DLLLogDetail("AlteracValley : spawning fires at bunker %s", m_template->m_name);
             while (spi->x != 0.0f)
             {
-                go = m_bg->SpawnGameObject(AV_GAMEOBJECT_FIRE, m_bg->GetMapMgr()->GetMapId(), spi->x, spi->y, spi->z, spi->o, 0, 35, 1.0f);
-                go->PushToWorld(m_bg->GetMapMgr());
+                go = m_bg->SpawnGameObject(AV_GAMEOBJECT_FIRE, m_bg->getWorldMap()->getBaseMap()->getMapId(), spi->x, spi->y, spi->z, spi->o, 0, 35, 1.0f);
+                go->PushToWorld(m_bg->getWorldMap());
                 ++spi;
             }
 
@@ -912,7 +912,7 @@ void AlteracValley::AVNode::Capture()
     }
 }
 
-AlteracValley::AlteracValley(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : CBattleground(mgr, id, lgroup, t)
+AlteracValley::AlteracValley(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : CBattleground(mgr, id, lgroup, t)
 {
     m_playerCountPerTeam = 40;
     m_reinforcements[0] = AV_NUM_REINFORCEMENTS;
@@ -1052,13 +1052,13 @@ void AlteracValley::DropFlag(Player* /*plr*/)
 void AlteracValley::OnCreate()
 {
     // Alliance Gate
-    GameObject* gate = SpawnGameObject(AV_GAMEOBJECT_GATE, GetMapMgr()->GetMapId(), 780.487f, -493.024f, 99.9553f, 3.0976f, 32, 114, 3.000000f);
+    GameObject* gate = SpawnGameObject(AV_GAMEOBJECT_GATE, getWorldMap()->getBaseMap()->getMapId(), 780.487f, -493.024f, 99.9553f, 3.0976f, 32, 114, 3.000000f);
     gate->SetRotationQuat(0.f, 0.f, 0.0129570f, -0.0602880f);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 
     // Horde gate
-    gate = SpawnGameObject(AV_GAMEOBJECT_GATE, GetMapMgr()->GetMapId(), -1375.73f, -538.966f, 55.3006f, 0.791198f, 32, 114, 3.000000f);
+    gate = SpawnGameObject(AV_GAMEOBJECT_GATE, getWorldMap()->getBaseMap()->getMapId(), -1375.73f, -538.966f, 55.3006f, 0.791198f, 32, 114, 3.000000f);
     gate->SetRotationQuat(0.f, 0.f, 0.36f, 0.922766f);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);

@@ -28,7 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGuildBankQueryTab.h"
 #include "Server/Packets/CmsgGuildBankerActivate.h"
 #include "Server/Packets/CmsgGuildSetRank.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Server/Packets/CmsgPetitionShowSignatures.h"
 #include "Server/Packets/SmsgPetitionShowSignatures.h"
 #include "Server/Packets/CmsgOfferPetition.h"
@@ -464,7 +464,7 @@ void WorldSession::handleGuildBankerActivate(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto gameObject = _player->GetMapMgr()->GetGameObject(srlPacket.guid.getGuidLow());
+    const auto gameObject = _player->getWorldMap()->getGameObject(srlPacket.guid.getGuidLow());
     if (gameObject == nullptr)
         return;
 
@@ -516,7 +516,7 @@ void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    Player* pTarget = _player->GetMapMgr()->GetPlayer(srlPacket.playerGuid.getGuidLow());
+    Player* pTarget = _player->getWorldMap()->getPlayer(srlPacket.playerGuid.getGuidLow());
     Charter* pCharter = sObjectMgr.GetCharterByItemGuid(srlPacket.itemGuid);
     if (pCharter == nullptr)
     {
@@ -575,7 +575,7 @@ void WorldSession::handleCharterSign(WorldPacket& recvPacket)
         _player->m_charters[charter->CharterType] = charter;
         _player->SaveToDB(false);
 
-        Player* player = _player->GetMapMgr()->GetPlayer(charter->GetLeader());
+        Player* player = _player->getWorldMap()->getPlayer(charter->GetLeader());
         if (player == nullptr)
             return;
 
@@ -738,7 +738,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    Creature* creature = _player->GetMapMgr()->GetCreature(srlPacket.creatureGuid.getGuidLow());
+    Creature* creature = _player->getWorldMap()->getCreature(srlPacket.creatureGuid.getGuidLow());
     if (!creature)
     {
         Disconnect();

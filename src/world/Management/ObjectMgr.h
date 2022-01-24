@@ -21,23 +21,29 @@
 #ifndef OBJECTMGR_H
 #define OBJECTMGR_H
 
+#include "Management/ArenaTeam.h"
+#include "Management/Charter.hpp"
+#include "Management/Group.h"
+#include "Management/Tickets/TicketMgr.hpp"
+#include "Movement/MovementManager.h"
 #include "Objects/Units/Creatures/Corpse.h"
+#include "Objects/Units/Creatures/CreatureDefines.hpp"
+#include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
 #include "Objects/Units/Players/Player.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/Creatures/Vehicle.h"
+#include "Server/Script/SimpleEventScript.hpp"
+#include "Spell/Spell.h"
+#include "Spell/SpellTargetConstraint.hpp"
 #include "Storage/DBC/DBCStructures.hpp"
 #if VERSION_STRING >= Cata
     #include "Storage/DB2/DB2Stores.h"
     #include "Storage/DB2/DB2Structures.h"
 #endif
-#include "Objects/Units/Creatures/CreatureDefines.hpp"
-#include "Spell/Spell.h"
-#include "Management/Group.h"
 
 #include <string>
-#include "Spell/SpellTargetConstraint.hpp"
-#include "Management/Tickets/TicketMgr.hpp"
-#include "Movement/MovementManager.h"
+
+class SpellInfo;
 
 struct WorldState
 {
@@ -52,7 +58,7 @@ struct WorldState
 };
 
 // this has nothing to do with object management ;)
-enum EncounterCreditType
+enum EncounterCreditType : uint8_t
 {
     ENCOUNTER_CREDIT_KILL_CREATURE  = 0,
     ENCOUNTER_CREDIT_CAST_SPELL     = 1
@@ -82,9 +88,6 @@ struct DungeonEncounter
 
 typedef std::list<DungeonEncounter const*> DungeonEncounterList;
 typedef std::unordered_map<uint32_t, DungeonEncounterList> DungeonEncounterContainer;
-
-class Group;
-class SpellInfo;
 
 //it seems trainerspells should be part of trainer files ;)
 struct TrainerSpell
@@ -179,10 +182,6 @@ struct InstanceReputationModifier
     std::vector<InstanceReputationMod> mods;
 };
 
-#include "Server/Script/SimpleEventScript.hpp"
-
-#include "Management/Charter.hpp"
-
 typedef std::unordered_map<uint32, Player*> PlayerStorageMap;
 
 #if VERSION_STRING > TBC
@@ -256,21 +255,10 @@ public:
         uint32 GenerateGroupId();
         uint32 GenerateGuildId();
 
-        void AddGroup(Group* group)
-        {
-            std::lock_guard<std::mutex> guard(m_groupLock);
-
-            m_groups.insert(std::make_pair(group->GetID(), group));
-        }
-
-        void RemoveGroup(Group* group)
-        {
-            std::lock_guard<std::mutex> guard(m_groupLock);
-
-            m_groups.erase(group->GetID());
-        }
-
+        void AddGroup(Group* group);
+        void RemoveGroup(Group* group);
         void LoadGroups();
+        void loadGroupInstances();
 
         // player names
         void AddPlayerInfo(CachedCharacterInfo* pn);
@@ -324,7 +312,7 @@ public:
         void LoadPlayersInfo();
 
         Corpse* LoadCorpse(uint32 guid);
-        void LoadCorpses(MapMgr* mgr);
+        void LoadCorpses(WorldMap* mgr);
         void LoadVendors();
         void ReloadVendors();
 

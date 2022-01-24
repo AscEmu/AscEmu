@@ -31,7 +31,7 @@ protected:
     bool DefFlag[AB_NUM_CONTROL_POINTS][2];
 
 public:
-    ArathiBasin(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
+    ArathiBasin(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
     ~ArathiBasin();
 
     bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
@@ -53,7 +53,7 @@ public:
     LocationVector GetStartingCoords(uint32_t Team) override;
     void HookOnFlagDrop(Player* plr) override;
 
-    static CBattleground* Create(MapMgr* m, uint32_t i, uint32_t l, uint32_t t) { return new ArathiBasin(m, i, l, t); }
+    static CBattleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new ArathiBasin(m, i, l, t); }
 
     uint32_t GetNameID() override { return 40; }
     void OnStart() override;

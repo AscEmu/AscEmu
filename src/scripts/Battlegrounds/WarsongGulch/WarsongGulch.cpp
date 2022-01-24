@@ -21,14 +21,14 @@
 #include "Management/HonorHandler.h"
 #include "Management/WorldStates.h"
 #include "Server/MainServerDefines.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Objects/GameObject.h"
 #include "Server/WorldSession.h"
 #include "Chat/ChatDefines.hpp"
 #include "WarsongGulchDefinitions.h"
 
-WarsongGulch::WarsongGulch(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : CBattleground(mgr, id, lgroup, t)
+WarsongGulch::WarsongGulch(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : CBattleground(mgr, id, lgroup, t)
 {
 
     m_zoneid = 3277;
@@ -65,11 +65,11 @@ WarsongGulch::WarsongGulch(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t
     m_homeFlags[1]->setAnimationProgress(100);
 
     // dropped flags
-    m_dropFlags[1] = m_mapMgr->CreateGameObject(179786);
+    m_dropFlags[1] = m_mapMgr->createGameObject(179786);
     if (!m_dropFlags[1]->CreateFromProto(179785, 489, 0, 0, 0, 0))
         DLLLogDetail("WarsongGulch : Could not create dropped flag 1");
 
-    m_dropFlags[0] = m_mapMgr->CreateGameObject(179786);
+    m_dropFlags[0] = m_mapMgr->createGameObject(179786);
     if (!m_dropFlags[0]->CreateFromProto(179786, 489, 0, 0, 0, 0))
         DLLLogDetail("WarsongGulch : Could not create dropped flag 0");
 
@@ -340,7 +340,7 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
      * will work.
      * - Burlex
      */
-    m_dropFlags[plr->getTeam()]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
+    m_dropFlags[plr->getTeam()]->SetNewGuid(m_mapMgr->generateGameobjectGuid());
 
     SpellInfo const* pSp = sSpellMgr.getSpellInfo(23333 + (plr->getTeam() * 2));
     Spell* sp = sSpellMgr.newSpell(plr, pSp, true, 0);

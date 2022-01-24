@@ -20,7 +20,7 @@
 #include "Setup.h"
 #include "Objects/Item.h"
 #include "Management/ItemInterface.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/Definitions/ProcFlags.hpp"
@@ -192,7 +192,7 @@ bool PreyOnTheWeakPeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
     if (p_target != NULL && p_target->getClass() == ROGUE)
     {
-        Unit* target = p_target->GetMapMgrUnit(p_target->getTargetGuid());
+        Unit* target = p_target->getWorldMapUnit(p_target->getTargetGuid());
         if (target == NULL)
             return true;
 

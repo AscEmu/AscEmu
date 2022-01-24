@@ -60,7 +60,7 @@ public:
         }
         if (_getHealthPercent() >= 10 && _getHealthPercent() <= 98 && !_isCasting())
         {
-            mElizaGuard = getCreature()->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 1871);
+            mElizaGuard = getCreature()->getWorldMap()->getInterface()->GetCreatureNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 1871);
             if (mElizaGuard == nullptr)
             {
                 _castAISpell(mSummonGuard);
@@ -78,7 +78,7 @@ class SummonElizaQuest : public QuestScript
 public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* Eliza = mTarget->GetMapMgr()->CreateAndSpawnCreature(314, -10271.127f, 53.784f, 42.711f, 1.72f);
+        Creature* Eliza = mTarget->getWorldMap()->createAndSpawnCreature(314, -10271.127f, 53.784f, 42.711f, 1.72f);
         if (Eliza != nullptr)
             Eliza->Despawn(300000, 0);    // Should it be that much ?
     }

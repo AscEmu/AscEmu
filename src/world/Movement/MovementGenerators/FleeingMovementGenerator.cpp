@@ -172,7 +172,7 @@ template<class T>
 void FleeingMovementGenerator<T>::getPoint(T* owner, LocationVector &position)
 {
     float casterDistance, casterAngle;
-    if (Unit* fleeTarget = (*owner).GetMapMgrUnit(_fleeTargetGUID))
+    if (Unit* fleeTarget = (*owner).getWorldMapUnit(_fleeTargetGUID))
     {
         casterDistance = fleeTarget->getDistance(owner);
         if (casterDistance > 0.2f)

@@ -29,7 +29,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/SpellEffectTarget.hpp"
@@ -1083,7 +1083,7 @@ void Pet::InitializeMe(bool first)
         delete query;
     }
 
-    PushToWorld(m_Owner->GetMapMgr());
+    PushToWorld(m_Owner->getWorldMap());
     if (!this->IsInWorld())
     {
         sLogger.failure("Pet::InitializeMe was pushed to world but not in World, return.");
@@ -1262,7 +1262,7 @@ void Pet::PrepareForRemove(bool bUpdate, bool bSetOffline)
     }
 
     if (IsInWorld() && IsActive())
-        Deactivate(m_mapMgr);
+        Deactivate(m_WorldMap);
 }
 
 void Pet::setDeathState(DeathState s)
@@ -2160,7 +2160,7 @@ void Pet::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
                 if (spl->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
                     uint64 guid = getChannelObjectGuid();
-                    DynamicObject* dObj = GetMapMgr()->GetDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
+                    DynamicObject* dObj = getWorldMap()->getDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
                     if (!dObj)
                         return;
 
@@ -2217,6 +2217,8 @@ void Pet::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     // Clear health batch on death
     clearHealthBatch();
 
-    if (m_mapMgr->m_battleground != NULL)
-        m_mapMgr->m_battleground->HookOnUnitDied(this);
+    if (m_WorldMap->getBaseMap()->isBattlegroundOrArena())
+    {
+        reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground()->HookOnUnitDied(this);
+    }
 }

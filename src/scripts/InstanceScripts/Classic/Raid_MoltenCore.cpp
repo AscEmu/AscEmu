@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 class MoltenCoreInstanceScript : public InstanceScript
 {
 public:
-    explicit MoltenCoreInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) { }
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new MoltenCoreInstanceScript(pMapMgr); }
+    explicit MoltenCoreInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr) { }
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new MoltenCoreInstanceScript(pMapMgr); }
 };
 
 class CoreRagerAI : public CreatureAIScript

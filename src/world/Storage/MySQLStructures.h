@@ -6,8 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Macros/CreatureMacros.hpp"
-#include "Map/InstanceDefines.hpp"
-#include "Map/WorldCreatorDefines.hpp"
+#include "Map/Maps/InstanceDefines.hpp"
 #include "Map/SpawnGroups.hpp"
 #include <cstdint>
 #include <string>

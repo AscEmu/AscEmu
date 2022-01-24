@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 class BlackfathomDeepsInstanceScript : public InstanceScript
 {
 public:
-    explicit BlackfathomDeepsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new BlackfathomDeepsInstanceScript(pMapMgr); }
+    explicit BlackfathomDeepsInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new BlackfathomDeepsInstanceScript(pMapMgr); }
 };
 
 class FathomStone : public GameObjectAIScript
@@ -29,7 +29,7 @@ public:
         if (pPlayer->isTeamHorde() && SpawnBaronAquanis == true) // Horde
         {
             // Spawn Baron Aquanis
-            _gameobject->GetMapMgr()->GetInterface()->SpawnCreature(BlackfathomDeeps::CN_BARON_AQUANIS, -782.021f, -63.5876f, -45.0935f, -2.44346f, true, false, 0, 0);
+            _gameobject->getWorldMap()->getInterface()->SpawnCreature(BlackfathomDeeps::CN_BARON_AQUANIS, -782.021f, -63.5876f, -45.0935f, -2.44346f, true, false, 0, 0);
             SpawnBaronAquanis = false;
         }
     }

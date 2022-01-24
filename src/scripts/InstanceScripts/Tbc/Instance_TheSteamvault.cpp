@@ -11,8 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 class TheSteamvaultInstanceScript : public InstanceScript
 {
 public:
-    explicit TheSteamvaultInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new TheSteamvaultInstanceScript(pMapMgr); }
+    explicit TheSteamvaultInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new TheSteamvaultInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {

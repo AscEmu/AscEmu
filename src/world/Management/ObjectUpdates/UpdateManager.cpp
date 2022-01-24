@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 #include <vector>
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Objects/Units/Players/Player.h"
 
 using namespace std;
@@ -237,10 +237,10 @@ void UpdateManager::internalPushUpdatesIfBufferIsFull(size_t additionalDataSize)
 
 void UpdateManager::internalUpdateMapMgr()
 {
-    const auto mapMgr = m_owner->GetMapMgr();
+    const auto mapMgr = m_owner->getWorldMap();
     if (mapMgr != nullptr && !bProcessPending)
     {
         bProcessPending = true;
-        mapMgr->PushToProcessed(m_owner);
+        mapMgr->pushToProcessed(m_owner);
     }
 }

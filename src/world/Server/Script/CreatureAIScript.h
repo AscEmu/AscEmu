@@ -8,13 +8,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTypes.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Chat/ChatDefines.hpp"
-#include "Map/InstanceDefines.hpp"
+#include "Map/Maps/InstanceDefines.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "ScriptMgr.h"
 #include "ScriptEvent.hpp"
-#include "Map/MapMgr.h"
-#include "Map/Instance.h"
-
+#include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/InstanceMap.hpp"
 #include "Movement/WaypointDefines.h"
 
 class Creature;
@@ -428,9 +427,9 @@ public:
     template<class T> inline
         const T& RAID_MODE(const T& normal10, const T& normal25, const T& heroic10, const T& heroic25) const
     {
-        if (_creature->GetMapMgr()->pInstance)
+        if (_creature->getWorldMap()->getInstance())
         {
-            switch (_creature->GetMapMgr()->pInstance->m_difficulty)
+            switch (_creature->getWorldMap()->getDifficulty())
             {
             case InstanceDifficulty::RAID_10MAN_NORMAL:
                 return normal10;

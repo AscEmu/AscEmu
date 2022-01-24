@@ -29,7 +29,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "WorldSocket.h"
 #include "Packets/SmsgNotification.h"
@@ -276,7 +276,7 @@ void WorldSession::LogoutPlayer(bool Save)
 
         if (_player->m_currentLoot && _player->IsInWorld())
         {
-            Object* obj = _player->GetMapMgr()->_GetObject(_player->m_currentLoot);
+            Object* obj = _player->getWorldMap()->getObject(_player->m_currentLoot);
             if (obj != nullptr)
             {
                 switch (obj->getObjectTypeId())

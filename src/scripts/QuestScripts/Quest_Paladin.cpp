@@ -51,11 +51,11 @@ public:
             float SSZ = pPlayer->GetPositionZ();
             float SSO = pPlayer->GetOrientation();
 
-            GameObject* Brazier = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 181956);
+            GameObject* Brazier = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 181956);
             if (Brazier)
             {
                 Brazier->setState(GO_STATE_OPEN);
-                pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(17716, SSX, SSY, SSZ, SSO, true, false, 0, 0)->Despawn(600000, 0);
+                pPlayer->getWorldMap()->getInterface()->SpawnCreature(17716, SSX, SSY, SSZ, SSO, true, false, 0, 0)->Despawn(600000, 0);
             }
         }
         else
@@ -77,7 +77,7 @@ public:
         float SSY = mKiller->GetPositionY();
         float SSZ = mKiller->GetPositionZ();
 
-        GameObject* Brazier = mKiller->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 181956);
+        GameObject* Brazier = mKiller->getWorldMap()->getInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 181956);
         if (Brazier)
         {
             Brazier->setState(GO_STATE_CLOSED);

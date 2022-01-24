@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AreaStorage.hpp"
 #include "VMapFactory.h"
+#include "VMapManager2.h"
+#include "MMapFactory.h"
 #include "Management/ArenaTeam.h"
 #include "AreaManagementGlobals.hpp"
 
@@ -104,7 +106,7 @@ namespace MapManagement::AreaManagement
 
     bool AreaStorage::IsOutdoor(uint32 mapId, float x, float y, float z)
     {
-        VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+        VMAP::VMapManager2* mgr = VMAP::VMapFactory::createOrGetVMapManager();
 
         uint32 mogpFlags;
         int32 adtId, rootId, groupId;

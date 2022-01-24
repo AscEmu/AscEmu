@@ -7,12 +7,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgAreaTriggerMessage.h"
 #include "Macros/ScriptMacros.hpp"
-#include "Map/InstanceDefines.hpp"
+#include "Map/Maps/InstanceDefines.hpp"
 #include "Management/Group.h"
 #include "Management/ItemInterface.h"
 #include "Management/QuestMgr.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Storage/WorldStrings.h"
 #include "Management/Battleground/Battleground.h"
 #include "Server/Script/ScriptMgr.h"
@@ -111,7 +111,7 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
     }
 
     sHookInterface.OnAreaTrigger(_player, srlPacket.triggerId);
-    CALL_INSTANCE_SCRIPT_EVENT(_player->GetMapMgr(), OnAreaTrigger)(_player, srlPacket.triggerId);
+    CALL_INSTANCE_SCRIPT_EVENT(_player->getWorldMap(), OnAreaTrigger)(_player, srlPacket.triggerId);
 
     if (_player->m_bg)
     {

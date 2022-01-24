@@ -20,7 +20,7 @@
 #include "Setup.h"
 #include "Objects/Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include <Spell/Definitions/PowerType.hpp>
 #include <Objects/Units/Creatures/Pet.h>
@@ -510,11 +510,11 @@ bool SummonSuccubusQuest(uint8_t /*effectIndex*/, Spell* s)
     if (cp == nullptr)
         return false;
 
-    Creature* pCreature = s->getPlayerCaster()->GetMapMgr()->CreateCreature(cp->Id);
+    Creature* pCreature = s->getPlayerCaster()->getWorldMap()->createCreature(cp->Id);
     pCreature->Load(cp, s->getPlayerCaster()->GetPositionX(), s->getPlayerCaster()->GetPositionY(), s->getPlayerCaster()->GetPositionZ());
     pCreature->getAIInterface()->Init(pCreature, AI_SCRIPT_AGRO);
     pCreature->getThreatManager().tauntUpdate();
-    pCreature->PushToWorld(s->getPlayerCaster()->GetMapMgr());
+    pCreature->PushToWorld(s->getPlayerCaster()->getWorldMap());
     pCreature->Despawn(60000, 0);
 
     return true;
@@ -528,11 +528,11 @@ bool SummonVoidWalkerQuest(uint8_t /*effectIndex*/, Spell* s)
     if (cp == nullptr)
         return false;
 
-    Creature* pCreature = p_caster->GetMapMgr()->CreateCreature(cp->Id);
+    Creature* pCreature = p_caster->getWorldMap()->createCreature(cp->Id);
     pCreature->Load(cp, p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ());
     pCreature->getAIInterface()->Init(pCreature, AI_SCRIPT_AGRO);
     pCreature->getThreatManager().tauntUpdate();
-    pCreature->PushToWorld(p_caster->GetMapMgr());
+    pCreature->PushToWorld(p_caster->getWorldMap());
     pCreature->Despawn(60000, 0);
 
     return true;
@@ -546,11 +546,11 @@ bool SummonFelHunterQuest(uint8_t /*effectIndex*/, Spell* s)
     if (cp == nullptr)
         return false;
 
-    Creature* pCreature = p_caster->GetMapMgr()->CreateCreature(cp->Id);
+    Creature* pCreature = p_caster->getWorldMap()->createCreature(cp->Id);
     pCreature->Load(cp, p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ());
     pCreature->getAIInterface()->Init(pCreature, AI_SCRIPT_AGRO);
     pCreature->getThreatManager().tauntUpdate();
-    pCreature->PushToWorld(p_caster->GetMapMgr());
+    pCreature->PushToWorld(p_caster->getWorldMap());
     pCreature->Despawn(60000, 0);
 
     return true;
@@ -645,13 +645,13 @@ bool DemonicCircleSummon(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* m_target = a->getOwner();
 
-    if (m_target->GetMapMgr() == nullptr)
+    if (m_target->getWorldMap() == nullptr)
         return true;
 
     if (apply)
     {
 
-        GameObject* circle = m_target->GetMapMgr()->GetGameObject(a->getOwner()->m_ObjectSlots[0]);
+        GameObject* circle = m_target->getWorldMap()->getGameObject(a->getOwner()->m_ObjectSlots[0]);
         SpellInfo const* sp = sSpellMgr.getSpellInfo(48020);
 
         if (circle != NULL && sp != NULL && m_target->CalcDistance(circle) <= GetMaxRange(sSpellRangeStore.LookupEntry(sp->getRangeIndex())))

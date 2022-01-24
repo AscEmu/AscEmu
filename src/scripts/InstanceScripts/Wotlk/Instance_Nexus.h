@@ -5,14 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-enum NexusEncounterList
+enum Encounters
 {
-    NEXUS_ANOMALUS = 0,
-    NEXUS_TELESTRA = 1,
-    NEXUS_ORMOROK = 2,
-    NEXUS_KERISTRASZA = 3,
-
-    NEXUS_END = 4
+    DATA_COMMANDER          = 0,
+    DATA_MAGUS_TELESTRA     = 1,
+    DATA_ANOMALUS           = 2,
+    DATA_ORMOROK            = 3,
+    DATA_KERISTRASZA        = 4,
 };
 
 enum CreatureEntry

@@ -23,7 +23,7 @@
 #include "Objects/Item.h"
 #include "Management/ItemInterface.h"
 #include "Objects/Units/Players/PlayerClasses.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "SpellMgr.hpp"
 #include "SpellAuras.h"
 #include "Definitions/ProcFlags.hpp"
@@ -44,14 +44,14 @@ public:
         return true;
     }
 
-    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weaponDamageType*/) override
+    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 /*weaponDamageType*/) override
     {
         Player* plr = static_cast<Player*>(getProcOwner());
 
-        dmgOverwrite[0] = plr->GetBlockDamageReduction() * (getOriginalSpell()->calculateEffectValue(0)) / 100;
+        setOverrideEffectDamage(0, plr->GetBlockDamageReduction() * (getOriginalSpell()->calculateEffectValue(0)) / 100);
 
         // plr->GetBlockDamageReduction() returns ZERO if player has no shield equipped
-        if (dmgOverwrite[0] == 0)
+        if (getOverrideEffectDamage(0) == 0)
             return true;
 
         return false;
@@ -254,7 +254,7 @@ public:
         return false;
     }
 
-    bool doEffect(Unit* /*victim*/, SpellInfo const* /*CastingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* dmgOverwrite, uint32 weaponDamageType) override
+    bool doEffect(Unit* /*victim*/, SpellInfo const* /*CastingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 weaponDamageType) override
     {
         Item* item;
 
@@ -265,7 +265,7 @@ public:
 
         if (item != nullptr && item->getGuid() == mItemGUID)
         {
-            dmgOverwrite[0] = damage;
+            setOverrideEffectDamage(0, damage);
             return false;
         }
 
@@ -322,7 +322,7 @@ public:
     }
 
     // Allow proc only if proccing hand is the one where poison was applied
-    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 weaponDamageType) override
+    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 weaponDamageType) override
     {
         Item* item;
 
@@ -403,7 +403,7 @@ public:
 
     static SpellProc* Create() { return new ImprovedDevouringPlagueSpellProc(); }
 
-    bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weaponDamageType*/) override
+    bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 /*weaponDamageType*/) override
     {
         // Get dmg amt for 1 tick
         const uint32_t dmg = castingSpell->calculateEffectValue(0);
@@ -412,7 +412,7 @@ public:
         auto amplitude = castingSpell->getEffectAmplitude(0) == 0 ? 1 : castingSpell->getEffectAmplitude(0);
         int ticks = GetDuration(sSpellDurationStore.LookupEntry(castingSpell->getDurationIndex())) / amplitude;
 
-        dmgOverwrite[0] = dmg * ticks * (getOriginalSpell()->calculateEffectValue(0)) / 100;
+        setOverrideEffectDamage(0, dmg * ticks * (getOriginalSpell()->calculateEffectValue(0)) / 100);
 
         return false;
     }
@@ -424,7 +424,7 @@ public:
 
     static SpellProc* Create() { return new EmpoweredRenewSpellProc(); }
 
-    bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weapon_damage_type*/) override
+    bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 /*weapon_damage_type*/) override
     {
         // Get heal amt for 1 tick
         const uint32_t dmg = castingSpell->calculateEffectValue(0);
@@ -433,7 +433,7 @@ public:
         int ticks = GetDuration(sSpellDurationStore.LookupEntry(castingSpell->getDurationIndex())) / castingSpell->getEffectAmplitude(0);
 
         // Total periodic effect is a single tick amount multiplied by number of ticks
-        dmgOverwrite[0] = dmg * ticks * (getOriginalSpell()->calculateEffectValue(0)) / 100;
+        setOverrideEffectDamage(0, dmg * ticks * (getOriginalSpell()->calculateEffectValue(0)) / 100);
 
         return false;
     }
@@ -473,7 +473,7 @@ public:
 
     static SpellProc* Create() { return new PrayerOfMendingProc(); }
 
-    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/) override
+    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 /*weaponDamageType*/) override
     {
         Aura* aura = getProcOwner()->getAuraWithId(getSpell()->getId());
         if (aura == nullptr)
@@ -619,7 +619,7 @@ public:
 
     static SpellProc* Create() { return new DeathRuneMasterySpellProc(); }
 
-    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/) override
+    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 /*weaponDamageType*/) override
     {
         DeathKnight* dk = static_cast<DeathKnight*>(getProcOwner());
 

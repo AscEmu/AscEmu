@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgAttackSwing.h"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Players/Player.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 
 using namespace AscEmu::Packets;
@@ -23,7 +23,7 @@ void WorldSession::handleAttackSwingOpcode(WorldPacket& recvPacket)
     if (_player->IsFeared() || _player->IsStunned() || _player->IsPacified() || _player->isDead())
         return;
 
-    const auto unitTarget = _player->GetMapMgr()->GetUnit(srlPacket.guid.getRawGuid());
+    const auto unitTarget = _player->getWorldMap()->getUnit(srlPacket.guid.getRawGuid());
     if (unitTarget == nullptr)
         return;
 
@@ -36,7 +36,7 @@ void WorldSession::handleAttackSwingOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleAttackStopOpcode(WorldPacket& /*recvPacket*/)
 {
-    const auto unitTarget = _player->GetMapMgr()->GetUnit(_player->getTargetGuid());
+    const auto unitTarget = _player->getWorldMap()->getUnit(_player->getTargetGuid());
     if (unitTarget == nullptr)
         return;
 

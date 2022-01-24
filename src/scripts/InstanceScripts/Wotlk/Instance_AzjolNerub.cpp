@@ -12,8 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 class AzjolNerubInstanceScript : public InstanceScript
 {
 public:
-    explicit AzjolNerubInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new AzjolNerubInstanceScript(pMapMgr); }
+    explicit AzjolNerubInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new AzjolNerubInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {

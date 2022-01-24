@@ -77,11 +77,11 @@ class IntotheSoulgrinder : public QuestScript
 public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* qg = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 22941);
+        Creature* qg = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 22941);
         if (qg == nullptr)
             return;
 
-        qg->GetMapMgr()->GetInterface()->SpawnCreature(23053, 2794.978271f, 5842.185547f, 35.911819f, 0, true, false, 0, 0);
+        qg->getWorldMap()->getInterface()->SpawnCreature(23053, 2794.978271f, 5842.185547f, 35.911819f, 0, true, false, 0, 0);
     }
 };
 
@@ -107,7 +107,7 @@ public:
     {
         if (pPlayer->hasQuestInQuestLog(10584))
         {
-            Creature* magneto = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21729, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0);
+            Creature* magneto = pPlayer->getWorldMap()->createAndSpawnCreature(21729, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0);
             if (magneto != nullptr)
             {
                 magneto->Despawn(5 * 60 * 1000, 0);
@@ -128,7 +128,7 @@ public:
     {
         if (!pPlayer->hasQuestInQuestLog(10609))
         {
-            Creature* whelp = pPlayer->GetMapMgr()->CreateAndSpawnCreature(20021, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0);
+            Creature* whelp = pPlayer->getWorldMap()->createAndSpawnCreature(20021, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0);
             if (whelp != nullptr)
             {
                 whelp->Despawn(5 * 60 * 1000, 0);
@@ -193,17 +193,17 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        GameObject* obelisk1 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2898.92f, 4759.29f, 277.408f, 185198);
-        GameObject* obelisk2 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2942.3f, 4752.28f, 285.553f, 185197);
-        GameObject* obelisk3 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2834.39f, 4856.67f, 277.632f, 185196);
-        GameObject* obelisk4 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2923.37f, 4840.36f, 278.45f, 185195);
-        GameObject* obelisk5 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2965.75f, 4835.25f, 277.949f, 185193);
+        GameObject* obelisk1 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(2898.92f, 4759.29f, 277.408f, 185198);
+        GameObject* obelisk2 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(2942.3f, 4752.28f, 285.553f, 185197);
+        GameObject* obelisk3 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(2834.39f, 4856.67f, 277.632f, 185196);
+        GameObject* obelisk4 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(2923.37f, 4840.36f, 278.45f, 185195);
+        GameObject* obelisk5 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(2965.75f, 4835.25f, 277.949f, 185193);
 
         if (obelisk1 && obelisk2 && obelisk3 && obelisk4 && obelisk5)
         {
             if (obelisk1->getState() == 0 && obelisk2->getState() == 0 && obelisk3->getState() == 0 && obelisk4->getState() == 0 && obelisk5->getState() == 0)
             {
-                Creature* ct = pPlayer->GetMapMgr()->CreateAndSpawnCreature(19963, 2943.59f, 4779.05f, 284.49f, 1.89f);
+                Creature* ct = pPlayer->getWorldMap()->createAndSpawnCreature(19963, 2943.59f, 4779.05f, 284.49f, 1.89f);
                 if (ct != nullptr)
                     ct->Despawn(5 * 60 * 1000, 0);
             }
@@ -279,7 +279,7 @@ public:
     {
         if (pPlayer->hasQuestInQuestLog(10974))
         {
-            Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(3989.094482f, 6071.562500f, 266.416656f, 22920);
+            Creature* pCreature = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(3989.094482f, 6071.562500f, 266.416656f, 22920);
             if (pCreature != nullptr)
             {
                 pCreature->setFaction(14);
@@ -318,7 +318,7 @@ public:
         setRooted(true);
         NdGo = nullptr;
 
-        plr = getCreature()->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ());
+        plr = getCreature()->getWorldMap()->getInterface()->GetPlayerNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ());
         Ogre = getNearestCreatureAI(CN_BLADESPIRE_OGRE_1);
         if (Ogre == nullptr)
         {

@@ -204,6 +204,7 @@ public:
     MySQLStructure::AreaTrigger const* getAreaTrigger(uint32_t entry);
     AreaTriggerContainer const* getAreaTriggersStore() { return &_areaTriggerStore; }
     MySQLStructure::AreaTrigger const* getMapEntranceTrigger(uint32_t mapId);
+    MySQLStructure::AreaTrigger const* getMapGoBackTrigger(uint32_t mapId);
 
     std::vector<MySQLStructure::CreatureAIScripts>* getCreatureAiScripts(uint32_t entry);
 

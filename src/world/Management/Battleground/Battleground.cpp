@@ -24,7 +24,7 @@
 #include "Management/Battleground/Battleground.h"
 #include "Management/Arenas.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include <Spell/Definitions/AuraInterruptFlags.hpp>
 
 #include "Chat/ChatHandler.hpp"
@@ -45,12 +45,12 @@ uint32 CBattleground::GetLevelGroup()
     return m_levelGroup;
 }
 
-MapMgr* CBattleground::GetMapMgr()
+WorldMap* CBattleground::getWorldMap()
 {
     return m_mapMgr;
 }
 
-CBattleground::CBattleground(MapMgr* mgr, uint32 id, uint32 levelgroup, uint32 type) : m_mapMgr(mgr), m_id(id), m_type(type), m_levelGroup(levelgroup), m_invisGMs(0)
+CBattleground::CBattleground(WorldMap* mgr, uint32 id, uint32 levelgroup, uint32 type) : m_mapMgr(mgr), m_id(id), m_type(type), m_levelGroup(levelgroup), m_invisGMs(0)
 {
     m_nextPvPUpdateTime = 0;
     m_countdownStage = 0;
@@ -266,7 +266,7 @@ void CBattleground::AddPlayer(Player* plr, uint32 team)
 
     /* Send a packet telling them that they can enter */
     plr->setPendingBattleground(this);
-    sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_READY, m_type, m_id, 80000, m_mapMgr->GetMapId(), Rated());        // You will be removed from the queue in 2 minutes.
+    sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_READY, m_type, m_id, 80000, m_mapMgr->getBaseMap()->getMapId(), Rated());        // You will be removed from the queue in 2 minutes.
 
     /* Add an event to remove them in 1 minute 20 seconds time. */
     sEventMgr.AddEvent(plr, &Player::removeFromBgQueue, EVENT_BATTLEGROUND_QUEUE_UPDATE, 80000, 1, 0);
@@ -375,7 +375,7 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
     {
         /* This is where we actually teleport the player to the battleground. */
         plr->safeTeleport(m_mapMgr, GetStartingCoords(plr->getBgTeam()));
-        sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_TIME, m_type, m_id, static_cast<uint32>(UNIXTIME) - m_startTime, m_mapMgr->GetMapId(), Rated());     // Elapsed time is the last argument
+        sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_TIME, m_type, m_id, static_cast<uint32>(UNIXTIME) - m_startTime, m_mapMgr->getBaseMap()->getMapId(), Rated());     // Elapsed time is the last argument
     }
     else
     {
@@ -386,7 +386,7 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
 
 GameObject* CBattleground::SpawnGameObject(uint32 entry, uint32 MapId, float x, float y, float z, float o, uint32 flags, uint32 faction, float scale)
 {
-    if (GameObject* go = m_mapMgr->CreateGameObject(entry))
+    if (GameObject* go = m_mapMgr->createGameObject(entry))
     {
         go->CreateFromProto(entry, MapId, x, y, z, o);
 
@@ -394,7 +394,7 @@ GameObject* CBattleground::SpawnGameObject(uint32 entry, uint32 MapId, float x, 
         go->setScale(scale);
         go->setFlags(flags);
         go->SetPosition(x, y, z, o);
-        go->SetInstanceID(m_mapMgr->GetInstanceID());
+        go->SetInstanceID(m_mapMgr->getInstanceId());
 
         return go;
     }
@@ -404,7 +404,7 @@ GameObject* CBattleground::SpawnGameObject(uint32 entry, uint32 MapId, float x, 
 
 GameObject* CBattleground::SpawnGameObject(uint32 entry, LocationVector &v, uint32 flags, uint32 faction, float scale)
 {
-    return SpawnGameObject(entry, m_mapMgr->GetMapId(), v.x, v.y, v.z, v.o, flags, faction, scale);
+    return SpawnGameObject(entry, m_mapMgr->getBaseMap()->getMapId(), v.x, v.y, v.z, v.o, flags, faction, scale);
 }
 
 Creature* CBattleground::SpawnCreature(uint32 entry, float x, float y, float z, float o, uint32 faction)
@@ -416,7 +416,7 @@ Creature* CBattleground::SpawnCreature(uint32 entry, float x, float y, float z, 
         return nullptr;
     }
 
-    if (Creature* c = m_mapMgr->CreateCreature(entry))
+    if (Creature* c = m_mapMgr->createCreature(entry))
     {
         c->Load(cp, x, y, z, o);
 
@@ -701,7 +701,7 @@ uint32 CBattleground::GetNameID()
 
 int32 CBattleground::event_GetInstanceID()
 {
-    return m_mapMgr->GetInstanceID();
+    return m_mapMgr->getInstanceId();
 }
 
 void CBattleground::EventCountdown()
@@ -777,7 +777,7 @@ void CBattleground::SetWorldState(uint32 Index, uint32 Value)
     if (m_zoneid == 0)
         return;
 
-    m_mapMgr->GetWorldStatesHandler().SetWorldStateForZone(m_zoneid, 0, Index, Value);
+    m_mapMgr->getWorldStatesHandler().SetWorldStateForZone(m_zoneid, 0, Index, Value);
 }
 
 void CBattleground::Close()
@@ -814,9 +814,6 @@ void CBattleground::Close()
 
     /* call the virtual on close for cleanup etc */
     OnClose();
-
-    /* shut down the map thread. this will delete the battleground from the current context. */
-    m_mapMgr->SetThreadState(THREADSTATE_TERMINATE);
 }
 
 void CBattleground::OnClose()
@@ -833,9 +830,9 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
     if (pInfo == nullptr)
         return nullptr;
 
-    Creature* pCreature = m_mapMgr->CreateCreature(pInfo->Id);
+    Creature* pCreature = m_mapMgr->createCreature(pInfo->Id);
 
-    pCreature->Create(m_mapMgr->GetMapId(), x, y, z, o);
+    pCreature->Create(m_mapMgr->getBaseMap()->getMapId(), x, y, z, o);
 
     pCreature->setEntry(13116 + horde);
     pCreature->setScale(1.0f);
@@ -942,7 +939,7 @@ void CBattleground::EventResurrectPlayers()
     {
         for (std::set<uint32>::iterator itr = i->second.begin(); itr != i->second.end(); ++itr)
         {
-            Player* plr = m_mapMgr->GetPlayer(*itr);
+            Player* plr = m_mapMgr->getPlayer(*itr);
             if (plr && plr->isDead())
             {
                 WorldPacket data(SMSG_SPELL_START, 50);

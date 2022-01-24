@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Item.h"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Server/MainServerDefines.h"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellAuras.h"
@@ -33,7 +33,7 @@ void WorldSession::handleSpellClick(WorldPacket& recvPacket)
     uint64_t unitGuid;
     recvPacket >> unitGuid;
 
-    Unit* unitTarget = _player->GetMapMgr()->GetUnit(unitGuid);
+    Unit* unitTarget = _player->getWorldMap()->getUnit(unitGuid);
     if (!unitTarget || !unitTarget->IsInWorld() || !unitTarget->isCreature())
         return;
 
@@ -264,7 +264,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
         return;
     }
 
-    Unit* petUnit = _player->GetMapMgr()->GetUnit(srlPacket.petGuid);
+    Unit* petUnit = _player->getWorldMap()->getUnit(srlPacket.petGuid);
     if (petUnit == nullptr)
     {
         sLogger.failure("Pet entity cannot be found for player %u.", _player->getGuidLow());
@@ -399,7 +399,7 @@ void WorldSession::handleUpdateProjectilePosition(WorldPacket& recvPacket)
 
     recvPacket >> casterGuid >> spellId >> castCount >> x >> y >> z;
 
-    Unit* caster = _player->GetMapMgr()->GetUnit(casterGuid);
+    Unit* caster = _player->getWorldMap()->getUnit(casterGuid);
     if (caster == nullptr)
         return;
 

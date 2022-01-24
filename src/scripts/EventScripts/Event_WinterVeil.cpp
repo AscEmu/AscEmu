@@ -24,7 +24,7 @@ public:
 
     void AIUpdate() override
     {
-        Player* plr = _gameobject->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ());
+        Player* plr = _gameobject->getWorldMap()->getInterface()->GetPlayerNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ());
         if (!plr)
             return;
 
@@ -106,7 +106,7 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
 
 void WinterVeilEmote(Player* pPlayer, uint32_t Emote, Unit* pUnit)
 {
-    pUnit = pPlayer->GetMapMgr()->GetUnit(pPlayer->getTargetGuid());
+    pUnit = pPlayer->getWorldMap()->getUnit(pPlayer->getTargetGuid());
     if (!pUnit || !pUnit->isAlive() || pUnit->getAIInterface()->getCurrentTarget())
         return;
 

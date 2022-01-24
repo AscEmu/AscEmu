@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Macros/ScriptMacros.hpp"
 #include "Server/WorldConfig.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Server/Packets/SmsgLootRemoved.h"
 #include "Server/Packets/SmsgLootAllPassed.h"
 #include "Server/Packets/SmsgLootRollWon.h"
@@ -370,7 +370,7 @@ DBC::Structures::ItemRandomSuffixEntry const* LootMgr::GetRandomSuffix(ItemPrope
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Loot Roll
-LootRoll::LootRoll(uint32_t /*timer*/, uint32_t groupcount, uint64_t guid, uint8_t slotid, uint32_t itemid, uint32_t randomsuffixid, uint32_t randompropertyid, MapMgr* mgr) : EventableObject()
+LootRoll::LootRoll(uint32_t /*timer*/, uint32_t groupcount, uint64_t guid, uint8_t slotid, uint32_t itemid, uint32_t randomsuffixid, uint32_t randompropertyid, WorldMap* mgr) : EventableObject()
 {
     _mgr = mgr;
     sEventMgr.AddEvent(this, &LootRoll::finalize, EVENT_LOOT_ROLL_FINALIZE, 60000, 1, 0);
@@ -429,13 +429,13 @@ void LootRoll::finalize()
 
     if (wowGuid.isUnit())
     {
-        creature = _mgr->GetCreature(wowGuid.getGuidLowPart());
+        creature = _mgr->getCreature(wowGuid.getGuidLowPart());
         if (creature)
             pLoot = &creature->loot;
     }
     else if (wowGuid.isGameObject())
     {
-        gameObject = _mgr->GetGameObject(wowGuid.getGuidLowPart());
+        gameObject = _mgr->getGameObject(wowGuid.getGuidLowPart());
         if (gameObject)
         {
             if (gameObject->IsLootable())
@@ -466,13 +466,13 @@ void LootRoll::finalize()
         return;
     }
 
-    Player* _player = (player) ? _mgr->GetPlayer((uint32_t)player) : nullptr;
+    Player* _player = (player) ? _mgr->getPlayer((uint32_t)player) : nullptr;
     if (!player || !_player)
     {
         /* all passed */
         std::set<uint32_t>::iterator pitr = m_passRolls.begin();
         while (_player == nullptr && pitr != m_passRolls.end())
-            _player = _mgr->GetPlayer((*(pitr++)));
+            _player = _mgr->getPlayer((*(pitr++)));
         if (_player != nullptr)
         {
             if (_player->isInGroup())

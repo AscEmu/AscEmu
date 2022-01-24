@@ -4,11 +4,11 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "DalaranSewers.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Objects/GameObject.h"
 #include "Server/Master.h"
 
-DalaranSewers::DalaranSewers(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :
+DalaranSewers::DalaranSewers(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :
     Arena(mgr, id, lgroup, t, players_per_side)
 {}
 
@@ -62,6 +62,6 @@ bool DalaranSewers::HookHandleRepop(Player* plr)
 {
     LocationVector dest;
     dest.ChangeCoords({ 1292.51f, 792.05f, 9.34f });
-    plr->safeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);
+    plr->safeTeleport(m_mapMgr->getBaseMap()->getMapId(), m_mapMgr->getInstanceId(), dest);
     return true;
 }

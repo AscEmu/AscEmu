@@ -11,10 +11,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
-#include "Map/InstanceDefines.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Maps/InstanceDefines.hpp"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
-#include "Map/WorldCreator.h"
 #include "Chat/ChatHandler.hpp"
 #include "Management/ObjectMgr.h"
 #include "Spell/Definitions/Spec.hpp"
@@ -1916,6 +1915,7 @@ bool ChatHandler::HandleCharListKillsCommand(const char* /*args*/, WorldSession*
 //.character list instances
 bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSession* m_session)
 {
+    /*
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
         return true;
@@ -1965,6 +1965,6 @@ bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSessi
         ss << "Player is assigned to " << MSG_COLOR_CYAN << count << "|r persistent instances.\n";
 
     SendMultilineMessage(m_session, ss.str().c_str());
-    sGMLog.writefromsession(m_session, "used show instances command on %s,", player_target->getName().c_str());
+    sGMLog.writefromsession(m_session, "used show instances command on %s,", player_target->getName().c_str());*/
     return true;
 }

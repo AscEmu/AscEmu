@@ -19,7 +19,7 @@
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Skill.hpp"
 #include "Management/ItemInterface.h"
-#include "Map/MapScriptInterface.h"
+#include "Map/Maps/MapScriptInterface.h"
 #include "Management/Faction.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
@@ -239,7 +239,7 @@ bool NetherWraithBeacon(uint8_t /*effectIndex*/, Spell* pSpell)
     float SSZ = pSpell->getPlayerCaster()->GetPositionZ();
     float SSO = pSpell->getPlayerCaster()->GetOrientation();
 
-    pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(22408, SSX, SSY, SSZ, SSO, true, false, 0, 0);
+    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->SpawnCreature(22408, SSX, SSY, SSZ, SSO, true, false, 0, 0);
     return true;
 }
 
@@ -308,12 +308,12 @@ bool ScryingCrystal(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* player = pSpell->getPlayerCaster();
     LocationVector pos = player->GetPosition();
-    if (player->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 300078))
+    if (player->getWorldMap()->getInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 300078))
     {
         player->addQuestKill(9824, 0, 0);
         return false;
     }
-    else if (player->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 300142))
+    else if (player->getWorldMap()->getInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 300142))
     {
         player->addQuestKill(9824, 1, 0);
         return false;
@@ -334,9 +334,9 @@ bool MinionsOfGurok(uint8_t /*effectIndex*/, Spell* pSpell)
     float SSZ = target->GetPositionZ();
     float SSO = target->GetOrientation();
 
-    pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(18181, SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO, true, false, 0, 0);
-    pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(18181, SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO, true, false, 0, 0);
-    pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(18181, SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO, true, false, 0, 0);
+    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->SpawnCreature(18181, SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO, true, false, 0, 0);
+    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->SpawnCreature(18181, SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO, true, false, 0, 0);
+    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->SpawnCreature(18181, SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO, true, false, 0, 0);
 
     return true;
 }
@@ -367,7 +367,7 @@ bool WarpRiftGenerator(uint8_t /*effectIndex*/, Spell* pSpell)
     float SSZ = pSpell->getPlayerCaster()->GetPositionZ();
     float SSO = pSpell->getPlayerCaster()->GetOrientation();
 
-    pSpell->getPlayerCaster()->GetMapMgr()->GetInterface()->SpawnCreature(16939, SSX, SSY, SSZ, SSO, true, false, 0, 0);
+    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->SpawnCreature(16939, SSX, SSY, SSZ, SSO, true, false, 0, 0);
 
     return true;
 }

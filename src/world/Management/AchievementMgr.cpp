@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
-#include "Map/InstanceDefines.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Maps/InstanceDefines.hpp"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/SpellMgr.hpp"
@@ -941,7 +941,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                     case 1206: // To All The Squirrels I've Loved Before
                     {
                         // requires a target
-                        if (Unit* pUnit = GetPlayer()->GetMapMgr()->GetUnit(selectedGUID))
+                        if (Unit* pUnit = GetPlayer()->getWorldMap()->getUnit(selectedGUID))
                         {
                             uint32_t ent = pUnit->getEntry();
                             if ((ent == 1412 && achievementCriteria->index == 1)      // Squirrel
@@ -973,7 +973,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                     case 2557: // To All The Squirrels Who Shared My Life
                     {
                         // requires a target
-                        if (Unit* pUnit = GetPlayer()->GetMapMgr()->GetUnit(selectedGUID))
+                        if (Unit* pUnit = GetPlayer()->getWorldMap()->getUnit(selectedGUID))
                         {
                             uint32_t ent = pUnit->getEntry();
                             if ((ent == 29328 && achievementCriteria->index == 1)      // Arctic Hare
@@ -1150,7 +1150,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
                 uint64_t crGUID = miscvalue1;
                 crGUID <<= 32; // shift to high 32-bits
                 crGUID += miscvalue2;
-                Unit* pUnit = GetPlayer()->GetMapMgr()->GetUnit(crGUID);
+                Unit* pUnit = GetPlayer()->getWorldMap()->getUnit(crGUID);
                 if (pUnit)
                 {
                     uint32_t crType = UNIT_TYPE_NONE;
@@ -1987,7 +1987,7 @@ void AchievementMgr::GiveAchievementReward(DBC::Structures::AchievementEntry con
     //Reward Mail
     if (Reward->sender)
     {
-        Creature* pCreature = GetPlayer()->GetMapMgr()->CreateCreature(Reward->sender);
+        Creature* pCreature = GetPlayer()->getWorldMap()->createCreature(Reward->sender);
         if (pCreature == nullptr)
         {
             sLogger.failure("can not create sender for achievement %u", entry);

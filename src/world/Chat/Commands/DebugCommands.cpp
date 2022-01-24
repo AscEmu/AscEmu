@@ -88,19 +88,19 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
         creature_spawn->CanFly = 0;
         creature_spawn->phase = session->GetPlayer()->GetPhase();
 
-        if (auto creature = session->GetPlayer()->GetMapMgr()->CreateCreature(entry))
+        if (auto creature = session->GetPlayer()->getWorldMap()->createCreature(entry))
         {
             creature->Load(creature_spawn, 0, nullptr);
             creature->m_loadedFromDB = true;
-            creature->PushToWorld(session->GetPlayer()->GetMapMgr());
+            creature->PushToWorld(session->GetPlayer()->getWorldMap());
 
             // Add to map
-            uint32 x = session->GetPlayer()->GetMapMgr()->GetPosX(session->GetPlayer()->GetPositionX());
-            uint32 y = session->GetPlayer()->GetMapMgr()->GetPosY(session->GetPlayer()->GetPositionY());
-            session->GetPlayer()->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(x, y)->CreatureSpawns.push_back(creature_spawn);
-            MapCell* map_cell = session->GetPlayer()->GetMapMgr()->GetCell(x, y);
+            uint32 x = session->GetPlayer()->getWorldMap()->getPosX(session->GetPlayer()->GetPositionX());
+            uint32 y = session->GetPlayer()->getWorldMap()->getPosY(session->GetPlayer()->GetPositionY());
+            session->GetPlayer()->getWorldMap()->getBaseMap()->getSpawnsListAndCreate(x, y)->CreatureSpawns.push_back(creature_spawn);
+            MapCell* map_cell = session->GetPlayer()->getWorldMap()->getCell(x, y);
             if (map_cell != nullptr)
-                map_cell->SetLoaded();
+                map_cell->setLoaded();
 
             for (auto aiSpells : creature->getAIInterface()->mCreatureAISpells)
             {

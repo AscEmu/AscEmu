@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 class ScarletMonasteryInstanceScript : public InstanceScript
 {
 public:
-    explicit ScarletMonasteryInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new ScarletMonasteryInstanceScript(pMapMgr); }
+    explicit ScarletMonasteryInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new ScarletMonasteryInstanceScript(pMapMgr); }
 };
 
 class VishasAI : public CreatureAIScript
@@ -227,7 +227,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        GameObject* SecretDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(1167.79f, 1347.26f, 31.5494f, ScarletMonastery::GO_SCARLET_SECRET_DOOR);
+        GameObject* SecretDoor = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(1167.79f, 1347.26f, 31.5494f, ScarletMonastery::GO_SCARLET_SECRET_DOOR);
         if (SecretDoor != nullptr)
         {
             if (SecretDoor->getState() == GO_STATE_CLOSED)
@@ -246,7 +246,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        GameObject* ArmoryDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2886.31f, -827.261f, 160.336f, ScarletMonastery::GO_ARMORY_DOOR);
+        GameObject* ArmoryDoor = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(2886.31f, -827.261f, 160.336f, ScarletMonastery::GO_ARMORY_DOOR);
         if (ArmoryDoor != nullptr)
         {
             if (ArmoryDoor->getState() == GO_STATE_CLOSED)
@@ -265,7 +265,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        GameObject* CathedralDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2908.18f, -818.203f, 160.332f, ScarletMonastery::GO_CATHEDRAL_DOOR);
+        GameObject* CathedralDoor = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(2908.18f, -818.203f, 160.332f, ScarletMonastery::GO_CATHEDRAL_DOOR);
         if (CathedralDoor != nullptr)
         {
             if (CathedralDoor->getState() == GO_STATE_CLOSED)

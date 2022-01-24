@@ -12,8 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 class InstanceTheShatteredHallsScript : public InstanceScript
 {
 public:
-    explicit InstanceTheShatteredHallsScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceTheShatteredHallsScript(pMapMgr); }
+    explicit InstanceTheShatteredHallsScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new InstanceTheShatteredHallsScript(pMapMgr); }
 
     void OnLoad() override
     {

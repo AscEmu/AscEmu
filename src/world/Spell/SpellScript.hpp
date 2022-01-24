@@ -8,14 +8,18 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/AuraRemoveMode.hpp"
 #include "Definitions/ProcFlags.hpp"
 #include "Definitions/SpellFailure.hpp"
-#include "Spell/SpellProc.hpp"
-#include "Objects/Units/Unit.h"
 
 #include "CommonTypes.hpp"
 
 class Aura;
+class Object;
 class Spell;
+class SpellInfo;
 class SpellProc;
+class Unit;
+
+struct AuraEffectModifier;
+struct DamageInfo;
 
 enum class SpellScriptExecuteState : uint8_t
 {

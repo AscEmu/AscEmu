@@ -39,7 +39,7 @@ public:
         m_forcedBasePoints.push_back(std::make_pair(effIndex, value));
     }
 
-    inline void get(uint8_t effIndex, int32_t* basePoints)
+    inline void get(uint8_t effIndex, int32_t* basePoints) const
     {
         if (effIndex >= MAX_SPELL_EFFECTS)
             return;

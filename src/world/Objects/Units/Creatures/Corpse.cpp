@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Server/MainServerDefines.h"
-#include "Map/MapCell.h"
+#include "Map/Cells/MapCell.hpp"
 #include "Corpse.h"
 #include "Management/ObjectMgr.h"
 #include "Data/WoWCorpse.hpp"
@@ -255,6 +255,6 @@ void Corpse::SetOwner(uint64 guid)
         //notify the MapCell that the Corpse has no more an owner so the MapCell can go idle (if there's nothing else)
         MapCell* cell = GetMapCell();
         if (cell != NULL)
-            cell->CorpseGoneIdle(this);
+            cell->corpseGoneIdle(this);
     }
 }

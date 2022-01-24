@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/ItemMacros.hpp"
 #include "Macros/PlayerMacros.hpp"
 #include "Management/Skill.hpp"
-#include "Map/InstanceDefines.hpp"
+#include "Map/Maps/InstanceDefines.hpp"
 #include <WorldConf.h>
 #include <CommonTypes.hpp>
 
@@ -958,8 +958,8 @@ public:
     uint32_t lastLevel;
     Group* m_Group;
     int8_t subGroup;
-    std::mutex savedInstanceIdsLock;
-    PlayerInstanceMap savedInstanceIds[InstanceDifficulty::MAX_DIFFICULTY];
+    //std::mutex savedInstanceIdsLock;
+    //PlayerInstanceMap savedInstanceIds[InstanceDifficulty::MAX_DIFFICULTY];
 
     uint32_t m_guild;
     uint32_t guildRank;

@@ -7,19 +7,18 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/GameEvent.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
-#include "Map/MapMgr.h"
-#include "Map/WorldCreator.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Server/Script/ScriptMgr.h"
 
 void GameEvent::CreateNPCs()
 {
     for (auto npc : npc_data)
     {
-        auto mapmgr = sInstanceMgr.GetMapMgr(npc.map_id);
+        auto mapmgr = sMapMgr.findWorldMap(npc.map_id);
         if (mapmgr == nullptr)
             continue;
 
-        Creature* c = mapmgr->CreateCreature(npc.entry);
+        Creature* c = mapmgr->createCreature(npc.entry);
         CreatureProperties const* cp = sMySQLStore.getCreatureProperties(npc.entry);
         if (cp == nullptr)
         {
@@ -67,11 +66,11 @@ void GameEvent::CreateObjects()
 {
     for (auto gobj : gameobject_data)
     {
-        auto mapmgr = sInstanceMgr.GetMapMgr(gobj.map_id);
+        auto mapmgr = sMapMgr.findWorldMap(gobj.map_id);
         if (mapmgr == NULL)
             continue;
 
-        GameObject* g = mapmgr->CreateGameObject(gobj.entry);
+        GameObject* g = mapmgr->createGameObject(gobj.entry);
         g->CreateFromProto(gobj.entry, gobj.map_id, gobj.position_x, gobj.position_y, gobj.position_z, gobj.facing);
 
         // Set up spawn specific information

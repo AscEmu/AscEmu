@@ -13,8 +13,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "zlib.h"
-#include "Map/InstanceDefines.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Maps/InstanceDefines.hpp"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Server/Packets/SmsgLogoutResponse.h"
 #include "Server/Packets/CmsgStandStateChange.h"
@@ -442,7 +442,7 @@ void WorldSession::handleGameobjReportUseOpCode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GAMEOBJ_REPORT_USE: %u (guid.low)", srlPacket.guid.getGuidLow());
 
-    const auto gameobject = _player->GetMapMgr()->GetGameObject(srlPacket.guid.getGuidLow());
+    const auto gameobject = _player->getWorldMap()->getGameObject(srlPacket.guid.getGuidLow());
     if (gameobject == nullptr)
         return;
 
@@ -463,12 +463,28 @@ void WorldSession::handleDungeonDifficultyOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SET_DUNGEON_DIFFICULTY: %d (difficulty)", srlPacket.difficulty);
 
-    _player->setDungeonDifficulty(srlPacket.difficulty);
-    sInstanceMgr.ResetSavedInstances(_player);
+    if (InstanceDifficulty::Difficulties(srlPacket.difficulty) == _player->getDungeonDifficulty())
+        return;
 
-    const auto group = _player->getGroup();
-    if (group && _player->isGroupLeader())
-        group->SetDungeonDifficulty(srlPacket.difficulty);
+    // cannot reset while in an instance
+    WorldMap* map = _player->getWorldMap();
+    if (map && map->getBaseMap()->isDungeon())
+        return;
+
+    Group* group = _player->getGroup();
+    if (group)
+    {
+        if (_player->isGroupLeader())
+        {
+            group->resetInstances(INSTANCE_RESET_CHANGE_DIFFICULTY, false, _player);
+            group->SetDungeonDifficulty(InstanceDifficulty::Difficulties(srlPacket.difficulty));
+        }
+    }
+    else
+    {
+        _player->resetInstances(INSTANCE_RESET_CHANGE_DIFFICULTY, false);
+        _player->setDungeonDifficulty(InstanceDifficulty::Difficulties(srlPacket.difficulty));
+    }
 }
 
 void WorldSession::handleRaidDifficultyOpcode(WorldPacket& recvPacket)
@@ -483,12 +499,28 @@ void WorldSession::handleRaidDifficultyOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SET_RAID_DIFFICULTY: %d (difficulty)", srlPacket.difficulty);
 
-    _player->setRaidDifficulty(InstanceDifficulty::Difficulties(srlPacket.difficulty));
-    sInstanceMgr.ResetSavedInstances(_player);
+    // cannot reset while in an instance
+    WorldMap* map = _player->getWorldMap();
+    if (map && map->getBaseMap()->isDungeon())
+        return;
 
-    const auto group = _player->getGroup();
-    if (group && _player->isGroupLeader())
-        group->SetRaidDifficulty(InstanceDifficulty::Difficulties(srlPacket.difficulty));
+    if (InstanceDifficulty::Difficulties(srlPacket.difficulty) == _player->getRaidDifficulty())
+        return;
+
+    Group* group = _player->getGroup();
+    if (group)
+    {
+        if (_player->isGroupLeader())
+        {
+            group->resetInstances(INSTANCE_RESET_CHANGE_DIFFICULTY, true, _player);
+            group->SetRaidDifficulty(InstanceDifficulty::Difficulties(srlPacket.difficulty));
+        }
+    }
+    else
+    {
+        _player->resetInstances(INSTANCE_RESET_CHANGE_DIFFICULTY, true);
+        _player->setRaidDifficulty(InstanceDifficulty::Difficulties(srlPacket.difficulty));
+    }
 #endif
 }
 
@@ -530,7 +562,7 @@ void WorldSession::handleLootRollOpcode(WorldPacket& recvPacket)
     {
         case HighGuid::GameObject:
         {
-            auto gameObject = _player->GetMapMgr()->GetGameObject(srlPacket.objectGuid.getGuidLowPart());
+            auto gameObject = _player->getWorldMap()->getGameObject(srlPacket.objectGuid.getGuidLowPart());
             if (gameObject == nullptr)
                 return;
 
@@ -546,7 +578,7 @@ void WorldSession::handleLootRollOpcode(WorldPacket& recvPacket)
         } break;
         case HighGuid::Unit:
         {
-            auto creature = _player->GetMapMgr()->GetCreature(srlPacket.objectGuid.getGuidLowPart());
+            auto creature = _player->getWorldMap()->getCreature(srlPacket.objectGuid.getGuidLowPart());
             if (creature == nullptr)
                 return;
 
@@ -672,7 +704,13 @@ void WorldSession::handleToggleCloakOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleResetInstanceOpcode(WorldPacket& /*recvPacket*/)
 {
-    sInstanceMgr.ResetSavedInstances(_player);
+    if (Group* group = _player->getGroup())
+    {
+        if (group->GetLeader()->guid == _player->getGuidLow())
+            group->resetInstances(INSTANCE_RESET_ALL, false, _player);
+    }
+    else
+        _player->resetInstances(INSTANCE_RESET_ALL, false);
 }
 
 void WorldSession::handleSetTitle(WorldPacket& recvPacket)
@@ -716,7 +754,7 @@ void WorldSession::handleResurrectResponse(WorldPacket& recvPacket)
     if (!_player->isAlive())
         return;
 
-    auto player = _player->GetMapMgr()->GetPlayer(srlPacket.guid.getGuidLow());
+    auto player = _player->getWorldMap()->getPlayer(srlPacket.guid.getGuidLow());
     if (player == nullptr)
         player = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow());
 
@@ -1802,7 +1840,7 @@ void WorldSession::handleGameObjectUse(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GAMEOBJ_USE: %u (gobj guidLow)", srlPacket.guid.getGuidLowPart());
 
-    auto gameObject = _player->GetMapMgr()->GetGameObject(srlPacket.guid.getGuidLowPart());
+    auto gameObject = _player->getWorldMap()->getGameObject(srlPacket.guid.getGuidLowPart());
     if (!gameObject)
         return;
 
@@ -1816,7 +1854,7 @@ void WorldSession::handleGameObjectUse(WorldPacket& recvPacket)
     sObjectMgr.CheckforScripts(_player, gameObjectProperties->raw.parameter_9);
 
     CALL_GO_SCRIPT_EVENT(gameObject, OnActivate)(_player);
-    CALL_INSTANCE_SCRIPT_EVENT(_player->GetMapMgr(), OnGameObjectActivate)(gameObject, _player);
+    CALL_INSTANCE_SCRIPT_EVENT(_player->getWorldMap(), OnGameObjectActivate)(gameObject, _player);
 
     _player->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
 
@@ -1855,7 +1893,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_INSPECT: %u (player guid)", static_cast<uint32_t>(srlPacket.guid));
 
-    auto inspectedPlayer = _player->GetMapMgr()->GetPlayer(static_cast<uint32_t>(srlPacket.guid));
+    auto inspectedPlayer = _player->getWorldMap()->getPlayer(static_cast<uint32_t>(srlPacket.guid));
     if (inspectedPlayer == nullptr)
     {
         sLogger.debug("Error received CMSG_INSPECT for unknown player!");
@@ -2314,7 +2352,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 
     recv_data >> GUID;
 
-    Unit* Image = _player->GetMapMgr()->GetUnit(GUID);
+    Unit* Image = _player->getWorldMap()->getUnit(GUID);
     if (Image == nullptr)
         return; // ups no unit found with that GUID on the map. Spoofed packet?
 
@@ -2322,7 +2360,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
         return;
 
     uint64_t CasterGUID = Image->getCreatedByGuid();
-    Unit* Caster = _player->GetMapMgr()->GetUnit(CasterGUID);
+    Unit* Caster = _player->getWorldMap()->getUnit(CasterGUID);
 
     if (Caster == nullptr)
         return; // apperantly this mirror image mirrors nothing, poor lonely soul :(Maybe it's the Caster's ghost called Casper

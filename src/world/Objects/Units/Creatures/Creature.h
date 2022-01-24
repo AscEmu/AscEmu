@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CreatureDefines.hpp"
 #include "Objects/Units/UnitDefines.hpp"
-#include "Map/Map.h"
+#include "Map/Maps/BaseMap.hpp"
 #include "Objects/Units/Unit.h"
 #include "Objects/Object.h"
 #include "Management/Group.h"
@@ -40,8 +40,8 @@ public:
 
     void Update(unsigned long time_passed);             // hides function Unit::Update
     void AddToWorld();                                  // hides virtual function Object::AddToWorld
-    void AddToWorld(MapMgr* pMapMgr);                   // hides virtual function Object::AddToWorld
-    // void PushToWorld(MapMgr*);                       // not used
+    void AddToWorld(WorldMap* pMapMgr);                   // hides virtual function Object::AddToWorld
+    // void PushToWorld(WorldMap*);                       // not used
     void RemoveFromWorld(bool free_guid);               // hides virtual function Unit::RemoveFromWorld
     // void OnPrePushToWorld();                         // not used
     void OnPushToWorld() override;                      // overrides virtual function Unit::OnPushToWorld
@@ -139,9 +139,11 @@ public:
     MovementGeneratorType getDefaultMovementType() const override { return m_defaultMovementType; }
     void setDefaultMovementType(MovementGeneratorType mgt) { m_defaultMovementType = mgt; }
 
+    bool isDungeonBoss() { return (GetCreatureProperties()->extra_a9_flags & 0x10000000) != 0; }
+
  //AGPL Starts
 
-        bool teleport(const LocationVector& vec, MapMgr* map);
+        bool teleport(const LocationVector& vec, WorldMap* map);
 
         bool Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStructure::MapInfo const* info);
         void Load(CreatureProperties const* c_properties, float x, float y, float z, float o = 0);
@@ -252,7 +254,7 @@ public:
         void DeleteFromDB();
 
         void OnRemoveCorpse();
-        void OnRespawn(MapMgr* m);
+        void OnRespawn(WorldMap* m);
 
         void BuildPetSpellList(WorldPacket & data);
 
@@ -312,6 +314,7 @@ public:
         MySQLStructure::CreatureSpawn* m_spawn = nullptr;
 
         virtual void Despawn(uint32 delay, uint32 respawntime);
+        void saveRespawnTime(uint32_t forceDelay = 0);
         void TriggerScriptEvent(int);
 
         AuctionHouse* auctionHouse = nullptr;
@@ -332,7 +335,6 @@ public:
         bool m_corpseEvent = false;
         MapCell* m_respawnCell = nullptr;
         bool m_noRespawn = false;
-        uint32 m_respawnTimeOverride = 0;
 
         float GetBaseParry();
         bool isattackable(MySQLStructure::CreatureSpawn* spawn);
@@ -343,7 +345,15 @@ public:
 
         void SetType(uint32 t);
 
+        void setRespawnTime(uint32_t respawn) { respawn ? std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) + respawn : 0; }
+        time_t getRespawnTime() { return m_respawnTime; }
+
     protected:
+
+        time_t m_corpseRemoveTime = 0;      // (msecs)timer for death or corpse disappearance
+        time_t m_respawnTime = 0;           // (secs) time of next respawn
+        uint32_t m_respawnDelay = 300;      // (secs) delay between corpse disappearance and respawning
+        uint32_t m_corpseDelay = 60;        // (secs) delay between death and corpse disappearance
 
         CreatureAIScript* _myScriptClass = nullptr;
         bool m_limbostate = false;

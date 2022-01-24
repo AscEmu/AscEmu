@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/WoWUnit.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Management/HonorHandler.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Movement/Spline/MovementPacketBuilder.h"
 #include "Objects/GameObject.h"
 #include "Server/Packets/SmsgAuraUpdate.h"
@@ -1278,21 +1278,7 @@ bool Unit::isInWater() const
 {
     if (worldConfig.terrainCollision.isCollisionEnabled)
     {
-        float outx = GetPositionX() + 3.5f * cos(GetOrientation());
-        float outy = GetPositionY() + 3.5f * sin(GetOrientation());
-        float outz = GetMapMgr()->GetLandHeight(outx, outy, GetPositionZ() + 2);
-        uint32_t watertype;
-        float watermark;
-        GetMapMgr()->GetLiquidInfo(outx, outy, outz, watermark, watertype);
-        outz = std::max(watermark, outz);
-
-        // Check for liquid type also, i.e. Orgrimmar is below water level
-        const auto liquidStatus = GetMapMgr()->getLiquidStatus(0, GetPositionX(), GetPositionY(), GetPositionZ(), MAP_ALL_LIQUIDS);
-        if (liquidStatus == LIQUID_MAP_NO_WATER)
-            return false;
-
-        if (watermark >= outz)
-            return true;
+        return getWorldMap()->getLiquidStatus(0, GetPositionX(), GetPositionY(), GetPositionZ(), MAP_ALL_LIQUIDS) & (LIQUID_MAP_IN_WATER | LIQUID_MAP_UNDER_WATER);
     }
 
     return false;
@@ -1300,29 +1286,20 @@ bool Unit::isInWater() const
 
 bool Unit::isUnderWater() const
 {
-    float outx = GetPositionX() + 3.5f * cos(GetOrientation());
-    float outy = GetPositionY() + 3.5f * sin(GetOrientation());
-    float outz = GetMapMgr()->GetLandHeight(outx, outy, GetPositionZ() + 2);
-    uint32 watertype;
-    float watermark;
-    GetMapMgr()->GetLiquidInfo(outx, outy, outz, watermark, watertype);
-    outz = std::max(watermark, outz);
-
-    if ((watermark - 2.0f) >= outz)
-        return true;
+    if (worldConfig.terrainCollision.isCollisionEnabled)
+    {
+        return getWorldMap()->getLiquidStatus(0, GetPositionX(), GetPositionY(), GetPositionZ(), MAP_ALL_LIQUIDS) & LIQUID_MAP_UNDER_WATER;
+    }
 
     return false;
 }
 
 bool Unit::isInAccessiblePlaceFor(Creature* c) const
 {
-    float ground = GetMapMgr()->GetLandHeight(GetPositionX(), GetPositionY(), GetPositionZ());
-    float height = GetPositionZ();
-
     if (isInWater())
         return c->canSwim();
 
-    if (IsFlying() || (ground) < (height - 10) && !GetTransport()) // we could be flying antihack!
+    if (IsFlying() && !GetTransport()) // we could be flying antihack!
         return c->canFly();
 
     return c->canWalk() || c->canFly();
@@ -2046,7 +2023,7 @@ void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
         }
     }
 
-    Player* player_mover = GetMapMgrPlayer(getCharmedByGuid());
+    Player* player_mover = getWorldMapPlayer(getCharmedByGuid());
     if (player_mover == nullptr)
     {
         if (isPlayer())
@@ -2562,7 +2539,7 @@ void Unit::setStunned(bool apply)
             setTargetGuid(getThreatManager().getCurrentVictim()->getGuid());
 
         // don't remove UNIT_FLAG_STUNNED for pet when owner is mounted (disabled pet's interface)
-        Unit* owner = GetMapMgrUnit(getCharmerOrOwnerGUID());
+        Unit* owner = getWorldMapUnit(getCharmerOrOwnerGUID());
         if (!owner || owner->getObjectTypeId() != TYPEID_PLAYER || !owner->ToPlayer()->isMounted())
             removeUnitFlags(UNIT_FLAG_STUNNED);
 
@@ -4021,7 +3998,7 @@ void Unit::addAura(Aura* aur)
             // Check if aura is applied on different unit
             if (previousTargetGuid != 0 && previousTargetGuid != aur->getOwner()->getGuid())
             {
-                const auto previousTarget = GetMapMgrUnit(previousTargetGuid);
+                const auto previousTarget = getWorldMapUnit(previousTargetGuid);
                 if (previousTarget != nullptr)
                     previousTarget->removeAllAurasByIdForGuid(aur->getSpellId(), caster->getGuid());
             }
@@ -4841,7 +4818,7 @@ bool Unit::canSee(Object* const obj)
     // Get map view distance (WIP: usually 100 yards for open world and 500 yards for instanced maps)
     //\ todo: there are some objects which should be visible even further and some objects which should always be visible
     // should cover all Instances with 5000 * 5000 easyier for far Gameobjects / Creatures to Handle, also Loaded Cells affect the Distance standart 2 Cells equal 500.0f * 500.0f : aaron02
-    const auto viewDistance = GetMapMgr()->GetMapInfo()->isInstanceMap() ? 5000.0f * 5000.0f : GetMapMgr()->m_UpdateDistance;
+    const auto viewDistance = getWorldMap()->getBaseMap()->getMapInfo()->isInstanceMap() ? 5000.0f * 5000.0f : getWorldMap()->getVisibilityRange();
     if (obj->isGameObject())
     {
         // TODO: for now, all maps have 500 yard view distance
@@ -4979,7 +4956,7 @@ bool Unit::canSee(Object* const obj)
             {
                 // Group members can see each other's summoned units
                 // unless they are dueling, then it's based on detection
-                const auto objectOwner = GetMapMgrPlayer(ownerGuid);
+                const auto objectOwner = getWorldMapPlayer(ownerGuid);
                 if (objectOwner != nullptr)
                 {
                     if (objectOwner->getGroup() && objectOwner->getGroup()->HasMember(static_cast<Player*>(this)))
@@ -5009,7 +4986,7 @@ bool Unit::canSee(Object* const obj)
 
                 // Group members can see each other's created gameobjects
                 // unless they are dueling, then it's based on detection
-                const auto objectOwner = GetMapMgrPlayer(ownerGuid);
+                const auto objectOwner = getWorldMapPlayer(ownerGuid);
                 if (objectOwner != nullptr && isPlayer())
                 {
                     if (objectOwner->getGroup() && objectOwner->getGroup()->HasMember(static_cast<Player*>(this)))
@@ -5036,13 +5013,13 @@ bool Unit::canSee(Object* const obj)
     auto meUnit = this;
     if (getCharmedByGuid() != 0)
     {
-        const auto summoner = GetMapMgrUnit(getCharmedByGuid());
+        const auto summoner = getWorldMapUnit(getCharmedByGuid());
         if (summoner != nullptr)
             meUnit = summoner;
     }
     else if (getSummonedByGuid() != 0)
     {
-        const auto summoner = GetMapMgrUnit(getSummonedByGuid());
+        const auto summoner = getWorldMapUnit(getSummonedByGuid());
         if (summoner != nullptr)
             meUnit = summoner;
     }
@@ -5141,7 +5118,7 @@ bool Unit::canSee(Object* const obj)
             if (gobTarget->getCreatedByGuid() != 0)
             {
                 // If trap has an owner, subtract owner's stealth level (unit level * 5) from detection value
-                const auto summoner = gobTarget->GetMapMgrUnit(gobTarget->getCreatedByGuid());
+                const auto summoner = gobTarget->getWorldMapUnit(gobTarget->getCreatedByGuid());
                 if (summoner != nullptr)
                     detectionValue -= summoner->getLevel() * 5;
             }
@@ -5949,7 +5926,7 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
         if (plrOwner != nullptr)
         {
             // Battleground damage score
-            if (plrOwner->getBattleground() && GetMapMgr() == victim->GetMapMgr())
+            if (plrOwner->getBattleground() && getWorldMap() == victim->getWorldMap())
             {
                 plrOwner->m_bgScore.DamageDone += damage;
                 plrOwner->getBattleground()->UpdatePvPData();
@@ -6109,7 +6086,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
         // Loot
         if (isLootable())
         {
-            const auto tagger = GetMapMgrPlayer(getTaggerGuid());
+            const auto tagger = getWorldMapPlayer(getTaggerGuid());
             if (tagger != nullptr)
             {
                 if (tagger->isInGroup()) // Group Case
@@ -6144,7 +6121,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
             // Experience points
             if (isTagged())
             {
-                const auto taggerUnit = GetMapMgrUnit(getTaggerGuid());
+                const auto taggerUnit = getWorldMapUnit(getTaggerGuid());
                 const auto tagger = taggerUnit != nullptr ? taggerUnit->getPlayerOwner() : nullptr;
                 if (tagger != nullptr)
                 {
@@ -6505,7 +6482,7 @@ void Unit::knockbackFrom(float x, float y, float speedXY, float speedZ)
     {
         if (getCharmGuid())
         {
-            Unit* charmer = GetMapMgrPlayer(getCharmGuid());
+            Unit* charmer = getWorldMapPlayer(getCharmGuid());
             player = charmer->ToPlayer();
         }
     }
@@ -6658,7 +6635,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
         if (plrOwner != nullptr)
         {
             // Battleground damage score
-            if (plrOwner->getBattleground() && GetMapMgr() == attacker->GetMapMgr())
+            if (plrOwner->getBattleground() && getWorldMap() == attacker->getWorldMap())
             {
                 plrOwner->m_bgScore.DamageDone += damage;
                 plrOwner->getBattleground()->UpdatePvPData();
@@ -6733,7 +6710,7 @@ uint32_t Unit::_handleBatchHealing(HealthBatchEvent const* batch, uint32_t* abso
         const auto plrOwner = healer->getPlayerOwner();
 
         // Update battleground score
-        if (plrOwner && plrOwner->getBattleground() && plrOwner->GetMapMgr() == GetMapMgr())
+        if (plrOwner && plrOwner->getBattleground() && plrOwner->getWorldMap() == getWorldMap())
         {
             plrOwner->m_bgScore.HealingDone += healing;
             plrOwner->getBattleground()->UpdatePvPData();
@@ -6971,7 +6948,7 @@ bool Unit::isTaggedByPlayerOrItsGroup(Player* tagger)
 
     if (tagger->isInGroup())
     {
-        if (const auto playerTagger = GetMapMgrPlayer(getTaggerGuid()))
+        if (const auto playerTagger = getWorldMapPlayer(getTaggerGuid()))
             if (tagger->getGroup()->HasMember(playerTagger))
                 return true;
     }
@@ -7360,3 +7337,31 @@ void Unit::handleSpellClick(Unit* clicker)
     }
 }
 #endif
+
+// Returns collisionheight of the unit. If it is 0, it returns DEFAULT_COLLISION_HEIGHT.
+float Unit::getCollisionHeight() const
+{
+    float scaleMod = getScale();
+
+    // Mounted
+    if (getMountDisplayId())
+    {
+        if (DBC::Structures::CreatureDisplayInfoEntry const* mountDisplayInfo = sCreatureDisplayInfoStore.LookupEntry(getMountDisplayId()))
+        {
+            if (DBC::Structures::CreatureModelDataEntry const* mountModelData = sCreatureModelDataStore.LookupEntry(mountDisplayInfo->ModelID))
+            {
+                DBC::Structures::CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.AssertEntry(getNativeDisplayId());
+                DBC::Structures::CreatureModelDataEntry const* modelData = sCreatureModelDataStore.AssertEntry(displayInfo->ModelID);
+                float const collisionHeight = scaleMod * (mountModelData->MountHeight + modelData->CollisionHeight * modelData->ModelScale * displayInfo->CreatureModelScale * 0.5f);
+                return collisionHeight == 0.0f ? DEFAULT_COLLISION_HEIGHT : collisionHeight;
+            }
+        }
+    }
+
+    // Dismounted case
+    DBC::Structures::CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.AssertEntry(getNativeDisplayId());
+    DBC::Structures::CreatureModelDataEntry const* modelData = sCreatureModelDataStore.AssertEntry(displayInfo->ModelID);
+
+    float const collisionHeight = scaleMod * modelData->CollisionHeight * modelData->ModelScale * displayInfo->CreatureModelScale;
+    return collisionHeight == 0.0f ? DEFAULT_COLLISION_HEIGHT : collisionHeight;
+}

@@ -17,7 +17,7 @@ protected:
     std::map<Creature*, std::set<uint32_t> > Get_m_resurrectMap() const { return m_resurrectMap; }
 
 public:
-    AlteracValley(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
+    AlteracValley(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
     ~AlteracValley();
 
     void EventAssaultControlPoint(uint32_t x);
@@ -38,7 +38,7 @@ public:
     LocationVector GetStartingCoords(uint32_t Team) override;
     void DropFlag(Player* plr);
 
-    static CBattleground* Create(MapMgr* m, uint32_t i, uint32_t l, uint32_t t) { return new AlteracValley(m, i, l, t); }
+    static CBattleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new AlteracValley(m, i, l, t); }
 
     const char* GetName() { return "Alterac Valley"; }
     void OnStart() override;

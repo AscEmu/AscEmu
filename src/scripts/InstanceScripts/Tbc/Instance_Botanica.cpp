@@ -11,8 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 class BotanicaInstanceScript : public InstanceScript
 {
 public:
-    explicit BotanicaInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new BotanicaInstanceScript(pMapMgr); }
+    explicit BotanicaInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new BotanicaInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {
