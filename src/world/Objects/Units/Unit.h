@@ -785,7 +785,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Aura
     void addAura(Aura* aur);
-    uint8_t findVisualSlotForAura(bool isPositive) const;
+    uint8_t findVisualSlotForAura(Aura const* aur) const;
 
     Aura* getAuraWithId(uint32_t spell_id);
     Aura* getAuraWithId(uint32_t* auraId);
