@@ -755,7 +755,7 @@ uint32_t SpellInfo::getRequiredTargetMaskForEffectTarget(uint32_t implicitTarget
         case EFF_TARGET_SELECTED_ENEMY_DEADLY_POISON:
             targetMask = SPELL_TARGET_AREA_RANDOM;
             break;
-        case 87:
+        case EFF_TARGET_AREA_DESTINATION:
             targetMask = SPELL_TARGET_AREA;
             break;
         case EFF_TARGET_NON_COMBAT_PET:
