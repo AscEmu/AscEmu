@@ -16,119 +16,180 @@ This file is released under the MIT license. See README-MIT for more information
 using namespace AscEmu::Packets;
 
 #if VERSION_STRING > TBC
-void WorldSession::handleDismissVehicle(WorldPacket& /*recvPacket*/)
+void WorldSession::handleDismissVehicle(WorldPacket& recvPacket)
 {
-    if (_player->getCurrentVehicle() == nullptr)
-        return;
+    uint64_t vehicleGUID = _player->getCharmGuid();
 
-    const auto unit = _player->GetMapMgr()->GetUnit(_player->getCharmGuid());
-    if (unit == nullptr)
+    if (!vehicleGUID)   // something wrong here...
+    {
+        recvPacket.rfinish();   // prevent warnings spam
         return;
+    }
 
-    if (unit->getVehicleComponent() == nullptr)
-        return;
-
-    unit->getVehicleComponent()->EjectPassenger(_player);
+    _player->obj_movement_info.readMovementInfo(recvPacket, CMSG_DISMISS_CONTROLLED_VEHICLE);
+    _player->callExitVehicle();
 }
 
-void WorldSession::handleRequestVehiclePreviousSeat(WorldPacket& /*recvPacket*/)
+void WorldSession::handleRequestVehiclePreviousSeat(WorldPacket& recvPacket)
 {
-    if (_player->getCurrentVehicle() == nullptr)
+    if (GetPlayer()->getVehicleBase() == nullptr)
+    {
+        recvPacket.rfinish();
         return;
+    }
 
-    _player->getCurrentVehicle()->MovePassengerToPrevSeat(_player);
+    auto seat = GetPlayer()->getVehicle()->getSeatForPassenger(GetPlayer());
+    if (!seat->canSwitchFromSeat())
+    {
+        recvPacket.rfinish();
+        return;
+    }
+
+    GetPlayer()->callChangeSeat(-1, false);
 }
 
-void WorldSession::handleRequestVehicleNextSeat(WorldPacket& /*recvPacket*/)
+void WorldSession::handleRequestVehicleNextSeat(WorldPacket& recvPacket)
 {
-    if (_player->getCurrentVehicle() == nullptr)
+    if (GetPlayer()->getVehicleBase() == nullptr)
+    {
+        recvPacket.rfinish();
         return;
+    }
 
-    _player->getCurrentVehicle()->MovePassengerToNextSeat(_player);
+    auto seat = GetPlayer()->getVehicle()->getSeatForPassenger(GetPlayer());
+    if (!seat->canSwitchFromSeat())
+    {
+        recvPacket.rfinish();
+        return;
+    }
+
+    GetPlayer()->callChangeSeat(-1, true);
 }
 
 void WorldSession::handleRequestVehicleSwitchSeat(WorldPacket& recvPacket)
 {
-    if (_player->getCurrentVehicle() == nullptr)
+    Unit* vehicle_base = GetPlayer()->getVehicleBase();
+    if (!vehicle_base)
         return;
 
-    CmsgRequestVehicleSwitchSeat srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
-        return;
+    if (auto seat = GetPlayer()->getVehicle()->getSeatForPassenger(GetPlayer()))
+        if (!seat->canSwitchFromSeat())
+            return;
 
-    if (srlPacket.guid.getRawGuid() == _player->getCurrentVehicle()->GetOwner()->getGuid())
+    WoWGuid guid;
+    int8_t seatId;
+
+    recvPacket >> guid;
+    recvPacket >> seatId;
+
+    if (vehicle_base->getGuid() == guid.getRawGuid())
     {
-        _player->getCurrentVehicle()->MovePassengerToSeat(_player, srlPacket.seat);
+        GetPlayer()->callChangeSeat(seatId);
     }
-    else
+    else if (Unit* vehUnit = GetPlayer()->GetMapMgr()->GetUnit(guid.getRawGuid()))
     {
-        const auto unit = _player->GetMapMgr()->GetUnit(srlPacket.guid.getRawGuid());
-        if (unit == nullptr)
-            return;
-
-        if (unit->getVehicleComponent() == nullptr)
-            return;
-
-        if (_player->getVehicleBase()->getGuid() != unit->getVehicleBase()->getGuid())
-            return;
-
-        _player->getCurrentVehicle()->EjectPassenger(_player);
-        unit->getVehicleComponent()->AddPassengerToSeat(_player, srlPacket.seat);
+        if (Vehicle* vehicle = vehUnit->getVehicleKit())
+        {
+            if (vehicle->hasEmptySeat(seatId))
+            {
+                vehUnit->handleSpellClick(GetPlayer(), seatId);
+            }
+        }
     }
 }
 
 void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]]WorldPacket& recvPacket)
 {
-    if (_player->getCurrentVehicle() == nullptr)
+    Unit* vehicle_base = GetPlayer()->getVehicleBase();
+    if (!vehicle_base)
         return;
 
-#if VERSION_STRING == WotLK
+    auto seat = GetPlayer()->getVehicle()->getSeatForPassenger(GetPlayer());
+    if (!seat->canSwitchFromSeat())
+        return;
+
+#if VERSION_STRING < Cata
     CmsgChangeSeatsOnControlledVehicle srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto sourceUnit = _player->GetMapMgr()->GetUnit(srlPacket.sourceGuid.getRawGuid());
-    if (sourceUnit == nullptr)
+    uint64_t guid = srlPacket.sourceGuid;               // current vehicle guid
+    uint64_t accessory = srlPacket.destinationGuid;     //  accessory guid
+
+    vehicle_base->obj_movement_info = srlPacket.movementInfo;
+    int8_t seatId = srlPacket.seat;
+
+    if (vehicle_base->getGuid() != guid)
         return;
 
-    if (sourceUnit->getVehicleComponent() == nullptr)
-        return;
-
-    if (sourceUnit->getGuid() != _player->getCurrentVehicle()->GetOwner()->getGuid())
-        return;
-
-    const auto destinationUnit = _player->GetMapMgr()->GetUnit(srlPacket.destinationGuid.getRawGuid());
-    if (destinationUnit == nullptr)
-        return;
-
-    if (destinationUnit->getVehicleComponent() == nullptr)
-        return;
-
-    if (sourceUnit->getGuid() == destinationUnit->getGuid())
+    if (!accessory)
     {
-        sourceUnit->getVehicleComponent()->MovePassengerToSeat(_player, srlPacket.seat);
+        GetPlayer()->callChangeSeat(-1, seatId > 0); // prev/next
+    }
+    else if (Unit* vehUnit = GetPlayer()->GetMapMgrUnit(accessory))
+    {
+        if (Vehicle* vehicle = vehUnit->getVehicleKit())
+            if (vehicle->hasEmptySeat(seatId))
+                vehUnit->handleSpellClick(GetPlayer(), seatId);
     }
     else
     {
-        if (sourceUnit->getVehicleBase()->getGuid() != destinationUnit->getVehicleBase()->getGuid())
-            return;
+        if (vehicle_base->getVehicle())
+            if (vehicle_base->getVehicle()->hasEmptySeat(seatId))
+                vehicle_base->getVehicleBase()->handleSpellClick(GetPlayer(), seatId);
+    }
 
-        _player->getCurrentVehicle()->EjectPassenger(_player);
-        destinationUnit->getVehicleComponent()->AddPassengerToSeat(_player, srlPacket.seat);
+#else
+    MovementInfo movementInfo; 
+    movementInfo.readMovementInfo(recvPacket, CMSG_CHANGE_SEATS_ON_CONTROLLED_VEHICLE);
+    vehicle_base->obj_movement_info = movementInfo;
+
+    ObjectGuid guid;
+    int8_t seatId;
+    recvPacket >> seatId;
+
+    guid[2] = recvPacket.readBit();
+    guid[4] = recvPacket.readBit();
+    guid[7] = recvPacket.readBit();
+    guid[6] = recvPacket.readBit();
+    guid[5] = recvPacket.readBit();
+    guid[0] = recvPacket.readBit();
+    guid[1] = recvPacket.readBit();
+    guid[3] = recvPacket.readBit();
+    
+    recvPacket.ReadByteSeq(guid[6]);
+    recvPacket.ReadByteSeq(guid[1]);
+    recvPacket.ReadByteSeq(guid[2]);
+    recvPacket.ReadByteSeq(guid[5]);
+    recvPacket.ReadByteSeq(guid[3]);
+    recvPacket.ReadByteSeq(guid[0]);
+    recvPacket.ReadByteSeq(guid[4]);
+    recvPacket.ReadByteSeq(guid[7]);
+
+    if (vehicle_base->getGuid() != movementInfo.guid)
+        return;
+
+    if (!guid)
+    {
+        GetPlayer()->callChangeSeat(-1, seatId > 0); // prev/next
+    }
+    else if (Unit* vehUnit = GetPlayer()->GetMapMgrUnit(guid))
+    {
+        if (Vehicle* vehicle = vehUnit->getVehicleKit())
+            if (vehicle->hasEmptySeat(seatId))
+                vehUnit->handleSpellClick(GetPlayer(), seatId);
     }
 #endif
 }
 
 void WorldSession::handleRemoveVehiclePassenger(WorldPacket& recvPacket)
 {
-    Vehicle* vehicle = nullptr;
-    if (_player->isVehicle())
-        vehicle = _player->getVehicleComponent();
-    else
-        vehicle = _player->getCurrentVehicle();
-
-    if (vehicle == nullptr)
+    Vehicle* vehicle = _player->getVehicleKit();
+    if (!vehicle)
+    {
+        recvPacket.rfinish();   // prevent warnings spam
         return;
+    }
 
     CmsgEjectPassenger srlPacket;
     if (!srlPacket.deserialise(recvPacket))
@@ -138,18 +199,28 @@ void WorldSession::handleRemoveVehiclePassenger(WorldPacket& recvPacket)
         return;
 
     const auto passengerUnit = _player->GetMapMgr()->GetUnit(srlPacket.guid);
-    if (passengerUnit == nullptr)
+    if (!passengerUnit)
         return;
 
-    vehicle->EjectPassenger(passengerUnit);
+    if (!passengerUnit->isOnVehicle(vehicle->getBase()))
+        return;
+
+    auto seat = vehicle->getSeatForPassenger(passengerUnit);
+    if (seat)
+        if (seat->isEjectable())
+            passengerUnit->callExitVehicle();
 }
 
 void WorldSession::handleLeaveVehicle(WorldPacket& /*recvPacket*/)
 {
-    if (_player->getCurrentVehicle() == nullptr)
-        return;
-
-    _player->getCurrentVehicle()->EjectPassenger(_player);
+    if (Vehicle* vehicle = GetPlayer()->getVehicle())
+    {
+        if (DBC::Structures::VehicleSeatEntry const* seat = vehicle->getSeatForPassenger(GetPlayer()))
+        {
+            if (seat->canEnterOrExit())
+                GetPlayer()->callExitVehicle();
+        }
+    }
 }
 
 void WorldSession::handleEnterVehicle(WorldPacket& recvPacket)
@@ -165,9 +236,9 @@ void WorldSession::handleEnterVehicle(WorldPacket& recvPacket)
     if (!_player->isInRange(unit, MAX_INTERACTION_RANGE))
         return;
 
-    if (unit->getVehicleComponent() == nullptr)
+    if (unit->getVehicleKit() == nullptr)
         return;
 
-    unit->getVehicleComponent()->AddPassenger(_player);
+    _player->callEnterVehicle(unit);
 }
 #endif

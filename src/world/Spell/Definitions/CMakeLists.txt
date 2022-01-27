@@ -18,7 +18,6 @@ set(SRC_SPELL_DEFINITIONS_FILES
     ${PATH_PREFIX}/School.hpp
     ${PATH_PREFIX}/Spec.hpp
     ${PATH_PREFIX}/SpellCastTargetFlags.hpp
-    ${PATH_PREFIX}/SpellClickSpell.hpp
     ${PATH_PREFIX}/SpellDamageType.hpp
     ${PATH_PREFIX}/SpellDidHitResult.hpp
     ${PATH_PREFIX}/SpellEffects.hpp

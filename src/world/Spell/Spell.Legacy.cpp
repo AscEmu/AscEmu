@@ -185,7 +185,6 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
 
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        forced_basepoints[i] = 0;
         isEffectDamageStatic[i] = false;
         effectPctModifier[i] = 1.0f;
 
@@ -644,6 +643,178 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     // Check if creature target is in evade mode
     if (target->isCreature() && target->isInEvadeMode())
         return SPELL_DID_HIT_EVADE;
+
+    // Check if unit target is immune to this spell effect
+    if (target->getSpellImmunity() != SPELL_IMMUNITY_NONE)
+    {
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_CHARM))
+        {
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_CHARMED ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_CHARMED)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_CONFUSE))
+        {
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_DISORIENTED ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_DISORIENTED)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_FEAR))
+        {
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_FLEEING ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_FLEEING)
+                return SPELL_DID_HIT_IMMUNE;
+
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_HORRIFIED ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_HORRIFIED)
+                return SPELL_DID_HIT_IMMUNE;
+
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_TURNED ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_TURNED)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_ROOT))
+        {
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_ROOTED ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_ROOTED)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_SILENCE))
+        {
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_SILENCED ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_SILENCED)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_STUN))
+        {
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_STUNNED ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_STUNNED)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_POLYMORPH))
+        {
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_POLYMORPHED ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_POLYMORPHED)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_BANISH))
+        {
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_BANISHED ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_BANISHED)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_SAP))
+        {
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_SAPPED ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_SAPPED)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_FROZEN))
+        {
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_FROZEN ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_FROZEN)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_SLOW))
+        {
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_ENSNARED ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_ENSNARED)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_SLEEP))
+        {
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_ASLEEP ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_ASLEEP)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_TAUNT))
+        {
+            if (getSpellInfo()->getEffect(effindex) == SPELL_EFFECT_ATTACK_ME ||
+                getSpellInfo()->getEffectApplyAuraName(effindex) == SPELL_AURA_MOD_TAUNT)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_SPELL_HASTE))
+        {
+            if (getSpellInfo()->getEffectApplyAuraName(effindex) == SPELL_AURA_INCREASE_CASTING_TIME_PCT)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_INTERRUPT_CAST))
+        {
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_INTERRUPTED ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_INTERRUPTED)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_MOD_HEALING))
+        {
+            if (getSpellInfo()->getEffectApplyAuraName(effindex) == SPELL_AURA_MOD_HEALING_DONE_PERCENT)
+            {
+                // Prevent only effects with negative value
+                const auto val = getSpellInfo()->calculateEffectValue(effindex);
+                if (val < 0)
+                    return SPELL_DID_HIT_IMMUNE;
+            }
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_TOTAL_STATS))
+        {
+            if (getSpellInfo()->getEffectApplyAuraName(effindex) == SPELL_AURA_MOD_TOTAL_STAT_PERCENTAGE)
+            {
+                // Prevent only effects with negative value
+                const auto val = getSpellInfo()->calculateEffectValue(effindex);
+                if (val < 0)
+                    return SPELL_DID_HIT_IMMUNE;
+            }
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_KNOCKBACK))
+        {
+            if (getSpellInfo()->getEffect(effindex) == SPELL_EFFECT_KNOCK_BACK || SPELL_EFFECT_KNOCK_BACK_DEST)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_DISARM))
+        {
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_DISARMED ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_DISARMED)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_INCAPACITATE))
+        {
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_INCAPACIPATED ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_INCAPACIPATED)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_BLEED))
+        {
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_BLEEDING ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_BLEEDING)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+
+        if (target->hasSpellImmunity(SPELL_IMMUNITY_SHACKLE))
+        {
+            if (getSpellInfo()->getMechanicsType() == MECHANIC_SHACKLED ||
+                getSpellInfo()->getEffectMechanic(effindex) == MECHANIC_SHACKLED)
+                return SPELL_DID_HIT_IMMUNE;
+        }
+    }
 
     // Check if target can reflect this spell
     if (m_canBeReflected)
@@ -1445,7 +1616,7 @@ void Spell::HandleAddAura(uint64 guid)
                     Spell* spell = sSpellMgr.newSpell(p_caster, spellInfo, true, nullptr);
 
 
-                    spell->forced_basepoints[0] = p_caster->getAuraWithId(kingOfTheJungle)->getSpellInfo()->custom_RankNumber * 5;
+                    spell->forced_basepoints.set(0, p_caster->getAuraWithId(kingOfTheJungle)->getSpellInfo()->custom_RankNumber * 5);
                     SpellCastTargets targets(p_caster->getGuid());
                     spell->prepare(&targets);
                 }
@@ -1549,7 +1720,7 @@ void Spell::HandleAddAura(uint64 guid)
         };
 
         if (spellid == 31665 && Target->hasAurasWithId(masterOfSubtlety))
-            spell->forced_basepoints[0] = Target->getAuraWithId(masterOfSubtlety)->getSpellInfo()->getEffectBasePoints(0);
+            spell->forced_basepoints.set(0, Target->getAuraWithId(masterOfSubtlety)->getSpellInfo()->getEffectBasePoints(0));
 
         SpellCastTargets targets(Target->getGuid());
         spell->prepare(&targets);
@@ -3093,8 +3264,13 @@ void Spell::SpellEffectJumpTarget(uint8_t effectIndex)
     if (u_caster == nullptr)
         return;
 
-    if (u_caster->getCurrentVehicle() || u_caster->isTrainingDummy())
+#ifdef FT_VEHICLES
+    if (u_caster->getVehicleKit() || u_caster->isTrainingDummy())
         return;
+#else
+    if (u_caster->isTrainingDummy())
+        return;
+#endif
 
     float x = 0;
     float y = 0;

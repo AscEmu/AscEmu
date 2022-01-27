@@ -210,3 +210,23 @@ inline void normalizeMapCoord(float &c)
     else if (c < -(MAP_HALFSIZE - 0.5f))
         c = -(MAP_HALFSIZE - 0.5f);
 }
+
+inline bool isValidMapCoord(float c)
+{
+    return std::isfinite(c) && (std::fabs(c) <= MAP_HALFSIZE - 0.5f);
+}
+
+inline bool isValidMapCoord(float x, float y)
+{
+    return isValidMapCoord(x) && isValidMapCoord(y);
+}
+
+inline bool isValidMapCoord(float x, float y, float z)
+{
+    return isValidMapCoord(x, y) && isValidMapCoord(z);
+}
+
+inline bool isValidMapCoord(float x, float y, float z, float o)
+{
+    return isValidMapCoord(x, y, z) && std::isfinite(o);
+}

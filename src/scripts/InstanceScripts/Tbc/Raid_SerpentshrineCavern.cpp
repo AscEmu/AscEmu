@@ -837,7 +837,7 @@ public:
                 return;
             //let's force this effect
             SpellForcedBasePoints forcedBasePoints;
-            forcedBasePoints.basePoints[0] = random_target->getMaxHealth() / 2;
+            forcedBasePoints.set(0, random_target->getMaxHealth() / 2);
             getCreature()->castSpell(random_target, info_cataclysmic_bolt, forcedBasePoints, true);
             TargetTable.clear();
         }

@@ -188,7 +188,7 @@ public:
         if (caster == NULL)
             return;
 
-        a->refresh();
+        a->refreshOrModifyStack();
 
         switch (spellId)
         {

@@ -109,7 +109,7 @@ void SpellProc::castSpell(Unit* victim, SpellInfo const* castingSpell)
 
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        spell->forced_basepoints[i] = getOverrideEffectDamage(i);
+        spell->forced_basepoints.set(i, getOverrideEffectDamage(i));
     }
 
     spell->ProcedOnSpell = castingSpell;

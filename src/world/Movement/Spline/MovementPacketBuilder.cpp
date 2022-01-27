@@ -57,11 +57,15 @@ void PacketBuilder::WriteCommonMonsterMovePart(MoveSpline const& move_spline, By
         break;
     }
 
+#if VERSION_STRING > WotLk
+    // add fake Enter_Cycle flag - needed for client-side cyclic movement (client will erase first spline vertex after first cycle done)
+    splineflags.enter_cycle = move_spline.isCyclic();
+#endif
     data << uint32_t(splineflags & uint32_t(~MoveSplineFlag::Mask_No_Monster_Move));
 #if VERSION_STRING > TBC
     if (splineflags.animation)
     {
-        data << splineflags.animTier;
+        data << splineflags.getAnimationId();
         data << move_spline.effect_start_time;
     }
 #endif
@@ -120,16 +124,27 @@ void WriteCatmullRomPath(Spline<int32_t> const& spline, ByteBuffer& data)
 
 void WriteCatmullRomCyclicPath(Spline<int32_t> const& spline, ByteBuffer& data)
 {
+#if VERSION_STRING <= WotLk
     if (spline.getPointCount() < 4)
         sLogger.failure("WriteCatmullRomCyclicPath: size of points is < 3, this will lead to issues!");
 
     uint32_t count = static_cast<uint32_t>(spline.getPointCount() - 4);
     data << count;
     data.append<Vector3>(&spline.getPoint(2), count);
+#else
+    if (spline.getPointCount() < 3)
+        sLogger.failure("WriteCatmullRomCyclicPath: size of points is < 3, this will lead to issues!");
+
+    uint32_t count = static_cast<uint32_t>(spline.getPointCount() - 3);
+    data << count + 1;
+    data << spline.getPoint(1); // fake point, client will erase it from the spline after first cycle done
+    data.append<Vector3>(&spline.getPoint(1), count);
+#endif
 }
 
 void PacketBuilder::WriteMonsterMove(MoveSpline const& move_spline, ByteBuffer& data)
 {
+#if VERSION_STRING <= WotLK
     WriteCommonMonsterMovePart(move_spline, data);
 
     const Spline<int32_t>& spline = move_spline.spline;
@@ -145,6 +160,23 @@ void PacketBuilder::WriteMonsterMove(MoveSpline const& move_spline, ByteBuffer& 
     {
         WriteLinearPath(spline, data);
     }
+#else
+    WriteCommonMonsterMovePart(move_spline, data);
+
+    const Spline<int32_t>& spline = move_spline.spline;
+    MoveSplineFlag splineflags = move_spline.splineflags;
+    if (splineflags & MoveSplineFlag::UncompressedPath)
+    {
+        if (splineflags.cyclic)
+            WriteCatmullRomCyclicPath(spline, data);
+        else
+            WriteCatmullRomPath(spline, data);
+    }
+    else
+    {
+        WriteLinearPath(spline, data);
+    }
+#endif
 }
 
 void PacketBuilder::WriteCreate(MoveSpline const& move_spline, ByteBuffer& data)

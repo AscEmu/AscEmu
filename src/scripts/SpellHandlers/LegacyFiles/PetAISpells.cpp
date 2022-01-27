@@ -320,9 +320,9 @@ public:
         getCreature()->setAnimationFlags(UNIT_BYTE1_FLAG_HOVER);
     }
 
-    void OnLastPassengerLeft(Unit *passenger) override
+    void OnRemovePassenger(Unit* _passenger) override
     {
-        if (getCreature()->getSummonedByGuid() == passenger->getGuid())
+        if (getCreature()->getSummonedByGuid() == _passenger->getGuid())
             getCreature()->Despawn(1 * 1000, 0);
     }
 };

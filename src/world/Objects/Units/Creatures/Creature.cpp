@@ -47,7 +47,7 @@ Creature::Creature(uint64_t guid)
     setRangedAttackPowerMultiplier(0.0f);
 
     //override class "Unit" initialisation
-    m_useAI = true;
+    setAItoUse(true);
 
     // Override initialization from Unit class
     getThreatManager().initialize();
@@ -178,24 +178,6 @@ float_t Creature::getMaxWanderDistance() const
 void Creature::setMaxWanderDistance(float_t dist)
 {
     m_wanderDistance = dist;
-}
-
-void Creature::addVehicleComponent(uint32_t creature_entry, uint32_t vehicleid)
-{
-    if (m_vehicle != nullptr)
-    {
-        sLogger.failure("Creature %u (%s) with GUID %u already has a vehicle component.", creature_properties->Id, creature_properties->Name.c_str(), GetUIdFromGUID());
-        return;
-    }
-
-    m_vehicle = new Vehicle();
-    m_vehicle->Load(this, creature_entry, vehicleid);
-}
-
-void Creature::removeVehicleComponent()
-{
-    delete m_vehicle;
-    m_vehicle = nullptr;
 }
 
 std::vector<CreatureItem>* Creature::getSellItems()
@@ -657,6 +639,11 @@ void Creature::OnRespawn(MapMgr* m)
 
     // Re-initialize reactstate that could be altered by movementgenerators
     getAIInterface()->initializeReactState();
+
+#ifdef FT_VEHICLES
+    // Init Vehicle
+    createVehicleKit(GetCreatureProperties()->vehicleid, getEntry());
+#endif
 
     m_PickPocketed = false;
     PushToWorld(m);
@@ -1550,7 +1537,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         getDisplayId() == 15435 ||
         (creature_properties->Family == UNIT_TYPE_MISC))
     {
-        m_useAI = false;
+        setAItoUse(false);
     }
 
     // more hacks!
@@ -1598,12 +1585,21 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     this->m_position.z = spawn->z;
     this->m_position.o = spawn->o;
 
+    // Set spell immunities
+    if (creature_properties->modImmunities != 0)
+    {
+        const auto immunityMask = static_cast<SpellImmunityMask>(creature_properties->modImmunities);
+        addSpellImmunity(immunityMask, true);
+    }
+
+#ifdef FT_VEHICLES
     if (isVehicle())
     {
-        addVehicleComponent(creature_properties->Id, creature_properties->vehicleid);
+        createVehicleKit(creature_properties->vehicleid, creature_properties->Id);
         addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
         setAItoUse(false);
     }
+#endif
 
     if (getMovementTemplate().isRooted())
         setControlled(true, UNIT_STATE_ROOTED);
@@ -1744,7 +1740,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         getDisplayId() == 15435 ||
         creature_properties->Type == UNIT_TYPE_MISC)
     {
-        m_useAI = false;
+        setAItoUse(false);
     }
 
     setPowerType(POWER_TYPE_MANA);
@@ -1765,12 +1761,21 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         // these are always invisible to players
         modInvisibilityLevel(InvisibilityFlag(creature_properties->invisibility_type), 1);
 
+    // Set spell immunities
+    if (creature_properties->modImmunities != 0)
+    {
+        const auto immunityMask = static_cast<SpellImmunityMask>(creature_properties->modImmunities);
+        addSpellImmunity(immunityMask, true);
+    }
+
+#ifdef FT_VEHICLES
     if (isVehicle())
     {
-        addVehicleComponent(creature_properties->Id, creature_properties->vehicleid);
+        createVehicleKit(creature_properties->vehicleid, creature_properties->Id);
         addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
         setAItoUse(false);
     }
+#endif
 
     if (getMovementTemplate().isRooted())
         setControlled(true, UNIT_STATE_ROOTED);
@@ -2175,15 +2180,11 @@ bool Creature::isCritter()
 
 void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 {
-    if (getVehicleComponent() != NULL)
-    {
-        getVehicleComponent()->RemoveAccessories();
-        getVehicleComponent()->EjectAllPassengers();
-    }
-
-    // Creature falls off vehicle on death
-    if ((m_currentVehicle != NULL))
-        m_currentVehicle->EjectPassenger(this);
+#ifdef FT_VEHICLES
+    // Exit Vehicle
+    removeVehicleKit();
+    callExitVehicle();
+#endif
 
     //general hook for die
     if (!sHookInterface.OnPreUnitDie(pAttacker, this))

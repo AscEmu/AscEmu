@@ -979,7 +979,7 @@ bool SpellInfo::isOnNextMeleeAttack() const
     return (Attributes & (ATTRIBUTES_ON_NEXT_ATTACK | ATTRIBUTES_ON_NEXT_SWING_2)) != 0;
 }
 
-int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = nullptr*/, Item* itemCaster/* = nullptr*/, int32_t forcedBasePoints/* = 0*/) const
+int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = nullptr*/, Item* itemCaster/* = nullptr*/, SpellForcedBasePoints forcedBasePoints/* = SpellForcedBasePoints()*/) const
 {
     if (effIndex >= MAX_SPELL_EFFECTS)
         return 0;
@@ -1032,18 +1032,13 @@ int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = n
         }
     }
 
-    if (forcedBasePoints != 0)
-    {
-        basePoints = forcedBasePoints;
-    }
-    else
-    {
 #if VERSION_STRING >= Cata
-        basePoints = getEffectBasePoints(effIndex);
+    basePoints = getEffectBasePoints(effIndex);
 #else
-        basePoints = getEffectBasePoints(effIndex) + 1;
+    basePoints = getEffectBasePoints(effIndex) + 1;
 #endif
-    }
+
+    forcedBasePoints.get(effIndex, &basePoints);
 
     // Check if value increases with level
     if (unitCaster != nullptr)

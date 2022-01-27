@@ -905,7 +905,10 @@ void World::loadMySQLTablesByTask()
     sObjectMgr.LoadReputationModifiers();
     sObjectMgr.LoadGroups();
     sObjectMgr.LoadArenaTeams();
+#ifdef FT_VEHICLES
     sObjectMgr.LoadVehicleAccessories();
+    sObjectMgr.loadVehicleSeatAddon();
+#endif
     sObjectMgr.LoadWorldStateTemplates();
 
 #if VERSION_STRING > TBC

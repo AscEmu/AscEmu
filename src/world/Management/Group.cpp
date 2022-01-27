@@ -1043,8 +1043,8 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     {
 #if VERSION_STRING < Cata
 #ifdef FT_VEHICLES
-        if (Vehicle* veh = pPlayer->getCurrentVehicle())
-            *data << uint32(veh->GetVehicleInfo()->seatID[pPlayer->getMovementInfo()->transport_seat]);
+        if (Vehicle* veh = pPlayer->getVehicleKit())
+            *data << uint32(veh->getVehicleInfo()->seatID[pPlayer->getMovementInfo()->transport_seat]);
 #endif
 #endif
     }

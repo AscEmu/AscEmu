@@ -100,9 +100,6 @@ public:
     float_t getMaxWanderDistance() const;
     void setMaxWanderDistance(float_t dist);
 
-    void addVehicleComponent(uint32_t creature_entry, uint32_t vehicleid);
-    void removeVehicleComponent();
-
     std::vector<CreatureItem>* getSellItems();
 
     uint32_t getWaypointPath() const { return _waypointPathId; }

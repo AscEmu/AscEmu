@@ -173,7 +173,7 @@ void Transporter::AddPassenger(Player* passenger)
     {
         passenger->SetTransport(this);
         passenger->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
-
+        passenger->obj_movement_info.transport_guid = getGuid();
         if(passenger->isPlayer())
             CALL_INSTANCE_SCRIPT_EVENT(GetMapMgr(), TransportBoarded)(passenger, this);
     }
@@ -202,7 +202,7 @@ void Transporter::RemovePassenger(Object* passenger)
     {
         passenger->SetTransport(nullptr);
         passenger->obj_movement_info.removeMovementFlag(MOVEFLAG_TRANSPORT);
-
+        passenger->obj_movement_info.clearTransportData();
         if (passenger->isPlayer())
             CALL_INSTANCE_SCRIPT_EVENT(GetMapMgr(), TransportUnboarded)(passenger->ToPlayer(), this);
     }
@@ -353,30 +353,37 @@ void Transporter::UpdatePassengerPositions(PassengerSet& passengers)
         CalculatePassengerPosition(x, y, z, &o);
         switch (passenger->getObjectTypeId())
         {
-        case TYPEID_PLAYER:
-        {
-            Player* player = reinterpret_cast<Player*>(passenger);
-            // Relocate only passengers in world and skip any player that might be still logging in/teleporting
-            if (passenger->IsInWorld())
-                player->SetPosition(x, y, z, o);
-            break;
+            case TYPEID_PLAYER:
+            {
+                Player* player = reinterpret_cast<Player*>(passenger);
+                // Relocate only passengers in world and skip any player that might be still logging in/teleporting
+                if (passenger->IsInWorld())
+                    player->SetPosition(x, y, z, o);
+                break;
+            }
+            case TYPEID_UNIT:
+            {
+                Creature* creature = static_cast<Creature*>(passenger);
+                creature->SetPosition(x, y, z, o, false);
+                creature->GetTransportHomePosition(x, y, z, o);
+                CalculatePassengerPosition(x, y, z, &o);
+                creature->SetSpawnLocation(x, y, z, o);
+                break;
+            }
+            case TYPEID_GAMEOBJECT:
+            {
+                GameObject* gameobject = static_cast<GameObject*>(passenger);
+                gameobject->SetPosition(x, y, z, o, false);
+                break;
+            }
+            default:
+                break;
         }
-        case TYPEID_UNIT:
-        {
-            Creature* creature = static_cast<Creature*>(passenger);
-            creature->SetPosition(x, y, z, o, false);
-            creature->GetTransportHomePosition(x, y, z, o);
-            CalculatePassengerPosition(x, y, z, &o);
-            creature->SetSpawnLocation(x, y, z, o);
-            break;
-        }
-        case TYPEID_GAMEOBJECT:
-        {
-            GameObject* gameobject = static_cast<GameObject*>(passenger);
-            gameobject->SetPosition(x, y, z, o, false);
-            break;
-        }
-        }
+#ifdef FT_VEHICLES
+        if (Unit* unit = passenger->ToUnit())
+            if (Vehicle* vehicle = unit->getVehicleKit())
+                vehicle->relocatePassengers();
+#endif
     }
 }
 

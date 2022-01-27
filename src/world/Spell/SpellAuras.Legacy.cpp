@@ -1376,7 +1376,7 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
             {
                 // Spell Overkill - in stealth and 20 seconds after stealth +30% energy regeneration - -1 duration => hacky infinity
                 buff->setMaxDuration(-1);
-                buff->refresh();
+                buff->refreshOrModifyStack();
             }
             else
                 m_target->castSpell(m_target, 58427, true);
@@ -1628,7 +1628,7 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
                         if (tmp_duration != 0)
                         {
                             m_target->m_auras[x]->setTimeLeft(tmp_duration);
-                            m_target->m_auras[x]->refresh();
+                            m_target->m_auras[x]->refreshOrModifyStack();
 
                             sEventMgr.ModifyEventTimeLeft(m_target->m_auras[x], EVENT_AURA_REMOVE, tmp_duration);
                             sEventMgr.AddEvent(m_target->m_auras[x], &Aura::removeAura, AURA_REMOVE_ON_EXPIRE, EVENT_AURA_REMOVE, tmp_duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
@@ -3166,42 +3166,39 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
             p_target->removeAllAurasByAuraEffect(SPELL_AURA_MOD_SHAPESHIFT);
 
         p_target->DismissActivePets();
-
+        p_target->addUnitFlags(UNIT_FLAG_MOUNT);
         p_target->mountvehicleid = ci->vehicleid;
 
         if (p_target->mountvehicleid != 0)
         {
-            p_target->addVehicleComponent(ci->Id, ci->vehicleid);
-
 #if VERSION_STRING > TBC
-            p_target->SendMessageToSet(SmsgPlayerVehicleData(p_target->GetNewGUID(), p_target->mountvehicleid).serialise().get(), true);
+            if (p_target->createVehicleKit(ci->vehicleid, ci->Id))
+            {
+                // Send other players that we are a vehicle
+                p_target->SendMessageToSet(SmsgPlayerVehicleData(p_target->GetNewGUID(), p_target->mountvehicleid).serialise().get(), true);
+                p_target->SendPacket(SmsgControlVehicle().serialise().get());
 
-            p_target->SendPacket(SmsgControlVehicle().serialise().get());
+                // mounts can also have accessories
+                p_target->getVehicleKit()->loadAllAccessories(false);
+            }
 #endif
-
-            p_target->addUnitFlags(UNIT_FLAG_MOUNT);
-            p_target->addNpcFlags(UNIT_NPC_FLAG_PLAYER_VEHICLE);
-
-            p_target->getVehicleComponent()->InstallAccessories();
         }
 
     }
     else
     {
-        if (p_target->getVehicleComponent() != nullptr)
-        {
-            p_target->removeNpcFlags(UNIT_NPC_FLAG_PLAYER_VEHICLE);
-            p_target->removeUnitFlags(UNIT_FLAG_MOUNT);
-
-            p_target->getVehicleComponent()->RemoveAccessories();
-            p_target->getVehicleComponent()->EjectAllPassengers();
+        p_target->removeUnitFlags(UNIT_FLAG_MOUNT);
 
 #if VERSION_STRING > TBC
+        if (p_target->getVehicleKit())
+        {
+            // Send other players that we are no longer a vehicle
             p_target->SendMessageToSet(SmsgPlayerVehicleData(p_target->GetNewGUID(), 0).serialise().get(), true);
-#endif
 
-            p_target->removeVehicleComponent();
+            // Remove vehicle from player
+            p_target->removeVehicleKit();
         }
+#endif
 
         p_target->mountvehicleid = 0;
         p_target->m_MountSpellId = 0;
@@ -5764,9 +5761,11 @@ void Aura::SpellAuraReduceEffectDuration(AuraEffectModifier* aurEff, bool apply)
 
 // Caster = player
 // Target = vehicle
-void Aura::HandleAuraControlVehicle(AuraEffectModifier* /*aurEff*/, bool apply)
+void Aura::HandleAuraControlVehicle(AuraEffectModifier* aurEff, bool apply)
 {
-    //return; Dead code reason...
+#ifdef FT_VEHICLES
+    if (!getCaster())
+        return;
 
     if (!getCaster()->isCreatureOrPlayer())
         return;
@@ -5775,19 +5774,31 @@ void Aura::HandleAuraControlVehicle(AuraEffectModifier* /*aurEff*/, bool apply)
         return;
 
     Unit* caster = static_cast<Unit*>(getCaster());
+    int8_t seatId = aurEff->getEffectBaseDamage() - 1;
 
     if (apply)
     {
-        if (m_target->getVehicleComponent()->HasEmptySeat())
-            m_target->getVehicleComponent()->AddPassenger(caster);
-
+        caster->enterVehicle(m_target->getVehicleKit(), seatId);
     }
     else
     {
-        if ((caster->getCurrentVehicle() != nullptr) && (caster->getCurrentVehicle() == m_target->getVehicleComponent()))
-            m_target->getVehicleComponent()->EjectPassenger(caster);
-    }
+        if (getSpellId() == 53111) // Devour Humanoid
+        {
+            if (caster->getObjectTypeId() == TYPEID_UNIT)
+                caster->ToCreature()->Despawn(0, 0);
+        }
 
+        if (seatId == m_target->getVehicleKit()->getSeatForNumberPassenger(caster))
+            caster->exitVehicle();
+        else if (seatId >= 0)
+            m_target->getVehicleKit()->removePassenger(caster);
+        else
+            caster->exitVehicle();
+
+        // some SPELL_AURA_CONTROL_VEHICLE auras have a dummy effect on the player - remove them
+        caster->removeAllAurasById(getSpellId());
+    }
+#endif
 }
 
 void Aura::SpellAuraModCombatResultChance(AuraEffectModifier* aurEff, bool apply)

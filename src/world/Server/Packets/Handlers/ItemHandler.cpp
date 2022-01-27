@@ -325,7 +325,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     spell->setItemCaster(tmpItem);
 
     if (spellToLearn != 0)
-        spell->forced_basepoints[0] = spellToLearn;
+        spell->forced_basepoints.set(0, spellToLearn);
 
 #if VERSION_STRING >= WotLK
     spell->m_glyphslot = srlPacket.glyphIndex;
@@ -2308,7 +2308,7 @@ void WorldSession::handleListInventoryOpcode(WorldPacket& recvPacket)
     MySQLStructure::VendorRestrictions const* vendor = sMySQLStore.getVendorRestriction(unit->GetCreatureProperties()->Id);
 
     //this is a blizzlike check
-    if (!_player->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
+    if (!_player->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT) && !unit->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
     {
         //avoid talking to anyone by guid hacking. Like sell farmed items anytime ? Low chance hack
         if (_player->getDistanceSq(unit) > 100)

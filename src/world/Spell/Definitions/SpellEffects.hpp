@@ -151,7 +151,7 @@ enum SpellEffect
     SPELL_EFFECT_UNKNOWN_141,               //    141
     SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE,  //    142
     SPELL_EFFECT_APPLY_OWNER_AREA_AURA,     //    143
-    SPELL_EFFECT_UNKNOWN_144,               //    144
+    SPELL_EFFECT_KNOCK_BACK_DEST,           //    144
     SPELL_EFFECT_UNKNOWN_145,               //    145
     SPELL_EFFECT_ACTIVATE_RUNES,            //    146
     SPELL_EFFECT_UNKNOWN_147,               //    147

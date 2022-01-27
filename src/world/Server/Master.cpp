@@ -58,7 +58,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20220116-00_characters";
-static const char* REQUIRED_WORLD_DB_VERSION = "20220113-01_playercreateinfo_spell_learn";
+static const char* REQUIRED_WORLD_DB_VERSION = "20220118-00_spell_disable";
 
 void Master::_OnSignal(int s)
 {

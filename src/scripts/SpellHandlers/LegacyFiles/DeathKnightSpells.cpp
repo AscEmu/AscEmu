@@ -260,13 +260,13 @@ bool DeathCoil(uint8_t /*effectIndex*/, Spell* s)
     SpellForcedBasePoints forcedBasePoints;
     if (isAttackable(s->getPlayerCaster(), unitTarget, false))
     {
-        forcedBasePoints.basePoints[EFF_INDEX_0] = dmg;
+        forcedBasePoints.set(EFF_INDEX_0, dmg);
         s->getPlayerCaster()->castSpell(unitTarget, 47632, forcedBasePoints, true);
     }
     else if (unitTarget->isPlayer() && unitTarget->getRace() == RACE_UNDEAD)
     {
         float multiplier = 1.5f;
-        forcedBasePoints.basePoints[EFF_INDEX_0] = static_cast<int32_t>((dmg * multiplier));
+        forcedBasePoints.set(EFF_INDEX_0, static_cast<int32_t>((dmg * multiplier)));
         s->getPlayerCaster()->castSpell(unitTarget, 47633, forcedBasePoints, true);
     }
 
@@ -298,7 +298,7 @@ bool DeathAndDecay(uint8_t effectIndex, Aura* pAura, bool apply)
             return true;
 
         SpellForcedBasePoints forcedBasePoints;
-        forcedBasePoints.basePoints[EFF_INDEX_0] = static_cast<uint32_t>(pAura->getEffectDamage(effectIndex) + caster->GetAP() * 0.064);
+        forcedBasePoints.set(EFF_INDEX_0, static_cast<uint32_t>(pAura->getEffectDamage(effectIndex) + caster->GetAP() * 0.064));
 
         caster->castSpell(pAura->getOwner(), 52212, forcedBasePoints, true);
     }

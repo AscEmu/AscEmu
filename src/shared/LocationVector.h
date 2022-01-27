@@ -162,6 +162,14 @@ class SERVER_DECL LocationVector
             o = src.o;
         }
 
+        void ChangeCoordsOffset(const LocationVector& offset)
+        {
+            x = getPositionX() + (offset.getPositionX() * std::cos(getOrientation()) + offset.getPositionY() * std::sin(getOrientation() + float(M_PI)));
+            y = getPositionY() + (offset.getPositionY() * std::cos(getOrientation()) + offset.getPositionX() * std::sin(getOrientation()));
+            z = getPositionZ() + offset.getPositionZ();
+            o = getOrientation() + offset.o;
+        }
+
         // add/subtract/equality vectors
         LocationVector & operator += (const LocationVector & add)
         {

@@ -3355,7 +3355,6 @@ public:
                     {
                         deathbringer->castSpell(getCreature(), SPELL_RIDE_VEHICLE, true);
                         deathbringer->setEmoteState(EMOTE_STATE_DROWNED);
-                        deathbringer->sendHopOnVehicle(getCreature(), 0);
                     }
 
                     getCreature()->getMovementManager()->movePoint(POINT_FINAL, finalPos);
@@ -3401,7 +3400,6 @@ public:
                     {
                         deathbringer->castSpell(getCreature(), SPELL_RIDE_VEHICLE, true);
                         deathbringer->setEmoteState(EMOTE_STATE_DROWNED);
-                        deathbringer->sendHopOnVehicle(getCreature(), 0);
                     }
 
                     sendDBChatMessage(SAY_OUTRO_ALLIANCE_14_SE);
@@ -3603,7 +3601,7 @@ void updateBloodPowerAura(Aura* aur, int32_t value)
         aurEff->setEffectBaseDamage(value);
     }
 
-    aur->refresh();
+    aur->refreshOrModifyStack();
 }
 
 class DeathbringerSaurfangAI : public CreatureAIScript

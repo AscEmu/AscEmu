@@ -328,7 +328,7 @@ bool GuardedByTheLight(uint8_t /*effectIndex*/, Spell* s)
         return false;
 
     if (Aura* aura = s->getPlayerCaster()->getAuraWithId(54428))
-        aura->refresh();
+        aura->refreshOrModifyStack();
 
     return true;
 }

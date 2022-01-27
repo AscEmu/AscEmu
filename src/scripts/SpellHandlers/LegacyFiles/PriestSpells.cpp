@@ -141,7 +141,7 @@ bool PainAndSufferingProc(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     // Set new aura's duration, reset event timer and set client visual aura
-    aura->refresh(true);
+    aura->refreshOrModifyStack(true);
 
     return true;
 }

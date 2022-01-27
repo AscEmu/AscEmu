@@ -25,6 +25,44 @@
 // APGL Ends
 // MIT Start
 
+// Do NOT extend the list, simply replace an unused value
+enum SpellImmunityMask : uint32_t
+{
+    SPELL_IMMUNITY_NONE               = 0x00000000,   // 0
+    SPELL_IMMUNITY_CHARM              = 0x00000001,   // 1
+    SPELL_IMMUNITY_CONFUSE            = 0x00000002,   // 2
+    SPELL_IMMUNITY_FEAR               = 0x00000004,   // 3
+    SPELL_IMMUNITY_ROOT               = 0x00000008,   // 4
+    SPELL_IMMUNITY_SILENCE            = 0x00000010,   // 5
+    SPELL_IMMUNITY_STUN               = 0x00000020,   // 6
+    SPELL_IMMUNITY_POLYMORPH          = 0x00000040,   // 7
+    SPELL_IMMUNITY_BANISH             = 0x00000080,   // 8
+    SPELL_IMMUNITY_SAP                = 0x00000100,   // 9
+    SPELL_IMMUNITY_FROZEN             = 0x00000200,   // 10
+    SPELL_IMMUNITY_SLOW               = 0x00000400,   // 11 movement impairing effects
+    SPELL_IMMUNITY_SLEEP              = 0x00000800,   // 12
+    SPELL_IMMUNITY_TAUNT              = 0x00001000,   // 13
+    SPELL_IMMUNITY_UNUSED_14          = 0x00002000,   // 14 unused
+    SPELL_IMMUNITY_SPELL_HASTE        = 0x00004000,   // 15 immune to spells that increase cast time
+    SPELL_IMMUNITY_INTERRUPT_CAST     = 0x00008000,   // 16
+    SPELL_IMMUNITY_MOD_HEALING        = 0x00010000,   // 17 i.e. Mortal Strike
+    SPELL_IMMUNITY_TOTAL_STATS        = 0x00020000,   // 18 i.e. Paladin's Vindication (TBC)
+    SPELL_IMMUNITY_KNOCKBACK          = 0x00040000,   // 19
+    SPELL_IMMUNITY_DISARM             = 0x00080000,   // 20
+    SPELL_IMMUNITY_INCAPACITATE       = 0x00100000,   // 21
+    SPELL_IMMUNITY_BLEED              = 0x00200000,   // 22
+    SPELL_IMMUNITY_SHACKLE            = 0x00400000,   // 23
+    SPELL_IMMUNITY_UNUSED_24          = 0x00800000,   // 24 unused
+    SPELL_IMMUNITY_UNUSED_25          = 0x01000000,   // 25 unused
+    SPELL_IMMUNITY_UNUSED_26          = 0x02000000,   // 26 unused
+    SPELL_IMMUNITY_UNUSED_27          = 0x04000000,   // 27 unused
+    SPELL_IMMUNITY_UNUSED_28          = 0x08000000,   // 28 unused
+    SPELL_IMMUNITY_UNUSED_29          = 0x10000000,   // 29 unused
+    SPELL_IMMUNITY_UNUSED_30          = 0x20000000,   // 30 unused
+    SPELL_IMMUNITY_UNUSED_31          = 0x40000000,   // 31 unused
+    SPELL_IMMUNITY_UNUSED_32          = 0x80000000,   // 32 unused
+};
+
 enum StealthFlag : uint8_t
 {
     STEALTH_FLAG_NORMAL             = 0,
@@ -758,6 +796,7 @@ enum UnitStates
     UNIT_STATE_FOLLOW_MOVE              = 0x08000000,
     UNIT_STATE_IGNORE_PATHFINDING       = 0x10000000, // do not use pathfinding in any MovementGenerator
     UNIT_STATE_FOLLOW_FORMATION_MOVE    = 0x20000000,
+    UNIT_STATE_ACCESSORY                = 0x40000000,
 
     UNIT_STATE_ALL_STATE_SUPPORTED      = UNIT_STATE_DIED | UNIT_STATE_MELEE_ATTACKING | UNIT_STATE_CHARMED | UNIT_STATE_STUNNED | UNIT_STATE_ROAMING | UNIT_STATE_CHASING
     | UNIT_STATE_FOCUSING | UNIT_STATE_FLEEING | UNIT_STATE_IN_FLIGHT | UNIT_STATE_FOLLOWING | UNIT_STATE_ROOTED | UNIT_STATE_CONFUSED

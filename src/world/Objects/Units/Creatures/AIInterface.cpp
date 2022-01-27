@@ -2286,12 +2286,14 @@ void AIInterface::setCreatureProtoDifficulty(uint32_t entry)
                 // these are always invisible to players
                 getUnit()->modInvisibilityLevel(InvisibilityFlag(properties_difficulty->invisibility_type), 1);
 
+#ifdef FT_VEHICLES
             if (getUnit()->isVehicle())
             {
-                getUnit()->addVehicleComponent(properties_difficulty->Id, properties_difficulty->vehicleid);
+                getUnit()->createVehicleKit(properties_difficulty->Id, properties_difficulty->vehicleid);
                 getUnit()->addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
                 getUnit()->setAItoUse(false);
             }
+#endif
 
             if (properties_difficulty->rooted)
                 getUnit()->setMoveRoot(true);

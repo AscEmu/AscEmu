@@ -92,6 +92,13 @@ public:
     // Fixes unit's model rotation. Disabled by default
     void SetOrientationFixed(bool enable);
 
+#if VERSION_STRING > WotLK
+    // Waypoints in packets will be sent without compression
+    void SetUncompressed();
+    // Inverses unit model orientation. Disabled by default
+    void SetOrientationInversed();
+#endif
+
     // Sets the velocity (in case you want to have custom movement velocity)
     // if no set, speed will be selected based on unit's speeds and current movement mode
     // Has no effect if falling mode enabled
@@ -108,6 +115,20 @@ protected:
     Unit*  unit;
 };
 
+
+#if VERSION_STRING > WotLK
+inline void MoveSplineInit::SetFly() { args.flags.EnableFlying(); }
+inline void MoveSplineInit::SetWalk(bool enable) { args.flags.walkmode = enable; }
+inline void MoveSplineInit::SetSmooth() { args.flags.EnableCatmullRom(); }
+inline void MoveSplineInit::SetUncompressed() { args.flags.uncompressedPath = true; }
+inline void MoveSplineInit::SetCyclic() { args.flags.cyclic = true; }
+inline void MoveSplineInit::SetFall() { args.flags.EnableFalling(); args.flags.fallingSlow = unit->hasUnitMovementFlag(MOVEFLAG_FEATHER_FALL); }
+inline void MoveSplineInit::SetVelocity(float vel) { args.velocity = vel; args.HasVelocity = true; }
+inline void MoveSplineInit::SetOrientationInversed() { args.flags.orientationInversed = true; }
+inline void MoveSplineInit::SetTransportEnter() { args.flags.EnableTransportEnter(); }
+inline void MoveSplineInit::SetTransportExit() { args.flags.EnableTransportExit(); }
+inline void MoveSplineInit::SetOrientationFixed(bool enable) { args.flags.orientationFixed = enable; }
+#else
 inline void MoveSplineInit::SetFly() { args.flags.EnableFlying(); }
 inline void MoveSplineInit::SetWalk(bool enable) { args.walk = enable; }
 inline void MoveSplineInit::SetSmooth() { args.flags.EnableCatmullRom(); }
@@ -118,6 +139,8 @@ inline void MoveSplineInit::SetBackward() { args.flags.backward = true; }
 inline void MoveSplineInit::SetTransportEnter() { args.flags.EnableTransportEnter(); }
 inline void MoveSplineInit::SetTransportExit() { args.flags.EnableTransportExit(); }
 inline void MoveSplineInit::SetOrientationFixed(bool enable) { args.flags.orientationFixed = enable; }
+#endif
+
 
 inline void MoveSplineInit::SetParabolic(float amplitude, float time_shift)
 {

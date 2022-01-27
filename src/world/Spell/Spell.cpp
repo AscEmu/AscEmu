@@ -1283,7 +1283,7 @@ void Spell::cancel()
 
 int32_t Spell::calculateEffect(uint8_t effIndex)
 {
-    auto value = getSpellInfo()->calculateEffectValue(effIndex, getUnitCaster(), getItemCaster(), forced_basepoints[effIndex]);
+    auto value = getSpellInfo()->calculateEffectValue(effIndex, getUnitCaster(), getItemCaster(), forced_basepoints);
 
     // Legacy script hook
     value = DoCalculateEffect(effIndex, GetUnitTarget(), value);

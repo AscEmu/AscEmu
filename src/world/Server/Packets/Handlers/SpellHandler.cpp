@@ -37,18 +37,10 @@ void WorldSession::handleSpellClick(WorldPacket& recvPacket)
     if (!unitTarget || !unitTarget->IsInWorld() || !unitTarget->isCreature())
         return;
 
-    auto creatureTarget = dynamic_cast<Creature*>(unitTarget);
-    if (!_player->isInRange(creatureTarget, MAX_INTERACTION_RANGE))
+    if (!_player->isInRange(unitTarget, MAX_INTERACTION_RANGE))
         return;
 
-    // TODO: investigate vehicles more, is this necessary? vehicle enter is handled in ::HandleEnterVehicle() anyway... -Appled
-    if (creatureTarget->isVehicle())
-    {
-        if (creatureTarget->getVehicleComponent() != nullptr)
-            creatureTarget->getVehicleComponent()->AddPassenger(_player);
-
-        return;
-    }
+    unitTarget->handleSpellClick(_player);
 
     // TODO: move this Lightwell 'script' to SpellScript or CreatureScript...
     // For future reference; seems like the Lightwell npc should actually cast spell 60123 on click
@@ -89,32 +81,6 @@ void WorldSession::handleSpellClick(WorldPacket& recvPacket)
             return;
         }
     }*/
-
-    SpellClickSpell const* spellClickData = sMySQLStore.getSpellClickSpell(creatureTarget->getEntry());
-    if (spellClickData != nullptr)
-    {
-        // TODO: there are spellclick spells which are friendly only, raid only and party only
-        if (!isFriendly(_player, creatureTarget))
-            return;
-
-        const auto spellInfo = sSpellMgr.getSpellInfo(spellClickData->SpellID);
-        if (spellInfo == nullptr)
-        {
-            sLogger.failure("NPC ID %u has spell associated on SpellClick but spell id %u cannot be found.", creatureTarget->getEntry(), spellClickData->SpellID);
-            return;
-        }
-
-        // TODO: there are spellclick spells which should be casted on player by npc (i.e. Lightwell spell) but also vice versa
-        Spell* spell = sSpellMgr.newSpell(_player, spellInfo, false, nullptr);
-        SpellCastTargets targets(unitGuid);
-        spell->prepare(&targets);
-    }
-    else
-    {
-        sChatHandler.BlueSystemMessage(this, "NPC ID %u (%s) has no spellclick spell associated with it.", creatureTarget->GetCreatureProperties()->Id, creatureTarget->GetCreatureProperties()->Name.c_str());
-        sLogger.failure("SpellClick packet received for creature %u but there is no spell associated with it.", creatureTarget->getEntry());
-        return;
-    }
 }
 
 void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)

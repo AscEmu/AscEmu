@@ -928,7 +928,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
 
             SpellInfo const* entry = sSpellMgr.getSpellInfo(44413);
             SpellForcedBasePoints forcedBasePoints;
-            forcedBasePoints.basePoints[0] = spellpower;
+            forcedBasePoints.set(0, spellpower);
             if (entry != nullptr)
                 pl->castSpell(pl->getGuid(), entry, forcedBasePoints, true);
         }
@@ -2301,7 +2301,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         movementFlagsExtra = obj_movement_info.getMovementFlags2();
 
         hasTransportTime2 = obj_movement_info.transport_guid != 0 && obj_movement_info.transport_time2 != 0;
-        hasVehicleId = unit->getCurrentVehicle() && unit->getCurrentVehicle()->GetVehicleInfo();
+        hasVehicleId = unit->getVehicleKit() && unit->getVehicleKit()->getVehicleInfo();
         hasPitch = obj_movement_info.hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || obj_movement_info.hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING);
         hasFallDirection = obj_movement_info.hasMovementFlag2(MOVEFLAG2_INTERPOLATED_TURN);
         hasFallData = hasFallDirection || obj_movement_info.fall_time != 0;
@@ -2463,7 +2463,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
             data->WriteByteSeq(tGuid[0]);
 
             if (hasVehicleId)
-                *data << uint32_t(unit->getCurrentVehicle()->GetVehicleInfo()->ID);
+                *data << uint32_t(unit->getVehicleKit()->getVehicleInfo()->ID);
 
             *data << int8_t(obj_movement_info.transport_seat);
 
@@ -3190,6 +3190,9 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
 {
     bool updateMap = false, result = true;
 
+    if (!isValidMapCoord(newX, newY, newZ, newOrientation))
+        return false;
+
     if (!std::isnan(newX) && !std::isnan(newY) && !std::isnan(newOrientation))
     {
         //It's a good idea to push through EVERY transport position change, no matter how small they are. By: VLack aka. VLsoft
@@ -3224,12 +3227,15 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
             }
         }
 
+#ifdef FT_VEHICLES
         if (isCreatureOrPlayer())
         {
-            Unit* u = static_cast<Unit*>(this);
-            if (u->getVehicleComponent() != nullptr)
-                u->getVehicleComponent()->MovePassengers(newX, newY, newZ, newOrientation);
+            if (ToUnit()->getVehicle() != nullptr)
+            {
+                ToUnit()->getVehicle()->relocatePassengers();
+            }
         }
+#endif
 
         return result;
     }
@@ -3871,7 +3877,7 @@ void Object::SendMessageToSet(WorldPacket* data, bool /*bToSelf*/, bool /*myteam
     if (!IsInWorld())
         return;
 
-    uint32 myphase = GetPhase();
+    uint32_t myphase = GetPhase();
     for (const auto& itr : mInRangePlayersSet)
     {
         if (itr && (itr->GetPhase() & myphase) != 0)
@@ -3879,9 +3885,22 @@ void Object::SendMessageToSet(WorldPacket* data, bool /*bToSelf*/, bool /*myteam
     }
 }
 
+void Object::SendMessageToSet(WorldPacket* data, Player const* skipp)
+{
+    if (!IsInWorld())
+        return;
+
+    uint32_t myphase = GetPhase();
+    for (const auto& itr : mInRangePlayersSet)
+    {
+        if (itr && (itr->GetPhase() & myphase) != 0 && itr != skipp)
+            itr->SendPacket(data);
+    }
+}
+
 void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId, Unit* target/* = nullptr*/)
 {
-    uint32 myphase = GetPhase();
+    uint32_t myphase = GetPhase();
     for (const auto& itr : mInRangePlayersSet)
     {
         Object* object = itr;
@@ -4476,7 +4495,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t o
     MovementStatusElements* sequence = GetMovementStatusElementsSequence(sOpcodeTables.getInternalIdForHex(opcode));
     if (!sequence)
     {
-        sLogger.failure("Unsupported MovementInfo::Read for 0x%X (%s)!", opcode);
+        sLogger.failure("Unsupported MovementInfo::Read for 0x%X (%u)!", opcode);
         return;
     }
 

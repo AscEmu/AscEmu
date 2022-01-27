@@ -1799,143 +1799,6 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
 {
     if (unitTarget == nullptr)
         return;
-    // can't apply stuns/fear/polymorph/root etc on boss
-    if (unitTarget->isCreature())
-    {
-        if (u_caster != nullptr && (u_caster != unitTarget))
-        {
-            Creature* c = static_cast< Creature* >(unitTarget);
-            /*
-            Charm (Mind Control, enslave demon): 1
-            Confuse (Blind etc): 2
-            Fear: 4
-            Root: 8
-            Silence : 16
-            Stun: 32
-            Sheep: 64
-            Banish: 128
-            Sap: 256
-            Frozen : 512
-            Ensnared 1024
-            Sleep 2048
-            Taunt (aura): 4096
-            Decrease Speed (Hamstring) (aura): 8192
-            Spell Haste (Curse of Tongues) (aura): 16384
-            Interrupt Cast: 32768
-            Mod Healing % (Mortal Strike) (aura): 65536
-            Total Stats % (Vindication) (aura): 131072
-            */
-
-            //Spells with Mechanic also add other ugly auras, but if the main aura is the effect --> immune to whole spell
-            if (c->GetCreatureProperties()->modImmunities)
-            {
-                bool immune = false;
-                if (m_spellInfo->getMechanicsType())
-                {
-                    switch (m_spellInfo->getMechanicsType())
-                    {
-                        case MECHANIC_CHARMED:
-                            if (c->GetCreatureProperties()->modImmunities & 1)
-                                immune = true;
-                            break;
-                        case MECHANIC_DISORIENTED:
-                            if (c->GetCreatureProperties()->modImmunities & 2)
-                                immune = true;
-                            break;
-                        case MECHANIC_FLEEING:
-                            if (c->GetCreatureProperties()->modImmunities & 4)
-                                immune = true;
-                            break;
-                        case MECHANIC_ROOTED:
-                            if (c->GetCreatureProperties()->modImmunities & 8)
-                                immune = true;
-                            break;
-                        case MECHANIC_SILENCED:
-                            if (c->GetCreatureProperties()->modImmunities & 16)
-                                immune = true;
-                            break;
-                        case MECHANIC_STUNNED:
-                            if (c->GetCreatureProperties()->modImmunities & 32)
-                                immune = true;
-                            break;
-                        case MECHANIC_POLYMORPHED:
-                            if (c->GetCreatureProperties()->modImmunities & 64)
-                                immune = true;
-                            break;
-                        case MECHANIC_BANISHED:
-                            if (c->GetCreatureProperties()->modImmunities & 128)
-                                immune = true;
-                            break;
-                        case MECHANIC_SAPPED:
-                            if (c->GetCreatureProperties()->modImmunities & 256)
-                                immune = true;
-                            break;
-                        case MECHANIC_FROZEN:
-                            if (c->GetCreatureProperties()->modImmunities & 512)
-                                immune = true;
-                            break;
-                        case MECHANIC_ENSNARED:
-                            if (c->GetCreatureProperties()->modImmunities & 1024)
-                                immune = true;
-                            break;
-                        case MECHANIC_ASLEEP:
-                            if (c->GetCreatureProperties()->modImmunities & 2048)
-                                immune = true;
-                            break;
-                    }
-                }
-                if (!immune)
-                {
-                    // Spells that do more than just one thing (damage and the effect) don't have a mechanic and we should only cancel the aura to be placed
-                    switch (m_spellInfo->getEffectApplyAuraName(effectIndex))
-                    {
-                        case SPELL_AURA_MOD_CONFUSE:
-                            if (c->GetCreatureProperties()->modImmunities & 2)
-                                immune = true;
-                            break;
-                        case SPELL_AURA_MOD_FEAR:
-                            if (c->GetCreatureProperties()->modImmunities & 4)
-                                immune = true;
-                            break;
-                        case SPELL_AURA_MOD_TAUNT:
-                            if (c->GetCreatureProperties()->modImmunities & 4096)
-                                immune = true;
-                            break;
-                        case SPELL_AURA_MOD_STUN:
-                            if (c->GetCreatureProperties()->modImmunities & 32)
-                                immune = true;
-                            break;
-                        case SPELL_AURA_MOD_SILENCE:
-                            if ((c->GetCreatureProperties()->modImmunities & 32768) || (c->GetCreatureProperties()->modImmunities & 16))
-                                immune = true;
-                            break;
-                        case SPELL_AURA_MOD_DECREASE_SPEED:
-                            if (c->GetCreatureProperties()->modImmunities & 8192)
-                                immune = true;
-                            break;
-                        case SPELL_AURA_INCREASE_CASTING_TIME_PCT:
-                            if (c->GetCreatureProperties()->modImmunities & 16384)
-                                immune = true;
-                            break;
-                        case SPELL_AURA_MOD_LANGUAGE: //hacky way to prefer that the COT icon is set to mob
-                            if (c->GetCreatureProperties()->modImmunities & 16384)
-                                immune = true;
-                            break;
-                        case SPELL_AURA_MOD_HEALING_DONE_PERCENT:
-                            if (c->GetCreatureProperties()->modImmunities & 65536)
-                                immune = true;
-                            break;
-                        case SPELL_AURA_MOD_TOTAL_STAT_PERCENTAGE:
-                            if (c->GetCreatureProperties()->modImmunities & 131072)
-                                immune = true;
-                            break;
-                    }
-                }
-                if (immune)
-                    return;
-            }
-        }
-    }
 
 #ifdef GM_Z_DEBUG_DIRECTLY
     else
@@ -3295,8 +3158,10 @@ void Spell::SpellEffectSummonVehicle(uint32 /*i*/, DBC::Structures::SummonProper
     // Delay this a bit to make sure its Spawned
     sEventMgr.AddEvent(c->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
+#ifdef FT_VEHICLES
     // Need to delay this a bit since first the client needs to see the vehicle
-    u_caster->addPassengerToVehicle(c->getGuid(), 1 * 1000);
+    u_caster->callEnterVehicle(c);
+#endif
 }
 
 void Spell::SpellEffectLeap(uint8_t effectIndex) // Leap
@@ -4008,7 +3873,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
                         {
                             const auto spellInfo = sSpellMgr.getSpellInfo(31117);
                             Spell* spell = sSpellMgr.newSpell(u_caster, spellInfo, true, nullptr);
-                            spell->forced_basepoints[0] = (aursp->calculateEffectValue(0)) * 9;   //damage effect
+                            spell->forced_basepoints.set(0, (aursp->calculateEffectValue(0)) * 9);   //damage effect
                             spell->ProcedOnSpell = getSpellInfo();
                             spell->pSpellId = aursp->getId();
                             SpellCastTargets targets(u_caster->getGuid());
@@ -4555,16 +4420,6 @@ void Spell::SpellEffectInterruptCast(uint8_t /*effectIndex*/) // Interrupt Cast
     if (getSpellInfo()->getAttributesExG() & ATTRIBUTESEXG_INTERRUPT_NPC && unitTarget->isPlayer())
         return;
 
-    if (!playerTarget)
-    {
-        if (u_caster && (u_caster != unitTarget))
-        {
-            Creature* c = static_cast< Creature* >(unitTarget);
-            if (c->GetCreatureProperties()->modImmunities & 32768)
-                return;
-        }
-    }
-
     // Get target's current spell (either channeled or generic spell with cast time)
     if (unitTarget->isCastingSpell(false, true))
     {
@@ -4895,9 +4750,10 @@ void Spell::SpellEffectBuildingDamage(uint8_t effectIndex)
 
     uint32 spellDamage = m_spellInfo->getEffectBasePoints(effectIndex) + 1;
     Unit* controller = nullptr;
-
-    if (u_caster->getVehicleComponent() != nullptr)
+#ifdef FT_VEHICLES
+    if (u_caster->getVehicle() != nullptr)
         controller = u_caster->GetMapMgr()->GetUnit(u_caster->getCharmedByGuid());
+#endif
 
     if (controller == nullptr)
         controller = u_caster;
@@ -5072,7 +4928,7 @@ void Spell::SpellEffectKnockBack(uint8_t effectIndex)
         return;
 
     float x, y;
-    if (m_spellInfo->getEffect(effectIndex) == 144)
+    if (m_spellInfo->getEffect(effectIndex) == SPELL_EFFECT_KNOCK_BACK_DEST)
     {
         if (m_targets.hasDestination())
         {
@@ -5205,7 +5061,7 @@ void Spell::SpellEffectFeedPet(uint8_t effectIndex)  // Feed Pet
 
     const auto spellInfo = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex));
     Spell* sp = sSpellMgr.newSpell(p_caster, spellInfo, true, nullptr);
-    sp->forced_basepoints[0] = damage;
+    sp->forced_basepoints.set(0, damage);
     SpellCastTargets tgt(pPet->getGuid());
     sp->prepare(&tgt);
 
@@ -6076,9 +5932,9 @@ void Spell::SpellEffectTriggerSpellWithValue(uint8_t effectIndex)
     for (uint32 x = 0; x < 3; x++)
     {
         if (effectIndex == x)
-            sp->forced_basepoints[x] = damage;  //prayer of mending should inherit heal bonus ?
+            sp->forced_basepoints.set(x, damage);  //prayer of mending should inherit heal bonus ?
         else
-            sp->forced_basepoints[x] = TriggeredSpell->getEffectBasePoints(effectIndex);
+            sp->forced_basepoints.set(x, TriggeredSpell->getEffectBasePoints(effectIndex));
 
     }
 

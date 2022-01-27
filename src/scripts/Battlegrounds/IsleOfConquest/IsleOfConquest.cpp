@@ -790,8 +790,8 @@ void IsleOfConquest::HookOnUnitDied(Unit *victim)
                 generals[TEAM_HORDE] = nullptr;
 
             }
-
-        if (c->getVehicleComponent() != nullptr)
+#ifdef FT_VEHICLES
+        if (c->getVehicle() != nullptr)
         {
             // Was it a workshop vehicle?
             for (uint8_t i = 0; i < MAX_PLAYER_TEAMS; i++)
@@ -834,6 +834,7 @@ void IsleOfConquest::HookOnUnitDied(Unit *victim)
                 ((state == IOC_SPAWN_TYPE_HORDE_CONTROLLED) && (workshopvehicle[TEAM_HORDE].creature == nullptr)))
                 BuildWorkshopVehicle(3 * 60 * 1000);
         }
+#endif
     }
 }
 

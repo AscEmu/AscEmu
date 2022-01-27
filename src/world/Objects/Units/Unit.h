@@ -699,6 +699,7 @@ public:
     AIInterface* getAIInterface() const { return m_aiInterface; }
 
     void setAItoUse(bool value) { m_useAI = value; }
+    bool isAIEnabled() { return m_useAI; }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Internal States
@@ -774,12 +775,18 @@ public:
     template <typename T> void applySpellModifiers(SpellModifierType modType, T* value, SpellInfo const* spellInfo, Spell* castingSpell = nullptr, Aura* castingAura = nullptr);
     template <typename T> void getTotalSpellModifiers(SpellModifierType modType, T baseValue, int32_t* flatMod, int32_t* pctMod, SpellInfo const* spellInfo, Spell* castingSpell = nullptr, Aura* castingAura = nullptr, bool checkOnly = false);
 
+    void addSpellImmunity(SpellImmunityMask immunityMask, bool apply);
+    uint32_t getSpellImmunity() const;
+    bool hasSpellImmunity(SpellImmunityMask immunityMask) const;
+
 private:
     bool m_canDualWield = false;
 
     std::list<SpellProc*> m_procSpells;
 
     std::list<AuraEffectModifier const*> m_spellModifiers[MAX_SPELLMOD_TYPE];
+
+    uint32_t m_spellImmunityMask = SPELL_IMMUNITY_NONE;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -809,7 +816,7 @@ public:
     void removeAllAurasByIdForGuid(uint32_t auraId, uint64_t guid);
     uint32_t removeAllAurasByIdReturnCount(uint32_t auraId) const;
     // Can remove only the effect from aura, or (by default) entire aura
-    void removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell = 0, bool removeOnlyEffect = false);
+    void removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell = 0, bool removeOnlyEffect = false, uint64_t casterGuid = 0);
 
     uint64_t getSingleTargetGuidForAura(uint32_t spellId);
     uint64_t getSingleTargetGuidForAura(uint32_t* spellIds, uint32_t* index);
@@ -1034,29 +1041,39 @@ public:
 private:
     SummonHandler* m_summonInterface = nullptr;
 
+#ifdef FT_VEHICLES
     //////////////////////////////////////////////////////////////////////////////////////////
     // Vehicle
 protected:
-    Vehicle* m_currentVehicle = nullptr;    // The vehicle the unit is attached to
     Vehicle* m_vehicle = nullptr;           // The Unit's own vehicle component
+    Vehicle* m_vehicleKit = nullptr;        // The vehicle the unit is attached to
 
 public:
-    Vehicle* getCurrentVehicle() const;
-    void setCurrentVehicle(Vehicle* vehicle);
-    void addPassengerToVehicle(uint64_t vehicleGuid, uint32_t delay);
+    bool createVehicleKit(uint32_t id, uint32_t creatureEntry);
+    void removeVehicleKit();
+    Vehicle* getVehicleKit() const { return m_vehicleKit; }
+    Vehicle* getVehicle() const { return m_vehicle; }
+    void setVehicle(Vehicle* vehicle) { m_vehicle = vehicle; }
+    bool isOnVehicle(Unit const* vehicle) const;
+    Unit* getVehicleBase() const;
+    Unit* getVehicleRoot() const;
+    Creature* getVehicleCreatureBase() const;
+    void handleSpellClick(Unit* clicker, int8_t seatId = -1);
+    void callEnterVehicle(Unit* base, int8_t seatId = -1);
+    void callExitVehicle(LocationVector const* exitPosition = nullptr);
+    void callChangeSeat(int8_t seatId, bool next = true);
 
-    Vehicle* getVehicleComponent() const;
-    Unit* getVehicleBase();
-
-    virtual void addVehicleComponent(uint32 /*creatureEntry*/, uint32 /*vehicleId*/) {}
-    virtual void removeVehicleComponent() {}
-
-    void sendHopOnVehicle(Unit* vehicleOwner, uint32_t seat);
-    void sendHopOffVehicle(Unit* vehicleOwner, LocationVector& /*landPosition*/);
+    // shouldnt be called directly always use the functions above
+    void exitVehicle(LocationVector const* exitPosition = nullptr);
+    void enterVehicle(Vehicle* vehicle, int8_t seatId);
+#else
+public:
+    void handleSpellClick(Unit* clicker);
+#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Unit Owner
-
+public:
     bool isUnitOwnerInParty(Unit* unit);
     bool isUnitOwnerInRaid(Unit* unit);
 
@@ -1115,7 +1132,6 @@ public:
 
     friend class AIInterface;
     friend class Aura;
-    TransportData m_transportData;
 
     virtual bool Teleport(const LocationVector& vec, MapMgr* map) = 0;
 

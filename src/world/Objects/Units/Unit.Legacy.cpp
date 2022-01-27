@@ -3184,7 +3184,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                         continue;
                     int32 val = parentproc->calculateEffectValue(0);
                     Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, NULL);
-                    spell->forced_basepoints[0] = (val * damageInfo.realDamage) / 300; //per tick
+                    spell->forced_basepoints.set(0, (val * damageInfo.realDamage) / 300); //per tick
                     SpellCastTargets targets(getGuid());
                     spell->prepare(&targets);
                     continue;
@@ -8201,8 +8201,14 @@ void Unit::OnPushToWorld()
     }
 
 #if VERSION_STRING >= WotLK
-    if (getVehicleComponent() != NULL)
-        getVehicleComponent()->InstallAccessories();
+    if (isVehicle())
+    {
+        if (getVehicleKit() != nullptr)
+        {
+            getVehicleKit()->initialize();
+            getVehicleKit()->loadAllAccessories(false);
+        }
+    }
 
     m_zAxisPosition = 0.0f;
 #endif
@@ -8213,17 +8219,9 @@ void Unit::OnPushToWorld()
 //! Remove Unit from world
 void Unit::RemoveFromWorld(bool free_guid)
 {
-    if (getCurrentVehicle() != NULL)
-        getCurrentVehicle()->EjectPassenger(this);
-
-    if (getVehicleComponent() != NULL)
-    {
-        getVehicleComponent()->RemoveAccessories();
-        getVehicleComponent()->EjectAllPassengers();
-    }
-
-    removeVehicleComponent();
-
+#ifdef FT_VEHICLES
+    removeVehicleKit();
+#endif
     removeAllFollowers();
 
     getCombatHandler().onRemoveFromWorld();
@@ -8954,8 +8952,10 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
                 obj_movement_info.transport_guid = plr->obj_movement_info.transport_guid;
             }
         }
+#ifdef FT_VEHICLES
         if (Unit* u = getVehicleBase())
             obj_movement_info.transport_guid = u->getGuid();
+#endif
         *data << obj_movement_info.transport_guid;
         *data << obj_movement_info.transport_guid;
         *data << GetTransOffsetX();

@@ -50,7 +50,7 @@ int32_t MoveSplineInit::Launch()
     MoveSpline& move_spline = *unit->movespline;
 
     // Elevators also use MOVEFLAG_TRANSPORT but we do not keep track of their position changes
-    bool transport = unit->hasUnitMovementFlag(MOVEFLAG_TRANSPORT) && unit->GetTransport();
+    bool transport = unit->hasUnitMovementFlag(MOVEFLAG_TRANSPORT) && unit->getTransGuid();
     Location real_position;
     // there is a big chance that current position is unknown if current state is not finalized, need compute it
     // this also allows CalculatePath spline position and update map position in much greater intervals
@@ -75,20 +75,25 @@ int32_t MoveSplineInit::Launch()
     // corrent first vertex
     args.path[0] = real_position;
     args.initialOrientation = real_position.orientation;
-    args.flags.enter_cycle = args.flags.cyclic;
     move_spline.onTransport = transport;
+
+#if VERSION_STRING <= WotLK
+    args.flags.enter_cycle = args.flags.cyclic;
     args.flags.EnableCatmullRom(); // with this set pathfinding works fine // aaron02
+#endif
 
     uint32_t moveFlags = unit->obj_movement_info.getMovementFlags();
 
 #if VERSION_STRING <= WotLK
     moveFlags |= MOVEFLAG_SPLINE_ENABLED;
-#endif
 
     if (!args.flags.backward)
         moveFlags = (moveFlags & ~(MOVEFLAG_MOVE_BACKWARD)) | MOVEFLAG_MOVE_FORWARD;
     else
         moveFlags = (moveFlags & ~(MOVEFLAG_MOVE_FORWARD)) | MOVEFLAG_MOVE_BACKWARD;
+#else
+    moveFlags |= MOVEFLAG_MOVE_FORWARD;
+#endif
 
     if (moveFlags & MOVEFLAG_ROOTED)
         moveFlags &= ~MOVEFLAG_MOVING_MASK;
@@ -185,6 +190,7 @@ void MoveSplineInit::Stop()
 
 MoveSplineInit::MoveSplineInit(Unit* m) : unit(m)
 {
+#if VERSION_STRING <= WotLK
     args.splineId = splineIdGen.NewId();
     // Elevators also use MOVEFLAG_TRANSPORT but we do not keep track of their position changes
     args.TransformForTransport = unit->hasUnitMovementFlag(MOVEFLAG_TRANSPORT) && unit->getTransGuid();
@@ -192,6 +198,15 @@ MoveSplineInit::MoveSplineInit(Unit* m) : unit(m)
     args.flags.canswim = unit->canSwim();
     args.walk = unit->hasUnitMovementFlag(MOVEFLAG_WALK);
     args.flags.flying = unit->obj_movement_info.hasMovementFlag(MOVEFLAG_FLYING_MASK);
+#else
+    args.splineId = splineIdGen.NewId();
+    // Elevators also use MOVEMENTFLAG_ONTRANSPORT but we do not keep track of their position changes
+    args.TransformForTransport = unit->getTransGuid() != 0;
+    // mix existing state into new
+    args.flags.walkmode = unit->obj_movement_info.hasMovementFlag(MOVEFLAG_WALK);
+    args.flags.flying = unit->obj_movement_info.hasMovementFlag(MOVEFLAG_FLYING_MASK);
+    args.flags.smoothGroundPath = true; // enabled by default, CatmullRom mode or client config "pathSmoothing" will disable this
+#endif
 }
 
 MoveSplineInit::~MoveSplineInit() = default;
@@ -216,10 +231,15 @@ void MoveSplineInit::SetFacing(float angle)
 {
     if (args.TransformForTransport)
     {
+#ifdef FT_VEHICLES
         if (Unit* vehicle = unit->getVehicleBase())
             angle -= vehicle->GetOrientation();
         else if (Transporter* transport = unit->GetTransport())
             angle -= transport->GetOrientation();
+#else
+        if (Transporter* transport = unit->GetTransport())
+            angle -= transport->GetOrientation();
+#endif
     }
 
     args.facing.angle = G3D::wrap(angle, 0.f, (float)G3D::twoPi());
@@ -261,7 +281,8 @@ Vector3 TransportPathTransform::operator()(Vector3 input)
 {
     if (_transformForTransport)
     {
-        if (TransportBase* vehicle = _owner->getCurrentVehicle())
+#ifdef FT_VEHICLES
+        if (TransportBase* vehicle = _owner->getVehicle())
         {
             vehicle->CalculatePassengerOffset(input.x, input.y, input.z);
         }
@@ -269,6 +290,12 @@ Vector3 TransportPathTransform::operator()(Vector3 input)
         {
             transport->CalculatePassengerOffset(input.x, input.y, input.z);
         }
+#else 
+        if (TransportBase* transport = _owner->GetTransport())
+        {
+            transport->CalculatePassengerOffset(input.x, input.y, input.z);
+        }
+#endif
     }
     return input;
 }

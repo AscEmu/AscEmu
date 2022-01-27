@@ -80,7 +80,7 @@ public:
 
         // Override the original duration and refresh aura
         sliceAura->setOriginalDuration(maxDuration);
-        sliceAura->refresh();
+        sliceAura->refreshOrModifyStack();
 
         sliceAura = nullptr;
         return SpellScriptExecuteState::EXECUTE_PREVENT;
