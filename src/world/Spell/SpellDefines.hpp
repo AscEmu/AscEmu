@@ -40,7 +40,7 @@ enum SpellAttributes
     ATTRIBUTES_ABILITY                              = 0x00000010,
     ATTRIBUTES_TRADESPELL                           = 0x00000020,   // Tradeskill recipies
     ATTRIBUTES_PASSIVE                              = 0x00000040,
-    ATTRIBUTES_NO_VISUAL_AURA                       = 0x00000080,   // not visible in spellbook or aura bar
+    ATTRIBUTES_NO_VISUAL_AURA                       = 0x00000080,   // Not visible in spellbook or aura bar. Client handles this by itself.
     ATTRIBUTES_NO_CAST                              = 0x00000100,   //seems to be afflicts pet
     ATTRIBUTES_TARGET_MAINHAND                      = 0x00000200,   // automatically select item from mainhand
     ATTRIBUTES_ON_NEXT_SWING_2                      = 0x00000400,   //completely the same as ATTRIBUTE_ON_NEXT_ATTACK for class spells. So difference somewhere in mob abilities.
@@ -245,8 +245,8 @@ enum SpellAttributesExE
     ATTRIBUTESEXE_UNK26                             = 0x01000000,
     ATTRIBUTESEXE_UNK27                             = 0x02000000,
     ATTRIBUTESEXE_SKIP_LINE_OF_SIGHT_CHECK          = 0x04000000,   // Used for spells which explode around target
-    ATTRIBUTESEXE_HIDE_AURA_ON_SELF_CAST            = 0x08000000,
-    ATTRIBUTESEXE_HIDE_AURA_ON_NON_SELF_CAST        = 0x10000000,
+    ATTRIBUTESEXE_HIDE_AURA_ON_SELF_CAST            = 0x08000000,   // Client handles this by itself
+    ATTRIBUTESEXE_HIDE_AURA_ON_NON_SELF_CAST        = 0x10000000,   // Client handles this by itself
     ATTRIBUTESEXE_UNK31                             = 0x20000000,
     ATTRIBUTESEXE_UNK32                             = 0x40000000,
     ATTRIBUTESEXE_UNK33                             = 0x80000000

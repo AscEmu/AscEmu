@@ -4140,9 +4140,7 @@ void Unit::addAura(Aura* aur)
     }
 
     // Find a visual slot for aura
-    uint8_t visualSlot = 0xFF;
-    if (!aur->IsPassive() || aur->getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO)
-        visualSlot = findVisualSlotForAura(!aur->isNegative());
+    const auto visualSlot = findVisualSlotForAura(aur);
 
     aur->m_visualSlot = visualSlot;
     aur->m_auraSlot = auraSlot;
@@ -4245,10 +4243,20 @@ void Unit::addAura(Aura* aur)
 
 }
 
-uint8_t Unit::findVisualSlotForAura(bool isPositive) const
+uint8_t Unit::findVisualSlotForAura(Aura const* aur) const
 {
+    uint8_t visualSlot = 0xFF;
+#if VERSION_STRING < WotLK
+    // Pre wotlk do not send self casted passive area auras
+    if (aur->IsPassive())
+#else
+    // Since wotlk send all passive area auras
+    if (aur->IsPassive() && !aur->IsAreaAura() && !aur->hasAuraEffect(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
+#endif
+        return visualSlot;
+
     uint8_t start, end;
-    if (isPositive)
+    if (!aur->isNegative())
     {
         start = 0;
         end = MAX_POSITIVE_VISUAL_AURAS_END;
@@ -4258,8 +4266,6 @@ uint8_t Unit::findVisualSlotForAura(bool isPositive) const
         start = MAX_NEGATIVE_VISUAL_AURAS_START;
         end = MAX_NEGATIVE_VISUAL_AURAS_END;
     }
-
-    uint8_t visualSlot = 0xFF;
 
     // Find an empty slot
     for (auto i = start; i < end; ++i)
@@ -4627,14 +4633,6 @@ void Unit::setTransformAura(uint32_t auraId)
 void Unit::sendAuraUpdate(Aura* aur, bool remove)
 {
     if (aur->m_visualSlot >= MAX_NEGATIVE_VISUAL_AURAS_END)
-        return;
-
-    // Check if aura is hidden on self cast
-    if (aur->getCasterGuid() == getGuid() && aur->getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_AURA_ON_SELF_CAST)
-        return;
-
-    // Check if aura is hidden when not self cast
-    if (aur->getCasterGuid() != getGuid() && aur->getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_AURA_ON_NON_SELF_CAST)
         return;
 
 #if VERSION_STRING < WotLK

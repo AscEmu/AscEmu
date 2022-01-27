@@ -499,7 +499,7 @@ class SERVER_DECL Aura : public EventableObject
         Aura(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
         ~Aura();
 
-        inline bool IsPassive() { if (!m_spellInfo) return false; return (m_spellInfo->isPassive() && !m_areaAura); }
+        inline bool IsPassive() const { if (!m_spellInfo) return false; return (m_spellInfo->isPassive() && !m_areaAura); }
 
         inline uint16 GetAuraSlot() const { return m_auraSlot; }
         void SetAuraSlot(uint16 slot) { m_auraSlot = slot; }
@@ -530,7 +530,7 @@ class SERVER_DECL Aura : public EventableObject
         /// Tells if the Aura is an area Aura.
         /// \param none    \return true if it is false otherwise.
         //////////////////////////////////////////////////////////////////////////////////////////
-        bool IsAreaAura();
+        bool IsAreaAura() const;
 
         //////////////////////////////////////////////////////////////////////////////////////////
 

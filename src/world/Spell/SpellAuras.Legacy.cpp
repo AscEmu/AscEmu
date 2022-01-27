@@ -6125,7 +6125,7 @@ bool Aura::IsCombatStateAffecting()
     return false;
 }
 
-bool Aura::IsAreaAura()
+bool Aura::IsAreaAura() const
 {
     auto sp = m_spellInfo;
 
