@@ -737,28 +737,8 @@ void SpellMgr::loadSpellInfoData()
 #endif
         }
         spellInfo.setSpellPriority(dbcSpellEntry->spellPriority);
-
-        // Read name and rank from DBC files
-        // If DBC files are not in enGB or enUS, the localized string is not in 1st element
-        for (const auto& localizedName : dbcSpellEntry->Name)
-        {
-            std::string name(localizedName);
-            if (!name.empty())
-            {
-                spellInfo.setName(name);
-                break;
-            }
-        }
-        for (const auto& localizedRank : dbcSpellEntry->Rank)
-        {
-            std::string rank(localizedRank);
-            if (!rank.empty())
-            {
-                spellInfo.setRank(rank);
-                break;
-            }
-        }
-
+        spellInfo.setName(dbcSpellEntry->Name[sWorld.getDbcLocaleLanguageId()]);
+        spellInfo.setRank(dbcSpellEntry->Rank[sWorld.getDbcLocaleLanguageId()]);
         spellInfo.setManaCostPercentage(dbcSpellEntry->ManaCostPercentage);
         spellInfo.setStartRecoveryCategory(dbcSpellEntry->StartRecoveryCategory);
         spellInfo.setStartRecoveryTime(dbcSpellEntry->StartRecoveryTime);

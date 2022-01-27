@@ -5458,11 +5458,14 @@ float_t Spell::getEffectRadius(uint8_t effectIndex)
         return m_effectRadius[effectIndex];
 
     m_isEffectRadiusSet[effectIndex] = true;
-
     m_effectRadius[effectIndex] = ::GetRadius(sSpellRadiusStore.LookupEntry(getSpellInfo()->getEffectRadiusIndex(effectIndex)));
-    if (G3D::fuzzyEq(m_effectRadius[effectIndex], 0.f))
+
+    // If spell has no effect radius set, use spell range instead
+    // but skip for effect target 87. Otherwise some teleport spells like ICC teleports will target
+    // all units in infinite range
+    if (G3D::fuzzyEq(m_effectRadius[effectIndex], 0.f) &&
+        getSpellInfo()->getEffectImplicitTargetA(effectIndex) != EFF_TARGET_AREA_DESTINATION && getSpellInfo()->getEffectImplicitTargetB(effectIndex) != EFF_TARGET_AREA_DESTINATION)
     {
-        // If spell has no effect radius set, use spell range instead
         const auto rangeEntry = sSpellRangeStore.LookupEntry(getSpellInfo()->getRangeIndex());
         if (rangeEntry != nullptr)
         {

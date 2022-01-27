@@ -69,6 +69,7 @@ typedef enum
     EFF_TARGET_ENEMIES_IN_AREA_CHANNELED_WITH_EXCEPTIONS          = 76,
     EFF_TARGET_SELECTED_ENEMY_CHANNELED                           = 77,
     EFF_TARGET_SELECTED_ENEMY_DEADLY_POISON                       = 86,
+    EFF_TARGET_AREA_DESTINATION                                   = 87,
     EFF_TARGET_NON_COMBAT_PET                                     = 90,
     // these are custom, feel free to move them further if targeting gets extended
     EFF_TARGET_CUSTOM_PARTY_INJURED_SINGLE                        = 99,

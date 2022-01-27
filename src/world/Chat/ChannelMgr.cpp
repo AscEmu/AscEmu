@@ -172,7 +172,7 @@ bool ChannelMgr::canPlayerJoinDefaultChannel(Player const* player, DBC::Structur
 std::string ChannelMgr::generateChannelName(DBC::Structures::ChatChannelsEntry const* channelDbc, DBC::Structures::AreaTableEntry const* areaEntry) const
 {
 #if VERSION_STRING < Cata
-    char* channelNameDbc = channelDbc->name_pattern[0];
+    char* channelNameDbc = channelDbc->name_pattern[sWorld.getDbcLocaleLanguageId()];
 #else
     char* channelNameDbc = channelDbc->name_pattern;
 #endif
@@ -186,7 +186,7 @@ std::string ChannelMgr::generateChannelName(DBC::Structures::ChatChannelsEntry c
     if (const auto defaultArea = MapManagement::AreaManagement::AreaStorage::GetAreaById(3459))
     {
 #if VERSION_STRING < Cata
-        defaultAreaName = defaultArea->area_name[0];
+        defaultAreaName = defaultArea->area_name[sWorld.getDbcLocaleLanguageId()];
 #else
         defaultAreaName = defaultArea->area_name;
 #endif
@@ -202,7 +202,7 @@ std::string ChannelMgr::generateChannelName(DBC::Structures::ChatChannelsEntry c
         if (areaEntry != nullptr)
         {
 #if VERSION_STRING < Cata
-            std::snprintf(channelName, 95, channelNameDbc, areaEntry->area_name[0]);
+            std::snprintf(channelName, 95, channelNameDbc, areaEntry->area_name[sWorld.getDbcLocaleLanguageId()]);
 #else
             std::snprintf(channelName, 95, channelNameDbc, areaEntry->area_name);
 #endif

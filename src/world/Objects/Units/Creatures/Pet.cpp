@@ -511,7 +511,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
             m_name = "Pet";
         else
 #if VERSION_STRING < Cata
-            m_name.assign(myFamily->name[0]);
+            m_name.assign(myFamily->name[sWorld.getDbcLocaleLanguageId()]);
 #else
             m_name.assign(myFamily->name);
 #endif

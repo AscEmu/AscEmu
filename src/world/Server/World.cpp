@@ -692,6 +692,15 @@ bool World::setInitialWorldSettings()
     if (!loadDbcDb2Stores())
         return false;
 
+#if VERSION_STRING < Cata
+    loadDbcLocaleLanguage();
+    auto localeString = Util::getLanguagesStringFromId(mDbcLocaleId);
+    if (mDbcLocaleId == 0)
+        localeString.append("/enUS");
+
+    sLogger.info("World : Using %s DBC locale", localeString.c_str());
+#endif
+
     sTaxiMgr.initialize();
     sChatHandler.initialize();
     sSpellProcMgr.initialize();
@@ -789,6 +798,32 @@ bool World::loadDbcDb2Stores()
 
     return true;
 }
+
+#if VERSION_STRING < Cata
+void World::loadDbcLocaleLanguage()
+{
+    // Read names from warrior class in ChrClasses DBC file to get used locale language
+    const auto warr = sChrClassesStore.LookupEntry(1);
+#if VERSION_STRING == Classic
+    for (uint8_t i = 0; i < 8; ++i)
+#else
+    for (uint8_t i = 0; i < 16; ++i)
+#endif
+    {
+        std::string name(warr->name[i]);
+        if (!name.empty())
+        {
+            mDbcLocaleId = i;
+            break;
+        }
+    }
+}
+
+uint8_t World::getDbcLocaleLanguageId() const
+{
+    return mDbcLocaleId;
+}
+#endif
 
 void World::loadMySQLStores()
 {

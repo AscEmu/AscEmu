@@ -208,6 +208,9 @@ class SERVER_DECL World : public EventableObject
     private:
 
         EventableObjectHolder* mEventableObjectHolder;
+#if VERSION_STRING < Cata
+        uint8_t mDbcLocaleId = 0;
+#endif
 
     public:
 
@@ -216,6 +219,14 @@ class SERVER_DECL World : public EventableObject
         bool setInitialWorldSettings();
         void resetCharacterLoginBannState();
         bool loadDbcDb2Stores();
+
+        // TODO: figure out how to get it for cata/mop
+        // although this is probably not needed anymore after wotlk
+#if VERSION_STRING < Cata
+        // Loads correct localization id used in name columns in DBC files
+        void loadDbcLocaleLanguage();
+        uint8_t getDbcLocaleLanguageId() const;
+#endif
 
         void loadMySQLStores();
         void loadMySQLTablesByTask();

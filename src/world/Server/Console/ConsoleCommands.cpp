@@ -265,8 +265,13 @@ bool handlePlayerInfoCommand(BaseConsole* baseConsole, int argumentCount, std::s
     }
 
     baseConsole->Write("Player: %s\r\n", player->getName().c_str());
-    baseConsole->Write("Race: %s\r\n", player->myRace->name[0]);
-    baseConsole->Write("Class: %s\r\n", player->myClass->name[0]);
+#if VERSION_STRING < Cata
+    baseConsole->Write("Race: %s\r\n", player->myRace->name[sWorld.getDbcLocaleLanguageId()]);
+    baseConsole->Write("Class: %s\r\n", player->myClass->name[sWorld.getDbcLocaleLanguageId()]);
+#else
+    baseConsole->Write("Race: %s\r\n", player->myRace->name);
+    baseConsole->Write("Class: %s\r\n", player->myClass->name);
+#endif
     baseConsole->Write("IP: %s\r\n", player->GetSession()->GetSocket() ? player->GetSession()->GetSocket()->GetRemoteIP().c_str() : "disconnected");
     baseConsole->Write("Level: %u\r\n", player->getLevel());
     baseConsole->Write("Account: %s\r\n", player->GetSession()->GetAccountNameS());

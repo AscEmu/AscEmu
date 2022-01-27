@@ -3650,6 +3650,10 @@ void AIInterface::UpdateAISpells()
                 if (!AISpell->isHpInPercentRange(getUnit()->getHealthPct()))
                     continue;
 
+                // Check if spell requires current target
+                if (getCurrentTarget() == nullptr && (AISpell->mTargetType == TARGET_ATTACKING || AISpell->mTargetType == TARGET_DESTINATION))
+                    continue;
+
                 // no random chance (cast in script)
                 if (AISpell->mCastChance == 0.0f)
                     continue;
@@ -3678,43 +3682,49 @@ void AIInterface::UpdateAISpells()
             Unit* target = getCurrentTarget();
             switch (usedSpell->mTargetType)
             {
-            case TARGET_SELF:
-            case TARGET_VARIOUS:
-            {
-                getUnit()->castSpell(getUnit(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
-                mLastCastedSpell = usedSpell;
-            } break;
-            case TARGET_ATTACKING:
-            {
-                getUnit()->castSpell(target, usedSpell->mSpellInfo, usedSpell->mIsTriggered);
-                mCurrentSpellTarget = target;
-                mLastCastedSpell = usedSpell;
-            } break;
-            case TARGET_DESTINATION:
-            {
-                getUnit()->castSpellLoc(target->GetPosition(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
-                mCurrentSpellTarget = target;
-                mLastCastedSpell = usedSpell;
-            } break;
-            case TARGET_RANDOM_FRIEND:
-            case TARGET_RANDOM_SINGLE:
-            case TARGET_RANDOM_DESTINATION:
-            {
-                castSpellOnRandomTarget(usedSpell);
-                mLastCastedSpell = usedSpell;
-            } break;
-            case TARGET_CUSTOM:
-            {
-                // nos custom target set, no spell cast.
-                if (usedSpell->getCustomTarget() != nullptr)
+                case TARGET_SELF:
+                case TARGET_VARIOUS:
                 {
-                    mCurrentSpellTarget = usedSpell->getCustomTarget();
+                    getUnit()->castSpell(getUnit(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
                     mLastCastedSpell = usedSpell;
-                    getUnit()->castSpell(mCurrentSpellTarget, usedSpell->mSpellInfo, usedSpell->mIsTriggered);
-                }
-            } break;
-            default:
-                break;
+                } break;
+                case TARGET_ATTACKING:
+                {
+                    getUnit()->castSpell(target, usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+                    mCurrentSpellTarget = target;
+                    mLastCastedSpell = usedSpell;
+                } break;
+                case TARGET_DESTINATION:
+                {
+                    getUnit()->castSpellLoc(target->GetPosition(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+                    mCurrentSpellTarget = target;
+                    mLastCastedSpell = usedSpell;
+                } break;
+                case TARGET_SOURCE:
+                {
+                    getUnit()->castSpellLoc(getUnit()->GetPosition(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+                    mLastCastedSpell = usedSpell;
+                } break;
+                case TARGET_RANDOM_FRIEND:
+                case TARGET_RANDOM_SINGLE:
+                case TARGET_RANDOM_DESTINATION:
+                {
+                    castSpellOnRandomTarget(usedSpell);
+                    mLastCastedSpell = usedSpell;
+                } break;
+                // TODO: missing TARGET_CLOSEST and TARGET_FURTHEST
+                case TARGET_CUSTOM:
+                {
+                    // nos custom target set, no spell cast.
+                    if (usedSpell->getCustomTarget() != nullptr)
+                    {
+                        mCurrentSpellTarget = usedSpell->getCustomTarget();
+                        mLastCastedSpell = usedSpell;
+                        getUnit()->castSpell(mCurrentSpellTarget, usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+                    }
+                } break;
+                default:
+                    break;
             }
 
             // send announcements on casttime beginn

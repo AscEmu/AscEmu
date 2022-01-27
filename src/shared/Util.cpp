@@ -18,7 +18,7 @@ namespace Util
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoW String functions
 
-    uint32_t getLanguagesIdFromString(std::string langstr)
+    uint8_t getLanguagesIdFromString(std::string langstr)
     {
         if (langstr.compare("enGB") == 0 || langstr.compare("enUS") == 0)
             return 0;
@@ -32,13 +32,53 @@ namespace Util
         if (langstr.compare("deDE") == 0)
             return 3;
 
-        if (langstr.compare("esES") == 0)
+        if (langstr.compare("zhCN") == 0)
             return 4;
 
-        if (langstr.compare("ruRU") == 0)
+        if (langstr.compare("zhTW") == 0)
             return 5;
 
+        if (langstr.compare("esES") == 0)
+            return 6;
+
+        // TBC
+        if (langstr.compare("esMX") == 0)
+            return 7;
+
+        if (langstr.compare("ruRU") == 0)
+            return 8;
+
+        // Cata
+        if (langstr.compare("ptBR") == 0)
+            return 10;
+
+        // Mop
+        if (langstr.compare("itIT") == 0)
+            return 11;
+
         return 0;
+    }
+
+    std::string getLanguagesStringFromId(uint8_t id)
+    {
+        switch (id)
+        {
+            case 1: return "koKR";
+            case 2: return "frFR";
+            case 3: return "deDE";
+            case 4: return "zhCN";
+            case 5: return "zhTW";
+            case 6: return "esES";
+            // TBC
+            case 7: return "esMX";
+            case 8: return "ruRU";
+            // Cata
+            case 10: return "ptBR";
+            // Mop
+            case 11: return "itIT";
+
+            default: return "enGB"; // also enUS
+        }
     }
 
     uint32_t getNumberFromStringByRange(std::string string, int startCharacter, int endCharacter)
