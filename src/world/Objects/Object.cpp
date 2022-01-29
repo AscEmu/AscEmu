@@ -3230,9 +3230,9 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
 #ifdef FT_VEHICLES
         if (isCreatureOrPlayer())
         {
-            if (ToUnit()->getVehicle() != nullptr)
+            if (ToUnit()->getVehicleKit() != nullptr)
             {
-                ToUnit()->getVehicle()->relocatePassengers();
+                ToUnit()->getVehicleKit()->relocatePassengers();
             }
         }
 #endif
@@ -4418,6 +4418,7 @@ float Object::getDistance2d(float x, float y) const
     return d > 0.0f ? d : 0.0f;
 }
 
+#if VERSION_STRING < Cata
 void MovementInfo::readMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t opcode)
 {
 #if VERSION_STRING == Classic
@@ -4487,7 +4488,75 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t o
     if (hasMovementFlag(MOVEFLAG_SPLINE_ELEVATION))
         data >> spline_elevation;
 
-#elif VERSION_STRING >= Cata
+#endif
+}
+
+void MovementInfo::writeMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t opcode, [[maybe_unused]]float custom_speed) const
+{
+#if VERSION_STRING == Classic
+
+    data << guid << flags << update_time << position << position.o;
+
+    if (hasMovementFlag(MOVEFLAG_TRANSPORT))
+        data << transport_guid << transport_position << transport_position.o;
+
+    if (hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)))
+        data << pitch_rate;
+
+    data << fall_time;
+
+    if (hasMovementFlag(MOVEFLAG_FALLING))
+        data << jump_info.velocity << jump_info.sinAngle << jump_info.cosAngle << jump_info.xyspeed;
+
+    if (hasMovementFlag(MOVEFLAG_SPLINE_ELEVATION))
+        data << spline_elevation;
+
+#elif VERSION_STRING == TBC
+
+    data << guid << flags << flags2 << update_time << position << position.o;
+
+    if (hasMovementFlag(MOVEFLAG_TRANSPORT))
+        data << transport_guid << transport_position << transport_position.o << transport_time;
+
+    if (hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING))
+        data << pitch_rate;
+
+    data << fall_time;
+
+    if (hasMovementFlag(MOVEFLAG_FALLING))
+        data << jump_info.velocity << jump_info.sinAngle << jump_info.cosAngle << jump_info.xyspeed;
+
+    if (hasMovementFlag(MOVEFLAG_SPLINE_ELEVATION))
+        data << spline_elevation;
+
+#elif VERSION_STRING == WotLK
+
+    data << guid << flags << flags2 << update_time << position << position.o;
+
+    if (hasMovementFlag(MOVEFLAG_TRANSPORT))
+    {
+        data << transport_guid << transport_position << transport_position.o << transport_time << transport_seat;
+
+        if (hasMovementFlag2(MOVEFLAG2_INTERPOLATED_MOVE))
+            data << transport_time2;
+    }
+
+    if (hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING))
+        data << pitch_rate;
+
+    data << fall_time;
+
+    if (hasMovementFlag(MOVEFLAG_FALLING))
+        data << jump_info.velocity << jump_info.sinAngle << jump_info.cosAngle << jump_info.xyspeed;
+
+    if (hasMovementFlag(MOVEFLAG_SPLINE_ELEVATION))
+        data << spline_elevation;
+
+#endif
+}
+#else
+void MovementInfo::readMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t opcode, ExtraMovementStatusElement* extras /*= nullptr*/)
+{
     bool hasTransportData = false,
         hasMovementFlags = false,
         hasMovementFlags2 = false;
@@ -4678,78 +4747,20 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t o
                 data.read_skip<uint32_t>();
                 break;
             case MSEByteParam:
-                data >> byte_parameter;
+                if (extras)
+                    extras->readNextElement(data);
+                else
+                    data >> byte_parameter;
                 break;
             default:
                 sLogger.failure("Wrong movement status element");
                 break;
         }
     }
-#endif
 }
 
-void MovementInfo::writeMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t opcode, [[maybe_unused]]float custom_speed) const
+void MovementInfo::writeMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t opcode, [[maybe_unused]]float custom_speed, ExtraMovementStatusElement* extras /*= nullptr*/) const
 {
-#if VERSION_STRING == Classic
-
-    data << guid << flags << update_time << position << position.o;
-
-    if (hasMovementFlag(MOVEFLAG_TRANSPORT))
-        data << transport_guid << transport_position << transport_position.o;
-
-    if (hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)))
-        data << pitch_rate;
-
-    data << fall_time;
-
-    if (hasMovementFlag(MOVEFLAG_FALLING))
-        data << jump_info.velocity << jump_info.sinAngle << jump_info.cosAngle << jump_info.xyspeed;
-
-    if (hasMovementFlag(MOVEFLAG_SPLINE_ELEVATION))
-        data << spline_elevation;
-
-#elif VERSION_STRING == TBC
-
-    data << guid << flags << flags2 << update_time << position << position.o;
-
-    if (hasMovementFlag(MOVEFLAG_TRANSPORT))
-        data << transport_guid << transport_position << transport_position.o << transport_time;
-
-    if (hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING))
-        data << pitch_rate;
-
-    data << fall_time;
-
-    if (hasMovementFlag(MOVEFLAG_FALLING))
-        data << jump_info.velocity << jump_info.sinAngle << jump_info.cosAngle << jump_info.xyspeed;
-
-    if (hasMovementFlag(MOVEFLAG_SPLINE_ELEVATION))
-        data << spline_elevation;
-
-#elif VERSION_STRING == WotLK
-
-    data << guid << flags << flags2 << update_time << position << position.o;
-
-    if (hasMovementFlag(MOVEFLAG_TRANSPORT))
-    {
-        data << transport_guid << transport_position << transport_position.o << transport_time << transport_seat;
-
-        if (hasMovementFlag2(MOVEFLAG2_INTERPOLATED_MOVE))
-            data << transport_time2;
-    }
-
-    if (hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING))
-        data << pitch_rate;
-
-    data << fall_time;
-
-    if (hasMovementFlag(MOVEFLAG_FALLING))
-        data << jump_info.velocity << jump_info.sinAngle << jump_info.cosAngle << jump_info.xyspeed;
-
-    if (hasMovementFlag(MOVEFLAG_SPLINE_ELEVATION))
-        data << spline_elevation;
-
-#elif VERSION_STRING >= Cata
     bool hasTransportData = !transport_guid.IsEmpty();
 
     MovementStatusElements* sequence = GetMovementStatusElementsSequence(opcode);
@@ -4925,6 +4936,12 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t 
             case MSEMovementCounter:
                 data << uint32_t(0);
                 break;
+            case MSEByteParam:
+                if (extras)
+                    extras->writeNextElement(data);
+                else
+                    data << int8_t(byte_parameter);
+                break;
             case MSECustomSpeed:
                 data << float(custom_speed);
                 break;
@@ -4933,5 +4950,5 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t 
                 break;
         }
     }
-#endif
 }
+#endif

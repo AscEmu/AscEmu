@@ -2866,11 +2866,6 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             } break;
             case SPELL_AURA_MOUNTED:
             {
-#if VERSION_STRING == Cata
-                if (getSpellInfo()->getEffectMiscValueB(i) && !p_caster->getMountCapability(getSpellInfo()->getEffectMiscValueB(i)))
-                    return SPELL_FAILED_NOT_HERE;
-#endif
-
                 if (worldConfig.terrainCollision.isCollisionEnabled)
                 {
                     if (!MapManagement::AreaManagement::AreaStorage::IsOutdoor(m_caster->GetMapId(), m_caster->GetPositionNC().x, m_caster->GetPositionNC().y, m_caster->GetPositionNC().z))
@@ -2879,6 +2874,11 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 
                 if (p_caster != nullptr)
                 {
+#if VERSION_STRING == Cata
+                    if (getSpellInfo()->getEffectMiscValueB(i) && !p_caster->getMountCapability(getSpellInfo()->getEffectMiscValueB(i)))
+                        return SPELL_FAILED_NOT_HERE;
+#endif
+
                     if (p_caster->GetTransport() != nullptr)
                         return SPELL_FAILED_NO_MOUNTS_ALLOWED;
 
@@ -4312,7 +4312,13 @@ void Spell::sendCastResult(SpellCastResult result, uint32_t parameter1 /*= 0*/, 
 
     Player* plr = p_caster;
     if (plr == nullptr && u_caster != nullptr)
+    {
         plr = u_caster->m_redirectSpellPackets;
+
+        if (plr == nullptr && getUnitCaster()->isVehicle())
+            plr = getUnitCaster()->getPlayerOwner();
+    }
+
     if (plr == nullptr)
         return;
 

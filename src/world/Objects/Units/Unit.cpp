@@ -7225,7 +7225,7 @@ void Unit::callChangeSeat(int8_t seatId, bool next)
         {
             auto aurEff = aur->getModifiableAuraEffect(i);
             if (aurEff->getAuraEffectType() == SPELL_AURA_CONTROL_VEHICLE)
-                aurEff->setEffectBaseDamage(seatId + 1);
+                aurEff->setEffectBaseDamage(seat->first + 1);
         }
 
         aur->refreshOrModifyStack();
@@ -7340,7 +7340,6 @@ void Unit::handleSpellClick(Unit* clicker)
         uint64_t origCasterGUID = (clickPair.castFlags & NPC_CLICK_CAST_ORIG_CASTER_OWNER) ? getOwnerGUID() : clicker->getGuid();
 
         SpellInfo const* spellEntry = sSpellMgr.getSpellInfo(clickPair.spellId);
-
 
         // Creatures like Lightwell...
         if (IsInMap(caster))
