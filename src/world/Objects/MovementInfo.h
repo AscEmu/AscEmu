@@ -121,8 +121,13 @@ struct MovementInfo
 #endif
     }
 
+#if VERSION_STRING < Cata
     void readMovementInfo(ByteBuffer& data, uint16_t opcode);
     void writeMovementInfo(ByteBuffer& data, uint16_t opcode, float custom_speed = 0.f) const;
+#else
+    void readMovementInfo(ByteBuffer& data, uint16_t opcode, ExtraMovementStatusElement* extras = nullptr);
+    void writeMovementInfo(ByteBuffer& data, uint16_t opcode, float custom_speed = 0.f, ExtraMovementStatusElement* extras = nullptr) const;
+#endif
 
     uint32_t flags;
 

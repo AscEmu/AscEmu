@@ -388,7 +388,10 @@ Vehicle* Vehicle::removePassenger(Unit* unit)
         if (getBase()->isCreature())
         {
             Creature* c = static_cast<Creature*>(getBase());
-            c->setFaction(sMySQLStore.getCreatureProperties(getEntry())->Faction);
+            if (getBase()->getVehicleBase())
+                c->setFaction(sMySQLStore.getCreatureProperties(getBase()->getVehicleBase()->getEntry())->Faction);
+            else
+                c->setFaction(sMySQLStore.getCreatureProperties(getEntry())->Faction);
         }
     }
 

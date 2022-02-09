@@ -38,3 +38,81 @@ bool ChaseAngle::isAngleOkay(float relativeAngle) const
 
     return (std::min(diff, float(2 * M_PI) - diff) <= Tolerance);
 }
+
+#if VERSION_STRING >= Cata
+void ExtraMovementStatusElement::readNextElement(ByteBuffer& packet)
+{
+    MovementStatusElements const element = _elements[_index++];
+
+    switch (element)
+    {
+        case MSEGuidBit0:
+        case MSEGuidBit1:
+        case MSEGuidBit2:
+        case MSEGuidBit3:
+        case MSEGuidBit4:
+        case MSEGuidBit5:
+        case MSEGuidBit6:
+        case MSEGuidBit7:
+            Data.guid[element - MSEGuidBit0] = packet.readBit();
+            break;
+        case MSEGuidByte0:
+        case MSEGuidByte1:
+        case MSEGuidByte2:
+        case MSEGuidByte3:
+        case MSEGuidByte4:
+        case MSEGuidByte5:
+        case MSEGuidByte6:
+        case MSEGuidByte7:
+            packet.ReadByteSeq(Data.guid[element - MSEGuidByte0]);
+            break;
+        case MSEExtraFloat:
+            packet >> Data.floatData;
+            break;
+        case MSEExtraInt8:
+            packet >> Data.byteData;
+            break;
+        default:
+            sLogger.failure("Incorrect extraMovementStatusElement sequence %d detected", element);
+            break;
+    }
+}
+
+void ExtraMovementStatusElement::writeNextElement(ByteBuffer& packet)
+{
+    MovementStatusElements const element = _elements[_index++];
+
+    switch (element)
+    {
+        case MSEGuidBit0:
+        case MSEGuidBit1:
+        case MSEGuidBit2:
+        case MSEGuidBit3:
+        case MSEGuidBit4:
+        case MSEGuidBit5:
+        case MSEGuidBit6:
+        case MSEGuidBit7:
+            packet.writeBit(Data.guid[element - MSEGuidBit0]);
+            break;
+        case MSEGuidByte0:
+        case MSEGuidByte1:
+        case MSEGuidByte2:
+        case MSEGuidByte3:
+        case MSEGuidByte4:
+        case MSEGuidByte5:
+        case MSEGuidByte6:
+        case MSEGuidByte7:
+            packet.WriteByteSeq(Data.guid[element - MSEGuidByte0]);
+            break;
+        case MSEExtraFloat:
+            packet << Data.floatData;
+            break;
+        case MSEExtraInt8:
+            packet << Data.byteData;
+            break;
+        default:
+            sLogger.failure("Incorrect extraMovementStatusElement sequence %d detected", element);
+            break;
+    }
+}
+#endif
