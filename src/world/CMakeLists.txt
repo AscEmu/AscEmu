@@ -3,7 +3,9 @@
 # set up our project name
 project(world CXX)
 
-include(Game${ASCEMU_VERSION}/CMakeLists.txt)
+if ("${ASCEMU_VERSION}" STREQUAL "Mop" OR "${ASCEMU_VERSION}" STREQUAL "Cata" OR "${ASCEMU_VERSION}" STREQUAL "WotLK" OR "${ASCEMU_VERSION}" STREQUAL "TBC" OR "${ASCEMU_VERSION}" STREQUAL "Classic")
+    include(Game${ASCEMU_VERSION}/CMakeLists.txt)
+endif ()
 
 include(Chat/CMakeLists.txt)
 include(Chat/Commands/CMakeLists.txt)
