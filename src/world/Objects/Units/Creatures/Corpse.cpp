@@ -114,7 +114,7 @@ void Corpse::setCorpseDataFromDbString(std::string dbString)
     std::string seperator = " ";
     auto dataVector = AscEmu::Util::Strings::split(dbString, seperator);
 
-    char const achievement_format[] = "luif";
+    //char const achievement_format[] = "luif";
     uint8_t countPosition = 0;
     uint8_t itemOffset = 6;
     for (auto stringValue : dataVector)

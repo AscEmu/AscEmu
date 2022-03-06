@@ -1705,8 +1705,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
     if (item->getItemProperties() == nullptr)
         return ADD_ITEM_RESULT_ERROR;
 
-    uint8 i = 0;
-    bool result2;
+    uint8 i;
     AddItemResult result3;
     Player* p = m_pOwner;
     uint32 itemMaxStack = item->getItemProperties()->MaxCount;
@@ -1773,7 +1772,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
                         if (m_pItems[i]->isContainer())
                         {
                             uint32 r_slot;
-                            result2 = static_cast<Container*>(m_pItems[i])->AddItemToFreeSlot(item, &r_slot);
+                            bool result2 = static_cast<Container*>(m_pItems[i])->AddItemToFreeSlot(item, &r_slot);
                             if (result2)
                             {
                                 m_result.ContainerSlot = static_cast<int8>(i);

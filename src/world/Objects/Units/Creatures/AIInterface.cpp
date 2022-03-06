@@ -2619,16 +2619,17 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
     m_Unit->setMountDisplayId(0);
 
     Instance* pInstance = nullptr;
-    if (m_Unit->GetMapMgr())
+    auto unitMapMgr = m_Unit->GetMapMgr();
+    if (unitMapMgr)
         pInstance = m_Unit->GetMapMgr()->pInstance;
 
-    if (m_Unit->GetMapMgr()
+    if (unitMapMgr
         && m_Unit->isCreature()
         && !m_Unit->isPet()
         && pInstance
         && pInstance->m_mapInfo->isInstanceMap())
     {
-        auto encounters = sObjectMgr.GetDungeonEncounterList(m_Unit->GetMapMgr()->GetMapId(), pInstance->m_difficulty);
+        const auto encounters = sObjectMgr.GetDungeonEncounterList(unitMapMgr->GetMapId(), pInstance->m_difficulty);
 
         Creature* pCreature = static_cast<Creature*>(m_Unit);
         bool found = false;
@@ -2645,14 +2646,14 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
                     found = true;
 
                     // Bosses get added via entry and not by spawnid
-                    m_Unit->GetMapMgr()->pInstance->m_killedNpcs.insert(npcGuid);
-                    sInstanceMgr.SaveInstanceToDB(m_Unit->GetMapMgr()->pInstance);
+                    unitMapMgr->pInstance->m_killedNpcs.insert(npcGuid);
+                    sInstanceMgr.SaveInstanceToDB(unitMapMgr->pInstance);
 
                     if (!pInstance->m_persistent && !pInstance->isResetable())
                     {
                         pInstance->m_persistent = true;
                         sInstanceMgr.SaveInstanceToDB(pInstance);
-                        for (PlayerStorageMap::iterator pItr = m_Unit->GetMapMgr()->m_PlayerStorage.begin(); pItr != m_Unit->GetMapMgr()->m_PlayerStorage.end(); ++pItr)
+                        for (PlayerStorageMap::iterator pItr = unitMapMgr->m_PlayerStorage.begin(); pItr != unitMapMgr->m_PlayerStorage.end(); ++pItr)
                         {
                             (*pItr).second->SetPersistentInstanceId(pInstance);
                         }
@@ -2665,8 +2666,8 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
         {
             // No instance boss information ... so fallback ...
             uint32_t npcGuid = pCreature->GetSQL_id();
-            m_Unit->GetMapMgr()->pInstance->m_killedNpcs.insert(npcGuid);
-            sInstanceMgr.SaveInstanceToDB(m_Unit->GetMapMgr()->pInstance);
+            unitMapMgr->pInstance->m_killedNpcs.insert(npcGuid);
+            sInstanceMgr.SaveInstanceToDB(unitMapMgr->pInstance);
         }
 
         // Killed Group checks
@@ -2678,21 +2679,21 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
             bool killed = true;
             for (auto spawns : spawnGroupData->spawns)
             {
-                if (m_Unit->GetMapMgr()->pInstance->m_killedNpcs.find(spawns.first) == m_Unit->GetMapMgr()->pInstance->m_killedNpcs.end())
+                if (unitMapMgr->pInstance->m_killedNpcs.find(spawns.first) == unitMapMgr->pInstance->m_killedNpcs.end())
                     killed = false;
             }
 
             if (killed)
-                CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), OnSpawnGroupKilled)(spawnGroupData->groupId);
+                CALL_INSTANCE_SCRIPT_EVENT(unitMapMgr, OnSpawnGroupKilled)(spawnGroupData->groupId);
         }
     }
-    if (m_Unit->GetMapMgr() && m_Unit->GetMapMgr()->GetMapInfo() && m_Unit->GetMapMgr()->GetMapInfo()->isRaid())
+    if (unitMapMgr && unitMapMgr->GetMapInfo() && unitMapMgr->GetMapInfo()->isRaid())
     {
         if (m_Unit->isCreature())
         {
-            if (static_cast<Creature*>(m_Unit)->GetCreatureProperties()->Rank == 3)
+            if (dynamic_cast<Creature*>(m_Unit)->GetCreatureProperties()->Rank == 3)
             {
-                m_Unit->GetMapMgr()->RemoveCombatInProgress(m_Unit->getGuid());
+                unitMapMgr->RemoveCombatInProgress(m_Unit->getGuid());
             }
         }
     }

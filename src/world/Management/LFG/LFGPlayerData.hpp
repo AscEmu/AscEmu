@@ -14,7 +14,7 @@ class LfgPlayerData
     public:
 
         LfgPlayerData();
-        ~LfgPlayerData();
+        ~LfgPlayerData() = default;
 
         // General
         void SetState(LfgState state);

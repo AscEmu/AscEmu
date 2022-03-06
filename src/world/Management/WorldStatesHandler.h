@@ -42,7 +42,7 @@ class SERVER_DECL WorldStatesHandler
             observer = NULL;
         }
 
-        ~WorldStatesHandler(){}
+        ~WorldStatesHandler() = default;
 
 
         //////////////////////////////////////////////////////////////////////////////////////////

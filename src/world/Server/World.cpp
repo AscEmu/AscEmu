@@ -1004,11 +1004,12 @@ void World::saveAllPlayersToDb()
 
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
-        if (itr->second->GetSession())
+        auto player = itr->second;
+        if (player->GetSession())
         {
-            auto startTime = Util::TimeNow();
-            itr->second->SaveToDB(false);
-            sLogger.info("Saved player `%s` (level %u) in %u ms.", itr->second->getName().c_str(), itr->second->getLevel(), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            const auto startTime = Util::TimeNow();
+            player->SaveToDB(false);
+            sLogger.info("Saved player `%s` (level %u) in %u ms.", player->getName().c_str(), player->getLevel(), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
             ++count;
         }
     }

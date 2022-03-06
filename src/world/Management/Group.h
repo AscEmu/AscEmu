@@ -110,7 +110,7 @@ public:
     friend class Group;
 
     SubGroup(Group* parent, uint32 id) : m_Parent(parent), m_Id(id)  {}
-    ~SubGroup();
+    ~SubGroup() = default;
 
     inline GroupMembersSet::iterator GetGroupMembersBegin(void) { return m_GroupMembers.begin(); }
     inline GroupMembersSet::iterator GetGroupMembersEnd(void)   { return m_GroupMembers.end(); }

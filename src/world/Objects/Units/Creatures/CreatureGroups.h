@@ -35,8 +35,8 @@ struct FormationInfo
 class SERVER_DECL FormationMgr
 {
 private:
-    FormationMgr();
-    ~FormationMgr();
+    FormationMgr() = default;
+    ~FormationMgr() = default;
 
     std::unordered_map<uint32_t /*spawnID*/, FormationInfo> _creatureGroupMap;
 
@@ -65,7 +65,7 @@ private:
 public:
     // Group cannot be created empty
     explicit CreatureGroup(uint32_t leaderSpawnId);
-    ~CreatureGroup();
+    ~CreatureGroup() = default;
 
     Creature* getLeader() const { return _leader; }
     uint32_t getLeaderSpawnId() const { return _leaderSpawnId; }

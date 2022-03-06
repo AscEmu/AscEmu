@@ -43,8 +43,8 @@ class SERVER_DECL InstanceMgr
 
     public:
 
-        InstanceMgr() {}
-        ~InstanceMgr() {}
+        InstanceMgr() = default;
+        ~InstanceMgr() = default;
 
         Map* GetMap(uint32_t mapid);
 

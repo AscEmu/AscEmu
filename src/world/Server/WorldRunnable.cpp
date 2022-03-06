@@ -20,11 +20,6 @@ WorldRunnable::WorldRunnable()
     this->threadInit();
 }
 
-WorldRunnable::~WorldRunnable()
-{
-
-}
-
 void WorldRunnable::threadShutdown()
 {
     m_thread->killAndJoin();

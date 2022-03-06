@@ -95,8 +95,10 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand* table, const char* text, Wo
         {
             if (!ExecuteCommandInTable(table[i].ChildCommands, text, m_session))
             {
-                if (table[i].Help != "")
+                if (!table[i].Help.empty())
+                {
                     SendMultilineMessage(m_session, table[i].Help.c_str());
+                }
                 else
                 {
                     GreenSystemMessage(m_session, "Available Subcommands:");
@@ -117,12 +119,10 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand* table, const char* text, Wo
 
         if (!(this->*(table[i].Handler))(text, m_session))
         {
-            if (table[i].Help != "")
+            if (!table[i].Help.empty())
                 SendMultilineMessage(m_session, table[i].Help.c_str());
             else
-            {
                 RedSystemMessage(m_session, "Incorrect syntax specified. Try .help %s for the correct syntax.", table[i].Name);
-            }
         }
 
         return true;
@@ -492,7 +492,7 @@ bool ChatHandler::ShowHelpForCommand(WorldSession* m_session, ChatCommand* table
                 return true;
         }
 
-        if (table[i].Help == "")
+        if (table[i].Help.empty())
         {
             SystemMessage(m_session, "There is no help for that command");
             return true;

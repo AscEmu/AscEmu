@@ -792,12 +792,13 @@ void SpellMgr::loadSpellInfoData()
         spellInfo.SpellTotemsId = dbcSpellEntry->SpellTotemsId;
 
         // Data from SpellAuraOptions.dbc
-        if (dbcSpellEntry->SpellAuraOptionsId && dbcSpellEntry->GetSpellAuraOptions() != nullptr)
+        auto spellAuraOption = dbcSpellEntry->GetSpellAuraOptions();
+        if (dbcSpellEntry->SpellAuraOptionsId && spellAuraOption != nullptr)
         {
-            spellInfo.setMaxstack(dbcSpellEntry->GetSpellAuraOptions()->MaxStackAmount);
-            spellInfo.setProcChance(dbcSpellEntry->GetSpellAuraOptions()->procChance);
-            spellInfo.setProcCharges(dbcSpellEntry->GetSpellAuraOptions()->procCharges);
-            spellInfo.setProcFlags(dbcSpellEntry->GetSpellAuraOptions()->procFlags);
+            spellInfo.setMaxstack(spellAuraOption->MaxStackAmount);
+            spellInfo.setProcChance(spellAuraOption->procChance);
+            spellInfo.setProcCharges(spellAuraOption->procCharges);
+            spellInfo.setProcFlags(spellAuraOption->procFlags);
         }
 
         // Data from SpellAuraRestrictions.dbc
@@ -822,14 +823,15 @@ void SpellMgr::loadSpellInfoData()
         }
 
         // Data from SpellCategories.dbc
-        if (dbcSpellEntry->SpellCategoriesId && dbcSpellEntry->GetSpellCategories() != nullptr)
+        auto spellCategories = dbcSpellEntry->GetSpellCategories();
+        if (dbcSpellEntry->SpellCategoriesId && spellCategories != nullptr)
         {
-            spellInfo.setCategory(dbcSpellEntry->GetSpellCategories()->Category);
-            spellInfo.setDispelType(dbcSpellEntry->GetSpellCategories()->DispelType);
-            spellInfo.setDmgClass(dbcSpellEntry->GetSpellCategories()->DmgClass);
-            spellInfo.setMechanicsType(dbcSpellEntry->GetSpellCategories()->MechanicsType);
-            spellInfo.setPreventionType(dbcSpellEntry->GetSpellCategories()->PreventionType);
-            spellInfo.setStartRecoveryCategory(dbcSpellEntry->GetSpellCategories()->StartRecoveryCategory);
+            spellInfo.setCategory(spellCategories->Category);
+            spellInfo.setDispelType(spellCategories->DispelType);
+            spellInfo.setDmgClass(spellCategories->DmgClass);
+            spellInfo.setMechanicsType(spellCategories->MechanicsType);
+            spellInfo.setPreventionType(spellCategories->PreventionType);
+            spellInfo.setStartRecoveryCategory(spellCategories->StartRecoveryCategory);
         }
 
         // Data from SpellClassOptions.dbc
@@ -873,13 +875,14 @@ void SpellMgr::loadSpellInfoData()
         }
 
         // Data from SpellPower.dbc
-        if (dbcSpellEntry->SpellPowerId && dbcSpellEntry->GetSpellPower() != nullptr)
+        auto spellPower = dbcSpellEntry->GetSpellPower();
+        if (dbcSpellEntry->SpellPowerId && spellPower != nullptr)
         {
-            spellInfo.setManaCost(dbcSpellEntry->GetSpellPower()->manaCost);
-            spellInfo.setManaCostPerlevel(dbcSpellEntry->GetSpellPower()->manaCostPerlevel);
-            spellInfo.setManaCostPercentage(dbcSpellEntry->GetSpellPower()->ManaCostPercentage);
-            spellInfo.setManaPerSecond(dbcSpellEntry->GetSpellPower()->manaPerSecond);
-            spellInfo.setManaPerSecondPerLevel(dbcSpellEntry->GetSpellPower()->manaPerSecondPerLevel);
+            spellInfo.setManaCost(spellPower->manaCost);
+            spellInfo.setManaCostPerlevel(spellPower->manaCostPerlevel);
+            spellInfo.setManaCostPercentage(spellPower->ManaCostPercentage);
+            spellInfo.setManaPerSecond(spellPower->manaPerSecond);
+            spellInfo.setManaPerSecondPerLevel(spellPower->manaPerSecondPerLevel);
         }
 
         // Data from SpellReagents.dbc

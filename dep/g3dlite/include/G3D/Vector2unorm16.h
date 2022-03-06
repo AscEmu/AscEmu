@@ -42,7 +42,7 @@ public:
     G3D::unorm16              x;
     G3D::unorm16              y;
 
-    Vector2unorm16() {}
+    Vector2unorm16() = default;
     Vector2unorm16(G3D::unorm16 _x, G3D::unorm16 _y) : x(_x), y(_y){}
     Vector2unorm16(float _x, float _y) : x(_x), y(_y){}
     explicit Vector2unorm16(const class Vector2& v);

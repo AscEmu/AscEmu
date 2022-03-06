@@ -35,12 +35,13 @@ public:
         {
             for (eventMap::iterator itr = eventMapStore.begin(); itr != eventMapStore.end();)
             {
-                if (itr->second.bossPhase == 0 || itr->second.bossPhase == bossPhase)
+                auto& scriptEvent = itr->second;
+                if (scriptEvent.bossPhase == 0 || scriptEvent.bossPhase == bossPhase)
                 {
-                    if (itr->second.timer > diff)
-                        itr->second.timer -= diff;
+                    if (scriptEvent.timer > diff)
+                        scriptEvent.timer -= diff;
                     else
-                        itr->second.timer = 0;
+                        scriptEvent.timer = 0;
                 }
 
                 ++itr;

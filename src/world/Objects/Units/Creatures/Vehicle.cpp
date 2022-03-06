@@ -306,7 +306,7 @@ bool Vehicle::isControler(Unit* _unit)
 
 VehicleSeatAddon const* Vehicle::getSeatAddonForSeatOfPassenger(Unit const* passenger) const
 {
-    for (SeatMap::const_iterator itr = Seats.begin(); itr != Seats.end(); itr++)
+    for (SeatMap::const_iterator itr = Seats.begin(); itr != Seats.end(); ++itr)
         if (!itr->second.isEmpty() && itr->second._passenger.guid == passenger->getGuid())
             return itr->second._seatAddon;
 

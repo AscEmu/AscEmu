@@ -88,7 +88,7 @@ public:
     public:
         explicit DelayedAction(DelayedActionDefine&& action, DelayedActionValidator&& validator, MovementManagerDelayedActionType type) : Action(std::move(action)), Validator(std::move(validator)), Type(type) { }
         explicit DelayedAction(DelayedActionDefine&& action, MovementManagerDelayedActionType type) : Action(std::move(action)), Validator(EmptyValidator), Type(type) { }
-        ~DelayedAction() { }
+        ~DelayedAction() = default;
 
         void resolve() { if (Validator()) Action(); }
 

@@ -28,7 +28,7 @@ public:
     void deleteAllWayPoints(uint32_t pathid);
 
 private:
-    WaypointMgr() { }
+    WaypointMgr() = default;
 
     std::unordered_map<uint32_t, WaypointPath> _waypointStore;
     std::unordered_map<uint32_t, WaypointPath> _customWaypointStore;

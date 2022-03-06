@@ -72,7 +72,7 @@ struct CalendarEvent
     {
     }
 
-    ~CalendarEvent(){};
+    ~CalendarEvent() = default;
 
     uint32 entry;               // entry of the calendar event (unique)
     uint32 creator;             // id of the character
@@ -91,7 +91,7 @@ struct CalendarInvite
     {
     }
 
-    ~CalendarInvite(){};
+    ~CalendarInvite() = default;
 
     uint32 invite_id;               // entry of the calendar event (unique)
     uint32 event;             // id of the character

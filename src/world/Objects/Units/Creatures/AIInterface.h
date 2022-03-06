@@ -193,9 +193,7 @@ public:
         mCustomTargetCreature = nullptr;
     }
 
-    ~CreatureAISpells()
-    {
-    }
+    ~CreatureAISpells() = default;
 
     SpellInfo const* mSpellInfo;
     float mCastChance;

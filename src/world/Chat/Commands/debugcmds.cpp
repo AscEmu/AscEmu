@@ -143,12 +143,12 @@ bool ChatHandler::HandleDistanceCommand(const char* /*args*/, WorldSession* m_se
 bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
 {
     Creature* creature = nullptr;
-
+    auto player = m_session->GetPlayer();
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
+    wowGuid.Init(player->getTargetGuid());
     if (wowGuid.getRawGuid() != 0)
     {
-        creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+        creature = player->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
     }
 
     if (creature == nullptr)
@@ -178,9 +178,9 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
     if (pMeth)
         Meth = atoi(pMeth);
 
-    float x = m_session->GetPlayer()->GetPositionX();
-    float y = m_session->GetPlayer()->GetPositionY();
-    float z = m_session->GetPlayer()->GetPositionZ();
+    float x = player->GetPositionX();
+    float y = player->GetPositionY();
+    float z = player->GetPositionZ();
     //float o = m_session->GetPlayer()->GetOrientation();
 
     MovementNew::MoveSplineInit init(creature);

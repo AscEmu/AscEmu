@@ -6090,23 +6090,23 @@ void Player::EndDuel(uint8 WinCondition)
 
     // Call off pet
     std::list<Pet*> summons = GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+    for (auto& summon : summons)
     {
-        (*itr)->getCombatHandler().clearCombat();
-        (*itr)->getAIInterface()->setPetOwner(this);
-        (*itr)->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, *itr, 0);
-        (*itr)->getThreatManager().clearAllThreat();
-        (*itr)->getThreatManager().removeMeFromThreatLists();
+        summon->getCombatHandler().clearCombat();
+        summon->getAIInterface()->setPetOwner(this);
+        summon->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, summon, 0);
+        summon->getThreatManager().clearAllThreat();
+        summon->getThreatManager().removeMeFromThreatLists();
     }
 
     std::list<Pet*> duelingWithSummons = DuelingWith->GetSummons();
-    for (std::list<Pet*>::iterator itr = duelingWithSummons.begin(); itr != duelingWithSummons.end(); ++itr)
+    for (auto& duelingWithSummon : duelingWithSummons)
     {
-        (*itr)->getCombatHandler().clearCombat();
-        (*itr)->getAIInterface()->setPetOwner(this);
-        (*itr)->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, *itr, 0);
-        (*itr)->getThreatManager().clearAllThreat();
-        (*itr)->getThreatManager().removeMeFromThreatLists();
+        duelingWithSummon->getCombatHandler().clearCombat();
+        duelingWithSummon->getAIInterface()->setPetOwner(this);
+        duelingWithSummon->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, duelingWithSummon, 0);
+        duelingWithSummon->getThreatManager().clearAllThreat();
+        duelingWithSummon->getThreatManager().removeMeFromThreatLists();
     }
 
     // removing auras that kills players after if low HP
@@ -7755,11 +7755,12 @@ void Player::AddCategoryCooldown(uint32 category_id, uint32 time, uint32 SpellId
     PlayerCooldownMap::iterator itr = m_cooldownMap[COOLDOWN_TYPE_CATEGORY].find(category_id);
     if (itr != m_cooldownMap[COOLDOWN_TYPE_CATEGORY].end())
     {
-        if (itr->second.ExpireTime < time)
+        auto& playerCooldown = itr->second;
+        if (playerCooldown.ExpireTime < time)
         {
-            itr->second.ExpireTime = time;
-            itr->second.ItemId = ItemId;
-            itr->second.SpellId = SpellId;
+            playerCooldown.ExpireTime = time;
+            playerCooldown.ItemId = ItemId;
+            playerCooldown.SpellId = SpellId;
         }
     }
     else
@@ -7780,11 +7781,12 @@ void Player::_Cooldown_Add(uint32 Type, uint32 Misc, uint32 Time, uint32 SpellId
     PlayerCooldownMap::iterator itr = m_cooldownMap[Type].find(Misc);
     if (itr != m_cooldownMap[Type].end())
     {
-        if (itr->second.ExpireTime < Time)
+        auto& playerCooldown = itr->second;
+        if (playerCooldown.ExpireTime < Time)
         {
-            itr->second.ExpireTime = Time;
-            itr->second.ItemId = ItemId;
-            itr->second.SpellId = SpellId;
+            playerCooldown.ExpireTime = Time;
+            playerCooldown.ItemId = ItemId;
+            playerCooldown.SpellId = SpellId;
         }
     }
     else

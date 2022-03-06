@@ -87,11 +87,6 @@ Group::~Group()
     sObjectMgr.RemoveGroup(this);
 }
 
-SubGroup::~SubGroup()
-{
-
-}
-
 void SubGroup::RemovePlayer(CachedCharacterInfo* info)
 {
     m_GroupMembers.erase(info);

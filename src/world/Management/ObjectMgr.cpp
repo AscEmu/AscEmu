@@ -1176,26 +1176,27 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId
 
         if (itr->first == gossipMenuId)
         {
-            if (itr->second.requirementType == 1 && !player->hasQuestInQuestLog(itr->second.requirementData))
+            auto& gossipMenuItem = itr->second;
+            if (gossipMenuItem.requirementType == 1 && !player->hasQuestInQuestLog(gossipMenuItem.requirementData))
                 continue;
 
-            if (itr->second.requirementType == 3)
+            if (gossipMenuItem.requirementType == 3)
             {
                 if (player->CanGainXp())
-                    menu.addItem(itr->second.icon, itr->second.menuOptionText, itr->second.itemOrder, "", itr->second.onChooseData, player->GetSession()->LocalizedGossipOption(itr->second.onChooseData2));
+                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, player->GetSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
                 
                 continue;
             }
 
-            if (itr->second.requirementType == 4)
+            if (gossipMenuItem.requirementType == 4)
             {
                 if (!player->CanGainXp())
-                    menu.addItem(itr->second.icon, itr->second.menuOptionText, itr->second.itemOrder, "", itr->second.onChooseData, player->GetSession()->LocalizedGossipOption(itr->second.onChooseData2));
+                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, player->GetSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
                 
                 continue;
             }
 
-            menu.addItem(itr->second.icon, itr->second.menuOptionText, itr->second.itemOrder);
+            menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder);
         }
     }
 

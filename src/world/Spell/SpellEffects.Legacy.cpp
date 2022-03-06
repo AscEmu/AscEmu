@@ -3920,7 +3920,7 @@ void Spell::SpellEffectSpawn(uint8_t /*effectIndex*/)
             if (u_caster == nullptr || p_caster != nullptr)
                 return;
 
-            static float coord[3][3] = { { -108.9034f, 2129.5678f, 144.9210f }, { -108.9034f, 2155.5678f, 155.678f }, { -77.9034f, 2155.5678f, 155.678f } };
+            //static float coord[3][3] = { { -108.9034f, 2129.5678f, 144.9210f }, { -108.9034f, 2155.5678f, 155.678f }, { -77.9034f, 2155.5678f, 155.678f } };
 
             // uint8 j = RandomUInt(3);
             //u_caster->getAIInterface()->SendMoveToPacket(coord[j][0],coord[j][1],coord[j][2],0.0f,0,u_caster->getAIInterface()->getMoveFlags());
@@ -5776,16 +5776,14 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
     else
         return;
 
-    Aura* aur;
-    SpellInfo const* aursp;
     std::list< uint32 > stealedSpells;
 
     for (uint32 x = start; x < end; x++)
     {
         if (unitTarget->m_auras[x] != nullptr)
         {
-            aur = unitTarget->m_auras[x];
-            aursp = aur->getSpellInfo();
+            Aura* aur = unitTarget->m_auras[x];
+            SpellInfo const* aursp = aur->getSpellInfo();
 
             if (aursp->getId() != 15007 && !aur->IsPassive()
                 //              && aur->IsPositive()    // Zack : We are only checking positive auras. There is no meaning to check again

@@ -15,7 +15,7 @@ class WorldRunnable
 
 public:
     WorldRunnable();
-    ~WorldRunnable();
+    ~WorldRunnable() = default;
 
     void threadShutdown();
 

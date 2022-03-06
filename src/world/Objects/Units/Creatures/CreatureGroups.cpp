@@ -13,14 +13,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #define MAX_DESYNC 5.0f
 
-FormationMgr::FormationMgr()
-{
-}
-
-FormationMgr::~FormationMgr()
-{
-}
-
 FormationMgr* FormationMgr::getInstance()
 {
     static FormationMgr mInstance;
@@ -184,10 +176,6 @@ void FormationMgr::addFormationMember(uint32_t spawnId, float followAng, float f
 }
 
 CreatureGroup::CreatureGroup(uint32_t leaderSpawnId) : _leader(nullptr), _members(), _leaderSpawnId(leaderSpawnId), _formed(false), _engaging(false)
-{
-}
-
-CreatureGroup::~CreatureGroup()
 {
 }
 

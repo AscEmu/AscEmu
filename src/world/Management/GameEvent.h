@@ -90,7 +90,7 @@ class GameEvent
             mEventScript = nullptr;
         }
 
-        GameEvent(){}
+        GameEvent() = default;
 
         bool isValid() const { return length > 0 && end > time(0); }
         void SpawnAllEntities();
