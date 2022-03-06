@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Util.hpp>
 #include <iostream>
 
-void DatabaseUpdater::initBaseIfNeeded(std::string dbName, std::string dbBaseType, Database& dbPointer)
+void DatabaseUpdater::initBaseIfNeeded(const std::string& dbName, const std::string& dbBaseType, Database& dbPointer)
 {
     QueryResult* dbResult = dbPointer.Query("SHOW TABLES FROM %s", dbName.c_str());
     if (dbResult == nullptr)
@@ -62,7 +62,7 @@ void DatabaseUpdater::initBaseIfNeeded(std::string dbName, std::string dbBaseTyp
     }
 }
 
-void DatabaseUpdater::setupDatabase(std::string database, Database& dbPointer)
+void DatabaseUpdater::setupDatabase(const std::string& database, Database& dbPointer)
 {
     const std::string sqlBaseDir = "sql/" + database;
     fs::path baseFilePath = fs::current_path();
@@ -91,7 +91,7 @@ void DatabaseUpdater::setupDatabase(std::string database, Database& dbPointer)
     }
 }
 
-void DatabaseUpdater::checkAndApplyDBUpdatesIfNeeded(std::string database, Database& dbPointer)
+void DatabaseUpdater::checkAndApplyDBUpdatesIfNeeded(const std::string& database, Database& dbPointer)
 {
     applyUpdatesForDatabase(database, dbPointer);
 
@@ -109,7 +109,7 @@ struct DatabaseUpdateFile
     uint32_t minorVersion;
 };
 
-void DatabaseUpdater::applyUpdatesForDatabase(std::string database, Database& dbPointer)
+void DatabaseUpdater::applyUpdatesForDatabase(const std::string& database, Database& dbPointer)
 {
     const std::string sqlUpdateDir = "sql/" + database + "/updates";
 

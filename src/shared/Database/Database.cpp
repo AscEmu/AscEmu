@@ -379,9 +379,7 @@ AsyncQuery::~AsyncQuery()
     delete func;
     for (std::vector<AsyncQueryResult>::iterator itr = queries.begin(); itr != queries.end(); ++itr)
     {
-        if (itr->result)
-            delete itr->result;
-
+        delete itr->result;
         delete[] itr->query;
     }
 }

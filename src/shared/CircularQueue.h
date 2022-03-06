@@ -30,7 +30,7 @@ class CircularQueue
         {
             memset(m_elements, 0, sizeof(T) * ELEMENTCOUNT);
         }
-        ~CircularQueue() {}
+        ~CircularQueue() = default;
 
         void push(T & val)
         {

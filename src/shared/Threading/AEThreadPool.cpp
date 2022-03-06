@@ -187,7 +187,7 @@ namespace AscEmu::Threading
         queueTask(task, milliseconds(-1), taskName);
     }
 
-    void AEThreadPool::queueHighPriorityTask(ThreadFunc task, std::string taskName)
+    void AEThreadPool::queueHighPriorityTask(ThreadFunc task, const std::string& taskName)
     {
         queueTask(task, milliseconds(-1), taskName, true);
     }

@@ -111,14 +111,14 @@ void HandleShutdown(Socket* /*s*/, uint32 /*len*/)
 
 void SocketMgr::CloseAll()
 {
-    std::list<Socket*> tokill;
+    std::vector<Socket*> tokill;
 
     socketLock.Acquire();
     for(std::set<Socket*>::iterator itr = _sockets.begin(); itr != _sockets.end(); ++itr)
         tokill.push_back(*itr);
     socketLock.Release();
 
-    for(std::list<Socket*>::iterator itr = tokill.begin(); itr != tokill.end(); ++itr)
+    for(std::vector<Socket*>::iterator itr = tokill.begin(); itr != tokill.end(); ++itr)
         (*itr)->Disconnect();
 
     size_t size;

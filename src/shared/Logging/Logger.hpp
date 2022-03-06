@@ -79,6 +79,6 @@ namespace AscEmu::Logging
         Severity getSeverityConsoleColorByDebugFlag(DebugFlags log_flags);
     };
 
-    std::string getFormattedFileName(std::string path_prefix, std::string file_prefix, bool use_date_time);
+    std::string getFormattedFileName(const std::string& path_prefix, const std::string& file_prefix, bool use_date_time);
 }
 #define sLogger AscEmu::Logging::Logger::getInstance()

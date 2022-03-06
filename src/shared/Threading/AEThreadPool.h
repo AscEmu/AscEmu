@@ -38,7 +38,7 @@ namespace AscEmu::Threading
             }
 
             bool isFireOnceTask() const { return m_repeat < std::chrono::milliseconds(0); }
-            bool canFire(TimePoint point) const { return !m_done && m_lastPulse + m_repeat < point; }
+            bool canFire(const TimePoint& point) const { return !m_done && m_lastPulse + m_repeat < point; }
         };
 
         std::mutex m_mtx;
@@ -64,7 +64,7 @@ namespace AscEmu::Threading
     public:
         void queueRecurringTask(ThreadFunc task, std::chrono::milliseconds repeatDelay, std::string taskName);
         void queueFireOnceTask(ThreadFunc task, std::string taskName);
-        void queueHighPriorityTask(ThreadFunc task, std::string taskName);
+        void queueHighPriorityTask(ThreadFunc task, const std::string& taskName);
 
         AEThreadPool(std::string poolName, uint16_t minimumThreadCount, uint16_t softMaximumThreadCount, uint16_t hardMaximumThreadCount);
         AEThreadPool(std::string poolName, uint16_t minimumThreadCount, uint16_t softMaximumThreadCount, uint16_t hardMaximumThreadCount, std::chrono::milliseconds pulseFrequency);

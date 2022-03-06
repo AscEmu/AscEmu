@@ -19,18 +19,18 @@ namespace Util
     // WoW String functions
 
     /*! \brief Returns wow specific language string to id*/
-    uint8_t getLanguagesIdFromString(std::string langstr);
+    uint8_t getLanguagesIdFromString(const std::string& langstr);
 
     /*! \brief Returns wow specific language id to string*/
     std::string getLanguagesStringFromId(uint8_t id);
 
     /*! \brief Returns an uint32_t from a string between start/endcharacter */
-    uint32_t getNumberFromStringByRange(std::string string, int startCharacter, int endCharacter);
+    uint32_t getNumberFromStringByRange(const std::string& string, int startCharacter, int endCharacter);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // WString functions
-    bool Utf8toWStr(std::string utf8str, std::wstring& wstr);
-    bool WStrToUtf8(std::wstring wstr, std::string& utf8str);
+    bool Utf8toWStr(const std::string& utf8str, std::wstring& wstr);
+    bool WStrToUtf8(const std::wstring& wstr, std::string& utf8str);
 
     size_t Utf8length(std::string& utf8str);
 
@@ -100,10 +100,10 @@ namespace Util
     uint32_t getMSTime();
 
     /*! \brief Returns the difference between start_time and now in milliseconds */
-    long long GetTimeDifferenceToNow(std::chrono::high_resolution_clock::time_point start_time);
+    long long GetTimeDifferenceToNow(const std::chrono::high_resolution_clock::time_point& start_time);
 
     /*! \brief Returns the difference between start_time and end_time in milliseconds */
-    long long GetTimeDifference(std::chrono::high_resolution_clock::time_point start_time, std::chrono::high_resolution_clock::time_point end_time);
+    long long GetTimeDifference(const std::chrono::high_resolution_clock::time_point& start_time, const std::chrono::high_resolution_clock::time_point& end_time);
 
     /*! \brief Returns the current Date Time as string */
     std::string GetCurrentDateTimeString();
@@ -164,15 +164,15 @@ namespace Util
     // C++17 filesystem dependent functions
 
     /*! \brief Returns map of directory file names. */
-    std::map<uint32_t, std::string> getDirectoryContent(std::string pathName, std::string specialSuffix = "", bool withPath = false);
+    std::map<uint32_t, std::string> getDirectoryContent(const std::string& pathName, const std::string& specialSuffix = "", bool withPath = false);
 
     /*! \brief Reads the file into a string based on the given path. */
     std::string readFileIntoString(fs::path path);
 
     /*! \brief Returns the first 8 chars of the file name as major version. */
-    uint32_t readMajorVersionFromString(std::string fileName);
+    uint32_t readMajorVersionFromString(const std::string& fileName);
 
-    uint32_t readMinorVersionFromString(std::string fileName);
+    uint32_t readMinorVersionFromString(const std::string& fileName);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Benchmark

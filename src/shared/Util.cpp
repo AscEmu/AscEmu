@@ -18,7 +18,7 @@ namespace Util
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoW String functions
 
-    uint8_t getLanguagesIdFromString(std::string langstr)
+    uint8_t getLanguagesIdFromString(const std::string& langstr)
     {
         if (langstr.compare("enGB") == 0 || langstr.compare("enUS") == 0)
             return 0;
@@ -81,7 +81,7 @@ namespace Util
         }
     }
 
-    uint32_t getNumberFromStringByRange(std::string string, int startCharacter, int endCharacter)
+    uint32_t getNumberFromStringByRange(const std::string& string, int startCharacter, int endCharacter)
     {
         auto const stringVersion = string.substr(startCharacter, endCharacter);
         return std::stoul(stringVersion);
@@ -95,14 +95,14 @@ namespace Util
         {
             return utf8::distance(utf8str.c_str(), utf8str.c_str() + utf8str.size());
         }
-        catch (std::exception)
+        catch (std::exception&)
         {
-            utf8str = "";
+            utf8str.clear();
             return 0;
         }
     }
 
-    bool Utf8toWStr(std::string utf8str, std::wstring& wstr)
+    bool Utf8toWStr(const std::string& utf8str, std::wstring& wstr)
     {
         try
         {
@@ -112,16 +112,16 @@ namespace Util
             if (len)
                 utf8::utf8to16(utf8str.c_str(), utf8str.c_str() + utf8str.size(), &wstr[0]);
         }
-        catch (std::exception)
+        catch (std::exception&)
         {
-            wstr = L"";
+            wstr.clear();
             return false;
         }
 
         return true;
     }
 
-    bool WStrToUtf8(std::wstring wstr, std::string& utf8str)
+    bool WStrToUtf8(const std::wstring& wstr, std::string& utf8str)
     {
         try
         {
@@ -130,9 +130,9 @@ namespace Util
             char* oend = utf8::utf16to8(wstr.c_str(), wstr.c_str() + wstr.size(), &utf8str[0]);
             utf8str.resize(oend - (&utf8str[0]));
         }
-        catch (std::exception)
+        catch (std::exception&)
         {
-            utf8str = "";
+            utf8str.clear();
             return false;
         }
 
@@ -156,14 +156,14 @@ namespace Util
         return uint32_t(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime).count());
     }
 
-    long long GetTimeDifferenceToNow(std::chrono::high_resolution_clock::time_point start_time)
+    long long GetTimeDifferenceToNow(const std::chrono::high_resolution_clock::time_point& start_time)
     {
         std::chrono::duration<float> float_diff = TimeNow() - start_time;
         std::chrono::milliseconds time_difference = std::chrono::duration_cast<std::chrono::milliseconds>(float_diff);
         return time_difference.count();
     }
 
-    long long GetTimeDifference(std::chrono::high_resolution_clock::time_point start_time, std::chrono::high_resolution_clock::time_point end_time)
+    long long GetTimeDifference(const std::chrono::high_resolution_clock::time_point& start_time, const std::chrono::high_resolution_clock::time_point& end_time)
     {
         std::chrono::duration<float> float_diff = end_time - start_time;
         std::chrono::milliseconds time_difference = std::chrono::duration_cast<std::chrono::milliseconds>(float_diff);
@@ -413,7 +413,7 @@ namespace Util
     //////////////////////////////////////////////////////////////////////////////////////////
     // C++17 filesystem dependent functions
 
-    std::map<uint32_t, std::string> getDirectoryContent(std::string pathName, std::string specialSuffix, bool withPath)
+    std::map<uint32_t, std::string> getDirectoryContent(const std::string& pathName, const std::string& specialSuffix, bool withPath)
     {
         std::map<uint32_t, std::string> directoryContentMap;
 
@@ -465,7 +465,7 @@ namespace Util
     }
 
     // Database update files only
-    uint32_t readMajorVersionFromString(std::string fileName)
+    uint32_t readMajorVersionFromString(const std::string& fileName)
     {
         //         <-------->  0 - 8
         // example: 20180722-00_some_update_file.sql
@@ -474,7 +474,7 @@ namespace Util
     }
 
     // Database update files only
-    uint32_t readMinorVersionFromString(std::string fileName)
+    uint32_t readMinorVersionFromString(const std::string& fileName)
     {
         //                  <-->  9 - 11
         // example: 20180722-00_some_update_file.sql

@@ -13,11 +13,11 @@ class Database;
 class DatabaseUpdater
 {
 public:
-    void static initBaseIfNeeded(std::string dbName, std::string dbBaseType, Database& dbPointer);
+    void static initBaseIfNeeded(const std::string& dbName, const std::string& dbBaseType, Database& dbPointer);
 
-    void static checkAndApplyDBUpdatesIfNeeded(std::string database, Database& dbPointer);
+    void static checkAndApplyDBUpdatesIfNeeded(const std::string& database, Database& dbPointer);
 
 private:
-    void static setupDatabase(std::string database,  Database& dbPointer);
-    void static applyUpdatesForDatabase(std::string database, Database& dbPointer);
+    void static setupDatabase(const std::string& database,  Database& dbPointer);
+    void static applyUpdatesForDatabase(const std::string& database, Database& dbPointer);
 };

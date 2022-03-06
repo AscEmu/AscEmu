@@ -19,7 +19,7 @@ class WowCrypt
 {
     public:
         WowCrypt();
-        ~WowCrypt();
+        ~WowCrypt() = default;
 
         bool isInitialized();
 

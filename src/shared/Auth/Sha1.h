@@ -31,7 +31,7 @@ class Sha1Hash
     public:
 
         Sha1Hash();
-        ~Sha1Hash();
+        ~Sha1Hash() = default;
 
         void UpdateFinalizeBigNumbers(BigNumber* bn0, ...);
         void UpdateBigNumbers(BigNumber* bn0, ...);

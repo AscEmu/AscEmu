@@ -23,10 +23,6 @@ WowCrypt::WowCrypt()
     m_recvJ = 0;
 }
 
-WowCrypt::~WowCrypt()
-{
-}
-
 bool WowCrypt::isInitialized()
 {
     return m_isInitialized;
@@ -42,7 +38,7 @@ void WowCrypt::initWotlkCrypt(uint8_t* key)
     uint8_t encryptHash[SHA_DIGEST_LENGTH];
     uint8_t decryptHash[SHA_DIGEST_LENGTH];
 
-    uint8_t pass[1024];
+    uint8_t pass[1024] = { 0 };
     uint32_t mdLength;
 
     HMAC(EVP_sha1(), send, seedLenght, key, 40, decryptHash, &mdLength);
@@ -68,7 +64,7 @@ void WowCrypt::initMopCrypt(uint8_t* key)
     uint8_t encryptHash[SHA_DIGEST_LENGTH];
     uint8_t decryptHash[SHA_DIGEST_LENGTH];
 
-    uint8_t pass[1024];
+    uint8_t pass[1024] = { 0 };
     uint32_t mdLength;
 
     HMAC(EVP_sha1(), send, seedLenght, key, 40, decryptHash, &mdLength);

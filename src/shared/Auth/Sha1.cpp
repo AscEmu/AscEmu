@@ -26,11 +26,6 @@ Sha1Hash::Sha1Hash()
     SHA1_Init(&mC);
 }
 
-Sha1Hash::~Sha1Hash()
-{
-    // nothing.. lol
-}
-
 void Sha1Hash::UpdateData(const uint8* dta, int len)
 {
     SHA1_Update(&mC, dta, len);

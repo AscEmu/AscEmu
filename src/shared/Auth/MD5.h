@@ -29,7 +29,7 @@ class MD5Hash
     public:
 
         MD5Hash();
-        ~MD5Hash();
+        ~MD5Hash() = default;
 
         void UpdateData(const uint8* dta, int len);
         void UpdateData(const std::string & str);

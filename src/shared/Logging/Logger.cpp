@@ -243,29 +243,27 @@ namespace AscEmu::Logging
     {
         switch (severity)
         {
-        case WARNING:
-            setConsoleColor(CONSOLE_COLOR_YELLOW);
-            break;
-        case FAILURE:
-        case FATAL:
-            setConsoleColor(CONSOLE_COLOR_RED);
-            break;
-        case BLUE:
-            setConsoleColor(CONSOLE_COLOR_BLUE);
-            break;
-        case YELLOW:
-            setConsoleColor(CONSOLE_COLOR_YELLOW);
-            break;
-        case PURPLE:
-            setConsoleColor(CONSOLE_COLOR_PURPLE);
-            break;
-        case CYAN:
-            setConsoleColor(CONSOLE_COLOR_CYAN);
-            break;
-        case INFO:
-        default:
-            setConsoleColor(CONSOLE_COLOR_NORMAL);
-            break;
+            case FAILURE:
+            case FATAL:
+                setConsoleColor(CONSOLE_COLOR_RED);
+                break;
+            case BLUE:
+                setConsoleColor(CONSOLE_COLOR_BLUE);
+                break;
+            case YELLOW:
+            case WARNING:
+                setConsoleColor(CONSOLE_COLOR_YELLOW);
+                break;
+            case PURPLE:
+                setConsoleColor(CONSOLE_COLOR_PURPLE);
+                break;
+            case CYAN:
+                setConsoleColor(CONSOLE_COLOR_CYAN);
+                break;
+            case INFO:
+            default:
+                setConsoleColor(CONSOLE_COLOR_NORMAL);
+                break;
         }
     }
 
@@ -290,7 +288,7 @@ namespace AscEmu::Logging
         }
     }
 
-    std::string getFormattedFileName(std::string path_prefix, std::string file_prefix, bool use_date_time)
+    std::string getFormattedFileName(const std::string& path_prefix, const std::string& file_prefix, bool use_date_time)
     {
         std::stringstream path_name;
         path_name << path_prefix;

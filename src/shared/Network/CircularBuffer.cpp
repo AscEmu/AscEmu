@@ -238,7 +238,6 @@ void CircularBuffer::Remove(size_t len)
             m_regionBPointer = NULL;
             m_regionBSize = 0;
             m_regionAPointer = m_buffer;
-            m_regionASize = 0;
         }
     }
 }

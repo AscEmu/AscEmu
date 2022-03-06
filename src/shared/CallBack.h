@@ -240,7 +240,7 @@ class SQLClassCallbackP0 : public SQLCallbackBase
         SCMethod method;
     public:
         SQLClassCallbackP0(T* instance, SCMethod imethod) : SQLCallbackBase(), base(instance), method(imethod) {}
-        ~SQLClassCallbackP0() {}
+        ~SQLClassCallbackP0() = default;
         void run(QueryResultVector & data) { (base->*method)(data); }
 };
 
@@ -253,7 +253,7 @@ class SQLClassCallbackP1 : public SQLCallbackBase
         P1 par1;
     public:
         SQLClassCallbackP1(T* instance, SCMethod imethod, P1 p1) : SQLCallbackBase(), base(instance), method(imethod), par1(p1) {}
-        ~SQLClassCallbackP1() {}
+        ~SQLClassCallbackP1() = default;
         void run(QueryResultVector & data) { (base->*method)(data, par1); }
 };
 
@@ -267,7 +267,7 @@ class SQLClassCallbackP2 : public SQLCallbackBase
         P2 par2;
     public:
         SQLClassCallbackP2(T* instance, SCMethod imethod, P1 p1, P2 p2) : SQLCallbackBase(), base(instance), method(imethod), par1(p1), par2(p2) {}
-        ~SQLClassCallbackP2() {}
+        ~SQLClassCallbackP2() = default;
         void run(QueryResultVector & data) { (base->*method)(data, par1, par2); }
 };
 
@@ -298,7 +298,7 @@ class SQLClassCallbackP4 : public SQLCallbackBase
         P4 par4;
     public:
         SQLClassCallbackP4(T* instance, SCMethod imethod, P1 p1, P2 p2, P3 p3, P4 p4) : SQLCallbackBase(), base(instance), method(imethod), par1(p1), par2(p2), par3(p3), par4(p4) {}
-        ~SQLClassCallbackP4() {}
+        ~SQLClassCallbackP4() = default;
         void run(QueryResultVector & data) { (base->*method)(data, par1, par2, par3, par4); }
 };
 

@@ -27,10 +27,7 @@ template<class TYPE>
 class LockedQueue
 {
     public:
-        ~LockedQueue()
-        {
-
-        }
+        ~LockedQueue() = default;
 
         inline void add(const TYPE & element)
         {

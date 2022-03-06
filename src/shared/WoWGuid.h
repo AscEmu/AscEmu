@@ -207,7 +207,7 @@ class SERVER_DECL WoWGuid
             _CompileByNew();
         }
 
-        void Init(WoWGuid guid)
+        void Init(const WoWGuid& guid)
         {
             Clear();
 

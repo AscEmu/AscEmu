@@ -11,8 +11,8 @@ class SERVER_DECL ConfigFile
 {
 public:
 
-    ConfigFile();
-    ~ConfigFile();
+    ConfigFile() = default;
+    ~ConfigFile() = default;
 
     struct ConfigValueSetting
     {
@@ -22,7 +22,7 @@ public:
         float asFloat;
     };
 
-    bool openAndLoadConfigFile(std::string configFileName);
+    bool openAndLoadConfigFile(const std::string& configFileName);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Parser
@@ -32,23 +32,23 @@ public:
     bool isComment(std::string& lineString, bool* isInMultilineComment);
     void applySettingToStore(std::string& str, ConfigValueSetting& setting);
 
-    uint32_t getSettingHash(std::string settingString);
+    uint32_t getSettingHash(const std::string& settingString);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Get functions
-    ConfigValueSetting* getSavedSetting(std::string sectionName, std::string confName);
+    ConfigValueSetting* getSavedSetting(const std::string& sectionName, const std::string& confName);
 
-    std::string getStringDefault(std::string sectionName, std::string confName, std::string defaultString);
-    bool getBoolDefault(std::string sectionName, std::string confName, bool defaultBool);
-    int getIntDefault(std::string sectionName, std::string confName, int defaultInt);
-    float getFloatDefault(std::string sectionName, std::string confName, float defaultFloat);
+    std::string getStringDefault(const std::string& sectionName, const std::string& confName, const std::string& defaultString);
+    bool getBoolDefault(const std::string& sectionName, const std::string& confName, bool defaultBool);
+    int getIntDefault(const std::string& sectionName, const std::string& confName, int defaultInt);
+    float getFloatDefault(const std::string& sectionName, const std::string& confName, float defaultFloat);
 
-    bool tryGetBool(std::string sectionName, std::string keyName, bool* b);
-    bool tryGetFloat(std::string sectionName, std::string keyName, float* f);
-    bool tryGetInt(std::string sectionName, std::string keyName, int* i);
-    bool tryGetInt(std::string sectionName, std::string keyName, uint8_t* i);
-    bool tryGetInt(std::string sectionName, std::string keyName, uint32_t* i);
-    bool tryGetString(std::string sectionName, std::string keyName, std::string* s);
+    bool tryGetBool(const std::string& sectionName, const std::string& keyName, bool* b);
+    bool tryGetFloat(const std::string& sectionName, const std::string& keyName, float* f);
+    bool tryGetInt(const std::string& sectionName, const std::string& keyName, int* i);
+    bool tryGetInt(const std::string& sectionName, const std::string& keyName, uint8_t* i);
+    bool tryGetInt(const std::string& sectionName, const std::string& keyName, uint32_t* i);
+    bool tryGetString(const std::string& sectionName, const std::string& keyName, std::string* s);
 
 private:
 

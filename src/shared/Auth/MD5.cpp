@@ -25,11 +25,6 @@ MD5Hash::MD5Hash()
     MD5_Init(&mC);
 }
 
-MD5Hash::~MD5Hash()
-{
-
-}
-
 void MD5Hash::UpdateData(const std::string & str)
 {
     UpdateData((const uint8*)str.data(), (int)str.length());
