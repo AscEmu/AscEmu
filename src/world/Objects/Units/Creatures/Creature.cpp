@@ -734,7 +734,7 @@ void Creature::SaveToDB()
         << m_position.y << ","
         << m_position.z << ","
         << m_position.o << ","
-        << getDefaultMovementType() << ","
+        << static_cast<uint32_t>(getDefaultMovementType()) << ","
         << getDisplayId() << ","
         << getFactionTemplate() << ","
         << getUnitFlags() << ","
