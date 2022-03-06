@@ -1,5 +1,8 @@
 # Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 
+set(CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 20)
+
 # we have our own custom modules and dep modules that we use. This tells cmakes where to find them.
 list(APPEND CMAKE_MODULE_PATH 
     ${CMAKE_SOURCE_DIR}/cmake/Modules
