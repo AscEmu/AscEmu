@@ -193,16 +193,7 @@ uint32 ItemInterface::m_CreateForPlayer(ByteBuffer* data)       // 100%
                     {
                         Item* pItem = static_cast<Container*>(m_pItems[i])->GetItem(static_cast<int16>(e));
                         if (pItem)
-                        {
-                            if (pItem->isContainer())
-                            {
-                                count += pItem->buildCreateUpdateBlockForPlayer(data, m_pOwner);
-                            }
-                            else
-                            {
-                                count += pItem->buildCreateUpdateBlockForPlayer(data, m_pOwner);
-                            }
-                        }
+                            count += pItem->buildCreateUpdateBlockForPlayer(data, m_pOwner);
                     }
                 }
                 else

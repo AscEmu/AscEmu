@@ -60,7 +60,6 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
             group->AddMember(_player->m_playerInfo);
             _player->m_dungeonDifficulty = group->m_difficulty;
             _player->sendDungeonDifficultyPacket();
-            return;
         }
         else
         {
@@ -79,6 +78,8 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
                 instance->m_creatorGuid = 0;
                 sInstanceMgr.SaveInstanceToDB(instance);
             }
+
+            delete group;
         }
     }
     else
@@ -542,6 +543,8 @@ void WorldSession::handleGroupAcceptOpcode(WorldPacket& /*recvPacket*/)
 
             sInstanceMgr.SaveInstanceToDB(instance);
         }
+
+        delete group;
     }
     else
     {

@@ -838,7 +838,7 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
 
     sQuestMgr.LoadExtraQuestStuff();
 
-    QuestRelation* qstrel = new QuestRelation;
+    QuestRelation* qstrel = nullptr;
     qstrel->qst = qst;
     qstrel->type = QUESTGIVER_QUEST_START;
 
@@ -860,7 +860,6 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
     SendMultilineMessage(m_session, recout.c_str());
     sGMLog.writefromsession(m_session, "added starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
 
-    delete qstrel;
     return true;
 }
 
@@ -925,7 +924,7 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
 
     sQuestMgr.LoadExtraQuestStuff();
 
-    QuestRelation* qstrel = new QuestRelation;
+    QuestRelation* qstrel = nullptr;
     qstrel->qst = qst;
     qstrel->type = QUESTGIVER_QUEST_END;
 
@@ -947,7 +946,6 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
     SendMultilineMessage(m_session, recout.c_str());
     sGMLog.writefromsession(m_session, "added finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
 
-    delete qstrel;
     return true;
 }
 
@@ -1025,7 +1023,7 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
 
     sQuestMgr.LoadExtraQuestStuff();
 
-    QuestRelation* qstrel = new QuestRelation;
+    QuestRelation* qstrel = nullptr;
     qstrel->qst = qst;
     qstrel->type = QUESTGIVER_QUEST_START;
 
@@ -1046,7 +1044,6 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
     SendMultilineMessage(m_session, recout.c_str());
     sGMLog.writefromsession(m_session, "deleted starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
 
-    delete qstrel;
     return true;
 }
 
@@ -1110,7 +1107,7 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
 
     sQuestMgr.LoadExtraQuestStuff();
 
-    QuestRelation* qstrel = new QuestRelation;
+    QuestRelation* qstrel = nullptr;
     qstrel->qst = qst;
     qstrel->type = QUESTGIVER_QUEST_END;
 
@@ -1132,7 +1129,6 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
     SendMultilineMessage(m_session, recout.c_str());
     sGMLog.writefromsession(m_session, "deleted finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
 
-    delete qstrel;
     return true;
 }
 

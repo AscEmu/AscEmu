@@ -36,7 +36,7 @@ namespace AscEmu::Packets
         std::string senderName;
         WoWGuid receiverGuid;
         std::string receiverName;
-        uint32_t achievementId;
+        uint32_t achievementId = 0;
 
         SmsgMessageChat() : SmsgMessageChat(0, 0, 0, "", 0, "", 0, "", 0)
         {

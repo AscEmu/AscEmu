@@ -275,10 +275,10 @@ struct Loot
     std::vector<LootItem> quest_items;      // PersonalItems
 
     uint32_t gold = 0;                      // Loot money
-    uint8_t unlootedCount;                  // Unlooted Items count
-    uint64_t roundRobinPlayer;              // Current Round Robin Player from the Group
+    uint8_t unlootedCount = 0;              // Unlooted Items count
+    uint64_t roundRobinPlayer = 0;          // Current Round Robin Player from the Group
 
-    Loot(uint32_t _gold = 0) : gold(_gold), unlootedCount(0) {}
+    Loot(uint32_t _gold = 0) : gold(_gold) {}
     ~Loot() { clear(); }
 
     // fill Current Loot Store for xx Items

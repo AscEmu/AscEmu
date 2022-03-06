@@ -140,7 +140,7 @@ void Vehicle::applyAllImmunities()
 
     // Mechanical units & vehicles (which are not Bosses) 
     // should also be immune on healing ( exceptions in switch below )
-    if (getBase()->ToCreature() && getBase()->ToCreature()->GetCreatureProperties()->Type == UNIT_TYPE_MECHANICAL && !getBase()->ToCreature()->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
+    if (getBase()->ToCreature() && getBase()->ToCreature()->GetCreatureProperties()->Type == UNIT_TYPE_MECHANICAL && getBase()->ToCreature()->GetCreatureProperties()->Rank != ELITE_WORLDBOSS)
     {
         //  Heal & dispel ...
         //  ToDo missing

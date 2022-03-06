@@ -251,7 +251,8 @@ void AuctionHouse::removeAuction(Auction* auction)
             if (cut && plr && plr->hasEnoughCoinage(static_cast<uint32_t>(cut)))
                 plr->modCoinage(-cut);
 
-            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, getId(), auction->ownerGuid, subject, "", 0, 0, auction->auctionItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
+            if (auction->auctionItem)
+                sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, getId(), auction->ownerGuid, subject, "", 0, 0, auction->auctionItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 
             // return bidders money
             if (auction->highestBidderGuid)

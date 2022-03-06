@@ -736,7 +736,7 @@ void WorldSession::handleReforgeItemOpcode(WorldPacket& recvData)
     }
 
     // todo implement special prices
-    if (!player->getCoinage() > uint64_t(100000)) // cheating
+    if (player->getCoinage() < uint64_t(100000)) // cheating
     {
         sendReforgeResult(false);
         return;

@@ -783,7 +783,8 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
 
         if (target->hasSpellImmunity(SPELL_IMMUNITY_KNOCKBACK))
         {
-            if (getSpellInfo()->getEffect(effindex) == SPELL_EFFECT_KNOCK_BACK || SPELL_EFFECT_KNOCK_BACK_DEST)
+            if (getSpellInfo()->getEffect(effindex) == SPELL_EFFECT_KNOCK_BACK ||
+                getSpellInfo()->getEffect(effindex) == SPELL_EFFECT_KNOCK_BACK_DEST)
                 return SPELL_DID_HIT_IMMUNE;
         }
 
