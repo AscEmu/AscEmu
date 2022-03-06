@@ -11,8 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: AscEmu Install Classic
+    - name: AscEmu Build Classic
       run: |
+        sudo apt-get update && sudo apt-get install -y gcc-11 g++
         sudo apt-get update && sudo apt-get install -y zlib1g-dev
         sudo apt-get update && sudo apt-get install -y libssl-dev
         sudo apt-get update && sudo apt-get install -y libpcre3-dev
