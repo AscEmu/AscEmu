@@ -427,10 +427,11 @@ void LfgMgr::InitializeLockedDungeons(Player* player)
     uint64 guid = player->getGuid();
     uint8 level = static_cast<uint8>(player->getLevel());
     uint8 expansion = static_cast<uint8>(player->GetSession()->GetFlags());
+
+#if VERSION_STRING < Cata
     LfgDungeonSet dungeons = GetDungeonsByRandom(0);
     LfgLockMap lock;
 
-#if VERSION_STRING < Cata
     for (LfgDungeonSet::const_iterator it = dungeons.begin(); it != dungeons.end(); ++it)
     {
         DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(*it);

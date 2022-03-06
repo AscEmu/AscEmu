@@ -79,7 +79,7 @@ class SERVER_DECL FastMutex
 
         FastMutex() : m_lock(0), m_recursiveCount(0) {}
 
-        ~FastMutex() {}
+        ~FastMutex() = default;
 
         bool AttemptAcquire();
         void Acquire();

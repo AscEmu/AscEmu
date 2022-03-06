@@ -38,7 +38,7 @@ class RC4Engine
         RC4Engine() : Initialized(false), index1(0), index2(0) {}
 
         //! Destructor
-        ~RC4Engine() { }
+        ~RC4Engine() = default;
 
         //! Initializes permutation, etc.
         void Setup(const unsigned char* keybytes, const unsigned int keylen)

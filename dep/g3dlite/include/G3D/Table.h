@@ -108,7 +108,7 @@ public:
     public:
         Key    key;
         Value  value;
-        Entry() {}
+        Entry() = default;
         Entry(const Key& k) : key(k) {}
         Entry(const Key& k, const Value& v) : key(k), value(v) {}
         bool operator==(const Entry &peer) const { return (key == peer.key && value == peer.value); }

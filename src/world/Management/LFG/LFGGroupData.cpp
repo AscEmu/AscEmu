@@ -29,9 +29,6 @@ LfgGroupData::LfgGroupData() :
     m_KicksLeft(LFG_GROUP_MAX_KICKS)
 {}
 
-LfgGroupData::~LfgGroupData()
-{}
-
 void LfgGroupData::SetState(LfgState state)
 {
     switch (state)

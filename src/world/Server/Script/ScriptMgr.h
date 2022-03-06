@@ -441,7 +441,7 @@ class SERVER_DECL TargetType
 {
 public:
     TargetType(uint32_t pTargetGen = TargetGen_Self, TargetFilter pTargetFilter = TargetFilter_None, uint32_t pMinTargetNumber = 0, uint32_t pMaxTargetNumber = 0);
-    ~TargetType();
+    ~TargetType() = default;
 
     uint32_t mTargetGenerator;      // Defines what kind of target should we try to find
     TargetFilter mTargetFilter;     // Defines filter of target

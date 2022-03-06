@@ -25,7 +25,7 @@ union FacingInfo
 
     FacingInfo(float o) : angle(o) { }
     FacingInfo(uint64_t t) : target(t) { }
-    FacingInfo() { }
+    FacingInfo() = default;
 };
 
 struct MoveSplineInitArgs

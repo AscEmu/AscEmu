@@ -891,10 +891,6 @@ TargetType::TargetType(uint32_t pTargetGen, TargetFilter pTargetFilter, uint32_t
     mTargetNumber[1] = pMaxTargetNumber;
 }
 
-TargetType::~TargetType()
-{
-}
-
 /* GameObjectAI Stuff */
 
 GameObjectAIScript::GameObjectAIScript(GameObject* goinstance) : _gameobject(goinstance)

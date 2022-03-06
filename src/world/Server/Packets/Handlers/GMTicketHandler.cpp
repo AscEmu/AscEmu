@@ -145,7 +145,7 @@ void WorldSession::handleGMTicketDeleteOpcode(WorldPacket& /*recvPacket*/)
         ss << ":";
         ss << ticket->guid;
 #endif
-        channel->say(_player, ss.str().c_str(), nullptr, true);
+        channel->say(_player, ss.str(), nullptr, true);
     }
 }
 
@@ -218,7 +218,7 @@ void WorldSession::handleGMTicketCreateOpcode(WorldPacket& recvPacket)
         ss << ":" << ticket->level;
         ss << ":" << ticket->name;
 #endif
-        channel->say(_player, ss.str().c_str(), nullptr, true);
+        channel->say(_player, ss.str(), nullptr, true);
     }
 }
 

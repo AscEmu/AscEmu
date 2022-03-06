@@ -134,6 +134,8 @@ void createExtendedLogDir()
 bool checkRequiredDirs()
 {
     std::vector<std::string> requiredDirs;
+    requiredDirs.reserve(3);
+
     requiredDirs.emplace_back(CONFDIR);
     requiredDirs.emplace_back("dbc");
     requiredDirs.emplace_back("maps");

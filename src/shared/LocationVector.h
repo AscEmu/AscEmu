@@ -34,7 +34,7 @@ class SERVER_DECL LocationVector
     public:
         // Constructors
         LocationVector(float X, float Y, float Z = 0, float O = 0) : x(X), y(Y), z(Z), o(O) {}
-        LocationVector() {}
+        LocationVector() = default;
 
         // MIT Start
         float getPositionX() const;

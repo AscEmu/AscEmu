@@ -127,7 +127,7 @@ void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const auto playerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.playerName.c_str());
+    const auto playerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.playerName);
     if (playerInfo == nullptr)
     {
         SystemMessage("That player cannot be found.");
@@ -317,7 +317,7 @@ void WorldSession::handleArenaTeamPromoteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const auto playerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.playerName.c_str());
+    const auto playerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.playerName);
     if (playerInfo == nullptr)
     {
         SystemMessage("That player cannot be found.");

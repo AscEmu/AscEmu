@@ -34,7 +34,7 @@ namespace Arcemu
         public:
 
             PerformanceCounter();
-            ~PerformanceCounter(){}
+            ~PerformanceCounter() = default;
 
             //////////////////////////////////////////////////////////////////////////////////////////
             ///float GetCurrentCPUUsage()

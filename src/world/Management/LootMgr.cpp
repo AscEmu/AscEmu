@@ -284,6 +284,7 @@ void LootMgr::loadLootTables(const char* szTableName, LootTemplateMap* LootTable
         Field* fields = result->Fetch();
 
         std::vector<float> chance;
+        chance.reserve(4);
 
         uint32_t entry = fields[0].GetUInt32();
         uint32_t itemId = fields[1].GetUInt32();

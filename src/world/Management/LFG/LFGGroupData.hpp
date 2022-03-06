@@ -19,7 +19,7 @@ class LfgGroupData
     public:
 
         LfgGroupData();
-        ~LfgGroupData();
+        ~LfgGroupData() = default;
 
         // General
         void SetState(LfgState state);

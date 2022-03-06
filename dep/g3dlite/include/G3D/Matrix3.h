@@ -80,7 +80,7 @@ public:
 
     /** Initial values are undefined for performance. 
         \sa Matrix3::zero, Matrix3::identity, Matrix3::fromAxisAngle, etc.*/
-    Matrix3() {}
+    Matrix3() = default;
 
     Matrix3 (class BinaryInput& b);
     Matrix3 (const float aafEntry[3][3]);

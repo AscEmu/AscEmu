@@ -346,7 +346,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
         data.WriteByteSeq(inviter_guid[5]);
         data.WriteByteSeq(inviter_guid[7]);
 
-        data.WriteString(_player->getName().c_str());
+        data.WriteString(_player->getName());
 
         data << int32_t(0);
 
@@ -417,7 +417,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
     data.WriteByteSeq(inviter_guid[5]);
     data.WriteByteSeq(inviter_guid[7]);
 
-    data.WriteString(_player->getName().c_str());
+    data.WriteString(_player->getName());
 
     data << int32_t(0);
 

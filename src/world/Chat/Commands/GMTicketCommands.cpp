@@ -63,7 +63,7 @@ bool ChatHandler::HandleGMTicketListCommand(const char* /*args*/, WorldSession* 
             zone = plr->GetZoneId();
         }
         ss << "GmTicket 0," << (*itr)->name << "," << (*itr)->level << ",0," << zone;
-        chn->say(cplr, ss.str().c_str(), cplr, true);
+        chn->say(cplr, ss.str(), cplr, true);
     }
 
     return true;
@@ -106,7 +106,7 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
 
         std::stringstream ss;
         ss << "GmTicket " << (firstLine ? "3" : "4") << "," << ticket->name << "," << start;
-        chn->say(cplr, ss.str().c_str(), cplr, true);
+        chn->say(cplr, ss.str(), cplr, true);
 
         firstLine = false;
 
@@ -116,7 +116,7 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
     {
         std::stringstream ss;
         ss << "GmTicket " << (firstLine ? "3" : "4") << "," << ticket->name << "," << start;
-        chn->say(cplr, ss.str().c_str(), cplr, true);
+        chn->say(cplr, ss.str(), cplr, true);
     }
     delete[] msg;
 
@@ -148,7 +148,7 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
 
     std::stringstream ss;
     ss << "GmTicket 1," << ticket->name;
-    chn->say(cplr, ss.str().c_str(), NULL, true);
+    chn->say(cplr, ss.str(), NULL, true);
 
     sTicketMgr.removeGMTicket(ticket->guid);
 
