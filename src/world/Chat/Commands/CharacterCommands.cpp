@@ -1412,7 +1412,7 @@ bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_ses
     char current_name[100];
     char new_name_cmd[100];
 
-    if (sscanf(args, "%s %s", &current_name, &new_name_cmd) != 2)
+    if (sscanf(args, "%s %s", current_name, new_name_cmd) != 2)
         return false;
 
     static const char* bannedCharacters = "\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";

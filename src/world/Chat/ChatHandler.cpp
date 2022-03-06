@@ -158,7 +158,7 @@ int ChatHandler::ParseCommands(const char* text, WorldSession* session)
             SystemMessage(session, "There is no such command, or you do not have access to it.");
         }
     }
-    catch (AscEmu::Exception::PlayerNotFoundException e)
+    catch (AscEmu::Exception::PlayerNotFoundException& e)
     {
         // TODO: Handle this properly (what do we do when we're running commands with no player object?)
         sLogger.failure("PlayerNotFoundException occurred when processing command [%s]. Exception: %s", text, e.AEwhat());
