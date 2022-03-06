@@ -270,7 +270,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
             if (aiScripts.action == actionSendMessage)
             {
-                auto message = new AI_SCRIPT_SENDMESSAGES();
+                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
 
                 message->textId = aiScripts.textId;
                 message->canche = aiScripts.chance;
@@ -278,7 +278,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->healthPrecent = aiScripts.maxHealth;
                 message->maxCount = aiScripts.maxCount;
 
-                mEmotesOnLoad.push_back(*message);
+                mEmotesOnLoad.push_back(std::move(message));
             }
         }
             break;
@@ -290,7 +290,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
             if (aiScripts.action == actionSendMessage)
             {
-                auto message = new AI_SCRIPT_SENDMESSAGES();
+                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
 
                 message->textId = aiScripts.textId;
                 message->canche = aiScripts.chance;
@@ -298,7 +298,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->healthPrecent = aiScripts.maxHealth;
                 message->maxCount = aiScripts.maxCount;
 
-                mEmotesOnCombatStart.push_back(*message);
+                mEmotesOnCombatStart.push_back(std::move(message));
             }
         }
             break;
@@ -308,7 +308,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
             if (aiScripts.action == actionSendMessage)
             {
-                auto message = new AI_SCRIPT_SENDMESSAGES();
+                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
 
                 message->textId = aiScripts.textId;
                 message->canche = aiScripts.chance;
@@ -316,7 +316,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->healthPrecent = aiScripts.maxHealth;
                 message->maxCount = aiScripts.maxCount;
 
-                mEmotesOnLeaveCombat.push_back(*message);
+                mEmotesOnLeaveCombat.push_back(std::move(message));
             }
         }
             break;
@@ -326,7 +326,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
             if (aiScripts.action == actionSendMessage)
             {
-                auto message = new AI_SCRIPT_SENDMESSAGES();
+                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
 
                 message->textId = aiScripts.textId;
                 message->canche = aiScripts.chance;
@@ -334,7 +334,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->healthPrecent = aiScripts.maxHealth;
                 message->maxCount = aiScripts.maxCount;
 
-                mEmotesOnDied.push_back(*message);
+                mEmotesOnDied.push_back(std::move(message));
             }
         }
             break;
@@ -344,7 +344,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
             if (aiScripts.action == actionSendMessage)
             {
-                auto message = new AI_SCRIPT_SENDMESSAGES();
+                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
 
                 message->textId = aiScripts.textId;
                 message->canche = aiScripts.chance;
@@ -352,7 +352,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->healthPrecent = aiScripts.maxHealth;
                 message->maxCount = aiScripts.maxCount;
 
-                mEmotesOnTargetDied.push_back(*message);
+                mEmotesOnTargetDied.push_back(std::move(message));
             }
         }
             break;
@@ -364,7 +364,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
             if (aiScripts.action == actionSendMessage)
             {
-                auto message = new AI_SCRIPT_SENDMESSAGES();
+                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
 
                 message->textId = aiScripts.textId;
                 message->canche = aiScripts.chance;
@@ -372,7 +372,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->healthPrecent = aiScripts.maxHealth;
                 message->maxCount = aiScripts.maxCount;
 
-                mEmotesOnAIUpdate.push_back(*message);
+                mEmotesOnAIUpdate.push_back(std::move(message));
             }
         }
             break;
@@ -384,7 +384,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
             if (aiScripts.action == actionSendMessage)
             {
-                auto message = new AI_SCRIPT_SENDMESSAGES();
+                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
 
                 message->textId = aiScripts.textId;
                 message->canche = aiScripts.chance;
@@ -392,7 +392,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->healthPrecent = aiScripts.maxHealth;
                 message->maxCount = aiScripts.maxCount;
 
-                mEmotesOnCallForHelp.push_back(*message);
+                mEmotesOnCallForHelp.push_back(std::move(message));
             }
         }
             break;
@@ -402,7 +402,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
             if (aiScripts.action == actionSendMessage)
             {
-                auto message = new AI_SCRIPT_SENDMESSAGES();
+                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
 
                 message->textId = aiScripts.textId;
                 message->canche = aiScripts.chance;
@@ -410,7 +410,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->healthPrecent = aiScripts.maxHealth;
                 message->maxCount = aiScripts.maxCount;
 
-                mEmotesOnRandomWaypoint.push_back(*message);
+                mEmotesOnRandomWaypoint.push_back(std::move(message));
             }
         }
             break;
@@ -420,7 +420,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
             if (aiScripts.action == actionSendMessage)
             {
-                auto message = new AI_SCRIPT_SENDMESSAGES();
+                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
 
                 message->textId = aiScripts.textId;
                 message->canche = aiScripts.chance;
@@ -428,7 +428,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->healthPrecent = aiScripts.maxHealth;
                 message->maxCount = aiScripts.maxCount;
 
-                mEmotesOnDamageTaken.push_back(*message);
+                mEmotesOnDamageTaken.push_back(std::move(message));
             }
         }
             break;
@@ -440,7 +440,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
             if (aiScripts.action == actionSendMessage)
             {
-                auto message = new AI_SCRIPT_SENDMESSAGES();
+                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
 
                 message->textId = aiScripts.textId;
                 message->canche = aiScripts.chance;
@@ -448,7 +448,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 message->healthPrecent = aiScripts.maxHealth;
                 message->maxCount = aiScripts.maxCount;
 
-                mEmotesOnFlee.push_back(*message);
+                mEmotesOnFlee.push_back(std::move(message));
             }
 
             // Incase we want a custom Flee Timer
@@ -541,6 +541,8 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", onAIUpdateScript.spellId);
         }
     }
+
+    sLogger.debug("Sizeof emote %i", mEmotesOnCombatStart.size());
 }
 
 Unit* AIInterface::getUnit() const
@@ -3929,7 +3931,7 @@ void AIInterface::sendStoredText(definedEmoteVector store, Unit* target)
     float randomChance = Util::getRandomFloat(100.0f);
 
     // Shuffle Around our textIds to randomize it
-    if (store.size())
+    if (!store.empty())
     {
         for (uint16_t i = 0; i < store.size() - 1; ++i)
         {
@@ -3939,25 +3941,25 @@ void AIInterface::sendStoredText(definedEmoteVector store, Unit* target)
 
         for (auto mEmotes : store)
         {
-            if (mEmotes.phase && mEmotes.phase != internalPhase)
+            if (mEmotes->phase && mEmotes->phase != internalPhase)
                 continue;
 
-            if (mEmotes.healthPrecent && float(getUnit()->getHealthPct()) < mEmotes.healthPrecent)
+            if (mEmotes->healthPrecent && float(getUnit()->getHealthPct()) < mEmotes->healthPrecent)
                 continue;
 
-            if (mEmotes.maxCount && mEmotes.count == mEmotes.maxCount)
+            if (mEmotes->maxCount && mEmotes->count == mEmotes->maxCount)
                 continue;
 
-            if (randomChance < mEmotes.canche)
+            if (randomChance < mEmotes->canche)
             {
-                MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(mEmotes.textId);
+                MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(mEmotes->textId);
                 if (npcScriptText != nullptr)
                     getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text, target, 0);
 
                 if (npcScriptText->sound != 0)
                     getUnit()->PlaySoundToSet(npcScriptText->sound);
 
-                ++mEmotes.count;
+                ++mEmotes->count;
 
                 break;
             }

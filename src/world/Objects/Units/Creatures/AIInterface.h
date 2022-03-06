@@ -559,7 +559,7 @@ public:
     std::vector<MySQLStructure::CreatureAIScripts> onFleeScripts;
 
 private:
-    typedef std::vector<AI_SCRIPT_SENDMESSAGES> definedEmoteVector;
+    typedef std::vector<std::shared_ptr<AI_SCRIPT_SENDMESSAGES>> definedEmoteVector;
     definedEmoteVector mEmotesOnLoad;
     definedEmoteVector mEmotesOnCombatStart;
     definedEmoteVector mEmotesOnLeaveCombat;
