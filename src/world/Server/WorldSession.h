@@ -987,11 +987,11 @@ class SERVER_DECL WorldSession
         uint32 _accountId;
         uint32 _accountFlags;
         std::string _accountName;
-
+#if VERSION_STRING > TBC
         bool has_level_55_char; // death knights
         bool has_dk;
-
-        //uint16 _TEMP_ERR_CREATE_CODE; // increments
+#endif
+        // uint16 _TEMP_ERR_CREATE_CODE; // increments
         uint8_t _side;
 
         WoWGuid m_MoverWoWGuid;

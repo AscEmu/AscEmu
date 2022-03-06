@@ -18,7 +18,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "Server/MainServerDefines.h"
 #include "Server/Master.h"
 
@@ -27,9 +26,6 @@
 #endif
 #include "CrashHandler.h"
 #include "ServerState.h"
-
-
-uint8 loglevel = 0;
 
 #ifndef WIN32
 int unix_main(int argc, char** argv)

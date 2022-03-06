@@ -759,7 +759,9 @@ void WorldSession::characterEnumProc(QueryResult* result)
 {
     std::vector<CharEnumData> enumData;
 
+#if VERSION_STRING > TBC
     has_dk = false;
+#endif
     _side = 255;
 
     uint8_t charRealCount = 0;

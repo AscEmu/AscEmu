@@ -56,8 +56,10 @@ WorldSession::WorldSession(uint32 id, std::string name, WorldSocket* sock) :
     _accountId(id),
     _accountFlags(0),
     _accountName(name),
+#if VERSION_STRING > TBC
     has_level_55_char(false),
     has_dk(false),
+#endif
     _side(255),
     _logoutTime(0),
     permissions(nullptr),
