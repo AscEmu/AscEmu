@@ -9,8 +9,8 @@ message(STATUS "Applying settings for ${CMAKE_CXX_COMPILER_ID}")
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
 # set defines for msvc
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c++17 /EHa /MP /bigobj")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17 /EHa /MP /bigobj")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c++20 /EHa /MP /bigobj")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20 /EHa /MP /bigobj")
 
 # set build platform specific settings (x86/x64)
 if (NOT IS_64BIT)

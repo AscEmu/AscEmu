@@ -103,7 +103,8 @@ static void createErrorMessage(
         if (NULL != formatMsg) {
             realLastErr = formatMsg;
         } else {
-            realLastErr = _T("Last error code does not exist.");
+            const char* noLastError = "Last error code does not exist.";
+            realLastErr = const_cast<LPSTR>(noLastError);
         }
 
         if (lastErr != 0) {

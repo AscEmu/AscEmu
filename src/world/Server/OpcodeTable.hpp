@@ -143,7 +143,7 @@ class SERVER_DECL OpcodeTables
             uint32_t internalId;
         };
 
-        std::vector<HexToId> _versionHexTable[MAX_VERSION_INDEX];
+        std::vector<HexToId> _versionHexTable[MAX_VERSION_INDEX] = {};
 };
 
 #define sOpcodeTables OpcodeTables::getInstance()

@@ -20,12 +20,18 @@ void OpcodeTables::initialize()
 {
     std::cout << "OpcodeTables preparing version specific tables." << "\n";
 
+    uint32_t valueCount = 0;
     // fill vector
     for (const auto opcodeStore : multiversionOpcodeStore)
     {   
         for (auto hexIndex = 0; hexIndex < MAX_VERSION_INDEX; ++hexIndex)
+        {
             _versionHexTable[hexIndex].emplace_back(opcodeStore.second.hexValues[hexIndex], opcodeStore.first);
+            ++valueCount;
+        }
     }
+
+    std::cout << "OpcodeTables prepared " << valueCount << " hexvalues for 5 version" << "\n";
 }
 
 void OpcodeTables::finalize()

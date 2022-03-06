@@ -100,84 +100,85 @@ void StartCrashHandler()
 ///////////////////////////////////////////////////////////////////////////////
 // GetExceptionDescription
 // Translate the exception code into something human readable
-static const TCHAR* GetExceptionDescription(DWORD ExceptionCode)
-{
-    struct ExceptionNames
-    {
-        DWORD    ExceptionCode;
-        TCHAR*     ExceptionName;
-    };
-
-#if 0  // from winnt.h
-#define STATUS_WAIT_0                    ((DWORD   )0x00000000L)
-#define STATUS_ABANDONED_WAIT_0          ((DWORD   )0x00000080L)
-#define STATUS_USER_APC                  ((DWORD   )0x000000C0L)
-#define STATUS_TIMEOUT                   ((DWORD   )0x00000102L)
-#define STATUS_PENDING                   ((DWORD   )0x00000103L)
-#define STATUS_SEGMENT_NOTIFICATION      ((DWORD   )0x40000005L)
-#define STATUS_GUARD_PAGE_VIOLATION      ((DWORD   )0x80000001L)
-#define STATUS_DATATYPE_MISALIGNMENT     ((DWORD   )0x80000002L)
-#define STATUS_BREAKPOINT                ((DWORD   )0x80000003L)
-#define STATUS_SINGLE_STEP               ((DWORD   )0x80000004L)
-#define STATUS_ACCESS_VIOLATION          ((DWORD   )0xC0000005L)
-#define STATUS_IN_PAGE_ERROR             ((DWORD   )0xC0000006L)
-#define STATUS_INVALID_HANDLE            ((DWORD   )0xC0000008L)
-#define STATUS_NO_MEMORY                 ((DWORD   )0xC0000017L)
-#define STATUS_ILLEGAL_INSTRUCTION       ((DWORD   )0xC000001DL)
-#define STATUS_NONCONTINUABLE_EXCEPTION  ((DWORD   )0xC0000025L)
-#define STATUS_INVALID_DISPOSITION       ((DWORD   )0xC0000026L)
-#define STATUS_ARRAY_BOUNDS_EXCEEDED     ((DWORD   )0xC000008CL)
-#define STATUS_FLOAT_DENORMAL_OPERAND    ((DWORD   )0xC000008DL)
-#define STATUS_FLOAT_DIVIDE_BY_ZERO      ((DWORD   )0xC000008EL)
-#define STATUS_FLOAT_INEXACT_RESULT      ((DWORD   )0xC000008FL)
-#define STATUS_FLOAT_INVALID_OPERATION   ((DWORD   )0xC0000090L)
-#define STATUS_FLOAT_OVERFLOW            ((DWORD   )0xC0000091L)
-#define STATUS_FLOAT_STACK_CHECK         ((DWORD   )0xC0000092L)
-#define STATUS_FLOAT_UNDERFLOW           ((DWORD   )0xC0000093L)
-#define STATUS_INTEGER_DIVIDE_BY_ZERO    ((DWORD   )0xC0000094L)
-#define STATUS_INTEGER_OVERFLOW          ((DWORD   )0xC0000095L)
-#define STATUS_PRIVILEGED_INSTRUCTION    ((DWORD   )0xC0000096L)
-#define STATUS_STACK_OVERFLOW            ((DWORD   )0xC00000FDL)
-#define STATUS_CONTROL_C_EXIT            ((DWORD   )0xC000013AL)
-#define STATUS_FLOAT_MULTIPLE_FAULTS     ((DWORD   )0xC00002B4L)
-#define STATUS_FLOAT_MULTIPLE_TRAPS      ((DWORD   )0xC00002B5L)
-#define STATUS_ILLEGAL_VLM_REFERENCE     ((DWORD   )0xC00002C0L)
-#endif
-
-    ExceptionNames ExceptionMap[] =
-    {
-        {0x40010005, _T("a Control-C")},
-        {0x40010008, _T("a Control-Break")},
-        {0x80000002, _T("a Datatype Misalignment")},
-        {0x80000003, _T("a Breakpoint")},
-        {0xc0000005, _T("an Access Violation")},
-        {0xc0000006, _T("an In Page Error")},
-        {0xc0000017, _T("a No Memory")},
-        {0xc000001d, _T("an Illegal Instruction")},
-        {0xc0000025, _T("a Noncontinuable Exception")},
-        {0xc0000026, _T("an Invalid Disposition")},
-        {0xc000008c, _T("a Array Bounds Exceeded")},
-        {0xc000008d, _T("a Float Denormal Operand")},
-        {0xc000008e, _T("a Float Divide by Zero")},
-        {0xc000008f, _T("a Float Inexact Result")},
-        {0xc0000090, _T("a Float Invalid Operation")},
-        {0xc0000091, _T("a Float Overflow")},
-        {0xc0000092, _T("a Float Stack Check")},
-        {0xc0000093, _T("a Float Underflow")},
-        {0xc0000094, _T("an Integer Divide by Zero")},
-        {0xc0000095, _T("an Integer Overflow")},
-        {0xc0000096, _T("a Privileged Instruction")},
-        {0xc00000fD, _T("a Stack Overflow")},
-        {0xc0000142, _T("a DLL Initialization Failed")},
-        {0xe06d7363, _T("a Microsoft C++ Exception")},
-    };
-
-    for(int i = 0; i < sizeof(ExceptionMap) / sizeof(ExceptionMap[0]); i++)
-        if(ExceptionCode == ExceptionMap[i].ExceptionCode)
-            return ExceptionMap[i].ExceptionName;
-
-    return _T("an Unknown exception type");
-}
+// Zyres: not used 2022/03/06
+//static const TCHAR* GetExceptionDescription(DWORD ExceptionCode)
+//{
+//    struct ExceptionNames
+//    {
+//        DWORD    ExceptionCode;
+//        TCHAR*     ExceptionName;
+//    };
+//
+//#if 0  // from winnt.h
+//#define STATUS_WAIT_0                    ((DWORD   )0x00000000L)
+//#define STATUS_ABANDONED_WAIT_0          ((DWORD   )0x00000080L)
+//#define STATUS_USER_APC                  ((DWORD   )0x000000C0L)
+//#define STATUS_TIMEOUT                   ((DWORD   )0x00000102L)
+//#define STATUS_PENDING                   ((DWORD   )0x00000103L)
+//#define STATUS_SEGMENT_NOTIFICATION      ((DWORD   )0x40000005L)
+//#define STATUS_GUARD_PAGE_VIOLATION      ((DWORD   )0x80000001L)
+//#define STATUS_DATATYPE_MISALIGNMENT     ((DWORD   )0x80000002L)
+//#define STATUS_BREAKPOINT                ((DWORD   )0x80000003L)
+//#define STATUS_SINGLE_STEP               ((DWORD   )0x80000004L)
+//#define STATUS_ACCESS_VIOLATION          ((DWORD   )0xC0000005L)
+//#define STATUS_IN_PAGE_ERROR             ((DWORD   )0xC0000006L)
+//#define STATUS_INVALID_HANDLE            ((DWORD   )0xC0000008L)
+//#define STATUS_NO_MEMORY                 ((DWORD   )0xC0000017L)
+//#define STATUS_ILLEGAL_INSTRUCTION       ((DWORD   )0xC000001DL)
+//#define STATUS_NONCONTINUABLE_EXCEPTION  ((DWORD   )0xC0000025L)
+//#define STATUS_INVALID_DISPOSITION       ((DWORD   )0xC0000026L)
+//#define STATUS_ARRAY_BOUNDS_EXCEEDED     ((DWORD   )0xC000008CL)
+//#define STATUS_FLOAT_DENORMAL_OPERAND    ((DWORD   )0xC000008DL)
+//#define STATUS_FLOAT_DIVIDE_BY_ZERO      ((DWORD   )0xC000008EL)
+//#define STATUS_FLOAT_INEXACT_RESULT      ((DWORD   )0xC000008FL)
+//#define STATUS_FLOAT_INVALID_OPERATION   ((DWORD   )0xC0000090L)
+//#define STATUS_FLOAT_OVERFLOW            ((DWORD   )0xC0000091L)
+//#define STATUS_FLOAT_STACK_CHECK         ((DWORD   )0xC0000092L)
+//#define STATUS_FLOAT_UNDERFLOW           ((DWORD   )0xC0000093L)
+//#define STATUS_INTEGER_DIVIDE_BY_ZERO    ((DWORD   )0xC0000094L)
+//#define STATUS_INTEGER_OVERFLOW          ((DWORD   )0xC0000095L)
+//#define STATUS_PRIVILEGED_INSTRUCTION    ((DWORD   )0xC0000096L)
+//#define STATUS_STACK_OVERFLOW            ((DWORD   )0xC00000FDL)
+//#define STATUS_CONTROL_C_EXIT            ((DWORD   )0xC000013AL)
+//#define STATUS_FLOAT_MULTIPLE_FAULTS     ((DWORD   )0xC00002B4L)
+//#define STATUS_FLOAT_MULTIPLE_TRAPS      ((DWORD   )0xC00002B5L)
+//#define STATUS_ILLEGAL_VLM_REFERENCE     ((DWORD   )0xC00002C0L)
+//#endif
+//
+//    ExceptionNames ExceptionMap[] =
+//    {
+//        {0x40010005, _T("a Control-C")},
+//        {0x40010008, _T("a Control-Break")},
+//        {0x80000002, _T("a Datatype Misalignment")},
+//        {0x80000003, _T("a Breakpoint")},
+//        {0xc0000005, _T("an Access Violation")},
+//        {0xc0000006, _T("an In Page Error")},
+//        {0xc0000017, _T("a No Memory")},
+//        {0xc000001d, _T("an Illegal Instruction")},
+//        {0xc0000025, _T("a Noncontinuable Exception")},
+//        {0xc0000026, _T("an Invalid Disposition")},
+//        {0xc000008c, _T("a Array Bounds Exceeded")},
+//        {0xc000008d, _T("a Float Denormal Operand")},
+//        {0xc000008e, _T("a Float Divide by Zero")},
+//        {0xc000008f, _T("a Float Inexact Result")},
+//        {0xc0000090, _T("a Float Invalid Operation")},
+//        {0xc0000091, _T("a Float Overflow")},
+//        {0xc0000092, _T("a Float Stack Check")},
+//        {0xc0000093, _T("a Float Underflow")},
+//        {0xc0000094, _T("an Integer Divide by Zero")},
+//        {0xc0000095, _T("an Integer Overflow")},
+//        {0xc0000096, _T("a Privileged Instruction")},
+//        {0xc00000fD, _T("a Stack Overflow")},
+//        {0xc0000142, _T("a DLL Initialization Failed")},
+//        {0xe06d7363, _T("a Microsoft C++ Exception")},
+//    };
+//
+//    for(int i = 0; i < sizeof(ExceptionMap) / sizeof(ExceptionMap[0]); i++)
+//        if(ExceptionCode == ExceptionMap[i].ExceptionCode)
+//            return ExceptionMap[i].ExceptionName;
+//
+//    return _T("an Unknown exception type");
+//}
 
 void echo(const char* format, ...)
 {
@@ -197,14 +198,15 @@ void echo(const char* format, ...)
     va_end(ap);
 }
 
-void PrintCrashInformation(PEXCEPTION_POINTERS except)
-{
-    echo("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
-    echo("Server has crashed. Reason was:\n");
-    echo("   %s at 0x%08X\n", GetExceptionDescription(except->ExceptionRecord->ExceptionCode),
-         except->ExceptionRecord->ExceptionAddress);
-    echo("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
-}
+// Zyres: not used 2022/03/06
+//void PrintCrashInformation(PEXCEPTION_POINTERS except)
+//{
+//    echo("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
+//    echo("Server has crashed. Reason was:\n");
+//    echo("   %s at 0x%08X\n", GetExceptionDescription(except->ExceptionRecord->ExceptionCode),
+//         except->ExceptionRecord->ExceptionAddress);
+//    echo("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
+//}
 
 void CStackWalker::OnSymInit(LPCSTR /*szSearchPath*/, DWORD /*symOptions*/, LPCSTR /*szUserName*/)
 {

@@ -1882,16 +1882,17 @@ template <class T> void QuestMgr::_AddQuest(uint32 entryid, QuestProperties cons
     }
 }
 
-void QuestMgr::_CleanLine(std::string* str)
-{
-    _RemoveChar("\r", str);
-    _RemoveChar("\n", str);
-
-    while (str->c_str()[0] == 32)
-    {
-        str->erase(0, 1);
-    }
-}
+// Zyres: not used 2022/03/06
+//void QuestMgr::_CleanLine(std::string* str)
+//{
+//    _RemoveChar("\r", str);
+//    _RemoveChar("\n", str);
+//
+//    while (str->c_str()[0] == 32)
+//    {
+//        str->erase(0, 1);
+//    }
+//}
 
 void QuestMgr::_RemoveChar(char* c, std::string* str)
 {

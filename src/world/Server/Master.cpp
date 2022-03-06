@@ -251,7 +251,7 @@ void checkAdditinaloDirs()
 
 bool Master::Run(int /*argc*/, char** /*argv*/)
 {
-    char* config_file = CONFDIR "/world.conf";
+    std::string config_file = CONFDIR "/world.conf";
 
     UNIXTIME = time(NULL);
     g_localTime = *localtime(&UNIXTIME);
@@ -697,7 +697,7 @@ void Master::PrintBanner()
     sLogger.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "========================================================");
 }
 
-bool Master::LoadWorldConfiguration(char* config_file)
+bool Master::LoadWorldConfiguration(std::string config_file)
 {
     sLogger.info("Config : Loading Config Files...");
     if (Config.MainConfig.openAndLoadConfigFile(config_file))

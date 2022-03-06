@@ -223,7 +223,8 @@ class SERVER_DECL QuestMgr
 
         // Quest Loading
         void _RemoveChar(char* c, std::string* str);
-        void _CleanLine(std::string* str);
+        // Zyres: not used 2022/03/06
+        //void _CleanLine(std::string* str);
 };
 
 template<> inline std::unordered_map<uint32, std::list<QuestRelation*>* >& QuestMgr::_GetList<Creature>()

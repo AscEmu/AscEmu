@@ -28,7 +28,7 @@ class SERVER_DECL Master
 
         bool Run(int argc, char** argv);
         void PrintBanner();
-        bool LoadWorldConfiguration(char* config_file);
+        bool LoadWorldConfiguration(std::string config_file);
         void OpenCheatLogFiles();
         void StartNetworkSubsystem();
         void StartRemoteConsole();
