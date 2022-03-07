@@ -728,90 +728,84 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     }
 
     // Allocate session
-    if (WorldSession* pSession = new WorldSession(AccountID, AccountName, this))
-    {
+    WorldSession* pSession = new WorldSession(AccountID, AccountName, this)
+
         mSession = pSession;
 
-        // aquire delete mutex
-        pSession->deleteMutex.Acquire();
+    // aquire delete mutex
+    pSession->deleteMutex.Acquire();
 
-        // Set session properties
-        pSession->SetClientBuild(mClientBuild);
+    // Set session properties
+    pSession->SetClientBuild(mClientBuild);
 
 #if VERSION_STRING >= Cata
-        pSession->readAddonInfoPacket(mAddonInfoBuffer);
+    pSession->readAddonInfoPacket(mAddonInfoBuffer);
 #endif
 
-        pSession->LoadSecurity(GMFlags);
-        pSession->SetAccountFlags(AccountFlags);
-        pSession->m_lastPing = static_cast<uint32>(UNIXTIME);
-        pSession->language = Util::getLanguagesIdFromString(lang);
+    pSession->LoadSecurity(GMFlags);
+    pSession->SetAccountFlags(AccountFlags);
+    pSession->m_lastPing = static_cast<uint32>(UNIXTIME);
+    pSession->language = Util::getLanguagesIdFromString(lang);
 
 #if VERSION_STRING != Mop
-        recvData >> pSession->m_muted;
+    recvData >> pSession->m_muted;
 #else
-        if (recvData.rpos() != recvData.wpos())
-            recvData >> pSession->m_muted;
+    if (recvData.rpos() != recvData.wpos())
+        recvData >> pSession->m_muted;
 #endif
 
-        for (uint8_t i = 0; i < 8; ++i)
-            pSession->SetAccountData(i, nullptr, true, 0);
+    for (uint8_t i = 0; i < 8; ++i)
+        pSession->SetAccountData(i, nullptr, true, 0);
 
-        if (worldConfig.server.useAccountData)
-        {
-            QueryResult* pResult = CharacterDatabase.Query("SELECT * FROM account_data WHERE acct = %u", AccountID);
-            if (pResult == nullptr)
-                CharacterDatabase.Execute("INSERT INTO account_data VALUES(%u, '', '', '', '', '', '', '', '', '')", AccountID);
-            else
-            {
-                for (uint8_t i = 0; i < 8; ++i)
-                {
-                    const char* data = pResult->Fetch()[1 + i].GetString();
-                    size_t len = data ? strlen(data) : 0;
-                    if (len > 1)
-                    {
-                        char* d = new char[len + 1];
-                        memcpy(d, data, len + 1);
-                        pSession->SetAccountData(i, d, true, static_cast<uint32>(len));
-                    }
-                }
-
-                delete pResult;
-            }
-        }
-
-        sLogger.debug("%s from %s:%u [%ums]", AccountName.c_str(), GetRemoteIP().c_str(), GetRemotePort(), _latency);
-
-        // Check for queue.
-        uint32 playerLimit = worldConfig.getPlayerLimit();
-        if ((sWorld.getSessionCount() < playerLimit) || pSession->HasGMPermissions())
-        {
-            Authenticate();
-        }
-        else if (playerLimit > 0)
-        {
-            // Queued, sucker.
-            uint32 Position = sWorld.addQueuedSocket(this);
-            mQueued = true;
-            sLogger.debug("%s added to queue in position %u", AccountName.c_str(), Position);
-
-            // Send packet so we know what we're doing
-            UpdateQueuePosition(Position);
-        }
+    if (worldConfig.server.useAccountData)
+    {
+        QueryResult* pResult = CharacterDatabase.Query("SELECT * FROM account_data WHERE acct = %u", AccountID);
+        if (pResult == nullptr)
+            CharacterDatabase.Execute("INSERT INTO account_data VALUES(%u, '', '', '', '', '', '', '', '', '')", AccountID);
         else
         {
-            SendPacket(SmsgAuthResponse(AuthRejected, ARST_ONLY_ERROR).serialise().get());
-            Disconnect();
-        }
+            for (uint8_t i = 0; i < 8; ++i)
+            {
+                const char* data = pResult->Fetch()[1 + i].GetString();
+                size_t len = data ? strlen(data) : 0;
+                if (len > 1)
+                {
+                    char* d = new char[len + 1];
+                    memcpy(d, data, len + 1);
+                    pSession->SetAccountData(i, d, true, static_cast<uint32>(len));
+                }
+            }
 
-        // release delete mutex
-        pSession->deleteMutex.Release();
+            delete pResult;
+        }
+    }
+
+    sLogger.debug("%s from %s:%u [%ums]", AccountName.c_str(), GetRemoteIP().c_str(), GetRemotePort(), _latency);
+
+    // Check for queue.
+    uint32 playerLimit = worldConfig.getPlayerLimit();
+    if ((sWorld.getSessionCount() < playerLimit) || pSession->HasGMPermissions())
+    {
+        Authenticate();
+    }
+    else if (playerLimit > 0)
+    {
+        // Queued, sucker.
+        uint32 Position = sWorld.addQueuedSocket(this);
+        mQueued = true;
+        sLogger.debug("%s added to queue in position %u", AccountName.c_str(), Position);
+
+        // Send packet so we know what we're doing
+        UpdateQueuePosition(Position);
     }
     else
     {
-        sLogger.failure("WorldSocket::InformationRetreiveCallback invalid session (nullptr)");
+        SendPacket(SmsgAuthResponse(AuthRejected, ARST_ONLY_ERROR).serialise().get());
         Disconnect();
     }
+
+    // release delete mutex
+    pSession->deleteMutex.Release();
 }
 
 void WorldSocket::Authenticate()

@@ -85,8 +85,6 @@ namespace Arcemu
             return false;
 
         uint32 setcount = 0;
-        EquipmentSet* set = NULL;
-        Field* fields = NULL;
 
         do
         {
@@ -96,12 +94,9 @@ namespace Arcemu
                 return true;
             }
 
-            fields = result->Fetch();
+            Field* fields = result->Fetch();
 
-            set = new EquipmentSet();
-            if (set == NULL)
-                return false;
-
+            EquipmentSet* set = new EquipmentSet();
             set->SetGUID = fields[1].GetUInt32();
             set->SetID = fields[2].GetUInt32();
             set->SetName = fields[3].GetString();
@@ -111,7 +106,6 @@ namespace Arcemu
                 set->ItemGUID[i] = fields[5 + i].GetUInt32();
 
             EquipmentSets.emplace(std::pair< uint32, EquipmentSet* >(set->SetGUID, set));
-            set = NULL;
             setcount++;
 
         }

@@ -65,15 +65,10 @@ CellHandler<Class>::CellHandler(Map* map)
 template <class Class>
 void CellHandler<Class>::_Init()
 {
-    _cells = new Class** [_sizeX];
+    _cells = new Class * *[_sizeX];
 
-    if (_cells != nullptr)
-    {
-        for (uint32 i = 0; i < _sizeX; i++)
-        {
-            _cells[i] = nullptr;
-        }
-    }
+    for (uint32 i = 0; i < _sizeX; i++)
+        _cells[i] = nullptr;
 }
 
 template <class Class>

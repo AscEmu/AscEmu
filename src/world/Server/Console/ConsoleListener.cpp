@@ -73,10 +73,6 @@ bool StartConsoleListener()
     uint32_t consoleListenPort = worldConfig.remoteConsole.port;
 
     g_pListenSocket = new ListenSocket<ConsoleSocket>(consoleListenHost.c_str(), consoleListenPort);
-    if (g_pListenSocket == nullptr)
-    {
-        return false;
-    }
 
     if (g_pListenSocket->IsOpen() == false)
     {

@@ -9512,13 +9512,14 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
 
         switch (loot_method)
         {
-        case PARTY_LOOT_GROUP:
-            getGroup()->sendGroupLoot(pLoot, GetMapMgr()->_GetObject(m_currentLoot), this, mapid);
-            break;
-        case PARTY_LOOT_NEED_BEFORE_GREED:
-            break;
-        case PARTY_LOOT_MASTER_LOOTER:
-            break;
+            case PARTY_LOOT_GROUP:
+                getGroup()->sendGroupLoot(pLoot, GetMapMgr()->_GetObject(m_currentLoot), this, mapid);
+                break;
+            case PARTY_LOOT_NEED_BEFORE_GREED:
+            case PARTY_LOOT_MASTER_LOOTER:
+            case PARTY_LOOT_FREE_FOR_ALL:
+            case PARTY_LOOT_ROUND_ROBIN:
+                break;
         }
     }
     else
