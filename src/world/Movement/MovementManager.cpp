@@ -886,9 +886,7 @@ void MovementManager::moveFall(uint32_t id/* = 0*/)
     // Use larger distance for vmap height search than in most other cases
     float tz = _owner->GetMapMgr()->GetLandHeight(_owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ());
     if (tz <= INVALID_HEIGHT)
-    {
         return;
-    }
 
     // Abort too if the ground is very near
     if (std::fabs(_owner->GetPositionZ() - tz) < 0.1f)
@@ -903,9 +901,7 @@ void MovementManager::moveFall(uint32_t id/* = 0*/)
 
     // Don't run spline movement for players
     if (_owner->getObjectTypeId() == TYPEID_PLAYER)
-    {
         return;
-    }
 
     auto posY = _owner->GetPositionY();
 #if VERSION_STRING >= WotLK
@@ -913,7 +909,7 @@ void MovementManager::moveFall(uint32_t id/* = 0*/)
 #endif
 
     MovementNew::MoveSplineInit init(_owner);
-    init.MoveTo(_owner->GetPositionX(), posY, false);
+    init.MoveTo(_owner->GetPositionX(), posY, _owner->GetPositionZ(), false);
     init.SetFall();
 
     GenericMovementGenerator* movement = new GenericMovementGenerator(std::move(init), EFFECT_MOTION_TYPE, id);

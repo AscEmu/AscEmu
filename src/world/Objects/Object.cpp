@@ -1471,7 +1471,10 @@ void Object::clearInRangeSets()
 void Object::addToInRangeObjects(Object* pObj)
 {
     if (pObj == nullptr)
+    {
         sLogger.failure("Invalid object pointers can't be added!");
+        return;
+    }
 
     if (pObj == this)
         sLogger.failure("We are in range of ourselves!");

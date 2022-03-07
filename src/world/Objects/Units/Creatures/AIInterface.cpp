@@ -770,10 +770,12 @@ void AIInterface::UpdateAgent(unsigned long time_passed)
 
                     MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(itr->textId);
                     if (npcScriptText != nullptr)
+                    {
                         getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
 
-                    if (npcScriptText->sound != 0)
-                        getUnit()->PlaySoundToSet(npcScriptText->sound);
+                        if (npcScriptText->sound != 0)
+                            getUnit()->PlaySoundToSet(npcScriptText->sound);
+                    }
                 }
             }
             break;
@@ -2742,10 +2744,12 @@ void AIInterface::eventOnTargetDied(Object* /*pKiller*/)
 
                         MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(onKilledScript.textId);
                         if (npcScriptText != nullptr)
+                        {
                             getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
 
-                        if (npcScriptText->sound != 0)
-                            getUnit()->PlaySoundToSet(npcScriptText->sound);
+                            if (npcScriptText->sound != 0)
+                                getUnit()->PlaySoundToSet(npcScriptText->sound);
+                        }
                     }
                 }
             }
@@ -3955,10 +3959,12 @@ void AIInterface::sendStoredText(definedEmoteVector store, Unit* target)
             {
                 MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(mEmotes->textId);
                 if (npcScriptText != nullptr)
+                {
                     getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text, target, 0);
 
-                if (npcScriptText->sound != 0)
-                    getUnit()->PlaySoundToSet(npcScriptText->sound);
+                    if (npcScriptText->sound != 0)
+                        getUnit()->PlaySoundToSet(npcScriptText->sound);
+                }
 
                 ++mEmotes->count;
 

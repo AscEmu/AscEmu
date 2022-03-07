@@ -547,59 +547,61 @@ void Creature::OnRespawn(MapMgr* m)
     {
         auto encounters = sObjectMgr.GetDungeonEncounterList(m->GetMapId(), m->pInstance->m_difficulty);
 
-        Instance* pInstance = m->pInstance;
-        if (encounters != NULL && pInstance != NULL)
+        if (Instance* pInstance = m->pInstance)
         {
-            bool skip = false;
-            for (auto killedNpc : pInstance->m_killedNpcs)
+            if (encounters != NULL)
             {
-                // is Killed add?
-                if (killedNpc == getSpawnId())
+                bool skip = false;
+                for (auto killedNpc : pInstance->m_killedNpcs)
                 {
-                    auto data = sMySQLStore.getSpawnGroupDataBySpawn(killedNpc);
-
-                    // When Our Add is bound to a Boss thats not killed Respawn it
-                    if (data && data->bossId)
+                    // is Killed add?
+                    if (killedNpc == getSpawnId())
                     {
-                        if (pInstance->m_killedNpcs.find(data->bossId) != pInstance->m_killedNpcs.end())
+                        auto data = sMySQLStore.getSpawnGroupDataBySpawn(killedNpc);
+
+                        // When Our Add is bound to a Boss thats not killed Respawn it
+                        if (data && data->bossId)
                         {
-                            skip = true;
-                            break;
+                            if (pInstance->m_killedNpcs.find(data->bossId) != pInstance->m_killedNpcs.end())
+                            {
+                                skip = true;
+                                break;
+                            }
+                            else
+                            {
+                                skip = false;
+                                break;
+                            }
                         }
-                        else
+                    }
+
+                    // Is killed boss?
+                    if (killedNpc == getEntry())
+                    {
+                        for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
                         {
-                            skip = false;
-                            break;
+                            DungeonEncounter const* encounter = *itr;
+                            if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == killedNpc)
+                            {
+                                skip = true;
+                                break;
+                            }
                         }
                     }
                 }
 
-                // Is killed boss?
-                if (killedNpc == getEntry())
+                if (skip)
                 {
-                    for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
-                    {
-                        DungeonEncounter const* encounter = *itr;
-                        if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == killedNpc)
-                        {
-                            skip = true;
-                            break;
-                        }
-                    }
+                    m_noRespawn = true;
+                    DeleteMe();
+                    return;
                 }
             }
 
-            if (skip)
-            {
-                m_noRespawn = true;
-                DeleteMe();
-                return;
-            }
+            // Remove from Killed Npcs
+            pInstance->m_killedNpcs.erase(getSpawnId());
+            sInstanceMgr.SaveInstanceToDB(pInstance);
         }
-
-        // Remove from Killed Npcs
-        pInstance->m_killedNpcs.erase(getSpawnId());
-        sInstanceMgr.SaveInstanceToDB(pInstance);
     }
 
     sLogger.info("Respawning " I64FMT "...", getGuid());
@@ -2458,8 +2460,7 @@ CreatureMovementData const& Creature::getMovementTemplate()
 
 void Creature::InitSummon(Object* summoner)
 {
-    if (summoner->isCreature())
-        CALL_SCRIPT_EVENT(summoner, onSummonedCreature)(this);
+    CALL_SCRIPT_EVENT(summoner, onSummonedCreature)(this);
 
     if (GetScript() != nullptr)
         GetScript()->OnSummon(static_cast<Unit*>(summoner));

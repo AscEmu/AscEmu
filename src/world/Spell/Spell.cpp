@@ -2407,10 +2407,13 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 
 #if VERSION_STRING >= WotLK
                             // Patch 3.2.0: In addition to the normal requirements, mining deposits in Northrend now require a minimum character level of 65 to mine.
-                            if (skillId == SKILL_MINING && p_caster->GetMapId() == 571 && p_caster->getLevel() < 65)
+                            if (p_caster)
                             {
-                                *parameter1 = SPELL_EXTRA_ERROR_NORTHREND_MINING;
-                                return SPELL_FAILED_CUSTOM_ERROR;
+                                if (skillId == SKILL_MINING && p_caster->GetMapId() == 571 && p_caster->getLevel() < 65)
+                                {
+                                    *parameter1 = SPELL_EXTRA_ERROR_NORTHREND_MINING;
+                                    return SPELL_FAILED_CUSTOM_ERROR;
+                                }
                             }
 #endif
 

@@ -8047,7 +8047,7 @@ void Unit::DropAurasOnDeath()
     {
         if (m_auras[x])
         {
-            if (m_auras[x] && m_auras[x]->getSpellInfo()->isDeathPersistent())
+            if (m_auras[x]->getSpellInfo()->isDeathPersistent())
                 continue;
 
             m_auras[x]->removeAura();
