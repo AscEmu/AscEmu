@@ -5867,8 +5867,7 @@ void Spell::SpellEffectRedirectThreat(uint8_t /*effectIndex*/)
     p_caster->SetMisdirectionTarget(unitTarget->getGuid());
 
     // Threat Management
-    if (unitTarget)
-        p_caster->getThreatManager().registerRedirectThreat(m_spellInfo->getId(), unitTarget->getGuid(), uint32(damage));
+    p_caster->getThreatManager().registerRedirectThreat(m_spellInfo->getId(), unitTarget->getGuid(), uint32(damage));
 }
 
 void Spell::SpellEffectPlayMusic(uint8_t effectIndex)

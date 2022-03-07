@@ -583,13 +583,13 @@ void Group::SetLooter(Player* pPlayer, uint8 method, uint16 threshold)
 
 void Group::SendPacketToAllButOne(WorldPacket* packet, Player* pSkipTarget)
 {
-    uint8 i = 0;
     m_groupLock.Acquire();
-    for (GroupMembersSet::iterator itr; i < m_SubGroupCount; i++)
+
+    for (uint8 i = 0; i < m_SubGroupCount; i++)
     {
-        for (itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
+        for (auto groupMember : m_SubGroups[i]->getGroupMembers())
         {
-            if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr)->guid))
+            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(groupMember->guid))
                 if (loggedInPlayer != pSkipTarget && loggedInPlayer->GetSession())
                     loggedInPlayer->GetSession()->SendPacket(packet);
         }
@@ -600,13 +600,13 @@ void Group::SendPacketToAllButOne(WorldPacket* packet, Player* pSkipTarget)
 
 void Group::OutPacketToAllButOne(uint16 op, uint16 len, const void* data, Player* pSkipTarget)
 {
-    uint8 i = 0;
     m_groupLock.Acquire();
-    for (GroupMembersSet::iterator itr; i < m_SubGroupCount; i++)
+
+    for (uint8 i = 0; i < m_SubGroupCount; i++)
     {
-        for (itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
+        for (auto groupMember : m_SubGroups[i]->getGroupMembers())
         {
-            if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr)->guid))
+            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(groupMember->guid))
                 if (loggedInPlayer != pSkipTarget)
                     loggedInPlayer->GetSession()->OutPacket(op, len, data);
         }
