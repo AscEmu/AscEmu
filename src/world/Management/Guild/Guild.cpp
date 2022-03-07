@@ -2356,8 +2356,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
             if (player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(playerBag, playerSlotId, false) == nullptr)
                 return;
 
-            if (pSourceItem)
-                pSourceItem->RemoveFromWorld();
+            pSourceItem->RemoveFromWorld();
         }
 
         if (pSourceItem == nullptr)

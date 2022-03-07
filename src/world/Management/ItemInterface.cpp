@@ -4241,8 +4241,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
             }
         }
 
-        if (SrcItem)
-            SrcItem = SafeRemoveAndRetreiveItemFromSlot(SrcInvSlot, SrcSlot, false);
+        SrcItem = SafeRemoveAndRetreiveItemFromSlot(SrcInvSlot, SrcSlot, false);
 
         if (DstItem)
             DstItem = SafeRemoveAndRetreiveItemFromSlot(DstInvSlot, DstSlot, false);

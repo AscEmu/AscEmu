@@ -324,26 +324,25 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
     xp *= worldConfig.getFloatRate(RATE_XP);
 
     // elite boss multiplier
-    if (victimI)
+
+    switch (victimI->Rank)
     {
-        switch (victimI->Rank)
-        {
-            case 0: // normal mob
-                break;
-            case 1: // elite
-                xp *= 2.0f;
-                break;
-            case 2: // rare elite
-                xp *= 2.0f;
-                break;
-            case 3: // world boss
-                xp *= 2.5f;
-                break;
-            default:    // rare or higher
-                //            xp *= 7.0f;
-                break;
-        }
+        case 0: // normal mob
+            break;
+        case 1: // elite
+            xp *= 2.0f;
+            break;
+        case 2: // rare elite
+            xp *= 2.0f;
+            break;
+        case 3: // world boss
+            xp *= 2.5f;
+            break;
+        default:    // rare or higher
+            //            xp *= 7.0f;
+            break;
     }
+
     return (uint32)xp;
 }
 
