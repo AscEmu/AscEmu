@@ -2585,7 +2585,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         la.dur = atol(auraDuration.c_str());
 
         std::getline(savedPlayerBuffsStream, auraPositivValue, ',');
-        la.positive = auraPositivValue.c_str() == nullptr ? false : true;
+        la.positive = auraPositivValue.empty() ? false : true;
 
         std::getline(savedPlayerBuffsStream, auraCharges, ',');
         la.charges = atol(auraCharges.c_str());

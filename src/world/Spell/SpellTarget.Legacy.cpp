@@ -63,7 +63,7 @@ SpellCastResult Spell::checkExplicitTarget(Object* target, uint32_t requiredTarg
         const auto* const originalTarget = m_caster->GetMapMgrObject(m_targets.getUnitTarget());
         if (originalTarget == nullptr)
             return SPELL_FAILED_BAD_TARGETS;
-        if ((originalTarget->isPlayer() && !target->isPlayer()) || (!originalTarget->isPlayer() && target->isPlayer()))
+        if (originalTarget->isPlayer() != target->isPlayer())
             return SPELL_FAILED_BAD_TARGETS;
         if ((originalTarget->isPlayer() && target->isPlayer() && static_cast<Player const*>(originalTarget)->getClass() != static_cast<Player const*>(target)->getClass()))
             return SPELL_FAILED_BAD_TARGETS;

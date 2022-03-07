@@ -80,7 +80,7 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
         return;
     }
 
-    if (Caster == nullptr)
+    if (info == nullptr)
     {
         sLogger.failure("Spell::Spell cant initialize without valid spell info!");
         return;
