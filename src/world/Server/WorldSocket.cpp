@@ -728,9 +728,9 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     }
 
     // Allocate session
-    WorldSession* pSession = new WorldSession(AccountID, AccountName, this)
+    WorldSession* pSession = new WorldSession(AccountID, AccountName, this);
 
-        mSession = pSession;
+    mSession = pSession;
 
     // aquire delete mutex
     pSession->deleteMutex.Acquire();

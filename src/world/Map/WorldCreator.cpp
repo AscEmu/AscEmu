@@ -648,7 +648,7 @@ MapMgr* InstanceMgr::_CreateInstance(uint32_t mapid, uint32_t instanceid)
         {
             sLogger.info("InstanceMgr : Creating continent %s.", m_maps[mapid]->GetMapName().c_str());
 
-            const auto newMap = new MapMgr(m_maps[mapid], mapid, instanceid))
+            const auto newMap = new MapMgr(m_maps[mapid], mapid, instanceid);
             
             // Scheduling the new map for running
             ThreadPool.ExecuteTask(newMap);
