@@ -5977,7 +5977,7 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
     if (plrOwner != nullptr && victim->isCreature() && victim->isTaggable())
     {
         victim->setTaggerGuid(getGuid());
-        plrOwner->TagUnit(victim);
+        plrOwner->tagUnit(victim);
     }
 
     if (removeAuras)
@@ -6122,7 +6122,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                                     if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr)->guid))
                                     {
                                         if (ToCreature()->HasLootForPlayer(loggedInPlayer))
-                                            loggedInPlayer->SendLootUpdate(this);
+                                            loggedInPlayer->sendLootUpdate(this);
                                     }
                                 }
                             }
@@ -6131,7 +6131,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                 }
                 else if (ToCreature()->HasLootForPlayer(tagger))    // Player case
                 {
-                    tagger->SendLootUpdate(this);
+                    tagger->sendLootUpdate(this);
                 }
             }
         }

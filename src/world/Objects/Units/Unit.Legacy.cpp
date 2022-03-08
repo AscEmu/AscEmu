@@ -7625,7 +7625,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     if (plrOwner != nullptr && pVictim->isCreature() && pVictim->isTaggable())
     {
         pVictim->setTaggerGuid(getGuid());
-        plrOwner->TagUnit(pVictim);
+        plrOwner->tagUnit(pVictim);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////

@@ -3613,7 +3613,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
         break;
     };
     if (gameObjTarget && gameObjTarget->getGoType() == GAMEOBJECT_TYPE_CHEST)
-        static_cast< Player* >(m_caster)->SendLoot(gameObjTarget->getGuid(), loottype, gameObjTarget->GetMapId());
+        static_cast< Player* >(m_caster)->sendLoot(gameObjTarget->getGuid(), loottype, gameObjTarget->GetMapId());
 }
 
 void Spell::SpellEffectTransformItem(uint8_t effectIndex)
@@ -4512,7 +4512,7 @@ void Spell::SpellEffectPickpocket(uint8_t /*effectIndex*/) // pickpocket
     uint32 _rank = static_cast< Creature* >(unitTarget)->GetCreatureProperties()->Rank;
     unitTarget->loot.gold = float2int32((_rank + 1) * unitTarget->getLevel() * (Util::getRandomUInt(5) + 1) * worldConfig.getFloatRate(RATE_MONEY));
 
-    p_caster->SendLoot(unitTarget->getGuid(), LOOT_PICKPOCKETING, unitTarget->GetMapId());
+    p_caster->sendLoot(unitTarget->getGuid(), LOOT_PICKPOCKETING, unitTarget->GetMapId());
     target->SetPickPocketed(true);
 }
 
@@ -4884,7 +4884,7 @@ void Spell::SpellEffectSkinning(uint8_t /*effectIndex*/)
     {
         //Fill loot for Skinning
         sLootMgr.fillSkinningLoot(p_caster, &cr->loot, unitTarget->getEntry(), 0);
-        static_cast<Player*>(m_caster)->SendLoot(unitTarget->getGuid(), LOOT_SKINNING, unitTarget->GetMapId());
+        static_cast<Player*>(m_caster)->sendLoot(unitTarget->getGuid(), LOOT_SKINNING, unitTarget->GetMapId());
 
         //Not skinable again
         cr->removeUnitFlags(UNIT_FLAG_SKINNABLE);
@@ -4999,7 +4999,7 @@ void Spell::SpellEffectDisenchant(uint8_t /*effectIndex*/)
     }
 
     //Fill disenchanting loot
-    p_caster->SetLootGUID(it->getGuid());
+    p_caster->setLootGuid(it->getGuid());
     if (!it->loot)
     {
         it->loot = new Loot;
@@ -5007,7 +5007,7 @@ void Spell::SpellEffectDisenchant(uint8_t /*effectIndex*/)
     }
 
     sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Successfully disenchanted item %d", uint32(it->getEntry()));
-    p_caster->SendLoot(it->getGuid(), LOOT_DISENCHANTING, p_caster->GetMapId());
+    p_caster->sendLoot(it->getGuid(), LOOT_DISENCHANTING, p_caster->GetMapId());
 
     //We can increase Enchanting skill up to 60
     auto skill = p_caster->getSkillLineCurrent(SKILL_ENCHANTING);
@@ -5334,12 +5334,12 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
         // Set all the lootable stuff on the player. If he repops before we've looted, we'll set the flags
         // on corpse then :p
 
-        playerTarget->bShouldHaveLootableOnCorpse = false;
+        playerTarget->setLootableOnCorpse(false);
         playerTarget->removeUnitFlags(UNIT_FLAG_SKINNABLE);
         playerTarget->addDynamicFlags(U_DYN_FLAG_LOOTABLE);
 
         // Send the loot.
-        p_caster->SendLoot(playerTarget->getGuid(), LOOT_SKINNING, playerTarget->GetMapId());
+        p_caster->sendLoot(playerTarget->getGuid(), LOOT_SKINNING, playerTarget->GetMapId());
 
         // Send a message to the died player, telling him he has to resurrect at the graveyard.
         // Send an empty corpse location too, :P
@@ -5379,7 +5379,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
         corpse->SetCorpseState(CORPSE_STATE_BONES);
 
         // send loot
-        p_caster->SendLoot(corpse->getGuid(), LOOT_SKINNING, corpse->GetMapId());
+        p_caster->sendLoot(corpse->getGuid(), LOOT_SKINNING, corpse->GetMapId());
 
         corpse->DeleteFromDB();
         sObjectMgr.CorpseAddEventDespawn(corpse);
@@ -5827,7 +5827,7 @@ void Spell::SpellEffectProspecting(uint8_t /*effectIndex*/)
     }
 
     //Fill Prospecting loot
-    p_caster->SetLootGUID(itemTarget->getGuid());
+    p_caster->setLootGuid(itemTarget->getGuid());
     if (!itemTarget->loot)
     {
         itemTarget->loot = new Loot;
@@ -5837,7 +5837,7 @@ void Spell::SpellEffectProspecting(uint8_t /*effectIndex*/)
     if (itemTarget->loot->items.size() > 0)
     {
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Successfully prospected item %d", uint32(itemTarget->getEntry()));
-        p_caster->SendLoot(itemTarget->getGuid(), LOOT_PROSPECTING, p_caster->GetMapId());
+        p_caster->sendLoot(itemTarget->getGuid(), LOOT_PROSPECTING, p_caster->GetMapId());
     }
     else // this should never happen either
     {
@@ -6050,7 +6050,7 @@ void Spell::SpellEffectMilling(uint8_t /*effectIndex*/)
     }
 
     //Fill Prospecting loot
-    p_caster->SetLootGUID(itemTarget->getGuid());
+    p_caster->setLootGuid(itemTarget->getGuid());
     if (!itemTarget->loot)
     {
         itemTarget->loot = new Loot;
@@ -6060,7 +6060,7 @@ void Spell::SpellEffectMilling(uint8_t /*effectIndex*/)
     if (itemTarget->loot->items.size() > 0)
     {
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Successfully milled item %d", uint32(itemTarget->getEntry()));
-        p_caster->SendLoot(itemTarget->getGuid(), LOOT_MILLING, p_caster->GetMapId());
+        p_caster->sendLoot(itemTarget->getGuid(), LOOT_MILLING, p_caster->GetMapId());
     }
     else // this should never happen either
     {

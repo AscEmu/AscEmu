@@ -4178,7 +4178,7 @@ public:
         uint8_t loot_type = (uint8_t)luaL_checkinteger(L, 2);
         uint8_t loot_type2 = 1;
         Player* plr = static_cast<Player*>(ptr);
-        plr->SetLootGUID(guid);
+        plr->setLootGuid(guid);
 
         WoWGuid wowGuid;
         wowGuid.Init(guid);
@@ -4238,7 +4238,7 @@ public:
                     break;
             }
         }
-        plr->SendLoot(guid, 2, plr->GetMapId());
+        plr->sendLoot(guid, 2, plr->GetMapId());
         return 0;
     }
 

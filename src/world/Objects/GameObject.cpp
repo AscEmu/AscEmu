@@ -1260,7 +1260,7 @@ void GameObject_FishingNode::onUse(Player* player)
         if (school != nullptr)
         {
             sLootMgr.fillGOLoot(player, &school->loot, school->GetGameObjectProperties()->raw.parameter_1, GetMapMgr()->iInstanceMode);
-            player->SendLoot(school->getGuid(), LOOT_FISHING, school->GetMapId());
+            player->sendLoot(school->getGuid(), LOOT_FISHING, school->GetMapId());
             EndFishing(false);
             school->CatchFish();
 
@@ -1268,7 +1268,7 @@ void GameObject_FishingNode::onUse(Player* player)
         else if (maxskill != 0 && Util::checkChance(((player->getSkillLineCurrent(SKILL_FISHING, true) - minskill) * 100) / maxskill))
         {
             sLootMgr.fillFishingLoot(player, &this->loot, zone, GetMapMgr()->iInstanceMode);
-            player->SendLoot(getGuid(), LOOT_FISHING, GetMapId());
+            player->sendLoot(getGuid(), LOOT_FISHING, GetMapId());
             EndFishing(false);
         }
         else

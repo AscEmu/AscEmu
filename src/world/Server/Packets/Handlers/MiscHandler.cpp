@@ -635,13 +635,13 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
         }
     }
 
-    _player->SetLootGUID(item->getGuid());
+    _player->setLootGuid(item->getGuid());
     if (item->loot == nullptr)
     {
         item->loot = new Loot; //eeeeeek
         sLootMgr.fillItemLoot(_player, item->loot, item->getEntry(), 0);
     }
-    _player->SendLoot(item->getGuid(), LOOT_DISENCHANTING, _player->GetMapId());
+    _player->sendLoot(item->getGuid(), LOOT_DISENCHANTING, _player->GetMapId());
 }
 
 void WorldSession::handleDismountOpcode(WorldPacket& /*recvPacket*/)

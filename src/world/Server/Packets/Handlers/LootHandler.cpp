@@ -81,7 +81,7 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
     Item* lootItem = nullptr;
 
     WoWGuid wowGuid;
-    wowGuid.Init(_player->GetLootGUID());
+    wowGuid.Init(_player->getLootGuid());
 
     auto loot = getItemLootFromHighGuidType(wowGuid);
     if (loot == nullptr)
@@ -195,7 +195,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
     Unit* pt = nullptr;
 
     WoWGuid wowGuid;
-    wowGuid.Init(_player->GetLootGUID());
+    wowGuid.Init(_player->getLootGuid());
 
     auto loot = getItemLootFromHighGuidType(wowGuid);
     if (loot == nullptr)
@@ -214,7 +214,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
         if (!pPlayer)
             return;
 
-        pPlayer->bShouldHaveLootableOnCorpse = false;
+        pPlayer->m_lootableOnCorpse = false;
         pt = pPlayer;
     }
 
@@ -338,7 +338,7 @@ void WorldSession::handleLootOpcode(WorldPacket& recvPacket)
             }
         }
     }
-    _player->SendLoot(srlPacket.guid, LOOT_CORPSE, _player->GetMapId());
+    _player->sendLoot(srlPacket.guid, LOOT_CORPSE, _player->GetMapId());
 }
 
 void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
@@ -351,7 +351,7 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
 
     SendPacket(SmsgLootReleaseResponse(srlPacket.guid.getRawGuid(), 1).serialise().get());
 
-    _player->SetLootGUID(0);
+    _player->setLootGuid(0);
     _player->removeUnitFlags(UNIT_FLAG_LOOTING);
     _player->m_currentLoot = 0;
 
@@ -392,7 +392,7 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
                 Player* plr = players->ToPlayer();
                 if (creature->isTaggedByPlayerOrItsGroup(plr))
                 {
-                    plr->SendLootUpdate(creature);
+                    plr->sendLootUpdate(creature);
                 }
             }
         }
@@ -529,7 +529,7 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
     {
         if (auto player = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow()))
         {
-            player->bShouldHaveLootableOnCorpse = false;
+            player->m_lootableOnCorpse = false;
             player->loot.items.clear();
             player->removeDynamicFlags(U_DYN_FLAG_LOOTABLE);
         }
@@ -570,14 +570,14 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
     if (player == nullptr)
         return;
 
-    if (_player->GetLootGUID() != srlPacket.creatureGuid.getRawGuid())
+    if (_player->getLootGuid() != srlPacket.creatureGuid.getRawGuid())
         return;
 
     Creature* creature = nullptr;
     Loot* loot = nullptr;
 
     WoWGuid lootGuid;
-    lootGuid.Init(_player->GetLootGUID());
+    lootGuid.Init(_player->getLootGuid());
 
     if (lootGuid.isUnit())
     {

@@ -977,7 +977,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     if (plrOwner != nullptr && victim->isCreature() && victim->isTaggable())
     {
         victim->setTaggerGuid(getGuid());
-        plrOwner->TagUnit(victim);
+        plrOwner->tagUnit(victim);
     }
 
     if (isCreatureOrPlayer())

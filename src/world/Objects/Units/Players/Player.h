@@ -1150,6 +1150,8 @@ public:
 
     bool isAtGroupRewardDistance(Object* pRewardSource);
 
+    void tagUnit(Object* object);
+
 
 private:
     uint16_t m_spellAreaUpdateTimer = 1000;
@@ -1223,9 +1225,23 @@ private:
     /////////////////////////////////////////////////////////////////////////////////////////
     // Loot
 public:
+    const uint64_t& getLootGuid() const { return m_lootGuid; }
+    void setLootGuid(const uint64_t& guid) { m_lootGuid = guid; }
+
+    void sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId);
+    void sendLootUpdate(Object* object);
+
     void sendLooter(Creature* creature);
     Item* storeNewLootItem(uint8_t slot, Loot* loot);
     Item* storeItem(LootItem const* lootItem);
+
+    bool isLootableOnCorpse() const { return m_lootableOnCorpse; }
+    void setLootableOnCorpse(bool lootable) { m_lootableOnCorpse = lootable; }
+
+private:
+    uint64_t m_lootGuid = 0;
+    uint64_t m_currentLoot = 0;
+    bool m_lootableOnCorpse = false;
 
 public:
     //MIT End
@@ -1535,23 +1551,8 @@ public:
     protected:
         void _ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedown = false, bool skip_stat_apply = false);
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Loot
-        /////////////////////////////////////////////////////////////////////////////////////////
-    public:
-        const uint64 & GetLootGUID() const { return m_lootGuid; }
-        void SetLootGUID(const uint64 & guid) { m_lootGuid = guid; }
-        
-        void SendLoot(uint64 guid, uint8 loot_type, uint32 mapid);
-        void SendLootUpdate(Object* o);
-        void TagUnit(Object* o);
-        
-        // loot variables
-        uint64 m_lootGuid = 0;
-        uint64 m_currentLoot = 0;
-        bool bShouldHaveLootableOnCorpse = false;
 
-        
+    public:
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // World Session
