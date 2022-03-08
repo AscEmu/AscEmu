@@ -49,7 +49,7 @@ public:
         if (plr->hasQuestInQuestLog(12670) || plr->HasFinishedQuest(12670))
         {
             if (TaxiPath* path = sTaxiMgr.GetTaxiPath(pObject->getEntry() == 29488 ? 1053 : 1054))
-                plr->TaxiStart(path, 26308, 0);
+                plr->startTaxiPath(path, 26308, 0);
         }
     }
 };

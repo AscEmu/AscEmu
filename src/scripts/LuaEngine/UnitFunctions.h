@@ -4377,7 +4377,7 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         TaxiPath* tp = CHECK_TAXIPATH(L, 1);
         uint32_t mount_id = static_cast<uint32_t>(luaL_checkinteger(L, 2));
-        plr->TaxiStart(tp, mount_id, 0);
+        plr->startTaxiPath(tp, mount_id, 0);
         return 0;
     }
 
@@ -4391,7 +4391,7 @@ public:
     static int GetTaxi(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        PUSH_TAXIPATH(L, static_cast<Player*>(ptr)->GetTaxiPath());
+        PUSH_TAXIPATH(L, static_cast<Player*>(ptr)->getTaxiPath());
         return 1;
     }
 

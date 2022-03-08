@@ -5709,7 +5709,7 @@ void Spell::SpellEffectStartTaxi(uint8_t /*effectIndex*/)
             return;
     }
 
-    playerTarget->TaxiStart(taxipath, modelid, 0);
+    playerTarget->startTaxiPath(taxipath, modelid, 0);
 }
 
 void Spell::SpellEffectPlayerPull(uint8_t /*effectIndex*/)
@@ -5973,9 +5973,9 @@ void Spell::SpellEffectTeachTaxiPath(uint8_t effectIndex)
     uint32 submask = 1 << ((getSpellInfo()->getEffectTriggerSpell(effectIndex) - 1) % 32);
 
     // Check for known nodes
-    if (!(playerTarget->GetTaximask(field) & submask))
+    if (!(playerTarget->getTaxiMask(field) & submask))
     {
-        playerTarget->SetTaximask(field, (submask | playerTarget->GetTaximask(field)));
+        playerTarget->setTaxiMask(field, (submask | playerTarget->getTaxiMask(field)));
 
         playerTarget->SendPacket(SmsgNewTaxiPath().serialise().get());
 

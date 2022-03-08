@@ -35,7 +35,7 @@ public:
         Creature* pCreature = pObject->isCreature() ? static_cast<Creature*>(pObject) : NULL;
         if (pCreature == NULL)
             return;
-        plr->TaxiStart(sTaxiMgr.GetTaxiPath(315), 479, 0);     // Hippogryph
+        plr->startTaxiPath(sTaxiMgr.GetTaxiPath(315), 479, 0);     // Hippogryph
     }
 
     void destroy() override { delete this; }
@@ -65,7 +65,7 @@ public:
         Creature* pCreature = pObject->isCreature() ? static_cast<Creature*>(pObject) : NULL;
         if (pCreature == NULL)
             return;
-        plr->TaxiStart(sTaxiMgr.GetTaxiPath(316), 295, 0);     // Wyvern
+        plr->startTaxiPath(sTaxiMgr.GetTaxiPath(316), 295, 0);     // Wyvern
     }
 
     void destroy() override { delete this; }

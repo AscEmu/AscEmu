@@ -110,7 +110,7 @@ public:
                 if (pCreature->getEntry() == 23859)
                 {
                     TaxiPath* path = sTaxiMgr.GetTaxiPath(745);
-                    plr->TaxiStart(path, 17759, 0);
+                    plr->startTaxiPath(path, 17759, 0);
                 }
                 break;
             }

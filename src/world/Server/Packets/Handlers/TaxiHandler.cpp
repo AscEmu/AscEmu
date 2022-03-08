@@ -30,9 +30,9 @@ void WorldSession::sendTaxiList(Creature* creature)
     const auto field = static_cast<uint8_t>((nearestNode - 1) / 32);
     const uint32_t subMask = 1 << ((nearestNode - 1) % 32);
 
-    if (!(_player->GetTaximask(field) & subMask) && !_player->m_cheats.hasTaxiCheat)
+    if (!(_player->getTaxiMask(field) & subMask) && !_player->m_cheats.hasTaxiCheat)
     {
-        _player->SetTaximask(field, (subMask | _player->GetTaximask(field)));
+        _player->setTaxiMask(field, (subMask | _player->getTaxiMask(field)));
 
         SendPacket(SmsgNewTaxiPath().serialise().get());
 
@@ -46,7 +46,7 @@ void WorldSession::sendTaxiList(Creature* creature)
     if (!_player->m_cheats.hasTaxiCheat)
     {
         for (uint32_t i = 0; i < DBC_TAXI_MASK_SIZE; ++i)
-            tmpTaxiNodeMask[i] &= _player->GetTaximask(i);
+            tmpTaxiNodeMask[i] &= _player->getTaxiMask(i);
     }
 
     std::array<uint32_t, DBC_TAXI_MASK_SIZE> taxiMask{};
@@ -60,7 +60,7 @@ uint8_t isTaximaskKnown(Player* player, uint32_t nearestNode)
     const auto field = static_cast<uint8_t>((nearestNode - 1) / 32);
     const uint32_t submask = 1 << ((nearestNode - 1) % 32);
 
-    if ((player->GetTaximask(field) & submask) != submask)
+    if ((player->getTaxiMask(field) & submask) != submask)
         return 0;
 
     return 1;
@@ -155,7 +155,7 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
     const auto field = static_cast<uint8_t>((currentNode - 1) / 32);
     const uint32_t subMask = 1 << ((currentNode - 1) % 32);
 
-    if ((_player->GetTaximask(field) & subMask) != subMask)
+    if ((_player->getTaxiMask(field) & subMask) != subMask)
     {
         SendPacket(SmsgActivatetaxireply(TaxiNodeError::UnspecificError).serialise().get());
         return;
@@ -180,9 +180,9 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
         _player->interruptSpellWithSpellType(CurrentSpellType(i));
 
     const uint32_t modelId = getMountForNode(_player, taxiNode);
-    _player->taxi_model_id = modelId;
+    _player->m_taxiMountDisplayId = modelId;
 
-    _player->TaxiStart(taxiPath, modelId, 0);
+    _player->startTaxiPath(taxiPath, modelId, 0);
 }
 
 void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
@@ -216,7 +216,7 @@ void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     const auto field = static_cast<uint8_t>((currentNode - 1) / 32);
     const uint32_t subMask = 1 << ((currentNode - 1) % 32);
 
-    if ((_player->GetTaximask(field) & subMask) != subMask)
+    if ((_player->getTaxiMask(field) & subMask) != subMask)
     {
         SendPacket(SmsgActivatetaxireply(TaxiNodeError::UnspecificError).serialise().get());
         return;
@@ -245,7 +245,7 @@ void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     }
 
     const uint32_t modelId = getMountForNode(_player, taxiNode);
-    _player->taxi_model_id = modelId;
+    _player->m_taxiMountDisplayId = modelId;
 
     SendPacket(SmsgActivatetaxireply(TaxiNodeError::Ok).serialise().get());
 
@@ -259,5 +259,5 @@ void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
         _player->m_taxiPaths.push_back(additionalTaxiPath);
     }
 
-    _player->TaxiStart(taxiPath, modelId, 0);
+    _player->startTaxiPath(taxiPath, modelId, 0);
 }

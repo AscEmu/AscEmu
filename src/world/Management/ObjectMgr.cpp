@@ -1250,7 +1250,7 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* p
                 {
                     if (itr->second.onChooseData != 0)
                     {
-                        player->TaxiStart(sTaxiMgr.GetTaxiPath(itr->second.onChooseData), itr->second.onChooseData2, 0);
+                        player->startTaxiPath(sTaxiMgr.GetTaxiPath(itr->second.onChooseData), itr->second.onChooseData2, 0);
                         GossipMenu::senGossipComplete(player);
                     }
 

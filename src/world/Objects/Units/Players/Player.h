@@ -1163,6 +1163,7 @@ private:
     mutable std::mutex m_lockGMTargetList;
 
 #if VERSION_STRING > WotLK
+    /////////////////////////////////////////////////////////////////////////////////////////
     // Void Storage
 public:
     void loadVoidStorage();
@@ -1180,8 +1181,51 @@ public:
     VoidStorageItem* getVoidStorageItem(uint8_t slot) const;
     VoidStorageItem* getVoidStorageItem(uint64_t id, uint8_t& slot) const;
 
+private:
     VoidStorageItem* _voidStorageItems[VOID_STORAGE_MAX_SLOT];
 #endif
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Taxi
+public:   
+    TaxiPath* getTaxiPath() const { return m_currentTaxiPath; }
+    void setTaxiPath(TaxiPath* path) { m_currentTaxiPath = path; }
+
+    void loadTaxiMask(const char* data);
+    const uint32_t& getTaxiMask(uint32_t index) const { return m_taxiMask[index]; }
+    void setTaxiMask(uint32_t index, uint32_t value) { m_taxiMask[index] = value; }
+
+    void setTaxiPosition() { m_taxiPosition = m_position; }
+    void unsetTaxiPosition() { m_taxiPosition = { 0, 0, 0 }; }
+
+    bool isOnTaxi() const { return m_isOnTaxi; }
+    void setOnTaxi(bool state) { m_isOnTaxi = state; }
+
+    void startTaxiPath(TaxiPath* path, uint32_t modelid, uint32_t start_node);
+    void skipTaxiPathNodesToEnd(TaxiPath* path);
+    void dismountAfterTaxiPath(uint32_t money, float x, float y, float z);
+    void interpolateTaxiPosition();
+
+private:
+    TaxiPath* m_currentTaxiPath = nullptr;
+
+    uint32_t m_taxiMountDisplayId = 0;
+    uint32_t m_lastTaxiNode = 0;
+    uint32_t m_taxiMapChangeNode = 0;
+    uint32_t m_taxiRideTime = 0;
+    uint32_t m_taxiMask[DBC_TAXI_MASK_SIZE];
+
+    LocationVector m_taxiPosition = { 0, 0, 0 };
+
+    bool m_isOnTaxi = false;
+    std::vector<TaxiPath*> m_taxiPaths;
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Loot
+public:
+    void sendLooter(Creature* creature);
+    Item* storeNewLootItem(uint8_t slot, Loot* loot);
+    Item* storeItem(LootItem const* lootItem);
 
 public:
     //MIT End
@@ -1260,36 +1304,6 @@ public:
         void CalcExpertise();
         std::map<uint32, uint32> m_wratings;
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Taxi
-        /////////////////////////////////////////////////////////////////////////////////////////
-        TaxiPath* GetTaxiPath() { return m_CurrentTaxiPath; }
-        bool isOnTaxi() const { return m_onTaxi; }
-        const uint32 & GetTaximask(uint32_t index) const { return m_taximask[index]; }
-        void LoadTaxiMask(const char* data);
-        void TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node);
-        void JumpToEndTaxiNode(TaxiPath* path);
-        void EventDismount(uint32 money, float x, float y, float z);
-        void EventTaxiInterpolate();
-
-        void SetTaxiState(bool state) { m_onTaxi = state; }
-        void SetTaximask(uint32_t index, uint32 value) { m_taximask[index] = value; }
-        void SetTaxiPath(TaxiPath* path) { m_CurrentTaxiPath = path; }
-        void SetTaxiPos() { m_taxi_pos_x = m_position.x; m_taxi_pos_y = m_position.y; m_taxi_pos_z = m_position.z; }
-        void UnSetTaxiPos() { m_taxi_pos_x = 0; m_taxi_pos_y = 0; m_taxi_pos_z = 0; }
-
-        // Taxi related variables
-        std::vector<TaxiPath*> m_taxiPaths;
-        TaxiPath* m_CurrentTaxiPath = nullptr;
-        uint32 taxi_model_id = 0;
-        uint32 lastNode = 0;
-        uint32 m_taxi_ride_time = 0;
-        uint32_t m_taximask[DBC_TAXI_MASK_SIZE];
-        float m_taxi_pos_x = 0.0f;
-        float m_taxi_pos_y = 0.0f;
-        float m_taxi_pos_z = 0.0f;
-        bool m_onTaxi = false;
-        uint32 m_taxiMapChangeNode = 0;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Quests
@@ -1527,7 +1541,7 @@ public:
     public:
         const uint64 & GetLootGUID() const { return m_lootGuid; }
         void SetLootGUID(const uint64 & guid) { m_lootGuid = guid; }
-        void sendLooter(Creature* creature);
+        
         void SendLoot(uint64 guid, uint8 loot_type, uint32 mapid);
         void SendLootUpdate(Object* o);
         void TagUnit(Object* o);
@@ -1537,8 +1551,7 @@ public:
         uint64 m_currentLoot = 0;
         bool bShouldHaveLootableOnCorpse = false;
 
-        Item* storeNewLootItem(uint8_t slot, Loot* loot);
-        Item* storeItem(LootItem const* lootItem);
+        
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // World Session

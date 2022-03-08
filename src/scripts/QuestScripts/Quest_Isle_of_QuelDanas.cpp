@@ -75,13 +75,13 @@ public:
             case 1:
             {
                 TaxiPath* pPath = sTaxiMgr.GetTaxiPath(779);
-                pPlayer->TaxiStart(pPath, 22840, 0);
+                pPlayer->startTaxiPath(pPath, 22840, 0);
                 pPlayer->removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
             } break;
             case 2:
             {
                 TaxiPath* pPath = sTaxiMgr.GetTaxiPath(784);
-                pPlayer->TaxiStart(pPath, 22840, 0);
+                pPlayer->startTaxiPath(pPath, 22840, 0);
                 pPlayer->removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
             } break;
         }
@@ -105,7 +105,7 @@ public:
     void onSelectOption(Object* /*pObject*/, Player* pPlayer, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         TaxiPath* pPath = sTaxiMgr.GetTaxiPath(788);
-        pPlayer->TaxiStart(pPath, 22840, 0);
+        pPlayer->startTaxiPath(pPath, 22840, 0);
         pPlayer->removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
     }
 };

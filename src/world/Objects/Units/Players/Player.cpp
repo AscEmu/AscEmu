@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.h"
+#include "Management/TaxiMgr.h"
 #include "Server/Opcodes.hpp"
 #include "Server/Packets/MsgTalentWipeConfirm.h"
 #include "Server/Packets/SmsgPetUnlearnConfirm.h"
@@ -3762,6 +3763,314 @@ bool Player::hasItem(uint32_t itemId, uint32_t amount /*= 1*/, bool checkBankAls
     return getItemInterface()->GetItemCount(itemId, checkBankAlso) >= amount;
 }
 
+#if VERSION_STRING >= WotLK
+void Player::updateSoulboundTradeItems()
+{
+    if (m_itemSoulboundTradeable.empty())
+        return;
+
+    for (ItemDurationList::iterator itemSoulbound = m_itemSoulboundTradeable.begin(); itemSoulbound != m_itemSoulboundTradeable.end();)
+    {
+        if (!(*itemSoulbound)->m_isDirty)
+        {
+            if ((*itemSoulbound)->getOwner()->getGuid() != getGuid())
+            {
+                m_itemSoulboundTradeable.erase(itemSoulbound++);
+                continue;
+            }
+            if ((*itemSoulbound)->checkSoulboundTradeExpire())
+            {
+                m_itemSoulboundTradeable.erase(itemSoulbound++);
+                continue;
+            }
+            ++itemSoulbound;
+        }
+        else
+        {
+            m_itemSoulboundTradeable.erase(itemSoulbound++);
+        }
+    }
+}
+
+void Player::addTradeableItem(Item* item)
+{
+    m_itemSoulboundTradeable.push_back(item);
+}
+
+void Player::removeTradeableItem(Item* item)
+{
+    m_itemSoulboundTradeable.remove(item);
+}
+#endif
+
+#if VERSION_STRING == WotLK
+void Player::calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, bool apply)
+{
+    DBC::Structures::ScalingStatDistributionEntry const* ssd = getScalingStatDistributionFor(*proto);
+    DBC::Structures::ScalingStatValuesEntry const* ssvrow = getScalingStatValuesFor(*proto);
+
+    if (!ssd || !ssvrow)
+        return;
+
+    for (uint32_t id = 0; id < MAX_ITEM_PROTO_STATS; ++id)
+    {
+        uint32_t statType = 0;
+        int32_t  val = 0;
+
+        if (ssd && ssvrow)
+        {
+            if (ssd->stat[id] < 0)
+                continue;
+            statType = ssd->stat[id];
+            val = (ssvrow->getScalingStatDistributionMultiplier(proto->ScalingStatsFlag) * ssd->statmodifier[id]) / 10000;
+        }
+        else
+        {
+            if (id >= proto->itemstatscount)
+                continue;
+
+            statType = proto->Stats[id].Type;
+            val = proto->Stats[id].Value;
+        }
+
+        if (val == 0)
+            continue;
+
+        switch (statType)
+        {
+        case ITEM_MOD_MANA:
+            ModifyBonuses(ITEM_MOD_MANA, val, apply);
+            break;
+        case ITEM_MOD_HEALTH:                           // modify HP
+            ModifyBonuses(ITEM_MOD_HEALTH, val, apply);
+            break;
+        case ITEM_MOD_AGILITY:                          // modify agility
+            ModifyBonuses(ITEM_MOD_AGILITY, val, apply);
+            break;
+        case ITEM_MOD_STRENGTH:                         //modify strength
+            ModifyBonuses(ITEM_MOD_STRENGTH, val, apply);
+            break;
+        case ITEM_MOD_INTELLECT:                        //modify intellect
+            ModifyBonuses(ITEM_MOD_INTELLECT, val, apply);
+            break;
+        case ITEM_MOD_SPIRIT:                           //modify spirit
+            ModifyBonuses(ITEM_MOD_SPIRIT, val, apply);
+            break;
+        case ITEM_MOD_STAMINA:                          //modify stamina
+            ModifyBonuses(ITEM_MOD_STAMINA, val, apply);
+            break;
+        case ITEM_MOD_DEFENSE_RATING:
+            ModifyBonuses(ITEM_MOD_DEFENSE_RATING, val, apply);
+            break;
+        case ITEM_MOD_DODGE_RATING:
+            ModifyBonuses(ITEM_MOD_DODGE_RATING, val, apply);
+            break;
+        case ITEM_MOD_PARRY_RATING:
+            ModifyBonuses(ITEM_MOD_PARRY_RATING, val, apply);
+            break;
+        case ITEM_MOD_SHIELD_BLOCK_RATING:
+            ModifyBonuses(ITEM_MOD_SHIELD_BLOCK_RATING, val, apply);
+            break;
+        case ITEM_MOD_MELEE_HIT_RATING:
+            ModifyBonuses(ITEM_MOD_MELEE_HIT_RATING, val, apply);
+            break;
+        case ITEM_MOD_RANGED_HIT_RATING:
+            ModifyBonuses(ITEM_MOD_RANGED_HIT_RATING, val, apply);
+            break;
+        case ITEM_MOD_SPELL_HIT_RATING:
+            ModifyBonuses(ITEM_MOD_SPELL_HIT_RATING, val, apply);
+            break;
+        case ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING:
+            ModifyBonuses(ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING, val, apply);
+            break;
+        case ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING:
+            ModifyBonuses(ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING, val, apply);
+            break;
+        case ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING:
+            ModifyBonuses(ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING, val, apply);
+            break;
+        case ITEM_MOD_MELEE_HIT_AVOIDANCE_RATING:
+            ModifyBonuses(ITEM_MOD_MELEE_HIT_AVOIDANCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_RANGED_HIT_AVOIDANCE_RATING:
+            ModifyBonuses(ITEM_MOD_RANGED_HIT_AVOIDANCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_SPELL_HIT_AVOIDANCE_RATING:
+            ModifyBonuses(ITEM_MOD_SPELL_HIT_AVOIDANCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_MELEE_CRITICAL_AVOIDANCE_RATING:
+            ModifyBonuses(ITEM_MOD_MELEE_CRITICAL_AVOIDANCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_RANGED_CRITICAL_AVOIDANCE_RATING:
+            ModifyBonuses(ITEM_MOD_RANGED_CRITICAL_AVOIDANCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_SPELL_CRITICAL_AVOIDANCE_RATING:
+            ModifyBonuses(ITEM_MOD_SPELL_CRITICAL_AVOIDANCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_MELEE_HASTE_RATING:
+            ModifyBonuses(ITEM_MOD_MELEE_HASTE_RATING, val, apply);
+            break;
+        case ITEM_MOD_RANGED_HASTE_RATING:
+            ModifyBonuses(ITEM_MOD_RANGED_HASTE_RATING, val, apply);
+            break;
+        case ITEM_MOD_SPELL_HASTE_RATING:
+            ModifyBonuses(ITEM_MOD_SPELL_HASTE_RATING, val, apply);
+            break;
+        case ITEM_MOD_HIT_RATING:
+            ModifyBonuses(ITEM_MOD_HIT_RATING, val, apply);
+            break;
+        case ITEM_MOD_CRITICAL_STRIKE_RATING:
+            ModifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, val, apply);
+            break;
+        case ITEM_MOD_HIT_AVOIDANCE_RATING:
+            ModifyBonuses(ITEM_MOD_HIT_AVOIDANCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_CRITICAL_AVOIDANCE_RATING:
+            ModifyBonuses(ITEM_MOD_CRITICAL_AVOIDANCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_RESILIENCE_RATING:
+            ModifyBonuses(ITEM_MOD_RESILIENCE_RATING, val, apply);
+            break;
+        case ITEM_MOD_HASTE_RATING:
+            ModifyBonuses(ITEM_MOD_HASTE_RATING, val, apply);
+            break;
+        case ITEM_MOD_EXPERTISE_RATING:
+            ModifyBonuses(ITEM_MOD_EXPERTISE_RATING, val, apply);
+            break;
+        case ITEM_MOD_ATTACK_POWER:
+            ModifyBonuses(ITEM_MOD_ATTACK_POWER, val, apply);
+            break;
+        case ITEM_MOD_RANGED_ATTACK_POWER:
+            ModifyBonuses(ITEM_MOD_RANGED_ATTACK_POWER, val, apply);
+            break;
+        case ITEM_MOD_MANA_REGENERATION:
+            ModifyBonuses(ITEM_MOD_MANA_REGENERATION, val, apply);
+            break;
+        case ITEM_MOD_ARMOR_PENETRATION_RATING:
+            ModifyBonuses(ITEM_MOD_ARMOR_PENETRATION_RATING, val, apply);
+            break;
+        case ITEM_MOD_SPELL_POWER:
+            ModifyBonuses(ITEM_MOD_SPELL_POWER, val, apply);
+            break;
+        case ITEM_MOD_HEALTH_REGEN:
+            ModifyBonuses(ITEM_MOD_HEALTH_REGEN, val, apply);
+            break;
+        case ITEM_MOD_SPELL_PENETRATION:
+            ModifyBonuses(ITEM_MOD_SPELL_PENETRATION, val, apply);
+            break;
+        case ITEM_MOD_BLOCK_VALUE:
+            ModifyBonuses(ITEM_MOD_BLOCK_VALUE, val, apply);
+            break;
+            // deprecated item mods
+        case ITEM_MOD_SPELL_HEALING_DONE:
+        case ITEM_MOD_SPELL_DAMAGE_DONE:
+            ModifyBonuses(ITEM_MOD_SPELL_HEALING_DONE, val, apply);
+            ModifyBonuses(ITEM_MOD_SPELL_DAMAGE_DONE, val, apply);
+            break;
+        default:
+            break;
+        }
+    }
+
+    // Apply Spell Power from ScalingStatValue if set
+    if (ssvrow)
+        if (int32_t spellbonus = ssvrow->getSpellBonus(proto->ScalingStatsEntry))
+            ModifyBonuses(ITEM_MOD_SPELL_POWER, spellbonus, apply);
+
+    // If set ScalingStatValue armor get it or use item armor
+    uint32_t armor = proto->Armor;
+    if (ssvrow)
+    {
+        if (uint32_t ssvarmor = ssvrow->getArmorMod(proto->ScalingStatsEntry))
+            armor = ssvarmor;
+    }
+    else if (armor && proto->ArmorDamageModifier)
+    {
+        armor -= uint32_t(proto->ArmorDamageModifier);
+    }
+
+    if (armor)
+    {
+        if (apply)
+            BaseResistance[0] += armor;
+        else
+            BaseResistance[0] -= armor;
+    }
+
+    /* Calculating the damages correct for our level and applying it */
+    if (ssvrow)
+    {
+        for (uint8_t i = 0; i < MAX_ITEM_PROTO_DAMAGES; ++i)
+        {
+            float minDamage = proto->Damage[i].Min;
+            float maxDamage = proto->Damage[i].Max;
+
+            // If set dpsMod in ScalingStatValue use it for min (70% from average), max (130% from average) damage
+            if (ssvrow && i == 0) // scaling stats only for first damage
+            {
+                int32_t extraDPS = ssvrow->getDPSMod(proto->ScalingStatsFlag);
+                if (extraDPS)
+                {
+                    float average = extraDPS * proto->Delay / 1000.0f;
+                    minDamage = 0.7f * average;
+                    maxDamage = 1.3f * average;
+                }
+
+                if (proto->InventoryType == INVTYPE_RANGED || proto->InventoryType == INVTYPE_RANGEDRIGHT || proto->InventoryType == INVTYPE_THROWN)
+                {
+                    BaseRangedDamage[0] += apply ? minDamage : -minDamage;
+                    BaseRangedDamage[1] += apply ? maxDamage : -maxDamage;
+                }
+                else
+                {
+                    if (slot == EQUIPMENT_SLOT_OFFHAND)
+                    {
+                        BaseOffhandDamage[0] = apply ? minDamage : 0;
+                        BaseOffhandDamage[1] = apply ? maxDamage : 0;
+                    }
+                    else
+                    {
+                        BaseDamage[0] = apply ? minDamage : 0;
+                        BaseDamage[1] = apply ? maxDamage : 0;
+                    }
+                }
+            }
+        }
+    }
+}
+#endif
+
+#if VERSION_STRING > WotLK
+void Player::calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, bool apply)
+{
+    // Todo CATA/MOP
+}
+#endif
+
+#if VERSION_STRING > TBC
+DBC::Structures::ScalingStatDistributionEntry const* Player::getScalingStatDistributionFor(ItemProperties const& itemProto) const
+{
+    if (!itemProto.ScalingStatsEntry)
+        return nullptr;
+
+    return sScalingStatDistributionStore.LookupEntry(itemProto.ScalingStatsEntry);
+}
+
+DBC::Structures::ScalingStatValuesEntry const* Player::getScalingStatValuesFor(ItemProperties const& itemProto) const
+{
+    if (!itemProto.ScalingStatsFlag)
+        return nullptr;
+
+    DBC::Structures::ScalingStatDistributionEntry const* ssd = getScalingStatDistributionFor(itemProto);
+    if (!ssd)
+        return nullptr;
+
+    // req. check at equip, but allow use for extended range if range limit max level, set proper level
+    uint32_t const ssd_level = std::min(uint32_t(getLevel()), ssd->maxlevel);
+    return sScalingStatValuesStore.LookupEntry(ssd_level);
+}
+#endif
+
 ItemInterface* Player::getItemInterface() const
 {
     return m_itemInterface;
@@ -5176,7 +5485,98 @@ bool Player::isOnGMTargetList(uint32_t guid) const
 
     return false;
 }
+
+bool Player::isAtGroupRewardDistance(Object* pRewardSource)
+{
+    if (!pRewardSource)
+        return false;
+
+    Object* player = sObjectMgr.GetCorpseByOwner(getGuidLow());
+    if (!player || isAlive())
+        player = this;
+
+    if (player->GetMapId() != pRewardSource->GetMapId() || player->GetInstanceID() != pRewardSource->GetInstanceID())
+        return false;
+
+    return pRewardSource->getDistance(player) <= 75.0f;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Void Storage
 #if VERSION_STRING > WotLK
+void Player::loadVoidStorage()
+{
+    QueryResult* result = CharacterDatabase.Query("SELECT itemid, itemEntry, slot, creatorGuid, randomProperty, suffixFactor FROM character_void_storage WHERE playerGuid = %u", getGuidLow());
+    if (!result)
+        return;
+
+    do
+    {
+        Field* fields = result->Fetch();
+
+        uint64_t itemId = fields[0].GetUInt64();
+        uint32_t itemEntry = fields[1].GetUInt32();
+        uint8_t slot = fields[2].GetUInt8();
+        uint32_t creatorGuid = fields[3].GetUInt32();
+        uint32_t randomProperty = fields[4].GetUInt32();
+        uint32_t suffixFactor = fields[5].GetUInt32();
+
+        if (!itemId)
+        {
+            sLogger.debug("Player::loadVoidStorage - Player (GUID: %u, name: %s) has an item with an invalid id (item id: %I64u, entry: %u).", getGuidLow(), getName().c_str(), itemId, itemEntry);
+            continue;
+        }
+
+        if (!sMySQLStore.getItemProperties(itemEntry))
+        {
+            sLogger.debug("Player::loadVoidStorage - Player (GUID: %u, name: %s) has an item with an invalid entry (item id: %I64u, entry: %u).", getGuidLow(), getName().c_str(), itemId, itemEntry);
+            continue;
+        }
+
+        if (slot >= VOID_STORAGE_MAX_SLOT)
+        {
+            sLogger.debug("Player::loadVoidStorage - Player (GUID: %u, name: %s) has an item with an invalid slot (item id: %I64u, entry: %u, slot: %u).", getGuidLow(), getName().c_str(), itemId, itemEntry, slot);
+            continue;
+        }
+
+        if (!sObjectMgr.GetPlayer(creatorGuid))
+        {
+            sLogger.debug("Player::loadVoidStorage - Player (GUID: %u, name: %s) has an item with an invalid creator guid, set to 0 (item id: %I64u, entry: %u, creatorGuid: %u).", getGuidLow(), getName().c_str(), itemId, itemEntry, creatorGuid);
+            creatorGuid = 0;
+        }
+
+        _voidStorageItems[slot] = new VoidStorageItem(itemId, itemEntry, creatorGuid, randomProperty, suffixFactor);
+    } while (result->NextRow());
+}
+
+void Player::saveVoidStorage()
+{
+    uint32_t lowGuid = getGuidLow();
+
+    for (uint8_t slot = 0; slot < VOID_STORAGE_MAX_SLOT; ++slot)
+    {
+        if (!_voidStorageItems[slot]) // unused item
+        {
+            // DELETE FROM void_storage WHERE slot = ? AND playerGuid = ?
+            CharacterDatabase.Execute("DELETE FROM character_void_storage WHERE playerGuid = %u AND slot = %u ", lowGuid, slot);
+        }
+        else
+        {
+            std::stringstream ss;
+            ss << "REPLACE INTO character_void_storage VALUES(";
+            ss << _voidStorageItems[slot]->itemId << ",";
+            ss << lowGuid << ",";
+            ss << uint32_t(_voidStorageItems[slot]->itemEntry) << ",";
+            ss << int(slot) << ",";
+            ss << _voidStorageItems[slot]->creatorGuid << ",";
+            ss << _voidStorageItems[slot]->itemRandomPropertyId << ",";
+            ss << _voidStorageItems[slot]->itemSuffixFactor;
+            ss << ")";
+            CharacterDatabase.Execute(ss.str().c_str());
+        }
+    }
+}
+
 uint8_t Player::getNextVoidStorageFreeSlot() const
 {
     for (uint8_t i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
@@ -5276,94 +5676,349 @@ VoidStorageItem* Player::getVoidStorageItem(uint64_t id, uint8_t& slot) const
 
     return nullptr;
 }
+#endif
 
-void Player::loadVoidStorage()
+/////////////////////////////////////////////////////////////////////////////////////////
+// Taxi
+void Player::loadTaxiMask(const char* data)
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT itemid, itemEntry, slot, creatorGuid, randomProperty, suffixFactor FROM character_void_storage WHERE playerGuid = %u", getGuidLow());
-    if (!result)
-        return;
+    std::vector<std::string> tokens = AscEmu::Util::Strings::split(data, " ");
 
-    do
+    uint8_t index;
+    std::vector<std::string>::iterator iter;
+
+    for (iter = tokens.begin(), index = 0; index < DBC_TAXI_MASK_SIZE && iter != tokens.end(); ++iter, ++index)
     {
-        Field* fields = result->Fetch();
-
-        uint64_t itemId = fields[0].GetUInt64();
-        uint32_t itemEntry = fields[1].GetUInt32();
-        uint8_t slot = fields[2].GetUInt8();
-        uint32_t creatorGuid = fields[3].GetUInt32();
-        uint32_t randomProperty = fields[4].GetUInt32();
-        uint32_t suffixFactor = fields[5].GetUInt32();
-
-        if (!itemId)
-        {
-            sLogger.debug("Player::loadVoidStorage - Player (GUID: %u, name: %s) has an item with an invalid id (item id: %I64u, entry: %u).", getGuidLow(), getName().c_str(), itemId, itemEntry);
-            continue;
-        }
-
-        if (!sMySQLStore.getItemProperties(itemEntry))
-        {
-            sLogger.debug("Player::loadVoidStorage - Player (GUID: %u, name: %s) has an item with an invalid entry (item id: %I64u, entry: %u).", getGuidLow(), getName().c_str(), itemId, itemEntry);
-            continue;
-        }
-
-        if (slot >= VOID_STORAGE_MAX_SLOT)
-        {
-            sLogger.debug("Player::loadVoidStorage - Player (GUID: %u, name: %s) has an item with an invalid slot (item id: %I64u, entry: %u, slot: %u).", getGuidLow(), getName().c_str(), itemId, itemEntry, slot);
-            continue;
-        }
-
-        if (!sObjectMgr.GetPlayer(creatorGuid))
-        {
-            sLogger.debug("Player::loadVoidStorage - Player (GUID: %u, name: %s) has an item with an invalid creator guid, set to 0 (item id: %I64u, entry: %u, creatorGuid: %u).", getGuidLow(), getName().c_str(), itemId, itemEntry, creatorGuid);
-            creatorGuid = 0;
-        }
-
-        _voidStorageItems[slot] = new VoidStorageItem(itemId, itemEntry, creatorGuid, randomProperty, suffixFactor);
-    } while (result->NextRow());
+        m_taxiMask[index] = atol((*iter).c_str());
+    }
 }
 
-void Player::saveVoidStorage()
+void Player::startTaxiPath(TaxiPath* path, uint32_t modelid, uint32_t start_node)
 {
-    uint32_t lowGuid = getGuidLow();
+    int32_t mapchangeid = -1;
+    float mapchangex = 0.0f, mapchangey = 0.0f, mapchangez = 0.0f;
+    uint32_t cn = m_taxiMapChangeNode;
 
-    for (uint8_t slot = 0; slot < VOID_STORAGE_MAX_SLOT; ++slot)
+    m_taxiMapChangeNode = 0;
+
+    Dismount();
+
+#ifdef FT_VEHICLES
+    callExitVehicle();
+#endif
+
+    //also remove morph spells
+    if (getDisplayId() != getNativeDisplayId())
     {
-        if (!_voidStorageItems[slot]) // unused item
+        RemoveAllAuraType(SPELL_AURA_TRANSFORM);
+        RemoveAllAuraType(SPELL_AURA_MOD_SHAPESHIFT);
+    }
+
+    DismissActivePets();
+
+    setMountDisplayId(modelid);
+    addUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
+    addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
+
+    setTaxiPath(path);
+    setTaxiPosition();
+    setOnTaxi(true);
+    m_taxiRideTime = Util::getMSTime();
+
+    //uint32 traveltime = uint32(path->getLength() * TAXI_TRAVEL_SPEED); // 36.7407
+    float traveldist = 0;
+
+    float lastx = 0, lasty = 0, lastz = 0;
+    TaxiPathNode* firstNode = path->GetPathNode(start_node);
+    uint32_t add_time = 0;
+
+    // temporary workaround for taximodes with changing map
+    if (path->GetID() == 766 || path->GetID() == 767 || path->GetID() == 771 || path->GetID() == 772)
+    {
+        skipTaxiPathNodesToEnd(path);
+        return;
+    }
+
+    if (start_node)
+    {
+        TaxiPathNode* pn = path->GetPathNode(0);
+        float dist = 0;
+        lastx = pn->x;
+        lasty = pn->y;
+        lastz = pn->z;
+        for (uint32_t i = 1; i <= start_node; ++i)
         {
-            // DELETE FROM void_storage WHERE slot = ? AND playerGuid = ?
-            CharacterDatabase.Execute("DELETE FROM character_void_storage WHERE playerGuid = %u AND slot = %u ", lowGuid, slot);
+            pn = path->GetPathNode(i);
+            if (!pn)
+            {
+                skipTaxiPathNodesToEnd(path);
+                return;
+            }
+
+            dist += CalcDistance(lastx, lasty, lastz, pn->x, pn->y, pn->z);
+            lastx = pn->x;
+            lasty = pn->y;
+            lastz = pn->z;
+        }
+        add_time = uint32_t(dist * TAXI_TRAVEL_SPEED);
+        lastx = lasty = lastz = 0;
+    }
+
+    size_t endn = path->GetNodeCount();
+    if (!m_taxiPaths.empty())
+        endn -= 2;
+
+    for (uint32_t i = start_node; i < endn; ++i)
+    {
+        TaxiPathNode* pn = path->GetPathNode(i);
+
+        // temporary workaround for taximodes with changing map
+        if (!pn || path->GetID() == 766 || path->GetID() == 767 || path->GetID() == 771 || path->GetID() == 772)
+        {
+            skipTaxiPathNodesToEnd(path);
+            return;
+        }
+
+        if (pn->mapid != m_mapId)
+        {
+            endn = (i - 1);
+            m_taxiMapChangeNode = i;
+
+            mapchangeid = (int32_t)pn->mapid;
+            mapchangex = pn->x;
+            mapchangey = pn->y;
+            mapchangez = pn->z;
+            break;
+        }
+
+        if (!lastx || !lasty || !lastz)
+        {
+            lastx = pn->x;
+            lasty = pn->y;
+            lastz = pn->z;
         }
         else
         {
-            std::stringstream ss;
-            ss << "REPLACE INTO character_void_storage VALUES(";
-            ss << _voidStorageItems[slot]->itemId << ",";
-            ss << lowGuid << ",";
-            ss << uint32_t(_voidStorageItems[slot]->itemEntry) << ",";
-            ss << int(slot) << ",";
-            ss << _voidStorageItems[slot]->creatorGuid << ",";
-            ss << _voidStorageItems[slot]->itemRandomPropertyId << ",";
-            ss << _voidStorageItems[slot]->itemSuffixFactor;
-            ss << ")";
-            CharacterDatabase.Execute(ss.str().c_str());
+            float dist = CalcDistance(lastx, lasty, lastz, pn->x, pn->y, pn->z);
+            traveldist += dist;
+            lastx = pn->x;
+            lasty = pn->y;
+            lastz = pn->z;
         }
     }
-}
+
+    uint32_t traveltime = uint32_t(traveldist * TAXI_TRAVEL_SPEED);
+
+    if (start_node > endn || (endn - start_node) > 200)
+        return;
+
+    WorldPacket data(SMSG_MONSTER_MOVE, 38 + ((endn - start_node) * 12));
+    data << GetNewGUID();
+    data << uint8_t(0); //VLack: it seems we have a 1 byte stuff after the new GUID
+    data << firstNode->x;
+    data << firstNode->y;
+    data << firstNode->z;
+    data << m_taxiRideTime;
+    data << uint8_t(0);
+#if VERSION_STRING >= Cata
+    data << uint32_t(0x0C008400);
+#else
+    data << uint32_t(0x00003000);
 #endif
+    data << uint32_t(traveltime);
 
-bool Player::isAtGroupRewardDistance(Object* pRewardSource)
+    if (!cn)
+        m_taxiRideTime -= add_time;
+
+    data << uint32_t(endn - start_node);
+
+    for (uint32_t i = start_node; i < endn; i++)
+    {
+        TaxiPathNode* pn = path->GetPathNode(i);
+        if (!pn)
+        {
+            skipTaxiPathNodesToEnd(path);
+            return;
+        }
+
+        data << pn->x;
+        data << pn->y;
+        data << pn->z;
+    }
+
+    SendMessageToSet(&data, true);
+
+    sEventMgr.AddEvent(this, &Player::interpolateTaxiPosition,
+        EVENT_PLAYER_TAXI_INTERPOLATE, 900, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+
+    if (mapchangeid < 0)
+    {
+        TaxiPathNode* pn = path->GetPathNode((uint32_t)path->GetNodeCount() - 1);
+        sEventMgr.AddEvent(this, &Player::dismountAfterTaxiPath, path->getPrice(),
+            pn->x, pn->y, pn->z, EVENT_PLAYER_TAXI_DISMOUNT, traveltime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    }
+    else
+    {
+        sEventMgr.AddEvent(this, &Player::EventTeleportTaxi, (uint32_t)mapchangeid, 
+            mapchangex, mapchangey, mapchangez, EVENT_PLAYER_TELEPORT, traveltime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    }
+}
+
+void Player::skipTaxiPathNodesToEnd(TaxiPath* path)
 {
-    if (!pRewardSource)
-        return false;
+    // this should *always* be safe in case it cant build your position on the path!
+    TaxiPathNode* pathnode = path->GetPathNode((uint32_t)path->GetNodeCount() - 1);
+    if (!pathnode)
+        return;
 
-    Object* player = sObjectMgr.GetCorpseByOwner(getGuidLow());
-    if (!player || isAlive())
-        player = this;
+    modCoinage(-(int32_t)path->getPrice());
 
-    if (player->GetMapId() != pRewardSource->GetMapId() || player->GetInstanceID() != pRewardSource->GetInstanceID())
-        return false;
+    setOnTaxi(false);
+    setTaxiPath(nullptr);
+    unsetTaxiPosition();
+    m_taxiRideTime = 0;
 
-    return pRewardSource->getDistance(player) <= 75.0f;
+    setMountDisplayId(0);
+    removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
+    removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
+
+    setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
+
+    SafeTeleport(pathnode->mapid, 0, LocationVector(pathnode->x, pathnode->y, pathnode->z));
+
+    // Start next path if any remaining
+    if (m_taxiPaths.size())
+    {
+        TaxiPath* p = *m_taxiPaths.begin();
+        m_taxiPaths.erase(m_taxiPaths.begin());
+        startTaxiPath(p, m_taxiMountDisplayId, 0);
+    }
+}
+
+void Player::dismountAfterTaxiPath(uint32_t money, float x, float y, float z)
+{
+    if (money)
+        modCoinage(-(int32_t)money);
+
+    if (money > 0 && m_fallDisabledUntil < time(nullptr) + 5)
+        m_fallDisabledUntil = time(nullptr) + 5; //VLack: If the ride wasn't free, the player shouldn't die after arrival because of fall damage... So we'll disable it for 5 seconds.
+
+    SetPosition(x, y, z, GetOrientation(), true);
+    if (m_taxiPaths.empty())
+        setOnTaxi(false);
+
+    setTaxiPath(nullptr);
+    unsetTaxiPosition();
+    m_taxiRideTime = 0;
+
+    setMountDisplayId(0);
+    removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
+    removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
+
+    setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
+
+    sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_INTERPOLATE);
+
+    // Save to database on dismount
+    SaveToDB(false);
+
+    // If we have multiple "trips" to do, "jump" on the next one :p
+    if (m_taxiPaths.size())
+    {
+        TaxiPath* p = *m_taxiPaths.begin();
+        m_taxiPaths.erase(m_taxiPaths.begin());
+        startTaxiPath(p, m_taxiMountDisplayId, 0);
+    }
+}
+
+void Player::interpolateTaxiPosition()
+{
+    if (!m_currentTaxiPath || m_mapMgr == nullptr) return;
+
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+
+    uint32_t ntime = Util::getMSTime();
+
+    if (ntime > m_taxiRideTime)
+        m_currentTaxiPath->SetPosForTime(x, y, z, ntime - m_taxiRideTime, &m_lastTaxiNode, m_mapId);
+    /*else
+        m_currentTaxiPath->SetPosForTime(x, y, z, m_taxiRideTime - ntime, &m_lastTaxiNode);*/
+
+    if (x < _minX || x > _maxX || y < _minY || y > _maxX)
+        return;
+
+    SetPosition(x, y, z, 0);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Loot
+void Player::sendLooter(Creature* creature)
+{
+    WorldPacket data(SMSG_LOOT_LIST, 8 + 1 + 1);
+    data << uint64_t(creature->getGuid());
+    data << uint8_t(0); // unk1
+    data << uint8_t(0); // no group looter
+    SendMessageToSet(&data, true);
+}
+
+Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
+{
+    Personaltem* questItem = nullptr;
+    Personaltem* ffaItem = nullptr;
+
+    // Pick our loot from Loot Store
+    LootItem* item = _loot->lootItemInSlot(slot, this, &questItem, &ffaItem);
+
+    if (!item)
+    {
+        getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_ALREADY_LOOTED);
+        return nullptr;
+    }
+
+    // questitems use the blocked field for other purposes
+    if (!questItem && item->is_blocked)
+    {
+        SendPacket(SmsgLootReleaseResponse(GetLootGUID(), 1).serialise().get());
+        return nullptr;
+    }
+
+    // Add our Item
+    Item* newItem = storeItem(item);
+    if (!newItem)
+        return nullptr;
+
+    if (questItem)
+    {
+        questItem->is_looted = true;
+        //freeforall is 1 if everyone's supposed to get the quest item.
+        if (item->is_ffa || _loot->getPlayerQuestItems().size() == 1)
+            GetSession()->SendPacket(SmsgLootRemoved(slot).serialise().get());
+        else
+            _loot->itemRemoved(questItem->index);
+    }
+    else
+    {
+        if (ffaItem)
+        {
+            //freeforall case, notify only one player of the removal
+            ffaItem->is_looted = true;
+            GetSession()->SendPacket(SmsgLootRemoved(slot).serialise().get());
+        }
+        else
+        {
+            _loot->itemRemoved(slot);
+        }
+    }
+
+    //if only one person is supposed to loot the item, then set it to looted
+    if (!item->is_ffa)
+        item->is_looted = true;
+
+    --_loot->unlootedCount;
+
+    return newItem;
 }
 
 Item* Player::storeItem(LootItem const* lootItem)
@@ -5450,378 +6105,3 @@ Item* Player::storeItem(LootItem const* lootItem)
         return add;
     }
 }
-
-Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
-{
-    Personaltem* questItem = nullptr;
-    Personaltem* ffaItem = nullptr;
-
-    // Pick our loot from Loot Store
-    LootItem* item = _loot->lootItemInSlot(slot, this, &questItem, &ffaItem);
-
-    if (!item)
-    {
-        getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_ALREADY_LOOTED);
-        return nullptr;
-    }
-
-    // questitems use the blocked field for other purposes
-    if (!questItem && item->is_blocked)
-    {
-        SendPacket(SmsgLootReleaseResponse(GetLootGUID(), 1).serialise().get());
-        return nullptr;
-    }
-
-    // Add our Item
-    Item* newItem = storeItem(item);
-    if (!newItem)
-        return nullptr;
-
-    if (questItem)
-    {
-        questItem->is_looted = true;
-        //freeforall is 1 if everyone's supposed to get the quest item.
-        if (item->is_ffa || _loot->getPlayerQuestItems().size() == 1)
-            GetSession()->SendPacket(SmsgLootRemoved(slot).serialise().get());
-        else
-            _loot->itemRemoved(questItem->index);
-    }
-    else
-    {
-        if (ffaItem)
-        {
-            //freeforall case, notify only one player of the removal
-            ffaItem->is_looted = true;
-            GetSession()->SendPacket(SmsgLootRemoved(slot).serialise().get());
-        }
-        else
-        {
-            _loot->itemRemoved(slot);
-        }
-    }
-
-    //if only one person is supposed to loot the item, then set it to looted
-    if (!item->is_ffa)
-        item->is_looted = true;
-
-    --_loot->unlootedCount;
-
-    return newItem;
-}
-
-#if VERSION_STRING >= WotLK
-void Player::updateSoulboundTradeItems()
-{
-    if (m_itemSoulboundTradeable.empty())
-        return;
-
-    for (ItemDurationList::iterator itemSoulbound = m_itemSoulboundTradeable.begin(); itemSoulbound != m_itemSoulboundTradeable.end();)
-    {
-        if (!(*itemSoulbound)->m_isDirty)
-        {
-            if ((*itemSoulbound)->getOwner()->getGuid() != getGuid())
-            {
-                m_itemSoulboundTradeable.erase(itemSoulbound++);
-                continue;
-            }
-            if ((*itemSoulbound)->checkSoulboundTradeExpire())
-            {
-                m_itemSoulboundTradeable.erase(itemSoulbound++);
-                continue;
-            }
-            ++itemSoulbound;
-        }
-        else
-        {
-            m_itemSoulboundTradeable.erase(itemSoulbound++);
-        }
-    }
-}
-
-void Player::addTradeableItem(Item* item)
-{
-    m_itemSoulboundTradeable.push_back(item);
-}
-
-void Player::removeTradeableItem(Item* item)
-{
-    m_itemSoulboundTradeable.remove(item);
-}
-#endif
-
-void Player::sendLooter(Creature* creature)
-{
-    WorldPacket data(SMSG_LOOT_LIST, 8 + 1 + 1);
-    data << uint64_t(creature->getGuid());
-    data << uint8_t(0); // unk1
-    data << uint8_t(0); // no group looter
-    SendMessageToSet(&data, true);
-}
-
-#if VERSION_STRING > TBC
-DBC::Structures::ScalingStatDistributionEntry const* Player::getScalingStatDistributionFor(ItemProperties const& itemProto) const
-{
-    if (!itemProto.ScalingStatsEntry)
-        return nullptr;
-
-    return sScalingStatDistributionStore.LookupEntry(itemProto.ScalingStatsEntry);
-}
-
-DBC::Structures::ScalingStatValuesEntry const* Player::getScalingStatValuesFor(ItemProperties const& itemProto) const
-{
-    if (!itemProto.ScalingStatsFlag)
-        return nullptr;
-
-    DBC::Structures::ScalingStatDistributionEntry const* ssd = getScalingStatDistributionFor(itemProto);
-    if (!ssd)
-        return nullptr;
-
-    // req. check at equip, but allow use for extended range if range limit max level, set proper level
-    uint32_t const ssd_level = std::min(uint32_t(getLevel()), ssd->maxlevel);
-    return sScalingStatValuesStore.LookupEntry(ssd_level);
-}
-#endif
-
-#if VERSION_STRING == WotLK
-void Player::calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, bool apply)
-{
-    DBC::Structures::ScalingStatDistributionEntry const* ssd = getScalingStatDistributionFor(*proto);
-    DBC::Structures::ScalingStatValuesEntry const* ssvrow = getScalingStatValuesFor(*proto);
-
-    if (!ssd || !ssvrow)
-        return;
-
-    for (uint32_t id = 0; id < MAX_ITEM_PROTO_STATS; ++id)
-    {
-        uint32_t statType = 0;
-        int32_t  val = 0;
-
-        if (ssd && ssvrow)
-        {
-            if (ssd->stat[id] < 0)
-                continue;
-            statType = ssd->stat[id];
-            val = (ssvrow->getScalingStatDistributionMultiplier(proto->ScalingStatsFlag) * ssd->statmodifier[id]) / 10000;
-        }
-        else
-        {
-            if (id >= proto->itemstatscount)
-                continue;
-
-            statType = proto->Stats[id].Type;
-            val = proto->Stats[id].Value;
-        }
-
-        if (val == 0)
-            continue;
-
-        switch (statType)
-        {
-            case ITEM_MOD_MANA:
-                ModifyBonuses(ITEM_MOD_MANA, val, apply);
-                break;
-            case ITEM_MOD_HEALTH:                           // modify HP
-                ModifyBonuses(ITEM_MOD_HEALTH, val, apply);
-                break;
-            case ITEM_MOD_AGILITY:                          // modify agility
-                ModifyBonuses(ITEM_MOD_AGILITY, val, apply);
-                break;
-            case ITEM_MOD_STRENGTH:                         //modify strength
-                ModifyBonuses(ITEM_MOD_STRENGTH, val, apply);
-                break;
-            case ITEM_MOD_INTELLECT:                        //modify intellect
-                ModifyBonuses(ITEM_MOD_INTELLECT, val, apply);
-                break;
-            case ITEM_MOD_SPIRIT:                           //modify spirit
-                ModifyBonuses(ITEM_MOD_SPIRIT, val, apply);
-                break;
-            case ITEM_MOD_STAMINA:                          //modify stamina
-                ModifyBonuses(ITEM_MOD_STAMINA, val, apply);
-                break;
-            case ITEM_MOD_DEFENSE_RATING:
-                ModifyBonuses(ITEM_MOD_DEFENSE_RATING, val, apply);
-                break;
-            case ITEM_MOD_DODGE_RATING:
-                ModifyBonuses(ITEM_MOD_DODGE_RATING, val, apply);
-                break;
-            case ITEM_MOD_PARRY_RATING:
-                ModifyBonuses(ITEM_MOD_PARRY_RATING, val, apply);
-                break;
-            case ITEM_MOD_SHIELD_BLOCK_RATING:
-                ModifyBonuses(ITEM_MOD_SHIELD_BLOCK_RATING, val, apply);
-                break;
-            case ITEM_MOD_MELEE_HIT_RATING:
-                ModifyBonuses(ITEM_MOD_MELEE_HIT_RATING, val, apply);
-                break;
-            case ITEM_MOD_RANGED_HIT_RATING:
-                ModifyBonuses(ITEM_MOD_RANGED_HIT_RATING, val, apply);
-                break;
-            case ITEM_MOD_SPELL_HIT_RATING:
-                ModifyBonuses(ITEM_MOD_SPELL_HIT_RATING, val, apply);
-                break;
-            case ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING:
-                ModifyBonuses(ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING, val, apply);
-                break;
-            case ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING:
-                ModifyBonuses(ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING, val, apply);
-                break;
-            case ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING:
-                ModifyBonuses(ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING, val, apply);
-                break;
-            case ITEM_MOD_MELEE_HIT_AVOIDANCE_RATING:
-                ModifyBonuses(ITEM_MOD_MELEE_HIT_AVOIDANCE_RATING, val, apply);
-                break;
-            case ITEM_MOD_RANGED_HIT_AVOIDANCE_RATING:
-                ModifyBonuses(ITEM_MOD_RANGED_HIT_AVOIDANCE_RATING, val, apply);
-                break;
-            case ITEM_MOD_SPELL_HIT_AVOIDANCE_RATING:
-                ModifyBonuses(ITEM_MOD_SPELL_HIT_AVOIDANCE_RATING, val, apply);
-                break;
-            case ITEM_MOD_MELEE_CRITICAL_AVOIDANCE_RATING:
-                ModifyBonuses(ITEM_MOD_MELEE_CRITICAL_AVOIDANCE_RATING, val, apply);
-                break;
-            case ITEM_MOD_RANGED_CRITICAL_AVOIDANCE_RATING:
-                ModifyBonuses(ITEM_MOD_RANGED_CRITICAL_AVOIDANCE_RATING, val, apply);
-                break;
-            case ITEM_MOD_SPELL_CRITICAL_AVOIDANCE_RATING:
-                ModifyBonuses(ITEM_MOD_SPELL_CRITICAL_AVOIDANCE_RATING, val, apply);
-                break;
-            case ITEM_MOD_MELEE_HASTE_RATING:
-                ModifyBonuses(ITEM_MOD_MELEE_HASTE_RATING, val, apply);
-                break;
-            case ITEM_MOD_RANGED_HASTE_RATING:
-                ModifyBonuses(ITEM_MOD_RANGED_HASTE_RATING, val, apply);
-                break;
-            case ITEM_MOD_SPELL_HASTE_RATING:
-                ModifyBonuses(ITEM_MOD_SPELL_HASTE_RATING, val, apply);
-                break;
-            case ITEM_MOD_HIT_RATING:
-                ModifyBonuses(ITEM_MOD_HIT_RATING, val, apply);
-                break;
-            case ITEM_MOD_CRITICAL_STRIKE_RATING:
-                ModifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, val, apply);
-                break;
-            case ITEM_MOD_HIT_AVOIDANCE_RATING:
-                ModifyBonuses(ITEM_MOD_HIT_AVOIDANCE_RATING, val, apply);
-                break;
-            case ITEM_MOD_CRITICAL_AVOIDANCE_RATING:
-                ModifyBonuses(ITEM_MOD_CRITICAL_AVOIDANCE_RATING, val, apply);
-                break;
-            case ITEM_MOD_RESILIENCE_RATING:
-                ModifyBonuses(ITEM_MOD_RESILIENCE_RATING, val, apply);
-                break;
-            case ITEM_MOD_HASTE_RATING:
-                ModifyBonuses(ITEM_MOD_HASTE_RATING, val, apply);
-                break;
-            case ITEM_MOD_EXPERTISE_RATING:
-                ModifyBonuses(ITEM_MOD_EXPERTISE_RATING, val, apply);
-                break;
-            case ITEM_MOD_ATTACK_POWER:
-                ModifyBonuses(ITEM_MOD_ATTACK_POWER, val, apply);
-                break;
-            case ITEM_MOD_RANGED_ATTACK_POWER:
-                ModifyBonuses(ITEM_MOD_RANGED_ATTACK_POWER, val, apply);
-                break;
-            case ITEM_MOD_MANA_REGENERATION:
-                ModifyBonuses(ITEM_MOD_MANA_REGENERATION, val, apply);
-                break;
-            case ITEM_MOD_ARMOR_PENETRATION_RATING:
-                ModifyBonuses(ITEM_MOD_ARMOR_PENETRATION_RATING, val, apply);
-                break;
-            case ITEM_MOD_SPELL_POWER:
-                ModifyBonuses(ITEM_MOD_SPELL_POWER, val, apply);
-                break;
-            case ITEM_MOD_HEALTH_REGEN:
-                ModifyBonuses(ITEM_MOD_HEALTH_REGEN, val, apply);
-                break;
-            case ITEM_MOD_SPELL_PENETRATION:
-                ModifyBonuses(ITEM_MOD_SPELL_PENETRATION, val, apply);
-                break;
-            case ITEM_MOD_BLOCK_VALUE:
-                ModifyBonuses(ITEM_MOD_BLOCK_VALUE, val, apply);
-                break;
-                // deprecated item mods
-            case ITEM_MOD_SPELL_HEALING_DONE:
-            case ITEM_MOD_SPELL_DAMAGE_DONE:
-                ModifyBonuses(ITEM_MOD_SPELL_HEALING_DONE, val, apply);
-                ModifyBonuses(ITEM_MOD_SPELL_DAMAGE_DONE, val, apply);
-                break;
-            default:
-                break;
-        }
-    }
-
-    // Apply Spell Power from ScalingStatValue if set
-    if (ssvrow)
-        if (int32_t spellbonus = ssvrow->getSpellBonus(proto->ScalingStatsEntry))
-            ModifyBonuses(ITEM_MOD_SPELL_POWER, spellbonus, apply);
-
-    // If set ScalingStatValue armor get it or use item armor
-    uint32_t armor = proto->Armor;
-    if (ssvrow)
-    {
-        if (uint32_t ssvarmor = ssvrow->getArmorMod(proto->ScalingStatsEntry))
-            armor = ssvarmor;
-    }
-    else if (armor && proto->ArmorDamageModifier)
-    {
-        armor -= uint32_t(proto->ArmorDamageModifier);
-    }
-
-    if (armor)
-    {
-        if (apply)
-            BaseResistance[0] += armor;
-        else
-            BaseResistance[0] -= armor;
-    }
-
-    /* Calculating the damages correct for our level and applying it */
-    if (ssvrow)
-    {
-        for (uint8_t i = 0; i < MAX_ITEM_PROTO_DAMAGES; ++i)
-        {
-            float minDamage = proto->Damage[i].Min;
-            float maxDamage = proto->Damage[i].Max;
-
-            // If set dpsMod in ScalingStatValue use it for min (70% from average), max (130% from average) damage
-            if (ssvrow && i == 0) // scaling stats only for first damage
-            {
-                int32_t extraDPS = ssvrow->getDPSMod(proto->ScalingStatsFlag);
-                if (extraDPS)
-                {
-                    float average = extraDPS * proto->Delay / 1000.0f;
-                    minDamage = 0.7f * average;
-                    maxDamage = 1.3f * average;
-                }
-
-                if (proto->InventoryType == INVTYPE_RANGED || proto->InventoryType == INVTYPE_RANGEDRIGHT || proto->InventoryType == INVTYPE_THROWN)
-                {
-                    BaseRangedDamage[0] += apply ? minDamage : -minDamage;
-                    BaseRangedDamage[1] += apply ? maxDamage : -maxDamage;
-                }
-                else
-                {
-                    if (slot == EQUIPMENT_SLOT_OFFHAND)
-                    {
-                        BaseOffhandDamage[0] = apply ? minDamage : 0;
-                        BaseOffhandDamage[1] = apply ? maxDamage : 0;
-                    }
-                    else
-                    {
-                        BaseDamage[0] = apply ? minDamage : 0;
-                        BaseDamage[1] = apply ? maxDamage : 0;
-                    }
-                }
-            }
-        }
-    }
-}
-#endif
-
-#if VERSION_STRING > WotLK
-void Player::calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, bool apply)
-{
-    // Todo CATA/MOP
-}
-#endif
