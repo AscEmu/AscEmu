@@ -75,6 +75,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/UnitDefines.hpp"
+#include "Server/Packets/SmsgSetFactionStanding.h"
+#include "Server/Packets/SmsgSetFactionVisible.h"
 #include "Server/Packets/SmsgTriggerMovie.h"
 #include "Server/Packets/SmsgTriggerCinematic.h"
 #include "Server/Packets/SmsgSpellCooldown.h"
@@ -1698,7 +1700,7 @@ bool Player::loadReputations(QueryResult* result)
     // Add initial reputations on first login
     if (m_FirstLogin)
     {
-        _InitialReputation();
+        initialiseReputation();
         return true;
     }
 
@@ -1727,7 +1729,7 @@ bool Player::loadReputations(QueryResult* result)
         reputation->standing = standing;
         reputation->flag = flag;
         m_reputation[id] = reputation;
-        reputationByListId[faction->RepListId] = reputation;
+        m_reputationByListId[faction->RepListId] = reputation;
     } while (result->NextRow());
 
     return true;
@@ -6422,4 +6424,500 @@ Item* Player::storeItem(LootItem const* lootItem)
 #endif
         return add;
     }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Reputation
+inline bool CanToggleAtWar(uint8_t flag) { return (flag & FACTION_FLAG_DISABLE_ATWAR) == 0; }
+inline bool AtWar(uint8_t flag) { return (flag & FACTION_FLAG_AT_WAR) != 0; }
+inline bool ForcedInvisible(uint8_t flag) { return (flag & FACTION_FLAG_FORCED_INVISIBLE) != 0; }
+inline bool Visible(uint8_t flag) { return (flag & FACTION_FLAG_VISIBLE) != 0; }
+inline bool Hidden(uint8_t flag) { return (flag & FACTION_FLAG_HIDDEN) != 0; }
+inline bool Inactive(uint8_t flag) { return (flag & FACTION_FLAG_INACTIVE) != 0; }
+
+inline bool SetFlagAtWar(uint8_t& flag, bool set)
+{
+    if (set && !AtWar(flag))
+        flag |= FACTION_FLAG_AT_WAR;
+    else if (!set && AtWar(flag))
+        flag &= ~FACTION_FLAG_AT_WAR;
+    else
+        return false;
+
+    return true;
+}
+
+inline bool SetFlagVisible(uint8_t& flag, bool set)
+{
+    if (ForcedInvisible(flag) || Hidden(flag))
+        return false;
+    else if (set && !Visible(flag))
+        flag |= FACTION_FLAG_VISIBLE;
+    else if (!set && Visible(flag))
+        flag &= ~FACTION_FLAG_VISIBLE;
+    else
+        return false;
+
+    return true;
+}
+
+inline bool SetFlagInactive(uint8_t& flag, bool set)
+{
+    if (set && !Inactive(flag))
+        flag |= FACTION_FLAG_INACTIVE;
+    else if (!set && Inactive(flag))
+        flag &= ~FACTION_FLAG_INACTIVE;
+    else
+        return false;
+
+    return true;
+}
+
+inline bool RankChanged(int32_t Standing, int32_t Change)
+{
+    return Player::getReputationRankFromStanding(Standing) != Player::getReputationRankFromStanding(Standing + Change);
+}
+
+inline bool RankChangedFlat(int32_t Standing, int32_t NewStanding)
+{
+    return Player::getReputationRankFromStanding(Standing) != Player::getReputationRankFromStanding(NewStanding);
+}
+
+void Player::setFactionStanding(uint32_t faction, int32_t value)
+{
+    DBC::Structures::FactionEntry const* factionEntry = sFactionStore.LookupEntry(faction);
+    if (!factionEntry || factionEntry->RepListId < 0)
+        return;
+
+    const int32_t minReputation = -42000;      //   0/36000 Hated
+    const int32_t exaltedReputation = 42000;   //   0/1000  Exalted
+    const int32_t maxReputation = 42999;       // 999/1000  Exalted
+
+    int32_t newValue = value;
+    if (newValue < minReputation)
+        newValue = minReputation;
+    else if (newValue > maxReputation)
+        newValue = maxReputation;
+
+    auto reputation = m_reputation.find(faction);
+    if (reputation == m_reputation.end())
+    {
+        if (!addNewFaction(factionEntry, newValue, false))
+            return;
+
+        reputation = m_reputation.find(faction);
+
+#if VERSION_STRING > TBC
+        if (reputation->second->standing >= 42000)
+            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
+
+        m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->ID, reputation->second->standing, 0);
+#endif
+
+        updateInrangeSetsBasedOnReputation();
+        onModStanding(factionEntry, reputation->second);
+    }
+    else
+    {
+        if (RankChangedFlat(reputation->second->standing, newValue))
+        {
+
+#if VERSION_STRING > TBC
+            if (reputation->second->standing - newValue >= exaltedReputation)
+                m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, -1, 0, 0);
+            else if (newValue >= exaltedReputation)
+                m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
+#endif
+
+            reputation->second->standing = newValue;
+            updateInrangeSetsBasedOnReputation();
+
+#if VERSION_STRING > TBC
+            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->ID, value, 0);
+#endif
+
+        }
+        else
+        {
+            reputation->second->standing = newValue;
+        }
+
+        onModStanding(factionEntry, reputation->second);
+    }
+}
+
+int32_t Player::getFactionStanding(uint32_t faction)
+{
+    const ReputationMap::iterator itr = m_reputation.find(faction);
+    if (itr != m_reputation.end())
+        return itr->second->standing;
+    return 0;
+}
+
+int32_t Player::getBaseFactionStanding(uint32_t faction)
+{
+    const ReputationMap::iterator itr = m_reputation.find(faction);
+    if (itr != m_reputation.end())
+        return itr->second->baseStanding;
+    return 0;
+}
+
+void Player::modFactionStanding(uint32_t faction, int32_t value)
+{
+    DBC::Structures::FactionEntry const* factionEntry = sFactionStore.LookupEntry(faction);
+    if (factionEntry == nullptr || factionEntry->RepListId < 0)
+        return;
+
+    const int32_t minReputation = -42000;      //   0/36000 Hated
+    const int32_t exaltedReputation = 42000;   //   0/1000  Exalted
+    const int32_t maxReputation = 42999;       // 999/1000  Exalted
+
+    if ((GetMapMgr()->GetMapInfo()->minlevel == 80 || 
+        (GetMapMgr()->iInstanceMode == InstanceDifficulty::DUNGEON_HEROIC && GetMapMgr()->GetMapInfo()->minlevel_heroic == 80)) && 
+        ChampioningFactionID != 0)
+        faction = ChampioningFactionID;
+
+    int32_t newValue = value;
+    if (newValue < minReputation)
+        newValue = minReputation;
+    else if (newValue > maxReputation)
+        newValue = maxReputation;
+
+    ReputationMap::iterator itr = m_reputation.find(faction);
+    if (itr == m_reputation.end())
+    {
+        if (!addNewFaction(factionEntry, newValue, false))
+            return;
+
+        itr = m_reputation.find(faction);
+
+#if VERSION_STRING > TBC
+        if (itr->second->standing >= 42000)
+            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
+
+        m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->ID, itr->second->standing, 0);
+#endif
+
+        updateInrangeSetsBasedOnReputation();
+        onModStanding(factionEntry, itr->second);
+    }
+    else
+    {
+        if (m_pctReputationMod > 0)
+            newValue = value + (value * m_pctReputationMod / 100);
+
+        if (RankChanged(itr->second->standing, newValue))
+        {
+            itr->second->standing += newValue;
+            updateInrangeSetsBasedOnReputation();
+
+#if VERSION_STRING > TBC
+            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->ID, itr->second->standing, 0);
+            if (itr->second->standing >= exaltedReputation) 
+                m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
+            else if (itr->second->standing - newValue >= exaltedReputation)
+                m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, -1, 0, 0);
+#endif
+
+        }
+        else
+        {
+            itr->second->standing += newValue;
+        }
+
+        if (itr->second->standing < minReputation)
+            itr->second->standing = minReputation;
+        else if (itr->second->standing > maxReputation)
+            itr->second->standing = maxReputation;
+        onModStanding(factionEntry, itr->second);
+    }
+}
+
+Standing Player::getFactionStandingRank(uint32_t faction)
+{
+    return getReputationRankFromStanding(getFactionStanding(faction));
+}
+
+Standing Player::getReputationRankFromStanding(int32_t value)
+{
+    if (value >= 42000)
+        return STANDING_EXALTED;
+    if (value >= 21000)
+        return STANDING_REVERED;
+    if (value >= 9000)
+        return STANDING_HONORED;
+    if (value >= 3000)
+        return STANDING_FRIENDLY;
+    if (value >= 0)
+        return STANDING_NEUTRAL;
+    if (value > -3000)
+        return STANDING_UNFRIENDLY;
+    if (value > -6000)
+        return STANDING_HOSTILE;
+
+    return STANDING_HATED;
+}
+
+void Player::setFactionAtWar(uint32_t faction, bool set)
+{
+    FactionReputation* factionReputation = m_reputationByListId[faction];
+    if (!factionReputation)
+        return;
+
+    if (faction >= 128)
+        return;
+
+    if (getReputationRankFromStanding(factionReputation->standing) <= STANDING_HOSTILE && !set)
+        return;
+
+    if (!CanToggleAtWar(factionReputation->flag))
+        return;
+
+    if (SetFlagAtWar(factionReputation->flag, set))
+        updateInrangeSetsBasedOnReputation();
+}
+
+bool Player::isHostileBasedOnReputation(DBC::Structures::FactionEntry const* factionEntry)
+{
+    if (!factionEntry)
+        return false;
+
+    if (factionEntry->RepListId < 0 || factionEntry->RepListId >= 128)
+        return false;
+
+    FactionReputation* factionReputation = m_reputationByListId[factionEntry->RepListId];
+    if (factionReputation == nullptr)
+        return false;
+
+    const auto itr = m_forcedReactions.find(factionEntry->ID);
+    if (itr != m_forcedReactions.end())
+        return itr->second <= STANDING_HOSTILE;
+
+    return AtWar(factionReputation->flag) || getReputationRankFromStanding(factionReputation->standing) <= STANDING_HOSTILE;
+}
+
+void Player::updateInrangeSetsBasedOnReputation()
+{
+    for (const auto& object : getInRangeObjectsSet())
+    {
+        if (!object->isCreatureOrPlayer())
+            continue;
+
+        const auto unit = dynamic_cast<Unit*>(object);
+        if (unit->m_factionEntry == nullptr || unit->m_factionEntry->RepListId < 0)
+            continue;
+
+        bool isHostile = isHostileBasedOnReputation(unit->m_factionEntry);
+        bool currentHostileObject = isObjectInInRangeOppositeFactionSet(unit);
+
+        if (isHostile && !currentHostileObject)
+            addInRangeOppositeFaction(unit);
+        else if (!isHostile && currentHostileObject)
+            addInRangeOppositeFaction(unit);
+    }
+}
+
+void Player::onKillUnitReputation(Unit* unit, bool innerLoop)
+{
+    if (!unit)
+        return;
+
+    if (!unit->isCreature() || unit->isPet() || unit->isCritter())
+        return;
+
+    if (Group* m_Group = getGroup())
+    {
+        if (!innerLoop)
+        {
+            m_Group->getLock().Acquire();
+
+            for (uint32_t i = 0; i < m_Group->GetSubGroupCount(); ++i)
+                for (auto groupMember : m_Group->GetSubGroup(i)->getGroupMembers())
+                    if (auto player = sObjectMgr.GetPlayer(groupMember->guid))
+                        if (player->isInRange(this, 100.0f))
+                            player->onKillUnitReputation(unit, true);
+
+            m_Group->getLock().Release();
+
+            return;
+        }
+    }
+
+    const uint32_t team = getTeam();
+    ReputationModifier* modifier = sObjectMgr.GetReputationModifier(unit->getEntry(), unit->m_factionEntry->ID);
+    if (modifier != nullptr)
+    {
+        for (auto& mod : modifier->mods)
+        {
+            if (!mod.faction[team])
+                continue;
+
+            if (!IS_INSTANCE(GetMapId()) || (IS_INSTANCE(GetMapId()) && this->m_dungeonDifficulty != InstanceDifficulty::DUNGEON_HEROIC))
+                if (mod.replimit)
+                    if (getFactionStanding(mod.faction[team]) >= static_cast<int32_t>(mod.replimit))
+                        continue;
+
+            modFactionStanding(mod.faction[team], float2int32(mod.value * worldConfig.getFloatRate(RATE_KILLREPUTATION)));
+        }
+    }
+    else
+    {
+        if (IS_INSTANCE(GetMapId()) && sObjectMgr.HandleInstanceReputationModifiers(this, unit))
+            return;
+
+        if (unit->m_factionEntry->RepListId < 0)
+            return;
+
+        const int32_t change = static_cast<int32_t>(-5.0f * worldConfig.getFloatRate(RATE_KILLREPUTATION));
+        modFactionStanding(unit->m_factionEntry->ID, change);
+    }
+}
+
+void Player::onTalkReputation(DBC::Structures::FactionEntry const* factionEntry)
+{
+    if (!factionEntry || factionEntry->RepListId < 0)
+        return;
+
+    FactionReputation* factionReputation = m_reputationByListId[factionEntry->RepListId];
+    if (factionReputation == nullptr)
+        return;
+
+    if (SetFlagVisible(factionReputation->flag, true) && IsInWorld())
+        SendPacket(SmsgSetFactionVisible(factionEntry->RepListId).serialise().get());
+}
+
+void Player::setFactionInactive(uint32_t faction, bool /*set*/)
+{
+    FactionReputation* factionReputation = m_reputationByListId[faction];
+    if (!factionReputation)
+        return;
+}
+
+bool Player::addNewFaction(DBC::Structures::FactionEntry const* factionEntry, int32_t standing, bool base)
+{
+    if (!factionEntry || factionEntry->RepListId < 0)
+        return false;
+
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        if ((factionEntry->RaceMask[i] & getRaceMask() || 
+            factionEntry->RaceMask[i] == 0 && factionEntry->ClassMask[i] != 0) && 
+            (factionEntry->ClassMask[i] & getClassMask() || factionEntry->ClassMask[i] == 0))
+        {
+            FactionReputation* factionReputation = new FactionReputation;
+            factionReputation->flag = static_cast<uint8_t>(factionEntry->repFlags[i]);
+            factionReputation->baseStanding = factionEntry->baseRepValue[i];
+            factionReputation->standing = (base) ? factionEntry->baseRepValue[i] : standing;
+
+            m_reputation[factionEntry->ID] = factionReputation;
+            m_reputationByListId[factionEntry->RepListId] = factionReputation;
+
+            return true;
+        }
+    }
+    return false;
+}
+
+void Player::onModStanding(DBC::Structures::FactionEntry const* factionEntry, FactionReputation* reputation)
+{
+    if (!factionEntry || !reputation)
+        return;
+
+    if (SetFlagVisible(reputation->flag, true) && IsInWorld())
+        SendPacket(SmsgSetFactionVisible(factionEntry->RepListId).serialise().get());
+
+    SetFlagAtWar(reputation->flag, (getReputationRankFromStanding(reputation->standing) <= STANDING_HOSTILE));
+
+    if (Visible(reputation->flag) && IsInWorld())
+        SendPacket(SmsgSetFactionStanding(factionEntry->RepListId, reputation->CalcStanding()).serialise().get());
+}
+
+uint32_t Player::getExaltedCount()
+{
+    uint32_t exaltedCount = 0;
+
+    auto itr = m_reputation.begin();
+    while (itr != m_reputation.end())
+    {
+        const int32_t exaltedReputation = 42000;
+        if (itr->second->standing >= exaltedReputation)
+            ++exaltedCount;
+        ++itr;
+    }
+    return exaltedCount;
+}
+
+void Player::sendSmsgInitialFactions()
+{
+#if VERSION_STRING == Mop
+    const uint16_t factionCount = 256;
+    ByteBuffer buffer;
+    uint32_t a = 0;
+
+    WorldPacket data(SMSG_INITIALIZE_FACTIONS, factionCount * (1 + 4) + 32);
+    /*for (uint32_t i = 0; i < 128; ++i)
+    {
+        FactionReputation* rep = m_reputationByListId[i];
+        if (rep == nullptr)
+        {
+            data << uint8_t(0);
+            data << uint32_t(0);
+            buffer.writeBit(0);
+        }
+        else
+        {
+            data << rep->flag;
+            data << rep->CalcStanding();
+            buffer.writeBit(0);
+        }
+    }*/
+
+    for (; a != factionCount; ++a)
+    {
+        data << uint8_t(0);
+        data << uint32_t(0);
+        buffer.writeBit(0);
+    }
+
+    buffer.flushBits();
+
+    data.append(buffer);
+#else
+    WorldPacket data(SMSG_INITIALIZE_FACTIONS, 764);
+    data << uint32_t(128);
+
+    for (auto& i : m_reputationByListId)
+    {
+        FactionReputation* factionReputation = i;
+        if (!factionReputation)
+        {
+            data << uint8_t(0);
+            data << uint32_t(0);
+        }
+        else
+        {
+            data << factionReputation->flag;
+            data << factionReputation->CalcStanding();
+        }
+    }
+
+#endif
+    m_session->SendPacket(&data);
+}
+
+void Player::initialiseReputation()
+{
+    for (uint32_t i = 0; i < sFactionStore.GetNumRows(); ++i)
+    {
+        DBC::Structures::FactionEntry const* factionEntry = sFactionStore.LookupEntry(i);
+        addNewFaction(factionEntry, 0, true);
+    }
+}
+
+uint32_t Player::getInitialFactionId()
+{
+    if (const auto raceEntry = sChrRacesStore.LookupEntry(getRace()))
+        return raceEntry->faction_id;
+
+    return 0;
 }

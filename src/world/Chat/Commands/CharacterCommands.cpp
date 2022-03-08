@@ -1198,7 +1198,7 @@ bool ChatHandler::HandleCharResetReputationCommand(const char* /*args*/, WorldSe
     if (selected_player == nullptr)
         return true;
 
-    selected_player->_InitialReputation();
+    selected_player->initialiseReputation();
 
     if (selected_player != m_session->GetPlayer())
     {
@@ -1565,7 +1565,7 @@ bool ChatHandler::HandleCharSetStandingCommand(const char* args, WorldSession* m
     if (player_target == nullptr)
         return true;
 
-    player_target->SetStanding(faction, standing);
+    player_target->setFactionStanding(faction, standing);
 
     if (player_target != m_session->GetPlayer())
     {
@@ -1863,8 +1863,8 @@ bool ChatHandler::HandleCharListStandingCommand(const char* args, WorldSession* 
     if (player_target == nullptr)
         return true;
 
-    int32 standing = player_target->GetStanding(faction);
-    int32 bstanding = player_target->GetBaseStanding(faction);
+    int32 standing = player_target->getFactionStanding(faction);
+    int32 bstanding = player_target->getBaseFactionStanding(faction);
 
     SystemMessage(m_session, "==== %s standing ====", player_target->getName().c_str());
     SystemMessage(m_session, "Reputation for faction %u:", faction);

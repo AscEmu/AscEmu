@@ -227,7 +227,7 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32_t id)
         {
             (*itr)->m_bgScore.BonusHonor += honorToAdd;
             HonorHandler::AddHonorPointsToPlayer((*itr), honorToAdd);
-            plr->ModStanding(fact, repToAdd);
+            plr->modFactionStanding(fact, repToAdd);
         }
 
         m_scores[plr->getTeam()]++;

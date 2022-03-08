@@ -1254,10 +1254,10 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                 SetCriteriaProgress(achievementCriteria, (int32_t)GetPlayer()->m_finishedQuests.size());
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION:
-                SetCriteriaProgress(achievementCriteria, GetPlayer()->GetStanding(achievementCriteria->gain_reputation.factionID));
+                SetCriteriaProgress(achievementCriteria, GetPlayer()->getFactionStanding(achievementCriteria->gain_reputation.factionID));
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION:
-                SetCriteriaProgress(achievementCriteria, GetPlayer()->GetExaltedCount());
+                SetCriteriaProgress(achievementCriteria, GetPlayer()->getExaltedCount());
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL:
                 SetCriteriaProgress(achievementCriteria, GetPlayer()->getSkillLineCurrent(static_cast<uint16_t>(achievementCriteria->reach_skill_level.skillID), true));

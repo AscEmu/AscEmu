@@ -5092,7 +5092,7 @@ void Spell::SpellEffectReputation(uint8_t effectIndex)
     if (!playerTarget)
         return;
 
-    playerTarget->ModStanding(getSpellInfo()->getEffectMiscValue(effectIndex), damage);
+    playerTarget->modFactionStanding(getSpellInfo()->getEffectMiscValue(effectIndex), damage);
 }
 
 void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)

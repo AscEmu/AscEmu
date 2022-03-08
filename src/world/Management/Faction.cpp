@@ -95,11 +95,11 @@ SERVER_DECL bool isHostile(Object* objA, Object* objB)
     // Reputation System Checks
     if (objA->isPlayer() && !objB->isPlayer())
         if (objB->m_factionEntry->RepListId >= 0)
-            hostile = reinterpret_cast< Player* >(objA)->IsHostileBasedOnReputation(objB->m_factionEntry);
+            hostile = reinterpret_cast< Player* >(objA)->isHostileBasedOnReputation(objB->m_factionEntry);
 
     if (objB->isPlayer() && !objA->isPlayer())
         if (objA->m_factionEntry->RepListId >= 0)
-            hostile = reinterpret_cast< Player* >(objB)->IsHostileBasedOnReputation(objA->m_factionEntry);
+            hostile = reinterpret_cast< Player* >(objB)->isHostileBasedOnReputation(objA->m_factionEntry);
 
     // PvP Flag System Checks
     // We check this after the normal isHostile test, that way if we're

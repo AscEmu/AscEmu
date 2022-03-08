@@ -1937,12 +1937,12 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                 {
                     amt = qReward->reward_repvalue[z];
                 }
-                if (qReward->reward_replimit && (player->GetStanding(fact) >= (int32)qReward->reward_replimit))
+                if (qReward->reward_replimit && (player->getFactionStanding(fact) >= (int32)qReward->reward_replimit))
                 {
                     continue;
                 }
                 amt = float2int32(amt * worldConfig.getFloatRate(RATE_QUESTREPUTATION));
-                player->ModStanding(fact, amt);
+                player->modFactionStanding(fact, amt);
             }
         }
         // Static Item reward
@@ -2031,12 +2031,12 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                 {
                     amt = qReward->reward_repvalue[z];
                 }
-                if (qReward->reward_replimit && (player->GetStanding(fact) >= (int32)qReward->reward_replimit))
+                if (qReward->reward_replimit && (player->getFactionStanding(fact) >= (int32)qReward->reward_replimit))
                 {
                     continue;
                 }
                 amt = float2int32(amt * worldConfig.getFloatRate(RATE_QUESTREPUTATION));
-                player->ModStanding(fact, amt);
+                player->modFactionStanding(fact, amt);
             }
         }
         // Static Item reward

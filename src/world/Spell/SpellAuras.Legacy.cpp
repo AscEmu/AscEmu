@@ -4599,9 +4599,9 @@ void Aura::SpellAuraModReputationAdjust(AuraEffectModifier* aurEff, bool apply)
     {
         mPositive = true;
         if (apply)
-            p_target->pctReputationMod += aurEff->getEffectDamage();
+            p_target->setPctReputationMod(p_target->getPctReputationMod() + aurEff->getEffectDamage());
         else
-            p_target->pctReputationMod -= aurEff->getEffectDamage();
+            p_target->setPctReputationMod(p_target->getPctReputationMod() - aurEff->getEffectDamage());
     }
 }
 
@@ -5620,9 +5620,9 @@ void Aura::SpellAuraIncreaseRepGainPct(AuraEffectModifier* aurEff, bool apply)
     {
         mPositive = true;
         if (apply)
-            p_target->pctReputationMod += aurEff->getEffectDamage();//re use
+            p_target->setPctReputationMod(p_target->getPctReputationMod() + aurEff->getEffectDamage());
         else
-            p_target->pctReputationMod -= aurEff->getEffectDamage();//re use
+            p_target->setPctReputationMod(p_target->getPctReputationMod() - aurEff->getEffectDamage());
     }
 }
 

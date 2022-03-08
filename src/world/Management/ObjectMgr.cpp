@@ -1259,7 +1259,7 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* p
                 {
                     if (itr->second.onChooseData != 0)
                     {
-                        if (player->GetStanding(itr->second.onChooseData) >= static_cast<int32_t>(itr->second.onChooseData2))
+                        if (player->getFactionStanding(itr->second.onChooseData) >= static_cast<int32_t>(itr->second.onChooseData2))
                             player->castSpell(player, sSpellMgr.getSpellInfo(itr->second.onChooseData3), true);
                         else
                             player->BroadcastMessage(player->GetSession()->LocalizedWorldSrv(itr->second.onChooseData4));
@@ -2082,12 +2082,12 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim
             replimit = i->mob_rep_limit;
         }
 
-        if (!value || (replimit && pPlayer->GetStanding(i->faction[team]) >= replimit))
+        if (!value || (replimit && pPlayer->getFactionStanding(i->faction[team]) >= replimit))
             continue;
 
         //value *= sWorld.getRate(RATE_KILLREPUTATION);
         value = float2int32(value * worldConfig.getFloatRate(RATE_KILLREPUTATION));
-        pPlayer->ModStanding(i->faction[team], value);
+        pPlayer->modFactionStanding(i->faction[team], value);
     }
 
     return true;

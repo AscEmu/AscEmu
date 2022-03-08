@@ -393,7 +393,7 @@ uint32 GetBuyPriceForItem(ItemProperties const* proto, uint32 count, Player* plr
 
     if (plr && vendor)
     {
-        Standing plrstanding = plr->GetStandingRank(vendor->m_factionTemplate->Faction);
+        Standing plrstanding = plr->getFactionStandingRank(vendor->m_factionTemplate->Faction);
         cost = float2int32(ceilf(proto->BuyPrice * pricemod[plrstanding]));
     }
 

@@ -481,7 +481,7 @@ void ArathiBasin::EventUpdateResources(uint32_t Team)
         for (std::set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
         {
             uint32_t fact = (*itr)->isTeamHorde() ? 510 : 509; //The Defilers : The League of Arathor
-            (*itr)->ModStanding(fact, 10);
+            (*itr)->modFactionStanding(fact, 10);
         }
         m_lastRepGainResources[Team] += resourcesToGainBR;
     }

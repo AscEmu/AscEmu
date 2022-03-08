@@ -115,6 +115,9 @@ public:
     inline GroupMembersSet::iterator GetGroupMembersBegin(void) { return m_GroupMembers.begin(); }
     inline GroupMembersSet::iterator GetGroupMembersEnd(void)   { return m_GroupMembers.end(); }
 
+    //MIT
+    GroupMembersSet getGroupMembers() const { return m_GroupMembers; }
+
     bool AddPlayer(CachedCharacterInfo* info);
     void RemovePlayer(CachedCharacterInfo* info);
 

@@ -2095,7 +2095,7 @@ int8 ItemInterface::CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemPropertie
         // Check to see if we have the reqs for that reputation
         if (proto->RequiredFaction)
         {
-            Standing current_standing = Player::GetReputationRankFromStanding(m_pOwner->GetStanding(proto->RequiredFaction));
+            Standing current_standing = Player::getReputationRankFromStanding(m_pOwner->getFactionStanding(proto->RequiredFaction));
             if (current_standing < (Standing)proto->RequiredFactionStanding)       // Not enough rep rankage..
                 return INV_ERR_ITEM_REPUTATION_NOT_ENOUGH;
         }
@@ -2648,7 +2648,7 @@ int8 ItemInterface::CanAffordItem(ItemProperties const* item, uint32 amount, Cre
         if (!factdbc || factdbc->RepListId < 0)
             return INV_ERR_OK;
 
-        if (m_pOwner->GetReputationRankFromStanding(m_pOwner->GetStanding(item->RequiredFaction)) < (int32)item->RequiredFactionStanding)
+        if (m_pOwner->getReputationRankFromStanding(m_pOwner->getFactionStanding(item->RequiredFaction)) < (int32)item->RequiredFactionStanding)
         {
             return INV_ERR_ITEM_REPUTATION_NOT_ENOUGH;
         }

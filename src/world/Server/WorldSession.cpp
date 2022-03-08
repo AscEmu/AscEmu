@@ -265,7 +265,7 @@ void WorldSession::LogoutPlayer(bool Save)
 
     if (_player != nullptr)
     {
-        _player->setFaction(_player->GetInitialFactionId());
+        _player->setFaction(_player->getInitialFactionId());
 
         sObjectMgr.RemovePlayer(_player);
         _player->ok_to_remove = true;

@@ -6050,7 +6050,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
             }
             else if (isCreature())
             {
-                attacker->getPlayerOwner()->Reputation_OnKilledUnit(this, false);
+                attacker->getPlayerOwner()->onKillUnitReputation(this, false);
 #ifdef FT_ACHIEVEMENTS
                 attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLING_BLOW, attacker->GetMapId(), 0, 0);
 #endif

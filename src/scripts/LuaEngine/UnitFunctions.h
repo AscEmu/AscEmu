@@ -727,7 +727,7 @@ public:
         TEST_UNITPLAYER_RET()
         if (ptr->isPlayer())
         {
-            RET_INT(static_cast<Player*>(ptr)->GetInitialFactionId());
+            RET_INT(static_cast<Player*>(ptr)->getInitialFactionId());
         }
         else
         {
@@ -3365,7 +3365,7 @@ public:
         uint32_t faction = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (faction)
         {
-            switch (static_cast<Player*>(ptr)->GetStandingRank(faction))
+            switch (static_cast<Player*>(ptr)->getFactionStandingRank(faction))
             {
                 case STANDING_HATED:
                     lua_pushstring(L, "Hated");
@@ -3403,7 +3403,7 @@ public:
         bool set = CHECK_BOOL(L, 3);
         if (faction)
         {
-            static_cast<Player*>(ptr)->SetAtWar(faction, set);
+            static_cast<Player*>(ptr)->setFactionAtWar(faction, set);
         }
         return 0;
     }
@@ -3414,7 +3414,7 @@ public:
         uint32_t faction = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         int32_t value = static_cast<int32_t>(luaL_checkinteger(L, 2));
         if (faction && value)
-            static_cast<Player*>(ptr)->SetStanding(faction, value);
+            static_cast<Player*>(ptr)->setFactionStanding(faction, value);
         return 0;
     }
 
@@ -3466,7 +3466,7 @@ public:
         TEST_PLAYER()
         uint32_t faction = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (faction)
-            lua_pushinteger(L, static_cast<Player*>(ptr)->GetStanding(faction));
+            lua_pushinteger(L, static_cast<Player*>(ptr)->getFactionStanding(faction));
         return 1;
     }
 

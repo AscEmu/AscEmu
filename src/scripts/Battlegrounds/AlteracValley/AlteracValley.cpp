@@ -1110,13 +1110,13 @@ void AlteracValley::OnAddPlayer(Player* plr)
 
     if (plr->isTeamHorde())
     {
-        plr->SetAtWar(730, true);
-        plr->SetStanding(730, -9000);
+        plr->setFactionAtWar(730, true);
+        plr->setFactionStanding(730, -9000);
     }
     else
     {
-        plr->SetAtWar(729, true);
-        plr->SetStanding(729, -9000);
+        plr->setFactionAtWar(729, true);
+        plr->setFactionStanding(729, -9000);
     }
 }
 

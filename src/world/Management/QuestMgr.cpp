@@ -102,7 +102,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
 
     // Check reputation
     if (qst->required_rep_faction && qst->required_rep_value)
-        if (plr->GetStanding(qst->required_rep_faction) < (int32)qst->required_rep_value)
+        if (plr->getFactionStanding(qst->required_rep_faction) < (int32)qst->required_rep_value)
             return QuestStatus::NotAvailable;
 
     if (plr->HasFinishedQuest(qst->id) && !sQuestMgr.IsQuestRepeatable(qst) && !sQuestMgr.IsQuestDaily(qst))
@@ -1447,11 +1447,11 @@ void QuestMgr::GiveQuestRewardReputation(Player* plr, QuestProperties const* qst
         }
 
         if (qst->reward_replimit)
-            if (plr->GetStanding(fact) >= (int32)qst->reward_replimit)
+            if (plr->getFactionStanding(fact) >= (int32)qst->reward_replimit)
                 continue;
 
         amt = float2int32(amt * worldConfig.getFloatRate(RATE_QUESTREPUTATION));     // reputation rewards
-        plr->ModStanding(fact, amt);
+        plr->modFactionStanding(fact, amt);
     }
 }
 

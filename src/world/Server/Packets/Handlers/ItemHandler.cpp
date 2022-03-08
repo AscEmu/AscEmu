@@ -148,7 +148,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
             return;
     }
 
-    if (itemProto->RequiredFaction && uint32_t(_player->GetStanding(itemProto->RequiredFaction)) < itemProto->RequiredFactionStanding)
+    if (itemProto->RequiredFaction && uint32_t(_player->getFactionStanding(itemProto->RequiredFaction)) < itemProto->RequiredFactionStanding)
     {
         _player->getItemInterface()->buildInventoryChangeError(tmpItem, nullptr, INV_ERR_ITEM_REPUTATION_NOT_ENOUGH);
         return;
@@ -2319,7 +2319,7 @@ void WorldSession::handleListInventoryOpcode(WorldPacket& recvPacket)
     unit->pauseMovement(180000);
     unit->SetSpawnLocation(unit->GetPosition());
 
-    _player->Reputation_OnTalk(unit->m_factionEntry);
+    _player->onTalkReputation(unit->m_factionEntry);
 
     if (_player->CanBuyAt(vendor))
         sendInventoryList(unit);

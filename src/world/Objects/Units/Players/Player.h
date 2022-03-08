@@ -1243,6 +1243,42 @@ private:
     uint64_t m_currentLoot = 0;
     bool m_lootableOnCorpse = false;
 
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Reputation
+public:
+    void setFactionStanding(uint32_t faction, int32_t value);
+    int32_t getFactionStanding(uint32_t faction);
+    int32_t getBaseFactionStanding(uint32_t faction);
+    void modFactionStanding(uint32_t faction, int32_t value);
+    
+    Standing getFactionStandingRank(uint32_t faction);
+    static Standing getReputationRankFromStanding(int32_t value);
+
+    void setFactionAtWar(uint32_t faction, bool set);
+
+    bool isHostileBasedOnReputation(DBC::Structures::FactionEntry const* factionEntry);
+    void updateInrangeSetsBasedOnReputation();
+
+    void onKillUnitReputation(Unit* unit, bool innerLoop);
+    void onTalkReputation(DBC::Structures::FactionEntry const* factionEntry);
+    
+    void setFactionInactive(uint32_t faction, bool set);
+    bool addNewFaction(DBC::Structures::FactionEntry const* factionEntry, int32_t standing, bool base);
+    void onModStanding(DBC::Structures::FactionEntry const* factionEntry, FactionReputation* reputation);
+    uint32_t getExaltedCount();
+
+    void sendSmsgInitialFactions();
+    void initialiseReputation();
+    uint32_t getInitialFactionId();
+
+    int32_t getPctReputationMod() const { return m_pctReputationMod; }
+    void setPctReputationMod(int32_t value) { m_pctReputationMod = value; }
+
+private:
+    ReputationMap m_reputation;
+    int32_t m_pctReputationMod = 0;
+    FactionReputation* m_reputationByListId[128] = { nullptr };
+
 public:
     //MIT End
     //AGPL Start
@@ -1433,32 +1469,7 @@ public:
         }
 
         uint32 GetMainMeleeDamage(uint32 AP_owerride);          // I need this for windfury
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Reputation
-        /////////////////////////////////////////////////////////////////////////////////////////
-        void ModStanding(uint32 Faction, int32 Value);
-        int32 GetStanding(uint32 Faction);
-        int32 GetBaseStanding(uint32 Faction);
-        void SetStanding(uint32 Faction, int32 Value);
-        void SetAtWar(uint32 Faction, bool Set);
-
-        Standing GetStandingRank(uint32 Faction);
-        bool IsHostileBasedOnReputation(DBC::Structures::FactionEntry const* dbc);
-        void UpdateInrangeSetsBasedOnReputation();
-        void Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop);
-        void Reputation_OnTalk(DBC::Structures::FactionEntry const* dbc);
-        static Standing GetReputationRankFromStanding(int32 Standing_);
-        void SetFactionInactive(uint32 faction, bool set);
-        bool AddNewFaction(DBC::Structures::FactionEntry const* dbc, int32 standing, bool base);
-        void OnModStanding(DBC::Structures::FactionEntry const* dbc, FactionReputation* rep);
-        uint32 GetExaltedCount();
-
-        // Factions
-        void smsg_InitialFactions();
-        uint32 GetInitialFactionId();
-        // factions variables
-        int32 pctReputationMod = 0;
-        FactionReputation* reputationByListId[128] = {nullptr};
+        
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // PVP
@@ -1590,8 +1601,6 @@ public:
         bool SaveSkills(bool NewCharacter, QueryBuffer* buf);
 
         bool m_FirstLogin = false;
-protected:
-        ReputationMap m_reputation;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Drunk system
@@ -1769,7 +1778,6 @@ public:
         void SendInitialLogonPackets();
         void Reset_Spells();
 
-        void _InitialReputation();
         void EventActivateGameObject(GameObject* obj);
         void EventDeActivateGameObject(GameObject* obj);
         void UpdateNearbyGameObjects();

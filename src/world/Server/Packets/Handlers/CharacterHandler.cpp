@@ -77,7 +77,7 @@ void WorldSession::handleSetFactionAtWarOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    _player->SetAtWar(srlPacket.id, srlPacket.state == 1);
+    _player->setFactionAtWar(srlPacket.id, srlPacket.state == 1);
 }
 
 void WorldSession::handleSetFactionInactiveOpcode(WorldPacket& recvPacket)
@@ -86,7 +86,7 @@ void WorldSession::handleSetFactionInactiveOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    _player->SetFactionInactive(srlPacket.id, srlPacket.state == 1);
+    _player->setFactionInactive(srlPacket.id, srlPacket.state == 1);
 }
 
 void WorldSession::handleCharDeleteOpcode(WorldPacket& recvPacket)

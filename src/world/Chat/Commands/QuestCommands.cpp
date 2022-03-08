@@ -350,11 +350,11 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                     if (qst->reward_repvalue[z])
                         amt = qst->reward_repvalue[z];
 
-                    if (qst->reward_replimit && (plr->GetStanding(fact) >= (int32)qst->reward_replimit))
+                    if (qst->reward_replimit && (plr->getFactionStanding(fact) >= (int32)qst->reward_replimit))
                         continue;
 
                     amt = float2int32(amt * worldConfig.getFloatRate(RATE_QUESTREPUTATION));
-                    plr->ModStanding(fact, amt);
+                    plr->modFactionStanding(fact, amt);
                 }
             }
             // Static Item reward
