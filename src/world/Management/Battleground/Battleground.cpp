@@ -641,7 +641,7 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
     if (!plr->isAlive())
     {
         plr->setHealth(plr->getMaxHealth());
-        plr->ResurrectPlayer();
+        plr->resurrect();
     }
 
     /* remove buffs */
@@ -969,7 +969,7 @@ void CBattleground::EventResurrectPlayers()
                 data << plr->getGuid();
                 plr->SendMessageToSet(&data, true);
 
-                plr->ResurrectPlayer();
+                plr->resurrect();
                 plr->setHealth(plr->getMaxHealth());
                 plr->setPower(POWER_TYPE_MANA, plr->getMaxPower(POWER_TYPE_MANA));
                 plr->setPower(POWER_TYPE_ENERGY, plr->getMaxPower(POWER_TYPE_ENERGY));

@@ -1005,7 +1005,7 @@ void Player::EventDeath()
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_DISMOUNT);
 
     if (!IS_INSTANCE(GetMapId()) && !sEventMgr.HasEvent(this, EVENT_PLAYER_FORCED_RESURRECT)) //Should never be true
-        sEventMgr.AddEvent(this, &Player::RepopRequestedPlayer, EVENT_PLAYER_FORCED_RESURRECT, forcedResurrectInterval, 1, 0); //in case he forgets to release spirit (afk or something)
+        sEventMgr.AddEvent(this, &Player::repopRequest, EVENT_PLAYER_FORCED_RESURRECT, forcedResurrectInterval, 1, 0); //in case he forgets to release spirit (afk or something)
 
     RemoveNegativeAuras();
 
@@ -3602,409 +3602,6 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         UpdateStats();
 }
 
-void Player::BuildPlayerRepop()
-{
-#if VERSION_STRING > TBC
-    GetSession()->SendPacket(SmsgPreResurrect(getGuid()).serialise().get());
-#endif
-
-    // Cleanup first
-    uint32 AuraIds[] = { 20584, 9036, 8326, 0 };
-    removeAllAurasById(AuraIds);
-
-    setHealth(1);
-
-    SpellCastTargets tgt(getGuid());
-
-    if (getRace() == RACE_NIGHTELF)
-    {
-        SpellInfo const* inf = sSpellMgr.getSpellInfo(9036);
-        Spell* sp = sSpellMgr.newSpell(this, inf, true, nullptr);
-        sp->prepare(&tgt);
-    }
-    else
-    {
-        SpellInfo const* inf = sSpellMgr.getSpellInfo(8326);
-        Spell* sp = sSpellMgr.newSpell(this, inf, true, nullptr);
-        sp->prepare(&tgt);
-    }
-
-    sendStopMirrorTimerPacket(MIRROR_TYPE_FATIGUE);
-    sendStopMirrorTimerPacket(MIRROR_TYPE_BREATH);
-    sendStopMirrorTimerPacket(MIRROR_TYPE_FIRE);
-
-    addPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE);
-
-    setMoveRoot(false);
-    setMoveWaterWalk();
-}
-
-void Player::RepopRequestedPlayer()
-{
-    sEventMgr.RemoveEvents(this, EVENT_PLAYER_CHECKFORCHEATS); // cebernic:-> Remove this first
-    sEventMgr.RemoveEvents(this, EVENT_PLAYER_FORCED_RESURRECT);   //in case somebody resurrected us before this event happened
-
-    if (m_corpseData.instanceId != 0)
-    {
-        // Cebernic: wOOo dead+dead = undead ? :D just resurrect player
-        if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
-            corpse->ResetDeathClock();
-
-        ResurrectPlayer();
-        RepopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
-        return;
-    }
-
-    auto transport = this->GetTransport();
-    if (transport != nullptr)
-    {
-        transport->RemovePassenger(this);
-        this->obj_movement_info.clearTransportData();
-
-        //ResurrectPlayer();
-        RepopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
-        return;
-    }
-
-    MySQLStructure::MapInfo const* pMapinfo = nullptr;
-
-    // Set death state to corpse, that way players will lose visibility
-    setDeathState(CORPSE);
-
-    // Update visibility, that way people wont see running corpses :P
-    UpdateVisibility();
-
-    // If we're in battleground, remove the skinnable flag.. has bad effects heheh
-    removeUnitFlags(UNIT_FLAG_SKINNABLE);
-
-    bool hasCorpse = (m_bg != nullptr) ? m_bg->CreateCorpse(this) : true;
-    if (hasCorpse)
-        CreateCorpse();
-
-    BuildPlayerRepop();
-
-    // Cebernic: don't do this.
-    if (!m_bg || (m_bg && m_bg->HasStarted()))
-    {
-        pMapinfo = sMySQLStore.getWorldMapInfo(GetMapId());
-        if (pMapinfo != nullptr)
-        {
-            if (pMapinfo->isNonInstanceMap() || pMapinfo->isBattleground())
-                RepopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
-            else
-                RepopAtGraveyard(pMapinfo->repopx, pMapinfo->repopy, pMapinfo->repopz, pMapinfo->repopmapid);
-
-            switch (pMapinfo->mapid)
-            {
-                case 533: // Naxx
-                case 550: // The Eye
-                case 552: // The Arcatraz
-                case 553: // The Botanica
-                case 554: // The Mechanar
-                    ResurrectPlayer();
-                    return;
-            }
-        }
-        else
-        {
-            RepopAtGraveyard(getBindPosition().x, getBindPosition().y, getBindPosition().z, getBindMapId());
-        }
-    }
-
-    if (hasCorpse)
-    {
-        SpawnCorpseBody();
-
-        if (m_corpseData.instanceId != 0)
-        {
-            if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
-                corpse->ResetDeathClock();
-        }
-
-        // Send Spirit Healer Location
-        m_session->SendPacket(SmsgDeathReleaseLoc(m_mapId, m_position).serialise().get());
-
-        // Corpse reclaim delay
-        m_session->SendPacket(SmsgCorpseReclaimDelay(CORPSE_RECLAIM_TIME_MS).serialise().get());
-    }
-}
-
-void Player::ResurrectPlayer()
-{
-    if (!sHookInterface.OnResurrect(this))
-        return;
-
-    sEventMgr.RemoveEvents(this, EVENT_PLAYER_FORCED_RESURRECT); // In case somebody resurrected us before this event happened
-    if (m_resurrectHealth)
-        setHealth(std::min(m_resurrectHealth, getMaxHealth()));
-    if (m_resurrectMana)
-        setPower(POWER_TYPE_MANA, m_resurrectMana);
-
-    m_resurrectHealth = m_resurrectMana = 0;
-
-    SpawnCorpseBones();
-
-    RemoveNegativeAuras();
-    uint32 AuraIds[] = { 20584, 9036, 8326, 55164, 0 };
-    removeAllAurasById(AuraIds);
-
-    removePlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE);
-    setDeathState(ALIVE);
-    UpdateVisibility();
-
-    // Don't pull players inside instances with this trick. Also fixes the part where you were able to double item bonuses
-    if (m_resurrecter && IsInWorld() && m_resurrectInstanceID == static_cast<uint32>(GetInstanceID()))
-        SafeTeleport(m_resurrectMapId, m_resurrectInstanceID, m_resurrectPosition);
-
-    m_resurrecter = 0;
-    setMoveLandWalk();
-
-    // Zack : shit on grill. So auras should be removed on player death instead of making this :P
-    // We can afford this bullshit atm since auras are lost upon death -> no immunities
-    for (uint8 i = 0; i < 7; i++)
-        SchoolImmunityList[i] = 0;
-
-    SpawnActivePet();
-
-    if (m_bg != nullptr)
-        m_bg->HookOnPlayerResurrect(this);
-}
-
-void Player::KillPlayer()
-{
-    if (getDeathState() != ALIVE) //You can't kill what has no life.   - amg south park references ftw :P
-        return;
-
-    setDeathState(JUST_DIED);
-
-    // Battleground stuff
-    if (m_bg)
-        m_bg->HookOnPlayerDeath(this);
-
-    EventDeath();
-
-    m_session->SendPacket(SmsgCancelCombat().serialise().get());
-    // Send server-side cancel message
-    WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
-    data << GetNewGUID();
-    SendMessageToSet(&data, false);
-
-    setMoveRoot(true);
-    sendStopMirrorTimerPacket(MIRROR_TYPE_FATIGUE);
-    sendStopMirrorTimerPacket(MIRROR_TYPE_BREATH);
-    sendStopMirrorTimerPacket(MIRROR_TYPE_FIRE);
-
-    addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE); // Player death animation, also can be used with DYNAMIC_FLAGS <- huh???
-    //\note remove all dynamic flags
-    setDynamicFlags(0);
-
-    if (getClass() == WARRIOR)   // Rage resets on death
-        setPower(POWER_TYPE_RAGE, 0);
-#if VERSION_STRING == WotLK
-    else if (getClass() == DEATHKNIGHT)
-        setPower(POWER_TYPE_RUNIC_POWER, 0);
-#endif
-
-    getSummonInterface()->removeAllSummons();
-    DismissActivePets();
-
-#ifdef FT_VEHICLES
-    // Player falls off vehicle on death
-    callExitVehicle();
-#endif
-
-    sHookInterface.OnDeath(this);
-}
-
-void Player::CreateCorpse()
-{
-    sObjectMgr.DelinkPlayerCorpses(this);
-    if (!isAllowedToCreateCorpse())
-    {
-        setAllowedToCreateCorpse(true);   // For next time
-        return; // No corpse allowed!
-    }
-
-    Corpse* pCorpse = sObjectMgr.CreateCorpse();
-    pCorpse->SetInstanceID(GetInstanceID());
-    pCorpse->Create(this, GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
-
-    pCorpse->SetZoneId(GetZoneId());
-
-    //bytes1
-    pCorpse->setRace(getRace());
-    pCorpse->setSkinColor(getSkinColor());
-
-    //bytes2
-    pCorpse->setFace(getFace());
-    pCorpse->setHairStyle(getHairStyle());
-    pCorpse->setHairColor(getHairColor());
-    pCorpse->setFacialFeatures(getFacialFeatures());
-
-    pCorpse->setFlags(CORPSE_FLAG_UNK1);
-
-    pCorpse->setDisplayId(getDisplayId());
-
-    if (m_bg)
-    {
-        // Remove our lootable flags
-        removeDynamicFlags(U_DYN_FLAG_LOOTABLE);
-        removeUnitFlags(UNIT_FLAG_SKINNABLE);
-
-        loot.gold = 0;
-
-        pCorpse->generateLoot();
-        if (m_lootableOnCorpse)
-            pCorpse->setDynamicFlags(1); // sets it so you can loot the plyr
-        else // Hope this works
-            pCorpse->setFlags(CORPSE_FLAG_UNK1 | CORPSE_FLAG_HIDDEN_HELM | CORPSE_FLAG_HIDDEN_CLOAK | CORPSE_FLAG_LOOT);
-
-        // Now that our corpse is created, don't do it again
-        m_lootableOnCorpse = false;
-    }
-    else
-    {
-        pCorpse->loot.gold = 0;
-    }
-
-    for (uint8 i = 0; i < EQUIPMENT_SLOT_END; ++i)
-    {
-        if (Item* pItem = getItemInterface()->GetInventoryItem(i))
-        {
-            uint32 iDisplayID = pItem->getItemProperties()->DisplayInfoID;
-            uint16 iIventoryType = (uint16)pItem->getItemProperties()->InventoryType;
-
-            uint32 _cfi = (uint16(iDisplayID)) | (iIventoryType) << 24;
-            pCorpse->setItem(i, _cfi);
-        }
-    }
-    // Save corpse in db for future use
-    pCorpse->SaveToDB();
-}
-
-void Player::SpawnCorpseBody()
-{
-    if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(this->getGuidLow()))
-    {
-        if (!corpse->IsInWorld())
-        {
-            if (m_lootableOnCorpse && corpse->getDynamicFlags() != 1)
-                corpse->setDynamicFlags(1); // sets it so you can loot the plyr
-
-            if (m_mapMgr == nullptr)
-                corpse->AddToWorld();
-            else
-                corpse->PushToWorld(m_mapMgr);
-        }
-
-        setCorpseData(corpse->GetPosition(), corpse->GetInstanceID());
-    }
-    else
-    {
-        setCorpseData({ 0, 0, 0, 0 }, 0);
-    }
-}
-
-void Player::SpawnCorpseBones()
-{
-    setCorpseData({ 0, 0, 0, 0 }, 0);
-
-    if (Corpse* pCorpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
-    {
-        if (pCorpse->IsInWorld() && pCorpse->GetCorpseState() == CORPSE_STATE_BODY)
-        {
-            if (pCorpse->GetInstanceID() != GetInstanceID())
-                sEventMgr.AddEvent(pCorpse, &Corpse::SpawnBones, EVENT_CORPSE_SPAWN_BONES, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-            else
-                pCorpse->SpawnBones();
-        }
-        else
-        {
-            //Cheater!
-        }
-    }
-}
-
-void Player::DeathDurabilityLoss(double percent)
-{
-    SendPacket(SmsgDurabilityDamageDeath(static_cast<uint32_t>(percent)).serialise().get());
-
-    for (uint8 i = 0; i < EQUIPMENT_SLOT_END; i++)
-    {
-        if (Item* pItem = getItemInterface()->GetInventoryItem(i))
-        {
-            uint32 pMaxDurability = pItem->getMaxDurability();
-            uint32 pDurability = pItem->getDurability();
-            if (pDurability)
-            {
-                int32 pNewDurability = (uint32)(pMaxDurability * percent);
-                pNewDurability = (pDurability - pNewDurability);
-                if (pNewDurability < 0)
-                    pNewDurability = 0;
-
-                if (pNewDurability <= 0)
-                    ApplyItemMods(pItem, i, false, true);
-
-                pItem->setDurability(static_cast<uint32>(pNewDurability));
-                pItem->m_isDirty = true;
-            }
-        }
-    }
-}
-
-void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
-{
-    if (hasAuraWithAuraEffect(SPELL_AURA_PREVENT_RESURRECTION))
-        return;
-
-    bool first = true;
-    // float closestX = 0, closestY = 0, closestZ = 0, closestO = 0;
-
-    LocationVector src(ox, oy, oz);
-    LocationVector dest;
-    LocationVector temp;
-    float closest_dist = 999999.0f;
-
-    if (!m_bg || !m_bg->HookHandleRepop(this))
-    {
-        MySQLStructure::Graveyards const* pGrave = nullptr;
-        MySQLDataStore::GraveyardsContainer const* its = sMySQLStore.getGraveyardsStore();
-        for (MySQLDataStore::GraveyardsContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
-        {
-            pGrave = sMySQLStore.getGraveyard(itr->second.id);
-            if (pGrave->mapId == mapid && (pGrave->factionId == getTeam() || pGrave->factionId == 3))
-            {
-                temp.ChangeCoords({ pGrave->position_x, pGrave->position_y, pGrave->position_z });
-                float dist = src.distanceSquare(temp);
-                if (first || dist < closest_dist)
-                {
-                    first = false;
-                    closest_dist = dist;
-                    dest = temp;
-                }
-            }
-        }
-        /* Fix on 3/13/2010, defaults to last graveyard, if none fit the criteria.
-        Keeps the player from hanging out to dry.*/
-        if (first && pGrave != nullptr)//crappy Databases with no graveyards.
-        {
-            dest.ChangeCoords({ pGrave->position_x, pGrave->position_y, pGrave->position_z });
-            first = false;
-        }
-    }
-    else
-    {
-        return;
-    }
-
-    if (sHookInterface.OnRepop(this) && !first)//dest has now always a value != {0,0,0,0}//but there may be DBs with no graveyards
-    {
-        SafeTeleport(mapid, 0, dest);
-    }
-
-    //\todo Generate error message here, compensate for failed teleport.
-}
-
 float Player::GetDefenseChance(uint32 opLevel)
 {
     float chance = getSkillLineCurrent(SKILL_DEFENSE, true) - (opLevel * 5.0f);
@@ -5351,7 +4948,7 @@ void Player::EventTeleportTaxi(uint32 mapid, float x, float y, float z)
         msg << uint8(0);
         m_session->SendPacket(&msg);
 
-        RepopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
+        repopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
         return;
     }
     _Relocate(mapid, LocationVector(x, y, z), (mapid == GetMapId() ? false : true), true, 0);
@@ -5972,7 +5569,7 @@ void Player::CompleteLoading()
         Corpse* corpse = sObjectMgr.GetCorpseByOwner(getGuidLow());
         if (corpse == nullptr)
         {
-            sEventMgr.AddEvent(this, &Player::RepopAtGraveyard, GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId(), EVENT_PLAYER_CHECKFORCHEATS, 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(this, &Player::repopAtGraveyard, GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId(), EVENT_PLAYER_CHECKFORCHEATS, 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
         else
         {
@@ -5992,8 +5589,8 @@ void Player::CompleteLoading()
 
             GetSession()->SendPacket(SmsgCorpseReclaimDelay(CORPSE_RECLAIM_TIME_MS).serialise().get());
         }
-        //RepopRequestedPlayer();
-        //sEventMgr.AddEvent(this, &Player::RepopRequestedPlayer, EVENT_PLAYER_CHECKFORCHEATS, 2000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        //repopRequest();
+        //sEventMgr.AddEvent(this, &Player::repopRequest, EVENT_PLAYER_CHECKFORCHEATS, 2000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 
     if (!IsMounted())
@@ -6048,7 +5645,7 @@ void Player::OnWorldPortAck()
     {
         //only resurrect if player is porting to a instance portal
         if (isDead() && !pMapinfo->isNonInstanceMap())
-            ResurrectPlayer();
+            resurrect();
 
         if (pMapinfo->hasFlag(WMI_INSTANCE_WELCOME) && GetMapMgr())
         {
@@ -7156,7 +6753,7 @@ uint32 Player::GetMaxPersonalRating()
 void Player::FullHPMP()
 {
     if (isDead())
-        ResurrectPlayer();
+        resurrect();
 
     setHealth(getMaxHealth());
     setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
@@ -7565,145 +7162,6 @@ uint32 Player::CheckDamageLimits(uint32 dmg, uint32 spellid)
         sendReportToGmMessage(getName(), dmglog.str());
 
     return dmg;
-}
-
-void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
-{
-#ifdef FT_VEHICLES
-    callExitVehicle();
-#endif
-
-#if VERSION_STRING > TBC
-    // A Player has died
-    if (isPlayer())
-    {
-        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH, 1, 0, 0);
-        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH_AT_MAP, GetMapId(), 1, 0);
-
-        // A Player killed a Player
-        if (pAttacker->isPlayer())
-            GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_PLAYER, 1, 0, 0);
-        else if (pAttacker->isCreature()) // A Creature killed a Player
-            GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_CREATURE, 1, 0, 0);
-    }
-#endif
-
-    //general hook for die
-    if (!sHookInterface.OnPreUnitDie(pAttacker, this))
-        return;
-
-    // on die and an target die proc
-    {
-        SpellInfo const* killerspell;
-        if (spellid)
-            killerspell = sSpellMgr.getSpellInfo(spellid);
-        else
-            killerspell = nullptr;
-    }
-
-    if (!pAttacker->isPlayer())
-        DeathDurabilityLoss(0.10);
-
-    if (getChannelObjectGuid() != 0)
-    {
-        Spell* spl = getCurrentSpell(CURRENT_CHANNELED_SPELL);
-        if (spl != nullptr)
-        {
-            for (uint8 i = 0; i < 3; i++)
-            {
-                if (spl->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
-                {
-                    uint64 guid = getChannelObjectGuid();
-                    DynamicObject* dObj = GetMapMgr()->GetDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
-                    if (!dObj)
-                        continue;
-
-                    dObj->Remove();
-                }
-            }
-
-            if (spl->getSpellInfo()->getChannelInterruptFlags() == 48140)
-                interruptSpell(spl->getSpellInfo()->getId());
-        }
-    }
-
-    // Stop players from casting
-    for (const auto& itr : getInRangePlayersSet())
-    {
-        Unit* attacker = static_cast<Unit*>(itr);
-        if (attacker && attacker->isCastingSpell())
-        {
-            for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
-            {
-                if (attacker->getCurrentSpell(CurrentSpellType(i)) == nullptr)
-                    continue;
-
-                if (attacker->getCurrentSpell(CurrentSpellType(i))->m_targets.getUnitTarget() == getGuid())
-                    attacker->interruptSpellWithSpellType(CurrentSpellType(i));
-            }
-        }
-    }
-
-    smsg_AttackStop(pAttacker);
-    EventAttackStop();
-
-    CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnPlayerDeath)(this, pAttacker);
-
-    {
-        uint32 self_res_spell = 0;
-        if (m_bg == nullptr || (m_bg != nullptr && !isArena(m_bg->GetType())))
-        {
-            self_res_spell = getSelfResurrectSpell();
-
-            if (self_res_spell == 0 && bReincarnation)
-            {
-                SpellInfo const* m_reincarnSpellInfo = sSpellMgr.getSpellInfo(20608);
-                if (!hasSpellOnCooldown(m_reincarnSpellInfo))
-                {
-                    uint32 ankh_count = getItemInterface()->GetItemCount(17030);
-                    if (ankh_count)
-                        self_res_spell = 21169;
-                }
-            }
-        }
-
-        setSelfResurrectSpell(self_res_spell);
-        setMountDisplayId(0);
-    }
-
-    CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
-    pAttacker->getAIInterface()->eventOnTargetDied(this);
-    pAttacker->smsg_AttackStop(this);
-
-    getCombatHandler().clearCombat();
-
-    m_underwaterTime = 0;
-    m_underwaterState = 0;
-
-    getSummonInterface()->removeAllSummons();
-    DismissActivePets();
-
-    setHealth(0);
-
-    //check for spirit of Redemption
-    if (HasSpell(20711))
-    {
-        SpellInfo const* sorInfo = sSpellMgr.getSpellInfo(27827);
-        if (sorInfo != nullptr)
-        {
-            Spell* sor = sSpellMgr.newSpell(this, sorInfo, true, nullptr);
-            SpellCastTargets targets(getGuid());
-            sor->prepare(&targets);
-        }
-    }
-
-    KillPlayer();
-
-    // Clear health batch on death
-    clearHealthBatch();
-
-    if (m_mapMgr->m_battleground != nullptr)
-        m_mapMgr->m_battleground->HookOnUnitDied(this);
 }
 
 void Player::handleKnockback(Object* object, float horizontal, float vertical)
@@ -8308,7 +7766,7 @@ bool Player::IsMounted()
 
 void Player::RemoteRevive()
 {
-    ResurrectPlayer();
+    resurrect();
     setMoveRoot(false);
     setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, false), true);
     setSpeedRate(TYPE_SWIM, getSpeedRate(TYPE_SWIM, false), true);

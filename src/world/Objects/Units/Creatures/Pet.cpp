@@ -2132,7 +2132,7 @@ Group* Pet::getGroup()
     return nullptr;
 }
 
-void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
+void Pet::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 {
     //general hook for die
     if (!sHookInterface.OnPreUnitDie(pAttacker, this))

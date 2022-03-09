@@ -337,7 +337,7 @@ public:
         float GetBaseParry();
         bool isattackable(MySQLStructure::CreatureSpawn* spawn);
 
-        void Die(Unit* pAttacker, uint32 damage, uint32 spellid) override;
+        void die(Unit* pAttacker, uint32 damage, uint32 spellid) override;
 
         uint32 GetType();
 

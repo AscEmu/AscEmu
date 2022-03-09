@@ -729,7 +729,7 @@ void WorldSession::handleResurrectResponse(WorldPacket& recvPacket)
         return;
     }
 
-    _player->ResurrectPlayer();
+    _player->resurrect();
     _player->setMoveRoot(false);
 }
 
@@ -1115,7 +1115,7 @@ void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    _player->ResurrectPlayer();
+    _player->resurrect();
     _player->setHealth(_player->getMaxHealth() / 2);
 }
 
@@ -1629,7 +1629,7 @@ void WorldSession::handleRepopRequestOpcode(WorldPacket& /*recvPacket*/)
             transport->RemovePassenger(_player);
     }
 
-    _player->RepopRequestedPlayer();
+    _player->repopRequest();
 }
 
 void WorldSession::handleWhoIsOpcode(WorldPacket& recvPacket)

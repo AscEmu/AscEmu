@@ -2435,8 +2435,8 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
     uint32 health = getSpellInfo()->getEffectBasePoints(effectIndex);
     uint32 mana = getSpellInfo()->getEffectMiscValue(effectIndex);
 
-    playerTarget->m_resurrectHealth = health;
-    playerTarget->m_resurrectMana = mana;
+    playerTarget->setResurrectHealth(health);
+    playerTarget->setResurrectMana(mana);
 
     SendResurrectRequest(playerTarget);
     playerTarget->setMoveRoot(false);
@@ -4858,10 +4858,10 @@ void Spell::SpellEffectSelfResurrect(uint8_t effectIndex)
     if (class_ == WARRIOR || class_ == ROGUE)
         mana = 0;
 
-    playerTarget->m_resurrectHealth = health;
-    playerTarget->m_resurrectMana = mana;
+    playerTarget->setResurrectHealth(health);
+    playerTarget->setResurrectMana(mana);
 
-    playerTarget->ResurrectPlayer();
+    playerTarget->resurrect();
     playerTarget->setMoveRoot(false);
 
     playerTarget->setSelfResurrectSpell(0);
@@ -5281,11 +5281,11 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
     if (playerTarget->isAlive() || !playerTarget->IsInWorld())
         return;
     //resurrect
-    playerTarget->m_resurrectMapId = p_caster->GetMapId();
-    playerTarget->m_resurrectInstanceID = p_caster->GetInstanceID();
-    playerTarget->m_resurrectPosition = p_caster->GetPosition();
-    playerTarget->m_resurrectHealth = damage;
-    playerTarget->m_resurrectMana = getSpellInfo()->getEffectMiscValue(effectIndex);
+    playerTarget->setResurrectMapId(p_caster->GetMapId());
+    playerTarget->setResurrectInstanceId(p_caster->GetInstanceID());
+    playerTarget->setResurrectPosition(p_caster->GetPosition());
+    playerTarget->setResurrectHealth(damage);
+    playerTarget->setResurrectMana(getSpellInfo()->getEffectMiscValue(effectIndex));
 
     SendResurrectRequest(playerTarget);
 }
@@ -5350,7 +5350,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
         playerTarget->setAllowedToCreateCorpse(false);
 
         // and.. force him to the graveyard and repop him.
-        playerTarget->RepopRequestedPlayer();
+        playerTarget->repopRequest();
 
     }
     else if (corpse)

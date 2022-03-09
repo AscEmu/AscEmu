@@ -646,7 +646,7 @@ public:
     {
         getCreature()->setMoveRoot(true);
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
-        getCreature()->Die(getCreature(), getCreature()->getHealth(), 0);
+        getCreature()->die(getCreature(), getCreature()->getHealth(), 0);
     }
 };
 

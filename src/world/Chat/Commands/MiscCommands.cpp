@@ -246,7 +246,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
         else
         {
             named_player->setHealth(0);
-            named_player->KillPlayer();
+            named_player->kill();
             RedSystemMessage(named_player->GetSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->getName().c_str());
             GreenSystemMessage(m_session, "Killed player %s.", args);
             sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid:  " I64FMT " ", named_player->getName().c_str(), named_player->getGuid());
@@ -278,7 +278,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
                     auto player = static_cast<Player*>(unit_target);
 
                     player->setHealth(0);
-                    player->KillPlayer();
+                    player->kill();
                     RedSystemMessage(player->GetSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->getName().c_str());
                     GreenSystemMessage(m_session, "Killed player %s.", player->getName().c_str());
                     sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid:  " I64FMT " ", m_session->GetPlayer()->getName().c_str(), player->getGuid());
@@ -323,7 +323,7 @@ bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
     if (reviveTarget->isDead())
     {
         reviveTarget->setMoveRoot(false);
-        reviveTarget->ResurrectPlayer();
+        reviveTarget->resurrect();
 
         if (!revivedSelf)
             GreenSystemMessage(m_session, "Player %s revived.", reviveTarget->getName().c_str());

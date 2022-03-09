@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/WoWPlayer.hpp"
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
+#include "Macros/CorpseMacros.hpp"
 #include "Management/Battleground/Battleground.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/ItemInterface.h"
@@ -21,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.h"
 #include "Management/TaxiMgr.h"
+#include "Objects/DynamicObject.h"
 #include "Server/Opcodes.hpp"
 #include "Server/Packets/MsgTalentWipeConfirm.h"
 #include "Server/Packets/SmsgPetUnlearnConfirm.h"
@@ -76,16 +78,21 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/UnitDefines.hpp"
 #include "Server/Packets/SmsgCancelCombat.h"
+#include "Server/Packets/SmsgCorpseReclaimDelay.h"
+#include "Server/Packets/SmsgDeathReleaseLoc.h"
 #include "Server/Packets/SmsgDuelComplete.h"
 #include "Server/Packets/SmsgDuelInbounds.h"
 #include "Server/Packets/SmsgDuelOutOfBounds.h"
 #include "Server/Packets/SmsgDuelRequested.h"
 #include "Server/Packets/SmsgDuelWinner.h"
+#include "Server/Packets/SmsgDurabilityDamageDeath.h"
+#include "Server/Packets/SmsgPreResurrect.h"
 #include "Server/Packets/SmsgSetFactionStanding.h"
 #include "Server/Packets/SmsgSetFactionVisible.h"
 #include "Server/Packets/SmsgTriggerMovie.h"
 #include "Server/Packets/SmsgTriggerCinematic.h"
 #include "Server/Packets/SmsgSpellCooldown.h"
+#include "Server/Script/CreatureAIScript.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Server/Warden/SpeedDetector.h"
 #include "Spell/Definitions/SpellEffects.hpp"
@@ -1243,7 +1250,7 @@ void Player::applyLevelInfo(uint32_t newLevel)
 
         // Small chance that you die at the same time you level up, and you may enter in a weird state
         if (isDead())
-            ResurrectPlayer();
+            resurrect();
 
         setLevel(newLevel);
 
@@ -4107,7 +4114,172 @@ uint8_t Player::getRaidDifficulty()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Corpse
+// Die, Kill, Corpse & Repop
+void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t spellId)
+{
+#ifdef FT_VEHICLES
+    callExitVehicle();
+#endif
+
+#if VERSION_STRING > TBC
+    if (isPlayer())
+    {
+        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH, 1, 0, 0);
+        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH_AT_MAP, GetMapId(), 1, 0);
+
+        if (unitAttacker->isPlayer())
+            GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_PLAYER, 1, 0, 0);
+        else if (unitAttacker->isCreature())
+            GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_CREATURE, 1, 0, 0);
+    }
+#endif
+
+    if (!sHookInterface.OnPreUnitDie(unitAttacker, this))
+        return;
+
+    if (!unitAttacker->isPlayer())
+        calcDeathDurabilityLoss(0.10);
+
+    if (getChannelObjectGuid() != 0)
+    {
+        if (const auto spell = getCurrentSpell(CURRENT_CHANNELED_SPELL))
+        {
+            for (uint8_t i = 0; i < 3; i++)
+            {
+                if (spell->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
+                {
+                    const uint64_t guid = getChannelObjectGuid();
+                    DynamicObject* dynamicObject = GetMapMgr()->GetDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
+                    if (!dynamicObject)
+                        continue;
+
+                    dynamicObject->Remove();
+                }
+            }
+
+            if (spell->getSpellInfo()->getChannelInterruptFlags() == 48140)
+                interruptSpell(spell->getSpellInfo()->getId());
+        }
+    }
+
+    for (const auto& inRangePlayer : getInRangePlayersSet())
+    {
+        Unit* attacker = dynamic_cast<Unit*>(inRangePlayer);
+        if (attacker && attacker->isCastingSpell())
+        {
+            for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+            {
+                if (attacker->getCurrentSpell(static_cast<CurrentSpellType>(i)) == nullptr)
+                    continue;
+
+                if (attacker->getCurrentSpell(static_cast<CurrentSpellType>(i))->m_targets.getUnitTarget() == getGuid())
+                    attacker->interruptSpellWithSpellType(static_cast<CurrentSpellType>(i));
+            }
+        }
+    }
+
+    smsg_AttackStop(unitAttacker);
+    EventAttackStop();
+
+    CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnPlayerDeath)(this, unitAttacker);
+
+    uint32_t selfResSpellId = 0;
+    if (!m_bg || m_bg && !isArena(m_bg->GetType()))
+    {
+        selfResSpellId = getSelfResurrectSpell();
+
+        if (selfResSpellId == 0 && bReincarnation)
+        {
+            SpellInfo const* m_reincarnSpellInfo = sSpellMgr.getSpellInfo(20608);
+            if (!hasSpellOnCooldown(m_reincarnSpellInfo))
+            {
+                uint32_t ankhCount = getItemInterface()->GetItemCount(17030);
+                if (ankhCount)
+                    selfResSpellId = 21169;
+            }
+        }
+    }
+
+    setSelfResurrectSpell(selfResSpellId);
+    setMountDisplayId(0);
+
+    CALL_SCRIPT_EVENT(unitAttacker, OnTargetDied)(this);
+    unitAttacker->getAIInterface()->eventOnTargetDied(this);
+    unitAttacker->smsg_AttackStop(this);
+
+    getCombatHandler().clearCombat();
+
+    m_underwaterTime = 0;
+    m_underwaterState = 0;
+
+    getSummonInterface()->removeAllSummons();
+    DismissActivePets();
+
+    setHealth(0);
+
+    //check for spirit of Redemption
+    if (HasSpell(20711))
+    {
+        SpellInfo const* sorInfo = sSpellMgr.getSpellInfo(27827);
+        if (sorInfo != nullptr)
+        {
+            Spell* sor = sSpellMgr.newSpell(this, sorInfo, true, nullptr);
+            SpellCastTargets targets(getGuid());
+            sor->prepare(&targets);
+        }
+    }
+
+    kill();
+
+    clearHealthBatch();
+
+    if (m_mapMgr->m_battleground != nullptr)
+        m_mapMgr->m_battleground->HookOnUnitDied(this);
+}
+
+void Player::kill()
+{
+    if (getDeathState() != ALIVE)
+        return;
+
+    setDeathState(JUST_DIED);
+
+    if (m_bg)
+        m_bg->HookOnPlayerDeath(this);
+
+    EventDeath();
+
+    m_session->SendPacket(SmsgCancelCombat().serialise().get());
+
+    WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
+    data << GetNewGUID();
+    SendMessageToSet(&data, false);
+
+    setMoveRoot(true);
+    sendStopMirrorTimerPacket(MIRROR_TYPE_FATIGUE);
+    sendStopMirrorTimerPacket(MIRROR_TYPE_BREATH);
+    sendStopMirrorTimerPacket(MIRROR_TYPE_FIRE);
+
+    addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
+    setDynamicFlags(0);
+
+    if (getClass() == WARRIOR)
+        setPower(POWER_TYPE_RAGE, 0);
+#if VERSION_STRING == WotLK
+    else if (getClass() == DEATHKNIGHT)
+        setPower(POWER_TYPE_RUNIC_POWER, 0);
+#endif
+
+    getSummonInterface()->removeAllSummons();
+    DismissActivePets();
+
+#ifdef FT_VEHICLES
+    callExitVehicle();
+#endif
+
+    sHookInterface.OnDeath(this);
+}
+
 void Player::setCorpseData(LocationVector position, int32_t instanceId)
 {
     m_corpseData.location = position;
@@ -4126,12 +4298,343 @@ int32_t Player::getCorpseInstanceId() const
 
 void Player::setAllowedToCreateCorpse(bool allowed)
 {
-    isCorpseCreationAllowed = allowed;
+    m_isCorpseCreationAllowed = allowed;
 }
 
 bool Player::isAllowedToCreateCorpse() const
 {
-    return isCorpseCreationAllowed;
+    return m_isCorpseCreationAllowed;
+}
+
+void Player::createCorpse()
+{
+    sObjectMgr.DelinkPlayerCorpses(this);
+
+    if (!isAllowedToCreateCorpse())
+    {
+        setAllowedToCreateCorpse(true);
+        return;
+    }
+
+    Corpse* corpse = sObjectMgr.CreateCorpse();
+    corpse->SetInstanceID(GetInstanceID());
+    corpse->Create(this, GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
+
+    corpse->SetZoneId(GetZoneId());
+
+    corpse->setRace(getRace());
+    corpse->setSkinColor(getSkinColor());
+
+    corpse->setFace(getFace());
+    corpse->setHairStyle(getHairStyle());
+    corpse->setHairColor(getHairColor());
+    corpse->setFacialFeatures(getFacialFeatures());
+
+    corpse->setFlags(CORPSE_FLAG_UNK1);
+
+    corpse->setDisplayId(getDisplayId());
+
+    if (m_bg)
+    {
+        removeDynamicFlags(U_DYN_FLAG_LOOTABLE);
+        removeUnitFlags(UNIT_FLAG_SKINNABLE);
+
+        loot.gold = 0;
+
+        corpse->generateLoot();
+        if (m_lootableOnCorpse)
+            corpse->setDynamicFlags(1);
+        else
+            corpse->setFlags(CORPSE_FLAG_UNK1 | CORPSE_FLAG_HIDDEN_HELM | CORPSE_FLAG_HIDDEN_CLOAK | CORPSE_FLAG_LOOT);
+
+        m_lootableOnCorpse = false;
+    }
+    else
+    {
+        corpse->loot.gold = 0;
+    }
+
+    for (uint8_t slot = 0; slot < EQUIPMENT_SLOT_END; ++slot)
+    {
+        if (Item* item = getItemInterface()->GetInventoryItem(slot))
+        {
+            const uint32_t displayId = item->getItemProperties()->DisplayInfoID;
+            const auto inventoryType = static_cast<uint16_t>(item->getItemProperties()->InventoryType);
+
+            const uint32_t itemId = static_cast<uint16_t>(displayId) | inventoryType << 24;
+            corpse->setItem(slot, itemId);
+        }
+    }
+
+    corpse->SaveToDB();
+}
+
+void Player::spawnCorpseBody()
+{
+    if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(this->getGuidLow()))
+    {
+        if (!corpse->IsInWorld())
+        {
+            if (m_lootableOnCorpse && corpse->getDynamicFlags() != 1)
+                corpse->setDynamicFlags(1);
+
+            if (m_mapMgr == nullptr)
+                corpse->AddToWorld();
+            else
+                corpse->PushToWorld(m_mapMgr);
+        }
+
+        setCorpseData(corpse->GetPosition(), corpse->GetInstanceID());
+    }
+    else
+    {
+        setCorpseData({ 0, 0, 0, 0 }, 0);
+    }
+}
+
+void Player::spawnCorpseBones()
+{
+    setCorpseData({ 0, 0, 0, 0 }, 0);
+
+    if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
+    {
+        if (corpse->IsInWorld() && corpse->GetCorpseState() == CORPSE_STATE_BODY)
+        {
+            if (corpse->GetInstanceID() != GetInstanceID())
+                sEventMgr.AddEvent(corpse, &Corpse::SpawnBones, EVENT_CORPSE_SPAWN_BONES, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            else
+                corpse->SpawnBones();
+        }
+    }
+}
+
+void Player::repopRequest()
+{
+    sEventMgr.RemoveEvents(this, EVENT_PLAYER_CHECKFORCHEATS);
+    sEventMgr.RemoveEvents(this, EVENT_PLAYER_FORCED_RESURRECT);
+
+    if (m_corpseData.instanceId != 0)
+    {
+        if (auto corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
+            corpse->ResetDeathClock();
+
+        resurrect();
+        repopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
+        return;
+    }
+
+    if (auto transport = this->GetTransport())
+    {
+        transport->RemovePassenger(this);
+        this->obj_movement_info.clearTransportData();
+
+        repopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
+        return;
+    }
+
+    setDeathState(CORPSE);
+
+    UpdateVisibility();
+
+    removeUnitFlags(UNIT_FLAG_SKINNABLE);
+
+    const bool hasCorpse = m_bg ? m_bg->CreateCorpse(this) : true;
+    if (hasCorpse)
+        createCorpse();
+
+    buildRepop();
+
+    if (!m_bg || m_bg && m_bg->HasStarted())
+    {
+        if (const auto mapInfo = sMySQLStore.getWorldMapInfo(GetMapId()))
+        {
+            if (mapInfo->isNonInstanceMap() || mapInfo->isBattleground())
+                repopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
+            else
+                repopAtGraveyard(mapInfo->repopx, mapInfo->repopy, mapInfo->repopz, mapInfo->repopmapid);
+
+            switch (mapInfo->mapid)
+            {
+                case 533: // Naxx
+                case 550: // The Eye
+                case 552: // The Arcatraz
+                case 553: // The Botanica
+                case 554: // The Mechanar
+                    resurrect();
+                    return;
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            repopAtGraveyard(getBindPosition().x, getBindPosition().y, getBindPosition().z, getBindMapId());
+        }
+    }
+
+    if (hasCorpse)
+    {
+        spawnCorpseBody();
+
+        if (m_corpseData.instanceId != 0)
+            if (auto corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
+                corpse->ResetDeathClock();
+
+        m_session->SendPacket(SmsgDeathReleaseLoc(m_mapId, m_position).serialise().get());
+        m_session->SendPacket(SmsgCorpseReclaimDelay(CORPSE_RECLAIM_TIME_MS).serialise().get());
+    }
+}
+
+void Player::repopAtGraveyard(float ox, float oy, float oz, uint32_t mapId)
+{
+    if (hasAuraWithAuraEffect(SPELL_AURA_PREVENT_RESURRECTION))
+        return;
+
+    bool first = true;
+
+    LocationVector currentLocation(ox, oy, oz);
+    LocationVector finalDestination;
+    LocationVector temp;
+
+    if (!m_bg || !m_bg->HookHandleRepop(this))
+    {
+        float closestDistance = 999999.0f;
+
+        MySQLStructure::Graveyards const* graveyard = nullptr;
+        for (const auto& graveyardStore : *sMySQLStore.getGraveyardsStore())
+        {
+            graveyard = sMySQLStore.getGraveyard(graveyardStore.second.id);
+            if (graveyard->mapId == mapId && (graveyard->factionId == getTeam() || graveyard->factionId == 3))
+            {
+                temp.ChangeCoords({ graveyard->position_x, graveyard->position_y, graveyard->position_z });
+                const float distance = currentLocation.distanceSquare(temp);
+                if (first || distance < closestDistance)
+                {
+                    first = false;
+                    closestDistance = distance;
+                    finalDestination = temp;
+                }
+            }
+        }
+
+        if (first && graveyard)
+        {
+            finalDestination.ChangeCoords({ graveyard->position_x, graveyard->position_y, graveyard->position_z });
+            first = false;
+        }
+    }
+    else
+    {
+        return;
+    }
+
+    if (sHookInterface.OnRepop(this) && !first)
+        SafeTeleport(mapId, 0, finalDestination);
+}
+
+void Player::resurrect()
+{
+    if (!sHookInterface.OnResurrect(this))
+        return;
+
+    sEventMgr.RemoveEvents(this, EVENT_PLAYER_FORCED_RESURRECT);
+
+    if (m_resurrectHealth)
+        setHealth(std::min(m_resurrectHealth, getMaxHealth()));
+
+    if (m_resurrectMana)
+        setPower(POWER_TYPE_MANA, m_resurrectMana);
+
+    m_resurrectHealth = m_resurrectMana = 0;
+
+    spawnCorpseBones();
+
+    RemoveNegativeAuras();
+
+    uint32_t AuraIds[] = { 20584, 9036, 8326, 55164, 0 };
+    removeAllAurasById(AuraIds);
+
+    removePlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE);
+    setDeathState(ALIVE);
+
+    UpdateVisibility();
+
+    if (m_resurrecter && IsInWorld() && m_resurrectInstanceID == static_cast<uint32>(GetInstanceID()))
+        SafeTeleport(m_resurrectMapId, m_resurrectInstanceID, m_resurrectPosition);
+
+    m_resurrecter = 0;
+    setMoveLandWalk();
+
+    for (uint8_t i = 0; i < 7; ++i)
+        SchoolImmunityList[i] = 0;
+
+    SpawnActivePet();
+
+    if (m_bg)
+        m_bg->HookOnPlayerResurrect(this);
+}
+
+void Player::buildRepop()
+{
+#if VERSION_STRING > TBC
+    GetSession()->SendPacket(SmsgPreResurrect(getGuid()).serialise().get());
+#endif
+
+    uint32_t AuraIds[] = { 20584, 9036, 8326, 0 };
+    removeAllAurasById(AuraIds);
+
+    setHealth(1);
+
+    SpellCastTargets target(getGuid());
+
+    if (getRace() == RACE_NIGHTELF)
+    {
+        SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(9036);
+        Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);
+        spell->prepare(&target);
+    }
+    else
+    {
+        SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(8326);
+        Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);
+        spell->prepare(&target);
+    }
+
+    sendStopMirrorTimerPacket(MIRROR_TYPE_FATIGUE);
+    sendStopMirrorTimerPacket(MIRROR_TYPE_BREATH);
+    sendStopMirrorTimerPacket(MIRROR_TYPE_FIRE);
+
+    addPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE);
+
+    setMoveRoot(false);
+    setMoveWaterWalk();
+}
+
+void Player::calcDeathDurabilityLoss(double percent)
+{
+    SendPacket(SmsgDurabilityDamageDeath(static_cast<uint32_t>(percent)).serialise().get());
+
+    for (uint8_t i = 0; i < EQUIPMENT_SLOT_END; ++i)
+    {
+        if (Item* item = getItemInterface()->GetInventoryItem(i))
+        {
+            const uint32_t maxDurability = item->getMaxDurability();
+            const uint32_t durability = item->getDurability();
+            if (durability)
+            {
+                int32_t newDurability = static_cast<uint32_t>(maxDurability * percent);
+                newDurability = durability - newDurability;
+                if (newDurability < 0)
+                    newDurability = 0;
+
+                if (newDurability <= 0)
+                    ApplyItemMods(item, i, false, true);
+
+                item->setDurability(static_cast<uint32>(newDurability));
+                item->m_isDirty = true;
+            }
+        }
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -5097,7 +5600,7 @@ bool Player::logOntoTransport()
         {
             if (isDead())
             {
-                ResurrectPlayer();
+                resurrect();
                 setHealth(getMaxHealth());
                 setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
             }

@@ -116,13 +116,13 @@ void Summon::onRemoveInRangeObject(Object* object)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Override Unit functions
-void Summon::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
+void Summon::die(Unit* pAttacker, uint32 damage, uint32 spellid)
 {
     // If this summon is summoned by a totem, unsummon the totem on death
     if (m_unitOwner->isTotem())
         static_cast<TotemSummon*>(m_unitOwner)->unSummon();
 
-    Creature::Die(pAttacker, damage, spellid);
+    Creature::die(pAttacker, damage, spellid);
 
     m_unitOwner->getSummonInterface()->removeGuardian(this, false);
 
@@ -294,7 +294,7 @@ bool TotemSummon::isTotem() const { return true; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Override Unit functions
-void TotemSummon::Die(Unit* /*pAttacker*/, uint32_t /*damage*/, uint32_t /*spellid*/)
+void TotemSummon::die(Unit* /*pAttacker*/, uint32_t /*damage*/, uint32_t /*spellid*/)
 {
     // Clear health batch on death
     clearHealthBatch();

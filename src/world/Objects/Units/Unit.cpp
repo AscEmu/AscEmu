@@ -6101,7 +6101,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
             plr->sendPartyKillLogPacket(getGuid());
         }
 
-        Die(attacker, damage, spellId);
+        die(attacker, damage, spellId);
 
         // Loot
         if (isLootable())

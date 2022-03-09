@@ -5152,7 +5152,7 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         if (plr->isDead())
-            plr->RepopRequestedPlayer();
+            plr->repopRequest();
         return 0;
     }
 

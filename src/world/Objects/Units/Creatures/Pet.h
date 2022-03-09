@@ -271,7 +271,7 @@ public:
 
         Group* getGroup();
 
-        void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
+        void die(Unit* pAttacker, uint32 damage, uint32 spellid);
 
     protected:
 

@@ -866,8 +866,11 @@ private:
     uint8_t m_raidDifficulty = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Corpse
+    // Die, Kill, Corpse & Repop
 public:
+
+    void die(Unit* unitAttacker, uint32_t damage, uint32_t spellId) override;
+    void kill();
 
     void setCorpseData(LocationVector position, int32_t instanceId);
     LocationVector getCorpseLocation() const;
@@ -875,6 +878,23 @@ public:
 
     void setAllowedToCreateCorpse(bool allowed);
     bool isAllowedToCreateCorpse() const;
+
+    void createCorpse();
+    void spawnCorpseBody();
+    void spawnCorpseBones();
+
+    void repopRequest();
+    void repopAtGraveyard(float ox, float oy, float oz, uint32_t mapId);
+    void resurrect();
+    void buildRepop();
+    void calcDeathDurabilityLoss(double percent);
+
+    void setResurrecterGuid(uint64_t guid) { m_resurrecter = guid; }
+    void setResurrectHealth(uint32_t health) { m_resurrectHealth = health; }
+    void setResurrectMana(uint32_t mana) { m_resurrectMana = mana; }
+    void setResurrectInstanceId(uint32_t id) { m_resurrectInstanceID = id; }
+    void setResurrectMapId(uint32_t id) { m_resurrectMapId = id; }
+    void setResurrectPosition(LocationVector position) { m_resurrectPosition = position; }
 
 private:
     struct CorpseData
@@ -884,7 +904,14 @@ private:
     };
     CorpseData m_corpseData;
 
-    bool isCorpseCreationAllowed = true;
+    bool m_isCorpseCreationAllowed = true;
+
+    uint64_t m_resurrecter = 0;
+    uint32_t m_resurrectHealth = 0;
+    uint32_t m_resurrectMana = 0;
+    uint32_t m_resurrectInstanceID = 0;
+    uint32_t m_resurrectMapId = 0;
+    LocationVector m_resurrectPosition = { 0, 0, 0, 0 };
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Bind
@@ -1644,21 +1671,6 @@ public:
         bool m_FirstLogin = false;
 
         /////////////////////////////////////////////////////////////////////////////////////////
-        // Death system
-        /////////////////////////////////////////////////////////////////////////////////////////
-        void SpawnCorpseBody();
-        void SpawnCorpseBones();
-        void CreateCorpse();
-        void KillPlayer();
-        void ResurrectPlayer();
-        void BuildPlayerRepop();
-        void RepopRequestedPlayer();
-        void DeathDurabilityLoss(double percent);
-        void RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid);
-
-        uint64 m_resurrecter = 0;
-
-        /////////////////////////////////////////////////////////////////////////////////////////
         // Talent Specs
         /////////////////////////////////////////////////////////////////////////////////////////
         uint16 m_maxTalentPoints = 0;
@@ -1957,11 +1969,7 @@ public:
 
         uint32 m_UnderwaterLastDmg = Util::getMSTime();
         
-        uint32 m_resurrectHealth = 0;
-        uint32 m_resurrectMana = 0;
-        uint32 m_resurrectInstanceID = 0;
-        uint32 m_resurrectMapId = 0;
-        LocationVector m_resurrectPosition;
+        
         bool blinked = false;
         uint32 m_explorationTimer = Util::getMSTime();
         // DBC stuff
@@ -1988,7 +1996,7 @@ public:
 
         void HandleSpellLoot(uint32 itemid);
 
-        void Die(Unit* pAttacker, uint32 damage, uint32 spellid) override;
+        
         void handleKnockback(Object* caster, float horizontal, float vertical) override;
 
         uint32 LastHonorResetTime() const { return m_lastHonorResetTime; }

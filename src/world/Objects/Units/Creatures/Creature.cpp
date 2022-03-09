@@ -2180,7 +2180,7 @@ bool Creature::isCritter()
         return false;
 }
 
-void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
+void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 {
 #ifdef FT_VEHICLES
     // Exit Vehicle

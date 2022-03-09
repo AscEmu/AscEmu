@@ -1458,7 +1458,7 @@ public:
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
+    virtual void die(Unit* pAttacker, uint32 damage, uint32 spellid);
     
     void AddGarbagePet(Pet* pet);
 

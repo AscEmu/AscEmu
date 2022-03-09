@@ -266,7 +266,7 @@ void Arena::HookOnPlayerKill(Player* plr, Player* pVictim)
 #ifdef ANTI_CHEAT
     if (!m_started)
     {
-        plr->KillPlayer(); //cheater.
+        plr->kill(); //cheater.
         return;
     }
 #endif

@@ -1408,7 +1408,7 @@ void Spell::SendResurrectRequest(Player* target)
         overrideTimer = true;
 
     target->GetSession()->SendPacket(SmsgResurrectRequest(m_caster->getGuid(), casterName, resurrectionSickness, overrideTimer, getSpellInfo()->getId()).serialise().get());
-    target->m_resurrecter = m_caster->getGuid();
+    target->setResurrecterGuid(m_caster->getGuid());
 }
 
 void Spell::SendTameFailure(uint8 result)

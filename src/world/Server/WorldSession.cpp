@@ -348,11 +348,11 @@ void WorldSession::LogoutPlayer(bool Save)
             if (pPlayer->getDeathState() == JUST_DIED)
                 pPlayer->RemoteRevive();
             if (pPlayer->getDeathState() != ALIVE)
-                pPlayer->ResurrectPlayer();
+                pPlayer->resurrect();
             _player->m_bg->RemovePlayer(_player, true);
         }
         else if (_player->isDead() && _player->getDeathState() == JUST_DIED)
-            _player->RepopRequestedPlayer();
+            _player->repopRequest();
 
         // Issue a message telling all guild members that this player signed
         // off

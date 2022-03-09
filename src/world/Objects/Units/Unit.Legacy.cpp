@@ -8891,7 +8891,7 @@ void Unit::RemoveGarbage()
     m_GarbagePets.clear();
 }
 
-void Unit::Die(Unit* /*pAttacker*/, uint32 /*damage*/, uint32 /*spellid*/)
+void Unit::die(Unit* /*pAttacker*/, uint32 /*damage*/, uint32 /*spellid*/)
 {}
 
 

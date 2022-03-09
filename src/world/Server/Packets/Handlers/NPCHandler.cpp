@@ -535,8 +535,8 @@ void WorldSession::handleSpiritHealerActivateOpcode(WorldPacket& /*recvPacket*/)
     if (!_player->isDead())
         return;
 
-    _player->DeathDurabilityLoss(0.25);
-    _player->ResurrectPlayer();
+    _player->calcDeathDurabilityLoss(0.25);
+    _player->resurrect();
 
     if (_player->getLevel() > 10)
     {

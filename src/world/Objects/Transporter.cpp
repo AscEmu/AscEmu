@@ -540,7 +540,7 @@ void Transporter::TeleportPlayers(float x, float y, float z, float o, uint32_t n
             bool teleport_successful = player->Teleport(LocationVector(destX, destY, destZ, destO), GetMapMgr());
             if (!teleport_successful)
             {
-                player->RepopAtGraveyard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId());
+                player->repopAtGraveyard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId());
             }
         }
     }
