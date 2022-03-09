@@ -4357,6 +4357,182 @@ void Player::initialiseArenaTeam()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Quests
+void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
+{
+    bool bValid = false;
+    bool hasquest = true;
+    bool bSkipLevelCheck = false;
+
+    QuestProperties const* questProperties = nullptr;
+
+    Object* qst_giver = nullptr;
+
+    WoWGuid wowGuid;
+    wowGuid.Init(guid);
+
+    if (wowGuid.isUnit())
+    {
+        Creature* quest_giver = m_mapMgr->GetCreature(wowGuid.getGuidLowPart());
+        if (quest_giver)
+            qst_giver = quest_giver;
+        else
+            return;
+
+        hasquest = quest_giver->HasQuest(quest_id, 1);
+        if (quest_giver->isQuestGiver())
+        {
+            bValid = true;
+            questProperties = sMySQLStore.getQuestProperties(quest_id);
+        }
+    }
+    else if (wowGuid.isGameObject())
+    {
+        GameObject* quest_giver = m_mapMgr->GetGameObject(wowGuid.getGuidLowPart());
+        if (quest_giver)
+            qst_giver = quest_giver;
+        else
+            return;
+
+        bValid = true;
+        questProperties = sMySQLStore.getQuestProperties(quest_id);
+    }
+    else if (wowGuid.isItem())
+    {
+        Item* quest_giver = getItemInterface()->GetItemByGUID(guid);
+        if (quest_giver)
+            qst_giver = quest_giver;
+        else
+            return;
+
+        bValid = true;
+        bSkipLevelCheck = true;
+        questProperties = sMySQLStore.getQuestProperties(quest_id);
+    }
+    else if (wowGuid.isPlayer())
+    {
+        Player* quest_giver = m_mapMgr->GetPlayer(static_cast<uint32_t>(guid));
+        if (quest_giver)
+            qst_giver = quest_giver;
+        else
+            return;
+
+        bValid = true;
+        questProperties = sMySQLStore.getQuestProperties(quest_id);
+    }
+
+    if (!qst_giver)
+    {
+        sLogger.debug("WORLD: Invalid questgiver GUID.");
+        return;
+    }
+
+    if (!bValid || questProperties == nullptr)
+    {
+        sLogger.debug("WORLD: Creature is not a questgiver.");
+        return;
+    }
+
+    if (hasQuestInQuestLog(questProperties->id))
+        return;
+
+    if (qst_giver->isCreature() && dynamic_cast<Creature*>(qst_giver)->m_escorter != nullptr)
+    {
+        m_session->SystemMessage("You cannot accept this quest at this time.");
+        return;
+    }
+
+    // Check the player hasn't already taken this quest, or it isn't available.
+    const uint32_t status = sQuestMgr.CalcQuestStatus(qst_giver, this, questProperties, 3, bSkipLevelCheck);
+
+    if ((!sQuestMgr.IsQuestRepeatable(questProperties) && hasQuestFinished(questProperties->id))
+        || (status != QuestStatus::Available && status != QuestStatus::Repeatable && status != QuestStatus::AvailableChat)
+        || !hasquest)
+    {
+        return;
+    }
+
+    const uint8_t log_slot = getFreeQuestSlot();
+    if (log_slot > MAX_QUEST_SLOT)
+    {
+        sQuestMgr.SendQuestLogFull(this);
+        return;
+    }
+
+    if ((questProperties->time != 0) && hasTimedQuestInQuestSlot())
+    {
+        sQuestMgr.SendQuestInvalid(INVALID_REASON_HAVE_TIMED_QUEST, this);
+        return;
+    }
+
+    if (questProperties->count_receiveitems || questProperties->srcitem)
+    {
+        const uint32_t slots_required = questProperties->count_receiveitems;
+
+        if (getItemInterface()->CalculateFreeSlots(nullptr) < slots_required)
+        {
+            getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_BAG_FULL);
+            sQuestMgr.SendQuestFailed(FAILED_REASON_INV_FULL, questProperties, this);
+            return;
+        }
+    }
+
+    auto questLogEntry = new QuestLogEntry(questProperties, this, log_slot);
+    questLogEntry->updatePlayerFields();
+
+    // If the quest should give any items on begin, give them the items.
+    for (uint32_t receive_item : questProperties->receive_items)
+    {
+        if (receive_item)
+        {
+            if (Item* item = sObjectMgr.CreateItem(receive_item, this))
+            {
+                if (!getItemInterface()->AddItemToFreeSlot(item))
+                {
+                    item->DeleteMe();
+                }
+                else
+                {
+                    sendItemPushResultPacket(false, true, false,
+                        getItemInterface()->LastSearchItemBagSlot(), getItemInterface()->LastSearchItemSlot(),
+                        1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
+                }
+            }
+        }
+    }
+
+    if (questProperties->srcitem && questProperties->srcitem != questProperties->receive_items[0])
+    {
+        if (!qst_giver->isItem() || (qst_giver->getEntry() != questProperties->srcitem))
+        {
+            if (Item* item = sObjectMgr.CreateItem(questProperties->srcitem, this))
+            {
+                item->setStackCount(questProperties->srcitemcount ? questProperties->srcitemcount : 1);
+                if (!getItemInterface()->AddItemToFreeSlot(item))
+                    item->DeleteMe();
+            }
+        }
+    }
+
+    if (questProperties->count_required_item || qst_giver->isGameObject())    // gameobject quests deactivate
+        UpdateNearbyGameObjects();
+
+    const SpellAreaForQuestMapBounds saBounds = { sSpellMgr.mSpellAreaForQuestMap.lower_bound(quest_id), sSpellMgr.mSpellAreaForQuestMap.upper_bound(quest_id) };
+    if (saBounds.first != saBounds.second)
+    {
+        for (auto itr = saBounds.first; itr != saBounds.second; ++itr)
+        {
+            if (itr->second->autoCast && itr->second->fitsToRequirements(this, GetZoneId(), getAreaId()))
+                if (!hasAurasWithId(itr->second->spellId))
+                    castSpell(this, itr->second->spellId, true);
+        }
+    }
+
+    sQuestMgr.OnQuestAccepted(this, questProperties, qst_giver);
+
+    sLogger.debug("WORLD: Added new QLE.");
+    sHookInterface.OnQuestAccept(this, questProperties, qst_giver);
+}
+
 void Player::setQuestLogInSlot(QuestLogEntry* entry, uint32_t slotId)
 {
     if (slotId < MAX_QUEST_SLOT)
@@ -4367,15 +4543,6 @@ bool Player::hasAnyQuestInQuestSlot() const
 {
     for (auto& questlogSlot : m_questlog)
         if (questlogSlot != nullptr)
-            return true;
-
-    return false;
-}
-
-bool Player::hasTimedQuestInQuestSlot() const
-{
-    for (auto& questlogSlot : m_questlog)
-        if (questlogSlot != nullptr && questlogSlot->getQuestProperties()->time != 0)
             return true;
 
     return false;
@@ -4435,6 +4602,141 @@ void Player::resetFinishedDailies()
 {
     std::lock_guard<std::mutex> lock(m_mutextDailies);
     m_finishedDailies.clear();
+}
+
+bool Player::hasTimedQuestInQuestSlot() const
+{
+    for (auto& questlogSlot : m_questlog)
+        if (questlogSlot != nullptr && questlogSlot->getQuestProperties()->time != 0)
+            return true;
+
+    return false;
+}
+
+void Player::eventTimedQuestExpire(uint32_t questId)
+{
+    if (QuestLogEntry* questLogEntry = this->getQuestLogByQuestId(questId))
+    {
+        QuestProperties const* qst = questLogEntry->getQuestProperties();
+
+        sQuestMgr.SendQuestUpdateFailedTimer(qst, this);
+        CALL_QUESTSCRIPT_EVENT(questLogEntry, OnQuestCancel)(this);
+        questLogEntry->sendQuestFailed(true);
+    }
+}
+
+void Player::addQuestToFinished(uint32_t questId)
+{
+    if (m_finishedQuests.find(questId) != m_finishedQuests.end())
+        return;
+
+    m_finishedQuests.insert(questId);
+}
+
+bool Player::hasQuestFinished(uint32_t questId)
+{
+    return m_finishedQuests.find(questId) != m_finishedQuests.end();
+}
+
+void Player::areaExploredQuestEvent(uint32_t questId)
+{
+    sQuestMgr.AreaExplored(this, questId);
+}
+
+void Player::clearQuest(uint32_t questId)
+{
+    m_finishedQuests.erase(questId);
+    m_finishedDailies.erase(questId);
+}
+
+bool Player::hasQuestForItem(uint32_t itemId)
+{
+    for (auto& questLogEntry : m_questlog)
+    {
+        if (questLogEntry)
+        {
+            QuestProperties const* questProperties = questLogEntry->getQuestProperties();
+
+            // Check the item_quest_association table for an entry related to this item
+            QuestAssociationList* tempList = sQuestMgr.GetQuestAssociationListForItemId(itemId);
+            if (tempList != nullptr)
+            {
+                QuestAssociationList::iterator questAssiciation;
+                for (questAssiciation = tempList->begin(); questAssiciation != tempList->end(); ++questAssiciation)
+                    if ((*questAssiciation)->qst == questProperties && (getItemInterface()->GetItemCount(itemId) < (*questAssiciation)->item_count))
+                        return true;
+            }
+
+            // No item_quest association found, check the quest requirements
+            if (!questProperties->count_required_item)
+                continue;
+
+            for (uint8_t j = 0; j < MAX_REQUIRED_QUEST_ITEM; ++j)
+                if (questProperties->required_item[j] == itemId && getItemInterface()->GetItemCount(itemId) < questProperties->required_itemcount[j])
+                    return true;
+        }
+    }
+    return false;
+}
+
+//Only for Cast Quests
+bool Player::hasQuestSpell(uint32_t spellId)
+{
+    if (!quest_spells.empty() && quest_spells.find(spellId) != quest_spells.end())
+        return true;
+
+    return false;
+}
+
+//Only for Cast Quests
+void Player::removeQuestSpell(uint32_t spellId)
+{
+    if (!quest_spells.empty())
+        quest_spells.erase(spellId);
+}
+
+//Only for Kill Quests
+bool Player::hasQuestMob(uint32_t entry)
+{
+    if (!quest_mobs.empty() && quest_mobs.find(entry) != quest_mobs.end())
+        return true;
+
+    return false;
+}
+
+//Only for Kill Quests
+void Player::removeQuestMob(uint32_t entry)
+{
+    if (!quest_mobs.empty())
+        quest_mobs.erase(entry);
+}
+
+void Player::addQuestKill(uint32_t questId, uint8_t reqId, uint32_t delay)
+{
+    if (!hasQuestInQuestLog(questId))
+        return;
+
+    if (delay)
+    {
+        sEventMgr.AddEvent(this, &Player::addQuestKill, questId, reqId, static_cast<uint32>(0), EVENT_PLAYER_UPDATE, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        return;
+    }
+
+    if (QuestLogEntry* questLogEntry = getQuestLogByQuestId(questId))
+    {
+        if (QuestProperties const* quest = questLogEntry->getQuestProperties())
+        {
+            if (questLogEntry->getMobCountByIndex(reqId) >= quest->required_mob_or_go_count[reqId])
+                return;
+
+            questLogEntry->incrementMobCountForIndex(reqId);
+            questLogEntry->SendUpdateAddKill(reqId);
+            questLogEntry->updatePlayerFields();
+
+            if (questLogEntry->canBeFinished())
+                questLogEntry->sendQuestComplete();
+        }
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -7210,3 +7512,7 @@ void Player::handleDuelCountdown()
         sEventMgr.AddEvent(m_duelPlayer, &Player::testDuelBoundary, EVENT_PLAYER_DUEL_BOUNDARY_CHECK, 500, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Quests
+

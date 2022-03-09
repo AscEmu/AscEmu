@@ -44,7 +44,7 @@ bool SpellArea::fitsToRequirements(Player* player, uint32_t newZone, uint32_t ne
 
     if (questEnd != 0)
     {
-        if (player == nullptr || player->GetQuestRewardStatus(questEnd))
+        if (player == nullptr || player->hasQuestFinished(questEnd))
             return false;
     }
 

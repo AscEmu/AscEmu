@@ -1921,10 +1921,10 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         return;
 
     // if we can take the quest, means that we haven't done this kind of "run", IE: First Heroic Random of Day.
-    if (!player->hasQuestInFinishedDailies(qReward->id) || !player->HasFinishedQuest(qReward->id))
+    if (!player->hasQuestInFinishedDailies(qReward->id) || !player->hasQuestFinished(qReward->id))
     {
         sQuestMgr.BuildQuestComplete(player, qReward);
-        player->AddToFinishedQuests(qReward->id);
+        player->addQuestToFinished(qReward->id);
 
         // Reputation reward
         for (uint8 z = 0; z < 6; z++)
@@ -2018,7 +2018,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
             return;
 
         sQuestMgr.BuildQuestComplete(player, qReward);
-        player->AddToFinishedQuests(qReward->id);
+        player->addQuestToFinished(qReward->id);
 
         // Reputation reward
         for (uint8 z = 0; z < 6; z++)

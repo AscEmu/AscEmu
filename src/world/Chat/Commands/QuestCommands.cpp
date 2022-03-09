@@ -50,7 +50,7 @@ std::string RemoveQuestFromPlayer(Player* plr, QuestProperties const* qst)
 
     if (plr->hasAnyQuestInQuestSlot())
     {
-        if (plr->HasFinishedQuest(qst->id))
+        if (plr->hasQuestFinished(qst->id))
         {
             recout += "Player has already completed that quest.\n\n";
         }
@@ -105,7 +105,7 @@ bool ChatHandler::HandleQuestStatusCommand(const char* args, WorldSession* m_ses
 
     if (QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id))
     {
-        if (plr->HasFinishedQuest(quest_id))
+        if (plr->hasQuestFinished(quest_id))
         {
             recout += "Player has already completed that quest.";
         }
@@ -152,7 +152,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
     QuestProperties const* questProperties = sMySQLStore.getQuestProperties(quest_id);
     if (questProperties)
     {
-        if (player->HasFinishedQuest(quest_id))
+        if (player->hasQuestFinished(quest_id))
             recout += "Player has already completed that quest.";
         else
         {
@@ -269,7 +269,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 
     if (QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id))
     {
-        if (plr->HasFinishedQuest(quest_id))
+        if (plr->hasQuestFinished(quest_id))
         {
             recout += "Player has already completed that quest.\n\n";
         }
@@ -337,7 +337,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 
             sGMLog.writefromsession(m_session, "completed quest %u [%s] for player %s", quest_id, qst->title.c_str(), plr->getName().c_str());
             sQuestMgr.BuildQuestComplete(plr, qst);
-            plr->AddToFinishedQuests(quest_id);
+            plr->addQuestToFinished(quest_id);
 
             // Quest Rewards : Copied from QuestMgr::OnQuestFinished()
             // Reputation reward
@@ -443,8 +443,8 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
             std::set<uint32>::iterator iter = qst->remove_quest_list.begin();
             for (; iter != qst->remove_quest_list.end(); ++iter)
             {
-                if (!plr->HasFinishedQuest((*iter)))
-                    plr->AddToFinishedQuests((*iter));
+                if (!plr->hasQuestFinished((*iter)))
+                    plr->addQuestToFinished((*iter));
             }
 
 #if VERSION_STRING > TBC

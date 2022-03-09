@@ -67,7 +67,7 @@ public:
     {
         if (mKiller->isPlayer())
         {
-            static_cast<Player*>(mKiller)->AddQuestKill(10503, 0, 0);
+            static_cast<Player*>(mKiller)->addQuestKill(10503, 0, 0);
         }
     }
 };
@@ -237,9 +237,9 @@ public:
         Player* pPlayer = static_cast<Player*>(mKiller);
 
         if (pPlayer->isTeamHorde())
-            pPlayer->AddQuestKill(10505, 0, 0);
+            pPlayer->addQuestKill(10505, 0, 0);
         else
-            pPlayer->AddQuestKill(10502, 0, 0);
+            pPlayer->addQuestKill(10502, 0, 0);
     }
 };
 
@@ -357,7 +357,7 @@ public:
             if (plr == nullptr)
                 return;
 
-            plr->AddQuestKill(10512, 0, 0);
+            plr->addQuestKill(10512, 0, 0);
 
             despawn(0, 0);
             return;

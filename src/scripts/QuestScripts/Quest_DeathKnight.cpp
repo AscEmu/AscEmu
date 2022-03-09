@@ -46,7 +46,7 @@ class GossipScourgeGryphon : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        if (plr->hasQuestInQuestLog(12670) || plr->HasFinishedQuest(12670))
+        if (plr->hasQuestInQuestLog(12670) || plr->hasQuestFinished(12670))
         {
             if (TaxiPath* path = sTaxiMgr.GetTaxiPath(pObject->getEntry() == 29488 ? 1053 : 1054))
                 plr->startTaxiPath(path, 26308, 0);
@@ -118,7 +118,7 @@ bool PreparationForBattleEffect(uint8_t /*effectIndex*/, Spell* pSpell)
         return false;
 
     // Apply spell if caster has quest and still heven't completed it yet
-    if (pCaster->hasQuestInQuestLog(QUEST_PREPARATION) && !pCaster->HasFinishedQuest(QUEST_PREPARATION))
+    if (pCaster->hasQuestInQuestLog(QUEST_PREPARATION) && !pCaster->hasQuestFinished(QUEST_PREPARATION))
         pCaster->castSpell(pCaster, SPELL_PREPERATION_FOR_BATTLE_CREDIT, true);
 
     return true;

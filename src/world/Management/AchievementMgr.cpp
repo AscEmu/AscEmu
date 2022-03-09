@@ -1251,7 +1251,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                 SetCriteriaProgress(achievementCriteria, 1, true);
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT:
-                SetCriteriaProgress(achievementCriteria, (int32_t)GetPlayer()->m_finishedQuests.size());
+                SetCriteriaProgress(achievementCriteria, (int32_t)GetPlayer()->getFinishedQuests().size());
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION:
                 SetCriteriaProgress(achievementCriteria, GetPlayer()->getFactionStanding(achievementCriteria->gain_reputation.factionID));
@@ -1271,25 +1271,21 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
             case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE:
             {
                 uint32_t qcinzone = 0;
-                std::set<uint32_t>::iterator qc = GetPlayer()->m_finishedQuests.begin();
-                for (; qc != GetPlayer()->m_finishedQuests.end(); ++qc)
+                for (uint32_t finishedQuestId : GetPlayer()->getFinishedQuests())
                 {
-                    QuestProperties const* qst = sMySQLStore.getQuestProperties(*qc);
+                    QuestProperties const* qst = sMySQLStore.getQuestProperties(finishedQuestId);
                     if (qst && qst->zone_id == achievementCriteria->complete_quests_in_zone.zoneID)
-                    {
                         ++qcinzone;
-                    }
                 }
                 SetCriteriaProgress(achievementCriteria, qcinzone);
             } break;
             case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST:
             {
                 uint32_t completed = 0;
-                std::set<uint32_t>::iterator it = GetPlayer()->m_finishedQuests.find(achievementCriteria->complete_quest.questID);
-                if (it != GetPlayer()->m_finishedQuests.end())
-                {
+                auto it = GetPlayer()->getFinishedQuests().find(achievementCriteria->complete_quest.questID);
+                if (it != GetPlayer()->getFinishedQuests().end())
                     ++completed;
-                }
+
                 SetCriteriaProgress(achievementCriteria, completed);
             } break;
             case ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS:

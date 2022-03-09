@@ -124,8 +124,8 @@ public:
         {
             Player* player = static_cast<Player*>(pKiller);
 
-            player->AddQuestKill(11537, 0, 0);
-            player->AddQuestKill(11538, 0, 0);
+            player->addQuestKill(11537, 0, 0);
+            player->addQuestKill(11538, 0, 0);
         }
     }
 };

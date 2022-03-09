@@ -45,7 +45,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        pPlayer->AddQuestKill(11965, 0, 0);
+        pPlayer->addQuestKill(11965, 0, 0);
     }
 };
 
@@ -59,7 +59,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        pPlayer->AddQuestKill(11900, 0, 0);
+        pPlayer->addQuestKill(11900, 0, 0);
     }
 };
 
@@ -71,7 +71,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        pPlayer->AddQuestKill(11900, 1, 0);
+        pPlayer->addQuestKill(11900, 1, 0);
     }
 };
 
@@ -83,7 +83,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        pPlayer->AddQuestKill(11900, 2, 0);
+        pPlayer->addQuestKill(11900, 2, 0);
     }
 };
 
@@ -95,7 +95,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        pPlayer->AddQuestKill(11900, 3, 0);
+        pPlayer->addQuestKill(11900, 3, 0);
     }
 };
 
@@ -121,7 +121,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        pPlayer->AddQuestKill(11602, 0, 0);
+        pPlayer->addQuestKill(11602, 0, 0);
 
         _gameobject->setState(GO_STATE_CLOSED);
         _gameobject->setState(GO_STATE_OPEN);
@@ -164,22 +164,22 @@ public:
                         float posX = pSinkhole->GetPositionX();
                         if (posX == 2657.13f)
                         {
-                            p->AddQuestKill(11608, 0, 0);
+                            p->addQuestKill(11608, 0, 0);
                         }
 
                         if (posX == 2716.02f)
                         {
-                            p->AddQuestKill(11608, 1, 0);
+                            p->addQuestKill(11608, 1, 0);
                         }
 
                         if (posX == 2877.96f)
                         {
-                            p->AddQuestKill(11608, 2, 0);
+                            p->addQuestKill(11608, 2, 0);
                         }
 
                         if (posX == 2962.16f)
                         {
-                            p->AddQuestKill(11608, 3, 0);
+                            p->addQuestKill(11608, 3, 0);
                         }
                     }
                 }
@@ -199,7 +199,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        pPlayer->AddQuestKill(11936, 0, 0);
+        pPlayer->addQuestKill(11936, 0, 0);
 
         //\todo why setting gameobject state 1 and 0?!?!
         _gameobject->setState(GO_STATE_CLOSED);
@@ -339,7 +339,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        if (!pPlayer->hasQuestInQuestLog(11788) || pPlayer->HasFinishedQuest(11788))
+        if (!pPlayer->hasQuestInQuestLog(11788) || pPlayer->hasQuestFinished(11788))
             return;
 
         auto* questLog = pPlayer->getQuestLogByQuestId(11788);
@@ -367,7 +367,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        if (!pPlayer->hasQuestInQuestLog(11788) || pPlayer->HasFinishedQuest(11788))
+        if (!pPlayer->hasQuestInQuestLog(11788) || pPlayer->hasQuestFinished(11788))
             return;
 
         auto* questLog = pPlayer->getQuestLogByQuestId(11788);
@@ -395,7 +395,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        if (!pPlayer->hasQuestInQuestLog(11788) || pPlayer->HasFinishedQuest(11788))
+        if (!pPlayer->hasQuestInQuestLog(11788) || pPlayer->hasQuestFinished(11788))
             return;
 
         auto* questLog = pPlayer->getQuestLogByQuestId(11788);
@@ -423,7 +423,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        if (!pPlayer->hasQuestInQuestLog(11788) || pPlayer->HasFinishedQuest(11788))
+        if (!pPlayer->hasQuestInQuestLog(11788) || pPlayer->hasQuestFinished(11788))
             return;
 
         auto* questLog = pPlayer->getQuestLogByQuestId(11788);
@@ -452,7 +452,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        if (!pPlayer->hasQuestInQuestLog(11798) || pPlayer->HasFinishedQuest(11798))
+        if (!pPlayer->hasQuestInQuestLog(11798) || pPlayer->hasQuestFinished(11798))
             return;
 
         auto* questLog = pPlayer->getQuestLogByQuestId(11798);
@@ -618,7 +618,7 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
             pCreature->castSpell(pCreature, 46800, true);
         }
 
-        pPlayer->AddQuestKill(11897, 2, 0);
+        pPlayer->addQuestKill(11897, 2, 0);
     }
 
     if (pCreature->getEntry() == 26249)
@@ -630,7 +630,7 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
             pCreature->castSpell(pCreature, 46800, true);
         }
 
-        pPlayer->AddQuestKill(11897, 1, 0);
+        pPlayer->addQuestKill(11897, 1, 0);
     }
 
     return true;
@@ -669,7 +669,7 @@ bool PlaceOil(uint8_t /*effectIndex*/, Spell* pSpell)
         {
             pCreature->castSpell(pCreature, 45991,false);
             pCreature->Despawn(10000, pCreature->GetCreatureProperties()->RespawnTime);
-            pPlayer->AddQuestKill(11715, 0, 0);
+            pPlayer->addQuestKill(11715, 0, 0);
         }
     }
 

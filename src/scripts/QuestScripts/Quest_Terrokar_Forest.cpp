@@ -32,7 +32,7 @@ public:
     {
         if (mKiller->isPlayer())
         {
-            static_cast<Player*>(mKiller)->AddQuestKill(11096, 0, 0);
+            static_cast<Player*>(mKiller)->addQuestKill(11096, 0, 0);
         }
     }
 };
@@ -148,7 +148,7 @@ public:
         creat->setControlled(true, UNIT_STATE_ROOTED);
         creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Finally! I'm free!");
 
-        plr->AddQuestKill(10873, 0, 0);
+        plr->addQuestKill(10873, 0, 0);
     }
 };
 
@@ -182,7 +182,7 @@ public:
     {
         plr->getItemInterface()->RemoveItemAmt(2799, 1);
 
-        plr->AddQuestKill(10201, 0, 0);
+        plr->addQuestKill(10201, 0, 0);
     }
 };
 

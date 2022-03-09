@@ -105,7 +105,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
         if (plr->getFactionStanding(qst->required_rep_faction) < (int32)qst->required_rep_value)
             return QuestStatus::NotAvailable;
 
-    if (plr->HasFinishedQuest(qst->id) && !sQuestMgr.IsQuestRepeatable(qst) && !sQuestMgr.IsQuestDaily(qst))
+    if (plr->hasQuestFinished(qst->id) && !sQuestMgr.IsQuestRepeatable(qst) && !sQuestMgr.IsQuestDaily(qst))
         return QuestStatus::NotAvailable;
 
     // Check One of Quest Prequest
@@ -116,7 +116,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
         {
             if (QuestProperties const* questcheck = sMySQLStore.getQuestProperties(*iter))
             {
-                if (plr->HasFinishedQuest((*iter)))
+                if (plr->hasQuestFinished((*iter)))
                 {
                     questscompleted = true;
                     break;
@@ -129,7 +129,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
 
     for (uint8 i = 0; i < 4; ++i)
     {
-        if (qst->required_quests[i] > 0 && !plr->HasFinishedQuest(qst->required_quests[i]))
+        if (qst->required_quests[i] > 0 && !plr->hasQuestFinished(qst->required_quests[i]))
         {
             return QuestStatus::NotAvailable;
         }
@@ -1196,7 +1196,7 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
     //QuestLogEntry* qle;
     QuestProperties const* qst;
 
-    if (plr->HasQuestMob(entry))
+    if (plr->hasQuestMob(entry))
     {
         for (uint8 i = 0; i < MAX_QUEST_SLOT; ++i)
         {
@@ -1238,7 +1238,7 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
                     for (auto gitr = pGroup->GetSubGroup(k)->GetGroupMembersBegin(); gitr != pGroup->GetSubGroup(k)->GetGroupMembersEnd(); ++gitr)
                     {
                         Player* gplr = sObjectMgr.GetPlayer((*gitr)->guid);
-                        if (gplr && gplr != plr && plr->isInRange(gplr, 300) && gplr->HasQuestMob(entry)) // don't double kills also don't give kills to party members at another side of the world
+                        if (gplr && gplr != plr && plr->isInRange(gplr, 300) && gplr->hasQuestMob(entry)) // don't double kills also don't give kills to party members at another side of the world
                         {
                             for (uint8 i = 0; i < 25; ++i)
                             {
@@ -1276,7 +1276,7 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
 
 void QuestMgr::OnPlayerCast(Player* plr, uint32 spellid, uint64 & victimguid)
 {
-    if (!plr || !plr->HasQuestSpell(spellid))
+    if (!plr || !plr->hasQuestSpell(spellid))
         return;
 
     Unit* victim = plr->GetMapMgr() ? plr->GetMapMgr()->GetUnit(victimguid) : nullptr;
@@ -1481,13 +1481,13 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
     {
         if (qst->required_spell[x] != 0)
         {
-            if (plr->HasQuestSpell(qst->required_spell[x]))
-                plr->RemoveQuestSpell(qst->required_spell[x]);
+            if (plr->hasQuestSpell(qst->required_spell[x]))
+                plr->removeQuestSpell(qst->required_spell[x]);
         }
         else if (qst->required_mob_or_go[x] != 0)
         {
-            if (plr->HasQuestMob(qst->required_mob_or_go[x]))
-                plr->RemoveQuestMob(qst->required_mob_or_go[x]);
+            if (plr->hasQuestMob(qst->required_mob_or_go[x]))
+                plr->removeQuestMob(qst->required_mob_or_go[x]);
         }
     }
 
@@ -1756,7 +1756,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         }
 
         //Add to finished quests
-        plr->AddToFinishedQuests(qst->id);
+        plr->addQuestToFinished(qst->id);
         if (qst->bonusarenapoints != 0)
         {
             plr->AddArenaPoints(qst->bonusarenapoints, true);
@@ -1773,8 +1773,8 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         std::set<uint32>::iterator iter = qst->remove_quest_list.begin();
         for (; iter != qst->remove_quest_list.end(); ++iter)
         {
-            if (!plr->HasFinishedQuest((*iter)))
-                plr->AddToFinishedQuests((*iter));
+            if (!plr->hasQuestFinished((*iter)))
+                plr->addQuestToFinished((*iter));
         }
     }
 
@@ -2186,7 +2186,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
             sLogger.debug("WORLD: Sent SMSG_QUESTGIVER_QUEST_DETAILS.");
 
             if ((*itr)->qst->HasFlag(QUEST_FLAGS_AUTO_ACCEPT))
-                plr->AcceptQuest(qst_giver->getGuid(), (*itr)->qst->id);
+                plr->acceptQuest(qst_giver->getGuid(), (*itr)->qst->id);
         }
         else if (status == QuestStatus::Finished)
         {

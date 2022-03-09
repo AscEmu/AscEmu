@@ -449,7 +449,7 @@ public:
         {
             if (auto* player = getCreature()->GetMapMgr()->GetPlayer(static_cast<uint32_t>(getCreature()->getTargetGuid())))
             {
-                if (!player->hasQuestInQuestLog(9303) || player->HasFinishedQuest(9303))
+                if (!player->hasQuestInQuestLog(9303) || player->hasQuestFinished(9303))
                     return;
 
                 if (auto* questLog = player->getQuestLogByQuestId(9303))

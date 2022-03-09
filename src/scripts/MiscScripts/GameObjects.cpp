@@ -29,9 +29,9 @@ public:
     void OnActivate(Player* player) override
     {
         if (player->isTeamHorde())
-            player->AddQuestKill(5098, 0, 0);
+            player->addQuestKill(5098, 0, 0);
         else
-            player->AddQuestKill(5097, 0, 0);
+            player->addQuestKill(5097, 0, 0);
     }
 };
 
@@ -44,9 +44,9 @@ public:
     void OnActivate(Player* player) override
     {
         if (player->isTeamHorde())
-            player->AddQuestKill(5098, 1, 0);
+            player->addQuestKill(5098, 1, 0);
         else
-            player->AddQuestKill(5097, 1, 0);
+            player->addQuestKill(5097, 1, 0);
     }
 };
 
@@ -59,9 +59,9 @@ public:
     void OnActivate(Player* player) override
     {
         if (player->isTeamHorde())
-            player->AddQuestKill(5098, 2, 0);
+            player->addQuestKill(5098, 2, 0);
         else
-            player->AddQuestKill(5097, 2, 0);
+            player->addQuestKill(5097, 2, 0);
     }
 };
 
@@ -74,9 +74,9 @@ public:
     void OnActivate(Player* player) override
     {
         if (player->isTeamHorde())
-            player->AddQuestKill(5098, 3, 0);
+            player->addQuestKill(5098, 3, 0);
         else
-            player->AddQuestKill(5097, 3, 0);
+            player->addQuestKill(5097, 3, 0);
     }
 };
 
@@ -88,15 +88,15 @@ public:
 
     void OnActivate(Player* player) override
     {
-        if (player->HasFinishedQuest(7761) && player->getLevel() >= 58 && player->isInGroup())
+        if (player->hasQuestFinished(7761) && player->getLevel() >= 58 && player->isInGroup())
         {
             player->SafeTeleport(469, 0, -7672.939941f, -1107.307617f, 396.649994f, 0.616532f);
         }
-        else if (player->getLevel() <= 57 || player->HasFinishedQuest(7761) == false)
+        else if (player->getLevel() <= 57 || player->hasQuestFinished(7761) == false)
         {
             player->BroadcastMessage("You need to be level 58 and have completed the quest : Blackhand's Command");
         }
-        else if (player->HasFinishedQuest(7761) == true && player->getLevel() >= 58 && !player->isInGroup())
+        else if (player->hasQuestFinished(7761) == true && player->getLevel() >= 58 && !player->isInGroup())
         {
             player->BroadcastMessage("You need to be in a raid group to be able to enter this instance");
         }
@@ -445,7 +445,7 @@ public:
 
     void OnActivate(Player* player) override
     {
-        player->AddQuestKill(10111, 0, 0);
+        player->addQuestKill(10111, 0, 0);
 
         LocationVector pos = player->GetPosition();
         Creature* bird = player->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 19055);
@@ -614,7 +614,7 @@ public:
 
     void OnActivate(Player* player) override
     {
-        player->AddQuestKill(5581, 0, 0);
+        player->addQuestKill(5581, 0, 0);
     }
 };
 
@@ -626,7 +626,7 @@ public:
 
     void OnActivate(Player* player) override
     {
-        player->AddQuestKill(9544, 0, 0);
+        player->addQuestKill(9544, 0, 0);
 
         LocationVector pos = player->GetPosition();
 
@@ -726,7 +726,7 @@ public:
 
     void OnActivate(Player* player) override
     {
-        player->AddQuestKill(10447, 1, 0);
+        player->addQuestKill(10447, 1, 0);
     }
 };
 
@@ -810,7 +810,7 @@ public:
 
     void OnActivate(Player* player) override
     {
-        player->AddQuestKill(181433, 0, 0);
+        player->addQuestKill(181433, 0, 0);
     }
 };
 

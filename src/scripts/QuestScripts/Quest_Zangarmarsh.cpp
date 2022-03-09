@@ -41,7 +41,7 @@ public:
             TextId = 9177;
         }
 
-        if (plr->HasFinishedQuest(9785) || plr->hasQuestInQuestLog(9785))
+        if (plr->hasQuestFinished(9785) || plr->hasQuestInQuestLog(9785))
         {
             GossipMenu menu(pObject->getGuid(), TextId, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 0, 1, text);
@@ -56,7 +56,7 @@ public:
         {
             case 17900:
             {
-                plr->AddQuestKill(9785, 0, 0);
+                plr->addQuestKill(9785, 0, 0);
 
                 if (plr->getFactionStandingRank(942) == 4)
                     casta->castSpell(plr, 31808, true);
@@ -70,7 +70,7 @@ public:
             } break;
             case 17901:
             {
-                plr->AddQuestKill(9785, 1, 0);
+                plr->addQuestKill(9785, 1, 0);
 
                 if (plr->getFactionStandingRank(942) == 4)
                     casta->castSpell(plr, 31807, true);

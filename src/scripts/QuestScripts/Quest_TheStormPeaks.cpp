@@ -28,7 +28,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        pPlayer->AddQuestKill(12965, 0, 0);
+        pPlayer->addQuestKill(12965, 0, 0);
     }
 };
 
@@ -40,7 +40,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        pPlayer->AddQuestKill(12965, 1, 0);
+        pPlayer->addQuestKill(12965, 1, 0);
     }
 };
 
@@ -52,7 +52,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        pPlayer->AddQuestKill(12965, 2, 0);
+        pPlayer->addQuestKill(12965, 2, 0);
     }
 };
 
@@ -89,7 +89,7 @@ public:
             {
                 GossipMenu::sendSimpleMenu(pObject->getGuid(), 13614, plr);
 
-                plr->AddQuestKill(12864, 0, 0);
+                plr->addQuestKill(12864, 0, 0);
             } break;
         }
     }

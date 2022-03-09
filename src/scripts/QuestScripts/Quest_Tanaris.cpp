@@ -39,7 +39,7 @@ public:
         Creature* spirit = static_cast<Creature*>(pObject);
         spirit->Despawn(1, 0);
 
-        plr->AddQuestKill(3520, 0, 0);
+        plr->addQuestKill(3520, 0, 0);
     }
 };
 
@@ -70,7 +70,7 @@ class StewardOfTime : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        if (plr->hasQuestInQuestLog(10279) || plr->HasFinishedQuest(10279))
+        if (plr->hasQuestInQuestLog(10279) || plr->hasQuestFinished(10279))
         {
             GossipMenu menu(pObject->getGuid(), 9978, plr->GetSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 496, 1);     // Please take me to the Master's Lair

@@ -331,14 +331,14 @@ void WorldSession::handleQuestPushResultOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_QUEST_PUSH_RESULT");
 
-    if (_player->GetQuestSharer())
+    if (_player->getQuestSharerByDbId())
     {
-        const auto questSharerPlayer = sObjectMgr.GetPlayer(_player->GetQuestSharer());
+        const auto questSharerPlayer = sObjectMgr.GetPlayer(_player->getQuestSharerByDbId());
         if (questSharerPlayer)
         {
             const uint64_t guid = recvPacket.size() >= 13 ? _player->getGuid() : srlPacket.giverGuid;
             questSharerPlayer->GetSession()->SendPacket(MsgQuestPushResult(guid, 0, srlPacket.pushResult).serialise().get());
-            _player->SetQuestSharer(0);
+            _player->setQuestSharerDbId(0);
         }
     }
 }
@@ -349,7 +349,7 @@ void WorldSession::handleQuestgiverAcceptQuestOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    _player->AcceptQuest(srlPacket.guid, srlPacket.questId);
+    _player->acceptQuest(srlPacket.guid, srlPacket.questId);
 }
 
 void WorldSession::handleQuestQueryOpcode(WorldPacket& recvPacket)
@@ -582,7 +582,7 @@ void WorldSession::handleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket)
         sLogger.debug("Sent SMSG_QUESTGIVER_QUEST_DETAILS.");
 
         if (qst->HasFlag(QUEST_FLAGS_AUTO_ACCEPT))
-            _player->AcceptQuest(qst_giver->getGuid(), qst->id);
+            _player->acceptQuest(qst_giver->getGuid(), qst->id);
     }
     else if (status == QuestStatus::NotFinished || status == QuestStatus::Finished)
     {
@@ -927,7 +927,7 @@ void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
                         {
                             response = QUEST_SHARE_MSG_HAVE_QUEST;
                         }
-                        else if (pPlayer->HasFinishedQuest(srlPacket.questId))
+                        else if (pPlayer->hasQuestFinished(srlPacket.questId))
                         {
                             response = QUEST_SHARE_MSG_FINISH_QUEST;
                         }
@@ -957,7 +957,7 @@ void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
 
                         WorldPacket data;
                         sQuestMgr.BuildQuestDetails(&data, pQuest, _player, 1, pPlayer->GetSession()->language, pPlayer);
-                        pPlayer->SetQuestSharer(pguid);
+                        pPlayer->setQuestSharerDbId(pguid);
                         pPlayer->GetSession()->SendPacket(&data);
                     }
                 }

@@ -33,7 +33,7 @@ public:
     {
         if (mKiller->isPlayer())
         {
-            static_cast<Player*>(mKiller)->AddQuestKill(9573, 1, 0);
+            static_cast<Player*>(mKiller)->addQuestKill(9573, 1, 0);
         }
     }
 };

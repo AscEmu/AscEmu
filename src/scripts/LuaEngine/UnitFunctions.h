@@ -1326,7 +1326,7 @@ public:
     {
         TEST_PLAYER_RET()
         uint32_t questid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        if (static_cast<Player*>(ptr)->HasFinishedQuest(questid))
+        if (static_cast<Player*>(ptr)->hasQuestFinished(questid))
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -1341,7 +1341,7 @@ public:
 
         if (auto* qst = sMySQLStore.getQuestProperties(quest_id))
         {
-            if (plr->HasFinishedQuest(quest_id))
+            if (plr->hasQuestFinished(quest_id))
             {
                 lua_pushnumber(L, 0);
                 return 1;
@@ -1353,7 +1353,7 @@ public:
                 sQuestMgr.BuildQuestComplete(plr, qst);
 
                 questLog->finishAndRemove();
-                plr->AddToFinishedQuests(quest_id);
+                plr->addQuestToFinished(quest_id);
                 lua_pushnumber(L, 1);
                 return 1;
             }
@@ -1372,7 +1372,7 @@ public:
 
         if (auto* questProperties = sMySQLStore.getQuestProperties(quest_id))
         {
-            if (player->HasFinishedQuest(quest_id))
+            if (player->hasQuestFinished(quest_id))
             {
                 lua_pushnumber(L, 0);
                 return 1;
@@ -1474,7 +1474,7 @@ public:
         uint8_t objective = static_cast<uint8_t>(luaL_checkinteger(L, 2));
         Player* player = static_cast<Player*>(ptr);
 
-        if (!player->HasFinishedQuest(questid))
+        if (!player->hasQuestFinished(questid))
         {
             if (auto questLog = player->getQuestLogByQuestId(questid))
             {

@@ -243,7 +243,7 @@ public:
 
                 if (x >= -1684 && x <= -1674 && y >= -4334 && y <= -4324)
                 {
-                    warrior->AreaExploredOrEventHappens(1719);
+                    warrior->areaExploredQuestEvent(1719);
                     sendDBChatMessage(SAY_TWIGGY_FLATHEAD_BEGIN, warrior);
 
                     for (uint8_t i = 0; i < 6; ++i)

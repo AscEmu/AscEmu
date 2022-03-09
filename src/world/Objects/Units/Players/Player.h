@@ -88,6 +88,9 @@ class SERVER_DECL Player : public Unit
 {
 public:
 
+    friend class WorldSession;
+    friend class Pet;
+
     Player(uint32_t guid);
     ~Player();
 
@@ -1002,10 +1005,11 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Quests
 public:
+    void acceptQuest(uint64_t guid, uint32_t quest_id);
+
     void setQuestLogInSlot(QuestLogEntry* entry, uint32_t slotId);
 
     bool hasAnyQuestInQuestSlot() const;
-    bool hasTimedQuestInQuestSlot() const;
     bool hasQuestInQuestLog(uint32_t questId) const;
     uint8_t getFreeQuestSlot() const;
 
@@ -1017,11 +1021,46 @@ public:
     bool hasQuestInFinishedDailies(uint32_t questId) const;
     void resetFinishedDailies();
 
+    bool hasTimedQuestInQuestSlot() const;
+    void eventTimedQuestExpire(uint32_t questId);
+
+    uint32_t getQuestSharerByDbId() const { return m_questSharer; }
+    void setQuestSharerDbId(uint32_t id) { m_questSharer = id; }
+
+    void addQuestToRemove(uint32_t questId) { m_removequests.insert(questId); }
+
+    void addQuestToFinished(uint32_t questId);
+    bool hasQuestFinished(uint32_t questId);
+
+    void areaExploredQuestEvent(uint32_t questId);
+
+    void clearQuest(uint32_t questId);
+
+    bool hasQuestForItem(uint32_t itemId);
+
+    void addQuestSpell(uint32_t spellId) { quest_spells.insert(spellId); }
+    bool hasQuestSpell(uint32_t spellId);
+    void removeQuestSpell(uint32_t spellId);
+
+    void addQuestMob(uint32_t entry) { quest_mobs.insert(entry); }
+    bool hasQuestMob(uint32_t entry);
+    void removeQuestMob(uint32_t entry);
+
+    void addQuestKill(uint32_t questId, uint8_t reqId, uint32_t delay = 0);
+
+    std::set<uint32_t> getFinishedQuests() const { return m_finishedQuests; }
+
 private:
     QuestLogEntry* m_questlog[MAX_QUEST_LOG_SIZE] = {nullptr};
 
     mutable std::mutex m_mutextDailies;
     std::set<uint32_t> m_finishedDailies = {};
+
+    std::set<uint32_t> m_removequests;
+    std::set<uint32_t> m_finishedQuests;
+    uint32_t m_questSharer = 0;
+    std::set<uint32_t> quest_spells;
+    std::set<uint32_t> quest_mobs;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Social
@@ -1316,10 +1355,11 @@ private:
 
 public:
     //MIT End
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // After this point we have to deal with legacy code -.-
+    // Keep the code above this line clean and structured (encapsulating)
+    /////////////////////////////////////////////////////////////////////////////////////////
     //AGPL Start
-
-    friend class WorldSession;
-    friend class Pet;
 
     public:
 
@@ -1337,11 +1377,6 @@ public:
         uint32 m_lastPotionId = 0;
         PlayerCooldownMap m_cooldownMap[NUM_COOLDOWN_TYPES];
         uint32 m_globalCooldown = 0;
-
-        /***********************************************************************************
-            AFTER THIS POINT, public and private ARE PASSED AROUND LIKE A CHEAP WH*RE :P
-            Let's keeps thing clean (use encapsulation) above this line. Thanks.
-        ***********************************************************************************/
 
     public:
         void SetLastPotion(uint32 itemid) { m_lastPotionId = itemid; }
@@ -1390,42 +1425,6 @@ public:
         void ModifyBonuses(uint32 type, int32 val, bool apply);
         void CalcExpertise();
         std::map<uint32, uint32> m_wratings;
-
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Quests
-        /////////////////////////////////////////////////////////////////////////////////////////
-        uint32 GetQuestSharer() { return m_questSharer; }
-
-        void SetQuestSharer(uint32 guid) { m_questSharer = guid; }
-
-        void PushToRemovedQuests(uint32 questid) { m_removequests.insert(questid);}
-        
-        void AddToFinishedQuests(uint32 quest_id);
-        void AreaExploredOrEventHappens(uint32 questId);   // scriptdev2
-
-        bool HasFinishedQuest(uint32 quest_id);
-
-        void EventTimedQuestExpire(uint32 questid);
-
-        void ClearQuest(uint32 id);
-
-        bool GetQuestRewardStatus(uint32 quest_id);
-        bool HasQuestForItem(uint32 itemid);
-        bool HasQuestSpell(uint32 spellid);
-        void RemoveQuestSpell(uint32 spellid);
-        bool HasQuestMob(uint32 entry);
-        
-        void RemoveQuestMob(uint32 entry);
-        void AddQuestKill(uint32 questid, uint8 reqid, uint32 delay = 0);
-
-        void AcceptQuest(uint64 guid, uint32 quest_id);
-
-        std::set<uint32> m_removequests;
-        std::set<uint32> m_finishedQuests;
-        uint32 m_questSharer = 0;
-        std::set<uint32> quest_spells;
-        std::set<uint32> quest_mobs;
 
         void EventPortToGM(Player* p);
 

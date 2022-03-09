@@ -650,7 +650,7 @@ void WorldSession::handleLfgPlayerLockInfoRequestOpcode(WorldPacket& /*recvPacke
             qRew = sMySQLStore.getQuestProperties(reward->reward[0].questId);
             if (qRew)
             {
-                done = _player->HasFinishedQuest(qRew->id);
+                done = _player->hasQuestFinished(qRew->id);
                 if (done)
                     qRew = sMySQLStore.getQuestProperties(reward->reward[1].questId);
             }

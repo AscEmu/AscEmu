@@ -412,7 +412,7 @@ bool PreparationForBattle(uint8_t /*effectIndex*/, Spell* pSpell)
 
     Player* pPlayer = pSpell->getPlayerCaster();
 
-    pPlayer->AddQuestKill(12842, 0, 0);
+    pPlayer->addQuestKill(12842, 0, 0);
 
     return true;
 };

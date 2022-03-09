@@ -49,7 +49,7 @@ public:
 
     void onSelectOption(Object* /*pObject*/, Player* plr, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
-        plr->AddQuestKill(9663, 0, 0);
+        plr->addQuestKill(9663, 0, 0);
     }
 };
 
@@ -67,7 +67,7 @@ public:
 
     void onSelectOption(Object* /*pObject*/, Player* plr, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
-        plr->AddQuestKill(9663, 1, 0);
+        plr->addQuestKill(9663, 1, 0);
     }
 };
 
@@ -85,7 +85,7 @@ public:
 
     void onSelectOption(Object* /*pObject*/, Player* plr, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
-        plr->AddQuestKill(9663, 2, 0);
+        plr->addQuestKill(9663, 2, 0);
     }
 };
 
@@ -97,7 +97,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        pPlayer->AddQuestKill(9667, 0, 0);
+        pPlayer->addQuestKill(9667, 0, 0);
 
         Creature* princess = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17682);
         if (princess != nullptr)
@@ -181,7 +181,7 @@ public:
                 RandomCreature->Despawn(60000, 0);
                 if (RandomCreature->getEntry() == 17681)
                 {
-                    QuestHolder->AddQuestKill(9670, 0, 0);
+                    QuestHolder->addQuestKill(9670, 0, 0);
                 }
             }
         }

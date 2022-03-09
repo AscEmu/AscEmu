@@ -44,9 +44,9 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        if (pPlayer->HasFinishedQuest(4284))
+        if (pPlayer->hasQuestFinished(4284))
         {
-            pPlayer->AddQuestKill(4285, 0, 0);
+            pPlayer->addQuestKill(4285, 0, 0);
         }
         else
         {
@@ -63,9 +63,9 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        if (pPlayer->HasFinishedQuest(4284))
+        if (pPlayer->hasQuestFinished(4284))
         {
-            pPlayer->AddQuestKill(4287, 0, 0);
+            pPlayer->addQuestKill(4287, 0, 0);
         }
         else
         {
@@ -82,9 +82,9 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        if (pPlayer->HasFinishedQuest(4284))
+        if (pPlayer->hasQuestFinished(4284))
         {
-            pPlayer->AddQuestKill(4288, 0, 0);
+            pPlayer->addQuestKill(4288, 0, 0);
         }
         else
         {

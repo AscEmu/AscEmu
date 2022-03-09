@@ -315,7 +315,7 @@ public:
 
     void onSelectOption(Object* /*pObject*/, Player* plr, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/) override
     {
-        plr->AddQuestKill(9918, 0, 0);
+        plr->addQuestKill(9918, 0, 0);
     }
 };
 

@@ -33,8 +33,8 @@ void QuestLogEntry::initPlayerData()
         {
             m_isCastQuest = true;
 
-            if (!m_player->HasQuestSpell(m_questProperties->required_spell[i]))
-                m_player->quest_spells.insert(m_questProperties->required_spell[i]);
+            if (!m_player->hasQuestSpell(m_questProperties->required_spell[i]))
+                m_player->addQuestSpell(m_questProperties->required_spell[i]);
         }
         else if (m_questProperties->required_emote[i] != 0)
         {
@@ -43,8 +43,8 @@ void QuestLogEntry::initPlayerData()
 
         if (m_questProperties->required_mob_or_go[i] != 0)
         {
-            if (!m_player->HasQuestMob(m_questProperties->required_mob_or_go[i]))
-                m_player->quest_mobs.insert(m_questProperties->required_mob_or_go[i]);
+            if (!m_player->hasQuestMob(m_questProperties->required_mob_or_go[i]))
+                m_player->addQuestMob(m_questProperties->required_mob_or_go[i]);
         }
     }
 
@@ -266,7 +266,7 @@ void QuestLogEntry::finishAndRemove()
     m_player->setQuestLogExpireTimeBySlot(m_slot, 0);
 
     m_player->setQuestLogInSlot(nullptr, m_slot);
-    m_player->PushToRemovedQuests(m_questProperties->id);
+    m_player->addQuestToRemove(m_questProperties->id);
     m_player->UpdateNearbyGameObjects();
 
     delete this;
@@ -383,7 +383,7 @@ void QuestLogEntry::updatePlayerFields()
     if (m_questProperties->time != 0 && m_state != QUEST_FAILED)
     {
         m_player->setQuestLogExpireTimeBySlot(m_slot, m_expirytime);
-        sEventMgr.AddEvent(m_player, &Player::EventTimedQuestExpire, m_questProperties->id, EVENT_TIMED_QUEST_EXPIRE, 
+        sEventMgr.AddEvent(m_player, &Player::eventTimedQuestExpire, m_questProperties->id, EVENT_TIMED_QUEST_EXPIRE, 
             (m_expirytime - UNIXTIME) * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
     else

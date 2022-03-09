@@ -37,7 +37,7 @@ public:
     {
         Creature* Prisoner12 = static_cast<Creature*>(pObject);
 
-        plr->AddQuestKill(9164, 0, 0);
+        plr->addQuestKill(9164, 0, 0);
 
         Prisoner12->Despawn(5000, 6 * 60 * 1000);
         Prisoner12->setStandState(STANDSTATE_STAND);
@@ -60,7 +60,7 @@ public:
     {
         Creature* Prisoner22 = static_cast<Creature*>(pObject);
 
-        plr->AddQuestKill(9164, 1, 0);
+        plr->addQuestKill(9164, 1, 0);
 
         Prisoner22->Despawn(5000, 6 * 60 * 1000);
         Prisoner22->setStandState(STANDSTATE_STAND);
@@ -84,7 +84,7 @@ public:
     {
         Creature* Prisoner32 = static_cast<Creature*>(pObject);
 
-        plr->AddQuestKill(9164, 2, 0);
+        plr->addQuestKill(9164, 2, 0);
 
         Prisoner32->Despawn(5000, 6 * 60 * 1000);
         Prisoner32->setStandState(STANDSTATE_STAND);

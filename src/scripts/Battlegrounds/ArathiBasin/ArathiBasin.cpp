@@ -878,19 +878,19 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
             {
                 case AB_CONTROL_POINT_MINE:
                 {
-                    pPlayer->AddQuestKill(8120, 0, 0);
+                    pPlayer->addQuestKill(8120, 0, 0);
                 } break;
                 case AB_CONTROL_POINT_LUMBERMILL:
                 {
-                    pPlayer->AddQuestKill(8120, 1, 0);
+                    pPlayer->addQuestKill(8120, 1, 0);
                 } break;
                 case AB_CONTROL_POINT_BLACKSMITH:
                 {
-                    pPlayer->AddQuestKill(8120, 2, 0);
+                    pPlayer->addQuestKill(8120, 2, 0);
                 } break;
                 case AB_CONTROL_POINT_STABLE:
                 {
-                    pPlayer->AddQuestKill(8120, 3, 0);
+                    pPlayer->addQuestKill(8120, 3, 0);
                 } break;
             }
         }
@@ -903,19 +903,19 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
                 {
                     case AB_CONTROL_POINT_MINE:
                     {
-                        pPlayer->AddQuestKill(8105, 0, 0);
+                        pPlayer->addQuestKill(8105, 0, 0);
                     } break;
                     case AB_CONTROL_POINT_LUMBERMILL:
                     {
-                        pPlayer->AddQuestKill(8105, 1, 0);
+                        pPlayer->addQuestKill(8105, 1, 0);
                     } break;
                     case AB_CONTROL_POINT_BLACKSMITH:
                     {
-                        pPlayer->AddQuestKill(8105, 2, 0);
+                        pPlayer->addQuestKill(8105, 2, 0);
                     } break;
                     case AB_CONTROL_POINT_FARM:
                     {
-                        pPlayer->AddQuestKill(8105, 3, 0);
+                        pPlayer->addQuestKill(8105, 3, 0);
                     } break;
                 }
             }

@@ -47,7 +47,7 @@ public:
     {
         if (mKiller->isPlayer())
         {
-            static_cast<Player*>(mKiller)->AddQuestKill(10836, 0, 0);
+            static_cast<Player*>(mKiller)->addQuestKill(10836, 0, 0);
         }
     }
 };
@@ -62,8 +62,8 @@ public:
     {
         if (mKiller->isPlayer())
         {
-            static_cast<Player*>(mKiller)->AddQuestKill(10703, 0, 0);
-            static_cast<Player*>(mKiller)->AddQuestKill(10702, 0, 0);
+            static_cast<Player*>(mKiller)->addQuestKill(10703, 0, 0);
+            static_cast<Player*>(mKiller)->addQuestKill(10702, 0, 0);
         }
     }
 };
@@ -291,7 +291,7 @@ public:
             } break;
             case 4:
             {
-                plr->AddQuestKill(10814, 0, 0);
+                plr->addQuestKill(10814, 0, 0);
             } break;
         }
     }

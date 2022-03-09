@@ -34,7 +34,7 @@ public:
     {
         if (mKiller->isPlayer())
         {
-            static_cast<Player*>(mKiller)->AddQuestKill(10482, 0, 0);
+            static_cast<Player*>(mKiller)->addQuestKill(10482, 0, 0);
         }
     }
 };
@@ -49,7 +49,7 @@ public:
         if (!mKiller->isPlayer())
             return;
 
-        static_cast<Player*>(mKiller)->AddQuestKill(10255, 0, 0);
+        static_cast<Player*>(mKiller)->addQuestKill(10255, 0, 0);
     }
 };
 
@@ -79,7 +79,7 @@ public:
                 GameObject* pNorthern = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-820.0f, 2029.0f, 55.0f, 300150);
                 if (pNorthern != nullptr && pPlayer->CalcDistance(pPlayer, pNorthern) < 40)      // if reduced the server will crash when out of range
                 {
-                    pPlayer->AddQuestKill(10895, 0, 0);
+                    pPlayer->addQuestKill(10895, 0, 0);
 
                     GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -819.77f, 2029.09f, 55.6082f, 0, 4);
                     if (pGameobject != nullptr)
@@ -95,7 +95,7 @@ public:
                 GameObject* pSouthern = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-1150.0f, 2110.0f, 84.0f, 300150);
                 if (pSouthern != nullptr && pPlayer->CalcDistance(pPlayer, pSouthern) < 40)
                 {
-                    pPlayer->AddQuestKill(10895, 1, 0);
+                    pPlayer->addQuestKill(10895, 1, 0);
 
                     GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -1150.53f, 2109.92f, 84.4204f, 0, 4);
                     if (pGameobject != nullptr)
@@ -111,7 +111,7 @@ public:
                 GameObject* pForge = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-893.0f, 1919.0f, 82.0f, 300150);
                 if (pForge != nullptr && pPlayer->CalcDistance(pPlayer, pForge) < 40)
                 {
-                    pPlayer->AddQuestKill(10895, 2, 0);
+                    pPlayer->addQuestKill(10895, 2, 0);
 
                     GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -893.499f, 1919.27f, 81.6449f, 0, 4);
                     if (pGameobject != nullptr)
@@ -127,7 +127,7 @@ public:
                 GameObject* pFoothill = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-978.0f, 1879.0f, 111.0f, 300150);
                 if (pFoothill != nullptr && pPlayer->CalcDistance(pPlayer, pFoothill) < 40)
                 {
-                    pPlayer->AddQuestKill(10895, 3, 0);
+                    pPlayer->addQuestKill(10895, 3, 0);
 
                     GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -977.713f, 1879.500f, 110.892f, 0, 4);
                     if (pGameobject != nullptr)
@@ -207,7 +207,7 @@ public:
         if (i == 66)
             return;
 
-        pPlayer->AddQuestKill(10368, i, 0);
+        pPlayer->addQuestKill(10368, i, 0);
 
         pPrisoner->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You've freed me! The winds speak to my people one again and grant us their strength. I thank you, stranger.");
         pPrisoner->Despawn(5000, 6 * 60 * 1000);

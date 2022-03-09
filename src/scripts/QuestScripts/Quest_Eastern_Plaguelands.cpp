@@ -44,7 +44,7 @@ class Darrowshire_Spirit : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        plr->AddQuestKill(5211, 0, 0);
+        plr->addQuestKill(5211, 0, 0);
 
         GossipMenu::sendSimpleMenu(pObject->getGuid(), 3873, plr);
 

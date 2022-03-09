@@ -4358,8 +4358,8 @@ void Spell::SpellEffectClearQuest(uint8_t effectIndex)
     uint32 questid1 = m_spellInfo->getEffectBasePoints(effectIndex);
     uint32 questid2 = m_spellInfo->getEffectMiscValue(effectIndex);
 
-    playerTarget->ClearQuest(questid1);
-    playerTarget->ClearQuest(questid2);
+    playerTarget->clearQuest(questid1);
+    playerTarget->clearQuest(questid2);
 }
 
 void Spell::SpellEffectApplyRaidAA(uint8_t effectIndex)

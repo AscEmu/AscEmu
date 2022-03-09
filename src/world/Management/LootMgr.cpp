@@ -595,7 +595,7 @@ bool LootItem::allowedForPlayer(Player* player) const
 
     // check quest requirements
     if (needs_quest && itemproto->QuestId)
-        if (!player->HasQuestForItem(itemId) || !player->hasQuestInQuestLog(itemproto->QuestId))
+        if (!player->hasQuestForItem(itemId) || !player->hasQuestInQuestLog(itemproto->QuestId))
             return false;
 
     return true;
@@ -710,7 +710,7 @@ bool LootTemplate::hasQuestDropForPlayer(LootTemplateMap const& /*store*/, Playe
 {
     for (LootStoreItemList::const_iterator i = Entries.begin(); i != Entries.end(); ++i)
     {
-        if (player->HasQuestForItem(i->itemId))
+        if (player->hasQuestForItem(i->itemId))
             return true;    // active quest drop found
     }
 

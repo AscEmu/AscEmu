@@ -86,7 +86,7 @@ public:
             }break;
             case 10:
             {
-                Plr->AddQuestKill(8304, 0, 0);
+                Plr->addQuestKill(8304, 0, 0);
             }break;
         }
     }
@@ -156,7 +156,7 @@ public:
             }break;
             case 10:
             {
-                Plr->AddQuestKill(8304, 0, 0);
+                Plr->addQuestKill(8304, 0, 0);
             }break;
         }
     }
