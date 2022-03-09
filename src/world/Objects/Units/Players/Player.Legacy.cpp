@@ -619,12 +619,12 @@ void Player::Update(unsigned long time_passed)
 
     }
 
-    if (m_drunk > 0)
+    if (m_serversideDrunkValue > 0)
     {
         m_drunkTimer += time_passed;
 
         if (m_drunkTimer > 10000)
-            HandleSobering();
+            handleSobering();
     }
 
     if (m_timeSyncTimer > 0)
@@ -1009,7 +1009,7 @@ void Player::EventDeath()
 
     RemoveNegativeAuras();
 
-    SetDrunkValue(0);
+    setServersideDrunkValue(0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2620,7 +2620,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     else
         soberFactor = 1 - timediff / 900;
 
-    SetDrunkValue(uint16(soberFactor * field[80].GetUInt32()));
+    setServersideDrunkValue(uint16(soberFactor * field[80].GetUInt32()));
 
 #if VERSION_STRING > TBC
     for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
@@ -4746,11 +4746,11 @@ void Player::EventCannibalize(uint32 amount)
 }
 
 // The player sobers by 256 every 10 seconds
-void Player::HandleSobering()
+void Player::handleSobering()
 {
     m_drunkTimer = 0;
 
-    SetDrunkValue((m_drunk <= 256) ? 0 : (m_drunk - 256));
+    setServersideDrunkValue((m_serversideDrunkValue <= 256) ? 0 : (m_serversideDrunkValue - 256));
 }
 
 DrunkenState Player::GetDrunkenstateByValue(uint16 value)
@@ -4769,12 +4769,12 @@ DrunkenState Player::GetDrunkenstateByValue(uint16 value)
 
 void Player::SetDrunkValue(uint16 newDrunkenValue, uint32 itemId)
 {
-    uint32 oldDrunkenState = GetDrunkenstateByValue(m_drunk);
+    uint32 oldDrunkenState = getDrunkStateByValue(m_serversideDrunkValue);
 
-    m_drunk = newDrunkenValue;
-    setDrunkValue(static_cast<uint8_t>(m_drunk));
+    m_serversideDrunkValue = newDrunkenValue;
+    setDrunkValue(static_cast<uint8_t>(m_serversideDrunkValue));
 
-    uint32 newDrunkenState = GetDrunkenstateByValue(m_drunk);
+    uint32 newDrunkenState = getDrunkStateByValue(m_serversideDrunkValue);
 
     if (newDrunkenState == oldDrunkenState)
         return;

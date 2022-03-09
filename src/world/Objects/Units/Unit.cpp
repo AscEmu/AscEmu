@@ -1943,7 +1943,7 @@ void Unit::handleFall(MovementInfo const& movementInfo)
                 dynamic_cast<Player*>(this)->GetAchievementMgr().UpdateAchievementCriteria(
                     ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING,
                     falldistance,
-                    dynamic_cast<Player*>(this)->GetDrunkenstateByValue(dynamic_cast<Player*>(this)->GetDrunkValue()),
+                    dynamic_cast<Player*>(this)->getDrunkStateByValue(dynamic_cast<Player*>(this)->getServersideDrunkValue()),
                     0);
             }
         }

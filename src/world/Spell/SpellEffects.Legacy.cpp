@@ -5032,13 +5032,13 @@ void Spell::SpellEffectInebriate(uint8_t /*effectIndex*/) // lets get drunk!
         return;
 
     // Drunkee!
-    uint16 currentDrunk = playerTarget->GetDrunkValue();
+    uint16 currentDrunk = playerTarget->getServersideDrunkValue();
     uint16 drunkMod = static_cast<uint16>(damage)* 256;
     if (currentDrunk + drunkMod > 0xFFFF)
         currentDrunk = 0xFFFF;
     else
         currentDrunk += drunkMod;
-    playerTarget->SetDrunkValue(currentDrunk, i_caster ? i_caster->getEntry() : 0);
+    playerTarget->setServersideDrunkValue(currentDrunk, i_caster ? i_caster->getEntry() : 0);
 }
 
 void Spell::SpellEffectFeedPet(uint8_t effectIndex)  // Feed Pet

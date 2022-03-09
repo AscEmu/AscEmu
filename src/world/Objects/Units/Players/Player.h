@@ -1279,6 +1279,18 @@ private:
     int32_t m_pctReputationMod = 0;
     FactionReputation* m_reputationByListId[128] = { nullptr };
 
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Drunk system
+public:
+    uint16_t getServersideDrunkValue() const { return m_serversideDrunkValue; }
+    void setServersideDrunkValue(uint16 newDrunkValue, uint32_t itemId = 0);
+    static DrunkenState getDrunkStateByValue(uint16_t value);
+    void handleSobering();
+
+private:
+    uint32_t m_drunkTimer = 0;
+    uint16_t m_serversideDrunkValue = 0;
+
 public:
     //MIT End
     //AGPL Start
@@ -1601,18 +1613,6 @@ public:
         bool SaveSkills(bool NewCharacter, QueryBuffer* buf);
 
         bool m_FirstLogin = false;
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Drunk system
-        /////////////////////////////////////////////////////////////////////////////////////////
-public:
-        void SetDrunkValue(uint16 newDrunkValue, uint32 itemid = 0);
-        uint16 GetDrunkValue() const { return m_drunk; }
-        static DrunkenState GetDrunkenstateByValue(uint16 value);
-        void HandleSobering();
-
-        uint32 m_drunkTimer = 0;
-        uint16 m_drunk = 0;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Death system

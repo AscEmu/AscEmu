@@ -6921,3 +6921,48 @@ uint32_t Player::getInitialFactionId()
 
     return 0;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Drunk system
+void Player::setServersideDrunkValue(uint16_t newDrunkenValue, uint32_t itemId)
+{
+    uint32_t oldDrunkenState = getDrunkStateByValue(m_serversideDrunkValue);
+
+    m_serversideDrunkValue = newDrunkenValue;
+    setDrunkValue(static_cast<uint8_t>(m_serversideDrunkValue));
+
+    uint32_t newDrunkenState = getDrunkStateByValue(m_serversideDrunkValue);
+
+    if (newDrunkenState == oldDrunkenState)
+        return;
+
+    if (newDrunkenState >= DRUNKEN_DRUNK)
+        modInvisibilityDetection(INVIS_FLAG_DRUNK, 100);
+    else
+        modInvisibilityDetection(INVIS_FLAG_DRUNK, -getInvisibilityDetection(INVIS_FLAG_DRUNK));
+
+    UpdateVisibility();
+
+    sendNewDrunkStatePacket(newDrunkenState, itemId);
+}
+
+DrunkenState Player::getDrunkStateByValue(uint16_t value)
+{
+    if (value >= 23000)
+        return DRUNKEN_SMASHED;
+
+    if (value >= 12800)
+        return DRUNKEN_DRUNK;
+
+    if (value & 0xFFFE)
+        return DRUNKEN_TIPSY;
+
+    return DRUNKEN_SOBER;
+}
+
+void Player::handleSobering()
+{
+    m_drunkTimer = 0;
+
+    setDrunkValue((m_serversideDrunkValue <= 256) ? 0 : (m_serversideDrunkValue - 256));
+}
