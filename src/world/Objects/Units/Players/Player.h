@@ -1291,6 +1291,29 @@ private:
     uint32_t m_drunkTimer = 0;
     uint16_t m_serversideDrunkValue = 0;
 
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Duel
+public:
+    Player* getDuelPlayer() const { return m_duelPlayer; }
+    void requestDuel(Player* target);
+    void testDuelBoundary();
+    void endDuel(uint8_t condition);
+    void cancelDuel();
+
+    void handleDuelCountdown();
+
+    void setDuelStatus(uint8_t status) { m_duelStatus = status; }
+    uint8_t getDuelStatus() const { return m_duelStatus; }
+
+    void setDuelState(uint8_t state) { m_duelState = state; }
+    uint8_t getDuelState() const { return m_duelState; }
+
+private:
+    Player* m_duelPlayer = nullptr;
+    uint8_t m_duelStatus = 0;
+    uint8_t m_duelState = DUEL_STATE_FINISHED;
+    uint32_t m_duelCountdownTimer = 0;
+
 public:
     //MIT End
     //AGPL Start
@@ -1501,23 +1524,7 @@ public:
         void SetKnownTitle(RankTitles title, bool set);
         void SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* shapeshift_form, bool active);
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Duel
-        /////////////////////////////////////////////////////////////////////////////////////////
-        void RequestDuel(Player* pTarget);
-        void DuelBoundaryTest();
-        void EndDuel(uint8 WinCondition);
-        void DuelCountdown();
-        void cancelDuel();
-        void SetDuelStatus(uint8 status) { m_duelStatus = status; }
-        uint8 GetDuelStatus() { return m_duelStatus; }
-        void SetDuelState(uint8 state) { m_duelState = state; }
-        uint8 GetDuelState() { return m_duelState; }
-
-        Player* DuelingWith = nullptr;
-        uint32 m_duelCountdownTimer = 0;
-        uint8 m_duelStatus = 0;
-        uint8 m_duelState = DUEL_STATE_FINISHED;
+        
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Pets/Summons

@@ -815,10 +815,10 @@ void Player::_EventCharmAttack()
             //pvp timeout reset
             /*if (pVictim->isPlayer())
             {
-            if (TO<Player*>(pVictim)->DuelingWith == NULL)//Dueling doesn't trigger PVP
+            if (TO<Player*>(pVictim)->m_duelPlayer == NULL)//Dueling doesn't trigger PVP
             TO<Player*>(pVictim)->PvPTimeoutUpdate(false); //update targets timer
 
-            if (DuelingWith == NULL)//Dueling doesn't trigger PVP
+            if (m_duelPlayer == NULL)//Dueling doesn't trigger PVP
             PvPTimeoutUpdate(false); //update casters timer
             }*/
 
@@ -3321,8 +3321,8 @@ void Player::RemoveFromWorld()
         cancelTrade(false);
 
     //stop dueling
-    if (DuelingWith != nullptr)
-        DuelingWith->EndDuel(DUEL_WINNER_RETREAT);
+    if (m_duelPlayer != nullptr)
+        m_duelPlayer->endDuel(DUEL_WINNER_RETREAT);
 
     //clear buyback
     getItemInterface()->EmptyBuyBack();
@@ -4745,51 +4745,6 @@ void Player::EventCannibalize(uint32 amount)
     sendPeriodicAuraLog(GetNewGUID(), GetNewGUID(), sSpellMgr.getSpellInfo(20577), amt, 0, 0, 0, SPELL_AURA_PERIODIC_HEAL_PCT, false);
 }
 
-// The player sobers by 256 every 10 seconds
-void Player::handleSobering()
-{
-    m_drunkTimer = 0;
-
-    setServersideDrunkValue((m_serversideDrunkValue <= 256) ? 0 : (m_serversideDrunkValue - 256));
-}
-
-DrunkenState Player::GetDrunkenstateByValue(uint16 value)
-{
-    if (value >= 23000)
-        return DRUNKEN_SMASHED;
-
-    if (value >= 12800)
-        return DRUNKEN_DRUNK;
-
-    if (value & 0xFFFE)
-        return DRUNKEN_TIPSY;
-
-    return DRUNKEN_SOBER;
-}
-
-void Player::SetDrunkValue(uint16 newDrunkenValue, uint32 itemId)
-{
-    uint32 oldDrunkenState = getDrunkStateByValue(m_serversideDrunkValue);
-
-    m_serversideDrunkValue = newDrunkenValue;
-    setDrunkValue(static_cast<uint8_t>(m_serversideDrunkValue));
-
-    uint32 newDrunkenState = getDrunkStateByValue(m_serversideDrunkValue);
-
-    if (newDrunkenState == oldDrunkenState)
-        return;
-
-    // special drunk invisibility detection
-    if (newDrunkenState >= DRUNKEN_DRUNK)
-        modInvisibilityDetection(INVIS_FLAG_DRUNK, 100);
-    else
-        modInvisibilityDetection(INVIS_FLAG_DRUNK, -getInvisibilityDetection(INVIS_FLAG_DRUNK));
-
-    UpdateVisibility();
-
-    sendNewDrunkStatePacket(newDrunkenState, itemId);
-}
-
 bool Player::HasQuestForItem(uint32 itemid)
 {
     for (uint8 i = 0; i < MAX_QUEST_SLOT; ++i)
@@ -5573,7 +5528,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
     if (at && (at->team == AREAC_SANCTUARY || at->flags & AREA_SANCTUARY))
     {
         Unit* pUnit = (getTargetGuid() == 0) ? nullptr : (m_mapMgr ? m_mapMgr->GetUnit(getTargetGuid()) : nullptr);
-        if (pUnit && DuelingWith != pUnit)
+        if (pUnit && m_duelPlayer != pUnit)
         {
             EventAttackStop();
             smsg_AttackStop(pUnit);
@@ -5586,7 +5541,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
                 if (getCurrentSpell(CurrentSpellType(i)) != nullptr)
                 {
                     Unit* target = getCurrentSpell(CurrentSpellType(i))->GetUnitTarget();
-                    if (target != nullptr && target != DuelingWith && target != this)
+                    if (target != nullptr && target != m_duelPlayer && target != this)
                     {
                         interruptSpellWithSpellType(CurrentSpellType(i));
                     }
@@ -5598,274 +5553,6 @@ void Player::ZoneUpdate(uint32 ZoneId)
     SendInitialWorldstates();
 
     updateChannels();
-}
-
-void Player::RequestDuel(Player* pTarget)
-{
-    // We Already Dueling or have already Requested a Duel
-
-    if (DuelingWith != nullptr)
-        return;
-
-    if (m_duelState != DUEL_STATE_FINISHED)
-        return;
-
-    SetDuelState(DUEL_STATE_REQUESTED);
-
-    //Setup Duel
-    pTarget->DuelingWith = this;
-    DuelingWith = pTarget;
-
-    //Get Flags position
-    float dist = CalcDistance(pTarget);
-    dist = dist * 0.5f; //half way
-    float x = (GetPositionX() + pTarget->GetPositionX() * dist) / (1 + dist) + cos(GetOrientation() + (M_PI_FLOAT / 2)) * 2;
-    float y = (GetPositionY() + pTarget->GetPositionY() * dist) / (1 + dist) + sin(GetOrientation() + (M_PI_FLOAT / 2)) * 2;
-    float z = (GetPositionZ() + pTarget->GetPositionZ() * dist) / (1 + dist);
-
-    //Create flag/arbiter
-    GameObject* pGameObj = GetMapMgr()->CreateGameObject(21680);
-    pGameObj->CreateFromProto(21680, GetMapId(), x, y, z, GetOrientation());
-
-    //Spawn the Flag
-    pGameObj->setCreatedByGuid(getGuid());
-    pGameObj->SetFaction(getFactionTemplate());
-    pGameObj->setLevel(getLevel());
-
-    //Assign the Flag
-    setDuelArbiter(pGameObj->getGuid());
-    pTarget->setDuelArbiter(pGameObj->getGuid());
-
-    pGameObj->PushToWorld(m_mapMgr);
-
-    pTarget->GetSession()->SendPacket(SmsgDuelRequested(pGameObj->getGuid(), getGuid()).serialise().get());
-}
-
-void Player::DuelCountdown()
-{
-    if (DuelingWith == nullptr)
-        return;
-
-    m_duelCountdownTimer -= 1000;
-
-    if (static_cast<int32>(m_duelCountdownTimer) < 0)
-        m_duelCountdownTimer = 0;
-
-    if (m_duelCountdownTimer == 0)
-    {
-        // Start Duel.
-        setPower(POWER_TYPE_RAGE, 0);
-        DuelingWith->setPower(POWER_TYPE_RAGE, 0);
-
-        //Give the players a Team
-        DuelingWith->setDuelTeam(1);  // Duel Requester
-        setDuelTeam(2);
-
-        SetDuelState(DUEL_STATE_STARTED);
-        DuelingWith->SetDuelState(DUEL_STATE_STARTED);
-
-        sEventMgr.AddEvent(this, &Player::DuelBoundaryTest, EVENT_PLAYER_DUEL_BOUNDARY_CHECK, 500, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        sEventMgr.AddEvent(DuelingWith, &Player::DuelBoundaryTest, EVENT_PLAYER_DUEL_BOUNDARY_CHECK, 500, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    }
-}
-
-void Player::DuelBoundaryTest()
-{
-    //check if in bounds
-    if (!IsInWorld())
-        return;
-
-    WoWGuid wowGuid;
-    wowGuid.Init(getDuelArbiter());
-
-    GameObject* pGameObject = GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
-    if (!pGameObject)
-    {
-        EndDuel(DUEL_WINNER_RETREAT);
-        return;
-    }
-
-    float Dist = CalcDistance(pGameObject);
-
-    if (Dist > 75.0f)
-    {
-        // Out of bounds
-        if (m_duelStatus == DUEL_STATUS_OUTOFBOUNDS)
-        {
-            // we already know, decrease timer by 500
-            m_duelCountdownTimer -= 500;
-            if (m_duelCountdownTimer == 0)
-            {
-                // Times up :p
-                DuelingWith->EndDuel(DUEL_WINNER_RETREAT);
-            }
-        }
-        else
-        {
-            // we just went out of bounds
-            // set timer
-            m_duelCountdownTimer = 10000;
-
-            // let us know
-            SendPacket(SmsgDuelOutOfBounds(m_duelCountdownTimer).serialise().get());
-            m_duelStatus = DUEL_STATUS_OUTOFBOUNDS;
-        }
-    }
-    else
-    {
-        // we're in range
-        if (m_duelStatus == DUEL_STATUS_OUTOFBOUNDS)
-        {
-            // just came back in range
-            SendPacket(SmsgDuelInbounds().serialise().get());
-            m_duelStatus = DUEL_STATUS_INBOUNDS;
-        }
-    }
-}
-
-void Player::EndDuel(uint8 WinCondition)
-{
-    WoWGuid wowGuid;
-    wowGuid.Init(getDuelArbiter());
-
-    if (m_duelState == DUEL_STATE_FINISHED)
-    {
-        //if loggingout player requested a duel then we have to make the cleanups
-        if (wowGuid.getGuidLowPart())
-        {
-            GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()) : 0;
-            if (arbiter != nullptr)
-            {
-                arbiter->RemoveFromWorld(true);
-                delete arbiter;
-            }
-
-            //we do not wish to lock the other player in duel state
-            DuelingWith->setDuelArbiter(0);
-            DuelingWith->setDuelTeam(0);
-            setDuelArbiter(0);
-            setDuelTeam(0);
-            sEventMgr.RemoveEvents(DuelingWith, EVENT_PLAYER_DUEL_BOUNDARY_CHECK);
-            sEventMgr.RemoveEvents(DuelingWith, EVENT_PLAYER_DUEL_COUNTDOWN);
-            DuelingWith->DuelingWith = nullptr;
-            DuelingWith = nullptr;
-            //the duel did not start so we are not in combat or cast any spells yet.
-        }
-        return;
-    }
-
-    // Remove the events
-    sEventMgr.RemoveEvents(this, EVENT_PLAYER_DUEL_COUNTDOWN);
-    sEventMgr.RemoveEvents(this, EVENT_PLAYER_DUEL_BOUNDARY_CHECK);
-
-    for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; ++x)
-    {
-        if (m_auras[x] == nullptr)
-            continue;
-
-        if (m_auras[x]->WasCastInDuel())
-            m_auras[x]->removeAura();
-    }
-
-    m_duelState = DUEL_STATE_FINISHED;
-
-    if (DuelingWith == nullptr)
-        return;
-
-    sEventMgr.RemoveEvents(DuelingWith, EVENT_PLAYER_DUEL_BOUNDARY_CHECK);
-    sEventMgr.RemoveEvents(DuelingWith, EVENT_PLAYER_DUEL_COUNTDOWN);
-
-    for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; ++x)
-    {
-        if (DuelingWith->m_auras[x] == nullptr)
-            continue;
-        if (DuelingWith->m_auras[x]->WasCastInDuel())
-            DuelingWith->m_auras[x]->removeAura();
-    }
-
-    DuelingWith->m_duelState = DUEL_STATE_FINISHED;
-
-    //Announce Winner
-    SendMessageToSet(SmsgDuelWinner(WinCondition, getName(), DuelingWith->getName()).serialise().get(), true);
-
-    SendMessageToSet(SmsgDuelComplete(1).serialise().get(), true);
-
-    //Send hook OnDuelFinished
-
-    if (WinCondition != 0)
-        sHookInterface.OnDuelFinished(DuelingWith, this);
-    else
-        sHookInterface.OnDuelFinished(this, DuelingWith);
-
-    //Clear Duel Related Stuff
-
-    GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()) : 0;
-
-    if (arbiter != nullptr)
-    {
-        arbiter->RemoveFromWorld(true);
-        delete arbiter;
-    }
-
-    setDuelArbiter(0);
-    setDuelTeam(0);
-    DuelingWith->setDuelArbiter(0);
-    DuelingWith->setDuelTeam(0);
-
-    EventAttackStop();
-    DuelingWith->EventAttackStop();
-
-    // Call off pet
-    std::list<Pet*> summons = GetSummons();
-    for (auto& summon : summons)
-    {
-        summon->getCombatHandler().clearCombat();
-        summon->getAIInterface()->setPetOwner(this);
-        summon->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, summon, 0);
-        summon->getThreatManager().clearAllThreat();
-        summon->getThreatManager().removeMeFromThreatLists();
-    }
-
-    std::list<Pet*> duelingWithSummons = DuelingWith->GetSummons();
-    for (auto& duelingWithSummon : duelingWithSummons)
-    {
-        duelingWithSummon->getCombatHandler().clearCombat();
-        duelingWithSummon->getAIInterface()->setPetOwner(this);
-        duelingWithSummon->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, duelingWithSummon, 0);
-        duelingWithSummon->getThreatManager().clearAllThreat();
-        duelingWithSummon->getThreatManager().removeMeFromThreatLists();
-    }
-
-    // removing auras that kills players after if low HP
-    /*RemoveNegativeAuras(); NOT NEEDED. External targets can always gank both duelers with DoTs. :D
-    DuelingWith->RemoveNegativeAuras();*/
-    //Same as above only cleaner.
-    for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_REMOVABLE_AURAS_END; x++)
-    {
-        if (DuelingWith->m_auras[x])
-        {
-            if (DuelingWith->m_auras[x]->WasCastInDuel())
-                DuelingWith->m_auras[x]->removeAura();
-        }
-        if (m_auras[x])
-        {
-            if (m_auras[x]->WasCastInDuel())
-                m_auras[x]->removeAura();
-        }
-    }
-
-    //Stop Players attacking so they don't kill the other player
-    m_session->SendPacket(SmsgCancelCombat().serialise().get());
-    DuelingWith->m_session->SendPacket(SmsgCancelCombat().serialise().get());
-
-    smsg_AttackStop(DuelingWith);
-    DuelingWith->smsg_AttackStop(this);
-
-    DuelingWith->m_duelCountdownTimer = 0;
-    m_duelCountdownTimer = 0;
-
-    DuelingWith->DuelingWith = nullptr;
-    DuelingWith = nullptr;
 }
 
 void Player::SendMirrorTimer(MirrorTimerTypes Type, uint32 max, uint32 current, int32 regen)

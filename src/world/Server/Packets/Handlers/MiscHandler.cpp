@@ -268,7 +268,7 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
 
     if (GetPermissionCount() == 0)
     {
-        if (_player->getCombatHandler().isInCombat() || _player->DuelingWith != nullptr)
+        if (_player->getCombatHandler().isInCombat() || _player->m_duelPlayer != nullptr)
         {
             SendPacket(SmsgLogoutResponse(true).serialise().get());
             return;

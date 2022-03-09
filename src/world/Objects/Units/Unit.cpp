@@ -4981,7 +4981,7 @@ bool Unit::canSee(Object* const obj)
                 {
                     if (objectOwner->getGroup() && objectOwner->getGroup()->HasMember(static_cast<Player*>(this)))
                     {
-                        if (objectOwner->DuelingWith != static_cast<Player*>(this))
+                        if (objectOwner->getDuelPlayer() != static_cast<Player*>(this))
                             return true;
                     }
                 }
@@ -5011,7 +5011,7 @@ bool Unit::canSee(Object* const obj)
                 {
                     if (objectOwner->getGroup() && objectOwner->getGroup()->HasMember(static_cast<Player*>(this)))
                     {
-                        if (objectOwner->DuelingWith != static_cast<Player*>(this))
+                        if (objectOwner->getDuelPlayer() != static_cast<Player*>(this))
                             return true;
                     }
                 }
@@ -6022,10 +6022,10 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
         }
 
         // Duel check
-        if (isPlayer() && static_cast<Player*>(this)->DuelingWith != nullptr)
+        if (isPlayer() && static_cast<Player*>(this)->getDuelPlayer() != nullptr)
         {
             setHealth(5);
-            static_cast<Player*>(this)->DuelingWith->EndDuel(DUEL_WINNER_KNOCKOUT);
+            static_cast<Player*>(this)->getDuelPlayer()->endDuel(DUEL_WINNER_KNOCKOUT);
             emote(EMOTE_ONESHOT_BEG);
             return;
         }

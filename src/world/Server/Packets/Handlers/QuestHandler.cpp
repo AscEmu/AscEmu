@@ -939,7 +939,7 @@ void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
                         {
                             response = QUEST_SHARE_MSG_LOG_FULL;
                         }
-                        else if (pPlayer->DuelingWith)
+                        else if (pPlayer->m_duelPlayer)
                         {
                             response = QUEST_SHARE_MSG_BUSY;
                         }

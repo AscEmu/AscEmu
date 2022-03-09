@@ -146,8 +146,8 @@ uint8 WorldSession::Update(uint32 InstanceID)
             _logoutTime = m_currMsTime + PLAYER_LOGOUT_DELAY;
 
         /*
-           if (_player && _player->DuelingWith)
-           _player->EndDuel(DUEL_WINNER_RETREAT);
+           if (_player && _player->m_duelPlayer)
+           _player->endDuel(DUEL_WINNER_RETREAT);
 
            bDeleted = true; LogoutPlayer(true); // 1 - Delete session
            completely. return 1; */
@@ -271,8 +271,8 @@ void WorldSession::LogoutPlayer(bool Save)
         _player->ok_to_remove = true;
 
         sHookInterface.OnLogout(pPlayer);
-        if (_player->DuelingWith)
-            _player->DuelingWith->EndDuel(DUEL_WINNER_RETREAT);
+        if (_player->m_duelPlayer)
+            _player->m_duelPlayer->endDuel(DUEL_WINNER_RETREAT);
 
         if (_player->m_currentLoot && _player->IsInWorld())
         {

@@ -13,7 +13,7 @@ using namespace AscEmu::Packets;
 
 void WorldSession::handleDuelAccepted(WorldPacket& /*recvPacket*/)
 {
-    const auto duelPlayer = _player->DuelingWith;
+    const auto duelPlayer = _player->m_duelPlayer;
     if (duelPlayer == nullptr)
         return;
 
@@ -36,18 +36,18 @@ void WorldSession::handleDuelAccepted(WorldPacket& /*recvPacket*/)
 
     _player->m_duelCountdownTimer = defaultDuelCountdown;
 
-    sEventMgr.AddEvent(_player, &Player::DuelCountdown, EVENT_PLAYER_DUEL_COUNTDOWN, 1000, 3, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(_player, &Player::handleDuelCountdown, EVENT_PLAYER_DUEL_COUNTDOWN, 1000, 3, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void WorldSession::handleDuelCancelled(WorldPacket& /*recvPacket*/)
 {
-    const auto duelPlayer = _player->DuelingWith;
+    const auto duelPlayer = _player->m_duelPlayer;
     if (duelPlayer == nullptr)
         return;
 
     if (_player->m_duelState == DUEL_STATE_STARTED)
     {
-        duelPlayer->EndDuel(DUEL_WINNER_KNOCKOUT);
+        duelPlayer->endDuel(DUEL_WINNER_KNOCKOUT);
         return;
     }
 

@@ -1774,7 +1774,7 @@ public:
     {
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
-        lua_pushnumber(L, plr->GetDuelState());
+        lua_pushnumber(L, plr->getDuelState());
         /*Returns
           DUEL_STATE_REQUESTED = 0
           DUEL_STATE_STARTED = 1

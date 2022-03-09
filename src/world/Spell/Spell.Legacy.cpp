@@ -146,16 +146,16 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
     {
         case TYPEID_PLAYER:
         case TYPEID_UNIT:
-            if (u_caster && u_caster->getPlayerOwner() != nullptr && u_caster->getPlayerOwner()->GetDuelState() == DUEL_STATE_STARTED)
+            if (u_caster && u_caster->getPlayerOwner() != nullptr && u_caster->getPlayerOwner()->getDuelState() == DUEL_STATE_STARTED)
                 duelSpell = true;
             break;
         case TYPEID_ITEM:
         case TYPEID_CONTAINER:
-            if (i_caster->getOwner() != nullptr && i_caster->getOwner()->GetDuelState() == DUEL_STATE_STARTED)
+            if (i_caster->getOwner() != nullptr && i_caster->getOwner()->getDuelState() == DUEL_STATE_STARTED)
                 duelSpell = true;
             break;
         case TYPEID_GAMEOBJECT:
-            if (g_caster->getPlayerOwner() != nullptr && g_caster->getPlayerOwner()->GetDuelState() == DUEL_STATE_STARTED)
+            if (g_caster->getPlayerOwner() != nullptr && g_caster->getPlayerOwner()->getDuelState() == DUEL_STATE_STARTED)
                 duelSpell = true;
             break;
         default:
@@ -376,7 +376,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
             if (p_caster && (itr)->isPlayer() && p_caster->getGroup() && static_cast<Player*>(itr)->getGroup() && static_cast<Player*>(itr)->getGroup() == p_caster->getGroup())      //Don't attack party members!!
             {
                 //Dueling - AoE's should still hit the target party member if you're dueling with him
-                if (!p_caster->DuelingWith || p_caster->DuelingWith != static_cast<Player*>(itr))
+                if (!p_caster->getDuelPlayer() || p_caster->getDuelPlayer() != static_cast<Player*>(itr))
                     continue;
             }
             if (getSpellInfo()->getTargetCreatureType())
@@ -3243,8 +3243,8 @@ GameObject* Spell::GetTargetConstraintGameObject() const
 bool Spell::DuelSpellNoMoreValid() const
 {
     if (duelSpell && (
-        (p_caster != nullptr && p_caster->GetDuelState() != DUEL_STATE_STARTED) ||
-        (u_caster != nullptr && u_caster->isPet() && static_cast<Pet*>(u_caster)->getPlayerOwner() && static_cast<Pet*>(u_caster)->getPlayerOwner()->GetDuelState() != DUEL_STATE_STARTED)))
+        (p_caster != nullptr && p_caster->getDuelState() != DUEL_STATE_STARTED) ||
+        (u_caster != nullptr && u_caster->isPet() && static_cast<Pet*>(u_caster)->getPlayerOwner() && static_cast<Pet*>(u_caster)->getPlayerOwner()->getDuelState() != DUEL_STATE_STARTED)))
         return true;
     else
         return false;

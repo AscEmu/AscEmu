@@ -75,6 +75,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/UnitDefines.hpp"
+#include "Server/Packets/SmsgCancelCombat.h"
+#include "Server/Packets/SmsgDuelComplete.h"
+#include "Server/Packets/SmsgDuelInbounds.h"
+#include "Server/Packets/SmsgDuelOutOfBounds.h"
+#include "Server/Packets/SmsgDuelRequested.h"
+#include "Server/Packets/SmsgDuelWinner.h"
 #include "Server/Packets/SmsgSetFactionStanding.h"
 #include "Server/Packets/SmsgSetFactionVisible.h"
 #include "Server/Packets/SmsgTriggerMovie.h"
@@ -155,10 +161,10 @@ Player::~Player()
 
     DismissActivePets();
 
-    if (DuelingWith != nullptr)
-        DuelingWith->DuelingWith = nullptr;
+    if (m_duelPlayer != nullptr)
+        m_duelPlayer->m_duelPlayer = nullptr;
 
-    DuelingWith = nullptr;
+    m_duelPlayer = nullptr;
 
     for (uint8_t i = 0; i < MAX_QUEST_SLOT; ++i)
     {
@@ -4757,43 +4763,6 @@ PlayerSpec& Player::getActiveSpec()
 #endif
 }
 
-void Player::cancelDuel()
-{
-    // arbiter
-    WoWGuid wowGuid;
-    wowGuid.Init(getDuelArbiter());
-    const auto arbiter = GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
-    if (arbiter)
-        arbiter->RemoveFromWorld(true);
-
-    // duel setup (duelpartner and us)
-    DuelingWith->setDuelArbiter(0);
-    DuelingWith->m_duelState = DUEL_STATE_FINISHED;
-    DuelingWith->DuelingWith = nullptr;
-    DuelingWith->setDuelTeam(0);
-    DuelingWith->m_duelCountdownTimer = 0;
-
-    setDuelArbiter(0);
-    m_duelState = DUEL_STATE_FINISHED;
-    DuelingWith = nullptr;
-    setDuelTeam(0);
-    m_duelCountdownTimer = 0;
-
-    // auras
-    for (auto i = MAX_NEGATIVE_AURAS_EXTEDED_START; i < MAX_NEGATIVE_AURAS_EXTEDED_END; ++i)
-    {
-        if (m_auras[i])
-            m_auras[i]->removeAura();
-    }
-
-    // summons
-    for (const auto& summonedPet: GetSummons())
-    {
-        if (summonedPet && summonedPet->isAlive())
-            summonedPet->SetPetAction(PET_ACTION_STAY);
-    }
-}
-
 void Player::logIntoBattleground()
 {
     const auto mapMgr = sInstanceMgr.GetInstance(this);
@@ -6926,12 +6895,12 @@ uint32_t Player::getInitialFactionId()
 // Drunk system
 void Player::setServersideDrunkValue(uint16_t newDrunkenValue, uint32_t itemId)
 {
-    uint32_t oldDrunkenState = getDrunkStateByValue(m_serversideDrunkValue);
+    const uint32_t oldDrunkenState = getDrunkStateByValue(m_serversideDrunkValue);
 
     m_serversideDrunkValue = newDrunkenValue;
     setDrunkValue(static_cast<uint8_t>(m_serversideDrunkValue));
 
-    uint32_t newDrunkenState = getDrunkStateByValue(m_serversideDrunkValue);
+    const uint32_t newDrunkenState = getDrunkStateByValue(m_serversideDrunkValue);
 
     if (newDrunkenState == oldDrunkenState)
         return;
@@ -6965,4 +6934,279 @@ void Player::handleSobering()
     m_drunkTimer = 0;
 
     setDrunkValue((m_serversideDrunkValue <= 256) ? 0 : (m_serversideDrunkValue - 256));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Duel
+void Player::requestDuel(Player* target)
+{
+    if (m_duelPlayer != nullptr)
+        return;
+
+    if (m_duelState != DUEL_STATE_FINISHED)
+        return;
+
+    setDuelState(DUEL_STATE_REQUESTED);
+
+    target->m_duelPlayer = this;
+    m_duelPlayer = target;
+
+    // flag position
+    const float distance = CalcDistance(target) * 0.5f;
+    const float x = (GetPositionX() + target->GetPositionX() * distance) / (1 + distance) + cos(GetOrientation() + (M_PI_FLOAT / 2)) * 2;
+    const float y = (GetPositionY() + target->GetPositionY() * distance) / (1 + distance) + sin(GetOrientation() + (M_PI_FLOAT / 2)) * 2;
+    const float z = (GetPositionZ() + target->GetPositionZ() * distance) / (1 + distance);
+
+    // create flag
+    if (GameObject* goFlag = GetMapMgr()->CreateGameObject(21680))
+    {
+        goFlag->CreateFromProto(21680, GetMapId(), x, y, z, GetOrientation());
+
+        goFlag->setCreatedByGuid(getGuid());
+        goFlag->SetFaction(getFactionTemplate());
+        goFlag->setLevel(getLevel());
+
+        setDuelArbiter(goFlag->getGuid());
+        target->setDuelArbiter(goFlag->getGuid());
+
+        goFlag->PushToWorld(m_mapMgr);
+
+        target->GetSession()->SendPacket(SmsgDuelRequested(goFlag->getGuid(), getGuid()).serialise().get());
+    }
+}
+
+void Player::testDuelBoundary()
+{
+    if (!IsInWorld())
+        return;
+
+    WoWGuid wowGuid;
+    wowGuid.Init(getDuelArbiter());
+
+    if (GameObject* goFlag = GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()))
+    {
+        if (CalcDistance(goFlag) > 75.0f)
+        {
+            if (m_duelStatus == DUEL_STATUS_OUTOFBOUNDS)
+            {
+                m_duelCountdownTimer -= 500;
+                if (m_duelCountdownTimer == 0)
+                    m_duelPlayer->endDuel(DUEL_WINNER_RETREAT);
+            }
+            else
+            {
+                m_duelCountdownTimer = 10000;
+
+                SendPacket(SmsgDuelOutOfBounds(m_duelCountdownTimer).serialise().get());
+                m_duelStatus = DUEL_STATUS_OUTOFBOUNDS;
+            }
+        }
+        else
+        {
+            if (m_duelStatus == DUEL_STATUS_OUTOFBOUNDS)
+            {
+                SendPacket(SmsgDuelInbounds().serialise().get());
+                m_duelStatus = DUEL_STATUS_INBOUNDS;
+            }
+        }
+    }
+    else
+    {
+        endDuel(DUEL_WINNER_RETREAT);
+    }
+}
+
+void Player::endDuel(uint8_t condition)
+{
+    WoWGuid wowGuid;
+    wowGuid.Init(getDuelArbiter());
+
+    if (m_duelState == DUEL_STATE_FINISHED)
+    {
+        if (wowGuid.getGuidLowPart())
+        {
+            GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()) : 0;
+            if (arbiter != nullptr)
+            {
+                arbiter->RemoveFromWorld(true);
+                delete arbiter;
+            }
+
+            m_duelPlayer->setDuelArbiter(0);
+            m_duelPlayer->setDuelTeam(0);
+
+            setDuelArbiter(0);
+            setDuelTeam(0);
+
+            sEventMgr.RemoveEvents(m_duelPlayer, EVENT_PLAYER_DUEL_BOUNDARY_CHECK);
+            sEventMgr.RemoveEvents(m_duelPlayer, EVENT_PLAYER_DUEL_COUNTDOWN);
+
+            m_duelPlayer->m_duelPlayer = nullptr;
+            m_duelPlayer = nullptr;
+        }
+
+        return;
+    }
+
+    sEventMgr.RemoveEvents(this, EVENT_PLAYER_DUEL_COUNTDOWN);
+    sEventMgr.RemoveEvents(this, EVENT_PLAYER_DUEL_BOUNDARY_CHECK);
+
+    for (uint32_t x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; ++x)
+    {
+        if (m_auras[x] == nullptr)
+            continue;
+
+        if (m_auras[x]->WasCastInDuel())
+            m_auras[x]->removeAura();
+    }
+
+    m_duelState = DUEL_STATE_FINISHED;
+
+    if (m_duelPlayer == nullptr)
+        return;
+
+    sEventMgr.RemoveEvents(m_duelPlayer, EVENT_PLAYER_DUEL_BOUNDARY_CHECK);
+    sEventMgr.RemoveEvents(m_duelPlayer, EVENT_PLAYER_DUEL_COUNTDOWN);
+
+    for (uint32_t x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; ++x)
+    {
+        if (m_duelPlayer->m_auras[x] == nullptr)
+            continue;
+        if (m_duelPlayer->m_auras[x]->WasCastInDuel())
+            m_duelPlayer->m_auras[x]->removeAura();
+    }
+
+    m_duelPlayer->m_duelState = DUEL_STATE_FINISHED;
+
+    SendMessageToSet(SmsgDuelWinner(condition, getName(), m_duelPlayer->getName()).serialise().get(), true);
+    SendMessageToSet(SmsgDuelComplete(1).serialise().get(), true);
+
+    if (condition != 0)
+        sHookInterface.OnDuelFinished(m_duelPlayer, this);
+    else
+        sHookInterface.OnDuelFinished(this, m_duelPlayer);
+
+    GameObject* goFlag = m_mapMgr ? GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()) : nullptr;
+    if (goFlag)
+    {
+        goFlag->RemoveFromWorld(true);
+        delete goFlag;
+    }
+
+    setDuelArbiter(0);
+    m_duelPlayer->setDuelArbiter(0);
+
+    setDuelTeam(0);
+    m_duelPlayer->setDuelTeam(0);
+
+    EventAttackStop();
+    m_duelPlayer->EventAttackStop();
+
+    for (auto& summon : GetSummons())
+    {
+        summon->getCombatHandler().clearCombat();
+        summon->getAIInterface()->setPetOwner(this);
+        summon->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, summon, 0);
+        summon->getThreatManager().clearAllThreat();
+        summon->getThreatManager().removeMeFromThreatLists();
+    }
+
+    for (auto& duelingWithSummon : m_duelPlayer->GetSummons())
+    {
+        duelingWithSummon->getCombatHandler().clearCombat();
+        duelingWithSummon->getAIInterface()->setPetOwner(this);
+        duelingWithSummon->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, duelingWithSummon, 0);
+        duelingWithSummon->getThreatManager().clearAllThreat();
+        duelingWithSummon->getThreatManager().removeMeFromThreatLists();
+    }
+
+    for (uint32_t x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_REMOVABLE_AURAS_END; x++)
+    {
+        if (m_duelPlayer->m_auras[x])
+        {
+            if (m_duelPlayer->m_auras[x]->WasCastInDuel())
+                m_duelPlayer->m_auras[x]->removeAura();
+        }
+
+        if (m_auras[x])
+        {
+            if (m_auras[x]->WasCastInDuel())
+                m_auras[x]->removeAura();
+        }
+    }
+
+    m_session->SendPacket(SmsgCancelCombat().serialise().get());
+    m_duelPlayer->m_session->SendPacket(SmsgCancelCombat().serialise().get());
+
+    smsg_AttackStop(m_duelPlayer);
+    m_duelPlayer->smsg_AttackStop(this);
+
+    m_duelPlayer->m_duelCountdownTimer = 0;
+    m_duelCountdownTimer = 0;
+
+    m_duelPlayer->m_duelPlayer = nullptr;
+    m_duelPlayer = nullptr;
+}
+
+void Player::cancelDuel()
+{
+    WoWGuid wowGuid;
+    wowGuid.Init(getDuelArbiter());
+
+    const auto goFlag = GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
+    if (goFlag)
+        goFlag->RemoveFromWorld(true);
+
+    setDuelArbiter(0);
+    m_duelPlayer->setDuelArbiter(0);
+
+    m_duelPlayer->m_duelState = DUEL_STATE_FINISHED;
+    m_duelState = DUEL_STATE_FINISHED;
+
+    m_duelPlayer->m_duelPlayer = nullptr;
+    m_duelPlayer = nullptr;
+
+    m_duelPlayer->setDuelTeam(0);
+    setDuelTeam(0);
+
+    m_duelPlayer->m_duelCountdownTimer = 0;
+    m_duelCountdownTimer = 0;
+
+    for (auto i = MAX_NEGATIVE_AURAS_EXTEDED_START; i < MAX_NEGATIVE_AURAS_EXTEDED_END; ++i)
+    {
+        if (m_auras[i])
+            m_auras[i]->removeAura();
+    }
+
+    for (const auto& summonedPet : GetSummons())
+    {
+        if (summonedPet && summonedPet->isAlive())
+            summonedPet->SetPetAction(PET_ACTION_STAY);
+    }
+}
+
+void Player::handleDuelCountdown()
+{
+    if (m_duelPlayer == nullptr)
+        return;
+
+    m_duelCountdownTimer -= 1000;
+
+    if (static_cast<int32_t>(m_duelCountdownTimer) < 0)
+        m_duelCountdownTimer = 0;
+
+    if (m_duelCountdownTimer == 0)
+    {
+        setPower(POWER_TYPE_RAGE, 0);
+        m_duelPlayer->setPower(POWER_TYPE_RAGE, 0);
+
+        m_duelPlayer->setDuelTeam(1);
+        setDuelTeam(2);
+
+        setDuelState(DUEL_STATE_STARTED);
+        m_duelPlayer->setDuelState(DUEL_STATE_STARTED);
+
+        sEventMgr.AddEvent(this, &Player::testDuelBoundary, EVENT_PLAYER_DUEL_BOUNDARY_CHECK, 500, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(m_duelPlayer, &Player::testDuelBoundary, EVENT_PLAYER_DUEL_BOUNDARY_CHECK, 500, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    }
 }

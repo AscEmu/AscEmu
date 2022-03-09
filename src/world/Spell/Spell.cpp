@@ -1834,15 +1834,15 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 // Check if target is dueling
                 // but allow spell cast if target is unfriendly
                 const auto targetPlayer = dynamic_cast<Player*>(target);
-                if (targetPlayer->GetDuelState() == DUEL_STATE_STARTED)
+                if (targetPlayer->getDuelState() == DUEL_STATE_STARTED)
                 {
-                    if (m_caster->getPlayerOwner() != nullptr && targetPlayer->DuelingWith != m_caster->getPlayerOwner() && isFriendly(m_caster->getPlayerOwner(), targetPlayer))
+                    if (m_caster->getPlayerOwner() != nullptr && targetPlayer->getDuelPlayer() != m_caster->getPlayerOwner() && isFriendly(m_caster->getPlayerOwner(), targetPlayer))
                         return SPELL_FAILED_TARGET_DUELING;
                 }
 
                 // Check if caster or target is in a sanctuary area
                 // but allow spell casting in duels
-                if (m_caster->getPlayerOwner() != nullptr && targetPlayer->DuelingWith != m_caster->getPlayerOwner() && !isFriendly(m_caster->getPlayerOwner(), targetPlayer))
+                if (m_caster->getPlayerOwner() != nullptr && targetPlayer->getDuelPlayer() != m_caster->getPlayerOwner() && !isFriendly(m_caster->getPlayerOwner(), targetPlayer))
                 {
                     if ((m_caster->GetArea() != nullptr && m_caster->GetArea()->flags & MapManagement::AreaManagement::AREA_SANCTUARY) ||
                         (targetPlayer->GetArea() != nullptr && targetPlayer->GetArea()->flags & MapManagement::AreaManagement::AREA_SANCTUARY))
@@ -2555,7 +2555,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (targetPlayer != nullptr && targetPlayer->GetTransport() != p_caster->GetTransport())
                     return SPELL_FAILED_NOT_ON_TRANSPORT;
 
-                if (targetPlayer != nullptr && targetPlayer->DuelingWith != nullptr)
+                if (targetPlayer != nullptr && targetPlayer->getDuelPlayer() != nullptr)
                     return SPELL_FAILED_TARGET_DUELING;
             } break;
             case SPELL_EFFECT_SUMMON_PLAYER:

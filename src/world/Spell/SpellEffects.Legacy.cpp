@@ -4683,13 +4683,13 @@ void Spell::SpellEffectDuel(uint8_t /*effectIndex*/) // Duel
         sendCastResult(SPELL_FAILED_TARGET_IN_COMBAT);
         return; // Target in combat with another unit
     }*/
-    if (playerTarget->DuelingWith)
+    if (playerTarget->getDuelPlayer())
     {
         sendCastResult(SPELL_FAILED_TARGET_DUELING);
         return; // Already Dueling
     }
 
-    p_caster->RequestDuel(playerTarget);
+    p_caster->requestDuel(playerTarget);
 }
 
 void Spell::SpellEffectStuck(uint8_t /*effectIndex*/)

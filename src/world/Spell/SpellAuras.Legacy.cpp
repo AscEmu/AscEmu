@@ -127,7 +127,7 @@ Aura::Aura(SpellInfo const* proto, int32 duration, Object* caster, Unit* target,
     {
         if (p_target && caster->isPlayer())
         {
-            if (p_target->DuelingWith == static_cast<Player*>(caster))
+            if (p_target->getDuelPlayer() == static_cast<Player*>(caster))
             {
                 m_castInDuel = true;
             }

@@ -169,7 +169,7 @@ SERVER_DECL bool isAttackable(Object* objA, Object* objB, bool CheckStealth)
         Player* a = objA->getPlayerOwner();
         Player* b = objB->getPlayerOwner();
 
-        if ((a->DuelingWith == b) && (a->GetDuelState() == DUEL_STATE_STARTED))
+        if ((a->getDuelPlayer() == b) && (a->getDuelState() == DUEL_STATE_STARTED))
             return true;
 
         if (b->isSanctuaryFlagSet())
