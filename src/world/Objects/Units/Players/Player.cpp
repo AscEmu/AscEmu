@@ -7025,17 +7025,17 @@ void Player::endDuel(uint8_t condition)
     {
         if (wowGuid.getGuidLowPart())
         {
-            GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()) : 0;
-            if (arbiter != nullptr)
+            GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()) : nullptr;
+            if (arbiter)
             {
                 arbiter->RemoveFromWorld(true);
                 delete arbiter;
             }
 
             m_duelPlayer->setDuelArbiter(0);
-            m_duelPlayer->setDuelTeam(0);
-
             setDuelArbiter(0);
+
+            m_duelPlayer->setDuelTeam(0);
             setDuelTeam(0);
 
             sEventMgr.RemoveEvents(m_duelPlayer, EVENT_PLAYER_DUEL_BOUNDARY_CHECK);
