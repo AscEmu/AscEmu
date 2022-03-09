@@ -1182,7 +1182,7 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId
 
             if (gossipMenuItem.requirementType == 3)
             {
-                if (player->CanGainXp())
+                if (player->canGainXp())
                     menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, player->GetSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
                 
                 continue;
@@ -1190,7 +1190,7 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId
 
             if (gossipMenuItem.requirementType == 4)
             {
-                if (!player->CanGainXp())
+                if (!player->canGainXp())
                     menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, player->GetSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
                 
                 continue;
@@ -1278,7 +1278,7 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* p
                     if (player->hasEnoughCoinage(itr->second.onChooseData))
                     {
                         player->modCoinage(-static_cast<int32_t>(itr->second.onChooseData));
-                        player->ToggleXpGain();
+                        player->toggleXpGain();
                         GossipMenu::senGossipComplete(player);
                     }
                 } break;

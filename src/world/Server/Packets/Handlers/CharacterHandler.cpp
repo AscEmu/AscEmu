@@ -719,7 +719,7 @@ void WorldSession::fullLogin(Player* player)
     //////////////////////////////////////////////////////////////////////////////////////////
     // the restxp is calculated with our offline time
     if (player->m_isResting)
-        player->ApplyPlayerRestState(true);
+        player->applyPlayerRestState(true);
 
     if (player->m_timeLogoff > 0 && player->getLevel() < player->getMaxLevel())
     {
@@ -727,7 +727,7 @@ void WorldSession::fullLogin(Player* player)
         const uint32_t timediff = currenttime - player->m_timeLogoff;
 
         if (timediff > 0)
-            player->AddCalculatedRestXP(timediff);
+            player->addCalculatedRestXp(timediff);
     }
     //////////////////////////////////////////////////////////////////////////////////////////
 

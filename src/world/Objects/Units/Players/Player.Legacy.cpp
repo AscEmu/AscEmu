@@ -964,12 +964,12 @@ void Player::_EventExploration()
     if (rest_on)
     {
         if (!m_isResting)
-            ApplyPlayerRestState(true);
+            applyPlayerRestState(true);
     }
     else
     {
         if (m_isResting)
-            ApplyPlayerRestState(false);
+            applyPlayerRestState(false);
     }
 
     if (!(currFields & val) && !isOnTaxi() && !obj_movement_info.transport_guid) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
@@ -1010,76 +1010,6 @@ void Player::EventDeath()
     RemoveNegativeAuras();
 
     setServersideDrunkValue(0);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-//  This function sends the message displaying the purple XP gain for the char
-//  It assumes you will send out an UpdateObject packet at a later time.
-//////////////////////////////////////////////////////////////////////////////////////////
-void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
-{
-    if (xp < 1)
-        return;
-
-#if VERSION_STRING >= Cata
-    //this is new since 403. As we gain XP we also gain XP with our guild
-    if (m_playerInfo && m_playerInfo->m_guild)
-    {
-        uint32 guild_share = xp / 100;
-
-        Guild* guild = sGuildMgr.getGuildById(m_playerInfo->m_guild);
-
-        if (guild)
-            guild->giveXP(guild_share, this);
-    }
-#endif
-
-    // Obviously if Xp gaining is disabled we don't want to gain XP
-    if (!m_XpGainAllowed)
-        return;
-
-    if (getLevel() >= getMaxLevel())
-        return;
-
-    uint32 restxp = xp;
-
-    //add reststate bonus (except for quests)
-    if (m_restState == RESTSTATE_RESTED && allowbonus)
-    {
-        restxp = SubtractRestXP(xp);
-        xp += restxp;
-    }
-
-    UpdateRestState();
-    sendLogXpGainPacket(guid, xp, restxp, guid == 0 ? true : false);
-
-    int32 newxp = getXp() + xp;
-    int32 nextlevelxp = getNextLevelXp();
-    uint32 level = getLevel();
-    bool levelup = false;
-
-    while (newxp >= nextlevelxp && newxp > 0)
-    {
-        ++level;
-        LevelInfo* li = sObjectMgr.GetLevelInfo(getRace(), getClass(), level);
-        if (li == nullptr)
-            return;
-        newxp -= nextlevelxp;
-        nextlevelxp = sMySQLStore.getPlayerXPForLevel(level);
-        levelup = true;
-
-        if (level >= getMaxLevel())
-            break;
-    }
-
-    if (level > getMaxLevel())
-        level = getMaxLevel();
-
-    if (levelup)
-        applyLevelInfo(level);
-
-    // Set the update bit
-    setXp(newxp);
 }
 
 void Player::smsg_InitialSpells()
@@ -1991,7 +1921,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     uint32 xpfield = 0;
 
-    if (m_XpGainAllowed)
+    if (m_isXpGainAllowed)
         xpfield = 1;
 
     ss << "'" << xpfield << "'" << ", ";
@@ -2731,9 +2661,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     uint32 xpfield = field[90].GetUInt32();
 
     if (xpfield == 0)
-        m_XpGainAllowed = false;
+        m_isXpGainAllowed = false;
     else
-        m_XpGainAllowed = true;
+        m_isXpGainAllowed = true;
 
     //field[87].GetString();    //skipping data
 
@@ -4543,92 +4473,6 @@ void Player::UpdateStats()
 
     UpdateChances();
     CalcDamage();
-}
-
-uint32 Player::SubtractRestXP(uint32 amount)
-{
-    if (getLevel() >= getMaxLevel()) // Save CPU, don't waste time on this if you've reached max_level
-        amount = 0;
-
-    int32 restAmount = m_restAmount - (amount << 1); // remember , we are dealing with xp without restbonus, so multiply by 2
-
-    if (restAmount < 0)
-        m_restAmount = 0;
-    else
-        m_restAmount = restAmount;
-
-    sLogger.debug("Subtracted %d rest XP to a total of %d", amount, m_restAmount);
-    UpdateRestState(); // Update clients interface with new values.
-    return amount;
-}
-
-void Player::AddCalculatedRestXP(uint32 seconds)
-{
-    // At level one, players will all start in the normal tier.
-    // When a player rests in a city or at an inn they will gain rest bonus at a very slow rate.
-    // Eight hours of rest will be needed for a player to gain one "bubble" of rest bonus.
-    // At any given time, players will be able to accumulate a maximum of 30 "bubbles" worth of rest bonus which
-    // translates into approximately 1.5 levels worth of rested play (before your character returns to normal rest state).
-    // Thanks to the comforts of a warm bed and a hearty meal, players who rest or log out at an Inn will
-    // accumulate rest credit four times faster than players logged off outside of an Inn or City.
-    // Players who log out anywhere else in the world will earn rest credit four times slower.
-    // http://www.worldofwarcraft.com/info/basics/resting.html
-
-    // Define xp for a full bar (= 20 bubbles)
-    uint32 xp_to_lvl = getNextLevelXp();
-
-    // get RestXP multiplier from config.
-    float bubblerate = worldConfig.getFloatRate(RATE_RESTXP);
-
-    // One bubble (5% of xp_to_level) for every 8 hours logged out.
-    // if multiplier RestXP (from ascent.config) is f.e 2, you only need 4hrs/bubble.
-    uint32 rested_xp = uint32(0.05f * xp_to_lvl * (seconds / (3600 * (8 / bubblerate))));
-
-    // if we are at a resting area rest_XP goes 4 times faster (making it 1 bubble every 2 hrs)
-    if (m_isResting)
-        rested_xp <<= 2;
-
-    // Add result to accumulated rested XP
-    m_restAmount += uint32(rested_xp);
-
-    // and set limit to be max 1.5 * 20 bubbles * multiplier (1.5 * xp_to_level * multiplier)
-    if (m_restAmount > xp_to_lvl + (uint32)((float)(xp_to_lvl >> 1) * bubblerate))
-        m_restAmount = xp_to_lvl + (uint32)((float)(xp_to_lvl >> 1) * bubblerate);
-
-    sLogger.debug("Add %d rest XP to a total of %d, RestState %d", rested_xp, m_restAmount, m_isResting);
-
-    // Update clients interface with new values.
-    UpdateRestState();
-}
-
-void Player::UpdateRestState()
-{
-    if (m_restAmount && getLevel() < getMaxLevel())
-        m_restState = RESTSTATE_RESTED;
-    else
-        m_restState = RESTSTATE_NORMAL;
-
-    // Update RestState 100%/200%
-    setRestState(m_restState);
-
-    //update needle (weird, works at 1/2 rate)
-    setRestStateXp(m_restAmount >> 1);
-}
-
-void Player::ApplyPlayerRestState(bool apply)
-{
-    if (apply)
-    {
-        m_restState = RESTSTATE_RESTED;
-        m_isResting = true;
-        addPlayerFlags(PLAYER_FLAG_RESTING); // put zZz icon
-    }
-    else
-    {
-        m_isResting = false;
-        removePlayerFlags(PLAYER_FLAG_RESTING); // remove zZz icon
-    }
-    UpdateRestState();
 }
 
 void Player::addToInRangeObjects(Object* pObj)
@@ -7550,19 +7394,6 @@ void Player::SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs)
         }
     }
     GetSession()->SendPacket(SmsgSpellCooldown(getGuid(), 0x0, spellMap).serialise().get());
-}
-
-void Player::ToggleXpGain()
-{
-    if (m_XpGainAllowed)
-        m_XpGainAllowed = false;
-    else
-        m_XpGainAllowed = true;
-}
-
-bool Player::CanGainXp()
-{
-    return m_XpGainAllowed;
 }
 
 void Player::RemoveGarbageItems()

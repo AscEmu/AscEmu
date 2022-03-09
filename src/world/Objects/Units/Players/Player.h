@@ -806,8 +806,6 @@ public:
 
     bool m_saveAllChangesCommand = false;
 
-    bool m_XpGainAllowed = true;
-
     AIInterface* m_aiInterfaceWaypoint = nullptr;
 
     bool m_isGmInvisible = false;
@@ -1155,7 +1153,7 @@ public:
     void sendLoginVerifyWorldPacket(uint32_t mapId, float posX, float posY, float posZ, float orientation);
     void sendMountResultPacket(uint32_t result);
     void sendDismountResultPacket(uint32_t result);
-    void sendLogXpGainPacket(uint64_t guid, uint32_t normalXp, uint32_t restedXp, bool type);
+    
     void sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2 = 0);
     void sendLevelupInfoPacket(uint32_t level, uint32_t hp, uint32_t mana, uint32_t stat0, uint32_t stat1, uint32_t stat2, uint32_t stat3, uint32_t stat4);
     void sendItemPushResultPacket(bool created, bool recieved, bool sendtoset, uint8_t destbagslot, uint32_t destslot, uint32_t count, uint32_t entry, uint32_t suffix, uint32_t randomprop, uint32_t stack);
@@ -1283,7 +1281,7 @@ private:
     bool m_lootableOnCorpse = false;
 
     /////////////////////////////////////////////////////////////////////////////////////////
-    // Reputation
+    // Reputation/faction
 public:
     void setFactionStanding(uint32_t faction, int32_t value);
     int32_t getFactionStanding(uint32_t faction);
@@ -1313,10 +1311,14 @@ public:
     int32_t getPctReputationMod() const { return m_pctReputationMod; }
     void setPctReputationMod(int32_t value) { m_pctReputationMod = value; }
 
+    void setChampioningFaction(uint32_t factionId) { m_championingFactionId = factionId; }
+
 private:
     ReputationMap m_reputation;
     int32_t m_pctReputationMod = 0;
     FactionReputation* m_reputationByListId[128] = { nullptr };
+
+    uint32_t m_championingFactionId = 0;
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Drunk system
@@ -1352,6 +1354,28 @@ private:
     uint8_t m_duelStatus = 0;
     uint8_t m_duelState = DUEL_STATE_FINISHED;
     uint32_t m_duelCountdownTimer = 0;
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Resting/Experience XP
+public:
+    void GiveXP(uint32_t xp, const uint64_t& guid, bool allowBonus);
+    void sendLogXpGainPacket(uint64_t guid, uint32_t normalXp, uint32_t restedXp, bool type);
+
+    void toggleXpGain() { m_isXpGainAllowed ? m_isXpGainAllowed = false : m_isXpGainAllowed = true; }
+    bool canGainXp() const { return m_isXpGainAllowed; }
+
+    uint32_t subtractRestXp(uint32_t amount);
+    void addCalculatedRestXp(uint32_t seconds);
+
+    void applyPlayerRestState(bool apply);
+    void updateRestState();
+
+private:
+    bool m_isXpGainAllowed = true;
+
+    uint8_t m_isResting = 0;
+    uint8_t m_restState = 0;
+    uint32_t m_restAmount = 0;
 
 public:
     //MIT End
@@ -1421,7 +1445,6 @@ public:
         void BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag);
         void BuildPetSpellList(WorldPacket & data);
 
-        void GiveXP(uint32 xp, const uint64 & guid, bool allowbonus);       /// to stop rest xp being given
         void ModifyBonuses(uint32 type, int32 val, bool apply);
         void CalcExpertise();
         std::map<uint32, uint32> m_wratings;
@@ -1701,21 +1724,7 @@ public:
         void RemoveIfVisible(uint64 obj);
 protected:
         std::set<uint64> m_visibleObjects;
-
 public:
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // rest
-        /////////////////////////////////////////////////////////////////////////////////////////
-        uint32 SubtractRestXP(uint32 amount);
-        void AddCalculatedRestXP(uint32 seconds);
-        void ApplyPlayerRestState(bool apply);
-        void UpdateRestState();
-protected:
-        uint8 m_isResting = 0;
-        uint8 m_restState = 0;
-        uint32 m_restAmount = 0;
-public:
-
         /////////////////////////////////////////////////////////////////////////////////////////
         //  PVP Stuff
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -1738,9 +1747,6 @@ public:
         void UpdatePvPArea();
         // PvP Toggle (called on /pvp)
         void PvPToggle();
-
-
-
 
         //Note:ModSkillLine -> value+=amt;ModSkillMax -->value=amt; --weird
         float GetSkillUpChance(uint16_t id);
@@ -1828,7 +1834,7 @@ public:
         float PctIgnoreRegenModifier = 0.0f;
         uint32 m_retainedrage = 0;                  // Warrior spell related
 
-        uint32* GetPlayedtime() { return m_playedtime; };
+        uint32* GetPlayedtime() { return m_playedtime; }
         void CalcStat(uint8_t t);
         float CalcRating(PlayerCombatRating t);
         void RegenerateHealth(bool inCombat);
@@ -2143,8 +2149,6 @@ public:
 
         void RemoveGarbageItems();
 
-        uint32 ChampioningFactionID = 0;
-
         uint32 m_timeSyncCounter = 0;
         uint32 m_timeSyncTimer = 0;
         uint32 m_timeSyncClient = 0;
@@ -2152,7 +2156,6 @@ public:
 
     public:
 
-        void SetChampioningFaction(uint32 f) { ChampioningFactionID = f; }
         void AddGarbageItem(Item* it);
         uint32 CheckDamageLimits(uint32 dmg, uint32 spellid);
 
@@ -2164,8 +2167,7 @@ public:
         void AvengingWrath() { mAvengingWrath = true; }
         bool mAvengingWrath = true;
 
-        void ToggleXpGain();
-        bool CanGainXp();
+        
 
 #if VERSION_STRING > TBC
         AchievementMgr & GetAchievementMgr() { return m_achievementMgr; }

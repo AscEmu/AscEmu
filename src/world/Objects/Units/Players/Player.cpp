@@ -5356,11 +5356,6 @@ void Player::sendDismountResultPacket(uint32_t result)
     m_session->SendPacket(SmsgDismountResult(result).serialise().get());
 }
 
-void Player::sendLogXpGainPacket(uint64_t guid, uint32_t normalXp, uint32_t restedXp, bool type)
-{
-    m_session->SendPacket(SmsgLogXpGain(guid, normalXp, restedXp, type).serialise().get());
-}
-
 void Player::sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2 /*= 0*/)
 {
     m_session->SendPacket(SmsgCastFailed(multiCast, spellId, errorMessage, extra1, extra2).serialise().get());
@@ -6845,8 +6840,8 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
 
     if ((GetMapMgr()->GetMapInfo()->minlevel == 80 || 
         (GetMapMgr()->iInstanceMode == InstanceDifficulty::DUNGEON_HEROIC && GetMapMgr()->GetMapInfo()->minlevel_heroic == 80)) && 
-        ChampioningFactionID != 0)
-        faction = ChampioningFactionID;
+        m_championingFactionId != 0)
+        faction = m_championingFactionId;
 
     int32_t newValue = value;
     if (newValue < minReputation)
@@ -7514,5 +7509,140 @@ void Player::handleDuelCountdown()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// Quests
+// Resting/Experience XP
+void Player::GiveXP(uint32_t xp, const uint64_t& guid, bool allowBonus)
+{
+    if (xp < 1)
+        return;
 
+#if VERSION_STRING >= Cata
+    //this is new since 403. As we gain XP we also gain XP with our guild
+    if (m_playerInfo && m_playerInfo->m_guild)
+    {
+        uint32_t guild_share = xp / 100;
+
+        if (Guild* guild = sGuildMgr.getGuildById(m_playerInfo->m_guild))
+            guild->giveXP(guild_share, this);
+    }
+#endif
+
+    if (!m_isXpGainAllowed)
+        return;
+
+    if (getLevel() >= getMaxLevel())
+        return;
+
+    uint32_t restXp = xp;
+
+    if (m_restState == RESTSTATE_RESTED && allowBonus)
+    {
+        restXp = subtractRestXp(xp);
+        xp += restXp;
+    }
+
+    updateRestState();
+
+    sendLogXpGainPacket(guid, xp, restXp, guid == 0 ? true : false);
+
+    int32_t newXp = getXp() + xp;
+    int32_t nextLevelXp = getNextLevelXp();
+    uint32_t level = getLevel();
+    bool levelup = false;
+
+    while (newXp >= nextLevelXp && newXp > 0)
+    {
+        ++level;
+        if (sObjectMgr.GetLevelInfo(getRace(), getClass(), level))
+        {
+            newXp -= nextLevelXp;
+            nextLevelXp = sMySQLStore.getPlayerXPForLevel(level);
+            levelup = true;
+            if (level >= getMaxLevel())
+                break;
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    if (level > getMaxLevel())
+        level = getMaxLevel();
+
+    if (levelup)
+        applyLevelInfo(level);
+
+    setXp(newXp);
+}
+
+void Player::sendLogXpGainPacket(uint64_t guid, uint32_t normalXp, uint32_t restedXp, bool type)
+{
+    m_session->SendPacket(SmsgLogXpGain(guid, normalXp, restedXp, type).serialise().get());
+}
+
+uint32_t Player::subtractRestXp(uint32_t amount)
+{
+    if (getLevel() >= getMaxLevel())
+        amount = 0;
+
+    const int32_t restAmount = m_restAmount - (amount << 1);
+    if (restAmount < 0)
+        m_restAmount = 0;
+    else
+        m_restAmount = restAmount;
+
+    sLogger.debug("Subtracted %d rest XP to a total of %d", amount, m_restAmount);
+
+    updateRestState();
+
+    return amount;
+}
+
+void Player::addCalculatedRestXp(uint32_t seconds)
+{
+    const uint32 nextLevelXp = getNextLevelXp();
+
+    const float restXpRate = worldConfig.getFloatRate(RATE_RESTXP);
+
+    auto restXp = static_cast<uint32_t>(0.05f * nextLevelXp * (seconds / (3600 * (8 / restXpRate))));
+
+    if (m_isResting)
+        restXp <<= 2;
+
+    m_restAmount += restXp;
+
+    if (m_restAmount > nextLevelXp + static_cast<uint32_t>(static_cast<float>(nextLevelXp >> 1) * restXpRate))
+        m_restAmount = nextLevelXp + static_cast<uint32_t>(static_cast<float>(nextLevelXp >> 1) * restXpRate);
+
+    sLogger.debug("Add %d rest XP to a total of %d, RestState %d", restXp, m_restAmount, m_isResting);
+
+    updateRestState();
+}
+
+void Player::applyPlayerRestState(bool apply)
+{
+    if (apply)
+    {
+        m_restState = RESTSTATE_RESTED;
+        m_isResting = true;
+        addPlayerFlags(PLAYER_FLAG_RESTING);
+    }
+    else
+    {
+        m_isResting = false;
+        removePlayerFlags(PLAYER_FLAG_RESTING);
+    }
+
+    updateRestState();
+}
+
+void Player::updateRestState()
+{
+    if (m_restAmount && getLevel() < getMaxLevel())
+        m_restState = RESTSTATE_RESTED;
+    else
+        m_restState = RESTSTATE_NORMAL;
+
+    setRestState(m_restState);
+    setRestStateXp(m_restAmount >> 1);
+}

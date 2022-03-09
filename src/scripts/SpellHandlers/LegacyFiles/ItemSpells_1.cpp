@@ -758,9 +758,9 @@ bool ChampioningTabards(uint8_t /*effectIndex*/, Aura* a, bool apply)
     uint32_t Faction = static_cast<uint32_t>(a->getSpellInfo()->getEffectMiscValue(0));
 
     if (apply)
-        p_caster->SetChampioningFaction(Faction);
+        p_caster->setChampioningFaction(Faction);
     else
-        p_caster->SetChampioningFaction(0);
+        p_caster->setChampioningFaction(0);
 
     return true;
 }

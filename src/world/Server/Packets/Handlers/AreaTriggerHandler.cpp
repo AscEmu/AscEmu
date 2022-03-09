@@ -187,7 +187,7 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
         case ATTYPE_INN:
         {
             if (!_player->m_isResting)
-                _player->ApplyPlayerRestState(true);
+                _player->applyPlayerRestState(true);
         } break;
         case ATTYPE_TELEPORT:
         {
