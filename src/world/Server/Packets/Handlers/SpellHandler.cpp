@@ -258,7 +258,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
     if (spellInfo == nullptr)
         return;
 
-    if (_player->GetSummon() == nullptr && _player->getCharmGuid() == 0)
+    if (_player->getFirstPetFromSummons() == nullptr && _player->getCharmGuid() == 0)
     {
         sLogger.failure("Received opcode but player %u has no pet.", _player->getGuidLow());
         return;
@@ -275,7 +275,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
         return;
 
     // If pet is summoned by player
-    if (_player->GetSummon() == petUnit)
+    if (_player->getFirstPetFromSummons() == petUnit)
     {
         // Check does the pet have the spell
         if (!dynamic_cast<Pet*>(petUnit)->HasSpell(srlPacket.spellId))

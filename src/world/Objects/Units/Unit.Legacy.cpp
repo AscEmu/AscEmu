@@ -792,11 +792,11 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
                 sEventMgr.ModifyEventTimeLeft(active_player_list[i], EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000);
             }
 
-            if (plr->GetSummon() && plr->GetSummon()->CanGainXP())
+            if (plr->getFirstPetFromSummons() && plr->getFirstPetFromSummons()->CanGainXP())
             {
-                uint32 pet_xp = (uint32)(CalculateXpToGive(pVictim, plr->GetSummon()) * xp_mod);   // vojta: this isn't blizzlike probably but i have no idea, feel free to correct it
+                uint32 pet_xp = (uint32)(CalculateXpToGive(pVictim, plr->getFirstPetFromSummons()) * xp_mod);   // vojta: this isn't blizzlike probably but i have no idea, feel free to correct it
                 if (pet_xp> 0)
-                    plr->GetSummon()->giveXp(pet_xp);
+                    plr->getFirstPetFromSummons()->giveXp(pet_xp);
             }
         }
     }
@@ -9134,7 +9134,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     // update target faction set
     pTarget->updateInRangeOppositeFactionSet();
 
-    if (!(pTarget->isPet() && dynamic_cast< Pet* >(pTarget) == pThis->GetSummon()))
+    if (!(pTarget->isPet() && dynamic_cast< Pet* >(pTarget) == pThis->getFirstPetFromSummons()))
     {
         WorldPacket data(SMSG_PET_SPELLS, 4 * 4 + 20);
         pTarget->BuildPetSpellList(data);
@@ -9184,7 +9184,7 @@ void Unit::UnPossess()
     // send "switch mover" packet
     pThis->sendClientControlPacket(pTarget, 0);
 
-    if (!(pTarget->isPet() && dynamic_cast< Pet* >(pTarget) == pThis->GetSummon()))
+    if (!(pTarget->isPet() && dynamic_cast< Pet* >(pTarget) == pThis->getFirstPetFromSummons()))
         pThis->SendEmptyPetSpellList();
 
     setMoveRoot(false);

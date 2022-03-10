@@ -2202,8 +2202,8 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                         return SPELL_FAILED_NOT_FISHABLE;
 
                     // if we are already fishing, don't cast it again
-                    if (p_caster->GetSummonedObject())
-                        if (p_caster->GetSummonedObject()->getEntry() == GO_FISHING_BOBBER)
+                    if (p_caster->getSummonedObject())
+                        if (p_caster->getSummonedObject()->getEntry() == GO_FISHING_BOBBER)
                             return SPELL_FAILED_SPELL_IN_PROGRESS;
                 }
             }

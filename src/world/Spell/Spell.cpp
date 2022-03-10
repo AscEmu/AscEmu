@@ -971,7 +971,7 @@ void Spell::finish(bool successful)
         }
 
         if (getSpellInfo()->hasEffect(SPELL_EFFECT_SUMMON_OBJECT))
-            getPlayerCaster()->SetSummonedObject(nullptr);
+            getPlayerCaster()->setSummonedObject(nullptr);
 
         // Clear combo points before spell procs
         if (m_requiresCP && !GetSpellFailed())
@@ -1245,14 +1245,14 @@ void Spell::cancel()
                             dynObj->Remove();
                     }
 
-                    if (getPlayerCaster() != nullptr && getPlayerCaster()->GetSummonedObject() != nullptr)
+                    if (getPlayerCaster() != nullptr && getPlayerCaster()->getSummonedObject() != nullptr)
                     {
-                        auto obj = getPlayerCaster()->GetSummonedObject();
+                        auto obj = getPlayerCaster()->getSummonedObject();
                         if (obj->IsInWorld())
                             obj->RemoveFromWorld(true);
 
                         delete obj;
-                        getPlayerCaster()->SetSummonedObject(nullptr);
+                        getPlayerCaster()->setSummonedObject(nullptr);
                     }
 
                     if (m_timer > 0)
@@ -1743,13 +1743,13 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                         return SPELL_FAILED_DONT_REPORT;
                     }
 
-                    if (p_caster->GetSummon() != nullptr || p_caster->GetUnstabledPetNumber() != 0)
+                    if (p_caster->getFirstPetFromSummons() != nullptr || p_caster->getUnstabledPetNumber() != 0)
                     {
                         SendTameFailure(PETTAME_ANOTHERSUMMONACTIVE);
                         return SPELL_FAILED_DONT_REPORT;
                     }
 
-                    if (p_caster->GetPetCount() >= 5)
+                    if (p_caster->getPetCount() >= 5)
                     {
                         SendTameFailure(PETTAME_TOOMANY);
                         return SPELL_FAILED_DONT_REPORT;
@@ -1879,7 +1879,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         // Check if spell requires a dead pet
         if (getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_REQ_DEAD_PET)
         {
-            const auto pet = p_caster->GetSummon();
+            const auto pet = p_caster->getFirstPetFromSummons();
             if (pet == nullptr)
                 return SPELL_FAILED_NO_PET;
             if (pet->isAlive())
@@ -1891,7 +1891,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         {
             if (getSpellInfo()->getEffectImplicitTargetA(i) == EFF_TARGET_PET)
             {
-                const auto pet = p_caster->GetSummon();
+                const auto pet = p_caster->getFirstPetFromSummons();
                 if (pet == nullptr)
                     return m_triggeredByAura ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_NO_PET;
                 else if (!pet->isAlive())
@@ -2228,7 +2228,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (p_caster == nullptr)
                     break;
 
-                if (p_caster->GetSummon() != nullptr && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_DISMISS_CURRENT_PET))
+                if (p_caster->getFirstPetFromSummons() != nullptr && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_DISMISS_CURRENT_PET))
                     return SPELL_FAILED_ALREADY_HAVE_SUMMON;
 
                 if (p_caster->getCharmGuid() != 0)
@@ -2249,7 +2249,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (p_caster == nullptr)
                     break;
 
-                if (p_caster->GetSummon() != nullptr)
+                if (p_caster->getFirstPetFromSummons() != nullptr)
                 {
                     if (!(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_DISMISS_CURRENT_PET))
                         return SPELL_FAILED_ALREADY_HAVE_SUMMON;
@@ -2468,7 +2468,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (p_caster == nullptr)
                     break;
 
-                const auto pet = p_caster->GetSummon();
+                const auto pet = p_caster->getFirstPetFromSummons();
                 if (pet == nullptr)
                     return SPELL_FAILED_NO_PET;
 
@@ -2686,7 +2686,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (p_caster == nullptr)
                     return SPELL_FAILED_BAD_TARGETS;
 
-                const auto pet = p_caster->GetSummon();
+                const auto pet = p_caster->getFirstPetFromSummons();
                 if (pet == nullptr)
                     return SPELL_FAILED_NO_PET;
 
@@ -2716,7 +2716,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (p_caster == nullptr)
                     return SPELL_FAILED_NO_PET;
 
-                const auto petTarget = p_caster->GetSummon();
+                const auto petTarget = p_caster->getFirstPetFromSummons();
                 if (petTarget == nullptr)
                     return SPELL_FAILED_NO_PET;
 
@@ -2751,7 +2751,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (target == p_caster)
                     return SPELL_FAILED_BAD_TARGETS;
 
-                if (p_caster->GetSummon() != nullptr && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_DISMISS_CURRENT_PET))
+                if (p_caster->getFirstPetFromSummons() != nullptr && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_DISMISS_CURRENT_PET))
                     return SPELL_FAILED_ALREADY_HAVE_SUMMON;
 
                 if (p_caster->getCharmGuid() != 0)
@@ -2792,7 +2792,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 
                 if (getSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_MOD_CHARM)
                 {
-                    if (p_caster != nullptr && p_caster->GetSummon() != nullptr && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_DISMISS_CURRENT_PET))
+                    if (p_caster != nullptr && p_caster->getFirstPetFromSummons() != nullptr && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_DISMISS_CURRENT_PET))
                         return SPELL_FAILED_ALREADY_HAVE_SUMMON;
 
                     // Player can have only one charm at time
@@ -2933,7 +2933,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (p_caster->getCharmedByGuid() != 0)
                     return SPELL_FAILED_CHARMED;
 
-                const auto petTarget = p_caster->GetSummon();
+                const auto petTarget = p_caster->getFirstPetFromSummons();
                 if (petTarget == nullptr)
                     return SPELL_FAILED_NO_PET;
 
@@ -4071,9 +4071,9 @@ SpellCastResult Spell::checkRange(const bool secondCheck)
             if (getSpellInfo()->getEffectImplicitTargetA(i) != EFF_TARGET_PET)
                 continue;
 
-            if (p_caster->GetSummon() != nullptr)
+            if (p_caster->getFirstPetFromSummons() != nullptr)
             {
-                targetUnit = p_caster->GetSummon();
+                targetUnit = p_caster->getFirstPetFromSummons();
                 break;
             }
         }

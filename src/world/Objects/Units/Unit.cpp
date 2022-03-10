@@ -2035,7 +2035,7 @@ void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
 
         if (!isInCombat())
         {
-            std::list<Pet*> ownerSummons = ToPlayer()->GetSummons();
+            std::list<Pet*> ownerSummons = ToPlayer()->getSummons();
             if (ownerSummons.size())
             {
                 for (std::list<Pet*>::iterator itr = ownerSummons.begin(); itr != ownerSummons.end(); ++itr)
@@ -2112,7 +2112,7 @@ void Unit::setSpeedRate(UnitSpeedType type, float value, bool current)
 
         if (!isInCombat())
         {
-            std::list<Pet*> ownerSummons = ToPlayer()->GetSummons();
+            std::list<Pet*> ownerSummons = ToPlayer()->getSummons();
             if (ownerSummons.size())
             {
                 for (std::list<Pet*>::iterator itr = ownerSummons.begin(); itr != ownerSummons.end(); ++itr)
@@ -5957,7 +5957,7 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
         {
             // Make victim's pet react to attacker
             ///\ todo: what about other summons?
-            const auto summons = static_cast<Player*>(victim)->GetSummons();
+            const auto summons = static_cast<Player*>(victim)->getSummons();
             for (const auto& pet : summons)
             {
                 if (pet->GetPetState() != PET_STATE_PASSIVE)
@@ -6157,11 +6157,11 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                             tagger->GiveXP(xp, getGuid(), true);
 
                             // Give XP to pets also
-                            if (tagger->GetSummon() != nullptr && tagger->GetSummon()->CanGainXP())
+                            if (tagger->getFirstPetFromSummons() != nullptr && tagger->getFirstPetFromSummons()->CanGainXP())
                             {
-                                xp = CalculateXpToGive(this, tagger->GetSummon());
+                                xp = CalculateXpToGive(this, tagger->getFirstPetFromSummons());
                                 if (xp > 0)
-                                    tagger->GetSummon()->giveXp(xp);
+                                    tagger->getFirstPetFromSummons()->giveXp(xp);
                             }
                         }
                     }
@@ -6666,7 +6666,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
         {
             // Make victim's pet react to attacker
             ///\ todo: what about other summons?
-            const auto summons = static_cast<Player*>(this)->GetSummons();
+            const auto summons = static_cast<Player*>(this)->getSummons();
             for (const auto& pet : summons)
             {
                 if (pet->GetPetState() != PET_STATE_PASSIVE)
@@ -7300,7 +7300,7 @@ void Unit::exitVehicle(LocationVector const* exitPosition)
 
     // Spawn active Pets
     if (player)
-        player->SpawnActivePet();
+        player->spawnActivePet();
 
     // Despawn Accessories
     if (vehicle->getBase()->hasUnitStateFlag(UNIT_STATE_ACCESSORY) && vehicle->getBase()->getObjectTypeId() == TYPEID_UNIT)

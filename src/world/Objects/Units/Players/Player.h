@@ -1404,6 +1404,45 @@ private:
     uint8_t m_restState = 0;
     uint32_t m_restAmount = 0;
 
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Pets/Summons
+public:
+    std::list<Pet*> getSummons();
+    void addPetToSummons(Pet* pet);
+    void removePetFromSummons(Pet* pet);
+    Pet* getFirstPetFromSummons() const;
+
+    PlayerPet* getPlayerPet(uint32_t petId);
+    void addPlayerPet(PlayerPet* pet, uint32_t index);
+    void removePlayerPet(uint32_t petId);
+    uint8_t getPetCount() const;
+
+    uint32_t getFreePetNumber() const;
+
+    void spawnPet(uint32_t petId);
+    void spawnActivePet();
+    void dismissActivePets();
+
+    void setStableSlotCount(uint8_t count);
+    uint8_t getStableSlotCount() const;
+
+    uint32_t getUnstabledPetNumber() const;
+
+    void eventSummonPet(Pet* summonPet);
+    void eventDismissPet();
+
+    Object* getSummonedObject() const;
+    void setSummonedObject(Object* summonedObject);
+
+private:
+    std::list<Pet*>  m_summons;
+    std::map<uint32_t, PlayerPet*> m_pets;
+
+    uint8_t m_stableSlotCount = 0;
+    uint32_t m_maxPetNumber = 0;
+
+    Object* m_summonedObject = nullptr;
+
 public:
     //MIT End
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -1573,54 +1612,6 @@ public:
         void SetKnownTitle(RankTitles title, bool set);
         void SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* shapeshift_form, bool active);
 
-        
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Pets/Summons
-        /////////////////////////////////////////////////////////////////////////////////////////
-        void AddSummon(Pet* pet) { m_Summons.push_front(pet); }
-        Pet* GetSummon()     // returns 1st summon
-        {
-            if (!m_Summons.empty())
-                return m_Summons.front();
-
-            return nullptr;
-        }
-        std::list<Pet*> GetSummons() { return m_Summons; }
-
-        void RemoveSummon(Pet* pet);
-        uint32 GeneratePetNumber();
-        void RemovePlayerPet(uint32 pet_number);
-        void AddPlayerPet(PlayerPet* pet, uint32 index) { m_Pets[index] = pet; }
-        PlayerPet* GetPlayerPet(uint32 idx)
-        {
-            std::map<uint32, PlayerPet*>::iterator itr = m_Pets.find(idx);
-            if (itr != m_Pets.end())
-                return itr->second;
-
-            return nullptr;
-        }
-        void SpawnPet(uint32 pet_number);
-        void SpawnActivePet();
-        void DismissActivePets();
-        uint8 GetPetCount() { return (uint8)m_Pets.size(); }
-        void SetStableSlotCount(uint8 count) { m_StableSlotCount = count; }
-        uint8 GetStableSlotCount() { return m_StableSlotCount; }
-
-        uint32 GetUnstabledPetNumber();
-        void EventSummonPet(Pet* new_pet);   // if we charmed or simply summoned a pet, this function should get called
-        void EventDismissPet();              // if pet/charm died or whatever happened we should call this function
-
-        Object* GetSummonedObject() { return m_SummonedObject; };
-        void SetSummonedObject(Object* t_SummonedObject) { m_SummonedObject = t_SummonedObject; };
-
-    protected:
-        std::list<Pet*>  m_Summons;
-        uint8 m_StableSlotCount = 0;
-        uint32 m_PetNumberMax = 0;
-        std::map<uint32, PlayerPet*> m_Pets;
-
-        Object* m_SummonedObject = nullptr;
     
         /////////////////////////////////////////////////////////////////////////////////////////
         // Item Interface

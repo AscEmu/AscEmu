@@ -435,11 +435,11 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
         return false;                       //the caller will delete us.
 
     if (dismiss_old_pet)
-        owner->DismissActivePets();
+        owner->dismissActivePets();
 
     m_Owner = owner;
     m_phase = m_Owner->GetPhase();
-    m_PetNumber = m_Owner->GeneratePetNumber();
+    m_PetNumber = m_Owner->getFreePetNumber();
     creature_properties = ci;
     myFamily = sCreatureFamilyStore.LookupEntry(ci->Family);
 
@@ -575,7 +575,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
             pp->type = WARLOCKPET;
 
         mPi = pp;
-        owner->AddPlayerPet(pp, pp->number);
+        owner->addPlayerPet(pp, pp->number);
     }
 
     InitializeMe(true);
@@ -1011,7 +1011,7 @@ void Pet::OnPushToWorld()
     if (m_Owner)
     {
         //before we initialize pet spells so we can apply spell mods on them
-        m_Owner->EventSummonPet(this);
+        m_Owner->eventSummonPet(this);
 
         Creature::OnPushToWorld();
     }
@@ -1031,7 +1031,7 @@ void Pet::InitializeMe(bool first)
     if (creature_properties == nullptr)
         return;
 
-    m_Owner->AddSummon(this);
+    m_Owner->addPetToSummons(this);
     m_Owner->setSummonGuid(getGuid());
 
     setPetNumber(GetUIdFromGUID());
@@ -1114,7 +1114,7 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
     if (bExpires || m_Owner == NULL)     // don't update expiring pets
         return;
 
-    auto player_pet = m_Owner->GetPlayerPet(m_PetNumber);
+    auto player_pet = m_Owner->getPlayerPet(m_PetNumber);
     if (player_pet == nullptr)
         return;
 
@@ -1161,7 +1161,7 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
 void Pet::Dismiss()     //Abandon pet
 {
     if (m_Owner && !bExpires)
-        m_Owner->RemovePlayerPet(m_PetNumber);   // find playerpet entry and delete it
+        m_Owner->removePlayerPet(m_PetNumber);   // find playerpet entry and delete it
 
     Remove(false, true);
 }
@@ -1192,7 +1192,7 @@ void Pet::RemoveFromWorld(bool free_guid)
 
 void Pet::OnRemoveFromWorld()
 {
-    std::list<Pet*> ownerSummons = m_Owner->GetSummons();
+    std::list<Pet*> ownerSummons = m_Owner->getSummons();
     for (std::list<Pet*>::iterator itr = ownerSummons.begin(); itr != ownerSummons.end(); ++itr)
     {
         //m_Owner MUST NOT have a reference to us anymore
@@ -1236,7 +1236,7 @@ void Pet::DelayedRemove(bool bTime, bool dismiss, uint32 delay)
 void Pet::PrepareForRemove(bool bUpdate, bool bSetOffline)
 {
     RemoveAllAuras();           // Prevent pet overbuffing
-    m_Owner->EventDismissPet();
+    m_Owner->eventDismissPet();
 
     if (bUpdate)
     {
@@ -1247,18 +1247,18 @@ void Pet::PrepareForRemove(bool bUpdate, bool bSetOffline)
             m_Owner->_SavePet(NULL);
     }
 
-    bool main_summon = m_Owner->GetSummon() == this;
-    m_Owner->RemoveSummon(this);
+    bool main_summon = m_Owner->getFirstPetFromSummons() == this;
+    m_Owner->removePetFromSummons(this);
 
-    if (m_Owner->GetSummon() == NULL)   //we have no more summons, required by spells summoning more than 1.
+    if (m_Owner->getFirstPetFromSummons() == NULL)   //we have no more summons, required by spells summoning more than 1.
     {
         m_Owner->setSummonGuid(0);
         m_Owner->SendEmptyPetSpellList();
     }
     else if (main_summon)               //we just removed the summon displayed in the portrait so we need to update it with another one.
     {
-        m_Owner->setSummonGuid(m_Owner->GetSummon()->getGuid());      //set the summon still alive
-        m_Owner->GetSummon()->SendSpellsToOwner();
+        m_Owner->setSummonGuid(m_Owner->getFirstPetFromSummons()->getGuid());      //set the summon still alive
+        m_Owner->getFirstPetFromSummons()->SendSpellsToOwner();
     }
 
     if (IsInWorld() && IsActive())

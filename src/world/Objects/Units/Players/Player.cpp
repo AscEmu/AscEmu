@@ -166,7 +166,7 @@ Player::~Player()
     if (Player* inviterPlayer = sObjectMgr.GetPlayer(getGroupInviterId()))
         inviterPlayer->setGroupInviterId(0);
 
-    DismissActivePets();
+    dismissActivePets();
 
     if (m_duelPlayer != nullptr)
         m_duelPlayer->m_duelPlayer = nullptr;
@@ -198,10 +198,10 @@ Player::~Player()
         delete _voidStorageItems[i];
 #endif
 
-    for (auto pet = m_Pets.begin(); pet != m_Pets.end(); ++pet)
+    for (auto pet = m_pets.begin(); pet != m_pets.end(); ++pet)
         delete pet->second;
 
-    m_Pets.clear();
+    m_pets.clear();
     RemoveGarbageItems();
 }
 
@@ -1328,7 +1328,7 @@ void Player::applyLevelInfo(uint32_t newLevel)
     // If player is warlock and has a summoned pet, its level should match owner's
     if (getClass() == WARLOCK)
     {
-        const auto pet = GetSummon();
+        const auto pet = getFirstPetFromSummons();
         if (pet != nullptr && pet->IsInWorld() && pet->isAlive())
         {
             pet->setLevel(newLevel);
@@ -3102,7 +3102,7 @@ void Player::addTalent(SpellInfo const* sp)
         {
             if (sp->getCasterAuraState() == 0 || hasAuraState(static_cast<AuraState>(sp->getCasterAuraState()), sp, this))
                 // TODO: temporarily check for this custom flag, will be removed when spell system checks properly for pets!
-                if (((sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) == 0) || (sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET && GetSummon() != nullptr))
+                if (((sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) == 0) || (sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET && getFirstPetFromSummons() != nullptr))
                     castSpell(getGuid(), sp, true);
         }
     }
@@ -3161,8 +3161,8 @@ void Player::resetTalents()
     }
 
     // Unsummon pet
-    if (GetSummon() != nullptr)
-        GetSummon()->Dismiss();
+    if (getFirstPetFromSummons() != nullptr)
+        getFirstPetFromSummons()->Dismiss();
 
     // Check offhand
     unEquipOffHandIfRequired();
@@ -3343,8 +3343,8 @@ void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
     data << uint8_t(SendPetTalents ? 1 : 0);
     if (SendPetTalents)
     {
-        if (GetSummon() != nullptr)
-            GetSummon()->SendTalentsToOwner();
+        if (getFirstPetFromSummons() != nullptr)
+            getFirstPetFromSummons()->SendTalentsToOwner();
         return;
     }
     else
@@ -3432,8 +3432,8 @@ void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
     m_talentActiveSpec = specId;
 
     // Dismiss pet
-    if (GetSummon() != nullptr)
-        GetSummon()->Dismiss();
+    if (getFirstPetFromSummons() != nullptr)
+        getFirstPetFromSummons()->Dismiss();
 
     // Remove old glyphs
     for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
@@ -4213,7 +4213,7 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t spellId)
     m_underwaterState = 0;
 
     getSummonInterface()->removeAllSummons();
-    DismissActivePets();
+    dismissActivePets();
 
     setHealth(0);
 
@@ -4271,7 +4271,7 @@ void Player::kill()
 #endif
 
     getSummonInterface()->removeAllSummons();
-    DismissActivePets();
+    dismissActivePets();
 
 #ifdef FT_VEHICLES
     callExitVehicle();
@@ -4568,7 +4568,7 @@ void Player::resurrect()
     for (uint8_t i = 0; i < 7; ++i)
         SchoolImmunityList[i] = 0;
 
-    SpawnActivePet();
+    spawnActivePet();
 
     if (m_bg)
         m_bg->HookOnPlayerResurrect(this);
@@ -5730,10 +5730,10 @@ void Player::sendTalentResetConfirmPacket()
 
 void Player::sendPetUnlearnConfirmPacket()
 {
-    if (GetSummon() == nullptr)
+    if (getFirstPetFromSummons() == nullptr)
         return;
 
-    m_session->SendPacket(SmsgPetUnlearnConfirm(GetSummon()->getGuid(), GetSummon()->GetUntrainCost()).serialise().get());
+    m_session->SendPacket(SmsgPetUnlearnConfirm(getFirstPetFromSummons()->getGuid(), getFirstPetFromSummons()->GetUntrainCost()).serialise().get());
 }
 
 void Player::sendDungeonDifficultyPacket()
@@ -5914,7 +5914,7 @@ void Player::setPvpFlag()
     addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
     getSummonInterface()->setPvPFlags(true);
-    for (auto& summon : GetSummons())
+    for (auto& summon : getSummons())
         summon->setPvpFlag();
 
     if (getCombatHandler().isInCombat())
@@ -5933,7 +5933,7 @@ void Player::removePvpFlag()
     removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
     getSummonInterface()->setPvPFlags(false);
-    for (auto& summon : GetSummons())
+    for (auto& summon : getSummons())
         summon->removePvpFlag();
 }
 
@@ -5949,7 +5949,7 @@ void Player::setFfaPvpFlag()
     addPlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
     getSummonInterface()->setFFAPvPFlags(true);
-    for (auto& summon : GetSummons())
+    for (auto& summon : getSummons())
         summon->setFfaPvpFlag();
 }
 
@@ -5960,7 +5960,7 @@ void Player::removeFfaPvpFlag()
     removePlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
     getSummonInterface()->setFFAPvPFlags(false);
-    for (auto& summon : GetSummons())
+    for (auto& summon : getSummons())
         summon->removeFfaPvpFlag();
 }
 
@@ -5975,7 +5975,7 @@ void Player::setSanctuaryFlag()
     addPlayerFlags(PLAYER_FLAG_SANCTUARY);
 
     getSummonInterface()->setSanctuaryFlags(true);
-    for (auto& summon : GetSummons())
+    for (auto& summon : getSummons())
         summon->setSanctuaryFlag();
 }
 
@@ -5985,7 +5985,7 @@ void Player::removeSanctuaryFlag()
     removePlayerFlags(PLAYER_FLAG_SANCTUARY);
 
     getSummonInterface()->setSanctuaryFlags(false);
-    for (auto& summon : GetSummons())
+    for (auto& summon : getSummons())
         summon->removeSanctuaryFlag();
 }
 
@@ -6502,7 +6502,7 @@ void Player::startTaxiPath(TaxiPath* path, uint32_t modelid, uint32_t start_node
         RemoveAllAuraType(SPELL_AURA_MOD_SHAPESHIFT);
     }
 
-    DismissActivePets();
+    dismissActivePets();
 
     setMountDisplayId(modelid);
     addUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
@@ -7902,7 +7902,7 @@ void Player::endDuel(uint8_t condition)
     EventAttackStop();
     m_duelPlayer->EventAttackStop();
 
-    for (auto& summon : GetSummons())
+    for (auto& summon : getSummons())
     {
         summon->getCombatHandler().clearCombat();
         summon->getAIInterface()->setPetOwner(this);
@@ -7911,7 +7911,7 @@ void Player::endDuel(uint8_t condition)
         summon->getThreatManager().removeMeFromThreatLists();
     }
 
-    for (auto& duelingWithSummon : m_duelPlayer->GetSummons())
+    for (auto& duelingWithSummon : m_duelPlayer->getSummons())
     {
         duelingWithSummon->getCombatHandler().clearCombat();
         duelingWithSummon->getAIInterface()->setPetOwner(this);
@@ -7978,7 +7978,7 @@ void Player::cancelDuel()
             m_auras[i]->removeAura();
     }
 
-    for (const auto& summonedPet : GetSummons())
+    for (const auto& summonedPet : getSummons())
     {
         if (summonedPet && summonedPet->isAlive())
             summonedPet->SetPetAction(PET_ACTION_STAY);
@@ -8149,3 +8149,189 @@ void Player::updateRestState()
     setRestState(m_restState);
     setRestStateXp(m_restAmount >> 1);
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Pets/Summons
+std::list<Pet*> Player::getSummons() { return m_summons; }
+void Player::addPetToSummons(Pet* pet) { m_summons.push_front(pet); }
+
+void Player::removePetFromSummons(Pet* pet)
+{
+    for (auto itr = m_summons.begin(); itr != m_summons.end(); ++itr)
+    {
+        if ((*itr)->getGuid() == pet->getGuid())
+        {
+            m_summons.erase(itr);
+            break;
+        }
+    }
+}
+
+Pet* Player::getFirstPetFromSummons() const
+{
+    if (!m_summons.empty())
+        return m_summons.front();
+
+    return nullptr;
+}
+
+PlayerPet* Player::getPlayerPet(uint32_t petId)
+{
+    const auto itr = m_pets.find(petId);
+    if (itr != m_pets.end())
+        return itr->second;
+
+    return nullptr;
+}
+
+void Player::addPlayerPet(PlayerPet* pet, uint32_t index) { m_pets[index] = pet; }
+
+void Player::removePlayerPet(uint32_t petId)
+{
+    const auto itr = m_pets.find(petId);
+    if (itr != m_pets.end())
+    {
+        delete itr->second;
+        m_pets.erase(itr);
+    }
+    CharacterDatabase.Execute("DELETE FROM playerpetspells WHERE ownerguid=%u AND petnumber=%u", getGuidLow(), petId);
+}
+
+uint8_t Player::getPetCount() const { return static_cast<uint8_t>(m_pets.size()); }
+
+uint32_t Player::getFreePetNumber() const
+{
+    const uint32_t newMax = m_maxPetNumber + 1;
+    for (uint32_t i = 1; i < m_maxPetNumber; ++i)
+        if (!m_pets.contains(i))
+            return i;
+
+    return newMax;
+}
+
+void Player::spawnPet(uint32_t petId)
+{
+    const auto itr = m_pets.find(petId);
+    if (itr == m_pets.end())
+    {
+        sLogger.failure("PET SYSTEM: " I64FMT " Tried to load invalid pet %u", getGuid(), petId);
+        return;
+    }
+
+    Pet* pet = sObjectMgr.CreatePet(itr->second->entry);
+    pet->LoadFromDB(this, itr->second);
+
+    if (this->isPvpFlagSet())
+        pet->setPvpFlag();
+    else
+        pet->removePvpFlag();
+
+    if (this->isFfaPvpFlagSet())
+        pet->setFfaPvpFlag();
+    else
+        pet->removeFfaPvpFlag();
+
+    if (this->isSanctuaryFlagSet())
+        pet->setSanctuaryFlag();
+    else
+        pet->removeSanctuaryFlag();
+
+    pet->setFaction(this->getFactionTemplate());
+
+    if (itr->second->spellid)
+    {
+        RemoveAura(18789);
+        RemoveAura(18790);
+        RemoveAura(18791);
+        RemoveAura(18792);
+        RemoveAura(35701);
+    }
+}
+
+void Player::spawnActivePet()
+{
+    if (getFirstPetFromSummons() != nullptr || !isAlive() || !IsInWorld())   //\todo  only hunters for now
+        return;
+
+    for (auto& pet : m_pets)
+    {
+        if (pet.second->stablestate == STABLE_STATE_ACTIVE && pet.second->active)
+        {
+            if (pet.second->alive)
+                spawnPet(pet.first);
+
+            return;
+        }
+    }
+}
+
+void Player::dismissActivePets()
+{
+    for (auto itr = m_summons.rbegin(); itr != m_summons.rend();)
+    {
+        if (Pet* summon = *itr)
+        {
+            if (summon->IsSummonedPet())
+                summon->Dismiss();
+            else
+                summon->Remove(true, false);
+        }
+    }
+}
+
+void Player::setStableSlotCount(uint8_t count) { m_stableSlotCount = count; }
+uint8_t Player::getStableSlotCount() const { return m_stableSlotCount; }
+
+uint32_t Player::getUnstabledPetNumber() const
+{
+    if (m_pets.empty())
+        return 0;
+
+    for (const auto& petMap : m_pets)
+        if (petMap.second->stablestate == STABLE_STATE_ACTIVE)
+            return petMap.first;
+
+    return 0;
+}
+
+void Player::eventSummonPet(Pet* summonPet)
+{
+    if (summonPet)
+    {
+        for (auto spellId : mSpells)
+        {
+            if (const auto spellInfo = sSpellMgr.getSpellInfo(spellId))
+            {
+                if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER)
+                {
+                    this->removeAllAurasByIdForGuid(spellId, this->getGuid());
+                    SpellCastTargets targets(this->getGuid());
+                    Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);
+                    spell->prepare(&targets);
+                }
+
+                if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET)
+                {
+                    this->removeAllAurasByIdForGuid(spellId, this->getGuid());
+                    SpellCastTargets targets(summonPet->getGuid());
+                    Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);
+                    spell->prepare(&targets);
+                }
+            }
+        }
+
+        for (const auto& aura : m_auras)
+            if (aura && aura->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_ON_PET)
+                aura->removeAura();
+    }
+}
+
+void Player::eventDismissPet()
+{
+    for (const auto& aura : m_auras)
+        if (aura && aura->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
+            aura->removeAura();
+}
+
+Object* Player::getSummonedObject() const { return m_summonedObject; }
+void Player::setSummonedObject(Object* summonedObject) { m_summonedObject = summonedObject; }

@@ -3032,7 +3032,7 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 /*i*/, DBC::Structures::SummonP
     if (p_caster == nullptr)
         return;
 
-    p_caster->DismissActivePets();
+    p_caster->dismissActivePets();
     p_caster->RemoveFieldSummon();
 
     int32 count = 0;
@@ -3077,7 +3077,7 @@ void Spell::SpellEffectSummonPossessed(uint32 /*i*/, DBC::Structures::SummonProp
     if (p_caster == nullptr)
         return;
 
-    p_caster->DismissActivePets();
+    p_caster->dismissActivePets();
     p_caster->RemoveFieldSummon();
 
     Summon* s = p_caster->GetMapMgr()->CreateSummon(properties_->Id, SUMMONTYPE_POSSESSED, GetDuration());
@@ -4027,7 +4027,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
     }
 
     if (p_caster != nullptr)
-        p_caster->SetSummonedObject(go);
+        p_caster->setSummonedObject(go);
 }
 
 void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanent
@@ -4146,24 +4146,24 @@ void Spell::SpellEffectSummonPet(uint8_t effectIndex) //summon - pet
 
     if (getSpellInfo()->getId() == 883)  // "Call Pet" spell
     {
-        if (p_caster->GetSummon())
+        if (p_caster->getFirstPetFromSummons())
         {
             sendCastResult(SPELL_FAILED_ALREADY_HAVE_SUMMON);
             return;
         }
 
-        uint32 petno = p_caster->GetUnstabledPetNumber();
+        uint32 petno = p_caster->getUnstabledPetNumber();
         if (petno)
         {
-            if (p_caster->GetPlayerPet(petno) == nullptr)
+            if (p_caster->getPlayerPet(petno) == nullptr)
             {
                 sendCastResult(SPELL_FAILED_ALREADY_HAVE_SUMMON);
                 return;
             }
 
-            if (p_caster->GetPlayerPet(petno)->alive)
+            if (p_caster->getPlayerPet(petno)->alive)
             {
-                p_caster->SpawnPet(petno);
+                p_caster->spawnPet(petno);
             }
             else
             {
@@ -4184,7 +4184,7 @@ void Spell::SpellEffectSummonPet(uint8_t effectIndex) //summon - pet
     //felhunter:     Devour Magic,Paranoia,Spell Lock,  Tainted Blood
 
     // remove old pet
-    Pet* old = static_cast< Player* >(m_caster)->GetSummon();
+    Pet* old = static_cast< Player* >(m_caster)->getFirstPetFromSummons();
     if (old)
         old->Dismiss();
 
@@ -5047,7 +5047,7 @@ void Spell::SpellEffectFeedPet(uint8_t effectIndex)  // Feed Pet
     if (!itemTarget || !p_caster)
         return;
 
-    Pet* pPet = p_caster->GetSummon();
+    Pet* pPet = p_caster->getFirstPetFromSummons();
     if (!pPet)
         return;
 
@@ -5082,7 +5082,7 @@ void Spell::SpellEffectDismissPet(uint8_t /*effectIndex*/)
     // remove pet.. but don't delete so it can be called later
     if (!p_caster) return;
 
-    Pet* pPet = p_caster->GetSummon();
+    Pet* pPet = p_caster->getFirstPetFromSummons();
     if (!pPet) return;
     pPet->Remove(true, true);
 }
@@ -5171,7 +5171,7 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
     //this is pet resurrect
     if (!p_caster)
         return;
-    Pet* pPet = p_caster->GetSummon();
+    Pet* pPet = p_caster->getFirstPetFromSummons();
     if (pPet)
     {
         //\note remove all dynamic flags
@@ -5185,8 +5185,8 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
     else
     {
 
-        p_caster->SpawnPet(p_caster->GetUnstabledPetNumber());
-        pPet = p_caster->GetSummon();
+        p_caster->spawnPet(p_caster->getUnstabledPetNumber());
+        pPet = p_caster->getFirstPetFromSummons();
         if (pPet == nullptr)//no pets to Revive
             return;
 
@@ -5949,8 +5949,8 @@ void Spell::SpellEffectCreatePet(uint8_t effectIndex)
     if (!playerTarget)
         return;
 
-    if (playerTarget->GetSummon())
-        playerTarget->GetSummon()->Remove(true, true);
+    if (playerTarget->getFirstPetFromSummons())
+        playerTarget->getFirstPetFromSummons()->Remove(true, true);
 
     CreatureProperties const* ci = sMySQLStore.getCreatureProperties(getSpellInfo()->getEffectMiscValue(effectIndex));
     if (ci)

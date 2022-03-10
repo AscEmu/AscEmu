@@ -367,7 +367,7 @@ void WorldSession::LogoutPlayer(bool Save)
 
         _player->getSummonInterface()->removeAllSummons();
 
-        _player->DismissActivePets();
+        _player->dismissActivePets();
 
         // _player->SaveAuras();
 

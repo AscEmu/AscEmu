@@ -369,7 +369,7 @@ void WorldSession::sendStabledPetList(uint64_t npcguid)
     std::vector<PlayerStablePetList> stableList;
     PlayerStablePetList stablePet;
 
-    for (const auto itr : _player->m_Pets)
+    for (const auto itr : _player->m_pets)
     {
         stablePet.petNumber = itr.first;
         stablePet.entry = itr.second->entry;
@@ -383,7 +383,7 @@ void WorldSession::sendStabledPetList(uint64_t npcguid)
         stableList.push_back(stablePet);
     }
 
-    SendPacket(MsgListStabledPets(npcguid, static_cast<uint8_t>(_player->m_Pets.size()), _player->m_StableSlotCount, stableList).serialise().get());
+    SendPacket(MsgListStabledPets(npcguid, static_cast<uint8_t>(_player->m_pets.size()), _player->m_stableSlotCount, stableList).serialise().get());
 }
 
 void WorldSession::sendTrainerList(Creature* creature)

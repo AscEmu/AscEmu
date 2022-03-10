@@ -424,7 +424,7 @@ void Aura::EventUpdatePetAA(AuraEffectModifier* aurEff, float r)
     else
         return;
 
-    std::list< Pet* > pl = p->GetSummons();
+    std::list< Pet* > pl = p->getSummons();
     for (std::list< Pet* >::iterator itr = pl.begin(); itr != pl.end(); ++itr)
     {
         Pet* pet = *itr;
@@ -718,7 +718,7 @@ void Aura::ClearAATargets()
     {
         Player* p = static_cast<Player*>(m_target);
 
-        std::list< Pet* > pl = p->GetSummons();
+        std::list< Pet* > pl = p->getSummons();
         for (std::list< Pet* >::iterator itr = pl.begin(); itr != pl.end(); ++itr)
         {
             Pet* pet = *itr;
@@ -3165,7 +3165,7 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
         if (p_target->getShapeShiftForm() && !(p_target->getShapeShiftForm() & (FORM_BATTLESTANCE | FORM_DEFENSIVESTANCE | FORM_BERSERKERSTANCE)))
             p_target->removeAllAurasByAuraEffect(SPELL_AURA_MOD_SHAPESHIFT);
 
-        p_target->DismissActivePets();
+        p_target->dismissActivePets();
         p_target->addUnitFlags(UNIT_FLAG_MOUNT);
         p_target->mountvehicleid = ci->vehicleid;
 
@@ -3207,7 +3207,7 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
         //m_target->removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
 
         //if we had pet then respawn
-        p_target->SpawnActivePet();
+        p_target->spawnActivePet();
         p_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_DISMOUNT);
     }
 }
@@ -5718,7 +5718,7 @@ void Aura::SpellAuraModPossessPet(AuraEffectModifier* /*aurEff*/, bool apply)
     if (!m_target->isPet())
         return;
 
-    std::list<Pet*> summons = pCaster->GetSummons();
+    std::list<Pet*> summons = pCaster->getSummons();
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
     {
         if (*itr == m_target)

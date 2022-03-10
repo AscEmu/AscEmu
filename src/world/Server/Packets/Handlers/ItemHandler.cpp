@@ -312,7 +312,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         }
         else
         {
-            if (!_player->GetSummon() || _player->GetSummon()->getEntry() != static_cast<uint32_t>(itemProto->ForcedPetId))
+            if (!_player->getFirstPetFromSummons() || _player->getFirstPetFromSummons()->getEntry() != static_cast<uint32_t>(itemProto->ForcedPetId))
             {
                 _player->sendCastFailedPacket(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, srlPacket.castCount, 0);
                 return;

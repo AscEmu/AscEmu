@@ -27,7 +27,7 @@ bool ChatHandler::HandlePetCreateCommand(const char* args, WorldSession* m_sessi
         return true;
     }
 
-    selected_player->DismissActivePets();
+    selected_player->dismissActivePets();
     selected_player->RemoveFieldSummon();
 
     float followangle = -M_PI_FLOAT * 2;
@@ -64,14 +64,14 @@ bool ChatHandler::HandlePetDismissCommand(const char* /*args*/, WorldSession* m_
     Pet* selected_pet = nullptr;
     if (selected_player != nullptr)
     {
-        if (selected_player->GetSummon() == nullptr)
+        if (selected_player->getFirstPetFromSummons() == nullptr)
         {
             RedSystemMessage(m_session, "Player has no pet.");
             return true;
         }
         else
         {
-            selected_player->DismissActivePets();
+            selected_player->dismissActivePets();
         }
     }
     else
@@ -111,7 +111,7 @@ bool ChatHandler::HandlePetRenameCommand(const char* args, WorldSession* m_sessi
     if (selected_player == nullptr)
         return true;
 
-    Pet* selected_pet = selected_player->GetSummon();
+    Pet* selected_pet = selected_player->getFirstPetFromSummons();
     if (selected_pet == nullptr)
     {
         RedSystemMessage(m_session, "You have no pet.");
@@ -147,7 +147,7 @@ bool ChatHandler::HandlePetAddSpellCommand(const char* args, WorldSession* m_ses
     if (selected_player == nullptr)
         return true;
 
-    if (selected_player->GetSummon() == nullptr)
+    if (selected_player->getFirstPetFromSummons() == nullptr)
     {
         RedSystemMessage(m_session, "%s has no pet.", selected_player->getName().c_str());
         return true;
@@ -164,7 +164,7 @@ bool ChatHandler::HandlePetAddSpellCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
-    std::list<Pet*> summons = selected_player->GetSummons();
+    std::list<Pet*> summons = selected_player->getSummons();
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
     {
         (*itr)->AddSpell(spell_entry, true);
@@ -182,7 +182,7 @@ bool ChatHandler::HandlePetRemoveSpellCommand(const char* args, WorldSession* m_
     if (selected_player == nullptr)
         return true;
 
-    if (selected_player->GetSummon() == nullptr)
+    if (selected_player->getFirstPetFromSummons() == nullptr)
     {
         RedSystemMessage(m_session, "%s has no pet.", selected_player->getName().c_str());
         return true;
@@ -199,7 +199,7 @@ bool ChatHandler::HandlePetRemoveSpellCommand(const char* args, WorldSession* m_
         return true;
     }
 
-    std::list<Pet*> summons = selected_player->GetSummons();
+    std::list<Pet*> summons = selected_player->getSummons();
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
     {
         (*itr)->RemoveSpell(SpellId);
@@ -225,7 +225,7 @@ bool ChatHandler::HandlePetSetLevelCommand(const char* args, WorldSession* m_ses
     Pet* selected_pet = nullptr;
     if (selected_player != nullptr)
     {
-        selected_pet = selected_player->GetSummon();
+        selected_pet = selected_player->getFirstPetFromSummons();
         if (selected_pet == nullptr)
         {
             RedSystemMessage(m_session, "Player has no pet.");

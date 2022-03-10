@@ -1814,7 +1814,7 @@ void Aura::spellAuraEffectAddModifier(AuraEffectModifier* aurEff, bool apply)
     // Hunter's beastmastery talents
     if (aurEff->getAuraEffectType() == SPELL_AURA_ADD_FLAT_MODIFIER)
     {
-        const auto pet = getPlayerOwner()->GetSummon();
+        const auto pet = getPlayerOwner()->getFirstPetFromSummons();
         if (pet != nullptr)
         {
             switch (getSpellInfo()->getId())

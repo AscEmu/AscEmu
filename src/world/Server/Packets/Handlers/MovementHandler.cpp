@@ -203,7 +203,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// stop using go on movement
-    if (auto* const summoned_object = _player->m_SummonedObject)
+    if (auto* const summoned_object = _player->m_summonedObject)
     {
         if (summoned_object->isGameObject())
         {
@@ -573,7 +573,7 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
         _player->setTransferStatus(TRANSFER_NONE);
         _player->SpeedCheatReset();
 
-        for (auto summon : _player->GetSummons())
+        for (auto summon : _player->getSummons())
             summon->SetPosition(_player->GetPositionX() + 2, _player->GetPositionY() + 2, _player->GetPositionZ(), M_PI_FLOAT);
 
         if (_player->m_sentTeleportPosition.x != 999999.0f)

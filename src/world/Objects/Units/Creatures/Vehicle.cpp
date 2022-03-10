@@ -546,7 +546,7 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
         if (!veSeat->hasFlag(DBC::Structures::VehicleSeatFlagsB::VEHICLE_SEAT_FLAG_B_KEEP_PET))
         {
             // Unsummon Pets
-            player->DismissActivePets();
+            player->dismissActivePets();
         }
     }
 

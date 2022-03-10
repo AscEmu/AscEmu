@@ -44,7 +44,7 @@ namespace AscEmu::Packets
             {
                 packet << player->getGuid();
 
-                auto playerPet = player->GetSummon();
+                auto playerPet = player->getFirstPetFromSummons();
                 if (playerPet)
                     packet << uint32_t(0x7FFFFFFF);
                 else

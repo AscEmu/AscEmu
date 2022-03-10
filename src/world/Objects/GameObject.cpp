@@ -95,8 +95,8 @@ GameObject::~GameObject()
     if (uint32_t guid = static_cast<uint32_t>(getCreatedByGuid()))
     {
         Player* player = sObjectMgr.GetPlayer(guid);
-        if (player && player->GetSummonedObject() == this)
-            player->SetSummonedObject(nullptr);
+        if (player && player->getSummonedObject() == this)
+            player->setSummonedObject(nullptr);
 
         if (player == m_summoner)
             m_summoner = nullptr;

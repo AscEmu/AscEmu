@@ -969,7 +969,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
         }
     }
 
-    Pet* pet = pPlayer->GetSummon();
+    Pet* pet = pPlayer->getFirstPetFromSummons();
     if (mask & GROUP_UPDATE_FLAG_PET_GUID)
     {
         if (pet)

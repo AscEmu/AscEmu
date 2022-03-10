@@ -2363,7 +2363,7 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         Unit* owner = GetMapMgr()->GetUnit(getCharmedByGuid());
 
         if (owner != NULL && owner->isPlayer())
-            static_cast<Player*>(owner)->EventDismissPet();
+            static_cast<Player*>(owner)->eventDismissPet();
     }
 
     if (getCharmedByGuid() != 0)

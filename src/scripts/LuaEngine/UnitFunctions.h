@@ -5312,7 +5312,7 @@ public:
     static int ResetPetTalents(lua_State* /*L*/, Unit* ptr)
     {
         TEST_PLAYER()
-        Pet* pet = static_cast<Player*>(ptr)->GetSummon();
+        Pet* pet = static_cast<Player*>(ptr)->getFirstPetFromSummons();
         if (pet != nullptr)
         {
             pet->WipeTalents();
