@@ -583,7 +583,7 @@ MapMgr* InstanceMgr::GetInstance(Object* obj)
                         // this is our instance.
                         if (in->m_mapMgr == nullptr)
                         {
-                            /*if (plr->m_TeleportState == 1)
+                            /*if (plr->m_teleportState == 1)
                             {
                             // the player is loading. boot him out to the entry point, we don't want to spam useless instances on startup.
                             m_mapLock.Release();

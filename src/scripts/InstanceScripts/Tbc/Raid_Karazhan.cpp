@@ -46,7 +46,7 @@ public:
         switch (Id)
         {
             case 4:
-                Plr->SafeTeleport(Plr->GetMapId(), Plr->GetInstanceID(), -11165.123f, -1911.13f, 232.009f, 2.3255f);
+                Plr->safeTeleport(Plr->GetMapId(), Plr->GetInstanceID(), LocationVector(-11165.123f, -1911.13f, 232.009f, 2.3255f));
                 break;
         }
         GossipMenu::senGossipComplete(Plr);

@@ -90,7 +90,7 @@ public:
     {
         if (player->hasQuestFinished(7761) && player->getLevel() >= 58 && player->isInGroup())
         {
-            player->SafeTeleport(469, 0, -7672.939941f, -1107.307617f, 396.649994f, 0.616532f);
+            player->safeTeleport(469, 0, LocationVector(-7672.939941f, -1107.307617f, 396.649994f, 0.616532f));
         }
         else if (player->getLevel() <= 57 || player->hasQuestFinished(7761) == false)
         {

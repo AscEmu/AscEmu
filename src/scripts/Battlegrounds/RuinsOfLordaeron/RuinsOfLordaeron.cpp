@@ -90,6 +90,6 @@ bool RuinsOfLordaeron::HookHandleRepop(Player* plr)
 {
     LocationVector dest(0, 0, 0, 0);
     dest.ChangeCoords({ 1286.112061f, 1668.334961f, 39.289127f });
-    plr->SafeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);
+    plr->safeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);
     return true;
 }

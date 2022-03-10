@@ -84,7 +84,7 @@ bool ChatHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSession* m
         {
             if (creatureSpawn->id == spawn_id)
             {
-                m_session->GetPlayer()->SafeTeleport(creatureSpawn->mapId, 0, LocationVector(creatureSpawn->x, creatureSpawn->y, creatureSpawn->z));
+                m_session->GetPlayer()->safeTeleport(creatureSpawn->mapId, 0, LocationVector(creatureSpawn->x, creatureSpawn->y, creatureSpawn->z));
                 return true;
             }
         }
@@ -110,7 +110,7 @@ bool ChatHandler::HandleGoGameObjectSpawnCommand(const char* args, WorldSession*
         {
             if (goSpawn->id == spawn_id)
             {
-                m_session->GetPlayer()->SafeTeleport(goSpawn->map, 0, LocationVector(goSpawn->position_x, goSpawn->position_y, goSpawn->position_z));
+                m_session->GetPlayer()->safeTeleport(goSpawn->map, 0, LocationVector(goSpawn->position_x, goSpawn->position_y, goSpawn->position_z));
                 return true;
             }
         }
@@ -197,7 +197,7 @@ bool ChatHandler::HandleGoStartLocationCommand(const char* args, WorldSession* m
 
     GreenSystemMessage(m_session, "Teleporting %s to %s starting location.", player_target->getName().c_str(), race.c_str());
 
-    player_target->SafeTeleport(player_info->mapId, 0, LocationVector(player_info->positionX, player_info->positionY, player_info->positionZ));
+    player_target->safeTeleport(player_info->mapId, 0, LocationVector(player_info->positionX, player_info->positionY, player_info->positionZ));
     return true;
 }
 
@@ -221,7 +221,7 @@ bool ChatHandler::HandleGoTriggerCommand(const char* args, WorldSession* m_sessi
         return true;
     }
 
-    m_session->GetPlayer()->SafeTeleport(area_trigger_entry->mapid, instance_id, LocationVector(area_trigger_entry->x, area_trigger_entry->y, area_trigger_entry->z, area_trigger_entry->box_radius));
+    m_session->GetPlayer()->safeTeleport(area_trigger_entry->mapid, instance_id, LocationVector(area_trigger_entry->x, area_trigger_entry->y, area_trigger_entry->z, area_trigger_entry->box_radius));
     BlueSystemMessage(m_session, "Teleported to trigger %u on [%u][%.2f][%.2f][%.2f]", area_trigger_entry->id, area_trigger_entry->mapid, area_trigger_entry->x, area_trigger_entry->y, area_trigger_entry->z);
     return true;
 }
@@ -522,7 +522,7 @@ bool ChatHandler::HandleWorldPortCommand(const char* args, WorldSession* m_sessi
     }
 
     LocationVector vec(x, y, z, o);
-    m_session->GetPlayer()->SafeTeleport(mapid, 0, vec);
+    m_session->GetPlayer()->safeTeleport(mapid, 0, vec);
 
     return true;
 }
@@ -802,11 +802,11 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession* m_session)
 
 #if VERSION_STRING < Cata
         if (m_session->GetPlayer()->GetMapId() == chr->GetMapId() && m_session->GetPlayer()->GetInstanceID() == chr->GetInstanceID())
-            m_session->GetPlayer()->SafeTeleport(chr->GetMapId(), chr->GetInstanceID(), chr->GetPosition());
+            m_session->GetPlayer()->safeTeleport(chr->GetMapId(), chr->GetInstanceID(), chr->GetPosition());
         else
-            m_session->GetPlayer()->SafeTeleport(chr->GetMapMgr(), chr->GetPosition());
+            m_session->GetPlayer()->safeTeleport(chr->GetMapMgr(), chr->GetPosition());
 #else
-        m_session->GetPlayer()->SafeTeleport(chr->GetMapId(), 0, chr->GetPosition());
+        m_session->GetPlayer()->safeTeleport(chr->GetMapId(), 0, chr->GetPosition());
 #endif
 
     }

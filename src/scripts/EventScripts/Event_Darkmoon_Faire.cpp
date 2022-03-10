@@ -65,15 +65,15 @@ public:
 
         if (CurrentPlayer->GetMapId() == 530) // Shattrath
         {
-            CurrentPlayer->SafeTeleport(530, 0, -1742.640869f, 5454.712402f, -7.928009f, 4.606363f);
+            CurrentPlayer->safeTeleport(530, 0, LocationVector(-1742.640869f, 5454.712402f, -7.928009f, 4.606363f));
         }
         else if (CurrentPlayer->GetMapId() == 0) // Elwynn Forest
         {
-            CurrentPlayer->SafeTeleport(0, 0, -9569.150391f, -14.753426f, 68.051422f, 4.874008f);
+            CurrentPlayer->safeTeleport(0, 0, LocationVector(-9569.150391f, -14.753426f, 68.051422f, 4.874008f));
         }
         else if (CurrentPlayer->GetMapId() == 1) // Mulgore
         {
-            CurrentPlayer->SafeTeleport(1, 0, -1326.711914f, 86.301125f, 133.093918f, 3.510725f);
+            CurrentPlayer->safeTeleport(1, 0, LocationVector(-1326.711914f, 86.301125f, 133.093918f, 3.510725f));
         }
 
         CurrentPlayer->setMoveRoot(false);

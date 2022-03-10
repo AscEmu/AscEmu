@@ -1344,7 +1344,7 @@ uint8 get_byte(uint32 buffer, uint32 index)
     return (uint8)buffer;
 }
 
-bool Creature::Teleport(const LocationVector& vec, MapMgr* map)
+bool Creature::teleport(const LocationVector& vec, MapMgr* map)
 {
     if (map == nullptr)
         return false;

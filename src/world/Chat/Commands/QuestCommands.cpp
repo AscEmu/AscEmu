@@ -1330,7 +1330,7 @@ bool ChatHandler::HandleQuestStarterSpawnCommand(const char* args, WorldSession*
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
 
-    m_session->GetPlayer()->SafeTeleport(locmap, 0, LocationVector(x, y, z));
+    m_session->GetPlayer()->safeTeleport(locmap, 0, LocationVector(x, y, z));
 
     return true;
 }
@@ -1401,7 +1401,7 @@ bool ChatHandler::HandleQuestFinisherSpawnCommand(const char* args, WorldSession
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
 
-    m_session->GetPlayer()->SafeTeleport(locmap, 0, LocationVector(x, y, z));
+    m_session->GetPlayer()->safeTeleport(locmap, 0, LocationVector(x, y, z));
 
     return true;
 }

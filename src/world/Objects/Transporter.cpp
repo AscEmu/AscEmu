@@ -537,7 +537,7 @@ void Transporter::TeleportPlayers(float x, float y, float z, float o, uint32_t n
             if (newMap)
                 player->GetSession()->SendPacket(SmsgTransferPending(newMapId, true, getEntry(), oldMapId).serialise().get());
 
-            bool teleport_successful = player->Teleport(LocationVector(destX, destY, destZ, destO), GetMapMgr());
+            bool teleport_successful = player->teleport(LocationVector(destX, destY, destZ, destO), GetMapMgr());
             if (!teleport_successful)
             {
                 player->repopAtGraveyard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId());

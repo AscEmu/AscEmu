@@ -1005,7 +1005,7 @@ bool IsleOfConquest::HookHandleRepop(Player* plr)
         return false;
 
     // port to it and queue for auto-resurrect
-    plr->SafeTeleport(plr->GetMapId(), plr->GetInstanceID(), dest_pos);
+    plr->safeTeleport(plr->GetMapId(), plr->GetInstanceID(), dest_pos);
     QueuePlayerForResurrect(plr, graveyards[id].spiritguide);
 
     return true;

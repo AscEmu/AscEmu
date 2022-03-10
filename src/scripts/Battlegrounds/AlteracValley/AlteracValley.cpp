@@ -1034,7 +1034,7 @@ bool AlteracValley::HookHandleRepop(Player* plr)
     }
 
     // port to it
-    plr->SafeTeleport(plr->GetMapId(), plr->GetInstanceID(), dest_pos);
+    plr->safeTeleport(plr->GetMapId(), plr->GetInstanceID(), dest_pos);
     return false;
 }
 

@@ -24,7 +24,7 @@ public:
     void OnPlayerEnter(Player* pPlayer) override
     {
         // Fixes a bug where you enter the instance and you run so far and teleports you out, changed DB coords still not working so this is a solution.
-        pPlayer->SafeTeleport(MAP_HALLSOFREFLECTION, pPlayer->GetInstanceID(), 5260.970f, 1956.850f, 707.692f, 1.08f);
+        pPlayer->safeTeleport(MAP_HALLSOFREFLECTION, pPlayer->GetInstanceID(), LocationVector(5260.970f, 1956.850f, 707.692f, 1.08f));
         if (!spawnsCreated())
         {
             if (pPlayer->getTeam() == TEAM_ALLIANCE)

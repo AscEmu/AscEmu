@@ -448,7 +448,7 @@ bool StrandOfTheAncient::HookHandleRepop(Player* plr)
         return false;
 
     // port to it and queue for auto-resurrect
-    plr->SafeTeleport(plr->GetMapId(), plr->GetInstanceID(), dest_pos);
+    plr->safeTeleport(plr->GetMapId(), plr->GetInstanceID(), dest_pos);
     QueuePlayerForResurrect(plr, graveyard[id].spiritguide);
 
     return true;
@@ -770,14 +770,14 @@ void StrandOfTheAncient::PrepareRound()
         for (std::set< Player* >::iterator itr = m_players[Attackers].begin(); itr != m_players[Attackers].end(); ++itr)
         {
             Player* p = *itr;
-            p->SafeTeleport(p->GetMapId(), p->GetInstanceID(), sotaAttackerStartingPosition[0]);
+            p->safeTeleport(p->GetMapId(), p->GetInstanceID(), sotaAttackerStartingPosition[0]);
             p->castSpell(p, BG_PREPARATION, true);
         }
 
         for (std::set<Player*>::iterator itr = m_players[Defenders].begin(); itr != m_players[Defenders].end(); ++itr)
         {
             Player* p = *itr;
-            p->SafeTeleport(p->GetMapId(), p->GetInstanceID(), sotaDefenderStartingPosition);
+            p->safeTeleport(p->GetMapId(), p->GetInstanceID(), sotaDefenderStartingPosition);
             p->castSpell(p, BG_PREPARATION, true);
         }
 
@@ -795,7 +795,7 @@ void StrandOfTheAncient::StartRound()
     {
         Player* p = *itr;
 
-        p->SafeTeleport(p->GetMapId(), p->GetInstanceID(), sotaAttackerStartingPosition[SOTA_ROUND_STARTED]);
+        p->safeTeleport(p->GetMapId(), p->GetInstanceID(), sotaAttackerStartingPosition[SOTA_ROUND_STARTED]);
         p->RemoveAura(BG_PREPARATION);
     }
 

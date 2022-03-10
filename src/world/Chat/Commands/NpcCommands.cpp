@@ -103,7 +103,7 @@ bool ChatHandler::HandleNpcAppearCommand(const char* /*_*/, WorldSession* sessio
         return true;
     }
 
-    session->GetPlayer()->Teleport(target->GetPosition(), target->GetMapMgr());
+    session->GetPlayer()->teleport(target->GetPosition(), target->GetMapMgr());
     return true;
 }
 

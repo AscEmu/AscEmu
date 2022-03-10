@@ -35,9 +35,6 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        float x, y, z, orientation;
-        uint32_t mapid;
-
         std::map<uint32_t, GameobjectTeleport*>::iterator itr = m_teleStorage.find(this->_gameobject->getEntry());
         if (itr != m_teleStorage.end())
         {
@@ -65,13 +62,14 @@ public:
 #endif
             else
             {
-                mapid = gt->mapid;
-                x = gt->x;
-                y = gt->y;
-                z = gt->z;
-                orientation = gt->o;
+                uint32_t mapid = gt->mapid;
+                LocationVector location;
+                location.x = gt->x;
+                location.y = gt->y;
+                location.z = gt->z;
+                location.o = gt->o;
 
-                pPlayer->SafeTeleport(mapid, 0, x, y, z, orientation);
+                pPlayer->safeTeleport(mapid, 0, location);
             }
         }
     }

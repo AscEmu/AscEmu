@@ -1780,7 +1780,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
         float new_y = unitTarget->GetPositionY() - (shadowstep_distance * sinf(ang));
         /* Send a movement packet to "charge" at this target. Similar to warrior charge. */
         p_caster->m_zAxisPosition = 0.0f;
-        p_caster->SafeTeleport(p_caster->GetMapId(), p_caster->GetInstanceID(), LocationVector(new_x, new_y, (unitTarget->GetPositionZ() + 0.1f), ang));
+        p_caster->safeTeleport(p_caster->GetMapId(), p_caster->GetInstanceID(), LocationVector(new_x, new_y, (unitTarget->GetPositionZ() + 0.1f), ang));
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3182,7 +3182,7 @@ void Spell::SpellEffectLeap(uint8_t effectIndex) // Leap
         float destx, desty, destz;
         unitTarget->GetPoint(unitTarget->GetOrientation(), radius, destx, desty, destz);
         if (playerTarget != nullptr)
-            playerTarget->SafeTeleport(playerTarget->GetMapId(), playerTarget->GetInstanceID(), LocationVector(destx, desty, destz, playerTarget->GetOrientation()));
+            playerTarget->safeTeleport(playerTarget->GetMapId(), playerTarget->GetInstanceID(), LocationVector(destx, desty, destz, playerTarget->GetOrientation()));
         else
         {
             float speedXY, speedZ;
@@ -4697,8 +4697,8 @@ void Spell::SpellEffectStuck(uint8_t /*effectIndex*/)
     if (!playerTarget || playerTarget != p_caster)
         return;
 
-    sEventMgr.AddEvent(playerTarget, &Player::EventTeleport, playerTarget->getBindMapId(), LocationVector(playerTarget->getBindPosition().x, playerTarget->getBindPosition().y,
-                       playerTarget->getBindPosition().z, playerTarget->getBindPosition().o), EVENT_PLAYER_TELEPORT, 50, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(playerTarget, &Player::eventTeleport, playerTarget->getBindMapId(), LocationVector(playerTarget->getBindPosition().x, playerTarget->getBindPosition().y,
+                       playerTarget->getBindPosition().z, playerTarget->getBindPosition().o), uint32_t(0), EVENT_PLAYER_TELEPORT, 50, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     /*
     playerTarget->SafeTeleport(playerTarget->getBindMapId(), 0, playerTarget->GetBindPositionX(), playerTarget->GetBindPositionY(), playerTarget->GetBindPositionZ(), 3.14f);*/
 }

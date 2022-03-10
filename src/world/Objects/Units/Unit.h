@@ -1133,8 +1133,6 @@ public:
     friend class AIInterface;
     friend class Aura;
 
-    virtual bool Teleport(const LocationVector& vec, MapMgr* map) = 0;
-
     virtual void Deactivate(MapMgr* mgr);
 
     bool  canReachWithAttack(Unit* pVictim);

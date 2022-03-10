@@ -544,7 +544,7 @@ bool IOCTeleporterIn(uint8_t /*effectIndex*/, Spell* s)
         return true;
 
     LocationVector v(IOCTeleInLocations[j][0], IOCTeleInLocations[j][1], IOCTeleInLocations[j][2]);
-    p->SafeTeleport(p->GetMapId(), p->GetInstanceID(), v);
+    p->safeTeleport(p->GetMapId(), p->GetInstanceID(), v);
 
     return true;
 }
@@ -575,7 +575,7 @@ bool IOCTeleporterOut(uint8_t /*effectIndex*/, Spell* s)
         return true;
 
     LocationVector v(IOCTeleOutLocations[j][0], IOCTeleOutLocations[j][1], IOCTeleOutLocations[j][2]);
-    p->SafeTeleport(p->GetMapId(), p->GetInstanceID(), v);
+    p->safeTeleport(p->GetMapId(), p->GetInstanceID(), v);
 
     return true;
 }
@@ -613,7 +613,7 @@ bool SOTATeleporter(uint8_t /*effectIndex*/, Spell* s)
 
     dest.ChangeCoords({ sotaTransDest[closest_platform][0], sotaTransDest[closest_platform][1], sotaTransDest[closest_platform][2], sotaTransDest[closest_platform][3] });
 
-    plr->SafeTeleport(plr->GetMapId(), plr->GetInstanceID(), dest);
+    plr->safeTeleport(plr->GetMapId(), plr->GetInstanceID(), dest);
     return true;
 }
 

@@ -62,6 +62,6 @@ bool DalaranSewers::HookHandleRepop(Player* plr)
 {
     LocationVector dest;
     dest.ChangeCoords({ 1292.51f, 792.05f, 9.34f });
-    plr->SafeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);
+    plr->safeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);
     return true;
 }

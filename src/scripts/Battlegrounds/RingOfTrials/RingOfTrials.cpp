@@ -84,6 +84,6 @@ bool RingOfTrials::HookHandleRepop(Player* plr)
 {
     LocationVector dest;
     dest.ChangeCoords({ 4057.042725f, 2918.686523f, 13.051933f });
-    plr->SafeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);
+    plr->safeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);
     return true;
 }

@@ -325,7 +325,7 @@ public:
             case 3:
             {
                 GossipMenu::senGossipComplete(pPlayer);
-                pPlayer->SafeTeleport(pPlayer->GetInstanceID(), 608, 1830.531006f, 803.939758f, 44.340508f, 6.281611f);
+                pPlayer->safeTeleport(pPlayer->GetInstanceID(), 608, LocationVector(1830.531006f, 803.939758f, 44.340508f, 6.281611f));
             } break;
         }
     }

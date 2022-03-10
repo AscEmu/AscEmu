@@ -255,7 +255,7 @@ public:
 #if VERSION_STRING > TBC
     void UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTypes type, int32 miscvalue1, int32 miscvalue2, uint32 time);
 #endif
-    void Teleport(WorldSession* m_session);
+    void teleport(WorldSession* m_session);
     bool isLFGGroup()
     {
         if(m_GroupType & GROUP_TYPE_LFD)

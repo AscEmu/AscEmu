@@ -178,7 +178,7 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
                 }
             }
             _player->SaveEntryPoint(areaTrigger->mapId);
-            _player->SafeTeleport(areaTrigger->mapId, 0, LocationVector(areaTrigger->x, areaTrigger->y, areaTrigger->z, areaTrigger->o));
+            _player->safeTeleport(areaTrigger->mapId, 0, LocationVector(areaTrigger->x, areaTrigger->y, areaTrigger->z, areaTrigger->o));
         } break;
         case ATTYPE_QUESTTRIGGER:
         {
@@ -194,7 +194,7 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
             if (!_player->isTransferPending())
             {
                 _player->SaveEntryPoint(areaTrigger->mapId);
-                _player->SafeTeleport(areaTrigger->mapId, 0, LocationVector(areaTrigger->x, areaTrigger->y, areaTrigger->z, areaTrigger->o));
+                _player->safeTeleport(areaTrigger->mapId, 0, LocationVector(areaTrigger->x, areaTrigger->y, areaTrigger->z, areaTrigger->o));
             }
         } break;
         default:

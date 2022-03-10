@@ -22,7 +22,7 @@ bool ChatHandler::HandleRecallGoCommand(const char* args, WorldSession* m_sessio
     {
         if (m_session->GetPlayer() != nullptr)
         {
-            m_session->GetPlayer()->SafeTeleport(recall->mapId, 0, recall->location);
+            m_session->GetPlayer()->safeTeleport(recall->mapId, 0, recall->location);
             return true;
         }
     }
@@ -43,8 +43,8 @@ bool ChatHandler::HandleRecallPortUsCommand(const char* args, WorldSession* m_se
         if (!target)
             return true;
 
-        player->SafeTeleport(recall->mapId, 0, recall->location);
-        target->SafeTeleport(recall->mapId, 0, recall->location);
+        player->safeTeleport(recall->mapId, 0, recall->location);
+        target->safeTeleport(recall->mapId, 0, recall->location);
         return true;
     }
 
@@ -164,9 +164,9 @@ bool ChatHandler::HandleRecallPortPlayerCommand(const char* args, WorldSession* 
             player->GetSession()->SystemMessage("%s teleported you to location %s!", m_session->GetPlayer()->getName().c_str(), recall->name.c_str());
 
         if (player->GetInstanceID() != m_session->GetPlayer()->GetInstanceID())
-            sEventMgr.AddEvent(player, &Player::EventSafeTeleport, recall->mapId, uint32_t(0), recall->location, EVENT_PLAYER_TELEPORT, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(player, &Player::eventTeleport, recall->mapId, recall->location, uint32_t(0), EVENT_PLAYER_TELEPORT, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         else
-            player->SafeTeleport(recall->mapId, 0, recall->location);
+            player->safeTeleport(recall->mapId, 0, recall->location);
 
         return true;
     }

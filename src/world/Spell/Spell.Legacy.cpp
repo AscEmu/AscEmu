@@ -2972,7 +2972,7 @@ void Spell::HandleTeleport(LocationVector pos, uint32 mapid, Unit* Target)
 
         if (!sEventMgr.HasEvent(pTarget, EVENT_PLAYER_TELEPORT))
         {
-            sEventMgr.AddEvent(pTarget, &Player::EventTeleport, mapid, pos, EVENT_PLAYER_TELEPORT, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(pTarget, &Player::eventTeleport, mapid, pos, uint32_t(0), EVENT_PLAYER_TELEPORT, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
     }
     else

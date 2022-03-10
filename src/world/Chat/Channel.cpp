@@ -160,7 +160,7 @@ void Channel::leaveChannel(Player* plr, bool sendPacket/* = true*/)
         setOwner(nullptr, nullptr);
 
     // Do not send packet in teleport or logout
-    if (sendPacket && !(plr->GetSession() && (plr->GetSession()->IsLoggingOut() || plr->m_TeleportState == 1)))
+    if (sendPacket && !(plr->GetSession() && (plr->GetSession()->IsLoggingOut() || plr->getTeleportState() == 1)))
         plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOULEFT, m_channelName, 0, 0, m_channelId).serialise().get());
 
     // Announce player leave to other members in channel

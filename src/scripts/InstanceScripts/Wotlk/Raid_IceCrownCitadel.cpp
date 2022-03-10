@@ -792,7 +792,7 @@ public:
                 for (auto itr = Players.begin(); itr != Players.end(); ++itr)
                     if (Player* pPlayer = itr->second)
                         if (pPlayer->GetPositionZ() < 420.0f && pPlayer->IsWithinDistInMap(pCreature, 300.0f))
-                            pPlayer->Teleport(pCreature->GetPosition(), mInstance);
+                            pPlayer->teleport(pCreature->GetPosition(), mInstance);
         }
     }
 

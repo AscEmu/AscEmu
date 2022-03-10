@@ -1037,7 +1037,7 @@ void WorldSession::handleSummonResponseOpcode(WorldPacket& recvPacket)
     if (_player->getCombatHandler().isInCombat())
         return;
 
-    _player->SafeTeleport(_player->m_summonMapId, _player->m_summonInstanceId, _player->m_summonPos);
+    _player->safeTeleport(_player->m_summonMapId, _player->m_summonInstanceId, _player->m_summonPos);
 
     _player->m_summoner = _player->m_summonInstanceId = _player->m_summonMapId = 0;
 }

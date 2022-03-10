@@ -266,7 +266,7 @@ bool EyeOfTheStorm::HookHandleRepop(Player* plr)
         }
     }
 
-    plr->SafeTeleport(plr->GetMapId(), plr->GetInstanceID(), dest);
+    plr->safeTeleport(plr->GetMapId(), plr->GetInstanceID(), dest);
     return true;
 }
 

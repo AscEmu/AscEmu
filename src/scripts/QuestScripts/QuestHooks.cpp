@@ -346,7 +346,7 @@ void OnEmote(Player* pPlayer, uint32_t Emote, Unit* pUnit)
 void InvasionPointCataclysm(Player* pPlayer, uint32_t /*AreaTrigger*/)
 {
     if (pPlayer->hasQuestInQuestLog(10766))
-        pPlayer->SafeTeleport(530, 0, -2723.674561f, 1952.664673f, 146.939743f, 3.185559f);
+        pPlayer->safeTeleport(530, 0, LocationVector(-2723.674561f, 1952.664673f, 146.939743f, 3.185559f));
 }
 
 void TheAffray(Player* pPlayer, uint32_t /*AreaTrigger*/)

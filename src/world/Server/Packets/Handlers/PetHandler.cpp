@@ -311,7 +311,7 @@ void WorldSession::handleBuyStableSlot(WorldPacket& /*recvPacket*/)
     uint32_t stable_cost = 0;
 
 #if VERSION_STRING < Cata
-    const auto stableSlotPrices = sStableSlotPricesStore.LookupEntry(_player->GetStableSlotCount() + 1);
+    const auto stableSlotPrices = sStableSlotPricesStore.LookupEntry(_player->getStableSlotCount() + 1);
 
     if (stableSlotPrices != nullptr)
         stable_cost = stableSlotPrices->Price;

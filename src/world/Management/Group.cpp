@@ -1478,7 +1478,7 @@ void Group::UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTy
 }
 #endif
 
-void Group::Teleport(WorldSession* m_session)
+void Group::teleport(WorldSession* m_session)
 {
     m_groupLock.Acquire();
 

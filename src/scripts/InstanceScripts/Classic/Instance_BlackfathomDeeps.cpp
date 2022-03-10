@@ -56,10 +56,10 @@ class MorriduneGossip : public GossipScript
         switch (Id)
         {
             case 1:
-                pPlayer->SafeTeleport(1, 0, 9951.52f, 2280.32f, 1341.39f, 0);
+                pPlayer->safeTeleport(1, 0, LocationVector(9951.52f, 2280.32f, 1341.39f, 0));
                 break;
             case 2:
-                pPlayer->SafeTeleport(1, 0, 4247.74f, 745.879f, -24.2967f, 4.36996f);
+                pPlayer->safeTeleport(1, 0, LocationVector(4247.74f, 745.879f, -24.2967f, 4.36996f));
                 break;
         }
 

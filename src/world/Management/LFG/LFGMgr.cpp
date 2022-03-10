@@ -1782,7 +1782,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
     if (out)
     {
         player->RemoveAura(LFG_SPELL_LUCK_OF_THE_DRAW);
-        player->SafeTeleport(player->getBGEntryMapId(), player->getBGEntryInstanceId(), player->getBGEntryPosition());
+        player->safeTeleport(player->getBGEntryMapId(), player->getBGEntryInstanceId(), player->getBGEntryPosition());
         return;
     }
 
@@ -1805,10 +1805,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
         else if (player->GetMapId() != uint32(dungeon->map))  // Do not teleport players in dungeon to the entrance
         {
             uint32 mapid = 0;
-            float x = 0;
-            float y = 0;
-            float z = 0;
-            float orientation = 0;
+            LocationVector location = { 0, 0, 0, 0 };
 
             if (!fromOpcode)
             {
@@ -1820,10 +1817,10 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
                     if (plrg && plrg != player && plrg->GetMapId() == uint32(dungeon->map))
                     {
                         mapid = plrg->GetMapId();
-                        x = plrg->GetPositionX();
-                        y = plrg->GetPositionY();
-                        z = plrg->GetPositionZ();
-                        orientation = plrg->GetOrientation();
+                        location.x = plrg->GetPositionX();
+                        location.y = plrg->GetPositionY();
+                        location.z = plrg->GetPositionZ();
+                        location.o = plrg->GetOrientation();
                     }
                 }
             }
@@ -1839,10 +1836,10 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
                 else
                 {
                     mapid = areaTrigger->mapId;
-                    x = areaTrigger->x;
-                    y = areaTrigger->y;
-                    z = areaTrigger->z;
-                    orientation = areaTrigger->o;
+                    location.x = areaTrigger->x;
+                    location.y = areaTrigger->y;
+                    location.z = areaTrigger->z;
+                    location.o = areaTrigger->o;
                 }
             }
 
@@ -1850,7 +1847,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
             {
                 player->setBGEntryPoint(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation(), player->GetMapId(), player->GetInstanceID());
                 player->Dismount();
-                if (!player->SafeTeleport(mapid, 0, x, y, z, orientation))
+                if (!player->safeTeleport(mapid, 0, location))
                     error = LFG_TELEPORTERROR_INVALID_LOCATION;
             }
         }

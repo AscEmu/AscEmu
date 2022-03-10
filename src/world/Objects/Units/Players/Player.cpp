@@ -92,10 +92,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgTriggerMovie.h"
 #include "Server/Packets/SmsgTriggerCinematic.h"
 #include "Server/Packets/SmsgSpellCooldown.h"
+#include "Server/Packets/SmsgTransferPending.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Server/Warden/SpeedDetector.h"
 #include "Spell/Definitions/SpellEffects.hpp"
+#include "Storage/WorldStrings.h"
 
 using namespace AscEmu::Packets;
 
@@ -1137,9 +1139,253 @@ void Player::initialiseNoseLevel()
     }
 }
 
+bool Player::teleport(const LocationVector& vec, MapMgr* map)
+{
+    if (map)
+    {
+        if (map->GetPlayer(this->getGuidLow()))
+        {
+            this->SetPosition(vec);
+        }
+        else
+        {
+            if (map->GetMapId() == 530 && !this->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_01))
+                return false;
+
+            if (map->GetMapId() == 571 && !this->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
+                return false;
+
+            this->safeTeleport(map, vec);
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+void Player::eventTeleport(uint32_t mapId, LocationVector position, uint32_t instanceId)
+{
+    safeTeleport(mapId, instanceId, position);
+}
+
+bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVector& vec)
+{
+    // do not teleport to an unallowed mapId
+    if (const auto mapInfo = sMySQLStore.getWorldMapInfo(mapId))
+    {
+        if (mapInfo->flags & WMI_INSTANCE_XPACK_01 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
+        {
+            sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(SS_MUST_HAVE_BC));
+            return false;
+        }
+
+        if (mapInfo->flags & WMI_INSTANCE_XPACK_02 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
+        {
+            sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(SS_MUST_HAVE_WOTLK));
+            return false;
+        }
+    }
+
+    // hide waypoints otherwise it will crash when trying to unload map
+    if (m_aiInterfaceWaypoint != nullptr)
+        m_aiInterfaceWaypoint->hideWayPoints(this);
+
+    m_aiInterfaceWaypoint = nullptr;
+
+    SpeedCheatDelay(10000);
+
+    if (isOnTaxi())
+    {
+        sEventMgr.RemoveEvents(this, EVENT_PLAYER_TELEPORT);
+
+        sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_DISMOUNT);
+        sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_INTERPOLATE);
+
+        setOnTaxi(false);
+        setTaxiPath(nullptr);
+        unsetTaxiPosition();
+        m_taxiRideTime = 0;
+        setMountDisplayId(0);
+
+        removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
+        removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
+
+        setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
+    }
+
+    if (obj_movement_info.transport_guid)
+    {
+        if (const auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid)))
+        {
+            transporter->RemovePassenger(this);
+            obj_movement_info.transport_guid = 0;
+        }
+    }
+
+    bool instance = false;
+    if (instanceId && static_cast<uint32>(m_instanceId) != instanceId)
+    {
+        instance = true;
+        this->SetInstanceID(instanceId);
+    }
+    else if (m_mapId != mapId)
+    {
+        instance = true;
+    }
+
+    // make sure player does not drown when teleporting from under water
+    if (m_underwaterState & UNDERWATERSTATE_UNDERWATER)
+        m_underwaterState &= ~UNDERWATERSTATE_UNDERWATER;
+
+    // can only fly in outlands or northrend (northrend requires cold weather flying)
+    if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
+    {
+        RemoveAura(flying_aura);
+        flying_aura = 0;
+    }
+
+#ifdef FT_VEHICLES
+    callExitVehicle();
+#endif
+
+    if (m_bg && m_bg->GetMapMgr() && GetMapMgr()->GetMapInfo()->mapid != mapId)
+    {
+        m_bg->RemovePlayer(this, false);
+    }
+
+    _Relocate(mapId, vec, true, instance, instanceId);
+
+    SpeedCheatReset();
+
+    ForceZoneUpdate();
+
+    return true;
+}
+
+void Player::safeTeleport(MapMgr* mgr, const LocationVector& vec)
+{
+    if (mgr)
+    {
+        SpeedCheatDelay(10000);
+
+        // can only fly in outlands or northrend (northrend requires cold weather flying)
+        if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
+        {
+            RemoveAura(flying_aura);
+            flying_aura = 0;
+        }
+
+        if (IsInWorld())
+            RemoveFromWorld();
+
+        m_mapId = mgr->GetMapId();
+        m_instanceId = mgr->GetInstanceID();
+
+        GetSession()->SendPacket(SmsgTransferPending(mgr->GetMapId()).serialise().get());
+        GetSession()->SendPacket(SmsgNewWorld(mgr->GetMapId(), vec).serialise().get());
+
+        setTransferStatus(TRANSFER_PENDING);
+        m_sentTeleportPosition = vec;
+        SetPosition(vec);
+
+        SpeedCheatReset();
+        ForceZoneUpdate();
+    }
+}
+
 void Player::setTransferStatus(uint8_t status) { m_transferStatus = status; }
 uint8_t Player::getTransferStatus() const { return m_transferStatus; }
 bool Player::isTransferPending() const { return getTransferStatus() == TRANSFER_PENDING; }
+
+void Player::sendTeleportPacket(float x, float y, float z, float o)
+{
+#if VERSION_STRING < Cata
+    WorldPacket data2(MSG_MOVE_TELEPORT, 38);
+    data2.append(GetNewGUID());
+    BuildMovementPacket(&data2, x, y, z, o);
+    SendMessageToSet(&data2, false);
+    SetPosition({ x, y, z, o });
+#else
+    LocationVector oldPos = LocationVector(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
+    LocationVector pos = LocationVector(x, y, z, o);
+
+    if (getObjectTypeId() == TYPEID_UNIT)
+        SetPosition(pos);
+
+    ObjectGuid guid = getGuid();
+
+    WorldPacket data(SMSG_MOVE_UPDATE_TELEPORT, 38);
+    obj_movement_info.writeMovementInfo(data, SMSG_MOVE_UPDATE_TELEPORT);
+
+    if (getObjectTypeId() == TYPEID_PLAYER)
+    {
+        WorldPacket data2(MSG_MOVE_TELEPORT, 38);
+        data2.writeBit(guid[6]);
+        data2.writeBit(guid[0]);
+        data2.writeBit(guid[3]);
+        data2.writeBit(guid[2]);
+        data2.writeBit(0); // unk
+        //\TODO add transport
+        data2.writeBit(uint64_t(0)); // transport guid
+        data2.writeBit(guid[1]);
+
+        data2.writeBit(guid[4]);
+        data2.writeBit(guid[7]);
+        data2.writeBit(guid[5]);
+        data2.flushBits();
+
+        data2 << uint32_t(0); // unk
+        data2.WriteByteSeq(guid[1]);
+        data2.WriteByteSeq(guid[2]);
+        data2.WriteByteSeq(guid[3]);
+        data2.WriteByteSeq(guid[5]);
+        data2 << float(GetPositionX());
+        data2.WriteByteSeq(guid[4]);
+        data2 << float(GetOrientation());
+        data2.WriteByteSeq(guid[7]);
+        data2 << float(GetPositionZ());
+        data2.WriteByteSeq(guid[0]);
+        data2.WriteByteSeq(guid[6]);
+        data2 << float(GetPositionY());
+        SendPacket(&data2);
+    }
+
+    if (getObjectTypeId() == TYPEID_PLAYER)
+        SetPosition(pos);
+    else
+        SetPosition(oldPos);
+
+    SendMessageToSet(&data, false);
+#endif
+}
+
+void Player::sendTeleportAckPacket(float x, float y, float z, float o)
+{
+    setTransferStatus(TRANSFER_PENDING);
+
+#if VERSION_STRING < WotLK
+    WorldPacket data(MSG_MOVE_TELEPORT_ACK, 41);
+    data << GetNewGUID();
+    data << uint32_t(2);
+    data << uint32_t(0);
+    data << uint8_t(0);
+
+    data << float(0);
+    data << x;
+    data << y;
+    data << z;
+    data << o;
+    data << uint16_t(2);
+    data << uint8_t(0);
+#else
+    WorldPacket data(MSG_MOVE_TELEPORT_ACK, 41);
+    data << GetNewGUID();
+    data << uint32_t(0);
+    BuildMovementPacket(&data, x, y, z, o);
+#endif
+    GetSession()->SendPacket(&data);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Commands
@@ -4529,7 +4775,7 @@ void Player::repopAtGraveyard(float ox, float oy, float oz, uint32_t mapId)
     }
 
     if (sHookInterface.OnRepop(this) && !first)
-        SafeTeleport(mapId, 0, finalDestination);
+        safeTeleport(mapId, 0, finalDestination);
 }
 
 void Player::resurrect()
@@ -4560,7 +4806,7 @@ void Player::resurrect()
     UpdateVisibility();
 
     if (m_resurrecter && IsInWorld() && m_resurrectInstanceID == static_cast<uint32>(GetInstanceID()))
-        SafeTeleport(m_resurrectMapId, m_resurrectInstanceID, m_resurrectPosition);
+        safeTeleport(m_resurrectMapId, m_resurrectInstanceID, m_resurrectPosition);
 
     m_resurrecter = 0;
     setMoveLandWalk();
@@ -6672,7 +6918,7 @@ void Player::skipTaxiPathNodesToEnd(TaxiPath* path)
 
     setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
 
-    SafeTeleport(pathnode->mapid, 0, LocationVector(pathnode->x, pathnode->y, pathnode->z));
+    safeTeleport(pathnode->mapid, 0, LocationVector(pathnode->x, pathnode->y, pathnode->z));
 
     // Start next path if any remaining
     if (m_taxiPaths.size())

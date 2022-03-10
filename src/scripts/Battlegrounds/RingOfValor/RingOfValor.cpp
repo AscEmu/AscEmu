@@ -85,6 +85,6 @@ bool RingOfValor::HookHandleRepop(Player* plr)
 {
     LocationVector dest;
     dest.ChangeCoords({ 762.91f, -284.28f, 28.28f });
-    plr->SafeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);
+    plr->safeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);
     return true;
 }

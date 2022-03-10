@@ -141,7 +141,7 @@ public:
 
  //AGPL Starts
 
-        bool Teleport(const LocationVector& vec, MapMgr* map) override;
+        bool teleport(const LocationVector& vec, MapMgr* map);
 
         bool Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStructure::MapInfo const* info);
         void Load(CreatureProperties const* c_properties, float x, float y, float z, float o = 0);

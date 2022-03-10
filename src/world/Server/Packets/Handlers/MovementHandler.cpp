@@ -500,7 +500,7 @@ void WorldSession::handleWorldTeleportOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    _player->SafeTeleport(srlPacket.mapId, 0, srlPacket.location);
+    _player->safeTeleport(srlPacket.mapId, 0, srlPacket.location);
 }
 
 void WorldSession::handleMountSpecialAnimOpcode(WorldPacket& /*recvPacket*/)
@@ -535,7 +535,7 @@ void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
     }
     else
     {
-        _player->m_TeleportState = 2;
+        _player->m_teleportState = 2;
         _player->AddToWorld();
     }
 

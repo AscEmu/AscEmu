@@ -55,7 +55,7 @@ bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_
     sLogger.info("CreateInstanceGMCommand : GM created instance for map %u", mapid);
 
     LocationVector vec(x, y, z);
-    m_session->GetPlayer()->SafeTeleport(mgr, vec);
+    m_session->GetPlayer()->safeTeleport(mgr, vec);
 
     return true;
 }

@@ -3114,7 +3114,7 @@ void Aura::SpellAuraMechanicImmunity(AuraEffectModifier* aurEff, bool apply)
             {
                 Player* ptarget = static_cast< Player* >(m_target);
 
-                ptarget->SafeTeleport(obj->GetMapId(), obj->GetInstanceID(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), m_target->GetOrientation());
+                ptarget->safeTeleport(obj->GetMapId(), obj->GetInstanceID(), LocationVector(obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), m_target->GetOrientation()));
             }
         }
     }

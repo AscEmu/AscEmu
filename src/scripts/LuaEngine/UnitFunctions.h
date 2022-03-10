@@ -1526,7 +1526,7 @@ public:
         }
 
         LocationVector vec(posX, posY, posZ, Orientation);
-        static_cast<Player*>(ptr)->SafeTeleport(mapId, 0, vec);
+        static_cast<Player*>(ptr)->safeTeleport(mapId, 0, vec);
         return 0;
     }
 

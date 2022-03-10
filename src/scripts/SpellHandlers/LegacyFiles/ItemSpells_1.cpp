@@ -50,7 +50,7 @@ bool GnomishTransporter(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     pSpell->getPlayerCaster()->EventAttackStop();
-    pSpell->getPlayerCaster()->SafeTeleport(1, 0, LocationVector(-7169.41f, -3838.63f, 8.72f));
+    pSpell->getPlayerCaster()->safeTeleport(1, 0, LocationVector(-7169.41f, -3838.63f, 8.72f));
     return true;
 }
 
@@ -784,15 +784,16 @@ bool Spinning(uint8_t /*effectIndex*/, Spell* s)
     if (!p_caster)
         return true;
 
-    float neworientation = Util::getRandomFloat(M_PI_FLOAT * 2);
+    LocationVector location;
+    location.x = p_caster->GetPositionX();
+    location.y = p_caster->GetPositionY();
+    location.z= p_caster->GetPositionZ();
+    location.o = Util::getRandomFloat(M_PI_FLOAT * 2);
 
-    float X = p_caster->GetPositionX();
-    float Y = p_caster->GetPositionY();
-    float Z = p_caster->GetPositionZ();
     uint32_t mapid = p_caster->GetMapId();
     uint32_t instanceid = p_caster->GetInstanceID();
 
-    p_caster->SafeTeleport(mapid, instanceid, X, Y, Z, neworientation);
+    p_caster->safeTeleport(mapid, instanceid, location);
 
     return true;
 }

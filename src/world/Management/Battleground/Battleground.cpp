@@ -374,7 +374,7 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
     if (!skip_teleport)
     {
         /* This is where we actually teleport the player to the battleground. */
-        plr->SafeTeleport(m_mapMgr, GetStartingCoords(plr->getBgTeam()));
+        plr->safeTeleport(m_mapMgr, GetStartingCoords(plr->getBgTeam()));
         sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_TIME, m_type, m_id, static_cast<uint32>(UNIXTIME) - m_startTime, m_mapMgr->GetMapId(), Rated());     // Elapsed time is the last argument
     }
     else
@@ -662,9 +662,9 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
         }
 
         if (!IS_INSTANCE(plr->getBGEntryMapId()))
-            plr->SafeTeleport(plr->getBGEntryMapId(), plr->getBGEntryInstanceId(), plr->getBGEntryPosition());
+            plr->safeTeleport(plr->getBGEntryMapId(), plr->getBGEntryInstanceId(), plr->getBGEntryPosition());
         else
-            plr->SafeTeleport(plr->getBindMapId(), 0, plr->getBindPosition());
+            plr->safeTeleport(plr->getBindMapId(), 0, plr->getBindPosition());
 
         sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
     }

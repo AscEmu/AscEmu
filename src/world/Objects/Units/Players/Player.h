@@ -505,7 +505,6 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement/Position
 public:
-
     void sendForceMovePacket(UnitSpeedType speed_type, float speed);
     void sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed);
 
@@ -526,12 +525,24 @@ public:
     uint32_t m_underwaterMaxTime = 180000;
     uint32_t m_underwaterState = 0;
 
+    bool teleport(const LocationVector& vec, MapMgr* map);
+    void eventTeleport(uint32_t mapId, LocationVector position, uint32_t instanceId = 0);
+
+    bool safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVector& vec);
+
+    //\Todo: this function is not as "safe" as the one above, reduce it to one function.
+    void safeTeleport(MapMgr* mgr, const LocationVector& vec);
+
     void setTransferStatus(uint8_t status);
     uint8_t getTransferStatus() const;
     bool isTransferPending() const;
 
-protected:
+    uint32_t getTeleportState() const { return m_teleportState; }
 
+    void sendTeleportPacket(float x, float y, float z, float o);
+    void sendTeleportAckPacket(float x, float y, float z, float o);
+
+protected:
     bool m_isMoving = false;
     bool m_isMovingFB = false;
     bool m_isStrafing = false;
@@ -542,7 +553,9 @@ protected:
 
     float m_noseLevel = .0f;
 
+    LocationVector m_sentTeleportPosition;
     uint8_t m_transferStatus = TRANSFER_NONE;
+    uint32_t m_teleportState = 1;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Basic
@@ -1452,9 +1465,6 @@ public:
     //AGPL Start
 
     public:
-
-        bool Teleport(const LocationVector& vec, MapMgr* map) override;
-
         void EventGroupFullUpdate();
 
         void UpdatePvPCurrencies();
@@ -1949,7 +1959,7 @@ public:
         uint32 m_honorless = 0;
         uint32 m_lastSeenWeather = 0;
         std::set<Object*> m_visibleFarsightObjects;
-        void EventTeleport(uint32 mapid, LocationVector position);
+        
         void EventTeleportTaxi(uint32 mapid, float x, float y, float z);
         void BroadcastMessage(const char* Format, ...);
         std::map<uint32, std::set<uint32> > SummonSpells;
@@ -1967,16 +1977,8 @@ public:
         DBC::Structures::ChrRacesEntry const* myRace = nullptr;
         DBC::Structures::ChrClassesEntry const* myClass = nullptr;
 
-        bool SafeTeleport(uint32 MapID, uint32 InstanceID, float X, float Y, float Z, float O);
-        bool SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector & vec);
-        void SafeTeleport(MapMgr* mgr, const LocationVector & vec);
         void EjectFromInstance();
         bool raidgrouponlysent = false;
-
-        void EventSafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector vec)
-        {
-            SafeTeleport(MapID, InstanceID, vec);
-        }
 
         // Hack fix here!
         void ForceZoneUpdate();
@@ -1984,10 +1986,8 @@ public:
         bool HasAreaExplored(::DBC::Structures::AreaTableEntry const*);
         bool HasOverlayUncovered(uint32 overlayID);
 
-
         void HandleSpellLoot(uint32 itemid);
 
-        
         void handleKnockback(Object* caster, float horizontal, float vertical) override;
 
         uint32 LastHonorResetTime() const { return m_lastHonorResetTime; }
@@ -1999,7 +1999,7 @@ public:
         uint32 load_mana = 0;
         void CompleteLoading();
         void OnWorldPortAck();
-        uint32 m_TeleportState = 1;
+        
         bool m_beingPushed = false;
         
         uint32 flying_aura = 0;
@@ -2028,7 +2028,6 @@ public:
 
         bool m_deathVision = false;
         SpellInfo const* last_heal_spell = nullptr;
-        LocationVector m_sentTeleportPosition;
 
         bool InBattleground() const { return m_bgQueueInstanceId != 0; }
         bool InBattlegroundQueue() const { return m_bgIsQueued != 0; }
@@ -2188,9 +2187,6 @@ public:
         uint16 GetGroupStatus();
         void SendUpdateToOutOfRangeGroupMembers();
         uint32 GroupUpdateFlags;
-
-        void SendTeleportPacket(float x, float y, float z, float o);
-        void SendTeleportAckPacket(float x, float y, float z, float o);
 
         void SendCinematicCamera(uint32 id);
 
