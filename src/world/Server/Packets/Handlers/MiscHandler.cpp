@@ -979,7 +979,7 @@ void WorldSession::handleReturnToGraveyardOpcode(WorldPacket& /*recvPacket*/)
     if (_player->isAlive())
         return;
 
-    _player->RepopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
+    _player->repopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
 }
 #endif
 
