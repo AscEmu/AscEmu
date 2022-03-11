@@ -1307,17 +1307,17 @@ void Player::setTransferStatus(uint8_t status) { m_transferStatus = status; }
 uint8_t Player::getTransferStatus() const { return m_transferStatus; }
 bool Player::isTransferPending() const { return getTransferStatus() == TRANSFER_PENDING; }
 
-void Player::sendTeleportPacket(float x, float y, float z, float o)
+void Player::sendTeleportPacket(LocationVector position)
 {
 #if VERSION_STRING < Cata
     WorldPacket data2(MSG_MOVE_TELEPORT, 38);
     data2.append(GetNewGUID());
-    BuildMovementPacket(&data2, x, y, z, o);
+    BuildMovementPacket(&data2, position.x, position.y, position.z, position.o);
     SendMessageToSet(&data2, false);
-    SetPosition({ x, y, z, o });
+    SetPosition(position);
 #else
     LocationVector oldPos = LocationVector(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
-    LocationVector pos = LocationVector(x, y, z, o);
+    LocationVector pos = position;
 
     if (getObjectTypeId() == TYPEID_UNIT)
         SetPosition(pos);
@@ -1369,7 +1369,7 @@ void Player::sendTeleportPacket(float x, float y, float z, float o)
 #endif
 }
 
-void Player::sendTeleportAckPacket(float x, float y, float z, float o)
+void Player::sendTeleportAckPacket(LocationVector position)
 {
     setTransferStatus(TRANSFER_PENDING);
 
@@ -1381,17 +1381,17 @@ void Player::sendTeleportAckPacket(float x, float y, float z, float o)
     data << uint8_t(0);
 
     data << float(0);
-    data << x;
-    data << y;
-    data << z;
-    data << o;
+    data << position.x;
+    data << position.y;
+    data << position.z;
+    data << position.o;
     data << uint16_t(2);
     data << uint8_t(0);
 #else
     WorldPacket data(MSG_MOVE_TELEPORT_ACK, 41);
     data << GetNewGUID();
     data << uint32_t(0);
-    BuildMovementPacket(&data, x, y, z, o);
+    BuildMovementPacket(&data, position.x, position.y, position.z, position.o);
 #endif
     GetSession()->SendPacket(&data);
 }

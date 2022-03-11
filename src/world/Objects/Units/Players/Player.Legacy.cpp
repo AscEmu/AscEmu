@@ -4526,7 +4526,7 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
     }
     else
     {
-        sendTeleportAckPacket(v.x, v.y, v.z, v.o);
+        sendTeleportAckPacket(v);
     }
 
     setTransferStatus(TRANSFER_PENDING);
@@ -4534,7 +4534,7 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
     SetPosition(v);
 
     if (sendpacket)
-        sendTeleportPacket(v.x, v.y, v.z, v.o);
+        sendTeleportPacket(v);
 
     SpeedCheatReset();
 

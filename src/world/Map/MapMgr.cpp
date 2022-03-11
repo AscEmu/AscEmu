@@ -774,7 +774,7 @@ void MapMgr::OutOfMapBoundariesTeleport(Object* object)
         {
             object->GetPositionV()->ChangeCoords(player->getBindPosition());
             player->GetSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
-            player->sendTeleportAckPacket(player->getBindPosition().x, player->getBindPosition().y, player->getBindPosition().z, 0);
+            player->sendTeleportAckPacket(LocationVector(player->getBindPosition().x, player->getBindPosition().y, player->getBindPosition().z, 0));
         }
     }
     else

@@ -549,8 +549,8 @@ public:
 
     uint32_t getTeleportState() const { return m_teleportState; }
 
-    void sendTeleportPacket(float x, float y, float z, float o);
-    void sendTeleportAckPacket(float x, float y, float z, float o);
+    void sendTeleportPacket(LocationVector position);
+    void sendTeleportAckPacket(LocationVector position);
 
 protected:
     bool m_isMoving = false;
