@@ -2959,7 +2959,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         else
         {
             if (isPlayer())
-                vehicleid = static_cast<Player*>(this)->m_mountVehicleId;
+                vehicleid = static_cast<Player*>(this)->getMountVehicleId();
         }
 
         *data << uint32_t(vehicleid);
