@@ -60,7 +60,7 @@ bool ChatHandler::HandleDismountCommand(const char* /*args*/, WorldSession* m_se
     }
 
     if (unit_target->isPlayer())
-        static_cast<Player*>(unit_target)->Dismount();
+        static_cast<Player*>(unit_target)->dismount();
 
     unit_target->setMountDisplayId(0);
 

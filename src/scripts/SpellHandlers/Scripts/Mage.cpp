@@ -326,7 +326,7 @@ public:
             // Dismount player on aura apply
             // TODO: should also dismount creatures
             if (aur->getPlayerOwner() != nullptr)
-                aur->getPlayerOwner()->Dismount();
+                aur->getPlayerOwner()->dismount();
 
             // Add this unitstate only for player polymorph spells
             // Mostly polymorphs casted by creatures won't regenerate health

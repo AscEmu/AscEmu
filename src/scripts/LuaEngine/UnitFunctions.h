@@ -4337,7 +4337,7 @@ public:
         if (ptr->isPlayer())
         {
             Player* plr = static_cast<Player*>(ptr);
-            plr->RemoveAura(plr->m_MountSpellId);
+            plr->RemoveAura(plr->getMountSpellId());
             plr->setMountDisplayId(0);
         }
         else
@@ -4524,7 +4524,7 @@ public:
         if (ptr->isPlayer())
         {
             Player* plr = static_cast<Player*>(ptr);
-            if (plr->IsMounted())
+            if (plr->isMounted())
                 lua_pushboolean(L, 1);
             else
                 lua_pushboolean(L, 0);

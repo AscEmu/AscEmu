@@ -925,6 +925,15 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
 }
 #endif
 
+void Player::dismount()
+{
+    if (m_mountSpellId != 0)
+    {
+        RemoveAura(m_mountSpellId);
+        m_mountSpellId = 0;
+    }
+}
+
 void Player::handleAuraInterruptForMovementFlags(MovementInfo const& movementInfo)
 {
     uint32_t auraInterruptFlags = 0;
@@ -949,6 +958,24 @@ void Player::handleAuraInterruptForMovementFlags(MovementInfo const& movementInf
     }
 
     RemoveAurasByInterruptFlag(auraInterruptFlags);
+}
+
+bool Player::isInCity() const
+{
+    const auto at = GetMapMgr()->GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
+    if (at != nullptr)
+    {
+        ::DBC::Structures::AreaTableEntry const* zt = nullptr;
+        if (at->zone)
+            zt = MapManagement::AreaManagement::AreaStorage::GetAreaById(at->zone);
+
+        bool areaIsCity = at->flags & MapManagement::AreaManagement::AREA_CITY_AREA || at->flags & MapManagement::AreaManagement::AREA_CITY;
+        bool zoneIsCity = zt && (zt->flags & MapManagement::AreaManagement::AREA_CITY_AREA || zt->flags & MapManagement::AreaManagement::AREA_CITY);
+
+        return (areaIsCity || zoneIsCity);
+    }
+
+    return false;
 }
 
 void Player::handleBreathing(MovementInfo const& movementInfo, WorldSession* session)
@@ -1030,24 +1057,6 @@ void Player::handleBreathing(MovementInfo const& movementInfo, WorldSession* ses
             SendMirrorTimer(MIRROR_TYPE_BREATH, m_underwaterTime, m_underwaterMaxTime, 10);
         }
     }
-}
-
-bool Player::isInCity() const
-{
-    const auto at = GetMapMgr()->GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
-    if (at != nullptr)
-    {
-        ::DBC::Structures::AreaTableEntry const* zt = nullptr;
-        if (at->zone)
-            zt = MapManagement::AreaManagement::AreaStorage::GetAreaById(at->zone);
-
-        bool areaIsCity = at->flags & MapManagement::AreaManagement::AREA_CITY_AREA || at->flags & MapManagement::AreaManagement::AREA_CITY;
-        bool zoneIsCity = zt && (zt->flags & MapManagement::AreaManagement::AREA_CITY_AREA || zt->flags & MapManagement::AreaManagement::AREA_CITY);
-
-        return (areaIsCity || zoneIsCity);
-    }
-
-    return false;
 }
 
 //\todo: find another solution for this
@@ -6735,7 +6744,7 @@ void Player::startTaxiPath(TaxiPath* path, uint32_t modelid, uint32_t start_node
 
     m_taxiMapChangeNode = 0;
 
-    Dismount();
+    dismount();
 
 #ifdef FT_VEHICLES
     callExitVehicle();

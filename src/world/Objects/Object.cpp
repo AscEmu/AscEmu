@@ -2248,7 +2248,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
             vehicleid = static_cast<Creature*>(this)->GetCreatureProperties()->vehicleid;
         else
             if (isPlayer())
-                vehicleid = static_cast<Player*>(this)->mountvehicleid;
+                vehicleid = static_cast<Player*>(this)->getMountVehicleId();
 
         *data << uint32(vehicleid);
         *data << float(GetTransOffsetO());
@@ -2521,7 +2521,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         else
         {
             if (isPlayer())
-                vehicleid = static_cast<Player*>(this)->mountvehicleid;
+                vehicleid = static_cast<Player*>(this)->m_mountVehicleId;
         }
 
         *data << float(normalizeOrientation(GetOrientation()));
@@ -2959,7 +2959,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         else
         {
             if (isPlayer())
-                vehicleid = static_cast<Player*>(this)->mountvehicleid;
+                vehicleid = static_cast<Player*>(this)->m_mountVehicleId;
         }
 
         *data << uint32_t(vehicleid);

@@ -510,7 +510,16 @@ public:
 
     bool isMoving() const { return m_isMoving; }
 
-    void handleBreathing(MovementInfo const& movement_info, WorldSession* session);
+    bool isMounted() const { return m_mountSpellId ? true : false; }
+    uint32_t getMountSpellId() const { return m_mountSpellId; }
+    void setMountSpellId(uint32_t id) { m_mountSpellId = id; }
+
+    bool isOnVehicle() const { return m_mountVehicleId ? true : false; }
+    uint32_t getMountVehicleId() const { return m_mountVehicleId; }
+    void setMountVehicleId(uint32_t id) { m_mountVehicleId = id; }
+
+    void dismount();
+
     void handleAuraInterruptForMovementFlags(MovementInfo const& movement_info);
 
     uint32_t getAreaId() const { return m_areaId; }
@@ -518,6 +527,7 @@ public:
 
     bool isInCity() const;
 
+    void handleBreathing(MovementInfo const& movement_info, WorldSession* session);
     void initialiseNoseLevel();
 
     bool m_isWaterBreathingEnabled = false;
@@ -548,6 +558,9 @@ protected:
     bool m_isStrafing = false;
     bool m_isTurning = false;
     bool m_isJumping = false;
+
+    uint32 m_mountSpellId = 0;
+    uint32 m_mountVehicleId = 0;
 
     uint32_t m_areaId = 0;
 
@@ -1871,28 +1884,6 @@ public:
         void AddItemsToWorld();
         void RemoveItemsFromWorld();
         void UpdateKnownCurrencies(uint32 itemId, bool apply);
-
-        uint32 m_MountSpellId = 0;
-        uint32 mountvehicleid = 0;
-
-        bool IsMounted();
-
-        void Dismount()
-        {
-            if (m_MountSpellId != 0)
-            {
-                RemoveAura(m_MountSpellId);
-                m_MountSpellId = 0;
-            }
-        }
-
-        bool isVehicle() const override
-        {
-            if (mountvehicleid != 0)
-                return true;
-
-            return false;
-        }
 
         uint32 TrackingSpell = 0;
         void _EventCharmAttack();

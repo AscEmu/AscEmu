@@ -1846,7 +1846,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
             if (error == LFG_TELEPORTERROR_OK)
             {
                 player->setBGEntryPoint(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation(), player->GetMapId(), player->GetInstanceID());
-                player->Dismount();
+                player->dismount();
                 if (!player->safeTeleport(mapid, 0, location))
                     error = LFG_TELEPORTERROR_INVALID_LOCATION;
             }

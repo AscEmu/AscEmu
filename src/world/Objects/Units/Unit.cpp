@@ -2563,7 +2563,7 @@ void Unit::setStunned(bool apply)
 
         // don't remove UNIT_FLAG_STUNNED for pet when owner is mounted (disabled pet's interface)
         Unit* owner = GetMapMgrUnit(getCharmerOrOwnerGUID());
-        if (!owner || owner->getObjectTypeId() != TYPEID_PLAYER || !owner->ToPlayer()->IsMounted())
+        if (!owner || owner->getObjectTypeId() != TYPEID_PLAYER || !owner->ToPlayer()->isMounted())
             removeUnitFlags(UNIT_FLAG_STUNNED);
 
         if (!hasUnitStateFlag(UNIT_STATE_ROOTED))         // prevent moving if it also has root effect

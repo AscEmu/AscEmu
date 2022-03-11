@@ -1515,7 +1515,7 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
                     {
                         p_target->castSpell(p_target, 1784, true);
 
-                        p_target->Dismount();
+                        p_target->dismount();
 
                         if (p_target->m_bg && p_target->m_bgHasFlag)
                         {
@@ -3145,7 +3145,7 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
         if (p_target->m_bg)
             p_target->m_bg->HookOnMount(p_target);
 
-        p_target->Dismount();
+        p_target->dismount();
 
         m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
 
@@ -3157,7 +3157,7 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
         if (!displayId)
             return;
 
-        p_target->m_MountSpellId = m_spellInfo->getId();
+        p_target->setMountSpellId(m_spellInfo->getId());
         p_target->flying_aura = 0;
         m_target->setMountDisplayId(displayId);
         //m_target->addUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
@@ -3167,15 +3167,15 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
 
         p_target->dismissActivePets();
         p_target->addUnitFlags(UNIT_FLAG_MOUNT);
-        p_target->mountvehicleid = ci->vehicleid;
+        p_target->setMountVehicleId(ci->vehicleid);
 
-        if (p_target->mountvehicleid != 0)
+        if (p_target->isOnVehicle())
         {
 #if VERSION_STRING > TBC
             if (p_target->createVehicleKit(ci->vehicleid, ci->Id))
             {
                 // Send other players that we are a vehicle
-                p_target->SendMessageToSet(SmsgPlayerVehicleData(p_target->GetNewGUID(), p_target->mountvehicleid).serialise().get(), true);
+                p_target->SendMessageToSet(SmsgPlayerVehicleData(p_target->GetNewGUID(), p_target->getMountVehicleId()).serialise().get(), true);
                 p_target->SendPacket(SmsgControlVehicle().serialise().get());
 
                 // mounts can also have accessories
@@ -3200,8 +3200,8 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
         }
 #endif
 
-        p_target->mountvehicleid = 0;
-        p_target->m_MountSpellId = 0;
+        p_target->setMountVehicleId(0);
+        p_target->setMountSpellId(0);
         p_target->flying_aura = 0;
         m_target->setMountDisplayId(0);
         //m_target->removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);

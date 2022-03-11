@@ -3098,7 +3098,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 p_caster->getItemInterface()->buildInventoryChangeError(i_caster, nullptr, INV_ERR_CANT_DO_IN_COMBAT);
                 return SPELL_FAILED_DONT_REPORT;
             }
-            else if (p_caster->IsMounted())
+            else if (p_caster->isMounted())
             {
                 return SPELL_FAILED_NOT_MOUNTED;
             }

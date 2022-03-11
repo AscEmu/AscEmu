@@ -649,7 +649,7 @@ void WorldSession::handleDismountOpcode(WorldPacket& /*recvPacket*/)
     if (_player->isOnTaxi())
         return;
 
-    _player->Dismount();
+    _player->dismount();
 }
 
 void WorldSession::handleToggleHelmOpcode(WorldPacket& /*recvPacket*/)

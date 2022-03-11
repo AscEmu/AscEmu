@@ -72,7 +72,7 @@ public:
             {
                 // todo: creatures
                 if (aur->getPlayerOwner() != nullptr)
-                    aur->getPlayerOwner()->Dismount();
+                    aur->getPlayerOwner()->dismount();
             }
 
             if (_health)

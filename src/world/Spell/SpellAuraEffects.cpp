@@ -1203,7 +1203,7 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
             case FORM_BERSERKERSTANCE:
                 break;
             default:
-                p_target->Dismount();
+                p_target->dismount();
                 break;
         }
     }

@@ -380,7 +380,7 @@ void WorldSession::LogoutPlayer(bool Save)
         // dismount on logout.
         // Ofc if the player was mounted on login they will be still mounted
         // ;)
-        _player->Dismount();
+        _player->dismount();
 
         _player->RemoveAllAuras();
         if (_player->IsInWorld())

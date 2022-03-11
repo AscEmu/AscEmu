@@ -292,7 +292,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     }
 
     // Stand up if player is sitting
-    if (!(spellInfo->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP) && !_player->IsMounted())
+    if (!(spellInfo->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP) && !_player->isMounted())
     {
         if (_player->getStandState() != STANDSTATE_STAND)
             _player->setStandState(STANDSTATE_STAND);

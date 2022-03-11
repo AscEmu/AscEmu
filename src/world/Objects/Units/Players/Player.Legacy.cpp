@@ -584,7 +584,7 @@ void Player::Update(unsigned long time_passed)
             if (!MapManagement::AreaManagement::AreaStorage::IsOutdoor(m_mapId, m_position.x, m_position.y, m_position.z))
             {
                 // this is duplicated check, but some mount auras comes w/o this flag set, maybe due to spellfixes.cpp line:663
-                Dismount();
+                dismount();
 
                 for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
                 {
@@ -820,7 +820,7 @@ void Player::_EventCharmAttack()
 void Player::EventAttackStart()
 {
     m_attacking = true;
-    Dismount();
+    dismount();
 }
 
 void Player::EventAttackStop()
@@ -4503,7 +4503,7 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
     bool sendpacket = (mapid == m_mapId);
     //Dismount before teleport and before being removed from world,
     //otherwise we may spawn the active pet while not being in world.
-    Dismount();
+    dismount();
 
     if (!sendpacket || force_new_world)
     {
@@ -5347,7 +5347,7 @@ void Player::CompleteLoading()
         //sEventMgr.AddEvent(this, &Player::repopRequest, EVENT_PLAYER_CHECKFORCHEATS, 2000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 
-    if (!IsMounted())
+    if (!isMounted())
         spawnActivePet();
 
 #if VERSION_STRING > TBC
@@ -7351,13 +7351,6 @@ void Player::SendDelayedPacket(WorldPacket* data, bool bDeleteOnSend)
 
     if (bDeleteOnSend)
         delete data;
-}
-
-bool Player::IsMounted()
-{
-    if (m_MountSpellId != 0)
-        return true;
-    return false;
 }
 
 void Player::RemoteRevive()

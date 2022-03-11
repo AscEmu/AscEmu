@@ -2020,7 +2020,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
         /**
          * Is mounted check
          */
-        if (!p_caster->IsMounted())
+        if (!p_caster->isMounted())
         {
             if (getSpellInfo()->getId() == 25860) // Reindeer Transformation
                 return SPELL_FAILED_ONLY_MOUNTED;
