@@ -106,7 +106,7 @@ Player::Player(uint32_t guid) :
     m_nextSave(Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
     m_mailBox(guid),
     SDetector(new SpeedCheatDetector),
-    GroupUpdateFlags(GROUP_UPDATE_FLAG_NONE)
+    m_groupUpdateFlags(GROUP_UPDATE_FLAG_NONE)
 {
     //////////////////////////////////////////////////////////////////////////
     m_objectType |= TYPE_PLAYER;
@@ -246,7 +246,7 @@ void Player::setPlayerFlags(uint32_t flags)
     if (!IsInWorld() || getGroup() == nullptr)
         return;
 
-    AddGroupUpdateFlag(GROUP_UPDATE_FLAG_STATUS);
+    addGroupUpdateFlag(GROUP_UPDATE_FLAG_STATUS);
 }
 void Player::addPlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() | flags); }
 void Player::removePlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() & ~flags); }
@@ -925,6 +925,16 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
 }
 #endif
 
+bool Player::isMoving() const { return m_isMoving; }
+
+bool Player::isMounted() const { return m_mountSpellId ? true : false; }
+uint32_t Player::getMountSpellId() const { return m_mountSpellId; }
+void Player::setMountSpellId(uint32_t id) { m_mountSpellId = id; }
+
+bool Player::isOnVehicle() const { return m_mountVehicleId ? true : false; }
+uint32_t Player::getMountVehicleId() const { return m_mountVehicleId; }
+void Player::setMountVehicleId(uint32_t id) { m_mountVehicleId = id; }
+
 void Player::dismount()
 {
     if (m_mountSpellId != 0)
@@ -938,27 +948,22 @@ void Player::handleAuraInterruptForMovementFlags(MovementInfo const& movementInf
 {
     uint32_t auraInterruptFlags = 0;
     if (movementInfo.hasMovementFlag(MOVEFLAG_MOTION_MASK))
-    {
         auraInterruptFlags |= AURA_INTERRUPT_ON_MOVEMENT;
-    }
 
     if (!(movementInfo.hasMovementFlag(MOVEFLAG_SWIMMING)) || movementInfo.hasMovementFlag(MOVEFLAG_FALLING))
-    {
         auraInterruptFlags |= AURA_INTERRUPT_ON_LEAVE_WATER;
-    }
 
     if (movementInfo.hasMovementFlag(MOVEFLAG_SWIMMING))
-    {
         auraInterruptFlags |= AURA_INTERRUPT_ON_ENTER_WATER;
-    }
 
     if ((movementInfo.hasMovementFlag(MOVEFLAG_TURNING_MASK)) || m_isTurning)
-    {
         auraInterruptFlags |= AURA_INTERRUPT_ON_TURNING;
-    }
 
     RemoveAurasByInterruptFlag(auraInterruptFlags);
 }
+
+uint32_t Player::getAreaId() const { return m_areaId; }
+void Player::setAreaId(uint32_t area) { m_areaId = area; }
 
 bool Player::isInCity() const
 {
@@ -1306,6 +1311,8 @@ void Player::safeTeleport(MapMgr* mgr, const LocationVector& vec)
 void Player::setTransferStatus(uint8_t status) { m_transferStatus = status; }
 uint8_t Player::getTransferStatus() const { return m_transferStatus; }
 bool Player::isTransferPending() const { return getTransferStatus() == TRANSFER_PENDING; }
+
+uint32_t Player::getTeleportState() const { return m_teleportState; }
 
 void Player::sendTeleportPacket(LocationVector position)
 {
@@ -4892,6 +4899,13 @@ void Player::calcDeathDurabilityLoss(double percent)
     }
 }
 
+void Player::setResurrecterGuid(uint64_t guid) { m_resurrecter = guid; }
+void Player::setResurrectHealth(uint32_t health) { m_resurrectHealth = health; }
+void Player::setResurrectMana(uint32_t mana) { m_resurrectMana = mana; }
+void Player::setResurrectInstanceId(uint32_t id) { m_resurrectInstanceID = id; }
+void Player::setResurrectMapId(uint32_t id) { m_resurrectMapId = id; }
+void Player::setResurrectPosition(LocationVector position) { m_resurrectPosition = position; }
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Bind
 void Player::setBindPoint(float x, float y, float z, float o, uint32_t mapId, uint32_t zoneId)
@@ -4966,9 +4980,9 @@ uint32_t Player::getGuildRankFromDB()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Group
-void Player::setGroupInviterId(uint32_t inviterId) { m_GroupInviter = inviterId; }
-uint32_t Player::getGroupInviterId() const { return m_GroupInviter; }
-bool Player::isAlreadyInvitedToGroup() const { return m_GroupInviter != 0; }
+void Player::setGroupInviterId(uint32_t inviterId) { m_grouIdpInviterId = inviterId; }
+uint32_t Player::getGroupInviterId() const { return m_grouIdpInviterId; }
+bool Player::isAlreadyInvitedToGroup() const { return m_grouIdpInviterId != 0; }
 
 bool Player::isInGroup() const { return m_playerInfo && m_playerInfo->m_Group; }
 
@@ -4984,6 +4998,64 @@ bool Player::isGroupLeader() const
 }
 
 int8_t Player::getSubGroupSlot() const { return m_playerInfo->subGroup; }
+
+uint32_t Player::getGroupUpdateFlags() const { return m_groupUpdateFlags; }
+
+void Player::setGroupUpdateFlags(uint32_t flags)
+{
+    if (getGroup())
+        m_groupUpdateFlags = flags;
+}
+
+void Player::addGroupUpdateFlag(uint32_t flag)
+{
+    if (getGroup())
+        m_groupUpdateFlags |= flag;
+}
+
+uint16_t Player::getGroupStatus()
+{
+    uint16_t status = MEMBER_STATUS_ONLINE;
+    if (isPvpFlagSet())
+        status |= MEMBER_STATUS_PVP;
+    if (getDeathState() == CORPSE)
+        status |= MEMBER_STATUS_DEAD;
+    else if (isDead())
+        status |= MEMBER_STATUS_GHOST;
+    if (isFfaPvpFlagSet())
+        status |= MEMBER_STATUS_PVP_FFA;
+    if (hasPlayerFlags(PLAYER_FLAG_AFK))
+        status |= MEMBER_STATUS_AFK;
+    if (hasPlayerFlags(PLAYER_FLAG_DND))
+        status |= MEMBER_STATUS_DND;
+
+    return status;
+}
+
+void Player::sendUpdateToOutOfRangeGroupMembers()
+{
+    if (m_groupUpdateFlags == GROUP_UPDATE_FLAG_NONE)
+        return;
+
+    if (Group* group = getGroup())
+        group->UpdateOutOfRangePlayer(this, true, nullptr);
+
+    m_groupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
+
+    if (Pet* pet = getFirstPetFromSummons())
+        pet->ResetAuraUpdateMaskForRaid();
+}
+
+void Player::eventGroupFullUpdate()
+{
+    if (m_playerInfo->m_Group)
+        m_playerInfo->m_Group->UpdateAllOutOfRangePlayersFor(this);
+}
+
+bool Player::isSendOnlyRaidgroupSet() const { return m_sendOnlyRaidgroup; }
+void Player::setSendOnlyRaidgroup(bool set) { m_sendOnlyRaidgroup = set; }
+
+LocationVector Player::getLastGroupPosition() const { return m_lastGroupPosition; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Channels
@@ -5383,6 +5455,11 @@ void Player::eventTimedQuestExpire(uint32_t questId)
     }
 }
 
+uint32_t Player::getQuestSharerByDbId() const { return m_questSharer; }
+void Player::setQuestSharerDbId(uint32_t id) { m_questSharer = id; }
+
+void Player::addQuestToRemove(uint32_t questId) { m_removequests.insert(questId); }
+
 void Player::addQuestToFinished(uint32_t questId)
 {
     if (m_finishedQuests.find(questId) != m_finishedQuests.end())
@@ -5437,6 +5514,8 @@ bool Player::hasQuestForItem(uint32_t itemId)
     return false;
 }
 
+void Player::addQuestSpell(uint32_t spellId) { quest_spells.insert(spellId); }
+
 //Only for Cast Quests
 bool Player::hasQuestSpell(uint32_t spellId)
 {
@@ -5452,6 +5531,8 @@ void Player::removeQuestSpell(uint32_t spellId)
     if (!quest_spells.empty())
         quest_spells.erase(spellId);
 }
+
+void Player::addQuestMob(uint32_t entry) { quest_mobs.insert(entry); }
 
 //Only for Kill Quests
 bool Player::hasQuestMob(uint32_t entry)
@@ -5496,6 +5577,8 @@ void Player::addQuestKill(uint32_t questId, uint8_t reqId, uint32_t delay)
         }
     }
 }
+
+std::set<uint32_t> Player::getFinishedQuests() const { return m_finishedQuests; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Social
@@ -6148,7 +6231,7 @@ void Player::sendGuildMotd()
     SendPacket(SmsgGuildEvent(GE_MOTD, { getGuild()->getMOTD() }, 0).serialise().get());
 }
 
-bool Player::isPvpFlagSet()
+bool Player::isPvpFlagSet() 
 {
 #if VERSION_STRING > TBC
     return getPvpFlags() & U_FIELD_BYTES_FLAG_PVP;
@@ -6491,6 +6574,9 @@ void Player::applyReforgeEnchantment(Item* item, bool apply)
 }
 #endif
 
+void Player::setAFKReason(std::string reason) { afkReason = reason; }
+std::string Player::getAFKReason() const { return afkReason; }
+
 void Player::addToGMTargetList(uint32_t guid)
 {
     std::lock_guard<std::mutex> guard(m_lockGMTargetList);
@@ -6620,6 +6706,10 @@ void Player::saveVoidStorage()
     }
 }
 
+bool Player::isVoidStorageUnlocked() const { return hasPlayerFlags(PLAYER_FLAGS_VOID_UNLOCKED); }
+void Player::unlockVoidStorage() { setPlayerFlags(PLAYER_FLAGS_VOID_UNLOCKED); }
+void Player::lockVoidStorage() { removePlayerFlags(PLAYER_FLAGS_VOID_UNLOCKED); }
+
 uint8_t Player::getNextVoidStorageFreeSlot() const
 {
     for (uint8_t i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
@@ -6723,6 +6813,9 @@ VoidStorageItem* Player::getVoidStorageItem(uint64_t id, uint8_t& slot) const
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Taxi
+TaxiPath* Player::getTaxiPath() const { return m_currentTaxiPath; }
+void Player::setTaxiPath(TaxiPath* path) { m_currentTaxiPath = path; }
+
 void Player::loadTaxiMask(const char* data)
 {
     std::vector<std::string> tokens = AscEmu::Util::Strings::split(data, " ");
@@ -6731,10 +6824,17 @@ void Player::loadTaxiMask(const char* data)
     std::vector<std::string>::iterator iter;
 
     for (iter = tokens.begin(), index = 0; index < DBC_TAXI_MASK_SIZE && iter != tokens.end(); ++iter, ++index)
-    {
         m_taxiMask[index] = atol((*iter).c_str());
-    }
 }
+
+const uint32_t& Player::getTaxiMask(uint32_t index) const { return m_taxiMask[index]; }
+void Player::setTaxiMask(uint32_t index, uint32_t value) { m_taxiMask[index] = value; }
+
+void Player::setTaxiPosition() { m_taxiPosition = m_position; }
+void Player::unsetTaxiPosition() { m_taxiPosition = { 0, 0, 0 }; }
+
+bool Player::isOnTaxi() const { return m_isOnTaxi; }
+void Player::setOnTaxi(bool state) { m_isOnTaxi = state; }
 
 void Player::startTaxiPath(TaxiPath* path, uint32_t modelid, uint32_t start_node)
 {
@@ -6997,6 +7097,9 @@ void Player::interpolateTaxiPosition()
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Loot
+const uint64_t& Player::getLootGuid() const { return m_lootGuid; }
+void Player::setLootGuid(const uint64_t& guid) { m_lootGuid = guid; }
+
 //\note: Types 1 corpse/go; 2 skinning/herbalism/minning; 3 fishing
 void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
 {
@@ -7449,6 +7552,9 @@ Item* Player::storeItem(LootItem const* lootItem)
         return add;
     }
 }
+
+bool Player::isLootableOnCorpse() const { return m_lootableOnCorpse; }
+void Player::setLootableOnCorpse(bool lootable) { m_lootableOnCorpse = lootable; }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Reputation
@@ -7946,8 +8052,15 @@ uint32_t Player::getInitialFactionId()
     return 0;
 }
 
+int32_t Player::getPctReputationMod() const { return m_pctReputationMod; }
+void Player::setPctReputationMod(int32_t value) { m_pctReputationMod = value; }
+
+void Player::setChampioningFaction(uint32_t factionId) { m_championingFactionId = factionId; }
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // Drunk system
+uint16_t Player::getServersideDrunkValue() const { return m_serversideDrunkValue; }
+
 void Player::setServersideDrunkValue(uint16_t newDrunkenValue, uint32_t itemId)
 {
     const uint32_t oldDrunkenState = getDrunkStateByValue(m_serversideDrunkValue);
@@ -7993,6 +8106,7 @@ void Player::handleSobering()
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Duel
+Player* Player::getDuelPlayer() const { return m_duelPlayer; }
 void Player::requestDuel(Player* target)
 {
     if (m_duelPlayer != nullptr)
@@ -8266,6 +8380,12 @@ void Player::handleDuelCountdown()
     }
 }
 
+void Player::setDuelStatus(uint8_t status) { m_duelStatus = status; }
+uint8_t Player::getDuelStatus() const { return m_duelStatus; }
+
+void Player::setDuelState(uint8_t state) { m_duelState = state; }
+uint8_t Player::getDuelState() const { return m_duelState; }
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // Resting/Experience XP
 void Player::GiveXP(uint32_t xp, const uint64_t& guid, bool allowBonus)
@@ -8337,6 +8457,9 @@ void Player::sendLogXpGainPacket(uint64_t guid, uint32_t normalXp, uint32_t rest
 {
     m_session->SendPacket(SmsgLogXpGain(guid, normalXp, restedXp, type).serialise().get());
 }
+
+void Player::toggleXpGain() { m_isXpGainAllowed ? m_isXpGainAllowed = false : m_isXpGainAllowed = true; }
+bool Player::canGainXp() const { return m_isXpGainAllowed; }
 
 uint32_t Player::subtractRestXp(uint32_t amount)
 {

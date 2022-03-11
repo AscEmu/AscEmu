@@ -2521,7 +2521,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         else
         {
             if (isPlayer())
-                vehicleid = static_cast<Player*>(this)->m_mountVehicleId;
+                vehicleid = static_cast<Player*>(this)->getMountVehicleId();
         }
 
         *data << float(normalizeOrientation(GetOrientation()));
@@ -3224,9 +3224,9 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
             m_lastMapUpdatePosition.ChangeCoords({ newX, newY, newZ, newOrientation });
             m_mapMgr->ChangeObjectLocation(this);
 
-            if (isPlayer() && static_cast<Player*>(this)->getGroup() && static_cast<Player*>(this)->m_last_group_position.Distance2DSq(m_position) > 25.0f)       // distance of 5.0
+            if (isPlayer() && dynamic_cast<Player*>(this)->getGroup() && dynamic_cast<Player*>(this)->getLastGroupPosition().Distance2DSq(m_position) > 25.0f)       // distance of 5.0
             {
-                static_cast<Player*>(this)->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_POSITION);
+                dynamic_cast<Player*>(this)->addGroupUpdateFlag(GROUP_UPDATE_FLAG_POSITION);
             }
         }
 
@@ -3782,7 +3782,7 @@ void Object::SetZoneId(uint32 newZone)
     if (isPlayer())
     {
         if (static_cast<Player*>(this)->getGroup())
-            static_cast<Player*>(this)->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_ZONE);
+            static_cast<Player*>(this)->addGroupUpdateFlag(GROUP_UPDATE_FLAG_ZONE);
     }
 }
 

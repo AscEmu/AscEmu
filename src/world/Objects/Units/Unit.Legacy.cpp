@@ -9067,7 +9067,7 @@ void Unit::UpdateAuraForGroup(uint8 slot)
         auto player = dynamic_cast<Player*>(this);
         if (player->getGroup())
         {
-            player->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_AURAS);
+            player->addGroupUpdateFlag(GROUP_UPDATE_FLAG_AURAS);
             player->SetAuraUpdateMaskForRaid(slot);
         }
     }
@@ -9075,7 +9075,7 @@ void Unit::UpdateAuraForGroup(uint8 slot)
     {
         if (owner->getGroup())
         {
-            owner->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_AURAS);
+            owner->addGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_AURAS);
             SetAuraUpdateMaskForRaid(slot);
         }
     }

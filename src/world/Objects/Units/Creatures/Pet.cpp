@@ -1173,7 +1173,7 @@ void Pet::Remove(bool bUpdate, bool bSetOffline)
 
     ScheduledForDeletion = true;
     PrepareForRemove(bUpdate, bSetOffline);
-    m_Owner->AddGroupUpdateFlag(GROUP_UPDATE_PET);
+    m_Owner->addGroupUpdateFlag(GROUP_UPDATE_PET);
 
     if (IsInWorld())
         Unit::RemoveFromWorld(true);
@@ -1673,7 +1673,7 @@ void Pet::Rename(std::string NewName)
             m_name.data(), m_Owner->getGuidLow(), getEntry());
     }
 
-    m_Owner->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_NAME);
+    m_Owner->addGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_NAME);
 }
 
 void Pet::ApplySummonLevelAbilities()
@@ -1934,7 +1934,7 @@ void Pet::LoadPetAuras(int32 id)
         castSpell(this, mod_auras[id], true);
     }
 
-    m_Owner->AddGroupUpdateFlag(GROUP_UPDATE_PET);
+    m_Owner->addGroupUpdateFlag(GROUP_UPDATE_PET);
 }
 
 void Pet::UpdateAP()

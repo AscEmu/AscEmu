@@ -763,10 +763,10 @@ void InstanceMgr::OnGroupDestruction(Group* pGroup)
                     {
                         for (auto playerStorageMap = instance->m_mapMgr->m_PlayerStorage.begin(); playerStorageMap != instance->m_mapMgr->m_PlayerStorage.end(); ++playerStorageMap)
                         {
-                            if ((*playerStorageMap).second->IsInWorld() && !(*playerStorageMap).second->raidgrouponlysent && (*playerStorageMap).second->GetInstanceID() == static_cast<int32_t>(instance->m_instanceId))
+                            if ((*playerStorageMap).second->IsInWorld() && !(*playerStorageMap).second->isSendOnlyRaidgroupSet() && (*playerStorageMap).second->GetInstanceID() == static_cast<int32_t>(instance->m_instanceId))
                             {
                                 (*playerStorageMap).second->sendRaidGroupOnly(60000, 1);
-                                (*playerStorageMap).second->raidgrouponlysent = true;
+                                (*playerStorageMap).second->setSendOnlyRaidgroup(true);
 
                                 sEventMgr.AddEvent((*playerStorageMap).second, &Player::EjectFromInstance, EVENT_PLAYER_EJECT_FROM_INSTANCE, 60000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                             }
@@ -964,10 +964,10 @@ void InstanceMgr::PlayerLeftGroup(Group* pGroup, Player* pPlayer)
                 if (instance->m_creatorGroup && instance->m_creatorGroup == pGroup->GetID())
                 {
                     // better make sure we're actually in that instance.. :P
-                    if (!pPlayer->raidgrouponlysent && pPlayer->GetInstanceID() == static_cast<int32_t>(instance->m_instanceId))
+                    if (!pPlayer->isSendOnlyRaidgroupSet() && pPlayer->GetInstanceID() == static_cast<int32_t>(instance->m_instanceId))
                     {
                         pPlayer->sendRaidGroupOnly(60000, 1);
-                        pPlayer->raidgrouponlysent = true;
+                        pPlayer->setSendOnlyRaidgroup(true);
 
                         sEventMgr.AddEvent(pPlayer, &Player::EjectFromInstance, EVENT_PLAYER_EJECT_FROM_INSTANCE, 60000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 

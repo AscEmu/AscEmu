@@ -508,22 +508,22 @@ public:
     void sendForceMovePacket(UnitSpeedType speed_type, float speed);
     void sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed);
 
-    bool isMoving() const { return m_isMoving; }
+    bool isMoving() const;
 
-    bool isMounted() const { return m_mountSpellId ? true : false; }
-    uint32_t getMountSpellId() const { return m_mountSpellId; }
-    void setMountSpellId(uint32_t id) { m_mountSpellId = id; }
+    bool isMounted() const;
+    uint32_t getMountSpellId() const;
+    void setMountSpellId(uint32_t id);
 
-    bool isOnVehicle() const { return m_mountVehicleId ? true : false; }
-    uint32_t getMountVehicleId() const { return m_mountVehicleId; }
-    void setMountVehicleId(uint32_t id) { m_mountVehicleId = id; }
+    bool isOnVehicle() const;
+    uint32_t getMountVehicleId() const;
+    void setMountVehicleId(uint32_t id);
 
     void dismount();
 
     void handleAuraInterruptForMovementFlags(MovementInfo const& movement_info);
 
-    uint32_t getAreaId() const { return m_areaId; }
-    void setAreaId(uint32_t area) { m_areaId = area; }
+    uint32_t getAreaId() const;
+    void setAreaId(uint32_t area);
 
     bool isInCity() const;
 
@@ -547,7 +547,7 @@ public:
     uint8_t getTransferStatus() const;
     bool isTransferPending() const;
 
-    uint32_t getTeleportState() const { return m_teleportState; }
+    uint32_t getTeleportState() const;
 
     void sendTeleportPacket(LocationVector position);
     void sendTeleportAckPacket(LocationVector position);
@@ -915,12 +915,12 @@ public:
     void buildRepop();
     void calcDeathDurabilityLoss(double percent);
 
-    void setResurrecterGuid(uint64_t guid) { m_resurrecter = guid; }
-    void setResurrectHealth(uint32_t health) { m_resurrectHealth = health; }
-    void setResurrectMana(uint32_t mana) { m_resurrectMana = mana; }
-    void setResurrectInstanceId(uint32_t id) { m_resurrectInstanceID = id; }
-    void setResurrectMapId(uint32_t id) { m_resurrectMapId = id; }
-    void setResurrectPosition(LocationVector position) { m_resurrectPosition = position; }
+    void setResurrecterGuid(uint64_t guid);
+    void setResurrectHealth(uint32_t health);
+    void setResurrectMana(uint32_t mana);
+    void setResurrectInstanceId(uint32_t id);
+    void setResurrectMapId(uint32_t id);
+    void setResurrectPosition(LocationVector position);
 
 private:
     struct CorpseData
@@ -1022,8 +1022,28 @@ public:
 
     int8_t getSubGroupSlot() const;
 
+    uint32_t getGroupUpdateFlags() const;
+    void setGroupUpdateFlags(uint32_t flags);
+    void addGroupUpdateFlag(uint32_t flag);
+    uint16_t getGroupStatus();
+
+    void sendUpdateToOutOfRangeGroupMembers();
+
+    void eventGroupFullUpdate();
+
+    bool isSendOnlyRaidgroupSet() const;
+    void setSendOnlyRaidgroup(bool set);
+
+    LocationVector getLastGroupPosition() const;
+
 private:
-    uint32_t m_GroupInviter = 0;
+    uint32_t m_grouIdpInviterId = 0;
+
+    bool m_sendOnlyRaidgroup = false;
+
+    LocationVector m_lastGroupPosition;
+
+    uint32 m_groupUpdateFlags;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Channels
@@ -1075,10 +1095,10 @@ public:
     bool hasTimedQuestInQuestSlot() const;
     void eventTimedQuestExpire(uint32_t questId);
 
-    uint32_t getQuestSharerByDbId() const { return m_questSharer; }
-    void setQuestSharerDbId(uint32_t id) { m_questSharer = id; }
+    uint32_t getQuestSharerByDbId() const;
+    void setQuestSharerDbId(uint32_t id);
 
-    void addQuestToRemove(uint32_t questId) { m_removequests.insert(questId); }
+    void addQuestToRemove(uint32_t questId);
 
     void addQuestToFinished(uint32_t questId);
     bool hasQuestFinished(uint32_t questId);
@@ -1089,17 +1109,17 @@ public:
 
     bool hasQuestForItem(uint32_t itemId);
 
-    void addQuestSpell(uint32_t spellId) { quest_spells.insert(spellId); }
+    void addQuestSpell(uint32_t spellId);
     bool hasQuestSpell(uint32_t spellId);
     void removeQuestSpell(uint32_t spellId);
 
-    void addQuestMob(uint32_t entry) { quest_mobs.insert(entry); }
+    void addQuestMob(uint32_t entry);
     bool hasQuestMob(uint32_t entry);
     void removeQuestMob(uint32_t entry);
 
     void addQuestKill(uint32_t questId, uint8_t reqId, uint32_t delay = 0);
 
-    std::set<uint32_t> getFinishedQuests() const { return m_finishedQuests; }
+    std::set<uint32_t> getFinishedQuests() const;
 
 private:
     QuestLogEntry* m_questlog[MAX_QUEST_LOG_SIZE] = {nullptr};
@@ -1231,8 +1251,8 @@ public:
     void setVisibleItemFields(uint32_t slot, Item* item);
     void applyReforgeEnchantment(Item* item, bool apply);
 
-    void setAFKReason(std::string reason) { afkReason = reason; }
-    std::string getAFKReason() const { return afkReason; }
+    void setAFKReason(std::string reason);
+    std::string getAFKReason() const;
 
     void addToGMTargetList(uint32_t guid);
     void removeFromGMTargetList(uint32_t guid);
@@ -1261,15 +1281,17 @@ public:
     void loadVoidStorage();
     void saveVoidStorage();
 
-    bool isVoidStorageUnlocked() const { return hasPlayerFlags(PLAYER_FLAGS_VOID_UNLOCKED); }
-    void unlockVoidStorage() { setPlayerFlags(PLAYER_FLAGS_VOID_UNLOCKED); }
-    void lockVoidStorage() { removePlayerFlags(PLAYER_FLAGS_VOID_UNLOCKED); }
+    bool isVoidStorageUnlocked() const;
+    void unlockVoidStorage();
+    void lockVoidStorage();
+
     uint8_t getNextVoidStorageFreeSlot() const;
     uint8_t getNumOfVoidStorageFreeSlots() const;
     uint8_t addVoidStorageItem(const VoidStorageItem& item);
     void addVoidStorageItemAtSlot(uint8_t slot, const VoidStorageItem& item);
     void deleteVoidStorageItem(uint8_t slot);
     bool swapVoidStorageItem(uint8_t oldSlot, uint8_t newSlot);
+
     VoidStorageItem* getVoidStorageItem(uint8_t slot) const;
     VoidStorageItem* getVoidStorageItem(uint64_t id, uint8_t& slot) const;
 
@@ -1280,18 +1302,18 @@ private:
     /////////////////////////////////////////////////////////////////////////////////////////
     // Taxi
 public:   
-    TaxiPath* getTaxiPath() const { return m_currentTaxiPath; }
-    void setTaxiPath(TaxiPath* path) { m_currentTaxiPath = path; }
+    TaxiPath* getTaxiPath() const;
+    void setTaxiPath(TaxiPath* path);
 
     void loadTaxiMask(const char* data);
-    const uint32_t& getTaxiMask(uint32_t index) const { return m_taxiMask[index]; }
-    void setTaxiMask(uint32_t index, uint32_t value) { m_taxiMask[index] = value; }
+    const uint32_t& getTaxiMask(uint32_t index) const;
+    void setTaxiMask(uint32_t index, uint32_t value);
 
-    void setTaxiPosition() { m_taxiPosition = m_position; }
-    void unsetTaxiPosition() { m_taxiPosition = { 0, 0, 0 }; }
+    void setTaxiPosition();
+    void unsetTaxiPosition();
 
-    bool isOnTaxi() const { return m_isOnTaxi; }
-    void setOnTaxi(bool state) { m_isOnTaxi = state; }
+    bool isOnTaxi() const;
+    void setOnTaxi(bool state);
 
     void startTaxiPath(TaxiPath* path, uint32_t modelid, uint32_t start_node);
     void skipTaxiPathNodesToEnd(TaxiPath* path);
@@ -1315,8 +1337,8 @@ private:
     /////////////////////////////////////////////////////////////////////////////////////////
     // Loot
 public:
-    const uint64_t& getLootGuid() const { return m_lootGuid; }
-    void setLootGuid(const uint64_t& guid) { m_lootGuid = guid; }
+    const uint64_t& getLootGuid() const;
+    void setLootGuid(const uint64_t& guid);
 
     void sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId);
     void sendLootUpdate(Object* object);
@@ -1325,8 +1347,8 @@ public:
     Item* storeNewLootItem(uint8_t slot, Loot* loot);
     Item* storeItem(LootItem const* lootItem);
 
-    bool isLootableOnCorpse() const { return m_lootableOnCorpse; }
-    void setLootableOnCorpse(bool lootable) { m_lootableOnCorpse = lootable; }
+    bool isLootableOnCorpse() const;
+    void setLootableOnCorpse(bool lootable);
 
 private:
     uint64_t m_lootGuid = 0;
@@ -1361,10 +1383,10 @@ public:
     void initialiseReputation();
     uint32_t getInitialFactionId();
 
-    int32_t getPctReputationMod() const { return m_pctReputationMod; }
-    void setPctReputationMod(int32_t value) { m_pctReputationMod = value; }
+    int32_t getPctReputationMod() const;
+    void setPctReputationMod(int32_t value);
 
-    void setChampioningFaction(uint32_t factionId) { m_championingFactionId = factionId; }
+    void setChampioningFaction(uint32_t factionId);
 
 private:
     ReputationMap m_reputation;
@@ -1376,7 +1398,7 @@ private:
     /////////////////////////////////////////////////////////////////////////////////////////
     // Drunk system
 public:
-    uint16_t getServersideDrunkValue() const { return m_serversideDrunkValue; }
+    uint16_t getServersideDrunkValue() const;
     void setServersideDrunkValue(uint16 newDrunkValue, uint32_t itemId = 0);
     static DrunkenState getDrunkStateByValue(uint16_t value);
     void handleSobering();
@@ -1388,7 +1410,7 @@ private:
     /////////////////////////////////////////////////////////////////////////////////////////
     // Duel
 public:
-    Player* getDuelPlayer() const { return m_duelPlayer; }
+    Player* getDuelPlayer() const;
     void requestDuel(Player* target);
     void testDuelBoundary();
     void endDuel(uint8_t condition);
@@ -1396,11 +1418,11 @@ public:
 
     void handleDuelCountdown();
 
-    void setDuelStatus(uint8_t status) { m_duelStatus = status; }
-    uint8_t getDuelStatus() const { return m_duelStatus; }
+    void setDuelStatus(uint8_t status);
+    uint8_t getDuelStatus() const;
 
-    void setDuelState(uint8_t state) { m_duelState = state; }
-    uint8_t getDuelState() const { return m_duelState; }
+    void setDuelState(uint8_t state);
+    uint8_t getDuelState() const;
 
 private:
     Player* m_duelPlayer = nullptr;
@@ -1414,8 +1436,8 @@ public:
     void GiveXP(uint32_t xp, const uint64_t& guid, bool allowBonus);
     void sendLogXpGainPacket(uint64_t guid, uint32_t normalXp, uint32_t restedXp, bool type);
 
-    void toggleXpGain() { m_isXpGainAllowed ? m_isXpGainAllowed = false : m_isXpGainAllowed = true; }
-    bool canGainXp() const { return m_isXpGainAllowed; }
+    void toggleXpGain();
+    bool canGainXp() const;
 
     uint32_t subtractRestXp(uint32_t amount);
     void addCalculatedRestXp(uint32_t seconds);
@@ -1461,7 +1483,7 @@ public:
     void setSummonedObject(Object* summonedObject);
 
 private:
-    std::list<Pet*>  m_summons;
+    std::list<Pet*> m_summons;
     std::map<uint32_t, PlayerPet*> m_pets;
 
     uint8_t m_stableSlotCount = 0;
@@ -1478,7 +1500,6 @@ public:
     //AGPL Start
 
     public:
-        void EventGroupFullUpdate();
 
         void UpdatePvPCurrencies();
         void FillRandomBattlegroundReward(bool wonBattleground, uint32 &honorPoints, uint32 &arenaPoints);
@@ -1969,7 +1990,6 @@ public:
         DBC::Structures::ChrClassesEntry const* myClass = nullptr;
 
         void EjectFromInstance();
-        bool raidgrouponlysent = false;
 
         // Hack fix here!
         void ForceZoneUpdate();
@@ -2003,7 +2023,6 @@ public:
 
         void RemoteRevive();
 
-        LocationVector m_last_group_position;
         int32 m_rap_mod_pct = 0;
 
 
@@ -2171,13 +2190,6 @@ public:
         void SetRoles(uint8 role) { m_roles = role; }
         uint8 GetRoles() { return m_roles; }
         uint8 m_roles = 0;
-
-        uint32 GetGroupUpdateFlags() { return GroupUpdateFlags; }
-        void SetGroupUpdateFlags(uint32 flags);
-        void AddGroupUpdateFlag(uint32 flag);
-        uint16 GetGroupStatus();
-        void SendUpdateToOutOfRangeGroupMembers();
-        uint32 GroupUpdateFlags;
 
         void SendCinematicCamera(uint32 id);
 

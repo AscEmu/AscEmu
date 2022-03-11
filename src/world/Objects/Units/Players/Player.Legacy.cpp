@@ -615,7 +615,7 @@ void Player::Update(unsigned long time_passed)
 
     if (time_passed >= m_partyUpdateTimer)
     {
-        SendUpdateToOutOfRangeGroupMembers();
+        sendUpdateToOutOfRangeGroupMembers();
 
         // Remove also garbage items
         RemoveGarbageItems();
@@ -895,7 +895,7 @@ void Player::_EventExploration()
         m_areaId = AreaId;
         UpdatePvPArea();
 
-        AddGroupUpdateFlag(GROUP_UPDATE_FULL);
+        addGroupUpdateFlag(GROUP_UPDATE_FULL);
 
         if (getGroup())
             getGroup()->UpdateOutOfRangePlayer(this, true, nullptr);
@@ -3147,7 +3147,7 @@ void Player::OnPushToWorld()
 
 void Player::RemoveFromWorld()
 {
-    if (raidgrouponlysent)
+    if (m_sendOnlyRaidgroup)
         event_RemoveEvents(EVENT_PLAYER_EJECT_FROM_INSTANCE);
 
     load_health = getHealth();
@@ -5365,13 +5365,13 @@ void Player::CompleteLoading()
 
     if (m_playerInfo->m_Group)
     {
-        sEventMgr.AddEvent(this, &Player::EventGroupFullUpdate, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(this, &Player::eventGroupFullUpdate, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 
-    if (raidgrouponlysent)
+    if (m_sendOnlyRaidgroup)
     {
         sendRaidGroupOnly(0xFFFFFFFF, 0);
-        raidgrouponlysent = false;
+        m_sendOnlyRaidgroup = false;
     }
 
     sInstanceMgr.BuildSavedInstancesForPlayer(this);
@@ -6112,15 +6112,6 @@ void Player::EventTalentHearthOfWildChange(bool apply)
         setAttackPowerMultiplier(getAttackPowerMultiplier() + tval / 200.0f);
         setRangedAttackPowerMultiplier(getRangedAttackPowerMultiplier() + tval / 200.0f);
         UpdateStats();
-    }
-}
-
-void Player::EventGroupFullUpdate()
-{
-    if (m_playerInfo->m_Group)
-    {
-        //m_playerInfo->m_Group->Update();
-        m_playerInfo->m_Group->UpdateAllOutOfRangePlayersFor(this);
     }
 }
 
@@ -7286,52 +7277,6 @@ void Player::CastSpellArea()
             }
         }
     }
-}
-
-void Player::SetGroupUpdateFlags(uint32 flags)
-{
-    if (getGroup() == nullptr)
-        return;
-    GroupUpdateFlags = flags;
-}
-
-void Player::AddGroupUpdateFlag(uint32 flag)
-{
-    if (getGroup() == nullptr)
-        return;
-    GroupUpdateFlags |= flag;
-}
-
-uint16 Player::GetGroupStatus()
-{
-    uint16 status = MEMBER_STATUS_ONLINE;
-    if (isPvpFlagSet())
-        status |= MEMBER_STATUS_PVP;
-    if (getDeathState() == CORPSE)
-        status |= MEMBER_STATUS_DEAD;
-    else if (isDead())
-        status |= MEMBER_STATUS_GHOST;
-    if (isFfaPvpFlagSet())
-        status |= MEMBER_STATUS_PVP_FFA;
-    if (hasPlayerFlags(PLAYER_FLAG_AFK))
-        status |= MEMBER_STATUS_AFK;
-    if (hasPlayerFlags(PLAYER_FLAG_DND))
-        status |= MEMBER_STATUS_DND;
-
-    return status;
-}
-
-void Player::SendUpdateToOutOfRangeGroupMembers()
-{
-    if (GroupUpdateFlags == GROUP_UPDATE_FLAG_NONE)
-        return;
-
-    if (Group* group = getGroup())
-        group->UpdateOutOfRangePlayer(this, true, nullptr);
-
-    GroupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
-    if (Pet* pet = getFirstPetFromSummons())
-        pet->ResetAuraUpdateMaskForRaid();
 }
 
 void Player::SendCinematicCamera(uint32 id)

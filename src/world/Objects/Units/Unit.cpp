@@ -247,7 +247,7 @@ void Unit::setPowerType(uint8_t powerType)
     if (plr == nullptr || !plr->IsInWorld() || plr->getGroup() == nullptr)
         return;
 
-    plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_POWER_TYPE : GROUP_UPDATE_FLAG_PET_POWER_TYPE);
+    plr->addGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_POWER_TYPE : GROUP_UPDATE_FLAG_PET_POWER_TYPE);
 }
 //bytes_0 end
 
@@ -270,7 +270,7 @@ void Unit::setHealth(uint32_t health)
     if (plr == nullptr || !plr->IsInWorld() || plr->getGroup() == nullptr)
         return;
 
-    plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_CUR_HP : GROUP_UPDATE_FLAG_PET_CUR_HP);
+    plr->addGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_CUR_HP : GROUP_UPDATE_FLAG_PET_CUR_HP);
 }
 void Unit::modHealth(int32_t health)
 {
@@ -426,7 +426,7 @@ void Unit::setPower(PowerType type, uint32_t value, bool sendPacket/* = true*/)
     if (plr == nullptr || !plr->IsInWorld() || plr->getGroup() == nullptr)
         return;
 
-    plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_CUR_POWER : GROUP_UPDATE_FLAG_PET_CUR_POWER);
+    plr->addGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_CUR_POWER : GROUP_UPDATE_FLAG_PET_CUR_POWER);
 }
 
 void Unit::modPower(PowerType type, int32_t value)
@@ -453,7 +453,7 @@ void Unit::setMaxHealth(uint32_t maxHealth)
     // Update health also to group
     const auto plr = getPlayerOwner();
     if (plr != nullptr && plr->IsInWorld() && plr->getGroup() != nullptr)
-        plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_MAX_HP : GROUP_UPDATE_FLAG_PET_MAX_HP);
+        plr->addGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_MAX_HP : GROUP_UPDATE_FLAG_PET_MAX_HP);
 
     if (maxHealth < getHealth())
         setHealth(maxHealth);
@@ -548,7 +548,7 @@ void Unit::setMaxPower(PowerType type, uint32_t value)
     // Update power also to group
     const auto plr = getPlayerOwner();
     if (plr != nullptr && plr->IsInWorld() && plr->getGroup() != nullptr)
-        plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_MAX_POWER : GROUP_UPDATE_FLAG_PET_MAX_POWER);
+        plr->addGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_MAX_POWER : GROUP_UPDATE_FLAG_PET_MAX_POWER);
 
     if (value < getPower(type))
         setPower(type, value);
@@ -685,7 +685,7 @@ void Unit::setLevel(uint32_t level)
         return;
 
     //\ todo: missing update flag for pet level
-    plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_LEVEL : 0);
+    plr->addGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_LEVEL : 0);
 }
 
 uint32_t Unit::getFactionTemplate() const { return unitData()->faction_template; }
@@ -856,7 +856,7 @@ void Unit::setDisplayId(uint32_t id)
         return;
 
     //\ todo: missing update flag for player display id
-    plr->AddGroupUpdateFlag(isPlayer() ? 0 : GROUP_UPDATE_FLAG_PET_MODEL_ID);
+    plr->addGroupUpdateFlag(isPlayer() ? 0 : GROUP_UPDATE_FLAG_PET_MODEL_ID);
 }
 
 uint32_t Unit::getNativeDisplayId() const { return unitData()->native_display_id; }
@@ -1071,7 +1071,7 @@ void Unit::setPvpFlags(uint8_t pvpFlags)
     if (plr == nullptr || !plr->IsInWorld() || !plr->getGroup())
         return;
 
-    plr->AddGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_STATUS : 0);
+    plr->addGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_STATUS : 0);
 }
 void Unit::addPvpFlags(uint8_t pvpFlags)
 {

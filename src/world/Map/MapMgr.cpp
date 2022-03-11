@@ -1680,7 +1680,7 @@ void MapMgr::BeginInstanceExpireCountdown()
 
     for (auto& itr : m_PlayerStorage)
     {
-        if (!itr.second->raidgrouponlysent)
+        if (!itr.second->isSendOnlyRaidgroupSet())
             itr.second->sendRaidGroupOnly(60000, 1);
     }
 

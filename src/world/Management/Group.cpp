@@ -152,7 +152,7 @@ bool Group::AddMember(CachedCharacterInfo* info, int32 subgroupid/* =-1 */)
             if (subgroup->AddPlayer(info))
             {
                 if (pPlayer != NULL)
-                    sEventMgr.AddEvent(pPlayer, &Player::EventGroupFullUpdate, EVENT_PLAYER_UPDATE, 1500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                    sEventMgr.AddEvent(pPlayer, &Player::eventGroupFullUpdate, EVENT_PLAYER_UPDATE, 1500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
                 if (info->m_Group && info->m_Group != this)
                     info->m_Group->RemovePlayer(info);
@@ -899,7 +899,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (pPlayer == nullptr)
         return;
 
-    uint32 mask = pPlayer->GetGroupUpdateFlags();
+    uint32 mask = pPlayer->getGroupUpdateFlags();
     if (mask & GROUP_UPDATE_FLAG_POWER_TYPE)                // if update power type, update current/max power also
         mask |= (GROUP_UPDATE_FLAG_CUR_POWER | GROUP_UPDATE_FLAG_MAX_POWER);
 
@@ -921,7 +921,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_STATUS)
     {
         if (!pPlayer->m_isGmInvisible)
-            *data << uint16(pPlayer->GetGroupStatus());
+            *data << uint16(pPlayer->getGroupStatus());
         else
             *data << uint16(MEMBER_STATUS_OFFLINE);
     }
