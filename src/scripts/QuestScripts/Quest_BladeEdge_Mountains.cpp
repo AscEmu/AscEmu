@@ -290,7 +290,7 @@ public:
         }
         else
         {
-            pPlayer->BroadcastMessage("Missing required quest : Stasis Chambers of Bash'ir");
+            pPlayer->broadcastMessage("Missing required quest : Stasis Chambers of Bash'ir");
         }
     }
 };

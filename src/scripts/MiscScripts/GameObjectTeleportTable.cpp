@@ -45,18 +45,18 @@ public:
 
             if (required_level > pPlayer->getLevel())
             {
-                pPlayer->BroadcastMessage("You must be at least level %u to use this portal", required_level);
+                pPlayer->broadcastMessage("You must be at least level %u to use this portal", required_level);
                 return;
             }
             else if (req_class != 0 && req_class != pPlayer->getClass())
             {
-                pPlayer->BroadcastMessage("You do not have the required class to use this Portal");
+                pPlayer->broadcastMessage("You do not have the required class to use this Portal");
                 return;
             }
 #if VERSION_STRING > TBC
             else if (req_achievement != 0 && pPlayer->GetAchievementMgr().HasCompleted(req_achievement))
             {
-                pPlayer->BroadcastMessage("You do not have the required achievement to use this Portal");
+                pPlayer->broadcastMessage("You do not have the required achievement to use this Portal");
                 return;
             }
 #endif

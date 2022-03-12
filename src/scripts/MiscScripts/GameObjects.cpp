@@ -94,11 +94,11 @@ public:
         }
         else if (player->getLevel() <= 57 || player->hasQuestFinished(7761) == false)
         {
-            player->BroadcastMessage("You need to be level 58 and have completed the quest : Blackhand's Command");
+            player->broadcastMessage("You need to be level 58 and have completed the quest : Blackhand's Command");
         }
         else if (player->hasQuestFinished(7761) == true && player->getLevel() >= 58 && !player->isInGroup())
         {
-            player->BroadcastMessage("You need to be in a raid group to be able to enter this instance");
+            player->broadcastMessage("You need to be in a raid group to be able to enter this instance");
         }
     }
 };
@@ -149,7 +149,7 @@ public:
         }
         else
         {
-            player->BroadcastMessage("You need to have item : Time-Lost Offering and to have quest : Terokk's Downfall");
+            player->broadcastMessage("You need to have item : Time-Lost Offering and to have quest : Terokk's Downfall");
         }
     }
 };
@@ -194,7 +194,7 @@ public:
         }
         else
         {
-            player->BroadcastMessage("Missing required item : Mallet of Zul'Farrak");
+            player->broadcastMessage("Missing required item : Mallet of Zul'Farrak");
         }
     }
 };
@@ -216,7 +216,7 @@ public:
         }
         else
         {
-            player->BroadcastMessage("Missing required quest : To Rule The Skies");
+            player->broadcastMessage("Missing required quest : To Rule The Skies");
         }
     }
 };
@@ -238,7 +238,7 @@ public:
         }
         else
         {
-            player->BroadcastMessage("Missing required quest : To Rule The Skies");
+            player->broadcastMessage("Missing required quest : To Rule The Skies");
         }
     }
 };
@@ -260,7 +260,7 @@ public:
         }
         else
         {
-            player->BroadcastMessage("Missing required quest : To Rule The Skies");
+            player->broadcastMessage("Missing required quest : To Rule The Skies");
         }
     }
 };
@@ -282,7 +282,7 @@ public:
         }
         else
         {
-            player->BroadcastMessage("Missing required quest : To Rule The Skies");
+            player->broadcastMessage("Missing required quest : To Rule The Skies");
         }
     }
 };
@@ -304,7 +304,7 @@ public:
         }
         else
         {
-            player->BroadcastMessage("Missing required quest : Call of Water");
+            player->broadcastMessage("Missing required quest : Call of Water");
         }
     }
 };
@@ -326,7 +326,7 @@ public:
         }
         else
         {
-            player->BroadcastMessage("Missing required quest : Call of Water");
+            player->broadcastMessage("Missing required quest : Call of Water");
         }
     }
 };

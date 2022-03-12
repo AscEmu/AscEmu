@@ -1974,7 +1974,7 @@ bool ZethGorMustBurnHorde(uint8_t /*effectIndex*/, Spell* pSpell)
     }
     else
     {
-        pPlayer->BroadcastMessage("Missing required quest : Zeth'Gor Must Burn");
+        pPlayer->broadcastMessage("Missing required quest : Zeth'Gor Must Burn");
     }
 
     return true;
@@ -2056,7 +2056,7 @@ bool LayingWasteToTheUnwantedAlliance(uint8_t /*effectIndex*/, Spell* pSpell)
     }
     else
     {
-        pPlayer->BroadcastMessage("Missing required quest : Laying Waste to the Unwanted");
+        pPlayer->broadcastMessage("Missing required quest : Laying Waste to the Unwanted");
     }
 
     return true;
@@ -2179,7 +2179,7 @@ bool DisruptTheirReinforcements(uint8_t /*effectIndex*/, Spell* pSpell)
         }
 
         if (SendMsg)
-            pPlayer->BroadcastMessage("Go to the Port of the Dark Legion!");
+            pPlayer->broadcastMessage("Go to the Port of the Dark Legion!");
     }
     else if (questLogHorde != nullptr)
     {
@@ -2202,11 +2202,11 @@ bool DisruptTheirReinforcements(uint8_t /*effectIndex*/, Spell* pSpell)
         }
 
         if (SendMsg)
-            pPlayer->BroadcastMessage("Go to the Port of the Dark Legion!");
+            pPlayer->broadcastMessage("Go to the Port of the Dark Legion!");
     }
     else
     {
-        pPlayer->BroadcastMessage("Missing required quest : Disrupt Their Reinforcements");
+        pPlayer->broadcastMessage("Missing required quest : Disrupt Their Reinforcements");
     }
 
     return true;

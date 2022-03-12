@@ -267,10 +267,10 @@ void DayWatcherThread::update_arena()
                 auto player = sObjectMgr.GetPlayer(guid);
                 if (player != nullptr)
                 {
-                    player->AddArenaPoints(arenapoints, false);
+                    player->addArenaPoints(arenapoints, false);
 
                     // update fields (no uint lock)
-                    sEventMgr.AddEvent(player, &Player::UpdateArenaPoints, EVENT_PLAYER_UPDATE, 100, 1, 0);
+                    sEventMgr.AddEvent(player, &Player::updateArenaPoints, EVENT_PLAYER_UPDATE, 100, 1, 0);
                     sChatHandler.SystemMessage(player->GetSession(), "Your arena points have been updated! Check your PvP tab!");
                 }
 

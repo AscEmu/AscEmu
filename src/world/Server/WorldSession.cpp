@@ -339,7 +339,7 @@ void WorldSession::LogoutPlayer(bool Save)
         // Decrement the global player count
         sWorld.decrementPlayerCount(_player->getTeam());
 
-        if (_player->m_bgIsQueued)
+        if (_player->m_isQueuedForBg)
             sBattlegroundManager.RemovePlayerFromQueues(_player);
 
         // Repop or Resurrect and remove from battlegrounds

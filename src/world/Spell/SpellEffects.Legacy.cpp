@@ -2650,7 +2650,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
 
                 if (dspellproto != nullptr)
                 {
-                    p_caster->BroadcastMessage("%sDISCOVERY! You discovered the %s !|r", MSG_COLOR_YELLOW, dspellproto->getName().c_str());
+                    p_caster->broadcastMessage("%sDISCOVERY! You discovered the %s !|r", MSG_COLOR_YELLOW, dspellproto->getName().c_str());
                     p_caster->addSpell(learn_spell);
                 }
                 else
@@ -3546,8 +3546,8 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
         case LOCKTYPE_SLOW_OPEN: // used for BG go's
         {
             if (!gameObjTarget) return;
-            if (p_caster && p_caster->m_bg)
-                if (p_caster->m_bg->HookSlowLockOpen(gameObjTarget, p_caster, this))
+            if (p_caster && p_caster->getBattleground())
+                if (p_caster->getBattleground()->HookSlowLockOpen(gameObjTarget, p_caster, this))
                     return;
 
             uint32 spellid = !gameObjTarget->GetGameObjectProperties()->raw.parameter_10 ? 23932 : gameObjTarget->GetGameObjectProperties()->raw.parameter_10;
@@ -3572,8 +3572,8 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
             if (gameObjTarget == nullptr)
                 return;
 
-            if ((p_caster != nullptr) && (p_caster->m_bg != nullptr))
-                p_caster->m_bg->HookQuickLockOpen(gameObjTarget, p_caster, this);
+            if ((p_caster != nullptr) && (p_caster->getBattleground() != nullptr))
+                p_caster->getBattleground()->HookQuickLockOpen(gameObjTarget, p_caster, this);
 
             // there is no break here on purpose
 
@@ -4714,7 +4714,7 @@ void Spell::SpellEffectSummonPlayer(uint8_t /*effectIndex*/)
     if (m_caster->GetMapMgr()->GetMapInfo() && playerTarget->getLevel() < m_caster->GetMapMgr()->GetMapInfo()->minlevel)    // we need some blizzlike message that player needs level xx - feel free to add it ;)
         return;
 
-    playerTarget->SummonRequest(m_caster->getGuidLow(), m_caster->GetZoneId(), m_caster->GetMapId(), m_caster->GetInstanceID(), m_caster->GetPosition());
+    playerTarget->sendSummonRequest(m_caster->getGuidLow(), m_caster->GetZoneId(), m_caster->GetMapId(), m_caster->GetInstanceID(), m_caster->GetPosition());
 }
 
 void Spell::SpellEffectActivateObject(uint8_t effectIndex) // Activate Object
@@ -5328,7 +5328,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
 
     if (playerTarget && !corpse)
     {
-        if (!playerTarget->m_bg || !playerTarget->isDead())
+        if (!playerTarget->getBattleground() || !playerTarget->isDead())
             return;
 
         // Set all the lootable stuff on the player. If he repops before we've looted, we'll set the flags
@@ -5362,7 +5362,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
         Player* owner = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart());
         if (owner)
         {
-            if (!owner->m_bg)
+            if (!owner->getBattleground())
                 return;
 
             owner->SendPacket(MsgCorspeQuery(0).serialise().get());
@@ -5764,7 +5764,7 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
     if (playerTarget != nullptr && p_caster != nullptr && p_caster != playerTarget)
     {
         if (playerTarget->isPvpFlagSet())
-            p_caster->PvPToggle();
+            p_caster->togglePvP();
     }
 
     uint32 start, end;
@@ -6108,9 +6108,9 @@ void Spell::SpellEffectActivateSpec(uint8_t /*effectIndex*/)
         sendCastResult(SPELL_FAILED_AFFECTING_COMBAT);
         return;
     }
-    else if (p_caster->m_bg)
+    else if (p_caster->getBattleground())
     {
-        uint32 Type = p_caster->m_bg->GetType();
+        uint32 Type = p_caster->getBattleground()->GetType();
         if (isArena(Type))
         {
             sendCastResult(SPELL_FAILED_AFFECTING_COMBAT); // does the job
@@ -6118,10 +6118,8 @@ void Spell::SpellEffectActivateSpec(uint8_t /*effectIndex*/)
         }
         else
         {
-            if (p_caster->m_bg->HasStarted())
-            {
+            if (p_caster->getBattleground()->HasStarted())
                 sendCastResult(SPELL_FAILED_AFFECTING_COMBAT); // does the job
-            }
         }
     }
 

@@ -353,7 +353,7 @@ void CombatHandler::_checkPvpFlags(Unit* target, bool friendlyAction)
         if (getOwner()->isPet())
         {
             if (!getOwner()->isPvpFlagSet())
-                playerOwner->PvPToggle();
+                playerOwner->togglePvP();
 
             if (!friendlyAction)
                 playerOwner->AggroPvPGuards();
@@ -361,7 +361,7 @@ void CombatHandler::_checkPvpFlags(Unit* target, bool friendlyAction)
         else
         {
             if (!playerOwner->isPvpFlagSet())
-                playerOwner->PvPToggle();
+                playerOwner->togglePvP();
 
             if (!friendlyAction)
                 playerOwner->AggroPvPGuards();

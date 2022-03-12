@@ -975,14 +975,14 @@ void AlteracValley::HookOnAreaTrigger(Player* plr, uint32_t trigger)
         case 2608: // alliance exits
         {
             if (plr->getTeam() != TEAM_ALLIANCE)
-                plr->SendAreaTriggerMessage("Only The Alliance can use that portal");
+                plr->sendAreaTriggerMessage("Only The Alliance can use that portal");
             else
                 RemovePlayer(plr, false);
         }break;
         case 2606: // horde exits
         {
             if (plr->getTeam() != TEAM_HORDE)
-                plr->SendAreaTriggerMessage("Only The Horde can use that portal");
+                plr->sendAreaTriggerMessage("Only The Horde can use that portal");
             else
                 RemovePlayer(plr, false);
         }break;

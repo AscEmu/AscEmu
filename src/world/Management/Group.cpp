@@ -308,7 +308,7 @@ void Group::Update()
                                 flags |= 4;
 
                             data << uint8(flags);
-                            data << uint8(plr ? plr->GetRoles() : 0);   // Player roles
+                            data << uint8(plr ? plr->retRoles() : 0);   // Player roles
                         }
                     }
                 }

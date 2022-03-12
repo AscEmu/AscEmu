@@ -129,11 +129,11 @@ void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session,
     // Random bgs
     if (isRandom == 1)
     {
-        auto hasWonRbgToday = m_session->GetPlayer()->HasWonRbgToday();
+        auto hasWonRbgToday = m_session->GetPlayer()->hasWonRbgToday();
         uint32 honorPointsForWinning, honorPointsForLosing, arenaPointsForWinning, arenaPointsForLosing;
 
-        m_session->GetPlayer()->FillRandomBattlegroundReward(true, honorPointsForWinning, arenaPointsForWinning);
-        m_session->GetPlayer()->FillRandomBattlegroundReward(false, honorPointsForLosing, arenaPointsForLosing);
+        m_session->GetPlayer()->fillRandomBattlegroundReward(true, honorPointsForWinning, arenaPointsForWinning);
+        m_session->GetPlayer()->fillRandomBattlegroundReward(false, honorPointsForLosing, arenaPointsForLosing);
 
         // rewards
         data << uint8(hasWonRbgToday);
@@ -200,11 +200,11 @@ void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session,
     // Random bgs
     if (isRandom == 1)
     {
-        auto hasWonRbgToday = m_session->GetPlayer()->HasWonRbgToday();
+        auto hasWonRbgToday = m_session->GetPlayer()->hasWonRbgToday();
         uint32 honorPointsForWinning, honorPointsForLosing, arenaPointsForWinning, arenaPointsForLosing;
 
-        m_session->GetPlayer()->FillRandomBattlegroundReward(true, honorPointsForWinning, arenaPointsForWinning);
-        m_session->GetPlayer()->FillRandomBattlegroundReward(false, honorPointsForLosing, arenaPointsForLosing);
+        m_session->GetPlayer()->fillRandomBattlegroundReward(true, honorPointsForWinning, arenaPointsForWinning);
+        m_session->GetPlayer()->fillRandomBattlegroundReward(false, honorPointsForLosing, arenaPointsForLosing);
 
         // rewards
         data << uint8(hasWonRbgToday);
@@ -257,9 +257,9 @@ void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, World
         return;
 
     if (srlPacket.bgType == BATTLEGROUND_RANDOM)
-        plr->SetQueuedForRbg(true);
+        plr->setIsQueuedForRbg(true);
     else
-        plr->SetQueuedForRbg(false);
+        plr->setIsQueuedForRbg(false);
 
     if (srlPacket.bgType >= BATTLEGROUND_NUM_TYPES || srlPacket.bgType == 0 || bgMaps.find(srlPacket.bgType) == bgMaps.end() && srlPacket.bgType != BATTLEGROUND_RANDOM)
     {
@@ -288,9 +288,9 @@ void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, World
     m_queuedPlayers[srlPacket.bgType][lgroup].push_back(pguid);
     sLogger.info("BattlegroundManager : Player %u is now in battleground queue for instance %u", m_session->GetPlayer()->getGuidLow(), (srlPacket.instanceId + 1));
 
-    plr->m_bgIsQueued = true;
-    plr->m_bgQueueInstanceId = srlPacket.instanceId;
-    plr->m_bgQueueType = srlPacket.bgType;
+    plr->setIsQueuedForBg(true);
+    plr->setQueuedBgInstanceId(srlPacket.instanceId);
+    plr->setBgQueueType(srlPacket.bgType);
 
     plr->setBGEntryPoint(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetOrientation(), plr->GetMapId(), plr->GetInstanceID());
 
@@ -611,16 +611,16 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                 }
 
                 // queued to a specific instance id?
-                if (plr->m_bgQueueInstanceId != 0)
+                if (plr->hasQueuedBgInstanceId())
                 {
-                    iitr = m_instances[i].find(plr->m_bgQueueInstanceId);
+                    iitr = m_instances[i].find(plr->getQueuedBgInstanceId());
                     if (iitr == m_instances[i].end())
                     {
                         // queue no longer valid, since instance has closed since queuing
-                        plr->GetSession()->SystemMessage(plr->GetSession()->LocalizedWorldSrv(ServerString::SS_QUEUE_BG_INSTANCE_ID_NO_VALID_DELETED), plr->m_bgQueueInstanceId);
-                        plr->m_bgIsQueued = false;
-                        plr->m_bgQueueType = 0;
-                        plr->m_bgQueueInstanceId = 0;
+                        plr->GetSession()->SystemMessage(plr->GetSession()->LocalizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_DELETED), plr->getQueuedBgInstanceId());
+                        plr->setIsQueuedForBg(false);
+                        plr->setBgQueueType(0);
+                        plr->setQueuedBgInstanceId(0);
                         m_queuedPlayers[i][j].erase(it4);
                         continue;
                     }
@@ -959,7 +959,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
 
 void CBattlegroundManager::RemovePlayerFromQueues(Player* plr)
 {
-    if (plr->m_bgQueueType >= BATTLEGROUND_NUM_TYPES)
+    if (plr->getBgQueueType() >= BATTLEGROUND_NUM_TYPES)
     {
         sLogger.failure("CBattlegroundManager::RemovePlayerFromQueues queueType %u is not valid!", BATTLEGROUND_NUM_TYPES);
         return;
@@ -971,22 +971,22 @@ void CBattlegroundManager::RemovePlayerFromQueues(Player* plr)
 
     uint32 lgroup = GetLevelGrouping(plr->getLevel());
 
-    std::list<uint32>::iterator itr = m_queuedPlayers[plr->m_bgQueueType][lgroup].begin();
-    while (itr != m_queuedPlayers[plr->m_bgQueueType][lgroup].end())
+    std::list<uint32>::iterator itr = m_queuedPlayers[plr->getBgQueueType()][lgroup].begin();
+    while (itr != m_queuedPlayers[plr->getBgQueueType()][lgroup].end())
     {
         if ((*itr) == plr->getGuidLow())
         {
-            sLogger.debug("Removing player %u from queue instance %u type %u", plr->getGuidLow(), plr->m_bgQueueInstanceId, plr->m_bgQueueType);
-            m_queuedPlayers[plr->m_bgQueueType][lgroup].erase(itr);
+            sLogger.debug("Removing player %u from queue instance %u type %u", plr->getGuidLow(), plr->getQueuedBgInstanceId(), plr->getBgQueueType());
+            m_queuedPlayers[plr->getBgQueueType()][lgroup].erase(itr);
             break;
         }
 
         ++itr;
     }
 
-    plr->m_bgIsQueued = false;
+    plr->setIsQueuedForBg(false);
     plr->setBgTeam(plr->getTeam());
-    plr->m_pendingBattleground = nullptr;
+    plr->setPendingBattleground(nullptr);
     SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
     m_queueLock.Release();
 
@@ -1233,11 +1233,11 @@ void CBattlegroundManager::DeleteBattleground(CBattleground* bg)
 
         if (Player* plr = sObjectMgr.GetPlayer(*it2))
         {
-            if (plr->m_bgQueueInstanceId == bg->GetId())
+            if (plr->getQueuedBgInstanceId() == bg->GetId())
             {
-                sChatHandler.SystemMessage(plr->GetSession(), plr->GetSession()->LocalizedWorldSrv(ServerString::SS_QUEUE_BG_INSTANCE_ID_NO_VALID_LONGER_EXISTS), bg->GetId());
+                sChatHandler.SystemMessage(plr->GetSession(), plr->GetSession()->LocalizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_LONGER_EXISTS), bg->GetId());
                 SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
-                plr->m_bgIsQueued = false;
+                plr->setIsQueuedForBg(false);
                 m_queuedPlayers[i][j].erase(it2);
             }
         }
@@ -1289,7 +1289,7 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
             for (itx = pGroup->GetSubGroup(0)->GetGroupMembersBegin(); itx != pGroup->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
             {
                 if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itx)->guid))
-                    if (!loggedInPlayer->m_bgIsQueued && !loggedInPlayer->m_bg)
+                    if (!loggedInPlayer->isQueuedForBg() && !loggedInPlayer->getBattleground())
                         HandleArenaJoin(loggedInPlayer->GetSession(), BattlegroundType, 0, 0);
             }
             pGroup->Unlock();
@@ -1344,7 +1344,7 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
 
             if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itx)->guid))
             {
-                if (loggedInPlayer->m_bg || loggedInPlayer->m_bgIsQueued)
+                if (loggedInPlayer->getBattleground() || loggedInPlayer->isQueuedForBg())
                 {
                     m_session->SystemMessage(m_session->LocalizedWorldSrv(ServerString::SS_ONE_OR_MORE_OF_PARTY_MEMBERS_ARE_ALREADY_QUEUED_OR_INSIDE_BG));
                     pGroup->Unlock();
@@ -1366,9 +1366,9 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
             if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itx)->guid))
             {
                 SendBattlefieldStatus(loggedInPlayer, BGSTATUS_INQUEUE, BattlegroundType, 0, 0, 0, 1);
-                loggedInPlayer->m_bgIsQueued = true;
-                loggedInPlayer->m_bgQueueInstanceId = 0;
-                loggedInPlayer->m_bgQueueType = BattlegroundType;
+                loggedInPlayer->setIsQueuedForBg(true);
+                loggedInPlayer->setQueuedBgInstanceId(0);
+                loggedInPlayer->setBgQueueType(BattlegroundType);
                 //\todo error/bgtype missing, always send all arenas (from legacy)
                 loggedInPlayer->GetSession()->SendPacket(SmsgGroupJoinedBattleground(6).serialise().get());
                 loggedInPlayer->setBGEntryPoint(loggedInPlayer->GetPositionX(), loggedInPlayer->GetPositionY(), loggedInPlayer->GetPositionZ(),
@@ -1396,9 +1396,9 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
 
     // send the battleground status packet
     SendBattlefieldStatus(m_session->GetPlayer(), BGSTATUS_INQUEUE, BattlegroundType, 0, 0, 0, 0);
-    m_session->GetPlayer()->m_bgIsQueued = true;
-    m_session->GetPlayer()->m_bgQueueInstanceId = 0;
-    m_session->GetPlayer()->m_bgQueueType = BattlegroundType;
+    m_session->GetPlayer()->setIsQueuedForBg(true);
+    m_session->GetPlayer()->setQueuedBgInstanceId(0);
+    m_session->GetPlayer()->setBgQueueType(BattlegroundType);
 
     m_session->GetPlayer()->setBGEntryPoint(m_session->GetPlayer()->GetPositionX(), m_session->GetPlayer()->GetPositionY(), m_session->GetPlayer()->GetPositionZ(), m_session->GetPlayer()->GetOrientation(),
         m_session->GetPlayer()->GetMapId(), m_session->GetPlayer()->GetInstanceID());

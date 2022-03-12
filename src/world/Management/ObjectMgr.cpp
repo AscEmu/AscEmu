@@ -1021,7 +1021,7 @@ Item* ObjectMgr::CreateItem(uint32 entry, Player* owner)
 #if VERSION_STRING > TBC
         if (owner != nullptr)
         {
-            uint32* played = owner->GetPlayedtime();
+            uint32* played = owner->getPlayedTime();
             pItem->setCreatePlayedTime(played[1]);
         }
 #endif
@@ -1262,7 +1262,7 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* p
                         if (player->getFactionStanding(itr->second.onChooseData) >= static_cast<int32_t>(itr->second.onChooseData2))
                             player->castSpell(player, sSpellMgr.getSpellInfo(itr->second.onChooseData3), true);
                         else
-                            player->BroadcastMessage(player->GetSession()->LocalizedWorldSrv(itr->second.onChooseData4));
+                            player->broadcastMessage(player->GetSession()->LocalizedWorldSrv(itr->second.onChooseData4));
                         
                         GossipMenu::senGossipComplete(player);
                     }

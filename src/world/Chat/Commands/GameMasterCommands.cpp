@@ -23,7 +23,7 @@ bool ChatHandler::HandleGMActiveCommand(const char* args, WorldSession* m_sessio
         }
         player->removePlayerFlags(PLAYER_FLAG_GM);
         player->setFaction(player->getInitialFactionId());
-        player->UpdatePvPArea();
+        player->updatePvPArea();
         player->UpdateVisibility();
     }
     else

@@ -2593,13 +2593,13 @@ void ItemInterface::BuyItem(ItemProperties const* item, uint32 total_amount, Cre
         if (m_pOwner->getHonorCurrency() >= (item_extended_cost->honor_points * total_amount))
         {
             m_pOwner->modHonorCurrency(-int32((item_extended_cost->honor_points * total_amount)));
-            m_pOwner->m_honorPoints -= int32(item_extended_cost->honor_points * total_amount);
+            m_pOwner->removeArenaPoints(item_extended_cost->honor_points * total_amount, true);
         }
 
         if (m_pOwner->getArenaCurrency() >= item_extended_cost->arena_points * total_amount)
         {
             m_pOwner->modArenaCurrency(-int32(item_extended_cost->arena_points * total_amount));
-            m_pOwner->m_arenaPoints -= int32(item_extended_cost->arena_points * total_amount);
+            m_pOwner->removeArenaPoints(item_extended_cost->arena_points * total_amount, true);
         }
 #endif
 #endif
@@ -3834,7 +3834,7 @@ void ItemInterface::AddRefundable(uint64 GUID, uint32 extendedcost)
     if (item == nullptr)
         return;
 
-    uint32* played = this->GetOwner()->GetPlayedtime();
+    uint32* played = this->GetOwner()->getPlayedTime();
 
     RefundableEntry.first = played[1];               // time of purchase in playedtime
     RefundableEntry.second = extendedcost;          // extendedcost

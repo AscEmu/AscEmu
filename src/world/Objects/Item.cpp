@@ -407,7 +407,7 @@ void Item::clearSoulboundTradeable(Player* /*currentOwner*/)
 
 bool Item::checkSoulboundTradeExpire()
 {
-    uint32_t* time = getOwner()->GetPlayedtime();
+    uint32_t* time = getOwner()->getPlayedTime();
 
     if (getCreatePlayedTime() + 2 * HOUR < time[1])
     {

@@ -50,7 +50,7 @@ public:
         }
         else
         {
-            pPlayer->BroadcastMessage("You need to have completed the quest : Crystals of Power");
+            pPlayer->broadcastMessage("You need to have completed the quest : Crystals of Power");
         }
     }
 };
@@ -69,7 +69,7 @@ public:
         }
         else
         {
-            pPlayer->BroadcastMessage("You need to have completed the quest : Crystals of Power");
+            pPlayer->broadcastMessage("You need to have completed the quest : Crystals of Power");
         }
     }
 };
@@ -88,7 +88,7 @@ public:
         }
         else
         {
-            pPlayer->BroadcastMessage("You need to have completed the quest : Crystals of Power");
+            pPlayer->broadcastMessage("You need to have completed the quest : Crystals of Power");
         }
     }
 };

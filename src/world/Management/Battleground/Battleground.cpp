@@ -265,11 +265,11 @@ void CBattleground::AddPlayer(Player* plr, uint32 team)
     m_pendPlayers[team].insert(plr->getGuidLow());
 
     /* Send a packet telling them that they can enter */
-    plr->m_pendingBattleground = this;
+    plr->setPendingBattleground(this);
     sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_READY, m_type, m_id, 80000, m_mapMgr->GetMapId(), Rated());        // You will be removed from the queue in 2 minutes.
 
     /* Add an event to remove them in 1 minute 20 seconds time. */
-    sEventMgr.AddEvent(plr, &Player::RemoveFromBattlegroundQueue, EVENT_BATTLEGROUND_QUEUE_UPDATE, 80000, 1, 0);
+    sEventMgr.AddEvent(plr, &Player::removeFromBgQueue, EVENT_BATTLEGROUND_QUEUE_UPDATE, 80000, 1, 0);
 }
 
 void CBattleground::RemovePendingPlayer(Player* plr)
@@ -280,7 +280,7 @@ void CBattleground::RemovePendingPlayer(Player* plr)
 
     /* send a null bg update (so they don't join) */
     sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
-    plr->m_pendingBattleground = nullptr;
+    plr->setPendingBattleground(nullptr);
     plr->setBgTeam(plr->getTeam());
 }
 
@@ -311,7 +311,7 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
     {
         sChatHandler.SystemMessage(plr->GetSession(), plr->GetSession()->LocalizedWorldSrv(ServerString::SS_YOU_CANNOT_JOIN_BG_AS_IT_HAS_ALREADY_ENDED));
         sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
-        plr->m_pendingBattleground = nullptr;
+        plr->setPendingBattleground(nullptr);
         return;
     }
 
@@ -341,8 +341,8 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
             plr->RemoveFromWorld();
     }
 
-    plr->m_pendingBattleground = nullptr;
-    plr->m_bg = this;
+    plr->setPendingBattleground(nullptr);
+    plr->setBattleground(this);
 
     if (!plr->isPvpFlagSet())
         plr->setPvpFlag();
@@ -478,19 +478,19 @@ void CBattleground::EndBattleground(PlayerTeam winningTeam)
     {
         for (auto winningPlr : m_players[winningTeam])
         {
-            if (winningPlr->QueuedForRbg())
+            if (winningPlr->isQueuedForRbg())
             {
-                winningPlr->ApplyRandomBattlegroundReward(true);
-                winningPlr->SetHasWonRbgToday(true);
+                winningPlr->applyRandomBattlegroundReward(true);
+                winningPlr->setHasWonRbgToday(true);
             }
 
             winningPlr->SaveToDB(false);
         }
         for (auto losingPlr : m_players[losingTeam])
         {
-            if (losingPlr->QueuedForRbg())
+            if (losingPlr->isQueuedForRbg())
             {
-                losingPlr->ApplyRandomBattlegroundReward(false);
+                losingPlr->applyRandomBattlegroundReward(false);
             }
 
             losingPlr->SaveToDB(false);
@@ -625,7 +625,7 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
     OnRemovePlayer(plr);
 
     // Clean-up
-    plr->m_bg = nullptr;
+    plr->setBattleground(nullptr);
     plr->FullHPMP();
     m_players[plr->getBgTeam()].erase(plr);
     memset(&plr->m_bgScore, 0, sizeof(BGScore));

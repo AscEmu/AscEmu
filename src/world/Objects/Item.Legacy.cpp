@@ -123,7 +123,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
 
     if (refundentry.first != 0 && refundentry.second != 0 && getOwner() != nullptr)
     {
-        uint32* played = getOwner()->GetPlayedtime();
+        uint32* played = getOwner()->getPlayedTime();
         if (played[1] < (refundentry.first + 60 * 60 * 2))
             m_owner->getItemInterface()->AddRefundable(this, refundentry.second, refundentry.first);
     }

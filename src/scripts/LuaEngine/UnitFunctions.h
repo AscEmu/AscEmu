@@ -1496,7 +1496,7 @@ public:
         const char* msg = luaL_checkstring(L, 1);
         if (!msg)
             return 0;
-        static_cast<Player*>(ptr)->SendAreaTriggerMessage(msg);
+        static_cast<Player*>(ptr)->sendAreaTriggerMessage(msg);
         return 0;
     }
 
@@ -1506,7 +1506,7 @@ public:
         const char* msg = luaL_checkstring(L, 1);
         if (!msg)
             return 0;
-        static_cast<Player*>(ptr)->BroadcastMessage(msg);
+        static_cast<Player*>(ptr)->broadcastMessage(msg);
         return 0;
     }
 
@@ -3437,7 +3437,7 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         uint32_t honor = CHECK_ULONG(L, 1);
-        plr->AddHonor(honor, true);
+        plr->addHonor(honor, true);
         return 0;
     }
 
@@ -3446,18 +3446,7 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         uint32_t honor = CHECK_ULONG(L, 1);
-
-        if (plr->m_honorPoints < honor)
-            plr->m_honorPoints = 0;
-        else
-            plr->m_honorPoints -= honor;
-
-        if (plr->m_honorToday < honor)
-            plr->m_honorToday = 0;
-        else
-            plr->m_honorToday -= honor;
-
-        plr->UpdateHonor();
+        plr->removeHonor(honor, true);
         return 0;
     }
 
@@ -3884,7 +3873,7 @@ public:
         TEST_PLAYER()
         int title = static_cast<int>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
-        plr->SetKnownTitle(RankTitles(title), true);
+        plr->setKnownPvPTitle(RankTitles(title), true);
         plr->SaveToDB(false);
         return 0;
     }
@@ -3894,7 +3883,7 @@ public:
         TEST_PLAYER()
         int title = static_cast<int>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
-        plr->SetKnownTitle(RankTitles(title), false);
+        plr->setKnownPvPTitle(RankTitles(title), false);
         plr->SaveToDB(false);
         return 0;
     }
@@ -3937,7 +3926,7 @@ public:
         TEST_PLAYER()
         int title = static_cast<int>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
-        if (plr->HasTitle(RankTitles(title)))
+        if (plr->hasPvPTitle(RankTitles(title)))
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -4561,28 +4550,28 @@ public:
     static int GetTotalHonor(lua_State* L, Unit* ptr)   // I loathe typing "honour" like "honor".
     {
         TEST_PLAYER()
-        lua_pushinteger(L, static_cast<Player*>(ptr)->m_honorPoints);
+        lua_pushinteger(L, static_cast<Player*>(ptr)->getHonor());
         return 1;
     }
 
     static int GetHonorToday(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        lua_pushinteger(L, static_cast<Player*>(ptr)->m_honorToday);
+        lua_pushinteger(L, static_cast<Player*>(ptr)->getHonorToday());
         return 1;
     }
 
     static int GetHonorYesterday(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        lua_pushinteger(L, static_cast<Player*>(ptr)->m_honorYesterday);
+        lua_pushinteger(L, static_cast<Player*>(ptr)->getHonorYesterday());
         return 1;
     }
 
     static int GetArenaPoints(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        lua_pushinteger(L, static_cast<Player*>(ptr)->m_arenaPoints);
+        lua_pushinteger(L, static_cast<Player*>(ptr)->getArenaPoints());
         return 1;
     }
 
@@ -4593,7 +4582,7 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         if (pnts > 0)
         {
-            plr->AddArenaPoints(pnts, true);
+            plr->addArenaPoints(pnts, true);
         }
         return 0;
     }
@@ -4603,16 +4592,10 @@ public:
         TEST_PLAYER()
         uint32_t pnts = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
-        int32_t npts = plr->m_arenaPoints - pnts;
-        if (npts >= 0)
-        {
-            plr->m_arenaPoints = npts;
-        }
-        else
-        {
-            plr->m_arenaPoints = 0;
-        }
-        plr->UpdateArenaPoints();
+
+        if (pnts > 0)
+            plr->removeArenaPoints(pnts, true);
+
         return 0;
     }
 
@@ -4621,7 +4604,7 @@ public:
         TEST_PLAYER()
         uint32_t pnts = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
-        plr->m_killsLifetime += pnts;
+        plr->incrementKills(pnts);
         return 0;
     }
 

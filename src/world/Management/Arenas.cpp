@@ -231,8 +231,8 @@ void Arena::OnAddPlayer(Player* plr)
         UpdatePlayerCounts();
     }
     // If they're still queued for the arena, remove them from the queue
-    if (plr->m_bgIsQueued)
-        plr->m_bgIsQueued = false;
+    if (plr->isQueuedForBg())
+        plr->setIsQueuedForBg(false);
 
     // Add the green/gold team flag
     Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo((plr->getInitialTeam()) ? 35775 - plr->getBgTeam() : 32725 - plr->getBgTeam()), -1, plr, plr, true);

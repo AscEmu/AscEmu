@@ -33,7 +33,7 @@
 
 void HonorHandler::AddHonorPointsToPlayer(Player* pPlayer, uint32 uAmount)
 {
-    pPlayer->AddHonor(uAmount, true);
+    pPlayer->addHonor(uAmount, true);
 }
 
 int32 HonorHandler::CalculateHonorPointsForKill(uint32 playerLevel, uint32 victimLevel)
@@ -65,10 +65,10 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
     if (pVictim == nullptr)
         return;
 
-    if (pVictim->m_honorless)
+    if (pVictim->getHonorless())
         return;
 
-    if (pPlayer->m_bg)
+    if (pPlayer->getBattleground())
     {
         if (pVictim->getBgTeam() == pPlayer->getBgTeam())
             return;
@@ -90,15 +90,15 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
 
     if (points > 0)
     {
-        if (pPlayer->m_bg)
+        if (pPlayer->getBattleground())
         {
-            std::lock_guard<std::recursive_mutex> lock(pPlayer->m_bg->GetMutex());
+            std::lock_guard<std::recursive_mutex> lock(pPlayer->getBattleground()->GetMutex());
 
             // hackfix for battlegrounds (since the groups there are disabled, we need to do this manually)
             std::vector<Player*> toadd;
             uint32 t = pPlayer->getBgTeam();
             toadd.reserve(15);        // shouldn't have more than this
-            std::set<Player*> * s = &pPlayer->m_bg->m_players[t];
+            std::set<Player*> * s = &pPlayer->getBattleground()->m_players[t];
 
             for (std::set<Player*>::iterator itr = s->begin(); itr != s->end(); ++itr)
             {
@@ -114,9 +114,8 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                 {
                     AddHonorPointsToPlayer(*vtr, pts);
 
-                    (*vtr)->m_killsToday++;
-                    (*vtr)->m_killsLifetime++;
-                    pPlayer->m_bg->HookOnHK(*vtr);
+                    (*vtr)->incrementKills();
+                    pPlayer->getBattleground()->HookOnHK(*vtr);
 
                     // Send PVP credit
                     uint32 pvppoints = pts * 10;
@@ -169,10 +168,9 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                 Player* pAffectedPlayer = (*itr);
                 if (!pAffectedPlayer) continue;
 
-                pAffectedPlayer->m_killsToday++;
-                pAffectedPlayer->m_killsLifetime++;
-                if (pAffectedPlayer->m_bg)
-                    pAffectedPlayer->m_bg->HookOnHK(pAffectedPlayer);
+                pAffectedPlayer->incrementKills();
+                if (pAffectedPlayer->getBattleground())
+                    pAffectedPlayer->getBattleground()->HookOnHK(pAffectedPlayer);
 
                 int32 contributorpts = points / (int32)contributors.size();
                 AddHonorPointsToPlayer(pAffectedPlayer, contributorpts);
@@ -228,5 +226,5 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
 void HonorHandler::RecalculateHonorFields(Player* pPlayer)
 {
     if (pPlayer != nullptr)
-        pPlayer->UpdatePvPCurrencies();
+        pPlayer->updatePvPCurrencies();
 }

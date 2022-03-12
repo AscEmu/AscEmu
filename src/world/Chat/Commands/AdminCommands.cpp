@@ -130,12 +130,12 @@ bool ChatHandler::HandleAdminMassSummonCommand(const char* args, WorldSession* m
         {
             if (faction > -1 && plr->getTeam() == static_cast<uint32>(faction))
             {
-                plr->SummonRequest(summon_player->getGuidLow(), summon_player->GetZoneId(), summon_player->GetMapId(), summon_player->GetInstanceID(), summon_player->GetPosition());
+                plr->sendSummonRequest(summon_player->getGuidLow(), summon_player->GetZoneId(), summon_player->GetMapId(), summon_player->GetInstanceID(), summon_player->GetPosition());
                 ++summon_count;
             }
             else if (faction == -1)
             {
-                plr->SummonRequest(summon_player->getGuidLow(), summon_player->GetZoneId(), summon_player->GetMapId(), summon_player->GetInstanceID(), summon_player->GetPosition());
+                plr->sendSummonRequest(summon_player->getGuidLow(), summon_player->GetZoneId(), summon_player->GetMapId(), summon_player->GetInstanceID(), summon_player->GetPosition());
                 ++summon_count;
             }
 

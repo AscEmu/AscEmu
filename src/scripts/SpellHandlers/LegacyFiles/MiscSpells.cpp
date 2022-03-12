@@ -296,10 +296,10 @@ bool WaitingToResurrect(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
     Creature* pCreature = p_target->IsInWorld() ? p_target->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart()) : nullptr;
 
-    if (pCreature == nullptr || p_target->m_bg == nullptr)
+    if (pCreature == nullptr || p_target->getBattleground() == nullptr)
         return true;
 
-    p_target->m_bg->RemovePlayerFromResurrect(p_target, pCreature);
+    p_target->getBattleground()->RemovePlayerFromResurrect(p_target, pCreature);
 
     return true;
 }
@@ -529,7 +529,7 @@ bool IOCTeleporterIn(uint8_t /*effectIndex*/, Spell* s)
         return true;
 
     // Let's not teleport in/out before the battle starts
-    if ((p->m_bg != NULL) && !p->m_bg->HasStarted())
+    if (p->getBattleground() && !p->getBattleground()->HasStarted())
         return true;
 
     uint32_t j;
@@ -560,7 +560,7 @@ bool IOCTeleporterOut(uint8_t /*effectIndex*/, Spell* s)
         return true;
 
     // Let's not teleport in/out before the battle starts
-    if ((p->m_bg != NULL) && !p->m_bg->HasStarted())
+    if (p->getBattleground() && !p->getBattleground()->HasStarted())
         return true;
 
     uint32_t j;

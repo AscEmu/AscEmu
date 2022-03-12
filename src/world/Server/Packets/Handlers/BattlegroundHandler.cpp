@@ -80,7 +80,7 @@ void WorldSession::handleArenaJoinOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (_player->m_bgIsQueued)
+    if (_player->m_isQueuedForBg)
         sBattlegroundManager.RemovePlayerFromQueues(_player);
 
     CmsgBattlemasterJoinArena srlPacket;
@@ -252,7 +252,7 @@ void WorldSession::handleBattleMasterJoinOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (_player->m_bgIsQueued)
+    if (_player->m_isQueuedForBg)
         sBattlegroundManager.RemovePlayerFromQueues(_player);
 
     if (_player->IsInWorld())

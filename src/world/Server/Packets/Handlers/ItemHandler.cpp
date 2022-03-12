@@ -419,7 +419,7 @@ void WorldSession::sendRefundInfo(uint64_t GUID)
 
         packet << uint32_t(0);
 
-        uint32_t* played = _player->GetPlayedtime();
+        uint32_t* played = _player->getPlayedTime();
 
         if (played[1] > RefundEntry.first + 60 * 60 * 2)
             packet << uint32_t(0);
@@ -466,7 +466,7 @@ void WorldSession::sendRefundInfo(uint64_t guid)
         data.flushBits();
         data.WriteByteSeq(objectGuid[7]);
 
-        uint32_t* played = _player->GetPlayedtime();
+        uint32_t* played = _player->getPlayedTime();
 
         if (played[1] > (refundEntryPair.first + 60 * 60 * 2))
             data << uint32_t(0);
@@ -802,7 +802,7 @@ void WorldSession::handleItemRefundRequestOpcode(WorldPacket& recvPacket)
 
             if (refundEntry.first != 0 && refundEntry.second != 0)
             {
-                uint32_t* played = _player->GetPlayedtime();
+                uint32_t* played = _player->getPlayedTime();
                 if (played[1] < refundEntry.first + 60 * 60 * 2)
                     itemExtendedCostEntry = sItemExtendedCostStore.LookupEntry(refundEntry.second);
             }

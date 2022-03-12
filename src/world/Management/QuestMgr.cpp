@@ -979,7 +979,7 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
 
     // Reward title
     if (qst->rewardtitleid > 0)
-        plr->SetKnownTitle(static_cast<RankTitles>(qst->rewardtitleid), true);
+        plr->setKnownPvPTitle(static_cast<RankTitles>(qst->rewardtitleid), true);
 
     // Some spells applied at quest reward
     SpellAreaForQuestMapBounds saBounds = sSpellMgr.getSpellAreaForQuestMapBounds(qst->id, false);
@@ -1759,7 +1759,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         plr->addQuestToFinished(qst->id);
         if (qst->bonusarenapoints != 0)
         {
-            plr->AddArenaPoints(qst->bonusarenapoints, true);
+            plr->addArenaPoints(qst->bonusarenapoints, true);
         }
 
 #if VERSION_STRING > TBC

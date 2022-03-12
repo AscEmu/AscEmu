@@ -1968,7 +1968,7 @@ void AchievementMgr::GiveAchievementReward(DBC::Structures::AchievementEntry con
         {
             auto char_title = sCharTitlesStore.LookupEntry(Reward->titel_A);
             if (char_title)
-                GetPlayer()->SetKnownTitle(static_cast< RankTitles >(char_title->bit_index), true);
+                GetPlayer()->setKnownPvPTitle(static_cast< RankTitles >(char_title->bit_index), true);
         }
     }
     if (GetPlayer()->getTeam() == TEAM_HORDE)
@@ -1977,7 +1977,7 @@ void AchievementMgr::GiveAchievementReward(DBC::Structures::AchievementEntry con
         {
             auto char_title = sCharTitlesStore.LookupEntry(Reward->titel_H);
             if (char_title)
-                GetPlayer()->SetKnownTitle(static_cast< RankTitles >(char_title->bit_index), true);
+                GetPlayer()->setKnownPvPTitle(static_cast< RankTitles >(char_title->bit_index), true);
         }
     }
 

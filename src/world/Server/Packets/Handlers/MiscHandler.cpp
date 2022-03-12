@@ -217,7 +217,7 @@ void WorldSession::handleSetSelectionOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleTogglePVPOpcode(WorldPacket& /*recvPacket*/)
 {
-    _player->PvPToggle();
+    _player->togglePvP();
 }
 
 void WorldSession::handleTutorialFlag(WorldPacket& recvPacket)
@@ -319,17 +319,17 @@ void WorldSession::handlePlayedTimeOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_PLAYED_TIME: displayinui: %u", srlPacket.displayInUi);
 
-    const uint32_t playedTime = static_cast<uint32_t>(UNIXTIME) - _player->m_playedtime[2];
+    const uint32_t playedTime = static_cast<uint32_t>(UNIXTIME) - _player->m_playedTime[2];
     if (playedTime > 0)
     {
-        _player->m_playedtime[0] += playedTime;
-        _player->m_playedtime[1] += playedTime;
-        _player->m_playedtime[2] += playedTime;
+        _player->m_playedTime[0] += playedTime;
+        _player->m_playedTime[1] += playedTime;
+        _player->m_playedTime[2] += playedTime;
     }
 
-    SendPacket(SmsgPlayedTime(_player->m_playedtime[1], _player->m_playedtime[0], srlPacket.displayInUi).serialise().get());
+    SendPacket(SmsgPlayedTime(_player->m_playedTime[1], _player->m_playedTime[0], srlPacket.displayInUi).serialise().get());
 
-    sLogger.debug("Sent SMSG_PLAYED_TIME total: %u level: %u", _player->m_playedtime[1], _player->m_playedtime[0]);
+    sLogger.debug("Sent SMSG_PLAYED_TIME total: %u level: %u", _player->m_playedTime[1], _player->m_playedTime[0]);
 }
 
 void WorldSession::handleSetActionButtonOpcode(WorldPacket& recvPacket)
@@ -686,7 +686,7 @@ void WorldSession::handleSetTitle(WorldPacket& recvPacket)
         return;
     }
 
-    if (_player->HasTitle(static_cast<RankTitles>(srlPacket.titleId)))
+    if (_player->hasPvPTitle(static_cast<RankTitles>(srlPacket.titleId)))
         _player->setChosenTitle(srlPacket.titleId);
 #endif
 }
@@ -1028,7 +1028,7 @@ void WorldSession::handleSummonResponseOpcode(WorldPacket& recvPacket)
     if (!srlPacket.isClickOn)
         return;
 
-    if (!_player->m_summoner)
+    if (!_player->m_summonData.summonerId)
     {
         SendNotification("You do not have permission to perform that function.");
         return;
@@ -1037,9 +1037,9 @@ void WorldSession::handleSummonResponseOpcode(WorldPacket& recvPacket)
     if (_player->getCombatHandler().isInCombat())
         return;
 
-    _player->safeTeleport(_player->m_summonMapId, _player->m_summonInstanceId, _player->m_summonPos);
+    _player->safeTeleport(_player->m_summonData.mapId, _player->m_summonData.instanceId, _player->m_summonData.position);
 
-    _player->m_summoner = _player->m_summonInstanceId = _player->m_summonMapId = 0;
+    _player->m_summonData.summonerId = _player->m_summonData.instanceId = _player->m_summonData.mapId = 0;
 }
 
 void WorldSession::handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/)

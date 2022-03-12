@@ -534,6 +534,7 @@ public:
     uint32_t m_underwaterTime = 180000;
     uint32_t m_underwaterMaxTime = 180000;
     uint32_t m_underwaterState = 0;
+    uint32_t m_underwaterLastDamage = Util::getMSTime();
 
     bool teleport(const LocationVector& vec, MapMgr* map);
     void eventTeleport(uint32_t mapId, LocationVector position, uint32_t instanceId = 0);
@@ -573,9 +574,14 @@ protected:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Basic
 public:
+    DBC::Structures::ChrRacesEntry const* getDbcRaceEntry();
+    DBC::Structures::ChrClassesEntry const* getDbcClassEntry();
 
     std::string getName() const;
     void setName(std::string name);
+
+    uint32_t getLoginFlag() const;
+    void setLoginFlag(uint32_t flag);
 
     void setInitialDisplayIds(uint8_t gender, uint8_t race);
 
@@ -609,21 +615,38 @@ public:
     void toggleAfk();
     void toggleDnd();
 
+    uint32_t* getPlayedTime();
+
 private:
+    LevelInfo* lvlinfo = nullptr;
+
+    DBC::Structures::ChrRacesEntry const* myRace = nullptr;
+    DBC::Structures::ChrClassesEntry const* myClass = nullptr;
+
+    uint32_t load_health = 0;
+    uint32_t load_mana = 0;
 
     //used for classic
     uint32_t max_level = 60;
 
     std::string m_name;
 
+    uint32_t login_flags = LOGIN_NO_FLAG;
+
     uint32_t m_team = 0;
     uint32_t m_bgTeam = 0;
+
+    //\note: 0 = played on level, 1 = played total, 2 = played session
+    uint32_t m_playedTime[3] = { 0, 0, static_cast<uint32_t>(UNIXTIME) };
+
+    uint32_t OnlineTime = static_cast<uint32_t>(UNIXTIME);
+
+    uint32_t m_timeLogoff = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Stats
     // Initializes stats and unit/playerdata fields
 public:
-
     void setInitialPlayerData();
 
     // Not same as Unit::regeneratePowers
@@ -655,7 +678,6 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Database stuff
 public:
-
     bool loadSpells(QueryResult* result);
     bool loadSkills(QueryResult* result);
     bool loadReputations(QueryResult* result);
@@ -743,7 +765,6 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Talents
 public:
-
     void learnTalent(uint32_t talentId, uint32_t talentRank);
     void addTalent(SpellInfo const* sp);
     void removeTalent(uint32_t spellId, bool onSpecChange = false);
@@ -767,7 +788,6 @@ private:
     /////////////////////////////////////////////////////////////////////////////////////////
     // Tutorials
 public:
-
     uint32_t getTutorialValueById(uint8_t id);
     void setTutorialValueForId(uint8_t id, uint32_t value);
 
@@ -775,12 +795,12 @@ public:
     void saveTutorials();
 
 protected:
-    uint32_t m_Tutorials[8] = {0};
+    uint32_t m_tutorials[8] = {0};
+    bool m_tutorialsDirty = true;
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Actionbar
 public:
-
     void setActionButton(uint8_t button, uint32_t action, uint8_t type, uint8_t misc);
     void sendActionBars(bool clearBars);
 
@@ -791,7 +811,6 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Trade
 public:
-
     Player* getTradeTarget() const;
     TradeData* getTradeData() const;
     void cancelTrade(bool sendToSelfAlso, bool silently = false);
@@ -802,14 +821,14 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Messages
 public:
-
     void sendReportToGmMessage(std::string playerName, std::string damageLog);
+    void broadcastMessage(const char* Format, ...);
+    void sendAreaTriggerMessage(const char* message, ...);
 
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Commands
 public:
-
     void disableSummoning(bool disable);
     bool isSummoningDisabled() const;
     void disableAppearing(bool disable);
@@ -826,6 +845,8 @@ public:
     void kickFromServer(uint32_t delay = 0);
     void eventKickFromServer();
 
+    void sendSummonRequest(uint32_t requesterId, uint32_t zoneId, uint32_t mapId, uint32_t instanceId, const LocationVector& position);
+
     PlayerCheat m_cheats = {false};
     float m_goLastXRotation = 0.0f;
     float m_goLastYRotation = 0.0f;
@@ -839,7 +860,6 @@ public:
     Creature* m_formationMaster = nullptr;
 
 private:
-
     bool m_disableAppearing = false;
     bool m_disableSummoning = false;
 
@@ -849,10 +869,18 @@ private:
     std::string m_banreason;
     uint32_t m_kickDelay = 0;
 
+    struct SummonData
+    {
+        uint32_t summonerId = 0;
+        uint32_t mapId = 0;
+        uint32_t instanceId = 0;
+        LocationVector position = { 0, 0, 0, 0 };
+    };
+    SummonData m_summonData;
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Items
 public:
-
     void unEquipOffHandIfRequired();
     bool hasOffHandWeapon() const;
 
@@ -874,13 +902,13 @@ public:
 
     // Player's item storage
     ItemInterface* getItemInterface() const;
+
 private:
     ItemInterface* m_itemInterface = nullptr;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Difficulty
 public:
-
     void setDungeonDifficulty(uint8_t diff);
     uint8_t getDungeonDifficulty();
 
@@ -894,7 +922,6 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Die, Kill, Corpse & Repop
 public:
-
     void die(Unit* unitAttacker, uint32_t damage, uint32_t spellId) override;
     void kill();
 
@@ -942,7 +969,6 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Bind
 public:
-
     void setBindPoint(float x, float y, float z, float o, uint32_t mapId, uint32_t zoneId);
 
     LocationVector getBindPosition() const;
@@ -963,7 +989,6 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Battleground Entry
 public:
-
     void setBGEntryPoint(float x, float y, float z, float o, uint32_t mapId, int32_t instanceId);
 
     LocationVector getBGEntryPosition() const;
@@ -982,7 +1007,6 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Charter
 public:
-
     void unsetCharter(uint8_t charterType);
     Charter* getCharter(uint8_t charterType);
 
@@ -995,7 +1019,6 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Guild
 public:
-
     void setInvitedByGuildId(uint32_t GuildId);
     uint32_t getInvitedByGuildId() const;
 
@@ -1010,7 +1033,6 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Group
 public:
-
     void setGroupInviterId(uint32_t inviterId);
     uint32_t getGroupInviterId() const;
     bool isAlreadyInvitedToGroup() const;
@@ -1048,7 +1070,6 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Channels
 public:
-
     void joinedChannel(Channel* channel);
     void leftChannel(Channel* channel);
 
@@ -1056,22 +1077,133 @@ public:
     void removeAllChannels();
 
 private:
-
     std::set<Channel*> m_channels;
     mutable std::mutex m_mutexChannel;
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // ArenaTeam
+    // Arena
 public:
-
     void setArenaTeam(uint8_t type, ArenaTeam* arenaTeam);
     ArenaTeam* getArenaTeam(uint8_t type);
 
-    bool isInArenaTeam(uint8_t type);
+    bool isInArenaTeam(uint8_t type) const;
     void initialiseArenaTeam();
+
+    void addArenaPoints(uint32_t arenaPoints, bool sendUpdate);
+    uint32_t getArenaPoints() const;
+    void removeArenaPoints(uint32_t arenaPoints, bool sendUpdate);
+    void updateArenaPoints();
 
 private:
     ArenaTeam* m_arenaTeams[NUM_ARENA_TEAM_TYPES] = {nullptr};
+    uint32_t m_arenaPoints = 0;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Honor
+public:
+    void addHonor(uint32_t honorPoints, bool sendUpdate);
+    uint32_t getHonor() const;
+    void removeHonor(uint32_t honorPoints, bool sendUpdate);
+
+    void updateHonor();
+
+    void rolloverHonor();
+    uint32_t getHonorToday() const;
+    uint32_t getHonorYesterday() const;
+    uint32_t getHonorless() const;
+    void incrementHonorless();
+    void decrementHonorless();
+
+    void incrementKills(uint32_t count = 0);
+    uint32_t getKillsToday() const;
+    uint32_t getKillsLifetime() const;
+    uint32_t getKillsYesterday() const;
+
+private:
+    uint32_t m_honorPoints = 0;
+
+    uint32_t m_honorRolloverTime = 0;
+    uint32_t m_lastHonorResetTime = 0;
+
+    uint32_t m_honorToday = 0;
+    uint32_t m_honorYesterday = 0;
+    uint32_t m_honorless = 0;
+
+    uint32_t m_killsToday = 0;
+    uint32_t m_killsLifetime = 0;
+    uint32_t m_killsYesterday = 0;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // PvP
+public:
+    void resetPvPTimer();
+    void stopPvPTimer();
+
+    void setupPvPOnLogin();
+    void updatePvPArea();
+    void togglePvP();
+
+    void updatePvPCurrencies();
+
+    bool hasPvPTitle(RankTitles title);
+    void setKnownPvPTitle(RankTitles title, bool set);
+
+private:
+    uint32 m_pvpTimer = 0;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Battleground
+public:
+    CBattleground* getBattleground() const;
+    void setBattleground(CBattleground* bg);
+
+    CBattleground* getPendingBattleground() const;
+    void setPendingBattleground(CBattleground* bg);
+
+    bool isQueuedForBg() const;
+    void setIsQueuedForBg(bool set);
+
+    bool hasQueuedBgInstanceId() const;
+    uint32_t getQueuedBgInstanceId() const;
+    void setQueuedBgInstanceId(uint32_t id);
+
+    bool isQueuedForRbg() const;
+    void setIsQueuedForRbg(bool value);
+
+    void removeFromBgQueue();
+
+    bool hasWonRbgToday() const;
+    void setHasWonRbgToday(bool value);
+
+    void setBgQueueType(uint32_t type);
+    uint32_t getBgQueueType() const;
+
+    bool hasBgFlag() const;
+    void setHasBgFlag(bool set);
+
+    void setRoles(uint8_t role);
+    uint8_t retRoles() const;
+
+    void fillRandomBattlegroundReward(bool wonBattleground, uint32_t& honorPoints, uint32_t& arenaPoints);
+    void applyRandomBattlegroundReward(bool wonBattleground);
+
+    BGScore m_bgScore;
+
+private:
+    CBattleground* m_bg = nullptr;
+    CBattleground* m_pendingBattleground = nullptr;
+
+    bool m_isQueuedForBg = false;
+    uint32_t m_queuedBgInstanceId = 0;
+
+    bool m_isQueuedForRbg = false;
+    bool m_hasWonRbgToday = false;
+
+    uint32_t m_bgQueueType = 0;
+
+    bool m_bgHasFlag = false;
+
+    uint8_t m_roles = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Quests
@@ -1320,6 +1452,8 @@ public:
     void dismountAfterTaxiPath(uint32_t money, float x, float y, float z);
     void interpolateTaxiPosition();
 
+    void eventTeleportTaxi(uint32_t mapId, float x, float y, float z);
+
 private:
     TaxiPath* m_currentTaxiPath = nullptr;
 
@@ -1499,12 +1633,6 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////
     //AGPL Start
 
-    public:
-
-        void UpdatePvPCurrencies();
-        void FillRandomBattlegroundReward(bool wonBattleground, uint32 &honorPoints, uint32 &arenaPoints);
-        void ApplyRandomBattlegroundReward(bool wonBattleground);
-
     protected:
 
         // COOLDOWNS
@@ -1528,8 +1656,6 @@ public:
 
         // END COOLDOWNS
     public:
-
-        void RemoveItemByGuid(uint64 GUID);
 
         //! Okay to remove from world
         bool ok_to_remove = false;
@@ -1638,22 +1764,6 @@ public:
         uint32 GetMainMeleeDamage(uint32 AP_owerride);          // I need this for windfury
         
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // PVP
-        /////////////////////////////////////////////////////////////////////////////////////////
-        uint32 GetMaxPersonalRating();
-
-        bool HasTitle(RankTitles title)
-        {
-#if VERSION_STRING > Classic
-            const auto index = static_cast<uint8_t>(title / 32);
-
-            return (getKnownTitles(index) & 1ULL << static_cast<uint64_t>((title % 32))) != 0;
-#else
-            return false;
-#endif
-        }
-        void SetKnownTitle(RankTitles title, bool set);
         void SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* shapeshift_form, bool active);
 
     
@@ -1665,8 +1775,7 @@ public:
     protected:
         void _ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedown = false, bool skip_stat_apply = false);
 
-
-    public:
+public:
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // World Session
@@ -1736,25 +1845,6 @@ public:
         void EventAttackUpdateSpeed() { }
         void EventDeath();
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Battleground stuff
-        /////////////////////////////////////////////////////////////////////////////////////////
-        bool QueuedForRbg();
-        void SetQueuedForRbg(bool value);
-        bool HasWonRbgToday();
-        void SetHasWonRbgToday(bool value);
-
-        CBattleground* m_bg = nullptr;
-        CBattleground* m_pendingBattleground = nullptr;
-        bool m_bgHasFlag = false;
-        bool m_bgIsQueued = false;
-        uint32 m_bgQueueType = 0;
-        uint32 m_bgQueueInstanceId = 0;
-
-    protected:
-        bool m_bgIsRbg = false;
-        bool m_bgIsRbgWon = false;
-
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Visible objects
@@ -1775,25 +1865,7 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         //  PVP Stuff
         /////////////////////////////////////////////////////////////////////////////////////////
-        uint32 m_pvpTimer = 0;
-
-        void AddHonor(uint32 honorPoints, bool sendUpdate);
-        void UpdateHonor();
-
-        void AddArenaPoints(uint32 arenaPoints, bool sendUpdate);
-        void UpdateArenaPoints();
-
-        // Do this on /pvp off
-        void ResetPvPTimer();
-        // Stop the timer for pvp off
-        void StopPvPTimer() { m_pvpTimer = 0; }
-
-        // Called at login to add the honorless buff, etc.
-        void LoginPvPSetup();
-        // Update our pvp area (called when zone changes)
-        void UpdatePvPArea();
-        // PvP Toggle (called on /pvp)
-        void PvPToggle();
+        
 
         //Note:ModSkillLine -> value+=amt;ModSkillMax -->value=amt; --weird
         float GetSkillUpChance(uint16_t id);
@@ -1881,7 +1953,6 @@ public:
         float PctIgnoreRegenModifier = 0.0f;
         uint32 m_retainedrage = 0;                  // Warrior spell related
 
-        uint32* GetPlayedtime() { return m_playedtime; }
         void CalcStat(uint8_t t);
         float CalcRating(PlayerCombatRating t);
         void RegenerateHealth(bool inCombat);
@@ -1900,8 +1971,6 @@ public:
         int32 rageFromDamageDealt = 0;
         int32 rageFromDamageTaken = 0;
 
-        void _Relocate(uint32 mapid, const LocationVector & v, bool sendpending, bool force_new_world, uint32 instance_id);
-
         void AddItemsToWorld();
         void RemoveItemsFromWorld();
         void UpdateKnownCurrencies(uint32 itemId, bool apply);
@@ -1913,21 +1982,38 @@ public:
 
         void ClearCooldownsOnLine(uint32 skill_line, uint32 called_from);
 
-        void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
-
         void ProcessPendingUpdates();
         bool CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer);
 
-        bool ExitInstance();
-        void SaveEntryPoint(uint32 mapId);
+        bool m_Autojoin = false;
+        bool m_AutoAddMem = false;
+        void SendMirrorTimer(MirrorTimerTypes Type, uint32 max, uint32 current, int32 regen);
 
-        // Cheat section
+        void UpdateChanceFields();
+
+        uint32 m_lastSeenWeather = 0;
+        std::set<Object*> m_visibleFarsightObjects;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // PVP/BG
+    public:
+        uint32 GetMaxPersonalRating();
+
+    //movement/position
+
+    public:
+
+        void _Relocate(uint32 mapid, const LocationVector& v, bool sendpending, bool force_new_world, uint32 instance_id);
+        void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
         void SpeedCheatDelay(uint32 ms_delay);
         void SpeedCheatReset();
-
         void ZoneUpdate(uint32 ZoneId);
-
-        // Instance IDs
+        void EjectFromInstance();
+        void ForceZoneUpdate();
+        bool HasAreaExplored(::DBC::Structures::AreaTableEntry const*);
+        bool HasOverlayUncovered(uint32 overlayID);
+        uint32 m_explorationTimer = Util::getMSTime();
+        bool ExitInstance();
         uint32 GetPersistentInstanceId(uint32 mapId, uint8 difficulty)
         {
             if (mapId >= MAX_NUM_MAPS || difficulty >= InstanceDifficulty::MAX_DIFFICULTY || m_playerInfo == NULL)
@@ -1942,107 +2028,41 @@ public:
 
             return (*itr).second;
         }
-
         void SetPersistentInstanceId(Instance* pInstance);
-        //Use this method carefully..
         void SetPersistentInstanceId(uint32 mapId, uint8 difficulty, uint32 instanceId);
-
-    public:
-
-        bool m_Autojoin = false;
-        bool m_AutoAddMem = false;
-        void SendMirrorTimer(MirrorTimerTypes Type, uint32 max, uint32 current, int32 regen);
         
-        BGScore m_bgScore;
-        
-        void UpdateChanceFields();
-        //Honor Variables
+        void handleKnockback(Object* caster, float horizontal, float vertical) override;
+        void SaveEntryPoint(uint32 mapId);
+
         time_t m_fallDisabledUntil = 0;
-        uint32 m_honorToday = 0;
-        uint32 m_honorYesterday = 0;
 
-        void RolloverHonor();
-        uint32 m_honorPoints = 0;
-        uint32 m_honorRolloverTime = 0;
-        uint32 m_killsToday = 0;
-        uint32 m_killsYesterday = 0;
-        uint32 m_killsLifetime = 0;
-        uint32 m_arenaPoints = 0;
-        uint32 m_honorless = 0;
-        uint32 m_lastSeenWeather = 0;
-        std::set<Object*> m_visibleFarsightObjects;
-        
-        void EventTeleportTaxi(uint32 mapid, float x, float y, float z);
-        void BroadcastMessage(const char* Format, ...);
+
         std::map<uint32, std::set<uint32> > SummonSpells;
         std::map<uint32, std::map<SpellInfo const*, uint16>*> PetSpells;
+
         void AddSummonSpell(uint32 Entry, uint32 SpellID);
         void RemoveSummonSpell(uint32 Entry, uint32 SpellID);
         std::set<uint32>* GetSummonSpells(uint32 Entry);
 
-        uint32 m_UnderwaterLastDmg = Util::getMSTime();
-        
-        
-        bool blinked = false;
-        uint32 m_explorationTimer = Util::getMSTime();
-        // DBC stuff
-        DBC::Structures::ChrRacesEntry const* myRace = nullptr;
-        DBC::Structures::ChrClassesEntry const* myClass = nullptr;
-
-        void EjectFromInstance();
-
-        // Hack fix here!
-        void ForceZoneUpdate();
-
-        bool HasAreaExplored(::DBC::Structures::AreaTableEntry const*);
-        bool HasOverlayUncovered(uint32 overlayID);
-
         void HandleSpellLoot(uint32 itemid);
 
-        void handleKnockback(Object* caster, float horizontal, float vertical) override;
-
-        uint32 LastHonorResetTime() const { return m_lastHonorResetTime; }
-        void LastHonorResetTime(uint32 val) { m_lastHonorResetTime = val; }
-        uint32 OnlineTime = static_cast<uint32_t>(UNIXTIME);
-        bool tutorialsDirty = true;
-        LevelInfo* lvlinfo = nullptr;
-        uint32 load_health = 0;
-        uint32 load_mana = 0;
         void CompleteLoading();
         void OnWorldPortAck();
-        
+        bool blinked = false;
         bool m_beingPushed = false;
         
         uint32 flying_aura = 0;
+
         bool resend_speed = false;
-        uint32 login_flags = LOGIN_NO_FLAG;
-
         uint32 m_speedChangeCounter = 1;
-
-        void SendAreaTriggerMessage(const char* message, ...);
 
         void RemoteRevive();
 
         int32 m_rap_mod_pct = 0;
 
-
-        void SummonRequest(uint32 Requestor, uint32 ZoneID, uint32 MapID, uint32 InstanceID, const LocationVector & Position);
-    protected:
-
-        LocationVector m_summonPos;
-        uint32 m_summonInstanceId = 0;
-        uint32 m_summonMapId = 0;
-        uint32 m_summoner = 0;
-    public:
-
-
         bool m_deathVision = false;
         SpellInfo const* last_heal_spell = nullptr;
 
-        bool InBattleground() const { return m_bgQueueInstanceId != 0; }
-        bool InBattlegroundQueue() const { return m_bgIsQueued != 0; }
-
-        void RemoveFromBattlegroundQueue();
         void FullHPMP();
         void RemoveTempEnchantsOnArena();
         uint32 m_arenateaminviteguid = 0;
@@ -2103,14 +2123,6 @@ public:
 
         std::list<ItemSet> m_itemsets;
 
-        // Rested State Stuff
-        uint32 m_timeLogoff = 0;
-        // Played time
-        // 0 = played on level
-        // 1 = played total
-        // 2 = played session
-        uint32 m_playedtime[3] = { 0, 0, static_cast<uint32_t>(UNIXTIME) };
-
         //combat mods
         float m_blockfromspellPCT = 0.0f;
         float m_critfromspell = 0.0f;
@@ -2127,7 +2139,7 @@ public:
         // Raid
         uint8 m_targetIcon = 0;
 
-        uint32 m_lastHonorResetTime = 0;
+        
         uint32 _fields[getSizeOfStructure(WoWPlayer)];
         int hearth_of_wild_pct = 0;        // druid hearth of wild talent used on shapeshifting. We either know what is last talent level or memo on learn
 
@@ -2186,10 +2198,6 @@ public:
 
         bool CanBuyAt(MySQLStructure::VendorRestrictions const* vendor);
         bool CanTrainAt(Trainer*);
-
-        void SetRoles(uint8 role) { m_roles = role; }
-        uint8 GetRoles() { return m_roles; }
-        uint8 m_roles = 0;
 
         void SendCinematicCamera(uint32 id);
 

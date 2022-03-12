@@ -208,7 +208,7 @@ bool handleKickPlayerCommand(BaseConsole* baseConsole, int argumentCount, std::s
     worldAnnounce << MSG_COLOR_LIGHTBLUE << "Console:|r " << player->getName().c_str() << " was removed from the server. Reason: " << kickReason;
     sWorld.sendMessageToAll(worldAnnounce.str());
 
-    player->BroadcastMessage("You are now being removed by the game by an administrator via the console. Reason: %s", kickReason.c_str());
+    player->broadcastMessage("You are now being removed by the game by an administrator via the console. Reason: %s", kickReason.c_str());
     player->kickFromServer(5000);
     baseConsole->Write("Kicked player %s.\r\n", player->getName().c_str());
 
@@ -266,11 +266,11 @@ bool handlePlayerInfoCommand(BaseConsole* baseConsole, int argumentCount, std::s
 
     baseConsole->Write("Player: %s\r\n", player->getName().c_str());
 #if VERSION_STRING < Cata
-    baseConsole->Write("Race: %s\r\n", player->myRace->name[sWorld.getDbcLocaleLanguageId()]);
-    baseConsole->Write("Class: %s\r\n", player->myClass->name[sWorld.getDbcLocaleLanguageId()]);
+    baseConsole->Write("Race: %s\r\n", player->getDbcRaceEntry()->name[sWorld.getDbcLocaleLanguageId()]);
+    baseConsole->Write("Class: %s\r\n", player->getDbcClassEntry()->name[sWorld.getDbcLocaleLanguageId()]);
 #else
-    baseConsole->Write("Race: %s\r\n", player->myRace->name);
-    baseConsole->Write("Class: %s\r\n", player->myClass->name);
+    baseConsole->Write("Race: %s\r\n", player->getDbcRaceEntry()->name);
+    baseConsole->Write("Class: %s\r\n", player->getDbcClassEntry()->name);
 #endif
     baseConsole->Write("IP: %s\r\n", player->GetSession()->GetSocket() ? player->GetSession()->GetSocket()->GetRemoteIP().c_str() : "disconnected");
     baseConsole->Write("Level: %u\r\n", player->getLevel());
@@ -365,7 +365,7 @@ bool handleWhisperCommand(BaseConsole* baseConsole, int argumentCount, std::stri
     std::stringstream whisperOut;
     whisperOut << MSG_COLOR_LIGHTBLUE << "Console whisper: |r" << consoleInput;
 
-    player->BroadcastMessage(whisperOut.str().c_str());
+    player->broadcastMessage(whisperOut.str().c_str());
     baseConsole->Write("Message '%s' sent to player %s.\r\n", consoleInput.c_str(), player->getName().c_str());
 
     return true;

@@ -1153,7 +1153,7 @@ void Spell::castMeOld()
         }
 
         // special case battleground additional actions
-        if (p_caster->m_bg)
+        if (p_caster->getBattleground())
         {
 
             // warsong gulch & eye of the storm flag pickup check
@@ -1260,14 +1260,14 @@ void Spell::castMeOld()
                 case 58984:     // Shadowmeld
                 case 17624:     // Petrification-> http://www.wowhead.com/?spell=17624
                 case 66:        // Invisibility
-                    if (p_caster->m_bg->GetType() == BATTLEGROUND_WARSONG_GULCH)
+                    if (p_caster->getBattleground()->GetType() == BATTLEGROUND_WARSONG_GULCH)
                     {
                         if (p_caster->getTeam() == 0)
                             p_caster->RemoveAura(23333);    // ally player drop horde flag if they have it
                         else
                             p_caster->RemoveAura(23335);    // horde player drop ally flag if they have it
                     }
-                    if (p_caster->m_bg->GetType() == BATTLEGROUND_EYE_OF_THE_STORM)
+                    if (p_caster->getBattleground()->GetType() == BATTLEGROUND_EYE_OF_THE_STORM)
 
                         p_caster->RemoveAura(34976);        // drop the flag
                     break;
@@ -1473,7 +1473,7 @@ void Spell::HandleAddAura(uint64 guid)
         if (static_cast<Player*>(Target)->isPvpFlagSet())
         {
             if (p_caster->isPlayer() && !p_caster->isPvpFlagSet())
-                p_caster->PvPToggle();
+                p_caster->togglePvP();
             else
                 p_caster->setPvpFlag();
         }
@@ -2029,7 +2029,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
          /**
           * check if spell is allowed while we have a battleground flag
           */
-        if (p_caster->m_bgHasFlag)
+        if (p_caster->hasBgFlag())
         {
             switch (getSpellInfo()->getId())
             {
@@ -2045,11 +2045,13 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                 case 1857:
                 case 26889:
                 {
-                    // thank Cruders for this :P
-                    if (p_caster->m_bg && p_caster->m_bg->GetType() == BATTLEGROUND_WARSONG_GULCH)
-                        p_caster->m_bg->HookOnFlagDrop(p_caster);
-                    else if (p_caster->m_bg && p_caster->m_bg->GetType() == BATTLEGROUND_EYE_OF_THE_STORM)
-                        p_caster->m_bg->HookOnFlagDrop(p_caster);
+                    if (const auto battleground = p_caster->getBattleground())
+                    {
+                        if (battleground->GetType() == BATTLEGROUND_WARSONG_GULCH)
+                            battleground->HookOnFlagDrop(p_caster);
+                        else if (battleground->GetType() == BATTLEGROUND_EYE_OF_THE_STORM)
+                            battleground->HookOnFlagDrop(p_caster);
+                    }
                     break;
                 }
             }

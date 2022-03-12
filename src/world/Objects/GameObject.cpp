@@ -1555,8 +1555,8 @@ void GameObject_Meetingstone::onUse(Player* player)
 // Class functions for GameObject_FlagStand
 void GameObject_FlagStand::onUse(Player* player)
 {
-    if (player->m_bg != nullptr)
-        player->m_bg->HookFlagStand(player, this);
+    if (player->getBattleground() != nullptr)
+        player->getBattleground()->HookFlagStand(player, this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1608,8 +1608,8 @@ bool GameObject_FishingHole::HasLoot()
 // Class functions for GameObject_FlagDrop
 void GameObject_FlagDrop::onUse(Player* player)
 {
-    if (player->m_bg)
-        player->m_bg->HookFlagDrop(player, this);
+    if (player->getBattleground())
+        player->getBattleground()->HookFlagDrop(player, this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

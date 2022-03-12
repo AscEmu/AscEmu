@@ -575,17 +575,17 @@ void WorldSession::sendServerStats()
     if (worldConfig.server.sendStatsOnJoin)
     {
 #ifdef WIN32
-        _player->BroadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);
+        _player->broadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);
 #else
-        _player->BroadcastMessage("Server: %sAscEmu - %s-%s", MSG_COLOR_WHITE, PLATFORM_TEXT, ARCH);
+        _player->broadcastMessage("Server: %sAscEmu - %s-%s", MSG_COLOR_WHITE, PLATFORM_TEXT, ARCH);
 #endif
 
-        _player->BroadcastMessage("Build hash: %s%s", MSG_COLOR_CYAN, BUILD_HASH_STR);
-        _player->BroadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u",
+        _player->broadcastMessage("Build hash: %s%s", MSG_COLOR_CYAN, BUILD_HASH_STR);
+        _player->broadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u",
             MSG_COLOR_SEXGREEN, static_cast<uint32_t>(sWorld.getSessionCount()), MSG_COLOR_SEXBLUE, sWorld.getPeakSessionCount(),
             MSG_COLOR_SEXBLUE, sWorld.getAcceptedConnections());
 
-        _player->BroadcastMessage("Server Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
+        _player->broadcastMessage("Server Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
     }
 }
 
@@ -657,7 +657,7 @@ void WorldSession::fullLogin(Player* player)
     sLogger.debug("Player %s logged in.", player->getName().c_str());
     sWorld.incrementPlayerCount(player->getTeam());
 
-    player->m_playedtime[2] = uint32_t(UNIXTIME);
+    player->m_playedTime[2] = uint32_t(UNIXTIME);
     //////////////////////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////////////

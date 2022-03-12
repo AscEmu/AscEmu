@@ -1418,11 +1418,11 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 #endif
 
         // Battleground checks
-        if (p_caster->m_bg != nullptr)
+        if (p_caster->getBattleground())
         {
 #if VERSION_STRING >= TBC
             // Arena checks
-            if (isArena(p_caster->m_bg->GetType()))
+            if (isArena(p_caster->getBattleground()->GetType()))
             {
                 // Spells with longer than 10 minute cooldown cannot be casted in arena
                 const auto spellCooldown = getSpellInfo()->getRecoveryTime() > getSpellInfo()->getCategoryRecoveryTime() ? getSpellInfo()->getRecoveryTime() : getSpellInfo()->getCategoryRecoveryTime();
@@ -1432,7 +1432,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 #endif
 
             // If battleground has ended, don't allow spell casting
-            if (!m_triggeredSpell && p_caster->m_bg->HasEnded())
+            if (!m_triggeredSpell && p_caster->getBattleground()->HasEnded())
                 return SPELL_FAILED_DONT_REPORT;
         }
         else if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_BG_ONLY)
@@ -2241,7 +2241,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     break;
 
                 // Don't allow these effects in battlegrounds if the battleground hasn't yet started
-                if (p_caster->m_bg != nullptr && !p_caster->m_bg->HasStarted())
+                if (p_caster->getBattleground() && !p_caster->getBattleground()->HasStarted())
                     return SPELL_FAILED_TRY_AGAIN;
             } break;
             case SPELL_EFFECT_SUMMON_PET:
@@ -2587,7 +2587,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     }
 
                     // Check if caster is in a battleground
-                    if (mapInfo->isBattleground() || p_caster->m_bg != nullptr)
+                    if (mapInfo->isBattleground() || p_caster->getBattleground())
                     {
 #if VERSION_STRING == Classic
                         return SPELL_FAILED_NOT_HERE;

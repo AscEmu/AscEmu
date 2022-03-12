@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "Macros/CorpseMacros.hpp"
+#include "Management/HonorHandler.h"
 #include "Management/Battleground/Battleground.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/ItemInterface.h"
@@ -77,6 +78,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/UnitDefines.hpp"
+#include "Server/LogonCommClient/LogonCommHandler.h"
+#include "Server/Packets/SmsgAreaTriggerMessage.h"
 #include "Server/Packets/SmsgCancelCombat.h"
 #include "Server/Packets/SmsgCorpseReclaimDelay.h"
 #include "Server/Packets/SmsgDeathReleaseLoc.h"
@@ -86,12 +89,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgDuelRequested.h"
 #include "Server/Packets/SmsgDuelWinner.h"
 #include "Server/Packets/SmsgDurabilityDamageDeath.h"
+#include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Packets/SmsgPreResurrect.h"
 #include "Server/Packets/SmsgSetFactionStanding.h"
 #include "Server/Packets/SmsgSetFactionVisible.h"
 #include "Server/Packets/SmsgTriggerMovie.h"
 #include "Server/Packets/SmsgTriggerCinematic.h"
 #include "Server/Packets/SmsgSpellCooldown.h"
+#include "Server/Packets/SmsgSummonRequest.h"
+#include "Server/Packets/SmsgTitleEarned.h"
 #include "Server/Packets/SmsgTransferPending.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Server/Script/ScriptMgr.h"
@@ -100,6 +106,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WorldStrings.h"
 
 using namespace AscEmu::Packets;
+using namespace MapManagement::AreaManagement;
 
 Player::Player(uint32_t guid) :
     m_updateMgr(this, static_cast<size_t>(worldConfig.server.compressionThreshold), 40000, 30000, 1000),
@@ -1466,11 +1473,26 @@ void Player::eventKickFromServer()
     }
 }
 
+void Player::sendSummonRequest(uint32_t requesterId, uint32_t zoneId, uint32_t mapId, uint32_t instanceId, const LocationVector& position)
+{
+    m_summonData.instanceId = instanceId;
+    m_summonData.position = position;
+    m_summonData.summonerId = requesterId;
+    m_summonData.mapId = mapId;
+
+    m_session->SendPacket(SmsgSummonRequest(requesterId, zoneId, 120000).serialise().get());
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Basic
+DBC::Structures::ChrRacesEntry const* Player::getDbcRaceEntry() { return myRace; };
+DBC::Structures::ChrClassesEntry const* Player::getDbcClassEntry() { return myClass; };
 
 std::string Player::getName() const { return m_name; }
 void Player::setName(std::string name) { m_name = name; }
+
+uint32_t Player::getLoginFlag() const { return login_flags; }
+void Player::setLoginFlag(uint32_t flag) { login_flags = flag; }
 
 void Player::setInitialDisplayIds(uint8_t gender, uint8_t race)
 {
@@ -1498,29 +1520,24 @@ void Player::setInitialDisplayIds(uint8_t gender, uint8_t race)
 
 void Player::applyLevelInfo(uint32_t newLevel)
 {
-    // Save current level
     const auto previousLevel = getLevel();
 
     if (!m_FirstLogin)
     {
         const auto previousLevelInfo = lvlinfo;
 
-        // Get new level info
         lvlinfo = sObjectMgr.GetLevelInfo(getRace(), getClass(), newLevel);
         if (lvlinfo == nullptr)
             return;
 
-        // Small chance that you die at the same time you level up, and you may enter in a weird state
         if (isDead())
             resurrect();
 
         setLevel(newLevel);
 
-        // Set new base health and mana
         setBaseHealth(lvlinfo->HP);
         setBaseMana(lvlinfo->Mana);
 
-        // Set new base stats
         for (uint8_t i = 0; i < STAT_COUNT; ++i)
         {
             BaseStats[i] = lvlinfo->Stat[i];
@@ -1528,20 +1545,14 @@ void Player::applyLevelInfo(uint32_t newLevel)
         }
 
 #if VERSION_STRING >= WotLK
-        // Recalculate Heilrooms
         for (uint8_t i = 0; i < INVENTORY_SLOT_BAG_END; ++i)
-        {
             if (Item* pItem = getItemInterface()->GetInventoryItem(i))
-            {
                 _ApplyItemMods(pItem, i, true, false, true);
-            }
-        }
 #endif
         UpdateStats();
 
-        // Set current health
         setHealth(getMaxHealth());
-        // Restore powers to full
+
         setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
         setPower(POWER_TYPE_FOCUS, getMaxPower(POWER_TYPE_FOCUS));
         setPower(POWER_TYPE_ENERGY, getMaxPower(POWER_TYPE_ENERGY));
@@ -1549,7 +1560,6 @@ void Player::applyLevelInfo(uint32_t newLevel)
         setPower(POWER_TYPE_RUNES, getMaxPower(POWER_TYPE_RUNES));
 #endif
 
-        // Send levelup info packet
         sendLevelupInfoPacket(
             newLevel,
             lvlinfo->HP - previousLevelInfo->HP,
@@ -1561,18 +1571,12 @@ void Player::applyLevelInfo(uint32_t newLevel)
             lvlinfo->Stat[STAT_SPIRIT] - previousLevelInfo->Stat[STAT_SPIRIT]);
     }
 
-    // Update max skill level
     updateSkillMaximumValues();
 
     if (newLevel > previousLevel || m_FirstLogin)
-    {
         setInitialTalentPoints();
-    }
     else if (newLevel != previousLevel)
-    {
-        // Reset talents if new level is lower than the previous level
         resetAllTalents();
-    }
 
     m_playerInfo->lastLevel = previousLevel;
 
@@ -1581,13 +1585,11 @@ void Player::applyLevelInfo(uint32_t newLevel)
     GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
 #endif
 
-    // Send script hooks
     if (m_FirstLogin)
         sHookInterface.OnFirstEnterWorld(this);
     else
         sHookInterface.OnPostLevelUp(this);
 
-    // If player is warlock and has a summoned pet, its level should match owner's
     if (getClass() == WARLOCK)
     {
         const auto pet = getFirstPetFromSummons();
@@ -1599,11 +1601,9 @@ void Player::applyLevelInfo(uint32_t newLevel)
         }
     }
 
-    // Send talent info to client
     smsg_TalentsInfo(false);
 
-    // Reset current played time
-    m_playedtime[0] = 0;
+    m_playedTime[0] = 0;
 }
 
 bool Player::isClassMage() { return false; }
@@ -1617,6 +1617,22 @@ bool Player::isClassWarrior() { return false; }
 bool Player::isClassPaladin() { return false; }
 bool Player::isClassMonk() { return false; }
 bool Player::isClassDruid() { return false; }
+
+PlayerTeam Player::getTeam() const { return m_team == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE; }
+PlayerTeam Player::getBgTeam() const { return m_bgTeam == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE; }
+void Player::setTeam(uint32_t team) { m_team = team; m_bgTeam = team; }
+void Player::setBgTeam(uint32_t team) { m_bgTeam = team; }
+
+uint32_t Player::getInitialTeam() const { return myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE; }
+
+void Player::resetTeam()
+{
+    m_team = myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE;
+    m_bgTeam = m_team;
+}
+
+bool Player::isTeamHorde() const { return getTeam() == TEAM_HORDE; }
+bool Player::isTeamAlliance() const { return getTeam() == TEAM_ALLIANCE; }
 
 Player* Player::getPlayerOwner()
 {
@@ -1659,21 +1675,7 @@ void Player::toggleDnd()
         addPlayerFlags(PLAYER_FLAG_DND);
 }
 
-PlayerTeam Player::getTeam() const { return m_team == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE; }
-PlayerTeam Player::getBgTeam() const { return m_bgTeam == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE; }
-void Player::setTeam(uint32_t team) { m_team = team; m_bgTeam = team; }
-void Player::setBgTeam(uint32_t team) { m_bgTeam = team; }
-
-uint32_t Player::getInitialTeam() const { return myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE; }
-
-void Player::resetTeam()
-{
-    m_team = myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE;
-    m_bgTeam = m_team;
-}
-
-bool Player::isTeamHorde() const { return getTeam() == TEAM_HORDE; }
-bool Player::isTeamAlliance() const { return getTeam() == TEAM_ALLIANCE; }
+uint32_t* Player::getPlayedTime() { return m_playedTime; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Stats
@@ -3754,7 +3756,7 @@ void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
 uint32_t Player::getTutorialValueById(uint8_t id)
 {
     if (id < 8)
-        return m_Tutorials[id];
+        return m_tutorials[id];
     return 0;
 }
 
@@ -3762,8 +3764,8 @@ void Player::setTutorialValueForId(uint8_t id, uint32_t value)
 {
     if (id < 8)
     {
-        m_Tutorials[id] = value;
-        tutorialsDirty = true;
+        m_tutorials[id] = value;
+        m_tutorialsDirty = true;
     }
 }
 
@@ -3773,19 +3775,19 @@ void Player::loadTutorials()
     {
         auto* const fields = result->Fetch();
         for (uint8_t id = 0; id < 8; ++id)
-            m_Tutorials[id] = fields[id + 1].GetUInt32();
+            m_tutorials[id] = fields[id + 1].GetUInt32();
     }
-    tutorialsDirty = false;
+    m_tutorialsDirty = false;
 }
 
 void Player::saveTutorials()
 {
-    if (tutorialsDirty)
+    if (m_tutorialsDirty)
     {
         CharacterDatabase.Execute("DELETE FROM tutorials WHERE playerid = %u;", getGuidLow());
-        CharacterDatabase.Execute("INSERT INTO tutorials VALUES('%u','%u','%u','%u','%u','%u','%u','%u','%u');", getGuidLow(), m_Tutorials[0], m_Tutorials[1], m_Tutorials[2], m_Tutorials[3], m_Tutorials[4], m_Tutorials[5], m_Tutorials[6], m_Tutorials[7]);
+        CharacterDatabase.Execute("INSERT INTO tutorials VALUES('%u','%u','%u','%u','%u','%u','%u','%u','%u');", getGuidLow(), m_tutorials[0], m_tutorials[1], m_tutorials[2], m_tutorials[3], m_tutorials[4], m_tutorials[5], m_tutorials[6], m_tutorials[7]);
 
-        tutorialsDirty = false;
+        m_tutorialsDirty = false;
     }
 }
 
@@ -3967,6 +3969,28 @@ void Player::sendReportToGmMessage(std::string playerName, std::string damageLog
     gm_ann += damageLog;
 
     sWorld.sendMessageToOnlineGms(gm_ann);
+}
+
+void Player::broadcastMessage(const char* Format, ...)
+{
+    va_list list;
+    va_start(list, Format);
+    char Message[1024];
+    vsnprintf(Message, 1024, Format, list);
+    va_end(list);
+
+    m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(Message)).serialise().get());
+}
+
+void Player::sendAreaTriggerMessage(const char* message, ...)
+{
+    va_list list;
+    va_start(list, message);
+    char msg[500];
+    vsnprintf(msg, 500, message, list);
+    va_end(list);
+
+    m_session->SendPacket(SmsgAreaTriggerMessage(0, msg, 0).serialise().get());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -5165,7 +5189,7 @@ void Player::removeAllChannels()
 void Player::setArenaTeam(uint8_t type, ArenaTeam* arenaTeam) { m_arenaTeams[type] = arenaTeam; }
 ArenaTeam* Player::getArenaTeam(uint8_t type) { return m_arenaTeams[type]; }
 
-bool Player::isInArenaTeam(uint8_t type) { return m_arenaTeams[type] != nullptr; }
+bool Player::isInArenaTeam(uint8_t type) const { return m_arenaTeams[type] != nullptr; }
 void Player::initialiseArenaTeam()
 {
     for (uint8_t i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
@@ -5183,6 +5207,505 @@ void Player::initialiseArenaTeam()
 #endif
         }
     }
+}
+
+void Player::addArenaPoints(uint32_t arenaPoints, bool sendUpdate)
+{
+    this->m_arenaPoints += arenaPoints;
+    if (this->m_arenaPoints > worldConfig.limit.maxArenaPoints)
+        this->m_arenaPoints = worldConfig.limit.maxArenaPoints;
+
+    if (sendUpdate)
+        this->updateArenaPoints();
+}
+
+uint32_t Player::getArenaPoints() const { return m_arenaPoints; }
+
+void Player::removeArenaPoints(uint32_t arenaPoints, bool sendUpdate)
+{
+    int32_t newPoints = this->m_arenaPoints;
+    newPoints -= arenaPoints;
+    if (newPoints < 0)
+        newPoints = 0;
+
+    this->m_arenaPoints = newPoints;
+
+    if (sendUpdate)
+        this->updateArenaPoints();
+}
+
+void Player::updateArenaPoints()
+{
+#if VERSION_STRING > Classic
+#if VERSION_STRING < Cata
+    this->setArenaCurrency(this->m_arenaPoints);
+#endif
+#endif
+
+    this->UpdateKnownCurrencies(43307, true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Honor
+void Player::addHonor(uint32_t honorPoints, bool sendUpdate)
+{
+    if (this->GetMapId() == 559 || this->GetMapId() == 562 || this->GetMapId() == 572)
+        return;
+
+    this->m_honorPoints += honorPoints;
+    this->m_honorToday += honorPoints;
+    if (this->m_honorPoints > worldConfig.limit.maxHonorPoints)
+        this->m_honorPoints = worldConfig.limit.maxHonorPoints;
+
+    if (sendUpdate)
+        this->updateHonor();
+}
+
+uint32_t Player::getHonor() const { return m_honorPoints; }
+
+void Player::removeHonor(uint32_t honorPoints, bool sendUpdate)
+{
+    int32_t newPoints = this->m_honorPoints;
+    newPoints -= honorPoints;
+    if (newPoints < 0)
+        newPoints = 0;
+
+    this->m_honorPoints = newPoints;
+
+    if (sendUpdate)
+        this->updateHonor();
+}
+
+void Player::updateHonor()
+{
+#if VERSION_STRING != Classic
+    this->setFieldKills((this->m_killsToday | this->m_killsYesterday << 16));
+#if VERSION_STRING < Cata
+    this->setContributionToday(this->m_honorToday);
+    this->setContributionYesterday(this->m_honorYesterday);
+
+    this->setHonorCurrency(this->m_honorPoints);
+#endif
+#endif
+    this->setLifetimeHonorableKills(this->m_killsLifetime);
+
+    this->UpdateKnownCurrencies(43308, true);
+}
+
+void Player::rolloverHonor()
+{
+    uint32_t current_val = (g_localTime.tm_year << 16) | g_localTime.tm_yday;
+    if (current_val != m_honorRolloverTime)
+    {
+        m_honorRolloverTime = current_val;
+        m_honorYesterday = m_honorToday;
+        m_killsYesterday = m_killsToday;
+        m_honorToday = m_killsToday = 0;
+    }
+}
+
+uint32_t Player::getHonorToday() const { return m_honorToday; }
+uint32_t Player::getHonorYesterday() const { return m_honorYesterday; }
+uint32_t Player::getHonorless() const { return m_honorless; }
+void Player::incrementHonorless() { m_honorless++; }
+void Player::decrementHonorless() { m_honorless > 0 ? m_honorless-- : m_honorless = 0; }
+
+void Player::incrementKills(uint32_t count)
+{
+    if (count)
+    {
+        m_killsToday += count;
+        m_killsLifetime += count;
+        return;
+    }
+
+    m_killsToday++;
+    m_killsLifetime++;
+}
+
+uint32_t Player::getKillsToday() const { return m_killsToday; }
+uint32_t Player::getKillsLifetime() const { return m_killsLifetime; }
+uint32_t Player::getKillsYesterday() const { return m_killsYesterday; }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// PvP
+void Player::resetPvPTimer() { m_pvpTimer = worldConfig.getIntRate(INTRATE_PVPTIMER); }
+void Player::stopPvPTimer() { m_pvpTimer = 0; }
+
+void Player::setupPvPOnLogin()
+{
+    _EventExploration();
+
+    const auto areaTableEntry = this->GetArea();
+
+    if (areaTableEntry != nullptr && isAlive() && 
+        (areaTableEntry->team == AREAC_CONTESTED ||
+            (isTeamAlliance() && areaTableEntry->team == AREAC_HORDE_TERRITORY) ||
+            (isTeamHorde() && areaTableEntry->team == AREAC_ALLIANCE_TERRITORY)))
+        castSpell(this, PLAYER_HONORLESS_TARGET_SPELL, true);
+}
+
+void Player::updatePvPArea()
+{
+    auto areaTableEntry = this->GetArea();
+    if (areaTableEntry == nullptr)
+        return;
+
+    if (hasPlayerFlags(PLAYER_FLAG_GM))
+    {
+        if (isPvpFlagSet())
+            removePvpFlag();
+        else
+            stopPvPTimer();
+
+        removeFfaPvpFlag();
+        return;
+    }
+
+    if ((areaTableEntry->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance()) || (areaTableEntry->team == AREAC_HORDE_TERRITORY && isTeamHorde()))
+    {
+        if (!hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE) && !m_pvpTimer)
+            resetPvPTimer();
+    }
+    else
+    {
+        if (areaTableEntry->flags & AREA_CITY_AREA || areaTableEntry->flags & AREA_CITY)
+        {
+            if ((areaTableEntry->team == AREAC_ALLIANCE_TERRITORY && isTeamHorde()) || (areaTableEntry->team == AREAC_HORDE_TERRITORY && isTeamAlliance()))
+            {
+                if (!isPvpFlagSet())
+                    setPvpFlag();
+                else
+                    stopPvPTimer();
+                return;
+            }
+        }
+
+        if (areaTableEntry->zone)
+        {
+            if (auto at2 = AreaStorage::GetAreaById(areaTableEntry->zone))
+            {
+                if ((at2->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance()) || (at2->team == AREAC_HORDE_TERRITORY && isTeamHorde()))
+                {
+                    if (!hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE) && !m_pvpTimer)
+                        resetPvPTimer();
+
+                    return;
+                }
+
+                if (at2->flags & AREA_CITY_AREA || at2->flags & AREA_CITY)
+                {
+                    if ((at2->team == AREAC_ALLIANCE_TERRITORY && isTeamHorde()) || (at2->team == AREAC_HORDE_TERRITORY && isTeamAlliance()))
+                    {
+                        if (!isPvpFlagSet())
+                            setPvpFlag();
+                        else
+                            stopPvPTimer();
+                        return;
+                    }
+                }
+            }
+        }
+
+        if (areaTableEntry->team == AREAC_SANCTUARY || areaTableEntry->flags & AREA_SANCTUARY)
+        {
+            if (isPvpFlagSet())
+                removePvpFlag();
+            else
+                stopPvPTimer();
+
+            removeFfaPvpFlag();
+            setSanctuaryFlag();
+        }
+        else
+        {
+            removeSanctuaryFlag();
+
+            if (sLogonCommHandler.getRealmType() == REALMTYPE_PVP || sLogonCommHandler.getRealmType() == REALMTYPE_RPPVP)
+            {
+                if (!isPvpFlagSet())
+                    setPvpFlag();
+                else
+                    stopPvPTimer();
+            }
+
+            if (sLogonCommHandler.getRealmType() == REALMTYPE_NORMAL || sLogonCommHandler.getRealmType() == REALMTYPE_RP)
+            {
+                if (hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE))
+                {
+                    if (!isPvpFlagSet())
+                        setPvpFlag();
+                }
+                else if (!hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE) && isPvpFlagSet() && !m_pvpTimer)
+                {
+                    resetPvPTimer();
+                }
+            }
+
+            if (areaTableEntry->flags & AREA_PVP_ARENA)
+            {
+                if (!isPvpFlagSet())
+                    setPvpFlag();
+
+                setFfaPvpFlag();
+            }
+            else
+            {
+                removeFfaPvpFlag();
+            }
+        }
+    }
+}
+
+void Player::togglePvP()
+{
+    if (sLogonCommHandler.getRealmType() == REALMTYPE_NORMAL || sLogonCommHandler.getRealmType() == REALMTYPE_RP)
+    {
+        if (m_pvpTimer > 0)
+        {
+            stopPvPTimer();
+
+            addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
+            removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
+
+            if (!isPvpFlagSet())
+                setPvpFlag();
+        }
+        else
+        {
+            if (isPvpFlagSet())
+            {
+                auto areaTableEntry = this->GetArea();
+                if (areaTableEntry && (areaTableEntry->flags & AREA_CITY_AREA || areaTableEntry->flags & AREA_CITY))
+                {
+                    if ((areaTableEntry->team == AREAC_ALLIANCE_TERRITORY && isTeamHorde()) || (areaTableEntry->team == AREAC_HORDE_TERRITORY && isTeamAlliance()))
+                    {
+                    }
+                    else
+                    {
+                        resetPvPTimer();
+                    }
+                }
+                else
+                {
+                    resetPvPTimer();
+                }
+
+                removePlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
+                addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
+            }
+            else
+            {
+                addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
+                removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
+
+                stopPvPTimer();
+                setPvpFlag();
+            }
+        }
+    }
+    else if (sLogonCommHandler.getRealmType() == REALMTYPE_PVP || sLogonCommHandler.getRealmType() == REALMTYPE_RPPVP)
+    {
+        auto at = this->GetArea();
+        if (at == nullptr)
+            return;
+
+        // This is where all the magic happens :P
+        if ((at->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance()) || (at->team == AREAC_HORDE_TERRITORY && isTeamHorde()))
+        {
+            if (m_pvpTimer > 0)
+            {
+                // Means that we typed /pvp while we were "cooling down". Stop the timer.
+                stopPvPTimer();
+
+                addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
+                removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
+
+                if (!isPvpFlagSet())
+                    setPvpFlag();
+            }
+            else
+            {
+                if (isPvpFlagSet())
+                {
+                    // Start the "cooldown" timer.
+                    resetPvPTimer();
+
+                    removePlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
+                    addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
+                }
+                else
+                {
+                    // Move into PvP state.
+                    addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
+                    removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
+
+                    stopPvPTimer();
+                    setPvpFlag();
+                }
+            }
+        }
+        else
+        {
+            if (at->zone)
+            {
+                auto at2 = MapManagement::AreaManagement::AreaStorage::GetAreaById(at->zone);
+                if (at2 && ((at2->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance()) || (at2->team == AREAC_HORDE_TERRITORY && isTeamHorde())))
+                {
+                    if (m_pvpTimer > 0)
+                    {
+                        // Means that we typed /pvp while we were "cooling down". Stop the timer.
+                        stopPvPTimer();
+
+                        addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
+                        removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
+
+                        if (!isPvpFlagSet())
+                            setPvpFlag();
+                    }
+                    else
+                    {
+                        if (isPvpFlagSet())
+                        {
+                            // Start the "cooldown" timer.
+                            resetPvPTimer();
+
+                            removePlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
+                            addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
+                        }
+                        else
+                        {
+                            // Move into PvP state.
+                            addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
+                            removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
+
+                            stopPvPTimer();
+                            setPvpFlag();
+                        }
+                    }
+                    return;
+                }
+            }
+
+            if (!hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE))
+            {
+                addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
+                removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
+            }
+            else
+            {
+                removePlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
+                addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
+            }
+        }
+    }
+}
+
+void Player::updatePvPCurrencies()
+{
+    this->updateHonor();
+    this->updateArenaPoints();
+}
+
+bool Player::hasPvPTitle(RankTitles title)
+{
+#if VERSION_STRING > Classic
+    const auto index = static_cast<uint8_t>(title / 32);
+
+    return (getKnownTitles(index) & 1ULL << static_cast<uint64_t>((title % 32))) != 0;
+#else
+    return false;
+#endif
+}
+
+void Player::setKnownPvPTitle(RankTitles title, bool set)
+{
+#if VERSION_STRING > Classic
+    if (!set && !hasPvPTitle(title))
+        return;
+
+    const auto index = static_cast<uint8_t>(title / 32);
+    const uint64_t current = getKnownTitles(index);
+
+    if (set)
+        setKnownTitles(index, current | 1ULL << static_cast<uint64_t>((title % 32)));
+    else
+        setKnownTitles(index, current & ~1 << (title % 32));
+
+    m_session->SendPacket(SmsgTitleEarned(title, set ? 1 : 0).serialise().get());
+#endif
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Battleground
+CBattleground* Player::getBattleground() const { return m_bg; }
+void Player::setBattleground(CBattleground* bg) { m_bg = bg; }
+
+CBattleground* Player::getPendingBattleground() const { return m_pendingBattleground; }
+void Player::setPendingBattleground(CBattleground* bg) { m_pendingBattleground = bg; }
+
+bool Player::isQueuedForBg() const { return m_isQueuedForBg; }
+void Player::setIsQueuedForBg(bool set) { m_isQueuedForBg = set; }
+
+bool Player::hasQueuedBgInstanceId() const { return m_queuedBgInstanceId != 0; }
+uint32_t Player::getQueuedBgInstanceId() const { return m_queuedBgInstanceId; }
+void Player::setQueuedBgInstanceId(uint32_t id) { m_queuedBgInstanceId = id; }
+
+bool Player::isQueuedForRbg() const { return this->m_isQueuedForRbg; }
+void Player::setIsQueuedForRbg(bool value) { this->m_isQueuedForRbg = value; }
+
+void Player::removeFromBgQueue()
+{
+    if (!m_pendingBattleground)
+        return;
+
+    m_pendingBattleground->RemovePendingPlayer(this);
+    sChatHandler.SystemMessage(m_session, GetSession()->LocalizedWorldSrv(ServerString::SS_BG_REMOVE_QUEUE_INF));
+}
+
+bool Player::hasWonRbgToday() const { return this->m_hasWonRbgToday; }
+void Player::setHasWonRbgToday(bool value) { this->m_hasWonRbgToday = value; }
+
+void Player::setBgQueueType(uint32_t type) { this->m_bgQueueType = type; }
+uint32_t Player::getBgQueueType() const { return this->m_bgQueueType; }
+
+bool Player::hasBgFlag() const { return m_bgHasFlag; }
+void Player::setHasBgFlag(bool set) { m_bgHasFlag = set; }
+
+void Player::setRoles(uint8_t role) { m_roles = role; }
+uint8_t Player::retRoles() const { return m_roles; }
+
+void Player::fillRandomBattlegroundReward(bool wonBattleground, uint32_t& honorPoints, uint32_t& arenaPoints)
+{
+    auto honorForSingleKill = HonorHandler::CalculateHonorPointsForKill(this->getLevel(), this->getLevel());
+
+    if (wonBattleground)
+    {
+        if (this->m_hasWonRbgToday)
+        {
+            honorPoints = worldConfig.bg.honorableKillsRbg * honorForSingleKill;
+            arenaPoints = worldConfig.bg.honorableArenaWinRbg;
+        }
+        else
+        {
+            honorPoints = worldConfig.bg.firstRbgHonorValueToday * honorForSingleKill;
+            arenaPoints = worldConfig.bg.firstRbgArenaHonorValueToday;
+        }
+    }
+    else
+    {
+        honorPoints = worldConfig.bg.honorByLosingRbg * honorForSingleKill;
+        arenaPoints = worldConfig.bg.honorByLosingArenaRbg;
+    }
+}
+
+void Player::applyRandomBattlegroundReward(bool wonBattleground)
+{
+    uint32 honorPoints, arenaPoints;
+    this->fillRandomBattlegroundReward(wonBattleground, honorPoints, arenaPoints);
+    this->addHonor(honorPoints, false);
+    this->addArenaPoints(arenaPoints, false);
+    this->updatePvPCurrencies();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -6242,7 +6765,7 @@ bool Player::isPvpFlagSet()
 
 void Player::setPvpFlag()
 {
-    StopPvPTimer();
+    stopPvPTimer();
 #if VERSION_STRING > TBC
     addPvpFlags(U_FIELD_BYTES_FLAG_PVP);
 #else
@@ -6261,7 +6784,7 @@ void Player::setPvpFlag()
 
 void Player::removePvpFlag()
 {
-    StopPvPTimer();
+    stopPvPTimer();
 #if VERSION_STRING > TBC
     removePvpFlags(U_FIELD_BYTES_FLAG_PVP);
 #else
@@ -6282,7 +6805,7 @@ bool Player::isFfaPvpFlagSet()
 
 void Player::setFfaPvpFlag()
 {
-    StopPvPTimer();
+    stopPvPTimer();
     addPvpFlags(U_FIELD_BYTES_FLAG_FFA_PVP);
     addPlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
@@ -6293,7 +6816,7 @@ void Player::setFfaPvpFlag()
 
 void Player::removeFfaPvpFlag()
 {
-    StopPvPTimer();
+    stopPvPTimer();
     removePvpFlags(U_FIELD_BYTES_FLAG_FFA_PVP);
     removePlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
@@ -7002,7 +7525,7 @@ void Player::startTaxiPath(TaxiPath* path, uint32_t modelid, uint32_t start_node
     }
     else
     {
-        sEventMgr.AddEvent(this, &Player::EventTeleportTaxi, (uint32_t)mapchangeid, 
+        sEventMgr.AddEvent(this, &Player::eventTeleportTaxi, (uint32_t)mapchangeid, 
             mapchangex, mapchangey, mapchangez, EVENT_PLAYER_TELEPORT, traveltime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
@@ -7093,6 +7616,23 @@ void Player::interpolateTaxiPosition()
         return;
 
     SetPosition(x, y, z, 0);
+}
+
+void Player::eventTeleportTaxi(uint32_t mapId, float x, float y, float z)
+{
+    if (mapId == 530 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01))
+    {
+        WorldPacket msg(CMSG_SERVER_BROADCAST, 50);
+        msg << uint32_t(3);
+        msg << GetSession()->LocalizedWorldSrv(SS_MUST_HAVE_BC);
+        msg << uint8_t(0);
+        m_session->SendPacket(&msg);
+
+        repopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
+        return;
+    }
+    _Relocate(mapId, LocationVector(x, y, z), (mapId == GetMapId() ? false : true), true, 0);
+    ForceZoneUpdate();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -7530,7 +8070,7 @@ Item* Player::storeItem(LootItem const* lootItem)
         {
             newItem->setSoulboundTradeable(looters);
 
-            uint32_t* played = GetPlayedtime();
+            uint32_t* played = getPlayedTime();
             newItem->setCreatePlayedTime(played[1]);
             addTradeableItem(newItem);
         }

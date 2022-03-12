@@ -40,13 +40,13 @@ bool ChatHandler::HandleBGInfoCommand(const char* /*args*/, WorldSession* m_sess
 //.battleground leave
 bool ChatHandler::HandleBGLeaveCommand(const char* /*args*/, WorldSession* m_session)
 {
-    if (!m_session->GetPlayer()->m_bg)
+    if (!m_session->GetPlayer()->getBattleground())
     {
         RedSystemMessage(m_session, "You are not in a battleground.");
         return true;
     }
 
-    m_session->GetPlayer()->m_bg->Close();
+    m_session->GetPlayer()->getBattleground()->Close();
 
     return true;
 }
@@ -84,13 +84,13 @@ bool ChatHandler::HandleBGPlaySoundCommand(const char* args, WorldSession* m_ses
     if (!*args)
         return false;
 
-    if (!m_session->GetPlayer()->m_bg)
+    if (!m_session->GetPlayer()->getBattleground())
     {
         RedSystemMessage(m_session, "You are not in a battleground.");
         return true;
     }
 
-    m_session->GetPlayer()->m_bg->PlaySoundToAll(atoi(args));
+    m_session->GetPlayer()->getBattleground()->PlaySoundToAll(atoi(args));
     return true;
 }
 
@@ -124,8 +124,8 @@ bool ChatHandler::HandleBGSetWorldStateCommand(const char* args, WorldSession* m
         return true;
     }
 
-    if (m_session->GetPlayer()->m_bg)
-        m_session->GetPlayer()->m_bg->SetWorldState(id, val);
+    if (m_session->GetPlayer()->getBattleground())
+        m_session->GetPlayer()->getBattleground()->SetWorldState(id, val);
 
     return true;
 }
@@ -141,13 +141,9 @@ bool ChatHandler::HandleBGSetWorldStatesCommand(const char* args, WorldSession* 
         return true;
     }
 
-    if (m_session->GetPlayer()->m_bg)
-    {
+    if (m_session->GetPlayer()->getBattleground())
         for (uint32 i = first; i < last; i++)
-        {
-            m_session->GetPlayer()->m_bg->SetWorldState(i, val);
-        }
-    }
+            m_session->GetPlayer()->getBattleground()->SetWorldState(i, val);
 
     return true;
 }
@@ -155,17 +151,19 @@ bool ChatHandler::HandleBGSetWorldStatesCommand(const char* args, WorldSession* 
 //.battleground start
 bool ChatHandler::HandleBGStartCommand(const char* /*args*/, WorldSession* m_session)
 {
-    if (!m_session->GetPlayer()->m_bg)
+    if (!m_session->GetPlayer()->getBattleground())
     {
         RedSystemMessage(m_session, "You are not in a battleground.");
         return true;
     }
 
-    m_session->GetPlayer()->m_bg->SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, m_session->LocalizedWorldSrv(ServerString::SS_THE_BATTLE_FOR_HAS_BEGUN), m_session->LocalizedWorldSrv(m_session->GetPlayer()->m_bg->GetNameID()));
+    m_session->GetPlayer()->getBattleground()->SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0,
+        m_session->LocalizedWorldSrv(SS_THE_BATTLE_FOR_HAS_BEGUN),
+        m_session->LocalizedWorldSrv(m_session->GetPlayer()->getBattleground()->GetNameID()));
 
-    sEventMgr.RemoveEvents(m_session->GetPlayer()->m_bg, EVENT_BATTLEGROUND_COUNTDOWN);
+    sEventMgr.RemoveEvents(m_session->GetPlayer()->getBattleground(), EVENT_BATTLEGROUND_COUNTDOWN);
 
-    m_session->GetPlayer()->m_bg->StartBattleground();
+    m_session->GetPlayer()->getBattleground()->StartBattleground();
 
     return true;
 }

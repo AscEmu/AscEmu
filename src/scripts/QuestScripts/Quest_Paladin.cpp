@@ -60,7 +60,7 @@ public:
         }
         else
         {
-            pPlayer->BroadcastMessage("Missing required quest : The First Trial");
+            pPlayer->broadcastMessage("Missing required quest : The First Trial");
         }
     }
 };

@@ -64,7 +64,7 @@ bool WorldSession::isFloodProtectionTriggered()
         {
             if (worldConfig.chat.enableSendFloodProtectionMessage)
             {
-                _player->BroadcastMessage("Your message has triggered serverside flood protection. You can speak again in %ld seconds.",
+                _player->broadcastMessage("Your message has triggered serverside flood protection. You can speak again in %ld seconds.",
                     floodTime - UNIXTIME);
             }
             return true;
@@ -180,7 +180,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 
     if (srlPacket.message.find("|T") > -1)
     {
-        //_player->BroadcastMessage("Don't even THINK about doing that again");
+        //_player->broadcastMessage("Don't even THINK about doing that again");
         return;
     }
 

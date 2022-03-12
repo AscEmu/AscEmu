@@ -1138,22 +1138,22 @@ void InstanceScript::sendUnitEncounter(uint32_t type, Unit* unit, uint8_t value_
 
 void InstanceScript::displayDataStateList(Player* player)
 {
-    player->BroadcastMessage("=== DataState for instance %s ===", mInstance->GetMapInfo()->name.c_str());
+    player->broadcastMessage("=== DataState for instance %s ===", mInstance->GetMapInfo()->name.c_str());
 
     for (const auto& encounter : mInstanceData)
     {
         CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounter.first);
         if (creature != nullptr)
         {
-            player->BroadcastMessage("  Boss '%s' (%u) - %s", creature->Name.c_str(), encounter.first, getDataStateString(encounter.first).c_str());
+            player->broadcastMessage("  Boss '%s' (%u) - %s", creature->Name.c_str(), encounter.first, getDataStateString(encounter.first).c_str());
         }
         else
         {
             GameObjectProperties const* gameobject = sMySQLStore.getGameObjectProperties(encounter.first);
             if (gameobject != nullptr)
-                player->BroadcastMessage("  Object '%s' (%u) - %s", gameobject->name.c_str(), encounter.first, getDataStateString(encounter.first).c_str());
+                player->broadcastMessage("  Object '%s' (%u) - %s", gameobject->name.c_str(), encounter.first, getDataStateString(encounter.first).c_str());
             else
-                player->BroadcastMessage("  MiscData %u - %s", encounter.first, getDataStateString(encounter.first).c_str());
+                player->broadcastMessage("  MiscData %u - %s", encounter.first, getDataStateString(encounter.first).c_str());
         }
     }
 }
@@ -1236,16 +1236,16 @@ void InstanceScript::updateTimers()
 
 void InstanceScript::displayTimerList(Player* player)
 {
-    player->BroadcastMessage("=== Timers for instance %s ===", mInstance->GetMapInfo()->name.c_str());
+    player->broadcastMessage("=== Timers for instance %s ===", mInstance->GetMapInfo()->name.c_str());
 
     if (mTimers.empty())
     {
-        player->BroadcastMessage("  No Timers available!");
+        player->broadcastMessage("  No Timers available!");
     }
     else
     {
         for (const auto& intTimer : mTimers)
-            player->BroadcastMessage("  TimerId (%u)  %u ms left", intTimer.first, intTimer.second);
+            player->broadcastMessage("  TimerId (%u)  %u ms left", intTimer.first, intTimer.second);
     }
 }
 
@@ -1359,7 +1359,7 @@ CreatureSet InstanceScript::getCreatureSetForEntry(uint32_t entry, bool debug /*
     if (debug == true)
     {
         if (player != nullptr)
-            player->BroadcastMessage("%u Creatures with entry %u found.", countCreatures, entry);
+            player->broadcastMessage("%u Creatures with entry %u found.", countCreatures, entry);
     }
 
     return creatureSet;

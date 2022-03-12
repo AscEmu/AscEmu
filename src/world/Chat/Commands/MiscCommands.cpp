@@ -648,8 +648,8 @@ bool ChatHandler::HandleInvisibleCommand(const char* /*args*/, WorldSession* m_s
 
         selected_player->sendFriendStatus(true);
 
-        if (selected_player->m_bg)
-            selected_player->m_bg->RemoveInvisGM();
+        if (selected_player->getBattleground())
+            selected_player->getBattleground()->RemoveInvisGM();
 
         if (selected_player != m_session->GetPlayer())
         {
@@ -668,8 +668,8 @@ bool ChatHandler::HandleInvisibleCommand(const char* /*args*/, WorldSession* m_s
 
         selected_player->sendFriendStatus(false);
 
-        if (selected_player->m_bg)
-            selected_player->m_bg->AddInvisGM();
+        if (selected_player->getBattleground())
+            selected_player->getBattleground()->AddInvisGM();
 
         if (selected_player != m_session->GetPlayer())
         {
@@ -992,7 +992,7 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
     char playedLevel[64];
     char playedTotal[64];
 
-    int seconds = (plr->GetPlayedtime())[0];
+    int seconds = (plr->getPlayedTime())[0];
     int mins = 0;
     int hours = 0;
     int days = 0;
@@ -1020,7 +1020,7 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
     }
     snprintf(playedLevel, 64, "[%d days, %d hours, %d minutes, %d seconds]", days, hours, mins, seconds);
 
-    seconds = (plr->GetPlayedtime())[1];
+    seconds = (plr->getPlayedTime())[1];
     mins = 0;
     hours = 0;
     days = 0;

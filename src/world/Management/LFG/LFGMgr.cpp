@@ -517,7 +517,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
     }
 
     // Check player or group member restrictions
-    if (player->InBattleground() || player->InBattlegroundQueue())
+    if (player->hasQueuedBgInstanceId() || player->isQueuedForBg())
     {
         joinData.result = LFG_JOIN_USING_BG_SYSTEM;
     }
@@ -553,7 +553,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
                             joinData.result = LFG_JOIN_PARTY_DESERTER;
                         else if (plrg->hasAurasWithId(LFG_SPELL_DUNGEON_COOLDOWN))
                             joinData.result = LFG_JOIN_PARTY_RANDOM_COOLDOWN;
-                        else if (plrg->InBattleground() || plrg->InBattlegroundQueue())
+                        else if (plrg->hasQueuedBgInstanceId() || plrg->isQueuedForBg())
                             joinData.result = LFG_JOIN_USING_BG_SYSTEM;
 
                         ++memberCount;
@@ -1508,7 +1508,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
 
             m_teleport.push_back(pguid);
             if(Player* plr = sObjectMgr.GetPlayer(static_cast<uint32>(pguid)))
-                plr->SetRoles(pProposal->players[pguid]->role);
+                plr->setRoles(pProposal->players[pguid]->role);
             SetState(pguid, LFG_STATE_DUNGEON);
         }
 

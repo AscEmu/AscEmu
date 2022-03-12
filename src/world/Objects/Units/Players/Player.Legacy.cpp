@@ -504,13 +504,13 @@ void Player::Update(unsigned long time_passed)
         if (!m_underwaterTime)
         {
             // check last damage dealt timestamp, and if enough time has elapsed deal damage
-            if (mstime >= m_UnderwaterLastDmg)
+            if (mstime >= m_underwaterLastDamage)
             {
                 uint32 damage = getMaxHealth() / 10;
 
                 sendEnvironmentalDamageLogPacket(getGuid(), DAMAGE_DROWNING, damage);
                 addSimpleEnvironmentalDamageBatchEvent(DAMAGE_DROWNING, damage);
-                m_UnderwaterLastDmg = mstime + 1000;
+                m_underwaterLastDamage = mstime + 1000;
             }
         }
     }
@@ -534,13 +534,13 @@ void Player::Update(unsigned long time_passed)
     if (m_underwaterState & UNDERWATERSTATE_LAVA)
     {
         // check last damage dealt timestamp, and if enough time has elapsed deal damage
-        if (mstime >= m_UnderwaterLastDmg)
+        if (mstime >= m_underwaterLastDamage)
         {
             uint32 damage = getMaxHealth() / 5;
 
             sendEnvironmentalDamageLogPacket(getGuid(), DAMAGE_LAVA, damage);
             addSimpleEnvironmentalDamageBatchEvent(DAMAGE_LAVA, damage);
-            m_UnderwaterLastDmg = mstime + 1000;
+            m_underwaterLastDamage = mstime + 1000;
         }
     }
 
@@ -893,7 +893,7 @@ void Player::_EventExploration()
     if (AreaId != m_areaId)
     {
         m_areaId = AreaId;
-        UpdatePvPArea();
+        updatePvPArea();
 
         addGroupUpdateFlag(GROUP_UPDATE_FULL);
 
@@ -1588,10 +1588,10 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         in_arena = true;
 
     //Calc played times
-    uint32 playedt = (uint32)UNIXTIME - m_playedtime[2];
-    m_playedtime[0] += playedt;
-    m_playedtime[1] += playedt;
-    m_playedtime[2] += playedt;
+    uint32 playedt = (uint32)UNIXTIME - m_playedTime[2];
+    m_playedTime[0] += playedt;
+    m_playedTime[1] += playedt;
+    m_playedTime[2] += playedt;
 
     // active cheats
     uint32 active_cheats = PLAYER_CHEAT_NONE;
@@ -1709,7 +1709,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     ss << uint32(m_isResting) << ", " << uint32(m_restState) << ", " << uint32(m_restAmount) << ", ";
 
-    ss << "'" << uint32(m_playedtime[0]) << " " << uint32(m_playedtime[1]) << " " << uint32(playedt) << "', ";
+    ss << "'" << uint32(m_playedTime[0]) << " " << uint32(m_playedTime[1]) << " " << uint32(playedt) << "', ";
 
     ss << uint32(m_deathState) << ", " << m_talentresettimes << ", "  << m_FirstLogin << ", " << login_flags << ", " << m_arenaPoints << ", " << (uint32)m_stableSlotCount << ", ";
 
@@ -1856,7 +1856,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     ss << ", ";
 
-    ss << uint32(this->HasWonRbgToday()) << ", " << uint32(m_dungeonDifficulty) << ", " << uint32(m_raidDifficulty);
+    ss << uint32(this->hasWonRbgToday()) << ", " << uint32(m_dungeonDifficulty) << ", " << uint32(m_raidDifficulty);
     ss << ")";
 
     if (bNewCharacter)
@@ -2234,8 +2234,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
 
     std::string tmpStr = field[46].GetString();
-    m_playedtime[0] = (uint32)atoi(strtok((char*)tmpStr.c_str(), " "));
-    m_playedtime[1] = (uint32)atoi(strtok(nullptr, " "));
+    m_playedTime[0] = (uint32)atoi(strtok((char*)tmpStr.c_str(), " "));
+    m_playedTime[1] = (uint32)atoi(strtok(nullptr, " "));
 
     m_deathState = (DeathState)field[47].GetUInt32();
     m_talentresettimes = field[48].GetUInt32();
@@ -2450,7 +2450,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         m_honorPoints = worldConfig.limit.maxHonorPoints;
     }
 
-    RolloverHonor();
+    rolloverHonor();
 
     // Load drunk value and calculate sobering. after 15 minutes logged out, the player will be sober again
     uint32 timediff = (uint32)UNIXTIME - m_timeLogoff;
@@ -2584,9 +2584,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     // Load player's RGB daily data
     if (field[93].GetUInt32() == 1)
-        m_bgIsRbgWon = true;
+        m_hasWonRbgToday = true;
     else
-        m_bgIsRbgWon = false;
+        m_hasWonRbgToday = false;
 
     m_dungeonDifficulty = field[94].GetUInt8();
     m_raidDifficulty = field[95].GetUInt8();
@@ -2756,18 +2756,6 @@ void Player::SetPersistentInstanceId(uint32 mapId, uint8 difficulty, uint32 inst
     CharacterDatabase.Execute("INSERT INTO instanceids (playerguid, mapid, mode, instanceid) VALUES (%u, %u, %u, %u)", m_playerInfo->guid, mapId, difficulty, instanceId);
 }
 
-void Player::RolloverHonor()
-{
-    uint32 current_val = (g_localTime.tm_year << 16) | g_localTime.tm_yday;
-    if (current_val != m_honorRolloverTime)
-    {
-        m_honorRolloverTime = current_val;
-        m_honorYesterday = m_honorToday;
-        m_killsYesterday = m_killsToday;
-        m_honorToday = m_killsToday = 0;
-    }
-}
-
 void Player::_LoadQuestLogEntry(QueryResult* result)
 {
     for (uint8_t slot = 0; slot < MAX_QUEST_SLOT; ++slot)
@@ -2905,7 +2893,7 @@ void Player::OnPushToWorld()
 #endif
 
     // Update PVP Situation
-    LoginPvPSetup();
+    setupPvPOnLogin();
 
     // TODO What is this?
 #ifndef AE_TBC
@@ -3014,7 +3002,7 @@ void Player::OnPushToWorld()
     getMovementManager()->initialize();
 
     // Update PVP Situation
-    LoginPvPSetup();
+    setupPvPOnLogin();
     removePvpFlags(U_FIELD_BYTES_FLAG_UNK2 | U_FIELD_BYTES_FLAG_SANCTUARY);
 
     if (m_playerInfo->lastOnline + 900 < UNIXTIME)    // did we logged out for more than 15 minutes?
@@ -4084,34 +4072,6 @@ uint32 Player::CalcTalentResetCost(uint32 resetnum)
     return resetnum * 50000;
 }
 
-/*! \returns True if player's current battleground was queued for as a random battleground
- *  \sa Player::SetQueuedForRbg */
-bool Player::QueuedForRbg()
-{
-    return this->m_bgIsRbg;
-}
-
-/*! Used to set whether player's current battleground was queued for as a random battleground
- *  \param value Value to assign to m_bgIsRbg
- *  \sa Player::QueuedForRbg */
-void Player::SetQueuedForRbg(bool value)
-{
-    this->m_bgIsRbg = value;
-}
-
-/*! \returns True if player has won a Random Battleground today */
-bool Player::HasWonRbgToday()
-{
-    return this->m_bgIsRbgWon;
-}
-
-/*! Used to set whether a player has won a random battleground today
- *  \param value Value to assign to m_bgIsRbgWon */
-void Player::SetHasWonRbgToday(bool value)
-{
-    this->m_bgIsRbgWon = value;
-}
-
 bool Player::HasSpell(uint32 spell)
 {
     return mSpells.find(spell) != mSpells.end();
@@ -4822,34 +4782,6 @@ void Player::SendMirrorTimer(MirrorTimerTypes Type, uint32 max, uint32 current, 
     GetSession()->SendPacket(SmsgStartMirrorTimer(Type, current, max, regen).serialise().get());
 }
 
-void Player::EventTeleportTaxi(uint32 mapid, float x, float y, float z)
-{
-    if (mapid == 530 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01))
-    {
-        WorldPacket msg(CMSG_SERVER_BROADCAST, 50);
-        msg << uint32(3);
-        msg << GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_BC);
-        msg << uint8(0);
-        m_session->SendPacket(&msg);
-
-        repopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
-        return;
-    }
-    _Relocate(mapid, LocationVector(x, y, z), (mapid == GetMapId() ? false : true), true, 0);
-    ForceZoneUpdate();
-}
-
-void Player::BroadcastMessage(const char* Format, ...)
-{
-    va_list l;
-    va_start(l, Format);
-    char Message[1024];
-    vsnprintf(Message, 1024, Format, l);
-    va_end(l);
-
-    m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(Message)).serialise().get());
-}
-
 float Player::CalcRating(PlayerCombatRating index)
 {
     uint32 level = getLevel();
@@ -4880,129 +4812,6 @@ void Player::ForceZoneUpdate()
     SendInitialWorldstates();
 }
 
-void Player::UpdatePvPArea()
-{
-    auto at = this->GetArea();
-    if (at == nullptr)
-        return;
-
-    if (hasPlayerFlags(PLAYER_FLAG_GM))
-    {
-        if (isPvpFlagSet())
-            removePvpFlag();
-        else
-            StopPvPTimer();
-
-        removeFfaPvpFlag();
-        return;
-    }
-
-    // This is where all the magic happens :P
-    if ((at->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance()) || (at->team == AREAC_HORDE_TERRITORY && isTeamHorde()))
-    {
-        if (!hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE) && !m_pvpTimer)
-        {
-            // I'm flagged and I just walked into a zone of my type. Start the 5min counter.
-            ResetPvPTimer();
-        }
-    }
-    else
-    {
-        //Enemy city check
-        if (at->flags & AREA_CITY_AREA || at->flags & AREA_CITY)
-        {
-            if ((at->team == AREAC_ALLIANCE_TERRITORY && isTeamHorde()) || (at->team == AREAC_HORDE_TERRITORY && isTeamAlliance()))
-            {
-                if (!isPvpFlagSet())
-                    setPvpFlag();
-                else
-                    StopPvPTimer();
-                return;
-            }
-        }
-
-        //fix for zone areas.
-        if (at->zone)
-        {
-            auto at2 = MapManagement::AreaManagement::AreaStorage::GetAreaById(at->zone);
-            if (at2 && ((at2->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance()) || (at2->team == AREAC_HORDE_TERRITORY && isTeamHorde())))
-            {
-                if (!hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE) && !m_pvpTimer)
-                {
-                    // I'm flagged and I just walked into a zone of my type. Start the 5min counter.
-                    ResetPvPTimer();
-                }
-                return;
-            }
-            //enemy territory check
-            if (at2 && (at2->flags & AREA_CITY_AREA || at2->flags & AREA_CITY))
-            {
-                if ((at2->team == AREAC_ALLIANCE_TERRITORY && isTeamHorde()) || (at2->team == AREAC_HORDE_TERRITORY && isTeamAlliance()))
-                {
-                    if (!isPvpFlagSet())
-                        setPvpFlag();
-                    else
-                        StopPvPTimer();
-                    return;
-                }
-            }
-        }
-
-        // I just walked into a sanctuary area
-        // Force remove flag me if I'm not already.
-        if (at->team == AREAC_SANCTUARY || at->flags & AREA_SANCTUARY)
-        {
-            if (isPvpFlagSet())
-                removePvpFlag();
-            else
-                StopPvPTimer();
-
-            removeFfaPvpFlag();
-            setSanctuaryFlag();
-        }
-        else
-        {
-            // if we are not in a sanctuary we don't need this flag
-            removeSanctuaryFlag();
-
-            //contested territory
-            if (sLogonCommHandler.getRealmType() == REALMTYPE_PVP || sLogonCommHandler.getRealmType() == REALMTYPE_RPPVP)
-            {
-                //automatically sets pvp flag on contested territories.
-                if (!isPvpFlagSet())
-                    setPvpFlag();
-                else
-                    StopPvPTimer();
-            }
-
-            if (sLogonCommHandler.getRealmType() == REALMTYPE_NORMAL || sLogonCommHandler.getRealmType() == REALMTYPE_RP)
-            {
-                if (hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE))
-                {
-                    if (!isPvpFlagSet())
-                        setPvpFlag();
-                }
-                else if (!hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE) && isPvpFlagSet() && !m_pvpTimer)
-                {
-                    ResetPvPTimer();
-                }
-            }
-
-            if (at->flags & AREA_PVP_ARENA)            /* ffa pvp arenas will come later */
-            {
-                if (!isPvpFlagSet())
-                    setPvpFlag();
-
-                setFfaPvpFlag();
-            }
-            else
-            {
-                removeFfaPvpFlag();
-            }
-        }
-    }
-}
-
 void Player::BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag)
 {
     for (const auto& iter : getInRangeObjectsSet())
@@ -5020,232 +4829,6 @@ void Player::BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag)
             }
         }
     }
-}
-
-void Player::LoginPvPSetup()
-{
-    // Make sure we know our area ID.
-    _EventExploration();
-
-    auto at = this->GetArea();
-
-    if (at != nullptr && isAlive() && (at->team == AREAC_CONTESTED || (isTeamAlliance() && at->team == AREAC_HORDE_TERRITORY) || (isTeamHorde() && at->team == AREAC_ALLIANCE_TERRITORY)))
-        castSpell(this, PLAYER_HONORLESS_TARGET_SPELL, true);
-
-}
-
-void Player::PvPToggle()
-{
-    if (sLogonCommHandler.getRealmType() == REALMTYPE_NORMAL || sLogonCommHandler.getRealmType() == REALMTYPE_RP)
-    {
-        if (m_pvpTimer > 0)
-        {
-            // Means that we typed /pvp while we were "cooling down". Stop the timer.
-            StopPvPTimer();
-
-            addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-            removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
-
-            if (!isPvpFlagSet())
-                setPvpFlag();
-        }
-        else
-        {
-            if (isPvpFlagSet())
-            {
-                auto at = this->GetArea();
-                if (at && (at->flags & AREA_CITY_AREA || at->flags & AREA_CITY))
-                {
-                    if ((at->team == AREAC_ALLIANCE_TERRITORY && isTeamHorde()) || (at->team == AREAC_HORDE_TERRITORY && isTeamAlliance()))
-                    {
-                    }
-                    else
-                    {
-                        // Start the "cooldown" timer.
-                        ResetPvPTimer();
-                    }
-                }
-                else
-                {
-                    // Start the "cooldown" timer.
-                    ResetPvPTimer();
-                }
-                removePlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-                addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
-            }
-            else
-            {
-                // Move into PvP state.
-                addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-                removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
-
-                StopPvPTimer();
-                setPvpFlag();
-            }
-        }
-    }
-    else if (sLogonCommHandler.getRealmType() == REALMTYPE_PVP || sLogonCommHandler.getRealmType() == REALMTYPE_RPPVP)
-    {
-        auto at = this->GetArea();
-        if (at == nullptr)
-            return;
-
-        // This is where all the magic happens :P
-        if ((at->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance()) || (at->team == AREAC_HORDE_TERRITORY && isTeamHorde()))
-        {
-            if (m_pvpTimer > 0)
-            {
-                // Means that we typed /pvp while we were "cooling down". Stop the timer.
-                StopPvPTimer();
-
-                addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-                removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
-
-                if (!isPvpFlagSet())
-                    setPvpFlag();
-            }
-            else
-            {
-                if (isPvpFlagSet())
-                {
-                    // Start the "cooldown" timer.
-                    ResetPvPTimer();
-
-                    removePlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-                    addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
-                }
-                else
-                {
-                    // Move into PvP state.
-                    addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-                    removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
-
-                    StopPvPTimer();
-                    setPvpFlag();
-                }
-            }
-        }
-        else
-        {
-            if (at->zone)
-            {
-                auto at2 = MapManagement::AreaManagement::AreaStorage::GetAreaById(at->zone);
-                if (at2 && ((at2->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance()) || (at2->team == AREAC_HORDE_TERRITORY && isTeamHorde())))
-                {
-                    if (m_pvpTimer > 0)
-                    {
-                        // Means that we typed /pvp while we were "cooling down". Stop the timer.
-                        StopPvPTimer();
-
-                        addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-                        removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
-
-                        if (!isPvpFlagSet())
-                            setPvpFlag();
-                    }
-                    else
-                    {
-                        if (isPvpFlagSet())
-                        {
-                            // Start the "cooldown" timer.
-                            ResetPvPTimer();
-
-                            removePlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-                            addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
-                        }
-                        else
-                        {
-                            // Move into PvP state.
-                            addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-                            removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
-
-                            StopPvPTimer();
-                            setPvpFlag();
-                        }
-                    }
-                    return;
-                }
-            }
-
-            if (!hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE))
-            {
-                addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-                removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
-            }
-            else
-            {
-                removePlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
-                addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
-            }
-        }
-    }
-}
-
-/*! Increments the player's honor
- *  \param honorPoints Number of honor points to add to the player
- *  \param sendUpdate True if UpdateHonor should be called after applying change
- *  \todo Remove map check (func does not work on map 559, 562, 572) */
-void Player::AddHonor(uint32 honorPoints, bool sendUpdate)
-{
-    if (this->GetMapId() == 559 || this->GetMapId() == 562 || this->GetMapId() == 572)
-        return;
-
-    this->m_honorPoints += honorPoints;
-    this->m_honorToday += honorPoints;
-    if (this->m_honorPoints > worldConfig.limit.maxHonorPoints)
-        this->m_honorPoints = worldConfig.limit.maxHonorPoints;
-
-    if (sendUpdate)
-        this->UpdateHonor();
-}
-
-/*! Updates the honor related fields and sends updated values to the player
- *  \todo Validate whether this function is unsafe to call while not in world */
-void Player::UpdateHonor()
-{
-#if VERSION_STRING != Classic
-    this->setFieldKills(uint32_t(this->m_killsToday | (this->m_killsYesterday << 16)));
-#if VERSION_STRING < Cata
-    this->setContributionToday(this->m_honorToday);
-    this->setContributionYesterday(this->m_honorYesterday);
-
-    this->setHonorCurrency(this->m_honorPoints);
-#endif
-#endif
-    this->setLifetimeHonorableKills(this->m_killsLifetime);
-
-    this->UpdateKnownCurrencies(43308, true); //Honor Points
-}
-
-/*! Increments the player's arena points
-*  \param arenaPoints Number of arena points to add to the player
-*  \param sendUpdate True if UpdateArenaPoints should be called after applying change */
-void Player::AddArenaPoints(uint32 arenaPoints, bool sendUpdate)
-{
-    this->m_arenaPoints += arenaPoints;
-    if (this->m_arenaPoints > worldConfig.limit.maxArenaPoints)
-        this->m_arenaPoints = worldConfig.limit.maxArenaPoints;
-
-    if (sendUpdate)
-        this->UpdateArenaPoints();
-}
-
-/*! Updates the arena point related fields and sends updated values to the player
-*  \todo Validate whether this function is unsafe to call while not in world */
-void Player::UpdateArenaPoints()
-{
-#if VERSION_STRING > Classic
-#if VERSION_STRING < Cata
-    this->setArenaCurrency(this->m_arenaPoints);
-#endif
-#endif
-
-    this->UpdateKnownCurrencies(43307, true);
-}
-
-void Player::ResetPvPTimer()
-{
-    m_pvpTimer = worldConfig.getIntRate(INTRATE_PVPTIMER);
 }
 
 void Player::CompleteLoading()
@@ -5359,8 +4942,8 @@ void Player::CompleteLoading()
     if (isBanned())
     {
         kickFromServer(10000);
-        BroadcastMessage(GetSession()->LocalizedWorldSrv(ServerString::SS_NOT_ALLOWED_TO_PLAY));
-        BroadcastMessage(GetSession()->LocalizedWorldSrv(ServerString::SS_BANNED_FOR_TIME), getBanReason().c_str());
+        broadcastMessage(GetSession()->LocalizedWorldSrv(ServerString::SS_NOT_ALLOWED_TO_PLAY));
+        broadcastMessage(GetSession()->LocalizedWorldSrv(ServerString::SS_BANNED_FOR_TIME), getBanReason().c_str());
     }
 
     if (m_playerInfo->m_Group)
@@ -5982,42 +5565,12 @@ void Player::EventPortToGM(Player* p)
     safeTeleport(p->GetMapId(), p->GetInstanceID(), p->GetPosition());
 }
 
-void Player::SendAreaTriggerMessage(const char* message, ...)
-{
-    va_list ap;
-    va_start(ap, message);
-    char msg[500];
-    vsnprintf(msg, 500, message, ap);
-    va_end(ap);
-
-    m_session->SendPacket(SmsgAreaTriggerMessage(0, msg, 0).serialise().get());
-}
-
 void Player::SoftDisconnect()
 {
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_SOFT_DISCONNECT);
     WorldSession* session = GetSession();
     session->LogoutPlayer(true);
     session->Disconnect();
-}
-
-void Player::SummonRequest(uint32 Requestor, uint32 ZoneID, uint32 MapID, uint32 InstanceID, const LocationVector & Position)
-{
-    m_summonInstanceId = InstanceID;
-    m_summonPos = Position;
-    m_summoner = Requestor;
-    m_summonMapId = MapID;
-
-    m_session->SendPacket(SmsgSummonRequest(Requestor, ZoneID, 120000).serialise().get());
-}
-
-void Player::RemoveFromBattlegroundQueue()
-{
-    if (!m_pendingBattleground)
-        return;
-
-    m_pendingBattleground->RemovePendingPlayer(this);
-    sChatHandler.SystemMessage(m_session, GetSession()->LocalizedWorldSrv(ServerString::SS_BG_REMOVE_QUEUE_INF));
 }
 
 ///\todo check this formular
@@ -6034,54 +5587,6 @@ float Player::GetSkillUpChance(uint16_t id)
         return 0.0f;
 
     return itr->second.GetSkillUpChance();
-}
-
-/*! Calls UpdateHonor and UpdateArenaPoints
- *  \sa Player::UpdateHonor, Player::UpdateArenaPoints */
-void Player::UpdatePvPCurrencies()
-{
-    this->UpdateHonor();
-    this->UpdateArenaPoints();
-}
-
-/*! Fills parameters with reward for winning a random battleground
- *  \param wonBattleground True if the player won the battleground
- *  \param &honorPoints Amount of honor the player would receieve
- *  \param &arenaPoints Number of arena points the player would receive */
-void Player::FillRandomBattlegroundReward(bool wonBattleground, uint32& honorPoints, uint32& arenaPoints)
-{
-    auto honorForSingleKill = HonorHandler::CalculateHonorPointsForKill(this->getLevel(), this->getLevel());
-
-    if (wonBattleground)
-    {
-        if (this->m_bgIsRbgWon)
-        {
-            honorPoints = worldConfig.bg.honorableKillsRbg * honorForSingleKill;
-            arenaPoints = worldConfig.bg.honorableArenaWinRbg;
-        }
-        else
-        {
-            honorPoints = worldConfig.bg.firstRbgHonorValueToday * honorForSingleKill;
-            arenaPoints = worldConfig.bg.firstRbgArenaHonorValueToday;
-        }
-    }
-    else
-    {
-        honorPoints = worldConfig.bg.honorByLosingRbg * honorForSingleKill;
-        arenaPoints = worldConfig.bg.honorByLosingArenaRbg;
-    }
-}
-
-/*! Increments the player's honor and arena points by the reward for winning an rbg
- *  \param wonBattleground True if the player won the battleground
- *  \note This does not set m_wonRbgToday */
-void Player::ApplyRandomBattlegroundReward(bool wonBattleground)
-{
-    uint32 honorPoints, arenaPoints;
-    this->FillRandomBattlegroundReward(wonBattleground, honorPoints, arenaPoints);
-    this->AddHonor(honorPoints, false);
-    this->AddArenaPoints(arenaPoints, false);
-    this->UpdatePvPCurrencies();
 }
 
 //wooot, crappy code rulez.....NOT
@@ -6526,24 +6031,6 @@ void Player::LoadFieldsFromString(const char* string, uint16 /*firstField*/, uin
     }
 }
 
-void Player::SetKnownTitle(RankTitles title, bool set)
-{
-#if VERSION_STRING > Classic
-    if (!set && !HasTitle(title))
-        return;
-
-    const auto index = static_cast<uint8_t>(title / 32);
-    const uint64_t current = getKnownTitles(index);
-
-    if (set)
-        setKnownTitles(index, current | 1ULL << static_cast<uint64_t>((title % 32)));
-    else
-        setKnownTitles(index, current & ~1 << (title % 32));
-
-    m_session->SendPacket(SmsgTitleEarned(title, set ? 1 : 0).serialise().get());
-#endif
-}
-
 void Player::CalcExpertise()
 {
     int32 modifier = 0;
@@ -6608,11 +6095,6 @@ void Player::UpdateKnownCurrencies(uint32 itemId, bool apply)
 #else
     if (itemId == 0 || apply ) { return; }
 #endif
-}
-
-void Player::RemoveItemByGuid(uint64 GUID)
-{
-    this->getItemInterface()->SafeFullRemoveItemByGuid(GUID);
 }
 
 void Player::SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* shapeshift_form, bool active)
@@ -7416,7 +6898,7 @@ void Player::SendInitialLogonPackets()
     m_session->SendPacket(SmsgBindPointUpdate(getBindPosition(), getBindMapId(), getBindZoneId()).serialise().get());
 
     std::vector<uint32_t> tutorials;
-    for (auto tutorial : m_Tutorials)
+    for (auto tutorial : m_tutorials)
         tutorials.push_back(tutorial);
 
     m_session->SendPacket(SmsgTutorialFlags(tutorials).serialise().get());

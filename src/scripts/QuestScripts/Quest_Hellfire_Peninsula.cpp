@@ -138,12 +138,12 @@ public:
             }
             else
             {
-                pPlayer->BroadcastMessage("You are too far away!");
+                pPlayer->broadcastMessage("You are too far away!");
             }
         }
         else
         {
-            pPlayer->BroadcastMessage("Missing required quest : Zeth'Gor Must Burn");
+            pPlayer->broadcastMessage("Missing required quest : Zeth'Gor Must Burn");
         }
     }
 };

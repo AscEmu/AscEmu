@@ -1382,15 +1382,15 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
                 m_target->castSpell(m_target, 58427, true);
         }
 
-        if (p_target && p_target->m_bgHasFlag)
+        if (p_target && p_target->hasBgFlag())
         {
-            if (p_target->m_bg && p_target->m_bg->GetType() == BATTLEGROUND_WARSONG_GULCH)
+            if (const auto battleground = p_target->getBattleground())
             {
-                p_target->m_bg->HookOnFlagDrop(p_target);
-            }
-            if (p_target->m_bg && p_target->m_bg->GetType() == BATTLEGROUND_EYE_OF_THE_STORM)
-            {
-                p_target->m_bg->HookOnFlagDrop(p_target);
+                if (battleground->GetType() == BATTLEGROUND_WARSONG_GULCH)
+                    battleground->HookOnFlagDrop(p_target);
+
+                if (battleground->GetType() == BATTLEGROUND_EYE_OF_THE_STORM)
+                    battleground->HookOnFlagDrop(p_target);
             }
         }
 
@@ -1517,11 +1517,11 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
 
                         p_target->dismount();
 
-                        if (p_target->m_bg && p_target->m_bgHasFlag)
+                        if (p_target->getBattleground() && p_target->hasBgFlag())
                         {
-                            if (p_target->m_bg->GetType() == BATTLEGROUND_WARSONG_GULCH || p_target->m_bg->GetType() == BATTLEGROUND_EYE_OF_THE_STORM)
+                            if (p_target->getBattleground()->GetType() == BATTLEGROUND_WARSONG_GULCH || p_target->getBattleground()->GetType() == BATTLEGROUND_EYE_OF_THE_STORM)
                             {
-                                p_target->m_bg->HookOnFlagDrop(p_target);
+                                p_target->getBattleground()->HookOnFlagDrop(p_target);
                             }
                         }
                     }
@@ -2237,10 +2237,10 @@ void Aura::SpellAuraModEffectImmunity(AuraEffectModifier* /*aurEff*/, bool apply
         if (m_spellInfo->getId() == 23333 || m_spellInfo->getId() == 23335 || m_spellInfo->getId() == 34976)
         {
             Player* plr = GetPlayerCaster();
-            if (plr == nullptr || plr->m_bg == nullptr)
+            if (plr == nullptr || plr->getBattleground() == nullptr)
                 return;
 
-            plr->m_bg->HookOnFlagDrop(plr);
+            plr->getBattleground()->HookOnFlagDrop(plr);
 
         }
     }
@@ -3142,8 +3142,8 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
 
         //p_target->AdvanceSkillLine(762); // advance riding skill
 
-        if (p_target->m_bg)
-            p_target->m_bg->HookOnMount(p_target);
+        if (p_target->getBattleground())
+            p_target->getBattleground()->HookOnMount(p_target);
 
         p_target->dismount();
 
@@ -4611,9 +4611,9 @@ void Aura::SpellAuraNoPVPCredit(AuraEffectModifier* /*aurEff*/, bool apply)
         return;
 
     if (apply)
-        p_target->m_honorless++;
+        p_target->incrementHonorless();
     else
-        p_target->m_honorless--;
+        p_target->decrementHonorless();
 }
 
 void Aura::SpellAuraModHealthRegInCombat(AuraEffectModifier* aurEff, bool apply)

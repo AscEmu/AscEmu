@@ -5946,10 +5946,10 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
         if (plrOwner != nullptr)
         {
             // Battleground damage score
-            if (plrOwner->m_bg != nullptr && GetMapMgr() == victim->GetMapMgr())
+            if (plrOwner->getBattleground() && GetMapMgr() == victim->GetMapMgr())
             {
                 plrOwner->m_bgScore.DamageDone += damage;
-                plrOwner->m_bg->UpdatePvPData();
+                plrOwner->getBattleground()->UpdatePvPData();
             }
         }
 
@@ -6036,12 +6036,12 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
 
         if (attacker->getPlayerOwner() != nullptr)
         {
-            if (attacker->getPlayerOwner()->m_bg != nullptr)
+            if (attacker->getPlayerOwner()->getBattleground())
             {
-                attacker->getPlayerOwner()->m_bg->HookOnUnitKill(attacker->getPlayerOwner(), this);
+                attacker->getPlayerOwner()->getBattleground()->HookOnUnitKill(attacker->getPlayerOwner(), this);
 
                 if (isPlayer())
-                    attacker->getPlayerOwner()->m_bg->HookOnPlayerKill(attacker->getPlayerOwner(), dynamic_cast<Player*>(this));
+                    attacker->getPlayerOwner()->getBattleground()->HookOnPlayerKill(attacker->getPlayerOwner(), dynamic_cast<Player*>(this));
             }
 
             if (isPlayer())
@@ -6655,10 +6655,10 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
         if (plrOwner != nullptr)
         {
             // Battleground damage score
-            if (plrOwner->m_bg != nullptr && GetMapMgr() == attacker->GetMapMgr())
+            if (plrOwner->getBattleground() && GetMapMgr() == attacker->GetMapMgr())
             {
                 plrOwner->m_bgScore.DamageDone += damage;
-                plrOwner->m_bg->UpdatePvPData();
+                plrOwner->getBattleground()->UpdatePvPData();
             }
         }
 
@@ -6725,15 +6725,15 @@ uint32_t Unit::_handleBatchHealing(HealthBatchEvent const* batch, uint32_t* abso
     *absorbedHeal = 0;
 
     const auto healer = batch->caster;
-    if (healer != nullptr)
+    if (healer )
     {
         const auto plrOwner = healer->getPlayerOwner();
 
         // Update battleground score
-        if (plrOwner != nullptr && plrOwner->m_bg != nullptr && plrOwner->GetMapMgr() == GetMapMgr())
+        if (plrOwner && plrOwner->getBattleground() && plrOwner->GetMapMgr() == GetMapMgr())
         {
             plrOwner->m_bgScore.HealingDone += healing;
-            plrOwner->m_bg->UpdatePvPData();
+            plrOwner->getBattleground()->UpdatePvPData();
         }
     }
 

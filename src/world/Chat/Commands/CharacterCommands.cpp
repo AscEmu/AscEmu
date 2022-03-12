@@ -605,11 +605,11 @@ bool ChatHandler::HandleCharAddHonorKillCommand(const char* args, WorldSession* 
     GreenSystemMessage(player_target->GetSession(), "%s added %u honor kill points to your character.", m_session->GetPlayer()->getName().c_str(), kill_amount);
     sGMLog.writefromsession(m_session, "added %u honor kill points to character %s", kill_amount, player_target->getName().c_str());
 
-    player_target->m_killsToday += kill_amount;
-    player_target->m_killsLifetime += kill_amount;
+    player_target->incrementKills(kill_amount);
+
 #if VERSION_STRING != Classic
-    player_target->setFieldKills(uint32_t(player_target->m_killsToday | (player_target->m_killsYesterday << 16)));
-    player_target->setLifetimeHonorableKills(player_target->m_killsLifetime);
+    player_target->setFieldKills(uint32_t(player_target->getKillsToday() | (player_target->getKillsYesterday() << 16)));
+    player_target->setLifetimeHonorableKills(player_target->getKillsLifetime());
 #endif
 
     return true;
@@ -1665,11 +1665,11 @@ bool ChatHandler::HandleCharSetTitleCommand(const char* args, WorldSession* m_se
     }
     else if (title > 0)
     {
-        player_target->SetKnownTitle(static_cast<RankTitles>(title), true);
+        player_target->setKnownPvPTitle(static_cast<RankTitles>(title), true);
     }
     else
     {
-        player_target->SetKnownTitle(static_cast<RankTitles>(-title), false);
+        player_target->setKnownPvPTitle(static_cast<RankTitles>(-title), false);
     }
 
 #if VERSION_STRING > Classic
@@ -1714,7 +1714,7 @@ bool ChatHandler::HandleCharSetForceRenameCommand(const char* args, WorldSession
     }
     else
     {
-        plr->login_flags = LOGIN_FORCED_RENAME;
+        plr->setLoginFlag(LOGIN_FORCED_RENAME);
         plr->SaveToDB(false);
         BlueSystemMessage(plr->GetSession(), "%s forced your character to be renamed next logon.", m_session->GetPlayer()->getName().c_str());
     }
@@ -1747,7 +1747,7 @@ bool ChatHandler::HandleCharSetCustomizeCommand(const char* args, WorldSession* 
     }
     else
     {
-        plr->login_flags = LOGIN_CUSTOMIZE_LOOKS;
+        plr->setLoginFlag(LOGIN_CUSTOMIZE_LOOKS);
         plr->SaveToDB(false);
         BlueSystemMessage(plr->GetSession(), "%s flagged your character for customization at next login.", m_session->GetPlayer()->getName().c_str());
     }
@@ -1779,7 +1779,7 @@ bool ChatHandler::HandleCharSetFactionChangeCommand(const char* args, WorldSessi
     }
     else
     {
-        plr->login_flags = LOGIN_CUSTOMIZE_FACTION;
+        plr->setLoginFlag(LOGIN_CUSTOMIZE_FACTION);
         plr->SaveToDB(false);
         BlueSystemMessage(plr->GetSession(), "%s flagged your character for a faction change at next login.", m_session->GetPlayer()->getName().c_str());
     }
@@ -1811,7 +1811,7 @@ bool ChatHandler::HandleCharSetRaceChangeCommand(const char* args, WorldSession*
     }
     else
     {
-        plr->login_flags = LOGIN_CUSTOMIZE_RACE;
+        plr->setLoginFlag(LOGIN_CUSTOMIZE_RACE);
         plr->SaveToDB(false);
         BlueSystemMessage(plr->GetSession(), "%s flagged your character for a race change at next login.", m_session->GetPlayer()->getName().c_str());
     }
@@ -1904,9 +1904,9 @@ bool ChatHandler::HandleCharListKillsCommand(const char* /*args*/, WorldSession*
         return true;
 
     SystemMessage(m_session, "==== %s kills ====", player_target->getName().c_str());
-    SystemMessage(m_session, "All Kills: %u", player_target->m_killsLifetime);
-    SystemMessage(m_session, "Kills today: %u", player_target->m_killsToday);
-    SystemMessage(m_session, "Kills yesterday: %u", player_target->m_killsYesterday);
+    SystemMessage(m_session, "All Kills: %u", player_target->getKillsLifetime());
+    SystemMessage(m_session, "Kills today: %u", player_target->getKillsToday());
+    SystemMessage(m_session, "Kills yesterday: %u", player_target->getKillsYesterday());
 
     return true;
 }
