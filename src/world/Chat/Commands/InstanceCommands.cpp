@@ -85,7 +85,7 @@ bool ChatHandler::HandleExitInstanceCommand(const char* /*args*/, WorldSession* 
 {
     BlueSystemMessage(m_session, "Attempting to exit from instance...");
 
-    bool result = m_session->GetPlayer()->ExitInstance();
+    bool result = m_session->GetPlayer()->exitInstance();
     if (!result)
         RedSystemMessage(m_session, "Entry points not found.");
     else
@@ -231,7 +231,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
                 PlayerInstanceMap::iterator itr = plr->getPlayerInfo()->savedInstanceIds[difficulty].find(instance->m_mapId);
                 if (itr == plr->getPlayerInfo()->savedInstanceIds[difficulty].end() || (*itr).second != instance->m_instanceId)
                     continue;
-                plr->SetPersistentInstanceId(instance->m_mapId, difficulty, 0);
+                plr->setPersistentInstanceId(instance->m_mapId, difficulty, 0);
                 SystemMessage(m_session, "Instance with id %u (%s) is persistent and will only be revoked from player.", instanceId, GetDifficultyString(difficulty));
                 foundSomething = true;
             }

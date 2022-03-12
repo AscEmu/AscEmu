@@ -382,7 +382,7 @@ Vehicle* Vehicle::removePassenger(Unit* unit)
 
         // send null spells if needed
         static_cast<Player*>(unit)->SendEmptyPetSpellList();
-        static_cast<Player*>(unit)->SetMover(unit);
+        static_cast<Player*>(unit)->setMover(unit);
 
         // set old Faction
         if (getBase()->isCreature())
@@ -587,7 +587,7 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
         getBase()->BuildPetSpellList(spells);
         passenger->SendPacket(&spells);
 
-        static_cast<Player*>(passenger)->SetMover(getBase());
+        static_cast<Player*>(passenger)->setMover(getBase());
 
         // set Correct Faction
         if (getBase()->isCreature())

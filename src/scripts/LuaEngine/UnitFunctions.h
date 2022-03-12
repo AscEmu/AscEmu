@@ -3141,7 +3141,7 @@ public:
     static int ResurrectPlayer(lua_State* /*L*/, Unit* ptr)
     {
         TEST_PLAYER()
-        static_cast<Player*>(ptr)->RemoteRevive();
+        static_cast<Player*>(ptr)->setResurrect();
         return 0;
     }
 
@@ -5257,7 +5257,7 @@ public:
 #if VERSION_STRING > TBC
         int32_t achievementID = static_cast<int32_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
-        if(plr->GetAchievementMgr().GMCompleteAchievement(nullptr, achievementID))
+        if(plr->getAchievementMgr().GMCompleteAchievement(nullptr, achievementID))
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -5270,7 +5270,7 @@ public:
         TEST_PLAYER()
 #if VERSION_STRING > TBC
         int32_t achievementID = static_cast<int32_t>(luaL_checkinteger(L, 1));
-        static_cast<Player*>(ptr)->GetAchievementMgr().GMResetAchievement(achievementID);
+        static_cast<Player*>(ptr)->getAchievementMgr().GMResetAchievement(achievementID);
 #endif
         return 0;
     }
@@ -5280,7 +5280,7 @@ public:
         TEST_PLAYER()
 #if VERSION_STRING > TBC
         uint32_t achievementID = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        lua_pushboolean(L, static_cast<Player*>(ptr)->GetAchievementMgr().HasCompleted(achievementID) ? 1 : 0);
+        lua_pushboolean(L, static_cast<Player*>(ptr)->getAchievementMgr().HasCompleted(achievementID) ? 1 : 0);
 #endif
         return 1;
     }
@@ -5931,7 +5931,7 @@ public:
     {
         TEST_PLAYER()
         uint32_t id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        static_cast<Player*>(ptr)->SendCinematicCamera(id);
+        static_cast<Player*>(ptr)->sendCinematicCamera(id);
         return 0;
     }
 
@@ -5994,7 +5994,7 @@ public:
         uint32_t field = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 
-        static_cast<Player*>(ptr)->SendWorldStateUpdate(field, value);
+        static_cast<Player*>(ptr)->sendWorldStateUpdate(field, value);
         return 0;
     }
 };

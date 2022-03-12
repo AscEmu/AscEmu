@@ -392,7 +392,7 @@ void WorldSession::sendTrainerList(Creature* creature)
     if (trainer == nullptr)
         return;
 
-    if (!_player->CanTrainAt(trainer))
+    if (!_player->canTrainAt(trainer))
     {
         GossipMenu::sendSimpleMenu(creature->getGuid(), trainer->Cannot_Train_GossipTextId, _player);
         return;
@@ -679,7 +679,7 @@ void WorldSession::handleBuyBankSlotOpcode(WorldPacket& recvPacket)
     _player->setBankSlots(slots);
     _player->modCoinage(-static_cast<int32_t>(price));
 #if VERSION_STRING > TBC
-    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT, 1, 0, 0);
+    _player->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT, 1, 0, 0);
 #endif
 
 }

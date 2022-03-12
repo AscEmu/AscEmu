@@ -136,11 +136,11 @@ bool WorldSession::isHackDetectedInMovementData(uint16_t opcode)
         // get the "normal speeds" not the changed ones!
         float speed = (_player->flying_aura) ? _player->getSpeedRate(TYPE_FLY, false) : (_player->getSpeedRate(TYPE_SWIM, false) > _player->getSpeedRate(TYPE_RUN, false)) ? _player->getSpeedRate(TYPE_SWIM, false) : _player->getSpeedRate(TYPE_RUN, false);
 
-        _player->SDetector->AddSample(sessionMovementInfo.position.x, sessionMovementInfo.position.y, Util::getMSTime(), speed);
+        _player->m_speedCheatDetector->AddSample(sessionMovementInfo.position.x, sessionMovementInfo.position.y, Util::getMSTime(), speed);
 
-        if (_player->SDetector->IsCheatDetected())
+        if (_player->m_speedCheatDetector->IsCheatDetected())
         {
-            _player->SDetector->ReportCheater(_player);
+            _player->m_speedCheatDetector->ReportCheater(_player);
             return true;
         }
     }
@@ -247,7 +247,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     {
         _player->blinked = false;
         _player->m_fallDisabledUntil = UNIXTIME + 5;
-        _player->SpeedCheatDelay(2000);
+        _player->speedCheatDelay(2000);
     }
     else
     {
@@ -539,8 +539,8 @@ void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
         _player->AddToWorld();
     }
 
-    _player->ResetTimeSync();
-    _player->SendTimeSync();
+    _player->resetTimeSync();
+    _player->sendTimeSync();
 }
 
 void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
@@ -571,7 +571,7 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
         }
 
         _player->setTransferStatus(TRANSFER_NONE);
-        _player->SpeedCheatReset();
+        _player->speedCheatReset();
 
         for (auto summon : _player->getSummons())
             summon->SetPosition(_player->GetPositionX() + 2, _player->GetPositionY() + 2, _player->GetPositionZ(), M_PI_FLOAT);

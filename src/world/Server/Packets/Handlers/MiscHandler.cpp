@@ -445,7 +445,7 @@ void WorldSession::handleGameobjReportUseOpCode(WorldPacket& recvPacket)
         return;
 
     sQuestMgr.OnGameObjectActivate(_player, gameobject);
-    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT, gameobject->getEntry(), 0, 0);
+    _player->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT, gameobject->getEntry(), 0, 0);
 
 #endif
 }
@@ -701,7 +701,7 @@ void WorldSession::handleZoneupdate(WorldPacket& recvPacket)
         return;
 
     sWeatherMgr.SendWeather(_player);
-    _player->ZoneUpdate(srlPacket.zoneId);
+    _player->zoneUpdate(srlPacket.zoneId);
     _player->getItemInterface()->EmptyBuyBack();
 }
 
@@ -1608,8 +1608,8 @@ void WorldSession::handleBarberShopResult(WorldPacket& recvPacket)
     _player->modCoinage(-static_cast<int32_t>(cost));
 
     _player->setStandState(STANDSTATE_STAND);
-    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_VISIT_BARBER_SHOP, 1, 0, 0);
-    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_AT_BARBER, cost, 0, 0);
+    _player->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_VISIT_BARBER_SHOP, 1, 0, 0);
+    _player->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_AT_BARBER, cost, 0, 0);
 }
 #endif
 

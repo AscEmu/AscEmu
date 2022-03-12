@@ -530,7 +530,7 @@ public:
 public:
     void setLocationWithoutUpdate(LocationVector& location);
 
-    void setPhase(uint8_t command = PHASE_SET, uint32_t newPhase = 1);
+    virtual void setPhase(uint8_t command = PHASE_SET, uint32_t newPhase = 1);
 
     bool isWithinCombatRange(Unit* obj, float dist2compare);
     bool isWithinMeleeRange(Unit* obj) { return isWithinMeleeRangeAt(GetPosition(), obj); }

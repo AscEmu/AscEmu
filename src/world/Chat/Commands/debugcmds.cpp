@@ -757,7 +757,7 @@ bool ChatHandler::HandleUpdateWorldStateCommand(const char *args, WorldSession* 
         return true;
     }
 
-    session->GetPlayer()->SendWorldStateUpdate(field, state);
+    session->GetPlayer()->sendWorldStateUpdate(field, state);
 
     return true;
 }

@@ -1057,8 +1057,8 @@ void Spell::finish(bool successful)
                     auto* const targetPlayer = getUnitCaster()->GetMapMgrPlayer(target.first);
                     if (targetPlayer != nullptr)
                     {
-                        targetPlayer->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, getSpellInfo()->getId(), 0, 0, getCaster());
-                        targetPlayer->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2, getSpellInfo()->getId(), 0, 0, getCaster());
+                        targetPlayer->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, getSpellInfo()->getId(), 0, 0, getCaster());
+                        targetPlayer->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2, getSpellInfo()->getId(), 0, 0, getCaster());
                     }
                 }
 #endif
@@ -1078,7 +1078,7 @@ void Spell::finish(bool successful)
                 if (uniqueHittedTargets.size() == 1)
                     spellTarget = getPlayerCaster()->GetMapMgrObject(uniqueHittedTargets.front().first);
 
-                getPlayerCaster()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2, getSpellInfo()->getId(), 0, 0, spellTarget);
+                getPlayerCaster()->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2, getSpellInfo()->getId(), 0, 0, spellTarget);
 #endif
             }
         }

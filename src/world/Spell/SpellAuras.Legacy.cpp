@@ -873,7 +873,7 @@ void Aura::SpellAuraModConfuse(AuraEffectModifier* aurEff, bool apply)
             // this is a hackfix to stop player from moving -> see AIInterface::_UpdateMovement() Wander AI for more info
             p_target->sendClientControlPacket(m_target, 0);
 
-            p_target->SpeedCheatDelay(getTimeLeft());
+            p_target->speedCheatDelay(getTimeLeft());
         }
     }
     else if ((m_flags & (1 << aurEff->getEffectIndex())) == 0)   //add these checks to mods where immunity can cancel only 1 mod and not whole spell
@@ -881,7 +881,7 @@ void Aura::SpellAuraModConfuse(AuraEffectModifier* aurEff, bool apply)
         m_target->setControlled(false, UNIT_STATE_CONFUSED);
         m_target->removeUnitFlags(UNIT_FLAG_CONFUSED);
         if (p_target)
-            p_target->SpeedCheatReset();
+            p_target->speedCheatReset();
 
         if (p_target)
         {
@@ -1003,7 +1003,7 @@ void Aura::SpellAuraModFear(AuraEffectModifier* aurEff, bool apply)
             // this is a hackfix to stop player from moving -> see AIInterface::_UpdateMovement() Fear AI for more info
             p_target->sendClientControlPacket(m_target, 0);
 
-            p_target->SpeedCheatDelay(getTimeLeft());
+            p_target->speedCheatDelay(getTimeLeft());
         }
     }
     else if ((m_flags & (1 << aurEff->getEffectIndex())) == 0)   //add these checks to mods where immunity can cancel only 1 mod and not whole spell
@@ -1021,7 +1021,7 @@ void Aura::SpellAuraModFear(AuraEffectModifier* aurEff, bool apply)
                 p_target->sendClientControlPacket(m_target, 1);
 
                 m_target->setAItoUse(false);
-                p_target->SpeedCheatReset();
+                p_target->speedCheatReset();
             }
             else
             {
@@ -5726,7 +5726,7 @@ void Aura::SpellAuraModPossessPet(AuraEffectModifier* /*aurEff*/, bool apply)
             if (apply)
             {
                 pCaster->Possess(m_target);
-                pCaster->SpeedCheatDelay(getTimeLeft());
+                pCaster->speedCheatDelay(getTimeLeft());
             }
             else
             {

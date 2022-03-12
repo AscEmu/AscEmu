@@ -1926,7 +1926,7 @@ void Unit::handleFall(MovementInfo const& movementInfo)
 
     bool disabledUntil = false;
     if (isPlayer())
-        disabledUntil = !dynamic_cast<Player*>(this)->m_cheats.hasGodModeCheat && UNIXTIME >= dynamic_cast<Player*>(this)->m_fallDisabledUntil;
+        disabledUntil = !dynamic_cast<Player*>(this)->m_cheats.hasGodModeCheat && UNIXTIME >= dynamic_cast<Player*>(this)->getFallDisabledUntil();
 
     if (isAlive() && !bInvincible && (falldistance > 12) && !m_noFallDamage && disabledUntil)
     {
@@ -1940,7 +1940,7 @@ void Unit::handleFall(MovementInfo const& movementInfo)
         {
             if (isPlayer())
             {
-                dynamic_cast<Player*>(this)->GetAchievementMgr().UpdateAchievementCriteria(
+                dynamic_cast<Player*>(this)->getAchievementMgr().UpdateAchievementCriteria(
                     ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING,
                     falldistance,
                     dynamic_cast<Player*>(this)->getDrunkStateByValue(dynamic_cast<Player*>(this)->getServersideDrunkValue()),
@@ -6052,7 +6052,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
             {
                 attacker->getPlayerOwner()->onKillUnitReputation(this, false);
 #ifdef FT_ACHIEVEMENTS
-                attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLING_BLOW, attacker->GetMapId(), 0, 0);
+                attacker->getPlayerOwner()->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLING_BLOW, attacker->GetMapId(), 0, 0);
 #endif
             }
 
@@ -6062,8 +6062,8 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                 if (isPlayer())
                 {
 #ifdef FT_ACHIEVEMENTS
-                    attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, attacker->getPlayerOwner()->getAreaId(), 1, 0);
-                    attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL, 1, 0, 0);
+                    attacker->getPlayerOwner()->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, attacker->getPlayerOwner()->getAreaId(), 1, 0);
+                    attacker->getPlayerOwner()->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL, 1, 0, 0);
 #endif
                     HonorHandler::OnPlayerKilled(attacker->getPlayerOwner(), dynamic_cast<Player*>(this));
                 }
@@ -6178,8 +6178,8 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                         }
                         else
                         {
-                            tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
-                            tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
+                            tagger->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
+                            tagger->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
                         }
 #endif
                     }
@@ -6188,8 +6188,8 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
 #ifdef FT_ACHIEVEMENTS
             else if (attacker->getPlayerOwner() != nullptr && isCritter())
             {
-                attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
-                attacker->getPlayerOwner()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
+                attacker->getPlayerOwner()->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
+                attacker->getPlayerOwner()->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
             }
 #endif
         }

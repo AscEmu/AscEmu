@@ -536,6 +536,8 @@ public:
     uint32_t m_underwaterState = 0;
     uint32_t m_underwaterLastDamage = Util::getMSTime();
 
+    void handleKnockback(Object* caster, float horizontal, float vertical) override;
+
     bool teleport(const LocationVector& vec, MapMgr* map);
     void eventTeleport(uint32_t mapId, LocationVector position, uint32_t instanceId = 0);
 
@@ -552,6 +554,13 @@ public:
 
     void sendTeleportPacket(LocationVector position);
     void sendTeleportAckPacket(LocationVector position);
+
+    void indoorCheckUpdate(uint32_t time);
+
+    time_t getFallDisabledUntil() const;
+    void setFallDisabledUntil(time_t time);
+
+    void setMapEntryPoint(uint32_t mapId);
 
 protected:
     bool m_isMoving = false;
@@ -571,6 +580,30 @@ protected:
     uint8_t m_transferStatus = TRANSFER_NONE;
     uint32_t m_teleportState = 1;
 
+    uint32_t m_indoorCheckTimer = 0;
+
+    time_t m_fallDisabledUntil = 0;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Instance, Zone, Area, Phase
+public:
+    void setPhase(uint8_t command = PHASE_SET, uint32_t newPhase = 1) override;
+
+    void zoneUpdate(uint32_t zoneId);
+    void forceZoneUpdate();
+
+    bool hasAreaExplored(DBC::Structures::AreaTableEntry const*);
+    bool hasOverlayUncovered(uint32_t overlayId);
+    void eventExploration();
+
+    uint32_t m_explorationTimer = Util::getMSTime();
+
+    void ejectFromInstance();
+    bool exitInstance();
+    uint32_t getPersistentInstanceId(uint32_t mapId, uint8_t difficulty);
+    void setPersistentInstanceId(Instance* instance);
+    void setPersistentInstanceId(uint32_t mapId, uint8_t difficulty, uint32_t instanceId);
+private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Basic
 public:
@@ -617,6 +650,8 @@ public:
 
     uint32_t* getPlayedTime();
 
+    CachedCharacterInfo* getPlayerInfo() const;
+
 private:
     LevelInfo* m_levelInfo = nullptr;
 
@@ -637,10 +672,10 @@ private:
 
     //\note: 0 = played on level, 1 = played total, 2 = played session
     uint32_t m_playedTime[3] = { 0, 0, static_cast<uint32_t>(UNIXTIME) };
-
     uint32_t m_onlineTime = static_cast<uint32_t>(UNIXTIME);
-
     uint32_t m_timeLogoff = 0;
+
+    CachedCharacterInfo* m_playerInfo = nullptr;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Stats
@@ -781,8 +816,15 @@ public:
 
     void activateTalentSpec(uint8_t specId);
 
+    uint32_t getTalentResetsCount() const;
+    void setTalentResetsCount(uint32_t value);
+
+    uint32_t calcTalentResetCost(uint32_t resetnum) const;
+
 private:
     uint32_t m_talentPointsFromQuests = 0;
+    uint32_t m_talentResetsCount = 0;
+    bool m_resetTalents = false;
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Tutorials
@@ -902,6 +944,8 @@ public:
     // Player's item storage
     ItemInterface* getItemInterface() const;
 
+    void removeTempItemEnchantsOnArena();
+
 private:
     ItemInterface* m_itemInterface = nullptr;
 
@@ -947,6 +991,9 @@ public:
     void setResurrectInstanceId(uint32_t id);
     void setResurrectMapId(uint32_t id);
     void setResurrectPosition(LocationVector position);
+
+    void setFullHealthMana();
+    void setResurrect();
 
 private:
     struct CorpseData
@@ -1093,9 +1140,13 @@ public:
     void removeArenaPoints(uint32_t arenaPoints, bool sendUpdate);
     void updateArenaPoints();
 
+    void setInviteArenaTeamId(uint32_t id);
+    uint32_t getInviteArenaTeamId() const;
+
 private:
     ArenaTeam* m_arenaTeams[NUM_ARENA_TEAM_TYPES] = {nullptr};
     uint32_t m_arenaPoints = 0;
+    uint32_t m_inviteArenaTeamId = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Honor
@@ -1302,7 +1353,13 @@ private:
     mutable std::mutex m_mutexIgnoreList;
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Hackdetection
+    // Hack/Cheat Detection
+public:
+    void speedCheatDelay(uint32_t delay);
+    void speedCheatReset();
+
+private:
+    SpeedCheatDetector* m_speedCheatDetector;
 
     //Speed
     //Fly
@@ -1393,6 +1450,22 @@ public:
 
     void tagUnit(Object* object);
 
+#if VERSION_STRING > TBC
+    AchievementMgr& getAchievementMgr();
+#endif
+
+    void sendUpdateDataToSet(ByteBuffer* groupBuf, ByteBuffer* nonGroupBuf, bool sendToSelf);
+    void sendWorldStateUpdate(uint32_t worldState, uint32_t value);
+
+    bool canBuyAt(MySQLStructure::VendorRestrictions const* vendor);
+    bool canTrainAt(Trainer* trainer);
+
+    void sendCinematicCamera(uint32_t id);
+
+    void setMover(Unit* target);
+
+    void resetTimeSync();
+    void sendTimeSync();
 
 private:
     uint16_t m_spellAreaUpdateTimer = 1000;
@@ -1404,6 +1477,15 @@ private:
 
     std::vector<uint32_t> m_gmPlayerTargetList;
     mutable std::mutex m_lockGMTargetList;
+
+#if VERSION_STRING > TBC
+    AchievementMgr m_achievementMgr = this;
+#endif
+
+    uint32 m_timeSyncCounter = 0;
+    uint32 m_timeSyncTimer = 0;
+    uint32 m_timeSyncClient = 0;
+    uint32 m_timeSyncServer = 0;
 
 #if VERSION_STRING > WotLK
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -1890,11 +1972,6 @@ public:
         void SetHealthFromSpell(uint32 value) { m_healthfromspell = value;}
         void SetManaFromSpell(uint32 value) { m_manafromspell = value;}
 
-        uint32 CalcTalentResetCost(uint32 resetnum);
-        
-        uint32 GetTalentResetTimes() { return m_talentresettimes; }
-        void SetTalentResetTimes(uint32 value) { m_talentresettimes = value; }
-
         uint32 m_nextSave;
 
         int m_lifetapbonus = 0;         //warlock spell related
@@ -1993,48 +2070,11 @@ public:
         uint32 m_lastSeenWeather = 0;
         std::set<Object*> m_visibleFarsightObjects;
 
-    //////////////////////////////////////////////////////////////////////////////////////////
     // PVP/BG
-    public:
         uint32 GetMaxPersonalRating();
 
     //movement/position
-
-    public:
-
         void _Relocate(uint32 mapid, const LocationVector& v, bool sendpending, bool force_new_world, uint32 instance_id);
-        void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
-        void SpeedCheatDelay(uint32 ms_delay);
-        void SpeedCheatReset();
-        void ZoneUpdate(uint32 ZoneId);
-        void EjectFromInstance();
-        void ForceZoneUpdate();
-        bool HasAreaExplored(::DBC::Structures::AreaTableEntry const*);
-        bool HasOverlayUncovered(uint32 overlayID);
-        uint32 m_explorationTimer = Util::getMSTime();
-        bool ExitInstance();
-        uint32 GetPersistentInstanceId(uint32 mapId, uint8 difficulty)
-        {
-            if (mapId >= MAX_NUM_MAPS || difficulty >= InstanceDifficulty::MAX_DIFFICULTY || m_playerInfo == NULL)
-                return 0;
-
-            std::lock_guard<std::mutex> lock(m_playerInfo->savedInstanceIdsLock);
-            PlayerInstanceMap::iterator itr = m_playerInfo->savedInstanceIds[difficulty].find(mapId);
-            if (itr == m_playerInfo->savedInstanceIds[difficulty].end())
-            {
-                return 0;
-            }
-
-            return (*itr).second;
-        }
-        void SetPersistentInstanceId(Instance* pInstance);
-        void SetPersistentInstanceId(uint32 mapId, uint8 difficulty, uint32 instanceId);
-        
-        void handleKnockback(Object* caster, float horizontal, float vertical) override;
-        void SaveEntryPoint(uint32 mapId);
-
-        time_t m_fallDisabledUntil = 0;
-
 
         std::map<uint32, std::set<uint32> > SummonSpells;
         std::map<uint32, std::map<SpellInfo const*, uint16>*> PetSpells;
@@ -2052,31 +2092,15 @@ public:
         
         uint32 flying_aura = 0;
 
-        bool resend_speed = false;
-        uint32 m_speedChangeCounter = 1;
-
-        void RemoteRevive();
+        bool m_changingMaps = true;
+        bool resend_speed = false; // set to true if m_changingMaps is true.
+        //uint32 m_speedChangeCounter = 1;
 
         int32 m_rap_mod_pct = 0;
 
         bool m_deathVision = false;
+    // paladin related
         SpellInfo const* last_heal_spell = nullptr;
-
-        void FullHPMP();
-        void RemoveTempEnchantsOnArena();
-        uint32 m_arenateaminviteguid = 0;
-
-        void ResetTimeSync();
-        void SendTimeSync();
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Spell Packet wrapper Please keep this separated
-        /////////////////////////////////////////////////////////////////////////////////////////
-        void SendWorldStateUpdate(uint32 WorldState, uint32 Value);
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // End of SpellPacket wrapper
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         Mailbox m_mailBox;
         uint64 m_areaSpiritHealer_guid = 0;
@@ -2088,9 +2112,7 @@ public:
         static UpdateMask m_visibleUpdateMask;
 
         void CopyAndSendDelayedPacket(WorldPacket* data);
-        
-        SpeedCheatDetector* SDetector;
-
+ 
     protected:
 
         void _SetCreateBits(UpdateMask* updateMask, Player* target) const;
@@ -2107,9 +2129,6 @@ public:
         void _EventAttack(bool offhand);
         
         void CastSpellArea();
-
-    // exploration
-        void _EventExploration();
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Player Class systems, info and misc things
@@ -2133,16 +2152,12 @@ public:
         uint32 m_healthfromitems = 0;
         uint32 m_manafromitems = 0;
 
-        // Talents
-        uint32 m_talentresettimes = 0;
         // Raid
         uint8 m_targetIcon = 0;
 
-        
         uint32 _fields[getSizeOfStructure(WoWPlayer)];
         int hearth_of_wild_pct = 0;        // druid hearth of wild talent used on shapeshifting. We either know what is last talent level or memo on learn
-
-        uint32 m_indoorCheckTimer = 0;
+    //session
         void RemovePendingPlayer();
 
     public:
@@ -2153,7 +2168,6 @@ public:
 
         bool m_passOnLoot = false;
         uint32 m_tradeSequence;
-        bool m_changingMaps = true;
 
         uint32 m_outStealthDamageBonusPct = 0;
         uint32 m_outStealthDamageBonusPeriod = 0;
@@ -2161,46 +2175,20 @@ public:
 
     private:
 
-        CachedCharacterInfo* m_playerInfo = nullptr;
-
-        bool resettalents = false;
         std::list< Item* > m_GarbageItems;
 
         void RemoveGarbageItems();
-
-        uint32 m_timeSyncCounter = 0;
-        uint32 m_timeSyncTimer = 0;
-        uint32 m_timeSyncClient = 0;
-        uint32 m_timeSyncServer = 0;
 
     public:
 
         void AddGarbageItem(Item* it);
         uint32 CheckDamageLimits(uint32 dmg, uint32 spellid);
 
-        CachedCharacterInfo* getPlayerInfo() const { return m_playerInfo; }
-
         void LoadFieldsFromString(const char* string, uint16 firstField, uint32 fieldsNum);
 
         // Avenging Wrath
         void AvengingWrath() { mAvengingWrath = true; }
         bool mAvengingWrath = true;
-
-        
-
-#if VERSION_STRING > TBC
-        AchievementMgr & GetAchievementMgr() { return m_achievementMgr; }
-        AchievementMgr m_achievementMgr = this;
-#endif
-
-        void SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, bool sendtoself);
-
-        bool CanBuyAt(MySQLStructure::VendorRestrictions const* vendor);
-        bool CanTrainAt(Trainer*);
-
-        void SendCinematicCamera(uint32 id);
-
-        void SetMover(Unit* target);
 
         // AGPL End
 };

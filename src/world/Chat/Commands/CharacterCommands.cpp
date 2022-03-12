@@ -1012,7 +1012,7 @@ bool ChatHandler::HandleCharRemoveItemCommand(const char* args, WorldSession* m_
     return true;
 }
 
-//.character resettalents
+//.character m_resetTalents
 bool ChatHandler::HandleCharResetTalentsCommand(const char* /*args*/, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
@@ -1256,7 +1256,7 @@ bool ChatHandler::HandleCharSetAllExploredCommand(const char* /*args*/, WorldSes
     }
 
 #if VERSION_STRING > TBC
-    player_target->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA); // update
+    player_target->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA); // update
 #endif
     return true;
 }

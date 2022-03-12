@@ -135,7 +135,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
                 recout += strm.str();
                 recout += ":";
                 recout += playerGUID;
-                time_t completetime = m_session->GetPlayer()->GetAchievementMgr().GetCompletedTime(achievement);
+                time_t completetime = m_session->GetPlayer()->getAchievementMgr().GetCompletedTime(achievement);
                 if (completetime)
                 {
                     // achievement is completed
@@ -227,7 +227,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
                     recout += strm.str();
                     recout += ":";
                     recout += playerGUID;
-                    time_t completetime = m_session->GetPlayer()->GetAchievementMgr().GetCompletedTime(achievement);
+                    time_t completetime = m_session->GetPlayer()->getAchievementMgr().GetCompletedTime(achievement);
                     if (completetime)
                     {
                         // achievement is completed

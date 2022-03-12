@@ -321,7 +321,7 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
         return;
     }
 
-    plr->FullHPMP();
+    plr->setFullHealthMana();
     plr->setTeam(plr->getBgTeam());
 
     //Do not let everyone know an invisible gm has joined.
@@ -626,7 +626,7 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
 
     // Clean-up
     plr->setBattleground(nullptr);
-    plr->FullHPMP();
+    plr->setFullHealthMana();
     m_players[plr->getBgTeam()].erase(plr);
     memset(&plr->m_bgScore, 0, sizeof(BGScore));
 

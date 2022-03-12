@@ -81,7 +81,7 @@ void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (player->m_arenateaminviteguid != 0)
+    if (player->getInviteArenaTeamId() != 0)
     {
         SystemMessage("That player is already invited to an arena team");
         return;
@@ -93,7 +93,7 @@ void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    player->m_arenateaminviteguid = _player->getArenaTeam(arenaTeam->m_type)->m_id;
+    player->setInviteArenaTeamId(_player->getArenaTeam(arenaTeam->m_type)->m_id);
 
     player->SendPacket(SmsgArenaTeamInvite(_player->getName(), _player->getArenaTeam(arenaTeam->m_type)->m_name).serialise().get());
 }
@@ -155,13 +155,13 @@ void WorldSession::handleArenaTeamInviteAcceptOpcode(WorldPacket& /*recvPacket*/
 {
     CHECK_INWORLD_RETURN
 
-    if (_player->m_arenateaminviteguid == 0)
+    if (_player->getInviteArenaTeamId() == 0)
     {
         SystemMessage("You have not been invited into another arena team.");
         return;
     }
 
-    auto arenaTeam = sObjectMgr.GetArenaTeamById(_player->m_arenateaminviteguid);
+    auto arenaTeam = sObjectMgr.GetArenaTeamById(_player->getInviteArenaTeamId());
     if (arenaTeam == nullptr)
     {
         SystemMessage("That arena team no longer exists.");
@@ -197,13 +197,13 @@ void WorldSession::handleArenaTeamInviteDenyOpcode(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
 
-    if (_player->m_arenateaminviteguid == 0)
+    if (_player->getInviteArenaTeamId() == 0)
     {
         SystemMessage("You were not invited.");
         return;
     }
 
-    ArenaTeam* team = sObjectMgr.GetArenaTeamById(_player->m_arenateaminviteguid);
+    ArenaTeam* team = sObjectMgr.GetArenaTeamById(_player->getInviteArenaTeamId());
     if (team == nullptr)
         return;
 

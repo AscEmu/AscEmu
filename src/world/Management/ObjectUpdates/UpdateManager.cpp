@@ -84,8 +84,8 @@ void UpdateManager::processPendingUpdates()
 
     // seems to be wrong but these packets needs to be send after "real" full login.
     m_owner->resendSpeed();
-    m_owner->ResetTimeSync();
-    m_owner->SendTimeSync();
+    m_owner->resetTimeSync();
+    m_owner->sendTimeSync();
 }
 
 void UpdateManager::queueDelayedPacket(WorldPacket * packet)

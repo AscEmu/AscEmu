@@ -9160,7 +9160,7 @@ void Unit::UnPossess()
     if (!pTarget)
         return;
 
-    pThis->SpeedCheatReset();
+    pThis->speedCheatReset();
 
     if (pTarget->isCreature())
     {

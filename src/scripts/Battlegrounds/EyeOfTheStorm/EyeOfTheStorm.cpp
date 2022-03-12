@@ -668,7 +668,7 @@ void EyeOfTheStorm::UpdateCPs()
                 if (disp->find(plr) == disp->end())
                 {
                     disp->insert(plr);
-                    plr->SendWorldStateUpdate(WORLDSTATE_EOTS_DISPLAYON, 1);
+                    plr->sendWorldStateUpdate(WORLDSTATE_EOTS_DISPLAYON, 1);
                 }
             }
         }
@@ -775,10 +775,10 @@ void EyeOfTheStorm::UpdateCPs()
             if (plr->GetDistance2dSq(go) > EOTS_CAPTURE_DISTANCE)
             {
                 disp->erase(eitr2);
-                plr->SendWorldStateUpdate(WORLDSTATE_EOTS_DISPLAYON, 0);            // hide the cp bar
+                plr->sendWorldStateUpdate(WORLDSTATE_EOTS_DISPLAYON, 0);            // hide the cp bar
             }
             else
-                plr->SendWorldStateUpdate(WORLDSTATE_EOTS_DISPLAYVALUE, m_CPStatus[i]);
+                plr->sendWorldStateUpdate(WORLDSTATE_EOTS_DISPLAYVALUE, m_CPStatus[i]);
         }
     }
 

@@ -1470,7 +1470,7 @@ void Group::UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTy
         {
             if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr2)->guid))
                 if (loggedInPlayer->IsVisible(o->getGuid()))
-                    loggedInPlayer->GetAchievementMgr().UpdateAchievementCriteria(type, miscvalue1, miscvalue2, time);
+                    loggedInPlayer->getAchievementMgr().UpdateAchievementCriteria(type, miscvalue1, miscvalue2, time);
         }
     }
 

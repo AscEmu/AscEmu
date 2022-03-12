@@ -2657,7 +2657,7 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
                         sInstanceMgr.SaveInstanceToDB(pInstance);
                         for (PlayerStorageMap::iterator pItr = unitMapMgr->m_PlayerStorage.begin(); pItr != unitMapMgr->m_PlayerStorage.end(); ++pItr)
                         {
-                            (*pItr).second->SetPersistentInstanceId(pInstance);
+                            (*pItr).second->setPersistentInstanceId(pInstance);
                         }
                     }
                 }

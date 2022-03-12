@@ -86,7 +86,7 @@ void GossipVendor::onHello(Object* object, Player* player)
         GossipMenu menu(creature->getGuid(), gossipTextId, player->GetSession()->language);
 
         const auto vendorRestrictions = sMySQLStore.getVendorRestriction(creature->GetCreatureProperties()->Id);
-        if (!player->CanBuyAt(vendorRestrictions))
+        if (!player->canBuyAt(vendorRestrictions))
             menu.setTextID(vendorRestrictions->cannotbuyattextid);
         else
             menu.addItem(GOSSIP_ICON_VENDOR, VENDOR, 1);
@@ -115,7 +115,7 @@ void GossipTrainer::onHello(Object* object, Player* player)
 
         if (const auto trainer = creature->GetTrainer())
         {
-            if (!player->CanTrainAt(trainer))
+            if (!player->canTrainAt(trainer))
             {
                 menu.setTextID(trainer->Cannot_Train_GossipTextId);
             }
@@ -134,7 +134,7 @@ void GossipTrainer::onHello(Object* object, Player* player)
                 if (creature->isVendor())
                 {
                     const auto vendorRestrictions = sMySQLStore.getVendorRestriction(creature->GetCreatureProperties()->Id);
-                    if (player->CanBuyAt(vendorRestrictions))
+                    if (player->canBuyAt(vendorRestrictions))
                         menu.addItem(GOSSIP_ICON_VENDOR, VENDOR, 2);
                 }
             }
@@ -213,7 +213,7 @@ void GossipInnKeeper::onHello(Object* object, Player* player)
         if (creature->isVendor())
         {
             const auto vendorRestrictions = sMySQLStore.getVendorRestriction(creature->GetCreatureProperties()->Id);
-            if (player->CanBuyAt(vendorRestrictions))
+            if (player->canBuyAt(vendorRestrictions))
                 menu.addItem(GOSSIP_ICON_VENDOR, VENDOR, 2);
         }
 
@@ -304,7 +304,7 @@ void GossipTabardDesigner::onHello(Object* object, Player* player)
         if (creature->isVendor())
         {
             const auto vendorRestrictions = sMySQLStore.getVendorRestriction(creature->GetCreatureProperties()->Id);
-            if (player->CanBuyAt(vendorRestrictions))
+            if (player->canBuyAt(vendorRestrictions))
                 menu.addItem(GOSSIP_ICON_VENDOR, VENDOR, 3);
         }
 

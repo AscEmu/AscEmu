@@ -47,7 +47,7 @@ bool AchievementMgr::canCompleteCriteria(DBC::Structures::AchievementCriteriaEnt
         case ACHIEVEMENT_CRITERIA_TYPE_ROLL_GREED_ON_LOOT:
             return true;
         case ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA:
-            return player->HasOverlayUncovered(achievementCriteria->explore_area.areaReference);
+            return player->hasOverlayUncovered(achievementCriteria->explore_area.areaReference);
         case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_ACHIEVEMENT:
             return m_completedAchievements.find(achievementCriteria->complete_achievement.linkedAchievement) != m_completedAchievements.end();
         case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SPELL:
@@ -86,7 +86,7 @@ bool AchievementMgr::canCompleteCriteria(DBC::Structures::AchievementCriteriaEnt
         case ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM:
             return achievementCriteria->loot_item.itemID == static_cast<uint32_t>(miscValue1);
         case ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA:
-            return player->HasOverlayUncovered(achievementCriteria->explore_area.areaReference);
+            return player->hasOverlayUncovered(achievementCriteria->explore_area.areaReference);
         case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE:
             return achievementCriteria->complete_quests_in_zone.zoneID == static_cast<uint32_t>(miscValue1);
         case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST:

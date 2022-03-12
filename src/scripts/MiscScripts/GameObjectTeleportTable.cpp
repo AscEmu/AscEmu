@@ -54,7 +54,7 @@ public:
                 return;
             }
 #if VERSION_STRING > TBC
-            else if (req_achievement != 0 && pPlayer->GetAchievementMgr().HasCompleted(req_achievement))
+            else if (req_achievement != 0 && pPlayer->getAchievementMgr().HasCompleted(req_achievement))
             {
                 pPlayer->broadcastMessage("You do not have the required achievement to use this Portal");
                 return;

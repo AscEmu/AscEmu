@@ -1913,7 +1913,7 @@ void MapMgr::TeleportPlayers()
 
         if (!bServerShutdown)
         {
-            p->EjectFromInstance();
+            p->ejectFromInstance();
         }
         else
         {

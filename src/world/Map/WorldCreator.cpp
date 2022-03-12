@@ -278,7 +278,7 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
                 }
 
                 // Try to add instance ID to player
-                plr->SetPersistentInstanceId(in);
+                plr->setPersistentInstanceId(in);
 
                 // Set current group
                 if (pGroup)
@@ -309,7 +309,7 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
                 if ((mapInfo->isMultimodeDungeon() && grpdiff == InstanceDifficulty::DUNGEON_HEROIC) || mapInfo->isRaid())
                 {
                     // This is the case when we don't have this map on this difficulty saved yet for the player entering
-                    if (plr->GetPersistentInstanceId(mapid, grpdiff) == 0)
+                    if (plr->getPersistentInstanceId(mapid, grpdiff) == 0)
                     {
                         // The group has this instance saved already so we will use it
                         if (pGroup->m_instanceIds[mapid][grpdiff] != 0)
@@ -332,9 +332,9 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
                     }
 
                     // If we have it saved to the player then use that
-                    if (in == nullptr && plr->GetPersistentInstanceId(mapid, grpdiff) != 0)
+                    if (in == nullptr && plr->getPersistentInstanceId(mapid, grpdiff) != 0)
                     {
-                        in = sInstanceMgr.GetInstanceByIds(mapid, plr->GetPersistentInstanceId(mapid, grpdiff));
+                        in = sInstanceMgr.GetInstanceByIds(mapid, plr->getPersistentInstanceId(mapid, grpdiff));
                     }
                 }
                 else
@@ -391,7 +391,7 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
                 }
 
                 // Try to add instance ID to player
-                plr->SetPersistentInstanceId(in);
+                plr->setPersistentInstanceId(in);
 
                 // Set current group
                 if (pGroup)
@@ -487,7 +487,7 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
     instancemap->insert(InstanceMap::value_type(in->m_instanceId, in));
 
     // Try to add instance ID to player
-    plr->SetPersistentInstanceId(in);
+    plr->setPersistentInstanceId(in);
 
     // instance created ok, i guess? return the ok for him to transport.
     m_mapLock.Release();
@@ -768,7 +768,7 @@ void InstanceMgr::OnGroupDestruction(Group* pGroup)
                                 (*playerStorageMap).second->sendRaidGroupOnly(60000, 1);
                                 (*playerStorageMap).second->setSendOnlyRaidgroup(true);
 
-                                sEventMgr.AddEvent((*playerStorageMap).second, &Player::EjectFromInstance, EVENT_PLAYER_EJECT_FROM_INSTANCE, 60000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                                sEventMgr.AddEvent((*playerStorageMap).second, &Player::ejectFromInstance, EVENT_PLAYER_EJECT_FROM_INSTANCE, 60000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                             }
                         }
                     }
@@ -969,7 +969,7 @@ void InstanceMgr::PlayerLeftGroup(Group* pGroup, Player* pPlayer)
                         pPlayer->sendRaidGroupOnly(60000, 1);
                         pPlayer->setSendOnlyRaidgroup(true);
 
-                        sEventMgr.AddEvent(pPlayer, &Player::EjectFromInstance, EVENT_PLAYER_EJECT_FROM_INSTANCE, 60000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                        sEventMgr.AddEvent(pPlayer, &Player::ejectFromInstance, EVENT_PLAYER_EJECT_FROM_INSTANCE, 60000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
                         m_mapLock.Release();
                         return;
@@ -993,7 +993,7 @@ bool InstanceMgr::PlayerOwnsInstance(Instance* pInstance, Player* pPlayer)
     // Persistent instance handling
     if (pInstance->m_persistent)
     {
-        return (pPlayer->GetPersistentInstanceId(pInstance->m_mapId, pInstance->m_difficulty) == pInstance->m_instanceId);
+        return (pPlayer->getPersistentInstanceId(pInstance->m_mapId, pInstance->m_difficulty) == pInstance->m_instanceId);
     }
 
     // Default instance handling

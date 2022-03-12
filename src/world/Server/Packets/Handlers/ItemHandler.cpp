@@ -363,7 +363,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     spell->prepare(&targets);
 
 #ifdef FT_ACHIEVEMENTS
-    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_ITEM, itemProto->ItemId, 0, 0);
+    _player->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_ITEM, itemProto->ItemId, 0, 0);
 #endif
 }
 
@@ -1116,7 +1116,7 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
 #if VERSION_STRING > TBC
     if (dstItem && srlPacket.srcSlot < INVENTORY_SLOT_BAG_END)
     {
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, dstItem->getItemProperties()->ItemId, 0, 0);
+        _player->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, dstItem->getItemProperties()->ItemId, 0, 0);
         if (srlPacket.srcSlot < INVENTORY_SLOT_BAG_START) // check Superior/Epic achievement
         {
             // Achievement ID:556 description Equip an epic item in every slot with a minimum item level of 213.
@@ -1125,13 +1125,13 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
             // "187" value not found in achievement or criteria entries, have to hard-code it here?
             if (dstItem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && dstItem->getItemProperties()->ItemLevel >= 187 ||
                 dstItem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && dstItem->getItemProperties()->ItemLevel >= 213)
-                _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, srlPacket.srcSlot,
+                _player->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, srlPacket.srcSlot,
                     dstItem->getItemProperties()->Quality, 0);
         }
     }
     if (srlPacket.destSlot < INVENTORY_SLOT_BAG_END)
     {
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, srcItem->getItemProperties()->ItemId, 0, 0);
+        _player->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, srcItem->getItemProperties()->ItemId, 0, 0);
         if (srlPacket.destSlot < INVENTORY_SLOT_BAG_START) // check Superior/Epic achievement
         {
             // Achievement ID:556 description Equip an epic item in every slot with a minimum item level of 213.
@@ -1140,7 +1140,7 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
             // "187" value not found in achievement or criteria entries, have to hard-code it here?
             if (srcItem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && srcItem->getItemProperties()->ItemLevel >= 187 ||
                 srcItem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && srcItem->getItemProperties()->ItemLevel >= 213)
-                _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, srlPacket.destSlot,
+                _player->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, srlPacket.destSlot,
                     srcItem->getItemProperties()->Quality, 0);
         }
     }
@@ -1405,7 +1405,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
         if (eitem->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
             eitem->addFlags(ITEM_FLAG_SOULBOUND);
 #if VERSION_STRING > TBC
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM,
+        _player->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM,
             eitem->getItemProperties()->ItemId, 0, 0);
         // Achievement ID:556 description Equip an epic item in every slot with a minimum item level of 213.
         // "213" value not found in achievement or criteria entries, have to hard-code it here? :(
@@ -1413,7 +1413,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
         // "187" value not found in achievement or criteria entries, have to hard-code it here? :(
         if (eitem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && eitem->getItemProperties()->ItemLevel >= 187 ||
             eitem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && eitem->getItemProperties()->ItemLevel >= 213)
-            _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, Slot,
+            _player->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, Slot,
                 eitem->getItemProperties()->Quality, 0);
 #endif
     }
@@ -2321,7 +2321,7 @@ void WorldSession::handleListInventoryOpcode(WorldPacket& recvPacket)
 
     _player->onTalkReputation(unit->m_factionEntry);
 
-    if (_player->CanBuyAt(vendor))
+    if (_player->canBuyAt(vendor))
         sendInventoryList(unit);
     else
         GossipMenu::sendSimpleMenu(unit->getGuid(), vendor->cannotbuyattextid, _player);

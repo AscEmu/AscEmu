@@ -346,7 +346,7 @@ void WorldSession::LogoutPlayer(bool Save)
         if (_player->m_bg)
         {
             if (pPlayer->getDeathState() == JUST_DIED)
-                pPlayer->RemoteRevive();
+                pPlayer->setResurrect();
             if (pPlayer->getDeathState() != ALIVE)
                 pPlayer->resurrect();
             _player->m_bg->RemovePlayer(_player, true);

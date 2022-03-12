@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.h"
 #include "Management/TaxiMgr.h"
+#include "Objects/Container.h"
 #include "Objects/DynamicObject.h"
 #include "Server/Opcodes.hpp"
 #include "Server/Packets/MsgTalentWipeConfirm.h"
@@ -90,15 +91,19 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgDuelWinner.h"
 #include "Server/Packets/SmsgDurabilityDamageDeath.h"
 #include "Server/Packets/SmsgMessageChat.h"
+#include "Server/Packets/SmsgMoveKnockBack.h"
 #include "Server/Packets/SmsgPreResurrect.h"
 #include "Server/Packets/SmsgSetFactionStanding.h"
 #include "Server/Packets/SmsgSetFactionVisible.h"
+#include "Server/Packets/SmsgSetPhaseShift.h"
 #include "Server/Packets/SmsgTriggerMovie.h"
 #include "Server/Packets/SmsgTriggerCinematic.h"
 #include "Server/Packets/SmsgSpellCooldown.h"
 #include "Server/Packets/SmsgSummonRequest.h"
+#include "Server/Packets/SmsgTimeSyncReq.h"
 #include "Server/Packets/SmsgTitleEarned.h"
 #include "Server/Packets/SmsgTransferPending.h"
+#include "Server/Packets/SmsgUpdateWorldState.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Server/Warden/SpeedDetector.h"
@@ -112,7 +117,7 @@ Player::Player(uint32_t guid) :
     m_updateMgr(this, static_cast<size_t>(worldConfig.server.compressionThreshold), 40000, 30000, 1000),
     m_nextSave(Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
     m_mailBox(guid),
-    SDetector(new SpeedCheatDetector),
+    m_speedCheatDetector(new SpeedCheatDetector),
     m_groupUpdateFlags(GROUP_UPDATE_FLAG_NONE)
 {
     //////////////////////////////////////////////////////////////////////////
@@ -199,8 +204,8 @@ Player::~Player()
 
     m_reputation.clear();
 
-    delete SDetector;
-    SDetector = nullptr;
+    delete m_speedCheatDetector;
+    m_speedCheatDetector = nullptr;
 
 #if VERSION_STRING > WotLK
     for (uint8_t i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
@@ -1160,6 +1165,24 @@ void Player::initialiseNoseLevel()
     }
 }
 
+void Player::handleKnockback(Object* object, float horizontal, float vertical)
+{
+    if (object == nullptr)
+        object = this;
+
+    float angle = calcRadAngle(object->GetPositionX(), object->GetPositionY(), GetPositionX(), GetPositionY());
+    if (object == this)
+        angle = static_cast<float>(M_PI + GetOrientation());
+
+    float sin = sinf(angle);
+    float cos = cosf(angle);
+
+    GetSession()->SendPacket(SmsgMoveKnockBack(GetNewGUID(), Util::getMSTime(), cos, sin, horizontal, -vertical).serialise().get());
+
+    blinked = true;
+    speedCheatDelay(10000);
+}
+
 bool Player::teleport(const LocationVector& vec, MapMgr* map)
 {
     if (map)
@@ -1214,7 +1237,7 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
 
     m_aiInterfaceWaypoint = nullptr;
 
-    SpeedCheatDelay(10000);
+    speedCheatDelay(10000);
 
     if (isOnTaxi())
     {
@@ -1277,9 +1300,9 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
 
     _Relocate(mapId, vec, true, instance, instanceId);
 
-    SpeedCheatReset();
+    speedCheatReset();
 
-    ForceZoneUpdate();
+    forceZoneUpdate();
 
     return true;
 }
@@ -1288,7 +1311,7 @@ void Player::safeTeleport(MapMgr* mgr, const LocationVector& vec)
 {
     if (mgr)
     {
-        SpeedCheatDelay(10000);
+        speedCheatDelay(10000);
 
         // can only fly in outlands or northrend (northrend requires cold weather flying)
         if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
@@ -1310,8 +1333,8 @@ void Player::safeTeleport(MapMgr* mgr, const LocationVector& vec)
         m_sentTeleportPosition = vec;
         SetPosition(vec);
 
-        SpeedCheatReset();
-        ForceZoneUpdate();
+        speedCheatReset();
+        forceZoneUpdate();
     }
 }
 
@@ -1408,6 +1431,376 @@ void Player::sendTeleportAckPacket(LocationVector position)
     BuildMovementPacket(&data, position.x, position.y, position.z, position.o);
 #endif
     GetSession()->SendPacket(&data);
+}
+
+void Player::indoorCheckUpdate(uint32_t time)
+{
+    if (worldConfig.terrainCollision.isCollisionEnabled)
+    {
+        if (time >= m_indoorCheckTimer)
+        {
+            if (!AreaStorage::IsOutdoor(m_mapId, m_position.x, m_position.y, m_position.z))
+            {
+                // this is duplicated check, but some mount auras comes w/o this flag set, maybe due to spellfixes.cpp line:663
+                dismount();
+
+                for (uint32_t x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; ++x)
+                {
+                    if (m_auras[x] && m_auras[x]->getSpellInfo()->getAttributes() & ATTRIBUTES_ONLY_OUTDOORS)
+                        RemoveAura(m_auras[x]);
+                }
+            }
+            m_indoorCheckTimer = time + COLLISION_INDOOR_CHECK_INTERVAL;
+        }
+    }
+}
+
+time_t Player::getFallDisabledUntil() const { return m_fallDisabledUntil; }
+void Player::setFallDisabledUntil(time_t time) { m_fallDisabledUntil = time; }
+
+void Player::setMapEntryPoint(uint32_t mapId)
+{
+    if (IS_INSTANCE(GetMapId()))
+        return;
+
+    if (MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo(mapId))
+        setBGEntryPoint(mapInfo->repopx, mapInfo->repopy, mapInfo->repopz, GetOrientation(), mapInfo->repopmapid, GetInstanceID());
+    else
+        setBGEntryPoint(0, 0, 0, 0, 0, 0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Instance, Zone, Area, Phase
+void Player::setPhase(uint8_t command, uint32_t newPhase)
+{
+    Unit::setPhase(command, newPhase);
+
+    if (GetSession())
+    {
+#if VERSION_STRING == WotLK
+        SendPacket(SmsgSetPhaseShift(newPhase, getGuid()).serialise().get());
+#elif VERSION_STRING > WotLK
+
+        uint32_t phaseFlags = 0;
+
+        for (uint32_t i = 0; i < sPhaseStore.GetNumRows(); ++i)
+        {
+            if (DBC::Structures::PhaseEntry const* phase = sPhaseStore.LookupEntry(i))
+            {
+                if (phase->PhaseShift == newPhase)
+                {
+                    phaseFlags = phase->Flags;
+                    break;
+                }
+            }
+        }
+
+        SendPacket(SmsgSetPhaseShift(newPhase, getGuid(), phaseFlags, GetMapId()).serialise().get());
+#endif
+    }
+
+    for (auto pet : getSummons())
+        if (pet)
+            pet->setPhase(command, newPhase);
+
+    if (Unit* charm = m_mapMgr->GetUnit(getCharmGuid()))
+        charm->setPhase(command, newPhase);
+}
+
+void Player::zoneUpdate(uint32_t zoneId)
+{
+    uint32_t oldzone = m_zoneId;
+    if (m_zoneId != zoneId)
+    {
+        SetZoneId(zoneId);
+        RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_AREA);
+    }
+
+    if (m_playerInfo)
+    {
+        m_playerInfo->lastZone = zoneId;
+        sHookInterface.OnZone(this, zoneId, oldzone);
+        CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnZoneChange)(this, zoneId, oldzone);
+
+        auto at = GetMapMgr()->GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
+        if (at && (at->team == AREAC_SANCTUARY || at->flags & AREA_SANCTUARY))
+        {
+            Unit* pUnit = (getTargetGuid() == 0) ? nullptr : (m_mapMgr ? m_mapMgr->GetUnit(getTargetGuid()) : nullptr);
+            if (pUnit && m_duelPlayer != pUnit)
+            {
+                EventAttackStop();
+                smsg_AttackStop(pUnit);
+            }
+
+            if (isCastingSpell())
+            {
+                for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+                {
+                    if (getCurrentSpell(CurrentSpellType(i)) != nullptr)
+                    {
+                        Unit* target = getCurrentSpell(CurrentSpellType(i))->GetUnitTarget();
+                        if (target != nullptr && target != m_duelPlayer && target != this)
+                        {
+                            interruptSpellWithSpellType(CurrentSpellType(i));
+                        }
+                    }
+                }
+            }
+        }
+
+        SendInitialWorldstates();
+
+        updateChannels();
+    }
+    else
+    {
+        sLogger.failure("Player with invalid player_info tries to call Player::zoneUpdate()!");
+        m_session->Disconnect();
+    }
+}
+
+void Player::forceZoneUpdate()
+{
+    if (!m_mapMgr)
+        return;
+
+    if (auto areaTableEntry = this->GetArea())
+    {
+        if (areaTableEntry->zone && areaTableEntry->zone != m_zoneId)
+            zoneUpdate(areaTableEntry->zone);
+
+        SendInitialWorldstates();
+    }
+}
+
+bool Player::hasAreaExplored(::DBC::Structures::AreaTableEntry const* areaTableEntry)
+{
+    if (areaTableEntry)
+    {
+        uint16_t offset = static_cast<uint16_t>(areaTableEntry->explore_flag / 32);
+
+        uint32_t val = (uint32_t)(1 << (areaTableEntry->explore_flag % 32));
+        uint32_t currFields = getExploredZone(offset);
+
+        return (currFields & val) != 0;
+    }
+
+    return false;
+}
+
+bool Player::hasOverlayUncovered(uint32_t overlayId)
+{
+    if (auto overlay = sWorldMapOverlayStore.LookupEntry(overlayId))
+    {
+        if (overlay->areaID && hasAreaExplored(AreaStorage::GetAreaById(overlay->areaID)))
+            return true;
+
+        if (overlay->areaID_2 && hasAreaExplored(AreaStorage::GetAreaById(overlay->areaID_2)))
+            return true;
+
+        if (overlay->areaID_3 && hasAreaExplored(AreaStorage::GetAreaById(overlay->areaID_3)))
+            return true;
+
+        if (overlay->areaID_4 && hasAreaExplored(AreaStorage::GetAreaById(overlay->areaID_4)))
+            return true;
+    }
+
+    return false;
+}
+
+void Player::eventExploration()
+{
+    if (isDead())
+        return;
+
+    if (!IsInWorld())
+        return;
+
+    if (m_position.x > _maxX || m_position.x < _minX || m_position.y > _maxY || m_position.y < _minY)
+        return;
+
+    if (GetMapMgr()->GetCellByCoords(GetPositionX(), GetPositionY()) == nullptr)
+        return;
+
+    if (auto areaTableEntry = this->GetArea())
+    {
+        uint16_t offset = static_cast<uint16_t>(areaTableEntry->explore_flag / 32);
+        uint32_t val = (uint32_t)(1 << (areaTableEntry->explore_flag % 32));
+        uint32_t currFields = getExploredZone(offset);
+
+        if (areaTableEntry->id != m_areaId)
+        {
+            m_areaId = areaTableEntry->id;
+
+            updatePvPArea();
+            addGroupUpdateFlag(GROUP_UPDATE_FULL);
+
+            if (getGroup())
+                getGroup()->UpdateOutOfRangePlayer(this, true, nullptr);
+        }
+
+        if (areaTableEntry->zone == 0 && m_zoneId != areaTableEntry->id)
+            zoneUpdate(areaTableEntry->id);
+        else if (areaTableEntry->zone != 0 && m_zoneId != areaTableEntry->zone)
+            zoneUpdate(areaTableEntry->zone);
+
+
+        if (areaTableEntry->zone != 0 && m_zoneId != areaTableEntry->zone)
+            zoneUpdate(areaTableEntry->zone);
+
+        bool rest_on = false;
+
+        if (areaTableEntry->flags & AREA_CITY_AREA || areaTableEntry->flags & AREA_CITY)
+        {
+            // check faction
+            if (areaTableEntry->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance() || (areaTableEntry->team == AREAC_HORDE_TERRITORY && isTeamHorde()))
+                rest_on = true;
+            else if (areaTableEntry->team != AREAC_ALLIANCE_TERRITORY && areaTableEntry->team != AREAC_HORDE_TERRITORY)
+                rest_on = true;
+        }
+        else
+        {
+            //second AT check for subzones.
+            if (areaTableEntry->zone)
+            {
+                auto at2 = AreaStorage::GetAreaById(areaTableEntry->zone);
+                if (at2 && (at2->flags & AREA_CITY_AREA || at2->flags & AREA_CITY))
+                {
+                    if (at2->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance() || (at2->team == AREAC_HORDE_TERRITORY && isTeamHorde()))
+                        rest_on = true;
+                    else if (at2->team != AREAC_ALLIANCE_TERRITORY && at2->team != AREAC_HORDE_TERRITORY)
+                        rest_on = true;
+                }
+            }
+        }
+
+        if (rest_on)
+        {
+            if (!m_isResting)
+                applyPlayerRestState(true);
+        }
+        else
+        {
+            if (m_isResting)
+                applyPlayerRestState(false);
+        }
+
+        if (!(currFields & val) && !isOnTaxi() && !obj_movement_info.transport_guid)
+        {
+            setExploredZone(offset, currFields | val);
+
+            uint32_t explore_xp = areaTableEntry->area_level * 10;
+            explore_xp *= float2int32(worldConfig.getFloatRate(RATE_EXPLOREXP));
+
+#if VERSION_STRING > TBC
+            getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA);
+#endif
+
+            if (getLevel() < getMaxLevel() && explore_xp > 0)
+            {
+                sendExploreExperiencePacket(areaTableEntry->id, explore_xp);
+                GiveXP(explore_xp, 0, false);
+            }
+            else
+            {
+                sendExploreExperiencePacket(areaTableEntry->id, 0);
+            }
+        }
+    }
+}
+
+void Player::ejectFromInstance()
+{
+    if (getBGEntryPosition().isSet() && !IS_INSTANCE(getBGEntryMapId()))
+        if (safeTeleport(getBGEntryMapId(), getBGEntryInstanceId(), getBGEntryPosition()))
+            return;
+
+    safeTeleport(getBindMapId(), 0, getBindPosition());
+}
+
+bool Player::exitInstance()
+{
+    if (getBGEntryPosition().isSet())
+    {
+        RemoveFromWorld();
+        safeTeleport(getBGEntryMapId(), getBGEntryInstanceId(), getBGEntryPosition());
+
+        return true;
+    }
+
+    return false;
+}
+
+uint32_t Player::getPersistentInstanceId(uint32_t mapId, uint8_t difficulty)
+{
+    if (mapId >= MAX_NUM_MAPS || difficulty >= InstanceDifficulty::MAX_DIFFICULTY || m_playerInfo == NULL)
+        return 0;
+
+    std::lock_guard<std::mutex> lock(m_playerInfo->savedInstanceIdsLock);
+    PlayerInstanceMap::iterator itr = m_playerInfo->savedInstanceIds[difficulty].find(mapId);
+    if (itr == m_playerInfo->savedInstanceIds[difficulty].end())
+        return 0;
+
+    return (*itr).second;
+}
+
+void Player::setPersistentInstanceId(Instance* instance)
+{
+    if (instance == nullptr)
+        return;
+
+    if (hasPlayerFlags(PLAYER_FLAG_GM))
+        return;
+
+    if (!instance->isPersistent())
+        return;
+
+    if (m_playerInfo)
+    {
+        if (m_playerInfo->m_Group && instance->m_creatorGroup == 0)
+            instance->m_creatorGroup = m_playerInfo->m_Group->GetID();
+
+        if (m_playerInfo->m_Group && (m_playerInfo->m_Group->m_instanceIds[instance->m_mapId][instance->m_difficulty] == 0 ||
+            !sInstanceMgr.InstanceExists(instance->m_mapId, m_playerInfo->m_Group->m_instanceIds[instance->m_mapId][instance->m_difficulty])))
+        {
+            m_playerInfo->m_Group->m_instanceIds[instance->m_mapId][instance->m_difficulty] = instance->m_instanceId;
+            m_playerInfo->m_Group->SaveToDB();
+        }
+    }
+
+    if (!instance->m_persistent)
+        setPersistentInstanceId(instance->m_mapId, instance->m_difficulty, 0);
+    else
+        setPersistentInstanceId(instance->m_mapId, instance->m_difficulty, instance->m_instanceId);
+
+    sLogger.debug("Added player %u to saved instance %u on map %u.", (uint32_t)getGuid(), instance->m_instanceId, instance->m_mapId);
+}
+
+void Player::setPersistentInstanceId(uint32_t mapId, uint8_t difficulty, uint32_t instanceId)
+{
+    if (mapId >= MAX_NUM_MAPS || difficulty >= InstanceDifficulty::MAX_DIFFICULTY || m_playerInfo == nullptr)
+        return;
+
+    if (m_playerInfo)
+    {
+        std::lock_guard<std::mutex> lock(m_playerInfo->savedInstanceIdsLock);
+        PlayerInstanceMap::iterator itr = m_playerInfo->savedInstanceIds[difficulty].find(mapId);
+        if (itr == m_playerInfo->savedInstanceIds[difficulty].end())
+        {
+            if (instanceId != 0)
+                m_playerInfo->savedInstanceIds[difficulty].insert(PlayerInstanceMap::value_type(mapId, instanceId));
+        }
+        else
+        {
+            if (instanceId == 0)
+                m_playerInfo->savedInstanceIds[difficulty].erase(itr);
+            else
+                (*itr).second = instanceId;
+        }
+
+        CharacterDatabase.Execute("DELETE FROM instanceids WHERE playerguid = %u AND mapid = %u AND mode = %u;", m_playerInfo->guid, mapId, difficulty);
+        CharacterDatabase.Execute("INSERT INTO instanceids (playerguid, mapid, mode, instanceid) VALUES (%u, %u, %u, %u)", m_playerInfo->guid, mapId, difficulty, instanceId);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1582,7 +1975,7 @@ void Player::applyLevelInfo(uint32_t newLevel)
 
 #if VERSION_STRING >= WotLK
     updateGlyphs();
-    GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
+    getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
 #endif
 
     if (m_FirstLogin)
@@ -1676,6 +2069,8 @@ void Player::toggleDnd()
 }
 
 uint32_t* Player::getPlayedTime() { return m_playedTime; }
+
+CachedCharacterInfo* Player::getPlayerInfo() const { return m_playerInfo; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Stats
@@ -2405,8 +2800,8 @@ void Player::advanceSkillLine(uint16_t skillLine, uint16_t amount/* = 1*/)
     sHookInterface.OnAdvanceSkillLine(this, skillLine, itr->second.CurrentValue);
 
 #ifdef FT_ACHIEVEMENTS
-    GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep, 0);
-    GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, itr->second.CurrentValue, 0);
+    getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep, 0);
+    getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, itr->second.CurrentValue, 0);
 #endif
 
     learnSkillSpells(skillLine, itr->second.CurrentValue);
@@ -2471,8 +2866,8 @@ void Player::addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t ma
             learnSkillSpells(skillLine, curVal);
 
 #ifdef FT_ACHIEVEMENTS
-        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep, 0);
-        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, currentValue, 0);
+        getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep, 0);
+        getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, currentValue, 0);
 #endif
     };
 
@@ -2754,7 +3149,7 @@ void Player::modifySkillMaximum(uint16_t skillLine, uint16_t maxValue)
         }
 
 #ifdef FT_ACHIEVEMENTS
-        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep, 0);
+        getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep, 0);
 #endif
 
         // Current skill value did not change
@@ -2764,7 +3159,7 @@ void Player::modifySkillMaximum(uint16_t skillLine, uint16_t maxValue)
         sHookInterface.OnAdvanceSkillLine(this, skillLine, itr->second.CurrentValue);
 
 #ifdef FT_ACHIEVEMENTS
-        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, itr->second.CurrentValue, 0);
+        getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, itr->second.CurrentValue, 0);
 #endif
 
         learnSkillSpells(skillLine, itr->second.CurrentValue);
@@ -3751,6 +4146,20 @@ void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
 #endif
 }
 
+uint32_t Player::getTalentResetsCount() const { return m_talentResetsCount; }
+void Player::setTalentResetsCount(uint32_t value) { m_talentResetsCount = value; }
+
+uint32_t Player::calcTalentResetCost(uint32_t resetnum) const
+{
+    if (resetnum == 0)
+        return  10000;
+
+    if (resetnum > 10)
+        return  500000;
+
+    return resetnum * 50000;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // Tutorials
 uint32_t Player::getTutorialValueById(uint8_t id)
@@ -4377,6 +4786,35 @@ ItemInterface* Player::getItemInterface() const
     return m_itemInterface;
 }
 
+void Player::removeTempItemEnchantsOnArena()
+{
+    ItemInterface* itemInterface = getItemInterface();
+
+    for (uint32_t x = EQUIPMENT_SLOT_START; x < EQUIPMENT_SLOT_END; ++x)
+        if (Item* item = itemInterface->GetInventoryItem(static_cast<int16_t>(x)))
+            item->RemoveAllEnchantments(true);
+
+    for (uint32_t x = INVENTORY_SLOT_BAG_START; x < INVENTORY_SLOT_BAG_END; ++x)
+    {
+        if (Item* item = itemInterface->GetInventoryItem(static_cast<int16_t>(x)))
+        {
+            if (item->isContainer())
+            {
+                Container* bag = static_cast<Container*>(item);
+                for (uint32_t ci = 0; ci < bag->getItemProperties()->ContainerSlots; ++ci)
+                {
+                    if (item = bag->GetItem(static_cast<int16_t>(ci)))
+                        item->RemoveAllEnchantments(true);
+                }
+            }
+        }
+    }
+
+    for (uint32_t x = INVENTORY_SLOT_ITEM_START; x < INVENTORY_SLOT_ITEM_END; ++x)
+        if (Item* item = itemInterface->GetInventoryItem(static_cast<int16_t>(x)))
+            item->RemoveAllEnchantments(true);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Difficulty
 void Player::setDungeonDifficulty(uint8_t diff)
@@ -4410,13 +4848,13 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t spellId)
 #if VERSION_STRING > TBC
     if (isPlayer())
     {
-        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH, 1, 0, 0);
-        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH_AT_MAP, GetMapId(), 1, 0);
+        getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH, 1, 0, 0);
+        getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH_AT_MAP, GetMapId(), 1, 0);
 
         if (unitAttacker->isPlayer())
-            GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_PLAYER, 1, 0, 0);
+            getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_PLAYER, 1, 0, 0);
         else if (unitAttacker->isCreature())
-            GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_CREATURE, 1, 0, 0);
+            getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_CREATURE, 1, 0, 0);
     }
 #endif
 
@@ -4930,6 +5368,29 @@ void Player::setResurrectInstanceId(uint32_t id) { m_resurrectInstanceID = id; }
 void Player::setResurrectMapId(uint32_t id) { m_resurrectMapId = id; }
 void Player::setResurrectPosition(LocationVector position) { m_resurrectPosition = position; }
 
+void Player::setFullHealthMana()
+{
+    if (isDead())
+        resurrect();
+
+    setHealth(getMaxHealth());
+    setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
+    setPower(POWER_TYPE_ENERGY, getMaxPower(POWER_TYPE_ENERGY));
+    setPower(POWER_TYPE_FOCUS, getMaxPower(POWER_TYPE_FOCUS));
+}
+
+void Player::setResurrect()
+{
+    resurrect();
+
+    setMoveRoot(false);
+    setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, false), true);
+    setSpeedRate(TYPE_SWIM, getSpeedRate(TYPE_SWIM, false), true);
+    setMoveLandWalk();
+
+    setFullHealthMana();
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Bind
 void Player::setBindPoint(float x, float y, float z, float o, uint32_t mapId, uint32_t zoneId)
@@ -5245,6 +5706,9 @@ void Player::updateArenaPoints()
     this->UpdateKnownCurrencies(43307, true);
 }
 
+void Player::setInviteArenaTeamId(uint32_t id) { m_inviteArenaTeamId = id; }
+uint32_t Player::getInviteArenaTeamId() const { return m_inviteArenaTeamId; }
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Honor
 void Player::addHonor(uint32_t honorPoints, bool sendUpdate)
@@ -5334,7 +5798,7 @@ void Player::stopPvPTimer() { m_pvpTimer = 0; }
 
 void Player::setupPvPOnLogin()
 {
-    _EventExploration();
+    eventExploration();
 
     const auto areaTableEntry = this->GetArea();
 
@@ -6407,6 +6871,18 @@ bool Player::isIgnored(uint32_t guid) const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Hack/Cheat Detection
+void Player::speedCheatDelay(uint32_t delay)
+{
+    m_speedCheatDetector->SkipSamplingUntil(Util::getMSTime() + delay + GetSession()->GetLatency() * 2 + 2000);
+}
+
+void Player::speedCheatReset()
+{
+    m_speedCheatDetector->EventSpeedChange();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 bool Player::isGMFlagSet()
 {
@@ -6586,7 +7062,7 @@ void Player::sendCinematicOnFirstLogin()
 
 void Player::sendTalentResetConfirmPacket()
 {
-    m_session->SendPacket(MsgTalentWipeConfirm(getGuid(), CalcTalentResetCost(GetTalentResetTimes())).serialise().get());
+    m_session->SendPacket(MsgTalentWipeConfirm(getGuid(), calcTalentResetCost(getTalentResetsCount())).serialise().get());
 }
 
 void Player::sendPetUnlearnConfirmPacket()
@@ -6743,7 +7219,7 @@ void Player::sendClientControlPacket(Unit* target, uint8_t allowMove)
     SendPacket(SmsgClientControlUpdate(target->GetNewGUID(), allowMove).serialise().get());
 
     if (target == this)
-        SetMover(this);
+        setMover(this);
 }
 
 void Player::sendGuildMotd()
@@ -7149,8 +7625,171 @@ void Player::tagUnit(Object* object)
         object->BuildFieldUpdatePacket(&groupBuff, getOffsetForStructuredField(WoWUnit, dynamic_flags), flags);
         object->BuildFieldUpdatePacket(&nonGroupBuff, getOffsetForStructuredField(WoWUnit, dynamic_flags), dynamic_cast<Unit*>(object)->getDynamicFlags());
 
-        SendUpdateDataToSet(&groupBuff, &nonGroupBuff, true);
+        sendUpdateDataToSet(&groupBuff, &nonGroupBuff, true);
     }
+}
+
+#if VERSION_STRING > TBC
+AchievementMgr& Player::getAchievementMgr() { return m_achievementMgr; }
+#endif
+
+void Player::sendUpdateDataToSet(ByteBuffer* groupBuf, ByteBuffer* nonGroupBuf, bool sendToSelf)
+{
+    if (groupBuf && nonGroupBuf)
+    {
+        for (const auto& object : getInRangePlayersSet())
+        {
+            if (Player* player = static_cast<Player*>(object))
+            {
+                if (player->getGroup() && getGroup() && player->getGroup()->GetID() == getGroup()->GetID())
+                    player->getUpdateMgr().pushUpdateData(groupBuf, 1);
+                else
+                    player->getUpdateMgr().pushUpdateData(nonGroupBuf, 1);
+            }
+        }
+    }
+    else
+    {
+        if (groupBuf && nonGroupBuf == nullptr)
+        {
+            for (const auto& object : getInRangePlayersSet())
+            {
+                if (Player* player = static_cast<Player*>(object))
+                    if (player && player->getGroup() && getGroup() && player->getGroup()->GetID() == getGroup()->GetID())
+                        player->getUpdateMgr().pushUpdateData(groupBuf, 1);
+            }
+        }
+        else
+        {
+            if (groupBuf == nullptr && nonGroupBuf)
+            {
+                for (const auto& object : getInRangePlayersSet())
+                {
+                    if (Player* player = static_cast<Player*>(object))
+                        if (player->getGroup() == nullptr || player->getGroup()->GetID() != getGroup()->GetID())
+                            player->getUpdateMgr().pushUpdateData(nonGroupBuf, 1);
+                }
+            }
+        }
+    }
+
+    if (sendToSelf && groupBuf != nullptr)
+        getUpdateMgr().pushUpdateData(groupBuf, 1);
+}
+
+void Player::sendWorldStateUpdate(uint32_t worldState, uint32_t value)
+{
+    m_session->SendPacket(SmsgUpdateWorldState(worldState, value).serialise().get());
+}
+
+bool Player::canBuyAt(MySQLStructure::VendorRestrictions const* vendor)
+{
+    if (vendor == nullptr)
+        return true;
+
+    if (vendor->flags == RESTRICTION_CHECK_ALL)
+    {
+        if ((vendor->racemask > 0) && !(getRaceMask() & vendor->racemask))
+            return false;
+
+        if ((vendor->classmask > 0) && !(getClassMask() & vendor->classmask))
+            return false;
+
+        if (vendor->reqrepfaction)
+        {
+            uint32_t plrep = getFactionStanding(vendor->reqrepfaction);
+            if (plrep < vendor->reqrepvalue)
+                return false;
+        }
+    }
+    else if (vendor->flags == RESTRICTION_CHECK_MOUNT_VENDOR)
+    {
+        if ((vendor->racemask > 0) && (vendor->reqrepfaction))
+        {
+            uint32_t plrep = getFactionStanding(vendor->reqrepfaction);
+            if (!(getRaceMask() & vendor->racemask) && (plrep < vendor->reqrepvalue))
+                return false;
+        }
+        else
+        {
+            sLogger.failure("VendorRestrictions: Mount vendor specified, but not enough info for creature %u", vendor->entry);
+        }
+    }
+
+    return true;
+}
+
+bool Player::canTrainAt(Trainer* trainer)
+{
+    if (!trainer)
+        return false;
+
+    if ((trainer->RequiredClass && this->getClass() != trainer->RequiredClass) ||
+        ((trainer->RequiredRace && this->getRace() != trainer->RequiredRace) &&
+            ((trainer->RequiredRepFaction && trainer->RequiredRepValue) &&
+                this->getFactionStanding(trainer->RequiredRepFaction) != static_cast<int32_t>(trainer->RequiredRepValue))) ||
+        (trainer->RequiredSkill && !this->hasSkillLine(trainer->RequiredSkill)) ||
+        (trainer->RequiredSkillLine && this->getSkillLineCurrent(trainer->RequiredSkill) < trainer->RequiredSkillLine))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+void Player::sendCinematicCamera(uint32_t id)
+{
+    m_mapMgr->ChangeObjectLocation(this);
+    SetPosition(float(GetPositionX() + 0.01), float(GetPositionY() + 0.01), float(GetPositionZ() + 0.01), GetOrientation());
+    m_session->SendPacket(SmsgTriggerCinematic(id).serialise().get());
+}
+
+void Player::setMover(Unit* target)
+{
+    m_session->m_MoverWoWGuid.Init(target->getGuid());
+    mControledUnit = target;
+
+#if VERSION_STRING > WotLk
+    ObjectGuid guid = target->getGuid();
+
+    WorldPacket data(SMSG_MOVE_SET_ACTIVE_MOVER, 9);
+    data.writeBit(guid[5]);
+    data.writeBit(guid[7]);
+    data.writeBit(guid[3]);
+    data.writeBit(guid[6]);
+    data.writeBit(guid[0]);
+    data.writeBit(guid[4]);
+    data.writeBit(guid[1]);
+    data.writeBit(guid[2]);
+
+    data.WriteByteSeq(guid[6]);
+    data.WriteByteSeq(guid[2]);
+    data.WriteByteSeq(guid[3]);
+    data.WriteByteSeq(guid[0]);
+    data.WriteByteSeq(guid[5]);
+    data.WriteByteSeq(guid[7]);
+    data.WriteByteSeq(guid[1]);
+    data.WriteByteSeq(guid[4]);
+
+    SendPacket(&data);
+#endif
+}
+
+void Player::resetTimeSync()
+{
+    m_timeSyncCounter = 0;
+    m_timeSyncTimer = 0;
+    m_timeSyncClient = 0;
+    m_timeSyncServer = Util::getMSTime();
+}
+
+void Player::sendTimeSync()
+{
+    GetSession()->SendPacket(SmsgTimeSyncReq(m_timeSyncCounter++).serialise().get());
+
+    // Schedule next sync in 10 sec
+    m_timeSyncTimer = 10000;
+    m_timeSyncServer = Util::getMSTime();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -7632,7 +8271,7 @@ void Player::eventTeleportTaxi(uint32_t mapId, float x, float y, float z)
         return;
     }
     _Relocate(mapId, LocationVector(x, y, z), (mapId == GetMapId() ? false : true), true, 0);
-    ForceZoneUpdate();
+    forceZoneUpdate();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -8055,7 +8694,7 @@ Item* Player::storeItem(LootItem const* lootItem)
             sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, lootItem->count, newItem->getEntry(), newItem->getPropertySeed(), newItem->getRandomPropertiesId(), newItem->getStackCount());
             sQuestMgr.OnPlayerItemPickup(this, newItem);
 #if VERSION_STRING > TBC
-            GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, newItem->getEntry(), 1, 0);
+            getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, newItem->getEntry(), 1, 0);
 #endif
         }
         else
@@ -8087,7 +8726,7 @@ Item* Player::storeItem(LootItem const* lootItem)
         sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, lootItem->count, add->getEntry(), add->getPropertySeed(), add->getRandomPropertiesId(), add->getStackCount());
         sQuestMgr.OnPlayerItemPickup(this, add);
 #if VERSION_STRING > TBC
-        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->getEntry(), 1, 0);
+        getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->getEntry(), 1, 0);
 #endif
         return add;
     }

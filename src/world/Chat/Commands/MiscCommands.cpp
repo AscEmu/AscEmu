@@ -329,7 +329,7 @@ bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
             GreenSystemMessage(m_session, "Player %s revived.", reviveTarget->getName().c_str());
     }
 
-    reviveTarget->FullHPMP();
+    reviveTarget->setFullHealthMana();
 
     // Write to GM log
     if (revivedSelf)

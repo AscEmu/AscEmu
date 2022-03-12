@@ -214,7 +214,7 @@ void Arena::OnAddPlayer(Player* plr)
     // On arena start all conjured items are removed
     plr->getItemInterface()->RemoveAllConjured();
     // On arena start remove all temp enchants
-    plr->RemoveTempEnchantsOnArena();
+    plr->removeTempItemEnchantsOnArena();
 
     // Before the arena starts all your cooldowns are reset
     if (!m_started  && plr->IsInWorld())
@@ -258,7 +258,7 @@ void Arena::OnRemovePlayer(Player* plr)
 
     // Reset all their cooldowns and restore their HP/Mana/Energy to max
     plr->resetAllCooldowns();
-    plr->FullHPMP();
+    plr->setFullHealthMana();
 }
 
 void Arena::HookOnPlayerKill(Player* plr, Player* pVictim)
