@@ -361,8 +361,8 @@ void WorldSession::LogoutPlayer(bool Save)
         _player->getItemInterface()->removeLootableItems();
 
         // Save HP/Mana
-        _player->load_health = _player->getHealth();
-        _player->load_mana = _player->getPower(POWER_TYPE_MANA);
+        _player->m_loadHealth = _player->getHealth();
+        _player->m_loadMana = _player->getPower(POWER_TYPE_MANA);
 
 
         _player->getSummonInterface()->removeAllSummons();

@@ -592,7 +592,7 @@ uint32_t Player::getMaxLevel() const
 #if VERSION_STRING > Classic
     return playerData()->field_max_level;
 #else
-    return max_level;
+    return m_classicMaxLevel;
 #endif
 }
 
@@ -601,7 +601,7 @@ void Player::setMaxLevel(uint32_t level)
 #if VERSION_STRING > Classic
     write(playerData()->field_max_level, level);
 #else
-    max_level = level;
+    m_classicMaxLevel = level;
 #endif 
 }
 
@@ -1485,14 +1485,14 @@ void Player::sendSummonRequest(uint32_t requesterId, uint32_t zoneId, uint32_t m
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Basic
-DBC::Structures::ChrRacesEntry const* Player::getDbcRaceEntry() { return myRace; };
-DBC::Structures::ChrClassesEntry const* Player::getDbcClassEntry() { return myClass; };
+DBC::Structures::ChrRacesEntry const* Player::getDbcRaceEntry() { return m_dbcRace; };
+DBC::Structures::ChrClassesEntry const* Player::getDbcClassEntry() { return m_dbcClass; };
 
 std::string Player::getName() const { return m_name; }
 void Player::setName(std::string name) { m_name = name; }
 
-uint32_t Player::getLoginFlag() const { return login_flags; }
-void Player::setLoginFlag(uint32_t flag) { login_flags = flag; }
+uint32_t Player::getLoginFlag() const { return m_loginFlag; }
+void Player::setLoginFlag(uint32_t flag) { m_loginFlag = flag; }
 
 void Player::setInitialDisplayIds(uint8_t gender, uint8_t race)
 {
@@ -1524,10 +1524,10 @@ void Player::applyLevelInfo(uint32_t newLevel)
 
     if (!m_FirstLogin)
     {
-        const auto previousLevelInfo = lvlinfo;
+        const auto previousLevelInfo = m_levelInfo;
 
-        lvlinfo = sObjectMgr.GetLevelInfo(getRace(), getClass(), newLevel);
-        if (lvlinfo == nullptr)
+        m_levelInfo = sObjectMgr.GetLevelInfo(getRace(), getClass(), newLevel);
+        if (m_levelInfo == nullptr)
             return;
 
         if (isDead())
@@ -1535,12 +1535,12 @@ void Player::applyLevelInfo(uint32_t newLevel)
 
         setLevel(newLevel);
 
-        setBaseHealth(lvlinfo->HP);
-        setBaseMana(lvlinfo->Mana);
+        setBaseHealth(m_levelInfo->HP);
+        setBaseMana(m_levelInfo->Mana);
 
         for (uint8_t i = 0; i < STAT_COUNT; ++i)
         {
-            BaseStats[i] = lvlinfo->Stat[i];
+            BaseStats[i] = m_levelInfo->Stat[i];
             CalcStat(i);
         }
 
@@ -1562,13 +1562,13 @@ void Player::applyLevelInfo(uint32_t newLevel)
 
         sendLevelupInfoPacket(
             newLevel,
-            lvlinfo->HP - previousLevelInfo->HP,
-            lvlinfo->Mana - previousLevelInfo->Mana,
-            lvlinfo->Stat[STAT_STRENGTH] - previousLevelInfo->Stat[STAT_STRENGTH],
-            lvlinfo->Stat[STAT_AGILITY] - previousLevelInfo->Stat[STAT_AGILITY],
-            lvlinfo->Stat[STAT_STAMINA] - previousLevelInfo->Stat[STAT_STAMINA],
-            lvlinfo->Stat[STAT_INTELLECT] - previousLevelInfo->Stat[STAT_INTELLECT],
-            lvlinfo->Stat[STAT_SPIRIT] - previousLevelInfo->Stat[STAT_SPIRIT]);
+            m_levelInfo->HP - previousLevelInfo->HP,
+            m_levelInfo->Mana - previousLevelInfo->Mana,
+            m_levelInfo->Stat[STAT_STRENGTH] - previousLevelInfo->Stat[STAT_STRENGTH],
+            m_levelInfo->Stat[STAT_AGILITY] - previousLevelInfo->Stat[STAT_AGILITY],
+            m_levelInfo->Stat[STAT_STAMINA] - previousLevelInfo->Stat[STAT_STAMINA],
+            m_levelInfo->Stat[STAT_INTELLECT] - previousLevelInfo->Stat[STAT_INTELLECT],
+            m_levelInfo->Stat[STAT_SPIRIT] - previousLevelInfo->Stat[STAT_SPIRIT]);
     }
 
     updateSkillMaximumValues();
@@ -1623,11 +1623,11 @@ PlayerTeam Player::getBgTeam() const { return m_bgTeam == TEAM_ALLIANCE ? TEAM_A
 void Player::setTeam(uint32_t team) { m_team = team; m_bgTeam = team; }
 void Player::setBgTeam(uint32_t team) { m_bgTeam = team; }
 
-uint32_t Player::getInitialTeam() const { return myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE; }
+uint32_t Player::getInitialTeam() const { return m_dbcRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE; }
 
 void Player::resetTeam()
 {
-    m_team = myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE;
+    m_team = m_dbcRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE;
     m_bgTeam = m_team;
 }
 
@@ -1681,10 +1681,10 @@ uint32_t* Player::getPlayedTime() { return m_playedTime; }
 // Stats
 void Player::setInitialPlayerData()
 {
-    if (lvlinfo != nullptr)
+    if (m_levelInfo != nullptr)
     {
-        setBaseHealth(lvlinfo->HP);
-        setBaseMana(lvlinfo->Mana);
+        setBaseHealth(m_levelInfo->HP);
+        setBaseMana(m_levelInfo->Mana);
     }
     else
     {
@@ -1817,7 +1817,7 @@ void Player::setInitialPlayerData()
 
     for (uint8_t i = 0; i < STAT_COUNT; ++i)
     {
-        BaseStats[i] = lvlinfo->Stat[i];
+        BaseStats[i] = m_levelInfo->Stat[i];
         CalcStat(i);
     }
 

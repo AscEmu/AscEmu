@@ -618,20 +618,19 @@ public:
     uint32_t* getPlayedTime();
 
 private:
-    LevelInfo* lvlinfo = nullptr;
+    LevelInfo* m_levelInfo = nullptr;
 
-    DBC::Structures::ChrRacesEntry const* myRace = nullptr;
-    DBC::Structures::ChrClassesEntry const* myClass = nullptr;
+    DBC::Structures::ChrRacesEntry const* m_dbcRace = nullptr;
+    DBC::Structures::ChrClassesEntry const* m_dbcClass = nullptr;
 
-    uint32_t load_health = 0;
-    uint32_t load_mana = 0;
+    uint32_t m_loadHealth = 0;
+    uint32_t m_loadMana = 0;
 
-    //used for classic
-    uint32_t max_level = 60;
+    uint32_t m_classicMaxLevel = 60;
 
     std::string m_name;
 
-    uint32_t login_flags = LOGIN_NO_FLAG;
+    uint32_t m_loginFlag = LOGIN_NO_FLAG;
 
     uint32_t m_team = 0;
     uint32_t m_bgTeam = 0;
@@ -639,7 +638,7 @@ private:
     //\note: 0 = played on level, 1 = played total, 2 = played session
     uint32_t m_playedTime[3] = { 0, 0, static_cast<uint32_t>(UNIXTIME) };
 
-    uint32_t OnlineTime = static_cast<uint32_t>(UNIXTIME);
+    uint32_t m_onlineTime = static_cast<uint32_t>(UNIXTIME);
 
     uint32_t m_timeLogoff = 0;
 

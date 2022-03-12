@@ -301,9 +301,9 @@ bool Player::Create(CharCreate& charCreateContent)
     m_restState = 0;
 
     // set race dbc
-    myRace = sChrRacesStore.LookupEntry(charCreateContent._race);
-    myClass = sChrClassesStore.LookupEntry(charCreateContent._class);
-    if (!myRace || !myClass)
+    m_dbcRace = sChrRacesStore.LookupEntry(charCreateContent._race);
+    m_dbcClass = sChrClassesStore.LookupEntry(charCreateContent._class);
+    if (!m_dbcRace || !m_dbcClass)
     {
         // information not found
         sCheatLog.writefromsession(m_session, "tried to create invalid player with race %u and class %u, dbc info not found", charCreateContent._race, charCreateContent._class);
@@ -311,7 +311,7 @@ bool Player::Create(CharCreate& charCreateContent)
         return false;
     }
 
-    if (myRace->team_id == 7)
+    if (m_dbcRace->team_id == 7)
         m_team = 0;
     else
         m_team = 1;
@@ -465,8 +465,8 @@ bool Player::Create(CharCreate& charCreateContent)
     }
 
     sHookInterface.OnCharacterCreate(this);
-    load_health = getMaxHealth();
-    load_mana = getMaxPower(POWER_TYPE_MANA);
+    m_loadHealth = getMaxHealth();
+    m_loadMana = getMaxPower(POWER_TYPE_MANA);
     return true;
 }
 
@@ -1660,7 +1660,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     ss << getFreePrimaryProfessionPoints() << ", ";
 
-    ss << load_health << ", " << load_mana << ", " << uint32(getPvpRank()) << ", " << getPlayerBytes() << ", " << getPlayerBytes2() << ", ";
+    ss << m_loadHealth << ", " << m_loadMana << ", " << uint32(getPvpRank()) << ", " << getPlayerBytes() << ", " << getPlayerBytes2() << ", ";
 
     // Remove un-needed and problematic player flags from being saved :p
     if (hasPlayerFlags(PLAYER_FLAG_PARTY_LEADER))
@@ -1711,7 +1711,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     ss << "'" << uint32(m_playedTime[0]) << " " << uint32(m_playedTime[1]) << " " << uint32(playedt) << "', ";
 
-    ss << uint32(m_deathState) << ", " << m_talentresettimes << ", "  << m_FirstLogin << ", " << login_flags << ", " << m_arenaPoints << ", " << (uint32)m_stableSlotCount << ", ";
+    ss << uint32(m_deathState) << ", " << m_talentresettimes << ", "  << m_FirstLogin << ", " << m_loginFlag << ", " << m_arenaPoints << ", " << (uint32)m_stableSlotCount << ", ";
 
     // instances
     if (in_arena)
@@ -2045,9 +2045,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     uint32 cfaction = field[6].GetUInt32();
 
     // set race dbc
-    myRace = sChrRacesStore.LookupEntry(getRace());
-    myClass = sChrClassesStore.LookupEntry(getClass());
-    if (!myClass || !myRace)
+    m_dbcRace = sChrRacesStore.LookupEntry(getRace());
+    m_dbcClass = sChrClassesStore.LookupEntry(getClass());
+    if (!m_dbcClass || !m_dbcRace)
     {
         // bad character
         sLogger.failure("guid %u failed to login, no race or class dbc found. (race %u class %u)", getGuidLow(), (unsigned int)getRace(), (unsigned int)getClass());
@@ -2055,7 +2055,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         return;
     }
 
-    if (myRace->team_id == 7)
+    if (m_dbcRace->team_id == 7)
         m_bgTeam = m_team = 0;
     else
         m_bgTeam = m_team = 1;
@@ -2063,7 +2063,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     initialiseNoseLevel();
 
     // set power type
-    setPowerType(static_cast<uint8>(myClass->power_type));
+    setPowerType(static_cast<uint8>(m_dbcClass->power_type));
 
     // obtain player create info
     info = sMySQLStore.getPlayerCreateInfo(getRace(), getClass());
@@ -2078,9 +2078,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setLevel(field[7].GetUInt32());
 
     // obtain level/stats information
-    lvlinfo = sObjectMgr.GetLevelInfo(getRace(), getClass(), getLevel());
+    m_levelInfo = sObjectMgr.GetLevelInfo(getRace(), getClass(), getLevel());
 
-    if (!lvlinfo)
+    if (!m_levelInfo)
     {
         sLogger.failure("guid %u level %u class %u race %u levelinfo not found!", getGuidLow(), getLevel(), (unsigned int)getClass(), (unsigned int)getRace());
         RemovePendingPlayer();
@@ -2152,11 +2152,11 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     setFreePrimaryProfessionPoints(field[18].GetUInt32());
 
-    load_health = field[19].GetUInt32();
-    load_mana = field[20].GetUInt32();
-    setHealth(load_health);
+    m_loadHealth = field[19].GetUInt32();
+    m_loadMana = field[20].GetUInt32();
+    setHealth(m_loadHealth);
 
-    sLogger.debug("Player level %u, health %u, mana %u loaded from db!", getLevel(), load_health, load_mana);
+    sLogger.debug("Player level %u, health %u, mana %u loaded from db!", getLevel(), m_loadHealth, m_loadMana);
 
     setPvpRank(field[21].GetUInt8());
 
@@ -2240,7 +2240,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     m_deathState = (DeathState)field[47].GetUInt32();
     m_talentresettimes = field[48].GetUInt32();
     m_FirstLogin = field[49].GetBool();
-    login_flags = field[50].GetUInt32();
+    m_loginFlag = field[50].GetUInt32();
     m_arenaPoints = field[51].GetUInt32();
     if (m_arenaPoints > worldConfig.limit.maxArenaPoints)
     {
@@ -2949,8 +2949,8 @@ void Player::OnPushToWorld()
     // send weather
     sWeatherMgr.SendWeather(this);
 
-    setHealth(load_health > getMaxHealth() ? getMaxHealth() : load_health);
-    setPower(POWER_TYPE_MANA, (load_mana > getMaxPower(POWER_TYPE_MANA) ? getMaxPower(POWER_TYPE_MANA) : load_mana));
+    setHealth(m_loadHealth > getMaxHealth() ? getMaxHealth() : m_loadHealth);
+    setPower(POWER_TYPE_MANA, (m_loadMana > getMaxPower(POWER_TYPE_MANA) ? getMaxPower(POWER_TYPE_MANA) : m_loadMana));
 
     if (!GetSession()->HasGMPermissions())
         getItemInterface()->CheckAreaItems();
@@ -3040,9 +3040,9 @@ void Player::OnPushToWorld()
     // send weather
     sWeatherMgr.SendWeather(this);
 
-    setHealth(load_health > getMaxHealth() ? getMaxHealth() : load_health);
+    setHealth(m_loadHealth > getMaxHealth() ? getMaxHealth() : m_loadHealth);
     if (getPowerType() == POWER_TYPE_MANA)
-        setPower(POWER_TYPE_MANA, (load_mana > getMaxPower(POWER_TYPE_MANA) ? getMaxPower(POWER_TYPE_MANA) : load_mana));
+        setPower(POWER_TYPE_MANA, (m_loadMana > getMaxPower(POWER_TYPE_MANA) ? getMaxPower(POWER_TYPE_MANA) : m_loadMana));
 
     if (m_FirstLogin)
     {
@@ -3138,8 +3138,8 @@ void Player::RemoveFromWorld()
     if (m_sendOnlyRaidgroup)
         event_RemoveEvents(EVENT_PLAYER_EJECT_FROM_INSTANCE);
 
-    load_health = getHealth();
-    load_mana = getPower(POWER_TYPE_MANA);
+    m_loadHealth = getHealth();
+    m_loadMana = getPower(POWER_TYPE_MANA);
 
     if (m_bg)
         m_bg->RemovePlayer(this, true);
