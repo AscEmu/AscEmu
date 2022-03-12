@@ -1353,11 +1353,11 @@ private:
     mutable std::mutex m_mutextDailies;
     std::set<uint32_t> m_finishedDailies = {};
 
-    std::set<uint32_t> m_removequests;
-    std::set<uint32_t> m_finishedQuests;
+    std::set<uint32_t> m_removequests = {};
+    std::set<uint32_t> m_finishedQuests = {};
     uint32_t m_questSharer = 0;
-    std::set<uint32_t> quest_spells;
-    std::set<uint32_t> quest_mobs;
+    std::set<uint32_t> quest_spells = {};
+    std::set<uint32_t> quest_mobs = {};
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Social

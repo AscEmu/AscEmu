@@ -1282,9 +1282,12 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
             case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST:
             {
                 uint32_t completed = 0;
-                auto it = GetPlayer()->getFinishedQuests().find(achievementCriteria->complete_quest.questID);
-                if (it != GetPlayer()->getFinishedQuests().end())
-                    ++completed;
+                for (uint32_t finishedQuestId : GetPlayer()->getFinishedQuests())
+                {
+                    if (QuestProperties const* qst = sMySQLStore.getQuestProperties(finishedQuestId))
+                        if (finishedQuestId == achievementCriteria->complete_quest.questID)
+                            ++completed;
+                }
 
                 SetCriteriaProgress(achievementCriteria, completed);
             } break;
