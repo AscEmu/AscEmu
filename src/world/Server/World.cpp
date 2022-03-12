@@ -227,7 +227,7 @@ void World::updateAllTrafficTotals()
 
     for (auto playerStorage = sObjectMgr._players.begin(); playerStorage != sObjectMgr._players.end(); ++playerStorage)
     {
-        WorldSocket* socket = playerStorage->second->GetSession()->GetSocket();
+        WorldSocket* socket = playerStorage->second->getSession()->GetSocket();
         if (!socket || !socket->IsConnected() || socket->IsDeleted())
             continue;
 
@@ -685,7 +685,7 @@ bool World::setInitialWorldSettings()
     (new RandomMovementFactory())->registerSelf();
     (new WaypointMovementFactory())->registerSelf();
 
-    Player::InitVisibleUpdateBits();
+    Player::initVisibleUpdateBits();
 
     resetCharacterLoginBannState();
 
@@ -1005,7 +1005,7 @@ void World::saveAllPlayersToDb()
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         auto player = itr->second;
-        if (player->GetSession())
+        if (player->getSession())
         {
             const auto startTime = Util::TimeNow();
             player->SaveToDB(false);

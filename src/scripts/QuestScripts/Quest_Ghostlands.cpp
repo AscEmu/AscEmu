@@ -26,7 +26,7 @@ class Prisoner12 : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 1, plr->getSession()->language);
         if (plr->hasQuestInQuestLog(9164))
             menu.addItem(GOSSIP_ICON_CHAT, 462, 1);     // Release Him.
 
@@ -49,7 +49,7 @@ class Prisoner22 : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 1, plr->getSession()->language);
         if (plr->hasQuestInQuestLog(9164))
             menu.addItem(GOSSIP_ICON_CHAT, 462, 1);     // Release Him.
 
@@ -73,7 +73,7 @@ class Prisoner32 : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 1, plr->getSession()->language);
         if (plr->hasQuestInQuestLog(9164))
             menu.addItem(GOSSIP_ICON_CHAT, 462, 1);     // Release Him.
 

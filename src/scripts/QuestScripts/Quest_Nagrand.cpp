@@ -308,7 +308,7 @@ class LumpGossipScript : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        GossipMenu menu(pObject->getGuid(), 2, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 2, plr->getSession()->language);
         menu.addItem(GOSSIP_ICON_CHAT, 469, 1);     // Why are Boulderfist out this far? You know this is Kurenai territory!
         menu.sendGossipPacket(plr);
     };

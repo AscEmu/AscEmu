@@ -50,7 +50,7 @@ void QuestLogEntry::initPlayerData()
 
     m_player->setQuestLogInSlot(this, m_slot);
 
-    if (!m_player->GetSession()->m_loggingInPlayer)
+    if (!m_player->getSession()->m_loggingInPlayer)
         CALL_QUESTSCRIPT_EVENT(this, OnQuestStart)(m_player, this);
 }
 
@@ -396,7 +396,7 @@ void QuestLogEntry::sendQuestComplete()
 {
     WorldPacket data(SMSG_QUESTUPDATE_COMPLETE, 4);
     data << m_questProperties->id;
-    m_player->GetSession()->SendPacket(&data);
+    m_player->getSession()->SendPacket(&data);
 
     m_player->UpdateNearbyGameObjects();
 

@@ -109,7 +109,7 @@ WorldSession::~WorldSession()
         _socket->SetSession(nullptr);
 
     if (m_loggingInPlayer)
-        m_loggingInPlayer->SetSession(nullptr);
+        m_loggingInPlayer->setSession(nullptr);
 
     deleteMutex.Release();
 }

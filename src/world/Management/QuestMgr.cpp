@@ -999,7 +999,7 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
 
 void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32 language)
 {
-    if (!plr || !plr->GetSession()) return;
+    if (!plr || !plr->getSession()) return;
     uint32 status;
     std::list<QuestRelation*>::iterator it;
     std::list<QuestRelation*>::iterator st;
@@ -1015,7 +1015,7 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
     if (qst_giver->isGameObject())
         *data << std::string("");
     else
-        *data << plr->GetSession()->LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU); // "Hey there, $N. How can I help you?" // Hello line
+        *data << plr->getSession()->LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU); // "Hey there, $N. How can I help you?" // Hello line
     *data << uint32(1); // Emote Delay
     *data << uint32(1); // Emote
 
@@ -1120,7 +1120,7 @@ void QuestMgr::SendQuestUpdateAddKill(Player* plr, uint32 questid, uint32 entry,
     data << count;
     data << tcount;
     data << guid;
-    plr->GetSession()->SendPacket(&data);
+    plr->getSession()->SendPacket(&data);
 }
 
 void QuestMgr::BuildQuestUpdateComplete(WorldPacket* data, QuestProperties const* qst)
@@ -1132,7 +1132,7 @@ void QuestMgr::BuildQuestUpdateComplete(WorldPacket* data, QuestProperties const
 
 void QuestMgr::SendPushToPartyResponse(Player* plr, Player* pTarget, uint8 response)
 {
-    plr->GetSession()->SendPacket(MsgQuestPushResult(pTarget->getGuid(), 0, response).serialise().get());
+    plr->getSession()->SendPacket(MsgQuestPushResult(pTarget->getGuid(), 0, response).serialise().get());
 }
 
 bool QuestMgr::OnGameObjectActivate(Player* plr, GameObject* go)
@@ -1351,7 +1351,7 @@ void QuestMgr::OnPlayerItemPickup(Player* plr, Item* item)
                         data.SetOpcode(SMSG_QUESTUPDATE_ADD_ITEM);
                         data << questLog->getQuestProperties()->required_item[j];
                         data << uint32(1);
-                        plr->GetSession()->SendPacket(&data);
+                        plr->getSession()->SendPacket(&data);
 
                         if (questLog->canBeFinished())
                             questLog->sendQuestComplete();
@@ -1498,8 +1498,8 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
     {
         if (!dynamic_cast<Creature*>(qst_giver)->HasQuest(qst->id, 2))
         {
-            //sCheatLog.writefromsession(plr->GetSession(), "tried to finish quest from invalid npc.");
-            plr->GetSession()->Disconnect();
+            //sCheatLog.writefromsession(plr->getSession(), "tried to finish quest from invalid npc.");
+            plr->getSession()->Disconnect();
             return;
         }
     }
@@ -1723,7 +1723,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                 data << uint32(0);
                 data << uint16(2);
                 data << plr->getGuid();
-                plr->GetSession()->SendPacket(&data);
+                plr->getSession()->SendPacket(&data);
 
                 data.Initialize(SMSG_SPELL_GO);
                 data << qst_giver->GetNewGUID();
@@ -1736,7 +1736,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                 data << uint8(0);
                 data << uint16(2);
                 data << plr->getGuid();
-                plr->GetSession()->SendPacket(&data);
+                plr->getSession()->SendPacket(&data);
 
                 // Teach the spell
                 plr->addSpell(qst->reward_spell);
@@ -2181,8 +2181,8 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
         if ((status == QuestStatus::Available) || (status == QuestStatus::Repeatable) || (status == QuestStatus::AvailableChat))
         {
-            sQuestMgr.BuildQuestDetails(&data, (*itr)->qst, qst_giver, 1, plr->GetSession()->language, plr); // 1 because we have 1 quest, and we want goodbye to function
-            plr->GetSession()->SendPacket(&data);
+            sQuestMgr.BuildQuestDetails(&data, (*itr)->qst, qst_giver, 1, plr->getSession()->language, plr); // 1 because we have 1 quest, and we want goodbye to function
+            plr->getSession()->SendPacket(&data);
             sLogger.debug("WORLD: Sent SMSG_QUESTGIVER_QUEST_DETAILS.");
 
             if ((*itr)->qst->HasFlag(QUEST_FLAGS_AUTO_ACCEPT))
@@ -2190,22 +2190,22 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
         }
         else if (status == QuestStatus::Finished)
         {
-            sQuestMgr.BuildOfferReward(&data, (*itr)->qst, qst_giver, 1, plr->GetSession()->language, plr);
-            plr->GetSession()->SendPacket(&data);
+            sQuestMgr.BuildOfferReward(&data, (*itr)->qst, qst_giver, 1, plr->getSession()->language, plr);
+            plr->getSession()->SendPacket(&data);
             //ss
             sLogger.debug("WORLD: Sent SMSG_QUESTGIVER_OFFER_REWARD.");
         }
         else if (status == QuestStatus::NotFinished)
         {
-            sQuestMgr.BuildRequestItems(&data, (*itr)->qst, qst_giver, status, plr->GetSession()->language);
-            plr->GetSession()->SendPacket(&data);
+            sQuestMgr.BuildRequestItems(&data, (*itr)->qst, qst_giver, status, plr->getSession()->language);
+            plr->getSession()->SendPacket(&data);
             sLogger.debug("WORLD: Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
         }
     }
     else
     {
-        sQuestMgr.BuildQuestList(&data, qst_giver, plr, plr->GetSession()->language);
-        plr->GetSession()->SendPacket(&data);
+        sQuestMgr.BuildQuestList(&data, qst_giver, plr, plr->getSession()->language);
+        plr->getSession()->SendPacket(&data);
         sLogger.debug("WORLD: Sent SMSG_QUESTGIVER_QUEST_LIST.");
     }
     return true;

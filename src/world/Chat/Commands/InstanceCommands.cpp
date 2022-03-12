@@ -269,7 +269,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
     }
 
     // tell player the instance was reset
-    plr->GetSession()->SendPacket(SmsgInstanceReset(instance->m_mapId).serialise().get());
+    plr->getSession()->SendPacket(SmsgInstanceReset(instance->m_mapId).serialise().get());
 
     // shut down instance
     sInstanceMgr.DeleteBattlegroundInstance(instance->m_mapId, instance->m_instanceId);

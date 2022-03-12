@@ -156,10 +156,10 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
         return true;
 
     // Notify player about removing ticket
-    plr->GetSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
+    plr->getSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
 
     // Response - Send GM Survey
-    plr->GetSession()->SendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
+    plr->getSession()->SendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
 
     return true;
 }
@@ -288,7 +288,7 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
         return true;
     }
 
-    if (ticket->assignedToPlayer != 0 && ticket->assignedToPlayer != cplr->getGuid() && !cplr->GetSession()->CanUseCommand('z'))
+    if (ticket->assignedToPlayer != 0 && ticket->assignedToPlayer != cplr->getGuid() && !cplr->getSession()->CanUseCommand('z'))
     {
         chn->say(cplr, "GmTicket:0:Ticket is assigned to another GM.", cplr, true);
         return true;
@@ -309,10 +309,10 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
         return true;
 
     // Notify player about removing ticket
-    plr->GetSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
+    plr->getSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
 
     // Response - Send GM Survey
-    plr->GetSession()->SendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
+    plr->getSession()->SendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
 
     SystemMessageToPlr(plr, "You have been selected to fill out a GM Performance Survey. Please respond truthfully to the questions that you are asked and include the Game Masters name to your comment.");
     return true;
@@ -361,7 +361,7 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* 
         return true;
     }
 
-    if (plr->GetSession()->GetPermissionCount() == 0)
+    if (plr->getSession()->GetPermissionCount() == 0)
     {
         chn->say(cplr, "GmTicket:0:Player is not a GM.", cplr, true);
         return true;
@@ -376,7 +376,7 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* 
     if (ticket->assignedToPlayer != 0 && ticket->assignedToPlayer != cplr->getGuid())
     {
         Player* aplr = sObjectMgr.GetPlayer((uint32)ticket->assignedToPlayer);
-        if (aplr != NULL && aplr->IsInWorld() && !cplr->GetSession()->CanUseCommand('z'))
+        if (aplr != NULL && aplr->IsInWorld() && !cplr->getSession()->CanUseCommand('z'))
         {
             chn->say(cplr, "GmTicket:0:Ticket already assigned to another GM.", cplr, true);
             return true;
@@ -401,7 +401,7 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* 
     //data << float(0.0);//updateTime - days | How recent is the data for oldest ticket time, measured in days.  If this number 1 hour, we have bad data.
     //data << unit64(2);//assignedToGM |0 - ticket is not currently assigned to a gm | 1 - ticket is assigned to a normal gm |    2 - ticket is in the escalation queue
     //data << uint64(1);//openedByGM | 0 - ticket has never been opened by a gm | 1 - ticket has been opened by a gm
-    //mplr->GetSession()->SendPacket(&data);
+    //mplr->getSession()->SendPacket(&data);
     SystemMessageToPlr(mplr, "SYSTEM: Your ticket has been escalated. A Senior Game Master will be with you shortly!");
     return true;
 }
@@ -434,7 +434,7 @@ bool ChatHandler::HandleGMTicketReleaseCommand(const char* args, WorldSession* m
     }
 
     Player* plr = sObjectMgr.GetPlayer((uint32)ticket->assignedToPlayer);
-    if (!cplr->GetSession()->CanUseCommand('z') && plr != NULL && plr->IsInWorld() && plr->GetSession()->CanUseCommand('z'))
+    if (!cplr->getSession()->CanUseCommand('z') && plr != NULL && plr->IsInWorld() && plr->getSession()->CanUseCommand('z'))
     {
         chn->say(cplr, "GmTicket:0:You can not release tickets from Senior Game Masters.", cplr, true);
         return true;
@@ -486,7 +486,7 @@ bool ChatHandler::HandleGMTicketCommentCommand(const char* args, WorldSession* m
         return true;
     }
 
-    if (ticket->assignedToPlayer != 0 && ticket->assignedToPlayer != cplr->getGuid() && !cplr->GetSession()->CanUseCommand('z'))
+    if (ticket->assignedToPlayer != 0 && ticket->assignedToPlayer != cplr->getGuid() && !cplr->getSession()->CanUseCommand('z'))
     {
         chn->say(cplr, "GmTicket:0:Ticket is assigned to another GM.", cplr, true);
         return true;
@@ -545,10 +545,10 @@ bool ChatHandler::HandleGMTicketDeletePermanentCommand(const char* args, WorldSe
     if (plr != NULL && plr->IsInWorld())
     {
         // Notify player about removing ticket
-        plr->GetSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
+        plr->getSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
 
         // Response - Send GM Survey
-        plr->GetSession()->SendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
+        plr->getSession()->SendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
 
         SystemMessageToPlr(plr, "You have been selected to fill out a GM Performance Survey. Please respond truthfully to the questions that you are asked and include the Game Masters name to your comment.");
     }

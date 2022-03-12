@@ -47,7 +47,7 @@ public:
 
 void ProspectorAnvilwardGossip::onHello(Object* pObject, Player * Plr)
 {
-    GossipMenu menu(pObject->getGuid(), ANVILWARD_1, Plr->GetSession()->language);
+    GossipMenu menu(pObject->getGuid(), ANVILWARD_1, Plr->getSession()->language);
     if (Plr->hasQuestInQuestLog(8483))
         menu.addItem(GOSSIP_ICON_CHAT, 460, 1);     // I need a moment of your time, Sir.
 
@@ -60,7 +60,7 @@ void ProspectorAnvilwardGossip::onSelectOption(Object* pObject, Player* Plr, uin
     {
         case 1:
         {
-            GossipMenu menu(pObject->getGuid(), 8240, Plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 8240, Plr->getSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 461, 2);     // Why... yes, of course. I've something to show you right inside this building. Mr. Anvilward.
             menu.sendGossipPacket(Plr);
         }break;

@@ -289,7 +289,7 @@ void CBattleground::OnPlayerPushed(Player* plr)
     if (plr->getGroup() && !Rated())
         plr->getGroup()->RemovePlayer(plr->getPlayerInfo());
 
-    plr->ProcessPendingUpdates();
+    plr->processPendingUpdates();
 
     if (plr->getGroup() == nullptr)
     {
@@ -309,7 +309,7 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
 
     if (m_ended)
     {
-        sChatHandler.SystemMessage(plr->GetSession(), plr->GetSession()->LocalizedWorldSrv(ServerString::SS_YOU_CANNOT_JOIN_BG_AS_IT_HAS_ALREADY_ENDED));
+        sChatHandler.SystemMessage(plr->getSession(), plr->getSession()->LocalizedWorldSrv(ServerString::SS_YOU_CANNOT_JOIN_BG_AS_IT_HAS_ALREADY_ENDED));
         sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
         plr->setPendingBattleground(nullptr);
         return;
@@ -585,8 +585,8 @@ void CBattleground::DistributePacketToAll(WorldPacket* packet)
     for (uint8 i = 0; i < 2; ++i)
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
-            if ((*itr) && (*itr)->GetSession())
-                (*itr)->GetSession()->SendPacket(packet);
+            if ((*itr) && (*itr)->getSession())
+                (*itr)->getSession()->SendPacket(packet);
     }
 }
 
@@ -596,8 +596,8 @@ void CBattleground::DistributePacketToTeam(WorldPacket* packet, uint32 Team)
 
     for (std::set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
     {
-        if ((*itr) && (*itr)->GetSession())
-            (*itr)->GetSession()->SendPacket(packet);
+        if ((*itr) && (*itr)->getSession())
+            (*itr)->getSession()->SendPacket(packet);
     }
 }
 
@@ -657,7 +657,7 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
     {
         if (!m_ended)
         {
-            if(!plr->GetSession()->HasGMPermissions())
+            if(!plr->getSession()->HasGMPermissions())
                 plr->castSpell(plr, BG_DESERTER, true);
         }
 
@@ -686,7 +686,7 @@ void CBattleground::SendPVPData(Player* plr)
 
     WorldPacket data(10 * (m_players[0].size() + m_players[1].size()) + 50);
     BuildPvPUpdateDataPacket(&data);
-    plr->GetSession()->SendPacket(&data);
+    plr->getSession()->SendPacket(&data);
 }
 
 void CBattleground::EventCreate()
@@ -714,8 +714,8 @@ void CBattleground::EventCountdown()
         for (uint8 i = 0; i < 2; ++i)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
-                if ((*itr) && (*itr)->GetSession())
-                    (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(ServerString::SS_BATTLE_BEGIN_ONE_MINUTE), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
+                if ((*itr) && (*itr)->getSession())
+                    (*itr)->getSession()->SystemMessage((*itr)->getSession()->LocalizedWorldSrv(ServerString::SS_BATTLE_BEGIN_ONE_MINUTE), (*itr)->getSession()->LocalizedWorldSrv(GetNameID()));
         }
 
         // SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "One minute until the battle for %s begins!", GetName());
@@ -729,8 +729,8 @@ void CBattleground::EventCountdown()
         for (uint8 i = 0; i < 2; ++i)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
-                if ((*itr) && (*itr)->GetSession())
-                    (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(ServerString::SS_THIRTY_SECONDS_UNTIL_THE_BATTLE), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
+                if ((*itr) && (*itr)->getSession())
+                    (*itr)->getSession()->SystemMessage((*itr)->getSession()->LocalizedWorldSrv(ServerString::SS_THIRTY_SECONDS_UNTIL_THE_BATTLE), (*itr)->getSession()->LocalizedWorldSrv(GetNameID()));
         }
 
         //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "Thirty seconds until the battle for %s begins!", GetName());
@@ -744,8 +744,8 @@ void CBattleground::EventCountdown()
         for (uint8 i = 0; i < 2; ++i)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
-                if ((*itr) && (*itr)->GetSession())
-                    (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(ServerString::SS_FIFTEEN_SECONDS_UNTIL_THE_BATTLE), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
+                if ((*itr) && (*itr)->getSession())
+                    (*itr)->getSession()->SystemMessage((*itr)->getSession()->LocalizedWorldSrv(ServerString::SS_FIFTEEN_SECONDS_UNTIL_THE_BATTLE), (*itr)->getSession()->LocalizedWorldSrv(GetNameID()));
         }
 
         //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "Fifteen seconds until the battle for %s begins!", GetName());
@@ -758,8 +758,8 @@ void CBattleground::EventCountdown()
         for (uint8 i = 0; i < 2; ++i)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
-                if ((*itr) && (*itr)->GetSession())
-                    (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(ServerString::SS_THE_BATTLE_FOR_HAS_BEGUN), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
+                if ((*itr) && (*itr)->getSession())
+                    (*itr)->getSession()->SystemMessage((*itr)->getSession()->LocalizedWorldSrv(ServerString::SS_THE_BATTLE_FOR_HAS_BEGUN), (*itr)->getSession()->LocalizedWorldSrv(GetNameID()));
         }
         //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The battle for %s has begun!", GetName());
         sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_COUNTDOWN);
@@ -902,7 +902,7 @@ void CBattleground::QueuePlayerForResurrect(Player* plr, Creature* spirit_healer
     std::map<Creature*, std::set<uint32> >::iterator itr = m_resurrectMap.find(spirit_healer);
     if (itr != m_resurrectMap.end())
         itr->second.insert(plr->getGuidLow());
-    plr->m_areaSpiritHealer_guid = spirit_healer->getGuid();
+    plr->setAreaSpiritHealerGuid(spirit_healer->getGuid());
 }
 
 void CBattleground::RemovePlayerFromResurrect(Player* plr, Creature* spirit_healer)
@@ -912,7 +912,7 @@ void CBattleground::RemovePlayerFromResurrect(Player* plr, Creature* spirit_heal
     std::map<Creature*, std::set<uint32> >::iterator itr = m_resurrectMap.find(spirit_healer);
     if (itr != m_resurrectMap.end())
         itr->second.erase(plr->getGuidLow());
-    plr->m_areaSpiritHealer_guid = 0;
+    plr->setAreaSpiritHealerGuid(0);
 }
 
 void CBattleground::AddSpiritGuide(Creature* pCreature)
@@ -1024,7 +1024,7 @@ void CBattleground::QueueAtNearestSpiritGuide(Player* plr, Creature* old)
     if (closest != nullptr)
     {
         closest->insert(plr->getGuidLow());
-        plr->m_areaSpiritHealer_guid = cl->getGuid();
+        plr->setAreaSpiritHealerGuid(cl->getGuid());
         plr->castSpell(plr, 2584, true);
     }
 

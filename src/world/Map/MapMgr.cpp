@@ -358,10 +358,10 @@ void MapMgr::PushObject(Object* obj)
         // Add the session to our set if it is a player.
         if (plObj)
         {
-            Sessions.insert(plObj->GetSession());
+            Sessions.insert(plObj->getSession());
 
             // Change the instance ID, this will cause it to be removed from the world thread (return value 1)
-            plObj->GetSession()->SetInstance(GetInstanceID());
+            plObj->getSession()->SetInstance(GetInstanceID());
 
             // Add the map wide objects
             if (_mapWideStaticObjects.size())
@@ -584,13 +584,13 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         }
 
         // Setting an instance ID here will trigger the session to be removed by MapMgr::run(). :)
-        if (plObj && plObj->GetSession())
+        if (plObj && plObj->getSession())
         {
-            plObj->GetSession()->SetInstance(0);
+            plObj->getSession()->SetInstance(0);
 
             // Add it to the global session set. Don't "re-add" to session if it is being deleted.
-            if (!plObj->GetSession()->bDeleted)
-                sWorld.addGlobalSession(plObj->GetSession());
+            if (!plObj->getSession()->bDeleted)
+                sWorld.addGlobalSession(plObj->getSession());
         }
     }
 
@@ -768,12 +768,12 @@ void MapMgr::OutOfMapBoundariesTeleport(Object* object)
         if (player->getBindMapId() != GetMapId())
         {
             player->safeTeleport(player->getBindMapId(), 0, player->getBindPosition());
-            player->GetSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
+            player->getSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
         }
         else
         {
             object->GetPositionV()->ChangeCoords(player->getBindPosition());
-            player->GetSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
+            player->getSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
             player->sendTeleportAckPacket(LocationVector(player->getBindPosition().x, player->getBindPosition().y, player->getBindPosition().z, 0));
         }
     }
@@ -1048,7 +1048,7 @@ void MapMgr::_UpdateObjects()
 
         _processQueue.erase(it2);
         if (player->GetMapMgr() == this)
-            player->ProcessPendingUpdates();
+            player->processPendingUpdates();
     }
 }
 
@@ -1917,8 +1917,8 @@ void MapMgr::TeleportPlayers()
         }
         else
         {
-            if (p->GetSession())
-                p->GetSession()->LogoutPlayer(false);
+            if (p->getSession())
+                p->getSession()->LogoutPlayer(false);
             else
                 delete p;
         }
@@ -2017,9 +2017,9 @@ void MapMgr::SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint
                 {
                     if ((*iter)->isPlayer())
                     {
-                        //TO< Player* >(*iter)->GetSession()->SendPacket(packet);
+                        //TO< Player* >(*iter)->getSession()->SendPacket(packet);
                         if ((*iter)->GetPhase() & obj->GetPhase())
-                            static_cast< Player* >(*iter)->GetSession()->SendChatPacket(packet, langpos, lang, originator);
+                            static_cast< Player* >(*iter)->getSession()->SendChatPacket(packet, langpos, lang, originator);
                     }
                 }
             }
@@ -2489,7 +2489,7 @@ void MapMgr::SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Me
         if ((ZoneMask != ZONE_MASK_ALL && plr->GetZoneId() != (uint32)ZoneMask))
             continue;
 
-        plr->GetSession()->SendPacket(SmsgDefenseMessage(ZoneId, msgbuf).serialise().get());
+        plr->getSession()->SendPacket(SmsgDefenseMessage(ZoneId, msgbuf).serialise().get());
     }
 }
 
@@ -2499,8 +2499,8 @@ void MapMgr::SendPacketToAllPlayers(WorldPacket* packet) const
     {
         Player* p = itr.second;
 
-        if (p->GetSession() != nullptr)
-            p->GetSession()->SendPacket(packet);
+        if (p->getSession() != nullptr)
+            p->getSession()->SendPacket(packet);
     }
 }
 
@@ -2510,8 +2510,8 @@ void MapMgr::SendPacketToPlayersInZone(uint32 zone, WorldPacket* packet) const
     {
         Player* p = itr.second;
 
-        if ((p->GetSession() != nullptr) && (p->GetZoneId() == zone))
-            p->GetSession()->SendPacket(packet);
+        if ((p->getSession() != nullptr) && (p->GetZoneId() == zone))
+            p->getSession()->SendPacket(packet);
     }
 }
 

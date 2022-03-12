@@ -2331,7 +2331,7 @@ void WorldSession::sendInventoryList(Creature* unit)
 {
     if (!unit->HasItems())
     {
-        sChatHandler.BlueSystemMessage(_player->GetSession(),
+        sChatHandler.BlueSystemMessage(_player->getSession(),
             "No sell template found. Report this to database's devs: %d (%s)",
             unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
         sLogger.failure("'%s' discovered that a creature with entry %u (%s) has no sell template.",
@@ -2636,7 +2636,7 @@ void WorldSession::handleRepairItemOpcode(WorldPacket& recvPacket)
                     if (i < INVENTORY_SLOT_BAG_END)
                     {
                         if (pItem->getDurability() == 0 && pItem->RepairItem(_player, srlPacket.isInGuild, &totalcost))
-                            _player->ApplyItemMods(pItem, static_cast<int16_t>(i), true);
+                            _player->applyItemMods(pItem, static_cast<int16_t>(i), true);
                         else
                             pItem->RepairItem(_player, srlPacket.isInGuild, &totalcost);
                     }
@@ -2660,7 +2660,7 @@ void WorldSession::handleRepairItemOpcode(WorldPacket& recvPacket)
                 if (item->RepairItem(_player) && cDurability == 0
                     && searchres->ContainerSlot == static_cast<int8_t>(INVALID_BACKPACK_SLOT)
                     && searchres->Slot < static_cast<int8_t>(INVENTORY_SLOT_BAG_END))
-                    _player->ApplyItemMods(item, searchres->Slot, true);
+                    _player->applyItemMods(item, searchres->Slot, true);
             }
         }
     }

@@ -242,7 +242,7 @@ void WorldSession::handleBattleMasterJoinOpcode(WorldPacket& recvPacket)
     {
         WorldPacket data(SMSG_GROUP_JOINED_BATTLEGROUND, 4);
         data << uint32_t(0xFFFFFFFE);
-        _player->GetSession()->SendPacket(&data);
+        _player->getSession()->SendPacket(&data);
         return;
     }
 

@@ -259,7 +259,7 @@ public:
     {
         if (plr->hasQuestInQuestLog(10814))
         {
-            GossipMenu menu(pObject->getGuid(), 10613, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 10613, plr->getSession()->language);
             if (plr->hasQuestInQuestLog(10583))
                 menu.addItem(GOSSIP_ICON_CHAT, 471, 1);     // I am listening, Dragon
 
@@ -273,19 +273,19 @@ public:
         {
             case 1:
             {
-                GossipMenu menu(pObject->getGuid(), 10614, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 10614, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 472, 2);     // But you are Dragons! How could orcs do this to you?
                 menu.sendGossipPacket(plr);
             } break;
             case 2:
             {
-                GossipMenu menu(pObject->getGuid(), 10615, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 10615, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 473, 3);     // Your mate?
                 menu.sendGossipPacket(plr);
             } break;
             case 3:
             {
-                GossipMenu menu(pObject->getGuid(), 10616, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 10616, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 474, 4);     // I have battled many beasts, Dragon. I will help you.
                 menu.sendGossipPacket(plr);
             } break;
@@ -349,7 +349,7 @@ public:
 
 void FlanisSwiftwing_Gossip::onHello(Object* pObject, Player* plr)
 {
-    GossipMenu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
+    GossipMenu menu(pObject->getGuid(), 40002, plr->getSession()->language);
     if (plr->hasQuestInQuestLog(10583))
         menu.addItem(GOSSIP_ICON_CHAT, 475, 1);     // Examine the corpse
 
@@ -365,7 +365,7 @@ void FlanisSwiftwing_Gossip::onSelectOption(Object* /*pObject*/, Player* Plr, ui
     item->setStackCount(1);
     if (!Plr->getItemInterface()->AddItemToFreeSlot(item))
     {
-        Plr->GetSession()->SendNotification("No free slots were found in your inventory!");
+        Plr->getSession()->SendNotification("No free slots were found in your inventory!");
         item->DeleteMe();
     }
     else

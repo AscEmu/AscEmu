@@ -528,7 +528,7 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
     }
 
     msg.delivery_time = static_cast<uint32_t>(UNIXTIME);
-    if (srlPacket.money != 0 || srlPacket.cod != 0 || attachedItems.empty() && playerReceiverInfo->acct != _player->GetSession()->GetAccountId())
+    if (srlPacket.money != 0 || srlPacket.cod != 0 || attachedItems.empty() && playerReceiverInfo->acct != _player->getSession()->GetAccountId())
     {
         if (!sMailSystem.MailOption(MAIL_FLAG_DISABLE_HOUR_DELAY_FOR_ITEMS))
             msg.delivery_time += HOUR;

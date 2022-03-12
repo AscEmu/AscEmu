@@ -337,7 +337,7 @@ void WorldSession::handleQuestPushResultOpcode(WorldPacket& recvPacket)
         if (questSharerPlayer)
         {
             const uint64_t guid = recvPacket.size() >= 13 ? _player->getGuid() : srlPacket.giverGuid;
-            questSharerPlayer->GetSession()->SendPacket(MsgQuestPushResult(guid, 0, srlPacket.pushResult).serialise().get());
+            questSharerPlayer->getSession()->SendPacket(MsgQuestPushResult(guid, 0, srlPacket.pushResult).serialise().get());
             _player->setQuestSharerDbId(0);
         }
     }
@@ -918,7 +918,7 @@ void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
                     Player* pPlayer = sObjectMgr.GetPlayer((*itr)->guid);
                     if (pPlayer && pPlayer->getGuid() != pguid)
                     {
-                        _player->GetSession()->SendPacket(MsgQuestPushResult(pPlayer->getGuid(), 0, QUEST_SHARE_MSG_SHARING_QUEST).serialise().get());
+                        _player->getSession()->SendPacket(MsgQuestPushResult(pPlayer->getGuid(), 0, QUEST_SHARE_MSG_SHARING_QUEST).serialise().get());
 
                         uint8_t response = QUEST_SHARE_MSG_SHARING_QUEST;
                         uint32_t status = sQuestMgr.PlayerMeetsReqs(pPlayer, pQuest, false);
@@ -956,9 +956,9 @@ void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
                         }
 
                         WorldPacket data;
-                        sQuestMgr.BuildQuestDetails(&data, pQuest, _player, 1, pPlayer->GetSession()->language, pPlayer);
+                        sQuestMgr.BuildQuestDetails(&data, pQuest, _player, 1, pPlayer->getSession()->language, pPlayer);
                         pPlayer->setQuestSharerDbId(pguid);
-                        pPlayer->GetSession()->SendPacket(&data);
+                        pPlayer->getSession()->SendPacket(&data);
                     }
                 }
                 _player->getGroup()->Unlock();

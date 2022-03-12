@@ -30,7 +30,7 @@ bool ChatHandler::HandleModifyHp(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify health from %u to %u on %s (%u)", oldHealth, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the health of %s from %u to %u.", player->getName().c_str(), oldHealth, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your health from %u to %u.", session->GetPlayer()->getName().c_str(), oldHealth, value);
+            GreenSystemMessage(player->getSession(), "%s modify your health from %u to %u.", session->GetPlayer()->getName().c_str(), oldHealth, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -71,7 +71,7 @@ bool ChatHandler::HandleModifyMana(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify power (mana) from %u to %u on %s (%u)", oldMana, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the power (mana) of %s from %u to %u.", player->getName().c_str(), oldMana, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your power (mana) from %u to %u.", session->GetPlayer()->getName().c_str(), oldMana, value);
+            GreenSystemMessage(player->getSession(), "%s modify your power (mana) from %u to %u.", session->GetPlayer()->getName().c_str(), oldMana, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -112,7 +112,7 @@ bool ChatHandler::HandleModifyRage(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify power (rage) from %u to %u on %s (%u)", oldRage, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the power (rage) of %s from %u to %u.", player->getName().c_str(), oldRage, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your power (rage) from %u to %u.", session->GetPlayer()->getName().c_str(), oldRage, value);
+            GreenSystemMessage(player->getSession(), "%s modify your power (rage) from %u to %u.", session->GetPlayer()->getName().c_str(), oldRage, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -153,7 +153,7 @@ bool ChatHandler::HandleModifyEnergy(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify power (energy) from %u to %u on %s (%u)", oldEnergy, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the power (energy) of %s from %u to %u.", player->getName().c_str(), oldEnergy, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your power (energy) from %u to %u.", session->GetPlayer()->getName().c_str(), oldEnergy, value);
+            GreenSystemMessage(player->getSession(), "%s modify your power (energy) from %u to %u.", session->GetPlayer()->getName().c_str(), oldEnergy, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -195,7 +195,7 @@ bool ChatHandler::HandleModifyRunicpower(const char* args, WorldSession* session
             sGMLog.writefromsession(session, "used modify power (runic) from %u to %u on %s (%u)", oldRunic, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the power (runic) of %s from %u to %u.", player->getName().c_str(), oldRunic, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your power (runic) from %u to %u.", session->GetPlayer()->getName().c_str(), oldRunic, value);
+            GreenSystemMessage(player->getSession(), "%s modify your power (runic) from %u to %u.", session->GetPlayer()->getName().c_str(), oldRunic, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -237,7 +237,7 @@ bool ChatHandler::HandleModifyStrength(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify stat (strength) from %u to %u on %s (%u)", oldStrength, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the stat (strength) of %s from %u to %u.", player->getName().c_str(), oldStrength, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your stat (strength) from %u to %u.", session->GetPlayer()->getName().c_str(), oldStrength, value);
+            GreenSystemMessage(player->getSession(), "%s modify your stat (strength) from %u to %u.", session->GetPlayer()->getName().c_str(), oldStrength, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -275,7 +275,7 @@ bool ChatHandler::HandleModifyAgility(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify stat (agility) from %u to %u on %s (%u)", oldAgility, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the stat (agility) of %s from %u to %u.", player->getName().c_str(), oldAgility, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your stat (agility) from %u to %u.", session->GetPlayer()->getName().c_str(), oldAgility, value);
+            GreenSystemMessage(player->getSession(), "%s modify your stat (agility) from %u to %u.", session->GetPlayer()->getName().c_str(), oldAgility, value);
     
         }
     }
@@ -314,7 +314,7 @@ bool ChatHandler::HandleModifyIntelligence(const char* args, WorldSession* sessi
             sGMLog.writefromsession(session, "used modify stat (intellect) from %u to %u on %s (%u)", oldIntellect, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the stat (intellect) of %s from %u to %u.", player->getName().c_str(), oldIntellect, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your stat (intellect) from %u to %u.", session->GetPlayer()->getName().c_str(), oldIntellect, value);
+            GreenSystemMessage(player->getSession(), "%s modify your stat (intellect) from %u to %u.", session->GetPlayer()->getName().c_str(), oldIntellect, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -352,7 +352,7 @@ bool ChatHandler::HandleModifySpirit(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify stat (spirit) from %u to %u on %s (%u)", oldSpirit, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the stat (spirit) of %s from %u to %u.", player->getName().c_str(), oldSpirit, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your stat (spirit) from %u to %u.", session->GetPlayer()->getName().c_str(), oldSpirit, value);
+            GreenSystemMessage(player->getSession(), "%s modify your stat (spirit) from %u to %u.", session->GetPlayer()->getName().c_str(), oldSpirit, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -390,7 +390,7 @@ bool ChatHandler::HandleModifyArmor(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify armor from %u to %u on %s (%u)", oldArmor, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the armor of %s from %u to %u.", player->getName().c_str(), oldArmor, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your armor from %u to %u.", session->GetPlayer()->getName().c_str(), oldArmor, value);
+            GreenSystemMessage(player->getSession(), "%s modify your armor from %u to %u.", session->GetPlayer()->getName().c_str(), oldArmor, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -428,7 +428,7 @@ bool ChatHandler::HandleModifyHoly(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify holy from %u to %u on %s (%u)", oldHoly, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the holy of %s from %u to %u.", player->getName().c_str(), oldHoly, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your holy from %u to %u.", session->GetPlayer()->getName().c_str(), oldHoly, value);
+            GreenSystemMessage(player->getSession(), "%s modify your holy from %u to %u.", session->GetPlayer()->getName().c_str(), oldHoly, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -466,7 +466,7 @@ bool ChatHandler::HandleModifyFire(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify fire from %u to %u on %s (%u)", oldFire, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the fire of %s from %u to %u.", player->getName().c_str(), oldFire, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your fire from %u to %u.", session->GetPlayer()->getName().c_str(), oldFire, value);
+            GreenSystemMessage(player->getSession(), "%s modify your fire from %u to %u.", session->GetPlayer()->getName().c_str(), oldFire, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -504,7 +504,7 @@ bool ChatHandler::HandleModifyNature(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify nature from %u to %u on %s (%u)", oldNature, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the nature of %s from %u to %u.", player->getName().c_str(), oldNature, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your nature from %u to %u.", session->GetPlayer()->getName().c_str(), oldNature, value);
+            GreenSystemMessage(player->getSession(), "%s modify your nature from %u to %u.", session->GetPlayer()->getName().c_str(), oldNature, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -542,7 +542,7 @@ bool ChatHandler::HandleModifyFrost(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify frost from %u to %u on %s (%u)", oldFrost, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the frost of %s from %u to %u.", player->getName().c_str(), oldFrost, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your frost from %u to %u.", session->GetPlayer()->getName().c_str(), oldFrost, value);
+            GreenSystemMessage(player->getSession(), "%s modify your frost from %u to %u.", session->GetPlayer()->getName().c_str(), oldFrost, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -580,7 +580,7 @@ bool ChatHandler::HandleModifyShadow(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify shadow from %u to %u on %s (%u)", oldShadow, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the shadow of %s from %u to %u.", player->getName().c_str(), oldShadow, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your shadow from %u to %u.", session->GetPlayer()->getName().c_str(), oldShadow, value);
+            GreenSystemMessage(player->getSession(), "%s modify your shadow from %u to %u.", session->GetPlayer()->getName().c_str(), oldShadow, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -618,7 +618,7 @@ bool ChatHandler::HandleModifyArcane(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify arcane from %u to %u on %s (%u)", oldArcane, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the arcane of %s from %u to %u.", player->getName().c_str(), oldArcane, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your arcane from %u to %u.", session->GetPlayer()->getName().c_str(), oldArcane, value);
+            GreenSystemMessage(player->getSession(), "%s modify your arcane from %u to %u.", session->GetPlayer()->getName().c_str(), oldArcane, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -656,7 +656,7 @@ bool ChatHandler::HandleModifyDamage(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify arcane from %f to %f on %s (%u)", oldDamage, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the arcane of %s from %f to %f.", player->getName().c_str(), oldDamage, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your arcane from %f to %f.", session->GetPlayer()->getName().c_str(), oldDamage, value);
+            GreenSystemMessage(player->getSession(), "%s modify your arcane from %f to %f.", session->GetPlayer()->getName().c_str(), oldDamage, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -696,7 +696,7 @@ bool ChatHandler::HandleModifyAp(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify ap from %u to %u on %s (%u)", oldAttackPower, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the ap of %s from %u to %u.", player->getName().c_str(), oldAttackPower, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your ap from %u to %u.", session->GetPlayer()->getName().c_str(), oldAttackPower, value);
+            GreenSystemMessage(player->getSession(), "%s modify your ap from %u to %u.", session->GetPlayer()->getName().c_str(), oldAttackPower, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -734,7 +734,7 @@ bool ChatHandler::HandleModifyRangeap(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify rangeap from %u to %u on %s (%u)", oldRangedAp, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the rangeap of %s from %u to %u.", player->getName().c_str(), oldRangedAp, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your rangeap from %u to %u.", session->GetPlayer()->getName().c_str(), oldRangedAp, value);
+            GreenSystemMessage(player->getSession(), "%s modify your rangeap from %u to %u.", session->GetPlayer()->getName().c_str(), oldRangedAp, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -772,7 +772,7 @@ bool ChatHandler::HandleModifyScale(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify scale from %f to %f on %s (%u)", oldScale, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the scale of %s from %f to %f.", player->getName().c_str(), oldScale, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your scale from %f to %f.", session->GetPlayer()->getName().c_str(), oldScale, value);
+            GreenSystemMessage(player->getSession(), "%s modify your scale from %f to %f.", session->GetPlayer()->getName().c_str(), oldScale, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -810,7 +810,7 @@ bool ChatHandler::HandleModifyNativedisplayid(const char* args, WorldSession* se
             sGMLog.writefromsession(session, "used modify nativedisplayid from %u to %u on %s (%u)", oldDisplayId, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the nativedisplayid of %s from %u to %u.", player->getName().c_str(), oldDisplayId, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your nativedisplayid from %u to %u.", session->GetPlayer()->getName().c_str(), oldDisplayId, value);
+            GreenSystemMessage(player->getSession(), "%s modify your nativedisplayid from %u to %u.", session->GetPlayer()->getName().c_str(), oldDisplayId, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -848,7 +848,7 @@ bool ChatHandler::HandleModifyDisplayid(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify displayid from %u to %u on %s (%u)", oldDisplayId, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the displayid of %s from %u to %u.", player->getName().c_str(), oldDisplayId, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your displayid from %u to %u.", session->GetPlayer()->getName().c_str(), oldDisplayId, value);
+            GreenSystemMessage(player->getSession(), "%s modify your displayid from %u to %u.", session->GetPlayer()->getName().c_str(), oldDisplayId, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -886,7 +886,7 @@ bool ChatHandler::HandleModifyFlags(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify flags from %u to %u on %s (%u)", oldUnitFlags, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the flags of %s from %u to %u.", player->getName().c_str(), oldUnitFlags, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your flags from %u to %u.", session->GetPlayer()->getName().c_str(), oldUnitFlags, value);
+            GreenSystemMessage(player->getSession(), "%s modify your flags from %u to %u.", session->GetPlayer()->getName().c_str(), oldUnitFlags, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -924,7 +924,7 @@ bool ChatHandler::HandleModifyFaction(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify faction from %u to %u on %s (%u)", oldFaction, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the faction of %s from %u to %u.", player->getName().c_str(), oldFaction, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your faction from %u to %u.", session->GetPlayer()->getName().c_str(), oldFaction, value);
+            GreenSystemMessage(player->getSession(), "%s modify your faction from %u to %u.", session->GetPlayer()->getName().c_str(), oldFaction, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -962,7 +962,7 @@ bool ChatHandler::HandleModifyDynamicflags(const char* args, WorldSession* sessi
             sGMLog.writefromsession(session, "used modify dynamicflags from %u to %u on %s (%u)", oldDynamicFlags, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the dynamicflags of %s from %u to %u.", player->getName().c_str(), oldDynamicFlags, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your dynamicflags from %u to %u.", session->GetPlayer()->getName().c_str(), oldDynamicFlags, value);
+            GreenSystemMessage(player->getSession(), "%s modify your dynamicflags from %u to %u.", session->GetPlayer()->getName().c_str(), oldDynamicFlags, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -1000,7 +1000,7 @@ bool ChatHandler::HandleModifyHappiness(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify happiness from %u to %u on %s (%u)", oldHappiness, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the happiness of %s from %u to %u.", player->getName().c_str(), oldHappiness, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your happiness from %u to %u.", session->GetPlayer()->getName().c_str(), oldHappiness, value);
+            GreenSystemMessage(player->getSession(), "%s modify your happiness from %u to %u.", session->GetPlayer()->getName().c_str(), oldHappiness, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -1038,7 +1038,7 @@ bool ChatHandler::HandleModifyBoundingradius(const char* args, WorldSession* ses
             sGMLog.writefromsession(session, "used modify boundingradius from %f to %f on %s (%u)", oldBounding, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the boundingradius of %s from %f to %f.", player->getName().c_str(), oldBounding, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your boundingradius from %f to %f.", session->GetPlayer()->getName().c_str(), oldBounding, value);
+            GreenSystemMessage(player->getSession(), "%s modify your boundingradius from %f to %f.", session->GetPlayer()->getName().c_str(), oldBounding, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -1076,7 +1076,7 @@ bool ChatHandler::HandleModifyCombatreach(const char* args, WorldSession* sessio
             sGMLog.writefromsession(session, "used modify combatreach from %f to %f on %s (%u)", oldReach, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the combatreach of %s from %f to %f.", player->getName().c_str(), oldReach, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your combatreach from %f to %f.", session->GetPlayer()->getName().c_str(), oldReach, value);
+            GreenSystemMessage(player->getSession(), "%s modify your combatreach from %f to %f.", session->GetPlayer()->getName().c_str(), oldReach, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -1114,7 +1114,7 @@ bool ChatHandler::HandleModifyEmotestate(const char* args, WorldSession* session
             sGMLog.writefromsession(session, "used modify emotestate from %u to %u on %s (%u)", oldEmote, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the emotestate of %s from %u to %u.", player->getName().c_str(), oldEmote, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your emotestate from %u to %u.", session->GetPlayer()->getName().c_str(), oldEmote, value);
+            GreenSystemMessage(player->getSession(), "%s modify your emotestate from %u to %u.", session->GetPlayer()->getName().c_str(), oldEmote, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -1152,7 +1152,7 @@ bool ChatHandler::HandleModifyBytes0(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify bytes0 from %u to %u on %s (%u)", oldBytes, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the bytes0 of %s from %u to %u.", player->getName().c_str(), oldBytes, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your bytes0 from %u to %u.", session->GetPlayer()->getName().c_str(), oldBytes, value);
+            GreenSystemMessage(player->getSession(), "%s modify your bytes0 from %u to %u.", session->GetPlayer()->getName().c_str(), oldBytes, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -1190,7 +1190,7 @@ bool ChatHandler::HandleModifyBytes1(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify bytes1 from %u to %u on %s (%u)", oldBytes, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the bytes1 of %s from %u to %u.", player->getName().c_str(), oldBytes, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your bytes1 from %u to %u.", session->GetPlayer()->getName().c_str(), oldBytes, value);
+            GreenSystemMessage(player->getSession(), "%s modify your bytes1 from %u to %u.", session->GetPlayer()->getName().c_str(), oldBytes, value);
         }
     }
     else if (unitTarget->isCreature())
@@ -1228,7 +1228,7 @@ bool ChatHandler::HandleModifyBytes2(const char* args, WorldSession* session)
             sGMLog.writefromsession(session, "used modify bytes2 from %u to %u on %s (%u)", oldBytes, value, player->getName().c_str(), player->getGuidLow());
 
             BlueSystemMessage(session, "You modify the bytes2 of %s from %u to %u.", player->getName().c_str(), oldBytes, value);
-            GreenSystemMessage(player->GetSession(), "%s modify your bytes2 from %u to %u.", session->GetPlayer()->getName().c_str(), oldBytes, value);
+            GreenSystemMessage(player->getSession(), "%s modify your bytes2 from %u to %u.", session->GetPlayer()->getName().c_str(), oldBytes, value);
         }
     }
     else if (unitTarget->isCreature())

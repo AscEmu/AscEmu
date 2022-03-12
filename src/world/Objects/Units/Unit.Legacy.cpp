@@ -665,7 +665,7 @@ bool Unit::canReachWithAttack(Unit* pVictim)
         if (pVictim->isPlayer() && static_cast<Player*>(pVictim)->isMoving())
         {
             // this only applies to PvP.
-            uint32 lat = static_cast<Player*>(pVictim)->GetSession() ? static_cast<Player*>(pVictim)->GetSession()->GetLatency() : 0;
+            uint32 lat = static_cast<Player*>(pVictim)->getSession() ? static_cast<Player*>(pVictim)->getSession()->GetLatency() : 0;
 
             // if we're over 500 get fucked anyway.. your gonna lag! and this stops cheaters too
             lat = (lat > 500) ? 500 : lat;
@@ -677,7 +677,7 @@ bool Unit::canReachWithAttack(Unit* pVictim)
         if (static_cast<Player*>(this)->isMoving())
         {
             // this only applies to PvP.
-            uint32 lat = static_cast<Player*>(this)->GetSession() ? static_cast<Player*>(this)->GetSession()->GetLatency() : 0;
+            uint32 lat = static_cast<Player*>(this)->getSession() ? static_cast<Player*>(this)->getSession()->GetLatency() : 0;
 
             // if we're over 500 get fucked anyway.. your gonna lag! and this stops cheaters too
             lat = (lat > 500) ? 500 : lat;
@@ -9138,7 +9138,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     {
         WorldPacket data(SMSG_PET_SPELLS, 4 * 4 + 20);
         pTarget->BuildPetSpellList(data);
-        pThis->GetSession()->SendPacket(&data);
+        pThis->getSession()->SendPacket(&data);
     }
 }
 

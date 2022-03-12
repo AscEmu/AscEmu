@@ -65,7 +65,7 @@ bool ChatHandler::HandleBGMenuCommand(const char* args, WorldSession* m_session)
     if (selected_player == nullptr)
         return true;
 
-    sBattlegroundManager.HandleBattlegroundListPacket(selected_player->GetSession(), type);
+    sBattlegroundManager.HandleBattlegroundListPacket(selected_player->getSession(), type);
 
     return true;
 }

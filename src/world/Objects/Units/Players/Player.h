@@ -27,10 +27,8 @@
 #include "Management/MailMgr.h"
 #include "Management/ItemPrototype.h"
 #include "Management/AchievementMgr.h"
-#include "Map/InstanceDefines.hpp"
 #include "Objects/Units/Unit.h" 
 #include "Storage/MySQLStructures.h"
-#include "Macros/MapsMacros.hpp"
 #include "Macros/PlayerMacros.hpp"
 #include "Objects/Units/Creatures/AIInterface.h" //?? what?
 #include "WorldConf.h"
@@ -111,11 +109,6 @@ private:
     const WoWPlayer* playerData() const { return reinterpret_cast<WoWPlayer*>(wow_data); }
 public:
     void resendSpeed();
-
-private:
-    UpdateManager m_updateMgr;
-public:
-    UpdateManager& getUpdateMgr();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Data
@@ -555,6 +548,9 @@ public:
     void sendTeleportPacket(LocationVector position);
     void sendTeleportAckPacket(LocationVector position);
 
+    void onWorldPortAck();
+    void eventPortToGm(Player* gmPlayer);
+
     void indoorCheckUpdate(uint32_t time);
 
     time_t getFallDisabledUntil() const;
@@ -676,6 +672,39 @@ private:
     uint32_t m_timeLogoff = 0;
 
     CachedCharacterInfo* m_playerInfo = nullptr;
+
+protected:
+    PlayerCreateInfo const* m_playerCreateInfo = nullptr;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Session & Packets
+public:
+    WorldSession* getSession() const;
+    void setSession(WorldSession* session);
+    void removePendingPlayer();
+    void softDisconnect();
+
+    void sendDelayedPacket(WorldPacket* data, bool bDeleteOnSend);
+
+    void processPendingUpdates();
+    bool compressAndSendUpdateBuffer(uint32_t size, const uint8_t* update_buffer);
+    uint32_t buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target) override;
+
+    static void initVisibleUpdateBits();
+    static UpdateMask m_visibleUpdateMask;
+
+    void copyAndSendDelayedPacket(WorldPacket* data);
+
+    UpdateManager& getUpdateMgr();
+
+private:
+    UpdateManager m_updateMgr;
+
+protected:
+    WorldSession* m_session = nullptr;
+
+    void setCreateBits(UpdateMask* updateMask, Player* target) const;
+    void setUpdateBits(UpdateMask* updateMask, Player* target) const;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Stats
@@ -946,8 +975,18 @@ public:
 
     void removeTempItemEnchantsOnArena();
 
+    void addGarbageItem(Item* item);
+
+    void applyItemMods(Item* item, int16 slot, bool apply, bool justBrokedown = false, bool skipStatApply = false);
+
 private:
     ItemInterface* m_itemInterface = nullptr;
+
+    void removeGarbageItems();
+    std::list<Item*> m_GarbageItems;
+
+protected:
+    std::list<ItemSet> m_itemSets;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Difficulty
@@ -992,6 +1031,9 @@ public:
     void setResurrectMapId(uint32_t id);
     void setResurrectPosition(LocationVector position);
 
+    uint64_t getAreaSpiritHealerGuid() const;
+    void setAreaSpiritHealerGuid(uint64_t guid);
+
     void setFullHealthMana();
     void setResurrect();
 
@@ -1011,6 +1053,8 @@ private:
     uint32_t m_resurrectInstanceID = 0;
     uint32_t m_resurrectMapId = 0;
     LocationVector m_resurrectPosition = { 0, 0, 0, 0 };
+
+    uint64_t m_areaSpiritHealerGuid = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Bind
@@ -1766,8 +1810,6 @@ public:
         void CalcExpertise();
         std::map<uint32, uint32> m_wratings;
 
-        void EventPortToGM(Player* p);
-
         /////////////////////////////////////////////////////////////////////////////////////////
         // Spells
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -1844,34 +1886,11 @@ public:
 
         uint32 GetMainMeleeDamage(uint32 AP_owerride);          // I need this for windfury
         
-
         void SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* shapeshift_form, bool active);
 
-    
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Item Interface
-        /////////////////////////////////////////////////////////////////////////////////////////
-    public:
-        void ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedown = false) { _ApplyItemMods(item, slot, apply, justdrokedown); }
-    protected:
-        void _ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedown = false, bool skip_stat_apply = false);
-
-public:
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // World Session
-        /////////////////////////////////////////////////////////////////////////////////////////
-        WorldSession* GetSession() const { return m_session; }
-        void SetSession(WorldSession* s) { m_session = s; }
-
-        void SendDelayedPacket(WorldPacket* data, bool bDeleteOnSend);
-protected:
-        WorldSession* m_session = nullptr;
 public:
 
         // Talents
-        // These functions build a specific type of A9 packet
-        uint32 buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
         void SetTalentHearthOfWildPCT(int value) { hearth_of_wild_pct = value; }
         void EventTalentHearthOfWildChange(bool apply);
 
@@ -2053,16 +2072,11 @@ public:
 
         uint32 TrackingSpell = 0;
         void _EventCharmAttack();
-        
-        void SoftDisconnect();
 
         void ClearCooldownsOnLine(uint32 skill_line, uint32 called_from);
 
-        void ProcessPendingUpdates();
-        bool CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer);
-
-        bool m_Autojoin = false;
-        bool m_AutoAddMem = false;
+        //bool m_Autojoin = false;
+        //bool m_AutoAddMem = false;
         void SendMirrorTimer(MirrorTimerTypes Type, uint32 max, uint32 current, int32 regen);
 
         void UpdateChanceFields();
@@ -2086,7 +2100,7 @@ public:
         void HandleSpellLoot(uint32 itemid);
 
         void CompleteLoading();
-        void OnWorldPortAck();
+        
         bool blinked = false;
         bool m_beingPushed = false;
         
@@ -2094,7 +2108,6 @@ public:
 
         bool m_changingMaps = true;
         bool resend_speed = false; // set to true if m_changingMaps is true.
-        //uint32 m_speedChangeCounter = 1;
 
         int32 m_rap_mod_pct = 0;
 
@@ -2103,20 +2116,11 @@ public:
         SpellInfo const* last_heal_spell = nullptr;
 
         Mailbox m_mailBox;
-        uint64 m_areaSpiritHealer_guid = 0;
         bool m_finishingmovesdodge = false;
 
         bool IsAttacking() { return m_attacking; }
 
-        static void InitVisibleUpdateBits();
-        static UpdateMask m_visibleUpdateMask;
-
-        void CopyAndSendDelayedPacket(WorldPacket* data);
- 
     protected:
-
-        void _SetCreateBits(UpdateMask* updateMask, Player* target) const;
-        void _SetUpdateBits(UpdateMask* updateMask, Player* target) const;
 
         void _SaveQuestLogEntry(QueryBuffer* buf);
         void _LoadQuestLogEntry(QueryResult* result);
@@ -2133,13 +2137,8 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         // Player Class systems, info and misc things
         /////////////////////////////////////////////////////////////////////////////////////////
-        PlayerCreateInfo const* info = nullptr;
         uint32 m_AttackMsgTimer = 0;        // "too far away" and "wrong facing" timer
         bool m_attacking = false;
-
-        uint32 m_invitersGuid = 0;      // It is guild inviters guid ,0 when its not used
-
-        std::list<ItemSet> m_itemsets;
 
         //combat mods
         float m_blockfromspellPCT = 0.0f;
@@ -2157,8 +2156,6 @@ public:
 
         uint32 _fields[getSizeOfStructure(WoWPlayer)];
         int hearth_of_wild_pct = 0;        // druid hearth of wild talent used on shapeshifting. We either know what is last talent level or memo on learn
-    //session
-        void RemovePendingPlayer();
 
     public:
 
@@ -2173,15 +2170,7 @@ public:
         uint32 m_outStealthDamageBonusPeriod = 0;
         uint32 m_outStealthDamageBonusTimer = 0;
 
-    private:
-
-        std::list< Item* > m_GarbageItems;
-
-        void RemoveGarbageItems();
-
-    public:
-
-        void AddGarbageItem(Item* it);
+        
         uint32 CheckDamageLimits(uint32 dmg, uint32 spellid);
 
         void LoadFieldsFromString(const char* string, uint16 firstField, uint32 fieldsNum);

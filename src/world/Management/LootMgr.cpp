@@ -460,7 +460,7 @@ void LootRoll::finalize()
             if (_player->isInGroup())
                 _player->getGroup()->SendPacketToAll(SmsgLootAllPassed(_guid, _groupcount, _itemid, _randomsuffixid, _randompropertyid).serialise().get());
             else
-                _player->GetSession()->SendPacket(SmsgLootAllPassed(_guid, _groupcount, _itemid, _randomsuffixid, _randompropertyid).serialise().get());
+                _player->getSession()->SendPacket(SmsgLootAllPassed(_guid, _groupcount, _itemid, _randomsuffixid, _randompropertyid).serialise().get());
         }
 
         /* item can now be looted by anyone :) */
@@ -475,7 +475,7 @@ void LootRoll::finalize()
     if (_player->isInGroup())
         _player->getGroup()->SendPacketToAll(SmsgLootRollWon(_guid, _slotid, _itemid, _randomsuffixid, _randompropertyid, _player->getGuid(), highest, hightype).serialise().get());
     else
-        _player->GetSession()->SendPacket(SmsgLootRollWon(_guid, _slotid, _itemid, _randomsuffixid, _randompropertyid, _player->getGuid(), highest, hightype).serialise().get());
+        _player->getSession()->SendPacket(SmsgLootRollWon(_guid, _slotid, _itemid, _randomsuffixid, _randompropertyid, _player->getGuid(), highest, hightype).serialise().get());
 
     LootItem& item = _slotid >= pLoot->items.size() ? pLoot->quest_items[_slotid - pLoot->items.size()] : pLoot->items[_slotid];
 
@@ -525,7 +525,7 @@ void LootRoll::playerRolled(Player* player, uint8_t choice)
     if (player->isInGroup())
         player->getGroup()->SendPacketToAll(SmsgLootRoll(_guid, _slotid, player->getGuid(), _itemid, _randomsuffixid, _randompropertyid, roll, choice).serialise().get());
     else
-        player->GetSession()->SendPacket(SmsgLootRoll(_guid, _slotid, player->getGuid(), _itemid, _randomsuffixid, _randompropertyid, roll, choice).serialise().get());
+        player->getSession()->SendPacket(SmsgLootRoll(_guid, _slotid, player->getGuid(), _itemid, _randomsuffixid, _randompropertyid, roll, choice).serialise().get());
     // check for early completion
     if (!--_remaining)
     {
@@ -1060,7 +1060,7 @@ void Loot::itemRemoved(uint8_t lootIndex)
     for (auto playerGuid : PlayersLooting)
     {
         if (Player* player = sObjectMgr.GetPlayer(playerGuid))
-            player->GetSession()->SendPacket(SmsgLootRemoved(lootIndex).serialise().get());
+            player->getSession()->SendPacket(SmsgLootRemoved(lootIndex).serialise().get());
         else
             removeLooter(playerGuid);
     }
@@ -1074,7 +1074,7 @@ void Loot::moneyRemoved()
         if (Player* player = sObjectMgr.GetPlayer(playerGuid))
         {
             WorldPacket data(SMSG_LOOT_CLEAR_MONEY, 0);
-            player->GetSession()->SendPacket(&data);
+            player->getSession()->SendPacket(&data);
         }
         else
         {

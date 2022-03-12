@@ -95,7 +95,7 @@ void TradeData::setTradeMoney(uint64_t money)
     getTargetTradeData()->setTradeAccepted(false);
 
     // Send update packet to trader
-    m_tradeTarget->GetSession()->sendTradeUpdate(true);
+    m_tradeTarget->getSession()->sendTradeUpdate(true);
 }
 
 void TradeData::setTradeAccepted(bool state, bool sendBoth/* = false*/)
@@ -105,9 +105,9 @@ void TradeData::setTradeAccepted(bool state, bool sendBoth/* = false*/)
     if (!state)
     {
         if (sendBoth)
-            m_tradeTarget->GetSession()->sendTradeResult(TRADE_STATUS_STATE_CHANGED);
+            m_tradeTarget->getSession()->sendTradeResult(TRADE_STATUS_STATE_CHANGED);
         else
-            m_player->GetSession()->sendTradeResult(TRADE_STATUS_STATE_CHANGED);
+            m_player->getSession()->sendTradeResult(TRADE_STATUS_STATE_CHANGED);
     }
 }
 
@@ -128,7 +128,7 @@ void TradeData::setTradeItem(TradeSlots slot, Item* item)
     getTargetTradeData()->setTradeAccepted(false);
 
     // Send update packet to trader
-    m_tradeTarget->GetSession()->sendTradeUpdate(true);
+    m_tradeTarget->getSession()->sendTradeUpdate(true);
 }
 
 void TradeData::setTradeSpell(uint32_t spell_id, Item* castItem /*= nullptr*/)
@@ -144,6 +144,6 @@ void TradeData::setTradeSpell(uint32_t spell_id, Item* castItem /*= nullptr*/)
     getTargetTradeData()->setTradeAccepted(false);
 
     // Send update packet to both parties
-    m_player->GetSession()->sendTradeUpdate(false);
-    m_tradeTarget->GetSession()->sendTradeUpdate(true);
+    m_player->getSession()->sendTradeUpdate(false);
+    m_tradeTarget->getSession()->sendTradeUpdate(true);
 }

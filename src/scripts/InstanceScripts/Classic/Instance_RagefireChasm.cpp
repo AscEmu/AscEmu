@@ -25,7 +25,7 @@ public:
         // Make sure player has the quest and Zelemar isn't spawned yet
         if (!pPlayer->hasQuestInQuestLog(9692)) // The Path of the Adept
         {
-            pPlayer->GetSession()->SendNotification("Request quest `The Path of the Adept`.");
+            pPlayer->getSession()->SendNotification("Request quest `The Path of the Adept`.");
             return;
         }
 

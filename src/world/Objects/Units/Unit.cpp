@@ -5714,8 +5714,8 @@ void Unit::sendChatMessageToPlayer(uint8_t type, uint32_t language, std::string 
     if (plr == nullptr)
         return;
 
-    const auto data = createChatPacket(type, language, msg, plr, plr->GetSession()->language);
-    plr->GetSession()->SendPacket(data.get());
+    const auto data = createChatPacket(type, language, msg, plr, plr->getSession()->language);
+    plr->getSession()->SendPacket(data.get());
 }
 
 void Unit::sendChatMessageAlternateEntry(uint32_t entry, uint8_t type, uint32_t lang, std::string  msg)
@@ -5938,7 +5938,7 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
         if (isPlayer())
         {
             const auto plr = static_cast<Player*>(this);
-            if (!plr->GetSession()->HasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
+            if (!plr->getSession()->HasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
                 damage = plr->CheckDamageLimits(damage, spellId);
         }
 
@@ -6513,7 +6513,7 @@ void Unit::knockbackFrom(float x, float y, float speedXY, float speedZ)
     }
     else
     {
-        player->GetSession()->SendPacket(SmsgMoveKnockBack(player->GetNewGUID(), Util::getMSTime(), cosf(player->GetOrientation()), sinf(player->GetOrientation()), speedXY, -speedZ).serialise().get());
+        player->getSession()->SendPacket(SmsgMoveKnockBack(player->GetNewGUID(), Util::getMSTime(), cosf(player->GetOrientation()), sinf(player->GetOrientation()), speedXY, -speedZ).serialise().get());
 
         if (player->hasAuraWithAuraEffect(SPELL_AURA_ENABLE_FLIGHT2) || player->hasAuraWithAuraEffect(SPELL_AURA_FLY))
             player->setMoveCanFly(true);
@@ -6630,7 +6630,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
         if (attacker->isPlayer())
         {
             const auto plr = static_cast<Player*>(attacker);
-            if (!plr->GetSession()->HasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
+            if (!plr->getSession()->HasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
                 damage = plr->CheckDamageLimits(damage, spellId);
         }
 

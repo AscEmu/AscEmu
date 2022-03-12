@@ -235,7 +235,7 @@ class FizzcrankGossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* pPlayer) override
     {
-        GossipMenu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 12435, pPlayer->getSession()->language);
         if (pPlayer->hasQuestInQuestLog(QUEST_THE_MECHAGNOMES))
             menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_1, 1);
 
@@ -248,49 +248,49 @@ public:
         {
             case 1:
             {
-                GossipMenu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK1, pPlayer->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK1, pPlayer->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_2, 2);
                 menu.sendGossipPacket(pPlayer);
             }break;
             case 2:
             {
-                GossipMenu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK2, pPlayer->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK2, pPlayer->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_2, 3);
                 menu.sendGossipPacket(pPlayer);
             }break;
             case 3:
             {
-                GossipMenu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK3, pPlayer->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK3, pPlayer->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_2, 4);
                 menu.sendGossipPacket(pPlayer);
             }break;
             case 4:
             {
-                GossipMenu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK4, pPlayer->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK4, pPlayer->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_2, 5);
                 menu.sendGossipPacket(pPlayer);
             }break;
             case 5:
             {
-                GossipMenu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK5, pPlayer->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK5, pPlayer->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_2, 6);
                 menu.sendGossipPacket(pPlayer);
             }break;
             case 6:
             {
-                GossipMenu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK6, pPlayer->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK6, pPlayer->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_2, 7);
                 menu.sendGossipPacket(pPlayer);
             }break;
             case 7:
             {
-                GossipMenu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK7, pPlayer->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK7, pPlayer->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_2, 8);
                 menu.sendGossipPacket(pPlayer);
             }break;
             case 8:
             {
-                GossipMenu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK8, pPlayer->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), GOSSIP_TEXTID_FIZZCRANK8, pPlayer->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GOSSIP_OPTION_FIZZCRANK_2, 9);
                 menu.sendGossipPacket(pPlayer);
             }break;
@@ -314,7 +314,7 @@ public:
         if (sMySQLStore.getNpcGossipText(Text) == nullptr)
             Text = DefaultGossipTextId;
 
-        GossipMenu menu(pObject->getGuid(), Text, pPlayer->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), Text, pPlayer->getSession()->language);
         sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), pPlayer, menu);
 
         menu.addItem(GOSSIP_ICON_FLIGHTMASTER, GI_SURRISTRASZ, 1);
@@ -324,7 +324,7 @@ public:
 
     void onSelectOption(Object* pObject, Player* pPlayer, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
-        pPlayer->GetSession()->sendTaxiList(static_cast<Creature*>(pObject));
+        pPlayer->getSession()->sendTaxiList(static_cast<Creature*>(pObject));
     }
 };
 
@@ -542,7 +542,7 @@ public:
     {
         if (pPlayer->hasQuestInQuestLog(QUEST_HUNT_IS_ON) && pPlayer->hasAurasWithId(46078))
         {
-            GossipMenu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 12435, pPlayer->getSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 603, 1);
             menu.sendGossipPacket(pPlayer);
         }
@@ -563,7 +563,7 @@ public:
     {
         if (pPlayer->hasQuestInQuestLog(QUEST_HUNT_IS_ON) && pPlayer->hasAurasWithId(46078))
         {
-            GossipMenu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 12435, pPlayer->getSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 604, 1);
             menu.sendGossipPacket(pPlayer);
         }
@@ -584,7 +584,7 @@ public:
     {
         if (pPlayer->hasQuestInQuestLog(QUEST_HUNT_IS_ON) && pPlayer->hasAurasWithId(46078))
         {
-            GossipMenu menu(pObject->getGuid(), 12435, pPlayer->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 12435, pPlayer->getSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 605, 1);
             menu.sendGossipPacket(pPlayer);
         }

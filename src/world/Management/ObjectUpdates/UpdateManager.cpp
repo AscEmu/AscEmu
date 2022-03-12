@@ -163,13 +163,13 @@ void UpdateManager::internalProcessPendingUpdates()
 #if VERSION_STRING < Cata
         if (buffer.wpos() > m_compressionThreshold)
         {
-            sent_packet = m_owner->CompressAndSendUpdateBuffer(uint32_t(buffer.wpos()), buffer.contents());
+            sent_packet = m_owner->compressAndSendUpdateBuffer(uint32_t(buffer.wpos()), buffer.contents());
         }
 #endif
 
         if (!sent_packet)
         {
-            m_owner->GetSession()->OutPacket(SMSG_UPDATE_OBJECT, uint16_t(buffer.wpos()), buffer.contents());
+            m_owner->getSession()->OutPacket(SMSG_UPDATE_OBJECT, uint16_t(buffer.wpos()), buffer.contents());
         }
 }
 
@@ -202,13 +202,13 @@ void UpdateManager::internalProcessPendingUpdates()
 #if VERSION_STRING < Cata
         if (buffer.wpos() > m_compressionThreshold)
         {
-            sent_packet = m_owner->CompressAndSendUpdateBuffer(uint32_t(buffer.wpos()), buffer.contents());
+            sent_packet = m_owner->compressAndSendUpdateBuffer(uint32_t(buffer.wpos()), buffer.contents());
         }
 #endif
 
         if (!sent_packet)
         {
-            m_owner->GetSession()->OutPacket(SMSG_UPDATE_OBJECT, uint16_t(buffer.wpos()), buffer.contents());
+            m_owner->getSession()->OutPacket(SMSG_UPDATE_OBJECT, uint16_t(buffer.wpos()), buffer.contents());
         }
     }
 
@@ -218,7 +218,7 @@ void UpdateManager::internalProcessPendingUpdates()
 
 void UpdateManager::internalSendDelayedPackets()
 {
-    const auto session = m_owner->GetSession();
+    const auto session = m_owner->getSession();
     for (const auto& packet : m_delayedPackets)
     {
         session->SendPacket(packet.get());

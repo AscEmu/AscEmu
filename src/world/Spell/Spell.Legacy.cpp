@@ -1385,7 +1385,7 @@ void Spell::SendInterrupted(uint8 result)
             plr = u_caster->m_redirectSpellPackets;
 
         if (plr != nullptr && plr->isPlayer())
-            plr->GetSession()->SendPacket(SmsgSpellFailure(m_caster->GetNewGUID(), extra_cast_number, getSpellInfo()->getId(), result).serialise().get());
+            plr->getSession()->SendPacket(SmsgSpellFailure(m_caster->GetNewGUID(), extra_cast_number, getSpellInfo()->getId(), result).serialise().get());
     }
 
     m_caster->SendMessageToSet(SmsgSpellFailedOther(m_caster->GetNewGUID(), extra_cast_number, getSpellInfo()->getId(), result).serialise().get(), false);
@@ -1407,7 +1407,7 @@ void Spell::SendResurrectRequest(Player* target)
     if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_IGNORE_RESURRECTION_TIMER)
         overrideTimer = true;
 
-    target->GetSession()->SendPacket(SmsgResurrectRequest(m_caster->getGuid(), casterName, resurrectionSickness, overrideTimer, getSpellInfo()->getId()).serialise().get());
+    target->getSession()->SendPacket(SmsgResurrectRequest(m_caster->getGuid(), casterName, resurrectionSickness, overrideTimer, getSpellInfo()->getId()).serialise().get());
     target->setResurrecterGuid(m_caster->getGuid());
 }
 
@@ -1417,7 +1417,7 @@ void Spell::SendTameFailure(uint8 result)
     {
         WorldPacket data(SMSG_PET_TAME_FAILURE, 1);
         data << uint8(result);
-        p_caster->GetSession()->SendPacket(&data);
+        p_caster->getSession()->SendPacket(&data);
     }
 }
 

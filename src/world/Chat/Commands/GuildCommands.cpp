@@ -218,7 +218,7 @@ bool ChatHandler::HandleGuildRemovePlayerCommand(const char* /*args*/, WorldSess
     if (selected_player != m_session->GetPlayer())
         sGMLog.writefromsession(m_session, "Kicked %s from Guild %s", selected_player->getName().c_str(), selected_player->getGuild()->getName().c_str());
 
-    selected_player->getGuild()->handleRemoveMember(selected_player->GetSession(), selected_player->getGuid());
+    selected_player->getGuild()->handleRemoveMember(selected_player->getSession(), selected_player->getGuid());
 
     return true;
 }

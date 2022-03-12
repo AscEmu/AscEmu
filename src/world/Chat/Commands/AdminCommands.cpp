@@ -44,7 +44,7 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         Player* player = itr->second;
-        if (player->GetSession() && player->IsInWorld())
+        if (player->getSession() && player->IsInWorld())
         {
             if (player->GetMapMgr() != m_session->GetPlayer()->GetMapMgr())
             {
@@ -77,7 +77,7 @@ bool ChatHandler::HandleAdminDispelAllCommand(const char* args, WorldSession* m_
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         Player* player = itr->second;
-        if (player->GetSession() && player->IsInWorld())
+        if (player->getSession() && player->IsInWorld())
         {
             if (player->GetMapMgr() != m_session->GetPlayer()->GetMapMgr())
             {
@@ -126,7 +126,7 @@ bool ChatHandler::HandleAdminMassSummonCommand(const char* args, WorldSession* m
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
         Player* plr = itr->second;
-        if (plr->GetSession() && plr->IsInWorld())
+        if (plr->getSession() && plr->IsInWorld())
         {
             if (faction > -1 && plr->getTeam() == static_cast<uint32>(faction))
             {

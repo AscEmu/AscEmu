@@ -52,7 +52,7 @@ void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
 
     if (!arenaTeam->isMember(GetPlayer()->getGuidLow()))
     {
-        GetPlayer()->SoftDisconnect();
+        GetPlayer()->softDisconnect();
         return;
     }
 
@@ -109,7 +109,7 @@ void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
     auto arenaTeam = sObjectMgr.GetArenaTeamById(srlPacket.teamId);
     if (arenaTeam == nullptr)
     {
-        GetPlayer()->SoftDisconnect();
+        GetPlayer()->softDisconnect();
         return;
     }
 
@@ -208,7 +208,7 @@ void WorldSession::handleArenaTeamInviteDenyOpcode(WorldPacket& /*recvPacket*/)
         return;
 
     if (const auto player = sObjectMgr.GetPlayer(team->m_leader))
-        player->GetSession()->SystemMessage("%s denied your arena team invitation for %s.", _player->getName().c_str(), team->m_name.c_str());
+        player->getSession()->SystemMessage("%s denied your arena team invitation for %s.", _player->getName().c_str(), team->m_name.c_str());
 }
 
 void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
@@ -222,7 +222,7 @@ void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
     auto arenaTeam = sObjectMgr.GetArenaTeamById(srlPacket.teamId);
     if (arenaTeam == nullptr)
     {
-        GetPlayer()->SoftDisconnect();
+        GetPlayer()->softDisconnect();
         return;
     }
 
@@ -266,7 +266,7 @@ void WorldSession::handleArenaTeamDisbandOpcode(WorldPacket& recvPacket)
     auto arenaTeam = sObjectMgr.GetArenaTeamById(srlPacket.teamId);
     if (arenaTeam == nullptr)
     {
-        GetPlayer()->SoftDisconnect();
+        GetPlayer()->softDisconnect();
         return;
     }
 
@@ -296,7 +296,7 @@ void WorldSession::handleArenaTeamPromoteOpcode(WorldPacket& recvPacket)
     auto arenaTeam = sObjectMgr.GetArenaTeamById(srlPacket.teamId);
     if (arenaTeam == nullptr)
     {
-        GetPlayer()->SoftDisconnect();
+        GetPlayer()->softDisconnect();
         return;
     }
 

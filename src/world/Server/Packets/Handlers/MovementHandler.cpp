@@ -130,7 +130,7 @@ bool WorldSession::isHackDetectedInMovementData(uint16_t opcode)
 
     // Speed
     // implement worldConfig.antiHack.isSpeedHackCkeckEnabled
-    if (!_player->isOnTaxi() && _player->obj_movement_info.transport_guid == 0 && !_player->GetSession()->GetPermissionCount())
+    if (!_player->isOnTaxi() && _player->obj_movement_info.transport_guid == 0 && !_player->getSession()->GetPermissionCount())
     {
         // simplified: just take the fastest speed. less chance of fuckups too
         // get the "normal speeds" not the changed ones!

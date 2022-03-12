@@ -564,10 +564,10 @@ void WorldSession::handleChatIgnoredOpcode(WorldPacket& recvPacket)
         return;
 
     const auto player = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow());
-    if (player == nullptr || player->GetSession() == nullptr)
+    if (player == nullptr || player->getSession() == nullptr)
         return;
 
-    player->GetSession()->SendPacket(SmsgMessageChat(CHAT_MSG_IGNORED, LANG_UNIVERSAL, 0, _player->getName(), _player->getGuid()).serialise().get());
+    player->getSession()->SendPacket(SmsgMessageChat(CHAT_MSG_IGNORED, LANG_UNIVERSAL, 0, _player->getName(), _player->getGuid()).serialise().get());
 }
 
 void WorldSession::handleChatChannelWatchOpcode(WorldPacket& recvPacket)

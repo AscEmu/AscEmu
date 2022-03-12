@@ -388,11 +388,11 @@ public:
         if (msg == nullptr)
             return 0;
 
-        plr->GetSession()->SendChatPacket(AscEmu::Packets::SmsgMessageChat(type, lang, 0, msg, plr->getGuid()).serialise().get(), 1, lang, plr->GetSession());
+        plr->getSession()->SendChatPacket(AscEmu::Packets::SmsgMessageChat(type, lang, 0, msg, plr->getGuid()).serialise().get(), 1, lang, plr->getSession());
         for (const auto& itr : plr->getInRangePlayersSet())
         {
             if (itr)
-                static_cast<Player*>(itr)->GetSession()->SendChatPacket(AscEmu::Packets::SmsgMessageChat(type, lang, 0, msg, plr->getGuid()).serialise().get(), 1, lang, plr->GetSession());
+                static_cast<Player*>(itr)->getSession()->SendChatPacket(AscEmu::Packets::SmsgMessageChat(type, lang, 0, msg, plr->getGuid()).serialise().get(), 1, lang, plr->getSession());
         }
         return 0;
     }
@@ -2247,7 +2247,7 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         if (data)
-            plr->GetSession()->SendPacket(data);
+            plr->getSession()->SendPacket(data);
         return 0;
     }
 
@@ -3218,7 +3218,7 @@ public:
     static int SoftDisconnect(lua_State* /*L*/, Unit* ptr)
     {
         TEST_PLAYER()
-        static_cast<Player*>(ptr)->SoftDisconnect();
+        static_cast<Player*>(ptr)->softDisconnect();
         return 0;
     }
 
@@ -3787,7 +3787,7 @@ public:
         TEST_PLAYER()
         char cmdlevel = (char)luaL_checkstring(L, 1)[0];
         Player* plr = static_cast<Player*>(ptr);
-        if (plr->GetSession()->CanUseCommand(cmdlevel))
+        if (plr->getSession()->CanUseCommand(cmdlevel))
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -3856,7 +3856,7 @@ public:
                     if (pItem->getItemProperties()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && pItem->getDurability() <= 0)
                     {
                         pItem->setDurabilityToMax();
-                        plr->ApplyItemMods(pItem, i, true);
+                        plr->applyItemMods(pItem, i, true);
                     }
                     else
                     {
@@ -4001,7 +4001,7 @@ public:
     static int GetAccountName(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        const char* aName = static_cast<Player*>(ptr)->GetSession()->GetAccountNameS();
+        const char* aName = static_cast<Player*>(ptr)->getSession()->GetAccountNameS();
         lua_pushstring(L, aName);
         return 1;
     }
@@ -4009,7 +4009,7 @@ public:
     static int GetGmRank(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        const char* level = static_cast<Player*>(ptr)->GetSession()->GetPermissions();
+        const char* level = static_cast<Player*>(ptr)->getSession()->GetPermissions();
         if (level != nullptr)
             lua_pushstring(L, level);
         else
@@ -4020,7 +4020,7 @@ public:
     static int IsGm(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-        if (static_cast<Player*>(ptr)->GetSession()->HasGMPermissions())
+        if (static_cast<Player*>(ptr)->getSession()->HasGMPermissions())
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -4086,14 +4086,14 @@ public:
         uint32_t actionid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (!crc && actionid < 9)
             return 0;
-        if (actionid == 1) plr->GetSession()->sendInventoryList(crc);
-        else if (actionid == 2) plr->GetSession()->sendTrainerList(crc);
-        else if (actionid == 3) plr->GetSession()->sendInnkeeperBind(crc);
-        else if (actionid == 4) plr->GetSession()->sendBankerList(crc);
-        else if (actionid == 5) plr->GetSession()->sendBattlegroundList(crc, miscint);
-        else if (actionid == 6) plr->GetSession()->sendAuctionList(crc);
-        else if (actionid == 7) plr->GetSession()->sendTabardHelp(crc);
-        else if (actionid == 8) plr->GetSession()->sendSpiritHealerRequest(crc);
+        if (actionid == 1) plr->getSession()->sendInventoryList(crc);
+        else if (actionid == 2) plr->getSession()->sendTrainerList(crc);
+        else if (actionid == 3) plr->getSession()->sendInnkeeperBind(crc);
+        else if (actionid == 4) plr->getSession()->sendBankerList(crc);
+        else if (actionid == 5) plr->getSession()->sendBattlegroundList(crc, miscint);
+        else if (actionid == 6) plr->getSession()->sendAuctionList(crc);
+        else if (actionid == 7) plr->getSession()->sendTabardHelp(crc);
+        else if (actionid == 8) plr->getSession()->sendSpiritHealerRequest(crc);
         else if (actionid == 9) plr->sendTalentResetConfirmPacket();
         else if (actionid == 10) plr->sendPetUnlearnConfirmPacket();
         return 0;
@@ -4105,7 +4105,7 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         Creature* object = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
         if (object != nullptr)
-            plr->GetSession()->sendInventoryList(object);
+            plr->getSession()->sendInventoryList(object);
         return 0;
     }
 
@@ -4115,7 +4115,7 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
         if (crc != nullptr)
-            plr->GetSession()->sendTrainerList(crc);
+            plr->getSession()->sendTrainerList(crc);
         return 0;
     }
 
@@ -4125,7 +4125,7 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
         if (crc != nullptr)
-            plr->GetSession()->sendInnkeeperBind(crc);
+            plr->getSession()->sendInnkeeperBind(crc);
         return 0;
     }
 
@@ -4135,7 +4135,7 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
         if (crc != nullptr)
-            plr->GetSession()->sendBankerList(crc);
+            plr->getSession()->sendBankerList(crc);
         return 0;
     }
 
@@ -4145,7 +4145,7 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
         if (crc != nullptr)
-            plr->GetSession()->sendAuctionList(crc);
+            plr->getSession()->sendAuctionList(crc);
         return 0;
     }
 
@@ -4156,7 +4156,7 @@ public:
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));
         uint32_t bgid = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         if (bgid && crc != nullptr)
-            plr->GetSession()->sendBattlegroundList(crc, bgid); //player filler ftw
+            plr->getSession()->sendBattlegroundList(crc, bgid); //player filler ftw
         return 0;
     }
 
@@ -4694,7 +4694,7 @@ public:
         const auto sender = static_cast<Player*>(ptr);
         const auto invitedPlayer = CHECK_PLAYER(L, 1);
         if (invitedPlayer != nullptr)
-            sender->getGuild()->sendGuildInvitePacket(sender->GetSession(), invitedPlayer->getName());
+            sender->getGuild()->sendGuildInvitePacket(sender->getSession(), invitedPlayer->getName());
 
         return 0;
     }
@@ -4705,7 +4705,7 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         if (target && plr->getGuild())
-            plr->getGuild()->handleUpdateMemberRank(plr->GetSession(), target->getGuid(), true);
+            plr->getGuild()->handleUpdateMemberRank(plr->getSession(), target->getGuid(), true);
 
         return 0;
     }
@@ -4716,7 +4716,7 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         if (target && plr->getGuild())
-            plr->getGuild()->handleUpdateMemberRank(plr->GetSession(), target->getGuid(), false);
+            plr->getGuild()->handleUpdateMemberRank(plr->getSession(), target->getGuid(), false);
 
         return 0;
     }
@@ -4727,7 +4727,7 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         const char* szNewMotd = luaL_checkstring(L, 1);
         if (plr->getGuild() && szNewMotd != nullptr)
-            plr->getGuild()->handleSetMOTD(plr->GetSession(), szNewMotd);
+            plr->getGuild()->handleSetMOTD(plr->getSession(), szNewMotd);
         return 0;
     }
 
@@ -4754,7 +4754,7 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         const char* gi = luaL_checkstring(L, 1);
         if (gi && plr->getGuild())
-            plr->getGuild()->handleSetInfo(plr->GetSession(), gi);
+            plr->getGuild()->handleSetInfo(plr->getSession(), gi);
         return 0;
     }
 
@@ -4788,7 +4788,7 @@ public:
         Player* target = CHECK_PLAYER(L, 1);
         const char* note = luaL_checkstring(L, 2);
         if (target && note && plr->getGuild())
-            plr->getGuild()->handleSetMemberNote(plr->GetSession(), note, target->getGuid(), true);
+            plr->getGuild()->handleSetMemberNote(plr->getSession(), note, target->getGuid(), true);
 
         return 0;
     }
@@ -4800,7 +4800,7 @@ public:
         Player* target = CHECK_PLAYER(L, 1);
         const char* note = luaL_checkstring(L, 2);
         if (target && note && plr->getGuild())
-            plr->getGuild()->handleSetMemberNote(plr->GetSession(), note, target->getGuid(), false);
+            plr->getGuild()->handleSetMemberNote(plr->getSession(), note, target->getGuid(), false);
 
         return 0;
     }
@@ -4826,7 +4826,7 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         if (target)
-            plr->getGuild()->handleSetNewGuildMaster(plr->GetSession(), target->getName());
+            plr->getGuild()->handleSetNewGuildMaster(plr->getSession(), target->getName());
         return 0;
     }
 
@@ -4837,7 +4837,7 @@ public:
         const char* message = luaL_checkstring(L, 1);
         bool officer = CHECK_BOOL(L, 2);
         if (plr->getGuild() != nullptr && message != nullptr)
-            plr->getGuild()->broadcastToGuild(plr->GetSession(), officer, message, 0);
+            plr->getGuild()->broadcastToGuild(plr->getSession(), officer, message, 0);
 
         return 0;
     }
@@ -4847,7 +4847,7 @@ public:
         TEST_PLAYER()
         Player* plr = static_cast<Player*>(ptr);
         if (plr->getGuild() != nullptr)
-            plr->getGuild()->sendLoginInfo(plr->GetSession());
+            plr->getGuild()->sendLoginInfo(plr->getSession());
 
         return 0;
     }
@@ -4858,7 +4858,7 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         uint32_t amount = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (plr->getGuild() != nullptr)
-            plr->getGuild()->handleMemberDepositMoney(plr->GetSession(), amount, true);
+            plr->getGuild()->handleMemberDepositMoney(plr->getSession(), amount, true);
 
         return 0;
     }
@@ -4869,7 +4869,7 @@ public:
         Player* plr = static_cast<Player*>(ptr);
         uint32_t amount = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (plr->getGuild() != nullptr)
-            plr->getGuild()->handleMemberWithdrawMoney(plr->GetSession(), amount, false);
+            plr->getGuild()->handleMemberWithdrawMoney(plr->getSession(), amount, false);
 
         return 0;
     }
@@ -5717,7 +5717,7 @@ public:
         if (ptr->isPlayer())
             p = static_cast<Player*>(ptr);
 
-        if ((cp->vehicleid == 0) && (p == nullptr) && (!p->GetSession()->HasGMPermissions()))
+        if ((cp->vehicleid == 0) && (p == nullptr) && (!p->getSession()->HasGMPermissions()))
             return 0;
 
         LocationVector v(ptr->GetPosition());

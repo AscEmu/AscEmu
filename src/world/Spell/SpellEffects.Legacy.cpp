@@ -878,7 +878,7 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
         if (!p_caster || (u_caster && u_caster->isPet()))
             return;
 
-        if (p_caster->GetSession()->GetPermissionCount() == 0)
+        if (p_caster->getSession()->GetPermissionCount() == 0)
             return;
     }
 
@@ -1803,9 +1803,9 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
 #ifdef GM_Z_DEBUG_DIRECTLY
     else
     {
-        if (unitTarget->isPlayer() && unitTarget->IsInWorld() && TO< Player* >(unitTarget)->GetSession() && TO< Player* >(unitTarget)->GetSession()->CanUseCommand('z'))
+        if (unitTarget->isPlayer() && unitTarget->IsInWorld() && TO< Player* >(unitTarget)->getSession() && TO< Player* >(unitTarget)->getSession()->CanUseCommand('z'))
         {
-            sChatHandler.BlueSystemMessage(TO< Player* >(unitTarget)->GetSession(), "[%sSystem%s] |rSpell::SpellEffectApplyAura: %s EffectApplyAuraName [%u] .", MSG_COLOR_WHITE, MSG_COLOR_LIGHTBLUE, MSG_COLOR_SUBWHITE,
+            sChatHandler.BlueSystemMessage(TO< Player* >(unitTarget)->getSession(), "[%sSystem%s] |rSpell::SpellEffectApplyAura: %s EffectApplyAuraName [%u] .", MSG_COLOR_WHITE, MSG_COLOR_LIGHTBLUE, MSG_COLOR_SUBWHITE,
                                            i);
         }
     }
@@ -2359,9 +2359,9 @@ void Spell::SpellEffectBind(uint8_t effectIndex)
 
     playerTarget->setBindPoint(playerTarget->GetPositionX(), playerTarget->GetPositionY(), playerTarget->GetPositionZ(), playerTarget->GetOrientation(), mapid, areaid);
 
-    playerTarget->GetSession()->SendPacket(SmsgBindPointUpdate(playerTarget->getBindPosition(), playerTarget->getBindMapId(), playerTarget->getBindZoneId()).serialise().get());
+    playerTarget->getSession()->SendPacket(SmsgBindPointUpdate(playerTarget->getBindPosition(), playerTarget->getBindMapId(), playerTarget->getBindZoneId()).serialise().get());
 
-    playerTarget->GetSession()->SendPacket(SmsgPlayerBound(m_caster->getGuid(), playerTarget->getBindZoneId()).serialise().get());
+    playerTarget->getSession()->SendPacket(SmsgPlayerBound(m_caster->getGuid(), playerTarget->getBindZoneId()).serialise().get());
 }
 
 void Spell::SpellEffectQuestComplete(uint8_t effectIndex) // Quest Complete
@@ -2689,7 +2689,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
                     char msg[256];
                     sprintf(msg, "%sDISCOVERY! %s has discovered how to create %s.|r", MSG_COLOR_GOLD, p_caster->getName().c_str(), se->getName().c_str());
 
-                    p_caster->GetMapMgr()->SendChatMessageToCellPlayers(p_caster, SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, msg, p_caster->getGuid()).serialise().get(), 2, 1, LANG_UNIVERSAL, p_caster->GetSession());
+                    p_caster->GetMapMgr()->SendChatMessageToCellPlayers(p_caster, SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, msg, p_caster->getGuid()).serialise().get(), 2, 1, LANG_UNIVERSAL, p_caster->getSession());
                 }
                 else
                 {
@@ -3195,7 +3195,7 @@ void Spell::SpellEffectLeap(uint8_t effectIndex) // Leap
         if (playerTarget == nullptr)  //let client handle this for players
             return;
 
-        playerTarget->GetSession()->SendPacket(SmsgMoveKnockBack(playerTarget->GetNewGUID(), Util::getMSTime(), cosf(playerTarget->GetOrientation()), sinf(playerTarget->GetOrientation()), radius, -10.0f).serialise().get());
+        playerTarget->getSession()->SendPacket(SmsgMoveKnockBack(playerTarget->GetNewGUID(), Util::getMSTime(), cosf(playerTarget->GetOrientation()), sinf(playerTarget->GetOrientation()), radius, -10.0f).serialise().get());
     }
 }
 
@@ -4045,7 +4045,7 @@ void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanen
         ItemProperties const* it = sMySQLStore.getItemProperties(itemid);
         if (it == nullptr)
         {
-            p_caster->GetSession()->SystemMessage("Item is missing, report this to devs. Entry: %u", itemid);
+            p_caster->getSession()->SystemMessage("Item is missing, report this to devs. Entry: %u", itemid);
             return;
         }
 
@@ -4068,8 +4068,8 @@ void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanen
         return;
     }
 
-    if (p_caster->GetSession()->GetPermissionCount() > 0)
-        sGMLog.writefromsession(p_caster->GetSession(), "enchanted item for %s", itemTarget->getOwner()->getName().c_str());
+    if (p_caster->getSession()->GetPermissionCount() > 0)
+        sGMLog.writefromsession(p_caster->getSession(), "enchanted item for %s", itemTarget->getOwner()->getName().c_str());
 
     //remove other perm enchantment that was enchanted by profession
     itemTarget->RemoveProfessionEnchant();
@@ -4231,7 +4231,7 @@ void Spell::SpellEffectLearnPetSpell(uint8_t effectIndex)
         // Send Packet
         /*      WorldPacket data(SMSG_SET_EXTRA_AURA_INFO_OBSOLETE, 22);
         data << pPet->getGuid() << uint8(0) << uint32(GetProto()->EffectTriggerSpell[i]) << uint32(-1) << uint32(0);
-        p_caster->GetSession()->SendPacket(&data);*/
+        p_caster->getSession()->SendPacket(&data);*/
     }
 }
 
@@ -5980,7 +5980,7 @@ void Spell::SpellEffectTeachTaxiPath(uint8_t effectIndex)
         playerTarget->SendPacket(SmsgNewTaxiPath().serialise().get());
 
         //Send packet
-        playerTarget->GetSession()->SendPacket(SmsgTaxinodeStatus(0, 1).serialise().get());
+        playerTarget->getSession()->SendPacket(SmsgTaxinodeStatus(0, 1).serialise().get());
     }
 }
 
@@ -6005,8 +6005,8 @@ void Spell::SpellEffectEnchantItemPrismatic(uint8_t effectIndex)
         return;
     }
 
-    if (p_caster->GetSession()->GetPermissionCount() > 0)
-        sGMLog.writefromsession(p_caster->GetSession(), "enchanted item for %s", itemTarget->getOwner()->getName().c_str());
+    if (p_caster->getSession()->GetPermissionCount() > 0)
+        sGMLog.writefromsession(p_caster->getSession(), "enchanted item for %s", itemTarget->getOwner()->getName().c_str());
 
     //remove other socket enchant
     itemTarget->RemoveEnchantment(6);
@@ -6186,9 +6186,9 @@ void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)
                     // Apply / Disapply enchantements from this item
                     pItem->setDurability(newdur);
                     if (newdur == 0 && olddur > 0)
-                        p_caster->ApplyItemMods(pItem, static_cast<uint16>(k), false);
+                        p_caster->applyItemMods(pItem, static_cast<uint16>(k), false);
                     else if (newdur > 0 && olddur == 0)
-                        p_caster->ApplyItemMods(pItem, static_cast<uint16>(k), true);
+                        p_caster->applyItemMods(pItem, static_cast<uint16>(k), true);
                 }
             }
         }
@@ -6216,9 +6216,9 @@ void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)
 
         // Apply / Disapply enchantements from this item
         if (newdur == 0 && olddur > 0)
-            p_caster->ApplyItemMods(pItem, slot, false);
+            p_caster->applyItemMods(pItem, slot, false);
         else if (newdur > 0 && olddur == 0)
-            p_caster->ApplyItemMods(pItem, slot, true);
+            p_caster->applyItemMods(pItem, slot, true);
     }
 }
 
@@ -6279,9 +6279,9 @@ void Spell::SpellEffectDurabilityDamagePCT(uint8_t effectIndex)
                     // Apply / Disapply enchantements from this item
                     pItem->setDurability(newdur);
                     if (newdur == 0 && olddur > 0)
-                        p_caster->ApplyItemMods(pItem, static_cast<uint16>(k), false);
+                        p_caster->applyItemMods(pItem, static_cast<uint16>(k), false);
                     else if (newdur > 0 && olddur == 0)
-                        p_caster->ApplyItemMods(pItem, static_cast<uint16>(k), true);
+                        p_caster->applyItemMods(pItem, static_cast<uint16>(k), true);
                 }
             }
         }
@@ -6312,9 +6312,9 @@ void Spell::SpellEffectDurabilityDamagePCT(uint8_t effectIndex)
 
         // Apply / Disapply enchantements from this item
         if (newdur == 0 && olddur > 0)
-            p_caster->ApplyItemMods(pItem, slot, false);
+            p_caster->applyItemMods(pItem, slot, false);
         else if (newdur > 0 && olddur == 0)
-            p_caster->ApplyItemMods(pItem, slot, true);
+            p_caster->applyItemMods(pItem, slot, true);
     }
 }
 

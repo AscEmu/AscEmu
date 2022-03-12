@@ -111,7 +111,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (playerTarget->GetSession()->LoggingOut)
+    if (playerTarget->getSession()->LoggingOut)
     {
         sendTradeResult(TRADE_STATUS_TARGET_LOGOUT);
         return;
@@ -154,7 +154,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
 
     data << uint32_t(0);              // unk
 
-    playerTarget->GetSession()->SendPacket(&data);
+    playerTarget->getSession()->SendPacket(&data);
 #endif
 }
 
@@ -174,7 +174,7 @@ void WorldSession::handleBeginTradeOpcode(WorldPacket& /*recvPacket*/)
     }
 
     sendTradeResult(TRADE_STATUS_INITIATED);
-    tradeData->getTradeTarget()->GetSession()->sendTradeResult(TRADE_STATUS_INITIATED);
+    tradeData->getTradeTarget()->getSession()->sendTradeResult(TRADE_STATUS_INITIATED);
 }
 
 void WorldSession::handleSetTradeGold(WorldPacket& recvPacket)
@@ -304,7 +304,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
     // If trade target has not accepted, do not proceed
     if (!targetTradeData->isTradeAccepted())
     {
-        tradeTarget->GetSession()->sendTradeResult(TRADE_STATUS_ACCEPTED);
+        tradeTarget->getSession()->sendTradeResult(TRADE_STATUS_ACCEPTED);
         return;
     }
 
@@ -317,7 +317,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
         targetTradeItems[i] = targetTradeData->getTradeItem(TradeSlots(i));
     }
 
-    tradeTarget->GetSession()->sendTradeResult(TRADE_STATUS_ACCEPTED);
+    tradeTarget->getSession()->sendTradeResult(TRADE_STATUS_ACCEPTED);
 
     // Check player's spell on the lowest item
     Spell* playerSpell = nullptr;
@@ -475,8 +475,8 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
     delete tradeTarget->m_TradeData;
     tradeTarget->m_TradeData = nullptr;
 
-    _player->GetSession()->sendTradeResult(TRADE_STATUS_COMPLETE);
-    tradeTarget->GetSession()->sendTradeResult(TRADE_STATUS_COMPLETE);
+    _player->getSession()->sendTradeResult(TRADE_STATUS_COMPLETE);
+    tradeTarget->getSession()->sendTradeResult(TRADE_STATUS_COMPLETE);
 
     _player->SaveToDB(false);
     tradeTarget->SaveToDB(false);
@@ -579,12 +579,12 @@ void WorldSession::handleBusyTrade(WorldPacket& /*recvPacket*/)
     const auto tradeData = _player->getTradeData();
     if (tradeData == nullptr)
     {
-        _player->GetSession()->sendTradeResult(TRADE_STATUS_PLAYER_NOT_FOUND);
+        _player->getSession()->sendTradeResult(TRADE_STATUS_PLAYER_NOT_FOUND);
         return;
     }
 
-    _player->GetSession()->sendTradeResult(TRADE_STATUS_PLAYER_BUSY);
-    tradeData->getTradeTarget()->GetSession()->sendTradeResult(TRADE_STATUS_PLAYER_BUSY);
+    _player->getSession()->sendTradeResult(TRADE_STATUS_PLAYER_BUSY);
+    tradeData->getTradeTarget()->getSession()->sendTradeResult(TRADE_STATUS_PLAYER_BUSY);
 
     _player->cancelTrade(false, true);
 }
@@ -594,12 +594,12 @@ void WorldSession::handleIgnoreTrade(WorldPacket& /*recvPacket*/)
     const auto tradeData = _player->getTradeData();
     if (tradeData == nullptr)
     {
-        _player->GetSession()->sendTradeResult(TRADE_STATUS_PLAYER_NOT_FOUND);
+        _player->getSession()->sendTradeResult(TRADE_STATUS_PLAYER_NOT_FOUND);
         return;
     }
 
-    _player->GetSession()->sendTradeResult(TRADE_STATUS_IGNORES_YOU);
-    tradeData->getTradeTarget()->GetSession()->sendTradeResult(TRADE_STATUS_IGNORES_YOU);
+    _player->getSession()->sendTradeResult(TRADE_STATUS_IGNORES_YOU);
+    tradeData->getTradeTarget()->getSession()->sendTradeResult(TRADE_STATUS_IGNORES_YOU);
 
     // Client sends this opcode after trade is created so TradeData must be cleaned
     _player->cancelTrade(false, true);
@@ -611,8 +611,8 @@ void WorldSession::handleUnacceptTrade(WorldPacket& /*recvPacket*/)
     if (tradeData == nullptr)
         return;
 
-    _player->GetSession()->sendTradeResult(TRADE_STATUS_UNACCEPTED);
-    tradeData->getTradeTarget()->GetSession()->sendTradeResult(TRADE_STATUS_UNACCEPTED);
+    _player->getSession()->sendTradeResult(TRADE_STATUS_UNACCEPTED);
+    tradeData->getTradeTarget()->getSession()->sendTradeResult(TRADE_STATUS_UNACCEPTED);
 
     _player->getTradeData()->setTradeAccepted(false, true);
 }

@@ -281,7 +281,7 @@ void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
         return;
     }
 
-    player->SetSession(this);
+    player->setSession(this);
     m_bIsWLevelSet = false;
 
     sLogger.debug("Async loading player %u", static_cast<uint32_t>(playerGuid));
@@ -430,7 +430,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     }
 
     const auto newPlayer = sObjectMgr.CreatePlayer(srlPacket.createStruct._class);
-    newPlayer->SetSession(this);
+    newPlayer->setSession(this);
 
     if (!newPlayer->Create(srlPacket.createStruct))
     {

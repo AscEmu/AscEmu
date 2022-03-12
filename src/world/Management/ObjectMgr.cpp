@@ -1159,7 +1159,7 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId
         textId = forcedTextId;
     }
 
-    GossipMenu menu(object->getGuid(), textId, player->GetSession()->language, gossipMenuId);
+    GossipMenu menu(object->getGuid(), textId, player->getSession()->language, gossipMenuId);
 
     sQuestMgr.FillQuestMenu(dynamic_cast<Creature*>(object), player, menu);
 
@@ -1183,7 +1183,7 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId
             if (gossipMenuItem.requirementType == 3)
             {
                 if (player->canGainXp())
-                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, player->GetSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
+                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, player->getSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
                 
                 continue;
             }
@@ -1191,7 +1191,7 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId
             if (gossipMenuItem.requirementType == 4)
             {
                 if (!player->canGainXp())
-                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, player->GetSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
+                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, player->getSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
                 
                 continue;
             }
@@ -1262,7 +1262,7 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* p
                         if (player->getFactionStanding(itr->second.onChooseData) >= static_cast<int32_t>(itr->second.onChooseData2))
                             player->castSpell(player, sSpellMgr.getSpellInfo(itr->second.onChooseData3), true);
                         else
-                            player->broadcastMessage(player->GetSession()->LocalizedWorldSrv(itr->second.onChooseData4));
+                            player->broadcastMessage(player->getSession()->LocalizedWorldSrv(itr->second.onChooseData4));
                         
                         GossipMenu::senGossipComplete(player);
                     }

@@ -179,7 +179,7 @@ public:
             {
                 if (pPlayer->getItemInterface()->GetItemCount(29501) > 0)
                 {
-                    GossipMenu menu(pObject->getGuid(), 10104, pPlayer->GetSession()->language);
+                    GossipMenu menu(pObject->getGuid(), 10104, pPlayer->getSession()->language);
                     menu.addItem(GOSSIP_ICON_CHAT, 463, 1);     // Walk free, Elder. Bring the spirits back to your tribe.
                     menu.sendGossipPacket(pPlayer);
                 }

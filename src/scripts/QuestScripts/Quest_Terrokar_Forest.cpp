@@ -171,7 +171,7 @@ class TheMomentofTruth : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 1, plr->getSession()->language);
         if (plr->hasQuestInQuestLog(10201) && plr->getItemInterface()->GetItemCount(28500, 0))
             menu.addItem(GOSSIP_ICON_CHAT, 497, 1);     // Try this
 

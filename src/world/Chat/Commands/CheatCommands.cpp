@@ -90,7 +90,7 @@ bool ChatHandler::HandleCheatTaxiCommand(const char* /*args*/, WorldSession* m_s
         else
         {
             GreenSystemMessage(m_session, "%s can just use discovered taxi nodes from now.", player_target->getName().c_str());
-            SystemMessage(player_target->GetSession(), "%s has deactivated taxi cheat on you.", m_session->GetPlayer()->getName().c_str());
+            SystemMessage(player_target->getSession(), "%s has deactivated taxi cheat on you.", m_session->GetPlayer()->getName().c_str());
             sGMLog.writefromsession(m_session, "has deactivated TaxiCheat on Player: %s", player_target->getName().c_str());
         }
 

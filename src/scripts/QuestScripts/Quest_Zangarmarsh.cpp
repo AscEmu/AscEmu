@@ -43,7 +43,7 @@ public:
 
         if (plr->hasQuestFinished(9785) || plr->hasQuestInQuestLog(9785))
         {
-            GossipMenu menu(pObject->getGuid(), TextId, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), TextId, plr->getSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 0, 1, text);
             menu.sendGossipPacket(plr);
         }
@@ -93,7 +93,7 @@ public:
     {
         if (!plr->getItemInterface()->GetItemCount(24573, true))
         {
-            GossipMenu menu(pObject->getGuid(), 9226, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 9226, plr->getSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 502, 1);     // Offer treat
             menu.sendGossipPacket(plr);
         }
@@ -105,13 +105,13 @@ public:
         {
             case 1:
             {
-                GossipMenu menu(pObject->getGuid(), 9227, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 9227, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 503, 2); // I'm a messenger for Draenei
                 menu.sendGossipPacket(plr);
             }break;
             case 2:
             {
-                GossipMenu menu(pObject->getGuid(), 9229, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 9229, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 504, 3); // Get message
                 menu.sendGossipPacket(plr);
             }break;

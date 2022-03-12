@@ -119,7 +119,7 @@ void ArenaTeam::SendPacket(WorldPacket* data)
         if (m_members[i].Info)
         {
             if (Player* loggedInPlayer = sObjectMgr.GetPlayer(m_members[i].Info->guid))
-                loggedInPlayer->GetSession()->SendPacket(data);
+                loggedInPlayer->getSession()->SendPacket(data);
         }
     }
 }
@@ -168,7 +168,7 @@ bool ArenaTeam::AddMember(CachedCharacterInfo* info)
 
         loggedInPlayer->setArenaTeam(m_type, this);
 
-        loggedInPlayer->GetSession()->SystemMessage("You are now a member of the arena team, '%s'.", m_name.c_str());
+        loggedInPlayer->getSession()->SystemMessage("You are now a member of the arena team, '%s'.", m_name.c_str());
 
 #endif
     }

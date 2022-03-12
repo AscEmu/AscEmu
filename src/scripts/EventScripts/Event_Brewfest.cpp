@@ -36,7 +36,7 @@ public:
 
 void CorenDirebrewGossip::onHello(Object* pObject, Player * Plr)
 {
-    GossipMenu menu(pObject->getGuid(), DIREBREW_1, Plr->GetSession()->language);
+    GossipMenu menu(pObject->getGuid(), DIREBREW_1, Plr->getSession()->language);
     menu.addItem(GOSSIP_ICON_CHAT, 439, 1);     // Insult Coren Direbrew's brew.
     menu.sendGossipPacket(Plr);
 }
@@ -49,7 +49,7 @@ void CorenDirebrewGossip::onSelectOption(Object* pObject, Player* Plr, uint32_t 
     {
         case 1:
         {
-            GossipMenu menu(pObject->getGuid(), DIREBREW_2, Plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), DIREBREW_2, Plr->getSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 440, 1);     // Fight.
             menu.addItem(GOSSIP_ICON_CHAT, 441, 1);     // Apologize.
             menu.sendGossipPacket(Plr);

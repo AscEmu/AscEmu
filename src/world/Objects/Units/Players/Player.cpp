@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Player.h"
 
+#include <zlib.h>
+
 #include "Chat/ChatDefines.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Data/WoWPlayer.hpp"
@@ -82,6 +84,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/Packets/SmsgAreaTriggerMessage.h"
 #include "Server/Packets/SmsgCancelCombat.h"
+#include "Server/Packets/SmsgCharacterLoginFailed.h"
 #include "Server/Packets/SmsgCorpseReclaimDelay.h"
 #include "Server/Packets/SmsgDeathReleaseLoc.h"
 #include "Server/Packets/SmsgDuelComplete.h"
@@ -112,6 +115,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;
+using namespace InstanceDifficulty;
 
 Player::Player(uint32_t guid) :
     m_updateMgr(this, static_cast<size_t>(worldConfig.server.compressionThreshold), 40000, 30000, 1000),
@@ -216,7 +220,7 @@ Player::~Player()
         delete pet->second;
 
     m_pets.clear();
-    RemoveGarbageItems();
+    removeGarbageItems();
 }
 
 void Player::resendSpeed()
@@ -227,16 +231,6 @@ void Player::resendSpeed()
         setSpeedRate(TYPE_FLY, getSpeedRate(TYPE_FLY, true), true);
         resend_speed = false;
     }
-}
-
-void Player::ProcessPendingUpdates()
-{
-    m_updateMgr.processPendingUpdates();
-}
-
-UpdateManager & Player::getUpdateMgr()
-{
-    return m_updateMgr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1177,7 +1171,7 @@ void Player::handleKnockback(Object* object, float horizontal, float vertical)
     float sin = sinf(angle);
     float cos = cosf(angle);
 
-    GetSession()->SendPacket(SmsgMoveKnockBack(GetNewGUID(), Util::getMSTime(), cos, sin, horizontal, -vertical).serialise().get());
+    getSession()->SendPacket(SmsgMoveKnockBack(GetNewGUID(), Util::getMSTime(), cos, sin, horizontal, -vertical).serialise().get());
 
     blinked = true;
     speedCheatDelay(10000);
@@ -1193,10 +1187,10 @@ bool Player::teleport(const LocationVector& vec, MapMgr* map)
         }
         else
         {
-            if (map->GetMapId() == 530 && !this->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_01))
+            if (map->GetMapId() == 530 && !this->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_01))
                 return false;
 
-            if (map->GetMapId() == 571 && !this->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
+            if (map->GetMapId() == 571 && !this->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
                 return false;
 
             this->safeTeleport(map, vec);
@@ -1220,13 +1214,13 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
     {
         if (mapInfo->flags & WMI_INSTANCE_XPACK_01 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
         {
-            sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(SS_MUST_HAVE_BC));
+            sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, getSession()->LocalizedWorldSrv(SS_MUST_HAVE_BC));
             return false;
         }
 
         if (mapInfo->flags & WMI_INSTANCE_XPACK_02 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
         {
-            sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, GetSession()->LocalizedWorldSrv(SS_MUST_HAVE_WOTLK));
+            sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, getSession()->LocalizedWorldSrv(SS_MUST_HAVE_WOTLK));
             return false;
         }
     }
@@ -1326,8 +1320,8 @@ void Player::safeTeleport(MapMgr* mgr, const LocationVector& vec)
         m_mapId = mgr->GetMapId();
         m_instanceId = mgr->GetInstanceID();
 
-        GetSession()->SendPacket(SmsgTransferPending(mgr->GetMapId()).serialise().get());
-        GetSession()->SendPacket(SmsgNewWorld(mgr->GetMapId(), vec).serialise().get());
+        getSession()->SendPacket(SmsgTransferPending(mgr->GetMapId()).serialise().get());
+        getSession()->SendPacket(SmsgNewWorld(mgr->GetMapId(), vec).serialise().get());
 
         setTransferStatus(TRANSFER_PENDING);
         m_sentTeleportPosition = vec;
@@ -1430,7 +1424,40 @@ void Player::sendTeleportAckPacket(LocationVector position)
     data << uint32_t(0);
     BuildMovementPacket(&data, position.x, position.y, position.z, position.o);
 #endif
-    GetSession()->SendPacket(&data);
+    getSession()->SendPacket(&data);
+}
+
+void Player::onWorldPortAck()
+{
+    MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo(GetMapId());
+    if (mapInfo)
+    {
+        if (isDead() && !mapInfo->isNonInstanceMap())
+            resurrect();
+
+        if (mapInfo->hasFlag(WMI_INSTANCE_WELCOME) && GetMapMgr())
+        {
+            std::string welcome_msg;
+            welcome_msg = std::string(getSession()->LocalizedWorldSrv(ServerString::SS_INSTANCE_WELCOME)) + " ";
+            welcome_msg += std::string(getSession()->LocalizedMapName(mapInfo->mapid));
+            welcome_msg += ". ";
+
+            if (!mapInfo->isDungeon() && !(mapInfo->isMultimodeDungeon() && m_dungeonDifficulty >= DUNGEON_HEROIC) && m_mapMgr->pInstance)
+            {
+                welcome_msg += std::string(getSession()->LocalizedWorldSrv(ServerString::SS_INSTANCE_RESET_INF)) + " ";
+                welcome_msg += Util::GetDateTimeStringFromTimeStamp((uint32)m_mapMgr->pInstance->m_expiration);
+            }
+
+            sChatHandler.SystemMessage(m_session, welcome_msg.c_str());
+        }
+    }
+
+    speedCheatReset();
+}
+
+void Player::eventPortToGm(Player* gmPlayer)
+{
+    safeTeleport(gmPlayer->GetMapId(), gmPlayer->GetInstanceID(), gmPlayer->GetPosition());
 }
 
 void Player::indoorCheckUpdate(uint32_t time)
@@ -1475,7 +1502,7 @@ void Player::setPhase(uint8_t command, uint32_t newPhase)
 {
     Unit::setPhase(command, newPhase);
 
-    if (GetSession())
+    if (getSession())
     {
 #if VERSION_STRING == WotLK
         SendPacket(SmsgSetPhaseShift(newPhase, getGuid()).serialise().get());
@@ -1733,7 +1760,7 @@ bool Player::exitInstance()
 
 uint32_t Player::getPersistentInstanceId(uint32_t mapId, uint8_t difficulty)
 {
-    if (mapId >= MAX_NUM_MAPS || difficulty >= InstanceDifficulty::MAX_DIFFICULTY || m_playerInfo == NULL)
+    if (mapId >= MAX_NUM_MAPS || difficulty >= MAX_DIFFICULTY || m_playerInfo == NULL)
         return 0;
 
     std::lock_guard<std::mutex> lock(m_playerInfo->savedInstanceIdsLock);
@@ -1778,7 +1805,7 @@ void Player::setPersistentInstanceId(Instance* instance)
 
 void Player::setPersistentInstanceId(uint32_t mapId, uint8_t difficulty, uint32_t instanceId)
 {
-    if (mapId >= MAX_NUM_MAPS || difficulty >= InstanceDifficulty::MAX_DIFFICULTY || m_playerInfo == nullptr)
+    if (mapId >= MAX_NUM_MAPS || difficulty >= MAX_DIFFICULTY || m_playerInfo == nullptr)
         return;
 
     if (m_playerInfo)
@@ -1857,12 +1884,12 @@ void Player::eventKickFromServer()
         else
             m_kickDelay -= 1000;
 
-        sChatHandler.BlueSystemMessage(GetSession(), "You will be removed from the server in %u seconds.", m_kickDelay / 1000);
+        sChatHandler.BlueSystemMessage(getSession(), "You will be removed from the server in %u seconds.", m_kickDelay / 1000);
     }
     else
     {
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_KICK);
-        GetSession()->LogoutPlayer(true);
+        getSession()->LogoutPlayer(true);
     }
 }
 
@@ -1940,7 +1967,7 @@ void Player::applyLevelInfo(uint32_t newLevel)
 #if VERSION_STRING >= WotLK
         for (uint8_t i = 0; i < INVENTORY_SLOT_BAG_END; ++i)
             if (Item* pItem = getItemInterface()->GetInventoryItem(i))
-                _ApplyItemMods(pItem, i, true, false, true);
+                applyItemMods(pItem, i, true, false, true);
 #endif
         UpdateStats();
 
@@ -2055,7 +2082,7 @@ void Player::toggleAfk()
             m_bg->RemovePlayer(this, false);
 
         if (worldConfig.getKickAFKPlayerTime())
-            sEventMgr.AddEvent(this, &Player::SoftDisconnect, EVENT_PLAYER_SOFT_DISCONNECT,
+            sEventMgr.AddEvent(this, &Player::softDisconnect, EVENT_PLAYER_SOFT_DISCONNECT,
                 worldConfig.getKickAFKPlayerTime(), 1, 0);
     }
 }
@@ -2071,6 +2098,370 @@ void Player::toggleDnd()
 uint32_t* Player::getPlayedTime() { return m_playedTime; }
 
 CachedCharacterInfo* Player::getPlayerInfo() const { return m_playerInfo; }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Session & Packets
+WorldSession* Player::getSession() const { return m_session; }
+void Player::setSession(WorldSession* session) { m_session = session; }
+
+void Player::removePendingPlayer()
+{
+    if (m_session)
+    {
+        uint8_t respons = E_CHAR_LOGIN_NO_CHARACTER;
+        SendPacket(SmsgCharacterLoginFailed(respons).serialise().get());
+        m_session->m_loggingInPlayer = nullptr;
+    }
+
+    ok_to_remove = true;
+    delete this;
+}
+
+void Player::softDisconnect()
+{
+    sEventMgr.RemoveEvents(this, EVENT_PLAYER_SOFT_DISCONNECT);
+    WorldSession* session = getSession();
+    session->LogoutPlayer(true);
+    session->Disconnect();
+}
+
+void Player::sendDelayedPacket(WorldPacket* data, bool bDeleteOnSend)
+{
+    if (data == nullptr)
+        return;
+
+    if (getSession() != nullptr)
+        getSession()->SendPacket(data);
+
+    if (bDeleteOnSend)
+        delete data;
+}
+
+bool Player::compressAndSendUpdateBuffer(uint32_t size, const uint8_t* update_buffer)
+{
+    uint32_t destsize = size + size / 10 + 16;
+    int rate = worldConfig.getIntRate(INTRATE_COMPRESSION);
+    if (size >= 40000 && rate < 6)
+        rate = 6;
+
+    // set up stream
+    z_stream stream;
+    stream.zalloc = nullptr;
+    stream.zfree = nullptr;
+    stream.opaque = nullptr;
+
+    if (deflateInit(&stream, rate) != Z_OK)
+    {
+        sLogger.failure("deflateInit failed.");
+        return false;
+    }
+
+    uint8_t* buffer = new uint8_t[destsize];
+
+    // set up stream pointers
+    stream.next_out = (Bytef*)buffer + 4;
+    stream.avail_out = destsize;
+    stream.next_in = (Bytef*)update_buffer;
+    stream.avail_in = size;
+
+    // call the actual process
+    if (deflate(&stream, Z_NO_FLUSH) != Z_OK ||
+        stream.avail_in != 0)
+    {
+        sLogger.failure("deflate failed.");
+        delete[] buffer;
+        return false;
+    }
+
+    // finish the deflate
+    if (deflate(&stream, Z_FINISH) != Z_STREAM_END)
+    {
+        sLogger.failure("deflate failed: did not end stream");
+        delete[] buffer;
+        return false;
+    }
+
+    // finish up
+    if (deflateEnd(&stream) != Z_OK)
+    {
+        sLogger.failure("deflateEnd failed.");
+        delete[] buffer;
+        return false;
+    }
+
+    // fill in the full size of the compressed stream
+    *(uint32_t*)&buffer[0] = size;
+
+#if VERSION_STRING < Cata
+    m_session->OutPacket(SMSG_COMPRESSED_UPDATE_OBJECT, (uint16_t)stream.total_out + 4, buffer);
+#else
+    m_session->OutPacket(SMSG_UPDATE_OBJECT, (uint16_t)stream.total_out + 4, buffer);
+#endif
+
+    delete[] buffer;
+
+    return true;
+}
+
+uint32_t Player::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+{
+    uint32_t count = 0;
+    if (target == this)
+        count += getItemInterface()->m_CreateForPlayer(data);
+
+    count += Unit::buildCreateUpdateBlockForPlayer(data, target);
+
+    return count;
+}
+
+void Player::initVisibleUpdateBits()
+{
+#if VERSION_STRING == Mop
+    Player::m_visibleUpdateMask.SetCount(getSizeOfStructure(WoWPlayer));
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, guid) + 1);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, data));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, data) + 1);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, raw_parts));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, entry));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, dynamic_flags));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, scale_x));
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, charm_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, charm_guid) + 1);
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, summon_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, summon_guid) + 1);
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, charmed_by_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, charmed_by_guid) + 1);
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, target_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, target_guid) + 1);
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid) + 1);
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, health));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_1));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_2));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_3));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_4));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_5));
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_health));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_1));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_2));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_3));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_4));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_5));
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, virtual_item_slot_display[0]));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, virtual_item_slot_display[1]));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, virtual_item_slot_display[2]));
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, level));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, faction_template));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_0));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, unit_flags));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, unit_flags_2));
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, base_attack_time[0]));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, base_attack_time[1]) + 1);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, bounding_radius));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, combat_reach));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, display_id));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, native_display_id));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, mount_display_id));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_1));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, pet_number));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, pet_name_timestamp));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid) + 1);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_spell));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, mod_cast_speed));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, dynamic_flags));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, npc_flags));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, hover_height));
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_flags));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes_2));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes_3));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_timestamp));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_team));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_arbiter));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_arbiter) + 1);
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_rank));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_level));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, base_mana));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_2));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, aura_state));
+
+    for (uint16_t i = 0; i < EQUIPMENT_SLOT_END; ++i)
+    {
+        uint32_t offset = i * 2;
+
+        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + offset);
+        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + 1 + offset);
+    }
+
+    uint16_t questIdOffset = 5;
+    for (uint16_t i = getOffsetForStructuredField(WoWPlayer, quests); i < getOffsetForStructuredField(WoWPlayer, visible_items); i += questIdOffset)
+        Player::m_visibleUpdateMask.SetBit(i);
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, chosen_title));
+
+#else
+    Player::m_visibleUpdateMask.SetCount(getSizeOfStructure(WoWPlayer));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, guid));
+#if VERSION_STRING < Cata
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, type));
+#else
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, raw_parts));
+#endif
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, entry));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, scale_x));
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, summon_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, summon_guid) + 1);
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, target_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, target_guid) + 1);
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, health));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_1));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_2));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_3));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_4));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_5));
+#if VERSION_STRING == WotLK
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_6));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_7));
+#endif
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_health));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_1));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_2));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_3));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_4));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_5));
+#if VERSION_STRING == WotLK
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_6));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_7));
+#endif
+
+#if VERSION_STRING > TBC
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, virtual_item_slot_display[0]));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, virtual_item_slot_display[1]));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, virtual_item_slot_display[2]));
+#endif
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, level));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, faction_template));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_0));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, unit_flags));
+#if VERSION_STRING != Classic
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, unit_flags_2));
+#endif
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, base_attack_time[0]));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, base_attack_time[1]) + 1);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, bounding_radius));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, combat_reach));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, display_id));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, native_display_id));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, mount_display_id));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_1));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, pet_number));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, pet_name_timestamp));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid) + 1);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_spell));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, dynamic_flags));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, npc_flags));
+#if VERSION_STRING > TBC
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, hover_height));
+#endif
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_flags));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes_2));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes_3));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_timestamp));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_team));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_arbiter));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_arbiter) + 1);
+#if VERSION_STRING < Cata
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_id));
+#endif
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_rank));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, base_mana));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_2));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, aura_state));
+
+    for (uint16_t i = 0; i < EQUIPMENT_SLOT_END; ++i)
+    {
+#if VERSION_STRING > TBC
+        uint32_t offset = i * 2;
+#else
+        uint32_t offset = i * 16;
+#endif
+        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + offset);
+        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + 1 + offset);
+    }
+
+#if VERSION_STRING == Classic
+    uint16_t questIdOffset = 3;
+#elif VERSION_STRING == TBC
+    uint16_t questIdOffset = 4;
+#else
+    uint16_t questIdOffset = 5;
+#endif
+
+    for (uint16_t i = getOffsetForStructuredField(WoWPlayer, quests); i < getOffsetForStructuredField(WoWPlayer, visible_items); i += questIdOffset)
+        Player::m_visibleUpdateMask.SetBit(i);
+
+#if VERSION_STRING != Classic
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, chosen_title));
+#endif
+#endif
+}
+
+void Player::copyAndSendDelayedPacket(WorldPacket* data) { m_updateMgr.queueDelayedPacket(new WorldPacket(*data)); }
+
+UpdateManager& Player::getUpdateMgr() { return m_updateMgr; }
+
+void Player::setCreateBits(UpdateMask* updateMask, Player* target) const
+{
+    if (target == this)
+    {
+        Object::setCreateBits(updateMask, target);
+    }
+    else
+    {
+        for (uint32 index = 0; index < m_valuesCount; index++)
+        {
+            if (m_uint32Values[index] != 0 && Player::m_visibleUpdateMask.GetBit(index))
+                updateMask->SetBit(index);
+        }
+    }
+}
+
+void Player::setUpdateBits(UpdateMask* updateMask, Player* target) const
+{
+    if (target == this)
+    {
+        Object::setUpdateBits(updateMask, target);
+    }
+    else
+    {
+        Object::setUpdateBits(updateMask, target);
+        *updateMask &= Player::m_visibleUpdateMask;
+    }
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Stats
@@ -2324,7 +2715,7 @@ bool Player::loadSpells(QueryResult* result)
     // Add initial spells on first login
     if (m_FirstLogin)
     {
-        for (const auto& spellId : info->spell_list)
+        for (const auto& spellId : m_playerCreateInfo->spell_list)
             addSpell(spellId);
 
         return true;
@@ -2703,7 +3094,7 @@ void Player::clearCooldownForSpell(uint32_t spellId)
         return;
 
     // Send cooldown clear packet
-    GetSession()->SendPacket(SmsgClearCooldown(spellId, getGuid()).serialise().get());
+    getSession()->SendPacket(SmsgClearCooldown(spellId, getGuid()).serialise().get());
 
     for (uint8_t i = 0; i < NUM_COOLDOWN_TYPES; ++i)
     {
@@ -2743,7 +3134,7 @@ void Player::resetAllCooldowns()
         for (auto itr = m_cooldownMap[i].begin(); itr != m_cooldownMap[i].end();)
         {
             auto spellId = (*itr).second.SpellId;
-            GetSession()->SendPacket(SmsgClearCooldown(spellId, getGuid()).serialise().get());
+            getSession()->SendPacket(SmsgClearCooldown(spellId, getGuid()).serialise().get());
             itr = m_cooldownMap[i].erase(itr);
         }
     }
@@ -3002,7 +3393,7 @@ uint16_t Player::getSkillLineMax(uint16_t skillLine) const
 
 void Player::learnInitialSkills()
 {
-    for (const auto& skill : info->skills)
+    for (const auto& skill : m_playerCreateInfo->skills)
     {
         if (skill.skillid == 0)
             continue;
@@ -4041,7 +4432,7 @@ void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
             }
         }
     }
-    GetSession()->SendPacket(&data);
+    getSession()->SendPacket(&data);
 #endif
 #else
     WorldPacket data(SMSG_TALENTS_INFO, 1000);
@@ -4074,7 +4465,7 @@ void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
         data << uint32(spec.GetTP());
     }
 
-    GetSession()->SendPacket(&data);
+    getSession()->SendPacket(&data);
 #endif
 }
 
@@ -4301,7 +4692,7 @@ void Player::sendActionBars([[maybe_unused]]bool clearBars)
     data << uint8_t(clearBars ? 1 : 0);
 #endif
 
-    GetSession()->SendPacket(&data);
+    getSession()->SendPacket(&data);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -4346,13 +4737,13 @@ void Player::cancelTrade(bool sendToSelfAlso, bool silently /*= false*/)
     if (m_TradeData != nullptr)
     {
         if (sendToSelfAlso)
-            GetSession()->sendTradeResult(TRADE_STATUS_CANCELLED);
+            getSession()->sendTradeResult(TRADE_STATUS_CANCELLED);
 
         auto tradeTarget = m_TradeData->getTradeTarget();
         if (tradeTarget != nullptr)
         {
             if (!silently)
-                tradeTarget->GetSession()->sendTradeResult(TRADE_STATUS_CANCELLED);
+                tradeTarget->getSession()->sendTradeResult(TRADE_STATUS_CANCELLED);
 
             delete tradeTarget->m_TradeData;
             tradeTarget->m_TradeData = nullptr;
@@ -4813,6 +5204,309 @@ void Player::removeTempItemEnchantsOnArena()
     for (uint32_t x = INVENTORY_SLOT_ITEM_START; x < INVENTORY_SLOT_ITEM_END; ++x)
         if (Item* item = itemInterface->GetInventoryItem(static_cast<int16_t>(x)))
             item->RemoveAllEnchantments(true);
+}
+
+void Player::addGarbageItem(Item* item) { m_GarbageItems.push_back(item); }
+
+void Player::removeGarbageItems()
+{
+    for (std::list<Item*>::iterator itr = m_GarbageItems.begin(); itr != m_GarbageItems.end(); ++itr)
+    {
+        Item* it = *itr;
+        delete it;
+    }
+
+    m_GarbageItems.clear();
+}
+
+void Player::applyItemMods(Item* item, int16 slot, bool apply, bool justBrokedown /* = false */, bool skipStatApply /* = false  */)
+{
+    if (slot >= INVENTORY_SLOT_BAG_END)
+        return;
+
+    if (!item)
+        return;
+
+    ItemProperties const* itemProperties = item->getItemProperties();
+    if (!itemProperties)
+        return;
+
+    if (!item->isContainer() && !item->getDurability() && item->getMaxDurability() && justBrokedown == false)
+        return;
+
+    item->ApplyRandomProperties(true);
+
+    int32_t setId = 0;
+    if (itemProperties->ItemSet < 0)
+    {
+        if (sMySQLStore.getItemSetLinkedBonus(itemProperties->ItemSet) != 0)
+            setId = sMySQLStore.getItemSetLinkedBonus(itemProperties->ItemSet);
+    }
+    else
+    {
+        setId = itemProperties->ItemSet;
+    }
+
+    if (setId != 0)
+    {
+        if (auto itemSetEntry = sItemSetStore.LookupEntry(setId))
+        {
+            bool isItemSetCreatedNew = false;
+            ItemSet* itemSet = nullptr;
+
+            std::list<ItemSet>::iterator itemSetListMember;
+            for (itemSetListMember = m_itemSets.begin(); itemSetListMember != m_itemSets.end(); ++itemSetListMember)
+            {
+                if (itemSetListMember->setid == setId)
+                {
+                    itemSet = &(*itemSetListMember);
+                    break;
+                }
+            }
+
+            if (apply)
+            {
+                // create new itemset if item has itemsetentry but not generated set stats
+                if (itemSet == nullptr)
+                {
+                    itemSet = new ItemSet;
+                    itemSet->itemscount = 1;
+                    itemSet->setid = setId;
+
+                    isItemSetCreatedNew = true;
+                }
+                else
+                {
+                    itemSet->itemscount++;
+                }
+
+                // apply spells from dbc for set
+                if (!itemSetEntry->RequiredSkillID || (getSkillLineCurrent(static_cast<uint16_t>(itemSetEntry->RequiredSkillID), true) >= itemSetEntry->RequiredSkillAmt))
+                {
+                    for (uint8_t itemIndex = 0; itemIndex < 8; ++itemIndex)
+                    {
+                        if (itemSet->itemscount == itemSetEntry->itemscount[itemIndex])
+                        {
+                            const auto spellInfo = sSpellMgr.getSpellInfo(itemSetEntry->SpellID[itemIndex]);
+                            Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);
+                            SpellCastTargets targets(getGuid());
+                            spell->prepare(&targets);
+                        }
+                    }
+                }
+
+                // push to m_itemSets if it was not available before.
+                if (itemSetListMember == m_itemSets.end())
+                    m_itemSets.push_back(*itemSet);
+            }
+            else
+            {
+                if (itemSet)
+                {
+                    for (uint8 itemIndex = 0; itemIndex < 8; ++itemIndex)
+                        if (itemSet->itemscount == itemSetEntry->itemscount[itemIndex])
+                            this->RemoveAura(itemSetEntry->SpellID[itemIndex], getGuid());
+
+                    if (!(--itemSet->itemscount))
+                        m_itemSets.erase(itemSetListMember);
+                }
+            }
+
+            if (isItemSetCreatedNew)
+                delete itemSet;
+        }
+        else
+        {
+            sLogger.failure("Item %u has wrong ItemSet %u", itemProperties->ItemId, setId);
+        }
+    }
+
+    //\todo: structure itemProperties to make this a for loop
+    if (itemProperties->FireRes)
+    {
+        if (apply)
+            FlatResistanceModifierPos[2] += itemProperties->FireRes;
+        else
+            FlatResistanceModifierPos[2] -= itemProperties->FireRes;
+        CalcResistance(2);
+    }
+
+    if (itemProperties->NatureRes)
+    {
+        if (apply)
+            FlatResistanceModifierPos[3] += itemProperties->NatureRes;
+        else
+            FlatResistanceModifierPos[3] -= itemProperties->NatureRes;
+        CalcResistance(3);
+    }
+
+    if (itemProperties->FrostRes)
+    {
+        if (apply)
+            FlatResistanceModifierPos[4] += itemProperties->FrostRes;
+        else
+            FlatResistanceModifierPos[4] -= itemProperties->FrostRes;
+        CalcResistance(4);
+    }
+
+    if (itemProperties->ShadowRes)
+    {
+        if (apply)
+            FlatResistanceModifierPos[5] += itemProperties->ShadowRes;
+        else
+            FlatResistanceModifierPos[5] -= itemProperties->ShadowRes;
+        CalcResistance(5);
+    }
+
+    if (itemProperties->ArcaneRes)
+    {
+        if (apply)
+            FlatResistanceModifierPos[6] += itemProperties->ArcaneRes;
+        else
+            FlatResistanceModifierPos[6] -= itemProperties->ArcaneRes;
+        CalcResistance(6);
+    }
+
+#if VERSION_STRING > TBC
+    if (itemProperties->ScalingStatsEntry != 0)
+    {
+        calculateHeirloomBonus(itemProperties, slot, apply);
+    }
+    else
+#endif
+    {
+        for (uint8_t statsIndex = 0; statsIndex < itemProperties->itemstatscount; ++statsIndex)
+        {
+            int32_t val = itemProperties->Stats[statsIndex].Value;
+            ModifyBonuses(itemProperties->Stats[statsIndex].Type, val, apply);
+        }
+
+        if (itemProperties->Armor)
+        {
+            if (apply)
+                BaseResistance[0] += itemProperties->Armor;
+            else
+                BaseResistance[0] -= itemProperties->Armor;
+            CalcResistance(0);
+        }
+
+        if (itemProperties->Damage[0].Min)
+        {
+            if (itemProperties->InventoryType == INVTYPE_RANGED || itemProperties->InventoryType == INVTYPE_RANGEDRIGHT || itemProperties->InventoryType == INVTYPE_THROWN)
+            {
+                BaseRangedDamage[0] += apply ? itemProperties->Damage[0].Min : -itemProperties->Damage[0].Min;
+                BaseRangedDamage[1] += apply ? itemProperties->Damage[0].Max : -itemProperties->Damage[0].Max;
+            }
+            else
+            {
+                if (slot == EQUIPMENT_SLOT_OFFHAND)
+                {
+                    BaseOffhandDamage[0] = apply ? itemProperties->Damage[0].Min : 0;
+                    BaseOffhandDamage[1] = apply ? itemProperties->Damage[0].Max : 0;
+                }
+                else
+                {
+                    BaseDamage[0] = apply ? itemProperties->Damage[0].Min : 0;
+                    BaseDamage[1] = apply ? itemProperties->Damage[0].Max : 0;
+                }
+            }
+        }
+    }
+
+    if (this->getClass() == DRUID && slot == EQUIPMENT_SLOT_MAINHAND)
+    {
+        uint8_t shapeShiftForm = getShapeShiftForm();
+        if (shapeShiftForm == FORM_MOONKIN || shapeShiftForm == FORM_CAT || shapeShiftForm == FORM_BEAR || shapeShiftForm == FORM_DIREBEAR)
+            this->ApplyFeralAttackPower(apply, item);
+    }
+
+    if (apply)
+    {
+        item->ApplyEnchantmentBonuses();
+
+        for (auto itemSpell : item->getItemProperties()->Spells)
+        {
+            if (itemSpell.Id == 0)
+                continue;
+
+            if (auto spellInfo = sSpellMgr.getSpellInfo(itemSpell.Id))
+            {
+                if (itemSpell.Trigger == ON_EQUIP)
+                {
+                    if (spellInfo->getRequiredShapeShift())
+                    {
+                        AddShapeShiftSpell(spellInfo->getId());
+                        continue;
+                    }
+
+                    Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);
+                    SpellCastTargets targets(getGuid());
+                    spell->castedItemId = item->getEntry();
+                    spell->prepare(&targets);
+
+                }
+                else if (itemSpell.Trigger == CHANCE_ON_HIT)
+                {
+                    // Calculate proc chance equivalent of 1 PPM
+                    // On average 'chance on hit' effects on items seem to have 1 proc-per-minute
+                    const auto procChance = float2int32((item->getItemProperties()->Delay * 0.001f / 60.0f) * 100.0f);
+                    switch (slot)
+                    {
+                        // 'Chance on hit' in main hand should only proc from main hand hits
+                        case EQUIPMENT_SLOT_MAINHAND:
+                            addProcTriggerSpell(spellInfo, nullptr, getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT), EXTRA_PROC_ON_MAIN_HAND_HIT_ONLY, nullptr, nullptr, nullptr, this);
+                            break;
+                        // 'Chance on hit' in off hand should only proc from off hand hits
+                        case EQUIPMENT_SLOT_OFFHAND:
+                            addProcTriggerSpell(spellInfo, nullptr, getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT | PROC_ON_DONE_OFFHAND_ATTACK), EXTRA_PROC_ON_OFF_HAND_HIT_ONLY, nullptr, nullptr, nullptr, this);
+                            break;
+                        // 'Chance on hit' in ranged slot should only proc from ranged attacks
+                        case EQUIPMENT_SLOT_RANGED:
+                            addProcTriggerSpell(spellInfo, nullptr, getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_RANGED_HIT | PROC_ON_DONE_RANGED_SPELL_HIT), EXTRA_PROC_NULL, nullptr, nullptr, nullptr, this);
+                            break;
+                        // In any other slot, proc on any melee or ranged hit
+                        default:
+                            addProcTriggerSpell(spellInfo, nullptr, getGuid(), procChance, SpellProcFlags(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT | PROC_ON_DONE_RANGED_HIT | PROC_ON_DONE_RANGED_SPELL_HIT), EXTRA_PROC_NULL, nullptr, nullptr, nullptr, this);
+                            break;
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        item->RemoveEnchantmentBonuses();
+        for (auto itemSpell : item->getItemProperties()->Spells)
+        {
+            if (itemSpell.Trigger == ON_EQUIP)
+            {
+                if (auto spellInfo = sSpellMgr.getSpellInfo(itemSpell.Id))
+                {
+                    if (spellInfo->getRequiredShapeShift())
+                        RemoveShapeShiftSpell(spellInfo->getId());
+                    else
+                        RemoveAura(itemSpell.Id);
+                }
+            }
+            else if (itemSpell.Trigger == CHANCE_ON_HIT)
+            {
+                this->removeProcTriggerSpell(itemSpell.Id);
+            }
+        }
+    }
+
+    if (!apply)
+    {
+        for (uint32_t posIndex = MAX_POSITIVE_AURAS_EXTEDED_START; posIndex < MAX_POSITIVE_AURAS_EXTEDED_END; ++posIndex)
+        {
+            if (auto m_aura = this->m_auras[posIndex])
+                if (m_aura->m_castedItemId && m_aura->m_castedItemId == itemProperties->ItemId)
+                    m_aura->removeAura();
+        }
+    }
+
+    if (!skipStatApply)
+        UpdateStats();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -5301,7 +5995,7 @@ void Player::resurrect()
 void Player::buildRepop()
 {
 #if VERSION_STRING > TBC
-    GetSession()->SendPacket(SmsgPreResurrect(getGuid()).serialise().get());
+    getSession()->SendPacket(SmsgPreResurrect(getGuid()).serialise().get());
 #endif
 
     uint32_t AuraIds[] = { 20584, 9036, 8326, 0 };
@@ -5352,7 +6046,7 @@ void Player::calcDeathDurabilityLoss(double percent)
                     newDurability = 0;
 
                 if (newDurability <= 0)
-                    ApplyItemMods(item, i, false, true);
+                    applyItemMods(item, i, false, true);
 
                 item->setDurability(static_cast<uint32>(newDurability));
                 item->m_isDirty = true;
@@ -5367,6 +6061,9 @@ void Player::setResurrectMana(uint32_t mana) { m_resurrectMana = mana; }
 void Player::setResurrectInstanceId(uint32_t id) { m_resurrectInstanceID = id; }
 void Player::setResurrectMapId(uint32_t id) { m_resurrectMapId = id; }
 void Player::setResurrectPosition(LocationVector position) { m_resurrectPosition = position; }
+
+uint64_t Player::getAreaSpiritHealerGuid() const { return m_areaSpiritHealerGuid; }
+void Player::setAreaSpiritHealerGuid(uint64_t guid) { m_areaSpiritHealerGuid = guid; }
 
 void Player::setFullHealthMana()
 {
@@ -6124,7 +6821,7 @@ void Player::removeFromBgQueue()
         return;
 
     m_pendingBattleground->RemovePendingPlayer(this);
-    sChatHandler.SystemMessage(m_session, GetSession()->LocalizedWorldSrv(ServerString::SS_BG_REMOVE_QUEUE_INF));
+    sChatHandler.SystemMessage(m_session, getSession()->LocalizedWorldSrv(ServerString::SS_BG_REMOVE_QUEUE_INF));
 }
 
 bool Player::hasWonRbgToday() const { return this->m_hasWonRbgToday; }
@@ -6652,7 +7349,7 @@ void Player::addToFriendList(std::string name, std::string note)
             return;
         }
 
-        if (targetPlayer->GetSession())
+        if (targetPlayer->getSession())
         {
             m_session->SendPacket(SmsgFriendStatus(FRIEND_ADDED_ONLINE, targetPlayer->getGuidLow(), note, 1,
                 targetPlayer->GetZoneId(), targetPlayer->getLevel(), targetPlayer->getClass()).serialise().get());
@@ -6734,7 +7431,7 @@ void Player::sendFriendStatus(bool comesOnline)
         {
             if (auto* targetPlayer = sObjectMgr.GetPlayer(friendedGuids))
             {
-                if (targetPlayer->GetSession())
+                if (targetPlayer->getSession())
                 {
                     if (comesOnline)
                         targetPlayer->SendPacket(SmsgFriendStatus(FRIEND_ONLINE, getGuid(), "", 1, getAreaId(), getLevel(), getClass()).serialise().get());
@@ -6874,7 +7571,7 @@ bool Player::isIgnored(uint32_t guid) const
 // Hack/Cheat Detection
 void Player::speedCheatDelay(uint32_t delay)
 {
-    m_speedCheatDetector->SkipSamplingUntil(Util::getMSTime() + delay + GetSession()->GetLatency() * 2 + 2000);
+    m_speedCheatDetector->SkipSamplingUntil(Util::getMSTime() + delay + getSession()->GetLatency() * 2 + 2000);
 }
 
 void Player::speedCheatReset()
@@ -7030,7 +7727,7 @@ void Player::setGuildAndGroupInfo()
         {
             setGuildId(getPlayerInfo()->m_guild);
             setGuildRank(getPlayerInfo()->guildRank);
-            guild->sendLoginInfo(GetSession());
+            guild->sendLoginInfo(getSession());
 #if VERSION_STRING >= Cata
             setGuildLevel(guild->getLevel());
 #endif
@@ -7712,7 +8409,7 @@ bool Player::canBuyAt(MySQLStructure::VendorRestrictions const* vendor)
         }
         else
         {
-            sLogger.failure("VendorRestrictions: Mount vendor specified, but not enough info for creature %u", vendor->entry);
+            sLogger.failure("VendorRestrictions: Mount vendor specified, but not enough m_playerCreateInfo for creature %u", vendor->entry);
         }
     }
 
@@ -7785,7 +8482,7 @@ void Player::resetTimeSync()
 
 void Player::sendTimeSync()
 {
-    GetSession()->SendPacket(SmsgTimeSyncReq(m_timeSyncCounter++).serialise().get());
+    getSession()->SendPacket(SmsgTimeSyncReq(m_timeSyncCounter++).serialise().get());
 
     // Schedule next sync in 10 sec
     m_timeSyncTimer = 10000;
@@ -7898,7 +8595,7 @@ uint8_t Player::addVoidStorageItem(const VoidStorageItem& item)
 
     if (slot >= VOID_STORAGE_MAX_SLOT)
     {
-        GetSession()->sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_FULL);
+        getSession()->sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_FULL);
         return 255;
     }
 
@@ -7911,14 +8608,14 @@ void Player::addVoidStorageItemAtSlot(uint8_t slot, const VoidStorageItem& item)
 {
     if (slot >= VOID_STORAGE_MAX_SLOT)
     {
-        GetSession()->sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_FULL);
+        getSession()->sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_FULL);
         return;
     }
 
     if (_voidStorageItems[slot])
     {
         sLogger.debug("Player::addVoidStorageItemAtSlot - Player (GUID: %u, name: %s) tried to add an item to an used slot (item id: %u, entry: %u, slot: %u).", getGuidLow(), getName().c_str(), _voidStorageItems[slot]->itemId, _voidStorageItems[slot]->itemEntry, slot);
-        GetSession()->sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_INTERNAL_ERROR_1);
+        getSession()->sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_INTERNAL_ERROR_1);
         return;
     }
 
@@ -7930,7 +8627,7 @@ void Player::deleteVoidStorageItem(uint8_t slot)
 {
     if (slot >= VOID_STORAGE_MAX_SLOT)
     {
-        GetSession()->sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_INTERNAL_ERROR_1);
+        getSession()->sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_INTERNAL_ERROR_1);
         return;
     }
 
@@ -7951,7 +8648,7 @@ VoidStorageItem* Player::getVoidStorageItem(uint8_t slot) const
 {
     if (slot >= VOID_STORAGE_MAX_SLOT)
     {
-        GetSession()->sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_INTERNAL_ERROR_1);
+        getSession()->sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_INTERNAL_ERROR_1);
         return nullptr;
     }
 
@@ -8263,7 +8960,7 @@ void Player::eventTeleportTaxi(uint32_t mapId, float x, float y, float z)
     {
         WorldPacket msg(CMSG_SERVER_BROADCAST, 50);
         msg << uint32_t(3);
-        msg << GetSession()->LocalizedWorldSrv(SS_MUST_HAVE_BC);
+        msg << getSession()->LocalizedWorldSrv(SS_MUST_HAVE_BC);
         msg << uint8_t(0);
         m_session->SendPacket(&msg);
 
@@ -8620,7 +9317,7 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
         questItem->is_looted = true;
         //freeforall is 1 if everyone's supposed to get the quest item.
         if (item->is_ffa || _loot->getPlayerQuestItems().size() == 1)
-            GetSession()->SendPacket(SmsgLootRemoved(slot).serialise().get());
+            getSession()->SendPacket(SmsgLootRemoved(slot).serialise().get());
         else
             _loot->itemRemoved(questItem->index);
     }
@@ -8630,7 +9327,7 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
         {
             //freeforall case, notify only one player of the removal
             ffaItem->is_looted = true;
-            GetSession()->SendPacket(SmsgLootRemoved(slot).serialise().get());
+            getSession()->SendPacket(SmsgLootRemoved(slot).serialise().get());
         }
         else
         {
@@ -9319,7 +10016,7 @@ void Player::requestDuel(Player* target)
 
         goFlag->PushToWorld(m_mapMgr);
 
-        target->GetSession()->SendPacket(SmsgDuelRequested(goFlag->getGuid(), getGuid()).serialise().get());
+        target->getSession()->SendPacket(SmsgDuelRequested(goFlag->getGuid(), getGuid()).serialise().get());
     }
 }
 

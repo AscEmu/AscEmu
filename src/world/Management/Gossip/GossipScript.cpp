@@ -72,7 +72,7 @@ GossipScript* GossipScript::getInterface(GameObject* gameObject)
 void GossipSpiritHealer::onHello(Object* object, Player* player)
 {
     if (const auto creature = dynamic_cast<Creature*>(object))
-        player->GetSession()->sendSpiritHealerRequest(creature);
+        player->getSession()->sendSpiritHealerRequest(creature);
 }
 
 void GossipVendor::onHello(Object* object, Player* player)
@@ -83,7 +83,7 @@ void GossipVendor::onHello(Object* object, Player* player)
         if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
-        GossipMenu menu(creature->getGuid(), gossipTextId, player->GetSession()->language);
+        GossipMenu menu(creature->getGuid(), gossipTextId, player->getSession()->language);
 
         const auto vendorRestrictions = sMySQLStore.getVendorRestriction(creature->GetCreatureProperties()->Id);
         if (!player->canBuyAt(vendorRestrictions))
@@ -100,7 +100,7 @@ void GossipVendor::onHello(Object* object, Player* player)
 void GossipVendor::onSelectOption(Object* object, Player* player, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
     if (const auto creature = dynamic_cast<Creature*>(object))
-        player->GetSession()->sendInventoryList(creature);
+        player->getSession()->sendInventoryList(creature);
 }
 
 void GossipTrainer::onHello(Object* object, Player* player)
@@ -111,7 +111,7 @@ void GossipTrainer::onHello(Object* object, Player* player)
         if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
-        GossipMenu menu(creature->getGuid(), gossipTextId, player->GetSession()->language);
+        GossipMenu menu(creature->getGuid(), gossipTextId, player->getSession()->language);
 
         if (const auto trainer = creature->GetTrainer())
         {
@@ -127,8 +127,8 @@ void GossipTrainer::onHello(Object* object, Player* player)
                 if (pos != std::string::npos)
                     name = name.substr(0, pos);
 
-                auto msg = std::string(player->GetSession()->LocalizedGossipOption(ISEEK));
-                msg += std::string(player->GetSession()->LocalizedGossipOption(TRAINING)) + ", " + name + ".";
+                auto msg = std::string(player->getSession()->LocalizedGossipOption(ISEEK));
+                msg += std::string(player->getSession()->LocalizedGossipOption(TRAINING)) + ", " + name + ".";
                 menu.addItem(GOSSIP_ICON_TRAINER, 0, 1, msg);
 
                 if (creature->isVendor())
@@ -151,9 +151,9 @@ void GossipTrainer::onSelectOption(Object* object, Player* player, uint32_t Id, 
     if (const auto creature = dynamic_cast<Creature*>(object))
     {
         if (1 == Id)
-            player->GetSession()->sendTrainerList(creature);
+            player->getSession()->sendTrainerList(creature);
         else
-            player->GetSession()->sendInventoryList(creature);
+            player->getSession()->sendInventoryList(creature);
     }
 }
 
@@ -165,7 +165,7 @@ void GossipFlightMaster::onHello(Object* object, Player* player)
         if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
-        GossipMenu menu(object->getGuid(), gossipTextId, player->GetSession()->language);
+        GossipMenu menu(object->getGuid(), gossipTextId, player->getSession()->language);
 
         menu.addItem(GOSSIP_ICON_FLIGHTMASTER, FLIGHTMASTER, 1);
 
@@ -178,7 +178,7 @@ void GossipFlightMaster::onHello(Object* object, Player* player)
 void GossipFlightMaster::onSelectOption(Object* object, Player* player, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
     if (const auto creature = dynamic_cast<Creature*>(object))
-        player->GetSession()->sendTaxiList(creature);
+        player->getSession()->sendTaxiList(creature);
 }
 
 void GossipAuctioneer::onHello(Object* object, Player* player)
@@ -189,13 +189,13 @@ void GossipAuctioneer::onHello(Object* object, Player* player)
         if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
-        GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_VENDOR, player->GetSession()->LocalizedGossipOption(AUCTIONEER));
+        GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_VENDOR, player->getSession()->LocalizedGossipOption(AUCTIONEER));
     }
 }
 
 void GossipAuctioneer::onSelectOption(Object* object, Player* player, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    player->GetSession()->sendAuctionList(dynamic_cast<Creature*>(object));
+    player->getSession()->sendAuctionList(dynamic_cast<Creature*>(object));
 }
 
 void GossipInnKeeper::onHello(Object* object, Player* player)
@@ -206,7 +206,7 @@ void GossipInnKeeper::onHello(Object* object, Player* player)
         if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
-        GossipMenu menu(object->getGuid(), gossipTextId, player->GetSession()->language);
+        GossipMenu menu(object->getGuid(), gossipTextId, player->getSession()->language);
 
         menu.addItem(GOSSIP_ICON_CHAT, INNKEEPER, 1);
 
@@ -228,9 +228,9 @@ void GossipInnKeeper::onSelectOption(Object* object, Player* player, uint32_t Id
     if (const auto creature = dynamic_cast<Creature*>(object))
     {
         if (1 == Id)
-            player->GetSession()->sendInnkeeperBind(creature);
+            player->getSession()->sendInnkeeperBind(creature);
         else
-            player->GetSession()->sendInventoryList(creature);
+            player->getSession()->sendInventoryList(creature);
     }
 }
 
@@ -242,7 +242,7 @@ void GossipBattleMaster::onHello(Object* object, Player* player)
         if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
-        GossipMenu menu(creature->getGuid(), gossipTextId, player->GetSession()->language);
+        GossipMenu menu(creature->getGuid(), gossipTextId, player->getSession()->language);
 
         menu.addItem(GOSSIP_ICON_BATTLE, BATTLEMASTER, 1);
 
@@ -254,12 +254,12 @@ void GossipBattleMaster::onHello(Object* object, Player* player)
 
 void GossipBattleMaster::onSelectOption(Object* object, Player* player, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    player->GetSession()->sendBattlegroundList(dynamic_cast<Creature*>(object), 0);
+    player->getSession()->sendBattlegroundList(dynamic_cast<Creature*>(object), 0);
 }
 
 void GossipBanker::onHello(Object* object, Player* player)
 {
-    player->GetSession()->sendBankerList(dynamic_cast<Creature*>(object));
+    player->getSession()->sendBankerList(dynamic_cast<Creature*>(object));
 }
 
 void GossipBanker::onSelectOption(Object* /*object*/, Player* /*player*/, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
@@ -275,15 +275,15 @@ void GossipCharterGiver::onHello(Object* object, Player* player)
             gossipTextId = DefaultGossipTextId;
 
         if (creature->isTabardDesigner())
-            GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(FOUND_GUILD));
+            GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_CHAT, player->getSession()->LocalizedGossipOption(FOUND_GUILD));
         else
-            GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(FOUND_ARENATEAM));
+            GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_CHAT, player->getSession()->LocalizedGossipOption(FOUND_ARENATEAM));
     }
 }
 
 void GossipCharterGiver::onSelectOption(Object* object, Player* player, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    player->GetSession()->sendCharterRequest(dynamic_cast<Creature*>(object));
+    player->getSession()->sendCharterRequest(dynamic_cast<Creature*>(object));
 }
 
 void GossipTabardDesigner::onHello(Object* object, Player* player)
@@ -294,7 +294,7 @@ void GossipTabardDesigner::onHello(Object* object, Player* player)
         if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
-        GossipMenu menu(creature->getGuid(), gossipTextId, player->GetSession()->language);
+        GossipMenu menu(creature->getGuid(), gossipTextId, player->getSession()->language);
 
         menu.addItem(GOSSIP_ICON_TABARD, TABARD, 1);
 
@@ -317,18 +317,18 @@ void GossipTabardDesigner::onSelectOption(Object* object, Player* player, uint32
     switch (Id)
     {
         case 1:
-            player->GetSession()->sendTabardHelp(dynamic_cast<Creature*>(object));
+            player->getSession()->sendTabardHelp(dynamic_cast<Creature*>(object));
             break;
         case 2:
         {
             if (const auto creature = dynamic_cast<Creature*>(object))
                 if (creature->isCharterGiver())
-                    player->GetSession()->sendCharterRequest(creature);
+                    player->getSession()->sendCharterRequest(creature);
         } break;
         case 3:
         {
             if (const auto creature = dynamic_cast<Creature*>(object))
-                player->GetSession()->sendInventoryList(creature);
+                player->getSession()->sendInventoryList(creature);
         } break;
         default: 
             break;
@@ -345,14 +345,14 @@ void GossipStableMaster::onHello(Object* object, Player* player)
         gossipTextId = DefaultGossipTextId;
 
     if (player->getClass() == ::HUNTER)
-        GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(STABLE_MY_PET));
+        GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_CHAT, player->getSession()->LocalizedGossipOption(STABLE_MY_PET));
     else
         GossipMenu::sendSimpleMenu(object->getGuid(), gossipTextId, player);
 }
 
 void GossipStableMaster::onSelectOption(Object* object, Player* player, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    player->GetSession()->sendStabledPetList(object->getGuid());
+    player->getSession()->sendStabledPetList(object->getGuid());
 }
 
 void GossipPetTrainer::onHello(Object* object, Player* player)
@@ -363,7 +363,7 @@ void GossipPetTrainer::onHello(Object* object, Player* player)
         if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
-        GossipMenu menu(object->getGuid(), gossipTextId, player->GetSession()->language);
+        GossipMenu menu(object->getGuid(), gossipTextId, player->getSession()->language);
 
         menu.addItem(GOSSIP_ICON_TRAINER, BEASTTRAINING, 1);
 
@@ -383,11 +383,11 @@ void GossipPetTrainer::onSelectOption(Object* object, Player* player, uint32_t I
         case 1:
         {
             if (const auto creature = dynamic_cast<Creature*>(object))
-                player->GetSession()->sendTrainerList(creature);
+                player->getSession()->sendTrainerList(creature);
         } break;
         case 2:
         {
-            GossipMenu::sendQuickMenu(object->getGuid(), TXTID_PETUNTRAIN, player, 3, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(PETTRAINER_TALENTRESET));
+            GossipMenu::sendQuickMenu(object->getGuid(), TXTID_PETUNTRAIN, player, 3, GOSSIP_ICON_CHAT, player->getSession()->LocalizedGossipOption(PETTRAINER_TALENTRESET));
         } break;
         default:
         {
@@ -401,7 +401,7 @@ void GossipClassTrainer::onHello(Object* object, Player* player)
 {
     if (auto creature = dynamic_cast<Creature*>(object))
     {
-        const auto playerSession = player->GetSession();
+        const auto playerSession = player->getSession();
 
         auto gossipTextId = sMySQLStore.getGossipTextIdForNpc(creature->getEntry());
         if (!sMySQLStore.getNpcGossipText(gossipTextId))
@@ -490,7 +490,7 @@ void GossipClassTrainer::onHello(Object* object, Player* player)
 
 void GossipClassTrainer::onSelectOption(Object* object, Player* player, uint32_t Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
-    const auto playerSession = player->GetSession();
+    const auto playerSession = player->getSession();
 
     switch (Id)
     {
@@ -544,7 +544,7 @@ void GossipGeneric::onHello(Object* object, Player* player)
 
     if (const auto creature = dynamic_cast<Creature*>(object))
     {
-        GossipMenu menu(object->getGuid(), gossipTextId, player->GetSession()->language);
+        GossipMenu menu(object->getGuid(), gossipTextId, player->getSession()->language);
 
         sQuestMgr.FillQuestMenu(creature, player, menu);
 

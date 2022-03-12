@@ -878,7 +878,7 @@ public:
         if (!pInstance)
             return;
 
-        GossipMenu menu(object->getGuid(), 15221, player->GetSession()->language);
+        GossipMenu menu(object->getGuid(), 15221, player->getSession()->language);
         menu.addItem(GOSSIP_ICON_CHAT, 515, 0);     // Teleport to Light's Hammer.
 
         if (pInstance->getData(CN_LORD_MARROWGAR) == Finished)

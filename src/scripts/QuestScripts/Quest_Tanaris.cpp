@@ -28,7 +28,7 @@ public:
     {
         if (plr->hasQuestInQuestLog(3520))
         {
-            GossipMenu menu(pObject->getGuid(), 2039, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 2039, plr->getSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 495, 1);     // Goodbye
             menu.sendGossipPacket(plr);
         }
@@ -72,7 +72,7 @@ public:
     {
         if (plr->hasQuestInQuestLog(10279) || plr->hasQuestFinished(10279))
         {
-            GossipMenu menu(pObject->getGuid(), 9978, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 9978, plr->getSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 496, 1);     // Please take me to the Master's Lair
             menu.sendGossipPacket(plr);
         }

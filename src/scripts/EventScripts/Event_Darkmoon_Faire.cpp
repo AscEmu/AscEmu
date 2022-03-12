@@ -192,7 +192,7 @@ public:
                 break;
         }
 
-        GossipMenu menu(pObject->getGuid(), textId, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), textId, plr->getSession()->language);
         menu.sendGossipPacket(plr);
     }
 };
@@ -234,7 +234,7 @@ public:
                 break;
         }
 
-        GossipMenu menu(pObject->getGuid(), textId, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), textId, plr->getSession()->language);
         menu.sendGossipPacket(plr);
     }
 };
@@ -280,14 +280,14 @@ class MaximaBlastenheimer_Gossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        GossipMenu menu(pObject->getGuid(), BARK_MAXIMA_1, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), BARK_MAXIMA_1, plr->getSession()->language);
         menu.addItem(GOSSIP_ICON_CHAT, GI_ULTRA_CANNON, 1);
         menu.sendGossipPacket(plr);
     }
 
     void onSelectOption(Object* pObject, Player* plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
-        GossipMenu menu(pObject->getGuid(), BARK_MAXIMA_2, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), BARK_MAXIMA_2, plr->getSession()->language);
         menu.sendGossipPacket(plr);
     }
 };
@@ -312,7 +312,7 @@ class ProfessorThaddeusPaleo_Gossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        GossipMenu menu(pObject->getGuid(), 60016, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 60016, plr->getSession()->language);
 
         if (static_cast<Creature*>(pObject)->getNpcFlags() & UNIT_NPC_FLAG_VENDOR)
             menu.addItem(GOSSIP_ICON_VENDOR, GI_BROWS_GOODS, 1);
@@ -328,11 +328,11 @@ public:
         switch (Id)
         {
             case 1:
-                plr->GetSession()->sendInventoryList(pCreature);
+                plr->getSession()->sendInventoryList(pCreature);
                 break;
             case 2:
             {
-                GossipMenu menu(pObject->getGuid(), 60017, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60017, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_TELL_BEAST_DECK, 5);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_TELL_PORTAL_DECK, 6);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_TELL_ELEMENTALS_DECK, 7);
@@ -401,12 +401,12 @@ public:
         // Check to see if the player already has a buff from Sayge.
         if (plr->hasAurasWithId(23768) || plr->hasAurasWithId(23769) || plr->hasAurasWithId(23767) || plr->hasAurasWithId(23738) || plr->hasAurasWithId(23766) || plr->hasAurasWithId(23737) || plr->hasAurasWithId(23735) || plr->hasAurasWithId(23736))
         {
-            GossipMenu menu(pObject->getGuid(), 60034, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 60034, plr->getSession()->language);
             menu.sendGossipPacket(plr);
         }
         else
         {
-            GossipMenu menu(pObject->getGuid(), 60026, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 60026, plr->getSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, GI_READY_DISC_FORTUNE, 1);
             menu.sendGossipPacket(plr);
         }
@@ -420,7 +420,7 @@ public:
         {
             case 1:        // Question 1 (Initial question, always the same)
             {
-                GossipMenu menu(pObject->getGuid(), 60027, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60027, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ANSWER_1_1, 10);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ANSWER_1_2, 11);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ANSWER_1_3, 12);
@@ -429,7 +429,7 @@ public:
             }break;
             case 10:    // Question 2 (First Answer = 1)
             {
-                GossipMenu menu(pObject->getGuid(), 60028, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60028, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ANSWER_2_1, 14);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ANSWER_2_2, 15);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ANSWER_2_3, 16);
@@ -437,7 +437,7 @@ public:
             }break;
             case 11:     // Question 2 (First Answer = 2)
             {
-                GossipMenu menu(pObject->getGuid(), 60029, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60029, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ANSWER_3_1, 17);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ANSWER_3_2, 18);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ANSWER_3_3, 19);
@@ -445,7 +445,7 @@ public:
             }break;
             case 12:     // Question 2 (First Answer = 3)
             {
-                GossipMenu menu(pObject->getGuid(), 60030, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60030, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ANSWER_4_1, 20);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ANSWER_4_2, 21);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ANSWER_4_3, 22);
@@ -453,7 +453,7 @@ public:
             }break;
             case 13:     // Question 2 (First Answer = 4)
             {
-                GossipMenu menu(pObject->getGuid(), 60031, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60031, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ANSWER_5_1, 23);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ANSWER_5_2, 24);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ANSWER_5_3, 25);
@@ -462,21 +462,21 @@ public:
             // Answers 1-#
             case 14:     // Answers: 1-1
             {
-                GossipMenu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60032, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_WRITTEN_FORTUNES, 30);
                 pCreature->castSpell(plr, 23768, true);
                 menu.sendGossipPacket(plr);
             }break;
             case 15:     // Answers: 1-2
             {
-                GossipMenu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60032, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_WRITTEN_FORTUNES, 30);
                 pCreature->castSpell(plr, 23769, true);
                 menu.sendGossipPacket(plr);
             }break;
             case 16:     // Answers: 1-3
             {
-                GossipMenu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60032, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_WRITTEN_FORTUNES, 30);
                 pCreature->castSpell(plr, 23767, true);
                 menu.sendGossipPacket(plr);
@@ -484,21 +484,21 @@ public:
             // Answers 2-#
             case 17:     // Answers: 2-1
             {
-                GossipMenu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60032, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_WRITTEN_FORTUNES, 30);
                 pCreature->castSpell(plr, 23738, true);
                 menu.sendGossipPacket(plr);
             }break;
             case 18:     // Answers: 2-2
             {
-                GossipMenu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60032, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_WRITTEN_FORTUNES, 30);
                 pCreature->castSpell(plr, 23766, true);
                 menu.sendGossipPacket(plr);
             }break;
             case 19:     // Answers: 2-3
             {
-                GossipMenu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60032, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_WRITTEN_FORTUNES, 30);
                 pCreature->castSpell(plr, 23769, true);
                 menu.sendGossipPacket(plr);
@@ -506,21 +506,21 @@ public:
             // Answers 3-#
             case 20:     // Answers: 3-1
             {
-                GossipMenu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60032, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_WRITTEN_FORTUNES, 30);
                 pCreature->castSpell(plr, 23737, true);
                 menu.sendGossipPacket(plr);
             }break;
             case 21:     // Answers: 3-2
             {
-                GossipMenu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60032, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_WRITTEN_FORTUNES, 30);
                 pCreature->castSpell(plr, 23735, true);
                 menu.sendGossipPacket(plr);
             }break;
             case 22:     // Answers: 3-3
             {
-                GossipMenu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60032, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_WRITTEN_FORTUNES, 30);
                 pCreature->castSpell(plr, 23736, true);
                 menu.sendGossipPacket(plr);
@@ -528,28 +528,28 @@ public:
             // Answers 4-#
             case 23:     // Answers: 4-1
             {
-                GossipMenu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60032, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_WRITTEN_FORTUNES, 30);
                 pCreature->castSpell(plr, 23766, true);
                 menu.sendGossipPacket(plr);
             }break;
             case 24:     // Answers: 4-2
             {
-                GossipMenu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60032, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_WRITTEN_FORTUNES, 30);
                 pCreature->castSpell(plr, 23738, true);
                 menu.sendGossipPacket(plr);
             }break;
             case 25:     // Answers: 4-3
             {
-                GossipMenu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60032, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_WRITTEN_FORTUNES, 30);
                 pCreature->castSpell(plr, 23737, true);
                 menu.sendGossipPacket(plr);
             }break;
             case 30:
             {
-                GossipMenu menu(pObject->getGuid(), 60033, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 60033, plr->getSession()->language);
                 menu.sendGossipPacket(plr);
                 // Cast the fortune into the player's inventory - Not working?
                 pCreature->castSpell(plr, 23765, true);
@@ -611,7 +611,7 @@ class SelinaDourman_Gossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        GossipMenu menu(pObject->getGuid(), 60035, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 60035, plr->getSession()->language);
         menu.addItem(GOSSIP_ICON_CHAT, GI_DF_WHAT_PURCHASE, 1);
         menu.addItem(GOSSIP_ICON_CHAT, GI_DF_FAIRE_PRIZE, 2);
         menu.addItem(GOSSIP_ICON_CHAT, GI_DF_WHAT_ARE_DARKMOON, 3);
@@ -633,13 +633,13 @@ public:
                 break;
             case 3:
             {
-                GossipMenu menu(pObject->getGuid(), 60038, plr->GetSession()->language);    // What are Darkmoon Cards?
+                GossipMenu menu(pObject->getGuid(), 60038, plr->getSession()->language);    // What are Darkmoon Cards?
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_MORE, 10);
                 menu.sendGossipPacket(plr);
             }break;
             case 4:
             {
-                GossipMenu menu(pObject->getGuid(), 60040, plr->GetSession()->language);    // What other things can I do at the faire?
+                GossipMenu menu(pObject->getGuid(), 60040, plr->getSession()->language);    // What other things can I do at the faire?
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_TONK_CONTROLS, 20);
                 menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ABOUT_CANON, 21);
                 menu.sendGossipPacket(plr);
@@ -664,7 +664,7 @@ class SilasDarkmoon_Gossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        GossipMenu menu(pObject->getGuid(), 60013, plr->GetSession()->language);                // \todo find right text
+        GossipMenu menu(pObject->getGuid(), 60013, plr->getSession()->language);                // \todo find right text
         menu.addItem(GOSSIP_ICON_CHAT, GI_DF_ASK_PROFIT, 1);    // Silas, why is most everything at the fair free? How do you make a profit?
         menu.sendGossipPacket(plr);
     }

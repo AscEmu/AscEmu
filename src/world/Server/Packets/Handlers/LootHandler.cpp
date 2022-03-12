@@ -237,7 +237,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
             else
             {
                 _player->modCoinage(money);
-                _player->GetSession()->SendPacket(SmsgLootMoneyNotify(money, 1).serialise().get());
+                _player->getSession()->SendPacket(SmsgLootMoneyNotify(money, 1).serialise().get());
 #if VERSION_STRING > TBC
                 _player->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, money, 0, 0);
 #endif
@@ -281,7 +281,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
                 else
                 {
                     player->modCoinage(sharedMoney);
-                    player->GetSession()->SendPacket(SmsgLootMoneyNotify(sharedMoney, groupMembers.size() <= 1).serialise().get());
+                    player->getSession()->SendPacket(SmsgLootMoneyNotify(sharedMoney, groupMembers.size() <= 1).serialise().get());
 
 #if VERSION_STRING > TBC
                     player->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, sharedMoney, 0, 0);

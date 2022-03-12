@@ -760,27 +760,27 @@ void Pet::SendTalentsToOwner()
     data.put< uint8 >(pos, count);
 
     // send the packet to owner
-    if (m_Owner->GetSession() != NULL)
-        m_Owner->GetSession()->SendPacket(&data);
+    if (m_Owner->getSession() != NULL)
+        m_Owner->getSession()->SendPacket(&data);
 #endif
 #endif
 }
 
 void Pet::SendCastFailed(uint32 spellid, uint8 fail)
 {
-    if (m_Owner == NULL || m_Owner->GetSession() == NULL)
+    if (m_Owner == NULL || m_Owner->getSession() == NULL)
         return;
 
     WorldPacket data(SMSG_PET_CAST_FAILED, 6);
     data << uint8(0);
     data << uint32(spellid);
     data << uint8(fail);
-    m_Owner->GetSession()->SendPacket(&data);
+    m_Owner->getSession()->SendPacket(&data);
 }
 
 void Pet::SendActionFeedback(PetActionFeedback value)
 {
-    if (m_Owner == NULL || m_Owner->GetSession() == NULL)
+    if (m_Owner == NULL || m_Owner->getSession() == NULL)
         return;
 
     m_Owner->SendPacket(AscEmu::Packets::SmsgPetActionFeedback(value).serialise().get());
@@ -1518,7 +1518,7 @@ void Pet::AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell)
     }
 
 #if VERSION_STRING > TBC
-    if (showLearnSpell && m_Owner && m_Owner->GetSession() && !(sp->getAttributes() & ATTRIBUTES_NO_CAST))
+    if (showLearnSpell && m_Owner && m_Owner->getSession() && !(sp->getAttributes() & ATTRIBUTES_NO_CAST))
         m_Owner->SendPacket(AscEmu::Packets::SmsgPetLearnedSpell(sp->getId()).serialise().get());
 #endif
 
@@ -1652,7 +1652,7 @@ void Pet::RemoveSpell(SpellInfo const* sp, [[maybe_unused]]bool showUnlearnSpell
     }
 
 #if VERSION_STRING > TBC
-    if (showUnlearnSpell && m_Owner && m_Owner->GetSession())
+    if (showUnlearnSpell && m_Owner && m_Owner->getSession())
         m_Owner->SendPacket(AscEmu::Packets::SmsgPetUnlearnedSpell(sp->getId()).serialise().get());
 #endif
 }

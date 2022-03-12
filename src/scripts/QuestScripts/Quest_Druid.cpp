@@ -53,7 +53,7 @@ class MoonkinGhost_Gossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        GossipMenu menu(pObject->getGuid(), 4714, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 4714, plr->getSession()->language);
         if (plr->hasQuestInQuestLog(6002))
             menu.addItem(GOSSIP_ICON_CHAT, 455, 1);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
         else if (plr->hasQuestInQuestLog(6001))
@@ -115,7 +115,7 @@ class SCRIPT_DECL BearGhost_Gossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        GossipMenu menu(pObject->getGuid(), 4719, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 4719, plr->getSession()->language);
         if (plr->hasQuestInQuestLog(5930)) // horde
             menu.addItem(GOSSIP_ICON_CHAT, 456, 1);     // What do you represent, spirit?
         else if (plr->hasQuestInQuestLog(5929)) // ally
@@ -130,21 +130,21 @@ public:
         {
             case 1:
             {
-                GossipMenu menu(pObject->getGuid(), 4721, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 4721, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 457, 2);     // I seek to understand the importance of strength of the body.
                 menu.sendGossipPacket(plr);
                 break;
             }
             case 2:
             {
-                GossipMenu menu(pObject->getGuid(), 4733, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 4733, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 458, 3);     // I seek to understand the importance of strength of the heart.
                 menu.sendGossipPacket(plr);
                 break;
             }
             case 3:
             {
-                GossipMenu menu(pObject->getGuid(), 4734, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 4734, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 459, 4);     // I have heard your words, Great Bear Spirit, and I understand. I now...
                 menu.sendGossipPacket(plr);
                 break;
@@ -166,21 +166,21 @@ public:
             }
             case 5:
             {
-                GossipMenu menu(pObject->getGuid(), 4721, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 4721, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 457, 6);     // I seek to understand the importance of strength of the body.
                 menu.sendGossipPacket(plr);
                 break;
             }
             case 6:
             {
-                GossipMenu menu(pObject->getGuid(), 4733, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 4733, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 458, 7);     // I seek to understand the importance of strength of the heart.
                 menu.sendGossipPacket(plr);
                 break;
             }
             case 7:
             {
-                GossipMenu menu(pObject->getGuid(), 4734, plr->GetSession()->language);
+                GossipMenu menu(pObject->getGuid(), 4734, plr->getSession()->language);
                 menu.addItem(GOSSIP_ICON_CHAT, 459, 8);     // I have heard your words, Great Bear Spirit, and I understand. I now...
                 menu.sendGossipPacket(plr);
                 break;

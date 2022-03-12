@@ -508,7 +508,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
                 {
                     if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*groupItr)->guid))
                     {
-                        if (loggedInPlayer->GetSession())
+                        if (loggedInPlayer->getSession())
                         {
                             // check if achievement message has already been sent to this player (if they received a guild achievement message already)
                             alreadySent = false;
@@ -523,7 +523,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
 
                             if (!alreadySent)
                             {
-                                loggedInPlayer->GetSession()->SendPacket(SmsgMessageChat(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, GetPlayer()->getGuid(), "", GetPlayer()->getGuid(), "", achievement->ID).serialise().get());
+                                loggedInPlayer->getSession()->SendPacket(SmsgMessageChat(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, GetPlayer()->getGuid(), "", GetPlayer()->getGuid(), "", achievement->ID).serialise().get());
                                 guidList[guidCount++] = (*groupItr)->guid;
                             }
                         }
@@ -537,7 +537,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
         for (const auto& inRangeItr : GetPlayer()->getInRangePlayersSet())
         {
             Player* p = static_cast<Player*>(inRangeItr);
-            if (p && p->GetSession() && !p->isIgnored(GetPlayer()->getGuidLow()))
+            if (p && p->getSession() && !p->isIgnored(GetPlayer()->getGuidLow()))
             {
                 // check if achievement message has already been sent to this player (in guild or group)
                 alreadySent = false;
@@ -551,7 +551,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
                 }
                 if (!alreadySent)
                 {
-                    p->GetSession()->SendPacket(SmsgMessageChat(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, GetPlayer()->getGuid(), "", GetPlayer()->getGuid(), "", achievement->ID).serialise().get());
+                    p->getSession()->SendPacket(SmsgMessageChat(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, GetPlayer()->getGuid(), "", GetPlayer()->getGuid(), "", achievement->ID).serialise().get());
                     guidList[guidCount++] = p->getGuidLow();
                 }
             }
@@ -567,7 +567,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
             }
             if (!alreadySent)
             {
-                GetPlayer()->GetSession()->SendPacket(SmsgMessageChat(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, GetPlayer()->getGuid(), "", GetPlayer()->getGuid(), "", achievement->ID).serialise().get());
+                GetPlayer()->getSession()->SendPacket(SmsgMessageChat(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, GetPlayer()->getGuid(), "", GetPlayer()->getGuid(), "", achievement->ID).serialise().get());
             }
         }
     }
@@ -578,7 +578,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
     data << uint32_t(achievement->ID);
     data << uint32_t(secsToTimeBitFields(UNIXTIME));
     data << uint32_t(0);
-    GetPlayer()->GetSession()->SendPacket(&data);
+    GetPlayer()->getSession()->SendPacket(&data);
     if (guidList)
     {
         delete[] guidList;
@@ -614,7 +614,7 @@ void AchievementMgr::CheckAllAchievementCriteria()
 /// item ID, faction ID, etc.), and miscvalue2 is the amount to increase the progress.
 void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, int32_t miscvalue1, int32_t miscvalue2, uint32_t /*time*/, Object* reference /*nullptr*/)
 {
-    if (m_player->GetSession()->HasGMPermissions() && worldConfig.gm.disableAchievements)
+    if (m_player->getSession()->HasGMPermissions() && worldConfig.gm.disableAchievements)
         return;
 
     uint64_t selectedGUID;
@@ -1212,7 +1212,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
 /// \brief This is only called from CheckAllAchievementCriteria(), during player login
 void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
 {
-    if (m_player->GetSession()->HasGMPermissions() && worldConfig.gm.disableAchievements)
+    if (m_player->getSession()->HasGMPermissions() && worldConfig.gm.disableAchievements)
         return;
 
     AchievementCriteriaEntryList const & achievementCriteriaList = sObjectMgr.GetAchievementCriteriaByType(type);
@@ -1703,7 +1703,7 @@ void AchievementMgr::sendAllAchievementData(Player* player)
         data.appendPackedTime(completeIter.second);
     }
 
-    player->GetSession()->SendPacket(&data);
+    player->getSession()->SendPacket(&data);
     
     if (isCharacterLoading && player == m_player)
     {
@@ -1810,7 +1810,7 @@ void AchievementMgr::sendRespondInspectAchievements(Player* player)
     data.WriteByteSeq(guid[4]);
     data.WriteByteSeq(guid[5]);
 
-    player->GetSession()->SendPacket(&data);
+    player->getSession()->SendPacket(&data);
 }
 #endif
 
@@ -1922,7 +1922,7 @@ void AchievementMgr::sendAllAchievementData(Player* player)
 
         // another 0xffffffff denotes end of the packet
         data << int32_t(-1);
-        player->GetSession()->SendPacket(&data);
+        player->getSession()->SendPacket(&data);
     }
     if (isCharacterLoading && player == m_player)
     {
@@ -2048,7 +2048,7 @@ bool AchievementMgr::GMCompleteAchievement(WorldSession* gmSession, uint32_t ach
             auto ach = sAchievementStore.LookupEntry(i);
             if (ach == nullptr)
             {
-                m_player->GetSession()->SystemMessage("Achievement %u entry not found.", i);
+                m_player->getSession()->SystemMessage("Achievement %u entry not found.", i);
             }
             else
             {
@@ -2063,7 +2063,7 @@ bool AchievementMgr::GMCompleteAchievement(WorldSession* gmSession, uint32_t ach
                 }
             }
         }
-        m_player->GetSession()->SystemMessage("All achievements completed.");
+        m_player->getSession()->SystemMessage("All achievements completed.");
         return true;
     }
     if (m_completedAchievements.find(achievementID) != m_completedAchievements.end())
@@ -2112,7 +2112,7 @@ bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, uint32_t criter
                 CompletedCriteria(crt);
             }
         }
-        m_player->GetSession()->SystemMessage("All achievement criteria completed.");
+        m_player->getSession()->SystemMessage("All achievement criteria completed.");
         return true;
     }
 

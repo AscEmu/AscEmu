@@ -332,9 +332,9 @@ void Group::Update()
 
                 if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr1)->guid))
                 if (!loggedInPlayer->IsInWorld())
-                    loggedInPlayer->CopyAndSendDelayedPacket(&data);
+                    loggedInPlayer->copyAndSendDelayedPacket(&data);
                 else
-                    loggedInPlayer->GetSession()->SendPacket(&data);
+                    loggedInPlayer->getSession()->SendPacket(&data);
             }
         }
     }
@@ -382,12 +382,12 @@ void SubGroup::Disband()
         {
             if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr)->guid))
             {
-                if (loggedInPlayer->GetSession() != nullptr)
+                if (loggedInPlayer->getSession() != nullptr)
                 {
-                    loggedInPlayer->GetSession()->SendPacket(SmsgPartyCommandResult(2, "", loggedInPlayer->getDungeonDifficulty()).serialise().get());
-                    loggedInPlayer->GetSession()->SendPacket(SmsgGroupDestroyed().serialise().get());
+                    loggedInPlayer->getSession()->SendPacket(SmsgPartyCommandResult(2, "", loggedInPlayer->getDungeonDifficulty()).serialise().get());
+                    loggedInPlayer->getSession()->SendPacket(SmsgGroupDestroyed().serialise().get());
 #if VERSION_STRING >= Cata
-                    loggedInPlayer->GetSession()->sendEmptyGroupList(loggedInPlayer);
+                    loggedInPlayer->getSession()->sendEmptyGroupList(loggedInPlayer);
 #else
                     (*itr)->m_Group->SendNullUpdate(loggedInPlayer);   // cebernic: panel refresh.
 #endif
@@ -483,17 +483,17 @@ void Group::RemovePlayer(CachedCharacterInfo* info)
     {
         sInstanceMgr.PlayerLeftGroup(this, pPlayer);
 
-        if (pPlayer->GetSession())
+        if (pPlayer->getSession())
         {
 #if VERSION_STRING < Cata
             SendNullUpdate(pPlayer);
 #endif
 
-            pPlayer->GetSession()->SendPacket(SmsgGroupDestroyed().serialise().get());
+            pPlayer->getSession()->SendPacket(SmsgGroupDestroyed().serialise().get());
 
-            pPlayer->GetSession()->SendPacket(SmsgPartyCommandResult(2, pPlayer->getName(), ERR_PARTY_NO_ERROR).serialise().get());
+            pPlayer->getSession()->SendPacket(SmsgPartyCommandResult(2, pPlayer->getName(), ERR_PARTY_NO_ERROR).serialise().get());
 #if VERSION_STRING >= Cata
-            pPlayer->GetSession()->sendEmptyGroupList(pPlayer);
+            pPlayer->getSession()->sendEmptyGroupList(pPlayer);
 #endif
         }
 
@@ -590,8 +590,8 @@ void Group::SendPacketToAllButOne(WorldPacket* packet, Player* pSkipTarget)
         for (auto groupMember : m_SubGroups[i]->getGroupMembers())
         {
             if (Player* loggedInPlayer = sObjectMgr.GetPlayer(groupMember->guid))
-                if (loggedInPlayer != pSkipTarget && loggedInPlayer->GetSession())
-                    loggedInPlayer->GetSession()->SendPacket(packet);
+                if (loggedInPlayer != pSkipTarget && loggedInPlayer->getSession())
+                    loggedInPlayer->getSession()->SendPacket(packet);
         }
     }
 
@@ -608,7 +608,7 @@ void Group::OutPacketToAllButOne(uint16 op, uint16 len, const void* data, Player
         {
             if (Player* loggedInPlayer = sObjectMgr.GetPlayer(groupMember->guid))
                 if (loggedInPlayer != pSkipTarget)
-                    loggedInPlayer->GetSession()->OutPacket(op, len, data);
+                    loggedInPlayer->getSession()->OutPacket(op, len, data);
         }
     }
 
@@ -1080,7 +1080,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
                 if (plr && plr != pPlayer)
                 {
                     if (plr->GetDistance2dSq(pPlayer) > dist)
-                        plr->GetSession()->SendPacket(data);
+                        plr->getSession()->SendPacket(data);
                 }
             }
         }
@@ -1121,7 +1121,7 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
             if (!plr->IsVisible(pPlayer->getGuid()))
             {
                 UpdateOutOfRangePlayer(plr, false, &data);
-                pPlayer->GetSession()->SendPacket(&data);
+                pPlayer->getSession()->SendPacket(&data);
             }
             else
             {

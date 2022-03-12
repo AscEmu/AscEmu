@@ -33,7 +33,7 @@ public:
     {
         if (plr->hasQuestInQuestLog(558))
         {
-            GossipMenu menu(pObject->getGuid(), 7012, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 7012, plr->getSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 505, 1);     // Lady Jaina, this may sound like an odd request... but I have a young ward who is quite shy. You are a hero to him, and he asked me to get your autograph.
             menu.sendGossipPacket(plr);
         }
@@ -53,7 +53,7 @@ public:
     {
         if (plr->hasQuestInQuestLog(925))
         {
-            GossipMenu menu(pObject->getGuid(), 7013, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 7013, plr->getSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 506, 1);     // Give me hoofprint.
             menu.sendGossipPacket(plr);
         }
@@ -75,7 +75,7 @@ public:
         if (sMySQLStore.getNpcGossipText(Text) == nullptr)
             Text = DefaultGossipTextId;
 
-        GossipMenu menu(pObject->getGuid(), Text, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), Text, plr->getSession()->language);
         sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), plr, menu);
 
         if ((plr->hasQuestInQuestLog(12791) || plr->hasQuestInQuestLog(12794) || plr->hasQuestInQuestLog(12796)) && plr->hasItem(39740))

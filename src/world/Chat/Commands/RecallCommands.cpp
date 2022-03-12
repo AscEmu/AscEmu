@@ -160,8 +160,8 @@ bool ChatHandler::HandleRecallPortPlayerCommand(const char* args, WorldSession* 
     if (const auto recall = sMySQLStore.getRecallByName(args))
     {
         sGMLog.writefromsession(m_session, "ported %s to %s ( map: %u, x: %f, y: %f, z: %f, 0: %f )", player->getName().c_str(), recall->name.c_str(), recall->mapId, recall->location.x, recall->location.y, recall->location.z, recall->location.o);
-        if (player->GetSession() && (player->GetSession()->CanUseCommand('a') || !m_session->GetPlayer()->m_isGmInvisible))
-            player->GetSession()->SystemMessage("%s teleported you to location %s!", m_session->GetPlayer()->getName().c_str(), recall->name.c_str());
+        if (player->getSession() && (player->getSession()->CanUseCommand('a') || !m_session->GetPlayer()->m_isGmInvisible))
+            player->getSession()->SystemMessage("%s teleported you to location %s!", m_session->GetPlayer()->getName().c_str(), recall->name.c_str());
 
         if (player->GetInstanceID() != m_session->GetPlayer()->GetInstanceID())
             sEventMgr.AddEvent(player, &Player::eventTeleport, recall->mapId, recall->location, uint32_t(0), EVENT_PLAYER_TELEPORT, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);

@@ -78,7 +78,7 @@ public:
     {
         if (plr->hasQuestInQuestLog(12645))
         {
-            GossipMenu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 40002, plr->getSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 476, 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
             menu.sendGossipPacket(plr);
         }
@@ -114,7 +114,7 @@ public:
     {
         if (plr->hasQuestInQuestLog(12645))
         {
-            GossipMenu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 40002, plr->getSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 476, 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
             menu.sendGossipPacket(plr);
         }
@@ -150,7 +150,7 @@ public:
     {
         if (plr->hasQuestInQuestLog(12645))
         {
-            GossipMenu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 40002, plr->getSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 476, 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
             menu.sendGossipPacket(plr);
         }

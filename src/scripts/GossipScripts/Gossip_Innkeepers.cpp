@@ -77,16 +77,16 @@ void InnkeeperGossip::onSelectOption(Object* pObject, Player* Plr, uint32_t Id, 
     {
         case 1: // Vendor
         {
-            Plr->GetSession()->sendInventoryList(pCreature);
+            Plr->getSession()->sendInventoryList(pCreature);
         } break;
         case 2: // Binder
         {
-            Plr->GetSession()->sendInnkeeperBind(pCreature);
+            Plr->getSession()->sendInnkeeperBind(pCreature);
         } break;
         case 3: // What can i do?
         {
             // Prepare second menu
-            GossipMenu::sendQuickMenu(pCreature->getGuid(), 1853, Plr, 2, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER));
+            GossipMenu::sendQuickMenu(pCreature->getGuid(), 1853, Plr, 2, GOSSIP_ICON_CHAT, Plr->getSession()->LocalizedGossipOption(INNKEEPER));
         } break;
         case 4: // Event of halloween
         {

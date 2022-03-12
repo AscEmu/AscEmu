@@ -768,7 +768,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
 #ifdef ANTI_CHEAT
     if (!m_started)
     {
-        Anticheat_Log->writefromsession(pPlayer->GetSession(), "%s tried to assault control point in arathi basin before battleground (ID %u) started.", pPlayer->getName().c_str(), this->m_id);
+        Anticheat_Log->writefromsession(pPlayer->getSession(), "%s tried to assault control point in arathi basin before battleground (ID %u) started.", pPlayer->getName().c_str(), this->m_id);
         SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, pPlayer->getGuid(), "%s will be removed from the game for cheating.", pPlayer->getName().c_str());
         // Remove player from battleground.
         RemovePlayer(pPlayer, false);

@@ -620,7 +620,7 @@ void WorldSession::handleLfgPlayerLockInfoRequestOpcode(WorldPacket& /*recvPacke
     const uint8_t level = static_cast<uint8_t>(_player->getLevel());
 
 #if VERSION_STRING < Cata
-    uint8_t expansion = static_cast<uint8_t>(_player->GetSession()->GetFlags());
+    uint8_t expansion = static_cast<uint8_t>(_player->getSession()->GetFlags());
     for (uint32_t i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
     {
         DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(i);

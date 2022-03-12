@@ -27,7 +27,7 @@ public:
     {
         if (plr->hasQuestInQuestLog(10652))
         {
-            GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
+            GossipMenu menu(pObject->getGuid(), 1, plr->getSession()->language);
             menu.addItem(GOSSIP_ICON_CHAT, 470, 1);     // I'm ready
             menu.sendGossipPacket(plr);
         }

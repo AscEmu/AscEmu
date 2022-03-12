@@ -22,11 +22,11 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
     sObjectMgr._playerslock.lock();
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
-        if (itr->second->GetSession())
+        if (itr->second->getSession())
         {
             online_count++;
-            latency_avg += itr->second->GetSession()->GetLatency();
-            if (itr->second->GetSession()->GetPermissionCount())
+            latency_avg += itr->second->getSession()->GetLatency();
+            if (itr->second->getSession()->GetPermissionCount())
             {
                 if (!worldConfig.gm.listOnlyActiveGms)
                 {
@@ -124,7 +124,7 @@ bool ChatHandler::HandleServerSaveAllCommand(const char* /*args*/, WorldSession*
     sObjectMgr._playerslock.lock();
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
-        if (itr->second->GetSession())
+        if (itr->second->getSession())
         {
             itr->second->SaveToDB(false);
             online_count++;

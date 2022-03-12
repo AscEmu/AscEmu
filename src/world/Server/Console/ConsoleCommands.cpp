@@ -122,11 +122,11 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
     sObjectMgr._playerslock.lock();
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
-        if (itr->second->GetSession())
+        if (itr->second->getSession())
         {
             onlineCount++;
-            avgLatency += itr->second->GetSession()->GetLatency();
-            if (itr->second->GetSession()->GetPermissionCount())
+            avgLatency += itr->second->getSession()->GetLatency();
+            if (itr->second->getSession()->GetPermissionCount())
                 gmCount++;
         }
     }
@@ -169,10 +169,10 @@ bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std
     sObjectMgr._playerslock.lock();
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
-        if (itr->second->GetSession()->GetPermissionCount())
+        if (itr->second->getSession()->GetPermissionCount())
         {
-            baseConsole->Write("| %21s | %15s | %03u ms |\r\n", itr->second->getName().c_str(), itr->second->GetSession()->GetPermissions(),
-                itr->second->GetSession()->GetLatency());
+            baseConsole->Write("| %21s | %15s | %03u ms |\r\n", itr->second->getName().c_str(), itr->second->getSession()->GetPermissions(),
+                itr->second->getSession()->GetLatency());
         }
     }
     sObjectMgr._playerslock.unlock();
@@ -243,8 +243,8 @@ bool handleListOnlinePlayersCommand(BaseConsole* baseConsole, int /*argumentCoun
     sObjectMgr._playerslock.lock();
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
-        baseConsole->Write("| %21s | %15u | %03u ms |\r\n", itr->second->getName().c_str(), itr->second->GetSession()->GetPlayer()->getLevel(),
-            itr->second->GetSession()->GetLatency());
+        baseConsole->Write("| %21s | %15u | %03u ms |\r\n", itr->second->getName().c_str(), itr->second->getSession()->GetPlayer()->getLevel(),
+            itr->second->getSession()->GetLatency());
     }
     sObjectMgr._playerslock.unlock();
 
@@ -272,9 +272,9 @@ bool handlePlayerInfoCommand(BaseConsole* baseConsole, int argumentCount, std::s
     baseConsole->Write("Race: %s\r\n", player->getDbcRaceEntry()->name);
     baseConsole->Write("Class: %s\r\n", player->getDbcClassEntry()->name);
 #endif
-    baseConsole->Write("IP: %s\r\n", player->GetSession()->GetSocket() ? player->GetSession()->GetSocket()->GetRemoteIP().c_str() : "disconnected");
+    baseConsole->Write("IP: %s\r\n", player->getSession()->GetSocket() ? player->getSession()->GetSocket()->GetRemoteIP().c_str() : "disconnected");
     baseConsole->Write("Level: %u\r\n", player->getLevel());
-    baseConsole->Write("Account: %s\r\n", player->GetSession()->GetAccountNameS());
+    baseConsole->Write("Account: %s\r\n", player->getSession()->GetAccountNameS());
     return true;
 }
 
@@ -287,7 +287,7 @@ bool handleShutDownServerCommand(BaseConsole* baseConsole, int /*argumentCount*/
         sObjectMgr._playerslock.lock();
         for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
         {
-            if (itr->second->GetSession())
+            if (itr->second->getSession())
                 itr->second->SaveToDB(false);
         }
         sObjectMgr._playerslock.unlock();

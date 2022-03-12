@@ -93,7 +93,7 @@ void Guild::sendGuildInvitePacket(WorldSession* session, std::string invitedName
         return;
     }
 
-    if (invitedPlayer->getTeam() != session->GetPlayer()->getTeam() && session->GetPlayer()->GetSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGuildEnabled)
+    if (invitedPlayer->getTeam() != session->GetPlayer()->getTeam() && session->GetPlayer()->getSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGuildEnabled)
     {
         session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_NOT_ALLIED).serialise().get());
         return;
@@ -112,10 +112,10 @@ void Guild::sendGuildInvitePacket(WorldSession* session, std::string invitedName
     invitedPlayer->setInvitedByGuildId(guild->getId());
 
 #if VERSION_STRING < Cata
-    invitedPlayer->GetSession()->SendPacket(SmsgGuildInvite(session->GetPlayer()->getName(), guild->getName()).serialise().get());
+    invitedPlayer->getSession()->SendPacket(SmsgGuildInvite(session->GetPlayer()->getName(), guild->getName()).serialise().get());
 
 #else
-    invitedPlayer->GetSession()->SendPacket(SmsgGuildInvite(session->GetPlayer()->getName(), guild->getName(), guild->getLevel(),
+    invitedPlayer->getSession()->SendPacket(SmsgGuildInvite(session->GetPlayer()->getName(), guild->getName(), guild->getLevel(),
         guild->getEmblemInfo(), guild->getId(), guild->getGUID()).serialise().get());
 #endif
 }
@@ -145,7 +145,7 @@ bool Guild::create(Player* pLeader, std::string const& name)
     if (sGuildMgr.getGuildByName(name))
         return false;
 
-    WorldSession* pLeaderSession = pLeader->GetSession();
+    WorldSession* pLeaderSession = pLeader->getSession();
     if (pLeaderSession == nullptr)
         return false;
 
@@ -1353,10 +1353,10 @@ void Guild::broadcastToGuild(WorldSession* session, bool officerOnly, std::strin
         {
             if (Player* player = itr->second->getPlayerByGuid(session->GetPlayer()->getGuid()))
             {
-                if (player->GetSession() && _hasRankRight(player->getGuid(), officerOnly ? GR_RIGHT_OFFCHATLISTEN : GR_RIGHT_GCHATLISTEN) &&
+                if (player->getSession() && _hasRankRight(player->getGuid(), officerOnly ? GR_RIGHT_OFFCHATLISTEN : GR_RIGHT_GCHATLISTEN) &&
                     !player->isIgnored(session->GetPlayer()->getGuidLow()))
                 {
-                    player->GetSession()->SendPacket(SmsgMessageChat(officerOnly ? CHAT_MSG_OFFICER : CHAT_MSG_GUILD, language, 0, msg).serialise().get());
+                    player->getSession()->SendPacket(SmsgMessageChat(officerOnly ? CHAT_MSG_OFFICER : CHAT_MSG_GUILD, language, 0, msg).serialise().get());
                 }
             }
         }
@@ -1371,10 +1371,10 @@ void Guild::broadcastAddonToGuild(WorldSession* session, bool officerOnly, std::
         {
             if (Player* player = itr->second->getPlayerByGuid(session->GetPlayer()->getGuid()))
             {
-                if (player->GetSession() && _hasRankRight(player->getGuid(), officerOnly ? GR_RIGHT_OFFCHATLISTEN : GR_RIGHT_GCHATLISTEN) &&
+                if (player->getSession() && _hasRankRight(player->getGuid(), officerOnly ? GR_RIGHT_OFFCHATLISTEN : GR_RIGHT_GCHATLISTEN) &&
                     !player->isIgnored(session->GetPlayer()->getGuidLow()))
                 {
-                    player->GetSession()->SendPacket(SmsgMessageChat(officerOnly ? CHAT_MSG_OFFICER : CHAT_MSG_GUILD, CHAT_MSG_ADDON, 0, msg).serialise().get());
+                    player->getSession()->SendPacket(SmsgMessageChat(officerOnly ? CHAT_MSG_OFFICER : CHAT_MSG_GUILD, CHAT_MSG_ADDON, 0, msg).serialise().get());
                 }
             }
         }
@@ -1389,7 +1389,7 @@ void Guild::broadcastPacketToRank(WorldPacket* packet, uint8_t rankId) const
         {
             if (Player* player = itr->second->getPlayerByGuid(itr->second->getGUID()))
             {
-                player->GetSession()->SendPacket(packet);
+                player->getSession()->SendPacket(packet);
             }
         }
     }
@@ -1401,7 +1401,7 @@ void Guild::broadcastPacket(WorldPacket* packet) const
     {
         if (Player* player = itr->second->getPlayerByGuid(itr->second->getGUID()))
         {
-            player->GetSession()->SendPacket(packet);
+            player->getSession()->SendPacket(packet);
         }
     }
 }
@@ -1470,7 +1470,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
 #if VERSION_STRING >= Cata
         player->setGuildLevel(getLevel());
 #endif
-        sendLoginInfo(player->GetSession());
+        sendLoginInfo(player->getSession());
         name = player->getName();
     }
     else
@@ -1918,7 +1918,7 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool /*withConten
 
             uint32_t numSlots = getRankBankTabSlotsPerDay(itr->second->getRankId(), tabId);
             data.put<uint32_t>(rempos, numSlots);
-            player->GetSession()->SendPacket(&data);
+            player->getSession()->SendPacket(&data);
         }
     }
 #else
@@ -2109,7 +2109,7 @@ void Guild::giveXP(uint32_t xp, Player* source)
 
     WorldPacket data(SMSG_GUILD_XP_GAIN, 8);
     data << uint64_t(xp);
-    source->GetSession()->SendPacket(&data);
+    source->getSession()->SendPacket(&data);
 
     m_experience += xp;
     m_todayExperience += xp;
@@ -2184,7 +2184,7 @@ void Guild::resetTimes(bool weekly)
         itr->second->resetValues(weekly);
         if (Player* player = itr->second->getPlayerByGuid(itr->second->getGUID()))
         {
-            player->GetSession()->SendPacket(SmsgGuildMemberDailyReset().serialise().get());
+            player->getSession()->SendPacket(SmsgGuildMemberDailyReset().serialise().get());
         }
     }
 }
@@ -2463,7 +2463,7 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlo
 
         uint32_t numSlots = getRankBankTabSlotsPerDay(itr->second->getRankId(), tabId);
         data.put<uint32_t>(rempos, numSlots);
-        player->GetSession()->SendPacket(&data);
+        player->getSession()->SendPacket(&data);
     }
 #else
     if (GuildBankTab const* guildBankTab = getBankTab(tabId))
@@ -2574,7 +2574,7 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlo
                 if (Player* player = itr->second->getPlayerByGuid(itr->second->getGUID()))
                 {
                     data.put<uint32_t>(rempos, uint32_t(getMemberRemainingSlots(itr->second, tabId)));
-                    player->GetSession()->SendPacket(&data);
+                    player->getSession()->SendPacket(&data);
                 }
             }
         }
@@ -2597,7 +2597,7 @@ void Guild::GuildMember::setStats(Player* player)
     mLevel = static_cast<uint8_t>(player->getLevel());
     mClass = player->getClass();
     mZoneId = player->GetZoneId();
-    mAccountId = player->GetSession()->GetAccountId();
+    mAccountId = player->getSession()->GetAccountId();
     mAchievementPoints = 0;
 }
 

@@ -58,7 +58,7 @@ class AyrenCloudbreaker_Gossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* pPlayer) override
     {
-        GossipMenu menu(pObject->getGuid(), 12252, pPlayer->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 12252, pPlayer->getSession()->language);
         if (pPlayer->hasQuestInQuestLog(11532) || pPlayer->hasQuestInQuestLog(11533))
             menu.addItem(GOSSIP_ICON_CHAT, 466, 1);     // Speaking of action, I've been ordered to undertake an air strike.
 
@@ -95,7 +95,7 @@ class SCRIPT_DECL UnrestrainedDragonhawk_Gossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* pPlayer) override
     {
-        GossipMenu menu(pObject->getGuid(), 12371, pPlayer->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 12371, pPlayer->getSession()->language);
         if (pPlayer->hasQuestInQuestLog(11543) || pPlayer->hasQuestInQuestLog(11542))
             menu.addItem(GOSSIP_ICON_CHAT, 468, 1); // <Ride the dragonhawk to Sun's Reach>
 

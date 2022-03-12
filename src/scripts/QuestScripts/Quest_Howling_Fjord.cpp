@@ -71,7 +71,7 @@ class Plaguethis_Gossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        GossipMenu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 40002, plr->getSession()->language);
         menu.addItem(GOSSIP_ICON_CHAT, 464, 2); // Where would you like to fly too ?
 
         if (plr->hasQuestInQuestLog(11332))
@@ -96,7 +96,7 @@ public:
 
                 if (!plr->getItemInterface()->AddItemToFreeSlot(item))
                 {
-                    plr->GetSession()->SendNotification("No free slots were found in your inventory!");
+                    plr->getSession()->SendNotification("No free slots were found in your inventory!");
                     item->DeleteMe();
                 }
                 else
@@ -116,7 +116,7 @@ public:
             }
             case 2:
             {
-                plr->GetSession()->sendTaxiList(pCreature);
+                plr->getSession()->sendTaxiList(pCreature);
                 break;
             }
         }

@@ -936,7 +936,7 @@ void Aura::SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply)
 
         target->SetEnslaveCount(target->GetEnslaveCount() + 1);
 
-        if (caster->GetSession())   // crashfix
+        if (caster->getSession())   // crashfix
         {
             WorldPacket data(SMSG_PET_SPELLS, 500);
             data << target->getGuid();
@@ -951,7 +951,7 @@ void Aura::SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply)
             data << uint32(PET_SPELL_AGRESSIVE);
             data << uint32(PET_SPELL_DEFENSIVE);
             data << uint32(PET_SPELL_PASSIVE);
-            caster->GetSession()->SendPacket(&data);
+            caster->getSession()->SendPacket(&data);
             target->SetEnslaveSpell(m_spellInfo->getId());
         }
     }
@@ -964,12 +964,12 @@ void Aura::SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply)
         m_target->getAIInterface()->Init(m_target, AI_SCRIPT_AGRO);
         m_target->setCharmedByGuid(0);
 
-        if (caster->GetSession() != nullptr)   // crashfix
+        if (caster->getSession() != nullptr)   // crashfix
         {
             caster->setCharmGuid(0);
             WorldPacket data(SMSG_PET_SPELLS, 8);
             data << uint64(0);
-            caster->GetSession()->SendPacket(&data);
+            caster->getSession()->SendPacket(&data);
             target->SetEnslaveSpell(0);
         }
     }
@@ -2703,7 +2703,7 @@ void Aura::SpellAuraIncreaseSwimSpeed(AuraEffectModifier* aurEff, bool apply)
         data << p_target->GetNewGUID();
         data << (uint32)2;
         data << m_target->getSpeedRate(TYPE_SWIM, true);
-        p_target->GetSession()->SendPacket(&data);
+        p_target->getSession()->SendPacket(&data);
     }
 }
 
@@ -4411,7 +4411,7 @@ void Aura::SpellAuraForceReaction(AuraEffectModifier* aurEff, bool apply)
     else
         p_target->m_forcedReactions.erase(aurEff->getEffectMiscValue());
 
-    p_target->GetSession()->SendPacket(SmsgSetForceReactions(p_target->m_forcedReactions).serialise().get());
+    p_target->getSession()->SendPacket(SmsgSetForceReactions(p_target->m_forcedReactions).serialise().get());
 }
 
 void Aura::SpellAuraModRangedHaste(AuraEffectModifier* aurEff, bool apply)
@@ -6080,7 +6080,7 @@ void Aura::SpellAuraPhase(AuraEffectModifier* aurEff, bool apply)
     if (m_target->getAuraCountForId(SPELL_AURA_PHASE) > 1)
     {
         if (m_target->isPlayer())
-            static_cast< Player* >(m_target)->GetSession()->SystemMessage("You can have only one phase aura!");
+            static_cast< Player* >(m_target)->getSession()->SystemMessage("You can have only one phase aura!");
         removeAura();
         return;
     }
@@ -6106,8 +6106,8 @@ void Aura::SpellAuraCallStabledPet(AuraEffectModifier* /*aurEff*/, bool apply)
     if (apply)
     {
         Player* pcaster = GetPlayerCaster();
-        if (pcaster != nullptr && pcaster->getClass() == HUNTER && pcaster->GetSession() != nullptr)
-            pcaster->GetSession()->sendStabledPetList(0);
+        if (pcaster != nullptr && pcaster->getClass() == HUNTER && pcaster->getSession() != nullptr)
+            pcaster->getSession()->sendStabledPetList(0);
     }
 }
 

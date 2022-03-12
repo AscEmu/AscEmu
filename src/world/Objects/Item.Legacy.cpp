@@ -1066,7 +1066,7 @@ bool Item::RepairItem(Player* pPlayer, bool guildmoney, int32* pCost)   //pCost 
 
     if (guildmoney && pPlayer->isInGuild())
     {
-        if (!pPlayer->getGuild()->handleMemberWithdrawMoney(pPlayer->GetSession(), cost, true))
+        if (!pPlayer->getGuild()->handleMemberWithdrawMoney(pPlayer->getSession(), cost, true))
             return false;//we should tell the client that he can't repair with the guild gold.
 
         if (pCost != 0)

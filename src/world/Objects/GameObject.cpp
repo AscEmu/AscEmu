@@ -1193,7 +1193,7 @@ void GameObject_Goober::onUse(Player* player)
 void GameObject_Camera::onUse(Player* player)
 {
     if (gameobject_properties->camera.cinematic_id != 0)
-        player->GetSession()->SendPacket(SmsgTriggerCinematic(gameobject_properties->camera.cinematic_id).serialise().get());
+        player->getSession()->SendPacket(SmsgTriggerCinematic(gameobject_properties->camera.cinematic_id).serialise().get());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

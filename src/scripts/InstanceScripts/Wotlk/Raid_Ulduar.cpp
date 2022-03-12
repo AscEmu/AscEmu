@@ -30,7 +30,7 @@ public:
     //    if (!pInstance)
     //        return;
 
-    //    Menu menu(object->getGuid(), 14424, player->GetSession()->language);
+    //    Menu menu(object->getGuid(), 14424, player->getSession()->language);
     //    menu.addItem(GOSSIP_ICON_CHAT, 521, 0);          // Expedition Base Camp.
 
     //    // Unlock after engaging Flame Leviathan

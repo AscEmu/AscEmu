@@ -26,7 +26,7 @@ class PathoftheAdept : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        GossipMenu menu(pObject->getGuid(), 1, plr->GetSession()->language);
+        GossipMenu menu(pObject->getGuid(), 1, plr->getSession()->language);
         if (plr->hasQuestInQuestLog(9692))
             menu.addItem(GOSSIP_ICON_CHAT, 493, 1); // Take Insignia
 

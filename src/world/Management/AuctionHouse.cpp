@@ -379,13 +379,13 @@ void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
         if (!outbid)
             outbid = 1;
 
-        bidder->GetSession()->SendPacket(SmsgAuctionBidderNotification(getId(), auction->Id, auction->highestBidderGuid, 0, outbid, auction->auctionItem->getEntry()).serialise().get());
+        bidder->getSession()->SendPacket(SmsgAuctionBidderNotification(getId(), auction->Id, auction->highestBidderGuid, 0, outbid, auction->auctionItem->getEntry()).serialise().get());
     }
 
     Player* owner = sObjectMgr.GetPlayer(auction->ownerGuid.getGuidLow());
     if (owner && owner->IsInWorld())
     {
-        owner->GetSession()->SendPacket(SmsgAuctionOwnerNotification(auction->Id, auction->highestBid, auction->auctionItem->getEntry()).serialise().get());
+        owner->getSession()->SendPacket(SmsgAuctionOwnerNotification(auction->Id, auction->highestBid, auction->auctionItem->getEntry()).serialise().get());
     }
 }
 
@@ -398,7 +398,7 @@ void AuctionHouse::sendAuctionOutBidNotificationPacket(Auction* auction, uint64_
         if (!outbid)
             outbid = 1;
 
-        bidder->GetSession()->SendPacket(SmsgAuctionBidderNotification(getId(), auction->Id, newBidder, newHighestBid, outbid, auction->auctionItem->getEntry()).serialise().get());
+        bidder->getSession()->SendPacket(SmsgAuctionBidderNotification(getId(), auction->Id, newBidder, newHighestBid, outbid, auction->auctionItem->getEntry()).serialise().get());
     }
 }
 
@@ -417,7 +417,7 @@ void AuctionHouse::sendAuctionExpiredNotificationPacket(Auction* /*auct*/)
     //  data << uint32_t(0);
     //  data << auct->pItem->getEntry();
     //  data << uint32_t(0);
-    //  owner->GetSession()->SendPacket(&data);
+    //  owner->getSession()->SendPacket(&data);
     //}
 }
 

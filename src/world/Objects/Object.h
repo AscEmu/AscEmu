@@ -663,9 +663,9 @@ public:
         void _Create(uint32 mapid, float x, float y, float z, float ang);
 
         // Mark values that need updating for specified player.
-        virtual void _SetUpdateBits(UpdateMask* updateMask, Player* target) const;
+        virtual void setUpdateBits(UpdateMask* updateMask, Player* target) const;
         // Mark values that player should get when he/she/it sees object for first time.
-        virtual void _SetCreateBits(UpdateMask* updateMask, Player* target) const;
+        virtual void setCreateBits(UpdateMask* updateMask, Player* target) const;
 
         // Create updates that player will see
 #if VERSION_STRING < WotLK

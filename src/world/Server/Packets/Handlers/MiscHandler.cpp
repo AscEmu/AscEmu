@@ -104,17 +104,17 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
         Player* plr = itr->second;
         ++itr;
 
-        if (!plr->GetSession() || !plr->IsInWorld())
+        if (!plr->getSession() || !plr->IsInWorld())
             continue;
 
         if (!worldConfig.gm.showGmInWhoList && !HasGMPermissions())
         {
-            if (plr->GetSession()->HasGMPermissions())
+            if (plr->getSession()->HasGMPermissions())
                 continue;
         }
 
         // Team check
-        if (!HasGMPermissions() && plr->getTeam() != team && !plr->GetSession()->HasGMPermissions() && !worldConfig.player.isInterfactionMiscEnabled)
+        if (!HasGMPermissions() && plr->getTeam() != team && !plr->getSession()->HasGMPermissions() && !worldConfig.player.isInterfactionMiscEnabled)
             continue;
 
         ++total_count;
@@ -1640,7 +1640,7 @@ void WorldSession::handleWhoIsOpcode(WorldPacket& recvPacket)
 
     sLogger.debug("Received WHOIS command from player %s for character %s", _player->getName().c_str(), srlPacket.characterName.c_str());
 
-    if (!_player->GetSession()->CanUseCommand('3'))
+    if (!_player->getSession()->CanUseCommand('3'))
     {
         SendNotification("You do not have permission to perform that function.");
         return;
@@ -1724,8 +1724,8 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
 
     if (itemProperties->Class != ITEM_CLASS_PROJECTILE || _player->getItemInterface()->GetItemCount(ammoId) == 0)
     {
-        sCheatLog.writefromsession(_player->GetSession(), "Definitely cheating. tried to add %u as ammo.", ammoId);
-        _player->GetSession()->Disconnect();
+        sCheatLog.writefromsession(_player->getSession(), "Definitely cheating. tried to add %u as ammo.", ammoId);
+        _player->getSession()->Disconnect();
         return;
     }
 

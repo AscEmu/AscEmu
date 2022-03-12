@@ -481,7 +481,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
     // we have dirty data, or are creating for ourself.
     UpdateMask updateMask;
     updateMask.SetCount(m_valuesCount);
-    _SetCreateBits(&updateMask, target);
+    setCreateBits(&updateMask, target);
 
     // this will cache automatically if needed
     buildValuesUpdate(data, &updateMask, target);
@@ -1738,7 +1738,7 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
     UpdateMask updateMask;
     updateMask.SetCount(m_valuesCount);
-    _SetUpdateBits(&updateMask, target);
+    setUpdateBits(&updateMask, target);
     for (uint32 x = 0; x < m_valuesCount; ++x)
     {
         if (updateMask.GetBit(x))
@@ -3247,12 +3247,12 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
     return false;
 }
 
-void Object::_SetUpdateBits(UpdateMask* updateMask, Player* /*target*/) const
+void Object::setUpdateBits(UpdateMask* updateMask, Player* /*target*/) const
 {
     *updateMask = m_updateMask;
 }
 
-void Object::_SetCreateBits(UpdateMask* updateMask, Player* /*target*/) const
+void Object::setCreateBits(UpdateMask* updateMask, Player* /*target*/) const
 {
     for (uint32 i = 0; i < m_valuesCount; ++i)
         if (m_uint32Values[i] != 0)
@@ -3290,9 +3290,9 @@ void Object::AddToWorld()
                 if (mapMgr->pInstance->m_creatorGroup != 0 && mapMgr->pInstance->m_creatorGroup != group->GetID())
                 {
                     // Player not in group or another group is already playing this instance.
-                    sChatHandler.SystemMessage(plr->GetSession(), "Another group is already inside this instance of the dungeon.");
-                    if (plr->GetSession()->GetPermissionCount() > 0)
-                        sChatHandler.BlueSystemMessage(plr->GetSession(), "Enable your GameMaster flag to ignore this rule.");
+                    sChatHandler.SystemMessage(plr->getSession(), "Another group is already inside this instance of the dungeon.");
+                    if (plr->getSession()->GetPermissionCount() > 0)
+                        sChatHandler.BlueSystemMessage(plr->getSession(), "Enable your GameMaster flag to ignore this rule.");
                     return;
                 }
                 else if (mapMgr->pInstance->m_creatorGroup == 0)
@@ -3912,7 +3912,7 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId,
             if (object->isPlayer())
             {
                 Player* player = static_cast<Player*>(object);
-                uint32_t sessionLanguage = player->GetSession()->language;
+                uint32_t sessionLanguage = player->getSession()->language;
 
                 std::string message;
                 MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(textId);

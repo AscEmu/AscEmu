@@ -137,7 +137,7 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
                 if (reason != AreaTriggerResult::Success)
                 {
                     char buffer[200];
-                    const auto session = _player->GetSession();
+                    const auto session = _player->getSession();
 
                     switch (reason)
                     {

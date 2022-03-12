@@ -144,7 +144,7 @@ void WeatherMgr::SendWeather(Player* plr)  //Update weather when player has chan
 
     if (itr == m_zoneWeathers.end())
     {
-        plr->GetSession()->SendPacket(AscEmu::Packets::SmsgWeather(0, 0, 0).serialise().get());
+        plr->getSession()->SendPacket(AscEmu::Packets::SmsgWeather(0, 0, 0).serialise().get());
         plr->m_lastSeenWeather = 0;
     }
     else
@@ -276,5 +276,5 @@ void WeatherInfo::SendUpdate(Player* plr) //Updates weather for player's zone-ch
     plr->m_lastSeenWeather = m_currentEffect;
 
     const uint32_t sound = GetSound(m_currentEffect, m_currentDensity);
-    plr->GetSession()->SendPacket(AscEmu::Packets::SmsgWeather(m_currentEffect, m_currentDensity, sound).serialise().get());
+    plr->getSession()->SendPacket(AscEmu::Packets::SmsgWeather(m_currentEffect, m_currentDensity, sound).serialise().get());
 }

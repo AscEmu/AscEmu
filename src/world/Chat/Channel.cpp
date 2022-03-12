@@ -96,7 +96,7 @@ void Channel::attemptJoin(Player* plr, std::string password, bool skipCheck/* = 
 
     uint8_t memberFlags = CHANNEL_MEMBER_FLAG_NONE;
 
-    if (!(m_channelFlags & CHANNEL_FLAGS_GENERAL) && plr->GetSession()->CanUseCommand('c'))
+    if (!(m_channelFlags & CHANNEL_FLAGS_GENERAL) && plr->getSession()->CanUseCommand('c'))
         memberFlags |= CHANNEL_MEMBER_FLAG_MODERATOR;
 
     if (!m_channelPassword.empty() && strcmp(m_channelPassword.c_str(), password.c_str()) != 0)
@@ -160,7 +160,7 @@ void Channel::leaveChannel(Player* plr, bool sendPacket/* = true*/)
         setOwner(nullptr, nullptr);
 
     // Do not send packet in teleport or logout
-    if (sendPacket && !(plr->GetSession() && (plr->GetSession()->IsLoggingOut() || plr->getTeleportState() == 1)))
+    if (sendPacket && !(plr->getSession() && (plr->getSession()->IsLoggingOut() || plr->getTeleportState() == 1)))
         plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOULEFT, m_channelName, 0, 0, m_channelId).serialise().get());
 
     // Announce player leave to other members in channel
@@ -269,7 +269,7 @@ void Channel::kickOrBanPlayer(Player* plr, Player* die_player, bool ban)
         return;
     }
 
-    if (!(me_itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(me_itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
         plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
@@ -313,7 +313,7 @@ void Channel::unBanPlayer(Player* plr, CachedCharacterInfo const* bplr)
         return;
     }
 
-    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
         plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
@@ -349,7 +349,7 @@ void Channel::moderateChannel(Player* plr)
         return;
     }
 
-    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->GetSession()->CanUseCommand('c'))
+    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('c'))
     {
         // Player is not a moderator
         plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
@@ -385,7 +385,7 @@ void Channel::giveModerator(Player* plr, Player* new_player)
         return;
     }
 
-    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
         plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
@@ -423,7 +423,7 @@ void Channel::takeModerator(Player* plr, Player* new_player)
         return;
     }
 
-    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
         plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
@@ -461,7 +461,7 @@ void Channel::mutePlayer(Player* plr, Player* die_player)
         return;
     }
 
-    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
         plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
@@ -499,7 +499,7 @@ void Channel::unMutePlayer(Player* plr, Player* die_player)
         return;
     }
 
-    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
         plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
@@ -537,7 +537,7 @@ void Channel::giveVoice(Player* plr, Player* v_player)
         return;
     }
 
-    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
         plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
@@ -575,7 +575,7 @@ void Channel::takeVoice(Player* plr, Player* v_player)
         return;
     }
 
-    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
         plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
@@ -604,7 +604,7 @@ void Channel::setPassword(Player* plr, std::string pass)
         return;
     }
 
-    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
         plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
@@ -631,7 +631,7 @@ void Channel::enableAnnouncements(Player* plr)
         return;
     }
 
-    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
         plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
@@ -682,7 +682,7 @@ void Channel::setOwner(Player* plr, Player const* newOwner)
             return;
         }
 
-        if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->GetSession()->CanUseCommand('a'))
+        if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
         {
             // Player is not a moderator
             plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
@@ -769,17 +769,17 @@ void Channel::listMembers(Player* plr, bool chatQuery)
         return;
     }
 
-    const auto isPlayerGm = plr->GetSession()->CanUseCommand('a');
+    const auto isPlayerGm = plr->getSession()->CanUseCommand('a');
     std::vector<SmsgChannelListMembers> members;
     for (const auto& member : m_members)
     {
-        if (member.first->GetSession() == nullptr)
+        if (member.first->getSession() == nullptr)
             continue;
 
         if (!isPlayerGm)
         {
             // Players should not be able to see GMs in chat lists
-            if (member.first->GetSession()->CanUseCommand('a'))
+            if (member.first->getSession()->CanUseCommand('a'))
                 continue;
         }
 

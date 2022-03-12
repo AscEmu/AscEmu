@@ -601,7 +601,7 @@ bool ChatHandler::HandlePlayMovie(const char* args, WorldSession* m_session)
     selected_player->sendMovie(movie);
 
     if (selected_player != m_session->GetPlayer())
-        GreenSystemMessage(selected_player->GetSession(), "Movie started for player %s", selected_player->getName().c_str());
+        GreenSystemMessage(selected_player->getSession(), "Movie started for player %s", selected_player->getName().c_str());
 
     return true;
 }

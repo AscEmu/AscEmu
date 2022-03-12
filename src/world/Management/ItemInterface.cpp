@@ -341,7 +341,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
             SlotResult result = this->FindFreeInventorySlot(item->getItemProperties());
 
             // send message to player
-            sChatHandler.BlueSystemMessage(m_pOwner->GetSession(), "A duplicated item, `%s` was found in your inventory. We've attempted to add it to a free slot in your inventory, if there is none this will fail. It will be attempted again the next time you log on.",
+            sChatHandler.BlueSystemMessage(m_pOwner->getSession(), "A duplicated item, `%s` was found in your inventory. We've attempted to add it to a free slot in your inventory, if there is none this will fail. It will be attempted again the next time you log on.",
                 item->getItemProperties()->Name.c_str());
             if (result.Result == true)
             {
@@ -411,7 +411,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
 
     if (m_pOwner->IsInWorld() && slot < INVENTORY_SLOT_BAG_END && ContainerSlot == INVENTORY_SLOT_NOT_SET)
     {
-        m_pOwner->ApplyItemMods(item, slot, true);
+        m_pOwner->applyItemMods(item, slot, true);
     }
 
     if (slot >= CURRENCYTOKEN_SLOT_START && slot < CURRENCYTOKEN_SLOT_END)
@@ -511,11 +511,11 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16
 
             if (slot < EQUIPMENT_SLOT_END)
             {
-                m_pOwner->ApplyItemMods(pItem, slot, false);
+                m_pOwner->applyItemMods(pItem, slot, false);
                 m_pOwner->setVisibleItemFields(slot, nullptr);
             }
             else if (slot < INVENTORY_SLOT_BAG_END)
-                m_pOwner->ApplyItemMods(pItem, slot, false);
+                m_pOwner->applyItemMods(pItem, slot, false);
 
             if (destroy)
             {
@@ -680,11 +680,11 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot)
 
             if (slot < EQUIPMENT_SLOT_END)
             {
-                m_pOwner->ApplyItemMods(pItem, slot, false);
+                m_pOwner->applyItemMods(pItem, slot, false);
                 m_pOwner->setVisibleItemFields(slot, nullptr);
             }
             else if (slot < INVENTORY_SLOT_BAG_END)
-                m_pOwner->ApplyItemMods(pItem, slot, false);  //watch containers that give attackspeed and stuff ;)
+                m_pOwner->applyItemMods(pItem, slot, false);  //watch containers that give attackspeed and stuff ;)
 
             if (pItem->IsInWorld())
             {
@@ -696,7 +696,7 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot)
             //delete pItem;
             // We make it a garbage item, so when it's used for a spell, it gets deleted in the next Player update
             // otherwise we get a nice crash
-            m_pOwner->AddGarbageItem(pItem);
+            m_pOwner->addGarbageItem(pItem);
         }
     }
     else
@@ -1817,7 +1817,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
             item->DeleteFromDB();
             // We make it a garbage item, so if it's used after calling this method, it gets deleted in the next Player update
             // otherwise we get a nice crash
-            m_pOwner->AddGarbageItem(item);
+            m_pOwner->addGarbageItem(item);
 
             return ADD_ITEM_RESULT_OK;
         }
@@ -1858,7 +1858,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
                     item->DeleteFromDB();
                     // We make it a garbage item, so if it's used after calling this method, it gets deleted in the next Player update
                     // otherwise we get a nice crash
-                    m_pOwner->AddGarbageItem(item);
+                    m_pOwner->addGarbageItem(item);
 
                     return ADD_ITEM_RESULT_OK;
                 }
@@ -3056,14 +3056,14 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
     if (srcslot < INVENTORY_SLOT_BAG_END)
     {
         if (m_pItems[(int)srcslot] != nullptr)
-            m_pOwner->ApplyItemMods(m_pItems[(int)srcslot], srcslot, false);
+            m_pOwner->applyItemMods(m_pItems[(int)srcslot], srcslot, false);
     }
 
     //dst item was equipped previously
     if (dstslot < INVENTORY_SLOT_BAG_END)
     {
         if (m_pItems[(int)dstslot] != nullptr)
-            m_pOwner->ApplyItemMods(m_pItems[(int)dstslot], dstslot, false);
+            m_pOwner->applyItemMods(m_pItems[(int)dstslot], dstslot, false);
     }
 
     //sLogger.debug("Putting items into slots...");
@@ -3223,7 +3223,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
     if (srcslot < INVENTORY_SLOT_BAG_END)
     {
         if (m_pItems[(int)srcslot] != nullptr)
-            m_pOwner->ApplyItemMods(m_pItems[(int)srcslot], srcslot, true);
+            m_pOwner->applyItemMods(m_pItems[(int)srcslot], srcslot, true);
         else if (srcslot == EQUIPMENT_SLOT_MAINHAND || srcslot == EQUIPMENT_SLOT_OFFHAND)
             m_pOwner->CalcDamage();
     }
@@ -3232,7 +3232,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
     if (dstslot < INVENTORY_SLOT_BAG_END)
     {
         if (m_pItems[(int)dstslot] != nullptr)
-            m_pOwner->ApplyItemMods(m_pItems[(int)dstslot], dstslot, true);
+            m_pOwner->applyItemMods(m_pItems[(int)dstslot], dstslot, true);
         else if (dstslot == EQUIPMENT_SLOT_MAINHAND || dstslot == EQUIPMENT_SLOT_OFFHAND)
             m_pOwner->CalcDamage();
     }
@@ -3597,7 +3597,7 @@ void ItemInterface::ReduceItemDurability()
                 //check final durability
                 if (!pItem->getDurability())   //no dur left
                 {
-                    m_pOwner->ApplyItemMods(pItem, static_cast<int16>(slot), false, true);
+                    m_pOwner->applyItemMods(pItem, static_cast<int16>(slot), false, true);
 
                 }
             }
@@ -4038,7 +4038,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
         else
         {
             freeslots = false;
-            chr->GetSession()->SendNotification("No free slots were found in your inventory!");
+            chr->getSession()->SendNotification("No free slots were found in your inventory!");
             item->DeleteMe();
         }
     }

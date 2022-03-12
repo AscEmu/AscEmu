@@ -617,7 +617,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                     if (iitr == m_instances[i].end())
                     {
                         // queue no longer valid, since instance has closed since queuing
-                        plr->GetSession()->SystemMessage(plr->GetSession()->LocalizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_DELETED), plr->getQueuedBgInstanceId());
+                        plr->getSession()->SystemMessage(plr->getSession()->LocalizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_DELETED), plr->getQueuedBgInstanceId());
                         plr->setIsQueuedForBg(false);
                         plr->setBgQueueType(0);
                         plr->setQueuedBgInstanceId(0);
@@ -1235,7 +1235,7 @@ void CBattlegroundManager::DeleteBattleground(CBattleground* bg)
         {
             if (plr->getQueuedBgInstanceId() == bg->GetId())
             {
-                sChatHandler.SystemMessage(plr->GetSession(), plr->GetSession()->LocalizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_LONGER_EXISTS), bg->GetId());
+                sChatHandler.SystemMessage(plr->getSession(), plr->getSession()->LocalizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_LONGER_EXISTS), bg->GetId());
                 SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
                 plr->setIsQueuedForBg(false);
                 m_queuedPlayers[i][j].erase(it2);
@@ -1290,7 +1290,7 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
             {
                 if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itx)->guid))
                     if (!loggedInPlayer->isQueuedForBg() && !loggedInPlayer->getBattleground())
-                        HandleArenaJoin(loggedInPlayer->GetSession(), BattlegroundType, 0, 0);
+                        HandleArenaJoin(loggedInPlayer->getSession(), BattlegroundType, 0, 0);
             }
             pGroup->Unlock();
             return;
@@ -1370,7 +1370,7 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
                 loggedInPlayer->setQueuedBgInstanceId(0);
                 loggedInPlayer->setBgQueueType(BattlegroundType);
                 //\todo error/bgtype missing, always send all arenas (from legacy)
-                loggedInPlayer->GetSession()->SendPacket(SmsgGroupJoinedBattleground(6).serialise().get());
+                loggedInPlayer->getSession()->SendPacket(SmsgGroupJoinedBattleground(6).serialise().get());
                 loggedInPlayer->setBGEntryPoint(loggedInPlayer->GetPositionX(), loggedInPlayer->GetPositionY(), loggedInPlayer->GetPositionZ(),
                     loggedInPlayer->GetOrientation(), loggedInPlayer->GetMapId(), loggedInPlayer->GetInstanceID());
             }

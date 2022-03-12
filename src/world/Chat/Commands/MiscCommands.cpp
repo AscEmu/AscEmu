@@ -247,7 +247,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
         {
             named_player->setHealth(0);
             named_player->kill();
-            RedSystemMessage(named_player->GetSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->getName().c_str());
+            RedSystemMessage(named_player->getSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->getName().c_str());
             GreenSystemMessage(m_session, "Killed player %s.", args);
             sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid:  " I64FMT " ", named_player->getName().c_str(), named_player->getGuid());
         }
@@ -279,7 +279,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
 
                     player->setHealth(0);
                     player->kill();
-                    RedSystemMessage(player->GetSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->getName().c_str());
+                    RedSystemMessage(player->getSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->getName().c_str());
                     GreenSystemMessage(m_session, "Killed player %s.", player->getName().c_str());
                     sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid:  " I64FMT " ", m_session->GetPlayer()->getName().c_str(), player->getGuid());
                     break;
@@ -352,7 +352,7 @@ bool ChatHandler::HandleRootCommand(const char* /*args*/, WorldSession* m_sessio
     if (unit->isPlayer())
     {
         SystemMessage(m_session, "Rooting Player %s.", static_cast<Player*>(unit)->getName().c_str());
-        BlueSystemMessage(static_cast<Player*>(unit)->GetSession(), "You have been rooted by %s.", m_session->GetPlayer()->getName().c_str());
+        BlueSystemMessage(static_cast<Player*>(unit)->getSession(), "You have been rooted by %s.", m_session->GetPlayer()->getName().c_str());
         sGMLog.writefromsession(m_session, "rooted player %s", static_cast<Player*>(unit)->getName().c_str());
     }
     else
@@ -376,7 +376,7 @@ bool ChatHandler::HandleUnrootCommand(const char* /*args*/, WorldSession* m_sess
     if (unit->isPlayer())
     {
         SystemMessage(m_session, "Unrooting Player %s.", static_cast<Player*>(unit)->getName().c_str());
-        BlueSystemMessage(static_cast<Player*>(unit)->GetSession(), "You have been unrooted by %s.", m_session->GetPlayer()->getName().c_str());
+        BlueSystemMessage(static_cast<Player*>(unit)->getSession(), "You have been unrooted by %s.", m_session->GetPlayer()->getName().c_str());
         sGMLog.writefromsession(m_session, "unrooted player %s", static_cast<Player*>(unit)->getName().c_str());
     }
     else
@@ -431,7 +431,7 @@ bool ChatHandler::HandleKickByNameCommand(const char* args, WorldSession* m_sess
         BlueSystemMessage(m_session, "Attempting to kick %s from the server for \'%s\'.", player_target->getName().c_str(), kickreason.c_str());
         sGMLog.writefromsession(m_session, "Kicked player %s from the server for %s", player_target->getName().c_str(), kickreason.c_str());
 
-        if (!m_session->CanUseCommand('z') && player_target->GetSession()->CanUseCommand('z'))
+        if (!m_session->CanUseCommand('z') && player_target->getSession()->CanUseCommand('z'))
         {
             RedSystemMessage(m_session, "You cannot kick %s, a GM whose permissions outrank yours.", player_target->getName().c_str());
             return true;
@@ -444,7 +444,7 @@ bool ChatHandler::HandleKickByNameCommand(const char* args, WorldSession* m_sess
             sWorld.sendMessageToAll(worldAnnounce.str(), nullptr);
         }
 
-        SystemMessage(player_target->GetSession(), "You are being kicked from the server by %s. Reason: %s", m_session->GetPlayer()->getName().c_str(), kickreason.c_str());
+        SystemMessage(player_target->getSession(), "You are being kicked from the server by %s. Reason: %s", m_session->GetPlayer()->getName().c_str(), kickreason.c_str());
         player_target->kickFromServer(6000);
         return true;
     }
@@ -470,7 +470,7 @@ bool ChatHandler::HandleKKickBySessionCommand(const char* args, WorldSession* m_
     auto player_target = sObjectMgr.GetPlayer(player_name, false);
     if (player_target != nullptr)
     {
-        if (!m_session->CanUseCommand('z') && player_target->GetSession()->CanUseCommand('z'))
+        if (!m_session->CanUseCommand('z') && player_target->getSession()->CanUseCommand('z'))
         {
             RedSystemMessage(m_session, "You cannot kick %s, a GM whose permissions outrank yours.", player_target->getName().c_str());
             return true;
@@ -608,7 +608,7 @@ bool ChatHandler::HandleInvincibleCommand(const char* /*args*/, WorldSession* m_
 
         if (selected_player != m_session->GetPlayer())
         {
-            GreenSystemMessage(selected_player->GetSession(), "%s turns your invincibility off", m_session->GetPlayer()->getName().c_str());
+            GreenSystemMessage(selected_player->getSession(), "%s turns your invincibility off", m_session->GetPlayer()->getName().c_str());
             sGMLog.writefromsession(m_session, "turns invincibility off for %s", selected_player->getName().c_str());
         }
         else
@@ -622,7 +622,7 @@ bool ChatHandler::HandleInvincibleCommand(const char* /*args*/, WorldSession* m_
 
         if (selected_player != m_session->GetPlayer())
         {
-            GreenSystemMessage(selected_player->GetSession(), "%s turns your invincibility on", m_session->GetPlayer()->getName().c_str());
+            GreenSystemMessage(selected_player->getSession(), "%s turns your invincibility on", m_session->GetPlayer()->getName().c_str());
             sGMLog.writefromsession(m_session, "turns invincibility on for %s", selected_player->getName().c_str());
         }
         else
@@ -653,7 +653,7 @@ bool ChatHandler::HandleInvisibleCommand(const char* /*args*/, WorldSession* m_s
 
         if (selected_player != m_session->GetPlayer())
         {
-            GreenSystemMessage(selected_player->GetSession(), "%s turns your invisibility and invincibility off", m_session->GetPlayer()->getName().c_str());
+            GreenSystemMessage(selected_player->getSession(), "%s turns your invisibility and invincibility off", m_session->GetPlayer()->getName().c_str());
             sGMLog.writefromsession(m_session, "turns invisibility and invincibility off for %s", selected_player->getName().c_str());
         }
         else
@@ -673,7 +673,7 @@ bool ChatHandler::HandleInvisibleCommand(const char* /*args*/, WorldSession* m_s
 
         if (selected_player != m_session->GetPlayer())
         {
-            GreenSystemMessage(selected_player->GetSession(), "%s turns your invisibility and invincibility on", m_session->GetPlayer()->getName().c_str());
+            GreenSystemMessage(selected_player->getSession(), "%s turns your invisibility and invincibility on", m_session->GetPlayer()->getName().c_str());
             sGMLog.writefromsession(m_session, "turns invisibility and invincibility on for %s", selected_player->getName().c_str());
         }
         else
@@ -797,7 +797,7 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession* m_session)
         SystemMessage(m_session, "Appearing at %s's location.", chr->getName().c_str());
         if (!m_session->GetPlayer()->m_isGmInvisible)
         {
-            SystemMessage(chr->GetSession(), "%s is appearing to your location.", m_session->GetPlayer()->getName().c_str());
+            SystemMessage(chr->getSession(), "%s is appearing to your location.", m_session->GetPlayer()->getName().c_str());
         }
 
 #if VERSION_STRING < Cata
@@ -879,14 +879,14 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
 
         if (!m_session->GetPlayer()->m_isGmInvisible)
         {
-            SystemMessage(chr->GetSession(), "You are being summoned by %s.", m_session->GetPlayer()->getName().c_str());
+            SystemMessage(chr->getSession(), "You are being summoned by %s.", m_session->GetPlayer()->getName().c_str());
         }
         Player* plr = m_session->GetPlayer();
         if (plr->GetMapMgr() == chr->GetMapMgr())
             chr->_Relocate(plr->GetMapId(), plr->GetPosition(), false, false, plr->GetInstanceID());
         else
         {
-            sEventMgr.AddEvent(chr, &Player::EventPortToGM, plr, 0, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(chr, &Player::eventPortToGm, plr, 0, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
     }
     else
@@ -966,17 +966,17 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
         plr = GetSelectedPlayer(m_session, true, true);
 
     if (!plr) return true;
-    if (!plr->GetSession())
+    if (!plr->getSession())
     {
         RedSystemMessage(m_session, "ERROR: this player hasn't got any session !");
         return true;
     }
-    if (!plr->GetSession()->GetSocket())
+    if (!plr->getSession()->GetSocket())
     {
         RedSystemMessage(m_session, "ERROR: this player hasn't got any socket !");
         return true;
     }
-    WorldSession* sess = plr->GetSession();
+    WorldSession* sess = plr->getSession();
 
     static const char* classes[MAX_PLAYER_CLASSES] =
     { "None", "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "Death Knight", "Shaman", "Mage", "Warlock", "None", "Druid" };
@@ -1311,20 +1311,20 @@ bool ChatHandler::HandleBanAllCommand(const char* args, WorldSession* m_session)
         return true;
     }
 
-    if (pBanned->GetSession() == NULL)
+    if (pBanned->getSession() == NULL)
     {
         RedSystemMessage(m_session, "Player does not have a session!");
         return true;
     }
 
-    if (pBanned->GetSession()->GetSocket() == NULL)
+    if (pBanned->getSession()->GetSocket() == NULL)
     {
         RedSystemMessage(m_session, "Player does not have a socket!");
         return true;
     }
 
-    pAcc = pBanned->GetSession()->GetAccountName();
-    pIP = pBanned->GetSession()->GetSocket()->GetRemoteIP();
+    pAcc = pBanned->getSession()->GetAccountName();
+    pIP = pBanned->getSession()->GetSocket()->GetRemoteIP();
     if (pIP == m_session->GetSocket()->GetRemoteIP())
     {
         RedSystemMessage(m_session, "That player has the same IP as you - ban failed");

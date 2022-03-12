@@ -273,7 +273,7 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
                 {
                     // Another group is already playing in this instance of the dungeon...
                     m_mapLock.Release();
-                    sChatHandler.SystemMessage(plr->GetSession(), "Another group is already inside this instance of the dungeon.");
+                    sChatHandler.SystemMessage(plr->getSession(), "Another group is already inside this instance of the dungeon.");
                     return INSTANCE_ABORT_NOT_IN_RAID_GROUP;
                 }
 
@@ -386,7 +386,7 @@ uint32_t InstanceMgr::PreTeleport(uint32_t mapid, Player* plr, uint32_t instance
                 if (!checkInstanceGroup(in, pGroup))
                 {
                     // Another group is already playing in this instance of the dungeon...
-                    sChatHandler.SystemMessage(plr->GetSession(), "Another group is already inside this instance of the dungeon.");
+                    sChatHandler.SystemMessage(plr->getSession(), "Another group is already inside this instance of the dungeon.");
                     return INSTANCE_ABORT_NOT_IN_RAID_GROUP;
                 }
 
@@ -724,12 +724,12 @@ void InstanceMgr::ResetSavedInstances(Player* plr)
                 {
                     if (instance->m_mapMgr && instance->m_mapMgr->HasPlayers())
                     {
-                        plr->GetSession()->SystemMessage("Failed to reset instance %u (%s), due to players still inside.", instance->m_instanceId, instance->m_mapMgr->GetMapInfo()->name.c_str());
+                        plr->getSession()->SystemMessage("Failed to reset instance %u (%s), due to players still inside.", instance->m_instanceId, instance->m_mapMgr->GetMapInfo()->name.c_str());
                         continue;
                     }
 
                     // <mapid> has been reset.
-                    plr->GetSession()->SendPacket(SmsgInstanceReset(instance->m_mapId).serialise().get());
+                    plr->getSession()->SendPacket(SmsgInstanceReset(instance->m_mapId).serialise().get());
 
                     // destroy the instance
                     _DeleteInstance(instance, true);
@@ -873,9 +873,9 @@ void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
                     {
                         m_mapLock.Release();
 
-                        plr->GetSession()->SendPacket(SmsgUpdateLastInstance(instance->m_mapId).serialise().get());
+                        plr->getSession()->SendPacket(SmsgUpdateLastInstance(instance->m_mapId).serialise().get());
 
-                        plr->GetSession()->SendPacket(SmsgUpdateInstanceOwnership(0x01).serialise().get());
+                        plr->getSession()->SendPacket(SmsgUpdateInstanceOwnership(0x01).serialise().get());
 
                         return;
                     }
@@ -885,7 +885,7 @@ void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
         m_mapLock.Release();
     }
 
-    plr->GetSession()->SendPacket(SmsgUpdateInstanceOwnership(0x00).serialise().get());
+    plr->getSession()->SendPacket(SmsgUpdateInstanceOwnership(0x00).serialise().get());
 }
 
 void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
@@ -945,7 +945,7 @@ void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
     m_mapLock.Release();
 
     data.put<uint32_t>(_counter, counter);
-    plr->GetSession()->SendPacket(&data);
+    plr->getSession()->SendPacket(&data);
 }
 
 void InstanceMgr::PlayerLeftGroup(Group* pGroup, Player* pPlayer)

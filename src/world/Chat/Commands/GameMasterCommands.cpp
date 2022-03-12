@@ -148,7 +148,7 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
     sObjectMgr._playerslock.lock();
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
-        if (itr->second->GetSession()->GetPermissionCount())
+        if (itr->second->getSession()->GetPermissionCount())
         {
             if (!worldConfig.gm.listOnlyActiveGms)
             {
@@ -158,7 +158,7 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
                 if (worldConfig.gm.hidePermissions && !is_gamemaster)
                     SystemMessage(m_session, " - %s", itr->second->getName().c_str());
                 else
-                    SystemMessage(m_session, " - %s [%s]", itr->second->getName().c_str(), itr->second->GetSession()->GetPermissions());
+                    SystemMessage(m_session, " - %s [%s]", itr->second->getName().c_str(), itr->second->getSession()->GetPermissions());
 
                 print_headline = false;
             }
@@ -172,7 +172,7 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
                     if (worldConfig.gm.hidePermissions && !is_gamemaster)
                         SystemMessage(m_session, " - %s", itr->second->getName().c_str());
                     else
-                        SystemMessage(m_session, " - %s [%s]", itr->second->getName().c_str(), itr->second->GetSession()->GetPermissions());
+                        SystemMessage(m_session, " - %s [%s]", itr->second->getName().c_str(), itr->second->getSession()->GetPermissions());
 
                     print_headline = false;
                 }

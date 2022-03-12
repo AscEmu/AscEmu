@@ -289,7 +289,7 @@ bool WaitingToResurrect(uint8_t /*effectIndex*/, Aura* a, bool apply)
     if (apply)        // already applied in opcode handler
         return true;
 
-    uint64_t crtguid = p_target->m_areaSpiritHealer_guid;
+    uint64_t crtguid = p_target->getAreaSpiritHealerGuid();
 
     WoWGuid wowGuid;
     wowGuid.Init(crtguid);

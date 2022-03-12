@@ -1410,7 +1410,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         }
 
 #if VERSION_STRING >= WotLK
-        if (getSpellInfo()->getAttributesExG() & ATTRIBUTESEXG_IS_CHEAT_SPELL && !p_caster->GetSession()->HasGMPermissions())
+        if (getSpellInfo()->getAttributesExG() & ATTRIBUTESEXG_IS_CHEAT_SPELL && !p_caster->getSession()->HasGMPermissions())
         {
             *parameter1 = SPELL_EXTRA_ERROR_GM_ONLY;
             return SPELL_FAILED_CUSTOM_ERROR;
@@ -5607,7 +5607,7 @@ void Spell::removeAmmo()
         {
             rangedWeapon->setDurability(rangedWeapon->getDurability() - 1);
             if (rangedWeapon->getDurability() == 0)
-                p_caster->ApplyItemMods(rangedWeapon, EQUIPMENT_SLOT_RANGED, false, true);
+                p_caster->applyItemMods(rangedWeapon, EQUIPMENT_SLOT_RANGED, false, true);
         }
 #endif
     }
