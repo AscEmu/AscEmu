@@ -85,18 +85,36 @@ void LootMgr::initialize()
 void LootMgr::finalize()
 {
     sLogger.info(" Deleting Loot Tables...");
-    for (LootTemplateMap::iterator iter = CreatureLoot.begin(); iter != CreatureLoot.end(); ++iter)
-        delete[] iter->second;
-    for (LootTemplateMap::iterator iter = FishingLoot.begin(); iter != FishingLoot.end(); ++iter)
-        delete[] iter->second;
-    for (LootTemplateMap::iterator iter = SkinningLoot.begin(); iter != SkinningLoot.end(); ++iter)
-        delete[] iter->second;
-    for (LootTemplateMap::iterator iter = GOLoot.begin(); iter != GOLoot.end(); ++iter)
-        delete[] iter->second;
-    for (LootTemplateMap::iterator iter = ItemLoot.begin(); iter != ItemLoot.end(); ++iter)
-        delete[] iter->second;
-    for (LootTemplateMap::iterator iter = PickpocketingLoot.begin(); iter != PickpocketingLoot.end(); ++iter)
-        delete[] iter->second;
+    for (auto& iter : CreatureLoot)
+    {
+        auto delIter = iter.second;
+        delete delIter;
+    }
+    for (auto& iter : FishingLoot)
+    {
+        auto delIter = iter.second;
+        delete delIter;
+    }
+    for (auto& iter : SkinningLoot)
+    {
+        auto delIter = iter.second;
+        delete delIter;
+    }
+    for (auto& iter : GOLoot)
+    {
+        auto delIter = iter.second;
+        delete delIter;
+    }
+    for (auto& iter : ItemLoot)
+    {
+        auto delIter = iter.second;
+        delete delIter;
+    }
+    for (auto& iter : PickpocketingLoot)
+    {
+        auto delIter = iter.second;
+        delete delIter;
+    }
 }
 
 void LootMgr::fillCreatureLoot(Unit* lootOwner, Loot* loot, uint32_t loot_id, uint8_t type)

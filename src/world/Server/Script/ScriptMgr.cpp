@@ -526,17 +526,11 @@ void ScriptMgr::UnloadScripts()
 
 #ifdef FT_ACHIEVEMENTS
     for (auto itr = _achievementCriteriaScripts.begin(); itr != _achievementCriteriaScripts.end();)
-    {
-        delete itr->second;
         itr = _achievementCriteriaScripts.erase(itr);
-    }
 #endif
 
     for (auto itr = _spellScripts.begin(); itr != _spellScripts.end();)
-    {
-        delete itr->second;
         itr = _spellScripts.erase(itr);
-    }
 
     UnloadScriptEngines();
 
