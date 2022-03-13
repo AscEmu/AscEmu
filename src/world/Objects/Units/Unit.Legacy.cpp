@@ -8373,7 +8373,7 @@ void Unit::UpdateVisibility()
                 Object* pObj = itr2;
 
                 can_see = plr->canSee(pObj);
-                is_visible = plr->IsVisible(pObj->getGuid());
+                is_visible = plr->isVisibleObject(pObj->getGuid());
                 if (can_see)
                 {
                     if (!is_visible)
@@ -8381,7 +8381,7 @@ void Unit::UpdateVisibility()
                         buf.clear();
                         count = pObj->buildCreateUpdateBlockForPlayer(&buf, plr);
                         plr->getUpdateMgr().pushCreationData(&buf, count);
-                        plr->AddVisibleObject(pObj->getGuid());
+                        plr->addVisibleObject(pObj->getGuid());
                     }
                 }
                 else
@@ -8389,7 +8389,7 @@ void Unit::UpdateVisibility()
                     if (is_visible)
                     {
                         plr->sendDestroyObjectPacket(pObj->getGuid());
-                        plr->RemoveVisibleObject(pObj->getGuid());
+                        plr->removeVisibleObject(pObj->getGuid());
                     }
                 }
 
@@ -8397,7 +8397,7 @@ void Unit::UpdateVisibility()
                 {
                     Player* pl = static_cast<Player*>(pObj);
                     can_see = pl->canSee(plr);
-                    is_visible = pl->IsVisible(plr->getGuid());
+                    is_visible = pl->isVisibleObject(plr->getGuid());
                     if (can_see)
                     {
                         if (!is_visible)
@@ -8405,7 +8405,7 @@ void Unit::UpdateVisibility()
                             buf.clear();
                             count = plr->buildCreateUpdateBlockForPlayer(&buf, pl);
                             pl->getUpdateMgr().pushCreationData(&buf, count);
-                            pl->AddVisibleObject(plr->getGuid());
+                            pl->addVisibleObject(plr->getGuid());
                         }
                     }
                     else
@@ -8413,7 +8413,7 @@ void Unit::UpdateVisibility()
                         if (is_visible)
                         {
                             pl->sendDestroyObjectPacket(plr->getGuid());
-                            pl->RemoveVisibleObject(plr->getGuid());
+                            pl->removeVisibleObject(plr->getGuid());
                         }
                     }
                 }
@@ -8428,13 +8428,13 @@ void Unit::UpdateVisibility()
             if (p)
             {
                 can_see = p->canSee(this);
-                is_visible = p->IsVisible(this->getGuid());
+                is_visible = p->isVisibleObject(this->getGuid());
                 if (!can_see)
                 {
                     if (is_visible)
                     {
                         p->sendDestroyObjectPacket(getGuid());
-                        p->RemoveVisibleObject(getGuid());
+                        p->removeVisibleObject(getGuid());
                     }
                 }
                 else
@@ -8444,7 +8444,7 @@ void Unit::UpdateVisibility()
                         buf.clear();
                         count = buildCreateUpdateBlockForPlayer(&buf, p);
                         p->getUpdateMgr().pushCreationData(&buf, count);
-                        p->AddVisibleObject(this->getGuid());
+                        p->addVisibleObject(this->getGuid());
                     }
                 }
             }

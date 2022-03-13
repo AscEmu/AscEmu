@@ -774,7 +774,7 @@ void WorldSession::handlePartyMemberStatsOpcode(WorldPacket& recvPacket)
     if (!_player->getGroup()->HasMember(requestedPlayer))
         return;
 
-    if (_player->IsVisible(requestedPlayer->getGuid()))
+    if (_player->isVisibleObject(requestedPlayer->getGuid()))
         return;
 
     SendPacket(SmsgPartyMemberStatsFull(requestedPlayer->getGuid(), requestedPlayer).serialise().get());

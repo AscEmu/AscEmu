@@ -944,7 +944,7 @@ void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
                             response = QUEST_SHARE_MSG_BUSY;
                         }
                         
-                        if (response == QUEST_SHARE_MSG_SHARING_QUEST && !pPlayer->IsVisible(_player->getGuid()))
+                        if (response == QUEST_SHARE_MSG_SHARING_QUEST && !pPlayer->isVisibleObject(_player->getGuid()))
                         {
                             response = QUEST_SHARE_MSG_BUSY;
                         }

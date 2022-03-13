@@ -712,6 +712,18 @@ protected:
     void setUpdateBits(UpdateMask* updateMask, Player* target) const;
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Visiblility
+public:
+    void addVisibleObject(uint64_t guid);
+    void removeVisibleObject(uint64_t guid);
+    bool isVisibleObject(uint64_t guid);
+
+    void removeIfVisiblePushOutOfRange(uint64_t guid);
+
+protected:
+    std::set<uint64_t> m_visibleObjects;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Stats
     // Initializes stats and unit/playerdata fields
 public:
@@ -1942,26 +1954,17 @@ public:
 public:
         void EventAttackStart();
         void EventAttackStop();
-        void EventAttackUpdateSpeed() { }
+
         void EventDeath();
 
 
         /////////////////////////////////////////////////////////////////////////////////////////
-        // Visible objects
+        // Inrange
         /////////////////////////////////////////////////////////////////////////////////////////
-    public:
-        bool IsVisible(uint64 pObj) { return !(m_visibleObjects.find(pObj) == m_visibleObjects.end()); }
         void addToInRangeObjects(Object* pObj);
         void onRemoveInRangeObject(Object* pObj);
         void clearInRangeSets();
-        void AddVisibleObject(uint64 pObj) { m_visibleObjects.insert(pObj); }
-        void RemoveVisibleObject(uint64 pObj) { m_visibleObjects.erase(pObj); }
-        void RemoveVisibleObject(std::set< uint64 >::iterator itr) { m_visibleObjects.erase(itr); }
-        std::set< uint64 >::iterator FindVisible(uint64 obj) { return m_visibleObjects.find(obj); }
-        void RemoveIfVisible(uint64 obj);
-protected:
-        std::set<uint64> m_visibleObjects;
-public:
+
         /////////////////////////////////////////////////////////////////////////////////////////
         //  PVP Stuff
         /////////////////////////////////////////////////////////////////////////////////////////

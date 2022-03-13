@@ -3140,7 +3140,7 @@ void Player::addToInRangeObjects(Object* pObj)
         uint32 ntime = Util::getMSTime();
 
         if (ntime > m_taxiRideTime)
-            m_currentTaxiPath->SendMoveForTime(this, static_cast< Player* >(pObj), ntime - m_taxiRideTime);
+            m_currentTaxiPath->SendMoveForTime(this, static_cast<Player*>(pObj), ntime - m_taxiRideTime);
         /*else
             m_currentTaxiPath->SendMoveForTime(this, TO< Player* >(pObj), m_taxiRideTime - ntime);*/
     }
@@ -3154,7 +3154,7 @@ void Player::onRemoveInRangeObject(Object* pObj)
     if (pObj == nullptr)
         return;
 
-    if (IsVisible(pObj->getGuid()))
+    if (isVisibleObject(pObj->getGuid()))
     {
         getUpdateMgr().pushOutOfRangeGuid(pObj->GetNewGUID());
     }
@@ -5040,16 +5040,6 @@ uint32 Player::CheckDamageLimits(uint32 dmg, uint32 spellid)
         sendReportToGmMessage(getName(), dmglog.str());
 
     return dmg;
-}
-
-void Player::RemoveIfVisible(uint64 obj)
-{
-    std::set< uint64 >::iterator itr = m_visibleObjects.find(obj);
-    if (itr == m_visibleObjects.end())
-        return;
-
-    m_visibleObjects.erase(obj);
-    getUpdateMgr().pushOutOfRangeGuid(obj);
 }
 
 ///\todo  Use this method all over source code

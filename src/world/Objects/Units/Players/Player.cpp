@@ -2191,7 +2191,7 @@ void Player::sendMessageToSet(WorldPacket* data, bool sendToSelf, bool sendToOwn
                 if (m_isGmInvisible && ((player->getSession()->GetPermissionCount() <= 0)))
                     continue;
 
-                if (player->IsVisible(getGuid()))
+                if (player->isVisibleObject(getGuid()))
                     player->sendPacket(data);
             }
             else
@@ -2538,6 +2538,21 @@ void Player::setUpdateBits(UpdateMask* updateMask, Player* target) const
     {
         Object::setUpdateBits(updateMask, target);
         *updateMask &= Player::m_visibleUpdateMask;
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Visiblility
+void Player::addVisibleObject(uint64_t guid) { m_visibleObjects.insert(guid); }
+void Player::removeVisibleObject(uint64_t guid) { m_visibleObjects.erase(guid); }
+bool Player::isVisibleObject(uint64_t guid) { return m_visibleObjects.contains(guid); }
+
+void Player::removeIfVisiblePushOutOfRange(uint64_t guid)
+{
+    if (m_visibleObjects.contains(guid))
+    {
+        m_visibleObjects.erase(guid);
+        getUpdateMgr().pushOutOfRangeGuid(guid);
     }
 }
 
@@ -9336,7 +9351,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
 
 void Player::sendLootUpdate(Object* object)
 {
-    if (!IsVisible(object->getGuid()))
+    if (!isVisibleObject(object->getGuid()))
         return;
 
     if (object->isCreatureOrPlayer())
