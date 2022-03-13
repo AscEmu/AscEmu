@@ -1830,7 +1830,7 @@ public:
         data << uint32_t(1);
         data << x << y << z;
 
-        ptr->SendMessageToSet(&data, true);
+        ptr->sendMessageToSet(&data, true);
         ptr->SetPosition(x, y, z, o, true);
         return 0;
     }
@@ -2224,7 +2224,7 @@ public:
         WorldPacket* data = CHECK_PACKET(L, 1);
         int self = lua_toboolean(L, 2);
         if (data && ptr)
-            ptr->SendMessageToSet(data, (self > 0) ? true : false);
+            ptr->sendMessageToSet(data, (self > 0) ? true : false);
         return 0;
     }
 
@@ -4436,7 +4436,7 @@ public:
         data << uint32_t(1);
         data << x << y << z;
 
-        ptr->SendMessageToSet(&data, true);
+        ptr->sendMessageToSet(&data, true);
         ptr->SetPosition(x, y, z, o);
         return 0;
     }
@@ -5578,7 +5578,7 @@ public:
         data << x;
         data << y;
         data << z;
-        ptr->SendMessageToSet(&data, false);
+        ptr->sendMessageToSet(&data, false);
         return 0;
     }
 

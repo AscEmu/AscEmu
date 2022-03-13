@@ -584,7 +584,7 @@ bool ChatHandler::HandleCommandsCommand(const char* args, WorldSession* m_sessio
 
 
     //FillSystemMessageData(&data, table[i].Name);
-    //m_session->SendPacket(&data);
+    //m_session->sendPacket(&data);
     //}
 
     SendMultilineMessage(m_session, output.c_str());

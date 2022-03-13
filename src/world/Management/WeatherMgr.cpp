@@ -165,7 +165,7 @@ void WeatherMgr::sendWeatherForPlayer(uint32_t type, float density, Player* play
     if (player != nullptr)
     {
         const uint32_t sound = GetSound(type, density);
-        player->SendPacket(AscEmu::Packets::SmsgWeather(type, density, sound).serialise().get());
+        player->sendPacket(AscEmu::Packets::SmsgWeather(type, density, sound).serialise().get());
     }
 }
 

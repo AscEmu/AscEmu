@@ -357,13 +357,13 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
     WorldPacket data(SMSG_PLAYER_MOVE, recvData.size());
     data << sessionMovementInfo;
-    mover->SendMessageToSet(&data, false);
+    mover->sendMessageToSet(&data, false);
 
 #elif VERSION_STRING == WotLK
 
     WorldPacket data(opcode, recvData.size());
     data << sessionMovementInfo;
-    mover->SendMessageToSet(&data, _player);
+    mover->sendMessageToSet(&data, false);
 
 #else
 
@@ -373,7 +373,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
     WorldPacket data(opcode, recvData.size());
     data << sessionMovementInfo;
-    mover->SendMessageToSet(&data, false);
+    mover->sendMessageToSet(&data, false);
 
 #endif
 
@@ -507,7 +507,7 @@ void WorldSession::handleMountSpecialAnimOpcode(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
 
-    _player->SendMessageToSet(SmsgMountspecialAnim(_player->getGuid()).serialise().get(), true);
+    _player->sendMessageToSet(SmsgMountspecialAnim(_player->getGuid()).serialise().get(), true);
 }
 
 void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)

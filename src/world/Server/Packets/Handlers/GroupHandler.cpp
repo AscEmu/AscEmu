@@ -34,7 +34,7 @@ using namespace AscEmu::Packets;
 #if VERSION_STRING >= Cata
 void WorldSession::sendEmptyGroupList(Player* player)
 {
-    player->SendPacket(SmsgGroupList().serialise().get());
+    player->sendPacket(SmsgGroupList().serialise().get());
 }
 
 void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
@@ -507,7 +507,7 @@ void WorldSession::handleGroupDeclineOpcode(WorldPacket& /*recvPacket*/)
     if (inviter == nullptr)
         return;
 
-    inviter->SendPacket(SmsgGroupDecline(_player->getName()).serialise().get());
+    inviter->sendPacket(SmsgGroupDecline(_player->getName()).serialise().get());
     inviter->setGroupInviterId(0);
     _player->setGroupInviterId(0);
 }
@@ -896,10 +896,10 @@ void WorldSession::handleReadyCheckOpcode(WorldPacket& recvPacket)
 
         if (group->GetLeader())
             if (Player* leader = sObjectMgr.GetPlayer(group->GetLeader()->guid))
-                leader->SendPacket(MsgRaidReadyCheck(_player->getGuid(), srlPacket.isReady, false).serialise().get());
+                leader->sendPacket(MsgRaidReadyCheck(_player->getGuid(), srlPacket.isReady, false).serialise().get());
 
         if (group->GetAssistantLeader())
             if (Player* assistant = sObjectMgr.GetPlayer(group->GetAssistantLeader()->guid))
-                assistant->SendPacket(MsgRaidReadyCheck(_player->getGuid(), srlPacket.isReady, false).serialise().get());
+                assistant->sendPacket(MsgRaidReadyCheck(_player->getGuid(), srlPacket.isReady, false).serialise().get());
     }
 }

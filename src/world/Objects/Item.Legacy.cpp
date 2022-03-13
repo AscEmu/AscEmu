@@ -478,7 +478,7 @@ int32 Item::AddEnchantment(uint32_t enchantment, uint32 Duration, bool /*Perm*/ 
 
     if (apply)
     {
-        m_owner->SendPacket(SmsgEnchantmentLog(m_owner->getGuid(), m_owner->getGuid(), getEntry(), Enchantment->Id).serialise().get());
+        m_owner->sendPacket(SmsgEnchantmentLog(m_owner->getGuid(), m_owner->getGuid(), getEntry(), Enchantment->Id).serialise().get());
 
         /* Only apply the enchantment bonus if we're equipped */
         int16 slot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid());
@@ -817,7 +817,7 @@ void Item::ModifyEnchantmentTime(uint32 Slot, uint32 Duration)
 
 void Item::SendEnchantTimeUpdate(uint32 Slot, uint32 Duration)
 {
-    m_owner->SendPacket(SmsgItemEnchantmentTimeUpdate(getGuid(), Slot, Duration, m_owner->getGuid()).serialise().get());
+    m_owner->sendPacket(SmsgItemEnchantmentTimeUpdate(getGuid(), Slot, Duration, m_owner->getGuid()).serialise().get());
 }
 
 void Item::RemoveAllEnchantments(bool OnlyTemporary)
@@ -1003,7 +1003,7 @@ void Item::EventRemoveItem()
 
 void Item::SendDurationUpdate()
 {
-    m_owner->SendPacket(SmsgItemTimeUpdate(this->getGuid(), this->getDuration()).serialise().get());
+    m_owner->sendPacket(SmsgItemTimeUpdate(this->getGuid(), this->getDuration()).serialise().get());
 }
 
 // "Stackable items (such as Frozen Orbs and gems) and

@@ -994,7 +994,7 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
         }
     }
 
-    plr->SendPacket(SmsgQuestgiverQuestComplete(qst->id, xp, GenerateRewardMoney(plr, qst), qst->bonushonor * 10, rewardtalents, qst->bonusarenapoints).serialise().get());
+    plr->sendPacket(SmsgQuestgiverQuestComplete(qst->id, xp, GenerateRewardMoney(plr, qst), qst->bonushonor * 10, rewardtalents, qst->bonusarenapoints).serialise().get());
 }
 
 void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32 language)
@@ -2027,7 +2027,7 @@ void QuestMgr::SendQuestInvalid(INVALID_REASON reason, Player* plyr)
     if (!plyr)
         return;
 
-    plyr->SendPacket(SmsgQuestgiverQuestInvalid(reason).serialise().get());
+    plyr->sendPacket(SmsgQuestgiverQuestInvalid(reason).serialise().get());
 
     sLogger.debug("WORLD:Sent SMSG_QUESTGIVER_QUEST_INVALID");
 }
@@ -2037,7 +2037,7 @@ void QuestMgr::SendQuestFailed(FAILED_REASON failed, QuestProperties const* qst,
     if (!plyr)
         return;
 
-    plyr->SendPacket(SmsgQuestgiverQuestFailed(qst->id, failed).serialise().get());
+    plyr->sendPacket(SmsgQuestgiverQuestFailed(qst->id, failed).serialise().get());
 
     sLogger.debug("WORLD:Sent SMSG_QUESTGIVER_QUEST_FAILED");
 }
@@ -2047,7 +2047,7 @@ void QuestMgr::SendQuestUpdateFailedTimer(QuestProperties const* pQuest, Player*
     if (!plyr)
         return;
 
-    plyr->SendPacket(SmsgQuestupdateFailedTimer(pQuest->id).serialise().get());
+    plyr->sendPacket(SmsgQuestupdateFailedTimer(pQuest->id).serialise().get());
 
     sLogger.debug("WORLD:Sent SMSG_QUESTUPDATE_FAILEDTIMER");
 }
@@ -2057,7 +2057,7 @@ void QuestMgr::SendQuestUpdateFailed(QuestProperties const* pQuest, Player* plyr
     if (!plyr)
         return;
 
-    plyr->SendPacket(SmsgQuestupdateFailed(pQuest->id).serialise().get());
+    plyr->sendPacket(SmsgQuestupdateFailed(pQuest->id).serialise().get());
 
     sLogger.debug("WORLD:Sent SMSG_QUESTUPDATE_FAILED");
 }
@@ -2067,7 +2067,7 @@ void QuestMgr::SendQuestLogFull(Player* plyr)
     if (!plyr)
         return;
 
-    plyr->SendPacket(SmsgQuestLogFull().serialise().get());
+    plyr->sendPacket(SmsgQuestLogFull().serialise().get());
     sLogger.debug("WORLD:Sent QUEST_LOG_FULL_MESSAGE");
 }
 

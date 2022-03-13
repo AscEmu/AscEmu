@@ -388,7 +388,7 @@ void CreatureAIScript::MoveTeleport(float posX, float posY, float posZ, float po
     data << posX;
     data << posY;
     data << posZ;
-    getCreature()->SendMessageToSet(&data, false);
+    getCreature()->sendMessageToSet(&data, false);
 }
 
 // Replace this with splines
@@ -410,7 +410,7 @@ void CreatureAIScript::MoveTeleport(LocationVector loc)
     data << loc.x;
     data << loc.y;
     data << loc.z;
-    getCreature()->SendMessageToSet(&data, false);
+    getCreature()->sendMessageToSet(&data, false);
 }
 
 void CreatureAIScript::moveToUnit(Unit* unit)

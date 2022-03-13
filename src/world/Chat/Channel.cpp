@@ -101,7 +101,7 @@ void Channel::attemptJoin(Player* plr, std::string password, bool skipCheck/* = 
 
     if (!m_channelPassword.empty() && strcmp(m_channelPassword.c_str(), password.c_str()) != 0)
     {
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_WRONGPASS, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_WRONGPASS, m_channelName).serialise().get());
         return;
     }
 
@@ -109,14 +109,14 @@ void Channel::attemptJoin(Player* plr, std::string password, bool skipCheck/* = 
 
     if (m_bannedMembers.find(plr->getGuidLow()) != m_bannedMembers.end())
     {
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOURBANNED, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOURBANNED, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
 
     if (m_members.find(plr) != m_members.end())
     {
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_ALREADY_ON, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_ALREADY_ON, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -133,7 +133,7 @@ void Channel::attemptJoin(Player* plr, std::string password, bool skipCheck/* = 
     if (m_announcePlayers)
         sendToAll(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_JOINED, m_channelName, plr->getGuid()).serialise().get(), nullptr);
 
-    plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOUJOINED, m_channelName, 0, m_channelFlags, m_channelId).serialise().get());
+    plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOUJOINED, m_channelName, 0, m_channelFlags, m_channelId).serialise().get());
 }
 
 void Channel::leaveChannel(Player* plr, bool sendPacket/* = true*/)
@@ -144,7 +144,7 @@ void Channel::leaveChannel(Player* plr, bool sendPacket/* = true*/)
     if (itr == m_members.end())
     {
         // Player is not on this channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -161,7 +161,7 @@ void Channel::leaveChannel(Player* plr, bool sendPacket/* = true*/)
 
     // Do not send packet in teleport or logout
     if (sendPacket && !(plr->getSession() && (plr->getSession()->IsLoggingOut() || plr->getTeleportState() == 1)))
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOULEFT, m_channelName, 0, 0, m_channelId).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOULEFT, m_channelName, 0, 0, m_channelId).serialise().get());
 
     // Announce player leave to other members in channel
     if (m_announcePlayers)
@@ -193,20 +193,20 @@ void Channel::say(Player* plr, std::string message, Player* for_gm_client, bool 
         if (itr == m_members.end())
         {
             // Player is not on channel
-            plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
+            plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
             return;
         }
 
         if (itr->second & CHANNEL_MEMBER_FLAG_MUTED)
         {
             // Player is muted
-            plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOUCANTSPEAK, m_channelName).serialise().get());
+            plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOUCANTSPEAK, m_channelName).serialise().get());
             return;
         }
 
         if (m_muted && !(itr->second & CHANNEL_MEMBER_FLAG_VOICED) && !(itr->second & CHANNEL_MEMBER_FLAG_MODERATOR) && !(itr->second & CHANNEL_MEMBER_FLAG_OWNER))
         {
-            plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOUCANTSPEAK, m_channelName).serialise().get());
+            plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOUCANTSPEAK, m_channelName).serialise().get());
             return;
         }
     }
@@ -220,7 +220,7 @@ void Channel::say(Player* plr, std::string message, Player* for_gm_client, bool 
     // Send message
     const uint8_t gmFlag = plr->isGMFlagSet() ? 4U : 0U;
     if (for_gm_client != nullptr)
-        for_gm_client->SendPacket(SmsgMessageChat(CHAT_MSG_CHANNEL, LANG_UNIVERSAL, gmFlag, message, plr->getGuid(), "", 0, m_channelName).serialise().get());
+        for_gm_client->sendPacket(SmsgMessageChat(CHAT_MSG_CHANNEL, LANG_UNIVERSAL, gmFlag, message, plr->getGuid(), "", 0, m_channelName).serialise().get());
     else
         sendToAll(SmsgMessageChat(CHAT_MSG_CHANNEL, LANG_UNIVERSAL, gmFlag, message, plr->getGuid(), "", 0, m_channelName).serialise().get());
 }
@@ -232,19 +232,19 @@ void Channel::invitePlayer(Player* plr, Player* new_player)
     if (m_members.find(plr) == m_members.end())
     {
         // Player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
         return;
     }
 
     if (m_members.find(new_player) != m_members.end())
     {
         // Invited player is already on the channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_ALREADY_ON, m_channelName, new_player->getGuid()).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_ALREADY_ON, m_channelName, new_player->getGuid()).serialise().get());
         return;
     }
 
-    new_player->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_INVITED, m_channelName, plr->getGuid()).serialise().get());
-    plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOU_INVITED, m_channelName, 0, 0, 0, 0, new_player->getName()).serialise().get());
+    new_player->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_INVITED, m_channelName, plr->getGuid()).serialise().get());
+    plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOU_INVITED, m_channelName, 0, 0, 0, 0, new_player->getName()).serialise().get());
 }
 
 void Channel::kickOrBanPlayer(Player* plr, Player* die_player, bool ban)
@@ -255,7 +255,7 @@ void Channel::kickOrBanPlayer(Player* plr, Player* die_player, bool ban)
     if (me_itr == m_members.end())
     {
         // Player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -264,7 +264,7 @@ void Channel::kickOrBanPlayer(Player* plr, Player* die_player, bool ban)
     if (itr == m_members.end())
     {
         // Kicked player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOT_ON_2, m_channelName, 0, 0, 0, 0, die_player->getName()).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOT_ON_2, m_channelName, 0, 0, 0, 0, die_player->getName()).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -272,7 +272,7 @@ void Channel::kickOrBanPlayer(Player* plr, Player* die_player, bool ban)
     if (!(me_itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -297,7 +297,7 @@ void Channel::kickOrBanPlayer(Player* plr, Player* die_player, bool ban)
     if (memberFlags & CHANNEL_MEMBER_FLAG_OWNER)
         setOwner(nullptr, nullptr);
 
-    die_player->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOULEFT, m_channelName, 0, 0, m_channelId).serialise().get());
+    die_player->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOULEFT, m_channelName, 0, 0, m_channelId).serialise().get());
 }
 
 void Channel::unBanPlayer(Player* plr, CachedCharacterInfo const* bplr)
@@ -308,7 +308,7 @@ void Channel::unBanPlayer(Player* plr, CachedCharacterInfo const* bplr)
     if (itr == m_members.end())
     {
         // Player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -316,7 +316,7 @@ void Channel::unBanPlayer(Player* plr, CachedCharacterInfo const* bplr)
     if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -325,7 +325,7 @@ void Channel::unBanPlayer(Player* plr, CachedCharacterInfo const* bplr)
     if (it2 == m_bannedMembers.end())
     {
         // Player is not banned
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOT_ON_2, m_channelName, 0, 0, 0, 0, bplr->name).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOT_ON_2, m_channelName, 0, 0, 0, 0, bplr->name).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -344,7 +344,7 @@ void Channel::moderateChannel(Player* plr)
     if (itr == m_members.end())
     {
         // Player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -352,7 +352,7 @@ void Channel::moderateChannel(Player* plr)
     if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('c'))
     {
         // Player is not a moderator
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -371,7 +371,7 @@ void Channel::giveModerator(Player* plr, Player* new_player)
     if (itr == m_members.end())
     {
         // Player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -380,7 +380,7 @@ void Channel::giveModerator(Player* plr, Player* new_player)
     if (itr2 == m_members.end())
     {
         // Target player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOT_ON_2, m_channelName, 0, 0, 0, 0, new_player->getName()).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOT_ON_2, m_channelName, 0, 0, 0, 0, new_player->getName()).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -388,7 +388,7 @@ void Channel::giveModerator(Player* plr, Player* new_player)
     if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -409,7 +409,7 @@ void Channel::takeModerator(Player* plr, Player* new_player)
     if (itr == m_members.end())
     {
         // Player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -418,7 +418,7 @@ void Channel::takeModerator(Player* plr, Player* new_player)
     if (itr2 == m_members.end())
     {
         // Target player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOT_ON_2, m_channelName, 0, 0, 0, 0, new_player->getName()).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOT_ON_2, m_channelName, 0, 0, 0, 0, new_player->getName()).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -426,7 +426,7 @@ void Channel::takeModerator(Player* plr, Player* new_player)
     if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -447,7 +447,7 @@ void Channel::mutePlayer(Player* plr, Player* die_player)
     if (itr == m_members.end())
     {
         // Player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -456,7 +456,7 @@ void Channel::mutePlayer(Player* plr, Player* die_player)
     if (itr2 == m_members.end())
     {
         // Target player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOT_ON_2, m_channelName, 0, 0, 0, 0, die_player->getName()).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOT_ON_2, m_channelName, 0, 0, 0, 0, die_player->getName()).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -464,7 +464,7 @@ void Channel::mutePlayer(Player* plr, Player* die_player)
     if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -485,7 +485,7 @@ void Channel::unMutePlayer(Player* plr, Player* die_player)
     if (itr == m_members.end())
     {
         // Player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -494,7 +494,7 @@ void Channel::unMutePlayer(Player* plr, Player* die_player)
     if (itr2 == m_members.end())
     {
         // Target player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOT_ON_2, m_channelName, 0, 0, 0, 0, die_player->getName()).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOT_ON_2, m_channelName, 0, 0, 0, 0, die_player->getName()).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -502,7 +502,7 @@ void Channel::unMutePlayer(Player* plr, Player* die_player)
     if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -523,7 +523,7 @@ void Channel::giveVoice(Player* plr, Player* v_player)
     if (itr == m_members.end())
     {
         // Player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -532,7 +532,7 @@ void Channel::giveVoice(Player* plr, Player* v_player)
     if (itr2 == m_members.end())
     {
         // Target player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOT_ON_2, m_channelName, 0, 0, 0, 0, v_player->getName()).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOT_ON_2, m_channelName, 0, 0, 0, 0, v_player->getName()).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -540,7 +540,7 @@ void Channel::giveVoice(Player* plr, Player* v_player)
     if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -561,7 +561,7 @@ void Channel::takeVoice(Player* plr, Player* v_player)
     if (itr == m_members.end())
     {
         // Player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -570,7 +570,7 @@ void Channel::takeVoice(Player* plr, Player* v_player)
     if (itr2 == m_members.end())
     {
         // Target player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOT_ON_2, m_channelName, 0, 0, 0, 0, v_player->getName()).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOT_ON_2, m_channelName, 0, 0, 0, 0, v_player->getName()).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -578,7 +578,7 @@ void Channel::takeVoice(Player* plr, Player* v_player)
     if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -599,7 +599,7 @@ void Channel::setPassword(Player* plr, std::string pass)
     if (itr == m_members.end())
     {
         // Player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -607,7 +607,7 @@ void Channel::setPassword(Player* plr, std::string pass)
     if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -626,7 +626,7 @@ void Channel::enableAnnouncements(Player* plr)
     if (itr == m_members.end())
     {
         // Player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -634,7 +634,7 @@ void Channel::enableAnnouncements(Player* plr)
     if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
     {
         // Player is not a moderator
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
         m_mutexChannel.unlock();
         return;
     }
@@ -653,7 +653,7 @@ void Channel::getOwner(Player* plr)
     if (itr == m_members.end())
     {
         // Player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
         return;
     }
 
@@ -661,7 +661,7 @@ void Channel::getOwner(Player* plr)
     {
         if (member.second & CHANNEL_MEMBER_FLAG_OWNER)
         {
-            plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_WHO_OWNER, m_channelName, 0, 0, 0, 0, member.first->getName()).serialise().get());
+            plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_WHO_OWNER, m_channelName, 0, 0, 0, 0, member.first->getName()).serialise().get());
             return;
         }
     }
@@ -678,14 +678,14 @@ void Channel::setOwner(Player* plr, Player const* newOwner)
         if (itr == m_members.end())
         {
             // Player is not on channel
-            plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
+            plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
             return;
         }
 
         if (!(itr->second & (CHANNEL_MEMBER_FLAG_OWNER | CHANNEL_MEMBER_FLAG_MODERATOR)) && !plr->getSession()->CanUseCommand('a'))
         {
             // Player is not a moderator
-            plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
+            plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTMOD, m_channelName).serialise().get());
             return;
         }
     }
@@ -765,7 +765,7 @@ void Channel::listMembers(Player* plr, bool chatQuery)
     if (itr == m_members.end())
     {
         // Player is not on channel
-        plr->SendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
+        plr->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_NOTON, m_channelName).serialise().get());
         return;
     }
 
@@ -799,7 +799,7 @@ void Channel::listMembers(Player* plr, bool chatQuery)
         members.push_back({ member.first->getGuid(), memberFlags });
     }
 
-    plr->SendPacket(SmsgChannelList(chatQuery, m_channelName, m_channelFlags, members).serialise().get());
+    plr->sendPacket(SmsgChannelList(chatQuery, m_channelName, m_channelFlags, members).serialise().get());
 }
 
 void Channel::sendToAll(WorldPacket* data)
@@ -808,7 +808,7 @@ void Channel::sendToAll(WorldPacket* data)
 
     for (auto& member : m_members)
     {
-        member.first->SendPacket(data);
+        member.first->sendPacket(data);
     }
 }
 
@@ -819,6 +819,6 @@ void Channel::sendToAll(WorldPacket* data, Player* skipPlayer)
     for (auto& member : m_members)
     {
         if (member.first != skipPlayer)
-            member.first->SendPacket(data);
+            member.first->sendPacket(data);
     }
 }

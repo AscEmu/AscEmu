@@ -579,7 +579,7 @@ void WorldSession::handleCharterSign(WorldPacket& recvPacket)
         if (player == nullptr)
             return;
 
-        player->SendPacket(SmsgPetitionSignResult(srlPacket.itemGuid, _player->getGuid(), PetitionSignResult::OK).serialise().get());
+        player->sendPacket(SmsgPetitionSignResult(srlPacket.itemGuid, _player->getGuid(), PetitionSignResult::OK).serialise().get());
         SendPacket(SmsgPetitionSignResult(srlPacket.itemGuid, uint64_t(charter->GetLeader()), PetitionSignResult::OK).serialise().get());
     }
 }
@@ -1299,7 +1299,7 @@ void WorldSession::handleGuildFinderBrowse(WorldPacket& recvPacket)
     if (guildCount == 0)
     {
         WorldPacket packet(SMSG_LF_GUILD_BROWSE_UPDATED, 0);
-        player->SendPacket(&packet);
+        player->sendPacket(&packet);
         return;
     }
 
@@ -1373,7 +1373,7 @@ void WorldSession::handleGuildFinderBrowse(WorldPacket& recvPacket)
     data.flushBits();
     data.append(bufferData);
 
-    player->SendPacket(&data);
+    player->sendPacket(&data);
 }
 
 void WorldSession::handleGuildFinderDeclineRecruit(WorldPacket& recvPacket)
@@ -1469,7 +1469,7 @@ void WorldSession::handleGuildFinderGetApplications(WorldPacket& /*recvPacket*/)
     }
     data << uint32_t(10 - sGuildFinderMgr.countRequestsFromPlayer(_player->getGuidLow()));
 
-    _player->SendPacket(&data);
+    _player->sendPacket(&data);
 }
 
 void WorldSession::handleGuildFinderGetRecruits(WorldPacket& recvPacket)
@@ -1542,7 +1542,7 @@ void WorldSession::handleGuildFinderGetRecruits(WorldPacket& recvPacket)
     data.append(dataBuffer);
     data << uint32_t(time(nullptr));
 
-    player->SendPacket(&data);
+    player->sendPacket(&data);
 }
 
 void WorldSession::handleGuildFinderPostRequest(WorldPacket& /*recvPacket*/)

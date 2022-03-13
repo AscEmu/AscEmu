@@ -541,7 +541,7 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
     if (player)
     {
         WorldPacket data(SMSG_ON_CANCEL_EXPECTED_RIDE_VEHICLE_AURA, 0);
-        player->SendPacket(&data);
+        player->sendPacket(&data);
 
         if (!veSeat->hasFlag(DBC::Structures::VehicleSeatFlagsB::VEHICLE_SEAT_FLAG_B_KEEP_PET))
         {
@@ -553,7 +553,7 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
     if (veSeat->hasFlag(DBC::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_PASSENGER_NOT_SELECTABLE))
         passenger->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
 
-    passenger->SendPacket(AscEmu::Packets::SmsgControlVehicle().serialise().get());
+    passenger->sendPacket(AscEmu::Packets::SmsgControlVehicle().serialise().get());
 
     float o = veSeatAddon ? veSeatAddon->SeatOrientationOffset : 0.f;
     float x = veSeat->attachmentOffsetX;
@@ -575,7 +575,7 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
     if (getBase()->getObjectTypeId() == TYPEID_UNIT && passenger->getObjectTypeId() == TYPEID_PLAYER &&
         veSeat->hasFlag(DBC::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_CAN_CONTROL))
     {
-        passenger->SendPacket(AscEmu::Packets::SmsgControlVehicle().serialise().get());
+        passenger->sendPacket(AscEmu::Packets::SmsgControlVehicle().serialise().get());
         static_cast<Player*>(passenger)->setFarsightGuid(getBase()->getGuid());
         static_cast<Player*>(passenger)->sendClientControlPacket(getBase(), 1);
 
@@ -585,7 +585,7 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
 
         WorldPacket spells(SMSG_PET_SPELLS, 100);
         getBase()->BuildPetSpellList(spells);
-        passenger->SendPacket(&spells);
+        passenger->sendPacket(&spells);
 
         static_cast<Player*>(passenger)->setMover(getBase());
 

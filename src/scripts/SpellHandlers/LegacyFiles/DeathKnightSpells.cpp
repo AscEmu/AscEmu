@@ -236,7 +236,7 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
         if (unitTarget->isCreature())
             unitTarget->pauseMovement(2000);
 
-        unitTarget->SendMessageToSet(&data, true);
+        unitTarget->sendMessageToSet(&data, true);
         unitTarget->SetPosition(posX, posY, posZ, alpha, true);
         unitTarget->addUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
         unitTarget->smsg_AttackStart(unitTarget);

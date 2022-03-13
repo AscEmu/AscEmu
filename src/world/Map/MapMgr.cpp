@@ -2017,7 +2017,7 @@ void MapMgr::SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint
                 {
                     if ((*iter)->isPlayer())
                     {
-                        //TO< Player* >(*iter)->getSession()->SendPacket(packet);
+                        //TO< Player* >(*iter)->getSession()->sendPacket(packet);
                         if ((*iter)->GetPhase() & obj->GetPhase())
                             static_cast< Player* >(*iter)->getSession()->SendChatPacket(packet, langpos, lang, originator);
                     }

@@ -774,7 +774,7 @@ int LuaGameObject::SendPacket(lua_State* L, GameObject* ptr)
     WorldPacket* data = CHECK_PACKET(L, 1);
     bool self = CHECK_BOOL(L, 2);
     if (ptr != NULL && data != NULL)
-        ptr->SendMessageToSet(data, self);
+        ptr->sendMessageToSet(data, self);
     return 0;
 }
 

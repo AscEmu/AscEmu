@@ -1012,7 +1012,7 @@ bool ChatHandler::HandleCharRemoveItemCommand(const char* args, WorldSession* m_
     return true;
 }
 
-//.character m_resetTalents
+//.character resettalents
 bool ChatHandler::HandleCharResetTalentsCommand(const char* /*args*/, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);

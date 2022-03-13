@@ -1257,7 +1257,7 @@ void CBattlegroundManager::DeleteBattleground(CBattleground* bg)
 
 void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus Status, uint32 Type, uint32 InstanceID, uint32 Time, uint32 MapId, uint8 RatedMatch)
 {
-    plr->SendPacket(SmsgBattlefieldStatus(plr->GetNewGUID(), Status, Type, InstanceID, Time, MapId, RatedMatch, isArena(Type)).serialise().get());
+    plr->sendPacket(SmsgBattlefieldStatus(plr->GetNewGUID(), Status, Type, InstanceID, Time, MapId, RatedMatch, isArena(Type)).serialise().get());
 }
 
 void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 BattlegroundType, uint8 as_group, uint8 rated_match)

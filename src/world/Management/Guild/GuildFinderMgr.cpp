@@ -317,7 +317,7 @@ void GuildFinderMgr::sendApplicantListUpdate(Guild& guild)
     WorldPacket data(SMSG_LF_GUILD_APPLICANT_LIST_UPDATED, 0);
     if (Player* player = sObjectMgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(guild.getLeaderGUID())))
     {
-        player->SendMessageToSet(&data, false);
+        player->sendMessageToSet(&data, false);
     }
 
     guild.broadcastPacketToRank(&data, GR_OFFICER);
@@ -326,6 +326,6 @@ void GuildFinderMgr::sendApplicantListUpdate(Guild& guild)
 void GuildFinderMgr::sendMembershipRequestListUpdate(Player& player)
 {
     WorldPacket data(SMSG_LF_GUILD_APPLICATIONS_LIST_CHANGED, 0);
-    player.SendMessageToSet(&data, false);
+    player.sendMessageToSet(&data, false);
 }
 #endif

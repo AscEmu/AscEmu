@@ -3889,7 +3889,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
     // send spell dispell log packet
     if (!dispelledSpells.empty())
     {
-        m_caster->SendMessageToSet(SmsgSpellDispellLog(m_caster->getGuid(), unitTarget->getGuid(), getSpellInfo()->getId(), dispelledSpells).serialise().get(), true);
+        m_caster->sendMessageToSet(SmsgSpellDispellLog(m_caster->getGuid(), unitTarget->getGuid(), getSpellInfo()->getId(), dispelledSpells).serialise().get(), true);
     }
 }
 
@@ -4231,7 +4231,7 @@ void Spell::SpellEffectLearnPetSpell(uint8_t effectIndex)
         // Send Packet
         /*      WorldPacket data(SMSG_SET_EXTRA_AURA_INFO_OBSOLETE, 22);
         data << pPet->getGuid() << uint8(0) << uint32(GetProto()->EffectTriggerSpell[i]) << uint32(-1) << uint32(0);
-        p_caster->getSession()->SendPacket(&data);*/
+        p_caster->getSession()->sendPacket(&data);*/
     }
 }
 
@@ -5344,7 +5344,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
         // Send a message to the died player, telling him he has to resurrect at the graveyard.
         // Send an empty corpse location too, :P
 
-        playerTarget->SendPacket(MsgCorspeQuery(0).serialise().get());
+        playerTarget->sendPacket(MsgCorspeQuery(0).serialise().get());
 
         // don't allow him to spawn a corpse
         playerTarget->setAllowedToCreateCorpse(false);
@@ -5365,7 +5365,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
             if (!owner->getBattleground())
                 return;
 
-            owner->SendPacket(MsgCorspeQuery(0).serialise().get());
+            owner->sendPacket(MsgCorspeQuery(0).serialise().get());
         }
 
         if (corpse->getDynamicFlags() != 1)
@@ -5745,7 +5745,7 @@ void Spell::SpellEffectPlayerPull(uint8_t /*effectIndex*/)
     data << pullY;
     data << pullZ;
 
-    p_target->SendMessageToSet(&data, true);
+    p_target->sendMessageToSet(&data, true);
 }
 
 void Spell::SpellEffectReduceThreatPercent(uint8_t /*effectIndex*/)
@@ -5812,7 +5812,7 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
 
     if (!stealedSpells.empty())
     {
-        m_caster->SendMessageToSet(SmsgSpellStealLog(m_caster->getGuid(), unitTarget->getGuid(), getSpellInfo()->getId(), stealedSpells).serialise().get(), true);
+        m_caster->sendMessageToSet(SmsgSpellStealLog(m_caster->getGuid(), unitTarget->getGuid(), getSpellInfo()->getId(), stealedSpells).serialise().get(), true);
     }
 }
 
@@ -5977,7 +5977,7 @@ void Spell::SpellEffectTeachTaxiPath(uint8_t effectIndex)
     {
         playerTarget->setTaxiMask(field, (submask | playerTarget->getTaxiMask(field)));
 
-        playerTarget->SendPacket(SmsgNewTaxiPath().serialise().get());
+        playerTarget->sendPacket(SmsgNewTaxiPath().serialise().get());
 
         //Send packet
         playerTarget->getSession()->SendPacket(SmsgTaxinodeStatus(0, 1).serialise().get());
@@ -6344,7 +6344,7 @@ void Spell::SpellEffectForceDeselect(uint8_t /*effectIndex*/)
     //clear focus SMSG_BREAK_TARGET
 
     //clear target
-    m_caster->SendMessageToSet(SmsgClearTarget(m_caster->getGuid()).serialise().get(), true);
+    m_caster->sendMessageToSet(SmsgClearTarget(m_caster->getGuid()).serialise().get(), true);
 
     //stop attacking and pet target
 }

@@ -2853,12 +2853,12 @@ void Aura::SpellAuraFeignDeath(AuraEffectModifier* /*aurEff*/, bool apply)
             /*if (p_target->hasUnitStateFlag(UNIT_STATE_ATTACKING))
                 p_target->removeUnitStateFlag(UNIT_STATE_ATTACKING);*/
 
-            p_target->SendPacket(SmsgCancelCombat().serialise().get());
+            p_target->sendPacket(SmsgCancelCombat().serialise().get());
 
             // Send server-side cancel message
             WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
             data << p_target->GetNewGUID();
-            p_target->SendMessageToSet(&data, false);
+            p_target->sendMessageToSet(&data, false);
         }
         else
         {
@@ -3175,8 +3175,8 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
             if (p_target->createVehicleKit(ci->vehicleid, ci->Id))
             {
                 // Send other players that we are a vehicle
-                p_target->SendMessageToSet(SmsgPlayerVehicleData(p_target->GetNewGUID(), p_target->getMountVehicleId()).serialise().get(), true);
-                p_target->SendPacket(SmsgControlVehicle().serialise().get());
+                p_target->sendMessageToSet(SmsgPlayerVehicleData(p_target->GetNewGUID(), p_target->getMountVehicleId()).serialise().get(), true);
+                p_target->sendPacket(SmsgControlVehicle().serialise().get());
 
                 // mounts can also have accessories
                 p_target->getVehicleKit()->loadAllAccessories(false);
@@ -3193,7 +3193,7 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
         if (p_target->getVehicleKit())
         {
             // Send other players that we are no longer a vehicle
-            p_target->SendMessageToSet(SmsgPlayerVehicleData(p_target->GetNewGUID(), 0).serialise().get(), true);
+            p_target->sendMessageToSet(SmsgPlayerVehicleData(p_target->GetNewGUID(), 0).serialise().get(), true);
 
             // Remove vehicle from player
             p_target->removeVehicleKit();
@@ -5678,7 +5678,7 @@ void Aura::SpellAuraModBlockValue(AuraEffectModifier* aurEff, bool apply)
 
 void Aura::SendChannelUpdate(uint32 time, Object* m_caster)
 {
-    m_caster->SendMessageToSet(MsgChannelUpdate(m_caster->GetNewGUID(), time).serialise().get(), true);
+    m_caster->sendMessageToSet(MsgChannelUpdate(m_caster->GetNewGUID(), time).serialise().get(), true);
 }
 
 void Aura::SpellAuraExpertise(AuraEffectModifier* /*aurEff*/, bool /*apply*/)

@@ -1314,7 +1314,7 @@ void Spell::AddTime(uint32 type)
                     delay = 1;
             }
 
-            u_caster->SendMessageToSet(SmsgSpellDelayed(u_caster->GetNewGUID(), delay).serialise().get(), true);
+            u_caster->sendMessageToSet(SmsgSpellDelayed(u_caster->GetNewGUID(), delay).serialise().get(), true);
 
             if (p_caster == nullptr)
             {
@@ -1363,7 +1363,7 @@ void Spell::SendLogExecute(uint32 spellDamage, uint64 & targetGuid)
         data << targetGuid;
     if (spellDamage)
         data << spellDamage;
-    m_caster->SendMessageToSet(&data, true);
+    m_caster->sendMessageToSet(&data, true);
 }
 
 void Spell::SendInterrupted(uint8 result)
@@ -1388,7 +1388,7 @@ void Spell::SendInterrupted(uint8 result)
             plr->getSession()->SendPacket(SmsgSpellFailure(m_caster->GetNewGUID(), extra_cast_number, getSpellInfo()->getId(), result).serialise().get());
     }
 
-    m_caster->SendMessageToSet(SmsgSpellFailedOther(m_caster->GetNewGUID(), extra_cast_number, getSpellInfo()->getId(), result).serialise().get(), false);
+    m_caster->sendMessageToSet(SmsgSpellFailedOther(m_caster->GetNewGUID(), extra_cast_number, getSpellInfo()->getId(), result).serialise().get(), false);
 }
 
 void Spell::SendResurrectRequest(Player* target)
@@ -3001,7 +3001,7 @@ void Spell::HandleTeleport(LocationVector pos, uint32 mapid, Unit* Target)
         data << float(pos.y);
         data << float(pos.z);
 
-        Target->SendMessageToSet(&data, true);
+        Target->sendMessageToSet(&data, true);
         Target->SetPosition(pos.x, pos.y, pos.z, pos.o);
     }
 }

@@ -637,7 +637,7 @@ void Player::_EventAttack(bool offhand)
         if (m_AttackMsgTimer != 1)
         {
 #if VERSION_STRING < Mop
-            SendPacket(SmsgAttackSwingNotInRange().serialise().get());
+            sendPacket(SmsgAttackSwingNotInRange().serialise().get());
 #endif
             m_AttackMsgTimer = 1;
         }
@@ -649,7 +649,7 @@ void Player::_EventAttack(bool offhand)
         if (m_AttackMsgTimer != 2)
         {
 #if VERSION_STRING < Mop
-            SendPacket(SmsgAttackSwingBadFacing().serialise().get());
+            sendPacket(SmsgAttackSwingBadFacing().serialise().get());
 #endif
             m_AttackMsgTimer = 2;
         }
@@ -724,7 +724,7 @@ void Player::_EventCharmAttack()
         {
             if (m_AttackMsgTimer == 0)
             {
-                //SendPacket(SmsgAttackSwingNotInRange().serialise().get());
+                //sendPacket(SmsgAttackSwingNotInRange().serialise().get());
                 // 2 sec till next msg.
                 m_AttackMsgTimer = 2000;
             }
@@ -736,7 +736,7 @@ void Player::_EventCharmAttack()
             if (m_AttackMsgTimer == 0)
             {
 #if VERSION_STRING < Mop
-                SendPacket(SmsgAttackSwingBadFacing().serialise().get());
+                sendPacket(SmsgAttackSwingBadFacing().serialise().get());
 #endif
                 m_AttackMsgTimer = 2000; // 2 sec till next msg.
             }
@@ -2590,7 +2590,7 @@ void Player::OnPushToWorld()
     WorldPacket data(SMSG_LOAD_CUF_PROFILES, 1);
     data.writeBits(0, 20);
     data.flushBits();
-    SendPacket(&data);
+    sendPacket(&data);
 
     data.Initialize(SMSG_BATTLE_PET_JOURNAL);
     data.writeBits(0, 19);
@@ -2598,10 +2598,10 @@ void Player::OnPushToWorld()
     data.writeBits(0, 25);
     data.flushBits();
     data << uint16_t(0);
-    SendPacket(&data);
+    sendPacket(&data);
 
     data.Initialize(SMSG_BATTLE_PET_JOURNAL_LOCK_ACQUIRED);
-    SendPacket(&data);
+    sendPacket(&data);
 
 #endif
 }
@@ -5005,125 +5005,6 @@ void Player::SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs)
         }
     }
     getSession()->SendPacket(SmsgSpellCooldown(getGuid(), 0x0, spellMap).serialise().get());
-}
-
-void Player::OutPacket(uint16 opcode, uint16 len, const void* data)
-{
-    if (m_session != nullptr)
-        m_session->OutPacket(opcode, len, data);
-}
-
-void Player::SendPacket(WorldPacket* packet)
-{
-    if (m_session != nullptr)
-        m_session->SendPacket(packet);
-}
-
-void Player::OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool self)
-{
-    if (!IsInWorld())
-        return;
-
-    bool gm = m_isGmInvisible;
-
-    if (self)
-        OutPacket(Opcode, Len, Data);
-
-    for (const auto& itr : getInRangePlayersSet())
-    {
-        if (itr)
-        {
-            Player* p = static_cast<Player*>(itr);
-            if (gm)
-            {
-                if (p->getSession()->GetPermissionCount() > 0)
-                    p->OutPacket(Opcode, Len, Data);
-            }
-            else
-            {
-                p->OutPacket(Opcode, Len, Data);
-            }
-        }
-    }
-}
-
-void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
-{
-    if (!IsInWorld())
-        return;
-
-    bool gminvis = false;
-
-    if (bToSelf)
-    {
-        SendPacket(data);
-    }
-
-    gminvis = m_isGmInvisible;
-    uint32 myphase = GetPhase();
-
-    if (myteam_only)
-    {
-        uint32 myteam = getTeam();
-
-        if (data->GetOpcode() != SMSG_MESSAGECHAT)
-        {
-            for (const auto& itr : getInRangePlayersSet())
-            {
-                if (itr)
-                {
-                    Player* p = static_cast<Player*>(itr);
-                    if (gminvis && ((p->getSession() == nullptr) || (p->getSession()->GetPermissionCount() <= 0)))
-                        continue;
-
-                    if (p->getTeam() == myteam && (p->GetPhase() & myphase) != 0 && p->IsVisible(getGuid()))
-                        p->SendPacket(data);
-                }
-            }
-        }
-        else
-        {
-            for (const auto& itr : getInRangePlayersSet())
-            {
-                if (itr)
-                {
-                    Player* p = static_cast<Player*>(itr);
-                    if (p->getSession() && p->getTeam() == myteam && !p->isIgnored(getGuidLow()) && (p->GetPhase() & myphase) != 0)
-                        p->SendPacket(data);
-                }
-            }
-        }
-    }
-    else
-    {
-        if (data->GetOpcode() != SMSG_MESSAGECHAT)
-        {
-            for (const auto& itr : getInRangePlayersSet())
-            {
-                if (itr)
-                {
-                    Player* p = static_cast<Player*>(itr);
-                    if (gminvis && (p->getSession() == nullptr || p->getSession()->GetPermissionCount() <= 0))
-                        continue;
-
-                    if ((p->GetPhase() & myphase) != 0 && p->IsVisible(getGuid()))
-                        p->SendPacket(data);
-                }
-            }
-        }
-        else
-        {
-            for (const auto& itr : getInRangePlayersSet())
-            {
-                if (itr)
-                {
-                    Player* p = static_cast<Player*>(itr);
-                    if (p->getSession() && !p->isIgnored(getGuidLow()) && (p->GetPhase() & myphase) != 0)
-                        p->SendPacket(data);
-                }
-            }
-        }
-    }
 }
 
 uint32 Player::CheckDamageLimits(uint32 dmg, uint32 spellid)

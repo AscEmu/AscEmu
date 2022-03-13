@@ -550,7 +550,7 @@ public:
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        // void OutPacket(uint16 opcode, uint16 len, const void *data)
+        // void outPacket(uint16 opcode, uint16 len, const void *data)
         // Sends a packet to the Player
         //
         // \param uint16 opcode      -   opcode of the packet
@@ -560,10 +560,10 @@ public:
         // \return none
         //
         //////////////////////////////////////////////////////////////////////////////////////////
-        virtual void OutPacket(uint16_t /*opcode*/, uint16_t /*len*/, const void* /*data*/) {};
+        virtual void outPacket(uint16_t /*opcode*/, uint16_t /*len*/, const void* /*data*/) {};
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        // void SendPacket(WorldPacket *packet)
+        // void sendPacket(WorldPacket *packet)
         //  Sends a packet to the Player
         //
         // \param WorldPAcket *packet      -     the packet that needs to be sent
@@ -571,14 +571,12 @@ public:
         // \return none
         //
         //////////////////////////////////////////////////////////////////////////////////////////
-        virtual void SendPacket(WorldPacket* /*packet*/) {};
+        virtual void sendPacket(WorldPacket* /*packet*/) {};
 
         void SendCreatureChatMessageInRange(Creature* creature, uint32_t textId, Unit* target = nullptr);
 
-        virtual void SendMessageToSet(WorldPacket* data, bool self, bool myteam_only = false);
-        virtual void SendMessageToSet(WorldPacket* data, Player const* /*skipp*/);
-        //void SendMessageToSet(StackBufferBase* data, bool self) { OutPacketToSet(data->GetOpcode(), static_cast<uint16>(data->GetSize()), data->GetBufferPointer(), self); }
-        virtual void OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool self);
+        virtual void sendMessageToSet(WorldPacket* data, bool self, bool myteam_only = false);
+        virtual void outPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool self);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // void SendAIReaction(uint32 reaction = 2)

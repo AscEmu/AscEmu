@@ -41,7 +41,7 @@ MailError MailSystem::DeliverMessage(uint64 recipent, MailMessage* message)
     {
         plr->m_mailBox.AddMessage(message);
         if ((uint32)UNIXTIME >= message->delivery_time)
-            plr->SendPacket(AscEmu::Packets::SmsgReceivedMail().serialise().get());
+            plr->sendPacket(AscEmu::Packets::SmsgReceivedMail().serialise().get());
     }
 
     SaveMessageToSQL(message);

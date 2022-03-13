@@ -704,7 +704,7 @@ void GameObject::CastSpell(uint64 TargetGUID, uint32 SpellID)
 //MIT
 void GameObject::sendGameobjectCustomAnim(uint32_t anim)
 {
-    SendMessageToSet(SmsgGameobjectCustomAnim(getGuid(), anim).serialise().get(), false, false);
+    sendMessageToSet(SmsgGameobjectCustomAnim(getGuid(), anim).serialise().get(), false, false);
 }
 
 
@@ -1180,7 +1180,7 @@ void GameObject_Goober::onUse(Player* player)
         player->castSpell(getGuid(), gameobject_properties->goober.spell_id, false);
 
         if (gameobject_properties->goober.page_id)
-            player->SendPacket(SmsgGameobjectPagetext(getGuid()).serialise().get());
+            player->sendPacket(SmsgGameobjectPagetext(getGuid()).serialise().get());
     }
     else
     {
@@ -1273,13 +1273,13 @@ void GameObject_FishingNode::onUse(Player* player)
         }
         else
         {
-            player->SendPacket(SmsgFishEscaped().serialise().get());
+            player->sendPacket(SmsgFishEscaped().serialise().get());
             EndFishing(true);
         }
     }
     else
     {
-        player->SendPacket(SmsgFishNotHooked().serialise().get());
+        player->sendPacket(SmsgFishNotHooked().serialise().get());
     }
 
     // Fishing is channeled spell
@@ -1622,7 +1622,7 @@ void GameObject_BarberChair::onUse(Player* player)
     player->updateSpeed();
 
     //send barber shop menu to player
-    player->SendPacket(SmsgEnableBarberShop().serialise().get());
+    player->sendPacket(SmsgEnableBarberShop().serialise().get());
 
     player->setStandState(STANDSTATE_SIT_HIGH_CHAIR);
 #endif
@@ -1700,7 +1700,7 @@ void GameObject_Destructible::Damage(uint32 damage, uint64 AttackerGUID, uint64 
 void GameObject_Destructible::SendDamagePacket(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
 {
 #if VERSION_STRING > TBC
-    SendMessageToSet(SmsgDestructibleBuildingDamage(GetNewGUID(), AttackerGUID, ControllerGUID, damage, SpellID).serialise().get(), false, false);
+    sendMessageToSet(SmsgDestructibleBuildingDamage(GetNewGUID(), AttackerGUID, ControllerGUID, damage, SpellID).serialise().get(), false, false);
 #endif
 }
 

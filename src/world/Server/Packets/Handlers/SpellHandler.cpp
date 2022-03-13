@@ -417,6 +417,6 @@ void WorldSession::handleUpdateProjectilePosition(WorldPacket& recvPacket)
     data << float(x);
     data << float(y);
     data << float(z);
-    caster->SendMessageToSet(&data, true);
+    caster->sendMessageToSet(&data, true);
 #endif
 }

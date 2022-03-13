@@ -328,7 +328,7 @@ void AuctionHouse::sendOwnerListPacket(Player* player, WorldPacket* /*packet*/)
         }
     }
 
-    player->SendPacket(SmsgAuctionOwnerListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, static_cast<uint32_t>(auctionPacketList.size())).serialise().get());
+    player->sendPacket(SmsgAuctionOwnerListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, static_cast<uint32_t>(auctionPacketList.size())).serialise().get());
 }
 
 void AuctionHouse::updateOwner(uint32_t oldGuid, uint32_t newGuid)
@@ -367,7 +367,7 @@ void AuctionHouse::sendBidListPacket(Player* player, WorldPacket* /*packet*/)
         }
     }
 
-    player->SendPacket(SmsgAuctionBidderListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, static_cast<uint32_t>(auctionPacketList.size()), 300).serialise().get());
+    player->sendPacket(SmsgAuctionBidderListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, static_cast<uint32_t>(auctionPacketList.size()), 300).serialise().get());
 }
 
 void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
@@ -417,7 +417,7 @@ void AuctionHouse::sendAuctionExpiredNotificationPacket(Auction* /*auct*/)
     //  data << uint32_t(0);
     //  data << auct->pItem->getEntry();
     //  data << uint32_t(0);
-    //  owner->getSession()->SendPacket(&data);
+    //  owner->getSession()->sendPacket(&data);
     //}
 }
 
@@ -508,5 +508,5 @@ void AuctionHouse::sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionL
         ++totalcount;
     }
 
-    player->SendPacket(SmsgAuctionListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, static_cast<uint32_t>(auctionPacketList.size()), 300).serialise().get());
+    player->sendPacket(SmsgAuctionListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, static_cast<uint32_t>(auctionPacketList.size()), 300).serialise().get());
 }

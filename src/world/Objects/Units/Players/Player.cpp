@@ -812,7 +812,7 @@ void Player::sendForceMovePacket(UnitSpeedType speed_type, float speed)
         }
     }
 
-    SendMessageToSet(&data, true);
+    sendMessageToSet(&data, true);
 }
 
 void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
@@ -927,7 +927,7 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
         }
     }
 
-    SendMessageToSet(&data, true);
+    sendMessageToSet(&data, true);
 }
 #endif
 
@@ -1344,7 +1344,7 @@ void Player::sendTeleportPacket(LocationVector position)
     WorldPacket data2(MSG_MOVE_TELEPORT, 38);
     data2.append(GetNewGUID());
     BuildMovementPacket(&data2, position.x, position.y, position.z, position.o);
-    SendMessageToSet(&data2, false);
+    sendMessageToSet(&data2, false);
     SetPosition(position);
 #else
     LocationVector oldPos = LocationVector(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
@@ -1388,7 +1388,7 @@ void Player::sendTeleportPacket(LocationVector position)
         data2.WriteByteSeq(guid[0]);
         data2.WriteByteSeq(guid[6]);
         data2 << float(GetPositionY());
-        SendPacket(&data2);
+        sendPacket(&data2);
     }
 
     if (getObjectTypeId() == TYPEID_PLAYER)
@@ -1396,7 +1396,7 @@ void Player::sendTeleportPacket(LocationVector position)
     else
         SetPosition(oldPos);
 
-    SendMessageToSet(&data, false);
+    sendMessageToSet(&data, false);
 #endif
 }
 
@@ -1505,7 +1505,7 @@ void Player::setPhase(uint8_t command, uint32_t newPhase)
     if (getSession())
     {
 #if VERSION_STRING == WotLK
-        SendPacket(SmsgSetPhaseShift(newPhase, getGuid()).serialise().get());
+        sendPacket(SmsgSetPhaseShift(newPhase, getGuid()).serialise().get());
 #elif VERSION_STRING > WotLK
 
         uint32_t phaseFlags = 0;
@@ -1522,7 +1522,7 @@ void Player::setPhase(uint8_t command, uint32_t newPhase)
             }
         }
 
-        SendPacket(SmsgSetPhaseShift(newPhase, getGuid(), phaseFlags, GetMapId()).serialise().get());
+        sendPacket(SmsgSetPhaseShift(newPhase, getGuid(), phaseFlags, GetMapId()).serialise().get());
 #endif
     }
 
@@ -2109,7 +2109,7 @@ void Player::removePendingPlayer()
     if (m_session)
     {
         uint8_t respons = E_CHAR_LOGIN_NO_CHARACTER;
-        SendPacket(SmsgCharacterLoginFailed(respons).serialise().get());
+        sendPacket(SmsgCharacterLoginFailed(respons).serialise().get());
         m_session->m_loggingInPlayer = nullptr;
     }
 
@@ -2120,20 +2120,98 @@ void Player::removePendingPlayer()
 void Player::softDisconnect()
 {
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_SOFT_DISCONNECT);
-    WorldSession* session = getSession();
-    session->LogoutPlayer(true);
-    session->Disconnect();
+
+    if (m_session)
+    {
+        m_session->LogoutPlayer(true);
+        m_session->Disconnect();
+    }
 }
 
-void Player::sendDelayedPacket(WorldPacket* data, bool bDeleteOnSend)
+void Player::outPacket(uint16_t opcode, uint16_t length, const void* data)
+{
+    if (m_session)
+        m_session->OutPacket(opcode, length, data);
+}
+
+void Player::sendPacket(WorldPacket* packet)
+{
+    if (m_session)
+        m_session->SendPacket(packet);
+}
+
+void Player::outPacketToSet(uint16_t opcode, uint16_t length, const void* data, bool sendToSelf)
+{
+    if (!IsInWorld())
+        return;
+
+    if (sendToSelf)
+        outPacket(opcode, length, data);
+
+    for (const auto& objectPlayer : getInRangePlayersSet())
+    {
+        if (Player* player = static_cast<Player*>(objectPlayer))
+        {
+            if (m_isGmInvisible)
+            {
+                if (player->getSession()->GetPermissionCount() > 0)
+                    player->outPacket(opcode, length, data);
+            }
+            else
+            {
+                player->outPacket(opcode, length, data);
+            }
+        }
+    }
+}
+
+void Player::sendMessageToSet(WorldPacket* data, bool sendToSelf, bool sendToOwnTeam)
+{
+    if (!IsInWorld())
+        return;
+
+    if (sendToSelf)
+        sendPacket(data);
+
+    for (const auto& objectPlayer : getInRangePlayersSet())
+    {
+        if (Player* player = static_cast<Player*>(objectPlayer))
+        {
+            if (player->getSession() == nullptr)
+                continue;
+
+            if (sendToOwnTeam && player->getTeam() != getTeam())
+                continue;
+
+            if ((player->GetPhase() & GetPhase()) == 0)
+                continue;
+
+            if (data->GetOpcode() != SMSG_MESSAGECHAT)
+            {
+                if (m_isGmInvisible && ((player->getSession()->GetPermissionCount() <= 0)))
+                    continue;
+
+                if (player->IsVisible(getGuid()))
+                    player->sendPacket(data);
+            }
+            else
+            {
+                if (!player->isIgnored(getGuidLow()))
+                    player->sendPacket(data);
+            }
+        }
+    }
+}
+
+void Player::sendDelayedPacket(WorldPacket* data, bool deleteDataOnSend)
 {
     if (data == nullptr)
         return;
 
-    if (getSession() != nullptr)
-        getSession()->SendPacket(data);
+    if (m_session)
+        m_session->SendPacket(data);
 
-    if (bDeleteOnSend)
+    if (deleteDataOnSend)
         delete data;
 }
 
@@ -3084,7 +3162,7 @@ void Player::sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t 
 
     spellMap.push_back(mapMembers);
 
-    SendMessageToSet(SmsgSpellCooldown(GetNewGUID(), isGcd, spellMap).serialise().get(), true);
+    sendMessageToSet(SmsgSpellCooldown(GetNewGUID(), isGcd, spellMap).serialise().get(), true);
 }
 
 void Player::clearCooldownForSpell(uint32_t spellId)
@@ -4717,7 +4795,7 @@ void Player::sendAuctionCommandResult(Auction* auction, uint32_t action, uint32_
         highestBidderGuid = auction->highestBidderGuid;
     }
 
-    SendPacket(SmsgAuctionCommandResult(auctionId, action, errorCode, outBid, highestBid, bidError, highestBidderGuid).serialise().get());
+    sendPacket(SmsgAuctionCommandResult(auctionId, action, errorCode, outBid, highestBid, bidError, highestBidderGuid).serialise().get());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -5671,7 +5749,7 @@ void Player::kill()
 
     WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
     data << GetNewGUID();
-    SendMessageToSet(&data, false);
+    sendMessageToSet(&data, false);
 
     setMoveRoot(true);
     sendStopMirrorTimerPacket(MIRROR_TYPE_FATIGUE);
@@ -6030,7 +6108,7 @@ void Player::buildRepop()
 
 void Player::calcDeathDurabilityLoss(double percent)
 {
-    SendPacket(SmsgDurabilityDamageDeath(static_cast<uint32_t>(percent)).serialise().get());
+    sendPacket(SmsgDurabilityDamageDeath(static_cast<uint32_t>(percent)).serialise().get());
 
     for (uint8_t i = 0; i < EQUIPMENT_SLOT_END; ++i)
     {
@@ -7434,9 +7512,9 @@ void Player::sendFriendStatus(bool comesOnline)
                 if (targetPlayer->getSession())
                 {
                     if (comesOnline)
-                        targetPlayer->SendPacket(SmsgFriendStatus(FRIEND_ONLINE, getGuid(), "", 1, getAreaId(), getLevel(), getClass()).serialise().get());
+                        targetPlayer->sendPacket(SmsgFriendStatus(FRIEND_ONLINE, getGuid(), "", 1, getAreaId(), getLevel(), getClass()).serialise().get());
                     else
-                        targetPlayer->SendPacket(SmsgFriendStatus(FRIEND_OFFLINE, getGuid()).serialise().get());
+                        targetPlayer->sendPacket(SmsgFriendStatus(FRIEND_OFFLINE, getGuid()).serialise().get());
                 }
             }
         }
@@ -7500,7 +7578,7 @@ void Player::sendFriendLists(uint32_t flags)
         }
     }
 
-    SendPacket(SmsgContactList(flags, contactMemberList).serialise().get());
+    sendPacket(SmsgContactList(flags, contactMemberList).serialise().get());
 }
 
 void Player::addToIgnoreList(std::string name)
@@ -7648,7 +7726,7 @@ bool Player::logOntoTransport()
             if (GetMapId() != transporter->GetMapId())
             {
                 SetMapId(transporter->GetMapId());
-                SendPacket(AscEmu::Packets::SmsgNewWorld(transporter->GetMapId(), positionOnTransport).serialise().get());
+                sendPacket(AscEmu::Packets::SmsgNewWorld(transporter->GetMapId(), positionOnTransport).serialise().get());
 
                 success = false;
             }
@@ -7746,13 +7824,13 @@ void Player::sendCinematicOnFirstLogin()
         if (const auto charEntry = sChrClassesStore.LookupEntry(getClass()))
         {
             if (charEntry->cinematic_id != 0)
-                SendPacket(SmsgTriggerCinematic(charEntry->cinematic_id).serialise().get());
+                sendPacket(SmsgTriggerCinematic(charEntry->cinematic_id).serialise().get());
             else if (const auto raceEntry = sChrRacesStore.LookupEntry(getRace()))
-                SendPacket(SmsgTriggerCinematic(raceEntry->cinematic_id).serialise().get());
+                sendPacket(SmsgTriggerCinematic(raceEntry->cinematic_id).serialise().get());
         }
 #else
         if (const auto raceEntry = sChrRacesStore.LookupEntry(getRace()))
-            SendPacket(SmsgTriggerCinematic(raceEntry->cinematic_id).serialise().get());
+            sendPacket(SmsgTriggerCinematic(raceEntry->cinematic_id).serialise().get());
 #endif
     }
 }
@@ -7789,7 +7867,7 @@ void Player::sendInstanceDifficultyPacket(uint8_t difficulty)
 
 void Player::sendNewDrunkStatePacket(uint32_t state, uint32_t itemId)
 {
-    SendMessageToSet(SmsgCrossedInebriationThreshold(getGuid(), state, itemId).serialise().get(), true);
+    sendMessageToSet(SmsgCrossedInebriationThreshold(getGuid(), state, itemId).serialise().get(), true);
 }
 
 void Player::sendSetProficiencyPacket(uint8_t itemClass, uint32_t proficiency)
@@ -7799,7 +7877,7 @@ void Player::sendSetProficiencyPacket(uint8_t itemClass, uint32_t proficiency)
 
 void Player::sendPartyKillLogPacket(uint64_t killedGuid)
 {
-    SendMessageToSet(SmsgPartyKillLog(getGuid(), killedGuid).serialise().get(), true);
+    sendMessageToSet(SmsgPartyKillLog(getGuid(), killedGuid).serialise().get(), true);
 }
 
 void Player::sendDestroyObjectPacket(uint64_t destroyedGuid)
@@ -7842,7 +7920,7 @@ void Player::sendMeetingStoneSetQueuePacket(uint32_t dungeonId, uint8_t status)
 
 void Player::sendPlayObjectSoundPacket(uint64_t objectGuid, uint32_t soundId)
 {
-    SendMessageToSet(SmsgPlayObjectSound(soundId, objectGuid).serialise().get(), true);
+    sendMessageToSet(SmsgPlayObjectSound(soundId, objectGuid).serialise().get(), true);
 }
 
 void Player::sendPlaySoundPacket(uint32_t soundId)
@@ -7913,7 +7991,7 @@ void Player::sendItemPushResultPacket(bool created, bool recieved, bool sendtose
 
 void Player::sendClientControlPacket(Unit* target, uint8_t allowMove)
 {
-    SendPacket(SmsgClientControlUpdate(target->GetNewGUID(), allowMove).serialise().get());
+    sendPacket(SmsgClientControlUpdate(target->GetNewGUID(), allowMove).serialise().get());
 
     if (target == this)
         setMover(this);
@@ -7924,7 +8002,7 @@ void Player::sendGuildMotd()
     if (!getGuild())
         return;
 
-    SendPacket(SmsgGuildEvent(GE_MOTD, { getGuild()->getMOTD() }, 0).serialise().get());
+    sendPacket(SmsgGuildEvent(GE_MOTD, { getGuild()->getMOTD() }, 0).serialise().get());
 }
 
 bool Player::isPvpFlagSet() 
@@ -8025,12 +8103,12 @@ void Player::removeSanctuaryFlag()
 
 void Player::sendPvpCredit(uint32_t honor, uint64_t victimGuid, uint32_t victimRank)
 {
-    this->SendPacket(SmsgPvpCredit(honor, victimGuid, victimRank).serialise().get());
+    this->sendPacket(SmsgPvpCredit(honor, victimGuid, victimRank).serialise().get());
 }
 
 void Player::sendRaidGroupOnly(uint32_t timeInMs, uint32_t type)
 {
-    this->SendPacket(SmsgRaidGroupOnly(timeInMs, type).serialise().get());
+    this->sendPacket(SmsgRaidGroupOnly(timeInMs, type).serialise().get());
 }
 
 void Player::setVisibleItemFields(uint32_t slot, Item* item)
@@ -8468,7 +8546,7 @@ void Player::setMover(Unit* target)
     data.WriteByteSeq(guid[1]);
     data.WriteByteSeq(guid[4]);
 
-    SendPacket(&data);
+    sendPacket(&data);
 #endif
 }
 
@@ -8848,7 +8926,7 @@ void Player::startTaxiPath(TaxiPath* path, uint32_t modelid, uint32_t start_node
         data << pn->z;
     }
 
-    SendMessageToSet(&data, true);
+    sendMessageToSet(&data, true);
 
     sEventMgr.AddEvent(this, &Player::interpolateTaxiPosition,
         EVENT_PLAYER_TAXI_INTERPOLATE, 900, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -9283,7 +9361,7 @@ void Player::sendLooter(Creature* creature)
     data << uint64_t(creature->getGuid());
     data << uint8_t(0); // unk1
     data << uint8_t(0); // no group looter
-    SendMessageToSet(&data, true);
+    sendMessageToSet(&data, true);
 }
 
 Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
@@ -9303,7 +9381,7 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
     // questitems use the blocked field for other purposes
     if (!questItem && item->is_blocked)
     {
-        SendPacket(SmsgLootReleaseResponse(getLootGuid(), 1).serialise().get());
+        sendPacket(SmsgLootReleaseResponse(getLootGuid(), 1).serialise().get());
         return nullptr;
     }
 
@@ -9789,7 +9867,7 @@ void Player::onTalkReputation(DBC::Structures::FactionEntry const* factionEntry)
         return;
 
     if (SetFlagVisible(factionReputation->flag, true) && IsInWorld())
-        SendPacket(SmsgSetFactionVisible(factionEntry->RepListId).serialise().get());
+        sendPacket(SmsgSetFactionVisible(factionEntry->RepListId).serialise().get());
 }
 
 void Player::setFactionInactive(uint32_t faction, bool /*set*/)
@@ -9830,12 +9908,12 @@ void Player::onModStanding(DBC::Structures::FactionEntry const* factionEntry, Fa
         return;
 
     if (SetFlagVisible(reputation->flag, true) && IsInWorld())
-        SendPacket(SmsgSetFactionVisible(factionEntry->RepListId).serialise().get());
+        sendPacket(SmsgSetFactionVisible(factionEntry->RepListId).serialise().get());
 
     SetFlagAtWar(reputation->flag, (getReputationRankFromStanding(reputation->standing) <= STANDING_HOSTILE));
 
     if (Visible(reputation->flag) && IsInWorld())
-        SendPacket(SmsgSetFactionStanding(factionEntry->RepListId, reputation->CalcStanding()).serialise().get());
+        sendPacket(SmsgSetFactionStanding(factionEntry->RepListId, reputation->CalcStanding()).serialise().get());
 }
 
 uint32_t Player::getExaltedCount()
@@ -10042,7 +10120,7 @@ void Player::testDuelBoundary()
             {
                 m_duelCountdownTimer = 10000;
 
-                SendPacket(SmsgDuelOutOfBounds(m_duelCountdownTimer).serialise().get());
+                sendPacket(SmsgDuelOutOfBounds(m_duelCountdownTimer).serialise().get());
                 m_duelStatus = DUEL_STATUS_OUTOFBOUNDS;
             }
         }
@@ -10050,7 +10128,7 @@ void Player::testDuelBoundary()
         {
             if (m_duelStatus == DUEL_STATUS_OUTOFBOUNDS)
             {
-                SendPacket(SmsgDuelInbounds().serialise().get());
+                sendPacket(SmsgDuelInbounds().serialise().get());
                 m_duelStatus = DUEL_STATUS_INBOUNDS;
             }
         }
@@ -10123,8 +10201,8 @@ void Player::endDuel(uint8_t condition)
 
     m_duelPlayer->m_duelState = DUEL_STATE_FINISHED;
 
-    SendMessageToSet(SmsgDuelWinner(condition, getName(), m_duelPlayer->getName()).serialise().get(), true);
-    SendMessageToSet(SmsgDuelComplete(1).serialise().get(), true);
+    sendMessageToSet(SmsgDuelWinner(condition, getName(), m_duelPlayer->getName()).serialise().get(), true);
+    sendMessageToSet(SmsgDuelComplete(1).serialise().get(), true);
 
     if (condition != 0)
         sHookInterface.OnDuelFinished(m_duelPlayer, this);

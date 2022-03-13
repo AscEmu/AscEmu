@@ -957,7 +957,7 @@ void Spell::finish(bool successful)
         {
             getPlayerCaster()->EventAttackStop();
             getPlayerCaster()->smsg_AttackStop(getPlayerCaster()->GetMapMgrUnit(getPlayerCaster()->getTargetGuid()));
-            getPlayerCaster()->SendPacket(SmsgCancelCombat().serialise().get());
+            getPlayerCaster()->sendPacket(SmsgCancelCombat().serialise().get());
         }
 
         if (m_Delayed)
@@ -4375,7 +4375,7 @@ void Spell::sendChannelUpdate(const uint32_t time, const uint32_t diff/* = 0*/)
         }
     }
 
-    m_caster->SendMessageToSet(MsgChannelUpdate(m_caster->GetNewGUID(), time).serialise().get(), true);
+    m_caster->sendMessageToSet(MsgChannelUpdate(m_caster->GetNewGUID(), time).serialise().get(), true);
 }
 
 void Spell::sendSpellStart()
@@ -4618,7 +4618,7 @@ void Spell::sendSpellStart()
 
     data.WriteByteSeq(casterGuid[3]);
 
-    m_caster->SendMessageToSet(&data, true);
+    m_caster->sendMessageToSet(&data, true);
 #else
     if (!m_caster->IsInWorld())
         return;
@@ -4689,7 +4689,7 @@ void Spell::sendSpellStart()
     if (castFlags & SPELL_PACKET_FLAGS_RANGED)
         writeProjectileDataToPacket(&data);
 
-    m_caster->SendMessageToSet(&data, true);
+    m_caster->sendMessageToSet(&data, true);
 #endif
 }
 
@@ -4890,7 +4890,7 @@ void Spell::sendSpellGo()
     data.WriteByteSeq(casterUnitGuid[4]);
     data.WriteByteSeq(casterGuid[7]);
 
-    m_caster->SendMessageToSet(&data, true);
+    m_caster->sendMessageToSet(&data, true);
 #else
     if (!m_caster->IsInWorld())
         return;
@@ -5011,13 +5011,13 @@ void Spell::sendSpellGo()
     if (m_targets.hasDestination())
         data << uint8_t(0);
 
-    m_caster->SendMessageToSet(&data, true);
+    m_caster->sendMessageToSet(&data, true);
 #endif
 }
 
 void Spell::sendChannelStart(const uint32_t duration)
 {
-    m_caster->SendMessageToSet(MsgChannelStart(m_caster->GetNewGUID(), getSpellInfo()->getId(), duration).serialise().get(), true);
+    m_caster->sendMessageToSet(MsgChannelStart(m_caster->GetNewGUID(), getSpellInfo()->getId(), duration).serialise().get(), true);
 
     Object const* channelTarget = nullptr;
     if (!uniqueHittedTargets.empty())

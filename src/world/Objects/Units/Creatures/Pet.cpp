@@ -700,7 +700,7 @@ void Pet::SendSpellsToOwner()
 
     BuildPetSpellList(data);
 
-    m_Owner->SendPacket(&data);
+    m_Owner->sendPacket(&data);
 }
 
 void Pet::SendTalentsToOwner()
@@ -783,7 +783,7 @@ void Pet::SendActionFeedback(PetActionFeedback value)
     if (m_Owner == NULL || m_Owner->getSession() == NULL)
         return;
 
-    m_Owner->SendPacket(AscEmu::Packets::SmsgPetActionFeedback(value).serialise().get());
+    m_Owner->sendPacket(AscEmu::Packets::SmsgPetActionFeedback(value).serialise().get());
 }
 
 void Pet::InitializeSpells()
@@ -1519,7 +1519,7 @@ void Pet::AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell)
 
 #if VERSION_STRING > TBC
     if (showLearnSpell && m_Owner && m_Owner->getSession() && !(sp->getAttributes() & ATTRIBUTES_NO_CAST))
-        m_Owner->SendPacket(AscEmu::Packets::SmsgPetLearnedSpell(sp->getId()).serialise().get());
+        m_Owner->sendPacket(AscEmu::Packets::SmsgPetLearnedSpell(sp->getId()).serialise().get());
 #endif
 
     if (IsInWorld())
@@ -1653,7 +1653,7 @@ void Pet::RemoveSpell(SpellInfo const* sp, [[maybe_unused]]bool showUnlearnSpell
 
 #if VERSION_STRING > TBC
     if (showUnlearnSpell && m_Owner && m_Owner->getSession())
-        m_Owner->SendPacket(AscEmu::Packets::SmsgPetUnlearnedSpell(sp->getId()).serialise().get());
+        m_Owner->sendPacket(AscEmu::Packets::SmsgPetUnlearnedSpell(sp->getId()).serialise().get());
 #endif
 }
 

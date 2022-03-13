@@ -713,7 +713,7 @@ void Group::MovePlayer(CachedCharacterInfo* info, uint8 subgroup)
 
 void Group::SendNullUpdate(Player* pPlayer)
 {
-    pPlayer->SendPacket(SmsgGroupList().serialise().get());
+    pPlayer->sendPacket(SmsgGroupList().serialise().get());
 }
 
 void Group::LoadFromDB(Field* fields)
@@ -1398,7 +1398,7 @@ void Group::sendGroupLoot(Loot* loot, Object* object, Player* /*plr*/, uint32_t 
                             if (loggedInPlayer->m_passOnLoot)
                                 item->roll->playerRolled(loggedInPlayer, ROLL_PASS);
                             else
-                                loggedInPlayer->SendPacket(&data);
+                                loggedInPlayer->sendPacket(&data);
                         }
                     }
                 }
@@ -1537,7 +1537,7 @@ void Group::GoOffline(Player* p)
                 ++itr;
 
                 if (plr && plr != p)
-                    plr->SendPacket(&data);
+                    plr->sendPacket(&data);
             }
         }
         m_groupLock.Release();

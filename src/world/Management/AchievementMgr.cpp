@@ -571,7 +571,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
             }
         }
     }
-    //    GetPlayer()->SendMessageToSet(&cdata, true);
+    //    GetPlayer()->sendMessageToSet(&cdata, true);
 
     WorldPacket data(SMSG_ACHIEVEMENT_EARNED, 30);
     data << GetPlayer()->GetNewGUID();
@@ -592,7 +592,7 @@ void AchievementMgr::SendCriteriaUpdate(CriteriaProgress* progress)
     if (progress == nullptr || isCharacterLoading)
         return;
 
-    GetPlayer()->SendPacket(SmsgCriteriaUpdate(progress->id, progress->counter, GetPlayer()->GetNewGUID(), secsToTimeBitFields(progress->date)).serialise().get());
+    GetPlayer()->sendPacket(SmsgCriteriaUpdate(progress->id, progress->counter, GetPlayer()->GetNewGUID(), secsToTimeBitFields(progress->date)).serialise().get());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2223,14 +2223,14 @@ void AchievementMgr::GMResetAchievement(uint32_t achievementID, bool finishAll/*
     if (finishAll)
     {
         for (auto& m_completedAchievement : m_completedAchievements)
-            GetPlayer()->SendPacket(SmsgAchievementDeleted(m_completedAchievement.first).serialise().get());
+            GetPlayer()->sendPacket(SmsgAchievementDeleted(m_completedAchievement.first).serialise().get());
 
         m_completedAchievements.clear();
         CharacterDatabase.Execute("DELETE FROM character_achievement WHERE guid = %u", m_player->getGuidLow());
     }
     else
     {
-        GetPlayer()->SendPacket(SmsgAchievementDeleted(achievementID).serialise().get());
+        GetPlayer()->sendPacket(SmsgAchievementDeleted(achievementID).serialise().get());
 
         m_completedAchievements.erase(achievementID);
         CharacterDatabase.Execute("DELETE FROM character_achievement WHERE guid = %u AND achievement = %u", m_player->getGuidLow(), static_cast<uint32_t>(achievementID));
@@ -2246,7 +2246,7 @@ void AchievementMgr::GMResetCriteria(uint32_t criteriaID, bool finishAll/* = fal
     {
         for (auto criteriaProgress : m_criteriaProgress)
         {
-            GetPlayer()->SendPacket(SmsgCriteriaDeleted(criteriaProgress.first).serialise().get());
+            GetPlayer()->sendPacket(SmsgCriteriaDeleted(criteriaProgress.first).serialise().get());
             delete criteriaProgress.second;
         }
 
@@ -2255,7 +2255,7 @@ void AchievementMgr::GMResetCriteria(uint32_t criteriaID, bool finishAll/* = fal
     }
     else
     {
-        GetPlayer()->SendPacket(SmsgCriteriaDeleted(criteriaID).serialise().get());
+        GetPlayer()->sendPacket(SmsgCriteriaDeleted(criteriaID).serialise().get());
 
         m_criteriaProgress.erase(criteriaID);
         CharacterDatabase.Execute("DELETE FROM character_achievement_progress WHERE guid = %u AND criteria = %u", m_player->getGuidLow(), static_cast<uint32_t>(criteriaID));

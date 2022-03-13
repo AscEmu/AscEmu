@@ -62,5 +62,5 @@ void GossipMenu::sendQuickMenu(uint64_t guid, uint32_t textId, Player* player, u
 
 void GossipMenu::senGossipComplete(Player* player)
 {
-    player->SendPacket(SmsgGossipComplete().serialise().get());
+    player->sendPacket(SmsgGossipComplete().serialise().get());
 }

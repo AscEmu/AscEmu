@@ -684,7 +684,12 @@ public:
     void removePendingPlayer();
     void softDisconnect();
 
-    void sendDelayedPacket(WorldPacket* data, bool bDeleteOnSend);
+    void outPacket(uint16_t opcode, uint16_t length, const void* data) override;
+    void sendPacket(WorldPacket* packet) override;
+    void outPacketToSet(uint16_t opcode, uint16_t length, const void* data, bool sendToSelf) override;
+    void sendMessageToSet(WorldPacket* data, bool sendToSelf, bool sendToOwnTeam = false) override;
+
+    void sendDelayedPacket(WorldPacket* data, bool deleteDataOnSend);
 
     void processPendingUpdates();
     bool compressAndSendUpdateBuffer(uint32_t size, const uint8_t* update_buffer);
@@ -1791,11 +1796,6 @@ public:
         void SendEmptyPetSpellList();
 
         void SendInitialWorldstates();
-
-        void OutPacket(uint16 opcode, uint16 len, const void* data);
-        void SendPacket(WorldPacket* packet);
-        void SendMessageToSet(WorldPacket* data, bool self, bool myteam_only = false);
-        void OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool self);
 
         static void CharChange_Looks(uint64 GUID, uint8 gender, uint8 skin, uint8 face, uint8 hairStyle, uint8 hairColor, uint8 facialHair);
         static void CharChange_Language(uint64 GUID, uint8 race);

@@ -927,7 +927,7 @@ void Unit::setStandState(uint8_t standState)
     write(unitData()->field_bytes_1.s.stand_state, standState);
 
     if (isPlayer())
-        static_cast<Player*>(this)->SendPacket(SmsgStandstateUpdate(standState).serialise().get());
+        static_cast<Player*>(this)->sendPacket(SmsgStandstateUpdate(standState).serialise().get());
 
     if (standState != STANDSTATE_SIT)
         RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_STAND_UP);
@@ -1417,7 +1417,7 @@ void Unit::setMoveWaterWalk()
 #else
         obj_movement_info.writeMovementInfo(data, SMSG_MOVE_WATER_WALK);
 #endif
-        SendMessageToSet(&data, true);
+        sendMessageToSet(&data, true);
     }
 
     if (isCreature())
@@ -1428,7 +1428,7 @@ void Unit::setMoveWaterWalk()
 #else
         obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_WATER_WALK);
 #endif
-        SendMessageToSet(&data, false);
+        sendMessageToSet(&data, false);
     }
 }
 
@@ -1445,7 +1445,7 @@ void Unit::setMoveLandWalk()
 #else
         obj_movement_info.writeMovementInfo(data, SMSG_MOVE_LAND_WALK);
 #endif
-        SendMessageToSet(&data, true);
+        sendMessageToSet(&data, true);
     }
 
     if (isCreature())
@@ -1456,7 +1456,7 @@ void Unit::setMoveLandWalk()
 #else
         obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_LAND_WALK);
 #endif
-        SendMessageToSet(&data, false);
+        sendMessageToSet(&data, false);
     }
 }
 
@@ -1473,7 +1473,7 @@ void Unit::setMoveFeatherFall()
 #else
         obj_movement_info.writeMovementInfo(data, SMSG_MOVE_FEATHER_FALL);
 #endif
-        SendMessageToSet(&data, true);
+        sendMessageToSet(&data, true);
     }
 
     if (isCreature())
@@ -1484,7 +1484,7 @@ void Unit::setMoveFeatherFall()
 #else
         obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_FEATHER_FALL);
 #endif
-        SendMessageToSet(&data, false);
+        sendMessageToSet(&data, false);
     }
 }
 
@@ -1501,7 +1501,7 @@ void Unit::setMoveNormalFall()
 #else
         obj_movement_info.writeMovementInfo(data, SMSG_MOVE_NORMAL_FALL);
 #endif
-        SendMessageToSet(&data, true);
+        sendMessageToSet(&data, true);
     }
 
     if (isCreature())
@@ -1512,7 +1512,7 @@ void Unit::setMoveNormalFall()
 #else
         obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_NORMAL_FALL);
 #endif
-        SendMessageToSet(&data, false);
+        sendMessageToSet(&data, false);
     }
 }
 
@@ -1531,7 +1531,7 @@ void Unit::setMoveHover(bool set_hover)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_MOVE_SET_HOVER);
 #endif
-            SendMessageToSet(&data, true);
+            sendMessageToSet(&data, true);
         }
         else
         {
@@ -1544,7 +1544,7 @@ void Unit::setMoveHover(bool set_hover)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_MOVE_UNSET_HOVER);
 #endif
-            SendMessageToSet(&data, true);
+            sendMessageToSet(&data, true);
         }
     }
 
@@ -1563,7 +1563,7 @@ void Unit::setMoveHover(bool set_hover)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_HOVER);
 #endif
-            SendMessageToSet(&data, false);
+            sendMessageToSet(&data, false);
         }
         else
         {
@@ -1577,7 +1577,7 @@ void Unit::setMoveHover(bool set_hover)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_UNSET_HOVER);
 #endif
-            SendMessageToSet(&data, false);
+            sendMessageToSet(&data, false);
         }
     }
 }
@@ -1601,7 +1601,7 @@ void Unit::setMoveCanFly(bool set_fly)
             obj_movement_info.writeMovementInfo(data, SMSG_MOVE_SET_CAN_FLY);
 #endif
 
-            SendMessageToSet(&data, true);
+            sendMessageToSet(&data, true);
         }
         else
         {
@@ -1620,7 +1620,7 @@ void Unit::setMoveCanFly(bool set_fly)
             obj_movement_info.writeMovementInfo(data, SMSG_MOVE_UNSET_CAN_FLY);
 #endif
 
-            SendMessageToSet(&data, true);
+            sendMessageToSet(&data, true);
         }
     }
 
@@ -1642,7 +1642,7 @@ void Unit::setMoveCanFly(bool set_fly)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_FLYING);
 #endif
-            SendMessageToSet(&data, false);
+            sendMessageToSet(&data, false);
         }
         else
         {
@@ -1659,7 +1659,7 @@ void Unit::setMoveCanFly(bool set_fly)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_UNSET_FLYING);
 #endif
-            SendMessageToSet(&data, false);
+            sendMessageToSet(&data, false);
         }
     }
 }
@@ -1680,7 +1680,7 @@ void Unit::setMoveRoot(bool set_root)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_FORCE_MOVE_ROOT);
 #endif
-            SendMessageToSet(&data, true);
+            sendMessageToSet(&data, true);
         }
         else
         {
@@ -1694,7 +1694,7 @@ void Unit::setMoveRoot(bool set_root)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_FORCE_MOVE_UNROOT);
 #endif
-            SendMessageToSet(&data, true);
+            sendMessageToSet(&data, true);
         }
     }
 
@@ -1711,7 +1711,7 @@ void Unit::setMoveRoot(bool set_root)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_ROOT);
 #endif
-            SendMessageToSet(&data, true);
+            sendMessageToSet(&data, true);
         }
         else
         {
@@ -1723,7 +1723,7 @@ void Unit::setMoveRoot(bool set_root)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_UNROOT);
 #endif
-            SendMessageToSet(&data, true);
+            sendMessageToSet(&data, true);
         }
     }
 }
@@ -1742,7 +1742,7 @@ void Unit::setMoveSwim(bool set_swim)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_START_SWIM);
 #endif
-            SendMessageToSet(&data, false);
+            sendMessageToSet(&data, false);
         }
         else
         {
@@ -1754,7 +1754,7 @@ void Unit::setMoveSwim(bool set_swim)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_STOP_SWIM);
 #endif
-            SendMessageToSet(&data, false);
+            sendMessageToSet(&data, false);
         }
     }
 }
@@ -1775,7 +1775,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_MOVE_GRAVITY_DISABLE);
 #endif
-            SendMessageToSet(&data, true);
+            sendMessageToSet(&data, true);
         }
         else
         {
@@ -1788,7 +1788,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_MOVE_GRAVITY_ENABLE);
 #endif
-            SendMessageToSet(&data, true);
+            sendMessageToSet(&data, true);
         }
     }
 
@@ -1804,7 +1804,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_GRAVITY_DISABLE);
 #endif
-            SendMessageToSet(&data, false);
+            sendMessageToSet(&data, false);
         }
         else
         {
@@ -1816,7 +1816,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_GRAVITY_ENABLE);
 #endif
-            SendMessageToSet(&data, false);
+            sendMessageToSet(&data, false);
         }
     }
 #endif
@@ -1838,7 +1838,7 @@ void Unit::setMoveWalk(bool set_walk)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_WALK_MODE);
 #endif
-            SendMessageToSet(&data, false);
+            sendMessageToSet(&data, false);
         }
         else
         {
@@ -1850,7 +1850,7 @@ void Unit::setMoveWalk(bool set_walk)
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_RUN_MODE);
 #endif
-            SendMessageToSet(&data, false);
+            sendMessageToSet(&data, false);
         }
     }
 }
@@ -1883,7 +1883,7 @@ void Unit::setFacing(float newo)
     data << GetPositionY();
     data << GetPositionZ();
 
-    SendMessageToSet(&data, true);
+    sendMessageToSet(&data, true);
 }
 #else
 void Unit::setFacing(float newo)
@@ -1906,7 +1906,7 @@ void Unit::setFacing(float newo)
     data << GetPositionY();
     data << GetPositionZ();
 
-    SendMessageToSet(&data, true);
+    sendMessageToSet(&data, true);
 }
 #endif
 
@@ -2065,7 +2065,7 @@ void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
             self << uint8(1);                               // unknown byte added in 2.1.0
         self << float(rate);
 
-        player_mover->SendPacket(&self);
+        player_mover->sendPacket(&self);
 #endif
         // Send notification to other players. sent to every clients (if in range) except one: the client of the player concerned by the change.
         WorldPacket data;
@@ -2074,7 +2074,7 @@ void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
         BuildMovementPacket(&data);
         data << float(rate);
 
-        player_mover->SendMessageToSet(&data, false);
+        player_mover->sendMessageToSet(&data, false);
     }
     else // unit controlled by AI.
     {
@@ -2083,7 +2083,7 @@ void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
         data.Initialize(moveTypeToOpcode[mtype][0], 8 + 4);
         data << GetNewGUID();
         data << float(rate);
-        SendMessageToSet(&data, false);
+        sendMessageToSet(&data, false);
     }
 }
 #else
@@ -2322,7 +2322,7 @@ void Unit::setSpeedRate(UnitSpeedType type, float value, bool current)
         return;
     }
 
-    SendMessageToSet(&data, true);
+    sendMessageToSet(&data, true);
 }
 #endif
 
@@ -2547,13 +2547,13 @@ void Unit::setStunned(bool apply)
             WorldPacket data(SMSG_FORCE_MOVE_ROOT, 10);
             data << GetNewGUID();
             data << 0;
-            SendMessageToSet(&data, true);
+            sendMessageToSet(&data, true);
         }
         else
         {
             WorldPacket data(SMSG_SPLINE_MOVE_ROOT, 8);
             data << 0;
-            SendMessageToSet(&data, true);
+            sendMessageToSet(&data, true);
         }
     }
     else
@@ -2573,13 +2573,13 @@ void Unit::setStunned(bool apply)
                 WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 10);
                 data << GetNewGUID();
                 data << 0;
-                SendMessageToSet(&data, true);
+                sendMessageToSet(&data, true);
             }
             else
             {
                 WorldPacket data(SMSG_SPLINE_MOVE_UNROOT, 8);
                 data << GetNewGUID();
-                SendMessageToSet(&data, true);
+                sendMessageToSet(&data, true);
             }
 
             removeUnitMovementFlag(MOVEFLAG_ROOTED);
@@ -2608,7 +2608,7 @@ void Unit::updateSplineMovement(uint32 t_diff)
             WorldPacket data(SMSG_FLIGHT_SPLINE_SYNC, 4 + packedGuid.size());
             MovementNew::PacketBuilder::WriteSplineSync(*movespline, data);
             data.append(packedGuid);
-            SendMessageToSet(&data, true);
+            sendMessageToSet(&data, true);
         }
     }
 
@@ -2706,7 +2706,7 @@ void Unit::sendMoveSplinePaket(UnitSpeedType speedType)
     data << GetNewGUID();
     data << float(getSpeedRate(speedType, true));
 
-    SendMessageToSet(&data, false);
+    sendMessageToSet(&data, false);
 }
 
 void Unit::disableSpline()
@@ -2747,7 +2747,7 @@ void Unit::jumpTo(float speedXY, float speedZ, bool forward, Optional<LocationVe
         data << float(speedXY);                                 // Horizontal speed
         data << float(-speedZ);                                 // Z Movement speed (vertical)
 
-        ToPlayer()->SendPacket(&data);
+        ToPlayer()->sendPacket(&data);
     }
 }
 
@@ -2872,7 +2872,7 @@ void Unit::applyControlStatesIfNeeded()
 
 void Unit::playSpellVisual(uint32_t visual_id, uint32_t type)
 {
-    SendMessageToSet(SmsgPlaySpellVisual(getGuid(), visual_id, type).serialise().get(), true);
+    sendMessageToSet(SmsgPlaySpellVisual(getGuid(), visual_id, type).serialise().get(), true);
 }
 
 void Unit::applyDiminishingReturnTimer(uint32_t* duration, SpellInfo const* spell)
@@ -3696,7 +3696,7 @@ void Unit::sendSpellNonMeleeDamageLog(Object* caster, Object* target, SpellInfo 
 
     data << uint8_t(0); // debug mode boolean
 
-    target->SendMessageToSet(&data, true);
+    target->sendMessageToSet(&data, true);
 }
 
 void Unit::sendSpellHealLog(Object* caster, Object* target, uint32_t spellId, uint32_t healAmount, bool isCritical, uint32_t overHeal, uint32_t absorbedHeal)
@@ -3704,12 +3704,12 @@ void Unit::sendSpellHealLog(Object* caster, Object* target, uint32_t spellId, ui
     if (caster == nullptr || target == nullptr)
         return;
 
-    target->SendMessageToSet(SmsgSpellHealLog(target->GetNewGUID(), caster->GetNewGUID(), spellId, healAmount, overHeal, absorbedHeal, isCritical).serialise().get(), true);
+    target->sendMessageToSet(SmsgSpellHealLog(target->GetNewGUID(), caster->GetNewGUID(), spellId, healAmount, overHeal, absorbedHeal, isCritical).serialise().get(), true);
 }
 
 void Unit::sendSpellOrDamageImmune(uint64_t casterGuid, Unit* target, uint32_t spellId)
 {
-    target->SendMessageToSet(SmsgSpellOrDamageImmune(casterGuid, target->getGuid(), spellId).serialise().get(), true);
+    target->sendMessageToSet(SmsgSpellOrDamageImmune(casterGuid, target->getGuid(), spellId).serialise().get(), true);
 }
 
 #if VERSION_STRING > TBC
@@ -3779,7 +3779,7 @@ void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& v
         data << uint32_t(0);
     }
 
-    SendMessageToSet(&data, true);
+    sendMessageToSet(&data, true);
 }
 #else
 void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& victimGuid, HitStatus hitStatus, uint32_t damage, [[maybe_unused]] uint32_t overKill, DamageInfo damageInfo, uint32_t absorbedDamage, VisualState visualState, uint32_t blockedDamage, [[maybe_unused]] uint32_t rageGain)
@@ -3834,7 +3834,7 @@ void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& v
         data << uint32_t(0);
     }
 
-    SendMessageToSet(&data, true);
+    sendMessageToSet(&data, true);
 }
 #endif
 
@@ -4640,14 +4640,14 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
     {
 #if VERSION_STRING == Classic
         if (isPlayer() && !aur->IsPassive())
-            static_cast<Player*>(this)->SendMessageToSet(SmsgUpdateAuraDuration(aur->m_visualSlot, aur->getTimeLeft()).serialise().get(), true);
+            static_cast<Player*>(this)->sendMessageToSet(SmsgUpdateAuraDuration(aur->m_visualSlot, aur->getTimeLeft()).serialise().get(), true);
 #else
         if (isPlayer() && !aur->IsPassive() && !(aur->getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_DURATION))
         {
-            static_cast<Player*>(this)->SendMessageToSet(SmsgUpdateAuraDuration(aur->m_visualSlot, aur->getTimeLeft()).serialise().get(), true);
+            static_cast<Player*>(this)->sendMessageToSet(SmsgUpdateAuraDuration(aur->m_visualSlot, aur->getTimeLeft()).serialise().get(), true);
 
             auto guid = GetNewGUID();
-            static_cast<Player*>(this)->SendMessageToSet(SmsgSetExtraAuraInfo(&guid, aur->m_visualSlot, aur->getSpellId(), aur->getMaxDuration(), aur->getTimeLeft()).serialise().get(), true);
+            static_cast<Player*>(this)->sendMessageToSet(SmsgSetExtraAuraInfo(&guid, aur->m_visualSlot, aur->getSpellId(), aur->getMaxDuration(), aur->getTimeLeft()).serialise().get(), true);
         }
 
         const auto caster = aur->GetUnitCaster();
@@ -4659,7 +4659,7 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
             data << uint32_t(aur->getSpellId());
             data << uint32_t(aur->getMaxDuration());
             data << uint32_t(aur->getTimeLeft());
-            caster->SendMessageToSet(&data, true);
+            caster->sendMessageToSet(&data, true);
         }
 #endif
     }
@@ -4668,7 +4668,7 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
     {
         const auto caster = aur->GetUnitCaster();
         if (caster != nullptr && caster->isPlayer())
-            static_cast<Player*>(caster)->SendMessageToSet(SmsgClearExtraAuraInfo(getGuid(), aur->getSpellId()).serialise().get(), true);
+            static_cast<Player*>(caster)->sendMessageToSet(SmsgClearExtraAuraInfo(getGuid(), aur->getSpellId()).serialise().get(), true);
     }
 #endif
 #else
@@ -4709,7 +4709,7 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
     }
 #endif
 
-    SendMessageToSet(SmsgAuraUpdate(getGuid(), auraUpdate, remove).serialise().get(), true);
+    sendMessageToSet(SmsgAuraUpdate(getGuid(), auraUpdate, remove).serialise().get(), true);
 #endif
 }
 
@@ -4770,7 +4770,7 @@ void Unit::sendFullAuraUpdate()
         ++updates;
     }
 
-    SendMessageToSet(packetData.serialise().get(), true);
+    sendMessageToSet(packetData.serialise().get(), true);
     sLogger.debug("Unit::sendFullAuraUpdate : Updated %u auras for guid %u", updates, getGuid());
 #endif
 }
@@ -4802,7 +4802,7 @@ bool Unit::sendPeriodicAuraLog(const WoWGuid& casterGuid, const WoWGuid& targetG
             return false;
     }
 
-    SendMessageToSet(SmsgPeriodicAuraLog(targetGuid, casterGuid, spellInfo->getId(), auraEffect, amount, overKillOrOverHeal, school, absorbed, resisted, isCritical, miscValue, gainMultiplier).serialise().get(), true);
+    sendMessageToSet(SmsgPeriodicAuraLog(targetGuid, casterGuid, spellInfo->getId(), auraEffect, amount, overKillOrOverHeal, school, absorbed, resisted, isCritical, miscValue, gainMultiplier).serialise().get(), true);
     return true;
 }
 
@@ -5574,7 +5574,7 @@ void Unit::energize(Unit* target, uint32_t spellId, uint32_t amount, PowerType t
 
 void Unit::sendSpellEnergizeLog(Unit* target, uint32_t spellId, uint32_t amount, PowerType type)
 {
-    SendMessageToSet(SmsgSpellEnergizeLog(target->GetNewGUID(), GetNewGUID(), spellId, type, amount).serialise().get(), true);
+    sendMessageToSet(SmsgSpellEnergizeLog(target->GetNewGUID(), GetNewGUID(), spellId, type, amount).serialise().get(), true);
 }
 
 uint8_t Unit::getHealthPct() const
@@ -5608,7 +5608,7 @@ void Unit::sendPowerUpdate([[maybe_unused]]bool self)
     const auto powerAmount = getPower(getPowerType());
 
 #if VERSION_STRING >= WotLK
-    SendMessageToSet(SmsgPowerUpdate(GetNewGUID(), static_cast<uint8_t>(getPowerType()), powerAmount).serialise().get(), self);
+    sendMessageToSet(SmsgPowerUpdate(GetNewGUID(), static_cast<uint8_t>(getPowerType()), powerAmount).serialise().get(), self);
 #endif
 }
 
@@ -5681,7 +5681,7 @@ std::unique_ptr<WorldPacket> Unit::createChatPacket(uint8_t type, uint32_t langu
 void Unit::sendChatMessage(uint8_t type, uint32_t language, std::string msg, Unit* target/* = nullptr*/, uint32_t sessionLanguage/* = 0*/)
 {
     const auto data = createChatPacket(type, language, msg, target, sessionLanguage);
-    SendMessageToSet(data.get(), true);
+    sendMessageToSet(data.get(), true);
 }
 
 void Unit::sendChatMessage(uint8_t type, uint32_t language, std::string msg, uint32_t delay)
@@ -5723,7 +5723,7 @@ void Unit::sendChatMessageAlternateEntry(uint32_t entry, uint8_t type, uint32_t 
     if (CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry))
     {
         const auto data = SmsgMessageChat(type, lang, 0, msg, getGuid(), creatureProperties->Name).serialise();
-        SendMessageToSet(data.get(), true);
+        sendMessageToSet(data.get(), true);
     }
 }
 
@@ -5764,7 +5764,7 @@ float Unit::getAttackSpeedModifier(WeaponDamageType type) const
 
 void Unit::sendEnvironmentalDamageLogPacket(uint64_t guid, uint8_t type, uint32_t damage, uint64_t unk /*= 0*/)
 {
-    SendMessageToSet(SmsgEnvironmentalDamageLog(guid, type, damage, unk).serialise().get(), true, false);
+    sendMessageToSet(SmsgEnvironmentalDamageLog(guid, type, damage, unk).serialise().get(), true, false);
 }
 
 bool Unit::isPvpFlagSet() { return false; }
@@ -5903,7 +5903,7 @@ void Unit::emote(EmoteType emote)
         return;
 #endif
 
-    SendMessageToSet(SmsgEmote(emote, this->getGuid()).serialise().get(), true);
+    sendMessageToSet(SmsgEmote(emote, this->getGuid()).serialise().get(), true);
 }
 
 void Unit::eventAddEmote(EmoteType emote, uint32 time)
@@ -6395,14 +6395,14 @@ uint32_t Unit::absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly
 void Unit::smsg_AttackStop(Unit* pVictim)
 {
     if (pVictim)
-        SendMessageToSet(SmsgAttackStop(GetNewGUID(), pVictim->GetNewGUID()).serialise().get(), true);
+        sendMessageToSet(SmsgAttackStop(GetNewGUID(), pVictim->GetNewGUID()).serialise().get(), true);
     else
-        SendMessageToSet(SmsgAttackStop(GetNewGUID(), WoWGuid()).serialise().get(), true);
+        sendMessageToSet(SmsgAttackStop(GetNewGUID(), WoWGuid()).serialise().get(), true);
 }
 
 void Unit::smsg_AttackStart(Unit* pVictim)
 {
-    SendMessageToSet(SmsgAttackStart(getGuid(), pVictim->getGuid()).serialise().get(), false);
+    sendMessageToSet(SmsgAttackStart(getGuid(), pVictim->getGuid()).serialise().get(), false);
 
     sLogger.debug("WORLD: Sent SMSG_ATTACKSTART");
 
@@ -7266,7 +7266,7 @@ void Unit::exitVehicle(LocationVector const* exitPosition)
     {
         WorldPacket data(SMSG_SPLINE_MOVE_UNROOT, 8);
         data << GetNewGUID();
-        SendMessageToSet(&data, false);
+        sendMessageToSet(&data, false);
     }
 
     LocationVector pos;

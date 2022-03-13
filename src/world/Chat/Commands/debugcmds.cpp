@@ -794,7 +794,7 @@ bool ChatHandler::HandleClearWorldStatesCommand(const char* /*args*/, WorldSessi
     data << uint32(p->getAreaId());
     data << uint16(0);
 
-    p->SendPacket(&data);
+    p->sendPacket(&data);
 
     return true;
 }

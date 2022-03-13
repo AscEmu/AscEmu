@@ -217,7 +217,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         case CHAT_MSG_EMOTE:
         {
             // TODO Verify "strange gestures" for xfaction
-            _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_EMOTE, messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), true, true);
+            _player->sendMessageToSet(SmsgMessageChat(CHAT_MSG_EMOTE, messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), true, true);
             sLogger.info("[emote] %s: %s", _player->getName().c_str(), srlPacket.message.c_str());
         } break;
         case CHAT_MSG_SAY:
@@ -225,7 +225,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             if (!player_can_speak_language)
                 break;
 
-            _player->SendMessageToSet(SmsgMessageChat(CHAT_MSG_SAY, messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), true);
+            _player->sendMessageToSet(SmsgMessageChat(CHAT_MSG_SAY, messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), true);
         } break;
         case CHAT_MSG_PARTY:
         case CHAT_MSG_PARTY_LEADER:
@@ -257,7 +257,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                         group->Lock();
                         for (auto* group_member : subgroup->getGroupMembers())
                             if (Player* loggedInPlayer = sObjectMgr.GetPlayer(group_member->guid))
-                                loggedInPlayer->SendPacket(send_packet.get());
+                                loggedInPlayer->sendPacket(send_packet.get());
                         group->Unlock();
                     }
                 }
@@ -270,7 +270,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                             group->Lock();
                             for (auto* group_member : sub_group->getGroupMembers())
                                 if (Player* loggedInPlayer = sObjectMgr.GetPlayer(group_member->guid))
-                                    loggedInPlayer->SendPacket(send_packet.get());
+                                    loggedInPlayer->sendPacket(send_packet.get());
                             group->Unlock();
                         }
                     }
@@ -319,7 +319,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                         break;
                     }
 
-                    playerTarget->SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER, messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get());
+                    playerTarget->sendPacket(SmsgMessageChat(CHAT_MSG_WHISPER, messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get());
                     if (messageLanguage != LANG_ADDON)
                     {
                         // TODO Verify should this be LANG_UNIVERSAL?
@@ -443,9 +443,9 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
                 break;
         }
 
-        _player->SendMessageToSet(SmsgEmote(emoteTextEntry->textid, _player->getGuid()).serialise().get(), true);
+        _player->sendMessageToSet(SmsgEmote(emoteTextEntry->textid, _player->getGuid()).serialise().get(), true);
 
-        _player->SendMessageToSet(SmsgTextEmote(nameLength, unitName, srlPacket.text_emote, _player->getGuid(), srlPacket.unk).serialise().get(), true);
+        _player->sendMessageToSet(SmsgTextEmote(nameLength, unitName, srlPacket.text_emote, _player->getGuid(), srlPacket.unk).serialise().get(), true);
 
 #if VERSION_STRING > TBC
         _player->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, srlPacket.text_emote, 0, 0);
@@ -516,7 +516,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
         } break;
     }
 
-    _player->SendMessageToSet(SmsgTextEmote(nameLength, unitName, srlPacket.text_emote, _player->getGuid(), srlPacket.unk).serialise().get(), true);
+    _player->sendMessageToSet(SmsgTextEmote(nameLength, unitName, srlPacket.text_emote, _player->getGuid(), srlPacket.unk).serialise().get(), true);
 
     _player->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, srlPacket.text_emote, 0, 0);
 

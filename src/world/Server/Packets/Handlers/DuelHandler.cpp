@@ -32,7 +32,7 @@ void WorldSession::handleDuelAccepted(WorldPacket& /*recvPacket*/)
     const uint32_t defaultDuelCountdown = 3000;
 
     SendPacket(SmsgDuelCountdown(defaultDuelCountdown).serialise().get());
-    duelPlayer->SendPacket(SmsgDuelCountdown(defaultDuelCountdown).serialise().get());
+    duelPlayer->sendPacket(SmsgDuelCountdown(defaultDuelCountdown).serialise().get());
 
     _player->m_duelCountdownTimer = defaultDuelCountdown;
 
@@ -52,7 +52,7 @@ void WorldSession::handleDuelCancelled(WorldPacket& /*recvPacket*/)
     }
 
     SendPacket(SmsgDuelComplete(1).serialise().get());
-    duelPlayer->SendPacket(SmsgDuelComplete(1).serialise().get());
+    duelPlayer->sendPacket(SmsgDuelComplete(1).serialise().get());
 
     _player->cancelDuel();
 }

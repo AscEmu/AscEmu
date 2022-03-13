@@ -148,7 +148,7 @@ void ItemInterface::buildInventoryChangeError(Item const* srcItem, Item const* d
             break;
     }
 
-    m_pOwner->SendPacket(SmsgInventoryChangeFailure(inventoryError, srcGuid, destGuid, extraData, sendExtraData).serialise().get());
+    m_pOwner->sendPacket(SmsgInventoryChangeFailure(inventoryError, srcGuid, destGuid, extraData, sendExtraData).serialise().get());
 }
 
 // MIT End

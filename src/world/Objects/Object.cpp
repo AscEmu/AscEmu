@@ -658,7 +658,7 @@ void Object::interruptSpellWithSpellType(CurrentSpellType spellType)
                 // Send server-side cancel message
                 WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
                 data << GetNewGUID();
-                SendMessageToSet(&data, false);
+                sendMessageToSet(&data, false);
             }
         }
 
@@ -1664,7 +1664,7 @@ Player* Object::getPlayerOwner() { return nullptr; }
 // Misc
 void Object::sendGameobjectDespawnAnim()
 {
-    SendMessageToSet(SmsgGameobjectDespawnAnim(this->getGuid()).serialise().get(), true);
+    sendMessageToSet(SmsgGameobjectDespawnAnim(this->getGuid()).serialise().get(), true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -3703,7 +3703,7 @@ void Object::SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 
     if (Caster == nullptr || Target == nullptr || Ability == 0)
         return;
 
-    Caster->SendMessageToSet(SmsgSpellLogMiss(Ability, Caster->getGuid(), Target->getGuid(), SpellLogType).serialise().get(), true);
+    Caster->sendMessageToSet(SmsgSpellLogMiss(Ability, Caster->getGuid(), Target->getGuid(), SpellLogType).serialise().get(), true);
 }
 
 int32 Object::event_GetInstanceID()
@@ -3788,7 +3788,7 @@ void Object::SetZoneId(uint32 newZone)
 
 void Object::PlaySoundToSet(uint32 sound_entry)
 {
-    SendMessageToSet(SmsgPlaySound(sound_entry).serialise().get(), true);
+    sendMessageToSet(SmsgPlaySound(sound_entry).serialise().get(), true);
 }
 
 bool Object::IsInBg()
@@ -3862,7 +3862,7 @@ void Object::Phase(uint8 command, uint32 newphase)
     }
 }
 
-void Object::OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool /*self*/)
+void Object::outPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool /*self*/)
 {
     if (!IsInWorld())
         return;
@@ -3871,11 +3871,11 @@ void Object::OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool /*
     for (const auto& itr : mInRangePlayersSet)
     {
         if (itr)
-            itr->OutPacket(Opcode, Len, Data);
+            itr->outPacket(Opcode, Len, Data);
     }
 }
 
-void Object::SendMessageToSet(WorldPacket* data, bool /*bToSelf*/, bool /*myteam_only*/)
+void Object::sendMessageToSet(WorldPacket* data, bool /*bToSelf*/, bool /*myteam_only*/)
 {
     if (!IsInWorld())
         return;
@@ -3884,20 +3884,7 @@ void Object::SendMessageToSet(WorldPacket* data, bool /*bToSelf*/, bool /*myteam
     for (const auto& itr : mInRangePlayersSet)
     {
         if (itr && (itr->GetPhase() & myphase) != 0)
-            itr->SendPacket(data);
-    }
-}
-
-void Object::SendMessageToSet(WorldPacket* data, Player const* skipp)
-{
-    if (!IsInWorld())
-        return;
-
-    uint32_t myphase = GetPhase();
-    for (const auto& itr : mInRangePlayersSet)
-    {
-        if (itr && (itr->GetPhase() & myphase) != 0 && itr != skipp)
-            itr->SendPacket(data);
+            itr->sendPacket(data);
     }
 }
 
@@ -3935,7 +3922,7 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId,
                     creature->PlaySoundToSet(npcScriptText->sound);
 
                 const auto data = creature->createChatPacket(npcScriptText->type, npcScriptText->language, message, target, sessionLanguage);
-                player->SendPacket(data.get());
+                player->sendPacket(data.get());
             }
         }
     }
@@ -4035,12 +4022,12 @@ void Object::SetMapCell(MapCell* cell)
 
 void Object::SendAIReaction(uint32 reaction)
 {
-    SendMessageToSet(SmsgAiReaction(getGuid(), reaction).serialise().get(), false);
+    sendMessageToSet(SmsgAiReaction(getGuid(), reaction).serialise().get(), false);
 }
 
 void Object::SendDestroyObject()
 {
-    SendMessageToSet(AscEmu::Packets::SmsgDestroyObject(getGuid()).serialise().get(), false);
+    sendMessageToSet(AscEmu::Packets::SmsgDestroyObject(getGuid()).serialise().get(), false);
 }
 
 bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float & outz, bool sloppypath)

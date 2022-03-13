@@ -309,10 +309,10 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
         return true;
 
     // Notify player about removing ticket
-    plr->getSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
+    plr->getSession()->sendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
 
     // Response - Send GM Survey
-    plr->getSession()->SendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
+    plr->getSession()->sendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
 
     SystemMessageToPlr(plr, "You have been selected to fill out a GM Performance Survey. Please respond truthfully to the questions that you are asked and include the Game Masters name to your comment.");
     return true;
@@ -401,7 +401,7 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* 
     //data << float(0.0);//updateTime - days | How recent is the data for oldest ticket time, measured in days.  If this number 1 hour, we have bad data.
     //data << unit64(2);//assignedToGM |0 - ticket is not currently assigned to a gm | 1 - ticket is assigned to a normal gm |    2 - ticket is in the escalation queue
     //data << uint64(1);//openedByGM | 0 - ticket has never been opened by a gm | 1 - ticket has been opened by a gm
-    //mplr->getSession()->SendPacket(&data);
+    //mplr->getSession()->sendPacket(&data);
     SystemMessageToPlr(mplr, "SYSTEM: Your ticket has been escalated. A Senior Game Master will be with you shortly!");
     return true;
 }
@@ -545,10 +545,10 @@ bool ChatHandler::HandleGMTicketDeletePermanentCommand(const char* args, WorldSe
     if (plr != NULL && plr->IsInWorld())
     {
         // Notify player about removing ticket
-        plr->getSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
+        plr->getSession()->sendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
 
         // Response - Send GM Survey
-        plr->getSession()->SendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
+        plr->getSession()->sendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
 
         SystemMessageToPlr(plr, "You have been selected to fill out a GM Performance Survey. Please respond truthfully to the questions that you are asked and include the Game Masters name to your comment.");
     }

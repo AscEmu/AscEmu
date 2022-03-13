@@ -980,7 +980,7 @@ void Creature::EnslaveExpire()
         data << uint64(0);
         data << uint32(0);
 
-        caster->SendPacket(&data);
+        caster->sendPacket(&data);
     }
     setCharmedByGuid(0);
     setSummonedByGuid(0);

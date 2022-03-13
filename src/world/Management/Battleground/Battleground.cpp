@@ -954,7 +954,7 @@ void CBattleground::EventResurrectPlayers()
                 data << uint32(0);
                 data << uint16(2);
                 data << plr->getGuid();
-                plr->SendMessageToSet(&data, true);
+                plr->sendMessageToSet(&data, true);
 
                 data.Initialize(SMSG_SPELL_GO);
                 data << plr->GetNewGUID();
@@ -967,7 +967,7 @@ void CBattleground::EventResurrectPlayers()
                 data << uint8(0);
                 data << uint16(2);
                 data << plr->getGuid();
-                plr->SendMessageToSet(&data, true);
+                plr->sendMessageToSet(&data, true);
 
                 plr->resurrect();
                 plr->setHealth(plr->getMaxHealth());

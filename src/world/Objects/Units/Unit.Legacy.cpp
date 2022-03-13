@@ -6194,7 +6194,7 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* attacker)
             {
                 if (const auto spellInfo = sSpellMgr.getSpellInfo((*i2).m_spellId))
                 {
-                    SendMessageToSet(SmsgSpellDamageShield(this->getGuid(), attacker->getGuid(), spellInfo->getId(), (*i2).m_damage, spellInfo->getSchoolMask()).serialise().get(), true);
+                    sendMessageToSet(SmsgSpellDamageShield(this->getGuid(), attacker->getGuid(), spellInfo->getId(), (*i2).m_damage, spellInfo->getSchoolMask()).serialise().get(), true);
                     addSimpleDamageBatchEvent((*i2).m_damage, this);
                 }
             }
@@ -6513,7 +6513,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         {
 #if VERSION_STRING < Mop
             if (isPlayer())
-                dynamic_cast<Player*>(this)->SendPacket(SmsgAttackSwingBadFacing().serialise().get());
+                dynamic_cast<Player*>(this)->sendPacket(SmsgAttackSwingBadFacing().serialise().get());
 #endif
 
             return DamageInfo();

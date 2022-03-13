@@ -95,7 +95,7 @@ void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
 
     player->setInviteArenaTeamId(_player->getArenaTeam(arenaTeam->m_type)->m_id);
 
-    player->SendPacket(SmsgArenaTeamInvite(_player->getName(), _player->getArenaTeam(arenaTeam->m_type)->m_name).serialise().get());
+    player->sendPacket(SmsgArenaTeamInvite(_player->getName(), _player->getArenaTeam(arenaTeam->m_type)->m_name).serialise().get());
 }
 
 void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)

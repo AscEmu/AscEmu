@@ -135,7 +135,7 @@ int32_t MoveSplineInit::Launch()
     }
 
     PacketBuilder::WriteMonsterMove(move_spline, data);
-    unit->SendMessageToSet(&data, true);
+    unit->sendMessageToSet(&data, true);
 
     return move_spline.Duration();
 }
@@ -185,7 +185,7 @@ void MoveSplineInit::Stop()
     }
 
     PacketBuilder::WriteStopMovement(loc, args.splineId, data);
-    unit->SendMessageToSet(&data, true);
+    unit->sendMessageToSet(&data, true);
 }
 
 MoveSplineInit::MoveSplineInit(Unit* m) : unit(m)

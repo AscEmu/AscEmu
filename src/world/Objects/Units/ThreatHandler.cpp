@@ -744,7 +744,7 @@ void ThreatManager::sendClearAllThreatToClients() const
 
     WorldPacket data(SMSG_THREAT_CLEAR, 8);
     data.append(packedGuidOwner);
-    _owner->SendMessageToSet(&data, false);
+    _owner->sendMessageToSet(&data, false);
 }
 
 void ThreatManager::sendRemoveToClients(Unit const* victim) const
@@ -757,7 +757,7 @@ void ThreatManager::sendRemoveToClients(Unit const* victim) const
     WorldPacket data(SMSG_THREAT_REMOVE, 16);
     data.append(packedGuidOwner);
     data.append(packedGuidVictim);
-    _owner->SendMessageToSet(&data, false);
+    _owner->sendMessageToSet(&data, false);
 }
 
 void ThreatManager::sendThreatListToClients(bool newHighest) const
@@ -788,7 +788,7 @@ void ThreatManager::sendThreatListToClients(bool newHighest) const
         ++count;
     }
     data.put<uint32_t>(countPos, count);
-    _owner->SendMessageToSet(&data, false);
+    _owner->sendMessageToSet(&data, false);
 }
 
 void ThreatManager::putThreatListRef(uint64_t const& guid, ThreatReference* ref)
