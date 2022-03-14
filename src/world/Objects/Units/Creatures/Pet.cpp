@@ -1253,7 +1253,7 @@ void Pet::PrepareForRemove(bool bUpdate, bool bSetOffline)
     if (m_Owner->getFirstPetFromSummons() == NULL)   //we have no more summons, required by spells summoning more than 1.
     {
         m_Owner->setSummonGuid(0);
-        m_Owner->SendEmptyPetSpellList();
+        m_Owner->sendEmptyPetSpellList();
     }
     else if (main_summon)               //we just removed the summon displayed in the portrait so we need to update it with another one.
     {

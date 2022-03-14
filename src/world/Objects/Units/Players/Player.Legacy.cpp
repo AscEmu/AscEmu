@@ -5248,13 +5248,6 @@ bool Player::SaveSkills(bool NewCharacter, QueryBuffer* buf)
     return true;
 }
 
-void Player::SendEmptyPetSpellList()
-{
-    WorldPacket data(SMSG_PET_SPELLS, 8);
-    data << uint64(0);
-    m_session->SendPacket(&data);
-}
-
 void Player::BuildPetSpellList(WorldPacket & data)
 {
     data << uint64(0);
@@ -5418,40 +5411,5 @@ void Player::SendInitialLogonPackets()
 #endif
 
     sLogger.info("WORLD: Sent initial logon packets for %s.", getName().c_str());
-}
-
-void Player::SendEquipmentSetList()
-{
-#if VERSION_STRING > TBC
-    WorldPacket data(SMSG_EQUIPMENT_SET_LIST, 1000);
-
-    getItemInterface()->m_EquipmentSets.FillEquipmentSetListPacket(data);
-    m_session->SendPacket(&data);
-
-    sLogger.debug("Sent SMSG_EQUIPMENT_SET_LIST.");
-#endif
-}
-
-void Player::SendEquipmentSetSaved(uint32 setID, uint32 setGUID)
-{
-#if VERSION_STRING > TBC
-    WorldPacket data(SMSG_EQUIPMENT_SET_SAVED, 12);
-    data << uint32(setID);
-    data << WoWGuid(uint64(setGUID));
-
-    m_session->SendPacket(&data);
-
-    sLogger.debug("Sent SMSG_EQUIPMENT_SET_SAVED.");
-#endif
-}
-
-void Player::SendInitialWorldstates()
-{
-#if VERSION_STRING < Cata
-    WorldPacket data(SMSG_INIT_WORLD_STATES, 100);
-
-    m_mapMgr->GetWorldStatesHandler().BuildInitWorldStatesForZone(m_zoneId, m_areaId, data);
-    m_session->SendPacket(&data);
-#endif
 }
 // end L15420 12/11/2018 Zyres

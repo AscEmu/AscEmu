@@ -9185,7 +9185,7 @@ void Unit::UnPossess()
     pThis->sendClientControlPacket(pTarget, 0);
 
     if (!(pTarget->isPet() && dynamic_cast< Pet* >(pTarget) == pThis->getFirstPetFromSummons()))
-        pThis->SendEmptyPetSpellList();
+        pThis->sendEmptyPetSpellList();
 
     setMoveRoot(false);
 

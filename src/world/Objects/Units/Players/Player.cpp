@@ -1575,7 +1575,7 @@ void Player::zoneUpdate(uint32_t zoneId)
             }
         }
 
-        SendInitialWorldstates();
+        sendInitialWorldstates();
 
         updateChannels();
     }
@@ -1596,7 +1596,7 @@ void Player::forceZoneUpdate()
         if (areaTableEntry->zone && areaTableEntry->zone != m_zoneId)
             zoneUpdate(areaTableEntry->zone);
 
-        SendInitialWorldstates();
+        sendInitialWorldstates();
     }
 }
 
@@ -8018,6 +8018,41 @@ void Player::sendGuildMotd()
         return;
 
     sendPacket(SmsgGuildEvent(GE_MOTD, { getGuild()->getMOTD() }, 0).serialise().get());
+}
+
+void Player::sendEquipmentSetList()
+{
+#if VERSION_STRING > TBC
+    WorldPacket data(SMSG_EQUIPMENT_SET_LIST, 1000);
+    getItemInterface()->m_EquipmentSets.FillEquipmentSetListPacket(data);
+    m_session->SendPacket(&data);
+#endif
+}
+
+void Player::sendEquipmentSetSaved(uint32_t setId, uint32_t setGuid)
+{
+#if VERSION_STRING > TBC
+    WorldPacket data(SMSG_EQUIPMENT_SET_SAVED, 12);
+    data << uint32_t(setId);
+    data << WoWGuid(uint64_t(setGuid));
+    m_session->SendPacket(&data);
+#endif
+}
+
+void Player::sendEmptyPetSpellList()
+{
+    WorldPacket data(SMSG_PET_SPELLS, 8);
+    data << uint64_t(0);
+    m_session->SendPacket(&data);
+}
+
+void Player::sendInitialWorldstates()
+{
+#if VERSION_STRING < Cata
+    WorldPacket data(SMSG_INIT_WORLD_STATES, 100);
+    m_mapMgr->GetWorldStatesHandler().BuildInitWorldStatesForZone(m_zoneId, m_areaId, data);
+    m_session->SendPacket(&data);
+#endif
 }
 
 bool Player::isPvpFlagSet() 

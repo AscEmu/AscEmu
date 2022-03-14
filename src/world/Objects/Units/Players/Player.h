@@ -1482,6 +1482,11 @@ public:
     void sendClientControlPacket(Unit* target, uint8_t allowMove);
     void sendGuildMotd();
 
+    void sendEquipmentSetList();
+    void sendEquipmentSetSaved(uint32_t setId, uint32_t setGuid);
+    void sendEmptyPetSpellList();
+    void sendInitialWorldstates();
+
     bool isPvpFlagSet() override;
     void setPvpFlag() override;
     void removePvpFlag() override;
@@ -1801,13 +1806,6 @@ public:
 
         //! Okay to remove from world
         bool ok_to_remove = false;
-
-        void SendEquipmentSetList();
-        void SendEquipmentSetSaved(uint32 setID, uint32 setGUID);
-        
-        void SendEmptyPetSpellList();
-
-        void SendInitialWorldstates();
 
         static void CharChange_Looks(uint64 GUID, uint8 gender, uint8 skin, uint8 face, uint8 hairStyle, uint8 hairColor, uint8 facialHair);
         static void CharChange_Language(uint64 GUID, uint8 race);

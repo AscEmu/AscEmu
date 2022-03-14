@@ -772,7 +772,7 @@ bool ChatHandler::HandleInitWorldStatesCommand(const char* /*args*/, WorldSessio
 
     BlueSystemMessage(session, "Sending initial worldstates for zone %u", zone);
 
-    p->SendInitialWorldstates();
+    p->sendInitialWorldstates();
 
     return true;
 }
