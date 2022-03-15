@@ -2577,7 +2577,7 @@ void Player::OnPushToWorld()
 
     getItemInterface()->HandleItemDurations();
 
-    SendInitialWorldstates();
+    sendInitialWorldstates();
 
     if (m_resetTalents)
     {

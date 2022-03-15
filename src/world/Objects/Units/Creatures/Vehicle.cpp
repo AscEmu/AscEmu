@@ -381,7 +381,7 @@ Vehicle* Vehicle::removePassenger(Unit* unit)
         static_cast<Player*>(unit)->sendClientControlPacket(getBase(), 0);
 
         // send null spells if needed
-        static_cast<Player*>(unit)->SendEmptyPetSpellList();
+        static_cast<Player*>(unit)->sendEmptyPetSpellList();
         static_cast<Player*>(unit)->setMover(unit);
 
         // set old Faction

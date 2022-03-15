@@ -3161,7 +3161,7 @@ void WorldSession::handleEquipmentSetSave(WorldPacket& data)
     if (_player->getItemInterface()->m_EquipmentSets.AddEquipmentSet(equipmentSet->SetGUID, equipmentSet))
     {
         sLogger.debug("Player %u successfully stored equipment set %u at slot %u ", _player->getGuidLow(), equipmentSet->SetGUID, equipmentSet->SetID);
-        _player->SendEquipmentSetSaved(equipmentSet->SetID, equipmentSet->SetGUID);
+        _player->sendEquipmentSetSaved(equipmentSet->SetID, equipmentSet->SetGUID);
     }
     else
     {
