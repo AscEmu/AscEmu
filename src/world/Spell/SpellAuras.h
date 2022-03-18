@@ -159,8 +159,8 @@ class SERVER_DECL Aura : public EventableObject
         AuraEffectModifier const* getAuraEffect(uint8_t effIndex) const;
         AuraEffectModifier* getModifiableAuraEffect(uint8_t effIndex);
         bool hasAuraEffect(AuraEffect auraEffect) const;
-        void addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValue, float_t effectPctModifier, bool isStaticDamage, uint8_t effIndex);
-        void addAuraEffect(AuraEffectModifier const* auraEffect);
+        void addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValue, float_t effectPctModifier, bool isStaticDamage, uint8_t effIndex, bool reapplying = false);
+        void addAuraEffect(AuraEffectModifier const* auraEffect, bool reapplying = false);
         void removeAuraEffect(uint8_t effIndex, bool reapplying = false);
         // Returns how many active aura effects the aura has
         uint8_t getAppliedEffectCount() const;
