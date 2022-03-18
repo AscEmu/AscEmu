@@ -3,29 +3,24 @@
 set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 
+# set RPATH-handing (CMake parameters)
+set(CMAKE_SKIP_BUILD_RPATH FALSE)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 # we have our own custom modules and dep modules that we use. This tells cmakes where to find them.
 list(APPEND CMAKE_MODULE_PATH 
     ${CMAKE_SOURCE_DIR}/cmake/Modules
     ${CMAKE_SOURCE_DIR}/dep/cotire/CMake)
 
 # get git information
-include(${CMAKE_SOURCE_DIR}/cmake/GitRevision.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/Modules/AEGitRevision.cmake)
 
-# get architecture type
-if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(IS_64BIT TRUE)
-else ()
-    set(IS_64BIT FALSE)
-endif ()
+# apply options settings
+include(${CMAKE_SOURCE_DIR}/cmake/Modules/AEConfigureFiles.cmake)
 
-# set default architecture identifier
-if (IS_64BIT)
-    message(STATUS "Detected x64 system")
-    message(STATUS "Generator Plattform: ${CMAKE_GENERATOR_PLATFORM}")
-else ()
-    message(STATUS "Detected Win32 system")
-    message(STATUS "Generator Plattform: ${CMAKE_GENERATOR_PLATFORM}")
-endif ()
+# get architecture type and set architecture identifier
+include(${CMAKE_SOURCE_DIR}/cmake/Modules/AEConfigureArch.cmake)
 
 # default definitions
 # -DPREFIX=\"${ASCEMU_SCRIPTLIB_PATH}\"
@@ -60,6 +55,3 @@ elseif (UNIX)
 else ()
     message(FATAL_ERROR "System is not supported." )
 endif ()
-
-# apply config settings
-include(${CMAKE_SOURCE_DIR}/cmake/Modules/GenerateConfigs.cmake)

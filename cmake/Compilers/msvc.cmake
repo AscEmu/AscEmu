@@ -1,14 +1,19 @@
 # Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 
-if (MSVC_VERSION VERSION_LESS 19.28)
-    message(FATAL_ERROR "AscEmu requires at least Visual Studio 2019 update 16.9")
+# MSVC >= 19.29
+set(MSVC_SUPPORTS_VERSION 19.29.30140.0)
+
+if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS MSVC_SUPPORTS_VERSION)
+    message(FATAL_ERROR "AscEmu requires version ${MSVC_SUPPORTS_VERSION} to build but found ${CMAKE_CXX_COMPILER_VERSION}")
+else ()
+    message(STATUS "Minimum version MSVC required is ${MSVC_SUPPORTS_VERSION}, found ${CMAKE_CXX_COMPILER_VERSION} - success")
 endif ()
 
 message(STATUS "Applying settings for ${CMAKE_CXX_COMPILER_ID}")
 
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
-# set defines for msvc
+# set defines for MSVC
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c++20 /EHa /MP /bigobj")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20 /EHa /MP /bigobj")
 
@@ -31,3 +36,6 @@ else ()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W0")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
 endif ()
+
+# install libraries for windows build (libmysql.dll)
+install(FILES ${INSTALLED_DEPENDENCIES} DESTINATION .)

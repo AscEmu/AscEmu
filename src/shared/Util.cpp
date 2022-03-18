@@ -481,5 +481,4 @@ namespace Util
         uint32_t const version = getNumberFromStringByRange(fileName, 9, 11);
         return version;
     }
-
 }

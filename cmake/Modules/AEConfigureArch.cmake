@@ -1,0 +1,60 @@
+# Copyright (c) 2014-2021 AscEmu Team <http://www.ascemu.org>
+
+# get architecture type and set architecture identifier
+if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(IS_64BIT TRUE)
+    message(STATUS "Detected system: ${CMAKE_SYSTEM_NAME} ${CMAKE_GENERATOR_PLATFORM}")
+else ()
+    set(IS_64BIT FALSE)
+    message(STATUS "Detected system: ${CMAKE_SYSTEM_NAME} ${CMAKE_GENERATOR_PLATFORM}")
+endif ()
+
+# let the preprocessor know about the system name
+#if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+#    set(PLATFORM_TEXT "Linux")
+#endif ()
+#if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+#    set(PLATFORM_TEXT "Darwin")
+#endif ()
+#if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+#    set(PLATFORM_TEXT "Windows")
+#endif ()
+#if (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+#    set(PLATFORM_TEXT "FreeBSD")
+#endif ()
+
+# get architecture type and set architecture identifier
+#if (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+#    set(ARCH "x86_64")
+#elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "amd64")
+#    set(ARCH "x86_64")
+#elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "AMD64")
+#    # cmake reports AMD64 on Windows, but we might be building for 32-bit.
+#    if (CMAKE_CL_64)
+#        set(ARCH "x86_64")
+#    else ()
+#        set(ARCH "x86")
+#    endif ()
+#elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86")
+#    set(ARCH "x86")
+#elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i386")
+#    set(ARCH "x86")
+#elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
+#    set(ARCH "x86")
+#elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm")
+#    set(ARCH "arm")
+#elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv6")
+#    set(ARCH "arm")
+#elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7-a")
+#    set(ARCH "arm")
+#elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
+#    set(ARCH "aarch64")
+#else ()
+#    message(FATAL_ERROR "Unknown processor:" ${CMAKE_SYSTEM_PROCESSOR})
+#endif ()
+#if (${ARCH} STREQUAL "x86" AND APPLE)
+#  # With CMake 2.8.x, ${CMAKE_SYSTEM_PROCESSOR} evalutes to i386 on OS X,
+#  # but clang defaults to 64-bit builds on OS X unless otherwise told.
+#  # Set ARCH to x86_64 so clang and CMake agree. This is fixed in CMake 3.
+#  set(ARCH "x86_64")
+#endif ()

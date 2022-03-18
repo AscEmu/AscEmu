@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 class WorldPacket;
 
-extern SERVER_DECL time_t UNIXTIME;        //update this every loop to avoid the time() syscall!
+extern SERVER_DECL time_t UNIXTIME; // update this every loop to avoid the time() syscall!
 extern SERVER_DECL tm g_localTime;
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -41,11 +41,10 @@ class WorldPacketLog
         void enablePacketLog();
         void disablePacketLog();
 
-        //WorldSocket.cpp
+        // WorldSocket.cpp
         void logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid = 0);
 };
 #define sWorldPacketLog WorldPacketLog::getInstance()
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // SessionLog
@@ -57,7 +56,6 @@ class SERVER_DECL SessionLog
     char* mFileName;
 
 public:
-
     SessionLog(const char* filename, bool open);
     ~SessionLog();
 
@@ -67,6 +65,6 @@ public:
 
     void write(const char* format, ...);
 
-    //WorldSession.cpp
+    // WorldSession.cpp
     void writefromsession(WorldSession* session, const char* format, ...);
 };

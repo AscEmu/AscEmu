@@ -280,6 +280,4 @@ namespace Arcemu
     }
 
 #endif
-
-
 }
