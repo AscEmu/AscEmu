@@ -2453,6 +2453,8 @@ void Player::initVisibleUpdateBits()
 
 void Player::copyAndSendDelayedPacket(WorldPacket* data) { m_updateMgr.queueDelayedPacket(new WorldPacket(*data)); }
 
+void Player::setEnteringToWorld() { m_enteringWorld = true; }
+
 UpdateManager& Player::getUpdateMgr() { return m_updateMgr; }
 
 void Player::setCreateBits(UpdateMask* updateMask, Player* target) const

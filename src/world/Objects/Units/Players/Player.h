@@ -699,10 +699,14 @@ public:
 
     void copyAndSendDelayedPacket(WorldPacket* data);
 
+    void setEnteringToWorld();
+
     UpdateManager& getUpdateMgr();
 
 private:
     UpdateManager m_updateMgr;
+
+    bool m_enteringWorld = false;
 
 protected:
     WorldSession* m_session = nullptr;

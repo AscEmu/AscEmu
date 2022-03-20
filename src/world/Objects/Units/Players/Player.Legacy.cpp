@@ -2404,9 +2404,10 @@ void Player::OnPushToWorld()
     CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnZoneChange)(this, m_zoneId, 0);
     CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnPlayerEnter)(this);
 
-    if (m_teleportState == 1)        // First world enter
+    if (m_teleportState == 1 || m_enteringWorld)        // First world enter
         CompleteLoading();
 
+    m_enteringWorld = false;
     m_teleportState = 0;
 
     if (isOnTaxi())
