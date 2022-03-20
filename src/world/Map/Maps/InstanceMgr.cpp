@@ -27,8 +27,9 @@ InstanceSaved::~InstanceSaved()
 
 void InstanceSaved::saveToDB()
 {
-    // save instance data too
+    // completed encounters as String
     std::string data;
+
     uint32_t completedEncounters = 0;
 
     WorldMap* map = sMapMgr.findInstanceMap(m_instanceid);
@@ -77,7 +78,9 @@ bool InstanceSaved::unloadIfEmpty()
         return false;
     }
     else
+    {
         return true;
+    }
 }
 
 uint16_t InstanceMgr::ResetTimeDelay[] = { 3600, 900, 300, 60 };
@@ -112,6 +115,7 @@ void InstanceMgr::loadInstances()
     CharacterDatabase.Execute("UPDATE corpses SET instanceId = 0 WHERE instanceId > 0 AND instanceId NOT IN (SELECT id FROM instance)");
     CharacterDatabase.Execute("UPDATE characters AS tmp LEFT JOIN instance ON tmp.instance_id = instance.id SET tmp.instance_id = 0 WHERE tmp.instance_id > 0 AND instance.id IS NULL");
 
+    // Initialize Free Instance Ids
     sMapMgr.initializeInstanceIds();
 
     // Load reset times and clean expired instances
@@ -127,12 +131,12 @@ void InstanceMgr::loadResetTimes()
     time_t today = (now / DAY) * DAY;
 
     // resettime = 0 in the DB for raid/heroic instances so those are skipped
-    typedef std::pair<uint32_t /*PAIR32(map, difficulty)*/, time_t> ResetTimeMapDiffType;
+    typedef std::pair<uint32_t, time_t> ResetTimeMapDiffType;
     typedef std::map<uint32_t, ResetTimeMapDiffType> InstResetTimeMapDiffType;
     InstResetTimeMapDiffType instResetTime;
 
     // index instance ids by map/difficulty pairs for fast reset warning send
-    typedef std::multimap<uint32_t /*PAIR32(map, difficulty)*/, uint32_t /*instanceid*/ > ResetTimeMapDiffInstances;
+    typedef std::multimap<uint32_t, uint32_t> ResetTimeMapDiffInstances;
     typedef std::pair<ResetTimeMapDiffInstances::const_iterator, ResetTimeMapDiffInstances::const_iterator> ResetTimeMapDiffInstancesBounds;
     ResetTimeMapDiffInstances mapDiffResetInstances;
 
@@ -144,7 +148,7 @@ void InstanceMgr::loadResetTimes()
 
             uint32_t instanceId = fields[0].GetUInt32();
 
-            // Mark instance id as being used
+            // Add our Current Instance Id as Used to our Pool
             sMapMgr.instanceIdPool.addUsedValue(instanceId);
 
             if (time_t resettime = time_t(fields[3].GetUInt64()))
@@ -157,7 +161,7 @@ void InstanceMgr::loadResetTimes()
             }
         } while (result->NextRow());
 
-        // schedule the reset times
+        // Add Event for our Resettime
         for (InstResetTimeMapDiffType::iterator itr = instResetTime.begin(); itr != instResetTime.end(); ++itr)
         {
             if (itr->second.second > now)
@@ -304,7 +308,6 @@ void InstanceMgr::resetSave(InstanceSavedMap::iterator& itr)
             ASSERT(bind->save == itr->second);
             if (bind->perm && bind->extendState) // permanent and not already expired
             {
-                // actual promotion in DB already happened in caller
                 bind->extendState = bind->extendState == EXTEND_STATE_EXTENDED ? EXTEND_STATE_NORMAL : EXTEND_STATE_EXPIRED;
                 shouldDelete = false;
                 continue;
@@ -345,7 +348,7 @@ void InstanceMgr::resetInstance(uint32_t mapid, uint32_t instanceId)
     if (itr != m_instanceSaveById.end())
         resetSave(itr);
 
-    deleteInstanceFromDB(instanceId);                       // even if save not loaded
+    deleteInstanceFromDB(instanceId);
 
     WorldMap* iMap = sMapMgr.findInstanceMap(instanceId);
 
@@ -361,7 +364,7 @@ void InstanceMgr::resetInstance(uint32_t mapid, uint32_t instanceId)
         WorldMap::deleteRespawnTimesInDB(mapid, instanceId);
     }
 
-    // Free up the instance id and allow it to be reused
+    // Free up the used instanceId from Our instanceId Pool
     sMapMgr.instanceIdPool.freeUsedId(instanceId);
 }
 
@@ -467,7 +470,7 @@ InstanceSaved* InstanceMgr::addInstanceSave(uint32_t mapId, uint32_t instanceId,
             const auto now_c = std::chrono::system_clock::now();
             const auto now_t = std::chrono::system_clock::to_time_t(now_c);
             resetTime = now_t + 2 * HOUR;
-            // normally this will be removed soon after in InstanceMap::Add, prevent error
+            // add our Reset Event
             addResetEvent(true, resetTime, InstResetEvent(0, mapId, difficulty, instanceId));
         }
     }
