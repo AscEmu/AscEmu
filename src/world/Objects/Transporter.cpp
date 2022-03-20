@@ -587,7 +587,8 @@ uint32_t Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* 
     uint32_t cnt = Object::buildCreateUpdateBlockForPlayer(data, target);
 
     // add all the npcs and gos to the packet
-    for (auto itr = _staticPassengers.begin(); itr != _staticPassengers.end(); ++itr)
+    // comment this out for now until we decided if we want creatures and gos always be loaded for transports
+    /*for (auto itr = _staticPassengers.begin(); itr != _staticPassengers.end(); ++itr)
     {
         Object* passenger = *itr;
         float x, y, z, o;
@@ -612,7 +613,7 @@ uint32_t Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* 
         }
         }
         cnt += passenger->buildCreateUpdateBlockForPlayer(data, target);
-    }
+    }*/
     return cnt;
 }
 
