@@ -424,14 +424,14 @@ void WorldMap::outOfMapBoundariesTeleport(Object* object)
 
         if (player->getBindMapId() != getBaseMap()->getMapId())
         {
-            player->SafeTeleport(player->getBindMapId(), 0, player->getBindPosition());
-            player->GetSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
+            player->safeTeleport(player->getBindMapId(), 0, player->getBindPosition());
+            player->getSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
         }
         else
         {
             object->GetPositionV()->ChangeCoords(player->getBindPosition());
-            player->GetSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
-            player->SendTeleportAckPacket(player->getBindPosition().x, player->getBindPosition().y, player->getBindPosition().z, 0);
+            player->getSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
+            player->sendTeleportAckPacket(player->getBindPosition());
         }
     }
     else
@@ -447,7 +447,7 @@ void WorldMap::removeAllPlayers()
         for (PlayerStorageMap::iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
         {
             Player* player = itr->second;
-            player->SafeTeleport(player->getBindMapId(), 0, player->getBindPosition());
+            player->safeTeleport(player->getBindMapId(), 0, player->getBindPosition());
         }
     }
 }
@@ -623,10 +623,10 @@ void WorldMap::PushObject(Object* obj)
         // Add the session to our set if it is a player.
         if (plObj)
         {
-            Sessions.insert(plObj->GetSession());
+            Sessions.insert(plObj->getSession());
 
             // Change the instance ID, this will cause it to be removed from the world thread (return value 1)
-            plObj->GetSession()->SetInstance(getInstanceId());
+            plObj->getSession()->SetInstance(getInstanceId());
 
             // Add the map wide objects
             if (_mapWideStaticObjects.size())
@@ -843,13 +843,13 @@ void WorldMap::RemoveObject(Object* obj, bool free_guid)
         }
 
         // Setting an instance ID here will trigger the session to be removed by MapMgr::run(). :)
-        if (plObj && plObj->GetSession())
+        if (plObj && plObj->getSession())
         {
-            plObj->GetSession()->SetInstance(0);
+            plObj->getSession()->SetInstance(0);
 
             // Add it to the global session set. Don't "re-add" to session if it is being deleted.
-            if (!plObj->GetSession()->bDeleted)
-                sWorld.addGlobalSession(plObj->GetSession());
+            if (!plObj->getSession()->bDeleted)
+                sWorld.addGlobalSession(plObj->getSession());
         }
     }
 }
@@ -1174,14 +1174,14 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
                 {
                     plObj2 = static_cast<Player*>(curObj);
 
-                    if (plObj2->canSee(obj) && !plObj2->IsVisible(obj->getGuid()))
+                    if (plObj2->canSee(obj) && !plObj2->isVisibleObject(obj->getGuid()))
                     {
                         if (!*buf)
                             *buf = new ByteBuffer(2500);
 
                         count = obj->buildCreateUpdateBlockForPlayer(*buf, plObj2);
                         plObj2->getUpdateMgr().pushCreationData(*buf, count);
-                        plObj2->AddVisibleObject(obj->getGuid());
+                        plObj2->addVisibleObject(obj->getGuid());
                         (*buf)->clear();
                     }
                 }
@@ -1189,28 +1189,28 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
                 {
                     plObj2 = static_cast<Unit*>(curObj)->mPlayerControler;
 
-                    if (plObj2->canSee(obj) && !plObj2->IsVisible(obj->getGuid()))
+                    if (plObj2->canSee(obj) && !plObj2->isVisibleObject(obj->getGuid()))
                     {
                         if (!*buf)
                             *buf = new ByteBuffer(2500);
 
                         count = obj->buildCreateUpdateBlockForPlayer(*buf, plObj2);
                         plObj2->getUpdateMgr().pushCreationData(*buf, count);
-                        plObj2->AddVisibleObject(obj->getGuid());
+                        plObj2->addVisibleObject(obj->getGuid());
                         (*buf)->clear();
                     }
                 }
 
                 if (plObj != nullptr)
                 {
-                    if (plObj->canSee(curObj) && !plObj->IsVisible(curObj->getGuid()))
+                    if (plObj->canSee(curObj) && !plObj->isVisibleObject(curObj->getGuid()))
                     {
                         if (!*buf)
                             *buf = new ByteBuffer(2500);
 
                         count = curObj->buildCreateUpdateBlockForPlayer(*buf, plObj);
                         plObj->getUpdateMgr().pushCreationData(*buf, count);
-                        plObj->AddVisibleObject(curObj->getGuid());
+                        plObj->addVisibleObject(curObj->getGuid());
                         (*buf)->clear();
                     }
                 }
@@ -1222,11 +1222,11 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
                 {
                     plObj2 = static_cast<Player*>(curObj);
                     cansee = plObj2->canSee(obj);
-                    isvisible = plObj2->IsVisible(obj->getGuid());
+                    isvisible = plObj2->isVisibleObject(obj->getGuid());
                     if (!cansee && isvisible)
                     {
                         plObj2->getUpdateMgr().pushOutOfRangeGuid(obj->GetNewGUID());
-                        plObj2->RemoveVisibleObject(obj->getGuid());
+                        plObj2->removeVisibleObject(obj->getGuid());
                     }
                     else if (cansee && !isvisible)
                     {
@@ -1235,7 +1235,7 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
 
                         count = obj->buildCreateUpdateBlockForPlayer(*buf, plObj2);
                         plObj2->getUpdateMgr().pushCreationData(*buf, count);
-                        plObj2->AddVisibleObject(obj->getGuid());
+                        plObj2->addVisibleObject(obj->getGuid());
                         (*buf)->clear();
                     }
                 }
@@ -1243,11 +1243,11 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
                 {
                     plObj2 = static_cast<Unit*>(curObj)->mPlayerControler;
                     cansee = plObj2->canSee(obj);
-                    isvisible = plObj2->IsVisible(obj->getGuid());
+                    isvisible = plObj2->isVisibleObject(obj->getGuid());
                     if (!cansee && isvisible)
                     {
                         plObj2->getUpdateMgr().pushOutOfRangeGuid(obj->GetNewGUID());
-                        plObj2->RemoveVisibleObject(obj->getGuid());
+                        plObj2->removeVisibleObject(obj->getGuid());
                     }
                     else if (cansee && !isvisible)
                     {
@@ -1256,7 +1256,7 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
 
                         count = obj->buildCreateUpdateBlockForPlayer(*buf, plObj2);
                         plObj2->getUpdateMgr().pushCreationData(*buf, count);
-                        plObj2->AddVisibleObject(obj->getGuid());
+                        plObj2->addVisibleObject(obj->getGuid());
                         (*buf)->clear();
                     }
                 }
@@ -1264,11 +1264,11 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
                 if (plObj != nullptr)
                 {
                     cansee = plObj->canSee(curObj);
-                    isvisible = plObj->IsVisible(curObj->getGuid());
+                    isvisible = plObj->isVisibleObject(curObj->getGuid());
                     if (!cansee && isvisible)
                     {
                         plObj->getUpdateMgr().pushOutOfRangeGuid(curObj->GetNewGUID());
-                        plObj->RemoveVisibleObject(curObj->getGuid());
+                        plObj->removeVisibleObject(curObj->getGuid());
                     }
                     else if (cansee && !isvisible)
                     {
@@ -1277,7 +1277,7 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
 
                         count = curObj->buildCreateUpdateBlockForPlayer(*buf, plObj);
                         plObj->getUpdateMgr().pushCreationData(*buf, count);
-                        plObj->AddVisibleObject(curObj->getGuid());
+                        plObj->addVisibleObject(curObj->getGuid());
                         (*buf)->clear();
                     }
                 }
@@ -1322,13 +1322,13 @@ void WorldMap::changeObjectLocation(Object* obj)
                 if (fRange > 0.0f && (curObj->GetDistance2dSq(obj) > fRange))
                 {
                     if (plObj != nullptr)
-                        plObj->RemoveIfVisible(curObj->getGuid());
+                        plObj->removeIfVisiblePushOutOfRange(curObj->getGuid());
 
                     if (curObj->isPlayer())
-                        static_cast<Player*>(curObj)->RemoveIfVisible(obj->getGuid());
+                        static_cast<Player*>(curObj)->removeIfVisiblePushOutOfRange(obj->getGuid());
 
                     if (curObj->isCreatureOrPlayer() && static_cast<Unit*>(curObj)->mPlayerControler != nullptr)
-                        static_cast<Unit*>(curObj)->mPlayerControler->RemoveIfVisible(obj->getGuid());
+                        static_cast<Unit*>(curObj)->mPlayerControler->removeIfVisiblePushOutOfRange(obj->getGuid());
 
                     curObj->removeObjectFromInRangeObjectsSet(obj);
 
@@ -1450,7 +1450,7 @@ void WorldMap::changeFarsightLocation(Player* plr, DynamicObject* farsight)
         // We're clearing.
         for (auto itr = plr->m_visibleFarsightObjects.begin(); itr != plr->m_visibleFarsightObjects.end(); ++itr)
         {
-            if (plr->IsVisible((*itr)->getGuid()) && !plr->canSee((*itr)))
+            if (plr->isVisibleObject((*itr)->getGuid()) && !plr->canSee((*itr)))
                 plr->getUpdateMgr().pushOutOfRangeGuid((*itr)->GetNewGUID());      // Send destroy
         }
 
@@ -1478,7 +1478,7 @@ void WorldMap::changeFarsightLocation(Player* plr, DynamicObject* farsight)
                         if (obj == nullptr)
                             continue;
 
-                        if (!plr->IsVisible(obj->getGuid()) && plr->canSee(obj) && farsight->GetDistance2dSq(obj) <= getVisibilityRange())
+                        if (!plr->isVisibleObject(obj->getGuid()) && plr->canSee(obj) && farsight->GetDistance2dSq(obj) <= getVisibilityRange())
                         {
                             ByteBuffer buf;
                             uint32_t count = obj->buildCreateUpdateBlockForPlayer(&buf, plr);
@@ -1780,9 +1780,9 @@ void WorldMap::sendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, ui
                 {
                     if ((*iter)->isPlayer())
                     {
-                        //TO< Player* >(*iter)->GetSession()->SendPacket(packet);
+                        //TO< Player* >(*iter)->getSession()->SendPacket(packet);
                         if ((*iter)->GetPhase() & obj->GetPhase())
-                            static_cast<Player*>(*iter)->GetSession()->SendChatPacket(packet, langpos, lang, originator);
+                            static_cast<Player*>(*iter)->getSession()->SendChatPacket(packet, langpos, lang, originator);
                     }
                 }
             }
@@ -1807,7 +1807,7 @@ void WorldMap::sendPvPCaptureMessage(int32_t ZoneMask, uint32_t ZoneId, const ch
         if ((ZoneMask != ZONE_MASK_ALL && plr->GetZoneId() != (uint32_t)ZoneMask))
             continue;
 
-        plr->GetSession()->SendPacket(SmsgDefenseMessage(ZoneId, msgbuf).serialise().get());
+        plr->getSession()->SendPacket(SmsgDefenseMessage(ZoneId, msgbuf).serialise().get());
     }
 }
 
@@ -1817,8 +1817,8 @@ void WorldMap::sendPacketToAllPlayers(WorldPacket* packet) const
     {
         Player* p = itr.second;
 
-        if (p->GetSession() != nullptr)
-            p->GetSession()->SendPacket(packet);
+        if (p->getSession() != nullptr)
+            p->getSession()->SendPacket(packet);
     }
 }
 
@@ -1828,8 +1828,8 @@ void WorldMap::sendPacketToPlayersInZone(uint32_t zone, WorldPacket* packet) con
     {
         Player* p = itr.second;
 
-        if ((p->GetSession() != nullptr) && (p->GetZoneId() == zone))
-            p->GetSession()->SendPacket(packet);
+        if ((p->getSession() != nullptr) && (p->GetZoneId() == zone))
+            p->getSession()->SendPacket(packet);
     }
 }
 
@@ -2191,7 +2191,7 @@ void WorldMap::updateObjects()
                             Player* lplr = static_cast<Player*>(itr);
 
                             // Make sure that the target player can see us.
-                            if (lplr && lplr->IsVisible(pObj->getGuid()))
+                            if (lplr && lplr->isVisibleObject(pObj->getGuid()))
                                 lplr->getUpdateMgr().pushUpdateData(&update, count);
                         }
                         update.clear();
@@ -2212,7 +2212,7 @@ void WorldMap::updateObjects()
 
             _processQueue.erase(it2);
             if (player->getWorldMap() == this)
-                player->ProcessPendingUpdates();
+                player->processPendingUpdates();
         }
     }
 }

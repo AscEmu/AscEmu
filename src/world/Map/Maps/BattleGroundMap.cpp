@@ -80,7 +80,7 @@ void BattlegroundMap::removeAllPlayers()
         for (const auto& itr : getPlayers())
         {
             Player* player = itr.second;
-            player->SafeTeleport(player->getBGEntryMapId(), 0, player->getBGEntryPosition());
+            player->safeTeleport(player->getBGEntryMapId(), 0, player->getBGEntryPosition());
         }
     }
 }

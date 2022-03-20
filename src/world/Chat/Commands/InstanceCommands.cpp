@@ -172,7 +172,7 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
     if (instance != nullptr && instance->getScript() != nullptr)
         instance->getScript()->displayDataStateList(plr);
     else
-        plr->BroadcastMessage("NO INSTANCE SCRIPT FOUND NO BOSS DATA AVAILABLE");
+        plr->broadcastMessage("NO INSTANCE SCRIPT FOUND NO BOSS DATA AVAILABLE");
 
     return true;
 }

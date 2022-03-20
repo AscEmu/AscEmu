@@ -1228,7 +1228,7 @@ void Group::resetInstances(uint8_t method, bool isRaid, Player* SendMsgTo)
             if (!isEmpty)
                 SendMsgTo->sendResetInstanceFailed(0, instanceSave->getMapId());
             else
-                SendMsgTo->SendPacket(SmsgInstanceReset(instanceSave->getMapId()).serialise().get());
+                SendMsgTo->sendPacket(SmsgInstanceReset(instanceSave->getMapId()).serialise().get());
         }
 
         if (isEmpty || method == INSTANCE_RESET_GROUP_DISBAND || method == INSTANCE_RESET_CHANGE_DIFFICULTY)

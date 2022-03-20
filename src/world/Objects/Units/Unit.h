@@ -1133,7 +1133,7 @@ public:
     friend class AIInterface;
     friend class Aura;
 
-    virtual void Deactivate(MapMgr* mgr);
+    virtual void Deactivate(WorldMap* mgr);
 
     bool  canReachWithAttack(Unit* pVictim);
 

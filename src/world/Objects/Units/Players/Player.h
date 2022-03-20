@@ -598,9 +598,6 @@ public:
 
     void ejectFromInstance();
     bool exitInstance();
-    uint32_t getPersistentInstanceId(uint32_t mapId, uint8_t difficulty);
-    void setPersistentInstanceId(Instance* instance);
-    void setPersistentInstanceId(uint32_t mapId, uint8_t difficulty, uint32_t instanceId);
 private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Basic

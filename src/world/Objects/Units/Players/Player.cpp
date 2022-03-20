@@ -986,7 +986,7 @@ void Player::setAreaId(uint32_t area) { m_areaId = area; }
 
 bool Player::isInCity() const
 {
-    const auto at = GetMapMgr()->GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
+    const auto at = sAreaStore.LookupEntry(getWorldMap()->getAreaId(/*GetPhase()*/0, GetPosition()));
     if (at != nullptr)
     {
         ::DBC::Structures::AreaTableEntry const* zt = nullptr;
@@ -1190,20 +1190,20 @@ void Player::handleKnockback(Object* object, float horizontal, float vertical)
     speedCheatDelay(10000);
 }
 
-bool Player::teleport(const LocationVector& vec, MapMgr* map)
+bool Player::teleport(const LocationVector& vec, WorldMap* map)
 {
     if (map)
     {
-        if (map->GetPlayer(this->getGuidLow()))
+        if (map->getPlayer(this->getGuidLow()))
         {
             this->SetPosition(vec);
         }
         else
         {
-            if (map->GetMapId() == 530 && !this->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_01))
+            if (map->getBaseMap()->getMapId() == 530 && !this->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_01))
                 return false;
 
-            if (map->GetMapId() == 571 && !this->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
+            if (map->getBaseMap()->getMapId() == 571 && !this->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
                 return false;
 
             this->safeTeleport(map, vec);
@@ -1300,7 +1300,7 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
     callExitVehicle();
 #endif
 
-    if (m_bg && m_bg->GetMapMgr() && GetMapMgr()->GetMapInfo()->mapid != mapId)
+    if (m_bg && m_bg->getWorldMap() && getWorldMap()->getBaseMap()->getMapInfo()->mapid != mapId)
     {
         m_bg->RemovePlayer(this, false);
     }
@@ -1314,7 +1314,7 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
     return true;
 }
 
-void Player::safeTeleport(MapMgr* mgr, const LocationVector& vec)
+void Player::safeTeleport(WorldMap* mgr, const LocationVector& vec)
 {
     if (mgr)
     {
@@ -1330,11 +1330,11 @@ void Player::safeTeleport(MapMgr* mgr, const LocationVector& vec)
         if (IsInWorld())
             RemoveFromWorld();
 
-        m_mapId = mgr->GetMapId();
-        m_instanceId = mgr->GetInstanceID();
+        m_mapId = mgr->getBaseMap()->getMapId();
+        m_instanceId = mgr->getInstanceId();
 
-        getSession()->SendPacket(SmsgTransferPending(mgr->GetMapId()).serialise().get());
-        getSession()->SendPacket(SmsgNewWorld(mgr->GetMapId(), vec).serialise().get());
+        getSession()->SendPacket(SmsgTransferPending(mgr->getBaseMap()->getMapId()).serialise().get());
+        getSession()->SendPacket(SmsgNewWorld(mgr->getBaseMap()->getMapId(), vec).serialise().get());
 
         setTransferStatus(TRANSFER_PENDING);
         m_sentTeleportPosition = vec;
@@ -1442,26 +1442,28 @@ void Player::sendTeleportAckPacket(LocationVector position)
 
 void Player::onWorldPortAck()
 {
-    MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo(GetMapId());
-    if (mapInfo)
+    DBC::Structures::MapEntry const* mEntry = sMapStore.LookupEntry(GetMapId());
+    //only resurrect if player is porting to a instance portal
+    if (mEntry->isDungeon() && isDead())
+        resurrect();
+
+    if (mEntry->isDungeon())
     {
-        if (isDead() && !mapInfo->isNonInstanceMap())
-            resurrect();
-
-        if (mapInfo->hasFlag(WMI_INSTANCE_WELCOME) && GetMapMgr())
+        // check if this instance has a reset time and send it to player if so
+        InstanceDifficulty::Difficulties diff = getDifficulty(mEntry->isRaid());
+        if (DBC::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mEntry->id, diff))
         {
-            std::string welcome_msg;
-            welcome_msg = std::string(getSession()->LocalizedWorldSrv(ServerString::SS_INSTANCE_WELCOME)) + " ";
-            welcome_msg += std::string(getSession()->LocalizedMapName(mapInfo->mapid));
-            welcome_msg += ". ";
-
-            if (!mapInfo->isDungeon() && !(mapInfo->isMultimodeDungeon() && m_dungeonDifficulty >= DUNGEON_HEROIC) && m_mapMgr->pInstance)
+            if (mapDiff->resetTime)
             {
-                welcome_msg += std::string(getSession()->LocalizedWorldSrv(ServerString::SS_INSTANCE_RESET_INF)) + " ";
-                welcome_msg += Util::GetDateTimeStringFromTimeStamp((uint32)m_mapMgr->pInstance->m_expiration);
-            }
+                if (time_t timeReset = sInstanceMgr.getResetTimeFor(mEntry->id, diff))
+                {
+                    const auto now_c = std::chrono::system_clock::now();
+                    const auto now = std::chrono::system_clock::to_time_t(now_c);
 
-            sChatHandler.SystemMessage(m_session, welcome_msg.c_str());
+                    uint32_t timeleft = uint32(timeReset - now);
+                    sendInstanceResetWarning(mEntry->id, diff, timeleft, true);
+                }
+            }
         }
     }
 
@@ -1543,7 +1545,7 @@ void Player::setPhase(uint8_t command, uint32_t newPhase)
         if (pet)
             pet->setPhase(command, newPhase);
 
-    if (Unit* charm = m_mapMgr->GetUnit(getCharmGuid()))
+    if (Unit* charm = m_WorldMap->getUnit(getCharmGuid()))
         charm->setPhase(command, newPhase);
 }
 
@@ -1560,12 +1562,12 @@ void Player::zoneUpdate(uint32_t zoneId)
     {
         m_playerInfo->lastZone = zoneId;
         sHookInterface.OnZone(this, zoneId, oldzone);
-        CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnZoneChange)(this, zoneId, oldzone);
+        CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnZoneChange)(this, zoneId, oldzone);
 
-        auto at = GetMapMgr()->GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
+        auto at = sAreaStore.LookupEntry(getWorldMap()->getAreaId(GetPhase(), GetPosition()));
         if (at && (at->team == AREAC_SANCTUARY || at->flags & AREA_SANCTUARY))
         {
-            Unit* pUnit = (getTargetGuid() == 0) ? nullptr : (m_mapMgr ? m_mapMgr->GetUnit(getTargetGuid()) : nullptr);
+            Unit* pUnit = (getTargetGuid() == 0) ? nullptr : (m_WorldMap ? m_WorldMap->getUnit(getTargetGuid()) : nullptr);
             if (pUnit && m_duelPlayer != pUnit)
             {
                 EventAttackStop();
@@ -1601,7 +1603,7 @@ void Player::zoneUpdate(uint32_t zoneId)
 
 void Player::forceZoneUpdate()
 {
-    if (!m_mapMgr)
+    if (!m_WorldMap)
         return;
 
     if (auto areaTableEntry = this->GetArea())
@@ -1656,10 +1658,10 @@ void Player::eventExploration()
     if (!IsInWorld())
         return;
 
-    if (m_position.x > _maxX || m_position.x < _minX || m_position.y > _maxY || m_position.y < _minY)
+    if (m_position.x > Map::Terrain::_maxX || m_position.x < Map::Terrain::_minX || m_position.y > Map::Terrain::_maxY || m_position.y < Map::Terrain::_minY)
         return;
 
-    if (GetMapMgr()->GetCellByCoords(GetPositionX(), GetPositionY()) == nullptr)
+    if (getWorldMap()->getCellByCoords(GetPositionX(), GetPositionY()) == nullptr)
         return;
 
     if (auto areaTableEntry = this->GetArea())
@@ -1771,78 +1773,6 @@ bool Player::exitInstance()
     return false;
 }
 
-uint32_t Player::getPersistentInstanceId(uint32_t mapId, uint8_t difficulty)
-{
-    if (mapId >= MAX_NUM_MAPS || difficulty >= MAX_DIFFICULTY || m_playerInfo == NULL)
-        return 0;
-
-    std::lock_guard<std::mutex> lock(m_playerInfo->savedInstanceIdsLock);
-    PlayerInstanceMap::iterator itr = m_playerInfo->savedInstanceIds[difficulty].find(mapId);
-    if (itr == m_playerInfo->savedInstanceIds[difficulty].end())
-        return 0;
-
-    return (*itr).second;
-}
-
-void Player::setPersistentInstanceId(Instance* instance)
-{
-    if (instance == nullptr)
-        return;
-
-    if (hasPlayerFlags(PLAYER_FLAG_GM))
-        return;
-
-    if (!instance->isPersistent())
-        return;
-
-    if (m_playerInfo)
-    {
-        if (m_playerInfo->m_Group && instance->m_creatorGroup == 0)
-            instance->m_creatorGroup = m_playerInfo->m_Group->GetID();
-
-        if (m_playerInfo->m_Group && (m_playerInfo->m_Group->m_instanceIds[instance->m_mapId][instance->m_difficulty] == 0 ||
-            !sInstanceMgr.InstanceExists(instance->m_mapId, m_playerInfo->m_Group->m_instanceIds[instance->m_mapId][instance->m_difficulty])))
-        {
-            m_playerInfo->m_Group->m_instanceIds[instance->m_mapId][instance->m_difficulty] = instance->m_instanceId;
-            m_playerInfo->m_Group->SaveToDB();
-        }
-    }
-
-    if (!instance->m_persistent)
-        setPersistentInstanceId(instance->m_mapId, instance->m_difficulty, 0);
-    else
-        setPersistentInstanceId(instance->m_mapId, instance->m_difficulty, instance->m_instanceId);
-
-    sLogger.debug("Added player %u to saved instance %u on map %u.", (uint32_t)getGuid(), instance->m_instanceId, instance->m_mapId);
-}
-
-void Player::setPersistentInstanceId(uint32_t mapId, uint8_t difficulty, uint32_t instanceId)
-{
-    if (mapId >= MAX_NUM_MAPS || difficulty >= MAX_DIFFICULTY || m_playerInfo == nullptr)
-        return;
-
-    if (m_playerInfo)
-    {
-        std::lock_guard<std::mutex> lock(m_playerInfo->savedInstanceIdsLock);
-        PlayerInstanceMap::iterator itr = m_playerInfo->savedInstanceIds[difficulty].find(mapId);
-        if (itr == m_playerInfo->savedInstanceIds[difficulty].end())
-        {
-            if (instanceId != 0)
-                m_playerInfo->savedInstanceIds[difficulty].insert(PlayerInstanceMap::value_type(mapId, instanceId));
-        }
-        else
-        {
-            if (instanceId == 0)
-                m_playerInfo->savedInstanceIds[difficulty].erase(itr);
-            else
-                (*itr).second = instanceId;
-        }
-
-        CharacterDatabase.Execute("DELETE FROM instanceids WHERE playerguid = %u AND mapid = %u AND mode = %u;", m_playerInfo->guid, mapId, difficulty);
-        CharacterDatabase.Execute("INSERT INTO instanceids (playerguid, mapid, mode, instanceid) VALUES (%u, %u, %u, %u)", m_playerInfo->guid, mapId, difficulty, instanceId);
-    }
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Commands
 void Player::disableSummoning(bool disable) { m_disableSummoning = disable; }
@@ -1867,7 +1797,7 @@ std::string Player::getBanReason() const { return m_banreason; }
 GameObject* Player::getSelectedGo() const
 {
     if (m_GMSelectedGO)
-        return GetMapMgr()->GetGameObject(static_cast<uint32_t>(m_GMSelectedGO));
+        return getWorldMap()->getGameObject(static_cast<uint32_t>(m_GMSelectedGO));
 
     return nullptr;
 }
@@ -2071,7 +2001,7 @@ Player* Player::getPlayerOwner()
 {
     if (getCharmedByGuid() != 0)
     {
-        const auto charmerUnit = GetMapMgrUnit(getCharmedByGuid());
+        const auto charmerUnit = getWorldMapUnit(getCharmedByGuid());
         if (charmerUnit != nullptr && charmerUnit->isPlayer())
             return dynamic_cast<Player*>(charmerUnit);
     }
@@ -3947,7 +3877,7 @@ void Player::updateComboPoints()
 
     if (getComboPointTarget() != 0)
     {
-        const auto* const target = GetMapMgrUnit(getComboPointTarget());
+        const auto* const target = getWorldMapUnit(getComboPointTarget());
         if (target == nullptr || target->isDead() || getTargetGuid() != getComboPointTarget())
         {
             buffer[0] = buffer[1] = 0;
@@ -5633,7 +5563,7 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t spellId)
                 if (spell->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
                     const uint64_t guid = getChannelObjectGuid();
-                    DynamicObject* dynamicObject = GetMapMgr()->GetDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
+                    DynamicObject* dynamicObject = getWorldMap()->getDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
                     if (!dynamicObject)
                         continue;
 
@@ -5665,7 +5595,7 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t spellId)
     smsg_AttackStop(unitAttacker);
     EventAttackStop();
 
-    CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnPlayerDeath)(this, unitAttacker);
+    CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnPlayerDeath)(this, unitAttacker);
 
     uint32_t selfResSpellId = 0;
     if (!m_bg || m_bg && !isArena(m_bg->GetType()))
@@ -5717,8 +5647,8 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t spellId)
 
     clearHealthBatch();
 
-    if (m_mapMgr->m_battleground != nullptr)
-        m_mapMgr->m_battleground->HookOnUnitDied(this);
+    if (m_WorldMap->getBaseMap()->isBattlegroundOrArena() && reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground())
+        reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground()->HookOnUnitDied(this);
 }
 
 void Player::kill()
@@ -5862,10 +5792,10 @@ void Player::spawnCorpseBody()
             if (m_lootableOnCorpse && corpse->getDynamicFlags() != 1)
                 corpse->setDynamicFlags(1);
 
-            if (m_mapMgr == nullptr)
+            if (m_WorldMap == nullptr)
                 corpse->AddToWorld();
             else
-                corpse->PushToWorld(m_mapMgr);
+                corpse->PushToWorld(m_WorldMap);
         }
 
         setCorpseData(corpse->GetPosition(), corpse->GetInstanceID());
@@ -6952,7 +6882,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
 
     if (wowGuid.isUnit())
     {
-        Creature* quest_giver = m_mapMgr->GetCreature(wowGuid.getGuidLowPart());
+        Creature* quest_giver = m_WorldMap->getCreature(wowGuid.getGuidLowPart());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -6967,7 +6897,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
     }
     else if (wowGuid.isGameObject())
     {
-        GameObject* quest_giver = m_mapMgr->GetGameObject(wowGuid.getGuidLowPart());
+        GameObject* quest_giver = m_WorldMap->getGameObject(wowGuid.getGuidLowPart());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -6990,7 +6920,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
     }
     else if (wowGuid.isPlayer())
     {
-        Player* quest_giver = m_mapMgr->GetPlayer(static_cast<uint32_t>(guid));
+        Player* quest_giver = m_WorldMap->getPlayer(static_cast<uint32_t>(guid));
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -7670,10 +7600,10 @@ PlayerSpec& Player::getActiveSpec()
 
 void Player::logIntoBattleground()
 {
-    const auto mapMgr = sInstanceMgr.GetInstance(this);
-    if (mapMgr && mapMgr->m_battleground)
+    const auto mapMgr = sMapMgr.findWorldMap(GetMapId(), GetInstanceID());
+    if (mapMgr && mapMgr->getBaseMap()->isBattlegroundOrArena())
     {
-        const auto battleground = mapMgr->m_battleground;
+        const auto battleground = reinterpret_cast<BattlegroundMap*>(mapMgr)->getBattleground();
         if (battleground->HasEnded() && battleground->HasFreeSlots(getInitialTeam(), battleground->GetType()))
         {
             if (!IS_INSTANCE(getBGEntryMapId()))
@@ -7846,6 +7776,13 @@ void Player::sendRaidDifficultyPacket()
 #if VERSION_STRING > TBC
     m_session->SendPacket(MsgSetRaidDifficulty(m_raidDifficulty, 1, isInGroup()).serialise().get());
 #endif
+}
+
+void Player::sendResetFailedNotify(uint32_t mapid)
+{
+    WorldPacket data(SMSG_RESET_FAILED_NOTIFY, 4);
+    data << uint32_t(mapid);
+    sendPacket(&data);
 }
 
 void Player::sendInstanceDifficultyPacket(uint8_t difficulty)
@@ -8023,7 +7960,7 @@ void Player::sendInitialWorldstates()
 {
 #if VERSION_STRING < Cata
     WorldPacket data(SMSG_INIT_WORLD_STATES, 100);
-    m_mapMgr->GetWorldStatesHandler().BuildInitWorldStatesForZone(m_zoneId, m_areaId, data);
+    m_WorldMap->getWorldStatesHandler().BuildInitWorldStatesForZone(m_zoneId, m_areaId, data);
     m_session->SendPacket(&data);
 #endif
 }
@@ -8542,7 +8479,7 @@ bool Player::canTrainAt(Trainer* trainer)
 
 void Player::sendCinematicCamera(uint32_t id)
 {
-    m_mapMgr->ChangeObjectLocation(this);
+    m_WorldMap->changeObjectLocation(this);
     SetPosition(float(GetPositionX() + 0.01), float(GetPositionY() + 0.01), float(GetPositionZ() + 0.01), GetOrientation());
     m_session->SendPacket(SmsgTriggerCinematic(id).serialise().get());
 }
@@ -9041,7 +8978,7 @@ void Player::dismountAfterTaxiPath(uint32_t money, float x, float y, float z)
 
 void Player::interpolateTaxiPosition()
 {
-    if (!m_currentTaxiPath || m_mapMgr == nullptr) return;
+    if (!m_currentTaxiPath || m_WorldMap == nullptr) return;
 
     float x = 0.0f;
     float y = 0.0f;
@@ -9054,7 +8991,7 @@ void Player::interpolateTaxiPosition()
     /*else
         m_currentTaxiPath->SetPosForTime(x, y, z, m_taxiRideTime - ntime, &m_lastTaxiNode);*/
 
-    if (x < _minX || x > _maxX || y < _minY || y > _maxX)
+    if (x < Map::Terrain::_minX || x > Map::Terrain::_maxX || y < Map::Terrain::_minY || y > Map::Terrain::_maxX)
         return;
 
     SetPosition(x, y, z, 0);
@@ -9095,7 +9032,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
 
     if (wowGuid.isUnit())
     {
-        Creature* pCreature = GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+        Creature* pCreature = getWorldMap()->getCreature(wowGuid.getGuidLowPart());
         if (!pCreature)return;
         pLoot = &pCreature->loot;
         m_currentLoot = pCreature->getGuid();
@@ -9103,7 +9040,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
     }
     else if (wowGuid.isGameObject())
     {
-        GameObject* pGO = GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
+        GameObject* pGO = getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
         if (!pGO)
             return;
 
@@ -9117,7 +9054,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
     }
     else if (wowGuid.isPlayer())
     {
-        Player* p = GetMapMgr()->GetPlayer((uint32_t)guid);
+        Player* p = getWorldMap()->getPlayer((uint32_t)guid);
         if (!p)
             return;
 
@@ -9162,7 +9099,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
         switch (loot_method)
         {
         case PARTY_LOOT_GROUP:
-            getGroup()->sendGroupLoot(pLoot, GetMapMgr()->_GetObject(m_currentLoot), this, mapId);
+            getGroup()->sendGroupLoot(pLoot, getWorldMap()->getObject(m_currentLoot), this, mapId);
             break;
         case PARTY_LOOT_NEED_BEFORE_GREED:
         case PARTY_LOOT_MASTER_LOOTER:
@@ -9684,8 +9621,8 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
     const int32_t exaltedReputation = 42000;   //   0/1000  Exalted
     const int32_t maxReputation = 42999;       // 999/1000  Exalted
 
-    if ((GetMapMgr()->GetMapInfo()->minlevel == 80 || 
-        (GetMapMgr()->iInstanceMode == InstanceDifficulty::DUNGEON_HEROIC && GetMapMgr()->GetMapInfo()->minlevel_heroic == 80)) && 
+    if ((getWorldMap()->getBaseMap()->getMapInfo()->minlevel == 80 ||
+        (getWorldMap()->getDifficulty() == InstanceDifficulty::DUNGEON_HEROIC && getWorldMap()->getBaseMap()->getMapInfo()->minlevel_heroic == 80)) &&
         m_championingFactionId != 0)
         faction = m_championingFactionId;
 
@@ -10109,7 +10046,7 @@ void Player::requestDuel(Player* target)
     const float z = (GetPositionZ() + target->GetPositionZ() * distance) / (1 + distance);
 
     // create flag
-    if (GameObject* goFlag = GetMapMgr()->CreateGameObject(21680))
+    if (GameObject* goFlag = getWorldMap()->createGameObject(21680))
     {
         goFlag->CreateFromProto(21680, GetMapId(), x, y, z, GetOrientation());
 
@@ -10120,7 +10057,7 @@ void Player::requestDuel(Player* target)
         setDuelArbiter(goFlag->getGuid());
         target->setDuelArbiter(goFlag->getGuid());
 
-        goFlag->PushToWorld(m_mapMgr);
+        goFlag->PushToWorld(m_WorldMap);
 
         target->getSession()->SendPacket(SmsgDuelRequested(goFlag->getGuid(), getGuid()).serialise().get());
     }
@@ -10134,7 +10071,7 @@ void Player::testDuelBoundary()
     WoWGuid wowGuid;
     wowGuid.Init(getDuelArbiter());
 
-    if (GameObject* goFlag = GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()))
+    if (GameObject* goFlag = getWorldMap()->getGameObject(wowGuid.getGuidLowPart()))
     {
         if (CalcDistance(goFlag) > 75.0f)
         {
@@ -10176,7 +10113,7 @@ void Player::endDuel(uint8_t condition)
     {
         if (wowGuid.getGuidLowPart())
         {
-            GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()) : nullptr;
+            GameObject* arbiter = m_WorldMap ? getWorldMap()->getGameObject(wowGuid.getGuidLowPart()) : nullptr;
             if (arbiter)
             {
                 arbiter->RemoveFromWorld(true);
@@ -10237,7 +10174,7 @@ void Player::endDuel(uint8_t condition)
     else
         sHookInterface.OnDuelFinished(this, m_duelPlayer);
 
-    GameObject* goFlag = m_mapMgr ? GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()) : nullptr;
+    GameObject* goFlag = m_WorldMap ? getWorldMap()->getGameObject(wowGuid.getGuidLowPart()) : nullptr;
     if (goFlag)
     {
         goFlag->RemoveFromWorld(true);
@@ -10304,7 +10241,7 @@ void Player::cancelDuel()
     WoWGuid wowGuid;
     wowGuid.Init(getDuelArbiter());
 
-    const auto goFlag = GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
+    const auto goFlag = getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
     if (goFlag)
         goFlag->RemoveFromWorld(true);
 
@@ -10695,7 +10632,6 @@ void Player::eventDismissPet()
 
 Object* Player::getSummonedObject() const { return m_summonedObject; }
 void Player::setSummonedObject(Object* summonedObject) { m_summonedObject = summonedObject; }
-#endif
 
 void Player::loadBoundInstances()
 {
@@ -10811,7 +10747,7 @@ void Player::unbindInstance(BoundInstancesMap::iterator& itr, InstanceDifficulty
         }
 
         if (itr->second.perm)
-            GetSession()->sendCalendarRaidLockout(itr->second.save, false);
+            getSession()->sendCalendarRaidLockout(itr->second.save, false);
 
         itr->second.save->removePlayer(this);               // save can become invalid
         m_boundInstances[difficulty].erase(itr++);
@@ -10873,11 +10809,11 @@ void Player::bindToInstance()
 
     WorldPacket data(SMSG_INSTANCE_SAVE_CREATED, 4);
     data << uint32_t(0);
-    SendPacket(&data);
+    sendPacket(&data);
     if (!isGMFlagSet())
     {
         bindToInstance(mapSave, true, EXTEND_STATE_KEEP);
-        GetSession()->sendCalendarRaidLockout(mapSave, true);
+        getSession()->sendCalendarRaidLockout(mapSave, true);
     }
 }
 
@@ -10920,7 +10856,7 @@ void Player::sendRaidInfo()
         }
     }
     data.put<uint32_t>(p_counter, counter);
-    SendPacket(&data);
+    sendPacket(&data);
 }
 
 /*
@@ -10946,7 +10882,7 @@ void Player::sendSavedInstances()
     //Send opcode 811. true or false means, whether you have current raid/heroic instances
     data.Initialize(SMSG_UPDATE_INSTANCE_OWNERSHIP);
     data << uint32_t(hasBeenSaved);
-    SendPacket(&data);
+    sendPacket(&data);
 
     if (!hasBeenSaved)
         return;
@@ -10959,7 +10895,7 @@ void Player::sendSavedInstances()
             {
                 data.Initialize(SMSG_UPDATE_LAST_INSTANCE);
                 data << uint32_t(itr->second.save->getMapId());
-                SendPacket(&data);
+                sendPacket(&data);
             }
         }
     }
@@ -10990,7 +10926,7 @@ void Player::sendInstanceResetWarning(uint32_t mapid, InstanceDifficulty::Diffic
         data << uint8_t(0); // is locked
         data << uint8_t(0); // is extended, ignored if prev field is 0
     }
-    SendPacket(&data);
+    sendPacket(&data);
 }
 
 void Player::resetInstances(uint8_t method, bool isRaid)
@@ -11031,7 +10967,7 @@ void Player::resetInstances(uint8_t method, bool isRaid)
 
         // since this is a solo instance there should not be any players inside
         if (method == INSTANCE_RESET_ALL || method == INSTANCE_RESET_CHANGE_DIFFICULTY)
-            SendPacket(SmsgInstanceReset(p->getMapId()).serialise().get());
+            sendPacket(SmsgInstanceReset(p->getMapId()).serialise().get());
 
         p->deleteFromDB();
         m_boundInstances[diff].erase(itr++);
@@ -11050,5 +10986,5 @@ void Player::sendResetInstanceFailed(uint32_t reason, uint32_t MapId)
     WorldPacket data(SMSG_INSTANCE_RESET_FAILED, 4);
     data << uint32_t(reason);
     data << uint32_t(MapId);
-    SendPacket(&data);
+    sendPacket(&data);
 }

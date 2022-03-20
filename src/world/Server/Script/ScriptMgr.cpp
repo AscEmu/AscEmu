@@ -1141,7 +1141,7 @@ void InstanceScript::displayDataStateList(Player* player)
     player->broadcastMessage("=== DataState for instance %s ===", mInstance->getBaseMap()->getMapInfo()->name.c_str());
 
     for (const auto& encounters : bosses)
-        player->BroadcastMessage("  Boss '%s' (%u) - %s", "Id", encounters.state, getDataStateString(encounters.state).c_str());
+        player->broadcastMessage("  Boss '%s' (%u) - %s", "Id", encounters.state, getDataStateString(encounters.state).c_str());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -100,8 +100,8 @@ void InstanceMap::permBindAllPlayers()
             player->bindToInstance(save, true);
             WorldPacket data(SMSG_INSTANCE_SAVE_CREATED, 4);
             data << uint32(0);
-            player->SendPacket(&data);
-            player->GetSession()->sendCalendarRaidLockout(save, true);
+            player->sendPacket(&data);
+            player->getSession()->sendCalendarRaidLockout(save, true);
 
             // if group leader is in instance, group also gets bound
             if (Group* group = player->getGroup())
@@ -180,7 +180,7 @@ bool InstanceMap::addPlayerToMap(Player* player)
                             data << uint32_t(60000);
                             data << uint32_t(getScript() ? getScript()->getCompletedEncounterMask() : 0);
                             data << uint8_t(0);
-                            player->SendPacket(&data);
+                            player->sendPacket(&data);
                             player->setPendingBind(mapSave->getInstanceId(), 60000);
                         }
                     }
