@@ -1741,8 +1741,12 @@ void Group::updateLooterGuid(Object* pLootedObject)
         else
         {
             if (i < 7)
-                if (m_SubGroups[i + 1]->m_GroupMembers.begin() != m_SubGroups[i + 1]->m_GroupMembers.end())
+            {
+                const auto nextSubGroup = m_SubGroups[i + 1];
+                if (nextSubGroup && nextSubGroup->m_GroupMembers.begin() != nextSubGroup->m_GroupMembers.end())
+                {
                     continue;
+                }
                 else
                 {
                     if (m_SubGroups[i]->m_GroupMembers.begin() != m_SubGroups[i]->m_GroupMembers.end())
@@ -1753,6 +1757,7 @@ void Group::updateLooterGuid(Object* pLootedObject)
                                 pNewLooter = (*member);
                     }
                 }
+            }
         }
 
         // Get First member on a subGroup it coult be possible that group 1 is empty
