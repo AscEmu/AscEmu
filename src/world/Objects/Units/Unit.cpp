@@ -4830,11 +4830,6 @@ bool Unit::canSee(Object* const obj)
         {
             return true;
         }
-        // Gameobjects on transport should always be visible
-        else if (gobj->GetTransport() != nullptr)
-        {
-            return true;
-        }
         else
         {
             if (!isInRange(gobj->GetPosition(), viewDistance))
@@ -4843,10 +4838,7 @@ bool Unit::canSee(Object* const obj)
     }
     else
     {
-        // Creatures on transports should always be visible
-        if (obj->isCreature() && dynamic_cast<Creature*>(obj)->hasUnitMovementFlag(MOVEFLAG_TRANSPORT))
-            return true;
-        else if (!isInRange(obj->GetPosition(), viewDistance))
+        if (!isInRange(obj->GetPosition(), viewDistance))
             return false;
     }
 
