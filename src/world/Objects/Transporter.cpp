@@ -484,6 +484,18 @@ float Transporter::CalculateSegmentPos(float now)
     return segmentPos / frame.NextDistFromPrev;
 }
 
+void Transporter::removeFromMap()
+{
+    sEventMgr.AddEvent(this, &Transporter::delayedRemoveFromMap, EVENT_TRANSPORTER_DELAYED_TELEPORT, 10, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+}
+
+void Transporter::delayedRemoveFromMap()
+{
+    UnloadStaticPassengers();
+    getWorldMap()->removeFromMapMgr(this);
+    RemoveFromWorld(true);
+}
+
 bool Transporter::TeleportTransport(uint32_t newMapid, float x, float y, float z, float o)
 {
     WorldMap* oldMap = getWorldMap();

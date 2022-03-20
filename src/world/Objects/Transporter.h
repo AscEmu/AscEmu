@@ -82,6 +82,9 @@ public:
     uint32  buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
     void UpdateForMap(WorldMap* map);
 
+    // Remove Transports
+    void removeFromMap();
+
     // This method transforms supplied transport offsets into global coordinates
     void CalculatePassengerPosition(float& x, float& y, float& z, float* o = nullptr) const override
     {
@@ -119,6 +122,9 @@ private:
     // Occours when Transport reaches Teleport Frame
     bool TeleportTransport(uint32_t newMapId, float x, float y, float z, float o);
     void DelayedTeleportTransport(WorldMap* oldMap);
+
+    // RemoveTransport
+    void delayedRemoveFromMap();
 
     // Helper to Port Players
     void TeleportPlayers(float x, float y, float z, float o, uint32_t newMapId, uint32_t oldMapId, bool newMap);
