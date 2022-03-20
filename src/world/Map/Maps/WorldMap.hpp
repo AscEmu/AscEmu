@@ -390,8 +390,6 @@ public:
     uint32_t _dynamicUpdateTimer;
     uint32_t _gameObjectUpdateTimer;
 
-    std::chrono::steady_clock::time_point m_lastUpdateTime = std::chrono::high_resolution_clock::now();
-
     // Worldstates
     WorldStatesHandler& getWorldStatesHandler();
     void onWorldStateUpdate(uint32_t zone, uint32_t field, uint32_t value) override;

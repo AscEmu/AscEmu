@@ -210,9 +210,6 @@ void WorldMap::update(uint32_t t_diff)
     // Time In Seconds
     const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-    // Time In Milliseconds ( exact Difftime Since last update Cycle )
-    auto diffTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - m_lastUpdateTime).count();
-
     // Update any events.
     // we make update of events before objects so in case there are 0 timediff events they do not get deleted after update but on next server update loop
     eventHolder.Update(t_diff);
@@ -231,7 +228,7 @@ void WorldMap::update(uint32_t t_diff)
             if (!trans || !trans->IsInWorld())
                 continue;
 
-            trans->Update(diffTime);
+            trans->Update(t_diff);
         }
     }
 
@@ -370,8 +367,6 @@ void WorldMap::update(uint32_t t_diff)
     
     // Finally, A9 Building/Distribution
     updateObjects();
-
-    m_lastUpdateTime = std::chrono::high_resolution_clock::now();
 }
 
 void WorldMap::processRespawns()
