@@ -82,7 +82,7 @@ public:
     uint32  buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
     void UpdateForMap(WorldMap* map);
 
-    // Remove Transports
+    // Removes transport from map
     void removeFromMap();
 
     // This method transforms supplied transport offsets into global coordinates
