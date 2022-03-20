@@ -2251,6 +2251,7 @@ void WorldMap::removeCombatInProgress(uint64_t guid)
 bool WorldMap::addToMapMgr(Transporter* obj)
 {
     std::unique_lock<std::mutex> lock(m_transportsLock);
+
     m_TransportStorage.insert(obj);
     return true;
 }

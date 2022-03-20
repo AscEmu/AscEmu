@@ -737,6 +737,7 @@ public:
                 {
                     transport->UnloadStaticPassengers();
                     transport->getWorldMap()->removeFromMapMgr(transport);
+                    transport->RemoveFromWorld(true);
                 }
                 break;
             }
