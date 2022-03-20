@@ -281,7 +281,7 @@ public:
 
     // Transports
     bool addToMapMgr(Transporter* obj);
-    void removeFromMapMgr(Transporter* obj, bool remove);
+    void removeFromMapMgr(Transporter* obj);
 
     // Corpse
     void addCorpseDespawn(uint64_t guid, time_t time);
@@ -387,9 +387,10 @@ public:
     // Update Timers
     uint32_t _sessionUpdateTimer;
     uint32_t _respawnUpdateTimer;
-    uint32_t _transportUpdateTimer;
     uint32_t _dynamicUpdateTimer;
     uint32_t _gameObjectUpdateTimer;
+
+    std::chrono::steady_clock::time_point m_lastUpdateTime = std::chrono::high_resolution_clock::now();
 
     // Worldstates
     WorldStatesHandler& getWorldStatesHandler();

@@ -736,7 +736,7 @@ public:
                 if (getBossState(DATA_ICECROWN_GUNSHIP_BATTLE) == Performed)
                 {
                     transport->UnloadStaticPassengers();
-                    transport->getWorldMap()->removeFromMapMgr(transport, true);
+                    transport->getWorldMap()->removeFromMapMgr(transport);
                 }
                 break;
             }

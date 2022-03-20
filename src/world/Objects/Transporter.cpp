@@ -342,8 +342,19 @@ void Transporter::UnloadStaticPassengers()
         Object* obj = *_staticPassengers.begin();
         RemovePassenger(obj);
 
-        if (obj->IsInWorld())
-            obj->Delete();
+        switch (obj->getObjectTypeId())
+        {
+            case TYPEID_UNIT:
+                obj->ToCreature()->Despawn(0, 0);
+                break;
+            case TYPEID_GAMEOBJECT:
+                obj->ToGameObject()->Despawn(0, 0);
+                break;
+            default:
+                if (obj->IsInWorld())
+                    obj->Delete();
+                break;
+        }
     }
 }
 
@@ -503,7 +514,7 @@ void Transporter::DelayedTeleportTransport(WorldMap* oldMap)
         return;
 
     _delayedTeleport = false;
-    oldMap->removeFromMapMgr(this, false);
+    oldMap->removeFromMapMgr(this);
     RemoveFromWorld(false);
 
     // Set new Map Information

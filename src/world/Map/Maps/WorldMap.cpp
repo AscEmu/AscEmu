@@ -69,7 +69,6 @@ WorldMap::WorldMap(BaseMap* baseMap, uint32_t id, time_t expiry, uint32_t Instan
     // Timers
     _sessionUpdateTimer = 20;
     _respawnUpdateTimer = 1000;
-    _transportUpdateTimer = 100;
     _dynamicUpdateTimer = 100;
     _gameObjectUpdateTimer = 200;
 
@@ -208,6 +207,12 @@ void WorldMap::update(uint32_t t_diff)
 
     std::unique_lock<std::mutex> updateLock(m_Updatelock);
 
+    // Time In Seconds
+    const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+    // Time In Milliseconds ( exact Difftime Since last update Cycle )
+    auto diffTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - m_lastUpdateTime).count();
+
     // Update any events.
     // we make update of events before objects so in case there are 0 timediff events they do not get deleted after update but on next server update loop
     eventHolder.Update(t_diff);
@@ -216,9 +221,7 @@ void WorldMap::update(uint32_t t_diff)
     _dynamicTree.update(t_diff);
 
     // Update Transporters
-    if (_transportUpdateTimer <= t_diff)
     {
-        _transportUpdateTimer = 100;
         std::unique_lock<std::mutex> guard(m_transportsLock);
         for (auto itr = m_TransportStorage.cbegin(); itr != m_TransportStorage.cend();)
         {
@@ -228,12 +231,8 @@ void WorldMap::update(uint32_t t_diff)
             if (!trans || !trans->IsInWorld())
                 continue;
 
-            trans->Update(t_diff);
+            trans->Update(diffTime);
         }
-    }
-    else
-    {
-        _transportUpdateTimer -= t_diff;
     }
 
     // Update Creatures
@@ -371,6 +370,8 @@ void WorldMap::update(uint32_t t_diff)
     
     // Finally, A9 Building/Distribution
     updateObjects();
+
+    m_lastUpdateTime = std::chrono::high_resolution_clock::now();
 }
 
 void WorldMap::processRespawns()
@@ -2259,17 +2260,12 @@ bool WorldMap::addToMapMgr(Transporter* obj)
     return true;
 }
 
-void WorldMap::removeFromMapMgr(Transporter* obj, bool remove)
+void WorldMap::removeFromMapMgr(Transporter* obj)
 {
     std::unique_lock<std::mutex> lock(m_transportsLock);
 
     m_TransportStorage.erase(obj);
     sTransportHandler.removeInstancedTransport(obj, getInstanceId());
-
-    RemoveObject(obj, false);
-
-    if (remove)
-        obj->RemoveFromWorld(true);
 }
 
 void WorldMap::objectUpdated(Object* obj)
