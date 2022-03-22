@@ -363,7 +363,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
     WorldPacket data(opcode, recvData.size());
     data << sessionMovementInfo;
-    mover->sendMessageToSet(&data, false);
+    mover->sendMessageToSet(&data, _player);
 
 #else
 

@@ -586,6 +586,7 @@ public:
         void SendCreatureChatMessageInRange(Creature* creature, uint32_t textId, Unit* target = nullptr);
 
         virtual void sendMessageToSet(WorldPacket* data, bool self, bool myteam_only = false);
+        virtual void sendMessageToSet(WorldPacket* data, Player const* /*skipp*/);
         virtual void outPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool self);
 
         //////////////////////////////////////////////////////////////////////////////////////////
