@@ -4078,8 +4078,11 @@ void Unit::addAura(Aura* aur)
                     if (aur->getAuraEffect(i)->getAuraEffectType() == SPELL_AURA_NONE)
                         continue;
 
-                    _aura->addAuraEffect(aur->getAuraEffect(i));
+                    _aura->addAuraEffect(aur->getAuraEffect(i), true);
                 }
+
+                // On reapply get duration from new aura
+                _aura->setOriginalDuration(aur->getOriginalDuration());
 
                 // Refresh duration and apply new stack if stackable
                 _aura->refreshOrModifyStack(false, 1);

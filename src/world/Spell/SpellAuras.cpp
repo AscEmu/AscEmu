@@ -82,7 +82,7 @@ bool Aura::hasAuraEffect(AuraEffect auraEffect) const
     return false;
 }
 
-void Aura::addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValue, float_t effectPctModifier, bool isStaticDamage, uint8_t effIndex)
+void Aura::addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValue, float_t effectPctModifier, bool isStaticDamage, uint8_t effIndex, bool reapplying/* = false*/)
 {
     if (effIndex >= MAX_SPELL_EFFECTS)
         return;
@@ -94,7 +94,7 @@ void Aura::addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValu
     }
 
     m_auraEffects[effIndex].setAuraEffectType(auraEffect);
-    m_auraEffects[effIndex].setEffectDamage(damage);
+    m_auraEffects[effIndex].setEffectDamage(reapplying ? damage * getStackCount() : damage);
     m_auraEffects[effIndex].setEffectBaseDamage(damage);
     m_auraEffects[effIndex].setEffectMiscValue(miscValue);
     m_auraEffects[effIndex].setEffectPercentModifier(effectPctModifier);
@@ -103,17 +103,20 @@ void Aura::addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValu
     m_auraEffects[effIndex].setAura(this);
     ++m_auraEffectCount;
 
-    // Calculate effect amplitude
-    _calculateEffectAmplitude(effIndex);
+    if (!reapplying)
+    {
+        // Calculate effect amplitude
+        _calculateEffectAmplitude(effIndex);
+    }
 }
 
-void Aura::addAuraEffect(AuraEffectModifier const* auraEffect)
+void Aura::addAuraEffect(AuraEffectModifier const* auraEffect, bool reapplying/* = false*/)
 {
     if (auraEffect == nullptr)
         return;
 
     addAuraEffect(auraEffect->getAuraEffectType(), auraEffect->getEffectBaseDamage(), auraEffect->getEffectMiscValue(),
-        auraEffect->getEffectPercentModifier(), auraEffect->isEffectDamageStatic(), auraEffect->getEffectIndex());
+        auraEffect->getEffectPercentModifier(), auraEffect->isEffectDamageStatic(), auraEffect->getEffectIndex(), reapplying);
 }
 
 void Aura::removeAuraEffect(uint8_t effIndex, bool reapplying/* = false*/)
