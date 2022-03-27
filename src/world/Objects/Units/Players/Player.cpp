@@ -2489,7 +2489,7 @@ void Player::setUpdateBits(UpdateMask* updateMask, Player* target) const
 //////////////////////////////////////////////////////////////////////////////////////////
 // Visiblility
 void Player::addVisibleObject(uint64_t guid) { m_visibleObjects.insert(guid); }
-void Player::removeVisibleObject(uint64_t guid) { m_visibleObjects.erase(guid); }
+void Player::removeVisibleObject(uint64_t guid) { if (isVisibleObject(guid)) m_visibleObjects.erase(guid); }
 bool Player::isVisibleObject(uint64_t guid) { return m_visibleObjects.contains(guid); }
 
 void Player::removeIfVisiblePushOutOfRange(uint64_t guid)
