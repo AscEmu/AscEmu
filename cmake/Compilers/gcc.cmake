@@ -1,13 +1,16 @@
 # Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 
-#include(CheckCXXCompilerFlag)
-#CHECK_CXX_COMPILER_FLAG("-std=c++20" COMPILER_SUPPORTS_CXX20)
+# GCC >= 8.0.0
+set(GCC_SUPPORTS_VERSION 8.0.0)
 
-#if (NOT COMPILER_SUPPORTS_CXX20)
-#    message(FATAL_ERROR "AscEmu requires at least GCC 8! Current version ${CMAKE_CXX_COMPILER} does not support c++20 feature")
-#endif ()
+if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS GCC_SUPPORTS_VERSION)
+    message(FATAL_ERROR "AscEmu requires version ${GCC_SUPPORTS_VERSION} to build but found ${CMAKE_CXX_COMPILER_VERSION}")
+else ()
+    message(STATUS "Minimum version GCC required is ${GCC_SUPPORTS_VERSION}, found ${CMAKE_CXX_COMPILER_VERSION} - success")
+endif ()
 
 message(STATUS "Applying settings for ${CMAKE_CXX_COMPILER}")
+
 add_definitions(-DHAS_CXX0X)
 
 # apply base flags

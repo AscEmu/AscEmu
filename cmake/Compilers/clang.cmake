@@ -1,17 +1,20 @@
 # Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++20" COMPILER_SUPPORTS_CXX17)
+# Clang >= 8.0.0
+set(CLANG_SUPPORTS_VERSION 8.0.0)
 
-if (NOT COMPILER_SUPPORTS_CXX20)
-    message(FATAL_ERROR "AscEmu requires at least Clang 15.0! Current version ${CMAKE_CXX_COMPILER} does not support c++20 feature")
+if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS CLANG_SUPPORTS_VERSION)
+    message(FATAL_ERROR "AscEmu requires version ${CLANG_SUPPORTS_VERSION} to build but found ${CMAKE_CXX_COMPILER_VERSION}")
+else ()
+    message(STATUS "Minimum version Clang required is ${CLANG_SUPPORTS_VERSION}, found ${CMAKE_CXX_COMPILER_VERSION} - success")
 endif ()
 
 message(STATUS "Applying settings for ${CMAKE_CXX_COMPILER}")
+
 add_definitions(-DHAS_CXX0X)
 
 # apply base flags
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -std=c11")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -std=c17")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -std=c++20")
 
 if (IS_64BIT)

@@ -34,11 +34,6 @@ include(${CMAKE_SOURCE_DIR}/cmake/Options.cmake)
 # perform system tasks
 include(${CMAKE_SOURCE_DIR}/cmake/CheckSystem.cmake)
 
-# set RPATH-handing (CMake parameters)
-set(CMAKE_SKIP_BUILD_RPATH FALSE)
-set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
 # add dependecies
 add_subdirectory(dep)
 
@@ -47,11 +42,6 @@ add_subdirectory(src)
 
 # add script libraries
 add_subdirectory(src/scripts)
-
-# install libraries for windows build (libmysql.dll)
-if (WIN32)
-    install(FILES ${INSTALLED_DEPENDENCIES} DESTINATION .)
-endif ()
 
 # install db updates
 install(DIRECTORY ${INSTALL_DB_FILES} DESTINATION sql FILES_MATCHING PATTERN "*.sql")

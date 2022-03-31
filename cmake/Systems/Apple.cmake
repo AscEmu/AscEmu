@@ -1,6 +1,6 @@
 # Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 
-message(STATUS "Applying settings for \"OS X\" system")
+message(STATUS "Applying settings for macOS system")
 
 set(LIBS_DIR ${CMAKE_INSTALL_PREFIX}/lib)
 set(CMAKE_MACOSX_RPATH TRUE)

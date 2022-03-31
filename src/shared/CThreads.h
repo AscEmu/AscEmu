@@ -31,11 +31,6 @@ class WorldSession;
 class Creature;
 class GameObject;
 
-#define MAPMGR_UPDATEOBJECT_LOOP_DELAY 100
-#define MAPMGR_SESSION_UPDATE_DELAY    50
-
-#define MAPMGR_UPDATE_DELAY            100
-
 enum CThreadState
 {
     THREADSTATE_TERMINATE = 0,
@@ -44,7 +39,6 @@ enum CThreadState
     THREADSTATE_BUSY      = 3,
     THREADSTATE_AWAITING  = 4,
 };
-
 
 struct NameTableEntry;
 
