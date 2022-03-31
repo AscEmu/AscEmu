@@ -10,7 +10,7 @@ jobs:
   Classic:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup Environment
       run: |
         sudo apt-get update && sudo apt-get install -y zlib1g-dev
@@ -30,7 +30,7 @@ jobs:
   TBC:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup Environment
       run: |
         sudo apt-get update && sudo apt-get install -y zlib1g-dev
@@ -49,7 +49,7 @@ jobs:
   WotLK:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup Environment
       run: |
         sudo apt-get update && sudo apt-get install -y zlib1g-dev
@@ -68,7 +68,7 @@ jobs:
   Cata:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup Environment
       run: |
         sudo apt-get update && sudo apt-get install -y zlib1g-dev
@@ -87,7 +87,7 @@ jobs:
   Mop:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup Environment
       run: |
         sudo apt-get update && sudo apt-get install -y zlib1g-dev
