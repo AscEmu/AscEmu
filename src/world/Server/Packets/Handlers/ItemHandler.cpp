@@ -627,7 +627,7 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
 
         if (!newEntries[i]) // reset look
         {
-            itemTransmogrified->RemoveEnchantment(TRANSMOGRIFY_ENCHANTMENT_SLOT);
+            itemTransmogrified->removeEnchantment(TRANSMOGRIFY_ENCHANTMENT_SLOT);
             player->setVisibleItemFields(slots[i], itemTransmogrified);
         }
         else
@@ -639,7 +639,7 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
             }
 
             // All okay, proceed
-            itemTransmogrified->AddEnchantment(newEntries[i], 0, true, false, false, TRANSMOGRIFY_ENCHANTMENT_SLOT, 0);
+            itemTransmogrified->addEnchantment(newEntries[i], TRANSMOGRIFY_ENCHANTMENT_SLOT, 0);
             player->setVisibleItemFields(slots[i], itemTransmogrified);
 
             itemTransmogrified->setOwnerGuid(player->getGuid());
@@ -714,9 +714,7 @@ void WorldSession::handleReforgeItemOpcode(WorldPacket& recvData)
     if (!reforgeEntry)
     {
         // Reset the item
-        if (item->isEquipped())
-            player->applyReforgeEnchantment(item, false);
-        item->RemoveEnchantment(REFORGE_ENCHANTMENT_SLOT);
+        item->removeEnchantment(REFORGE_ENCHANTMENT_SLOT);
         sendReforgeResult(true);
         return;
     }
@@ -744,12 +742,8 @@ void WorldSession::handleReforgeItemOpcode(WorldPacket& recvData)
 
     player->modCoinage(-int64_t(100000));
 
-    item->AddEnchantment(reforgeEntry, 0, true, false, false, REFORGE_ENCHANTMENT_SLOT, 0);
-
+    item->addEnchantment(reforgeEntry, REFORGE_ENCHANTMENT_SLOT, 0);
     sendReforgeResult(true);
-
-    if (item->isEquipped())
-        player->applyReforgeEnchantment(item, true);
 }
 
 void WorldSession::sendReforgeResult(bool success)
@@ -2753,9 +2747,10 @@ void WorldSession::handleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacke
     if (!item)
         return;
 
-    item->RemoveAllEnchantments(true);
+    item->removeAllEnchantments(true);
 }
 
+#if VERSION_STRING > Classic
 void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
@@ -2787,24 +2782,30 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
     DBC::Structures::GemPropertiesEntry const* gem_properties;
     DBC::Structures::SpellItemEnchantmentEntry const* spell_item_enchant;
 
-    for (uint32_t i = 0; i < TargetItem->GetSocketsCount(); ++i)
+    for (uint8_t i = 0; i < TargetItem->getSocketSlotCount(); ++i)
     {
-        EnchantmentInstance* EI = TargetItem->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + i);
+        const auto enchantmentSlot = static_cast<EnchantmentSlot>(SOCK_ENCHANTMENT_SLOT1 + i);
+        EnchantmentInstance* EI = TargetItem->getEnchantment(enchantmentSlot);
+
         if (EI)
         {
-            FilledSlots++;
-#if VERSION_STRING > Classic
+            // Do not count enchanting/blacksmithing prismatic sockets towards socket bonus
+            if (TargetProto->Sockets[i].SocketColor)
+                FilledSlots++;
+
             ItemProperties const* ip = sMySQLStore.getItemProperties(EI->Enchantment->GemEntry);
-#else
-            ItemProperties const* ip = nullptr;
-#endif
             if (ip == nullptr)
                 gem_properties = nullptr;
             else
                 gem_properties = sGemPropertiesStore.LookupEntry(ip->GemProperties);
 
-            if (gem_properties && !(gem_properties->SocketMask & TargetProto->Sockets[i].SocketColor))
+            // Skip checks for enchanting/blacksmithing prismatic socket slots
+            // Also skip check if this gem is about to be replaced
+            if (gem_properties && TargetProto->Sockets[i].SocketColor && !srlPacket.gemGuid[i] &&
+                !(gem_properties->SocketMask & TargetProto->Sockets[i].SocketColor))
+            {
                 ColorMatch = false;
+            }
         }
 
         if (srlPacket.gemGuid[i])  //add or replace gem
@@ -2812,20 +2813,24 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
             Item* it = nullptr;
             ItemProperties const* ip = nullptr;
 
-            // tried to put gem in socket where no socket exists (take care about prismatic sockets)
+            // Check if item has socket slot in this slot
             if (!TargetProto->Sockets[i].SocketColor)
             {
-#if VERSION_STRING > TBC
-                // no prismatic socket
-                if (!TargetItem->GetEnchantment(PRISMATIC_ENCHANTMENT_SLOT))
+#if VERSION_STRING < WotLK
+                // Tried to add gem to a slot that does not exist in item
+                return;
+#else
+                // Check for prismatic slot enchantment
+                if (!TargetItem->getEnchantment(PRISMATIC_ENCHANTMENT_SLOT))
                     return;
-#endif
+
                 // not first not-colored (not normally used) socket
                 if (i != 0 && !TargetProto->Sockets[i - 1].SocketColor && (i + 1 >= 3
                     || TargetProto->Sockets[i + 1].SocketColor))
                     return;
 
                 // ok, this is first not colored socket for item with prismatic socket
+#endif
             }
 
             if (apply)
@@ -2874,7 +2879,8 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
             if (!gem_properties)
                 continue;
 
-            if (!(gem_properties->SocketMask & TargetProto->Sockets[i].SocketColor))
+            // Skip checks for enchanting/blacksmithing prismatic socket slots
+            if (TargetProto->Sockets[i].SocketColor && !(gem_properties->SocketMask & TargetProto->Sockets[i].SocketColor))
                 ColorMatch = false;
 
             //this is ok in few cases
@@ -2887,46 +2893,44 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
 
             //replace gem
             if (EI)
-                TargetItem->RemoveEnchantment(2 + i); //remove previous
-            else//add gem
-                FilledSlots++;
+            {
+                // Remove previous gem
+                TargetItem->removeEnchantment(enchantmentSlot);
+            }
+            else
+            {
+                // Do not count enchanting/blacksmithing prismatic sockets towards socket bonus
+                if (TargetProto->Sockets[i].SocketColor)
+                    FilledSlots++;
+            }
 
             spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(gem_properties->EnchantmentID);
             if (spell_item_enchant != nullptr)
-            {
-                if (TargetItem->getItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
-                    TargetItem->AddEnchantment(gem_properties->EnchantmentID, 0, true, apply, false, 2 + i);
-            }
-
+                TargetItem->addEnchantment(gem_properties->EnchantmentID, enchantmentSlot, 0);
         }
     }
 
     //Add color match bonus
     if (TargetItem->getItemProperties()->SocketBonus)
     {
-        if (ColorMatch && FilledSlots == TargetItem->GetSocketsCount())
+        if (ColorMatch && FilledSlots >= TargetItem->getSocketSlotCount(false))
         {
-            if (TargetItem->HasEnchantment(TargetItem->getItemProperties()->SocketBonus) > 0)
+            if (TargetItem->hasEnchantment(TargetItem->getItemProperties()->SocketBonus))
                 return;
 
             spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(TargetItem->getItemProperties()->SocketBonus);
             if (spell_item_enchant != nullptr)
-            {
-                if (TargetItem->getItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
-                {
-                    int32_t Slot = TargetItem->FindFreeEnchantSlot(spell_item_enchant, 0);
-                    TargetItem->AddEnchantment(TargetItem->getItemProperties()->SocketBonus, 0, true, apply, false, Slot);
-                }
-            }
+                TargetItem->addEnchantment(TargetItem->getItemProperties()->SocketBonus, BONUS_ENCHANTMENT_SLOT, 0);
         }
         else  //remove
         {
-            TargetItem->RemoveSocketBonusEnchant();
+            TargetItem->removeSocketBonusEnchant();
         }
     }
 
     TargetItem->m_isDirty = true;
 }
+#endif
 
 void WorldSession::handleWrapItemOpcode(WorldPacket& recvPacket)
 {

@@ -396,8 +396,20 @@ uint32_t Player::getVisibleItemEntry(uint32_t slot) const { return playerData()-
 void Player::setVisibleItemEntry(uint32_t slot, uint32_t entry) { write(playerData()->visible_items[slot].entry, entry); }
 
 #if VERSION_STRING > TBC
-uint16_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const { return playerData()->visible_items[slot].enchantment[pos]; }
-void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint16_t enchantment) { write(playerData()->visible_items[slot].enchantment[pos], enchantment); }
+uint16_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const
+{
+    if (pos > TEMP_ENCHANTMENT_SLOT)
+        return 0;
+
+    return playerData()->visible_items[slot].enchantment[pos];
+}
+void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint16_t enchantment)
+{
+    if (pos > TEMP_ENCHANTMENT_SLOT)
+        return;
+
+    write(playerData()->visible_items[slot].enchantment[pos], enchantment);
+}
 #else
 uint32_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const { return playerData()->visible_items[slot].enchantment[pos]; }
 void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint32_t enchantment)  { write(playerData()->visible_items[slot].enchantment[pos], enchantment); }
@@ -4957,46 +4969,6 @@ bool Player::hasItem(uint32_t itemId, uint32_t amount /*= 1*/, bool checkBankAls
     return getItemInterface()->GetItemCount(itemId, checkBankAlso) >= amount;
 }
 
-#if VERSION_STRING >= WotLK
-void Player::updateSoulboundTradeItems()
-{
-    if (m_itemSoulboundTradeable.empty())
-        return;
-
-    for (ItemDurationList::iterator itemSoulbound = m_itemSoulboundTradeable.begin(); itemSoulbound != m_itemSoulboundTradeable.end();)
-    {
-        if (!(*itemSoulbound)->m_isDirty)
-        {
-            if ((*itemSoulbound)->getOwner()->getGuid() != getGuid())
-            {
-                m_itemSoulboundTradeable.erase(itemSoulbound++);
-                continue;
-            }
-            if ((*itemSoulbound)->checkSoulboundTradeExpire())
-            {
-                m_itemSoulboundTradeable.erase(itemSoulbound++);
-                continue;
-            }
-            ++itemSoulbound;
-        }
-        else
-        {
-            m_itemSoulboundTradeable.erase(itemSoulbound++);
-        }
-    }
-}
-
-void Player::addTradeableItem(Item* item)
-{
-    m_itemSoulboundTradeable.push_back(item);
-}
-
-void Player::removeTradeableItem(Item* item)
-{
-    m_itemSoulboundTradeable.remove(item);
-}
-#endif
-
 #if VERSION_STRING == WotLK
 void Player::calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, bool apply)
 {
@@ -5276,7 +5248,7 @@ void Player::removeTempItemEnchantsOnArena()
 
     for (uint32_t x = EQUIPMENT_SLOT_START; x < EQUIPMENT_SLOT_END; ++x)
         if (Item* item = itemInterface->GetInventoryItem(static_cast<int16_t>(x)))
-            item->RemoveAllEnchantments(true);
+            item->removeAllEnchantments(true);
 
     for (uint32_t x = INVENTORY_SLOT_BAG_START; x < INVENTORY_SLOT_BAG_END; ++x)
     {
@@ -5288,7 +5260,7 @@ void Player::removeTempItemEnchantsOnArena()
                 for (uint32_t ci = 0; ci < bag->getItemProperties()->ContainerSlots; ++ci)
                 {
                     if (item = bag->GetItem(static_cast<int16_t>(ci)))
-                        item->RemoveAllEnchantments(true);
+                        item->removeAllEnchantments(true);
                 }
             }
         }
@@ -5296,7 +5268,7 @@ void Player::removeTempItemEnchantsOnArena()
 
     for (uint32_t x = INVENTORY_SLOT_ITEM_START; x < INVENTORY_SLOT_ITEM_END; ++x)
         if (Item* item = itemInterface->GetInventoryItem(static_cast<int16_t>(x)))
-            item->RemoveAllEnchantments(true);
+            item->removeAllEnchantments(true);
 }
 
 void Player::addGarbageItem(Item* item) { m_GarbageItems.push_back(item); }
@@ -5515,7 +5487,7 @@ void Player::applyItemMods(Item* item, int16 slot, bool apply, bool justBrokedow
 
     if (apply)
     {
-        item->ApplyEnchantmentBonuses();
+        item->applyAllEnchantmentBonuses();
 
         for (auto itemSpell : item->getItemProperties()->Spells)
         {
@@ -5568,7 +5540,7 @@ void Player::applyItemMods(Item* item, int16 slot, bool apply, bool justBrokedow
     }
     else
     {
-        item->RemoveEnchantmentBonuses();
+        item->removeAllEnchantmentBonuses();
         for (auto itemSpell : item->getItemProperties()->Spells)
         {
             if (itemSpell.Trigger == ON_EQUIP)
@@ -8167,10 +8139,10 @@ void Player::setVisibleItemFields(uint32_t slot, Item* item)
     {
         setVisibleItemEntry(slot, item->getVisibleEntry());
 #if VERSION_STRING > TBC
-        setVisibleItemEnchantment(slot, 0, item->getEnchantmentId(PERM_ENCHANTMENT_SLOT));
-        setVisibleItemEnchantment(slot, 1, item->getEnchantmentId(TEMP_ENCHANTMENT_SLOT));
+        setVisibleItemEnchantment(slot, PERM_ENCHANTMENT_SLOT, item->getEnchantmentId(PERM_ENCHANTMENT_SLOT));
+        setVisibleItemEnchantment(slot, TEMP_ENCHANTMENT_SLOT, item->getEnchantmentId(TEMP_ENCHANTMENT_SLOT));
 #else
-        for (int i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
+        for (uint8_t i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
             setVisibleItemEnchantment(slot, i, item->getEnchantmentId(i));
 #endif
     }
@@ -8178,10 +8150,10 @@ void Player::setVisibleItemFields(uint32_t slot, Item* item)
     {
         setVisibleItemEntry(slot, 0);
 #if VERSION_STRING > TBC
-        setVisibleItemEnchantment(slot, 0, 0);
-        setVisibleItemEnchantment(slot, 1, 0);
+        setVisibleItemEnchantment(slot, PERM_ENCHANTMENT_SLOT, 0);
+        setVisibleItemEnchantment(slot, TEMP_ENCHANTMENT_SLOT, 0);
 #else
-        for (int i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
+        for (uint8_t i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
             setVisibleItemEnchantment(slot, i, 0);
 #endif
     }
@@ -8395,6 +8367,11 @@ void Player::applyReforgeEnchantment(Item* item, bool apply)
     }
 
     UpdateStats();
+}
+#elif VERSION_STRING > Cata
+void Player::applyReforgeEnchantment(Item* item, bool apply)
+{
+    // TODO mop
 }
 #endif
 
@@ -9536,7 +9513,7 @@ Item* Player::storeItem(LootItem const* lootItem)
 
             uint32_t* played = getPlayedTime();
             newItem->setCreatePlayedTime(played[1]);
-            addTradeableItem(newItem);
+            getItemInterface()->addTradeableItem(newItem);
         }
 #endif
 

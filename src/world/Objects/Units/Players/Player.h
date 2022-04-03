@@ -973,14 +973,6 @@ public:
 
     bool hasItem(uint32_t itemId, uint32_t amount = 1, bool checkBankAlso = false) const;
 
-#if VERSION_STRING >= WotLK
-    // Soulbound Tradeable
-    void updateSoulboundTradeItems();
-    void addTradeableItem(Item* item);
-    void removeTradeableItem(Item* item);
-    ItemDurationList m_itemSoulboundTradeable;
-#endif
-
 #if VERSION_STRING > TBC
     void calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, bool apply);
     DBC::Structures::ScalingStatDistributionEntry const* getScalingStatDistributionFor(ItemProperties const& itemProto) const;
@@ -1503,7 +1495,9 @@ public:
     void sendRaidGroupOnly(uint32_t timeInMs, uint32_t type);
 
     void setVisibleItemFields(uint32_t slot, Item* item);
+#if VERSION_STRING >= Cata
     void applyReforgeEnchantment(Item* item, bool apply);
+#endif
 
     void setAFKReason(std::string reason);
     std::string getAFKReason() const;
@@ -1537,7 +1531,7 @@ private:
     uint16_t m_spellAreaUpdateTimer = 1000;
     uint16_t m_pendingPacketTimer = 100;
     uint16_t m_partyUpdateTimer = 1000;
-    uint16_t m_durationUpdateTimer = 1000;
+    uint32_t m_itemUpdateTimer = 0;
 
     std::string afkReason;
 

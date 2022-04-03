@@ -869,13 +869,10 @@ void WorldSession::characterEnumProc(QueryResult* result)
             }
 
             QueryResult* item_db_result = CharacterDatabase.Query("SELECT slot, entry, enchantments FROM playeritems "
-                "WHERE ownerguid=%u AND containerslot = '-1' AND slot BETWEEN '0' AND '20'",
+                "WHERE ownerguid=%u AND containerslot = '-1' AND slot BETWEEN '0' AND '22'",
                 WoWGuid::getGuidLowPartFromUInt64(charEnum.guid));
-#if VERSION_STRING >= WotLK
+
             memset(charEnum.player_items, 0, sizeof(PlayerItem) * INVENTORY_SLOT_BAG_END);
-#else
-            memset(charEnum.player_items, 0, sizeof(PlayerItem) * 20);
-#endif
 
             if (item_db_result)
             {
@@ -908,7 +905,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
                                     }
 #endif
                                     // Only Display Perm Enchants on Weapons
-                                    if (item_slot == EQUIPMENT_SLOT_MAINHAND || item_slot == EQUIPMENT_SLOT_OFFHAND && enchslot == PERM_ENCHANTMENT_SLOT)
+                                    if ((item_slot == EQUIPMENT_SLOT_MAINHAND || item_slot == EQUIPMENT_SLOT_OFFHAND) && enchslot == PERM_ENCHANTMENT_SLOT)
                                     {
                                         const auto spellItemEnchantmentEntry = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
                                         if (spellItemEnchantmentEntry != nullptr)

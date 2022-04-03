@@ -585,19 +585,16 @@ void Player::Update(unsigned long time_passed)
         m_partyUpdateTimer -= static_cast<uint16_t>(time_passed);
     }
 
-    // Item Duration Timer maybe add Enchants and retradeable items also here ?
-    if (time_passed >= m_durationUpdateTimer)
+    // Update items
+    if (m_itemUpdateTimer >= 1000)
     {
-#if VERSION_STRING >= WotLK
-        // Soulbound trade
-        updateSoulboundTradeItems();
-#endif
-
-        // Reset Timer
-        m_durationUpdateTimer = 1000;
+        getItemInterface()->update(m_itemUpdateTimer);
+        m_itemUpdateTimer = 0;
     }
     else
-        m_durationUpdateTimer -= static_cast<uint16_t>(time_passed);
+    {
+        m_itemUpdateTimer += time_passed;
+    }
 }
 
 void Player::_EventAttack(bool offhand)
@@ -2194,9 +2191,10 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
         if (it != nullptr)
         {
-            for (uint32 count = 0; count < it->GetSocketsCount(); count++)
+            for (uint8_t count = 0; count < it->getSocketSlotCount(); count++)
             {
-                EnchantmentInstance* ei = it->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + count);
+                const auto enchantmentSlot = static_cast<EnchantmentSlot>(SOCK_ENCHANTMENT_SLOT1 + count);
+                EnchantmentInstance* ei = it->getEnchantment(enchantmentSlot);
 
                 if (ei && ei->Enchantment)
                 {
@@ -2212,7 +2210,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
                             if (uniques[i] == ip->ItemId)
                             {
                                 // found a duplicate unique-equipped gem, remove it
-                                it->RemoveEnchantment(2 + count);
+                                it->removeEnchantment(enchantmentSlot);
                                 break;
                             }
                         }
@@ -2348,113 +2346,6 @@ void Player::OnPrePushToWorld()
 #endif
 }
 
-#ifdef AE_TBC
-void Player::OnPushToWorld()
-{
-    if (m_teleportState == 2)   // Worldport Ack
-        onWorldPortAck();
-
-    speedCheatReset();
-    m_beingPushed = false;
-    AddItemsToWorld();
-
-    // delay the unlock movement packet
-
-    // set fly if cheat is active
-    // TODO Validate that this isn't breaking logon by messaging player without delay
-#ifndef AE_TBC
-    setMoveCanFly(m_cheats.hasFlyCheat);
-#endif
-
-    // Update PVP Situation
-    setupPvPOnLogin();
-
-    // TODO What is this?
-#ifndef AE_TBC
-    removePvpFlags(U_FIELD_BYTES_FLAG_UNK2 | U_FIELD_BYTES_FLAG_SANCTUARY);
-#endif
-
-    if (m_playerInfo->lastOnline + 900 < UNIXTIME)    // did we logged out for more than 15 minutes?
-        getItemInterface()->RemoveAllConjured();
-
-    Unit::OnPushToWorld();
-
-    if (m_FirstLogin)
-    {
-        uint8 start_level = 1;
-
-        start_level = static_cast<uint8>(worldConfig.player.playerStartingLevel);
-
-        applyLevelInfo(start_level);
-        m_FirstLogin = false;
-    }
-
-    sHookInterface.OnEnterWorld(this);
-    CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnZoneChange)(this, m_zoneId, 0);
-    CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnPlayerEnter)(this);
-
-    if (m_teleportState == 1)        // First world enter
-        CompleteLoading();
-
-    m_teleportState = 0;
-
-    if (isOnTaxi())
-    {
-        if (m_taxiMapChangeNode != 0)
-        {
-            m_lastTaxiNode = m_taxiMapChangeNode;
-        }
-
-        // Process create packet
-        processPendingUpdates();
-
-        startTaxiPath(getTaxiPath(), getMountDisplayId(), m_lastTaxiNode);
-
-        m_taxiMapChangeNode = 0;
-    }
-
-    // can only fly in outlands or northrend (northrend requires cold weather flying)
-    if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
-    {
-        RemoveAura(flying_aura);
-        flying_aura = 0;
-    }
-
-    // send weather
-    sWeatherMgr.SendWeather(this);
-
-    setHealth(m_loadHealth > getMaxHealth() ? getMaxHealth() : m_loadHealth);
-    setPower(POWER_TYPE_MANA, (m_loadMana > getMaxPower(POWER_TYPE_MANA) ? getMaxPower(POWER_TYPE_MANA) : m_loadMana));
-
-    if (!getSession()->HasGMPermissions())
-        getItemInterface()->CheckAreaItems();
-
-    if (m_mapMgr && m_mapMgr->m_battleground != nullptr && m_bg != m_mapMgr->m_battleground)
-        m_mapMgr->m_battleground->PortPlayer(this, true);
-
-    if (m_bg != nullptr)
-    {
-        m_bg->OnAddPlayer(this);   // add buffs and so, must be after zone update and related aura removal
-        m_bg->OnPlayerPushed(this);
-    }
-
-    m_changingMaps = false;
-    sendFullAuraUpdate();
-
-    getItemInterface()->HandleItemDurations();
-
-    //SendInitialWorldstates();
-
-    if (m_resetTalents)
-    {
-        resetTalents();
-        m_resetTalents = false;
-    }
-
-    resetTimeSync();
-    sendTimeSync();
-}
-#else
 void Player::OnPushToWorld()
 {
     uint8 class_ = getClass();
@@ -2547,9 +2438,11 @@ void Player::OnPushToWorld()
             setPower(POWER_TYPE_RUNES, 8);
             break;
 #endif
+#if VERSION_STRING >= Cata
         case HUNTER:
             setPower(POWER_TYPE_FOCUS, 0);
             setMaxPower(POWER_TYPE_FOCUS, 100);
+#endif
         default:
             setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
             break;
@@ -2576,6 +2469,8 @@ void Player::OnPushToWorld()
     sendFullAuraUpdate();
 
     getItemInterface()->HandleItemDurations();
+    // Send enchant durations for unequipped items
+    getItemInterface()->sendEnchantDurations();
 
     sendInitialWorldstates();
 
@@ -2605,7 +2500,6 @@ void Player::OnPushToWorld()
 
 #endif
 }
-#endif
 
 void Player::RemoveFromWorld()
 {

@@ -618,7 +618,9 @@ class SERVER_DECL WorldSession
         void handleAutoBankItemOpcode(WorldPacket& recvPacket);
         void handleAutoStoreBankItemOpcode(WorldPacket& recvPacket);
         void handleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket);
+#if VERSION_STRING > Classic
         void handleInsertGemOpcode(WorldPacket& recvPacket);
+#endif
         void handleWrapItemOpcode(WorldPacket& recvPacket);
 #if VERSION_STRING > TBC
         void handleEquipmentSetUse(WorldPacket& recvPacket);

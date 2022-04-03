@@ -4072,9 +4072,9 @@ void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanen
         sGMLog.writefromsession(p_caster->getSession(), "enchanted item for %s", itemTarget->getOwner()->getName().c_str());
 
     //remove other perm enchantment that was enchanted by profession
-    itemTarget->RemoveProfessionEnchant();
-    int32 Slot = itemTarget->AddEnchantment(getSpellInfo()->getEffectMiscValue(effectIndex), 0, true, true, false, 0);
-    if (Slot < 0)
+    itemTarget->removeEnchantment(PERM_ENCHANTMENT_SLOT);
+    const auto addedEnchantment = itemTarget->addEnchantment(getSpellInfo()->getEffectMiscValue(effectIndex), PERM_ENCHANTMENT_SLOT, 0);
+    if (!addedEnchantment)
         return; // Apply failed
 
     if (!i_caster)
@@ -4112,10 +4112,10 @@ void Spell::SpellEffectEnchantItemTemporary(uint8_t effectIndex)  // Enchant Ite
         return;
     }
 
-    itemTarget->RemoveEnchantment(TEMP_ENCHANTMENT_SLOT);
+    itemTarget->removeEnchantment(TEMP_ENCHANTMENT_SLOT);
 
-    int32 Slot = itemTarget->AddEnchantment(EnchantmentID, Duration, false, true, false, TEMP_ENCHANTMENT_SLOT);
-    if (Slot < 0)
+    const auto addedEnchantment = itemTarget->addEnchantment(EnchantmentID, TEMP_ENCHANTMENT_SLOT, Duration * 1000);
+    if (!addedEnchantment)
         return; // Apply failed
 
     auto skill_line_ability = sSpellMgr.getFirstSkillEntryForSpell(getSpellInfo()->getId());
@@ -4813,8 +4813,8 @@ void Spell::SpellEffectEnchantHeldItem(uint8_t effectIndex)
         return;
     }
 
-    item->RemoveEnchantment(1);
-    item->AddEnchantment(getSpellInfo()->getEffectMiscValue(effectIndex), Duration, false, true, false, 1);
+    item->removeEnchantment(TEMP_ENCHANTMENT_SLOT);
+    item->addEnchantment(getSpellInfo()->getEffectMiscValue(effectIndex), TEMP_ENCHANTMENT_SLOT, Duration * 1000);
 }
 
 void Spell::SpellEffectSelfResurrect(uint8_t effectIndex)
@@ -5994,6 +5994,9 @@ void Spell::SpellEffectDualWield2H(uint8_t /*effectIndex*/)
 
 void Spell::SpellEffectEnchantItemPrismatic(uint8_t effectIndex)
 {
+#if VERSION_STRING < WotLK
+    return;
+#else
     if (!itemTarget || !p_caster)
         return;
 
@@ -6009,14 +6012,14 @@ void Spell::SpellEffectEnchantItemPrismatic(uint8_t effectIndex)
         sGMLog.writefromsession(p_caster->getSession(), "enchanted item for %s", itemTarget->getOwner()->getName().c_str());
 
     //remove other socket enchant
-    itemTarget->RemoveEnchantment(6);
-    int32 Slot = itemTarget->AddEnchantment(m_spellInfo->getEffectMiscValue(effectIndex), 0, true, true, false, 6);
+    itemTarget->removeEnchantment(PRISMATIC_ENCHANTMENT_SLOT);
+    const auto addedEnchantment = itemTarget->addEnchantment(m_spellInfo->getEffectMiscValue(effectIndex), PRISMATIC_ENCHANTMENT_SLOT, 0);
 
-    if (Slot < 6)
+    if (!addedEnchantment)
         return; // Apply failed
 
     itemTarget->m_isDirty = true;
-
+#endif
 }
 
 void Spell::SpellEffectCreateItem2(uint8_t effectIndex) // Create item

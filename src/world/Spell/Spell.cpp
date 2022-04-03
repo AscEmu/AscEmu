@@ -3595,8 +3595,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 {
                     switch (type)
                     {
-                        // todo: declare these in a header file and figure out other values
-                        case 7: // Enchants 'on use' enchantment to item
+                        case ITEM_ENCHANTMENT_TYPE_USE_SPELL:
                             // Check if the item already has a 'on use' enchantment
                             if (hasOnUseEffect)
                             {
@@ -3607,24 +3606,17 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
 #endif
                             }
                             break;
-                        case 8: // Enchants a new prismatic socket slot to item
-#if VERSION_STRING > TBC
+#if VERSION_STRING >= WotLK
+                        case ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET:
                             // Check if the item already has a prismatic gem slot enchanted
                             if (targetItem->getEnchantmentId(PRISMATIC_ENCHANTMENT_SLOT) != 0)
-                            {
                                 return SPELL_FAILED_ITEM_ALREADY_ENCHANTED;
-                            }
-#endif
+
                             // or if the item already has the maximum amount of socket slots
-                            if (targetItem->GetSocketsCount() >= MAX_ITEM_PROTO_SOCKETS)
-                            {
-#if VERSION_STRING < WotLK
-                                return SPELL_FAILED_BAD_TARGETS;
-#else
+                            if (targetItem->getSocketSlotCount() >= MAX_ITEM_PROTO_SOCKETS)
                                 return SPELL_FAILED_MAX_SOCKETS;
-#endif
-                            }
                             break;
+#endif
                         default:
                             break;
                     }
