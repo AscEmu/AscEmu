@@ -163,8 +163,6 @@ if (APPLE)
     target_link_libraries(${PROJECT_NAME} c++)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD")
     target_link_libraries(${PROJECT_NAME} c++experimental)
-elseif (NOT WIN32)
-    target_link_libraries(${PROJECT_NAME} stdc++fs)
 endif ()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
