@@ -1,5 +1,6 @@
 .idea
 .TMP
+.DS_Store
 src/logonserver/logon_conf.h
 src/shared/git_version.h
 src/shared/Common.hpp
