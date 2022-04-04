@@ -42,8 +42,6 @@ if (APPLE)
     target_link_libraries(${PROJECT_NAME} c++)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD")
     target_link_libraries(${PROJECT_NAME} c++experimental)
-elseif (NOT WIN32)
-    target_link_libraries(${PROJECT_NAME} stdc++fs)
 endif ()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.h)
