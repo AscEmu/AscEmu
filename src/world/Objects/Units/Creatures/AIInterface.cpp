@@ -1398,7 +1398,7 @@ void AIInterface::doFleeToGetAssistance()
     float radius = 30.0f;
     if (radius > 0)
     {
-        Creature* creature = getUnit()->getWorldMap()->getInterface()->getNearestAssistCreatureInGrid(getUnit()->ToCreature(), getCurrentTarget(), radius);
+        Creature* creature = getUnit()->getWorldMap()->getInterface()->getNearestAssistCreatureInCell(getUnit()->ToCreature(), getCurrentTarget(), radius);
 
         setNoSearchAssistance(true);
 
@@ -1420,7 +1420,7 @@ void AIInterface::callAssistance()
 
         if (radius > 0)
         {
-            Creature* creature = getUnit()->getWorldMap()->getInterface()->getNearestAssistCreatureInGrid(getUnit()->ToCreature(), getCurrentTarget(), radius);
+            Creature* creature = getUnit()->getWorldMap()->getInterface()->getNearestAssistCreatureInCell(getUnit()->ToCreature(), getCurrentTarget(), radius);
 
             if (creature)
                 creature->getAIInterface()->onHostileAction(getCurrentTarget());
@@ -2617,7 +2617,7 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
         pInstance = m_Unit->getWorldMap()->getInstance();
 
     // todo aaron02
-            /*
+    /*
     if (unitMapMgr
         && m_Unit->isCreature()
         && !m_Unit->isPet()
@@ -2682,6 +2682,7 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
                 CALL_INSTANCE_SCRIPT_EVENT(unitMapMgr, OnSpawnGroupKilled)(spawnGroupData->groupId);
         }
     }*/
+
     if (unitMapMgr && unitMapMgr->getBaseMap()->getMapInfo() && unitMapMgr->getBaseMap()->getMapInfo()->isRaid())
     {
         if (m_Unit->isCreature())

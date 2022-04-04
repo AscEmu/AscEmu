@@ -252,7 +252,7 @@ void CreatureAIScript::GetCreatureListWithEntryInGrid(std::list<Creature*>& cont
     if (_creature->getWorldMap()->getInterface() == nullptr)
         return;
 
-    _creature->getWorldMap()->getInterface()->GetCreatureListWithEntryInGrid(_creature, container, entry, maxSearchRange);
+    _creature->getWorldMap()->getInterface()->GetCreatureListWithEntryInRange(_creature, container, entry, maxSearchRange);
 }
 
 Creature* CreatureAIScript::findNearestCreature(uint32_t entry, float maxSearchRange /*= 250.0f*/)
@@ -268,7 +268,7 @@ void CreatureAIScript::GetGameObjectListWithEntryInGrid(std::list<GameObject*>& 
     if (_creature->getWorldMap()->getInterface() == nullptr)
         return;
 
-    _creature->getWorldMap()->getInterface()->GetGameObjectListWithEntryInGrid(_creature, container, entry, maxSearchRange);
+    _creature->getWorldMap()->getInterface()->GetGameObjectListWithEntryInRange(_creature, container, entry, maxSearchRange);
 }
 
 float CreatureAIScript::getRangeToObject(Object* object)

@@ -943,13 +943,21 @@ std::string InstanceScript::getDataStateString(uint8_t state)
 #if VERSION_STRING >= WotLK
 void InstanceScript::generateBossDataState()
 {
+    const auto* encounters = sObjectMgr.GetDungeonEncounterList(GetWorldMap()->getBaseMap()->getMapId(), GetWorldMap()->getDifficulty());
+    size_t i = 0;
+
+    for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr, ++i)
+    {
+        DungeonEncounter const* encounter = *itr;
+
+        BossInfo* bossInfo = &bosses[i];
+        bossInfo->entry = encounter->creditEntry;
+        bossInfo->state = NotStarted;
+    }
+
+    // Set States
     for (size_t i = 0; i < bosses.size(); ++i)
         setBossState(i, NotStarted);
-
-    // todo aaron02
-    /*
-    if (state == NotStarted)
-        GetInstance()->respawnBossLinkedGroups(data);*/
 }
 
 bool InstanceScript::setBossState(uint32_t id, EncounterStates state)
@@ -978,10 +986,8 @@ bool InstanceScript::setBossState(uint32_t id, EncounterStates state)
 
         OnEncounterStateChange(id, state);
 
-        // todo aaron02
-        /*
         if (state == NotStarted)
-            GetInstance()->respawnBossLinkedGroups(data);*/
+            GetInstance()->respawnBossLinkedGroups(bossInfo->entry);
 
         return true;
     }
@@ -1014,6 +1020,17 @@ void InstanceScript::loadSavedInstanceData(char const* data)
 
 void InstanceScript::readSaveDataBossStates(std::istringstream& data)
 {
+    const auto* encounters = sObjectMgr.GetDungeonEncounterList(GetWorldMap()->getBaseMap()->getMapId(), GetWorldMap()->getDifficulty());
+    size_t i = 0;
+
+    for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr, ++i)
+    {
+        DungeonEncounter const* encounter = *itr;
+
+        BossInfo* bossInfo = &bosses[i];
+        bossInfo->entry = encounter->creditEntry;
+    }
+
     uint32_t bossId = 0;
     for (std::vector<BossInfo>::iterator i = bosses.begin(); i != bosses.end(); ++i, ++bossId)
     {
@@ -1023,7 +1040,9 @@ void InstanceScript::readSaveDataBossStates(std::istringstream& data)
             buff = NotStarted;
 
         if (buff < InvalidState)
+        {
             setBossState(bossId, EncounterStates(buff));
+        }
     }
 }
 
@@ -1141,7 +1160,21 @@ void InstanceScript::displayDataStateList(Player* player)
     player->broadcastMessage("=== DataState for instance %s ===", mInstance->getBaseMap()->getMapInfo()->name.c_str());
 
     for (const auto& encounters : bosses)
-        player->broadcastMessage("  Boss '%s' (%u) - %s", "Id", encounters.state, getDataStateString(encounters.state).c_str());
+    {
+        CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounters.entry);
+        if (creature != nullptr)
+        {
+            player->broadcastMessage("  Boss '%s' (%u) - %s", creature->Name.c_str(), encounters.entry, getDataStateString(encounters.state).c_str());
+        }
+        else
+        {
+            GameObjectProperties const* gameobject = sMySQLStore.getGameObjectProperties(encounters.entry);
+            if (gameobject != nullptr)
+                player->broadcastMessage("  Object '%s' (%u) - %s", gameobject->name.c_str(), encounters.entry, getDataStateString(encounters.state).c_str());
+            else
+                player->broadcastMessage("  MiscData %u - %s", encounters.entry, getDataStateString(encounters.state).c_str());
+        }
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -578,6 +578,7 @@ enum EncounterStates
 struct BossInfo
 {
     BossInfo() : state(InvalidState) {}
+    uint32_t entry = 0;
     EncounterStates state;
 };
 

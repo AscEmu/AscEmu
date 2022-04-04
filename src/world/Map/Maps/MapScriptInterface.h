@@ -118,29 +118,22 @@ public:
         return nullptr;
     }
 
-    inline void GetCreatureListWithEntryInGrid(Creature* pCreature, std::list<Creature*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+    inline void GetCreatureListWithEntryInRange(Creature* pCreature, std::list<Creature*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
     {
-        MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(pCreature->GetPositionX()), m_worldMap.getPosY(pCreature->GetPositionY()));
-        if (pCell == 0)
-            return;
-
         float CurrentDist = 0;
-        Creature* target = nullptr;
 
-        ObjectSet::const_iterator iter = pCell->Begin();
-        for (; iter != pCell->End(); ++iter)
+        for (auto const& target : m_worldMap.activeCreatures)
         {
-            if ((*iter)->isCreature() && (*iter)->getEntry() == entry)
+            if (target->isCreature() && target->getEntry() == entry)
             {
-                target = static_cast<Creature*>((*iter));
-                CurrentDist = (*iter)->CalcDistance(pCreature);
+                CurrentDist = target->CalcDistance(pCreature);
                 if (CurrentDist <= maxSearchRange)
                     container.push_back(target);
             }
         }
     }
 
-    inline Creature* getNearestAssistCreatureInGrid(Creature* pCreature, Unit* enemy, float range /*= 250.0f*/) const
+    inline Creature* getNearestAssistCreatureInCell(Creature* pCreature, Unit* enemy, float range /*= 250.0f*/) const
     {
         MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(pCreature->GetPositionX()), m_worldMap.getPosY(pCreature->GetPositionY()));
         if (pCell == 0)
@@ -169,22 +162,15 @@ public:
         return nullptr;
     }
 
-    inline void GetGameObjectListWithEntryInGrid(Creature* pCreature, std::list<GameObject*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+    inline void GetGameObjectListWithEntryInRange(Creature* pCreature, std::list<GameObject*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
     {
-        MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(pCreature->GetPositionX()), m_worldMap.getPosY(pCreature->GetPositionY()));
-        if (pCell == 0)
-            return;
-
         float CurrentDist = 0;
-        GameObject* target = nullptr;
 
-        ObjectSet::const_iterator iter = pCell->Begin();
-        for (; iter != pCell->End(); ++iter)
+        for (auto const& target : m_worldMap.activeGameObjects)
         {
-            if ((*iter)->isGameObject() && (*iter)->getEntry() == entry)
+            if (target->isGameObject() && target->getEntry() == entry)
             {
-                target = reinterpret_cast<GameObject*>((*iter));
-                CurrentDist = (*iter)->CalcDistance(pCreature);
+                CurrentDist = target->CalcDistance(pCreature);
                 if (CurrentDist <= maxSearchRange)
                     container.push_back(target);
             }
