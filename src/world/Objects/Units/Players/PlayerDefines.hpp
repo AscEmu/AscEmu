@@ -1116,7 +1116,6 @@ typedef std::map<SpellInfo const*, std::pair<uint32_t, uint32_t> >StrikeSpellMap
 typedef std::map<uint32_t, OnHitSpell >               StrikeSpellDmgMap;
 typedef std::map<uint16_t, PlayerSkill>               SkillMap;
 typedef std::map<uint32_t, PlayerCooldown>            PlayerCooldownMap;
-typedef std::list<Item*>                              ItemDurationList;
 
 struct PlayerCheat
 {

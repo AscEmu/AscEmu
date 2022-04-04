@@ -27,12 +27,9 @@ This file is released under the MIT license. See README-MIT for more information
 /// -
 #define INVENTORY_SLOT_NOT_SET -1
 
-//\todo verfify this!
-#if VERSION_STRING <= TBC
-    #define DBC_PLAYER_ITEMS 20
-#else
-    #define DBC_PLAYER_ITEMS 23 // INVENTORY_SLOT_BAG_END
-#endif
+/// Count of visible items (equippable items + bags)
+/// i.e arrow quivers are also visible on character screen
+#define DBC_PLAYER_ITEMS 23 // INVENTORY_SLOT_BAG_END
 
 /// -
 #define RANDOM_SUFFIX_MAGIC_CALCULATION(__suffix, __scale) float2int32(float(__suffix) * float(__scale) / 10000.0f);

@@ -397,7 +397,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
 
 #if VERSION_STRING >= WotLK
             if (tradeItems[i]->hasFlags(ITEM_FLAG_BOP_TRADEABLE))
-                _player->removeTradeableItem(tradeItems[i]);
+                _player->getItemInterface()->removeTradeableItem(tradeItems[i]);
 #endif
         }
         if (targetTradeItems[i] != nullptr)
@@ -407,7 +407,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
 
 #if VERSION_STRING >= WotLK
             if (targetTradeItems[i]->hasFlags(ITEM_FLAG_BOP_TRADEABLE))
-                tradeTarget->removeTradeableItem(targetTradeItems[i]);
+                tradeTarget->getItemInterface()->removeTradeableItem(targetTradeItems[i]);
 #endif
         }
     }
@@ -423,7 +423,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
 
 #if VERSION_STRING >= WotLK
             if (tradeItems[i]->hasFlags(ITEM_FLAG_BOP_TRADEABLE))
-                tradeTarget->addTradeableItem(tradeItems[i]);
+                tradeTarget->getItemInterface()->addTradeableItem(tradeItems[i]);
 #endif
         }
         if (targetTradeItems[i] != nullptr)
@@ -434,7 +434,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
 
 #if VERSION_STRING >= WotLK
             if (targetTradeItems[i]->hasFlags(ITEM_FLAG_BOP_TRADEABLE))
-                _player->addTradeableItem(targetTradeItems[i]);
+                _player->getItemInterface()->addTradeableItem(targetTradeItems[i]);
 #endif
         }
     }

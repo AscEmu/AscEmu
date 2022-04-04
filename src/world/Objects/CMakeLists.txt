@@ -12,6 +12,7 @@ set(SRC_OBJECTS_FILES
     ${PATH_PREFIX}/Item.cpp
     ${PATH_PREFIX}/Item.Legacy.cpp
     ${PATH_PREFIX}/Item.h
+    ${PATH_PREFIX}/ItemDefines.hpp
     ${PATH_PREFIX}/MovementDefines.h
     ${PATH_PREFIX}/MovementInfo.h
     ${PATH_PREFIX}/Object.cpp

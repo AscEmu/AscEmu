@@ -21,7 +21,11 @@
 
 #include "EquipmentSetMgr.h"
 #include "ItemPrototype.h"
+#include "Objects/ItemDefines.hpp"
 #include "Common.hpp"
+
+#include <list>
+#include <mutex>
 
 class Creature;
 
@@ -233,9 +237,53 @@ enum AddItemResult
 //////////////////////////////////////////////////////////////////////////////////////////
 typedef std::map<uint64, std::pair<time_t, uint32>> RefundableMap;
 
+// APGL End
+// MIT Start
+struct ItemEnchantmentDuration
+{
+    Item* item = nullptr;
+    EnchantmentSlot slot = TEMP_ENCHANTMENT_SLOT;
+    uint32_t timeLeft = 0;
+};
+
+typedef std::list<Item*> ItemList;
+typedef std::vector<ItemEnchantmentDuration> ItemEnchantmentDurationList;
+
 class SERVER_DECL ItemInterface
 {
-    private:
+public:
+    bool hasItemForTotemCategory(uint32_t totemCategory);
+    bool isItemInTradeWindow(Item const* item) const;
+
+    void addTemporaryEnchantedItem(Item* item, EnchantmentSlot slot);
+    void removeTemporaryEnchantedItem(Item* item);
+    void removeTemporaryEnchantedItem(Item* item, EnchantmentSlot slot);
+    void sendEnchantDurations(Item const* forItem = nullptr);
+    void updateEnchantDurations(uint32_t timePassed);
+
+#if VERSION_STRING >= WotLK
+    // Soulbound Tradeable
+    void updateSoulboundTradeItems();
+    void addTradeableItem(Item* item);
+    void removeTradeableItem(Item* item);
+#endif
+
+    // Inventory error report
+    void buildInventoryChangeError(Item const* srcItem, Item const* dstItem, uint8_t inventoryError, uint32_t srcItemId = 0);
+
+    void update(uint32_t timePassed);
+
+private:
+    ItemEnchantmentDurationList m_temporaryEnchantmentList;
+    std::mutex m_temporaryEnchantmentMutex;
+
+#if VERSION_STRING >= WotLK
+    ItemList m_soulboundTradeableList;
+    std::mutex m_soulboundTradeableMutex;
+#endif
+
+    // MIT End
+    // APGL Start
 
         SlotResult m_result;
         Player* m_pOwner;
@@ -247,17 +295,6 @@ class SERVER_DECL ItemInterface
         AddItemResult m_AddItem(Item* item, int8 ContainerSlot, int16 slot);
 
     public:
-        // APGL End
-        // MIT Start
-
-        bool hasItemForTotemCategory(uint32_t totemCategory);
-        bool isItemInTradeWindow(Item const* item) const;
-
-        // Inventory error report
-        void buildInventoryChangeError(Item const* srcItem, Item const* dstItem, uint8_t inventoryError, uint32_t srcItemId = 0);
-
-        // MIT End
-        // APGL Start
 
         Arcemu::EquipmentSetMgr m_EquipmentSets;
         friend class ItemIterator;

@@ -149,11 +149,11 @@ namespace luaItem
     int AddEnchantment(lua_State* L, Item* ptr)
     {
         uint32_t entry = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        uint32_t duration = static_cast<uint32_t>(luaL_checkinteger(L, 2));
-        bool permanent = (duration == 0) ? true : false;
-        bool temp = (luaL_checkinteger(L, 3) == 1) ? true : false;
+        auto slot = static_cast<EnchantmentSlot>(luaL_checkinteger(L, 2));
+        uint32_t duration = static_cast<uint32_t>(luaL_checkinteger(L, 3));
+        bool temp = (luaL_checkinteger(L, 4) == 1) ? true : false;
 
-        lua_pushinteger(L, ptr->AddEnchantment(entry, duration, permanent, true, temp)); //Return the enchantment Slot back to LUA
+        lua_pushinteger(L, ptr->addEnchantment(entry, slot, duration, temp));
         return 1;
     }
 
@@ -169,13 +169,13 @@ namespace luaItem
         bool temp = CHECK_BOOL(L, 2);
 
         if (slot == -1)
-            ptr->RemoveAllEnchantments(temp);
+            ptr->removeAllEnchantments(temp);
         else if (slot == -2)
-            ptr->RemoveProfessionEnchant();
+            ptr->removeEnchantment(PERM_ENCHANTMENT_SLOT);
         else if (slot == -3)
-            ptr->RemoveSocketBonusEnchant();
+            ptr->removeSocketBonusEnchant();
         else if (slot >= 0)
-            ptr->RemoveEnchantment(slot);
+            ptr->removeEnchantment(static_cast<EnchantmentSlot>(slot));
 
         return 0;
     }
@@ -351,10 +351,10 @@ namespace luaItem
         if (ptr == nullptr)
             return 0;
 
-        uint32_t slot = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        auto slot = static_cast<EnchantmentSlot>(luaL_checkinteger(L, 1));
         uint32_t duration = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 
-        ptr->ModifyEnchantmentTime(slot, duration);
+        ptr->modifyEnchantmentTime(slot, duration);
         return 1;
     }
 

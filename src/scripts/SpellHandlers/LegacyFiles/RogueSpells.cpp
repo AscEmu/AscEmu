@@ -63,7 +63,7 @@ bool Shiv(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!it)
         return true;
 
-    EnchantmentInstance* ench = it->GetEnchantment(TEMP_ENCHANTMENT_SLOT);
+    EnchantmentInstance* ench = it->getEnchantment(TEMP_ENCHANTMENT_SLOT);
     if (ench)
     {
         DBC::Structures::SpellItemEnchantmentEntry const* Entry = ench->Enchantment;

@@ -21,6 +21,7 @@
 #ifndef WOWSERVER_ITEM_H
 #define WOWSERVER_ITEM_H
 
+#include "ItemDefines.hpp"
 #include "Management/Skill.hpp"
 #include "Management/ItemPrototype.h"
 #include "Storage/DBC/DBCStructures.hpp"
@@ -34,39 +35,12 @@ class Container;
 
 struct EnchantmentInstance
 {
+    // Durations for temporary enchantments are stored in ItemInterface and WoWItem data
     DBC::Structures::SpellItemEnchantmentEntry const* Enchantment;
     bool BonusApplied;
-    //\todo slot is < 255 set to uint8_t and get rid of casts.
-    uint32 Slot;
-    time_t ApplyTime;
-    uint32 Duration;
+    EnchantmentSlot Slot;
     bool RemoveAtLogout;
     uint32 RandomSuffix;
-};
-
-enum ItemQualities
-{
-    ITEM_QUALITY_POOR               = 0,                 //GREY
-    ITEM_QUALITY_NORMAL             = 1,                 //WHITE
-    ITEM_QUALITY_UNCOMMON           = 2,                 //GREEN
-    ITEM_QUALITY_RARE               = 3,                 //BLUE
-    ITEM_QUALITY_EPIC               = 4,                 //PURPLE
-    ITEM_QUALITY_LEGENDARY          = 5,                 //ORANGE
-    ITEM_QUALITY_ARTIFACT           = 6,                 //LIGHT YELLOW
-    ITEM_QUALITY_HEIRLOOM           = 7
-};
-
-enum ItemEnchantmentType
-{
-    ITEM_ENCHANTMENT_TYPE_NONE              = 0,
-    ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL      = 1,
-    ITEM_ENCHANTMENT_TYPE_DAMAGE            = 2,
-    ITEM_ENCHANTMENT_TYPE_EQUIP_SPELL       = 3,
-    ITEM_ENCHANTMENT_TYPE_RESISTANCE        = 4,
-    ITEM_ENCHANTMENT_TYPE_STAT              = 5,
-    ITEM_ENCHANTMENT_TYPE_TOTEM             = 6,
-    ITEM_ENCHANTMENT_TYPE_USE_SPELL         = 7,
-    ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET  = 8
 };
 
 const static uint16_t arm_skills[7] =
@@ -155,80 +129,14 @@ const static double SuffixMods[NUM_INVENTORY_TYPES] =
     0.26,        // RELIC
 };
 
-typedef std::map<uint32, EnchantmentInstance> EnchantmentMap;
+// MIT Start
 
-/// -1 from client enchantment slot number
-enum EnchantmentSlot
-{
-#if VERSION_STRING <= TBC
-    PERM_ENCHANTMENT_SLOT           = 0,
-    TEMP_ENCHANTMENT_SLOT           = 1,
-    SOCK_ENCHANTMENT_SLOT1          = 2,
-    SOCK_ENCHANTMENT_SLOT2          = 3,
-    SOCK_ENCHANTMENT_SLOT3          = 4,
-    BONUS_ENCHANTMENT_SLOT          = 5,
-    MAX_INSPECTED_ENCHANTMENT_SLOT  = 6,
-
-    PROP_ENCHANTMENT_SLOT_0         = 6,    // used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_1         = 7,    // used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_2         = 8,    // used with RandomSuffix and RandomProperty
-    PROP_ENCHANTMENT_SLOT_3         = 9,    // used with RandomProperty
-    PROP_ENCHANTMENT_SLOT_4         = 10,   // used with RandomProperty
-    MAX_ENCHANTMENT_SLOT            = 11
-#endif
-
-#if VERSION_STRING == WotLK
-    PERM_ENCHANTMENT_SLOT           = 0,
-    TEMP_ENCHANTMENT_SLOT           = 1,
-    SOCK_ENCHANTMENT_SLOT1          = 2,
-    SOCK_ENCHANTMENT_SLOT2          = 3,
-    SOCK_ENCHANTMENT_SLOT3          = 4,
-    BONUS_ENCHANTMENT_SLOT          = 5,
-    PRISMATIC_ENCHANTMENT_SLOT      = 6,
-    MAX_INSPECTED_ENCHANTMENT_SLOT  = 7,
-
-    PROP_ENCHANTMENT_SLOT_0         = 7,    // used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_1         = 8,    // used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_2         = 9,    // used with RandomSuffix and RandomProperty
-    PROP_ENCHANTMENT_SLOT_3         = 10,   // used with RandomProperty
-    PROP_ENCHANTMENT_SLOT_4         = 11,   // used with RandomProperty
-    MAX_ENCHANTMENT_SLOT            = 12
-#endif
-
-#if VERSION_STRING >= Cata
-    PERM_ENCHANTMENT_SLOT           = 0,
-    TEMP_ENCHANTMENT_SLOT           = 1,
-    SOCK_ENCHANTMENT_SLOT1          = 2,
-    SOCK_ENCHANTMENT_SLOT2          = 3,
-    SOCK_ENCHANTMENT_SLOT3          = 4,
-    BONUS_ENCHANTMENT_SLOT          = 5,
-    PRISMATIC_ENCHANTMENT_SLOT      = 6,
-
-    REFORGE_ENCHANTMENT_SLOT        = 8,
-    TRANSMOGRIFY_ENCHANTMENT_SLOT   = 9,
-    MAX_INSPECTED_ENCHANTMENT_SLOT  = 10,
-
-    PROP_ENCHANTMENT_SLOT_0         = 10,   // used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_1         = 11,   // used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_2         = 12,   // used with RandomSuffix and RandomProperty
-    PROP_ENCHANTMENT_SLOT_3         = 13,   // used with RandomProperty
-    PROP_ENCHANTMENT_SLOT_4         = 14,   // used with RandomProperty
-    MAX_ENCHANTMENT_SLOT            = 15
-#endif
-};
-
-enum RandomEnchantmentTypes
-{
-    RANDOMPROPERTY = 1,
-    RANDOMSUFFIX   = 2
-};
+typedef std::map<EnchantmentSlot, EnchantmentInstance> EnchantmentMap;
 
 struct WoWItem;
 class SERVER_DECL Item : public Object
 {
-    // MIT Start
 public:
-
     Item();
     virtual ~Item();
 
@@ -311,8 +219,39 @@ public:
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Misc
+    // Enchantments
+    EnchantmentInstance* getEnchantment(EnchantmentSlot slot);
+    EnchantmentInstance const* getEnchantment(EnchantmentSlot slot) const;
+    bool hasEnchantment(uint32_t enchantmentId) const;
+    // Returns -1 if enchantment is not found
+    int16_t hasEnchantmentReturnSlot(uint32_t enchantmentId) const;
+    // Returns true if enchantment was added successfully
+    bool addEnchantment(uint32_t enchantmentId, EnchantmentSlot slot, uint32_t duration, bool removedAtLogout = false, uint32_t randomSuffix = 0);
+    void removeEnchantment(EnchantmentSlot slot, bool timerExpired = false);
 
+    void modifyEnchantmentTime(EnchantmentSlot slot, uint32_t duration);
+
+    void applyAllEnchantmentBonuses();
+    void removeAllEnchantmentBonuses();
+
+    void removeAllEnchantments(bool onlyTemporary);
+    void removeSocketBonusEnchant();
+
+private:
+    void _setEnchantmentDataFields(EnchantmentSlot slot, uint32_t enchantmentId, uint32_t duration, uint32_t charges);
+
+    // Returns true if found available slot, false otherwise
+    bool _findFreeRandomEnchantmentSlot(EnchantmentSlot* slot, RandomEnchantmentType randomType) const;
+
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Sockets / gems
+#if VERSION_STRING >= TBC
+    uint8_t getSocketSlotCount(bool includePrismatic = true) const;
+
+#endif
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Misc
     Player* getOwner() const;
     void setOwner(Player* owner);
 
@@ -404,54 +343,13 @@ public:
             }
         }
 
-        time_t GetEnchantmentApplytime(uint32 slot)
-        {
-            EnchantmentMap::iterator itr = Enchantments.find(slot);
-            if (itr == Enchantments.end())
-                return 0;
-            else
-                return itr->second.ApplyTime;
-        }
-
         uint32_t getVisibleEntry() const;
-
-        // Adds an enchantment to the item.
-        void setEnchantment(EnchantmentSlot slot, uint32_t id, uint32_t duration, uint32_t charges);
-        int32 AddEnchantment(uint32_t enchantment, uint32 Duration, bool Perm = false, bool apply = true, bool RemoveAtLogout = false, uint32 Slot_ = 0, uint32 RandomSuffix = 0);
-        uint32 GetSocketsCount();
-
-        /// Removes an enchantment from the item.
-        void RemoveEnchantment(uint32 EnchantmentSlot);
 
         // Removes related temporary enchants
         void RemoveRelatedEnchants(DBC::Structures::SpellItemEnchantmentEntry const* newEnchant);
 
         /// Adds the bonus on an enchanted item.
-        void ApplyEnchantmentBonus(uint32 Slot, bool Apply);
-
-        /// Applies all enchantment bonuses (use on equip)
-        void ApplyEnchantmentBonuses();
-
-        /// Removes all enchantment bonuses (use on dequip)
-        void RemoveEnchantmentBonuses();
-
-        /// Event to remove an enchantment.
-        void EventRemoveEnchantment(uint32 Slot);
-
-        /// Check if we have an enchantment of this id?
-        int32 HasEnchantment(uint32 Id);
-
-        /// Check if we have an enchantment on that slot
-        bool HasEnchantmentOnSlot(uint32 slot);
-
-        /// Modify the time of an existing enchantment.
-        void ModifyEnchantmentTime(uint32 Slot, uint32 Duration);
-
-        /// Find free enchantment slot.
-        int32 FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32 random_type);
-
-        /// Removes all enchantments.
-        void RemoveAllEnchantments(bool OnlyTemporary);
+        void ApplyEnchantmentBonus(EnchantmentSlot Slot, bool Apply);
 
         /// Sends SMSG_ITEM_UPDATE_ENCHANT_TIME
         void SendEnchantTimeUpdate(uint32 Slot, uint32 Duration);
@@ -460,9 +358,6 @@ public:
 
         /// Applies any random properties the item has.
         void ApplyRandomProperties(bool apply);
-
-        void RemoveProfessionEnchant();
-        void RemoveSocketBonusEnchant();
 
         /// gets the itemlink for a message to the player
         std::string GetItemLink(uint32 language);
@@ -477,7 +372,6 @@ public:
         bool locked = false;
         bool m_isDirty = false;
 
-        EnchantmentInstance* GetEnchantment(uint32 slot);
         bool IsGemRelated(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment);
 
         static uint32 GenerateRandomSuffixFactor(ItemProperties const* m_itemProto);

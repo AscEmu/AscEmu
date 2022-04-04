@@ -7,8 +7,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/WoWItem.hpp"
 #include "Item.h"
 #include "Map/MapMgrDefines.hpp"
+#include "Server/Packets/SmsgEnchantmentLog.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLDataStore.hpp"
+
+using namespace AscEmu::Packets;
 
 Item::Item()
 {
@@ -51,15 +54,26 @@ Item::~Item()
 
     sEventMgr.RemoveEvents(this);
 
-    for (EnchantmentMap::iterator itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
+#if VERSION_STRING >= Cata
+    for (auto itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
     {
-        if (itr->second.Slot == 0 && itr->second.ApplyTime == 0 && itr->second.Duration == 0)
+        // These are allocated with new
+        if (itr->second.Slot == REFORGE_ENCHANTMENT_SLOT || itr->second.Slot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
         {
             delete itr->second.Enchantment;
             itr->second.Enchantment = nullptr;
         }
     }
+#endif
     Enchantments.clear();
+
+    if (m_owner != nullptr)
+    {
+        m_owner->getItemInterface()->removeTemporaryEnchantedItem(this);
+#if VERSION_STRING >= WotLK
+        m_owner->getItemInterface()->removeTradeableItem(this);
+#endif
+    }
 
     if (IsInWorld())
         RemoveFromWorld();
@@ -209,6 +223,255 @@ uint32_t Item::getCreatePlayedTime() const { return itemData()->create_played_ti
 void Item::setCreatePlayedTime(uint32_t time) { write(itemData()->create_played_time, time); }
 #endif
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Enchantments
+EnchantmentInstance* Item::getEnchantment(EnchantmentSlot slot)
+{
+    auto itr = Enchantments.find(slot);
+    return itr != Enchantments.end() ? &itr->second : nullptr;
+}
+
+EnchantmentInstance const* Item::getEnchantment(EnchantmentSlot slot) const
+{
+    auto itr = Enchantments.find(slot);
+    return itr != Enchantments.end() ? &itr->second : nullptr;
+}
+
+bool Item::hasEnchantment(uint32_t enchantmentId) const
+{
+    for (uint8_t slot = PERM_ENCHANTMENT_SLOT; slot < MAX_ENCHANTMENT_SLOT; ++slot)
+    {
+        if (getEnchantmentId(slot) == enchantmentId)
+            return true;
+    }
+
+    return false;
+}
+
+int16_t Item::hasEnchantmentReturnSlot(uint32_t enchantmentId) const
+{
+    for (uint8_t slot = PERM_ENCHANTMENT_SLOT; slot < MAX_ENCHANTMENT_SLOT; ++slot)
+    {
+        if (getEnchantmentId(slot) == enchantmentId)
+            return slot;
+    }
+
+    return -1;
+}
+
+bool Item::addEnchantment(uint32_t enchantmentId, EnchantmentSlot slot, uint32_t duration, bool removedAtLogout/* = false*/, uint32_t randomSuffix/* = 0*/)
+{
+    m_isDirty = true;
+
+    DBC::Structures::SpellItemEnchantmentEntry const* Enchantment = nullptr;
+    switch (slot)
+    {
+#if VERSION_STRING >= Cata
+        case TRANSMOGRIFY_ENCHANTMENT_SLOT:
+        case REFORGE_ENCHANTMENT_SLOT:
+        {
+            auto custom_enchant = new DBC::Structures::SpellItemEnchantmentEntry();
+            custom_enchant->Id = enchantmentId;
+
+            Enchantment = custom_enchant;
+        } break;
+#endif
+        default:
+        {
+            const auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchantmentId);
+            if (spell_item_enchant == nullptr)
+                return false;
+
+            Enchantment = spell_item_enchant;
+        } break;
+    }
+
+    EnchantmentInstance enchantInstance;
+    enchantInstance.BonusApplied = false;
+    enchantInstance.Slot = slot;
+    enchantInstance.Enchantment = Enchantment;
+    enchantInstance.RemoveAtLogout = removedAtLogout;
+    enchantInstance.RandomSuffix = randomSuffix;
+
+    // Set enchantment to item's wowdata fields
+    _setEnchantmentDataFields(slot, Enchantment->Id, duration, 0);
+
+    Enchantments.insert(std::make_pair(slot, enchantInstance));
+
+    if (m_owner == nullptr)
+        return true;
+
+    // Add the removal event
+    if (duration)
+        m_owner->getItemInterface()->addTemporaryEnchantedItem(this, slot);
+
+    // Do not send log packet if owner is not yet in world
+    if (!m_owner->IsInWorld())
+        return true;
+
+#if VERSION_STRING >= Cata
+    if (slot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
+        return true;
+#endif
+
+    m_owner->sendPacket(SmsgEnchantmentLog(m_owner->getGuid(), m_owner->getGuid(), getEntry(), Enchantment->Id).serialise().get());
+
+    // Apply enchantment bonus only if the item is equipped
+    // but send enchant time update packet for items in inventory as well
+    const auto equipSlot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid());
+    if (equipSlot >= EQUIPMENT_SLOT_START && equipSlot < EQUIPMENT_SLOT_END)
+        ApplyEnchantmentBonus(slot, true);
+    else if (duration)
+        SendEnchantTimeUpdate(slot, duration / 1000);
+
+    return true;
+}
+
+void Item::removeEnchantment(EnchantmentSlot slot, bool timerExpired/* = false*/)
+{
+    const auto itr = Enchantments.find(slot);
+    if (itr == Enchantments.end())
+        return;
+
+    // Remove enchantment bonus
+    if (itr->second.BonusApplied)
+        ApplyEnchantmentBonus(slot, false);
+
+    _setEnchantmentDataFields(slot, 0, 0, 0);
+
+#if VERSION_STRING >= Cata
+    // These are allocated with new
+    if (slot == REFORGE_ENCHANTMENT_SLOT || slot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
+    {
+        delete itr->second.Enchantment;
+        itr->second.Enchantment = nullptr;
+    }
+#endif
+
+    Enchantments.erase(itr);
+
+    if (!timerExpired)
+        m_owner->getItemInterface()->removeTemporaryEnchantedItem(this, slot);
+}
+
+void Item::modifyEnchantmentTime(EnchantmentSlot slot, uint32_t duration)
+{
+    auto itr = Enchantments.find(slot);
+    if (itr == Enchantments.end())
+        return;
+
+    setEnchantmentDuration(slot, duration);
+    SendEnchantTimeUpdate(itr->second.Slot, duration / 1000);
+}
+
+void Item::applyAllEnchantmentBonuses()
+{
+    for (auto itr = Enchantments.cbegin(); itr != Enchantments.cend();)
+    {
+        auto itr2 = itr++;
+        ApplyEnchantmentBonus(itr2->first, true);
+    }
+}
+
+void Item::removeAllEnchantmentBonuses()
+{
+    for (auto itr = Enchantments.cbegin(); itr != Enchantments.cend();)
+    {
+        auto itr2 = itr++;
+        ApplyEnchantmentBonus(itr2->first, false);
+    }
+}
+
+void Item::removeAllEnchantments(bool onlyTemporary)
+{
+    for (auto itr = Enchantments.cbegin(); itr != Enchantments.cend();)
+    {
+        auto itr2 = itr++;
+        if (onlyTemporary && getEnchantmentDuration(itr2->second.Slot) == 0)
+            continue;
+
+        removeEnchantment(itr2->first);
+    }
+}
+
+void Item::removeSocketBonusEnchant()
+{
+    for (const auto& enchantment : Enchantments)
+    {
+        if (enchantment.second.Enchantment->Id == getItemProperties()->SocketBonus)
+        {
+            removeEnchantment(enchantment.first);
+            return;
+        }
+    }
+}
+
+void Item::_setEnchantmentDataFields(EnchantmentSlot slot, uint32_t enchantmentId, uint32_t duration, uint32_t charges)
+{
+    if (getEnchantmentId(slot) == enchantmentId && getEnchantmentDuration(slot) == duration && getEnchantmentCharges(slot) == charges)
+        return;
+
+    setEnchantmentId(slot, enchantmentId);
+    setEnchantmentDuration(slot, duration);
+    setEnchantmentCharges(slot, charges);
+
+    m_isDirty = true;
+}
+
+bool Item::_findFreeRandomEnchantmentSlot(EnchantmentSlot* slot, RandomEnchantmentType randomType) const
+{
+    if (randomType == RandomEnchantmentType::PROPERTY)
+    {
+        for (uint8_t i = PROP_ENCHANTMENT_SLOT_2; i <= PROP_ENCHANTMENT_SLOT_4; ++i)
+        {
+            if (getEnchantmentId(i) == 0)
+            {
+                *slot = static_cast<EnchantmentSlot>(i);
+                return true;
+            }
+        }
+    }
+    else if (randomType == RandomEnchantmentType::SUFFIX)
+    {
+        for (uint8_t i = PROP_ENCHANTMENT_SLOT_0; i <= PROP_ENCHANTMENT_SLOT_2; ++i)
+        {
+            if (getEnchantmentId(i) == 0)
+            {
+                *slot = static_cast<EnchantmentSlot>(i);
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Sockets / gems
+#if VERSION_STRING >= TBC
+uint8_t Item::getSocketSlotCount([[maybe_unused]]bool includePrismatic/* = true*/) const
+{
+    // Containers have no sockets
+    if (isContainer())
+        return 0;
+
+    uint8_t count = 0;
+    for (uint8_t i = 0; i < MAX_ITEM_PROTO_SOCKETS; ++i)
+    {
+        if (getItemProperties()->Sockets[i].SocketColor)
+            ++count;
+    }
+
+#if VERSION_STRING >= WotLK
+    // Prismatic socket
+    if (includePrismatic && getEnchantment(PRISMATIC_ENCHANTMENT_SLOT) != nullptr)
+        ++count;
+#endif
+
+    return count;
+}
+
+#endif
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 

@@ -211,7 +211,7 @@ public:
         damage = 0;
         uint32 wp_speed;
         Item* item = static_cast< Item* >(obj);
-        EnchantmentInstance* enchant = item->GetEnchantment(TEMP_ENCHANTMENT_SLOT);
+        EnchantmentInstance* enchant = item->getEnchantment(TEMP_ENCHANTMENT_SLOT);
         if (enchant != nullptr)
         {
             SpellInfo const* sp = sSpellMgr.getSpellInfo(enchant->Enchantment->spell[0]);

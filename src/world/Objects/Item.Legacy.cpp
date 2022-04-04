@@ -108,8 +108,8 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
         {
             if (sscanf(enchant.c_str(), "%u,%u,%u", &enchant_id, &time_left, &enchslot) == 3)
             {
-                if (enchant_id && m_itemProperties->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
-                    AddEnchantment(enchant_id, time_left, (time_left == 0), false, false, enchslot);
+                if (enchant_id)
+                    addEnchantment(enchant_id, static_cast<EnchantmentSlot>(enchslot), time_left);
             }
         }
     }
@@ -191,15 +191,16 @@ void Item::ApplyRandomProperties(bool apply)
                     if (spell_item_enchant == nullptr)
                         continue;
 
-                    int32 Slot = HasEnchantment(item_random_properties->spells[k]);
+                    auto Slot = hasEnchantmentReturnSlot(item_random_properties->spells[k]);
                     if (Slot < 0)
                     {
-                        Slot = FindFreeEnchantSlot(spell_item_enchant, 1);
-                        AddEnchantment(item_random_properties->spells[k], 0, false, apply, true, Slot);
+                        EnchantmentSlot slot = PROP_ENCHANTMENT_SLOT_2;
+                        if (_findFreeRandomEnchantmentSlot(&slot, RandomEnchantmentType::PROPERTY))
+                            addEnchantment(item_random_properties->spells[k], slot, 0, true);
                     }
                     else if (apply)
                     {
-                        ApplyEnchantmentBonus(Slot, true);
+                        ApplyEnchantmentBonus(static_cast<EnchantmentSlot>(Slot), true);
                     }
                 }
             }
@@ -219,15 +220,16 @@ void Item::ApplyRandomProperties(bool apply)
                     if (spell_item_enchant == nullptr)
                         continue;
 
-                    int32 Slot = HasEnchantment(spell_item_enchant->Id);
+                    auto Slot = hasEnchantmentReturnSlot(spell_item_enchant->Id);
                     if (Slot < 0)
                     {
-                        Slot = FindFreeEnchantSlot(spell_item_enchant, 2);
-                        AddEnchantment(item_random_suffix->enchantments[k], 0, false, apply, true, Slot, item_random_suffix->prefixes[k]);
+                        EnchantmentSlot slot = PROP_ENCHANTMENT_SLOT_0;
+                        if (_findFreeRandomEnchantmentSlot(&slot, RandomEnchantmentType::SUFFIX))
+                            addEnchantment(item_random_suffix->enchantments[k], slot, 0, true, item_random_suffix->prefixes[k]);
                     }
                     else if (apply)
                     {
-                        ApplyEnchantmentBonus(Slot, true);
+                        ApplyEnchantmentBonus(static_cast<EnchantmentSlot>(Slot), true);
                     }
                 }
             }
@@ -287,16 +289,15 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* 
             if (itr->second.RemoveAtLogout)
                 continue;
 
-            uint32 elapsed_duration = uint32(UNIXTIME - itr->second.ApplyTime);
-            int32 remaining_duration = itr->second.Duration - elapsed_duration;
-            if (remaining_duration < 0)
-                remaining_duration = 0;
+            if (getEnchantmentId(itr->second.Slot) != itr->second.Enchantment->Id)
+                continue;
 
-            if (itr->second.Enchantment && (remaining_duration > 5 || itr->second.Duration == 0))
+            const auto timeLeft = getEnchantmentDuration(itr->second.Slot);
+            if (itr->second.Enchantment && (timeLeft > 5000 || timeLeft == 0))
             {
                 ss << itr->second.Enchantment->Id << ",";
-                ss << remaining_duration << ",";
-                ss << itr->second.Slot << ";";
+                ss << timeLeft << ",";
+                ss << static_cast<int>(itr->second.Slot) << ";";
             }
         }
     }
@@ -416,113 +417,7 @@ void Item::RemoveFromWorld()
     event_Relocate();
 }
 
-int32 Item::AddEnchantment(uint32_t enchantment, uint32 Duration, bool /*Perm*/ /* = false */, bool apply /* = true */, bool RemoveAtLogout /* = false */, uint32 Slot_, uint32 RandomSuffix)
-{
-    int32 Slot = Slot_;
-    m_isDirty = true;
-
-    DBC::Structures::SpellItemEnchantmentEntry const* Enchantment = nullptr;
-
-    switch (Slot)
-    {
-#if VERSION_STRING >= Cata
-        case TRANSMOGRIFY_ENCHANTMENT_SLOT:
-        case REFORGE_ENCHANTMENT_SLOT:
-        {
-            auto custom_enchant = new DBC::Structures::SpellItemEnchantmentEntry();
-            custom_enchant->Id = enchantment;
-
-            Enchantment = custom_enchant;
-        }
-            break;
-#endif
-        default:
-        {
-            auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchantment);
-            if (spell_item_enchant == nullptr)
-                return Slot;
-
-            Enchantment = spell_item_enchant;
-        }
-            break;
-    }
-
-    // Create the enchantment struct.
-    EnchantmentInstance Instance;
-    Instance.ApplyTime = UNIXTIME;
-    Instance.BonusApplied = false;
-    Instance.Slot = Slot;
-    Instance.Enchantment = Enchantment;
-    Instance.Duration = Duration;
-    Instance.RemoveAtLogout = RemoveAtLogout;
-    Instance.RandomSuffix = RandomSuffix;
-
-    // Set the enchantment in the item fields.
-    setEnchantment(EnchantmentSlot(Slot), Enchantment->Id, static_cast<uint32_t>(Instance.ApplyTime), 0);
-
-    // Add it to our map.
-    Enchantments.insert(std::make_pair(static_cast<uint32>(Slot), Instance));
-
-    if (m_owner == nullptr)
-        return Slot;
-
-    // Add the removal event.
-    if (Duration)
-    {
-        sEventMgr.AddEvent(this, &Item::RemoveEnchantment, uint32(Slot), EVENT_REMOVE_ENCHANTMENT1 + Slot, Duration * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    }
-
-    // No need to send the log packet, if the owner isn't in world (we're still loading)
-    if (!m_owner->IsInWorld())
-        return Slot;
-
-    if (apply)
-    {
-        m_owner->sendPacket(SmsgEnchantmentLog(m_owner->getGuid(), m_owner->getGuid(), getEntry(), Enchantment->Id).serialise().get());
-
-        /* Only apply the enchantment bonus if we're equipped */
-        int16 slot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid());
-        if (slot >= EQUIPMENT_SLOT_START && slot < EQUIPMENT_SLOT_END)
-            ApplyEnchantmentBonus(Slot, true);
-    }
-
-    return Slot;
-}
-
-void Item::setEnchantment(EnchantmentSlot slot, uint32_t id, uint32_t duration, uint32_t charges)
-{
-    // Better lost small time at check in comparison lost time at item save to DB.
-    if ((getEnchantmentId(slot) == id) && (getEnchantmentDuration(slot) == duration) && (getEnchantmentCharges(slot) == charges))
-        return;
-
-    setEnchantmentId(static_cast<uint8_t>(slot), id);
-    setEnchantmentDuration(static_cast<uint8_t>(slot), duration);
-    setEnchantmentCharges(static_cast<uint8_t>(slot), charges);
-}
-
-void Item::RemoveEnchantment(uint32 enchantmentSlot)
-{
-    // Make sure we actually exist.
-    EnchantmentMap::iterator itr = Enchantments.find(enchantmentSlot);
-    if (itr == Enchantments.end())
-        return;
-
-    m_isDirty = true;
-    uint32_t Slot = itr->first;
-    if (itr->second.BonusApplied)
-        ApplyEnchantmentBonus(enchantmentSlot, false);
-
-    // Unset the item fields.
-    setEnchantment(EnchantmentSlot(Slot), 0, 0, 0);
-
-    // Remove the enchantment event for removal.
-    event_RemoveEvents(EVENT_REMOVE_ENCHANTMENT1 + Slot);
-
-    // Remove the enchantment instance.
-    Enchantments.erase(itr);
-}
-
-void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
+void Item::ApplyEnchantmentBonus(EnchantmentSlot Slot, bool Apply)
 {
     if (m_owner == nullptr)
         return;
@@ -542,23 +437,32 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
     if (Apply)
     {
         // Send the enchantment time update packet.
-        SendEnchantTimeUpdate(itr->second.Slot, itr->second.Duration);
+        const auto duration = getEnchantmentDuration(itr->second.Slot) / 1000;
+        if (duration)
+            SendEnchantTimeUpdate(itr->second.Slot, duration);
     }
 
     // Apply the visual on the player.
     uint32 ItemSlot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid());
     if (ItemSlot < EQUIPMENT_SLOT_END)
     {
-        //On 3.1 we can't add a Slot to the base now, as we no longer have multiple fields for storing them. 
-        //This in some cases will try to write for example 3 visuals into one place, but now every item has only one 
-        //field for this, and as we can't choose which visual to have, we'll accept the last one.
-
-        m_owner->setVisibleItemEnchantment(ItemSlot, static_cast<uint8_t>(Slot), Apply ? Entry->Id : 0);
+#if VERSION_STRING >= WotLK
+        if (Slot == PERM_ENCHANTMENT_SLOT || Slot == TEMP_ENCHANTMENT_SLOT)
+#else
+        if (Slot < MAX_INSPECTED_ENCHANTMENT_SLOT)
+#endif
+            m_owner->setVisibleItemEnchantment(ItemSlot, Slot, Apply ? Entry->Id : 0);
     }
-    else
+    else if (Apply)
     {
-        sLogger.failure("Item::ApplyEnchantmentBonus visual out of range! Tried to address UInt32 field %i !!!", ItemSlot);
+        sLogger.failure("Item::ApplyEnchantmentBonus : Tried to apply visual enchantment but equipment slot %i is invalid", ItemSlot);
     }
+
+#if VERSION_STRING >= Cata
+    // Apply stats from reforging
+    if (Slot == REFORGE_ENCHANTMENT_SLOT)
+        m_owner->applyReforgeEnchantment(this, Apply);
+#endif
 
     // Another one of those for loop that where not indented properly god knows what will break
     // but i made it actually affect the code below it
@@ -729,107 +633,9 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
     }
 }
 
-void Item::ApplyEnchantmentBonuses()
-{
-    for (EnchantmentMap::iterator itr = Enchantments.begin(); itr != Enchantments.end();)
-    {
-        EnchantmentMap::iterator itr2 = itr++;
-        ApplyEnchantmentBonus(itr2->first, true);
-    }
-}
-
-void Item::RemoveEnchantmentBonuses()
-{
-    for (EnchantmentMap::iterator itr = Enchantments.begin(); itr != Enchantments.end();)
-    {
-        EnchantmentMap::iterator itr2 = itr++;
-        ApplyEnchantmentBonus(itr2->first, false);
-    }
-}
-
-void Item::EventRemoveEnchantment(uint32 Slot)
-{
-    // Remove the enchantment.
-    RemoveEnchantment(Slot);
-}
-
-int32 Item::FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const* /*Enchantment*/, uint32 random_type)
-{
-    uint32 GemSlotsReserve = GetSocketsCount();
-    if (getItemProperties()->SocketBonus)
-        GemSlotsReserve++;
-
-    if (random_type == RANDOMPROPERTY)        // random prop
-    {
-        for (uint8_t Slot = PROP_ENCHANTMENT_SLOT_2; Slot < MAX_ENCHANTMENT_SLOT; ++Slot)
-            if (getEnchantmentId(Slot) == 0)
-                return Slot;
-    }
-    else if (random_type == RANDOMSUFFIX)    // random suffix
-    {
-        for (uint8_t Slot = PROP_ENCHANTMENT_SLOT_0; Slot < MAX_ENCHANTMENT_SLOT; ++Slot)
-            if (getEnchantmentId(Slot) == 0)
-                return Slot;
-    }
-
-    for (uint8_t Slot = static_cast<uint8_t>(GemSlotsReserve + 2); Slot < 11; Slot++)
-    {
-        if (getEnchantmentId(Slot) == 0)
-            return Slot;
-    }
-
-    return -1;
-}
-
-int32 Item::HasEnchantment(uint32 Id)
-{
-    for (uint8_t Slot = 0; Slot < MAX_ENCHANTMENT_SLOT; Slot++)
-    {
-        if (getEnchantmentId(Slot) == Id)
-            return Slot;
-    }
-
-    return -1;
-}
-
-bool Item::HasEnchantmentOnSlot(uint32 slot)
-{
-    EnchantmentMap::iterator itr = Enchantments.find(slot);
-    return itr != Enchantments.end();
-}
-
-void Item::ModifyEnchantmentTime(uint32 Slot, uint32 Duration)
-{
-    EnchantmentMap::iterator itr = Enchantments.find(Slot);
-    if (itr == Enchantments.end())
-        return;
-
-    // Reset the apply time.
-    itr->second.ApplyTime = UNIXTIME;
-    itr->second.Duration = Duration;
-
-    // Change the event timer.
-    event_ModifyTimeAndTimeLeft(EVENT_REMOVE_ENCHANTMENT1 + Slot, Duration * 1000);
-
-    // Send update packet
-    SendEnchantTimeUpdate(itr->second.Slot, Duration);
-}
-
 void Item::SendEnchantTimeUpdate(uint32 Slot, uint32 Duration)
 {
     m_owner->sendPacket(SmsgItemEnchantmentTimeUpdate(getGuid(), Slot, Duration, m_owner->getGuid()).serialise().get());
-}
-
-void Item::RemoveAllEnchantments(bool OnlyTemporary)
-{
-    for (EnchantmentMap::iterator itr = Enchantments.begin(); itr != Enchantments.end();)
-    {
-        EnchantmentMap::iterator it2 = itr++;
-        if (OnlyTemporary && it2->second.Duration == 0)
-            continue;
-
-        RemoveEnchantment(it2->first);
-    }
 }
 
 void Item::RemoveRelatedEnchants(DBC::Structures::SpellItemEnchantmentEntry const* newEnchant)
@@ -838,44 +644,8 @@ void Item::RemoveRelatedEnchants(DBC::Structures::SpellItemEnchantmentEntry cons
     {
         EnchantmentMap::iterator itr2 = itr++;
         if (itr2->second.Enchantment->Id == newEnchant->Id || (itr2->second.Enchantment->EnchantGroups > 1 && newEnchant->EnchantGroups > 1))
-            RemoveEnchantment(itr2->first);
+            removeEnchantment(itr2->first);
     }
-}
-
-void Item::RemoveProfessionEnchant()
-{
-    for (EnchantmentMap::iterator itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
-    {
-        if (itr->second.Duration != 0)  // not perm
-            continue;
-
-        if (IsGemRelated(itr->second.Enchantment))
-            continue;
-
-        RemoveEnchantment(itr->first);
-        return;
-    }
-}
-
-void Item::RemoveSocketBonusEnchant()
-{
-    for (EnchantmentMap::iterator itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
-    {
-        if (itr->second.Enchantment->Id == getItemProperties()->SocketBonus)
-        {
-            RemoveEnchantment(itr->first);
-            return;
-        }
-    }
-}
-
-EnchantmentInstance* Item::GetEnchantment(uint32 slot)
-{
-    EnchantmentMap::iterator itr = Enchantments.find(slot);
-    if (itr != Enchantments.end())
-        return &itr->second;
-
-    return nullptr;
 }
 
 bool Item::IsGemRelated(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment)
@@ -888,25 +658,6 @@ bool Item::IsGemRelated(DBC::Structures::SpellItemEnchantmentEntry const* Enchan
 #else
     return 0;
 #endif
-}
-
-uint32 Item::GetSocketsCount()
-{
-    if (isContainer()) // no sockets on containers.
-        return 0;
-
-    uint32 c = 0;
-    for (uint32 x = 0; x < 3; ++x)
-        if (getItemProperties()->Sockets[x].SocketColor)
-            c++;
-
-#if VERSION_STRING > TBC
-    //prismatic socket
-    if (GetEnchantment(PRISMATIC_ENCHANTMENT_SLOT) != nullptr)
-        c++;
-#endif
-
-    return c;
 }
 
 uint32 Item::GenerateRandomSuffixFactor(ItemProperties const* m_itemProto)
@@ -978,9 +729,10 @@ uint32 Item::CountGemsWithLimitId(uint32 LimitId)
 {
 #if VERSION_STRING > Classic
     uint32 result = 0;
-    for (uint32 count = 0; count < GetSocketsCount(); count++)
+    for (uint8_t count = 0; count < getSocketSlotCount(); count++)
     {
-        EnchantmentInstance* ei = GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + count);
+        const auto ei = getEnchantment(static_cast<EnchantmentSlot>(SOCK_ENCHANTMENT_SLOT1 + count));
+
         //huh ? Gem without entry ?
         if (ei && ei->Enchantment->GemEntry)
         {

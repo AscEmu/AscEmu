@@ -115,6 +115,116 @@ bool ItemInterface::isItemInTradeWindow(Item const* item) const
     return item->getOwner()->getTradeData()->hasTradeItem(item->getGuid());
 }
 
+void ItemInterface::addTemporaryEnchantedItem(Item* item, EnchantmentSlot slot)
+{
+    std::unique_lock<std::mutex> guard(m_temporaryEnchantmentMutex);
+    ItemEnchantmentDuration enchantment;
+    enchantment.item = item;
+    enchantment.slot = slot;
+    enchantment.timeLeft = item->getEnchantmentDuration(slot);
+    m_temporaryEnchantmentList.push_back(enchantment);
+}
+
+void ItemInterface::removeTemporaryEnchantedItem(Item* item)
+{
+    std::unique_lock<std::mutex> guard(m_temporaryEnchantmentMutex);
+    for (auto itr = m_temporaryEnchantmentList.cbegin(); itr != m_temporaryEnchantmentList.cend();)
+    {
+        if ((*itr).item == item)
+            itr = m_temporaryEnchantmentList.erase(itr);
+        else
+            ++itr;
+    }
+}
+
+void ItemInterface::removeTemporaryEnchantedItem(Item* item, EnchantmentSlot slot)
+{
+    std::unique_lock<std::mutex> guard(m_temporaryEnchantmentMutex);
+    for (auto itr = m_temporaryEnchantmentList.cbegin(); itr != m_temporaryEnchantmentList.cend();)
+    {
+        if ((*itr).item == item && (*itr).slot == slot)
+            itr = m_temporaryEnchantmentList.erase(itr);
+        else
+            ++itr;
+    }
+}
+
+void ItemInterface::sendEnchantDurations(Item const* forItem/* = nullptr*/)
+{
+    std::unique_lock<std::mutex> guard(m_temporaryEnchantmentMutex);
+    for (const auto& itr : m_temporaryEnchantmentList)
+    {
+        if (forItem != nullptr && itr.item != forItem)
+            continue;
+
+        itr.item->setEnchantmentDuration(itr.slot, itr.timeLeft);
+        itr.item->SendEnchantTimeUpdate(itr.slot, itr.timeLeft / 1000);
+        itr.item->m_isDirty = true;
+    }
+}
+
+void ItemInterface::updateEnchantDurations(uint32_t timePassed)
+{
+    std::unique_lock<std::mutex> guard(m_temporaryEnchantmentMutex);
+    for (auto itr = m_temporaryEnchantmentList.begin(); itr != m_temporaryEnchantmentList.end();)
+    {
+        if (timePassed >= (*itr).timeLeft)
+        {
+            // Enchantment has expired
+            (*itr).item->removeEnchantment((*itr).slot, true);
+            itr = m_temporaryEnchantmentList.erase(itr);
+        }
+        else
+        {
+            (*itr).timeLeft -= timePassed;
+            ++itr;
+        }
+    }
+}
+
+#if VERSION_STRING >= WotLK
+void ItemInterface::updateSoulboundTradeItems()
+{
+    std::lock_guard<std::mutex> guard(m_soulboundTradeableMutex);
+    if (m_soulboundTradeableList.empty())
+        return;
+
+    for (auto itemSoulbound = m_soulboundTradeableList.cbegin(); itemSoulbound != m_soulboundTradeableList.cend();)
+    {
+        if (!(*itemSoulbound)->m_isDirty)
+        {
+            if ((*itemSoulbound)->getOwner()->getGuid() != m_pOwner->getGuid())
+            {
+                itemSoulbound = m_soulboundTradeableList.erase(itemSoulbound);
+                continue;
+            }
+            if ((*itemSoulbound)->checkSoulboundTradeExpire())
+            {
+                itemSoulbound = m_soulboundTradeableList.erase(itemSoulbound);
+                continue;
+            }
+            ++itemSoulbound;
+        }
+        else
+        {
+            itemSoulbound = m_soulboundTradeableList.erase(itemSoulbound);
+        }
+    }
+}
+
+void ItemInterface::addTradeableItem(Item* item)
+{
+    std::lock_guard<std::mutex> guard(m_soulboundTradeableMutex);
+    m_soulboundTradeableList.push_back(item);
+}
+
+void ItemInterface::removeTradeableItem(Item* item)
+{
+    std::lock_guard<std::mutex> guard(m_soulboundTradeableMutex);
+    m_soulboundTradeableList.remove(item);
+}
+#endif
+
 void ItemInterface::buildInventoryChangeError(Item const* srcItem, Item const* dstItem, uint8_t inventoryError, uint32_t srcItemId/* = 0*/)
 {
     uint64_t srcGuid = 0;
@@ -149,6 +259,19 @@ void ItemInterface::buildInventoryChangeError(Item const* srcItem, Item const* d
     }
 
     m_pOwner->sendPacket(SmsgInventoryChangeFailure(inventoryError, srcGuid, destGuid, extraData, sendExtraData).serialise().get());
+}
+
+void ItemInterface::update(uint32_t timePassed)
+{
+    // Update enchantment durations
+    updateEnchantDurations(timePassed);
+
+#if VERSION_STRING >= WotLK
+    // Retradeable soulbound items
+    updateSoulboundTradeItems();
+#endif
+
+    // todo: add items with duration also here
 }
 
 // MIT End
@@ -409,6 +532,8 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
         m_pOwner->setVisibleItemFields(slot, item);
     }
 
+    sendEnchantDurations(item);
+
     if (m_pOwner->IsInWorld() && slot < INVENTORY_SLOT_BAG_END && ContainerSlot == INVENTORY_SLOT_NOT_SET)
     {
         m_pOwner->applyItemMods(item, slot, true);
@@ -508,6 +633,8 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16
             pItem->m_isDirty = true;
 
             m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(slot), 0);
+
+            sendEnchantDurations(pItem);
 
             if (slot < EQUIPMENT_SLOT_END)
             {
@@ -677,6 +804,8 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot)
             pItem->m_isDirty = true;
 
             m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(slot), 0);
+
+            sendEnchantDurations(pItem);
 
             if (slot < EQUIPMENT_SLOT_END)
             {
@@ -2021,12 +2150,13 @@ int8 ItemInterface::CanEquipItemInSlot2(int8 DstInvSlot, int8 slot, Item* item, 
     if (int8 ret = CanEquipItemInSlot(DstInvSlot, slot, proto, ignore_combat, skip_2h_check))
         return ret;
 
+#if VERSION_STRING > Classic
     if ((slot < INVENTORY_SLOT_BAG_END && DstInvSlot == INVENTORY_SLOT_NOT_SET) || (slot >= BANK_SLOT_BAG_START && slot < BANK_SLOT_BAG_END && DstInvSlot == INVENTORY_SLOT_NOT_SET))
     {
-        for (uint32 count = 0; count < item->GetSocketsCount(); count++)
+        for (uint8_t count = 0; count < item->getSocketSlotCount(); count++)
         {
-#if VERSION_STRING > Classic
-            EnchantmentInstance* ei = item->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + count);
+            const auto ei = item->getEnchantment(static_cast<EnchantmentSlot>(SOCK_ENCHANTMENT_SLOT1 + count));
+
             if (ei && ei->Enchantment->GemEntry)       //huh ? Gem without entry ?
             {
                 ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry);
@@ -2057,9 +2187,9 @@ int8 ItemInterface::CanEquipItemInSlot2(int8 DstInvSlot, int8 slot, Item* item, 
 #endif
                 }
             }
-#endif
         }
     }
+#endif
 
     return 0;
 }
@@ -3219,6 +3349,12 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
         }
     }
 
+    // Update enchantment durations
+    if (m_pItems[(int)srcslot] != nullptr)
+        sendEnchantDurations(m_pItems[(int)srcslot]);
+    if (m_pItems[(int)dstslot] != nullptr)
+        sendEnchantDurations(m_pItems[(int)dstslot]);
+
     //src item is equipped now
     if (srcslot < INVENTORY_SLOT_BAG_END)
     {
@@ -3296,6 +3432,9 @@ void ItemInterface::mLoadItemsFromDatabase(QueryResult* result)
 /// Item saving
 void ItemInterface::mSaveItemsToDatabase(bool first, QueryBuffer* buf)
 {
+    // Make sure durations of temporary enchanted items are saved to db
+    sendEnchantDurations();
+
     int16 x;
 
     for (x = EQUIPMENT_SLOT_START; x < CURRENCYTOKEN_SLOT_END; ++x)
@@ -3616,11 +3755,11 @@ bool ItemInterface::IsEquipped(uint32 itemid)
             if (it->getItemProperties()->ItemId == itemid)
                 return true;
 
-            // check gems as well
 #if VERSION_STRING > Classic
-            for (uint32 count = 0; count < it->GetSocketsCount(); count++)
+            // check gems as well
+            for (uint8_t count = 0; count < it->getSocketSlotCount(); count++)
             {
-                EnchantmentInstance* ei = it->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + count);
+                const auto ei = it->getEnchantment(static_cast<EnchantmentSlot>(SOCK_ENCHANTMENT_SLOT1 + count));
 
                 if (ei && ei->Enchantment)
                 {
@@ -3670,9 +3809,10 @@ uint32 ItemInterface::GetEquippedCountByItemLimit(uint32 LimitId)
 
         if (it != nullptr)
         {
-            for (uint32 socketcount = 0; socketcount < it->GetSocketsCount(); ++socketcount)
+            for (uint8_t socketcount = 0; socketcount < it->getSocketSlotCount(); socketcount++)
             {
-                EnchantmentInstance* ei = it->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + socketcount);
+                const auto ei = it->getEnchantment(static_cast<EnchantmentSlot>(SOCK_ENCHANTMENT_SLOT1 + count));
+
                 if (ei && ei->Enchantment)
                 {
                     ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry);
