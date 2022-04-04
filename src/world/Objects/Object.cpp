@@ -1572,6 +1572,7 @@ std::vector<Object*> Object::getInRangeOppositeFactionSet()
 
 bool Object::isObjectInInRangeOppositeFactionSet(Object* pObj)
 {
+    std::unique_lock<std::shared_mutex> guard(m_inRangeSetMutex);
     auto it = std::find(mInRangeOppositeFactionSet.begin(), mInRangeOppositeFactionSet.end(), pObj);
     return it != mInRangeOppositeFactionSet.end();
 }
@@ -1612,6 +1613,7 @@ void Object::addInRangeOppositeFaction(Object* obj)
 
 void Object::removeObjectFromInRangeOppositeFactionSet(Object* obj)
 {
+    std::unique_lock<std::shared_mutex> guard(m_inRangeSetMutex);
     mInRangeOppositeFactionSet.erase(std::remove(mInRangeOppositeFactionSet.begin(), mInRangeOppositeFactionSet.end(), obj), mInRangeOppositeFactionSet.end());
 }
 
@@ -1623,6 +1625,7 @@ std::vector<Object*> Object::getInRangeSameFactionSet()
 
 bool Object::isObjectInInRangeSameFactionSet(Object* pObj)
 {
+    std::unique_lock<std::shared_mutex> guard(m_inRangeSetMutex);
     auto it = std::find(mInRangeSameFactionSet.begin(), mInRangeSameFactionSet.end(), pObj);
     return it != mInRangeSameFactionSet.end();
 }
@@ -1665,6 +1668,7 @@ void Object::addInRangeSameFaction(Object* obj)
 
 void Object::removeObjectFromInRangeSameFactionSet(Object* obj)
 {
+    std::unique_lock<std::shared_mutex> guard(m_inRangeSetMutex);
     mInRangeSameFactionSet.erase(std::remove(mInRangeSameFactionSet.begin(), mInRangeSameFactionSet.end(), obj), mInRangeSameFactionSet.end());
 }
 

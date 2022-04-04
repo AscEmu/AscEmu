@@ -669,6 +669,7 @@ class SERVER_DECL InstanceScript
         void sendUnitEncounter(uint32_t type, Unit* unit = nullptr, uint8_t value_a = 0, uint8_t value_b = 0);
 
         bool setBossState(uint32_t id, EncounterStates state);
+        std::vector<BossInfo> getBosses() { return bosses; }
         EncounterStates getBossState(uint32_t id) const { return id < bosses.size() ? bosses[id].state : InvalidState; }
         //used for debug
         std::string getDataStateString(uint8_t state);

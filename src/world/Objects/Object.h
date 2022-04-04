@@ -240,6 +240,7 @@ private:
     std::map<Spell*, bool> m_travelingSpells;
     std::list<Spell*> m_garbageSpells;
     mutable std::shared_mutex m_spellUpdateMutex;
+    mutable std::shared_mutex m_inRangeSetMutex;
 
 public:
     Spell* getCurrentSpell(CurrentSpellType spellType) const;

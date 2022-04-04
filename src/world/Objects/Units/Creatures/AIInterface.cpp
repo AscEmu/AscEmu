@@ -2397,6 +2397,16 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
         CALL_SCRIPT_EVENT(m_Unit, _internalOnCombatStart)(pUnit);
         CALL_SCRIPT_EVENT(m_Unit, OnCombatStart)(pUnit);
 
+        // set encounter state = InProgress
+        size_t i = 0;
+        for (const auto boss : m_Unit->getWorldMap()->getScript()->getBosses())
+        {
+            if (m_Unit->getEntry() == boss.entry)
+                CALL_INSTANCE_SCRIPT_EVENT(m_Unit->getWorldMap(), setBossState)(i, InProgress);
+
+            i++;
+        }
+
         if (creature->m_spawn && (creature->m_spawn->channel_target_go || creature->m_spawn->channel_target_creature))
         {
             m_Unit->setChannelSpellId(0);
@@ -2550,6 +2560,17 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
 
     if (m_Unit->isCreature() && m_Unit->isAlive())
     {
+        // Reset Instance Data
+        // set encounter state back to NotStarted
+        size_t i = 0;
+        for (const auto boss : m_Unit->getWorldMap()->getScript()->getBosses())
+        {
+            if (m_Unit->getEntry() == boss.entry)
+                CALL_INSTANCE_SCRIPT_EVENT(m_Unit->getWorldMap(), setBossState)(i, NotStarted);
+
+            i++;
+        }
+
         // Respawn all Npcs from Current Group if needed
         auto data = sMySQLStore.getSpawnGroupDataBySpawn(getUnit()->ToCreature()->getSpawnId());
         if (data && data->spawnFlags & SPAWFLAG_FLAG_FULLPACK)
