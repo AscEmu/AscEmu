@@ -164,7 +164,11 @@ public:
     bool HandleCharSetFactionChangeCommand(const char* args, WorldSession* m_session);
     bool HandleCharSetRaceChangeCommand(const char* args, WorldSession* m_session);
     bool HandleCharResetTalentsCommand(const char* /*args*/, WorldSession* m_session);
+
+#if VERSION_STRING >= TBC // support classic
     bool HandleCharResetSkillsCommand(const char* /*args*/, WorldSession* m_session);
+#endif
+
     bool HandleCharRemoveItemCommand(const char* args, WorldSession* m_session);
     bool HandleCharIncreaseWeaponSkill(const char* args, WorldSession* m_session);
     bool HandleCharResetReputationCommand(const char* /*args*/, WorldSession* m_session);

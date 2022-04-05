@@ -435,6 +435,7 @@ public:
 
 class SpellDeflectionAura : public AbsorbAura
 {
+#if VERSION_STRING >= TBC // support classic
 public:
 
     SpellDeflectionAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
@@ -463,6 +464,7 @@ public:
 
         return dmg_absorbed;
     }
+#endif
 };
 
 class BloodwormSpell : public Spell
