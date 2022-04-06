@@ -2397,14 +2397,17 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
         CALL_SCRIPT_EVENT(m_Unit, _internalOnCombatStart)(pUnit);
         CALL_SCRIPT_EVENT(m_Unit, OnCombatStart)(pUnit);
 
-        // set encounter state = InProgress
-        size_t i = 0;
-        for (const auto boss : m_Unit->getWorldMap()->getScript()->getBosses())
+        if (m_Unit->getWorldMap() && m_Unit->getWorldMap()->getScript())
         {
-            if (m_Unit->getEntry() == boss.entry)
-                CALL_INSTANCE_SCRIPT_EVENT(m_Unit->getWorldMap(), setBossState)(i, InProgress);
+            // set encounter state = InProgress
+            size_t i = 0;
+            for (const auto boss : m_Unit->getWorldMap()->getScript()->getBosses())
+            {
+                if (m_Unit->getEntry() == boss.entry)
+                    CALL_INSTANCE_SCRIPT_EVENT(m_Unit->getWorldMap(), setBossState)(i, InProgress);
 
-            i++;
+                i++;
+            }
         }
 
         if (creature->m_spawn && (creature->m_spawn->channel_target_go || creature->m_spawn->channel_target_creature))
@@ -2560,15 +2563,18 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
 
     if (m_Unit->isCreature() && m_Unit->isAlive())
     {
-        // Reset Instance Data
-        // set encounter state back to NotStarted
-        size_t i = 0;
-        for (const auto boss : m_Unit->getWorldMap()->getScript()->getBosses())
+        if (m_Unit->getWorldMap() && m_Unit->getWorldMap()->getScript())
         {
-            if (m_Unit->getEntry() == boss.entry)
-                CALL_INSTANCE_SCRIPT_EVENT(m_Unit->getWorldMap(), setBossState)(i, NotStarted);
+            // Reset Instance Data
+            // set encounter state back to NotStarted
+            size_t i = 0;
+            for (const auto boss : m_Unit->getWorldMap()->getScript()->getBosses())
+            {
+                if (m_Unit->getEntry() == boss.entry)
+                    CALL_INSTANCE_SCRIPT_EVENT(m_Unit->getWorldMap(), setBossState)(i, NotStarted);
 
-            i++;
+                i++;
+            }
         }
 
         // Respawn all Npcs from Current Group if needed
