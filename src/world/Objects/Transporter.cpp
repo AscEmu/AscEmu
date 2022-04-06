@@ -367,11 +367,13 @@ void Transporter::UpdatePassengerPositions(PassengerSet& passengers)
         if (passenger->GetMapId() != GetMapId())
             continue;
 
+#ifdef FT_VEHICLES
         // if passenger is on vehicle we have to assume the vehicle is also on transport
         // and its the vehicle that will be updating its passengers
         if (Unit* unit = passenger->ToUnit())
             if (unit->getVehicle())
                 continue;
+#endif
 
         float x, y, z, o;
         passenger->obj_movement_info.transport_position.getPosition(x, y, z, o);

@@ -7,8 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "DBCStructures.h"
 #include "../world/Storage/DBC/DBCGlobals.hpp"
-
+#include "Map/Maps/InstanceDefines.hpp"
 #include "WorldConf.h"
+
+typedef std::map<uint32_t, DBC::Structures::MapDifficulty> MapDifficultyMap;
 
 #if VERSION_STRING == Cata
 inline float GetRadius(DBC::Structures::SpellRadiusEntry const* radius)
@@ -114,8 +116,10 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrClassesEntry> sChrClasses
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrRacesEntry> sChrRacesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrPowerTypesEntry> sChrPowerTypesEntry;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureDisplayInfoEntry>  sCreatureDisplayInfoStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureModelDataEntry> sCreatureModelDataStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MapEntry> sMapStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MapDifficultyEntry> sMapDifficultyStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::HolidaysEntry> sHolidaysStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRuneCostEntry> sSpellRuneCostStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemRandomSuffixEntry> sItemRandomSuffixStore;
@@ -161,6 +165,11 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TransportRotationEntry> sTra
 DBC::Structures::CharStartOutfitEntry const* getStartOutfitByRaceClass(uint8_t race, uint8_t class_, uint8_t gender);
 
 DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id);
+
+extern SERVER_DECL MapDifficultyMap sMapDifficultyMap;
+DBC::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty);
+DBC::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty);
+
 
 std::string generateName(uint32 type = 0);
 

@@ -10748,9 +10748,10 @@ void Player::unbindInstance(BoundInstancesMap::iterator& itr, InstanceDifficulty
             CharacterDatabase.Execute("DELETE FROM character_instance WHERE guid = %u AND instance = %u", getGuidLow(), itr->second.save->getInstanceId());
         }
 
+#if VERSION_STRING > TBC
         if (itr->second.perm)
             getSession()->sendCalendarRaidLockout(itr->second.save, false);
-
+#endif
         itr->second.save->removePlayer(this);               // save can become invalid
         m_boundInstances[difficulty].erase(itr++);
     }
@@ -10815,7 +10816,9 @@ void Player::bindToInstance()
     if (!isGMFlagSet())
     {
         bindToInstance(mapSave, true, EXTEND_STATE_KEEP);
+#if VERSION_STRING > TBC
         getSession()->sendCalendarRaidLockout(mapSave, true);
+#endif
     }
 }
 

@@ -3638,7 +3638,7 @@ void Player::AddItemsToWorld()
     {
         if (const auto pItem = getItemInterface()->GetInventoryItem(i))
         {
-            pItem->PushToWorld(m_mapMgr);
+            pItem->PushToWorld(m_WorldMap);
 
             if (i < INVENTORY_SLOT_BAG_END)      // only equipment slots get mods.
                 applyItemMods(pItem, i, true, false, true);
@@ -3652,7 +3652,7 @@ void Player::AddItemsToWorld()
                 {
                     Item* item = (static_cast< Container* >(pItem))->GetItem(static_cast<int16>(e));
                     if (item)
-                        item->PushToWorld(m_mapMgr);
+                        item->PushToWorld(m_WorldMap);
                 }
             }
         }

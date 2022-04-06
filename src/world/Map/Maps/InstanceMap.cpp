@@ -101,7 +101,9 @@ void InstanceMap::permBindAllPlayers()
             WorldPacket data(SMSG_INSTANCE_SAVE_CREATED, 4);
             data << uint32(0);
             player->sendPacket(&data);
+#if VERSION_STRING > TBC
             player->getSession()->sendCalendarRaidLockout(save, true);
+#endif
 
             // if group leader is in instance, group also gets bound
             if (Group* group = player->getGroup())
@@ -362,5 +364,9 @@ uint32_t InstanceMap::getMaxPlayers()
     if (mapDiff && mapDiff->maxPlayers)
         return mapDiff->maxPlayers;
 
+#if VERSION_STRING > TBC
     return getBaseMap()->getMapEntry()->max_players;
+#else
+    return getBaseMap()->getMapInfo()->playerlimit;
+#endif
 }

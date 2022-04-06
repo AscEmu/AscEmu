@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Common.hpp"
-#include "Map/InstanceDefines.hpp"
 #include "Spell/SpellDefines.hpp"
 
 struct WMOAreaTableTripple
@@ -195,7 +194,7 @@ namespace DBC::Structures
         char const creature_display_info_format[]="nixifxxxxxxxxxxxx";
         char const creature_display_info_extra_format[]="nixxxxxxxxxxxxxxxxxxx";
         char const creature_family_format[] = "nfifiiiiixsx";
-        //char const creature_model_data_format[] = "nxxxxxxxxxxxxxxffxxxxxxxxxxxxxx"; new
+        char const creature_model_Data_format[] = "nisxfxxxxxxxxxxffxxxxxxxxxxx";
         char const creature_spell_data_format[] = "niiiiiiii";  //niiiixxxx
         //char const creature_type_format[]="nxx"; new
         char const currency_types_format[] = "nisxxxxiiix";
@@ -244,7 +243,7 @@ namespace DBC::Structures
         char const lock_format[] = "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx";
         char const mail_template_format[] = "nss";  //nxs
         char const map_format[] = "nsiiiisissififfiiiii";
-        //char const map_difficulty_entry_format[] = "niisiis"; new
+        char const map_difficulty_entry_format[] = "diisiix";
         char const mount_capability_format[] = "niiiiiii";
         char const mount_type_format[] = "niiiiiiiiiiiiiiiiiiiiiiii";
         //char const movie_entry_format[] = "nxxx"; new
@@ -988,6 +987,41 @@ namespace DBC::Structures
         //char* unk                                                 // 20
     };
 
+    enum CreatureModelDataFlags
+    {
+        CREATURE_MODEL_DATA_FLAGS_CAN_MOUNT = 0x00000080
+    };
+
+    struct CreatureModelDataEntry
+    {
+        uint32_t ID;                                                // 0
+        uint32_t Flags;                                             // 1
+        char const* ModelName;                                      // 2
+        //uint32_t SizeClass;                                       // 3
+        float ModelScale;                                           // 4 Used in calculation of unit collision data
+        //int32_t BloodID;                                          // 5
+        //int32_t FootprintTextureID;                               // 6
+        //uint32_t FootprintTextureLength;                          // 7
+        //uint32_t FootprintTextureWidth;                           // 8
+        //float FootprintParticleScale;                             // 9
+        //uint32_t FoleyMaterialID;                                 // 10
+        //float FootstepShakeSize;                                  // 11
+        //uint32_t DeathThudShakeSize;                              // 12
+        //uint32_t SoundID;                                         // 13
+        //float CollisionWidth;                                     // 14
+        float CollisionHeight;                                      // 15
+        float MountHeight;                                          // 16 Used in calculation of unit collision data when mounted
+        //float GeoBoxMin[3];                                       // 17-19
+        //float GeoBoxMax[3];                                       // 20-22
+        //float WorldEffectScale;                                   // 23
+        //float AttachedEffectScale;                                // 24
+        //float MissileCollisionRadius;                             // 25
+        //float MissileCollisionPush;                               // 26
+        //float MissileCollisionRaise;                              // 27
+
+        inline bool hasFlag(CreatureModelDataFlags flag) const { return (Flags & flag) != 0; }
+    };
+
     struct CreatureFamilyEntry
     {
         uint32_t ID;                                                // 0
@@ -1391,11 +1425,43 @@ namespace DBC::Structures
         bool isBattleArena() const { return map_type == MAP_ARENA; }
         bool isBattlegroundOrArena() const { return map_type == MAP_BATTLEGROUND || map_type == MAP_ARENA; }
         bool isWorldMap() const { return map_type == MAP_COMMON; }
+		
+		bool getEntrancePos(int32_t& mapid, float& x, float& y) const
+        {
+            if (parent_map < 0)
+                return false;
+            mapid = parent_map;
+            x = start_x;
+            y = start_y;
+            return true;
+        }
 
         bool isContinent() const
         {
             return id == 0 || id == 1 || id == 530 || id == 571;
         }
+    };
+
+    struct MapDifficultyEntry
+    {
+        //uint32_t ID;                                            // 0
+        uint32_t MapID;                                           // 1
+        uint32_t Difficulty;                                      // 2 (for arenas: arena slot)
+        char const* Message;                                    // 3-18 text showed when transfer to map failed (missing requirements)
+        //uint32 Message_lang_mask;                             // 19
+        uint32_t RaidDuration;                                    // 20
+        uint32_t MaxPlayers;                                      // 21
+        //char const* Difficultystring;                         // 22
+    };
+
+    struct MapDifficulty
+    {
+        MapDifficulty() : resetTime(0), maxPlayers(0), hasErrorMessage(false) { }
+        MapDifficulty(uint32 _resetTime, uint32 _maxPlayers, bool _hasErrorMessage) : resetTime(_resetTime), maxPlayers(_maxPlayers), hasErrorMessage(_hasErrorMessage) { }
+
+        uint32_t resetTime;
+        uint32_t maxPlayers;
+        bool hasErrorMessage;
     };
 
     struct NameGenEntry

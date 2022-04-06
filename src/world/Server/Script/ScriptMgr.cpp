@@ -940,7 +940,6 @@ std::string InstanceScript::getDataStateString(uint8_t state)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // encounters
-#if VERSION_STRING >= WotLK
 void InstanceScript::generateBossDataState()
 {
     const auto* encounters = sObjectMgr.GetDungeonEncounterList(GetWorldMap()->getBaseMap()->getMapId(), GetWorldMap()->getDifficulty());
@@ -1061,6 +1060,7 @@ std::string InstanceScript::getSaveData()
     return saveStream.str();
 }
 
+#if VERSION_STRING >= WotLK
 void InstanceScript::updateEncounterState(EncounterCreditType type, uint32_t creditEntry)
 {
     DungeonEncounterList const* encounters = sObjectMgr.GetDungeonEncounterList(mInstance->getBaseMap()->getMapId(), mInstance->getDifficulty());
@@ -1109,43 +1109,6 @@ void InstanceScript::updateEncountersStateForCreature(uint32_t creditEntry, uint
 void InstanceScript::updateEncountersStateForSpell(uint32_t creditEntry, uint8_t difficulty)
 {
     updateEncounterState(ENCOUNTER_CREDIT_CAST_SPELL, creditEntry);
-}
-#endif
-
-#if VERSION_STRING <= TBC
-void InstanceScript::generateBossDataState()
-{
-    auto encounters = sObjectMgr.GetDungeonEncounterList(mInstance->GetMapId());
-
-    if (encounters != nullptr)
-    {
-        completedEncounters = 0;
-
-        for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
-        {
-            DungeonEncounter const* encounter = *itr;
-            if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE)
-            {
-                CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounter->creditEntry);
-                if (creature == nullptr)
-                    sLogger.failure("Your instance_encounters table includes invalid data for boss entry %u!", encounter->creditEntry);
-                else
-                    mInstanceData.insert(std::pair<uint32_t, uint32_t>(encounter->creditEntry, NotStarted));
-            }
-        }
-
-        for (const auto& killedNpc : mInstance->pInstance->m_killedNpcs)
-        {
-            for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
-            {
-                DungeonEncounter const* encounter = *itr;
-                if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == killedNpc)
-                    setData(encounter->creditEntry, Finished);
-            }
-        }
-    }
-
-    sLogger.debug("InstanceScript::generateBossDataState() - Boss State generated for map %u.", mInstance->GetMapId());
 }
 #endif
 
