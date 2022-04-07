@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Common.hpp"
+#include "Map/Maps/InstanceDefines.hpp"
 #include "Spell/SpellDefines.hpp"
 
 struct WMOAreaTableTripple

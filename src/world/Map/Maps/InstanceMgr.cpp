@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Util/Strings.hpp"
-#include "GameWotLK/Storage/DBCStores.h"
 
 InstanceSaved::InstanceSaved(uint32_t mapId, uint32_t instanceId, InstanceDifficulty::Difficulties difficulty, time_t resetTime, bool canReset)
     : m_resetTime(resetTime),
