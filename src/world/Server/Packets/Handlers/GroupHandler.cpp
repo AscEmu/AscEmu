@@ -69,15 +69,6 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
             group->AddMember(_player->m_playerInfo);
             _player->m_dungeonDifficulty = group->m_difficulty;
             _player->sendDungeonDifficultyPacket();
-
-            Instance* instance = sInstanceMgr.GetInstanceByIds(group_inviter->GetMapId(), group_inviter->GetInstanceID());
-            if (instance != nullptr && instance->m_creatorGuid == group_inviter->getGuidLow())
-            {
-                group->m_instanceIds[instance->m_mapId][instance->m_difficulty] = instance->m_instanceId;
-                instance->m_creatorGroup = group->GetID();
-                instance->m_creatorGuid = 0;
-                sInstanceMgr.SaveInstanceToDB(instance);
-            }
         }
     }
     else

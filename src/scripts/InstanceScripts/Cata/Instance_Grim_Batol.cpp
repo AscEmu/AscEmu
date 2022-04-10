@@ -9,8 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 class GrimBatolInstanceScript : public InstanceScript
 {
 public:
-    explicit GrimBatolInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new GrimBatolInstanceScript(pMapMgr); }
+    explicit GrimBatolInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new GrimBatolInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {

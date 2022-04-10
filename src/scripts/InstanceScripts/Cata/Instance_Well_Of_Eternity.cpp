@@ -9,8 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 class WellOfEternityInstanceScript : public InstanceScript
 {
 public:
-    explicit WellOfEternityInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new WellOfEternityInstanceScript(pMapMgr); }
+    explicit WellOfEternityInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new WellOfEternityInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {

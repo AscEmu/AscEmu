@@ -9,8 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 class TheStonecoreInstanceScript : public InstanceScript
 {
 public:
-    explicit TheStonecoreInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new TheStonecoreInstanceScript(pMapMgr); }
+    explicit TheStonecoreInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new TheStonecoreInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {

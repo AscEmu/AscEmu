@@ -9,8 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 class HourOfTwilightInstanceScript : public InstanceScript
 {
 public:
-    explicit HourOfTwilightInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new HourOfTwilightInstanceScript(pMapMgr); }
+    explicit HourOfTwilightInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new HourOfTwilightInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {

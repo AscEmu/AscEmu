@@ -9,8 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 class BlackwingDescentInstanceScript : public InstanceScript
 {
 public:
-    explicit BlackwingDescentInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new BlackwingDescentInstanceScript(pMapMgr); }
+    explicit BlackwingDescentInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new BlackwingDescentInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {

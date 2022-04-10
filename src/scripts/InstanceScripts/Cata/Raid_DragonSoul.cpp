@@ -9,8 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 class DragonSoulInstanceScript : public InstanceScript
 {
 public:
-    explicit DragonSoulInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new DragonSoulInstanceScript(pMapMgr); }
+    explicit DragonSoulInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new DragonSoulInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {

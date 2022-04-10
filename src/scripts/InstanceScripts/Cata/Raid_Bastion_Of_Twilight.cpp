@@ -9,8 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 class BastionOfTwilightInstanceScript : public InstanceScript
 {
 public:
-    explicit BastionOfTwilightInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new BastionOfTwilightInstanceScript(pMapMgr); }
+    explicit BastionOfTwilightInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new BastionOfTwilightInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {

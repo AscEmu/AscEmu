@@ -9,8 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 class LostCityOfTolvirInstanceScript : public InstanceScript
 {
 public:
-    explicit LostCityOfTolvirInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new LostCityOfTolvirInstanceScript(pMapMgr); }
+    explicit LostCityOfTolvirInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new LostCityOfTolvirInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {

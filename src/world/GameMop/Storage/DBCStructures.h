@@ -912,21 +912,20 @@ namespace DBC::Structures
 
     struct CreatureDisplayInfoEntry
     {
-        uint32_t Displayid;                                         // 0
-        uint32_t ModelId;                                           // 1
-        //uint32_t sound_id;                                        // 2
-        //uint32_t ExtendedDisplayInfoID;                           // 3
-        float scale;                                                // 4
-        //uint32_t unk01;                                           // 5
-        //uint32_t unk02[2];                                        // 6-8
-        //uint32_t unk03;                                           // 9
-        //uint32_t unk04;                                           // 10
-        //uint32_t unk05;                                           // 11
-        //uint32_t unk06;                                           // 12
-        //uint32_t unk07;                                           // 13
-        //uint32_t unk08;                                           // 14
-        //uint32_t unk09;                                           // 15
-        //uint32_t unk10;                                           // 16
+        uint32_t ID;                                                // 0
+        uint32_t ModelID;                                           // 1
+        //uint32_t SoundID;                                         // 2
+        uint32_t ExtendedDisplayInfoID;                             // 3
+        float CreatureModelScale;                                   // 4
+        //uint32_t CreatureModelAlpha;                              // 5
+        //char const* TextureVariation[3];                          // 6-8
+        //char const* PortraitTextureName;                          // 9
+        //uint32_t SizeClass;                                       // 10
+        //uint32_t BloodID;                                         // 11
+        //uint32_t NPCSoundID;                                      // 12
+        //uint32_t ParticleColorID;                                 // 13
+        //uint32_t CreatureGeosetData;                              // 14
+        //uint32_t ObjectEffectPackageID;                           // 15
     };
 
     struct CreatureDisplayInfoExtraEntry

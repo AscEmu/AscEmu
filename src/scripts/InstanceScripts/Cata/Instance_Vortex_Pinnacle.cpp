@@ -9,8 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 class VortexPinnacleInstanceScript : public InstanceScript
 {
 public:
-    explicit VortexPinnacleInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new VortexPinnacleInstanceScript(pMapMgr); }
+    explicit VortexPinnacleInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new VortexPinnacleInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {

@@ -9,8 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 class BlackrockCavernsInstanceScript : public InstanceScript
 {
 public:
-    explicit BlackrockCavernsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new BlackrockCavernsInstanceScript(pMapMgr); }
+    explicit BlackrockCavernsInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new BlackrockCavernsInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {

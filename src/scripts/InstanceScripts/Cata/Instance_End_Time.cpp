@@ -9,8 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 class EndTimeInstanceScript : public InstanceScript
 {
 public:
-    explicit EndTimeInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new EndTimeInstanceScript(pMapMgr); }
+    explicit EndTimeInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new EndTimeInstanceScript(pMapMgr); }
 
     void OnLoad() override
     {

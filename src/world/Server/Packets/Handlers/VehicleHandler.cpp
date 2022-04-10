@@ -176,7 +176,7 @@ void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]]WorldPac
     {
         GetPlayer()->callChangeSeat(seatId, seatId > 0); // prev/next
     }
-    else if (Unit* vehUnit = GetPlayer()->getWorldMapUnit(guid))
+    else if (Unit* vehUnit = GetPlayer()->getWorldMapUnit(accessory))
     {
         if (Vehicle* vehicle = vehUnit->getVehicleKit())
             if (vehicle->hasEmptySeat(seatId))
