@@ -314,7 +314,9 @@ public:
         MySQLStructure::CreatureSpawn* m_spawn = nullptr;
 
         virtual void Despawn(uint32 delay, uint32 respawntime);
+        virtual void Despawn(uint32 delay);
         void saveRespawnTime(uint32_t forceDelay = 0);
+        void respawn(bool force = false);
         void TriggerScriptEvent(int);
 
         AuctionHouse* auctionHouse = nullptr;
@@ -332,7 +334,6 @@ public:
     static uint32 GetLineByFamily(DBC::Structures::CreatureFamilyEntry const* family);
         void RemoveLimboState(Unit* healer);
 
-        bool m_corpseEvent = false;
         MapCell* m_respawnCell = nullptr;
         bool m_noRespawn = false;
 

@@ -328,10 +328,10 @@ InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, Instanc
 
     InstanceMap* map = new InstanceMap(baseMap, mapId, time_t(300000), InstanceId, difficulty, InstanceTeam);
 
-    map->initialize();
-
     // Load Saved Respawns when existing
     map->loadRespawnTimes();
+
+    map->initialize();
 
     // Load Saved Data when possible
     bool load_data = save != nullptr;

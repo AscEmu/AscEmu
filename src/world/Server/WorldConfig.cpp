@@ -132,11 +132,11 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     rate.arenaQueueDiff = 150;
 
     // world.conf - Corpse Decay Settings
-    corpseDecay.normalTimeInSeconds = 300000;
-    corpseDecay.rareTimeInSeconds = 900000;
-    corpseDecay.eliteTimeInSeconds = 300000;
-    corpseDecay.rareEliteTimeInSeconds = 900000;
-    corpseDecay.worldbossTimeInSeconds = 3600000;
+    corpseDecay.normalTimeInSeconds = 3000;
+    corpseDecay.rareTimeInSeconds = 900;
+    corpseDecay.eliteTimeInSeconds = 300;
+    corpseDecay.rareEliteTimeInSeconds = 900;
+    corpseDecay.worldbossTimeInSeconds = 3600;
 
     // world.conf - Terrain & Collision Settings
     terrainCollision.isCollisionEnabled = false;
@@ -445,15 +445,10 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
 
     // world.conf - Corpse Decay Settings
     Config.MainConfig.tryGetInt("CorpseDecaySettings", "DecayNormal", &corpseDecay.normalTimeInSeconds);
-    corpseDecay.normalTimeInSeconds *= 1000;
     Config.MainConfig.tryGetInt("CorpseDecaySettings", "DecayRare", &corpseDecay.rareTimeInSeconds);
-    corpseDecay.rareTimeInSeconds *= 1000;
     Config.MainConfig.tryGetInt("CorpseDecaySettings", "DecayElite", &corpseDecay.eliteTimeInSeconds);
-    corpseDecay.eliteTimeInSeconds *= 1000;
     Config.MainConfig.tryGetInt("CorpseDecaySettings", "DecayRareElite", &corpseDecay.rareEliteTimeInSeconds);
-    corpseDecay.rareEliteTimeInSeconds *= 1000;
     Config.MainConfig.tryGetInt("CorpseDecaySettings", "DecayWorldboss", &corpseDecay.worldbossTimeInSeconds);
-    corpseDecay.worldbossTimeInSeconds *= 1000;
 
     // world.conf - Terrain & Collision Settings
     Config.MainConfig.tryGetBool("Terrain", "Collision", &terrainCollision.isCollisionEnabled);

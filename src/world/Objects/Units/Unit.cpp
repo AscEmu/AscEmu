@@ -6723,10 +6723,44 @@ bool Unit::justDied() const { return m_deathState == JUST_DIED; }
 void Unit::setDeathState(DeathState state)
 {
     m_deathState = state;
+
+    bool isOnVehicle = getVehicle() != nullptr;
+
+    if (state != ALIVE && state != JUST_RESPAWNED)
+    {
+        exitVehicle();
+
+        DropAurasOnDeath();
+        
+        if (!isPet())
+            removeUnitFlags(UNIT_FLAG_PET_IN_COMBAT);
+    }
+
     if (state == JUST_DIED)
     {
         getThreatManager().removeMeFromThreatLists();
         DropAurasOnDeath();
+
+        // Don't clear the movement if the Unit was on a vehicle as we are exiting now
+        if (!isOnVehicle)
+        {
+            if (IsInWorld())
+            {
+                getMovementManager()->clear();
+                getMovementManager()->moveIdle();
+            }
+
+            stopMoving();
+            disableSpline();
+        }
+
+        setHealth(0);
+        setPower(getPowerType(), 0);
+        setEmoteState(0);
+    }
+    else if (state == JUST_RESPAWNED)
+    {
+        removeUnitFlags(UNIT_FLAG_SKINNABLE); // clear skinnable for creature and player
     }
 }
 

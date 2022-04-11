@@ -591,10 +591,35 @@ void Pet::Update(unsigned long time_passed)
     else
     {
         Unit::Update(time_passed);      //Dead Hunter's Pets should be despawned only if the Owner logs out or goes out of range.
-        if (m_corpseEvent)
+
+        const auto now_c = std::chrono::system_clock::now();
+        const auto now = std::chrono::system_clock::to_time_t(now_c);
+
+        // Update DeathState
+
+        switch (m_deathState)
         {
-            sEventMgr.RemoveEvents(this);
-            m_corpseEvent = false;
+        case DEAD:
+        {
+            if (m_respawnTime <= now)
+            {
+                respawn();
+            }
+        }
+        break;
+        case CORPSE:
+        {
+            if (m_deathState != CORPSE)
+                break;
+
+            if (m_corpseRemoveTime <= now)
+            {
+                OnRemoveCorpse();
+            }
+        }
+        break;
+        default:
+            break;
         }
     }
 

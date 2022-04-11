@@ -266,6 +266,7 @@ public:
     uint32_t getHealth() const;
     void setHealth(uint32_t health);
     void modHealth(int32_t health);
+    inline void setFullHealth() { setHealth(getMaxHealth()); }
 
     uint32_t getPower(PowerType type, bool inRealTime = true) const;
     void setPower(PowerType type, uint32_t value, bool sendPacket = true);

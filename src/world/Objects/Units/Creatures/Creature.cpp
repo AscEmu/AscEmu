@@ -186,15 +186,13 @@ std::vector<CreatureItem>* Creature::getSellItems()
 
 void Creature::setDeathState(DeathState s)
 {
+    Unit::setDeathState(s);
+
     if (s == ALIVE)
         this->removeUnitFlags(UNIT_FLAG_DEAD);
 
     if (s == JUST_DIED)
     {
-        stopMoving();
-        m_deathState = CORPSE;
-        m_corpseEvent = true;
-
         // Respawn Handling
         const auto now_c = std::chrono::system_clock::now();
         const auto now = std::chrono::system_clock::to_time_t(now_c);
@@ -210,6 +208,14 @@ void Creature::setDeathState(DeathState s)
 
         saveRespawnTime();
 
+        setTargetGuid(0);
+
+        setUnitFlags(UNIT_NPC_FLAG_NONE);
+
+        setMountDisplayId(0);
+
+        getAIInterface()->setNoSearchAssistance(false);
+
         if (m_enslaveSpell)
             RemoveEnslave();
 
@@ -223,10 +229,40 @@ void Creature::setDeathState(DeathState s)
         // if it's not a Pet, and not a summon and it has skinningloot then we will allow skinning
         if (getCreatedByGuid() == 0 && getSummonedByGuid() == 0 && sLootMgr.isSkinnable(creature_properties->Id))
             addUnitFlags(UNIT_FLAG_SKINNABLE);
+
+        bool needsFalling = (IsFlying() || isHovering()) && !isUnderWater();
+        setMoveHover(false);
+        setMoveDisableGravity(false);
+
+        if (needsFalling)
+            getMovementManager()->moveFall();
+
+        Unit::setDeathState(CORPSE);
     }
-    else
+    else if (s == JUST_RESPAWNED)
     {
-        m_deathState = s;
+        if (isPet())
+        {
+            setFullHealth();
+        }
+        else
+        {
+            uint32_t curhealth = getMaxHealth();
+            setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
+            setHealth((m_deathState == ALIVE || m_deathState == JUST_RESPAWNED) ? curhealth : 0);
+        }
+
+        setTaggerGuid(0);
+
+        getAIInterface()->setCannotReachTarget(false);
+        updateMovementFlags();
+
+        removeUnitStateFlag(UNIT_STATE_ALL_ERASABLE);
+
+        OnRespawn(getWorldMap());
+
+        motion_Initialize();
+        Unit::setDeathState(ALIVE);
     }
 }
 
@@ -451,6 +487,7 @@ void Creature::Update(unsigned long time_passed)
 {
     Unit::Update(time_passed);
 
+    // Update Movement
     if (time_passed >= m_movementFlagUpdateTimer)
     {
         updateMovementFlags();
@@ -461,12 +498,29 @@ void Creature::Update(unsigned long time_passed)
         m_movementFlagUpdateTimer -= static_cast<uint16_t>(time_passed);
     }
 
-    if (m_corpseEvent)
-    {
-        sEventMgr.RemoveEvents(this, EVENT_CREATURE_REMOVE_CORPSE);
-        sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, m_corpseDelay * IN_MILLISECONDS, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    const auto now_c = std::chrono::system_clock::now();
+    const auto now = std::chrono::system_clock::to_time_t(now_c);
 
-        m_corpseEvent = false;
+    // Update DeathState
+    switch (m_deathState)
+    {
+        case DEAD:
+        {
+            if (m_respawnTime <= now)
+                respawn();
+        }
+            break;
+        case CORPSE:
+        {
+            if (m_deathState != CORPSE)
+                break;
+
+            if (m_corpseRemoveTime <= now)
+                OnRemoveCorpse();
+        }
+            break;
+        default:
+            break;
     }
 }
 
@@ -883,11 +937,10 @@ bool Creature::CanAddToWorld()
 
 void Creature::RemoveFromWorld(bool addrespawnevent, bool /*free_guid*/)
 {
-    uint32 delay = 0;
     if (addrespawnevent && m_respawnTime > 0)
-        delay = m_respawnDelay;
-
-    Despawn(0, delay);
+        Despawn(0);
+    else
+        Despawn(0, 0);
 }
 
 void Creature::RemoveFromWorld(bool free_guid)
@@ -1840,6 +1893,61 @@ void Creature::OnPushToWorld()
     CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnCreaturePushToWorld)(this);
 }
 
+void Creature::respawn(bool force)
+{
+    if (force)
+    {
+        if (isAlive())
+            setDeathState(JUST_DIED);
+        else if (getDeathState() != CORPSE)
+            setDeathState(CORPSE);
+    }
+
+    if (true)
+    {
+        OnRemoveCorpse();
+
+        if (getDeathState() == DEAD)
+        {
+            sLogger.debug("Respawning creature %s (%s)", GetCreatureProperties()->Name.c_str(), getGuid());
+            m_respawnTime = 0;
+            loot.clear();
+
+            uint8_t minlevel = std::min(GetCreatureProperties()->MaxLevel, GetCreatureProperties()->MinLevel);
+            uint8_t maxlevel = std::max(GetCreatureProperties()->MaxLevel, GetCreatureProperties()->MinLevel);
+            uint8_t level = minlevel == maxlevel ? minlevel : Util::getRandomUInt(minlevel, maxlevel);
+            setLevel(level);
+
+            setDeathState(JUST_RESPAWNED);
+
+            uint32_t displayID = getNativeDisplayId();
+            uint8_t gender = GetCreatureProperties()->GetGenderAndCreateRandomDisplayID(&displayID);
+
+            setGender(gender);
+            setDisplayId(displayID);
+            setNativeDisplayId(displayID);
+
+            getMovementManager()->initializeDefault();
+
+            // Re-initialize reactstate that could be altered by movementgenerators
+            getAIInterface()->initializeReactState();
+        }
+    }
+    else
+    {
+        if (getSpawnId())
+        {
+            MapCell* pCell = getWorldMap()->getCellByCoords(GetSpawnX(), GetSpawnY());
+            if (pCell == nullptr)
+                pCell = GetMapCell();
+
+            getWorldMap()->doRespawn(SPAWN_TYPE_CREATURE, nullptr, getSpawnId(), pCell->getPositionX(), pCell->getPositionY());
+        }
+    }
+
+    sLogger.debug("Respawning creature %s (%s)", GetCreatureProperties()->Name.c_str(), getGuid());
+}
+
 void Creature::Despawn(uint32 delay, uint32 respawntime)
 {
     if (delay)
@@ -1873,6 +1981,54 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
                 m_respawnCell = pCell;
 
                 saveRespawnTime(respawntime);
+                Unit::RemoveFromWorld(false);
+            }
+            else
+            {
+                sLogger.failure("Creature::Despawn not able to get a valid MapCell (nullptr)");
+            }
+        }
+        else
+        {
+            Unit::RemoveFromWorld(true);
+            SafeDelete();
+        }
+    }
+}
+
+void Creature::Despawn(uint32 delay)
+{
+    if (delay)
+    {
+        sEventMgr.AddEvent(this, &Creature::Despawn, (uint32)0, EVENT_CREATURE_RESPAWN, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    }
+    else
+    {
+        PrepareForRemove();
+
+        if (!IsInWorld())
+            return;
+
+        if (_myScriptClass != NULL)
+            _myScriptClass->OnDespawn();
+
+        if (!m_noRespawn)
+        {
+            // get the cell with our SPAWN location. if we've moved cell this might break :P
+            MapCell* pCell = m_WorldMap->getCellByCoords(m_spawnLocation.x, m_spawnLocation.y);
+            if (pCell == nullptr)
+                pCell = GetMapCell();
+
+            if (pCell != nullptr)
+            {
+                pCell->_respawnObjects.insert(this);
+
+                sEventMgr.RemoveEvents(this);
+
+                m_position = m_spawnLocation;
+                m_respawnCell = pCell;
+
+                saveRespawnTime();
                 Unit::RemoveFromWorld(false);
             }
             else
