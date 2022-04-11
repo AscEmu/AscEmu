@@ -12,11 +12,11 @@
 
 ## Folder: zlib
 - Web: http://www.zlib.net
-- Version: 1.2.11 (2017/01/15)
+- Version: 1.2.12 (2022/03/27)
 
 ## Folder: lualib
 - Web: https://www.lua.org
-- Version: 5.3.4 (2017-01-12)
+- Version: 5.3.4 (2017/01/12)
 
 ## Folder: g3dlite
 - Web: http://g3d.cs.williams.edu
