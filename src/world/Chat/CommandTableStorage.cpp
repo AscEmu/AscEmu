@@ -770,7 +770,9 @@ void CommandTableStorage::Init()
         { "resetreputation",    'n', &ChatHandler::HandleCharResetReputationCommand,    "Resets reputation to start levels.",               nullptr },
         { "resetspells",        'n', &ChatHandler::HandleCharResetSpellsCommand,        "Resets all spells of selected player.",            nullptr },
         { "resettalents",       'n', &ChatHandler::HandleCharResetTalentsCommand,       "Resets all talents of selected player.",           nullptr },
+#if VERSION_STRING >= TBC // support classic
         { "resetskills",        'n', &ChatHandler::HandleCharResetSkillsCommand,        "Resets all skills.",                               nullptr },
+#endif
         { "removeitem",         'm', &ChatHandler::HandleCharRemoveItemCommand,         "Removes item x count y.",                          nullptr },
         { "advanceallskills",   'm', &ChatHandler::HandleAdvanceAllSkillsCommand,       "Advances all skills <x> points.",                  nullptr },
         { nullptr,              '0', nullptr,                                           "",                                                 nullptr }

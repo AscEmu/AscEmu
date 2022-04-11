@@ -930,6 +930,7 @@ bool ChatHandler::HandleCharAddGoldCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
+#if VERSION_STRING >= TBC // support classic
 //.character resetskills
 bool ChatHandler::HandleCharResetSkillsCommand(const char* /*args*/, WorldSession* m_session)
 {
@@ -957,6 +958,7 @@ bool ChatHandler::HandleCharResetSkillsCommand(const char* /*args*/, WorldSessio
 
     return true;
 }
+#endif
 
 //.character removeitem
 bool ChatHandler::HandleCharRemoveItemCommand(const char* args, WorldSession* m_session)

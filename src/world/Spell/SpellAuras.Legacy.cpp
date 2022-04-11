@@ -1907,6 +1907,7 @@ void Aura::SpellAuraReflectSpells(AuraEffectModifier* aurEff, bool apply)
 
 void Aura::SpellAuraModStat(AuraEffectModifier* aurEff, bool apply)
 {
+#if VERSION_STRING > TBC // support classic
     int32 stat = aurEff->getEffectMiscValue();
     int32 val;
 
@@ -1973,6 +1974,7 @@ void Aura::SpellAuraModStat(AuraEffectModifier* aurEff, bool apply)
             }
         }
     }
+#endif
 }
 
 void Aura::SpellAuraModSkill(AuraEffectModifier* aurEff, bool apply)
@@ -2515,6 +2517,7 @@ void Aura::SpellAuraTrackResources(AuraEffectModifier* aurEff, bool apply)
 
 void Aura::SpellAuraModParryPerc(AuraEffectModifier* aurEff, bool apply)
 {
+#if VERSION_STRING > TBC // support classic
     //if (m_target->getObjectTypeId() == TYPEID_PLAYER)
     {
         int32 amt;
@@ -2536,10 +2539,12 @@ void Aura::SpellAuraModParryPerc(AuraEffectModifier* aurEff, bool apply)
             p_target->UpdateChances();
         }
     }
+#endif
 }
 
 void Aura::SpellAuraModDodgePerc(AuraEffectModifier* aurEff, bool apply)
 {
+#if VERSION_STRING > TBC // support classic
     // if (m_target->getObjectTypeId() == TYPEID_PLAYER)
     {
         int32 amt = aurEff->getEffectDamage();
@@ -2560,6 +2565,7 @@ void Aura::SpellAuraModDodgePerc(AuraEffectModifier* aurEff, bool apply)
             p_target->UpdateChances();
         }
     }
+#endif
 }
 
 void Aura::SpellAuraModBlockPerc(AuraEffectModifier* aurEff, bool apply)
@@ -2588,6 +2594,7 @@ void Aura::SpellAuraModBlockPerc(AuraEffectModifier* aurEff, bool apply)
 
 void Aura::SpellAuraModCritPerc(AuraEffectModifier* aurEff, bool apply)
 {
+#if VERSION_STRING >= TBC // support classic
     if (p_target != nullptr)
     {
         if (apply)
@@ -2614,6 +2621,7 @@ void Aura::SpellAuraModCritPerc(AuraEffectModifier* aurEff, bool apply)
         }
         p_target->UpdateChances();
     }
+#endif
 }
 
 void Aura::SpellAuraModHitChance(AuraEffectModifier* aurEff, bool apply)
@@ -3279,6 +3287,7 @@ void Aura::SpellAuraModDamagePercDone(AuraEffectModifier* aurEff, bool apply)
 
 void Aura::SpellAuraModPercStat(AuraEffectModifier* aurEff, bool apply)
 {
+#if VERSION_STRING >= TBC // support classic
     int32 val;
     if (apply)
     {
@@ -3341,6 +3350,7 @@ void Aura::SpellAuraModPercStat(AuraEffectModifier* aurEff, bool apply)
             }
         }
     }
+#endif
 }
 
 void Aura::SpellAuraSplitDamage(AuraEffectModifier* aurEff, bool apply)
@@ -4263,6 +4273,7 @@ void Aura::SpellAuraModManaRegInterrupt(AuraEffectModifier* aurEff, bool apply)
 
 void Aura::SpellAuraModTotalStatPerc(AuraEffectModifier* aurEff, bool apply)
 {
+#if VERSION_STRING >= TBC // support classic
     int32 val;
     if (apply)
     {
@@ -4344,6 +4355,7 @@ void Aura::SpellAuraModTotalStatPerc(AuraEffectModifier* aurEff, bool apply)
             }
         }
     }
+#endif
 }
 
 void Aura::SpellAuraModHaste(AuraEffectModifier* aurEff, bool apply)
@@ -5493,6 +5505,7 @@ void Aura::SpellAuraRegenManaStatPCT(AuraEffectModifier* aurEff, bool apply)
 
 void Aura::SpellAuraSpellHealingStatPCT(AuraEffectModifier* aurEff, bool apply)
 {
+#if VERSION_STRING >= TBC // support classic
     if (!m_target->isPlayer())
         return;
 
@@ -5517,6 +5530,7 @@ void Aura::SpellAuraSpellHealingStatPCT(AuraEffectModifier* aurEff, bool apply)
         static_cast<Player*>(m_target)->ModifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, aurEff->getEffectFixedDamage(), false);
         static_cast<Player*>(m_target)->UpdateChances();
     }
+#endif
 }
 
 void Aura::SpellAuraAllowFlight(AuraEffectModifier* /*aurEff*/, bool apply)

@@ -258,6 +258,7 @@ void WorldSession::handleTutorialReset(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING >= TBC // support classic
     CHECK_INWORLD_RETURN
 
     if (!sHookInterface.OnLogoutRequest(_player))
@@ -300,6 +301,7 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
     _player->setStandState(STANDSTATE_SIT);
 
     SetLogoutTimer(PLAYER_LOGOUT_DELAY);
+#endif
 }
 
 void WorldSession::handleSetSheathedOpcode(WorldPacket& recvPacket)

@@ -6560,6 +6560,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             dmg.schoolMask = SCHOOL_MASK_NORMAL;
     }
 
+#if VERSION_STRING >= TBC // support classic
     //////////////////////////////////////////////////////////////////////////////////////////
     //Victim Skill Base Calculation
     if (pVictim->isPlayer())
@@ -6601,6 +6602,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         }
         victim_skill = float2int32(vskill + floorf(plr->CalcRating(CR_DEFENSE_SKILL)));
     }
+
     //////////////////////////////////////////////////////////////////////////////////////////
     //mob defensive chances
     else
@@ -6637,6 +6639,8 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             }
         }
     }
+#endif
+
     //////////////////////////////////////////////////////////////////////////////////////////
     //Attacker Skill Base Calculation
     if (this->isPlayer())
@@ -7649,7 +7653,9 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             if (Util::checkChance(pr->GetSkillUpChance(SKILL_DEFENSE) * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
             {
                 pr->advanceSkillLine(SKILL_DEFENSE, static_cast<uint16_t>(float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
+#if VERSION_STRING >= TBC // support classic
                 pr->UpdateChances();
+#endif
             }
         }
         else

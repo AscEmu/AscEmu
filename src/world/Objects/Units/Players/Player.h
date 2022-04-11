@@ -1967,11 +1967,14 @@ public:
 
         float SpellHasteRatingBonus = 1.0f;
         void UpdateAttackSpeed();
+
+#if VERSION_STRING >= TBC // support classic
         float GetDefenseChance(uint32 opLevel);
         float GetDodgeChance();
         float GetBlockChance();
         float GetParryChance();
         void UpdateChances();
+#endif
         void UpdateStats();
         uint32 GetBlockDamageReduction();
         void ApplyFeralAttackPower(bool apply, Item* item = NULL);

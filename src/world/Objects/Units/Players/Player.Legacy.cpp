@@ -2556,6 +2556,7 @@ void Player::RemoveFromWorld()
     m_playerInfo->lastOnline = UNIXTIME; // don't destroy conjured items yet
 }
 
+#if VERSION_STRING >= TBC // support classic
 float Player::GetDefenseChance(uint32 opLevel)
 {
     float chance = getSkillLineCurrent(SKILL_DEFENSE, true) - (opLevel * 5.0f);
@@ -2734,6 +2735,7 @@ void Player::UpdateChances()
         this->CalcRating(CR_CRIT_SPELL);
     UpdateChanceFields();
 }
+#endif
 
 void Player::UpdateChanceFields()
 {
@@ -3022,7 +3024,10 @@ void Player::UpdateStats()
         }
     }
 
+#if VERSION_STRING >= TBC // support classic
     UpdateChances();
+#endif
+
     CalcDamage();
 }
 
@@ -4435,7 +4440,10 @@ void Player::EventTalentHearthOfWildChange(bool apply)
         TotalStatModPctPos[STAT_STAMINA] += tval;
         CalcStat(STAT_STAMINA);
         UpdateStats();
+
+#if VERSION_STRING >= TBC // support classic
         UpdateChances();
+#endif
     }
     //increase attackpower if :
     else if (SS == FORM_CAT)
