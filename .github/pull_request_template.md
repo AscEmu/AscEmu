@@ -12,10 +12,9 @@
 - [] Log into world.
 
 <!--
-***Multiversion Ingame Tests Performed:***
-- [] BC
+**Multiversion Ingame Tests Performed:**
+- [] Classic
+- [] TBC
 - [] WotLK
 - [] Cata
 -->
-
-
