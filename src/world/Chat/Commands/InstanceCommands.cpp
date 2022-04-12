@@ -61,7 +61,6 @@ bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_
 //.instance countcreature
 bool ChatHandler::HandleCountCreaturesCommand(const char* args, WorldSession* m_session)
 {
-    /*
     Player* plr = m_session->GetPlayer();
     if (plr == nullptr)
         return true;
@@ -74,8 +73,7 @@ bool ChatHandler::HandleCountCreaturesCommand(const char* args, WorldSession* m_
     if (instance == nullptr)
         return true;
 
-    instance->m_mapMgr->GetScript()->getCreatureSetForEntry(entry, true, plr);
-*/
+    instance->getScript()->getCreatureSetForEntry(entry, true, plr);
     return true;
 }
 
@@ -180,7 +178,6 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
 //.instance reset
 bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_session)
 {
-    /*
     uint32 instanceId;
     int argc = 1;
     char* playername = NULL;
@@ -216,75 +213,34 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
         return true;
     }
 
-    Instance* instance = sInstanceMgr.GetInstanceByIds(MAX_NUM_MAPS, instanceId);
+    InstanceMap* instance = sMapMgr.findInstanceMap(instanceId);
     if (instance == nullptr)
     {
         RedSystemMessage(m_session, "There's no instance with id %u.", instanceId);
         return true;
     }
 
-    if (instance->isPersistent())
-    {
-        if (m_session->CanUseCommand('z'))
-        {
-            bool foundSomething = false;
-            std::lock_guard<std::mutex> lock(plr->getPlayerInfo()->savedInstanceIdsLock);
-            for (uint8 difficulty = 0; difficulty < InstanceDifficulty::MAX_DIFFICULTY; difficulty++)
-            {
-                PlayerInstanceMap::iterator itr = plr->getPlayerInfo()->savedInstanceIds[difficulty].find(instance->m_mapId);
-                if (itr == plr->getPlayerInfo()->savedInstanceIds[difficulty].end() || (*itr).second != instance->m_instanceId)
-                    continue;
-                plr->setPersistentInstanceId(instance->m_mapId, difficulty, 0);
-                SystemMessage(m_session, "Instance with id %u (%s) is persistent and will only be revoked from player.", instanceId, GetDifficultyString(difficulty));
-                foundSomething = true;
-            }
+    InstanceSaved* save = sInstanceMgr.getInstanceSave(instanceId);
 
-            if (!foundSomething)
-                RedSystemMessage(m_session, "Player is not assigned to persistent instance with id %u.", instanceId);
-            return true;
-        }
-        else
-        {
-            RedSystemMessage(m_session, "Instance with id %u is persistent and can only be removed from player by admins.", instanceId);
-            return true;
-        }
-    }
-
-    if (instance->m_mapMgr && instance->m_mapMgr->HasPlayers())
+    if (instance && instance->hasPlayers())
     {
         RedSystemMessage(m_session, "Failed to reset non-persistent instance with id %u, due to player still inside.", instanceId);
         return true;
     }
 
-    if (instance->m_creatorGroup)
-    {
-        Group* group = plr->getGroup();
-        if (group == nullptr || instance->m_creatorGroup != group->GetID())
-        {
-            RedSystemMessage(m_session, "Player %s is not a member of the group assigned to the non-persistent instance with id %u.", plr->getName().c_str(), instanceId);
-            return true;
-        }
-    }
-    else if (instance->m_creatorGuid == 0 || instance->m_creatorGuid != plr->getGuidLow())
-    {
-        RedSystemMessage(m_session, "Player %s is not assigned to instance with id %u.", plr->getName().c_str(), instanceId);
-        return true;
-    }
+    instance->reset(INSTANCE_RESET_GLOBAL);
 
     // tell player the instance was reset
-    plr->getSession()->SendPacket(SmsgInstanceReset(instance->m_mapId).serialise().get());
+    plr->getSession()->SendPacket(SmsgInstanceReset(instance->getBaseMap()->getMapId()).serialise().get());
 
-    // shut down instance
-    sInstanceMgr.DeleteBattlegroundInstance(instance->m_mapId, instance->m_instanceId);
     //    RedSystemMessage(m_session, "Resetting single non-persistent instances is not available yet.");
-    sGMLog.writefromsession(m_session, "used reset instance command on %s, instance %u,", plr->getName().c_str(), instanceId);*/
+    sGMLog.writefromsession(m_session, "used reset instance command on %s, instance %u,", plr->getName().c_str(), instanceId);
     return true;
 }
 
 //.instance resetall
 bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession* m_session)
 {
-    /*
     bool is_name_set = false;
     Player* player;
 
@@ -308,10 +264,10 @@ bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession*
     }
 
     SystemMessage(m_session, "Trying to reset all instances of player %s...", player->getName().c_str());
-    sInstanceMgr.ResetSavedInstances(player);
+    player->resetInstances(INSTANCE_RESET_ALL, false);
     SystemMessage(m_session, "...done");
 
-    sGMLog.writefromsession(m_session, "used reset all instances command on %s,", player->getName().c_str());*/
+    sGMLog.writefromsession(m_session, "used reset all instances command on %s,", player->getName().c_str());
     return true;
 }
 
@@ -352,7 +308,6 @@ bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* 
 //.instance showtimers
 bool ChatHandler::HandleShowTimersCommand(const char* /*args*/, WorldSession* m_session)
 {
-    /*
     Player* player = m_session->GetPlayer();
     if (player == nullptr)
         return true;
@@ -361,10 +316,10 @@ bool ChatHandler::HandleShowTimersCommand(const char* /*args*/, WorldSession* m_
     if (instanceId == 0)
         return true;
 
-    Instance* instance = sInstanceMgr.GetInstanceByIds(MAX_NUM_MAPS, instanceId);
+    InstanceMap* instance = sMapMgr.findInstanceMap(instanceId);
 
-    if (instance && instance->m_mapMgr != nullptr && instance->m_mapMgr->GetScript() != nullptr)
-        instance->m_mapMgr->GetScript()->displayTimerList(player);
-*/
+    if (instance && instance->getScript() != nullptr)
+        instance->getScript()->displayTimerList(player);
+
     return true;
 }

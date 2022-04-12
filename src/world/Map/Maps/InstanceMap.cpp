@@ -277,8 +277,6 @@ void InstanceMap::createInstanceData(bool load)
     if (!getScript()->getEncounterCount())
         getScript()->setBossNumber(bossNumber);
 
-    printf("Boss Numbers %u \n", getScript()->getEncounterCount());
-
     if (load)
     {
         auto result = CharacterDatabase.Query("SELECT data, completedEncounters FROM instance WHERE map = %u AND id = %u", getBaseMap()->getMapId(), getInstanceId());
