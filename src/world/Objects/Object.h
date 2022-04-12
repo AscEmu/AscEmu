@@ -241,6 +241,7 @@ private:
     std::list<Spell*> m_garbageSpells;
     mutable std::shared_mutex m_spellUpdateMutex;
     mutable std::shared_mutex m_inRangeSetMutex;
+    mutable std::shared_mutex m_inRangeFactionSetMutex;
 
 public:
     Spell* getCurrentSpell(CurrentSpellType spellType) const;
