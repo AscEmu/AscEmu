@@ -2581,10 +2581,13 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
         auto data = sMySQLStore.getSpawnGroupDataBySpawn(getUnit()->ToCreature()->getSpawnId());
         if (data && data->spawnFlags & SPAWFLAG_FLAG_FULLPACK)
         {
-            for (auto spawns : data->spawns)
+            if (!m_Unit->getWorldMap()->isUnloadPending())
             {
-                if (spawns.second && spawns.second->m_spawn && !spawns.second->isAlive())
-                    spawns.second->Despawn(0, 1000);
+                for (auto spawns : data->spawns)
+                {
+                    if (spawns.second && spawns.second->m_spawn && !spawns.second->isAlive())
+                        spawns.second->Despawn(0, 1000);
+                }
             }
         }
 
