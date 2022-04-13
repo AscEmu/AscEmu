@@ -66,7 +66,7 @@ void Vehicle::deactivate()
 
 void Vehicle::initSeats()
 {
-    for (uint32_t i = 0; i < MAX_VEHICLE_SEATS; ++i)
+    for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; ++i)
     {
         if (uint32_t seatId = _vehicleInfo->seatID[i])
             if (auto veSeat = sVehicleSeatStore.LookupEntry(seatId))
@@ -458,7 +458,8 @@ bool Vehicle::isVehicleInUse() const
 bool Vehicle::isControllableVehicle() const
 {
     for (SeatMap::const_iterator itr = Seats.begin(); itr != Seats.end(); ++itr)
-        return (itr->second._seatInfo->IsController());
+        if (itr->second._seatInfo->IsController())
+            return true;
 
     return false;
 }
