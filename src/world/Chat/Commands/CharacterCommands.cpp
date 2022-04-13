@@ -1915,7 +1915,6 @@ bool ChatHandler::HandleCharListKillsCommand(const char* /*args*/, WorldSession*
 //.character list instances
 bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSession* m_session)
 {
-    /*
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
         return true;
@@ -1924,39 +1923,42 @@ bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSessi
     std::stringstream ss;
     ss << "Show persistent instances of " << MSG_COLOR_CYAN << player_target->getName().c_str() << "|r\n";
 
-    std::lock_guard<std::mutex> lock(player_target->getPlayerInfo()->savedInstanceIdsLock);
-    for (uint32 difficulty = 0; difficulty < InstanceDifficulty::MAX_DIFFICULTY; difficulty++)
+
+
+    for (uint32_t mapId = 0; mapId < MAX_NUM_MAPS; mapId++)
     {
-        for (PlayerInstanceMap::iterator itr = player_target->getPlayerInfo()->savedInstanceIds[difficulty].begin(); itr != player_target->getPlayerInfo()->savedInstanceIds[difficulty].end(); ++itr)
+        const auto save = player_target->getInstanceSave(mapId, false);
+
+        if (save)
         {
             count++;
-            ss << " - " << MSG_COLOR_CYAN << (*itr).second << "|r";
-            MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo((*itr).first);
-            if (mapInfo != NULL)
-                ss << " (" << MSG_COLOR_CYAN << mapInfo->name << "|r)";
-            Instance* pInstance = sInstanceMgr.GetInstanceByIds((*itr).first, (*itr).second);
-            if (pInstance == NULL)
-                ss << " - " << MSG_COLOR_RED << "Expired!|r";
-            else
+            MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo(mapId);
+            if (mapInfo)
             {
-                ss << " [" << GetMapTypeString(static_cast<uint8>(pInstance->m_mapInfo->type)) << "]";
-                if (pInstance->m_mapInfo->isMultimodeDungeon())
+                ss << " - " << MSG_COLOR_CYAN << mapInfo->mapid << "|r";
+                ss << " (" << MSG_COLOR_CYAN << mapInfo->name << "|r)";
+
+                ss << " [" << GetMapTypeString(static_cast<uint8>(mapInfo->type)) << "]";
+                if (mapInfo->isMultimodeDungeon())
                 {
-                    ss << " [" << GetDifficultyString(pInstance->m_difficulty) << "]";
+                    ss << " [" << GetDifficultyString(save->getDifficulty()) << "]";
                 }
                 ss << " - ";
-                if (pInstance->m_mapMgr == NULL)
+
+                InstanceMap* instance = sMapMgr.findInstanceMap(save->getInstanceId());
+                if (instance == nullptr)
                     ss << MSG_COLOR_LIGHTRED << "Shut Down|r";
                 else
                 {
-                    if (!pInstance->m_mapMgr->HasPlayers())
+                    if (!instance->hasPlayers())
                         ss << MSG_COLOR_LIGHTRED << "Idle|r";
                     else
                         ss << MSG_COLOR_GREEN << "In use|r";
                 }
+
             }
-            ss << "\n";
         }
+        ss << "\n";
     }
 
     if (count == 0)
@@ -1965,6 +1967,6 @@ bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSessi
         ss << "Player is assigned to " << MSG_COLOR_CYAN << count << "|r persistent instances.\n";
 
     SendMultilineMessage(m_session, ss.str().c_str());
-    sGMLog.writefromsession(m_session, "used show instances command on %s,", player_target->getName().c_str());*/
+    sGMLog.writefromsession(m_session, "used show instances command on %s,", player_target->getName().c_str());
     return true;
 }
