@@ -220,8 +220,6 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
         return true;
     }
 
-    InstanceSaved* save = sInstanceMgr.getInstanceSave(instanceId);
-
     if (instance && instance->hasPlayers())
     {
         RedSystemMessage(m_session, "Failed to reset non-persistent instance with id %u, due to player still inside.", instanceId);

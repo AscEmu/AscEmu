@@ -1455,7 +1455,7 @@ void Player::onWorldPortAck()
         {
             if (mapDiff->resetTime)
             {
-                if (time_t timeReset = sInstanceMgr.getResetTimeFor(mEntry->id, diff))
+                if (time_t timeReset = sInstanceMgr.getResetTimeFor(static_cast<uint16_t>(mEntry->id), diff))
                 {
                     const auto now_c = std::chrono::system_clock::now();
                     const auto now = std::chrono::system_clock::to_time_t(now_c);
@@ -10641,8 +10641,6 @@ void Player::loadBoundInstances()
         m_boundInstances[i].clear();
 
     Group* group = getGroup();
-
-    uint32_t guid = getGuidLow();
 
     //                                             0          1    2           3            4          5
     auto result = CharacterDatabase.Query("SELECT id, permanent, map, difficulty, extendState, resettime FROM character_instance LEFT JOIN instance ON instance = id WHERE guid =  %u", getGuidLow());

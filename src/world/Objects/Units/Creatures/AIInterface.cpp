@@ -2400,8 +2400,8 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
         if (m_Unit->getWorldMap() && m_Unit->getWorldMap()->getScript())
         {
             // set encounter state = InProgress
-            size_t i = 0;
-            for (const auto boss : m_Unit->getWorldMap()->getScript()->getBosses())
+            uint32_t i = 0;
+            for (const auto& boss : m_Unit->getWorldMap()->getScript()->getBosses())
             {
                 if (m_Unit->getEntry() == boss.entry)
                     CALL_INSTANCE_SCRIPT_EVENT(m_Unit->getWorldMap(), setBossState)(i, InProgress);
@@ -2519,7 +2519,7 @@ void AIInterface::engagementOver()
     instanceCombatProgress(false);
 }
 
-void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
+void AIInterface::eventLeaveCombat(Unit* /*pUnit*/, uint32_t /*misc1*/)
 {
     if (m_Unit->isCreature())
     {
@@ -2567,7 +2567,7 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
         {
             // Reset Instance Data
             // set encounter state back to NotStarted
-            size_t i = 0;
+            uint32_t i = 0;
             for (const auto boss : m_Unit->getWorldMap()->getScript()->getBosses())
             {
                 if (m_Unit->getEntry() == boss.entry)

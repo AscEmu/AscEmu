@@ -1913,9 +1913,9 @@ void Creature::respawn(bool force)
             m_respawnTime = 0;
             loot.clear();
 
-            uint8_t minlevel = std::min(GetCreatureProperties()->MaxLevel, GetCreatureProperties()->MinLevel);
-            uint8_t maxlevel = std::max(GetCreatureProperties()->MaxLevel, GetCreatureProperties()->MinLevel);
-            uint8_t level = minlevel == maxlevel ? minlevel : Util::getRandomUInt(minlevel, maxlevel);
+            auto minlevel = std::min(GetCreatureProperties()->MaxLevel, GetCreatureProperties()->MinLevel);
+            auto maxlevel = std::max(GetCreatureProperties()->MaxLevel, GetCreatureProperties()->MinLevel);
+            auto level = minlevel == maxlevel ? minlevel : Util::getRandomUInt(minlevel, maxlevel);
             setLevel(level);
 
             setDeathState(JUST_RESPAWNED);

@@ -568,7 +568,7 @@ void Player::Update(unsigned long time_passed)
         if (_pendingBindTimer <= time_passed)
         {
             // Player left the instance
-            if (_pendingBindId == GetInstanceID())
+            if (_pendingBindId == static_cast<uint32_t>(GetInstanceID()))
                 bindToInstance();
             setPendingBind(0, 0);
         }
@@ -3582,7 +3582,7 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
             }
             else if (instance_id && !sInstanceMgr.getInstanceSave(instance_id)) // ... and instance is reseted then look for entrance.
             {
-                auto areaTrigger = sMySQLStore.getMapEntranceTrigger(mapid);
+                areaTrigger = sMySQLStore.getMapEntranceTrigger(mapid);
                 check = true;
             }
         }

@@ -52,7 +52,7 @@ EnterState BattlegroundMap::cannotEnter(Player* player)
     if (player->getWorldMap() == this)
         return CANNOT_ENTER_ALREADY_IN_MAP;
 
-    if (player->GetInstanceID() != getInstanceId())
+    if (static_cast<uint32_t>(player->GetInstanceID()) != getInstanceId())
         return CANNOT_ENTER_INSTANCE_BIND_MISMATCH;
 
     return WorldMap::cannotEnter(player);

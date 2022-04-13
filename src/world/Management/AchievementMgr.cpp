@@ -617,7 +617,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
     if (m_player->getSession()->HasGMPermissions() && worldConfig.gm.disableAchievements)
         return;
 
-    uint64_t selectedGUID;
+    uint64_t selectedGUID = 0;
     if (type == ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE)
     {
         selectedGUID = GetPlayer()->getTargetGuid();
@@ -1549,7 +1549,7 @@ void AchievementMgr::SetCriteriaProgress(DBC::Structures::AchievementCriteriaEnt
     else
     {
         progress = m_criteriaProgress[entry->ID];
-        if (progress->counter == newValue)
+        if (progress->counter == static_cast<uint32_t>(newValue))
         {
             return;
         }

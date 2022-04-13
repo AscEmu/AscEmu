@@ -2124,7 +2124,7 @@ void MySQLDataStore::loadSpellClickSpellsTable()
             continue;
         }
 
-        uint8_t userType = fields[3].GetUInt16();
+        uint8_t userType = fields[3].GetUInt8();
         if (userType >= SPELL_CLICK_USER_MAX)
             sLogger.failure("Table npc_spellclick_spells creature: %u references unknown user type %u. Skipping entry.", npc_entry, uint32(userType));
 

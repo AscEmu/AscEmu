@@ -35,8 +35,8 @@ public:
     InstanceSaved(uint32_t mapId, uint32_t instanceId, InstanceDifficulty::Difficulties difficulty, time_t resetTime, bool canReset);
     ~InstanceSaved();
 
-    uint8_t getPlayerCount() const { return m_playerList.size(); }
-    uint8_t getGroupCount() const { return m_groupList.size(); }
+    uint8_t getPlayerCount() const { return static_cast<uint8_t>(m_playerList.size()); }
+    uint8_t getGroupCount() const { return static_cast<uint8_t>(m_groupList.size()); }
 
     // Map Related
     uint32_t getInstanceId() const { return m_instanceid; }
@@ -167,7 +167,7 @@ public:
     void update();
 
     // Reset Times
-    time_t getResetTimeFor(uint32_t mapid, InstanceDifficulty::Difficulties d) const
+    time_t getResetTimeFor(uint16_t mapid, InstanceDifficulty::Difficulties d) const
     {
         DifficultyMap map = DifficultyMap();
         
@@ -180,13 +180,13 @@ public:
     time_t getSubsequentResetTime(uint32_t mapid, InstanceDifficulty::Difficulties difficulty, time_t resetTime) const;
 
     // Use this on startup when initializing reset times
-    void initializeResetTimeFor(uint32_t mapid, InstanceDifficulty::Difficulties d, time_t t)
+    void initializeResetTimeFor(uint16_t mapid, InstanceDifficulty::Difficulties d, time_t t)
     {
         m_resetTimeByMapDifficulty[Util::MAKE_PAIR32(mapid, d)] = t;
     }
 
     // Use this only when updating existing reset times
-    void setResetTimeFor(uint32_t mapid, InstanceDifficulty::Difficulties d, time_t t)
+    void setResetTimeFor(uint16_t mapid, InstanceDifficulty::Difficulties d, time_t t)
     {
         DifficultyMap map = DifficultyMap();
 
@@ -194,7 +194,7 @@ public:
         map.MapPairParts.difficulty = d;
 
         ResetTimeByMapDifficultyMap::iterator itr = m_resetTimeByMapDifficulty.find(map.MapPair);
-        if (itr != m_resetTimeByMapDifficulty.end());
+        if (itr != m_resetTimeByMapDifficulty.end())
             itr->second = t;
     }
 

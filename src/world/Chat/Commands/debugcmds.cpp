@@ -946,9 +946,6 @@ bool ChatHandler::HandleCollisionTestLOS(const char* /*args*/, WorldSession* m_s
             return true;
         }
 
-        const auto mgr = VMAP::VMapFactory::createOrGetVMapManager();
-        const LocationVector & loc2 = pObj->GetPosition();
-        const LocationVector & loc1 = m_session->GetPlayer()->GetPosition();
         bool res = pObj->IsWithinLOSInMap(m_session->GetPlayer());
 
         SystemMessage(m_session, "Result was: %s.", res ? "in LOS" : "not in LOS");

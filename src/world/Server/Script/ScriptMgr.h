@@ -564,7 +564,7 @@ enum EncounterFrameType
 #endif
 };
 
-enum EncounterStates
+enum EncounterStates : uint8_t
 {
     NotStarted          = 0,
     InProgress          = 1,
@@ -674,7 +674,7 @@ class SERVER_DECL InstanceScript
         //used for debug
         std::string getDataStateString(uint8_t state);
 
-        uint32_t getEncounterCount() const { return bosses.size(); }
+        uint32_t getEncounterCount() const { return static_cast<uint32_t>(bosses.size()); }
 
         void saveToDB();
         void updateEncounterState(EncounterCreditType type, uint32_t creditEntry);

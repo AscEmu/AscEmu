@@ -5789,7 +5789,7 @@ void Aura::HandleAuraControlVehicle(AuraEffectModifier* aurEff, bool apply)
         return;
 
     Unit* caster = static_cast<Unit*>(getCaster());
-    int8_t seatId = aurEff->getEffectBaseDamage() - 1;
+    auto seatId = static_cast<int8_t>(aurEff->getEffectBaseDamage() - 1);
 
     if (apply)
     {

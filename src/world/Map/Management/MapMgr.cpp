@@ -85,7 +85,7 @@ void MapMgr::shutdown()
     updater.shutdown();
 }
 
-void MapMgr::update(uint32_t diff)
+void MapMgr::update(uint32_t /*diff*/)
 {
     uint32_t mstime = Util::getMSTime();
     uint32_t difftime = mstime - lastMapMgrUpdate;

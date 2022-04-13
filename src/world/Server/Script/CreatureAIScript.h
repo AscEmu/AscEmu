@@ -101,7 +101,7 @@ public:
     virtual void OnDamageTaken(Unit* /*_attacker*/, uint32_t /*_amount*/) {}
     virtual void DamageTaken(Unit* /*_attacker*/, uint32_t* /*damage*/) {} // Warning triggers before dmg applied, you can modify the damage done here
     virtual void OnCastSpell(uint32_t /*_spellId*/) {}
-    virtual void OnSpellHitTarget(Object* target, SpellInfo const* info) {} // Triggers when a casted Spell Hits a Target
+    virtual void OnSpellHitTarget(Object* /*target*/, SpellInfo const* /*info*/) {} // Triggers when a casted Spell Hits a Target
     virtual void OnTargetParried(Unit* /*_target*/) {}
     virtual void OnTargetDodged(Unit* /*_target*/) {}
     virtual void OnTargetBlocked(Unit* /*_target*/, int32 /*_amount*/) {}
@@ -127,7 +127,7 @@ public:
     virtual void StringFunctionCall(int) {}
     virtual void onSummonedCreature(Creature* /*summon*/) {}
     virtual void OnSummon(Unit* /*summoner*/) {}
-    virtual void OnSummonDies(Creature* summon, Unit* /*killer*/) {}
+    virtual void OnSummonDies(Creature* /*summon*/, Unit* /*killer*/) {}
 
     // Vehicles
     virtual void OnSpellClick(Unit* /*_clicker*/, bool /*spellClickHandled*/) { }

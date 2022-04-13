@@ -943,7 +943,7 @@ std::string InstanceScript::getDataStateString(uint8_t state)
 void InstanceScript::generateBossDataState()
 {
     const auto* encounters = sObjectMgr.GetDungeonEncounterList(GetWorldMap()->getBaseMap()->getMapId(), GetWorldMap()->getDifficulty());
-    size_t i = 0;
+    uint32_t i = 0;
 
     for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr, ++i)
     {
@@ -955,7 +955,7 @@ void InstanceScript::generateBossDataState()
     }
 
     // Set States
-    for (size_t i = 0; i < bosses.size(); ++i)
+    for (i = 0; i < bosses.size(); ++i)
         setBossState(i, NotStarted);
 }
 
@@ -1006,7 +1006,7 @@ void InstanceScript::loadSavedInstanceData(char const* data)
 {
     if (!data)
     {
-        sLogger.failure("Unable to load Saved Instance Data for Instance %s (Map %d, Instance Id: %d).", mInstance->getBaseMap()->getMapName(), mInstance->getBaseMap()->getMapId(), mInstance->getInstanceId());
+        sLogger.failure("Unable to load Saved Instance Data for Instance %s (Map %d, Instance Id: %d).", mInstance->getBaseMap()->getMapName().c_str(), mInstance->getBaseMap()->getMapId(), mInstance->getInstanceId());
         return;
     }
 
@@ -1014,7 +1014,7 @@ void InstanceScript::loadSavedInstanceData(char const* data)
 
     readSaveDataBossStates(loadStream);
 
-    sLogger.debug("Saved Instance Data Loaded for Instance %s (Map %d, Instance Id: %d) is complete.", mInstance->getBaseMap()->getMapName(), mInstance->getBaseMap()->getMapId(), mInstance->getInstanceId());
+    sLogger.debug("Saved Instance Data Loaded for Instance %s (Map %d, Instance Id: %d) is complete.", mInstance->getBaseMap()->getMapName().c_str(), mInstance->getBaseMap()->getMapId(), mInstance->getInstanceId());
 }
 
 void InstanceScript::readSaveDataBossStates(std::istringstream& data)
@@ -1031,7 +1031,7 @@ void InstanceScript::readSaveDataBossStates(std::istringstream& data)
     }
 
     uint32_t bossId = 0;
-    for (std::vector<BossInfo>::iterator i = bosses.begin(); i != bosses.end(); ++i, ++bossId)
+    for (std::vector<BossInfo>::iterator itr = bosses.begin(); itr != bosses.end(); ++itr, ++bossId)
     {
         uint32 buff;
         data >> buff;
@@ -1101,12 +1101,12 @@ void InstanceScript::updateEncounterState(EncounterCreditType type, uint32_t cre
     }
 }
 
-void InstanceScript::updateEncountersStateForCreature(uint32_t creditEntry, uint8_t difficulty)
+void InstanceScript::updateEncountersStateForCreature(uint32_t creditEntry, uint8_t /*difficulty*/)
 {
     updateEncounterState(ENCOUNTER_CREDIT_KILL_CREATURE, creditEntry);
 }
 
-void InstanceScript::updateEncountersStateForSpell(uint32_t creditEntry, uint8_t difficulty)
+void InstanceScript::updateEncountersStateForSpell(uint32_t creditEntry, uint8_t /*difficulty*/)
 {
     updateEncounterState(ENCOUNTER_CREDIT_CAST_SPELL, creditEntry);
 }

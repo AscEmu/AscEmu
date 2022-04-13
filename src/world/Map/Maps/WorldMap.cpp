@@ -338,8 +338,6 @@ void WorldMap::update(uint32_t t_diff)
     /// Update Respawns
     if (_respawnUpdateTimer <= t_diff)
     {
-        const auto now_c = std::chrono::system_clock::now();
-        const auto now = std::chrono::system_clock::to_time_t(now_c);
         processRespawns();
 
         while (!_corpseDespawnTimes.empty())
@@ -1898,7 +1896,7 @@ void WorldMap::loadRespawnTimes()
     } while (result->NextRow());
 }
 
-void WorldMap::saveRespawnTime(SpawnObjectType type, uint32_t spawnId, uint32_t entry, time_t respawnTime, uint32_t cellX, uint32_t cellY, bool startup)
+void WorldMap::saveRespawnTime(SpawnObjectType type, uint32_t spawnId, uint32_t entry, time_t respawnTime, float cellX, float cellY, bool startup)
 {
     if (!respawnTime)
     {
@@ -2012,7 +2010,7 @@ void WorldMap::deleteRespawn(RespawnInfo* info)
     auto& spawnMap = getRespawnMapForType(info->type);
     auto range = spawnMap.equal_range(info->spawnId);
     auto it = std::find_if(range.first, range.second, [info](RespawnInfoMap::value_type const& pair) { return (pair.second == info); });
-    ASSERT(it != range.second, "Respawn stores inconsistent for map %u, spawnid %u (type %u)", GetId(), info->spawnId, uint32(info->type));
+    ASSERT(it != range.second);
     spawnMap.erase(it);
 
     // respawn heap
@@ -2025,7 +2023,7 @@ void WorldMap::deleteRespawn(RespawnInfo* info)
     delete info;
 }
 
-void WorldMap::deleteRespawnTimesInDB(uint16_t mapId, uint32_t instanceId)
+void WorldMap::deleteRespawnTimesInDB(uint32_t mapId, uint32_t instanceId)
 {
     CharacterDatabase.Execute("DELETE FROM respawn WHERE mapId = %u AND instanceId = %u", mapId, instanceId);
 }
@@ -2323,7 +2321,7 @@ bool WorldMap::is25ManRaid()
     return getBaseMap()->isRaid() && getSpawnMode() & 1;
 }
 
-bool WorldMap::getAreaInfo(uint32_t phaseMask, float x, float y, float z, uint32_t& flags, int32_t& adtId, int32_t& rootId, int32_t& groupId)
+bool WorldMap::getAreaInfo(uint32_t /*phaseMask*/, float x, float y, float z, uint32_t& flags, int32_t& adtId, int32_t& rootId, int32_t& groupId)
 {
     float vmap_z = z;
     float dynamic_z = z;

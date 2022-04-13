@@ -54,7 +54,7 @@ struct CompareRespawnInfo
             return (a->time > b->time);
         if (a->spawnId != b->spawnId)
             return a->spawnId < b->spawnId;
-        ASSERT(a->type != b->type, "Duplicate respawn entry for spawnId (%u,%u) found!", a->type, a->spawnId);
+        ASSERT(a->type != b->type);
         return a->type < b->type;
     }
 };
@@ -228,7 +228,7 @@ public:
     float getGridHeight(float x, float y) const;
     float getHeight(LocationVector const& pos, bool vmap = true, float maxSearchDist = 50.0f) const { return getHeight(pos.getPositionX(), pos.getPositionY(), pos.getPositionZ(), vmap, maxSearchDist); }
     // phasemask seems to be invalid when loading into a map                                                                                                                                                // phase
-    float getHeight(uint32_t phasemask, float x, float y, float z, bool vmap = true, float maxSearchDist = 50.0f) const { return std::max<float>(getHeight(x, y, z, vmap, maxSearchDist), getGameObjectFloor(1, x, y, z, maxSearchDist)); }
+    float getHeight(uint32_t /*phasemask*/, float x, float y, float z, bool vmap = true, float maxSearchDist = 50.0f) const { return std::max<float>(getHeight(x, y, z, vmap, maxSearchDist), getGameObjectFloor(1, x, y, z, maxSearchDist)); }
     float getHeight(uint32_t phasemask, LocationVector const& pos, bool vmap = true, float maxSearchDist = 50.0f) const { return getHeight(phasemask, pos.getPositionX(), pos.getPositionY(), pos.getPositionZ(), vmap, maxSearchDist); }
 
     // Instance
@@ -330,13 +330,13 @@ public:
 
     // Respawn Handling
     void loadRespawnTimes();
-    void saveRespawnTime(SpawnObjectType type, uint32_t spawnId, uint32_t entry, time_t respawnTime, uint32_t cellX, uint32_t cellY, bool startup = false);
+    void saveRespawnTime(SpawnObjectType type, uint32_t spawnId, uint32_t entry, time_t respawnTime, float cellX, float cellY, bool startup = false);
     void saveRespawnDB(RespawnInfo const& info);
     bool addRespawn(RespawnInfo const& info);
     void removeRespawnTime(SpawnObjectType type, uint32_t spawnId);
 
     void deleteRespawnTimes() { unloadAllRespawnInfos(); deleteRespawnTimesInDB(getBaseMap()->getMapId(), getInstanceId()); }
-    static void deleteRespawnTimesInDB(uint16_t mapId, uint32_t instanceId);
+    static void deleteRespawnTimesInDB(uint32_t mapId, uint32_t instanceId);
 
     void unloadAllRespawnInfos();
 

@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <WorldConf.h>
 #include "VMapFactory.h"
 #include "IVMapManager.h"
-
+#include "G3D/Plane.h"
 #include "TerrainMgr.hpp"
 
 #include "Logging/Logger.hpp"

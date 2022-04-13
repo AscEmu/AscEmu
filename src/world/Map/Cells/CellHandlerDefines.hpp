@@ -15,8 +15,8 @@ namespace Map
 
         inline static const int TilesCount = 64;
         inline static const int MapResoloution = 128;
-        inline static const int MapSize = (TileSize * TilesCount);
-        inline static const int MapHalfSize = (MapSize / 2);
+        inline static const float MapSize = (TileSize * TilesCount);
+        inline static const float MapHalfSize = (MapSize / 2);
 
         inline static const int MapCenter = (TilesCount / 2);
         inline static const float MapCenterOffset = (TileSize / 2);

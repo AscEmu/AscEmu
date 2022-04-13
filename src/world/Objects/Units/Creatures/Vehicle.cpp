@@ -203,7 +203,7 @@ void Vehicle::loadAllAccessories(bool evading)
             loadAccessory(itr->accessoryEntry, itr->seatId, itr->isMinion, itr->summonedType, itr->summonTime);
 }
 
-void Vehicle::loadAccessory(uint32_t entry, int8_t seatId, bool minion, uint8_t type, uint32_t summonTime)
+void Vehicle::loadAccessory(uint32_t entry, int8_t seatId, bool minion, uint8_t /*type*/, uint32_t /*summonTime*/)
 {
     if (_status == STATUS_DEACTIVATED)
     {

@@ -139,7 +139,7 @@ bool InstanceMap::addPlayerToMap(Player* player)
                 // cannot enter other instances if bound permanently
                 if (playerBind->save != mapSave)
                 {
-                    sLogger.debug("player % s % s is permanently bound to instance % s % d, % d, % d, % d, % d, % d but he is being put into instance % s % d, % d, % d, % d, % d, % d", player->getName().c_str(), player->getGuid(), getBaseMap()->getMapName().c_str(), playerBind->save->getMapId(), playerBind->save->getInstanceId(), playerBind->save->getDifficulty(), playerBind->save->getPlayerCount(), playerBind->save->getGroupCount(), playerBind->save->canReset(), getBaseMap()->getMapName(), mapSave->getMapId(), mapSave->getInstanceId(), mapSave->getDifficulty(), mapSave->getPlayerCount(), mapSave->getGroupCount(), mapSave->canReset());
+                    sLogger.debug("player % s % s is permanently bound to instance % s % d, % d, % d, % d, % d, % d but he is being put into instance % s % d, % d, % d, % d, % d, % d", player->getName().c_str(), player->getGuid(), getBaseMap()->getMapName().c_str(), playerBind->save->getMapId(), playerBind->save->getInstanceId(), playerBind->save->getDifficulty(), playerBind->save->getPlayerCount(), playerBind->save->getGroupCount(), playerBind->save->canReset(), getBaseMap()->getMapName().c_str(), mapSave->getMapId(), mapSave->getInstanceId(), mapSave->getDifficulty(), mapSave->getPlayerCount(), mapSave->getGroupCount(), mapSave->canReset());
                     return false;
                 }
             }
@@ -205,9 +205,11 @@ bool InstanceMap::addPlayerToMap(Player* player)
 
         sLogger.info("Player '%s' entered instance '%u' of map '%s' \n", player->getName().c_str(), getInstanceId(), getBaseMap()->getMapName().c_str());
     }
+
+    return true;
 }
 
-void InstanceMap::removePlayerFromMap(Player* player)
+void InstanceMap::removePlayerFromMap(Player* /*player*/)
 {
     // if last player set unload timer
     if (!m_unloadTimer && getPlayerCount() == 1)
@@ -272,7 +274,7 @@ void InstanceMap::createInstanceData(bool load)
 
     auto const& encounters = sObjectMgr.GetDungeonEncounterList(getBaseMap()->getMapId(), getDifficulty());
 
-    uint32_t bossNumber = encounters->size();
+    uint32_t bossNumber = static_cast<uint32_t>(encounters->size());
 
     if (!getScript()->getEncounterCount())
         getScript()->setBossNumber(bossNumber);

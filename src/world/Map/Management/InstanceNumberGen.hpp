@@ -99,7 +99,7 @@ public:
             return;
         }
 
-        std::remove(usedIds.begin(), usedIds.end(), id), usedIds.end();
+        usedIds.erase(std::remove(usedIds.begin(), usedIds.end(), id), usedIds.end());
         freeIds.emplace(id);
     }
 

@@ -4047,15 +4047,15 @@ void Unit::addAura(Aura* aur)
                 // The auras are casted by same unit, reapply all effects
                 // Old aura will never have more effects than new aura and all effects have same indexes
                 // but old aura can have less effects if certain effects have been removed by i.e. pvp trinket
-                for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                for (uint8_t x = 0; x < MAX_SPELL_EFFECTS; ++x)
                 {
-                    _aura->removeAuraEffect(i, true);
+                    _aura->removeAuraEffect(x, true);
 
                     // Do not add empty effects
-                    if (aur->getAuraEffect(i)->getAuraEffectType() == SPELL_AURA_NONE)
+                    if (aur->getAuraEffect(x)->getAuraEffectType() == SPELL_AURA_NONE)
                         continue;
 
-                    _aura->addAuraEffect(aur->getAuraEffect(i), true);
+                    _aura->addAuraEffect(aur->getAuraEffect(x), true);
                 }
 
                 // On reapply get duration from new aura

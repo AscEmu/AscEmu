@@ -152,8 +152,8 @@ void InstanceMgr::loadResetTimes()
 
             if (time_t resettime = time_t(fields[3].GetUInt64()))
             {
-                uint32_t mapid = fields[1].GetUInt16();
-                uint32_t difficulty = fields[2].GetUInt8();
+                auto mapid = fields[1].GetUInt16();
+                auto difficulty = fields[2].GetUInt8();
 
                 instResetTime[instanceId] = ResetTimeMapDiffType(Util::MAKE_PAIR32(mapid, difficulty), resettime);
                 mapDiffResetInstances.insert(ResetTimeMapDiffInstances::value_type(Util::MAKE_PAIR32(mapid, difficulty), instanceId));
@@ -168,19 +168,19 @@ void InstanceMgr::loadResetTimes()
                 DifficultyMap map = DifficultyMap();
                 map.MapPair = itr->second.first;
 
-                addResetEvent(true, itr->second.second, InstResetEvent(0, map.MapPairParts.mapid, InstanceDifficulty::Difficulties(map.MapPairParts.difficulty), itr->first));
+                addResetEvent(true, itr->second.second, InstResetEvent(0, map.MapPairParts.mapid, InstanceDifficulty::Difficulties(map.MapPairParts.difficulty), static_cast<uint16_t>(itr->first)));
             }
         }
     }
 
     // load the global respawn times for raid/heroic instances
-    uint32_t resetHour = worldConfig.instance.relativeDailyHeroicInstanceResetHour;
+    auto resetHour = static_cast<uint8_t>(worldConfig.instance.relativeDailyHeroicInstanceResetHour);
     if (QueryResult* result = CharacterDatabase.Query("SELECT mapid, difficulty, resettime FROM instance_reset"))
     {
         do
         {
             Field* fields = result->Fetch();
-            uint32_t mapid = fields[0].GetUInt16();
+            auto mapid = fields[0].GetUInt16();
             InstanceDifficulty::Difficulties difficulty = InstanceDifficulty::Difficulties(fields[1].GetUInt8());
             uint64 oldresettime = fields[2].GetUInt64();
 
@@ -211,7 +211,7 @@ void InstanceMgr::loadResetTimes()
         DifficultyMap map = DifficultyMap();
         map.MapPair = itr->first;
 
-        uint32_t mapid = map.MapPairParts.mapid;
+        auto mapid = map.MapPairParts.mapid;
         InstanceDifficulty::Difficulties difficulty = InstanceDifficulty::Difficulties(map.MapPairParts.difficulty);
         DBC::Structures::MapDifficulty const* mapDiff = &itr->second;
         if (!mapDiff->resetTime)
@@ -253,7 +253,7 @@ void InstanceMgr::loadResetTimes()
 
         ResetTimeMapDiffInstancesBounds range = mapDiffResetInstances.equal_range(map_diff_pair);
         for (; range.first != range.second; ++range.first)
-            addResetEvent(true, t - ResetTimeDelay[type - 1], InstResetEvent(type, mapid, difficulty, range.first->second));
+            addResetEvent(true, t - ResetTimeDelay[type - 1], InstResetEvent(type, mapid, difficulty, static_cast<uint16_t>(range.first->second)));
     }
 }
 
@@ -401,7 +401,7 @@ void InstanceMgr::resetOrWarnAll(uint32_t mapid, InstanceDifficulty::Difficultie
                 ++itr;
         }
 
-        setResetTimeFor(mapid, difficulty, next_reset);
+        setResetTimeFor(static_cast<uint16_t>(mapid), difficulty, next_reset);
         addResetEvent(true, time_t(next_reset - 3600), InstResetEvent(1, mapid, difficulty, 0));
 
         // Update it in the DB
@@ -462,7 +462,7 @@ InstanceSaved* InstanceMgr::addInstanceSave(uint32_t mapId, uint32_t instanceId,
         // for normal instances if no creatures are killed the instance will reset in two hours
         if (entry->map_type == MAP_RAID || difficulty > InstanceDifficulty::Difficulties::DUNGEON_NORMAL)
         {
-            resetTime = getResetTimeFor(mapId, difficulty);
+            resetTime = getResetTimeFor(static_cast<uint16_t>(mapId), difficulty);
         }
         else
         {
@@ -470,7 +470,7 @@ InstanceSaved* InstanceMgr::addInstanceSave(uint32_t mapId, uint32_t instanceId,
             const auto now_t = std::chrono::system_clock::to_time_t(now_c);
             resetTime = now_t + 2 * HOUR;
             // add our Reset Event
-            addResetEvent(true, resetTime, InstResetEvent(0, mapId, difficulty, instanceId));
+            addResetEvent(true, resetTime, InstResetEvent(0, mapId, difficulty, static_cast<uint16_t>(instanceId)));
         }
     }
 
@@ -566,7 +566,7 @@ time_t InstanceMgr::getSubsequentResetTime(uint32_t mapid, InstanceDifficulty::D
         return 0;
     }
 
-    time_t resetHour = worldConfig.instance.relativeDailyHeroicInstanceResetHour;
+    auto resetHour = static_cast<uint8_t>(worldConfig.instance.relativeDailyHeroicInstanceResetHour);
     time_t period = uint32_t((mapDiff->resetTime / DAY) * DAY);
     if (period < DAY)
         period = DAY;

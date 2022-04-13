@@ -36,7 +36,7 @@ bool ChatHandler::HandleVehicleEjectPassengerCommand(const char* args, WorldSess
 
     if (u->getVehicleKit())
     {
-        if (Unit* passenger = u->getVehicleKit()->getPassenger(seat))
+        if (Unit* passenger = u->getVehicleKit()->getPassenger(static_cast<int8_t>(seat)))
             passenger->callExitVehicle();
     }
     return true;
