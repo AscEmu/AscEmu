@@ -35,7 +35,7 @@ struct CorpseInfo
 struct RespawnInfo
 {
     SpawnObjectType type;
-    uint64_t spawnId;
+    uint32_t spawnId;
     uint32_t entry;
     time_t time;
 
