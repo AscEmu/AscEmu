@@ -10839,7 +10839,8 @@ void Player::sendRaidInfo()
     size_t p_counter = data.wpos();
     data << uint32_t(counter);                                // placeholder
 
-    time_t now = Util::getGameTime();
+    const auto now_c = std::chrono::system_clock::now();
+    const auto now = std::chrono::system_clock::to_time_t(now_c);
 
     for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
     {

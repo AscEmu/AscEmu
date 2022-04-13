@@ -936,8 +936,6 @@ struct PlayerCreateInfo
 //\todo: It is mostly used to handle offline player data for groups, somehow it is used to
 // determine if a player is online or not.
 
-typedef std::unordered_map<uint32_t, uint32_t> PlayerInstanceMap;
-
 class SERVER_DECL CachedCharacterInfo
 {
 public:
@@ -958,8 +956,6 @@ public:
     uint32_t lastLevel;
     Group* m_Group;
     int8_t subGroup;
-    //std::mutex savedInstanceIdsLock;
-    //PlayerInstanceMap savedInstanceIds[InstanceDifficulty::MAX_DIFFICULTY];
 
     uint32_t m_guild;
     uint32_t guildRank;

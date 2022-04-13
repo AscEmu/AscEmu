@@ -1298,8 +1298,7 @@ Group::BoundInstancesMap& Group::getBoundInstances(InstanceDifficulty::Difficult
 
 InstanceGroupBind* Group::bindToInstance(InstanceSaved* save, bool permanent, bool load)
 {
-    // todo we dont want to bind battlegrounds
-    if (!save  || isBGGroup() || isBFGroup())
+    if (!save   || isBGGroup() /*|| isBFGroup()*/)
         return nullptr;
 
     InstanceGroupBind& bind = m_boundInstances[save->getDifficulty()][save->getMapId()];
