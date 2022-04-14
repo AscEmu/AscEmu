@@ -129,12 +129,14 @@ void InstanceMgr::loadResetTimes()
     const auto now = std::chrono::system_clock::to_time_t(now_c);
     time_t today = (now / DAY) * DAY;
 
-    // resettime = 0 in the DB for raid/heroic instances so those are skipped
+    // resettime = 0 in the DB for raid/heroic instances
+    //                   map/difficulty, resetTime
     typedef std::pair<uint32_t, time_t> ResetTimeMapDiffType;
     typedef std::map<uint32_t, ResetTimeMapDiffType> InstResetTimeMapDiffType;
     InstResetTimeMapDiffType instResetTime;
 
-    // index instance ids by map/difficulty pairs for fast reset warning send
+    // index instance ids by map/difficulty pairs
+    //                   map/difficulty, instanceId
     typedef std::multimap<uint32_t, uint32_t> ResetTimeMapDiffInstances;
     typedef std::pair<ResetTimeMapDiffInstances::const_iterator, ResetTimeMapDiffInstances::const_iterator> ResetTimeMapDiffInstancesBounds;
     ResetTimeMapDiffInstances mapDiffResetInstances;
@@ -173,7 +175,7 @@ void InstanceMgr::loadResetTimes()
         }
     }
 
-    // load the global respawn times for raid/heroic instances
+    // load the global resettimes for raid and heroic instances
     auto resetHour = static_cast<uint8_t>(worldConfig.instance.relativeDailyHeroicInstanceResetHour);
     if (QueryResult* result = CharacterDatabase.Query("SELECT mapid, difficulty, resettime FROM instance_reset"))
     {
@@ -243,7 +245,7 @@ void InstanceMgr::loadResetTimes()
 
         initializeResetTimeFor(mapid, difficulty, t);
 
-        // schedule the global reset/warning
+        // add the global reset event
         uint8_t type;
         for (type = 1; type < 4; ++type)
             if (t - ResetTimeDelay[type - 1] > now)
@@ -293,8 +295,6 @@ void InstanceMgr::update()
 
 void InstanceMgr::resetSave(InstanceSavedMap::iterator& itr)
 {
-    // unbind all players bound to the instance
-    // do not allow UnbindInstance to automatically unload the InstanceSaves
     lock_instanceLists = true;
 
     bool shouldDelete = true;
@@ -540,7 +540,6 @@ void InstanceMgr::addResetEvent(bool add, time_t time, InstResetEvent event)
             }
         }
 
-        // in case the reset time changed (should happen very rarely), we search the whole queue
         if (itr == range.second)
         {
             for (itr = m_resetTimeQueue.begin(); itr != m_resetTimeQueue.end(); ++itr)
