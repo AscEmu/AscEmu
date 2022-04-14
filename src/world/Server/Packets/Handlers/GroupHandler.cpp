@@ -63,6 +63,7 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
         }
         else
         {
+            // Added into ObjectMgr, should not leak memory
             group = new Group(true);
             group->m_difficulty = group_inviter->m_dungeonDifficulty;
             group->AddMember(group_inviter->m_playerInfo);
@@ -78,8 +79,6 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
                 instance->m_creatorGuid = 0;
                 sInstanceMgr.SaveInstanceToDB(instance);
             }
-
-            delete group;
         }
     }
     else
@@ -527,6 +526,7 @@ void WorldSession::handleGroupAcceptOpcode(WorldPacket& /*recvPacket*/)
     auto group = player->getGroup();
     if (group == nullptr)
     {
+        // Added into ObjectMgr, should not leak memory
         group = new Group(true);
         group->AddMember(player->getPlayerInfo());
         group->AddMember(_player->getPlayerInfo());
@@ -543,8 +543,6 @@ void WorldSession::handleGroupAcceptOpcode(WorldPacket& /*recvPacket*/)
 
             sInstanceMgr.SaveInstanceToDB(instance);
         }
-
-        delete group;
     }
     else
     {
