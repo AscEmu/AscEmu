@@ -68,7 +68,7 @@ CREATE TABLE `instance_reset` (
   KEY `difficulty` (`difficulty`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
-DROP TABLE IF EXISTS  `instanceids`;
-DROP TABLE IF EXISTS  `instances`;
+DROP TABLE IF EXISTS `instanceids`;
+DROP TABLE IF EXISTS `instances`;
 
-UPDATE `character_db_version` SET LastUpdate = '20220202-00_instances';
+UPDATE `character_db_version` SET LastUpdate = '20220414-00_instances';
