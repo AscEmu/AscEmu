@@ -7381,8 +7381,14 @@ float Unit::getCollisionHeight() const
         {
             if (DBC::Structures::CreatureModelDataEntry const* mountModelData = sCreatureModelDataStore.LookupEntry(mountDisplayInfo->ModelID))
             {
-                DBC::Structures::CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.AssertEntry(getNativeDisplayId());
-                DBC::Structures::CreatureModelDataEntry const* modelData = sCreatureModelDataStore.AssertEntry(displayInfo->ModelID);
+                DBC::Structures::CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(getNativeDisplayId());
+                if (!displayInfo)
+                    return DEFAULT_COLLISION_HEIGHT;
+
+                DBC::Structures::CreatureModelDataEntry const* modelData = sCreatureModelDataStore.LookupEntry(displayInfo->ModelID);
+                if (!modelData)
+                    return DEFAULT_COLLISION_HEIGHT;
+
                 float const collisionHeight = scaleMod * (mountModelData->MountHeight + modelData->CollisionHeight * getScale() * displayInfo->CreatureModelScale * 0.5f);
                 return collisionHeight == 0.0f ? DEFAULT_COLLISION_HEIGHT : collisionHeight;
             }
@@ -7390,8 +7396,13 @@ float Unit::getCollisionHeight() const
     }
 
     // Dismounted case
-    DBC::Structures::CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.AssertEntry(getNativeDisplayId());
-    DBC::Structures::CreatureModelDataEntry const* modelData = sCreatureModelDataStore.AssertEntry(displayInfo->ModelID);
+    DBC::Structures::CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(getNativeDisplayId());
+    if (!displayInfo)
+        return DEFAULT_COLLISION_HEIGHT;
+
+    DBC::Structures::CreatureModelDataEntry const* modelData = sCreatureModelDataStore.LookupEntry(displayInfo->ModelID);
+    if (!modelData)
+        return DEFAULT_COLLISION_HEIGHT;
 
     float const collisionHeight = scaleMod * modelData->CollisionHeight * getScale() * displayInfo->CreatureModelScale;
     return collisionHeight == 0.0f ? DEFAULT_COLLISION_HEIGHT : collisionHeight;
