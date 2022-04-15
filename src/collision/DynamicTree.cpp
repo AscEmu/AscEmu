@@ -91,7 +91,7 @@ struct DynTreeImpl : public ParentTree/*, public Intersectable*/
         unbalanced_times = 0;
     }
 
-    void update(uint32 difftime)
+    void update(uint32_t difftime)
     {
         if (!size())
             return;
@@ -149,8 +149,8 @@ void DynamicMapTree::update(uint32_t t_diff)
 struct DynamicTreeIntersectionCallback
 {
     bool did_hit;
-    uint32 phase_mask;
-    DynamicTreeIntersectionCallback(uint32 phasemask) : did_hit(false), phase_mask(phasemask) { }
+    uint32_t phase_mask;
+    DynamicTreeIntersectionCallback(uint32_t phasemask) : did_hit(false), phase_mask(phasemask) { }
     bool operator()(const G3D::Ray& r, const GameObjectModel& obj, float& distance)
     {
         did_hit = obj.intersectRay(r, distance, true, phase_mask);
@@ -162,8 +162,8 @@ struct DynamicTreeIntersectionCallback
 struct DynamicTreeIntersectionCallback_WithLogger
 {
     bool did_hit;
-    uint32 phase_mask;
-    DynamicTreeIntersectionCallback_WithLogger(uint32 phasemask) : did_hit(false), phase_mask(phasemask)
+    uint32_t phase_mask;
+    DynamicTreeIntersectionCallback_WithLogger(uint32_t phasemask) : did_hit(false), phase_mask(phasemask)
     {
         sLogger.debug("DynamicTreeIntersectionCallback_WithLogger : Dynamic Intersection log");
     }
@@ -183,7 +183,7 @@ struct DynamicTreeIntersectionCallback_WithLogger
 
 struct DynamicTreeAreaInfoCallback
 {
-    DynamicTreeAreaInfoCallback(uint32 phaseMask) : _phaseMask(phaseMask) {}
+    DynamicTreeAreaInfoCallback(uint32_t phaseMask) : _phaseMask(phaseMask) {}
 
     void operator()(G3D::Vector3 const& p, GameObjectModel const& obj)
     {
@@ -193,13 +193,13 @@ struct DynamicTreeAreaInfoCallback
     VMAP::AreaInfo const& GetAreaInfo() const { return _areaInfo; }
 
 private:
-    uint32 _phaseMask;
+    uint32_t _phaseMask;
     VMAP::AreaInfo _areaInfo;
 };
 
 struct DynamicTreeLocationInfoCallback
 {
-    DynamicTreeLocationInfoCallback(uint32 phaseMask) : _phaseMask(phaseMask), _hitModel(nullptr) {}
+    DynamicTreeLocationInfoCallback(uint32_t phaseMask) : _phaseMask(phaseMask), _hitModel(nullptr) {}
 
     void operator()(G3D::Vector3 const& p, GameObjectModel const& obj)
     {
@@ -211,7 +211,7 @@ struct DynamicTreeLocationInfoCallback
     GameObjectModel const* GetHitModel() const { return _hitModel; }
 
 private:
-    uint32 _phaseMask;
+    uint32_t _phaseMask;
     VMAP::LocationInfo _locationInfo;
     GameObjectModel const* _hitModel;
 };

@@ -254,7 +254,7 @@ namespace VMAP
         return false;
     }
 
-    bool VMapManager2::GetLiquidLevel(uint32 mapId, float x, float y, float z, uint8 reqLiquidType, float& level, float& floor, uint32& type, uint32& mogpFlags) const
+    bool VMapManager2::getLiquidLevel(uint32_t mapId, float x, float y, float z, uint8_t reqLiquidType, float& level, float& floor, uint32_t& type, uint32_t& mogpFlags) const
     {
         if (!IsVMAPDisabledForPtr(mapId, VMAP_DISABLE_LIQUIDSTATUS))
         {

@@ -11,7 +11,7 @@ CREATE TABLE `character_instance` (
   `extendState` tinyint unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`guid`,`instance`),
   KEY `instance` (`instance`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Table structure for `group_instance`
@@ -23,7 +23,7 @@ CREATE TABLE `group_instance` (
   `permanent` tinyint unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`guid`,`instance`),
   KEY `instance` (`instance`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Table structure for `instance`
@@ -40,7 +40,7 @@ CREATE TABLE `instance` (
   KEY `map` (`map`),
   KEY `resettime` (`resettime`),
   KEY `difficulty` (`difficulty`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Table structure for `respawn`
@@ -54,7 +54,7 @@ CREATE TABLE `respawn` (
   `instanceId` int unsigned NOT NULL,
   PRIMARY KEY (`type`,`spawnId`,`instanceId`),
   KEY `idx_instance` (`instanceId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='Stored respawn times';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4_unicode_ci COMMENT='Stored respawn times';
 
 -- ----------------------------
 -- Table structure for `instance_reset`
@@ -66,7 +66,7 @@ CREATE TABLE `instance_reset` (
   `resettime` bigint unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`mapid`,`difficulty`),
   KEY `difficulty` (`difficulty`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `instanceids`;
 DROP TABLE IF EXISTS `instances`;

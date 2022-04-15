@@ -781,9 +781,13 @@ public:
         if (pCreature)
         {
             for (const auto& itr : mInstance->getPlayers())
+            {
                 if (Player* pPlayer = itr.second)
+                {
                     if (pPlayer->GetPositionZ() < 420.0f && pPlayer->IsWithinDistInMap(pCreature, 300.0f))
                         pPlayer->teleport(pCreature->GetPosition(), mInstance);
+                }
+            }
         }
     }
 

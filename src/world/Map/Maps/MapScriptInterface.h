@@ -193,6 +193,5 @@ public:
     void DeleteCreature(Creature* ptr);
 
 private:
-
     WorldMap& m_worldMap;
 };

@@ -3165,7 +3165,7 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapEntranceTrigger(uint32_
 MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t mapId)
 {
     bool useParentDbValue = false;
-    uint32 parentId = 0;
+    uint32_t parentId = 0;
     DBC::Structures::MapEntry const* mapEntry = sMapStore.LookupEntry(mapId);
     if (!mapEntry || mapEntry->parent_map < 0)
         return nullptr;
@@ -3181,7 +3181,7 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t 
         useParentDbValue = true;
     }
 
-    uint32_t entrance_map = uint32(mapEntry->parent_map);
+    uint32_t entrance_map = uint32_t(mapEntry->parent_map);
     for (AreaTriggerContainer::const_iterator itr = _areaTriggerStore.begin(); itr != _areaTriggerStore.end(); ++itr)
     {
         if ((!useParentDbValue && itr->second.mapId == entrance_map) || (useParentDbValue && itr->second.mapId == parentId))

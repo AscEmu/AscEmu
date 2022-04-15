@@ -183,7 +183,7 @@ void InstanceMgr::loadResetTimes()
             Field* fields = result->Fetch();
             auto mapid = fields[0].GetUInt16();
             InstanceDifficulty::Difficulties difficulty = InstanceDifficulty::Difficulties(fields[1].GetUInt8());
-            uint64 oldresettime = fields[2].GetUInt64();
+            uint64_t oldresettime = fields[2].GetUInt64();
 
             DBC::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mapid, difficulty);
             if (!mapDiff)
@@ -193,7 +193,7 @@ void InstanceMgr::loadResetTimes()
             }
 
             // update the reset time if the hour in the configs changes
-            uint64 newresettime = Util::getLocalHourTimestamp(oldresettime, resetHour, false);
+            uint64_t newresettime = Util::getLocalHourTimestamp(oldresettime, resetHour, false);
             if (oldresettime != newresettime)
             {
                 CharacterDatabase.Execute("UPDATE instance_reset SET resettime = %u WHERE mapid = %u AND difficulty = %u", uint64_t(newresettime), uint16_t(mapid), uint8_t(difficulty));

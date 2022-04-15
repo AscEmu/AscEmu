@@ -13,7 +13,6 @@ template <class Class>
 class CellHandler
 {
 public:
-
     CellHandler(BaseMap* map);
     ~CellHandler();
 
@@ -31,7 +30,6 @@ public:
     BaseMap* getBaseMap() { return _map; }
 
 protected:
-
     void _Init();
 
     Class*** _cells;

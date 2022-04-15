@@ -601,7 +601,8 @@ namespace VMAP
         {
             //if (fread(&chunkSize, sizeof(uint32), 1, rf) != 1) result = false;
 
-            if (result && fread(&count, sizeof(uint32), 1, rf) != 1)result = false;
+            if (result && fread(&count, sizeof(uint32), 1, rf) != 1) 
+                result = false;
             if (result) groupModels.resize(count);
             //if (result && fread(&groupModels[0], sizeof(GroupModel), count, rf) != count) result = false;
             for (uint32 i=0; i<count && result; ++i)

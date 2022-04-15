@@ -112,8 +112,8 @@ void TileMap::loadAreaData(FILE* f, TileMapHeader& header)
     m_tileArea = areaHeader.gridArea;
     if (!(areaHeader.flags & MAP_AREA_NO_AREA))
     {
-        m_areaMap = new uint16[16 * 16];
-        if (fread(m_areaMap, sizeof(uint16), 16 * 16, f) != 16 * 16)
+        m_areaMap = new uint16_t[16 * 16];
+        if (fread(m_areaMap, sizeof(uint16_t), 16 * 16, f) != 16 * 16)
             return;
     }
 }
@@ -138,10 +138,10 @@ void TileMap::loadHeightData(FILE* f, TileMapHeader& header)
             m_tileHeightMultiplier = (mapHeader.gridMaxHeight - mapHeader.gridHeight) / 65535;
             m_gridGetHeight = &TileMap::getHeightFromUint16;
 
-            m_heightMap9S = new uint16[129 * 129];
-            m_heightMap8S = new uint16[128 * 128];
-            if (fread(m_heightMap9S, sizeof(uint16), 129 * 129, f) != 129 * 129 ||
-                fread(m_heightMap8S, sizeof(uint16), 128 * 128, f) != 128 * 128)
+            m_heightMap9S = new uint16_t[129 * 129];
+            m_heightMap8S = new uint16_t[128 * 128];
+            if (fread(m_heightMap9S, sizeof(uint16_t), 129 * 129, f) != 129 * 129 ||
+                fread(m_heightMap8S, sizeof(uint16_t), 128 * 128, f) != 128 * 128)
                 return;
         }
         else if (m_heightMapFlags & MAP_HEIGHT_AS_INT8)
@@ -149,10 +149,10 @@ void TileMap::loadHeightData(FILE* f, TileMapHeader& header)
             m_tileHeightMultiplier = (mapHeader.gridMaxHeight - mapHeader.gridHeight) / 255;
             m_gridGetHeight = &TileMap::getHeightFromUint8;
 
-            m_heightMap9B = new uint8[129 * 129];
-            m_heightMap8B = new uint8[128 * 128];
-            if (fread(m_heightMap9B, sizeof(uint8), 129 * 129, f) != 129 * 129 ||
-                fread(m_heightMap8B, sizeof(uint8), 128 * 128, f) != 128 * 128)
+            m_heightMap9B = new uint8_t[129 * 129];
+            m_heightMap8B = new uint8_t[128 * 128];
+            if (fread(m_heightMap9B, sizeof(uint8_t), 129 * 129, f) != 129 * 129 ||
+                fread(m_heightMap8B, sizeof(uint8_t), 128 * 128, f) != 128 * 128)
                 return;
         }
         else
@@ -214,8 +214,8 @@ void TileMap::loadHolesData(FILE* in, TileMapHeader& header)
     if (fseek(in, header.holesOffset, SEEK_SET) != 0)
         return;
 
-    m_holes = new uint16[16 * 16];
-    if (fread(m_holes, sizeof(uint16), 16 * 16, in) != 16 * 16)
+    m_holes = new uint16_t[16 * 16];
+    if (fread(m_holes, sizeof(uint16_t), 16 * 16, in) != 16 * 16)
         return;
 }
 
@@ -229,7 +229,7 @@ bool TileMap::isHole(int row, int col) const
     int holeRow = row % 8 / 2;
     int holeCol = (col - (cellCol * 8)) / 2;
 
-    uint16 hole = m_holes[cellRow * 16 + cellCol];
+    uint16_t hole = m_holes[cellRow * 16 + cellCol];
 
     return (hole & holetab_h[holeCol] & holetab_v[holeRow]) != 0;
 }
@@ -342,16 +342,16 @@ float TileMap::getHeightFromUint8(float x, float y) const
     if (isHole(x_int, y_int))
         return INVALID_HEIGHT;
 
-    int32 a, b, c;
-    uint8* V9_h1_ptr = &m_heightMap9B[x_int * 128 + x_int + y_int];
+    int32_t a, b, c;
+    uint8_t* V9_h1_ptr = &m_heightMap9B[x_int * 128 + x_int + y_int];
     if (x + y < 1)
     {
         if (x > y)
         {
             // 1 triangle (h1, h2, h5 points)
-            int32 h1 = V9_h1_ptr[0];
-            int32 h2 = V9_h1_ptr[129];
-            int32 h5 = 2 * m_heightMap8B[x_int * 128 + y_int];
+            int32_t h1 = V9_h1_ptr[0];
+            int32_t h2 = V9_h1_ptr[129];
+            int32_t h5 = 2 * m_heightMap8B[x_int * 128 + y_int];
             a = h2 - h1;
             b = h5 - h1 - h2;
             c = h1;
@@ -359,9 +359,9 @@ float TileMap::getHeightFromUint8(float x, float y) const
         else
         {
             // 2 triangle (h1, h3, h5 points)
-            int32 h1 = V9_h1_ptr[0];
-            int32 h3 = V9_h1_ptr[1];
-            int32 h5 = 2 * m_heightMap8B[x_int * 128 + y_int];
+            int32_t h1 = V9_h1_ptr[0];
+            int32_t h3 = V9_h1_ptr[1];
+            int32_t h5 = 2 * m_heightMap8B[x_int * 128 + y_int];
             a = h5 - h1 - h3;
             b = h3 - h1;
             c = h1;
@@ -372,9 +372,9 @@ float TileMap::getHeightFromUint8(float x, float y) const
         if (x > y)
         {
             // 3 triangle (h2, h4, h5 points)
-            int32 h2 = V9_h1_ptr[129];
-            int32 h4 = V9_h1_ptr[130];
-            int32 h5 = 2 * m_heightMap8B[x_int * 128 + y_int];
+            int32_t h2 = V9_h1_ptr[129];
+            int32_t h4 = V9_h1_ptr[130];
+            int32_t h5 = 2 * m_heightMap8B[x_int * 128 + y_int];
             a = h2 + h4 - h5;
             b = h4 - h2;
             c = h5 - h4;
@@ -382,9 +382,9 @@ float TileMap::getHeightFromUint8(float x, float y) const
         else
         {
             // 4 triangle (h3, h4, h5 points)
-            int32 h3 = V9_h1_ptr[1];
-            int32 h4 = V9_h1_ptr[130];
-            int32 h5 = 2 * m_heightMap8B[x_int * 128 + y_int];
+            int32_t h3 = V9_h1_ptr[1];
+            int32_t h4 = V9_h1_ptr[130];
+            int32_t h5 = 2 * m_heightMap8B[x_int * 128 + y_int];
             a = h4 - h3;
             b = h3 + h4 - h5;
             c = h5 - h4;
@@ -412,16 +412,16 @@ float TileMap::getHeightFromUint16(float x, float y) const
     if (isHole(x_int, y_int))
         return INVALID_HEIGHT;
 
-    int32 a, b, c;
-    uint16* V9_h1_ptr = &m_heightMap9S[x_int * 128 + x_int + y_int];
+    int32_t a, b, c;
+    uint16_t* V9_h1_ptr = &m_heightMap9S[x_int * 128 + x_int + y_int];
     if (x + y < 1)
     {
         if (x > y)
         {
             // 1 triangle (h1, h2, h5 points)
-            int32 h1 = V9_h1_ptr[0];
-            int32 h2 = V9_h1_ptr[129];
-            int32 h5 = 2 * m_heightMap8S[x_int * 128 + y_int];
+            int32_t h1 = V9_h1_ptr[0];
+            int32_t h2 = V9_h1_ptr[129];
+            int32_t h5 = 2 * m_heightMap8S[x_int * 128 + y_int];
             a = h2 - h1;
             b = h5 - h1 - h2;
             c = h1;
@@ -429,9 +429,9 @@ float TileMap::getHeightFromUint16(float x, float y) const
         else
         {
             // 2 triangle (h1, h3, h5 points)
-            int32 h1 = V9_h1_ptr[0];
-            int32 h3 = V9_h1_ptr[1];
-            int32 h5 = 2 * m_heightMap8S[x_int * 128 + y_int];
+            int32_t h1 = V9_h1_ptr[0];
+            int32_t h3 = V9_h1_ptr[1];
+            int32_t h5 = 2 * m_heightMap8S[x_int * 128 + y_int];
             a = h5 - h1 - h3;
             b = h3 - h1;
             c = h1;
@@ -442,9 +442,9 @@ float TileMap::getHeightFromUint16(float x, float y) const
         if (x > y)
         {
             // 3 triangle (h2, h4, h5 points)
-            int32 h2 = V9_h1_ptr[129];
-            int32 h4 = V9_h1_ptr[130];
-            int32 h5 = 2 * m_heightMap8S[x_int * 128 + y_int];
+            int32_t h2 = V9_h1_ptr[129];
+            int32_t h4 = V9_h1_ptr[130];
+            int32_t h5 = 2 * m_heightMap8S[x_int * 128 + y_int];
             a = h2 + h4 - h5;
             b = h4 - h2;
             c = h5 - h4;
@@ -452,9 +452,9 @@ float TileMap::getHeightFromUint16(float x, float y) const
         else
         {
             // 4 triangle (h3, h4, h5 points)
-            int32 h3 = V9_h1_ptr[1];
-            int32 h4 = V9_h1_ptr[130];
-            int32 h5 = 2 * m_heightMap8S[x_int * 128 + y_int];
+            int32_t h3 = V9_h1_ptr[1];
+            int32_t h4 = V9_h1_ptr[130];
+            int32_t h5 = 2 * m_heightMap8S[x_int * 128 + y_int];
             a = h4 - h3;
             b = h3 + h4 - h5;
             c = h5 - h4;
@@ -511,17 +511,17 @@ ZLiquidStatus TileMap::getLiquidStatus(float x, float y, float z, uint8_t ReqLiq
 
     // Check water type in cell
     int idx = (x_int >> 3) * 16 + (y_int >> 3);
-    uint8 type = m_liquidFlags ? m_liquidFlags[idx] : m_liquidGlobalFlags;
-    uint32 entry = m_liquidEntry ? m_liquidEntry[idx] : m_liquidGlobalEntry;
+    uint8_t type = m_liquidFlags ? m_liquidFlags[idx] : m_liquidGlobalFlags;
+    uint32_t entry = m_liquidEntry ? m_liquidEntry[idx] : m_liquidGlobalEntry;
     if (DBC::Structures::LiquidTypeEntry const* liquidEntry = sLiquidTypeStore.LookupEntry(entry))
     {
         type &= MAP_LIQUID_TYPE_DARK_WATER;
-        uint32 liqTypeIdx = liquidEntry->Type;
+        uint32_t liqTypeIdx = liquidEntry->Type;
         if (entry < 21)
         {
             if (DBC::Structures::AreaTableEntry const* area = sAreaStore.LookupEntry(getArea(x, y)))
             {
-                uint32 overrideLiquid = area->liquid_type_override[liquidEntry->Type];
+                uint32_t overrideLiquid = area->liquid_type_override[liquidEntry->Type];
                 if (!overrideLiquid && area->zone)
                 {
                     area = sAreaStore.LookupEntry(area->zone);
