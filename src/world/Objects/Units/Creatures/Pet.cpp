@@ -592,8 +592,7 @@ void Pet::Update(unsigned long time_passed)
     {
         Unit::Update(time_passed);      //Dead Hunter's Pets should be despawned only if the Owner logs out or goes out of range.
 
-        const auto now_c = std::chrono::system_clock::now();
-        const auto now = std::chrono::system_clock::to_time_t(now_c);
+        const auto now = Util::getTimeNow();
 
         // Update DeathState
 

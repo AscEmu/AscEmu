@@ -125,8 +125,7 @@ void InstanceMgr::loadInstances()
 
 void InstanceMgr::loadResetTimes()
 {
-    const auto now_c = std::chrono::system_clock::now();
-    const auto now = std::chrono::system_clock::to_time_t(now_c);
+    const auto now = Util::getTimeNow();
     time_t today = (now / DAY) * DAY;
 
     // resettime = 0 in the DB for raid/heroic instances
@@ -261,8 +260,7 @@ void InstanceMgr::loadResetTimes()
 
 void InstanceMgr::update()
 {
-    const auto now_c = std::chrono::system_clock::now();
-    const auto now = std::chrono::system_clock::to_time_t(now_c);
+    const auto now = Util::getTimeNow();
     time_t t;
 
     while (!m_resetTimeQueue.empty())
@@ -374,8 +372,7 @@ void InstanceMgr::resetOrWarnAll(uint32_t mapid, InstanceDifficulty::Difficultie
     if (!mapEntry->instanceable())
         return;
 
-    const auto now_c = std::chrono::system_clock::now();
-    const auto now = std::chrono::system_clock::to_time_t(now_c);
+    const auto now = Util::getTimeNow();
 
     if (!warn)
     {
@@ -466,8 +463,7 @@ InstanceSaved* InstanceMgr::addInstanceSave(uint32_t mapId, uint32_t instanceId,
         }
         else
         {
-            const auto now_c = std::chrono::system_clock::now();
-            const auto now_t = std::chrono::system_clock::to_time_t(now_c);
+            const auto now_t = Util::getTimeNow();
             resetTime = now_t + 2 * HOUR;
             // add our Reset Event
             addResetEvent(true, resetTime, InstResetEvent(0, mapId, difficulty, static_cast<uint16_t>(instanceId)));

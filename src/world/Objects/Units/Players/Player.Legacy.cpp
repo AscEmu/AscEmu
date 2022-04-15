@@ -561,6 +561,18 @@ void Player::Update(unsigned long time_passed)
         if (m_drunkTimer > 10000)
             handleSobering();
     }
+    
+    // Instance Hourly Limit
+    if (!_instanceResetTimes.empty())
+    {
+        for (InstanceTimeMap::iterator itr = _instanceResetTimes.begin(); itr != _instanceResetTimes.end();)
+        {
+            if (itr->second < Util::getTimeNow())
+                _instanceResetTimes.erase(itr++);
+            else
+                ++itr;
+        }
+    }
 
     // Instance Binds
     if (hasPendingBind())
@@ -1439,6 +1451,9 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     // Cooldown Items
     _SavePlayerCooldowns(buf);
 
+    // Instance Timed Lockout
+    saveInstanceTimeRestrictions();
+
     // Pets
     if (getClass() == HUNTER || getClass() == WARLOCK)
     {
@@ -2168,6 +2183,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     // Saved Instances
     loadBoundInstances();
+    loadInstanceTimeRestrictions();
 
     // Create Instance when needed
     if (sMapMgr.findBaseMap(GetMapId()) && sMapMgr.findBaseMap(GetMapId())->instanceable())

@@ -101,6 +101,9 @@ namespace Util
     /*! \brief Returns the current point in time */
     std::chrono::high_resolution_clock::time_point TimeNow();
 
+    /*! \ brief Returns TimeNow() as time_t*/
+    time_t getTimeNow();
+
     /*! \ brief Returns TimeNow() as uint32_t*/
     uint32_t getMSTime();
 

@@ -2666,8 +2666,7 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
         {
             // the reset time is set but not added to the scheduler
             // until the players leave the instance
-            const auto now_c = std::chrono::system_clock::now();
-            const auto now = std::chrono::system_clock::to_time_t(now_c);
+            const auto now = Util::getTimeNow();
             time_t resettime = now + 2 * HOUR;
             if (InstanceSaved* save = sInstanceMgr.getInstanceSave(pCreature->GetInstanceID()))
                 if (save->getResetTime() < resettime)

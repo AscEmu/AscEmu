@@ -40,6 +40,7 @@ public:
     // Start for each row in worldmap_info an Instance
     void initialize();
     void initializeInstanceIds();
+    EnterState canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* player, bool loginCheck = false);
     void shutdown();
     void removeInstance(uint32_t instanceId);
 

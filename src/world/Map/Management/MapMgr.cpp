@@ -389,3 +389,102 @@ WorldMap* MapMgr::createMap(uint32_t mapId, Player* player, uint32_t instanceId)
     }
     return map;
 }
+
+EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* player, bool loginCheck)
+{
+    DBC::Structures::MapEntry const* entry = sMapStore.LookupEntry(mapid);
+    if (!entry)
+        return CANNOT_ENTER_NO_ENTRY;
+
+    if (!entry->isDungeon())
+        return CAN_ENTER;
+
+    MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo(mapid);
+    if (!mapInfo && mapInfo->isNonInstanceMap())
+        return CANNOT_ENTER_UNINSTANCED_DUNGEON;
+
+    InstanceDifficulty::Difficulties targetDifficulty, requestedDifficulty;
+    targetDifficulty = requestedDifficulty = player->getDifficulty(entry->isRaid());
+
+    // Get the highest available difficulty if current setting is higher than the instance allows
+    DBC::Structures::MapDifficulty const* mapDiff = getDownscaledMapDifficultyData(entry->id, targetDifficulty);
+    if (!mapDiff)
+        return CANNOT_ENTER_DIFFICULTY_UNAVAILABLE;
+
+    //Bypass checks for GMs
+    if (player->isGMFlagSet())
+        return CAN_ENTER;
+
+    //Other requirements
+    if (!mapInfo || !mapInfo->hasFlag(WMI_INSTANCE_ENABLED))
+        return CANNOT_ENTER_UNSPECIFIED_REASON;
+
+    if (mapInfo->hasFlag(WMI_INSTANCE_XPACK_01) && !player->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_01) && !player->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
+        return CANNOT_ENTER_XPACK01;
+
+    if (mapInfo->hasFlag(WMI_INSTANCE_XPACK_02) && !player->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
+        return CANNOT_ENTER_XPACK02;
+
+    if (minLevel && player->getLevel() < minLevel)
+        return CANNOT_ENTER_MIN_LEVEL;
+
+    if (mapInfo->required_quest_A && (player->getTeam() == TEAM_ALLIANCE) && !player->hasQuestFinished(mapInfo->required_quest_A))
+        return CANNOT_ENTER_ATTUNE_QA;
+
+    if (mapInfo->required_quest_H && (player->getTeam() == TEAM_HORDE) && !player->hasQuestFinished(mapInfo->required_quest_H))
+        return CANNOT_ENTER_ATTUNE_QH;
+
+    if (mapInfo->required_item && !player->getItemInterface()->GetItemCount(mapInfo->required_item, true))
+        return CANNOT_ENTER_ATTUNE_ITEM;
+
+    if (player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC &&
+        mapInfo->isMultimodeDungeon()
+        && ((mapInfo->heroic_key_1 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_1, false))
+            && (mapInfo->heroic_key_2 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_2, false))
+            )
+        )
+        return CANNOT_ENTER_KEY;
+
+    if (!mapInfo->isNonInstanceMap() && player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC && player->getLevel() < mapInfo->minlevel_heroic)
+        return CANNOT_ENTER_MIN_LEVEL_HC;
+
+    char const* mapName = entry->map_name[0];
+
+    Group* group = player->getGroup();
+    if (entry->isRaid()) // can only enter in a raid group
+        if ((!group || !group->isRaidGroup()) && !player->m_cheats.hasTriggerpassCheat)
+            return CANNOT_ENTER_NOT_IN_RAID;
+
+    if (!player->isAlive())
+    {
+        // only let us enter when its the instance our corpse is in
+        uint32_t corpseInstance = player->getCorpseInstanceId();
+
+        const auto instance = sMapMgr.findWorldMap(mapid, corpseInstance);
+        if (instance->getBaseMap()->getMapId() != mapid)
+            return CANNOT_ENTER_CORPSE_IN_DIFFERENT_INSTANCE;
+    }
+
+    //Get instance where player's group is bound & its map
+    if (!loginCheck && group)
+    {
+        InstanceGroupBind* boundInstance = group->getBoundInstance(entry);
+        if (boundInstance && boundInstance->save)
+            if (WorldMap* boundMap = sMapMgr.findWorldMap(mapid, boundInstance->save->getInstanceId()))
+                if (EnterState denyReason = boundMap->cannotEnter(player))
+                    return denyReason;
+    }
+
+    // players are only allowed to enter 5 instances per hour
+    if (entry->isDungeon() && (!player->getGroup() || (player->getGroup() && !player->getGroup()->isLFGGroup())))
+    {
+        uint32_t instanceIdToCheck = 0;
+        if (InstanceSaved* save = player->getInstanceSave(mapid, entry->isRaid()))
+            instanceIdToCheck = save->getInstanceId();
+
+        if (!player->checkInstanceCount(instanceIdToCheck) && !player->isDead())
+            return CANNOT_ENTER_TOO_MANY_INSTANCES;
+    }
+
+    return CAN_ENTER;
+}

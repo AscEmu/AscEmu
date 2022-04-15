@@ -1457,8 +1457,7 @@ void Player::onWorldPortAck()
             {
                 if (time_t timeReset = sInstanceMgr.getResetTimeFor(static_cast<uint16_t>(mEntry->id), diff))
                 {
-                    const auto now_c = std::chrono::system_clock::now();
-                    const auto now = std::chrono::system_clock::to_time_t(now_c);
+                    const auto now = Util::getTimeNow();
 
                     uint32_t timeleft = uint32(timeReset - now);
                     sendInstanceResetWarning(mEntry->id, diff, timeleft, true);
@@ -10837,10 +10836,9 @@ void Player::sendRaidInfo()
     WorldPacket data(SMSG_RAID_INSTANCE_INFO, 4);
 
     size_t p_counter = data.wpos();
-    data << uint32_t(counter);                                // placeholder
+    data << uint32_t(counter);
 
-    const auto now_c = std::chrono::system_clock::now();
-    const auto now = std::chrono::system_clock::to_time_t(now_c);
+    const auto now = Util::getTimeNow();
 
     for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
     {
@@ -10995,4 +10993,45 @@ void Player::sendResetInstanceFailed(uint32_t reason, uint32_t MapId)
     data << uint32_t(reason);
     data << uint32_t(MapId);
     sendPacket(&data);
+}
+
+void Player::loadInstanceTimeRestrictions()
+{
+    auto result = CharacterDatabase.Query("SELECT instanceId, releaseTime FROM account_instance_times WHERE accountId = %u", getSession()->GetAccountId());
+    if (!result)
+        return;
+
+    do
+    {
+        Field* fields = result->Fetch();
+        _instanceResetTimes.insert(InstanceTimeMap::value_type(fields[0].GetUInt32(), fields[1].GetUInt64()));
+    } while (result->NextRow());
+}
+
+bool Player::checkInstanceCount(uint32_t instanceId) const
+{
+    // Max Instances Per Hour is per Default 5 add these to Configs
+    if (_instanceResetTimes.size() < 5)
+        return true;
+
+    return _instanceResetTimes.find(instanceId) != _instanceResetTimes.end();
+}
+
+void Player::addInstanceEnterTime(uint32_t instanceId, time_t enterTime)
+{
+    if (_instanceResetTimes.find(instanceId) == _instanceResetTimes.end())
+        _instanceResetTimes.insert(InstanceTimeMap::value_type(instanceId, enterTime + HOUR));
+}
+
+void Player::saveInstanceTimeRestrictions()
+{
+    if (_instanceResetTimes.empty())
+        return;
+
+    CharacterDatabase.Execute("DELETE FROM account_instance_times WHERE accountId = %u", getSession()->GetAccountId());
+
+    for (InstanceTimeMap::const_iterator itr = _instanceResetTimes.begin(); itr != _instanceResetTimes.end(); ++itr)
+    {
+        CharacterDatabase.Execute("INSERT INTO account_instance_times (accountId, instanceId, releaseTime) VALUES (%u, %u, %u)", getSession()->GetAccountId(), itr->first, itr->second);
+    }
 }

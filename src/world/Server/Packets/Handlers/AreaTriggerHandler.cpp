@@ -16,79 +16,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WorldStrings.h"
 #include "Management/Battleground/Battleground.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Server/Packets/SmsgTransferAborted.h"
+#include "Server/Packets/SmsgRaidGroupOnly.h"
 
 using namespace AscEmu::Packets;
-
-namespace AreaTriggerResult
-{
-    enum
-    {
-        Success = 0,
-        Unavailable = 1,
-        NoBurningCrusade = 2,
-        NoHeroic = 3,
-        NoRaid = 4,
-        NoAttuneQA = 5,
-        NoAttuneI = 6,
-        Level = 7,
-        NoGroup = 8,
-        NoKey = 9,
-        NoCheck = 10,
-        NoWotLK = 11,
-        LevelHeroic = 12,
-        NoAttuneQH = 13
-    };
-}
-
-uint32_t checkTriggerPrerequisites(MySQLStructure::AreaTrigger const* areaTrigger, WorldSession* session, Player* player, MySQLStructure::MapInfo const* mapInfo)
-{
-    if (!mapInfo || !mapInfo->hasFlag(WMI_INSTANCE_ENABLED))
-        return AreaTriggerResult::Unavailable;
-
-    if (mapInfo->hasFlag(WMI_INSTANCE_XPACK_01) && !session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !session->HasFlag(ACCOUNT_FLAG_XPACK_02))
-        return AreaTriggerResult::NoBurningCrusade;
-
-    if (mapInfo->hasFlag(WMI_INSTANCE_XPACK_02) && !session->HasFlag(ACCOUNT_FLAG_XPACK_02))
-        return AreaTriggerResult::NoWotLK;
-
-    // These can be overridden by cheats/GM
-    if (player->m_cheats.hasTriggerpassCheat)
-        return AreaTriggerResult::Success;
-
-    if (areaTrigger->requiredLevel && player->getLevel() < areaTrigger->requiredLevel)
-        return AreaTriggerResult::Level;
-
-    if (player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC && !mapInfo->isMultimodeDungeon() && !mapInfo->isNonInstanceMap())
-        return AreaTriggerResult::NoHeroic;
-
-    if (mapInfo->isRaid() && (!player->getGroup() || (player->getGroup() && player->getGroup()->getGroupType() != GROUP_TYPE_RAID)))
-        return AreaTriggerResult::NoRaid;
-
-    if ((mapInfo->isMultimodeDungeon() && player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC) && !player->getGroup())
-        return AreaTriggerResult::NoGroup;
-
-    if (mapInfo->required_quest_A && (player->getTeam() == TEAM_ALLIANCE) && !player->hasQuestFinished(mapInfo->required_quest_A))
-        return AreaTriggerResult::NoAttuneQA;
-
-    if (mapInfo->required_quest_H && (player->getTeam() == TEAM_HORDE) && !player->hasQuestFinished(mapInfo->required_quest_H))
-        return AreaTriggerResult::NoAttuneQH;
-
-    if (mapInfo->required_item && !player->getItemInterface()->GetItemCount(mapInfo->required_item, true))
-        return AreaTriggerResult::NoAttuneI;
-
-    if (player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC &&
-        mapInfo->isMultimodeDungeon()
-        && ((mapInfo->heroic_key_1 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_1, false))
-        && (mapInfo->heroic_key_2 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_2, false))
-        )
-        )
-        return AreaTriggerResult::NoKey;
-
-    if (!mapInfo->isNonInstanceMap() && player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC && player->getLevel() < mapInfo->minlevel_heroic)
-        return AreaTriggerResult::LevelHeroic;
-
-    return AreaTriggerResult::Success;
-}
 
 void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
 {
@@ -123,6 +54,84 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
     if (areaTrigger == nullptr)
         return;
 
+    if (_player->GetMapId() != areaTrigger->mapId)
+    {
+        const auto mapInfo = sMySQLStore.getWorldMapInfo(areaTrigger->mapId);
+        EnterState denyReason = sMapMgr.canPlayerEnter(areaTrigger->mapId, areaTrigger->requiredLevel, _player, false);
+
+        if (denyReason != CAN_ENTER)
+        {
+            char buffer[200];
+            const auto session = _player->getSession();
+
+            switch (denyReason)
+            {
+                case CANNOT_ENTER_NOT_IN_RAID:
+                {
+                    _player->sendPacket(SmsgRaidGroupOnly(0, 2).serialise().get());
+                } break;
+                case CANNOT_ENTER_CORPSE_IN_DIFFERENT_INSTANCE:
+                {
+                    WorldPacket data(SMSG_CORPSE_NOT_IN_INSTANCE);
+                    _player->sendPacket(&data);
+                } break;
+                case CANNOT_ENTER_INSTANCE_BIND_MISMATCH:
+                {
+                    _player->sendPacket(SmsgTransferAborted(areaTrigger->mapId, INSTANCE_ABORT_ERROR).serialise().get());
+                } break;
+                case CANNOT_ENTER_TOO_MANY_INSTANCES:
+                {
+                    _player->sendPacket(SmsgTransferAborted(areaTrigger->mapId, INSTANCE_ABORT_TOO_MANY).serialise().get());
+                } break;
+                case CANNOT_ENTER_MAX_PLAYERS:
+                {
+                    _player->sendPacket(SmsgTransferAborted(areaTrigger->mapId, INSTANCE_ABORT_FULL).serialise().get());
+                } break;
+                case CANNOT_ENTER_ENCOUNTER:
+                {
+                    _player->sendPacket(SmsgTransferAborted(areaTrigger->mapId, INSTANCE_ABORT_ENCOUNTER).serialise().get());
+                } break;
+                case CANNOT_ENTER_MIN_LEVEL:
+                {
+                    snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_BE_LEVEL_X), areaTrigger->requiredLevel);
+                    SendPacket(SmsgAreaTriggerMessage(sizeof(buffer), buffer, 0).serialise().get());
+                } break;
+                case CANNOT_ENTER_ATTUNE_ITEM:
+                {
+                    const auto itemProperties = sMySQLStore.getItemProperties(mapInfo->required_item);
+                    snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), itemProperties ? itemProperties->Name.c_str() : "UNKNOWN");
+                    SendPacket(SmsgAreaTriggerMessage(sizeof(buffer), buffer, 0).serialise().get());
+                } break;
+                case CANNOT_ENTER_ATTUNE_QA:
+                {
+                    const auto questProperties = sMySQLStore.getQuestProperties(mapInfo->required_quest_A);
+                    snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), questProperties ? questProperties->title.c_str() : "UNKNOWN");
+                    SendPacket(SmsgAreaTriggerMessage(sizeof(buffer), buffer, 0).serialise().get());
+                } break;
+                case CANNOT_ENTER_ATTUNE_QH:
+                {
+                    const auto questProperties = sMySQLStore.getQuestProperties(mapInfo->required_quest_H);
+                    snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), questProperties ? questProperties->title.c_str() : "UNKNOWN");
+                    SendPacket(SmsgAreaTriggerMessage(sizeof(buffer), buffer, 0).serialise().get());
+                } break;
+                case CANNOT_ENTER_KEY:
+                {
+                    const auto itemProperties = sMySQLStore.getItemProperties(mapInfo->heroic_key_1);
+                    snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), itemProperties ? itemProperties->Name.c_str() : "UNKNOWN");
+                    SendPacket(SmsgAreaTriggerMessage(sizeof(buffer), buffer, 0).serialise().get());
+                } break;
+                case CANNOT_ENTER_MIN_LEVEL_HC:
+                {
+                    snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_BE_LEVEL_X), mapInfo->minlevel_heroic);
+                    SendPacket(SmsgAreaTriggerMessage(sizeof(buffer), buffer, 0).serialise().get());
+                } break;
+                default:
+                    break;
+            }
+            return;
+        }
+    }
+
     switch (areaTrigger->type)
     {
         case ATTYPE_INSTANCE:
@@ -130,53 +139,6 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
             if (_player->isTransferPending())
                 break;
 
-            if (worldConfig.instance.checkTriggerPrerequisitesOnEnter)
-            {
-                const auto mapInfo = sMySQLStore.getWorldMapInfo(areaTrigger->mapId);
-                const uint32_t reason = checkTriggerPrerequisites(areaTrigger, this, _player, mapInfo);
-                if (reason != AreaTriggerResult::Success)
-                {
-                    char buffer[200];
-                    const auto session = _player->getSession();
-
-                    switch (reason)
-                    {
-                        case AreaTriggerResult::Level:
-                        {
-                            snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_BE_LEVEL_X), areaTrigger->requiredLevel);
-                        } break;
-                        case AreaTriggerResult::NoAttuneI:
-                        {
-                            const auto itemProperties = sMySQLStore.getItemProperties(mapInfo->required_item);
-                            snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), itemProperties ? itemProperties->Name.c_str() : "UNKNOWN");
-                        } break;
-                        case AreaTriggerResult::NoAttuneQA:
-                        {
-                            const auto questProperties = sMySQLStore.getQuestProperties(mapInfo->required_quest_A);
-                            snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), questProperties ? questProperties->title.c_str() : "UNKNOWN");
-                        } break;
-                        case AreaTriggerResult::NoAttuneQH:
-                        {
-                            const auto questProperties = sMySQLStore.getQuestProperties(mapInfo->required_quest_H);
-                            snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), questProperties ? questProperties->title.c_str() : "UNKNOWN");
-                        } break;
-                        case AreaTriggerResult::NoKey:
-                        {
-                            const auto itemProperties = sMySQLStore.getItemProperties(mapInfo->heroic_key_1);
-                            snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), itemProperties ? itemProperties->Name.c_str() : "UNKNOWN");
-                        } break;
-                        case AreaTriggerResult::LevelHeroic:
-                        {
-                            snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_BE_LEVEL_X), mapInfo->minlevel_heroic);
-                        } break;
-                        default:
-                            break;
-                    }
-
-                    SendPacket(SmsgAreaTriggerMessage(sizeof(buffer), buffer, 0).serialise().get());
-                    return;
-                }
-            }
             _player->setMapEntryPoint(areaTrigger->mapId);
             _player->safeTeleport(areaTrigger->mapId, 0, LocationVector(areaTrigger->x, areaTrigger->y, areaTrigger->z, areaTrigger->o));
         } break;

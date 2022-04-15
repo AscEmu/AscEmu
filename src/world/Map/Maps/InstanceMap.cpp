@@ -122,6 +122,10 @@ bool InstanceMap::addPlayerToMap(Player* player)
     {
         Group* group = player->getGroup();
 
+        // increase Instance Hourly Limit
+        if (!group || !group->isLFGGroup())
+            player->addInstanceEnterTime(getInstanceId(), Util::getTimeNow());
+
         // get or create an instance save for the map
         InstanceSaved* mapSave = sInstanceMgr.getInstanceSave(getInstanceId());
         if (!mapSave)

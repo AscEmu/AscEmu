@@ -149,6 +149,14 @@ namespace Util
         return std::chrono::high_resolution_clock::now();
     }
 
+    time_t getTimeNow()
+    {
+        const auto now_c = std::chrono::system_clock::now();
+        const auto now = std::chrono::system_clock::to_time_t(now_c);
+
+        return now;
+    }
+
     uint32_t getMSTime()
     {
         static const std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();

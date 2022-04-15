@@ -395,8 +395,7 @@ void GameObject::saveRespawnTime(uint32_t forceDelay)
     if (!m_spawn->id)
         return;
 
-    const auto now_c = std::chrono::system_clock::now();
-    const auto now = std::chrono::system_clock::to_time_t(now_c);
+    const auto now = Util::getTimeNow();
 
     // do this for now delete the part when we are only respawning with spawnid
     if (true)

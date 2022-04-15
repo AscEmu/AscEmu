@@ -194,8 +194,7 @@ void Creature::setDeathState(DeathState s)
     if (s == JUST_DIED)
     {
         // Respawn Handling
-        const auto now_c = std::chrono::system_clock::now();
-        const auto now = std::chrono::system_clock::to_time_t(now_c);
+        const auto now = Util::getTimeNow();
 
         m_corpseRemoveTime = now + m_corpseDelay;
 
@@ -498,8 +497,7 @@ void Creature::Update(unsigned long time_passed)
         m_movementFlagUpdateTimer -= static_cast<uint16_t>(time_passed);
     }
 
-    const auto now_c = std::chrono::system_clock::now();
-    const auto now = std::chrono::system_clock::to_time_t(now_c);
+    const auto now = Util::getTimeNow();
 
     // Update DeathState
     switch (m_deathState)
@@ -550,8 +548,7 @@ void Creature::OnRemoveCorpse()
         m_position = m_spawnLocation;
 
         // Respawn Handling
-        const auto now_c = std::chrono::system_clock::now();
-        const auto now = std::chrono::system_clock::to_time_t(now_c);
+        const auto now = Util::getTimeNow();
         m_corpseRemoveTime = now;
 
         // if corpse was removed during falling, the falling will continue and override relocation to respawn position
@@ -2049,8 +2046,7 @@ void Creature::saveRespawnTime(uint32_t forceDelay)
     if (isSummon() || !getSpawnId() || !getWorldMap())
         return;
 
-    const auto now_c = std::chrono::system_clock::now();
-    const auto now = std::chrono::system_clock::to_time_t(now_c);
+    const auto now = Util::getTimeNow();
 
     // do this for now delete the part when we are only respawning with spawnid
     if (true)

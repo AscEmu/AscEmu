@@ -128,8 +128,7 @@ void WorldSession::handleCalendarEventModeratorStatus(WorldPacket& /*recvPacket*
 void WorldSession::sendCalendarRaidLockout(InstanceSaved const* save, bool add)
 {
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_CALENDAR_RAID_LOCKOUT_ADDED/REMOVED");
-    const auto now_c = std::chrono::system_clock::now();
-    const auto now = std::chrono::system_clock::to_time_t(now_c);
+    const auto now = Util::getTimeNow();
     time_t currTime = now;
 
     WorldPacket data(SMSG_CALENDAR_RAID_LOCKOUT_REMOVED, (4) + 4 + 4 + 4 + 8);
@@ -155,8 +154,7 @@ void WorldSession::sendCalendarRaidLockoutUpdated(InstanceSaved const* save)
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_CALENDAR_RAID_LOCKOUT_UPDATED [%s] Map: %u, Difficulty %u",
         guid, save->getMapId(), save->getDifficulty());
 
-    const auto now_c = std::chrono::system_clock::now();
-    const auto now = std::chrono::system_clock::to_time_t(now_c);
+    const auto now = Util::getTimeNow();
     time_t currTime = now;
 
     WorldPacket data(SMSG_CALENDAR_RAID_LOCKOUT_UPDATED, 4 + 4 + 4 + 4 + 8);

@@ -208,7 +208,7 @@ void WorldMap::update(uint32_t t_diff)
     std::unique_lock<std::mutex> updateLock(m_Updatelock);
 
     // Time In Seconds
-    const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    const auto now = Util::getTimeNow();
 
     // Update any events.
     // we make update of events before objects so in case there are 0 timediff events they do not get deleted after update but on next server update loop
@@ -369,8 +369,7 @@ void WorldMap::update(uint32_t t_diff)
 
 void WorldMap::processRespawns()
 {
-    const auto now_c = std::chrono::system_clock::now();
-    const auto now = std::chrono::system_clock::to_time_t(now_c);
+    const auto now = Util::getTimeNow();
 
     while (!_respawnTimes.empty())
     {
@@ -2112,8 +2111,7 @@ void WorldMap::doRespawn(SpawnObjectType type, Object* object, uint32_t spawnId,
 
 void WorldMap::addCorpseDespawn(uint64_t guid, time_t time)
 {
-    const auto now_c = std::chrono::system_clock::now();
-    const auto now = std::chrono::system_clock::to_time_t(now_c);
+    const auto now = Util::getTimeNow();
 
     CorpseInfo info(now + time, guid);
     _corpseDespawnTimes.emplace(info);

@@ -75,6 +75,8 @@ class Aura;
 struct OnHitSpell;
 class CachedCharacterInfo;
 
+typedef std::unordered_map<uint32_t, time_t> InstanceTimeMap;
+
 //\todo: everything above this comment, does not belong in this file. Refactor this file to hold only the player class ;-)
 // Everything below this line is bloated (seems we need some new concepts like RAII and a lot of refactoring to shrink it to a manageable class.
 // Group all related members to a struct/class. Follow the "modern" way of C++ and leave the C way behind.
@@ -2118,6 +2120,12 @@ public:
         void sendResetInstanceFailed(uint32_t reason, uint32_t MapId);
 
         void sendInstanceResetWarning(uint32_t mapid, InstanceDifficulty::Difficulties difficulty, uint32_t time, bool welcome);
+
+        void loadInstanceTimeRestrictions();
+        bool checkInstanceCount(uint32_t instanceId) const;
+        void addInstanceEnterTime(uint32_t instanceId, time_t enterTime);
+        void saveInstanceTimeRestrictions();
+        InstanceTimeMap _instanceResetTimes;
 
     private:
         uint32_t _pendingBindId = 0;

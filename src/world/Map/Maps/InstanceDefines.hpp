@@ -47,7 +47,15 @@ enum EnterState
     CANNOT_ENTER_TOO_MANY_INSTANCES             = 8,
     CANNOT_ENTER_MAX_PLAYERS                    = 9,
     CANNOT_ENTER_ENCOUNTER                      = 10,
-    CANNOT_ENTER_UNSPECIFIED_REASON             = 11
+    CANNOT_ENTER_UNSPECIFIED_REASON             = 11,
+    CANNOT_ENTER_XPACK01                        = 12,
+    CANNOT_ENTER_XPACK02                        = 13,
+    CANNOT_ENTER_MIN_LEVEL                      = 14,
+    CANNOT_ENTER_MIN_LEVEL_HC                   = 15,
+    CANNOT_ENTER_ATTUNE_QA                      = 16,
+    CANNOT_ENTER_ATTUNE_QH                      = 17,
+    CANNOT_ENTER_ATTUNE_ITEM                    = 18,
+    CANNOT_ENTER_KEY                            = 19,
 };
 
 enum INSTANCE_ABORT_ERROR
