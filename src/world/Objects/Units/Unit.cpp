@@ -6724,12 +6724,17 @@ void Unit::setDeathState(DeathState state)
 {
     m_deathState = state;
 
+#ifdef FT_VEHICLES
     bool isOnVehicle = getVehicle() != nullptr;
+#else
+    bool isOnVehicle = false;
+#endif
 
     if (state != ALIVE && state != JUST_RESPAWNED)
     {
+#ifdef FT_VEHICLES
         exitVehicle();
-
+#endif
         DropAurasOnDeath();
         
         if (!isPet())
