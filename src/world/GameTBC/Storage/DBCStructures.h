@@ -52,8 +52,8 @@ namespace DBC::Structures
         char const chat_channels_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxx";
         char const chr_classes_format[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxix";
         char const chr_races_format[] = "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi";
-        char const creature_display_info_format[] = "nixifxxxxxxxxxxx";
-        char const creature_model_Data_format[] = "nisxfxxxxxxxxxxffxxxxxxxxxxx";
+        char const creature_display_info_format[] = "nixifxxxxxxxxx";
+        char const creature_model_Data_format[] = "nisxfxxxxxxxxxxffxxxxxxx";
         char const creature_family_format[] = "nfifiiiissssssssssssssssxx";
         char const creature_spell_data_format[] = "niiiiiiii";
         char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
