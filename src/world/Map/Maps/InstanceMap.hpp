@@ -36,7 +36,7 @@ public:
     uint32_t getMaxPlayers();
 
     PlayerTeam getTeamIdInInstance() { return instanceTeam; }
-    uint32_t getTeamInInstance() { return instanceTeam == TEAM_ALLIANCE ? 469 : 67; }
+    uint32_t getTeamInInstance() { return instanceTeam == TEAM_ALLIANCE ? ALLIANCE : HORDE; }
 
 private:
     bool m_resetAfterUnload;

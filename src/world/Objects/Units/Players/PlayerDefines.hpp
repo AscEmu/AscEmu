@@ -40,6 +40,18 @@ enum PlayerTeam : uint8_t
     MAX_PLAYER_TEAMS
 };
 
+enum Team : uint32_t
+{
+    HORDE                       = 67,
+    ALLIANCE                    = 469,
+    //STEAMWHEEDLE_CARTEL       = 169,
+    //ALLIANCE_FORCES           = 891,
+    //HORDE_FORCES              = 892,
+    //SANCTUARY                 = 936,
+    //OUTLAND                   = 980,
+    TEAM_OTHER = 0
+};
+
 enum Gender
 {
     GENDER_MALE     = 0,
