@@ -1,9 +1,9 @@
 ﻿# ![logo](http://ascemu.org/images/logo.png)
 
-master | development
-:------------: | :------------:
+master                                                                                                                                                     | development
+:--------------------------------------------------------------------------------------------------------------------------------------------------------: | :------------:
 [![CircleCI](https://circleci.com/gh/AscEmu/AscEmu.svg?branch=master&style=shield)](https://app.circleci.com/pipelines/github/AscEmu/AscEmu?branch=master) | [![CircleCI](https://circleci.com/gh/AscEmu/AscEmu.svg?branch=develop&style=shield)](https://app.circleci.com/pipelines/github/AscEmu/AscEmu?branch=develop)
-[![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu) | [![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/develop?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu)
+[![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu)    | [![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/develop?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu)
 
 [![CodeFactor](https://www.codefactor.io/repository/github/ascemu/ascemu/badge)](https://www.codefactor.io/repository/github/ascemu/ascemu)
 
@@ -21,12 +21,12 @@ AscEmu supports several versions as listed below. We achieved to handle differen
 
 Beside our multiversion-core we developed our world database with this attitude. Compared to other projects we are still a small project but with one core and database we are able to work on different versions at the same time. Beside all that we are able to show the changes to the game side by side in our code and database.
 
-Description | Classic | TBC | WotLK | Cata | MoP
-:------------: | :------------: | :------------: | :------------: | :------------: | :------------:
+Description      | Classic            | TBC                | WotLK              | Cata               | MoP
+:--------------: | :----------------: | :----------------: | :----------------: | :----------------: | :------------:
 Authentification | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:
-Worldsocket | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:
-Char Enum | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:
-Log into world | :x: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :x:
+Worldsocket      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:
+Char Enum        | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:
+Log into world   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :x:
 
 ## Contributing
 Feel free to contribute any corrections but make sure it is useful and tested before opening PRs.
@@ -63,4 +63,4 @@ HowTo install (detailed guides on our wiki)
 * [License](LICENSE.md)
 * [Thanks to all](THANKS.md)
 * [Terms of use](TERMS_OF_USE_AGREEMENT.md)
- 
+

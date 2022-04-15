@@ -2,7 +2,7 @@
 
 ## Introduction
 Shared project for functions/structures/classes used by world and logon project.
-Do not add code which is not used by world- AND logonserver.
+Do not add code which is not used by world AND logonserver.
 
 ## State
 ### Legacy Code
@@ -12,7 +12,7 @@ Keep legacy code inside a AGPL file. Do NOT copy any legacy code to a MIT file!
 Keep in mind that legacy code was written mostly in C-style/c++98 and horrible outdated.
 
 ### New Code
-New code has to be placed inside a MIT file. The current max standard is C++14.
+New code has to be placed inside a MIT file. The current standard is C++14 and newer.
 
 ## List of Legacy files
 ### Not rewritten - yet
