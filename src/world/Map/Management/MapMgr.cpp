@@ -448,7 +448,11 @@ EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* pla
     if (!mapInfo->isNonInstanceMap() && player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC && player->getLevel() < mapInfo->minlevel_heroic)
         return CANNOT_ENTER_MIN_LEVEL_HC;
 
+#if VERSION_STRING <= WotLK
     char const* mapName = entry->map_name[0];
+#else
+    char const* mapName = entry->map_name;
+#endif
 
     Group* group = player->getGroup();
     if (entry->isRaid()) // can only enter in a raid group
