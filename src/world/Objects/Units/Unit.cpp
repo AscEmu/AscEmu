@@ -7383,7 +7383,7 @@ float Unit::getCollisionHeight() const
             {
                 DBC::Structures::CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.AssertEntry(getNativeDisplayId());
                 DBC::Structures::CreatureModelDataEntry const* modelData = sCreatureModelDataStore.AssertEntry(displayInfo->ModelID);
-                float const collisionHeight = scaleMod * (mountModelData->MountHeight + modelData->CollisionHeight * modelData->ModelScale * displayInfo->CreatureModelScale * 0.5f);
+                float const collisionHeight = scaleMod * (mountModelData->MountHeight + modelData->CollisionHeight * getScale() * displayInfo->CreatureModelScale * 0.5f);
                 return collisionHeight == 0.0f ? DEFAULT_COLLISION_HEIGHT : collisionHeight;
             }
         }
@@ -7393,6 +7393,6 @@ float Unit::getCollisionHeight() const
     DBC::Structures::CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.AssertEntry(getNativeDisplayId());
     DBC::Structures::CreatureModelDataEntry const* modelData = sCreatureModelDataStore.AssertEntry(displayInfo->ModelID);
 
-    float const collisionHeight = scaleMod * modelData->CollisionHeight * modelData->ModelScale * displayInfo->CreatureModelScale;
+    float const collisionHeight = scaleMod * modelData->CollisionHeight * getScale() * displayInfo->CreatureModelScale;
     return collisionHeight == 0.0f ? DEFAULT_COLLISION_HEIGHT : collisionHeight;
 }

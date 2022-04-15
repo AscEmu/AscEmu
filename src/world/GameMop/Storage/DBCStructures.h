@@ -189,7 +189,7 @@ namespace DBC::Structures
         char const creature_display_info_format[]="nixxfxxxxxxxxxxxxxxx";
         char const creature_display_info_extra_format[]="nixxxxxxxxxxxxxxxxxxx";
         char const creature_family_format[] = "nfifiiiiixsx";
-        char const creature_model_Data_format[] = "nisxfxxxxxxxxxxffxxxxxxxxxxx";
+        char const creature_model_Data_format[] = "nisxxxxxxxxxxxxffxxxxxxxxxxxxxx";
         char const creature_spell_data_format[] = "niiiiiiii";  //niiiixxxx
         //char const creature_type_format[]="nxx"; new
         char const currency_types_format[] = "nisxxxxiiixx";
@@ -954,7 +954,7 @@ namespace DBC::Structures
         uint32_t Flags;                                             // 1
         char const* ModelName;                                      // 2
         //uint32_t SizeClass;                                       // 3
-        float ModelScale;                                           // 4 Used in calculation of unit collision data
+        //float ModelScale;                                         // 4 Used in calculation of unit collision data
         //int32_t BloodID;                                          // 5
         //int32_t FootprintTextureID;                               // 6
         //uint32_t FootprintTextureLength;                          // 7
