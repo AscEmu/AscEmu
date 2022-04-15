@@ -9,8 +9,14 @@ set(sources
     deflate.c
     infback.c
     inffast.c
+    gzclose.c
+    gzlib.c
+    gzread.c
+    gzwrite.c
     inflate.c
+    infback.c
     inftrees.c
+    inffast.c
     trees.c
     uncompr.c
     zutil.c
