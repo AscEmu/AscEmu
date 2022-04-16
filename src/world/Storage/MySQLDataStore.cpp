@@ -3162,6 +3162,7 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapEntranceTrigger(uint32_
     return nullptr;
 }
 
+#if VERSION_STRING > Classic
 MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t mapId)
 {
     bool useParentDbValue = false;
@@ -3193,6 +3194,39 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t 
     }
     return nullptr;
 }
+#else
+MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t mapId)
+{
+    bool useParentDbValue = false;
+    uint32_t parentId = 0;
+    auto const* mapEntry = sMySQLStore.getWorldMapInfo(mapId);
+    if (!mapEntry || mapEntry->repopmapid < 0)
+        return nullptr;
+
+    if (mapEntry->isDungeon())
+    {
+        auto const* iTemplate = sMySQLStore.getWorldMapInfo(mapId);
+
+        if (!iTemplate)
+            return nullptr;
+
+        parentId = iTemplate->repopmapid;
+        useParentDbValue = true;
+    }
+
+    uint32_t entrance_map = uint32_t(mapEntry->repopmapid);
+    for (AreaTriggerContainer::const_iterator itr = _areaTriggerStore.begin(); itr != _areaTriggerStore.end(); ++itr)
+    {
+        if ((!useParentDbValue && itr->second.mapId == entrance_map) || (useParentDbValue && itr->second.mapId == parentId))
+        {
+            DBC::Structures::AreaTriggerEntry const* atEntry = sAreaTriggerStore.LookupEntry(itr->first);
+            if (atEntry && atEntry->mapid == mapId)
+                return &itr->second;
+        }
+    }
+    return nullptr;
+}
+#endif
 
 void MySQLDataStore::loadWordFilterCharacterNames()
 {

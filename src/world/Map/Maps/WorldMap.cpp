@@ -18,6 +18,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "InstanceMap.hpp"
 #include "Server/Packets/SmsgUpdateWorldState.h"
 #include "Server/Packets/SmsgDefenseMessage.h"
+#include "Map/Area/AreaManagementGlobals.hpp"
+#include "Map/Area/AreaStorage.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -2453,9 +2455,9 @@ ZLiquidStatus WorldMap::getLiquidStatus(uint32_t phaseMask, float x, float y, fl
 
                 if (liquid_type && liquid_type < 21)
                 {
-#if VERSION_STRING > Classic
                     if (DBC::Structures::AreaTableEntry const* area = sAreaStore.LookupEntry(getAreaId(phaseMask, x, y, z)))
                     {
+#if VERSION_STRING > Classic
                         uint32_t overrideLiquid = area->liquid_type_override[liquidFlagType];
                         if (!overrideLiquid && area->zone)
                         {
@@ -2464,20 +2466,20 @@ ZLiquidStatus WorldMap::getLiquidStatus(uint32_t phaseMask, float x, float y, fl
                                 overrideLiquid = area->liquid_type_override[liquidFlagType];
                         }
 #else
-                    uint32_t overrideLiquid = area->liquid_type_override;
-                    if (!overrideLiquid && area->zone)
-                    {
-                        area = MapManagement::AreaManagement::AreaStorage::GetAreaById(area->zone);
-                        if (area)
-                            overrideLiquid = area->liquid_type_override;
-                    }
+                        uint32_t overrideLiquid = area->liquid_type_override;
+                        if (!overrideLiquid && area->zone)
+                        {
+                            area = MapManagement::AreaManagement::AreaStorage::GetAreaById(area->zone);
+                            if (area)
+                                overrideLiquid = area->liquid_type_override;
+                        }
 #endif
 
-                    if (DBC::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.LookupEntry(overrideLiquid))
-                    {
-                        liquid_type = overrideLiquid;
-                        liquidFlagType = liq->Type;
-                    }
+                        if (DBC::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.LookupEntry(overrideLiquid))
+                        {
+                            liquid_type = overrideLiquid;
+                            liquidFlagType = liq->Type;
+                        }
                     }
                 }
 

@@ -7389,7 +7389,12 @@ float Unit::getCollisionHeight() const
                 if (!modelData)
                     return DEFAULT_COLLISION_HEIGHT;
 
-                float const collisionHeight = scaleMod * (mountModelData->MountHeight + modelData->CollisionHeight * getScale() * displayInfo->CreatureModelScale * 0.5f);
+#if VERSION_STRING > Classic
+                float const collisionHeight = scaleMod * (mountModelData->MountHeight + modelData->CollisionHeight * displayInfo->CreatureModelScale * 0.5f);
+#else
+                // Do the Collision Calc without Mount height since there are not that many Different Mounts
+                float const collisionHeight = scaleMod * (modelData->CollisionHeight * displayInfo->CreatureModelScale * 0.5f);
+#endif
                 return collisionHeight == 0.0f ? DEFAULT_COLLISION_HEIGHT : collisionHeight;
             }
         }
@@ -7404,6 +7409,6 @@ float Unit::getCollisionHeight() const
     if (!modelData)
         return DEFAULT_COLLISION_HEIGHT;
 
-    float const collisionHeight = scaleMod * modelData->CollisionHeight * getScale() * displayInfo->CreatureModelScale;
+    float const collisionHeight = scaleMod * modelData->CollisionHeight * displayInfo->CreatureModelScale;
     return collisionHeight == 0.0f ? DEFAULT_COLLISION_HEIGHT : collisionHeight;
 }

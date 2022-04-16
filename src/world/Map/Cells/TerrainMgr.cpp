@@ -521,6 +521,7 @@ ZLiquidStatus TileMap::getLiquidStatus(float x, float y, float z, uint8_t ReqLiq
         {
             if (DBC::Structures::AreaTableEntry const* area = sAreaStore.LookupEntry(getArea(x, y)))
             {
+#if VERSION_STRING > Classic
                 uint32_t overrideLiquid = area->liquid_type_override[liquidEntry->Type];
                 if (!overrideLiquid && area->zone)
                 {
@@ -528,6 +529,9 @@ ZLiquidStatus TileMap::getLiquidStatus(float x, float y, float z, uint8_t ReqLiq
                     if (area)
                         overrideLiquid = area->liquid_type_override[liquidEntry->Type];
                 }
+#else
+                uint32_t overrideLiquid = 0;
+#endif
 
                 if (DBC::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.LookupEntry(overrideLiquid))
                 {

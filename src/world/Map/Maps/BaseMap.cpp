@@ -100,7 +100,11 @@ bool BaseMap::isBattleground() const
 
 bool BaseMap::isBattleArena() const
 {
+#if VERSION_STRING > Classic
     return _mapEntry && _mapEntry->isBattleArena();
+#else
+    return false;
+#endif
 }
 
 bool BaseMap::isBattlegroundOrArena() const
@@ -110,9 +114,13 @@ bool BaseMap::isBattlegroundOrArena() const
 
 bool BaseMap::getEntrancePos(int32& mapid, float& x, float& y) const
 {
+#if VERSION_STRING > Classic
     if (!_mapEntry)
         return false;
     return _mapEntry->getEntrancePos(mapid, x, y);
+#else
+    return false;
+#endif
 }
 
 void BaseMap::loadSpawns(bool reload)
