@@ -83,7 +83,6 @@ namespace DBC::Structures
         char const lock_format[] = "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx";
         char const mail_template_format[] = "nsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxx";
         char const map_format[] = "nxixssssssssssssssssxxxxxxxixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiffiixxi";
-        char const map_difficulty_entry_format[] = "diisxxxxxxxxxxxxxxxxiix";
         char const name_gen_format[] = "nsii";
         char const skill_line_format[] = "niissssssssssssssssxxxxxxxxxxxxxxxxxxi";
         char const skill_line_ability_format[] = "iiiiiiiiiiiiiii";
@@ -599,18 +598,6 @@ namespace DBC::Structures
         {
             return id == 0 || id == 1 || id == 530 || id == 571;
         }
-    };
-
-    struct MapDifficultyEntry
-    {
-        //uint32_t ID;                                            // 0
-        uint32_t MapID;                                           // 1
-        uint32_t Difficulty;                                      // 2 (for arenas: arena slot)
-        char const* Message;                                    // 3-18 text showed when transfer to map failed (missing requirements)
-        //uint32 Message_lang_mask;                             // 19
-        uint32_t RaidDuration;                                    // 20
-        uint32_t MaxPlayers;                                      // 21
-        //char const* Difficultystring;                         // 22
     };
 
     struct MapDifficulty

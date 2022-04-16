@@ -10710,10 +10710,12 @@ void Player::loadBoundInstances()
 
 InstancePlayerBind* Player::getBoundInstance(uint32_t mapid, InstanceDifficulty::Difficulties difficulty, bool withExpired)
 {
+#if VERSION_STRING > TBC
     // some instances only have one difficulty
     auto const* mapDiff = getDownscaledMapDifficultyData(mapid, difficulty);
     if (!mapDiff)
         return nullptr;
+#endif
 
     BoundInstancesMap::iterator itr = m_boundInstances[difficulty].find(mapid);
     if (itr != m_boundInstances[difficulty].end())

@@ -322,8 +322,9 @@ InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, Instanc
     }
 
     // some instances only have one difficulty
+#if VERSION_STRING > TBC
     getDownscaledMapDifficultyData(mapId, difficulty);
-
+#endif
     sLogger.debug("MapMgr::createInstance Create %s map instance %d for %u created with difficulty %s", save ? "" : "new ", InstanceId, mapId, difficulty ? "heroic" : "normal");
 
     InstanceMap* map = new InstanceMap(baseMap, mapId, time_t(300000), InstanceId, difficulty, InstanceTeam);
@@ -406,10 +407,12 @@ EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* pla
     InstanceDifficulty::Difficulties targetDifficulty, requestedDifficulty;
     targetDifficulty = requestedDifficulty = player->getDifficulty(entry->isRaid());
 
+#if VERSION_STRING > TBC
     // Get the highest available difficulty if current setting is higher than the instance allows
     DBC::Structures::MapDifficulty const* mapDiff = getDownscaledMapDifficultyData(entry->id, targetDifficulty);
     if (!mapDiff)
         return CANNOT_ENTER_DIFFICULTY_UNAVAILABLE;
+#endif
 
     //Bypass checks for GMs
     if (player->isGMFlagSet())

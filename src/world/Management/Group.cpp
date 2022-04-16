@@ -1282,7 +1282,9 @@ InstanceGroupBind* Group::getBoundInstance(DBC::Structures::MapEntry const* mapE
 InstanceGroupBind* Group::getBoundInstance(InstanceDifficulty::Difficulties difficulty, uint32_t mapId)
 {
     // some instances only have one difficulty
+#if VERSION_STRING > TBC
     getDownscaledMapDifficultyData(mapId, difficulty);
+#endif
 
     BoundInstancesMap::iterator itr = m_boundInstances[difficulty].find(mapId);
     if (itr != m_boundInstances[difficulty].end())

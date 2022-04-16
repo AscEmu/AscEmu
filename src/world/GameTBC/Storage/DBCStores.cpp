@@ -89,7 +89,6 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleEntry> sVehicleStore(DBC::St
 SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSeatStore(DBC::Structures::vehicle_seat_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::WorldMapAreaEntry> sWorldMapAreaStore(DBC::Structures::world_map_area_entry_format);
 MapDifficultyMap sMapDifficultyMap;
-SERVER_DECL DBC::DBCStorage<DBC::Structures::MapDifficultyEntry> sMapDifficultyStore(DBC::Structures::map_difficulty_entry_format);
 
 bool LoadDBCs()
 {
@@ -212,12 +211,15 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sChrRacesStore, dbc_path, "ChrRaces.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sChrClassesStore, dbc_path, "ChrClasses.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sMapStore, dbc_path, "Map.dbc");
-    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sMapDifficultyStore, dbc_path, "MapDifficulty.dbc");
     {
-        for (uint32_t i = 0; i < sMapDifficultyStore.GetNumRows(); ++i)
+        for (uint32_t i = 0; i < sMapStore.GetNumRows(); ++i)
         {
-            if (auto entry = sMapDifficultyStore.LookupEntry(i))
-                sMapDifficultyMap[Util::MAKE_PAIR32(entry->MapID, entry->Difficulty)] = DBC::Structures::MapDifficulty(entry->RaidDuration, entry->MaxPlayers, entry->Message[0] != '\0');
+            if (auto entry = sMapStore.LookupEntry(i))
+            {
+                sMapDifficultyMap[Util::MAKE_PAIR32(entry->id, InstanceDifficulty::Difficulties::DUNGEON_NORMAL)] = DBC::Structures::MapDifficulty(entry->reset_raid_time, entry->isRaid() ? 5 : 40, false);
+                sMapDifficultyMap[Util::MAKE_PAIR32(entry->id, InstanceDifficulty::Difficulties::DUNGEON_HEROIC)] = DBC::Structures::MapDifficulty(entry->reset_heroic_tim, 5, false);
+                printf("mapid %u reset %u reset %u\n", entry->id, entry->reset_raid_time, entry->reset_heroic_tim);
+            }
         }
     }
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAuctionHouseStore, dbc_path, "AuctionHouse.dbc");
@@ -299,30 +301,6 @@ DBC::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, Insta
 {
     MapDifficultyMap::const_iterator itr = sMapDifficultyMap.find(Util::MAKE_PAIR32(mapId, difficulty));
     return itr != sMapDifficultyMap.end() ? &itr->second : nullptr;
-}
-
-DBC::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty)
-{
-    uint32_t tmpDiff = difficulty;
-    DBC::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(tmpDiff));
-    if (!mapDiff)
-    {
-        if (tmpDiff > 1) // heroic, downscale to normal
-            tmpDiff -= 2;
-        else
-            tmpDiff -= 1;   // any non-normal mode for raids like tbc (only one mode)
-
-        // pull new data
-        mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(tmpDiff)); // we are 10 normal or 25 normal
-        if (!mapDiff)
-        {
-            tmpDiff -= 1;
-            mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(tmpDiff)); // 10 normal
-        }
-    }
-
-    difficulty = InstanceDifficulty::Difficulties(tmpDiff);
-    return mapDiff;
 }
 
 std::string generateName(uint32_t type)
