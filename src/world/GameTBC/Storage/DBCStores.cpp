@@ -216,9 +216,16 @@ bool LoadDBCs()
         {
             if (auto entry = sMapStore.LookupEntry(i))
             {
-                sMapDifficultyMap[Util::MAKE_PAIR32(entry->id, InstanceDifficulty::Difficulties::DUNGEON_NORMAL)] = DBC::Structures::MapDifficulty(entry->reset_raid_time, entry->isRaid() ? 5 : 40, false);
-                sMapDifficultyMap[Util::MAKE_PAIR32(entry->id, InstanceDifficulty::Difficulties::DUNGEON_HEROIC)] = DBC::Structures::MapDifficulty(entry->reset_heroic_tim, 5, false);
-                printf("mapid %u reset %u reset %u\n", entry->id, entry->reset_raid_time, entry->reset_heroic_tim);
+                uint32_t maxPlayers = 5;
+                if (entry->addon < 1)
+                    maxPlayers = entry->isRaid() ? 40 : 5;
+                else
+                    maxPlayers = entry->isRaid() ? 25 : 5;
+
+                if (!entry->reset_heroic_tim)
+                    sMapDifficultyMap[Util::MAKE_PAIR32(entry->id, InstanceDifficulty::Difficulties::DUNGEON_NORMAL)] = DBC::Structures::MapDifficulty(entry->reset_raid_time, maxPlayers, false);
+                else
+                    sMapDifficultyMap[Util::MAKE_PAIR32(entry->id, InstanceDifficulty::Difficulties::DUNGEON_HEROIC)] = DBC::Structures::MapDifficulty(entry->reset_heroic_tim, maxPlayers, false);
             }
         }
     }

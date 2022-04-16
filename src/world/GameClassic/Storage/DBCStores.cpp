@@ -227,7 +227,7 @@ bool LoadDBCs()
             if (auto entry = sMapStore.LookupEntry(i))
             {
                 //                                                               Classic Only has one Difficulty                                   Same reset Time      and only 5 or 40 man Raids
-                sMapDifficultyMap[Util::MAKE_PAIR32(entry->id, InstanceDifficulty::Difficulties::DUNGEON_NORMAL)] = DBC::Structures::MapDifficulty(604800, entry->isRaid() ? 5 : 40, false);
+                sMapDifficultyMap[Util::MAKE_PAIR32(entry->id, InstanceDifficulty::Difficulties::DUNGEON_NORMAL)] = DBC::Structures::MapDifficulty(604800, entry->isRaid() ? 40 : 5, false);
             }
         }
     }
