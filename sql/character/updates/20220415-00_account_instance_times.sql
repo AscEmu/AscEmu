@@ -6,6 +6,6 @@ CREATE TABLE `account_instance_times` (
   `instanceId` int unsigned NOT NULL DEFAULT '0',
   `releaseTime` bigint unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`accountId`,`instanceId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 UPDATE `character_db_version` SET LastUpdate = '20220415-00_account_instance_times';
