@@ -10659,11 +10659,10 @@ void Player::loadBoundInstances()
             bool deleteInstance = false;
 
             DBC::Structures::MapEntry const* mapEntry = sMapStore.LookupEntry(mapId);
-            // todo appled sWorld.getDbcLocaleLanguageId()
 #if VERSION_STRING > WotLK
             std::string mapname = mapEntry ? mapEntry->map_name : "Unknown";
 #else
-            std::string mapname = mapEntry ? mapEntry->map_name[0] : "Unknown";
+            std::string mapname = mapEntry ? mapEntry->map_name[sWorld.getDbcLocaleLanguageId()] : "Unknown";
 #endif
 
             if (!mapEntry || !mapEntry->isDungeon())
