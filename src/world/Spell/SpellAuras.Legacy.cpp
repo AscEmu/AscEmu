@@ -648,6 +648,10 @@ void Aura::EventUpdateAreaAura(uint8_t effIndex, float r)
         return;
     }
 
+    // Do not update area aura if caster is not in world yet
+    if (!u_caster->IsInWorld())
+        return;
+
     uint32 AreaAuraEffectId = m_spellInfo->getAreaAuraEffect();
 
     switch (AreaAuraEffectId)
