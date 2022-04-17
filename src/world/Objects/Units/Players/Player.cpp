@@ -7769,7 +7769,7 @@ void Player::sendPetUnlearnConfirmPacket()
 
 void Player::sendDungeonDifficultyPacket()
 {
-    m_session->SendPacket(MsgSetDungeonDifficulty(m_raidDifficulty, 1, isInGroup()).serialise().get());
+    m_session->SendPacket(MsgSetDungeonDifficulty(m_dungeonDifficulty, 1, isInGroup()).serialise().get());
 }
 
 void Player::sendRaidDifficultyPacket()

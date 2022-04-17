@@ -2251,6 +2251,7 @@ void WorldSession::loadHandlers() // WotLK
     WorldPacketHandlers[MSG_RANDOM_ROLL].handler = &WorldSession::handleRandomRollOpcode;
     WorldPacketHandlers[MSG_SET_DUNGEON_DIFFICULTY].handler = &WorldSession::handleDungeonDifficultyOpcode;
     WorldPacketHandlers[MSG_SET_RAID_DIFFICULTY].handler = &WorldSession::handleRaidDifficultyOpcode;
+    WorldPacketHandlers[CMSG_INSTANCE_LOCK_RESPONSE].handler = &WorldSession::handleInstanceLockResponse;
     
     // Misc
     WorldPacketHandlers[CMSG_OPEN_ITEM].handler = &WorldSession::handleOpenItemOpcode;

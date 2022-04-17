@@ -2477,3 +2477,19 @@ void WorldSession::sendMOTD()
         GetPlayer()->sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, line.c_str());
 #endif
 }
+
+void WorldSession::handleInstanceLockResponse(WorldPacket& recvPacket)
+{
+    uint8_t accept;
+    recvPacket >> accept;
+
+    if (!_player->hasPendingBind())
+        return;
+
+    if (accept)
+        _player->bindToInstance();
+    else
+        _player->repopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
+
+    _player->setPendingBind(0, 0);
+}

@@ -2600,7 +2600,7 @@ void AIInterface::eventLeaveCombat(Unit* /*pUnit*/, uint32_t /*misc1*/)
     initialiseScripts(getUnit()->getEntry());
 
     // when this leads to errors remove
-    if (m_Unit->getWorldMap()->isUnloadPending())
+    if (m_Unit->getWorldMap() && m_Unit->getWorldMap()->isUnloadPending())
         return;
 
     CALL_SCRIPT_EVENT(m_Unit, _internalOnCombatStop)();

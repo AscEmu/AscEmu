@@ -724,6 +724,7 @@ protected:
         void handleGameobjReportUseOpCode(WorldPacket& recvPacket);
         void handleDungeonDifficultyOpcode(WorldPacket& recvPacket);
         void handleRaidDifficultyOpcode(WorldPacket& recvPacket);
+        void handleInstanceLockResponse(WorldPacket& recvPacket);
         void handleSetAutoLootPassOpcode(WorldPacket& recvPacket);
         void handleSetActionBarTogglesOpcode(WorldPacket& recvPacket);
         void handleLootRollOpcode(WorldPacket& recvPacket);
