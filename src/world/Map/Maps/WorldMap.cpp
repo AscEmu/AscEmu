@@ -20,13 +20,25 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgDefenseMessage.h"
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
+#include "TLSObject.h"
+#include "CThreads.h"
+#include "CrashHandler.h"
 
 using namespace AscEmu::Packets;
 
+Arcemu::Utility::TLSObject<WorldMap*> t_currentMapContext;
+
+extern bool bServerShutdown;
+
 WorldMap::WorldMap(BaseMap* baseMap, uint32_t id, time_t expiry, uint32_t InstanceId, uint8_t SpawnMode) : CellHandler<MapCell>(baseMap), eventHolder(InstanceId), worldstateshandler(id)
 {
-    _terrain = new TerrainHolder(id);
+    // Thread
+    thread_shutdown = false;
+    thread_kill_only = false;
+    thread_running = false;
 
+    // Map
+    _terrain = new TerrainHolder(id);
     m_baseMap = baseMap;
     pInstance = nullptr;
     m_unloadTimer = expiry;
@@ -117,11 +129,16 @@ void WorldMap::initialize()
 
 WorldMap::~WorldMap()
 {
+    thread_shutdown = true;
+    sEventMgr.RemoveEvents(this);
+
     if (ScriptInterface != nullptr)
     {
         delete ScriptInterface;
         ScriptInterface = nullptr;
     }
+
+    delete _terrain;
 
     // Remove objects
     if (_cells)
@@ -190,7 +207,76 @@ WorldMap::~WorldMap()
 
     MMAP::MMapFactory::createOrGetMMapManager()->unloadMapInstance(getBaseMap()->getMapId(), getInstanceId());
 
-    sLogger.debug("MapMgr : Instance %u shut down. (%s)", getInstanceId(), getBaseMap()->getMapName().c_str());
+    sLogger.debug("WorldMap : Instance %u shut down. (%s)", getInstanceId(), getBaseMap()->getMapName().c_str());
+}
+
+bool WorldMap::runThread()
+{
+    bool rv = true;
+
+    THREAD_TRY_EXECUTION
+        rv = Do();
+    THREAD_HANDLE_CRASH
+        return rv;
+}
+
+bool WorldMap::Do()
+{
+#ifdef WIN32
+    threadid = GetCurrentThreadId();
+#endif
+
+    t_currentMapContext.set(this);
+
+    thread_running = true;
+    ThreadState = THREADSTATE_BUSY;
+
+    uint32_t id = getBaseMap()->getMapId();
+    SetThreadName("WorldMap - M%u|I%u", getBaseMap()->getMapId(), getInstanceId());
+
+    uint32_t last_exec = Util::getMSTime();
+
+    while (GetThreadState() != THREADSTATE_TERMINATE && !thread_shutdown)
+    {
+        uint32_t exec_start = Util::getMSTime();
+        uint32_t test = exec_start - last_exec;
+
+        // Update Our Map
+        update(exec_start - last_exec);
+
+        // Sleep for 20 ms
+        last_exec = Util::getMSTime();
+        uint32_t exec_time = last_exec - exec_start;
+        if (exec_time < 20)
+            Arcemu::Sleep(20 - exec_time);
+    }
+
+    thread_running = false;
+    if (thread_kill_only)
+        return false;
+
+    // delete ourselves
+    delete this;
+
+    // already deleted, so the threadpool doesn't have to.
+    return false;
+}
+
+void WorldMap::instanceShutdown()
+{
+    pInstance = nullptr;
+    SetThreadState(THREADSTATE_TERMINATE);
+}
+
+void WorldMap::killThread()
+{
+    pInstance = nullptr;
+    thread_kill_only = true;
+    SetThreadState(THREADSTATE_TERMINATE);
+    while (thread_running)
+    {
+        Arcemu::Sleep(100);
+    }
 }
 
 void WorldMap::update(uint32_t t_diff)
@@ -402,7 +488,11 @@ void WorldMap::processRespawns()
 
 void WorldMap::unloadAll()
 {
+    if (getPlayerCount())
+        return;
+
     sMapMgr.removeInstance(getInstanceId());
+    instanceShutdown();
 }
 
 void WorldMap::initVisibilityDistance()
@@ -442,7 +532,18 @@ void WorldMap::removeAllPlayers()
         for (PlayerStorageMap::iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
         {
             Player* player = itr->second;
-            player->safeTeleport(player->getBindMapId(), 0, player->getBindPosition());
+
+            if (!bServerShutdown)
+            {
+                player->ejectFromInstance();
+            }
+            else
+            {
+                if (player->getSession())
+                    player->getSession()->LogoutPlayer(false);
+                else
+                    delete player;
+            }
         }
     }
 }

@@ -12,6 +12,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/WorldStatesHandler.h"
 #include "DynamicTree.h"
 #include "Map/Cells/TerrainMgr.hpp"
+#include "CThreads.h"
+
+namespace Arcemu
+{
+    namespace Utility
+    {
+        template<typename T>
+        class TLSObject;
+    }
+}
 
 template <typename T>
 class CellHandler;
@@ -107,6 +117,8 @@ struct CompareTimeAndGuid
     }
 };
 
+extern Arcemu::Utility::TLSObject<WorldMap*> t_currentMapContext;
+
 typedef std::unordered_map<uint32_t, Player*> PlayerStorageMap;
 typedef std::vector<Creature*> CreaturesStorageMap;
 typedef std::unordered_map<uint32_t, Pet*> PetStorageMap;
@@ -126,7 +138,7 @@ typedef std::set<uint64_t> CombatProgressMap;
 typedef std::unordered_map<uint32, Creature*> CreatureSqlIdMap;
 typedef std::unordered_map<uint32, GameObject*> GameObjectSqlIdMap;
 
-class SERVER_DECL WorldMap : public CellHandler <MapCell>, public EventableObject, public WorldStatesHandler::WorldStatesObserver
+class SERVER_DECL WorldMap : public CellHandler <MapCell>, public EventableObject, public CThread, public WorldStatesHandler::WorldStatesObserver
 {
     friend class MapScriptInterface;
     friend class MapCell;
@@ -137,6 +149,15 @@ public:
     virtual void initialize();
     virtual void update(uint32_t);
     virtual void unloadAll();
+
+    bool runThread() override;
+    bool Do();
+
+    // better hope to clear any references to us when calling this :P
+    void instanceShutdown();
+
+    /// kill the worker thread only
+    void killThread();
 
     void setUnloadPending(bool value) { m_unloadPending = value; }
     bool isUnloadPending() { return m_unloadPending; }
@@ -445,4 +466,12 @@ protected:
     float m_VisibleDistance;
     BaseMap* m_baseMap;
     InstanceMap* pInstance;
+
+public:
+#ifdef WIN32
+    DWORD threadid;
+#endif
+    bool thread_shutdown;
+    bool thread_kill_only;
+    bool thread_running;
 };

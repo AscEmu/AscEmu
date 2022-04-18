@@ -35,8 +35,7 @@ void BattlegroundMap::update(uint32_t t_diff)
         // Remove all Players
         removeAllPlayers();
 
-        // Add one More Update before we Delete the Map
-        sMapMgr.getMapUpdater()->addJob(*this, 10);
+        //  Unload Us :)
         setUnloadPending(true);
     }
 }

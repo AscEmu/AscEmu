@@ -122,7 +122,6 @@ void World::finalize()
 #endif
 
     sLogger.info("InstanceMgr : ~InstanceMgr()");
-    //sInstanceMgr.Shutdown();
     sMapMgr.shutdown();
 
     sLogger.info("WordFilter : ~WordFilter()");

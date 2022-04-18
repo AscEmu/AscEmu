@@ -272,19 +272,18 @@ bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession*
 //.instance shutdown
 bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* m_session)
 {
-    /*
     uint32 instanceId = (args ? atoi(args) : 0);
     if (instanceId == 0)
         return false;
 
-    Instance* instance = sInstanceMgr.GetInstanceByIds(MAX_NUM_MAPS, instanceId);
+    InstanceMap* instance = sMapMgr.findInstanceMap(instanceId);
     if (instance == nullptr)
     {
         RedSystemMessage(m_session, "There's no instance with id %u.", instanceId);
         return true;
     }
 
-    if (instance->m_mapMgr == nullptr)
+    if (instance->isUnloadPending())
     {
         RedSystemMessage(m_session, "Instance with id %u already shut down.", instanceId);
         return true;
@@ -292,14 +291,13 @@ bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* 
 
     SystemMessage(m_session, "Attempting to shutdown instance with id %u...", instanceId);
 
-    sInstanceMgr.SafeDeleteInstance(instance->m_mapMgr);
-
-    instance = nullptr;
+    // Remove all Players
+    instance->removeAllPlayers();
+    instance->setUnloadPending(true);
 
     SystemMessage(m_session, "...done");
 
     sGMLog.writefromsession(m_session, "used shutdown instance command on instance %u,", instanceId);
-*/
     return true;
 }
 

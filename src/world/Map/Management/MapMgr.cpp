@@ -36,11 +36,6 @@ MapMgr& MapMgr::getInstance()
 
 void MapMgr::initialize()
 {
-    // Spawn Threads based on current hardware
-    // may return 0 when not able to detect
-    auto processor_count = std::thread::hardware_concurrency();
-    updater.activate(processor_count);
-
     // Generate Instances based on WorldMapInfo Table
     const auto mapInfoStore = sMySQLStore.getWorldMapInfoStore();
     for (auto mapInfo = mapInfoStore->begin(); mapInfo != mapInfoStore->end(); ++mapInfo)
@@ -80,38 +75,11 @@ void MapMgr::shutdown()
         delete ini->second;
         m_InstancedMaps.erase(ini);
     }
-
-    // Close all Threads
-    updater.shutdown();
 }
 
 void MapMgr::update(uint32_t /*diff*/)
 {
-    uint32_t mstime = Util::getMSTime();
-    uint32_t difftime = mstime - lastMapMgrUpdate;
 
-    std::lock_guard<std::mutex> lock(m_mapsLock);
-
-    // Only add new Jobs when the Old Ones are done
-    if (updater.getQueueSize())
-        return;
-
-    // Continents
-    WorldMapContainer::iterator map = m_WorldMaps.begin();
-    for (; map != m_WorldMaps.end(); ++map)
-        updater.addJob(*map->second, difftime);
-
-    // Instances
-    InstancedMapContainer::iterator ini = m_InstancedMaps.begin();
-    for (; ini != m_InstancedMaps.end(); ++ini)
-    {
-        if (!ini->second->isUnloadPending())
-        {
-            updater.addJob(*ini->second, difftime);
-        }
-    }
-
-    lastMapMgrUpdate = mstime;
 }
 
 void MapMgr::removeInstance(uint32_t instanceId)
@@ -171,6 +139,9 @@ WorldMap* MapMgr::createWorldMap(uint32_t mapId, uint32_t unloadTime)
     sLogger.debug("MapMgr::createWorldMap Create Continent %s for Map %u", baseMap->getMapName().c_str(), mapId);
 
     WorldMap* map = new WorldMap(baseMap, mapId, time_t(unloadTime), 0, InstanceDifficulty::Difficulties::DUNGEON_NORMAL);
+
+    // Scheduling the new map for running
+    ThreadPool.ExecuteTask(map);
 
     map->initialize();
 
@@ -328,6 +299,9 @@ InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, Instanc
     sLogger.debug("MapMgr::createInstance Create %s map instance %d for %u created with difficulty %s", save ? "" : "new ", InstanceId, mapId, difficulty ? "heroic" : "normal");
 
     InstanceMap* map = new InstanceMap(baseMap, mapId, time_t(300000), InstanceId, difficulty, InstanceTeam);
+
+    // Scheduling the new map for running
+    ThreadPool.ExecuteTask(map);
 
     // Load Saved Respawns when existing
     map->loadRespawnTimes();

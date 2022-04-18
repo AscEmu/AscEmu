@@ -43,8 +43,6 @@ public:
     EnterState canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* player, bool loginCheck = false);
     void shutdown();
     void removeInstance(uint32_t instanceId);
-
-    MapMgrUpdate* getMapUpdater() { return &updater; }
     void update(uint32_t);
 
     // BaseMaps
@@ -81,8 +79,6 @@ private:
     BaseMapContainer m_BaseMaps;
     WorldMapContainer m_WorldMaps;
     InstancedMapContainer m_InstancedMaps;
-
-    MapMgrUpdate updater;
 };
 
 #define sMapMgr MapMgr::getInstance()
