@@ -236,19 +236,20 @@ bool WorldMap::Do()
 
     uint32_t last_exec = Util::getMSTime();
 
+    Arcemu::Sleep(1000);
+
     while (GetThreadState() != THREADSTATE_TERMINATE && !thread_shutdown)
     {
         uint32_t exec_start = Util::getMSTime();
-        uint32_t test = exec_start - last_exec;
+        uint32_t difftime = exec_start - last_exec;
 
         // Update Our Map
-        update(exec_start - last_exec);
+        update(difftime);
+
+        last_exec = Util::getMSTime();
 
         // Sleep for 20 ms
-        last_exec = Util::getMSTime();
-        uint32_t exec_time = last_exec - exec_start;
-        if (exec_time < 20)
-            Arcemu::Sleep(20 - exec_time);
+        Arcemu::Sleep(20);
     }
 
     thread_running = false;
