@@ -725,13 +725,12 @@ bool World::setInitialWorldSettings()
     sLootMgr.loadLoot();
 
     loadMySQLTablesByTask();
-
-    sMapMgr.initialize();
-
     logEntitySize();
 
     sSpellMgr.loadSpellDataFromDatabase();
     sSpellMgr.calculateSpellCoefficients();
+
+    sMapMgr.initialize();
 
 #if VERSION_STRING > TBC
     sLogger.info("World : Starting Achievement System...");
@@ -772,8 +771,6 @@ bool World::setInitialWorldSettings()
     dw = std::move(std::make_unique<DayWatcherThread>());
 
     broadcastMgr = std::move(std::make_unique<BroadcastMgr>());
-
-    sEventMgr.AddEvent(this, &World::checkForExpiredInstances, EVENT_WORLD_UPDATEAUCTIONS, 120000, 0, 0);
 
     sLogger.info("World: init in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
@@ -1045,11 +1042,6 @@ void World::logoutAllPlayers()
         ++i;
         deleteSession(worldSession);
     }
-}
-
-void World::checkForExpiredInstances()
-{
-    //sInstanceMgr.CheckForExpiredInstances();
 }
 
 void World::deleteObject(Object* object)
