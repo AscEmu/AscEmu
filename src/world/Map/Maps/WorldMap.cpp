@@ -572,19 +572,19 @@ void WorldMap::PushObject(Object* obj)
         //Zyres: this was an old ASSERT MapMgr for map x is not allowed to push objects for mapId z
         if (obj->GetMapId() != getBaseMap()->getMapId())
         {
-            sLogger.failure("MapMgr::PushObject manager for mapId %u tried to push object for mapId %u, return!", getBaseMap()->getMapId(), obj->GetMapId());
+            sLogger.failure("WorldMap::PushObject manager for mapId %u tried to push object for mapId %u, return!", getBaseMap()->getMapId(), obj->GetMapId());
             return;
         }
 
         if (obj->GetPositionY() > Map::Terrain::_maxY || obj->GetPositionY() < Map::Terrain::_minY)
         {
-            sLogger.failure("MapMgr::PushObject not allowed to push object to y: %f (max %f/min %f), return!", obj->GetPositionY(), Map::Terrain::_maxY, Map::Terrain::_minY);
+            sLogger.failure("WorldMap::PushObject not allowed to push object to y: %f (max %f/min %f), return!", obj->GetPositionY(), Map::Terrain::_maxY, Map::Terrain::_minY);
             return;
         }
 
         if (_cells == nullptr)
         {
-            sLogger.failure("MapMgr::PushObject not allowed to push object to invalid cell (nullptr), return!");
+            sLogger.failure("WorldMap::PushObject not allowed to push object to invalid cell (nullptr), return!");
             return;
         }
 
@@ -754,7 +754,7 @@ void WorldMap::PushObject(Object* obj)
     }
     else
     {
-        sLogger.failure("MapMgr::PushObject tried to push invalid object (nullptr)!");
+        sLogger.failure("WorldMap::PushObject tried to push invalid object (nullptr)!");
     }
 }
 
@@ -787,19 +787,19 @@ void WorldMap::RemoveObject(Object* obj, bool free_guid)
     // Assertions
     if (obj == nullptr)
     {
-        sLogger.failure("MapMgr::RemoveObject tried to remove invalid object (nullptr)");
+        sLogger.failure("WorldMap::RemoveObject tried to remove invalid object (nullptr)");
         return;
     }
 
     if (obj->GetMapId() != getBaseMap()->getMapId())
     {
-        sLogger.failure("MapMgr::RemoveObject tried to remove object with map %u but mapMgr is for map %u!", obj->GetMapId(), getBaseMap()->getMapId());
+        sLogger.failure("WorldMap::RemoveObject tried to remove object with map %u but WorldMap is for map %u!", obj->GetMapId(), getBaseMap()->getMapId());
         return;
     }
 
     if (_cells == nullptr)
     {
-        sLogger.failure("MapMgr::RemoveObject tried to remove invalid cells (nullptr)");
+        sLogger.failure("WorldMap::RemoveObject tried to remove invalid cells (nullptr)");
         return;
     }
 
@@ -860,7 +860,7 @@ void WorldMap::RemoveObject(Object* obj, bool free_guid)
             break;
         default:
         {
-            sLogger.debug("MapMgr::RemoveObject called for invalid type %u.", obj->GetTypeFromGUID());
+            sLogger.debug("WorldMap::RemoveObject called for invalid type %u.", obj->GetTypeFromGUID());
             break;
         }
     }
@@ -939,7 +939,7 @@ void WorldMap::RemoveObject(Object* obj, bool free_guid)
                 plObj->getUpdateMgr().pushOutOfRangeGuid(_mapWideStaticObject->GetNewGUID());
         }
 
-        // Setting an instance ID here will trigger the session to be removed by MapMgr::run(). :)
+        // Setting an instance ID here will trigger the session to be removed by WorldMap::run(). :)
         if (plObj && plObj->getSession())
         {
             plObj->getSession()->SetInstance(0);
@@ -1144,14 +1144,14 @@ void WorldMap::updateCellActivity(uint32_t x, uint32_t y, uint32_t radius)
                     objCell = create(posX, posY);
                     objCell->init(posX, posY, this);
 
-                    sLogger.debug("MapMgr : Cell [%u,%u] on map %u (instance %u) is now active.", posX, posY, getBaseMap()->getMapId(), getInstanceId());
+                    sLogger.debug("WorldMap : Cell [%u,%u] on map %u (instance %u) is now active.", posX, posY, getBaseMap()->getMapId(), getInstanceId());
                     objCell->setActivity(true);
 
                     getTerrain()->loadTile((int32)posX / 8, (int32)posY / 8);
 
                     if (!objCell->isLoaded())
                     {
-                        sLogger.debug("MapMgr : Loading objects for Cell [%u][%u] on map %u (instance %u)...", posX, posY, getBaseMap()->getMapId(), getInstanceId());
+                        sLogger.debug("WorldMap : Loading objects for Cell [%u][%u] on map %u (instance %u)...", posX, posY, getBaseMap()->getMapId(), getInstanceId());
 
                         sp = _map->getSpawnsList(posX, posY);
                         if (sp)
@@ -1468,7 +1468,7 @@ void WorldMap::changeObjectLocation(Object* obj)
         }
         else
         {
-            sLogger.failure("MapMgr::ChangeObjectLocation not able to create object cell (nullptr), return!");
+            sLogger.failure("WorldMap::ChangeObjectLocation not able to create object cell (nullptr), return!");
             return;
         }
     }
