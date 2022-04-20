@@ -12,7 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <set>
 #include <map>
-#include <shared_mutex>
 
 #include "WoWGuid.h"
 #include <LocationVector.h>
@@ -239,7 +238,6 @@ private:
 
     std::map<Spell*, bool> m_travelingSpells;
     std::list<Spell*> m_garbageSpells;
-    mutable std::shared_mutex m_spellUpdateMutex;
 
 public:
     Spell* getCurrentSpell(CurrentSpellType spellType) const;

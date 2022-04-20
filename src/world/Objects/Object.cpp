@@ -62,13 +62,11 @@ Object::~Object()
                     interruptSpellWithSpellType(static_cast<CurrentSpellType>(i));
             }
 
-            std::unique_lock<std::shared_mutex> updateMutex(m_spellUpdateMutex);
             for (auto travelingSpellItr = m_travelingSpells.begin(); travelingSpellItr != m_travelingSpells.end();)
             {
                 delete (*travelingSpellItr).first;
                 travelingSpellItr = m_travelingSpells.erase(travelingSpellItr);
             }
-            updateMutex.unlock();
 
             removeGarbageSpells();
 
@@ -1373,7 +1371,6 @@ void Object::_UpdateSpells(uint32_t time)
         static_cast<Player*>(this)->updateAutoRepeatSpell();
 
     // Remove finished traveling spells
-    std::unique_lock<std::shared_mutex> updateMutex(m_spellUpdateMutex);
     for (auto travelingSpellItr = m_travelingSpells.begin(); travelingSpellItr != m_travelingSpells.end();)
     {
         auto spellItr = *travelingSpellItr;
@@ -1389,7 +1386,6 @@ void Object::_UpdateSpells(uint32_t time)
 
         ++travelingSpellItr;
     }
-    updateMutex.unlock();
 
     // Update traveling spells
     for (const auto& spellItr : m_travelingSpells)
