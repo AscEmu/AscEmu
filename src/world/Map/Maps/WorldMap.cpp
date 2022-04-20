@@ -240,16 +240,27 @@ bool WorldMap::Do()
 
     while (GetThreadState() != THREADSTATE_TERMINATE && !thread_shutdown)
     {
-        uint32_t exec_start = Util::getMSTime();
-        uint32_t difftime = exec_start - last_exec;
+        uint32 exec_start = Util::getMSTime();
+
+        //first push to world new objects
+        {
+            std::unique_lock<std::mutex> lock(m_objectinsertlock);
+            if (m_objectinsertpool.size())
+            {
+                for (auto o : m_objectinsertpool)
+                    o->PushToWorld(this);
+
+                m_objectinsertpool.clear();
+            }
+        }
 
         // Update Our Map
-        update(difftime);
+        update(20);
 
         last_exec = Util::getMSTime();
-
-        // Sleep for 20 ms
-        Arcemu::Sleep(20);
+        uint32 exec_time = last_exec - exec_start;
+        if (exec_time < 20)  //mapmgr update period 20
+            Arcemu::Sleep(20 - exec_time);
     }
 
     thread_running = false;
@@ -282,29 +293,18 @@ void WorldMap::killThread()
 
 void WorldMap::update(uint32_t t_diff)
 {
-    //first push to world new objects
-    {
-        std::unique_lock<std::mutex> lock(m_objectinsertlock);
-        if (m_objectinsertpool.size())
-        {
-            for (auto o : m_objectinsertpool)
-                o->PushToWorld(this);
-
-            m_objectinsertpool.clear();
-        }
-    }
-
-    std::unique_lock<std::mutex> updateLock(m_Updatelock);
-
     // Time In Seconds
-    const auto now = Util::getTimeNow();
+    const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+    // Time In Milliseconds ( exact Difftime Since last update Cycle )
+    auto diffTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - m_lastUpdateTime).count();
 
     // Update any events.
     // we make update of events before objects so in case there are 0 timediff events they do not get deleted after update but on next server update loop
-    eventHolder.Update(t_diff);
+    eventHolder.Update(diffTime);
 
     // Update Dynamic Map
-    _dynamicTree.update(t_diff);
+    _dynamicTree.update(diffTime);
 
     // Update Transporters
     {
@@ -317,7 +317,7 @@ void WorldMap::update(uint32_t t_diff)
             if (!trans || !trans->IsInWorld())
                 continue;
 
-            trans->Update(t_diff);
+            trans->Update(diffTime);
         }
     }
 
@@ -327,7 +327,7 @@ void WorldMap::update(uint32_t t_diff)
         {
             Creature* ptr = *itr;
             ++itr;
-            ptr->Update(t_diff);
+            ptr->Update(diffTime);
         }
     }
 
@@ -337,7 +337,7 @@ void WorldMap::update(uint32_t t_diff)
         {
             Pet* ptr = itr->second;
             ++itr;
-            ptr->Update(t_diff);
+            ptr->Update(diffTime);
         }
     }
 
@@ -347,12 +347,12 @@ void WorldMap::update(uint32_t t_diff)
         {
             Player* ptr = itr->second;
             ++itr;
-            ptr->Update(t_diff);
+            ptr->Update(diffTime);
         }
     }
 
     // Dynamic objects are updated every 100ms
-    if (_dynamicUpdateTimer <= t_diff)
+    if (_dynamicUpdateTimer <= diffTime)
     {
         _dynamicUpdateTimer = 100;
         for (auto itr = m_DynamicObjectStorage.cbegin(); itr != m_DynamicObjectStorage.cend();)
@@ -364,11 +364,11 @@ void WorldMap::update(uint32_t t_diff)
     }
     else
     {
-        _dynamicUpdateTimer -= t_diff;
+        _dynamicUpdateTimer -= diffTime;
     }
 
     // Update gameobjects only every 200ms
-    if (_gameObjectUpdateTimer <= t_diff)
+    if (_gameObjectUpdateTimer <= diffTime)
     {
         _gameObjectUpdateTimer = 200;
         for (auto itr = activeGameObjects.cbegin(); itr != activeGameObjects.cend();)
@@ -376,16 +376,16 @@ void WorldMap::update(uint32_t t_diff)
             GameObject* gameobject = *itr;
             ++itr;
             if (gameobject != nullptr)
-                gameobject->Update(t_diff);
+                gameobject->Update(diffTime);
         }
     }
     else
     {
-        _gameObjectUpdateTimer -= t_diff;
+        _gameObjectUpdateTimer -= diffTime;
     }
 
     // Update Sessions
-    if (_sessionUpdateTimer <= t_diff)
+    if (_sessionUpdateTimer <= diffTime)
     {
         _sessionUpdateTimer = 1;
         for (auto itr = Sessions.cbegin(); itr != Sessions.cend();)
@@ -421,11 +421,11 @@ void WorldMap::update(uint32_t t_diff)
     }
     else
     {
-        _sessionUpdateTimer -= t_diff;
+        _sessionUpdateTimer -= diffTime;
     }
 
     /// Update Respawns
-    if (_respawnUpdateTimer <= t_diff)
+    if (_respawnUpdateTimer <= diffTime)
     {
         processRespawns();
 
@@ -449,11 +449,13 @@ void WorldMap::update(uint32_t t_diff)
     }
     else
     {
-        _respawnUpdateTimer -= t_diff;
+        _respawnUpdateTimer -= diffTime;
     }
     
     // Finally, A9 Building/Distribution
     updateObjects();
+
+    m_lastUpdateTime = std::chrono::high_resolution_clock::now();
 }
 
 void WorldMap::processRespawns()

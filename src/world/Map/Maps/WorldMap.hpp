@@ -168,7 +168,6 @@ public:
 
     void outOfMapBoundariesTeleport(Object* object);
 
-    std::mutex m_Updatelock;
     std::mutex m_objectinsertlock;
     ObjectSet m_objectinsertpool;
     void AddObject(Object*);
@@ -410,6 +409,8 @@ public:
     uint32_t _respawnUpdateTimer;
     uint32_t _dynamicUpdateTimer;
     uint32_t _gameObjectUpdateTimer;
+
+    std::chrono::steady_clock::time_point m_lastUpdateTime = std::chrono::high_resolution_clock::now();
 
     // Worldstates
     WorldStatesHandler& getWorldStatesHandler();
