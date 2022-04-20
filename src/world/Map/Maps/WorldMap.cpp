@@ -264,8 +264,8 @@ bool WorldMap::Do()
 
         last_exec = Util::getMSTime();
         uint32 exec_time = last_exec - exec_start;
-        if (exec_time < 10)  //mapmgr update period 20
-            Arcemu::Sleep(10 - exec_time);
+        if (exec_time < 80)  //mapmgr update period 80
+            Arcemu::Sleep(80 - exec_time);
     }
 
     thread_running = false;
