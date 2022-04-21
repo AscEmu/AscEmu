@@ -80,12 +80,6 @@ WorldMap::WorldMap(BaseMap* baseMap, uint32_t id, time_t expiry, uint32_t Instan
     _reusable_guids_gameobject.clear();
     _reusable_guids_creature.clear();
 
-    // Timers
-    _sessionUpdateTimer = 20;
-    _respawnUpdateTimer = 1000;
-    _dynamicUpdateTimer = 100;
-    _gameObjectUpdateTimer = 200;
-
     // Updates
     _updates.clear();
     _processQueue.clear();
@@ -355,42 +349,38 @@ void WorldMap::update(uint32_t t_diff)
     }
 
     // Dynamic objects are updated every 100ms
-    if (_dynamicUpdateTimer <= t_diff)
+    diffTime = msTime - m_lastDynamicUpdateTimer;
+    if (diffTime >= 100)
     {
-        _dynamicUpdateTimer = 100;
         for (auto itr = m_DynamicObjectStorage.cbegin(); itr != m_DynamicObjectStorage.cend();)
         {
             DynamicObject* o = itr->second;
             ++itr;
             o->UpdateTargets();
         }
-    }
-    else
-    {
-        _dynamicUpdateTimer -= t_diff;
+
+        m_lastDynamicUpdateTimer = msTime;
     }
 
     // Update gameobjects only every 200ms
-    if (_gameObjectUpdateTimer <= t_diff)
+    diffTime = msTime - m_lastGameObjectUpdateTimer;
+    if (diffTime >= 200)
     {
-        _gameObjectUpdateTimer = 200;
         for (auto itr = activeGameObjects.cbegin(); itr != activeGameObjects.cend();)
         {
             GameObject* gameobject = *itr;
             ++itr;
             if (gameobject != nullptr)
-                gameobject->Update(t_diff);
+                gameobject->Update(diffTime);
         }
-    }
-    else
-    {
-        _gameObjectUpdateTimer -= t_diff;
+
+        m_lastGameObjectUpdateTimer = msTime;
     }
 
-    // Update Sessions
-    if (_sessionUpdateTimer <= t_diff)
+    // Update Sessions every 100ms
+    diffTime = msTime - m_lastSessionUpdateTimer;
+    if (diffTime >= 100)
     {
-        _sessionUpdateTimer = 1;
         for (auto itr = Sessions.cbegin(); itr != Sessions.cend();)
         {
             WorldSession* session = (*itr);
@@ -421,14 +411,13 @@ void WorldMap::update(uint32_t t_diff)
                 Sessions.erase(it2);
             }
         }
-    }
-    else
-    {
-        _sessionUpdateTimer -= t_diff;
+
+        m_lastSessionUpdateTimer = msTime;
     }
 
-    /// Update Respawns
-    if (_respawnUpdateTimer <= t_diff)
+    /// Update Respawns every 1000ms
+    diffTime = msTime - m_lastRespawnUpdateTimer;
+    if (diffTime >= 1000)
     {
         processRespawns();
 
@@ -451,11 +440,8 @@ void WorldMap::update(uint32_t t_diff)
             }
             break;
         }
-        _respawnUpdateTimer = 1000;
-    }
-    else
-    {
-        _respawnUpdateTimer -= t_diff;
+
+        m_lastRespawnUpdateTimer = msTime;
     }
     
     // Finally, A9 Building/Distribution
@@ -1977,7 +1963,7 @@ void WorldMap::loadRespawnTimes()
 
         if (type == SPAWN_TYPE_CREATURE)
         {
-            auto creature_spawns = sMySQLStore._creatureSpawnsStore[getBaseMap()->getMapId()];
+            const auto& creature_spawns = sMySQLStore._creatureSpawnsStore[getBaseMap()->getMapId()];
             if (creature_spawns.size())
             {
                 for (auto const& spawn : creature_spawns)
@@ -1989,7 +1975,7 @@ void WorldMap::loadRespawnTimes()
         }
         else if (type == SPAWN_TYPE_GAMEOBJECT)
         {
-            auto gameobject_spawns = sMySQLStore._gameobjectSpawnsStore[getBaseMap()->getMapId()];
+            const auto& gameobject_spawns = sMySQLStore._gameobjectSpawnsStore[getBaseMap()->getMapId()];
             if (gameobject_spawns.size())
             {
                 for (auto const& spawn : gameobject_spawns)
@@ -2016,7 +2002,7 @@ void WorldMap::saveRespawnTime(SpawnObjectType type, uint32_t spawnId, uint32_t 
         return;
     }
 
-    RespawnInfo ri;
+    RespawnInfo ri{};
     ri.type = type;
     ri.spawnId = spawnId;
     ri.entry = entry;
@@ -2647,7 +2633,7 @@ float WorldMap::getWaterLevel(float x, float y)
 
 bool WorldMap::isInWater(uint32_t phaseMask, float x, float y, float pZ, LiquidData* data)
 {
-    LiquidData liquid_status;
+    LiquidData liquid_status{};
     LiquidData* liquid_ptr = data ? data : &liquid_status;
     return (getLiquidStatus(phaseMask, x, y, pZ, MAP_ALL_LIQUIDS, liquid_ptr) & (LIQUID_MAP_IN_WATER | LIQUID_MAP_UNDER_WATER)) != 0;
 }
@@ -2834,7 +2820,7 @@ void WorldMap::spawnManualGroup(uint32_t groupId)
 
     if (data)
     {
-        for (auto spawns : data->spawns)
+        for (auto& spawns : data->spawns)
         {
             if (auto creature = spawns.second)
             {

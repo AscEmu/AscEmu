@@ -405,12 +405,11 @@ public:
     GameObjectSqlIdMap _sqlids_gameobjects;
 
     // Update Timers
-    uint32_t _sessionUpdateTimer;
-    uint32_t _respawnUpdateTimer;
-    uint32_t _dynamicUpdateTimer;
-    uint32_t _gameObjectUpdateTimer;
-
     uint32_t m_lastTransportUpdateTimer = 0;
+    uint32_t m_lastDynamicUpdateTimer = 0;
+    uint32_t m_lastGameObjectUpdateTimer = 0;
+    uint32_t m_lastSessionUpdateTimer = 0;
+    uint32_t m_lastRespawnUpdateTimer = 0;
 
     uint32_t m_lastUpdateTime = 0;
 
