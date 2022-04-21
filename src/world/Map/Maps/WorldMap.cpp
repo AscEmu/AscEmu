@@ -241,7 +241,7 @@ bool WorldMap::Do()
 
         //first push to world new objects
         {
-            std::unique_lock<std::mutex> lock(m_objectinsertlock);
+            std::scoped_lock<std::mutex> lock(m_objectinsertlock);
             if (!m_objectinsertpool.empty())
             {
                 for (auto& o : m_objectinsertpool)
@@ -303,7 +303,7 @@ void WorldMap::update(uint32_t t_diff)
     auto diffTime = msTime - m_lastTransportUpdateTimer;
     if (diffTime >= 100)
     {
-        std::unique_lock<std::mutex> guard(m_transportsLock);
+        std::scoped_lock<std::mutex> guard(m_transportsLock);
         for (auto itr = m_TransportStorage.cbegin(); itr != m_TransportStorage.cend();)
         {
             Transporter* trans = *itr;
@@ -543,7 +543,7 @@ void WorldMap::removeAllPlayers()
 
 void WorldMap::AddObject(Object* obj)
 {
-    std::unique_lock<std::mutex> lock(m_objectinsertlock);
+    std::scoped_lock<std::mutex> lock(m_objectinsertlock);
     m_objectinsertpool.insert(obj);
 
     if (obj->isPlayer())
@@ -801,12 +801,12 @@ void WorldMap::RemoveObject(Object* obj, bool free_guid)
     //there is a very small chance that on double player ports on same update player is added to multiple insertpools but not removed
     //one clear example was the double port proc when exploiting double resurrect
     {
-        std::unique_lock<std::mutex> lock(m_objectinsertlock);
+        std::scoped_lock<std::mutex> lock(m_objectinsertlock);
         m_objectinsertpool.erase(obj);
     }
 
     {
-        std::unique_lock<std::mutex> lock(m_updateMutex);
+        std::scoped_lock<std::mutex> lock(m_updateMutex);
         _updates.erase(obj);
         obj->ClearUpdateMask();
     }
@@ -2218,7 +2218,7 @@ void WorldMap::addCorpseDespawn(uint64_t guid, time_t time)
 void WorldMap::updateObjects()
 {
     {
-        std::unique_lock<std::mutex> lock(m_updateMutex);
+        std::scoped_lock<std::mutex> lock(m_updateMutex);
 
         if (!_updates.size() && !_processQueue.size())
             return;
@@ -2344,7 +2344,7 @@ void WorldMap::removeCombatInProgress(uint64_t guid)
 
 bool WorldMap::addToMapMgr(Transporter* obj)
 {
-    std::unique_lock<std::mutex> lock(m_transportsLock);
+    std::scoped_lock<std::mutex> lock(m_transportsLock);
 
     m_TransportStorage.insert(obj);
     return true;
@@ -2352,7 +2352,7 @@ bool WorldMap::addToMapMgr(Transporter* obj)
 
 void WorldMap::removeFromMapMgr(Transporter* obj)
 {
-    std::unique_lock<std::mutex> lock(m_transportsLock);
+    std::scoped_lock<std::mutex> lock(m_transportsLock);
 
     m_TransportStorage.erase(obj);
     sTransportHandler.removeInstancedTransport(obj, getInstanceId());
@@ -2361,7 +2361,7 @@ void WorldMap::removeFromMapMgr(Transporter* obj)
 void WorldMap::objectUpdated(Object* obj)
 {
     // set our fields to dirty stupid fucked up code in places.. i hate doing this but i've got to :<- burlex
-    std::unique_lock<std::mutex> lock(m_updateMutex);
+    std::scoped_lock<std::mutex> lock(m_updateMutex);
     _updates.insert(obj);
 }
 
