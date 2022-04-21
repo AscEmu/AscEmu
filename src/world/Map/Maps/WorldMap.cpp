@@ -234,23 +234,23 @@ bool WorldMap::Do()
     uint32_t id = getBaseMap()->getMapId();
     SetThreadName("WorldMap - M%u|I%u", getBaseMap()->getMapId(), getInstanceId());
 
-    uint32_t last_exec = Util::getMSTime();
+    m_lastUpdateTime = Util::getMSTime();
 
-    //Arcemu::Sleep(1000);
+    Arcemu::Sleep(1000);
 
     while (GetThreadState() != THREADSTATE_TERMINATE && !thread_shutdown)
     {
-        uint32 exec_start = Util::getMSTime();
+        const auto exec_start = Util::getMSTime();
 
         // Time In Milliseconds ( exact Difftime Since last update Cycle )
-        auto diffTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - m_lastUpdateTime).count();
+        const uint32_t diffTime = exec_start - m_lastUpdateTime;
 
         //first push to world new objects
         {
             std::unique_lock<std::mutex> lock(m_objectinsertlock);
-            if (m_objectinsertpool.size())
+            if (!m_objectinsertpool.empty())
             {
-                for (auto o : m_objectinsertpool)
+                for (auto& o : m_objectinsertpool)
                     o->PushToWorld(this);
 
                 m_objectinsertpool.clear();
@@ -260,12 +260,10 @@ bool WorldMap::Do()
         // Update Our Map
         update(diffTime);
 
-        m_lastUpdateTime = std::chrono::high_resolution_clock::now();
-
-        last_exec = Util::getMSTime();
-        uint32 exec_time = last_exec - exec_start;
-        if (exec_time < 80)  //mapmgr update period 80
-            Arcemu::Sleep(80 - exec_time);
+        m_lastUpdateTime = Util::getMSTime();
+        const uint32_t exec_time = m_lastUpdateTime - exec_start;
+        if (exec_time < 20)  //mapmgr update period 20
+            Arcemu::Sleep(20 - exec_time);
     }
 
     thread_running = false;
@@ -298,8 +296,7 @@ void WorldMap::killThread()
 
 void WorldMap::update(uint32_t t_diff)
 {
-    // Time In Seconds
-    const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    const auto msTime = Util::getMSTime();
 
     // Update any events.
     // we make update of events before objects so in case there are 0 timediff events they do not get deleted after update but on next server update loop
@@ -309,6 +306,8 @@ void WorldMap::update(uint32_t t_diff)
     _dynamicTree.update(t_diff);
 
     // Update Transporters
+    auto diffTime = msTime - m_lastTransportUpdateTimer;
+    if (diffTime >= 100)
     {
         std::unique_lock<std::mutex> guard(m_transportsLock);
         for (auto itr = m_TransportStorage.cbegin(); itr != m_TransportStorage.cend();)
@@ -319,8 +318,10 @@ void WorldMap::update(uint32_t t_diff)
             if (!trans || !trans->IsInWorld())
                 continue;
 
-            trans->Update(t_diff);
+            trans->Update(diffTime);
         }
+
+        m_lastTransportUpdateTimer = msTime;
     }
 
     // Update Creatures
@@ -430,6 +431,9 @@ void WorldMap::update(uint32_t t_diff)
     if (_respawnUpdateTimer <= t_diff)
     {
         processRespawns();
+
+        // Time In Seconds
+        const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
         while (!_corpseDespawnTimes.empty())
         {
@@ -1128,6 +1132,8 @@ void WorldMap::updateAllCells(bool apply)
 
 void WorldMap::updateCellActivity(uint32_t x, uint32_t y, uint32_t radius)
 {
+    std::scoped_lock<std::mutex> guard(m_cellActivityLock);
+
     CellSpawns* sp;
     uint32_t endX = (x + radius) <= Map::Cell::_sizeX ? x + radius : (Map::Cell::_sizeX - 1);
     uint32_t endY = (y + radius) <= Map::Cell::_sizeY ? y + radius : (Map::Cell::_sizeY - 1);

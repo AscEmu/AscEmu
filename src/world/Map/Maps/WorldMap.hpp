@@ -410,7 +410,9 @@ public:
     uint32_t _dynamicUpdateTimer;
     uint32_t _gameObjectUpdateTimer;
 
-    std::chrono::steady_clock::time_point m_lastUpdateTime = std::chrono::high_resolution_clock::now();
+    uint32_t m_lastTransportUpdateTimer = 0;
+
+    uint32_t m_lastUpdateTime = 0;
 
     // Worldstates
     WorldStatesHandler& getWorldStatesHandler();
@@ -456,6 +458,8 @@ private:
     DynamicObjectStorageMap m_DynamicObjectStorage;
     TransportsContainer m_TransportStorage;
     std::mutex m_transportsLock;
+
+    std::mutex m_cellActivityLock;
 
     // Sessions
     std::set<WorldSession*> Sessions;
