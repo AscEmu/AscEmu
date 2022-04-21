@@ -18,7 +18,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/WorldMap.hpp"
 #include "Map/Maps/InstanceMap.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
-#include "MapMgrUpdater.hpp"
 #include "InstanceNumberGen.hpp"
 
 class Player;

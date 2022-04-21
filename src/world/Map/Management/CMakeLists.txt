@@ -8,8 +8,6 @@ set(SRC_MAP_MANAGEMENT_FILES
     ${PATH_PREFIX}/MapMgr.cpp
     ${PATH_PREFIX}/MapMgr.hpp
     ${PATH_PREFIX}/MapMgrDefines.hpp
-    ${PATH_PREFIX}/MapMgrUpdater.cpp
-    ${PATH_PREFIX}/MapMgrUpdater.hpp
 )
 
 source_group(Map\\Management FILES ${SRC_MAP_MANAGEMENT_FILES})
