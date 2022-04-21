@@ -143,10 +143,11 @@ WorldMap* MapMgr::createWorldMap(uint32_t mapId, uint32_t unloadTime)
     // Scheduling the new map for running
     ThreadPool.ExecuteTask(map);
 
-    map->initialize();
-
     // Load Saved Respawns when existing
     map->loadRespawnTimes();
+
+    // Initialize Map Script and Load Static Spawns
+    map->initialize();
 
     return map;
 }
@@ -306,6 +307,7 @@ InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, Instanc
     // Load Saved Respawns when existing
     map->loadRespawnTimes();
 
+    // Initialize Map Script and Load Static Spawns
     map->initialize();
 
     // Load Saved Data when possible
