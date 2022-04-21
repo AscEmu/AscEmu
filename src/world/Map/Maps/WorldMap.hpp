@@ -267,7 +267,7 @@ public:
     virtual void removeAllPlayers();
 
     // Creatures
-    uint32_t m_CreatureHighGuid;
+    uint32_t m_CreatureHighGuid = 0;
     Creature* createCreature(uint32_t entry);
     Creature* createAndSpawnCreature(uint32_t pEntry, float pX, float pY, float pZ, float pO);
 
@@ -282,7 +282,7 @@ public:
     Pet* getPet(uint32_t guid);
 
     // GameObject
-    uint32_t m_GOHighGuid;
+    uint32_t m_GOHighGuid = 0;
     GameObject* createGameObject(uint32_t entry);
     GameObject* createAndSpawnGameObject(uint32_t entryID, float x, float y, float z, float o, float scale);
 
@@ -292,7 +292,7 @@ public:
     GameObject* getSqlIdGameObject(uint32_t sqlid);
 
     // DynamicObjects
-    uint32_t m_DynamicObjectHighGuid;
+    uint32_t m_DynamicObjectHighGuid = 0;
     DynamicObject* createDynamicObject();
     DynamicObject* getDynamicObject(uint32_t guid);
 
@@ -445,7 +445,7 @@ private:
     MapScriptInterface* ScriptInterface;
     bool m_unloadPending = false;
 
-    TerrainHolder* _terrain;
+    TerrainHolder* _terrain = nullptr;
     uint32_t _instanceId;
     uint8_t _instanceSpawnMode = InstanceDifficulty::Difficulties::DUNGEON_NORMAL;
 
@@ -464,18 +464,18 @@ private:
     std::set<WorldSession*> Sessions;
 
 protected:
-    InstanceScript* mInstanceScript;
+    InstanceScript* mInstanceScript = nullptr;
     DynamicMapTree _dynamicTree;
-    uint32_t m_unloadTimer;
+    uint32_t m_unloadTimer = 0;
     float m_VisibleDistance;
-    BaseMap* m_baseMap;
-    InstanceMap* pInstance;
+    BaseMap* m_baseMap = nullptr;
+    InstanceMap* pInstance = nullptr;
 
 public:
 #ifdef WIN32
     DWORD threadid;
 #endif
-    bool thread_shutdown;
-    bool thread_kill_only;
-    bool thread_running;
+    bool thread_shutdown = false;
+    bool thread_kill_only = false;
+    bool thread_running = false;
 };

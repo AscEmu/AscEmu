@@ -14,7 +14,7 @@ class SERVER_DECL InstanceMap : public WorldMap
 {
 public:
     InstanceMap(BaseMap* baseMap, uint32_t id, time_t, uint32_t InstanceId, uint8_t SpawnMode, PlayerTeam InstanceTeam);
-    ~InstanceMap();
+    ~InstanceMap() = default;
 
     void update(uint32_t) override;
     void unloadAll() override;
@@ -39,8 +39,8 @@ public:
     uint32_t getTeamInInstance() { return instanceTeam == TEAM_ALLIANCE ? ALLIANCE : HORDE; }
 
 private:
-    bool m_resetAfterUnload;
-    bool m_unloadWhenEmpty;
+    bool m_resetAfterUnload = false;
+    bool m_unloadWhenEmpty = false;
 
     PlayerTeam instanceTeam;
 };

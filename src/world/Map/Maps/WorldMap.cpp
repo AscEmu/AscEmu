@@ -30,63 +30,19 @@ Arcemu::Utility::TLSObject<WorldMap*> t_currentMapContext;
 
 extern bool bServerShutdown;
 
-WorldMap::WorldMap(BaseMap* baseMap, uint32_t id, time_t expiry, uint32_t InstanceId, uint8_t SpawnMode) : CellHandler<MapCell>(baseMap), eventHolder(InstanceId), worldstateshandler(id)
+WorldMap::WorldMap(BaseMap* baseMap, uint32_t id, time_t expiry, uint32_t InstanceId, uint8_t SpawnMode) : CellHandler<MapCell>(baseMap), eventHolder(InstanceId), worldstateshandler(id),
+    ScriptInterface(new MapScriptInterface(*this)), _terrain(new TerrainHolder(id)), m_unloadTimer(expiry), m_baseMap(baseMap)
 {
-    // Thread
-    thread_shutdown = false;
-    thread_kill_only = false;
-    thread_running = false;
-
     // Map
-    _terrain = new TerrainHolder(id);
-    m_baseMap = baseMap;
-    pInstance = nullptr;
-    m_unloadTimer = expiry;
     setSpawnMode(SpawnMode);
     setInstanceId(InstanceId);
 
     m_holder = &eventHolder;
     m_event_Instanceid = eventHolder.GetInstanceID();
 
-    // Create script interface
-    ScriptInterface = new MapScriptInterface(*this);
-
     // Set up storage arrays
     m_CreatureStorage.resize(getBaseMap()->CreatureSpawnCount, nullptr);
     m_GameObjectStorage.resize(getBaseMap()->GameObjectSpawnCount, nullptr);
-
-    // Guids
-    m_GOHighGuid = 0;
-    m_CreatureHighGuid = 0;
-    m_DynamicObjectHighGuid = 0;
-
-    // Storage
-    m_forcedcells.clear();
-    m_PlayerStorage.clear();
-    m_PetStorage.clear();
-    m_DynamicObjectStorage.clear();
-    Sessions.clear();
-    m_TransportStorage.clear();
-    _combatProgress.clear();
-
-    // Active Set
-    _mapWideStaticObjects.clear();
-    activeGameObjects.clear();
-    activeCreatures.clear();
-    m_corpses.clear();
-
-    _sqlids_creatures.clear();
-    _sqlids_gameobjects.clear();
-    _reusable_guids_gameobject.clear();
-    _reusable_guids_creature.clear();
-
-    // Updates
-    _updates.clear();
-    _processQueue.clear();
-    Sessions.clear();
-
-    // Script
-    mInstanceScript = nullptr;
 
     //lets initialize visibility distance for Continent
     WorldMap::initVisibilityDistance();

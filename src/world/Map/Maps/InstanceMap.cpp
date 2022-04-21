@@ -8,25 +8,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "InstanceDefines.hpp"
 
 InstanceMap::InstanceMap(BaseMap* baseMap, uint32_t id, time_t expiry, uint32_t InstanceId, uint8_t SpawnMode, PlayerTeam InstanceTeam)
-    : WorldMap(baseMap, id, expiry, InstanceId, SpawnMode)
+    : WorldMap(baseMap, id, expiry, InstanceId, SpawnMode), instanceTeam(InstanceTeam)
 {
     // WorldMap
     m_unloadTimer = expiry;
 
     pInstance = this;
 
-    // InstanceMap
-    m_resetAfterUnload = false;
-    m_unloadWhenEmpty = false;
-    instanceTeam = InstanceTeam;
-
     //lets initialize visibility distance for Instance
     InstanceMap::initVisibilityDistance();
-}
-
-InstanceMap::~InstanceMap()
-{
-
 }
 
 void InstanceMap::update(uint32_t t_diff)
