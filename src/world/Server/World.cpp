@@ -121,7 +121,7 @@ void World::finalize()
     sGuildMgr.finalize();
 #endif
 
-    sLogger.info("InstanceMgr : ~InstanceMgr()");
+    sLogger.info("MapMgr : ~MapMgr()");
     sMapMgr.shutdown();
 
     sLogger.info("WordFilter : ~WordFilter()");

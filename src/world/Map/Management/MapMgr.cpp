@@ -85,7 +85,7 @@ void MapMgr::update(uint32_t /*diff*/)
 void MapMgr::removeInstance(uint32_t instanceId)
 {
     // get the Lock so we cant Update and Delete at the same time :)
-    std::lock_guard<std::mutex> lock(m_mapsLock);
+    std::scoped_lock<std::mutex> lock(m_mapsLock);
 
     auto ini = m_InstancedMaps.find(instanceId);
     if (ini != m_InstancedMaps.end())
@@ -104,7 +104,7 @@ void MapMgr::createBaseMap(uint32_t mapId)
 
     if (map == nullptr)
     {
-        std::lock_guard<std::mutex> lock(m_mapsLock);
+        std::scoped_lock<std::mutex> lock(m_mapsLock);
 
         // Only Create Valid Maps
         const auto mapEntry = sMapStore.LookupEntry(mapId);
@@ -138,7 +138,7 @@ WorldMap* MapMgr::createWorldMap(uint32_t mapId, uint32_t unloadTime)
 
     sLogger.debug("MapMgr::createWorldMap Create Continent %s for Map %u", baseMap->getMapName().c_str(), mapId);
 
-    WorldMap* map = new WorldMap(baseMap, mapId, time_t(unloadTime), 0, InstanceDifficulty::Difficulties::DUNGEON_NORMAL);
+    WorldMap* map = new WorldMap(baseMap, mapId, unloadTime, 0, InstanceDifficulty::Difficulties::DUNGEON_NORMAL);
 
     // Scheduling the new map for running
     ThreadPool.ExecuteTask(map);
@@ -161,7 +161,7 @@ WorldMap* MapMgr::findWorldMap(uint32_t mapid) const
 InstanceMap* MapMgr::findInstanceMap(uint32_t instanceId) const
 {
     const auto& iter = m_InstancedMaps.find(instanceId);
-    return (iter == m_InstancedMaps.end() ? nullptr : reinterpret_cast<InstanceMap*>(iter->second));
+    return (iter == m_InstancedMaps.end() ? nullptr : dynamic_cast<InstanceMap*>(iter->second));
 }
 
 std::list<InstanceMap*> MapMgr::findInstancedMaps(uint32_t mapId)
@@ -171,7 +171,7 @@ std::list<InstanceMap*> MapMgr::findInstancedMaps(uint32_t mapId)
     for (auto const& maps : m_InstancedMaps)
     {
         if (maps.second->getBaseMap()->getMapId() == mapId && maps.second->getBaseMap()->isDungeon())
-            list.push_back(reinterpret_cast<InstanceMap*>(maps.second));
+            list.push_back(dynamic_cast<InstanceMap*>(maps.second));
     }
 
     return list;
@@ -268,7 +268,7 @@ WorldMap* MapMgr::createInstanceForPlayer(uint32_t mapId, Player* player, uint32
 InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, InstanceSaved* save, InstanceDifficulty::Difficulties difficulty, PlayerTeam InstanceTeam)
 {
     // load/create a map
-    std::lock_guard<std::mutex> lock(m_mapsLock);
+    std::scoped_lock<std::mutex> lock(m_mapsLock);
 
     // make sure we have a valid BaseMap
     const auto& baseMap = findBaseMap(mapId);
@@ -299,7 +299,7 @@ InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, Instanc
 #endif
     sLogger.debug("MapMgr::createInstance Create %s map instance %d for %u created with difficulty %s", save ? "" : "new ", InstanceId, mapId, difficulty ? "heroic" : "normal");
 
-    InstanceMap* map = new InstanceMap(baseMap, mapId, time_t(300000), InstanceId, difficulty, InstanceTeam);
+    InstanceMap* map = new InstanceMap(baseMap, mapId, 300000U, InstanceId, difficulty, InstanceTeam);
 
     // Scheduling the new map for running
     ThreadPool.ExecuteTask(map);
@@ -324,7 +324,7 @@ InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, Instanc
 
 BattlegroundMap* MapMgr::createBattleground(uint32_t mapId, uint32_t InstanceId)
 {
-    std::lock_guard<std::mutex> lock(m_mapsLock);
+    std::scoped_lock<std::mutex> lock(m_mapsLock);
 
     uint32_t newInstanceId = instanceIdPool.generateId();
     if (!newInstanceId)
@@ -340,7 +340,7 @@ BattlegroundMap* MapMgr::createBattleground(uint32_t mapId, uint32_t InstanceId)
 
     uint8_t spawnMode = InstanceDifficulty::Difficulties::DUNGEON_NORMAL;
 
-    BattlegroundMap* map = new BattlegroundMap(baseMap, mapId, time_t(300000), InstanceId, spawnMode);
+    BattlegroundMap* map = new BattlegroundMap(baseMap, mapId, 300000U, InstanceId, spawnMode);
 
     m_InstancedMaps[InstanceId] = map;
     return map;
@@ -426,12 +426,6 @@ EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* pla
 
     if (!mapInfo->isNonInstanceMap() && player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC && player->getLevel() < mapInfo->minlevel_heroic)
         return CANNOT_ENTER_MIN_LEVEL_HC;
-
-#if VERSION_STRING <= WotLK
-    char const* mapName = entry->map_name[0];
-#else
-    char const* mapName = entry->map_name;
-#endif
 
     Group* group = player->getGroup();
     if (entry->isRaid()) // can only enter in a raid group

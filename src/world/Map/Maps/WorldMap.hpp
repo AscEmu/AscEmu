@@ -142,8 +142,9 @@ class SERVER_DECL WorldMap : public CellHandler <MapCell>, public EventableObjec
 {
     friend class MapScriptInterface;
     friend class MapCell;
+
 public:
-    WorldMap(BaseMap* baseMap, uint32_t id, time_t, uint32_t InstanceId, uint8_t SpawnMode);
+    WorldMap(BaseMap* baseMap, uint32_t id, uint32_t expiryTime, uint32_t InstanceId, uint8_t SpawnMode);
     virtual ~WorldMap();
 
     virtual void initialize();

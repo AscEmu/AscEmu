@@ -15,7 +15,7 @@ class CBattleground;
 class SERVER_DECL BattlegroundMap : public WorldMap
 {
 public:
-    BattlegroundMap(BaseMap* baseMap, uint32_t id, time_t, uint32_t InstanceId, uint8_t SpawnMode);
+    BattlegroundMap(BaseMap* baseMap, uint32_t id, uint32_t expiryTime, uint32_t InstanceId, uint8_t SpawnMode);
     ~BattlegroundMap();
 
     void update(uint32_t) override;

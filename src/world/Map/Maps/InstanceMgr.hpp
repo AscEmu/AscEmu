@@ -44,16 +44,18 @@ public:
 
     void addPlayer(Player* player)
     {
-        std::lock_guard<std::mutex> lock(_playerListLock);
+        std::scoped_lock<std::mutex> lock(_playerListLock);
         m_playerList.push_back(player);
     }
 
     bool removePlayer(Player* player)
     {
-        _playerListLock.lock();
-        m_playerList.remove(player);
-        bool isStillValid = unloadIfEmpty();
-        _playerListLock.unlock();
+        bool isStillValid = false;
+        {
+            std::scoped_lock<std::mutex> lock(_playerListLock);
+            m_playerList.remove(player);
+            isStillValid = unloadIfEmpty();
+        }
 
         //delete here if needed, after releasing the lock
         if (m_toDelete)

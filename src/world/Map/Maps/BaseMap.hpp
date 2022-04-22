@@ -59,8 +59,8 @@ public:
     CellSpawns staticSpawns;
 
 private:
-    DBC::Structures::MapEntry const* _mapEntry;
-    MySQLStructure::MapInfo const* _mapInfo;
+    DBC::Structures::MapEntry const* _mapEntry = nullptr;
+    MySQLStructure::MapInfo const* _mapInfo = nullptr;
     uint32_t _mapId;
    
     std::string name;

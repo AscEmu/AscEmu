@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "InstanceMap.hpp"
 #include "InstanceDefines.hpp"
 
-InstanceMap::InstanceMap(BaseMap* baseMap, uint32_t id, time_t expiry, uint32_t InstanceId, uint8_t SpawnMode, PlayerTeam InstanceTeam)
+InstanceMap::InstanceMap(BaseMap* baseMap, uint32_t id, uint32_t expiry, uint32_t InstanceId, uint8_t SpawnMode, PlayerTeam InstanceTeam)
     : WorldMap(baseMap, id, expiry, InstanceId, SpawnMode), instanceTeam(InstanceTeam)
 {
     // WorldMap
@@ -206,7 +206,7 @@ void InstanceMap::removePlayerFromMap(Player* /*player*/)
 {
     // if last player set unload timer
     if (!m_unloadTimer && getPlayerCount() == 1)
-        m_unloadTimer = m_unloadWhenEmpty ? 1 : 5 * MINUTE * IN_MILLISECONDS;
+        m_unloadTimer = m_unloadWhenEmpty ? 1U : 5U * MINUTE * IN_MILLISECONDS;
 
     // for normal instances schedule the reset after all players have left
     setResetSchedule(true);

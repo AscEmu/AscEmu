@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 class SERVER_DECL InstanceMap : public WorldMap
 {
 public:
-    InstanceMap(BaseMap* baseMap, uint32_t id, time_t, uint32_t InstanceId, uint8_t SpawnMode, PlayerTeam InstanceTeam);
+    InstanceMap(BaseMap* baseMap, uint32_t id, uint32_t expiryTime, uint32_t InstanceId, uint8_t SpawnMode, PlayerTeam InstanceTeam);
     ~InstanceMap() = default;
 
     void update(uint32_t) override;

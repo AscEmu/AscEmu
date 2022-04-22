@@ -30,8 +30,8 @@ Arcemu::Utility::TLSObject<WorldMap*> t_currentMapContext;
 
 extern bool bServerShutdown;
 
-WorldMap::WorldMap(BaseMap* baseMap, uint32_t id, time_t expiry, uint32_t InstanceId, uint8_t SpawnMode) : CellHandler<MapCell>(baseMap), eventHolder(InstanceId), worldstateshandler(id),
-    ScriptInterface(new MapScriptInterface(*this)), _terrain(new TerrainHolder(id)), m_unloadTimer(expiry), m_baseMap(baseMap)
+WorldMap::WorldMap(BaseMap* baseMap, uint32_t id, uint32_t expiry, uint32_t InstanceId, uint8_t SpawnMode) : CellHandler<MapCell>(baseMap), eventHolder(InstanceId), worldstateshandler(id),
+    _terrain(new TerrainHolder(id)), m_unloadTimer(expiry), m_baseMap(baseMap)
 {
     // Map
     setSpawnMode(SpawnMode);
@@ -39,6 +39,9 @@ WorldMap::WorldMap(BaseMap* baseMap, uint32_t id, time_t expiry, uint32_t Instan
 
     m_holder = &eventHolder;
     m_event_Instanceid = eventHolder.GetInstanceID();
+
+    // Create script interface
+    ScriptInterface = new MapScriptInterface(*this);
 
     // Set up storage arrays
     m_CreatureStorage.resize(getBaseMap()->CreatureSpawnCount, nullptr);
@@ -181,7 +184,6 @@ bool WorldMap::Do()
     thread_running = true;
     ThreadState = THREADSTATE_BUSY;
 
-    uint32_t id = getBaseMap()->getMapId();
     SetThreadName("WorldMap - M%u|I%u", getBaseMap()->getMapId(), getInstanceId());
 
     m_lastUpdateTime = Util::getMSTime();
@@ -623,7 +625,7 @@ void WorldMap::PushObject(Object* obj)
         if (plObj != nullptr)
         {
             m_PlayerStorage[plObj->getGuidLow()] = plObj;
-            updateCellActivity(x, y, 2 + cellNumber);
+            updateCellActivity(x, y, 2U + cellNumber);
         }
         else
         {
@@ -864,7 +866,7 @@ void WorldMap::RemoveObject(Object* obj, bool free_guid)
         {
             uint32_t x = getPosX(obj->GetPositionX());
             uint32_t y = getPosY(obj->GetPositionY());
-            updateCellActivity(x, y, 2 + cellNumber);
+            updateCellActivity(x, y, 2U + cellNumber);
         }
         m_PlayerStorage.erase(obj->getGuidLow());
     }
@@ -874,7 +876,7 @@ void WorldMap::RemoveObject(Object* obj, bool free_guid)
         {
             uint32_t x = getPosX(obj->GetPositionX());
             uint32_t y = getPosY(obj->GetPositionY());
-            updateCellActivity(x, y, 2 + cellNumber);
+            updateCellActivity(x, y, 2U + cellNumber);
         }
     }
 
@@ -1192,7 +1194,7 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
         return;
 
     Player* plObj2;
-    int count;
+    uint32_t count;
     bool cansee, isvisible;
 
     auto iter = cell->Begin();
@@ -1446,7 +1448,7 @@ void WorldMap::changeObjectLocation(Object* obj)
         if (obj->isPlayer() || obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->mPlayerControler != nullptr)
         {
             // have to unlock/lock here to avoid a deadlock situation.
-            updateCellActivity(cellX, cellY, 2 + cellNumber);
+            updateCellActivity(cellX, cellY, 2U + cellNumber);
             if (pOldCell != NULL)
             {
                 // only do the second check if there's -/+ 2 difference
@@ -2539,7 +2541,7 @@ ZLiquidStatus WorldMap::getLiquidStatus(uint32_t phaseMask, float x, float y, fl
             data->depth_level = ground_level;
 
             data->entry = liquid_type;
-            data->type_flags = 1 << liquidFlagType;
+            data->type_flags = 1U << liquidFlagType;
             }
 
         float delta = liquid_level - z;
