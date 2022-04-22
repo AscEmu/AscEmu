@@ -1467,7 +1467,8 @@ void Object::removeSpellModifierFromCurrentSpells(AuraEffectModifier const* aura
 // InRange sets
 void Object::clearInRangeSets()
 {
-    std::scoped_lock guard(m_inRangeSetMutex, m_inRangeFactionSetMutex, m_inRangePlayerSetMutex);
+    std::scoped_lock guard(m_inRangeSetMutex, m_inRangeFactionSetMutex);
+    std::unique_lock<std::shared_mutex> playerGuard(m_inRangePlayerSetMutex);
     mInRangeObjectsSet.clear();
     mInRangePlayersSet.clear();
     mInRangeOppositeFactionSet.clear();
@@ -1487,7 +1488,7 @@ void Object::addToInRangeObjects(Object* pObj)
 
     if (pObj->isPlayer())
     {
-        std::scoped_lock<std::mutex> playerLock(m_inRangePlayerSetMutex);
+        std::unique_lock<std::shared_mutex> playerLock(m_inRangePlayerSetMutex);
         mInRangePlayersSet.push_back(pObj);
     }
 
@@ -1545,7 +1546,7 @@ void Object::removeObjectFromInRangeObjectsSet(Object* pObj)
     {
         if (pObj->isPlayer())
         {
-            std::scoped_lock<std::mutex> playerLock(m_inRangePlayerSetMutex);
+            std::unique_lock<std::shared_mutex> playerLock(m_inRangePlayerSetMutex);
             mInRangePlayersSet.erase(std::remove(mInRangePlayersSet.begin(), mInRangePlayersSet.end(), pObj), mInRangePlayersSet.end());
         }
 
@@ -3886,7 +3887,7 @@ void Object::outPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool /*
         return;
 
     // We are on Object level, which means we can't send it to ourselves so we only send to Players inrange
-    std::scoped_lock<std::mutex> playerLock(m_inRangePlayerSetMutex);
+    std::shared_lock<std::shared_mutex> playerLock(m_inRangePlayerSetMutex);
     for (const auto& itr : mInRangePlayersSet)
     {
         if (itr)
@@ -3900,7 +3901,7 @@ void Object::sendMessageToSet(WorldPacket* data, bool /*bToSelf*/, bool /*myteam
         return;
 
     uint32_t myphase = GetPhase();
-    std::scoped_lock<std::mutex> playerLock(m_inRangePlayerSetMutex);
+    std::shared_lock<std::shared_mutex> playerLock(m_inRangePlayerSetMutex);
     for (const auto& itr : mInRangePlayersSet)
     {
         if (itr && (itr->GetPhase() & myphase) != 0)
@@ -3914,7 +3915,7 @@ void Object::sendMessageToSet(WorldPacket* data, Player const* skipp)
         return;
 
     uint32_t myphase = GetPhase();
-    std::scoped_lock<std::mutex> playerLock(m_inRangePlayerSetMutex);
+    std::shared_lock<std::shared_mutex> playerLock(m_inRangePlayerSetMutex);
     for (const auto& itr : mInRangePlayersSet)
     {
         if (itr && (itr->GetPhase() & myphase) != 0 && itr != skipp)
@@ -3925,7 +3926,7 @@ void Object::sendMessageToSet(WorldPacket* data, Player const* skipp)
 void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId, Unit* target/* = nullptr*/)
 {
     uint32_t myphase = GetPhase();
-    std::scoped_lock<std::mutex> playerLock(m_inRangePlayerSetMutex);
+    std::shared_lock<std::shared_mutex> playerLock(m_inRangePlayerSetMutex);
     for (const auto& itr : mInRangePlayersSet)
     {
         Object* object = itr;

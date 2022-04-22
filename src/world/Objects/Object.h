@@ -12,6 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <set>
 #include <map>
+#include <mutex>
+#include <shared_mutex>
 
 #include "WoWGuid.h"
 #include <LocationVector.h>
@@ -277,7 +279,7 @@ private:
 
     mutable std::mutex m_inRangeSetMutex;
     mutable std::mutex m_inRangeFactionSetMutex;
-    mutable std::mutex m_inRangePlayerSetMutex;
+    mutable std::shared_mutex m_inRangePlayerSetMutex;
 
 public:
     // general
