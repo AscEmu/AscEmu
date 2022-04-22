@@ -275,6 +275,10 @@ private:
     std::vector<Object*> mInRangeOppositeFactionSet;
     std::vector<Object*> mInRangeSameFactionSet;
 
+    mutable std::mutex m_inRangeSetMutex;
+    mutable std::mutex m_inRangeFactionSetMutex;
+    mutable std::mutex m_inRangePlayerSetMutex;
+
 public:
     // general
     virtual void clearInRangeSets();

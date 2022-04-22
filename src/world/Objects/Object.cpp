@@ -1467,6 +1467,7 @@ void Object::removeSpellModifierFromCurrentSpells(AuraEffectModifier const* aura
 // InRange sets
 void Object::clearInRangeSets()
 {
+    std::scoped_lock guard(m_inRangeSetMutex, m_inRangeFactionSetMutex, m_inRangePlayerSetMutex);
     mInRangeObjectsSet.clear();
     mInRangePlayersSet.clear();
     mInRangeOppositeFactionSet.clear();
@@ -1486,14 +1487,17 @@ void Object::addToInRangeObjects(Object* pObj)
 
     if (pObj->isPlayer())
     {
+        std::scoped_lock<std::mutex> playerLock(m_inRangePlayerSetMutex);
         mInRangePlayersSet.push_back(pObj);
     }
 
+    std::scoped_lock<std::mutex> guard(m_inRangeSetMutex);
     mInRangeObjectsSet.push_back(pObj);
 }
 
 void Object::removeSelfFromInrangeSets()
 {
+    std::scoped_lock<std::mutex> guard(m_inRangeSetMutex);
     for (const auto& itr : mInRangeObjectsSet)
     {
         if (itr)
@@ -1519,6 +1523,8 @@ size_t Object::getInRangeObjectsCount()
 
 bool Object::isObjectInInRangeObjectsSet(Object* pObj)
 {
+    std::scoped_lock<std::mutex> guard(m_inRangeSetMutex);
+
     // Do not use std::find here - if something is added to or removed from the in range vector at the same time
     // the std::find causes a crash because vector iterator is out of range.
     // Tested with transports and gameobjects -Appled
@@ -1533,10 +1539,13 @@ bool Object::isObjectInInRangeObjectsSet(Object* pObj)
 
 void Object::removeObjectFromInRangeObjectsSet(Object* pObj)
 {
+    std::scoped_lock<std::mutex> guard(m_inRangeSetMutex);
+
     if (pObj != nullptr)
     {
         if (pObj->isPlayer())
         {
+            std::scoped_lock<std::mutex> playerLock(m_inRangePlayerSetMutex);
             mInRangePlayersSet.erase(std::remove(mInRangePlayersSet.begin(), mInRangePlayersSet.end(), pObj), mInRangePlayersSet.end());
         }
 
@@ -1569,13 +1578,19 @@ std::vector<Object*> Object::getInRangeOppositeFactionSet()
 
 bool Object::isObjectInInRangeOppositeFactionSet(Object* pObj)
 {
+    std::scoped_lock<std::mutex> guard(m_inRangeFactionSetMutex);
     auto it = std::find(mInRangeOppositeFactionSet.begin(), mInRangeOppositeFactionSet.end(), pObj);
     return it != mInRangeOppositeFactionSet.end();
 }
 
 void Object::updateInRangeOppositeFactionSet()
 {
-    mInRangeOppositeFactionSet.clear();
+    {
+        std::scoped_lock<std::mutex> factionLock(m_inRangeFactionSetMutex);
+        mInRangeOppositeFactionSet.clear();
+    }
+
+    std::scoped_lock<std::mutex> guard(m_inRangeSetMutex);
     for (const auto& itr : mInRangeObjectsSet)
     {
         if (itr)
@@ -1603,11 +1618,13 @@ void Object::updateInRangeOppositeFactionSet()
 
 void Object::addInRangeOppositeFaction(Object* obj)
 {
+    std::scoped_lock<std::mutex> guard(m_inRangeFactionSetMutex);
     mInRangeOppositeFactionSet.push_back(obj);
 }
 
 void Object::removeObjectFromInRangeOppositeFactionSet(Object* obj)
 {
+    std::scoped_lock<std::mutex> guard(m_inRangeFactionSetMutex);
     mInRangeOppositeFactionSet.erase(std::remove(mInRangeOppositeFactionSet.begin(), mInRangeOppositeFactionSet.end(), obj), mInRangeOppositeFactionSet.end());
 }
 
@@ -1619,13 +1636,19 @@ std::vector<Object*> Object::getInRangeSameFactionSet()
 
 bool Object::isObjectInInRangeSameFactionSet(Object* pObj)
 {
+    std::scoped_lock<std::mutex> guard(m_inRangeFactionSetMutex);
     auto it = std::find(mInRangeSameFactionSet.begin(), mInRangeSameFactionSet.end(), pObj);
     return it != mInRangeSameFactionSet.end();
 }
 
 void Object::updateInRangeSameFactionSet()
 {
-    mInRangeSameFactionSet.clear();
+    {
+        std::scoped_lock<std::mutex> factionLock(m_inRangeFactionSetMutex);
+        mInRangeSameFactionSet.clear();
+    }
+
+    std::scoped_lock<std::mutex> guard(m_inRangeSetMutex);
     for (const auto& itr : mInRangeObjectsSet)
     {
         if (itr)
@@ -1655,11 +1678,13 @@ void Object::updateInRangeSameFactionSet()
 
 void Object::addInRangeSameFaction(Object* obj)
 {
+    std::scoped_lock<std::mutex> guard(m_inRangeFactionSetMutex);
     mInRangeSameFactionSet.push_back(obj);
 }
 
 void Object::removeObjectFromInRangeSameFactionSet(Object* obj)
 {
+    std::scoped_lock<std::mutex> guard(m_inRangeFactionSetMutex);
     mInRangeSameFactionSet.erase(std::remove(mInRangeSameFactionSet.begin(), mInRangeSameFactionSet.end(), obj), mInRangeSameFactionSet.end());
 }
 
@@ -3861,6 +3886,7 @@ void Object::outPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool /*
         return;
 
     // We are on Object level, which means we can't send it to ourselves so we only send to Players inrange
+    std::scoped_lock<std::mutex> playerLock(m_inRangePlayerSetMutex);
     for (const auto& itr : mInRangePlayersSet)
     {
         if (itr)
@@ -3874,6 +3900,7 @@ void Object::sendMessageToSet(WorldPacket* data, bool /*bToSelf*/, bool /*myteam
         return;
 
     uint32_t myphase = GetPhase();
+    std::scoped_lock<std::mutex> playerLock(m_inRangePlayerSetMutex);
     for (const auto& itr : mInRangePlayersSet)
     {
         if (itr && (itr->GetPhase() & myphase) != 0)
@@ -3887,6 +3914,7 @@ void Object::sendMessageToSet(WorldPacket* data, Player const* skipp)
         return;
 
     uint32_t myphase = GetPhase();
+    std::scoped_lock<std::mutex> playerLock(m_inRangePlayerSetMutex);
     for (const auto& itr : mInRangePlayersSet)
     {
         if (itr && (itr->GetPhase() & myphase) != 0 && itr != skipp)
@@ -3897,6 +3925,7 @@ void Object::sendMessageToSet(WorldPacket* data, Player const* skipp)
 void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId, Unit* target/* = nullptr*/)
 {
     uint32_t myphase = GetPhase();
+    std::scoped_lock<std::mutex> playerLock(m_inRangePlayerSetMutex);
     for (const auto& itr : mInRangePlayersSet)
     {
         Object* object = itr;
