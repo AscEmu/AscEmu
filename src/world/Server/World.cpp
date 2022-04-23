@@ -676,6 +676,16 @@ void World::sendBroadcastMessageById(uint32_t broadcastId)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // General Functions
+void World::setWorldServerCompletelyLoaded(bool set)
+{
+    m_worldServerCompletelyLoaded = set;
+}
+
+bool World::isWorldServerCompletelyLoaded() const
+{
+    return m_worldServerCompletelyLoaded;
+}
+
 bool World::setInitialWorldSettings()
 {
     auto startTime = Util::TimeNow();

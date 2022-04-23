@@ -212,9 +212,15 @@ class SERVER_DECL World : public EventableObject
         uint8_t mDbcLocaleId = 0;
 #endif
 
+        // Maps should not start updating object until world is completely loaded
+        bool m_worldServerCompletelyLoaded = false;
+
     public:
 
         std::list<SpellInfo const*> dummySpellList;
+
+        void setWorldServerCompletelyLoaded(bool);
+        bool isWorldServerCompletelyLoaded() const;
 
         bool setInitialWorldSettings();
         void resetCharacterLoginBannState();
