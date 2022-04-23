@@ -62,6 +62,7 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
         if (denyReason != CAN_ENTER)
         {
             char buffer[200];
+
             const auto session = _player->getSession();
 
             switch (denyReason)
@@ -94,36 +95,36 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
                 case CANNOT_ENTER_MIN_LEVEL:
                 {
                     snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_BE_LEVEL_X), areaTrigger->requiredLevel);
-                    SendPacket(SmsgAreaTriggerMessage(sizeof(buffer), buffer, 0).serialise().get());
+                    _player->sendAreaTriggerMessage(buffer);
                 } break;
                 case CANNOT_ENTER_ATTUNE_ITEM:
                 {
                     const auto itemProperties = sMySQLStore.getItemProperties(mapInfo->required_item);
                     snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), itemProperties ? itemProperties->Name.c_str() : "UNKNOWN");
-                    SendPacket(SmsgAreaTriggerMessage(sizeof(buffer), buffer, 0).serialise().get());
+                    _player->sendAreaTriggerMessage(buffer);
                 } break;
                 case CANNOT_ENTER_ATTUNE_QA:
                 {
                     const auto questProperties = sMySQLStore.getQuestProperties(mapInfo->required_quest_A);
                     snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), questProperties ? questProperties->title.c_str() : "UNKNOWN");
-                    SendPacket(SmsgAreaTriggerMessage(sizeof(buffer), buffer, 0).serialise().get());
+                    _player->sendAreaTriggerMessage(buffer);
                 } break;
                 case CANNOT_ENTER_ATTUNE_QH:
                 {
                     const auto questProperties = sMySQLStore.getQuestProperties(mapInfo->required_quest_H);
                     snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), questProperties ? questProperties->title.c_str() : "UNKNOWN");
-                    SendPacket(SmsgAreaTriggerMessage(sizeof(buffer), buffer, 0).serialise().get());
+                    _player->sendAreaTriggerMessage(buffer);
                 } break;
                 case CANNOT_ENTER_KEY:
                 {
                     const auto itemProperties = sMySQLStore.getItemProperties(mapInfo->heroic_key_1);
                     snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), itemProperties ? itemProperties->Name.c_str() : "UNKNOWN");
-                    SendPacket(SmsgAreaTriggerMessage(sizeof(buffer), buffer, 0).serialise().get());
+                    _player->sendAreaTriggerMessage(buffer);
                 } break;
                 case CANNOT_ENTER_MIN_LEVEL_HC:
                 {
                     snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_BE_LEVEL_X), mapInfo->minlevel_heroic);
-                    SendPacket(SmsgAreaTriggerMessage(sizeof(buffer), buffer, 0).serialise().get());
+                    _player->sendAreaTriggerMessage(buffer);
                 } break;
                 default:
                     break;
