@@ -141,9 +141,13 @@ void Transporter::Update(unsigned long time_passed)
     // Add model to map after we are fully done with moving maps
     if (_delayedAddModel)
     {
-        _delayedAddModel = false;
-        if (m_model)
-            getWorldMap()->insertGameObjectModel(*m_model);
+        _delayedAddModelTimer -= time_passed;
+        if (_delayedAddModelTimer <= 0)
+        {
+            _delayedAddModel = false;
+            if (m_model)
+                getWorldMap()->insertGameObjectModel(*m_model);
+        }
     }
 
     // Set position

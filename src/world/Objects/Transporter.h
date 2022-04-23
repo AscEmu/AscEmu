@@ -157,6 +157,7 @@ private:
     PassengerSet::iterator _passengerTeleportItr;
     PassengerSet _staticPassengers;
 
+    int32_t _delayedAddModelTimer = 500;
     int32_t _positionChangeTimer = 100;
     int32_t _mapUpdateTimer = 0;
 

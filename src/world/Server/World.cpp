@@ -740,15 +740,18 @@ bool World::setInitialWorldSettings()
     sSpellMgr.loadSpellDataFromDatabase();
     sSpellMgr.calculateSpellCoefficients();
 
+    sLogger.info("World : Loading Transporters...");
+    sTransportHandler.loadTransportTemplates();
+
     sMapMgr.initialize();
+
+    sLogger.info("World : Starting Transport System...");
+    sTransportHandler.spawnContinentTransports();
 
 #if VERSION_STRING > TBC
     sLogger.info("World : Starting Achievement System...");
     sObjectMgr.LoadAchievementCriteriaList();
 #endif
-
-    sLogger.info("World : Loading Transporters...");
-    sTransportHandler.loadTransportTemplates();
 
     sLogger.info("World : Starting Mail System...");
     sMailSystem.StartMailSystem();

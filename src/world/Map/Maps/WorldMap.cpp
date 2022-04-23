@@ -187,12 +187,10 @@ bool WorldMap::Do()
     SetThreadName("WorldMap - M%u|I%u", getBaseMap()->getMapId(), getInstanceId());
 
     // Wait for world server to completely start before updating maps
-    //while (!sWorld.isWorldServerCompletelyLoaded())
-    //{
-    //    Arcemu::Sleep(100);
-    //}
-
-    //Arcemu::Sleep(1000);
+    while (!sWorld.isWorldServerCompletelyLoaded())
+    {
+        Arcemu::Sleep(100);
+    }
 
     m_lastUpdateTime = Util::getMSTime();
 
