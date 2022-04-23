@@ -357,6 +357,9 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     sGameEventMgrThread.initialize();
 
+    sLogger.info("Server : Starting Transport System...");
+    sTransportHandler.spawnContinentTransports();
+
     StartRemoteConsole();
 
     WritePidFile();

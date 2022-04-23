@@ -747,9 +747,8 @@ bool World::setInitialWorldSettings()
     sObjectMgr.LoadAchievementCriteriaList();
 #endif
 
-    sLogger.info("World : Starting Transport System...");
+    sLogger.info("World : Loading Transporters...");
     sTransportHandler.loadTransportTemplates();
-    sTransportHandler.spawnContinentTransports();
 
     sLogger.info("World : Starting Mail System...");
     sMailSystem.StartMailSystem();

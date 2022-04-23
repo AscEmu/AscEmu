@@ -542,7 +542,8 @@ void AIInterface::initialiseScripts(uint32_t entry)
         }
     }
 
-    sLogger.debug("Sizeof emote %i", mEmotesOnCombatStart.size());
+    if (mEmotesOnCombatStart.size())
+        sLogger.debug("Creature with Entry %u has %i emotes on CombatStart", mEmotesOnCombatStart.size(), getUnit()->getEntry());
 }
 
 Unit* AIInterface::getUnit() const
