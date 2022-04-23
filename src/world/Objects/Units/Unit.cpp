@@ -4824,9 +4824,9 @@ bool Unit::canSee(Object* const obj)
         // TODO: for now, all maps have 500 yard view distance
         // problem is that objects on active map cells are updated only if player can see it, iirc
 
-        // Transports should always be visible
+        // Transports and Destructible Buildings should always be visible
         const auto gobj = static_cast<GameObject*>(obj);
-        if (gobj->getGoType() == GAMEOBJECT_TYPE_TRANSPORT || gobj->getGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT)
+        if (gobj->getGoType() == GAMEOBJECT_TYPE_TRANSPORT || gobj->getGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT || gobj->getGoType() == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
         {
             return true;
         }

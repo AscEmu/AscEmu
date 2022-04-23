@@ -2342,6 +2342,10 @@ float WorldMap::getUpdateDistance(Object* curObj, Object* obj, Player* plObj)
     if (curObj->GetTypeFromGUID() == HIGHGUID_TYPE_TRANSPORTER)
         return no_distance;
 
+     // unlimited distance for Destructible Buildings (only up to 2 cells +/- anyway.)
+    if (curObj->isGameObject() && (static_cast<GameObject*>(curObj)->getGoType() == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING))
+        return no_distance;
+
     // unlimited distance in Instances/Raids
     if (getBaseMap()->getMapInfo()->isInstanceMap())
         return no_distance;
