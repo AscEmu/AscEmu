@@ -1184,7 +1184,7 @@ void Group::SetAssistantLeader(CachedCharacterInfo* pMember)
 
 void Group::resetInstances(uint8_t method, bool isRaid, Player* SendMsgTo)
 {
-    if (isBGGroup() || isBFGroup())
+    if (isBGGroup() /* || isBFGroup()*/)
         return;
 
     // method can be INSTANCE_RESET_ALL, INSTANCE_RESET_CHANGE_DIFFICULTY, INSTANCE_RESET_GROUP_DISBAND
