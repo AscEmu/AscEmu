@@ -299,12 +299,6 @@ public:
 
     static InstanceScript* Create(WorldMap* pMapMgr) { return new BlackTempleScript(pMapMgr); }
 
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
-
     void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
     {
         // You don't have to use additional scripts to open any gates / doors

@@ -1992,12 +1992,6 @@ public:
 
     static InstanceScript* Create(WorldMap* pMapMgr) { return new SerpentshrineCavern(pMapMgr); }
 
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance needed to Link all Generators and Bridge
-        GetInstance()->updateAllCells(true);
-    }
-
     void OnGameObjectPushToWorld(GameObject* pGameObject) override
     {
         switch (pGameObject->getEntry())

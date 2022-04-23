@@ -14,12 +14,6 @@ class ShadowLabyrinthInstanceScript : public InstanceScript
 public:
     explicit ShadowLabyrinthInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(WorldMap* pMapMgr) { return new ShadowLabyrinthInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
 };
 
 class CabalAcolyteAI : public CreatureAIScript

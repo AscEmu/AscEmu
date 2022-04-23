@@ -14,12 +14,6 @@ class TheEyeInstanceScript : public InstanceScript
 public:
     explicit TheEyeInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(WorldMap* pMapMgr) { return new TheEyeInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

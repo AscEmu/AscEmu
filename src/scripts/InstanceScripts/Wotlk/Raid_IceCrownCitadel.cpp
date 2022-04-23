@@ -472,12 +472,6 @@ public:
            skybreaker = sTransportHandler.createTransport(GO_THE_SKYBREAKER_HORDE_ICC, mInstance);
     }
 
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetWorldMap()->updateAllCells(true); 
-    }
-
     void OnPlayerEnter(Player* player) override
     {
         if (!spawnsCreated())

@@ -13,12 +13,6 @@ class ArcatrazInstanceScript : public InstanceScript
 public:
     explicit ArcatrazInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(WorldMap* pMapMgr) { return new ArcatrazInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
 };
 
 // VOID_ZONE 36119 // DBC: 36119; it's not fully functionl without additional core support (for dmg and random place targeting).

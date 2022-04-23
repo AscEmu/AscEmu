@@ -45,12 +45,6 @@ public:
 
     static InstanceScript* Create(WorldMap* pMapMgr) { return new TheVioletHoldScript(pMapMgr); }
 
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
-
     void UpdateEvent() override
     {
         auto state = getBossState(MAP_VIOLET_HOLD);

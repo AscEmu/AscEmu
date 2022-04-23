@@ -12,12 +12,6 @@ class ManaTombsInstanceScript : public InstanceScript
 public:
     explicit ManaTombsInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(WorldMap* pMapMgr) { return new ManaTombsInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
 };
 
 class EtherealDarkcasterAI : public CreatureAIScript

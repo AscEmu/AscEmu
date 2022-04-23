@@ -18,12 +18,6 @@ public:
 
     static InstanceScript* Create(WorldMap* pMapMgr) { return new MountHyjalScript(pMapMgr); }
 
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
-
     void SetLocaleInstanceData(uint32_t pType, uint32_t pIndex, uint32_t pData)
     {
         if (pType >= HYJAL_TYPE_END || pIndex >= 10)

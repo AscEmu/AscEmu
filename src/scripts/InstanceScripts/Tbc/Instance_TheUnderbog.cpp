@@ -13,12 +13,6 @@ class TheUnderbogInstanceScript : public InstanceScript
 public:
     explicit TheUnderbogInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(WorldMap* pMapMgr) { return new TheUnderbogInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

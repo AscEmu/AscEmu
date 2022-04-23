@@ -13,12 +13,6 @@ public:
     explicit InstanceForgeOfSoulsScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(WorldMap* pMapMgr) { return new InstanceForgeOfSoulsScript(pMapMgr); }
 
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
-
     void OnPlayerEnter(Player* player) override
     {
         if (!spawnsCreated())

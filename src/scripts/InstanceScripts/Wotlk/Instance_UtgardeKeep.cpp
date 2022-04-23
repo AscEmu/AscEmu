@@ -49,12 +49,6 @@ public:
 
     static InstanceScript* Create(WorldMap* pMapMgr) { return new UtgardeKeepScript(pMapMgr); }
 
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
-
     void OnCreaturePushToWorld(Creature* pCreature) override
     {
         switch (pCreature->getEntry())

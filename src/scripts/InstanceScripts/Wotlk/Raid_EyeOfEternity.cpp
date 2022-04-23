@@ -13,12 +13,6 @@ class EyeOfEternityInstanceScript : public InstanceScript
 public:
     explicit EyeOfEternityInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(WorldMap* pMapMgr) { return new EyeOfEternityInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
 };
 
 void SetupEyeOfEternity(ScriptMgr* mgr)

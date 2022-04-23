@@ -13,12 +13,6 @@ class TheSteamvaultInstanceScript : public InstanceScript
 public:
     explicit TheSteamvaultInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(WorldMap* pMapMgr) { return new TheSteamvaultInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

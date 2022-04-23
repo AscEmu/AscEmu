@@ -516,12 +516,6 @@ public:
 
     static InstanceScript* Create(WorldMap* pMapMgr) { return new NexusScript(pMapMgr); }
 
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
-
     void PrepareGameObjectsForState()
     {
         if (getBossState(DATA_ANOMALUS) == Performed)
