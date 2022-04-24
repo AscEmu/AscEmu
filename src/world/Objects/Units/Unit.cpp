@@ -4884,6 +4884,10 @@ bool Unit::canSee(Object* const obj)
     // Player is dead and has released spirit
     if (isPlayer() && getDeathState() == CORPSE)
     {
+        // Player should see all gameobjects when dead
+        if (obj->isGameObject() && obj->getPlayerOwner() == nullptr)
+            return true;
+
         const float_t corpseViewDistance = 1600.0f; // 40*40 yards
         const auto playerMe = static_cast<Player*>(this);
         // If object is another player
