@@ -438,7 +438,7 @@ EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* pla
         uint32_t corpseInstance = player->getCorpseInstanceId();
 
         const auto instance = sMapMgr.findWorldMap(mapid, corpseInstance);
-        if (instance->getBaseMap()->getMapId() != mapid)
+        if (instance == nullptr || instance->getBaseMap()->getMapId() != mapid)
             return CANNOT_ENTER_CORPSE_IN_DIFFERENT_INSTANCE;
     }
 

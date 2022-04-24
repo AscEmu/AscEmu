@@ -73,7 +73,7 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
                 } break;
                 case CANNOT_ENTER_CORPSE_IN_DIFFERENT_INSTANCE:
                 {
-                    WorldPacket data(SMSG_CORPSE_NOT_IN_INSTANCE);
+                    WorldPacket data(SMSG_CORPSE_NOT_IN_INSTANCE, 1);
                     _player->sendPacket(&data);
                 } break;
                 case CANNOT_ENTER_INSTANCE_BIND_MISMATCH:
