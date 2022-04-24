@@ -1532,8 +1532,6 @@ void Unit::setMoveHover(bool set_hover)
         {
             addUnitMovementFlag(MOVEFLAG_HOVER);
 
-            setAnimationFlags(UNIT_BYTE1_FLAG_HOVER);
-
             WorldPacket data(SMSG_SPLINE_MOVE_SET_HOVER, 10);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
@@ -1546,8 +1544,6 @@ void Unit::setMoveHover(bool set_hover)
         {
             removeUnitMovementFlag(MOVEFLAG_HOVER);
 
-            setAnimationFlags(getAnimationFlags() &~UNIT_BYTE1_FLAG_HOVER);
-
             WorldPacket data(SMSG_SPLINE_MOVE_UNSET_HOVER, 10);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
@@ -1556,6 +1552,13 @@ void Unit::setMoveHover(bool set_hover)
 #endif
             sendMessageToSet(&data, false);
         }
+
+        if (hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
+            setAnimationTier(UnitBytes1_AnimationFlags::UNIT_BYTE1_FLAG_FLY);
+        else if (isHovering())
+            setAnimationTier(UnitBytes1_AnimationFlags::UNIT_BYTE1_FLAG_HOVER);
+        else
+            setAnimationTier(UnitBytes1_AnimationFlags::UNIT_BYTE1_FLAG_GROUND);
     }
 }
 
@@ -1638,6 +1641,13 @@ void Unit::setMoveCanFly(bool set_fly)
 #endif
             sendMessageToSet(&data, false);
         }
+
+        if (hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
+            setAnimationTier(UnitBytes1_AnimationFlags::UNIT_BYTE1_FLAG_FLY);
+        else if (isHovering())
+            setAnimationTier(UnitBytes1_AnimationFlags::UNIT_BYTE1_FLAG_HOVER);
+        else
+            setAnimationTier(UnitBytes1_AnimationFlags::UNIT_BYTE1_FLAG_GROUND);
     }
 }
 
@@ -1795,6 +1805,13 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
 #endif
             sendMessageToSet(&data, false);
         }
+
+        if (hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
+            setAnimationTier(UnitBytes1_AnimationFlags::UNIT_BYTE1_FLAG_FLY);
+        else if (isHovering())
+            setAnimationTier(UnitBytes1_AnimationFlags::UNIT_BYTE1_FLAG_HOVER);
+        else
+            setAnimationTier(UnitBytes1_AnimationFlags::UNIT_BYTE1_FLAG_GROUND);
     }
 #endif
 }
@@ -1931,6 +1948,14 @@ void Unit::handleFall(MovementInfo const& movementInfo)
     }
 
     m_zAxisPosition = 0.0f;
+}
+
+void Unit::setAnimationTier(uint8_t tier)
+{
+    if (!isCreature())
+        return;
+
+    setAnimationFlags(tier);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

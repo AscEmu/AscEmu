@@ -601,6 +601,7 @@ public:
     void setMoveDisableGravity(bool disable_gravity);
     void setMoveWalk(bool set_walk);
     void setFacing(float newo);     //only working if creature is idle
+    void setAnimationTier(uint8_t tier);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // used for handling fall
