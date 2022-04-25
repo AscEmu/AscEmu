@@ -78,6 +78,26 @@ bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float
 
 void Transporter::Update(unsigned long time_passed)
 {
+    if (_delayedMapRemove)
+    {
+        _delayedMapRemoveTimer -= time_passed;
+        if (_delayedMapRemoveTimer <= 0)
+        {
+            _delayedMapRemove = false;
+            delayedRemoveFromMap();
+            return;
+        }
+    }
+
+    if (_delayedTeleport)
+    {
+        _delayedTransportTeleportTimer -= time_passed;
+        if (_delayedTransportTeleportTimer <= 0)
+        {
+            DelayedTeleportTransport(_delayedTransportFromMap);
+            return;
+        }
+    }
     if (GetKeyFrames().size() <= 1)
         return;
 
@@ -499,7 +519,8 @@ float Transporter::CalculateSegmentPos(float now)
 void Transporter::removeFromMap()
 {
     UnloadStaticPassengers();
-    sEventMgr.AddEvent(this, &Transporter::delayedRemoveFromMap, EVENT_TRANSPORTER_DELAYED_REMOVE, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    _delayedMapRemove = 100;
+    _delayedMapRemove = true;
 }
 
 void Transporter::delayedRemoveFromMap()
@@ -515,10 +536,11 @@ bool Transporter::TeleportTransport(uint32_t newMapid, float x, float y, float z
     if (oldMap->getBaseMap()->getMapId() != newMapid) // New Map case
     {
         // Unload at old Map
-        _delayedTeleport = true;
         UnloadStaticPassengers();
         // Wait a bit before we Procced in new MapMgr
-        sEventMgr.AddEvent(this, &Transporter::DelayedTeleportTransport, (oldMap), EVENT_TRANSPORTER_DELAYED_TELEPORT, 500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        _delayedTransportTeleportTimer = 500;
+        _delayedTransportFromMap = oldMap;
+        _delayedTeleport = true;
         return true;
     }
     else // Same Map Case
@@ -538,6 +560,7 @@ void Transporter::DelayedTeleportTransport(WorldMap* oldMap)
         return;
 
     _delayedTeleport = false;
+    _delayedTransportFromMap = nullptr;
     oldMap->removeFromMapMgr(this);
     RemoveFromWorld(false);
 

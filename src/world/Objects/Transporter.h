@@ -142,6 +142,10 @@ private:
     void SetMoving(bool val) { _isMoving = val; }
 
     bool _delayedAddModel = false;
+    bool _delayedMapRemove = false;
+
+    WorldMap* _delayedTransportFromMap = nullptr;
+
     TransportTemplate const* _transportInfo = nullptr;
 
     KeyFrameVec::const_iterator _currentFrame;
@@ -158,6 +162,8 @@ private:
     PassengerSet _staticPassengers;
 
     int32_t _delayedAddModelTimer = 500;
+    int32_t _delayedMapRemoveTimer = 100;
+    int32_t _delayedTransportTeleportTimer = 500;
     int32_t _positionChangeTimer = 100;
     int32_t _mapUpdateTimer = 0;
 
