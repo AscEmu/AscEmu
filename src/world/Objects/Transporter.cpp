@@ -78,26 +78,6 @@ bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float
 
 void Transporter::Update(unsigned long time_passed)
 {
-    if (_delayedMapRemove)
-    {
-        _delayedMapRemoveTimer -= time_passed;
-        if (_delayedMapRemoveTimer <= 0)
-        {
-            _delayedMapRemove = false;
-            delayedRemoveFromMap();
-            return;
-        }
-    }
-
-    if (_delayedTeleport)
-    {
-        _delayedTransportTeleportTimer -= time_passed;
-        if (_delayedTransportTeleportTimer <= 0)
-        {
-            DelayedTeleportTransport(_delayedTransportFromMap);
-            return;
-        }
-    }
     if (GetKeyFrames().size() <= 1)
         return;
 
@@ -193,6 +173,26 @@ void Transporter::Update(unsigned long time_passed)
         }
         else // When Transport Stopped keep updating players position
             UpdatePlayerPositions(_passengers);
+    }
+}
+
+void Transporter::delayedUpdate(unsigned long time_passed)
+{
+    if (GetKeyFrames().size() <= 1)
+        return;
+
+    if (_delayedTeleport)
+        DelayedTeleportTransport(_delayedTransportFromMap);
+
+    if (_delayedMapRemove)
+    {
+        _delayedMapRemoveTimer -= time_passed;
+        if (_delayedMapRemoveTimer <= 0)
+        {
+            _delayedMapRemove = false;
+            delayedRemoveFromMap();
+            return;
+        }
     }
 }
 
@@ -538,7 +538,6 @@ bool Transporter::TeleportTransport(uint32_t newMapid, float x, float y, float z
         // Unload at old Map
         UnloadStaticPassengers();
         // Wait a bit before we Procced in new MapMgr
-        _delayedTransportTeleportTimer = 500;
         _delayedTransportFromMap = oldMap;
         _delayedTeleport = true;
         return true;

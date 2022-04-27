@@ -61,6 +61,7 @@ public:
 
     // Update Transporter Position and Transport Passengers
     void Update(unsigned long /*time_passed*/);
+    void delayedUpdate(unsigned long /*time_passed*/);
 
     // Populate Transporters with Creatures and Gameobjects
     void LoadStaticPassengers();
@@ -163,7 +164,6 @@ private:
 
     int32_t _delayedAddModelTimer = 500;
     int32_t _delayedMapRemoveTimer = 100;
-    int32_t _delayedTransportTeleportTimer = 500;
     int32_t _positionChangeTimer = 100;
     int32_t _mapUpdateTimer = 0;
 

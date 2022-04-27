@@ -216,6 +216,9 @@ bool WorldMap::Do()
         // Update Our Map
         update(diffTime);
 
+        // Update Our Map with a bit delay
+        delayedUpdate(diffTime);
+
         m_lastUpdateTime = Util::getMSTime();
         const uint32_t exec_time = m_lastUpdateTime - exec_start;
         if (exec_time < 20)  //mapmgr update period 20
@@ -265,7 +268,7 @@ void WorldMap::update(uint32_t t_diff)
     auto diffTime = msTime - m_lastTransportUpdateTimer;
     if (diffTime >= 100 && sWorld.isWorldServerCompletelyLoaded())
     {
-        std::scoped_lock<std::mutex> guard(m_transportsLock);
+        std::shared_lock<std::shared_mutex> guard(m_transportsLock);
         for (auto itr = m_TransportStorage.cbegin(); itr != m_TransportStorage.cend();)
         {
             Transporter* trans = *itr;
@@ -412,6 +415,27 @@ void WorldMap::update(uint32_t t_diff)
     
     // Finally, A9 Building/Distribution
     updateObjects();
+}
+
+void WorldMap::delayedUpdate(uint32_t diff)
+{
+    const auto msTime = Util::getMSTime();
+
+    // DelayedUpdate Transporters
+    if (sWorld.isWorldServerCompletelyLoaded())
+    {
+        std::shared_lock<std::shared_mutex> guard(m_transportsLock);
+        for (auto itr = m_TransportStorage.cbegin(); itr != m_TransportStorage.cend();)
+        {
+            Transporter* trans = *itr;
+            ++itr;
+
+            if (!trans || !trans->IsInWorld())
+                continue;
+
+            trans->delayedUpdate(diff);
+        }
+    }
 }
 
 void WorldMap::processRespawns()
@@ -2310,7 +2334,7 @@ void WorldMap::removeCombatInProgress(uint64_t guid)
 
 bool WorldMap::addToMapMgr(Transporter* obj)
 {
-    std::scoped_lock<std::mutex> lock(m_transportsLock);
+    std::shared_lock<std::shared_mutex> lock(m_transportsLock);
 
     m_TransportStorage.insert(obj);
     return true;
@@ -2318,7 +2342,7 @@ bool WorldMap::addToMapMgr(Transporter* obj)
 
 void WorldMap::removeFromMapMgr(Transporter* obj)
 {
-    std::scoped_lock<std::mutex> lock(m_transportsLock);
+    std::shared_lock<std::shared_mutex> lock(m_transportsLock);
 
     m_TransportStorage.erase(obj);
     sTransportHandler.removeInstancedTransport(obj, getInstanceId());

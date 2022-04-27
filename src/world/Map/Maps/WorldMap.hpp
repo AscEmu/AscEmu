@@ -149,6 +149,7 @@ public:
 
     virtual void initialize();
     virtual void update(uint32_t);
+    virtual void delayedUpdate(uint32_t);
     virtual void unloadAll();
 
     bool runThread() override;
@@ -457,7 +458,7 @@ private:
     GameObjectStorageMap m_GameObjectStorage;
     DynamicObjectStorageMap m_DynamicObjectStorage;
     TransportsContainer m_TransportStorage;
-    std::mutex m_transportsLock;
+    std::shared_mutex m_transportsLock;
 
     std::mutex m_cellActivityLock;
 
