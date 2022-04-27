@@ -2334,7 +2334,7 @@ void WorldMap::removeCombatInProgress(uint64_t guid)
 
 bool WorldMap::addToMapMgr(Transporter* obj)
 {
-    std::shared_lock<std::shared_mutex> lock(m_transportsLock);
+    std::unique_lock<std::shared_mutex> lock(m_transportsLock);
 
     m_TransportStorage.insert(obj);
     return true;
@@ -2342,7 +2342,7 @@ bool WorldMap::addToMapMgr(Transporter* obj)
 
 void WorldMap::removeFromMapMgr(Transporter* obj)
 {
-    std::shared_lock<std::shared_mutex> lock(m_transportsLock);
+    std::unique_lock<std::shared_mutex> lock(m_transportsLock);
 
     m_TransportStorage.erase(obj);
     sTransportHandler.removeInstancedTransport(obj, getInstanceId());
