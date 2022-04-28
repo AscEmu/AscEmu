@@ -161,7 +161,7 @@ WorldMap* MapMgr::findWorldMap(uint32_t mapid) const
 InstanceMap* MapMgr::findInstanceMap(uint32_t instanceId) const
 {
     const auto& iter = m_InstancedMaps.find(instanceId);
-    return (iter == m_InstancedMaps.end() ? nullptr : dynamic_cast<InstanceMap*>(iter->second));
+    return (iter == m_InstancedMaps.end() ? nullptr : static_cast<InstanceMap*>(iter->second));
 }
 
 std::list<InstanceMap*> MapMgr::findInstancedMaps(uint32_t mapId)
@@ -171,7 +171,7 @@ std::list<InstanceMap*> MapMgr::findInstancedMaps(uint32_t mapId)
     for (auto const& maps : m_InstancedMaps)
     {
         if (maps.second->getBaseMap()->getMapId() == mapId && maps.second->getBaseMap()->isDungeon())
-            list.push_back(dynamic_cast<InstanceMap*>(maps.second));
+            list.push_back(static_cast<InstanceMap*>(maps.second));
     }
 
     return list;
@@ -322,7 +322,7 @@ InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, Instanc
     return map;
 }
 
-BattlegroundMap* MapMgr::createBattleground(uint32_t mapId, uint32_t InstanceId)
+BattlegroundMap* MapMgr::createBattleground(uint32_t mapId)
 {
     std::scoped_lock<std::mutex> lock(m_mapsLock);
 
@@ -340,9 +340,9 @@ BattlegroundMap* MapMgr::createBattleground(uint32_t mapId, uint32_t InstanceId)
 
     uint8_t spawnMode = InstanceDifficulty::Difficulties::DUNGEON_NORMAL;
 
-    BattlegroundMap* map = new BattlegroundMap(baseMap, mapId, 300000U, InstanceId, spawnMode);
+    BattlegroundMap* map = new BattlegroundMap(baseMap, mapId, 300000U, newInstanceId, spawnMode);
 
-    m_InstancedMaps[InstanceId] = map;
+    m_InstancedMaps[newInstanceId] = map;
     return map;
 }
 

@@ -57,7 +57,7 @@ public:
     InstanceMap* findInstanceMap(uint32_t instanceId) const;
     std::list<InstanceMap*> findInstancedMaps(uint32_t mapId);
     InstanceMap* createInstance(uint32_t mapId, uint32_t InstanceId, InstanceSaved* save, InstanceDifficulty::Difficulties difficulty, PlayerTeam InstanceTeam);
-    BattlegroundMap* createBattleground(uint32_t mapId, uint32_t InstanceId);
+    BattlegroundMap* createBattleground(uint32_t mapId);
     WorldMap* createMap(uint32_t mapId, Player* player, uint32_t instanceId = 0);
 
     // Multi

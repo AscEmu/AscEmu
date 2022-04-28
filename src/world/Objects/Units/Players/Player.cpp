@@ -1300,7 +1300,7 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
     callExitVehicle();
 #endif
 
-    if (m_bg && m_bg->getWorldMap() && getWorldMap()->getBaseMap()->getMapInfo()->mapid != mapId)
+    if (m_bg && m_bg->getWorldMap() && getWorldMap() && getWorldMap()->getBaseMap()->getMapInfo()->mapid != mapId)
     {
         m_bg->RemovePlayer(this, false);
     }

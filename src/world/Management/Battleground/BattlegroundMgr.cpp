@@ -1130,7 +1130,7 @@ CBattleground* CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGro
         uint32 mapid = arenaMaps[index];
         ArenaFactoryMethod arenaFactory = arenaFactories[index];
 
-        mgr = sMapMgr.createBattleground(mapid, 0);
+        mgr = sMapMgr.createBattleground(mapid);
         if (mgr == nullptr)
         {
             sLogger.failure("call failed for map %u, type %u, level group %u", mapid, Type, LevelGroup);
@@ -1193,7 +1193,7 @@ CBattleground* CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGro
     }
 
     // Create Map Manager
-    mgr = sMapMgr.createBattleground(bgMaps[Type], 0);
+    mgr = sMapMgr.createBattleground(bgMaps[Type]);
     if (mgr == nullptr)
     {
         sLogger.failure("call failed for map %u, type %u, level group %u", bgMaps[Type], Type, LevelGroup);
