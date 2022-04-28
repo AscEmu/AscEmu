@@ -342,6 +342,9 @@ BattlegroundMap* MapMgr::createBattleground(uint32_t mapId)
 
     BattlegroundMap* map = new BattlegroundMap(baseMap, mapId, 300000U, newInstanceId, spawnMode);
 
+    // Scheduling the new map for running
+    ThreadPool.ExecuteTask(map);
+
     m_InstancedMaps[newInstanceId] = map;
     return map;
 }
