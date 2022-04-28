@@ -345,6 +345,12 @@ BattlegroundMap* MapMgr::createBattleground(uint32_t mapId)
     // Scheduling the new map for running
     ThreadPool.ExecuteTask(map);
 
+    // Initialize Map Script and Load Static Spawns
+    map->initialize();
+
+    // In Battlegrounds we load all Cells
+    map->updateAllCells(true);
+
     m_InstancedMaps[newInstanceId] = map;
     return map;
 }
