@@ -397,7 +397,7 @@ void GameObject::Despawn(uint32 delay, uint32 respawntime)
 
 void GameObject::saveRespawnTime(uint32_t forceDelay)
 {
-    if (!m_spawn->id)
+    if (!m_spawn || !m_spawn->id)
         return;
 
     const auto now = Util::getTimeNow();
