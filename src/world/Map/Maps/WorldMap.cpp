@@ -217,7 +217,8 @@ bool WorldMap::Do()
         update(diffTime);
 
         // Update Our Map with a bit delay
-        delayedUpdate(diffTime);
+        if (!thread_shutdown)
+            delayedUpdate(diffTime);
 
         m_lastUpdateTime = Util::getMSTime();
         const uint32_t exec_time = m_lastUpdateTime - exec_start;
