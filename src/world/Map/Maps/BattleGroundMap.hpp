@@ -24,7 +24,6 @@ public:
     void removePlayerFromMap(Player*) override;
     EnterState cannotEnter(Player* player) override;
     void setUnload();
-    void removeAllPlayers() override;
 
     virtual void initVisibilityDistance() override;
 

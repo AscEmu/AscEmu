@@ -71,15 +71,3 @@ void BattlegroundMap::setUnload()
 {
     m_unloadTimer = 1;
 }
-
-void BattlegroundMap::removeAllPlayers()
-{
-    if (getPlayerCount())
-    {
-        for (const auto& itr : getPlayers())
-        {
-            Player* player = itr.second;
-            player->safeTeleport(player->getBGEntryMapId(), 0, player->getBGEntryPosition());
-        }
-    }
-}

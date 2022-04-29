@@ -513,9 +513,10 @@ void WorldMap::removeAllPlayers()
 {
     if (getPlayerCount())
     {
-        for (PlayerStorageMap::iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
+        for (PlayerStorageMap::iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end();)
         {
             Player* player = itr->second;
+            ++itr;
 
             if (!bServerShutdown)
             {
