@@ -357,6 +357,11 @@ void GameObject::Despawn(uint32 delay, uint32 respawntime)
     if (!IsInWorld())
         return;
 
+    // Remove the Model
+    if (m_model)
+        if (getWorldMap()->containsGameObjectModel(*m_model))
+            getWorldMap()->removeGameObjectModel(*m_model);
+
     //This is for go get deleted while looting
     if (m_spawn)
     {
