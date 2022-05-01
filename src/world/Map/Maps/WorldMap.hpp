@@ -164,7 +164,7 @@ public:
     bool isUnloadPending() { return m_unloadPending; }
 
     float getVisibilityRange() const { return m_VisibleDistance; }
-    float getUpdateDistance(Object const* curObj, Object const* obj, Player const* plObj) const;
+    float getUpdateDistance(Object* curObj, Object* obj, Player* plObj);
     virtual void initVisibilityDistance();
 
     void outOfMapBoundariesTeleport(Object* object);

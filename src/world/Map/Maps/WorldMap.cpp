@@ -2382,7 +2382,7 @@ void WorldMap::objectUpdated(Object* obj)
     _updates.insert(obj);
 }
 
-float WorldMap::getUpdateDistance(Object const* curObj, Object const* obj, Player const* plObj) const
+float WorldMap::getUpdateDistance(Object* curObj, Object* obj, Player* plObj)
 {
     static float no_distance = 0.0f;
 
@@ -2394,7 +2394,7 @@ float WorldMap::getUpdateDistance(Object const* curObj, Object const* obj, Playe
         return no_distance;
 
      // unlimited distance for Destructible Buildings (only up to 2 cells +/- anyway.)
-    if (curObj->isGameObject() && (static_cast<GameObject const*>(curObj)->getGoType() == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING))
+    if (curObj->isGameObject() && (static_cast<GameObject*>(curObj)->getGoType() == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING))
         return no_distance;
 
     // unlimited distance in Instances/Raids
@@ -2402,11 +2402,11 @@ float WorldMap::getUpdateDistance(Object const* curObj, Object const* obj, Playe
         return no_distance;
 
     //If the object announcing its position is a transport, or other special object, then deleting it from visible objects should be avoided. - By: VLack
-    if (obj->isGameObject() && (static_cast<GameObject const*>(obj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
+    if (obj->isGameObject() && (static_cast<GameObject*>(obj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
         return no_distance;
 
     //If the object we're checking for possible removal is a transport or other special object, and we are players on the same map, don't remove it, and add it whenever possible...
-    if (plObj && curObj->isGameObject() && (static_cast<GameObject const*>(curObj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
+    if (plObj && curObj->isGameObject() && (static_cast<GameObject*>(curObj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
         return no_distance;
 
     // normal distance
