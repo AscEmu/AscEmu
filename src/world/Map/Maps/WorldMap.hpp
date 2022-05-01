@@ -149,7 +149,6 @@ public:
 
     virtual void initialize();
     virtual void update(uint32_t);
-    virtual void delayedUpdate(uint32_t);
     virtual void unloadAll();
 
     bool runThread() override;
@@ -165,7 +164,7 @@ public:
     bool isUnloadPending() { return m_unloadPending; }
 
     float getVisibilityRange() const { return m_VisibleDistance; }
-    float getUpdateDistance(Object* curObj, Object* obj, Player* plObj);
+    float getUpdateDistance(Object const* curObj, Object const* obj, Player const* plObj) const;
     virtual void initVisibilityDistance();
 
     void outOfMapBoundariesTeleport(Object* object);
@@ -304,6 +303,8 @@ public:
     // Transports
     bool addToMapMgr(Transporter* obj);
     void removeFromMapMgr(Transporter* obj);
+    void markDelayedRemoveFor(Transporter* transport, bool removeFromMap);
+    void removeDelayedRemoveFor(Transporter* transport);
 
     // Corpse
     void addCorpseDespawn(uint64_t guid, time_t time);
@@ -458,7 +459,10 @@ private:
     GameObjectStorageMap m_GameObjectStorage;
     DynamicObjectStorageMap m_DynamicObjectStorage;
     TransportsContainer m_TransportStorage;
-    std::shared_mutex m_transportsLock;
+    // <Transporter, remove from map>
+    std::map<Transporter*, bool> m_TransportDelayedRemoveStorage;
+    std::mutex m_transportsLock;
+    std::mutex m_delayedTransportLock;
 
     std::mutex m_cellActivityLock;
 

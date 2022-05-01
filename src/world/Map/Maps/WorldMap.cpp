@@ -124,6 +124,7 @@ WorldMap::~WorldMap()
     m_GameObjectStorage.clear();
     m_CreatureStorage.clear();
     m_TransportStorage.clear();
+    m_TransportDelayedRemoveStorage.clear();
 
     unloadAllRespawnInfos();
 
@@ -216,10 +217,6 @@ bool WorldMap::Do()
         // Update Our Map
         update(diffTime);
 
-        // Update Our Map with a bit delay
-        if (!thread_shutdown)
-            delayedUpdate(diffTime);
-
         m_lastUpdateTime = Util::getMSTime();
         const uint32_t exec_time = m_lastUpdateTime - exec_start;
         if (exec_time < 20)  //mapmgr update period 20
@@ -269,16 +266,43 @@ void WorldMap::update(uint32_t t_diff)
     auto diffTime = msTime - m_lastTransportUpdateTimer;
     if (diffTime >= 100 && sWorld.isWorldServerCompletelyLoaded())
     {
-        std::shared_lock<std::shared_mutex> guard(m_transportsLock);
-        for (auto itr = m_TransportStorage.cbegin(); itr != m_TransportStorage.cend();)
         {
-            Transporter* trans = *itr;
-            ++itr;
+            std::scoped_lock<std::mutex> guard(m_transportsLock);
+            for (auto itr = m_TransportStorage.cbegin(); itr != m_TransportStorage.cend();)
+            {
+                Transporter* trans = *itr;
+                ++itr;
 
-            if (!trans || !trans->IsInWorld())
-                continue;
+                if (!trans || !trans->IsInWorld())
+                    continue;
 
-            trans->Update(diffTime);
+                trans->Update(diffTime);
+            }
+        }
+
+        {
+            std::scoped_lock<std::mutex> guard(m_delayedTransportLock);
+            for (auto itr = m_TransportDelayedRemoveStorage.cbegin(); itr != m_TransportDelayedRemoveStorage.cend();)
+            {
+                auto* trans = itr->first;
+                if (!trans || !trans->IsInWorld())
+                {
+                    itr = m_TransportDelayedRemoveStorage.erase(itr);
+                    continue;
+                }
+
+                if (itr->second)
+                {
+                    removeFromMapMgr(trans);
+                    trans->RemoveFromWorld(true);
+                }
+                else
+                {
+                    trans->DelayedTeleportTransport();
+                }
+
+                itr = m_TransportDelayedRemoveStorage.erase(itr);
+            }
         }
 
         m_lastTransportUpdateTimer = msTime;
@@ -416,27 +440,6 @@ void WorldMap::update(uint32_t t_diff)
     
     // Finally, A9 Building/Distribution
     updateObjects();
-}
-
-void WorldMap::delayedUpdate(uint32_t diff)
-{
-    const auto msTime = Util::getMSTime();
-
-    // DelayedUpdate Transporters
-    if (sWorld.isWorldServerCompletelyLoaded())
-    {
-        std::shared_lock<std::shared_mutex> guard(m_transportsLock);
-        for (auto itr = m_TransportStorage.cbegin(); itr != m_TransportStorage.cend();)
-        {
-            Transporter* trans = *itr;
-            ++itr;
-
-            if (!trans || !trans->IsInWorld())
-                continue;
-
-            trans->delayedUpdate(diff);
-        }
-    }
 }
 
 void WorldMap::processRespawns()
@@ -2336,7 +2339,7 @@ void WorldMap::removeCombatInProgress(uint64_t guid)
 
 bool WorldMap::addToMapMgr(Transporter* obj)
 {
-    std::shared_lock<std::shared_mutex> lock(m_transportsLock);
+    std::scoped_lock<std::mutex> lock(m_transportsLock);
 
     m_TransportStorage.insert(obj);
     return true;
@@ -2344,10 +2347,32 @@ bool WorldMap::addToMapMgr(Transporter* obj)
 
 void WorldMap::removeFromMapMgr(Transporter* obj)
 {
-    std::shared_lock<std::shared_mutex> lock(m_transportsLock);
+    std::scoped_lock<std::mutex> lock(m_transportsLock);
 
     m_TransportStorage.erase(obj);
     sTransportHandler.removeInstancedTransport(obj, getInstanceId());
+}
+
+void WorldMap::markDelayedRemoveFor(Transporter* transport, bool removeFromMap)
+{
+    std::scoped_lock<std::mutex> lock(m_delayedTransportLock);
+    auto itr = m_TransportDelayedRemoveStorage.find(transport);
+    if (itr != m_TransportDelayedRemoveStorage.end())
+    {
+        // If boolean is already set to true, do not set it to false
+        if (!itr->second)
+            itr->second = removeFromMap;
+
+        return;
+    }
+
+    m_TransportDelayedRemoveStorage.insert(std::make_pair(transport, removeFromMap));
+}
+
+void WorldMap::removeDelayedRemoveFor(Transporter* transport)
+{
+    std::scoped_lock<std::mutex> lock(m_delayedTransportLock);
+    m_TransportDelayedRemoveStorage.erase(transport);
 }
 
 void WorldMap::objectUpdated(Object* obj)
@@ -2357,7 +2382,7 @@ void WorldMap::objectUpdated(Object* obj)
     _updates.insert(obj);
 }
 
-float WorldMap::getUpdateDistance(Object* curObj, Object* obj, Player* plObj)
+float WorldMap::getUpdateDistance(Object const* curObj, Object const* obj, Player const* plObj) const
 {
     static float no_distance = 0.0f;
 
@@ -2369,7 +2394,7 @@ float WorldMap::getUpdateDistance(Object* curObj, Object* obj, Player* plObj)
         return no_distance;
 
      // unlimited distance for Destructible Buildings (only up to 2 cells +/- anyway.)
-    if (curObj->isGameObject() && (static_cast<GameObject*>(curObj)->getGoType() == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING))
+    if (curObj->isGameObject() && (static_cast<GameObject const*>(curObj)->getGoType() == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING))
         return no_distance;
 
     // unlimited distance in Instances/Raids
@@ -2377,11 +2402,11 @@ float WorldMap::getUpdateDistance(Object* curObj, Object* obj, Player* plObj)
         return no_distance;
 
     //If the object announcing its position is a transport, or other special object, then deleting it from visible objects should be avoided. - By: VLack
-    if (obj->isGameObject() && (static_cast<GameObject*>(obj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
+    if (obj->isGameObject() && (static_cast<GameObject const*>(obj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
         return no_distance;
 
     //If the object we're checking for possible removal is a transport or other special object, and we are players on the same map, don't remove it, and add it whenever possible...
-    if (plObj && curObj->isGameObject() && (static_cast<GameObject*>(curObj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
+    if (plObj && curObj->isGameObject() && (static_cast<GameObject const*>(curObj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
         return no_distance;
 
     // normal distance

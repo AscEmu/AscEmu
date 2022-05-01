@@ -526,11 +526,6 @@ float Object::getDistanceSq(float x, float y, float z) const
     return m_position.distanceSquare({ x, y, z });
 }
 
-Player* Object::asPlayer()
-{
-    return reinterpret_cast<Player*>(this);
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spell functions
 Spell* Object::getCurrentSpell(CurrentSpellType spellType) const
@@ -1514,7 +1509,7 @@ std::vector<Object*> Object::getInRangeObjectsSet()
 
 bool Object::hasInRangeObjects()
 {
-    return mInRangeObjectsSet.size() > 0;
+    return !mInRangeObjectsSet.empty();
 }
 
 size_t Object::getInRangeObjectsCount()
@@ -1522,20 +1517,10 @@ size_t Object::getInRangeObjectsCount()
     return mInRangeObjectsSet.size();
 }
 
-bool Object::isObjectInInRangeObjectsSet(Object* pObj)
+bool Object::isObjectInInRangeObjectsSet(Object* pObj) const
 {
     std::scoped_lock<std::mutex> guard(m_inRangeSetMutex);
-
-    // Do not use std::find here - if something is added to or removed from the in range vector at the same time
-    // the std::find causes a crash because vector iterator is out of range.
-    // Tested with transports and gameobjects -Appled
-    for (const auto& inRangeObj : mInRangeObjectsSet)
-    {
-        if (inRangeObj == pObj)
-            return true;
-    }
-
-    return false;
+    return std::find(mInRangeObjectsSet.cbegin(), mInRangeObjectsSet.cend(), pObj) != mInRangeObjectsSet.cend();
 }
 
 void Object::removeObjectFromInRangeObjectsSet(Object* pObj)

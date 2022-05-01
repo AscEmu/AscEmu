@@ -61,7 +61,6 @@ public:
 
     // Update Transporter Position and Transport Passengers
     void Update(unsigned long /*time_passed*/);
-    void delayedUpdate(unsigned long /*time_passed*/);
 
     // Populate Transporters with Creatures and Gameobjects
     void LoadStaticPassengers();
@@ -114,6 +113,8 @@ public:
 
     uint32_t getCurrentFrame() { return _currentFrame->Index; }
 
+    void DelayedTeleportTransport();
+
     bool isTransporter() const override { return true; }
 
 private:
@@ -122,10 +123,6 @@ private:
 
     // Occours when Transport reaches Teleport Frame
     bool TeleportTransport(uint32_t newMapId, float x, float y, float z, float o);
-    void DelayedTeleportTransport(WorldMap* oldMap);
-
-    // RemoveTransport
-    void delayedRemoveFromMap();
 
     // Helper to Port Players
     void TeleportPlayers(float x, float y, float z, float o, uint32_t newMapId, uint32_t oldMapId, bool newMap);

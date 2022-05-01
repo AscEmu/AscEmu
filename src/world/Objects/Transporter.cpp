@@ -35,6 +35,9 @@ Transporter::Transporter(uint64_t guid) : GameObject(guid), _passengerTeleportIt
 
 Transporter::~Transporter()
 {
+    if (getWorldMap())
+        getWorldMap()->removeDelayedRemoveFor(this);
+
     ASSERT(_passengers.empty());
     _passengers.clear();
 }
@@ -78,6 +81,24 @@ bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float
 
 void Transporter::Update(unsigned long time_passed)
 {
+    if (_delayedTeleport)
+    {
+        _delayedTeleport = false;
+        getWorldMap()->markDelayedRemoveFor(this, false);
+        return;
+    }
+
+    if (_delayedMapRemove)
+    {
+        _delayedMapRemoveTimer -= time_passed;
+        if (_delayedMapRemoveTimer <= 0)
+        {
+            _delayedMapRemove = false;
+            getWorldMap()->markDelayedRemoveFor(this, true);
+            return;
+        }
+    }
+
     if (GetKeyFrames().size() <= 1)
         return;
 
@@ -173,26 +194,6 @@ void Transporter::Update(unsigned long time_passed)
         }
         else // When Transport Stopped keep updating players position
             UpdatePlayerPositions(_passengers);
-    }
-}
-
-void Transporter::delayedUpdate(unsigned long time_passed)
-{
-    if (GetKeyFrames().size() <= 1)
-        return;
-
-    if (_delayedTeleport)
-        DelayedTeleportTransport(_delayedTransportFromMap);
-
-    if (_delayedMapRemove)
-    {
-        _delayedMapRemoveTimer -= time_passed;
-        if (_delayedMapRemoveTimer <= 0)
-        {
-            _delayedMapRemove = false;
-            delayedRemoveFromMap();
-            return;
-        }
     }
 }
 
@@ -523,12 +524,6 @@ void Transporter::removeFromMap()
     _delayedMapRemove = true;
 }
 
-void Transporter::delayedRemoveFromMap()
-{
-    getWorldMap()->removeFromMapMgr(this);
-    RemoveFromWorld(true);
-}
-
 bool Transporter::TeleportTransport(uint32_t newMapid, float x, float y, float z, float o)
 {
     WorldMap* oldMap = getWorldMap();
@@ -553,14 +548,12 @@ bool Transporter::TeleportTransport(uint32_t newMapid, float x, float y, float z
     }
 }
 
-void Transporter::DelayedTeleportTransport(WorldMap* oldMap)
+void Transporter::DelayedTeleportTransport()
 {
-    if (!_delayedTeleport)
+    if (!_delayedTransportFromMap)
         return;
 
-    _delayedTeleport = false;
-    _delayedTransportFromMap = nullptr;
-    oldMap->removeFromMapMgr(this);
+    _delayedTransportFromMap->removeFromMapMgr(this);
     RemoveFromWorld(false);
 
     // Set new Map Information
@@ -578,7 +571,9 @@ void Transporter::DelayedTeleportTransport(WorldMap* oldMap)
     getWorldMap()->addToMapMgr(this);
 
     // Teleport Players
-    TeleportPlayers(x, y, z, o, _nextFrame->Node.mapid, oldMap->getBaseMap()->getMapId(), true);
+    TeleportPlayers(x, y, z, o, _nextFrame->Node.mapid, _delayedTransportFromMap->getBaseMap()->getMapId(), true);
+
+    _delayedTransportFromMap = nullptr;
 
     // Update Transport Positions
     UpdatePosition(x, y, z, o);

@@ -231,7 +231,6 @@ public:
 
     float getDistanceSq(LocationVector target) const;
     float getDistanceSq(float x, float y, float z) const;
-    Player* asPlayer();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spell functions
@@ -295,7 +294,7 @@ public:
     bool hasInRangeObjects();
     size_t getInRangeObjectsCount();
 
-    bool isObjectInInRangeObjectsSet(Object* pObj);
+    bool isObjectInInRangeObjectsSet(Object* pObj) const;
     void removeObjectFromInRangeObjectsSet(Object* pObj);
 
     // Players

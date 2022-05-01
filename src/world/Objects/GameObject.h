@@ -521,7 +521,7 @@ public:
     MapCell* m_respawnCell = nullptr;
 
         void SetOverrides(uint32 go_overrides) { m_overrides = go_overrides; }
-        uint32 GetOverrides() { return m_overrides; }
+        uint32 GetOverrides() const { return m_overrides; }
 
         void SetRotationQuat(float qx, float qy, float qz, float qw);
 
