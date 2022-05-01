@@ -472,6 +472,14 @@ uint32 const* getTalentTabPages(uint8 playerClass)
     return InspectTalentTabPages[playerClass];
 }
 
+uint32_t getLiquidFlags(uint32_t liquidType)
+{
+    if (DBC::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.LookupEntry(liquidType))
+        return 1 << liq->Type;
+
+    return 0;
+}
+
 uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerType)
 {
     return powerIndexByClass[playerClass][powerType];

@@ -126,5 +126,7 @@ std::string generateName(uint32_t type = 0);
 
 uint32_t const* getTalentTabPages(uint8_t playerClass);
 
+uint32_t getLiquidFlags(uint32_t liquidId);
+
 bool LoadDBCs();
 #endif

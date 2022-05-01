@@ -56,7 +56,7 @@ struct TileMapHeightHeader
 struct TileMapLiquidHeader
 {
     uint32_t fourcc;
-    uint16_t flags;
+    uint8_t flags;
     uint8_t liquidFlags;
     uint16_t liquidType;
     uint8_t offsetX;

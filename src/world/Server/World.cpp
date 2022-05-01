@@ -37,6 +37,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/WaypointManager.h"
 #include "Packets/SmsgMessageChat.h"
 
+#include "VMapFactory.h"
+#include "VMapManager2.h"
+
 #if VERSION_STRING >= Cata
 #include "Management/Guild/GuildFinderMgr.hpp"
 #endif
@@ -726,6 +729,10 @@ bool World::setInitialWorldSettings()
         std::string vmapPath = worldConfig.server.dataDir + "vmaps";
         LoadGameObjectModelList(vmapPath);
     }
+
+    // Initialize Vmaps Liquid
+    VMAP::VMapManager2* vmmgr2 = VMAP::VMapFactory::createOrGetVMapManager();
+    vmmgr2->GetLiquidFlagsPtr = &getLiquidFlags;
 
     sInstanceMgr.loadInstances();
     loadMySQLStores();

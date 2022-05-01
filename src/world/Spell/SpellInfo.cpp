@@ -1153,3 +1153,35 @@ bool SpellInfo::isTriggerSpellCastedByCaster(SpellInfo const* triggeringSpell) c
 
     return false;
 }
+
+float SpellInfo::getMinRange(bool positive /*= false*/) const
+{
+    DBC::Structures::SpellRangeEntry const* RangeEntry = sSpellRangeStore.LookupEntry(getRangeIndex());
+    if (!RangeEntry)
+        return 0.0f;
+#if VERSION_STRING > TBC
+    if (positive)
+        return RangeEntry->minRangeFriendly;
+#endif
+    return RangeEntry->minRange;
+}
+
+float SpellInfo::getMaxRange(bool positive /*= false*/, Object* caster /*= nullptr*/, Spell* spell /*= nullptr*/) const
+{
+    DBC::Structures::SpellRangeEntry const* RangeEntry = sSpellRangeStore.LookupEntry(getRangeIndex());
+    if (!RangeEntry)
+        return 0.0f;
+    float range;
+#if VERSION_STRING > TBC
+    if (positive)
+        range = RangeEntry->maxRangeFriendly;
+    else
+#endif
+        range = RangeEntry->maxRange;
+    if (caster)
+        if (Player* modOwner = caster->getPlayerOwner())
+            modOwner->applySpellModifiers(SPELLMOD_RANGE, &range, this, spell);
+
+    return range;
+}
+

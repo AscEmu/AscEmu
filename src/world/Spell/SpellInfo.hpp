@@ -498,6 +498,9 @@ public:
 
     uint32_t getSpellDifficultyID() const { return SpellDifficultyId; }
 
+    float getMinRange(bool positive = false) const;
+    float getMaxRange(bool positive = false, Object* caster = nullptr, Spell* spell = nullptr) const;
+
     //////////////////////////////////////////////////////////////////////////////////////////
     //custom values
     uint32_t getCustom_BGR_one_buff_on_target() const { return custom_BGR_one_buff_on_target; }

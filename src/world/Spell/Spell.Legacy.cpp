@@ -2174,33 +2174,31 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                 uint32 entry = getSpellInfo()->getEffectMiscValue(0);
                 if (entry == GO_FISHING_BOBBER)
                 {
-                    //uint32 mapid = p_caster->GetMapId();
-                    float px = u_caster->GetPositionX();
-                    float py = u_caster->GetPositionY();
-                    float pz = u_caster->GetPositionZ();
-                    float orient = m_caster->GetOrientation();
-                    float posx = 0, posy = 0, posz = 0;
-                    float co = cos(orient);
-                    float si = sin(orient);
                     WorldMap* map = m_caster->getWorldMap();
+                    float minDist = m_spellInfo->getMinRange(true);
+                    float maxDist = m_spellInfo->getMaxRange(true);
+                    float posx = 0, posy = 0, posz = 0;
+                    float dist = Util::getRandomFloat(minDist, maxDist);
 
-                    float r;
-                    for (r = 20; r > 10; r--)
-                    {
-                        posx = px + r * co;
-                        posy = py + r * si;
-                        uint32 liquidtype = map->getLiquidStatus(m_caster->GetPhase(), posx, posy, posz, MAP_LIQUID_TYPE_WATER);
-                        if (!(liquidtype & ZLiquidStatus::LIQUID_MAP_IN_WATER))//water
-                            continue;
+                    float angle = Util::getRandomFloat(0.0f, 1.0f) * static_cast<float>(M_PI * 35.0f / 180.0f) - static_cast<float>(M_PI * 17.5f / 180.0f);
+                    m_caster->getClosePoint(posx, posy, posz, 0.388999998569489f, dist, angle);
 
-                        if (!m_caster->IsWithinLOS(LocationVector(posx, posy, posz)))
-                            continue;
+                    float ground = m_caster->getMapHeight(posx, posy, posz);
+                    float liquidLevel = VMAP_INVALID_HEIGHT_VALUE;
 
-                        if (posz > u_caster->getMapHeight(posx, posy, pz + 2))
-                            break;
-                    }
-                    if (r <= 10)
+                    LiquidData liquidData;
+                    if (map->getLiquidStatus(m_caster->GetPhase(), posx, posy, posz, MAP_ALL_LIQUIDS, &liquidData, m_caster->getCollisionHeight()))
+                        liquidLevel = liquidData.level;
+
+                    if (liquidLevel <= ground)
+                        return SPELL_FAILED_NOT_FISHABLE;;
+
+                    if (ground + 0.75 > liquidLevel)
+#if VERSION_STRING > Classic
+                        return SPELL_FAILED_TOO_SHALLOW;
+#else
                         return SPELL_FAILED_NOT_FISHABLE;
+#endif
 
                     // if we are already fishing, don't cast it again
                     if (p_caster->getSummonedObject())

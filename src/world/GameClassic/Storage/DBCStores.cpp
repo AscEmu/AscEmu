@@ -317,4 +317,12 @@ uint32_t const* getTalentTabPages(uint8_t playerClass)
     return InspectTalentTabPages[playerClass];
 }
 
+uint32_t getLiquidFlags(uint32_t liquidType)
+{
+    if (DBC::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.LookupEntry(liquidType))
+        return 1 << liq->Type;
+
+    return 0;
+}
+
 #endif
