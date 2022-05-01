@@ -2065,7 +2065,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 }
                 else
                 {
-                    distance = GetMaxRange(sSpellRangeStore.LookupEntry(getSpellInfo()->getRangeIndex()));
+                    distance = getSpellInfo()->getMaxRange(false, p_caster, this);
                     distance *= distance;
                 }
 

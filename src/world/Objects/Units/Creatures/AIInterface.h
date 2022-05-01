@@ -184,8 +184,8 @@ public:
 
         if (mSpellInfo != nullptr)
         {
-            mMinPositionRangeToCast = GetMinRange(sSpellRangeStore.LookupEntry(mSpellInfo->getRangeIndex()));
-            mMaxPositionRangeToCast = GetMaxRange(sSpellRangeStore.LookupEntry(mSpellInfo->getRangeIndex()));
+            mMinPositionRangeToCast = mSpellInfo->getMinRange();
+            mMaxPositionRangeToCast = mSpellInfo->getMaxRange();
         }
 
         mAttackStopTimer = 0;

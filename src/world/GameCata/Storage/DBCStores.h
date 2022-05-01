@@ -27,20 +27,6 @@ inline uint32 GetCastTime(DBC::Structures::SpellCastTimesEntry const* time)
 
     return time->CastTime;
 }
-inline float GetMaxRange(DBC::Structures::SpellRangeEntry const* range)
-{
-    if (range == nullptr)
-        return 0;
-
-    return range->maxRange;
-}
-inline float GetMinRange(DBC::Structures::SpellRangeEntry const* range)
-{
-    if (range == nullptr)
-        return 0;
-
-    return range->minRange;
-}
 inline uint32 GetDuration(DBC::Structures::SpellDurationEntry const* dur)
 {
     if (dur == nullptr)

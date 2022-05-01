@@ -851,11 +851,11 @@ AI_Spell* Pet::CreateAISpell(SpellInfo const* info)
     sp->agent = AGENT_SPELL;
     sp->entryId = getEntry();
     sp->floatMisc1 = 0;
-    sp->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(info->getRangeIndex()));
+    sp->maxrange = info->getMaxRange();
     if (sp->maxrange < std::sqrt(info->custom_base_range_or_radius_sqr))
         sp->maxrange = std::sqrt(info->custom_base_range_or_radius_sqr);
 
-    sp->minrange = GetMinRange(sSpellRangeStore.LookupEntry(info->getRangeIndex()));
+    sp->minrange = info->getMinRange();
     sp->Misc2 = 0;
     sp->procChance = 0;
     sp->spell = info;

@@ -1286,7 +1286,7 @@ void AIInterface::updateCombat(uint32_t p_time)
             }
         }
 
-        const auto maxRange = GetMaxRange(sSpellRangeStore.LookupEntry(getSpellEntry(spellId)->getRangeIndex()));
+        const auto maxRange = getSpellEntry(spellId)->getMaxRange();
         if (canCastSpell && (maxRange == 0.0f || getUnit()->isWithinCombatRange(getCurrentTarget(), maxRange)))
         {
             SpellInfo const* spellInfo = getSpellEntry(spellId);

@@ -125,6 +125,9 @@ public:
 
     bool isTriggerSpellCastedByCaster(SpellInfo const* triggeringSpell) const;
 
+    float_t getMinRange(bool friendly = false) const;
+    float_t getMaxRange(bool friendly = false, Object* caster = nullptr, Spell* spell = nullptr) const;
+
     // Getters for spell data
     uint32_t getId() const { return Id; }
     uint32_t getCategory() const { return Category; }
@@ -497,9 +500,6 @@ public:
     }
 
     uint32_t getSpellDifficultyID() const { return SpellDifficultyId; }
-
-    float getMinRange(bool positive = false) const;
-    float getMaxRange(bool positive = false, Object* caster = nullptr, Spell* spell = nullptr) const;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     //custom values

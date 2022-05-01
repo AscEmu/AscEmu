@@ -136,9 +136,8 @@ public:
                     sp1.Misc2 = 0;
                     sp1.procCount = 0;
                     sp1.procChance = 100;
-                    range = sSpellRangeStore.LookupEntry(sp1.spell->getRangeIndex());
-                    sp1.minrange = GetMinRange(range);
-                    sp1.maxrange = GetMaxRange(range);
+                    sp1.minrange = sp1.spell->getMinRange();
+                    sp1.maxrange = sp1.spell->getMaxRange();
 
                     getCreature()->getAIInterface()->addSpellToList(&sp1);
 
@@ -156,9 +155,8 @@ public:
                     sp2.Misc2 = 0;
                     sp2.procCount = 0;
                     sp2.procChance = 100;
-                    range = sSpellRangeStore.LookupEntry(sp2.spell->getRangeIndex());
-                    sp2.minrange = GetMinRange(range);
-                    sp2.maxrange = GetMaxRange(range);
+                    sp2.minrange = sp2.spell->getMinRange();
+                    sp2.maxrange = sp2.spell->getMaxRange();
 
                     getCreature()->getAIInterface()->addSpellToList(&sp2);
                 }

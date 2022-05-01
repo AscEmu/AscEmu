@@ -65,8 +65,8 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
     ai_spell->cooldown = spellCooldown;
     ai_spell->procCounter = 0;
     ai_spell->cooldowntime = 0;
-    ai_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(spell_entry->getRangeIndex()));
-    ai_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(spell_entry->getRangeIndex()));
+    ai_spell->minrange = spell_entry->getMinRange();
+    ai_spell->maxrange = spell_entry->getMaxRange();
 
     const_cast<CreatureProperties*>(creature_target->GetCreatureProperties())->spells.push_back(ai_spell);
 

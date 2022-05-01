@@ -654,7 +654,7 @@ bool DemonicCircleSummon(uint8_t /*effectIndex*/, Aura* a, bool apply)
         GameObject* circle = m_target->getWorldMap()->getGameObject(a->getOwner()->m_ObjectSlots[0]);
         SpellInfo const* sp = sSpellMgr.getSpellInfo(48020);
 
-        if (circle != NULL && sp != NULL && m_target->CalcDistance(circle) <= GetMaxRange(sSpellRangeStore.LookupEntry(sp->getRangeIndex())))
+        if (circle != NULL && sp != NULL && m_target->CalcDistance(circle) <= sp->getMaxRange())
         {
             if (!m_target->hasAurasWithId(62388))
                 m_target->castSpell(m_target, 62388, true);

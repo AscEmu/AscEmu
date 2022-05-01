@@ -1154,34 +1154,36 @@ bool SpellInfo::isTriggerSpellCastedByCaster(SpellInfo const* triggeringSpell) c
     return false;
 }
 
-float SpellInfo::getMinRange(bool positive /*= false*/) const
+float_t SpellInfo::getMinRange([[maybe_unused]]bool friendly/* = false*/) const
 {
-    DBC::Structures::SpellRangeEntry const* RangeEntry = sSpellRangeStore.LookupEntry(getRangeIndex());
-    if (!RangeEntry)
+    const auto* const rangeEntry = sSpellRangeStore.LookupEntry(getRangeIndex());
+    if (rangeEntry == nullptr)
         return 0.0f;
+
 #if VERSION_STRING > TBC
-    if (positive)
-        return RangeEntry->minRangeFriendly;
+    if (friendly)
+        return rangeEntry->minRangeFriendly;
 #endif
-    return RangeEntry->minRange;
+
+    return rangeEntry->minRange;
 }
 
-float SpellInfo::getMaxRange(bool positive /*= false*/, Object* caster /*= nullptr*/, Spell* spell /*= nullptr*/) const
+float_t SpellInfo::getMaxRange([[maybe_unused]]bool friendly/* = false*/, Object* caster/* = nullptr*/, Spell* spell/* = nullptr*/) const
 {
-    DBC::Structures::SpellRangeEntry const* RangeEntry = sSpellRangeStore.LookupEntry(getRangeIndex());
-    if (!RangeEntry)
+    const auto* const rangeEntry = sSpellRangeStore.LookupEntry(getRangeIndex());
+    if (rangeEntry == nullptr)
         return 0.0f;
-    float range;
+
+    float_t range = 0.0f;
 #if VERSION_STRING > TBC
-    if (positive)
-        range = RangeEntry->maxRangeFriendly;
+    if (friendly)
+        range = rangeEntry->maxRangeFriendly;
     else
 #endif
-        range = RangeEntry->maxRange;
-    if (caster)
-        if (Player* modOwner = caster->getPlayerOwner())
-            modOwner->applySpellModifiers(SPELLMOD_RANGE, &range, this, spell);
+        range = rangeEntry->maxRange;
+
+    if (caster != nullptr && caster->isCreatureOrPlayer())
+        dynamic_cast<Unit*>(caster)->applySpellModifiers(SPELLMOD_RANGE, &range, this, spell);
 
     return range;
 }
-

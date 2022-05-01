@@ -241,7 +241,7 @@ void Spell::AddChainTargets(uint32 i, uint32 targetType, float /*r*/, uint32 /*m
         firstTarget = u_caster;
 
     bool RaidOnly = false;
-    float range = GetMaxRange(sSpellRangeStore.LookupEntry(m_spellInfo->getRangeIndex()));//this is probably wrong,
+    float range = m_spellInfo->getMaxRange(false, m_caster, this);//this is probably wrong,
     //this is cast distance, not searching distance
     range *= range;
 
