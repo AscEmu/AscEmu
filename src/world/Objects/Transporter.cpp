@@ -42,6 +42,13 @@ Transporter::~Transporter()
     _passengers.clear();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Essential functions
+void Transporter::OnPushToWorld()
+{
+    _pendingMapChange = false;
+}
+
 bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float z, float ang, uint8_t animprogress)
 {
     gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
@@ -84,8 +91,8 @@ void Transporter::Update(unsigned long time_passed)
     if (_delayedTeleport)
     {
         _delayedTeleport = false;
+        _pendingMapChange = true;
         getWorldMap()->markDelayedRemoveFor(this, false);
-        return;
     }
 
     if (_delayedMapRemove)
@@ -94,10 +101,13 @@ void Transporter::Update(unsigned long time_passed)
         if (_delayedMapRemoveTimer <= 0)
         {
             _delayedMapRemove = false;
+            _pendingMapChange = true;
             getWorldMap()->markDelayedRemoveFor(this, true);
-            return;
         }
     }
+
+    if (_pendingMapChange)
+        return;
 
     if (GetKeyFrames().size() <= 1)
         return;
@@ -162,13 +172,9 @@ void Transporter::Update(unsigned long time_passed)
     // Add model to map after we are fully done with moving maps
     if (_delayedAddModel)
     {
-        _delayedAddModelTimer -= time_passed;
-        if (_delayedAddModelTimer <= 0)
-        {
-            _delayedAddModel = false;
-            if (m_model)
-                getWorldMap()->insertGameObjectModel(*m_model);
-        }
+        _delayedAddModel = false;
+        if (m_model)
+            getWorldMap()->insertGameObjectModel(*m_model);
     }
 
     // Set position
@@ -520,7 +526,7 @@ float Transporter::CalculateSegmentPos(float now)
 void Transporter::removeFromMap()
 {
     UnloadStaticPassengers();
-    _delayedMapRemove = 100;
+    _delayedMapRemoveTimer = 100;
     _delayedMapRemove = true;
 }
 
@@ -550,7 +556,7 @@ bool Transporter::TeleportTransport(uint32_t newMapid, float x, float y, float z
 
 void Transporter::DelayedTeleportTransport()
 {
-    if (!_delayedTransportFromMap)
+    if (!_delayedTransportFromMap || !_pendingMapChange)
         return;
 
     _delayedTransportFromMap->removeFromMapMgr(this);

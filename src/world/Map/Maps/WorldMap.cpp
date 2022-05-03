@@ -187,12 +187,6 @@ bool WorldMap::Do()
 
     SetThreadName("WorldMap - M%u|I%u", getBaseMap()->getMapId(), getInstanceId());
 
-    // Wait for world server to completely start before updating maps
-    while (!sWorld.isWorldServerCompletelyLoaded())
-    {
-        Arcemu::Sleep(100);
-    }
-
     m_lastUpdateTime = Util::getMSTime();
 
     while (GetThreadState() != THREADSTATE_TERMINATE && !thread_shutdown)
@@ -264,7 +258,7 @@ void WorldMap::update(uint32_t t_diff)
 
     // Update Transporters
     auto diffTime = msTime - m_lastTransportUpdateTimer;
-    if (diffTime >= 100 && sWorld.isWorldServerCompletelyLoaded())
+    if (diffTime >= 100)
     {
         {
             std::scoped_lock<std::mutex> guard(m_transportsLock);
@@ -305,10 +299,6 @@ void WorldMap::update(uint32_t t_diff)
             }
         }
 
-        m_lastTransportUpdateTimer = msTime;
-    }
-    else if (!sWorld.isWorldServerCompletelyLoaded())
-    {
         m_lastTransportUpdateTimer = msTime;
     }
 

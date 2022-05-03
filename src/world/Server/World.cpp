@@ -679,16 +679,6 @@ void World::sendBroadcastMessageById(uint32_t broadcastId)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // General Functions
-void World::setWorldServerCompletelyLoaded(bool set)
-{
-    m_worldServerCompletelyLoaded = set;
-}
-
-bool World::isWorldServerCompletelyLoaded() const
-{
-    return m_worldServerCompletelyLoaded;
-}
-
 bool World::setInitialWorldSettings()
 {
     auto startTime = Util::TimeNow();
@@ -742,23 +732,22 @@ bool World::setInitialWorldSettings()
     sLootMgr.loadLoot();
 
     loadMySQLTablesByTask();
+
+    sMapMgr.initialize();
+
     logEntitySize();
 
     sSpellMgr.loadSpellDataFromDatabase();
     sSpellMgr.calculateSpellCoefficients();
 
-    sLogger.info("World : Loading Transporters...");
-    sTransportHandler.loadTransportTemplates();
-
-    sMapMgr.initialize();
-
-    sLogger.info("World : Starting Transport System...");
-    sTransportHandler.spawnContinentTransports();
-
 #if VERSION_STRING > TBC
     sLogger.info("World : Starting Achievement System...");
     sObjectMgr.LoadAchievementCriteriaList();
 #endif
+
+    sLogger.info("World : Starting Transport System...");
+    sTransportHandler.loadTransportTemplates();
+    sTransportHandler.spawnContinentTransports();
 
     sLogger.info("World : Starting Mail System...");
     sMailSystem.StartMailSystem();

@@ -56,6 +56,10 @@ public:
     typedef std::set<Object*> PassengerSet;
     ~Transporter();
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Essential functions
+    void OnPushToWorld() override;
+
     // Creates The Transporter
     bool Create(uint32_t entry, uint32_t mapid, float x, float y, float z, float ang, uint8_t animprogress);
 
@@ -150,6 +154,7 @@ private:
     KeyFrameVec::const_iterator _nextFrame;
     bool _isMoving = true;
     bool _pendingStop = false;
+    bool _pendingMapChange = false;
 
     // These are needed to properly control events triggering only once for each frame
     bool _triggeredArrivalEvent = false;
@@ -159,7 +164,6 @@ private:
     PassengerSet::iterator _passengerTeleportItr;
     PassengerSet _staticPassengers;
 
-    int32_t _delayedAddModelTimer = 500;
     int32_t _delayedMapRemoveTimer = 100;
     int32_t _positionChangeTimer = 100;
     int32_t _mapUpdateTimer = 0;

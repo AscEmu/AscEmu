@@ -351,8 +351,6 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
         sScriptMgr.DumpUnimplementedSpells();
     }
 
-    sWorld.setWorldServerCompletelyLoaded(true);
-
     sLogger.info("Server : Ready for connections. Startup time: %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     sGameEventMgrThread.initialize();
