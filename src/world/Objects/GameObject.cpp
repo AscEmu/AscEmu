@@ -357,11 +357,6 @@ void GameObject::Despawn(uint32 delay, uint32 respawntime)
     if (!IsInWorld())
         return;
 
-    // Remove the Model
-    if (m_model)
-        if (getWorldMap()->containsGameObjectModel(*m_model))
-            getWorldMap()->removeGameObjectModel(*m_model);
-
     //This is for go get deleted while looting
     if (m_spawn)
     {
@@ -381,7 +376,7 @@ void GameObject::Despawn(uint32 delay, uint32 respawntime)
 
             m_respawnCell = pCell;
             saveRespawnTime(respawntime);
-            Object::RemoveFromWorld(false);
+            RemoveFromWorld(false);
         }
         else
         {
@@ -390,7 +385,7 @@ void GameObject::Despawn(uint32 delay, uint32 respawntime)
     }
     else
     {
-        Object::RemoveFromWorld(true);
+        RemoveFromWorld(true);
         ExpireAndDelete();
     }
 }
