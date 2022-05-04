@@ -1688,33 +1688,12 @@ void Object::sendGameobjectDespawnAnim()
 //////////////////////////////////////////////////////////////////////////////////////////
 // AGPL Starts
 
-::DBC::Structures::AreaTableEntry const* Object::GetArea()
+::DBC::Structures::AreaTableEntry const* Object::GetArea() const
 {
-    if (!this->IsInWorld()) return nullptr;
+    if (!IsInWorld())
+        return nullptr;
 
-    auto map_mgr = this->getWorldMap();
-    if (!map_mgr) return nullptr;
-
-    uint32_t mogp_flags;
-    int32_t adt_id;
-    int32_t root_id;
-    int32_t group_id;
-    uint32_t area_flag_without_adt_id;
-
-    bool have_area_info = map_mgr->getAreaInfo(GetPhase(), GetPositionX(), GetPositionY(), GetPositionZ(), mogp_flags, adt_id, root_id, group_id);
-
-    auto tile = map_mgr->getTerrain()->getTile(GetPositionX(), GetPositionY());
-    if (tile)
-        area_flag_without_adt_id = tile->m_map.getArea(GetPositionX(), GetPositionY());
-    else
-        area_flag_without_adt_id = 0;
-
-    auto area_flag = MapManagement::AreaManagement::AreaStorage::GetFlagByPosition(area_flag_without_adt_id, have_area_info, mogp_flags, adt_id, root_id, group_id, GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), nullptr);
-    auto at = MapManagement::AreaManagement::AreaStorage::GetAreaByFlag(area_flag);
-    if (!at)
-        at = MapManagement::AreaManagement::AreaStorage::GetAreaByMapId(this->GetMapId());
-
-    return at;
+    return MapManagement::AreaManagement::AreaStorage::getExactArea(getWorldMap(), GetPosition(), GetPhase());
 }
 
 void Object::_Create(uint32 mapid, float x, float y, float z, float ang)

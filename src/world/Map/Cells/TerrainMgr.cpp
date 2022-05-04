@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include <WorldConf.h>
+#include "Map/Area/AreaManagementGlobals.hpp"
+#include "Map/Area/AreaStorage.hpp"
 #include "VMapFactory.h"
 #include "IVMapManager.h"
 #include "G3D/Plane.h"
@@ -525,7 +527,7 @@ ZLiquidStatus TileMap::getLiquidStatus(float x, float y, float z, uint8_t ReqLiq
                 uint32_t overrideLiquid = area->liquid_type_override[liquidEntry->Type];
                 if (!overrideLiquid && area->zone)
                 {
-                    area = sAreaStore.LookupEntry(area->zone);
+                    area = MapManagement::AreaManagement::AreaStorage::GetAreaById(area->zone);
                     if (area)
                         overrideLiquid = area->liquid_type_override[liquidEntry->Type];
                 }

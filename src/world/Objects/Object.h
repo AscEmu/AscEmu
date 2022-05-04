@@ -366,7 +366,7 @@ public:
         const float & GetSpawnO() const { return m_spawnLocation.o; }
         LocationVector GetSpawnPosition() const { return m_spawnLocation; }
 
-        ::DBC::Structures::AreaTableEntry const* GetArea();
+        ::DBC::Structures::AreaTableEntry const* GetArea() const;
 
         void getPosition(float &x, float &y) const { x = GetPositionX(); y = GetPositionY(); }
         void getPosition(float &x, float &y, float &z) const { getPosition(x, y); z = GetPositionZ(); }
@@ -622,7 +622,7 @@ public:
 
         uint32 m_phase = 1;         // This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
 
-    uint32 GetPhase() { return m_phase; }
+    uint32 GetPhase() const const { return m_phase; }
         virtual void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
 
         // SpellLog packets just to keep the code cleaner and better to read

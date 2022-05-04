@@ -986,8 +986,7 @@ void Player::setAreaId(uint32_t area) { m_areaId = area; }
 
 bool Player::isInCity() const
 {
-    const auto at = sAreaStore.LookupEntry(getWorldMap()->getAreaId(/*GetPhase()*/0, GetPosition()));
-    if (at != nullptr)
+    if (const auto at = GetArea())
     {
         ::DBC::Structures::AreaTableEntry const* zt = nullptr;
         if (at->zone)
@@ -1563,7 +1562,7 @@ void Player::zoneUpdate(uint32_t zoneId)
         sHookInterface.OnZone(this, zoneId, oldzone);
         CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnZoneChange)(this, zoneId, oldzone);
 
-        auto at = sAreaStore.LookupEntry(getWorldMap()->getAreaId(GetPhase(), GetPosition()));
+        auto at = GetArea();
         if (at && (at->team == AREAC_SANCTUARY || at->flags & AREA_SANCTUARY))
         {
             Unit* pUnit = (getTargetGuid() == 0) ? nullptr : (m_WorldMap ? m_WorldMap->getUnit(getTargetGuid()) : nullptr);
@@ -2912,7 +2911,7 @@ bool Player::canUseFlyingMountHere()
     auto areaEntry = GetArea();
     if (areaEntry == nullptr)
         // If area is null, try finding any area from the zone with zone id
-        areaEntry = sAreaStore.LookupEntry(GetZoneId());
+        areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(GetZoneId());
     if (areaEntry == nullptr)
         return false;
 

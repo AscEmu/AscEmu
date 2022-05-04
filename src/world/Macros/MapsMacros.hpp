@@ -86,3 +86,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #define MAP_LIQUID_NO_TYPE    0x0001
 #define MAP_LIQUID_NO_HEIGHT  0x0002
+
+// Extra tolerance to z position to check if it is in air or on ground.
+#define GROUND_HEIGHT_TOLERANCE 0.05f

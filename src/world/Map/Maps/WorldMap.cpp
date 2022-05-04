@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "VMapFactory.h"
 #include "MMapFactory.h"
 #include "Map/Cells/CellHandler.hpp"
+#include "Macros/MapsMacros.hpp"
 #include "shared/WoWGuid.h"
 #include "MapScriptInterface.h"
 #include "Server/Script/ScriptMgr.h"
@@ -1020,7 +1021,7 @@ void WorldMap::updateAllCells(bool apply, uint32_t areamask)
                 if (!cellHasAreaID(x, y, AreaID))
                     continue;
 
-                auto at = sAreaStore.LookupEntry(AreaID);
+                auto at = MapManagement::AreaManagement::AreaStorage::GetAreaById(AreaID);
                 if (at == nullptr)
                     continue;
                 if (at->zone != areamask)
@@ -2513,20 +2514,25 @@ uint32_t WorldMap::getAreaId(uint32_t phaseMask, float x, float y, float z)
 
 uint32_t WorldMap::getZoneId(uint32_t phaseMask, float x, float y, float z)
 {
-    uint32_t areaId = getAreaId(phaseMask, x, y, z);
-    if (DBC::Structures::AreaTableEntry const* area = sAreaStore.LookupEntry(areaId))
+    uint32_t areaId = 0;
+    if (const auto* area = MapManagement::AreaManagement::AreaStorage::getExactArea(this, LocationVector(x, y, z), phaseMask))
+    {
+        areaId = area->id;
         if (area->zone)
             return area->zone;
+    }
 
     return areaId;
 }
 
 void WorldMap::getZoneAndAreaId(uint32_t phaseMask, uint32_t& zoneid, uint32_t& areaid, float x, float y, float z)
 {
-    areaid = zoneid = getAreaId(phaseMask, x, y, z);
-    if (DBC::Structures::AreaTableEntry const* area = sAreaStore.LookupEntry(areaid))
+    if (const auto* area = MapManagement::AreaManagement::AreaStorage::getExactArea(this, LocationVector(x, y, z), phaseMask))
+    {
+        areaid = area->id;
         if (area->zone)
             zoneid = area->zone;
+    }
 }
 
 static inline bool isInWMOInterior(uint32_t mogpFlags)
@@ -2562,13 +2568,13 @@ ZLiquidStatus WorldMap::getLiquidStatus(uint32_t phaseMask, float x, float y, fl
 
                 if (liquid_type && liquid_type < 21)
                 {
-                    if (DBC::Structures::AreaTableEntry const* area = sAreaStore.LookupEntry(getAreaId(phaseMask, x, y, z)))
+                    if (const auto* area = MapManagement::AreaManagement::AreaStorage::getExactArea(this, LocationVector(x, y, z), phaseMask))
                     {
 #if VERSION_STRING > Classic
                         uint32_t overrideLiquid = area->liquid_type_override[liquidFlagType];
                         if (!overrideLiquid && area->zone)
                         {
-                            area = sAreaStore.LookupEntry(area->zone);
+                            area = MapManagement::AreaManagement::AreaStorage::GetAreaById(area->zone);
                             if (area)
                                 overrideLiquid = area->liquid_type_override[liquidFlagType];
                         }

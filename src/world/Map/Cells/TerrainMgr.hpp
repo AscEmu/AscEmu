@@ -21,8 +21,6 @@ namespace VMAP
 class TerrainHolder;
 class TerrainTile;
 
-float const GROUND_HEIGHT_TOLERANCE = 0.05f; // Extra tolerance to z position to check if it is in air or on ground.
-
 struct TileMapHeader
 {
     uint32_t mapMagic;

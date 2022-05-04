@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "VMapManager2.h"
 #include "MMapFactory.h"
 #include "Management/ArenaTeam.h"
+#include "Macros/MapsMacros.hpp"
 #include "AreaManagementGlobals.hpp"
 
 namespace MapManagement::AreaManagement
@@ -83,6 +84,41 @@ namespace MapManagement::AreaManagement
         return nullptr;
     }
 
+    DBC::Structures::AreaTableEntry const* AreaStorage::getExactArea(WorldMap* worldMap, LocationVector pos, uint32_t phaseMask)
+    {
+        if (worldMap == nullptr)
+            return nullptr;
+
+        uint32_t mogp_flags = 0;
+        int32_t adt_id = 0;
+        int32_t root_id = 0;
+        int32_t group_id = 0;
+        uint32_t area_flag_without_adt_id = 0;
+        float_t tileMapHeight = INVALID_HEIGHT;
+
+        const auto hasAreaInfo = worldMap->getAreaInfo(phaseMask, pos.x, pos.y, pos.z, mogp_flags, adt_id, root_id, group_id);
+
+        if (const auto* tile = worldMap->getTerrain()->getTile(pos.x, pos.y))
+        {
+            area_flag_without_adt_id = tile->m_map.getArea(pos.x, pos.y);
+            tileMapHeight = tile->m_map.getHeight(pos.x, pos.y);
+        }
+
+        const auto area_flag = MapManagement::AreaManagement::AreaStorage::GetFlagByPosition(area_flag_without_adt_id, tileMapHeight, hasAreaInfo, mogp_flags, adt_id, root_id, group_id, worldMap->getBaseMap()->getMapId(), pos.x, pos.y, pos.z, nullptr);
+        const auto* areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaByFlag(area_flag);
+
+        if (areaEntry == nullptr)
+            areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaByMapId(worldMap->getBaseMap()->getMapId());
+
+        if (areaEntry == nullptr)
+        {
+            if (const auto linkedZoneId = worldMap->getBaseMap()->getMapEntry()->linked_zone)
+                areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(linkedZoneId);
+        }
+
+        return areaEntry;
+    }
+
     DBC::Structures::AreaTableEntry const* AreaStorage::GetAreaById(uint32 area_id)
     {
         int32 area_flag = AreaStorage::GetFlagById(area_id);
@@ -120,7 +156,7 @@ namespace MapManagement::AreaManagement
         if (wmoEntry)
         {
             sLogger.debug("Got WMOAreaTableEntry! flag %u, areaid %u", wmoEntry->flags, wmoEntry->areaId);
-            atEntry = sAreaStore.LookupEntry(wmoEntry->areaId);
+            atEntry = GetAreaById(wmoEntry->areaId);
         }
 
         return IsOutdoorWMO(mogpFlags, adtId, rootId, groupId, wmoEntry, atEntry);
@@ -168,10 +204,11 @@ namespace MapManagement::AreaManagement
             return 0;
     }
 
-    const uint32 AreaStorage::GetFlagByPosition(uint32 area_flag_without_adt_id, bool have_area_info, uint32 /*mogp_flags*/, int32 adt_id, int32 root_id, int32 group_id, uint32 map_id, float /*x*/, float /*y*/, float /*z*/, bool* /*_out_is_outdoors*/)
+    const uint32 AreaStorage::GetFlagByPosition(uint32 area_flag_without_adt_id, uint32_t tileMapHeight, bool have_area_info, uint32 /*mogp_flags*/, int32 adt_id, int32 root_id, int32 group_id, uint32 map_id, float /*x*/, float /*y*/, float z, bool* /*_out_is_outdoors*/)
     {
         ::DBC::Structures::AreaTableEntry const* at_entry = nullptr;
-        if (have_area_info)
+        // floor is the height we are closer to (but only if above)
+        if (have_area_info && G3D::fuzzyGe(z, z - GROUND_HEIGHT_TOLERANCE) && (G3D::fuzzyLt(z, tileMapHeight - GROUND_HEIGHT_TOLERANCE) || z > tileMapHeight))
         {
             auto wmo_triple = GetWMOAreaTableEntryByTriple(root_id, adt_id, group_id);
             if (wmo_triple)
