@@ -622,7 +622,7 @@ public:
 
         uint32 m_phase = 1;         // This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
 
-    uint32 GetPhase() const const { return m_phase; }
+    uint32 GetPhase() const { return m_phase; }
         virtual void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
 
         // SpellLog packets just to keep the code cleaner and better to read
