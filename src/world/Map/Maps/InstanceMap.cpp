@@ -206,7 +206,7 @@ void InstanceMap::removePlayerFromMap(Player* /*player*/)
 {
     // if last player set unload timer
     if (!m_unloadTimer && getPlayerCount() == 1)
-        m_unloadTimer = m_unloadWhenEmpty ? 1U : 5U * MINUTE * IN_MILLISECONDS;
+        m_unloadTimer = m_unloadWhenEmpty ? 1U : worldConfig.server.mapUnloadTime * IN_MILLISECONDS;
 
     // for normal instances schedule the reset after all players have left
     setResetSchedule(true);

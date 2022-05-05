@@ -119,7 +119,7 @@ void MapMgr::createBaseMap(uint32_t mapId)
 
         if (!mapEntry->instanceable())
         {
-            m_WorldMaps[mapId] = createWorldMap(mapId, 300000);
+            m_WorldMaps[mapId] = createWorldMap(mapId, worldConfig.server.mapUnloadTime * 1000);
         }
     }
 }
@@ -140,14 +140,14 @@ WorldMap* MapMgr::createWorldMap(uint32_t mapId, uint32_t unloadTime)
 
     WorldMap* map = new WorldMap(baseMap, mapId, unloadTime, 0, InstanceDifficulty::Difficulties::DUNGEON_NORMAL);
 
-    // Scheduling the new map for running
-    ThreadPool.ExecuteTask(map);
-
     // Load Saved Respawns when existing
     map->loadRespawnTimes();
 
     // Initialize Map Script and Load Static Spawns
     map->initialize();
+
+    // Scheduling the new map for running
+    map->startMapThread();
 
     return map;
 }
@@ -299,10 +299,7 @@ InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, Instanc
 #endif
     sLogger.debug("MapMgr::createInstance Create %s map instance %d for %u created with difficulty %s", save ? "" : "new ", InstanceId, mapId, difficulty ? "heroic" : "normal");
 
-    InstanceMap* map = new InstanceMap(baseMap, mapId, 300000U, InstanceId, difficulty, InstanceTeam);
-
-    // Scheduling the new map for running
-    ThreadPool.ExecuteTask(map);
+    InstanceMap* map = new InstanceMap(baseMap, mapId, worldConfig.server.mapUnloadTime * 1000, InstanceId, difficulty, InstanceTeam);
 
     // Load Saved Respawns when existing
     map->loadRespawnTimes();
@@ -319,6 +316,10 @@ InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, Instanc
 
     // Add current Instance to our Active Instances
     m_InstancedMaps[InstanceId] = map;
+
+    // Scheduling the new map for running
+    map->startMapThread();
+
     return map;
 }
 
@@ -340,10 +341,7 @@ BattlegroundMap* MapMgr::createBattleground(uint32_t mapId)
 
     uint8_t spawnMode = InstanceDifficulty::Difficulties::DUNGEON_NORMAL;
 
-    BattlegroundMap* map = new BattlegroundMap(baseMap, mapId, 300000U, newInstanceId, spawnMode);
-
-    // Scheduling the new map for running
-    ThreadPool.ExecuteTask(map);
+    BattlegroundMap* map = new BattlegroundMap(baseMap, mapId, worldConfig.server.mapUnloadTime * 1000, newInstanceId, spawnMode);
 
     // Initialize Map Script and Load Static Spawns
     map->initialize();
@@ -352,6 +350,10 @@ BattlegroundMap* MapMgr::createBattleground(uint32_t mapId)
     map->updateAllCells(true);
 
     m_InstancedMaps[newInstanceId] = map;
+
+    // Scheduling the new map for running
+    map->startMapThread();
+
     return map;
 }
 

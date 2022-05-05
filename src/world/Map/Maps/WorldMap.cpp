@@ -21,13 +21,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgDefenseMessage.h"
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
-#include "TLSObject.h"
-#include "CThreads.h"
 #include "CrashHandler.h"
 
-using namespace AscEmu::Packets;
+#include <ctime>
 
-Arcemu::Utility::TLSObject<WorldMap*> t_currentMapContext;
+using namespace AscEmu::Packets;
+using namespace AscEmu::Threading;
 
 extern bool bServerShutdown;
 
@@ -47,6 +46,10 @@ WorldMap::WorldMap(BaseMap* baseMap, uint32_t id, uint32_t expiry, uint32_t Inst
     // Set up storage arrays
     m_CreatureStorage.resize(getBaseMap()->CreatureSpawnCount, nullptr);
     m_GameObjectStorage.resize(getBaseMap()->GameObjectSpawnCount, nullptr);
+
+    // Thread
+    const std::string threadName("WorldMap - M" + std::to_string(getBaseMap()->getMapId()) + "|I" + std::to_string(getInstanceId()));
+    m_thread = std::make_unique<AEThread>(threadName, [this](AEThread& /*thread*/) { this->runThread(); }, std::chrono::milliseconds(20), false);
 
     //lets initialize visibility distance for Continent
     WorldMap::initVisibilityDistance();
@@ -83,7 +86,7 @@ void WorldMap::initialize()
 
 WorldMap::~WorldMap()
 {
-    thread_shutdown = true;
+    m_thread->killAndJoin();
     sEventMgr.RemoveEvents(this);
 
     if (ScriptInterface != nullptr)
@@ -165,32 +168,25 @@ WorldMap::~WorldMap()
     sLogger.debug("WorldMap : Instance %u shut down. (%s)", getInstanceId(), getBaseMap()->getMapName().c_str());
 }
 
-bool WorldMap::runThread()
+void WorldMap::startMapThread()
 {
-    bool rv = true;
-
-    THREAD_TRY_EXECUTION
-        rv = Do();
-    THREAD_HANDLE_CRASH
-        return rv;
+    m_lastUpdateTime = Util::getMSTime();
+    m_thread->reboot();
 }
 
-bool WorldMap::Do()
+void WorldMap::runThread()
 {
-#ifdef WIN32
-    threadid = GetCurrentThreadId();
-#endif
+    THREAD_TRY_EXECUTION
+        Do();
+    THREAD_HANDLE_CRASH
+        return;
+}
 
-    t_currentMapContext.set(this);
+void WorldMap::Do()
+{
+    m_threadRunning = true;
 
-    thread_running = true;
-    ThreadState = THREADSTATE_BUSY;
-
-    SetThreadName("WorldMap - M%u|I%u", getBaseMap()->getMapId(), getInstanceId());
-
-    m_lastUpdateTime = Util::getMSTime();
-
-    while (GetThreadState() != THREADSTATE_TERMINATE && !thread_shutdown)
+    if (!m_terminateThread)
     {
         const auto exec_start = Util::getMSTime();
 
@@ -202,7 +198,7 @@ bool WorldMap::Do()
             std::scoped_lock<std::mutex> lock(m_objectinsertlock);
             if (!m_objectinsertpool.empty())
             {
-                for (auto& o : m_objectinsertpool)
+                for (const auto& o : m_objectinsertpool)
                     o->PushToWorld(this);
 
                 m_objectinsertpool.clear();
@@ -213,34 +209,32 @@ bool WorldMap::Do()
         update(diffTime);
 
         m_lastUpdateTime = Util::getMSTime();
-        const uint32_t exec_time = m_lastUpdateTime - exec_start;
-        if (exec_time < 20)  //mapmgr update period 20
-            Arcemu::Sleep(20 - exec_time);
+        return;
     }
 
-    thread_running = false;
-    if (thread_kill_only)
-        return false;
+    m_threadRunning = false;
+    if (m_killThreadOnly)
+    {
+        m_thread->killAndJoin();
+        return;
+    }
 
     // delete ourselves
     delete this;
-
-    // already deleted, so the threadpool doesn't have to.
-    return false;
 }
 
 void WorldMap::instanceShutdown()
 {
     pInstance = nullptr;
-    SetThreadState(THREADSTATE_TERMINATE);
+    m_terminateThread = true;
 }
 
 void WorldMap::killThread()
 {
     pInstance = nullptr;
-    thread_kill_only = true;
-    SetThreadState(THREADSTATE_TERMINATE);
-    while (thread_running)
+    m_killThreadOnly = true;
+    m_terminateThread = true;
+    while (m_threadRunning)
     {
         Arcemu::Sleep(100);
     }
