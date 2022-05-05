@@ -414,7 +414,7 @@ namespace MMAP
     /**************************************************************************/
     void MapBuilder::buildTile(uint32 mapID, uint32 tileX, uint32 tileY, dtNavMesh* navMesh)
     {
-        printf("[Map %04i] Building tile [%02u,%02u]\n", mapID, tileX, tileY);
+        //printf("[Map %04i] Building tile [%02u,%02u]\n", mapID, tileX, tileY);
 
         MeshData meshData;
 
@@ -533,7 +533,7 @@ namespace MMAP
         // console output
         char tileString[255];
         sprintf(tileString, "[Map %04i] [%02i,%02i]: ", mapID, tileX, tileY);
-        printf("%s Building movemap tiles...\n", tileString);
+        //printf("%s Building movemap tiles...\n", tileString);
 
         IntermediateValues iv;
 
@@ -806,7 +806,7 @@ namespace MMAP
                 break;
             }
 
-            printf("%s Building navmesh tile...\n", tileString);
+            //printf("%s Building navmesh tile...\n", tileString);
             if (!dtCreateNavMeshData(&params, &navData, &navDataSize))
             {
                 printf("%s Failed building navmesh tile!\n", tileString);
@@ -814,7 +814,7 @@ namespace MMAP
             }
 
             dtTileRef tileRef = 0;
-            printf("%s Adding tile to navmesh...\n", tileString);
+            //printf("%s Adding tile to navmesh...\n", tileString);
             // DT_TILE_FREE_DATA tells detour to unallocate memory when the tile
             // is removed via removeTile()
             dtStatus dtResult = navMesh->addTile(navData, navDataSize, DT_TILE_FREE_DATA, 0, &tileRef);
@@ -837,7 +837,7 @@ namespace MMAP
                 break;
             }
 
-            printf("%s Writing to file...\n", tileString);
+            //printf("%s Writing to file...\n", tileString);
 
             // write header
             MmapTileHeader header;

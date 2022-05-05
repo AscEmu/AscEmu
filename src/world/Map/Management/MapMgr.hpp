@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Cells/CellHandler.hpp"
 #include "Management/WorldStatesHandler.h"
 #include "MapDefines.h"
-#include "CThreads.h"
 #include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
 #include "Server/EventableObject.h"
 #include "Storage/DBC/DBCStructures.hpp"

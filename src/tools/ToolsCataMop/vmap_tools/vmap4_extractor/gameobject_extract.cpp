@@ -95,8 +95,12 @@ void ExtractGameobjectModels()
         strToLower(ch_ext);
 
         bool result = false;
+        uint8_t isWmo = 0;
         if (!strcmp(ch_ext, ".wmo"))
+        {
+            isWmo = 1;
             result = ExtractSingleWmo(path);
+        }
         else if (!strcmp(ch_ext, ".mdl"))   // TODO: extract .mdl files, if needed
             continue;
         else //if (!strcmp(ch_ext, ".mdx") || !strcmp(ch_ext, ".m2"))
@@ -107,6 +111,7 @@ void ExtractGameobjectModels()
             uint32 displayId = it->getUInt(0);
             uint32 path_length = strlen(name);
             fwrite(&displayId, sizeof(uint32), 1, model_list);
+            fwrite(&isWmo, sizeof(uint8_t), 1, model_list);
             fwrite(&path_length, sizeof(uint32), 1, model_list);
             fwrite(name, sizeof(char), path_length, model_list);
         }

@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "TLSObject.h"
 #include "Objects/DynamicObject.h"
 #include "Map/Cells/CellHandler.hpp"
-#include "CThreads.h"
 #include "Management/WorldStatesHandler.h"
 #include "Objects/Item.h"
 #include "Map/Area/AreaStorage.hpp"
