@@ -2147,7 +2147,7 @@ void WorldMap::doRespawn(SpawnObjectType type, Object* object, uint32_t spawnId,
     deleteRespawnFromDB(type, spawnId);
     
     MapCell* cell = getCellByCoords(cellX, cellY);
-    if (cell == nullptr)    //cell got deleted while waiting for respawn.
+    if (cell == nullptr || object == nullptr)    //cell or object got deleted while waiting for respawn.
         return;
 
     switch (type)
