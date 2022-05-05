@@ -74,11 +74,6 @@ void MapMgr::shutdown()
     }
 }
 
-void MapMgr::update(uint32_t /*diff*/)
-{
-
-}
-
 void MapMgr::removeInstance(uint32_t instanceId)
 {
     // get the Lock so we cant Update and Delete at the same time :)

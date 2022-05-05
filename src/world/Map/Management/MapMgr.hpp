@@ -41,7 +41,6 @@ public:
     EnterState canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* player, bool loginCheck = false);
     void shutdown();
     void removeInstance(uint32_t instanceId);
-    void update(uint32_t);
 
     // BaseMaps
     void createBaseMap(uint32_t mapId);
