@@ -59,11 +59,18 @@ EnterState BattlegroundMap::cannotEnter(Player* player)
 
 bool BattlegroundMap::addPlayerToMap(Player* player)
 {
+    // disable unload Timer
+    m_unloadTimer = 0;
+
     return WorldMap::addPlayerToMap(player);
 }
 
 void BattlegroundMap::removePlayerFromMap(Player* player)
 {
+    // if last player set unload timer
+    if (!m_unloadTimer && getPlayerCount() == 1)
+        setUnload();
+
     WorldMap::removePlayerFromMap(player);
 }
 
