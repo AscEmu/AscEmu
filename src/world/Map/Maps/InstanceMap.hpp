@@ -17,7 +17,7 @@ public:
     ~InstanceMap() = default;
 
     void update(uint32_t) override;
-    void unloadAll() override;
+    void unloadAll(bool onShutdown = false) override;
 
     void createInstanceData(bool load);
 

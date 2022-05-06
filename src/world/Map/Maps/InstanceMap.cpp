@@ -36,14 +36,14 @@ void InstanceMap::update(uint32_t t_diff)
     }
 }
 
-void InstanceMap::unloadAll()
+void InstanceMap::unloadAll(bool onShutdown/* = false*/)
 {
     if (m_resetAfterUnload == true)
     {
         deleteRespawnTimes();
     }
 
-    WorldMap::unloadAll();
+    WorldMap::unloadAll(onShutdown);
 }
 
 void InstanceMap::initVisibilityDistance()

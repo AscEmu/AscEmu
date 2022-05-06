@@ -170,6 +170,7 @@ WorldMap::~WorldMap()
 
 void WorldMap::startMapThread()
 {
+    m_terminateThread = false;
     m_lastUpdateTime = Util::getMSTime();
     m_thread->reboot();
 }
@@ -180,6 +181,25 @@ void WorldMap::runThread()
         Do();
     THREAD_HANDLE_CRASH
         return;
+}
+
+void WorldMap::shutdownMapThread(bool killThreadOnly/* = false*/)
+{
+    pInstance = nullptr;
+    m_terminateThread = true;
+
+    // Note; map is never deleted if boolean is set to true, only thread is killed and freed
+    sMapMgr.addMapToRemovePool(this, killThreadOnly);
+}
+
+void WorldMap::unsafeKillMapThread()
+{
+    m_thread->killAndJoin();
+}
+
+bool WorldMap::isMapReadyForDelete() const
+{
+    return m_thread->isKilled() && m_thread->isDone();
 }
 
 void WorldMap::Do()
@@ -213,31 +233,9 @@ void WorldMap::Do()
     }
 
     m_threadRunning = false;
-    if (m_killThreadOnly)
-    {
-        m_thread->killAndJoin();
-        return;
-    }
 
-    // delete ourselves
-    delete this;
-}
-
-void WorldMap::instanceShutdown()
-{
-    pInstance = nullptr;
-    m_terminateThread = true;
-}
-
-void WorldMap::killThread()
-{
-    pInstance = nullptr;
-    m_killThreadOnly = true;
-    m_terminateThread = true;
-    while (m_threadRunning)
-    {
-        Arcemu::Sleep(100);
-    }
+    // Map is added to MapMgr remove pool which deletes map when thread has finished all its work
+    m_thread->requestKill();
 }
 
 void WorldMap::update(uint32_t t_diff)
@@ -458,13 +456,16 @@ void WorldMap::processRespawns()
     }
 }
 
-void WorldMap::unloadAll()
+void WorldMap::unloadAll(bool onShutdown/* = false*/)
 {
     if (getPlayerCount())
         return;
 
+    if (onShutdown)
+        return;
+
     sMapMgr.removeInstance(getInstanceId());
-    instanceShutdown();
+    shutdownMapThread();
 }
 
 void WorldMap::initVisibilityDistance()

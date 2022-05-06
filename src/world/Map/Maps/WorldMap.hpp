@@ -138,17 +138,15 @@ public:
 
     virtual void initialize();
     virtual void update(uint32_t);
-    virtual void unloadAll();
+    virtual void unloadAll(bool onShutdown = false);
 
     void startMapThread();
     void runThread();
+    void shutdownMapThread(bool killThreadOnly = false);
+    void unsafeKillMapThread();
+    bool isMapReadyForDelete() const;
+
     void Do();
-
-    // better hope to clear any references to us when calling this :P
-    void instanceShutdown();
-
-    /// kill the worker thread only
-    void killThread();
 
     void setUnloadPending(bool value) { m_unloadPending = value; }
     bool isUnloadPending() { return m_unloadPending; }
@@ -437,7 +435,6 @@ private:
     std::unique_ptr<AscEmu::Threading::AEThread> m_thread;
     bool m_threadRunning = false;
     bool m_terminateThread = false;
-    bool m_killThreadOnly = false;
 
     WorldStatesHandler worldstateshandler;
     MapScriptInterface* ScriptInterface;

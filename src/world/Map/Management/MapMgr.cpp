@@ -55,22 +55,28 @@ void MapMgr::initializeInstanceIds()
 
 void MapMgr::shutdown()
 {
+    std::scoped_lock<std::mutex> lock(m_mapsLock);
+
     // Continents
-    WorldMapContainer::iterator map = m_WorldMaps.begin();
-    for (; map != m_WorldMaps.end(); ++map)
+    for (auto map = m_WorldMaps.cbegin(); map != m_WorldMaps.cend();)
     {
-        map->second->unloadAll();
+        map->second->unloadAll(true);
         delete map->second;
-        m_WorldMaps.erase(map);
+        map = m_WorldMaps.erase(map);
     }
 
     // Instances
-    InstancedMapContainer::iterator ini = m_InstancedMaps.begin();
-    for (; ini != m_InstancedMaps.end(); ++ini)
+    for (auto ini = m_InstancedMaps.cbegin(); ini != m_InstancedMaps.cend();)
     {
-        ini->second->unloadAll();
+        ini->second->unloadAll(true);
         delete ini->second;
-        m_InstancedMaps.erase(ini);
+        ini = m_InstancedMaps.erase(ini);
+    }
+
+    for (auto itr = m_pendingRemoveMaps.cbegin(); itr != m_pendingRemoveMaps.cend();)
+    {
+        delete itr->first;
+        itr = m_pendingRemoveMaps.erase(itr);
     }
 }
 
@@ -84,8 +90,39 @@ void MapMgr::removeInstance(uint32_t instanceId)
     {
         if (ini->second->isUnloadPending())
         {
-            delete ini->second;
             m_InstancedMaps.erase(ini);
+        }
+    }
+}
+
+void MapMgr::addMapToRemovePool(WorldMap* map, bool killThreadOnly)
+{
+    std::scoped_lock<std::mutex> lock(m_mapsLock);
+    auto itr = m_pendingRemoveMaps.find(map);
+    if (itr != m_pendingRemoveMaps.cend())
+    {
+        if (itr->second)
+            itr->second = killThreadOnly;
+
+        return;
+    }
+
+    m_pendingRemoveMaps.insert(std::make_pair(map, killThreadOnly));
+}
+
+void MapMgr::update()
+{
+    std::scoped_lock<std::mutex> lock(m_mapsLock);
+    for (auto itr = m_pendingRemoveMaps.cbegin(); itr != m_pendingRemoveMaps.cend();)
+    {
+        if (itr->first->isMapReadyForDelete())
+        {
+            if (itr->second)
+                itr->first->unsafeKillMapThread();
+            else
+                delete itr->first;
+
+            itr = m_pendingRemoveMaps.erase(itr);
         }
     }
 }

@@ -41,6 +41,8 @@ public:
     EnterState canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* player, bool loginCheck = false);
     void shutdown();
     void removeInstance(uint32_t instanceId);
+    void addMapToRemovePool(WorldMap* map, bool killThreadOnly);
+    void update();
 
     // BaseMaps
     void createBaseMap(uint32_t mapId);
@@ -68,6 +70,7 @@ private:
     typedef std::unordered_map<uint32_t, BaseMap*> BaseMapContainer;
     typedef std::unordered_map<uint32_t, WorldMap*> WorldMapContainer;
     typedef std::unordered_map<uint32_t, WorldMap*> InstancedMapContainer;
+    typedef std::unordered_map<WorldMap*, bool /*killThreadOnly*/> MapRemovePool;
 
     uint32_t lastMapMgrUpdate = Util::getMSTime();
 
@@ -76,6 +79,7 @@ private:
     BaseMapContainer m_BaseMaps;
     WorldMapContainer m_WorldMaps;
     InstancedMapContainer m_InstancedMaps;
+    MapRemovePool m_pendingRemoveMaps;
 };
 
 #define sMapMgr MapMgr::getInstance()

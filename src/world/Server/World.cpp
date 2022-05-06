@@ -996,6 +996,7 @@ void World::Update(unsigned long timePassed)
     mEventableObjectHolder->Update(static_cast<uint32_t>(timePassed));
     sAuctionMgr.Update();
     updateQueuedSessions(static_cast<uint32_t>(timePassed));
+    sMapMgr.update();
     sInstanceMgr.update();
     sGuildMgr.update(static_cast<uint32>(timePassed));
 }
