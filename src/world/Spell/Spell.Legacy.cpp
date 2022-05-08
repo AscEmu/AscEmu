@@ -1961,27 +1961,27 @@ uint8 Spell::CanCast(bool /*tolerate*/)
          */
         if (getSpellInfo()->getId() == 32146)
         {
-            Creature* corpse = m_caster->getWorldMap()->getInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), 18240);
+            Creature* corpse = m_caster->getWorldMap()->getInterface()->getCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), 18240);
             if (corpse != nullptr)
                 if (m_caster->CalcDistance(m_caster, corpse) > 5)
                     return SPELL_FAILED_NOT_HERE;
         }
         else if (getSpellInfo()->getId() == 39246)
         {
-            Creature* cleft = m_caster->getWorldMap()->getInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), 22105);
+            Creature* cleft = m_caster->getWorldMap()->getInterface()->getCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), 22105);
             if (cleft == nullptr || cleft->isAlive())
                 return SPELL_FAILED_NOT_HERE;
         }
         else if (getSpellInfo()->getId() == 30988)
         {
-            Creature* corpse = m_caster->getWorldMap()->getInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), 17701);
+            Creature* corpse = m_caster->getWorldMap()->getInterface()->getCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), 17701);
             if (corpse != nullptr)
                 if (m_caster->CalcDistance(m_caster, corpse) > 5 || corpse->isAlive())
                     return SPELL_FAILED_NOT_HERE;
         }
         else if (getSpellInfo()->getId() == 43723)
         {
-            Creature* abysal = p_caster->getWorldMap()->getInterface()->GetCreatureNearestCoords(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ(), 19973);
+            Creature* abysal = p_caster->getWorldMap()->getInterface()->getCreatureNearestCoords(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ(), 19973);
             if (abysal != nullptr)
             {
                 if (!abysal->isAlive())
@@ -1993,7 +1993,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
         }
         else if (getSpellInfo()->getId() == 32307)
         {
-            Creature* kilsorrow = p_caster->getWorldMap()->getInterface()->GetCreatureNearestCoords(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ());
+            Creature* kilsorrow = p_caster->getWorldMap()->getInterface()->getCreatureNearestCoords(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ());
             if (kilsorrow == nullptr || kilsorrow->isAlive() || p_caster->CalcDistance(p_caster, kilsorrow) > 1)
                 return SPELL_FAILED_NOT_HERE;
             if (kilsorrow->getEntry() != 17147 && kilsorrow->getEntry() != 17148 && kilsorrow->getEntry() != 18397 && kilsorrow->getEntry() != 18658 && kilsorrow->getEntry() != 17146)

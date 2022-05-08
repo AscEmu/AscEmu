@@ -40,7 +40,7 @@ class Quest_Maggocs_Treasure_Chest : public QuestScript
 public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        mTarget->getWorldMap()->getInterface()->SpawnCreature(20600, 2001.76f, 5164.77f, 265.19f, 5.5148f, true, false, 0, 0);
+        mTarget->getWorldMap()->getInterface()->spawnCreature(20600, LocationVector(2001.76f, 5164.77f, 265.19f, 5.5148f), true, false, 0, 0);
     }
 };
 

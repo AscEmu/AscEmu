@@ -76,7 +76,7 @@ public:
 
                     for (uint8_t i = 0; i < finall; i++)
                     {
-                        Creature * NewCreature = getCreature()->getWorldMap()->getInterface()->SpawnCreature(22419, SSX + Util::getRandomFloat(3.0f), SSY + Util::getRandomFloat(3.0f), SSZ, SSO + Util::getRandomFloat(1.0f), true, false, 0, 0);
+                        Creature * NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(22419, LocationVector(SSX + Util::getRandomFloat(3.0f), SSY + Util::getRandomFloat(3.0f), SSZ, SSO + Util::getRandomFloat(1.0f)), true, false, 0, 0);
                         if (NewCreature != nullptr)
                             NewCreature->Despawn(120000, 0);
                     }

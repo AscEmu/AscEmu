@@ -84,10 +84,10 @@ class DofNaralexGossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override
     {
-        Unit* Fanglord1 = pObject->getWorldMap()->getInterface()->GetCreatureNearestCoords(-151.139008f, 414.367004f, -72.629402f, WailingCaverns::CN_LORD_COBRAHN);
-        Unit* Fanglord2 = pObject->getWorldMap()->getInterface()->GetCreatureNearestCoords(36.807400f, -241.063995f, -79.498901f, WailingCaverns::CN_LORD_PYTHAS);
-        Unit* Fanglord3 = pObject->getWorldMap()->getInterface()->GetCreatureNearestCoords(-118.710999f, -24.990999f, -28.498501f, WailingCaverns::CN_LORD_SERPENTIS);
-        Unit* Fanglord4 = pObject->getWorldMap()->getInterface()->GetCreatureNearestCoords(-70.788902f, 120.072998f, -89.673599f, WailingCaverns::CN_LADY_ANACONDRA);
+        Unit* Fanglord1 = pObject->getWorldMap()->getInterface()->getCreatureNearestCoords(-151.139008f, 414.367004f, -72.629402f, WailingCaverns::CN_LORD_COBRAHN);
+        Unit* Fanglord2 = pObject->getWorldMap()->getInterface()->getCreatureNearestCoords(36.807400f, -241.063995f, -79.498901f, WailingCaverns::CN_LORD_PYTHAS);
+        Unit* Fanglord3 = pObject->getWorldMap()->getInterface()->getCreatureNearestCoords(-118.710999f, -24.990999f, -28.498501f, WailingCaverns::CN_LORD_SERPENTIS);
+        Unit* Fanglord4 = pObject->getWorldMap()->getInterface()->getCreatureNearestCoords(-70.788902f, 120.072998f, -89.673599f, WailingCaverns::CN_LADY_ANACONDRA);
 
         if ((!Fanglord1 || !Fanglord1->isAlive()) && (!Fanglord2 || !Fanglord2->isAlive()) && (!Fanglord3 || !Fanglord3->isAlive()) && (!Fanglord4 || !Fanglord4->isAlive()))
         {

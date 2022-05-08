@@ -24,6 +24,42 @@ InstanceSaved::~InstanceSaved()
 {
 }
 
+void InstanceSaved::addPlayer(Player* player)
+{
+    std::scoped_lock<std::mutex> lock(_playerListLock);
+    m_playerList.push_back(player);
+}
+
+bool InstanceSaved::removePlayer(Player* player)
+{
+    bool isStillValid = false;
+    {
+        std::scoped_lock<std::mutex> lock(_playerListLock);
+        m_playerList.remove(player);
+        isStillValid = unloadIfEmpty();
+    }
+
+    //delete here if needed, after releasing the lock
+    if (m_toDelete)
+        delete this;
+
+    return isStillValid;
+}
+
+void InstanceSaved::addGroup(Group* group)
+{
+    m_groupList.push_back(group);
+}
+
+bool InstanceSaved::removeGroup(Group* group)
+{
+    m_groupList.remove(group);
+    bool isStillValid = unloadIfEmpty();
+    if (m_toDelete)
+        delete this;
+    return isStillValid;
+}
+
 void InstanceSaved::saveToDB()
 {
     // completed encounters as String
@@ -151,7 +187,7 @@ void InstanceMgr::loadResetTimes()
             // Add our Current Instance Id as Used to our Pool
             sMapMgr.instanceIdPool.addUsedValue(instanceId);
 
-            if (time_t resettime = time_t(fields[3].GetUInt64()))
+            if (time_t resettime = static_cast<time_t>(fields[3].GetUInt64()))
             {
                 auto mapid = fields[1].GetUInt16();
                 auto difficulty = fields[2].GetUInt8();
@@ -219,7 +255,7 @@ void InstanceMgr::loadResetTimes()
             continue;
 
         // the reset_delay must be at least one day
-        uint32_t period = uint32_t((mapDiff->resetTime / DAY) * DAY);
+        uint32_t period = static_cast<uint32_t>((mapDiff->resetTime / DAY) * DAY);
         if (period < DAY)
             period = DAY;
 
@@ -330,7 +366,9 @@ void InstanceMgr::resetSave(InstanceSavedMap::iterator& itr)
         itr = m_instanceSaveById.erase(itr);
     }
     else
+    {
         ++itr;
+    }
 
     lock_instanceLists = false;
 }
@@ -418,7 +456,7 @@ void InstanceMgr::resetOrWarnAll(uint32_t mapid, InstanceDifficulty::Difficultie
             if (now >= resetTime)
                 timeLeft = 0;
             else
-                timeLeft = uint32_t(resetTime - now);
+                timeLeft = static_cast<uint32_t>(resetTime - now);
 
             map->sendResetWarnings(timeLeft);
         }
@@ -549,7 +587,9 @@ void InstanceMgr::addResetEvent(bool add, time_t time, InstResetEvent event)
         }
     }
     else
+    {
         m_resetTimeQueue.insert(std::pair<time_t, InstResetEvent>(time, event));
+    }
 }
 
 time_t InstanceMgr::getSubsequentResetTime(uint32_t mapid, InstanceDifficulty::Difficulties difficulty, time_t resetTime) const
@@ -562,7 +602,7 @@ time_t InstanceMgr::getSubsequentResetTime(uint32_t mapid, InstanceDifficulty::D
     }
 
     auto resetHour = static_cast<uint8_t>(worldConfig.instance.relativeDailyHeroicInstanceResetHour);
-    time_t period = uint32_t((mapDiff->resetTime / DAY) * DAY);
+    time_t period = static_cast<uint32_t>((mapDiff->resetTime / DAY) * DAY);
     if (period < DAY)
         period = DAY;
 

@@ -24,7 +24,7 @@ public:
 
     void AIUpdate() override
     {
-        Player* plr = _gameobject->getWorldMap()->getInterface()->GetPlayerNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ());
+        Player* plr = _gameobject->getWorldMap()->getInterface()->getPlayerNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ());
         if (!plr)
             return;
 

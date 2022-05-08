@@ -19,7 +19,7 @@ class Player;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Class MapScriptInterface
-/// Provides an interface to mapmgr for scripts, to obtain objects, get players, etc.
+/// Provides an interface to WorldMap for scripts, to obtain objects, get players, etc.
 //////////////////////////////////////////////////////////////////////////////////////////
 class SERVER_DECL MapScriptInterface
 {
@@ -27,13 +27,13 @@ public:
     MapScriptInterface(WorldMap& mgr);
     ~MapScriptInterface();
 
-    template<class T, uint32 TypeId> T* GetObjectNearestCoords(uint32 Entry, float x, float y, float z = 0.0f)
+    template<class T, uint32_t TypeId> T* getObjectNearestCoords(uint32_t Entry, float x, float y, float z = 0.0f)
     {
         MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(x), m_worldMap.getPosY(y));
-        if (pCell == 0)
+        if (pCell == nullptr)
             return 0;
 
-        T* ClosestObject = NULL;
+        T* ClosestObject = nullptr;
         float ClosestDist = 999999.0f;
         float CurrentDist = 0;
 
@@ -54,17 +54,17 @@ public:
         return ClosestObject;
     }
 
-    inline GameObject* GetGameObjectNearestCoords(float x, float y, float z = 0.0f, uint32 Entry = 0)
+    inline GameObject* getGameObjectNearestCoords(float x, float y, float z = 0.0f, uint32_t Entry = 0)
     {
-        return GetObjectNearestCoords<GameObject, TYPEID_GAMEOBJECT>(Entry, x, y, z);
+        return getObjectNearestCoords<GameObject, TYPEID_GAMEOBJECT>(Entry, x, y, z);
     }
 
-    inline Creature* GetCreatureNearestCoords(float x, float y, float z = 0.0f, uint32 Entry = 0)
+    inline Creature* getCreatureNearestCoords(float x, float y, float z = 0.0f, uint32_t Entry = 0)
     {
-        return GetObjectNearestCoords<Creature, TYPEID_UNIT>(Entry, x, y, z);
+        return getObjectNearestCoords<Creature, TYPEID_UNIT>(Entry, x, y, z);
     }
 
-    inline GameObject* FindNearestGoWithType(Object* o, uint32 type)
+    inline GameObject* findNearestGoWithType(Object* o, uint32_t type)
     {
         GameObject* go = nullptr;
         float r = FLT_MAX;
@@ -98,7 +98,7 @@ public:
     inline Creature* findNearestCreature(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
     {
         MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(pObject->GetPositionX()), m_worldMap.getPosY(pObject->GetPositionY()));
-        if (pCell == 0)
+        if (pCell == nullptr)
             return nullptr;
 
         float CurrentDist = 0;
@@ -118,7 +118,7 @@ public:
         return nullptr;
     }
 
-    inline void GetCreatureListWithEntryInRange(Creature* pCreature, std::list<Creature*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+    inline void getCreatureListWithEntryInRange(Creature* pCreature, std::list<Creature*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
     {
         float CurrentDist = 0;
 
@@ -136,7 +136,7 @@ public:
     inline Creature* getNearestAssistCreatureInCell(Creature* pCreature, Unit* enemy, float range /*= 250.0f*/) const
     {
         MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(pCreature->GetPositionX()), m_worldMap.getPosY(pCreature->GetPositionY()));
-        if (pCell == 0)
+        if (pCell == nullptr)
             return nullptr;
 
         float CurrentDist = 0;
@@ -162,7 +162,7 @@ public:
         return nullptr;
     }
 
-    inline void GetGameObjectListWithEntryInRange(Creature* pCreature, std::list<GameObject*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+    inline void getGameObjectListWithEntryInRange(Creature* pCreature, std::list<GameObject*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
     {
         float CurrentDist = 0;
 
@@ -177,20 +177,20 @@ public:
         }
     }
 
-    inline Player* GetPlayerNearestCoords(float x, float y, float z = 0.0f, uint32 Entry = 0)
+    inline Player* getPlayerNearestCoords(float x, float y, float z = 0.0f, uint32_t Entry = 0)
     {
-        return GetObjectNearestCoords<Player, TYPEID_PLAYER>(Entry, x, y, z);
+        return getObjectNearestCoords<Player, TYPEID_PLAYER>(Entry, x, y, z);
     }
 
-    uint32 GetPlayerCountInRadius(float x, float y, float z = 0.0f, float radius = 5.0f);
+    uint32_t getPlayerCountInRadius(float x, float y, float z = 0.0f, float radius = 5.0f);
 
-    GameObject* SpawnGameObject(uint32 Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, uint32 Misc1, uint32 Misc2, uint32 phase = 0xFFFFFFF);
-    GameObject* SpawnGameObject(MySQLStructure::GameobjectSpawn* gs, bool AddToWorld);
-    Creature* SpawnCreature(uint32 Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, bool tmplate, uint32 Misc1, uint32 Misc2, uint32 phase = 0xFFFFFFF);
-    Creature* SpawnCreature(MySQLStructure::CreatureSpawn* sp, bool AddToWorld);
+    GameObject* spawnGameObject(uint32_t Entry, LocationVector pos, bool AddToWorld, uint32_t Misc1, uint32_t Misc2, uint32_t phase = 0xFFFFFFF);
+    GameObject* spawnGameObject(MySQLStructure::GameobjectSpawn* gs, bool AddToWorld);
+    Creature* spawnCreature(uint32_t Entry, LocationVector pos, bool AddToWorld, bool tmplate, uint32_t Misc1, uint32_t Misc2, uint32_t phase = 0xFFFFFFF);
+    Creature* spawnCreature(MySQLStructure::CreatureSpawn* sp, bool AddToWorld);
 
-    void DeleteGameObject(GameObject* ptr);
-    void DeleteCreature(Creature* ptr);
+    void deleteGameObject(GameObject* ptr);
+    void deleteCreature(Creature* ptr);
 
 private:
     WorldMap& m_worldMap;

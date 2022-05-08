@@ -70,9 +70,6 @@ public:
 
     void setLocalData(uint32_t type, uint32_t data) override
     {
-        if (GetWorldMap()->isUnloadPending())
-            return;
-
         switch (type)
         {
         case DATA_MANTICRON_CUBE:

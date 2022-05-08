@@ -67,7 +67,7 @@ public:
         {
             LocationVector pos = pPlayer->GetPosition();
 
-            GameObject* pBeacon = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 184661);
+            GameObject* pBeacon = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 184661);
             if (pBeacon != nullptr && pBeacon->getFlags() > 0)
             {
                 pBeacon->removeFlags(GO_FLAG_NONSELECTABLE);
@@ -76,7 +76,7 @@ public:
             // Northern Zeth'Gor Tower
             if (questLog->getMobCountByIndex(0) < questLog->getQuestProperties()->required_mob_or_go_count[0])
             {
-                GameObject* pNorthern = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-820.0f, 2029.0f, 55.0f, 300150);
+                GameObject* pNorthern = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-820.0f, 2029.0f, 55.0f, 300150);
                 if (pNorthern != nullptr && pPlayer->CalcDistance(pPlayer, pNorthern) < 40)      // if reduced the server will crash when out of range
                 {
                     pPlayer->addQuestKill(10895, 0, 0);
@@ -92,7 +92,7 @@ public:
             // Southern Zeth'Gor Tower
             if (questLog->getMobCountByIndex(1) < questLog->getQuestProperties()->required_mob_or_go_count[1])
             {
-                GameObject* pSouthern = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-1150.0f, 2110.0f, 84.0f, 300150);
+                GameObject* pSouthern = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-1150.0f, 2110.0f, 84.0f, 300150);
                 if (pSouthern != nullptr && pPlayer->CalcDistance(pPlayer, pSouthern) < 40)
                 {
                     pPlayer->addQuestKill(10895, 1, 0);
@@ -108,7 +108,7 @@ public:
             // Forge Zeth'Gor Tower
             if (questLog->getMobCountByIndex(2) < questLog->getQuestProperties()->required_mob_or_go_count[2])
             {
-                GameObject* pForge = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-893.0f, 1919.0f, 82.0f, 300150);
+                GameObject* pForge = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-893.0f, 1919.0f, 82.0f, 300150);
                 if (pForge != nullptr && pPlayer->CalcDistance(pPlayer, pForge) < 40)
                 {
                     pPlayer->addQuestKill(10895, 2, 0);
@@ -124,7 +124,7 @@ public:
             // Foothill Zeth'Gor Tower
             if (questLog->getMobCountByIndex(3) < questLog->getQuestProperties()->required_mob_or_go_count[3])
             {
-                GameObject* pFoothill = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-978.0f, 1879.0f, 111.0f, 300150);
+                GameObject* pFoothill = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-978.0f, 1879.0f, 111.0f, 300150);
                 if (pFoothill != nullptr && pPlayer->CalcDistance(pPlayer, pFoothill) < 40)
                 {
                     pPlayer->addQuestKill(10895, 3, 0);
@@ -259,7 +259,7 @@ class DarkTidingsAlliance : public QuestScript
 public:
     void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* pCreature = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17479);
+        Creature* pCreature = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17479);
         if (pCreature == nullptr)
             return;
 
@@ -274,7 +274,7 @@ class DarkTidingsHorde : public QuestScript
 public:
     void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* pCreature = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17558);
+        Creature* pCreature = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17558);
         if (pCreature == nullptr)
             return;
 

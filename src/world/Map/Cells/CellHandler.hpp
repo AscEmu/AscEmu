@@ -22,7 +22,7 @@ public:
     Class* createByCoords(float x, float y);
     void remove(uint32_t x, uint32_t y);
 
-    bool allocated(uint32_t x, uint32_t y) { return _cells[x][y] != NULL; }
+    bool allocated(uint32_t x, uint32_t y) { return _cells[x][y] != nullptr; }
 
     static uint32_t getPosX(float x);
     static uint32_t getPosY(float y);
@@ -140,17 +140,17 @@ Class* CellHandler<Class>::getCellByCoords(float x, float y)
 }
 
 template <class Class>
-uint32 CellHandler<Class>::getPosX(float x)
+uint32_t CellHandler<Class>::getPosX(float x)
 {
     if ((x >= Map::Terrain::_minX) && (x <= Map::Terrain::_maxX))
-        return (uint32)((Map::Terrain::_maxX - x) / Map::Cell::cellSize);
+        return (uint32_t)((Map::Terrain::_maxX - x) / Map::Cell::cellSize);
     return 0;
 }
 
 template <class Class>
-uint32 CellHandler<Class>::getPosY(float y)
+uint32_t CellHandler<Class>::getPosY(float y)
 {
     if ((y >= Map::Terrain::_minY) && (y <= Map::Terrain::_maxY))
-        return (uint32)((Map::Terrain::_maxY - y) / Map::Cell::cellSize);
+        return (uint32_t)((Map::Terrain::_maxY - y) / Map::Cell::cellSize);
     return 0;
 }

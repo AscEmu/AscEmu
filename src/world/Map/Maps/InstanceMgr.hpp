@@ -42,41 +42,10 @@ public:
     uint32_t getInstanceId() const { return m_instanceid; }
     uint32_t getMapId() const { return m_mapid; }
 
-    void addPlayer(Player* player)
-    {
-        std::scoped_lock<std::mutex> lock(_playerListLock);
-        m_playerList.push_back(player);
-    }
-
-    bool removePlayer(Player* player)
-    {
-        bool isStillValid = false;
-        {
-            std::scoped_lock<std::mutex> lock(_playerListLock);
-            m_playerList.remove(player);
-            isStillValid = unloadIfEmpty();
-        }
-
-        //delete here if needed, after releasing the lock
-        if (m_toDelete)
-            delete this;
-
-        return isStillValid;
-    }
-
-    void addGroup(Group* group)
-    {
-        m_groupList.push_back(group);
-    }
-
-    bool removeGroup(Group* group)
-    {
-        m_groupList.remove(group);
-        bool isStillValid = unloadIfEmpty();
-        if (m_toDelete)
-            delete this;
-        return isStillValid;
-    }
+    void addPlayer(Player* player);
+    bool removePlayer(Player* player);
+    void addGroup(Group* group);
+    bool removeGroup(Group* group);
 
     // Database
     void saveToDB();
@@ -97,7 +66,6 @@ public:
     typedef std::list<Group*> GroupList;
 
 private:
-
     bool unloadIfEmpty();
     void setToDelete(bool toDelete)
     {

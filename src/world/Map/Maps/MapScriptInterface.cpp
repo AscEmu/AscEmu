@@ -14,23 +14,23 @@ MapScriptInterface::~MapScriptInterface()
     m_worldMap.ScriptInterface = nullptr;
 }
 
-uint32 MapScriptInterface::GetPlayerCountInRadius(float x, float y, float z /* = 0.0f */, float radius /* = 5.0f */)
+uint32_t MapScriptInterface::getPlayerCountInRadius(float x, float y, float z /* = 0.0f */, float radius /* = 5.0f */)
 {
     // use a cell radius of 2
-    uint32 PlayerCount = 0;
-    uint32 cellX = m_worldMap.getPosX(x);
-    uint32 cellY = m_worldMap.getPosY(y);
+    uint32_t PlayerCount = 0;
+    uint32_t cellX = m_worldMap.getPosX(x);
+    uint32_t cellY = m_worldMap.getPosY(y);
 
-    uint32 endX = cellX < Map::Cell::_sizeX ? cellX + 1 : Map::Cell::_sizeX;
-    uint32 endY = cellY < Map::Cell::_sizeY ? cellY + 1 : Map::Cell::_sizeY;
-    uint32 startX = cellX > 0 ? cellX - 1 : 0;
-    uint32 startY = cellY > 0 ? cellY - 1 : 0;
+    uint32_t endX = cellX < Map::Cell::_sizeX ? cellX + 1 : Map::Cell::_sizeX;
+    uint32_t endY = cellY < Map::Cell::_sizeY ? cellY + 1 : Map::Cell::_sizeY;
+    uint32_t startX = cellX > 0 ? cellX - 1 : 0;
+    uint32_t startY = cellY > 0 ? cellY - 1 : 0;
     MapCell* pCell;
     ObjectSet::iterator iter, iter_end;
 
-    for (uint32 cx = startX; cx < endX; ++cx)
+    for (uint32_t cx = startX; cx < endX; ++cx)
     {
-        for (uint32 cy = startY; cy < endY; ++cy)
+        for (uint32_t cy = startY; cy < endY; ++cy)
         {
             pCell = m_worldMap.getCell(cx, cy);
             if (pCell == nullptr || pCell->getPlayerCount() == 0)
@@ -53,11 +53,11 @@ uint32 MapScriptInterface::GetPlayerCountInRadius(float x, float y, float z /* =
     return PlayerCount;
 }
 
-GameObject* MapScriptInterface::SpawnGameObject(uint32 Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, uint32 /*Misc1*/, uint32 /*Misc2*/, uint32 phase)
+GameObject* MapScriptInterface::spawnGameObject(uint32_t Entry, LocationVector pos, bool AddToWorld, uint32_t /*Misc1*/, uint32_t /*Misc2*/, uint32_t phase)
 {
 
     GameObject* pGameObject = m_worldMap.createGameObject(Entry);
-    if (!pGameObject->CreateFromProto(Entry, m_worldMap.getBaseMap()->getMapId(), cX, cY, cZ, cO))
+    if (!pGameObject->CreateFromProto(Entry, m_worldMap.getBaseMap()->getMapId(), pos.x, pos.y, pos.z, pos.o))
     {
         delete pGameObject;
         return nullptr;
@@ -71,7 +71,7 @@ GameObject* MapScriptInterface::SpawnGameObject(uint32 Entry, float cX, float cY
     return pGameObject;
 }
 
-GameObject* MapScriptInterface::SpawnGameObject(MySQLStructure::GameobjectSpawn* gs, bool AddToWorld)
+GameObject* MapScriptInterface::spawnGameObject(MySQLStructure::GameobjectSpawn* gs, bool AddToWorld)
 {
     if (!gs)
         return nullptr;
@@ -90,7 +90,7 @@ GameObject* MapScriptInterface::SpawnGameObject(MySQLStructure::GameobjectSpawn*
 }
 
 // Zyres 11/06/2017 - bool tmplate not used!
-Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, bool /*tmplate*/, uint32 /*Misc1*/, uint32 /*Misc2*/, uint32 phase)
+Creature* MapScriptInterface::spawnCreature(uint32_t Entry, LocationVector pos, bool AddToWorld, bool /*tmplate*/, uint32_t /*Misc1*/, uint32_t /*Misc2*/, uint32_t phase)
 {
     CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(Entry);
     if (creature_properties == nullptr)
@@ -98,15 +98,15 @@ Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, fl
 
     MySQLStructure::CreatureSpawn* spawn = new MySQLStructure::CreatureSpawn;
     spawn->entry = Entry;
-    uint32 DisplayID = 0;
-    uint8 Gender = creature_properties->GetGenderAndCreateRandomDisplayID(&DisplayID);
+    uint32_t DisplayID = 0;
+    uint8_t Gender = creature_properties->GetGenderAndCreateRandomDisplayID(&DisplayID);
     spawn->displayid = DisplayID;
     spawn->id = 0;
     spawn->movetype = 0;
-    spawn->x = cX;
-    spawn->y = cY;
-    spawn->z = cZ;
-    spawn->o = cO;
+    spawn->x = pos.x;
+    spawn->y = pos.y;
+    spawn->z = pos.z;
+    spawn->o = pos.o;
     spawn->emote_state = 0;
     spawn->flags = 0;
     spawn->factionid = creature_properties->Faction;
@@ -151,7 +151,7 @@ Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, fl
     return nullptr;
 }
 
-Creature* MapScriptInterface::SpawnCreature(MySQLStructure::CreatureSpawn* sp, bool AddToWorld)
+Creature* MapScriptInterface::spawnCreature(MySQLStructure::CreatureSpawn* sp, bool AddToWorld)
 {
     if (!sp)
         return nullptr;
@@ -162,7 +162,7 @@ Creature* MapScriptInterface::SpawnCreature(MySQLStructure::CreatureSpawn* sp, b
         return nullptr;
     }
 
-    uint8 Gender = creature_properties->GetGenderAndCreateRandomDisplayID(&sp->displayid);
+    uint8_t Gender = creature_properties->GetGenderAndCreateRandomDisplayID(&sp->displayid);
     Creature* p = this->m_worldMap.createCreature(sp->entry);
     if (p)
     {
@@ -179,12 +179,12 @@ Creature* MapScriptInterface::SpawnCreature(MySQLStructure::CreatureSpawn* sp, b
     return nullptr;
 }
 
-void MapScriptInterface::DeleteCreature(Creature* ptr)
+void MapScriptInterface::deleteCreature(Creature* ptr)
 {
     delete ptr;
 }
 
-void MapScriptInterface::DeleteGameObject(GameObject* ptr)
+void MapScriptInterface::deleteGameObject(GameObject* ptr)
 {
     delete ptr;
 }

@@ -1766,7 +1766,7 @@ void PlagueFissureGO::DoErrupt()
 {
     _gameobject->sendGameobjectCustomAnim();
 
-    Creature* pFissureTrigger = _gameobject->getWorldMap()->getInterface()->SpawnCreature(15384, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), _gameobject->GetOrientation(), true, false, 0, 0, 1);
+    Creature* pFissureTrigger = _gameobject->getWorldMap()->getInterface()->spawnCreature(15384, _gameobject->GetPosition(), true, false, 0, 0, 1);
     if (!pFissureTrigger)
         return;
 

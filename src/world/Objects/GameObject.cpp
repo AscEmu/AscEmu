@@ -1300,7 +1300,7 @@ void GameObject_FishingNode::onUse(Player* player)
             player->advanceSkillLine(SKILL_FISHING, static_cast<uint16_t>(float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
 
         GameObject_FishingHole* school = nullptr;
-        GameObject* go = getWorldMap()->getInterface()->FindNearestGoWithType(this, GAMEOBJECT_TYPE_FISHINGHOLE);
+        GameObject* go = getWorldMap()->getInterface()->findNearestGoWithType(this, GAMEOBJECT_TYPE_FISHINGHOLE);
         if (go != nullptr)
         {
             school = dynamic_cast<GameObject_FishingHole*>(go);

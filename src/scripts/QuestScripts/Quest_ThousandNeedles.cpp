@@ -59,7 +59,7 @@ public:
         float SSY = mTarget->GetPositionY();
         float SSZ = mTarget->GetPositionZ();
 
-        Creature* creat = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 4452);
+        Creature* creat = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(SSX, SSY, SSZ, 4452);
         if (creat == nullptr)
             return;
 

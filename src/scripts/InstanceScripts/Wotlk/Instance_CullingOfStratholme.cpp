@@ -283,7 +283,7 @@ public:
             }
             break;
         }
-        GameObject* crate = pMapMgr->getInterface()->GetGameObjectNearestCoords(x, y, z, 190094);
+        GameObject* crate = pMapMgr->getInterface()->getGameObjectNearestCoords(x, y, z, 190094);
         if (crate)
             crate->Despawn(0, 0);
 

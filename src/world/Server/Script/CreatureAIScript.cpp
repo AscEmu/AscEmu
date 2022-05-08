@@ -223,7 +223,7 @@ Player* CreatureAIScript::getNearestPlayer()
     if (_creature->getWorldMap()->getInterface() == nullptr)
         return nullptr;
 
-    return _creature->getWorldMap()->getInterface()->GetPlayerNearestCoords(_creature->GetPositionX(), _creature->GetPositionY(), _creature->GetPositionZ());
+    return _creature->getWorldMap()->getInterface()->getPlayerNearestCoords(_creature->GetPositionX(), _creature->GetPositionY(), _creature->GetPositionZ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -244,7 +244,7 @@ Creature* CreatureAIScript::getNearestCreature(float posX, float posY, float pos
     if (_creature->getWorldMap()->getInterface() == nullptr)
         return nullptr;
 
-    return _creature->getWorldMap()->getInterface()->GetCreatureNearestCoords(posX, posY, posZ, entry);
+    return _creature->getWorldMap()->getInterface()->getCreatureNearestCoords(posX, posY, posZ, entry);
 }
 
 void CreatureAIScript::GetCreatureListWithEntryInGrid(std::list<Creature*>& container, uint32 entry, float maxSearchRange /*= 250.0f*/)
@@ -252,7 +252,7 @@ void CreatureAIScript::GetCreatureListWithEntryInGrid(std::list<Creature*>& cont
     if (_creature->getWorldMap()->getInterface() == nullptr)
         return;
 
-    _creature->getWorldMap()->getInterface()->GetCreatureListWithEntryInRange(_creature, container, entry, maxSearchRange);
+    _creature->getWorldMap()->getInterface()->getCreatureListWithEntryInRange(_creature, container, entry, maxSearchRange);
 }
 
 Creature* CreatureAIScript::findNearestCreature(uint32_t entry, float maxSearchRange /*= 250.0f*/)
@@ -268,7 +268,7 @@ void CreatureAIScript::GetGameObjectListWithEntryInGrid(std::list<GameObject*>& 
     if (_creature->getWorldMap()->getInterface() == nullptr)
         return;
 
-    _creature->getWorldMap()->getInterface()->GetGameObjectListWithEntryInRange(_creature, container, entry, maxSearchRange);
+    _creature->getWorldMap()->getInterface()->getGameObjectListWithEntryInRange(_creature, container, entry, maxSearchRange);
 }
 
 float CreatureAIScript::getRangeToObject(Object* object)
@@ -299,7 +299,7 @@ Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY
     if (_creature->getWorldMap()->getInterface() == nullptr)
         return nullptr;
 
-    Creature* creature = _creature->getWorldMap()->getInterface()->SpawnCreature(entry, posX, posY, posZ, posO, true, true, 0, 0, phase);
+    Creature* creature = _creature->getWorldMap()->getInterface()->spawnCreature(entry, LocationVector(posX, posY, posZ, posO), true, true, 0, 0, phase);
     if (creature == nullptr)
         return nullptr;
 
@@ -1037,7 +1037,7 @@ GameObject* CreatureAIScript::getNearestGameObject(float posX, float posY, float
     if (_creature->getWorldMap()->getInterface() == nullptr)
         return nullptr;
 
-    return _creature->getWorldMap()->getInterface()->GetGameObjectNearestCoords(posX, posY, posZ, entry);
+    return _creature->getWorldMap()->getInterface()->getGameObjectNearestCoords(posX, posY, posZ, entry);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

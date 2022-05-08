@@ -42,9 +42,13 @@ void MapCell::init(uint32_t x, uint32_t y, WorldMap* mapmgr)
 void MapCell::addObject(Object* obj)
 {
     if (obj->isPlayer())
+    {
         ++_playerCount;
+    }
     else if (obj->isTransporter())
+    {
         ++_transportCount;
+    }
     else if (obj->isCorpse())
     {
         _corpses.push_back(obj);
@@ -152,19 +156,19 @@ void MapCell::removeObjects()
     {
         switch ((*itr)->getObjectTypeId())
         {
-        case TYPEID_UNIT:
-            if (!(*itr)->isPet())
-            {
-                _map->_reusable_guids_creature.push_back((*itr)->GetUIdFromGUID());
-                reinterpret_cast<Creature*>(*itr)->m_respawnCell = nullptr;
-                delete static_cast<Creature*>(*itr);
-            }
-            break;
-        case TYPEID_GAMEOBJECT:
-            _map->_reusable_guids_gameobject.push_back((*itr)->GetUIdFromGUID());
-            reinterpret_cast<GameObject*>(*itr)->m_respawnCell = nullptr;
-            delete static_cast<GameObject*>(*itr);
-            break;
+            case TYPEID_UNIT:
+                if (!(*itr)->isPet())
+                {
+                    _map->_reusable_guids_creature.push_back((*itr)->GetUIdFromGUID());
+                    reinterpret_cast<Creature*>(*itr)->m_respawnCell = nullptr;
+                    delete static_cast<Creature*>(*itr);
+                }
+                break;
+            case TYPEID_GAMEOBJECT:
+                _map->_reusable_guids_gameobject.push_back((*itr)->GetUIdFromGUID());
+                reinterpret_cast<GameObject*>(*itr)->m_respawnCell = nullptr;
+                delete static_cast<GameObject*>(*itr);
+                break;
         }
     }
     _respawnObjects.clear();
@@ -320,7 +324,7 @@ void MapCell::queueUnloadPending()
 
     _unloadpending = true;
     sLogger.debug("Queueing pending unload of cell %u %u", _x, _y);
-    sEventMgr.AddEvent(_map, &WorldMap::unloadCell, (uint32)_x, (uint32)_y, MAKE_CELL_EVENT(_x, _y), worldConfig.server.mapUnloadTime * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(_map, &WorldMap::unloadCell, (uint32_t)_x, (uint32_t)_y, MAKE_CELL_EVENT(_x, _y), worldConfig.server.mapUnloadTime * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void MapCell::cancelPendingUnload()

@@ -94,7 +94,7 @@ void ExtractGameobjectModels()
         strToLower(ch_ext);
 
         bool result = false;
-        uint8 isWmo = 0;
+        uint8_t isWmo = 0;
         if (!strcmp(ch_ext, ".wmo"))
         {
             isWmo = 1;
@@ -112,11 +112,11 @@ void ExtractGameobjectModels()
 
         if (result)
         {
-            uint32 displayId = it->getUInt(0);
-            uint32 path_length = static_cast<uint32_t>(strlen(name));
-            fwrite(&displayId, sizeof(uint32), 1, model_list);
-            fwrite(&isWmo, sizeof(uint8), 1, model_list);
-            fwrite(&path_length, sizeof(uint32), 1, model_list);
+            uint32_t displayId = it->getUInt(0);
+            uint32_t path_length = static_cast<uint32_t>(strlen(name));
+            fwrite(&displayId, sizeof(uint32_t), 1, model_list);
+            fwrite(&isWmo, sizeof(uint8_t), 1, model_list);
+            fwrite(&path_length, sizeof(uint32_t), 1, model_list);
             fwrite(name, sizeof(char), path_length, model_list);
         }
     }

@@ -2068,7 +2068,6 @@ void ObjectMgr::LoadGroups()
         {
             Group* g = new Group(false);
             g->LoadFromDB(result->Fetch());
-
         }
         while (result->NextRow());
         delete result;
@@ -2103,7 +2102,7 @@ void ObjectMgr::loadGroupInstances()
         }
 
         uint32_t diff = fields[4].GetUInt8();
-        if (diff >= uint32_t(mapEntry->isRaid() ? InstanceDifficulty::Difficulties::MAX_RAID_DIFFICULTY : InstanceDifficulty::Difficulties::MAX_DUNGEON_DIFFICULTY))
+        if (diff >= static_cast<uint32_t>(mapEntry->isRaid() ? InstanceDifficulty::Difficulties::MAX_RAID_DIFFICULTY : InstanceDifficulty::Difficulties::MAX_DUNGEON_DIFFICULTY))
         {
             sLogger.failure("Wrong dungeon difficulty use in group_instance table: %d", diff + 1);
             diff = 0;                                   // default for both difficaly types
@@ -2603,7 +2602,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
             {
             case static_cast<uint8>(ScriptCommands::SCRIPT_COMMAND_RESPAWN_GAMEOBJECT):
             {
-                Object* target = plr->getWorldMap()->getInterface()->GetGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
+                Object* target = plr->getWorldMap()->getInterface()->getGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
                 if (target == nullptr)
                     return;
 
@@ -2641,7 +2640,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
             {
                 if ((itr->second.x || itr->second.y || itr->second.z) == 0)
                 {
-                    Object* target = plr->getWorldMap()->getInterface()->GetGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
+                    Object* target = plr->getWorldMap()->getInterface()->getGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
                     if (target == nullptr)
                         return;
 
@@ -2656,7 +2655,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                 }
                 else
                 {
-                    Object* target = plr->getWorldMap()->getInterface()->GetGameObjectNearestCoords(float(itr->second.x), float(itr->second.y), float(itr->second.z), itr->second.data_1);
+                    Object* target = plr->getWorldMap()->getInterface()->getGameObjectNearestCoords(float(itr->second.x), float(itr->second.y), float(itr->second.z), itr->second.data_1);
                     if (target == nullptr)
                         return;
 

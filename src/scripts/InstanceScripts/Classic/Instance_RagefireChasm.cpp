@@ -29,12 +29,12 @@ public:
             return;
         }
 
-        Creature* Zelemar = _gameobject->getWorldMap()->getInterface()->GetCreatureNearestCoords(-370.133f, 162.519f, -21.1299f, RagefireChasm::CN_ZELMAR);
+        Creature* Zelemar = _gameobject->getWorldMap()->getInterface()->getCreatureNearestCoords(-370.133f, 162.519f, -21.1299f, RagefireChasm::CN_ZELMAR);
         if (Zelemar)
             return;
 
         // Spawn Zelemar the Wrathful
-        Zelemar = _gameobject->getWorldMap()->getInterface()->SpawnCreature(17830, -370.133f, 162.519f, -21.1299f, -1.29154f, true, false, 0, 0);
+        Zelemar = _gameobject->getWorldMap()->getInterface()->spawnCreature(17830, LocationVector(-370.133f, 162.519f, -21.1299f, -1.29154f), true, false, 0, 0);
         if (Zelemar)
         {
             Zelemar->m_noRespawn = true;

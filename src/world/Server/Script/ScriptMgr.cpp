@@ -1299,7 +1299,7 @@ Creature* InstanceScript::spawnCreature(uint32_t entry, float posX, float posY, 
         return nullptr;
     }
 
-    Creature* creature = mInstance->getInterface()->SpawnCreature(entry, posX, posY, posZ, posO, true, true, 0, 0);
+    Creature* creature = mInstance->getInterface()->spawnCreature(entry, LocationVector(posX, posY, posZ, posO), true, true, 0, 0);
     if (creature == nullptr)
         return nullptr;
 
@@ -1373,7 +1373,7 @@ Creature* InstanceScript::findNearestCreature(Object* pObject, uint32_t entry, f
 
 GameObject* InstanceScript::spawnGameObject(uint32_t entry, float posX, float posY, float posZ, float posO, bool addToWorld /*= true*/, uint32_t misc1 /*= 0*/, uint32_t phase /*= 0*/)
 {
-    GameObject* spawnedGameObject = mInstance->getInterface()->SpawnGameObject(entry, posX, posY, posZ, posO, addToWorld, misc1, phase);
+    GameObject* spawnedGameObject = mInstance->getInterface()->spawnGameObject(entry, LocationVector(posX, posY, posZ, posO), addToWorld, misc1, phase);
     return spawnedGameObject;
 }
 

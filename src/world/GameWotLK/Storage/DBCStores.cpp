@@ -238,7 +238,7 @@ bool LoadDBCs()
     {
         for (uint32_t i = 0; i < sMapDifficultyStore.GetNumRows(); ++i)
         {
-            if(auto entry = sMapDifficultyStore.LookupEntry(i))
+            if (auto entry = sMapDifficultyStore.LookupEntry(i))
                 sMapDifficultyMap[Util::MAKE_PAIR32(entry->MapID, entry->Difficulty)] = DBC::Structures::MapDifficulty(entry->RaidDuration, entry->MaxPlayers, entry->Message[0] != '\0');
         }
     }

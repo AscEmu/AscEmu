@@ -80,7 +80,7 @@ void OntoGoldshireComplete(Player* pPlayer, Object* pObject)
 
 void ZuluhedtheWhacked(Player* pPlayer, Object* /*pObject*/)
 {
-    Creature* Zuluhed = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(-4206.199219f, 313.5462f, 122.907f, 11980);
+    Creature* Zuluhed = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(-4206.199219f, 313.5462f, 122.907f, 11980);
     if(Zuluhed == nullptr)
     {
         pPlayer->getWorldMap()->createAndSpawnCreature(11980, -4206.199219f, 313.5462f, 122.907f, 1.2589f);
@@ -203,7 +203,7 @@ void OnQuestFinished(Player* pPlayer, QuestProperties* pQuest, Object* pObject)
 
 void ZuluhedtheWhackedCancel(Player* pPlayer)
 {
-    Creature* Zuluhed = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(-4206.199219f, 313.5462f, 122.907f, 11980);
+    Creature* Zuluhed = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(-4206.199219f, 313.5462f, 122.907f, 11980);
     if(Zuluhed != nullptr)
     {
         Zuluhed->Despawn(0, 0);
@@ -366,7 +366,7 @@ void Scratches(Player* pPlayer, uint32_t /*AreaTrigger*/)
 {
     if (auto* questLog = pPlayer->getQuestLogByQuestId(10556))
     {
-        Creature* Kaliri = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21468);
+        Creature* Kaliri = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21468);
         if (Kaliri == nullptr)
             return;
 

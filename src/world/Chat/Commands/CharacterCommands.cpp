@@ -1923,8 +1923,6 @@ bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSessi
     std::stringstream ss;
     ss << "Show persistent instances of " << MSG_COLOR_CYAN << player_target->getName().c_str() << "|r\n";
 
-
-
     for (uint32_t mapId = 0; mapId < MAX_NUM_MAPS; mapId++)
     {
         const auto save = player_target->getInstanceSave(mapId, false);

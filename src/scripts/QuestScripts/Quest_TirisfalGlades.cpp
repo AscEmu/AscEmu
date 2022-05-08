@@ -26,7 +26,7 @@ class TheDormantShade : public QuestScript
 public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* creat = mTarget->getWorldMap()->getInterface()->SpawnCreature(1946, 2467.314f, 14.8471f, 23.5950f, 0, true, false, 0, 0);
+        Creature* creat = mTarget->getWorldMap()->getInterface()->spawnCreature(1946, LocationVector(2467.314f, 14.8471f, 23.5950f), true, false, 0, 0);
         creat->Despawn(60000, 0);
         creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have disturbed my rest. Now face my wrath!");
     }
@@ -89,7 +89,7 @@ public:
         float SSY = mTarget->GetPositionY();
         float SSZ = mTarget->GetPositionZ();
 
-        Creature* Dashel = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 6784);
+        Creature* Dashel = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(SSX, SSY, SSZ, 6784);
 
         if (Dashel == nullptr)
             return;

@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Threading/Mutex.h"
 #include <Server/World.h>
 #include <Macros/MapsMacros.hpp>
+#include "Movement/MovementDefines.h"
 
 namespace G3D { class Plane; }
 namespace VMAP
@@ -70,11 +71,11 @@ enum ZLiquidStatus : uint32_t
     LIQUID_MAP_ABOVE_WATER      = 0x00000001,
     LIQUID_MAP_WATER_WALK       = 0x00000002,
     LIQUID_MAP_IN_WATER         = 0x00000004,
-    LIQUID_MAP_UNDER_WATER      = 0x00000008
-};
+    LIQUID_MAP_UNDER_WATER      = 0x00000008,
 
-#define MAP_LIQUID_STATUS_SWIMMING (LIQUID_MAP_IN_WATER | LIQUID_MAP_UNDER_WATER)
-#define MAP_LIQUID_STATUS_IN_CONTACT (MAP_LIQUID_STATUS_SWIMMING | LIQUID_MAP_WATER_WALK)
+    MAP_LIQUID_STATUS_SWIMMING  = (LIQUID_MAP_IN_WATER | LIQUID_MAP_UNDER_WATER),
+    MAP_LIQUID_STATUS_IN_CONTACT = (MAP_LIQUID_STATUS_SWIMMING | LIQUID_MAP_WATER_WALK)
+};
 
 enum MapLiquidType
 {
@@ -98,43 +99,43 @@ struct LiquidData
 class TileMap
 {
 public:
-    uint32_t m_heightMapFlags;
+    uint32_t m_heightMapFlags = 0;
 
     // Height Map
     union
     {
-        float* m_heightMap8F;
+        float* m_heightMap8F = nullptr;
         uint16_t* m_heightMap8S;
         uint8_t* m_heightMap8B;
     };
     union
     {
-        float* m_heightMap9F;
+        float* m_heightMap9F = nullptr;
         uint16_t* m_heightMap9S;
         uint8_t* m_heightMap9B;
     };
-    G3D::Plane * m_minHeightPlanes;
+    G3D::Plane * m_minHeightPlanes = nullptr;
     // Height Data
-    float m_tileHeight;
-    float m_tileHeightMultiplier;
+    float m_tileHeight = INVALID_HEIGHT;
+    float m_tileHeightMultiplier = 0;
 
     // Area Data
-    uint16* m_areaMap;
+    uint16_t* m_areaMap = nullptr;
 
     // Liquid Data
-    float m_liquidLevel;
-    uint16_t* m_liquidEntry;
-    uint8_t* m_liquidFlags;
-    float* m_liquidMap;
-    uint16_t m_tileArea;
-    uint16_t m_liquidGlobalEntry;
-    uint8_t m_liquidGlobalFlags;
-    uint8_t m_liquidOffX;
-    uint8_t m_liquidOffY;
-    uint8_t m_liquidWidth;
-    uint8_t m_liquidHeight;
+    float m_liquidLevel = INVALID_HEIGHT;
+    uint16_t* m_liquidEntry = nullptr;
+    uint8_t* m_liquidFlags = nullptr;
+    float* m_liquidMap = nullptr;
+    uint16_t m_tileArea = 0;
+    uint16_t m_liquidGlobalEntry = 0;
+    uint8_t m_liquidGlobalFlags = 0;
+    uint8_t m_liquidOffX = 0;
+    uint8_t m_liquidOffY = 0;
+    uint8_t m_liquidWidth = 0;
+    uint8_t m_liquidHeight = 0;
 
-    uint16_t* m_holes;
+    uint16_t* m_holes = nullptr;
 
     TileMap();
     ~TileMap();
@@ -157,7 +158,7 @@ public:
     uint16_t getArea(float x, float y) const;
     float getHeight(float x, float y) const { return (this->*m_gridGetHeight)(x, y); }
     float getLiquidLevel(float x, float y) const;
-    ZLiquidStatus getLiquidStatus(float x, float y, float z, uint8_t ReqLiquidType, LiquidData* data = 0, float collisionHeight = 2.03128f);
+    ZLiquidStatus getLiquidStatus(LocationVector pos, uint8_t ReqLiquidType, LiquidData* data = 0, float collisionHeight = 2.03128f);
 };
 
 class TerrainTile

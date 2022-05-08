@@ -1243,7 +1243,6 @@ void Group::resetInstances(uint8_t method, bool isRaid, Player* SendMsgTo)
                 CharacterDatabase.Execute("DELETE FROM group_instance WHERE instance = %u", instanceSave->getInstanceId());
             }
 
-
             // i don't know for sure if hash_map iterators
             m_boundInstances[diff].erase(itr);
             itr = m_boundInstances[diff].begin();
@@ -1252,13 +1251,15 @@ void Group::resetInstances(uint8_t method, bool isRaid, Player* SendMsgTo)
             instanceSave->removeGroup(this);
         }
         else
+        {
             ++itr;
+        }
     }
 }
 
 InstanceGroupBind* Group::getBoundInstance(Player* player)
 {
-    uint32 mapid = player->GetMapId();
+    uint32_t mapid = player->GetMapId();
     DBC::Structures::MapEntry const* mapEntry = sMapStore.LookupEntry(mapid);
     return getBoundInstance(mapEntry);
 }

@@ -62,7 +62,7 @@ bool SummonCyclonian(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector unitPos = pUnit->GetPosition();
 
-    Creature* pCreature = pUnit->getWorldMap()->getInterface()->SpawnCreature(6239, unitPos.x, unitPos.y, unitPos.z, unitPos.o, true, false, 0, 0);
+    Creature* pCreature = pUnit->getWorldMap()->getInterface()->spawnCreature(6239, unitPos, true, false, 0, 0);
     if (pCreature != nullptr)
     {
         pCreature->Despawn(600000, 0);
@@ -156,7 +156,7 @@ bool ScrapReaver(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector pos = pPlayer->GetPosition();
 
-    Creature* pCreature = pPlayer->getWorldMap()->getInterface()->SpawnCreature(19851, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
+    Creature* pCreature = pPlayer->getWorldMap()->getInterface()->spawnCreature(19851, pos, true, false, 0, 0);
     if (pCreature != nullptr)
     {
         pCreature->Despawn(600000, 0);
@@ -170,7 +170,7 @@ bool RuuanokClaw(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pSpell->getPlayerCaster())
         return true;
 
-    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->SpawnCreature(21767, 3210.960693f, 5348.308594f, 144.537476f, 5.450696f, true, false, 0, 0);
+    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(21767, LocationVector(3210.960693f, 5348.308594f, 144.537476f, 5.450696f), true, false, 0, 0);
     return true;
 }
 
@@ -184,10 +184,10 @@ bool KarangsBanner(uint8_t /*effectIndex*/, Spell* pSpell)
     // Banner Aura
     pPlayer->castSpell(pPlayer, sSpellMgr.getSpellInfo(20746), true);
 
-    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->SpawnCreature(12921, 2231.710205f, -1543.603027f, 90.694946f, 4.700579f, true, false, 0, 0);
-    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->SpawnCreature(12921, 2232.534912f, -1556.983276f, 89.744415f, 1.527570f, true, false, 0, 0);
+    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(12921, LocationVector(2231.710205f, -1543.603027f, 90.694946f, 4.700579f), true, false, 0, 0);
+    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(12921, LocationVector(2232.534912f, -1556.983276f, 89.744415f, 1.527570f), true, false, 0, 0);
 
-    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->SpawnCreature(12757, 2239.357178f, -1546.649536f, 89.671097f, 3.530336f, true, false, 0, 0);
+    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(12757, LocationVector(2239.357178f, -1546.649536f, 89.671097f, 3.530336f), true, false, 0, 0);
 
     return true;
 }
@@ -213,7 +213,7 @@ bool FuryoftheDreghoodElders(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector pos = pPlayer->GetPosition();
 
-    Creature* arzethpower = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 19354);
+    Creature* arzethpower = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pos.x, pos.y, pos.z, 19354);
     if (arzethpower == nullptr)
         return true;
 
@@ -259,10 +259,10 @@ bool BalanceMustBePreserved(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (!pPlayer->hasQuestInQuestLog(9720))
         return true;
 
-    GameObject* lake1 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-756, 5926, 19, 300076);
-    GameObject* lake2 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-213, 6302, 21, 300076);
-    GameObject* lake3 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(498, 8197, 21, 300076);
-    GameObject* lake4 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(566, 6358, 23, 300076);
+    GameObject* lake1 = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-756, 5926, 19, 300076);
+    GameObject* lake2 = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-213, 6302, 21, 300076);
+    GameObject* lake3 = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(498, 8197, 21, 300076);
+    GameObject* lake4 = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(566, 6358, 23, 300076);
 
     if (lake1 != nullptr)
         pPlayer->addQuestKill(9720, 0, 0);
@@ -288,10 +288,10 @@ bool BlessingofIncineratus(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pPlayer->hasQuestInQuestLog(9805))
         return true;
 
-    GameObject* big = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-1972, 6276, 56, 300077);
-    GameObject* east = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-1841, 6387, 52, 400050);
-    GameObject* west = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-1920, 6361, 56, 400051);
-    GameObject* south = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-1808, 6293, 59, 400052);
+    GameObject* big = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-1972, 6276, 56, 300077);
+    GameObject* east = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-1841, 6387, 52, 400050);
+    GameObject* west = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-1920, 6361, 56, 400051);
+    GameObject* south = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-1808, 6293, 59, 400052);
 
     if (big != nullptr)
     {
@@ -392,7 +392,7 @@ bool UnyieldingBattleHorn(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Creature* creat = pSpell->getPlayerCaster()->getWorldMap()->getInterface()->SpawnCreature(19862, -1190.856079f, 2261.246582f, 46.625797f, 1.705882f, true, false, 0, 0);
+    Creature* creat = pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(19862, LocationVector(-1190.856079f, 2261.246582f, 46.625797f, 1.705882f), true, false, 0, 0);
     creat->Despawn(300000, 0); // 5 mins delay
 
     return true;
@@ -407,10 +407,10 @@ bool MeasuringWarpEnergies(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pPlayer->hasQuestInQuestLog(10313))
         return true;
 
-    GameObject* north = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(3216, 4045, 145, 300094);
-    GameObject* east = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(2766, 3865, 145, 300094);
-    GameObject* west = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(2958, 4318, 145, 300094);
-    GameObject* south = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(2817, 4337, 145, 300094);
+    GameObject* north = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(3216, 4045, 145, 300094);
+    GameObject* east = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(2766, 3865, 145, 300094);
+    GameObject* west = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(2958, 4318, 145, 300094);
+    GameObject* south = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(2817, 4337, 145, 300094);
 
     if (north != nullptr)
     {
@@ -472,7 +472,7 @@ bool ScrollOfMyzrael(uint8_t /*effectIndex*/, Spell* pSpell)
 
     const float MyzraelPos[] = { -940.7374f, -3111.1953f, 48.9566f, 3.327f };
 
-    Creature* myzrael = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(MyzraelPos[0], MyzraelPos[1], MyzraelPos[2], 2755);
+    Creature* myzrael = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(MyzraelPos[0], MyzraelPos[1], MyzraelPos[2], 2755);
     if (myzrael != nullptr)
     {
         if (!myzrael->isAlive())
@@ -785,21 +785,21 @@ bool BuildingAPerimeter(uint8_t /*effectIndex*/, Spell* pSpell)
 
     Player* pPlayer = pSpell->getPlayerCaster();
 
-    GameObject* pEast = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(2257.0f, 2465.0f, 101.0f, 183947);
+    GameObject* pEast = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(2257.0f, 2465.0f, 101.0f, 183947);
     if (pEast != nullptr && pPlayer->CalcDistance(pPlayer, pEast) < 30)
     {
         pPlayer->addQuestKill(10313, 0, 0);
         return true;
     }
 
-    GameObject* pNorth = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(2375.0f, 2285.0f, 141.0f, 183947);
+    GameObject* pNorth = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(2375.0f, 2285.0f, 141.0f, 183947);
     if (pNorth != nullptr && pPlayer->CalcDistance(pPlayer, pNorth) < 30)
     {
         pPlayer->addQuestKill(10313, 1, 0);
         return true;
     }
 
-    GameObject* pWest = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(2283.0f, 2181.0f, 95.0f, 183947);
+    GameObject* pWest = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(2283.0f, 2181.0f, 95.0f, 183947);
     if (pWest != nullptr && pPlayer->CalcDistance(pPlayer, pWest) < 30)
     {
         pPlayer->addQuestKill(10313, 2, 0);
@@ -817,7 +817,7 @@ bool RodofPurification(uint8_t /*effectIndex*/, Spell* pSpell)
 
     if (auto* questLog = pPlayer->getQuestLogByQuestId(10839))
     {
-        GameObject* Darkstone = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-2512, 5418, 0, 185191);
+        GameObject* Darkstone = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-2512, 5418, 0, 185191);
         if (Darkstone != nullptr)
         {
             if (pPlayer->CalcDistance(pPlayer, Darkstone) < 15)
@@ -839,7 +839,7 @@ bool AnUnusualPatron(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector pos = pPlayer->GetPosition();
 
-    Creature* Naias = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 17207);
+    Creature* Naias = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pos.x, pos.y, pos.z, 17207);
     if (Naias != nullptr)
         return true;
 
@@ -883,7 +883,7 @@ bool TemporalPhaseModulator(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pPlayer->hasQuestInQuestLog(10609) == false)
         return true;
 
-    Creature* whelp = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 20021);
+    Creature* whelp = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pos.x, pos.y, pos.z, 20021);
     if (whelp != nullptr)
     {
         LocationVector whelpPos = whelp->GetPosition();
@@ -901,7 +901,7 @@ bool TemporalPhaseModulator(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
     }
 
-    whelp = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 21817);
+    whelp = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pos.x, pos.y, pos.z, 21817);
     if (whelp != nullptr)
     {
         LocationVector whelpPos = whelp->GetPosition();
@@ -919,7 +919,7 @@ bool TemporalPhaseModulator(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
     }
 
-    whelp = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 21821);
+    whelp = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pos.x, pos.y, pos.z, 21821);
     if (whelp != nullptr)
     {
         LocationVector whelpPos = whelp->GetPosition();
@@ -936,7 +936,7 @@ bool TemporalPhaseModulator(uint8_t /*effectIndex*/, Spell* pSpell)
         whelp->Despawn(1, 0);
         return true;
     }
-    whelp = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 21823);
+    whelp = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pos.x, pos.y, pos.z, 21823);
     if (whelp != nullptr)
     {
         LocationVector whelpPos = whelp->GetPosition();
@@ -1176,7 +1176,7 @@ bool SummonShadra(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     LocationVector pos = pSpell->getPlayerCaster()->GetPosition();
-    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->SpawnCreature(2707, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
+    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(2707, pos, true, false, 0, 0);
 
     return true;
 }
@@ -1187,7 +1187,7 @@ bool SummonEcheyakee(uint8_t effectIndex, Spell* pSpell)
         return true;
 
     LocationVector pos = pSpell->getPlayerCaster()->GetPosition();
-    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->SpawnCreature(3475, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
+    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(3475, pos, true, false, 0, 0);
 
     return true;
 }
@@ -1283,7 +1283,7 @@ bool SummonAquementas(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector pos = pSpell->getPlayerCaster()->GetPosition();
 
-    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->SpawnCreature(9453, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
+    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(9453, pos, true, false, 0, 0);
 
     return true;
 }
@@ -1404,7 +1404,7 @@ bool ArcaneDisruption(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
     if (auto* questLog = plr->getQuestLogByQuestId(13149))
     {
-        GameObject* crate = plr->getWorldMap()->getInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 190094);
+        GameObject* crate = plr->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 190094);
         if (crate != nullptr)
         {
             GameObject* go = plr->getWorldMap()->createGameObject(190095);
@@ -1447,7 +1447,7 @@ bool ToLegionHold(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
     LocationVector pos = pPlayer->GetPosition();
 
-    Creature* pJovaanCheck = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(-3310.743896f, 2951.929199f, 171.132538f, 21633);
+    Creature* pJovaanCheck = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(-3310.743896f, 2951.929199f, 171.132538f, 21633);
     if (pJovaanCheck != nullptr)
         return true;
 
@@ -1464,7 +1464,7 @@ bool ToLegionHold(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
                 pJovaan->getAIInterface()->setAllowedToEnterCombat(false);
             }
         }
-        GameObject* pGameObject = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 184834);
+        GameObject* pGameObject = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 184834);
         if (pGameObject != nullptr)
         {
             pGameObject->Despawn(60000, 0);
@@ -1730,14 +1730,14 @@ bool DouseEternalFlame(uint8_t /*effectIndex*/, Spell* pSpell)
 
     const LocationVector pos = plr->GetPosition();
 
-    GameObject* Flame = plr->getWorldMap()->getInterface()->GetGameObjectNearestCoords(3678, -3640, 139, 182068);
+    GameObject* Flame = plr->getWorldMap()->getInterface()->getGameObjectNearestCoords(3678, -3640, 139, 182068);
     if (Flame != nullptr)
     {
         if (plr->CalcDistance(plr, Flame) < 30)
         {
             plr->addQuestKill(9737, 0, 0);
 
-            Creature* pCreature = plr->getWorldMap()->getInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 10917);
+            Creature* pCreature = plr->getWorldMap()->getInterface()->getCreatureNearestCoords(pos.x, pos.y, pos.z, 10917);
             if (pCreature != nullptr)
                 pCreature->setFaction(11);
         }
@@ -1769,7 +1769,7 @@ bool NeutralizingTheCauldrons(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pPlayer->hasQuestInQuestLog(11647))
         return true;
 
-    GameObject* pCauldron = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 187690);
+    GameObject* pCauldron = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 187690);
     if (pCauldron == nullptr)
         return true;
 
@@ -1827,15 +1827,15 @@ bool CompleteAncestorRitual(uint8_t /*effectIndex*/, Spell* pSpell)
 
     const LocationVector pos = pPlayer->GetPosition();
 
-    GameObject* pElderObj = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 191088);
+    GameObject* pElderObj = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 191088);
     if (pElderObj != nullptr && pPlayer->GetDistance2dSq(pElderObj) < 8.0f)
         pPlayer->addQuestKill(11610, 0, 0);
 
-    pElderObj = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 191089);
+    pElderObj = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 191089);
     if (pElderObj != nullptr && pPlayer->GetDistance2dSq(pElderObj) < 8.0f)
         pPlayer->addQuestKill(11610, 1, 0);
 
-    pElderObj = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 191090);
+    pElderObj = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 191090);
     if (pElderObj != nullptr && pPlayer->GetDistance2dSq(pElderObj) < 8.0f)
         pPlayer->addQuestKill(11610, 2, 0);
 
@@ -1867,7 +1867,7 @@ bool TestingTheAntidote(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector targetPos = target->GetPosition();
 
-    Creature* spawned = target->getWorldMap()->getInterface()->SpawnCreature(16992, targetPos.x, targetPos.y, targetPos.z, targetPos.o, true, false, 0, 0);
+    Creature* spawned = target->getWorldMap()->getInterface()->spawnCreature(16992, targetPos, true, false, 0, 0);
     if (spawned == nullptr)
         return true;
 
@@ -1891,7 +1891,7 @@ bool ZethGorMustBurnHorde(uint8_t /*effectIndex*/, Spell* pSpell)
         // Barracks
         if (questLog->getMobCountByIndex(0) < questLog->getQuestProperties()->required_mob_or_go_count[0])
         {
-            GameObject* pBarracks = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-1137.0f, 1970.0f, 74.0f, 300151);
+            GameObject* pBarracks = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-1137.0f, 1970.0f, 74.0f, 300151);
             if (pBarracks != nullptr && pPlayer->CalcDistance(pPlayer, pBarracks) < 30)
             {
                 pPlayer->addQuestKill(10792, 0, 0);
@@ -1927,7 +1927,7 @@ bool ZethGorMustBurnHorde(uint8_t /*effectIndex*/, Spell* pSpell)
         // Eastern Hovel
         if (questLog->getMobCountByIndex(1) < questLog->getQuestProperties()->required_mob_or_go_count[1])
         {
-            GameObject* pEasternHovel = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-940.0f, 1920.0f, 69.0f, 300151);
+            GameObject* pEasternHovel = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-940.0f, 1920.0f, 69.0f, 300151);
             if (pEasternHovel != nullptr && pPlayer->CalcDistance(pPlayer, pEasternHovel) < 30)
             {
                 pPlayer->addQuestKill(10792, 1, 0);
@@ -1943,7 +1943,7 @@ bool ZethGorMustBurnHorde(uint8_t /*effectIndex*/, Spell* pSpell)
         // Western Hovel
         if (questLog->getMobCountByIndex(2) < questLog->getQuestProperties()->required_mob_or_go_count[2])
         {
-            GameObject* pWesternHovel = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-1155.0f, 2061.0f, 68.0f, 300151);
+            GameObject* pWesternHovel = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-1155.0f, 2061.0f, 68.0f, 300151);
             if (pWesternHovel != nullptr && pPlayer->CalcDistance(pPlayer, pWesternHovel) < 30)
             {
                 pPlayer->addQuestKill(10792, 2, 0);
@@ -1959,7 +1959,7 @@ bool ZethGorMustBurnHorde(uint8_t /*effectIndex*/, Spell* pSpell)
         // Stable
         if (questLog->getMobCountByIndex(3) < questLog->getQuestProperties()->required_mob_or_go_count[3])
         {
-            GameObject* pStable = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-1052.0f, 2007.0f, 66.0f, 300151);
+            GameObject* pStable = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-1052.0f, 2007.0f, 66.0f, 300151);
             if (pStable != nullptr && pPlayer->CalcDistance(pPlayer, pStable) < 30)
             {
                 pPlayer->addQuestKill(10792, 3, 0);
@@ -1993,7 +1993,7 @@ bool LayingWasteToTheUnwantedAlliance(uint8_t /*effectIndex*/, Spell* pSpell)
         // Eastern Thrower
         if (questLog->getMobCountByIndex(0) < questLog->getQuestProperties()->required_mob_or_go_count[0])
         {
-            GameObject* pEasternTower = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-155.0f, 2517.0f, 43.0f, 300152);
+            GameObject* pEasternTower = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-155.0f, 2517.0f, 43.0f, 300152);
             if (pEasternTower != nullptr && pPlayer->CalcDistance(pPlayer, pEasternTower) < 30)
             {
                 pPlayer->addQuestKill(10078, 0, 0);
@@ -2009,7 +2009,7 @@ bool LayingWasteToTheUnwantedAlliance(uint8_t /*effectIndex*/, Spell* pSpell)
         // Central Eastern Thrower
         if (questLog->getMobCountByIndex(1) < questLog->getQuestProperties()->required_mob_or_go_count[1])
         {
-            GameObject* pCentralEasternTower = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-152.0f, 2661.0f, 44.0f, 300152);
+            GameObject* pCentralEasternTower = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-152.0f, 2661.0f, 44.0f, 300152);
             if (pCentralEasternTower != nullptr && pPlayer->CalcDistance(pPlayer, pCentralEasternTower) < 30)
             {
                 pPlayer->addQuestKill(10078, 1, 0);
@@ -2025,7 +2025,7 @@ bool LayingWasteToTheUnwantedAlliance(uint8_t /*effectIndex*/, Spell* pSpell)
         // Central Western Thrower
         if (questLog->getMobCountByIndex(2) < questLog->getQuestProperties()->required_mob_or_go_count[2])
         {
-            GameObject* pCentralWesternTower = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-174.0f, 2772.0f, 32.0f, 300152);
+            GameObject* pCentralWesternTower = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-174.0f, 2772.0f, 32.0f, 300152);
             if (pCentralWesternTower != nullptr && pPlayer->CalcDistance(pPlayer, pCentralWesternTower) < 30)
             {
                 pPlayer->addQuestKill(10078, 2, 0);
@@ -2041,7 +2041,7 @@ bool LayingWasteToTheUnwantedAlliance(uint8_t /*effectIndex*/, Spell* pSpell)
         // Western Thrower
         if (questLog->getMobCountByIndex(3) < questLog->getQuestProperties()->required_mob_or_go_count[3])
         {
-            GameObject* pWesternTower = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-166.0f, 2818.0f, 29.0f, 300152);
+            GameObject* pWesternTower = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-166.0f, 2818.0f, 29.0f, 300152);
             if (pWesternTower != nullptr && pPlayer->CalcDistance(pPlayer, pWesternTower) < 30)
             {
                 pPlayer->addQuestKill(10078, 3, 0);
@@ -2076,9 +2076,9 @@ bool BurnItUp(uint8_t /*effectIndex*/, Spell* pSpell)
     {
         if (questLog->getMobCountByIndex(0) < questLog->getQuestProperties()->required_mob_or_go_count[0])
         {
-            GameObject* pEastern = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-300.0f, 2407.0f, 50.0f, 183122);
+            GameObject* pEastern = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-300.0f, 2407.0f, 50.0f, 183122);
             if (pEastern == nullptr)
-                pEastern = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-300.0f, 2407.0f, 50.0f, 185122);
+                pEastern = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-300.0f, 2407.0f, 50.0f, 185122);
 
             if (pEastern != nullptr && pPlayer->CalcDistance(pPlayer, pEastern) < 30)
             {
@@ -2094,9 +2094,9 @@ bool BurnItUp(uint8_t /*effectIndex*/, Spell* pSpell)
 
         if (questLog->getMobCountByIndex(1) < questLog->getQuestProperties()->required_mob_or_go_count[1])
         {
-            GameObject* pWestern = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-350.0f, 2708.0f, 35.0f, 183122);
+            GameObject* pWestern = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-350.0f, 2708.0f, 35.0f, 183122);
             if (pWestern == nullptr)
-                pWestern = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-350.0f, 2708.0f, 35.0f, 185122);
+                pWestern = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-350.0f, 2708.0f, 35.0f, 185122);
 
             if (pWestern != nullptr && pPlayer->CalcDistance(pPlayer, pWestern) < 30)
             {
@@ -2162,7 +2162,7 @@ bool DisruptTheirReinforcements(uint8_t /*effectIndex*/, Spell* pSpell)
         bool SendMsg = false;
         if (questLogAliance->getMobCountByIndex(0) < questLogAliance->getQuestProperties()->required_mob_or_go_count[0])
         {
-            GameObject* pGrimh = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-419.0f, 1847.0f, 80.0f, 184414);
+            GameObject* pGrimh = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-419.0f, 1847.0f, 80.0f, 184414);
             if (pGrimh != nullptr && pPlayer->CalcDistance(pPlayer, pGrimh) < 10)
                 pPlayer->addQuestKill(10144, 0, 0);
             else
@@ -2171,7 +2171,7 @@ bool DisruptTheirReinforcements(uint8_t /*effectIndex*/, Spell* pSpell)
 
         if (questLogAliance->getMobCountByIndex(1) < questLogAliance->getQuestProperties()->required_mob_or_go_count[1])
         {
-            GameObject* pKaalez = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-548.0f, 1782.0f, 58.0f, 184415);
+            GameObject* pKaalez = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-548.0f, 1782.0f, 58.0f, 184415);
             if (pKaalez != nullptr && pPlayer->CalcDistance(pPlayer, pKaalez) < 10)
                 pPlayer->addQuestKill(10144, 1, 0);
             else
@@ -2186,7 +2186,7 @@ bool DisruptTheirReinforcements(uint8_t /*effectIndex*/, Spell* pSpell)
         bool SendMsg = false;
         if (questLogHorde->getMobCountByIndex(0) < questLogHorde->getQuestProperties()->required_mob_or_go_count[0])
         {
-            GameObject* pXilus = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-85.0f, 1880.0f, 74.0f, 184290);
+            GameObject* pXilus = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-85.0f, 1880.0f, 74.0f, 184290);
             if (pXilus != nullptr && pPlayer->CalcDistance(pPlayer, pXilus) < 10)
                 pPlayer->addQuestKill(10208, 0, 0);
             else
@@ -2194,7 +2194,7 @@ bool DisruptTheirReinforcements(uint8_t /*effectIndex*/, Spell* pSpell)
         }
         if (questLogHorde->getMobCountByIndex(1) < questLogHorde->getQuestProperties()->required_mob_or_go_count[1])
         {
-            GameObject* pKruul = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(147.0f, 1717.0f, 38.0f, 184289);
+            GameObject* pKruul = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(147.0f, 1717.0f, 38.0f, 184289);
             if (pKruul != nullptr && pPlayer->CalcDistance(pPlayer, pKruul) < 10)
                 pPlayer->addQuestKill(10208, 1, 0);
             else
@@ -2247,7 +2247,7 @@ bool WarIsHell(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector pos = plr->GetPosition();
 
-    Creature* target = plr->getWorldMap()->getInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 24008);
+    Creature* target = plr->getWorldMap()->getInterface()->getCreatureNearestCoords(pos.x, pos.y, pos.z, 24008);
     if (target == nullptr)
         return true;
 
@@ -2394,9 +2394,9 @@ bool ShipBombing(uint8_t /*effectIndex*/, Spell* pSpell)
             return true;
     }
 
-    GameObject* pSinloren = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(13200.232422f, -7049.176270f, 3.838517f, 550000);
-    GameObject* pBloodoath = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(13319.419922f, -6988.779785f, 4.002993f, 550000);
-    GameObject* pDawnchaser = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(13274.51625f, -7145.434570f, 4.770292f, 550000);
+    GameObject* pSinloren = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(13200.232422f, -7049.176270f, 3.838517f, 550000);
+    GameObject* pBloodoath = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(13319.419922f, -6988.779785f, 4.002993f, 550000);
+    GameObject* pDawnchaser = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(13274.51625f, -7145.434570f, 4.770292f, 550000);
 
     GameObject* obj;
 
@@ -2480,7 +2480,7 @@ bool ImpaleEmissary(uint8_t /*effectIndex*/, Spell* pSpell)
             return true;
     }
 
-    Creature* pEmissary = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 25003);
+    Creature* pEmissary = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pos.x, pos.y, pos.z, 25003);
     if (pEmissary == nullptr)
         return true;
 
@@ -2510,7 +2510,7 @@ bool LeyLine(uint8_t /*effectIndex*/, Spell* pSpell)
 
         for (uint8_t i = 0; i < 3; i++)
         {
-            Object* portal = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, portals[i]);
+            Object* portal = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pos.x, pos.y, pos.z, portals[i]);
             if (portal != nullptr && questLog->getMobCountByIndex(i) < questLog->getQuestProperties()->required_mob_or_go_count[i])
             {
                 pPlayer->addQuestKill(11547, i, 0);
@@ -2530,7 +2530,7 @@ bool ManaRemnants(uint8_t /*effectIndex*/, Spell* pSpell)
 
     const LocationVector pos = pPlayer->GetPosition();
 
-    Creature* Ward = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 40404);
+    Creature* Ward = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pos.x, pos.y, pos.z, 40404);
     if (Ward == nullptr)
         return false;
 
@@ -2563,7 +2563,7 @@ bool StoppingTheSpread(uint8_t /*effectIndex*/, Spell* pSpell)
 
     const LocationVector pos = plr->GetPosition();
 
-    Creature* target = plr->getWorldMap()->getInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 18240);
+    Creature* target = plr->getWorldMap()->getInterface()->getCreatureNearestCoords(pos.x, pos.y, pos.z, 18240);
     if (target == nullptr)
         return true;
 
@@ -2600,7 +2600,7 @@ bool RuthlessCunning(uint8_t /*effectIndex*/, Spell* pSpell)
 
     const LocationVector pos = plr->GetPosition();
 
-    Creature* kilsorrow = plr->getWorldMap()->getInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z);
+    Creature* kilsorrow = plr->getWorldMap()->getInterface()->getCreatureNearestCoords(pos.x, pos.y, pos.z);
     if (kilsorrow == nullptr || kilsorrow->isAlive())
         return true;
 
@@ -2634,7 +2634,7 @@ bool TheFleshLies(uint8_t /*effectIndex*/, Spell* pSpell)
 
     const LocationVector pos = plr->GetPosition();
 
-    Creature* target = plr->getWorldMap()->getInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 20561);
+    Creature* target = plr->getWorldMap()->getInterface()->getCreatureNearestCoords(pos.x, pos.y, pos.z, 20561);
     if (target == nullptr)
         return true;
 
@@ -2668,9 +2668,9 @@ bool SurveyingtheRuins(uint8_t /*effectIndex*/, Spell* pSpell)
     {
         if (questLog->getMobCountByIndex(0) < questLog->getQuestProperties()->required_mob_or_go_count[0])
         {
-            GameObject* mark1 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(4695.2f, 2603.39f, 209.878f, 184612);
+            GameObject* mark1 = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(4695.2f, 2603.39f, 209.878f, 184612);
             if (mark1 == nullptr)
-                mark1 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(4695.28f, 2602.73f, 209.84f, 300095);
+                mark1 = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(4695.28f, 2602.73f, 209.84f, 300095);
 
             if (mark1 != nullptr && pPlayer->CalcDistance(pPlayer, mark1) < 15)
             {
@@ -2681,9 +2681,9 @@ bool SurveyingtheRuins(uint8_t /*effectIndex*/, Spell* pSpell)
 
         if (questLog->getMobCountByIndex(1) < questLog->getQuestProperties()->required_mob_or_go_count[1])
         {
-            GameObject* mark2 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(4608.08f, 2442.02f, 195.71f, 184612);
+            GameObject* mark2 = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(4608.08f, 2442.02f, 195.71f, 184612);
             if (mark2 == nullptr)
-                mark2 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(4607.71f, 2440.72f, 195.65f, 300095);
+                mark2 = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(4607.71f, 2440.72f, 195.65f, 300095);
 
             if (mark2 != nullptr && pPlayer->CalcDistance(pPlayer, mark2) < 15)
             {
@@ -2694,9 +2694,9 @@ bool SurveyingtheRuins(uint8_t /*effectIndex*/, Spell* pSpell)
 
         if (questLog->getMobCountByIndex(2) < questLog->getQuestProperties()->required_mob_or_go_count[2])
         {
-            GameObject* mark3 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(4716.37f, 2371.59f, 198.168f, 184612);
+            GameObject* mark3 = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(4716.37f, 2371.59f, 198.168f, 184612);
             if (mark3 == nullptr)
-                mark3 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(4716.77f, 2371.6f, 198.19f, 300095);
+                mark3 = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(4716.77f, 2371.6f, 198.19f, 300095);
 
             if (mark3 != nullptr && pPlayer->CalcDistance(pPlayer, mark3) < 15)
             {
@@ -2736,8 +2736,8 @@ bool Carcass(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a Shadoweave Ta
     LocationVector pos = pPlayer->GetPosition();
 
     QuestLogEntry* pQuest = pPlayer->getQuestLogByQuestId(10804);
-    Creature* NetherDrake = pPlayer->getWorldMap()->getInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 21648);
-    GameObject* FlayerCarcass = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 185155);
+    Creature* NetherDrake = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pos.x, pos.y, pos.z, 21648);
+    GameObject* FlayerCarcass = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 185155);
 
     if (FlayerCarcass == nullptr)
     {
@@ -2905,11 +2905,11 @@ bool FindingTheSource(uint8_t /*effectIndex*/, Spell* pSpell)
     if (qle == nullptr)
         return true;
 
-    GameObject* place1 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-7163, -1149, -264, 148503);
-    GameObject* place2 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-7281, -1244, -248, 148503);
-    GameObject* place3 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-7140, -1465, -242, 148503);
-    GameObject* place4 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-7328, -1461, -242, 148503);
-    GameObject* place5 = pPlayer->getWorldMap()->getInterface()->GetGameObjectNearestCoords(-7092, -1305, -187, 148503);
+    GameObject* place1 = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-7163, -1149, -264, 148503);
+    GameObject* place2 = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-7281, -1244, -248, 148503);
+    GameObject* place3 = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-7140, -1465, -242, 148503);
+    GameObject* place4 = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-7328, -1461, -242, 148503);
+    GameObject* place5 = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(-7092, -1305, -187, 148503);
 
     if (place1 != nullptr)
     {
@@ -3025,7 +3025,7 @@ bool CastFishingNet(uint8_t /*effectIndex*/, Spell* pSpell)
 
     if (Util::getRandomUInt(10) <= 3)
     {
-        Creature* pNewCreature = pPlayer->getWorldMap()->getInterface()->SpawnCreature(17102, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
+        Creature* pNewCreature = pPlayer->getWorldMap()->getInterface()->spawnCreature(17102, pos, true, false, 0, 0);
         if (pNewCreature != nullptr)
         {
             pNewCreature->pauseMovement(500);
@@ -3076,7 +3076,7 @@ bool InducingVision(uint8_t /*effectIndex*/, Spell* pSpell)
     if (mTarget == nullptr || mTarget->getWorldMap() == nullptr || mTarget->getWorldMap()->getInterface() == nullptr)
         return true;
 
-    Creature* creature = mTarget->getWorldMap()->getInterface()->SpawnCreature(2983, -2238.994873f, -408.009552f, -9.424423f, 5.753043f, true, false, 0, 0);
+    Creature* creature = mTarget->getWorldMap()->getInterface()->spawnCreature(2983, LocationVector(-2238.994873f, -408.009552f, -9.424423f, 5.753043f), true, false, 0, 0);
 
     MovementNew::PointsArray path(InducingVisionPath, InducingVisionPath + pathSize);
     MovementNew::MoveSplineInit init(creature);

@@ -2108,7 +2108,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             {
                 // Spell requires an implicit target
                 // Find closest creature with the required entry id
-                const auto creatureTarget = m_caster->IsInWorld() ? m_caster->getWorldMap()->getInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), entryId) : nullptr;
+                const auto creatureTarget = m_caster->IsInWorld() ? m_caster->getWorldMap()->getInterface()->getCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), entryId) : nullptr;
                 if (creatureTarget != nullptr)
                 {
                     // Check that the creature is within spell's range
@@ -2162,7 +2162,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             {
                 // Spell requires an implicit target
                 // Find closest gameobject with the required entry id
-                const auto gobTarget = m_caster->IsInWorld() ? m_caster->getWorldMap()->getInterface()->GetGameObjectNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), entryId) : nullptr;
+                const auto gobTarget = m_caster->IsInWorld() ? m_caster->getWorldMap()->getInterface()->getGameObjectNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), entryId) : nullptr;
                 if (gobTarget != nullptr)
                 {
                     // Check that the gameobject is within spell's range

@@ -33,7 +33,7 @@ public:
         if (!mKiller->isPlayer())
             return;
 
-        Creature* creat = getCreature()->getWorldMap()->getInterface()->SpawnCreature(11064, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
+        Creature* creat = getCreature()->getWorldMap()->getInterface()->spawnCreature(11064, getCreature()->GetPosition(), true, false, 0, 0);
         if (creat)
             creat->Despawn(60000, 0);
     }

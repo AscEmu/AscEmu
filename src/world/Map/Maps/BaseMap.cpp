@@ -109,7 +109,7 @@ bool BaseMap::isBattlegroundOrArena() const
     return _mapEntry && _mapEntry->isBattlegroundOrArena();
 }
 
-bool BaseMap::getEntrancePos(int32& mapid, float& x, float& y) const
+bool BaseMap::getEntrancePos(int32_t& mapid, float& x, float& y) const
 {
 #if VERSION_STRING > Classic
     if (!_mapEntry)

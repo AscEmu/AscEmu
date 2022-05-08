@@ -46,7 +46,7 @@ public:
     bool isBattleground() const;
     bool isBattleArena() const;
     bool isBattlegroundOrArena() const;
-    bool getEntrancePos(int32& mapid, float& x, float& y) const;
+    bool getEntrancePos(int32_t& mapid, float& x, float& y) const;
 
     // Cell
     void loadSpawns(bool reload);    // set to true to make clean up

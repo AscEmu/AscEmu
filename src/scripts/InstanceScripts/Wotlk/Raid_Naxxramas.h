@@ -2181,7 +2181,7 @@ public:
                             LastOne = Block;
 
                             GameObject* IceBlock = NULL;
-                            IceBlock = getCreature()->getWorldMap()->getInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
+                            IceBlock = getCreature()->getWorldMap()->getInterface()->spawnGameObject(ICE_BLOCK_GO, IceBlocks[Block], true, 0, 0);
                             if (IceBlock != NULL)
                             {
                                 IceBlock->setFlags(GO_FLAG_NONSELECTABLE);
@@ -2205,7 +2205,7 @@ public:
                                 Block = Util::getRandomUInt(10, 13);
 
                             GameObject* IceBlock = NULL;
-                            IceBlock = getCreature()->getWorldMap()->getInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
+                            IceBlock = getCreature()->getWorldMap()->getInterface()->spawnGameObject(ICE_BLOCK_GO, IceBlocks[Block], true, 0, 0);
                             if (IceBlock != NULL)
                             {
                                 IceBlock->setFlags(GO_FLAG_NONSELECTABLE);
@@ -2224,7 +2224,7 @@ public:
                                 Block = Util::getRandomUInt(7) + 13;
 
                             GameObject* IceBlock = NULL;
-                            IceBlock = getCreature()->getWorldMap()->getInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
+                            IceBlock = getCreature()->getWorldMap()->getInterface()->spawnGameObject(ICE_BLOCK_GO, IceBlocks[Block], true, 0, 0);
                             if (IceBlock != NULL)
                             {
                                 IceBlock->setFlags(GO_FLAG_NONSELECTABLE);

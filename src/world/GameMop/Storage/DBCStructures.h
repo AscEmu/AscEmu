@@ -1403,7 +1403,7 @@ namespace DBC::Structures
     struct MapDifficulty
     {
         MapDifficulty() : resetTime(0), maxPlayers(0), hasErrorMessage(false) { }
-        MapDifficulty(uint32 _resetTime, uint32 _maxPlayers, bool _hasErrorMessage) : resetTime(_resetTime), maxPlayers(_maxPlayers), hasErrorMessage(_hasErrorMessage) { }
+        MapDifficulty(uint32_t _resetTime, uint32_t _maxPlayers, bool _hasErrorMessage) : resetTime(_resetTime), maxPlayers(_maxPlayers), hasErrorMessage(_hasErrorMessage) { }
 
         uint32_t resetTime;
         uint32_t maxPlayers;

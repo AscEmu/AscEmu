@@ -27,11 +27,11 @@ class Quest_The_Ring_of_Blood_The_Final_Challenge : public QuestScript
 public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* pMogor = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+        Creature* pMogor = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
         if (pMogor != nullptr)
         {
             pMogor->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Prepare yourselves!");
-            Unit* Qgiver = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+            Unit* Qgiver = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
             if (Qgiver != nullptr)
             {
                 char msg[256];
@@ -53,11 +53,11 @@ public:
 
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* mogor = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+        Creature* mogor = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
         if (mogor != nullptr)
             mogor->Despawn(1000, 0);
 
-        mTarget->getWorldMap()->getInterface()->SpawnCreature(18069, -712.443115f, 7932.182129f, 59.430191f, 4.515952f, true, false, 0, 0);
+        mTarget->getWorldMap()->getInterface()->spawnCreature(18069, LocationVector(-712.443115f, 7932.182129f, 59.430191f, 4.515952f), true, false, 0, 0);
     }
 };
 
@@ -66,7 +66,7 @@ class Quest_The_Ring_of_Blood_The_Warmaul_Champion : public QuestScript
 public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* pQgiver = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+        Unit* pQgiver = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
         if (pQgiver != nullptr)
         {
             char msg[256];
@@ -76,13 +76,13 @@ public:
             //char msg2[256];
             //snprintf((char*)msg2, 256, "They had to ship the champion in from the Blade's Edge gladiator pits. He was training on mountain giants - three at a time.", mTarget->GetName());
             pQgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
-            mTarget->getWorldMap()->getInterface()->SpawnCreature(18402, -704.669f, 7871.08f, 45.0387f, 1.59531f, true, false, 0, 0);
+            mTarget->getWorldMap()->getInterface()->spawnCreature(18402, LocationVector(-704.669f, 7871.08f, 45.0387f, 1.59531f), true, false, 0, 0);
         };
     };
 
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* pMogor = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+        Unit* pMogor = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
         if (pMogor != nullptr)
         {
             char msg[256];
@@ -90,7 +90,7 @@ public:
             pMogor->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
         };
 
-        Creature* pWarmaulChamp = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18402);
+        Creature* pWarmaulChamp = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18402);
         if (pWarmaulChamp != nullptr)
             pWarmaulChamp->Despawn(1000, 0);
     };
@@ -101,7 +101,7 @@ class Quest_The_Ring_of_Blood_Skragath : public QuestScript
 public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* Qgiver = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+        Unit* Qgiver = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
         if (Qgiver != nullptr)
         {
             char msg[256];
@@ -113,13 +113,13 @@ public:
             //char msg2[256];
             //snprintf((char*)msg2, 256, "From the parts unknown: Ska'gath! Can %s possibly survive the onslaught of void energies?", mTarget->GetName());
             Qgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
-            mTarget->getWorldMap()->getInterface()->SpawnCreature(18401, -704.669f, 7871.08f, 45.0387f, 1.59531f, true, false, 0, 0);
+            mTarget->getWorldMap()->getInterface()->spawnCreature(18401, LocationVector(-704.669f, 7871.08f, 45.0387f, 1.59531f), true, false, 0, 0);
         };
     };
 
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* mogor = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+        Unit* mogor = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
         if (mogor != nullptr)
         {
             char msg[256];
@@ -127,7 +127,7 @@ public:
             mogor->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
         };
 
-        Creature* pSkragath = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18401);
+        Creature* pSkragath = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18401);
         if (pSkragath != nullptr)
             pSkragath->Despawn(1000, 0);
     };
@@ -138,7 +138,7 @@ class Quest_The_Ring_of_Blood_Rokdar_the_Sundered_Lord : public QuestScript
 public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* Qgiver = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+        Unit* Qgiver = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
         if (Qgiver != nullptr)
         {
             char msg[256];
@@ -149,17 +149,17 @@ public:
             msg2 += " is in for the fight of his life.";
             Qgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
 
-            mTarget->getWorldMap()->getInterface()->SpawnCreature(18400, -704.669f, 7871.08f, 45.0387f, 1.59531f, true, false, 0, 0);
+            mTarget->getWorldMap()->getInterface()->spawnCreature(18400, LocationVector(-704.669f, 7871.08f, 45.0387f, 1.59531f), true, false, 0, 0);
         };
     };
 
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* mogor = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+        Unit* mogor = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
         if (mogor != nullptr)
             mogor->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "WUT!? UNPOSSIBLE!!");
 
-        Creature* pRokdar = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18400);
+        Creature* pRokdar = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18400);
         if (pRokdar != nullptr)
             pRokdar->Despawn(1000, 0);
     };
@@ -170,11 +170,11 @@ class Quest_The_Ring_of_Blood_The_Blue_Brothers : public QuestScript
 public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* pBrokentoe = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18398);
+        Creature* pBrokentoe = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18398);
         if (pBrokentoe != nullptr)
             pBrokentoe->Despawn(1000, 0);
 
-        Unit* Qgiver = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+        Unit* Qgiver = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
         if (Qgiver != nullptr)
         {
             char msg[256];
@@ -183,14 +183,14 @@ public:
             std::string msg2 = "The battle is about to begin! The unmerciful Murkblood twins versus ";
             msg2 += mTarget->getName();
             Qgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
-            mTarget->getWorldMap()->getInterface()->SpawnCreature(18399, -704.669f, 7871.08f, 45.0387f, 1.59531f, true, false, 0, 0);
-            mTarget->getWorldMap()->getInterface()->SpawnCreature(18399, -708.076f, 7870.41f, 44.8457f, 1.59531f, true, false, 0, 0);
+            mTarget->getWorldMap()->getInterface()->spawnCreature(18399, LocationVector(-704.669f, 7871.08f, 45.0387f, 1.59531f), true, false, 0, 0);
+            mTarget->getWorldMap()->getInterface()->spawnCreature(18399, LocationVector(-708.076f, 7870.41f, 44.8457f, 1.59531f), true, false, 0, 0);
         };
     };
 
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* mogor = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+        Unit* mogor = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
         if (mogor != nullptr)
         {
             char msg[256];
@@ -198,11 +198,11 @@ public:
             mogor->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
         };
 
-        Creature* pBrother1 = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18399);
+        Creature* pBrother1 = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18399);
         if (pBrother1 != nullptr)
             pBrother1->Despawn(1000, 0);
 
-        Creature* pBrother2 = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18399);
+        Creature* pBrother2 = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18399);
         if (pBrother2 != nullptr)
             pBrother2->Despawn(1000, 0);
     };
@@ -213,19 +213,19 @@ class Quest_The_Ring_of_Blood_Brokentoe : public QuestScript
 public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* Qgiver = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+        Unit* Qgiver = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
         if (Qgiver != nullptr)
         {
             char msg[256];
             snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->getName().c_str());
             Qgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-            mTarget->getWorldMap()->getInterface()->SpawnCreature(18398, -704.669f, 7871.08f, 45.0387f, 1.59531f, true, false, 0, 0)->Despawn(600000, 0);
+            mTarget->getWorldMap()->getInterface()->spawnCreature(18398, LocationVector(-704.669f, 7871.08f, 45.0387f, 1.59531f), true, false, 0, 0)->Despawn(600000, 0);
         };
     };
 
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Unit* Qgiver = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+        Unit* Qgiver = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
         if (Qgiver != nullptr)
         {
             char msg[256];
@@ -233,7 +233,7 @@ public:
             Qgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
         };
 
-        Unit* mogor = mTarget->getWorldMap()->getInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+        Unit* mogor = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
         if (mogor != nullptr)
         {
             char msg[256];

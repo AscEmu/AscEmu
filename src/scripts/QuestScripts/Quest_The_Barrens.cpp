@@ -122,7 +122,7 @@ public:
 
             if (kolkarskilled > 8 && mPlayer->hasQuestInQuestLog(851))
             {
-                getCreature()->getWorldMap()->getInterface()->SpawnCreature(3395, -1209.8f, -2729.84f, 106.33f, 4.8f, true, false, 0, 0)->Despawn(600000, 0);
+                getCreature()->getWorldMap()->getInterface()->spawnCreature(3395, LocationVector(-1209.8f, -2729.84f, 106.33f, 4.8f), true, false, 0, 0)->Despawn(600000, 0);
                 kolkarskilled = 0;
                 getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I am slain! Summon Verog!");
             }

@@ -22,7 +22,7 @@ public:
                 float x = mTarget->GetPositionX() + Util::getRandomUInt(20) - 10;
                 float y = mTarget->GetPositionY() + Util::getRandomUInt(20) - 10;
                 float z = mTarget->GetPositionZ();
-                Creature* guard = getCreature()->getWorldMap()->getInterface()->SpawnCreature(26253, x, y, z, 0, true, false, getCreature()->getFactionTemplate(), 50);
+                Creature* guard = getCreature()->getWorldMap()->getInterface()->spawnCreature(26253, LocationVector(x, y, z), true, false, getCreature()->getFactionTemplate(), 50);
 
                 if (guard != nullptr)
                 {

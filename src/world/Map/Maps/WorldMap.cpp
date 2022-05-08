@@ -2616,7 +2616,7 @@ if (useGridLiquid)
     if (TerrainTile* gmap = getTerrain()->getTile(x, y))
     {
         LiquidData map_data;
-        ZLiquidStatus map_result = gmap->m_map.getLiquidStatus(x, y, z, ReqLiquidType, &map_data, collisionHeight);
+        ZLiquidStatus map_result = gmap->m_map.getLiquidStatus(LocationVector(x, y, z), ReqLiquidType, &map_data, collisionHeight);
         // Not override LIQUID_MAP_ABOVE_WATER with LIQUID_MAP_NO_WATER:
         if (map_result != LIQUID_MAP_NO_WATER && (map_data.level > ground_level))
         {

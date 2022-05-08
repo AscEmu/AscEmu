@@ -156,7 +156,7 @@ public:
                 Player* p = static_cast<Player*>(summoner);
                 if (p->hasQuestInQuestLog(11608))
                 {
-                    GameObject* pSinkhole = p->getWorldMap()->getInterface()->GetGameObjectNearestCoords(p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), 300171);
+                    GameObject* pSinkhole = p->getWorldMap()->getInterface()->getGameObjectNearestCoords(p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), 300171);
                     if (pSinkhole != nullptr)
                     {
                         getCreature()->castSpell(getCreature(), 45502, true);

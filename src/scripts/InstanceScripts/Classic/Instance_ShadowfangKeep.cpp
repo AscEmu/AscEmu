@@ -435,7 +435,7 @@ public:
                 }break;
                 case 7:
                 {
-                    if (Creature* pVincent = getCreature()->getWorldMap()->getInterface()->GetCreatureNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), ShadowfangKeep::CN_DEATHSTALKER_VINCENT))
+                    if (Creature* pVincent = getCreature()->getWorldMap()->getInterface()->getCreatureNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), ShadowfangKeep::CN_DEATHSTALKER_VINCENT))
                     {
                         // Make him look like dead
                         pVincent->SendScriptTextChatMessage(ShadowfangKeep::SAY_VINCENT_DEATH);
@@ -1224,7 +1224,7 @@ bool ashrombeUnlockDummySpell(uint8_t /*effectIndex*/, Spell* pSpell)
         return false;
     }
 
-    if (GameObject* pGameObject = target->getWorldMap()->getInterface()->GetGameObjectNearestCoords(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), ShadowfangKeep::GO_COURTYARD_DOOR))
+    if (GameObject* pGameObject = target->getWorldMap()->getInterface()->getGameObjectNearestCoords(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), ShadowfangKeep::GO_COURTYARD_DOOR))
     {
         pGameObject->setState(GO_STATE_OPEN);
         return true;

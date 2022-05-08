@@ -290,8 +290,8 @@ namespace VMAP
         if (IsVMAPDisabledForPtr(mapId, VMAP_DISABLE_LIQUIDSTATUS))
         {
             data.floorZ = z;
-            int32 adtId, rootId, groupId;
-            uint32 flags;
+            int32_t adtId, rootId, groupId;
+            uint32_t flags;
             if (getAreaInfo(mapId, x, y, data.floorZ, flags, adtId, rootId, groupId))
                 data.areaInfo.emplace(adtId, rootId, groupId, flags);
             return;
@@ -306,7 +306,7 @@ namespace VMAP
                 ASSERT(info.hitModel);
                 ASSERT(info.hitInstance);
                 data.floorZ = info.ground_Z;
-                uint32 liquidType = info.hitModel->GetLiquidType();
+                uint32_t liquidType = info.hitModel->GetLiquidType();
                 float liquidLevel;
                 if (!reqLiquidType || (GetLiquidFlagsPtr(liquidType) & reqLiquidType))
                     if (info.hitInstance->GetLiquidLevel(pos, info, liquidLevel))

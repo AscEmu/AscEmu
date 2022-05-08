@@ -88,7 +88,7 @@ void InstanceMap::permBindAllPlayers()
         {
             player->bindToInstance(save, true);
             WorldPacket data(SMSG_INSTANCE_SAVE_CREATED, 4);
-            data << uint32(0);
+            data << uint32_t(0);
             player->sendPacket(&data);
 #if VERSION_STRING > TBC
             player->getSession()->sendCalendarRaidLockout(save, true);
@@ -243,7 +243,7 @@ EnterState InstanceMap::cannotEnter(Player* player)
         return WorldMap::cannotEnter(player);
 
     // cannot enter if the instance is full (player cap)
-    uint32 maxPlayers = getMaxPlayers();
+    uint32_t maxPlayers = getMaxPlayers();
     if (getPlayerCount() >= maxPlayers)
         return CANNOT_ENTER_MAX_PLAYERS;
 
