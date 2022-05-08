@@ -935,7 +935,7 @@ bool Creature::CanAddToWorld()
 void Creature::RemoveFromWorld(bool addrespawnevent, bool /*free_guid*/)
 {
     if (addrespawnevent && m_respawnTime > 0)
-        Despawn(0);
+        despawn(0);
     else
         Despawn(0, 0);
 }
@@ -1798,21 +1798,21 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 
     switch (this->creature_properties->Rank)
     {
-    case ELITE_ELITE:
-        m_corpseDelay = worldConfig.corpseDecay.eliteTimeInSeconds;
-        break;
-    case ELITE_RAREELITE:
-        m_corpseDelay = worldConfig.corpseDecay.rareEliteTimeInSeconds;
-        break;
-    case ELITE_WORLDBOSS:
-        m_corpseDelay = worldConfig.corpseDecay.worldbossTimeInSeconds;
-        break;
-    case ELITE_RARE:
-        m_corpseDelay = worldConfig.corpseDecay.rareTimeInSeconds;
-        break;
-    default:
-        m_corpseDelay = worldConfig.corpseDecay.normalTimeInSeconds;
-        break;
+        case ELITE_ELITE:
+            m_corpseDelay = worldConfig.corpseDecay.eliteTimeInSeconds;
+            break;
+        case ELITE_RAREELITE:
+            m_corpseDelay = worldConfig.corpseDecay.rareEliteTimeInSeconds;
+            break;
+        case ELITE_WORLDBOSS:
+            m_corpseDelay = worldConfig.corpseDecay.worldbossTimeInSeconds;
+            break;
+        case ELITE_RARE:
+            m_corpseDelay = worldConfig.corpseDecay.rareTimeInSeconds;
+            break;
+        default:
+            m_corpseDelay = worldConfig.corpseDecay.normalTimeInSeconds;
+            break;
     }
 }
 
@@ -1900,6 +1900,7 @@ void Creature::respawn(bool force)
             setDeathState(CORPSE);
     }
 
+    // do this for now delete the part when we are only respawning with spawnid
     if (true)
     {
         OnRemoveCorpse();
@@ -1962,7 +1963,7 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
             _myScriptClass->OnDespawn();
 
         if (respawntime && !m_noRespawn)
-        {           
+        {
             // get the cell with our SPAWN location. if we've moved cell this might break :P
             MapCell* pCell = m_WorldMap->getCellByCoords(m_spawnLocation.x, m_spawnLocation.y);
             if (pCell == nullptr)
@@ -1993,11 +1994,11 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
     }
 }
 
-void Creature::Despawn(uint32 delay)
+void Creature::despawn(uint32_t delay)
 {
     if (delay)
     {
-        sEventMgr.AddEvent(this, &Creature::Despawn, (uint32)0, EVENT_CREATURE_RESPAWN, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(this, &Creature::despawn, (uint32_t)0, EVENT_CREATURE_RESPAWN, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
     else
     {
@@ -2006,7 +2007,7 @@ void Creature::Despawn(uint32 delay)
         if (!IsInWorld())
             return;
 
-        if (_myScriptClass != NULL)
+        if (_myScriptClass != nullptr)
             _myScriptClass->OnDespawn();
 
         if (!m_noRespawn)

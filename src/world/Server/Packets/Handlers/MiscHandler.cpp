@@ -710,7 +710,9 @@ void WorldSession::handleResetInstanceOpcode(WorldPacket& /*recvPacket*/)
             group->resetInstances(INSTANCE_RESET_ALL, false, _player);
     }
     else
+    {
         _player->resetInstances(INSTANCE_RESET_ALL, false);
+    }
 }
 
 void WorldSession::handleSetTitle(WorldPacket& recvPacket)

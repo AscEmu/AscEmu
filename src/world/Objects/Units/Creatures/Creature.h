@@ -314,7 +314,7 @@ public:
         MySQLStructure::CreatureSpawn* m_spawn = nullptr;
 
         virtual void Despawn(uint32 delay, uint32 respawntime);
-        virtual void Despawn(uint32 delay);
+        virtual void despawn(uint32_t delay);
         void saveRespawnTime(uint32_t forceDelay = 0);
         void respawn(bool force = false);
         void TriggerScriptEvent(int);

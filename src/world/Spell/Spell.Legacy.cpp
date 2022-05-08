@@ -2183,11 +2183,11 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                     float angle = Util::getRandomFloat(0.0f, 1.0f) * static_cast<float>(M_PI * 35.0f / 180.0f) - static_cast<float>(M_PI * 17.5f / 180.0f);
                     m_caster->getClosePoint(posx, posy, posz, 0.388999998569489f, dist, angle);
 
-                    float ground = m_caster->getMapHeight(posx, posy, posz);
+                    float ground = m_caster->getMapHeight(LocationVector(posx, posy, posz));
                     float liquidLevel = VMAP_INVALID_HEIGHT_VALUE;
 
                     LiquidData liquidData;
-                    if (map->getLiquidStatus(m_caster->GetPhase(), posx, posy, posz, MAP_ALL_LIQUIDS, &liquidData, m_caster->getCollisionHeight()))
+                    if (map->getLiquidStatus(m_caster->GetPhase(), LocationVector(posx, posy, posz), MAP_ALL_LIQUIDS, &liquidData, m_caster->getCollisionHeight()))
                         liquidLevel = liquidData.level;
 
                     if (liquidLevel <= ground)
@@ -3398,7 +3398,7 @@ void Spell::HandleTargetNoObject()
     float newz = m_caster->GetPositionZ();
 
     //clamp Z
-    newz = m_caster->getMapHeight(newx, newy, newz);
+    newz = m_caster->getMapHeight(LocationVector(newx, newy, newz));
 
     bool isInLOS = m_caster->IsWithinLOS(LocationVector(newx, newy, newz));
     //if not in line of sight, or too far away we summon inside caster

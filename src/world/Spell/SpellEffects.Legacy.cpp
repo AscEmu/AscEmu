@@ -3972,7 +3972,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         {
             posx = px + r * co;
             posy = py + r * si;
-            ZLiquidStatus liquidStatus = map->getLiquidStatus(m_caster->GetPhase(), posx, posy, pz + 2, MAP_LIQUID_TYPE_WATER);
+            ZLiquidStatus liquidStatus = map->getLiquidStatus(m_caster->GetPhase(), LocationVector(posx, posy, pz + 2), MAP_LIQUID_TYPE_WATER);
             
             if (!(liquidStatus & LIQUID_MAP_NO_WATER))//water
                 continue;

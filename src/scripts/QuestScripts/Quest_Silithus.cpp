@@ -235,7 +235,7 @@ class Thunderan : public QuestScript
 public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        mTarget->getWorldMap()->createAndSpawnCreature(14435, -6241.0f, 1715.0f, 4.8f, 0.605017f);
+        mTarget->getWorldMap()->createAndSpawnCreature(14435, LocationVector(-6241.0f, 1715.0f, 4.8f, 0.605017f));
     }
 };
 

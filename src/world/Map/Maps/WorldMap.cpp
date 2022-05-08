@@ -144,7 +144,7 @@ WorldMap::~WorldMap()
     }
     m_corpses.clear();
 
-    if (mInstanceScript != NULL)
+    if (mInstanceScript != nullptr)
         mInstanceScript->Destroy();
 
     // Empty remaining containers
@@ -285,7 +285,7 @@ void WorldMap::update(uint32_t t_diff)
                 }
                 else
                 {
-                    trans->DelayedTeleportTransport();
+                    trans->delayedTeleportTransport();
                 }
 
                 itr = m_TransportDelayedRemoveStorage.erase(itr);
@@ -454,6 +454,18 @@ void WorldMap::processRespawns()
             saveRespawnDB(*next);
         }
     }
+}
+
+bool WorldMap::canUnload(uint32_t diff)
+{
+    if (!m_unloadTimer)
+        return false;
+
+    if (m_unloadTimer <= diff)
+        return true;
+
+    m_unloadTimer -= diff;
+    return false;
 }
 
 void WorldMap::unloadAll(bool onShutdown/* = false*/)
@@ -655,9 +667,9 @@ void WorldMap::PushObject(Object* obj)
             switch (obj->GetTypeFromGUID())
             {
                 case HIGHGUID_TYPE_PET:
+                {
                     m_PetStorage[obj->GetUIdFromGUID()] = static_cast<Pet*>(obj);
-                    break;
-
+                } break;
                 case HIGHGUID_TYPE_UNIT:
                 case HIGHGUID_TYPE_VEHICLE:
                 {
@@ -670,7 +682,6 @@ void WorldMap::PushObject(Object* obj)
                         }
                     }
                 } break;
-
                 case HIGHGUID_TYPE_GAMEOBJECT:
                 {
                     m_GameObjectStorage[obj->GetUIdFromGUID()] = static_cast<GameObject*>(obj);
@@ -681,8 +692,9 @@ void WorldMap::PushObject(Object* obj)
                 } break;
 
                 case HIGHGUID_TYPE_DYNAMICOBJECT:
-                    m_DynamicObjectStorage[obj->getGuidLow()] = (DynamicObject*)obj;
-                    break;
+                {
+                    m_DynamicObjectStorage[obj->getGuidLow()] = static_cast<DynamicObject*>(obj);
+                } break;
             }
         }
 
@@ -701,7 +713,7 @@ void WorldMap::PushObject(Object* obj)
             // Add the map wide objects
             if (_mapWideStaticObjects.size())
             {
-                uint32 globalcount = 0;
+                uint32_t globalcount = 0;
                 if (!buf)
                     buf = new ByteBuffer(300);
 
@@ -740,18 +752,18 @@ void WorldMap::PushStaticObject(Object* obj)
 
     switch (obj->GetTypeFromGUID())
     {
-    case HIGHGUID_TYPE_UNIT:
-    case HIGHGUID_TYPE_VEHICLE:
-        m_CreatureStorage[obj->GetUIdFromGUID()] = static_cast<Creature*>(obj);
-        break;
+        case HIGHGUID_TYPE_UNIT:
+        case HIGHGUID_TYPE_VEHICLE:
+            m_CreatureStorage[obj->GetUIdFromGUID()] = static_cast<Creature*>(obj);
+            break;
 
-    case HIGHGUID_TYPE_GAMEOBJECT:
-        m_GameObjectStorage[obj->GetUIdFromGUID()] = static_cast<GameObject*>(obj);
-        break;
+        case HIGHGUID_TYPE_GAMEOBJECT:
+            m_GameObjectStorage[obj->GetUIdFromGUID()] = static_cast<GameObject*>(obj);
+            break;
 
-    default:
-        sLogger.debug("WorldMap::PushStaticObject called for invalid type %u.", obj->GetTypeFromGUID());
-        break;
+        default:
+            sLogger.debug("WorldMap::PushStaticObject called for invalid type %u.", obj->GetTypeFromGUID());
+            break;
     }
 }
 
@@ -1122,7 +1134,7 @@ void WorldMap::updateCellActivity(uint32_t x, uint32_t y, uint32_t radius)
                     sLogger.debug("WorldMap : Cell [%u,%u] on map %u (instance %u) is now active.", posX, posY, getBaseMap()->getMapId(), getInstanceId());
                     objCell->setActivity(true);
 
-                    getTerrain()->loadTile((int32)posX / 8, (int32)posY / 8);
+                    getTerrain()->loadTile(static_cast<int32_t>(posX) / 8, static_cast<int32_t>(posY) / 8);
 
                     if (!objCell->isLoaded())
                     {
@@ -1144,7 +1156,7 @@ void WorldMap::updateCellActivity(uint32_t x, uint32_t y, uint32_t radius)
 
                     sLogger.debug("Cell [%u,%u] on map %u (instance %u) is now active.", posX, posY, getBaseMap()->getMapId(), getInstanceId());
 
-                    getTerrain()->loadTile((int32)posX / 8, (int32)posY / 8);
+                    getTerrain()->loadTile(static_cast<int32_t>(posX) / 8, static_cast<int32_t>(posY) / 8);
                     objCell->setActivity(true);
 
                     if (!objCell->isLoaded())
@@ -1472,11 +1484,11 @@ void WorldMap::changeObjectLocation(Object* obj)
         {
             // have to unlock/lock here to avoid a deadlock situation.
             updateCellActivity(cellX, cellY, 2U + cellNumber);
-            if (pOldCell != NULL)
+            if (pOldCell != nullptr)
             {
                 // only do the second check if there's -/+ 2 difference
-                if (abs((int)cellX - (int)pOldCell->_x) > 2 + cellNumber ||
-                    abs((int)cellY - (int)pOldCell->_y) > 2 + cellNumber)
+                if (abs(static_cast<int>(cellX) - static_cast<int>(pOldCell->_x)) > 2 + cellNumber ||
+                    abs(static_cast<int>(cellY) - static_cast<int>(pOldCell->_y)) > 2 + cellNumber)
                 {
                     updateCellActivity(pOldCell->_x, pOldCell->_y, cellNumber);
                 }
@@ -1614,7 +1626,7 @@ uint64_t WorldMap::generateCreatureGuid(uint32_t entry, bool canUseOldGuid/* = t
         {
             // Reallocate array with larger size.
             size_t newsize = m_CreatureStorage.size() + RESERVE_EXPAND_SIZE;
-            m_CreatureStorage.resize(newsize, NULL);
+            m_CreatureStorage.resize(newsize, nullptr);
         }
         guid = m_CreatureHighGuid;
     }
@@ -1630,7 +1642,7 @@ Creature* WorldMap::createCreature(uint32_t entry)
     return new Creature(guid);
 }
 
-Creature* WorldMap::createAndSpawnCreature(uint32_t pEntry, float pX, float pY, float pZ, float pO)
+Creature* WorldMap::createAndSpawnCreature(uint32_t pEntry, LocationVector pos)
 {
     auto* creature = createCreature(pEntry);
     const auto* cp = sMySQLStore.getCreatureProperties(pEntry);
@@ -1640,7 +1652,7 @@ Creature* WorldMap::createAndSpawnCreature(uint32_t pEntry, float pX, float pY, 
         return nullptr;
     }
 
-    creature->Load(cp, pX, pY, pZ, pO);
+    creature->Load(cp, pos.x, pos.y, pos.z, pos.o);
     creature->AddToWorld(this);
     return creature;
 }
@@ -1690,7 +1702,7 @@ GameObject* WorldMap::createGameObject(uint32_t entry)
         {
             // Reallocate array with larger size.
             size_t newsize = m_GameObjectStorage.size() + RESERVE_EXPAND_SIZE;
-            m_GameObjectStorage.resize(newsize, NULL);
+            m_GameObjectStorage.resize(newsize, nullptr);
         }
 
         GUID = m_GOHighGuid;
@@ -1793,13 +1805,13 @@ Unit* WorldMap::getUnit(const uint64_t& guid)
 
     switch (wowGuid.getHigh())
     {
-    case HighGuid::Unit:
-    case HighGuid::Vehicle:
-        return getCreature(wowGuid.getGuidLowPart());
-    case HighGuid::Player:
-        return getPlayer(wowGuid.getGuidLowPart());
-    case HighGuid::Pet:
-        return getPet(wowGuid.getGuidLowPart());
+        case HighGuid::Unit:
+        case HighGuid::Vehicle:
+            return getCreature(wowGuid.getGuidLowPart());
+        case HighGuid::Player:
+            return getPlayer(wowGuid.getGuidLowPart());
+        case HighGuid::Pet:
+            return getPet(wowGuid.getGuidLowPart());
     }
 
     return nullptr;
@@ -1876,7 +1888,7 @@ void WorldMap::sendPvPCaptureMessage(int32_t ZoneMask, uint32_t ZoneId, const ch
         Player* plr = itr->second;
         ++itr;
 
-        if ((ZoneMask != ZONE_MASK_ALL && plr->GetZoneId() != (uint32_t)ZoneMask))
+        if ((ZoneMask != ZONE_MASK_ALL && plr->GetZoneId() != static_cast<uint32_t>(ZoneMask)))
             continue;
 
         plr->getSession()->SendPacket(SmsgDefenseMessage(ZoneId, msgbuf).serialise().get());
@@ -1974,6 +1986,31 @@ void WorldMap::loadRespawnTimes()
     } while (result->NextRow());
 }
 
+RespawnInfoMap& WorldMap::getRespawnMapForType(SpawnObjectType type)
+{
+    switch (type)
+    {
+    case SPAWN_TYPE_CREATURE:
+        return _creatureRespawnTimesBySpawnId;
+    case SPAWN_TYPE_GAMEOBJECT:
+        return _gameObjectRespawnTimesBySpawnId;
+    default:
+        break;
+    }
+}
+RespawnInfoMap const& WorldMap::getRespawnMapForType(SpawnObjectType type) const
+{
+    switch (type)
+    {
+    case SPAWN_TYPE_CREATURE:
+        return _creatureRespawnTimesBySpawnId;
+    case SPAWN_TYPE_GAMEOBJECT:
+        return _gameObjectRespawnTimesBySpawnId;
+    default:
+        break;
+    }
+}
+
 void WorldMap::saveRespawnTime(SpawnObjectType type, uint32_t spawnId, uint32_t entry, time_t respawnTime, float cellX, float cellY, bool startup)
 {
     if (!respawnTime)
@@ -1999,7 +2036,9 @@ void WorldMap::saveRespawnTime(SpawnObjectType type, uint32_t spawnId, uint32_t 
             sLogger.failure("Attempt to load saved respawn %" PRIu64 " for (%u,%u) failed - duplicate respawn? Skipped.", respawnTime, uint32_t(type), spawnId);
     }
     else if (success)
+    {
         saveRespawnDB(ri);
+    }
 }
 
 void WorldMap::saveRespawnDB(RespawnInfo const& info)
@@ -2129,8 +2168,10 @@ bool WorldMap::checkRespawn(RespawnInfo* info)
             break;
         }
         default:
+        {
             sLogger.failure("Invalid spawn type %u with spawnId %u on map %u", uint32_t(info->type), info->spawnId, getBaseMap()->getMapId());
             return true;
+        }
     }
 
     if (doDelete)
@@ -2184,7 +2225,9 @@ void WorldMap::doRespawn(SpawnObjectType type, Object* object, uint32_t spawnId,
             break;
         }
         default:
-            sLogger.failure("Invalid spawn type %u (spawnid %u) on map %u", uint32(type), spawnId, getBaseMap()->getMapId());
+        {
+            sLogger.failure("Invalid spawn type %u (spawnid %u) on map %u", static_cast<uint32>(type), spawnId, getBaseMap()->getMapId());
+        }
     }
 }
 
@@ -2253,7 +2296,7 @@ void WorldMap::updateObjects()
                     }
 
                     // build the update
-                    count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Player*>(NULL));
+                    count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Player*>(nullptr));
 
                     if (count)
                     {
@@ -2424,11 +2467,11 @@ bool WorldMap::is25ManRaid()
     return getBaseMap()->isRaid() && getSpawnMode() & 1;
 }
 
-bool WorldMap::getAreaInfo(uint32_t /*phaseMask*/, float x, float y, float z, uint32_t& flags, int32_t& adtId, int32_t& rootId, int32_t& groupId)
+bool WorldMap::getAreaInfo(uint32_t /*phaseMask*/, LocationVector pos, uint32_t& flags, int32_t& adtId, int32_t& rootId, int32_t& groupId)
 {
-    float vmap_z = z;
-    float dynamic_z = z;
-    float check_z = z;
+    float vmap_z = pos.z;
+    float dynamic_z = pos.z;
+    float check_z = pos.z;
     const auto vmgr = VMAP::VMapFactory::createOrGetVMapManager();
     uint32_t vflags;
     int32_t vadtId;
@@ -2439,7 +2482,7 @@ bool WorldMap::getAreaInfo(uint32_t /*phaseMask*/, float x, float y, float z, ui
     int32_t drootId;
     int32_t dgroupId;
 
-    bool hasVmapAreaInfo = vmgr->getAreaInfo(getBaseMap()->getMapId(), x, y, vmap_z, vflags, vadtId, vrootId, vgroupId);
+    bool hasVmapAreaInfo = vmgr->getAreaInfo(getBaseMap()->getMapId(), pos.x, pos.y, vmap_z, vflags, vadtId, vrootId, vgroupId);
     bool hasDynamicAreaInfo = false;/*_dynamicTree.getAreaInfo(x, y, dynamic_z, phaseMask, dflags, dadtId, drootId, dgroupId);*/
     auto useVmap = [&]() { check_z = vmap_z; flags = vflags; adtId = vadtId; rootId = vrootId; groupId = vgroupId; };
     auto useDyn = [&]() { check_z = dynamic_z; flags = dflags; adtId = dadtId; rootId = drootId; groupId = dgroupId; };
@@ -2459,11 +2502,11 @@ bool WorldMap::getAreaInfo(uint32_t /*phaseMask*/, float x, float y, float z, ui
     if (hasVmapAreaInfo || hasDynamicAreaInfo)
     {
         // check if there's terrain between player height and object height
-        if (TerrainTile* gmap = getTerrain()->getTile(x, y))
+        if (TerrainTile* gmap = getTerrain()->getTile(pos.x, pos.y))
         {
-            float mapHeight = gmap->m_map.getHeight(x, y);
+            float mapHeight = gmap->m_map.getHeight(pos.x, pos.y);
             // z + 2.0f condition taken from getHeight(), not sure if it's such a great choice...
-            if (z + 2.0f > mapHeight && mapHeight > check_z)
+            if (pos.z + 2.0f > mapHeight && mapHeight > check_z)
                 return false;
         }
         return true;
@@ -2471,25 +2514,25 @@ bool WorldMap::getAreaInfo(uint32_t /*phaseMask*/, float x, float y, float z, ui
     return false;
 }
 
-uint32_t WorldMap::getAreaId(uint32_t phaseMask, float x, float y, float z)
+uint32_t WorldMap::getAreaId(uint32_t phaseMask, LocationVector const& pos)
 {
     uint32_t mogpFlags;
     int32_t adtId, rootId, groupId;
-    float vmapZ = z;
-    bool hasVmapArea = getAreaInfo(phaseMask, x, y, vmapZ, mogpFlags, adtId, rootId, groupId);
+    float vmapZ = pos.z;
+    bool hasVmapArea = getAreaInfo(phaseMask, LocationVector(pos.x, pos.y, vmapZ), mogpFlags, adtId, rootId, groupId);
 
     uint32_t gridAreaId = 0;
     float gridMapHeight = INVALID_HEIGHT;
-    if (TerrainTile* gmap = getTerrain()->getTile(x, y))
+    if (TerrainTile* gmap = getTerrain()->getTile(pos.x, pos.y))
     {
-        gridAreaId = gmap->m_map.getArea(x, y);
-        gridMapHeight = gmap->m_map.getHeight(x, y);
+        gridAreaId = gmap->m_map.getArea(pos.x, pos.y);
+        gridMapHeight = gmap->m_map.getHeight(pos.x, pos.y);
     }
 
     uint32_t areaId = 0;
 
     // floor is the height we are closer to (but only if above)
-    if (hasVmapArea && G3D::fuzzyGe(z, vmapZ - GROUND_HEIGHT_TOLERANCE) && (G3D::fuzzyLt(z, gridMapHeight - GROUND_HEIGHT_TOLERANCE) || vmapZ > gridMapHeight))
+    if (hasVmapArea && G3D::fuzzyGe(pos.z, vmapZ - GROUND_HEIGHT_TOLERANCE) && (G3D::fuzzyLt(pos.z, gridMapHeight - GROUND_HEIGHT_TOLERANCE) || vmapZ > gridMapHeight))
     {
         // wmo found
         if (DBC::Structures::WMOAreaTableEntry const* wmoEntry = GetWMOAreaTableEntryByTriple(rootId, adtId, groupId))
@@ -2499,7 +2542,9 @@ uint32_t WorldMap::getAreaId(uint32_t phaseMask, float x, float y, float z)
             areaId = gridAreaId;
     }
     else
+    {
         areaId = gridAreaId;
+    }
 
     if (!areaId)
         areaId = getBaseMap()->getMapEntry()->linked_zone;
@@ -2507,10 +2552,10 @@ uint32_t WorldMap::getAreaId(uint32_t phaseMask, float x, float y, float z)
     return areaId;
 }
 
-uint32_t WorldMap::getZoneId(uint32_t phaseMask, float x, float y, float z)
+uint32_t WorldMap::getZoneId(uint32_t phaseMask, LocationVector const& pos)
 {
     uint32_t areaId = 0;
-    if (const auto* area = MapManagement::AreaManagement::AreaStorage::getExactArea(this, LocationVector(x, y, z), phaseMask))
+    if (const auto* area = MapManagement::AreaManagement::AreaStorage::getExactArea(this, pos, phaseMask))
     {
         areaId = area->id;
         if (area->zone)
@@ -2535,7 +2580,7 @@ static inline bool isInWMOInterior(uint32_t mogpFlags)
     return (mogpFlags & 0x2000) != 0;
 }
 
-ZLiquidStatus WorldMap::getLiquidStatus(uint32_t phaseMask, float x, float y, float z, uint8_t ReqLiquidType, LiquidData* data, float collisionHeight)
+ZLiquidStatus WorldMap::getLiquidStatus(uint32_t phaseMask, LocationVector pos, uint8_t ReqLiquidType, LiquidData* data, float collisionHeight)
 {
     ZLiquidStatus result = LIQUID_MAP_NO_WATER;
     const auto vmgr = VMAP::VMapFactory::createOrGetVMapManager();
@@ -2544,11 +2589,11 @@ ZLiquidStatus WorldMap::getLiquidStatus(uint32_t phaseMask, float x, float y, fl
     uint32_t liquid_type = 0;
     uint32_t mogpFlags = 0;
     bool useGridLiquid = true;
-    if (vmgr->getLiquidLevel(getBaseMap()->getMapId(), x, y, z, ReqLiquidType, liquid_level, ground_level, liquid_type, mogpFlags))
+    if (vmgr->getLiquidLevel(getBaseMap()->getMapId(), pos.x, pos.y, pos.z, ReqLiquidType, liquid_level, ground_level, liquid_type, mogpFlags))
     {
         useGridLiquid = !isInWMOInterior(mogpFlags);
         // Check water level and ground level
-        if (liquid_level > ground_level && G3D::fuzzyGe(z, ground_level - GROUND_HEIGHT_TOLERANCE))
+        if (liquid_level > ground_level && G3D::fuzzyGe(pos.z, ground_level - GROUND_HEIGHT_TOLERANCE))
         {
             // All ok in water -> store data
             if (data)
@@ -2563,7 +2608,7 @@ ZLiquidStatus WorldMap::getLiquidStatus(uint32_t phaseMask, float x, float y, fl
 
                 if (liquid_type && liquid_type < 21)
                 {
-                    if (const auto* area = MapManagement::AreaManagement::AreaStorage::getExactArea(this, LocationVector(x, y, z), phaseMask))
+                    if (const auto* area = MapManagement::AreaManagement::AreaStorage::getExactArea(this, pos, phaseMask))
                     {
 #if VERSION_STRING > Classic
                         uint32_t overrideLiquid = area->liquid_type_override[liquidFlagType];
@@ -2591,48 +2636,48 @@ ZLiquidStatus WorldMap::getLiquidStatus(uint32_t phaseMask, float x, float y, fl
                     }
                 }
 
-            data->level = liquid_level;
-            data->depth_level = ground_level;
+                data->level = liquid_level;
+                data->depth_level = ground_level;
 
-            data->entry = liquid_type;
-            data->type_flags = 1U << liquidFlagType;
+                data->entry = liquid_type;
+                data->type_flags = 1U << liquidFlagType;
             }
 
-        float delta = liquid_level - z;
+            float delta = liquid_level - pos.z;
 
-        // Get position delta
-        if (delta > collisionHeight)                   // Under water
-            return LIQUID_MAP_UNDER_WATER;
-        if (delta > 0.0f)                   // In water
-            return LIQUID_MAP_IN_WATER;
-        if (delta > -0.1f)                   // Walk on water
-            return LIQUID_MAP_WATER_WALK;
-        result = LIQUID_MAP_ABOVE_WATER;
+            // Get position delta
+            if (delta > collisionHeight)        // Under water
+                return LIQUID_MAP_UNDER_WATER;
+            if (delta > 0.0f)                   // In water
+                return LIQUID_MAP_IN_WATER;
+            if (delta > -0.1f)                  // Walk on water
+                return LIQUID_MAP_WATER_WALK;
+            result = LIQUID_MAP_ABOVE_WATER;
         }
     }
 
-if (useGridLiquid)
-{
-    if (TerrainTile* gmap = getTerrain()->getTile(x, y))
+    if (useGridLiquid)
     {
-        LiquidData map_data;
-        ZLiquidStatus map_result = gmap->m_map.getLiquidStatus(LocationVector(x, y, z), ReqLiquidType, &map_data, collisionHeight);
-        // Not override LIQUID_MAP_ABOVE_WATER with LIQUID_MAP_NO_WATER:
-        if (map_result != LIQUID_MAP_NO_WATER && (map_data.level > ground_level))
+        if (TerrainTile* gmap = getTerrain()->getTile(pos.x, pos.y))
         {
-            if (data)
+            LiquidData map_data;
+            ZLiquidStatus map_result = gmap->m_map.getLiquidStatus(pos, ReqLiquidType, &map_data, collisionHeight);
+            // Not override LIQUID_MAP_ABOVE_WATER with LIQUID_MAP_NO_WATER:
+            if (map_result != LIQUID_MAP_NO_WATER && (map_data.level > ground_level))
             {
-                // hardcoded in client like this
-                if (getBaseMap()->getMapId() == 530 && map_data.entry == 2)
-                    map_data.entry = 15;
+                if (data)
+                {
+                    // hardcoded in client like this
+                    if (getBaseMap()->getMapId() == 530 && map_data.entry == 2)
+                        map_data.entry = 15;
 
-                *data = map_data;
+                    *data = map_data;
+                }
+                return map_result;
             }
-            return map_result;
         }
     }
-}
-return result;
+    return result;
 }
 
 float WorldMap::getWaterLevel(float x, float y)
@@ -2643,34 +2688,34 @@ float WorldMap::getWaterLevel(float x, float y)
         return 0;
 }
 
-bool WorldMap::isInWater(uint32_t phaseMask, float x, float y, float pZ, LiquidData* data)
+bool WorldMap::isInWater(uint32_t phaseMask, LocationVector pos, LiquidData* data)
 {
     LiquidData liquid_status{};
     LiquidData* liquid_ptr = data ? data : &liquid_status;
-    return (getLiquidStatus(phaseMask, x, y, pZ, MAP_ALL_LIQUIDS, liquid_ptr) & (LIQUID_MAP_IN_WATER | LIQUID_MAP_UNDER_WATER)) != 0;
+    return (getLiquidStatus(phaseMask, pos, MAP_ALL_LIQUIDS, liquid_ptr) & (LIQUID_MAP_IN_WATER | LIQUID_MAP_UNDER_WATER)) != 0;
 }
 
-bool WorldMap::isUnderWater(uint32_t phaseMask, float x, float y, float z)
+bool WorldMap::isUnderWater(uint32_t phaseMask, LocationVector pos)
 {
-    return (getLiquidStatus(phaseMask, x, y, z, MAP_LIQUID_TYPE_WATER | MAP_LIQUID_TYPE_OCEAN) & LIQUID_MAP_UNDER_WATER) != 0;
+    return (getLiquidStatus(phaseMask, pos, MAP_LIQUID_TYPE_WATER | MAP_LIQUID_TYPE_OCEAN) & LIQUID_MAP_UNDER_WATER) != 0;
 }
 
-bool WorldMap::isInLineOfSight(float x1, float y1, float z1, float x2, float y2, float z2, uint32_t phasemask, LineOfSightChecks checks)
+bool WorldMap::isInLineOfSight(LocationVector pos1, LocationVector pos2, uint32_t phasemask, LineOfSightChecks checks)
 {
     if ((checks & LINEOFSIGHT_CHECK_VMAP)
-        && !VMAP::VMapFactory::createOrGetVMapManager()->isInLineOfSight(getBaseMap()->getMapId(), x1, y1, z1, x2, y2, z2))
+        && !VMAP::VMapFactory::createOrGetVMapManager()->isInLineOfSight(getBaseMap()->getMapId(), pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z))
         return false;
 
-    if (checks & LINEOFSIGHT_CHECK_GOBJECT && !_dynamicTree.isInLineOfSight(x1, y1, z1, x2, y2, z2, phasemask))
+    if (checks & LINEOFSIGHT_CHECK_GOBJECT && !_dynamicTree.isInLineOfSight(pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z, phasemask))
         return false;
 
     return true;
 }
 
-bool WorldMap::getObjectHitPos(uint32_t phasemask, float x1, float y1, float z1, float x2, float y2, float z2, float& rx, float& ry, float& rz, float modifyDist)
+bool WorldMap::getObjectHitPos(uint32_t phasemask, LocationVector pos1, LocationVector pos2, float& rx, float& ry, float& rz, float modifyDist)
 {
-    G3D::Vector3 startPos(x1, y1, z1);
-    G3D::Vector3 dstPos(x2, y2, z2);
+    G3D::Vector3 startPos(pos1.x, pos1.y, pos1.z);
+    G3D::Vector3 dstPos(pos2.x, pos2.y, pos2.z);
 
     G3D::Vector3 resultPos;
     bool result = _dynamicTree.getObjectHitPos(phasemask, startPos, dstPos, resultPos, modifyDist);
@@ -2692,15 +2737,15 @@ float WorldMap::getWaterOrGroundLevel(uint32_t phasemask, float x, float y, floa
 
         LiquidData liquid_status;
 
-        ZLiquidStatus res = getLiquidStatus(phasemask, x, y, ground_z, MAP_ALL_LIQUIDS, &liquid_status, collisionHeight);
+        ZLiquidStatus res = getLiquidStatus(phasemask, LocationVector(x, y, ground_z), MAP_ALL_LIQUIDS, &liquid_status, collisionHeight);
         switch (res)
         {
-        case LIQUID_MAP_ABOVE_WATER:
-            return std::max<float>(liquid_status.level, ground_z);
-        case LIQUID_MAP_NO_WATER:
-            return ground_z;
-        default:
-            return liquid_status.level;
+            case LIQUID_MAP_ABOVE_WATER:
+                return std::max<float>(liquid_status.level, ground_z);
+            case LIQUID_MAP_NO_WATER:
+                return ground_z;
+            default:
+                return liquid_status.level;
         }
     }
 

@@ -138,10 +138,10 @@ void WorldSession::sendCalendarRaidLockout(InstanceSaved const* save, bool add)
         data.appendPackedTime(currTime);
     }
 
-    data << uint32(save->getMapId());
-    data << uint32(save->getDifficulty());
-    data << uint32(save->getResetTime() - currTime);
-    data << uint64(save->getInstanceId());
+    data << uint32_t(save->getMapId());
+    data << uint32_t(save->getDifficulty());
+    data << uint32_t(save->getResetTime() - currTime);
+    data << uint64_t(save->getInstanceId());
     SendPacket(&data);
 }
 
@@ -159,10 +159,10 @@ void WorldSession::sendCalendarRaidLockoutUpdated(InstanceSaved const* save)
 
     WorldPacket data(SMSG_CALENDAR_RAID_LOCKOUT_UPDATED, 4 + 4 + 4 + 4 + 8);
     data.appendPackedTime(currTime);
-    data << uint32(save->getMapId());
-    data << uint32(save->getDifficulty());
-    data << uint32(0); // Amount of seconds that has changed to the reset time
-    data << uint32(save->getResetTime() - currTime);
+    data << uint32_t(save->getMapId());
+    data << uint32_t(save->getDifficulty());
+    data << uint32_t(0); // Amount of seconds that has changed to the reset time
+    data << uint32_t(save->getResetTime() - currTime);
     SendPacket(&data);
 }
 #endif

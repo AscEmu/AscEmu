@@ -635,8 +635,8 @@ class SERVER_DECL InstanceScript
         virtual void Destroy() {}
 
         // Something to return Instance's MapMgr
-        WorldMap* GetWorldMap() { return mInstance; }
-        InstanceMap* GetInstance() { return mInstance->getInstance(); }
+        WorldMap* getWorldMap() { return mInstance; }
+        InstanceMap* getInstance() { return mInstance->getInstance(); }
         uint8_t GetDifficulty() { return Difficulty; }
 
         // MIT start

@@ -83,7 +83,7 @@ void ZuluhedtheWhacked(Player* pPlayer, Object* /*pObject*/)
     Creature* Zuluhed = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(-4206.199219f, 313.5462f, 122.907f, 11980);
     if(Zuluhed == nullptr)
     {
-        pPlayer->getWorldMap()->createAndSpawnCreature(11980, -4206.199219f, 313.5462f, 122.907f, 1.2589f);
+        pPlayer->getWorldMap()->createAndSpawnCreature(11980, LocationVector(-4206.199219f, 313.5462f, 122.907f, 1.2589f));
     }
 }
 

@@ -497,7 +497,7 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
                 }*/
             }
 
-            bool isInLOS = m_caster->getWorldMap()->isInLineOfSight(x, y, z, obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), m_caster->GetPhase(), LineOfSightChecks::LINEOFSIGHT_ALL_CHECKS);
+            bool isInLOS = m_caster->getWorldMap()->isInLineOfSight(LocationVector(x, y, z), obj->GetPosition(), m_caster->GetPhase(), LineOfSightChecks::LINEOFSIGHT_ALL_CHECKS);
 
             if (!isInLOS)
                 return false;
@@ -651,7 +651,7 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
                 auto lv = LocationVector();
                 lv.x = m_caster->GetPositionX() + (cosf(ang) * r);
                 lv.y = m_caster->GetPositionY() + (sinf(ang) * r);
-                lv.z = m_caster->getMapHeight(lv.x, lv.y, m_caster->GetPositionZ() + 2.0f);
+                lv.z = m_caster->getMapHeight(LocationVector(lv.x, lv.y, m_caster->GetPositionZ() + 2.0f));
                 t->setDestination(lv);
                 t->setTargetMask(TARGET_FLAG_DEST_LOCATION);
 

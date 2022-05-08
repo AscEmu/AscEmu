@@ -111,13 +111,13 @@ public:
 
     void EnableMovement(bool enabled, WorldMap* instance);
 
-    void SetDelayedAddModelToMap() { _delayedAddModel = true; }
+    void setDelayedAddModelToMap() { _delayedAddModel = true; }
 
     TransportTemplate const* GetTransportTemplate() const { return _transportInfo; }
 
     uint32_t getCurrentFrame() { return _currentFrame->Index; }
 
-    void DelayedTeleportTransport();
+    void delayedTeleportTransport();
 
     bool isTransporter() const override { return true; }
 

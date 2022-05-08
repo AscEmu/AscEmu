@@ -107,7 +107,7 @@ public:
     {
         if (pPlayer->hasQuestInQuestLog(10584))
         {
-            Creature* magneto = pPlayer->getWorldMap()->createAndSpawnCreature(21729, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0);
+            Creature* magneto = pPlayer->getWorldMap()->createAndSpawnCreature(21729, _gameobject->GetPosition());
             if (magneto != nullptr)
             {
                 magneto->Despawn(5 * 60 * 1000, 0);
@@ -128,7 +128,7 @@ public:
     {
         if (!pPlayer->hasQuestInQuestLog(10609))
         {
-            Creature* whelp = pPlayer->getWorldMap()->createAndSpawnCreature(20021, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0);
+            Creature* whelp = pPlayer->getWorldMap()->createAndSpawnCreature(20021, _gameobject->GetPosition());
             if (whelp != nullptr)
             {
                 whelp->Despawn(5 * 60 * 1000, 0);
@@ -203,7 +203,7 @@ public:
         {
             if (obelisk1->getState() == 0 && obelisk2->getState() == 0 && obelisk3->getState() == 0 && obelisk4->getState() == 0 && obelisk5->getState() == 0)
             {
-                Creature* ct = pPlayer->getWorldMap()->createAndSpawnCreature(19963, 2943.59f, 4779.05f, 284.49f, 1.89f);
+                Creature* ct = pPlayer->getWorldMap()->createAndSpawnCreature(19963, LocationVector(2943.59f, 4779.05f, 284.49f, 1.89f));
                 if (ct != nullptr)
                     ct->Despawn(5 * 60 * 1000, 0);
             }

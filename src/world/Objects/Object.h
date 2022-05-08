@@ -533,7 +533,7 @@ public:
         void updateAllowedPositionZ(float x, float y, float &z, float* groundZ = nullptr);
         float getMapWaterOrGroundLevel(float x, float y, float z, float* ground = nullptr);
         float getFloorZ();
-        float getMapHeight(float x, float y, float z, bool vmap = true, float distanceToSearch = 50.0f);
+        float getMapHeight(LocationVector pos, bool vmap = true, float distanceToSearch = 50.0f);
         void movePositionToFirstCollision(LocationVector &pos, float dist, float angle);
         LocationVector getFirstCollisionPosition(float dist, float angle);
 

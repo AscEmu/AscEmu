@@ -1278,7 +1278,7 @@ bool Unit::isInWater() const
 {
     if (worldConfig.terrainCollision.isCollisionEnabled)
     {
-        return getWorldMap()->getLiquidStatus(0, GetPositionX(), GetPositionY(), GetPositionZ(), MAP_ALL_LIQUIDS) & (LIQUID_MAP_IN_WATER | LIQUID_MAP_UNDER_WATER);
+        return getWorldMap()->getLiquidStatus(0, GetPosition(), MAP_ALL_LIQUIDS) & (LIQUID_MAP_IN_WATER | LIQUID_MAP_UNDER_WATER);
     }
 
     return false;
@@ -1288,7 +1288,7 @@ bool Unit::isUnderWater() const
 {
     if (worldConfig.terrainCollision.isCollisionEnabled)
     {
-        return getWorldMap()->getLiquidStatus(0, GetPositionX(), GetPositionY(), GetPositionZ(), MAP_ALL_LIQUIDS) & LIQUID_MAP_UNDER_WATER;
+        return getWorldMap()->getLiquidStatus(0, GetPosition(), MAP_ALL_LIQUIDS) & LIQUID_MAP_UNDER_WATER;
     }
 
     return false;

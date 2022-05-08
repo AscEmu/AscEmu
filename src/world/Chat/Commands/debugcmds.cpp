@@ -712,7 +712,7 @@ bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_s
         // spawn in spiral
         x = r * sinf(angle);
         y = r * cosf(angle);
-        z = unit->getMapHeight(bx + x, by + y, unit->GetPositionZ() + 2);
+        z = unit->getMapHeight(LocationVector(bx + x, by + y, unit->GetPositionZ() + 2));
 
         Creature* c = m->createCreature(npcid);
         c->Load(cp, bx + x, by + y, z, 0.0f);

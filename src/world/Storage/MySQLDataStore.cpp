@@ -3182,7 +3182,7 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t 
         useParentDbValue = true;
     }
 
-    uint32_t entrance_map = uint32_t(mapEntry->parent_map);
+    uint32_t entrance_map = static_cast<uint32_t>(mapEntry->parent_map);
     for (AreaTriggerContainer::const_iterator itr = _areaTriggerStore.begin(); itr != _areaTriggerStore.end(); ++itr)
     {
         if ((!useParentDbValue && itr->second.mapId == entrance_map) || (useParentDbValue && itr->second.mapId == parentId))
@@ -3214,7 +3214,7 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t 
         useParentDbValue = true;
     }
 
-    uint32_t entrance_map = uint32_t(mapEntry->repopmapid);
+    uint32_t entrance_map = static_cast<uint32_t>(mapEntry->repopmapid);
     for (AreaTriggerContainer::const_iterator itr = _areaTriggerStore.begin(); itr != _areaTriggerStore.end(); ++itr)
     {
         if ((!useParentDbValue && itr->second.mapId == entrance_map) || (useParentDbValue && itr->second.mapId == parentId))

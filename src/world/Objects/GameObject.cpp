@@ -598,7 +598,7 @@ void GameObject::OnPushToWorld()
     if (m_model)
     {
         if (Transporter* trans = ToTransport())
-            trans->SetDelayedAddModelToMap();
+            trans->setDelayedAddModelToMap();
         else
             getWorldMap()->insertGameObjectModel(*m_model);
     }
@@ -1786,7 +1786,7 @@ public:
     G3D::Vector3 GetPosition() const override { return G3D::Vector3(_owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ()); }
     float GetOrientation() const override { return _owner->GetOrientation(); }
     float GetScale() const override { return _owner->getScale(); }
-    void DebugVisualizeCorner(G3D::Vector3 const& corner) const override { const_cast<GameObject*>(_owner)->getWorldMap()->createAndSpawnCreature(1, corner.x, corner.y, corner.z, 0); }
+    void DebugVisualizeCorner(G3D::Vector3 const& corner) const override { const_cast<GameObject*>(_owner)->getWorldMap()->createAndSpawnCreature(1, LocationVector(corner.x, corner.y, corner.z, 0)); }
 
 private:
     GameObject const* _owner;

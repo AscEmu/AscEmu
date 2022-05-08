@@ -91,7 +91,7 @@ public:
                 {
                     for (std::list<uint32_t>::iterator itr = nandos_summons.begin(); itr != nandos_summons.end();)
                     {
-                        if (Creature* pCreature = GetInstance()->getCreature(*itr))
+                        if (Creature* pCreature = getInstance()->getCreature(*itr))
                         {
                             pCreature->Despawn(1000, 0);
                         }
@@ -115,7 +115,7 @@ public:
                 if (pData == Performed)
                 {
                     // Set gossip flags for both prisoners and push texts
-                    if (Creature* pCreature = GetInstance()->getCreature(npc_adamant_GUID))
+                    if (Creature* pCreature = getInstance()->getCreature(npc_adamant_GUID))
                     {
                         if (pCreature->isAlive())
                         {
@@ -124,7 +124,7 @@ public:
                         }
                     }
 
-                    if (Creature* pCreature = GetInstance()->getCreature(npc_ashcrombe_GUID))
+                    if (Creature* pCreature = getInstance()->getCreature(npc_ashcrombe_GUID))
                     {
                         if (pCreature->isAlive())
                         {

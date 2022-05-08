@@ -1458,7 +1458,7 @@ void Player::onWorldPortAck()
                 {
                     const auto now = Util::getTimeNow();
 
-                    uint32_t timeleft = uint32(timeReset - now);
+                    uint32_t timeleft = static_cast<uint32_t>(timeReset - now);
                     sendInstanceResetWarning(mEntry->id, diff, timeleft, true);
                 }
             }
@@ -10635,7 +10635,7 @@ void Player::setSummonedObject(Object* summonedObject) { m_summonedObject = summ
 
 void Player::loadBoundInstances()
 {
-    for (uint8 i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
+    for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
         m_boundInstances[i].clear();
 
     Group* group = getGroup();
@@ -10649,9 +10649,9 @@ void Player::loadBoundInstances()
             Field* fields = result->Fetch();
 
             bool perm = fields[1].GetBool();
-            uint32 mapId = fields[2].GetUInt16();
-            uint32 instanceId = fields[0].GetUInt32();
-            uint8 difficulty = fields[3].GetUInt8();
+            uint32_t mapId = fields[2].GetUInt16();
+            uint32_t instanceId = fields[0].GetUInt32();
+            uint8_t difficulty = fields[3].GetUInt8();
             BindExtensionState extendState = BindExtensionState(fields[4].GetUInt8());
 
             time_t resetTime = time_t(fields[5].GetUInt64());
@@ -10873,7 +10873,7 @@ void Player::sendSavedInstances()
     bool hasBeenSaved = false;
     WorldPacket data;
 
-    for (uint8 i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
+    for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
     {
         for (BoundInstancesMap::iterator itr = m_boundInstances[i].begin(); itr != m_boundInstances[i].end(); ++itr)
         {

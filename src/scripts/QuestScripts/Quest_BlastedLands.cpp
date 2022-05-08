@@ -29,7 +29,7 @@ public:
 
         if (!spawncheckcr)
         {
-            Creature* general = mTarget->getWorldMap()->createAndSpawnCreature(7750, -10619, -2997, 28.8f, 4);
+            Creature* general = mTarget->getWorldMap()->createAndSpawnCreature(7750, LocationVector(-10619, -2997, 28.8f, 4));
             general->Despawn(3 * 60 * 1000, 0);
         }
 
@@ -80,7 +80,7 @@ public:
                 Creature* spawncheckcr = plr->getWorldMap()->getInterface()->getCreatureNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 7750);
                 if (!spawncheckcr)
                 {
-                    general = plr->getWorldMap()->createAndSpawnCreature(7750, -10619, -2997, 28.8f, 4);
+                    general = plr->getWorldMap()->createAndSpawnCreature(7750, LocationVector(-10619, -2997, 28.8f, 4));
                     general->Despawn(3 * 60 * 1000, 0);
                 }
 

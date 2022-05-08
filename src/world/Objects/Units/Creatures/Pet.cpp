@@ -598,27 +598,27 @@ void Pet::Update(unsigned long time_passed)
 
         switch (m_deathState)
         {
-        case DEAD:
-        {
-            if (m_respawnTime <= now)
+            case DEAD:
             {
-                respawn();
+                if (m_respawnTime <= now)
+                {
+                    respawn();
+                }
             }
-        }
-        break;
-        case CORPSE:
-        {
-            if (m_deathState != CORPSE)
-                break;
-
-            if (m_corpseRemoveTime <= now)
-            {
-                OnRemoveCorpse();
-            }
-        }
-        break;
-        default:
             break;
+            case CORPSE:
+            {
+                if (m_deathState != CORPSE)
+                    break;
+
+                if (m_corpseRemoveTime <= now)
+                {
+                    OnRemoveCorpse();
+                }
+            }
+            break;
+            default:
+                break;
         }
     }
 

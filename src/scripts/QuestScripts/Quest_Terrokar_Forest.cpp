@@ -136,7 +136,7 @@ public:
                 break;
         }
 
-        Creature* creat = plr->getWorldMap()->createAndSpawnCreature(spawn, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 0);
+        Creature* creat = plr->getWorldMap()->createAndSpawnCreature(spawn, getCreature()->GetPosition());
         if (creat == nullptr)
             return;
 

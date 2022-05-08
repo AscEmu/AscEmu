@@ -168,7 +168,7 @@ void PathGenerator::buildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 con
             // Check both start and end points, if they're both in water, then we can *safely* let the creature move
             for (uint32_t i = 0; i < _pathPoints.size(); ++i)
             {
-                ZLiquidStatus liquidStatus = _source->getWorldMap()->getLiquidStatus(_source->GetPhase(), _pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z, MAP_ALL_LIQUIDS, nullptr, _source->getCollisionHeight());
+                ZLiquidStatus liquidStatus = _source->getWorldMap()->getLiquidStatus(_source->GetPhase(), LocationVector(_pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z), MAP_ALL_LIQUIDS, nullptr, _source->getCollisionHeight());
 
                 // One of the points is not in the water, cancel movement.
                 if (liquidStatus == LIQUID_MAP_NO_WATER)
@@ -201,7 +201,7 @@ void PathGenerator::buildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 con
         bool buildShotrcut = false;
 
         G3D::Vector3 const& p = (distToStartPoly > 7.0f) ? startPos : endPos;
-        if (_source->getWorldMap()->isUnderWater(_source->GetPhase(), p.x, p.y, p.z))
+        if (_source->getWorldMap()->isUnderWater(_source->GetPhase(), LocationVector(p.x, p.y, p.z)))
         {
             if (Unit* _sourceUnit = _source->ToUnit())
                 if (_sourceUnit->canSwim())
@@ -652,7 +652,7 @@ void PathGenerator::updateFilter()
 NavTerrainFlag PathGenerator::getNavTerrain(float x, float y, float z)
 {
     LiquidData data;
-    ZLiquidStatus liquidStatus = _source->getWorldMap()->getLiquidStatus(_source->GetPhase(), x, y, z, MAP_ALL_LIQUIDS, &data, _source->getCollisionHeight());
+    ZLiquidStatus liquidStatus = _source->getWorldMap()->getLiquidStatus(_source->GetPhase(), LocationVector(x, y, z), MAP_ALL_LIQUIDS, &data, _source->getCollisionHeight());
     if (liquidStatus == LIQUID_MAP_NO_WATER)
         return NAV_GROUND;
 
@@ -952,7 +952,7 @@ void PathGenerator::shortenPathUntilDist(G3D::Vector3 const& target, float dist)
 
         // check if the shortened path is still in LoS with the target
         _source->getHitSpherePointFor({ _pathPoints[i - 1].x, _pathPoints[i - 1].y, _pathPoints[i - 1].z + collisionHeight }, x, y, z);
-        if (!_source->getWorldMap()->isInLineOfSight(x, y, z, _pathPoints[i - 1].x, _pathPoints[i - 1].y, _pathPoints[i - 1].z + collisionHeight, _source->GetPhase(), LINEOFSIGHT_ALL_CHECKS))
+        if (!_source->getWorldMap()->isInLineOfSight(LocationVector(x, y, z), LocationVector(_pathPoints[i - 1].x, _pathPoints[i - 1].y, _pathPoints[i - 1].z + collisionHeight), _source->GetPhase(), LINEOFSIGHT_ALL_CHECKS))
         {
             // whenver we find a point that is not in LoS anymore, simply use last valid path
             _pathPoints.resize(i + 1);

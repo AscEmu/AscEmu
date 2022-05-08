@@ -942,7 +942,7 @@ std::string InstanceScript::getDataStateString(uint8_t state)
 // encounters
 void InstanceScript::generateBossDataState()
 {
-    const auto* encounters = sObjectMgr.GetDungeonEncounterList(GetWorldMap()->getBaseMap()->getMapId(), GetWorldMap()->getDifficulty());
+    const auto* encounters = sObjectMgr.GetDungeonEncounterList(getWorldMap()->getBaseMap()->getMapId(), getWorldMap()->getDifficulty());
     uint32_t i = 0;
 
     for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr, ++i)
@@ -986,7 +986,7 @@ bool InstanceScript::setBossState(uint32_t id, EncounterStates state)
         OnEncounterStateChange(id, state);
 
         if (state == NotStarted)
-            GetInstance()->respawnBossLinkedGroups(bossInfo->entry);
+            getInstance()->respawnBossLinkedGroups(bossInfo->entry);
 
         return true;
     }
@@ -1019,7 +1019,7 @@ void InstanceScript::loadSavedInstanceData(char const* data)
 
 void InstanceScript::readSaveDataBossStates(std::istringstream& data)
 {
-    const auto* encounters = sObjectMgr.GetDungeonEncounterList(GetWorldMap()->getBaseMap()->getMapId(), GetWorldMap()->getDifficulty());
+    const auto* encounters = sObjectMgr.GetDungeonEncounterList(getWorldMap()->getBaseMap()->getMapId(), getWorldMap()->getDifficulty());
     size_t i = 0;
 
     for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr, ++i)
@@ -1033,7 +1033,7 @@ void InstanceScript::readSaveDataBossStates(std::istringstream& data)
     uint32_t bossId = 0;
     for (std::vector<BossInfo>::iterator itr = bosses.begin(); itr != bosses.end(); ++itr, ++bossId)
     {
-        uint32 buff;
+        uint32_t buff;
         data >> buff;
         if (buff == InProgress || buff == Failed || buff == PreProgress)
             buff = NotStarted;
@@ -1114,7 +1114,7 @@ void InstanceScript::updateEncountersStateForSpell(uint32_t creditEntry, uint8_t
 
 void InstanceScript::sendUnitEncounter(uint32_t type, Unit* unit, uint8_t value_a, uint8_t value_b)
 {
-    WorldMap* instance = GetInstance();
+    WorldMap* instance = getInstance();
     instance->sendPacketToAllPlayers(SmsgUpdateInstanceEncounterUnit(type, unit ? unit->GetNewGUID() : WoWGuid(), value_a, value_b).serialise().get());
 }
 

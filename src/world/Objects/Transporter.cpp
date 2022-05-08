@@ -554,7 +554,7 @@ bool Transporter::TeleportTransport(uint32_t newMapid, float x, float y, float z
     }
 }
 
-void Transporter::DelayedTeleportTransport()
+void Transporter::delayedTeleportTransport()
 {
     if (!_delayedTransportFromMap || !_pendingMapChange)
         return;

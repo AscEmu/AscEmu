@@ -465,10 +465,10 @@ public:
 
     void SpawnEnemyGunship()
     {
-        if (GetInstance()->getTeamIdInInstance() == TEAM_ALLIANCE)
+        if (getInstance()->getTeamIdInInstance() == TEAM_ALLIANCE)
             orgrimmar = sTransportHandler.createTransport(GO_ORGRIM_S_HAMMER_ALLIANCE_ICC, mInstance);
 
-        if (GetInstance()->getTeamIdInInstance() == TEAM_HORDE)
+        if (getInstance()->getTeamIdInInstance() == TEAM_HORDE)
            skybreaker = sTransportHandler.createTransport(GO_THE_SKYBREAKER_HORDE_ICC, mInstance);
     }
 
@@ -477,7 +477,7 @@ public:
         if (!spawnsCreated())
         {
             // setup only the npcs with the correct team...
-            switch (GetInstance()->getTeamIdInInstance())
+            switch (getInstance()->getTeamIdInInstance())
             {
                 case TEAM_ALLIANCE:
                 {
@@ -499,7 +499,7 @@ public:
             Creature* Tirion = getLocalCreatureData(NPC_INTRO_TIRION);
             if (Tirion)
             {
-                Creature* Commander = findNearestCreature(Tirion, GetInstance()->getTeamIdInInstance() ? NPC_SE_HIGH_OVERLORD_SAURFANG : NPC_SE_MURADIN_BRONZEBEARD, 30.0f);
+                Creature* Commander = findNearestCreature(Tirion, getInstance()->getTeamIdInInstance() ? NPC_SE_HIGH_OVERLORD_SAURFANG : NPC_SE_MURADIN_BRONZEBEARD, 30.0f);
                 if (Commander)
                     Commander->setNpcFlags(UNIT_NPC_FLAG_NONE);
             }
@@ -525,10 +525,10 @@ public:
 
                     if (!isPrepared)
                     {
-                        if (GetInstance()->getTeamIdInInstance() == TEAM_ALLIANCE)
+                        if (getInstance()->getTeamIdInInstance() == TEAM_ALLIANCE)
                             skybreaker = sTransportHandler.createTransport(GO_THE_SKYBREAKER_ALLIANCE_ICC, mInstance);
 
-                        if (GetInstance()->getTeamIdInInstance() == TEAM_HORDE)
+                        if (getInstance()->getTeamIdInInstance() == TEAM_HORDE)
                             orgrimmar = sTransportHandler.createTransport(GO_ORGRIM_S_HAMMER_HORDE_ICC, mInstance);
 
                         isPrepared = true;
@@ -543,7 +543,7 @@ public:
                 }   
                 case EVENT_WIPE_CHECK:
                 {
-                    if (GetInstance()->getTeamIdInInstance() == TEAM_ALLIANCE)
+                    if (getInstance()->getTeamIdInInstance() == TEAM_ALLIANCE)
                     {
                         DoCheckFallingPlayer(GetCreatureByGuid(MuradinBronzebeardGbGUID));
                         if (DoWipeCheck(skybreaker))
@@ -563,10 +563,10 @@ public:
                 }
                 case EVENT_START_FLY:
                 {
-                    if (GetInstance()->getTeamIdInInstance() == TEAM_ALLIANCE && skybreaker)
+                    if (getInstance()->getTeamIdInInstance() == TEAM_ALLIANCE && skybreaker)
                         skybreaker->EnableMovement(true, mInstance);
 
-                    if (GetInstance()->getTeamIdInInstance() == TEAM_HORDE && orgrimmar)
+                    if (getInstance()->getTeamIdInInstance() == TEAM_HORDE && orgrimmar)
                         orgrimmar->EnableMovement(true, mInstance);
                     break;
                 }
@@ -590,7 +590,7 @@ public:
                 if (!Tirion)
                     return;
 
-                Creature* Commander = findNearestCreature(Tirion, GetInstance()->getTeamIdInInstance() ? NPC_SE_HIGH_OVERLORD_SAURFANG : NPC_SE_MURADIN_BRONZEBEARD, 30.0f);
+                Creature* Commander = findNearestCreature(Tirion, getInstance()->getTeamIdInInstance() ? NPC_SE_HIGH_OVERLORD_SAURFANG : NPC_SE_MURADIN_BRONZEBEARD, 30.0f);
 
                 if (Tirion && LichKing && Bolvar && Commander)
                 {
@@ -607,7 +607,7 @@ public:
                     Bolvar->SendTimedScriptTextChatMessage(EVENT_INTRO09, 105000);
                     LichKing->SendTimedScriptTextChatMessage(EVENT_INTRO10, 111000);
                
-                    if (GetInstance()->getTeamIdInInstance() == TEAM_ALLIANCE)
+                    if (getInstance()->getTeamIdInInstance() == TEAM_ALLIANCE)
                     {
                         Commander->SendTimedScriptTextChatMessage(EVENT_INTRO20, 117000);
                         Tirion->SendTimedScriptTextChatMessage(EVENT_INTRO21, 129000);
@@ -640,7 +640,7 @@ public:
             {
                 if (getBossState(DATA_ICECROWN_GUNSHIP_BATTLE) == Performed)
                 {
-                    if (GetInstance()->getTeamIdInInstance() == TEAM_ALLIANCE && skybreaker)
+                    if (getInstance()->getTeamIdInInstance() == TEAM_ALLIANCE && skybreaker)
                     {
                         skybreaker->EnableMovement(true, mInstance);
 
@@ -648,7 +648,7 @@ public:
                             orgrimmar->EnableMovement(true, mInstance);
                     }
 
-                    if (GetInstance()->getTeamIdInInstance() == TEAM_HORDE && orgrimmar)
+                    if (getInstance()->getTeamIdInInstance() == TEAM_HORDE && orgrimmar)
                     {
                         orgrimmar->EnableMovement(true, mInstance);
 
@@ -665,7 +665,7 @@ public:
             }
             case ACTION_SPAWN_TRANSPORT:
             {
-                if (GetInstance()->getTeamIdInInstance() == TEAM_ALLIANCE)
+                if (getInstance()->getTeamIdInInstance() == TEAM_ALLIANCE)
                 {
                     scriptEvents.addEvent(EVENT_SPAWN_ZEPPELIN_ALLIANCE, 1);
                 }
@@ -687,7 +687,7 @@ public:
                 GameObject* teleporter1 = nullptr;
                 GameObject* teleporter2 = nullptr;
 
-                if (GetInstance()->getTeamIdInInstance() == TEAM_HORDE)
+                if (getInstance()->getTeamIdInInstance() == TEAM_HORDE)
                 {
                     teleporter1 = spawnGameObject(GO_HORDE_TELEPORTER, deathbringerHordeGOs[0].x, deathbringerHordeGOs[0].y, deathbringerHordeGOs[0].z, deathbringerHordeGOs[0].o);
                     teleporter2 = spawnGameObject(GO_HORDE_TELEPORTER, deathbringerHordeGOs[1].x, deathbringerHordeGOs[1].y, deathbringerHordeGOs[1].z, deathbringerHordeGOs[1].o);
@@ -735,7 +735,7 @@ public:
             }
             case EVENT_ENEMY_GUNSHIP_COMBAT:
             {
-                if (Creature* captain = GetInstance()->getTeamIdInInstance() == TEAM_HORDE ? getLocalCreatureData(DATA_GB_HIGH_OVERLORD_SAURFANG) : getLocalCreatureData(DATA_GB_MURADIN_BRONZEBEARD))
+                if (Creature* captain = getInstance()->getTeamIdInInstance() == TEAM_HORDE ? getLocalCreatureData(DATA_GB_HIGH_OVERLORD_SAURFANG) : getLocalCreatureData(DATA_GB_MURADIN_BRONZEBEARD))
                     captain->GetScript()->DoAction(ACTION_BATTLE_EVENT);
                 // Instance
                 transport->getWorldMap()->getScript()->DoAction(ACTION_BATTLE_EVENT);
@@ -1264,7 +1264,7 @@ public:
         // Random target Case
         else
         {
-            Unit* target = mInstance->GetInstance()->getUnit(static_cast<Creature*>(summoner)->GetScript()->GetCreatureData64(DATA_COLDFLAME_GUID));
+            Unit* target = mInstance->getInstance()->getUnit(static_cast<Creature*>(summoner)->GetScript()->GetCreatureData64(DATA_COLDFLAME_GUID));
             if (!target)
             {
                 getCreature()->Despawn(100, 0);
@@ -2663,7 +2663,7 @@ public:
         // Instance Script
         mInstance = (IceCrownCitadelScript*)getInstanceScript();
 
-        _teamInInstance = mInstance->GetInstance()->getTeamIdInInstance();
+        _teamInInstance = mInstance->getInstance()->getTeamIdInInstance();
         _summonedFirstMage = false;
         _died = false;
         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
@@ -3426,7 +3426,7 @@ public:
                 }
                 case POINT_CORPSE:
                 {
-                    if (mInstance->GetInstance()->getTeamIdInInstance() == TEAM_HORDE)
+                    if (mInstance->getInstance()->getTeamIdInInstance() == TEAM_HORDE)
                     {
                         sendDBChatMessage(SAY_OUTRO_HORDE_3_SE);
                         scriptEvents.addEvent(EVENT_OUTRO_HORDE_5_SE, 2000);    // move
@@ -3450,7 +3450,7 @@ public:
                 }
                 case POINT_TRANSPORT:
                 {
-                    Creature* Commander = mInstance->GetInstance()->getInterface()->findNearestCreature(getCreature(), NPC_SE_MURADIN_BRONZEBEARD, 200.0f);
+                    Creature* Commander = mInstance->getInstance()->getInterface()->findNearestCreature(getCreature(), NPC_SE_MURADIN_BRONZEBEARD, 200.0f);
                     if (Commander)
                         Commander->GetScript()->DoAction(ACTION_CONTINUE_OUTRO);
 
@@ -3462,9 +3462,9 @@ public:
                 }
                 case POINT_FINAL:
                 {
-                    if (mInstance->GetInstance()->getTeamIdInInstance() == TEAM_ALLIANCE)
+                    if (mInstance->getInstance()->getTeamIdInInstance() == TEAM_ALLIANCE)
                     {
-                        Creature* Commander = mInstance->GetInstance()->getInterface()->findNearestCreature(getCreature(), NPC_SE_MURADIN_BRONZEBEARD, 200.0f);
+                        Creature* Commander = mInstance->getInstance()->getInterface()->findNearestCreature(getCreature(), NPC_SE_MURADIN_BRONZEBEARD, 200.0f);
                         if (Commander)
                             Commander->GetScript()->DoAction(ACTION_CONTINUE_OUTRO2);
 
@@ -3548,7 +3548,7 @@ public:
             }
             case ACTION_START_OUTRO:
             {
-                if (mInstance->GetInstance()->getTeamIdInInstance() == TEAM_HORDE)
+                if (mInstance->getInstance()->getTeamIdInInstance() == TEAM_HORDE)
                 {
                     // Horde Outro
                     _removeAura(SPELL_GRIP_OF_AGONY);
@@ -3711,7 +3711,7 @@ public:
 
         clearMarksFromTargets();
 
-        Creature* Commander = mInstance->GetInstance()->getInterface()->findNearestCreature(getCreature(), mInstance->GetInstance()->getTeamIdInInstance() ? NPC_SE_HIGH_OVERLORD_SAURFANG : NPC_SE_MURADIN_BRONZEBEARD, 90.0f);
+        Creature* Commander = mInstance->getInstance()->getInterface()->findNearestCreature(getCreature(), mInstance->getInstance()->getTeamIdInInstance() ? NPC_SE_HIGH_OVERLORD_SAURFANG : NPC_SE_MURADIN_BRONZEBEARD, 90.0f);
         if (Commander)
             Commander->GetScript()->DoAction(EVENT_WIPE);
     }
@@ -3851,7 +3851,7 @@ public:
             getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
 
-            Creature* Commander = mInstance->GetInstance()->getInterface()->findNearestCreature(getCreature(), mInstance->GetInstance()->getTeamIdInInstance() ? NPC_SE_HIGH_OVERLORD_SAURFANG : NPC_SE_MURADIN_BRONZEBEARD, 250.0f);
+            Creature* Commander = mInstance->getInstance()->getInterface()->findNearestCreature(getCreature(), mInstance->getInstance()->getTeamIdInInstance() ? NPC_SE_HIGH_OVERLORD_SAURFANG : NPC_SE_MURADIN_BRONZEBEARD, 250.0f);
             if (Commander)
                 Commander->GetScript()->DoAction(ACTION_START_OUTRO);
         }
@@ -3893,7 +3893,7 @@ public:
                 scriptEvents.addEvent(EVENT_INTRO_HORDE_4_SE, 6500, PHASE_INTRO_H);
                 scriptEvents.addEvent(EVENT_INTRO_HORDE_9_SE, 48200, PHASE_INTRO_H);
 
-                if (mInstance->GetInstance()->getTeamIdInInstance() == TEAM_ALLIANCE)
+                if (mInstance->getInstance()->getTeamIdInInstance() == TEAM_ALLIANCE)
                     scriptEvents.addEvent(EVENT_INTRO_FINISH_SE, 8000, PHASE_INTRO_A);
                 else
                     scriptEvents.addEvent(EVENT_INTRO_FINISH_SE, 55700, PHASE_INTRO_H);

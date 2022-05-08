@@ -46,7 +46,7 @@ bool CleansingVial(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pPlayer->hasQuestInQuestLog(9427) == false)
         return true;
 
-    Creature* pAggonar = pPlayer->getWorldMap()->createAndSpawnCreature(17000, 428.15f, 3461.73f, 63.40f, 0);
+    Creature* pAggonar = pPlayer->getWorldMap()->createAndSpawnCreature(17000, LocationVector(428.15f, 3461.73f, 63.40f));
     if (pAggonar != nullptr)
         pAggonar->Despawn(6 * 60 * 1000, 0);
 
@@ -99,7 +99,7 @@ bool SummonEkkorash(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector pos = plr->GetPosition();
 
-    plr->getWorldMap()->createAndSpawnCreature(19493, pos.x, pos.y, pos.z, 0);
+    plr->getWorldMap()->createAndSpawnCreature(19493, pos);
     return true;
 }
 
@@ -114,11 +114,11 @@ bool CallRexxar(uint8_t /*effectIndex*/, Spell* pSpell)
 
     if (pPlayer->hasQuestInQuestLog(10742))
     {
-        Creature* calax1 = pPlayer->getWorldMap()->createAndSpawnCreature(21984, pos.x, pos.y, pos.z, pos.o);
+        Creature* calax1 = pPlayer->getWorldMap()->createAndSpawnCreature(21984, pos);
         if (calax1 != nullptr)
             calax1->Despawn(2 * 60 * 1000, 0);
 
-        Creature* calax2 = pPlayer->getWorldMap()->createAndSpawnCreature(20555, pos.x, pos.y, pos.z, pos.o);
+        Creature* calax2 = pPlayer->getWorldMap()->createAndSpawnCreature(20555, pos);
         if (calax2 != nullptr)
             calax2->Despawn(2 * 60 * 1000, 0);
     }
@@ -219,7 +219,7 @@ bool FuryoftheDreghoodElders(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector arzethPos = arzethpower->GetPosition();
 
-    Creature* arzethless = pPlayer->getWorldMap()->createAndSpawnCreature(20680, arzethPos.x, arzethPos.y, arzethPos.z, arzethPos.o);
+    Creature* arzethless = pPlayer->getWorldMap()->createAndSpawnCreature(20680, arzethPos);
     if (arzethless != nullptr)
         arzethless->Despawn(5 * 60 * 1000, 0);
 
@@ -237,7 +237,7 @@ bool ASpiritAlly(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pPlayer->hasQuestInQuestLog(9847) == false)
         return true;
 
-    Creature* allyspirit = pPlayer->getWorldMap()->createAndSpawnCreature(18185, -353, 7255, 49.36f, 6.28f);
+    Creature* allyspirit = pPlayer->getWorldMap()->createAndSpawnCreature(18185, LocationVector(-353, 7255, 49.36f, 6.28f));
     if (allyspirit != nullptr)
         allyspirit->Despawn(6 * 60 * 1000, 0);
 
@@ -343,7 +343,7 @@ bool TagMurloc(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
     const LocationVector murlocPos = pPlayer->GetPosition();
 
-    Creature* tagged = pPlayer->getWorldMap()->createAndSpawnCreature(17654, murlocPos.x, murlocPos.y, murlocPos.z, 0);
+    Creature* tagged = pPlayer->getWorldMap()->createAndSpawnCreature(17654, murlocPos);
     if (tagged != nullptr)
         tagged->Despawn(5 * 60 * 1000, 0);
 
@@ -381,7 +381,7 @@ bool EvilDrawsNear(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector pos = pPlayer->GetPosition();
 
-    Creature* dragon = pPlayer->getWorldMap()->createAndSpawnCreature(22441, pos.x + 15, pos.y + 15, pos.z, pos.o);
+    Creature* dragon = pPlayer->getWorldMap()->createAndSpawnCreature(22441, LocationVector(pos.x + 15, pos.y + 15, pos.z, pos.o));
     dragon->Despawn(6 * 60 * 1000, 0);
 
     return true;
@@ -481,7 +481,7 @@ bool ScrollOfMyzrael(uint8_t /*effectIndex*/, Spell* pSpell)
             return true;
     }
 
-    myzrael = pPlayer->getWorldMap()->createAndSpawnCreature(2755, MyzraelPos[0], MyzraelPos[1], MyzraelPos[2], MyzraelPos[3]);
+    myzrael = pPlayer->getWorldMap()->createAndSpawnCreature(2755, LocationVector(MyzraelPos[0], MyzraelPos[1], MyzraelPos[2], MyzraelPos[3]));
     return true;
 }
 
@@ -498,7 +498,7 @@ bool Showdown(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
     }
 
-    Creature* goc = p_caster->getWorldMap()->createAndSpawnCreature(20555, 3739, 5365, -4, 3.5);
+    Creature* goc = p_caster->getWorldMap()->createAndSpawnCreature(20555, LocationVector(3739, 5365, -4, 3.5));
     goc->Despawn(6 * 60 * 1000, 0);
 
     return true;
@@ -533,7 +533,7 @@ bool TheBaitforLarkorwi2(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector pos = pPlayer->GetPosition();
 
-    Creature* larkowi = pPlayer->getWorldMap()->createAndSpawnCreature(9684, pos.x + 2, pos.y + 3, pos.z, pos.o);
+    Creature* larkowi = pPlayer->getWorldMap()->createAndSpawnCreature(9684, LocationVector(pos.x + 2, pos.y + 3, pos.z, pos.o));
     larkowi->Despawn(5 * 60 * 1000, 0);
 
     return true;
@@ -562,7 +562,7 @@ bool Fumping(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector pos = pPlayer->GetPosition();
 
-    Creature* creat = pPlayer->getWorldMap()->createAndSpawnCreature(entry, pos.x, pos.y, pos.z, 0);
+    Creature* creat = pPlayer->getWorldMap()->createAndSpawnCreature(entry, pos);
     if (entry == 22483) //Sand Gnomes ;)
     {
         creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "YIEEEEEEEAA!");
@@ -583,7 +583,7 @@ bool TheBigBoneWorm(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector pos = pPlayer->GetPosition();
 
-    Creature* exarch = pPlayer->getWorldMap()->createAndSpawnCreature(22038, pos.x + 7, pos.y + 7, pos.z, pos.o);
+    Creature* exarch = pPlayer->getWorldMap()->createAndSpawnCreature(22038, LocationVector(pos.x + 7, pos.y + 7, pos.z, pos.o));
     exarch->Despawn(6 * 60 * 1000, 0);
 
     return true;
@@ -600,7 +600,7 @@ bool Torgos(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector pos = pPlayer->GetPosition();
 
-    Creature* torgos = pPlayer->getWorldMap()->createAndSpawnCreature(18707, pos.x, pos.y - 10, pos.z, pos.o);
+    Creature* torgos = pPlayer->getWorldMap()->createAndSpawnCreature(18707, LocationVector(pos.x, pos.y - 10, pos.z, pos.o));
     if (torgos == nullptr)
         return true;
 
@@ -616,7 +616,7 @@ bool WelcomingtheWolfSpirit(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector pos = pPlayer->GetPosition();
 
-    Creature* spiritwolf = pPlayer->getWorldMap()->createAndSpawnCreature(19616, pos.x + 2, pos.y + 3, pos.z, pos.o);
+    Creature* spiritwolf = pPlayer->getWorldMap()->createAndSpawnCreature(19616, LocationVector(pos.x + 2, pos.y + 3, pos.z, pos.o));
     spiritwolf->Despawn(5 * 60 * 1000, 0);
 
     pPlayer->addQuestKill(10791, 0, 0);
@@ -635,7 +635,7 @@ bool NaturalRemedies(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pPlayer->hasQuestInQuestLog(10351) == false)
         return true;
 
-    Creature* colos = pPlayer->getWorldMap()->createAndSpawnCreature(19305, pos.x, pos.y, pos.z, 0);
+    Creature* colos = pPlayer->getWorldMap()->createAndSpawnCreature(19305, pos);
     if (colos != nullptr)
         colos->Despawn(5 * 60 * 1000, 0);
 
@@ -653,7 +653,7 @@ bool FloraoftheEcoDomes(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector normPos = normal->GetPosition();
 
-    Creature* mutant = pPlayer->getWorldMap()->createAndSpawnCreature(20983, normPos.x, normPos.y, normPos.z, 0);
+    Creature* mutant = pPlayer->getWorldMap()->createAndSpawnCreature(20983, normPos);
 
     normal->Despawn(1, 6 * 60 * 1000);
     mutant->Despawn(5 * 60 * 1000, 0);
@@ -677,13 +677,13 @@ bool TheCleansingMustBeStopped(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pPlayer->hasQuestInQuestLog(9370) == false)
         return true;
 
-    Creature* draenei1 = pPlayer->getWorldMap()->createAndSpawnCreature(16994, pos.x + Util::getRandomFloat(5.0f), pos.y + Util::getRandomFloat(5.0f), pos.z, pos.o);
+    Creature* draenei1 = pPlayer->getWorldMap()->createAndSpawnCreature(16994, LocationVector(pos.x + Util::getRandomFloat(5.0f), pos.y + Util::getRandomFloat(5.0f), pos.z, pos.o));
     draenei1->Despawn(6 * 60 * 1000, 0);
 
-    Creature* draenei2 = pPlayer->getWorldMap()->createAndSpawnCreature(16994, pos.x - Util::getRandomFloat(5.0f), pos.y + Util::getRandomFloat(5.0f), pos.z, pos.o);
+    Creature* draenei2 = pPlayer->getWorldMap()->createAndSpawnCreature(16994, LocationVector(pos.x - Util::getRandomFloat(5.0f), pos.y + Util::getRandomFloat(5.0f), pos.z, pos.o));
     draenei2->Despawn(6 * 60 * 1000, 0);
 
-    Creature* draenei3 = pPlayer->getWorldMap()->createAndSpawnCreature(16994, pos.x + Util::getRandomFloat(5.0f), pos.y - Util::getRandomFloat(5.0f), pos.z, pos.o);
+    Creature* draenei3 = pPlayer->getWorldMap()->createAndSpawnCreature(16994, LocationVector(pos.x + Util::getRandomFloat(5.0f), pos.y - Util::getRandomFloat(5.0f), pos.z, pos.o));
     draenei3->Despawn(6 * 60 * 1000, 0);
 
     return true;
@@ -711,7 +711,7 @@ bool AdministreringtheSalve(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 
         const LocationVector sickPos = sick->GetPosition();
 
-        Creature* healed = pPlayer->getWorldMap()->createAndSpawnCreature(16846, sickPos.x, sickPos.y, sickPos.z, 0);
+        Creature* healed = pPlayer->getWorldMap()->createAndSpawnCreature(16846, sickPos);
         sick->Despawn(1, 6 * 60 * 1000);
         healed->Despawn(3 * 60 * 1000, 0);
 
@@ -742,35 +742,35 @@ bool ZappedGiants(uint8_t /*effectIndex*/, Spell* pSpell)
         case 5360:
         {
             creat->Despawn(1000, 6 * 60 * 1000);
-            Creature* zappedcreat = pPlayer->getWorldMap()->createAndSpawnCreature(14639, creatPos.x, creatPos.y, creatPos.z, 0);
+            Creature* zappedcreat = pPlayer->getWorldMap()->createAndSpawnCreature(14639, creatPos);
             zappedcreat->Despawn(3 * 60 * 1000, 0);
         }
         break;
         case 5361:
         {
             creat->Despawn(1000, 6 * 60 * 1000);
-            Creature* zappedcreat = pPlayer->getWorldMap()->createAndSpawnCreature(14638, creatPos.x, creatPos.y, creatPos.z, 0);
+            Creature* zappedcreat = pPlayer->getWorldMap()->createAndSpawnCreature(14638, creatPos);
             zappedcreat->Despawn(3 * 60 * 1000, 0);
         }
         break;
         case 5359:
         {
             creat->Despawn(1000, 6 * 60 * 1000);
-            Creature* zappedcreat = pPlayer->getWorldMap()->createAndSpawnCreature(14603, creatPos.x, creatPos.y, creatPos.z, 0);
+            Creature* zappedcreat = pPlayer->getWorldMap()->createAndSpawnCreature(14603, creatPos);
             zappedcreat->Despawn(3 * 60 * 1000, 0);
         }
         break;
         case 5358:
         {
             creat->Despawn(1000, 6 * 60 * 1000);
-            Creature* zappedcreat = pPlayer->getWorldMap()->createAndSpawnCreature(14640, creatPos.x, creatPos.y, creatPos.z, 0);
+            Creature* zappedcreat = pPlayer->getWorldMap()->createAndSpawnCreature(14640, creatPos);
             zappedcreat->Despawn(3 * 60 * 1000, 0);
         }
         break;
         case 5357:
         {
             creat->Despawn(1000, 6 * 60 * 1000);
-            Creature* zappedcreat = pPlayer->getWorldMap()->createAndSpawnCreature(14604, creatPos.x, creatPos.y, creatPos.z, 0);
+            Creature* zappedcreat = pPlayer->getWorldMap()->createAndSpawnCreature(14604, creatPos);
             zappedcreat->Despawn(3 * 60 * 1000, 0);
         }
         break;
@@ -843,7 +843,7 @@ bool AnUnusualPatron(uint8_t /*effectIndex*/, Spell* pSpell)
     if (Naias != nullptr)
         return true;
 
-    Naias = pPlayer->getWorldMap()->createAndSpawnCreature(17207, pos.x, pos.y, pos.z, pos.o);
+    Naias = pPlayer->getWorldMap()->createAndSpawnCreature(17207, pos);
     Naias->Despawn(10 * 60 * 1000, 0);
     return true;
 }
@@ -863,7 +863,7 @@ bool MagnetoCollector(uint8_t /*effectIndex*/, Aura* pAura, bool /*apply*/)
 
     LocationVector magnetoPos = magneto->GetPosition();
 
-    Creature* auramagneto = pPlayer->getWorldMap()->createAndSpawnCreature(21731, magnetoPos.x, magnetoPos.y, magnetoPos.z, magnetoPos.o);
+    Creature* auramagneto = pPlayer->getWorldMap()->createAndSpawnCreature(21731, magnetoPos);
     if (auramagneto != nullptr)
         auramagneto->Despawn(4 * 60 * 1000, 0);
 
@@ -889,12 +889,12 @@ bool TemporalPhaseModulator(uint8_t /*effectIndex*/, Spell* pSpell)
         LocationVector whelpPos = whelp->GetPosition();
         if (Util::getRandomUInt(1) == 0)
         {
-            Creature* adolescent = pPlayer->getWorldMap()->createAndSpawnCreature(21817, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
+            Creature* adolescent = pPlayer->getWorldMap()->createAndSpawnCreature(21817, whelpPos);
             adolescent->Despawn(5 * 60 * 1000, 0);
         }
         else
         {
-            Creature* proto = pPlayer->getWorldMap()->createAndSpawnCreature(21821, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
+            Creature* proto = pPlayer->getWorldMap()->createAndSpawnCreature(21821, whelpPos);
             proto->Despawn(5 * 60 * 1000, 0);
         }
         whelp->Despawn(1, 0);
@@ -907,12 +907,12 @@ bool TemporalPhaseModulator(uint8_t /*effectIndex*/, Spell* pSpell)
         LocationVector whelpPos = whelp->GetPosition();
         if (Util::getRandomUInt(10) < 8)
         {
-            Creature* mature = pPlayer->getWorldMap()->createAndSpawnCreature(21820, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
+            Creature* mature = pPlayer->getWorldMap()->createAndSpawnCreature(21820, whelpPos);
             mature->Despawn(5 * 60 * 1000, 0);
         }
         else
         {
-            Creature* funnyd = pPlayer->getWorldMap()->createAndSpawnCreature(21823, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
+            Creature* funnyd = pPlayer->getWorldMap()->createAndSpawnCreature(21823, whelpPos);
             funnyd->Despawn(5 * 60 * 1000, 0);
         }
         whelp->Despawn(1, 0);
@@ -925,12 +925,12 @@ bool TemporalPhaseModulator(uint8_t /*effectIndex*/, Spell* pSpell)
         LocationVector whelpPos = whelp->GetPosition();
         if (Util::getRandomUInt(10) < 8)
         {
-            Creature* mature = pPlayer->getWorldMap()->createAndSpawnCreature(21820, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
+            Creature* mature = pPlayer->getWorldMap()->createAndSpawnCreature(21820, whelpPos);
             mature->Despawn(5 * 60 * 1000, 0);
         }
         else
         {
-            Creature* funnyd = pPlayer->getWorldMap()->createAndSpawnCreature(21823, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
+            Creature* funnyd = pPlayer->getWorldMap()->createAndSpawnCreature(21823, whelpPos);
             funnyd->Despawn(5 * 60 * 1000, 0);
         }
         whelp->Despawn(1, 0);
@@ -942,12 +942,12 @@ bool TemporalPhaseModulator(uint8_t /*effectIndex*/, Spell* pSpell)
         LocationVector whelpPos = whelp->GetPosition();
         if (Util::getRandomUInt(1) == 0)
         {
-            Creature* adolescent = pPlayer->getWorldMap()->createAndSpawnCreature(21817, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
+            Creature* adolescent = pPlayer->getWorldMap()->createAndSpawnCreature(21817, whelpPos);
             adolescent->Despawn(5 * 60 * 1000, 0);
         }
         else
         {
-            Creature* proto = pPlayer->getWorldMap()->createAndSpawnCreature(21821, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
+            Creature* proto = pPlayer->getWorldMap()->createAndSpawnCreature(21821, whelpPos);
             proto->Despawn(5 * 60 * 1000, 0);
         }
         whelp->Despawn(1, 0);
@@ -983,7 +983,7 @@ bool WyrmcallersHorn(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector pos = plr->GetPosition();
 
-    Creature* pCreature = plr->getWorldMap()->createAndSpawnCreature(24019, pos.x, pos.y, pos.z, 0);
+    Creature* pCreature = plr->getWorldMap()->createAndSpawnCreature(24019, pos);
     if (pCreature == nullptr)
     {
         return true;
@@ -1004,7 +1004,7 @@ bool RaeloraszSpark(uint8_t /*effectIndex*/, Spell* pSpell)
 
     const LocationVector pos = plr->GetPosition();
 
-    Creature* pCreature = plr->getWorldMap()->createAndSpawnCreature(26237, pos.x, pos.y, pos.z, 0);
+    Creature* pCreature = plr->getWorldMap()->createAndSpawnCreature(26237, pos);
     pCreature->Despawn(5 * 60 * 1000, 0);
 
     if (auto* questLog = plr->getQuestLogByQuestId(11969))
@@ -1021,7 +1021,7 @@ bool RuneOfDistortion(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector pos = plr->GetPosition();
 
-    Creature* pCreature = plr->getWorldMap()->createAndSpawnCreature(32162, pos.x, pos.y, pos.z, 0);
+    Creature* pCreature = plr->getWorldMap()->createAndSpawnCreature(32162, pos);
     pCreature->Despawn(5 * 60 * 1000, 0);
 
     if (plr->hasQuestInQuestLog(13312) == false && plr->hasQuestInQuestLog(13337) == false)
@@ -1455,7 +1455,7 @@ bool ToLegionHold(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     {
 
         pPlayer->setMoveRoot(true);
-        Creature* pJovaan = pPlayer->getWorldMap()->createAndSpawnCreature(21633, -3310.743896f, 2951.929199f, 171.132538f, 5.054039f);    // Spawn Jovaan
+        Creature* pJovaan = pPlayer->getWorldMap()->createAndSpawnCreature(21633, LocationVector(-3310.743896f, 2951.929199f, 171.132538f, 5.054039f));    // Spawn Jovaan
         if (pJovaan != nullptr)
         {
             pJovaan->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
@@ -1499,7 +1499,7 @@ bool CenarionMoondust(uint8_t /*effectIndex*/, Spell* pSpell) // Body And Heart 
     p_caster->getWorldMap()->createAndSpawnGameObject(177644, 6331.01f, 88.245f, 22.6522f, 2.01455f, 1.0);
 
     // it dont delete lunaclaw if he is here
-    Creature* lunaclaw = p_caster->getWorldMap()->createAndSpawnCreature(12138, pos[0], pos[1], pos[2], pos[3]);
+    Creature* lunaclaw = p_caster->getWorldMap()->createAndSpawnCreature(12138, LocationVector(pos[0], pos[1], pos[2], pos[3]));
 
     if (lunaclaw == nullptr)
         return true;
@@ -1543,7 +1543,7 @@ bool CenarionLunardust(uint8_t /*effectIndex*/, Spell* pSpell)  // Body And Hear
     //Moonkin Stone aura
     p_caster->getWorldMap()->createAndSpawnGameObject(177644, -2499.54f, -1633.03f, 91.8121f, 0.262894f, 1.0);
 
-    Creature* lunaclaw = p_caster->getWorldMap()->createAndSpawnCreature(12138, pos[0], pos[1], pos[2], pos[3]);
+    Creature* lunaclaw = p_caster->getWorldMap()->createAndSpawnCreature(12138, LocationVector(pos[0], pos[1], pos[2], pos[3]));
     if (lunaclaw == nullptr)
         return true;
 
@@ -1593,13 +1593,13 @@ bool CurativeAnimalSalve(uint8_t /*effectIndex*/, Spell* pSpell) // Curing the S
 
         if (entry == 12298) // Sickly Deer
         {
-            Creature* deer = caster->getWorldMap()->createAndSpawnCreature(12298, targetPos.x, targetPos.y, targetPos.z, targetPos.o); // Cured Deer
+            Creature* deer = caster->getWorldMap()->createAndSpawnCreature(12298, targetPos); // Cured Deer
             if (deer != nullptr)
                 deer->Despawn(2 * 60 * 1000, 0);
         }
         else // Sickly Gazelle
         {
-            Creature* gazelle = caster->getWorldMap()->createAndSpawnCreature(12297, targetPos.x, targetPos.y, targetPos.z, targetPos.o); // Cured Gazelle
+            Creature* gazelle = caster->getWorldMap()->createAndSpawnCreature(12297, targetPos); // Cured Gazelle
             if (gazelle != nullptr)
                 gazelle->Despawn(2 * 60 * 1000, 0);
         }
@@ -2228,7 +2228,7 @@ bool FuryOfTheDreghoodElders(uint32_t /*i*/, Spell* pSpell)
 
     LocationVector targetPos = pUnit->GetPosition();
 
-    Creature* elder = pPlayer->getWorldMap()->createAndSpawnCreature(20680, targetPos.x, targetPos.y, targetPos.z, targetPos.o);
+    Creature* elder = pPlayer->getWorldMap()->createAndSpawnCreature(20680, targetPos);
     if (elder != nullptr)
         elder->Despawn(5 * 60 * 1000, 0);
 
@@ -2366,7 +2366,7 @@ bool OrbOfMurlocControl(uint8_t /*effectIndex*/, Spell* pSpell)
                 {
                     pPlayer->addQuestKill(11541, 0, 0);
 
-                    Creature* FreedGreengill = pPlayer->getWorldMap()->createAndSpawnCreature(25085, targetPos.x, targetPos.y, targetPos.z, targetPos.o);
+                    Creature* FreedGreengill = pPlayer->getWorldMap()->createAndSpawnCreature(25085, targetPos);
                     if (FreedGreengill != nullptr)
                         FreedGreengill->Despawn(6 * 60 * 1000, 0);
 

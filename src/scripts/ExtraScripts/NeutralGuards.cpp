@@ -54,7 +54,7 @@ public:
 
             x = getCreature()->GetSpawnX() + ran * sin(ang);
             y = getCreature()->GetSpawnY() + ran * cos(ang);
-            z = getCreature()->getMapHeight(x, y, getCreature()->GetSpawnZ() + 2);
+            z = getCreature()->getMapHeight(LocationVector(x, y, getCreature()->GetSpawnZ() + 2));
 
             addWaypoint(1, createWaypoint(i, 800, WAYPOINT_MOVE_TYPE_WALK, LocationVector(x, y, z, o)));
         }

@@ -3433,7 +3433,9 @@ bool Object::IsWithinLOSInMap(Object* obj)
         oz += getCollisionHeight();
     }
     else
+    {
         obj->getHitSpherePointFor({ GetPositionX(), GetPositionY(), GetPositionZ() + getCollisionHeight() }, ox, oy, oz);
+    }
 
     float x, y, z;
     if (getObjectTypeId() == TYPEID_PLAYER)
@@ -3442,29 +3444,34 @@ bool Object::IsWithinLOSInMap(Object* obj)
         z += getCollisionHeight();
     }
     else
+    {
         getHitSpherePointFor({ obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ() + obj->getCollisionHeight() }, x, y, z);
+    }
 
-    LocationVector location = obj->GetPosition();
-    return IsWithinLOS(location);
+    return getWorldMap()->isInLineOfSight(LocationVector(x, y, z), LocationVector(ox, oy, oz), GetPhase(), LINEOFSIGHT_ALL_CHECKS);
 }
 
 bool Object::IsWithinLOS(LocationVector location)
 {
-    LocationVector location2;
-    location2 = GetPosition();
-
-    location.z += getCollisionHeight();
-
-    float x, y, z;
-    if (getObjectTypeId() == TYPEID_PLAYER)
+    if (IsInWorld())
     {
-        getPosition(x, y, z);
-        z += getCollisionHeight();
-    }
-    else
-        getHitSpherePointFor({ location.x, location.y, location.z }, x, y, z);
+        location.z += getCollisionHeight();
 
-    return getWorldMap()->isInLineOfSight(x, y, z, location.x, location.y, location.z, GetPhase(), LineOfSightChecks::LINEOFSIGHT_ALL_CHECKS);
+        float x, y, z;
+        if (getObjectTypeId() == TYPEID_PLAYER)
+        {
+            getPosition(x, y, z);
+            z += getCollisionHeight();
+        }
+        else
+        {
+            getHitSpherePointFor({ location.x, location.y, location.z }, x, y, z);
+        }
+
+        return getWorldMap()->isInLineOfSight(LocationVector(x, y, z), location, GetPhase(), LineOfSightChecks::LINEOFSIGHT_ALL_CHECKS);
+    }
+
+    return true;
 }
 
 float Object::calcAngle(float Position1X, float Position1Y, float Position2X, float Position2Y)
@@ -4103,7 +4110,7 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
             outz = testz;
         }
 
-        outz = getMapHeight(outx, outy, outz + 2);
+        outz = getMapHeight(LocationVector(outx, outy, outz + 2));
     }
 
     return true;
@@ -4228,7 +4235,7 @@ void Object::updateAllowedPositionZ(float x, float y, float &z, float* groundZ)
             if (canSwim)
                 max_z = getMapWaterOrGroundLevel(x, y, z, &ground_z);
             else
-                max_z = ground_z = getMapHeight(x, y, z);
+                max_z = ground_z = getMapHeight(LocationVector(x, y, z));
 
             if (max_z > INVALID_HEIGHT)
             {
@@ -4250,7 +4257,7 @@ void Object::updateAllowedPositionZ(float x, float y, float &z, float* groundZ)
         }
         else
         {
-            float ground_z = getMapHeight(x, y, z);
+            float ground_z = getMapHeight(LocationVector(x, y, z));
 #if VERSION_STRING >= WotLK
             ground_z += unit->getHoverHeight();
 #endif
@@ -4264,7 +4271,7 @@ void Object::updateAllowedPositionZ(float x, float y, float &z, float* groundZ)
     }
     else
     {
-        float ground_z = getMapHeight(x, y, z);
+        float ground_z = getMapHeight(LocationVector(x, y, z));
         if (ground_z > INVALID_HEIGHT)
             z = ground_z;
 
@@ -4328,8 +4335,8 @@ void Object::movePositionToFirstCollision(LocationVector &pos, float dist, float
 
     // check dynamic collision
     col = getWorldMap()->getObjectHitPos(GetPhase(),
-        pos.x, pos.y, pos.z + halfHeight,
-        destx, desty, destz + halfHeight,
+        LocationVector(pos.x, pos.y, pos.z + halfHeight),
+        LocationVector(destx, desty, destz + halfHeight),
         destx, desty, destz, -0.5f);
 
     destz -= halfHeight;
@@ -4382,15 +4389,15 @@ float Object::getFloorZ()
     if (!IsInWorld())
         return m_staticFloorZ;
 
-    return std::max<float>(m_staticFloorZ, getWorldMap()->getGameObjectFloor(GetPhase(), GetPositionX(), GetPositionY(), GetPositionZ() + getCollisionHeight()));
+    return std::max<float>(m_staticFloorZ, getWorldMap()->getGameObjectFloor(GetPhase(), LocationVector(GetPositionX(), GetPositionY(), GetPositionZ() + getCollisionHeight())));
 }
 
-float Object::getMapHeight(float x, float y, float z, bool vmap/* = true*/, float distanceToSearch/* = DEFAULT_HEIGHT_SEARCH*/)
+float Object::getMapHeight(LocationVector pos, bool vmap/* = true*/, float distanceToSearch/* = DEFAULT_HEIGHT_SEARCH*/)
 {
-    if (z != MAX_HEIGHT)
-        z += getCollisionHeight();
+    if (pos.z != MAX_HEIGHT)
+        pos.z += getCollisionHeight();
 
-    return getWorldMap()->getHeight(GetPhase(), x, y, z, vmap, distanceToSearch);
+    return getWorldMap()->getHeight(GetPhase(), pos, vmap, distanceToSearch);
 }
 
 float Object::getDistance(Object const* obj) const

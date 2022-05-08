@@ -124,8 +124,8 @@ typedef std::set<Object*> UpdateQueue;
 typedef std::set<Player*> PUpdateQueue;
 
 typedef std::set<uint64_t> CombatProgressMap;
-typedef std::unordered_map<uint32, Creature*> CreatureSqlIdMap;
-typedef std::unordered_map<uint32, GameObject*> GameObjectSqlIdMap;
+typedef std::unordered_map<uint32_t, Creature*> CreatureSqlIdMap;
+typedef std::unordered_map<uint32_t, GameObject*> GameObjectSqlIdMap;
 
 class SERVER_DECL WorldMap : public CellHandler <MapCell>, public EventableObject, public WorldStatesHandler::WorldStatesObserver
 {
@@ -167,17 +167,7 @@ public:
     void addObjectToActiveSet(Object* obj);
     void removeObjectFromActiveSet(Object* obj);
 
-    bool canUnload(uint32_t diff)
-    {
-        if (!m_unloadTimer)
-            return false;
-
-        if (m_unloadTimer <= diff)
-            return true;
-
-        m_unloadTimer -= diff;
-        return false;
-    }
+    bool canUnload(uint32_t diff);
 
     virtual bool addPlayerToMap(Player*) { return true; }
     virtual void removePlayerFromMap(Player*) {};
@@ -201,23 +191,21 @@ public:
     DBC::Structures::MapDifficulty const* getMapDifficulty();
 
     // Area and Zone Management
-    bool getAreaInfo(uint32_t phaseMask, float x, float y, float z, uint32_t& mogpflags, int32_t& adtId, int32_t& rootId, int32_t& groupId);
-    uint32_t getAreaId(uint32_t phaseMask, float x, float y, float z);
-    uint32_t getAreaId(uint32_t phaseMask, LocationVector const& pos) { return getAreaId(phaseMask, pos.getPositionX(), pos.getPositionY(), pos.getPositionZ()); }
-    uint32_t getZoneId(uint32_t phaseMask, float x, float y, float z);
-    uint32_t getZoneId(uint32_t phaseMask, LocationVector const& pos) { return getZoneId(phaseMask, pos.getPositionX(), pos.getPositionY(), pos.getPositionZ()); }
+    bool getAreaInfo(uint32_t phaseMask, LocationVector pos, uint32_t& mogpflags, int32_t& adtId, int32_t& rootId, int32_t& groupId);
+    uint32_t getAreaId(uint32_t phaseMask, LocationVector const& pos);
+    uint32_t getZoneId(uint32_t phaseMask, LocationVector const& pos);
     void getZoneAndAreaId(uint32_t phaseMask, uint32_t& zoneid, uint32_t& areaid, float x, float y, float z);
     void getZoneAndAreaId(uint32_t phaseMask, uint32_t& zoneid, uint32_t& areaid, LocationVector const& pos) { getZoneAndAreaId(phaseMask, zoneid, areaid, pos.getPositionX(), pos.getPositionY(), pos.getPositionZ()); }
 
     // Water
-    ZLiquidStatus getLiquidStatus(uint32_t phaseMask, float x, float y, float z, uint8_t ReqLiquidType, LiquidData* data = nullptr, float collisionHeight = 2.03128f);
+    ZLiquidStatus getLiquidStatus(uint32_t phaseMask, LocationVector pos, uint8_t ReqLiquidType, LiquidData* data = nullptr, float collisionHeight = 2.03128f);
     float getWaterLevel(float x, float y);
-    bool isInWater(uint32_t phaseMask, float x, float y, float z, LiquidData* data = nullptr);
-    bool isUnderWater(uint32_t phaseMask, float x, float y, float z);
+    bool isInWater(uint32_t phaseMask, LocationVector pos, LiquidData* data = nullptr);
+    bool isUnderWater(uint32_t phaseMask, LocationVector pos);
 
     // Line of Sight
-    bool isInLineOfSight(float x1, float y1, float z1, float x2, float y2, float z2, uint32_t phasemask, LineOfSightChecks checks);
-    bool getObjectHitPos(uint32_t phasemask, float x1, float y1, float z1, float x2, float y2, float z2, float& rx, float& ry, float& rz, float modifyDist);
+    bool isInLineOfSight(LocationVector pos1, LocationVector pos2, uint32_t phasemask, LineOfSightChecks checks);
+    bool getObjectHitPos(uint32_t phasemask, LocationVector pos1, LocationVector pos2, float& rx, float& ry, float& rz, float modifyDist);
 
     // Dynamic Map
     DynamicMapTree getDynamicTree() const { return _dynamicTree; }
@@ -225,9 +213,9 @@ public:
     void removeGameObjectModel(GameObjectModel const& model) { _dynamicTree.remove(model); }
     void insertGameObjectModel(GameObjectModel const& model) { _dynamicTree.insert(model); }
     bool containsGameObjectModel(GameObjectModel const& model) const { return _dynamicTree.contains(model); }
-    float getGameObjectFloor(uint32_t phasemask, float x, float y, float z, float maxSearchDist = 50.0f) const
+    float getGameObjectFloor(uint32_t phasemask, LocationVector pos, float maxSearchDist = 50.0f) const
     {
-        return _dynamicTree.getHeight(x, y, z, maxSearchDist, phasemask);
+        return _dynamicTree.getHeight(pos.x, pos.y, pos.z, maxSearchDist, phasemask);
     }
 
     // Terrain
@@ -237,7 +225,7 @@ public:
     float getGridHeight(float x, float y) const;
     float getHeight(LocationVector const& pos, bool vmap = true, float maxSearchDist = 50.0f) const { return getHeight(pos.getPositionX(), pos.getPositionY(), pos.getPositionZ(), vmap, maxSearchDist); }
     // phasemask seems to be invalid when loading into a map                                                                                                                                                // phase
-    float getHeight(uint32_t /*phasemask*/, float x, float y, float z, bool vmap = true, float maxSearchDist = 50.0f) const { return std::max<float>(getHeight(x, y, z, vmap, maxSearchDist), getGameObjectFloor(1, x, y, z, maxSearchDist)); }
+    float getHeight(uint32_t /*phasemask*/, float x, float y, float z, bool vmap = true, float maxSearchDist = 50.0f) const { return std::max<float>(getHeight(x, y, z, vmap, maxSearchDist), getGameObjectFloor(1, LocationVector(x, y, z), maxSearchDist)); }
     float getHeight(uint32_t phasemask, LocationVector const& pos, bool vmap = true, float maxSearchDist = 50.0f) const { return getHeight(phasemask, pos.getPositionX(), pos.getPositionY(), pos.getPositionZ(), vmap, maxSearchDist); }
 
     // Instance
@@ -258,7 +246,7 @@ public:
     // Creatures
     uint32_t m_CreatureHighGuid = 0;
     Creature* createCreature(uint32_t entry);
-    Creature* createAndSpawnCreature(uint32_t pEntry, float pX, float pY, float pZ, float pO);
+    Creature* createAndSpawnCreature(uint32_t pEntry, LocationVector pos);
 
     uint64_t generateCreatureGuid(uint32_t entry, bool canUseOldGuid = true);
 
@@ -364,30 +352,9 @@ public:
     respawnQueue _respawnTimes;
     RespawnInfoMap _creatureRespawnTimesBySpawnId;
     RespawnInfoMap _gameObjectRespawnTimesBySpawnId;
-    RespawnInfoMap& getRespawnMapForType(SpawnObjectType type)
-    {
-        switch (type)
-        {
-            case SPAWN_TYPE_CREATURE:
-                return _creatureRespawnTimesBySpawnId;
-            case SPAWN_TYPE_GAMEOBJECT:
-                return _gameObjectRespawnTimesBySpawnId;
-            default:
-                break;
-        }
-    }
-    RespawnInfoMap const& getRespawnMapForType(SpawnObjectType type) const
-    {
-        switch (type)
-        {
-            case SPAWN_TYPE_CREATURE:
-                return _creatureRespawnTimesBySpawnId;
-            case SPAWN_TYPE_GAMEOBJECT:
-                return _gameObjectRespawnTimesBySpawnId;
-            default:
-                break;
-        }
-    }
+
+    RespawnInfoMap& getRespawnMapForType(SpawnObjectType type);
+    RespawnInfoMap const& getRespawnMapForType(SpawnObjectType type) const;
 
     void respawnBossLinkedGroups(uint32_t bossId);
     void spawnManualGroup(uint32_t groupId);

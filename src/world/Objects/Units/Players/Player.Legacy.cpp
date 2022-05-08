@@ -565,9 +565,10 @@ void Player::Update(unsigned long time_passed)
     // Instance Hourly Limit
     if (!_instanceResetTimes.empty())
     {
+        time_t now = Util::getTimeNow();
         for (InstanceTimeMap::iterator itr = _instanceResetTimes.begin(); itr != _instanceResetTimes.end();)
         {
-            if (itr->second < Util::getTimeNow())
+            if (itr->second < now)
                 _instanceResetTimes.erase(itr++);
             else
                 ++itr;
@@ -585,7 +586,9 @@ void Player::Update(unsigned long time_passed)
             setPendingBind(0, 0);
         }
         else
+        {
             _pendingBindTimer -= time_passed;
+        }
     }
 
     if (m_timeSyncTimer > 0)
@@ -5261,8 +5264,8 @@ void Player::CastSpellArea()
     if (getWorldMap()->getCellByCoords(GetPositionX(), GetPositionY()) == nullptr)
         return;
 
-    uint32 AreaId = 0;
-    uint32 ZoneId = 0;
+    uint32_t AreaId = 0;
+    uint32_t ZoneId = 0;
 
     getWorldMap()->getZoneAndAreaId(GetPhase(), ZoneId, AreaId, GetPosition());
 

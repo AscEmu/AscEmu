@@ -96,7 +96,7 @@ namespace MapManagement::AreaManagement
         uint32_t area_flag_without_adt_id = 0;
         float_t tileMapHeight = INVALID_HEIGHT;
 
-        const auto hasAreaInfo = worldMap->getAreaInfo(phaseMask, pos.x, pos.y, pos.z, mogp_flags, adt_id, root_id, group_id);
+        const auto hasAreaInfo = worldMap->getAreaInfo(phaseMask, pos, mogp_flags, adt_id, root_id, group_id);
 
         if (const auto* tile = worldMap->getTerrain()->getTile(pos.x, pos.y))
         {
