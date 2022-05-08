@@ -1365,10 +1365,10 @@ void Object::_UpdateSpells(uint32_t time)
     if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL] != nullptr && isPlayer())
         static_cast<Player*>(this)->updateAutoRepeatSpell();
 
-    // Remove finished traveling spells
+    // Update traveling spells
     for (auto travelingSpellItr = m_travelingSpells.begin(); travelingSpellItr != m_travelingSpells.end();)
     {
-        auto spellItr = *travelingSpellItr;
+        auto& spellItr = *travelingSpellItr;
 
         // Remove finished spells from list
         // They will be deleted on next update tick
@@ -1379,13 +1379,8 @@ void Object::_UpdateSpells(uint32_t time)
             continue;
         }
 
-        ++travelingSpellItr;
-    }
-
-    // Update traveling spells
-    for (const auto& spellItr : m_travelingSpells)
-    {
         spellItr.first->update(time);
+        ++travelingSpellItr;
     }
 
     // Update current spells
