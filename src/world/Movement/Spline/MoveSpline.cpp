@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MoveSpline.h"
 
 #include <sstream>
-
+#include "WorldConf.h"
 #include "CommonDefines.hpp"
 #include "Logging/Logger.hpp"
 

@@ -13,12 +13,23 @@ This file is released under the MIT license. See README-MIT for more information
 #include "DynamicTree.h"
 #include "Map/Cells/TerrainMgr.hpp"
 #include "Threading/AEThread.h"
+#include "Storage/DBC/DBCStructures.hpp"
 
 template <typename T>
 class CellHandler;
 class InstanceScript;
 class MapScriptInterface;
 class Object;
+class GameObject;
+class Unit;
+class Creature;
+class Player;
+class Pet;
+class Transporter;
+class Corpse;
+class CBattleground;
+class InstanceScript;
+class Summon;
 class InstanceMap;
 class CreatureGroup;
 enum LineOfSightChecks : uint8_t;

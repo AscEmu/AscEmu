@@ -15,6 +15,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "shared/WoWGuid.h"
 #include "MapScriptInterface.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Macros/ScriptMacros.hpp"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/WorldStatesHandler.h"
 #include "InstanceMap.hpp"
 #include "Server/Packets/SmsgUpdateWorldState.h"
