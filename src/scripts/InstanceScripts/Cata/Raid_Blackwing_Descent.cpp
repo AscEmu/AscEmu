@@ -11,12 +11,6 @@ class BlackwingDescentInstanceScript : public InstanceScript
 public:
     explicit BlackwingDescentInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(WorldMap* pMapMgr) { return new BlackwingDescentInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
 };
 
 void SetupBlackwingDescent(ScriptMgr* mgr)

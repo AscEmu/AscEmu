@@ -11,12 +11,6 @@ class ThroneOfTidesInstanceScript : public InstanceScript
 public:
     explicit ThroneOfTidesInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(WorldMap* pMapMgr) { return new ThroneOfTidesInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
 };
 
 void SetupThroneOfTides(ScriptMgr* mgr)

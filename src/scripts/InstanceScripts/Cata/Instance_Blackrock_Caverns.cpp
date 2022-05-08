@@ -11,12 +11,6 @@ class BlackrockCavernsInstanceScript : public InstanceScript
 public:
     explicit BlackrockCavernsInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(WorldMap* pMapMgr) { return new BlackrockCavernsInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
 };
 
 void SetupBlackrockCaverns(ScriptMgr* mgr)

@@ -11,12 +11,6 @@ class TheStonecoreInstanceScript : public InstanceScript
 public:
     explicit TheStonecoreInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(WorldMap* pMapMgr) { return new TheStonecoreInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
 };
 
 void SetupTheStonecore(ScriptMgr* mgr)

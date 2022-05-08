@@ -11,12 +11,6 @@ class BaradinHoldInstanceScript : public InstanceScript
 public:
     explicit BaradinHoldInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(WorldMap* pMapMgr) { return new BaradinHoldInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
 };
 
 void SetupBaradinHold(ScriptMgr* mgr)

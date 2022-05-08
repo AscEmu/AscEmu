@@ -11,12 +11,6 @@ class GrimBatolInstanceScript : public InstanceScript
 public:
     explicit GrimBatolInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(WorldMap* pMapMgr) { return new GrimBatolInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
 };
 
 void SetupGrimBatol(ScriptMgr* mgr)

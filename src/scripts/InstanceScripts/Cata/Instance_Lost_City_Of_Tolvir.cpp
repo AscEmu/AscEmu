@@ -11,12 +11,6 @@ class LostCityOfTolvirInstanceScript : public InstanceScript
 public:
     explicit LostCityOfTolvirInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
     static InstanceScript* Create(WorldMap* pMapMgr) { return new LostCityOfTolvirInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
 };
 
 void SetupLostCityOfTolvir(ScriptMgr* mgr)
