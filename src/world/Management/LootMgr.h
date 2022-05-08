@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Map/Maps/InstanceDefines.hpp"
+#include "Objects/Units/Unit.h"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 
 #define MAX_NR_LOOT_ITEMS 16

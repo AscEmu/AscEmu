@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "Macros/CorpseMacros.hpp"
+#include "Macros/ScriptMacros.hpp"
 #include "Management/HonorHandler.h"
 #include "Management/Battleground/Battleground.h"
 #include "Management/Guild/GuildMgr.hpp"
@@ -82,6 +83,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/UnitDefines.hpp"
+#include "Server/Definitions.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/Packets/SmsgAreaTriggerMessage.h"
 #include "Server/Packets/SmsgCancelCombat.h"
@@ -113,6 +115,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Warden/SpeedDetector.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/WorldStrings.h"
+#include "Util/Strings.hpp"
 
 using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;

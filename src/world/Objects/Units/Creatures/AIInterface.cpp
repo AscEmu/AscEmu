@@ -29,6 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/WaypointManager.h"
 #include "Movement/MovementManager.h"
 #include "Movement/Spline/MoveSplineInit.h"
+#include "Server/Definitions.h"
 #include "Server/Script/CreatureAIScript.h"
 
 #ifndef UNIX

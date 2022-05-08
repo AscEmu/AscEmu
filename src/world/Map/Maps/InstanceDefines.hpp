@@ -100,3 +100,11 @@ enum InstanceResetWarningType
     RAID_INSTANCE_WELCOME                       = 4,                    // Welcome to %s. This raid instance is scheduled to reset in %s.
     RAID_INSTANCE_EXPIRED                       = 5
 };
+
+enum BindExtensionState
+{
+    EXTEND_STATE_EXPIRED = 0,
+    EXTEND_STATE_NORMAL = 1,
+    EXTEND_STATE_EXTENDED = 2,
+    EXTEND_STATE_KEEP = 255
+};

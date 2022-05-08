@@ -8,16 +8,17 @@ This file is released under the MIT license. See README-MIT for more information
 #include "InstanceDefines.hpp"
 
 #include <cstdint>
+#include <ctime>
+#include <list>
+#include <map>
+#include <mutex>
+#include <unordered_map>
 
+#include "Util.hpp"
+
+class Group;
+class Player;
 class InstanceSaved;
-
-enum BindExtensionState
-{
-    EXTEND_STATE_EXPIRED            = 0,
-    EXTEND_STATE_NORMAL             = 1,
-    EXTEND_STATE_EXTENDED           = 2,
-    EXTEND_STATE_KEEP               = 255
-};
 
 struct InstancePlayerBind
 {

@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "InstanceMap.hpp"
 #include "InstanceDefines.hpp"
+#include "Server/Definitions.h"
+#include "Server/Script/ScriptMgr.h"
 
 InstanceMap::InstanceMap(BaseMap* baseMap, uint32_t id, uint32_t expiry, uint32_t InstanceId, uint8_t SpawnMode, PlayerTeam InstanceTeam)
     : WorldMap(baseMap, id, expiry, InstanceId, SpawnMode), instanceTeam(InstanceTeam)

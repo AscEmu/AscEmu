@@ -40,6 +40,7 @@
 #include <mutex>
 
 #include "TradeData.hpp"
+#include "Map/Maps/InstanceDefines.hpp"
 
 class ArenaTeam;
 struct CharCreate;

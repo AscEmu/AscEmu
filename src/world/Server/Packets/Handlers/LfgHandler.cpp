@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLfgRoleChosen.h"
 #include "Server/Packets/CmsgSearchLfgJoin.h"
 #include "Server/Packets/CmsgSearchLfgLeave.h"
+#include "Server/Script/ScriptMgr.h"
 
 using namespace AscEmu::Packets;
 

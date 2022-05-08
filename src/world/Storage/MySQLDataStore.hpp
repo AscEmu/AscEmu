@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellClickInfo.hpp"
 #include "Spell/Definitions/TeleportCoords.hpp"
 #include "MySQLStructures.h"
+#include "Objects/GameObject.h"
 
 extern SERVER_DECL std::set<std::string> CreaturePropertiesTables;
 extern SERVER_DECL std::set<std::string> CreatureQuestStarterTables;

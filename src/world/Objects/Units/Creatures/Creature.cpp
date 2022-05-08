@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Objects/Units/Creatures/CreatureGroups.h"
+#include "Server/Definitions.h"
 
 using namespace AscEmu::Packets;
 

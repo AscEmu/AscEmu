@@ -42,6 +42,7 @@
 #include "Server/Script/ScriptMgr.h"
 #include "Map/Maps/MapScriptInterface.h"
 #include "GameObjectModel.h"
+#include "Server/Definitions.h"
 
 // MIT
 
