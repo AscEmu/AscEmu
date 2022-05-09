@@ -1221,7 +1221,7 @@ int LuaGameObject::GetWorldStateForZone(lua_State* L, GameObject* ptr)
     uint32_t areaId;
     uint32_t entry = 0;
 
-   ptr->getWorldMap()->getZoneAndAreaId(ptr->GetPhase(), zoneId, areaId, ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
+   ptr->getWorldMap()->getZoneAndAreaId(ptr->GetPhase(), zoneId, areaId, ptr->GetPosition());
 
    if (zoneId == 0)
        entry = areaId;
@@ -1253,7 +1253,7 @@ int LuaGameObject::SetWorldStateForZone(lua_State* L, GameObject* ptr)
     uint32_t areaId;
     uint32_t entry = 0;
 
-    ptr->getWorldMap()->getZoneAndAreaId(ptr->GetPhase(), zoneId, areaId, ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
+    ptr->getWorldMap()->getZoneAndAreaId(ptr->GetPhase(), zoneId, areaId, ptr->GetPosition());
 
     if (zoneId == 0)
         entry = areaId;

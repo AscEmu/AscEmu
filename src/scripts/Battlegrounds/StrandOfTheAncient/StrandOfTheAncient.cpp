@@ -471,17 +471,17 @@ void StrandOfTheAncient::OnCreate()
     m_resurrectMap.clear();
 
     /* Relic */
-    m_relic = m_mapMgr->createAndSpawnGameObject(GO_RELIC, sotaTitanRelic[0], sotaTitanRelic[1], sotaTitanRelic[2], sotaTitanRelic[3], 0.6f);
+    m_relic = m_mapMgr->createAndSpawnGameObject(GO_RELIC, LocationVector(sotaTitanRelic[0], sotaTitanRelic[1], sotaTitanRelic[2], sotaTitanRelic[3]), 0.6f);
 
     for (uint8_t i = 0; i < GATE_COUNT; i++)
     {
-        m_gates[i] = m_mapMgr->createAndSpawnGameObject(GateGOIds[i], sotaGates[i][0], sotaGates[i][1], sotaGates[i][2], sotaGates[i][3], 1.0f);
-        m_gateSigils[i] = m_mapMgr->createAndSpawnGameObject(GateSigilGOIds[i], sotaGateSigils[i][0], sotaGateSigils[i][1], sotaGateSigils[i][2], sotaGateSigils[i][3], 1.0f);
-        m_gateTransporters[i] = m_mapMgr->createAndSpawnGameObject(192819,sotaTransporters[i][0], sotaTransporters[i][1], sotaTransporters[i][2], sotaTransporters[i][3], 1.0f);
+        m_gates[i] = m_mapMgr->createAndSpawnGameObject(GateGOIds[i], LocationVector(sotaGates[i][0], sotaGates[i][1], sotaGates[i][2], sotaGates[i][3]), 1.0f);
+        m_gateSigils[i] = m_mapMgr->createAndSpawnGameObject(GateSigilGOIds[i], LocationVector(sotaGateSigils[i][0], sotaGateSigils[i][1], sotaGateSigils[i][2], sotaGateSigils[i][3]), 1.0f);
+        m_gateTransporters[i] = m_mapMgr->createAndSpawnGameObject(192819, LocationVector(sotaTransporters[i][0], sotaTransporters[i][1], sotaTransporters[i][2], sotaTransporters[i][3]), 1.0f);
     }
 
     // Spawn door for Chamber of Ancient Relics
-    m_endgate = m_mapMgr->createAndSpawnGameObject(GateGOIds[5], sotaChamberGate[0], sotaChamberGate[1], sotaChamberGate[2], sotaChamberGate[3], 1.0f);
+    m_endgate = m_mapMgr->createAndSpawnGameObject(GateGOIds[5], LocationVector(sotaChamberGate[0], sotaChamberGate[1], sotaChamberGate[2], sotaChamberGate[3]), 1.0f);
 
     PrepareRound();
 }
@@ -664,7 +664,7 @@ void StrandOfTheAncient::PrepareRound()
             m_boats[i]->Despawn(0, 0);
         }
 
-        m_boats[i] = m_mapMgr->createAndSpawnGameObject(boatId, sotaBoats[i][0], sotaBoats[i][1], sotaBoats[i][2], sotaBoats[i][3], 1.0f);
+        m_boats[i] = m_mapMgr->createAndSpawnGameObject(boatId, LocationVector(sotaBoats[i][0], sotaBoats[i][1], sotaBoats[i][2], sotaBoats[i][3]), 1.0f);
     }
 
     for (uint8_t i = 0; i < GATE_COUNT; ++i)
@@ -674,7 +674,7 @@ void StrandOfTheAncient::PrepareRound()
 
     for (uint8_t i = 0; i < SOTA_NORTH_BOMBS; ++i)
     {
-        m_bomb[i] = m_mapMgr->createAndSpawnGameObject(SOTA_BOMBS, sotaBombsLocations[i][0], sotaBombsLocations[i][1], sotaBombsLocations[i][2], sotaBombsLocations[i][3], 1.5f);
+        m_bomb[i] = m_mapMgr->createAndSpawnGameObject(SOTA_BOMBS, LocationVector(sotaBombsLocations[i][0], sotaBombsLocations[i][1], sotaBombsLocations[i][2], sotaBombsLocations[i][3]), 1.5f);
     }
 
     for (uint8_t i = 0; i < SOTA_NUM_CANONS; ++i)
@@ -949,7 +949,7 @@ void StrandOfTheAncient::CaptureControlPoint(SOTAControlPoints point)
             }
             for (uint8_t i = SOTA_EAST_BOMBS_INDEX; i < SOTA_WEST_BOMBS_INDEX; i++)
             {
-                m_bomb[i] = m_mapMgr->createAndSpawnGameObject(SOTA_BOMBS, sotaBombsLocations[i][0], sotaBombsLocations[i][1], sotaBombsLocations[i][2], sotaBombsLocations[i][3], 1.5f);
+                m_bomb[i] = m_mapMgr->createAndSpawnGameObject(SOTA_BOMBS, LocationVector(sotaBombsLocations[i][0], sotaBombsLocations[i][1], sotaBombsLocations[i][2], sotaBombsLocations[i][3]), 1.5f);
             }
             npc[TEAM_ALLIANCE] = SpawnCreature(SOTA_RIGGER_SPARKLIGHT, sotaNPCSLocations[0], TeamFactions[Attackers]);
             break;
@@ -960,7 +960,7 @@ void StrandOfTheAncient::CaptureControlPoint(SOTAControlPoints point)
             }
             for (uint8_t i = SOTA_WEST_BOMBS_INDEX; i < SOTA_NUM_BOMBS; i++)
             {
-                m_bomb[i] = m_mapMgr->createAndSpawnGameObject(SOTA_BOMBS, sotaBombsLocations[i][0], sotaBombsLocations[i][1], sotaBombsLocations[i][2], sotaBombsLocations[i][3], 1.5f);
+                m_bomb[i] = m_mapMgr->createAndSpawnGameObject(SOTA_BOMBS, LocationVector(sotaBombsLocations[i][0], sotaBombsLocations[i][1], sotaBombsLocations[i][2], sotaBombsLocations[i][3]), 1.5f);
             }
             npc[TEAM_HORDE] = SpawnCreature(SOTA_GORGRIL_RIGSPARK, sotaNPCSLocations[1], TeamFactions[Attackers]);
             break;

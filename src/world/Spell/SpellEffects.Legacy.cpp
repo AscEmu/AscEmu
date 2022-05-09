@@ -74,6 +74,8 @@
 #include "Server/Packets/MsgCorpseQuery.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "VMapFactory.h"
+#include "VMapManager2.h"
 
 using namespace AscEmu::Packets;
 
@@ -503,7 +505,7 @@ void Spell::spellEffectSummonTotem(uint8_t summonSlot, CreatureProperties const*
 
     // Correct Z position
     //\ todo: this probably should be inside Object::GetPoint()
-    const auto landHeight = u_caster->getWorldMap()->getHeight(v.x, v.y, v.z + 2);
+    const auto landHeight = u_caster->getWorldMap()->getHeight(LocationVector(v.x, v.y, v.z + 2));
     const auto landDiff = landHeight - v.z;
     if (fabs(landDiff) <= 15)
         v.z = landHeight;
@@ -3963,30 +3965,25 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         if (p_caster == nullptr)
             return;
 
-        float co = cos(orient);
-        float si = sin(orient);
         WorldMap* map = m_caster->getWorldMap();
+        float minDist = m_spellInfo->getMinRange(true);
+        float maxDist = m_spellInfo->getMaxRange(true);
+        float posx = 0, posy = 0, posz = 0;
+        float dist = Util::getRandomFloat(minDist, maxDist);
 
-        float r;
-        for (r = 20; r > 10; r--)
-        {
-            posx = px + r * co;
-            posy = py + r * si;
-            ZLiquidStatus liquidStatus = map->getLiquidStatus(m_caster->GetPhase(), LocationVector(posx, posy, pz + 2), MAP_LIQUID_TYPE_WATER);
-            
-            if (!(liquidStatus & LIQUID_MAP_NO_WATER))//water
-                continue;
+        float angle = Util::getRandomFloat(0.0f, 1.0f) * static_cast<float>(M_PI * 35.0f / 180.0f) - static_cast<float>(M_PI * 17.5f / 180.0f);
+        m_caster->getClosePoint(posx, posy, posz, 0.388999998569489f, dist, angle);
 
-            if (posz > map->getHeight(posx, posy, pz + 2))  //water
-                break;
-        }
+        float ground = m_caster->getMapHeight(LocationVector(posx, posy, posz));
+        float liquidLevel = VMAP_INVALID_HEIGHT_VALUE;
 
-        posx = px + r * co;
-        posy = py + r * si;
+        LiquidData liquidData;
+        if (map->getLiquidStatus(m_caster->GetPhase(), LocationVector(posx, posy, posz), MAP_ALL_LIQUIDS, &liquidData, m_caster->getCollisionHeight()))
+            liquidLevel = liquidData.level;
 
         go = u_caster->getWorldMap()->createGameObject(entry);
 
-        go->CreateFromProto(entry, mapid, posx, posy, posz, orient);
+        go->CreateFromProto(entry, mapid, posx, posy, liquidLevel, orient);
         go->setFlags(GO_FLAG_NONE);
         go->setState(GO_STATE_OPEN);
         go->setCreatedByGuid(m_caster->getGuid());

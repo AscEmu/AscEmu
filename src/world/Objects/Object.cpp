@@ -4038,7 +4038,7 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
         return false;
     outx = GetPositionX() + rad * cos(angle);
     outy = GetPositionY() + rad * sin(angle);
-    outz = getWorldMap()->getHeight(outx, outy, GetPositionZ() + 2);
+    outz = getWorldMap()->getHeight(LocationVector(outx, outy, GetPositionZ() + 2));
 
     float waterz = getWorldMap()->getWaterLevel(outx, outy);
 
@@ -4381,7 +4381,7 @@ void Object::movePositionToFirstCollision(LocationVector &pos, float dist, float
 
 float Object::getMapWaterOrGroundLevel(float x, float y, float z, float* ground/* = nullptr*/)
 {
-    return getWorldMap()->getWaterOrGroundLevel(GetPhase(), x, y, z, ground, getObjectTypeId() == TYPEID_UNIT ? !static_cast<Unit*>(this)->getAuraWithAuraEffect(SPELL_AURA_WATER_WALK) : false);
+    return getWorldMap()->getWaterOrGroundLevel(GetPhase(), LocationVector(x, y, z), ground, getObjectTypeId() == TYPEID_UNIT ? !static_cast<Unit*>(this)->getAuraWithAuraEffect(SPELL_AURA_WATER_WALK) : false);
 }
 
 float Object::getFloorZ()

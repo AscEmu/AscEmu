@@ -5902,7 +5902,7 @@ public:
         uint32_t areaId;
         uint32_t entry = 0;
 
-        ptr->getWorldMap()->getZoneAndAreaId(ptr->GetPhase(), zoneId, areaId, ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
+        ptr->getWorldMap()->getZoneAndAreaId(ptr->GetPhase(), zoneId, areaId, ptr->GetPosition());
 
         if (zoneId == 0)
             entry = areaId;
@@ -5931,7 +5931,7 @@ public:
         uint32_t areaId;
         uint32_t entry = 0;
 
-        ptr->getWorldMap()->getZoneAndAreaId(ptr->GetPhase(), zoneId, areaId, ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
+        ptr->getWorldMap()->getZoneAndAreaId(ptr->GetPhase(), zoneId, areaId, ptr->GetPosition());
 
         if (zoneId == 0)
             entry = areaId;

@@ -498,7 +498,7 @@ public:
             GameObject* go = player->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 177491);
             if (go == nullptr)
             {
-                GameObject* barel = player->getWorldMap()->createAndSpawnGameObject(177491, 2449.51f, -1662.32f, 104.38f, 1.0f, 1);
+                GameObject* barel = player->getWorldMap()->createAndSpawnGameObject(177491, LocationVector(2449.51f, -1662.32f, 104.38f, 1.0f), 1);
                 if (barel != nullptr)
                     barel->Despawn(2 * 60 * 1000, 0);
             }
@@ -558,7 +558,7 @@ public:
         if (pirate != nullptr)
             pirate->Despawn(6 * 60 * 1000, 0);
 
-        GameObject* gobj = player->getWorldMap()->createAndSpawnGameObject(142194, pos.x + 5, pos.y, pos.z, pos.o, 1);
+        GameObject* gobj = player->getWorldMap()->createAndSpawnGameObject(142194, LocationVector(pos.x + 5, pos.y, pos.z, pos.o), 1);
         if (gobj != nullptr)
             gobj->Despawn(10 * 60 * 1000, 0);
     }
@@ -583,6 +583,7 @@ public:
             return;
 
         Creature* shaghostspawn = player->getWorldMap()->createAndSpawnCreature(9136, pos);
+        if (shaghostspawn != nullptr)
             shaghostspawn->Despawn(2 * 60 * 1000, 0);
     }
 };

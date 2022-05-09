@@ -66,7 +66,7 @@ public:
         if (!mKiller->isPlayer())
             return;
 
-        GameObject* go = mKiller->getWorldMap()->createAndSpawnGameObject(177241, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), 1);
+        GameObject* go = mKiller->getWorldMap()->createAndSpawnGameObject(177241, getCreature()->GetPosition(), 1);
         if (go != nullptr)
             go->Despawn(60 * 1000, 0);
     }

@@ -37,7 +37,7 @@ public:
 
         if (!spawncheckgobj)
         {
-            GameObject* generalsbox = mTarget->getWorldMap()->createAndSpawnGameObject(141980, -10622, -2994, 28.6f, 4, 4);
+            GameObject* generalsbox = mTarget->getWorldMap()->createAndSpawnGameObject(141980, LocationVector(-10622, -2994, 28.6f, 4), 4);
             if (generalsbox != nullptr)
                 generalsbox->Despawn(3 * 60 * 1000, 0);
         }
@@ -87,7 +87,7 @@ public:
                 GameObject* spawncheckgobj = plr->getWorldMap()->getInterface()->getGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 141980);
                 if (!spawncheckgobj)
                 {
-                    GameObject* generalsbox = plr->getWorldMap()->createAndSpawnGameObject(141980, -10622, -2994, 28.6f, 4, 4);
+                    GameObject* generalsbox = plr->getWorldMap()->createAndSpawnGameObject(141980, LocationVector(-10622, -2994, 28.6f, 4), 4);
                     if (generalsbox != nullptr)
                         generalsbox->Despawn(3 * 60 * 1000, 0);
                 }

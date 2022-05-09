@@ -257,21 +257,21 @@ class FacingNegolash : public QuestScript
 
         for (uint8_t i = 0; i < 9; ++i)
         {
-            obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_MEAT, MeatSpawnPoints[i].x, MeatSpawnPoints[i].y, MeatSpawnPoints[i].z, MeatSpawnPoints[i].orientation, 1);
+            obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_MEAT, LocationVector(MeatSpawnPoints[i].x, MeatSpawnPoints[i].y, MeatSpawnPoints[i].z, MeatSpawnPoints[i].orientation), 1);
             if (obj != nullptr)
                 obj->Despawn(2 * 60 * 1000, 0);
         }
 
         for (uint8_t i = 0; i < 5; ++i)
         {
-            obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_BOTTLE, BottleSpawnPoints[i].x, BottleSpawnPoints[i].y, BottleSpawnPoints[i].z, BottleSpawnPoints[i].orientation, 1);
+            obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_BOTTLE, LocationVector(BottleSpawnPoints[i].x, BottleSpawnPoints[i].y, BottleSpawnPoints[i].z, BottleSpawnPoints[i].orientation), 1);
             if (obj != nullptr)
                 obj->Despawn(2 * 60 * 1000, 0);
         }
 
         for (uint8_t i = 0; i < 3; ++i)
         {
-            obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_BREAD, BreadSpawnPoints[i].x, BreadSpawnPoints[i].y, BreadSpawnPoints[i].z, BreadSpawnPoints[i].orientation, 1);
+            obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_BREAD, LocationVector(BreadSpawnPoints[i].x, BreadSpawnPoints[i].y, BreadSpawnPoints[i].z, BreadSpawnPoints[i].orientation), 1);
             if (obj != nullptr)
                 obj->Despawn(2 * 60 * 1000, 0);
         }

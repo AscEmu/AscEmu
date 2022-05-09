@@ -1717,7 +1717,7 @@ GameObject* WorldMap::createGameObject(uint32_t entry)
     return gameobject;
 }
 
-GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, float x, float y, float z, float o, float scale)
+GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector pos, float scale)
 {
     auto gameobject_info = sMySQLStore.getGameObjectProperties(entryID);
     if (gameobject_info == nullptr)
@@ -1732,7 +1732,7 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, float x, float 
 
     uint32_t mapid = getBaseMap()->getMapId();
     // Setup game object
-    go->CreateFromProto(entryID, mapid, x, y, z, o);
+    go->CreateFromProto(entryID, mapid, pos.x, pos.y, pos.z, pos.o);
     go->setScale(scale);
     go->InitAI();
     go->PushToWorld(this);
@@ -1758,8 +1758,8 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, float x, float 
     go_spawn->phase = go->GetPhase();
     go_spawn->overrides = go->GetOverrides();
 
-    uint32_t cx = getPosX(x);
-    uint32_t cy = getPosY(y);
+    uint32_t cx = getPosX(pos.x);
+    uint32_t cy = getPosY(pos.y);
 
     getBaseMap()->getSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(go_spawn);
     go->m_spawn = go_spawn;
@@ -1829,17 +1829,17 @@ Object* WorldMap::getObject(const uint64_t& guid)
 
     switch (wowGuid.getHigh())
     {
-    case HighGuid::GameObject:
-        return getGameObject(wowGuid.getGuidLowPart());
-    case HighGuid::Unit:
-    case HighGuid::Vehicle:
-        return getCreature(wowGuid.getGuidLowPart());
-    case HighGuid::DynamicObject:
-        return getDynamicObject(wowGuid.getGuidLowPart());
-    case HighGuid::Transporter:
-        return sTransportHandler.getTransporter(wowGuid.getGuidLowPart());
-    default:
-        return getUnit(guid);
+        case HighGuid::GameObject:
+            return getGameObject(wowGuid.getGuidLowPart());
+        case HighGuid::Unit:
+        case HighGuid::Vehicle:
+            return getCreature(wowGuid.getGuidLowPart());
+        case HighGuid::DynamicObject:
+            return getDynamicObject(wowGuid.getGuidLowPart());
+        case HighGuid::Transporter:
+            return sTransportHandler.getTransporter(wowGuid.getGuidLowPart());
+        default:
+            return getUnit(guid);
     }
 }
 
@@ -1992,24 +1992,24 @@ RespawnInfoMap& WorldMap::getRespawnMapForType(SpawnObjectType type)
 {
     switch (type)
     {
-    case SPAWN_TYPE_CREATURE:
-        return _creatureRespawnTimesBySpawnId;
-    case SPAWN_TYPE_GAMEOBJECT:
-        return _gameObjectRespawnTimesBySpawnId;
-    default:
-        break;
+        case SPAWN_TYPE_CREATURE:
+            return _creatureRespawnTimesBySpawnId;
+        case SPAWN_TYPE_GAMEOBJECT:
+            return _gameObjectRespawnTimesBySpawnId;
+        default:
+            break;
     }
 }
 RespawnInfoMap const& WorldMap::getRespawnMapForType(SpawnObjectType type) const
 {
     switch (type)
     {
-    case SPAWN_TYPE_CREATURE:
-        return _creatureRespawnTimesBySpawnId;
-    case SPAWN_TYPE_GAMEOBJECT:
-        return _gameObjectRespawnTimesBySpawnId;
-    default:
-        break;
+        case SPAWN_TYPE_CREATURE:
+            return _creatureRespawnTimesBySpawnId;
+        case SPAWN_TYPE_GAMEOBJECT:
+            return _gameObjectRespawnTimesBySpawnId;
+        default:
+            break;
     }
 }
 
@@ -2228,7 +2228,7 @@ void WorldMap::doRespawn(SpawnObjectType type, Object* object, uint32_t spawnId,
         }
         default:
         {
-            sLogger.failure("Invalid spawn type %u (spawnid %u) on map %u", static_cast<uint32>(type), spawnId, getBaseMap()->getMapId());
+            sLogger.failure("Invalid spawn type %u (spawnid %u) on map %u", static_cast<uint32_t>(type), spawnId, getBaseMap()->getMapId());
         }
     }
 }
@@ -2567,9 +2567,9 @@ uint32_t WorldMap::getZoneId(uint32_t phaseMask, LocationVector const& pos)
     return areaId;
 }
 
-void WorldMap::getZoneAndAreaId(uint32_t phaseMask, uint32_t& zoneid, uint32_t& areaid, float x, float y, float z)
+void WorldMap::getZoneAndAreaId(uint32_t phaseMask, uint32_t& zoneid, uint32_t& areaid, LocationVector const& pos)
 {
-    if (const auto* area = MapManagement::AreaManagement::AreaStorage::getExactArea(this, LocationVector(x, y, z), phaseMask))
+    if (const auto* area = MapManagement::AreaManagement::AreaStorage::getExactArea(this, pos, phaseMask))
     {
         areaid = area->id;
         if (area->zone)
@@ -2728,18 +2728,18 @@ bool WorldMap::getObjectHitPos(uint32_t phasemask, LocationVector pos1, Location
     return result;
 }
 
-float WorldMap::getWaterOrGroundLevel(uint32_t phasemask, float x, float y, float z, float* ground /*= nullptr*/, bool /*swim = false*/, float collisionHeight /*= 2.03128f*/)
+float WorldMap::getWaterOrGroundLevel(uint32_t phasemask, LocationVector const& pos, float* ground /*= nullptr*/, bool /*swim = false*/, float collisionHeight /*= 2.03128f*/)
 {
-    if (getTerrain()->getTile(x, y))
+    if (getTerrain()->getTile(pos.x, pos.y))
     {
         // we need ground level (including grid height version) for proper return water level in point
-        float ground_z = getHeight(phasemask, x, y, z + collisionHeight, true, 50.0f);
+        float ground_z = getHeight(phasemask, LocationVector(pos.x, pos.y, pos.z + collisionHeight), true, 50.0f);
         if (ground)
             *ground = ground_z;
 
         LiquidData liquid_status;
 
-        ZLiquidStatus res = getLiquidStatus(phasemask, LocationVector(x, y, ground_z), MAP_ALL_LIQUIDS, &liquid_status, collisionHeight);
+        ZLiquidStatus res = getLiquidStatus(phasemask, LocationVector(pos.x, pos.y, ground_z), MAP_ALL_LIQUIDS, &liquid_status, collisionHeight);
         switch (res)
         {
             case LIQUID_MAP_ABOVE_WATER:
@@ -2754,12 +2754,12 @@ float WorldMap::getWaterOrGroundLevel(uint32_t phasemask, float x, float y, floa
     return VMAP_INVALID_HEIGHT_VALUE;
 }
 
-float WorldMap::getHeight(float x, float y, float z, bool checkVMap /*= true*/, float maxSearchDist /*= 50.0f*/) const
+float WorldMap::getHeight(LocationVector const& pos, bool checkVMap /*= true*/, float maxSearchDist /*= 50.0f*/) const
 {
     // find raw .map surface under Z coordinates
     float mapHeight = VMAP_INVALID_HEIGHT_VALUE;
-    float gridHeight = getGridHeight(x, y);
-    if (G3D::fuzzyGe(z, gridHeight - GROUND_HEIGHT_TOLERANCE))
+    float gridHeight = getGridHeight(pos.x, pos.y);
+    if (G3D::fuzzyGe(pos.z, gridHeight - GROUND_HEIGHT_TOLERANCE))
         mapHeight = gridHeight;
 
     float vmapHeight = VMAP_INVALID_HEIGHT_VALUE;
@@ -2767,7 +2767,7 @@ float WorldMap::getHeight(float x, float y, float z, bool checkVMap /*= true*/, 
     {
         const auto vmgr = VMAP::VMapFactory::createOrGetVMapManager();
         if (vmgr->isHeightCalcEnabled())
-            vmapHeight = vmgr->getHeight(getBaseMap()->getMapId(), x, y, z, maxSearchDist);
+            vmapHeight = vmgr->getHeight(getBaseMap()->getMapId(), pos.x, pos.y, pos.z, maxSearchDist);
     }
 
     // mapHeight set for any above raw ground Z or <= INVALID_HEIGHT
@@ -2780,7 +2780,7 @@ float WorldMap::getHeight(float x, float y, float z, bool checkVMap /*= true*/, 
 
             // vmap height above map height
             // or if the distance of the vmap height is less the land height distance
-            if (vmapHeight > mapHeight || std::fabs(mapHeight - z) > std::fabs(vmapHeight - z))
+            if (vmapHeight > mapHeight || std::fabs(mapHeight - pos.z) > std::fabs(vmapHeight - pos.z))
                 return vmapHeight;
 
             return mapHeight;                           // better use .map surface height

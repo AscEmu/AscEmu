@@ -205,8 +205,7 @@ public:
     bool getAreaInfo(uint32_t phaseMask, LocationVector pos, uint32_t& mogpflags, int32_t& adtId, int32_t& rootId, int32_t& groupId);
     uint32_t getAreaId(uint32_t phaseMask, LocationVector const& pos);
     uint32_t getZoneId(uint32_t phaseMask, LocationVector const& pos);
-    void getZoneAndAreaId(uint32_t phaseMask, uint32_t& zoneid, uint32_t& areaid, float x, float y, float z);
-    void getZoneAndAreaId(uint32_t phaseMask, uint32_t& zoneid, uint32_t& areaid, LocationVector const& pos) { getZoneAndAreaId(phaseMask, zoneid, areaid, pos.getPositionX(), pos.getPositionY(), pos.getPositionZ()); }
+    void getZoneAndAreaId(uint32_t phaseMask, uint32_t& zoneid, uint32_t& areaid, LocationVector const& pos);
 
     // Water
     ZLiquidStatus getLiquidStatus(uint32_t phaseMask, LocationVector pos, uint8_t ReqLiquidType, LiquidData* data = nullptr, float collisionHeight = 2.03128f);
@@ -231,13 +230,11 @@ public:
 
     // Terrain
     TerrainHolder* getTerrain() const { return _terrain; }
-    float getWaterOrGroundLevel(uint32_t phasemask, float x, float y, float z, float* ground = nullptr, bool swim = false, float collisionHeight = 2.03128f);
-    float getHeight(float x, float y, float z, bool checkVMap = true, float maxSearchDist = 50.0f) const;
+    float getWaterOrGroundLevel(uint32_t phasemask, LocationVector const& pos, float* ground = nullptr, bool swim = false, float collisionHeight = 2.03128f);
     float getGridHeight(float x, float y) const;
-    float getHeight(LocationVector const& pos, bool vmap = true, float maxSearchDist = 50.0f) const { return getHeight(pos.getPositionX(), pos.getPositionY(), pos.getPositionZ(), vmap, maxSearchDist); }
+    float getHeight(LocationVector const& pos, bool vmap = true, float maxSearchDist = 50.0f) const;
     // phasemask seems to be invalid when loading into a map                                                                                                                                                // phase
-    float getHeight(uint32_t /*phasemask*/, float x, float y, float z, bool vmap = true, float maxSearchDist = 50.0f) const { return std::max<float>(getHeight(x, y, z, vmap, maxSearchDist), getGameObjectFloor(1, LocationVector(x, y, z), maxSearchDist)); }
-    float getHeight(uint32_t phasemask, LocationVector const& pos, bool vmap = true, float maxSearchDist = 50.0f) const { return getHeight(phasemask, pos.getPositionX(), pos.getPositionY(), pos.getPositionZ(), vmap, maxSearchDist); }
+    float getHeight(uint32_t phasemask, LocationVector const& pos, bool vmap = true, float maxSearchDist = 50.0f) const { return std::max<float>(getHeight(pos, vmap, maxSearchDist), getGameObjectFloor(phasemask, pos, maxSearchDist)); }
 
     // Instance
     uint32_t getInstanceId() const { return _instanceId; }
@@ -272,7 +269,7 @@ public:
     // GameObject
     uint32_t m_GOHighGuid = 0;
     GameObject* createGameObject(uint32_t entry);
-    GameObject* createAndSpawnGameObject(uint32_t entryID, float x, float y, float z, float o, float scale);
+    GameObject* createAndSpawnGameObject(uint32_t entryID, LocationVector pos, float scale);
 
     uint32_t generateGameobjectGuid() { return ++m_GOHighGuid; }
 

@@ -729,7 +729,7 @@ void AlteracValley::AVNode::Spawn()
             {
                 float x = Util::getRandomInt(10) * cos(Util::getRandomFloat(6.28f)) + m_template->m_flagLocation.x;
                 float y = Util::getRandomInt(10) * cos(Util::getRandomFloat(6.28f)) + m_template->m_flagLocation.y;
-                float z = m_bg->getWorldMap()->getHeight(x, y, m_template->m_flagLocation.z);
+                float z = m_bg->getWorldMap()->getHeight(LocationVector(x, y, m_template->m_flagLocation.z));
                 m_guards.push_back(m_bg->SpawnCreature(m_template->m_guardId[t], x, y, z, 0.0f));
             }
         }
