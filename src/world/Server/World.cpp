@@ -36,6 +36,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Movement/WaypointManager.h"
 #include "Packets/SmsgMessageChat.h"
+#include "Map/Management/MapMgr.hpp"
 
 #include "VMapFactory.h"
 #include "VMapManager2.h"

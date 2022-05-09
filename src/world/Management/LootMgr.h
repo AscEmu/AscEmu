@@ -6,8 +6,21 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Map/Maps/InstanceDefines.hpp"
-#include "Objects/Units/Unit.h"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
+#include "Server/EventableObject.h"
+#include "Storage/DBC/DBCStructures.hpp"
+#if VERSION_STRING >= Cata
+#include "Storage/DB2/DB2Structures.h"
+#endif
+
+#include <map>
+#include <vector>
+#include <set>
+
+struct ItemProperties;
+class Player;
+class Unit;
+class WorldMap;
 
 #define MAX_NR_LOOT_ITEMS 16
 #define MAX_NR_LOOT_QUESTITEMS 32
@@ -39,20 +52,6 @@ enum LootRollType
     ROLL_GREED                      = 2,                        // Player Picks Greed for an Item
     ROLL_DISENCHANT                 = 3                         // Player Picks Disenchant for an Item
 };
-
-#include "Server/EventableObject.h"
-#include "Storage/DBC/DBCStructures.hpp"
-#if VERSION_STRING >= Cata
-    #include "Storage/DB2/DB2Structures.h"
-#endif
-
-#include <map>
-#include <vector>
-#include <set>
-
-struct ItemProperties;
-class WorldMap;
-class Player;
 
 class LootRoll : public EventableObject
 {

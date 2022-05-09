@@ -11,6 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 
+#include <vector>
+
 class Aura;
 class Object;
 class Spell;
