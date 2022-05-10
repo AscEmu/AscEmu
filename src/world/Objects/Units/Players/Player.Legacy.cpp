@@ -46,10 +46,10 @@
 #include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
 #include "Map/Area/AreaStorage.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/InstanceMgr.hpp"
 #include "Management/Faction.h"
 #include "Spell/SpellAuras.h"
-#include "Map/WorldCreator.h"
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/SpellIsFlags.hpp"
 #include "Spell/Definitions/SpellMechanics.hpp"
@@ -89,7 +89,6 @@ using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;
 
 UpdateMask Player::m_visibleUpdateMask;
-
 
 void Player::CharChange_Looks(uint64 GUID, uint8 gender, uint8 skin, uint8 face, uint8 hairStyle, uint8 hairColor, uint8 facialHair)
 {
@@ -562,6 +561,35 @@ void Player::Update(unsigned long time_passed)
         if (m_drunkTimer > 10000)
             handleSobering();
     }
+    
+    // Instance Hourly Limit
+    if (!_instanceResetTimes.empty())
+    {
+        time_t now = Util::getTimeNow();
+        for (InstanceTimeMap::iterator itr = _instanceResetTimes.begin(); itr != _instanceResetTimes.end();)
+        {
+            if (itr->second < now)
+                _instanceResetTimes.erase(itr++);
+            else
+                ++itr;
+        }
+    }
+
+    // Instance Binds
+    if (hasPendingBind())
+    {
+        if (_pendingBindTimer <= time_passed)
+        {
+            // Player left the instance
+            if (_pendingBindId == static_cast<uint32_t>(GetInstanceID()))
+                bindToInstance();
+            setPendingBind(0, 0);
+        }
+        else
+        {
+            _pendingBindTimer -= time_passed;
+        }
+    }
 
     if (m_timeSyncTimer > 0)
     {
@@ -611,7 +639,7 @@ void Player::_EventAttack(bool offhand)
 
     Unit* pVictim = nullptr;
     if (getTargetGuid())
-        pVictim = GetMapMgr()->GetUnit(getTargetGuid());
+        pVictim = getWorldMap()->getUnit(getTargetGuid());
 
     //Can't find victim, stop attacking
     if (!pVictim)
@@ -701,7 +729,7 @@ void Player::_EventCharmAttack()
         return;
     }
 
-    Unit* pVictim = GetMapMgr()->GetUnit(getTargetGuid());
+    Unit* pVictim = getWorldMap()->getUnit(getTargetGuid());
     if (!pVictim)
     {
         sLogger.failure("WORLD: " I64FMT " doesn't exist.", getTargetGuid());
@@ -713,7 +741,7 @@ void Player::_EventCharmAttack()
     }
     else
     {
-        Unit* currentCharm = GetMapMgr()->GetUnit(getCharmGuid());
+        Unit* currentCharm = getWorldMap()->getUnit(getCharmGuid());
         if (!currentCharm)
             return;
 
@@ -1425,6 +1453,9 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     // Cooldown Items
     _SavePlayerCooldowns(buf);
+
+    // Instance Timed Lockout
+    saveInstanceTimeRestrictions();
 
     // Pets
     if (getClass() == HUNTER || getClass() == WARLOCK)
@@ -2153,6 +2184,18 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     m_mailBox.Load(results[PlayerQuery::Mailbox].result);
 
+    // Saved Instances
+    loadBoundInstances();
+    loadInstanceTimeRestrictions();
+
+    // Create Instance when needed
+    if (sMapMgr.findBaseMap(GetMapId()) && sMapMgr.findBaseMap(GetMapId())->instanceable())
+    {
+        // No Instance Found Lets Create it
+        if (!sMapMgr.findWorldMap(GetMapId(), GetInstanceID()))
+            sMapMgr.createInstanceForPlayer(GetMapId(), this, GetInstanceID());
+    }
+
     // SOCIAL
     loadFriendList();
     loadFriendedByOthersList();
@@ -2285,7 +2328,7 @@ void Player::AddToWorld()
     Object::AddToWorld();
 
     // Add failed.
-    if (m_mapMgr == nullptr)
+    if (m_WorldMap == nullptr)
     {
         // eject from instance
         m_beingPushed = false;
@@ -2294,14 +2337,14 @@ void Player::AddToWorld()
     }
 
     if (m_session)
-        m_session->SetInstance(m_mapMgr->GetInstanceID());
+        m_session->SetInstance(m_WorldMap->getInstanceId());
 
 #if VERSION_STRING > TBC
-    sendInstanceDifficultyPacket(m_mapMgr->iInstanceMode);
+    sendInstanceDifficultyPacket(m_WorldMap->getDifficulty());
 #endif
 }
 
-void Player::AddToWorld(MapMgr* pMapMgr)
+void Player::AddToWorld(WorldMap* pMapMgr)
 {
     // check transporter
     auto transport = this->GetTransport();
@@ -2322,7 +2365,7 @@ void Player::AddToWorld(MapMgr* pMapMgr)
     Object::AddToWorld(pMapMgr);
 
     // Add failed.
-    if (m_mapMgr == nullptr)
+    if (m_WorldMap == nullptr)
     {
         // eject from instance
         m_beingPushed = false;
@@ -2331,10 +2374,10 @@ void Player::AddToWorld(MapMgr* pMapMgr)
     }
 
     if (m_session)
-        m_session->SetInstance(m_mapMgr->GetInstanceID());
+        m_session->SetInstance(m_WorldMap->getInstanceId());
 
 #if VERSION_STRING > TBC
-    sendInstanceDifficultyPacket(m_mapMgr->iInstanceMode);
+    sendInstanceDifficultyPacket(m_WorldMap->getDifficulty());
 #endif
 }
 
@@ -2377,12 +2420,13 @@ void Player::OnPushToWorld()
 
 
     sHookInterface.OnEnterWorld(this);
-    CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnZoneChange)(this, m_zoneId, 0);
-    CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnPlayerEnter)(this);
+    CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnZoneChange)(this, m_zoneId, 0);
+    CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnPlayerEnter)(this);
 
-    if (m_teleportState == 1)        // First world enter
+    if (m_teleportState == 1 || m_enteringWorld)        // First world enter
         CompleteLoading();
 
+    m_enteringWorld = false;
     m_teleportState = 0;
 
     if (isOnTaxi())
@@ -2456,8 +2500,11 @@ void Player::OnPushToWorld()
     if (!getSession()->HasGMPermissions())
         getItemInterface()->CheckAreaItems();
 
-    if (m_mapMgr && m_mapMgr->m_battleground != nullptr && m_bg != m_mapMgr->m_battleground)
-        m_mapMgr->m_battleground->PortPlayer(this, true);
+    if (m_WorldMap->getBaseMap()->isBattlegroundOrArena())
+    {
+        if (m_WorldMap && reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground() != nullptr && m_bg != reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground())
+            reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground()->PortPlayer(this, true);
+    }
 
     if (m_bg != nullptr)
     {
@@ -3063,7 +3110,7 @@ void Player::onRemoveInRangeObject(Object* pObj)
 
     if (pObj->getGuid() == getCharmGuid())
     {
-        Unit* p = GetMapMgr()->GetUnit(getCharmGuid());
+        Unit* p = getWorldMap()->getUnit(getCharmGuid());
         if (!p)
             return;
 
@@ -3514,17 +3561,69 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
     //otherwise we may spawn the active pet while not being in world.
     dismount();
 
+    MySQLStructure::AreaTrigger const* areaTrigger = nullptr;
+    bool check = false;
+
     if (!sendpacket || force_new_world)
     {
-        uint32 status = sInstanceMgr.PreTeleport(mapid, this, instance_id);
-        if (status != INSTANCE_OK)
+        WorldMap* map = sMapMgr.createMap(mapid, this, instance_id);
+        if (!map)
         {
-            m_session->SendPacket(SmsgTransferAborted(mapid, status).serialise().get());
+            m_session->SendPacket(SmsgTransferAborted(mapid, INSTANCE_ABORT_NOT_FOUND).serialise().get());
             return;
         }
+        else if (map->getBaseMap()->isDungeon())
+        {
+            if (auto state = map->cannotEnter(this))
+            {
+                switch (state)
+                {
+                    case CANNOT_ENTER_DIFFICULTY_UNAVAILABLE:
+                        m_session->SendPacket(SmsgTransferAborted(mapid, INSTANCE_ABORT_HEROIC_MODE_NOT_AVAILABLE).serialise().get());
+                        break;
+                    case CANNOT_ENTER_INSTANCE_BIND_MISMATCH:
+                        sChatHandler.SystemMessage(m_session, "Another group is already inside this instance of the dungeon.");
+                        break;
+                    case CANNOT_ENTER_TOO_MANY_INSTANCES:
+                        m_session->SendPacket(SmsgTransferAborted(mapid, INSTANCE_ABORT_TOO_MANY).serialise().get());
+                        break;
+                    case CANNOT_ENTER_MAX_PLAYERS:
+                        m_session->SendPacket(SmsgTransferAborted(mapid, INSTANCE_ABORT_FULL).serialise().get());
+                        break;
+                    case CANNOT_ENTER_ENCOUNTER:
+                        m_session->SendPacket(SmsgTransferAborted(mapid, INSTANCE_ABORT_ENCOUNTER).serialise().get());
+                        break;
+                    default:
+                        break;
+                }
+                areaTrigger = sMySQLStore.getMapGoBackTrigger(mapid);
+                check = true;
+            }
+            else if (instance_id && !sInstanceMgr.getInstanceSave(instance_id)) // ... and instance is reseted then look for entrance.
+            {
+                areaTrigger = sMySQLStore.getMapEntranceTrigger(mapid);
+                check = true;
+            }
+        }
 
-        if (instance_id)
-            m_instanceId = instance_id;
+        // Special Cases
+        if (check)
+        {
+            if (areaTrigger)
+            {
+                // our Instance got Reset Port us to the Entrance
+                sendTeleportAckPacket(LocationVector(areaTrigger->x, areaTrigger->y, areaTrigger->z, areaTrigger->o));
+                if (mapid != areaTrigger->mapId)
+                {
+                    mapid = areaTrigger->mapId;
+                    map = sMapMgr.createMap(mapid, this);
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
 
         if (IsInWorld())
             RemoveFromWorld();
@@ -3532,6 +3631,7 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
         m_session->SendPacket(SmsgNewWorld(mapid, v).serialise().get());
 
         SetMapId(mapid);
+        SetInstanceID(map->getInstanceId());
     }
     else
     {
@@ -3557,7 +3657,7 @@ void Player::AddItemsToWorld()
     {
         if (const auto pItem = getItemInterface()->GetInventoryItem(i))
         {
-            pItem->PushToWorld(m_mapMgr);
+            pItem->PushToWorld(m_WorldMap);
 
             if (i < INVENTORY_SLOT_BAG_END)      // only equipment slots get mods.
                 applyItemMods(pItem, i, true, false, true);
@@ -3571,7 +3671,7 @@ void Player::AddItemsToWorld()
                 {
                     Item* item = (static_cast< Container* >(pItem))->GetItem(static_cast<int16>(e));
                     if (item)
-                        item->PushToWorld(m_mapMgr);
+                        item->PushToWorld(m_WorldMap);
                 }
             }
         }
@@ -3586,7 +3686,7 @@ void Player::AddItemsToWorld()
     {
         if (Item* pItem = getItemInterface()->GetInventoryItem(i))
         {
-            pItem->PushToWorld(m_mapMgr);
+            pItem->PushToWorld(m_WorldMap);
 
             if (i < INVENTORY_SLOT_BAG_END)      // only equipment slots get mods.
                 applyItemMods(pItem, i, true, false, true);
@@ -3600,7 +3700,7 @@ void Player::AddItemsToWorld()
                 {
                     Item* item = (static_cast< Container* >(pItem))->GetItem(static_cast<int16>(e));
                     if (item)
-                        item->PushToWorld(m_mapMgr);
+                        item->PushToWorld(m_WorldMap);
                 }
             }
         }
@@ -3829,8 +3929,6 @@ void Player::CompleteLoading()
         sendRaidGroupOnly(0xFFFFFFFF, 0);
         m_sendOnlyRaidgroup = false;
     }
-
-    sInstanceMgr.BuildSavedInstancesForPlayer(this);
 
 #if VERSION_STRING > TBC
     // add glyphs
@@ -5160,18 +5258,16 @@ void Player::CastSpellArea()
     if (!IsInWorld())
         return;
 
-    if (m_position.x > _maxX || m_position.x < _minX || m_position.y > _maxY || m_position.y < _minY)
+    if (m_position.x > Map::Terrain::_maxX || m_position.x < Map::Terrain::_minX || m_position.y > Map::Terrain::_maxY || m_position.y < Map::Terrain::_minY)
         return;
 
-    if (GetMapMgr()->GetCellByCoords(GetPositionX(), GetPositionY()) == nullptr)
+    if (getWorldMap()->getCellByCoords(GetPositionX(), GetPositionY()) == nullptr)
         return;
 
-    auto at = GetMapMgr()->GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
-    if (at == nullptr)
-        return;
+    uint32_t AreaId = 0;
+    uint32_t ZoneId = 0;
 
-    uint32 AreaId = at->id;
-    uint32 ZoneId = at->zone;
+    getWorldMap()->getZoneAndAreaId(GetPhase(), ZoneId, AreaId, GetPosition());
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     // Cheks for Casting a Spell in Specified Area / Zone :D                                          //

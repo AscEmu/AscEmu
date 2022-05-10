@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 class RazorfenDownsInstanceScript : public InstanceScript
 {
 public:
-    explicit RazorfenDownsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new RazorfenDownsInstanceScript(pMapMgr); }
+    explicit RazorfenDownsInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr) {}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new RazorfenDownsInstanceScript(pMapMgr); }
 };
 
 void SetupRazorfenDowns(ScriptMgr* mgr)

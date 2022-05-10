@@ -31,9 +31,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
-#include "Map/InstanceDefines.hpp"
-#include "Map/MapMgr.h"
-#include "Map/MapScriptInterface.h"
+#include "Map/Maps/InstanceDefines.hpp"
+#include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/MapScriptInterface.h"
 #include "Objects/DynamicObject.h"
 #include "Management/Faction.h"
 #include "Objects/GameObject.h"
@@ -224,6 +224,8 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
         // First autorepeat casts are actually never casted, only set as current spell. Player::updateAutoRepeatSpell handles the shooting.
         if (m_castTime == 0 && !getSpellInfo()->isChanneled() && !getSpellInfo()->isRangedAutoRepeat())
             castMe(false);
+        else
+            m_spellState = SPELL_STATE_CASTING;
     }
     else
     {
@@ -238,6 +240,8 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
 
 void Spell::castMe(const bool doReCheck)
 {
+    m_spellState = SPELL_STATE_CASTED;
+
     if (DuelSpellNoMoreValid())
     {
         sendCastResult(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_INTERRUPTED);
@@ -281,8 +285,6 @@ void Spell::castMe(const bool doReCheck)
         }
     }
 
-    m_isCasting = true;
-
     // Remove stealth if spell is an instant cast
     if (!m_triggeredSpell && m_castTime == 0 && p_caster != nullptr)
     {
@@ -300,7 +302,7 @@ void Spell::castMe(const bool doReCheck)
         if (requiredTargetMask & SPELL_TARGET_AREA_CURTARGET)
         {
             // If target type is area around target, set destination correctly
-            const auto targetObj = m_caster->GetMapMgrObject(m_targets.getUnitTarget());
+            const auto targetObj = m_caster->getWorldMapObject(m_targets.getUnitTarget());
             if (targetObj != nullptr)
             {
                 m_targets.setTargetMask(TARGET_FLAG_DEST_LOCATION);
@@ -321,7 +323,7 @@ void Spell::castMe(const bool doReCheck)
     {
         // Spell was redirected
         // Grounding Totem gets destroyed after redirecting 1 spell
-        const auto magnetTarget = m_caster->GetMapMgrUnit(m_magnetTarget);
+        const auto magnetTarget = m_caster->getWorldMapUnit(m_magnetTarget);
         if (magnetTarget != nullptr && magnetTarget->isCreature())
         {
             const auto creatureMagnet = static_cast<Creature*>(magnetTarget);
@@ -385,7 +387,6 @@ void Spell::castMe(const bool doReCheck)
     // Spell is casted on next melee spell as a triggered spell
     if (getSpellInfo()->isOnNextMeleeAttack() && !m_triggeredSpell)
     {
-        m_isCasting = false;
         if (u_caster != nullptr)
         {
             if (m_triggeredByAura == nullptr && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NOT_BREAK_STEALTH))
@@ -525,7 +526,7 @@ void Spell::castMe(const bool doReCheck)
     {
         for (auto itr = m_pendingAuras.begin(); itr != m_pendingAuras.end();)
         {
-            const auto pendingAur = *itr;
+            const auto& pendingAur = *itr;
             // Handle only instant auras here
             if (pendingAur.second.travelTime > 0)
             {
@@ -597,8 +598,6 @@ void Spell::castMe(const bool doReCheck)
         m_spellState = SPELL_STATE_TRAVELING;
         m_caster->addTravelingSpell(this);
     }
-
-    m_isCasting = false;
 }
 
 void Spell::handleHittedTarget(const uint64_t targetGuid, uint8_t effIndex)
@@ -903,7 +902,7 @@ void Spell::finish(bool successful)
         {
             for (const auto& uniqueTarget : uniqueHittedTargets)
             {
-                auto* const targetUnit = getUnitCaster()->GetMapMgrUnit(uniqueTarget.first);
+                auto* const targetUnit = getUnitCaster()->getWorldMapUnit(uniqueTarget.first);
                 if (targetUnit == nullptr)
                     continue;
 
@@ -956,15 +955,15 @@ void Spell::finish(bool successful)
         if (getSpellInfo()->getAttributes() & ATTRIBUTES_STOP_ATTACK && getPlayerCaster()->IsAttacking())
         {
             getPlayerCaster()->EventAttackStop();
-            getPlayerCaster()->smsg_AttackStop(getPlayerCaster()->GetMapMgrUnit(getPlayerCaster()->getTargetGuid()));
+            getPlayerCaster()->smsg_AttackStop(getPlayerCaster()->getWorldMapUnit(getPlayerCaster()->getTargetGuid()));
             getPlayerCaster()->sendPacket(SmsgCancelCombat().serialise().get());
         }
 
         if (m_Delayed)
         {
-            auto target = getPlayerCaster()->GetMapMgrUnit(getPlayerCaster()->getChannelObjectGuid());
+            auto target = getPlayerCaster()->getWorldMapUnit(getPlayerCaster()->getChannelObjectGuid());
             if (target == nullptr)
-                target = getPlayerCaster()->GetMapMgrUnit(getPlayerCaster()->getTargetGuid());
+                target = getPlayerCaster()->getWorldMapUnit(getPlayerCaster()->getTargetGuid());
 
             if (target != nullptr)
                 target->RemoveAura(getSpellInfo()->getId(), getCaster()->getGuid());
@@ -994,7 +993,7 @@ void Spell::finish(bool successful)
             if (m_doneTargetProcs.find(uniqueTarget.first) != m_doneTargetProcs.end())
                 continue;
 
-            targetUnit = getCaster()->GetMapMgrUnit(uniqueTarget.first);
+            targetUnit = getCaster()->getWorldMapUnit(uniqueTarget.first);
             if (targetUnit == nullptr)
                 continue;
 
@@ -1015,7 +1014,7 @@ void Spell::finish(bool successful)
             if (uniqueTarget.first == m_caster->getGuid())
                 casterProcFlags &= ~(PROC_ON_DONE_MELEE_SPELL_HIT | PROC_ON_DONE_RANGED_SPELL_HIT);
 
-            targetUnit = getCaster()->GetMapMgrUnit(uniqueTarget.first);
+            targetUnit = getCaster()->getWorldMapUnit(uniqueTarget.first);
             if (targetUnit == nullptr)
                 continue;
 
@@ -1024,7 +1023,7 @@ void Spell::finish(bool successful)
 
         // Use victim only if there was one target
         if (uniqueHittedTargets.size() == 1)
-            targetUnit = getCaster()->GetMapMgrUnit(uniqueHittedTargets.front().first);
+            targetUnit = getCaster()->getWorldMapUnit(uniqueHittedTargets.front().first);
         else
             targetUnit = nullptr;
 
@@ -1054,7 +1053,7 @@ void Spell::finish(bool successful)
 #ifdef FT_ACHIEVEMENTS
                 else if (wowGuid.isPlayer())
                 {
-                    auto* const targetPlayer = getUnitCaster()->GetMapMgrPlayer(target.first);
+                    auto* const targetPlayer = getUnitCaster()->getWorldMapPlayer(target.first);
                     if (targetPlayer != nullptr)
                     {
                         targetPlayer->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, getSpellInfo()->getId(), 0, 0, getCaster());
@@ -1076,7 +1075,7 @@ void Spell::finish(bool successful)
                 // Set target for spell cast achievement only if spell had one target
                 Object* spellTarget = nullptr;
                 if (uniqueHittedTargets.size() == 1)
-                    spellTarget = getPlayerCaster()->GetMapMgrObject(uniqueHittedTargets.front().first);
+                    spellTarget = getPlayerCaster()->getWorldMapObject(uniqueHittedTargets.front().first);
 
                 getPlayerCaster()->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2, getSpellInfo()->getId(), 0, 0, spellTarget);
 #endif
@@ -1091,7 +1090,7 @@ void Spell::finish(bool successful)
 void Spell::update(unsigned long timePassed)
 {
     // Check for moving while casting or channeling
-    if (m_spellState == SPELL_STATE_PREPARING || m_spellState == SPELL_STATE_CHANNELING)
+    if (m_spellState == SPELL_STATE_CASTING || m_spellState == SPELL_STATE_CHANNELING)
     {
         // but allow slight error
         if (u_caster != nullptr &&
@@ -1124,7 +1123,7 @@ void Spell::update(unsigned long timePassed)
 
     switch (m_spellState)
     {
-        case SPELL_STATE_PREPARING:
+        case SPELL_STATE_CASTING:
         {
             m_timer -= timePassed;
 
@@ -1212,7 +1211,7 @@ void Spell::cancel()
 {
     switch (getState())
     {
-        case SPELL_STATE_PREPARING:
+        case SPELL_STATE_CASTING:
         {
             if (getPlayerCaster() != nullptr)
                 getPlayerCaster()->clearGlobalCooldown();
@@ -1230,9 +1229,9 @@ void Spell::cancel()
             {
                 if (m_timer > 0 || m_Delayed)
                 {
-                    auto channelTarget = getUnitCaster()->GetMapMgrUnit(getUnitCaster()->getChannelObjectGuid());
+                    auto channelTarget = getUnitCaster()->getWorldMapUnit(getUnitCaster()->getChannelObjectGuid());
                     if (channelTarget == nullptr && getPlayerCaster() != nullptr)
-                        channelTarget = getPlayerCaster()->GetMapMgrUnit(getPlayerCaster()->getTargetGuid());
+                        channelTarget = getPlayerCaster()->getWorldMapUnit(getPlayerCaster()->getTargetGuid());
 
                     if (channelTarget != nullptr)
                         channelTarget->RemoveAura(getSpellInfo()->getId(), getCaster()->getGuid());
@@ -1240,7 +1239,7 @@ void Spell::cancel()
                     // Remove dynamic objects (area aura effects from Blizzard, Rain of Fire etc)
                     if (m_AreaAura)
                     {
-                        const auto dynObj = getUnitCaster()->GetMapMgrDynamicObject(getUnitCaster()->getChannelObjectGuid());
+                        const auto dynObj = getUnitCaster()->getWorldMapDynamicObject(getUnitCaster()->getChannelObjectGuid());
                         if (dynObj != nullptr)
                             dynObj->Remove();
                     }
@@ -1262,6 +1261,8 @@ void Spell::cancel()
                 getUnitCaster()->RemoveAura(getSpellInfo()->getId(), getCaster()->getGuid());
             }
         } break;
+        case SPELL_STATE_CASTED:
+            break;
         default:
         {
             if (getState() == SPELL_STATE_NULL)
@@ -1277,7 +1278,7 @@ void Spell::cancel()
 
     // If this is true, the spell is somewhere in ::castMe() function
     // In that case, ::finish() will be called when the spell has hitted targets
-    if (!m_isCasting)
+    if (m_spellState != SPELL_STATE_CASTED)
         finish(false);
 }
 
@@ -1359,7 +1360,7 @@ int32_t Spell::calculateEffect(uint8_t effIndex)
     else if (getItemCaster() != nullptr && GetUnitTarget() != nullptr)
     {
         // Apply spell modifiers from the item owner
-        const auto itemCreator = GetUnitTarget()->GetMapMgrUnit(getItemCaster()->getCreatorGuid());
+        const auto itemCreator = GetUnitTarget()->getWorldMapUnit(getItemCaster()->getCreatorGuid());
         if (itemCreator != nullptr)
         {
             itemCreator->applySpellModifiers(SPELLMOD_ALL_EFFECTS, &value, getSpellInfo(), this);
@@ -1579,14 +1580,14 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
     // Check explicit gameobject target
     if (m_targets.getGameObjectTarget() != 0)
     {
-        const auto objTarget = m_caster->GetMapMgrGameObject(m_targets.getGameObjectTarget());
+        const auto objTarget = m_caster->getWorldMapGameObject(m_targets.getGameObjectTarget());
         const auto targetCheck = checkExplicitTarget(objTarget, explicitTargetMask);
         if (targetCheck != SPELL_CAST_SUCCESS)
             return targetCheck;
     }
 
     // Unit target
-    const auto target = m_caster->GetMapMgrUnit(m_targets.getUnitTarget());
+    const auto target = m_caster->getWorldMapUnit(m_targets.getUnitTarget());
     if (target != nullptr)
     {
         // Check explicit unit target
@@ -1692,12 +1693,12 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 // Check if target can be tamed
                 if (getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_TAME_BEAST)
                 {
-                    auto targetUnit = p_caster->GetMapMgrUnit(m_targets.getUnitTarget());
+                    auto targetUnit = p_caster->getWorldMapUnit(m_targets.getUnitTarget());
                     // If spell is triggered, target may need to be picked manually
                     if (targetUnit == nullptr)
                     {
                         if (p_caster->getTargetGuid() != 0)
-                            targetUnit = p_caster->GetMapMgrUnit(p_caster->getTargetGuid());
+                            targetUnit = p_caster->getWorldMapUnit(p_caster->getTargetGuid());
                     }
 
                     if (targetUnit == nullptr)
@@ -1825,7 +1826,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             if (!m_triggeredSpell && worldConfig.terrainCollision.isCollisionEnabled)
             {
                 if (m_caster->IsInWorld() && !(getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_IGNORE_LINE_OF_SIGHT) && !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SKIP_LINE_OF_SIGHT_CHECK) &&
-                    (m_caster->GetMapId() != target->GetMapId() || !m_caster->GetMapMgr()->isInLineOfSight(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ())))
+                    (m_caster->GetMapId() != target->GetMapId() || !m_caster->IsWithinLOSInMap(target)))
                     return SPELL_FAILED_LINE_OF_SIGHT;
             }
 
@@ -1900,7 +1901,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (!m_triggeredSpell && worldConfig.terrainCollision.isCollisionEnabled)
                 {
                     if (m_caster->IsInWorld() && !(getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_IGNORE_LINE_OF_SIGHT) && !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SKIP_LINE_OF_SIGHT_CHECK) &&
-                        (m_caster->GetMapId() != pet->GetMapId() || !m_caster->GetMapMgr()->isInLineOfSight(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), pet->GetPositionX(), pet->GetPositionY(), pet->GetPositionZ())))
+                        (m_caster->GetMapId() != pet->GetMapId() || !m_caster->IsWithinLOSInMap(pet)))
                         return SPELL_FAILED_LINE_OF_SIGHT;
                 }
             }
@@ -1914,7 +1915,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
     if (m_targets.hasDestination() && !m_triggeredSpell && worldConfig.terrainCollision.isCollisionEnabled)
     {
         if (m_caster->IsInWorld() && !(getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_IGNORE_LINE_OF_SIGHT) && !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SKIP_LINE_OF_SIGHT_CHECK) &&
-            !m_caster->GetMapMgr()->isInLineOfSight(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_targets.getDestination().x, m_targets.getDestination().y, m_targets.getDestination().z))
+            !m_caster->IsWithinLOS(m_targets.getDestination()))
             return SPELL_FAILED_LINE_OF_SIGHT;
     }
 
@@ -1925,7 +1926,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         {
             auto areaEntry = p_caster->GetArea();
             if (areaEntry == nullptr)
-                areaEntry = sAreaStore.LookupEntry(p_caster->GetZoneId());
+                areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(p_caster->GetZoneId());
             if (areaEntry == nullptr)
                 return SPELL_FAILED_NOT_HERE;
 
@@ -1994,7 +1995,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         // Check if spell can be casted in heroic dungeons or in raids
         if (getSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_NOT_IN_RAIDS_OR_HEROIC_DUNGEONS)
         {
-            if (p_caster->IsInWorld() && p_caster->GetMapMgr()->GetMapInfo() != nullptr && (p_caster->GetMapMgr()->GetMapInfo()->isRaid() || p_caster->GetMapMgr()->iInstanceMode == InstanceDifficulty::DUNGEON_HEROIC))
+            if (p_caster->IsInWorld() && p_caster->getWorldMap()->getBaseMap()->getMapInfo() != nullptr && (p_caster->getWorldMap()->getBaseMap()->getMapInfo()->isRaid() || p_caster->getWorldMap()->getDifficulty() == InstanceDifficulty::DUNGEON_HEROIC))
             {
 #if VERSION_STRING < WotLK
                 return SPELL_FAILED_NOT_HERE;
@@ -2064,7 +2065,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 }
                 else
                 {
-                    distance = GetMaxRange(sSpellRangeStore.LookupEntry(getSpellInfo()->getRangeIndex()));
+                    distance = getSpellInfo()->getMaxRange(false, p_caster, this);
                     distance *= distance;
                 }
 
@@ -2107,7 +2108,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             {
                 // Spell requires an implicit target
                 // Find closest creature with the required entry id
-                const auto creatureTarget = m_caster->IsInWorld() ? m_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), entryId) : nullptr;
+                const auto creatureTarget = m_caster->IsInWorld() ? m_caster->getWorldMap()->getInterface()->getCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), entryId) : nullptr;
                 if (creatureTarget != nullptr)
                 {
                     // Check that the creature is within spell's range
@@ -2127,14 +2128,14 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (p_caster != nullptr)
                 {
                     // If caster is player, use player's selected target
-                    creatureTarget = p_caster->GetMapMgrUnit(p_caster->getTargetGuid());
+                    creatureTarget = p_caster->getWorldMapUnit(p_caster->getTargetGuid());
                 }
                 else if (u_caster != nullptr)
                 {
                     // If caster is creature, use the one set in castSpell function
-                    creatureTarget = u_caster->GetMapMgrUnit(m_targets.getUnitTarget());
+                    creatureTarget = u_caster->getWorldMapUnit(m_targets.getUnitTarget());
                     if (creatureTarget == nullptr)
-                        creatureTarget = u_caster->GetMapMgrUnit(u_caster->getTargetGuid());
+                        creatureTarget = u_caster->getWorldMapUnit(u_caster->getTargetGuid());
                 }
 
                 if (creatureTarget == nullptr)
@@ -2161,7 +2162,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             {
                 // Spell requires an implicit target
                 // Find closest gameobject with the required entry id
-                const auto gobTarget = m_caster->IsInWorld() ? m_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), entryId) : nullptr;
+                const auto gobTarget = m_caster->IsInWorld() ? m_caster->getWorldMap()->getInterface()->getGameObjectNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), entryId) : nullptr;
                 if (gobTarget != nullptr)
                 {
                     // Check that the gameobject is within spell's range
@@ -2175,7 +2176,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             else
             {
                 // Spell requires an explicit target
-                const auto objectTarget = m_caster->GetMapMgrObject(m_targets.getGameObjectTarget());
+                const auto objectTarget = m_caster->getWorldMapObject(m_targets.getGameObjectTarget());
                 if (objectTarget == nullptr)
                     continue;
 
@@ -2267,7 +2268,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 uint32_t lockId = 0;
                 if (m_targets.getGameObjectTarget() != 0)
                 {
-                    const auto objectTarget = p_caster->GetMapMgrGameObject(m_targets.getGameObjectTarget());
+                    const auto objectTarget = p_caster->getWorldMapGameObject(m_targets.getGameObjectTarget());
                     if (objectTarget != nullptr &&
                         objectTarget->getGoType() != GAMEOBJECT_TYPE_QUESTGIVER &&
                         objectTarget->getGoType() != GAMEOBJECT_TYPE_AREADAMAGE &&
@@ -2462,7 +2463,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (getSpellInfo()->getEffectImplicitTargetA(i) != EFF_TARGET_PET)
                     break;
             }
-            // no break here
+            [[fallthrough]];
             case SPELL_EFFECT_LEARN_PET_SPELL:
             {
                 if (p_caster == nullptr)
@@ -2548,10 +2549,10 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_CANT_DUEL_WHILE_INVISIBLE;
 
                 // Check if caster is in dungeon or raid
-                if (p_caster->IsInWorld() && p_caster->GetMapMgr()->GetMapInfo() != nullptr && !p_caster->GetMapMgr()->GetMapInfo()->isNonInstanceMap())
+                if (p_caster->IsInWorld() && p_caster->getWorldMap()->getBaseMap()->getMapInfo() != nullptr && !p_caster->getWorldMap()->getBaseMap()->getMapInfo()->isNonInstanceMap())
                     return SPELL_FAILED_NO_DUELING;
 
-                const auto targetPlayer = p_caster->GetMapMgrPlayer(m_targets.getUnitTarget());
+                const auto targetPlayer = p_caster->getWorldMapPlayer(m_targets.getUnitTarget());
                 if (targetPlayer != nullptr && targetPlayer->GetTransport() != p_caster->GetTransport())
                     return SPELL_FAILED_NOT_ON_TRANSPORT;
 
@@ -2569,13 +2570,13 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_TARGET_NOT_IN_RAID;
 
                 // Check if caster is in an instance map
-                if (p_caster->IsInWorld() && p_caster->GetMapMgr()->GetMapInfo() != nullptr && !p_caster->GetMapMgr()->GetMapInfo()->isNonInstanceMap())
+                if (p_caster->IsInWorld() && p_caster->getWorldMap()->getBaseMap()->getMapInfo() != nullptr && !p_caster->getWorldMap()->getBaseMap()->getMapInfo()->isNonInstanceMap())
                 {
                     if (!p_caster->IsInMap(targetPlayer))
                         return SPELL_FAILED_TARGET_NOT_IN_INSTANCE;
 
-                    const auto mapInfo = p_caster->GetMapMgr()->GetMapInfo();
-                    if (p_caster->GetMapMgr()->iInstanceMode == InstanceDifficulty::DUNGEON_HEROIC)
+                    const auto mapInfo = p_caster->getWorldMap()->getBaseMap()->getMapInfo();
+                    if (p_caster->getWorldMap()->getDifficulty() == InstanceDifficulty::DUNGEON_HEROIC)
                     {
                         if (mapInfo->minlevel_heroic > targetPlayer->getLevel())
                             return SPELL_FAILED_LOWLEVEL;
@@ -2626,7 +2627,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 // Check if creature is looted
                 if (creatureTarget->loot.isLooted() && creatureTarget->isTagged())
                 {
-                    const auto taggerPlayer = creatureTarget->GetMapMgrPlayer(creatureTarget->getTaggerGuid());
+                    const auto taggerPlayer = creatureTarget->getWorldMapPlayer(creatureTarget->getTaggerGuid());
                     if (taggerPlayer != nullptr && creatureTarget->HasLootForPlayer(taggerPlayer))
                         return SPELL_FAILED_TARGET_NOT_LOOTED;
                 }
@@ -3107,7 +3108,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
         // Check health and power for consumables (potions, healthstones, mana items etc)
         if (itemProperties->Class == ITEM_CLASS_CONSUMABLE)
         {
-            const auto targetUnit = p_caster->GetMapMgrUnit(m_targets.getUnitTarget());
+            const auto targetUnit = p_caster->getWorldMapUnit(m_targets.getUnitTarget());
             if (targetUnit != nullptr)
             {
                 SpellCastResult errorMessage = SPELL_CAST_SUCCESS;
@@ -3546,7 +3547,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                         return SPELL_FAILED_DONT_REPORT;
                     }
                 }
-            // no break here
+            [[fallthrough]];
             case SPELL_EFFECT_ADD_SOCKET:
             {
                 if (m_targets.getItemTarget() == 0)
@@ -4049,7 +4050,7 @@ SpellCastResult Spell::checkRange(const bool secondCheck)
     if (!secondCheck && getSpellInfo()->isOnNextMeleeAttack())
         return SPELL_CAST_SUCCESS;
 
-    auto targetUnit = m_caster->GetMapMgrUnit(m_targets.getUnitTarget());
+    auto targetUnit = m_caster->getWorldMapUnit(m_targets.getUnitTarget());
 
     // Self cast spells don't need range check
     if (getSpellInfo()->getRangeIndex() == 1 || targetUnit == m_caster)
@@ -4333,7 +4334,7 @@ void Spell::sendChannelUpdate(const uint32_t time, const uint32_t diff/* = 0*/)
             {
                 const auto casterGuid = u_caster->getGuid();
                 const auto aur = u_caster->getAuraWithIdForGuid(getSpellInfo()->getId(), casterGuid);
-                const auto target = u_caster->GetMapMgrUnit(channelGuid);
+                const auto target = u_caster->getWorldMapUnit(channelGuid);
 
                 if (aur != nullptr)
                     aur->update(diff, true);
@@ -4346,7 +4347,7 @@ void Spell::sendChannelUpdate(const uint32_t time, const uint32_t diff/* = 0*/)
                 }
             }
 
-            const auto dynamicObject = u_caster->GetMapMgrDynamicObject(WoWGuid::getGuidLowPartFromUInt64(channelGuid));
+            const auto dynamicObject = u_caster->getWorldMapDynamicObject(WoWGuid::getGuidLowPartFromUInt64(channelGuid));
             if (dynamicObject != nullptr)
                 dynamicObject->Remove();
 
@@ -4356,7 +4357,7 @@ void Spell::sendChannelUpdate(const uint32_t time, const uint32_t diff/* = 0*/)
             // Remove temporary summons which were created by this channeled spell (i.e Eye of Kilrogg)
             if (p_caster != nullptr && p_caster->getCharmGuid() != 0 && getSpellInfo()->hasEffect(SPELL_EFFECT_SUMMON))
             {
-                const auto charmedUnit = p_caster->GetMapMgrUnit(p_caster->getCharmGuid());
+                const auto charmedUnit = p_caster->getWorldMapUnit(p_caster->getCharmGuid());
                 if (charmedUnit != nullptr && charmedUnit->getCreatedBySpellId() == getSpellInfo()->getId())
                     p_caster->UnPossess();
             }
@@ -5018,14 +5019,14 @@ void Spell::sendChannelStart(const uint32_t duration)
         // brief: the channel target is properly set in SpellEffects.cpp for persistent dynamic objects
         for (const auto& targetGuid : uniqueHittedTargets)
         {
-            const auto targetUnit = m_caster->GetMapMgrUnit(targetGuid.first);
+            const auto targetUnit = m_caster->getWorldMapUnit(targetGuid.first);
             if (targetUnit != nullptr)
             {
                 channelTarget = targetUnit;
                 break;
             }
 
-            const auto objTarget = m_caster->GetMapMgrGameObject(targetGuid.first);
+            const auto objTarget = m_caster->getWorldMapGameObject(targetGuid.first);
             if (objTarget != nullptr)
             {
                 channelTarget = objTarget;
@@ -5447,7 +5448,7 @@ void Spell::takeUsedSpellModifiers()
 
 void Spell::setForceCritOnTarget(Unit const* target)
 {
-    if (target == nullptr || target->GetMapMgr() == nullptr)
+    if (target == nullptr || target->getWorldMap() == nullptr)
         return;
 
     m_critTargets.push_back(target->getGuid());
@@ -5623,7 +5624,7 @@ void Spell::_updateCasterPointers(Object* caster)
     {
         case TYPEID_PLAYER:
             p_caster = dynamic_cast<Player*>(caster);
-        // no break here
+        [[fallthrough]];
         case TYPEID_UNIT:
             u_caster = dynamic_cast<Unit*>(caster);
             break;
@@ -5693,13 +5694,13 @@ void Spell::_updateTargetPointers(const uint64_t targetGuid)
             {
                 case HighGuid::Unit:
                 case HighGuid::Vehicle:
-                    unitTarget = getCaster()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+                    unitTarget = getCaster()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
                     break;
                 case HighGuid::Pet:
-                    unitTarget = getCaster()->GetMapMgr()->GetPet(wowGuid.getGuidLowPart());
+                    unitTarget = getCaster()->getWorldMap()->getPet(wowGuid.getGuidLowPart());
                     break;
                 case HighGuid::Player:
-                    unitTarget = getCaster()->GetMapMgr()->GetPlayer(wowGuid.getGuidLowPart());
+                    unitTarget = getCaster()->getWorldMap()->getPlayer(wowGuid.getGuidLowPart());
                     playerTarget = dynamic_cast<Player*>(unitTarget);
                     break;
                 case HighGuid::Item:
@@ -5707,7 +5708,7 @@ void Spell::_updateTargetPointers(const uint64_t targetGuid)
                         itemTarget = getPlayerCaster()->getItemInterface()->GetItemByGUID(targetGuid);
                     break;
                 case HighGuid::GameObject:
-                    gameObjTarget = getCaster()->GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
+                    gameObjTarget = getCaster()->getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
                     break;
                 case HighGuid::Corpse:
                     corpseTarget = sObjectMgr.GetCorpse(wowGuid.getGuidLowPart());
@@ -5732,7 +5733,7 @@ void Spell::_loadInitialTargetPointers(bool reset/* = false*/)
         return;
 
     if (m_targets.getGameObjectTarget() != 0)
-        gameObjTarget = m_caster->GetMapMgrGameObject(m_targets.getGameObjectTarget());
+        gameObjTarget = m_caster->getWorldMapGameObject(m_targets.getGameObjectTarget());
 
     if (m_targets.getItemTarget() != 0 && getPlayerCaster() != nullptr)
     {
@@ -5750,7 +5751,7 @@ void Spell::_loadInitialTargetPointers(bool reset/* = false*/)
 
     if (m_targets.getUnitTarget() != 0)
     {
-        unitTarget = m_caster->GetMapMgrUnit(m_targets.getUnitTarget());
+        unitTarget = m_caster->getWorldMapUnit(m_targets.getUnitTarget());
 
         if (unitTarget != nullptr && unitTarget->isPlayer())
             playerTarget = dynamic_cast<Player*>(unitTarget);
@@ -5786,7 +5787,7 @@ float_t Spell::_getSpellTravelTimeForTarget(uint64_t guid) const
 
         if (m_caster->getGuid() != guid)
         {
-            const auto obj = m_caster->GetMapMgrObject(guid);
+            const auto obj = m_caster->getWorldMapObject(guid);
             if (obj == nullptr)
                 return -1.0f;
 

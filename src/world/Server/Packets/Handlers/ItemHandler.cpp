@@ -35,7 +35,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Container.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Server/Packets/CmsgListInventory.h"
 #include "Server/Packets/SmsgBuyItem.h"
 #include "Server/Packets/CmsgBuyItem.h"
@@ -570,7 +570,7 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
     recvData.ReadByteSeq(npcGuid[6]);
     recvData.ReadByteSeq(npcGuid[0]);
 
-    Creature* creature = player->GetMapMgrCreature(npcGuid);
+    Creature* creature = player->getWorldMapCreature(npcGuid);
     if (!creature)
     {
         sLogger.debug("handleTransmogrifyItems - Unit (GUID: %u) not found.", uint64_t(npcGuid));
@@ -686,7 +686,7 @@ void WorldSession::handleReforgeItemOpcode(WorldPacket& recvData)
     recvData.ReadByteSeq(guid[7]);
     recvData.ReadByteSeq(guid[5]);
 
-    Creature* creature = player->GetMapMgrCreature(guid);
+    Creature* creature = player->getWorldMapCreature(guid);
     if (!creature)
     {
         sLogger.debug("handleReforgeItemOpcode - Unit (GUID: %u) not found.", uint64_t(guid));
@@ -1880,7 +1880,7 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    Creature* unit = _player->GetMapMgr()->GetCreature(srlPacket.vendorGuid.getGuidLowPart());
+    Creature* unit = _player->getWorldMap()->getCreature(srlPacket.vendorGuid.getGuidLowPart());
     // Check if Vendor exists
     if (unit == nullptr)
     {
@@ -1974,7 +1974,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
 
     _player->interruptSpell();
 
-    Creature* unit = _player->GetMapMgr()->GetCreature(srlPacket.srcGuid.getGuidLowPart());
+    Creature* unit = _player->getWorldMap()->getCreature(srlPacket.srcGuid.getGuidLowPart());
     if (unit == nullptr || !unit->HasItems())
         return;
 
@@ -2145,7 +2145,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
     uint8_t error = 0;
     SlotResult slotResult;
 
-    auto creature = _player->GetMapMgr()->GetCreature(srlPacket.sourceGuid.getGuidLowPart());
+    auto creature = _player->getWorldMap()->getCreature(srlPacket.sourceGuid.getGuidLowPart());
     if (creature == nullptr || !creature->HasItems())
         return;
 
@@ -2295,7 +2295,7 @@ void WorldSession::handleListInventoryOpcode(WorldPacket& recvPacket)
     WoWGuid wowGuid;
     wowGuid.Init(srlPacket.guid);
 
-    Creature* unit = _player->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+    Creature* unit = _player->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (unit == nullptr)
         return;
 
@@ -2594,7 +2594,7 @@ void WorldSession::handleRepairItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(srlPacket.creatureGuid.getGuidLowPart());
+    Creature* pCreature = _player->getWorldMap()->getCreature(srlPacket.creatureGuid.getGuidLowPart());
     if (pCreature == nullptr)
         return;
 

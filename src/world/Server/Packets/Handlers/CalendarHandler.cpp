@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Server/WorldSession.h"
 #include "Objects/Units/Players/Player.h"
+#include "Map/Maps/InstanceMgr.hpp"
 
 #if VERSION_STRING > TBC
 
@@ -122,5 +123,46 @@ void WorldSession::handleCalendarEventStatus(WorldPacket& /*recvPacket*/)
 void WorldSession::handleCalendarEventModeratorStatus(WorldPacket& /*recvPacket*/)
 {
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarEventModeratorStatus Not handled");
+}
+
+void WorldSession::sendCalendarRaidLockout(InstanceSaved const* save, bool add)
+{
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_CALENDAR_RAID_LOCKOUT_ADDED/REMOVED");
+    const auto now = Util::getTimeNow();
+    time_t currTime = now;
+
+    WorldPacket data(SMSG_CALENDAR_RAID_LOCKOUT_REMOVED, (4) + 4 + 4 + 4 + 8);
+    if (add)
+    {
+        data.SetOpcode(SMSG_CALENDAR_RAID_LOCKOUT_ADDED);
+        data.appendPackedTime(currTime);
+    }
+
+    data << uint32_t(save->getMapId());
+    data << uint32_t(save->getDifficulty());
+    data << uint32_t(save->getResetTime() - currTime);
+    data << uint64_t(save->getInstanceId());
+    SendPacket(&data);
+}
+
+void WorldSession::sendCalendarRaidLockoutUpdated(InstanceSaved const* save)
+{
+    if (!save)
+        return;
+
+    WoWGuid guid = _player->getGuid();
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_CALENDAR_RAID_LOCKOUT_UPDATED [%s] Map: %u, Difficulty %u",
+        guid, save->getMapId(), save->getDifficulty());
+
+    const auto now = Util::getTimeNow();
+    time_t currTime = now;
+
+    WorldPacket data(SMSG_CALENDAR_RAID_LOCKOUT_UPDATED, 4 + 4 + 4 + 4 + 8);
+    data.appendPackedTime(currTime);
+    data << uint32_t(save->getMapId());
+    data << uint32_t(save->getDifficulty());
+    data << uint32_t(0); // Amount of seconds that has changed to the reset time
+    data << uint32_t(save->getResetTime() - currTime);
+    SendPacket(&data);
 }
 #endif

@@ -18,11 +18,11 @@
  */
 
 #include "RingOfValor.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Objects/GameObject.h"
 #include "Server/Master.h"
 
-RingOfValor::RingOfValor(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :
+RingOfValor::RingOfValor(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :
     Arena(mgr, id, lgroup, t, players_per_side)
 {}
 
@@ -85,6 +85,6 @@ bool RingOfValor::HookHandleRepop(Player* plr)
 {
     LocationVector dest;
     dest.ChangeCoords({ 762.91f, -284.28f, 28.28f });
-    plr->safeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);
+    plr->safeTeleport(m_mapMgr->getBaseMap()->getMapId(), m_mapMgr->getInstanceId(), dest);
     return true;
 }

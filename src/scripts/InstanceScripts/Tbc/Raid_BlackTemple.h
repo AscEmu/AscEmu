@@ -5,6 +5,19 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+enum Encounters
+{
+    DATA_HIGH_WARLORD_NAJENTUS      = 0,
+    DATA_SUPREMUS                   = 1,
+    DATA_SHADE_OF_AKAMA             = 2,
+    DATA_TERON_GOREFIEND            = 3,
+    DATA_GURTOGG_BLOODBOIL          = 4,
+    DATA_RELIQUARY_OF_SOULS         = 5,
+    DATA_MOTHER_SHAHRAZ             = 6,
+    DATA_ILLIDARI_COUNCIL           = 7,
+    DATA_ILLIDAN_STORMRAGE          = 8,
+};
+
 enum CreatureEntry
 {
     CN_SUPREMUS                     = 22898,

@@ -12,14 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 class ShadowLabyrinthInstanceScript : public InstanceScript
 {
 public:
-    explicit ShadowLabyrinthInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new ShadowLabyrinthInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
+    explicit ShadowLabyrinthInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new ShadowLabyrinthInstanceScript(pMapMgr); }
 };
 
 class CabalAcolyteAI : public CreatureAIScript
@@ -378,7 +372,7 @@ public:
         resonance->setAttackStopTimer(1000);
         resonanceTimerId = 0;
 
-        if (getCreature()->GetMapMgr() != NULL && !_isHeroic() && getCreature()->getHealthPct() >= 41)
+        if (getCreature()->getWorldMap() != NULL && !_isHeroic() && getCreature()->getHealthPct() >= 41)
         {
             getCreature()->SetHealthPct(40);
         }
@@ -390,7 +384,7 @@ public:
     {
         SonicBoomTimerId = _addTimer(5000);
 
-        if (getCreature()->GetMapMgr() != NULL && !_isHeroic() && getCreature()->getHealthPct() >= 41)
+        if (getCreature()->getWorldMap() != NULL && !_isHeroic() && getCreature()->getHealthPct() >= 41)
         {
             getCreature()->SetHealthPct(40);
         }
@@ -399,7 +393,7 @@ public:
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        if (getCreature()->GetMapMgr() != NULL && !_isHeroic() && getCreature()->getHealthPct() >= 41)
+        if (getCreature()->getWorldMap() != NULL && !_isHeroic() && getCreature()->getHealthPct() >= 41)
         {
             getCreature()->SetHealthPct(40);
         }

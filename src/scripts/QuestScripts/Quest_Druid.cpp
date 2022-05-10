@@ -42,7 +42,7 @@ public:
 
         Player* plr = static_cast<Player*>(mKiller);
 
-        Creature* ct = plr->GetMapMgr()->CreateAndSpawnCreature(12144, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 0);
+        Creature* ct = plr->getWorldMap()->createAndSpawnCreature(12144, getCreature()->GetPosition());
         if (ct != nullptr)
             ct->Despawn(1 * 60 * 1000, 0);
     }

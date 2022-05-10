@@ -115,7 +115,7 @@ public:
     {
         if (pPlayer->hasQuestInQuestLog(9174))
         {
-            Creature* naga = pPlayer->GetMapMgr()->CreateAndSpawnCreature(16292, 7938, -7632, 114, 3.05f);
+            Creature* naga = pPlayer->getWorldMap()->createAndSpawnCreature(16292, LocationVector(7938, -7632, 114, 3.05f));
             naga->Despawn(6 * 60 * 1000, 0);
         }
     }

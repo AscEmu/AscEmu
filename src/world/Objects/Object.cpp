@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/QuestLogEntry.hpp"
 #include "Server/EventableObject.h"
 #include "VMapFactory.h"
+#include "VMapManager2.h"
 #include "MMapFactory.h"
 #include "TLSObject.h"
 #include "Management/Battleground/Battleground.h"
@@ -16,9 +17,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Area/AreaStorage.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
-#include "Map/WorldCreator.h"
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/SpellDamageType.hpp"
 #include "Spell/Definitions/SpellMechanics.hpp"
@@ -369,7 +369,7 @@ void Object::updateObject()
 {
     if (IsInWorld() && !m_objectUpdated)
     {
-        m_mapMgr->ObjectUpdated(this);
+        m_WorldMap->objectUpdated(this);
         m_objectUpdated = true;
     }
 }
@@ -413,7 +413,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
             else if (isSummon())
             {
                 // Only player summons
-                const auto summoner = GetMapMgrPlayer(static_cast<Summon*>(this)->getSummonedByGuid());
+                const auto summoner = getWorldMapPlayer(static_cast<Summon*>(this)->getSummonedByGuid());
                 if (summoner != nullptr)
                     updateType = UPDATETYPE_CREATE_OBJECT2;
             }
@@ -524,11 +524,6 @@ float Object::getDistanceSq(LocationVector comp) const
 float Object::getDistanceSq(float x, float y, float z) const
 {
     return m_position.distanceSquare({ x, y, z });
-}
-
-Player* Object::asPlayer()
-{
-    return reinterpret_cast<Player*>(this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1373,7 +1368,7 @@ void Object::_UpdateSpells(uint32_t time)
     // Update traveling spells
     for (auto travelingSpellItr = m_travelingSpells.begin(); travelingSpellItr != m_travelingSpells.end();)
     {
-        auto spellItr = *travelingSpellItr;
+        auto& spellItr = *travelingSpellItr;
 
         // Remove finished spells from list
         // They will be deleted on next update tick
@@ -1462,6 +1457,8 @@ void Object::removeSpellModifierFromCurrentSpells(AuraEffectModifier const* aura
 // InRange sets
 void Object::clearInRangeSets()
 {
+    std::scoped_lock guard(m_inRangeSetMutex, m_inRangeFactionSetMutex);
+    std::unique_lock<std::shared_mutex> playerGuard(m_inRangePlayerSetMutex);
     mInRangeObjectsSet.clear();
     mInRangePlayersSet.clear();
     mInRangeOppositeFactionSet.clear();
@@ -1480,13 +1477,18 @@ void Object::addToInRangeObjects(Object* pObj)
         sLogger.failure("We are in range of ourselves!");
 
     if (pObj->isPlayer())
+    {
+        std::unique_lock<std::shared_mutex> playerLock(m_inRangePlayerSetMutex);
         mInRangePlayersSet.push_back(pObj);
+    }
 
+    std::scoped_lock<std::mutex> guard(m_inRangeSetMutex);
     mInRangeObjectsSet.push_back(pObj);
 }
 
 void Object::removeSelfFromInrangeSets()
 {
+    std::scoped_lock<std::mutex> guard(m_inRangeSetMutex);
     for (const auto& itr : mInRangeObjectsSet)
     {
         if (itr)
@@ -1502,7 +1504,7 @@ std::vector<Object*> Object::getInRangeObjectsSet()
 
 bool Object::hasInRangeObjects()
 {
-    return mInRangeObjectsSet.size() > 0;
+    return !mInRangeObjectsSet.empty();
 }
 
 size_t Object::getInRangeObjectsCount()
@@ -1510,26 +1512,23 @@ size_t Object::getInRangeObjectsCount()
     return mInRangeObjectsSet.size();
 }
 
-bool Object::isObjectInInRangeObjectsSet(Object* pObj)
+bool Object::isObjectInInRangeObjectsSet(Object* pObj) const
 {
-    // Do not use std::find here - if something is added to or removed from the in range vector at the same time
-    // the std::find causes a crash because vector iterator is out of range.
-    // Tested with transports and gameobjects -Appled
-    for (const auto& inRangeObj : mInRangeObjectsSet)
-    {
-        if (inRangeObj == pObj)
-            return true;
-    }
-
-    return false;
+    std::scoped_lock<std::mutex> guard(m_inRangeSetMutex);
+    return std::find(mInRangeObjectsSet.cbegin(), mInRangeObjectsSet.cend(), pObj) != mInRangeObjectsSet.cend();
 }
 
 void Object::removeObjectFromInRangeObjectsSet(Object* pObj)
 {
+    std::scoped_lock<std::mutex> guard(m_inRangeSetMutex);
+
     if (pObj != nullptr)
     {
         if (pObj->isPlayer())
+        {
+            std::unique_lock<std::shared_mutex> playerLock(m_inRangePlayerSetMutex);
             mInRangePlayersSet.erase(std::remove(mInRangePlayersSet.begin(), mInRangePlayersSet.end(), pObj), mInRangePlayersSet.end());
+        }
 
         mInRangeObjectsSet.erase(std::remove(mInRangeObjectsSet.begin(), mInRangeObjectsSet.end(), pObj), mInRangeObjectsSet.end());
 
@@ -1560,14 +1559,19 @@ std::vector<Object*> Object::getInRangeOppositeFactionSet()
 
 bool Object::isObjectInInRangeOppositeFactionSet(Object* pObj)
 {
+    std::scoped_lock<std::mutex> guard(m_inRangeFactionSetMutex);
     auto it = std::find(mInRangeOppositeFactionSet.begin(), mInRangeOppositeFactionSet.end(), pObj);
     return it != mInRangeOppositeFactionSet.end();
 }
 
 void Object::updateInRangeOppositeFactionSet()
 {
-    mInRangeOppositeFactionSet.clear();
+    {
+        std::scoped_lock<std::mutex> factionLock(m_inRangeFactionSetMutex);
+        mInRangeOppositeFactionSet.clear();
+    }
 
+    std::scoped_lock<std::mutex> guard(m_inRangeSetMutex);
     for (const auto& itr : mInRangeObjectsSet)
     {
         if (itr)
@@ -1577,16 +1581,16 @@ void Object::updateInRangeOppositeFactionSet()
                 if (isHostile(this, itr))
                 {
                     if (!itr->isObjectInInRangeOppositeFactionSet(this))
-                        itr->mInRangeOppositeFactionSet.push_back(this);
+                        itr->addInRangeOppositeFaction(this);
                     if (!isObjectInInRangeOppositeFactionSet(itr))
-                        mInRangeOppositeFactionSet.push_back(itr);
+                        addInRangeOppositeFaction(itr);
                 }
                 else
                 {
                     if (itr->isObjectInInRangeOppositeFactionSet(this))
-                        itr->mInRangeOppositeFactionSet.erase(std::remove(itr->mInRangeOppositeFactionSet.begin(), itr->mInRangeOppositeFactionSet.end(), this), itr->mInRangeOppositeFactionSet.end());
+                        itr->removeObjectFromInRangeOppositeFactionSet(this);
                     if (isObjectInInRangeOppositeFactionSet(itr))
-                        mInRangeOppositeFactionSet.erase(std::remove(mInRangeOppositeFactionSet.begin(), mInRangeOppositeFactionSet.end(), itr), mInRangeOppositeFactionSet.end());
+                        removeObjectFromInRangeOppositeFactionSet(itr);
                 }
             }
         }
@@ -1595,11 +1599,13 @@ void Object::updateInRangeOppositeFactionSet()
 
 void Object::addInRangeOppositeFaction(Object* obj)
 {
+    std::scoped_lock<std::mutex> guard(m_inRangeFactionSetMutex);
     mInRangeOppositeFactionSet.push_back(obj);
 }
 
 void Object::removeObjectFromInRangeOppositeFactionSet(Object* obj)
 {
+    std::scoped_lock<std::mutex> guard(m_inRangeFactionSetMutex);
     mInRangeOppositeFactionSet.erase(std::remove(mInRangeOppositeFactionSet.begin(), mInRangeOppositeFactionSet.end(), obj), mInRangeOppositeFactionSet.end());
 }
 
@@ -1611,14 +1617,19 @@ std::vector<Object*> Object::getInRangeSameFactionSet()
 
 bool Object::isObjectInInRangeSameFactionSet(Object* pObj)
 {
+    std::scoped_lock<std::mutex> guard(m_inRangeFactionSetMutex);
     auto it = std::find(mInRangeSameFactionSet.begin(), mInRangeSameFactionSet.end(), pObj);
     return it != mInRangeSameFactionSet.end();
 }
 
 void Object::updateInRangeSameFactionSet()
 {
-    mInRangeSameFactionSet.clear();
+    {
+        std::scoped_lock<std::mutex> factionLock(m_inRangeFactionSetMutex);
+        mInRangeSameFactionSet.clear();
+    }
 
+    std::scoped_lock<std::mutex> guard(m_inRangeSetMutex);
     for (const auto& itr : mInRangeObjectsSet)
     {
         if (itr)
@@ -1628,18 +1639,18 @@ void Object::updateInRangeSameFactionSet()
                 if (isFriendly(this, itr))
                 {
                     if (!itr->isObjectInInRangeSameFactionSet(this))
-                        itr->mInRangeSameFactionSet.push_back(this);
+                        itr->addInRangeSameFaction(this);
 
-                    if (!isObjectInInRangeOppositeFactionSet(itr))
-                        mInRangeSameFactionSet.push_back(itr);
+                    if (!isObjectInInRangeSameFactionSet(itr))
+                        addInRangeSameFaction(itr);
                 }
                 else
                 {
                     if (itr->isObjectInInRangeSameFactionSet(this))
-                        itr->mInRangeSameFactionSet.erase(std::remove(itr->mInRangeSameFactionSet.begin(), itr->mInRangeSameFactionSet.end(), this), itr->mInRangeSameFactionSet.end());
+                        itr->removeObjectFromInRangeSameFactionSet(this);
 
                     if (isObjectInInRangeSameFactionSet(itr))
-                        mInRangeSameFactionSet.erase(std::remove(mInRangeSameFactionSet.begin(), mInRangeSameFactionSet.end(), itr), mInRangeSameFactionSet.end());
+                        removeObjectFromInRangeSameFactionSet(itr);
                 }
             }
         }
@@ -1648,11 +1659,13 @@ void Object::updateInRangeSameFactionSet()
 
 void Object::addInRangeSameFaction(Object* obj)
 {
+    std::scoped_lock<std::mutex> guard(m_inRangeFactionSetMutex);
     mInRangeSameFactionSet.push_back(obj);
 }
 
 void Object::removeObjectFromInRangeSameFactionSet(Object* obj)
 {
+    std::scoped_lock<std::mutex> guard(m_inRangeFactionSetMutex);
     mInRangeSameFactionSet.erase(std::remove(mInRangeSameFactionSet.begin(), mInRangeSameFactionSet.end(), obj), mInRangeSameFactionSet.end());
 }
 
@@ -1670,19 +1683,12 @@ void Object::sendGameobjectDespawnAnim()
 //////////////////////////////////////////////////////////////////////////////////////////
 // AGPL Starts
 
-::DBC::Structures::AreaTableEntry const* Object::GetArea()
+::DBC::Structures::AreaTableEntry const* Object::GetArea() const
 {
-    if (!this->IsInWorld()) return nullptr;
+    if (!IsInWorld())
+        return nullptr;
 
-    auto map_mgr = this->GetMapMgr();
-    if (!map_mgr) return nullptr;
-
-    auto area_flag = map_mgr->GetAreaFlag(this->GetPositionX(), this->GetPositionY(), this->GetPositionZ());
-    auto at = MapManagement::AreaManagement::AreaStorage::GetAreaByFlag(area_flag);
-    if (!at)
-        at = MapManagement::AreaManagement::AreaStorage::GetAreaByMapId(this->GetMapId());
-
-    return at;
+    return MapManagement::AreaManagement::AreaStorage::getExactArea(getWorldMap(), GetPosition(), GetPhase());
 }
 
 void Object::_Create(uint32 mapid, float x, float y, float z, float ang)
@@ -3183,7 +3189,7 @@ bool Object::SetPosition(const LocationVector & v, [[maybe_unused]]bool allowPor
 
     if (IsInWorld() && updateMap)
     {
-        m_mapMgr->ChangeObjectLocation(this);
+        m_WorldMap->changeObjectLocation(this);
     }
 
     return result;
@@ -3222,7 +3228,7 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
         if (IsInWorld() && updateMap)
         {
             m_lastMapUpdatePosition.ChangeCoords({ newX, newY, newZ, newOrientation });
-            m_mapMgr->ChangeObjectLocation(this);
+            m_WorldMap->changeObjectLocation(this);
 
             if (isPlayer() && dynamic_cast<Player*>(this)->getGroup() && dynamic_cast<Player*>(this)->getLastGroupPosition().Distance2DSq(m_position) > 25.0f)       // distance of 5.0
             {
@@ -3261,102 +3267,72 @@ void Object::setCreateBits(UpdateMask* updateMask, Player* /*target*/) const
 
 void Object::AddToWorld()
 {
-    MapMgr* mapMgr = sInstanceMgr.GetInstance(this);
+    WorldMap* mapMgr = nullptr;
+
+    const auto mapInfo = sMySQLStore.getWorldMapInfo(GetMapId());
+    if (mapInfo == nullptr || GetMapId() >= MAX_NUM_MAPS)
+        return;
+
+    mapMgr = sMapMgr.findWorldMap(GetMapId(), GetInstanceID());
+
     if (mapMgr == nullptr)
     {
         sLogger.failure("AddToWorld() failed for Object with GUID " I64FMT " MapId %u InstanceId %u", getGuid(), GetMapId(), GetInstanceID());
         return;
     }
 
-    if (isPlayer())
-    {
-        Player* plr = static_cast<Player*>(this);
-        if (mapMgr->pInstance != nullptr && !plr->isGMFlagSet())
-        {
-            // Player limit?
-            if (mapMgr->GetMapInfo()->playerlimit && mapMgr->GetPlayerCount() >= mapMgr->GetMapInfo()->playerlimit)
-                return;
-            Group* group = plr->getGroup();
-            // Player in group?
-            if (group == nullptr && mapMgr->pInstance->m_creatorGuid == 0)
-                return;
-            // If set: Owns player the instance?
-            if (mapMgr->pInstance->m_creatorGuid != 0 && mapMgr->pInstance->m_creatorGuid != plr->getGuidLow())
-                return;
-
-            if (group != nullptr)
-            {
-                // Is instance empty or owns our group the instance?
-                if (mapMgr->pInstance->m_creatorGroup != 0 && mapMgr->pInstance->m_creatorGroup != group->GetID())
-                {
-                    // Player not in group or another group is already playing this instance.
-                    sChatHandler.SystemMessage(plr->getSession(), "Another group is already inside this instance of the dungeon.");
-                    if (plr->getSession()->GetPermissionCount() > 0)
-                        sChatHandler.BlueSystemMessage(plr->getSession(), "Enable your GameMaster flag to ignore this rule.");
-                    return;
-                }
-                else if (mapMgr->pInstance->m_creatorGroup == 0)
-                    // Players group now "owns" the instance.
-                    mapMgr->pInstance->m_creatorGroup = group->GetID();
-            }
-        }
-    }
-
-    m_mapMgr = mapMgr;
+    m_WorldMap = mapMgr;
     m_inQueue = true;
 
     // correct incorrect instance id's
-    m_instanceId = m_mapMgr->GetInstanceID();
-    m_mapId = m_mapMgr->GetMapId();
+    m_instanceId = m_WorldMap->getInstanceId();
+    m_mapId = m_WorldMap->getBaseMap()->getMapId();
     mapMgr->AddObject(this);
 }
 
-void Object::AddToWorld(MapMgr* pMapMgr)
+void Object::AddToWorld(WorldMap* pMapMgr)
 {
-    if (!pMapMgr || (pMapMgr->GetMapInfo()->playerlimit && this->isPlayer() && pMapMgr->GetPlayerCount() >= pMapMgr->GetMapInfo()->playerlimit))
+    if (!pMapMgr || (pMapMgr->getBaseMap()->getMapInfo()->playerlimit && this->isPlayer() && pMapMgr->getPlayerCount() >= pMapMgr->getBaseMap()->getMapInfo()->playerlimit))
         return; //instance add failed
 
-    m_mapMgr = pMapMgr;
+    m_WorldMap = pMapMgr;
     m_inQueue = true;
 
     pMapMgr->AddObject(this);
 
     // correct incorrect instance id's
-    m_instanceId = pMapMgr->GetInstanceID();
-    m_mapId = m_mapMgr->GetMapId();
+    m_instanceId = pMapMgr->getInstanceId();
+    m_mapId = m_WorldMap->getBaseMap()->getMapId();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Unlike addtoworld it pushes it directly ignoring add pool this can
 /// only be called from the thread of mapmgr!
 //////////////////////////////////////////////////////////////////////////////////////////
-void Object::PushToWorld(MapMgr* mgr)
+void Object::PushToWorld(WorldMap* mgr)
 {
-    if (t_currentMapContext.get() == mgr)
+    if (mgr == nullptr)
     {
-        if (mgr == nullptr)
-        {
-            sLogger.failure("Invalid push to world of Object " I64FMT " ", getGuid());
-            return; // instance add failed
-        }
-
-        m_mapId = mgr->GetMapId();
-        //there's no need to set the InstanceId before calling PushToWorld() because it's already set here.
-        m_instanceId = mgr->GetInstanceID();
-
-        m_mapMgr = mgr;
-        OnPrePushToWorld();
-
-        mgr->PushObject(this);
-
-        // correct incorrect instance id's
-        m_inQueue = false;
-
-        event_Relocate();
-
-        // call virtual function to handle stuff.. :P
-        OnPushToWorld();
+        sLogger.failure("Invalid push to world of Object " I64FMT " ", getGuid());
+        return; // instance add failed
     }
+
+    m_mapId = mgr->getBaseMap()->getMapId();
+    //there's no need to set the InstanceId before calling PushToWorld() because it's already set here.
+    m_instanceId = mgr->getInstanceId();
+
+    m_WorldMap = mgr;
+    OnPrePushToWorld();
+
+    mgr->PushObject(this);
+
+    // correct incorrect instance id's
+    m_inQueue = false;
+
+    event_Relocate();
+
+    // call virtual function to handle stuff.. :P
+    OnPushToWorld();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -3364,12 +3340,12 @@ void Object::PushToWorld(MapMgr* mgr)
 //////////////////////////////////////////////////////////////////////////////////////////
 void Object::RemoveFromWorld(bool free_guid)
 {
-    if (m_mapMgr != nullptr)
+    if (m_WorldMap != nullptr)
     {
         OnPreRemoveFromWorld();
 
-        MapMgr* m = m_mapMgr;
-        m_mapMgr = nullptr;
+        WorldMap* m = m_WorldMap;
+        m_WorldMap = nullptr;
 
         m->RemoveObject(this, free_guid);
 
@@ -3450,24 +3426,52 @@ bool Object::IsWithinLOSInMap(Object* obj)
     if (!IsInMap(obj))
         return false;
 
-    LocationVector location = obj->GetPosition();
-    return IsWithinLOS(location);
+    float ox, oy, oz;
+    if (obj->getObjectTypeId() == TYPEID_PLAYER)
+    {
+        obj->getPosition(ox, oy, oz);
+        oz += getCollisionHeight();
+    }
+    else
+    {
+        obj->getHitSpherePointFor({ GetPositionX(), GetPositionY(), GetPositionZ() + getCollisionHeight() }, ox, oy, oz);
+    }
+
+    float x, y, z;
+    if (getObjectTypeId() == TYPEID_PLAYER)
+    {
+        getPosition(x, y, z);
+        z += getCollisionHeight();
+    }
+    else
+    {
+        getHitSpherePointFor({ obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ() + obj->getCollisionHeight() }, x, y, z);
+    }
+
+    return getWorldMap()->isInLineOfSight(LocationVector(x, y, z), LocationVector(ox, oy, oz), GetPhase(), LINEOFSIGHT_ALL_CHECKS);
 }
 
 bool Object::IsWithinLOS(LocationVector location)
 {
-    LocationVector location2;
-    location2 = GetPosition();
+    if (IsInWorld())
+    {
+        location.z += getCollisionHeight();
 
-    if (worldConfig.terrainCollision.isCollisionEnabled)
-    {
-        VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-        return mgr->isInLineOfSight(GetMapId(), location2.x, location2.y, location2.z + 2.0f, location.x, location.y, location.z + 2.0f);
+        float x, y, z;
+        if (getObjectTypeId() == TYPEID_PLAYER)
+        {
+            getPosition(x, y, z);
+            z += getCollisionHeight();
+        }
+        else
+        {
+            getHitSpherePointFor({ location.x, location.y, location.z }, x, y, z);
+        }
+
+        return getWorldMap()->isInLineOfSight(LocationVector(x, y, z), location, GetPhase(), LineOfSightChecks::LINEOFSIGHT_ALL_CHECKS);
     }
-    else
-    {
-        return true;
-    }
+
+    return true;
 }
 
 float Object::calcAngle(float Position1X, float Position1Y, float Position2X, float Position2Y)
@@ -3738,40 +3742,21 @@ bool Object::CanActivate()
     return false;
 }
 
-void Object::Activate(MapMgr* mgr)
+void Object::Activate(WorldMap* mgr)
 {
-    switch (m_objectTypeId)
-    {
-    case TYPEID_UNIT:
-        mgr->activeCreatures.insert(static_cast<Creature*>(this));
-        break;
+    mgr->addObjectToActiveSet(this);
 
-    case TYPEID_GAMEOBJECT:
-        mgr->activeGameObjects.insert(static_cast<GameObject*>(this));
-        break;
-    }
     // Objects are active so set to true.
     Active = true;
 }
 
-void Object::Deactivate(MapMgr* mgr)
+void Object::Deactivate(WorldMap* mgr)
 {
     if (mgr == nullptr)
         return;
 
-    switch (m_objectTypeId)
-    {
-    case TYPEID_UNIT:
-        // check iterator
-        if (mgr->creature_iterator != mgr->activeCreatures.end() && (*mgr->creature_iterator)->getGuid() == getGuid())
-            ++mgr->creature_iterator;
-        mgr->activeCreatures.erase(static_cast<Creature*>(this));
-        break;
+    mgr->removeObjectFromActiveSet(this);
 
-    case TYPEID_GAMEOBJECT:
-        mgr->activeGameObjects.erase(static_cast<GameObject*>(this));
-        break;
-    }
     Active = false;
 }
 
@@ -3868,6 +3853,7 @@ void Object::outPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool /*
         return;
 
     // We are on Object level, which means we can't send it to ourselves so we only send to Players inrange
+    std::shared_lock<std::shared_mutex> playerLock(m_inRangePlayerSetMutex);
     for (const auto& itr : mInRangePlayersSet)
     {
         if (itr)
@@ -3881,6 +3867,7 @@ void Object::sendMessageToSet(WorldPacket* data, bool /*bToSelf*/, bool /*myteam
         return;
 
     uint32_t myphase = GetPhase();
+    std::shared_lock<std::shared_mutex> playerLock(m_inRangePlayerSetMutex);
     for (const auto& itr : mInRangePlayersSet)
     {
         if (itr && (itr->GetPhase() & myphase) != 0)
@@ -3888,9 +3875,24 @@ void Object::sendMessageToSet(WorldPacket* data, bool /*bToSelf*/, bool /*myteam
     }
 }
 
+void Object::sendMessageToSet(WorldPacket* data, Player const* skipp)
+{
+    if (!IsInWorld())
+        return;
+
+    uint32_t myphase = GetPhase();
+    std::shared_lock<std::shared_mutex> playerLock(m_inRangePlayerSetMutex);
+    for (const auto& itr : mInRangePlayersSet)
+    {
+        if (itr && (itr->GetPhase() & myphase) != 0 && itr != skipp)
+            itr->sendPacket(data);
+    }
+}
+
 void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId, Unit* target/* = nullptr*/)
 {
     uint32_t myphase = GetPhase();
+    std::shared_lock<std::shared_mutex> playerLock(m_inRangePlayerSetMutex);
     for (const auto& itr : mInRangePlayersSet)
     {
         Object* object = itr;
@@ -3928,15 +3930,15 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId,
     }
 }
 
-Object* Object::GetMapMgrObject(const uint64 & guid)
+Object* Object::getWorldMapObject(const uint64 & guid)
 {
     if (!IsInWorld())
         return nullptr;
 
-    return GetMapMgr()->_GetObject(guid);
+    return getWorldMap()->getObject(guid);
 }
 
-Pet* Object::GetMapMgrPet(const uint64 & guid)
+Pet* Object::getWorldMapPet(const uint64 & guid)
 {
     if (!IsInWorld())
         return nullptr;
@@ -3944,29 +3946,18 @@ Pet* Object::GetMapMgrPet(const uint64 & guid)
     WoWGuid wowGuid;
     wowGuid.Init(guid);
 
-    return GetMapMgr()->GetPet(wowGuid.getGuidLowPart());
+    return getWorldMap()->getPet(wowGuid.getGuidLowPart());
 }
 
-Unit* Object::GetMapMgrUnit(const uint64 & guid)
+Unit* Object::getWorldMapUnit(const uint64 & guid)
 {
     if (!IsInWorld())
         return nullptr;
 
-    return GetMapMgr()->GetUnit(guid);
+    return getWorldMap()->getUnit(guid);
 }
 
-Player* Object::GetMapMgrPlayer(const uint64 & guid)
-{
-    if (!IsInWorld())
-        return nullptr;
-
-    WoWGuid wowGuid;
-    wowGuid.Init(guid);
-
-    return GetMapMgr()->GetPlayer(wowGuid.getGuidLowPart());
-}
-
-Creature* Object::GetMapMgrCreature(const uint64 & guid)
+Player* Object::getWorldMapPlayer(const uint64 & guid)
 {
     if (!IsInWorld())
         return nullptr;
@@ -3974,10 +3965,10 @@ Creature* Object::GetMapMgrCreature(const uint64 & guid)
     WoWGuid wowGuid;
     wowGuid.Init(guid);
 
-    return GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+    return getWorldMap()->getPlayer(wowGuid.getGuidLowPart());
 }
 
-GameObject* Object::GetMapMgrGameObject(const uint64 & guid)
+Creature* Object::getWorldMapCreature(const uint64 & guid)
 {
     if (!IsInWorld())
         return nullptr;
@@ -3985,10 +3976,10 @@ GameObject* Object::GetMapMgrGameObject(const uint64 & guid)
     WoWGuid wowGuid;
     wowGuid.Init(guid);
 
-    return GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
+    return getWorldMap()->getCreature(wowGuid.getGuidLowPart());
 }
 
-DynamicObject* Object::GetMapMgrDynamicObject(const uint64 & guid)
+GameObject* Object::getWorldMapGameObject(const uint64 & guid)
 {
     if (!IsInWorld())
         return nullptr;
@@ -3996,13 +3987,24 @@ DynamicObject* Object::GetMapMgrDynamicObject(const uint64 & guid)
     WoWGuid wowGuid;
     wowGuid.Init(guid);
 
-    return GetMapMgr()->GetDynamicObject(wowGuid.getGuidLowPart());
+    return getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
+}
+
+DynamicObject* Object::getWorldMapDynamicObject(const uint64 & guid)
+{
+    if (!IsInWorld())
+        return nullptr;
+
+    WoWGuid wowGuid;
+    wowGuid.Init(guid);
+
+    return getWorldMap()->getDynamicObject(wowGuid.getGuidLowPart());
 }
 
 MapCell* Object::GetMapCell() const
 {
-    if (m_mapMgr)
-        return m_mapMgr->GetCell(m_mapCell_x, m_mapCell_y);
+    if (m_WorldMap)
+        return m_WorldMap->getCell(m_mapCell_x, m_mapCell_y);
     return nullptr;
 }
 
@@ -4015,8 +4017,8 @@ void Object::SetMapCell(MapCell* cell)
     }
     else
     {
-        m_mapCell_x = cell->GetPositionX();
-        m_mapCell_y = cell->GetPositionY();
+        m_mapCell_x = cell->getPositionX();
+        m_mapCell_y = cell->getPositionY();
     }
 }
 
@@ -4036,10 +4038,10 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
         return false;
     outx = GetPositionX() + rad * cos(angle);
     outy = GetPositionY() + rad * sin(angle);
-    outz = GetMapMgr()->GetLandHeight(outx, outy, GetPositionZ() + 2);
-    float waterz;
-    uint32 watertype;
-    GetMapMgr()->GetLiquidInfo(outx, outy, GetPositionZ() + 2, waterz, watertype);
+    outz = getWorldMap()->getHeight(LocationVector(outx, outy, GetPositionZ() + 2));
+
+    float waterz = getWorldMap()->getWaterLevel(outx, outy);
+
     outz = std::max(waterz, outz);
 
     MMAP::MMapManager* mmap = MMAP::MMapFactory::createOrGetMMapManager();
@@ -4097,7 +4099,7 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
     {
         float testx, testy, testz;
 
-        VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+        const auto mgr = VMAP::VMapFactory::createOrGetVMapManager();
         bool isHittingObject = mgr->getObjectHitPos(GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ() + 2, outx, outy, outz + 2, testx, testy, testz, -0.5f);
 
         if (isHittingObject)
@@ -4108,7 +4110,7 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
             outz = testz;
         }
 
-        outz = GetMapMgr()->GetLandHeight(outx, outy, outz + 2);
+        outz = getMapHeight(LocationVector(outx, outy, outz + 2));
     }
 
     return true;
@@ -4146,7 +4148,7 @@ void Object::getNearPoint(Object* searcher, float& x, float& y, float& z, float 
 {
     getNearPoint2D(searcher, x, y, distance2d, absAngle);
     z = GetPositionZ();
-    z = GetMapMgr()->GetLandHeight(x, y, z);
+    (searcher ? searcher : this)->updateAllowedPositionZ(x, y, z);
 
     // if detection disabled, return first point
     if (!worldConfig.terrainCollision.isCollisionEnabled)
@@ -4166,7 +4168,7 @@ void Object::getNearPoint(Object* searcher, float& x, float& y, float& z, float 
     {
         getNearPoint2D(searcher, x, y, distance2d, absAngle + angle);
         z = GetPositionZ();
-        z = GetMapMgr()->GetLandHeight(x, y, z);
+        (searcher ? searcher : this)->updateAllowedPositionZ(x, y, z);
         if (IsWithinLOS(LocationVector(x,y,z)))
             return;
     }
@@ -4218,7 +4220,7 @@ void Object::updateAllowedPositionZ(float x, float y, float &z, float* groundZ)
     if (GetTransport())
     {
         if (groundZ)
-            *groundZ = z + 2.0f; // dont clip inside our transport :)
+            *groundZ = z + 1.0f; // dont clip inside our transport :)
 
         return;
     }
@@ -4233,7 +4235,7 @@ void Object::updateAllowedPositionZ(float x, float y, float &z, float* groundZ)
             if (canSwim)
                 max_z = getMapWaterOrGroundLevel(x, y, z, &ground_z);
             else
-                max_z = ground_z = GetMapMgr()->GetLandHeight(x, y, z + 5.0f);
+                max_z = ground_z = getMapHeight(LocationVector(x, y, z));
 
             if (max_z > INVALID_HEIGHT)
             {
@@ -4255,7 +4257,7 @@ void Object::updateAllowedPositionZ(float x, float y, float &z, float* groundZ)
         }
         else
         {
-            float ground_z = GetMapMgr()->GetLandHeight(x, y, z + 5.0f);
+            float ground_z = getMapHeight(LocationVector(x, y, z));
 #if VERSION_STRING >= WotLK
             ground_z += unit->getHoverHeight();
 #endif
@@ -4269,7 +4271,7 @@ void Object::updateAllowedPositionZ(float x, float y, float &z, float* groundZ)
     }
     else
     {
-        float ground_z = GetMapMgr()->GetLandHeight(x, y, z + 5.0f);
+        float ground_z = getMapHeight(LocationVector(x, y, z));
         if (ground_z > INVALID_HEIGHT)
             z = ground_z;
 
@@ -4309,7 +4311,7 @@ void Object::movePositionToFirstCollision(LocationVector &pos, float dist, float
     destz = result.z;
 
     // check static LOS
-    float halfHeight = 2.0f * 0.5f;
+    float halfHeight = getCollisionHeight() * 0.5f;
     bool col = false;
 
     // Unit is flying, check for potential collision via vmaps
@@ -4331,7 +4333,11 @@ void Object::movePositionToFirstCollision(LocationVector &pos, float dist, float
         }
     }
 
-    // check dynamic collision //todo
+    // check dynamic collision
+    col = getWorldMap()->getObjectHitPos(GetPhase(),
+        LocationVector(pos.x, pos.y, pos.z + halfHeight),
+        LocationVector(destx, desty, destz + halfHeight),
+        destx, desty, destz, -0.5f);
 
     destz -= halfHeight;
 
@@ -4361,7 +4367,7 @@ void Object::movePositionToFirstCollision(LocationVector &pos, float dist, float
                 return;
 
             // fall back to gridHeight if any
-            float gridHeight = GetMapMgr()->GetADTLandHeight(pos.x, pos.y);
+            float gridHeight = getWorldMap()->getGridHeight(pos.x, pos.y);
             if (gridHeight > INVALID_HEIGHT)
             {
                 pos.z = gridHeight;
@@ -4375,7 +4381,23 @@ void Object::movePositionToFirstCollision(LocationVector &pos, float dist, float
 
 float Object::getMapWaterOrGroundLevel(float x, float y, float z, float* ground/* = nullptr*/)
 {
-    return GetMapMgr()->getWaterOrGroundLevel(GetPhase(), x, y, z, ground, getObjectTypeId() == TYPEID_UNIT ? !static_cast<Unit*>(this)->getAuraWithAuraEffect(SPELL_AURA_WATER_WALK) : false);
+    return getWorldMap()->getWaterOrGroundLevel(GetPhase(), LocationVector(x, y, z), ground, getObjectTypeId() == TYPEID_UNIT ? !static_cast<Unit*>(this)->getAuraWithAuraEffect(SPELL_AURA_WATER_WALK) : false);
+}
+
+float Object::getFloorZ()
+{
+    if (!IsInWorld())
+        return m_staticFloorZ;
+
+    return std::max<float>(m_staticFloorZ, getWorldMap()->getGameObjectFloor(GetPhase(), LocationVector(GetPositionX(), GetPositionY(), GetPositionZ() + getCollisionHeight())));
+}
+
+float Object::getMapHeight(LocationVector pos, bool vmap/* = true*/, float distanceToSearch/* = DEFAULT_HEIGHT_SEARCH*/)
+{
+    if (pos.z != MAX_HEIGHT)
+        pos.z += getCollisionHeight();
+
+    return getWorldMap()->getHeight(GetPhase(), pos, vmap, distanceToSearch);
 }
 
 float Object::getDistance(Object const* obj) const

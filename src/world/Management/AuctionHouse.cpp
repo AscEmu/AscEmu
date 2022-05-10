@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Item.h"
 #include "Management/ItemInterface.h"
 #include "Server/MainServerDefines.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/ObjectMgr.h"
 #include "Server/Packets/SmsgAuctionBidderNotification.h"
 #include "Server/Packets/SmsgAuctionOwnerNotification.h"

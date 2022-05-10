@@ -102,8 +102,8 @@ if (USE_PCH)
     <Server/Script/CreatureAIScript.h>
     <Objects/Units/Creatures/AIInterface.h>
     <Objects/Item.h>
-    <Map/MapMgr.h>
-    <Map/MapScriptInterface.h>
+    <Map/Management/MapMgr.hpp>
+    <Map/Maps/MapScriptInterface.h>
     <Management/ItemInterface.h>
     <Storage/MySQLDataStore.hpp>
     <Management/QuestLogEntry.hpp>

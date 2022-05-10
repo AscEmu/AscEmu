@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MoveSpline.h"
 
 #include <sstream>
-
+#include "WorldConf.h"
 #include "CommonDefines.hpp"
 #include "Logging/Logger.hpp"
 
@@ -142,7 +142,7 @@ void MoveSpline::init_spline(MoveSplineInitArgs const& args)
     /// @todo what to do in such cases? problem is in input data (all points are at same coords)
     if (spline.length() < minimal_duration)
     {
-        sLogger.failure("misc", "MoveSpline::init_spline: zero length spline, wrong input data?");
+        sLogger.failure("MoveSpline::init_spline: zero length spline, wrong input data?");
         spline.set_length(spline.last(), spline.isCyclic() ? 1000 : 1);
     }
     point_Idx = spline.first();
@@ -229,7 +229,7 @@ bool MoveSplineInitArgs::_checkPathBounds() const
             offset = path[i] - middle;
             if (std::fabs(offset.x) >= MAX_OFFSET || std::fabs(offset.y) >= MAX_OFFSET || std::fabs(offset.z) >= MAX_OFFSET)
             {
-                sLogger.failure("misc", "MoveSplineInitArgs::_checkPathBounds check failed");
+                sLogger.failure("MoveSplineInitArgs::_checkPathBounds check failed");
                 return false;
             }
         }

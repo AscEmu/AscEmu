@@ -46,10 +46,10 @@ public:
 
         plr->getItemInterface()->RemoveItemAmt(2799, 1);
         doctor->castSpell(doctor, sSpellMgr.getSpellInfo(12380), true);
-        if (!plr->GetMapMgr() || !plr->GetMapMgr()->GetInterface())
+        if (!plr->getWorldMap() || !plr->getWorldMap()->getInterface())
             return;
 
-        Creature* firstenemy = plr->GetMapMgr()->CreateAndSpawnCreature(1511, -13770.5f, -6.79f, 42.8f, 5.7f);
+        Creature* firstenemy = plr->getWorldMap()->createAndSpawnCreature(1511, LocationVector(-13770.5f, -6.79f, 42.8f, 5.7f));
         if (firstenemy != nullptr)
         {
             firstenemy->getAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
@@ -69,7 +69,7 @@ public:
         if (mKiller->isPlayer())
         {
             Player* mPlayer = static_cast<Player*>(mKiller);
-            Creature* beka1 =mPlayer->GetMapMgr()->CreateAndSpawnCreature(1516, -13770.5f, -6.79f, 42.8f, 5.7f);
+            Creature* beka1 =mPlayer->getWorldMap()->createAndSpawnCreature(1516, LocationVector(-13770.5f, -6.79f, 42.8f, 5.7f));
             if (beka1 != nullptr)
             {
                 beka1->getAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
@@ -79,10 +79,10 @@ public:
         }
         else
         {
-            Player* mPlayer = getCreature()->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ());
+            Player* mPlayer = getCreature()->getWorldMap()->getInterface()->getPlayerNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ());
             if (mPlayer)
             {
-                Creature* beka1 = mPlayer->GetMapMgr()->CreateAndSpawnCreature(1516, -13770.5f, -6.79f, 42.8f, 5.7f);
+                Creature* beka1 = mPlayer->getWorldMap()->createAndSpawnCreature(1516, LocationVector(-13770.5f, -6.79f, 42.8f, 5.7f));
                 if (beka1 != nullptr)
                 {
                     beka1->getAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
@@ -105,7 +105,7 @@ public:
         if (mKiller->isPlayer())
         {
             Player* mPlayer = static_cast<Player*>(mKiller);
-            Creature* beka1 = mPlayer->GetMapMgr()->CreateAndSpawnCreature(1514, -13770.5f, -6.79f, 42.8f, 5.7f);
+            Creature* beka1 = mPlayer->getWorldMap()->createAndSpawnCreature(1514, LocationVector(-13770.5f, -6.79f, 42.8f, 5.7f));
             if (beka1 != nullptr)
             {
                 beka1->getAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
@@ -115,10 +115,10 @@ public:
         }
         else
         {
-            Player* mPlayer = getCreature()->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ());
+            Player* mPlayer = getCreature()->getWorldMap()->getInterface()->getPlayerNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ());
             if (mPlayer)
             {
-                Creature* beka1 = mPlayer->GetMapMgr()->CreateAndSpawnCreature(1514, -13770.5f, -6.79f, 42.8f, 5.7f);
+                Creature* beka1 = mPlayer->getWorldMap()->createAndSpawnCreature(1514, LocationVector(-13770.5f, -6.79f, 42.8f, 5.7f));
                 if (beka1 != nullptr)
                 {
                     beka1->getAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
@@ -142,7 +142,7 @@ public:
         float SSY = mKiller->GetPositionY();
         float SSZ = mKiller->GetPositionZ();
 
-        Creature* doctor = mKiller->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 1449);
+        Creature* doctor = mKiller->getWorldMap()->getInterface()->getCreatureNearestCoords(SSX, SSY, SSZ, 1449);
         if (doctor)
             doctor->emote(EMOTE_ONESHOT_CHEER);
     }
@@ -157,11 +157,11 @@ public:
         float SSY = mTarget->GetPositionY();
         float SSZ = mTarget->GetPositionZ();
 
-        GameObject* skull1 = mTarget->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 2551);
+        GameObject* skull1 = mTarget->getWorldMap()->getInterface()->getGameObjectNearestCoords(SSX, SSY, SSZ, 2551);
         if (skull1 == nullptr)
             return;
 
-        Creature* Kin_weelay = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 2519);
+        Creature* Kin_weelay = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(SSX, SSY, SSZ, 2519);
         if (Kin_weelay == nullptr)
             return;
 
@@ -171,7 +171,7 @@ public:
         Kin_weelay->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg1.c_str());
         Kin_weelay->castSpell(Kin_weelay, sSpellMgr.getSpellInfo(3644), false);
         skull1->Despawn(5000, 0);
-        GameObject* skull2 = mTarget->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 2551);
+        GameObject* skull2 = mTarget->getWorldMap()->getInterface()->getGameObjectNearestCoords(SSX, SSY, SSZ, 2551);
         if (skull2)
             skull2->Despawn(5000, 0);
 
@@ -191,7 +191,7 @@ public:
         float Y = mTarget->GetPositionY();
         float Z = mTarget->GetPositionZ();
 
-        Creature* Crank = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(X, Y, Z, 2498);
+        Creature* Crank = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(X, Y, Z, 2498);
         if (Crank)
         {
             std::string say = "Hm... if you're looking to adle wits. ";
@@ -211,7 +211,7 @@ public:
         float Y = mTarget->GetPositionY();
         float Z = mTarget->GetPositionZ();
 
-        Creature* MacKinley = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(X, Y, Z, 2501);
+        Creature* MacKinley = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(X, Y, Z, 2501);
         if (MacKinley)
         {
             std::string say = "Bah! ";
@@ -257,26 +257,26 @@ class FacingNegolash : public QuestScript
 
         for (uint8_t i = 0; i < 9; ++i)
         {
-            obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_MEAT, MeatSpawnPoints[i].x, MeatSpawnPoints[i].y, MeatSpawnPoints[i].z, MeatSpawnPoints[i].orientation, 1);
+            obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_MEAT, LocationVector(MeatSpawnPoints[i].x, MeatSpawnPoints[i].y, MeatSpawnPoints[i].z, MeatSpawnPoints[i].orientation), 1);
             if (obj != nullptr)
                 obj->Despawn(2 * 60 * 1000, 0);
         }
 
         for (uint8_t i = 0; i < 5; ++i)
         {
-            obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_BOTTLE, BottleSpawnPoints[i].x, BottleSpawnPoints[i].y, BottleSpawnPoints[i].z, BottleSpawnPoints[i].orientation, 1);
+            obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_BOTTLE, LocationVector(BottleSpawnPoints[i].x, BottleSpawnPoints[i].y, BottleSpawnPoints[i].z, BottleSpawnPoints[i].orientation), 1);
             if (obj != nullptr)
                 obj->Despawn(2 * 60 * 1000, 0);
         }
 
         for (uint8_t i = 0; i < 3; ++i)
         {
-            obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_BREAD, BreadSpawnPoints[i].x, BreadSpawnPoints[i].y, BreadSpawnPoints[i].z, BreadSpawnPoints[i].orientation, 1);
+            obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_BREAD, LocationVector(BreadSpawnPoints[i].x, BreadSpawnPoints[i].y, BreadSpawnPoints[i].z, BreadSpawnPoints[i].orientation), 1);
             if (obj != nullptr)
                 obj->Despawn(2 * 60 * 1000, 0);
         }
 
-        Creature* Negolash = pPlayer->GetMapMgr()->CreateAndSpawnCreature(1494, -14657.400391f, 155.115997f, 4.081050f, 0.353429f);
+        Creature* Negolash = pPlayer->getWorldMap()->createAndSpawnCreature(1494, LocationVector(-14657.400391f, 155.115997f, 4.081050f, 0.353429f));
         if (Negolash != nullptr)
         {
             Negolash->getAIInterface()->moveTo(-14647.526367f, 143.710052f, 1.164550f);

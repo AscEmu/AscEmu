@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Common.hpp"
 #include "Storage/DBC/DBCStorage.hpp"
 #include "Storage/DBC/DBCStructures.hpp"
+#include "Map/Maps/WorldMap.hpp"
 
 namespace MapManagement::AreaManagement
 {
@@ -39,6 +40,7 @@ namespace MapManagement::AreaManagement
         static DBC::Structures::AreaTableEntry const* GetAreaById(uint32 area_id);
         static DBC::Structures::AreaTableEntry const* GetAreaByFlag(uint32 area_flag);
         static DBC::Structures::AreaTableEntry const* GetAreaByMapId(uint32 map_id);
+        static DBC::Structures::AreaTableEntry const* getExactArea(WorldMap* worldMap, LocationVector pos, uint32_t phaseMask);
 
         /* Get Flag */
         static int32 GetFlagById(uint32 area_id);
@@ -55,6 +57,6 @@ namespace MapManagement::AreaManagement
         static bool IsOutdoor(uint32 mapId, float x, float y, float z);
         static bool IsOutdoorWMO(uint32 mogpFlags, int32 /*adtId*/, int32 /*rootId*/, int32 /*groupId*/, DBC::Structures::WMOAreaTableEntry const* wmoEntry, DBC::Structures::AreaTableEntry const* atEntry);
         
-        static const uint32 GetFlagByPosition(uint32 area_flag_without_adt_id, bool have_area_info, uint32 mogp_flags, int32 adt_id, int32 root_id, int32 group_id, uint32 map_id, float x, float y, float z, bool* _out_is_outdoors = nullptr);
+        static const uint32 GetFlagByPosition(uint32 area_flag_without_adt_id, uint32_t tileMapHeight, bool have_area_info, uint32 mogp_flags, int32 adt_id, int32 root_id, int32 group_id, uint32 map_id, float x, float y, float z, bool* _out_is_outdoors = nullptr);
     };
 } // </ MapManagement::AreaManagement>

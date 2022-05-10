@@ -28,7 +28,7 @@
 #include "Objects/Units/Stats.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellTarget.h"
@@ -720,7 +720,7 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
         {
             pGroupGuy = sObjectMgr.GetPlayer((*itr)->guid);
             if (pGroupGuy && pGroupGuy->isAlive() && /* PlayerInGroup->GetInstanceID()==pGroupGuy->GetInstanceID() &&*/
-                pVictim->GetMapMgr() == pGroupGuy->GetMapMgr() && pGroupGuy->getDistanceSq(pVictim) < 100 * 100)
+                pVictim->getWorldMap() == pGroupGuy->getWorldMap() && pGroupGuy->getDistanceSq(pVictim) < 100 * 100)
             {
                 active_player_list[active_player_count] = pGroupGuy;
                 active_player_count++;
@@ -1017,7 +1017,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
             {
                 spell_proc->setOverrideEffectDamage(i, ospinfo->getEffectBasePoints(i) + 1);
                 sScriptMgr.callScriptedSpellProcDoEffect(spell_proc, victim, CastingSpell, damageInfo);
-                spell_proc->doEffect(victim, CastingSpell, flag, damageInfo.realDamage, damageInfo.absorbedDamage, spell_proc->getOverrideEffectDamages(), damageInfo.weaponType);
+                spell_proc->doEffect(victim, CastingSpell, flag, damageInfo.realDamage, damageInfo.absorbedDamage, damageInfo.weaponType);
             }
         }
 
@@ -1025,7 +1025,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
         const auto scriptResult = sScriptMgr.callScriptedSpellProcDoEffect(spell_proc, victim, CastingSpell, damageInfo);
         if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
             continue;
-        if (spell_proc->doEffect(victim, CastingSpell, flag, damageInfo.realDamage, damageInfo.absorbedDamage, spell_proc->getOverrideEffectDamages(), damageInfo.weaponType))
+        if (spell_proc->doEffect(victim, CastingSpell, flag, damageInfo.realDamage, damageInfo.absorbedDamage, damageInfo.weaponType))
             continue;
 
         //these are player talents. Fuckem they pull the emu speed down
@@ -7439,7 +7439,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         //ugly hack for shadowfiend restoring mana
         if (getSummonedByGuid() != 0 && getEntry() == 19668)
         {
-            Player* owner = GetMapMgr()->GetPlayer((uint32)getSummonedByGuid());
+            Player* owner = getWorldMap()->getPlayer((uint32)getSummonedByGuid());
             if (owner)
             {
                 uint32 amount = static_cast<uint32>(owner->getMaxPower(POWER_TYPE_MANA) * 0.05f);
@@ -7449,7 +7449,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         //ugly hack for Bloodsworm restoring hp
         if (getSummonedByGuid() != 0 && getEntry() == 28017)
         {
-            Player* owner = GetMapMgr()->GetPlayer((uint32)getSummonedByGuid());
+            Player* owner = getWorldMap()->getPlayer((uint32)getSummonedByGuid());
             if (owner != NULL)
                 owner->addSimpleHealingBatchEvent(float2int32(1.5f * dmg.realDamage), owner, sSpellMgr.getSpellInfo(50452));
         }
@@ -8236,7 +8236,7 @@ void Unit::RemoveFromWorld(bool free_guid)
     {
         setCritterGuid(0);
 
-        if (Unit* u = m_mapMgr->GetUnit(getCritterGuid()))
+        if (Unit* u = m_WorldMap->getUnit(getCritterGuid()))
             u->Delete();
     }
 #endif
@@ -8248,7 +8248,7 @@ void Unit::RemoveFromWorld(bool free_guid)
     {
         if (m_ObjectSlots[i] != 0)
         {
-            if (GameObject* obj = m_mapMgr->GetGameObject(m_ObjectSlots[i]))
+            if (GameObject* obj = m_WorldMap->getGameObject(m_ObjectSlots[i]))
                 obj->ExpireAndDelete();
 
             m_ObjectSlots[i] = 0;
@@ -8285,7 +8285,7 @@ void Unit::RemoveFromWorld(bool free_guid)
     getThreatManager().removeMeFromThreatLists();
 }
 
-void Unit::Deactivate(MapMgr* mgr)
+void Unit::Deactivate(WorldMap* mgr)
 {
     if (m_useAI)
         getAIInterface()->enterEvadeMode();
@@ -8597,9 +8597,9 @@ void Unit::EventModelChange()
 void Unit::RemoveFieldSummon()
 {
     uint64 guid = getSummonGuid();
-    if (guid && GetMapMgr())
+    if (guid && getWorldMap())
     {
-        Creature* summon = static_cast<Creature*>(GetMapMgr()->GetUnit(guid));
+        Creature* summon = static_cast<Creature*>(getWorldMap()->getUnit(guid));
         if (summon)
             summon->RemoveFromWorld(false, true);
         setSummonGuid(0);
@@ -8738,7 +8738,7 @@ uint32 Unit::DoDamageSplitTarget(uint32 res, SchoolMask schoolMask, bool melee_d
 {
     DamageSplitTarget* ds = m_damageSplitTarget;
 
-    Unit* splittarget = (GetMapMgr() != NULL) ? GetMapMgr()->GetUnit(ds->m_target) : NULL;
+    Unit* splittarget = (getWorldMap() != NULL) ? getWorldMap()->getUnit(ds->m_target) : NULL;
     if (splittarget != NULL && res > 0)
     {
         // calculate damage
@@ -9162,7 +9162,7 @@ void Unit::UnPossess()
     if (!getCharmGuid())
         return;
 
-    Unit* pTarget = GetMapMgr()->GetUnit(getCharmGuid());
+    Unit* pTarget = getWorldMap()->getUnit(getCharmGuid());
     if (!pTarget)
         return;
 

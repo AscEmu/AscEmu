@@ -46,7 +46,7 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
         Player* player = itr->second;
         if (player->getSession() && player->IsInWorld())
         {
-            if (player->GetMapMgr() != m_session->GetPlayer()->GetMapMgr())
+            if (player->getWorldMap() != m_session->GetPlayer()->getWorldMap())
             {
                 sEventMgr.AddEvent(static_cast< Unit* >(player), &Unit::eventCastSpell, static_cast< Unit* >(player), spell_entry, EVENT_PLAYER_CHECKFORCHEATS, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             }
@@ -79,7 +79,7 @@ bool ChatHandler::HandleAdminDispelAllCommand(const char* args, WorldSession* m_
         Player* player = itr->second;
         if (player->getSession() && player->IsInWorld())
         {
-            if (player->GetMapMgr() != m_session->GetPlayer()->GetMapMgr())
+            if (player->getWorldMap() != m_session->GetPlayer()->getWorldMap())
             {
                 sEventMgr.AddEvent(static_cast< Unit* >(player), &Unit::DispelAll, pos ? true : false, EVENT_PLAYER_CHECKFORCHEATS, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             }

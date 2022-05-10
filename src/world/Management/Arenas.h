@@ -40,7 +40,7 @@ class SERVER_DECL Arena : public CBattleground
     public:
 
         bool rated_match;
-        Arena(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side);
+        Arena(WorldMap* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side);
         virtual ~Arena();
 
         bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;

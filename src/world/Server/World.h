@@ -238,8 +238,6 @@ class SERVER_DECL World : public EventableObject
         void playSoundToAllPlayers(uint32_t soundId);
         void logoutAllPlayers();
 
-        void checkForExpiredInstances();
-
         void deleteObject(Object* object);
 
     //////////////////////////////////////////////////////////////////////////////////////////

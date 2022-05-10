@@ -9,14 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 class ZulAmanCataInstanceScript : public InstanceScript
 {
 public:
-    explicit ZulAmanCataInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new ZulAmanCataInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
+    explicit ZulAmanCataInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new ZulAmanCataInstanceScript(pMapMgr); }
 };
 
 void SetupZulAmanCata(ScriptMgr* mgr)

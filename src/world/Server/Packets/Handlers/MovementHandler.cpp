@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Objects/Units/Players/Player.h"
 #include "Objects/Units/Creatures/Vehicle.h"
-#include "Map/CellHandlerDefines.hpp"
+#include "Map/Cells/CellHandlerDefines.hpp"
 #include "Objects/GameObject.h"
 #include "Server/MainServerDefines.h"
 #include "Server/Warden/SpeedDetector.h"
@@ -189,10 +189,10 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     /// out of bounds check
     {
         bool out_of_bounds = false;
-        out_of_bounds = out_of_bounds || sessionMovementInfo.position.y < _minY;
-        out_of_bounds = out_of_bounds || sessionMovementInfo.position.y > _maxY;
-        out_of_bounds = out_of_bounds || sessionMovementInfo.position.x > _maxX;
-        out_of_bounds = out_of_bounds || sessionMovementInfo.position.x > _maxX;
+        out_of_bounds = out_of_bounds || sessionMovementInfo.position.y < Map::Terrain::_minY;
+        out_of_bounds = out_of_bounds || sessionMovementInfo.position.y > Map::Terrain::_maxY;
+        out_of_bounds = out_of_bounds || sessionMovementInfo.position.x > Map::Terrain::_maxX;
+        out_of_bounds = out_of_bounds || sessionMovementInfo.position.x > Map::Terrain::_maxX;
 
         if (out_of_bounds)
         {
@@ -322,7 +322,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
         // Transports like Elevators
         if (!mover->GetTransport() && !mover->getVehicle())
         {
-            GameObject* go = mover->GetMapMgrGameObject(movementInfo.transport_guid);
+            GameObject* go = mover->getWorldMapGameObject(movementInfo.transport_guid);
             if (!go || go->getOType() != GAMEOBJECT_TYPE_TRANSPORT)
                 movementInfo.removeMovementFlag(MOVEFLAG_TRANSPORT);
         }
@@ -330,7 +330,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
         // Transports like Elevators
         if (!mover->GetTransport())
         {
-            GameObject* go = mover->GetMapMgrGameObject(movementInfo.transport_guid);
+            GameObject* go = mover->getWorldMapGameObject(movementInfo.transport_guid);
             if (!go || go->getOType() != GAMEOBJECT_TYPE_TRANSPORT)
                 movementInfo.removeMovementFlag(MOVEFLAG_TRANSPORT);
         }
@@ -363,7 +363,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
     WorldPacket data(opcode, recvData.size());
     data << sessionMovementInfo;
-    mover->sendMessageToSet(&data, false);
+    mover->sendMessageToSet(&data, _player);
 
 #else
 

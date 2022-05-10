@@ -24,8 +24,7 @@
 #include "Management/Arenas.h"
 #include "Management/ArenaTeam.h"
 #include "Server/MainServerDefines.h"
-#include "Map/MapMgr.h"
-#include "Map/WorldCreator.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Management/ObjectMgr.h"
 #include "Server/Packets/SmsgArenaError.h"
@@ -1109,7 +1108,7 @@ CBattleground* CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGro
         if (bgFactories.find(bgMaps[Type]) != bgFactories.end())
             cfunc = bgFactories[bgMaps[Type]];
 
-    MapMgr* mgr = nullptr;
+    BattlegroundMap* mgr = nullptr;
     CBattleground* bg;
     bool isWeekend = false;
     struct tm tm;
@@ -1131,7 +1130,7 @@ CBattleground* CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGro
         uint32 mapid = arenaMaps[index];
         ArenaFactoryMethod arenaFactory = arenaFactories[index];
 
-        mgr = sInstanceMgr.CreateBattlegroundInstance(mapid);
+        mgr = sMapMgr.createBattleground(mapid);
         if (mgr == nullptr)
         {
             sLogger.failure("call failed for map %u, type %u, level group %u", mapid, Type, LevelGroup);
@@ -1142,7 +1141,7 @@ CBattleground* CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGro
 
         iid = ++m_maxBattlegroundId[Type];
         bg = arenaFactory(mgr, iid, LevelGroup, Type, players_per_side);
-        mgr->m_battleground = bg;
+        mgr->setBattleground(bg);
         sLogger.info("BattlegroundManager : Created arena battleground type %u for level group %u on map %u.", Type, LevelGroup, mapid);
         sEventMgr.AddEvent(bg, &CBattleground::EventCreate, EVENT_BATTLEGROUND_QUEUE_UPDATE, 1, 1, 0);
         m_instanceLock.Acquire();
@@ -1194,7 +1193,7 @@ CBattleground* CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGro
     }
 
     // Create Map Manager
-    mgr = sInstanceMgr.CreateBattlegroundInstance(bgMaps[Type]);
+    mgr = sMapMgr.createBattleground(bgMaps[Type]);
     if (mgr == nullptr)
     {
         sLogger.failure("call failed for map %u, type %u, level group %u", bgMaps[Type], Type, LevelGroup);
@@ -1205,7 +1204,7 @@ CBattleground* CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGro
     iid = ++m_maxBattlegroundId[Type];
     bg = cfunc(mgr, iid, LevelGroup, Type);
     bg->SetIsWeekend(isWeekend);
-    mgr->m_battleground = bg;
+    mgr->setBattleground(bg);
     sEventMgr.AddEvent(bg, &CBattleground::EventCreate, EVENT_BATTLEGROUND_QUEUE_UPDATE, 1, 1, 0);
     sLogger.info("BattlegroundManager : Created battleground type %u for level group %u.", Type, LevelGroup);
 

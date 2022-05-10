@@ -24,7 +24,7 @@ class Zenn_Foulhoof : public QuestScript
 public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        if (Creature* creature = mTarget->GetMapMgr()->GetSqlIdCreature(43727))
+        if (Creature* creature = mTarget->getWorldMap()->getSqlIdCreature(43727))
         {
             creature->setDisplayId(901);
             creature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Ribbit! No! This cannot...ribbit...be! You have duped me with...ribbit..your foul trickery! Ribbit!");

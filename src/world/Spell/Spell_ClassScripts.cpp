@@ -20,7 +20,7 @@
  */
 
 
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 #include "Spell/SpellMgr.hpp"
 #include "SpellAuras.h"
@@ -380,7 +380,7 @@ public:
         {
             if (m_caster != NULL && m_caster->IsInWorld())
             {
-                Unit* target = m_caster->GetMapMgr()->GetUnit(m_targets.getUnitTarget());
+                Unit* target = m_caster->getWorldMap()->getUnit(m_targets.getUnitTarget());
 
                 if (target == NULL || !(isAttackable(m_caster, target, false) || target->getRace() == RACE_UNDEAD))
                     result = SPELL_FAILED_BAD_TARGETS;

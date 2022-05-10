@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ThreatHandler.h"
 
 #include "Creatures/Creature.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
 
 void ThreatReference::addThreat(float amount)
@@ -187,7 +187,7 @@ void ThreatManager::initialize()
     {
         // TODO: Summoner is set in Summon::Load and we call ThreatManager initialize from Summon constructor
         // so summoner is always nullptr here. Maybe in the future it's set in constructor ;) -Appled
-        if (Unit* summoner = pUnit->GetMapMgr()->GetUnit(WoWGuid::getGuidLowPartFromUInt64(pUnit->getSummonedByGuid())))
+        if (Unit* summoner = pUnit->getWorldMap()->getUnit(WoWGuid::getGuidLowPartFromUInt64(pUnit->getSummonedByGuid())))
             if (summoner->isPlayer())
                 return false;
     }
@@ -547,7 +547,7 @@ void ThreatManager::addThreat(Unit* target, float amount, SpellInfo const* spell
                 if (it != _myThreatListEntries.end())
                     redirTarget = it->second->_victim;
                 else
-                    redirTarget = target->GetMapMgrUnit(pair.first);
+                    redirTarget = target->getWorldMapUnit(pair.first);
 
                 if (redirTarget)
                 {                 

@@ -291,19 +291,13 @@ enum
 class BlackTempleScript : public InstanceScript
 {
 public:
-    explicit BlackTempleScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit BlackTempleScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
     {
-        if (getData(CN_SUPREMUS) == Finished)
+        if (getBossState(DATA_SUPREMUS) == Performed)
             setGameObjectStateForEntry(185882, GO_STATE_OPEN); // Gate to Black Temple behind Supremus
     }
 
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new BlackTempleScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new BlackTempleScript(pMapMgr); }
 
     void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
     {
@@ -5236,7 +5230,7 @@ public:
     void OnActivate(Player* /*pPlayer*/) override
     {
         _gameobject->setFlags(GO_FLAG_NONSELECTABLE);
-        Creature* pTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), CN_CAGE_TRAP_DISTURB_TRIGGER);
+        Creature* pTrigger = _gameobject->getWorldMap()->getInterface()->getCreatureNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), CN_CAGE_TRAP_DISTURB_TRIGGER);
         if (pTrigger != NULL && pTrigger->GetScript() != NULL)
         {
             CageTrapTriggerAI* pTriggerAI = static_cast< CageTrapTriggerAI* >(pTrigger->GetScript());

@@ -28,7 +28,7 @@
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Players/PlayerClasses.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 #include "SpellAuras.h"
 #include "Definitions/SpellModifierType.hpp"
@@ -69,9 +69,9 @@ Player* Aura::GetPlayerCaster()
         }
     }
 
-    if (m_target->GetMapMgr())
+    if (m_target->getWorldMap())
     {
-        return m_target->GetMapMgr()->GetPlayer(WoWGuid::getGuidLowPartFromUInt64(m_casterGuid));
+        return m_target->getWorldMap()->getPlayer(WoWGuid::getGuidLowPartFromUInt64(m_casterGuid));
     }
     else
     {
@@ -84,8 +84,8 @@ Unit* Aura::GetUnitCaster()
     if (m_casterGuid == m_target->getGuid())
         return m_target;
 
-    if (m_target->GetMapMgr())
-        return m_target->GetMapMgr()->GetUnit(m_casterGuid);
+    if (m_target->getWorldMap())
+        return m_target->getWorldMap()->getUnit(m_casterGuid);
     else
         return nullptr;
 }
@@ -276,7 +276,7 @@ void Aura::EventUpdateGroupAA(AuraEffectModifier* /*aurEff*/, float r)
         AreaAuraList::iterator itr2 = itr;
         ++itr;
 
-        Player* tp = m_target->GetMapMgr()->GetPlayer(WoWGuid::getGuidLowPartFromUInt64(*itr2));
+        Player* tp = m_target->getWorldMap()->getPlayer(WoWGuid::getGuidLowPartFromUInt64(*itr2));
 
         bool removable = false;
         if (tp == nullptr)
@@ -389,7 +389,7 @@ void Aura::EventUpdateRaidAA(AuraEffectModifier* /*aurEff*/, float r)
         AreaAuraList::iterator itr2 = itr;
         ++itr;
 
-        Player* tp = m_target->GetMapMgr()->GetPlayer(WoWGuid::getGuidLowPartFromUInt64(*itr2));
+        Player* tp = m_target->getWorldMap()->getPlayer(WoWGuid::getGuidLowPartFromUInt64(*itr2));
         bool removable = false;
 
         if (tp == nullptr)
@@ -501,7 +501,7 @@ void Aura::EventUpdateFriendAA(AuraEffectModifier* /*aurEff*/, float r)
         AreaAuraList::iterator itr2 = itr;
         ++itr;
 
-        Unit* tu = u->GetMapMgr()->GetUnit(*itr2);
+        Unit* tu = u->getWorldMap()->getUnit(*itr2);
         bool removable = false;
 
         if (tu == nullptr)
@@ -568,7 +568,7 @@ void Aura::EventUpdateEnemyAA(AuraEffectModifier* /*aurEff*/, float r)
         AreaAuraList::iterator itr2 = itr;
         ++itr;
 
-        Unit* tu = u->GetMapMgr()->GetUnit(*itr2);
+        Unit* tu = u->getWorldMap()->getUnit(*itr2);
         bool removable = false;
 
         if (tu == nullptr)
@@ -648,6 +648,10 @@ void Aura::EventUpdateAreaAura(uint8_t effIndex, float r)
         return;
     }
 
+    // Do not update area aura if caster is not in world yet
+    if (!u_caster->IsInWorld())
+        return;
+
     uint32 AreaAuraEffectId = m_spellInfo->getAreaAuraEffect();
 
     switch (AreaAuraEffectId)
@@ -685,7 +689,7 @@ void Aura::EventUpdateAreaAura(uint8_t effIndex, float r)
 
     for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end(); ++itr)
     {
-        auto unit = m_target->GetMapMgr()->GetUnit(*itr);
+        auto unit = m_target->getWorldMap()->getUnit(*itr);
         if (unit == nullptr)
             return;
 
@@ -705,7 +709,7 @@ void Aura::ClearAATargets()
 
     for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end(); ++itr)
     {
-        Unit* tu = m_target->GetMapMgr()->GetUnit(*itr);
+        Unit* tu = m_target->getWorldMap()->getUnit(*itr);
 
         if (tu == nullptr)
             continue;
@@ -729,7 +733,7 @@ void Aura::ClearAATargets()
 
     if (m_spellInfo->hasEffect(SPELL_EFFECT_APPLY_OWNER_AREA_AURA))
     {
-        Unit* u = m_target->GetMapMgr()->GetUnit(m_target->getCreatedByGuid());
+        Unit* u = m_target->getWorldMap()->getUnit(m_target->getCreatedByGuid());
 
         if (u != nullptr)
             u->RemoveAura(spellid);
@@ -3116,7 +3120,7 @@ void Aura::SpellAuraMechanicImmunity(AuraEffectModifier* aurEff, bool apply)
         // Demonic Circle hack
         if (m_spellInfo->getId() == 48020 && m_target->isPlayer() && m_target->hasAurasWithId(62388))
         {
-            GameObject* obj = m_target->GetMapMgr()->GetGameObject(m_target->m_ObjectSlots[0]);
+            GameObject* obj = m_target->getWorldMap()->getGameObject(m_target->m_ObjectSlots[0]);
 
             if (obj != nullptr)
             {
@@ -3187,6 +3191,7 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
                 p_target->sendPacket(SmsgControlVehicle().serialise().get());
 
                 // mounts can also have accessories
+                p_target->getVehicleKit()->initialize();
                 p_target->getVehicleKit()->loadAllAccessories(false);
             }
 #endif
@@ -3460,7 +3465,7 @@ void Aura::SpellAuraChannelDeathItem(AuraEffectModifier* aurEff, bool apply)
 
             if (m_target->isDead())
             {
-                Player* pCaster = m_target->GetMapMgr()->GetPlayer((uint32)m_casterGuid);
+                Player* pCaster = m_target->getWorldMap()->getPlayer((uint32)m_casterGuid);
                 if (!pCaster)
                     return;
                 /*int32 delta=pCaster->getLevel()-m_target->getLevel();
@@ -5784,11 +5789,11 @@ void Aura::HandleAuraControlVehicle(AuraEffectModifier* aurEff, bool apply)
     if (!getCaster()->isCreatureOrPlayer())
         return;
 
-    if (!m_target->isVehicle())
+    if (m_target->isCreature() && !m_target->isVehicle() || !m_target->getVehicleKit())
         return;
 
     Unit* caster = static_cast<Unit*>(getCaster());
-    int8_t seatId = aurEff->getEffectBaseDamage() - 1;
+    auto seatId = static_cast<int8_t>(aurEff->getEffectBaseDamage() - 1);
 
     if (apply)
     {

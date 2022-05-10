@@ -35,6 +35,7 @@
 #include "SpellHelpers.h"
 
 #include "VMapFactory.h"
+#include "VMapManager2.h"
 #include "Objects/Item.h"
 #include "Objects/DynamicObject.h"
 #include "Management/ItemInterface.h"
@@ -44,8 +45,8 @@
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Players/PlayerClasses.hpp"
-#include "Map/MapMgr.h"
-#include "Map/MapScriptInterface.h"
+#include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/MapScriptInterface.h"
 #include "Management/Faction.h"
 #include "SpellMgr.hpp"
 #include "SpellAuras.h"
@@ -107,7 +108,6 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
     pSpellId = 0;
     ProcedOnSpell = nullptr;
     extra_cast_number = 0;
-    m_isCasting = false;
     m_glyphslot = 0;
     m_charges = info->getProcCharges();
 
@@ -131,9 +131,9 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
     m_spellInfo = info;
 
     // Get spell difficulty
-    if (info->getSpellDifficultyID() != 0 && Caster->getObjectTypeId() != TYPEID_PLAYER && Caster->GetMapMgr() != nullptr && Caster->GetMapMgr()->pInstance != nullptr)
+    if (info->getSpellDifficultyID() != 0 && Caster->getObjectTypeId() != TYPEID_PLAYER && Caster->getWorldMap() != nullptr)
     {
-        auto SpellDiffEntry = sSpellMgr.getSpellInfoByDifficulty(info->getSpellDifficultyID(), Caster->GetMapMgr()->iInstanceMode);
+        auto SpellDiffEntry = sSpellMgr.getSpellInfoByDifficulty(info->getSpellDifficultyID(), Caster->getWorldMap()->getDifficulty());
         if (SpellDiffEntry != nullptr)
             m_spellInfo = SpellDiffEntry;
     }
@@ -164,7 +164,7 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
 
     if (u_caster && getSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_CAST_BY_CHARMER)
     {
-        auto unitCharmer = u_caster->GetMapMgrUnit(u_caster->getCharmedByGuid());
+        auto unitCharmer = u_caster->getWorldMapUnit(u_caster->getCharmedByGuid());
         if (unitCharmer != nullptr)
         {
             u_caster = unitCharmer;
@@ -391,8 +391,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
             {
                 if (worldConfig.terrainCollision.isCollisionEnabled)
                 {
-                    VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-                    bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), itr->GetPositionX(), itr->GetPositionY(), itr->GetPositionZ());
+                    bool isInLOS = m_caster->IsWithinLOSInMap(itr);
 
                     if (m_caster->GetMapId() == itr->GetMapId() && !isInLOS)
                         continue;
@@ -458,8 +457,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
             {
                 if (worldConfig.terrainCollision.isCollisionEnabled)
                 {
-                    VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-                    bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), itr->GetPositionX(), itr->GetPositionY(), itr->GetPositionZ());
+                    bool isInLOS = m_caster->IsWithinLOSInMap(itr);
 
                     if (m_caster->GetMapId() == itr->GetMapId() && !isInLOS)
                         continue;
@@ -1298,7 +1296,7 @@ void Spell::AddTime(uint32 type)
         }
         if (m_DelayStep == 2)
             return; //spells can only be delayed twice as of 3.0.2
-        if (m_spellState == SPELL_STATE_PREPARING)
+        if (m_spellState == SPELL_STATE_CASTING)
         {
             // no pushback for some spells
             if ((getSpellInfo()->getInterruptFlags() & CAST_INTERRUPT_PUSHBACK) == 0)
@@ -1437,7 +1435,7 @@ void Spell::HandleAddAura(uint64 guid)
     if (u_caster && u_caster->getGuid() == guid)
         Target = u_caster;
     else if (m_caster->IsInWorld())
-        Target = m_caster->GetMapMgr()->GetUnit(guid);
+        Target = m_caster->getWorldMap()->getUnit(guid);
 
     if (Target == nullptr)
     {
@@ -1937,7 +1935,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
      */
     if (m_caster && m_caster->IsInWorld())
     {
-        Unit* target = m_caster->GetMapMgr()->GetUnit(m_targets.getUnitTarget());
+        Unit* target = m_caster->getWorldMap()->getUnit(m_targets.getUnitTarget());
 
         /**
          * Check for valid targets
@@ -1963,27 +1961,27 @@ uint8 Spell::CanCast(bool /*tolerate*/)
          */
         if (getSpellInfo()->getId() == 32146)
         {
-            Creature* corpse = m_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), 18240);
+            Creature* corpse = m_caster->getWorldMap()->getInterface()->getCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), 18240);
             if (corpse != nullptr)
                 if (m_caster->CalcDistance(m_caster, corpse) > 5)
                     return SPELL_FAILED_NOT_HERE;
         }
         else if (getSpellInfo()->getId() == 39246)
         {
-            Creature* cleft = m_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), 22105);
+            Creature* cleft = m_caster->getWorldMap()->getInterface()->getCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), 22105);
             if (cleft == nullptr || cleft->isAlive())
                 return SPELL_FAILED_NOT_HERE;
         }
         else if (getSpellInfo()->getId() == 30988)
         {
-            Creature* corpse = m_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), 17701);
+            Creature* corpse = m_caster->getWorldMap()->getInterface()->getCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), 17701);
             if (corpse != nullptr)
                 if (m_caster->CalcDistance(m_caster, corpse) > 5 || corpse->isAlive())
                     return SPELL_FAILED_NOT_HERE;
         }
         else if (getSpellInfo()->getId() == 43723)
         {
-            Creature* abysal = p_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ(), 19973);
+            Creature* abysal = p_caster->getWorldMap()->getInterface()->getCreatureNearestCoords(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ(), 19973);
             if (abysal != nullptr)
             {
                 if (!abysal->isAlive())
@@ -1995,7 +1993,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
         }
         else if (getSpellInfo()->getId() == 32307)
         {
-            Creature* kilsorrow = p_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ());
+            Creature* kilsorrow = p_caster->getWorldMap()->getInterface()->getCreatureNearestCoords(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ());
             if (kilsorrow == nullptr || kilsorrow->isAlive() || p_caster->CalcDistance(p_caster, kilsorrow) > 1)
                 return SPELL_FAILED_NOT_HERE;
             if (kilsorrow->getEntry() != 17147 && kilsorrow->getEntry() != 17148 && kilsorrow->getEntry() != 18397 && kilsorrow->getEntry() != 18658 && kilsorrow->getEntry() != 17146)
@@ -2063,7 +2061,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
      */
     if (m_targets.getUnitTarget())
     {
-        Unit* target = (m_caster->IsInWorld()) ? m_caster->GetMapMgr()->GetUnit(m_targets.getUnitTarget()) : NULL;
+        Unit* target = (m_caster->IsInWorld()) ? m_caster->getWorldMap()->getUnit(m_targets.getUnitTarget()) : NULL;
 
         if (target)
         {
@@ -2176,32 +2174,31 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                 uint32 entry = getSpellInfo()->getEffectMiscValue(0);
                 if (entry == GO_FISHING_BOBBER)
                 {
-                    //uint32 mapid = p_caster->GetMapId();
-                    float px = u_caster->GetPositionX();
-                    float py = u_caster->GetPositionY();
-                    float pz = u_caster->GetPositionZ();
-                    float orient = m_caster->GetOrientation();
+                    WorldMap* map = m_caster->getWorldMap();
+                    float minDist = m_spellInfo->getMinRange(true);
+                    float maxDist = m_spellInfo->getMaxRange(true);
                     float posx = 0, posy = 0, posz = 0;
-                    float co = cos(orient);
-                    float si = sin(orient);
-                    MapMgr* map = m_caster->GetMapMgr();
+                    float dist = Util::getRandomFloat(minDist, maxDist);
 
-                    float r;
-                    for (r = 20; r > 10; r--)
-                    {
-                        posx = px + r * co;
-                        posy = py + r * si;
-                        uint32 liquidtype;
-                        map->GetLiquidInfo(posx, posy, pz + 2, posz, liquidtype);
-                        if (!(liquidtype & 1))//water
-                            continue;
-                        if (!map->isInLineOfSight(px, py, pz + 0.5f, posx, posy, posz))
-                            continue;
-                        if (posz > map->GetLandHeight(posx, posy, pz + 2))
-                            break;
-                    }
-                    if (r <= 10)
+                    float angle = Util::getRandomFloat(0.0f, 1.0f) * static_cast<float>(M_PI * 35.0f / 180.0f) - static_cast<float>(M_PI * 17.5f / 180.0f);
+                    m_caster->getClosePoint(posx, posy, posz, 0.388999998569489f, dist, angle);
+
+                    float ground = m_caster->getMapHeight(LocationVector(posx, posy, posz));
+                    float liquidLevel = VMAP_INVALID_HEIGHT_VALUE;
+
+                    LiquidData liquidData;
+                    if (map->getLiquidStatus(m_caster->GetPhase(), LocationVector(posx, posy, posz), MAP_ALL_LIQUIDS, &liquidData, m_caster->getCollisionHeight()))
+                        liquidLevel = liquidData.level;
+
+                    if (liquidLevel <= ground)
+                        return SPELL_FAILED_NOT_FISHABLE;;
+
+                    if (ground + 0.75 > liquidLevel)
+#if VERSION_STRING > Classic
+                        return SPELL_FAILED_TOO_SHALLOW;
+#else
                         return SPELL_FAILED_NOT_FISHABLE;
+#endif
 
                     // if we are already fishing, don't cast it again
                     if (p_caster->getSummonedObject())
@@ -3282,7 +3279,7 @@ void Spell::SpellEffectJumpTarget(uint8_t effectIndex)
 
     if (m_targets.getTargetMask() & TARGET_FLAG_UNIT)
     {
-        Object* uobj = m_caster->GetMapMgr()->_GetObject(m_targets.getUnitTarget());
+        Object* uobj = m_caster->getWorldMap()->getObject(m_targets.getUnitTarget());
 
         if (uobj == nullptr || !uobj->isCreatureOrPlayer())
         {
@@ -3375,7 +3372,7 @@ void Spell::SpellEffectJumpBehindTarget(uint8_t effectIndex)
 
     if (m_targets.getTargetMask() & TARGET_FLAG_UNIT)
     {
-        Object* uobj = m_caster->GetMapMgr()->_GetObject(m_targets.getUnitTarget());
+        Object* uobj = m_caster->getWorldMap()->getObject(m_targets.getUnitTarget());
 
         if (uobj == nullptr || !uobj->isCreatureOrPlayer())
             return;
@@ -3401,10 +3398,9 @@ void Spell::HandleTargetNoObject()
     float newz = m_caster->GetPositionZ();
 
     //clamp Z
-    newz = m_caster->GetMapMgr()->GetLandHeight(newx, newy, newz);
+    newz = m_caster->getMapHeight(LocationVector(newx, newy, newz));
 
-    VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-    bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ() + 2.0f, newx, newy, newz + 2.0f);
+    bool isInLOS = m_caster->IsWithinLOS(LocationVector(newx, newy, newz));
     //if not in line of sight, or too far away we summon inside caster
     if (fabs(newz - m_caster->GetPositionZ()) > 10 || !isInLOS)
     {

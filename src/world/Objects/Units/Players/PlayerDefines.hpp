@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/ItemMacros.hpp"
 #include "Macros/PlayerMacros.hpp"
 #include "Management/Skill.hpp"
-#include "Map/InstanceDefines.hpp"
+#include "Map/Maps/InstanceDefines.hpp"
 #include <WorldConf.h>
 #include <CommonTypes.hpp>
 
@@ -38,6 +38,18 @@ enum PlayerTeam : uint8_t
     TEAM_ALLIANCE = 0,
     TEAM_HORDE    = 1,
     MAX_PLAYER_TEAMS
+};
+
+enum Team : uint32_t
+{
+    HORDE                       = 67,
+    ALLIANCE                    = 469,
+    //STEAMWHEEDLE_CARTEL       = 169,
+    //ALLIANCE_FORCES           = 891,
+    //HORDE_FORCES              = 892,
+    //SANCTUARY                 = 936,
+    //OUTLAND                   = 980,
+    TEAM_OTHER = 0
 };
 
 enum Gender
@@ -936,8 +948,6 @@ struct PlayerCreateInfo
 //\todo: It is mostly used to handle offline player data for groups, somehow it is used to
 // determine if a player is online or not.
 
-typedef std::unordered_map<uint32_t, uint32_t> PlayerInstanceMap;
-
 class SERVER_DECL CachedCharacterInfo
 {
 public:
@@ -958,8 +968,6 @@ public:
     uint32_t lastLevel;
     Group* m_Group;
     int8_t subGroup;
-    std::mutex savedInstanceIdsLock;
-    PlayerInstanceMap savedInstanceIds[InstanceDifficulty::MAX_DIFFICULTY];
 
     uint32_t m_guild;
     uint32_t guildRank;

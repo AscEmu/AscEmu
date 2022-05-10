@@ -18,7 +18,7 @@
  */
 
 #include "Setup.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 #include "Spell/SpellAuras.h"
 #include "Server/Opcodes.hpp"
@@ -40,7 +40,7 @@ bool Pestilence(uint8_t effectIndex, Spell* pSpell)
             return true;
 
         Unit* u_caster = pSpell->getUnitCaster();
-        Unit* Main = u_caster->GetMapMgr()->GetUnit(u_caster->getTargetGuid());
+        Unit* Main = u_caster->getWorldMap()->getUnit(u_caster->getTargetGuid());
         if (Main == NULL)
             return true;
         bool blood = Main->hasAurasWithId(BLOOD_PLAGUE);

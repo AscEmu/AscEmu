@@ -190,8 +190,8 @@ public: //\todo Zyres: public fpr LuaEngine, sort out why
 
     void Update(unsigned long time_passed);             // hides function Object::Update
     // void AddToWorld();                               // not used
-    // void AddToWorld(MapMgr* pMapMgr);                // not used
-    // void PushToWorld(MapMgr*);                       // not used
+    // void AddToWorld(WorldMap* pMapMgr);                // not used
+    // void PushToWorld(WorldMap*);                       // not used
     virtual void RemoveFromWorld(bool free_guid);       // hides virtual function Object::RemoveFromWorld
     // void OnPrePushToWorld();                         // not used
     virtual void OnPushToWorld();                       // hides virtual function Object::OnPushToWorld
@@ -266,6 +266,7 @@ public:
     uint32_t getHealth() const;
     void setHealth(uint32_t health);
     void modHealth(int32_t health);
+    inline void setFullHealth() { setHealth(getMaxHealth()); }
 
     uint32_t getPower(PowerType type, bool inRealTime = true) const;
     void setPower(PowerType type, uint32_t value, bool sendPacket = true);
@@ -600,6 +601,7 @@ public:
     void setMoveDisableGravity(bool disable_gravity);
     void setMoveWalk(bool set_walk);
     void setFacing(float newo);     //only working if creature is idle
+    void setAnimationTier(uint8_t tier);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // used for handling fall
@@ -1133,7 +1135,7 @@ public:
     friend class AIInterface;
     friend class Aura;
 
-    virtual void Deactivate(MapMgr* mgr);
+    virtual void Deactivate(WorldMap* mgr);
 
     bool  canReachWithAttack(Unit* pVictim);
 
@@ -1442,6 +1444,7 @@ public:
 
     void EventModelChange();
     inline float GetModelHalfSize() { return m_modelhalfsize * getScale(); }
+    float getCollisionHeight() const override;
 
     void RemoveFieldSummon();
 

@@ -21,8 +21,12 @@
 #define _IVMAPMANAGER_H
 
 #include <string>
+#include <optional>
 #include "Common.hpp"
 
+ //! Optional helper class to wrap optional values within.
+template <class T>
+using Optional = std::optional<T>;
 //===========================================================
 
 /**
@@ -42,8 +46,29 @@ namespace VMAP
     #define VMAP_INVALID_HEIGHT       -100000.0f            // for check
     #define VMAP_INVALID_HEIGHT_VALUE -200000.0f            // real assigned value in unknown height case
 
+    struct AreaAndLiquidData
+    {
+        struct AreaInfo
+        {
+            AreaInfo(int32_t _adtId, int32_t _rootId, int32_t _groupId, uint32_t _flags) : adtId(_adtId), rootId(_rootId), groupId(_groupId), mogpFlags(_flags) { }
+            int32_t const adtId;
+            int32_t const rootId;
+            int32_t const groupId;
+            uint32_t const mogpFlags;
+        };
+        struct LiquidInfo
+        {
+            LiquidInfo(uint32_t _type, float _level) : type(_type), level(_level) { }
+            uint32_t const type;
+            float const level;
+        };
+
+        float floorZ = VMAP_INVALID_HEIGHT;
+        Optional<AreaInfo> areaInfo;
+        Optional<LiquidInfo> liquidInfo;
+    };
     //===========================================================
-    class IVMapManager
+    class SERVER_DECL IVMapManager
     {
         private:
             bool iEnableLineOfSightCalc;
@@ -93,8 +118,10 @@ namespace VMAP
             Query world model area info.
             \param z gets adjusted to the ground height for which this are info is valid
             */
-            virtual bool getAreaInfo(unsigned int pMapId, float x, float y, float &z, uint32 &flags, int32 &adtId, int32 &rootId, int32 &groupId) const=0;
-            virtual bool GetLiquidLevel(uint32 pMapId, float x, float y, float z, uint8 ReqLiquidType, float &level, float &floor, uint32 &type) const=0;
+            virtual bool getAreaInfo(unsigned int pMapId, float x, float y, float &z, uint32_t &flags, int32_t &adtId, int32_t &rootId, int32_t &groupId) const=0;
+            virtual bool getLiquidLevel(uint32_t pMapId, float x, float y, float z, uint8_t ReqLiquidType, float &level, float &floor, uint32_t &type, uint32_t& mogpFlags) const=0;
+            // get both area + liquid data in a single vmap lookup
+            virtual void getAreaAndLiquidData(unsigned int mapId, float x, float y, float z, uint8_t reqLiquidType, AreaAndLiquidData& data) const = 0;
     };
 
 }

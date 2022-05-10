@@ -29,7 +29,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "WorldSocket.h"
 #include "Packets/SmsgNotification.h"
@@ -276,7 +276,7 @@ void WorldSession::LogoutPlayer(bool Save)
 
         if (_player->m_currentLoot && _player->IsInWorld())
         {
-            Object* obj = _player->GetMapMgr()->_GetObject(_player->m_currentLoot);
+            Object* obj = _player->getWorldMap()->getObject(_player->m_currentLoot);
             if (obj != nullptr)
             {
                 switch (obj->getObjectTypeId())
@@ -2251,6 +2251,7 @@ void WorldSession::loadHandlers() // WotLK
     WorldPacketHandlers[MSG_RANDOM_ROLL].handler = &WorldSession::handleRandomRollOpcode;
     WorldPacketHandlers[MSG_SET_DUNGEON_DIFFICULTY].handler = &WorldSession::handleDungeonDifficultyOpcode;
     WorldPacketHandlers[MSG_SET_RAID_DIFFICULTY].handler = &WorldSession::handleRaidDifficultyOpcode;
+    WorldPacketHandlers[CMSG_INSTANCE_LOCK_RESPONSE].handler = &WorldSession::handleInstanceLockResponse;
     
     // Misc
     WorldPacketHandlers[CMSG_OPEN_ITEM].handler = &WorldSession::handleOpenItemOpcode;
@@ -2499,7 +2500,7 @@ void WorldSession::loadHandlers() // Cata
     // WorldPacketHandlers[CMSG_SET_CONTACT_NOTES].handler = &WorldSession::handleSetContactNotes;
 
     // Areatrigger
-    //WorldPacketHandlers[CMSG_AREATRIGGER].handler = &WorldSession::HandleAreaTriggerOpcode;
+    WorldPacketHandlers[CMSG_AREATRIGGER].handler = &WorldSession::handleAreaTriggerOpcode;
 
     // Account Data
     WorldPacketHandlers[CMSG_UPDATE_ACCOUNT_DATA].handler = &WorldSession::handleUpdateAccountData;

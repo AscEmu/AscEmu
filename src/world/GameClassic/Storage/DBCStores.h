@@ -7,6 +7,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "DBCStructures.h"
 #include "WorldConf.h"
+#include "Map/Maps/InstanceDefines.hpp"
+
+typedef std::map<uint32_t, DBC::Structures::MapDifficulty> MapDifficultyMap;
 
 #if VERSION_STRING == Classic
 #include "../world/Storage/DBC/DBCGlobals.hpp"
@@ -25,20 +28,6 @@ inline uint32_t GetCastTime(DBC::Structures::SpellCastTimesEntry const* time)
         return 0;
 
     return time->CastTime;
-}
-inline float GetMaxRange(DBC::Structures::SpellRangeEntry const* range)
-{
-    if (range == nullptr)
-        return 0;
-
-    return range->maxRange;
-}
-inline float GetMinRange(DBC::Structures::SpellRangeEntry const* range)
-{
-    if (range == nullptr)
-        return 0;
-
-    return range->minRange;
 }
 inline uint32_t GetDuration(DBC::Structures::SpellDurationEntry const* dur)
 {
@@ -77,6 +66,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AuctionHouseEntry> sAuctionH
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentEntry> sTalentStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentTabEntry> sTalentTabStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureDisplayInfoEntry> sCreatureDisplayInfoStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureModelDataEntry> sCreatureModelDataStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureSpellDataEntry> sCreatureSpellDataStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureFamilyEntry> sCreatureFamilyStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrClassesEntry> sChrClassesStore;
@@ -112,9 +102,14 @@ DBC::Structures::CharStartOutfitEntry const* getStartOutfitByRaceClass(uint8_t r
 
 DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id);
 
+extern SERVER_DECL MapDifficultyMap sMapDifficultyMap;
+DBC::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty);
+
 std::string generateName(uint32_t type = 0);
 
 uint32_t const* getTalentTabPages(uint8_t playerClass);
+
+uint32_t getLiquidFlags(uint32_t liquidId);
 
 bool LoadDBCs();
 #endif

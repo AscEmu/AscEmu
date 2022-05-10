@@ -22,7 +22,7 @@ public:
                 float x = mTarget->GetPositionX() + Util::getRandomUInt(20) - 10;
                 float y = mTarget->GetPositionY() + Util::getRandomUInt(20) - 10;
                 float z = mTarget->GetPositionZ();
-                Creature* guard = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(26253, x, y, z, 0, true, false, getCreature()->getFactionTemplate(), 50);
+                Creature* guard = getCreature()->getWorldMap()->getInterface()->spawnCreature(26253, LocationVector(x, y, z), true, false, getCreature()->getFactionTemplate(), 50);
 
                 if (guard != nullptr)
                 {
@@ -37,7 +37,7 @@ public:
     // Generates 3 random waypoints around the NPC
     void setGuardWaypoints()
     {
-        if (!getCreature()->GetMapMgr())
+        if (!getCreature()->getWorldMap())
             return;
 
         float x = 0.0f;
@@ -54,7 +54,7 @@ public:
 
             x = getCreature()->GetSpawnX() + ran * sin(ang);
             y = getCreature()->GetSpawnY() + ran * cos(ang);
-            z = getCreature()->GetMapMgr()->GetLandHeight(x, y, getCreature()->GetSpawnZ() + 2);
+            z = getCreature()->getMapHeight(LocationVector(x, y, getCreature()->GetSpawnZ() + 2));
 
             addWaypoint(1, createWaypoint(i, 800, WAYPOINT_MOVE_TYPE_WALK, LocationVector(x, y, z, o)));
         }

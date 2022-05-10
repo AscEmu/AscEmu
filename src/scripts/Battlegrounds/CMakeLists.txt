@@ -72,7 +72,7 @@ if (USE_PCH)
     <Management/HonorHandler.h>
     <Management/QuestLogEntry.hpp>
     <Management/WorldStates.h>
-    <Map/MapMgr.h>
+    <Map/Management/MapMgr.hpp>
     <Objects/GameObject.h>
     <Server/MainServerDefines.h>
     <Server/Packets/SmsgMessageChat.h>

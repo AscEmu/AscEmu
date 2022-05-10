@@ -53,7 +53,7 @@ class SERVER_DECL SpellProc
         // Called after proc chance is rolled
         // Return false so Unit::HandleProc execute subsequent statements
         // Return true if this handle everything, so Unit::HandleProc skips to next iteration
-        virtual bool doEffect(Unit* victim, SpellInfo const* castingSpell, uint32_t procFlag, uint32_t dmg, uint32_t abs, int* dmg_overwrite, uint32_t weapon_damage_type);
+        virtual bool doEffect(Unit* victim, SpellInfo const* castingSpell, uint32_t procFlag, uint32_t dmg, uint32_t abs, uint32_t weapon_damage_type);
 
         // Calculate proc chance
         virtual uint32_t calcProcChance(Unit* victim, SpellInfo const* castingSpell);
@@ -97,8 +97,8 @@ class SERVER_DECL SpellProc
         bool isCastedOnProcOwner() const;
         void setCastedOnProcOwner(bool);
 
+        // Returns 0 if effect index has not been overridden
         int32_t getOverrideEffectDamage(uint8_t effIndex) const;
-        int32_t* getOverrideEffectDamages();
         void setOverrideEffectDamage(uint8_t effIndex, int32_t damage);
 
         Aura* getCreatedByAura() const;
@@ -151,7 +151,7 @@ class SERVER_DECL SpellProc
         // Mask used on spell effect
         uint32_t mGroupRelation[3] = { 0, 0, 0 };
 
-        int32_t mOverrideEffectDamage[MAX_SPELL_EFFECTS];
+        SpellForcedBasePoints mOverrideEffectDamage = SpellForcedBasePoints();
 
         // Indicates that this proc will be skipped on next ::handleProc call
         // used to avoid some spell procs from procing themselves

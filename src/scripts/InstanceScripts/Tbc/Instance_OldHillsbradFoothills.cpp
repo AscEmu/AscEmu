@@ -23,7 +23,7 @@ private:
     uint32_t m_phaseData[OHF_END];
 
 public:
-    explicit OldHilsbradInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit OldHilsbradInstance(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
     {
         m_numBarrel = 0;
 
@@ -31,13 +31,7 @@ public:
             m_phaseData[i] = OHF_DATA_NOT_STARTED;
     }
 
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new OldHilsbradInstance(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new OldHilsbradInstance(pMapMgr); }
 
     void OnPlayerEnter(Player* pPlayer)
     {
@@ -53,7 +47,7 @@ public:
             return;
 
         if (pIndex == OHF_PHASE_2)
-            mInstance->GetWorldStatesHandler().SetWorldStateForZone(2367, 0, WORLDSTATE_OLD_HILLSBRAD_BARRELS, 0);
+            mInstance->getWorldStatesHandler().SetWorldStateForZone(2367, 0, WORLDSTATE_OLD_HILLSBRAD_BARRELS, 0);
 
         m_phaseData[pIndex] = pData;
     }
@@ -73,13 +67,13 @@ public:
 
         pGameObject->Despawn(1000, 0);
         m_numBarrel++;
-        pGameObject->GetMapMgr()->GetWorldStatesHandler().SetWorldStateForZone(2367, 0, WORLDSTATE_OLD_HILLSBRAD_BARRELS, m_numBarrel);
+        pGameObject->getWorldMap()->getWorldStatesHandler().SetWorldStateForZone(2367, 0, WORLDSTATE_OLD_HILLSBRAD_BARRELS, m_numBarrel);
         if (m_numBarrel != 5)
             return;
 
         SetData(OHF_PHASE_1, OHF_DATA_DONE);
 
-        for (auto& itr : mInstance->m_PlayerStorage)
+        for (auto& itr : mInstance->getPlayers())
         {
             if (auto* player = itr.second)
             {

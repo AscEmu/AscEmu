@@ -1153,3 +1153,37 @@ bool SpellInfo::isTriggerSpellCastedByCaster(SpellInfo const* triggeringSpell) c
 
     return false;
 }
+
+float_t SpellInfo::getMinRange([[maybe_unused]]bool friendly/* = false*/) const
+{
+    const auto* const rangeEntry = sSpellRangeStore.LookupEntry(getRangeIndex());
+    if (rangeEntry == nullptr)
+        return 0.0f;
+
+#if VERSION_STRING > TBC
+    if (friendly)
+        return rangeEntry->minRangeFriendly;
+#endif
+
+    return rangeEntry->minRange;
+}
+
+float_t SpellInfo::getMaxRange([[maybe_unused]]bool friendly/* = false*/, Object* caster/* = nullptr*/, Spell* spell/* = nullptr*/) const
+{
+    const auto* const rangeEntry = sSpellRangeStore.LookupEntry(getRangeIndex());
+    if (rangeEntry == nullptr)
+        return 0.0f;
+
+    float_t range = 0.0f;
+#if VERSION_STRING > TBC
+    if (friendly)
+        range = rangeEntry->maxRangeFriendly;
+    else
+#endif
+        range = rangeEntry->maxRange;
+
+    if (caster != nullptr && caster->isCreatureOrPlayer())
+        dynamic_cast<Unit*>(caster)->applySpellModifiers(SPELLMOD_RANGE, &range, this, spell);
+
+    return range;
+}

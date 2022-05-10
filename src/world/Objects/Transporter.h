@@ -49,12 +49,16 @@ protected:
 
 class SERVER_DECL Transporter : public GameObject, public TransportBase
 {
-    friend Transporter* TransportHandler::createTransport(uint32_t, MapMgr*);
+    friend Transporter* TransportHandler::createTransport(uint32_t, WorldMap*);
     Transporter(uint64_t guid);
 
 public:
     typedef std::set<Object*> PassengerSet;
     ~Transporter();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Essential functions
+    void OnPushToWorld() override;
 
     // Creates The Transporter
     bool Create(uint32_t entry, uint32_t mapid, float x, float y, float z, float ang, uint8_t animprogress);
@@ -80,7 +84,10 @@ public:
 
     // Build Update for Player
     uint32  buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
-    void UpdateForMap(MapMgr* map);
+    void UpdateForMap(WorldMap* map);
+
+    // Removes transport from map
+    void removeFromMap();
 
     // This method transforms supplied transport offsets into global coordinates
     void CalculatePassengerPosition(float& x, float& y, float& z, float* o = nullptr) const override
@@ -102,11 +109,17 @@ public:
 
     void UpdatePosition(float x, float y, float z, float o);
 
-    void EnableMovement(bool enabled, MapMgr* instance);
+    void EnableMovement(bool enabled, WorldMap* instance);
+
+    void setDelayedAddModelToMap() { _delayedAddModel = true; }
 
     TransportTemplate const* GetTransportTemplate() const { return _transportInfo; }
 
     uint32_t getCurrentFrame() { return _currentFrame->Index; }
+
+    void delayedTeleportTransport();
+
+    bool isTransporter() const override { return true; }
 
 private:
     void MoveToNextWaypoint();
@@ -114,7 +127,6 @@ private:
 
     // Occours when Transport reaches Teleport Frame
     bool TeleportTransport(uint32_t newMapId, float x, float y, float z, float o);
-    void DelayedTeleportTransport(MapMgr* oldMap);
 
     // Helper to Port Players
     void TeleportPlayers(float x, float y, float z, float o, uint32_t newMapId, uint32_t oldMapId, bool newMap);
@@ -131,12 +143,18 @@ private:
     bool IsMoving() const { return _isMoving; }
     void SetMoving(bool val) { _isMoving = val; }
 
+    bool _delayedAddModel = false;
+    bool _delayedMapRemove = false;
+
+    WorldMap* _delayedTransportFromMap = nullptr;
+
     TransportTemplate const* _transportInfo = nullptr;
 
     KeyFrameVec::const_iterator _currentFrame;
     KeyFrameVec::const_iterator _nextFrame;
     bool _isMoving = true;
     bool _pendingStop = false;
+    bool _pendingMapChange = false;
 
     // These are needed to properly control events triggering only once for each frame
     bool _triggeredArrivalEvent = false;
@@ -146,6 +164,7 @@ private:
     PassengerSet::iterator _passengerTeleportItr;
     PassengerSet _staticPassengers;
 
+    int32_t _delayedMapRemoveTimer = 100;
     int32_t _positionChangeTimer = 100;
     int32_t _mapUpdateTimer = 0;
 

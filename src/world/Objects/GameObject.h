@@ -24,7 +24,7 @@
 #include "Management/QuestMgr.h"
 #include "Management/TransporterHandler.h"
 #include "Data/WoWGameObject.hpp"
-#include "Map/Map.h"
+#include "Map/Maps/BaseMap.hpp"
 
 enum GameObject_State : uint8_t
 {
@@ -479,8 +479,9 @@ public:
 
         void Update(unsigned long time_passed);
 
-        void Spawn(MapMgr* m);
+        void Spawn(WorldMap* m);
         void Despawn(uint32 delay, uint32 respawntime);
+        void saveRespawnTime(uint32_t forceDelay = 0);
 
         //void _EnvironmentalDamageUpdate();
         // Serialization
@@ -536,6 +537,7 @@ public:
         TransportInfoData const* GetTransValues() const { return &mTransValues; }
         Transporter* ToTransport() { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter*>(this); else return nullptr; }
         Transporter const* ToTransport() const { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter const*>(this); else return nullptr; }
+        void updateModelPosition();
 
     protected:
 
@@ -557,6 +559,10 @@ public:
 
         void sendGameobjectCustomAnim(uint32_t anim = 0);
         virtual void onUse(Player* /*player*/) {}
+
+    protected:
+        GameObjectModel* createModel();
+        void updateModel();
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

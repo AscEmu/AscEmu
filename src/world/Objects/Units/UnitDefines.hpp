@@ -232,10 +232,11 @@ enum EnviromentalDamage : uint8_t
 
 enum DeathState
 {
-    ALIVE = 0,  // Unit is alive and well
-    JUST_DIED,  // Unit has JUST died
-    CORPSE,     // Unit has died but remains in the world as a corpse
-    DEAD        // Unit is dead and his corpse is gone from the world
+    ALIVE           = 0,    // Unit is alive and well
+    JUST_DIED       = 1,    // Unit has JUST died
+    CORPSE          = 2,    // Unit has died but remains in the world as a corpse
+    DEAD            = 3,    // Unit is dead and his corpse is gone from the world
+    JUST_RESPAWNED  = 4     // Unit has just Respawned
 };
 
 enum Factions

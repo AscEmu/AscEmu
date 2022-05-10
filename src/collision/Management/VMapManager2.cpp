@@ -254,7 +254,7 @@ namespace VMAP
         return false;
     }
 
-    bool VMapManager2::GetLiquidLevel(uint32 mapId, float x, float y, float z, uint8 reqLiquidType, float& level, float& floor, uint32& type) const
+    bool VMapManager2::getLiquidLevel(uint32_t mapId, float x, float y, float z, uint8_t reqLiquidType, float& level, float& floor, uint32_t& type, uint32_t& mogpFlags) const
     {
         if (!IsVMAPDisabledForPtr(mapId, VMAP_DISABLE_LIQUIDSTATUS))
         {
@@ -269,8 +269,10 @@ namespace VMAP
                     ASSERT(floor < std::numeric_limits<float>::max());
                     ASSERT(info.hitModel);
                     if (info.hitModel)
+                    {
                         type = info.hitModel->GetLiquidType();  // entry from LiquidType.dbc
-
+                        mogpFlags = info.hitModel->GetMogpFlags();
+                    }
                     if (reqLiquidType && !(GetLiquidFlagsPtr(type) & reqLiquidType))
                         return false;
                     ASSERT(info.hitInstance);
@@ -281,6 +283,39 @@ namespace VMAP
         }
 
         return false;
+    }
+
+    void VMapManager2::getAreaAndLiquidData(unsigned int mapId, float x, float y, float z, uint8_t reqLiquidType, AreaAndLiquidData& data) const
+    {
+        if (IsVMAPDisabledForPtr(mapId, VMAP_DISABLE_LIQUIDSTATUS))
+        {
+            data.floorZ = z;
+            int32_t adtId, rootId, groupId;
+            uint32_t flags;
+            if (getAreaInfo(mapId, x, y, data.floorZ, flags, adtId, rootId, groupId))
+                data.areaInfo.emplace(adtId, rootId, groupId, flags);
+            return;
+        }
+        InstanceTreeMap::const_iterator instanceTree = GetMapTree(mapId);
+        if (instanceTree != iInstanceMapTrees.end())
+        {
+            LocationInfo info;
+            Vector3 pos = convertPositionToInternalRep(x, y, z);
+            if (instanceTree->second->GetLocationInfo(pos, info))
+            {
+                ASSERT(info.hitModel);
+                ASSERT(info.hitInstance);
+                data.floorZ = info.ground_Z;
+                uint32_t liquidType = info.hitModel->GetLiquidType();
+                float liquidLevel;
+                if (!reqLiquidType || (GetLiquidFlagsPtr(liquidType) & reqLiquidType))
+                    if (info.hitInstance->GetLiquidLevel(pos, info, liquidLevel))
+                        data.liquidInfo.emplace(liquidType, liquidLevel);
+
+                if (!IsVMAPDisabledForPtr(mapId, VMAP_DISABLE_AREAFLAG))
+                    data.areaInfo.emplace(info.hitInstance->adtId, info.rootId, info.hitModel->GetWmoID(), info.hitModel->GetMogpFlags());
+            }
+        }
     }
 
     WorldModel* VMapManager2::acquireModelInstance(const std::string& basepath, const std::string& filename)

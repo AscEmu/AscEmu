@@ -10,14 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 class CullingOfStratholmeInstanceScript : public InstanceScript
 {
 public:
-    explicit CullingOfStratholmeInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new CullingOfStratholmeInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
+    explicit CullingOfStratholmeInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new CullingOfStratholmeInstanceScript(pMapMgr); }
 };
 
 class MeathookAI : public CreatureAIScript
@@ -225,9 +219,9 @@ public:
             sendDBChatMessage(SAY_MALGANIS_17);
 
             //spawn a chest and go
-            GameObject* go = getCreature()->GetMapMgr()->CreateGameObject(190663);
-            go->CreateFromProto(190663, getCreature()->GetMapMgr()->GetMapId(), getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), 0.0f, 0.0f, 0.0f, 0.0f);
-            go->PushToWorld(getCreature()->GetMapMgr());
+            GameObject* go = getCreature()->getWorldMap()->createGameObject(190663);
+            go->CreateFromProto(190663, getCreature()->getWorldMap()->getBaseMap()->getMapId(), getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), 0.0f, 0.0f, 0.0f, 0.0f);
+            go->PushToWorld(getCreature()->getWorldMap());
             getCreature()->Despawn(1, 0);
         }
     }
@@ -239,10 +233,10 @@ public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         for (uint8_t i = 0; i < 5; i++)
-        SpawnCrates(i, mTarget->GetMapMgr());
+        SpawnCrates(i, mTarget->getWorldMap());
     }
 
-    static void SpawnCrates(uint32_t id, MapMgr* pMapMgr)
+    static void SpawnCrates(uint32_t id, WorldMap* pMapMgr)
     {
         uint32_t entry = 190094;
         float x = 0.0f, y = 0.0f, z = 0.0f, o = 0.0f;
@@ -289,12 +283,12 @@ public:
             }
             break;
         }
-        GameObject* crate = pMapMgr->GetInterface()->GetGameObjectNearestCoords(x, y, z, 190094);
+        GameObject* crate = pMapMgr->getInterface()->getGameObjectNearestCoords(x, y, z, 190094);
         if (crate)
             crate->Despawn(0, 0);
 
-        GameObject* go = pMapMgr->CreateGameObject(entry);
-        go->CreateFromProto(entry, pMapMgr->GetMapId(), x, y, z, o, 0.0f, 0.0f, 0.0f, 0.0f);
+        GameObject* go = pMapMgr->createGameObject(entry);
+        go->CreateFromProto(entry, pMapMgr->getBaseMap()->getMapId(), x, y, z, o, 0.0f, 0.0f, 0.0f, 0.0f);
         go->PushToWorld(pMapMgr);
     }
 };
@@ -485,12 +479,12 @@ public:
                 Creature* c = nullptr;
                 if (cp)
                 {
-                    c = getCreature()->GetMapMgr()->CreateCreature(26533);
+                    c = getCreature()->getWorldMap()->createCreature(26533);
                     if (c)
                     {
                         //position is guessed
                         c->Load(cp, 2113.52f, 1288.01f, 136.382f, 2.30383f);
-                        c->PushToWorld(getCreature()->GetMapMgr());
+                        c->PushToWorld(getCreature()->getWorldMap());
                     }
                 }
                 if (c)

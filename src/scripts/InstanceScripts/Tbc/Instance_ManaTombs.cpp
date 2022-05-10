@@ -10,14 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 class ManaTombsInstanceScript : public InstanceScript
 {
 public:
-    explicit ManaTombsInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new ManaTombsInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
+    explicit ManaTombsInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new ManaTombsInstanceScript(pMapMgr); }
 };
 
 class EtherealDarkcasterAI : public CreatureAIScript

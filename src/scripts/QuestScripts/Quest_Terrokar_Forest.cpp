@@ -76,7 +76,7 @@ public:
 
                     for (uint8_t i = 0; i < finall; i++)
                     {
-                        Creature * NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(22419, SSX + Util::getRandomFloat(3.0f), SSY + Util::getRandomFloat(3.0f), SSZ, SSO + Util::getRandomFloat(1.0f), true, false, 0, 0);
+                        Creature * NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(22419, LocationVector(SSX + Util::getRandomFloat(3.0f), SSY + Util::getRandomFloat(3.0f), SSZ, SSO + Util::getRandomFloat(1.0f)), true, false, 0, 0);
                         if (NewCreature != nullptr)
                             NewCreature->Despawn(120000, 0);
                     }
@@ -136,7 +136,7 @@ public:
                 break;
         }
 
-        Creature* creat = plr->GetMapMgr()->CreateAndSpawnCreature(spawn, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 0);
+        Creature* creat = plr->getWorldMap()->createAndSpawnCreature(spawn, getCreature()->GetPosition());
         if (creat == nullptr)
             return;
 

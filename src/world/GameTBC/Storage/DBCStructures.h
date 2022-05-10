@@ -52,7 +52,8 @@ namespace DBC::Structures
         char const chat_channels_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxx";
         char const chr_classes_format[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxix";
         char const chr_races_format[] = "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi";
-        char const creature_display_info_format[] = "nxxxxxxxxxxxxx";
+        char const creature_display_info_format[] = "nixifxxxxxxxxx";
+        char const creature_model_Data_format[] = "nisxfxxxxxxxxxxffxxxxxxx";
         char const creature_family_format[] = "nfifiiiissssssssssssssssxx";
         char const creature_spell_data_format[] = "niiiiiiii";
         char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
@@ -241,12 +242,47 @@ namespace DBC::Structures
 
     struct CreatureDisplayInfoEntry
     {
-        uint32_t display_id;                                        // 0
-        //uint32_t model;                                           // 1
-        //uint32_t unk0                                             // 2
-        //uint32_t InfoExtra;                                       // 3
-        //float size;                                               // 4
+        uint32_t ID;                                                // 0
+        uint32_t ModelID;                                           // 1
+        //uint32_t SoundID                                          // 2
+        uint32_t ExtendedDisplayInfoID;                             // 3
+        float CreatureModelScale;                                   // 4
                                                                     // 5 - 15 unk
+    };
+
+    enum CreatureModelDataFlags
+    {
+        CREATURE_MODEL_DATA_FLAGS_CAN_MOUNT = 0x00000080
+    };
+
+    struct CreatureModelDataEntry
+    {
+        uint32_t ID;                                                // 0
+        uint32_t Flags;                                             // 1
+        char const* ModelName;                                      // 2
+        //uint32_t SizeClass;                                       // 3
+        float ModelScale;                                           // 4 Used in calculation of unit collision data
+        //int32_t BloodID;                                          // 5
+        //int32_t FootprintTextureID;                               // 6
+        //uint32_t FootprintTextureLength;                          // 7
+        //uint32_t FootprintTextureWidth;                           // 8
+        //float FootprintParticleScale;                             // 9
+        //uint32_t FoleyMaterialID;                                 // 10
+        //float FootstepShakeSize;                                  // 11
+        //uint32_t DeathThudShakeSize;                              // 12
+        //uint32_t SoundID;                                         // 13
+        //float CollisionWidth;                                     // 14
+        float CollisionHeight;                                      // 15
+        float MountHeight;                                          // 16 Used in calculation of unit collision data when mounted
+        //float GeoBoxMin[3];                                       // 17-19
+        //float GeoBoxMax[3];                                       // 20-22
+        //float WorldEffectScale;                                   // 23
+        //float AttachedEffectScale;                                // 24
+        //float MissileCollisionRadius;                             // 25
+        //float MissileCollisionPush;                               // 26
+        //float MissileCollisionRaise;                              // 27
+
+        inline bool hasFlag(CreatureModelDataFlags flag) const { return (Flags & flag) != 0; }
     };
 
     struct CreatureFamilyEntry
@@ -548,10 +584,30 @@ namespace DBC::Structures
         bool isBattlegroundOrArena() const { return map_type == MAP_BATTLEGROUND || map_type == MAP_ARENA; }
         bool isWorldMap() const { return map_type == MAP_COMMON; }
 
+        bool getEntrancePos(int32_t& mapid, float& x, float& y) const
+        {
+            if (parent_map < 0)
+                return false;
+            mapid = parent_map;
+            x = start_x;
+            y = start_y;
+            return true;
+        }
+
         bool isContinent() const
         {
             return id == 0 || id == 1 || id == 530 || id == 571;
         }
+    };
+
+    struct MapDifficulty
+    {
+        MapDifficulty() : resetTime(0), maxPlayers(0), hasErrorMessage(false) { }
+        MapDifficulty(uint32_t _resetTime, uint32_t _maxPlayers, bool _hasErrorMessage) : resetTime(_resetTime), maxPlayers(_maxPlayers), hasErrorMessage(_hasErrorMessage) { }
+
+        uint32_t resetTime;
+        uint32_t maxPlayers;
+        bool hasErrorMessage;
     };
 
     struct NameGenEntry

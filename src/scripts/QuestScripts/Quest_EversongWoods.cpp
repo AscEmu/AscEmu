@@ -20,11 +20,11 @@
 #include "Setup.h"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Item.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include <Management/QuestLogEntry.hpp>
-#include "Map/MapScriptInterface.h"
+#include "Map/Maps/MapScriptInterface.h"
 #include "Server/Script/CreatureAIScript.h"
 
 enum

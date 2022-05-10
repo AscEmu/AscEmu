@@ -2124,7 +2124,7 @@ void MySQLDataStore::loadSpellClickSpellsTable()
             continue;
         }
 
-        uint8_t userType = fields[3].GetUInt16();
+        uint8_t userType = fields[3].GetUInt8();
         if (userType >= SPELL_CLICK_USER_MAX)
             sLogger.failure("Table npc_spellclick_spells creature: %u references unknown user type %u. Skipping entry.", npc_entry, uint32(userType));
 
@@ -3161,6 +3161,72 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapEntranceTrigger(uint32_
     }
     return nullptr;
 }
+
+#if VERSION_STRING > Classic
+MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t mapId)
+{
+    bool useParentDbValue = false;
+    uint32_t parentId = 0;
+    DBC::Structures::MapEntry const* mapEntry = sMapStore.LookupEntry(mapId);
+    if (!mapEntry || mapEntry->parent_map < 0)
+        return nullptr;
+
+    if (mapEntry->isDungeon())
+    {
+        auto const* iTemplate = sMySQLStore.getWorldMapInfo(mapId);
+
+        if (!iTemplate)
+            return nullptr;
+
+        parentId = iTemplate->repopmapid;
+        useParentDbValue = true;
+    }
+
+    uint32_t entrance_map = static_cast<uint32_t>(mapEntry->parent_map);
+    for (AreaTriggerContainer::const_iterator itr = _areaTriggerStore.begin(); itr != _areaTriggerStore.end(); ++itr)
+    {
+        if ((!useParentDbValue && itr->second.mapId == entrance_map) || (useParentDbValue && itr->second.mapId == parentId))
+        {
+            DBC::Structures::AreaTriggerEntry const* atEntry = sAreaTriggerStore.LookupEntry(itr->first);
+            if (atEntry && atEntry->mapid == mapId)
+                return &itr->second;
+        }
+    }
+    return nullptr;
+}
+#else
+MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t mapId)
+{
+    bool useParentDbValue = false;
+    uint32_t parentId = 0;
+    auto const* mapEntry = sMySQLStore.getWorldMapInfo(mapId);
+    if (!mapEntry || mapEntry->repopmapid < 0)
+        return nullptr;
+
+    if (mapEntry->isDungeon())
+    {
+        auto const* iTemplate = sMySQLStore.getWorldMapInfo(mapId);
+
+        if (!iTemplate)
+            return nullptr;
+
+        parentId = iTemplate->repopmapid;
+        useParentDbValue = true;
+    }
+
+    uint32_t entrance_map = static_cast<uint32_t>(mapEntry->repopmapid);
+    for (AreaTriggerContainer::const_iterator itr = _areaTriggerStore.begin(); itr != _areaTriggerStore.end(); ++itr)
+    {
+        if ((!useParentDbValue && itr->second.mapId == entrance_map) || (useParentDbValue && itr->second.mapId == parentId))
+        {
+            DBC::Structures::AreaTriggerEntry const* atEntry = sAreaTriggerStore.LookupEntry(itr->first);
+            if (atEntry && atEntry->mapid == mapId)
+                return &itr->second;
+        }
+    }
+    return nullptr;
+}
+#endif
 
 void MySQLDataStore::loadWordFilterCharacterNames()
 {

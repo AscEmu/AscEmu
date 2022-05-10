@@ -21,7 +21,7 @@ class WarsongGulch : public CBattleground
     void TimeLeft();
 
 public:
-    WarsongGulch(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
+    WarsongGulch(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
     ~WarsongGulch();
 
     bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
@@ -46,7 +46,7 @@ public:
 
     void EventReturnFlags();
 
-    static CBattleground* Create(MapMgr* m, uint32_t i, uint32_t l, uint32_t t) { return new WarsongGulch(m, i, l, t); }
+    static CBattleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new WarsongGulch(m, i, l, t); }
 
     uint32_t GetNameID() override { return 39; }
     uint64_t GetFlagHolderGUID(uint32_t faction) const override { return m_flagHolders[faction]; }

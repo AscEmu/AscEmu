@@ -22,8 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <CrashHandler.h>
 #include "Server/MainServerDefines.h"
 //#include "Config/Config.h"
-//#include "Map/MapCell.h"
-#include "Map/WorldCreator.h"
+//#include "Map/MapCell.hpp"
 #include "Storage/DayWatcherThread.h"
 #include "BroadcastMgr.h"
 #include "Spell/SpellMgr.hpp"
@@ -37,6 +36,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Movement/WaypointManager.h"
 #include "Packets/SmsgMessageChat.h"
+#include "Map/Management/MapMgr.hpp"
+
+#include "VMapFactory.h"
+#include "VMapManager2.h"
 
 #if VERSION_STRING >= Cata
 #include "Management/Guild/GuildFinderMgr.hpp"
@@ -122,8 +125,8 @@ void World::finalize()
     sGuildMgr.finalize();
 #endif
 
-    sLogger.info("InstanceMgr : ~InstanceMgr()");
-    sInstanceMgr.Shutdown();
+    sLogger.info("MapMgr : ~MapMgr()");
+    sMapMgr.shutdown();
 
     sLogger.info("WordFilter : ~WordFilter()");
     delete g_chatFilter;
@@ -718,6 +721,11 @@ bool World::setInitialWorldSettings()
         LoadGameObjectModelList(vmapPath);
     }
 
+    // Initialize Vmaps Liquid
+    VMAP::VMapManager2* vmmgr2 = VMAP::VMapFactory::createOrGetVMapManager();
+    vmmgr2->GetLiquidFlagsPtr = &getLiquidFlags;
+
+    sInstanceMgr.loadInstances();
     loadMySQLStores();
 
     sLogger.info("World : Loading loot data...");
@@ -725,6 +733,9 @@ bool World::setInitialWorldSettings()
     sLootMgr.loadLoot();
 
     loadMySQLTablesByTask();
+
+    sMapMgr.initialize();
+
     logEntitySize();
 
     sSpellMgr.loadSpellDataFromDatabase();
@@ -769,8 +780,6 @@ bool World::setInitialWorldSettings()
     dw = std::move(std::make_unique<DayWatcherThread>());
 
     broadcastMgr = std::move(std::make_unique<BroadcastMgr>());
-
-    sEventMgr.AddEvent(this, &World::checkForExpiredInstances, EVENT_WORLD_UPDATEAUCTIONS, 120000, 0, 0);
 
     sLogger.info("World: init in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
@@ -939,6 +948,7 @@ void World::loadMySQLTablesByTask()
     sObjectMgr.SetHighestGuids();
     sObjectMgr.LoadReputationModifiers();
     sObjectMgr.LoadGroups();
+    sObjectMgr.loadGroupInstances();
     sObjectMgr.LoadArenaTeams();
 #ifdef FT_VEHICLES
     sObjectMgr.LoadVehicleAccessories();
@@ -970,9 +980,6 @@ void World::loadMySQLTablesByTask()
     g_chatFilter = new WordFilter();
 
     sLogger.info("Done. Database loaded in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-
-    // calling this puts all maps into our task list.
-    sInstanceMgr.Load();
 }
 
 void World::logEntitySize()
@@ -990,7 +997,8 @@ void World::Update(unsigned long timePassed)
     mEventableObjectHolder->Update(static_cast<uint32_t>(timePassed));
     sAuctionMgr.Update();
     updateQueuedSessions(static_cast<uint32_t>(timePassed));
-
+    sMapMgr.update();
+    sInstanceMgr.update();
     sGuildMgr.update(static_cast<uint32>(timePassed));
 }
 
@@ -1043,11 +1051,6 @@ void World::logoutAllPlayers()
         ++i;
         deleteSession(worldSession);
     }
-}
-
-void World::checkForExpiredInstances()
-{
-    sInstanceMgr.CheckForExpiredInstances();
 }
 
 void World::deleteObject(Object* object)

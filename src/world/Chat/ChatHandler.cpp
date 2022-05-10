@@ -4,12 +4,11 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 
-#include "Map/InstanceDefines.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Maps/InstanceDefines.hpp"
+#include "Map/Management/MapMgr.hpp"
 #include "Exceptions/PlayerExceptions.hpp"
 #include "Objects/Item.h"
 #include "Management/ItemInterface.h"
-#include "Map/WorldCreatorDefines.hpp"
 #include "ChatHandler.hpp"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
@@ -209,7 +208,7 @@ Player* ChatHandler::GetSelectedPlayer(WorldSession* m_session, bool showerror, 
     }
     else
     {
-        player_target = m_session->GetPlayer()->GetMapMgr()->GetPlayer((uint32)guid);
+        player_target = m_session->GetPlayer()->getWorldMap()->getPlayer((uint32)guid);
     }
 
     return player_target;
@@ -228,12 +227,12 @@ Creature* ChatHandler::GetSelectedCreature(WorldSession* m_session, bool showerr
     switch(wowGuid.getHigh())
     {
         case HighGuid::Pet:
-            creature = reinterpret_cast<Creature*>(m_session->GetPlayer()->GetMapMgr()->GetPet(wowGuid.getGuidLowPart()));
+            creature = reinterpret_cast<Creature*>(m_session->GetPlayer()->getWorldMap()->getPet(wowGuid.getGuidLowPart()));
             break;
 
         case HighGuid::Unit:
         case HighGuid::Vehicle:
-            creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+            creature = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
             break;
         default:
             is_invalid_type = true;
@@ -258,7 +257,7 @@ Unit* ChatHandler::GetSelectedUnit(WorldSession* m_session, bool showerror)
 
     uint64 guid = m_session->GetPlayer()->getTargetGuid();
 
-    Unit* unit = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid);
+    Unit* unit = m_session->GetPlayer()->getWorldMap()->getUnit(guid);
     if (unit == nullptr)
     {
         if (showerror)

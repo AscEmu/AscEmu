@@ -4,17 +4,17 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "VMapFactory.h"
+#include "VMapManager2.h"
 #include "MMapManager.h"
 #include "MMapFactory.h"
 #include "Objects/Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Macros/ScriptMacros.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 #include "Spell/SpellMgr.hpp"
 #include "Macros/AIInterfaceMacros.hpp"
-#include "Map/WorldCreator.h"
 #include "Spell/Definitions/SpellCastTargetFlags.hpp"
 #include "Spell/Definitions/SpellRanged.hpp"
 #include "Spell/Definitions/LockTypes.hpp"
@@ -24,11 +24,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Management/ObjectMgr.h"
 #include "Server/Packets/Movement/CreatureMovement.h"
-#include "Map/AreaBoundary.h"
-#include "Map/MapScriptInterface.h"
+#include "Map/AreaBoundary.hpp"
+#include "Map/Maps/MapScriptInterface.h"
 #include "Movement/WaypointManager.h"
 #include "Movement/MovementManager.h"
 #include "Movement/Spline/MoveSplineInit.h"
+#include "Server/Definitions.h"
 #include "Server/Script/CreatureAIScript.h"
 
 #ifndef UNIX
@@ -542,7 +543,8 @@ void AIInterface::initialiseScripts(uint32_t entry)
         }
     }
 
-    sLogger.debug("Sizeof emote %i", mEmotesOnCombatStart.size());
+    if (mEmotesOnCombatStart.size())
+        sLogger.debug("Creature with Entry %u has %i emotes on CombatStart", mEmotesOnCombatStart.size(), getUnit()->getEntry());
 }
 
 Unit* AIInterface::getUnit() const
@@ -663,7 +665,7 @@ void AIInterface::enterEvadeMode()
 
 void AIInterface::Update(unsigned long time_passed)
 {
-    if (m_Unit->isPlayer() || m_Unit->GetMapMgr() == nullptr)
+    if (m_Unit->isPlayer() || m_Unit->getWorldMap() == nullptr)
         return;
 
     // Call AIUpdate
@@ -1084,7 +1086,7 @@ void AIInterface::updateTargets(unsigned long time_passed)
         getUnit()->setTargetGuid(0);
 
     // When target is out of Possible Range evade.
-    if ((getCurrentTarget() && !getUnit()->GetMapMgr()->GetMapInfo()->isInstanceMap()) || (getCurrentTarget() && getUnit()->GetMapId() != getCurrentTarget()->GetMapMgr()->GetMapId()))
+    if ((getCurrentTarget() && !getUnit()->getWorldMap()->getBaseMap()->getMapInfo()->isInstanceMap()) || (getCurrentTarget() && getUnit()->GetMapId() != getCurrentTarget()->getWorldMap()->getBaseMap()->getMapId()))
     {
         if (getCurrentTarget()->getDistance(getUnit()->GetPosition()) > 50.0f)
             enterEvadeMode();
@@ -1131,7 +1133,7 @@ void AIInterface::updateCombat(uint32_t p_time)
     if (getUnit()->isCreature() && static_cast<Creature*>(getUnit())->GetCreatureProperties()->Type == UNIT_TYPE_CRITTER && static_cast<Creature*>(getUnit())->GetType() != CREATURE_TYPE_GUARDIAN)
         return;
 
-    if (getUnit()->GetMapMgr() == nullptr)
+    if (getUnit()->getWorldMap() == nullptr)
         return;
 
     if (getUnit()->isCastingSpell())
@@ -1285,7 +1287,7 @@ void AIInterface::updateCombat(uint32_t p_time)
             }
         }
 
-        const auto maxRange = GetMaxRange(sSpellRangeStore.LookupEntry(getSpellEntry(spellId)->getRangeIndex()));
+        const auto maxRange = getSpellEntry(spellId)->getMaxRange();
         if (canCastSpell && (maxRange == 0.0f || getUnit()->isWithinCombatRange(getCurrentTarget(), maxRange)))
         {
             SpellInfo const* spellInfo = getSpellEntry(spellId);
@@ -1398,7 +1400,7 @@ void AIInterface::doFleeToGetAssistance()
     float radius = 30.0f;
     if (radius > 0)
     {
-        Creature* creature = getUnit()->GetMapMgr()->GetInterface()->getNearestAssistCreatureInGrid(getUnit()->ToCreature(), getCurrentTarget(), radius);
+        Creature* creature = getUnit()->getWorldMap()->getInterface()->getNearestAssistCreatureInCell(getUnit()->ToCreature(), getCurrentTarget(), radius);
 
         setNoSearchAssistance(true);
 
@@ -1420,7 +1422,7 @@ void AIInterface::callAssistance()
 
         if (radius > 0)
         {
-            Creature* creature = getUnit()->GetMapMgr()->GetInterface()->getNearestAssistCreatureInGrid(getUnit()->ToCreature(), getCurrentTarget(), radius);
+            Creature* creature = getUnit()->getWorldMap()->getInterface()->getNearestAssistCreatureInCell(getUnit()->ToCreature(), getCurrentTarget(), radius);
 
             if (creature)
                 creature->getAIInterface()->onHostileAction(getCurrentTarget());
@@ -1430,7 +1432,7 @@ void AIInterface::callAssistance()
 
 void AIInterface::findAssistance()
 {
-    if (!getUnit()->GetMapMgr() || !getCurrentTarget())
+    if (!getUnit()->getWorldMap() || !getCurrentTarget())
         return;
 
     for (const auto& itr : getUnit()->getInRangeObjectsSet())
@@ -1444,7 +1446,7 @@ void AIInterface::findAssistance()
             if (DistToMe <= 25.0f && helper->isInCombat() && !isAlreadyAssisting(helper)) // Also add targets if already in fight
                 m_assistTargets.insert(helper);
 
-            if (DistToMe <= 10.0f && getUnit()->GetMapMgr()->GetMapInfo()->isInstanceMap()) // only Search additional Attackers in Instanced Maps
+            if (DistToMe <= 10.0f && getUnit()->getWorldMap()->getBaseMap()->getMapInfo()->isInstanceMap()) // only Search additional Attackers in Instanced Maps
             {
                 if (helper->getAIInterface()->canAssistTo(getUnit(), getCurrentTarget(), false))
                 {
@@ -1775,7 +1777,7 @@ Unit* AIInterface::findTarget()
     if (!getAllowedToEnterCombat())
         return nullptr;
 
-    if (m_Unit->GetMapMgr() == nullptr)
+    if (m_Unit->getWorldMap() == nullptr)
         return nullptr;
 
     Unit* target = nullptr;
@@ -1832,9 +1834,7 @@ Unit* AIInterface::findTarget()
             {
                 if (worldConfig.terrainCollision.isCollisionEnabled)
                 {
-                    VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-                    bool los = mgr->isInLineOfSight(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ(), tmpPlr->GetPositionX(), tmpPlr->GetPositionY(), tmpPlr->GetPositionZ());
-                    if (los)
+                    if (m_Unit->IsWithinLOSInMap(tmpPlr))
                     {
                         distance = dist;
                         target = static_cast<Unit*>(tmpPlr);
@@ -1877,7 +1877,7 @@ Unit* AIInterface::findTarget()
             {
                 if (worldConfig.terrainCollision.isCollisionEnabled)
                 {
-                    if (m_Unit->GetMapMgr()->isInLineOfSight(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2, pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ() + 2))
+                    if (m_Unit->IsWithinLOSInMap(pUnit))
                     {
                         distance = dist;
                         target = pUnit;
@@ -1929,7 +1929,7 @@ Unit* AIInterface::findTarget()
                 {
                     if (worldConfig.terrainCollision.isCollisionEnabled)
                     {
-                        if (m_Unit->GetMapMgr()->isInLineOfSight(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2, pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ() + 2))
+                        if (m_Unit->IsWithinLOSInMap(pUnit))
                         {
                             distance = dist;
                             target = pUnit;
@@ -2048,7 +2048,7 @@ void AIInterface::updateTotem(uint32_t p_time)
             Spell* pSpell = sSpellMgr.newSpell(m_Unit, totemspell, true, 0);
             Unit* nextTarget = getCurrentTarget();
             if (nextTarget == NULL ||
-                (!m_Unit->GetMapMgr()->GetUnit(nextTarget->getGuid()) ||
+                (!m_Unit->getWorldMap()->getUnit(nextTarget->getGuid()) ||
                     !nextTarget->isAlive() ||
                     !(m_Unit->isInRange(nextTarget->GetPosition(), pSpell->getSpellInfo()->custom_base_range_or_radius_sqr)) ||
                     !isAttackable(m_Unit, nextTarget, !(pSpell->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED))
@@ -2061,7 +2061,7 @@ void AIInterface::updateTotem(uint32_t p_time)
                 SpellCastTargets targets(0);
                 pSpell->GenerateTargets(&targets);
                 if (targets.getTargetMask() & TARGET_FLAG_UNIT)
-                    m_target = getUnit()->GetMapMgrUnit(targets.getUnitTarget());
+                    m_target = getUnit()->getWorldMapUnit(targets.getUnitTarget());
             }
             nextTarget = getCurrentTarget();
             if (nextTarget)
@@ -2309,9 +2309,9 @@ uint8_t AIInterface::getDifficultyType()
 {
     uint8_t difficulty_type;
 
-    Instance* instance = sInstanceMgr.GetInstanceByIds(MAX_NUM_MAPS, m_Unit->GetInstanceID());
+    InstanceMap* instance = sMapMgr.findInstanceMap(m_Unit->GetInstanceID());
     if (instance != nullptr)
-        difficulty_type = instance->m_difficulty;
+        difficulty_type = instance->getDifficulty();
     else
         difficulty_type = 0;    // standard MODE_NORMAL / MODE_NORMAL_10MEN
 
@@ -2399,8 +2399,18 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
         CALL_SCRIPT_EVENT(m_Unit, _internalOnCombatStart)(pUnit);
         CALL_SCRIPT_EVENT(m_Unit, OnCombatStart)(pUnit);
 
-        // set encounter state = InProgress
-        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(m_Unit->getEntry(), InProgress);
+        if (m_Unit->getWorldMap() && m_Unit->getWorldMap()->getScript())
+        {
+            // set encounter state = InProgress
+            uint32_t i = 0;
+            for (const auto& boss : m_Unit->getWorldMap()->getScript()->getBosses())
+            {
+                if (m_Unit->getEntry() == boss.entry)
+                    CALL_INSTANCE_SCRIPT_EVENT(m_Unit->getWorldMap(), setBossState)(i, InProgress);
+
+                i++;
+            }
+        }
 
         if (creature->m_spawn && (creature->m_spawn->channel_target_go || creature->m_spawn->channel_target_creature))
         {
@@ -2447,16 +2457,16 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
 
 void AIInterface::instanceCombatProgress(bool activate)
 {
-    if (getUnit()->GetMapMgr() && getUnit()->GetMapMgr()->GetMapInfo() && getUnit()->GetMapMgr()->GetMapInfo()->isRaid())
+    if (getUnit()->getWorldMap() && getUnit()->getWorldMap()->getBaseMap()->getMapInfo() && getUnit()->getWorldMap()->getBaseMap()->getMapInfo()->isRaid())
     {
         if (getUnit()->isCreature())
         {
             if (static_cast<Creature*>(getUnit())->GetCreatureProperties()->Rank == 3)
             {
                 if (activate)
-                    getUnit()->GetMapMgr()->AddCombatInProgress(getUnit()->getGuid());
+                    getUnit()->getWorldMap()->addCombatInProgress(getUnit()->getGuid());
                 else
-                    getUnit()->GetMapMgr()->RemoveCombatInProgress(getUnit()->getGuid());
+                    getUnit()->getWorldMap()->removeCombatInProgress(getUnit()->getGuid());
             }
         }
     }
@@ -2474,7 +2484,7 @@ void AIInterface::initGroupThreat(Unit* target)
             for (GroupMembersSet::iterator itr = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
             {
                 Player* pGroupGuy = sObjectMgr.GetPlayer((*itr)->guid);
-                if (pGroupGuy && pGroupGuy->isAlive() && m_Unit->GetMapMgr() == pGroupGuy->GetMapMgr() && pGroupGuy->getDistanceSq(target) <= 40 * 40) //50 yards for now. lets see if it works
+                if (pGroupGuy && pGroupGuy->isAlive() && m_Unit->getWorldMap() == pGroupGuy->getWorldMap() && pGroupGuy->getDistanceSq(target) <= 40 * 40) //50 yards for now. lets see if it works
                 {
                     m_Unit->getThreatManager().addThreat(pGroupGuy, 0.0f, nullptr, true, true);
                 }
@@ -2511,7 +2521,7 @@ void AIInterface::engagementOver()
     instanceCombatProgress(false);
 }
 
-void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
+void AIInterface::eventLeaveCombat(Unit* /*pUnit*/, uint32_t /*misc1*/)
 {
     if (m_Unit->isCreature())
     {
@@ -2555,18 +2565,31 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
 
     if (m_Unit->isCreature() && m_Unit->isAlive())
     {
-        // Reset Instance Data
-        // set encounter state back to NotStarted
-        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(m_Unit->getEntry(), NotStarted);
+        if (m_Unit->getWorldMap() && m_Unit->getWorldMap()->getScript())
+        {
+            // Reset Instance Data
+            // set encounter state back to NotStarted
+            uint32_t i = 0;
+            for (const auto boss : m_Unit->getWorldMap()->getScript()->getBosses())
+            {
+                if (m_Unit->getEntry() == boss.entry)
+                    CALL_INSTANCE_SCRIPT_EVENT(m_Unit->getWorldMap(), setBossState)(i, NotStarted);
+
+                i++;
+            }
+        }
 
         // Respawn all Npcs from Current Group if needed
         auto data = sMySQLStore.getSpawnGroupDataBySpawn(getUnit()->ToCreature()->getSpawnId());
         if (data && data->spawnFlags & SPAWFLAG_FLAG_FULLPACK)
         {
-            for (auto spawns : data->spawns)
+            if (!m_Unit->getWorldMap()->isUnloadPending())
             {
-                if (spawns.second && spawns.second->m_spawn && !spawns.second->isAlive())
-                    spawns.second->Despawn(0, 1000);
+                for (auto spawns : data->spawns)
+                {
+                    if (spawns.second && spawns.second->m_spawn && !spawns.second->isAlive())
+                        spawns.second->Despawn(0, 1000);
+                }
             }
         }
 
@@ -2577,6 +2600,10 @@ void AIInterface::eventLeaveCombat(Unit* pUnit, uint32_t /*misc1*/)
     }
 
     initialiseScripts(getUnit()->getEntry());
+
+    // when this leads to errors remove
+    if (m_Unit->getWorldMap() && m_Unit->getWorldMap()->isUnloadPending())
+        return;
 
     CALL_SCRIPT_EVENT(m_Unit, _internalOnCombatStop)();
     CALL_SCRIPT_EVENT(m_Unit, OnCombatStop)(getUnit());
@@ -2607,71 +2634,62 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
 
         if (getUnit()->getSummonedByGuid())
         {
-            Unit* summoner = getUnit()->GetMapMgrUnit(getUnit()->getSummonedByGuid());
+            Unit* summoner = getUnit()->getWorldMapUnit(getUnit()->getSummonedByGuid());
 
             if (summoner)
                 CALL_SCRIPT_EVENT(summoner, OnSummonDies)(m_Unit->ToCreature(), pUnit);
         }
 
-        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), OnCreatureDeath)(static_cast<Creature*>(m_Unit), pUnit);
+        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->getWorldMap(), OnCreatureDeath)(static_cast<Creature*>(m_Unit), pUnit);
     }
 
     setAiState(AI_STATE_IDLE);
 
     m_Unit->setMountDisplayId(0);
 
-    Instance* pInstance = nullptr;
-    auto unitMapMgr = m_Unit->GetMapMgr();
+    InstanceMap* pInstance = nullptr;
+    auto unitMapMgr = m_Unit->getWorldMap();
     if (unitMapMgr)
-        pInstance = m_Unit->GetMapMgr()->pInstance;
+        pInstance = m_Unit->getWorldMap()->getInstance();
 
     if (unitMapMgr
         && m_Unit->isCreature()
         && !m_Unit->isPet()
-        && pInstance
-        && pInstance->m_mapInfo->isInstanceMap())
+        && pInstance)
     {
-        const auto encounters = sObjectMgr.GetDungeonEncounterList(unitMapMgr->GetMapId(), pInstance->m_difficulty);
-
         Creature* pCreature = static_cast<Creature*>(m_Unit);
-        bool found = false;
 
-        if (encounters != NULL)
+        if (pInstance->isRaidOrHeroicDungeon())
         {
-            uint32_t npcGuid = pCreature->GetCreatureProperties()->Id;
+            if (pCreature->isDungeonBoss())
+                pInstance->permBindAllPlayers();
+        }
+        else
+        {
+            // the reset time is set but not added to the scheduler
+            // until the players leave the instance
+            const auto now = Util::getTimeNow();
+            time_t resettime = now + 2 * HOUR;
+            if (InstanceSaved* save = sInstanceMgr.getInstanceSave(pCreature->GetInstanceID()))
+                if (save->getResetTime() < resettime)
+                    save->setResetTime(resettime);
+        }
 
-            for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
+        if (m_Unit->getWorldMap() && m_Unit->getWorldMap()->getScript())
+        {
+            // Set Instance Data
+            // set encounter state to Performed
+            uint32_t i = 0;
+            for (const auto boss : m_Unit->getWorldMap()->getScript()->getBosses())
             {
-                DungeonEncounter const* encounter = *itr;
-                if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == npcGuid)
+                if (m_Unit->getEntry() == boss.entry)
                 {
-                    found = true;
-
-                    // Bosses get added via entry and not by spawnid
-                    unitMapMgr->pInstance->m_killedNpcs.insert(npcGuid);
-                    sInstanceMgr.SaveInstanceToDB(unitMapMgr->pInstance);
-
-                    if (!pInstance->m_persistent && !pInstance->isResetable())
-                    {
-                        pInstance->m_persistent = true;
-                        sInstanceMgr.SaveInstanceToDB(pInstance);
-                        for (PlayerStorageMap::iterator pItr = unitMapMgr->m_PlayerStorage.begin(); pItr != unitMapMgr->m_PlayerStorage.end(); ++pItr)
-                        {
-                            (*pItr).second->setPersistentInstanceId(pInstance);
-                        }
-                    }
+                    CALL_INSTANCE_SCRIPT_EVENT(m_Unit->getWorldMap(), setBossState)(i, Performed);
                 }
+                i++;
             }
         }
-
-        if (found == false)
-        {
-            // No instance boss information ... so fallback ...
-            uint32_t npcGuid = pCreature->GetSQL_id();
-            unitMapMgr->pInstance->m_killedNpcs.insert(npcGuid);
-            sInstanceMgr.SaveInstanceToDB(unitMapMgr->pInstance);
-        }
-
+        
         // Killed Group checks
         auto spawnGroupData = sMySQLStore.getSpawnGroupDataBySpawn(pCreature->spawnid);
 
@@ -2681,7 +2699,7 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
             bool killed = true;
             for (auto spawns : spawnGroupData->spawns)
             {
-                if (unitMapMgr->pInstance->m_killedNpcs.find(spawns.first) == unitMapMgr->pInstance->m_killedNpcs.end())
+                if (!unitMapMgr->getRespawnInfo(SPAWN_TYPE_CREATURE, spawns.first))
                     killed = false;
             }
 
@@ -2689,13 +2707,14 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
                 CALL_INSTANCE_SCRIPT_EVENT(unitMapMgr, OnSpawnGroupKilled)(spawnGroupData->groupId);
         }
     }
-    if (unitMapMgr && unitMapMgr->GetMapInfo() && unitMapMgr->GetMapInfo()->isRaid())
+
+    if (unitMapMgr && unitMapMgr->getBaseMap()->getMapInfo() && unitMapMgr->getBaseMap()->getMapInfo()->isRaid())
     {
         if (m_Unit->isCreature())
         {
             if (dynamic_cast<Creature*>(m_Unit)->GetCreatureProperties()->Rank == 3)
             {
-                unitMapMgr->RemoveCombatInProgress(m_Unit->getGuid());
+                unitMapMgr->removeCombatInProgress(m_Unit->getGuid());
             }
         }
     }
@@ -2844,7 +2863,7 @@ void AIInterface::setDefaultBoundary()
 
     // Do net set default boundaries to creatures in raids or dungeons
     // Mobs and bosses will chase players to instance portal unless custom boundaries are set
-    if (m_Unit->GetMapMgr()->GetMapInfo()->isInstanceMap())
+    if (m_Unit->getWorldMap()->getBaseMap()->getMapInfo()->isInstanceMap())
         return;
 
     if (m_Unit->isPet() || m_Unit->isSummon())

@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 
 //.gobject damage
 bool ChatHandler::HandleGODamageCommand(const char* args, WorldSession* session)
@@ -74,12 +74,12 @@ bool ChatHandler::HandleGODeleteCommand(const char* /*args*/, WorldSession* m_se
 
     if (selected_gobject->m_spawn != nullptr && selected_gobject->m_spawn->entry == selected_gobject->getEntry())
     {
-        uint32 cellx = uint32(((_maxX - selected_gobject->m_spawn->position_x) / _cellSize));
-        uint32 celly = uint32(((_maxY - selected_gobject->m_spawn->position_y) / _cellSize));
+        uint32 cellx = uint32(((Map::Terrain::_maxX - selected_gobject->m_spawn->position_x) / Map::Cell::cellSize));
+        uint32 celly = uint32(((Map::Terrain::_maxY - selected_gobject->m_spawn->position_y) / Map::Cell::cellSize));
 
-        if (cellx < _sizeX && celly < _sizeY)
+        if (cellx < Map::Cell::_sizeX && celly < Map::Cell::_sizeY)
         {
-            CellSpawns* cell_spawns = selected_gobject->GetMapMgr()->GetBaseMap()->GetSpawnsList(cellx, celly);
+            CellSpawns* cell_spawns = selected_gobject->getWorldMap()->getBaseMap()->getSpawnsList(cellx, celly);
             if (cell_spawns != nullptr)
             {
                 for (GameobjectSpawnList::iterator itr = cell_spawns->GameobjectSpawns.begin(); itr != cell_spawns->GameobjectSpawns.end(); ++itr)
@@ -358,10 +358,10 @@ bool ChatHandler::HandleGOMoveHereCommand(const char* args, WorldSession* m_sess
         GreenSystemMessage(m_session, "GameObject position temporarily set to your current position.");
     }
 
-    uint32 new_go_guid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
+    uint32 new_go_guid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
     gameobject->RemoveFromWorld(true);
     gameobject->SetNewGuid(new_go_guid);
-    gameobject->PushToWorld(m_session->GetPlayer()->GetMapMgr());
+    gameobject->PushToWorld(m_session->GetPlayer()->getWorldMap());
 
     m_session->GetPlayer()->setSelectedGo(new_go_guid);
 
@@ -460,10 +460,10 @@ bool ChatHandler::HandleGORotateCommand(const char* args, WorldSession* m_sessio
 
     GreenSystemMessage(m_session, "Gameobject spawn id: %u rotated", go->m_spawn->id);
 
-    uint32 NewGuid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
+    uint32 NewGuid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
     go->RemoveFromWorld(true);
     go->SetNewGuid(NewGuid);
-    go->PushToWorld(m_session->GetPlayer()->GetMapMgr());
+    go->PushToWorld(m_session->GetPlayer()->getWorldMap());
     go->SaveToDB();
 
     m_session->GetPlayer()->setSelectedGo(NewGuid);
@@ -555,7 +555,7 @@ bool ChatHandler::HandleGOSelectGuidCommand(const char* args, WorldSession* m_se
         return true;
     }
 
-    auto gameobject = m_session->GetPlayer()->GetMapMgr()->GetGameObject(guid);
+    auto gameobject = m_session->GetPlayer()->getWorldMap()->getGameObject(guid);
     if (gameobject == nullptr)
     {
         RedSystemMessage(m_session, "No GameObject found with guid %u", guid);
@@ -587,7 +587,7 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
     }
 
     auto player = m_session->GetPlayer();
-    auto gameobject = player->GetMapMgr()->CreateGameObject(go_entry);
+    auto gameobject = player->getWorldMap()->createGameObject(go_entry);
 
     uint32 mapid = player->GetMapId();
     float x = player->GetPositionX();
@@ -596,7 +596,7 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
     float o = player->GetOrientation();
 
     gameobject->CreateFromProto(go_entry, mapid, x, y, z, o);
-    gameobject->PushToWorld(player->GetMapMgr());
+    gameobject->PushToWorld(player->getWorldMap());
     gameobject->Phase(PHASE_SET, player->GetPhase());
 
     // Create spawn instance
@@ -620,14 +620,14 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
     go_spawn->phase = gameobject->GetPhase();
     go_spawn->overrides = gameobject->GetOverrides();
 
-    uint32 cx = player->GetMapMgr()->GetPosX(player->GetPositionX());
-    uint32 cy = player->GetMapMgr()->GetPosY(player->GetPositionY());
-    player->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(go_spawn);
+    uint32 cx = player->getWorldMap()->getPosX(player->GetPositionX());
+    uint32 cy = player->getWorldMap()->getPosY(player->GetPositionY());
+    player->getWorldMap()->getBaseMap()->getSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(go_spawn);
     gameobject->m_spawn = go_spawn;
 
-    MapCell* mCell = player->GetMapMgr()->GetCell(cx, cy);
+    MapCell* mCell = player->getWorldMap()->getCell(cx, cy);
     if (mCell != nullptr)
-        mCell->SetLoaded();
+        mCell->setLoaded();
 
     bool save_to_db = false;
     if (m_session->GetPlayer()->m_saveAllChangesCommand || save > 0)
@@ -821,10 +821,10 @@ bool ChatHandler::HandleGOSetOverridesCommand(const char* args, WorldSession* m_
         GreenSystemMessage(m_session, "Gameobject overrides temporarily set to %u for spawn ID: %u.", go_override, go_spawn->id);
     }
 
-    uint32 new_go_guid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
+    uint32 new_go_guid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
     gameobject->RemoveFromWorld(true);
     gameobject->SetNewGuid(new_go_guid);
-    gameobject->PushToWorld(m_session->GetPlayer()->GetMapMgr());
+    gameobject->PushToWorld(m_session->GetPlayer()->getWorldMap());
 
     m_session->GetPlayer()->setSelectedGo(new_go_guid);
 
@@ -877,10 +877,10 @@ bool ChatHandler::HandleGOSetPhaseCommand(const char* args, WorldSession* m_sess
         GreenSystemMessage(m_session, "GameObject phase temporarily set to %u.", phase);
     }
 
-    uint32 new_go_guid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
+    uint32 new_go_guid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
     gameobject->RemoveFromWorld(true);
     gameobject->SetNewGuid(new_go_guid);
-    gameobject->PushToWorld(m_session->GetPlayer()->GetMapMgr());
+    gameobject->PushToWorld(m_session->GetPlayer()->getWorldMap());
 
     m_session->GetPlayer()->setSelectedGo(new_go_guid);
 
@@ -930,10 +930,10 @@ bool ChatHandler::HandleGOSetScaleCommand(const char* args, WorldSession* m_sess
         GreenSystemMessage(m_session, "Gameobject scale temporarily set to %3.3lf for spawn ID: %u.", scale, go_spawn->id);
     }
 
-    uint32 new_go_guid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
+    uint32 new_go_guid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
     gameobject->RemoveFromWorld(true);
     gameobject->SetNewGuid(new_go_guid);
-    gameobject->PushToWorld(m_session->GetPlayer()->GetMapMgr());
+    gameobject->PushToWorld(m_session->GetPlayer()->getWorldMap());
 
     m_session->GetPlayer()->setSelectedGo(new_go_guid);
 

@@ -19,7 +19,7 @@
 #include "IsleOfConquest.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/WorldStates.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 
 // gameobject faction
 static uint32_t g_gameObjectFactions[IOC_NUM_CONTROL_POINTS] =
@@ -288,7 +288,7 @@ static uint32_t cptogy[IOC_NUM_CONTROL_POINTS] =
 };
 
 
-IsleOfConquest::IsleOfConquest(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : CBattleground(mgr, id, lgroup, t)
+IsleOfConquest::IsleOfConquest(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : CBattleground(mgr, id, lgroup, t)
 {
     m_zoneid = 4710;
     m_reinforcements[0] = IOC_NUM_REINFORCEMENTS;
@@ -514,7 +514,7 @@ void IsleOfConquest::SpawnControlPoint(uint32_t Id, uint32_t Type)
 
     if (controlpoint[Id].banner == nullptr)
     {
-        controlpoint[Id].banner = SpawnGameObject(gameobject_info->entry, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
+        controlpoint[Id].banner = SpawnGameObject(gameobject_info->entry, m_mapMgr->getBaseMap()->getMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
             ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
         controlpoint[Id].banner->setState(GO_STATE_CLOSED);
@@ -548,7 +548,7 @@ void IsleOfConquest::SpawnControlPoint(uint32_t Id, uint32_t Type)
             controlpoint[Id].banner->RemoveFromWorld(false);
 
         // assign it a new guid (client needs this to see the entry change?)
-        controlpoint[Id].banner->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
+        controlpoint[Id].banner->SetNewGuid(m_mapMgr->generateGameobjectGuid());
         controlpoint[Id].banner->setEntry(gameobject_info->entry);
         controlpoint[Id].banner->setDisplayId(gameobject_info->display_id);
         controlpoint[Id].banner->setGoType(static_cast<uint8_t>(gameobject_info->type));
@@ -627,7 +627,7 @@ void IsleOfConquest::SpawnControlPoint(uint32_t Id, uint32_t Type)
             controlpoint[Id].aura->RemoveFromWorld(false);
 
         // re-spawn the aura
-        controlpoint[Id].aura->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
+        controlpoint[Id].aura->SetNewGuid(m_mapMgr->generateGameobjectGuid());
         controlpoint[Id].aura->setEntry(gi_aura->entry);
         controlpoint[Id].aura->setDisplayId(gi_aura->display_id);
         controlpoint[Id].aura->SetGameObjectProperties(gi_aura);

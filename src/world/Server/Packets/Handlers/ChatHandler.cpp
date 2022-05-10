@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "Management/Battleground/Battleground.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Chat/ChatDefines.hpp"
 #include "Server/Script/ScriptMgr.h"
@@ -294,7 +294,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                 break;
 
             auto yell_packet = SmsgMessageChat(CHAT_MSG_YELL, messageLanguage, gmFlag, srlPacket.message, _player->getGuid());
-            _player->GetMapMgr()->SendChatMessageToCellPlayers(_player, yell_packet.serialise().get(), 2, 1, messageLanguage, this);
+            _player->getWorldMap()->sendChatMessageToCellPlayers(_player, yell_packet.serialise().get(), 2, 1, messageLanguage, this);
         } break;
         case CHAT_MSG_WHISPER:
         {
@@ -410,7 +410,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
     uint32_t nameLength = 1;
     std::string unitName;
 
-    auto unit = _player->GetMapMgr()->GetUnit(srlPacket.guid);
+    auto unit = _player->getWorldMap()->getUnit(srlPacket.guid);
     if (unit != nullptr)
     {
         if (unit->isPlayer())
@@ -469,7 +469,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
     const char* unitName = " ";
     uint32_t nameLength = 1;
 
-    Unit* unit = _player->GetMapMgr()->GetUnit(srlPacket.guid);
+    Unit* unit = _player->getWorldMap()->getUnit(srlPacket.guid);
     if (unit)
     {
         if (unit->isPlayer())

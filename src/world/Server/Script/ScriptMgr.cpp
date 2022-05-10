@@ -28,12 +28,12 @@
 #include <git_version.h>
 
 #include <fstream>
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
 #include "Management/ObjectMgr.h"
 #include "ScriptMgr.h"
-#include "Map/MapScriptInterface.h"
+#include "Map/Maps/MapScriptInterface.h"
 #include "Common.hpp"
 #include "CreatureAIScript.h"
 #include "Management/LFG/LFGMgr.hpp"
@@ -824,9 +824,9 @@ GameObjectAIScript* ScriptMgr::CreateAIScriptClassForGameObject(uint32 /*uEntryI
     return (function_ptr)(pGameObject);
 }
 
-InstanceScript* ScriptMgr::CreateScriptClassForInstance(uint32 /*pMapId*/, MapMgr* pMapMgr)
+InstanceScript* ScriptMgr::CreateScriptClassForInstance(uint32 /*pMapId*/, WorldMap* pMapMgr)
 {
-    InstanceCreateMap::iterator Iter = mInstances.find(pMapMgr->GetMapId());
+    InstanceCreateMap::iterator Iter = mInstances.find(pMapMgr->getBaseMap()->getMapId());
     if (Iter == mInstances.end())
         return NULL;
     exp_create_instance_ai function_ptr = Iter->second;
@@ -908,11 +908,9 @@ void GameObjectAIScript::RegisterAIUpdateEvent(uint32_t frequency)
 
 /* InstanceAI Stuff */
 
-InstanceScript::InstanceScript(MapMgr* pMapMgr) : mInstance(pMapMgr), mSpawnsCreated(false), mTimerCount(0), mUpdateFrequency(defaultUpdateFrequency)
+InstanceScript::InstanceScript(WorldMap* pMapMgr) : mInstance(pMapMgr), mSpawnsCreated(false), mTimerCount(0), mUpdateFrequency(defaultUpdateFrequency)
 {
-    Difficulty = pMapMgr->pInstance->m_difficulty;
-
-    generateBossDataState();
+    Difficulty = pMapMgr->getDifficulty();
     registerUpdateEvent();
 }
 
@@ -920,61 +918,17 @@ InstanceScript::InstanceScript(MapMgr* pMapMgr) : mInstance(pMapMgr), mSpawnsCre
 //////////////////////////////////////////////////////////////////////////////////////////
 // data
 
-void InstanceScript::addData(uint32_t data, uint32_t state /*= NotStarted*/)
-{
-    auto Iter = mInstanceData.find(data);
-    if (Iter == mInstanceData.end())
-        mInstanceData.insert(std::pair<uint32_t, uint32_t>(data, state));
-    else
-        sLogger.debug("InstanceScript::addData - tried to set state for entry %u. The entry is already available with a state!", data);
-}
-
-void InstanceScript::setData(uint32_t data, uint32_t state)
-{
-    auto Iter = mInstanceData.find(data);
-    if (Iter != mInstanceData.end())
-    {
-        Iter->second = state;
-        OnEncounterStateChange(data, state);
-
-        if (state == NotStarted)
-            GetInstance()->respawnBossLinkedGroups(data);
-    }
-    else
-        sLogger.debug("InstanceScript::setData - tried to set state for entry %u on map %u. The entry is not defined in table instance_bosses or manually to handle states!", data, mInstance->GetMapId());
-}
-
-uint32_t InstanceScript::getData(uint32_t data)
-{
-    auto Iter = mInstanceData.find(data);
-    if (Iter != mInstanceData.end())
-        return Iter->second;
-
-    return InvalidState;
-}
-
-bool InstanceScript::isDataStateFinished(uint32_t data)
-{
-    return getData(data) == Finished;
-}
-
 //used for debug
-std::string InstanceScript::getDataStateString(uint32_t bossEntry)
+std::string InstanceScript::getDataStateString(uint8_t state)
 {
-    uint32_t eState = NotStarted;
-
-    auto it = mInstanceData.find(bossEntry);
-    if (it != mInstanceData.end())
-        eState = it->second;
-
-    switch (eState)
+    switch (state)
     {
         case NotStarted:
             return "Not started";
         case InProgress:
             return "In Progress";
-        case Finished:
-            return "Finished";
+        case Failed:
+            return "Failed";
         case Performed:
             return "Performed";
         case PreProgress:
@@ -986,54 +940,138 @@ std::string InstanceScript::getDataStateString(uint32_t bossEntry)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // encounters
+void InstanceScript::generateBossDataState()
+{
+    const auto* encounters = sObjectMgr.GetDungeonEncounterList(getWorldMap()->getBaseMap()->getMapId(), getWorldMap()->getDifficulty());
+    uint32_t i = 0;
+
+    for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr, ++i)
+    {
+        DungeonEncounter const* encounter = *itr;
+
+        BossInfo* bossInfo = &bosses[i];
+        bossInfo->entry = encounter->creditEntry;
+        bossInfo->state = NotStarted;
+    }
+
+    // Set States
+    for (i = 0; i < bosses.size(); ++i)
+        setBossState(i, NotStarted);
+}
+
+bool InstanceScript::setBossState(uint32_t id, EncounterStates state)
+{
+    if (id < bosses.size())
+    {
+        BossInfo* bossInfo = &bosses[id];
+        if (bossInfo->state == InvalidState) // loading
+        {
+            bossInfo->state = state;
+            return false;
+        }
+        else
+        {
+            if (bossInfo->state == state)
+                return false;
+
+            if (bossInfo->state == Performed)
+            {
+                return false;
+            }
+
+            bossInfo->state = state;
+            saveToDB();
+        }
+
+        OnEncounterStateChange(id, state);
+
+        if (state == NotStarted)
+            getInstance()->respawnBossLinkedGroups(bossInfo->entry);
+
+        return true;
+    }
+    return false;
+}
+
+void InstanceScript::saveToDB()
+{
+    std::string data = getSaveData();
+    if (data.empty())
+        return;
+
+    CharacterDatabase.Execute("UPDATE instance SET completedEncounters=%u, data=\'%s\' WHERE id=%u", getCompletedEncounterMask(), data.c_str(), mInstance->getInstanceId());
+}
+
+void InstanceScript::loadSavedInstanceData(char const* data)
+{
+    if (!data)
+    {
+        sLogger.failure("Unable to load Saved Instance Data for Instance %s (Map %d, Instance Id: %d).", mInstance->getBaseMap()->getMapName().c_str(), mInstance->getBaseMap()->getMapId(), mInstance->getInstanceId());
+        return;
+    }
+
+    std::istringstream loadStream(data);
+
+    readSaveDataBossStates(loadStream);
+
+    sLogger.debug("Saved Instance Data Loaded for Instance %s (Map %d, Instance Id: %d) is complete.", mInstance->getBaseMap()->getMapName().c_str(), mInstance->getBaseMap()->getMapId(), mInstance->getInstanceId());
+}
+
+void InstanceScript::readSaveDataBossStates(std::istringstream& data)
+{
+    const auto* encounters = sObjectMgr.GetDungeonEncounterList(getWorldMap()->getBaseMap()->getMapId(), getWorldMap()->getDifficulty());
+    size_t i = 0;
+
+    for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr, ++i)
+    {
+        DungeonEncounter const* encounter = *itr;
+
+        BossInfo* bossInfo = &bosses[i];
+        bossInfo->entry = encounter->creditEntry;
+    }
+
+    uint32_t bossId = 0;
+    for (std::vector<BossInfo>::iterator itr = bosses.begin(); itr != bosses.end(); ++itr, ++bossId)
+    {
+        uint32_t buff;
+        data >> buff;
+        if (buff == InProgress || buff == Failed || buff == PreProgress)
+            buff = NotStarted;
+
+        if (buff < InvalidState)
+        {
+            setBossState(bossId, EncounterStates(buff));
+        }
+    }
+}
+
+void InstanceScript::writeSaveDataBossStates(std::ostringstream& data)
+{
+    for (auto const& bossInfo : bosses)
+        data << uint32_t(bossInfo.state) << ' ';
+}
+
+std::string InstanceScript::getSaveData()
+{
+    std::ostringstream saveStream;
+
+    writeSaveDataBossStates(saveStream);
+
+    return saveStream.str();
+}
+
 #if VERSION_STRING >= WotLK
-void InstanceScript::generateBossDataState()
+void InstanceScript::updateEncounterState(EncounterCreditType type, uint32_t creditEntry)
 {
-    auto encounters = sObjectMgr.GetDungeonEncounterList(mInstance->GetMapId(), mInstance->pInstance->m_difficulty);
-
-    if (encounters != nullptr)
-    {
-        completedEncounters = 0;
-
-        for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
-        {
-            DungeonEncounter const* encounter = *itr;
-            if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE)
-            {
-                CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounter->creditEntry);
-                if (creature == nullptr)
-                    sLogger.failure("Your instance_encounters table includes invalid data for boss entry %u!", encounter->creditEntry);
-                else
-                    mInstanceData.insert(std::pair<uint32_t, uint32_t>(encounter->creditEntry, NotStarted));
-            }           
-        }
-
-        for (const auto& killedNpc : mInstance->pInstance->m_killedNpcs)
-        {
-            for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
-            {
-                DungeonEncounter const* encounter = *itr;
-                if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == killedNpc)
-                    setData(encounter->creditEntry, Finished);
-            }
-        }
-    }
-
-    sLogger.debug("InstanceScript::generateBossDataState() - Boss State generated for map %u.", mInstance->GetMapId());
-}
-
-void InstanceScript::UpdateEncountersStateForCreature(uint32_t creditEntry, uint8_t difficulty)
-{
-    DungeonEncounterList const* encounters = sObjectMgr.GetDungeonEncounterList(mInstance->GetMapId(), difficulty);
+    DungeonEncounterList const* encounters = sObjectMgr.GetDungeonEncounterList(mInstance->getBaseMap()->getMapId(), mInstance->getDifficulty());
     if (!encounters)
         return;
 
-    uint32 dungeonId = 0;
+    uint32_t dungeonId = 0;
 
-    for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
+    for (auto const& encounter : *encounters)
     {
-        DungeonEncounter const* encounter = *itr;
-        if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == creditEntry)
+        if (encounter->creditType == type && encounter->creditEntry == creditEntry)
         {
             completedEncounters |= 1 << encounter->dbcEntry->encounterIndex;
             if (encounter->lastEncounterDungeon)
@@ -1046,108 +1084,58 @@ void InstanceScript::UpdateEncountersStateForCreature(uint32_t creditEntry, uint
 
     if (dungeonId)
     {
-        for (const auto& itr : mInstance->m_PlayerStorage)
+        for (auto const& ref : mInstance->getPlayers())
         {
-            Player* p = itr.second;
-            sLfgMgr.RewardDungeonDoneFor(dungeonId, p);
+            if (Player* player = ref.second)
+            {
+                if (Group* grp = player->getGroup())
+                {
+                    if (grp->isLFGGroup())
+                    {
+                        sLfgMgr.RewardDungeonDoneFor(dungeonId, player);
+                        return;
+                    }
+                }
+            }
         }
     }
 }
 
-void InstanceScript::UpdateEncountersStateForSpell(uint32_t creditEntry, uint8_t difficulty)
+void InstanceScript::updateEncountersStateForCreature(uint32_t creditEntry, uint8_t /*difficulty*/)
 {
-    DungeonEncounterList const* encounters = sObjectMgr.GetDungeonEncounterList(mInstance->GetMapId(), difficulty);
-    if (!encounters)
-        return;
-
-    uint32 dungeonId = 0;
-
-    for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
-    {
-        DungeonEncounter const* encounter = *itr;
-        if (encounter->creditType == ENCOUNTER_CREDIT_CAST_SPELL && encounter->creditEntry == creditEntry)
-        {
-            completedEncounters |= 1 << encounter->dbcEntry->encounterIndex;
-            if (encounter->lastEncounterDungeon)
-            {
-                dungeonId = encounter->lastEncounterDungeon;
-                break;
-            }
-        }
-    }
-
-    if (dungeonId)
-    {
-        for (const auto& itr : mInstance->m_PlayerStorage)
-        {
-            Player* p = itr.second;
-            sLfgMgr.RewardDungeonDoneFor(dungeonId, p);
-        }
-    }
+    updateEncounterState(ENCOUNTER_CREDIT_KILL_CREATURE, creditEntry);
 }
-#endif
 
-#if VERSION_STRING <= TBC
-void InstanceScript::generateBossDataState()
+void InstanceScript::updateEncountersStateForSpell(uint32_t creditEntry, uint8_t /*difficulty*/)
 {
-    auto encounters = sObjectMgr.GetDungeonEncounterList(mInstance->GetMapId());
-
-    if (encounters != nullptr)
-    {
-        completedEncounters = 0;
-
-        for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
-        {
-            DungeonEncounter const* encounter = *itr;
-            if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE)
-            {
-                CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounter->creditEntry);
-                if (creature == nullptr)
-                    sLogger.failure("Your instance_encounters table includes invalid data for boss entry %u!", encounter->creditEntry);
-                else
-                    mInstanceData.insert(std::pair<uint32_t, uint32_t>(encounter->creditEntry, NotStarted));
-            }
-        }
-
-        for (const auto& killedNpc : mInstance->pInstance->m_killedNpcs)
-        {
-            for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
-            {
-                DungeonEncounter const* encounter = *itr;
-                if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == killedNpc)
-                    setData(encounter->creditEntry, Finished);
-            }
-        }
-    }
-
-    sLogger.debug("InstanceScript::generateBossDataState() - Boss State generated for map %u.", mInstance->GetMapId());
+    updateEncounterState(ENCOUNTER_CREDIT_CAST_SPELL, creditEntry);
 }
 #endif
 
 void InstanceScript::sendUnitEncounter(uint32_t type, Unit* unit, uint8_t value_a, uint8_t value_b)
 {
-    MapMgr* instance = GetInstance();
-    instance->SendPacketToAllPlayers(SmsgUpdateInstanceEncounterUnit(type, unit ? unit->GetNewGUID() : WoWGuid(), value_a, value_b).serialise().get());
+    WorldMap* instance = getInstance();
+    instance->sendPacketToAllPlayers(SmsgUpdateInstanceEncounterUnit(type, unit ? unit->GetNewGUID() : WoWGuid(), value_a, value_b).serialise().get());
 }
 
 void InstanceScript::displayDataStateList(Player* player)
 {
-    player->broadcastMessage("=== DataState for instance %s ===", mInstance->GetMapInfo()->name.c_str());
+    player->broadcastMessage("=== DataState for instance %s ===", mInstance->getBaseMap()->getMapInfo()->name.c_str());
 
-    for (const auto& encounter : mInstanceData)
+    for (const auto& encounters : bosses)
     {
-        CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounter.first);
+        CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounters.entry);
         if (creature != nullptr)
         {
-            player->broadcastMessage("  Boss '%s' (%u) - %s", creature->Name.c_str(), encounter.first, getDataStateString(encounter.first).c_str());
+            player->broadcastMessage("  Boss '%s' (%u) - %s", creature->Name.c_str(), encounters.entry, getDataStateString(encounters.state).c_str());
         }
         else
         {
-            GameObjectProperties const* gameobject = sMySQLStore.getGameObjectProperties(encounter.first);
+            GameObjectProperties const* gameobject = sMySQLStore.getGameObjectProperties(encounters.entry);
             if (gameobject != nullptr)
-                player->broadcastMessage("  Object '%s' (%u) - %s", gameobject->name.c_str(), encounter.first, getDataStateString(encounter.first).c_str());
+                player->broadcastMessage("  Object '%s' (%u) - %s", gameobject->name.c_str(), encounters.entry, getDataStateString(encounters.state).c_str());
             else
-                player->broadcastMessage("  MiscData %u - %s", encounter.first, getDataStateString(encounter.first).c_str());
+                player->broadcastMessage("  MiscData %u - %s", encounters.entry, getDataStateString(encounters.state).c_str());
         }
     }
 }
@@ -1230,7 +1218,7 @@ void InstanceScript::updateTimers()
 
 void InstanceScript::displayTimerList(Player* player)
 {
-    player->broadcastMessage("=== Timers for instance %s ===", mInstance->GetMapInfo()->name.c_str());
+    player->broadcastMessage("=== Timers for instance %s ===", mInstance->getBaseMap()->getMapInfo()->name.c_str());
 
     if (mTimers.empty())
     {
@@ -1248,7 +1236,7 @@ void InstanceScript::displayTimerList(Player* player)
 
 void InstanceScript::registerUpdateEvent()
 {
-    sEventMgr.AddEvent(mInstance, &MapMgr::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, getUpdateFrequency(), 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(mInstance, &WorldMap::callScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, getUpdateFrequency(), 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void InstanceScript::modifyUpdateEvent(uint32_t frequencyInMs)
@@ -1278,12 +1266,12 @@ void InstanceScript::setCellForcedStates(float xMin, float xMax, float yMin, flo
     {
         while (yMin < yMax)
         {
-            MapCell* CurrentCell = mInstance->GetCellByCoords(xMin, yMin);
+            MapCell* CurrentCell = mInstance->getCellByCoords(xMin, yMin);
             if (forceActive && CurrentCell == nullptr)
             {
-                CurrentCell = mInstance->CreateByCoords(xMin, yMin);
+                CurrentCell = mInstance->createByCoords(xMin, yMin);
                 if (CurrentCell != nullptr)
-                    CurrentCell->Init(mInstance->GetPosX(xMin), mInstance->GetPosY(yMin), mInstance);
+                    CurrentCell->init(mInstance->getPosX(xMin), mInstance->getPosY(yMin), mInstance);
             }
 
             if (CurrentCell != nullptr)
@@ -1311,7 +1299,7 @@ Creature* InstanceScript::spawnCreature(uint32_t entry, float posX, float posY, 
         return nullptr;
     }
 
-    Creature* creature = mInstance->GetInterface()->SpawnCreature(entry, posX, posY, posZ, posO, true, true, 0, 0);
+    Creature* creature = mInstance->getInterface()->spawnCreature(entry, LocationVector(posX, posY, posZ, posO), true, true, 0, 0);
     if (creature == nullptr)
         return nullptr;
 
@@ -1325,19 +1313,19 @@ Creature* InstanceScript::spawnCreature(uint32_t entry, float posX, float posY, 
 
 Creature* InstanceScript::getCreatureBySpawnId(uint32_t entry)
 {
-    return mInstance->GetSqlIdCreature(entry);
+    return mInstance->getSqlIdCreature(entry);
 }
 
 Creature* InstanceScript::GetCreatureByGuid(uint32_t guid)
 {
-    return mInstance->GetCreature(guid);
+    return mInstance->getCreature(guid);
 }
 
 CreatureSet InstanceScript::getCreatureSetForEntry(uint32_t entry, bool debug /*= false*/, Player* player /*= nullptr*/)
 {
     CreatureSet creatureSet;
     uint32_t countCreatures = 0;
-    for (auto creature : mInstance->CreatureStorage)
+    for (auto creature : mInstance->getCreatures())
     {
         if (creature != nullptr)
         {
@@ -1362,7 +1350,7 @@ CreatureSet InstanceScript::getCreatureSetForEntry(uint32_t entry, bool debug /*
 CreatureSet InstanceScript::getCreatureSetForEntries(std::vector<uint32_t> entryVector)
 {
     CreatureSet creatureSet;
-    for (auto creature : mInstance->CreatureStorage)
+    for (auto creature : mInstance->getCreatures())
     {
         if (creature != nullptr)
         {
@@ -1379,24 +1367,24 @@ CreatureSet InstanceScript::getCreatureSetForEntries(std::vector<uint32_t> entry
 
 Creature* InstanceScript::findNearestCreature(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/)
 {
-    Creature* pCreature = mInstance->GetInterface()->findNearestCreature(pObject, entry, maxSearchRange);
+    Creature* pCreature = mInstance->getInterface()->findNearestCreature(pObject, entry, maxSearchRange);
     return pCreature;
 }
 
 GameObject* InstanceScript::spawnGameObject(uint32_t entry, float posX, float posY, float posZ, float posO, bool addToWorld /*= true*/, uint32_t misc1 /*= 0*/, uint32_t phase /*= 0*/)
 {
-    GameObject* spawnedGameObject = mInstance->GetInterface()->SpawnGameObject(entry, posX, posY, posZ, posO, addToWorld, misc1, phase);
+    GameObject* spawnedGameObject = mInstance->getInterface()->spawnGameObject(entry, LocationVector(posX, posY, posZ, posO), addToWorld, misc1, phase);
     return spawnedGameObject;
 }
 
 GameObject* InstanceScript::getGameObjectBySpawnId(uint32_t entry)
 {
-    return mInstance->GetSqlIdGameObject(entry);
+    return mInstance->getSqlIdGameObject(entry);
 }
 
 GameObject* InstanceScript::GetGameObjectByGuid(uint32_t guid)
 {
-    return mInstance->GetGameObject(guid);
+    return mInstance->getGameObject(guid);
 }
 
 GameObject* InstanceScript::getClosestGameObjectForPosition(uint32_t entry, float posX, float posY, float posZ)
@@ -1431,7 +1419,7 @@ GameObject* InstanceScript::getClosestGameObjectForPosition(uint32_t entry, floa
 GameObjectSet InstanceScript::getGameObjectsSetForEntry(uint32_t entry)
 {
     GameObjectSet gameobjectSet;
-    for (auto gameobject : mInstance->GOStorage)
+    for (auto gameobject : mInstance->getGameObjects())
     {
         if (gameobject != nullptr)
         {

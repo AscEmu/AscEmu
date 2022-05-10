@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Chat/ChatHandler.hpp"
 #include "Storage/MySQLDataStore.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 
 #ifdef FT_VEHICLES
 //.vehicle ejectpassenger
@@ -27,7 +27,7 @@ bool ChatHandler::HandleVehicleEjectPassengerCommand(const char* args, WorldSess
         return false;
     }
 
-    Unit* u = p->GetMapMgr()->GetUnit(p->getTargetGuid());
+    Unit* u = p->getWorldMap()->getUnit(p->getTargetGuid());
     if (u == nullptr)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
@@ -36,7 +36,7 @@ bool ChatHandler::HandleVehicleEjectPassengerCommand(const char* args, WorldSess
 
     if (u->getVehicleKit())
     {
-        if (Unit* passenger = u->getVehicleKit()->getPassenger(seat))
+        if (Unit* passenger = u->getVehicleKit()->getPassenger(static_cast<int8_t>(seat)))
             passenger->callExitVehicle();
     }
     return true;
@@ -51,7 +51,7 @@ bool ChatHandler::HandleVehicleEjectAllPassengersCommand(const char* /*args*/, W
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    Unit* u = p->GetMapMgr()->GetUnit(p->getTargetGuid());
+    Unit* u = p->getWorldMap()->getUnit(p->getTargetGuid());
     if (u == NULL)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
@@ -75,7 +75,7 @@ bool ChatHandler::HandleVehicleInstallAccessoriesCommand(const char* /*args*/, W
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    Unit* u = p->GetMapMgr()->GetUnit(p->getTargetGuid());
+    Unit* u = p->getWorldMap()->getUnit(p->getTargetGuid());
     if (u == NULL)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
@@ -106,7 +106,7 @@ bool ChatHandler::HandleVehicleAddPassengerCommand(const char* args, WorldSessio
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    Unit* u = session->GetPlayer()->GetMapMgr()->GetUnit(session->GetPlayer()->getTargetGuid());
+    Unit* u = session->GetPlayer()->getWorldMap()->getUnit(session->GetPlayer()->getTargetGuid());
     if (u == NULL)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
@@ -129,9 +129,9 @@ bool ChatHandler::HandleVehicleAddPassengerCommand(const char* args, WorldSessio
         RedSystemMessage(session, "Creature %u doesn't exist in the database", creature_entry);
         return false;
     }
-    Creature* c = u->GetMapMgr()->CreateCreature(creature_entry);
+    Creature* c = u->getWorldMap()->createCreature(creature_entry);
     c->Load(cp, u->GetPositionX(), u->GetPositionY(), u->GetPositionZ(), u->GetOrientation());
-    c->PushToWorld(u->GetMapMgr());
+    c->PushToWorld(u->getWorldMap());
     c->callEnterVehicle(u);
     return true;
 }

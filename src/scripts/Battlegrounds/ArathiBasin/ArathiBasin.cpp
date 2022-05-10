@@ -23,7 +23,7 @@
 #include "Management/QuestLogEntry.hpp"
 #include "Management/WorldStates.h"
 #include "Server/MainServerDefines.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellMgr.hpp"
 
 uint32_t buffentries[3] = { 180380, 180362, 180146 };
@@ -160,7 +160,7 @@ void ArathiBasin::SpawnBuff(uint32_t x)
 
     if (m_buffs[x] == nullptr)
     {
-        m_buffs[x] = SpawnGameObject(chosen_buffid, m_mapMgr->GetMapId(), BuffCoordinates[x][0], BuffCoordinates[x][1], BuffCoordinates[x][2],
+        m_buffs[x] = SpawnGameObject(chosen_buffid, m_mapMgr->getBaseMap()->getMapId(), BuffCoordinates[x][0], BuffCoordinates[x][1], BuffCoordinates[x][2],
             BuffCoordinates[x][3], 0, 114, 1);
 
         m_buffs[x]->SetRotationQuat(0.f, 0.f, BuffRotations[x][0], BuffRotations[x][1]);
@@ -177,7 +177,7 @@ void ArathiBasin::SpawnBuff(uint32_t x)
 
         if (chosen_buffid != m_buffs[x]->getEntry())
         {
-            m_buffs[x]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
+            m_buffs[x]->SetNewGuid(m_mapMgr->generateGameobjectGuid());
             m_buffs[x]->setEntry(chosen_buffid);
             m_buffs[x]->SetGameObjectProperties(gameobject_info);
         }
@@ -196,7 +196,7 @@ void ArathiBasin::SpawnControlPoint(uint32_t Id, uint32_t Type)
 
     if (m_controlPoints[Id] == nullptr)
     {
-        m_controlPoints[Id] = SpawnGameObject(gameobject_info->entry, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
+        m_controlPoints[Id] = SpawnGameObject(gameobject_info->entry, m_mapMgr->getBaseMap()->getMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
             ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
         m_controlPoints[Id]->SetRotationQuat(0.f, 0.f, ControlPointRotations[Id][0], ControlPointRotations[Id][1]);
@@ -231,7 +231,7 @@ void ArathiBasin::SpawnControlPoint(uint32_t Id, uint32_t Type)
             m_controlPoints[Id]->RemoveFromWorld(false);
 
         // assign it a new guid (client needs this to see the entry change?)
-        m_controlPoints[Id]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
+        m_controlPoints[Id]->SetNewGuid(m_mapMgr->generateGameobjectGuid());
         m_controlPoints[Id]->setEntry(gameobject_info->entry);
         m_controlPoints[Id]->setDisplayId(gameobject_info->display_id);
         m_controlPoints[Id]->setGoType(static_cast<uint8_t>(gameobject_info->type));
@@ -268,7 +268,7 @@ void ArathiBasin::SpawnControlPoint(uint32_t Id, uint32_t Type)
 
     if (m_controlPointAuras[Id] == nullptr)
     {
-        m_controlPointAuras[Id] = SpawnGameObject(gi_aura->entry, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
+        m_controlPointAuras[Id] = SpawnGameObject(gi_aura->entry, m_mapMgr->getBaseMap()->getMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
             ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
         m_controlPointAuras[Id]->SetRotationQuat(0.f, 0.f, ControlPointRotations[Id][0], ControlPointRotations[Id][1]);
@@ -283,7 +283,7 @@ void ArathiBasin::SpawnControlPoint(uint32_t Id, uint32_t Type)
             m_controlPointAuras[Id]->RemoveFromWorld(false);
 
         // re-spawn the aura
-        m_controlPointAuras[Id]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
+        m_controlPointAuras[Id]->SetNewGuid(m_mapMgr->generateGameobjectGuid());
         m_controlPointAuras[Id]->setEntry(gi_aura->entry);
         m_controlPointAuras[Id]->setDisplayId(gi_aura->display_id);
         m_controlPointAuras[Id]->SetGameObjectProperties(gi_aura);
@@ -349,7 +349,7 @@ void ArathiBasin::OnStart()
     m_started = true;
 }
 
-ArathiBasin::ArathiBasin(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : CBattleground(mgr, id, lgroup, t)
+ArathiBasin::ArathiBasin(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : CBattleground(mgr, id, lgroup, t)
 {
     for (uint8_t i = 0; i < 2; i++)
     {
@@ -805,7 +805,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
             {
                 for (std::set<uint32_t>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
                 {
-                    Player* r_plr = m_mapMgr->GetPlayer(*it2);
+                    Player* r_plr = m_mapMgr->getPlayer(*it2);
                     if (r_plr != nullptr && r_plr->isDead())
                         HookHandleRepop(r_plr);
                 }

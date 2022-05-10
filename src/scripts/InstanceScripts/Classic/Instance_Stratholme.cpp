@@ -9,8 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 class StratholmeInstanceScript : public InstanceScript
 {
 public:
-    explicit StratholmeInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) { }
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new StratholmeInstanceScript(pMapMgr); }
+    explicit StratholmeInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr) { }
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new StratholmeInstanceScript(pMapMgr); }
 };
 
 void SetupStratholme(ScriptMgr* mgr)

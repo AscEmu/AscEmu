@@ -27,7 +27,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
 #include "Server/Packets/MsgQuestPushResult.h"
@@ -1279,7 +1279,7 @@ void QuestMgr::OnPlayerCast(Player* plr, uint32 spellid, uint64 & victimguid)
     if (!plr || !plr->hasQuestSpell(spellid))
         return;
 
-    Unit* victim = plr->GetMapMgr() ? plr->GetMapMgr()->GetUnit(victimguid) : nullptr;
+    Unit* victim = plr->getWorldMap() ? plr->getWorldMap()->getUnit(victimguid) : nullptr;
 
     const uint32 entry = victim ? victim->getEntry() : 0;
 
@@ -2720,7 +2720,7 @@ void QuestMgr::OnPlayerEmote(Player* plr, uint32 emoteid, uint64 & victimguid)
     if (!plr || !emoteid || !victimguid)
         return;
 
-    Unit* victim = plr->GetMapMgr() ? plr->GetMapMgr()->GetUnit(victimguid) : nullptr;
+    Unit* victim = plr->getWorldMap() ? plr->getWorldMap()->getUnit(victimguid) : nullptr;
 
     uint8_t j;
     const uint32 entry = victim ? victim->getEntry() : 0;

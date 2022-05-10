@@ -99,7 +99,7 @@ public:
     {
         pPlayer->addQuestKill(9667, 0, 0);
 
-        Creature* princess = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17682);
+        Creature* princess = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17682);
         if (princess != nullptr)
             princess->Despawn(1000, 6 * 60 * 1000);
     }
@@ -123,7 +123,7 @@ public:
 
             if (fulborgskilled > 8 && mPlayer->hasQuestInQuestLog(9667))
             {
-                getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(17702, -2419, -12166, 33, 3.45f, true, false, 0, 0)->Despawn(18000000, 0);
+                getCreature()->getWorldMap()->getInterface()->spawnCreature(17702, LocationVector(-2419, -12166, 33, 3.45f), true, false, 0, 0)->Despawn(18000000, 0);
                 fulborgskilled = 0;
                 getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Chief, we need your help!");
             }
@@ -164,7 +164,7 @@ public:
         {
             // Creatures from Bloodmyst Isle
             uint32_t Id[51] = { 17681, 17887, 17550, 17323, 17338, 17341, 17333, 17340, 17353, 17320, 17339, 17337, 17715, 17322, 17494, 17654, 17342, 17328, 17331, 17325, 17321, 17330, 17522, 17329, 17524, 17327, 17661, 17352, 17334, 17326, 17324, 17673, 17336, 17346, 17589, 17609, 17608, 17345, 17527, 17344, 17347, 17525, 17713, 17523, 17348, 17606, 17604, 17607, 17610, 17358, 17588 };
-            Creature* RandomCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(Id[Util::getRandomUInt(50)], pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
+            Creature* RandomCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(Id[Util::getRandomUInt(50)], pos, true, false, 0, 0);
             if (RandomCreature != nullptr)
             {
                 RandomCreature->m_noRespawn = true;
@@ -174,7 +174,7 @@ public:
         else
         {
             uint32_t Id[8] = { 17681, 17321, 17330, 17522, 17673, 17336, 17346, 17589 };
-            Creature* RandomCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(Id[Util::getRandomUInt(7)], pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
+            Creature* RandomCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(Id[Util::getRandomUInt(7)], pos, true, false, 0, 0);
             if (RandomCreature != nullptr)
             {
                 RandomCreature->m_noRespawn = true;

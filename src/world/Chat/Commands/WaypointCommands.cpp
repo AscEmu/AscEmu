@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Server/WorldSession.h"
 #include "Movement/WaypointManager.h"

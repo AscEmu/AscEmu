@@ -6,10 +6,14 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <WorldConf.h>
-#include "Map/InstanceDefines.hpp"
+#include "Map/Maps/InstanceDefines.hpp"
+#include "Map/Maps/InstanceMgr.hpp"
 #include "Objects/Units/Players/Player.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Server/Packets/CmsgMessageChat.h"
+#include "Map/Maps/WorldMap.hpp"
+
+class BaseMap;
 
 enum PartyErrors
 {
@@ -99,6 +103,13 @@ typedef struct
     Player* player;
 } GroupMember;
 
+struct InstanceGroupBind
+{
+    InstanceSaved* save;
+    bool perm;
+    InstanceGroupBind() : save(nullptr), perm(false) { }
+};
+
 class Group;
 class Player;
 
@@ -150,6 +161,8 @@ public:
 
     Group(bool Assign);
     ~Group();
+
+    typedef std::unordered_map<uint32_t, InstanceGroupBind> BoundInstancesMap;
 
     // Adding/Removal Management
     bool AddMember(CachedCharacterInfo* info, int32 subgroupid = -1);
@@ -227,8 +240,17 @@ public:
     inline CachedCharacterInfo* GetMainTank() { return m_mainTank; }
     inline CachedCharacterInfo* GetMainAssist() { return m_mainAssist; }
 
-    uint32 m_instanceIds[MAX_NUM_MAPS][InstanceDifficulty::MAX_DIFFICULTY];
+    InstanceGroupBind* bindToInstance(InstanceSaved* save, bool permanent, bool load = false);
+    void unbindInstance(uint32_t mapid, uint8_t difficulty, bool unload = false);
+    InstanceGroupBind* getBoundInstance(Player* player);
+    InstanceGroupBind* getBoundInstance(BaseMap* aMap);
+    InstanceGroupBind* getBoundInstance(DBC::Structures::MapEntry const* mapEntry);
+    InstanceGroupBind* getBoundInstance(InstanceDifficulty::Difficulties difficulty, uint32_t mapId);
+    BoundInstancesMap& getBoundInstances(InstanceDifficulty::Difficulties difficulty);
 
+    void resetInstances(uint8_t method, bool isRaid, Player* SendMsgTo);
+
+    InstanceDifficulty::Difficulties getDifficulty(bool isRaid) const;
     void SetDungeonDifficulty(uint8 diff);
     void SetRaidDifficulty(uint8 diff);
     void SendLootUpdates(Object* o);
@@ -256,6 +278,9 @@ public:
     void UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTypes type, int32 miscvalue1, int32 miscvalue2, uint32 time);
 #endif
     void teleport(WorldSession* m_session);
+    bool isRaidGroup() { return (m_GroupType & GROUP_TYPE_RAID) != 0; }
+    bool isBGGroup() { return (m_GroupType & GROUP_TYPE_BG) != 0; }
+    bool isBFGroup() { return (m_GroupType & GROUP_TYPE_BGRAID) != 0; }
     bool isLFGGroup()
     {
         if(m_GroupType & GROUP_TYPE_LFD)
@@ -276,6 +301,8 @@ protected:
     CachedCharacterInfo* m_assistantLeader;
     CachedCharacterInfo* m_mainTank;
     CachedCharacterInfo* m_mainAssist;
+
+    BoundInstancesMap   m_boundInstances[InstanceDifficulty::MAX_DIFFICULTY];
 
     uint8 m_LootMethod;
     uint16 m_LootThreshold;

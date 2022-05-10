@@ -19,7 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <iterator>
 
 
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "MovementGenerators/ChaseMovementGenerator.h"
 #include "MovementGenerators/ConfusedMovementGenerator.h"
 #include "MovementGenerators/FleeingMovementGenerator.h"
@@ -559,7 +559,7 @@ void MovementManager::moveTargetedHome()
 
     clear();
 
-    Unit* target = owner->GetMapMgrUnit(owner->getCharmerOrOwnerGUID());
+    Unit* target = owner->getWorldMapUnit(owner->getCharmerOrOwnerGUID());
     if (!target)
     {
         add(new HomeMovementGenerator<Creature>());
@@ -806,7 +806,7 @@ void MovementManager::moveCirclePath(float x, float y, float z, float radius, bo
         }
         else
         {
-            point.z = _owner->GetMapMgr()->GetLandHeight(point.x, point.y, z);
+            point.z = _owner->getWorldMap()->getHeight(LocationVector(point.x, point.y, z));
 #if VERSION_STRING >= WotLK
             point.z += _owner->getHoverHeight();
 #endif
@@ -884,7 +884,7 @@ void MovementManager::resumeSplineChain(SplineChainResumeInfo const& info)
 void MovementManager::moveFall(uint32_t id/* = 0*/)
 {
     // Use larger distance for vmap height search than in most other cases
-    float tz = _owner->GetMapMgr()->GetLandHeight(_owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ());
+    float tz = _owner->getWorldMap()->getHeight(_owner->GetPosition());
     if (tz <= INVALID_HEIGHT)
         return;
 

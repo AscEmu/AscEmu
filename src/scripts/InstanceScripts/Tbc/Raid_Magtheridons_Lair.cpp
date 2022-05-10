@@ -13,9 +13,9 @@ This file is released under the MIT license. See README-MIT for more information
 class MagtheridonsLairInstanceScript : public InstanceScript
 {
 public:
-    explicit MagtheridonsLairInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit MagtheridonsLairInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
     {
-        Instance = (MagtheridonsLairInstanceScript*)pMapMgr->GetScript();
+        Instance = (MagtheridonsLairInstanceScript*)pMapMgr->getScript();
         door = nullptr;
         hall = nullptr;
         cubes.clear();
@@ -25,13 +25,7 @@ public:
         worldTrigger = nullptr;
     }
 
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new MagtheridonsLairInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new MagtheridonsLairInstanceScript(pMapMgr); }
 
     void OnGameObjectPushToWorld(GameObject* pGameObject) override
     {
@@ -160,7 +154,7 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        Instance = (MagtheridonsLairInstanceScript*)_gameobject->GetMapMgr()->GetScript();
+        Instance = (MagtheridonsLairInstanceScript*)_gameobject->getWorldMap()->getScript();
 
         // We check if player has aura that prevents anyone from using this GO
         if (pPlayer->getAuraWithId(SPELL_MIND_EXHAUSTION) || pPlayer->getAuraWithId(SPELL_SHADOW_GRASP))
@@ -169,7 +163,7 @@ public:
         if (!Instance && !Instance->magtheridon)
             return;
 
-        if (Creature* trigger = _gameobject->GetMapMgr()->GetInterface()->findNearestCreature(pPlayer, NPC_HELFIRE_RAID_TRIGGER, 10.0f))
+        if (Creature* trigger = _gameobject->getWorldMap()->getInterface()->findNearestCreature(pPlayer, NPC_HELFIRE_RAID_TRIGGER, 10.0f))
             trigger->castSpell(Instance->magtheridon, SPELL_SHADOW_GRASP_VISUAL, true);
 
         pPlayer->setTargetGuid(Instance->magtheridon->getGuid());
@@ -544,7 +538,7 @@ public:
             scriptEvents.addEvent(EVENT_NEARLY_EMOTE, 60000);
             scriptEvents.removeEvent(EVENT_TAUNT);
 
-            getInstanceScript()->setData(DATA_MAGTHERIDON, InProgress);
+            getInstanceScript()->setBossState(DATA_MAGTHERIDON, InProgress);
         }
     }
 

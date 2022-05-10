@@ -11,14 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 class ArcatrazInstanceScript : public InstanceScript
 {
 public:
-    explicit ArcatrazInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new ArcatrazInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
+    explicit ArcatrazInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new ArcatrazInstanceScript(pMapMgr); }
 };
 
 // VOID_ZONE 36119 // DBC: 36119; it's not fully functionl without additional core support (for dmg and random place targeting).

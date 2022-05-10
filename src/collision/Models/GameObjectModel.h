@@ -25,6 +25,7 @@
 #include <G3D/AABox.h>
 #include <G3D/Ray.h>
 
+#include "MapTree.h"
 #include "Common.hpp"
 #include <memory>
 
@@ -50,7 +51,7 @@ public:
 
 class GameObjectModel /*, public Intersectable*/
 {
-    GameObjectModel() : phasemask(0), iInvScale(0), iScale(0), iModel(NULL) { }
+    GameObjectModel() : phasemask(0), iInvScale(0), iScale(0), iModel(nullptr), isWmo(false) { }
 public:
     std::string name;
 
@@ -62,11 +63,15 @@ public:
 
     /**    Enables\disables collision. */
     void disable() { phasemask = 0;}
-    void enable(uint32 ph_mask) { phasemask = ph_mask;}
+    void enable(uint32_t ph_mask) { phasemask = ph_mask;}
 
     bool isEnabled() const {return phasemask != 0;}
+    bool isMapObject() const { return isWmo; }
 
-    bool intersectRay(const G3D::Ray& Ray, float& MaxDist, bool StopAtFirstHit, uint32 ph_mask) const;
+    bool intersectRay(const G3D::Ray& Ray, float& MaxDist, bool StopAtFirstHit, uint32_t ph_mask) const;
+    void intersectPoint(G3D::Vector3 const& point, VMAP::AreaInfo& info, uint32_t ph_mask) const;
+    bool getLocationInfo(G3D::Vector3 const& point, VMAP::LocationInfo& info, uint32_t ph_mask) const;
+    bool getLiquidLevel(G3D::Vector3 const& point, VMAP::LocationInfo& info, float& liqHeight) const;
 
     static GameObjectModel* Create(std::unique_ptr<GameObjectModelOwnerBase> modelOwner, std::string const& dataPath);
 
@@ -75,7 +80,7 @@ public:
 private:
     bool initialize(std::unique_ptr<GameObjectModelOwnerBase> modelOwner, std::string const& dataPath);
 
-    uint32 phasemask;
+    uint32_t phasemask;
     G3D::AABox iBound;
     G3D::Matrix3 iInvRot;
     G3D::Vector3 iPos;
@@ -83,6 +88,7 @@ private:
     float iScale;
     VMAP::WorldModel* iModel;
     std::unique_ptr<GameObjectModelOwnerBase> owner;
+    bool isWmo;
 };
 
 #endif // _GAMEOBJECT_MODEL_H

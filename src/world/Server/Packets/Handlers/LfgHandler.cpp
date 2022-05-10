@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLfgRoleChosen.h"
 #include "Server/Packets/CmsgSearchLfgJoin.h"
 #include "Server/Packets/CmsgSearchLfgLeave.h"
+#include "Server/Script/ScriptMgr.h"
 
 using namespace AscEmu::Packets;
 
@@ -400,7 +401,7 @@ void WorldSession::sendLfgUpdateProposal(uint32_t proposalId, const LfgProposal*
     bool isContinue = false;
 
     Group* grp = dLowGuid ? sObjectMgr.GetGroupById(dLowGuid) : nullptr;
-    const uint32_t completedEncounters = 0;
+    uint32_t completedEncounters = 0;
     if (grp)
     {
         uint64_t gguid = grp->GetGUID();
@@ -432,10 +433,8 @@ void WorldSession::sendLfgUpdateProposal(uint32_t proposalId, const LfgProposal*
                 Player* groupMember = sObjectMgr.GetPlayer((*itx)->guid);
                 if (groupMember && groupMember->GetMapId() == uint32_t(dungeon->map))
                 {
-                    /* todo fix this
-                    if (InstanceScript* instance = groupMember->GetInstanceScript())
-                    completedEncounters = instance->GetCompletedEncounterMask();
-                    */
+                    if (InstanceScript* instance = groupMember->getWorldMap()->getScript())
+                    completedEncounters = instance->getCompletedEncounterMask();
                     break;
                 }
             }

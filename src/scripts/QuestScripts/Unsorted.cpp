@@ -29,7 +29,7 @@ class Quest_Grimoire_Business : public QuestScript
 public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* ct = mTarget->GetMapMgr()->CreateAndSpawnCreature(22911, 3279.67f, 4640.77f, 216.526f, 1.3516f);
+        Creature* ct = mTarget->getWorldMap()->createAndSpawnCreature(22911, LocationVector(3279.67f, 4640.77f, 216.526f, 1.3516f));
         if (ct != nullptr)
             ct->Despawn(2 * 60 * 1000, 0);
     }
@@ -40,7 +40,7 @@ class Quest_Maggocs_Treasure_Chest : public QuestScript
 public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        mTarget->GetMapMgr()->GetInterface()->SpawnCreature(20600, 2001.76f, 5164.77f, 265.19f, 5.5148f, true, false, 0, 0);
+        mTarget->getWorldMap()->getInterface()->spawnCreature(20600, LocationVector(2001.76f, 5164.77f, 265.19f, 5.5148f), true, false, 0, 0);
     }
 };
 
@@ -49,7 +49,7 @@ class Quest_Grulloc_Has_Two_Skulls : public QuestScript
 public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* ct = mTarget->GetMapMgr()->CreateAndSpawnCreature(20216, 2687.46f, 5541.14f, -1.93669f, 3.52847f);
+        Creature* ct = mTarget->getWorldMap()->createAndSpawnCreature(20216, LocationVector(2687.46f, 5541.14f, -1.93669f, 3.52847f));
         if (ct != nullptr)
             ct->Despawn(2 * 60 * 1000, 0);
     }
@@ -60,7 +60,7 @@ class Quest_Zuluhed_the_Whacked : public QuestScript
 public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* ct = mTarget->GetMapMgr()->CreateAndSpawnCreature(11980, -4177.39f, 376.289f, 117.78f, 2.7381f);
+        Creature* ct = mTarget->getWorldMap()->createAndSpawnCreature(11980, LocationVector(-4177.39f, 376.289f, 117.78f, 2.7381f));
         if (ct != nullptr)
             ct->Despawn(2 * 60 * 1000, 0);
     }

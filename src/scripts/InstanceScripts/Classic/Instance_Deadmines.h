@@ -7,6 +7,21 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace Deadmines
 {
+    enum Encounters
+    {
+        // Encounters
+        BOSS_RHAHKZOR           = 0,
+        BOSS_SNEED              = 1,
+        BOSS_GILNID             = 2,
+        BOSS_MR_SMITE           = 3,
+        BOSS_GREENSKIN          = 4,
+        BOSS_VANCLEEF           = 5,
+        BOSS_COOKIE             = 6,
+
+        // Additional
+        EVENT_STATE             = 7
+    };
+
     static LocationVector Doors[] =
     {
         { -168.514f, -579.861f, 19.3159f, 0 },  // Gilnid doors

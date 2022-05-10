@@ -187,7 +187,7 @@ bool Container::AddItem(int16 slot, Item* item)
     if (m_owner->IsInWorld() && !item->IsInWorld())
     {
         //item->AddToWorld();
-        item->PushToWorld(m_owner->GetMapMgr());
+        item->PushToWorld(m_owner->getWorldMap());
 
         ByteBuffer buf(3000);
         uint32 count = item->buildCreateUpdateBlockForPlayer(&buf, m_owner);
@@ -334,7 +334,7 @@ bool Container::AddItemToFreeSlot(Item* pItem, uint32* r_slot)
 
             if (m_owner->IsInWorld() && !pItem->IsInWorld())
             {
-                pItem->PushToWorld(m_owner->GetMapMgr());
+                pItem->PushToWorld(m_owner->getWorldMap());
                 ByteBuffer buf(2500);
                 uint32 count = pItem->buildCreateUpdateBlockForPlayer(&buf, m_owner);
                 m_owner->getUpdateMgr().pushCreationData(&buf, count);

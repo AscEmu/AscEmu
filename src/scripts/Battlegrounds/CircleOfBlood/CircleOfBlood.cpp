@@ -18,10 +18,10 @@
  */
 
 #include "CircleOfBlood.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Objects/GameObject.h"
 
-CircleOfBlood::CircleOfBlood(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :
+CircleOfBlood::CircleOfBlood(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :
     Arena(mgr, id, lgroup, t, players_per_side)
 {}
 
@@ -84,6 +84,6 @@ bool CircleOfBlood::HookHandleRepop(Player* plr)
 {
     LocationVector dest;
     dest.ChangeCoords({ 6241.171875f, 261.067322f, 0.891833f });
-    plr->safeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);
+    plr->safeTeleport(m_mapMgr->getBaseMap()->getMapId(), m_mapMgr->getInstanceId(), dest);
     return true;
 }

@@ -80,10 +80,10 @@ void OntoGoldshireComplete(Player* pPlayer, Object* pObject)
 
 void ZuluhedtheWhacked(Player* pPlayer, Object* /*pObject*/)
 {
-    Creature* Zuluhed = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-4206.199219f, 313.5462f, 122.907f, 11980);
+    Creature* Zuluhed = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(-4206.199219f, 313.5462f, 122.907f, 11980);
     if(Zuluhed == nullptr)
     {
-        pPlayer->GetMapMgr()->CreateAndSpawnCreature(11980, -4206.199219f, 313.5462f, 122.907f, 1.2589f);
+        pPlayer->getWorldMap()->createAndSpawnCreature(11980, LocationVector(-4206.199219f, 313.5462f, 122.907f, 1.2589f));
     }
 }
 
@@ -203,7 +203,7 @@ void OnQuestFinished(Player* pPlayer, QuestProperties* pQuest, Object* pObject)
 
 void ZuluhedtheWhackedCancel(Player* pPlayer)
 {
-    Creature* Zuluhed = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-4206.199219f, 313.5462f, 122.907f, 11980);
+    Creature* Zuluhed = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(-4206.199219f, 313.5462f, 122.907f, 11980);
     if(Zuluhed != nullptr)
     {
         Zuluhed->Despawn(0, 0);
@@ -316,7 +316,7 @@ void InnkeeperChicken(Player* pPlayer, Unit* pUnit)
 
 void OnEmote(Player* pPlayer, uint32_t Emote, Unit* pUnit)
 {
-    pUnit = pPlayer->GetMapMgr()->GetUnit(pPlayer->getTargetGuid());
+    pUnit = pPlayer->getWorldMap()->getUnit(pPlayer->getTargetGuid());
     if(!pUnit || !pUnit->isAlive() || pUnit->getAIInterface()->getCurrentTarget())
         return;
 
@@ -353,7 +353,7 @@ void TheAffray(Player* pPlayer, uint32_t /*AreaTrigger*/)
 {
     if (pPlayer->hasQuestInQuestLog(1719))
     {
-        Creature* twiggy = pPlayer->GetMapMgr()->GetInterface()->findNearestCreature(pPlayer, 6248, 30.0f);
+        Creature* twiggy = pPlayer->getWorldMap()->getInterface()->findNearestCreature(pPlayer, 6248, 30.0f);
         if (twiggy && twiggy->GetScript())
         {
             twiggy->GetScript()->SetCreatureData64(1, pPlayer->getGuid());
@@ -366,7 +366,7 @@ void Scratches(Player* pPlayer, uint32_t /*AreaTrigger*/)
 {
     if (auto* questLog = pPlayer->getQuestLogByQuestId(10556))
     {
-        Creature* Kaliri = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21468);
+        Creature* Kaliri = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21468);
         if (Kaliri == nullptr)
             return;
 

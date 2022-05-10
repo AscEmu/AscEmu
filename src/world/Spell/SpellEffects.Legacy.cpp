@@ -39,7 +39,7 @@
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Server/MainServerDefines.h"
 #include "Map/Area/AreaStorage.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 #include "SpellMgr.hpp"
 #include "SpellAuras.h"
@@ -74,6 +74,8 @@
 #include "Server/Packets/MsgCorpseQuery.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "VMapFactory.h"
+#include "VMapManager2.h"
 
 using namespace AscEmu::Packets;
 
@@ -503,7 +505,7 @@ void Spell::spellEffectSummonTotem(uint8_t summonSlot, CreatureProperties const*
 
     // Correct Z position
     //\ todo: this probably should be inside Object::GetPoint()
-    const auto landHeight = u_caster->GetMapMgr()->GetLandHeight(v.x, v.y, v.z + 2);
+    const auto landHeight = u_caster->getWorldMap()->getHeight(LocationVector(v.x, v.y, v.z + 2));
     const auto landDiff = landHeight - v.z;
     if (fabs(landDiff) <= 15)
         v.z = landHeight;
@@ -513,7 +515,7 @@ void Spell::spellEffectSummonTotem(uint8_t summonSlot, CreatureProperties const*
         summonDuration = 10 * 60 * 1000; // 10 min if duration does not exist
 
     // Create totem
-    const auto totem = u_caster->GetMapMgr()->CreateSummon(properties->Id, SUMMONTYPE_TOTEM, summonDuration);
+    const auto totem = u_caster->getWorldMap()->createSummon(properties->Id, SUMMONTYPE_TOTEM, summonDuration);
     if (totem == nullptr)
         return;
 
@@ -529,7 +531,7 @@ void Spell::spellEffectSummonTotem(uint8_t summonSlot, CreatureProperties const*
     totem->setMaxHealth(damage);
     totem->setHealth(damage);
 
-    totem->PushToWorld(u_caster->GetMapMgr());
+    totem->PushToWorld(u_caster->getWorldMap());
 }
 
 void Spell::spellEffectWeapon(uint8_t /*effectIndex*/)
@@ -1747,7 +1749,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
         if (unitTarget == m_caster)
         {
             /* try to get a selection */
-            unitTarget = m_caster->GetMapMgr()->GetUnit(m_targets.getUnitTarget());
+            unitTarget = m_caster->getWorldMap()->getUnit(m_targets.getUnitTarget());
             if ((!unitTarget) || !isAttackable(p_caster, unitTarget, !(getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)) || (unitTarget->CalcDistance(p_caster) > 28.0f))
             {
                 return;
@@ -1930,6 +1932,13 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
             }
         }break;
     }
+
+    if (!pAura)
+    {
+        sLogger.failure("Warning tried to add Aura Effect for nonexistant Aura returning!");
+        return;
+    }
+
     pAura->addAuraEffect(static_cast<AuraEffect>(getSpellInfo()->getEffectApplyAuraName(effectIndex)), damage, getSpellInfo()->getEffectMiscValue(effectIndex), effectPctModifier[effectIndex], isEffectDamageStatic[effectIndex], effectIndex);
 }
 
@@ -2689,7 +2698,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
                     char msg[256];
                     sprintf(msg, "%sDISCOVERY! %s has discovered how to create %s.|r", MSG_COLOR_GOLD, p_caster->getName().c_str(), se->getName().c_str());
 
-                    p_caster->GetMapMgr()->SendChatMessageToCellPlayers(p_caster, SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, msg, p_caster->getGuid()).serialise().get(), 2, 1, LANG_UNIVERSAL, p_caster->getSession());
+                    p_caster->getWorldMap()->sendChatMessageToCellPlayers(p_caster, SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, msg, p_caster->getGuid()).serialise().get(), 2, 1, LANG_UNIVERSAL, p_caster->getSession());
                 }
                 else
                 {
@@ -2723,7 +2732,7 @@ void Spell::SpellEffectPersistentAA(uint8_t effectIndex) // Persistent Area Aura
     // grep: this is a hack!
     // our shitty dynobj system doesn't support GO casters, so we gotta
     // kinda have 2 summoners for traps that apply AA.
-    DynamicObject* dynObj = m_caster->GetMapMgr()->CreateDynamicObject();
+    DynamicObject* dynObj = m_caster->getWorldMap()->createDynamicObject();
 
     if (g_caster != nullptr && g_caster->m_summoner && !unitTarget)
     {
@@ -2949,7 +2958,7 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
         float tempx = x + (getEffectRadius(effectIndex) * (cosf(m_fallowAngle + m_caster->GetOrientation())));
         float tempy = y + (getEffectRadius(effectIndex) * (sinf(m_fallowAngle + m_caster->GetOrientation())));
 
-        if (Creature* p = m_caster->GetMapMgr()->CreateCreature(cr_entry))
+        if (Creature* p = m_caster->getWorldMap()->createCreature(cr_entry))
         {
             p->Load(properties, tempx, tempy, z);
             p->SetZoneId(m_caster->GetZoneId());
@@ -2969,7 +2978,7 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
             p->setSummonedByGuid(m_caster->getGuid());
             p->setCreatedByGuid(m_caster->getGuid());
 
-            p->PushToWorld(m_caster->GetMapMgr());
+            p->PushToWorld(m_caster->getWorldMap());
 
             // Delay this a bit to make sure its Spawned
             sEventMgr.AddEvent(p, &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -3005,12 +3014,12 @@ void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPrope
         v.x += x;
         v.y += y;
 
-        Summon* s = u_caster->GetMapMgr()->CreateSummon(properties_->Id, SUMMONTYPE_GUARDIAN, GetDuration());
+        Summon* s = u_caster->getWorldMap()->createSummon(properties_->Id, SUMMONTYPE_GUARDIAN, GetDuration());
         if (s == nullptr)
             return;
 
         s->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
-        s->PushToWorld(u_caster->GetMapMgr());
+        s->PushToWorld(u_caster->getWorldMap());
 
         // Delay this a bit to make sure its Spawned
         sEventMgr.AddEvent(s->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -3080,7 +3089,7 @@ void Spell::SpellEffectSummonPossessed(uint32 /*i*/, DBC::Structures::SummonProp
     p_caster->dismissActivePets();
     p_caster->RemoveFieldSummon();
 
-    Summon* s = p_caster->GetMapMgr()->CreateSummon(properties_->Id, SUMMONTYPE_POSSESSED, GetDuration());
+    Summon* s = p_caster->getWorldMap()->createSummon(properties_->Id, SUMMONTYPE_POSSESSED, GetDuration());
     if (s == nullptr)
         return;
 
@@ -3089,7 +3098,7 @@ void Spell::SpellEffectSummonPossessed(uint32 /*i*/, DBC::Structures::SummonProp
 
     s->Load(properties_, p_caster, v, m_spellInfo->getId(), spe->Slot - 1);
     s->setCreatedBySpellId(m_spellInfo->getId());
-    s->PushToWorld(p_caster->GetMapMgr());
+    s->PushToWorld(p_caster->getWorldMap());
 
     // Delay this a bit to make sure its Spawned
     sEventMgr.AddEvent(s->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -3105,7 +3114,7 @@ void Spell::SpellEffectSummonCompanion(uint32 /*i*/, DBC::Structures::SummonProp
 #if VERSION_STRING > TBC
     if (u_caster->getCritterGuid() != 0)
     {
-        auto critter = u_caster->GetMapMgr()->GetUnit(u_caster->getCritterGuid());
+        auto critter = u_caster->getWorldMap()->getUnit(u_caster->getCritterGuid());
         if (critter == nullptr)
             return;
 
@@ -3122,13 +3131,13 @@ void Spell::SpellEffectSummonCompanion(uint32 /*i*/, DBC::Structures::SummonProp
             return;
     }
 
-    auto summon = u_caster->GetMapMgr()->CreateSummon(properties_->Id, SUMMONTYPE_COMPANION, GetDuration());
+    auto summon = u_caster->getWorldMap()->createSummon(properties_->Id, SUMMONTYPE_COMPANION, GetDuration());
     if (summon == nullptr)
         return;
 
     summon->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
     summon->setCreatedBySpellId(m_spellInfo->getId());
-    summon->PushToWorld(u_caster->GetMapMgr());
+    summon->PushToWorld(u_caster->getWorldMap());
 
     // Delay this a bit to make sure its Spawned
     sEventMgr.AddEvent(summon->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -3146,14 +3155,14 @@ void Spell::SpellEffectSummonVehicle(uint32 /*i*/, DBC::Structures::SummonProper
     if ((properties_->vehicleid == 0) && (p_caster == nullptr))
         return;
 
-    Creature* c = u_caster->GetMapMgr()->CreateCreature(properties_->Id);
+    Creature* c = u_caster->getWorldMap()->createCreature(properties_->Id);
     c->Load(properties_, v.x, v.y, v.z, v.o);
     c->setPhase(PHASE_SET, u_caster->GetPhase());
     c->setCreatedBySpellId(m_spellInfo->getId());
     c->setCreatedByGuid(u_caster->getGuid());
     c->setSummonedByGuid(u_caster->getGuid());
     c->removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
-    c->PushToWorld(u_caster->GetMapMgr());
+    c->PushToWorld(u_caster->getWorldMap());
 
     // Delay this a bit to make sure its Spawned
     sEventMgr.AddEvent(c->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -3453,8 +3462,8 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
                             GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(gameObjTarget);
                             if (pLGO->loot.items.size() == 0)
                             {
-                                if (gameObjTarget->GetMapMgr() != nullptr)
-                                    sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                                if (gameObjTarget->getWorldMap() != nullptr)
+                                    sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->getWorldMap()->getDifficulty());
                                 else
                                     sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
 
@@ -3490,8 +3499,8 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
 
                     if (pLGO->loot.items.size() == 0)
                     {
-                        if (gameObjTarget->GetMapMgr() != nullptr)
-                            sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                        if (gameObjTarget->getWorldMap() != nullptr)
+                            sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->getWorldMap()->getDifficulty());
                         else
                             sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
                     }
@@ -3526,8 +3535,8 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
                 GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(gameObjTarget);
                 if (pLGO->loot.items.size() == 0)
                 {
-                    if (gameObjTarget->GetMapMgr() != nullptr)
-                        sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                    if (gameObjTarget->getWorldMap() != nullptr)
+                        sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->getWorldMap()->getDifficulty());
                     else
                         sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
                 }
@@ -3585,7 +3594,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
             gameObjTarget->Use(m_caster->getGuid());
 
             CALL_GO_SCRIPT_EVENT(gameObjTarget, OnActivate)(p_caster);
-            CALL_INSTANCE_SCRIPT_EVENT(gameObjTarget->GetMapMgr(), OnGameObjectActivate)(gameObjTarget, p_caster);
+            CALL_INSTANCE_SCRIPT_EVENT(gameObjTarget->getWorldMap(), OnGameObjectActivate)(gameObjTarget, p_caster);
 
             if (sQuestMgr.OnActivateQuestGiver(gameObjTarget, p_caster))
                 return;
@@ -3602,8 +3611,8 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
 
                 if (pLGO->loot.items.size() == 0)
                 {
-                    if (gameObjTarget->GetMapMgr() != nullptr)
-                        sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                    if (gameObjTarget->getWorldMap() != nullptr)
+                        sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->getWorldMap()->getDifficulty());
                     else
                         sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
                 }
@@ -3663,7 +3672,7 @@ void Spell::SpellEffectLearnSpell(uint8_t effectIndex) // Learn Spell
     if (playerTarget == nullptr && unitTarget && unitTarget->isPet()) // something's wrong with this logic here.
     {
         // bug in target map fill?
-        //playerTarget = m_caster->GetMapMgr()->GetPlayer((uint32)m_targets.getUnitTarget());
+        //playerTarget = m_caster->getWorldMap()->GetPlayer((uint32)m_targets.getUnitTarget());
         SpellEffectLearnPetSpell(effectIndex);
         return;
     }
@@ -3956,29 +3965,25 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         if (p_caster == nullptr)
             return;
 
-        float co = cos(orient);
-        float si = sin(orient);
-        MapMgr* map = m_caster->GetMapMgr();
+        WorldMap* map = m_caster->getWorldMap();
+        float minDist = m_spellInfo->getMinRange(true);
+        float maxDist = m_spellInfo->getMaxRange(true);
+        float posx = 0, posy = 0, posz = 0;
+        float dist = Util::getRandomFloat(minDist, maxDist);
 
-        float r;
-        for (r = 20; r > 10; r--)
-        {
-            posx = px + r * co;
-            posy = py + r * si;
-            uint32 liquidtype;
-            map->GetLiquidInfo(posx, posy, pz + 2, posz, liquidtype);
-            if (!(liquidtype & 1))//water
-                continue;
-            if (posz > map->GetLandHeight(posx, posy, pz + 2))  //water
-                break;
-        }
+        float angle = Util::getRandomFloat(0.0f, 1.0f) * static_cast<float>(M_PI * 35.0f / 180.0f) - static_cast<float>(M_PI * 17.5f / 180.0f);
+        m_caster->getClosePoint(posx, posy, posz, 0.388999998569489f, dist, angle);
 
-        posx = px + r * co;
-        posy = py + r * si;
+        float ground = m_caster->getMapHeight(LocationVector(posx, posy, posz));
+        float liquidLevel = VMAP_INVALID_HEIGHT_VALUE;
 
-        go = u_caster->GetMapMgr()->CreateGameObject(entry);
+        LiquidData liquidData;
+        if (map->getLiquidStatus(m_caster->GetPhase(), LocationVector(posx, posy, posz), MAP_ALL_LIQUIDS, &liquidData, m_caster->getCollisionHeight()))
+            liquidLevel = liquidData.level;
 
-        go->CreateFromProto(entry, mapid, posx, posy, posz, orient);
+        go = u_caster->getWorldMap()->createGameObject(entry);
+
+        go->CreateFromProto(entry, mapid, posx, posy, liquidLevel, orient);
         go->setFlags(GO_FLAG_NONE);
         go->setState(GO_STATE_OPEN);
         go->setCreatedByGuid(m_caster->getGuid());
@@ -3987,7 +3992,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
 
         go->SetSummoned(u_caster);
 
-        go->PushToWorld(m_caster->GetMapMgr());
+        go->PushToWorld(m_caster->getWorldMap());
 
         u_caster->setChannelObjectGuid(go->getGuid());
     }
@@ -4003,7 +4008,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
             pz = destination.z;
         }
 
-        go = m_caster->GetMapMgr()->CreateGameObject(entry);
+        go = m_caster->getWorldMap()->createGameObject(entry);
 
         go->CreateFromProto(entry, mapid, posx, posy, pz, orient);
         go->setCreatedByGuid(m_caster->getGuid());
@@ -4011,7 +4016,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
 
         go->SetSummoned(u_caster);
 
-        go->PushToWorld(m_caster->GetMapMgr());
+        go->PushToWorld(m_caster->getWorldMap());
         sEventMgr.AddEvent(go, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
         if (info->type == GAMEOBJECT_TYPE_RITUAL)
@@ -4443,7 +4448,7 @@ void Spell::SpellEffectInterruptCast(uint8_t /*effectIndex*/) // Interrupt Cast
             // and InterruptFlags of target's casting spell
             if (school
                 && (TargetSpell->getState() == SPELL_STATE_CHANNELING
-                || (TargetSpell->getState() == SPELL_STATE_PREPARING && TargetSpell->getSpellInfo()->getCastingTimeIndex() > 0))
+                || (TargetSpell->getState() == SPELL_STATE_CASTING && TargetSpell->getSpellInfo()->getCastingTimeIndex() > 0))
                 && TargetSpell->getSpellInfo()->getPreventionType() == PREVENTION_TYPE_SILENCE
                 && ((TargetSpell->getSpellInfo()->getInterruptFlags() & CAST_INTERRUPT_ON_AUTOATTACK)
                 || (TargetSpell->getSpellInfo()->getChannelInterruptFlags() & CHANNEL_INTERRUPT_ON_MOVEMENT)))
@@ -4527,12 +4532,12 @@ void Spell::SpellEffectAddFarsight(uint8_t effectIndex) // Add Farsight
         lv = m_targets.getSource();
     }
 
-    DynamicObject* dynObj = p_caster->GetMapMgr()->CreateDynamicObject();
+    DynamicObject* dynObj = p_caster->getWorldMap()->createDynamicObject();
     dynObj->Create(u_caster, this, lv, GetDuration(), getEffectRadius(effectIndex), DYNAMIC_OBJECT_FARSIGHT_FOCUS);
     dynObj->SetInstanceID(p_caster->GetInstanceID());
     p_caster->setFarsightGuid(dynObj->getGuid());
 
-    p_caster->GetMapMgr()->ChangeFarsightLocation(p_caster, dynObj);
+    p_caster->getWorldMap()->changeFarsightLocation(p_caster, dynObj);
 }
 
 void Spell::SpellEffectUseGlyph(uint8_t effectIndex)
@@ -4602,7 +4607,7 @@ void Spell::SpellEffectSummonObjectWild(uint8_t effectIndex)
     if (!u_caster) return;
 
     // spawn a new one
-    GameObject* GoSummon = u_caster->GetMapMgr()->CreateGameObject(getSpellInfo()->getEffectMiscValue(effectIndex));
+    GameObject* GoSummon = u_caster->getWorldMap()->createGameObject(getSpellInfo()->getEffectMiscValue(effectIndex));
     if (!GoSummon->CreateFromProto(getSpellInfo()->getEffectMiscValue(effectIndex),
         m_caster->GetMapId(), m_caster->GetPositionX() + 1, m_caster->GetPositionY() + 1, m_caster->GetPositionZ(), m_caster->GetOrientation()))
     {
@@ -4611,7 +4616,7 @@ void Spell::SpellEffectSummonObjectWild(uint8_t effectIndex)
     }
 
     GoSummon->Phase(PHASE_SET, u_caster->GetPhase());
-    GoSummon->PushToWorld(u_caster->GetMapMgr());
+    GoSummon->PushToWorld(u_caster->getWorldMap());
     GoSummon->SetSummoned(u_caster);
 
     sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -4709,9 +4714,9 @@ void Spell::SpellEffectSummonPlayer(uint8_t /*effectIndex*/)
         return;
 
     // vojta: from 2.4 players can be summoned on another map
-    //if (m_caster->GetMapMgr()->GetMapInfo() && m_caster->GetMapMgr()->GetMapInfo()->type != INSTANCE_NULL && m_caster->GetMapId() != playerTarget->GetMapId())
+    //if (m_caster->getWorldMap()->GetMapInfo() && m_caster->getWorldMap()->GetMapInfo()->type != INSTANCE_NULL && m_caster->GetMapId() != playerTarget->GetMapId())
     //  return;
-    if (m_caster->GetMapMgr()->GetMapInfo() && playerTarget->getLevel() < m_caster->GetMapMgr()->GetMapInfo()->minlevel)    // we need some blizzlike message that player needs level xx - feel free to add it ;)
+    if (m_caster->getWorldMap()->getBaseMap()->getMapInfo() && playerTarget->getLevel() < m_caster->getWorldMap()->getBaseMap()->getMapInfo()->minlevel)    // we need some blizzlike message that player needs level xx - feel free to add it ;)
         return;
 
     playerTarget->sendSummonRequest(m_caster->getGuidLow(), m_caster->GetZoneId(), m_caster->GetMapId(), m_caster->GetInstanceID(), m_caster->GetPosition());
@@ -4752,7 +4757,7 @@ void Spell::SpellEffectBuildingDamage(uint8_t effectIndex)
     Unit* controller = nullptr;
 #ifdef FT_VEHICLES
     if (u_caster->getVehicle() != nullptr)
-        controller = u_caster->GetMapMgr()->GetUnit(u_caster->getCharmedByGuid());
+        controller = u_caster->getWorldMap()->getUnit(u_caster->getCharmedByGuid());
 #endif
 
     if (controller == nullptr)
@@ -5103,7 +5108,7 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
     GameObject* GoSummon = nullptr;
 
     uint32 slot = getSpellInfo()->getEffect(effectIndex) - SPELL_EFFECT_SUMMON_OBJECT_SLOT1;
-    GoSummon = u_caster->m_ObjectSlots[slot] ? u_caster->GetMapMgr()->GetGameObject(u_caster->m_ObjectSlots[slot]) : 0;
+    GoSummon = u_caster->m_ObjectSlots[slot] ? u_caster->getWorldMap()->getGameObject(u_caster->m_ObjectSlots[slot]) : 0;
     u_caster->m_ObjectSlots[slot] = 0;
 
     if (GoSummon)
@@ -5120,7 +5125,7 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
 
 
     // spawn a new one
-    GoSummon = u_caster->GetMapMgr()->CreateGameObject(getSpellInfo()->getEffectMiscValue(effectIndex));
+    GoSummon = u_caster->getWorldMap()->createGameObject(getSpellInfo()->getEffectMiscValue(effectIndex));
 
     float dx = 0.0f;
     float dy = 0.0f;
@@ -5153,7 +5158,7 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
     GoSummon->SetSummoned(u_caster);
     u_caster->m_ObjectSlots[slot] = GoSummon->GetUIdFromGUID();
 
-    GoSummon->PushToWorld(m_caster->GetMapMgr());
+    GoSummon->PushToWorld(m_caster->getWorldMap());
 
     sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }

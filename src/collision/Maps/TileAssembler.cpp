@@ -437,12 +437,17 @@ namespace VMAP
             return;
         }
 
-        uint32 name_length, displayId;
+        uint32_t name_length, displayId;
+        uint8_t isWmo;
         char buff[500];
         while (!feof(model_list))
         {
-            if (fread(&displayId, sizeof(uint32), 1, model_list) != 1
-                || fread(&name_length, sizeof(uint32), 1, model_list) != 1
+            if (fread(&displayId, sizeof(uint32_t), 1, model_list) != 1)
+                if (feof(model_list))   // EOF flag is only set after failed reading attempt
+                    break;
+
+            if (fread(&isWmo, sizeof(uint8_t), 1, model_list) != 1
+                || fread(&name_length, sizeof(uint32_t), 1, model_list) != 1
                 || name_length >= sizeof(buff)
                 || fread(&buff, sizeof(char), name_length, model_list) != name_length)
             {
@@ -461,12 +466,12 @@ namespace VMAP
             spawnedModelFiles.insert(model_name);
             AABox bounds;
             bool boundEmpty = true;
-            for (uint32 g = 0; g < raw_model.groupsArray.size(); ++g)
+            for (uint32_t g = 0; g < raw_model.groupsArray.size(); ++g)
             {
                 std::vector<Vector3>& vertices = raw_model.groupsArray[g].vertexArray;
 
                 size_t nvectors = vertices.size();
-                for (uint32 i = 0; i < nvectors; ++i)
+                for (uint32_t i = 0; i < nvectors; ++i)
                 {
                     Vector3& v = vertices[i];
                     if (boundEmpty)
@@ -492,8 +497,9 @@ namespace VMAP
                 continue;
             }
 
-            fwrite(&displayId, sizeof(uint32), 1, model_list_copy);
-            fwrite(&name_length, sizeof(uint32), 1, model_list_copy);
+            fwrite(&displayId, sizeof(uint32_t), 1, model_list_copy);
+            fwrite(&isWmo, sizeof(uint8_t), 1, model_list_copy);
+            fwrite(&name_length, sizeof(uint32_t), 1, model_list_copy);
             fwrite(&buff, sizeof(char), name_length, model_list_copy);
             fwrite(&bounds.low(), sizeof(Vector3), 1, model_list_copy);
             fwrite(&bounds.high(), sizeof(Vector3), 1, model_list_copy);

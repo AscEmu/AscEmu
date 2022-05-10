@@ -50,7 +50,7 @@ void WorldSession::handleVoidStorageUnlock(WorldPacket& recvData)
     recvData.ReadByteSeq(npcGuid[6]);
     recvData.ReadByteSeq(npcGuid[4]);
 
-    Creature* creature = player->GetMapMgrCreature(npcGuid);
+    Creature* creature = player->getWorldMapCreature(npcGuid);
     if (!creature)
     {
         sLogger.debug("handleVoidStorageUnlock - Unit (GUID: %u) not found.", uint64_t(npcGuid));
@@ -98,7 +98,7 @@ void WorldSession::handleVoidStorageQuery(WorldPacket& recvData)
     recvData.ReadByteSeq(npcGuid[4]);
     recvData.ReadByteSeq(npcGuid[2]);
 
-    Creature* creature = player->GetMapMgrCreature(npcGuid);
+    Creature* creature = player->getWorldMapCreature(npcGuid);
     if (!creature)
     {
         sLogger.debug("handleVoidStorageQuery - Unit (GUID: %u) not found.", uint64_t(npcGuid));
@@ -287,7 +287,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
     recvData.ReadByteSeq(npcGuid[2]);
     recvData.ReadByteSeq(npcGuid[0]);
 
-    Creature* creature = player->GetMapMgrCreature(npcGuid);
+    Creature* creature = player->getWorldMapCreature(npcGuid);
     if (!creature)
     {
         sLogger.debug("handleVoidStorageTransfer - Unit (GUID: %u) not found.", uint64_t(npcGuid));
@@ -527,7 +527,7 @@ void WorldSession::handleVoidSwapItem(WorldPacket& recvData)
     recvData.ReadByteSeq(npcGuid[4]);
     recvData.ReadByteSeq(itemId[7]);
 
-    Creature* creature = player->GetMapMgrCreature(npcGuid);
+    Creature* creature = player->getWorldMapCreature(npcGuid);
     if (!creature)
     {
         sLogger.debug("handleVoidSwapItem - Unit (GUID: %u) not found.", uint64_t(npcGuid));

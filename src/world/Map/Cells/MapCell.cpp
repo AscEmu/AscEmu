@@ -1,78 +1,70 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 
 #include "VMapFactory.h"
+#include "VMapManager2.h"
 #include "MMapManager.h"
 #include "MMapFactory.h"
-#include "Map/MapCell.h"
-#include "MapMgr.h"
-#include "WorldCreator.h"
+#include "Map/Cells/MapCell.hpp"
+#include "Map/Management/MapMgr.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 
 Mutex m_cellloadLock;
-uint32 m_celltilesLoaded[MAX_NUM_MAPS][64][64];
+uint32_t m_celltilesLoaded[MAX_NUM_MAPS][64][64];
 
 extern bool bServerShutdown;
 
 MapCell::~MapCell()
 {
-    RemoveObjects();
+    removeObjects();
 }
 
-void MapCell::Init(uint32 x, uint32 y, MapMgr* mapmgr)
+void MapCell::init(uint32_t x, uint32_t y, WorldMap* mapmgr)
 {
-    _mapmgr = mapmgr;
+    _map = mapmgr;
     _active = false;
     _loaded = false;
     _playerCount = 0;
     _corpses.clear();
-    _x = static_cast<uint16>(x);
-    _y = static_cast<uint16>(y);
+    _x = static_cast<uint16_t>(x);
+    _y = static_cast<uint16_t>(y);
     _unloadpending = false;
     _objects.clear();
     objects_iterator = _objects.begin();
 }
 
-void MapCell::AddObject(Object* obj)
+void MapCell::addObject(Object* obj)
 {
     if (obj->isPlayer())
+    {
         ++_playerCount;
+    }
+    else if (obj->isTransporter())
+    {
+        ++_transportCount;
+    }
     else if (obj->isCorpse())
     {
         _corpses.push_back(obj);
         if (_unloadpending)
-            CancelPendingUnload();
+            cancelPendingUnload();
     }
 
     _objects.insert(obj);
 }
 
-void MapCell::RemoveObject(Object* obj)
+void MapCell::removeObject(Object* obj)
 {
     if (obj->isPlayer())
         --_playerCount;
+    else if (obj->isTransporter())
+        --_transportCount;
     else if (obj->isCorpse())
         _corpses.remove(obj);
 
@@ -82,11 +74,11 @@ void MapCell::RemoveObject(Object* obj)
     _objects.erase(obj);
 }
 
-void MapCell::SetActivity(bool state)
+void MapCell::setActivity(bool state)
 {
-    uint32 mapId = _mapmgr->GetMapId();
-    uint32 tileX = _x / 8;
-    uint32 tileY = _y / 8;
+    uint32_t mapId = _map->getBaseMap()->getMapId();
+    uint32_t tileX = _x / 8;
+    uint32_t tileY = _y / 8;
 
     if (!state)
         _idlepending = false;
@@ -97,15 +89,15 @@ void MapCell::SetActivity(bool state)
         for (ObjectSet::iterator itr = _objects.begin(); itr != _objects.end(); ++itr)
         {
             if (!(*itr)->IsActive() && (*itr)->CanActivate())
-                (*itr)->Activate(_mapmgr);
+                (*itr)->Activate(_map);
         }
 
         if (_unloadpending)
-            CancelPendingUnload();
+            cancelPendingUnload();
 
         if (worldConfig.terrainCollision.isCollisionEnabled)
         {
-            VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+            const auto mgr = VMAP::VMapFactory::createOrGetVMapManager();
             MMAP::MMapManager* mmgr = MMAP::MMapFactory::createOrGetMMapManager();
 
             std::string vmapPath = worldConfig.server.dataDir + "vmaps";
@@ -127,15 +119,15 @@ void MapCell::SetActivity(bool state)
         for (ObjectSet::iterator itr = _objects.begin(); itr != _objects.end(); ++itr)
         {
             if ((*itr)->IsActive())
-                (*itr)->Deactivate(_mapmgr);
+                (*itr)->Deactivate(_map);
         }
 
-        if (!_unloadpending && CanUnload())
-            QueueUnloadPending();
+        if (!_unloadpending && canUnload())
+            queueUnloadPending();
 
         if (worldConfig.terrainCollision.isCollisionEnabled)
         {
-            VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+            const auto mgr = VMAP::VMapFactory::createOrGetVMapManager();
             MMAP::MMapManager* mmgr = MMAP::MMapFactory::createOrGetMMapManager();
             m_cellloadLock.Acquire();
             if (!(--m_celltilesLoaded[mapId][tileX][tileY]))
@@ -149,10 +141,9 @@ void MapCell::SetActivity(bool state)
     }
 
     _active = state;
-
 }
 
-void MapCell::RemoveObjects()
+void MapCell::removeObjects()
 {
     ObjectSet::iterator itr;
 
@@ -168,13 +159,13 @@ void MapCell::RemoveObjects()
             case TYPEID_UNIT:
                 if (!(*itr)->isPet())
                 {
-                    _mapmgr->_reusable_guids_creature.push_back((*itr)->GetUIdFromGUID());
+                    _map->_reusable_guids_creature.push_back((*itr)->GetUIdFromGUID());
                     reinterpret_cast<Creature*>(*itr)->m_respawnCell = nullptr;
                     delete static_cast<Creature*>(*itr);
                 }
                 break;
             case TYPEID_GAMEOBJECT:
-                _mapmgr->_reusable_guids_gameobject.push_back((*itr)->GetUIdFromGUID());
+                _map->_reusable_guids_gameobject.push_back((*itr)->GetUIdFromGUID());
                 reinterpret_cast<GameObject*>(*itr)->m_respawnCell = nullptr;
                 delete static_cast<GameObject*>(*itr);
                 break;
@@ -190,11 +181,11 @@ void MapCell::RemoveObjects()
         ++objects_iterator;
 
         //If MapUnloadTime is non-zero, a transport could get deleted here (when it arrives to a cell that's scheduled to be unloaded because players left from it), so don't delete it! - By: VLack aka. VLsoft
-        if (!bServerShutdown && obj->isGameObject() && static_cast< GameObject* >(obj)->GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT)
+        if (!bServerShutdown && obj->isGameObject() && static_cast<GameObject*>(obj)->GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT)
             continue;
 
         if (obj->IsActive())
-            obj->Deactivate(_mapmgr);
+            obj->Deactivate(_map);
 
         if (obj->IsInWorld())
             obj->RemoveFromWorld(true);
@@ -204,127 +195,37 @@ void MapCell::RemoveObjects()
     _objects.clear();
     _corpses.clear();
     _playerCount = 0;
+    _transportCount = 0;
     _loaded = false;
 }
 
-
-void MapCell::LoadObjects(CellSpawns* sp)
+void MapCell::loadObjects(CellSpawns* sp)
 {
     //we still have mobs loaded on cell. There is no point of loading them again
     if (_loaded == true)
         return;
 
     _loaded = true;
-    Instance* pInstance = _mapmgr->pInstance;
     if (sp->CreatureSpawns.size())      //got creatures
     {
         for (CreatureSpawnList::iterator i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
         {
             auto spawnGroupData = sMySQLStore.getSpawnGroupDataBySpawn((*i)->id);
-            bool skip = false;
             bool onRespawn = false;
-            if (pInstance)
-            {
-                auto encounters = sObjectMgr.GetDungeonEncounterList(_mapmgr->GetMapId(), pInstance->m_difficulty);
 
-                // Spawn Group Handling
-                if (spawnGroupData && spawnGroupData->groupFlags & SPAWNGROUP_FLAG_MANUAL_SPAWN)
-                    skip = true;
-
-                if (encounters != NULL && !skip)
-                {
-                    for (auto killedNpc : pInstance->m_killedNpcs)
-                    {
-                        // is Boss Killed but trash untouched ( on Retail all Npcs not Killed but linked to a Boss thats already Killed dont Spawn )
-                        if (spawnGroupData && spawnGroupData->bossId)
-                        {
-                            if (pInstance->m_killedNpcs.find(spawnGroupData->bossId) != pInstance->m_killedNpcs.end())
-                            {
-                                skip = true;
-                                break;
-                            }
-                            else
-                            {
-                                skip = false;
-                                break;
-                            }
-                        }
-
-                        // is Killed add ?
-                        if (killedNpc == (*i)->id)
-                        {
-                            auto data = sMySQLStore.getSpawnGroupDataBySpawn(killedNpc);
-
-                            // When Our Add is bound to a Boss thats not killed Respawn it
-                            if (data && data->spawnFlags & SPAWFLAG_FLAG_BOUNDTOBOSS && data->bossId)
-                            {
-                                if (pInstance->m_killedNpcs.find(data->bossId) != pInstance->m_killedNpcs.end())
-                                {
-                                    skip = true;
-                                    break;
-                                }
-                                else
-                                {
-                                    skip = false;
-                                    break;
-                                }
-                            }
-
-                            onRespawn = true;
-                            break;
-                        }
-
-                        // Is killed boss?
-                        if (killedNpc == (*i)->entry)
-                        {
-                            for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr)
-                            {
-                                DungeonEncounter const* encounter = *itr;
-                                if (encounter->creditType == ENCOUNTER_CREDIT_KILL_CREATURE && encounter->creditEntry == killedNpc)
-                                {
-                                    skip = true;
-                                    break;
-                                }
-
-                            }
-                        }
-                    }
-
-                    if (!skip && !onRespawn)
-                    {
-                        // remove from Killed Npcs
-                        if (pInstance->m_killedNpcs.find((*i)->id) != pInstance->m_killedNpcs.end())
-                            pInstance->m_killedNpcs.erase((*i)->id);
-                    }
-                }
-                else
-                {
-                    // No boss information available ... fallback ...
-                    if (pInstance->m_killedNpcs.find((*i)->id) != pInstance->m_killedNpcs.end())
-                        continue;
-                }
-            }
-
-            sInstanceMgr.SaveInstanceToDB(pInstance);
-
-            Creature* c = _mapmgr->CreateCreature((*i)->entry);
+            Creature* c = _map->createCreature((*i)->entry);
 
             c->m_loadedFromDB = true;
 
-
-            if (c->Load(*i, _mapmgr->iInstanceMode, _mapmgr->GetMapInfo()) && c->CanAddToWorld())
+            if (c->Load(*i, _map->getDifficulty(), _map->getBaseMap()->getMapInfo()) && c->CanAddToWorld())
             {
-                if (spawnGroupData)
-                    spawnGroupData->spawns[(*i)->id] = c;
-
-                if (!skip && !onRespawn)
-                    c->PushToWorld(_mapmgr);
-
-                // Creatures in Instances are always Respawning after 2 hours
-                if (onRespawn)
+                // Respawn Handling
+                if (auto info = _map->getRespawnInfo(SPAWN_TYPE_CREATURE, c->spawnid))
                 {
+                    onRespawn = true;
+
                     // get the cell with our SPAWN location. if we've moved cell this might break :P
-                    MapCell* pCell = _mapmgr->GetCellByCoords(c->GetSpawnX(), c->GetSpawnY());
+                    MapCell* pCell = _map->getCellByCoords(c->GetSpawnX(), c->GetSpawnY());
                     if (pCell == nullptr)
                         pCell = c->GetMapCell();
 
@@ -332,18 +233,36 @@ void MapCell::LoadObjects(CellSpawns* sp)
                     {
                         pCell->_respawnObjects.insert(c);
 
-                        sEventMgr.RemoveEvents(c);
-                        sEventMgr.AddEvent(_mapmgr, &MapMgr::EventRespawnCreature, c, pCell->GetPositionX(), pCell->GetPositionY(), EVENT_CREATURE_RESPAWN, (1000 * 60 * 60 * 2), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-
                         c->SetPosition(c->GetSpawnPosition(), true);
                         c->m_respawnCell = pCell;
+                        sEventMgr.RemoveEvents(c);
+
+                        RespawnInfo ri;
+                        ri.type = SPAWN_TYPE_CREATURE;
+                        ri.spawnId = c->getSpawnId();
+                        ri.entry = c->getEntry();
+                        ri.time = info->time;
+                        ri.cellX = c->GetSpawnX();
+                        ri.cellY = c->GetSpawnY();
+                        ri.obj = c;
+
+                        bool success = _map->addRespawn(ri);
+                        if (success)
+                            _map->saveRespawnDB(ri);
                     }
                 }
+
+                if (spawnGroupData)
+                    spawnGroupData->spawns[(*i)->id] = c;
+
+                // Creatures Spawning
+                if (!onRespawn)
+                    c->PushToWorld(_map);
             }
             else
             {
                 MySQLStructure::CreatureSpawn* spawn = (*i);
-                sLogger.failure("Failed spawning Creature %u with spawnId %u MapId %u", spawn->entry, spawn->id, _mapmgr->GetMapId());
+                sLogger.failure("Failed spawning Creature %u with spawnId %u MapId %u", spawn->entry, spawn->id, _map->getBaseMap()->getMapId());
                 delete c;       //missing proto or something of that kind
             }
         }
@@ -353,17 +272,17 @@ void MapCell::LoadObjects(CellSpawns* sp)
     {
         for (GameobjectSpawnList::iterator i = sp->GameobjectSpawns.begin(); i != sp->GameobjectSpawns.end(); ++i)
         {
-            GameObject* go = _mapmgr->CreateGameObject((*i)->entry);
+            GameObject* go = _map->createGameObject((*i)->entry);
 
             if (go->Load(*i))
             {
                 go->m_loadedFromDB = true;
-                go->PushToWorld(_mapmgr);
+                go->PushToWorld(_map);
             }
             else
             {
                 MySQLStructure::GameobjectSpawn* spawn = (*i);
-                sLogger.failure("Failed spawning GameObject %u with spawnId %u MapId %u", spawn->entry, spawn->id, _mapmgr->GetMapId());
+                sLogger.failure("Failed spawning GameObject %u with spawnId %u MapId %u", spawn->entry, spawn->id, _map->getBaseMap()->getMapId());
                 delete go;          //missing proto or something of that kind
             }
         }
@@ -382,7 +301,7 @@ void MapCell::scheduleCellIdleState()
 
     _idlepending = true;
     sLogger.debug("Queueing pending idle of cell %u %u", _x, _y);
-    sEventMgr.AddEvent(_mapmgr, &MapMgr::setCellIdle, _x, _y, this, MAKE_CELL_EVENT(_x, _y), 30000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(_map, &WorldMap::setCellIdle, _x, _y, this, MAKE_CELL_EVENT(_x, _y), 30000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void MapCell::cancelPendingIdle()
@@ -391,11 +310,11 @@ void MapCell::cancelPendingIdle()
         return;
 
     sLogger.debug("Cancelling pending idle of cell %u %u", _x, _y);
-    sEventMgr.RemoveEvents(_mapmgr, MAKE_CELL_EVENT(_x, _y));
+    sEventMgr.RemoveEvents(_map, MAKE_CELL_EVENT(_x, _y));
     _idlepending = false;
 }
 
-void MapCell::QueueUnloadPending()
+void MapCell::queueUnloadPending()
 {
     if (_unloadpending)
         return;
@@ -405,10 +324,10 @@ void MapCell::QueueUnloadPending()
 
     _unloadpending = true;
     sLogger.debug("Queueing pending unload of cell %u %u", _x, _y);
-    sEventMgr.AddEvent(_mapmgr, &MapMgr::UnloadCell, (uint32)_x, (uint32)_y, MAKE_CELL_EVENT(_x, _y), worldConfig.server.mapUnloadTime * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(_map, &WorldMap::unloadCell, (uint32_t)_x, (uint32_t)_y, MAKE_CELL_EVENT(_x, _y), worldConfig.server.mapUnloadTime * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
-void MapCell::CancelPendingUnload()
+void MapCell::cancelPendingUnload()
 {
     sLogger.debug("Cancelling pending unload of cell %u %u", _x, _y);
     if (!_unloadpending)
@@ -417,11 +336,11 @@ void MapCell::CancelPendingUnload()
     if (isIdlePending())
         cancelPendingIdle();
 
-    sEventMgr.RemoveEvents(_mapmgr, MAKE_CELL_EVENT(_x, _y));
+    sEventMgr.RemoveEvents(_map, MAKE_CELL_EVENT(_x, _y));
     _unloadpending = false;
 }
 
-void MapCell::Unload()
+void MapCell::unload()
 {
     if (_unloadpending)
     {
@@ -445,8 +364,8 @@ void MapCell::Unload()
 
         sLogger.debug("Unloading cell %u %u", _x, _y);
 
-        RemoveObjects();
-        _mapmgr->Remove(_x, _y);
+        removeObjects();
+        _map->remove(_x, _y);
     }
     else
     {
@@ -454,22 +373,23 @@ void MapCell::Unload()
     }
 }
 
-void MapCell::CorpseGoneIdle(Object* corpse)
+void MapCell::corpseGoneIdle(Object* corpse)
 {
     _corpses.remove(corpse);
-    CheckUnload();
+    checkUnload();
 }
 
-void MapCell::CheckUnload()
+void MapCell::checkUnload()
 {
-    if (!_active && !_unloadpending && CanUnload())
-        QueueUnloadPending();
+    if (!_active && !_unloadpending && canUnload())
+        queueUnloadPending();
 }
 
-bool MapCell::CanUnload()
+bool MapCell::canUnload()
 {
-    if (_corpses.size() == 0 && _mapmgr->m_battleground == NULL)
+    if (_corpses.size() == 0  && !_map->getBaseMap()->isBattlegroundOrArena())
         return true;
     else
         return false;
 }
+

@@ -53,7 +53,7 @@ if (USE_PCH)
     Setup.h
     <Objects/Item.h>
     <Management/ItemInterface.h>
-    <Map/MapMgr.h>
+    <Map/Management/MapMgr.hpp>
     <Management/Faction.h>
     <Spell/Spell.h>
     <Spell/SpellMgr.hpp>

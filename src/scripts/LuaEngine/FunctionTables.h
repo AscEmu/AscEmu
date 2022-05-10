@@ -386,7 +386,6 @@ RegType<Unit> UnitMethods[] =
     { "SendGuildLog", &LuaUnit::SendGuildLog },
     { "GuildBankDepositMoney", &LuaUnit::GuildBankDepositMoney },
     { "GuildBankWithdrawMoney", &LuaUnit::GuildBankWithdrawMoney },
-    { "GetInstanceOwner", &LuaUnit::GetInstanceOwner },
     { "GetGmRank", &LuaUnit::GetGmRank },
     { "SetByteValue", &LuaUnit::SetByteValue },
     { "GetByteValue", &LuaUnit::GetByteValue },
@@ -465,7 +464,6 @@ RegType<Unit> UnitMethods[] =
     { "GetPlayerMovementFlags", &LuaUnit::GetPlayerMovementFlags},
     { "GetObject", &LuaUnit::GetObject },
     { "GetSecondHated", &LuaUnit::GetSecondHated },
-    { "SaveToInstance", &LuaUnit::SaveToInstance },
     { "UseAI", &LuaUnit::UseAI },
     { "FlagFFA", &LuaUnit::FlagFFA },
     { "TeleportCreature", &LuaUnit::TeleportCreature },
@@ -570,7 +568,6 @@ RegType<GameObject> GOMethods[] =
     { "SendPacket", LuaGameObject::SendPacket },
     { "AddLoot", &LuaGameObject::AddLoot},
     { "Update", &LuaGameObject::Update}, //sadikum
-    { "GetInstanceOwner", &LuaGameObject::GetInstanceOwner },
     { "GetDungeonDifficulty", &LuaGameObject::GetDungeonDifficulty },
     { "SetDungeonDifficulty", &LuaGameObject::SetDungeonDifficulty },
     { "HasFlag", &LuaGameObject::HasFlag },

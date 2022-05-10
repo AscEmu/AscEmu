@@ -29,9 +29,9 @@
 #include "Storage/MySQLStructures.h"
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Server/MainServerDefines.h"
-#include "Map/InstanceDefines.hpp"
-#include "Map/MapMgr.h"
-#include "Map/MapScriptInterface.h"
+#include "Map/Maps/InstanceDefines.hpp"
+#include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/MapScriptInterface.h"
 #include "Spell/SpellMgr.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Spell/Definitions/SpellEffects.hpp"
@@ -475,45 +475,6 @@ void ObjectMgr::LoadPlayersInfo()
             pn->subGroup = 0;
             pn->m_guild = 0;
             pn->guildRank = GUILD_RANK_NONE;
-
-            // Raid & heroic Instance IDs
-            // Must be done before entering world...
-            QueryResult* result2 = CharacterDatabase.Query("SELECT instanceid, mode, mapid FROM instanceids WHERE playerguid = %u", pn->guid);
-            if (result2)
-            {
-                PlayerInstanceMap::iterator itr;
-                do
-                {
-                    uint32 instanceId = result2->Fetch()[0].GetUInt32();
-                    uint32 mode = result2->Fetch()[1].GetUInt32();
-                    uint32 mapId = result2->Fetch()[2].GetUInt32();
-                    if (mode >= InstanceDifficulty::MAX_DIFFICULTY || mapId >= MAX_NUM_MAPS)
-                    {
-                        continue;
-                    }
-
-                    std::lock_guard<std::mutex> lock(pn->savedInstanceIdsLock);
-                    itr = pn->savedInstanceIds[mode].find(mapId);
-                    if (itr == pn->savedInstanceIds[mode].end())
-                    {
-                        pn->savedInstanceIds[mode].insert(PlayerInstanceMap::value_type(mapId, instanceId));
-                    }
-                    else
-                    {
-                        (*itr).second = instanceId;
-                    }
-
-                    ///\todo Instances not loaded yet ~.~
-                    //if (!sInstanceMgr.InstanceExists(mapId, pn->m_savedInstanceIds[mapId][mode]))
-                    //{
-                    //    pn->m_savedInstanceIds[mapId][mode] = 0;
-                    //    CharacterDatabase.Execute("DELETE FROM instanceids WHERE mapId = %u AND instanceId = %u AND mode = %u", mapId, instanceId, mode);
-                    //}
-
-                } while (result2->NextRow());
-                delete result2;
-            }
-
             pn->team = getSideByRace(pn->race);
 
             std::string lpn = pn->name;
@@ -1060,9 +1021,9 @@ Item* ObjectMgr::LoadItem(uint32 lowguid)
     return pReturn;
 }
 
-void ObjectMgr::LoadCorpses(MapMgr* mgr)
+void ObjectMgr::LoadCorpses(WorldMap* mgr)
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM corpses WHERE instanceid = %u", mgr->GetInstanceID());
+    QueryResult* result = CharacterDatabase.Query("SELECT * FROM corpses WHERE instanceid = %u", mgr->getInstanceId());
 
     if (result)
     {
@@ -1119,7 +1080,7 @@ void ObjectMgr::CorpseAddEventDespawn(Corpse* pCorpse)
     if (!pCorpse->IsInWorld())
         delete pCorpse;
     else
-        sEventMgr.AddEvent(pCorpse->GetMapMgr(), &MapMgr::EventCorpseDespawn, pCorpse->getGuid(), EVENT_CORPSE_DESPAWN, 600000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        pCorpse->getWorldMap()->addCorpseDespawn(pCorpse->getGuid(), 600000);
 }
 
 void ObjectMgr::CorpseCollectorUnload()
@@ -2115,6 +2076,48 @@ void ObjectMgr::LoadGroups()
     sLogger.info("ObjectMgr : %u groups loaded.", static_cast<uint32_t>(this->m_groups.size()));
 }
 
+void ObjectMgr::loadGroupInstances()
+{
+    // Delete Invalid Instances
+    CharacterDatabase.Execute("DELETE FROM group_instance WHERE guid NOT IN (SELECT guid FROM `groups`)");
+
+    QueryResult* result = CharacterDatabase.Query("SELECT gi.guid, i.map, gi.instance, gi.permanent, i.difficulty, i.resettime, (SELECT COUNT(1) FROM character_instance ci LEFT JOIN `groups` g ON ci.guid = g.group1member1 WHERE ci.instance = gi.instance AND ci.permanent = 1 LIMIT 1) FROM group_instance gi LEFT JOIN instance i ON gi.instance = i.id ORDER BY guid");
+    if (!result)
+    {
+        sLogger.info("Loaded 0 group-instance saves. DB table `group_instance` is empty!");
+        return;
+    }
+
+    uint32_t count = 0;
+    do
+    {
+        Field* fields = result->Fetch();
+        Group* group = sObjectMgr.GetGroupById(fields[0].GetUInt32());
+
+        DBC::Structures::MapEntry const* mapEntry = sMapStore.LookupEntry(fields[1].GetUInt16());
+        if (!mapEntry || !mapEntry->isDungeon())
+        {
+            sLogger.failure("Incorrect entry in group_instance table : no dungeon map %d", fields[1].GetUInt16());
+            continue;
+        }
+
+        uint32_t diff = fields[4].GetUInt8();
+        if (diff >= static_cast<uint32_t>(mapEntry->isRaid() ? InstanceDifficulty::Difficulties::MAX_RAID_DIFFICULTY : InstanceDifficulty::Difficulties::MAX_DUNGEON_DIFFICULTY))
+        {
+            sLogger.failure("Wrong dungeon difficulty use in group_instance table: %d", diff + 1);
+            diff = 0;                                   // default for both difficaly types
+        }
+
+        InstanceSaved* save = sInstanceMgr.addInstanceSave(mapEntry->id, fields[2].GetUInt32(), InstanceDifficulty::Difficulties(diff), time_t(fields[5].GetUInt64()), fields[6].GetUInt64() == 0, true);
+        group->bindToInstance(save, fields[3].GetBool(), true);
+        ++count;
+    } 
+    while (result->NextRow());
+    delete result;
+
+    sLogger.info("Loaded %u group-instance saves", count);
+}
+
 void ObjectMgr::LoadArenaTeams()
 {
     QueryResult* result = CharacterDatabase.Query("SELECT * FROM arenateams");
@@ -2326,6 +2329,18 @@ uint32 ObjectMgr::GenerateGuildId()
     r = ++m_hiGuildId;
 
     return r;
+}
+
+void ObjectMgr::AddGroup(Group* group)
+{
+    std::lock_guard<std::mutex> guard(m_groupLock);
+    m_groups.insert(std::make_pair(group->GetID(), group));
+}
+
+void ObjectMgr::RemoveGroup(Group* group)
+{
+    std::lock_guard<std::mutex> guard(m_groupLock);
+    m_groups.erase(group->GetID());
 }
 
 uint32 ObjectMgr::GenerateCreatureSpawnID()
@@ -2587,7 +2602,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
             {
             case static_cast<uint8>(ScriptCommands::SCRIPT_COMMAND_RESPAWN_GAMEOBJECT):
             {
-                Object* target = plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
+                Object* target = plr->getWorldMap()->getInterface()->getGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
                 if (target == nullptr)
                     return;
 
@@ -2625,7 +2640,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
             {
                 if ((itr->second.x || itr->second.y || itr->second.z) == 0)
                 {
-                    Object* target = plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
+                    Object* target = plr->getWorldMap()->getInterface()->getGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
                     if (target == nullptr)
                         return;
 
@@ -2640,7 +2655,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                 }
                 else
                 {
-                    Object* target = plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(float(itr->second.x), float(itr->second.y), float(itr->second.z), itr->second.data_1);
+                    Object* target = plr->getWorldMap()->getInterface()->getGameObjectNearestCoords(float(itr->second.x), float(itr->second.y), float(itr->second.z), itr->second.data_1);
                     if (target == nullptr)
                         return;
 

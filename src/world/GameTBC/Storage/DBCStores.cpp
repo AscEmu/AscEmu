@@ -35,6 +35,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::CharTitlesEntry> sCharTitlesStore(D
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ChatChannelsEntry> sChatChannelsStore(DBC::Structures::chat_channels_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtCombatRatingsEntry> sGtCombatRatingsStore(DBC::Structures::gt_combat_ratings_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureDisplayInfoEntry> sCreatureDisplayInfoStore(DBC::Structures::creature_display_info_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureModelDataEntry> sCreatureModelDataStore(DBC::Structures::creature_model_Data_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureSpellDataEntry> sCreatureSpellDataStore(DBC::Structures::creature_spell_data_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureFamilyEntry> sCreatureFamilyStore(DBC::Structures::creature_family_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiNodesEntry> sTaxiNodesStore(DBC::Structures::taxi_nodes_format);
@@ -87,6 +88,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::LiquidTypeEntry> sLiquidTypeStore(D
 SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleEntry> sVehicleStore(DBC::Structures::vehicle_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSeatStore(DBC::Structures::vehicle_seat_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::WorldMapAreaEntry> sWorldMapAreaStore(DBC::Structures::world_map_area_entry_format);
+MapDifficultyMap sMapDifficultyMap;
 
 bool LoadDBCs()
 {
@@ -203,11 +205,30 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTotemCategoryStore, dbc_path, "TotemCategory.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTransportAnimationStore, dbc_path, "TransportAnimation.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sCreatureDisplayInfoStore, dbc_path, "CreatureDisplayInfo.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sCreatureModelDataStore, dbc_path, "CreatureModelData.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sCreatureSpellDataStore, dbc_path, "CreatureSpellData.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sCreatureFamilyStore, dbc_path, "CreatureFamily.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sChrRacesStore, dbc_path, "ChrRaces.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sChrClassesStore, dbc_path, "ChrClasses.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sMapStore, dbc_path, "Map.dbc");
+    {
+        for (uint32_t i = 0; i < sMapStore.GetNumRows(); ++i)
+        {
+            if (auto entry = sMapStore.LookupEntry(i))
+            {
+                uint32_t maxPlayers = 5;
+                if (entry->addon < 1)
+                    maxPlayers = entry->isRaid() ? 40 : 5;
+                else
+                    maxPlayers = entry->isRaid() ? 25 : 5;
+
+                if (!entry->reset_heroic_tim)
+                    sMapDifficultyMap[Util::MAKE_PAIR32(entry->id, InstanceDifficulty::Difficulties::DUNGEON_NORMAL)] = DBC::Structures::MapDifficulty(entry->reset_raid_time, maxPlayers, false);
+                else
+                    sMapDifficultyMap[Util::MAKE_PAIR32(entry->id, InstanceDifficulty::Difficulties::DUNGEON_HEROIC)] = DBC::Structures::MapDifficulty(entry->reset_heroic_tim, maxPlayers, false);
+            }
+        }
+    }
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAuctionHouseStore, dbc_path, "AuctionHouse.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemRandomSuffixStore, dbc_path, "ItemRandomSuffix.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtCombatRatingsStore, dbc_path, "gtCombatRatings.dbc");
@@ -283,6 +304,12 @@ DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 roo
     return iter->second;
 }
 
+DBC::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty)
+{
+    MapDifficultyMap::const_iterator itr = sMapDifficultyMap.find(Util::MAKE_PAIR32(mapId, difficulty));
+    return itr != sMapDifficultyMap.end() ? &itr->second : nullptr;
+}
+
 std::string generateName(uint32_t type)
 {
     if (_namegenData[type].size() == 0)
@@ -295,6 +322,14 @@ std::string generateName(uint32_t type)
 uint32_t const* getTalentTabPages(uint8_t playerClass)
 {
     return InspectTalentTabPages[playerClass];
+}
+
+uint32_t getLiquidFlags(uint32_t liquidType)
+{
+    if (DBC::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.LookupEntry(liquidType))
+        return 1 << liq->Type;
+
+    return 0;
 }
 
 #endif

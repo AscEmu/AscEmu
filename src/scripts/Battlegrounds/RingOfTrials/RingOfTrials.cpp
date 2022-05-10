@@ -18,10 +18,10 @@
  */
 
 #include "RingOfTrials.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Objects/GameObject.h"
 
-RingOfTrials::RingOfTrials(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :
+RingOfTrials::RingOfTrials(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :
     Arena(mgr, id, lgroup, t, players_per_side)
 {}
 
@@ -84,6 +84,6 @@ bool RingOfTrials::HookHandleRepop(Player* plr)
 {
     LocationVector dest;
     dest.ChangeCoords({ 4057.042725f, 2918.686523f, 13.051933f });
-    plr->safeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);
+    plr->safeTeleport(m_mapMgr->getBaseMap()->getMapId(), m_mapMgr->getInstanceId(), dest);
     return true;
 }

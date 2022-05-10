@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Spell/Spell.h>
 #include <Objects/Units/Creatures/Creature.h>
 #include "LUAEngine.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Server/Script/ScriptSetup.h"
 #include <WorldConf.h>
 
@@ -22,8 +22,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/QuestLogEntry.hpp"
 #include "Objects/Item.h"
 #include "Management/ArenaTeam.h"
-#include "Map/WorldCreatorDefines.hpp"
-#include "Map/WorldCreator.h"
 #include "LuaMacros.h"
 #include "LuaHelpers.h"
 #include "Server/Script/CreatureAIScript.h"
@@ -1632,7 +1630,7 @@ public:
 
         RELEASE_LOCK
         uint32_t iid = getCreature()->GetInstanceID();
-        if (getCreature()->GetMapMgr() == nullptr || getCreature()->GetMapMgr()->GetMapInfo()->isNonInstanceMap())
+        if (getCreature()->getWorldMap() == nullptr || getCreature()->getWorldMap()->getBaseMap()->getMapInfo()->isNonInstanceMap())
             iid = 0;
 
         WoWGuid wowGuid;
@@ -2271,7 +2269,7 @@ public:
 class LuaInstance : public InstanceScript
 {
 public:
-    explicit LuaInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr), m_instanceId(pMapMgr->GetInstanceID()), m_binding(nullptr) {}
+    explicit LuaInstance(WorldMap* pMapMgr) : InstanceScript(pMapMgr), m_instanceId(pMapMgr->getInstanceId()), m_binding(nullptr) {}
     ~LuaInstance() {}
 
     // Player
@@ -2482,10 +2480,10 @@ QuestScript* CreateLuaQuestScript(uint32_t id)
     return pLua;
 }
 
-InstanceScript* CreateLuaInstance(MapMgr* pMapMgr)
+InstanceScript* CreateLuaInstance(WorldMap* pMapMgr)
 {
     LuaInstance* pLua = nullptr;
-    uint32_t id = pMapMgr->GetMapId();
+    uint32_t id = pMapMgr->getBaseMap()->getMapId();
     LuaObjectBinding* pBinding = LuaGlobal::instance()->luaEngine()->getInstanceBinding(id);
     if (pBinding != nullptr)
     {
@@ -3161,21 +3159,21 @@ void LuaEngine::Restart()
     for (auto itr = temp.begin(); itr != temp.end(); itr += 3)
     {
         //*itr = mapid; *(itr+1) = iid; *(itr+2) = lowguid
-        MapMgr* mgr = nullptr;
+        WorldMap* mgr = nullptr;
         if (*(itr + 1) == 0) //no instance
         {
-            mgr = sInstanceMgr.GetMapMgr(*itr);
+            mgr = sMapMgr.findWorldMap(*itr);
         }
         else
         {
-            Instance* inst = sInstanceMgr.GetInstanceByIds(*itr, *(itr + 1));
+            InstanceMap* inst = sMapMgr.findInstanceMap(*(itr + 1));
             if (inst != nullptr)
-                mgr = inst->m_mapMgr;
+                mgr = inst;
         }
 
         if (mgr != nullptr)
         {
-            Creature* unit = mgr->GetCreature(*(itr + 2));
+            Creature* unit = mgr->getCreature(*(itr + 2));
             if (unit != nullptr && unit->IsInWorld() && unit->GetScript() != nullptr)
                 unit->GetScript()->OnLoad();
         }

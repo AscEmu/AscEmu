@@ -26,7 +26,7 @@
 #include "Objects/Container.h"
 #include "Management/ItemInterface.h"
 #include "Server/MainServerDefines.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Data/WoWItem.hpp"
@@ -410,8 +410,8 @@ void Item::RemoveFromWorld()
     if (!IsInWorld())
         return;
 
-    m_mapMgr->RemoveObject(this, false);
-    m_mapMgr = nullptr;
+    m_WorldMap->RemoveObject(this, false);
+    m_WorldMap = nullptr;
 
     // update our event holder
     event_Relocate();

@@ -39,7 +39,7 @@ public:
         m_forcedBasePoints.push_back(std::make_pair(effIndex, value));
     }
 
-    inline void get(uint8_t effIndex, int32_t* basePoints)
+    inline void get(uint8_t effIndex, int32_t* basePoints) const
     {
         if (effIndex >= MAX_SPELL_EFFECTS)
             return;
@@ -124,6 +124,9 @@ public:
     uint32_t getAreaAuraEffect() const;
 
     bool isTriggerSpellCastedByCaster(SpellInfo const* triggeringSpell) const;
+
+    float_t getMinRange(bool friendly = false) const;
+    float_t getMaxRange(bool friendly = false, Object* caster = nullptr, Spell* spell = nullptr) const;
 
     // Getters for spell data
     uint32_t getId() const { return Id; }

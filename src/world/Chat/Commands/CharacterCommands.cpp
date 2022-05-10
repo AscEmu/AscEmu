@@ -11,16 +11,18 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
-#include "Map/InstanceDefines.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Maps/InstanceDefines.hpp"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
-#include "Map/WorldCreator.h"
 #include "Chat/ChatHandler.hpp"
 #include "Management/ObjectMgr.h"
 #include "Spell/Definitions/Spec.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Util/Strings.hpp"
+#include "Map/Maps/WorldMap.hpp"
+#include "Map/Maps/InstanceMap.hpp"
+#include "Map/Maps/BattleGroundMap.hpp"
 
 //.character clearcooldowns
 bool ChatHandler::HandleCharClearCooldownsCommand(const char* /*args*/, WorldSession* m_session)
@@ -1924,39 +1926,40 @@ bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSessi
     std::stringstream ss;
     ss << "Show persistent instances of " << MSG_COLOR_CYAN << player_target->getName().c_str() << "|r\n";
 
-    std::lock_guard<std::mutex> lock(player_target->getPlayerInfo()->savedInstanceIdsLock);
-    for (uint32 difficulty = 0; difficulty < InstanceDifficulty::MAX_DIFFICULTY; difficulty++)
+    for (uint32_t mapId = 0; mapId < MAX_NUM_MAPS; mapId++)
     {
-        for (PlayerInstanceMap::iterator itr = player_target->getPlayerInfo()->savedInstanceIds[difficulty].begin(); itr != player_target->getPlayerInfo()->savedInstanceIds[difficulty].end(); ++itr)
+        const auto save = player_target->getInstanceSave(mapId, false);
+
+        if (save)
         {
             count++;
-            ss << " - " << MSG_COLOR_CYAN << (*itr).second << "|r";
-            MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo((*itr).first);
-            if (mapInfo != NULL)
-                ss << " (" << MSG_COLOR_CYAN << mapInfo->name << "|r)";
-            Instance* pInstance = sInstanceMgr.GetInstanceByIds((*itr).first, (*itr).second);
-            if (pInstance == NULL)
-                ss << " - " << MSG_COLOR_RED << "Expired!|r";
-            else
+            MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo(mapId);
+            if (mapInfo)
             {
-                ss << " [" << GetMapTypeString(static_cast<uint8>(pInstance->m_mapInfo->type)) << "]";
-                if (pInstance->m_mapInfo->isMultimodeDungeon())
+                ss << " - " << MSG_COLOR_CYAN << mapInfo->mapid << "|r";
+                ss << " (" << MSG_COLOR_CYAN << mapInfo->name << "|r)";
+
+                ss << " [" << GetMapTypeString(static_cast<uint8>(mapInfo->type)) << "]";
+                if (mapInfo->isMultimodeDungeon())
                 {
-                    ss << " [" << GetDifficultyString(pInstance->m_difficulty) << "]";
+                    ss << " [" << GetDifficultyString(save->getDifficulty()) << "]";
                 }
                 ss << " - ";
-                if (pInstance->m_mapMgr == NULL)
+
+                InstanceMap* instance = sMapMgr.findInstanceMap(save->getInstanceId());
+                if (instance == nullptr)
                     ss << MSG_COLOR_LIGHTRED << "Shut Down|r";
                 else
                 {
-                    if (!pInstance->m_mapMgr->HasPlayers())
+                    if (!instance->hasPlayers())
                         ss << MSG_COLOR_LIGHTRED << "Idle|r";
                     else
                         ss << MSG_COLOR_GREEN << "In use|r";
                 }
+
             }
-            ss << "\n";
         }
+        ss << "\n";
     }
 
     if (count == 0)

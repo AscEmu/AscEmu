@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 class EyeOfTheStorm : public CBattleground
 {
 public:
-    EyeOfTheStorm(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
+    EyeOfTheStorm(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
     ~EyeOfTheStorm();
 
     bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
@@ -31,7 +31,7 @@ public:
     void HookGenerateLoot(Player* plr, Object* pCorpse) override;
     void SpawnBuff(uint32_t x);
     LocationVector GetStartingCoords(uint32_t Team) override;
-    static CBattleground* Create(MapMgr* m, uint32_t i, uint32_t l, uint32_t t) { return new EyeOfTheStorm(m, i, l, t); }
+    static CBattleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new EyeOfTheStorm(m, i, l, t); }
     uint64_t GetFlagHolderGUID(uint32_t /*faction*/) const override { return m_flagHolder; }
 
     uint32_t GetNameID() override { return 44; }

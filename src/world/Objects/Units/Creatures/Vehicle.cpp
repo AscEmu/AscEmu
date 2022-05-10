@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Storage/MySQLDataStore.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Server/Packets/SmsgControlVehicle.h"
@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Pet.h"
+#include "Macros/ScriptMacros.hpp"
 
 #ifdef FT_VEHICLES
 
@@ -66,7 +67,7 @@ void Vehicle::deactivate()
 
 void Vehicle::initSeats()
 {
-    for (uint32_t i = 0; i < MAX_VEHICLE_SEATS; ++i)
+    for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; ++i)
     {
         if (uint32_t seatId = _vehicleInfo->seatID[i])
             if (auto veSeat = sVehicleSeatStore.LookupEntry(seatId))
@@ -203,7 +204,7 @@ void Vehicle::loadAllAccessories(bool evading)
             loadAccessory(itr->accessoryEntry, itr->seatId, itr->isMinion, itr->summonedType, itr->summonTime);
 }
 
-void Vehicle::loadAccessory(uint32_t entry, int8_t seatId, bool minion, uint8_t type, uint32_t summonTime)
+void Vehicle::loadAccessory(uint32_t entry, int8_t seatId, bool minion, uint8_t /*type*/, uint32_t /*summonTime*/)
 {
     if (_status == STATUS_DEACTIVATED)
     {
@@ -215,11 +216,11 @@ void Vehicle::loadAccessory(uint32_t entry, int8_t seatId, bool minion, uint8_t 
     if (cp == nullptr)
         return;
 
-    Creature* accessory = getBase()->GetMapMgr()->CreateCreature(entry);
+    Creature* accessory = getBase()->getWorldMap()->createCreature(entry);
     accessory->Load(cp, getBase()->GetPositionX(), getBase()->GetPositionY(), getBase()->GetPositionZ(), getBase()->GetOrientation());
     accessory->setPhase(PHASE_SET, getBase()->GetPhase());
     accessory->setFaction(getBase()->getFactionTemplate());
-    accessory->PushToWorld(getBase()->GetMapMgr());
+    accessory->PushToWorld(getBase()->getWorldMap());
 
     accessory->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
     accessory->addUnitMovementFlag(MOVEFLAG_TRANSPORT);
@@ -263,7 +264,7 @@ Unit* Vehicle::getPassenger(int8_t seatId) const
     if (seat == Seats.end())
         return nullptr;
 
-    return getBase()->GetMapMgrUnit(seat->second._passenger.guid);
+    return getBase()->getWorldMapUnit(seat->second._passenger.guid);
 }
 
 SeatMap::const_iterator Vehicle::getNextEmptySeat(int8_t seatId, bool next) const
@@ -343,7 +344,7 @@ bool Vehicle::addPassenger(Unit* unit, int8_t seatId)
         // when there is already an Unit in the requested seat remove him
         if (!seat->second.isEmpty())
         {
-            Unit* passenger = getBase()->GetMapMgrUnit(seat->second._passenger.guid);
+            Unit* passenger = getBase()->getWorldMapUnit(seat->second._passenger.guid);
             if (passenger)
                 passenger->callExitVehicle();
         }
@@ -430,7 +431,7 @@ void Vehicle::relocatePassengers()
     // not sure that absolute position calculation is correct, it must depend on vehicle pitch angle
     for (SeatMap::const_iterator itr = Seats.begin(); itr != Seats.end(); ++itr)
     {
-        if (Unit* passenger = getBase()->GetMapMgrUnit(itr->second._passenger.guid))
+        if (Unit* passenger = getBase()->getWorldMapUnit(itr->second._passenger.guid))
         {
             if (passenger && passenger->IsInWorld())
             {
@@ -458,7 +459,8 @@ bool Vehicle::isVehicleInUse() const
 bool Vehicle::isControllableVehicle() const
 {
     for (SeatMap::const_iterator itr = Seats.begin(); itr != Seats.end(); ++itr)
-        return (itr->second._seatInfo->IsController());
+        if (itr->second._seatInfo->IsController())
+            return true;
 
     return false;
 }

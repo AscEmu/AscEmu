@@ -8,9 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Item.h"
 #include <Management/QuestLogEntry.hpp>
-#include "Map/MapMgr.h"
-#include "Map/MapScriptInterface.h"
-#include "Map/WorldCreatorDefines.hpp"
+#include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/MapScriptInterface.h"
 #include "Management/ItemInterface.h"
 #include "Movement/Spline/MoveSpline.h"
 #include "Server/Script/CreatureAIScript.h"

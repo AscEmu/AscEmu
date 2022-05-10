@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <G3D/Vector3.h>
 #include "Storage/MySQLDataStore.hpp"
 #include "Macros/ScriptMacros.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Server/Packets/SmsgTransferPending.h"
 #include <Movement/Spline/Spline.h>
 #include "Server/Script/ScriptMgr.h"
@@ -35,8 +35,18 @@ Transporter::Transporter(uint64_t guid) : GameObject(guid), _passengerTeleportIt
 
 Transporter::~Transporter()
 {
+    if (getWorldMap())
+        getWorldMap()->removeDelayedRemoveFor(this);
+
     ASSERT(_passengers.empty());
     _passengers.clear();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Essential functions
+void Transporter::OnPushToWorld()
+{
+    _pendingMapChange = false;
 }
 
 bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float z, float ang, uint8_t animprogress)
@@ -78,6 +88,27 @@ bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float
 
 void Transporter::Update(unsigned long time_passed)
 {
+    if (_delayedTeleport)
+    {
+        _delayedTeleport = false;
+        _pendingMapChange = true;
+        getWorldMap()->markDelayedRemoveFor(this, false);
+    }
+
+    if (_delayedMapRemove)
+    {
+        _delayedMapRemoveTimer -= time_passed;
+        if (_delayedMapRemoveTimer <= 0)
+        {
+            _delayedMapRemove = false;
+            _pendingMapChange = true;
+            getWorldMap()->markDelayedRemoveFor(this, true);
+        }
+    }
+
+    if (_pendingMapChange)
+        return;
+
     if (GetKeyFrames().size() <= 1)
         return;
 
@@ -138,6 +169,14 @@ void Transporter::Update(unsigned long time_passed)
                 return; // Update more in new map thread
     }
 
+    // Add model to map after we are fully done with moving maps
+    if (_delayedAddModel)
+    {
+        _delayedAddModel = false;
+        if (m_model)
+            getWorldMap()->insertGameObjectModel(*m_model);
+    }
+
     // Set position
     _positionChangeTimer -= time_passed;
     if (_positionChangeTimer <= 0)
@@ -175,7 +214,7 @@ void Transporter::AddPassenger(Player* passenger)
         passenger->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
         passenger->obj_movement_info.transport_guid = getGuid();
         if(passenger->isPlayer())
-            CALL_INSTANCE_SCRIPT_EVENT(GetMapMgr(), TransportBoarded)(passenger, this);
+            CALL_INSTANCE_SCRIPT_EVENT(getWorldMap(), TransportBoarded)(passenger, this);
     }
 }
 
@@ -204,19 +243,19 @@ void Transporter::RemovePassenger(Object* passenger)
         passenger->obj_movement_info.removeMovementFlag(MOVEFLAG_TRANSPORT);
         passenger->obj_movement_info.clearTransportData();
         if (passenger->isPlayer())
-            CALL_INSTANCE_SCRIPT_EVENT(GetMapMgr(), TransportUnboarded)(passenger->ToPlayer(), this);
+            CALL_INSTANCE_SCRIPT_EVENT(getWorldMap(), TransportUnboarded)(passenger->ToPlayer(), this);
     }
 }
 
 Creature* Transporter::createNPCPassenger(MySQLStructure::CreatureSpawn* data)
 {
-    MapMgr* map = GetMapMgr();
+    WorldMap* map = getWorldMap();
 
     CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(data->entry);
     if (creature_properties == nullptr || map == nullptr)
         return 0;
 
-    Creature* pCreature = map->CreateCreature(data->entry);
+    Creature* pCreature = map->createCreature(data->entry);
 
     float x, y, z, o;
     x = data->x;
@@ -235,7 +274,7 @@ Creature* Transporter::createNPCPassenger(MySQLStructure::CreatureSpawn* data)
     pCreature->addUnitStateFlag(UNIT_STATE_IGNORE_PATHFINDING);
 
     // Create Creature
-    pCreature->Create(map->GetMapId(), x, y, z, o);
+    pCreature->Create(map->getBaseMap()->getMapId(), x, y, z, o);
     pCreature->Load(creature_properties, x, y, z, o);
 
     // AddToWorld
@@ -260,7 +299,7 @@ Creature* Transporter::createNPCPassenger(MySQLStructure::CreatureSpawn* data)
 
 GameObject* Transporter::createGOPassenger(MySQLStructure::GameobjectSpawn* data)
 {
-    MapMgr* map = GetMapMgr();
+    WorldMap* map = getWorldMap();
 
     const auto properties = sMySQLStore.getGameObjectProperties(data->entry);
     if (properties == nullptr || map == nullptr)
@@ -273,9 +312,9 @@ GameObject* Transporter::createGOPassenger(MySQLStructure::GameobjectSpawn* data
     z = data->position_z;
     o = data->rotation_0;
 
-    GameObject* pGameobject = map->CreateGameObject(data->entry);
+    GameObject* pGameobject = map->createGameObject(data->entry);
 
-    if (!pGameobject->CreateFromProto(data->entry, map->GetMapId(), x, y, z, o))
+    if (!pGameobject->CreateFromProto(data->entry, map->getBaseMap()->getMapId(), x, y, z, o))
         return 0;
 
     pGameobject->SetTransport(this);
@@ -334,8 +373,19 @@ void Transporter::UnloadStaticPassengers()
         Object* obj = *_staticPassengers.begin();
         RemovePassenger(obj);
 
-        if (obj->IsInWorld())
-            obj->Delete();
+        switch (obj->getObjectTypeId())
+        {
+            case TYPEID_UNIT:
+                obj->ToCreature()->Despawn(0, 0);
+                break;
+            case TYPEID_GAMEOBJECT:
+                obj->ToGameObject()->Despawn(0, 0);
+                break;
+            default:
+                if (obj->IsInWorld())
+                    obj->Delete();
+                break;
+        }
     }
 }
 
@@ -347,6 +397,14 @@ void Transporter::UpdatePassengerPositions(PassengerSet& passengers)
         // transport teleported but passenger not yet (can happen for players)
         if (passenger->GetMapId() != GetMapId())
             continue;
+
+#ifdef FT_VEHICLES
+        // if passenger is on vehicle we have to assume the vehicle is also on transport
+        // and its the vehicle that will be updating its passengers
+        if (Unit* unit = passenger->ToUnit())
+            if (unit->getVehicle())
+                continue;
+#endif
 
         float x, y, z, o;
         passenger->obj_movement_info.transport_position.getPosition(x, y, z, o);
@@ -413,7 +471,7 @@ void Transporter::UpdatePlayerPositions(PassengerSet& passengers)
     }
 }
 
-void Transporter::EnableMovement(bool enabled, MapMgr* /*instance*/)
+void Transporter::EnableMovement(bool enabled, WorldMap* /*instance*/)
 {
     if (!GetGameObjectProperties()->mo_transport.can_be_stopped)
         return;
@@ -465,23 +523,30 @@ float Transporter::CalculateSegmentPos(float now)
     return segmentPos / frame.NextDistFromPrev;
 }
 
+void Transporter::removeFromMap()
+{
+    UnloadStaticPassengers();
+    _delayedMapRemoveTimer = 100;
+    _delayedMapRemove = true;
+}
+
 bool Transporter::TeleportTransport(uint32_t newMapid, float x, float y, float z, float o)
 {
-    MapMgr* oldMap = GetMapMgr();
+    WorldMap* oldMap = getWorldMap();
 
-    if (oldMap->GetMapId() != newMapid) // New Map case
+    if (oldMap->getBaseMap()->getMapId() != newMapid) // New Map case
     {
         // Unload at old Map
-        _delayedTeleport = true;
         UnloadStaticPassengers();
         // Wait a bit before we Procced in new MapMgr
-        sEventMgr.AddEvent(this, &Transporter::DelayedTeleportTransport, (oldMap), EVENT_TRANSPORTER_DELAYED_TELEPORT, 500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        _delayedTransportFromMap = oldMap;
+        _delayedTeleport = true;
         return true;
     }
     else // Same Map Case
     {
         // Teleport Players
-        TeleportPlayers(x, y, z, o, oldMap->GetMapId(), oldMap->GetMapId(), false);
+        TeleportPlayers(x, y, z, o, oldMap->getBaseMap()->getMapId(), oldMap->getBaseMap()->getMapId(), false);
 
         // Update Transport Positions
         UpdatePosition(x, y, z, o);
@@ -489,13 +554,12 @@ bool Transporter::TeleportTransport(uint32_t newMapid, float x, float y, float z
     }
 }
 
-void Transporter::DelayedTeleportTransport(MapMgr* oldMap)
+void Transporter::delayedTeleportTransport()
 {
-    if (!_delayedTeleport)
+    if (!_delayedTransportFromMap || !_pendingMapChange)
         return;
 
-    _delayedTeleport = false;
-    oldMap->RemoveFromMapMgr(this, false);
+    _delayedTransportFromMap->removeFromMapMgr(this);
     RemoveFromWorld(false);
 
     // Set new Map Information
@@ -510,10 +574,12 @@ void Transporter::DelayedTeleportTransport(MapMgr* oldMap)
 
     // Add new Object to new MapMgr
     AddToWorld();
-    GetMapMgr()->AddToMapMgr(this);
+    getWorldMap()->addToMapMgr(this);
 
     // Teleport Players
-    TeleportPlayers(x, y, z, o, _nextFrame->Node.mapid, oldMap->GetMapId(), true);
+    TeleportPlayers(x, y, z, o, _nextFrame->Node.mapid, _delayedTransportFromMap->getBaseMap()->getMapId(), true);
+
+    _delayedTransportFromMap = nullptr;
 
     // Update Transport Positions
     UpdatePosition(x, y, z, o);
@@ -537,7 +603,7 @@ void Transporter::TeleportPlayers(float x, float y, float z, float o, uint32_t n
             if (newMap)
                 player->getSession()->SendPacket(SmsgTransferPending(newMapId, true, getEntry(), oldMapId).serialise().get());
 
-            bool teleport_successful = player->teleport(LocationVector(destX, destY, destZ, destO), GetMapMgr());
+            bool teleport_successful = player->teleport(LocationVector(destX, destY, destZ, destO), getWorldMap());
             if (!teleport_successful)
             {
                 player->repopAtGraveyard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId());
@@ -546,19 +612,19 @@ void Transporter::TeleportPlayers(float x, float y, float z, float o, uint32_t n
     }
 }
 
-void Transporter::UpdateForMap(MapMgr* targetMap)
+void Transporter::UpdateForMap(WorldMap* targetMap)
 {
-    if (!targetMap->HasPlayers())
+    if (!targetMap->hasPlayers())
         return;
 
-    if (GetMapId() == targetMap->GetMapId())
+    if (GetMapId() == targetMap->getBaseMap()->getMapId())
     {
-        for (auto itr = targetMap->m_PlayerStorage.begin(); itr != targetMap->m_PlayerStorage.end(); ++itr)
+        for (const auto& itr : targetMap->getPlayers())
         {
             ByteBuffer transData(500);
             uint32_t count = 0;
-            count = Object::buildCreateUpdateBlockForPlayer(&transData, itr->second);
-            itr->second->getUpdateMgr().pushUpdateData(&transData, count);
+            count = Object::buildCreateUpdateBlockForPlayer(&transData, itr.second);
+            itr.second->getUpdateMgr().pushUpdateData(&transData, count);
         }
     }
 }
@@ -568,7 +634,8 @@ uint32_t Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* 
     uint32_t cnt = Object::buildCreateUpdateBlockForPlayer(data, target);
 
     // add all the npcs and gos to the packet
-    for (auto itr = _staticPassengers.begin(); itr != _staticPassengers.end(); ++itr)
+    // comment this out for now until we decided if we want creatures and gos always be loaded for transports
+    /*for (auto itr = _staticPassengers.begin(); itr != _staticPassengers.end(); ++itr)
     {
         Object* passenger = *itr;
         float x, y, z, o;
@@ -593,7 +660,7 @@ uint32_t Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* 
         }
         }
         cnt += passenger->buildCreateUpdateBlockForPlayer(data, target);
-    }
+    }*/
     return cnt;
 }
 
@@ -604,7 +671,7 @@ void Transporter::DoEventIfAny(KeyFrame const& node, bool departure)
         sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Taxi %s event %u", departure ? "departure" : "arrival", eventid);
 
         // Use MapScript Interface to Handle these if not handle it here
-        CALL_INSTANCE_SCRIPT_EVENT(GetMapMgr(), TransporterEvents)(this, eventid);
+        CALL_INSTANCE_SCRIPT_EVENT(getWorldMap(), TransporterEvents)(this, eventid);
 
         // TODO Sort out ships and zeppelins
         switch (eventid)

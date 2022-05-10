@@ -7,9 +7,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CreatureAIScript.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Map/InstanceDefines.hpp"
-#include "Map/MapMgr.h"
-#include "Map/MapScriptInterface.h"
+#include "Map/Maps/InstanceDefines.hpp"
+#include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/MapScriptInterface.h"
 #include "Management/Faction.h"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Movement/Spline/MoveSplineInit.h"
@@ -29,7 +29,7 @@ void SummonList::despawnEntry(uint32_t entry)
 {
     for (StorageType::iterator i = _storage.begin(); i != _storage.end();)
     {
-        Creature* summon = _creature->GetMapMgrCreature(*i);
+        Creature* summon = _creature->getWorldMapCreature(*i);
         if (!summon)
         {
             i = _storage.erase(i);
@@ -50,7 +50,7 @@ void SummonList::despawnAll()
 {
     while (!_storage.empty())
     {
-        Creature* summon = _creature->GetMapMgrCreature(_storage.front());
+        Creature* summon = _creature->getWorldMapCreature(_storage.front());
         _storage.pop_front();
         if (summon)
             summon->Despawn(1000, 0);
@@ -61,7 +61,7 @@ void SummonList::removeNotExisting()
 {
     for (StorageType::iterator i = _storage.begin(); i != _storage.end();)
     {
-        if (_creature->GetMapMgrCreature(*i))
+        if (_creature->getWorldMapCreature(*i))
             ++i;
         else
             i = _storage.erase(i);
@@ -72,7 +72,7 @@ bool SummonList::hasEntry(uint32_t entry) const
 {
     for (uint64_t const& guid : _storage)
     {
-        Creature* summon = _creature->GetMapMgrCreature(guid);
+        Creature* summon = _creature->getWorldMapCreature(guid);
         if (summon && summon->getEntry() == entry)
             return true;
     }
@@ -124,9 +124,8 @@ void CreatureAIScript::_internalOnDied(Unit* killer)
     // Finish Encounter
     if (getInstanceScript() != nullptr)
     {
-        getInstanceScript()->setData(getCreature()->getEntry(), Finished);
 #if VERSION_STRING >= WotLK
-        getInstanceScript()->UpdateEncountersStateForCreature(getCreature()->getEntry(), getCreature()->GetMapMgr()->pInstance->m_difficulty);
+        getInstanceScript()->updateEncountersStateForCreature(getCreature()->getEntry(), getCreature()->getWorldMap()->getDifficulty());
 #endif
     }
 
@@ -221,10 +220,10 @@ void CreatureAIScript::_internalOnScriptPhaseChange()
 // player
 Player* CreatureAIScript::getNearestPlayer()
 {
-    if (_creature->GetMapMgr()->GetInterface() == nullptr)
+    if (_creature->getWorldMap()->getInterface() == nullptr)
         return nullptr;
 
-    return _creature->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_creature->GetPositionX(), _creature->GetPositionY(), _creature->GetPositionZ());
+    return _creature->getWorldMap()->getInterface()->getPlayerNearestCoords(_creature->GetPositionX(), _creature->GetPositionY(), _creature->GetPositionZ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -242,34 +241,34 @@ Creature* CreatureAIScript::getNearestCreature(uint32_t entry)
 
 Creature* CreatureAIScript::getNearestCreature(float posX, float posY, float posZ, uint32_t entry)
 {
-    if (_creature->GetMapMgr()->GetInterface() == nullptr)
+    if (_creature->getWorldMap()->getInterface() == nullptr)
         return nullptr;
 
-    return _creature->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(posX, posY, posZ, entry);
+    return _creature->getWorldMap()->getInterface()->getCreatureNearestCoords(posX, posY, posZ, entry);
 }
 
 void CreatureAIScript::GetCreatureListWithEntryInGrid(std::list<Creature*>& container, uint32 entry, float maxSearchRange /*= 250.0f*/)
 {
-    if (_creature->GetMapMgr()->GetInterface() == nullptr)
+    if (_creature->getWorldMap()->getInterface() == nullptr)
         return;
 
-    _creature->GetMapMgr()->GetInterface()->GetCreatureListWithEntryInGrid(_creature, container, entry, maxSearchRange);
+    _creature->getWorldMap()->getInterface()->getCreatureListWithEntryInRange(_creature, container, entry, maxSearchRange);
 }
 
 Creature* CreatureAIScript::findNearestCreature(uint32_t entry, float maxSearchRange /*= 250.0f*/)
 {
-    if (_creature->GetMapMgr()->GetInterface() == nullptr)
+    if (_creature->getWorldMap()->getInterface() == nullptr)
         return nullptr;
 
-    return _creature->GetMapMgr()->GetInterface()->findNearestCreature(_creature, entry, maxSearchRange);
+    return _creature->getWorldMap()->getInterface()->findNearestCreature(_creature, entry, maxSearchRange);
 }
 
 void CreatureAIScript::GetGameObjectListWithEntryInGrid(std::list<GameObject*>& container, uint32 entry, float maxSearchRange /*= 250.0f*/)
 {
-    if (_creature->GetMapMgr()->GetInterface() == nullptr)
+    if (_creature->getWorldMap()->getInterface() == nullptr)
         return;
 
-    _creature->GetMapMgr()->GetInterface()->GetGameObjectListWithEntryInGrid(_creature, container, entry, maxSearchRange);
+    _creature->getWorldMap()->getInterface()->getGameObjectListWithEntryInRange(_creature, container, entry, maxSearchRange);
 }
 
 float CreatureAIScript::getRangeToObject(Object* object)
@@ -297,10 +296,10 @@ Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY
         return nullptr;
     }
 
-    if (_creature->GetMapMgr()->GetInterface() == nullptr)
+    if (_creature->getWorldMap()->getInterface() == nullptr)
         return nullptr;
 
-    Creature* creature = _creature->GetMapMgr()->GetInterface()->SpawnCreature(entry, posX, posY, posZ, posO, true, true, 0, 0, phase);
+    Creature* creature = _creature->getWorldMap()->getInterface()->spawnCreature(entry, LocationVector(posX, posY, posZ, posO), true, true, 0, 0, phase);
     if (creature == nullptr)
         return nullptr;
 
@@ -1022,7 +1021,7 @@ void CreatureAIScript::_unsetTargetToChannel()
 
 Unit* CreatureAIScript::_getTargetToChannel()
 {
-    return _creature->GetMapMgr()->GetUnit(_creature->getChannelObjectGuid());
+    return _creature->getWorldMap()->getUnit(_creature->getChannelObjectGuid());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1035,10 +1034,10 @@ GameObject* CreatureAIScript::getNearestGameObject(uint32_t entry)
 
 GameObject* CreatureAIScript::getNearestGameObject(float posX, float posY, float posZ, uint32_t entry)
 {
-    if (_creature->GetMapMgr()->GetInterface() == nullptr)
+    if (_creature->getWorldMap()->getInterface() == nullptr)
         return nullptr;
 
-    return _creature->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(posX, posY, posZ, entry);
+    return _creature->getWorldMap()->getInterface()->getGameObjectNearestCoords(posX, posY, posZ, entry);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1162,14 +1161,14 @@ void CreatureAIScript::generateNextRandomIdleEmoteTime()
 
 InstanceScript* CreatureAIScript::getInstanceScript()
 {
-    MapMgr* mapMgr = _creature->GetMapMgr();
-    return (mapMgr) ? mapMgr->GetScript() : nullptr;
+    WorldMap* mapMgr = _creature->getWorldMap();
+    return (mapMgr) ? mapMgr->getScript() : nullptr;
 }
 
 bool CreatureAIScript::_isHeroic()
 {
-    MapMgr* mapMgr = _creature->GetMapMgr();
-    if (mapMgr == nullptr || mapMgr->iInstanceMode != InstanceDifficulty::DUNGEON_HEROIC)
+    WorldMap* mapMgr = _creature->getWorldMap();
+    if (mapMgr == nullptr || mapMgr->getDifficulty() != InstanceDifficulty::DUNGEON_HEROIC)
         return false;
 
     return true;

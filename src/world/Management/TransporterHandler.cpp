@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Storage/MySQLDataStore.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include <Movement/Spline/Spline.h>
 #include <Movement/Spline/MoveSplineInitArgs.h>
 #include "Server/Definitions.h"
@@ -76,7 +76,7 @@ void TransportHandler::spawnContinentTransports()
     sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Transporter Handler : Spawned %u Continent Transports", createCount);
 }
 
-Transporter* TransportHandler::createTransport(uint32_t entry, MapMgr* map /*= nullptr*/)
+Transporter* TransportHandler::createTransport(uint32_t entry, WorldMap* map /*= nullptr*/)
 {
     TransportTemplate const* tInfo = getTransportTemplate(entry);
     if (!tInfo)
@@ -110,7 +110,7 @@ Transporter* TransportHandler::createTransport(uint32_t entry, MapMgr* map /*= n
     // Storage
     _Transports.insert(trans);
     if (map)
-        _TransportersByInstanceIdMap[map->GetInstanceID()].insert(trans);
+        _TransportersByInstanceIdMap[map->getInstanceId()].insert(trans);
     else
         _TransportersByInstanceIdMap[trans->GetInstanceID()].insert(trans);
 
@@ -130,12 +130,12 @@ Transporter* TransportHandler::createTransport(uint32_t entry, MapMgr* map /*= n
     if (map)
     {
         trans->AddToWorld(map);
-        trans->SetInstanceID(map->GetInstanceID());
+        trans->SetInstanceID(map->getInstanceId());
     }      
     else
         trans->AddToWorld();
 
-    trans->GetMapMgr()->AddToMapMgr(trans);
+    trans->getWorldMap()->addToMapMgr(trans);
 
     // Load Creatures
     trans->LoadStaticPassengers();

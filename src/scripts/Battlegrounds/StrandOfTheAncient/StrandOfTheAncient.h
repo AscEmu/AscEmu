@@ -35,9 +35,9 @@ private:
     SOTAGraveyard graveyard[NUM_SOTA_GRAVEYARDS];
 
 public:
-    static CBattleground* Create(MapMgr* m, uint32_t i, uint32_t l, uint32_t t) { return new StrandOfTheAncient(m, i, l, t); }
+    static CBattleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new StrandOfTheAncient(m, i, l, t); }
 
-    StrandOfTheAncient(MapMgr* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
+    StrandOfTheAncient(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
     ~StrandOfTheAncient();
 
     uint32_t GetNameID() override { return 34; }   //\todo in worldstring_tables ?

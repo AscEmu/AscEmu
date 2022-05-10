@@ -14,11 +14,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Objects/GameObject.h"
 #include "Macros/ScriptMacros.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "WoWGuid.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Management/ItemInterface.h"
 #include "Management/ObjectMgr.h"
+#include "Server/Definitions.h"
 #include "Server/Packets/SmsgLootRemoved.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Spell/Definitions/LockTypes.hpp"
@@ -32,14 +33,14 @@ Loot* WorldSession::getItemLootFromHighGuidType(WoWGuid wowGuid)
     {
         case HighGuid::Unit:
         {
-            if (auto creature = _player->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart()))
+            if (auto creature = _player->getWorldMap()->getCreature(wowGuid.getGuidLowPart()))
                 return &creature->loot;
 
             return nullptr;
         }
         case HighGuid::GameObject:
         {
-            if (auto gameObject = _player->GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()))
+            if (auto gameObject = _player->getWorldMap()->getGameObject(wowGuid.getGuidLowPart()))
             {
                 if (gameObject->IsLootable())
                     return &dynamic_cast<GameObject_Lootable*>(gameObject)->loot;
@@ -56,7 +57,7 @@ Loot* WorldSession::getItemLootFromHighGuidType(WoWGuid wowGuid)
         }
         case HighGuid::Player:
         {
-            if (auto player = _player->GetMapMgr()->GetPlayer(wowGuid.getGuidLowPart()))
+            if (auto player = _player->getWorldMap()->getPlayer(wowGuid.getGuidLowPart()))
                 return &player->loot;
 
             return nullptr;
@@ -89,13 +90,13 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
 
     if (wowGuid.isUnit())
     {
-        lootCreature = _player->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+        lootCreature = _player->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
         if (lootCreature == nullptr)
             return;
     }
     else if (wowGuid.isGameObject())
     {
-        lootGameObject = _player->GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
+        lootGameObject = _player->getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
         if (lootGameObject == nullptr)
             return;
     }
@@ -107,7 +108,7 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
     }
     else if (wowGuid.isPlayer())
     {
-        const auto player = _player->GetMapMgr()->GetPlayer(wowGuid.getGuidLowPart());
+        const auto player = _player->getWorldMap()->getPlayer(wowGuid.getGuidLowPart());
         if (player == nullptr)
             return;
     }
@@ -145,14 +146,14 @@ Loot* WorldSession::getMoneyLootFromHighGuidType(WoWGuid wowGuid)
     {
         case HighGuid::Unit:
         {
-            if (auto creature = _player->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart()))
+            if (auto creature = _player->getWorldMap()->getCreature(wowGuid.getGuidLowPart()))
                 return &creature->loot;
 
             return nullptr;
         }
         case HighGuid::GameObject:
         {
-            if (auto gameObject = _player->GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()))
+            if (auto gameObject = _player->getWorldMap()->getGameObject(wowGuid.getGuidLowPart()))
             {
                 if (gameObject->IsLootable())
                     return &dynamic_cast<GameObject_Lootable*>(gameObject)->loot;
@@ -169,7 +170,7 @@ Loot* WorldSession::getMoneyLootFromHighGuidType(WoWGuid wowGuid)
         }
         case HighGuid::Player:
         {
-            if (auto player = _player->GetMapMgr()->GetPlayer(wowGuid.getGuidLowPart()))
+            if (auto player = _player->getWorldMap()->getPlayer(wowGuid.getGuidLowPart()))
                 return &player->loot;
 
             return nullptr;
@@ -203,14 +204,14 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
 
     if (wowGuid.isUnit())
     {
-        Creature* pCreature = _player->GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+        Creature* pCreature = _player->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
         if (!pCreature)
             return;
         pt = pCreature;
     }
     else if (wowGuid.isPlayer())
     {
-        Player* pPlayer = _player->GetMapMgr()->GetPlayer(wowGuid.getGuidLowPart());
+        Player* pPlayer = _player->getWorldMap()->getPlayer(wowGuid.getGuidLowPart());
         if (!pPlayer)
             return;
 
@@ -357,7 +358,7 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
 
     if (srlPacket.guid.isUnit())
     {
-        Creature* creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
+        Creature* creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
         if (creature == nullptr)
             return;
 
@@ -399,7 +400,7 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
     }
     else if (srlPacket.guid.isGameObject())
     {
-        GameObject* gameObject = _player->GetMapMgr()->GetGameObject(srlPacket.guid.getGuidLow());
+        GameObject* gameObject = _player->getWorldMap()->getGameObject(srlPacket.guid.getGuidLow());
         if (gameObject == nullptr)
             return;
 
@@ -566,7 +567,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
     if (_player->getGroup() == nullptr || _player->getGroup()->GetLooter() != _player->getPlayerInfo())
         return;
 
-    auto player = _player->GetMapMgr()->GetPlayer(srlPacket.playerGuid.getGuidLow());
+    auto player = _player->getWorldMap()->getPlayer(srlPacket.playerGuid.getGuidLow());
     if (player == nullptr)
         return;
 
@@ -581,7 +582,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
 
     if (lootGuid.isUnit())
     {
-        creature = _player->GetMapMgr()->GetCreature(srlPacket.creatureGuid.getGuidLowPart());
+        creature = _player->getWorldMap()->getCreature(srlPacket.creatureGuid.getGuidLowPart());
         if (creature == nullptr)
             return;
 
@@ -589,7 +590,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
     }
     else if (lootGuid.isGameObject())
     {
-        auto gameObject = _player->GetMapMgr()->GetGameObject(srlPacket.creatureGuid.getGuidLowPart());
+        auto gameObject = _player->getWorldMap()->getGameObject(srlPacket.creatureGuid.getGuidLowPart());
         if (gameObject == nullptr)
             return;
 

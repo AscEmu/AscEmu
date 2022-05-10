@@ -25,14 +25,17 @@
 #include "Management/GameEventMgr.h"
 #include "Objects/Units/Unit.h"
 #include "Management/ArenaTeam.h"
+#include "Map/Maps/InstanceMap.hpp"
 #include "Server/Script/AchievementScript.hpp"
 #include "Server/ServerState.h"
+#include "Server/World.h"
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellScript.hpp"
 #include "ScriptEvent.hpp"
 
 class Channel;
+enum EncounterCreditType : uint8_t;
 class Guild;
 struct QuestProperties;
 
@@ -132,7 +135,7 @@ class QuestScript;
 // Factory Imports (from script lib)
 typedef CreatureAIScript* (*exp_create_creature_ai)(Creature* pCreature);
 typedef GameObjectAIScript* (*exp_create_gameobject_ai)(GameObject* pGameObject);
-typedef InstanceScript* (*exp_create_instance_ai)(MapMgr* pMapMgr);
+typedef InstanceScript* (*exp_create_instance_ai)(WorldMap* pMapMgr);
 
 typedef bool(*exp_handle_dummy_spell)(uint8_t effectIndex, Spell* pSpell);
 typedef bool(*exp_handle_script_effect)(uint8_t effectIndex, Spell* pSpell);
@@ -259,7 +262,7 @@ public:
 
         CreatureAIScript* CreateAIScriptClassForEntry(Creature* pCreature);
         GameObjectAIScript* CreateAIScriptClassForGameObject(uint32 uEntryId, GameObject* pGameObject);
-        InstanceScript* CreateScriptClassForInstance(uint32 pMapId, MapMgr* pMapMgr);
+        InstanceScript* CreateScriptClassForInstance(uint32 pMapId, WorldMap* pMapMgr);
 
         bool CallScriptedDummySpell(uint32 uSpellId, uint8_t effectIndex, Spell* pSpell);
         bool HandleScriptedSpellEffect(uint32 SpellId, uint8_t effectIndex, Spell* s);
@@ -541,7 +544,6 @@ class SERVER_DECL QuestScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Instanced class created for each instance of the map, holds all scriptable exports
-#include "Map/WorldCreator.h"
 
 enum EncounterFrameType
 {
@@ -562,17 +564,23 @@ enum EncounterFrameType
 #endif
 };
 
-enum EncounterStates
+enum EncounterStates : uint8_t
 {
-    NotStarted = 0,
-    InProgress = 1,
-    Finished = 2,
-    Performed = 3,
-    PreProgress = 4,
-    InvalidState = 0xff
+    NotStarted          = 0,
+    InProgress          = 1,
+    Failed              = 2,
+    Performed           = 3,
+    PreProgress         = 4,
+    InvalidState        = 0xff
 };
 
-typedef std::map<uint32_t, uint32_t> InstanceDataMap;
+// Maybe Save more in future
+struct BossInfo
+{
+    BossInfo() : state(InvalidState) {}
+    uint32_t entry = 0;
+    EncounterStates state;
+};
 
 typedef std::set<Creature*> CreatureSet;
 typedef std::set<GameObject*> GameObjectSet;
@@ -591,7 +599,7 @@ class SERVER_DECL InstanceScript
 {
     public:
 
-        InstanceScript(MapMgr* pMapMgr);
+        InstanceScript(WorldMap* pMapMgr);
         virtual ~InstanceScript() {}
 
         // Procedures that had been here before
@@ -627,18 +635,13 @@ class SERVER_DECL InstanceScript
         virtual void Destroy() {}
 
         // Something to return Instance's MapMgr
-        MapMgr* GetInstance() { return mInstance; }
+        WorldMap* getWorldMap() { return mInstance; }
+        InstanceMap* getInstance() { return mInstance->getInstance(); }
         uint8_t GetDifficulty() { return Difficulty; }
 
         // MIT start
         //////////////////////////////////////////////////////////////////////////////////////////
         // data
-
-        void addData(uint32_t data, uint32_t state = NotStarted);
-
-        void setData(uint32_t data, uint32_t state);
-        uint32_t getData(uint32_t data);
-        bool isDataStateFinished(uint32_t data);
 
         // not saved to database, only for scripting
         virtual void setLocalData(uint32_t /*type*/, uint32_t /*data*/) {}
@@ -649,9 +652,6 @@ class SERVER_DECL InstanceScript
         virtual void DoAction(int32_t /*action*/) {}
         virtual void TransporterEvents(Transporter* /*transport*/, uint32_t /*eventId*/) {}
         uint8_t Difficulty;
-        
-        //used for debug
-        std::string getDataStateString(uint32_t bossEntry);
 
         void setZoneMusic(uint32_t zoneId, uint32_t musicId)
         {
@@ -665,14 +665,38 @@ class SERVER_DECL InstanceScript
 
         // called for all initialized instancescripts!
         void generateBossDataState();
+        void loadSavedInstanceData(char const* data);
         void sendUnitEncounter(uint32_t type, Unit* unit = nullptr, uint8_t value_a = 0, uint8_t value_b = 0);
 
+        bool setBossState(uint32_t id, EncounterStates state);
+        std::vector<BossInfo> getBosses() { return bosses; }
+        EncounterStates getBossState(uint32_t id) const { return id < bosses.size() ? bosses[id].state : InvalidState; }
+        //used for debug
+        std::string getDataStateString(uint8_t state);
+
+        uint32_t getEncounterCount() const { return static_cast<uint32_t>(bosses.size()); }
+
+        void saveToDB();
+        void updateEncounterState(EncounterCreditType type, uint32_t creditEntry);
+
         // Checks encounter state
-        void UpdateEncountersStateForCreature(uint32_t creditEntry, uint8_t difficulty);
-        void UpdateEncountersStateForSpell(uint32_t creditEntry, uint8_t difficulty);
+        void updateEncountersStateForCreature(uint32_t creditEntry, uint8_t difficulty);
+        void updateEncountersStateForSpell(uint32_t creditEntry, uint8_t difficulty);
+
+        // Used only during loading
+        void setCompletedEncountersMask(uint32_t newMask) { completedEncounters = newMask; }
+
+        // Returns completed encounters mask for packets
+        uint32_t getCompletedEncounterMask() const { return completedEncounters; }
+
+        void readSaveDataBossStates(std::istringstream& data);
+        void writeSaveDataBossStates(std::ostringstream& data);
+        virtual std::string getSaveData();
 
         //used for debug
         void displayDataStateList(Player* player);
+
+        void setBossNumber(uint32_t number) { bosses.resize(number); }
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // timers
@@ -686,7 +710,7 @@ class SERVER_DECL InstanceScript
 
         uint32_t addTimer(uint32_t durationInMs);
         uint32_t getTimeForTimer(uint32_t timerId);
-        uint32_t completedEncounters; // completed encounter mask, bit indexes are DungeonEncounter.dbc boss numbers, used for packets // todo for further use save these in db
+        uint32_t completedEncounters = 0; // completed encounter mask, bit indexes are DungeonEncounter.dbc boss numbers, used for packets
         void removeTimer(uint32_t& timerId);
         void resetTimer(uint32_t timerId, uint32_t durationInMs);
         bool isTimerFinished(uint32_t timerId);
@@ -757,11 +781,11 @@ class SERVER_DECL InstanceScript
 
     protected:
 
-        InstanceDataMap mInstanceData;
+        std::vector<BossInfo> bosses;
 
         //MIT end
 
-        MapMgr* mInstance;
+        WorldMap* mInstance;
 };
 
 

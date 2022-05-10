@@ -9,14 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 class HallsOfOriginationInstanceScript : public InstanceScript
 {
 public:
-    explicit HallsOfOriginationInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new HallsOfOriginationInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
+    explicit HallsOfOriginationInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new HallsOfOriginationInstanceScript(pMapMgr); }
 };
 
 void SetupHallsOfOrigination(ScriptMgr* mgr)

@@ -90,11 +90,19 @@ namespace Util
         std::transform(str.begin(), str.end(), str.begin(), WCharToLower);
     }
 
+    inline uint32_t MAKE_PAIR32(uint16_t l, uint16_t h)
+    {
+        return uint32_t(l | (uint32_t(h) << 16));
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Time calculation/formatting
 
     /*! \brief Returns the current point in time */
     std::chrono::high_resolution_clock::time_point TimeNow();
+
+    /*! \ brief Returns TimeNow() as time_t*/
+    time_t getTimeNow();
 
     /*! \ brief Returns TimeNow() as uint32_t*/
     uint32_t getMSTime();
@@ -122,6 +130,8 @@ namespace Util
 
     /*! \brief Returns generated time value for client packets */
     uint32_t getGameTime();
+
+    time_t getLocalHourTimestamp(time_t time, uint8_t hour, bool onlyAfterTime = true);
 
     std::string ByteArrayToHexString(uint8_t const* bytes, uint32_t arrayLength, bool reverseArray = false);
 

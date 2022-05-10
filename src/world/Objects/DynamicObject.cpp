@@ -21,7 +21,7 @@
 
 
 #include "Objects/DynamicObject.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellAuras.h"
@@ -189,9 +189,9 @@ void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float 
     m_phase = caster->GetPhase();
 
     if (pSpell->g_caster)
-        PushToWorld(pSpell->g_caster->GetMapMgr());
+        PushToWorld(pSpell->g_caster->getWorldMap());
     else
-        PushToWorld(caster->GetMapMgr());
+        PushToWorld(caster->getWorldMap());
 
     if (caster->dynObj != nullptr)
     {
@@ -272,7 +272,7 @@ void DynamicObject::UpdateTargets()
 
         while (jtr != jend)
         {
-            target = GetMapMgr() ? GetMapMgr()->GetUnit(*jtr) : nullptr;
+            target = getWorldMap() ? getWorldMap()->getUnit(*jtr) : nullptr;
             jtr2 = jtr;
             ++jtr;
 
@@ -312,7 +312,7 @@ void DynamicObject::Remove()
 
         uint64 TargetGUID = *itr;
 
-        target = m_mapMgr->GetUnit(TargetGUID);
+        target = m_WorldMap->getUnit(TargetGUID);
 
         if (target != nullptr)
             target->RemoveAura(m_spellProto->getId());

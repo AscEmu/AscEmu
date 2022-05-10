@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "Macros/CorpseMacros.hpp"
+#include "Macros/ScriptMacros.hpp"
 #include "Management/HonorHandler.h"
 #include "Management/Battleground/Battleground.h"
 #include "Management/Guild/GuildMgr.hpp"
@@ -21,7 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Skill.hpp"
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.h"
 #include "Management/TaxiMgr.h"
@@ -64,6 +65,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgClearCooldown.h"
 #include "Server/Packets/SmsgLootReleaseResponse.h"
 #include "Server/Packets/SmsgLootRemoved.h"
+#include "Server/Packets/SmsgInstanceReset.h"
 #include "Server/World.h"
 #include "Server/WorldSocket.h"
 #include "Server/Packets/SmsgContactList.h"
@@ -81,6 +83,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/UnitDefines.hpp"
+#include "Server/Definitions.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/Packets/SmsgAreaTriggerMessage.h"
 #include "Server/Packets/SmsgCancelCombat.h"
@@ -112,6 +115,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Warden/SpeedDetector.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/WorldStrings.h"
+#include "Util/Strings.hpp"
 
 using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;
@@ -985,8 +989,7 @@ void Player::setAreaId(uint32_t area) { m_areaId = area; }
 
 bool Player::isInCity() const
 {
-    const auto at = GetMapMgr()->GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
-    if (at != nullptr)
+    if (const auto at = GetArea())
     {
         ::DBC::Structures::AreaTableEntry const* zt = nullptr;
         if (at->zone)
@@ -1189,20 +1192,20 @@ void Player::handleKnockback(Object* object, float horizontal, float vertical)
     speedCheatDelay(10000);
 }
 
-bool Player::teleport(const LocationVector& vec, MapMgr* map)
+bool Player::teleport(const LocationVector& vec, WorldMap* map)
 {
     if (map)
     {
-        if (map->GetPlayer(this->getGuidLow()))
+        if (map->getPlayer(this->getGuidLow()))
         {
             this->SetPosition(vec);
         }
         else
         {
-            if (map->GetMapId() == 530 && !this->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_01))
+            if (map->getBaseMap()->getMapId() == 530 && !this->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_01))
                 return false;
 
-            if (map->GetMapId() == 571 && !this->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
+            if (map->getBaseMap()->getMapId() == 571 && !this->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
                 return false;
 
             this->safeTeleport(map, vec);
@@ -1299,7 +1302,7 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
     callExitVehicle();
 #endif
 
-    if (m_bg && m_bg->GetMapMgr() && GetMapMgr()->GetMapInfo()->mapid != mapId)
+    if (m_bg && m_bg->getWorldMap() && getWorldMap() && getWorldMap()->getBaseMap()->getMapInfo()->mapid != mapId)
     {
         m_bg->RemovePlayer(this, false);
     }
@@ -1313,7 +1316,7 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
     return true;
 }
 
-void Player::safeTeleport(MapMgr* mgr, const LocationVector& vec)
+void Player::safeTeleport(WorldMap* mgr, const LocationVector& vec)
 {
     if (mgr)
     {
@@ -1329,11 +1332,11 @@ void Player::safeTeleport(MapMgr* mgr, const LocationVector& vec)
         if (IsInWorld())
             RemoveFromWorld();
 
-        m_mapId = mgr->GetMapId();
-        m_instanceId = mgr->GetInstanceID();
+        m_mapId = mgr->getBaseMap()->getMapId();
+        m_instanceId = mgr->getInstanceId();
 
-        getSession()->SendPacket(SmsgTransferPending(mgr->GetMapId()).serialise().get());
-        getSession()->SendPacket(SmsgNewWorld(mgr->GetMapId(), vec).serialise().get());
+        getSession()->SendPacket(SmsgTransferPending(mgr->getBaseMap()->getMapId()).serialise().get());
+        getSession()->SendPacket(SmsgNewWorld(mgr->getBaseMap()->getMapId(), vec).serialise().get());
 
         setTransferStatus(TRANSFER_PENDING);
         m_sentTeleportPosition = vec;
@@ -1441,26 +1444,27 @@ void Player::sendTeleportAckPacket(LocationVector position)
 
 void Player::onWorldPortAck()
 {
-    MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo(GetMapId());
-    if (mapInfo)
+    DBC::Structures::MapEntry const* mEntry = sMapStore.LookupEntry(GetMapId());
+    //only resurrect if player is porting to a instance portal
+    if (mEntry->isDungeon() && isDead())
+        resurrect();
+
+    if (mEntry->isDungeon())
     {
-        if (isDead() && !mapInfo->isNonInstanceMap())
-            resurrect();
-
-        if (mapInfo->hasFlag(WMI_INSTANCE_WELCOME) && GetMapMgr())
+        // check if this instance has a reset time and send it to player if so
+        InstanceDifficulty::Difficulties diff = getDifficulty(mEntry->isRaid());
+        if (DBC::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mEntry->id, diff))
         {
-            std::string welcome_msg;
-            welcome_msg = std::string(getSession()->LocalizedWorldSrv(ServerString::SS_INSTANCE_WELCOME)) + " ";
-            welcome_msg += std::string(getSession()->LocalizedMapName(mapInfo->mapid));
-            welcome_msg += ". ";
-
-            if (!mapInfo->isDungeon() && !(mapInfo->isMultimodeDungeon() && m_dungeonDifficulty >= DUNGEON_HEROIC) && m_mapMgr->pInstance)
+            if (mapDiff->resetTime)
             {
-                welcome_msg += std::string(getSession()->LocalizedWorldSrv(ServerString::SS_INSTANCE_RESET_INF)) + " ";
-                welcome_msg += Util::GetDateTimeStringFromTimeStamp((uint32)m_mapMgr->pInstance->m_expiration);
-            }
+                if (time_t timeReset = sInstanceMgr.getResetTimeFor(static_cast<uint16_t>(mEntry->id), diff))
+                {
+                    const auto now = Util::getTimeNow();
 
-            sChatHandler.SystemMessage(m_session, welcome_msg.c_str());
+                    uint32_t timeleft = static_cast<uint32_t>(timeReset - now);
+                    sendInstanceResetWarning(mEntry->id, diff, timeleft, true);
+                }
+            }
         }
     }
 
@@ -1542,7 +1546,7 @@ void Player::setPhase(uint8_t command, uint32_t newPhase)
         if (pet)
             pet->setPhase(command, newPhase);
 
-    if (Unit* charm = m_mapMgr->GetUnit(getCharmGuid()))
+    if (Unit* charm = m_WorldMap->getUnit(getCharmGuid()))
         charm->setPhase(command, newPhase);
 }
 
@@ -1559,12 +1563,12 @@ void Player::zoneUpdate(uint32_t zoneId)
     {
         m_playerInfo->lastZone = zoneId;
         sHookInterface.OnZone(this, zoneId, oldzone);
-        CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnZoneChange)(this, zoneId, oldzone);
+        CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnZoneChange)(this, zoneId, oldzone);
 
-        auto at = GetMapMgr()->GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
+        auto at = GetArea();
         if (at && (at->team == AREAC_SANCTUARY || at->flags & AREA_SANCTUARY))
         {
-            Unit* pUnit = (getTargetGuid() == 0) ? nullptr : (m_mapMgr ? m_mapMgr->GetUnit(getTargetGuid()) : nullptr);
+            Unit* pUnit = (getTargetGuid() == 0) ? nullptr : (m_WorldMap ? m_WorldMap->getUnit(getTargetGuid()) : nullptr);
             if (pUnit && m_duelPlayer != pUnit)
             {
                 EventAttackStop();
@@ -1600,7 +1604,7 @@ void Player::zoneUpdate(uint32_t zoneId)
 
 void Player::forceZoneUpdate()
 {
-    if (!m_mapMgr)
+    if (!m_WorldMap)
         return;
 
     if (auto areaTableEntry = this->GetArea())
@@ -1655,10 +1659,10 @@ void Player::eventExploration()
     if (!IsInWorld())
         return;
 
-    if (m_position.x > _maxX || m_position.x < _minX || m_position.y > _maxY || m_position.y < _minY)
+    if (m_position.x > Map::Terrain::_maxX || m_position.x < Map::Terrain::_minX || m_position.y > Map::Terrain::_maxY || m_position.y < Map::Terrain::_minY)
         return;
 
-    if (GetMapMgr()->GetCellByCoords(GetPositionX(), GetPositionY()) == nullptr)
+    if (getWorldMap()->getCellByCoords(GetPositionX(), GetPositionY()) == nullptr)
         return;
 
     if (auto areaTableEntry = this->GetArea())
@@ -1770,78 +1774,6 @@ bool Player::exitInstance()
     return false;
 }
 
-uint32_t Player::getPersistentInstanceId(uint32_t mapId, uint8_t difficulty)
-{
-    if (mapId >= MAX_NUM_MAPS || difficulty >= MAX_DIFFICULTY || m_playerInfo == NULL)
-        return 0;
-
-    std::lock_guard<std::mutex> lock(m_playerInfo->savedInstanceIdsLock);
-    PlayerInstanceMap::iterator itr = m_playerInfo->savedInstanceIds[difficulty].find(mapId);
-    if (itr == m_playerInfo->savedInstanceIds[difficulty].end())
-        return 0;
-
-    return (*itr).second;
-}
-
-void Player::setPersistentInstanceId(Instance* instance)
-{
-    if (instance == nullptr)
-        return;
-
-    if (hasPlayerFlags(PLAYER_FLAG_GM))
-        return;
-
-    if (!instance->isPersistent())
-        return;
-
-    if (m_playerInfo)
-    {
-        if (m_playerInfo->m_Group && instance->m_creatorGroup == 0)
-            instance->m_creatorGroup = m_playerInfo->m_Group->GetID();
-
-        if (m_playerInfo->m_Group && (m_playerInfo->m_Group->m_instanceIds[instance->m_mapId][instance->m_difficulty] == 0 ||
-            !sInstanceMgr.InstanceExists(instance->m_mapId, m_playerInfo->m_Group->m_instanceIds[instance->m_mapId][instance->m_difficulty])))
-        {
-            m_playerInfo->m_Group->m_instanceIds[instance->m_mapId][instance->m_difficulty] = instance->m_instanceId;
-            m_playerInfo->m_Group->SaveToDB();
-        }
-    }
-
-    if (!instance->m_persistent)
-        setPersistentInstanceId(instance->m_mapId, instance->m_difficulty, 0);
-    else
-        setPersistentInstanceId(instance->m_mapId, instance->m_difficulty, instance->m_instanceId);
-
-    sLogger.debug("Added player %u to saved instance %u on map %u.", (uint32_t)getGuid(), instance->m_instanceId, instance->m_mapId);
-}
-
-void Player::setPersistentInstanceId(uint32_t mapId, uint8_t difficulty, uint32_t instanceId)
-{
-    if (mapId >= MAX_NUM_MAPS || difficulty >= MAX_DIFFICULTY || m_playerInfo == nullptr)
-        return;
-
-    if (m_playerInfo)
-    {
-        std::lock_guard<std::mutex> lock(m_playerInfo->savedInstanceIdsLock);
-        PlayerInstanceMap::iterator itr = m_playerInfo->savedInstanceIds[difficulty].find(mapId);
-        if (itr == m_playerInfo->savedInstanceIds[difficulty].end())
-        {
-            if (instanceId != 0)
-                m_playerInfo->savedInstanceIds[difficulty].insert(PlayerInstanceMap::value_type(mapId, instanceId));
-        }
-        else
-        {
-            if (instanceId == 0)
-                m_playerInfo->savedInstanceIds[difficulty].erase(itr);
-            else
-                (*itr).second = instanceId;
-        }
-
-        CharacterDatabase.Execute("DELETE FROM instanceids WHERE playerguid = %u AND mapid = %u AND mode = %u;", m_playerInfo->guid, mapId, difficulty);
-        CharacterDatabase.Execute("INSERT INTO instanceids (playerguid, mapid, mode, instanceid) VALUES (%u, %u, %u, %u)", m_playerInfo->guid, mapId, difficulty, instanceId);
-    }
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Commands
 void Player::disableSummoning(bool disable) { m_disableSummoning = disable; }
@@ -1866,7 +1798,7 @@ std::string Player::getBanReason() const { return m_banreason; }
 GameObject* Player::getSelectedGo() const
 {
     if (m_GMSelectedGO)
-        return GetMapMgr()->GetGameObject(static_cast<uint32_t>(m_GMSelectedGO));
+        return getWorldMap()->getGameObject(static_cast<uint32_t>(m_GMSelectedGO));
 
     return nullptr;
 }
@@ -2070,7 +2002,7 @@ Player* Player::getPlayerOwner()
 {
     if (getCharmedByGuid() != 0)
     {
-        const auto charmerUnit = GetMapMgrUnit(getCharmedByGuid());
+        const auto charmerUnit = getWorldMapUnit(getCharmedByGuid());
         if (charmerUnit != nullptr && charmerUnit->isPlayer())
             return dynamic_cast<Player*>(charmerUnit);
     }
@@ -2522,6 +2454,8 @@ void Player::initVisibleUpdateBits()
 
 void Player::copyAndSendDelayedPacket(WorldPacket* data) { m_updateMgr.queueDelayedPacket(new WorldPacket(*data)); }
 
+void Player::setEnteringToWorld() { m_enteringWorld = true; }
+
 UpdateManager& Player::getUpdateMgr() { return m_updateMgr; }
 
 void Player::setCreateBits(UpdateMask* updateMask, Player* target) const
@@ -2556,7 +2490,7 @@ void Player::setUpdateBits(UpdateMask* updateMask, Player* target) const
 //////////////////////////////////////////////////////////////////////////////////////////
 // Visiblility
 void Player::addVisibleObject(uint64_t guid) { m_visibleObjects.insert(guid); }
-void Player::removeVisibleObject(uint64_t guid) { m_visibleObjects.erase(guid); }
+void Player::removeVisibleObject(uint64_t guid) { if (isVisibleObject(guid)) m_visibleObjects.erase(guid); }
 bool Player::isVisibleObject(uint64_t guid) { return m_visibleObjects.contains(guid); }
 
 void Player::removeIfVisiblePushOutOfRange(uint64_t guid)
@@ -2980,7 +2914,7 @@ bool Player::canUseFlyingMountHere()
     auto areaEntry = GetArea();
     if (areaEntry == nullptr)
         // If area is null, try finding any area from the zone with zone id
-        areaEntry = sAreaStore.LookupEntry(GetZoneId());
+        areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(GetZoneId());
     if (areaEntry == nullptr)
         return false;
 
@@ -3946,7 +3880,7 @@ void Player::updateComboPoints()
 
     if (getComboPointTarget() != 0)
     {
-        const auto* const target = GetMapMgrUnit(getComboPointTarget());
+        const auto* const target = getWorldMapUnit(getComboPointTarget());
         if (target == nullptr || target->isDead() || getTargetGuid() != getComboPointTarget())
         {
             buffer[0] = buffer[1] = 0;
@@ -5632,7 +5566,7 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t spellId)
                 if (spell->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
                     const uint64_t guid = getChannelObjectGuid();
-                    DynamicObject* dynamicObject = GetMapMgr()->GetDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
+                    DynamicObject* dynamicObject = getWorldMap()->getDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
                     if (!dynamicObject)
                         continue;
 
@@ -5664,7 +5598,7 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t spellId)
     smsg_AttackStop(unitAttacker);
     EventAttackStop();
 
-    CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnPlayerDeath)(this, unitAttacker);
+    CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnPlayerDeath)(this, unitAttacker);
 
     uint32_t selfResSpellId = 0;
     if (!m_bg || m_bg && !isArena(m_bg->GetType()))
@@ -5716,8 +5650,8 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t spellId)
 
     clearHealthBatch();
 
-    if (m_mapMgr->m_battleground != nullptr)
-        m_mapMgr->m_battleground->HookOnUnitDied(this);
+    if (m_WorldMap->getBaseMap()->isBattlegroundOrArena() && reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground())
+        reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground()->HookOnUnitDied(this);
 }
 
 void Player::kill()
@@ -5861,10 +5795,10 @@ void Player::spawnCorpseBody()
             if (m_lootableOnCorpse && corpse->getDynamicFlags() != 1)
                 corpse->setDynamicFlags(1);
 
-            if (m_mapMgr == nullptr)
+            if (m_WorldMap == nullptr)
                 corpse->AddToWorld();
             else
-                corpse->PushToWorld(m_mapMgr);
+                corpse->PushToWorld(m_WorldMap);
         }
 
         setCorpseData(corpse->GetPosition(), corpse->GetInstanceID());
@@ -6951,7 +6885,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
 
     if (wowGuid.isUnit())
     {
-        Creature* quest_giver = m_mapMgr->GetCreature(wowGuid.getGuidLowPart());
+        Creature* quest_giver = m_WorldMap->getCreature(wowGuid.getGuidLowPart());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -6966,7 +6900,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
     }
     else if (wowGuid.isGameObject())
     {
-        GameObject* quest_giver = m_mapMgr->GetGameObject(wowGuid.getGuidLowPart());
+        GameObject* quest_giver = m_WorldMap->getGameObject(wowGuid.getGuidLowPart());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -6989,7 +6923,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
     }
     else if (wowGuid.isPlayer())
     {
-        Player* quest_giver = m_mapMgr->GetPlayer(static_cast<uint32_t>(guid));
+        Player* quest_giver = m_WorldMap->getPlayer(static_cast<uint32_t>(guid));
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -7669,10 +7603,10 @@ PlayerSpec& Player::getActiveSpec()
 
 void Player::logIntoBattleground()
 {
-    const auto mapMgr = sInstanceMgr.GetInstance(this);
-    if (mapMgr && mapMgr->m_battleground)
+    const auto mapMgr = sMapMgr.findWorldMap(GetMapId(), GetInstanceID());
+    if (mapMgr && mapMgr->getBaseMap()->isBattlegroundOrArena())
     {
-        const auto battleground = mapMgr->m_battleground;
+        const auto battleground = reinterpret_cast<BattlegroundMap*>(mapMgr)->getBattleground();
         if (battleground->HasEnded() && battleground->HasFreeSlots(getInitialTeam(), battleground->GetType()))
         {
             if (!IS_INSTANCE(getBGEntryMapId()))
@@ -7837,7 +7771,7 @@ void Player::sendPetUnlearnConfirmPacket()
 
 void Player::sendDungeonDifficultyPacket()
 {
-    m_session->SendPacket(MsgSetDungeonDifficulty(m_raidDifficulty, 1, isInGroup()).serialise().get());
+    m_session->SendPacket(MsgSetDungeonDifficulty(m_dungeonDifficulty, 1, isInGroup()).serialise().get());
 }
 
 void Player::sendRaidDifficultyPacket()
@@ -7845,6 +7779,13 @@ void Player::sendRaidDifficultyPacket()
 #if VERSION_STRING > TBC
     m_session->SendPacket(MsgSetRaidDifficulty(m_raidDifficulty, 1, isInGroup()).serialise().get());
 #endif
+}
+
+void Player::sendResetFailedNotify(uint32_t mapid)
+{
+    WorldPacket data(SMSG_RESET_FAILED_NOTIFY, 4);
+    data << uint32_t(mapid);
+    sendPacket(&data);
 }
 
 void Player::sendInstanceDifficultyPacket(uint8_t difficulty)
@@ -8022,7 +7963,7 @@ void Player::sendInitialWorldstates()
 {
 #if VERSION_STRING < Cata
     WorldPacket data(SMSG_INIT_WORLD_STATES, 100);
-    m_mapMgr->GetWorldStatesHandler().BuildInitWorldStatesForZone(m_zoneId, m_areaId, data);
+    m_WorldMap->getWorldStatesHandler().BuildInitWorldStatesForZone(m_zoneId, m_areaId, data);
     m_session->SendPacket(&data);
 #endif
 }
@@ -8541,7 +8482,7 @@ bool Player::canTrainAt(Trainer* trainer)
 
 void Player::sendCinematicCamera(uint32_t id)
 {
-    m_mapMgr->ChangeObjectLocation(this);
+    m_WorldMap->changeObjectLocation(this);
     SetPosition(float(GetPositionX() + 0.01), float(GetPositionY() + 0.01), float(GetPositionZ() + 0.01), GetOrientation());
     m_session->SendPacket(SmsgTriggerCinematic(id).serialise().get());
 }
@@ -9040,7 +8981,7 @@ void Player::dismountAfterTaxiPath(uint32_t money, float x, float y, float z)
 
 void Player::interpolateTaxiPosition()
 {
-    if (!m_currentTaxiPath || m_mapMgr == nullptr) return;
+    if (!m_currentTaxiPath || m_WorldMap == nullptr) return;
 
     float x = 0.0f;
     float y = 0.0f;
@@ -9053,7 +8994,7 @@ void Player::interpolateTaxiPosition()
     /*else
         m_currentTaxiPath->SetPosForTime(x, y, z, m_taxiRideTime - ntime, &m_lastTaxiNode);*/
 
-    if (x < _minX || x > _maxX || y < _minY || y > _maxX)
+    if (x < Map::Terrain::_minX || x > Map::Terrain::_maxX || y < Map::Terrain::_minY || y > Map::Terrain::_maxX)
         return;
 
     SetPosition(x, y, z, 0);
@@ -9094,7 +9035,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
 
     if (wowGuid.isUnit())
     {
-        Creature* pCreature = GetMapMgr()->GetCreature(wowGuid.getGuidLowPart());
+        Creature* pCreature = getWorldMap()->getCreature(wowGuid.getGuidLowPart());
         if (!pCreature)return;
         pLoot = &pCreature->loot;
         m_currentLoot = pCreature->getGuid();
@@ -9102,7 +9043,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
     }
     else if (wowGuid.isGameObject())
     {
-        GameObject* pGO = GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
+        GameObject* pGO = getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
         if (!pGO)
             return;
 
@@ -9116,7 +9057,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
     }
     else if (wowGuid.isPlayer())
     {
-        Player* p = GetMapMgr()->GetPlayer((uint32_t)guid);
+        Player* p = getWorldMap()->getPlayer((uint32_t)guid);
         if (!p)
             return;
 
@@ -9161,7 +9102,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
         switch (loot_method)
         {
         case PARTY_LOOT_GROUP:
-            getGroup()->sendGroupLoot(pLoot, GetMapMgr()->_GetObject(m_currentLoot), this, mapId);
+            getGroup()->sendGroupLoot(pLoot, getWorldMap()->getObject(m_currentLoot), this, mapId);
             break;
         case PARTY_LOOT_NEED_BEFORE_GREED:
         case PARTY_LOOT_MASTER_LOOTER:
@@ -9683,8 +9624,8 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
     const int32_t exaltedReputation = 42000;   //   0/1000  Exalted
     const int32_t maxReputation = 42999;       // 999/1000  Exalted
 
-    if ((GetMapMgr()->GetMapInfo()->minlevel == 80 || 
-        (GetMapMgr()->iInstanceMode == InstanceDifficulty::DUNGEON_HEROIC && GetMapMgr()->GetMapInfo()->minlevel_heroic == 80)) && 
+    if ((getWorldMap()->getBaseMap()->getMapInfo()->minlevel == 80 ||
+        (getWorldMap()->getDifficulty() == InstanceDifficulty::DUNGEON_HEROIC && getWorldMap()->getBaseMap()->getMapInfo()->minlevel_heroic == 80)) &&
         m_championingFactionId != 0)
         faction = m_championingFactionId;
 
@@ -10108,7 +10049,7 @@ void Player::requestDuel(Player* target)
     const float z = (GetPositionZ() + target->GetPositionZ() * distance) / (1 + distance);
 
     // create flag
-    if (GameObject* goFlag = GetMapMgr()->CreateGameObject(21680))
+    if (GameObject* goFlag = getWorldMap()->createGameObject(21680))
     {
         goFlag->CreateFromProto(21680, GetMapId(), x, y, z, GetOrientation());
 
@@ -10119,7 +10060,7 @@ void Player::requestDuel(Player* target)
         setDuelArbiter(goFlag->getGuid());
         target->setDuelArbiter(goFlag->getGuid());
 
-        goFlag->PushToWorld(m_mapMgr);
+        goFlag->PushToWorld(m_WorldMap);
 
         target->getSession()->SendPacket(SmsgDuelRequested(goFlag->getGuid(), getGuid()).serialise().get());
     }
@@ -10133,7 +10074,7 @@ void Player::testDuelBoundary()
     WoWGuid wowGuid;
     wowGuid.Init(getDuelArbiter());
 
-    if (GameObject* goFlag = GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()))
+    if (GameObject* goFlag = getWorldMap()->getGameObject(wowGuid.getGuidLowPart()))
     {
         if (CalcDistance(goFlag) > 75.0f)
         {
@@ -10175,7 +10116,7 @@ void Player::endDuel(uint8_t condition)
     {
         if (wowGuid.getGuidLowPart())
         {
-            GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()) : nullptr;
+            GameObject* arbiter = m_WorldMap ? getWorldMap()->getGameObject(wowGuid.getGuidLowPart()) : nullptr;
             if (arbiter)
             {
                 arbiter->RemoveFromWorld(true);
@@ -10236,7 +10177,7 @@ void Player::endDuel(uint8_t condition)
     else
         sHookInterface.OnDuelFinished(this, m_duelPlayer);
 
-    GameObject* goFlag = m_mapMgr ? GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart()) : nullptr;
+    GameObject* goFlag = m_WorldMap ? getWorldMap()->getGameObject(wowGuid.getGuidLowPart()) : nullptr;
     if (goFlag)
     {
         goFlag->RemoveFromWorld(true);
@@ -10303,7 +10244,7 @@ void Player::cancelDuel()
     WoWGuid wowGuid;
     wowGuid.Init(getDuelArbiter());
 
-    const auto goFlag = GetMapMgr()->GetGameObject(wowGuid.getGuidLowPart());
+    const auto goFlag = getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
     if (goFlag)
         goFlag->RemoveFromWorld(true);
 
@@ -10694,3 +10635,406 @@ void Player::eventDismissPet()
 
 Object* Player::getSummonedObject() const { return m_summonedObject; }
 void Player::setSummonedObject(Object* summonedObject) { m_summonedObject = summonedObject; }
+
+void Player::loadBoundInstances()
+{
+    for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
+        m_boundInstances[i].clear();
+
+    Group* group = getGroup();
+
+    //                                             0          1    2           3            4          5
+    auto result = CharacterDatabase.Query("SELECT id, permanent, map, difficulty, extendState, resettime FROM character_instance LEFT JOIN instance ON instance = id WHERE guid =  %u", getGuidLow());
+    if (result)
+    {
+        do
+        {
+            Field* fields = result->Fetch();
+
+            bool perm = fields[1].GetBool();
+            uint32_t mapId = fields[2].GetUInt16();
+            uint32_t instanceId = fields[0].GetUInt32();
+            uint8_t difficulty = fields[3].GetUInt8();
+            BindExtensionState extendState = BindExtensionState(fields[4].GetUInt8());
+
+            time_t resetTime = time_t(fields[5].GetUInt64());
+            bool deleteInstance = false;
+
+            DBC::Structures::MapEntry const* mapEntry = sMapStore.LookupEntry(mapId);
+#if VERSION_STRING > WotLK
+            std::string mapname = mapEntry ? mapEntry->map_name : "Unknown";
+#else
+            std::string mapname = mapEntry ? mapEntry->map_name[sWorld.getDbcLocaleLanguageId()] : "Unknown";
+#endif
+
+            if (!mapEntry || !mapEntry->isDungeon())
+            {
+                sLogger.failure("Player::loadBoundInstances: Player '%s' (%s) has bind to not existed or not dungeon map %d (%s)",
+                    getName().c_str(), getGuid(), mapId, mapname.c_str());
+                deleteInstance = true;
+            }
+            else if (difficulty >= InstanceDifficulty::MAX_DIFFICULTY)
+            {
+                sLogger.failure("entities.player", "Player::loadBoundInstances: player '%s' (%s) has bind to not existed difficulty %d instance for map %u (%s)",
+                    getName().c_str(), getGuid(), difficulty, mapId, mapname.c_str());
+                deleteInstance = true;
+            }
+            else
+            {
+                DBC::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(difficulty));
+                if (!mapDiff)
+                {
+                    sLogger.failure("entities.player", "Player::loadBoundInstances: player '%s' (%s) has bind to not existed difficulty %d instance for map %u (%s)",
+                        getName().c_str(), getGuid(), difficulty, mapId, mapname.c_str());
+                    deleteInstance = true;
+                }
+                else if (!perm && group)
+                {
+                    sLogger.failure("entities.player", "Player::loadBoundInstances: player '%s' (%s) is in group %s but has a non-permanent character bind to map %d (%s), %d, %d",
+                        getName().c_str(), getGuid(), group->GetGUID(), mapId, mapname.c_str(), instanceId, difficulty);
+                    deleteInstance = true;
+                }
+            }
+
+            if (deleteInstance)
+            {
+                CharacterDatabase.Execute("DELETE FROM character_instance WHERE guid = %u AND instance = %u", getGuidLow(), instanceId);
+                continue;
+            }
+
+            // since non permanent binds are always solo bind, they can always be reset
+            if (InstanceSaved* save = sInstanceMgr.addInstanceSave(mapId, instanceId, InstanceDifficulty::Difficulties(difficulty), resetTime, !perm, true))
+                bindToInstance(save, perm, extendState, true);
+        } while (result->NextRow());
+    }
+}
+
+InstancePlayerBind* Player::getBoundInstance(uint32_t mapid, InstanceDifficulty::Difficulties difficulty, bool withExpired)
+{
+#if VERSION_STRING > TBC
+    // some instances only have one difficulty
+    auto const* mapDiff = getDownscaledMapDifficultyData(mapid, difficulty);
+    if (!mapDiff)
+        return nullptr;
+#endif
+
+    BoundInstancesMap::iterator itr = m_boundInstances[difficulty].find(mapid);
+    if (itr != m_boundInstances[difficulty].end())
+        if (itr->second.extendState || withExpired)
+            return &itr->second;
+    return nullptr;
+}
+
+InstanceSaved* Player::getInstanceSave(uint32_t mapid, bool raid)
+{
+    InstancePlayerBind* pBind = getBoundInstance(mapid, getDifficulty(raid));
+    InstanceSaved* pSave = pBind ? pBind->save : nullptr;
+    if (!pBind || !pBind->perm)
+        if (Group* group = getGroup())
+            if (InstanceGroupBind* groupBind = group->getBoundInstance(getDifficulty(raid), mapid))
+                pSave = groupBind->save;
+
+    return pSave;
+}
+
+void Player::unbindInstance(uint32_t mapid, InstanceDifficulty::Difficulties difficulty, bool unload)
+{
+    BoundInstancesMap::iterator itr = m_boundInstances[difficulty].find(mapid);
+    unbindInstance(itr, difficulty, unload);
+}
+
+void Player::unbindInstance(BoundInstancesMap::iterator& itr, InstanceDifficulty::Difficulties difficulty, bool unload)
+{
+    if (itr != m_boundInstances[difficulty].end())
+    {
+        if (!unload)
+        {
+            CharacterDatabase.Execute("DELETE FROM character_instance WHERE guid = %u AND instance = %u", getGuidLow(), itr->second.save->getInstanceId());
+        }
+
+#if VERSION_STRING > TBC
+        if (itr->second.perm)
+            getSession()->sendCalendarRaidLockout(itr->second.save, false);
+#endif
+        itr->second.save->removePlayer(this);               // save can become invalid
+        m_boundInstances[difficulty].erase(itr++);
+    }
+}
+
+InstancePlayerBind* Player::bindToInstance(InstanceSaved* save, bool permanent, BindExtensionState extendState, bool load)
+{
+    if (save)
+    {
+        InstancePlayerBind& bind = m_boundInstances[save->getDifficulty()][save->getMapId()];
+        if (extendState == EXTEND_STATE_KEEP) // special flag, keep the player's current extend state when updating for new boss down
+        {
+            if (save == bind.save)
+                extendState = bind.extendState;
+            else
+                extendState = EXTEND_STATE_NORMAL;
+        }
+        if (!load)
+        {
+            if (bind.save)
+            {
+                // update the save when the group kills a boss
+                if (permanent != bind.perm || save != bind.save || extendState != bind.extendState)
+                {
+                    CharacterDatabase.Execute("UPDATE character_instance SET instance = %u, permanent = %u, extendState = %u WHERE guid = %u AND instance = %u", save->getInstanceId(), permanent, extendState, getGuidLow(), bind.save->getInstanceId());
+                }
+            }
+            else
+            {
+                CharacterDatabase.Execute("INSERT INTO character_instance (guid, instance, permanent, extendState) VALUES (%u, %u, %u, %u)", getGuidLow(), save->getInstanceId(), permanent, extendState);
+            }
+        }
+
+        if (bind.save != save)
+        {
+            if (bind.save)
+                bind.save->removePlayer(this);
+            save->addPlayer(this);
+        }
+
+        if (permanent)
+            save->setCanReset(false);
+
+        bind.save = save;
+        bind.perm = permanent;
+        bind.extendState = extendState;
+        return &bind;
+    }
+
+    return nullptr;
+}
+
+void Player::bindToInstance()
+{
+    InstanceSaved* mapSave = sInstanceMgr.getInstanceSave(_pendingBindId);
+    if (!mapSave)
+        return;
+
+    WorldPacket data(SMSG_INSTANCE_SAVE_CREATED, 4);
+    data << uint32_t(0);
+    sendPacket(&data);
+    if (!isGMFlagSet())
+    {
+        bindToInstance(mapSave, true, EXTEND_STATE_KEEP);
+#if VERSION_STRING > TBC
+        getSession()->sendCalendarRaidLockout(mapSave, true);
+#endif
+    }
+}
+
+void Player::setPendingBind(uint32_t instanceId, uint32_t bindTimer)
+{
+    _pendingBindId = instanceId;
+    _pendingBindTimer = bindTimer;
+}
+
+void Player::sendRaidInfo()
+{
+    uint32_t counter = 0;
+
+    WorldPacket data(SMSG_RAID_INSTANCE_INFO, 4);
+
+    size_t p_counter = data.wpos();
+    data << uint32_t(counter);
+
+    const auto now = Util::getTimeNow();
+
+    for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
+    {
+        for (BoundInstancesMap::iterator itr = m_boundInstances[i].begin(); itr != m_boundInstances[i].end(); ++itr)
+        {
+            InstancePlayerBind const& bind = itr->second;
+            if (bind.perm)
+            {
+                InstanceSaved* save = bind.save;
+                data << uint32_t(save->getMapId());                          // map id
+                data << uint32_t(save->getDifficulty());                     // difficulty
+                data << uint64_t(save->getInstanceId());                     // instance id
+                data << uint8_t(bind.extendState != EXTEND_STATE_EXPIRED);   // expired = 0
+                data << uint8_t(bind.extendState == EXTEND_STATE_EXTENDED);  // extended = 1
+                time_t nextReset = save->getResetTime();
+                if (bind.extendState == EXTEND_STATE_EXTENDED)
+                    nextReset = sInstanceMgr.getSubsequentResetTime(save->getMapId(), save->getDifficulty(), save->getResetTime());
+                data << uint32_t(nextReset - now);                // reset time
+                ++counter;
+            }
+        }
+    }
+    data.put<uint32_t>(p_counter, counter);
+    sendPacket(&data);
+}
+
+/*
+- called on every successful teleportation to a map
+*/
+void Player::sendSavedInstances()
+{
+    bool hasBeenSaved = false;
+    WorldPacket data;
+
+    for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
+    {
+        for (BoundInstancesMap::iterator itr = m_boundInstances[i].begin(); itr != m_boundInstances[i].end(); ++itr)
+        {
+            if (itr->second.perm)                               // only permanent binds are sent
+            {
+                hasBeenSaved = true;
+                break;
+            }
+        }
+    }
+
+    //Send opcode 811. true or false means, whether you have current raid/heroic instances
+    data.Initialize(SMSG_UPDATE_INSTANCE_OWNERSHIP);
+    data << uint32_t(hasBeenSaved);
+    sendPacket(&data);
+
+    if (!hasBeenSaved)
+        return;
+
+    for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
+    {
+        for (BoundInstancesMap::iterator itr = m_boundInstances[i].begin(); itr != m_boundInstances[i].end(); ++itr)
+        {
+            if (itr->second.perm)
+            {
+                data.Initialize(SMSG_UPDATE_LAST_INSTANCE);
+                data << uint32_t(itr->second.save->getMapId());
+                sendPacket(&data);
+            }
+        }
+    }
+}
+
+void Player::sendInstanceResetWarning(uint32_t mapid, InstanceDifficulty::Difficulties difficulty, uint32_t time, bool welcome)
+{
+    // type of warning, based on the time remaining until reset
+    uint32_t type;
+    if (welcome)
+        type = RAID_INSTANCE_WELCOME;
+    else if (time > 21600)
+        type = RAID_INSTANCE_WELCOME;
+    else if (time > 3600)
+        type = RAID_INSTANCE_WARNING_HOURS;
+    else if (time > 300)
+        type = RAID_INSTANCE_WARNING_MIN;
+    else
+        type = RAID_INSTANCE_WARNING_MIN_SOON;
+
+    WorldPacket data(SMSG_RAID_INSTANCE_MESSAGE, 4 + 4 + 4 + 4);
+    data << uint32_t(type);
+    data << uint32_t(mapid);
+    data << uint32_t(difficulty);   // difficulty
+    data << uint32_t(time);
+    if (type == RAID_INSTANCE_WELCOME)
+    {
+        data << uint8_t(0); // is locked
+        data << uint8_t(0); // is extended, ignored if prev field is 0
+    }
+    sendPacket(&data);
+}
+
+void Player::resetInstances(uint8_t method, bool isRaid)
+{
+    // method can be INSTANCE_RESET_ALL, INSTANCE_RESET_CHANGE_DIFFICULTY, INSTANCE_RESET_GROUP_JOIN
+
+    // we assume that when the difficulty changes, all instances that can be reset will be
+    InstanceDifficulty::Difficulties diff = getDifficulty(isRaid);
+
+    for (BoundInstancesMap::iterator itr = m_boundInstances[diff].begin(); itr != m_boundInstances[diff].end();)
+    {
+        InstanceSaved* p = itr->second.save;
+        DBC::Structures::MapEntry const* entry = sMapStore.LookupEntry(itr->first);
+        if (!entry || entry->isRaid() != isRaid || !p->canReset())
+        {
+            ++itr;
+            continue;
+        }
+
+        if (method == INSTANCE_RESET_ALL)
+        {
+            // the "reset all instances" method can only reset normal maps
+            if (entry->map_type == MAP_RAID || diff == InstanceDifficulty::Difficulties::DUNGEON_HEROIC)
+            {
+                ++itr;
+                continue;
+            }
+        }
+
+        // if the map is loaded, reset it
+        WorldMap* map = sMapMgr.findWorldMap(p->getMapId(), p->getInstanceId());
+        if (map && map->getBaseMap()->isDungeon())
+            if (!reinterpret_cast<InstanceMap*>(map)->reset(method))
+            {
+                ++itr;
+                continue;
+            }
+
+        // since this is a solo instance there should not be any players inside
+        if (method == INSTANCE_RESET_ALL || method == INSTANCE_RESET_CHANGE_DIFFICULTY)
+            sendPacket(SmsgInstanceReset(p->getMapId()).serialise().get());
+
+        p->deleteFromDB();
+        m_boundInstances[diff].erase(itr++);
+
+        // the following should remove the instance save from the manager and delete it as well
+        p->removePlayer(this);
+    }
+}
+
+void Player::sendResetInstanceFailed(uint32_t reason, uint32_t MapId)
+{
+    // reasons for instance reset failure:
+    // 0: There are players inside the instance.
+    // 1: There are players offline in your party.
+    // 2: There are players in your party attempting to zone into an instance.
+    WorldPacket data(SMSG_INSTANCE_RESET_FAILED, 4);
+    data << uint32_t(reason);
+    data << uint32_t(MapId);
+    sendPacket(&data);
+}
+
+void Player::loadInstanceTimeRestrictions()
+{
+    auto result = CharacterDatabase.Query("SELECT instanceId, releaseTime FROM account_instance_times WHERE accountId = %u", getSession()->GetAccountId());
+    if (!result)
+        return;
+
+    do
+    {
+        Field* fields = result->Fetch();
+        _instanceResetTimes.insert(InstanceTimeMap::value_type(fields[0].GetUInt32(), fields[1].GetUInt64()));
+    } while (result->NextRow());
+}
+
+bool Player::checkInstanceCount(uint32_t instanceId) const
+{
+    // Max Instances Per Hour is per Default 5 add these to Configs
+    if (_instanceResetTimes.size() < 5)
+        return true;
+
+    return _instanceResetTimes.find(instanceId) != _instanceResetTimes.end();
+}
+
+void Player::addInstanceEnterTime(uint32_t instanceId, time_t enterTime)
+{
+    if (_instanceResetTimes.find(instanceId) == _instanceResetTimes.end())
+        _instanceResetTimes.insert(InstanceTimeMap::value_type(instanceId, enterTime + HOUR));
+}
+
+void Player::saveInstanceTimeRestrictions()
+{
+    if (_instanceResetTimes.empty())
+        return;
+
+    CharacterDatabase.Execute("DELETE FROM account_instance_times WHERE accountId = %u", getSession()->GetAccountId());
+
+    for (InstanceTimeMap::const_iterator itr = _instanceResetTimes.begin(); itr != _instanceResetTimes.end(); ++itr)
+    {
+        CharacterDatabase.Execute("INSERT INTO account_instance_times (accountId, instanceId, releaseTime) VALUES (%u, %u, %u)", getSession()->GetAccountId(), itr->first, itr->second);
+    }
+}

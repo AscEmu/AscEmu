@@ -12,6 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <set>
 #include <map>
+#include <mutex>
+#include <shared_mutex>
 
 #include "WoWGuid.h"
 #include <LocationVector.h>
@@ -42,7 +44,9 @@ class ByteBuffer;
 class WorldSession;
 class Player;
 class MapCell;
-class MapMgr;
+class WorldMap;
+class InstanceMap;
+class BattlegroundMap;
 class ObjectContainer;
 class DynamicObject;
 class Creature;
@@ -54,6 +58,7 @@ class UpdateMask;
 class EventableObject;
 
 #define MAX_INTERACTION_RANGE 5.0f
+float const DEFAULT_COLLISION_HEIGHT = 2.03128f; // Most common value in dbc
 
 enum CurrentSpellType : uint8_t
 {
@@ -108,20 +113,20 @@ public:
     // updated by EventableObject
     void Update(unsigned long /*time_passed*/) {}
 
-    // adds/queues object to world and links mapmgr to it if possible
+    // adds/queues object to world and links WorldMap to it if possible
     virtual void AddToWorld();
 
-    // adds/queues objext to world and links mapmgr to it
-    virtual void AddToWorld(MapMgr* pMapMgr);
+    // adds/queues objext to world and links WorldMap to it
+    virtual void AddToWorld(WorldMap* pMapMgr);
 
-    // Unlike addtoworld it pushes it directly ignoring add pool this can only be called from the thread of mapmgr!
-    void PushToWorld(MapMgr*);
+    // Unlike addtoworld it pushes it directly ignoring add pool this can only be called from the thread of WorldMap!
+    void PushToWorld(WorldMap*);
 
     // removes object from world and queue
     virtual void RemoveFromWorld(bool free_guid);
 
     // True if object exists in world, else false
-    bool IsInWorld() const { return m_mapMgr != NULL; }
+    bool IsInWorld() const { return m_WorldMap != NULL; }
 
     // is called BEFORE pushing the Object in the game world
     virtual void OnPrePushToWorld() {}
@@ -217,6 +222,7 @@ public:
     virtual bool isTotem() const { return false; }
     virtual bool isSummon() const { return false; }
     virtual bool isVehicle() const { return false; }
+    virtual bool isTransporter() const { return false; }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Position functions
@@ -225,7 +231,6 @@ public:
 
     float getDistanceSq(LocationVector target) const;
     float getDistanceSq(float x, float y, float z) const;
-    Player* asPlayer();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spell functions
@@ -271,6 +276,10 @@ private:
     std::vector<Object*> mInRangeOppositeFactionSet;
     std::vector<Object*> mInRangeSameFactionSet;
 
+    mutable std::mutex m_inRangeSetMutex;
+    mutable std::mutex m_inRangeFactionSetMutex;
+    mutable std::shared_mutex m_inRangePlayerSetMutex;
+
 public:
     // general
     virtual void clearInRangeSets();
@@ -285,7 +294,7 @@ public:
     bool hasInRangeObjects();
     size_t getInRangeObjectsCount();
 
-    bool isObjectInInRangeObjectsSet(Object* pObj);
+    bool isObjectInInRangeObjectsSet(Object* pObj) const;
     void removeObjectFromInRangeObjectsSet(Object* pObj);
 
     // Players
@@ -357,7 +366,7 @@ public:
         const float & GetSpawnO() const { return m_spawnLocation.o; }
         LocationVector GetSpawnPosition() const { return m_spawnLocation; }
 
-        ::DBC::Structures::AreaTableEntry const* GetArea();
+        ::DBC::Structures::AreaTableEntry const* GetArea() const;
 
         void getPosition(float &x, float &y) const { x = GetPositionX(); y = GetPositionY(); }
         void getPosition(float &x, float &y, float &z) const { getPosition(x, y); z = GetPositionZ(); }
@@ -433,27 +442,27 @@ public:
         bool IsWithinLOSInMap(Object* obj);
         bool IsWithinLOS(LocationVector location);
 
-        // Only for MapMgr use
+        // Only for WorldMap use
         MapCell* GetMapCell() const;
-    uint32 GetMapCellX() { return m_mapCell_x; }
-    uint32 GetMapCellY() { return m_mapCell_y; }
-        // Only for MapMgr use
+        uint32 GetMapCellX() { return m_mapCell_x; }
+        uint32 GetMapCellY() { return m_mapCell_y; }
+        // Only for WorldMap use
         void SetMapCell(MapCell* cell);
-        // Only for MapMgr use
-        MapMgr* GetMapMgr() const { return m_mapMgr; }
+        // Only for WorldMap use
+        WorldMap* getWorldMap() const { return m_WorldMap; }
 
-        Object* GetMapMgrObject(const uint64 & guid);
-        Pet* GetMapMgrPet(const uint64 & guid);
-        Unit* GetMapMgrUnit(const uint64 & guid);
-        Player* GetMapMgrPlayer(const uint64 & guid);
-        Creature* GetMapMgrCreature(const uint64 & guid);
-        GameObject* GetMapMgrGameObject(const uint64 & guid);
-        DynamicObject* GetMapMgrDynamicObject(const uint64 & guid);
+        Object* getWorldMapObject(const uint64_t & guid);
+        Pet* getWorldMapPet(const uint64_t & guid);
+        Unit* getWorldMapUnit(const uint64_t & guid);
+        Player* getWorldMapPlayer(const uint64_t & guid);
+        Creature* getWorldMapCreature(const uint64_t & guid);
+        GameObject* getWorldMapGameObject(const uint64_t & guid);
+        DynamicObject* getWorldMapDynamicObject(const uint64_t & guid);
 
         void SetMapId(uint32 newMap) { m_mapId = newMap; }
         void SetZoneId(uint32 newZone);
 
-    uint32 GetMapId() const { return m_mapId; }
+        uint32 GetMapId() const { return m_mapId; }
         const uint32 & GetZoneId() const { return m_zoneId; }
 
         void SetNewGuid(uint32 Guid)
@@ -523,6 +532,8 @@ public:
         LocationVector getHitSpherePointFor(LocationVector const& dest) const;
         void updateAllowedPositionZ(float x, float y, float &z, float* groundZ = nullptr);
         float getMapWaterOrGroundLevel(float x, float y, float z, float* ground = nullptr);
+        float getFloorZ();
+        float getMapHeight(LocationVector pos, bool vmap = true, float distanceToSearch = 50.0f);
         void movePositionToFirstCollision(LocationVector &pos, float dist, float angle);
         LocationVector getFirstCollisionPosition(float dist, float angle);
 
@@ -548,6 +559,8 @@ public:
                 return 40000.0f;                        // enough for out of range
             return m_position.Distance2DSq(obj->m_position);
         }
+
+        virtual float getCollisionHeight() const { return 0.0f; }
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // void outPacket(uint16 opcode, uint16 len, const void *data)
@@ -576,6 +589,7 @@ public:
         void SendCreatureChatMessageInRange(Creature* creature, uint32_t textId, Unit* target = nullptr);
 
         virtual void sendMessageToSet(WorldPacket* data, bool self, bool myteam_only = false);
+        virtual void sendMessageToSet(WorldPacket* data, Player const* /*skipp*/);
         virtual void outPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool self);
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -608,7 +622,7 @@ public:
 
         uint32 m_phase = 1;         // This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
 
-    uint32 GetPhase() { return m_phase; }
+    uint32 GetPhase() const { return m_phase; }
         virtual void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
 
         // SpellLog packets just to keep the code cleaner and better to read
@@ -634,11 +648,11 @@ public:
 
         bool IsActive() { return Active; }
         virtual bool CanActivate();
-        virtual void Activate(MapMgr* mgr);
-        virtual void Deactivate(MapMgr* mgr);
+        virtual void Activate(WorldMap* mgr);
+        virtual void Deactivate(WorldMap* mgr);
         // Player is in pvp queue.
         bool m_inQueue = false;
-        void SetMapMgr(MapMgr* mgr) { m_mapMgr = mgr; }
+        void SetMapMgr(WorldMap* mgr) { m_WorldMap = mgr; }
 
         void Delete()
         {
@@ -683,12 +697,14 @@ public:
         //update flag
         uint16 m_updateFlag;
 
+        float m_staticFloorZ = -100000.0f;
+
         // Zone id.
         uint32 m_zoneId = 0;
         // Continent/map id.
         uint32 m_mapId = MAPID_NOT_IN_WORLD;
         // Map manager
-        MapMgr* m_mapMgr = nullptr;
+        WorldMap* m_WorldMap = nullptr;
         // Current map cell row and column
         uint32 m_mapCell_x = uint32(-1);
         uint32 m_mapCell_y = uint32(-1);

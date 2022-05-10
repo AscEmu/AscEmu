@@ -20,7 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgPetActionSound.h"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Creatures/Pet.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Movement/MovementDefines.h"
 #include "Movement/MovementManager.h"
 #include "Server/MainServerDefines.h"
@@ -40,7 +40,7 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
 
     if (srlPacket.guid.isUnit())
     {
-        const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
+        const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
         if (creature == nullptr)
             return;
 
@@ -67,14 +67,14 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
         return;
     }
 
-    const auto pet = _player->GetMapMgr()->GetPet(srlPacket.guid.getGuidLowPart());
+    const auto pet = _player->getWorldMap()->getPet(srlPacket.guid.getGuidLowPart());
     if (pet == nullptr)
         return;
 
     Unit* unitTarget = nullptr;
     if (srlPacket.action == PET_ACTION_SPELL || srlPacket.action == PET_ACTION_SPELL_1 || srlPacket.action == PET_ACTION_SPELL_2 || (srlPacket.action == PET_ACTION_ACTION && srlPacket.misc == PET_ACTION_ATTACK))
     {
-        unitTarget = _player->GetMapMgr()->GetUnit(srlPacket.targetguid);
+        unitTarget = _player->getWorldMap()->getUnit(srlPacket.targetguid);
         if (unitTarget == nullptr)
             unitTarget = pet;
     }
@@ -214,7 +214,7 @@ void WorldSession::handlePetNameQuery(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto pet = _player->GetMapMgr()->GetPet(srlPacket.guid.getGuidLowPart());
+    const auto pet = _player->getWorldMap()->getPet(srlPacket.guid.getGuidLowPart());
     if (pet == nullptr)
         return;
 
@@ -460,7 +460,7 @@ void WorldSession::handlePetCancelAura(WorldPacket& recvPacket)
     if (spellInfo != nullptr && spellInfo->getAttributes() & static_cast<uint32_t>(ATTRIBUTES_CANT_CANCEL))
         return;
 
-    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLow());
+    const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLow());
 #ifdef FT_VEHICLES
     if (creature != nullptr && (creature->getPlayerOwner() == _player  || _player->getVehicleKit() && _player->getVehicleKit()->isControler(_player)))
         creature->RemoveAura(srlPacket.spellId);
@@ -610,7 +610,7 @@ void WorldSession::handleDismissCritter(WorldPacket& recvPacket)
         return;
     }
 
-    const auto unit = _player->GetMapMgr()->GetUnit(srlPacket.guid.getRawGuid());
+    const auto unit = _player->getWorldMap()->getUnit(srlPacket.guid.getRawGuid());
     if (unit != nullptr)
         unit->Delete();
 

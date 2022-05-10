@@ -82,7 +82,6 @@ public:
     static int Activate                      (lua_State* L, GameObject* ptr);
     static int DespawnObject                 (lua_State* L, GameObject* ptr);
     static int AddLoot                       (lua_State* L, GameObject* ptr);
-    static int GetInstanceOwner              (lua_State* L, GameObject* ptr);
     static int GetDungeonDifficulty          (lua_State* L, GameObject* ptr);
     static int SetDungeonDifficulty          (lua_State* L, GameObject* ptr);
     static int HasFlag                       (lua_State* L, GameObject* ptr);

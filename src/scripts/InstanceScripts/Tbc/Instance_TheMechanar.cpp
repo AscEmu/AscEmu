@@ -10,14 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 class TheMechanarInstanceScript : public InstanceScript
 {
 public:
-    explicit TheMechanarInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new TheMechanarInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
+    explicit TheMechanarInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new TheMechanarInstanceScript(pMapMgr); }
 };
 
 class ArcaneServantAI : public CreatureAIScript

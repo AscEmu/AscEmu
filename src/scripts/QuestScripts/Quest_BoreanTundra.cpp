@@ -156,7 +156,7 @@ public:
                 Player* p = static_cast<Player*>(summoner);
                 if (p->hasQuestInQuestLog(11608))
                 {
-                    GameObject* pSinkhole = p->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), 300171);
+                    GameObject* pSinkhole = p->getWorldMap()->getInterface()->getGameObjectNearestCoords(p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), 300171);
                     if (pSinkhole != nullptr)
                     {
                         getCreature()->castSpell(getCreature(), 45502, true);
@@ -349,7 +349,7 @@ public:
         if (questLog->getMobCountByIndex(0) != 0)
             return;
 
-        Creature* Twonky = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25830, 4117.513672f, 5089.670898f, -1.506265f, 2.043593f);
+        Creature* Twonky = pPlayer->getWorldMap()->createAndSpawnCreature(25830, LocationVector(4117.513672f, 5089.670898f, -1.506265f, 2.043593f));
         if (Twonky->isAlive())
             _gameobject->setState(GO_STATE_OPEN);
         else
@@ -377,7 +377,7 @@ public:
         if (questLog->getMobCountByIndex(1) != 0)
             return;
 
-        Creature* Ed210 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25831, 4218.529785f, 4802.284668f, -12.975346f, 5.833142f);
+        Creature* Ed210 = pPlayer->getWorldMap()->createAndSpawnCreature(25831, LocationVector(4218.529785f, 4802.284668f, -12.975346f, 5.833142f));
         if (Ed210->isAlive())
             _gameobject->setState(GO_STATE_OPEN);
         else
@@ -405,7 +405,7 @@ public:
         if (questLog->getMobCountByIndex(2) != 0)
             return;
 
-        Creature* MaxBlasto = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25832, 4029.974609f, 4890.195313f, -12.775084f, 1.081481f);
+        Creature* MaxBlasto = pPlayer->getWorldMap()->createAndSpawnCreature(25832, LocationVector(4029.974609f, 4890.195313f, -12.775084f, 1.081481f));
         if (MaxBlasto->isAlive())
             _gameobject->setState(GO_STATE_OPEN);
         else
@@ -433,7 +433,7 @@ public:
         if (questLog->getMobCountByIndex(3) != 0)
             return;
 
-        Creature* TheGrinder = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25833, 3787.021484f, 4821.941895f, -12.967110f, 5.097224f);
+        Creature* TheGrinder = pPlayer->getWorldMap()->createAndSpawnCreature(25833, LocationVector(3787.021484f, 4821.941895f, -12.967110f, 5.097224f));
         if (TheGrinder->isAlive())
             _gameobject->setState(GO_STATE_OPEN);
         else
@@ -466,7 +466,7 @@ public:
             questLog->updatePlayerFields();
         }
 
-        Creature* GearmasterMechazod = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25834, 4006.289551f, 4848.437500f, 25.957747f, 2.459837f);
+        Creature* GearmasterMechazod = pPlayer->getWorldMap()->createAndSpawnCreature(25834, LocationVector(4006.289551f, 4848.437500f, 25.957747f, 2.459837f));
         GearmasterMechazod->setTargetGuid(pPlayer->getGuid());
         if (GearmasterMechazod->isAlive())
             _gameobject->setState(GO_STATE_OPEN);

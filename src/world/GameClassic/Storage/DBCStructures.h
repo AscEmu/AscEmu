@@ -50,7 +50,8 @@ namespace DBC::Structures
         char const chat_channels_format[] = "iixssssssssxxxxxxxxxx";
         char const chr_classes_format[] = "nxxixssssssssxxix"; // 1.12.1
         char const chr_races_format[] = "nxixiixxixxxxxixissssssssxxxx"; //1.12.1
-        char const creature_display_info_format[] = "nxxxxxxxxxxx";
+        char const creature_display_info_format[] = "nixifxxxxxxx";
+        char const creature_model_Data_format[] = "nisxfxxxxxxxxxxf";
         char const creature_family_format[] = "nfifiiiissssssssxx";
         char const creature_spell_data_format[] = "niiiiiiii";
         char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
@@ -233,11 +234,38 @@ namespace DBC::Structures
     struct CreatureDisplayInfoEntry
     {
         uint32_t display_id;                                        // 0
-        //uint32_t model;                                           // 1
-        //uint32_t unk0                                             // 2
-        //uint32_t InfoExtra;                                       // 3
-        //float size;                                               // 4
+        uint32_t ModelID;                                           // 1
+        //uint32_t SoundID                                          // 2
+        uint32_t ExtendedDisplayInfoID;                             // 3
+        float CreatureModelScale;                                   // 4
                                                                     // 5 - 15 unk
+    };
+
+    enum CreatureModelDataFlags
+    {
+        CREATURE_MODEL_DATA_FLAGS_CAN_MOUNT = 0x00000080
+    };
+
+    struct CreatureModelDataEntry
+    {
+        uint32_t ID;                                                // 0
+        uint32_t Flags;                                             // 1
+        char const* ModelName;                                      // 2
+        //uint32_t SizeClass;                                       // 3
+        float ModelScale;                                           // 4 Used in calculation of unit collision data
+        //int32_t BloodID;                                          // 5
+        //int32_t FootprintTextureID;                               // 6
+        //uint32_t FootprintTextureLength;                          // 7
+        //uint32_t FootprintTextureWidth;                           // 8
+        //float FootprintParticleScale;                             // 9
+        //uint32_t FoleyMaterialID;                                 // 10
+        //float FootstepShakeSize;                                  // 11
+        //uint32_t DeathThudShakeSize;                              // 12
+        //uint32_t SoundID;                                         // 13
+        //float CollisionWidth;                                     // 14
+        float CollisionHeight;                                      // 15
+
+        inline bool hasFlag(CreatureModelDataFlags flag) const { return (Flags & flag) != 0; }
     };
 
     struct CreatureFamilyEntry
@@ -523,6 +551,16 @@ namespace DBC::Structures
         {
             return id == 0 || id == 1 || id == 530 || id == 571;
         }
+    };
+
+    struct MapDifficulty
+    {
+        MapDifficulty() : resetTime(0), maxPlayers(0), hasErrorMessage(false) { }
+        MapDifficulty(uint32_t _resetTime, uint32_t _maxPlayers, bool _hasErrorMessage) : resetTime(_resetTime), maxPlayers(_maxPlayers), hasErrorMessage(_hasErrorMessage) { }
+
+        uint32_t resetTime;
+        uint32_t maxPlayers;
+        bool hasErrorMessage;
     };
 
     struct NameGenEntry

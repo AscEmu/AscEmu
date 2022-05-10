@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 class BlackrockSpireInstanceScript : public InstanceScript
 {
 public:
-    explicit BlackrockSpireInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new BlackrockSpireInstanceScript(pMapMgr); }
+    explicit BlackrockSpireInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr) {}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new BlackrockSpireInstanceScript(pMapMgr); }
 };
 
 class GythAI : public CreatureAIScript

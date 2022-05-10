@@ -236,7 +236,7 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
 
         if (caster->isPlayer() && getSpellInfo()->hasEffect(SPELL_EFFECT_SUMMON))
         {
-            const auto charm = caster->GetMapMgrUnit(caster->getCharmGuid());
+            const auto charm = caster->getWorldMapUnit(caster->getCharmGuid());
             if (charm != nullptr && charm->getCreatedBySpellId() == getSpellInfo()->getId())
                 caster->UnPossess();
         }
@@ -667,7 +667,7 @@ Object* Aura::getCaster() const
     if (getCasterGuid() == getOwner()->getGuid())
         return getOwner();
     if (getOwner()->IsInWorld())
-        return getOwner()->GetMapMgrObject(getCasterGuid());
+        return getOwner()->getWorldMapObject(getCasterGuid());
 
     return nullptr;
 }
@@ -991,7 +991,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             // If spell is channeled, periodic target should be the channel object
             if (originalCaster != nullptr && getSpellInfo()->isChanneled())
             {
-                target = originalCaster->GetMapMgrUnit(originalCaster->getChannelObjectGuid());
+                target = originalCaster->getWorldMapUnit(originalCaster->getChannelObjectGuid());
                 if (target == nullptr)
                     target = getOwner();
             }
@@ -999,9 +999,10 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             if (casterUnit != nullptr)
             {
                 Spell* triggerSpell = sSpellMgr.newSpell(casterUnit, triggerInfo, true, this);
-                for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                if (aurEff->getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
                 {
-                    triggerSpell->forced_basepoints.set(i, customDamage);
+                    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                        triggerSpell->forced_basepoints.set(i, customDamage);
                 }
 
                 SpellCastTargets spellTargets(0);

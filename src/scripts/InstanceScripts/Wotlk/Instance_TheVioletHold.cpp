@@ -35,25 +35,19 @@ friend class SinclariGossip; // Friendship forever ;-)
     int32_t S1_GuardFleeTimer = -1;       // Delay guards fleeing room for 2.5s (arbitrary)
 
 public:
-    explicit TheVioletHoldScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit TheVioletHoldScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
     {
         for (uint8_t i = 0; i < TVH_END; ++i)
             m_phaseData[i] = NotStarted;
 
-        addData(MAP_VIOLET_HOLD);
+        setBossState(MAP_VIOLET_HOLD, NotStarted);
     }
 
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new TheVioletHoldScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new TheVioletHoldScript(pMapMgr); }
 
     void UpdateEvent() override
     {
-        auto state = getData(MAP_VIOLET_HOLD);
+        auto state = getBossState(MAP_VIOLET_HOLD);
 
         if (state != m_lastState)
         {
@@ -71,8 +65,7 @@ public:
             case InProgress:
                 S2_SpawnPortals();
                 break;
-            case Finished: printf("State: %s\n", "State_Finished"); break;
-            case Performed: printf("State: %s\n", "State_Performed"); break;
+            case Performed: printf("State: %s\n", "State_Finished"); break;
             case PreProgress:
                 S1_ActivateCrystalFleeRoom();
                 break;
@@ -218,13 +211,13 @@ public:
 
     void OnPlayerEnter(Player* pPlayer) override
     {
-        TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
+        TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->getWorldMap()->getScript();
         if (!pInstance)
             return;
 
-        if (pInstance->getData(MAP_VIOLET_HOLD) == NotStarted)
+        if (pInstance->getBossState(MAP_VIOLET_HOLD) == NotStarted)
         {
-            setData(MAP_VIOLET_HOLD, PreProgress);
+            setBossState(MAP_VIOLET_HOLD, PreProgress);
         }
     }
 };
@@ -256,8 +249,8 @@ public:
         } break;
         case 5:
         {
-            TheVioletHoldScript* pInstance = (TheVioletHoldScript*)getCreature()->GetMapMgr()->GetScript();
-            pInstance->setData(608, InProgress);
+            TheVioletHoldScript* pInstance = (TheVioletHoldScript*)getCreature()->getWorldMap()->getScript();
+            pInstance->setBossState(608, InProgress);
             GameObject* pVioletHoldDoor = pInstance->getClosestGameObjectForPosition(191723, 1822.59f, 803.93f, 44.36f);
             if (pVioletHoldDoor != nullptr)
                 pVioletHoldDoor->setState(GO_STATE_CLOSED);
@@ -269,7 +262,7 @@ public:
     {
         getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
 
-        TheVioletHoldScript* pInstance = (TheVioletHoldScript*)getCreature()->GetMapMgr()->GetScript();
+        TheVioletHoldScript* pInstance = (TheVioletHoldScript*)getCreature()->getWorldMap()->getScript();
         if (!pInstance)
             return;
     }
@@ -280,12 +273,12 @@ class SinclariGossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* pPlayer) override
     {
-        TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
+        TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->getWorldMap()->getScript();
         if (!pInstance)
             return;
 
         //Page 1: Textid and first menu item
-        if (pInstance->getData(608) == PreProgress)
+        if (pInstance->getBossState(608) == PreProgress)
         {
             GossipMenu menu(pObject->getGuid(), 13853, 0);
             menu.addItem(GOSSIP_ICON_CHAT, (600), 1);
@@ -293,7 +286,7 @@ public:
         }
 
         //If VioletHold is started, Sinclari has this item for people who aould join.
-        if (pInstance->getData(608) == InProgress)
+        if (pInstance->getBossState(608) == InProgress)
         {
             GossipMenu menu(pObject->getGuid(), 13853, 0);
             menu.addItem(GOSSIP_ICON_CHAT, (602), 3);
@@ -303,7 +296,7 @@ public:
 
     void onSelectOption(Object* pObject, Player* pPlayer, uint32_t Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
-        TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
+        TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->getWorldMap()->getScript();
         if (!pInstance)
             return;
 

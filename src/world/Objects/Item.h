@@ -145,8 +145,8 @@ public:
 
     // void Update(unsigned long /*time_passed*/);      // not used
     // void AddToWorld();                               // not used
-    // void AddToWorld(MapMgr* pMapMgr);                // not used
-    // void PushToWorld(MapMgr*);                       // not used
+    // void AddToWorld(WorldMap* pMapMgr);                // not used
+    // void PushToWorld(WorldMap*);                       // not used
     // void RemoveFromWorld(bool free_guid);            // not used
     // void OnPrePushToWorld();                         // not used
     // void OnPushToWorld();                            // not used

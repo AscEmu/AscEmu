@@ -12,14 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 class KarazhanInstanceScript : public InstanceScript
 {
 public:
-    explicit KarazhanInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr){}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new KarazhanInstanceScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
+    explicit KarazhanInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr){}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new KarazhanInstanceScript(pMapMgr); }
 };
 
 // Partially by Plexor (I used a spell before, but changed to his method)
@@ -34,7 +28,7 @@ public:
         menu.addItem(GOSSIP_ICON_CHAT, 430, 3);     // How do you navigate the tower?
 
         //Killing the Shade of Aran makes a teleport to medivh's available from Berthold the Doorman.
-        Unit* soa = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-11165.2f, -1912.13f, 232.009f, 16524);
+        Unit* soa = pObject->getWorldMap()->getInterface()->getCreatureNearestCoords(-11165.2f, -1912.13f, 232.009f, 16524);
         if (!soa || !soa->isAlive())
             menu.addItem(GOSSIP_ICON_CHAT, 431, 4); // Please teleport me to the Guardian's Library.
 
@@ -505,7 +499,7 @@ public:
             case 1:
             {
                 static_cast<Creature*>(pObject)->Despawn(100, 0);
-                Creature* pop = pObject->GetMapMgr()->GetInterface()->SpawnCreature(17521, pObject->GetPositionX(), pObject->GetPositionY(), pObject->GetPositionZ(), 0, true, true, 0, 0);
+                Creature* pop = pObject->getWorldMap()->getInterface()->spawnCreature(17521, pObject->GetPosition(), true, true, 0, 0);
                 if (pop)
                     pop->getAIInterface()->onHostileAction(Plr);
                 break;
@@ -677,7 +671,7 @@ public:
         if (Tree3)
             Tree3->Despawn(0, 0);
         //if (BackDrop)
-        //    BackDrop->GetMapMgr()->GetInterface()->DeleteGameObject(BackDrop);
+        //    BackDrop->getWorldMap()->getInterface()->DeleteGameObject(BackDrop);
     }
 
     void BarnesSpeakWOZ()
@@ -1167,7 +1161,7 @@ public:
                 if (!FlameWreathTarget[i])
                     continue;
 
-                Unit* pTarget = getCreature()->GetMapMgr()->GetUnit(FlameWreathTarget[i]);
+                Unit* pTarget = getCreature()->getWorldMap()->getUnit(FlameWreathTarget[i]);
                 if (pTarget && pTarget->getDistanceSq(FWTargPosX[i], FWTargPosY[i], getCreature()->GetPositionZ()) > 3)
                 {
                     pTarget->castSpell(pTarget, 20476, true);
@@ -2214,7 +2208,7 @@ public:
     {
         for (uint8_t i = 0; i < 5; ++i)
         {
-            Unit* ETarget = getCreature()->GetMapMgr()->GetUnit(Enfeeble_Targets[i]);
+            Unit* ETarget = getCreature()->getWorldMap()->getUnit(Enfeeble_Targets[i]);
             if (ETarget && ETarget->isAlive())
                 ETarget->setHealth(Enfeeble_Health[i]);
             Enfeeble_Targets[i] = 0;

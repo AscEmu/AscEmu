@@ -21,6 +21,7 @@
 #define WORLDSTATEHANDLER_H
 
 #include "WorldPacket.h"
+#include "Storage/MySQLStructures.h"
 #include <unordered_map>
 
 struct WorldState;

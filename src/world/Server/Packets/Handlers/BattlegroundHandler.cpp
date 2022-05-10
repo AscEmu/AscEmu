@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Objects/Units/Players/Player.h"
 #include "Management/Battleground/Battleground.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 
@@ -43,7 +43,7 @@ void WorldSession::handleInspectHonorStatsOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_INSPECT_HONOR_STATS: %u (guidLow)", srlPacket.guid.getGuidLow());
 
-    const auto player = _player->GetMapMgr()->GetPlayer(srlPacket.guid.getGuidLow());
+    const auto player = _player->getWorldMap()->getPlayer(srlPacket.guid.getGuidLow());
     if (player == nullptr)
         return;
 
@@ -152,7 +152,7 @@ void WorldSession::handleBattleMasterHelloOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BATTLEMASTER_HELLO: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
-    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
+    const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr || !creature->isBattleMaster())
         return;
 
@@ -190,7 +190,7 @@ void WorldSession::handleAreaSpiritHealerQueueOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AREA_SPIRIT_HEALER_QUEUE: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
-    const auto spiritHealer = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
+    const auto spiritHealer = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (spiritHealer == nullptr)
         return;
 
@@ -210,7 +210,7 @@ void WorldSession::handleAreaSpiritHealerQueryOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AREA_SPIRIT_HEALER_QUEUE: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
-    const auto spiritHealer = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
+    const auto spiritHealer = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (spiritHealer == nullptr)
         return;
 

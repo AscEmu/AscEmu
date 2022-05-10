@@ -28,7 +28,7 @@ public:
 
     uint8_t mStatueCount;
 
-    explicit GundrakScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit GundrakScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
     {
         mSladranAltarGUID = 0;
         mSladranStatueGUID = 0;
@@ -49,13 +49,7 @@ public:
         mStatueCount = 0;
     }
 
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new GundrakScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new GundrakScript(pMapMgr); }
 
     void OnGameObjectPushToWorld(GameObject* pGameObject) override
     {
@@ -192,7 +186,7 @@ public:
                 if (pAltar)
                     pAltar->removeFlags(GO_FLAG_NOT_SELECTABLE);
 
-                if (mInstance->iInstanceMode != InstanceDifficulty::DUNGEON_HEROIC)
+                if (mInstance->getDifficulty() != InstanceDifficulty::DUNGEON_HEROIC)
                     return;
 
                 pDoors = GetGameObjectByGuid(mEckDoorsGUID);

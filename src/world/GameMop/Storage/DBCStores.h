@@ -7,8 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "DBCStructures.h"
 #include "../world/Storage/DBC/DBCGlobals.hpp"
-
+#include "Map/Maps/InstanceDefines.hpp"
 #include "WorldConf.h"
+
+typedef std::map<uint32_t, DBC::Structures::MapDifficulty> MapDifficultyMap;
 
 #if VERSION_STRING == Mop
 inline float GetRadius(DBC::Structures::SpellRadiusEntry const* radius)
@@ -24,20 +26,6 @@ inline uint32 GetCastTime(DBC::Structures::SpellCastTimesEntry const* time)
         return 0;
 
     return time->CastTime;
-}
-inline float GetMaxRange(DBC::Structures::SpellRangeEntry const* range)
-{
-    if (range == nullptr)
-        return 0;
-
-    return range->maxRange;
-}
-inline float GetMinRange(DBC::Structures::SpellRangeEntry const* range)
-{
-    if (range == nullptr)
-        return 0;
-
-    return range->minRange;
 }
 inline uint32 GetDuration(DBC::Structures::SpellDurationEntry const* dur)
 {
@@ -111,8 +99,10 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrClassesEntry> sChrClasses
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrRacesEntry> sChrRacesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrPowerTypesEntry> sChrPowerTypesEntry;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureDisplayInfoEntry>  sCreatureDisplayInfoStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureModelDataEntry> sCreatureModelDataStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MapEntry> sMapStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MapDifficultyEntry> sMapDifficultyStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::HolidaysEntry> sHolidaysStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRuneCostEntry> sSpellRuneCostStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemRandomSuffixEntry> sItemRandomSuffixStore;
@@ -159,9 +149,15 @@ DBC::Structures::CharStartOutfitEntry const* getStartOutfitByRaceClass(uint8_t r
 
 DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id);
 
+extern SERVER_DECL MapDifficultyMap sMapDifficultyMap;
+DBC::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty);
+DBC::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty);
+
 std::string generateName(uint32 type = 0);
 
 uint32 const* getTalentTabPages(uint8 playerClass);
+
+uint32_t getLiquidFlags(uint32_t liquidId);
 
 uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerIndex);
 

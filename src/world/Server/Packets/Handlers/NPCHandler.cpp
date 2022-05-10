@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgPetitionShowlist.h"
 #include "Server/Packets/CmsgPetitionShowlist.h"
 #include "Objects/Units/Creatures/Creature.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/AuctionMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Management/ObjectMgr.h"
@@ -47,7 +47,7 @@ void WorldSession::handleTabardVendorActivateOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_TABARDVENDOR_ACTIVATE: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
-    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
+    const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
         return;
 
@@ -71,7 +71,7 @@ void WorldSession::handleBankerActivateOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BANKER_ACTIVATE: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
-    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
+    const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
         return;
 
@@ -95,7 +95,7 @@ void WorldSession::handleAuctionHelloOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUCTION_HELLO: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
-    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
+    const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
         return;
 
@@ -129,7 +129,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_TRAINER_BUY_SPELL: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
-    const auto creature = _player->GetMapMgrCreature(srlPacket.guid.getGuidLowPart());
+    const auto creature = _player->getWorldMapCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
         return;
 
@@ -196,7 +196,7 @@ void WorldSession::handleCharterShowListOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_CHARTER_SHOW_LIST: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
-    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
+    const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
         return;
 
@@ -220,7 +220,7 @@ void WorldSession::handleGossipHelloOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GOSSIP_HELLO: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
-    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
+    const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature != nullptr)
     {
         // makes npc stop when for example on its waypoint path // aaron02
@@ -263,7 +263,7 @@ void WorldSession::handleGossipSelectOptionOpcode(WorldPacket& recvPacket)
         } break;
         case HighGuid::Unit:
         {
-            if (const auto creature = dynamic_cast<Creature*>(_player->GetMapMgr()->_GetObject(srlPacket.guid)))
+            if (const auto creature = dynamic_cast<Creature*>(_player->getWorldMap()->getObject(srlPacket.guid)))
             {
                 script = GossipScript::getInterface(creature);
                 object = creature;
@@ -271,7 +271,7 @@ void WorldSession::handleGossipSelectOptionOpcode(WorldPacket& recvPacket)
         } break;
         case HighGuid::GameObject:
         {
-            if (const auto gameObject = dynamic_cast<GameObject*>(_player->GetMapMgr()->_GetObject(srlPacket.guid)))
+            if (const auto gameObject = dynamic_cast<GameObject*>(_player->getWorldMap()->getObject(srlPacket.guid)))
             {
                 script = GossipScript::getInterface(gameObject);
                 object = gameObject;
@@ -298,7 +298,7 @@ void WorldSession::handleBinderActivateOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BINDER_ACTIVATE: %u (guidLowPart)", srlPacket.guid.getGuidLowPart());
 
-    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
+    const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
         return;
 
@@ -341,7 +341,7 @@ void WorldSession::handleTrainerListOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
+    const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
         return;
 
@@ -654,7 +654,7 @@ void WorldSession::handleBuyBankSlotOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BUY_BANK_SLOT: %u (guidLow)", srlPacket.guid.getGuidLow());
 
-    const auto creature = _player->GetMapMgr()->GetCreature(srlPacket.guid.getGuidLowPart());
+    const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr || !creature->isBanker())
     {
         SendPacket(SmsgBuyBankSlotResult(BankslotError::NotABanker).serialise().get());

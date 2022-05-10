@@ -5,6 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+enum EncounterData
+{
+    DATA_MAULGAR                    = 0,
+    DATA_GRUUL                      = 1
+};
+
 enum CreatureEntry
 {
     NPC_MAULGAR                     = 18831,

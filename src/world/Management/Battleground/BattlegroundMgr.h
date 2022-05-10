@@ -77,9 +77,7 @@ const uint32 RESURRECT_SPELL                    = 21074; // Spirit Healer Res
 const uint32 BG_DESERTER                        = 26013;
 
 class CBattleground;
-class MapMgr;
 class Player;
-class Map;
 class Group;
 class Corpse; // AV
 
@@ -204,8 +202,8 @@ static inline uint32 GetFieldCount(uint32 BGType)
 
 class Arena;
 
-typedef CBattleground* (*BattlegroundFactoryMethod)(MapMgr* mgr, uint32 iid, uint32 group, uint32 type);
-typedef CBattleground* (*ArenaFactoryMethod)(MapMgr* mgr, uint32 iid, uint32 group, uint32 type, uint32 players_per_side);
+typedef CBattleground* (*BattlegroundFactoryMethod)(BattlegroundMap* mgr, uint32 iid, uint32 group, uint32 type);
+typedef CBattleground* (*ArenaFactoryMethod)(BattlegroundMap* mgr, uint32 iid, uint32 group, uint32 type, uint32 players_per_side);
 
 
 class SERVER_DECL CBattlegroundManager : public EventableObject

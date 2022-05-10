@@ -732,8 +732,13 @@ void WorldSession::fullLogin(Player* player)
     //////////////////////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////////////
+
+    // Make sure CompleteLoading is always called
+    // Without this if player is entering to a faulty map it would not be ever called
+    player->setEnteringToWorld();
+
     // add us to the world if we are not already added
-    if (canEnterWorld && !player->GetMapMgr())
+    if (canEnterWorld && !player->getWorldMap())
         player->AddToWorld();
     //////////////////////////////////////////////////////////////////////////////////////////
 

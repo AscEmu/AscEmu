@@ -117,18 +117,18 @@ void OnActivate(Player* pPlayer)
 {
     // Pre-flight checks
     GameObject* tonkConsole = NULL;
-    tonkConsole = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 180524);
+    tonkConsole = pPlayer->getWorldMap()->GetInterface()->GetGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 180524);
 
     // Open and disable the Tonk Console
     tonkConsole->SetFlags(GO_FLAG_NONSELECTABLE);
     tonkConsole->setState(GO_STATE_OPEN);
 
     // Spawn Steam Tonk
-    pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(19405, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), true, false, 0, 0)->Despawn(310000, 0);;
+    pPlayer->getWorldMap()->GetInterface()->SpawnCreature(19405, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), true, false, 0, 0)->Despawn(310000, 0);;
 
     // Store the tonk just spawned
     Creature* pTonk = NULL;
-    pTonk = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 19405);
+    pTonk = pPlayer->getWorldMap()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 19405);
 
     // Cast the tonk control spell on the tonk
     pPlayer->castSpell(pTonk, 33849, false);

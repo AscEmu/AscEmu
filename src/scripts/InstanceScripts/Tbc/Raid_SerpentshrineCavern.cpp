@@ -1530,12 +1530,12 @@ public:
     void OnActivate(Player* pPlayer) override
     {
         Creature* Vashj = NULL;
-        Vashj = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(29.798161f, -923.358276f, 42.900517f, CN_LADY_VASHJ);
+        Vashj = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(29.798161f, -923.358276f, 42.900517f, CN_LADY_VASHJ);
         if (Vashj != NULL && static_cast< VashjAI* >(Vashj->GetScript())->Phase == 2)
         {
             Vashj->modHealth(static_cast<int32_t>((Vashj->getMaxHealth() / 100) * 5));
             Creature* channel = NULL;
-            channel = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), CN_SHIELD_GENERATOR_CHANNEL);
+            channel = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), CN_SHIELD_GENERATOR_CHANNEL);
             if (channel != NULL && channel->IsInWorld())
                 channel->Despawn(0, 0);
         }
@@ -1984,19 +1984,13 @@ public:
     // Console & Bridge parts
     uint32_t mBridgePart[3];
 
-    explicit SerpentshrineCavern(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    explicit SerpentshrineCavern(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
     {
         for (uint8_t i = 0; i < 3; ++i)
             mBridgePart[i] = 0;
     }
 
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new SerpentshrineCavern(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance needed to Link all Generators and Bridge
-        GetInstance()->updateAllCells(true);
-    }
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new SerpentshrineCavern(pMapMgr); }
 
     void OnGameObjectPushToWorld(GameObject* pGameObject) override
     {

@@ -29,7 +29,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/SpellEffectTarget.hpp"
@@ -591,10 +591,34 @@ void Pet::Update(unsigned long time_passed)
     else
     {
         Unit::Update(time_passed);      //Dead Hunter's Pets should be despawned only if the Owner logs out or goes out of range.
-        if (m_corpseEvent)
+
+        const auto now = Util::getTimeNow();
+
+        // Update DeathState
+
+        switch (m_deathState)
         {
-            sEventMgr.RemoveEvents(this);
-            m_corpseEvent = false;
+            case DEAD:
+            {
+                if (m_respawnTime <= now)
+                {
+                    respawn();
+                }
+            }
+            break;
+            case CORPSE:
+            {
+                if (m_deathState != CORPSE)
+                    break;
+
+                if (m_corpseRemoveTime <= now)
+                {
+                    OnRemoveCorpse();
+                }
+            }
+            break;
+            default:
+                break;
         }
     }
 
@@ -827,11 +851,11 @@ AI_Spell* Pet::CreateAISpell(SpellInfo const* info)
     sp->agent = AGENT_SPELL;
     sp->entryId = getEntry();
     sp->floatMisc1 = 0;
-    sp->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(info->getRangeIndex()));
+    sp->maxrange = info->getMaxRange();
     if (sp->maxrange < std::sqrt(info->custom_base_range_or_radius_sqr))
         sp->maxrange = std::sqrt(info->custom_base_range_or_radius_sqr);
 
-    sp->minrange = GetMinRange(sSpellRangeStore.LookupEntry(info->getRangeIndex()));
+    sp->minrange = info->getMinRange();
     sp->Misc2 = 0;
     sp->procChance = 0;
     sp->spell = info;
@@ -1083,7 +1107,7 @@ void Pet::InitializeMe(bool first)
         delete query;
     }
 
-    PushToWorld(m_Owner->GetMapMgr());
+    PushToWorld(m_Owner->getWorldMap());
     if (!this->IsInWorld())
     {
         sLogger.failure("Pet::InitializeMe was pushed to world but not in World, return.");
@@ -1262,7 +1286,7 @@ void Pet::PrepareForRemove(bool bUpdate, bool bSetOffline)
     }
 
     if (IsInWorld() && IsActive())
-        Deactivate(m_mapMgr);
+        Deactivate(m_WorldMap);
 }
 
 void Pet::setDeathState(DeathState s)
@@ -2160,7 +2184,7 @@ void Pet::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
                 if (spl->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
                     uint64 guid = getChannelObjectGuid();
-                    DynamicObject* dObj = GetMapMgr()->GetDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
+                    DynamicObject* dObj = getWorldMap()->getDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
                     if (!dObj)
                         return;
 
@@ -2217,6 +2241,8 @@ void Pet::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     // Clear health batch on death
     clearHealthBatch();
 
-    if (m_mapMgr->m_battleground != NULL)
-        m_mapMgr->m_battleground->HookOnUnitDied(this);
+    if (m_WorldMap->getBaseMap()->isBattlegroundOrArena())
+    {
+        reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground()->HookOnUnitDied(this);
+    }
 }

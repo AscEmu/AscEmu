@@ -18,6 +18,9 @@ include(Management/Tickets/CMakeLists.txt)
 include(Macros/CMakeLists.txt)
 include(Map/CMakeLists.txt)
 include(Map/Area/CMakeLists.txt)
+include(Map/Cells/CMakeLists.txt)
+include(Map/Management/CMakeLists.txt)
+include(Map/Maps/CMakeLists.txt)
 include(Movement/CMakeLists.txt)
 include(Movement/Spline/CMakeLists.txt)
 include(Movement/MovementGenerators/CMakeLists.txt)
@@ -87,6 +90,10 @@ set(sources
     ${SRC_MANAGEMENT_TICKETS_FILES}
     ${SRC_MAP_FILES}
     ${SRC_MAP_AREA_FILES}
+    ${SRC_MAP_AREA_FILES}
+    ${SRC_MAP_CELLS_FILES}
+    ${SRC_MAP_MANAGEMENT_FILES}
+    ${SRC_MAP_MAPS_FILES}
     ${SRC_MOVEMENT_FILES}
     ${SRC_MOVEMENT_SPLINE_FILES}
     ${SRC_MOVEMENT_MOVEMENTGENERATOR_FILES}
@@ -120,6 +127,7 @@ set(sources
     ../collision/Models/GameObjectModel.cpp
     ../collision/Maps/MapTree.cpp
     ../collision/Maps/TileAssembler.cpp
+    ../collision/DynamicTree.cpp
     ../collision/BoundingIntervalHierarchy.cpp
 )
 
@@ -201,7 +209,7 @@ if (USE_PCH)
     Macros/ScriptMacros.hpp
     Management/ItemInterface.h
     Management/QuestLogEntry.hpp
-    Map/MapMgr.h
+    Map/Management/MapMgr.hpp
     Objects/GameObject.h
     Server/Definitions.h
     Server/Opcodes.hpp

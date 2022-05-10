@@ -149,7 +149,7 @@ public:
     void removeInstancedTransport(Transporter* transport, uint32_t instanceID);
 
     // Creates a transport using given GameObject template entry
-    Transporter* createTransport(uint32_t entry, MapMgr* map = nullptr);
+    Transporter* createTransport(uint32_t entry, WorldMap* map = nullptr);
 
     // Spawns all continent transports, used at startup
     void spawnContinentTransports();

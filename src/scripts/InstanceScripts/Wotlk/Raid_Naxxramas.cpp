@@ -12,14 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 class NaxxramasScript : public InstanceScript
 {
 public:
-    explicit NaxxramasScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
-    static InstanceScript* Create(MapMgr* pMapMgr) { return new NaxxramasScript(pMapMgr); }
-
-    void OnLoad() override
-    {
-        // Load All Cells in Our Instance
-        GetInstance()->updateAllCells(true);
-    }
+    explicit NaxxramasScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr) {}
+    static InstanceScript* Create(WorldMap* pMapMgr) { return new NaxxramasScript(pMapMgr); }
 
     void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
     {
@@ -346,7 +340,7 @@ void MaexxnaAI::AIUpdate()
 //    if (Maexxna != NULL)
 //    {
 //        // Is target really added everytime and isn't this check redundant ?
-//        if (pTarget == NULL || !pTarget->isPlayer() || pTarget->hasAurasWithId(MAEXXNA_WEB_WRAP) || Maexxna->getCreature() == NULL || Maexxna->getCreature()->GetMapMgr() == NULL)
+//        if (pTarget == NULL || !pTarget->isPlayer() || pTarget->hasAurasWithId(MAEXXNA_WEB_WRAP) || Maexxna->getCreature() == NULL || Maexxna->getCreature()->getWorldMap() == NULL)
 //            return;
 //
 //        uint32_t Id = Util::getRandomUInt(1);
@@ -1172,7 +1166,7 @@ void NothThePlaguebringerAI::OnCombatStart(Unit* /*pTarget*/)
     mSkeletonTimer = _addTimer(8000);
     mPhaseCounter = 0;
 
-    if (getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
+    if (getCreature()->getWorldMap() != NULL && getCreature()->getWorldMap()->getInterface() != NULL)
     {
         GameObject* Gate = getNearestGameObject(2740.689209f, -3489.697266f, 262.117767f, 181200);
         if (Gate != NULL)
@@ -1186,7 +1180,7 @@ void NothThePlaguebringerAI::OnCombatStart(Unit* /*pTarget*/)
 
 void NothThePlaguebringerAI::OnCombatStop(Unit* /*pTarget*/)
 {
-    if (getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
+    if (getCreature()->getWorldMap() != NULL && getCreature()->getWorldMap()->getInterface() != NULL)
     {
         GameObject* Gate = getNearestGameObject(2740.689209f, -3489.697266f, 262.117767f, 181200);
         if (Gate != NULL)
@@ -1640,7 +1634,7 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* /*pTarget*/)
     mEruptionPhase = 3;
     mClockWiseEruption = true;
 
-    if (getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
+    if (getCreature()->getWorldMap() != NULL && getCreature()->getWorldMap()->getInterface() != NULL)
     {
         GameObject* Gate = getNearestGameObject(2790.709961f, -3708.669922f, 276.584991f, 181202);
         if (Gate != NULL)
@@ -1681,7 +1675,7 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* /*pTarget*/)
 void HeiganTheUncleanAI::OnCombatStop(Unit* /*pTarget*/)
 {
     _unsetTargetToChannel();
-    if (getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
+    if (getCreature()->getWorldMap() != NULL && getCreature()->getWorldMap()->getInterface() != NULL)
     {
         GameObject* Gate = getNearestGameObject(2790.709961f, -3708.669922f, 276.584991f, 181202);
         if (Gate != NULL)
@@ -1772,7 +1766,7 @@ void PlagueFissureGO::DoErrupt()
 {
     _gameobject->sendGameobjectCustomAnim();
 
-    Creature* pFissureTrigger = _gameobject->GetMapMgr()->GetInterface()->SpawnCreature(15384, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), _gameobject->GetOrientation(), true, false, 0, 0, 1);
+    Creature* pFissureTrigger = _gameobject->getWorldMap()->getInterface()->spawnCreature(15384, _gameobject->GetPosition(), true, false, 0, 0, 1);
     if (!pFissureTrigger)
         return;
 
@@ -2070,7 +2064,7 @@ PortalOfShadowsAI::PortalOfShadowsAI(Creature* pCreature) : CreatureAIScript(pCr
     // We do not consider using a spell that summons these portals by anyone else than Shade of Naxxramas.
     // I must figure out why it's often not added if only one Shade is on the battlefield.
     // I don't like this method anyway.
-    if (getCreature()->getSummonedByGuid() != 0 && getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
+    if (getCreature()->getSummonedByGuid() != 0 && getCreature()->getWorldMap() != NULL && getCreature()->getWorldMap()->getInterface() != NULL)
     {
         //mShadeAI = static_cast< ShadeOfNaxxramasAI* >(GetNearestCreature(CN_SHADE_OF_NAXXRAMAS));
         Creature* UnitPtr = getNearestCreature(CN_SHADE_OF_NAXXRAMAS);
@@ -2257,7 +2251,7 @@ DeathchargerSteedAI::DeathchargerSteedAI(Creature* pCreature) : CreatureAIScript
 
     // We do not consider using a spell that summons this unit by anyone else than Death Knight Cavalier.
     // I don't like this method anyway.
-    if (getCreature()->getSummonedByGuid() != 0 && getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
+    if (getCreature()->getSummonedByGuid() != 0 && getCreature()->getWorldMap() != NULL && getCreature()->getWorldMap()->getInterface() != NULL)
     {
         mDeathKnightAI = static_cast< DeathKnightCavalierAI* >(getNearestCreatureAI(CN_DEATH_KNIGHT_CAVALIER));
         if (mDeathKnightAI != NULL && mDeathKnightAI->mChargerAI == NULL)

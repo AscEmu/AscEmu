@@ -18,8 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgPartyMemberStatsFull.h"
 #include "Server/WorldSession.h"
 #include "Management/ObjectMgr.h"
-#include "Map/MapMgr.h"
-#include "Map/WorldCreator.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Server/Packets/CmsgGroupChangeSubGroup.h"
 #include "Server/Packets/CmsgGroupAssistantLeader.h"
 #include "Server/Packets/MsgPartyAssign.h"
@@ -70,15 +69,6 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
             group->AddMember(_player->m_playerInfo);
             _player->m_dungeonDifficulty = group->m_difficulty;
             _player->sendDungeonDifficultyPacket();
-
-            Instance* instance = sInstanceMgr.GetInstanceByIds(group_inviter->GetMapId(), group_inviter->GetInstanceID());
-            if (instance != nullptr && instance->m_creatorGuid == group_inviter->getGuidLow())
-            {
-                group->m_instanceIds[instance->m_mapId][instance->m_difficulty] = instance->m_instanceId;
-                instance->m_creatorGroup = group->GetID();
-                instance->m_creatorGuid = 0;
-                sInstanceMgr.SaveInstanceToDB(instance);
-            }
         }
     }
     else
@@ -533,16 +523,6 @@ void WorldSession::handleGroupAcceptOpcode(WorldPacket& /*recvPacket*/)
         group->m_difficulty = player->m_dungeonDifficulty;
         _player->m_dungeonDifficulty = player->m_dungeonDifficulty;
         _player->sendDungeonDifficultyPacket();
-
-        const auto instance = sInstanceMgr.GetInstanceByIds(player->GetMapId(), player->GetInstanceID());
-        if (instance && instance->m_creatorGuid == player->getGuidLow())
-        {
-            group->m_instanceIds[instance->m_mapId][instance->m_difficulty] = instance->m_instanceId;
-            instance->m_creatorGroup = group->GetID();
-            instance->m_creatorGuid = 0;
-
-            sInstanceMgr.SaveInstanceToDB(instance);
-        }
     }
     else
     {
@@ -756,13 +736,13 @@ void WorldSession::handlePartyMemberStatsOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_PARTY_MEMBER_STATS: %u (guidLow)", srlPacket.guid.getGuidLow());
 
-    if (_player->GetMapMgr() == nullptr)
+    if (_player->getWorldMap() == nullptr)
     {
         sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_PARTY_MEMBER_STATS: But MapMgr is not ready!");
         return;
     }
 
-    const auto requestedPlayer = _player->GetMapMgr()->GetPlayer(srlPacket.guid.getGuidLow());
+    const auto requestedPlayer = _player->getWorldMap()->getPlayer(srlPacket.guid.getGuidLow());
     if (_player->getGroup() == nullptr || requestedPlayer == nullptr)
     {
         SendPacket(SmsgPartyMemberStatsFull(srlPacket.guid, nullptr).serialise().get());
@@ -796,7 +776,7 @@ void WorldSession::handleConvertGroupToRaidOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleRequestRaidInfoOpcode(WorldPacket& /*recvPacket*/)
 {
-    sInstanceMgr.BuildRaidSavedInstancesForPlayer(_player);
+    _player->sendRaidInfo();
 }
 
 void WorldSession::handleGroupChangeSubGroup(WorldPacket& recvPacket)

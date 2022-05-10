@@ -5,6 +5,27 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+// Overwrite we added 1 Encounte which is not in Database
+uint32_t const EncounterCount = 13;
+
+enum Encounters
+{
+    DATA_LORD_MARROWGAR                 = 0,
+    DATA_LADY_DEATHWHISPER              = 1,
+    DATA_ICECROWN_GUNSHIP_BATTLE        = 2,
+    DATA_DEATHBRINGER_SAURFANG          = 3,
+    DATA_FESTERGUT                      = 4,
+    DATA_ROTFACE                        = 5,
+    DATA_PROFESSOR_PUTRICIDE            = 6,
+    DATA_BLOOD_PRINCE_COUNCIL           = 7,
+    DATA_BLOOD_QUEEN_LANA_THEL          = 8,
+    DATA_VALITHRIA_DREAMWALKER          = 9,
+    DATA_SINDRAGOSA                     = 10,
+    DATA_THE_LICH_KING                  = 11,
+
+    DATA_SISTER_SVALNA                  = 12,    // Extra Encounter
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Allianze & Horde spawns
 struct ICCSpawns
@@ -807,7 +828,6 @@ enum DeprogrammingData
 enum AdditionalData
 {
     DATA_BONED_ACHIEVEMENT                      = 1,
-    DATA_GUNSHIP_EVENT                          = 2,
     DATA_TEAM_IN_INSTANCE                       = 3,
 
     // Gunship
@@ -825,7 +845,6 @@ enum AdditionalData
 
     // Deathbringer Suarfang
     DATA_SAURFANG_DOOR                          = 16,
-    DATA_DEATHBRINGER_SAURFANG                  = 17,
 };
 
 enum Achievements

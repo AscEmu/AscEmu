@@ -18,7 +18,7 @@
  */
 
 #include "Setup.h"
-#include "Map/MapMgr.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 #include "Spell/SpellAuras.h"
 #include "Server/Script/ScriptMgr.h"
@@ -157,7 +157,7 @@ bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
     uint64_t prev_target = caster->getSingleTargetGuidForAura(judgements, &index);
     if (prev_target)
     {
-        Unit* t = caster->GetMapMgr()->GetUnit(prev_target);
+        Unit* t = caster->getWorldMap()->getUnit(prev_target);
         if (t != nullptr)
         {
             t->removeAllAurasById(judgements[index]);

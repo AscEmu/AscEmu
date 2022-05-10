@@ -1019,8 +1019,8 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
     blood_strike_spell->spell = sSpellMgr.getSpellInfo(DEATH_KNIGHT_UNDERSTUDY_BLOOD_STRIKE);
     blood_strike_spell->agent = AGENT_SPELL;
     blood_strike_spell->entryId = getCreature()->getEntry();
-    blood_strike_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(blood_strike_spell->spell->getRangeIndex()));
-    blood_strike_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(blood_strike_spell->spell->getRangeIndex()));
+    blood_strike_spell->maxrange = blood_strike_spell->spell->getMaxRange();
+    blood_strike_spell->minrange = blood_strike_spell->spell->getMinRange();
     blood_strike_spell->spelltargetType = TTYPE_SINGLETARGET;
     blood_strike_spell->spellType = STYPE_DAMAGE;
     blood_strike_spell->cooldown = sObjectMgr.GetPetSpellCooldown(blood_strike_spell->spell->getId());
@@ -1038,8 +1038,8 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
     bone_barrier_spell->spell = sSpellMgr.getSpellInfo(DEATH_KNIGHT_UNDERSTUDY_BONE_BARRIER);
     bone_barrier_spell->agent = AGENT_SPELL;
     bone_barrier_spell->entryId = getCreature()->getEntry();
-    bone_barrier_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(bone_barrier_spell->spell->getRangeIndex()));
-    bone_barrier_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(bone_barrier_spell->spell->getRangeIndex()));
+    bone_barrier_spell->maxrange = bone_barrier_spell->spell->getMaxRange();
+    bone_barrier_spell->minrange = bone_barrier_spell->spell->getMinRange();
     bone_barrier_spell->spelltargetType = TTYPE_CASTER;
     bone_barrier_spell->spellType = STYPE_BUFF;
     bone_barrier_spell->cooldown = sObjectMgr.GetPetSpellCooldown(bone_barrier_spell->spell->getId());
@@ -1057,8 +1057,8 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
     understudy_taunt_spell->spell = sSpellMgr.getSpellInfo(DEATH_KNIGHT_UNDERSTUDY_TAUNT);
     understudy_taunt_spell->agent = AGENT_SPELL;
     understudy_taunt_spell->entryId = getCreature()->getEntry();
-    understudy_taunt_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(understudy_taunt_spell->spell->getRangeIndex()));
-    understudy_taunt_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(understudy_taunt_spell->spell->getRangeIndex()));
+    understudy_taunt_spell->maxrange = understudy_taunt_spell->spell->getMaxRange();
+    understudy_taunt_spell->minrange = understudy_taunt_spell->spell->getMinRange();
     understudy_taunt_spell->spelltargetType = TTYPE_SINGLETARGET;
     understudy_taunt_spell->spellType = STYPE_BUFF;
     understudy_taunt_spell->cooldown = sObjectMgr.GetPetSpellCooldown(understudy_taunt_spell->spell->getId());
@@ -2181,7 +2181,7 @@ public:
                             LastOne = Block;
 
                             GameObject* IceBlock = NULL;
-                            IceBlock = getCreature()->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
+                            IceBlock = getCreature()->getWorldMap()->getInterface()->spawnGameObject(ICE_BLOCK_GO, IceBlocks[Block], true, 0, 0);
                             if (IceBlock != NULL)
                             {
                                 IceBlock->setFlags(GO_FLAG_NONSELECTABLE);
@@ -2205,7 +2205,7 @@ public:
                                 Block = Util::getRandomUInt(10, 13);
 
                             GameObject* IceBlock = NULL;
-                            IceBlock = getCreature()->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
+                            IceBlock = getCreature()->getWorldMap()->getInterface()->spawnGameObject(ICE_BLOCK_GO, IceBlocks[Block], true, 0, 0);
                             if (IceBlock != NULL)
                             {
                                 IceBlock->setFlags(GO_FLAG_NONSELECTABLE);
@@ -2224,7 +2224,7 @@ public:
                                 Block = Util::getRandomUInt(7) + 13;
 
                             GameObject* IceBlock = NULL;
-                            IceBlock = getCreature()->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
+                            IceBlock = getCreature()->getWorldMap()->getInterface()->spawnGameObject(ICE_BLOCK_GO, IceBlocks[Block], true, 0, 0);
                             if (IceBlock != NULL)
                             {
                                 IceBlock->setFlags(GO_FLAG_NONSELECTABLE);
