@@ -862,7 +862,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
     if (DefFlag[Id][0] && !DefFlag[Id][1])
     {
         DefFlag[Id][0] = false;
-        SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "$N defend %s", ControlPointNames[Id]);
+        SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "%s defend %s", pPlayer->getName().c_str(), ControlPointNames[Id]);
         sEventMgr.AddEvent(this, &ArathiBasin::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         pPlayer->m_bgScore.MiscData[BG_SCORE_AB_BASES_CAPTURED]++;
         UpdatePvPData();
@@ -870,7 +870,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
     else if (!DefFlag[Id][0] && !DefFlag[Id][1])
     {
         DefFlag[Id][0] = true;
-        SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "$N assault %s !", ControlPointNames[Id]);
+        SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "%s assault %s !", pPlayer->getName().c_str(), ControlPointNames[Id]);
         PlaySoundToAll(Team ? 8212 : 8174);
         if (Team)
         {
@@ -927,8 +927,8 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
     else
     {
         DefFlag[Id][0] = true;
-        SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "$N claims the %s! If left unchallenged, the %s will control it in 1 minute!", ControlPointNames[Id],
-            Team ? "Horde" : "Alliance");
+        SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "%s claims the %s! If left unchallenged, the %s will control it in 1 minute!", 
+                                                                                                          pPlayer->getName().c_str(), ControlPointNames[Id], Team ? "Horde" : "Alliance");
         PlaySoundToAll(8192);
         sEventMgr.AddEvent(this, &ArathiBasin::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, TimeVarsMs::Minute, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }

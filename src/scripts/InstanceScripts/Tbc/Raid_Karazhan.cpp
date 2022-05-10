@@ -487,7 +487,7 @@ class GrandMother : public GossipScript
 public:
     void onHello(Object* pObject, Player* Plr) override
     {
-        GossipMenu menu(pObject->getGuid(), 7245, 0);         // Don't get too close, $N. I'm liable to fumble and bash your brains open with the face of my hammer.
+        GossipMenu menu(pObject->getGuid(), 7245, 0);   // Don't get too close, $N. I'm liable to fumble and bash your brains open with the face of my hammer.
         menu.addItem(GOSSIP_ICON_CHAT, 434, 1);         // What phat lewts you have Grandmother!
         menu.sendGossipPacket(Plr);
     }
