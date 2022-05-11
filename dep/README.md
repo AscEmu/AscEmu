@@ -33,7 +33,3 @@
 ## Folder: bzip2
 - Web: http://www.bzip.org
 - Version: 1.0.8 (2019/07/13)
-
-## Folder: cotire
-- Web: https://github.com/sakra/cotire
-- Version: 1.8.1 (2019/12/23)
