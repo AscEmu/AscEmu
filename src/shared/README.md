@@ -24,7 +24,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2014 | AscemuServerDefines.hpp
 * 2008 | WoWGuid.h
 * 2008 | WorldPacket.h
-* 2008 | TLSObject.h
 * 2008 | Threading/ThreadStarter.h
 * 2008 | Threading/ThreadPool.h
 * 2008 | Threading/ThreadPool.cpp
@@ -155,6 +154,9 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 
 ### Removed on 02 Feb 2021
 * 2008 | Threading/RWLock.h
+
+### Removed on 10 May 2022
+* 2008 | TLSObject.h
 
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp

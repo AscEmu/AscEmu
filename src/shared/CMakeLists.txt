@@ -56,10 +56,8 @@ set(headers
     PreallocatedQueue.h
     RC4Engine.h
     SysInfo.hpp
-    TLSObject.h
     WorldPacket.h
     WoWGuid.h
-
     Common.hpp
     Log.hpp
     LogDefines.hpp
