@@ -96,3 +96,70 @@ protected:
 
     bool hasTrappedUnit;
 };
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Spell: Bone Storm
+class BoneStorm : public SpellScript
+{
+public:
+    void onAuraCreate(Aura* aur) override;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Spell: Bone Storm Damage
+class BoneStormDamage : public SpellScript
+{
+public:
+    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg) override;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Spell: Bone Spike Graveyard
+class BoneSpikeGraveyard : public SpellScript
+{
+public:
+    void onAuraApply(Aura* aur) override;
+    SpellCastResult onCanCast(Spell* spell, uint32_t* /*parameter1*/, uint32_t* /*parameter2*/) override;
+    Unit* GetRandomTargetNotMainTank(Creature* caster);
+    bool CheckTarget(Unit* target, CreatureAIScript* creatureAI);
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Spell: Coldflame
+class Coldflame : public SpellScript
+{
+public:
+    void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) override;
+    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex) override;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Spell: Coldflame Bone Storm
+class ColdflameBonestorm : public SpellScript
+{
+public:
+    SpellScriptExecuteState beforeSpellEffect(Spell* spell, uint8_t effectIndex) override;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Spell: Coldflame Damage
+class ColdflameDamage : public SpellScript
+{
+public:
+    void filterEffectTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) override;
+    bool CanBeAppliedOn(Unit* target, Spell* spell);
+    SpellScriptExecuteState beforeSpellEffect(Spell* /*spell*/, uint8_t effectIndex) override;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Spell: Bone Slice
+class BoneSlice : public SpellScript
+{
+public:
+    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg) override;
+    SpellCastResult onCanCast(Spell* spell, uint32_t* /*parameter1*/, uint32_t* /*parameter2*/) override;
+    void filterEffectTargets(Spell* /*spell*/, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) override;
+    void afterSpellEffect(Spell* spell, uint8_t effIndex) override;
+
+    uint32_t targetCount;
+};
