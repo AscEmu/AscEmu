@@ -6,9 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_IceCrownCitadel.h"
 
 #include "LordMarrowgar.h"
-#include "LadyDeathwhisper.cpp"
-#include "GunshipBattle.cpp"
-#include "Saurfang.cpp"
+#include "LadyDeathwhisper.h"
+#include "GunshipBattle.h"
+#include "Saurfang.h"
 
 #include "Management/Faction.h"
 #include "Objects/Units/Creatures/Summons/Summon.h"
