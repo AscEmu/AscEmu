@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Setup.h"
+
 // Overwrite we added 1 Encounte which is not in Database
 uint32_t const EncounterCount = 13;
 
@@ -1331,13 +1333,13 @@ uint32 const SummonEntries[2] = { NPC_CULT_FANATIC, NPC_CULT_ADHERENT };
 
 uint32 const BoneSpikeSummonId[3] = { 69062, 72669, 72670 };
 
-uint32_t gunshipIds[] =
+static uint32_t gunshipIds[] =
 {
     NPC_GB_SKYBREAKER,
     NPC_GB_ORGRIMS_HAMMER
 };
 
-uint32_t canonIds[] =
+static uint32_t canonIds[] =
 {
     NPC_GB_ALLIANCE_CANON,
     NPC_GB_HORDE_CANON
@@ -1370,6 +1372,71 @@ static float ICCTeleCoords[6][5] =
     { MAP_ICECROWNCITADEL, -549.151001f, 2211.463967f, 539.290222f, 0.0f },   //4   Teleport to Deathbringer's Rise 
     { MAP_ICECROWNCITADEL, 4356.780273f, 2863.636230f, 349.337982f, 0.0f },   //5   Teleport to the Upper Spire.
     { MAP_ICECROWNCITADEL, 4453.248535f, 2769.325684f, 349.347473f, 0.0f }    //6   Teleport to Sindragosa's Lair
+};
+
+class IceCrownCitadelScript : public InstanceScript
+{
+public:
+    explicit IceCrownCitadelScript(WorldMap* pMapMgr);
+    static InstanceScript* Create(WorldMap* pMapMgr);
+
+    uint32_t getLocalData(uint32_t type) const;
+    Creature* getLocalCreatureData(uint32_t type) const;
+
+    void OnCreaturePushToWorld(Creature* pCreature) override;
+    void OnGameObjectPushToWorld(GameObject* pGameObject) override;
+    void SetGameobjectStates(GameObject* pGameObject);
+    void OnEncounterStateChange(uint32_t entry, uint32_t state) override;
+    void OnAreaTrigger(Player* pPlayer, uint32 pAreaId);
+    void OnPlayerEnter(Player* player) override;
+    void UpdateEvent() override;
+    void DoAction(int32_t const action) override;
+    void TransporterEvents(Transporter* transport, uint32_t eventId) override;
+
+    void SpawnEnemyGunship();
+    bool DoWipeCheck(Transporter* t);
+    void DoCheckFallingPlayer(Creature* pCreature);
+
+    void TransportBoarded(Unit* pUnit, Transporter* transport);
+    void TransportUnboarded(Unit* pUnit, Transporter* transport);
+
+    Transporter* skybreaker;
+    Transporter* orgrimmar;
+    Transporter* HordeZeppelinAlliance;
+
+protected:
+    IceCrownCitadelScript* Instance;
+
+    // Entrance
+    bool introDone;
+    uint32_t HighlordEntranceGUID;
+    uint32_t LichKingEntranceGUID;
+    uint32_t BolvarEntranceGUID;
+
+    // Marrowgar
+    uint32_t LordMarrowgarGUID;
+    uint32_t MarrowgarIcewall1GUID;
+    uint32_t MarrowgarIcewall2GUID;
+    uint32_t MarrowgarEntranceDoorGUID;
+    bool bonedAchievement;
+
+    // Lady Deathwhisper
+    uint32_t LadyDeathwisperGUID;
+    uint32_t LadyDeathwisperElevatorGUID;
+    uint32_t LadyDeathwisperEntranceDoorGUID;
+
+    // Gunship Event			
+    uint32_t SkybreakerBossGUID;
+    uint32_t OrgrimmarBossGUID;
+    uint32_t DeathbringerSaurfangGbGUID;
+    uint32_t MuradinBronzebeardGbGUID;
+    uint32_t GbBattleMageGUID;
+    bool isPrepared;
+
+    // Deathbringer Saurfang
+    uint32_t DeathbringerDoorGUID;
+    uint32_t DeathbringerSaurfangGUID;
+    bool deathbringerGoSpawned;
 };
 
 void SetupICC(ScriptMgr* mgr);

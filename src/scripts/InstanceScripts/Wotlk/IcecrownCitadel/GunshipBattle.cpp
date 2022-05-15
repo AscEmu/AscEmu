@@ -3,8 +3,6 @@ Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Setup.h"
-#include "Raid_IceCrownCitadel.h"
 #include "GunshipBattle.h"
 #include "Management/Faction.h"
 #include "Objects/Units/Creatures/Summons/Summon.h"
