@@ -778,7 +778,7 @@ public:
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+        setCanEnterCombat(false);
         SetAIUpdateFreq(24000);
         
         setAIAgent(AGENT_SPELL);
@@ -801,7 +801,7 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setRooted(false);
-        getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+        setCanEnterCombat(true);
 
         if (isAlive())
         {
