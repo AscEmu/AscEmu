@@ -1354,6 +1354,7 @@ public:
 
                 questLog->finishAndRemove();
                 plr->addQuestToFinished(quest_id);
+                plr->updateNearbyQuestGameObjects();
                 lua_pushnumber(L, 1);
                 return 1;
             }

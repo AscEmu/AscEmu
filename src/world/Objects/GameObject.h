@@ -25,6 +25,7 @@
 #include "Management/TransporterHandler.h"
 #include "Data/WoWGameObject.hpp"
 #include "Map/Maps/BaseMap.hpp"
+#include "WorldConf.h"
 
 enum GameObject_State : uint8_t
 {
@@ -422,8 +423,18 @@ public:
     float getParentRotation(uint8_t type) const;
     void setParentRotation(uint8_t type, float rotation);
 
-    uint32_t getDynamic() const;
-    void setDynamic(uint32_t dynamic);
+#if VERSION_STRING < WotLK
+    uint32_t getDynamicFlags() const;
+    void setDynamicFlags(uint32_t dynamicFlags);
+#elif VERSION_STRING < Mop
+    uint32_t getDynamicField() const;
+    uint16_t getDynamicFlags() const;
+    int16_t getDynamicPathProgress() const;
+    void setDynamicField(uint32_t dynamic);
+    void setDynamicField(uint16_t dynamicFlags, int16_t pathProgress);
+    void setDynamicFlags(uint16_t dynamicFlags);
+    void setDynamicPathProgress(int16_t pathProgress);
+#endif
 
     uint32_t getFactionTemplate() const;
     void setFactionTemplate(uint32_t id);

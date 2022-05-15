@@ -2247,7 +2247,7 @@ void Player::initVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, data) + 1);
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, raw_parts));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, entry));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, dynamic_flags));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, dynamic_field));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, scale_x));
 
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, charm_guid));
@@ -2303,7 +2303,6 @@ void Player::initVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid) + 1);
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_spell));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, mod_cast_speed));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, dynamic_flags));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, npc_flags));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, hover_height));
 
@@ -7026,8 +7025,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
         }
     }
 
-    if (questProperties->count_required_item || qst_giver->isGameObject())    // gameobject quests deactivate
-        UpdateNearbyGameObjects();
+    updateNearbyQuestGameObjects();
 
     const SpellAreaForQuestMapBounds saBounds = { sSpellMgr.mSpellAreaForQuestMap.lower_bound(quest_id), sSpellMgr.mSpellAreaForQuestMap.upper_bound(quest_id) };
     if (saBounds.first != saBounds.second)
@@ -7257,6 +7255,29 @@ void Player::addQuestKill(uint32_t questId, uint8_t reqId, uint32_t delay)
 
             if (questLogEntry->canBeFinished())
                 questLogEntry->sendQuestComplete();
+        }
+    }
+}
+
+void Player::updateNearbyQuestGameObjects()
+{
+    for (const auto& itr : getInRangeObjectsSet())
+    {
+        auto* obj = itr;
+        if (obj == nullptr || !obj->isGameObject() || obj->isTransporter())
+            continue;
+
+        const auto gameobject = dynamic_cast<GameObject*>(obj);
+        const auto gobProperties = gameobject->GetGameObjectProperties();
+
+        // Update dynamic flags for gameobjects with quests or item loot
+        if (gameobject->isQuestGiver() || !gobProperties->itemMap.empty() || !gobProperties->goMap.empty())
+        {
+#if VERSION_STRING < Mop
+            gameobject->forceBuildUpdateValueForField(getOffsetForStructuredField(WoWGameObject, dynamic), this);
+#else
+            gameobject->forceBuildUpdateValueForField(getOffsetForStructuredField(WoWObject, dynamic_field), this);
+#endif
         }
     }
 }
@@ -8359,16 +8380,11 @@ void Player::tagUnit(Object* object)
 {
     if (object->isCreatureOrPlayer())
     {
-        uint32 flags = static_cast<Unit*>(object)->getDynamicFlags();
-        flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
-
-        ByteBuffer nonGroupBuff(500);
-        ByteBuffer groupBuff(500);
-
-        object->BuildFieldUpdatePacket(&groupBuff, getOffsetForStructuredField(WoWUnit, dynamic_flags), flags);
-        object->BuildFieldUpdatePacket(&nonGroupBuff, getOffsetForStructuredField(WoWUnit, dynamic_flags), dynamic_cast<Unit*>(object)->getDynamicFlags());
-
-        sendUpdateDataToSet(&groupBuff, &nonGroupBuff, true);
+#if VERSION_STRING < Mop
+        object->forceBuildUpdateValueForField(getOffsetForStructuredField(WoWUnit, dynamic_flags), this);
+#else
+        object->forceBuildUpdateValueForField(getOffsetForStructuredField(WoWObject, dynamic_field), this);
+#endif
     }
 }
 
@@ -9317,7 +9333,11 @@ void Player::sendLootUpdate(Object* object)
         flags |= U_DYN_FLAG_LOOTABLE;
         flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
 
+#if VERSION_STRING < Mop
         object->BuildFieldUpdatePacket(&buffer, getOffsetForStructuredField(WoWUnit, dynamic_flags), flags);
+#else
+        object->BuildFieldUpdatePacket(&buffer, getOffsetForStructuredField(WoWObject, dynamic_field), flags);
+#endif
 
         getUpdateMgr().pushUpdateData(&buffer, 1);
     }

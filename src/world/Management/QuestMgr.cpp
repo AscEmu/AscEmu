@@ -42,12 +42,44 @@
 
 using namespace AscEmu::Packets;
 
+// APGL End
+// MIT Start
 QuestMgr& QuestMgr::getInstance()
 {
     static QuestMgr mInstance;
     return mInstance;
 }
 
+void QuestMgr::onPlayerItemRemove(Player* plr, Item const* item)
+{
+    const auto itemEntry = item->getEntry();
+
+    for (uint8_t i = 0; i < MAX_QUEST_SLOT; ++i)
+    {
+        const auto* const questLog = plr->getQuestLogBySlotId(i);
+        if (questLog == nullptr)
+            continue;
+
+        if (questLog->getQuestProperties()->count_required_item == 0)
+            continue;
+
+        for (uint8_t j = 0; j < MAX_REQUIRED_QUEST_ITEM; ++j)
+        {
+            if (questLog->getQuestProperties()->required_item[j] != itemEntry)
+                continue;
+
+            const auto itemCount = plr->getItemInterface()->GetItemCount(itemEntry, true);
+            if (itemCount < questLog->getQuestProperties()->required_itemcount[j])
+            {
+                // Player has less items than quest requires, update nearby gameobjects
+                plr->updateNearbyQuestGameObjects();
+            }
+        }
+    }
+}
+
+// MIT End
+// APGL Start
 uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, QuestRelation* qst)
 {
     return CalcQuestStatus(quest_giver, plr, qst->qst, qst->type, false);
@@ -1160,6 +1192,8 @@ bool QuestMgr::OnGameObjectActivate(Player* plr, GameObject* go)
 
                     if (questLog->canBeFinished())
                         questLog->sendQuestComplete();
+                    else
+                        plr->updateNearbyQuestGameObjects();
 
                     questLog->updatePlayerFields();
                     return true;
@@ -1352,11 +1386,18 @@ void QuestMgr::OnPlayerItemPickup(Player* plr, Item* item)
                         data << questLog->getQuestProperties()->required_item[j];
                         data << uint32(1);
                         plr->getSession()->SendPacket(&data);
-
+                    }
+                    else
+                    {
                         if (questLog->canBeFinished())
+                        {
                             questLog->sendQuestComplete();
-
-                        break;
+                        }
+                        else
+                        {
+                            // Quest objective is complete, remove sparkles from nearby gameobjects
+                            plr->updateNearbyQuestGameObjects();
+                        }
                     }
                 }
             }
@@ -1809,6 +1850,8 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
 #endif
         }
     }
+
+    plr->updateNearbyQuestGameObjects();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

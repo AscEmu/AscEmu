@@ -192,6 +192,19 @@ public:
     void setEntry(uint32_t entry);
     uint32_t getEntry() const;
 
+#if VERSION_STRING >= Mop
+    uint32_t getDynamicField() const;
+    uint16_t getDynamicFlags() const;
+    int16_t getDynamicPathProgress() const;
+    void setDynamicField(uint32_t dynamic);
+    void setDynamicField(uint16_t dynamicFlags, int16_t pathProgress);
+    void setDynamicFlags(uint16_t dynamicFlags);
+    void addDynamicFlags(uint16_t dynamicFlags);
+    void removeDynamicFlags(uint16_t dynamicFlags);
+    bool hasDynamicFlags(uint16_t dynamicFlags) const;
+    void setDynamicPathProgress(int16_t pathProgress);
+#endif
+
     float getScale() const;
     void setScale(float scaleX);
 
@@ -201,6 +214,11 @@ public:
 
     //! This includes any nested objects we have, inventory for example.
     virtual uint32_t buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
+
+    // Forces update for WoWData field
+    void forceBuildUpdateValueForField(uint32_t field, Player* target);
+    // Forces update for multiple WoWData fields
+    void forceBuildUpdateValueForFields(uint32_t const* fields, Player* target);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Object Type Id
@@ -289,31 +307,31 @@ public:
     void removeSelfFromInrangeSets();
 
     // Objects
-    std::vector<Object*> getInRangeObjectsSet();
+    std::vector<Object*> getInRangeObjectsSet() const;
 
-    bool hasInRangeObjects();
-    size_t getInRangeObjectsCount();
+    bool hasInRangeObjects() const;
+    size_t getInRangeObjectsCount() const;
 
     bool isObjectInInRangeObjectsSet(Object* pObj) const;
     void removeObjectFromInRangeObjectsSet(Object* pObj);
 
     // Players
-    std::vector<Object*> getInRangePlayersSet();
-    size_t getInRangePlayersCount();
+    std::vector<Object*> getInRangePlayersSet() const;
+    size_t getInRangePlayersCount() const;
 
     // Opposite Faction
-    std::vector<Object*> getInRangeOppositeFactionSet();
+    std::vector<Object*> getInRangeOppositeFactionSet() const;
 
-    bool isObjectInInRangeOppositeFactionSet(Object* pObj);
+    bool isObjectInInRangeOppositeFactionSet(Object* pObj) const;
     void updateInRangeOppositeFactionSet();
 
     void addInRangeOppositeFaction(Object* obj);
     void removeObjectFromInRangeOppositeFactionSet(Object* obj);
 
     // same faction
-    std::vector<Object*> getInRangeSameFactionSet();
+    std::vector<Object*> getInRangeSameFactionSet() const;
 
-    bool isObjectInInRangeSameFactionSet(Object* pObj);
+    bool isObjectInInRangeSameFactionSet(Object* pObj) const;
     void updateInRangeSameFactionSet();
 
     void addInRangeSameFaction(Object* obj);
@@ -686,7 +704,7 @@ public:
         void buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* target);
 #endif
 
-        void buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player* target);
+        void buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask* updateMask, Player* target);
 
         // WoWGuid class
         WoWGuid m_wowGuid;

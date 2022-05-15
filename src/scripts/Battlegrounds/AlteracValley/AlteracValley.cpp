@@ -579,7 +579,7 @@ void AlteracValley::AVNode::Spawn()
             m_flag = m_bg->SpawnGameObject(g->id[m_state], m_bg->getWorldMap()->getBaseMap()->getMapId(), g->x, g->y, g->z, g->o, 0, 0, 1.0f);
             m_flag->SetFaction(g_gameObjectFactions[m_state]);
             m_flag->setAnimationProgress(100);
-            m_flag->setDynamic(1);
+            m_flag->setDynamicFlags(GO_DYN_FLAG_INTERACTABLE);
             m_flag->PushToWorld(m_bg->getWorldMap());
         }
         else
@@ -596,7 +596,7 @@ void AlteracValley::AVNode::Spawn()
                 m_flag->setGoType(static_cast<uint8_t>(gameobject_info->type));
                 m_flag->SetFaction(g_gameObjectFactions[m_state]);
                 m_flag->setAnimationProgress(100);
-                m_flag->setDynamic(1);
+                m_flag->setDynamicFlags(GO_DYN_FLAG_INTERACTABLE);
                 m_flag->PushToWorld(m_bg->getWorldMap());
             }
         }
@@ -842,7 +842,7 @@ void AlteracValley::AVNode::Capture()
             if (m_flag != nullptr)
             {
                 m_flag->setFlags(GO_FLAG_NONSELECTABLE);
-                m_flag->setDynamic(0);
+                m_flag->setDynamicFlags(GO_DYN_FLAG_NONE);
                 m_flag->setState(GO_STATE_CLOSED);
             }
 

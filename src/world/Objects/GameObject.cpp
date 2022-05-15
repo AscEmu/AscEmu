@@ -138,12 +138,17 @@ bool GameObject::hasFlags(uint32_t flags) const { return (getFlags() & flags) !=
 float GameObject::getParentRotation(uint8_t type) const { return gameObjectData()->rotation[type]; }
 void GameObject::setParentRotation(uint8_t type, float rotation) { write(gameObjectData()->rotation[type], rotation); }
 
-#if VERSION_STRING < Mop
-uint32_t GameObject::getDynamic() const { return gameObjectData()->dynamic; }
-void GameObject::setDynamic(uint32_t dynamic) { write(gameObjectData()->dynamic, dynamic); }
-#else
-uint32_t GameObject::getDynamic() const { return 0; }
-void GameObject::setDynamic(uint32_t dynamic) { return; }
+#if VERSION_STRING < WotLK
+uint32_t GameObject::getDynamicFlags() const { return gameObjectData()->dynamic; }
+void GameObject::setDynamicFlags(uint32_t dynamicFlags) { write(gameObjectData()->dynamic, dynamicFlags); }
+#elif VERSION_STRING < Mop
+uint32_t GameObject::getDynamicField() const { return gameObjectData()->dynamic; }
+uint16_t GameObject::getDynamicFlags() const { return gameObjectData()->dynamic_field_parts.dyn_flag; }
+int16_t GameObject::getDynamicPathProgress() const { return gameObjectData()->dynamic_field_parts.path_progress; }
+void GameObject::setDynamicField(uint32_t dynamic) { write(gameObjectData()->dynamic, dynamic); }
+void GameObject::setDynamicField(uint16_t dynamicFlags, int16_t pathProgress) { setDynamicField(static_cast<uint32_t>(pathProgress) << 16 | dynamicFlags); }
+void GameObject::setDynamicFlags(uint16_t dynamicFlags) { setDynamicField(dynamicFlags, getDynamicPathProgress()); }
+void GameObject::setDynamicPathProgress(int16_t pathProgress) { setDynamicField(getDynamicFlags(), pathProgress); }
 #endif
 
 uint32_t GameObject::getFactionTemplate() const { return gameObjectData()->faction_template; }

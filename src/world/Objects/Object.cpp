@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Creatures/Summons/Summon.h"
 #include "Storage/DBC/DBCStores.h"
 #include "Management/QuestLogEntry.hpp"
+#include "Management/QuestMgr.h"
 #include "Server/EventableObject.h"
 #include "VMapFactory.h"
 #include "VMapManager2.h"
@@ -360,6 +361,31 @@ void Object::setObjectType(uint8_t objectTypeId)
 uint32_t Object::getEntry() const { return objectData()->entry; }
 void Object::setEntry(uint32_t entry) { write(objectData()->entry, entry); }
 
+#if VERSION_STRING >= Mop
+uint32_t Object::getDynamicField() const { return objectData()->dynamic_field; }
+uint16_t Object::getDynamicFlags() const { return objectData()->dynamic_field_parts.dynamic_flags; }
+int16_t Object::getDynamicPathProgress() const
+{
+    if (!isGameObject())
+        return 0;
+
+    return objectData()->dynamic_field_parts.path_progress;
+}
+void Object::setDynamicField(uint32_t dynamic) { write(objectData()->dynamic_field, dynamic); }
+void Object::setDynamicField(uint16_t dynamicFlags, int16_t pathProgress) { setDynamicField(static_cast<uint32_t>(pathProgress) << 16 | dynamicFlags); }
+void Object::setDynamicFlags(uint16_t dynamicFlags) { setDynamicField(dynamicFlags, getDynamicPathProgress()); }
+void Object::addDynamicFlags(uint16_t dynamicFlags) { setDynamicFlags(static_cast<uint16_t>(getDynamicFlags() | dynamicFlags)); }
+void Object::removeDynamicFlags(uint16_t dynamicFlags) { setDynamicFlags(static_cast<uint16_t>(getDynamicFlags() & ~dynamicFlags)); }
+bool Object::hasDynamicFlags(uint16_t dynamicFlags) const { return (getDynamicFlags() & dynamicFlags) != 0; }
+void Object::setDynamicPathProgress(int16_t pathProgress)
+{
+    if (!isGameObject())
+        return;
+
+    setDynamicField(getDynamicFlags(), pathProgress);
+}
+#endif
+
 float Object::getScale() const { return objectData()->scale_x; }
 void Object::setScale(float scaleX) { write(objectData()->scale_x, scaleX); }
 
@@ -484,12 +510,37 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
     setCreateBits(&updateMask, target);
 
     // this will cache automatically if needed
-    buildValuesUpdate(data, &updateMask, target);
+    buildValuesUpdate(updateType, data, &updateMask, target);
 #if VERSION_STRING == Mop
     *data << uint8_t(0);
 #endif
     // Update count
     return 1;
+}
+
+void Object::forceBuildUpdateValueForField(uint32_t field, Player* target)
+{
+    if (target == nullptr)
+        return;
+
+    m_updateMask.SetBit(field);
+
+    ByteBuffer buffer(500);
+    BuildValuesUpdateBlockForPlayer(&buffer, target);
+    target->getUpdateMgr().pushUpdateData(&buffer, 1);
+}
+
+void Object::forceBuildUpdateValueForFields(uint32_t const* fields, Player* target)
+{
+    if (target == nullptr)
+        return;
+
+    for (uint32_t i = 0; fields[i] != 0; ++i)
+        m_updateMask.SetBit(fields[i]);
+
+    ByteBuffer buffer(500);
+    BuildValuesUpdateBlockForPlayer(&buffer, target);
+    target->getUpdateMgr().pushUpdateData(&buffer, 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1497,17 +1548,17 @@ void Object::removeSelfFromInrangeSets()
 }
 
 // Objects
-std::vector<Object*> Object::getInRangeObjectsSet()
+std::vector<Object*> Object::getInRangeObjectsSet() const
 {
     return mInRangeObjectsSet;
 }
 
-bool Object::hasInRangeObjects()
+bool Object::hasInRangeObjects() const
 {
     return !mInRangeObjectsSet.empty();
 }
 
-size_t Object::getInRangeObjectsCount()
+size_t Object::getInRangeObjectsCount() const
 {
     return mInRangeObjectsSet.size();
 }
@@ -1541,23 +1592,23 @@ void Object::removeObjectFromInRangeObjectsSet(Object* pObj)
 }
 
 // Players
-std::vector<Object*> Object::getInRangePlayersSet()
+std::vector<Object*> Object::getInRangePlayersSet() const
 {
     return mInRangePlayersSet;
 }
 
-size_t Object::getInRangePlayersCount()
+size_t Object::getInRangePlayersCount() const
 {
     return mInRangePlayersSet.size();
 }
 
 // Opposite Faction
-std::vector<Object*> Object::getInRangeOppositeFactionSet()
+std::vector<Object*> Object::getInRangeOppositeFactionSet() const
 {
     return mInRangeOppositeFactionSet;
 }
 
-bool Object::isObjectInInRangeOppositeFactionSet(Object* pObj)
+bool Object::isObjectInInRangeOppositeFactionSet(Object* pObj) const
 {
     std::scoped_lock<std::mutex> guard(m_inRangeFactionSetMutex);
     auto it = std::find(mInRangeOppositeFactionSet.begin(), mInRangeOppositeFactionSet.end(), pObj);
@@ -1610,12 +1661,12 @@ void Object::removeObjectFromInRangeOppositeFactionSet(Object* obj)
 }
 
 // Same Faction
-std::vector<Object*> Object::getInRangeSameFactionSet()
+std::vector<Object*> Object::getInRangeSameFactionSet() const
 {
     return mInRangeSameFactionSet;
 }
 
-bool Object::isObjectInInRangeSameFactionSet(Object* pObj)
+bool Object::isObjectInInRangeSameFactionSet(Object* pObj) const
 {
     std::scoped_lock<std::mutex> guard(m_inRangeFactionSetMutex);
     auto it = std::find(mInRangeSameFactionSet.begin(), mInRangeSameFactionSet.end(), pObj);
@@ -1754,7 +1805,7 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
                 *data << uint8(UPDATETYPE_VALUES);              // update type == update
                 *data << m_wowGuid;
 
-                buildValuesUpdate(data, &updateMask, target);
+                buildValuesUpdate(UPDATETYPE_VALUES, data, &updateMask, target);
 #if VERSION_STRING == Mop
                 * data << uint8_t(0);
 #endif
@@ -1778,7 +1829,7 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
         *buf << uint8(UPDATETYPE_VALUES);
         *buf << m_wowGuid;
 
-        buildValuesUpdate(buf, mask, nullptr);
+        buildValuesUpdate(UPDATETYPE_VALUES, buf, mask, nullptr);
 #if VERSION_STRING == Mop
         * buf << uint8_t(0);
 #endif
@@ -2996,7 +3047,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 }
 #endif
 
-void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player* target)
+void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask* updateMask, Player* target)
 {
     if (!updateMask)
     {
@@ -3004,136 +3055,30 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
         return;
     }
 
+    if (isGameObject() && !isTransporter())
+    {
+#if VERSION_STRING < Mop
+        updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, dynamic));
+#else
+        updateMask->SetBit(getOffsetForStructuredField(WoWObject, dynamic_field));
+#endif
+
+        if (updateType != UPDATETYPE_CREATE_OBJECT && updateType != UPDATETYPE_CREATE_OBJECT2)
+        {
+#if VERSION_STRING < WotLK
+            updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, animation_progress));
+#elif VERSION_STRING < Mop
+            updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, bytes_1_gameobject.animation_progress));
+#else
+            updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, bytes_2_gameobject.animation_progress));
+#endif
+        }
+    }
+
     if (updateMask->GetCount() != m_valuesCount)
     {
         sLogger.failure("Object::buildValuesUpdate values count in update mask is not equal to object values count!");
         return;
-    }
-
-    auto activate_quest_object = false, reset = false;
-    uint32_t old_flags = 0;
-
-    // Create a new object
-    if (updateMask->GetBit(getOffsetForStructuredField(WoWObject, guid)) && target)
-    {
-        if (isCreature() || isCorpse())
-        {
-            auto this_creature = static_cast<Creature*>(this);
-            if (this_creature->isTagged() && !this_creature->loot.isLooted())
-            {
-                uint32_t current_flags;
-                old_flags = current_flags = this_creature->getDynamicFlags();
-                if (this_creature->getTaggerGuid() == target->getGuid())
-                {
-                    old_flags = U_DYN_FLAG_TAGGED_BY_OTHER;
-                    if (current_flags & U_DYN_FLAG_TAGGED_BY_OTHER)
-                        current_flags &= ~old_flags;
-
-                    if (!(current_flags & U_DYN_FLAG_LOOTABLE) && this_creature->HasLootForPlayer(target))
-                        current_flags |= U_DYN_FLAG_LOOTABLE;
-                }
-                else if (!this_creature->loot.isLooted())
-                {
-                    old_flags = U_DYN_FLAG_LOOTABLE;
-
-                    if (!(current_flags & U_DYN_FLAG_TAGGED_BY_OTHER))
-                        current_flags |= U_DYN_FLAG_TAGGED_BY_OTHER;
-
-                    if (current_flags & U_DYN_FLAG_LOOTABLE)
-                        current_flags &= ~old_flags;
-                }
-
-                this_creature->setDynamicFlags(current_flags);
-                reset = true;
-            }
-        }
-
-        if (isGameObject())
-        {
-            const auto this_go = static_cast<GameObject*>(this);
-            if (this_go->isQuestGiver())
-            {
-                auto this_qg = static_cast<GameObject_QuestGiver*>(this);
-                if (this_qg->HasQuests())
-                {
-                    for (auto quest_relation : this_qg->getQuestList())
-                    {
-                        if (!quest_relation)
-                            continue;
-
-                        if (const auto quest_props = quest_relation->qst)
-                        {
-                            activate_quest_object = (quest_relation->type & QUESTGIVER_QUEST_START && !target->hasQuestInQuestLog(quest_props->id))
-                                || (quest_relation->type & QUESTGIVER_QUEST_END && !target->hasQuestInQuestLog(quest_props->id));
-                        }
-                    }
-                }
-                else
-                {
-                    if (const auto go_props = this_go->GetGameObjectProperties())
-                    {
-                        if (go_props->goMap.size() > 0 || go_props->itemMap.size() > 0)
-                        {
-                            for (const auto quest_go : go_props->goMap)
-                            {
-                                if (auto* const questLog = target->getQuestLogByQuestId(quest_go.first->id))
-                                {
-                                    const auto quest = questLog->getQuestProperties();
-                                    if (quest->count_required_mob == 0)
-                                        continue;
-
-                                    for (uint8_t i = 0; i < 4; ++i)
-                                    {
-                                        if (quest->required_mob_or_go[i] == static_cast<int32_t>(this_go->getEntry()))
-                                        {
-                                            if (questLog->getMobCountByIndex(i) < quest->required_mob_or_go_count[i])
-                                            {
-                                                activate_quest_object = true;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-
-                                if (activate_quest_object)
-                                    break;
-                            }
-
-                            if (!activate_quest_object)
-                            {
-                                for (auto quest_props : go_props->itemMap)
-                                {
-                                    for (const auto item_pair : quest_props.second)
-                                    {
-                                        if (auto* const questLog = target->getQuestLogByQuestId(quest_props.first->id))
-                                        {
-                                            if (target->getItemInterface()->GetItemCount(item_pair.first) < item_pair.second)
-                                            {
-                                                activate_quest_object = true;
-                                                break;
-                                            }
-                                        }
-                                    }
-
-                                    if (activate_quest_object)
-                                        break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // We already checked if GameObject, but do it again in case logic path changes in future
-    if (activate_quest_object && isGameObject())
-    {
-        const auto this_go = static_cast<GameObject*>(this);
-        old_flags = this_go->getDynamic();
-        // Show sparkles
-        this_go->setDynamic(1 | 8);
-        reset = true;
     }
 
     uint32_t block_count, values_count;
@@ -3153,17 +3098,196 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
     for (uint32_t idx = 0; idx < values_count; ++idx)
     {
         if (updateMask->GetBit(idx))
-            *data << m_uint32Values[idx];
-    }
+        {
+            // Some data must be altered because it has to be different to each player
+            auto bitValue = m_uint32Values[idx];
 
-    if (reset)
-    {
-        skipping_updates = true;
-        if (isCreatureOrPlayer())
-            static_cast<Unit*>(this)->setDynamicFlags(old_flags);
-        else if (isGameObject())
-            static_cast<GameObject*>(this)->setDynamic(old_flags);
-        skipping_updates = false;
+            if (target != nullptr)
+            {
+                if (isCreature())
+                {
+                    auto* const creature = dynamic_cast<Creature*>(this);
+
+                    if (idx == getOffsetForStructuredField(WoWUnit, unit_flags))
+                    {
+                        // Remove not selectable flag if GM mode is activated
+                        if (target->isGMFlagSet())
+                            bitValue &= ~UNIT_FLAG_NOT_SELECTABLE;
+                    }
+                    else if (idx == getOffsetForStructuredField(WoWUnit, display_id))
+                    {
+                        // Trigger npcs
+                        if (creature->GetCreatureProperties()->isTriggerNpc)
+                        {
+                            if (target->isGMFlagSet())
+                                bitValue = creature->GetCreatureProperties()->getVisibleModelForTriggerNpc();
+                        }
+                    }
+#if VERSION_STRING < Mop
+                    else if (idx == getOffsetForStructuredField(WoWUnit, dynamic_flags))
+#else
+                    else if (idx == getOffsetForStructuredField(WoWObject, dynamic_field))
+#endif
+                    {
+                        auto dynamicFlags = bitValue & ~(U_DYN_FLAG_LOOTABLE | U_DYN_FLAG_TAGGED_BY_OTHER | U_DYN_FLAG_TAPPED_BY_PLAYER);
+
+                        // Tagging
+                        if (creature->getTaggerGuid())
+                        {
+                            dynamicFlags |= U_DYN_FLAG_TAGGED_BY_OTHER;
+
+                            if (creature->isTaggedByPlayerOrItsGroup(target))
+                                dynamicFlags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
+                        }
+
+                        // Loot
+                        if (!creature->loot.isLooted() && creature->HasLootForPlayer(target))
+                            dynamicFlags |= U_DYN_FLAG_LOOTABLE;
+
+                        bitValue = dynamicFlags;
+                    }
+                }
+                else if (isGameObject())
+                {
+                    auto* const gameobject = dynamic_cast<GameObject*>(this);
+
+#if VERSION_STRING < Mop
+                    if (idx == getOffsetForStructuredField(WoWGameObject, dynamic))
+#else
+                    if (idx == getOffsetForStructuredField(WoWObject, dynamic_field))
+#endif
+                    {
+                        union
+                        {
+                            struct
+                            {
+                                uint16_t dynamicFlags;
+                                int16_t pathProgress;
+                            } field_parts;
+                            uint32_t dynamicField;
+                        };
+
+                        dynamicField = bitValue;
+                        field_parts.dynamicFlags &= ~(GO_DYN_FLAG_INTERACTABLE | GO_DYN_FLAG_SPARKLE);
+
+                        if (!isTransporter())
+                            field_parts.pathProgress = 0;
+
+                        const auto gobProperties = gameobject->GetGameObjectProperties();
+
+                        // Loot
+                        if (!gobProperties->goMap.empty() || !gobProperties->itemMap.empty())
+                        {
+                            auto activeObject = false;
+                            for (const auto& questPair : gobProperties->goMap)
+                            {
+                                if (auto* const questLog = target->getQuestLogByQuestId(questPair.first->id))
+                                {
+                                    const auto quest = questLog->getQuestProperties();
+                                    if (quest->count_required_mob == 0)
+                                        continue;
+
+                                    for (uint8_t i = 0; i < 4; ++i)
+                                    {
+                                        if (quest->required_mob_or_go[i] == static_cast<int32_t>(gameobject->getEntry()))
+                                        {
+                                            if (questLog->getMobCountByIndex(i) < quest->required_mob_or_go_count[i])
+                                            {
+                                                activeObject = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (activeObject)
+                                    break;
+                            }
+
+                            if (!activeObject)
+                            {
+                                for (const auto& questItemData : gobProperties->itemMap)
+                                {
+                                    for (const auto& itemPair : questItemData.second)
+                                    {
+                                        auto* const questLog = target->getQuestLogByQuestId(questItemData.first->id);
+                                        if (questLog == nullptr)
+                                            continue;
+
+                                        if (target->getItemInterface()->GetItemCount(itemPair.first) < itemPair.second)
+                                        {
+                                            activeObject = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (activeObject)
+                                        break;
+                                }
+                            }
+
+                            if (activeObject)
+                                field_parts.dynamicFlags |= GO_DYN_FLAG_INTERACTABLE | GO_DYN_FLAG_SPARKLE;
+                        }
+
+                        // Interactable gameobject
+                        if (!(field_parts.dynamicFlags & GO_DYN_FLAG_INTERACTABLE))
+                        {
+                            if (gameobject->isQuestGiver())
+                            {
+                                auto* const objectQuestGiver = dynamic_cast<GameObject_QuestGiver*>(this);
+                                if (objectQuestGiver->HasQuests())
+                                {
+                                    auto activeObject = false;
+                                    for (const auto& questRelation : objectQuestGiver->getQuestList())
+                                    {
+                                        if (questRelation == nullptr)
+                                            continue;
+
+                                        const auto questProperties = questRelation->qst;
+                                        if (questProperties == nullptr)
+                                            continue;
+
+                                        // Activate object if player has not started the quest but only if player is also able to start quest
+                                        // or if player has the quest and object is the quest ender
+                                        if ((questRelation->type & QUESTGIVER_QUEST_START && !target->hasQuestInQuestLog(questProperties->id)
+                                            && sQuestMgr.CalcQuestStatus(gameobject, target, questRelation) >= QuestStatus::AvailableChat) ||
+                                            (questRelation->type & QUESTGIVER_QUEST_END && target->hasQuestInQuestLog(questProperties->id)))
+                                        {
+                                            activeObject = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (activeObject)
+                                        field_parts.dynamicFlags |= GO_DYN_FLAG_INTERACTABLE;
+                                }
+                            }
+                        }
+
+                        bitValue = dynamicField;
+                    }
+                }
+                else if (isCorpse())
+                {
+                    auto* const corpse = dynamic_cast<Corpse*>(this);
+
+                    if (idx == getOffsetForStructuredField(WoWCorpse, dynamic_flags))
+                    {
+                        auto dynamicFlags = bitValue & ~(U_DYN_FLAG_LOOTABLE | U_DYN_FLAG_TAPPED_BY_PLAYER);
+
+                        // Loot
+                        // TODO: missing check if player is eligible to loot this corpse
+                        if (!corpse->loot.isLooted())
+                            dynamicFlags |= U_DYN_FLAG_LOOTABLE | U_DYN_FLAG_TAPPED_BY_PLAYER;
+
+                        bitValue = dynamicFlags;
+                    }
+                }
+            }
+
+            *data << bitValue;
+        }
     }
 }
 // MIT End

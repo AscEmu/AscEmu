@@ -730,7 +730,7 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
     }
 
     auto creature_spawn = new MySQLStructure::CreatureSpawn;
-    uint8 gender = creature_properties->GetGenderAndCreateRandomDisplayID(&creature_spawn->displayid);
+    uint8 gender = creature_properties->generateRandomDisplayIdAndReturnGender(&creature_spawn->displayid);
     creature_spawn->entry = entry;
     creature_spawn->id = sObjectMgr.GenerateCreatureSpawnID();
     creature_spawn->movetype = 0;

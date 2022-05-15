@@ -72,7 +72,7 @@ bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float
     setLevel(tInfo->pathTime);
     setAnimationProgress(animprogress);
 
-    setDynamicPathProgress();
+    updatePathProgress();
 
     _transportInfo = tInfo;
 
@@ -133,6 +133,11 @@ void Transporter::Update(unsigned long time_passed)
             if (timer < _currentFrame->DepartureTime)
             {
                 justStopped = IsMoving();
+#if VERSION_STRING >= WotLK
+                if (justStopped)
+                    setDynamicFlags(GO_DYN_FLAG_TRANSPORT_STOPPED);
+#endif
+
                 SetMoving(false);
                 if (_pendingStop && getState() != GO_STATE_CLOSED)
                 {
@@ -150,6 +155,11 @@ void Transporter::Update(unsigned long time_passed)
             DoEventIfAny(*_currentFrame, true); // departure event
             _triggeredDepartureEvent = true;
         }
+
+#if VERSION_STRING >= WotLK
+        if (!IsMoving())
+            setDynamicFlags(GO_DYN_FLAG_NONE);
+#endif
 
         // not waiting anymore
         SetMoving(true);
@@ -184,7 +194,7 @@ void Transporter::Update(unsigned long time_passed)
         _positionChangeTimer = positionUpdateDelay;
         if (IsMoving())
         {
-            setDynamicPathProgress();
+            updatePathProgress();
 
             // Return a Value between 0 and 1 which represents the time from 0 to 1 between current and next node.
             float t = !justStopped ? CalculateSegmentPos(float(timer) * 0.001f) : 1.0f;
@@ -195,7 +205,7 @@ void Transporter::Update(unsigned long time_passed)
         }
         else if (justStopped)
         {
-            setDynamicPathProgress();
+            updatePathProgress();
             UpdatePosition(_currentFrame->Node.x, _currentFrame->Node.y, _currentFrame->Node.z, _currentFrame->InitialOrientation);
         }
         else // When Transport Stopped keep updating players position
@@ -697,11 +707,9 @@ void Transporter::DoEventIfAny(KeyFrame const& node, bool departure)
     }
 }
 
-void Transporter::setDynamicPathProgress()
+void Transporter::updatePathProgress()
 {
-    uint32_t dynamicValue = 0;
-
-    uint16_t dynamicFlags = 0; // seems to always be 0
+#if VERSION_STRING >= WotLK
     int16_t pathProgress = -1; // dynamic Path Progress
 
     if (uint32_t transportPeriod = getTransportPeriod())
@@ -710,8 +718,7 @@ void Transporter::setDynamicPathProgress()
         pathProgress = int16_t(timer / float(transportPeriod) * 65535.0f);
     }
 
-    dynamicValue = (pathProgress << 16) + dynamicFlags;
-
     // Set Updatemask
-    setDynamic(dynamicValue);
+    setDynamicPathProgress(pathProgress);
+#endif
 }

@@ -376,7 +376,11 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
                 Player* plr = players->ToPlayer();
                 if (creature->isTaggedByPlayerOrItsGroup(plr))
                 {
+#if VERSION_STRING < Mop
                     creature->BuildFieldUpdatePacket(plr, getOffsetForStructuredField(WoWUnit, dynamic_flags), 0);
+#else
+                    creature->BuildFieldUpdatePacket(plr, getOffsetForStructuredField(WoWObject, dynamic_field), 0);
+#endif
                 }
             }
 

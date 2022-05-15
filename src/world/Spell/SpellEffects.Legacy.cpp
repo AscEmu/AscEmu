@@ -3601,7 +3601,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
 
             if (sQuestMgr.OnGameObjectActivate(p_caster, gameObjTarget))
             {
-                p_caster->UpdateNearbyGameObjects();
+                p_caster->updateNearbyQuestGameObjects();
                 return;
             }
 
@@ -4734,9 +4734,16 @@ void Spell::SpellEffectActivateObject(uint8_t effectIndex) // Activate Object
     }
 
     CALL_GO_SCRIPT_EVENT(gameObjTarget, OnActivate)(p_caster);
-    gameObjTarget->setDynamic(1);
 
-    sEventMgr.AddEvent(gameObjTarget, &GameObject::setDynamic, static_cast<uint32_t>(0), 0, GetDuration(), 1, 0);
+    gameObjTarget->setDynamicFlags(GO_DYN_FLAG_INTERACTABLE);
+
+#if VERSION_STRING < WotLK
+    sEventMgr.AddEvent(gameObjTarget, &GameObject::setDynamicFlags, static_cast<uint32_t>(0), 0, GetDuration(), 1, 0);
+#elif VERSION_STRING < Mop
+    sEventMgr.AddEvent(gameObjTarget, &GameObject::setDynamicFlags, static_cast<uint16_t>(0), 0, GetDuration(), 1, 0);
+#else
+    sEventMgr.AddEvent(dynamic_cast<Object*>(gameObjTarget), &Object::setDynamicFlags, static_cast<uint16_t>(0), 0, GetDuration(), 1, 0);
+#endif
 }
 
 void Spell::SpellEffectBuildingDamage(uint8_t effectIndex)

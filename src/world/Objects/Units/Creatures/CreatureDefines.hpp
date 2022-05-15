@@ -23,14 +23,13 @@
 #if VERSION_STRING >= Cata
 #include "Storage/DB2/DB2Structures.h"
 #endif
-
 #include "Spell/Definitions/School.hpp"
-
-#include <ctime>
-
 #include "Util.hpp"
 #include "Server/Master.h"
 #include "Macros/CreatureMacros.hpp"
+
+#include <cstdint>
+#include <ctime>
 
 struct AI_Spell;
 
@@ -38,6 +37,9 @@ const uint8 creatureMaxProtoSpells = 8;
 const uint32 creatureMaxInventoryItems = 150;
 
 const time_t vendorItemsUpdate = 3600000;
+
+// APGL End
+// MIT Start
 
 enum class CreatureGroundMovementType : uint8
 {
@@ -95,6 +97,19 @@ struct SERVER_DECL CreatureMovementData
     CreatureChaseMovementType getChase() const { return Chase; }
     CreatureRandomMovementType getRandom() const { return Random; }
 };
+
+struct CreatureDisplayInfoData
+{
+    uint32_t id = 0;
+    uint32_t modelId = 0;
+    uint32_t extendedDisplayInfoId = 0;
+    float_t creatureModelScale = 0.0f;
+    bool isModelInvisibleStalker = false;
+    DBC::Structures::CreatureModelDataEntry const* modelInfo = nullptr;
+};
+
+// MIT End
+// APGL Start
 
 enum creatureguardtype
 {
@@ -196,7 +211,7 @@ struct CreatureProperties
     std::string aura_string;
     bool isBoss;
     uint32 money;
-    uint32 invisibility_type;
+    bool isTriggerNpc;
     float walk_speed;       /// base movement
     float run_speed;        /// most of the time mobs use this
     float fly_speed;
@@ -218,47 +233,16 @@ struct CreatureProperties
 
     std::string lowercase_name;
 
-    uint8 GetGenderAndCreateRandomDisplayID(uint32* des) const
-    {
-        uint32 models[] = { Male_DisplayID, Male_DisplayID2, Female_DisplayID, Female_DisplayID2 };
-        if (!models[0] && !models[1] && !models[2] && !models[3])
-        {
-            // All models are invalid.
-            DLLLogDetail("CreatureSpawn : All model IDs are invalid for creature %u", Id);
-            return 0;
-        }
+    // APGL End
+    // MIT Start
 
-        while (true)
-        {
-            uint32 res = Util::getRandomUInt(3);
-            if (models[res])
-            {
-                *des = models[res];
-                return res < 2 ? 0U : 1U;
-            }
-        }
-    }
+    uint8_t generateRandomDisplayIdAndReturnGender(uint32_t* displayId) const;
+    uint32_t getRandomModelId() const;
+    uint32_t getInvisibleModelForTriggerNpc() const;
+    uint32_t getVisibleModelForTriggerNpc() const;
 
-    uint32 GetRandomModelId() const
-    {
-        uint8 counter = 0;
-        uint32 model_ids[4];
-
-        if (Male_DisplayID)
-            model_ids[counter++] = Male_DisplayID;
-        if (Male_DisplayID2)
-            model_ids[counter++] = Male_DisplayID2;
-        if (Female_DisplayID)
-            model_ids[counter++] = Female_DisplayID;
-        if (Female_DisplayID2)
-            model_ids[counter++] = Female_DisplayID2;
-
-        if (counter > 0)
-            return model_ids[Util::getRandomUInt(0U, counter - 1U)];
-
-        DLLLogDetail("CreatureProperties : No random display_id found for entry %u", Id);
-        return 0;
-    }
+    // MIT End
+    // APGL Start
 
     //itemslots
     uint32 itemslot_1;

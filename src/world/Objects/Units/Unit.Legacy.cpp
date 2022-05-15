@@ -8423,6 +8423,25 @@ void Unit::UpdateVisibility()
                         }
                     }
                 }
+                else if (pObj->isCreature() && plr->getSession() && plr->getSession()->HasGMPermissions())
+                {
+                    auto* const creature = dynamic_cast<Creature*>(pObj);
+
+                    uint32_t fieldIds[] =
+                    {
+                        // Update unit flags to remove not selectable flag
+                        getOffsetForStructuredField(WoWUnit, unit_flags),
+                        // Placeholder if creature is a trigger npc
+                        0,
+                        0
+                    };
+
+                    // Update trigger model
+                    if (creature->GetCreatureProperties()->isTriggerNpc)
+                        fieldIds[1] = getOffsetForStructuredField(WoWUnit, display_id);
+
+                    creature->forceBuildUpdateValueForFields(fieldIds, plr);
+                }
             }
         }
     }

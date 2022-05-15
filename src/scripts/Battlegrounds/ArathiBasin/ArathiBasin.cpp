@@ -203,7 +203,7 @@ void ArathiBasin::SpawnControlPoint(uint32_t Id, uint32_t Type)
         m_controlPoints[Id]->setState(GO_STATE_CLOSED);
         m_controlPoints[Id]->setGoType(static_cast<uint8_t>(gameobject_info->type));
         m_controlPoints[Id]->setAnimationProgress(100);
-        m_controlPoints[Id]->setDynamic(1);
+        m_controlPoints[Id]->setDynamicFlags(GO_DYN_FLAG_INTERACTABLE);
         m_controlPoints[Id]->setDisplayId(gameobject_info->display_id);
 
         switch (Type)

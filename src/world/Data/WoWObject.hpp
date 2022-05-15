@@ -110,7 +110,15 @@ struct WoWObject
     };
 
     uint32_t entry;
-    uint32_t dynamic_flags;
+    union
+    {
+        struct
+        {
+            uint16_t dynamic_flags;
+            int16_t path_progress;
+        } dynamic_field_parts;
+        uint32_t dynamic_field;
+    };
     float scale_x;
 
     void setLowGuid(uint32_t val)

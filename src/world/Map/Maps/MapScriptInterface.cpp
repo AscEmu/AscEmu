@@ -99,7 +99,7 @@ Creature* MapScriptInterface::spawnCreature(uint32_t Entry, LocationVector pos, 
     MySQLStructure::CreatureSpawn* spawn = new MySQLStructure::CreatureSpawn;
     spawn->entry = Entry;
     uint32_t DisplayID = 0;
-    uint8_t Gender = creature_properties->GetGenderAndCreateRandomDisplayID(&DisplayID);
+    uint8_t Gender = creature_properties->generateRandomDisplayIdAndReturnGender(&DisplayID);
     spawn->displayid = DisplayID;
     spawn->id = 0;
     spawn->movetype = 0;
@@ -162,7 +162,7 @@ Creature* MapScriptInterface::spawnCreature(MySQLStructure::CreatureSpawn* sp, b
         return nullptr;
     }
 
-    uint8_t Gender = creature_properties->GetGenderAndCreateRandomDisplayID(&sp->displayid);
+    uint8_t Gender = creature_properties->generateRandomDisplayIdAndReturnGender(&sp->displayid);
     Creature* p = this->m_worldMap.createCreature(sp->entry);
     if (p)
     {

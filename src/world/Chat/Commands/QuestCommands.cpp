@@ -68,7 +68,7 @@ std::string RemoveQuestFromPlayer(Player* plr, QuestProperties const* qst)
                         plr->getItemInterface()->RemoveItemAmt(itemId, 1);
                 }
 
-                plr->UpdateNearbyGameObjects();
+                plr->updateNearbyQuestGameObjects();
             }
             else
             {
@@ -206,6 +206,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                         }
                     }
 
+                    player->updateNearbyQuestGameObjects();
                     sHookInterface.OnQuestAccept(player, questProperties, nullptr);
 
                     recout += "Quest has been added to the player's quest log.";
@@ -462,6 +463,9 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                 plr->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qst->reward_money, 0, 0);
 #endif
             }
+
+            plr->updateNearbyQuestGameObjects();
+
 #if VERSION_STRING > TBC
             plr->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qst->zone_id, 0, 0);
             plr->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qst->id, 0, 0);

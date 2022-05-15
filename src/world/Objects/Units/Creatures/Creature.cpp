@@ -27,6 +27,107 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
+uint8_t CreatureProperties::generateRandomDisplayIdAndReturnGender(uint32_t* displayId) const
+{
+    if (isTriggerNpc)
+    {
+        // Trigger npcs should load their invisible model
+        *displayId = getInvisibleModelForTriggerNpc();
+        return 0;
+    }
+
+    const uint32_t models[] = { Male_DisplayID, Male_DisplayID2, Female_DisplayID, Female_DisplayID2 };
+    if (!models[0] && !models[1] && !models[2] && !models[3])
+    {
+        // All models are invalid
+        sLogger.failure("CreatureProperties : All display IDs are invalid for creature entry %u", Id);
+        return 0;
+    }
+
+    while (true)
+    {
+        const auto res = Util::getRandomUInt(3);
+        if (models[res])
+        {
+            *displayId = models[res];
+            return res < 2 ? 0U : 1U;
+        }
+    }
+}
+
+uint32_t CreatureProperties::getRandomModelId() const
+{
+    if (isTriggerNpc)
+    {
+        // Trigger npcs should load their invisible model
+        return getInvisibleModelForTriggerNpc();
+    }
+
+    std::vector<uint32_t> modelIds;
+
+    if (Male_DisplayID)
+        modelIds.push_back(Male_DisplayID);
+    if (Male_DisplayID2)
+        modelIds.push_back(Male_DisplayID2);
+    if (Female_DisplayID)
+        modelIds.push_back(Female_DisplayID);
+    if (Female_DisplayID2)
+        modelIds.push_back(Female_DisplayID2);
+
+    if (modelIds.empty())
+    {
+        sLogger.failure("CreatureProperties : All display IDs are invalid for creature entry %u", Id);
+        return 0;
+    }
+
+    Util::randomShuffleVector(&modelIds);
+    return modelIds.front();
+}
+
+uint32_t CreatureProperties::getInvisibleModelForTriggerNpc() const
+{
+    const auto* displayInfo = sObjectMgr.getCreatureDisplayInfoData(Male_DisplayID);
+    if (displayInfo != nullptr && displayInfo->isModelInvisibleStalker)
+        return Male_DisplayID;
+
+    displayInfo = sObjectMgr.getCreatureDisplayInfoData(Male_DisplayID2);
+    if (displayInfo != nullptr && displayInfo->isModelInvisibleStalker)
+        return Male_DisplayID2;
+
+    displayInfo = sObjectMgr.getCreatureDisplayInfoData(Female_DisplayID);
+    if (displayInfo != nullptr && displayInfo->isModelInvisibleStalker)
+        return Female_DisplayID;
+
+    displayInfo = sObjectMgr.getCreatureDisplayInfoData(Female_DisplayID2);
+    if (displayInfo != nullptr && displayInfo->isModelInvisibleStalker)
+        return Female_DisplayID2;
+
+    // Incase invisible model not found, return default trigger invisible model
+    return 11686;
+}
+
+uint32_t CreatureProperties::getVisibleModelForTriggerNpc() const
+{
+    const auto* displayInfo = sObjectMgr.getCreatureDisplayInfoData(Male_DisplayID);
+    if (displayInfo != nullptr && !displayInfo->isModelInvisibleStalker)
+        return Male_DisplayID;
+
+    displayInfo = sObjectMgr.getCreatureDisplayInfoData(Male_DisplayID2);
+    if (displayInfo != nullptr && !displayInfo->isModelInvisibleStalker)
+        return Male_DisplayID2;
+
+    displayInfo = sObjectMgr.getCreatureDisplayInfoData(Female_DisplayID);
+    if (displayInfo != nullptr && !displayInfo->isModelInvisibleStalker)
+        return Female_DisplayID;
+
+    displayInfo = sObjectMgr.getCreatureDisplayInfoData(Female_DisplayID2);
+    if (displayInfo != nullptr && !displayInfo->isModelInvisibleStalker)
+        return Female_DisplayID2;
+
+    // Incase visible model not found, return default trigger visible model
+    return 17519;
+}
+
 Creature::Creature(uint64_t guid)
 {
     //////////////////////////////////////////////////////////////////////////
@@ -1557,10 +1658,6 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         setDeathState(CORPSE);
     }
 
-    if (creature_properties->invisibility_type > INVIS_FLAG_NORMAL)
-        // TODO: currently only invisibility type 15 is used for invisible trigger NPCs
-        // these are always invisible to players
-        modInvisibilityLevel(InvisibilityFlag(creature_properties->invisibility_type), 1);
     if (spawn->stand_state)
         setStandState((uint8)spawn->stand_state);
 
@@ -1656,7 +1753,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setPower(POWER_TYPE_MANA, creature_properties->Mana);
 
     uint32 model = 0;
-    uint8 gender = creature_properties->GetGenderAndCreateRandomDisplayID(&model);
+    uint8 gender = creature_properties->generateRandomDisplayIdAndReturnGender(&model);
     setGender(gender);
 
     setDisplayId(model);
@@ -1766,11 +1863,6 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         getAIInterface()->setGuard(true);
     else
         getAIInterface()->setGuard(false);
-
-    if (creature_properties->invisibility_type > INVIS_FLAG_NORMAL)
-        // TODO: currently only invisibility type 15 is used for invisible trigger NPCs
-        // these are always invisible to players
-        modInvisibilityLevel(InvisibilityFlag(creature_properties->invisibility_type), 1);
 
     // Set spell immunities
     if (creature_properties->modImmunities != 0)
@@ -1920,7 +2012,7 @@ void Creature::respawn(bool force)
             setDeathState(JUST_RESPAWNED);
 
             uint32_t displayID = getNativeDisplayId();
-            uint8_t gender = GetCreatureProperties()->GetGenderAndCreateRandomDisplayID(&displayID);
+            uint8_t gender = GetCreatureProperties()->generateRandomDisplayIdAndReturnGender(&displayID);
 
             setGender(gender);
             setDisplayId(displayID);
