@@ -81,12 +81,12 @@ void LordMarrowgarAI::Reset()
     boneSpikeImmune.clear();
 }
 
-void LordMarrowgarAI::AIUpdate()
+void LordMarrowgarAI::AIUpdate(unsigned long time_passed)
 {
     if (!_isInCombat())
         return;
 
-    scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
+    scriptEvents.updateEvents(time_passed, getScriptPhase());
 
     if (_isCasting())
         return;
@@ -332,9 +332,9 @@ void ColdflameAI::OnSummon(Unit* summoner)
     scriptEvents.addEvent(EVENT_COLDFLAME_TRIGGER, 500);
 }
 
-void ColdflameAI::AIUpdate()
+void ColdflameAI::AIUpdate(unsigned long time_passed)
 {
-    scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
+    scriptEvents.updateEvents(time_passed, getScriptPhase());
 
     if (scriptEvents.getFinishedEvent() == EVENT_COLDFLAME_TRIGGER)
     {
@@ -371,7 +371,7 @@ BoneSpikeAI::BoneSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
 }
 
-CreatureAIScript* ColdflameAI::Create(Creature* pCreature) { return new BoneSpikeAI(pCreature); }
+CreatureAIScript* BoneSpikeAI::Create(Creature* pCreature) { return new BoneSpikeAI(pCreature); }
 
 void BoneSpikeAI::OnSummon(Unit* summoner)
 {
@@ -399,12 +399,12 @@ void BoneSpikeAI::OnDied(Unit* /*pTarget*/)
     getCreature()->Despawn(100, 0);
 }
 
-void BoneSpikeAI::AIUpdate()
+void BoneSpikeAI::AIUpdate(unsigned long time_passed)
 {
     if (!hasTrappedUnit)
         return;
 
-    scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
+    scriptEvents.updateEvents(time_passed, getScriptPhase());
 
     if (scriptEvents.getFinishedEvent() == EVENT_FAIL_BONED)
         if (mInstance)

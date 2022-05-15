@@ -18,10 +18,10 @@ public:
 
     void IntroStart();
 
-    void OnCombatStart(Unit* /*pTarget*/) override;
-    void OnCombatStop(Unit* /*_target*/) override;
+    void OnCombatStart(Unit* pTarget) override;
+    void OnCombatStop(Unit* pTarget) override;
     void Reset();
-    void AIUpdate() override;
+    void AIUpdate(unsigned long time_passed) override;
     void OnReachWP(uint32_t type, uint32_t iWaypointId) override;
 
     LocationVector const* GetLastColdflamePosition() const;
@@ -64,7 +64,7 @@ public:
 
     void OnLoad() override;
     void OnSummon(Unit* summoner) override;
-    void AIUpdate() override;
+    void AIUpdate(unsigned long time_passed) override;
 
 protected:
     // Common
@@ -85,7 +85,7 @@ public:
     void OnSummon(Unit* summoner) override;
     void OnTargetDied(Unit* pTarget) override;
     void OnDied(Unit* /*pTarget*/) override;
-    void AIUpdate() override;
+    void AIUpdate(unsigned long time_passed) override;
 
 protected:
     // Common
