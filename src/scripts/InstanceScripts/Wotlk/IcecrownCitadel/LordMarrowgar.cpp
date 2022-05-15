@@ -14,449 +14,402 @@ This file is released under the MIT license. See README-MIT for more information
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Boss: Lord Marrowgar
-class LordMarrowgarAI : public CreatureAIScript
+LordMarrowgarAI::LordMarrowgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
-public:
-    static CreatureAIScript* Create(Creature* c) { return new LordMarrowgarAI(c); }
-    explicit LordMarrowgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    // Instance Script
+    mInstance = getInstanceScript();
+
+    boneStormDuration = RAID_MODE<uint32_t>(20000, 30000, 20000, 30000);
+    baseSpeed = pCreature->getSpeedRate(TYPE_RUN, false);
+    introDone = false;
+    boneSlice = false;
+    boneStormtarget = nullptr;
+    coldflameLastPos = getCreature()->GetPosition();
+
+    // Scripted Spells not autocastet
+    boneSliceSpell = addAISpell(SPELL_BONE_SLICE, 0.0f, TARGET_ATTACKING);
+    boneStormSpell = addAISpell(SPELL_BONE_STORM, 0.0f, TARGET_SELF);
+    boneStormSpell->addDBEmote(SAY_MARR_BONE_STORM_EMOTE);
+
+    boneSpikeGraveyardSpell = addAISpell(SPELL_BONE_SPIKE_GRAVEYARD, 0.0f, TARGET_SELF);
+    coldflameNormalSpell = addAISpell(SPELL_COLDFLAME_NORMAL, 0.0f, TARGET_SELF);
+    coldflameBoneStormSpell = addAISpell(SPELL_COLDFLAME_BONE_STORM, 0.0f, TARGET_SELF);
+
+    berserkSpell = addAISpell(SPELL_BERSERK, 0.0f, TARGET_SELF);
+    berserkSpell->addDBEmote(SAY_MARR_BERSERK);                  // THE MASTER'S RAGE COURSES THROUGH ME!
+    berserkSpell->mIsTriggered = true;
+
+    // Messages
+    addEmoteForEvent(Event_OnCombatStart, SAY_MARR_AGGRO);     // The Scourge will wash over this world as a swarm of death and destruction!
+    addEmoteForEvent(Event_OnTargetDied, SAY_MARR_KILL_1);      // More bones for the offering!
+    addEmoteForEvent(Event_OnTargetDied, SAY_MARR_KILL_2);      // Languish in damnation!
+    addEmoteForEvent(Event_OnDied, SAY_MARR_DEATH);            // I see... Only darkness.
+}
+
+CreatureAIScript* LordMarrowgarAI::Create(Creature* pCreature) { return new LordMarrowgarAI(pCreature); }
+
+void LordMarrowgarAI::IntroStart()
+{
+    sendDBChatMessage(SAY_MARR_ENTER_ZONE);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
+    introDone = true;
+}
+
+void LordMarrowgarAI::OnCombatStart(Unit* /*pTarget*/)
+{
+    // common events
+    scriptEvents.addEvent(EVENT_ENABLE_BONE_SLICE, 10000);
+    scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(10000, 15000));
+    scriptEvents.addEvent(EVENT_COLDFLAME, 5000);
+    scriptEvents.addEvent(EVENT_WARN_BONE_STORM, Util::getRandomInt(45000, 50000));
+    scriptEvents.addEvent(EVENT_ENRAGE, 600000);
+}
+
+void LordMarrowgarAI::OnCombatStop(Unit* /*_target*/)
+{
+    Reset();
+}
+
+void LordMarrowgarAI::Reset()
+{
+    scriptEvents.resetEvents();
+
+    getCreature()->setSpeedRate(TYPE_RUN, baseSpeed, true);
+    getCreature()->RemoveAura(SPELL_BONE_STORM);
+    getCreature()->RemoveAura(SPELL_BERSERK);
+
+    boneSlice = false;
+    boneSpikeImmune.clear();
+}
+
+void LordMarrowgarAI::AIUpdate()
+{
+    if (!_isInCombat())
+        return;
+
+    scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
+
+    if (_isCasting())
+        return;
+
+    while (uint32_t eventId = scriptEvents.getFinishedEvent())
     {
-        // Instance Script
-        mInstance = getInstanceScript();
-
-        boneStormDuration = RAID_MODE<uint32_t>(20000, 30000, 20000, 30000);
-        baseSpeed = pCreature->getSpeedRate(TYPE_RUN, false);
-        introDone = false;
-        boneSlice = false;
-        boneStormtarget = nullptr;
-        coldflameLastPos = getCreature()->GetPosition();
-
-        // Scripted Spells not autocastet
-        boneSliceSpell = addAISpell(SPELL_BONE_SLICE, 0.0f, TARGET_ATTACKING);
-        boneStormSpell = addAISpell(SPELL_BONE_STORM, 0.0f, TARGET_SELF);
-        boneStormSpell->addDBEmote(SAY_MARR_BONE_STORM_EMOTE);
-
-        boneSpikeGraveyardSpell = addAISpell(SPELL_BONE_SPIKE_GRAVEYARD, 0.0f, TARGET_SELF);
-        coldflameNormalSpell = addAISpell(SPELL_COLDFLAME_NORMAL, 0.0f, TARGET_SELF);
-        coldflameBoneStormSpell = addAISpell(SPELL_COLDFLAME_BONE_STORM, 0.0f, TARGET_SELF);
-
-        berserkSpell = addAISpell(SPELL_BERSERK, 0.0f, TARGET_SELF);
-        berserkSpell->addDBEmote(SAY_MARR_BERSERK);                  // THE MASTER'S RAGE COURSES THROUGH ME!
-        berserkSpell->mIsTriggered = true;
-
-        // Messages
-        addEmoteForEvent(Event_OnCombatStart, SAY_MARR_AGGRO);     // The Scourge will wash over this world as a swarm of death and destruction!
-        addEmoteForEvent(Event_OnTargetDied, SAY_MARR_KILL_1);      // More bones for the offering!
-        addEmoteForEvent(Event_OnTargetDied, SAY_MARR_KILL_2);      // Languish in damnation!
-        addEmoteForEvent(Event_OnDied, SAY_MARR_DEATH);            // I see... Only darkness.
-    }
-
-    void IntroStart()
-    {
-        sendDBChatMessage(SAY_MARR_ENTER_ZONE);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
-        introDone = true;
-    }
-
-    void OnCombatStart(Unit* /*pTarget*/) override
-    {
-        // common events
-        scriptEvents.addEvent(EVENT_ENABLE_BONE_SLICE, 10000);
-        scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(10000, 15000));
-        scriptEvents.addEvent(EVENT_COLDFLAME, 5000);
-        scriptEvents.addEvent(EVENT_WARN_BONE_STORM, Util::getRandomInt(45000, 50000));
-        scriptEvents.addEvent(EVENT_ENRAGE, 600000);
-    }
-
-    void OnCombatStop(Unit* /*_target*/) override
-    {
-        Reset();
-    }
-
-    void Reset()
-    {
-        scriptEvents.resetEvents();
-
-        getCreature()->setSpeedRate(TYPE_RUN, baseSpeed, true);
-        getCreature()->RemoveAura(SPELL_BONE_STORM);
-        getCreature()->RemoveAura(SPELL_BERSERK);
-
-        boneSlice = false;
-        boneSpikeImmune.clear();
-    }
-
-    void AIUpdate() override
-    {
-        if (!_isInCombat())
-            return;
-
-        scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
-
-        if (_isCasting())
-            return;
-
-        while (uint32_t eventId = scriptEvents.getFinishedEvent())
+        switch (eventId)
         {
-            switch (eventId)
+            case EVENT_BONE_SPIKE_GRAVEYARD:
             {
-                case EVENT_BONE_SPIKE_GRAVEYARD:
-                {
-                    if (_isHeroic() || !getCreature()->hasAurasWithId(SPELL_BONE_STORM))
-                        _castAISpell(boneSpikeGraveyardSpell);
+                if (_isHeroic() || !getCreature()->hasAurasWithId(SPELL_BONE_STORM))
+                    _castAISpell(boneSpikeGraveyardSpell);
 
-                    scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(15000, 20000));
-                    break;
-                }
-                case EVENT_COLDFLAME:
-                {
-                    coldflameLastPos = getCreature()->GetPosition();
+                scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(15000, 20000));
+                break;
+            }
+            case EVENT_COLDFLAME:
+            {
+                coldflameLastPos = getCreature()->GetPosition();
 
-                    if (!getCreature()->hasAurasWithId(SPELL_BONE_STORM))
-                        _castAISpell(coldflameNormalSpell);
-                    else
-                        _castAISpell(coldflameBoneStormSpell);
+                if (!getCreature()->hasAurasWithId(SPELL_BONE_STORM))
+                    _castAISpell(coldflameNormalSpell);
+                else
+                    _castAISpell(coldflameBoneStormSpell);
 
-                    scriptEvents.addEvent(EVENT_COLDFLAME, 5000);
-                    break;
-                }
-                case EVENT_WARN_BONE_STORM:
-                {
-                    boneSlice = false;
-                    _castAISpell(boneStormSpell);
+                scriptEvents.addEvent(EVENT_COLDFLAME, 5000);
+                break;
+            }
+            case EVENT_WARN_BONE_STORM:
+            {
+                boneSlice = false;
+                _castAISpell(boneStormSpell);
 
-                    scriptEvents.delayEvent(EVENT_BONE_SPIKE_GRAVEYARD, 3000);
-                    scriptEvents.delayEvent(EVENT_COLDFLAME, 3000);
+                scriptEvents.delayEvent(EVENT_BONE_SPIKE_GRAVEYARD, 3000);
+                scriptEvents.delayEvent(EVENT_COLDFLAME, 3000);
 
-                    scriptEvents.addEvent(EVENT_BONE_STORM_BEGIN, 3050);
-                    scriptEvents.addEvent(EVENT_WARN_BONE_STORM, Util::getRandomInt(90000, 95000));
-                }
-                case EVENT_BONE_STORM_BEGIN:
-                {
-                    getCreature()->setSpeedRate(TYPE_RUN, baseSpeed * 3.0f, true);
-                    sendDBChatMessage(SAY_MARR_BONE_STORM); // BONE STORM!
+                scriptEvents.addEvent(EVENT_BONE_STORM_BEGIN, 3050);
+                scriptEvents.addEvent(EVENT_WARN_BONE_STORM, Util::getRandomInt(90000, 95000));
+            }
+            case EVENT_BONE_STORM_BEGIN:
+            {
+                getCreature()->setSpeedRate(TYPE_RUN, baseSpeed * 3.0f, true);
+                sendDBChatMessage(SAY_MARR_BONE_STORM); // BONE STORM!
 
-                    scriptEvents.addEvent(EVENT_BONE_STORM_END, boneStormDuration + 1);
-                }
-                    [[fallthrough]];
-                case EVENT_BONE_STORM_MOVE:
-                {
-                    scriptEvents.addEvent(EVENT_BONE_STORM_MOVE, boneStormDuration / 3);
+                scriptEvents.addEvent(EVENT_BONE_STORM_END, boneStormDuration + 1);
+            }
+                [[fallthrough]];
+            case EVENT_BONE_STORM_MOVE:
+            {
+                scriptEvents.addEvent(EVENT_BONE_STORM_MOVE, boneStormDuration / 3);
 
-                    boneStormtarget = getBestPlayerTarget(TargetFilter_NotCurrent);
-                    if (!boneStormtarget)
-                        boneStormtarget = getBestPlayerTarget(TargetFilter_Current);
-                
-                    if (boneStormtarget)
-                        getCreature()->getMovementManager()->movePoint(POINT_TARGET_BONESTORM_PLAYER, boneStormtarget->GetPosition());
+                boneStormtarget = getBestPlayerTarget(TargetFilter_NotCurrent);
+                if (!boneStormtarget)
+                    boneStormtarget = getBestPlayerTarget(TargetFilter_Current);
+            
+                if (boneStormtarget)
+                    getCreature()->getMovementManager()->movePoint(POINT_TARGET_BONESTORM_PLAYER, boneStormtarget->GetPosition());
 
-                    break;
-                }
-                case EVENT_BONE_STORM_END:
-                {
-                    if (MovementGenerator* movement = getCreature()->getMovementManager()->getMovementGenerator([](MovementGenerator const* a) -> bool
+                break;
+            }
+            case EVENT_BONE_STORM_END:
+            {
+                if (MovementGenerator* movement = getCreature()->getMovementManager()->getMovementGenerator([](MovementGenerator const* a) -> bool
+                    {
+                        if (a->getMovementGeneratorType() == POINT_MOTION_TYPE)
                         {
-                            if (a->getMovementGeneratorType() == POINT_MOTION_TYPE)
-                            {
-                                PointMovementGenerator<Creature> const* pointMovement = dynamic_cast<PointMovementGenerator<Creature> const*>(a);
-                                return pointMovement && pointMovement->getId() == POINT_TARGET_BONESTORM_PLAYER;
-                            }
-                            return false;
-                        }))
+                            PointMovementGenerator<Creature> const* pointMovement = dynamic_cast<PointMovementGenerator<Creature> const*>(a);
+                            return pointMovement && pointMovement->getId() == POINT_TARGET_BONESTORM_PLAYER;
+                        }
+                        return false;
+                    }))
 
-                    getCreature()->getMovementManager()->remove(movement);
+                getCreature()->getMovementManager()->remove(movement);
 
-                    getCreature()->getMovementManager()->moveChase(getCreature()->getAIInterface()->getCurrentTarget());
+                getCreature()->getMovementManager()->moveChase(getCreature()->getAIInterface()->getCurrentTarget());
 
-                    getCreature()->setSpeedRate(TYPE_RUN, baseSpeed, true);
-                    scriptEvents.removeEvent(EVENT_BONE_STORM_MOVE);
-                    scriptEvents.addEvent(EVENT_ENABLE_BONE_SLICE, 10000);
+                getCreature()->setSpeedRate(TYPE_RUN, baseSpeed, true);
+                scriptEvents.removeEvent(EVENT_BONE_STORM_MOVE);
+                scriptEvents.addEvent(EVENT_ENABLE_BONE_SLICE, 10000);
 
-                    if (!_isHeroic())
-                        scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(15000, 20000));
-                    break;
-                }
-                case EVENT_ENABLE_BONE_SLICE:
-                {
-                    boneSlice = true;
-                    break;
-                }
-                case EVENT_ENRAGE:
-                {
-                    _castAISpell(berserkSpell);
-                    break;
-                }
-                default:
-                    break;
-            }
-        }
-     
-        // We should not melee attack when storming
-        if (getCreature()->hasAurasWithId(SPELL_BONE_STORM))
-        {
-            _setMeleeDisabled(true);
-            return;
-        }
-
-        _setMeleeDisabled(false);
-
-        // 10 seconds since encounter start Bone Slice replaces melee attacks
-        if (boneSlice)
-        {
-            _castAISpell(boneSliceSpell);
-        }
-
-    }
-
-    void OnReachWP(uint32_t type, uint32_t iWaypointId) override
-    {
-        if (type != POINT_MOTION_TYPE || iWaypointId != POINT_TARGET_BONESTORM_PLAYER)
-            return;
-
-        // lock movement
-        getCreature()->getMovementManager()->moveIdle();
-    }
-
-    LocationVector const* GetLastColdflamePosition() const
-    {
-        return &coldflameLastPos;
-    }
-
-    void SetLastColdflamePosition(LocationVector pos)
-    {
-        coldflameLastPos = pos;
-    }
-
-    void SetCreatureData64(uint32_t Type, uint64_t Data) override
-    {
-        switch (Type)
-        {
-            case DATA_COLDFLAME_GUID:
-            {
-                coldflameTarget = Data;
+                if (!_isHeroic())
+                    scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(15000, 20000));
                 break;
             }
-            case DATA_SPIKE_IMMUNE:
+            case EVENT_ENABLE_BONE_SLICE:
             {
-                boneSpikeImmune.push_back(Data);
+                boneSlice = true;
+                break;
+            }
+            case EVENT_ENRAGE:
+            {
+                _castAISpell(berserkSpell);
                 break;
             }
             default:
                 break;
         }
     }
-
-    uint64_t GetCreatureData64(uint32_t Type) const
-    { 
-        switch (Type)
-        {
-            case DATA_COLDFLAME_GUID:
-                return coldflameTarget;
-            case DATA_SPIKE_IMMUNE + 0:
-            case DATA_SPIKE_IMMUNE + 1:
-            case DATA_SPIKE_IMMUNE + 2:
-            {
-                uint32_t index = Type - DATA_SPIKE_IMMUNE;
-                if (index < boneSpikeImmune.size())
-                    return boneSpikeImmune[index];
-
-                break;
-            }
-            default:
-                return 0;
-        }
-
-        return 0;
-    }
-
-    void DoAction(int32_t const action) override
+ 
+    // We should not melee attack when storming
+    if (getCreature()->hasAurasWithId(SPELL_BONE_STORM))
     {
-        if (action == ACTION_CLEAR_SPIKE_IMMUNITIES)
-            boneSpikeImmune.clear();
-
-        if (action == ACTION_MARROWGAR_INTRO_START)
-            IntroStart();
+        _setMeleeDisabled(true);
+        return;
     }
 
-protected:
-    // Common
-    InstanceScript* mInstance;
-    float baseSpeed;
-    bool introDone;
-    bool boneSlice;
+    _setMeleeDisabled(false);
 
-    Unit* boneStormtarget;
-    LocationVector coldflameLastPos;
-    uint64_t coldflameTarget;
-    std::vector<uint64_t> boneSpikeImmune;
+    // 10 seconds since encounter start Bone Slice replaces melee attacks
+    if (boneSlice)
+    {
+        _castAISpell(boneSliceSpell);
+    }
 
-    // Spells
-    CreatureAISpells* boneSliceSpell;
-    CreatureAISpells* boneStormSpell;
-    CreatureAISpells* boneSpikeGraveyardSpell;
-    CreatureAISpells* coldflameNormalSpell;
-    CreatureAISpells* coldflameBoneStormSpell;
-    CreatureAISpells* berserkSpell;
+}
 
-    uint32_t boneStormDuration;
-};
+void LordMarrowgarAI::OnReachWP(uint32_t type, uint32_t iWaypointId)
+{
+    if (type != POINT_MOTION_TYPE || iWaypointId != POINT_TARGET_BONESTORM_PLAYER)
+        return;
+
+    // lock movement
+    getCreature()->getMovementManager()->moveIdle();
+}
+
+LocationVector const* LordMarrowgarAI::GetLastColdflamePosition() const
+{
+    return &coldflameLastPos;
+}
+
+void LordMarrowgarAI::SetLastColdflamePosition(LocationVector pos)
+{
+    coldflameLastPos = pos;
+}
+
+void LordMarrowgarAI::SetCreatureData64(uint32_t Type, uint64_t Data)
+{
+    switch (Type)
+    {
+        case DATA_COLDFLAME_GUID:
+        {
+            coldflameTarget = Data;
+            break;
+        }
+        case DATA_SPIKE_IMMUNE:
+        {
+            boneSpikeImmune.push_back(Data);
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+uint64_t LordMarrowgarAI::GetCreatureData64(uint32_t Type) const
+{ 
+    switch (Type)
+    {
+        case DATA_COLDFLAME_GUID:
+            return coldflameTarget;
+        case DATA_SPIKE_IMMUNE + 0:
+        case DATA_SPIKE_IMMUNE + 1:
+        case DATA_SPIKE_IMMUNE + 2:
+        {
+            uint32_t index = Type - DATA_SPIKE_IMMUNE;
+            if (index < boneSpikeImmune.size())
+                return boneSpikeImmune[index];
+
+            break;
+        }
+        default:
+            return 0;
+    }
+
+    return 0;
+}
+
+void LordMarrowgarAI::DoAction(int32_t const action)
+{
+    if (action == ACTION_CLEAR_SPIKE_IMMUNITIES)
+        boneSpikeImmune.clear();
+
+    if (action == ACTION_MARROWGAR_INTRO_START)
+        IntroStart();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Misc: Cold Flame
-class ColdflameAI : public CreatureAIScript
+ColdflameAI::ColdflameAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
-public:
-    static CreatureAIScript* Create(Creature* c) { return new ColdflameAI(c); }
-    explicit ColdflameAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Instance Script
-        mInstance = getInstanceScript();     
-        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
-        getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
-        coldflameTriggerSpell = addAISpell(SPELL_COLDFLAME_SUMMON, 0.0f, TARGET_SOURCE);
-        coldflameTriggerSpell->mIsTriggered = true;
-    }
+    // Instance Script
+    mInstance = getInstanceScript();
+    getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
+    getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
+    coldflameTriggerSpell = addAISpell(SPELL_COLDFLAME_SUMMON, 0.0f, TARGET_SOURCE);
+    coldflameTriggerSpell->mIsTriggered = true;
+}
 
-    void OnLoad() override
-    {
-        getCreature()->setVisible(false);
-    }
+CreatureAIScript* ColdflameAI::Create(Creature* pCreature) { return new ColdflameAI(pCreature); }
 
-    void OnSummon(Unit* summoner) override
-    {
-        if (!mInstance || !summoner->isCreature())
-            return;
+void ColdflameAI::OnLoad()
+{
+    getCreature()->setVisible(false);
+}
 
-        if (summoner->hasAurasWithId(SPELL_BONE_STORM))
+void ColdflameAI::OnSummon(Unit* summoner)
+{
+    if (!mInstance || !summoner->isCreature())
+        return;
+
+    if (summoner->hasAurasWithId(SPELL_BONE_STORM))
+    {
+        // Bonestorm X Pattern
+        if (LordMarrowgarAI* marrowgarAI = static_cast<LordMarrowgarAI*>(static_cast<Creature*>(summoner)->GetScript()))
         {
-            // Bonestorm X Pattern
-            if (LordMarrowgarAI* marrowgarAI = static_cast<LordMarrowgarAI*>(static_cast<Creature*>(summoner)->GetScript()))
-            {
-                LocationVector const* ownerPos = marrowgarAI->GetLastColdflamePosition();
-                float angle = ownerPos->o / M_PI_FLOAT * 180.0f;
-                MoveTeleport(ownerPos->x , ownerPos->y, ownerPos->z, ownerPos->o);
-                // Store last Coldflame Position and add 90 degree to create x pattern
-                LocationVector nextPos;
-                nextPos.x = ownerPos->x;
-                nextPos.y = ownerPos->y;
-                nextPos.z = ownerPos->z;
-                nextPos.o = angle + 90 * M_PI_FLOAT / 180.0f;
+            LocationVector const* ownerPos = marrowgarAI->GetLastColdflamePosition();
+            float angle = ownerPos->o / M_PI_FLOAT * 180.0f;
+            MoveTeleport(ownerPos->x , ownerPos->y, ownerPos->z, ownerPos->o);
+            // Store last Coldflame Position and add 90 degree to create x pattern
+            LocationVector nextPos;
+            nextPos.x = ownerPos->x;
+            nextPos.y = ownerPos->y;
+            nextPos.z = ownerPos->z;
+            nextPos.o = angle + 90 * M_PI_FLOAT / 180.0f;
 
-                marrowgarAI->SetLastColdflamePosition(nextPos);
-            }
+            marrowgarAI->SetLastColdflamePosition(nextPos);
         }
-        // Random target Case
-        else
+    }
+    // Random target Case
+    else
+    {
+        Unit* target = mInstance->getInstance()->getUnit(static_cast<Creature*>(summoner)->GetScript()->GetCreatureData64(DATA_COLDFLAME_GUID));
+        if (!target)
         {
-            Unit* target = mInstance->getInstance()->getUnit(static_cast<Creature*>(summoner)->GetScript()->GetCreatureData64(DATA_COLDFLAME_GUID));
-            if (!target)
-            {
-                getCreature()->Despawn(100, 0);
-                return;
-            }        
-            MoveTeleport(summoner->GetPosition());
-
-            getCreature()->SetOrientation(getCreature()->calcAngle(summoner->GetPositionX(), summoner->GetPositionY(), target->GetPositionX(), target->GetPositionY()) * M_PI_FLOAT / 180.0f);
+            getCreature()->Despawn(100, 0);
+            return;
         }        
-        MoveTeleport(summoner->GetPositionX(), summoner->GetPositionY(),summoner->GetPositionZ(), getCreature()->GetOrientation());
+        MoveTeleport(summoner->GetPosition());
+
+        getCreature()->SetOrientation(getCreature()->calcAngle(summoner->GetPositionX(), summoner->GetPositionY(), target->GetPositionX(), target->GetPositionY()) * M_PI_FLOAT / 180.0f);
+    }        
+    MoveTeleport(summoner->GetPositionX(), summoner->GetPositionY(),summoner->GetPositionZ(), getCreature()->GetOrientation());
+    scriptEvents.addEvent(EVENT_COLDFLAME_TRIGGER, 500);
+}
+
+void ColdflameAI::AIUpdate()
+{
+    scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
+
+    if (scriptEvents.getFinishedEvent() == EVENT_COLDFLAME_TRIGGER)
+    {
+        LocationVector newPos;
+        newPos = getCreature()->GetPosition();
+
+        float angle = newPos.o;
+        float destx, desty, destz;
+        destx = newPos.x + 5.0f * std::cos(angle);
+        desty = newPos.y + 5.0f * std::sin(angle);
+        destz = newPos.z;
+
+        newPos.x = destx;
+        newPos.y = desty;
+        newPos.z = destz;
+
+        MoveTeleport(newPos.x, newPos.y, newPos.z, newPos.o);
+        _castAISpell(coldflameTriggerSpell);         
         scriptEvents.addEvent(EVENT_COLDFLAME_TRIGGER, 500);
     }
-
-    void AIUpdate() override
-    {
-        scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
-
-        if (scriptEvents.getFinishedEvent() == EVENT_COLDFLAME_TRIGGER)
-        {
-            LocationVector newPos;
-            newPos = getCreature()->GetPosition();
-
-            float angle = newPos.o;
-            float destx, desty, destz;
-            destx = newPos.x + 5.0f * std::cos(angle);
-            desty = newPos.y + 5.0f * std::sin(angle);
-            destz = newPos.z;
-
-            newPos.x = destx;
-            newPos.y = desty;
-            newPos.z = destz;
-
-            MoveTeleport(newPos.x, newPos.y, newPos.z, newPos.o);
-            _castAISpell(coldflameTriggerSpell);         
-            scriptEvents.addEvent(EVENT_COLDFLAME_TRIGGER, 500);
-        }
-    }
-
-protected:
-    // Common
-    InstanceScript* mInstance;
-
-    //Spells
-    CreatureAISpells* coldflameTriggerSpell;
-};
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Misc: Bone Spike
-class BoneSpikeAI : public CreatureAIScript
+BoneSpikeAI::BoneSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
-public:
-    static CreatureAIScript* Create(Creature* c) { return new BoneSpikeAI(c); }
-    explicit BoneSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        // Instance Script
-        mInstance = getInstanceScript();
+    // Instance Script
+    mInstance = getInstanceScript();
 
-        // Common
-        hasTrappedUnit = false;
-        summon = nullptr;
-
-        getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
-    }
-
-    void OnSummon(Unit* summoner) override
-    {
-        summon = summoner;
-        // Make our Creature in Combat otherwise on Died Script wont trigger
-        getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_AGRO);
-
-        getCreature()->castSpell(summoner, SPELL_IMPALED);
-        summoner->castSpell(getCreature(), SPELL_RIDE_VEHICLE_SE, true);
-        scriptEvents.addEvent(EVENT_FAIL_BONED, 8000);
-        hasTrappedUnit = true;
-    }
-
-    void OnTargetDied(Unit* pTarget) override
-    {
-        getCreature()->Despawn(100, 0);
-        pTarget->RemoveAura(SPELL_IMPALED);
-    }
-
-    void OnDied(Unit* /*pTarget*/) override
-    {       
-        if (summon)
-            summon->RemoveAura(SPELL_IMPALED);
-         
-        getCreature()->Despawn(100, 0);
-    }
-
-    void AIUpdate() override
-    {
-        if (!hasTrappedUnit)
-            return;
-
-        scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
-
-        if (scriptEvents.getFinishedEvent() == EVENT_FAIL_BONED)
-            if (mInstance)
-                mInstance->setLocalData(DATA_BONED_ACHIEVEMENT, uint32_t(false));
-    }
-
-protected:
     // Common
-    InstanceScript* mInstance;
+    hasTrappedUnit = false;
+    summon = nullptr;
 
-    // Summon
-    Unit* summon;
+    getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
+}
 
-    bool hasTrappedUnit;
-};
+CreatureAIScript* ColdflameAI::Create(Creature* pCreature) { return new BoneSpikeAI(pCreature); }
+
+void BoneSpikeAI::OnSummon(Unit* summoner)
+{
+    summon = summoner;
+    // Make our Creature in Combat otherwise on Died Script wont trigger
+    getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_AGRO);
+
+    getCreature()->castSpell(summoner, SPELL_IMPALED);
+    summoner->castSpell(getCreature(), SPELL_RIDE_VEHICLE_SE, true);
+    scriptEvents.addEvent(EVENT_FAIL_BONED, 8000);
+    hasTrappedUnit = true;
+}
+
+void BoneSpikeAI::OnTargetDied(Unit* pTarget)
+{
+    getCreature()->Despawn(100, 0);
+    pTarget->RemoveAura(SPELL_IMPALED);
+}
+
+void BoneSpikeAI::OnDied(Unit* /*pTarget*/)
+{       
+    if (summon)
+        summon->RemoveAura(SPELL_IMPALED);
+     
+    getCreature()->Despawn(100, 0);
+}
+
+void BoneSpikeAI::AIUpdate()
+{
+    if (!hasTrappedUnit)
+        return;
+
+    scriptEvents.updateEvents(GetAIUpdateFreq(), getScriptPhase());
+
+    if (scriptEvents.getFinishedEvent() == EVENT_FAIL_BONED)
+        if (mInstance)
+            mInstance->setLocalData(DATA_BONED_ACHIEVEMENT, uint32_t(false));
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Spell: Bone Storm

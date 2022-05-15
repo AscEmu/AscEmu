@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Raid_IceCrownCitadel.h"
 
-#include "LordMarrowgar.cpp"
+#include "LordMarrowgar.h"
 #include "LadyDeathwhisper.cpp"
 #include "GunshipBattle.cpp"
 #include "Saurfang.cpp"
