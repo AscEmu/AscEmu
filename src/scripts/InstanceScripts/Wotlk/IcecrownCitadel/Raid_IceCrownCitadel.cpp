@@ -3,12 +3,12 @@ Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Raid_IceCrownCitadel.h"
+#include "Raid_IceCrownCitadel.hpp"
 
-#include "LordMarrowgar.h"
-#include "LadyDeathwhisper.h"
-#include "GunshipBattle.h"
-#include "Saurfang.h"
+#include "LordMarrowgar.hpp"
+#include "LadyDeathwhisper.hpp"
+#include "GunshipBattle.hpp"
+#include "Saurfang.hpp"
 
 #include "Management/Faction.h"
 #include "Objects/Units/Creatures/Summons/Summon.h"

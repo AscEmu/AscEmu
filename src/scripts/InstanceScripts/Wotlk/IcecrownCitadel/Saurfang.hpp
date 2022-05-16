@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Raid_IceCrownCitadel.h"
+#include "Raid_IceCrownCitadel.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Boss: Deathbringer Suarfang

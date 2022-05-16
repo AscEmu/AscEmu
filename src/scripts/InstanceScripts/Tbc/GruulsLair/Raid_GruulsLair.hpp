@@ -90,13 +90,6 @@ enum CreatureSpells
     SPELL_KNOCK_BACK                = 24199, // Knockback spell until correct implementation is made
 };
 
-enum Events
-{
-    EVENT_SHATTER                   = 1,
-    EVENT_HURTFUL_STRIKE,
-    EVENT_BLASTWAVE
-};
-
 enum Actions
 {
     ACTION_ENABLE                   = 1,
@@ -110,33 +103,55 @@ enum DataTypes
     DATA_DOOR_GRUUL                 = 2
 };
 
-enum Phases
+class GruulsLairInstanceScript : public InstanceScript
 {
-    PHASE_1                        = 1,
-    PHASE_2                        = 2
+public:
+    explicit GruulsLairInstanceScript(WorldMap* pMapMgr);
+    static InstanceScript* Create(WorldMap* pMapMgr);
+
+    void OnGameObjectPushToWorld(GameObject* pGameObject) override;
+    void OnCreaturePushToWorld(Creature* pCreature) override;
+    void OnEncounterStateChange(uint32_t entry, uint32_t state) override;
+    void SetGameobjectStates();
+    void setLocalData(uint32_t type, uint32_t data) override;
+
+public:
+    GruulsLairInstanceScript* Instance;
+    GameObject* mDoorMaulgar;
+    GameObject* mDoorGruul;
+    Creature* mKrosh;
+    Creature* mOlm;
+    Creature* mKiggler;
+    Creature* mBlindeye;
+    Creature* mMaulgar;
+    Creature* mGruul;
 };
 
-enum Yells
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Creature: Lair Brute
+class LairBruteAI : public CreatureAIScript
 {
-    GRUUL_SAY_AGGRO                 = 4820,
-    GRUUL_SAY_SLAM_01               = 4821,
-    GRUUL_SAY_SLAM_02               = 4822,
-    GRUUL_SAY_SHATTER_01            = 4823,
-    GRUUL_SAY_SHATTER_02            = 4824,
-    GRUUL_SAY_SLAY_01               = 4825,
-    GRUUL_SAY_SLAY_02               = 4826,
-    GRUUL_SAY_SLAY_03               = 4827,
-    GRUUL_SAY_DEATH                 = 4828,
-    GRUUL_EMOTE_GROW                = 4829,
+public:
+    static CreatureAIScript* Create(Creature* pCreature);
+    explicit LairBruteAI(Creature* pCreature);
 
-    MAUL_SAY_AGGRO                  = 4830,
-    MAUL_SAY_ENRAGE                 = 4831,
-    MAUL_SAY_OGRE_DEATH_01          = 4832,
-    MAUL_SAY_OGRE_DEATH_02          = 4833,
-    MAUL_SAY_OGRE_DEATH_03          = 4834,
-    MAUL_SAY_OGRE_DEATH_04          = 4835,
-    MAUL_SAY_SLAY_01                = 4836,
-    MAUL_SAY_SLAY_02                = 4837,
-    MAUL_SAY_SLAY_03                = 4838,
-    MAUL_SAY_DEATH                  = 4839,
+    void OnCastSpell(uint32_t spellId) override;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Creature: Gronn Priest
+class GronnPriestAI : public CreatureAIScript
+{
+public:
+    static CreatureAIScript* Create(Creature* pCreature);
+    explicit GronnPriestAI(Creature* pCreature);
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Creature: Wild Fell Stalker
+class WildFelStalkerAI : public CreatureAIScript
+{
+public:
+    static CreatureAIScript* Create(Creature* c);
+    explicit WildFelStalkerAI(Creature* pCreature);
 };

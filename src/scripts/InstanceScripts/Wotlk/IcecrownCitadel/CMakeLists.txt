@@ -9,11 +9,11 @@ set(SRC_WOTLK_ICECROWNCITADEL_SCRIPTS_FILES
 	${PATH_PREFIX}/GunshipBattle.cpp
 	${PATH_PREFIX}/Saurfang.cpp
 	
-	${PATH_PREFIX}/Raid_IceCrownCitadel.h
-	${PATH_PREFIX}/LordMarrowgar.h
-	${PATH_PREFIX}/LadyDeathwhisper.h
-	${PATH_PREFIX}/GunshipBattle.h
-	${PATH_PREFIX}/Saurfang.h
+	${PATH_PREFIX}/Raid_IceCrownCitadel.hpp
+	${PATH_PREFIX}/LordMarrowgar.hpp
+	${PATH_PREFIX}/LadyDeathwhisper.hpp
+	${PATH_PREFIX}/GunshipBattle.hpp
+	${PATH_PREFIX}/Saurfang.hpp
 )
 
 source_group(Wotlk/IcecrownCitadel FILES ${SRC_WOTLK_ICECROWNCITADEL_SCRIPTS_FILES})

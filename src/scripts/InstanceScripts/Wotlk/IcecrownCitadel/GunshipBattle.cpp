@@ -3,7 +3,7 @@ Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "GunshipBattle.h"
+#include "GunshipBattle.hpp"
 #include "Management/Faction.h"
 #include "Objects/Units/Creatures/Summons/Summon.h"
 #include <Management/ObjectMgr.h>
