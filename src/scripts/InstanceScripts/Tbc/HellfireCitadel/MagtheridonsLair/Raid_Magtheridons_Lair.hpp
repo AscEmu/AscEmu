@@ -127,6 +127,13 @@ enum Actions
     ACTION_START_CHANNELERS_EVENT       = 3
 };
 
+enum Events
+{
+    EVENT_SHADOWBOLT                    = 1,
+    EVENT_FEAR1,
+    EVENT_ABYSSAL
+};
+
 enum DataTypes
 {
     DATA_MAGTHERIDON                    = 0,
@@ -138,50 +145,98 @@ enum DataTypes
     DATA_DOOR                           = 6
 };
 
-enum Events
+//////////////////////////////////////////////////////////////////////////////////////////
+//Magtheridons Lair Instance
+class MagtheridonsLairInstanceScript : public InstanceScript
 {
-    // Magtheridon
-    EVENT_BERSERK = 1,
-    EVENT_CLEAVE,
-    EVENT_BLAZE,
-    EVENT_BLAST_NOVA,
-    EVENT_QUAKE,
-    EVENT_START_FIGHT,
-    EVENT_RELEASED,
-    EVENT_COLLAPSE,
-    EVENT_DEBRIS_KNOCKDOWN,
-    EVENT_DEBRIS,
-    EVENT_NEARLY_EMOTE,
-    EVENT_TAUNT,
-    // Hellfire Channelers events
-    EVENT_SHADOWBOLT,
-    EVENT_FEAR1,
-    EVENT_ABYSSAL
+public:
+    explicit MagtheridonsLairInstanceScript(WorldMap* pMapMgr);
+    static InstanceScript* Create(WorldMap* pMapMgr);
+
+    void OnGameObjectPushToWorld(GameObject* pGameObject) override;
+    void OnCreaturePushToWorld(Creature* pCreature) override;
+    void setLocalData(uint32_t type, uint32_t data) override;
+    void DoAction(int32_t const action) override;
+
+
+public:
+    MagtheridonsLairInstanceScript* Instance;
+    GameObject* door;
+    GameObject* hall;
+    std::list<GameObject*> columns;
+    std::list<GameObject*> cubes;
+    Creature* magtheridon;
+    Creature* worldTrigger;
 };
 
-enum Phases
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Gameobject: manticron Cubes
+class ManticronCubeGO : public GameObjectAIScript
 {
-    PHASE_BANISH = 1,
-    PHASE_1,
-    PHASE_2,
-    PHASE_3
+public:
+    static GameObjectAIScript* Create(GameObject* GO);
+    explicit ManticronCubeGO(GameObject* pGameObject);
+
+    void OnActivate(Player* pPlayer) override;
+
+protected:
+    MagtheridonsLairInstanceScript* Instance;
 };
 
-enum Yells
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Creature: Cube Trigger Npc
+class CubeTriggerAI : public CreatureAIScript
 {
-    SAY_TAUNT01                         = 8740,
-    SAY_TAUNT02                         = 8741,
-    SAY_TAUNT03                         = 8742,
-    SAY_TAUNT04                         = 8743,
-    SAY_TAUNT05                         = 8743,
-    SAY_TAUNT06                         = 8745,
-    SAY_FREE                            = 8748,
-    SAY_SLAY                            = 8751,
-    SAY_BANISHED                        = 8749,
-    SAY_COLLAPSE                        = 8752,
-    SAY_DEATH                           = 8750
-    //EMOTE_WEAKEN                        = not in database "%s's bonds begin to weaken!",
-    //EMOTE_NEARLY_FREE                   = not in database "%s is nearly free of his bonds!",
-    //EMOTE_BREAKS_FREE                   = not in database "%s breaks free!",
-    //EMOTE_BLAST_NOVA                    = not in database "%s begins to cast Blast Nova!"
+public:
+    static CreatureAIScript* Create(Creature* c);
+    explicit CubeTriggerAI(Creature* pCreature);
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Creature: Room Triger ( Roof falling down )
+class RoomTrigger : public CreatureAIScript
+{
+public:
+    static CreatureAIScript* Create(Creature* pCreature);
+    explicit RoomTrigger(Creature* pCreature);
+
+    void OnLoad() override;
+    void AIUpdate() override;
+
+protected:
+    CreatureAISpells* debrisVisual;
+    CreatureAISpells* debrisDamage;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Creature: Hellfire Warder
+class HellfireWarderAI : public CreatureAIScript
+{
+public:
+    static CreatureAIScript* Create(Creature* pCreature);
+    explicit HellfireWarderAI(Creature* pCreature);
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Creature: Hellfire Channeler
+class HellfireChannelerAI : public CreatureAIScript
+{
+public:
+    static CreatureAIScript* Create(Creature* pCreature);
+    explicit HellfireChannelerAI(Creature* pCreature);
+
+    void OnLoad() override;
+    void OnCombatStart(Unit* /*mTarget*/) override;
+    void OnCombatStop(Unit* /*mTarget*/) override;
+    void AIUpdate(unsigned long time_passed) override;
+    void OnDied(Unit* /*killer*/) override;
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32_t /*fAmount*/) override;
+
+protected:
+    CreatureAISpells* shadowGasp;
+    CreatureAISpells* shadowBolt;
+    CreatureAISpells* fear;
+    CreatureAISpells* darkMending;
+    CreatureAISpells* summonAbyssal;
+    CreatureAISpells* soulTransfer;
 };
