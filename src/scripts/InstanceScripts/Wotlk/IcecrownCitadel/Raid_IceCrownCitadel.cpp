@@ -819,79 +819,70 @@ void IceCrownCitadelScript::TransportUnboarded(Unit* pUnit, Transporter* transpo
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// IceCrown Teleporter
-class ICCTeleporterGossip : public GossipScript
+void ICCTeleporterGossip::onHello(Object* object, Player* player)
 {
-public:
-    void onHello(Object* object, Player* player) override
-    {
-        InstanceScript* pInstance = player->getWorldMap()->getScript();
-        if (!pInstance)
-            return;
+    InstanceScript* pInstance = player->getWorldMap()->getScript();
+    if (!pInstance)
+        return;
 
-        GossipMenu menu(object->getGuid(), 15221, player->getSession()->language);
-        menu.addItem(GOSSIP_ICON_CHAT, 515, 0);     // Teleport to Light's Hammer.
+    GossipMenu menu(object->getGuid(), 15221, player->getSession()->language);
+    menu.addItem(GOSSIP_ICON_CHAT, 515, 0);     // Teleport to Light's Hammer.
 
-        if (pInstance->getBossState(DATA_LORD_MARROWGAR) == Performed)
-            menu.addItem(GOSSIP_ICON_CHAT, 516, 1);      // Teleport to Oratory of The Damned.
+    if (pInstance->getBossState(DATA_LORD_MARROWGAR) == Performed)
+        menu.addItem(GOSSIP_ICON_CHAT, 516, 1);      // Teleport to Oratory of The Damned.
 
-        if (pInstance->getBossState(DATA_LADY_DEATHWHISPER) == Performed)
-            menu.addItem(GOSSIP_ICON_CHAT, 517, 2);      // Teleport to Rampart of Skulls.
+    if (pInstance->getBossState(DATA_LADY_DEATHWHISPER) == Performed)
+        menu.addItem(GOSSIP_ICON_CHAT, 517, 2);      // Teleport to Rampart of Skulls.
 
-        // GunshipBattle has to be Performed...
-        if (pInstance->getBossState(DATA_ICECROWN_GUNSHIP_BATTLE) == Performed || pInstance->getBossState(DATA_DEATHBRINGER_SAURFANG) == Performed)
-        menu.addItem(GOSSIP_ICON_CHAT, (518), 3);        // Teleport to Deathbringer's Rise.
+    // GunshipBattle has to be Performed...
+    if (pInstance->getBossState(DATA_ICECROWN_GUNSHIP_BATTLE) == Performed || pInstance->getBossState(DATA_DEATHBRINGER_SAURFANG) == Performed)
+    menu.addItem(GOSSIP_ICON_CHAT, (518), 3);        // Teleport to Deathbringer's Rise.
 
-        if (pInstance->getBossState(DATA_VALITHRIA_DREAMWALKER) == Performed)
-            menu.addItem(GOSSIP_ICON_CHAT, 519, 4);      // Teleport to the Upper Spire.
+    if (pInstance->getBossState(DATA_VALITHRIA_DREAMWALKER) == Performed)
+        menu.addItem(GOSSIP_ICON_CHAT, 519, 4);      // Teleport to the Upper Spire.
 
-        if (pInstance->getBossState(DATA_SINDRAGOSA) == Performed)
-            menu.addItem(GOSSIP_ICON_CHAT, 520, 5);      // Teleport to Sindragosa's Lair.
+    if (pInstance->getBossState(DATA_SINDRAGOSA) == Performed)
+        menu.addItem(GOSSIP_ICON_CHAT, 520, 5);      // Teleport to Sindragosa's Lair.
 
-        menu.sendGossipPacket(player);
-    }
+    menu.sendGossipPacket(player);
+}
 
-    void onSelectOption(Object* /*object*/, Player* player, uint32_t Id, const char* /*enteredcode*/, uint32_t /*gossipId*/) override
-    {
-        switch (Id)
-        {
-            case 0:
-                player->castSpell(player, 70781, true);     // Light's Hammer
-                break;
-            case 1:
-                player->castSpell(player, 70856, true);     // Oratory of The Damned
-                break;
-            case 2:
-                player->castSpell(player, 70857, true);     // Rampart of Skulls
-                break;
-            case 3:
-                player->castSpell(player, 70858, true);     // Deathbringer's Rise
-                break;
-            case 4:
-                player->castSpell(player, 70859, true);     // Upper Spire
-                break;
-            case 5:
-                player->castSpell(player, 70861, true);     // Sindragosa's Lair
-                break;
-        }
-        GossipMenu::senGossipComplete(player);
-    }
-};
-
-class ICCTeleporterAI : public GameObjectAIScript
+void ICCTeleporterGossip::onSelectOption(Object* /*object*/, Player* player, uint32_t Id, const char* /*enteredcode*/, uint32_t /*gossipId*/)
 {
-public:
-    explicit ICCTeleporterAI(GameObject* go) : GameObjectAIScript(go) {}
-
-    ~ICCTeleporterAI() {}
-
-    static GameObjectAIScript* Create(GameObject* go) { return new ICCTeleporterAI(go); }
-
-    void OnActivate(Player* player) override
+    switch (Id)
     {
-        ICCTeleporterGossip gossip;
-        gossip.onHello(_gameobject, player);
+        case 0:
+            player->castSpell(player, 70781, true);     // Light's Hammer
+            break;
+        case 1:
+            player->castSpell(player, 70856, true);     // Oratory of The Damned
+            break;
+        case 2:
+            player->castSpell(player, 70857, true);     // Rampart of Skulls
+            break;
+        case 3:
+            player->castSpell(player, 70858, true);     // Deathbringer's Rise
+            break;
+        case 4:
+            player->castSpell(player, 70859, true);     // Upper Spire
+            break;
+        case 5:
+            player->castSpell(player, 70861, true);     // Sindragosa's Lair
+            break;
     }
-};
+    GossipMenu::senGossipComplete(player);
+}
+
+ICCTeleporterAI::ICCTeleporterAI(GameObject* go) : GameObjectAIScript(go) {}
+GameObjectAIScript* ICCTeleporterAI::Create(GameObject* go) { return new ICCTeleporterAI(go); }
+
+ICCTeleporterAI::~ICCTeleporterAI() {}
+
+void ICCTeleporterAI::OnActivate(Player* player)
+{
+    ICCTeleporterGossip gossip;
+    gossip.onHello(_gameobject, player);
+}
 
 void SetupICC(ScriptMgr* mgr)
 {

@@ -1439,4 +1439,25 @@ protected:
     bool deathbringerGoSpawned;
 };
 
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// IceCrown Teleporter
+class ICCTeleporterGossip : public GossipScript
+{
+public:
+    void onHello(Object* object, Player* player) override;
+    void onSelectOption(Object* /*object*/, Player* player, uint32_t Id, const char* /*enteredcode*/, uint32_t /*gossipId*/) override;
+};
+
+class ICCTeleporterAI : public GameObjectAIScript
+{
+public:
+    explicit ICCTeleporterAI(GameObject* go);
+    static GameObjectAIScript* Create(GameObject* go);
+
+    ~ICCTeleporterAI();
+
+    void OnActivate(Player* player) override;
+};
+
 void SetupICC(ScriptMgr* mgr);
