@@ -2284,12 +2284,6 @@ void AIInterface::setCreatureProtoDifficulty(uint32_t entry)
             else
                 getUnit()->getAIInterface()->setGuard(false);
 
-            //invisibility
-            if (properties_difficulty->invisibility_type > INVIS_FLAG_NORMAL)
-                // TODO: currently only invisibility type 15 is used for invisible trigger NPCs
-                // these are always invisible to players
-                getUnit()->modInvisibilityLevel(InvisibilityFlag(properties_difficulty->invisibility_type), 1);
-
 #ifdef FT_VEHICLES
             if (getUnit()->isVehicle())
             {

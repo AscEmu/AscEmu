@@ -1468,7 +1468,7 @@ bool ToLegionHold(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
         if (pGameObject != nullptr)
         {
             pGameObject->Despawn(60000, 0);
-            pPlayer->UpdateNearbyGameObjects();
+            pPlayer->updateNearbyQuestGameObjects();
         }
     }
     else
@@ -2263,7 +2263,7 @@ bool WarIsHell(uint8_t /*effectIndex*/, Spell* pSpell)
         obj->Despawn(1 * 60 * 1000, 0);
 
     target->Despawn(2000, 60 * 1000);
-    plr->UpdateNearbyGameObjects();
+    plr->updateNearbyQuestGameObjects();
 
     return true;
 }
@@ -2582,7 +2582,7 @@ bool StoppingTheSpread(uint8_t /*effectIndex*/, Spell* pSpell)
         }
 
         target->Despawn(2000, 60 * 1000);
-        plr->UpdateNearbyGameObjects();
+        plr->updateNearbyQuestGameObjects();
         questLog->updatePlayerFields();
     }
 
@@ -2651,7 +2651,7 @@ bool TheFleshLies(uint8_t /*effectIndex*/, Spell* pSpell)
                 obj->Despawn(1 * 30 * 1000, 0);
         }
         target->Despawn(2000, 60 * 1000);
-        plr->UpdateNearbyGameObjects();
+        plr->updateNearbyQuestGameObjects();
     }
 
     return true;
@@ -2854,7 +2854,7 @@ bool ShatariTorch(uint8_t /*effectIndex*/, Spell* pSpell)
 
     target->Despawn(0, 1 * 60 * 1000);
 
-    plr->UpdateNearbyGameObjects();
+    plr->updateNearbyQuestGameObjects();
 
     return true;
 }

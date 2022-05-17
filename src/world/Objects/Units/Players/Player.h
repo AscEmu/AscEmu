@@ -1362,6 +1362,8 @@ public:
 
     void addQuestKill(uint32_t questId, uint8_t reqId, uint32_t delay = 0);
 
+    void updateNearbyQuestGameObjects();
+
     std::set<uint32_t> getFinishedQuests() const;
 
 private:
@@ -2010,10 +2012,6 @@ public:
         uint32 m_modblockvaluefromspells = 0;
         void SendInitialLogonPackets();
         void Reset_Spells();
-
-        void EventActivateGameObject(GameObject* obj);
-        void EventDeActivateGameObject(GameObject* obj);
-        void UpdateNearbyGameObjects();
 
         void CalcResistance(uint8_t type);
         float res_M_crit_get() { return m_resist_critical[0]; }

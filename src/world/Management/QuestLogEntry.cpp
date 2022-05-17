@@ -267,7 +267,6 @@ void QuestLogEntry::finishAndRemove()
 
     m_player->setQuestLogInSlot(nullptr, m_slot);
     m_player->addQuestToRemove(m_questProperties->id);
-    m_player->UpdateNearbyGameObjects();
 
     delete this;
 }
@@ -398,7 +397,7 @@ void QuestLogEntry::sendQuestComplete()
     data << m_questProperties->id;
     m_player->getSession()->SendPacket(&data);
 
-    m_player->UpdateNearbyGameObjects();
+    m_player->updateNearbyQuestGameObjects();
 
     CALL_QUESTSCRIPT_EVENT(this, OnQuestComplete)(m_player, this);
 }

@@ -725,6 +725,7 @@ bool World::setInitialWorldSettings()
     VMAP::VMapManager2* vmmgr2 = VMAP::VMapFactory::createOrGetVMapManager();
     vmmgr2->GetLiquidFlagsPtr = &getLiquidFlags;
 
+    sObjectMgr.initialize();
     sInstanceMgr.loadInstances();
     loadMySQLStores();
 
@@ -924,7 +925,6 @@ void World::loadMySQLTablesByTask()
 {
     auto startTime = Util::TimeNow();
 
-    sObjectMgr.initialize();
     sAddonMgr.initialize();
     sTicketMgr.initialize();
     sGameEventMgr.initialize();

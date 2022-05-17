@@ -955,11 +955,13 @@ void Unit::setPetExperience(uint32_t experience) { write(unitData()->pet_experie
 uint32_t Unit::getPetNextLevelExperience() const { return unitData()->pet_next_level_experience; }
 void Unit::setPetNextLevelExperience(uint32_t experience) { write(unitData()->pet_next_level_experience, experience); }
 
+#if VERSION_STRING < Mop
 uint32_t Unit::getDynamicFlags() const { return unitData()->dynamic_flags; }
 void Unit::setDynamicFlags(uint32_t dynamicFlags) { write(unitData()->dynamic_flags, dynamicFlags); }
 void Unit::addDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() | dynamicFlags); }
 void Unit::removeDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() & ~dynamicFlags); }
 bool Unit::hasDynamicFlags(uint32_t dynamicFlags) const { return (getDynamicFlags() & dynamicFlags) != 0; }
+#endif
 
 float Unit::getModCastSpeed() const { return unitData()->mod_cast_speed; }
 void Unit::setModCastSpeed(float modifier) { write(unitData()->mod_cast_speed, modifier); }
@@ -7406,23 +7408,23 @@ float Unit::getCollisionHeight() const
     // Mounted
     if (getMountDisplayId())
     {
-        if (DBC::Structures::CreatureDisplayInfoEntry const* mountDisplayInfo = sCreatureDisplayInfoStore.LookupEntry(getMountDisplayId()))
+        if (const auto* mountDisplayInfo = sObjectMgr.getCreatureDisplayInfoData(getMountDisplayId()))
         {
-            if (DBC::Structures::CreatureModelDataEntry const* mountModelData = sCreatureModelDataStore.LookupEntry(mountDisplayInfo->ModelID))
+            if (const auto* mountModelData = mountDisplayInfo->modelInfo)
             {
-                DBC::Structures::CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(getNativeDisplayId());
+                const auto* displayInfo = sObjectMgr.getCreatureDisplayInfoData(getNativeDisplayId());
                 if (!displayInfo)
                     return DEFAULT_COLLISION_HEIGHT;
 
-                DBC::Structures::CreatureModelDataEntry const* modelData = sCreatureModelDataStore.LookupEntry(displayInfo->ModelID);
+                const auto* modelData = displayInfo->modelInfo;
                 if (!modelData)
                     return DEFAULT_COLLISION_HEIGHT;
 
 #if VERSION_STRING > Classic
-                float const collisionHeight = scaleMod * (mountModelData->MountHeight + modelData->CollisionHeight * displayInfo->CreatureModelScale * 0.5f);
+                float const collisionHeight = scaleMod * (mountModelData->MountHeight + modelData->CollisionHeight * displayInfo->creatureModelScale * 0.5f);
 #else
                 // Do the Collision Calc without Mount height since there are not that many Different Mounts
-                float const collisionHeight = scaleMod * (modelData->CollisionHeight * displayInfo->CreatureModelScale * 0.5f);
+                float const collisionHeight = scaleMod * (modelData->CollisionHeight * displayInfo->creatureModelScale * 0.5f);
 #endif
                 return collisionHeight == 0.0f ? DEFAULT_COLLISION_HEIGHT : collisionHeight;
             }
@@ -7430,14 +7432,14 @@ float Unit::getCollisionHeight() const
     }
 
     // Dismounted case
-    DBC::Structures::CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(getNativeDisplayId());
+    const auto* displayInfo = sObjectMgr.getCreatureDisplayInfoData(getNativeDisplayId());
     if (!displayInfo)
         return DEFAULT_COLLISION_HEIGHT;
 
-    DBC::Structures::CreatureModelDataEntry const* modelData = sCreatureModelDataStore.LookupEntry(displayInfo->ModelID);
+    const auto* modelData = displayInfo->modelInfo;
     if (!modelData)
         return DEFAULT_COLLISION_HEIGHT;
 
-    float const collisionHeight = scaleMod * modelData->CollisionHeight * displayInfo->CreatureModelScale;
+    float const collisionHeight = scaleMod * modelData->CollisionHeight * displayInfo->creatureModelScale;
     return collisionHeight == 0.0f ? DEFAULT_COLLISION_HEIGHT : collisionHeight;
 }

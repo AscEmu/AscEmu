@@ -58,7 +58,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20220415-00_account_instance_times";
-static const char* REQUIRED_WORLD_DB_VERSION = "20220415-00_spawn_groups";
+static const char* REQUIRED_WORLD_DB_VERSION = "20220513-00_creature_properties";
 
 void Master::_OnSignal(int s)
 {

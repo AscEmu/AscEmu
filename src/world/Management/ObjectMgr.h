@@ -191,6 +191,7 @@ typedef std::list<DBC::Structures::AchievementCriteriaEntry const*> AchievementC
 typedef std::unordered_map<std::string, CachedCharacterInfo*> PlayerNameStringIndexMap;
 
 // finally we are here, the base class of this file ;)
+//MIT
 class SERVER_DECL ObjectMgr : public EventableObject
 {
 private:
@@ -198,7 +199,6 @@ private:
     ~ObjectMgr() = default;
 
 public:
-    //MIT
     static ObjectMgr& getInstance();
     void initialize();
     void finalize();
@@ -212,6 +212,10 @@ public:
     void generateDatabaseGossipOptionAndSubMenu(Object* object, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId);
 
     void loadTrainers();
+
+    // Preload CreatureDisplayInfoStore and CreatureModelDataStore to avoid DBC lookup calls
+    void loadCreatureDisplayInfo();
+    CreatureDisplayInfoData const* getCreatureDisplayInfoData(uint32_t displayId) const;
 
     Player* createPlayerByGuid(uint8_t _class, uint32_t guid);
 
@@ -441,6 +445,7 @@ public:
         SpellEffectMaps mSpellEffectMaps;
         DungeonEncounterContainer _dungeonEncounterStore;
         std::unordered_map<uint32_t, CreatureMovementData> _creatureMovementOverrides;
+        std::unordered_map<uint32_t, CreatureDisplayInfoData> _creatureDisplayInfoData;
 
     protected:
 

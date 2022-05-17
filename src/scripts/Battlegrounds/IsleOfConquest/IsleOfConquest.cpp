@@ -520,7 +520,7 @@ void IsleOfConquest::SpawnControlPoint(uint32_t Id, uint32_t Type)
         controlpoint[Id].banner->setState(GO_STATE_CLOSED);
         controlpoint[Id].banner->setGoType(static_cast<uint8_t>(gameobject_info->type));
         controlpoint[Id].banner->setAnimationProgress(100);
-        controlpoint[Id].banner->setDynamic(1);
+        controlpoint[Id].banner->setDynamicFlags(GO_DYN_FLAG_INTERACTABLE);
         controlpoint[Id].banner->setDisplayId(gameobject_info->display_id);
 
         switch (Type)

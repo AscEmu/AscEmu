@@ -75,7 +75,7 @@ WarsongGulch::WarsongGulch(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, u
 
     for (uint8_t i = 0; i < 2; ++i)
     {
-        m_dropFlags[i]->setDynamic(1);
+        m_dropFlags[i]->setDynamicFlags(GO_DYN_FLAG_INTERACTABLE);
         m_dropFlags[i]->setScale(2.5f);
     }
 

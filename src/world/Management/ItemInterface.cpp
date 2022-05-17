@@ -644,6 +644,8 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16
             else if (slot < INVENTORY_SLOT_BAG_END)
                 m_pOwner->applyItemMods(pItem, slot, false);
 
+            sQuestMgr.onPlayerItemRemove(GetOwner(), pItem);
+
             if (destroy)
             {
                 if (pItem->IsInWorld())
@@ -821,6 +823,8 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot)
             }
 
             pItem->DeleteFromDB();
+
+            sQuestMgr.onPlayerItemRemove(GetOwner(), pItem);
 
             //delete pItem;
             // We make it a garbage item, so when it's used for a spell, it gets deleted in the next Player update
@@ -1199,6 +1203,7 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
                 {
                     item->setStackCount(item->getStackCount() - amt);
                     item->m_isDirty = true;
+                    sQuestMgr.onPlayerItemRemove(GetOwner(), item);
                     return amt;
                 }
                 else if (item->getStackCount() == amt)
@@ -1238,6 +1243,7 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
                         {
                             item2->setStackCount(item2->getStackCount() - amt);
                             item2->m_isDirty = true;
+                            sQuestMgr.onPlayerItemRemove(GetOwner(), item2);
                             return amt;
                         }
                         else if (item2->getStackCount() == amt)
@@ -1275,6 +1281,7 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
                 {
                     item->setStackCount(item->getStackCount() - amt);
                     item->m_isDirty = true;
+                    sQuestMgr.onPlayerItemRemove(GetOwner(), item);
                     return amt;
                 }
                 else if (item->getStackCount() == amt)
@@ -1309,6 +1316,7 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
                 {
                     item->setStackCount(item->getStackCount() - amt);
                     item->m_isDirty = true;
+                    sQuestMgr.onPlayerItemRemove(GetOwner(), item);
                     return amt;
                 }
                 else if (item->getStackCount() == amt)
@@ -1361,6 +1369,7 @@ uint32 ItemInterface::RemoveItemAmt_ProtectPointer(uint32 id, uint32 amt, Item**
                 {
                     item->setStackCount(item->getStackCount() - amt);
                     item->m_isDirty = true;
+                    sQuestMgr.onPlayerItemRemove(GetOwner(), item);
                     return amt;
                 }
                 else if (item->getStackCount() == amt)
@@ -1409,6 +1418,7 @@ uint32 ItemInterface::RemoveItemAmt_ProtectPointer(uint32 id, uint32 amt, Item**
                         {
                             item2->setStackCount(item2->getStackCount() - amt);
                             item2->m_isDirty = true;
+                            sQuestMgr.onPlayerItemRemove(GetOwner(), item2);
                             return amt;
                         }
                         else if (item2->getStackCount() == amt)
@@ -1451,6 +1461,7 @@ uint32 ItemInterface::RemoveItemAmt_ProtectPointer(uint32 id, uint32 amt, Item**
                 {
                     item->setStackCount(item->getStackCount() - amt);
                     item->m_isDirty = true;
+                    sQuestMgr.onPlayerItemRemove(GetOwner(), item);
                     return amt;
                 }
                 else if (item->getStackCount() == amt)
@@ -1491,6 +1502,7 @@ uint32 ItemInterface::RemoveItemAmt_ProtectPointer(uint32 id, uint32 amt, Item**
                 {
                     item->setStackCount(item->getStackCount() - amt);
                     item->m_isDirty = true;
+                    sQuestMgr.onPlayerItemRemove(GetOwner(), item);
                     return amt;
                 }
                 else if (item->getStackCount() == amt)
@@ -1545,6 +1557,7 @@ uint32 ItemInterface::RemoveItemAmtByGuid(uint64 guid, uint32 amt)
                 {
                     item->setStackCount(item->getStackCount() - amt);
                     item->m_isDirty = true;
+                    sQuestMgr.onPlayerItemRemove(GetOwner(), item);
                     return amt;
                 }
                 else if (item->getStackCount() == amt)
@@ -1585,6 +1598,7 @@ uint32 ItemInterface::RemoveItemAmtByGuid(uint64 guid, uint32 amt)
                         {
                             item2->setStackCount(item2->getStackCount() - amt);
                             item2->m_isDirty = true;
+                            sQuestMgr.onPlayerItemRemove(GetOwner(), item2);
                             return amt;
                         }
                         else if (item2->getStackCount() == amt)
@@ -1622,6 +1636,7 @@ uint32 ItemInterface::RemoveItemAmtByGuid(uint64 guid, uint32 amt)
                 {
                     item->setStackCount(item->getStackCount() - amt);
                     item->m_isDirty = true;
+                    sQuestMgr.onPlayerItemRemove(GetOwner(), item);
                     return amt;
                 }
                 else if (item->getStackCount() == amt)
@@ -1657,6 +1672,7 @@ uint32 ItemInterface::RemoveItemAmtByGuid(uint64 guid, uint32 amt)
                 {
                     item->setStackCount(item->getStackCount() - amt);
                     item->m_isDirty = true;
+                    sQuestMgr.onPlayerItemRemove(GetOwner(), item);
                     return amt;
                 }
                 else if (item->getStackCount() == amt)

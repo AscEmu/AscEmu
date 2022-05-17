@@ -233,7 +233,7 @@ namespace DBC::Structures
 
     struct CreatureDisplayInfoEntry
     {
-        uint32_t display_id;                                        // 0
+        uint32_t ID;                                                // 0
         uint32_t ModelID;                                           // 1
         //uint32_t SoundID                                          // 2
         uint32_t ExtendedDisplayInfoID;                             // 3

@@ -1395,7 +1395,11 @@ void Group::SendLootUpdates(Object* o)
         Flags |= U_DYN_FLAG_LOOTABLE;
         Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
 
+#if VERSION_STRING < Mop
         o->BuildFieldUpdatePacket(&buf, getOffsetForStructuredField(WoWUnit, dynamic_flags), Flags);
+#else
+        o->BuildFieldUpdatePacket(&buf, getOffsetForStructuredField(WoWObject, dynamic_field), Flags);
+#endif
 
         Lock();
 

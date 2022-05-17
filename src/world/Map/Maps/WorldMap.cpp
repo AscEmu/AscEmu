@@ -2299,6 +2299,7 @@ void WorldMap::updateObjects()
 
                     // build the update
                     count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Player*>(nullptr));
+                    update.clear();
 
                     if (count)
                     {
@@ -2308,9 +2309,14 @@ void WorldMap::updateObjects()
 
                             // Make sure that the target player can see us.
                             if (lplr && lplr->isVisibleObject(pObj->getGuid()))
+                            {
+                                // Build correct update to each player
+                                // Data may differ from player to player
+                                pObj->BuildValuesUpdateBlockForPlayer(&update, lplr);
                                 lplr->getUpdateMgr().pushUpdateData(&update, count);
+                                update.clear();
+                            }
                         }
-                        update.clear();
                     }
                 }
             }

@@ -3236,20 +3236,6 @@ bool Player::removeDeletedSpell(uint32 SpellID)
     return true;
 }
 
-void Player::EventActivateGameObject(GameObject* obj)
-{
-#if VERSION_STRING < Mop
-    obj->BuildFieldUpdatePacket(this, getOffsetForStructuredField(struct WoWGameObject, dynamic), 1 | 8);
-#endif
-}
-
-void Player::EventDeActivateGameObject(GameObject* obj)
-{
-#if VERSION_STRING < Mop
-    obj->BuildFieldUpdatePacket(this, getOffsetForStructuredField(struct WoWGameObject, dynamic), 0);
-#endif
-}
-
 void Player::Reset_Spells()
 {
     if (PlayerCreateInfo const* playerCreateInfo = sMySQLStore.getPlayerCreateInfo(getRace(), getClass()))
@@ -3332,95 +3318,6 @@ void Player::CalcResistance(uint8_t type)
                         m_auras[x]->SpellAuraModAttackPowerOfArmor(aurEff, true);
                 }
             }
-        }
-    }
-}
-
-void Player::UpdateNearbyGameObjects()
-{
-    for (const auto& itr : getInRangeObjectsSet())
-    {
-        Object* obj = itr;
-        if (obj && obj->isGameObject())
-        {
-            bool activate_quest_object = false;
-            GameObject* go = static_cast<GameObject*>(obj);
-            QuestLogEntry* qle = nullptr;
-            auto gameobject_info = go->GetGameObjectProperties();
-
-            bool deactivate = false;
-            if (gameobject_info && (gameobject_info->goMap.size() || gameobject_info->itemMap.size()))
-            {
-                for (GameObjectGOMap::const_iterator GOitr = gameobject_info->goMap.begin(); GOitr != gameobject_info->goMap.end(); ++GOitr)
-                {
-                    if ((qle = getQuestLogByQuestId(GOitr->first->id)) != nullptr)
-                    {
-                        for (uint8_t i = 0; i < qle->getQuestProperties()->count_required_mob; ++i)
-                        {
-                            if (qle->getQuestProperties()->required_mob_or_go[i] == static_cast<int32>(go->getEntry()) &&
-                                qle->getMobCountByIndex(i) < qle->getQuestProperties()->required_mob_or_go_count[i])
-                            {
-                                activate_quest_object = true;
-                                break;
-                            }
-                        }
-
-                        if (activate_quest_object)
-                            break;
-                    }
-                }
-
-                if (!activate_quest_object)
-                {
-                    for (GameObjectItemMap::const_iterator GOitr = gameobject_info->itemMap.begin(); GOitr != gameobject_info->itemMap.end(); ++GOitr)
-                    {
-                        for (std::map<uint32, uint32>::const_iterator it2 = GOitr->second.begin(); it2 != GOitr->second.end(); ++it2)
-                        {
-                            if (getItemInterface()->GetItemCount(it2->first) < it2->second)
-                            {
-                                activate_quest_object = true;
-                                break;
-                            }
-                        }
-
-                        if (activate_quest_object)
-                            break;
-                    }
-                }
-
-                if (!activate_quest_object)
-                {
-                    deactivate = true;
-                }
-            }
-
-            bool bPassed = !deactivate;
-            if (go->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
-            {
-                GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
-
-                if (go_quest_giver->HasQuests() && go_quest_giver->NumOfQuests() > 0)
-                {
-                    for (std::list<QuestRelation*>::iterator itr2 = go_quest_giver->QuestsBegin(); itr2 != go_quest_giver->QuestsEnd(); ++itr2)
-                    {
-                        QuestRelation* qr = (*itr2);
-
-                        uint32 status = sQuestMgr.CalcQuestStatus(nullptr, this, qr->qst, qr->type, false);
-                        if (status == QuestStatus::AvailableChat
-                            || (qr->type & QUESTGIVER_QUEST_START && (status == QuestStatus::Available || status == QuestStatus::Repeatable))
-                            || (qr->type & QUESTGIVER_QUEST_END && status == QuestStatus::Finished))
-                        {
-                            // Activate gameobject
-                            EventActivateGameObject(go);
-                            bPassed = true;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (!bPassed)
-                EventDeActivateGameObject(static_cast<GameObject*>(itr));
         }
     }
 }

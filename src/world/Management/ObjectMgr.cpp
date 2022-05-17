@@ -67,6 +67,8 @@ void ObjectMgr::initialize()
 #if VERSION_STRING > WotLK
     m_voidItemId = 1;
 #endif
+
+    loadCreatureDisplayInfo();
 }
 
 void ObjectMgr::finalize()
@@ -196,10 +198,44 @@ void ObjectMgr::finalize()
 
     worldstate_templates.clear();
 
+    _creatureDisplayInfoData.clear();
 
     sLogger.info("ObjectMgr : Clearing up event scripts...");
     mEventScriptMaps.clear();
     mSpellEffectMaps.clear();
+}
+
+void ObjectMgr::loadCreatureDisplayInfo()
+{
+    for (uint32_t i = 0; i < sCreatureDisplayInfoStore.GetNumRows(); ++i)
+    {
+        const auto* const displayInfoEntry = sCreatureDisplayInfoStore.LookupEntry(i);
+        if (displayInfoEntry == nullptr)
+            continue;
+
+        CreatureDisplayInfoData data;
+        data.id = displayInfoEntry->ID;
+        data.modelId = displayInfoEntry->ModelID;
+        data.extendedDisplayInfoId = displayInfoEntry->ExtendedDisplayInfoID;
+        data.creatureModelScale = displayInfoEntry->CreatureModelScale;
+        data.modelInfo = sCreatureModelDataStore.LookupEntry(data.modelId);
+        if (data.modelInfo != nullptr)
+        {
+            if (strstr(data.modelInfo->ModelName, "InvisibleStalker"))
+                data.isModelInvisibleStalker = true;
+        }
+
+        _creatureDisplayInfoData.insert(std::make_pair(displayInfoEntry->ID, data));
+    }
+}
+
+CreatureDisplayInfoData const* ObjectMgr::getCreatureDisplayInfoData(uint32_t displayId) const
+{
+    const auto itr = _creatureDisplayInfoData.find(displayId);
+    if (itr == _creatureDisplayInfoData.cend())
+        return nullptr;
+
+    return &itr->second;
 }
 
 Player* ObjectMgr::createPlayerByGuid(uint8_t _class, uint32_t guid)

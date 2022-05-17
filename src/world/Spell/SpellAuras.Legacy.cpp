@@ -5009,7 +5009,11 @@ void Aura::SpellAuraEmphaty(AuraEffectModifier* /*aurEff*/, bool apply)
     if (apply)
         dynflags |= U_DYN_FLAG_PLAYER_INFO;
 
+#if VERSION_STRING < Mop
     m_target->BuildFieldUpdatePacket(caster, getOffsetForStructuredField(WoWUnit, dynamic_flags), dynflags);
+#else
+    m_target->BuildFieldUpdatePacket(caster, getOffsetForStructuredField(WoWObject, dynamic_field), dynflags);
+#endif
 }
 
 void Aura::SpellAuraModOffhandDamagePCT(AuraEffectModifier* aurEff, bool apply)

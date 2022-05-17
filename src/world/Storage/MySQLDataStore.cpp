@@ -560,8 +560,8 @@ void MySQLDataStore::loadCreaturePropertiesTable()
                                                                 "mindamage, maxdamage, can_ranged, rangedattacktime, rangedmindamage, rangedmaxdamage, respawntime, armor, "
         //                                                            36           37           38            39          40           41            42             43
                                                                 "resistance1, resistance2, resistance3, resistance4, resistance5, resistance6, combat_reach, bounding_radius, "
-        //                                                         44    45     46         47                48         49        50          51            52     53      54
-                                                                "auras, boss, money, invisibility_type, walk_speed, run_speed, fly_speed, extra_a9_flags, spell1, spell2, spell3, "
+        //                                                         44    45     46         47          48         49        50          51            52     53      54
+                                                                "auras, boss, money, isTriggerNpc, walk_speed, run_speed, fly_speed, extra_a9_flags, spell1, spell2, spell3, "
         //                                                          55      56      57      58      59        60           61               62            63         64           65
                                                                 "spell4, spell5, spell6, spell7, spell8, spell_flags, modImmunities, isTrainingDummy, guardtype, summonguard, spelldataid, "
         //                                                          66         67        68          69          70          71          72          73         74         75
@@ -610,7 +610,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             creatureProperties.Male_DisplayID = fields[3].GetUInt32();
             if (creatureProperties.Male_DisplayID != 0)
             {
-                DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(creatureProperties.Male_DisplayID);
+                const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(creatureProperties.Male_DisplayID);
                 if (creature_display == nullptr)
                 {
                     sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table %s includes invalid Male_DisplayID %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Male_DisplayID, entry);
@@ -620,7 +620,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             creatureProperties.Female_DisplayID = fields[4].GetUInt32();
             if (creatureProperties.Female_DisplayID != 0)
             {
-                DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(creatureProperties.Female_DisplayID);
+                const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(creatureProperties.Female_DisplayID);
                 if (creature_display == nullptr)
                 {
                     sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table %s includes invalid Female_DisplayID %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Female_DisplayID, entry);
@@ -630,7 +630,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             creatureProperties.Male_DisplayID2 = fields[5].GetUInt32();
             if (creatureProperties.Male_DisplayID2 != 0)
             {
-                DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(creatureProperties.Male_DisplayID2);
+                const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(creatureProperties.Male_DisplayID2);
                 if (creature_display == nullptr)
                 {
                     sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table %s includes invalid Male_DisplayID2 %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Male_DisplayID2, entry);
@@ -640,7 +640,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             creatureProperties.Female_DisplayID2 = fields[6].GetUInt32();
             if (creatureProperties.Female_DisplayID2 != 0)
             {
-                DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(creatureProperties.Female_DisplayID2);
+                const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(creatureProperties.Female_DisplayID2);
                 if (creature_display == nullptr)
                 {
                     sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table %s includes invalid Female_DisplayID2 %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Female_DisplayID2, entry);
@@ -719,7 +719,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             creatureProperties.aura_string = fields[44].GetString();
             creatureProperties.isBoss = fields[45].GetBool();
             creatureProperties.money = fields[46].GetUInt32();
-            creatureProperties.invisibility_type = fields[47].GetUInt32();
+            creatureProperties.isTriggerNpc = fields[47].GetBool();
             creatureProperties.walk_speed = fields[48].GetFloat();
             creatureProperties.run_speed = fields[49].GetFloat();
             creatureProperties.fly_speed = fields[50].GetFloat();
@@ -4274,18 +4274,18 @@ void MySQLDataStore::loadCreatureSpawns()
                     cspawn->o = fields[8].GetFloat();
                     cspawn->movetype = fields[9].GetUInt8();
                     cspawn->displayid = fields[10].GetUInt32();
-                    if (cspawn->displayid != 0)
+                    if (cspawn->displayid != 0 && !creature_properties->isTriggerNpc)
                     {
-                        DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(cspawn->displayid);
+                        const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(cspawn->displayid);
                         if (!creature_display)
                         {
                             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table %s includes invalid displayid %u for npc entry: %u, spawn_id: %u. Set to a random modelid!", (*tableiterator).c_str(), cspawn->displayid, cspawn->entry, cspawn->id);
-                            cspawn->displayid = creature_properties->GetRandomModelId();
+                            cspawn->displayid = creature_properties->getRandomModelId();
                         }
                     }
                     else
                     {
-                        cspawn->displayid = creature_properties->GetRandomModelId();
+                        cspawn->displayid = creature_properties->getRandomModelId();
                     }
 
                     cspawn->factionid = fields[11].GetUInt32();

@@ -137,7 +137,7 @@ private:
 
     void DoEventIfAny(KeyFrame const& node, bool departure);
 
-    void setDynamicPathProgress();
+    void updatePathProgress();
 
     // Helpers to know if stop frame was reached
     bool IsMoving() const { return _isMoving; }

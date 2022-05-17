@@ -86,23 +86,27 @@ class Item;
 typedef std::list<QuestRelation*> QuestRelationList;
 typedef std::list<QuestAssociation*> QuestAssociationList;
 
-
+// APGL End
+// MIT Start
 class SERVER_DECL QuestMgr
 {
-    private:
+private:
+    QuestMgr() = default;
+    ~QuestMgr() = default;
 
-        QuestMgr() = default;
-        ~QuestMgr() = default;
+public:
+    static QuestMgr& getInstance();
+    void finalize();
 
-    public:
+    QuestMgr(QuestMgr&&) = delete;
+    QuestMgr(QuestMgr const&) = delete;
+    QuestMgr& operator=(QuestMgr&&) = delete;
+    QuestMgr& operator=(QuestMgr const&) = delete;
 
-        static QuestMgr& getInstance();
-        void finalize();
+    void onPlayerItemRemove(Player* plr, Item const* item);
 
-        QuestMgr(QuestMgr&&) = delete;
-        QuestMgr(QuestMgr const&) = delete;
-        QuestMgr& operator=(QuestMgr&&) = delete;
-        QuestMgr& operator=(QuestMgr const&) = delete;
+    // MIT End
+    // APGL Start
 
         uint32 PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool skiplevelcheck);
 

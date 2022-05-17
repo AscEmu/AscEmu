@@ -637,7 +637,7 @@ void WorldSession::handleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
         }
     }
 
-    _player->UpdateNearbyGameObjects();
+    _player->updateNearbyQuestGameObjects();
 
     sHookInterface.OnQuestCancelled(_player, qPtr);
 }

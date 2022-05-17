@@ -414,11 +414,13 @@ public:
     uint32_t getPetNextLevelExperience() const;
     void setPetNextLevelExperience(uint32_t experience);
 
+#if VERSION_STRING < Mop
     uint32_t getDynamicFlags() const;
     void setDynamicFlags(uint32_t dynamicFlags);
     void addDynamicFlags(uint32_t dynamicFlags);
     void removeDynamicFlags(uint32_t dynamicFlags);
     bool hasDynamicFlags(uint32_t dynamicFlags) const;
+#endif
 
     float getModCastSpeed() const;
     void setModCastSpeed(float modifier);
