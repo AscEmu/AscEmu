@@ -32,6 +32,8 @@ include(Classic/Uldaman/CMakeLists.txt)
 include(Classic/WailingCaverns/CMakeLists.txt)
 include(Classic/ZulFarak/CMakeLists.txt)
 include(Classic/ZulGurub/CMakeLists.txt)
+
+if ("${ASCEMU_NUMBER}" GREATER_EQUAL 1)
 include(Tbc/CMakeLists.txt)
 include(Tbc/Auchindoun/AuchenauCrypts/CMakeLists.txt)
 include(Tbc/Auchindoun/ManaTombs/CMakeLists.txt)
@@ -58,6 +60,9 @@ include(Tbc/TempestKeep/Botanica/CMakeLists.txt)
 include(Tbc/TempestKeep/Mechanar/CMakeLists.txt)
 include(Tbc/TempestKeep/TheEye/CMakeLists.txt)
 include(Tbc/ZulAman/CMakeLists.txt)
+endif ()
+
+if ("${ASCEMU_NUMBER}" GREATER_EQUAL 2)
 include(Wotlk/CMakeLists.txt)
 include(Wotlk/AzjolNerub/Ahnkahet/CMakeLists.txt)
 include(Wotlk/AzjolNerub/AzjolNerub/CMakeLists.txt)
@@ -84,6 +89,7 @@ include(Wotlk/UtgardeKeep/UtgradePinnacle/CMakeLists.txt)
 include(Wotlk/VaultOfArchavon/CMakeLists.txt)
 include(Wotlk/VioletHold/CMakeLists.txt)
 include(Cata/CMakeLists.txt)
+endif ()
 
 set(SRC_BASIC
     Setup.cpp
