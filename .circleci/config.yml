@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   "Classic":
     docker:
-      - image: "cimg/base:stable"
+      - image: "cimg/base:2022.04-20.04"
     steps:
       - checkout
       - run:
@@ -41,7 +41,7 @@ jobs:
             cd ..
   "TBC":
     docker:
-      - image: "cimg/base:stable"
+      - image: "cimg/base:2022.04-20.04"
     steps:
       - checkout
       - run:
@@ -80,7 +80,7 @@ jobs:
             
   "WotLK":
     docker:
-      - image: "cimg/base:stable"
+      - image: "cimg/base:2022.04-20.04"
     steps:
       - checkout
       - run:
@@ -119,7 +119,7 @@ jobs:
             
   "Cata":
     docker:
-      - image: "cimg/base:stable"
+      - image: "cimg/base:2022.04-20.04"
     steps:
       - checkout
       - run:
@@ -158,7 +158,7 @@ jobs:
             
   "Mop":
     docker:
-      - image: "cimg/base:stable"
+      - image: "cimg/base:2022.04-20.04"
     steps:
       - checkout
       - run:
