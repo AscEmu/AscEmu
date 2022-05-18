@@ -1,9 +1,9 @@
 ﻿# ![logo](http://ascemu.org/images/logo.png)
 
-master                                                                                                                                                     | development
-:--------------------------------------------------------------------------------------------------------------------------------------------------------: | :------------:
-[![CircleCI](https://circleci.com/gh/AscEmu/AscEmu.svg?branch=master&style=shield)](https://app.circleci.com/pipelines/github/AscEmu/AscEmu?branch=master) | [![CircleCI](https://circleci.com/gh/AscEmu/AscEmu.svg?branch=develop&style=shield)](https://app.circleci.com/pipelines/github/AscEmu/AscEmu?branch=develop)
-[![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu)    | [![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/develop?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu)
+Master                                                         | Development
+:------------------------------------------------------------: | :----------------------------------------------------------------:
+[![MasterCircle][MasterCircleBadge]][MasterCircleUrl]          | [![DevelopCircle][DevelopCircleBadge]][DevelopCircleUrl]         |
+[![MasterAppYeyor][MasterAppYeyorBadge]][MasterAppYeyorUrl]    | [![DevelopAppYeyor][DevelopAppYeyorBadge]][DevelopAppYeyorUrl]   |
 
 ## Introduction
 AscEmu is derived from ArcEmu to keep up the Antrix-Ascent-Arcemu way of Framework.
@@ -12,9 +12,9 @@ We focus on optimizing the codebase and improving the ingame functionality.
 You can help us by contributing. It is completely open source and can be used by everyone.
 This project is for educational purpose. So, if you're looking for serverfiles to run your server or create some "custom" scripts  this is the wrong place for you. If you want to discuss/develop/work on an open source project and on important stuff for the framework feel free to join our community.
 
-discord          | codefactor         | openhub
-:--------------: | :----------------: | :----------------:
-[![](https://user-images.githubusercontent.com/1216225/168970774-1c2c4b77-64e5-489d-a2ae-0a02e3983479.svg)](https://discord.com/invite/CBdgrh7) | [![CodeFactor](https://www.codefactor.io/repository/github/ascemu/ascemu/badge)](https://www.codefactor.io/repository/github/ascemu/ascemu) | [![Open HUB Stats](https://www.openhub.net/p/AscEmu/widgets/project_thin_badge.gif)](https://www.openhub.net/p/AscEmu)
+Discord                                | Codefactor                                      | Openhub
+:------------------------------------: | :---------------------------------------------: | :--------------------------------------:
+[![Discord][DiscordBadge]][DiscordUrl] | [![Codefactor][CodefactorBadge]][CodefactorUrl] | [![Openhub][OpenhubBadge]][OpenhubUrl] |
 
 ## Multiversion
 AscEmu supports several versions as listed below. We achieved to handle different versions of the serverside code in one repo. The biggest advantage of that is that we always develop for all our supported versions without wasting time to merge features across all repos.
@@ -45,12 +45,10 @@ Be patient with us and give us details.
  2. How should it work
  3. Images will help us a lot
 
-
 ## Install
 HowTo install (detailed guides on our wiki)
 * [Linux](https://ascemu.github.io/Wiki/docs/installation/linux/)
 * [Windows](https://ascemu.github.io/Wiki/docs/installation/windows/)
-
 
 ## Links
 * [Web](http://www.ascemu.org)
@@ -58,9 +56,30 @@ HowTo install (detailed guides on our wiki)
 * [Wiki](https://ascemu.github.io/Wiki/)
 * [World DB](https://github.com/AscEmu/OneDB)
 
-
 ### Copyright and other stuff
 * [License](LICENSE.md)
 * [Thanks to all](THANKS.md)
 * [Terms of use](TERMS_OF_USE_AGREEMENT.md)
 
+
+<!-- Undercover:start:status -->
+[MasterCircleBadge]: https://circleci.com/gh/AscEmu/AscEmu.svg?branch=master&style=shield
+[DevelopCircleBadge]: https://circleci.com/gh/AscEmu/AscEmu.svg?branch=develop&style=shield
+[MasterAppYeyorBadge]: https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true
+[DevelopAppYeyorBadge]: https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/develop?svg=true
+
+[MasterCircleUrl]: https://github.com/vlang/v/workflows/CI/badge.svg
+[DevelopCircleUrl]: https://app.circleci.com/pipelines/github/AscEmu/AscEmu?branch=develop
+[MasterAppYeyorUrl]: https://ci.appveyor.com/project/Zyres/ascemu
+[DevelopAppYeyorUrl]: https://ci.appveyor.com/project/Zyres/ascemu
+<!-- Undercover:end:status -->
+
+<!-- Undercover:start:community -->
+[DiscordBadge]: https://user-images.githubusercontent.com/1216225/168970774-1c2c4b77-64e5-489d-a2ae-0a02e3983479.svg
+[CodefactorBadge]: https://www.codefactor.io/repository/github/ascemu/ascemu/badge
+[OpenhubBadge]: https://www.openhub.net/p/AscEmu/widgets/project_thin_badge.gif
+
+[DiscordUrl]: https://discord.com/invite/CBdgrh7
+[CodefactorUrl]: https://www.codefactor.io/repository/github/ascemu/ascemu
+[OpenhubUrl]: https://www.openhub.net/p/AscEmu
+<!-- Undercover:end:community -->
