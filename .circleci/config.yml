@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   "Classic":
     docker:
-      - image: "cimg/base@sha256:ef15b3cd73e92cc53407da65863d7b1502e998e554050f6baeebe82137d901ed"
+      - image: "cimg/base:2022.03"
     steps:
       - checkout
       - run:
@@ -41,7 +41,7 @@ jobs:
             cd ..
   "TBC":
     docker:
-      - image: "cimg/base@sha256:ef15b3cd73e92cc53407da65863d7b1502e998e554050f6baeebe82137d901ed"
+      - image: "cimg/base:2022.03"
     steps:
       - checkout
       - run:
@@ -80,7 +80,7 @@ jobs:
             
   "WotLK":
     docker:
-      - image: "cimg/base@sha256:ef15b3cd73e92cc53407da65863d7b1502e998e554050f6baeebe82137d901ed"
+      - image: "cimg/base:2022.03"
     steps:
       - checkout
       - run:
@@ -119,7 +119,7 @@ jobs:
             
   "Cata":
     docker:
-      - image: "cimg/base@sha256:ef15b3cd73e92cc53407da65863d7b1502e998e554050f6baeebe82137d901ed"
+      - image: "cimg/base:2022.03"
     steps:
       - checkout
       - run:
@@ -158,7 +158,7 @@ jobs:
             
   "Mop":
     docker:
-      - image: "cimg/base@sha256:ef15b3cd73e92cc53407da65863d7b1502e998e554050f6baeebe82137d901ed"
+      - image: "cimg/base:2022.03"
     steps:
       - checkout
       - run:
