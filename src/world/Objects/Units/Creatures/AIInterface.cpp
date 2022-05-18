@@ -1068,10 +1068,6 @@ void AIInterface::updateTargets(unsigned long time_passed)
         // If unit has target but does not have threat with it, evade
         if (getUnit()->getThreatManager().canHaveThreatList() && !getUnit()->getThreatManager().isThreatenedBy(getCurrentTarget()))
         {
-            auto test = getCurrentTarget();
-            bool threat = getUnit()->getThreatManager().isThreatenedBy(test);
-            auto list = getUnit()->getThreatManager().getModifiableThreatList();
-
             enterEvadeMode();
             return;
         }
