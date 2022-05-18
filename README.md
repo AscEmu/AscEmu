@@ -5,16 +5,16 @@ master                                                                          
 [![CircleCI](https://circleci.com/gh/AscEmu/AscEmu.svg?branch=master&style=shield)](https://app.circleci.com/pipelines/github/AscEmu/AscEmu?branch=master) | [![CircleCI](https://circleci.com/gh/AscEmu/AscEmu.svg?branch=develop&style=shield)](https://app.circleci.com/pipelines/github/AscEmu/AscEmu?branch=develop)
 [![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu)    | [![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/develop?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu)
 
-[![CodeFactor](https://www.codefactor.io/repository/github/ascemu/ascemu/badge)](https://www.codefactor.io/repository/github/ascemu/ascemu)
-
-[![Open HUB Stats](https://www.openhub.net/p/AscEmu/widgets/project_thin_badge.gif)](https://www.openhub.net/p/AscEmu)
-
 ## Introduction
 AscEmu is derived from ArcEmu to keep up the Antrix-Ascent-Arcemu way of Framework.
 We focus on optimizing the codebase and improving the ingame functionality.
 
 You can help us by contributing. It is completely open source and can be used by everyone.
 This project is for educational purpose. So, if you're looking for serverfiles to run your server or create some "custom" scripts  this is the wrong place for you. If you want to discuss/develop/work on an open source project and on important stuff for the framework feel free to join our community.
+
+discord          | codefactor         | openhub
+:--------------: | :----------------: | :----------------:
+[![](https://user-images.githubusercontent.com/1216225/168970774-1c2c4b77-64e5-489d-a2ae-0a02e3983479.svg)](https://discord.com/invite/CBdgrh7) | [![CodeFactor](https://www.codefactor.io/repository/github/ascemu/ascemu/badge)](https://www.codefactor.io/repository/github/ascemu/ascemu) | [![Open HUB Stats](https://www.openhub.net/p/AscEmu/widgets/project_thin_badge.gif)](https://www.openhub.net/p/AscEmu)
 
 ## Multiversion
 AscEmu supports several versions as listed below. We achieved to handle different versions of the serverside code in one repo. The biggest advantage of that is that we always develop for all our supported versions without wasting time to merge features across all repos.
