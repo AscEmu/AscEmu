@@ -22,6 +22,8 @@ SERVER_DECL std::set<std::string> ItemPropertiesTables;
 SERVER_DECL std::set<std::string> QuestPropertiesTables;
 SERVER_DECL std::set<std::string> RecallTables;
 
+SERVER_DECL std::vector<MySQLAdditionalTable> MySQLAdditionalTables;
+
 MySQLDataStore& MySQLDataStore::getInstance()
 {
     static MySQLDataStore mInstance;
@@ -104,7 +106,116 @@ void MySQLDataStore::loadAdditionalTableConfig()
 
         if (target_table.compare("recall") == 0)
             RecallTables.insert(additional_table);
+
+        // Zyres: new way for general additional tables
+        MySQLAdditionalTable myTable;
+        myTable.mainTable = target_table;
+        myTable.tableVector.push_back(target_table);
+        myTable.tableVector.push_back(additional_table);
+
+        MySQLAdditionalTables.push_back(myTable);
+        sLogger.info("MySQLDataLoads : Table %s added as additional table for %s", additional_table.c_str(), target_table.c_str());
     }
+
+    // test function
+    {
+        // add aditional test table
+        MySQLAdditionalTable myTable;
+        myTable.mainTable = "test";
+        myTable.tableVector.push_back("test");
+        myTable.tableVector.push_back("test_copy");
+
+        MySQLAdditionalTables.push_back(myTable);
+        sLogger.info("MySQLDataLoads : Table test_copy added as additional table for test");
+
+        // create tables
+        WorldDatabase.WaitExecuteNA("DROP TABLE IF EXISTS `test`");
+        WorldDatabase.WaitExecuteNA("CREATE TABLE `test` (`id` int, `text` varchar(255))");
+
+        WorldDatabase.WaitExecuteNA("DROP TABLE IF EXISTS `test_copy`");
+        WorldDatabase.WaitExecuteNA("CREATE TABLE `test_copy` (`id` int, `text` varchar(255))");
+
+        WorldDatabase.WaitExecuteNA("INSERT INTO `test` VALUES (1, 'test 1'),(2, 'test 2'), (3, 'test 3')");
+        WorldDatabase.WaitExecuteNA("INSERT INTO `test_copy` VALUES (4, 'test 4'),(5, 'test 5')");
+
+        // load tables
+        auto startTime = Util::TimeNow();
+
+        QueryResult* test_result = getWorldDBQuery("SELECT id, text FROM test");
+        if (test_result == nullptr)
+        {
+            sLogger.info("MySQLDataLoads : Table `test` is empty!");
+            return;
+        }
+
+        sLogger.info("MySQLDataLoads : Table `test` has %u rows", test_result->GetRowCount());
+
+        uint32_t test_count = 0;
+        do
+        {
+            ++test_count;
+        } while (test_result->NextRow());
+
+        delete test_result;
+
+        sLogger.info("MySQLDataLoads : Loaded %u of 5 ids from `test` table in %u ms!", test_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+
+        WorldDatabase.ExecuteNA("DROP TABLE IF EXISTS `test`");
+        WorldDatabase.ExecuteNA("DROP TABLE IF EXISTS `test_copy`");
+    }
+}
+
+QueryResult* MySQLDataStore::getWorldDBQuery(std::string query, ...)
+{
+    // fill in values
+    const char* rawQuery = query.c_str();
+    char finalizedQuery[16384];
+
+    va_list vlist;
+    va_start(vlist, rawQuery);
+    vsnprintf(finalizedQuery, 16384, rawQuery, vlist);
+    va_end(vlist);
+
+    // save query as prepared
+    std::string preparedQuery = finalizedQuery;
+
+    // checkout additional tables
+    for (auto additionalTable : MySQLAdditionalTables)
+    {
+        // query includes table which has additional tables
+        if (AscEmu::Util::Strings::contains(additionalTable.mainTable, preparedQuery))
+        {
+            // set up new query including the original one
+            std::string completeQuery = preparedQuery;
+
+            if (additionalTable.tableVector.size() > 1)
+            {
+                // go through tables, note: main table is always part of it
+                for (const auto& table : additionalTable.tableVector)
+                {
+                    // we already have the query for the main table, if it is an additional table add UNION query
+                    if (table != additionalTable.mainTable)
+                    {
+                        std::string changeQuery = preparedQuery;
+                        const size_t pos = changeQuery.find(additionalTable.mainTable);
+                        const size_t len = additionalTable.mainTable.length();
+                        changeQuery.replace(pos, len, table);
+
+                        completeQuery += " UNION ";
+                        completeQuery += changeQuery;
+
+                        sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_DB_TABLES, "MySQLDataLoads : Added additional query '%s'", changeQuery.c_str());
+                    }
+                }
+            }
+
+            sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_DB_TABLES, "MySQLDataLoads : AdditionalTableLoading - Query: '%s'", completeQuery.c_str());
+            return WorldDatabase.Query(completeQuery.c_str());
+        }
+    }
+
+    // no additional tables defined, just send our query
+    return WorldDatabase.Query(preparedQuery.c_str());
 }
 
 void MySQLDataStore::loadItemPagesTable()

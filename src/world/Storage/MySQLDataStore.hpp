@@ -23,6 +23,15 @@ extern SERVER_DECL std::set<std::string> ItemPropertiesTables;
 extern SERVER_DECL std::set<std::string> QuestPropertiesTables;
 extern SERVER_DECL std::set<std::string> RecallTables;
 
+//Zyres: Define base tables
+struct MySQLAdditionalTable
+{
+    std::string mainTable;
+    std::vector<std::string> tableVector;
+};
+
+extern SERVER_DECL std::vector<MySQLAdditionalTable> MySQLAdditionalTables;
+
 
 class SERVER_DECL MySQLDataStore
 {
@@ -248,7 +257,11 @@ public:
     }
 
     //Config
+    void loadAvailableTables();
     void loadAdditionalTableConfig();
+
+    //helpers
+    QueryResult* getWorldDBQuery(std::string query, ...);
 
     //Loads
     void loadItemPagesTable();
