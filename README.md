@@ -61,14 +61,13 @@ HowTo install (detailed guides on our wiki)
 * [Thanks to all](THANKS.md)
 * [Terms of use](TERMS_OF_USE_AGREEMENT.md)
 
-
 <!-- Undercover:start:status -->
 [MasterCircleBadge]: https://circleci.com/gh/AscEmu/AscEmu.svg?branch=master&style=shield
 [DevelopCircleBadge]: https://circleci.com/gh/AscEmu/AscEmu.svg?branch=develop&style=shield
 [MasterAppYeyorBadge]: https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true
 [DevelopAppYeyorBadge]: https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/develop?svg=true
 
-[MasterCircleUrl]: https://github.com/vlang/v/workflows/CI/badge.svg
+[MasterCircleUrl]: https://app.circleci.com/pipelines/github/AscEmu/AscEmu?branch=master
 [DevelopCircleUrl]: https://app.circleci.com/pipelines/github/AscEmu/AscEmu?branch=develop
 [MasterAppYeyorUrl]: https://ci.appveyor.com/project/Zyres/ascemu
 [DevelopAppYeyorUrl]: https://ci.appveyor.com/project/Zyres/ascemu
