@@ -9,8 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Spell/SpellMgr.hpp"
 #include "Util/Strings.hpp"
+#include <regex>
 
-SERVER_DECL std::set<std::string> CreaturePropertiesTables;
 SERVER_DECL std::set<std::string> CreatureQuestStarterTables;
 SERVER_DECL std::set<std::string> CreatureQuestFinisherTables;
 SERVER_DECL std::set<std::string> CreatureSpawnsTables;
@@ -41,7 +41,6 @@ void MySQLDataStore::finalize()
 void MySQLDataStore::loadAdditionalTableConfig()
 {
     // init basic tables
-    CreaturePropertiesTables.emplace(std::string("creature_properties"));
     CreatureQuestStarterTables.emplace(std::string("creature_quest_starter"));
     CreatureQuestFinisherTables.emplace(std::string("creature_quest_finisher"));
     CreatureSpawnsTables.emplace(std::string("creature_spawns"));
@@ -73,9 +72,6 @@ void MySQLDataStore::loadAdditionalTableConfig()
 
         if (additional_table.empty() || target_table.empty())
             continue;
-
-        if (target_table.compare("creature_properties") == 0)
-            CreaturePropertiesTables.insert(additional_table);
 
         if (target_table.compare("creature_quest_starter") == 0)
             CreatureQuestStarterTables.insert(additional_table);
@@ -116,53 +112,6 @@ void MySQLDataStore::loadAdditionalTableConfig()
         MySQLAdditionalTables.push_back(myTable);
         sLogger.info("MySQLDataLoads : Table %s added as additional table for %s", additional_table.c_str(), target_table.c_str());
     }
-
-    // test function
-    {
-        // add aditional test table
-        MySQLAdditionalTable myTable;
-        myTable.mainTable = "test";
-        myTable.tableVector.push_back("test");
-        myTable.tableVector.push_back("test_copy");
-
-        MySQLAdditionalTables.push_back(myTable);
-        sLogger.info("MySQLDataLoads : Table test_copy added as additional table for test");
-
-        // create tables
-        WorldDatabase.WaitExecuteNA("DROP TABLE IF EXISTS `test`");
-        WorldDatabase.WaitExecuteNA("CREATE TABLE `test` (`id` int, `text` varchar(255))");
-
-        WorldDatabase.WaitExecuteNA("DROP TABLE IF EXISTS `test_copy`");
-        WorldDatabase.WaitExecuteNA("CREATE TABLE `test_copy` (`id` int, `text` varchar(255))");
-
-        WorldDatabase.WaitExecuteNA("INSERT INTO `test` VALUES (1, 'test 1'),(2, 'test 2'), (3, 'test 3')");
-        WorldDatabase.WaitExecuteNA("INSERT INTO `test_copy` VALUES (4, 'test 4'),(5, 'test 5')");
-
-        // load tables
-        auto startTime = Util::TimeNow();
-
-        QueryResult* test_result = getWorldDBQuery("SELECT id, text FROM test");
-        if (test_result == nullptr)
-        {
-            sLogger.info("MySQLDataLoads : Table `test` is empty!");
-            return;
-        }
-
-        sLogger.info("MySQLDataLoads : Table `test` has %u rows", test_result->GetRowCount());
-
-        uint32_t test_count = 0;
-        do
-        {
-            ++test_count;
-        } while (test_result->NextRow());
-
-        delete test_result;
-
-        sLogger.info("MySQLDataLoads : Loaded %u of 5 ids from `test` table in %u ms!", test_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-
-        WorldDatabase.ExecuteNA("DROP TABLE IF EXISTS `test`");
-        WorldDatabase.ExecuteNA("DROP TABLE IF EXISTS `test_copy`");
-    }
 }
 
 QueryResult* MySQLDataStore::getWorldDBQuery(std::string query, ...)
@@ -197,9 +146,8 @@ QueryResult* MySQLDataStore::getWorldDBQuery(std::string query, ...)
                     if (table != additionalTable.mainTable)
                     {
                         std::string changeQuery = preparedQuery;
-                        const size_t pos = changeQuery.find(additionalTable.mainTable);
-                        const size_t len = additionalTable.mainTable.length();
-                        changeQuery.replace(pos, len, table);
+
+                        changeQuery = std::regex_replace(changeQuery, std::regex(additionalTable.mainTable), table);
 
                         completeQuery += " UNION ";
                         completeQuery += changeQuery;
@@ -655,299 +603,276 @@ void MySQLDataStore::loadCreaturePropertiesTable()
 {
     auto startTime = Util::TimeNow();
     uint32_t creature_properties_count = 0;
-    uint32_t basic_field_count = 0;
 
-    std::set<std::string>::iterator tableiterator;
-    for (tableiterator = CreaturePropertiesTables.begin(); tableiterator != CreaturePropertiesTables.end(); ++tableiterator)
-    {
-        std::string table_name = *tableiterator;
-        //                                                                      0          1           2             3                 4               5                  6
-        QueryResult* creature_properties_result = WorldDatabase.Query("SELECT entry, killcredit1, killcredit2, male_displayid, female_displayid, male_displayid2, female_displayid2, "
-        //                                                         7      8         9         10       11     12     13       14            15              16           17
-                                                                "name, subname, info_str, type_flags, type, family, `rank`, encounter, base_attack_mod, range_attack_mod, leader, "
-        //                                                          18        19        20        21         22      23     24      25          26           27
-                                                                "minlevel, maxlevel, faction, minhealth, maxhealth, mana, scale, npcflags, attacktime, attack_school, "
-        //                                                          28          29         30            31                 32                33            34        35
-                                                                "mindamage, maxdamage, can_ranged, rangedattacktime, rangedmindamage, rangedmaxdamage, respawntime, armor, "
-        //                                                            36           37           38            39          40           41            42             43
-                                                                "resistance1, resistance2, resistance3, resistance4, resistance5, resistance6, combat_reach, bounding_radius, "
-        //                                                         44    45     46         47          48         49        50          51            52     53      54
-                                                                "auras, boss, money, isTriggerNpc, walk_speed, run_speed, fly_speed, extra_a9_flags, spell1, spell2, spell3, "
-        //                                                          55      56      57      58      59        60           61               62            63         64           65
-                                                                "spell4, spell5, spell6, spell7, spell8, spell_flags, modImmunities, isTrainingDummy, guardtype, summonguard, spelldataid, "
-        //                                                          66         67        68          69          70          71          72          73         74         75
-                                                                "vehicleid, rooted, questitem1, questitem2, questitem3, questitem4, questitem5, questitem6, waypointid, gossipId FROM %s base "
+    //                                                                    0          1           2             3                 4               5                  6
+    QueryResult* creature_properties_result = getWorldDBQuery("SELECT entry, killcredit1, killcredit2, male_displayid, female_displayid, male_displayid2, female_displayid2, "
+        //7      8         9         10       11     12     13       14            15              16           17
+        "name, subname, info_str, type_flags, type, family, `rank`, encounter, base_attack_mod, range_attack_mod, leader, "
+        //  18        19        20        21         22      23     24      25          26           27
+        "minlevel, maxlevel, faction, minhealth, maxhealth, mana, scale, npcflags, attacktime, attack_school, "
+        //   28          29         30            31                 32                33            34        35
+        "mindamage, maxdamage, can_ranged, rangedattacktime, rangedmindamage, rangedmaxdamage, respawntime, armor, "
+        //   36           37           38            39          40           41            42             43
+        "resistance1, resistance2, resistance3, resistance4, resistance5, resistance6, combat_reach, bounding_radius, "
+        // 44    45     46         47          48         49        50          51            52     53      54
+        "auras, boss, money, isTriggerNpc, walk_speed, run_speed, fly_speed, extra_a9_flags, spell1, spell2, spell3, "
+        // 55      56      57      58      59        60           61               62            63         64           65
+        "spell4, spell5, spell6, spell7, spell8, spell_flags, modImmunities, isTrainingDummy, guardtype, summonguard, spelldataid, "
+        //  66         67        68          69          70          71          72          73         74         75
+        "vehicleid, rooted, questitem1, questitem2, questitem3, questitem4, questitem5, questitem6, waypointid, gossipId FROM creature_properties base "
         //
-                                                                "WHERE build=(SELECT MAX(build) FROM %s buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", table_name.c_str(), table_name.c_str(), VERSION_STRING);
+        "WHERE build=(SELECT MAX(build) FROM creature_properties buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", VERSION_STRING);
 
-        if (creature_properties_result == nullptr)
+    if (creature_properties_result == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `creature_properties` is empty!");
+        return;
+    }
+
+    sLogger.info("MySQLDataLoads : Table creature_properties has %u columns", creature_properties_result->GetFieldCount());
+
+    _creaturePropertiesStore.rehash(creature_properties_result->GetRowCount());
+
+    do
+    {
+        Field* fields = creature_properties_result->Fetch();
+
+        uint32_t entry = fields[0].GetUInt32();
+
+        CreatureProperties& creatureProperties = _creaturePropertiesStore[entry];
+
+        creatureProperties.Id = entry;
+        creatureProperties.killcredit[0] = fields[1].GetUInt32();
+        creatureProperties.killcredit[1] = fields[2].GetUInt32();
+        creatureProperties.Male_DisplayID = fields[3].GetUInt32();
+        if (creatureProperties.Male_DisplayID != 0)
         {
-            sLogger.info("MySQLDataLoads : Table `%s` is empty!", table_name.c_str());
-            return;
+            const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(creatureProperties.Male_DisplayID);
+            if (creature_display == nullptr)
+            {
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table creature_properties includes invalid Male_DisplayID %u for npc entry: %u. Set to 0!", creatureProperties.Male_DisplayID, entry);
+                creatureProperties.Male_DisplayID = 0;
+            }
+        }
+        creatureProperties.Female_DisplayID = fields[4].GetUInt32();
+        if (creatureProperties.Female_DisplayID != 0)
+        {
+            const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(creatureProperties.Female_DisplayID);
+            if (creature_display == nullptr)
+            {
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table creature_properties includes invalid Female_DisplayID %u for npc entry: %u. Set to 0!", creatureProperties.Female_DisplayID, entry);
+                creatureProperties.Female_DisplayID = 0;
+            }
+        }
+        creatureProperties.Male_DisplayID2 = fields[5].GetUInt32();
+        if (creatureProperties.Male_DisplayID2 != 0)
+        {
+            const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(creatureProperties.Male_DisplayID2);
+            if (creature_display == nullptr)
+            {
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table creature_properties includes invalid Male_DisplayID2 %u for npc entry: %u. Set to 0!", creatureProperties.Male_DisplayID2, entry);
+                creatureProperties.Male_DisplayID2 = 0;
+            }
+        }
+        creatureProperties.Female_DisplayID2 = fields[6].GetUInt32();
+        if (creatureProperties.Female_DisplayID2 != 0)
+        {
+            const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(creatureProperties.Female_DisplayID2);
+            if (creature_display == nullptr)
+            {
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table creature_properties includes invalid Female_DisplayID2 %u for npc entry: %u. Set to 0!", creatureProperties.Female_DisplayID2, entry);
+                creatureProperties.Female_DisplayID2 = 0;
+            }
         }
 
-        uint32_t row_count = 0;
-        if (table_name.compare("creature_properties") == 0)
+        creatureProperties.Name = fields[7].GetString();
+
+        //lowercase
+        std::string lower_case_name = creatureProperties.Name;
+        AscEmu::Util::Strings::toLowerCase(lower_case_name);
+        creatureProperties.lowercase_name = lower_case_name;
+
+        creatureProperties.SubName = fields[8].GetString();
+        creatureProperties.info_str = fields[9].GetString();
+        creatureProperties.typeFlags = fields[10].GetUInt32();
+        creatureProperties.Type = fields[11].GetUInt32();
+        creatureProperties.Family = fields[12].GetUInt32();
+        creatureProperties.Rank = fields[13].GetUInt32();
+        creatureProperties.Encounter = fields[14].GetUInt32();
+        creatureProperties.baseAttackMod = fields[15].GetFloat();
+        creatureProperties.rangeAttackMod = fields[16].GetFloat();
+        creatureProperties.Leader = fields[17].GetUInt8();
+        creatureProperties.MinLevel = fields[18].GetUInt32();
+        creatureProperties.MaxLevel = fields[19].GetUInt32();
+        creatureProperties.Faction = fields[20].GetUInt32();
+        if (fields[21].GetUInt32() != 0)
         {
-            basic_field_count = creature_properties_result->GetFieldCount();
+            creatureProperties.MinHealth = fields[21].GetUInt32();
         }
         else
         {
-            row_count = static_cast<uint32_t>(_creaturePropertiesStore.size());
+            sLogger.failure("Table `creature_properties` MinHealth = 0 is not a valid value! Default set to 1 for entry: %u.", entry);
+            creatureProperties.MinHealth = 1;
         }
 
-        if (basic_field_count != creature_properties_result->GetFieldCount())
+        if (fields[22].GetUInt32() != 0)
         {
-            sLogger.failure("Additional creature_properties table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), creature_properties_result->GetFieldCount());
-            delete creature_properties_result;
-            continue;
+            creatureProperties.MaxHealth = fields[22].GetUInt32();
+        }
+        else
+        {
+            sLogger.failure("Table `creature_properties` MaxHealth = 0 is not a valid value! Default set to 1 for entry: %u.", entry);
+            creatureProperties.MaxHealth = 1;
         }
 
-        sLogger.info("MySQLDataLoads : Table `%s` has %u columns", table_name.c_str(), creature_properties_result->GetFieldCount());
-
-        _creaturePropertiesStore.rehash(row_count + creature_properties_result->GetRowCount());
-
-        do
+        creatureProperties.Mana = fields[23].GetUInt32();
+        creatureProperties.Scale = fields[24].GetFloat();
+        creatureProperties.NPCFLags = fields[25].GetUInt32();
+        creatureProperties.AttackTime = fields[26].GetUInt32();
+        if (fields[27].GetUInt8() <= SCHOOL_ARCANE)
         {
-            Field* fields = creature_properties_result->Fetch();
+            creatureProperties.attackSchool = fields[27].GetUInt8();
+        }
+        else
+        {
+            sLogger.failure("Table `creature_properties` AttackType: %u is not a valid value! Default set to 0 for entry: %u.", fields[10].GetUInt32(), entry);
+            creatureProperties.attackSchool = SCHOOL_NORMAL;
+        }
 
-            uint32_t entry = fields[0].GetUInt32();
+        creatureProperties.MinDamage = fields[28].GetFloat();
+        creatureProperties.MaxDamage = fields[29].GetFloat();
+        creatureProperties.CanRanged = fields[30].GetUInt32();
+        creatureProperties.RangedAttackTime = fields[31].GetUInt32();
+        creatureProperties.RangedMinDamage = fields[32].GetFloat();
+        creatureProperties.RangedMaxDamage = fields[33].GetFloat();
+        creatureProperties.RespawnTime = fields[34].GetUInt32();
+        for (uint8_t i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
+        {
+            creatureProperties.Resistances[i] = fields[35 + i].GetUInt32();
+        }
 
-            CreatureProperties& creatureProperties = _creaturePropertiesStore[entry];
+        creatureProperties.CombatReach = fields[42].GetFloat();
+        creatureProperties.BoundingRadius = fields[43].GetFloat();
+        creatureProperties.aura_string = fields[44].GetString();
+        creatureProperties.isBoss = fields[45].GetBool();
+        creatureProperties.money = fields[46].GetUInt32();
+        creatureProperties.isTriggerNpc = fields[47].GetBool();
+        creatureProperties.walk_speed = fields[48].GetFloat();
+        creatureProperties.run_speed = fields[49].GetFloat();
+        creatureProperties.fly_speed = fields[50].GetFloat();
+        creatureProperties.extra_a9_flags = fields[51].GetUInt32();
 
-            creatureProperties.Id = entry;
-            creatureProperties.killcredit[0] = fields[1].GetUInt32();
-            creatureProperties.killcredit[1] = fields[2].GetUInt32();
-            creatureProperties.Male_DisplayID = fields[3].GetUInt32();
-            if (creatureProperties.Male_DisplayID != 0)
+        for (uint8_t i = 0; i < creatureMaxProtoSpells; ++i)
+        {
+            // Process spell fields
+            creatureProperties.AISpells[i] = fields[52 + i].GetUInt32();
+            if (creatureProperties.AISpells[i] != 0)
             {
-                const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(creatureProperties.Male_DisplayID);
-                if (creature_display == nullptr)
+                SpellInfo const* sp = sSpellMgr.getSpellInfo(creatureProperties.AISpells[i]);
+                if (sp == nullptr)
                 {
-                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table %s includes invalid Male_DisplayID %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Male_DisplayID, entry);
-                    creatureProperties.Male_DisplayID = 0;
+                    uint8_t spell_number = i;
+                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "spell %u in table creature_properties column spell%u for creature entry: %u is not a valid spell!", creatureProperties.AISpells[i], spell_number + 1, entry);
+                    continue;
                 }
-            }
-            creatureProperties.Female_DisplayID = fields[4].GetUInt32();
-            if (creatureProperties.Female_DisplayID != 0)
-            {
-                const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(creatureProperties.Female_DisplayID);
-                if (creature_display == nullptr)
+                else
                 {
-                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table %s includes invalid Female_DisplayID %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Female_DisplayID, entry);
-                    creatureProperties.Female_DisplayID = 0;
-                }
-            }
-            creatureProperties.Male_DisplayID2 = fields[5].GetUInt32();
-            if (creatureProperties.Male_DisplayID2 != 0)
-            {
-                const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(creatureProperties.Male_DisplayID2);
-                if (creature_display == nullptr)
-                {
-                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table %s includes invalid Male_DisplayID2 %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Male_DisplayID2, entry);
-                    creatureProperties.Male_DisplayID2 = 0;
-                }
-            }
-            creatureProperties.Female_DisplayID2 = fields[6].GetUInt32();
-            if (creatureProperties.Female_DisplayID2 != 0)
-            {
-                const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(creatureProperties.Female_DisplayID2);
-                if (creature_display == nullptr)
-                {
-                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table %s includes invalid Female_DisplayID2 %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Female_DisplayID2, entry);
-                    creatureProperties.Female_DisplayID2 = 0;
-                }
-            }
-
-            creatureProperties.Name = fields[7].GetString();
-
-            //lowercase
-            std::string lower_case_name = creatureProperties.Name;
-            AscEmu::Util::Strings::toLowerCase(lower_case_name);
-            creatureProperties.lowercase_name = lower_case_name;
-
-            creatureProperties.SubName = fields[8].GetString();
-            creatureProperties.info_str = fields[9].GetString();
-            creatureProperties.typeFlags = fields[10].GetUInt32();
-            creatureProperties.Type = fields[11].GetUInt32();
-            creatureProperties.Family = fields[12].GetUInt32();
-            creatureProperties.Rank = fields[13].GetUInt32();
-            creatureProperties.Encounter = fields[14].GetUInt32();
-            creatureProperties.baseAttackMod = fields[15].GetFloat();
-            creatureProperties.rangeAttackMod = fields[16].GetFloat();
-            creatureProperties.Leader = fields[17].GetUInt8();
-            creatureProperties.MinLevel = fields[18].GetUInt32();
-            creatureProperties.MaxLevel = fields[19].GetUInt32();
-            creatureProperties.Faction = fields[20].GetUInt32();
-            if (fields[21].GetUInt32() != 0)
-            {
-                creatureProperties.MinHealth = fields[21].GetUInt32();
-            }
-            else
-            {
-                sLogger.failure("Table `%s` MinHealth = 0 is not a valid value! Default set to 1 for entry: %u.", table_name.c_str(), entry);
-                creatureProperties.MinHealth = 1;
-            }
-
-            if (fields[22].GetUInt32() != 0)
-            {
-                creatureProperties.MaxHealth = fields[22].GetUInt32();
-            }
-            else
-            {
-                sLogger.failure("Table `%s` MaxHealth = 0 is not a valid value! Default set to 1 for entry: %u.", table_name.c_str(), entry);
-                creatureProperties.MaxHealth = 1;
-            }
-
-            creatureProperties.Mana = fields[23].GetUInt32();
-            creatureProperties.Scale = fields[24].GetFloat();
-            creatureProperties.NPCFLags = fields[25].GetUInt32();
-            creatureProperties.AttackTime = fields[26].GetUInt32();
-            if (fields[27].GetUInt8() <= SCHOOL_ARCANE)
-            {
-                creatureProperties.attackSchool = fields[27].GetUInt8();
-            }
-            else
-            {
-                sLogger.failure("Table `%s` AttackType: %u is not a valid value! Default set to 0 for entry: %u.", table_name.c_str(), fields[10].GetUInt32(), entry);
-                creatureProperties.attackSchool = SCHOOL_NORMAL;
-            }
-
-            creatureProperties.MinDamage = fields[28].GetFloat();
-            creatureProperties.MaxDamage = fields[29].GetFloat();
-            creatureProperties.CanRanged = fields[30].GetUInt32();
-            creatureProperties.RangedAttackTime = fields[31].GetUInt32();
-            creatureProperties.RangedMinDamage = fields[32].GetFloat();
-            creatureProperties.RangedMaxDamage = fields[33].GetFloat();
-            creatureProperties.RespawnTime = fields[34].GetUInt32();
-            for (uint8_t i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
-            {
-                creatureProperties.Resistances[i] = fields[35 + i].GetUInt32();
-            }
-
-            creatureProperties.CombatReach = fields[42].GetFloat();
-            creatureProperties.BoundingRadius = fields[43].GetFloat();
-            creatureProperties.aura_string = fields[44].GetString();
-            creatureProperties.isBoss = fields[45].GetBool();
-            creatureProperties.money = fields[46].GetUInt32();
-            creatureProperties.isTriggerNpc = fields[47].GetBool();
-            creatureProperties.walk_speed = fields[48].GetFloat();
-            creatureProperties.run_speed = fields[49].GetFloat();
-            creatureProperties.fly_speed = fields[50].GetFloat();
-            creatureProperties.extra_a9_flags = fields[51].GetUInt32();
-
-            for (uint8_t i = 0; i < creatureMaxProtoSpells; ++i)
-            {
-                // Process spell fields
-                creatureProperties.AISpells[i] = fields[52 + i].GetUInt32();
-                if (creatureProperties.AISpells[i] != 0)
-                {
-                    SpellInfo const* sp = sSpellMgr.getSpellInfo(creatureProperties.AISpells[i]);
-                    if (sp == nullptr)
-                    {
-                        uint8_t spell_number = i;
-                        sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "spell %u in table %s column spell%u for creature entry: %u is not a valid spell!", creatureProperties.AISpells[i], table_name.c_str(), spell_number + 1, entry);
-                        continue;
-                    }
-                    else
-                    {
-                        if ((sp->getAttributes() & ATTRIBUTES_PASSIVE) == 0)
-                            creatureProperties.castable_spells.push_back(sp->getId());
-                        else
-                            creatureProperties.start_auras.insert(sp->getId());
-                    }
-                }
-            }
-
-            creatureProperties.AISpellsFlags = fields[60].GetUInt32();
-            creatureProperties.modImmunities = fields[61].GetUInt32();
-            creatureProperties.isTrainingDummy = fields[62].GetBool();
-            creatureProperties.guardtype = fields[63].GetUInt32();
-            creatureProperties.summonguard = fields[64].GetUInt32();
-            creatureProperties.spelldataid = fields[65].GetUInt32();
-            // process creature spells from creaturespelldata.dbc
-            if (creatureProperties.spelldataid != 0)
-            {
-                auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(creatureProperties.spelldataid);
-                for (uint8_t i = 0; i < 3; i++)
-                {
-                    if (creature_spell_data == nullptr)
-                        continue;
-
-                    if (creature_spell_data->Spells[i] == 0)
-                        continue;
-
-                    SpellInfo const* sp = sSpellMgr.getSpellInfo(creature_spell_data->Spells[i]);
-                    if (sp == nullptr)
-                        continue;
-
                     if ((sp->getAttributes() & ATTRIBUTES_PASSIVE) == 0)
                         creatureProperties.castable_spells.push_back(sp->getId());
                     else
                         creatureProperties.start_auras.insert(sp->getId());
                 }
             }
+        }
 
-            creatureProperties.vehicleid = fields[66].GetUInt32();
-            creatureProperties.rooted = fields[67].GetBool();
-
-            for (uint8_t i = 0; i < 6; ++i)
-                creatureProperties.QuestItems[i] = fields[68 + i].GetUInt32();
-
-            creatureProperties.waypointid = fields[74].GetUInt32();
-
-            creatureProperties.gossipId = fields[75].GetUInt32();
-
-            auto movement = getCreaturePropertiesMovement(entry);
-            if (movement)
+        creatureProperties.AISpellsFlags = fields[60].GetUInt32();
+        creatureProperties.modImmunities = fields[61].GetUInt32();
+        creatureProperties.isTrainingDummy = fields[62].GetBool();
+        creatureProperties.guardtype = fields[63].GetUInt32();
+        creatureProperties.summonguard = fields[64].GetUInt32();
+        creatureProperties.spelldataid = fields[65].GetUInt32();
+        // process creature spells from creaturespelldata.dbc
+        if (creatureProperties.spelldataid != 0)
+        {
+            auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(creatureProperties.spelldataid);
+            for (uint8_t i = 0; i < 3; i++)
             {
-                creatureProperties.MovementType = movement->MovementType;
-                creatureProperties.Movement.Ground = movement->Movement.Ground;
-                creatureProperties.Movement.Swim = movement->Movement.Swim;
-                creatureProperties.Movement.Flight = movement->Movement.Flight;
-                creatureProperties.Movement.Rooted = movement->Movement.Rooted;
-                creatureProperties.Movement.Chase = movement->Movement.Chase;
-                creatureProperties.Movement.Random = movement->Movement.Random;
+                if (creature_spell_data == nullptr)
+                    continue;
+
+                if (creature_spell_data->Spells[i] == 0)
+                    continue;
+
+                SpellInfo const* sp = sSpellMgr.getSpellInfo(creature_spell_data->Spells[i]);
+                if (sp == nullptr)
+                    continue;
+
+                if ((sp->getAttributes() & ATTRIBUTES_PASSIVE) == 0)
+                    creatureProperties.castable_spells.push_back(sp->getId());
+                else
+                    creatureProperties.start_auras.insert(sp->getId());
             }
-            else
+        }
+
+        creatureProperties.vehicleid = fields[66].GetUInt32();
+        creatureProperties.rooted = fields[67].GetBool();
+
+        for (uint8_t i = 0; i < 6; ++i)
+            creatureProperties.QuestItems[i] = fields[68 + i].GetUInt32();
+
+        creatureProperties.waypointid = fields[74].GetUInt32();
+
+        creatureProperties.gossipId = fields[75].GetUInt32();
+
+        auto movement = getCreaturePropertiesMovement(entry);
+        if (movement)
+        {
+            creatureProperties.MovementType = movement->MovementType;
+            creatureProperties.Movement.Ground = movement->Movement.Ground;
+            creatureProperties.Movement.Swim = movement->Movement.Swim;
+            creatureProperties.Movement.Flight = movement->Movement.Flight;
+            creatureProperties.Movement.Rooted = movement->Movement.Rooted;
+            creatureProperties.Movement.Chase = movement->Movement.Chase;
+            creatureProperties.Movement.Random = movement->Movement.Random;
+        }
+        else
+        {
+            creatureProperties.MovementType = IDLE_MOTION_TYPE;
+            creatureProperties.Movement.Ground = static_cast<CreatureGroundMovementType>(1);
+            creatureProperties.Movement.Swim = false;
+            creatureProperties.Movement.Flight = static_cast<CreatureFlightMovementType>(0);
+            creatureProperties.Movement.Rooted = false;
+            creatureProperties.Movement.Chase = static_cast<CreatureChaseMovementType>(0);
+            creatureProperties.Movement.Random = static_cast<CreatureRandomMovementType>(0);
+        }
+
+        //process aura string
+        if (creatureProperties.aura_string.size() != 0)
+        {
+            std::string auras = creatureProperties.aura_string;
+            std::vector<std::string> split_auras = AscEmu::Util::Strings::split(auras, " ");
+            for (std::vector<std::string>::iterator it = split_auras.begin(); it != split_auras.end(); ++it)
             {
-                creatureProperties.MovementType = IDLE_MOTION_TYPE;
-                creatureProperties.Movement.Ground = static_cast<CreatureGroundMovementType>(1);
-                creatureProperties.Movement.Swim = false;
-                creatureProperties.Movement.Flight = static_cast<CreatureFlightMovementType>(0);
-                creatureProperties.Movement.Rooted = false;
-                creatureProperties.Movement.Chase = static_cast<CreatureChaseMovementType>(0);
-                creatureProperties.Movement.Random = static_cast<CreatureRandomMovementType>(0);
+                uint32_t id = atol((*it).c_str());
+                if (id)
+                    creatureProperties.start_auras.insert(id);
             }
+        }
 
-            //process aura string
-            if (creatureProperties.aura_string.size() != 0)
-            {
-                std::string auras = creatureProperties.aura_string;
-                std::vector<std::string> split_auras = AscEmu::Util::Strings::split(auras, " ");
-                for (std::vector<std::string>::iterator it = split_auras.begin(); it != split_auras.end(); ++it)
-                {
-                    uint32_t id = atol((*it).c_str());
-                    if (id)
-                        creatureProperties.start_auras.insert(id);
-                }
-            }
+        //Itemslot
+        creatureProperties.itemslot_1 = 0;
+        creatureProperties.itemslot_2 = 0;
+        creatureProperties.itemslot_3 = 0;
 
-            //Itemslot
-            creatureProperties.itemslot_1 = 0;
-            creatureProperties.itemslot_2 = 0;
-            creatureProperties.itemslot_3 = 0;
+        /*for (uint8_t i = 0; i < NUM_MONSTER_SAY_EVENTS; ++i)
+        {
+            creatureProperties.MonsterSay[i] = nullptr;
+        }*/
 
-            /*for (uint8_t i = 0; i < NUM_MONSTER_SAY_EVENTS; ++i)
-            {
-                creatureProperties.MonsterSay[i] = nullptr;
-            }*/
+        ++creature_properties_count;
+    } while (creature_properties_result->NextRow());
 
-            ++creature_properties_count;
-        } while (creature_properties_result->NextRow());
-
-        delete creature_properties_result;
-    }
+    delete creature_properties_result;
 
     sLogger.info("MySQLDataLoads : Loaded %u creature proto data in %u ms!", creature_properties_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }

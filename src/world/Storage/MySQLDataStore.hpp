@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MySQLStructures.h"
 #include "Objects/GameObject.h"
 
-extern SERVER_DECL std::set<std::string> CreaturePropertiesTables;
 extern SERVER_DECL std::set<std::string> CreatureQuestStarterTables;
 extern SERVER_DECL std::set<std::string> CreatureQuestFinisherTables;
 extern SERVER_DECL std::set<std::string> CreatureSpawnsTables;
@@ -257,7 +256,6 @@ public:
     }
 
     //Config
-    void loadAvailableTables();
     void loadAdditionalTableConfig();
 
     //helpers
