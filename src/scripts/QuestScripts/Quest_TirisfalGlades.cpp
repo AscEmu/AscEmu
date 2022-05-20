@@ -32,6 +32,20 @@ public:
     }
 };
 
+enum Calvin
+{
+    SAY_COMPLETE                = 10759,
+    ACTION_QUESTSTARTED         = 1,
+    SPELL_DRINK                 = 7737,
+    QUEST_590                   = 590,
+
+    EVENT_EMOTE_RUDE            = 1,
+    EVENT_TALK                  = 2,
+    EVENT_DRINK                 = 3,
+    EVENT_SET_QUESTGIVER_FLAG   = 4,
+    EVENT_STAND                 = 5
+};
+
 class CalvinMontague : public CreatureAIScript
 {
 public:
@@ -44,40 +58,93 @@ public:
         getCreature()->setStandState(STANDSTATE_STAND);
     }
 
-    void OnDamageTaken(Unit* mAttacker, uint32_t /*fAmount*/) override
+    void DamageTaken(Unit* _attacker, uint32_t* damage) override
     {
-        if (getCreature()->getHealthPct() < 10)
+        if (getCreature()->getHealthPct() < 15 || *damage > getCreature()->getHealth())
         {
-            if (mAttacker->isPlayer())
+            // Dont let us die
+            damage = 0;
+
+            // Evade
+            getCreature()->getAIInterface()->enterEvadeMode();
+            removeCombat();
+
+            // setPlayer
+            _playerGuid = _attacker->getGuid();
+
+            // Outro Event
+            scriptEvents.addEvent(EVENT_EMOTE_RUDE, 3000);
+        }
+    }
+
+    void AIUpdate(unsigned long time_passed) override
+    {
+        scriptEvents.updateEvents(time_passed, getScriptPhase());
+
+        if (uint32_t eventId = scriptEvents.getFinishedEvent())
+        {
+            switch (eventId)
             {
-                getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-                if (auto* questLog = static_cast<Player*>(mAttacker)->getQuestLogByQuestId(590))
+                case EVENT_EMOTE_RUDE:
                 {
-                    questLog->sendQuestComplete();
-                    setScriptPhase(2);
-                }
+                    getCreature()->emote(EMOTE_ONESHOT_RUDE);
+                    scriptEvents.addEvent(EVENT_TALK, 2000);
+                } break;
+                case EVENT_TALK:
+                {
+                    sendDBChatMessage(SAY_COMPLETE);
+                    scriptEvents.addEvent(EVENT_DRINK, 5000);
+                } break;
+                case EVENT_DRINK:
+                {
+                    // Finish the Quest
+                    if (Player* plr = getCreature()->getWorldMapPlayer(_playerGuid))
+                    {
+                        if (auto* questLog = static_cast<Player*>(plr)->getQuestLogByQuestId(QUEST_590))
+                            questLog->sendQuestComplete();
+                    }
+                    _playerGuid = 0;
+                    getCreature()->castSpell(nullptr, SPELL_DRINK);
+                    scriptEvents.addEvent(EVENT_SET_QUESTGIVER_FLAG, 12000);
+                } break;
+                case EVENT_SET_QUESTGIVER_FLAG:
+                {
+                    getCreature()->addNpcFlags(UNIT_NPC_FLAG_QUESTGIVER);
+                    scriptEvents.addEvent(EVENT_STAND, 3000);
+                } break;
+                case EVENT_STAND:
+                {
+                    getCreature()->setStandState(STANDSTATE_STAND);
+                } break;
             }
         }
     }
 
-    void OnScriptPhaseChange(uint32_t phase) override
+    void DoAction(int32_t const action) override
     {
-        if (phase == 2)
+        if (ACTION_QUESTSTARTED)
         {
-            getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting.");
-            getCreature()->RemoveNegativeAuras();
-            getCreature()->setFaction(68);
-            getCreature()->setStandState(STANDSTATE_SIT);
-            getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(433), true);
-            sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::setStandState, (uint8_t)STANDSTATE_STAND, EVENT_CREATURE_UPDATE, 18000, 0, 1);
-            getCreature()->getThreatManager().clearAllThreat();
-            getCreature()->getThreatManager().removeMeFromThreatLists();
-            getCreature()->getAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
-            _setMeleeDisabled(true);
-            getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
-            getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setFaction(28);
+            getCreature()->getAIInterface()->setMeleeDisabled(false);
+            getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
+            getCreature()->getAIInterface()->setImmuneToPC(false);
+            getCreature()->getAIInterface()->setImmuneToNPC(false);            
         }
     }
+
+    void removeCombat()
+    {
+        getCreature()->getThreatManager().clearAllThreat();
+        getCreature()->getThreatManager().removeMeFromThreatLists();
+        getCreature()->RemoveNegativeAuras();
+        getCreature()->setFaction(68);
+        _setMeleeDisabled(true);
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
+        getCreature()->getAIInterface()->setImmuneToPC(true);
+        getCreature()->getAIInterface()->setImmuneToNPC(true);
+    }
+
+    uint64_t _playerGuid = 0;
 };
 
 class ARoguesDeal : public QuestScript
@@ -91,12 +158,8 @@ public:
 
         Creature* Dashel = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(SSX, SSY, SSZ, 6784);
 
-        if (Dashel == nullptr)
-            return;
-
-        Dashel->setFaction(28);
-        Dashel->getAIInterface()->setMeleeDisabled(false);
-        Dashel->getAIInterface()->setAllowedToEnterCombat(true);
+        if (Dashel && Dashel->GetScript())
+            Dashel->GetScript()->DoAction(ACTION_QUESTSTARTED);
     }
 };
 
