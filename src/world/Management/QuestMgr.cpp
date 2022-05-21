@@ -141,6 +141,10 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
     if (plr->hasQuestFinished(qst->id) && !sQuestMgr.IsQuestRepeatable(qst) && !sQuestMgr.IsQuestDaily(qst))
         return QuestStatus::NotAvailable;
 
+    // dont display quests we already have
+    if (plr->hasQuestInQuestLog(qst->id))
+        status = QuestStatus::NotAvailable;
+
     // Check One of Quest Prequest
     bool questscompleted = false;
     if (!qst->quest_list.empty())
