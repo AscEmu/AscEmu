@@ -63,7 +63,7 @@ public:
         if (getCreature()->getHealthPct() < 15 || *damage > getCreature()->getHealth())
         {
             // Dont let us die
-            damage = 0;
+            *damage = 0;
 
             // Evade
             getCreature()->getAIInterface()->enterEvadeMode();
