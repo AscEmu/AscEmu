@@ -65,9 +65,11 @@ public:
             // Dont let us die
             *damage = 0;
 
+            // Stopp Sttacking Me
+            removeCombat();
+
             // Evade
             getCreature()->getAIInterface()->enterEvadeMode();
-            removeCombat();
 
             // setPlayer
             _playerGuid = _attacker->getGuid();
@@ -124,6 +126,7 @@ public:
     {
         if (ACTION_QUESTSTARTED)
         {
+            getCreature()->removeNpcFlags(UNIT_NPC_FLAG_QUESTGIVER);
             getCreature()->setFaction(28);
             getCreature()->getAIInterface()->setMeleeDisabled(false);
             getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
