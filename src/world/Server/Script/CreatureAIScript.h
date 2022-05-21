@@ -129,6 +129,10 @@ public:
     virtual void OnSummon(Unit* /*summoner*/) {}
     virtual void OnSummonDies(Creature* /*summon*/, Unit* /*killer*/) {}
 
+    // Quests
+    virtual void onQuestAccept(Player* /*player*/, QuestProperties const* /*qst*/) {}
+    virtual void onQuestRewarded(Player* /*player*/, QuestProperties const* /*qst*/) {}
+
     // Vehicles
     virtual void OnSpellClick(Unit* /*_clicker*/, bool /*spellClickHandled*/) { }
     virtual void OnVehicleInitialize() { }

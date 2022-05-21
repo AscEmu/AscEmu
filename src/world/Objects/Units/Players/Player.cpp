@@ -7040,6 +7040,12 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
 
     sQuestMgr.OnQuestAccepted(this, questProperties, qst_giver);
 
+    // Hook to Creature Script
+    if (qst_giver && qst_giver->ToCreature() && qst_giver->ToCreature()->GetScript())
+    {
+        qst_giver->ToCreature()->GetScript()->onQuestAccept(this, questProperties);
+    }
+
     sLogger.debug("WORLD: Added new QLE.");
     sHookInterface.OnQuestAccept(this, questProperties, qst_giver);
 }

@@ -35,7 +35,6 @@ public:
 enum Calvin
 {
     SAY_COMPLETE                = 10759,
-    ACTION_QUESTSTARTED         = 1,
     SPELL_DRINK                 = 7737,
     QUEST_590                   = 590,
 
@@ -70,9 +69,6 @@ public:
 
             // Evade
             getCreature()->getAIInterface()->enterEvadeMode();
-
-            // setPlayer
-            _playerGuid = _attacker->getGuid();
 
             // Outro Event
             scriptEvents.addEvent(EVENT_EMOTE_RUDE, 3000);
@@ -122,16 +118,19 @@ public:
         }
     }
 
-    void DoAction(int32_t const action) override
+    void onQuestAccept(Player* player, QuestProperties const* qst) override
     {
-        if (ACTION_QUESTSTARTED)
+        if (qst->id == QUEST_590)
         {
+            // setPlayer
+            _playerGuid = player->getGuid();
+
             getCreature()->removeNpcFlags(UNIT_NPC_FLAG_QUESTGIVER);
             getCreature()->setFaction(28);
             getCreature()->getAIInterface()->setMeleeDisabled(false);
             getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
             getCreature()->getAIInterface()->setImmuneToPC(false);
-            getCreature()->getAIInterface()->setImmuneToNPC(false);            
+            getCreature()->getAIInterface()->setImmuneToNPC(false);
         }
     }
 
@@ -148,22 +147,6 @@ public:
     }
 
     uint64_t _playerGuid = 0;
-};
-
-class ARoguesDeal : public QuestScript
-{
-public:
-    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
-    {
-        float SSX = mTarget->GetPositionX();
-        float SSY = mTarget->GetPositionY();
-        float SSZ = mTarget->GetPositionZ();
-
-        Creature* Dashel = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(SSX, SSY, SSZ, 6784);
-
-        if (Dashel && Dashel->GetScript())
-            Dashel->GetScript()->DoAction(ACTION_QUESTSTARTED);
-    }
 };
 
 class Zealot : public CreatureAIScript
@@ -212,7 +195,6 @@ void SetupTirisfalGlades(ScriptMgr* mgr)
 {
     mgr->register_quest_script(410, new TheDormantShade());
     mgr->register_creature_script(6784, &CalvinMontague::Create);
-    mgr->register_quest_script(590, new ARoguesDeal());
     mgr->register_creature_script(1931, &Zealot::Create);
     mgr->register_quest_script(24959, new FreshOutOfTheGrave());
 }

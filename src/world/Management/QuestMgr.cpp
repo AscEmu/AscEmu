@@ -39,6 +39,7 @@
 #include "Server/Packets/SmsgQuestgiverQuestFailed.h"
 #include "Storage/WorldStrings.h"
 #include "Util/Strings.hpp"
+#include "server/Script/CreatureAIScript.h"
 
 using namespace AscEmu::Packets;
 
@@ -1849,6 +1850,12 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
             sMailSystem.SendCreatureGameobjectMail(mailType, qst_giver->getEntry(), plr->getGuid(), mail_template->subject, mail_template->content, 0, 0, itemGuid, MAIL_STATIONERY_TEST1, MAIL_CHECK_MASK_HAS_BODY, qst->MailDelaySecs);
 #endif
         }
+    }
+
+    // Hook to Creature Script
+    if (qst_giver && qst_giver->ToCreature() && qst_giver->ToCreature()->GetScript())
+    {
+        qst_giver->ToCreature()->GetScript()->onQuestRewarded(plr, qst);
     }
 
     plr->updateNearbyQuestGameObjects();
