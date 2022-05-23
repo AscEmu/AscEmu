@@ -3,7 +3,7 @@
 set(PATH_PREFIX Logging)
 
 set(SRC_LOGGING_FILES
-    ${PATH_PREFIX}/ConsoleDefines.hpp
+    ${PATH_PREFIX}/LoggerDefines.hpp
     ${PATH_PREFIX}/Logger.cpp
     ${PATH_PREFIX}/Logger.hpp
     ${PATH_PREFIX}/MessageType.hpp

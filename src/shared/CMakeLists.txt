@@ -60,7 +60,6 @@ set(headers
     WoWGuid.h
     Common.hpp
     Log.hpp
-    LogDefines.hpp
     Util.hpp
     FactoryHolder.h
     ObjectRegistry.h

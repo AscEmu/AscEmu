@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Logger.hpp"
-#include "ConsoleDefines.hpp"
+#include "LoggerDefines.hpp"
 #include "Util.hpp"
 #include "Config/Config.h"
 
