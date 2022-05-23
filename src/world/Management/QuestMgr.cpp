@@ -39,6 +39,7 @@
 #include "Server/Packets/SmsgQuestgiverQuestFailed.h"
 #include "Storage/WorldStrings.h"
 #include "Util/Strings.hpp"
+#include "Server/Script/CreatureAIScript.h"
 
 using namespace AscEmu::Packets;
 
@@ -139,6 +140,10 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
 
     if (plr->hasQuestFinished(qst->id) && !sQuestMgr.IsQuestRepeatable(qst) && !sQuestMgr.IsQuestDaily(qst))
         return QuestStatus::NotAvailable;
+
+    // dont display quests we already have
+    if (plr->hasQuestInQuestLog(qst->id))
+        status = QuestStatus::NotAvailable;
 
     // Check One of Quest Prequest
     bool questscompleted = false;
@@ -1849,6 +1854,12 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
             sMailSystem.SendCreatureGameobjectMail(mailType, qst_giver->getEntry(), plr->getGuid(), mail_template->subject, mail_template->content, 0, 0, itemGuid, MAIL_STATIONERY_TEST1, MAIL_CHECK_MASK_HAS_BODY, qst->MailDelaySecs);
 #endif
         }
+    }
+
+    // Hook to Creature Script
+    if (qst_giver && qst_giver->ToCreature() && qst_giver->ToCreature()->GetScript())
+    {
+        qst_giver->ToCreature()->GetScript()->onQuestRewarded(plr, qst);
     }
 
     plr->updateNearbyQuestGameObjects();
