@@ -184,6 +184,7 @@ public:
         getCreature()->getAIInterface()->setReactState(REACT_PASSIVE);
         setScriptPhase(PHASE_CHAINED);
         getCreature()->setStandState(STANDSTATE_KNEEL);
+        getCreature()->setVirtualItemSlotId(MELEE, 0);
     }
 
     void DoAction(int32_t /*action*/) override
@@ -401,6 +402,89 @@ bool PreparationForBattleEffect(uint8_t /*effectIndex*/, Spell* pSpell)
     return true;
 }
 
+class DK_INITIATE_VISUAL : public SpellScript
+{
+public:
+    SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* spell, uint8_t effIndex) override
+    {
+        if (!spell->getCaster())
+            return SpellScriptCheckDummy::DUMMY_NOT_HANDLED;
+
+        if (spell->getCaster()->ToCreature())
+        {
+            uint32_t spellId;
+            switch (spell->getCaster()->ToCreature()->getDisplayId())
+            {
+                case 25369:
+                    spellId = 51552;
+                    break; // bloodelf female
+                case 25373:
+                    spellId = 51551;
+                    break; // bloodelf male
+                case 25363:
+                    spellId = 51542;
+                    break; // draenei female
+                case 25357:
+                    spellId = 51541;
+                    break; // draenei male
+                case 25361:
+                    spellId = 51537;
+                    break; // dwarf female
+                case 25356:
+                    spellId = 51538;
+                    break; // dwarf male
+                case 25372:
+                    spellId = 51550;
+                    break; // forsaken female
+                case 25367:
+                    spellId = 51549;
+                    break; // forsaken male
+                case 25362:
+                    spellId = 51540;
+                    break; // gnome female
+                case 25359:
+                    spellId = 51539;
+                    break; // gnome male
+                case 25355:
+                    spellId = 51534;
+                    break; // human female
+                case 25354:
+                    spellId = 51520;
+                    break; // human male
+                case 25360:
+                    spellId = 51536;
+                    break; // nightelf female
+                case 25358:
+                    spellId = 51535;
+                    break; // nightelf male
+                case 25368:
+                    spellId = 51544;
+                    break; // orc female
+                case 25364:
+                    spellId = 51543;
+                    break; // orc male
+                case 25371:
+                    spellId = 51548;
+                    break; // tauren female
+                case 25366:
+                    spellId = 51547;
+                    break; // tauren male
+                case 25370:
+                    spellId = 51545;
+                    break; // troll female
+                case 25365:
+                    spellId = 51546;
+                    break; // troll male
+                default:
+                    return SpellScriptCheckDummy::DUMMY_NOT_HANDLED;
+            }
+
+            spell->getCaster()->ToCreature()->castSpell(nullptr, spellId, true);
+            spell->getCaster()->ToCreature()->setVirtualItemSlotId(MELEE, 38707);
+        }
+    }
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Quest Death Comes From On High
 class EyeofAcherusControl : public GameObjectAIScript
@@ -435,6 +519,7 @@ void SetupDeathKnight(ScriptMgr* mgr)
     mgr->register_gameobject_script(acherus_soul_prison, &AcherusSoulPrison::Create);
     mgr->register_creature_script(acherus_unworthy_initiate, UnworthyInitiateAI::Create);
     mgr->register_creature_script(29521, UnworthyInitiateAnchorAI::Create);
+    mgr->register_spell_script(SPELL_DK_INITIATE_VISUAL, new DK_INITIATE_VISUAL);
 
     mgr->register_gameobject_script(191609, &EyeofAcherusControl::Create);
 }
