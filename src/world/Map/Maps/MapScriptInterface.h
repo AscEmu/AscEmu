@@ -102,6 +102,7 @@ public:
             return nullptr;
 
         float CurrentDist = 0;
+        float r = FLT_MAX;
         Creature* target = nullptr;
 
         ObjectSet::const_iterator iter = pCell->Begin();
@@ -109,13 +110,18 @@ public:
         {
             if ((*iter)->isCreature() && (*iter)->getEntry() == entry)
             {
-                target = static_cast<Creature*>((*iter));
                 CurrentDist = (*iter)->CalcDistance(pObject);
                 if (CurrentDist <= maxSearchRange)
-                    return target;
+                {
+                    if (CurrentDist < r)
+                    {
+                        r = CurrentDist;
+                        target = static_cast<Creature*>((*iter));
+                    }
+                }
             }
         }
-        return nullptr;
+        return target;
     }
 
     inline void getCreatureListWithEntryInRange(Creature* pCreature, std::list<Creature*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
@@ -175,6 +181,35 @@ public:
                     container.push_back(target);
             }
         }
+    }
+
+    inline GameObject* findNearestGameObject(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+    {
+        MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(pObject->GetPositionX()), m_worldMap.getPosY(pObject->GetPositionY()));
+        if (pCell == nullptr)
+            return nullptr;
+
+        float CurrentDist = 0;
+        float r = FLT_MAX;
+        GameObject* target = nullptr;
+
+        ObjectSet::const_iterator iter = pCell->Begin();
+        for (; iter != pCell->End(); ++iter)
+        {
+            if ((*iter)->isGameObject() && (*iter)->getEntry() == entry)
+            {
+                CurrentDist = (*iter)->CalcDistance(pObject);
+                if (CurrentDist <= maxSearchRange)
+                {
+                    if (CurrentDist < r)
+                    {
+                        r = CurrentDist;
+                        target = static_cast<GameObject*>((*iter));
+                    }
+                }
+            }
+        }
+        return target;
     }
 
     inline Player* getPlayerNearestCoords(float x, float y, float z = 0.0f, uint32_t Entry = 0)

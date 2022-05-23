@@ -177,6 +177,7 @@ public:
     void GetCreatureListWithEntryInGrid(std::list<Creature*>& container, uint32 entry, float maxSearchRange /*= 250.0f*/);
     Creature* findNearestCreature(uint32_t entry, float maxSearchRange /*= 250.0f*/);
     void GetGameObjectListWithEntryInGrid(std::list<GameObject*>& container, uint32 entry, float maxSearchRange /*= 250.0f*/);
+    GameObject* findNearestGameObject(uint32_t entry, float maxSearchRange /*= 250.0f*/);
 
     float getRangeToObject(Object* object);
 
