@@ -1344,9 +1344,9 @@ namespace DBC::Structures
     struct SpellDurationEntry
     {
         uint32_t ID;                                                // 0
-        uint32_t Duration1;                                         // 1
-        uint32_t Duration2;                                         // 2
-        uint32_t Duration3;                                         // 3
+        int32_t Duration1;                                          // 1
+        int32_t Duration2;                                          // 2
+        int32_t Duration3;                                          // 3
     };
 
 #define MAX_SPELL_EFFECTS 3

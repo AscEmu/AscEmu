@@ -209,6 +209,7 @@ class SERVER_DECL Spell
         // doBeforeEffectHit, doCalculateEffect or beforeSpellEffect script hooks to have any effect
         void setForceCritOnTarget(Unit const* target);
 
+        int32_t getDuration();
         float_t getEffectRadius(uint8_t effectIndex);
 
         // used by spells that should have dynamic variables in spellentry
@@ -256,6 +257,9 @@ class SERVER_DECL Spell
 
         bool m_requiresCP = false;
         int8_t m_usedComboPoints = 0;
+
+        int32_t m_duration = 0;
+        bool isDurationSet = false;
 
         float_t m_effectRadius[MAX_SPELL_EFFECTS] = {0.0f};
         bool m_isEffectRadiusSet[MAX_SPELL_EFFECTS] = {false};
@@ -641,8 +645,6 @@ class SERVER_DECL Spell
 
         void InitProtoOverride();
 
-        uint32 GetDuration();
-
         static uint32 GetBaseThreat(uint32 dmg);
 
         static uint32 GetMechanic(SpellInfo const* sp);
@@ -689,8 +691,6 @@ class SERVER_DECL Spell
         GameObject* targetConstraintGameObject;
         uint32 add_damage;
 
-        uint32 Dur;
-        bool bDurSet;
         uint8 m_rune_avail_before;
         //void _DamageRangeUpdate();
 

@@ -510,7 +510,7 @@ void Spell::spellEffectSummonTotem(uint8_t summonSlot, CreatureProperties const*
     if (fabs(landDiff) <= 15)
         v.z = landHeight;
 
-    auto summonDuration = GetDuration();
+    auto summonDuration = static_cast<uint32_t>(getDuration());
     if (summonDuration == 0)
         summonDuration = 10 * 60 * 1000; // 10 min if duration does not exist
 
@@ -695,7 +695,7 @@ void Spell::ApplyAreaAura(uint8_t effectIndex)
     auto itr = m_pendingAuras.find(unitTarget->getGuid());
     if (itr == m_pendingAuras.end())
     {
-        pAura = sSpellMgr.newAura(getSpellInfo(), GetDuration(), m_caster, unitTarget);
+        pAura = sSpellMgr.newAura(getSpellInfo(), getDuration(), m_caster, unitTarget);
 
         float r = getEffectRadius(effectIndex);
 
@@ -1824,7 +1824,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
     //if we do not make a check to see if the aura owner is the same as the caster then we will stack the 2 auras and they will not be visible client sided
     if (itr == m_pendingAuras.end())
     {
-        uint32_t Duration = GetDuration();
+        uint32_t Duration = getDuration();
 
         if (ProcedOnSpell)  //Warrior's Blood Frenzy
         {
@@ -2719,7 +2719,7 @@ void Spell::SpellEffectPersistentAA(uint8_t effectIndex) // Persistent Area Aura
     if (m_AreaAura || !m_caster->IsInWorld())
         return;
     //create only 1 dyn object
-    uint32 dur = GetDuration();
+    uint32 dur = getDuration();
     float r = getEffectRadius(effectIndex);
 
     //Note: this code seems to be useless
@@ -2984,7 +2984,7 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
             sEventMgr.AddEvent(p, &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
             //make sure they will be desummoned (roxor)
-            sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, static_cast<uint32_t>(getDuration()), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
         else
         {
@@ -3014,7 +3014,7 @@ void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPrope
         v.x += x;
         v.y += y;
 
-        Summon* s = u_caster->getWorldMap()->createSummon(properties_->Id, SUMMONTYPE_GUARDIAN, GetDuration());
+        Summon* s = u_caster->getWorldMap()->createSummon(properties_->Id, SUMMONTYPE_GUARDIAN, static_cast<uint32_t>(getDuration()));
         if (s == nullptr)
             return;
 
@@ -3025,7 +3025,7 @@ void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPrope
         sEventMgr.AddEvent(s->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
         if ((p_caster != nullptr) && (spe->Slot != 0))
-            p_caster->sendTotemCreatedPacket(static_cast<uint8_t>(spe->Slot - 1), s->getGuid(), GetDuration(), m_spellInfo->getId());
+            p_caster->sendTotemCreatedPacket(static_cast<uint8_t>(spe->Slot - 1), s->getGuid(), static_cast<uint32_t>(getDuration()), m_spellInfo->getId());
 
         // Lightwell
         if (spe->Type == SUMMON_TYPE_LIGHTWELL)
@@ -3069,7 +3069,7 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 /*i*/, DBC::Structures::SummonP
 
         Pet* pet = sObjectMgr.CreatePet(properties_->Id);
 
-        if (!pet->CreateAsSummon(properties_->Id, ci, nullptr, p_caster, m_spellInfo, 1, GetDuration(), &v, false))
+        if (!pet->CreateAsSummon(properties_->Id, ci, nullptr, p_caster, m_spellInfo, 1, static_cast<uint32_t>(getDuration()), &v, false))
         {
             pet->DeleteMe();
             pet = nullptr;
@@ -3089,7 +3089,7 @@ void Spell::SpellEffectSummonPossessed(uint32 /*i*/, DBC::Structures::SummonProp
     p_caster->dismissActivePets();
     p_caster->RemoveFieldSummon();
 
-    Summon* s = p_caster->getWorldMap()->createSummon(properties_->Id, SUMMONTYPE_POSSESSED, GetDuration());
+    Summon* s = p_caster->getWorldMap()->createSummon(properties_->Id, SUMMONTYPE_POSSESSED, static_cast<uint32_t>(getDuration()));
     if (s == nullptr)
         return;
 
@@ -3131,7 +3131,7 @@ void Spell::SpellEffectSummonCompanion(uint32 /*i*/, DBC::Structures::SummonProp
             return;
     }
 
-    auto summon = u_caster->getWorldMap()->createSummon(properties_->Id, SUMMONTYPE_COMPANION, GetDuration());
+    auto summon = u_caster->getWorldMap()->createSummon(properties_->Id, SUMMONTYPE_COMPANION, static_cast<uint32_t>(getDuration()));
     if (summon == nullptr)
         return;
 
@@ -4017,7 +4017,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         go->SetSummoned(u_caster);
 
         go->PushToWorld(m_caster->getWorldMap());
-        sEventMgr.AddEvent(go, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(go, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, static_cast<uint32_t>(getDuration()), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
         if (info->type == GAMEOBJECT_TYPE_RITUAL)
         {
@@ -4442,7 +4442,7 @@ void Spell::SpellEffectInterruptCast(uint8_t /*effectIndex*/) // Interrupt Cast
         if (TargetSpell != nullptr)
         {
             uint32 school = TargetSpell->getSpellInfo()->getFirstSchoolFromSchoolMask(); // Get target's casting spell school
-            int32 duration = GetDuration(); // Duration of school lockout
+            int32 duration = getDuration(); // Duration of school lockout
 
             // Check for CastingTime (to prevent interrupting instant casts), PreventionType
             // and InterruptFlags of target's casting spell
@@ -4483,7 +4483,7 @@ void Spell::SpellEffectDistract(uint8_t /*effectIndex*/) // Distract
     if (m_targets.getDestination().isSet())
     {
         //      unitTarget->getAIInterface()->MoveTo(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, 0);
-        uint32 Stare_duration = GetDuration();
+        uint32 Stare_duration = getDuration();
         if (Stare_duration > 30 * 60 * 1000)
             Stare_duration = 10000;//if we try to stare for more then a half an hour then better not stare at all :P (bug)
 
@@ -4533,7 +4533,7 @@ void Spell::SpellEffectAddFarsight(uint8_t effectIndex) // Add Farsight
     }
 
     DynamicObject* dynObj = p_caster->getWorldMap()->createDynamicObject();
-    dynObj->Create(u_caster, this, lv, GetDuration(), getEffectRadius(effectIndex), DYNAMIC_OBJECT_FARSIGHT_FOCUS);
+    dynObj->Create(u_caster, this, lv, static_cast<uint32_t>(getDuration()), getEffectRadius(effectIndex), DYNAMIC_OBJECT_FARSIGHT_FOCUS);
     dynObj->SetInstanceID(p_caster->GetInstanceID());
     p_caster->setFarsightGuid(dynObj->getGuid());
 
@@ -4619,7 +4619,7 @@ void Spell::SpellEffectSummonObjectWild(uint8_t effectIndex)
     GoSummon->PushToWorld(u_caster->getWorldMap());
     GoSummon->SetSummoned(u_caster);
 
-    sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, static_cast<uint32_t>(getDuration()), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void Spell::SpellEffectSanctuary(uint8_t /*effectIndex*/) // Stop all attacks made to you
@@ -4738,11 +4738,11 @@ void Spell::SpellEffectActivateObject(uint8_t effectIndex) // Activate Object
     gameObjTarget->setDynamicFlags(GO_DYN_FLAG_INTERACTABLE);
 
 #if VERSION_STRING < WotLK
-    sEventMgr.AddEvent(gameObjTarget, &GameObject::setDynamicFlags, static_cast<uint32_t>(0), 0, GetDuration(), 1, 0);
+    sEventMgr.AddEvent(gameObjTarget, &GameObject::setDynamicFlags, static_cast<uint32_t>(0), 0, static_cast<uint32_t>(getDuration()), 1, 0);
 #elif VERSION_STRING < Mop
-    sEventMgr.AddEvent(gameObjTarget, &GameObject::setDynamicFlags, static_cast<uint16_t>(0), 0, GetDuration(), 1, 0);
+    sEventMgr.AddEvent(gameObjTarget, &GameObject::setDynamicFlags, static_cast<uint16_t>(0), 0, static_cast<uint32_t>(getDuration()), 1, 0);
 #else
-    sEventMgr.AddEvent(dynamic_cast<Object*>(gameObjTarget), &Object::setDynamicFlags, static_cast<uint16_t>(0), 0, GetDuration(), 1, 0);
+    sEventMgr.AddEvent(dynamic_cast<Object*>(gameObjTarget), &Object::setDynamicFlags, static_cast<uint16_t>(0), 0, static_cast<uint32_t>(getDuration()), 1, 0);
 #endif
 }
 
@@ -5167,7 +5167,7 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
 
     GoSummon->PushToWorld(m_caster->getWorldMap());
 
-    sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, static_cast<uint32_t>(getDuration()), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void Spell::SpellEffectDispelMechanic(uint8_t effectIndex)
