@@ -193,18 +193,13 @@ public:
         setScriptPhase(PHASE_TO_EQUIP);
 
         getCreature()->setStandState(STANDSTATE_STAND);
-        // idk why but iu have to call this twice otherwise the visual effect dont gets removed
-        getCreature()->RemoveAura(SPELL_SOUL_PRISON_CHAIN);
         getCreature()->RemoveAura(SPELL_SOUL_PRISON_CHAIN);
 
         float z;
         if (Creature* anchor = getCreature()->getWorldMapCreature(anchorGUID))
         {
+            anchor->interruptSpell();
             anchor->getNearPoint(getCreature(), anchorX, anchorY, z, 1.0f, anchor->getAbsoluteAngle(getCreature()));
-
-            // Stopp channeling
-            anchor->setChannelObjectGuid(0);
-            anchor->setChannelSpellId(0);
         }
 
         Player* player = getCreature()->getWorldMapPlayer(playerGUID);
@@ -240,12 +235,8 @@ public:
                     if (Creature* anchor = findNearestCreature(29521, 30.0f))
                     {
                         anchor->GetScript()->SetCreatureData64(0, getCreature()->getGuid());
-                        anchor->castSpell(getCreature(), SPELL_SOUL_PRISON_CHAIN, true);
+                        anchor->castSpell(getCreature(), SPELL_SOUL_PRISON_CHAIN);
                         anchorGUID = anchor->getGuid();
-
-                        // SetChannelTarget
-                        anchor->setChannelObjectGuid(getCreature()->getGuid());
-                        anchor->setChannelSpellId(SPELL_SOUL_PRISON_CHAINED);
                     }
 
                     GameObject* prison = nullptr;
@@ -482,6 +473,8 @@ public:
             spell->getCaster()->ToCreature()->castSpell(nullptr, spellId, true);
             spell->getCaster()->ToCreature()->setVirtualItemSlotId(MELEE, 38707);
         }
+
+        return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
 
