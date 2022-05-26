@@ -2291,7 +2291,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     {
         GameObject const* go = static_cast<GameObject*>(this);
         if (go && go->ToTransport())
-            *data << uint32_t(go->GetTransValues()->PathProgress);
+            *data << uint32_t(go->getGOValue()->Transport.PathProgress);
         else
             *data << Util::getMSTime();
     }
@@ -2313,7 +2313,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     if (updateFlags & UPDATEFLAG_ROTATION)   //0x0200
     {
         if (isGameObject())
-            *data << static_cast<GameObject*>(this)->GetRotation();
+            *data << static_cast<GameObject*>(this)->getPackedLocalRotation();
     }
 }
 #endif
