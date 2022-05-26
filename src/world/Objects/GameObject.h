@@ -600,7 +600,7 @@ public:
 
     uint32_t getSpawnId() const { return m_spawnId; }
 
-    void despawn(uint32_t delay /*milliseconds*/, uint32_t respawntime /*seconds*/);
+    void despawn(uint32_t delay /*milliseconds*/, uint32_t forceRespawntime /*seconds*/);
     void expireAndDelete();
     void setRespawnTime(int32_t respawn);
     void saveRespawnTime(uint32_t forceDelay = 0);

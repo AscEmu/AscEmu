@@ -635,14 +635,14 @@ void GameObject::Update(unsigned long time_passed)
     _UpdateSpells(time_passed);
 }
 
-void GameObject::despawn(uint32_t delay, uint32_t respawntime)
+void GameObject::despawn(uint32_t delay, uint32_t forceRespawntime)
 {
     if (delay > 0)
     {
         if (!m_despawnDelay || m_despawnDelay > delay)
         {
             m_despawnDelay = delay;
-            m_despawnRespawnTime = respawntime;
+            m_despawnRespawnTime = forceRespawntime;
         }
     }
     else
@@ -652,22 +652,10 @@ void GameObject::despawn(uint32_t delay, uint32_t respawntime)
 
         CALL_GO_SCRIPT_EVENT(this, OnDespawn)();
 
-        if (m_spawn)
+        if (m_spawn && m_loadedFromDB)
         {
-            /* Get our originating mapcell */
-            if (MapCell* pCell = GetMapCell())
-            {
-                pCell->_respawnObjects.insert(this);
-                sEventMgr.RemoveEvents(this);
-
-                m_respawnCell = pCell;
-                saveRespawnTime(respawntime);
-                RemoveFromWorld(false);
-            }
-            else
-            {
-                sLogger.failure("GameObject::Despawn tries to respawn go %u without a valid MapCell, return!", this->getEntry());
-            }
+            uint32_t const respawnDelay = (forceRespawntime > 0) ? forceRespawntime : m_spawn->spawntimesecs;
+            saveRespawnTime(respawnDelay);
         }
 
         RemoveFromWorld(true);
