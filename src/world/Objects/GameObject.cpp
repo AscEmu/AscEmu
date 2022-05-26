@@ -303,6 +303,7 @@ bool GameObject::loadFromDB(uint32_t spawnId, WorldMap* map, bool addToWorld)
     uint32_t entry = data->entry;
     GameObject_State gameobjectState = data->state;
 
+    m_spawnId = spawnId;
     if (!create(entry, map->getBaseMap()->getMapId(), data->phase, data->spawnPoint, data->rotation, data->state))
         return false;
 
@@ -343,6 +344,69 @@ bool GameObject::loadFromDB(uint32_t spawnId, WorldMap* map, bool addToWorld)
         getWorldMap()->AddObject(this);
 
     return true;
+}
+
+void GameObject::deleteFromDB()
+{
+    if (m_spawn != nullptr)
+        WorldDatabase.Execute("DELETE FROM gameobject_spawns WHERE id = %u AND min_build <= %u AND max_build >= %u ", m_spawn->id, VERSION_STRING, VERSION_STRING);
+}
+
+void GameObject::saveToDB()
+{
+    if (m_spawn == nullptr)
+    {
+        // Create spawn instance
+        MySQLStructure::GameobjectSpawn* m_spawnTemp = new MySQLStructure::GameobjectSpawn;
+        m_spawnTemp->entry = getEntry();
+        m_spawnTemp->id = sObjectMgr.GenerateGameObjectSpawnID();
+        m_spawnTemp->map = GetMapId();
+        m_spawnTemp->spawnPoint = GetPosition();
+        m_spawnTemp->phase = GetPhase();
+        m_spawnTemp->rotation = m_localRotation;
+        m_spawnTemp->spawntimesecs = m_spawnedByDefault ? m_respawnDelayTime : -(int32)m_respawnDelayTime;
+        m_spawnTemp->state = GameObject_State(getState());
+
+        uint32_t cx = getWorldMap()->getPosX(GetPositionX());
+        uint32_t cy = getWorldMap()->getPosY(GetPositionY());
+
+        getWorldMap()->getBaseMap()->getSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(m_spawnTemp);
+
+        m_spawn = m_spawnTemp;
+    }
+    std::stringstream ss;
+
+    ss << "DELETE FROM gameobject_spawns WHERE id = ";
+    ss << m_spawn->id;
+    ss << " AND min_build <= ";
+    ss << VERSION_STRING;
+    ss << " AND max_build >= ";
+    ss << VERSION_STRING;
+    ss << ";";
+
+    WorldDatabase.ExecuteNA(ss.str().c_str());
+
+    ss.rdbuf()->str("");
+
+    ss << "INSERT INTO gameobject_spawns VALUES("
+        << m_spawn->id << ","
+        << getEntry() << ","
+        << GetMapId() << ","
+        << GetPhase() << ","
+        << GetPositionX() << ","
+        << GetPositionY() << ","
+        << GetPositionZ() << ","
+        << GetOrientation() << ","
+        << getParentRotation(0) << ","
+        << getParentRotation(1) << ","
+        << getParentRotation(2) << ","
+        << getParentRotation(3) << ","
+        << int32_t(m_respawnDelayTime) << ","
+        << getState() << ","
+        << "0,"            // event
+        << VERSION_STRING << ","
+        << VERSION_STRING << ")";
+    WorldDatabase.Execute(ss.str().c_str());
 }
 
 bool GameObject::create(uint32_t entry, uint32_t mapId, uint32_t phase, LocationVector const& position, QuaternionData const& rotation, GameObject_State state, uint32_t spawnId)
@@ -732,76 +796,6 @@ GameObjectProperties const* GameObject::GetGameObjectProperties() const
     return gameobject_properties;
 }
 
-void GameObject::SaveToDB()
-{
-    /*
-    if (m_spawn == NULL)
-    {
-        // Create spawn instance
-        m_spawn = new MySQLStructure::GameobjectSpawn;
-        m_spawn->entry = getEntry();
-        m_spawn->id = sObjectMgr.GenerateGameObjectSpawnID();
-        m_spawn->map = GetMapId();
-        m_spawn->position_x = GetPositionX();
-        m_spawn->position_y = GetPositionY();
-        m_spawn->position_z = GetPositionZ();
-        m_spawn->orientation = GetOrientation();
-        m_spawn->rotation_0 = getParentRotation(0);
-        m_spawn->rotation_1 = getParentRotation(1);
-        m_spawn->rotation_2 = getParentRotation(2);
-        m_spawn->rotation_3 = getParentRotation(3);
-        m_spawn->state = getState();
-        m_spawn->flags = getFlags();
-        m_spawn->faction = getFactionTemplate();
-        m_spawn->scale = getScale();
-        //m_spawn->stateNpcLink = 0;
-        m_spawn->phase = GetPhase();
-        m_spawn->overrides = GetOverrides();
-
-        uint32 cx = getWorldMap()->getPosX(GetPositionX());
-        uint32 cy = getWorldMap()->getPosY(GetPositionY());
-
-        getWorldMap()->getBaseMap()->getSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(m_spawn);
-    }
-    std::stringstream ss;
-
-    ss << "DELETE FROM gameobject_spawns WHERE id = ";
-    ss << m_spawn->id;
-    ss << " AND min_build <= ";
-    ss << VERSION_STRING;
-    ss << " AND max_build >= ";
-    ss << VERSION_STRING;
-    ss << ";";
-
-    WorldDatabase.ExecuteNA(ss.str().c_str());
-
-    ss.rdbuf()->str("");
-
-    ss << "INSERT INTO gameobject_spawns VALUES("
-        << m_spawn->id << ","
-        << VERSION_STRING << ","
-        << VERSION_STRING << ","
-        << getEntry() << ","
-        << GetMapId() << ","
-        << GetPositionX() << ","
-        << GetPositionY() << ","
-        << GetPositionZ() << ","
-        << GetOrientation() << ","
-        << getParentRotation(0) << ","
-        << getParentRotation(1) << ","
-        << getParentRotation(2) << ","
-        << getParentRotation(3) << ","
-        << "0,"              // initial state
-        << getFlags() << ","
-        << getFactionTemplate() << ","
-        << getScale() << ","
-        << "0,"             // respawnNpcLink
-        << m_phase << ","
-        << m_overrides << ","
-        << "0)";            // event
-    WorldDatabase.Execute(ss.str().c_str());*/
-}
-
 void GameObject::SaveToFile(std::stringstream & name)
 {
 
@@ -843,12 +837,6 @@ void GameObject::InitAI()
 {
     if (myScript == NULL)
         myScript = sScriptMgr.CreateAIScriptClassForGameObject(getEntry(), this);
-}
-
-void GameObject::DeleteFromDB()
-{
-    if (m_spawn != NULL)
-        WorldDatabase.Execute("DELETE FROM gameobject_spawns WHERE id = %u AND min_build <= %u AND max_build >= %u ", m_spawn->id, VERSION_STRING, VERSION_STRING);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

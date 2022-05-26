@@ -584,6 +584,8 @@ public:
     ~GameObject();
 
     bool loadFromDB(uint32_t spawnId, WorldMap* map, bool addToWorld);
+    void saveToDB();
+    void deleteFromDB();
     bool create(uint32_t entry, uint32_t mapId, uint32_t phase, LocationVector const& position, QuaternionData const&  rotation, GameObject_State state, uint32_t spawnId = 0);
 
     uint32_t getSpawnId() const { return m_spawnId; }
@@ -704,9 +706,7 @@ public:
 
         //void _EnvironmentalDamageUpdate();
         // Serialization
-        void SaveToDB();
         void SaveToFile(std::stringstream & name);
-        void DeleteFromDB();
 
         void SetSummoned(Unit* mob)
         {
