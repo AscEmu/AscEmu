@@ -87,21 +87,9 @@ struct QuaternionData
     QuaternionData() : x(0.0f), y(0.0f), z(0.0f), w(1.0f) { }
     QuaternionData(float X, float Y, float Z, float W) : x(X), y(Y), z(Z), w(W) { }
 
-    bool isUnit() const
-    {
-        return fabs(x * x + y * y + z * z + w * w - 1.0f) < 1e-5f;
-    }
-
-    void toEulerAnglesZYX(float& Z, float& Y, float& X) const
-    {
-        G3D::Matrix3(G3D::Quat(x, y, z, w)).toEulerAnglesZYX(Z, Y, X);
-    }
-
-    static QuaternionData fromEulerAnglesZYX(float Z, float Y, float X)
-    {
-        G3D::Quat quat(G3D::Matrix3::fromEulerAnglesZYX(Z, Y, X));
-        return QuaternionData(quat.x, quat.y, quat.z, quat.w);
-    }
+    bool isUnit() const;
+    void toEulerAnglesZYX(float& Z, float& Y, float& X) const;
+    static QuaternionData fromEulerAnglesZYX(float Z, float Y, float X);
 };
 
 enum GameObjectTypes
