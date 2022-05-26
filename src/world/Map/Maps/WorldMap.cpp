@@ -1717,9 +1717,9 @@ GameObject* WorldMap::createGameObject(uint32_t entry)
     return gameobject;
 }
 
-GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector pos, float scale)
+GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector pos, float scale, uint32_t spawnTime)
 {
-    /*auto gameobject_info = sMySQLStore.getGameObjectProperties(entryID);
+    auto gameobject_info = sMySQLStore.getGameObjectProperties(entryID);
     if (gameobject_info == nullptr)
     {
         sLogger.debug("Error looking up entry in CreateAndSpawnGameObject");
@@ -1732,7 +1732,7 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
 
     uint32_t mapid = getBaseMap()->getMapId();
     // Setup game object
-    go->CreateFromProto(entryID, mapid, pos.x, pos.y, pos.z, pos.o);
+    go->create(entryID, mapid, go->GetPhase(), pos, QuaternionData(), GO_STATE_CLOSED);
     go->setScale(scale);
     go->InitAI();
     go->PushToWorld(this);
@@ -1742,21 +1742,11 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
     go_spawn->entry = go->getEntry();
     go_spawn->id = sObjectMgr.GenerateGameObjectSpawnID();
     go_spawn->map = go->GetMapId();
-    go_spawn->position_x = go->GetPositionX();
-    go_spawn->position_y = go->GetPositionY();
-    go_spawn->position_z = go->GetPositionZ();
-    go_spawn->orientation = go->GetOrientation();
-    go_spawn->rotation_0 = go->getParentRotation(0);
-    go_spawn->rotation_1 = go->getParentRotation(1);
-    go_spawn->rotation_2 = go->getParentRotation(2);
-    go_spawn->rotation_3 = go->getParentRotation(3);
-    go_spawn->state = go->getState();
-    go_spawn->flags = go->getFlags();
-    go_spawn->faction = go->getFactionTemplate();
-    go_spawn->scale = go->getScale();
-    //go_spawn->stateNpcLink = 0;
+    go_spawn->spawnPoint = go->GetPosition();
+    go_spawn->rotation = go->getLocalRotation();
+    go_spawn->state = GameObject_State(go->getState());
     go_spawn->phase = go->GetPhase();
-    go_spawn->overrides = go->GetOverrides();
+    go_spawn->spawntimesecs = spawnTime;
 
     uint32_t cx = getPosX(pos.x);
     uint32_t cy = getPosY(pos.y);
@@ -1764,13 +1754,14 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
     getBaseMap()->getSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(go_spawn);
     go->m_spawn = go_spawn;
 
+    go->setRespawnTime(respawnTime);
+
     MapCell* mCell = getCell(cx, cy);
 
     if (mCell != nullptr)
         mCell->setLoaded();
 
-    return go;*/
-    return nullptr;
+    return go;
 }
 
 GameObject* WorldMap::getGameObject(uint32_t guid)

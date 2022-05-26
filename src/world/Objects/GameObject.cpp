@@ -442,6 +442,29 @@ bool GameObject::create(uint32_t entry, uint32_t mapId, uint32_t phase, Location
     return true;
 }
 
+void GameObject::setRespawnTime(int32_t respawn)
+{
+    m_respawnTime = respawn > 0 ? Util::getTimeNow() + respawn : 0;
+    m_respawnDelayTime = respawn > 0 ? respawn : 0;
+}
+
+void GameObject::respawn()
+{
+    if (m_spawnedByDefault && m_respawnTime > 0)
+    {
+        m_respawnTime = Util::getTimeNow();
+
+        if (getSpawnId())
+        {
+            MapCell* pCell = getWorldMap()->getCellByCoords(GetSpawnX(), GetSpawnY());
+            if (pCell == nullptr)
+                pCell = GetMapCell();
+
+            getWorldMap()->doRespawn(SPAWN_TYPE_GAMEOBJECT, this, getSpawnId(), pCell->getPositionX(), pCell->getPositionY());
+        }
+    }
+}
+
 void GameObject::setLocalRotation(float qx, float qy, float qz, float qw)
 {
     G3D::Quat rotation(qx, qy, qz, qw);
@@ -491,11 +514,97 @@ void GameObject::updatePackedRotation()
     m_packedRotation = z | (y << 21) | (x << 42);
 }
 
-// MIT End
-
-GameObjectProperties const* GameObject::GetGameObjectProperties() const
+void GameObject::setLootState(LootState state, Unit* unit)
 {
-    return gameobject_properties;
+    m_lootState = state;
+    if (unit)
+        m_lootStateUnitGUID = unit->getGuid();
+    else
+        m_lootStateUnitGUID = 0;
+
+    // Start restock timer if the chest is partially looted or not looted at all
+    if (getGoType() == GAMEOBJECT_TYPE_CHEST && state == GO_ACTIVATED && GetGameObjectProperties()->chest.restock_time > 0 && m_restockTime == 0)
+        m_restockTime = Util::getTimeNow() + GetGameObjectProperties()->chest.restock_time;
+
+    if (getGoType() == GAMEOBJECT_TYPE_DOOR) // only set collision for doors on SetGoState
+        return;
+
+    if (m_model)
+    {
+        bool collision = false;
+        // Use the current go state
+        if ((getGoType() != GO_STATE_CLOSED && (state == GO_ACTIVATED || state == GO_JUST_DEACTIVATED)) || state == GO_READY)
+            collision = !collision;
+
+        enableCollision(collision);
+    }
+}
+
+void GameObject::enableCollision(bool enable)
+{
+    if (!m_model)
+        return;
+
+    m_model->enable(enable ? GetPhase() : 0);
+}
+
+uint32_t GameObject::getTransportPeriod() const
+{
+    if (getGoType() != GAMEOBJECT_TYPE_TRANSPORT)
+        return 0;
+
+    if (getGOValue()->Transport.AnimationInfo)
+        return getGOValue()->Transport.AnimationInfo->TotalTime;
+
+    return 0;
+}
+
+class GameObjectModelOwnerImpl : public GameObjectModelOwnerBase
+{
+public:
+    explicit GameObjectModelOwnerImpl(GameObject const* owner) : _owner(owner) { }
+
+    bool IsSpawned() const override { return true; }
+    uint32 GetDisplayId() const override { return _owner->getDisplayId(); }
+    uint32 GetPhaseMask() const override { return 1; }       // todo our gameobjects dont support phases?
+    G3D::Vector3 GetPosition() const override { return G3D::Vector3(_owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ()); }
+    float GetOrientation() const override { return _owner->GetOrientation(); }
+    float GetScale() const override { return _owner->getScale(); }
+    void DebugVisualizeCorner(G3D::Vector3 const& corner) const override { const_cast<GameObject*>(_owner)->getWorldMap()->createAndSpawnCreature(1, LocationVector(corner.x, corner.y, corner.z, 0)); }
+
+private:
+    GameObject const* _owner;
+};
+
+GameObjectModel* GameObject::createModel()
+{
+    return GameObjectModel::Create(std::make_unique<GameObjectModelOwnerImpl>(this), worldConfig.server.dataDir);
+}
+
+void GameObject::updateModelPosition()
+{
+    if (!m_model)
+        return;
+
+    if (getWorldMap()->containsGameObjectModel(*m_model))
+    {
+        getWorldMap()->removeGameObjectModel(*m_model);
+        m_model->UpdatePosition();
+        getWorldMap()->insertGameObjectModel(*m_model);
+    }
+}
+
+void GameObject::updateModel()
+{
+    if (!IsInWorld())
+        return;
+    if (m_model)
+        if (getWorldMap()->containsGameObjectModel(*m_model))
+            getWorldMap()->removeGameObjectModel(*m_model);
+    delete m_model;
+    m_model = createModel();
+    if (m_model)
+        getWorldMap()->insertGameObjectModel(*m_model);
 }
 
 void GameObject::Update(unsigned long time_passed)
@@ -512,55 +621,57 @@ void GameObject::Update(unsigned long time_passed)
     if (m_deleted)
         return;
 
+    if (m_despawnDelay)
+    {
+        if (m_despawnDelay > time_passed)
+            m_despawnDelay -= time_passed;
+        else
+        {
+            m_despawnDelay = 0;
+            despawn(0, m_despawnRespawnTime);
+        }
+    }
+
     _UpdateSpells(time_passed);
 }
 
-void GameObject::Spawn(WorldMap* m)
+void GameObject::despawn(uint32_t delay, uint32_t respawntime)
 {
-    PushToWorld(m);
-}
-
-void GameObject::Despawn(uint32 delay, uint32 respawntime)
-{
-    if (delay)
+    if (delay > 0)
     {
-        sEventMgr.AddEvent(this, &GameObject::Despawn, (uint32)0, respawntime, EVENT_GAMEOBJECT_EXPIRE, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        return;
-    }
-
-    if (!IsInWorld())
-        return;
-
-    //This is for go get deleted while looting
-    if (m_spawn)
-    {
-        setState(static_cast<uint8>(m_spawn->state));
-        //setFlags(m_spawn->flags); aaron02
-    }
-
-    CALL_GO_SCRIPT_EVENT(this, OnDespawn)();
-
-    if (respawntime)
-    {
-        /* Get our originating mapcell */
-        if (MapCell* pCell = GetMapCell())
+        if (!m_despawnDelay || m_despawnDelay > delay)
         {
-            pCell->_respawnObjects.insert(this);
-            sEventMgr.RemoveEvents(this);
-
-            m_respawnCell = pCell;
-            saveRespawnTime(respawntime);
-            RemoveFromWorld(false);
-        }
-        else
-        {
-            sLogger.failure("GameObject::Despawn tries to respawn go %u without a valid MapCell, return!", this->getEntry());
+            m_despawnDelay = delay;
+            m_despawnRespawnTime = respawntime;
         }
     }
     else
     {
+        if (!IsInWorld())
+            return;
+
+        CALL_GO_SCRIPT_EVENT(this, OnDespawn)();
+
+        if (m_spawn)
+        {
+            /* Get our originating mapcell */
+            if (MapCell* pCell = GetMapCell())
+            {
+                pCell->_respawnObjects.insert(this);
+                sEventMgr.RemoveEvents(this);
+
+                m_respawnCell = pCell;
+                saveRespawnTime(respawntime);
+                RemoveFromWorld(false);
+            }
+            else
+            {
+                sLogger.failure("GameObject::Despawn tries to respawn go %u without a valid MapCell, return!", this->getEntry());
+            }
+        }
+
         RemoveFromWorld(true);
-        ExpireAndDelete();
+        expireAndDelete();
     }
 }
 
@@ -591,6 +702,13 @@ void GameObject::saveRespawnTime(uint32_t forceDelay)
 
     time_t thisRespawnTime = forceDelay ? now + forceDelay / IN_MILLISECONDS : 0;
     getWorldMap()->saveRespawnTime(SPAWN_TYPE_GAMEOBJECT, m_spawn->id, getEntry(), thisRespawnTime, m_respawnCell->getPositionX(), m_respawnCell->getPositionY());
+}
+
+// MIT End
+
+GameObjectProperties const* GameObject::GetGameObjectProperties() const
+{
+    return gameobject_properties;
 }
 
 void GameObject::SaveToDB()
@@ -715,31 +833,30 @@ void GameObject::DeleteFromDB()
 //////////////////////////////////////////////////////////////////////////////////////////
 // Summoned Go's
 //////////////////////////////////////////////////////////////////////////////////////////
-void GameObject::_Expire()
-{
-    sEventMgr.RemoveEvents(this);
 
-    if (IsInWorld())
-        RemoveFromWorld(true);
-
-    //sEventMgr.AddEvent(sWorld, &World::DeleteObject, ((Object*)this), EVENT_DELETE_TIMER, 1000, 1);
-    delete this;
-    //this = NULL;
-}
-
-void GameObject::ExpireAndDelete()
+void GameObject::expireAndDelete()
 {
     if (m_deleted)
         return;
 
     m_deleted = true;
 
+    setLootState(GO_NOT_READY);
+    sendGameobjectDespawnAnim();
+
+    setState(GO_STATE_CLOSED);
+
     // remove any events
     sEventMgr.RemoveEvents(this);
     if (IsInWorld())
-        sEventMgr.AddEvent(this, &GameObject::_Expire, EVENT_GAMEOBJECT_EXPIRE, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    else
+    {
+        RemoveFromWorld(true);
         delete this;
+    }
+    else
+    {
+        delete this;
+    }
 }
 
 void GameObject::CallScriptUpdate()
@@ -791,7 +908,7 @@ void GameObject::onRemoveInRangeObject(Object* pObj)
                 m_summoner->m_ObjectSlots[i] = 0;
 
         m_summoner = 0;
-        ExpireAndDelete();
+        expireAndDelete();
     }
 }
 // Remove gameobject from world, using their despawn animation.
@@ -1188,7 +1305,7 @@ void GameObject_Trap::Update(unsigned long time_passed)
                 {
                     if (!m_summoner)
                     {
-                        ExpireAndDelete();
+                        expireAndDelete();
                         return;
                     }
 
@@ -1208,7 +1325,7 @@ void GameObject_Trap::Update(unsigned long time_passed)
 
                 if (m_summonedGo && gameobject_properties->trap.charges != 0 && charges == 0)
                 {
-                    ExpireAndDelete();
+                    expireAndDelete();
                     return;
                 }
                                                                                                     //Zyres: This is the same XD
@@ -1462,9 +1579,9 @@ bool GameObject_FishingNode::UseNode()
 void GameObject_FishingNode::EndFishing(bool abort)
 {
     if (!abort)
-        sEventMgr.AddEvent(static_cast<GameObject*>(this), &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, 10 * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        despawn(10000, 0);
     else
-        ExpireAndDelete();
+        expireAndDelete();
 }
 
 void GameObject_FishingNode::EventFishHooked()
@@ -1597,7 +1714,7 @@ void GameObject_Ritual::onUse(Player* player)
             spell->prepare(&targets2);
 
             // expire the gameobject
-            ExpireAndDelete();
+            expireAndDelete();
         }
         else if (gameobject_properties->entry == 186811 || gameobject_properties->entry == 181622)
         {
@@ -1608,7 +1725,7 @@ void GameObject_Ritual::onUse(Player* player)
             spell = sSpellMgr.newSpell(player->getWorldMap()->getPlayer(GetRitual()->GetCasterGUID()), info, true, nullptr);
             SpellCastTargets targets2(GetRitual()->GetCasterGUID());
             spell->prepare(&targets2);
-            ExpireAndDelete();
+            expireAndDelete();
         }
     }
 }
@@ -1656,7 +1773,7 @@ void GameObject_SpellCaster::onUse(Player* player)
     CastSpell(player->getGuid(), spell);
 
     if (charges > 0 && --charges == 0)
-        ExpireAndDelete();
+        expireAndDelete();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1697,7 +1814,7 @@ void GameObject_Meetingstone::onUse(Player* player)
     player->setChannelSpellId(rGo->GetRitual()->GetSpellID());
 
     // expire after 2mins
-    sEventMgr.AddEvent(pGo, &GameObject::_Expire, EVENT_GAMEOBJECT_EXPIRE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    despawn(120000, 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1736,7 +1853,7 @@ void GameObject_FishingHole::CatchFish()
     ASSERT(usage_remaining > 0);
     usage_remaining--;
     if (usage_remaining == 0)
-        sEventMgr.AddEvent(static_cast<GameObject*>(this), &GameObject::Despawn, uint32(0), (1800000 + Util::getRandomUInt(3600000)), EVENT_GAMEOBJECT_EXPIRE, 10000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT); // respawn in 30 - 90 minutes
+        despawn(0, 1800 + Util::getRandomUInt(3600)); // respawn in 30 - 90 minutes
 }
 
 void GameObject_FishingHole::CalcFishRemaining(bool force)
@@ -1859,63 +1976,4 @@ void GameObject_Destructible::Rebuild()
     setDisplayId(gameobject_properties->display_id);
     maxhitpoints = gameobject_properties->destructible_building.intact_num_hits + gameobject_properties->destructible_building.damaged_num_hits;
     hitpoints = maxhitpoints;
-}
-
-uint32_t GameObject::getTransportPeriod() const
-{
-    if (getGoType() != GAMEOBJECT_TYPE_TRANSPORT)
-        return 0;
-
-    if (getGOValue()->Transport.AnimationInfo)
-        return getGOValue()->Transport.AnimationInfo->TotalTime;
-
-    return 0;
-}
-
-class GameObjectModelOwnerImpl : public GameObjectModelOwnerBase
-{
-public:
-    explicit GameObjectModelOwnerImpl(GameObject const* owner) : _owner(owner) { }
-
-    bool IsSpawned() const override { return true; }
-    uint32 GetDisplayId() const override { return _owner->getDisplayId(); }
-    uint32 GetPhaseMask() const override { return 1; }       // todo our gameobjects dont support phases?
-    G3D::Vector3 GetPosition() const override { return G3D::Vector3(_owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ()); }
-    float GetOrientation() const override { return _owner->GetOrientation(); }
-    float GetScale() const override { return _owner->getScale(); }
-    void DebugVisualizeCorner(G3D::Vector3 const& corner) const override { const_cast<GameObject*>(_owner)->getWorldMap()->createAndSpawnCreature(1, LocationVector(corner.x, corner.y, corner.z, 0)); }
-
-private:
-    GameObject const* _owner;
-};
-
-GameObjectModel* GameObject::createModel()
-{
-    return GameObjectModel::Create(std::make_unique<GameObjectModelOwnerImpl>(this), worldConfig.server.dataDir);
-}
-
-void GameObject::updateModelPosition()
-{
-    if (!m_model)
-        return;
-
-    if (getWorldMap()->containsGameObjectModel(*m_model))
-    {
-        getWorldMap()->removeGameObjectModel(*m_model);
-        m_model->UpdatePosition();
-        getWorldMap()->insertGameObjectModel(*m_model);
-    }
-}
-
-void GameObject::updateModel()
-{
-    if (!IsInWorld())
-        return;
-    if (m_model)
-        if (getWorldMap()->containsGameObjectModel(*m_model))
-            getWorldMap()->removeGameObjectModel(*m_model);
-    delete m_model;
-    m_model = createModel();
-    if (m_model)
-        getWorldMap()->insertGameObjectModel(*m_model);
 }

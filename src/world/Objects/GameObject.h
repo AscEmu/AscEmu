@@ -600,6 +600,15 @@ public:
 
     uint32_t getSpawnId() const { return m_spawnId; }
 
+    void despawn(uint32_t delay /*milliseconds*/, uint32_t respawntime /*seconds*/);
+    void expireAndDelete();
+    void setRespawnTime(int32_t respawn);
+    void saveRespawnTime(uint32_t forceDelay = 0);
+    void respawn();
+
+    LootState getLootState() const { return m_lootState; }
+    void setLootState(LootState state, Unit* unit = nullptr);
+
     void setLocalRotationAngles(float z_rot, float y_rot, float x_rot);
     void setLocalRotation(float qx, float qy, float qz, float qw);
     void setParentRotation(QuaternionData const& rotation);
@@ -607,6 +616,7 @@ public:
     int64_t getPackedLocalRotation() const { return m_packedRotation; }
     QuaternionData getWorldRotation() const;
 
+    void enableCollision(bool enable);
     GameObjectModel* m_model = nullptr;
 
     Transporter* ToTransport() { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter*>(this); else return nullptr; }
@@ -704,10 +714,6 @@ public:
 
         void Update(unsigned long time_passed);
 
-        void Spawn(WorldMap* m);
-        void Despawn(uint32 delay, uint32 respawntime);
-        void saveRespawnTime(uint32_t forceDelay = 0);
-
         //void _EnvironmentalDamageUpdate();
         // Serialization
         void SaveToDB();
@@ -719,9 +725,6 @@ public:
             m_summoner = mob;
             m_summonedGo = true;
         }
-        void _Expire();
-
-        void ExpireAndDelete();
 
         int32 charges = -1;
 
@@ -771,16 +774,16 @@ public:
         GameObjectModel* createModel();
         void updateModel();
 
-        uint32_t m_spawnId = 0; // temporary GameObjects have 0
-        time_t m_respawnTime = 0;
-        uint32_t m_respawnDelayTime = 0;
-        uint32_t m_despawnDelay = 0;
-        uint32_t m_despawnRespawnTime = 300;
+        uint32_t m_spawnId = 0;                 // temporary GameObjects have 0
+        time_t m_respawnTime = 0;               // seconds
+        uint32_t m_respawnDelayTime = 0;        // seconds
+        uint32_t m_despawnDelay = 0;            // milliseconds
+        uint32_t m_despawnRespawnTime = 300;    // seconds
         LootState m_lootState = GO_NOT_READY;
         uint64_t m_lootStateUnitGUID = 0;
         bool m_spawnedByDefault = true;
-        time_t m_restockTime = 0;
-        time_t m_cooldownTime = 0;
+        time_t m_restockTime = 0;               // seconds
+        time_t m_cooldownTime = 0;              // milliseconds
         GameObject_State m_prevGoState = GO_STATE_OPEN; // What state to set whenever resetting
 
         int64_t m_packedRotation = 0;
