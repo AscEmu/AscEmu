@@ -220,7 +220,7 @@ public:
     uint32_t getPlayerCountInRadius(float x, float y, float z = 0.0f, float radius = 5.0f);
 
     GameObject* spawnGameObject(uint32_t Entry, LocationVector pos, bool AddToWorld, uint32_t Misc1, uint32_t Misc2, uint32_t phase = 0xFFFFFFF);
-    GameObject* spawnGameObject(MySQLStructure::GameobjectSpawn* gs, bool AddToWorld);
+    GameObject* spawnGameObject(uint32_t spawnId, bool AddToWorld);
     Creature* spawnCreature(uint32_t Entry, LocationVector pos, bool AddToWorld, bool tmplate, uint32_t Misc1, uint32_t Misc2, uint32_t phase = 0xFFFFFFF);
     Creature* spawnCreature(MySQLStructure::CreatureSpawn* sp, bool AddToWorld);
 

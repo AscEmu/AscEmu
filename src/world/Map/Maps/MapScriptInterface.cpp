@@ -57,7 +57,7 @@ GameObject* MapScriptInterface::spawnGameObject(uint32_t Entry, LocationVector p
 {
 
     GameObject* pGameObject = m_worldMap.createGameObject(Entry);
-    if (!pGameObject->CreateFromProto(Entry, m_worldMap.getBaseMap()->getMapId(), pos.x, pos.y, pos.z, pos.o))
+    if (!pGameObject->create(Entry, m_worldMap.getBaseMap()->getMapId(), phase, pos, QuaternionData(), GO_STATE_CLOSED))
     {
         delete pGameObject;
         return nullptr;
@@ -71,13 +71,15 @@ GameObject* MapScriptInterface::spawnGameObject(uint32_t Entry, LocationVector p
     return pGameObject;
 }
 
-GameObject* MapScriptInterface::spawnGameObject(MySQLStructure::GameobjectSpawn* gs, bool AddToWorld)
+GameObject* MapScriptInterface::spawnGameObject(uint32_t spawnId, bool AddToWorld)
 {
-    if (!gs)
+    if (!spawnId)
         return nullptr;
 
-    GameObject* pGameObject = m_worldMap.createGameObject(gs->entry);
-    if (!pGameObject->Load(gs))
+    MySQLStructure::GameobjectSpawn const* data = sMySQLStore.getGameObjectSpawn(spawnId);
+
+    GameObject* pGameObject = m_worldMap.createGameObject(data->entry);
+    if (!pGameObject->loadFromDB(spawnId, &m_worldMap, false))
     {
         delete pGameObject;
         return nullptr;

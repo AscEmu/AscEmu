@@ -66,7 +66,7 @@ void WorldMap::initialize()
     for (auto& GameobjectSpawn : _map->staticSpawns.GameobjectSpawns)
     {
         GameObject* obj = createGameObject(GameobjectSpawn->entry);
-        obj->Load(GameobjectSpawn);
+        obj->loadFromDB(GameobjectSpawn->id, this, false);
         PushStaticObject(obj);
     }
 
@@ -1719,7 +1719,7 @@ GameObject* WorldMap::createGameObject(uint32_t entry)
 
 GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector pos, float scale)
 {
-    auto gameobject_info = sMySQLStore.getGameObjectProperties(entryID);
+    /*auto gameobject_info = sMySQLStore.getGameObjectProperties(entryID);
     if (gameobject_info == nullptr)
     {
         sLogger.debug("Error looking up entry in CreateAndSpawnGameObject");
@@ -1769,7 +1769,8 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
     if (mCell != nullptr)
         mCell->setLoaded();
 
-    return go;
+    return go;*/
+    return nullptr;
 }
 
 GameObject* WorldMap::getGameObject(uint32_t guid)
@@ -1976,7 +1977,7 @@ void WorldMap::loadRespawnTimes()
                 for (auto const& spawn : gameobject_spawns)
                 {
                     if (spawn->id == spawnId)
-                        saveRespawnTime(type, spawnId, spawn->entry, time_t(respawnTime), spawn->position_x, spawn->position_y, true);
+                        saveRespawnTime(type, spawnId, spawn->entry, time_t(respawnTime), spawn->spawnPoint.x, spawn->spawnPoint.y, true);
                 }
             }
         }
@@ -2011,6 +2012,13 @@ RespawnInfoMap const& WorldMap::getRespawnMapForType(SpawnObjectType type) const
         default:
             break;
     }
+}
+
+time_t WorldMap::getRespawnTime(SpawnObjectType type, uint32_t spawnId) const
+{
+    auto const& map = getRespawnMapForType(type);
+    auto it = map.find(spawnId);
+    return (it == map.end()) ? 0 : it->second->time;
 }
 
 void WorldMap::saveRespawnTime(SpawnObjectType type, uint32_t spawnId, uint32_t entry, time_t respawnTime, float cellX, float cellY, bool startup)

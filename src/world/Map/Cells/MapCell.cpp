@@ -274,7 +274,7 @@ void MapCell::loadObjects(CellSpawns* sp)
         {
             GameObject* go = _map->createGameObject((*i)->entry);
 
-            if (go->Load(*i))
+            if (go->loadFromDB((*i)->id, _map, false))
             {
                 go->m_loadedFromDB = true;
                 go->PushToWorld(_map);

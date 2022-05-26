@@ -136,7 +136,13 @@ void GameObject::removeFlags(uint32_t flags) { setFlags(getFlags() & ~flags); }
 bool GameObject::hasFlags(uint32_t flags) const { return (getFlags() & flags) != 0; }
 
 float GameObject::getParentRotation(uint8_t type) const { return gameObjectData()->rotation[type]; }
-void GameObject::setParentRotation(uint8_t type, float rotation) { write(gameObjectData()->rotation[type], rotation); }
+void GameObject::setParentRotation(QuaternionData const& rotation)
+{
+    write(gameObjectData()->rotation[0], rotation.x);
+    write(gameObjectData()->rotation[1], rotation.y);
+    write(gameObjectData()->rotation[2], rotation.z);
+    write(gameObjectData()->rotation[3], rotation.w);
+}
 
 #if VERSION_STRING < WotLK
 uint32_t GameObject::getDynamicFlags() const { return gameObjectData()->dynamic; }
@@ -261,14 +267,69 @@ Player* GameObject::getPlayerOwner()
 
     return nullptr;
 }
-// MIT End
 
-GameObjectProperties const* GameObject::GetGameObjectProperties() const
+bool GameObject::loadFromDB(uint32_t spawnId, WorldMap* map, bool addToWorld)
 {
-    return gameobject_properties;
+    MySQLStructure::GameobjectSpawn const* data = sMySQLStore.getGameObjectSpawn(spawnId);
+
+    if (!data)
+    {
+        sLogger.failure("Gameobject (spawnId: %u) not found in table gameobject_spawns, cant load.");
+        return false;
+    }
+
+    if (!map || !map->getBaseMap())
+    {
+        sLogger.failure("Gameobject (spawnId: %u) invalid WorldMap or base data Invalid, cant load.");
+        return false;
+    }
+
+    uint32_t entry = data->entry;
+    GameObject_State gameobjectState = data->state;
+
+    if (!create(entry, map->getBaseMap()->getMapId(), data->phase, data->spawnPoint, data->rotation, data->state))
+        return false;
+
+    if (data->spawntimesecs >= 0)
+    {
+        m_spawnedByDefault = true;
+
+        if (!GetGameObjectProperties()->getDespawnPossibility() && !GetGameObjectProperties()->isDespawnAtAction())
+        {
+            setFlags(GO_FLAG_NEVER_DESPAWN);
+            m_respawnDelayTime = 0;
+            m_respawnTime = 0;
+        }
+        else
+        {
+            m_respawnDelayTime = data->spawntimesecs;
+            m_respawnTime = getWorldMap()->getGORespawnTime(data->id);
+
+            // ready to respawn
+            if (m_respawnTime && m_respawnTime <= Util::getTimeNow())
+            {
+                m_respawnTime = 0;
+                getWorldMap()->removeRespawnTime(SPAWN_TYPE_GAMEOBJECT, data->id);
+            }
+        }
+    }
+    else
+    {
+        m_spawnedByDefault = false;
+        m_respawnDelayTime = -data->spawntimesecs;
+        m_respawnTime = 0;
+    }
+
+    m_spawn = data;
+
+    // add to insert Pool
+    if (addToWorld)
+        getWorldMap()->AddObject(this);
+
+    return true;
 }
 
-bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, float z, float ang, float r0, float r1, float r2, float r3, uint32 overrides)
+bool GameObject::create(uint32_t entry, uint32_t mapId, uint32_t phase, LocationVector const& position, QuaternionData const& rotation, GameObject_State state, uint32_t spawnId)
 {
     gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
     if (gameobject_properties == nullptr)
@@ -277,57 +338,164 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
         return false;
     }
 
-    Object::_Create(mapid, x, y, z, ang);
+    Object::_Create(mapId, position.x, position.y, position.z, position.o);
     setEntry(entry);
-    SetRotationQuat(r0, r1, r2, r3);
-    SetPosition(x, y, z, ang);
+    SetPosition(position);
     setDisplayId(gameobject_properties->display_id);
+    m_phase = phase;
+
+    setLocalRotation(rotation.x, rotation.y, rotation.z, rotation.w);
+    MySQLStructure::GameObjectSpawnExtra const* gameObjectAddon = sMySQLStore.getGameObjectExtra(getSpawnId());
+
+    // For most of gameobjects is (0, 0, 0, 1) quaternion, there are only some transports with not standard rotation
+    QuaternionData parentRotation;
+    if (gameObjectAddon)
+        parentRotation = gameObjectAddon->parentRotation;
+
+    setParentRotation(parentRotation);
+
+    setScale(gameobject_properties->size);
+
+    // Spawn Overrides
+    if (MySQLStructure::GameObjectSpawnOverrides const* goOverride = sMySQLStore.getGameObjectOverride(getSpawnId()))
+    {
+        SetFaction(goOverride->faction);
+        setFlags(goOverride->flags);
+    }
+
+    m_model = createModel();
+
     setGoType(static_cast<uint8>(gameobject_properties->type));
+    m_prevGoState = state;
+    setState(state);
+    setArtKit(0);
 
     switch (gameobject_properties->type)
     {
+        case GAMEOBJECT_TYPE_FISHINGHOLE:
+        {
+            setAnimationProgress(0);
+            m_goValue.FishingHole.MaxOpens = Util::getRandomUInt(gameobject_properties->fishinghole.max_success_opens, gameobject_properties->fishinghole.max_success_opens);
+        } break;
+        case GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING:
+        {
+            m_goValue.Building.Health = gameobject_properties->destructible_building.intact_num_hits + gameobject_properties->destructible_building.damaged_num_hits;
+            m_goValue.Building.MaxHealth = m_goValue.Building.Health;
+            setAnimationProgress(255);
+        } break;
         case GAMEOBJECT_TYPE_TRANSPORT:
+        {
             m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
-#if VERSION_STRING == Classic
-            m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT);
-#endif
-#if VERSION_STRING == TBC
-            m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT);
-#endif
-#if VERSION_STRING == WotLK
-            m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
-#endif
-#if VERSION_STRING == Cata
-            m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
-#endif
-#if VERSION_STRING == Mop
-            m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
-#endif
+
+            #if VERSION_STRING == Classic
+                    m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT);
+            #endif
+            #if VERSION_STRING == TBC
+                    m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT);
+            #endif
+            #if VERSION_STRING == WotLK
+                    m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
+            #endif
+            #if VERSION_STRING == Cata
+                    m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
+            #endif
+            #if VERSION_STRING == Mop
+                    m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
+            #endif
 
             setLevel(gameobject_properties->transport.pause);
             setState(gameobject_properties->transport.startOpen ? GO_STATE_OPEN : GO_STATE_CLOSED);
-            mTransValues.CurrentSeg = 0;
-            mTransValues.AnimationInfo = sTransportHandler.getTransportAnimInfo(entry);
-            mTransValues.PathProgress = 0;
-            break;
+            setAnimationProgress(0);
+            m_goValue.Transport.CurrentSeg = 0;
+            m_goValue.Transport.AnimationInfo = sTransportHandler.getTransportAnimInfo(entry);
+            m_goValue.Transport.PathProgress = 0;
+        } break;
         case GAMEOBJECT_TYPE_MO_TRANSPORT:
+        {
             m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
             setFlags(GO_FLAG_TRANSPORT | GO_FLAG_NEVER_DESPAWN);
             setState(gameobject_properties->mo_transport.can_be_stopped ? GO_STATE_CLOSED : GO_STATE_OPEN);
-            setParentRotation(3, 1.0f);
-            mTransValues.PathProgress = 0;
-            break;
-        default:
-            m_overrides = overrides;
+            m_goValue.Transport.PathProgress = 0;
+        } break;
+        case GAMEOBJECT_TYPE_FISHINGNODE:
+        {
             setAnimationProgress(0);
-            setState(GO_STATE_CLOSED);
+        } break;
+        default:
+            setAnimationProgress(0);
+            break;
     }
 
     InitAI();
 
-    m_model = createModel();
+    if (spawnId)
+        m_spawnId = spawnId;
+
+    // Check if GameObject is Large
+    if (gameobject_properties->isLargeGameObject())
+        m_overrides = GAMEOBJECT_AREAWIDE;  // not implemented yet
+
+    // Check if GameObject is Infinite
+    if (gameobject_properties->isInfiniteGameObject())
+        m_overrides = GAMEOBJECT_MAPWIDE;
 
     return true;
+}
+
+void GameObject::setLocalRotation(float qx, float qy, float qz, float qw)
+{
+    G3D::Quat rotation(qx, qy, qz, qw);
+    rotation.unitize();
+    m_localRotation.x = rotation.x;
+    m_localRotation.y = rotation.y;
+    m_localRotation.z = rotation.z;
+    m_localRotation.w = rotation.w;
+    updatePackedRotation();
+}
+
+void GameObject::setLocalRotationAngles(float z_rot, float y_rot, float x_rot)
+{
+    G3D::Quat quat(G3D::Matrix3::fromEulerAnglesZYX(z_rot, y_rot, x_rot));
+    setLocalRotation(quat.x, quat.y, quat.z, quat.w);
+}
+
+QuaternionData GameObject::getWorldRotation() const
+{
+    QuaternionData localRotation = getLocalRotation();
+    if (Transporter* transport = GetTransport())
+    {
+        QuaternionData worldRotation = transport->getWorldRotation();
+
+        G3D::Quat worldRotationQuat(worldRotation.x, worldRotation.y, worldRotation.z, worldRotation.w);
+        G3D::Quat localRotationQuat(localRotation.x, localRotation.y, localRotation.z, localRotation.w);
+
+        G3D::Quat resultRotation = localRotationQuat * worldRotationQuat;
+
+        return QuaternionData(resultRotation.x, resultRotation.y, resultRotation.z, resultRotation.w);
+    }
+    return localRotation;
+}
+
+void GameObject::updatePackedRotation()
+{
+    static const int32 PACK_YZ = 1 << 20;
+    static const int32 PACK_X = PACK_YZ << 1;
+
+    static const int32 PACK_YZ_MASK = (PACK_YZ << 1) - 1;
+    static const int32 PACK_X_MASK = (PACK_X << 1) - 1;
+
+    int8 w_sign = (m_localRotation.w >= 0.f ? 1 : -1);
+    int64 x = int32(m_localRotation.x * PACK_X) * w_sign & PACK_X_MASK;
+    int64 y = int32(m_localRotation.y * PACK_YZ) * w_sign & PACK_YZ_MASK;
+    int64 z = int32(m_localRotation.z * PACK_YZ) * w_sign & PACK_YZ_MASK;
+    m_packedRotation = z | (y << 21) | (x << 42);
+}
+
+// MIT End
+
+GameObjectProperties const* GameObject::GetGameObjectProperties() const
+{
+    return gameobject_properties;
 }
 
 void GameObject::Update(unsigned long time_passed)
@@ -367,7 +535,7 @@ void GameObject::Despawn(uint32 delay, uint32 respawntime)
     if (m_spawn)
     {
         setState(static_cast<uint8>(m_spawn->state));
-        setFlags(m_spawn->flags);
+        //setFlags(m_spawn->flags); aaron02
     }
 
     CALL_GO_SCRIPT_EVENT(this, OnDespawn)();
@@ -427,6 +595,7 @@ void GameObject::saveRespawnTime(uint32_t forceDelay)
 
 void GameObject::SaveToDB()
 {
+    /*
     if (m_spawn == NULL)
     {
         // Create spawn instance
@@ -491,7 +660,7 @@ void GameObject::SaveToDB()
         << m_phase << ","
         << m_overrides << ","
         << "0)";            // event
-    WorldDatabase.Execute(ss.str().c_str());
+    WorldDatabase.Execute(ss.str().c_str());*/
 }
 
 void GameObject::SaveToFile(std::stringstream & name)
@@ -535,24 +704,6 @@ void GameObject::InitAI()
 {
     if (myScript == NULL)
         myScript = sScriptMgr.CreateAIScriptClassForGameObject(getEntry(), this);
-}
-
-bool GameObject::Load(MySQLStructure::GameobjectSpawn* go_spawn)
-{
-    if (!CreateFromProto(go_spawn->entry, 0, go_spawn->position_x, go_spawn->position_y, go_spawn->position_z, go_spawn->orientation, go_spawn->rotation_0, go_spawn->rotation_1, go_spawn->rotation_2, go_spawn->rotation_3, go_spawn->overrides))
-        return false;
-
-    m_spawn = go_spawn;
-    m_phase = go_spawn->phase;
-    setFlags(go_spawn->flags);
-    setState(static_cast<uint8>(go_spawn->state));
-    if (go_spawn->faction)
-    {
-        SetFaction(go_spawn->faction);
-    }
-    setScale(go_spawn->scale);
-
-    return true;
 }
 
 void GameObject::DeleteFromDB()
@@ -669,70 +820,6 @@ uint32 GameObject::GetGOReqSkill()
             return lock->minlockskill[i];
     }
     return 0;
-}
-
-using G3D::Quat;
-struct QuaternionCompressed
-{
-    QuaternionCompressed() : m_raw(0) {}
-    QuaternionCompressed(int64 val) : m_raw(val) {}
-    QuaternionCompressed(const Quat& quat) { Set(quat); }
-
-    enum
-    {
-        PACK_COEFF_YZ = 1 << 20,
-        PACK_COEFF_X = 1 << 21,
-    };
-
-    void Set(const Quat& quat)
-    {
-        int8 w_sign = (quat.w >= 0 ? 1 : -1);
-        int64 X = int32(quat.x * PACK_COEFF_X) * w_sign & ((1 << 22) - 1);
-        int64 Y = int32(quat.y * PACK_COEFF_YZ) * w_sign & ((1 << 21) - 1);
-        int64 Z = int32(quat.z * PACK_COEFF_YZ) * w_sign & ((1 << 21) - 1);
-        m_raw = Z | (Y << 21) | (X << 42);
-    }
-
-    Quat Unpack() const
-    {
-        double x = (double)(m_raw >> 42) / (double)PACK_COEFF_X;
-        double y = (double)(m_raw << 22 >> 43) / (double)PACK_COEFF_YZ;
-        double z = (double)(m_raw << 43 >> 43) / (double)PACK_COEFF_YZ;
-        double w = 1 - (x * x + y * y + z * z);
-        
-        if (w >= 0)
-        {
-            w = std::sqrt(w);
-
-            return Quat(float(x), float(y), float(z), float(w));
-        }
-
-        sLogger.failure("QuaternionCompressed::Unpack w is negative, this should not happen!");
-        return Quat(0, 0, 0, 0);
-    }
-
-    int64 m_raw;
-};
-
-void GameObject::SetRotationQuat(float qx, float qy, float qz, float qw)
-{
-    Quat quat(qx, qy, qz, qw);
-    // Temporary solution for gameobjects that has no rotation data in DB:
-    if (qz == 0 && qw == 0)
-        quat = Quat::fromAxisAngleRotation(G3D::Vector3::unitZ(), GetOrientation());
-
-    quat.unitize();
-    m_rotation = QuaternionCompressed(quat).m_raw;
-    setParentRotation(0, quat.x);
-    setParentRotation(1, quat.y);
-    setParentRotation(2, quat.z);
-    setParentRotation(3, quat.w);
-}
-
-void GameObject::SetRotationAngles(float z_rot, float y_rot, float x_rot)
-{
-    Quat quat(G3D::Matrix3::fromEulerAnglesZYX(z_rot, y_rot, x_rot));
-    SetRotationQuat(quat.x, quat.y, quat.z, quat.w);
 }
 
 void GameObject::CastSpell(uint64 TargetGUID, SpellInfo const* sp)
@@ -1176,7 +1263,9 @@ void GameObject_SpellFocus::SpawnLinkedTrap()
         return;
     }
 
-    if (!go->CreateFromProto(trapid, m_mapId, m_position.x, m_position.y, m_position.z, m_position.o))
+    QuaternionData rot = QuaternionData::fromEulerAnglesZYX(m_position.getOrientation(), 0.f, 0.f);
+
+    if (!go->create(trapid, m_mapId, m_phase, m_position, rot, GO_STATE_CLOSED))
     {
         sLogger.failure("Failed CreateFromProto for linked trap of GameObject %u ( %s ).", gameobject_properties->entry, gameobject_properties->name.c_str());
         return;
@@ -1598,7 +1687,9 @@ void GameObject_Meetingstone::onUse(Player* player)
 
     GameObject_Ritual* rGo = static_cast<GameObject_Ritual*>(pGo);
 
-    rGo->CreateFromProto(179944, player->GetMapId(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), 0);
+    QuaternionData rot = QuaternionData::fromEulerAnglesZYX(player->GetOrientation(), 0.f, 0.f);
+
+    rGo->create(179944, player->GetMapId(), player->GetPositionX(), player->GetPosition(), rot, GO_STATE_CLOSED);
     rGo->GetRitual()->Setup(player->getGuidLow(), pPlayer->getGuidLow(), 18540);
     rGo->PushToWorld(player->getWorldMap());
 
@@ -1775,8 +1866,8 @@ uint32_t GameObject::getTransportPeriod() const
     if (getGoType() != GAMEOBJECT_TYPE_TRANSPORT)
         return 0;
 
-    if (GetTransValues()->AnimationInfo)
-        return GetTransValues()->AnimationInfo->TotalTime;
+    if (getGOValue()->Transport.AnimationInfo)
+        return getGOValue()->Transport.AnimationInfo->TotalTime;
 
     return 0;
 }

@@ -34,6 +34,14 @@ enum GameObject_State : uint8_t
     GO_STATE_ALTERNATIVE_OPEN   = 2
 };
 
+enum LootState : uint8_t
+{
+    GO_NOT_READY                = 0,
+    GO_READY                    = 1,
+    GO_ACTIVATED                = 2,
+    GO_JUST_DEACTIVATED         = 3
+};
+
 enum GameObject_Flags
 {
     GO_FLAG_NONE                = 0x000,
@@ -50,11 +58,90 @@ enum GameObject_Flags
     GO_FLAG_DESTROYED           = 0x400
 };
 
-struct TransportInfoData
+union GameObjectValue
 {
-    uint32_t PathProgress = 0;
-    TransportAnimation const* AnimationInfo = nullptr;
-    uint32_t CurrentSeg = 0;
+    //11 GAMEOBJECT_TYPE_TRANSPORT
+    struct
+    {
+        uint32_t PathProgress = 0;
+        TransportAnimation const* AnimationInfo = nullptr;
+        uint32_t CurrentSeg = 0;
+    } Transport;
+    //25 GAMEOBJECT_TYPE_FISHINGHOLE
+    struct
+    {
+        uint32_t MaxOpens;
+    } FishingHole;
+    //33 GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING
+    struct
+    {
+        uint32_t Health;
+        uint32_t MaxHealth;
+    } Building;
+};
+
+struct QuaternionData
+{
+    float x, y, z, w;
+
+    QuaternionData() : x(0.0f), y(0.0f), z(0.0f), w(1.0f) { }
+    QuaternionData(float X, float Y, float Z, float W) : x(X), y(Y), z(Z), w(W) { }
+
+    bool isUnit() const
+    {
+        return fabs(x * x + y * y + z * z + w * w - 1.0f) < 1e-5f;
+    }
+
+    void toEulerAnglesZYX(float& Z, float& Y, float& X) const
+    {
+        G3D::Matrix3(G3D::Quat(x, y, z, w)).toEulerAnglesZYX(Z, Y, X);
+    }
+
+    static QuaternionData fromEulerAnglesZYX(float Z, float Y, float X)
+    {
+        G3D::Quat quat(G3D::Matrix3::fromEulerAnglesZYX(Z, Y, X));
+        return QuaternionData(quat.x, quat.y, quat.z, quat.w);
+    }
+};
+
+enum GameObjectTypes
+{
+    GAMEOBJECT_TYPE_DOOR                    = 0,
+    GAMEOBJECT_TYPE_BUTTON                  = 1,
+    GAMEOBJECT_TYPE_QUESTGIVER              = 2,
+    GAMEOBJECT_TYPE_CHEST                   = 3,
+    GAMEOBJECT_TYPE_BINDER                  = 4,
+    GAMEOBJECT_TYPE_GENERIC                 = 5,
+    GAMEOBJECT_TYPE_TRAP                    = 6,
+    GAMEOBJECT_TYPE_CHAIR                   = 7,
+    GAMEOBJECT_TYPE_SPELL_FOCUS             = 8,
+    GAMEOBJECT_TYPE_TEXT                    = 9,
+    GAMEOBJECT_TYPE_GOOBER                  = 10,
+    GAMEOBJECT_TYPE_TRANSPORT               = 11,
+    GAMEOBJECT_TYPE_AREADAMAGE              = 12,
+    GAMEOBJECT_TYPE_CAMERA                  = 13,
+    GAMEOBJECT_TYPE_MAP_OBJECT              = 14,
+    GAMEOBJECT_TYPE_MO_TRANSPORT            = 15,
+    GAMEOBJECT_TYPE_DUEL_ARBITER            = 16,
+    GAMEOBJECT_TYPE_FISHINGNODE             = 17,
+    GAMEOBJECT_TYPE_RITUAL                  = 18,
+    GAMEOBJECT_TYPE_MAILBOX                 = 19,
+    GAMEOBJECT_TYPE_AUCTIONHOUSE            = 20,
+    GAMEOBJECT_TYPE_GUARDPOST               = 21,
+    GAMEOBJECT_TYPE_SPELLCASTER             = 22,
+    GAMEOBJECT_TYPE_MEETINGSTONE            = 23,
+    GAMEOBJECT_TYPE_FLAGSTAND               = 24,
+    GAMEOBJECT_TYPE_FISHINGHOLE             = 25,
+    GAMEOBJECT_TYPE_FLAGDROP                = 26,
+    GAMEOBJECT_TYPE_MINI_GAME               = 27,
+    GAMEOBJECT_TYPE_LOTTERY_KIOSK           = 28,
+    GAMEOBJECT_TYPE_CAPTURE_POINT           = 29,
+    GAMEOBJECT_TYPE_AURA_GENERATOR          = 30,
+    GAMEOBJECT_TYPE_DUNGEON_DIFFICULTY      = 31,
+    GAMEOBJECT_TYPE_BARBER_CHAIR            = 32,
+    GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING   = 33,
+    GAMEOBJECT_TYPE_GUILD_BANK              = 34,
+    GAMEOBJECT_TYPE_TRAPDOOR                = 35
 };
 
 class Player;
@@ -116,6 +203,20 @@ struct GameObjectProperties
             uint32 los_ok;                      // parameter_8
         }button;
         // 2 GAMEOBJECT_TYPE_QUESTGIVER
+        struct
+        {
+            uint32 lockId;                      //0 -> Lock.dbc
+            uint32 questList;                   //1
+            uint32 pageMaterial;                //2
+            uint32 gossipID;                    //3
+            uint32 customAnim;                  //4
+            uint32 noDamageImmune;              //5
+            uint32 openTextID;                  //6 can be used to replace castBarCaption?
+            uint32 losOK;                       //7
+            uint32 allowMounted;                //8 Is usable while on mount/vehicle. (0/1)
+            uint32 large;                       //9
+            uint32 conditionID1;                //10
+        } questgiver;
         // 3 GAMEOBJECT_TYPE_CHEST
         struct
         {
@@ -139,6 +240,16 @@ struct GameObjectProperties
         } chest;
         // 4 GAMEOBJECT_TYPE_BINDER
         // 5 GAMEOBJECT_TYPE_GENERIC
+        struct
+        {
+            uint32 floatingTooltip;             // parameter_0
+            uint32 highlight;                   // parameter_1
+            uint32 serverOnly;                  // parameter_2
+            uint32 large;                       // parameter_3
+            uint32 floatOnWater;                // parameter_4
+            int32 questID;                      // parameter_5
+            uint32 conditionID1;                // parameter_6
+        } _generic;
         // 6 GAMEOBJECT_TYPE_TRAP
         struct
         {
@@ -207,6 +318,17 @@ struct GameObjectProperties
             uint32_t mapID;                     //parameter_5
         } transport;
         // 12 GAMEOBJECT_TYPE_AREADAMAGE
+        struct
+        {
+            uint32 lockId;                      // parameter_0
+            uint32 radius;                      // parameter_1
+            uint32 damageMin;                   // parameter_2
+            uint32 damageMax;                   // parameter_3
+            uint32 damageSchool;                // parameter_4
+            uint32 autoCloseTime;               // parameter_5 secs till autoclose = autoCloseTime / 0x10000
+            uint32 openTextID;                  // parameter_6
+            uint32 closeTextID;                 // parameter_7
+        } areadamage;
         // 13 GAMEOBJECT_TYPE_CAMERA
         struct
         {
@@ -257,6 +379,18 @@ struct GameObjectProperties
         }spell_caster;
         // 23 GAMEOBJECT_TYPE_MEETINGSTONE
         // 24 GAMEOBJECT_TYPE_FLAGSTAND
+        struct
+        {
+            uint32 lockId;                      // parameter_0
+            uint32 pickupSpell;                 // parameter_1
+            uint32 radius;                      // parameter_2
+            uint32 returnAura;                  // parameter_3
+            uint32 returnSpell;                 // parameter_4
+            uint32 noDamageImmune;              // parameter_5
+            uint32 openTextID;                  // parameter_6
+            uint32 losOK;                       // parameter_7
+            uint32 conditionID1;                // parameter_8
+        } flagstand;
         // 25 GAMEOBJECT_TYPE_FISHINGHOLE
         struct
         {
@@ -267,9 +401,42 @@ struct GameObjectProperties
             uint32 lock_id;                     // parameter_4 from Lock.dbc
         }fishinghole;
         // 26 GAMEOBJECT_TYPE_FLAGDROP
+        struct
+        {
+            uint32 lockId;                      // parameter_0
+            uint32 eventID;                     // parameter_1
+            uint32 pickupSpell;                 // parameter_2
+            uint32 noDamageImmune;              // parameter_3
+            uint32 openTextID;                  // parameter_4
+        } flagdrop;
         // 27 GAMEOBJECT_TYPE_MINI_GAME
         // 28 GAMEOBJECT_TYPE_LOTTERY_KIOSK
         // 29 GAMEOBJECT_TYPE_CAPTURE_POINT
+        struct
+        {
+            uint32 radius;                      // parameter_0
+            uint32 spell;                       // parameter_1
+            uint32 worldState1;                 // parameter_2
+            uint32 worldstate2;                 // parameter_3
+            uint32 winEventID1;                 // parameter_4
+            uint32 winEventID2;                 // parameter_5
+            uint32 contestedEventID1;           // parameter_6
+            uint32 contestedEventID2;           // parameter_7
+            uint32 progressEventID1;            // parameter_8
+            uint32 progressEventID2;            // parameter_9
+            uint32 neutralEventID1;             // parameter_10
+            uint32 neutralEventID2;             // parameter_11
+            uint32 neutralPercent;              // parameter_12
+            uint32 worldstate3;                 // parameter_13
+            uint32 minSuperiority;              // parameter_14
+            uint32 maxSuperiority;              // parameter_15
+            uint32 minTime;                     // parameter_16
+            uint32 maxTime;                     // parameter_17
+            uint32 large;                       // parameter_18
+            uint32 highlight;                   // parameter_19
+            uint32 startingValue;               // parameter_20
+            uint32 unidirectional;              // parameter_21
+        } capturePoint;
         // 30 GAMEOBJECT_TYPE_AURA_GENERATOR
         // 31 GAMEOBJECT_TYPE_DUNGEON_DIFFICULTY
         // 32 GAMEOBJECT_TYPE_BARBER_CHAIR
@@ -341,6 +508,74 @@ struct GameObjectProperties
     GameObjectGOMap goMap;
     // <quest, [<item, item_count>]>
     GameObjectItemMap itemMap;
+
+    bool isDespawnAtAction() const
+    {
+        switch (type)
+        {
+            case GAMEOBJECT_TYPE_CHEST:  return chest.consumable != 0;
+            case GAMEOBJECT_TYPE_GOOBER: return goober.consumable != 0;
+            default: return false;
+        }
+    }
+
+    bool getDespawnPossibility() const
+    {
+        switch (type)
+        {
+            case GAMEOBJECT_TYPE_DOOR:       return door.no_damage_immune != 0;
+            case GAMEOBJECT_TYPE_BUTTON:     return button.no_damage_immune != 0;
+            case GAMEOBJECT_TYPE_QUESTGIVER: return questgiver.noDamageImmune != 0;
+            case GAMEOBJECT_TYPE_GOOBER:     return goober.no_damage_immune != 0;
+            case GAMEOBJECT_TYPE_FLAGSTAND:  return flagstand.noDamageImmune != 0;
+            case GAMEOBJECT_TYPE_FLAGDROP:   return flagdrop.noDamageImmune != 0;
+            default: return true;
+        }
+    }
+
+    uint32_t getAutoCloseTime() const
+    {
+        uint32_t autoCloseTime = 0;
+        switch (type)
+        {
+            case GAMEOBJECT_TYPE_DOOR:          autoCloseTime = door.auto_close_time; break;
+            case GAMEOBJECT_TYPE_BUTTON:        autoCloseTime = button.auto_close_time; break;
+            case GAMEOBJECT_TYPE_TRAP:          autoCloseTime = trap.auto_close_time; break;
+            case GAMEOBJECT_TYPE_GOOBER:        autoCloseTime = goober.auto_close_time; break;
+            case GAMEOBJECT_TYPE_TRANSPORT:     autoCloseTime = transport.autoCloseTime; break;
+            case GAMEOBJECT_TYPE_AREADAMAGE:    autoCloseTime = areadamage.autoCloseTime; break;
+            default: break;
+        }
+        return autoCloseTime;              // prior to 3.0.3, conversion was / 0x10000;
+    }
+
+    bool isLargeGameObject() const
+    {
+        switch (type)
+        {
+            case GAMEOBJECT_TYPE_BUTTON:            return button.large != 0;
+            case GAMEOBJECT_TYPE_QUESTGIVER:        return questgiver.large != 0;
+            case GAMEOBJECT_TYPE_GENERIC:           return _generic.large != 0;
+            case GAMEOBJECT_TYPE_TRAP:              return trap.large != 0;
+            case GAMEOBJECT_TYPE_SPELL_FOCUS:       return spell_focus.large != 0;
+            case GAMEOBJECT_TYPE_GOOBER:            return goober.large != 0;
+            case GAMEOBJECT_TYPE_SPELLCASTER:       return spell_caster.large != 0;
+            case GAMEOBJECT_TYPE_CAPTURE_POINT:     return capturePoint.large != 0;
+            default: return false;
+        }
+    }
+
+    bool isInfiniteGameObject() const
+    {
+        switch (type)
+        {
+            case GAMEOBJECT_TYPE_DOOR:                  return true;
+            case GAMEOBJECT_TYPE_FLAGSTAND:             return true;
+            case GAMEOBJECT_TYPE_FLAGDROP:              return true;
+            case GAMEOBJECT_TYPE_TRAPDOOR:              return true;
+            default: return false;
+        }
+    }
 };
 
 enum GameObjectBytes
@@ -349,46 +584,6 @@ enum GameObjectBytes
     GAMEOBJECT_BYTES_TYPE_ID        = 1,
     GAMEOBJECT_BYTES_UNK            = 2,        //\todo unknown atm
     GAMEOBJECT_BYTES_ANIMPROGRESS   = 3,
-};
-
-enum GameObjectTypes
-{
-    GAMEOBJECT_TYPE_DOOR                    = 0,
-    GAMEOBJECT_TYPE_BUTTON                  = 1,
-    GAMEOBJECT_TYPE_QUESTGIVER              = 2,
-    GAMEOBJECT_TYPE_CHEST                   = 3,
-    GAMEOBJECT_TYPE_BINDER                  = 4,
-    GAMEOBJECT_TYPE_GENERIC                 = 5,
-    GAMEOBJECT_TYPE_TRAP                    = 6,
-    GAMEOBJECT_TYPE_CHAIR                   = 7,
-    GAMEOBJECT_TYPE_SPELL_FOCUS             = 8,
-    GAMEOBJECT_TYPE_TEXT                    = 9,
-    GAMEOBJECT_TYPE_GOOBER                  = 10,
-    GAMEOBJECT_TYPE_TRANSPORT               = 11,
-    GAMEOBJECT_TYPE_AREADAMAGE              = 12,
-    GAMEOBJECT_TYPE_CAMERA                  = 13,
-    GAMEOBJECT_TYPE_MAP_OBJECT              = 14,
-    GAMEOBJECT_TYPE_MO_TRANSPORT            = 15,
-    GAMEOBJECT_TYPE_DUEL_ARBITER            = 16,
-    GAMEOBJECT_TYPE_FISHINGNODE             = 17,
-    GAMEOBJECT_TYPE_RITUAL                  = 18,
-    GAMEOBJECT_TYPE_MAILBOX                 = 19,
-    GAMEOBJECT_TYPE_AUCTIONHOUSE            = 20,
-    GAMEOBJECT_TYPE_GUARDPOST               = 21,
-    GAMEOBJECT_TYPE_SPELLCASTER             = 22,
-    GAMEOBJECT_TYPE_MEETINGSTONE            = 23,
-    GAMEOBJECT_TYPE_FLAGSTAND               = 24,
-    GAMEOBJECT_TYPE_FISHINGHOLE             = 25,
-    GAMEOBJECT_TYPE_FLAGDROP                = 26,
-    GAMEOBJECT_TYPE_MINI_GAME               = 27,
-    GAMEOBJECT_TYPE_LOTTERY_KIOSK           = 28,
-    GAMEOBJECT_TYPE_CAPTURE_POINT           = 29,
-    GAMEOBJECT_TYPE_AURA_GENERATOR          = 30,
-    GAMEOBJECT_TYPE_DUNGEON_DIFFICULTY      = 31,
-    GAMEOBJECT_TYPE_BARBER_CHAIR            = 32,
-    GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING   = 33,
-    GAMEOBJECT_TYPE_GUILD_BANK              = 34,
-    GAMEOBJECT_TYPE_TRAPDOOR                = 35
 };
 
 struct WoWGameObject;
@@ -400,7 +595,31 @@ public:
     GameObject(uint64_t guid);
     ~GameObject();
 
+    bool loadFromDB(uint32_t spawnId, WorldMap* map, bool addToWorld);
+    bool create(uint32_t entry, uint32_t mapId, uint32_t phase, LocationVector const& position, QuaternionData const&  rotation, GameObject_State state, uint32_t spawnId = 0);
+
+    uint32_t getSpawnId() const { return m_spawnId; }
+
+    void setLocalRotationAngles(float z_rot, float y_rot, float x_rot);
+    void setLocalRotation(float qx, float qy, float qz, float qw);
+    void setParentRotation(QuaternionData const& rotation);
+    QuaternionData const& getLocalRotation() const { return m_localRotation; }
+    int64_t getPackedLocalRotation() const { return m_packedRotation; }
+    QuaternionData getWorldRotation() const;
+
+    GameObjectModel* m_model = nullptr;
+
+    Transporter* ToTransport() { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter*>(this); else return nullptr; }
+    Transporter const* ToTransport() const { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter const*>(this); else return nullptr; }
+    void updateModelPosition();
+
+    MySQLStructure::GameobjectSpawn const* m_spawn = nullptr;
+
+    GameObjectValue const* getGOValue() const { return &m_goValue; }
+
 private:
+
+    void updatePackedRotation();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
@@ -421,7 +640,6 @@ public:
     bool hasFlags(uint32_t flags) const;
 
     float getParentRotation(uint8_t type) const;
-    void setParentRotation(uint8_t type, float rotation);
 
 #if VERSION_STRING < WotLK
     uint32_t getDynamicFlags() const;
@@ -478,10 +696,6 @@ public:
     GameObjectProperties const* GetGameObjectProperties() const;
         void SetGameObjectProperties(GameObjectProperties const* go_prop) { gameobject_properties = go_prop; }
 
-        bool CreateFromProto(uint32 entry, uint32 mapid, float x, float y, float z, float ang, float r0 = 0.0f, float r1 = 0.0f, float r2 = 0.0f, float r3 = 0.0f, uint32 overrides = 0);
-
-        bool Load(MySQLStructure::GameobjectSpawn* spawn);
-
         virtual bool IsLootable() { return false; }
 
         virtual void Use(uint64 /*GUID*/) {}
@@ -499,10 +713,6 @@ public:
         void SaveToDB();
         void SaveToFile(std::stringstream & name);
         void DeleteFromDB();
-
-        // z_rot, y_rot, x_rot - rotation angles around z, y and x axes
-        void SetRotationAngles(float z_rot, float y_rot, float x_rot);
-        int64 GetRotation() const { return m_rotation; }
 
         void SetSummoned(Unit* mob)
         {
@@ -523,18 +733,15 @@ public:
 
         GameObjectAIScript* GetScript() { return myScript; }
 
-        MySQLStructure::GameobjectSpawn* m_spawn = nullptr;
         void OnPushToWorld();
         void onRemoveInRangeObject(Object* pObj);
         void RemoveFromWorld(bool free_guid);
 
         uint32 GetGOReqSkill();
-    MapCell* m_respawnCell = nullptr;
+        MapCell* m_respawnCell = nullptr;
 
         void SetOverrides(uint32 go_overrides) { m_overrides = go_overrides; }
         uint32 GetOverrides() { return m_overrides; }
-
-        void SetRotationQuat(float qx, float qy, float qz, float qw);
 
         //\todo serverdie faction can be handled in update.
         void SetFaction(uint32 id)
@@ -543,27 +750,16 @@ public:
             setServersideFaction();
         }
 
-        GameObjectModel* m_model = nullptr;
-
-        TransportInfoData const* GetTransValues() const { return &mTransValues; }
-        Transporter* ToTransport() { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter*>(this); else return nullptr; }
-        Transporter const* ToTransport() const { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter const*>(this); else return nullptr; }
-        void updateModelPosition();
-
     protected:
 
         bool m_summonedGo = false;
         bool m_deleted = false;
         GameObjectProperties const* gameobject_properties = nullptr;
+
         GameObjectAIScript* myScript = nullptr;
         uint32 _fields[getSizeOfStructure(WoWGameObject)];
 
-        // Transport Infos
-        TransportInfoData mTransValues;
-
         uint32 m_overrides = 0;             //See enum GAMEOBJECT_OVERRIDES!
-
-        uint64 m_rotation = 0;
 
     //MIT
     public:
@@ -574,6 +770,22 @@ public:
     protected:
         GameObjectModel* createModel();
         void updateModel();
+
+        uint32_t m_spawnId = 0; // temporary GameObjects have 0
+        time_t m_respawnTime = 0;
+        uint32_t m_respawnDelayTime = 0;
+        uint32_t m_despawnDelay = 0;
+        uint32_t m_despawnRespawnTime = 300;
+        LootState m_lootState = GO_NOT_READY;
+        uint64_t m_lootStateUnitGUID = 0;
+        bool m_spawnedByDefault = true;
+        time_t m_restockTime = 0;
+        time_t m_cooldownTime = 0;
+        GameObject_State m_prevGoState = GO_STATE_OPEN; // What state to set whenever resetting
+
+        int64_t m_packedRotation = 0;
+        QuaternionData m_localRotation;
+        GameObjectValue m_goValue;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

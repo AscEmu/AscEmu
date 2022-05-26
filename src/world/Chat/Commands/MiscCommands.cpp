@@ -110,7 +110,7 @@ bool ChatHandler::HandleGoGameObjectSpawnCommand(const char* args, WorldSession*
         {
             if (goSpawn->id == spawn_id)
             {
-                m_session->GetPlayer()->safeTeleport(goSpawn->map, 0, LocationVector(goSpawn->position_x, goSpawn->position_y, goSpawn->position_z));
+                m_session->GetPlayer()->safeTeleport(goSpawn->map, 0, LocationVector(goSpawn->spawnPoint.x, goSpawn->spawnPoint.y, goSpawn->spawnPoint.z));
                 return true;
             }
         }

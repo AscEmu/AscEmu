@@ -364,6 +364,10 @@ public:
     RespawnInfoMap& getRespawnMapForType(SpawnObjectType type);
     RespawnInfoMap const& getRespawnMapForType(SpawnObjectType type) const;
 
+    time_t getRespawnTime(SpawnObjectType type, uint32_t spawnId) const;
+    time_t getCreatureRespawnTime(uint32_t spawnId) const { return getRespawnTime(SPAWN_TYPE_CREATURE, spawnId); }
+    time_t getGORespawnTime(uint32_t spawnId) const { return getRespawnTime(SPAWN_TYPE_GAMEOBJECT, spawnId); }
+
     void respawnBossLinkedGroups(uint32_t bossId);
     void spawnManualGroup(uint32_t groupId);
 

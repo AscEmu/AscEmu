@@ -317,10 +317,10 @@ GameObject* Transporter::createGOPassenger(MySQLStructure::GameobjectSpawn* data
 
     float x, y, z, o;
 
-    x = data->position_x;
-    y = data->position_y;
-    z = data->position_z;
-    o = data->rotation_0;
+    x = data->spawnPoint.x;
+    y = data->spawnPoint.y;
+    z = data->spawnPoint.z;
+    o = data->spawnPoint.o;
 
     GameObject* pGameobject = map->createGameObject(data->entry);
 

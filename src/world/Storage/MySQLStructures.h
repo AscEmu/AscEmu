@@ -11,6 +11,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 #include <string>
 #include "LocationVector.h"
+#include <G3D/Box.h>
+#include <G3D/CoordinateFrame.h>
+#include <G3D/Quat.h>
 
 // related to table areatriggers
 enum AreaTriggerType
@@ -212,18 +215,6 @@ namespace MySQLStructure
     //gameobject_quest_pickup_binding
     //gameobject_quest_starter
     //gameobject_spawns
-    struct QuaternionData
-    {
-        float x, y, z, w;
-
-        QuaternionData() : x(0.0f), y(0.0f), z(0.0f), w(1.0f) { }
-        QuaternionData(float X, float Y, float Z, float W) : x(X), y(Y), z(Z), w(W) { }
-
-        bool isUnit() const;
-        void toEulerAnglesZYX(float& Z, float& Y, float& X) const;
-        static QuaternionData fromEulerAnglesZYX(float Z, float Y, float X);
-    };
-
     struct GameobjectSpawn
     {
         uint32_t id;
@@ -233,14 +224,12 @@ namespace MySQLStructure
         LocationVector spawnPoint;
         QuaternionData rotation;
         uint32_t spawntimesecs;
-        uint8_t animprogress;
-        uint32_t state;
+        GameObject_State state;
         //uint32_t event_entry
     };
 
     struct GameObjectSpawnExtra
     {
-        uint32_t id;
         QuaternionData parentRotation;
     };
 

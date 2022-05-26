@@ -935,6 +935,8 @@ void World::loadMySQLTablesByTask()
 
     sMySQLStore.loadCreatureSpawns();
     sMySQLStore.loadGameobjectSpawns();
+    sMySQLStore.loadGameObjectSpawnsExtraTable();
+    sMySQLStore.loadGameObjectSpawnsOverrideTable();
 
     sMySQLStore.loadCreatureGroupSpawns();
 

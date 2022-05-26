@@ -167,12 +167,12 @@ void BaseMap::loadSpawns(bool reload)
     GameObjectSpawnCount = 0;
     for (auto go_spawn : sMySQLStore._gameobjectSpawnsStore[this->_mapId])
     {
-        if (go_spawn->overrides & GAMEOBJECT_MAPWIDE)
+        /*if (go_spawn->overrides & GAMEOBJECT_MAPWIDE)
         {
             staticSpawns.GameobjectSpawns.push_back(go_spawn); //We already have a staticSpawns in the Map class, and it does just the right thing
             ++GameObjectSpawnCount;
         }
-        else
+        else*/
         {
             // Zyres: transporter stuff
             if (sMySQLStore.getGameObjectProperties(go_spawn->entry)->type == 11 || sMySQLStore.getGameObjectProperties(go_spawn->entry)->type == 15)
@@ -181,8 +181,8 @@ void BaseMap::loadSpawns(bool reload)
             }
             else
             {
-                uint32_t cellx = CellHandler<MapMgr>::getPosX(go_spawn->position_x);
-                uint32_t celly = CellHandler<MapMgr>::getPosY(go_spawn->position_y);
+                uint32_t cellx = CellHandler<MapMgr>::getPosX(go_spawn->spawnPoint.x);
+                uint32_t celly = CellHandler<MapMgr>::getPosY(go_spawn->spawnPoint.y);
                 if (spawns[cellx] == NULL)
                 {
                     spawns[cellx] = new CellSpawns * [Map::Cell::_sizeY];
