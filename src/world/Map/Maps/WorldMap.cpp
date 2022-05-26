@@ -2029,8 +2029,8 @@ void WorldMap::saveRespawnTime(SpawnObjectType type, uint32_t spawnId, uint32_t 
     ri.obj = nullptr;
     ri.cellX = cellX;
     ri.cellY = cellY;
-    bool success = addRespawn(ri);
 
+    bool success = addRespawn(ri);
     if (startup)
     {
         if (!success)
@@ -2212,10 +2212,27 @@ void WorldMap::doRespawn(SpawnObjectType type, Object* object, uint32_t spawnId,
         }
         case SPAWN_TYPE_GAMEOBJECT:
         {
-            MySQLStructure::GameobjectSpawn const* data = sMySQLStore.getGameObjectSpawn(spawnId);
-            GameObject* obj = createGameObject(data->entry);
-            if (!obj->loadFromDB(spawnId, this, true))
-                delete obj;
+            if (object)
+            {
+                GameObject* obj = object->ToGameObject();
+                if (obj)
+                {
+                    auto itr = cell->_respawnObjects.find(obj);
+                    if (itr != cell->_respawnObjects.end())
+                    {
+                        obj->m_respawnCell = nullptr;
+                        cell->_respawnObjects.erase(itr);
+                        obj->PushToWorld(this);
+                    }
+                }
+            }
+            else
+            {
+                MySQLStructure::GameobjectSpawn const* data = sMySQLStore.getGameObjectSpawn(spawnId);
+                GameObject* obj = createGameObject(data->entry);
+                if (!obj->loadFromDB(spawnId, this, true))
+                    delete obj;
+            }
             break;
         }
         default:

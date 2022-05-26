@@ -657,6 +657,25 @@ void GameObject::despawn(uint32_t delay, uint32_t forceRespawntime)
             uint32_t const respawnDelay = (forceRespawntime > 0) ? forceRespawntime : m_spawn->spawntimesecs;
             saveRespawnTime(respawnDelay);
         }
+        else if (!m_loadedFromDB) // Respawning for non Database Loaded Objects
+        {
+            /* Get our originating mapcell */
+            if (MapCell* pCell = GetMapCell())
+            {
+                pCell->_respawnObjects.insert(this);
+                sEventMgr.RemoveEvents(this);
+
+                m_respawnCell = pCell;
+                uint32_t const respawnDelay = (forceRespawntime > 0) ? forceRespawntime : m_spawn->spawntimesecs;
+                saveRespawnTime(respawnDelay);
+                RemoveFromWorld(false);
+            }
+            else
+            {
+                sLogger.failure("GameObject::Despawn tries to respawn go %u without a valid MapCell, return!", this->getEntry());
+            }
+            return;
+        }
 
         RemoveFromWorld(true);
         expireAndDelete();
@@ -665,31 +684,29 @@ void GameObject::despawn(uint32_t delay, uint32_t forceRespawntime)
 
 void GameObject::saveRespawnTime(uint32_t forceDelay)
 {
-    if (!m_spawn || !m_spawn->id)
-        return;
-
-    const auto now = Util::getTimeNow();
-
-    // do this for now delete the part when we are only respawning with spawnid
-    if (true)
+    if (m_spawn && (forceDelay || m_respawnTime > Util::getTimeNow()) && m_spawnedByDefault)
     {
-        RespawnInfo ri;
-        ri.type = SPAWN_TYPE_GAMEOBJECT;
-        ri.spawnId = m_spawn->id;
-        ri.entry = getEntry();
-        ri.time = now + forceDelay / IN_MILLISECONDS;
-        ri.cellX = m_spawnLocation.x;
-        ri.cellY = m_spawnLocation.y;
-        ri.obj = this;
+        // for Gameobjects not Loaded from Database
+        if (!m_loadedFromDB)
+        {
+            RespawnInfo ri;
+            ri.type = SPAWN_TYPE_GAMEOBJECT;
+            ri.spawnId = getSpawnId();
+            ri.entry = getEntry();
+            ri.time = m_respawnTime;
+            ri.obj = this;
+            ri.cellX = m_spawnLocation.x;
+            ri.cellY = m_spawnLocation.y;
 
-        bool success = getWorldMap()->addRespawn(ri);
-        if (success)
-            getWorldMap()->saveRespawnDB(ri);
-        return;
+            bool success = getWorldMap()->addRespawn(ri);
+            if (success)
+                getWorldMap()->saveRespawnDB(ri);
+            return;
+        }
+
+        time_t thisRespawnTime = forceDelay ? Util::getTimeNow() + forceDelay / IN_MILLISECONDS : m_respawnTime;
+        getWorldMap()->saveRespawnTime(SPAWN_TYPE_GAMEOBJECT, m_spawnId, getEntry(), thisRespawnTime, m_respawnCell->getPositionX(), m_respawnCell->getPositionY());
     }
-
-    time_t thisRespawnTime = forceDelay ? now + forceDelay / IN_MILLISECONDS : 0;
-    getWorldMap()->saveRespawnTime(SPAWN_TYPE_GAMEOBJECT, m_spawn->id, getEntry(), thisRespawnTime, m_respawnCell->getPositionX(), m_respawnCell->getPositionY());
 }
 
 // MIT End
