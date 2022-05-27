@@ -3998,8 +3998,8 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
 
     LocationVector pos = { fx, fy, fz, u_caster->GetOrientation() };
     QuaternionData rot = QuaternionData::fromEulerAnglesZYX(u_caster->GetOrientation(), 0.f, 0.f);
-    GameObject* go = u_caster->getWorldMap()->createGameObject(entry);
-    if (!go->create(entry, mapid, u_caster->GetPhase(), pos, rot, GO_STATE_CLOSED))
+    GameObject* go = sObjectMgr.createGameObject(entry);
+    if (!go->create(u_caster->getWorldMap()->generateGameobjectLowGuid(), entry, mapid, u_caster->GetPhase(), pos, rot, GO_STATE_CLOSED))
     {
         delete go;
         return;
@@ -4648,8 +4648,8 @@ void Spell::SpellEffectSummonObjectWild(uint8_t effectIndex)
     QuaternionData rot = QuaternionData::fromEulerAnglesZYX(m_caster->GetOrientation(), 0.f, 0.f);
 
     // spawn a new one
-    GameObject* GoSummon = u_caster->getWorldMap()->createGameObject(gameobject_id);
-    if (!GoSummon->create(gameobject_id, map->getBaseMap()->getMapId(), m_caster->GetPhase(), LocationVector(x, y, z, m_caster->GetOrientation()), rot, GO_STATE_CLOSED))
+    GameObject* GoSummon = sObjectMgr.createGameObject(gameobject_id);
+    if (!GoSummon->create(map->generateGameobjectLowGuid(), gameobject_id, map->getBaseMap()->getMapId(), m_caster->GetPhase(), LocationVector(x, y, z, m_caster->GetOrientation()), rot, GO_STATE_CLOSED))
     {
         delete GoSummon;
         return;
@@ -5177,7 +5177,7 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
 
 
     // spawn a new one
-    GoSummon = u_caster->getWorldMap()->createGameObject(getSpellInfo()->getEffectMiscValue(effectIndex));
+    GoSummon = sObjectMgr.createGameObject(getSpellInfo()->getEffectMiscValue(effectIndex));
 
     float dx = 0.0f;
     float dy = 0.0f;
@@ -5198,7 +5198,7 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
     }
 
     QuaternionData rot = QuaternionData::fromEulerAnglesZYX(m_caster->GetOrientation(), 0.f, 0.f);
-    if (!GoSummon->create(getSpellInfo()->getEffectMiscValue(effectIndex), m_caster->GetMapId(), m_caster->GetPhase(), LocationVector(dx, dy, dz, m_caster->GetOrientation()), rot, GO_STATE_CLOSED))
+    if (!GoSummon->create(m_caster->getWorldMap()->generateGameobjectLowGuid(), getSpellInfo()->getEffectMiscValue(effectIndex), m_caster->GetMapId(), m_caster->GetPhase(), LocationVector(dx, dy, dz, m_caster->GetOrientation()), rot, GO_STATE_CLOSED))
     {
         delete GoSummon;
         return;

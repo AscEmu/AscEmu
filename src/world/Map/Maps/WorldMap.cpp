@@ -65,7 +65,7 @@ void WorldMap::initialize()
     // create static objects
     for (auto& GameobjectSpawn : _map->staticSpawns.GameobjectSpawns)
     {
-        GameObject* obj = createGameObject(GameobjectSpawn->entry);
+        GameObject* obj = sObjectMgr.createGameObject(GameobjectSpawn->entry);
         obj->loadFromDB(GameobjectSpawn->id, this, false);
         PushStaticObject(obj);
     }
@@ -1687,7 +1687,7 @@ Summon* WorldMap::createSummon(uint32_t entry, SummonType type, uint32_t duratio
     return sObjectMgr.createSummonByGuid(guid, type, duration);
 }
 
-GameObject* WorldMap::createGameObject(uint32_t entry)
+uint32_t WorldMap::generateGameobjectLowGuid()
 {
     uint32_t GUID = 0;
 
@@ -1710,11 +1710,7 @@ GameObject* WorldMap::createGameObject(uint32_t entry)
         GUID = m_GOHighGuid;
     }
 
-    GameObject* gameobject = sObjectMgr.createGameObjectByGuid(entry, GUID);
-    if (gameobject == nullptr)
-        return nullptr;
-
-    return gameobject;
+    return GUID;
 }
 
 GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector pos, float scale, uint32_t respawnTime)
@@ -1728,40 +1724,42 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
 
     sLogger.debug("CreateAndSpawnGameObject: By Entry '%u'", entryID);
 
-    GameObject* go = createGameObject(entryID);
+    GameObject* gameobject = sObjectMgr.createGameObject(entryID);
+    if (gameobject == nullptr)
+        return nullptr;
 
     uint32_t mapid = getBaseMap()->getMapId();
     // Setup game object
-    go->create(entryID, mapid, go->GetPhase(), pos, QuaternionData(), GO_STATE_CLOSED);
-    go->setScale(scale);
-    go->InitAI();
-    go->PushToWorld(this);
+    gameobject->create(generateGameobjectLowGuid(), entryID, mapid, gameobject->GetPhase(), pos, QuaternionData(), GO_STATE_CLOSED);
+    gameobject->setScale(scale);
+    gameobject->InitAI();
+    gameobject->PushToWorld(this);
 
     // Create spawn instance
     auto go_spawn = new MySQLStructure::GameobjectSpawn;
-    go_spawn->entry = go->getEntry();
+    go_spawn->entry = gameobject->getEntry();
     go_spawn->id = sObjectMgr.GenerateGameObjectSpawnID();
-    go_spawn->map = go->GetMapId();
-    go_spawn->spawnPoint = go->GetPosition();
-    go_spawn->rotation = go->getLocalRotation();
-    go_spawn->state = GameObject_State(go->getState());
-    go_spawn->phase = go->GetPhase();
+    go_spawn->map = gameobject->GetMapId();
+    go_spawn->spawnPoint = gameobject->GetPosition();
+    go_spawn->rotation = gameobject->getLocalRotation();
+    go_spawn->state = GameObject_State(gameobject->getState());
+    go_spawn->phase = gameobject->GetPhase();
     go_spawn->spawntimesecs = respawnTime;
 
     uint32_t cx = getPosX(pos.x);
     uint32_t cy = getPosY(pos.y);
 
     getBaseMap()->getSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(go_spawn);
-    go->m_spawn = go_spawn;
+    gameobject->m_spawn = go_spawn;
 
-    go->setRespawnTime(respawnTime);
+    gameobject->setRespawnTime(respawnTime);
 
     MapCell* mCell = getCell(cx, cy);
 
     if (mCell != nullptr)
         mCell->setLoaded();
 
-    return go;
+    return gameobject;
 }
 
 GameObject* WorldMap::getGameObject(uint32_t guid)
@@ -2229,7 +2227,7 @@ void WorldMap::doRespawn(SpawnObjectType type, Object* object, uint32_t spawnId,
             else
             {
                 MySQLStructure::GameobjectSpawn const* data = sMySQLStore.getGameObjectSpawn(spawnId);
-                GameObject* obj = createGameObject(data->entry);
+                GameObject* obj = sObjectMgr.createGameObject(data->entry);
                 if (!obj->loadFromDB(spawnId, this, true))
                     delete obj;
             }

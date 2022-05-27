@@ -70,8 +70,8 @@ void GameEvent::CreateObjects()
         if (mapmgr == NULL)
             continue;
 
-        GameObject* g = mapmgr->createGameObject(gobj.entry);
-        g->create(gobj.entry, gobj.map_id, gobj.phase, LocationVector(gobj.position_x, gobj.position_y, gobj.position_z, gobj.facing), QuaternionData(), GameObject_State(gobj.state));
+        GameObject* g = sObjectMgr.createGameObject(gobj.entry);
+        g->create(mapmgr->generateGameobjectLowGuid(), gobj.entry, gobj.map_id, gobj.phase, LocationVector(gobj.position_x, gobj.position_y, gobj.position_z, gobj.facing), QuaternionData(), GameObject_State(gobj.state));
 
         // Set up spawn specific information
         g->setScale(gobj.scale);

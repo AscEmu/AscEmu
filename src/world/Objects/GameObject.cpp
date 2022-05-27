@@ -64,7 +64,7 @@ QuaternionData QuaternionData::fromEulerAnglesZYX(float Z, float Y, float X)
     return QuaternionData(quat.x, quat.y, quat.z, quat.w);
 }
 
-GameObject::GameObject(uint64_t guid)
+GameObject::GameObject()
 {
     //////////////////////////////////////////////////////////////////////////
     m_objectType |= TYPE_GAMEOBJECT;
@@ -95,7 +95,6 @@ GameObject::GameObject(uint64_t guid)
     m_updateMask.SetCount(getSizeOfStructure(WoWGameObject));
 
     setOType(TYPE_GAMEOBJECT | TYPE_OBJECT);
-    setGuid(guid);
 
     setAnimationProgress(100);
     setScale(1);
@@ -304,7 +303,7 @@ bool GameObject::loadFromDB(uint32_t spawnId, WorldMap* map, bool addToWorld)
     GameObject_State gameobjectState = data->state;
 
     m_spawnId = spawnId;
-    if (!create(entry, map->getBaseMap()->getMapId(), data->phase, data->spawnPoint, data->rotation, data->state))
+    if (!create(map->generateGameobjectLowGuid(), entry, map->getBaseMap()->getMapId(), data->phase, data->spawnPoint, data->rotation, data->state))
         return false;
 
     if (data->spawntimesecs >= 0)
@@ -409,7 +408,7 @@ void GameObject::saveToDB()
     WorldDatabase.Execute(ss.str().c_str());
 }
 
-bool GameObject::create(uint32_t entry, uint32_t mapId, uint32_t phase, LocationVector const& position, QuaternionData const& rotation, GameObject_State state, uint32_t spawnId)
+bool GameObject::create(uint64_t guid, uint32_t entry, uint32_t mapId, uint32_t phase, LocationVector const& position, QuaternionData const& rotation, GameObject_State state, uint32_t spawnId)
 {
     gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
     if (gameobject_properties == nullptr)
@@ -423,6 +422,8 @@ bool GameObject::create(uint32_t entry, uint32_t mapId, uint32_t phase, Location
         sLogger.failure("Gameobject (GUID: %u Entry: %u) not created: gameobject type GAMEOBJECT_TYPE_MO_TRANSPORT cannot be manually created.", getGuidLow(), entry);
         return false;
     }
+
+    setGuid(guid);
 
     Object::_Create(mapId, position.x, position.y, position.z, position.o);
     setEntry(entry);
@@ -980,7 +981,7 @@ void GameObject::sendGameobjectCustomAnim(uint32_t anim)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Door
-GameObject_Door::GameObject_Door(uint64 GUID) : GameObject(GUID)
+GameObject_Door::GameObject_Door() : GameObject()
 { }
 
 GameObject_Door::~GameObject_Door()
@@ -1024,7 +1025,7 @@ void GameObject_Door::onUse(Player* /*player*/)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Button
-GameObject_Button::GameObject_Button(uint64 GUID) : GameObject(GUID)
+GameObject_Button::GameObject_Button() : GameObject()
 {
     spell = nullptr;
 }
@@ -1082,7 +1083,7 @@ void GameObject_Button::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_QuestGiver
-GameObject_QuestGiver::GameObject_QuestGiver(uint64 GUID) : GameObject(GUID)
+GameObject_QuestGiver::GameObject_QuestGiver() : GameObject()
 {
     m_quests = NULL;
 }
@@ -1148,7 +1149,7 @@ uint16 GameObject_QuestGiver::GetQuestRelation(uint32 quest_id)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Chest
-GameObject_Chest::GameObject_Chest(uint64 GUID) : GameObject_Lootable(GUID)
+GameObject_Chest::GameObject_Chest() : GameObject_Lootable()
 {
     spell = nullptr;
 }
@@ -1213,7 +1214,7 @@ void GameObject_Chest::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Trap
-GameObject_Trap::GameObject_Trap(uint64 GUID) : GameObject(GUID)
+GameObject_Trap::GameObject_Trap() : GameObject()
 {
     spell = NULL;
     targetupdatetimer = 0;
@@ -1363,7 +1364,7 @@ void GameObject_Chair::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_SpellFocus
-GameObject_SpellFocus::GameObject_SpellFocus(uint64 GUID) : GameObject(GUID)
+GameObject_SpellFocus::GameObject_SpellFocus() : GameObject()
 { }
 
 GameObject_SpellFocus::~GameObject_SpellFocus()
@@ -1381,7 +1382,7 @@ void GameObject_SpellFocus::SpawnLinkedTrap()
     if (trapid == 0)
         return;
 
-    GameObject* go = m_WorldMap->createGameObject(trapid);
+    GameObject* go = sObjectMgr.createGameObject(trapid);
     if (go == nullptr)
     {
         sLogger.failure("Failed to create linked trap (entry: %u) for GameObject %u ( %s ). Missing GOProperties!", trapid, gameobject_properties->entry, gameobject_properties->name.c_str());
@@ -1390,7 +1391,7 @@ void GameObject_SpellFocus::SpawnLinkedTrap()
 
     QuaternionData rot = QuaternionData::fromEulerAnglesZYX(m_position.getOrientation(), 0.f, 0.f);
 
-    if (!go->create(trapid, m_mapId, m_phase, m_position, rot, GO_STATE_CLOSED))
+    if (!go->create(m_WorldMap->generateGameobjectLowGuid(), trapid, m_mapId, m_phase, m_position, rot, GO_STATE_CLOSED))
     {
         sLogger.failure("Failed CreateFromProto for linked trap of GameObject %u ( %s ).", gameobject_properties->entry, gameobject_properties->name.c_str());
         return;
@@ -1403,7 +1404,7 @@ void GameObject_SpellFocus::SpawnLinkedTrap()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Goober
-GameObject_Goober::GameObject_Goober(uint64 GUID) : GameObject(GUID)
+GameObject_Goober::GameObject_Goober() : GameObject()
 {
     spell = NULL;
 }
@@ -1470,7 +1471,7 @@ void GameObject_Camera::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_FishingNode
-GameObject_FishingNode::GameObject_FishingNode(uint64 GUID) : GameObject_Lootable(GUID)
+GameObject_FishingNode::GameObject_FishingNode() : GameObject_Lootable()
 {
     FishHooked = false;
 }
@@ -1608,7 +1609,7 @@ bool GameObject_FishingNode::HasLoot()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Ritual
-GameObject_Ritual::GameObject_Ritual(uint64 GUID) : GameObject(GUID)
+GameObject_Ritual::GameObject_Ritual() : GameObject()
 {
 }
 
@@ -1740,7 +1741,7 @@ void GameObject_Ritual::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_SpellCaster
-GameObject_SpellCaster::GameObject_SpellCaster(uint64 GUID) : GameObject(GUID)
+GameObject_SpellCaster::GameObject_SpellCaster() : GameObject()
 {
     spell = nullptr;
 }
@@ -1806,7 +1807,7 @@ void GameObject_Meetingstone::onUse(Player* player)
         return;
 
     // Create the summoning portal
-    GameObject* pGo = player->getWorldMap()->createGameObject(179944);
+    GameObject* pGo = sObjectMgr.createGameObject(179944);
     if (pGo == nullptr)
         return;
 
@@ -1814,7 +1815,7 @@ void GameObject_Meetingstone::onUse(Player* player)
 
     QuaternionData rot = QuaternionData::fromEulerAnglesZYX(player->GetOrientation(), 0.f, 0.f);
 
-    rGo->create(179944, player->GetMapId(), player->GetPositionX(), player->GetPosition(), rot, GO_STATE_CLOSED);
+    rGo->create(m_WorldMap->generateGameobjectLowGuid(), 179944, player->GetMapId(), player->GetPositionX(), player->GetPosition(), rot, GO_STATE_CLOSED);
     rGo->GetRitual()->Setup(player->getGuidLow(), pPlayer->getGuidLow(), 18540);
     rGo->PushToWorld(player->getWorldMap());
 
@@ -1835,7 +1836,7 @@ void GameObject_FlagStand::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_FishingHole
-GameObject_FishingHole::GameObject_FishingHole(uint64 GUID) : GameObject_Lootable(GUID)
+GameObject_FishingHole::GameObject_FishingHole() : GameObject_Lootable()
 {
     usage_remaining = 0;
 }
@@ -1904,7 +1905,7 @@ void GameObject_BarberChair::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Destructible
-GameObject_Destructible::GameObject_Destructible(uint64 GUID) : GameObject(GUID)
+GameObject_Destructible::GameObject_Destructible() : GameObject()
 {
     hitpoints = 0;
     maxhitpoints = 0;

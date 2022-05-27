@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-Transporter::Transporter(uint64_t guid) : GameObject(guid), _passengerTeleportItr(_passengers.begin())
+Transporter::Transporter(uint64_t guid) : GameObject(), _passengerTeleportItr(_passengers.begin())
 {
 #if VERSION_STRING == Classic
     m_updateFlag = (UPDATEFLAG_TRANSPORT | UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
@@ -49,7 +49,7 @@ void Transporter::OnPushToWorld()
     _pendingMapChange = false;
 }
 
-bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float z, float ang, uint8_t animprogress)
+bool Transporter::Create(uint64_t guid, uint32_t entry, uint32_t mapid, float x, float y, float z, float ang, uint8_t animprogress)
 {
     gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
     if (gameobject_properties == nullptr)
@@ -64,6 +64,8 @@ bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float
         sLogger.failure("Transport %u will not be created, missing `transport_template` entry.", entry);
         return false;
     }
+
+    setGuid(guid);
 
     Object::_Create(mapid, x, y, z, ang);
     setEntry(entry);
@@ -332,7 +334,7 @@ GameObject* Transporter::createGOPassenger(MySQLStructure::GameobjectSpawn* data
     if (properties == nullptr || map == nullptr)
         return nullptr;
 
-    GameObject* pGameobject = map->createGameObject(data->entry);
+    GameObject* pGameobject = sObjectMgr.createGameObject(data->entry);
 
     if (!pGameobject->loadFromDB(data->id, map, false))
     {
