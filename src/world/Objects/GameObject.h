@@ -27,13 +27,6 @@
 #include "Map/Maps/BaseMap.hpp"
 #include "WorldConf.h"
 
-enum GameObject_State : uint8_t
-{
-    GO_STATE_OPEN               = 0,
-    GO_STATE_CLOSED             = 1,
-    GO_STATE_ALTERNATIVE_OPEN   = 2
-};
-
 enum LootState : uint8_t
 {
     GO_NOT_READY                = 0,
@@ -78,18 +71,6 @@ union GameObjectValue
         uint32_t Health;
         uint32_t MaxHealth;
     } Building;
-};
-
-struct QuaternionData
-{
-    float x, y, z, w;
-
-    QuaternionData() : x(0.0f), y(0.0f), z(0.0f), w(1.0f) { }
-    QuaternionData(float X, float Y, float Z, float W) : x(X), y(Y), z(Z), w(W) { }
-
-    bool isUnit() const;
-    void toEulerAnglesZYX(float& Z, float& Y, float& X) const;
-    static QuaternionData fromEulerAnglesZYX(float Z, float Y, float X);
 };
 
 enum GameObjectTypes

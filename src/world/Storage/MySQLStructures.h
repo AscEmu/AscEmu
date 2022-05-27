@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/CreatureMacros.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/SpawnGroups.hpp"
+#include "Objects/ObjectDefines.h"
 #include <cstdint>
 #include <string>
 #include "LocationVector.h"
