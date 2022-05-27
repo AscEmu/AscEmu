@@ -386,9 +386,9 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
 
 GameObject* CBattleground::SpawnGameObject(uint32 entry, uint32 MapId, float x, float y, float z, float o, uint32 flags, uint32 faction, float scale)
 {
-    if (GameObject* go = sObjectMgr.createGameObject(entry))
+    if (GameObject* go = m_mapMgr->createGameObject(entry))
     {
-        go->create(m_mapMgr->generateGameobjectLowGuid(), entry, MapId, 0, LocationVector(x, y, z, o), QuaternionData(), GO_STATE_CLOSED);
+        go->create(entry, MapId, 0, LocationVector(x, y, z, o), QuaternionData(), GO_STATE_CLOSED);
 
         go->SetFaction(faction);
         go->setScale(scale);

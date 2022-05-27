@@ -289,7 +289,7 @@ Player* ObjectMgr::createPlayerByGuid(uint8_t _class, uint32_t guid)
     return player;
 }
 
-GameObject* ObjectMgr::createGameObject(uint32_t id)
+GameObject* ObjectMgr::createGameObjectByGuid(uint32_t id, uint32_t guid)
 {
     GameObjectProperties const* gameobjectProperties = sMySQLStore.getGameObjectProperties(id);
     if (gameobjectProperties == nullptr)
@@ -297,64 +297,66 @@ GameObject* ObjectMgr::createGameObject(uint32_t id)
 
     GameObject* gameObject;
 
+    const uint64_t createdGuid = uint64_t((uint64_t(HIGHGUID_TYPE_GAMEOBJECT) << 32) | guid);
+
     switch (gameobjectProperties->type)
     {
         case GAMEOBJECT_TYPE_DOOR:
-            gameObject = new GameObject_Door();
+            gameObject = new GameObject_Door(createdGuid);
             break;
         case GAMEOBJECT_TYPE_BUTTON:
-            gameObject = new GameObject_Button();
+            gameObject = new GameObject_Button(createdGuid);
             break;
         case GAMEOBJECT_TYPE_QUESTGIVER:
-            gameObject = new GameObject_QuestGiver();
+            gameObject = new GameObject_QuestGiver(createdGuid);
             break;
         case GAMEOBJECT_TYPE_CHEST:
-            gameObject = new GameObject_Chest();
+            gameObject = new GameObject_Chest(createdGuid);
             break;
         case GAMEOBJECT_TYPE_TRAP:
-            gameObject = new GameObject_Trap();
+            gameObject = new GameObject_Trap(createdGuid);
             break;
         case GAMEOBJECT_TYPE_CHAIR:
-            gameObject = new GameObject_Chair();
+            gameObject = new GameObject_Chair(createdGuid);
             break;
         case GAMEOBJECT_TYPE_SPELL_FOCUS:
-            gameObject = new GameObject_SpellFocus();
+            gameObject = new GameObject_SpellFocus(createdGuid);
             break;
         case GAMEOBJECT_TYPE_GOOBER:
-            gameObject = new GameObject_Goober();
+            gameObject = new GameObject_Goober(createdGuid);
             break;
         case GAMEOBJECT_TYPE_CAMERA:
-            gameObject = new GameObject_Camera();
+            gameObject = new GameObject_Camera(createdGuid);
             break;
         case GAMEOBJECT_TYPE_FISHINGNODE:
-            gameObject = new GameObject_FishingNode();
+            gameObject = new GameObject_FishingNode(createdGuid);
             break;
         case GAMEOBJECT_TYPE_RITUAL:
-            gameObject = new GameObject_Ritual();
+            gameObject = new GameObject_Ritual(createdGuid);
             break;
         case GAMEOBJECT_TYPE_SPELLCASTER:
-            gameObject = new GameObject_SpellCaster();
+            gameObject = new GameObject_SpellCaster(createdGuid);
             break;
         case GAMEOBJECT_TYPE_MEETINGSTONE:
-            gameObject = new GameObject_Meetingstone();
+            gameObject = new GameObject_Meetingstone(createdGuid);
             break;
         case GAMEOBJECT_TYPE_FLAGSTAND:
-            gameObject = new GameObject_FlagStand();
+            gameObject = new GameObject_FlagStand(createdGuid);
             break;
         case GAMEOBJECT_TYPE_FISHINGHOLE:
-            gameObject = new GameObject_FishingHole();
+            gameObject = new GameObject_FishingHole(createdGuid);
             break;
         case GAMEOBJECT_TYPE_FLAGDROP:
-            gameObject = new GameObject_FlagDrop();
+            gameObject = new GameObject_FlagDrop(createdGuid);
             break;
         case GAMEOBJECT_TYPE_BARBER_CHAIR:
-            gameObject = new GameObject_BarberChair();
+            gameObject = new GameObject_BarberChair(createdGuid);
             break;
         case GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING:
-            gameObject = new GameObject_Destructible();
+            gameObject = new GameObject_Destructible(createdGuid);
             break;
         default:
-            gameObject = new GameObject();
+            gameObject = new GameObject(createdGuid);
             break;
     }
 

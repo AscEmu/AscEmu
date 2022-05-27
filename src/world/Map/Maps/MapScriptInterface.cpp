@@ -56,8 +56,8 @@ uint32_t MapScriptInterface::getPlayerCountInRadius(float x, float y, float z /*
 GameObject* MapScriptInterface::spawnGameObject(uint32_t Entry, LocationVector pos, bool AddToWorld, uint32_t /*Misc1*/, uint32_t /*Misc2*/, uint32_t phase)
 {
 
-    GameObject* pGameObject = sObjectMgr.createGameObject(Entry);
-    if (!pGameObject->create(m_worldMap.generateGameobjectLowGuid(), Entry, m_worldMap.getBaseMap()->getMapId(), phase, pos, QuaternionData(), GO_STATE_CLOSED))
+    GameObject* pGameObject = m_worldMap.createGameObject(Entry);
+    if (!pGameObject->create(Entry, m_worldMap.getBaseMap()->getMapId(), phase, pos, QuaternionData(), GO_STATE_CLOSED))
     {
         delete pGameObject;
         return nullptr;
@@ -78,7 +78,7 @@ GameObject* MapScriptInterface::spawnGameObject(uint32_t spawnId, bool AddToWorl
 
     MySQLStructure::GameobjectSpawn const* data = sMySQLStore.getGameObjectSpawn(spawnId);
 
-    GameObject* pGameObject = sObjectMgr.createGameObject(data->entry);
+    GameObject* pGameObject = m_worldMap.createGameObject(data->entry);
     if (!pGameObject->loadFromDB(spawnId, &m_worldMap, false))
     {
         delete pGameObject;

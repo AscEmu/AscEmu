@@ -10102,9 +10102,9 @@ void Player::requestDuel(Player* target)
     const float z = (GetPositionZ() + target->GetPositionZ() * distance) / (1 + distance);
 
     // create flag
-    if (GameObject* goFlag = sObjectMgr.createGameObject(21680))
+    if (GameObject* goFlag = getWorldMap()->createGameObject(21680))
     {
-        goFlag->create(m_WorldMap->generateGameobjectLowGuid(), 21680, GetMapId(), GetPhase(), LocationVector(x, y, z, GetOrientation()), QuaternionData(), GO_STATE_CLOSED);
+        goFlag->create(21680, GetMapId(), GetPhase(), LocationVector(x, y, z, GetOrientation()), QuaternionData(), GO_STATE_CLOSED);
 
         goFlag->setCreatedByGuid(getGuid());
         goFlag->SetFaction(getFactionTemplate());

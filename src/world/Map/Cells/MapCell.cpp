@@ -272,7 +272,7 @@ void MapCell::loadObjects(CellSpawns* sp)
     {
         for (GameobjectSpawnList::iterator i = sp->GameobjectSpawns.begin(); i != sp->GameobjectSpawns.end(); ++i)
         {
-            GameObject* go = sObjectMgr.createGameObject((*i)->entry);
+            GameObject* go = _map->createGameObject((*i)->entry);
 
             if (go->loadFromDB((*i)->id, _map, false))
             {

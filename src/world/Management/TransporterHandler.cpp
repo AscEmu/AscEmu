@@ -101,7 +101,7 @@ Transporter* TransportHandler::createTransport(uint32_t entry, WorldMap* map /*=
     float z = startNode.z;
     float o = tInfo->keyFrames.begin()->InitialOrientation;
 
-    if (!trans->Create(trans->getGuid(), entry, mapId, x, y, z, o, 255))
+    if (!trans->Create(entry, mapId, x, y, z, o, 255))
     {
         delete trans;
         return nullptr;
