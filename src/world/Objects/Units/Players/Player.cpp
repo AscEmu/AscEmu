@@ -10104,7 +10104,7 @@ void Player::requestDuel(Player* target)
     // create flag
     if (GameObject* goFlag = getWorldMap()->createGameObject(21680))
     {
-        goFlag->CreateFromProto(21680, GetMapId(), x, y, z, GetOrientation());
+        goFlag->create(21680, GetMapId(), GetPhase(), LocationVector(x, y, z, GetOrientation()), QuaternionData(), GO_STATE_CLOSED);
 
         goFlag->setCreatedByGuid(getGuid());
         goFlag->SetFaction(getFactionTemplate());

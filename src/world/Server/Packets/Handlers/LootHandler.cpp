@@ -128,7 +128,6 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
 
     sHookInterface.OnLoot(_player, lootCreature, 0, item->getEntry());
 
-
     if (lootGameObject && lootGameObject->getEntry() == GO_FISHING_BOBBER)
     {
         int count = 0;
@@ -136,7 +135,7 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
             count += itemFromLoot.count;
 
         if (!count)
-            lootGameObject->ExpireAndDelete();
+            lootGameObject->expireAndDelete();
     }
 }
 
@@ -439,9 +438,9 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
                         despawn = true;
 
                     const uint32_t lootQuestId = sQuestMgr.GetGameObjectLootQuest(gameObject->getEntry());
-                    const uint32_t longDespawnTime = 900000 + Util::getRandomUInt(600000);
-                    const uint32_t despawnTime = lootQuestId ? 180000 + Util::getRandomUInt(180000) : longDespawnTime;
-                    const uint32_t despawnTimeInstanceCheck = lootQuestId ? 180000 + Util::getRandomUInt(180000) : IS_INSTANCE(gameObject->GetMapId()) ? 0 : longDespawnTime;
+                    const uint32_t longDespawnTime = 900 + Util::getRandomUInt(600);
+                    const uint32_t despawnTime = lootQuestId ? 180 + Util::getRandomUInt(180) : longDespawnTime;
+                    const uint32_t despawnTimeInstanceCheck = lootQuestId ? 180 + Util::getRandomUInt(180) : IS_INSTANCE(gameObject->GetMapId()) ? 0 : longDespawnTime;
 
                     const auto lockEntry = sLockStore.LookupEntry(gameObject->GetGameObjectProperties()->chest.lock_id);
                     if (lockEntry != nullptr)
@@ -453,7 +452,7 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
                                 if (lockEntry->locktype[i] == 1)
                                 {
                                     if (despawn)
-                                        gameObject->Despawn(0, despawnTime);
+                                        gameObject->despawn(0, despawnTime);
                                     else
                                         gameObject->setState(GO_STATE_CLOSED);
 
@@ -469,11 +468,11 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
                                             gameObject->setState(GO_STATE_CLOSED);
 
                                             // despawn after 5 minutes when loot was left
-                                            gameObject->Despawn(5*MINUTE*IN_MILLISECONDS, longDespawnTime);
+                                            gameObject->despawn(5*MINUTE*IN_MILLISECONDS, longDespawnTime);
                                             return;
                                         }
 
-                                        gameObject->Despawn(0, longDespawnTime);
+                                        gameObject->despawn(0, longDespawnTime);
                                         return;
                                     }
                                 }
@@ -484,10 +483,10 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
                                         gameObject->setState(GO_STATE_CLOSED);
 
                                         // despawn after 5 minutes when loot was left
-                                        gameObject->Despawn(5 * MINUTE*IN_MILLISECONDS, despawnTimeInstanceCheck);
+                                        gameObject->despawn(5 * MINUTE*IN_MILLISECONDS, despawnTimeInstanceCheck);
                                         return;
                                     }
-                                    gameObject->Despawn(0, despawnTimeInstanceCheck);
+                                    gameObject->despawn(0, despawnTimeInstanceCheck);
                                     return;
                                 }
                             }
@@ -498,10 +497,10 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
                                     gameObject->setState(GO_STATE_CLOSED);
 
                                     // despawn after 5 minutes when loot was left
-                                    gameObject->Despawn(5 * MINUTE*IN_MILLISECONDS, despawnTimeInstanceCheck);
+                                    gameObject->despawn(5 * MINUTE*IN_MILLISECONDS, despawnTimeInstanceCheck);
                                     return;
                                 }
-                                gameObject->Despawn(0, despawnTimeInstanceCheck);
+                                gameObject->despawn(0, despawnTimeInstanceCheck);
                                 return;
                             }
                         }
@@ -513,11 +512,11 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
                             gameObject->setState(GO_STATE_CLOSED);
 
                             // despawn after 5 minutes when loot was left
-                            gameObject->Despawn(5 * MINUTE*IN_MILLISECONDS, despawnTimeInstanceCheck);
+                            gameObject->despawn(5 * MINUTE*IN_MILLISECONDS, despawnTimeInstanceCheck);
                             return;
                         }
 
-                        gameObject->Despawn(0, despawnTimeInstanceCheck);
+                        gameObject->despawn(0, despawnTimeInstanceCheck);
                     }
                 }
             }

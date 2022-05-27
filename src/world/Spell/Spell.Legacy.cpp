@@ -2151,6 +2151,8 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                     if (p_caster->getSummonedObject())
                         if (p_caster->getSummonedObject()->getEntry() == GO_FISHING_BOBBER)
                             return SPELL_FAILED_SPELL_IN_PROGRESS;
+
+                    m_targets.setDestination(LocationVector(posx, posy, liquidLevel));
                 }
             }
 

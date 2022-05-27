@@ -456,7 +456,7 @@ void Arena::HookOnAreaTrigger(Player* plr, uint32 id)
                 s->prepare(&targets);
 
                 // despawn the gameobject (not delete!)
-                m_buffs[buffslot]->Despawn(0, 30 * 1000 /*BUFF_RESPAWN_TIME*/);
+                m_buffs[buffslot]->despawn(0, 30 /*BUFF_RESPAWN_TIME*/);
             }
         }
     }

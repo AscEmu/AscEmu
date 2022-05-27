@@ -269,7 +269,7 @@ public:
     // GameObject
     uint32_t m_GOHighGuid = 0;
     GameObject* createGameObject(uint32_t entry);
-    GameObject* createAndSpawnGameObject(uint32_t entryID, LocationVector pos, float scale, uint32_t spawnTime = 0);
+    GameObject* createAndSpawnGameObject(uint32_t entryID, LocationVector pos, float scale = 1.0f, uint32_t spawnTime = 0);
 
     uint32_t generateGameobjectGuid() { return ++m_GOHighGuid; }
 

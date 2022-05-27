@@ -2642,7 +2642,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                 if (target == nullptr)
                     return;
 
-                static_cast<GameObject*>(target)->Despawn(1000, itr->second.data_2);
+                static_cast<GameObject*>(target)->despawn(1000, itr->second.data_2);
 
                 break;
             }

@@ -2578,7 +2578,7 @@ void Player::RemoveFromWorld()
     {
         if (m_summonedObject->GetInstanceID() != GetInstanceID())
         {
-            sEventMgr.AddEvent(m_summonedObject, &Object::Delete, EVENT_GAMEOBJECT_EXPIRE, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
+            m_summonedObject->ToGameObject()->despawn(100, 0);
         }
         else
         {

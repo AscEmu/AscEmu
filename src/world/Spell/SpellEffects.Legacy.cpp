@@ -3966,88 +3966,97 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         return;
     }
 
-    uint32 mapid = u_caster->GetMapId();
-    float px = u_caster->GetPositionX();
-    float py = u_caster->GetPositionY();
-    float pz = u_caster->GetPositionZ();
-    float orient = m_caster->GetOrientation();
-    float posx = 0, posy = 0, posz = 0;
+    float fx, fy, fz;
 
-    GameObject* go = nullptr;
-
-    if (info->type == GAMEOBJECT_TYPE_FISHINGNODE)
+    if (m_targets.hasDestination())
     {
-        if (p_caster == nullptr)
-            return;
-
-        WorldMap* map = m_caster->getWorldMap();
-        float minDist = m_spellInfo->getMinRange(true);
-        float maxDist = m_spellInfo->getMaxRange(true);
-        float posx = 0, posy = 0, posz = 0;
-        float dist = Util::getRandomFloat(minDist, maxDist);
-
-        float angle = Util::getRandomFloat(0.0f, 1.0f) * static_cast<float>(M_PI * 35.0f / 180.0f) - static_cast<float>(M_PI * 17.5f / 180.0f);
-        m_caster->getClosePoint(posx, posy, posz, 0.388999998569489f, dist, angle);
-
-        float ground = m_caster->getMapHeight(LocationVector(posx, posy, posz));
-        float liquidLevel = VMAP_INVALID_HEIGHT_VALUE;
-
-        LiquidData liquidData;
-        if (map->getLiquidStatus(m_caster->GetPhase(), LocationVector(posx, posy, posz), MAP_ALL_LIQUIDS, &liquidData, m_caster->getCollisionHeight()))
-            liquidLevel = liquidData.level;
-
-        go = u_caster->getWorldMap()->createGameObject(entry);
-
-        go->CreateFromProto(entry, mapid, posx, posy, liquidLevel, orient);
-        go->setFlags(GO_FLAG_NONE);
-        go->setState(GO_STATE_OPEN);
-        go->setCreatedByGuid(m_caster->getGuid());
-        go->SetFaction(u_caster->getFactionTemplate());
-        go->Phase(PHASE_SET, u_caster->GetPhase());
-
-        go->SetSummoned(u_caster);
-
-        go->PushToWorld(m_caster->getWorldMap());
-
-        u_caster->setChannelObjectGuid(go->getGuid());
+        fx = m_targets.getDestination().x;
+        fy = m_targets.getDestination().y;
+        fz = m_targets.getDestination().z;
+    }
+    else if (m_spellInfo->getEffectRadiusIndex(effectIndex) && m_spellInfo->getSpeed() == 0)
+    {
+        float dis = ::GetRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->getEffectRadiusIndex(effectIndex)));
+        u_caster->getClosePoint(fx, fy, fz, 0.388999998569489f, dis);
     }
     else
     {
-        posx = px;
-        posy = py;
-        auto destination = m_targets.getDestination();
-        if ((m_targets.hasDestination()) && destination.isSet())
-        {
-            posx = destination.x;
-            posy = destination.y;
-            pz = destination.z;
-        }
+        //GO is always friendly to it's creator, get range for friends
+        float min_dis = m_spellInfo->getMinRange(true);
+        float max_dis = m_spellInfo->getMaxRange(true);
+        float dis = (float)Util::getRandomFloat(0.0f, 1.0f) * (max_dis - min_dis) + min_dis;
 
-        go = m_caster->getWorldMap()->createGameObject(entry);
-
-        go->CreateFromProto(entry, mapid, posx, posy, pz, orient);
-        go->setCreatedByGuid(m_caster->getGuid());
-        go->Phase(PHASE_SET, u_caster->GetPhase());
-
-        go->SetSummoned(u_caster);
-
-        go->PushToWorld(m_caster->getWorldMap());
-        sEventMgr.AddEvent(go, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, static_cast<uint32_t>(getDuration()), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-
-        if (info->type == GAMEOBJECT_TYPE_RITUAL)
-        {
-            if (p_caster == nullptr)
-                return;
-
-            GameObject_Ritual* go_ritual = static_cast<GameObject_Ritual*>(go);
-
-            go_ritual->GetRitual()->Setup(p_caster->getGuidLow(), 0, m_spellInfo->getId());
-            go_ritual->GetRitual()->Setup(p_caster->getGuidLow(), static_cast< uint32 >(p_caster->getTargetGuid()), m_spellInfo->getId());
-        }
+        u_caster->getClosePoint(fx, fy, fz, 0.388999998569489f, dis);
     }
+
+    WorldMap* map = m_caster->getWorldMap();
+    uint32 mapid = u_caster->GetMapId();
+
+    // if gameobject is summoning object, it should be spawned right on caster's position
+    if (info->type == GAMEOBJECT_TYPE_RITUAL)
+        u_caster->getPosition(fx, fy, fz);
+
+    LocationVector pos = { fx, fy, fz, u_caster->GetOrientation() };
+    QuaternionData rot = QuaternionData::fromEulerAnglesZYX(u_caster->GetOrientation(), 0.f, 0.f);
+    GameObject* go = u_caster->getWorldMap()->createGameObject(entry);
+    if (!go->create(entry, mapid, u_caster->GetPhase(), pos, rot, GO_STATE_CLOSED))
+    {
+        delete go;
+        return;
+    }
+
+    int32_t duration = ::GetDuration(sSpellDurationStore.LookupEntry(m_spellInfo->getDurationIndex()));
+
+    switch (info->type)
+    {
+        case GAMEOBJECT_TYPE_FISHINGNODE:
+        {
+            go->setCreatedByGuid(m_caster->getGuid());
+            go->SetSummoned(u_caster);
+
+            u_caster->setChannelObjectGuid(go->getGuid());
+
+            int32_t lastSec = 0;
+            switch (Util::getRandomUInt(0, 2))
+            {
+                case 0: lastSec = 3; break;
+                case 1: lastSec = 7; break;
+                case 2: lastSec = 13; break;
+            }
+
+            // Duration of the fishing bobber can't be higher than the Fishing channeling duration
+            duration = std::min(duration, duration - lastSec * IN_MILLISECONDS + 5 * IN_MILLISECONDS);
+        } break;
+        case GAMEOBJECT_TYPE_RITUAL:
+        {
+            if (u_caster->isPlayer())
+            {
+                go->setCreatedByGuid(m_caster->getGuid());
+                go->SetSummoned(u_caster);
+
+                GameObject_Ritual* go_ritual = static_cast<GameObject_Ritual*>(go);
+
+                go_ritual->GetRitual()->Setup(p_caster->getGuidLow(), 0, m_spellInfo->getId());
+                go_ritual->GetRitual()->Setup(p_caster->getGuidLow(), static_cast<uint32>(p_caster->getTargetGuid()), m_spellInfo->getId());
+            }
+        } break;
+        case GAMEOBJECT_TYPE_DUEL_ARBITER: // 52991
+        {
+            go->setCreatedByGuid(m_caster->getGuid());
+            go->SetSummoned(u_caster);
+        } break;
+        case GAMEOBJECT_TYPE_FISHINGHOLE:
+        case GAMEOBJECT_TYPE_CHEST:
+        default:
+            break;
+    }
+
+    go->setRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
 
     if (p_caster != nullptr)
         p_caster->setSummonedObject(go);
+
+    map->PushObject(go);
 }
 
 void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanent
@@ -4619,22 +4628,39 @@ void Spell::SpellEffectHealMechanical(uint8_t /*effectIndex*/)
 
 void Spell::SpellEffectSummonObjectWild(uint8_t effectIndex)
 {
-    if (!u_caster) return;
+    if (!u_caster)
+        return;
+
+    uint32_t gameobject_id = getSpellInfo()->getEffectMiscValue(effectIndex);
+
+    float x, y, z;
+    if (m_targets.hasDestination())
+    {
+        m_targets.getDestination().getPosition(x, y, z);
+    }
+    else
+    {
+        u_caster->getClosePoint(x, y, z, 0.388999998569489f);
+    }
+
+    WorldMap* map = u_caster->getWorldMap();
+
+    QuaternionData rot = QuaternionData::fromEulerAnglesZYX(m_caster->GetOrientation(), 0.f, 0.f);
 
     // spawn a new one
-    GameObject* GoSummon = u_caster->getWorldMap()->createGameObject(getSpellInfo()->getEffectMiscValue(effectIndex));
-    if (!GoSummon->CreateFromProto(getSpellInfo()->getEffectMiscValue(effectIndex),
-        m_caster->GetMapId(), m_caster->GetPositionX() + 1, m_caster->GetPositionY() + 1, m_caster->GetPositionZ(), m_caster->GetOrientation()))
+    GameObject* GoSummon = u_caster->getWorldMap()->createGameObject(gameobject_id);
+    if (!GoSummon->create(gameobject_id, map->getBaseMap()->getMapId(), m_caster->GetPhase(), LocationVector(x, y, z, m_caster->GetOrientation()), rot, GO_STATE_CLOSED))
     {
         delete GoSummon;
         return;
     }
 
-    GoSummon->Phase(PHASE_SET, u_caster->GetPhase());
+    int32_t duration = GetDuration();
+
+    GoSummon->setRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
+
     GoSummon->PushToWorld(u_caster->getWorldMap());
     GoSummon->SetSummoned(u_caster);
-
-    sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, static_cast<uint32_t>(getDuration()), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void Spell::SpellEffectSanctuary(uint8_t /*effectIndex*/) // Stop all attacks made to you
@@ -5140,7 +5166,7 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
     if (GoSummon)
     {
         if (GoSummon->GetInstanceID() != u_caster->GetInstanceID())
-            GoSummon->ExpireAndDelete();
+            GoSummon->expireAndDelete();
         else
         {
             if (GoSummon->IsInWorld())
@@ -5171,7 +5197,8 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
         dz = m_caster->GetPositionZ();
     }
 
-    if (!GoSummon->CreateFromProto(getSpellInfo()->getEffectMiscValue(effectIndex), m_caster->GetMapId(), dx, dy, dz, m_caster->GetOrientation()))
+    QuaternionData rot = QuaternionData::fromEulerAnglesZYX(m_caster->GetOrientation(), 0.f, 0.f);
+    if (!GoSummon->create(getSpellInfo()->getEffectMiscValue(effectIndex), m_caster->GetMapId(), m_caster->GetPhase(), LocationVector(dx, dy, dz, m_caster->GetOrientation()), rot, GO_STATE_CLOSED))
     {
         delete GoSummon;
         return;
@@ -5186,7 +5213,9 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
 
     GoSummon->PushToWorld(m_caster->getWorldMap());
 
-    sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, static_cast<uint32_t>(getDuration()), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    int32_t duration = getDuration();
+
+    GoSummon->setRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
 }
 
 void Spell::SpellEffectDispelMechanic(uint8_t effectIndex)

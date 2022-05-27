@@ -418,6 +418,12 @@ bool GameObject::create(uint32_t entry, uint32_t mapId, uint32_t phase, Location
         return false;
     }
 
+    if (gameobject_properties->type == GAMEOBJECT_TYPE_MO_TRANSPORT)
+    {
+        sLogger.failure("Gameobject (GUID: %u Entry: %u) not created: gameobject type GAMEOBJECT_TYPE_MO_TRANSPORT cannot be manually created.", getGuidLow(), entry);
+        return false;
+    }
+
     Object::_Create(mapId, position.x, position.y, position.z, position.o);
     setEntry(entry);
     SetPosition(position);
@@ -488,13 +494,6 @@ bool GameObject::create(uint32_t entry, uint32_t mapId, uint32_t phase, Location
             setAnimationProgress(0);
             m_goValue.Transport.CurrentSeg = 0;
             m_goValue.Transport.AnimationInfo = sTransportHandler.getTransportAnimInfo(entry);
-            m_goValue.Transport.PathProgress = 0;
-        } break;
-        case GAMEOBJECT_TYPE_MO_TRANSPORT:
-        {
-            m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
-            setFlags(GO_FLAG_TRANSPORT | GO_FLAG_NEVER_DESPAWN);
-            setState(gameobject_properties->mo_transport.can_be_stopped ? GO_STATE_CLOSED : GO_STATE_OPEN);
             m_goValue.Transport.PathProgress = 0;
         } break;
         case GAMEOBJECT_TYPE_FISHINGNODE:

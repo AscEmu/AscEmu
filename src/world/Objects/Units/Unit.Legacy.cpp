@@ -8035,7 +8035,7 @@ void Unit::RemoveFromWorld(bool free_guid)
         if (m_ObjectSlots[i] != 0)
         {
             if (GameObject* obj = m_WorldMap->getGameObject(m_ObjectSlots[i]))
-                obj->ExpireAndDelete();
+                obj->expireAndDelete();
 
             m_ObjectSlots[i] = 0;
         }
