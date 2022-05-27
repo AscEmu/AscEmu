@@ -16,6 +16,8 @@ using namespace AscEmu::Packets;
 
 Transporter::Transporter(uint64_t guid) : GameObject(), _passengerTeleportItr(_passengers.begin())
 {
+    setGuid(guid);
+
 #if VERSION_STRING == Classic
     m_updateFlag = (UPDATEFLAG_TRANSPORT | UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
 #endif
@@ -64,8 +66,6 @@ bool Transporter::Create(uint64_t guid, uint32_t entry, uint32_t mapid, float x,
         sLogger.failure("Transport %u will not be created, missing `transport_template` entry.", entry);
         return false;
     }
-
-    setGuid(guid);
 
     Object::_Create(mapid, x, y, z, ang);
     setEntry(entry);

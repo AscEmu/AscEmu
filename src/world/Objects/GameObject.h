@@ -51,14 +51,17 @@ enum GameObject_Flags
     GO_FLAG_DESTROYED           = 0x400
 };
 
+class Transporter;
+struct TransportAnimation;
+
 union GameObjectValue
 {
     //11 GAMEOBJECT_TYPE_TRANSPORT
     struct
     {
-        uint32_t PathProgress = 0;
-        TransportAnimation const* AnimationInfo = nullptr;
-        uint32_t CurrentSeg = 0;
+        uint32_t PathProgress;
+        TransportAnimation const* AnimationInfo;
+        uint32_t CurrentSeg;
     } Transport;
     //25 GAMEOBJECT_TYPE_FISHINGHOLE
     struct
@@ -561,7 +564,7 @@ class SERVER_DECL GameObject : public Object
 {
     // MIT Start
 public:
-    GameObject();
+    explicit GameObject();
     ~GameObject();
 
     bool loadFromDB(uint32_t spawnId, WorldMap* map, bool addToWorld);
@@ -757,6 +760,7 @@ public:
 
         int64_t m_packedRotation = 0;
         QuaternionData m_localRotation;
+
         GameObjectValue m_goValue;
 };
 
