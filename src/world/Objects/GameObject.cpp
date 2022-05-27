@@ -320,13 +320,13 @@ bool GameObject::loadFromDB(uint32_t spawnId, WorldMap* map, bool addToWorld)
         else
         {
             m_respawnDelayTime = data->spawntimesecs;
-            m_respawnTime = getWorldMap()->getGORespawnTime(data->id);
+            m_respawnTime = map->getGORespawnTime(data->id);
 
             // ready to respawn
             if (m_respawnTime && m_respawnTime <= Util::getTimeNow())
             {
                 m_respawnTime = 0;
-                getWorldMap()->removeRespawnTime(SPAWN_TYPE_GAMEOBJECT, data->id);
+                map->removeRespawnTime(SPAWN_TYPE_GAMEOBJECT, data->id);
             }
         }
     }
@@ -341,7 +341,7 @@ bool GameObject::loadFromDB(uint32_t spawnId, WorldMap* map, bool addToWorld)
 
     // add to insert Pool
     if (addToWorld)
-        getWorldMap()->AddObject(this);
+        map->AddObject(this);
 
     return true;
 }

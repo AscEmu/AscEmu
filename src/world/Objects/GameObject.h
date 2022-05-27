@@ -56,9 +56,9 @@ union GameObjectValue
     //11 GAMEOBJECT_TYPE_TRANSPORT
     struct
     {
-        uint32_t PathProgress = 0;
-        TransportAnimation const* AnimationInfo = nullptr;
-        uint32_t CurrentSeg = 0;
+        uint32_t PathProgress;
+        TransportAnimation const* AnimationInfo;
+        uint32_t CurrentSeg;
     } Transport;
     //25 GAMEOBJECT_TYPE_FISHINGHOLE
     struct
