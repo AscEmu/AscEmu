@@ -788,7 +788,7 @@ void GameObject::Update(unsigned long time_passed)
                                 Unit* caster = getOwner();
                                 if (caster && caster->isPlayer())
                                 {
-                                    caster->ToPlayer()->removeGameObject(this, false);
+                                    caster->removeGameObject(this, false);
                                     caster->sendPacket(SmsgFishEscaped().serialise().get());
 
                                     // Fishing is channeled spell
