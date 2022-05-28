@@ -806,14 +806,16 @@ void GameObject::Update(unsigned long time_passed)
                             }
                             case GAMEOBJECT_TYPE_DOOR:
                             case GAMEOBJECT_TYPE_BUTTON:
+                            {
                                 // We need to open doors if they are closed (add there another condition if this code breaks some usage, but it need to be here for battlegrounds)
                                 if (getState() != GO_STATE_CLOSED)
                                     resetDoorOrButton();
-                                break;
+                            } break;
                             case GAMEOBJECT_TYPE_FISHINGHOLE:
+                            {
                                 // Initialize a new max fish count on respawn
                                 m_goValue.FishingHole.MaxOpens = Util::getRandomUInt(GetGameObjectProperties()->fishinghole.min_success_opens, GetGameObjectProperties()->fishinghole.max_success_opens);
-                                break;
+                            } break;
                             default:
                                 break;
                         }
@@ -905,33 +907,34 @@ void GameObject::Update(unsigned long time_passed)
                     }
                 }
             }
-
-            break;
-        }
+        } break;
         case GO_ACTIVATED:
         {
             switch (getGoType())
             {
                 case GAMEOBJECT_TYPE_DOOR:
                 case GAMEOBJECT_TYPE_BUTTON:
+                {
                     if (m_cooldownTime && Util::getMSTime() >= m_cooldownTime)
                         resetDoorOrButton();
-                    break;
+                } break;
                 case GAMEOBJECT_TYPE_GOOBER:
+                {
                     if (Util::getMSTime() >= m_cooldownTime)
                     {
                         removeFlags(GO_FLAG_NONSELECTABLE);
                         setLootState(GO_JUST_DEACTIVATED);
                     }
-                    break;
+                } break;
                 case GAMEOBJECT_TYPE_CHEST:
+                {
                     // Non-consumable chest was partially looted and restock time passed, restock all loot now
                     if (GetGameObjectProperties()->chest.consumable == 0 && Util::getTimeNow() >= m_restockTime)
                     {
                         m_restockTime = 0;
                         m_lootState = GO_READY;
                     }
-                    break;
+                } break;
                 case GAMEOBJECT_TYPE_TRAP:
                 {
                     GameObjectProperties const* goInfo = GetGameObjectProperties();
@@ -955,13 +958,11 @@ void GameObject::Update(unsigned long time_passed)
                         else if (!goInfo->trap.charges)
                             setLootState(GO_READY);
                     }
-                    break;
-                }
+                } break;
                 default:
                     break;
             }
-            break;
-        }
+        } break;
         case GO_JUST_DEACTIVATED:
         {
             // If nearby linked trap exists, despawn it
@@ -1055,8 +1056,7 @@ void GameObject::Update(unsigned long time_passed)
             // Otherwise just save respawn time to map object memory
             saveRespawnTime();
             despawn(0, 0);
-            break;
-        }
+        } break;
     }
 
     _UpdateSpells(time_passed);
