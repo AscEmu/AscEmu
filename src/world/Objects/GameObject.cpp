@@ -637,9 +637,9 @@ class GameObjectModelOwnerImpl : public GameObjectModelOwnerBase
 public:
     explicit GameObjectModelOwnerImpl(GameObject const* owner) : _owner(owner) { }
 
-    bool IsSpawned() const override { return true; }
+    bool IsSpawned() const override { return _owner->isSpawned(); }
     uint32 GetDisplayId() const override { return _owner->getDisplayId(); }
-    uint32 GetPhaseMask() const override { return 1; }       // todo our gameobjects dont support phases?
+    uint32 GetPhaseMask() const override { return _owner->GetPhase(); }
     G3D::Vector3 GetPosition() const override { return G3D::Vector3(_owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ()); }
     float GetOrientation() const override { return _owner->GetOrientation(); }
     float GetScale() const override { return _owner->getScale(); }
@@ -888,7 +888,7 @@ void GameObject::Update(unsigned long time_passed)
                         setLootState(GO_ACTIVATED, target);
 
                 }
-                else if (uint32 max_charges = goInfo->getCharges())
+                else if (uint32_t max_charges = goInfo->getCharges())
                 {
                     if (m_usetimes >= max_charges)
                     {
@@ -963,7 +963,7 @@ void GameObject::Update(unsigned long time_passed)
             //if Gameobject should cast spell, then this, but some GOs (type = 10) should be destroyed
             if (getGoType() == GAMEOBJECT_TYPE_GOOBER)
             {
-                uint32 spellId = GetGameObjectProperties()->goober.spell_id;
+                uint32_t spellId = GetGameObjectProperties()->goober.spell_id;
 
                 if (spellId)
                 {
@@ -1040,7 +1040,7 @@ void GameObject::Update(unsigned long time_passed)
                 return;
             }
 
-            uint32 respawnDelay = m_respawnDelayTime;
+            uint32_t respawnDelay = m_respawnDelayTime;
             m_respawnTime = Util::getTimeNow() + respawnDelay;
 
             // if option not set then object will be saved at grid unload
@@ -1143,7 +1143,7 @@ void GameObject::resetDoorOrButton()
 bool GameObject::isUseable()
 {
     // If cooldown data present in template
-    if (uint32 cooldown = GetGameObjectProperties()->getCooldown())
+    if (uint32_t cooldown = GetGameObjectProperties()->getCooldown())
     {
         if (Util::getMSTime() < m_cooldownTime)
             return false;
@@ -1181,7 +1181,7 @@ void GameObject::switchDoorOrButton(bool activate, bool alternative /* = false *
         setState(GO_STATE_CLOSED);
 }
 
-void GameObject::triggerLinkedGameObject(uint32 trapEntry, Unit* target)
+void GameObject::triggerLinkedGameObject(uint32_t trapEntry, Unit* target)
 {
     GameObjectProperties const* trapInfo = sMySQLStore.getGameObjectProperties(trapEntry);
     if (!trapInfo || trapInfo->type != GAMEOBJECT_TYPE_TRAP)
@@ -1342,7 +1342,7 @@ void GameObject::onRemoveInRangeObject(Object* pObj)
     Object::onRemoveInRangeObject(pObj);
     if (m_summonedGo && getOwner() == pObj)
     {
-        for (uint8 i = 0; i < 4; i++)
+        for (uint8_t i = 0; i < 4; i++)
             if (getOwner()->m_ObjectSlots[i] == getGuidLow())
                 getOwner()->m_ObjectSlots[i] = 0;
 
@@ -1350,14 +1350,14 @@ void GameObject::onRemoveInRangeObject(Object* pObj)
     }
 }
 
-uint32 GameObject::GetGOReqSkill()
+uint32_t GameObject::GetGOReqSkill()
 {
     // Here we check the SpellFocus table against the dbcs
     auto lock = sLockStore.LookupEntry(GetGameObjectProperties()->raw.parameter_0);
     if (!lock)
         return 0;
 
-    for (uint8 i = 0; i < LOCK_NUM_CASES; i++)
+    for (uint8_t i = 0; i < LOCK_NUM_CASES; i++)
     {
         if (lock->locktype[i] == 2 && lock->minlockskill[i])
             return lock->minlockskill[i];
@@ -1365,7 +1365,7 @@ uint32 GameObject::GetGOReqSkill()
     return 0;
 }
 
-void GameObject::CastSpell(uint64 TargetGUID, SpellInfo const* sp)
+void GameObject::CastSpell(uint64_t TargetGUID, SpellInfo const* sp)
 {
     Spell* s = sSpellMgr.newSpell(this, sp, true, nullptr);
 
@@ -1377,7 +1377,7 @@ void GameObject::CastSpell(uint64 TargetGUID, SpellInfo const* sp)
     s->prepare(&tgt);
 }
 
-void GameObject::CastSpell(uint64 TargetGUID, uint32 SpellID)
+void GameObject::CastSpell(uint64_t TargetGUID, uint32_t SpellID)
 {
     SpellInfo const* sp = sSpellMgr.getSpellInfo(SpellID);
     if (sp == nullptr)
@@ -1497,7 +1497,7 @@ void GameObject_QuestGiver::DeleteQuest(QuestRelation* Q)
     }
 }
 
-QuestProperties const* GameObject_QuestGiver::FindQuest(uint32 quest_id, uint8 quest_relation)
+QuestProperties const* GameObject_QuestGiver::FindQuest(uint32_t quest_id, uint8_t quest_relation)
 {
     for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
     {
@@ -1511,7 +1511,7 @@ QuestProperties const* GameObject_QuestGiver::FindQuest(uint32 quest_id, uint8 q
     return nullptr;
 }
 
-uint16 GameObject_QuestGiver::GetQuestRelation(uint32 quest_id)
+uint16 GameObject_QuestGiver::GetQuestRelation(uint32_t quest_id)
 {
     uint16 quest_relation = 0;
 
@@ -1995,7 +1995,7 @@ void GameObject_Ritual::onUse(Player* player)
         }
         else if (gameobject_properties->entry == 177193)    // doom portal
         {
-            uint32 victimid = Util::getRandomUInt(GetRitual()->GetMaxMembers() - 1);
+            uint32_t victimid = Util::getRandomUInt(GetRitual()->GetMaxMembers() - 1);
 
             // kill the sacrifice player
             Player* psacrifice = player->getWorldMap()->getPlayer(GetRitual()->GetMemberGUIDBySlot(victimid));
@@ -2237,7 +2237,7 @@ void GameObject_Destructible::InitAI()
     Rebuild();
 }
 
-void GameObject_Destructible::Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
+void GameObject_Destructible::Damage(uint32_t damage, uint64_t AttackerGUID, uint64_t ControllerGUID, uint32_t SpellID)
 {
     // If we are already destroyed there's nothing to damage!
     if (hitpoints == 0)
@@ -2284,12 +2284,12 @@ void GameObject_Destructible::Damage(uint32 damage, uint64 AttackerGUID, uint64 
         CALL_GO_SCRIPT_EVENT(this, OnDamaged)(damage);
     }
 
-    uint8 animprogress = static_cast<uint8>(std::round(hitpoints / float(maxhitpoints)) * 255);
+    uint8_t animprogress = static_cast<uint8>(std::round(hitpoints / float(maxhitpoints)) * 255);
     setAnimationProgress(animprogress);
     SendDamagePacket(damage, AttackerGUID, ControllerGUID, SpellID);
 }
 
-void GameObject_Destructible::SendDamagePacket(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
+void GameObject_Destructible::SendDamagePacket(uint32_t damage, uint64_t AttackerGUID, uint64_t ControllerGUID, uint32_t SpellID)
 {
 #if VERSION_STRING > TBC
     sendMessageToSet(SmsgDestructibleBuildingDamage(GetNewGUID(), AttackerGUID, ControllerGUID, damage, SpellID).serialise().get(), false, false);

@@ -801,8 +801,8 @@ public:
         virtual bool IsLootable() { return false; }
 
         virtual void Use(uint64 /*GUID*/) {}
-        void CastSpell(uint64 TargetGUID, SpellInfo const* sp);
-        void CastSpell(uint64 TargetGUID, uint32 SpellID);
+        void CastSpell(uint64_t TargetGUID, SpellInfo const* sp);
+        void CastSpell(uint64_t TargetGUID, uint32_t SpellID);
 
         void Update(unsigned long time_passed);
 
@@ -819,7 +819,7 @@ public:
         void OnPushToWorld();
         void onRemoveInRangeObject(Object* pObj);
 
-        uint32 GetGOReqSkill();
+        uint32_t GetGOReqSkill();
         MapCell* m_respawnCell = nullptr;
 
         void SetOverrides(uint32 go_overrides) { m_overrides = go_overrides; }
@@ -967,13 +967,13 @@ class GameObject_QuestGiver : public GameObject
         // \param uint32 quest_id  -  Identifier of the Quest
         // \param uint8 quest_relation  -  QuestRelation type
         // \return the Quest on success NULL on failure
-        QuestProperties const* FindQuest(uint32 quest_id, uint8 quest_relation);
+        QuestProperties const* FindQuest(uint32_t quest_id, uint8_t quest_relation);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Finds the Quest with quest_id in the GO, and returns it's QuestRelation type
         // \param uint32 quest_id  -  Identifier of the Quest
         // \return Returns the QuestRelation type on success, 0 on failure
-        uint16 GetQuestRelation(uint32 quest_id);
+        uint16 GetQuestRelation(uint32_t quest_id);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Returns an iterator to the GO's QuestRelation list beginning
@@ -1331,20 +1331,20 @@ class SERVER_DECL GameObject_Destructible : public GameObject
 
         void InitAI();
 
-        void Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID);
+        void Damage(uint32_t damage, uint64_t AttackerGUID, uint64_t ControllerGUID, uint32_t SpellID);
 
         void Rebuild();
 
-        uint32 GetHP() { return hitpoints; }
+        uint32_t GetHP() { return hitpoints; }
 
-        uint32 GetMaxHP() { return maxhitpoints; }
+        uint32_t GetMaxHP() { return maxhitpoints; }
 
     private:
 
-        void SendDamagePacket(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID);
+        void SendDamagePacket(uint32_t damage, uint64_t AttackerGUID, uint64_t ControllerGUID, uint32_t SpellID);
 
-        uint32 hitpoints;
-        uint32 maxhitpoints;
+        uint32_t hitpoints;
+        uint32_t maxhitpoints;
 };
 
 #endif // GAMEOBJECT_H
