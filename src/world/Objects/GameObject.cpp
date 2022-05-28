@@ -113,20 +113,6 @@ GameObject::~GameObject()
         myScript = nullptr;
     }
 
-    if (uint32_t guid = static_cast<uint32_t>(getCreatedByGuid()))
-    {
-        Player* player = sObjectMgr.GetPlayer(guid);
-        if (player && player->getSummonedObject() == this)
-        {
-            player->setSummonedObject(nullptr);
-            player->removeGameObject(this, true);
-            if (m_summonedGo && player)
-                for (uint8_t i = 0; i < 4; ++i)
-                    if (player->m_ObjectSlots[i] == getGuidLow())
-                        player->m_ObjectSlots[i] = 0;
-        }
-    }
-
     if (m_respawnCell)
         m_respawnCell->_respawnObjects.erase(this);
 }
@@ -795,7 +781,10 @@ void GameObject::Update(unsigned long time_passed)
                             {
                                 Unit* caster = getOwner();
                                 if (caster && caster->isPlayer())
+                                {
+                                    caster->ToPlayer()->removeGameObject(this, false);
                                     caster->sendPacket(SmsgFishEscaped().serialise().get());
+                                }
 
                                 // can be delete
                                 m_lootState = GO_JUST_DEACTIVATED;

@@ -1126,6 +1126,8 @@ class GameObject_FishingNode : public GameObject_Lootable
         void onUse(Player* player) override;
 
         bool HasLoot();
+
+        bool IsLootable() { return true; }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

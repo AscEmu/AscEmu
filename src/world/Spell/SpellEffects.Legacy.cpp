@@ -3962,46 +3962,82 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         return;
     }
 
-    float fx, fy, fz;
+    WorldMap* map = m_caster->getWorldMap();
+    uint32 mapid = u_caster->GetMapId();
+    float px = u_caster->GetPositionX();
+    float py = u_caster->GetPositionY();
+    float pz = u_caster->GetPositionZ();
+    float orient = m_caster->GetOrientation();
+    float posx = 0, posy = 0, posz = 0;
 
-    if (m_targets.hasDestination())
+
+    int32_t duration = ::GetDuration(sSpellDurationStore.LookupEntry(m_spellInfo->getDurationIndex()));
+    GameObject* go = nullptr;
+
+    if (info->type == GAMEOBJECT_TYPE_FISHINGNODE)
     {
-        fx = m_targets.getDestination().x;
-        fy = m_targets.getDestination().y;
-        fz = m_targets.getDestination().z;
-    }
-    else if (m_spellInfo->getEffectRadiusIndex(effectIndex) && m_spellInfo->getSpeed() == 0)
-    {
-        float dis = ::GetRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->getEffectRadiusIndex(effectIndex)));
-        u_caster->getClosePoint(fx, fy, fz, 0.388999998569489f, dis);
+        if (p_caster == nullptr)
+            return;
+
+        float minDist = m_spellInfo->getMinRange(true);
+        float maxDist = m_spellInfo->getMaxRange(true);
+        float posx = 0, posy = 0, posz = 0;
+        float dist = Util::getRandomFloat(minDist, maxDist);
+
+        float angle = Util::getRandomFloat(0.0f, 1.0f) * static_cast<float>(M_PI * 35.0f / 180.0f) - static_cast<float>(M_PI * 17.5f / 180.0f);
+        m_caster->getClosePoint(posx, posy, posz, 0.388999998569489f, dist, angle);
+
+        float ground = m_caster->getMapHeight(LocationVector(posx, posy, posz));
+        float liquidLevel = VMAP_INVALID_HEIGHT_VALUE;
+
+        LiquidData liquidData;
+        if (map->getLiquidStatus(m_caster->GetPhase(), LocationVector(posx, posy, posz), MAP_ALL_LIQUIDS, &liquidData, m_caster->getCollisionHeight()))
+            liquidLevel = liquidData.level;
+
+        go = u_caster->getWorldMap()->createGameObject(entry);
+
+        LocationVector pos = { posx, posy, liquidLevel, u_caster->GetOrientation() };
+        QuaternionData rot = QuaternionData::fromEulerAnglesZYX(u_caster->GetOrientation(), 0.f, 0.f);
+
+        go->create(entry, map, 0, pos, rot, GO_STATE_CLOSED);
+        go->setFlags(GO_FLAG_NONE);
+        go->setState(GO_STATE_OPEN);
+        go->setCreatedByGuid(m_caster->getGuid());
+        go->SetFaction(u_caster->getFactionTemplate());
+        go->Phase(PHASE_SET, u_caster->GetPhase());
+
+        u_caster->addGameObject(go);
+
+        go->PushToWorld(m_caster->getWorldMap());
+
+        u_caster->setChannelObjectGuid(go->getGuid());
     }
     else
     {
-        //GO is always friendly to it's creator, get range for friends
-        float min_dis = m_spellInfo->getMinRange(true);
-        float max_dis = m_spellInfo->getMaxRange(true);
-        float dis = (float)Util::getRandomFloat(0.0f, 1.0f) * (max_dis - min_dis) + min_dis;
+        posx = px;
+        posy = py;
+        auto destination = m_targets.getDestination();
 
-        u_caster->getClosePoint(fx, fy, fz, 0.388999998569489f, dis);
+        if ((m_targets.hasDestination()) && destination.isSet())
+        {
+            posx = destination.x;
+            posy = destination.y;
+            pz = destination.z;
+        }
+
+        LocationVector pos = { posx, posy, pz, u_caster->GetOrientation() };
+        QuaternionData rot = QuaternionData::fromEulerAnglesZYX(u_caster->GetOrientation(), 0.f, 0.f);
+        GameObject* go = u_caster->getWorldMap()->createGameObject(entry);
+        if (!go->create(entry, map, u_caster->GetPhase(), pos, rot, GO_STATE_CLOSED))
+        {
+            delete go;
+            return;
+        }
+
+        go->setCreatedByGuid(m_caster->getGuid());
+        u_caster->addGameObject(go);
+        go->PushToWorld(m_caster->getWorldMap());
     }
-
-    WorldMap* map = m_caster->getWorldMap();
-    uint32 mapid = u_caster->GetMapId();
-
-    // if gameobject is summoning object, it should be spawned right on caster's position
-    if (info->type == GAMEOBJECT_TYPE_RITUAL)
-        u_caster->getPosition(fx, fy, fz);
-
-    LocationVector pos = { fx, fy, fz, u_caster->GetOrientation() };
-    QuaternionData rot = QuaternionData::fromEulerAnglesZYX(u_caster->GetOrientation(), 0.f, 0.f);
-    GameObject* go = u_caster->getWorldMap()->createGameObject(entry);
-    if (!go->create(entry, map, u_caster->GetPhase(), pos, rot, GO_STATE_CLOSED))
-    {
-        delete go;
-        return;
-    }
-
-    int32_t duration = ::GetDuration(sSpellDurationStore.LookupEntry(m_spellInfo->getDurationIndex()));
 
     switch (info->type)
     {
@@ -4057,8 +4093,6 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
 
     if (p_caster != nullptr)
         p_caster->setSummonedObject(go);
-
-    map->PushObject(go);
 }
 
 void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanent
