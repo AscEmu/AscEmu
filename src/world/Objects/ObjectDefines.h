@@ -113,3 +113,9 @@ struct QuaternionData
     void toEulerAnglesZYX(float& Z, float& Y, float& X) const;
     static QuaternionData fromEulerAnglesZYX(float Z, float Y, float X);
 };
+
+enum GOSummonType : uint8_t
+{
+    GO_SUMMON_TIMED_OR_CORPSE_DESPAWN = 0,    // despawns after a specified time OR when the summoner dies
+    GO_SUMMON_TIMED_DESPAWN = 1     // despawns after a specified time
+};

@@ -10177,6 +10177,8 @@ void Player::requestDuel(Player* target)
 
         goFlag->PushToWorld(m_WorldMap);
 
+        addGameObject(goFlag);
+
         target->getSession()->SendPacket(SmsgDuelRequested(goFlag->getGuid(), getGuid()).serialise().get());
     }
 }

@@ -364,7 +364,7 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
 void WorldSession::doLootRelease(WoWGuid lguid)
 {
     Player* player = GetPlayer();
-    Loot* loot;
+    Loot* loot = nullptr;
 
     SendPacket(SmsgLootReleaseResponse(lguid.getRawGuid(), 1).serialise().get());
 
@@ -465,7 +465,7 @@ void WorldSession::doLootRelease(WoWGuid lguid)
     }
     else
     {
-        if (Creature* creature = GetPlayer()->getWorldMap()->getCreature(lguid.getGuidLow()))
+        if (Creature* creature = GetPlayer()->getWorldMap()->getCreature(lguid.getGuidLowPart()))
         {
             // Remove roundrobin and make Lootable for evryone in our group
             creature->loot.roundRobinPlayer = 0;
@@ -508,7 +508,8 @@ void WorldSession::doLootRelease(WoWGuid lguid)
     }
 
     //Player is not looking at loot list, he doesn't need to see updates on the loot list
-    loot->removeLooter(_player->getGuidLow());
+    if (loot)
+        loot->removeLooter(_player->getGuidLow());
 }
 
 void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)

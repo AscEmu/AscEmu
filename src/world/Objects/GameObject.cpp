@@ -117,19 +117,18 @@ GameObject::~GameObject()
     {
         Player* player = sObjectMgr.GetPlayer(guid);
         if (player && player->getSummonedObject() == this)
+        {
             player->setSummonedObject(nullptr);
-
-        if (player == m_summoner)
-            m_summoner = nullptr;
+            player->removeGameObject(this, true);
+            if (m_summonedGo && player)
+                for (uint8_t i = 0; i < 4; ++i)
+                    if (player->m_ObjectSlots[i] == getGuidLow())
+                        player->m_ObjectSlots[i] = 0;
+        }
     }
 
     if (m_respawnCell)
         m_respawnCell->_respawnObjects.erase(this);
-
-    if (m_summonedGo && m_summoner)
-        for (uint8_t i = 0; i < 4; ++i)
-            if (m_summoner->m_ObjectSlots[i] == getGuidLow())
-                m_summoner->m_ObjectSlots[i] = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -275,14 +274,6 @@ void GameObject::setAnimationProgress(uint8_t progress)
 
 bool GameObject::isQuestGiver() const { return getGoType() == GAMEOBJECT_TYPE_QUESTGIVER; }
 bool GameObject::isFishingNode() const { return getGoType() == GAMEOBJECT_TYPE_FISHINGNODE; }
-
-Player* GameObject::getPlayerOwner()
-{
-    if (m_summoner != nullptr && m_summoner->isPlayer())
-        return dynamic_cast<Player*>(m_summoner);
-
-    return nullptr;
-}
 
 bool GameObject::loadFromDB(uint32_t spawnId, WorldMap* map, bool addToWorld)
 {
@@ -1354,13 +1345,12 @@ void GameObject::OnPushToWorld()
 void GameObject::onRemoveInRangeObject(Object* pObj)
 {
     Object::onRemoveInRangeObject(pObj);
-    if (m_summonedGo && m_summoner == pObj)
+    if (m_summonedGo && getOwner() == pObj)
     {
         for (uint8 i = 0; i < 4; i++)
-            if (m_summoner->m_ObjectSlots[i] == getGuidLow())
-                m_summoner->m_ObjectSlots[i] = 0;
+            if (getOwner()->m_ObjectSlots[i] == getGuidLow())
+                getOwner()->m_ObjectSlots[i] = 0;
 
-        m_summoner = 0;
         expireAndDelete();
     }
 }
@@ -1635,7 +1625,6 @@ void GameObject_Trap::InitAI()
     }
 
     spell = sSpellMgr.getSpellInfo(gameobject_properties->trap.spell_id);
-    charges = gameobject_properties->trap.charges;
 
     if (gameobject_properties->trap.stealthed != 0)
     {
@@ -2078,8 +2067,6 @@ GameObject_SpellCaster::~GameObject_SpellCaster()
 
 void GameObject_SpellCaster::InitAI()
 {
-    charges = gameobject_properties->spell_caster.charges;
-
     spell = sSpellMgr.getSpellInfo(gameobject_properties->spell_caster.spell_id);
     if (spell == nullptr)
         sLogger.failure("GameObject %u ( %s ) has a nonexistant spellID in the database.", gameobject_properties->entry, gameobject_properties->name.c_str());
@@ -2092,9 +2079,9 @@ void GameObject_SpellCaster::onUse(Player* player)
 
     if (GetGameObjectProperties()->spell_caster.party_only != 0)
     {
-        if (m_summoner != nullptr && m_summoner->isPlayer())
+        if (getOwner() != nullptr && getOwner()->isPlayer())
         {
-            Player* summoner = static_cast<Player*>(m_summoner);
+            Player* summoner = static_cast<Player*>(getOwner());
             if (summoner->getGuid() != player->getGuid())
             {
                 if (!player->isInGroup())
@@ -2111,7 +2098,9 @@ void GameObject_SpellCaster::onUse(Player* player)
 
     CastSpell(player->getGuid(), spell);
 
-    if (charges > 0 && --charges == 0)
+    addUse();
+
+    if (getUseCount() == 0)
         expireAndDelete();
 }
 

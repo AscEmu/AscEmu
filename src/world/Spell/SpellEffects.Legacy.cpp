@@ -1879,8 +1879,8 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
             return;
         }
 
-        if (g_caster && g_caster->getCreatedByGuid() && g_caster->m_summoner)
-            pAura = sSpellMgr.newAura(getSpellInfo(), Duration, g_caster->m_summoner, unitTarget, m_triggeredSpell, i_caster);
+        if (g_caster && g_caster->getCreatedByGuid() && g_caster->getOwner())
+            pAura = sSpellMgr.newAura(getSpellInfo(), Duration, g_caster->getOwner(), unitTarget, m_triggeredSpell, i_caster);
         else
             pAura = sSpellMgr.newAura(getSpellInfo(), Duration, m_caster, unitTarget, m_triggeredSpell, i_caster);
 
@@ -2749,9 +2749,9 @@ void Spell::SpellEffectPersistentAA(uint8_t effectIndex) // Persistent Area Aura
     // kinda have 2 summoners for traps that apply AA.
     DynamicObject* dynObj = m_caster->getWorldMap()->createDynamicObject();
 
-    if (g_caster != nullptr && g_caster->m_summoner && !unitTarget)
+    if (g_caster != nullptr && g_caster->getOwner() && !unitTarget)
     {
-        Unit* caster = g_caster->m_summoner;
+        Unit* caster = g_caster->getOwner();
         dynObj->Create(caster, this, g_caster->GetPositionX(), g_caster->GetPositionY(),
                        g_caster->GetPositionZ(), dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         m_AreaAura = true;
@@ -2802,7 +2802,7 @@ void Spell::SpellEffectPersistentAA(uint8_t effectIndex) // Persistent Area Aura
             if (u_caster != nullptr)
                 dynObj->Create(u_caster, this, destination.x, destination.y, destination.z, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
             else if (g_caster != nullptr)
-                dynObj->Create(g_caster->m_summoner, this, destination.x, destination.y, destination.z, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
+                dynObj->Create(g_caster->getOwner(), this, destination.x, destination.y, destination.z, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         }
         break;
         default:
@@ -3010,10 +3010,6 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
 
 void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
 {
-
-    if (g_caster != nullptr)
-        u_caster = g_caster->m_summoner;
-
     if (u_caster == nullptr)
         return;
 
@@ -4012,8 +4008,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         case GAMEOBJECT_TYPE_FISHINGNODE:
         {
             go->setCreatedByGuid(m_caster->getGuid());
-            go->SetSummoned(u_caster);
-
+            u_caster->addGameObject(go);
             u_caster->setChannelObjectGuid(go->getGuid());
 
             int32_t lastSec = 0;
@@ -4032,7 +4027,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
             if (u_caster->isPlayer())
             {
                 go->setCreatedByGuid(m_caster->getGuid());
-                go->SetSummoned(u_caster);
+                u_caster->addGameObject(go);
 
                 GameObject_Ritual* go_ritual = static_cast<GameObject_Ritual*>(go);
 
@@ -4043,7 +4038,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         case GAMEOBJECT_TYPE_DUEL_ARBITER: // 52991
         {
             go->setCreatedByGuid(m_caster->getGuid());
-            go->SetSummoned(u_caster);
+            u_caster->addGameObject(go);
         } break;
         case GAMEOBJECT_TYPE_FISHINGHOLE:
         case GAMEOBJECT_TYPE_CHEST:
@@ -4667,7 +4662,7 @@ void Spell::SpellEffectSummonObjectWild(uint8_t effectIndex)
     GoSummon->setRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
 
     GoSummon->PushToWorld(u_caster->getWorldMap());
-    GoSummon->SetSummoned(u_caster);
+    u_caster->addGameObject(GoSummon);
     GoSummon->setSpellId(m_spellInfo->getId());
 
     if (GameObject* linkedTrap = GoSummon->getLinkedTrap())
@@ -5177,18 +5172,17 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
     GoSummon = u_caster->m_ObjectSlots[slot] ? u_caster->getWorldMap()->getGameObject(u_caster->m_ObjectSlots[slot]) : 0;
     u_caster->m_ObjectSlots[slot] = 0;
 
-    if (GoSummon)
+    if (uint32_t guid = u_caster->m_ObjectSlots[slot])
     {
-        if (GoSummon->GetInstanceID() != u_caster->GetInstanceID())
-            GoSummon->expireAndDelete();
-        else
+        if (GameObject* obj = u_caster->getWorldMapGameObject(guid))
         {
-            if (GoSummon->IsInWorld())
-                GoSummon->RemoveFromWorld(true);
-            delete GoSummon;
+            // Recast case - null spell id to make auras not be removed on object remove from world
+            if (m_spellInfo->getId() == obj->getSpellId())
+                obj->setSpellId(0);
+            u_caster->removeGameObject(obj, true);
         }
+        u_caster->m_ObjectSlots[slot] = 0;
     }
-
 
     // spawn a new one
     GoSummon = u_caster->getWorldMap()->createGameObject(getSpellInfo()->getEffectMiscValue(effectIndex));
@@ -5222,14 +5216,14 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
     GoSummon->setCreatedByGuid(m_caster->getGuid());
     GoSummon->Phase(PHASE_SET, u_caster->GetPhase());
 
-    GoSummon->SetSummoned(u_caster);
-    u_caster->m_ObjectSlots[slot] = GoSummon->GetUIdFromGUID();
-
     GoSummon->PushToWorld(m_caster->getWorldMap());
 
     int32_t duration = getDuration();
 
     GoSummon->setRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
+    GoSummon->setSpellId(m_spellInfo->getId());
+    u_caster->addGameObject(GoSummon);
+    u_caster->m_ObjectSlots[slot] = GoSummon->GetUIdFromGUID();
 }
 
 void Spell::SpellEffectDispelMechanic(uint8_t effectIndex)

@@ -446,7 +446,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
         case TYPEID_GAMEOBJECT:
         {
             // Only player gameobjects
-            if (static_cast<GameObject*>(this)->getPlayerOwner() != nullptr)
+            if (static_cast<GameObject*>(this)->getOwner() != nullptr)
                 updateType = UPDATETYPE_CREATE_OBJECT2;
         } break;
         default:
@@ -478,7 +478,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
                     break;
                 default:
                     // Set update type for other gameobjects only if it's created by a player
-                    if (gameObj->getPlayerOwner() != nullptr)
+                    if (gameObj->getOwner() != nullptr)
                         updateType = UPDATETYPE_CREATE_OBJECT2;
                     break;
             }
@@ -3847,19 +3847,18 @@ bool Object::CanActivate()
 {
     switch (m_objectTypeId)
     {
-    case TYPEID_UNIT:
-    {
-        if (!isPet())
-            return true;
-    }
-    break;
+        case TYPEID_UNIT:
+        {
+            if (!isPet())
+                return true;
+        }
+        break;
 
-    case TYPEID_GAMEOBJECT:
-    {
-        if (static_cast<GameObject*>(this)->getGoType() != GAMEOBJECT_TYPE_TRAP)
+        case TYPEID_GAMEOBJECT:
+        {
             return true;
-    }
-    break;
+        }
+        break;
     }
 
     return false;
@@ -4556,6 +4555,38 @@ float Object::getDistance2d(float x, float y) const
 Unit* Object::getOwner()
 {
     return getWorldMapUnit(getOwnerGUID());
+}
+
+GameObject* Object::summonGameObject(uint32_t entryID, LocationVector pos, QuaternionData const& rot, uint32_t spawnTime, GOSummonType summonType)
+{
+    auto gameobject_info = sMySQLStore.getGameObjectProperties(entryID);
+    if (gameobject_info == nullptr)
+    {
+        sLogger.debug("Error looking up entry in CreateAndSpawnGameObject");
+        return nullptr;
+    }
+
+    sLogger.debug("CreateAndSpawnGameObject: By Entry '%u'", entryID);
+
+    WorldMap* map = getWorldMap();
+    if (!map)
+        return nullptr;
+
+    GameObject* go = map->createGameObject(entryID);
+    if (!go->create(entryID, map, GetPhase(), pos, rot, GO_STATE_CLOSED, sObjectMgr.GenerateGameObjectSpawnID()))
+    {
+        delete go;
+        return nullptr;
+    }
+
+    go->setRespawnTime(spawnTime);
+    if (isPlayer() || (getObjectTypeId() == TYPEID_UNIT && summonType == GO_SUMMON_TIMED_OR_CORPSE_DESPAWN)) //not sure how to handle this
+        ToUnit()->addGameObject(go);
+    else
+        go->setSpawnedByDefault(false);
+
+    map->PushObject(go);
+    return go;
 }
 
 #if VERSION_STRING < Cata

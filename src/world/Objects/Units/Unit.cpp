@@ -7755,3 +7755,88 @@ float Unit::getCollisionHeight() const
     float const collisionHeight = scaleMod * modelData->CollisionHeight * displayInfo->creatureModelScale;
     return collisionHeight == 0.0f ? DEFAULT_COLLISION_HEIGHT : collisionHeight;
 }
+
+GameObject* Unit::getGameObject(uint32_t spellId) const
+{
+    for (GameObjectList::const_iterator i = m_gameObj.begin(); i != m_gameObj.end(); ++i)
+        if ((*i)->getSpellId() == spellId)
+            return *i;
+
+    return nullptr;
+}
+
+void Unit::addGameObject(GameObject* gameObj)
+{
+    if (!gameObj || gameObj->getOwnerGUID())
+        return;
+
+    m_gameObj.push_back(gameObj);
+    gameObj->setOwnerGuid(getGuid());
+}
+
+void Unit::removeGameObject(GameObject* gameObj, bool del)
+{
+    if (!gameObj || gameObj->getOwnerGUID() != getGuid())
+        return;
+
+    gameObj->setOwnerGuid(0);
+
+    for (uint8 i = 0; i < 4; ++i)
+    {
+        if (m_ObjectSlots[i] == gameObj->GetUIdFromGUID())
+        {
+            m_ObjectSlots[i] = 0;
+            break;
+        }
+    }
+
+    // GO created by some spell
+    if (uint32 spellid = gameObj->getSpellId())
+        removeAllAurasById(spellid);
+
+    m_gameObj.remove(gameObj);
+
+    if (del)
+    {
+        gameObj->setRespawnTime(0);
+        gameObj->Delete();
+    }
+}
+
+void Unit::removeGameObject(uint32 spellid, bool del)
+{
+    if (m_gameObj.empty())
+        return;
+
+    GameObjectList::iterator i, next;
+    for (i = m_gameObj.begin(); i != m_gameObj.end(); i = next)
+    {
+        next = i;
+        if (spellid == 0 || (*i)->getSpellId() == spellid)
+        {
+            (*i)->setOwnerGuid(0);
+            if (del)
+            {
+                (*i)->setRespawnTime(0);
+                (*i)->Delete();
+            }
+
+            next = m_gameObj.erase(i);
+        }
+        else
+            ++next;
+    }
+}
+
+void Unit::removeAllGameObjects()
+{
+    // remove references to unit
+    while (!m_gameObj.empty())
+    {
+        GameObjectList::iterator i = m_gameObj.begin();
+        (*i)->setOwnerGuid(0);
+        (*i)->setRespawnTime(0);
+        (*i)->Delete();
+        m_gameObj.erase(i);
+    }
+}

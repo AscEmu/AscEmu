@@ -637,6 +637,7 @@ public:
     bool create(uint32_t entry, WorldMap* map, uint32_t phase, LocationVector const& position, QuaternionData const&  rotation, GameObject_State state, uint32_t spawnId = 0);
 
     uint32_t getSpawnId() const { return m_spawnId; }
+    void setSpawnId(uint32_t spawnId) { m_spawnId = spawnId; }
 
     void despawn(uint32_t delay /*milliseconds*/, uint32_t forceRespawntime /*seconds*/);
     void expireAndDelete();
@@ -676,6 +677,17 @@ public:
     void useDoorOrButton(uint32_t time_to_restore = 0, bool alternative = false, Unit* user = nullptr);
     void resetDoorOrButton();
     void triggerLinkedGameObject(uint32_t trapEntry, Unit* target);
+
+    void setOwnerGuid(uint64_t owner)
+    {
+        // Owner already found and different than expected owner - remove object from old owner
+        if (owner && getOwnerGUID() && getOwnerGUID() != owner)
+            return;
+
+        m_spawnedByDefault = false; // all object with owner is despawned after delay
+        setCreatedByGuid(owner);
+    }
+    uint64_t getOwnerGUID() const override { return getCreatedByGuid(); }
 
     uint16_t getLootMode() const { return m_LootMode; }
     bool hasLootMode(uint16 lootMode) const { return (m_LootMode & lootMode) != 0; }
@@ -779,9 +791,6 @@ public:
     uint8_t invisibilityFlag = INVIS_FLAG_NORMAL;
     uint8_t stealthFlag = STEALTH_FLAG_NORMAL;
 
-    // Owner
-    Player* getPlayerOwner() override;
-
     // MIT End
 
     GameEvent* mEvent = nullptr;
@@ -801,17 +810,7 @@ public:
         // Serialization
         void SaveToFile(std::stringstream & name);
 
-        void SetSummoned(Unit* mob)
-        {
-            m_summoner = mob;
-            m_summonedGo = true;
-        }
-
-        int32 charges = -1;
-
         virtual void InitAI();
-
-        Unit* m_summoner = nullptr;
 
         void CallScriptUpdate();
 

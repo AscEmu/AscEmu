@@ -1732,7 +1732,7 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
 
     uint32_t mapid = getBaseMap()->getMapId();
     // Setup game object
-    go->create(entryID, this, go->GetPhase(), pos, QuaternionData(), GO_STATE_CLOSED);
+    go->create(entryID, this, go->GetPhase(), pos, QuaternionData(), GO_STATE_CLOSED, sObjectMgr.GenerateGameObjectSpawnID());
     go->setScale(scale);
     go->InitAI();
     go->PushToWorld(this);
@@ -1740,7 +1740,7 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
     // Create spawn instance
     auto go_spawn = new MySQLStructure::GameobjectSpawn;
     go_spawn->entry = go->getEntry();
-    go_spawn->id = sObjectMgr.GenerateGameObjectSpawnID();
+    go_spawn->id = go->getSpawnId();
     go_spawn->map = go->GetMapId();
     go_spawn->spawnPoint = go->GetPosition();
     go_spawn->rotation = go->getLocalRotation();
