@@ -790,6 +790,14 @@ void GameObject::Update(unsigned long time_passed)
                                 {
                                     caster->ToPlayer()->removeGameObject(this, false);
                                     caster->sendPacket(SmsgFishEscaped().serialise().get());
+
+                                    // Fishing is channeled spell
+                                    auto channelledSpell = caster->getCurrentSpell(CURRENT_CHANNELED_SPELL);
+                                    if (channelledSpell != nullptr)
+                                    {
+                                        channelledSpell->sendChannelUpdate(0);
+                                        channelledSpell->finish(true);
+                                    }
                                 }
 
                                 // can be delete
