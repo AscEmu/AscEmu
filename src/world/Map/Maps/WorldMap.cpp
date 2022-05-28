@@ -1747,12 +1747,12 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
     go_spawn->state = GameObject_State(go->getState());
     go_spawn->phase = go->GetPhase();
     go_spawn->spawntimesecs = respawnTime;
+    go->m_spawn = go_spawn;
 
     uint32_t cx = getPosX(pos.x);
     uint32_t cy = getPosY(pos.y);
 
     getBaseMap()->getSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(go_spawn);
-    go->m_spawn = go_spawn;
 
     if (respawnTime)
         go->setRespawnTime(respawnTime);

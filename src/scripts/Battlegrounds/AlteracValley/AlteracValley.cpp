@@ -564,7 +564,7 @@ void AlteracValley::AVNode::Spawn()
         if (m_flag != nullptr)
         {
             DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : Despawning main flag", m_template->m_name);
-            m_flag->Despawn(0, 0);
+            m_flag->despawn(0, 0);
             m_flag = nullptr;
         }
     }
@@ -609,7 +609,7 @@ void AlteracValley::AVNode::Spawn()
         if (m_aura != nullptr)
         {
             DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : Despawning secondary flag", m_template->m_name);
-            m_aura->Despawn(0, 0);
+            m_aura->despawn(0, 0);
             m_aura = nullptr;
         }
     }
@@ -656,7 +656,7 @@ void AlteracValley::AVNode::Spawn()
         if (m_glow != nullptr)
         {
             DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : Despawning glow", m_template->m_name);
-            m_glow->Despawn(0, 0);
+            m_glow->despawn(0, 0);
             m_glow = nullptr;
         }
     }
@@ -1053,13 +1053,13 @@ void AlteracValley::OnCreate()
 {
     // Alliance Gate
     GameObject* gate = SpawnGameObject(AV_GAMEOBJECT_GATE, getWorldMap()->getBaseMap()->getMapId(), 780.487f, -493.024f, 99.9553f, 3.0976f, 32, 114, 3.000000f);
-    gate->SetRotationQuat(0.f, 0.f, 0.0129570f, -0.0602880f);
+    gate->setLocalRotation(0.f, 0.f, 0.0129570f, -0.0602880f);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 
     // Horde gate
     gate = SpawnGameObject(AV_GAMEOBJECT_GATE, getWorldMap()->getBaseMap()->getMapId(), -1375.73f, -538.966f, 55.3006f, 0.791198f, 32, 114, 3.000000f);
-    gate->SetRotationQuat(0.f, 0.f, 0.36f, 0.922766f);
+    gate->setLocalRotation(0.f, 0.f, 0.36f, 0.922766f);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 

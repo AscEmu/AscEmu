@@ -489,7 +489,7 @@ void IsleOfConquest::CloseGates()
     {
         for (uint8_t j = 0; j < 3; j++)
         {
-            gates[i][j].dyngate->Despawn(0, 0);
+            gates[i][j].dyngate->despawn(0, 0);
             gates[i][j].dyngate = nullptr;
             //gates[i][j].gate->Damage(1, 0, 0, 0);
         }

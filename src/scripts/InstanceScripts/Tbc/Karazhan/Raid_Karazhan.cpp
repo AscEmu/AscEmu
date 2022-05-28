@@ -663,13 +663,13 @@ public:
             Tinman->Despawn(0, 0);
 
         if (House)
-            House->Despawn(0, 0);
+            House->despawn(0, 0);
         if (Tree)
-            Tree->Despawn(0, 0);
+            Tree->despawn(0, 0);
         if (Tree2)
-            Tree2->Despawn(0, 0);
+            Tree2->despawn(0, 0);
         if (Tree3)
-            Tree3->Despawn(0, 0);
+            Tree3->despawn(0, 0);
         //if (BackDrop)
         //    BackDrop->getWorldMap()->getInterface()->DeleteGameObject(BackDrop);
     }

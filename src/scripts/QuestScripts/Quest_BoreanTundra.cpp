@@ -125,7 +125,7 @@ public:
 
         _gameobject->setState(GO_STATE_CLOSED);
         _gameobject->setState(GO_STATE_OPEN);
-        _gameobject->Despawn(500, 60000);
+        _gameobject->despawn(500, 60000);
     }
 };
 
@@ -204,7 +204,7 @@ public:
         //\todo why setting gameobject state 1 and 0?!?!
         _gameobject->setState(GO_STATE_CLOSED);
         _gameobject->setState(GO_STATE_OPEN);
-        _gameobject->Despawn(500, 60000);
+        _gameobject->despawn(500, 60000);
     }
 };
 

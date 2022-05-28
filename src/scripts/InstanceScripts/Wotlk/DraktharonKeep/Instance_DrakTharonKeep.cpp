@@ -156,7 +156,7 @@ public:
             {
                 GameObject* Crystal = getCreature()->getWorldMap()->getGameObject(getCreature()->m_ObjectSlots[i]);
                 if (Crystal && Crystal->IsInWorld())
-                    Crystal->Despawn(0, 0);
+                    Crystal->despawn(0, 0);
             }
         }
         getCreature()->setMoveRoot(true);
@@ -333,7 +333,7 @@ public:
             break;
         }
         GameObject* go = getCreature()->getWorldMap()->createGameObject(entry);
-        go->CreateFromProto(entry, getCreature()->getWorldMap()->getBaseMap()->getMapId(), x, y, z, o, 0.0f, 0.0f, 0.0f, 0.0f);
+        go->create(entry, getCreature()->getWorldMap(), 0, LocationVector(x, y, z, o), QuaternionData(), GO_STATE_CLOSED);
         go->PushToWorld(getCreature()->getWorldMap());
         getCreature()->m_ObjectSlots[id] = go->GetUIdFromGUID();
     }
@@ -367,7 +367,7 @@ public:
                     GameObject* Crystal = Novos->getWorldMap()->getGameObject(Novos->m_ObjectSlots[i]);
                     if (Crystal && Crystal->IsInWorld())
                     {
-                        Crystal->Despawn(0, 0);
+                        Crystal->despawn(0, 0);
                         return;
                     }
                 }

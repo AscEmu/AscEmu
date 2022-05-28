@@ -277,7 +277,7 @@ bool GameObject::isFishingNode() const { return getGoType() == GAMEOBJECT_TYPE_F
 
 bool GameObject::loadFromDB(uint32_t spawnId, WorldMap* map, bool addToWorld)
 {
-    MySQLStructure::GameobjectSpawn const* data = sMySQLStore.getGameObjectSpawn(spawnId);
+    MySQLStructure::GameobjectSpawn* data = sMySQLStore.getGameObjectSpawn(spawnId);
 
     if (!data)
     {
@@ -1090,7 +1090,7 @@ void GameObject::despawn(uint32_t delay, uint32_t forceRespawntime)
                 sEventMgr.RemoveEvents(this);
 
                 m_respawnCell = pCell;
-                uint32_t const respawnDelay = (forceRespawntime > 0) ? forceRespawntime : m_spawn->spawntimesecs;
+                uint32_t const respawnDelay = (forceRespawntime > 0) ? forceRespawntime : 0;
                 saveRespawnTime(respawnDelay);
                 RemoveFromWorld(false);
             }

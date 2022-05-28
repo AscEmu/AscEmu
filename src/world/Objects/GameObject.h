@@ -718,7 +718,7 @@ public:
     Transporter const* ToTransport() const { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter const*>(this); else return nullptr; }
     void updateModelPosition();
 
-    MySQLStructure::GameobjectSpawn const* m_spawn = nullptr;
+    MySQLStructure::GameobjectSpawn* m_spawn = nullptr;
 
     GameObjectValue const* getGOValue() const { return &m_goValue; }
 

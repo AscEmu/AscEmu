@@ -499,7 +499,7 @@ public:
             {
                 GameObject* barel = player->getWorldMap()->createAndSpawnGameObject(177491, LocationVector(2449.51f, -1662.32f, 104.38f, 1.0f), 1);
                 if (barel != nullptr)
-                    barel->Despawn(2 * 60 * 1000, 0);
+                    barel->despawn(2 * 60 * 1000, 0);
             }
         }
     }
@@ -559,7 +559,7 @@ public:
 
         GameObject* gobj = player->getWorldMap()->createAndSpawnGameObject(142194, LocationVector(pos.x + 5, pos.y, pos.z, pos.o), 1);
         if (gobj != nullptr)
-            gobj->Despawn(10 * 60 * 1000, 0);
+            gobj->despawn(10 * 60 * 1000, 0);
     }
 };
 
@@ -763,7 +763,7 @@ public:
         // Wth is that ? To remove ?
         GameObject* gobj = player->getWorldMap()->getInterface()->getGameObjectNearestCoords(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), 184729);
         if (gobj != nullptr)
-            gobj->Despawn(6 * 60 * 1000, 0);
+            gobj->despawn(6 * 60 * 1000, 0);
 
         Creature* spike = player->getWorldMap()->createAndSpawnCreature(21319, LocationVector(1315.54f, 6688.33f, -18, 0.001f));
         if (spike != nullptr)

@@ -113,7 +113,7 @@ public:
                 magneto->Despawn(5 * 60 * 1000, 0);
             }
 
-            _gameobject->Despawn(300000, 0);
+            _gameobject->despawn(300000, 0);
         }
     }
 };
@@ -134,7 +134,7 @@ public:
                 whelp->Despawn(5 * 60 * 1000, 0);
             }
 
-            _gameobject->Despawn(300000, 0);
+            _gameobject->despawn(300000, 0);
         }
     }
 };
@@ -352,7 +352,7 @@ public:
             if (NdGo == nullptr)
                 return;
 
-            NdGo->Despawn(0, 0);
+            NdGo->despawn(0, 0);
             Ogre->despawn(60 * 1000, 3 * 60 * 1000);
             if (plr == nullptr)
                 return;

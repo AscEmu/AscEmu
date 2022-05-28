@@ -341,15 +341,15 @@ int LuaGameObject::SpawnGameObject(lua_State* L, GameObject* ptr)
 
     GameObject* go = ptr->getWorldMap()->createGameObject(entry_id);
     uint32_t mapid = ptr->GetMapId();
-    go->CreateFromProto(entry_id, mapid, x, y, z, o);
+    go->create(entry_id, ptr->getWorldMap(), ptr->GetPhase(), LocationVector(x, y, z, o), QuaternionData(), GO_STATE_CLOSED);
     go->Phase(PHASE_SET, phase);
     go->setScale(scale);
     go->AddToWorld(ptr->getWorldMap());
 
     if (duration)
-    sEventMgr.AddEvent(go, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_UPDATE, duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        go->despawn( duration, 0);
     if (save)
-        go->SaveToDB();
+        go->saveToDB();
     PUSH_GO(L, go);
     return 1;
 }
@@ -617,7 +617,7 @@ int LuaGameObject::Update(lua_State* /*L*/, GameObject* ptr)
     ptr->RemoveFromWorld(true);
     ptr->SetNewGuid(NewGuid);
     ptr->PushToWorld(mapmgr);
-    ptr->SaveToDB();
+    ptr->saveToDB();
     return 0;
 }
 
@@ -718,7 +718,7 @@ int LuaGameObject::PhaseSet(lua_State* L, GameObject* ptr)
         ptr->m_spawn->phase = newphase;
     if (Save)
     {
-        ptr->SaveToDB();
+        ptr->saveToDB();
         ptr->m_loadedFromDB = true;
     }
     return 0;
@@ -735,7 +735,7 @@ int LuaGameObject::PhaseAdd(lua_State* L, GameObject* ptr)
         ptr->m_spawn->phase |= newphase;
     if (Save)
     {
-        ptr->SaveToDB();
+        ptr->saveToDB();
         ptr->m_loadedFromDB = true;
     }
     return 0;
@@ -752,7 +752,7 @@ int LuaGameObject::PhaseDelete(lua_State* L, GameObject* ptr)
         ptr->m_spawn->phase &= ~newphase;
     if (Save)
     {
-        ptr->SaveToDB();
+        ptr->saveToDB();
         ptr->m_loadedFromDB = true;
     }
     return 0;
@@ -809,7 +809,7 @@ int LuaGameObject::DespawnObject(lua_State* L, GameObject* ptr)
     int respawntime = static_cast<int>(luaL_checkinteger(L, 2));
     if (!delay)
         delay = 1; //Delay 0 might cause bugs
-    ptr->Despawn(delay, respawntime);
+    ptr->despawn(delay, respawntime);
     return 0;
 }
 
@@ -935,7 +935,7 @@ int LuaGameObject::SetPosition(lua_State* L, GameObject* ptr)
     ptr->SetPosition(x, y, z, o);
     ptr->PushToWorld(mapMgr);
     if (save)
-        ptr->SaveToDB();
+        ptr->saveToDB();
     RET_BOOL(true)
 }
 

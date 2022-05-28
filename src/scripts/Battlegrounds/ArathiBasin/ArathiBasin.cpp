@@ -163,7 +163,7 @@ void ArathiBasin::SpawnBuff(uint32_t x)
         m_buffs[x] = SpawnGameObject(chosen_buffid, m_mapMgr->getBaseMap()->getMapId(), BuffCoordinates[x][0], BuffCoordinates[x][1], BuffCoordinates[x][2],
             BuffCoordinates[x][3], 0, 114, 1);
 
-        m_buffs[x]->SetRotationQuat(0.f, 0.f, BuffRotations[x][0], BuffRotations[x][1]);
+        m_buffs[x]->setLocalRotation(0.f, 0.f, BuffRotations[x][0], BuffRotations[x][1]);
         m_buffs[x]->setState(GO_STATE_CLOSED);
         m_buffs[x]->setGoType(GAMEOBJECT_TYPE_TRAP);
         m_buffs[x]->setAnimationProgress(100);
@@ -199,7 +199,7 @@ void ArathiBasin::SpawnControlPoint(uint32_t Id, uint32_t Type)
         m_controlPoints[Id] = SpawnGameObject(gameobject_info->entry, m_mapMgr->getBaseMap()->getMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
             ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
-        m_controlPoints[Id]->SetRotationQuat(0.f, 0.f, ControlPointRotations[Id][0], ControlPointRotations[Id][1]);
+        m_controlPoints[Id]->setLocalRotation(0.f, 0.f, ControlPointRotations[Id][0], ControlPointRotations[Id][1]);
         m_controlPoints[Id]->setState(GO_STATE_CLOSED);
         m_controlPoints[Id]->setGoType(static_cast<uint8_t>(gameobject_info->type));
         m_controlPoints[Id]->setAnimationProgress(100);
@@ -271,7 +271,7 @@ void ArathiBasin::SpawnControlPoint(uint32_t Id, uint32_t Type)
         m_controlPointAuras[Id] = SpawnGameObject(gi_aura->entry, m_mapMgr->getBaseMap()->getMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
             ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
-        m_controlPointAuras[Id]->SetRotationQuat(0.f, 0.f, ControlPointRotations[Id][0], ControlPointRotations[Id][1]);
+        m_controlPointAuras[Id]->setLocalRotation(0.f, 0.f, ControlPointRotations[Id][0], ControlPointRotations[Id][1]);
         m_controlPointAuras[Id]->setState(GO_STATE_CLOSED);
         m_controlPointAuras[Id]->setGoType(GAMEOBJECT_TYPE_TRAP);
         m_controlPointAuras[Id]->setAnimationProgress(100);

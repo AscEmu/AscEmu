@@ -137,7 +137,7 @@ public:
     GameObjectProperties const* getGameObjectProperties(uint32_t entry);
     GameObjectPropertiesContainer const* getGameObjectPropertiesStore() { return &_gameobjectPropertiesStore; }
 
-    MySQLStructure::GameobjectSpawn const* getGameObjectSpawn(uint32_t spawnId) const;
+    MySQLStructure::GameobjectSpawn* getGameObjectSpawn(uint32_t spawnId);
     MySQLStructure::GameObjectSpawnExtra const* getGameObjectExtra(uint32_t lowguid) const;
     MySQLStructure::GameObjectSpawnOverrides const* getGameObjectOverride(uint32_t lowguid) const;
 

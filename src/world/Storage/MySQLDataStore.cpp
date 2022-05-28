@@ -4434,9 +4434,9 @@ void MySQLDataStore::loadGameobjectSpawns()
     sLogger.info("MySQLDataLoads : Loaded %u rows from `gameobject_spawns` table in %u ms!", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
-MySQLStructure::GameobjectSpawn const* MySQLDataStore::getGameObjectSpawn(uint32_t spawnId) const
+MySQLStructure::GameobjectSpawn* MySQLDataStore::getGameObjectSpawn(uint32_t spawnId)
 {
-    GameObjectSpawnContainer::const_iterator itr = _gameObjectSpawnStore.find(spawnId);
+    GameObjectSpawnContainer::iterator itr = _gameObjectSpawnStore.find(spawnId);
     if (itr == _gameObjectSpawnStore.end()) return nullptr;
     return &itr->second;
 }
