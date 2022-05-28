@@ -3,8 +3,7 @@ Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef LOG_DEFINES_HPP
-#define LOG_DEFINES_HPP
+#pragma once
 
 #include "Common.hpp"
 
@@ -27,12 +26,3 @@ This file is released under the MIT license. See README-MIT for more information
     #define CONSOLE_COLOR_CYAN      "\033[1;36m"
     #define CONSOLE_COLOR_PURPLE    "\033[0;35m"
 #endif
-
-enum LogLevel
-{
-    LL_NORMAL    = 0,
-    LL_DETAIL    = 1,
-    LL_DEBUG     = 2
-};
-
-#endif  // LOG_DEFINES_HPP
