@@ -707,7 +707,7 @@ void GameObject::Update(unsigned long time_passed)
     {
         case GO_NOT_READY:
         {
-            switch (getOType())
+            switch (getGoType())
             {
                 case GAMEOBJECT_TYPE_TRAP:
                 {
@@ -743,7 +743,13 @@ void GameObject::Update(unsigned long time_passed)
                         {
                             setState(GO_STATE_OPEN);
                             setFlags(GO_FLAG_NEVER_DESPAWN);
-                            sendGameobjectCustomAnim(getAnimationProgress());
+
+                            ByteBuffer data(2500);
+                            uint32_t count = 0;
+                            count = BuildValuesUpdateBlockForPlayer(&data, caster->ToPlayer());
+                            caster->ToPlayer()->getUpdateMgr().pushUpdateData(&data, count);
+
+                            sendGameobjectCustomAnim(0);
                         }
 
                         m_lootState = GO_READY;                 // can be successfully open with some chance

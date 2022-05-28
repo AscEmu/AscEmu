@@ -7779,6 +7779,9 @@ void Unit::removeGameObject(GameObject* gameObj, bool del)
     if (!gameObj || gameObj->getOwnerGUID() != getGuid())
         return;
 
+    if (isPlayer())
+        ToPlayer()->setSummonedObject(0);
+
     gameObj->setOwnerGuid(0);
 
     for (uint8 i = 0; i < 4; ++i)

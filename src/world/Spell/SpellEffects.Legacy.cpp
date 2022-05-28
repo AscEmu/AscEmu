@@ -3999,13 +3999,14 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         LocationVector pos = { posx, posy, liquidLevel, u_caster->GetOrientation() };
         QuaternionData rot = QuaternionData::fromEulerAnglesZYX(u_caster->GetOrientation(), 0.f, 0.f);
 
-        go->create(entry, map, 0, pos, rot, GO_STATE_CLOSED);
-        go->setFlags(GO_FLAG_NONE);
-        go->setState(GO_STATE_OPEN);
-        go->setCreatedByGuid(m_caster->getGuid());
-        go->SetFaction(u_caster->getFactionTemplate());
-        go->Phase(PHASE_SET, u_caster->GetPhase());
+        if (!go->create(entry, map, p_caster->GetPhase(), pos, rot, GO_STATE_CLOSED))
+        {
+            delete go;
+            return;
+        }
 
+        go->setGoType(GAMEOBJECT_TYPE_FISHINGNODE);
+        go->setCreatedByGuid(m_caster->getGuid());
         u_caster->addGameObject(go);
 
         go->PushToWorld(m_caster->getWorldMap());
