@@ -3200,7 +3200,7 @@ void LuaEngine::ResumeLuaThread(int ref)
         if (lua_rawequal(lu, -1, -2))
         {
             lua_pop(lu, 2);
-            int res = lua_resume(expectedThread, expectedThread, lua_gettop(expectedThread));
+            int res = lua_resume(expectedThread, expectedThread, lua_gettop(expectedThread), nullptr);
             if (res && res != LUA_YIELD)
                 report(expectedThread);
         }
