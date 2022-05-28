@@ -137,6 +137,9 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
         if (!count)
             lootGameObject->expireAndDelete();
     }
+
+    if (loot->isLooted() && wowGuid.isItem())
+        _player->getSession()->doLootRelease(wowGuid);
 }
 
 Loot* WorldSession::getMoneyLootFromHighGuidType(WoWGuid wowGuid)
@@ -225,6 +228,10 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
 
     // Clear Money
     loot->gold = 0;
+
+    // Delete container if empty
+    if (loot->isLooted() && wowGuid.isItem())
+        _player->getSession()->doLootRelease(wowGuid);
 
     if (!_player->isInGroup())
     {
@@ -349,198 +356,89 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    SendPacket(SmsgLootReleaseResponse(srlPacket.guid.getRawGuid(), 1).serialise().get());
+    if (ObjectGuid lguid = GetPlayer()->getLootGuid())
+        if (lguid == srlPacket.guid)
+            doLootRelease(srlPacket.guid);
+}
+
+void WorldSession::doLootRelease(WoWGuid lguid)
+{
+    Player* player = GetPlayer();
+    Loot* loot;
+
+    SendPacket(SmsgLootReleaseResponse(lguid.getRawGuid(), 1).serialise().get());
 
     _player->setLootGuid(0);
     _player->removeUnitFlags(UNIT_FLAG_LOOTING);
     _player->m_currentLoot = 0;
 
-    if (srlPacket.guid.isUnit())
+    if (!player->IsInWorld())
+        return;
+
+    if (lguid.isGameObject())
     {
-        Creature* creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
-        if (creature == nullptr)
-            return;
-
-        // Remove our Guid
-        creature->loot.removeLooter(_player->getGuidLow());
-
-        // Remove roundrobin and make Lootable for evryone in our group
-        creature->loot.roundRobinPlayer = 0;
-
-        if (creature->loot.isLooted())
+        GameObject* go = GetPlayer()->getWorldMap()->getGameObject(lguid.getGuidLowPart());
+        if (auto gameObjectLootable = dynamic_cast<GameObject_Lootable*>(go))
         {
-            // Make creature no Longer Lootable we have no more loot left
-            for (auto players : creature->getInRangePlayersSet())
+            // Remove our Guid
+            gameObjectLootable->loot.removeLooter(_player->getGuidLow());
+
+            // Remove roundrobin and make Lootable for evryone in our group
+            gameObjectLootable->loot.roundRobinPlayer = 0;
+            // not check distance for GO in case owned GO (fishing bobber case, for example) or Fishing hole GO
+            if (!go || ((go->getOwnerGUID() != _player->getGuid() && go->getGoType() != GAMEOBJECT_TYPE_FISHINGHOLE) && !go->IsWithinDistInMap(_player, 30.0f)))
+                return;
+
+            loot = &gameObjectLootable->loot;
+
+            if (go->getGoType() == GAMEOBJECT_TYPE_DOOR)
             {
-                Player* plr = players->ToPlayer();
-                if (creature->isTaggedByPlayerOrItsGroup(plr))
-                {
-#if VERSION_STRING < Mop
-                    creature->BuildFieldUpdatePacket(plr, getOffsetForStructuredField(WoWUnit, dynamic_flags), 0);
-#else
-                    creature->BuildFieldUpdatePacket(plr, getOffsetForStructuredField(WoWObject, dynamic_field), 0);
-#endif
-                }
+                // locked doors are opened with spelleffect openlock, prevent remove its as looted
+                go->useDoorOrButton();
             }
-
-            // Make our Creature Skinnable when possible
-            if (!creature->Skinned && sLootMgr.isSkinnable(creature->getEntry()))
-                creature->BuildFieldUpdatePacket(_player, getOffsetForStructuredField(WoWUnit, unit_flags), UNIT_FLAG_SKINNABLE);
-        }
-        else
-        {
-            // When Loot is left make Lootable for our mates
-            // Send Loot Update to our GroupMembers
-            for (auto players : _player->getInRangePlayersSet())
+            else if (loot->isLooted() || go->getGoType() == GAMEOBJECT_TYPE_FISHINGNODE)
             {
-                Player* plr = players->ToPlayer();
-                if (creature->isTaggedByPlayerOrItsGroup(plr))
-                {
-                    plr->sendLootUpdate(creature);
-                }
-            }
-        }
-    }
-    else if (srlPacket.guid.isGameObject())
-    {
-        GameObject* gameObject = _player->getWorldMap()->getGameObject(srlPacket.guid.getGuidLow());
-        if (gameObject == nullptr)
-            return;
-
-        switch (gameObject->getGoType())
-        {
-            case GAMEOBJECT_TYPE_FISHINGNODE:
-            {
-                if (auto pLGO = dynamic_cast<GameObject_Lootable*>(gameObject))
-                {
-                    // Remove our Guid
-                    pLGO->loot.removeLooter(_player->getGuidLow());
-
-                    if (gameObject->IsInWorld())
-                        gameObject->RemoveFromWorld(true);
-
-                    delete gameObject;
-                }
-            }
-            break;
-            case GAMEOBJECT_TYPE_CHEST:
-            {
-                if (auto gameObjectLootable = dynamic_cast<GameObject_Lootable*>(gameObject))
-                {
-                    // Remove our Guid
-                    gameObjectLootable->loot.removeLooter(_player->getGuidLow());
-
-                    // Remove roundrobin and make Lootable for evryone in our group
-                    gameObjectLootable->loot.roundRobinPlayer = 0;
-
-                    bool despawn = false;
-                    if (gameObject->GetGameObjectProperties()->chest.consumable == 1)
-                        despawn = true;
-
-                    const uint32_t lootQuestId = sQuestMgr.GetGameObjectLootQuest(gameObject->getEntry());
-                    const uint32_t longDespawnTime = 900 + Util::getRandomUInt(600);
-                    const uint32_t despawnTime = lootQuestId ? 180 + Util::getRandomUInt(180) : longDespawnTime;
-                    const uint32_t despawnTimeInstanceCheck = lootQuestId ? 180 + Util::getRandomUInt(180) : IS_INSTANCE(gameObject->GetMapId()) ? 0 : longDespawnTime;
-
-                    const auto lockEntry = sLockStore.LookupEntry(gameObject->GetGameObjectProperties()->chest.lock_id);
-                    if (lockEntry != nullptr)
-                    {
-                        for (uint32_t i = 0; i < LOCK_NUM_CASES; ++i)
-                        {
-                            if (lockEntry->locktype[i] != 0)
-                            {
-                                if (lockEntry->locktype[i] == 1)
-                                {
-                                    if (despawn)
-                                        gameObject->despawn(0, despawnTime);
-                                    else
-                                        gameObject->setState(GO_STATE_CLOSED);
-
-                                    return;
-                                }
-
-                                if (lockEntry->locktype[i] == 2)
-                                {
-                                    if (lockEntry->lockmisc[i] == LOCKTYPE_MINING || lockEntry->lockmisc[i] == LOCKTYPE_HERBALISM)
-                                    {
-                                        if (gameObjectLootable->HasLoot())
-                                        {
-                                            gameObject->setState(GO_STATE_CLOSED);
-
-                                            // despawn after 5 minutes when loot was left
-                                            gameObject->despawn(5*MINUTE*IN_MILLISECONDS, longDespawnTime);
-                                            return;
-                                        }
-
-                                        gameObject->despawn(0, longDespawnTime);
-                                        return;
-                                    }
-                                }
-                                else
-                                {
-                                    if (gameObjectLootable->HasLoot())
-                                    {
-                                        gameObject->setState(GO_STATE_CLOSED);
-
-                                        // despawn after 5 minutes when loot was left
-                                        gameObject->despawn(5 * MINUTE*IN_MILLISECONDS, despawnTimeInstanceCheck);
-                                        return;
-                                    }
-                                    gameObject->despawn(0, despawnTimeInstanceCheck);
-                                    return;
-                                }
-                            }
-                            else
-                            {
-                                if (gameObjectLootable->HasLoot())
-                                {
-                                    gameObject->setState(GO_STATE_CLOSED);
-
-                                    // despawn after 5 minutes when loot was left
-                                    gameObject->despawn(5 * MINUTE*IN_MILLISECONDS, despawnTimeInstanceCheck);
-                                    return;
-                                }
-                                gameObject->despawn(0, despawnTimeInstanceCheck);
-                                return;
-                            }
-                        }
-                    }
+                if (go->getGoType() == GAMEOBJECT_TYPE_FISHINGHOLE)
+                {                                               // The fishing hole used once more
+                    go->addUse();                               // if the max usage is reached, will be despawned in next tick
+                    if (go->getUseCount() >= go->getGOValue()->FishingHole.MaxOpens)
+                        go->setLootState(GO_JUST_DEACTIVATED);
                     else
-                    {
-                        if (gameObjectLootable->HasLoot())
-                        {
-                            gameObject->setState(GO_STATE_CLOSED);
-
-                            // despawn after 5 minutes when loot was left
-                            gameObject->despawn(5 * MINUTE*IN_MILLISECONDS, despawnTimeInstanceCheck);
-                            return;
-                        }
-
-                        gameObject->despawn(0, despawnTimeInstanceCheck);
-                    }
+                        go->setLootState(GO_READY);
                 }
+                else
+                    go->setLootState(GO_JUST_DEACTIVATED);
+
+                loot->clear();
             }
-            default:
-                break;
+            else
+            {
+                // not fully looted object
+                go->setLootState(GO_ACTIVATED, player);
+
+                // if the round robin player release, reset it.
+                if (player->getGuid() == loot->roundRobinPlayer)
+                    loot->roundRobinPlayer = 0;
+            }
         }
     }
-    else if (srlPacket.guid.isCorpse())
+    else if (lguid.isCorpse())        // ONLY remove insignia at BG
     {
-        if (auto corpse = sObjectMgr.GetCorpse(srlPacket.guid.getGuidLow()))
-            corpse->setDynamicFlags(0);
-    }
-    else if (srlPacket.guid.isPlayer())
-    {
-        if (auto player = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow()))
+        Corpse* corpse = sObjectMgr.GetCorpse(lguid.getGuidLow());
+        if (!corpse || !corpse->IsWithinDistInMap(_player, 5.0f))
+            return;
+
+        loot = &corpse->loot;
+
+        if (loot->isLooted())
         {
-            player->m_lootableOnCorpse = false;
-            player->loot.items.clear();
-            player->removeDynamicFlags(U_DYN_FLAG_LOOTABLE);
+            loot->clear();
+            corpse->setDynamicFlags(0);
         }
     }
-    else if (srlPacket.guid.isItem())
+    else if (lguid.isItem())
     {
-        if (auto item = _player->getItemInterface()->GetItemByGUID(srlPacket.guid.getRawGuid()))
+        if (auto item = _player->getItemInterface()->GetItemByGUID(lguid.getRawGuid()))
         {
             if (item->loot != nullptr)
             {
@@ -552,13 +450,65 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
             }
 
             if (item->loot == nullptr)
-                _player->getItemInterface()->RemoveItemAmtByGuid(srlPacket.guid.getRawGuid(), 1);
+                _player->getItemInterface()->RemoveItemAmtByGuid(lguid.getRawGuid(), 1);
+        }
+        return;                                             // item can be looted only single player
+    }
+    else if (lguid.isPlayer())
+    {
+        if (auto player = sObjectMgr.GetPlayer(lguid.getGuidLow()))
+        {
+            player->m_lootableOnCorpse = false;
+            player->loot.items.clear();
+            player->removeDynamicFlags(U_DYN_FLAG_LOOTABLE);
         }
     }
     else
     {
-        sLogger.debug("Unhandled loot source object type in handleLootReleaseOpcode");
+        if (Creature* creature = GetPlayer()->getWorldMap()->getCreature(lguid.getGuidLow()))
+        {
+            // Remove roundrobin and make Lootable for evryone in our group
+            creature->loot.roundRobinPlayer = 0;
+
+            loot = &creature->loot;
+            if (creature->loot.isLooted())
+            {
+                // Make creature no Longer Lootable we have no more loot left
+                for (auto players : creature->getInRangePlayersSet())
+                {
+                    Player* plr = players->ToPlayer();
+                    if (creature->isTaggedByPlayerOrItsGroup(plr))
+                    {
+#if VERSION_STRING < Mop
+                        creature->BuildFieldUpdatePacket(plr, getOffsetForStructuredField(WoWUnit, dynamic_flags), 0);
+#else
+                        creature->BuildFieldUpdatePacket(plr, getOffsetForStructuredField(WoWObject, dynamic_field), 0);
+#endif
+                    }
+                }
+
+                // Make our Creature Skinnable when possible
+                if (!creature->Skinned && sLootMgr.isSkinnable(creature->getEntry()))
+                    creature->BuildFieldUpdatePacket(_player, getOffsetForStructuredField(WoWUnit, unit_flags), UNIT_FLAG_SKINNABLE);
+            }
+            else
+            {
+                // When Loot is left make Lootable for our mates
+                // Send Loot Update to our GroupMembers
+                for (auto players : _player->getInRangePlayersSet())
+                {
+                    Player* plr = players->ToPlayer();
+                    if (creature->isTaggedByPlayerOrItsGroup(plr))
+                    {
+                        plr->sendLootUpdate(creature);
+                    }
+                }
+            }
+        }
     }
+
+    //Player is not looking at loot list, he doesn't need to see updates on the loot list
+    loot->removeLooter(_player->getGuidLow());
 }
 
 void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)

@@ -1732,7 +1732,7 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
 
     uint32_t mapid = getBaseMap()->getMapId();
     // Setup game object
-    go->create(entryID, mapid, go->GetPhase(), pos, QuaternionData(), GO_STATE_CLOSED);
+    go->create(entryID, this, go->GetPhase(), pos, QuaternionData(), GO_STATE_CLOSED);
     go->setScale(scale);
     go->InitAI();
     go->PushToWorld(this);
@@ -1754,7 +1754,8 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
     getBaseMap()->getSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(go_spawn);
     go->m_spawn = go_spawn;
 
-    go->setRespawnTime(respawnTime);
+    if (respawnTime)
+        go->setRespawnTime(respawnTime);
 
     MapCell* mCell = getCell(cx, cy);
 

@@ -556,6 +556,7 @@ public:
         LocationVector getFirstCollisionPosition(float dist, float angle);
 
         virtual float getCombatReach() const { return 0.0f; } // overridden (only) in Unit
+        Unit* getOwner();
         virtual uint64_t getOwnerGUID() const { return 0; }
         virtual uint64_t getCharmerOrOwnerGUID() const { return getOwnerGUID(); }
 

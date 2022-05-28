@@ -67,19 +67,18 @@ bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float
 
     Object::_Create(mapid, x, y, z, ang);
     setEntry(entry);
-    SetPosition(LocationVector(x, y, z, ang));
-    setDisplayId(gameobject_properties->display_id);
-    m_phase = 0;
-
     setLocalRotation(0.0f, 0.0f, 0.0f, 1.0f);
     setParentRotation(QuaternionData());
-
-    setScale(gameobject_properties->size);
+    SetPosition(LocationVector(x, y, z, ang));
+    setDisplayId(gameobject_properties->display_id);
+    setGoType(static_cast<uint8>(gameobject_properties->type));
 
     m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
     setFlags(GO_FLAG_TRANSPORT | GO_FLAG_NEVER_DESPAWN);
     setState(gameobject_properties->mo_transport.can_be_stopped ? GO_STATE_CLOSED : GO_STATE_OPEN);
     m_goValue.Transport.PathProgress = 0;
+
+    setScale(gameobject_properties->size);
 
     InitAI();
 

@@ -53,6 +53,16 @@ enum LootRollType
     ROLL_DISENCHANT                 = 3                         // Player Picks Disenchant for an Item
 };
 
+enum LootModes
+{
+    LOOT_MODE_DEFAULT               = 0x1,
+    LOOT_MODE_HARD_MODE_1           = 0x2,
+    LOOT_MODE_HARD_MODE_2           = 0x4,
+    LOOT_MODE_HARD_MODE_3           = 0x8,
+    LOOT_MODE_HARD_MODE_4           = 0x10,
+    LOOT_MODE_JUNK_FISH             = 0x8000
+};
+
 class LootRoll : public EventableObject
 {
     public:
@@ -292,6 +302,9 @@ struct Loot
 
     // clear our Loot
     void clear();
+
+    // return true when there is Loot left
+    bool empty() const { return items.empty() && gold == 0; }
 
     // return true when all Items and Money are Looted
     bool isLooted() const { return gold == 0 && unlootedCount == 0; }

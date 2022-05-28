@@ -409,7 +409,11 @@ enum LootType
     LOOT_DISENCHANTING          = 2,        // 4    // ignored
     LOOT_PROSPECTING            = 2,        // 7
     LOOT_MILLING                = 2,        // 8
-    LOOT_INSIGNIA               = 2         // 21 unsupported by client, sending LOOT_SKINNING instead
+    LOOT_INSIGNIA               = 2,        // 21 unsupported by client, sending LOOT_SKINNING instead
+
+
+    LOOT_FISHINGHOLE            = 20,      // unsupported by client, sending LOOT_FISHING instead
+    LOOT_FISHING_JUNK           = 21       // unsupported by client, sending LOOT_FISHING instead
 };
 
 enum ModType

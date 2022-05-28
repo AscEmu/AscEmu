@@ -57,7 +57,7 @@ GameObject* MapScriptInterface::spawnGameObject(uint32_t Entry, LocationVector p
 {
 
     GameObject* pGameObject = m_worldMap.createGameObject(Entry);
-    if (!pGameObject->create(Entry, m_worldMap.getBaseMap()->getMapId(), phase, pos, QuaternionData(), GO_STATE_CLOSED))
+    if (!pGameObject->create(Entry, &m_worldMap, phase, pos, QuaternionData(), GO_STATE_CLOSED))
     {
         delete pGameObject;
         return nullptr;

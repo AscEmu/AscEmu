@@ -682,6 +682,8 @@ protected:
         void handleLootReleaseOpcode(WorldPacket& recvPacket);
         void handleLootMasterGiveOpcode(WorldPacket& recvPacket);
 
+        void doLootRelease(WoWGuid lguid);
+
         //////////////////////////////////////////////////////////////////////////////////////////
         // MailHandler.cpp
         void handleGetMailOpcode(WorldPacket& /*recvPacket*/);

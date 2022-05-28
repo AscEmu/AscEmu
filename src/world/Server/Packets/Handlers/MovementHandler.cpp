@@ -210,9 +210,6 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
             auto* const go = dynamic_cast<GameObject*>(summoned_object);
             if (go->isFishingNode())
             {
-                auto* fishing_node = dynamic_cast<GameObject_FishingNode*>(go);
-                fishing_node->EndFishing(true);
-
                 // This is done separately as not all channeled spells are canceled by all movement opcodes
                 if (auto* spell = _player->getCurrentSpell(CURRENT_CHANNELED_SPELL))
                 {

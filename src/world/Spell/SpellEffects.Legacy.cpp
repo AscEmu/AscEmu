@@ -3999,7 +3999,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
     LocationVector pos = { fx, fy, fz, u_caster->GetOrientation() };
     QuaternionData rot = QuaternionData::fromEulerAnglesZYX(u_caster->GetOrientation(), 0.f, 0.f);
     GameObject* go = u_caster->getWorldMap()->createGameObject(entry);
-    if (!go->create(entry, mapid, u_caster->GetPhase(), pos, rot, GO_STATE_CLOSED))
+    if (!go->create(entry, map, u_caster->GetPhase(), pos, rot, GO_STATE_CLOSED))
     {
         delete go;
         return;
@@ -4052,6 +4052,13 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
     }
 
     go->setRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
+    go->setSpellId(m_spellInfo->getId());
+
+    if (GameObject* linkedTrap = go->getLinkedTrap())
+    {
+        linkedTrap->setRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
+        linkedTrap->setSpellId(m_spellInfo->getId());
+    }
 
     if (p_caster != nullptr)
         p_caster->setSummonedObject(go);
@@ -4649,7 +4656,7 @@ void Spell::SpellEffectSummonObjectWild(uint8_t effectIndex)
 
     // spawn a new one
     GameObject* GoSummon = u_caster->getWorldMap()->createGameObject(gameobject_id);
-    if (!GoSummon->create(gameobject_id, map->getBaseMap()->getMapId(), m_caster->GetPhase(), LocationVector(x, y, z, m_caster->GetOrientation()), rot, GO_STATE_CLOSED))
+    if (!GoSummon->create(gameobject_id, map, m_caster->GetPhase(), LocationVector(x, y, z, m_caster->GetOrientation()), rot, GO_STATE_CLOSED))
     {
         delete GoSummon;
         return;
@@ -4661,6 +4668,13 @@ void Spell::SpellEffectSummonObjectWild(uint8_t effectIndex)
 
     GoSummon->PushToWorld(u_caster->getWorldMap());
     GoSummon->SetSummoned(u_caster);
+    GoSummon->setSpellId(m_spellInfo->getId());
+
+    if (GameObject* linkedTrap = GoSummon->getLinkedTrap())
+    {
+        linkedTrap->setRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
+        linkedTrap->setSpellId(m_spellInfo->getId());
+    }
 }
 
 void Spell::SpellEffectSanctuary(uint8_t /*effectIndex*/) // Stop all attacks made to you
@@ -5198,7 +5212,7 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
     }
 
     QuaternionData rot = QuaternionData::fromEulerAnglesZYX(m_caster->GetOrientation(), 0.f, 0.f);
-    if (!GoSummon->create(getSpellInfo()->getEffectMiscValue(effectIndex), m_caster->GetMapId(), m_caster->GetPhase(), LocationVector(dx, dy, dz, m_caster->GetOrientation()), rot, GO_STATE_CLOSED))
+    if (!GoSummon->create(getSpellInfo()->getEffectMiscValue(effectIndex), m_caster->getWorldMap(), m_caster->GetPhase(), LocationVector(dx, dy, dz, m_caster->GetOrientation()), rot, GO_STATE_CLOSED))
     {
         delete GoSummon;
         return;

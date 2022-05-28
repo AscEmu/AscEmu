@@ -337,6 +337,11 @@ struct GameObjectProperties
         // 19 GAMEOBJECT_TYPE_MAILBOX
         // 20 GAMEOBJECT_TYPE_AUCTIONHOUSE
         // 21 GAMEOBJECT_TYPE_GUARDPOST
+        struct
+        {
+            uint32 creatureID;                              //0
+            uint32 charges;                                 //1
+        } guardpost;
         // 22 GAMEOBJECT_TYPE_SPELLCASTER
         struct
         {
@@ -478,6 +483,56 @@ struct GameObjectProperties
     // <quest, [<item, item_count>]>
     GameObjectItemMap itemMap;
 
+    uint32_t getLootId() const
+    {
+        switch (type)
+        {
+            case GAMEOBJECT_TYPE_CHEST:       return chest.loot_id;
+            case GAMEOBJECT_TYPE_FISHINGHOLE: return fishinghole.loot_id;
+            default: return 0;
+        }
+    }
+
+    uint32_t getCooldown() const                              // Cooldown preventing goober and traps to cast spell
+    {
+        switch (type)
+        {
+            case GAMEOBJECT_TYPE_TRAP:        return trap.cooldown;
+            case GAMEOBJECT_TYPE_GOOBER:      return goober.cooldown;
+            default: return 0;
+        }
+    }
+
+    uint32_t getLockId() const
+    {
+        switch (type)
+        {
+            case GAMEOBJECT_TYPE_DOOR:       return door.lock_id;
+            case GAMEOBJECT_TYPE_BUTTON:     return button.lock_id;
+            case GAMEOBJECT_TYPE_QUESTGIVER: return questgiver.lockId;
+            case GAMEOBJECT_TYPE_CHEST:      return chest.lock_id;
+            case GAMEOBJECT_TYPE_TRAP:       return trap.lock_id;
+            case GAMEOBJECT_TYPE_GOOBER:     return goober.lock_id;
+            case GAMEOBJECT_TYPE_AREADAMAGE: return areadamage.lockId;
+            case GAMEOBJECT_TYPE_CAMERA:     return camera.lock_id;
+            case GAMEOBJECT_TYPE_FLAGSTAND:  return flagstand.lockId;
+            case GAMEOBJECT_TYPE_FISHINGHOLE:return fishinghole.lock_id;
+            case GAMEOBJECT_TYPE_FLAGDROP:   return flagdrop.lockId;
+            default: return 0;
+        }
+    }
+
+    uint32_t getCharges() const                               // despawn at uses amount
+    {
+        switch (type)
+        {
+            //case GAMEOBJECT_TYPE_TRAP:        return trap.charges;
+            case GAMEOBJECT_TYPE_GUARDPOST:   return guardpost.charges;
+            case GAMEOBJECT_TYPE_SPELLCASTER: return spell_caster.charges;
+            default: return 0;
+        }
+    }
+
     bool isDespawnAtAction() const
     {
         switch (type)
@@ -499,6 +554,18 @@ struct GameObjectProperties
             case GAMEOBJECT_TYPE_FLAGSTAND:  return flagstand.noDamageImmune != 0;
             case GAMEOBJECT_TYPE_FLAGDROP:   return flagdrop.noDamageImmune != 0;
             default: return true;
+        }
+    }
+
+    uint32_t getLinkedGameObjectEntry() const
+    {
+        switch (type)
+        {
+            case GAMEOBJECT_TYPE_BUTTON:      return button.linked_trap_id;
+            case GAMEOBJECT_TYPE_CHEST:       return chest.linked_trap_id;
+            case GAMEOBJECT_TYPE_SPELL_FOCUS: return spell_focus.linked_trap_id;
+            case GAMEOBJECT_TYPE_GOOBER:      return goober.linked_trap_id;
+            default: return 0;
         }
     }
 
@@ -567,18 +634,63 @@ public:
     bool loadFromDB(uint32_t spawnId, WorldMap* map, bool addToWorld);
     void saveToDB();
     void deleteFromDB();
-    bool create(uint32_t entry, uint32_t mapId, uint32_t phase, LocationVector const& position, QuaternionData const&  rotation, GameObject_State state, uint32_t spawnId = 0);
+    bool create(uint32_t entry, WorldMap* map, uint32_t phase, LocationVector const& position, QuaternionData const&  rotation, GameObject_State state, uint32_t spawnId = 0);
 
     uint32_t getSpawnId() const { return m_spawnId; }
 
     void despawn(uint32_t delay /*milliseconds*/, uint32_t forceRespawntime /*seconds*/);
     void expireAndDelete();
+    void removeFromWorld(bool free_guid);
+
     void setRespawnTime(int32_t respawn);
+    time_t getRespawnTime() const { return m_respawnTime; }
     void saveRespawnTime(uint32_t forceDelay = 0);
     void respawn();
+    uint32_t getRespawnDelay() const { return m_respawnDelayTime; }
+    bool isSpawned() const
+    {
+        return m_respawnDelayTime == 0 ||
+            (m_respawnTime > 0 && !m_spawnedByDefault) ||
+            (m_respawnTime == 0 && m_spawnedByDefault);
+    }
+
+    bool isSpawnedByDefault() const { return m_spawnedByDefault; }
+    void setSpawnedByDefault(bool b) { m_spawnedByDefault = b; }
+
+    void setSpellId(uint32 id)
+    {
+        m_spawnedByDefault = false;                     // all summoned object is despawned after delay
+        m_spellId = id;
+    }
+    uint32_t getSpellId() const { return m_spellId; }
+
+    GameObject* getLinkedTrap();
+    void setLinkedTrap(GameObject* linkedTrap) { m_linkedTrap = linkedTrap->getGuid(); }
+
+    void addUniqueUse(Player* player);
+    void addUse() { ++m_usetimes; }
+    uint32_t getUseCount() const { return m_usetimes; }
+    uint32_t getUniqueUseCount() const { return m_unique_users.size(); }
+    bool isUseable();
+    void switchDoorOrButton(bool activate, bool alternative = false);
+    void useDoorOrButton(uint32_t time_to_restore = 0, bool alternative = false, Unit* user = nullptr);
+    void resetDoorOrButton();
+    void triggerLinkedGameObject(uint32_t trapEntry, Unit* target);
+
+    uint16_t getLootMode() const { return m_LootMode; }
+    bool hasLootMode(uint16 lootMode) const { return (m_LootMode & lootMode) != 0; }
+    void setLootMode(uint16 lootMode) { m_LootMode = lootMode; }
+    void addLootMode(uint16 lootMode) { m_LootMode |= lootMode; }
+    void removeLootMode(uint16 lootMode) { m_LootMode &= ~lootMode; }
+    void resetLootMode() { m_LootMode = LOOT_MODE_DEFAULT; }
+    void setLootGenerationTime() { m_lootGenerationTime = Util::getTimeNow(); }
+    uint32_t getLootGenerationTime() const { return m_lootGenerationTime; }
 
     LootState getLootState() const { return m_lootState; }
     void setLootState(LootState state, Unit* unit = nullptr);
+
+    void getFishLoot(Loot* loot, Player* loot_owner);
+    void getFishLootJunk(Loot* loot, Player* loot_owner);
 
     void setLocalRotationAngles(float z_rot, float y_rot, float x_rot);
     void setLocalRotation(float qx, float qy, float qz, float qw);
@@ -707,7 +819,6 @@ public:
 
         void OnPushToWorld();
         void onRemoveInRangeObject(Object* pObj);
-        void RemoveFromWorld(bool free_guid);
 
         uint32 GetGOReqSkill();
         MapCell* m_respawnCell = nullptr;
@@ -743,11 +854,13 @@ public:
         GameObjectModel* createModel();
         void updateModel();
 
+        uint32_t m_spellId = 0;
+
         uint32_t m_spawnId = 0;                 // temporary GameObjects have 0
         time_t m_respawnTime = 0;               // seconds
-        uint32_t m_respawnDelayTime = 0;        // seconds
+        uint32_t m_respawnDelayTime = 300;      // seconds
         uint32_t m_despawnDelay = 0;            // milliseconds
-        uint32_t m_despawnRespawnTime = 300;    // seconds
+        uint32_t m_despawnRespawnTime = 0;      // seconds
         LootState m_lootState = GO_NOT_READY;
         uint64_t m_lootStateUnitGUID = 0;
         bool m_spawnedByDefault = true;
@@ -758,6 +871,14 @@ public:
         int64_t m_packedRotation = 0;
         QuaternionData m_localRotation;
         GameObjectValue m_goValue;
+
+        uint16_t m_LootMode = LOOT_MODE_DEFAULT; // bitmask, determines what loot will be lootable used for Hardmodes example Ulduar Bosses
+        uint32_t m_lootGenerationTime = 0;
+
+        uint64_t m_linkedTrap = 0;
+
+        std::set<uint64_t> m_unique_users;
+        uint32_t m_usetimes = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -785,13 +906,7 @@ class GameObject_Door : public GameObject
 
         void InitAI();
 
-        void onUse(Player* player) override;
-
-        void Open();
-        void Close();
-
-        /// Opens the door with a special way. Like an explosion.
-        void SpecialOpen();
+        void onUse(Player* player) override;;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -806,9 +921,6 @@ class GameObject_Button : public GameObject
         void InitAI();
 
         void onUse(Player* player) override;
-
-        void Open();
-        void Close();
 
     private:
 
@@ -937,14 +1049,12 @@ class GameObject_Trap : public GameObject
         ~GameObject_Trap();
 
         void InitAI();
-        void Update(unsigned long time_passed);
+
+        void onUse(Player* player) override;
 
     private:
 
         SpellInfo const* spell;
-        uint32 targetupdatetimer;
-        float maxdistance;
-        uint32 cooldown;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -970,10 +1080,6 @@ class GameObject_SpellFocus : public GameObject
         ~GameObject_SpellFocus();
 
         void OnPushToWorld();
-
-    private:
-
-        void SpawnLinkedTrap();
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -988,9 +1094,6 @@ class GameObject_Goober : public GameObject
         void InitAI();
 
         void onUse(Player* player) override;
-
-        void Open();
-        void Close();
 
     private:
         SpellInfo const* spell;
@@ -1021,26 +1124,9 @@ class GameObject_FishingNode : public GameObject_Lootable
         GameObject_FishingNode(uint64 GUID);
         ~GameObject_FishingNode();
 
-        void OnPushToWorld();
-
         void onUse(Player* player) override;
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Handles the click on the bobber, if there is a fish hooked, otherwise end session
-        // \return true on success, false otherwise.
-        bool UseNode();
-
-        void EndFishing(bool abort);
-
-        void EventFishHooked();
-
-        bool IsLootable() { return true; }
-
         bool HasLoot();
-
-    private:
-
-        bool FishHooked;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1203,18 +1289,10 @@ class GameObject_FishingHole : public GameObject_Lootable
 
         void InitAI();
 
+        void onUse(Player* player) override;
+
         bool IsLootable() { return true; }
         bool HasLoot();
-
-        bool CanFish();
-
-        void CatchFish();
-
-        void CalcFishRemaining(bool force);
-
-    private:
-
-        uint32 usage_remaining;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

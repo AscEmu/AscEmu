@@ -9092,17 +9092,79 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
     }
     else if (wowGuid.isGameObject())
     {
-        GameObject* pGO = getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
-        if (!pGO)
-            return;
+        GameObject* go = getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
 
-        if (!pGO->IsLootable())
+        if (!go)
+        {
+            SmsgLootReleaseResponse(guid, 1);
             return;
+        }
 
-        GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
-        pLGO->setState(0);
+        if (loot_type == LOOT_SKINNING)
+        {
+            // Disarm Trap
+            if (!go->IsWithinDistInMap(this, 20.f))
+            {
+                SmsgLootReleaseResponse(guid, 1);
+                return;
+            }
+        }
+        else
+        {
+            if (loot_type != LOOT_FISHINGHOLE && ((loot_type != LOOT_FISHING && loot_type != LOOT_FISHING_JUNK) || go->getOwnerGUID() != getGuid()) && !go->IsWithinDistInMap(this, 30.0f))
+            {
+                SmsgLootReleaseResponse(guid, 1);
+                return;
+            }
+
+            if (loot_type == LOOT_CORPSE && go->getRespawnTime() && go->isSpawnedByDefault())
+            {
+                SmsgLootReleaseResponse(guid, 1);
+                return;
+            }
+        }
+
+        GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(go);
         pLoot = &pLGO->loot;
-        m_currentLoot = pLGO->getGuid();
+
+        // loot was generated and respawntime has passed since then, allow to recreate loot
+        // to avoid bugs, this rule covers spawned gameobjects only
+        // Don't allow to regenerate chest loot inside instances and raids
+        if (go->isSpawnedByDefault() && go->getLootState() == GO_ACTIVATED && !pLGO->loot.isLooted() && !go->getWorldMap()->getBaseMap()->instanceable() && go->getLootGenerationTime() + go->getRespawnDelay() < Util::getTimeNow())
+            go->setLootState(GO_READY);
+
+        if (go->getLootState() == GO_READY)
+        {
+            uint32_t lootid = go->GetGameObjectProperties()->getLootId();
+            if (lootid)
+            {
+                pLoot->clear();
+
+                Group* group = getGroup();
+                bool groupRules = (group && go->GetGameObjectProperties()->type == GAMEOBJECT_TYPE_CHEST && go->GetGameObjectProperties()->chest.group_loot_rules);
+
+                // check current RR player and get next if necessary
+                if (groupRules)
+                    group->updateLooterGuid(go);
+
+                pLoot->fillLoot(lootid, sLootMgr.GOLoot, this, false, go->getLootMode());
+                go->setLootGenerationTime();
+
+                // get next RR player (for next loot)
+                if (groupRules && !pLoot->empty())
+                    group->updateLooterGuid(go);
+            }
+
+            if (loot_type == LOOT_FISHING)
+                go->getFishLoot(pLoot, this);
+            else if (loot_type == LOOT_FISHING_JUNK)
+                go->getFishLootJunk(pLoot, this);
+
+            go->setLootState(GO_ACTIVATED, this);
+
+            // set Current Looter
+            m_currentLoot = pLGO->getGuid();
+        }
     }
     else if (wowGuid.isPlayer())
     {
@@ -10104,7 +10166,7 @@ void Player::requestDuel(Player* target)
     // create flag
     if (GameObject* goFlag = getWorldMap()->createGameObject(21680))
     {
-        goFlag->create(21680, GetMapId(), GetPhase(), LocationVector(x, y, z, GetOrientation()), QuaternionData(), GO_STATE_CLOSED);
+        goFlag->create(21680, m_WorldMap, GetPhase(), LocationVector(x, y, z, GetOrientation()), QuaternionData(), GO_STATE_CLOSED);
 
         goFlag->setCreatedByGuid(getGuid());
         goFlag->SetFaction(getFactionTemplate());

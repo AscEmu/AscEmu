@@ -4553,6 +4553,11 @@ float Object::getDistance2d(float x, float y) const
     return d > 0.0f ? d : 0.0f;
 }
 
+Unit* Object::getOwner()
+{
+    return getWorldMapUnit(getOwnerGUID());
+}
+
 #if VERSION_STRING < Cata
 void MovementInfo::readMovementInfo(ByteBuffer& data, [[maybe_unused]]uint16_t opcode)
 {
