@@ -741,15 +741,8 @@ void GameObject::Update(unsigned long time_passed)
                         Unit* caster = getOwner();
                         if (caster && caster->isPlayer())
                         {
-                            setState(GO_STATE_OPEN);
                             setFlags(GO_FLAG_NEVER_DESPAWN);
-
-                            ByteBuffer data(2500);
-                            uint32_t count = 0;
-                            count = BuildValuesUpdateBlockForPlayer(&data, caster->ToPlayer());
-                            caster->ToPlayer()->getUpdateMgr().pushUpdateData(&data, count);
-
-                            sendGameobjectCustomAnim(0);
+                            sendGameobjectCustomAnim();
                         }
 
                         m_lootState = GO_READY;                 // can be successfully open with some chance
