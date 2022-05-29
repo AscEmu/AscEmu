@@ -74,12 +74,16 @@ void GameEvent::CreateObjects()
         g->create(gobj.entry, mapmgr, gobj.phase, LocationVector(gobj.position_x, gobj.position_y, gobj.position_z, gobj.facing), QuaternionData(), GameObject_State(gobj.state));
 
         // Set up spawn specific information
-        g->setScale(gobj.scale);
+        MySQLStructure::GameObjectSpawnOverrides const* overrides = sMySQLStore.getGameObjectOverride(gobj.id);
+        if (overrides)
+        {
+            g->setScale(overrides->scale);
 
-        if (gobj.faction != 0)
-            g->SetFaction(gobj.faction);
+            if (overrides->faction != 0)
+                g->SetFaction(overrides->faction);
 
-        g->setFlags(gobj.flags);
+            g->setFlags(overrides->flags);
+        }
 
         bool addToWorld = true;
         if (mEventScript != nullptr)
