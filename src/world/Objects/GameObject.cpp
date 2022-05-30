@@ -1153,7 +1153,7 @@ void GameObject::expireAndDelete()
     sEventMgr.RemoveEvents(this);
     if (IsInWorld())
     {
-        removeFromWorld(true);
+        RemoveFromWorld(true);
         delete this;
     }
     else
@@ -1162,7 +1162,7 @@ void GameObject::expireAndDelete()
     }
 }
 
-void GameObject::removeFromWorld(bool free_guid)
+void GameObject::RemoveFromWorld(bool free_guid)
 {
     if (IsInWorld())
     {

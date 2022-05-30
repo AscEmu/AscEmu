@@ -628,7 +628,7 @@ public:
 
     void despawn(uint32_t delay /*milliseconds*/, uint32_t forceRespawntime /*seconds*/);
     void expireAndDelete();
-    void removeFromWorld(bool free_guid);
+    void RemoveFromWorld(bool free_guid);
 
     void setRespawnTime(int32_t respawn);
     time_t getRespawnTime() const { return m_respawnTime; }
