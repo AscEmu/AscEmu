@@ -325,6 +325,9 @@ GameObject* ObjectMgr::createGameObjectByGuid(uint32_t id, uint32_t guid)
         case GAMEOBJECT_TYPE_GOOBER:
             gameObject = new GameObject_Goober(createdGuid);
             break;
+        case GAMEOBJECT_TYPE_TRANSPORT:
+            gameObject = new GameObject_Transport(createdGuid);
+            break;
         case GAMEOBJECT_TYPE_CAMERA:
             gameObject = new GameObject_Camera(createdGuid);
             break;

@@ -254,7 +254,7 @@ void GameEventMgr::LoadFromDB()
                 }
 
                 EventGameObjectSpawnsQueryResult dbResult;
-                dbResult.event_entry = field[18].GetUInt32();
+                dbResult.event_entry = event_id;
                 dbResult.id = field[0].GetUInt32();
                 dbResult.entry = field[1].GetUInt32();
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(dbResult.entry);

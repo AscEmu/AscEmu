@@ -438,12 +438,13 @@ bool GameObject::create(uint32_t entry, WorldMap* map, uint32_t phase, LocationV
         case GAMEOBJECT_TYPE_FISHINGHOLE:
         {
             setAnimationProgress(0);
-            m_goValue.FishingHole.MaxOpens = Util::getRandomUInt(gameobject_properties->fishinghole.max_success_opens, gameobject_properties->fishinghole.max_success_opens);
+            dynamic_cast<GameObject_FishingHole*>(this)->setMaxOpen(Util::getRandomUInt(gameobject_properties->fishinghole.max_success_opens, gameobject_properties->fishinghole.max_success_opens));
         } break;
         case GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING:
         {
-            m_goValue.Building.Health = gameobject_properties->destructible_building.intact_num_hits + gameobject_properties->destructible_building.damaged_num_hits;
-            m_goValue.Building.MaxHealth = m_goValue.Building.Health;
+            auto* const destructible = dynamic_cast<GameObject_Destructible*>(this);
+            destructible->setHP(gameobject_properties->destructible_building.intact_num_hits + gameobject_properties->destructible_building.damaged_num_hits);
+            destructible->setMaxHP(destructible->GetHP());
             setAnimationProgress(255);
         } break;
         case GAMEOBJECT_TYPE_TRANSPORT:
@@ -469,9 +470,9 @@ bool GameObject::create(uint32_t entry, WorldMap* map, uint32_t phase, LocationV
             setLevel(gameobject_properties->transport.pause);
             setState(gameobject_properties->transport.startOpen ? GO_STATE_OPEN : GO_STATE_CLOSED);
             setAnimationProgress(0);
-            m_goValue.Transport.CurrentSeg = 0;
-            m_goValue.Transport.AnimationInfo = sTransportHandler.getTransportAnimInfo(entry);
-            m_goValue.Transport.PathProgress = 0;
+            m_goValue.CurrentSeg = 0;
+            m_goValue.AnimationInfo = sTransportHandler.getTransportAnimInfo(entry);
+            m_goValue.PathProgress = 0;
         } break;
         case GAMEOBJECT_TYPE_FISHINGNODE:
         {
@@ -626,8 +627,8 @@ uint32_t GameObject::getTransportPeriod() const
     if (getGoType() != GAMEOBJECT_TYPE_TRANSPORT)
         return 0;
 
-    if (getGOValue()->Transport.AnimationInfo)
-        return getGOValue()->Transport.AnimationInfo->TotalTime;
+    if (getGOValue()->AnimationInfo)
+        return getGOValue()->AnimationInfo->TotalTime;
 
     return 0;
 }
@@ -680,6 +681,12 @@ void GameObject::updateModel()
         getWorldMap()->insertGameObjectModel(*m_model);
 }
 
+void GameObject::_updateOnNotReady(unsigned long /*timeDiff*/)
+{
+    // for other GOis same switched without delay to GO_READY
+    m_lootState = GO_READY;
+}
+
 void GameObject::Update(unsigned long time_passed)
 {
     if (m_event_Instanceid != m_instanceId)
@@ -707,59 +714,12 @@ void GameObject::Update(unsigned long time_passed)
     {
         case GO_NOT_READY:
         {
-            switch (getGoType())
+            _updateOnNotReady(time_passed);
+
+            if (getGoType() == GAMEOBJECT_TYPE_CHEST)
             {
-                case GAMEOBJECT_TYPE_TRAP:
-                {
-                    GameObjectProperties const* goInfo = GetGameObjectProperties();
-                    // Bombs
-                    if (goInfo->trap.charges == 2)
-                        // Hardcoded tooltip value
-                        m_cooldownTime = Util::getMSTime() + 10 * IN_MILLISECONDS;
-                    else if (Unit* owner = getOwner())
-                        if (owner->isInCombat())
-                            m_cooldownTime = Util::getMSTime() + goInfo->trap.start_delay * IN_MILLISECONDS;
-
-                    setLootState(GO_READY);
-                } break;
-                case GAMEOBJECT_TYPE_TRANSPORT:
-                {
-                    if (!m_goValue.Transport.AnimationInfo)
-                        break;
-
-                    if (getState() == GO_STATE_CLOSED)
-                    {
-                        m_goValue.Transport.PathProgress += time_passed;
-                    }
-                } break;
-                case GAMEOBJECT_TYPE_FISHINGNODE:
-                {
-                    // fishing code (bobber ready)
-                    if (Util::getTimeNow() > m_respawnTime - 5)
-                    {
-                        // splash bobber (bobber ready now)
-                        Unit* caster = getOwner();
-                        if (caster && caster->isPlayer())
-                        {
-                            setFlags(GO_FLAG_NEVER_DESPAWN);
-                            sendGameobjectCustomAnim();
-                        }
-
-                        m_lootState = GO_READY;                 // can be successfully open with some chance
-                    }
-                } return;
-                case GAMEOBJECT_TYPE_CHEST:
-                {
-                    if (m_restockTime > Util::getTimeNow())
-                        return;
-                    // If there is no restock timer, or if the restock timer passed, the chest becomes ready to loot
-                    m_restockTime = 0;
-                    m_lootState = GO_READY;
-                } break;
-                default:
-                {
-                    m_lootState = GO_READY; // for other GOis same switched without delay to GO_READY
-                } break;
+                if (m_restockTime > Util::getTimeNow())
+                    return;
             }
         } [[fallthrough]];
         case GO_READY:
@@ -774,44 +734,10 @@ void GameObject::Update(unsigned long time_passed)
                         m_respawnTime = 0;
                         m_usetimes = 0;
 
-                        switch (getGoType())
-                        {
-                            case GAMEOBJECT_TYPE_FISHINGNODE: //  can't fish now
-                            {
-                                Unit* caster = getOwner();
-                                if (caster && caster->isPlayer())
-                                {
-                                    caster->removeGameObject(this, false);
-                                    caster->sendPacket(SmsgFishEscaped().serialise().get());
+                        _updateOnReady();
 
-                                    // Fishing is channeled spell
-                                    auto channelledSpell = caster->getCurrentSpell(CURRENT_CHANNELED_SPELL);
-                                    if (channelledSpell != nullptr)
-                                    {
-                                        channelledSpell->sendChannelUpdate(0);
-                                        channelledSpell->finish(true);
-                                    }
-                                }
-
-                                // can be delete
-                                m_lootState = GO_JUST_DEACTIVATED;
-                                return;
-                            }
-                            case GAMEOBJECT_TYPE_DOOR:
-                            case GAMEOBJECT_TYPE_BUTTON:
-                            {
-                                // We need to open doors if they are closed (add there another condition if this code breaks some usage, but it need to be here for battlegrounds)
-                                if (getState() != GO_STATE_CLOSED)
-                                    resetDoorOrButton();
-                            } break;
-                            case GAMEOBJECT_TYPE_FISHINGHOLE:
-                            {
-                                // Initialize a new max fish count on respawn
-                                m_goValue.FishingHole.MaxOpens = Util::getRandomUInt(GetGameObjectProperties()->fishinghole.min_success_opens, GetGameObjectProperties()->fishinghole.max_success_opens);
-                            } break;
-                            default:
-                                break;
-                        }
+                        if (m_lootState == GO_JUST_DEACTIVATED)
+                            return;
 
                         // Despawn timer
                         if (!m_spawnedByDefault)
@@ -1418,6 +1344,13 @@ void GameObject_Door::onUse(Player* player)
     useDoorOrButton(0, false, player);
 }
 
+void GameObject_Door::_updateOnReady()
+{
+    // We need to open doors if they are closed (add there another condition if this code breaks some usage, but it need to be here for battlegrounds)
+    if (getState() != GO_STATE_CLOSED)
+        resetDoorOrButton();
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Button
 GameObject_Button::GameObject_Button(uint64 GUID) : GameObject(GUID)
@@ -1456,6 +1389,13 @@ void GameObject_Button::onUse(Player* player)
         if (spell != nullptr)
             CastSpell(player->getGuid(), spell);
     }
+}
+
+void GameObject_Button::_updateOnReady()
+{
+    // We need to open doors if they are closed (add there another condition if this code breaks some usage, but it need to be here for battlegrounds)
+    if (getState() != GO_STATE_CLOSED)
+        resetDoorOrButton();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1595,6 +1535,15 @@ void GameObject_Chest::onUse(Player* player)
     }
 }
 
+void GameObject_Chest::_updateOnNotReady(unsigned long /*timeDiff*/)
+{
+    if (m_restockTime > Util::getTimeNow())
+        return;
+    // If there is no restock timer, or if the restock timer passed, the chest becomes ready to loot
+    m_restockTime = 0;
+    m_lootState = GO_READY;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Trap
 GameObject_Trap::GameObject_Trap(uint64 GUID) : GameObject(GUID)
@@ -1650,6 +1599,20 @@ void GameObject_Trap::onUse(Player* player)
 
     if (goInfo->trap.charges == 1)         // Deactivate after trigger
         setLootState(GO_JUST_DEACTIVATED);
+}
+
+void GameObject_Trap::_updateOnNotReady(unsigned long /*timeDiff*/)
+{
+    GameObjectProperties const* goInfo = GetGameObjectProperties();
+    // Bombs
+    if (goInfo->trap.charges == 2)
+        // Hardcoded tooltip value
+        m_cooldownTime = Util::getMSTime() + 10 * IN_MILLISECONDS;
+    else if (Unit* owner = getOwner())
+        if (owner->isInCombat())
+            m_cooldownTime = Util::getMSTime() + goInfo->trap.start_delay * IN_MILLISECONDS;
+
+    setLootState(GO_READY);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1751,7 +1714,7 @@ void GameObject_Goober::onUse(Player* player)
     setLootState(GO_ACTIVATED, player);
 
     if (info->goober.custom_anim)
-        SmsgGameobjectCustomAnim(getGuid(), getAnimationProgress());
+        sendGameobjectCustomAnim(getAnimationProgress());
     else
         setState(GO_STATE_OPEN);
 
@@ -1761,6 +1724,19 @@ void GameObject_Goober::onUse(Player* player)
         CastSpell(player->getGuid(), spell);
 
     player->castSpell(getGuid(), gameobject_properties->goober.spell_id, false);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_Transport
+void GameObject_Transport::_updateOnNotReady(unsigned long timeDiff)
+{
+    if (!m_goValue.AnimationInfo)
+        return;
+
+    if (getState() == GO_STATE_CLOSED)
+    {
+        m_goValue.PathProgress += timeDiff;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1874,6 +1850,44 @@ bool GameObject_FishingNode::HasLoot()
         return true;
 
     return false;
+}
+
+void GameObject_FishingNode::_updateOnNotReady(unsigned long /*timeDiff*/)
+{
+    // fishing code (bobber ready)
+    if (Util::getTimeNow() > m_respawnTime - 5)
+    {
+        // splash bobber (bobber ready now)
+        Unit* caster = getOwner();
+        if (caster && caster->isPlayer())
+        {
+            setFlags(GO_FLAG_NEVER_DESPAWN);
+            sendGameobjectCustomAnim();
+        }
+
+        m_lootState = GO_READY;                 // can be successfully open with some chance
+    }
+}
+
+void GameObject_FishingNode::_updateOnReady()
+{
+    Unit* caster = getOwner();
+    if (caster && caster->isPlayer())
+    {
+        caster->removeGameObject(this, false);
+        caster->sendPacket(SmsgFishEscaped().serialise().get());
+
+        // Fishing is channeled spell
+        auto channelledSpell = caster->getCurrentSpell(CURRENT_CHANNELED_SPELL);
+        if (channelledSpell != nullptr)
+        {
+            channelledSpell->sendChannelUpdate(0);
+            channelledSpell->finish(true);
+        }
+    }
+
+    // can be delete
+    m_lootState = GO_JUST_DEACTIVATED;
 }
 
 void GameObject::getFishLoot(Loot* fishloot, Player* loot_owner)
@@ -2189,6 +2203,12 @@ bool GameObject_FishingHole::HasLoot()
         return true;
 
     return false;
+}
+
+void GameObject_FishingHole::_updateOnReady()
+{
+    // Initialize a new max fish count on respawn
+    maxOpens = Util::getRandomUInt(GetGameObjectProperties()->fishinghole.min_success_opens, GetGameObjectProperties()->fishinghole.max_success_opens);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

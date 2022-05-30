@@ -76,7 +76,7 @@ bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float
     m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
     setFlags(GO_FLAG_TRANSPORT | GO_FLAG_NEVER_DESPAWN);
     setState(gameobject_properties->mo_transport.can_be_stopped ? GO_STATE_CLOSED : GO_STATE_OPEN);
-    m_goValue.Transport.PathProgress = 0;
+    m_goValue.PathProgress = 0;
 
     setScale(gameobject_properties->size);
 
@@ -129,9 +129,9 @@ void Transporter::Update(unsigned long time_passed)
         return;
 
     if (IsMoving() || !_pendingStop)
-        m_goValue.Transport.PathProgress += time_passed;
+        m_goValue.PathProgress += time_passed;
 
-    uint32_t timer = m_goValue.Transport.PathProgress % getTransportPeriod();
+    uint32_t timer = m_goValue.PathProgress % getTransportPeriod();
     bool justStopped = false;
 
     //sLogger.debug("Transporter: current node %u and pathprogress %u \n", _currentFrame->Index, GetTimer());
@@ -158,9 +158,9 @@ void Transporter::Update(unsigned long time_passed)
                 if (_pendingStop && getState() != GO_STATE_CLOSED)
                 {
                     setState(GO_STATE_CLOSED);
-                    m_goValue.Transport.PathProgress = (m_goValue.Transport.PathProgress / getTransportPeriod());
-                    m_goValue.Transport.PathProgress *= getTransportPeriod();
-                    m_goValue.Transport.PathProgress += _currentFrame->ArriveTime;
+                    m_goValue.PathProgress = (m_goValue.PathProgress / getTransportPeriod());
+                    m_goValue.PathProgress *= getTransportPeriod();
+                    m_goValue.PathProgress += _currentFrame->ArriveTime;
                 }
                 break; // its a stop frame and we are waiting
             }
@@ -729,7 +729,7 @@ void Transporter::updatePathProgress()
 
     if (uint32_t transportPeriod = getTransportPeriod())
     {
-        float timer = float(getGOValue()->Transport.PathProgress % transportPeriod);
+        float timer = float(getGOValue()->PathProgress % transportPeriod);
         pathProgress = int16_t(timer / float(transportPeriod) * 65535.0f);
     }
 

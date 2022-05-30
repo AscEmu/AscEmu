@@ -2291,7 +2291,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     {
         GameObject const* go = static_cast<GameObject*>(this);
         if (go && go->ToTransport())
-            *data << uint32_t(go->getGOValue()->Transport.PathProgress);
+            *data << uint32_t(go->getGOValue()->PathProgress);
         else
             *data << Util::getMSTime();
     }

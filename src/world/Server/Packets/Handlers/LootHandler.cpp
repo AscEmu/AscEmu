@@ -401,7 +401,7 @@ void WorldSession::doLootRelease(WoWGuid lguid)
                 if (go->getGoType() == GAMEOBJECT_TYPE_FISHINGHOLE)
                 {                                               // The fishing hole used once more
                     go->addUse();                               // if the max usage is reached, will be despawned in next tick
-                    if (go->getUseCount() >= go->getGOValue()->FishingHole.MaxOpens)
+                    if (go->getUseCount() >= dynamic_cast<GameObject_FishingHole*>(go)->getMaxOpen())
                         go->setLootState(GO_JUST_DEACTIVATED);
                     else
                         go->setLootState(GO_READY);

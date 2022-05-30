@@ -51,26 +51,13 @@ enum GameObject_Flags
     GO_FLAG_DESTROYED           = 0x400
 };
 
-union GameObjectValue
+// TODO: move these under proper Gameobject subclasses
+struct GameObjectValue
 {
     //11 GAMEOBJECT_TYPE_TRANSPORT
-    struct
-    {
-        uint32_t PathProgress;
-        TransportAnimation const* AnimationInfo;
-        uint32_t CurrentSeg;
-    } Transport;
-    //25 GAMEOBJECT_TYPE_FISHINGHOLE
-    struct
-    {
-        uint32_t MaxOpens;
-    } FishingHole;
-    //33 GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING
-    struct
-    {
-        uint32_t Health;
-        uint32_t MaxHealth;
-    } Building;
+    uint32_t PathProgress = 0;
+    TransportAnimation const* AnimationInfo = nullptr;
+    uint32_t CurrentSeg = 0;
 };
 
 enum GameObjectTypes
@@ -853,6 +840,9 @@ public:
         GameObjectModel* createModel();
         void updateModel();
 
+        virtual void _updateOnNotReady(unsigned long timeDiff);
+        virtual void _updateOnReady() {}
+
         uint32_t m_spellId = 0;
 
         uint32_t m_spawnId = 0;                 // temporary GameObjects have 0
@@ -905,7 +895,10 @@ class GameObject_Door : public GameObject
 
         void InitAI();
 
-        void onUse(Player* player) override;;
+        void onUse(Player* player) override;
+
+    protected:
+        void _updateOnReady() override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -920,6 +913,9 @@ class GameObject_Button : public GameObject
         void InitAI();
 
         void onUse(Player* player) override;
+
+    protected:
+        void _updateOnReady() override;
 
     private:
 
@@ -1033,6 +1029,9 @@ class GameObject_Chest : public GameObject_Lootable
         void Open();
         void Close();
 
+    protected:
+        void _updateOnNotReady(unsigned long timeDiff) override;
+
     private:
 
         SpellInfo const* spell;
@@ -1050,6 +1049,9 @@ class GameObject_Trap : public GameObject
         void InitAI();
 
         void onUse(Player* player) override;
+
+    protected:
+        void _updateOnNotReady(unsigned long timeDiff) override;
 
     private:
 
@@ -1099,7 +1101,16 @@ class GameObject_Goober : public GameObject
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// implementing Type 11
+// implementing Type 11 (TRANSPORT) GameObjects
+class GameObject_Transport : public GameObject
+{
+    public:
+        GameObject_Transport(uint64_t guid) : GameObject(guid) {}
+        ~GameObject_Transport() {}
+
+    protected:
+        void _updateOnNotReady(unsigned long timeDiff) override;
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // implementing Type 13 (CAMERA) GameObjects
@@ -1128,6 +1139,10 @@ class GameObject_FishingNode : public GameObject_Lootable
         bool HasLoot();
 
         bool IsLootable() { return true; }
+
+    protected:
+        void _updateOnNotReady(unsigned long timeDiff) override;
+        void _updateOnReady() override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1294,6 +1309,15 @@ class GameObject_FishingHole : public GameObject_Lootable
 
         bool IsLootable() { return true; }
         bool HasLoot();
+
+        uint32_t getMaxOpen() const { return maxOpens; }
+        void setMaxOpen(uint32_t max) { maxOpens = max; }
+
+    protected:
+        void _updateOnReady() override;
+
+    private:
+        uint32_t maxOpens = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1336,8 +1360,10 @@ class SERVER_DECL GameObject_Destructible : public GameObject
         void Rebuild();
 
         uint32_t GetHP() { return hitpoints; }
+        void setHP(uint32_t hp) { hitpoints = hp; }
 
         uint32_t GetMaxHP() { return maxhitpoints; }
+        void setMaxHP(uint32_t maxHp) { maxhitpoints = maxHp; }
 
     private:
 
