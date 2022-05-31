@@ -597,8 +597,12 @@ void GameObject::setLootState(LootState state, Unit* unit)
         m_lootStateUnitGUID = 0;
 
     // Start restock timer if the chest is partially looted or not looted at all
-    if (getGoType() == GAMEOBJECT_TYPE_CHEST && state == GO_ACTIVATED && GetGameObjectProperties()->chest.restock_time > 0 && m_restockTime == 0)
-        m_restockTime = Util::getTimeNow() + GetGameObjectProperties()->chest.restock_time;
+    if (getGoType() == GAMEOBJECT_TYPE_CHEST)
+    {
+        auto* const chest = dynamic_cast<GameObject_Chest*>(this);
+        if (state == GO_ACTIVATED && GetGameObjectProperties()->chest.restock_time > 0 && chest->getRestockTime() == 0)
+            chest->setRestockTime(Util::getTimeNow() + GetGameObjectProperties()->chest.restock_time);
+    }
 
     if (getGoType() == GAMEOBJECT_TYPE_DOOR) // only set collision for doors on SetGoState
         return;
@@ -721,7 +725,7 @@ void GameObject::Update(unsigned long time_passed)
 
             if (getGoType() == GAMEOBJECT_TYPE_CHEST)
             {
-                if (m_restockTime > Util::getTimeNow())
+                if (dynamic_cast<GameObject_Chest*>(this)->getRestockTime() > Util::getTimeNow())
                     return;
             }
         } [[fallthrough]];
@@ -849,7 +853,7 @@ void GameObject::Update(unsigned long time_passed)
                 if (getGoType() == GAMEOBJECT_TYPE_CHEST && GetGameObjectProperties()->chest.restock_time > 0)
                 {
                     // Start restock timer when the chest is fully looted
-                    m_restockTime = Util::getTimeNow() + GetGameObjectProperties()->chest.restock_time;
+                    dynamic_cast<GameObject_Chest*>(this)->setRestockTime(Util::getTimeNow() + GetGameObjectProperties()->chest.restock_time);
                     setLootState(GO_NOT_READY);
                 }
                 else
@@ -1246,6 +1250,29 @@ void GameObject::sendGameobjectCustomAnim(uint32_t anim)
     sendMessageToSet(SmsgGameobjectCustomAnim(getGuid(), anim).serialise().get(), false, false);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_Lootable
+void GameObject_Lootable::getFishLoot(Player* loot_owner, bool getJunk/* = false*/)
+{
+    loot.clear();
+
+    uint32_t zone, subzone;
+    uint32_t defaultzone = 1;
+    m_WorldMap->getZoneAndAreaId(GetPhase(), zone, subzone, GetPosition());
+
+    const uint8_t lootMode = getJunk ? LOOT_MODE_JUNK_FISH : 0;
+
+    // if subzone loot exist use it
+    loot.fillLoot(subzone, sLootMgr.FishingLoot, loot_owner, true, lootMode);
+    if (loot.empty())
+    {
+        //subzone no result,use zone loot
+        loot.fillLoot(zone, sLootMgr.FishingLoot, loot_owner, true, lootMode);
+        //use zone 1 as default, somewhere fishing got nothing,becase subzone and zone not set, like Off the coast of Storm Peaks.
+        if (loot.empty())
+            loot.fillLoot(defaultzone, sLootMgr.FishingLoot, loot_owner, true, lootMode);
+    }
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Door
@@ -1933,46 +1960,6 @@ void GameObject_FishingNode::_internalUpdateOnState(unsigned long timeDiff)
             break;
         default:
             break;
-    }
-}
-
-void GameObject::getFishLoot(Loot* fishloot, Player* loot_owner)
-{
-    fishloot->clear();
-
-    uint32_t zone, subzone;
-    uint32_t defaultzone = 1;
-    m_WorldMap->getZoneAndAreaId(GetPhase(), zone, subzone, GetPosition());
-
-    // if subzone loot exist use it
-    fishloot->fillLoot(subzone, sLootMgr.FishingLoot, loot_owner, true);
-    if (fishloot->empty())
-    {
-        //subzone no result,use zone loot
-        fishloot->fillLoot(zone, sLootMgr.FishingLoot, loot_owner, true);
-        //use zone 1 as default, somewhere fishing got nothing,becase subzone and zone not set, like Off the coast of Storm Peaks.
-        if (fishloot->empty())
-            fishloot->fillLoot(defaultzone, sLootMgr.FishingLoot, loot_owner, true);
-    }
-}
-
-void GameObject::getFishLootJunk(Loot* fishloot, Player* loot_owner)
-{
-    fishloot->clear();
-
-    uint32_t zone, subzone;
-    uint32_t defaultzone = 1;
-    m_WorldMap->getZoneAndAreaId(GetPhase(), zone, subzone, GetPosition());
-
-    // if subzone loot exist use it
-    fishloot->fillLoot(subzone, sLootMgr.FishingLoot, loot_owner, true, LOOT_MODE_JUNK_FISH);
-    if (fishloot->empty())  //use this becase if zone or subzone has normal mask drop, then fishloot->FillLoot return true.
-    {
-        //use zone loot
-        fishloot->fillLoot(zone, sLootMgr.FishingLoot, loot_owner, true, LOOT_MODE_JUNK_FISH);
-        if (fishloot->empty())
-            //use zone 1 as default
-            fishloot->fillLoot(defaultzone, sLootMgr.FishingLoot, loot_owner, true, LOOT_MODE_JUNK_FISH);
     }
 }
 

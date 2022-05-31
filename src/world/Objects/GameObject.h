@@ -676,20 +676,8 @@ public:
     }
     uint64_t getOwnerGUID() const override { return getCreatedByGuid(); }
 
-    uint16_t getLootMode() const { return m_LootMode; }
-    bool hasLootMode(uint16 lootMode) const { return (m_LootMode & lootMode) != 0; }
-    void setLootMode(uint16 lootMode) { m_LootMode = lootMode; }
-    void addLootMode(uint16 lootMode) { m_LootMode |= lootMode; }
-    void removeLootMode(uint16 lootMode) { m_LootMode &= ~lootMode; }
-    void resetLootMode() { m_LootMode = LOOT_MODE_DEFAULT; }
-    void setLootGenerationTime() { m_lootGenerationTime = Util::getTimeNow(); }
-    uint32_t getLootGenerationTime() const { return m_lootGenerationTime; }
-
     LootState getLootState() const { return m_lootState; }
     void setLootState(LootState state, Unit* unit = nullptr);
-
-    void getFishLoot(Loot* loot, Player* loot_owner);
-    void getFishLootJunk(Loot* loot, Player* loot_owner);
 
     void setLocalRotationAngles(float z_rot, float y_rot, float x_rot);
     void setLocalRotation(float qx, float qy, float qz, float qw);
@@ -852,16 +840,12 @@ public:
         LootState m_lootState = GO_NOT_READY;
         uint64_t m_lootStateUnitGUID = 0;
         bool m_spawnedByDefault = true;
-        time_t m_restockTime = 0;               // seconds
         time_t m_cooldownTime = 0;              // milliseconds
         GameObject_State m_prevGoState = GO_STATE_OPEN; // What state to set whenever resetting
 
         int64_t m_packedRotation = 0;
         QuaternionData m_localRotation;
         GameObjectValue m_goValue;
-
-        uint16_t m_LootMode = LOOT_MODE_DEFAULT; // bitmask, determines what loot will be lootable used for Hardmodes example Ulduar Bosses
-        uint32_t m_lootGenerationTime = 0;
 
         uint64_t m_linkedTrap = 0;
 
@@ -880,7 +864,27 @@ class GameObject_Lootable : public GameObject
 
         virtual bool HasLoot() = 0;
 
+        uint16_t getLootMode() const { return m_LootMode; }
+        bool hasLootMode(uint16 lootMode) const { return (m_LootMode & lootMode) != 0; }
+        void setLootMode(uint16 lootMode) { m_LootMode = lootMode; }
+        void addLootMode(uint16 lootMode) { m_LootMode |= lootMode; }
+        void removeLootMode(uint16 lootMode) { m_LootMode &= ~lootMode; }
+        void resetLootMode() { m_LootMode = LOOT_MODE_DEFAULT; }
+        void setLootGenerationTime() { m_lootGenerationTime = Util::getTimeNow(); }
+        uint32_t getLootGenerationTime() const { return m_lootGenerationTime; }
+
+        time_t getRestockTime() const { return m_restockTime; }
+        void setRestockTime(time_t time) { m_restockTime = time; }
+
+        void getFishLoot(Player* loot_owner, bool getJunk = false);
+
         Loot loot;
+
+    protected:
+        time_t m_restockTime = 0;                // seconds
+
+        uint16_t m_LootMode = LOOT_MODE_DEFAULT; // bitmask, determines what loot will be lootable used for Hardmodes example Ulduar Bosses
+        uint32_t m_lootGenerationTime = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

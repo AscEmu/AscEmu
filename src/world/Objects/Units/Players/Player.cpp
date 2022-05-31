@@ -9130,7 +9130,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
         // loot was generated and respawntime has passed since then, allow to recreate loot
         // to avoid bugs, this rule covers spawned gameobjects only
         // Don't allow to regenerate chest loot inside instances and raids
-        if (go->isSpawnedByDefault() && go->getLootState() == GO_ACTIVATED && !pLGO->loot.isLooted() && !go->getWorldMap()->getBaseMap()->instanceable() && go->getLootGenerationTime() + go->getRespawnDelay() < Util::getTimeNow())
+        if (go->isSpawnedByDefault() && go->getLootState() == GO_ACTIVATED && !pLGO->loot.isLooted() && !go->getWorldMap()->getBaseMap()->instanceable() && pLGO->getLootGenerationTime() + go->getRespawnDelay() < Util::getTimeNow())
             go->setLootState(GO_READY);
 
         if (go->getLootState() == GO_READY)
@@ -9147,18 +9147,16 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
                 if (groupRules)
                     group->updateLooterGuid(go);
 
-                pLoot->fillLoot(lootid, sLootMgr.GOLoot, this, false, go->getLootMode());
-                go->setLootGenerationTime();
+                pLoot->fillLoot(lootid, sLootMgr.GOLoot, this, false, pLGO->getLootMode());
+                pLGO->setLootGenerationTime();
 
                 // get next RR player (for next loot)
                 if (groupRules && !pLoot->empty())
                     group->updateLooterGuid(go);
             }
 
-            if (loot_type == LOOT_FISHING)
-                go->getFishLoot(pLoot, this);
-            else if (loot_type == LOOT_FISHING_JUNK)
-                go->getFishLootJunk(pLoot, this);
+            if (loot_type == LOOT_FISHING || loot_type == LOOT_FISHING_JUNK)
+                pLGO->getFishLoot(this, loot_type == LOOT_FISHING_JUNK);
 
             go->setLootState(GO_ACTIVATED, this);
 
