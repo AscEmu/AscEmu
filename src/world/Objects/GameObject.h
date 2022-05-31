@@ -840,8 +840,7 @@ public:
         GameObjectModel* createModel();
         void updateModel();
 
-        virtual void _updateOnNotReady(unsigned long timeDiff);
-        virtual void _updateOnReady() {}
+        virtual void _internalUpdateOnState(unsigned long timeDiff);
 
         uint32_t m_spellId = 0;
 
@@ -898,7 +897,7 @@ class GameObject_Door : public GameObject
         void onUse(Player* player) override;
 
     protected:
-        void _updateOnReady() override;
+        void _internalUpdateOnState(unsigned long timeDiff) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -915,7 +914,7 @@ class GameObject_Button : public GameObject
         void onUse(Player* player) override;
 
     protected:
-        void _updateOnReady() override;
+        void _internalUpdateOnState(unsigned long timeDiff) override;
 
     private:
 
@@ -1030,7 +1029,7 @@ class GameObject_Chest : public GameObject_Lootable
         void Close();
 
     protected:
-        void _updateOnNotReady(unsigned long timeDiff) override;
+        void _internalUpdateOnState(unsigned long timeDiff) override;
 
     private:
 
@@ -1051,7 +1050,7 @@ class GameObject_Trap : public GameObject
         void onUse(Player* player) override;
 
     protected:
-        void _updateOnNotReady(unsigned long timeDiff) override;
+        void _internalUpdateOnState(unsigned long timeDiff) override;
 
     private:
 
@@ -1096,6 +1095,9 @@ class GameObject_Goober : public GameObject
 
         void onUse(Player* player) override;
 
+    protected:
+        void _internalUpdateOnState(unsigned long timeDiff) override;
+
     private:
         SpellInfo const* spell;
 };
@@ -1109,7 +1111,7 @@ class GameObject_Transport : public GameObject
         ~GameObject_Transport() {}
 
     protected:
-        void _updateOnNotReady(unsigned long timeDiff) override;
+        void _internalUpdateOnState(unsigned long timeDiff) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1141,8 +1143,7 @@ class GameObject_FishingNode : public GameObject_Lootable
         bool IsLootable() { return true; }
 
     protected:
-        void _updateOnNotReady(unsigned long timeDiff) override;
-        void _updateOnReady() override;
+        void _internalUpdateOnState(unsigned long timeDiff) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1314,7 +1315,7 @@ class GameObject_FishingHole : public GameObject_Lootable
         void setMaxOpen(uint32_t max) { maxOpens = max; }
 
     protected:
-        void _updateOnReady() override;
+        void _internalUpdateOnState(unsigned long timeDiff) override;
 
     private:
         uint32_t maxOpens = 0;

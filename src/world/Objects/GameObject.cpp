@@ -681,10 +681,13 @@ void GameObject::updateModel()
         getWorldMap()->insertGameObjectModel(*m_model);
 }
 
-void GameObject::_updateOnNotReady(unsigned long /*timeDiff*/)
+void GameObject::_internalUpdateOnState(unsigned long /*timeDiff*/)
 {
-    // for other GOis same switched without delay to GO_READY
-    m_lootState = GO_READY;
+    if (m_lootState == GO_NOT_READY)
+    {
+        // for other GOis same switched without delay to GO_READY
+        m_lootState = GO_READY;
+    }
 }
 
 void GameObject::Update(unsigned long time_passed)
@@ -714,7 +717,7 @@ void GameObject::Update(unsigned long time_passed)
     {
         case GO_NOT_READY:
         {
-            _updateOnNotReady(time_passed);
+            _internalUpdateOnState(time_passed);
 
             if (getGoType() == GAMEOBJECT_TYPE_CHEST)
             {
@@ -734,7 +737,7 @@ void GameObject::Update(unsigned long time_passed)
                         m_respawnTime = 0;
                         m_usetimes = 0;
 
-                        _updateOnReady();
+                        _internalUpdateOnState(time_passed);
 
                         if (m_lootState == GO_JUST_DEACTIVATED)
                             return;
@@ -829,58 +832,7 @@ void GameObject::Update(unsigned long time_passed)
         } break;
         case GO_ACTIVATED:
         {
-            switch (getGoType())
-            {
-                case GAMEOBJECT_TYPE_DOOR:
-                case GAMEOBJECT_TYPE_BUTTON:
-                {
-                    if (m_cooldownTime && Util::getMSTime() >= m_cooldownTime)
-                        resetDoorOrButton();
-                } break;
-                case GAMEOBJECT_TYPE_GOOBER:
-                {
-                    if (Util::getMSTime() >= m_cooldownTime)
-                    {
-                        removeFlags(GO_FLAG_NONSELECTABLE);
-                        setLootState(GO_JUST_DEACTIVATED);
-                    }
-                } break;
-                case GAMEOBJECT_TYPE_CHEST:
-                {
-                    // Non-consumable chest was partially looted and restock time passed, restock all loot now
-                    if (GetGameObjectProperties()->chest.consumable == 0 && Util::getTimeNow() >= m_restockTime)
-                    {
-                        m_restockTime = 0;
-                        m_lootState = GO_READY;
-                    }
-                } break;
-                case GAMEOBJECT_TYPE_TRAP:
-                {
-                    GameObjectProperties const* goInfo = GetGameObjectProperties();
-                    if (goInfo->trap.charges == 2 && goInfo->trap.spell_id)
-                    {
-                        /// @todo nullptr target won't work for target type 1
-                        CastSpell(0, goInfo->trap.spell_id);
-                        setLootState(GO_JUST_DEACTIVATED);
-                    }
-                    else if (Unit* target = getWorldMapUnit(m_lootStateUnitGUID))
-                    {
-                        // Some traps do not have a spell but should be triggered
-                        if (goInfo->trap.spell_id)
-                            CastSpell(target->getGuid(), goInfo->trap.spell_id);
-
-                        // Template value or 4 seconds
-                        m_cooldownTime = Util::getMSTime() + (goInfo->trap.cooldown ? goInfo->trap.cooldown : uint32(4)) * IN_MILLISECONDS;
-
-                        if (goInfo->trap.charges == 1)
-                            setLootState(GO_JUST_DEACTIVATED);
-                        else if (!goInfo->trap.charges)
-                            setLootState(GO_READY);
-                    }
-                } break;
-                default:
-                    break;
-            }
+            _internalUpdateOnState(time_passed);
         } break;
         case GO_JUST_DEACTIVATED:
         {
@@ -888,35 +840,7 @@ void GameObject::Update(unsigned long time_passed)
             if (GameObject* linkedTrap = getLinkedTrap())
                 linkedTrap->despawn(0, 0);
 
-            //if Gameobject should cast spell, then this, but some GOs (type = 10) should be destroyed
-            if (getGoType() == GAMEOBJECT_TYPE_GOOBER)
-            {
-                uint32_t spellId = GetGameObjectProperties()->goober.spell_id;
-
-                if (spellId)
-                {
-                    for (auto it = m_unique_users.begin(); it != m_unique_users.end(); ++it)
-                        // m_unique_users can contain only player GUIDs
-                        if (Player* owner = getWorldMapPlayer(*it))
-                            owner->castSpell(owner, spellId, false);
-
-                    m_unique_users.clear();
-                    m_usetimes = 0;
-                }
-
-                // Only goobers with a lock id or a reset time may reset their go state
-                if (GetGameObjectProperties()->getLockId() || GetGameObjectProperties()->getAutoCloseTime())
-                    setState(GO_STATE_CLOSED);
-            }
-
-            switch (getGoType())
-            {
-                case GAMEOBJECT_TYPE_CHEST:
-                case GAMEOBJECT_TYPE_FISHINGNODE:
-                case GAMEOBJECT_TYPE_FISHINGHOLE:
-                    static_cast<GameObject_Lootable*>(this)->loot.clear();
-                    break;
-            }
+            _internalUpdateOnState(time_passed);
 
             // Do not delete chests or goobers that are not consumed on loot, while still allowing them to despawn when they expire if summoned
             bool isSummonedAndExpired = (getOwner() || getSpellId()) && m_respawnTime == 0;
@@ -1344,11 +1268,22 @@ void GameObject_Door::onUse(Player* player)
     useDoorOrButton(0, false, player);
 }
 
-void GameObject_Door::_updateOnReady()
+void GameObject_Door::_internalUpdateOnState(unsigned long /*timeDiff*/)
 {
-    // We need to open doors if they are closed (add there another condition if this code breaks some usage, but it need to be here for battlegrounds)
-    if (getState() != GO_STATE_CLOSED)
-        resetDoorOrButton();
+    switch (m_lootState)
+    {
+        case GO_READY:
+            // We need to open doors if they are closed (add there another condition if this code breaks some usage, but it need to be here for battlegrounds)
+            if (getState() != GO_STATE_CLOSED)
+                resetDoorOrButton();
+            break;
+        case GO_ACTIVATED:
+            if (m_cooldownTime && Util::getMSTime() >= m_cooldownTime)
+                resetDoorOrButton();
+            break;
+        default:
+            break;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1391,11 +1326,22 @@ void GameObject_Button::onUse(Player* player)
     }
 }
 
-void GameObject_Button::_updateOnReady()
+void GameObject_Button::_internalUpdateOnState(unsigned long /*timeDiff*/)
 {
-    // We need to open doors if they are closed (add there another condition if this code breaks some usage, but it need to be here for battlegrounds)
-    if (getState() != GO_STATE_CLOSED)
-        resetDoorOrButton();
+    switch (m_lootState)
+    {
+        case GO_READY:
+            // We need to open doors if they are closed (add there another condition if this code breaks some usage, but it need to be here for battlegrounds)
+            if (getState() != GO_STATE_CLOSED)
+                resetDoorOrButton();
+            break;
+        case GO_ACTIVATED:
+            if (m_cooldownTime && Util::getMSTime() >= m_cooldownTime)
+                resetDoorOrButton();
+            break;
+        default:
+            break;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1535,13 +1481,31 @@ void GameObject_Chest::onUse(Player* player)
     }
 }
 
-void GameObject_Chest::_updateOnNotReady(unsigned long /*timeDiff*/)
+void GameObject_Chest::_internalUpdateOnState(unsigned long /*timeDiff*/)
 {
-    if (m_restockTime > Util::getTimeNow())
-        return;
-    // If there is no restock timer, or if the restock timer passed, the chest becomes ready to loot
-    m_restockTime = 0;
-    m_lootState = GO_READY;
+    switch (m_lootState)
+    {
+        case GO_NOT_READY:
+            if (m_restockTime > Util::getTimeNow())
+                return;
+            // If there is no restock timer, or if the restock timer passed, the chest becomes ready to loot
+            m_restockTime = 0;
+            m_lootState = GO_READY;
+            break;
+        case GO_ACTIVATED:
+            // Non-consumable chest was partially looted and restock time passed, restock all loot now
+            if (GetGameObjectProperties()->chest.consumable == 0 && Util::getTimeNow() >= m_restockTime)
+            {
+                m_restockTime = 0;
+                m_lootState = GO_READY;
+            }
+            break;
+        case GO_JUST_DEACTIVATED:
+            loot.clear();
+            break;
+        default:
+            break;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1601,18 +1565,50 @@ void GameObject_Trap::onUse(Player* player)
         setLootState(GO_JUST_DEACTIVATED);
 }
 
-void GameObject_Trap::_updateOnNotReady(unsigned long /*timeDiff*/)
+void GameObject_Trap::_internalUpdateOnState(unsigned long /*timeDiff*/)
 {
-    GameObjectProperties const* goInfo = GetGameObjectProperties();
-    // Bombs
-    if (goInfo->trap.charges == 2)
-        // Hardcoded tooltip value
-        m_cooldownTime = Util::getMSTime() + 10 * IN_MILLISECONDS;
-    else if (Unit* owner = getOwner())
-        if (owner->isInCombat())
-            m_cooldownTime = Util::getMSTime() + goInfo->trap.start_delay * IN_MILLISECONDS;
+    switch (m_lootState)
+    {
+        case GO_NOT_READY:
+        {
+            GameObjectProperties const* goInfo = GetGameObjectProperties();
+            // Bombs
+            if (goInfo->trap.charges == 2)
+                // Hardcoded tooltip value
+                m_cooldownTime = Util::getMSTime() + 10 * IN_MILLISECONDS;
+            else if (Unit* owner = getOwner())
+                if (owner->isInCombat())
+                    m_cooldownTime = Util::getMSTime() + goInfo->trap.start_delay * IN_MILLISECONDS;
 
-    setLootState(GO_READY);
+            setLootState(GO_READY);
+        } break;
+        case GO_ACTIVATED:
+        {
+            GameObjectProperties const* goInfo = GetGameObjectProperties();
+            if (goInfo->trap.charges == 2 && goInfo->trap.spell_id)
+            {
+                /// @todo nullptr target won't work for target type 1
+                CastSpell(0, goInfo->trap.spell_id);
+                setLootState(GO_JUST_DEACTIVATED);
+            }
+            else if (Unit* target = getWorldMapUnit(m_lootStateUnitGUID))
+            {
+                // Some traps do not have a spell but should be triggered
+                if (goInfo->trap.spell_id)
+                    CastSpell(target->getGuid(), goInfo->trap.spell_id);
+
+                // Template value or 4 seconds
+                m_cooldownTime = Util::getMSTime() + (goInfo->trap.cooldown ? goInfo->trap.cooldown : uint32(4)) * IN_MILLISECONDS;
+
+                if (goInfo->trap.charges == 1)
+                    setLootState(GO_JUST_DEACTIVATED);
+                else if (!goInfo->trap.charges)
+                    setLootState(GO_READY);
+            }
+        } break;
+        default:
+            break;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1726,16 +1722,56 @@ void GameObject_Goober::onUse(Player* player)
     player->castSpell(getGuid(), gameobject_properties->goober.spell_id, false);
 }
 
+void GameObject_Goober::_internalUpdateOnState(unsigned long /*timeDiff*/)
+{
+    switch (m_lootState)
+    {
+        case GO_ACTIVATED:
+            if (Util::getMSTime() >= m_cooldownTime)
+            {
+                removeFlags(GO_FLAG_NONSELECTABLE);
+                setLootState(GO_JUST_DEACTIVATED);
+            }
+            break;
+        case GO_JUST_DEACTIVATED:
+            //if Gameobject should cast spell, then this, but some GOs (type = 10) should be destroyed
+            if (uint32_t spellId = GetGameObjectProperties()->goober.spell_id)
+            {
+                for (auto it = m_unique_users.begin(); it != m_unique_users.end(); ++it)
+                    // m_unique_users can contain only player GUIDs
+                    if (Player* owner = getWorldMapPlayer(*it))
+                        owner->castSpell(owner, spellId, false);
+
+                m_unique_users.clear();
+                m_usetimes = 0;
+            }
+
+            // Only goobers with a lock id or a reset time may reset their go state
+            if (GetGameObjectProperties()->getLockId() || GetGameObjectProperties()->getAutoCloseTime())
+                setState(GO_STATE_CLOSED);
+            break;
+        default:
+            break;
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Transport
-void GameObject_Transport::_updateOnNotReady(unsigned long timeDiff)
+void GameObject_Transport::_internalUpdateOnState(unsigned long timeDiff)
 {
-    if (!m_goValue.AnimationInfo)
-        return;
-
-    if (getState() == GO_STATE_CLOSED)
+    switch (m_lootState)
     {
-        m_goValue.PathProgress += timeDiff;
+        case GO_NOT_READY:
+            if (!m_goValue.AnimationInfo)
+                break;
+
+            if (getState() == GO_STATE_CLOSED)
+            {
+                m_goValue.PathProgress += timeDiff;
+            }
+            break;
+        default:
+            break;
     }
 }
 
@@ -1852,42 +1888,52 @@ bool GameObject_FishingNode::HasLoot()
     return false;
 }
 
-void GameObject_FishingNode::_updateOnNotReady(unsigned long /*timeDiff*/)
+void GameObject_FishingNode::_internalUpdateOnState(unsigned long timeDiff)
 {
-    // fishing code (bobber ready)
-    if (Util::getTimeNow() > m_respawnTime - 5)
+    switch (m_lootState)
     {
-        // splash bobber (bobber ready now)
-        Unit* caster = getOwner();
-        if (caster && caster->isPlayer())
+        case GO_NOT_READY:
         {
-            setFlags(GO_FLAG_NEVER_DESPAWN);
-            sendGameobjectCustomAnim();
-        }
+            // fishing code (bobber ready)
+            if (Util::getTimeNow() > m_respawnTime - 5)
+            {
+                // splash bobber (bobber ready now)
+                Unit* caster = getOwner();
+                if (caster && caster->isPlayer())
+                {
+                    setFlags(GO_FLAG_NEVER_DESPAWN);
+                    sendGameobjectCustomAnim();
+                }
 
-        m_lootState = GO_READY;                 // can be successfully open with some chance
-    }
-}
-
-void GameObject_FishingNode::_updateOnReady()
-{
-    Unit* caster = getOwner();
-    if (caster && caster->isPlayer())
-    {
-        caster->removeGameObject(this, false);
-        caster->sendPacket(SmsgFishEscaped().serialise().get());
-
-        // Fishing is channeled spell
-        auto channelledSpell = caster->getCurrentSpell(CURRENT_CHANNELED_SPELL);
-        if (channelledSpell != nullptr)
+                m_lootState = GO_READY;                 // can be successfully open with some chance
+            }
+        } break;
+        case GO_READY:
         {
-            channelledSpell->sendChannelUpdate(0);
-            channelledSpell->finish(true);
-        }
-    }
+            Unit* caster = getOwner();
+            if (caster && caster->isPlayer())
+            {
+                caster->removeGameObject(this, false);
+                caster->sendPacket(SmsgFishEscaped().serialise().get());
 
-    // can be delete
-    m_lootState = GO_JUST_DEACTIVATED;
+                // Fishing is channeled spell
+                auto channelledSpell = caster->getCurrentSpell(CURRENT_CHANNELED_SPELL);
+                if (channelledSpell != nullptr)
+                {
+                    channelledSpell->sendChannelUpdate(0);
+                    channelledSpell->finish(true);
+                }
+            }
+
+            // can be delete
+            m_lootState = GO_JUST_DEACTIVATED;
+        } break;
+        case GO_JUST_DEACTIVATED:
+            loot.clear();
+            break;
+        default:
+            break;
+    }
 }
 
 void GameObject::getFishLoot(Loot* fishloot, Player* loot_owner)
@@ -2205,10 +2251,20 @@ bool GameObject_FishingHole::HasLoot()
     return false;
 }
 
-void GameObject_FishingHole::_updateOnReady()
+void GameObject_FishingHole::_internalUpdateOnState(unsigned long /*timeDiff*/)
 {
-    // Initialize a new max fish count on respawn
-    maxOpens = Util::getRandomUInt(GetGameObjectProperties()->fishinghole.min_success_opens, GetGameObjectProperties()->fishinghole.max_success_opens);
+    switch (m_lootState)
+    {
+        case GO_READY:
+            // Initialize a new max fish count on respawn
+            maxOpens = Util::getRandomUInt(GetGameObjectProperties()->fishinghole.min_success_opens, GetGameObjectProperties()->fishinghole.max_success_opens);
+            break;
+        case GO_JUST_DEACTIVATED:
+            loot.clear();
+            break;
+        default:
+            break;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
