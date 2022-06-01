@@ -1101,7 +1101,7 @@ void Player::addSpell(uint32 spell_id, uint16_t fromSkill/* = 0*/)
     // Add spell's skill line to player
     if (fromSkill == 0)
     {
-        const auto teachesProfession = spell->hasEffect(SPELL_EFFECT_SKILL);
+        const auto teachesProfession = spell->hasEffect(SPELL_EFFECT_SKILL) || spell->hasEffect(SPELL_EFFECT_TRADE_SKILL);
 
         const auto spellSkillBounds = sSpellMgr.getSkillEntryForSpellBounds(spell_id);
         for (auto spellSkillItr = spellSkillBounds.first; spellSkillItr != spellSkillBounds.second; ++spellSkillItr)

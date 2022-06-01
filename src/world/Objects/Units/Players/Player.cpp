@@ -3502,7 +3502,9 @@ void Player::learnSkillSpells(uint16_t skillLine, uint16_t currentValue)
             if (sameSpell && oldSpell->custom_RankNumber >= spellInfo->custom_RankNumber)
             {
                 // Stupid profession related spells for "skinning" having the same namehash and not ranked
-                if (spellInfo->getId() != 32605 && spellInfo->getId() != 32606 && spellInfo->getId() != 49383)
+                // Also skip 'generic' skill line spells, multiple opening spells with same icon and name
+                if (spellInfo->getId() != 32605 && spellInfo->getId() != 32606 && spellInfo->getId() != 49383
+                    && skillLine != 183)
                 {
                     // Player already has this spell, or a higher rank. Don't add it.
                     learnThisSpell = false;
