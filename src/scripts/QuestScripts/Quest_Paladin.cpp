@@ -46,16 +46,11 @@ public:
     {
         if (pPlayer->hasQuestInQuestLog(9678))
         {
-            float SSX = pPlayer->GetPositionX();
-            float SSY = pPlayer->GetPositionY();
-            float SSZ = pPlayer->GetPositionZ();
-            float SSO = pPlayer->GetOrientation();
-
-            GameObject* Brazier = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(SSX, SSY, SSZ, 181956);
+            GameObject* Brazier = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 181956);
             if (Brazier)
             {
                 Brazier->setState(GO_STATE_OPEN);
-                pPlayer->getWorldMap()->getInterface()->spawnCreature(17716, LocationVector(SSX, SSY, SSZ, SSO), true, false, 0, 0)->Despawn(600000, 0);
+                pPlayer->getWorldMap()->getInterface()->spawnCreature(17716, pPlayer->GetPosition(), true, false, 0, 0)->Despawn(600000, 0);
             }
         }
         else
@@ -73,11 +68,7 @@ public:
 
     void OnDied(Unit* mKiller) override
     {
-        float SSX = mKiller->GetPositionX();
-        float SSY = mKiller->GetPositionY();
-        float SSZ = mKiller->GetPositionZ();
-
-        GameObject* Brazier = mKiller->getWorldMap()->getInterface()->getGameObjectNearestCoords(SSX, SSY, SSZ, 181956);
+        GameObject* Brazier = mKiller->getWorldMap()->getInterface()->getGameObjectNearestCoords(mKiller->GetPositionX(), mKiller->GetPositionY(), mKiller->GetPositionZ(), 181956);
         if (Brazier)
         {
             Brazier->setState(GO_STATE_CLOSED);
