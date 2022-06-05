@@ -11,11 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Util/Strings.hpp"
 #include <regex>
 
-SERVER_DECL std::set<std::string> CreatureQuestStarterTables;
-SERVER_DECL std::set<std::string> CreatureQuestFinisherTables;
 SERVER_DECL std::set<std::string> CreatureSpawnsTables;
-SERVER_DECL std::set<std::string> GameObjectQuestStarterTables;
-SERVER_DECL std::set<std::string> GameObjectQuestFinisherTables;
 SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
 SERVER_DECL std::set<std::string> GameObjectPropertiesTables;
 SERVER_DECL std::set<std::string> ItemPropertiesTables;
@@ -41,11 +37,7 @@ void MySQLDataStore::finalize()
 void MySQLDataStore::loadAdditionalTableConfig()
 {
     // init basic tables
-    CreatureQuestStarterTables.emplace(std::string("creature_quest_starter"));
-    CreatureQuestFinisherTables.emplace(std::string("creature_quest_finisher"));
     CreatureSpawnsTables.emplace(std::string("creature_spawns"));
-    GameObjectQuestStarterTables.emplace(std::string("gameobject_quest_starter"));
-    GameObjectQuestFinisherTables.emplace(std::string("gameobject_quest_finisher"));
     GameObjectSpawnsTables.emplace(std::string("gameobject_spawns"));
     GameObjectPropertiesTables.emplace(std::string("gameobject_properties"));
     ItemPropertiesTables.emplace(std::string("item_properties"));
@@ -73,20 +65,8 @@ void MySQLDataStore::loadAdditionalTableConfig()
         if (additional_table.empty() || target_table.empty())
             continue;
 
-        if (target_table.compare("creature_quest_starter") == 0)
-            CreatureQuestStarterTables.insert(additional_table);
-
-        if (target_table.compare("creature_quest_finisher") == 0)
-            CreatureQuestFinisherTables.insert(additional_table);
-
         if (target_table.compare("creature_spawns") == 0)
             CreatureSpawnsTables.insert(additional_table);
-
-        if (target_table.compare("gameobject_quest_starter") == 0)
-            GameObjectQuestStarterTables.insert(additional_table);
-
-        if (target_table.compare("gameobject_quest_finisher") == 0)
-            GameObjectQuestFinisherTables.insert(additional_table);
 
         if (target_table.compare("gameobject_spawns") == 0)
             GameObjectSpawnsTables.insert(additional_table);

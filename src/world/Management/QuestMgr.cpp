@@ -2486,115 +2486,95 @@ void QuestMgr::LoadExtraQuestStuff()
     // load creature starters
     uint32 creature, quest;
     QueryResult* pResult = nullptr;
-    uint32 pos = 0;
-    uint32 total = 0;
 
-    for (auto tableName : CreatureQuestStarterTables)
+    pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM creature_quest_starter WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
+    if (pResult)
     {
-        pResult = WorldDatabase.Query("SELECT * FROM %s WHERE min_build <= %u AND max_build >= %u", tableName.c_str(), VERSION_STRING, VERSION_STRING);
-        if (pResult)
+        do
         {
-            total = pResult->GetRowCount();
-            do
-            {
-                Field* data = pResult->Fetch();
-                creature = data[0].GetUInt32();
-                quest = data[1].GetUInt32();
+            Field* data = pResult->Fetch();
+            creature = data[0].GetUInt32();
+            quest = data[1].GetUInt32();
 
-                auto qst = sMySQLStore.getQuestProperties(quest);
-                if (qst == nullptr)
-                {
-                    sLogger.debug("Tried to add starter to npc %d for non-existent quest %u in table %s.", creature, quest, tableName.c_str());
-                }
-                else
-                {
-                    _AddQuest<Creature>(creature, qst, 1);  // 1 = starter
-                }
-            } while (pResult->NextRow());
-            delete pResult;
-        }
+            auto qst = sMySQLStore.getQuestProperties(quest);
+            if (qst == nullptr)
+            {
+                sLogger.debug("Tried to add starter to npc %d for non-existent quest %u in table creature_quest_starter.", creature, quest);
+            }
+            else
+            {
+                _AddQuest<Creature>(creature, qst, 1);  // 1 = starter
+            }
+        } while (pResult->NextRow());
+        delete pResult;
     }
 
-    for (auto tableName : CreatureQuestFinisherTables)
+    pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM creature_quest_finisher WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
+    if (pResult)
     {
-        pResult = WorldDatabase.Query("SELECT * FROM %s WHERE min_build <= %u AND max_build >= %u", tableName.c_str(), VERSION_STRING, VERSION_STRING);
-        pos = 0;
-        if (pResult)
+        do
         {
-            total = pResult->GetRowCount();
-            do
-            {
-                Field* data = pResult->Fetch();
-                creature = data[0].GetUInt32();
-                quest = data[1].GetUInt32();
+            Field* data = pResult->Fetch();
+            creature = data[0].GetUInt32();
+            quest = data[1].GetUInt32();
 
-                auto qst = sMySQLStore.getQuestProperties(quest);
-                if (qst == nullptr)
-                {
-                    sLogger.debug("Tried to add finisher to npc %d for non-existent quest %u in table %s.", creature, quest, tableName.c_str());
-                }
-                else
-                {
-                    _AddQuest<Creature>(creature, qst, 2);  // 2 = finisher
-                }
-            } while (pResult->NextRow());
-            delete pResult;
-        }
+            auto qst = sMySQLStore.getQuestProperties(quest);
+            if (qst == nullptr)
+            {
+                sLogger.debug("Tried to add finisher to npc %d for non-existent quest %u in table creature_quest_finisher.", creature, quest);
+            }
+            else
+            {
+                _AddQuest<Creature>(creature, qst, 2);  // 2 = finisher
+            }
+        } while (pResult->NextRow());
+        delete pResult;
     }
 
-    for (auto tableName : GameObjectQuestStarterTables)
+    pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM gameobject_quest_starter WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
+    if (pResult)
     {
-        pResult = WorldDatabase.Query("SELECT * FROM %s WHERE min_build <= %u AND max_build >= %u", tableName.c_str(), VERSION_STRING, VERSION_STRING);
-        pos = 0;
-        if (pResult)
+        do
         {
-            total = pResult->GetRowCount();
-            do
-            {
-                Field* data = pResult->Fetch();
-                creature = data[0].GetUInt32();
-                quest = data[1].GetUInt32();
+            Field* data = pResult->Fetch();
+            creature = data[0].GetUInt32();
+            quest = data[1].GetUInt32();
 
-                auto qst = sMySQLStore.getQuestProperties(quest);
-                if (qst == nullptr)
-                {
-                    sLogger.debug("Tried to add starter to go %d for non-existent quest %u in table %s.", creature, quest, tableName.c_str());
-                }
-                else
-                {
-                    _AddQuest<GameObject>(creature, qst, 1);  // 1 = starter
-                }
-            } while (pResult->NextRow());
-            delete pResult;
-        }
+            auto qst = sMySQLStore.getQuestProperties(quest);
+            if (qst == nullptr)
+            {
+                sLogger.debug("Tried to add starter to go %d for non-existent quest %u in table gameobject_quest_starter.", creature, quest);
+            }
+            else
+            {
+                _AddQuest<GameObject>(creature, qst, 1);  // 1 = starter
+            }
+        } while (pResult->NextRow());
+        delete pResult;
     }
 
-    for (auto tableName : GameObjectQuestFinisherTables)
+    pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM gameobject_quest_finisher WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
+    if (pResult)
     {
-        pResult = WorldDatabase.Query("SELECT * FROM %s WHERE min_build <= %u AND max_build >= %u", tableName.c_str(), VERSION_STRING, VERSION_STRING);
-        pos = 0;
-        if (pResult)
+        do
         {
-            total = pResult->GetRowCount();
-            do
-            {
-                Field* data = pResult->Fetch();
-                creature = data[0].GetUInt32();
-                quest = data[1].GetUInt32();
+            Field* data = pResult->Fetch();
+            creature = data[0].GetUInt32();
+            quest = data[1].GetUInt32();
 
-                auto qst = sMySQLStore.getQuestProperties(quest);
-                if (qst == nullptr)
-                {
-                    sLogger.debug("Tried to add finisher to go %d for non-existent quest %u in table %s.", creature, quest, tableName.c_str());
-                }
-                else
-                {
-                    _AddQuest<GameObject>(creature, qst, 2);  // 2 = finish
-                }
-            } while (pResult->NextRow());
-            delete pResult;
-        }
+            auto qst = sMySQLStore.getQuestProperties(quest);
+            if (qst == nullptr)
+            {
+                sLogger.debug("Tried to add finisher to go %d for non-existent quest %u in table gameobject_quest_finisher.", creature, quest);
+            }
+            else
+            {
+                _AddQuest<GameObject>(creature, qst, 2);  // 2 = finish
+            }
+        } while (pResult->NextRow());
+        delete pResult;
     }
+
     //sObjectMgr.ProcessGameobjectQuests();
 
     //load item quest associations
@@ -2602,10 +2582,8 @@ void QuestMgr::LoadExtraQuestStuff()
     uint8 item_count;
 
     pResult = WorldDatabase.Query("SELECT * FROM item_quest_association");
-    pos = 0;
     if (pResult != NULL)
     {
-        total = pResult->GetRowCount();
         do
         {
             Field* data = pResult->Fetch();
