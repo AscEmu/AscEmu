@@ -183,7 +183,7 @@ public:
         if (spell->getUnitCaster() == nullptr)
             return SpellScriptExecuteState::EXECUTE_PREVENT;
 
-        const auto spellDuration = spell->GetDuration();
+        const auto spellDuration = spell->getDuration();
         if (spellDuration == 0)
         {
             // Prismatic Cloak 3/3 reduces duration to 0 and invisibility should be applied instantly

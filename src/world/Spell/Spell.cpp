@@ -454,15 +454,16 @@ void Spell::castMe(const bool doReCheck)
     uint32_t channelDuration = 0;
     if (getSpellInfo()->isChanneled())
     {
-        channelDuration = GetDuration();
-        // Apply haste modifer to channel duration
-        if (u_caster != nullptr)
-            channelDuration = static_cast<uint32_t>(channelDuration * u_caster->getModCastSpeed());
-
-        if (channelDuration > 0)
+        if (getDuration() > 0)
         {
-            m_spellState = SPELL_STATE_CHANNELING;
+            channelDuration = static_cast<uint32_t>(getDuration());
             sendChannelStart(channelDuration);
+            m_spellState = SPELL_STATE_CHANNELING;
+        }
+        else if (getDuration() == -1)
+        {
+            sendChannelStart(static_cast<uint32_t>(getDuration()));
+            m_spellState = SPELL_STATE_CHANNELING;
         }
     }
 
@@ -1090,7 +1091,7 @@ void Spell::finish(bool successful)
 void Spell::update(unsigned long timePassed)
 {
     // Check for moving while casting or channeling
-    if (m_spellState == SPELL_STATE_CASTING || m_spellState == SPELL_STATE_CHANNELING)
+    if (getPlayerCaster() != nullptr && (m_spellState == SPELL_STATE_CASTING || m_spellState == SPELL_STATE_CHANNELING))
     {
         // but allow slight error
         if (u_caster != nullptr &&
@@ -1144,11 +1145,14 @@ void Spell::update(unsigned long timePassed)
                         cancel();
                 }
 
-                m_timer -= timePassed;
+                if (timePassed >= static_cast<uint32_t>(m_timer))
+                    m_timer = 0;
+                else
+                    m_timer -= timePassed;
             }
 
             // Channeling finishes
-            if (m_timer <= 0)
+            if (m_timer == 0)
             {
                 sendChannelUpdate(0, timePassed);
                 finish();
@@ -5042,7 +5046,7 @@ void Spell::sendChannelStart(const uint32_t duration)
             u_caster->setChannelObjectGuid(channelTarget->getGuid());
     }
 
-    m_castTime = m_timer = duration;
+    m_timer = duration;
 }
 
 void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult result, uint32_t parameter1, uint32_t parameter2)
@@ -5452,6 +5456,65 @@ void Spell::setForceCritOnTarget(Unit const* target)
         return;
 
     m_critTargets.push_back(target->getGuid());
+}
+
+int32_t Spell::getDuration()
+{
+    if (isDurationSet)
+        return m_duration;
+
+    isDurationSet = true;
+
+    if (!getSpellInfo()->getDurationIndex())
+    {
+        m_duration = -1;
+        return m_duration;
+    }
+
+    const auto spellDuration = sSpellDurationStore.LookupEntry(getSpellInfo()->getDurationIndex());
+    if (spellDuration == nullptr)
+    {
+        m_duration = -1;
+        return m_duration;
+    }
+
+    // Duration affected by level
+    if (getUnitCaster() != nullptr && spellDuration->Duration1 < 0 && spellDuration->Duration2)
+    {
+        m_duration = spellDuration->Duration1 + (spellDuration->Duration2 * static_cast<int32_t>(getUnitCaster()->getLevel()));
+
+        if (m_duration > 0 && spellDuration->Duration3 > 0 && m_duration > spellDuration->Duration3)
+            m_duration = spellDuration->Duration3;
+
+        if (m_duration < 0)
+            m_duration = 0;
+    }
+
+    if (m_duration == 0)
+        m_duration = spellDuration->Duration1;
+
+    // Check if duration is affected by combo points
+    if (getPlayerCaster() != nullptr)
+    {
+        if (const auto comboPoints = getPlayerCaster()->getComboPoints())
+        {
+            const auto bonus = (comboPoints * (spellDuration->Duration3 - spellDuration->Duration1)) / 5;
+            if (bonus)
+                m_duration += bonus;
+        }
+    }
+
+    if (getUnitCaster() != nullptr && m_duration > 0)
+    {
+        // Apply duration modifiers
+        getUnitCaster()->applySpellModifiers(SPELLMOD_DURATION, &m_duration, getSpellInfo(), this);
+
+        // Apply haste bonus
+        if (getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HASTE_AFFECTS_DURATION)
+            m_duration = static_cast<int32_t>(m_duration * getUnitCaster()->getModCastSpeed());
+    }
+
+    return m_duration;
 }
 
 float_t Spell::getEffectRadius(uint8_t effectIndex)

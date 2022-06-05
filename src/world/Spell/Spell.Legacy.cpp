@@ -99,7 +99,6 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
     castedItemId = 0;
 
     m_Spell_Failed = false;
-    bDurSet = false;
 
     targetConstraintCreature = nullptr;
     targetConstraintGameObject = nullptr;
@@ -123,7 +122,6 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
     m_missileTravelTime = 0;
     m_IsCastedOnSelf = false;
     m_magnetTarget = 0;
-    Dur = 0;
 
     // APGL End
     // MIT Start
@@ -1331,7 +1329,7 @@ void Spell::AddTime(uint32 type)
         }
         else if (getSpellInfo()->getChannelInterruptFlags() != 48140)
         {
-            int32 delay = GetDuration() / 4; //0.5 second push back
+            int32 delay = getDuration() / 4; //0.5 second push back
             ++m_DelayStep;
             m_timer -= delay;
             if (m_timer < 0)
@@ -1844,68 +1842,6 @@ void Spell::InitProtoOverride()
     if (m_spellInfo_override != nullptr)
         return;
     m_spellInfo_override = sSpellMgr.getSpellInfo(getSpellInfo()->getId());
-}
-
-uint32 Spell::GetDuration()
-{
-    if (bDurSet)
-        return Dur;
-    bDurSet = true;
-    int32 c_dur = 0;
-
-    if (getSpellInfo()->getDurationIndex())
-    {
-        auto spell_duration = sSpellDurationStore.LookupEntry(getSpellInfo()->getDurationIndex());
-        if (spell_duration)
-        {
-            //check for negative and 0 durations.
-            //duration affected by level
-            if ((int32)spell_duration->Duration1 < 0 && spell_duration->Duration2 && u_caster)
-            {
-                this->Dur = uint32(((int32)spell_duration->Duration1 + (spell_duration->Duration2 * u_caster->getLevel())));
-                if ((int32)this->Dur > 0 && spell_duration->Duration3 > 0 && (int32)this->Dur > (int32)spell_duration->Duration3)
-                {
-                    this->Dur = spell_duration->Duration3;
-                }
-
-                if ((int32)this->Dur < 0)
-                    this->Dur = 0;
-                c_dur = this->Dur;
-            }
-            if (!c_dur)
-            {
-                this->Dur = spell_duration->Duration1;
-            }
-            //combo point lolerCopter? ;P
-            if (p_caster)
-            {
-                uint32 cp = p_caster->getComboPoints();
-                if (cp)
-                {
-                    uint32 bonus = (cp * (spell_duration->Duration3 - spell_duration->Duration1)) / 5;
-                    if (bonus)
-                    {
-                        this->Dur += bonus;
-                    }
-                }
-            }
-
-            if (u_caster != nullptr)
-            {
-                u_caster->applySpellModifiers(SPELLMOD_DURATION, &Dur, getSpellInfo(), this);
-            }
-        }
-        else
-        {
-            this->Dur = (uint32)-1;
-        }
-    }
-    else
-    {
-        this->Dur = (uint32)-1;
-    }
-
-    return this->Dur;
 }
 
 uint32 Spell::GetBaseThreat(uint32 dmg)

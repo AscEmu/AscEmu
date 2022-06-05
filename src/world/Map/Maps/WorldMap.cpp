@@ -2597,7 +2597,7 @@ ZLiquidStatus WorldMap::getLiquidStatus(uint32_t phaseMask, LocationVector pos, 
     uint32_t liquid_type = 0;
     uint32_t mogpFlags = 0;
     bool useGridLiquid = true;
-    if (vmgr->getLiquidLevel(getBaseMap()->getMapId(), pos.x, pos.y, pos.z, ReqLiquidType, liquid_level, ground_level, liquid_type, mogpFlags))
+    if (getBaseMap() && vmgr->getLiquidLevel(getBaseMap()->getMapId(), pos.x, pos.y, pos.z, ReqLiquidType, liquid_level, ground_level, liquid_type, mogpFlags))
     {
         useGridLiquid = !isInWMOInterior(mogpFlags);
         // Check water level and ground level
