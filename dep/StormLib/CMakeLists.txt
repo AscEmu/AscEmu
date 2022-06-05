@@ -8,12 +8,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(CMakeDependentOption)
 
-option(BUILD_SHARED_LIBS "Compile shared libraries" OFF)
-option(STORM_SKIP_INSTALL "Skip installing files" OFF)
-option(STORM_BUILD_TESTS
-    "Compile StormLib test application" OFF
+# option(BUILD_SHARED_LIBS "Compile shared libraries" OFF)
+# option(STORM_SKIP_INSTALL "Skip installing files" OFF)
+# option(STORM_BUILD_TESTS
+#   "Compile StormLib test application" OFF
 #   "BUILD_TESTING" OFF # Stay coherent with CTest variables
-)
+# )
 
 set(SRC_FILES
            src/adpcm/adpcm.cpp
