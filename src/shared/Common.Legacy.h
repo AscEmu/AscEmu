@@ -33,14 +33,7 @@
 #include <cmath>
 #include <cerrno>
 
-#if defined( __WIN32__ ) || defined( WIN32 ) || defined( _WIN32 )
-    #define WIN32_LEAN_AND_MEAN
-    #define NOMINMAX
-    #include <windows.h>
-    #undef NOMINMAX
-#else
-    #define MAX_PATH 1024
-#endif
+#define MAX_PATH 1024
 
 #include "Network/NetworkIncludes.hpp"
 
@@ -138,7 +131,6 @@
 #include "Threading/LegacyThreading.h"
 
 #include "Threading/ConditionVariable.h"
-
 
 #if COMPILER == COMPILER_MICROSOFT
     #define I64FMT "%016I64X"

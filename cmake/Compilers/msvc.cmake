@@ -13,6 +13,13 @@ message(STATUS "Applying settings for ${CMAKE_CXX_COMPILER_ID}")
 
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
+# windows math include does not define constants by default.
+# set this definition so it does.
+# also set NOMINMAX so the min and max functions are not overwritten with macros.
+add_definitions(-DWIN32_LEAN_AND_MEAN)
+add_definitions(-D_USE_MATH_DEFINES)
+add_definitions(-DNOMINMAX)
+
 # set defines for MSVC
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c++20 /EHa /MP /bigobj")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20 /EHa /MP /bigobj")
