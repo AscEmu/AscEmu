@@ -179,9 +179,6 @@ namespace MySQLStructure
 
             return buffer;
         }
-
-        // additional table handling
-        std::string table;
     };
 
     //creature_timed_emotes
@@ -241,9 +238,6 @@ namespace MySQLStructure
         uint32_t phase;
         uint32_t overrides;
         //event_entry
-
-        // additional table handling
-        std::string table;
     };
 
     //gameobject_teleports

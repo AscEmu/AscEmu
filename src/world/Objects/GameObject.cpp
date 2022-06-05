@@ -457,7 +457,7 @@ void GameObject::SaveToDB()
     }
     std::stringstream ss;
 
-    ss << "DELETE FROM "<< m_spawn->table <<" WHERE id = ";
+    ss << "DELETE FROM gameobject_spawns WHERE id = ";
     ss << m_spawn->id;
     ss << " AND min_build <= ";
     ss << VERSION_STRING;
@@ -469,7 +469,7 @@ void GameObject::SaveToDB()
 
     ss.rdbuf()->str("");
 
-    ss << "INSERT INTO "<< m_spawn->table <<" VALUES("
+    ss << "INSERT INTO gameobject_spawns VALUES("
         << m_spawn->id << ","
         << VERSION_STRING << ","
         << VERSION_STRING << ","
@@ -558,7 +558,7 @@ bool GameObject::Load(MySQLStructure::GameobjectSpawn* go_spawn)
 void GameObject::DeleteFromDB()
 {
     if (m_spawn != NULL)
-        WorldDatabase.Execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u ", m_spawn->table.c_str() ,m_spawn->id, VERSION_STRING, VERSION_STRING);
+        WorldDatabase.Execute("DELETE FROM gameobject_spawns WHERE id = %u AND min_build <= %u AND max_build >= %u ", m_spawn->id, VERSION_STRING, VERSION_STRING);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

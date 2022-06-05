@@ -306,7 +306,7 @@ bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_sess
     SystemMessage(m_session, "=================================");
 
     if (gameobject->m_spawn != nullptr)
-        SystemMessage(m_session, "Is part of table: %s", gameobject->m_spawn->table.c_str());
+        SystemMessage(m_session, "Is part of table: gameobject_spawns");
     else
         SystemMessage(m_session, "Is spawnd by an internal script");
 
@@ -348,9 +348,9 @@ bool ChatHandler::HandleGOMoveHereCommand(const char* args, WorldSession* m_sess
         }
         else
         {
-            GreenSystemMessage(m_session, "Position changed in gameobject_spawns table for spawn ID: %u.", go_spawn->table.c_str(), go_spawn->id);
-            WorldDatabase.Execute("UPDATE %s SET position_x = %f, position_y = %f, position_z = %f WHERE id = %u AND min_build <= %u AND max_build >= %u", go_spawn->table.c_str(), position_x, position_y, position_z, go_spawn->id, VERSION_STRING, VERSION_STRING);
-            sGMLog.writefromsession(m_session, "changed gameobject position of %s ID: %u.", go_spawn->table.c_str(), go_spawn->id);
+            GreenSystemMessage(m_session, "Position changed in gameobject_spawns table for spawn ID: %u.", go_spawn->id);
+            WorldDatabase.Execute("UPDATE gameobject_spawns SET position_x = %f, position_y = %f, position_z = %f WHERE id = %u AND min_build <= %u AND max_build >= %u", position_x, position_y, position_z, go_spawn->id, VERSION_STRING, VERSION_STRING);
+            sGMLog.writefromsession(m_session, "changed gameobject position of gameobject_spawns ID: %u.", go_spawn->id);
         }
     }
     else

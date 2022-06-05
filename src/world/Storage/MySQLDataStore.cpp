@@ -4253,8 +4253,6 @@ void MySQLDataStore::loadCreatureSpawns()
                 cspawn->wander_distance = fields[30].GetUInt32();
                 cspawn->waypoint_id = fields[31].GetUInt32();
 
-                cspawn->table = "creature_spawns";
-
                 //\todo add flag to declare a spawn as static. E.g. gameobject_spawns
                 /*if (!stricmp((*tableiterator).c_str(), "creature_staticspawns"))
                 {
@@ -4279,7 +4277,7 @@ void MySQLDataStore::loadGameobjectSpawns()
     auto startTime = Util::TimeNow();
     uint32_t count = 0;
 
-    QueryResult* gobject_spawn_result = WorldDatabase.Query("SELECT * FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", VERSION_STRING, VERSION_STRING);
+    QueryResult* gobject_spawn_result = sMySQLStore.getWorldDBQuery("SELECT * FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", VERSION_STRING, VERSION_STRING);
     if (gobject_spawn_result)
     {
         uint32 gobject_spawn_fields = gobject_spawn_result->GetFieldCount();
@@ -4339,8 +4337,6 @@ void MySQLDataStore::loadGameobjectSpawns()
                     go_spawn->phase = 0xFFFFFFFF;
 
                 go_spawn->overrides = fields[19].GetUInt32();
-
-                go_spawn->table = "gameobject_spawns";
 
                 _gameobjectSpawnsStore[go_spawn->map].push_back(go_spawn);
                 ++count;
