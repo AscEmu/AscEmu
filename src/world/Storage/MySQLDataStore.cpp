@@ -13,10 +13,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 SERVER_DECL std::set<std::string> CreatureSpawnsTables;
 SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
-SERVER_DECL std::set<std::string> GameObjectPropertiesTables;
-SERVER_DECL std::set<std::string> ItemPropertiesTables;
-SERVER_DECL std::set<std::string> QuestPropertiesTables;
-SERVER_DECL std::set<std::string> RecallTables;
 
 SERVER_DECL std::vector<MySQLAdditionalTable> MySQLAdditionalTables;
 
@@ -39,10 +35,6 @@ void MySQLDataStore::loadAdditionalTableConfig()
     // init basic tables
     CreatureSpawnsTables.emplace(std::string("creature_spawns"));
     GameObjectSpawnsTables.emplace(std::string("gameobject_spawns"));
-    GameObjectPropertiesTables.emplace(std::string("gameobject_properties"));
-    ItemPropertiesTables.emplace(std::string("item_properties"));
-    QuestPropertiesTables.emplace(std::string("quest_properties"));
-    RecallTables.emplace(std::string("recall"));
 
     // get config
     std::string strData = worldConfig.startup.additionalTableLoads;
@@ -70,18 +62,6 @@ void MySQLDataStore::loadAdditionalTableConfig()
 
         if (target_table.compare("gameobject_spawns") == 0)
             GameObjectSpawnsTables.insert(additional_table);
-
-        if (target_table.compare("gameobject_properties") == 0)
-            GameObjectPropertiesTables.insert(additional_table);
-
-        if (target_table.compare("item_properties") == 0)
-            ItemPropertiesTables.insert(additional_table);
-
-        if (target_table.compare("quest_properties") == 0)
-            QuestPropertiesTables.insert(additional_table);
-
-        if (target_table.compare("recall") == 0)
-            RecallTables.insert(additional_table);
 
         // Zyres: new way for general additional tables
         MySQLAdditionalTable myTable;
@@ -197,336 +177,315 @@ void MySQLDataStore::loadItemPropertiesTable()
     auto startTime = Util::TimeNow();
 
     uint32_t item_count = 0;
-    uint32_t basic_field_count = 0;
 
-    std::set<std::string>::iterator tableiterator;
-    for (tableiterator = ItemPropertiesTables.begin(); tableiterator != ItemPropertiesTables.end(); ++tableiterator)
+    QueryResult* item_result = sMySQLStore.getWorldDBQuery("SELECT * FROM item_properties base "
+        "WHERE build=(SELECT MAX(build) FROM item_properties spec WHERE base.entry = spec.entry AND build <= %u)", VERSION_STRING);
+
+    //                                                         0      1       2        3       4        5         6       7       8       9          10
+    /*QueryResult* item_result = WorldDatabase.Query("SELECT entry, class, subclass, field4, name1, displayid, quality, flags, flags2, buyprice, sellprice, "
+    //                                                   11             12              13           14            15            16               17
+                                                   "inventorytype, allowableclass, allowablerace, itemlevel, requiredlevel, RequiredSkill, RequiredSkillRank, "
+    //                                                   18                 19                    20                21                    22             23
+                                                   "RequiredSpell, RequiredPlayerRank1, RequiredPlayerRank2, RequiredFaction, RequiredFactionStanding, Unique, "
+    //                                                  24           25              26           27           28           29         30           31
+                                                   "maxcount, ContainerSlots, itemstatscount, stat_type1, stat_value1, stat_type2, stat_value2, stat_type3, "
+    //                                                  32           33          34           35          36           37           38          39
+                                                   "stat_value3, stat_type4, stat_value4, stat_type5, stat_value5, stat_type6, stat_value6, stat_type7, "
+    //                                                  40           41          42           43          44           45           46
+                                                   "stat_value7, stat_type8, stat_value8, stat_type9, stat_value9, stat_type10, stat_value10, "
+    //                                                          47                           48                 49        50        51         52        53
+                                                   "ScaledStatsDistributionId, ScaledStatsDistributionFlags, dmg_min1, dmg_max1, dmg_type1, dmg_min2, dmg_max2, "
+    //                                                 54       55       56        57         58          59         60          61       62        63
+                                                   "dmg_type2, armor, holy_res, fire_res, nature_res, frost_res, shadow_res, arcane_res, delay, ammo_type, "
+    //                                                64      65             66             67              68               69                   70
+                                                   "range, spellid_1, spelltrigger_1, spellcharges_1, spellcooldown_1, spellcategory_1, spellcategorycooldown_1, "
+    //                                                  71           72              73              74               75                   76
+                                                   "spellid_2, spelltrigger_2, spellcharges_2, spellcooldown_2, spellcategory_2, spellcategorycooldown_2, "
+    //                                                  77           78              79              80               81                   82
+                                                   "spellid_3, spelltrigger_3, spellcharges_3, spellcooldown_3, spellcategory_3, spellcategorycooldown_3, "
+    //                                                  83           84              85              86               87                   88
+                                                   "spellid_4, spelltrigger_4, spellcharges_4, spellcooldown_4, spellcategory_4, spellcategorycooldown_4, "
+    //                                                  89           90              91              92               93                   94
+                                                   "spellid_5, spelltrigger_5, spellcharges_5, spellcooldown_5, spellcategory_5, spellcategorycooldown_5, "
+    //                                                 95         96          97         98             99          100      101         102          103
+                                                   "bonding, description, page_id, page_language, page_material, quest_id, lock_id, lock_material, sheathID, "
+    //                                                 104          105        106     107         108           109      110      111         112
+                                                   "randomprop, randomsuffix, block, itemset, MaxDurability, ZoneNameID, mapid, bagfamily, TotemCategory, "
+    //                                                   113           114         115          116          117           118         119          120
+                                                   "socket_color_1, unk201_3, socket_color_2, unk201_5, socket_color_3, unk201_7, socket_bonus, GemProperties, "
+    //                                                      121                122                 123                 124             125        126
+                                                   "ReqDisenchantSkill, ArmorDamageModifier, existingduration, ItemLimitCategoryId, HolidayId, food_type FROM item_properties");*/
+
+    if (item_result == nullptr)
     {
-        std::string table_name = *tableiterator;
-        QueryResult* item_result = WorldDatabase.Query("SELECT * FROM %s base "
-            "WHERE build=(SELECT MAX(build) FROM %s spec WHERE base.entry = spec.entry AND build <= %u)", table_name.c_str(), table_name.c_str(), VERSION_STRING);
+        sLogger.info("MySQLDataLoads : Table `item_properties` is empty!");
+        return;
+    }
 
-        //                                                         0      1       2        3       4        5         6       7       8       9          10
-        /*QueryResult* item_result = WorldDatabase.Query("SELECT entry, class, subclass, field4, name1, displayid, quality, flags, flags2, buyprice, sellprice, "
-        //                                                   11             12              13           14            15            16               17
-                                                       "inventorytype, allowableclass, allowablerace, itemlevel, requiredlevel, RequiredSkill, RequiredSkillRank, "
-        //                                                   18                 19                    20                21                    22             23
-                                                       "RequiredSpell, RequiredPlayerRank1, RequiredPlayerRank2, RequiredFaction, RequiredFactionStanding, Unique, "
-        //                                                  24           25              26           27           28           29         30           31
-                                                       "maxcount, ContainerSlots, itemstatscount, stat_type1, stat_value1, stat_type2, stat_value2, stat_type3, "
-        //                                                  32           33          34           35          36           37           38          39
-                                                       "stat_value3, stat_type4, stat_value4, stat_type5, stat_value5, stat_type6, stat_value6, stat_type7, "
-        //                                                  40           41          42           43          44           45           46
-                                                       "stat_value7, stat_type8, stat_value8, stat_type9, stat_value9, stat_type10, stat_value10, "
-        //                                                          47                           48                 49        50        51         52        53
-                                                       "ScaledStatsDistributionId, ScaledStatsDistributionFlags, dmg_min1, dmg_max1, dmg_type1, dmg_min2, dmg_max2, "
-        //                                                 54       55       56        57         58          59         60          61       62        63
-                                                       "dmg_type2, armor, holy_res, fire_res, nature_res, frost_res, shadow_res, arcane_res, delay, ammo_type, "
-        //                                                64      65             66             67              68               69                   70
-                                                       "range, spellid_1, spelltrigger_1, spellcharges_1, spellcooldown_1, spellcategory_1, spellcategorycooldown_1, "
-        //                                                  71           72              73              74               75                   76
-                                                       "spellid_2, spelltrigger_2, spellcharges_2, spellcooldown_2, spellcategory_2, spellcategorycooldown_2, "
-        //                                                  77           78              79              80               81                   82
-                                                       "spellid_3, spelltrigger_3, spellcharges_3, spellcooldown_3, spellcategory_3, spellcategorycooldown_3, "
-        //                                                  83           84              85              86               87                   88
-                                                       "spellid_4, spelltrigger_4, spellcharges_4, spellcooldown_4, spellcategory_4, spellcategorycooldown_4, "
-        //                                                  89           90              91              92               93                   94
-                                                       "spellid_5, spelltrigger_5, spellcharges_5, spellcooldown_5, spellcategory_5, spellcategorycooldown_5, "
-        //                                                 95         96          97         98             99          100      101         102          103
-                                                       "bonding, description, page_id, page_language, page_material, quest_id, lock_id, lock_material, sheathID, "
-        //                                                 104          105        106     107         108           109      110      111         112
-                                                       "randomprop, randomsuffix, block, itemset, MaxDurability, ZoneNameID, mapid, bagfamily, TotemCategory, "
-        //                                                   113           114         115          116          117           118         119          120
-                                                       "socket_color_1, unk201_3, socket_color_2, unk201_5, socket_color_3, unk201_7, socket_bonus, GemProperties, "
-        //                                                      121                122                 123                 124             125        126
-                                                       "ReqDisenchantSkill, ArmorDamageModifier, existingduration, ItemLimitCategoryId, HolidayId, food_type FROM item_properties");*/
+    sLogger.info("MySQLDataLoads : Table `item_properties` has %u columns", item_result->GetFieldCount());
 
-        if (item_result == nullptr)
+    _itemPropertiesStore.rehash(item_result->GetRowCount());
+
+    do
+    {
+        Field* fields = item_result->Fetch();
+
+        uint32_t entry = fields[0].GetUInt32();
+
+        ItemProperties& itemProperties = _itemPropertiesStore[entry];
+
+        itemProperties.ItemId = entry;
+        itemProperties.Class = fields[2].GetUInt32();
+        itemProperties.SubClass = fields[3].GetUInt16();
+        itemProperties.unknown_bc = fields[4].GetUInt32();
+        itemProperties.Name = fields[5].GetString();
+        itemProperties.DisplayInfoID = fields[6].GetUInt32();
+        itemProperties.Quality = fields[7].GetUInt32();
+        itemProperties.Flags = fields[8].GetUInt32();
+        itemProperties.Flags2 = fields[9].GetUInt32();
+        itemProperties.BuyPrice = fields[10].GetUInt32();
+        itemProperties.SellPrice = fields[11].GetUInt32();
+
+        itemProperties.InventoryType = fields[12].GetUInt32();
+        itemProperties.AllowableClass = fields[13].GetUInt32();
+        itemProperties.AllowableRace = fields[14].GetUInt32();
+        itemProperties.ItemLevel = fields[15].GetUInt32();
+        itemProperties.RequiredLevel = fields[16].GetUInt32();
+        itemProperties.RequiredSkill = fields[17].GetUInt16();
+        itemProperties.RequiredSkillRank = fields[18].GetUInt32();
+        itemProperties.RequiredSkillSubRank = fields[19].GetUInt32();
+        itemProperties.RequiredPlayerRank1 = fields[20].GetUInt32();
+        itemProperties.RequiredPlayerRank2 = fields[21].GetUInt32();
+        itemProperties.RequiredFaction = fields[22].GetUInt32();
+        itemProperties.RequiredFactionStanding = fields[23].GetUInt32();
+        itemProperties.Unique = fields[24].GetUInt32();
+        itemProperties.MaxCount = fields[25].GetUInt32();
+        itemProperties.ContainerSlots = fields[26].GetUInt32();
+        itemProperties.itemstatscount = fields[27].GetUInt32();
+
+        for (uint8_t i = 0; i < itemProperties.itemstatscount; ++i)
         {
-            sLogger.info("MySQLDataLoads : Table `%s` is empty!", table_name.c_str());
-            return;
+            itemProperties.Stats[i].Type = fields[28 + i * 2].GetUInt32();
+            itemProperties.Stats[i].Value = fields[29 + i * 2].GetInt32();
         }
 
-        uint32_t row_count = 0;
-        if (table_name.compare("item_properties") == 0)
-        {
-            basic_field_count = item_result->GetFieldCount();
-        }
-        else
-        {
-            row_count = static_cast<uint32_t>(_itemPropertiesStore.size());
-        }
+        itemProperties.ScalingStatsEntry = fields[48].GetUInt32();
+        itemProperties.ScalingStatsFlag = fields[49].GetUInt32();
 
-        if (basic_field_count != item_result->GetFieldCount())
+        for (uint8_t i = 0; i < MAX_ITEM_PROTO_DAMAGES; ++i)
         {
-            sLogger.failure("Additional item_properties table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), item_result->GetFieldCount(), basic_field_count);
-            continue;
+            itemProperties.Damage[i].Min = fields[50 + i * 3].GetFloat();
+            itemProperties.Damage[i].Max = fields[51 + i * 3].GetFloat();
+            itemProperties.Damage[i].Type = fields[52 + i * 3].GetUInt32();
         }
 
-        sLogger.info("MySQLDataLoads : Table `%s` has %u columns", table_name.c_str(), item_result->GetFieldCount());
+        itemProperties.Armor = fields[56].GetUInt32();
+        itemProperties.HolyRes = fields[57].GetUInt32();
+        itemProperties.FireRes = fields[58].GetUInt32();
+        itemProperties.NatureRes = fields[59].GetUInt32();
+        itemProperties.FrostRes = fields[60].GetUInt32();
+        itemProperties.ShadowRes = fields[61].GetUInt32();
+        itemProperties.ArcaneRes = fields[62].GetUInt32();
+        itemProperties.Delay = fields[63].GetUInt32();
+        itemProperties.AmmoType = fields[64].GetUInt32();
+        itemProperties.Range = fields[65].GetFloat();
 
-        _itemPropertiesStore.rehash(row_count + item_result->GetRowCount());
-
-        do
+        for (uint8_t i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
         {
-            Field* fields = item_result->Fetch();
+            itemProperties.Spells[i].Id = fields[66 + i * 6].GetUInt32();
+            itemProperties.Spells[i].Trigger = fields[67 + i * 6].GetUInt32();
+            itemProperties.Spells[i].Charges = fields[68 + i * 6].GetInt32();
+            itemProperties.Spells[i].Cooldown = fields[69 + i * 6].GetInt32();
+            itemProperties.Spells[i].Category = fields[70 + i * 6].GetUInt32();
+            itemProperties.Spells[i].CategoryCooldown = fields[71 + i * 6].GetInt32();
+        }
 
-            uint32_t entry = fields[0].GetUInt32();
-
-            ItemProperties& itemProperties = _itemPropertiesStore[entry];
-
-            itemProperties.ItemId = entry;
-            itemProperties.Class = fields[2].GetUInt32();
-            itemProperties.SubClass = fields[3].GetUInt16();
-            itemProperties.unknown_bc = fields[4].GetUInt32();
-            itemProperties.Name = fields[5].GetString();
-            itemProperties.DisplayInfoID = fields[6].GetUInt32();
-            itemProperties.Quality = fields[7].GetUInt32();
-            itemProperties.Flags = fields[8].GetUInt32();
-            itemProperties.Flags2 = fields[9].GetUInt32();
-            itemProperties.BuyPrice = fields[10].GetUInt32();
-            itemProperties.SellPrice = fields[11].GetUInt32();
-
-            itemProperties.InventoryType = fields[12].GetUInt32();
-            itemProperties.AllowableClass = fields[13].GetUInt32();
-            itemProperties.AllowableRace = fields[14].GetUInt32();
-            itemProperties.ItemLevel = fields[15].GetUInt32();
-            itemProperties.RequiredLevel = fields[16].GetUInt32();
-            itemProperties.RequiredSkill = fields[17].GetUInt16();
-            itemProperties.RequiredSkillRank = fields[18].GetUInt32();
-            itemProperties.RequiredSkillSubRank = fields[19].GetUInt32();
-            itemProperties.RequiredPlayerRank1 = fields[20].GetUInt32();
-            itemProperties.RequiredPlayerRank2 = fields[21].GetUInt32();
-            itemProperties.RequiredFaction = fields[22].GetUInt32();
-            itemProperties.RequiredFactionStanding = fields[23].GetUInt32();
-            itemProperties.Unique = fields[24].GetUInt32();
-            itemProperties.MaxCount = fields[25].GetUInt32();
-            itemProperties.ContainerSlots = fields[26].GetUInt32();
-            itemProperties.itemstatscount = fields[27].GetUInt32();
-
-            for (uint8_t i = 0; i < itemProperties.itemstatscount; ++i)
+        itemProperties.Bonding = fields[96].GetUInt32();
+        itemProperties.Description = fields[97].GetString();
+        uint32_t page_id = fields[98].GetUInt32();
+        if (page_id != 0)
+        {
+            MySQLStructure::ItemPage const* item_page = getItemPage(page_id);
+            if (item_page == nullptr)
             {
-                itemProperties.Stats[i].Type = fields[28 + i * 2].GetUInt32();
-                itemProperties.Stats[i].Value = fields[29 + i * 2].GetInt32();
-            }
-
-            itemProperties.ScalingStatsEntry = fields[48].GetUInt32();
-            itemProperties.ScalingStatsFlag = fields[49].GetUInt32();
-
-            for (uint8_t i = 0; i < MAX_ITEM_PROTO_DAMAGES; ++i)
-            {
-                itemProperties.Damage[i].Min = fields[50 + i * 3].GetFloat();
-                itemProperties.Damage[i].Max = fields[51 + i * 3].GetFloat();
-                itemProperties.Damage[i].Type = fields[52 + i * 3].GetUInt32();
-            }
-
-            itemProperties.Armor = fields[56].GetUInt32();
-            itemProperties.HolyRes = fields[57].GetUInt32();
-            itemProperties.FireRes = fields[58].GetUInt32();
-            itemProperties.NatureRes = fields[59].GetUInt32();
-            itemProperties.FrostRes = fields[60].GetUInt32();
-            itemProperties.ShadowRes = fields[61].GetUInt32();
-            itemProperties.ArcaneRes = fields[62].GetUInt32();
-            itemProperties.Delay = fields[63].GetUInt32();
-            itemProperties.AmmoType = fields[64].GetUInt32();
-            itemProperties.Range = fields[65].GetFloat();
-
-            for (uint8_t i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
-            {
-                itemProperties.Spells[i].Id = fields[66 + i * 6].GetUInt32();
-                itemProperties.Spells[i].Trigger = fields[67 + i * 6].GetUInt32();
-                itemProperties.Spells[i].Charges = fields[68 + i * 6].GetInt32();
-                itemProperties.Spells[i].Cooldown = fields[69 + i * 6].GetInt32();
-                itemProperties.Spells[i].Category = fields[70 + i * 6].GetUInt32();
-                itemProperties.Spells[i].CategoryCooldown = fields[71 + i * 6].GetInt32();
-            }
-
-            itemProperties.Bonding = fields[96].GetUInt32();
-            itemProperties.Description = fields[97].GetString();
-            uint32_t page_id = fields[98].GetUInt32();
-            if (page_id != 0)
-            {
-                MySQLStructure::ItemPage const* item_page = getItemPage(page_id);
-                if (item_page == nullptr)
-                {
-                    sLogger.failure("Table `%s` entry: %u includes invalid pageId %u! pageId is set to 0.", table_name.c_str(), entry, page_id);
-                    itemProperties.PageId = 0;
-                }
-                else
-                {
-                    itemProperties.PageId = page_id;
-                }
+                sLogger.failure("Table `item_properties` entry: %u includes invalid pageId %u! pageId is set to 0.", entry, page_id);
+                itemProperties.PageId = 0;
             }
             else
             {
                 itemProperties.PageId = page_id;
             }
+        }
+        else
+        {
+            itemProperties.PageId = page_id;
+        }
 
-            itemProperties.PageLanguage = fields[99].GetUInt32();
-            itemProperties.PageMaterial = fields[100].GetUInt32();
-            itemProperties.QuestId = fields[101].GetUInt32();
-            itemProperties.LockId = fields[102].GetUInt32();
-            itemProperties.LockMaterial = fields[103].GetUInt32();
-            itemProperties.SheathID = fields[104].GetUInt32();
-            itemProperties.RandomPropId = fields[105].GetUInt32();
-            itemProperties.RandomSuffixId = fields[106].GetUInt32();
-            itemProperties.Block = fields[107].GetUInt32();
-            itemProperties.ItemSet = fields[108].GetInt32();
-            itemProperties.MaxDurability = fields[109].GetUInt32();
-            itemProperties.ZoneNameID = fields[110].GetUInt32();
-            itemProperties.MapID = fields[111].GetUInt32();
-            itemProperties.BagFamily = fields[112].GetUInt32();
-            itemProperties.TotemCategory = fields[113].GetUInt32();
+        itemProperties.PageLanguage = fields[99].GetUInt32();
+        itemProperties.PageMaterial = fields[100].GetUInt32();
+        itemProperties.QuestId = fields[101].GetUInt32();
+        itemProperties.LockId = fields[102].GetUInt32();
+        itemProperties.LockMaterial = fields[103].GetUInt32();
+        itemProperties.SheathID = fields[104].GetUInt32();
+        itemProperties.RandomPropId = fields[105].GetUInt32();
+        itemProperties.RandomSuffixId = fields[106].GetUInt32();
+        itemProperties.Block = fields[107].GetUInt32();
+        itemProperties.ItemSet = fields[108].GetInt32();
+        itemProperties.MaxDurability = fields[109].GetUInt32();
+        itemProperties.ZoneNameID = fields[110].GetUInt32();
+        itemProperties.MapID = fields[111].GetUInt32();
+        itemProperties.BagFamily = fields[112].GetUInt32();
+        itemProperties.TotemCategory = fields[113].GetUInt32();
 
-            for (uint8_t i = 0; i < MAX_ITEM_PROTO_SOCKETS; ++i)
-            {
-                itemProperties.Sockets[i].SocketColor = uint32_t(fields[114 + i * 2].GetUInt8());
-                itemProperties.Sockets[i].Unk = fields[115 + i * 2].GetUInt32();
-            }
+        for (uint8_t i = 0; i < MAX_ITEM_PROTO_SOCKETS; ++i)
+        {
+            itemProperties.Sockets[i].SocketColor = uint32_t(fields[114 + i * 2].GetUInt8());
+            itemProperties.Sockets[i].Unk = fields[115 + i * 2].GetUInt32();
+        }
 
-            itemProperties.SocketBonus = fields[120].GetUInt32();
-            itemProperties.GemProperties = fields[121].GetUInt32();
-            itemProperties.DisenchantReqSkill = fields[122].GetInt32();
-            itemProperties.ArmorDamageModifier = fields[123].GetUInt32();
-            itemProperties.ExistingDuration = fields[124].GetUInt32();
-            itemProperties.ItemLimitCategory = fields[125].GetUInt32();
-            itemProperties.HolidayId = fields[126].GetUInt32();
-            itemProperties.FoodType = fields[127].GetUInt32();
+        itemProperties.SocketBonus = fields[120].GetUInt32();
+        itemProperties.GemProperties = fields[121].GetUInt32();
+        itemProperties.DisenchantReqSkill = fields[122].GetInt32();
+        itemProperties.ArmorDamageModifier = fields[123].GetUInt32();
+        itemProperties.ExistingDuration = fields[124].GetUInt32();
+        itemProperties.ItemLimitCategory = fields[125].GetUInt32();
+        itemProperties.HolidayId = fields[126].GetUInt32();
+        itemProperties.FoodType = fields[127].GetUInt32();
 
-            //lowercase
-            std::string lower_case_name = itemProperties.Name;
-            AscEmu::Util::Strings::toLowerCase(lower_case_name);
-            itemProperties.lowercase_name = lower_case_name;
+        //lowercase
+        std::string lower_case_name = itemProperties.Name;
+        AscEmu::Util::Strings::toLowerCase(lower_case_name);
+        itemProperties.lowercase_name = lower_case_name;
 
-            //forced pet entries (hacky stuff ->spells)
-            switch (itemProperties.ItemId)
-            {
-                case 28071: //Grimoire of Anguish (Rank 1)
-                case 28072: //Grimoire of Anguish (Rank 2)
-                case 28073: //Grimoire of Anguish (Rank 3)
-                case 25469: //Grimoire of Avoidance
-                case 23734: //Grimoire of Cleave (Rank 1)
-                case 23745: //Grimoire of Cleave (Rank 2)
-                case 23755: //Grimoire of Cleave (Rank 3)
-                case 25900: //Grimoire of Demonic Frenzy
-                case 23711: //Grimoire of Intercept (Rank 1)
-                case 23730: //Grimoire of Intercept (Rank 2)
-                case 23731: //Grimoire of Intercept (Rank 3)
-                            // Felguard
-                    itemProperties.ForcedPetId = 17252;
-                    break;
+        //forced pet entries (hacky stuff ->spells)
+        switch (itemProperties.ItemId)
+        {
+        case 28071: //Grimoire of Anguish (Rank 1)
+        case 28072: //Grimoire of Anguish (Rank 2)
+        case 28073: //Grimoire of Anguish (Rank 3)
+        case 25469: //Grimoire of Avoidance
+        case 23734: //Grimoire of Cleave (Rank 1)
+        case 23745: //Grimoire of Cleave (Rank 2)
+        case 23755: //Grimoire of Cleave (Rank 3)
+        case 25900: //Grimoire of Demonic Frenzy
+        case 23711: //Grimoire of Intercept (Rank 1)
+        case 23730: //Grimoire of Intercept (Rank 2)
+        case 23731: //Grimoire of Intercept (Rank 3)
+                    // Felguard
+            itemProperties.ForcedPetId = 17252;
+            break;
 
-                case 16321: //Grimoire of Blood Pact (Rank 1)
-                case 16322: //Grimoire of Blood Pact (Rank 2)
-                case 16323: //Grimoire of Blood Pact (Rank 3)
-                case 16324: //Grimoire of Blood Pact (Rank 4)
-                case 16325: //Grimoire of Blood Pact (Rank 5)
-                case 22180: //Grimoire of Blood Pact (Rank 6)
-                case 16326: //Grimoire of Fire Shield (Rank 1)
-                case 16327: //Grimoire of Fire Shield (Rank 2)
-                case 16328: //Grimoire of Fire Shield (Rank 3)
-                case 16329: //Grimoire of Fire Shield (Rank 4)
-                case 16330: //Grimoire of Fire Shield (Rank 5)
-                case 22181: //Grimoire of Fire Shield (Rank 6)
-                case 16302: //Grimoire of Firebolt (Rank 2)
-                case 16316: //Grimoire of Firebolt (Rank 3)
-                case 16317: //Grimoire of Firebolt (Rank 4)
-                case 16318: //Grimoire of Firebolt (Rank 5)
-                case 16319: //Grimoire of Firebolt (Rank 6)
-                case 16320: //Grimoire of Firebolt (Rank 7)
-                case 22179: //Grimoire of Firebolt (Rank 8)
-                case 16331: //Grimoire of Phase Shift
-                            // Imp
-                    itemProperties.ForcedPetId = 416;
-                    break;
+        case 16321: //Grimoire of Blood Pact (Rank 1)
+        case 16322: //Grimoire of Blood Pact (Rank 2)
+        case 16323: //Grimoire of Blood Pact (Rank 3)
+        case 16324: //Grimoire of Blood Pact (Rank 4)
+        case 16325: //Grimoire of Blood Pact (Rank 5)
+        case 22180: //Grimoire of Blood Pact (Rank 6)
+        case 16326: //Grimoire of Fire Shield (Rank 1)
+        case 16327: //Grimoire of Fire Shield (Rank 2)
+        case 16328: //Grimoire of Fire Shield (Rank 3)
+        case 16329: //Grimoire of Fire Shield (Rank 4)
+        case 16330: //Grimoire of Fire Shield (Rank 5)
+        case 22181: //Grimoire of Fire Shield (Rank 6)
+        case 16302: //Grimoire of Firebolt (Rank 2)
+        case 16316: //Grimoire of Firebolt (Rank 3)
+        case 16317: //Grimoire of Firebolt (Rank 4)
+        case 16318: //Grimoire of Firebolt (Rank 5)
+        case 16319: //Grimoire of Firebolt (Rank 6)
+        case 16320: //Grimoire of Firebolt (Rank 7)
+        case 22179: //Grimoire of Firebolt (Rank 8)
+        case 16331: //Grimoire of Phase Shift
+                    // Imp
+            itemProperties.ForcedPetId = 416;
+            break;
 
-                case 16357: //Grimoire of Consume Shadows (Rank 1)
-                case 16358: //Grimoire of Consume Shadows (Rank 2)
-                case 16359: //Grimoire of Consume Shadows (Rank 3)
-                case 16360: //Grimoire of Consume Shadows (Rank 4)
-                case 16361: //Grimoire of Consume Shadows (Rank 5)
-                case 16362: //Grimoire of Consume Shadows (Rank 6)
-                case 22184: //Grimoire of Consume Shadows (Rank 7)
-                case 16351: //Grimoire of Sacrifice (Rank 1)
-                case 16352: //Grimoire of Sacrifice (Rank 2)
-                case 16353: //Grimoire of Sacrifice (Rank 3)
-                case 16354: //Grimoire of Sacrifice (Rank 4)
-                case 16355: //Grimoire of Sacrifice (Rank 5)
-                case 16356: //Grimoire of Sacrifice (Rank 6)
-                case 22185: //Grimoire of Sacrifice (Rank 7)
-                case 16363: //Grimoire of Suffering (Rank 1)
-                case 16364: //Grimoire of Suffering (Rank 2)
-                case 16365: //Grimoire of Suffering (Rank 3)
-                case 16366: //Grimoire of Suffering (Rank 4)
-                case 22183: //Grimoire of Suffering (Rank 5)
-                case 28068: //Grimoire of Suffering (Rank 6)
-                case 16346: //Grimoire of Torment (Rank 2)
-                case 16347: //Grimoire of Torment (Rank 3)
-                case 16348: //Grimoire of Torment (Rank 4)
-                case 16349: //Grimoire of Torment (Rank 5)
-                case 16350: //Grimoire of Torment (Rank 6)
-                case 22182: //Grimoire of Torment (Rank 7)
-                            // Voidwalker
-                    itemProperties.ForcedPetId = 1860;
-                    break;
+        case 16357: //Grimoire of Consume Shadows (Rank 1)
+        case 16358: //Grimoire of Consume Shadows (Rank 2)
+        case 16359: //Grimoire of Consume Shadows (Rank 3)
+        case 16360: //Grimoire of Consume Shadows (Rank 4)
+        case 16361: //Grimoire of Consume Shadows (Rank 5)
+        case 16362: //Grimoire of Consume Shadows (Rank 6)
+        case 22184: //Grimoire of Consume Shadows (Rank 7)
+        case 16351: //Grimoire of Sacrifice (Rank 1)
+        case 16352: //Grimoire of Sacrifice (Rank 2)
+        case 16353: //Grimoire of Sacrifice (Rank 3)
+        case 16354: //Grimoire of Sacrifice (Rank 4)
+        case 16355: //Grimoire of Sacrifice (Rank 5)
+        case 16356: //Grimoire of Sacrifice (Rank 6)
+        case 22185: //Grimoire of Sacrifice (Rank 7)
+        case 16363: //Grimoire of Suffering (Rank 1)
+        case 16364: //Grimoire of Suffering (Rank 2)
+        case 16365: //Grimoire of Suffering (Rank 3)
+        case 16366: //Grimoire of Suffering (Rank 4)
+        case 22183: //Grimoire of Suffering (Rank 5)
+        case 28068: //Grimoire of Suffering (Rank 6)
+        case 16346: //Grimoire of Torment (Rank 2)
+        case 16347: //Grimoire of Torment (Rank 3)
+        case 16348: //Grimoire of Torment (Rank 4)
+        case 16349: //Grimoire of Torment (Rank 5)
+        case 16350: //Grimoire of Torment (Rank 6)
+        case 22182: //Grimoire of Torment (Rank 7)
+                    // Voidwalker
+            itemProperties.ForcedPetId = 1860;
+            break;
 
-                case 16368: //Grimoire of Lash of Pain (Rank 2)
-                case 16371: //Grimoire of Lash of Pain (Rank 3)
-                case 16372: //Grimoire of Lash of Pain (Rank 4)
-                case 16373: //Grimoire of Lash of Pain (Rank 5)
-                case 16374: //Grimoire of Lash of Pain (Rank 6)
-                case 22186: //Grimoire of Lash of Pain (Rank 7)
-                case 16380: //Grimoire of Lesser Invisibility
-                case 16379: //Grimoire of Seduction
-                case 16375: //Grimoire of Soothing Kiss (Rank 1)
-                case 16376: //Grimoire of Soothing Kiss (Rank 2)
-                case 16377: //Grimoire of Soothing Kiss (Rank 3)
-                case 16378: //Grimoire of Soothing Kiss (Rank 4)
-                case 22187: //Grimoire of Soothing Kiss (Rank 5)
-                            // Succubus
-                    itemProperties.ForcedPetId = 1863;
-                    break;
+        case 16368: //Grimoire of Lash of Pain (Rank 2)
+        case 16371: //Grimoire of Lash of Pain (Rank 3)
+        case 16372: //Grimoire of Lash of Pain (Rank 4)
+        case 16373: //Grimoire of Lash of Pain (Rank 5)
+        case 16374: //Grimoire of Lash of Pain (Rank 6)
+        case 22186: //Grimoire of Lash of Pain (Rank 7)
+        case 16380: //Grimoire of Lesser Invisibility
+        case 16379: //Grimoire of Seduction
+        case 16375: //Grimoire of Soothing Kiss (Rank 1)
+        case 16376: //Grimoire of Soothing Kiss (Rank 2)
+        case 16377: //Grimoire of Soothing Kiss (Rank 3)
+        case 16378: //Grimoire of Soothing Kiss (Rank 4)
+        case 22187: //Grimoire of Soothing Kiss (Rank 5)
+                    // Succubus
+            itemProperties.ForcedPetId = 1863;
+            break;
 
-                case 16381: //Grimoire of Devour Magic (Rank 2)
-                case 16382: //Grimoire of Devour Magic (Rank 3)
-                case 16383: //Grimoire of Devour Magic (Rank 4)
-                case 22188: //Grimoire of Devour Magic (Rank 5)
-                case 22189: //Grimoire of Devour Magic (Rank 6)
-                case 16390: //Grimoire of Paranoia
-                case 16388: //Grimoire of Spell Lock (Rank 1)
-                case 16389: //Grimoire of Spell Lock (Rank 2)
-                case 16384: //Grimoire of Tainted Blood (Rank 1)
-                case 16385: //Grimoire of Tainted Blood (Rank 2)
-                case 16386: //Grimoire of Tainted Blood (Rank 3)
-                case 16387: //Grimoire of Tainted Blood (Rank 4)
-                case 22190: //Grimoire of Tainted Blood (Rank 5)
-                            //Felhunter
-                    itemProperties.ForcedPetId = 417;
-                    break;
+        case 16381: //Grimoire of Devour Magic (Rank 2)
+        case 16382: //Grimoire of Devour Magic (Rank 3)
+        case 16383: //Grimoire of Devour Magic (Rank 4)
+        case 22188: //Grimoire of Devour Magic (Rank 5)
+        case 22189: //Grimoire of Devour Magic (Rank 6)
+        case 16390: //Grimoire of Paranoia
+        case 16388: //Grimoire of Spell Lock (Rank 1)
+        case 16389: //Grimoire of Spell Lock (Rank 2)
+        case 16384: //Grimoire of Tainted Blood (Rank 1)
+        case 16385: //Grimoire of Tainted Blood (Rank 2)
+        case 16386: //Grimoire of Tainted Blood (Rank 3)
+        case 16387: //Grimoire of Tainted Blood (Rank 4)
+        case 22190: //Grimoire of Tainted Blood (Rank 5)
+                    //Felhunter
+            itemProperties.ForcedPetId = 417;
+            break;
 
-                case 21283:
-                case 3144:
-                case 21282:
-                case 9214:
-                case 21281:
-                case 22891:
-                    // Player
-                    itemProperties.ForcedPetId = 0;
-                    break;
+        case 21283:
+        case 3144:
+        case 21282:
+        case 9214:
+        case 21281:
+        case 22891:
+            // Player
+            itemProperties.ForcedPetId = 0;
+            break;
 
-                default:
-                    itemProperties.ForcedPetId = -1;
-                    break;
-            }
+        default:
+            itemProperties.ForcedPetId = -1;
+            break;
+        }
 
 
-            // Check the data with itemdbc, spelldbc, factiondbc....
+        // Check the data with itemdbc, spelldbc, factiondbc....
 
-            ++item_count;
-        } while (item_result->NextRow());
+        ++item_count;
+    } while (item_result->NextRow());
 
-        delete item_result;
-    }
+    delete item_result;
+
 
     sLogger.info("MySQLDataLoads : Loaded %u item_properties in %u ms!", item_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -922,118 +881,95 @@ void MySQLDataStore::loadGameObjectPropertiesTable()
 {
     auto startTime = Util::TimeNow();
     uint32_t gameobject_properties_count = 0;
-    uint32_t basic_field_count = 0;
 
-    std::set<std::string>::iterator tableiterator;
-    for (tableiterator = GameObjectPropertiesTables.begin(); tableiterator != GameObjectPropertiesTables.end(); ++tableiterator)
+    //                                                                                  0      1        2        3         4              5          6          7            8             9
+    QueryResult* gameobject_properties_result = sMySQLStore.getWorldDBQuery("SELECT entry, type, display_id, name, category_name, cast_bar_text, UnkStr, parameter_0, parameter_1, parameter_2, "
+        //     10           11          12           13           14            15           16           17           18
+        "parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9, parameter_10, parameter_11, "
+        //     19            20            21            22           23            24            25            26
+        "parameter_12, parameter_13, parameter_14, parameter_15, parameter_16, parameter_17, parameter_18, parameter_19, "
+        //     27            28            29            30        31        32          33          34         35
+        "parameter_20, parameter_21, parameter_22, parameter_23, size, QuestItem1, QuestItem2, QuestItem3, QuestItem4, "
+        //     36          37
+        "QuestItem5, QuestItem6 FROM gameobject_properties base "
+        "WHERE build=(SELECT MAX(build) FROM gameobject_properties buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", VERSION_STRING);
+
+    if (gameobject_properties_result == nullptr)
     {
-        std::string table_name = *tableiterator;
-        //                                                                        0       1        2        3         4              5          6          7            8             9
-        QueryResult* gameobject_properties_result = WorldDatabase.Query("SELECT entry, type, display_id, name, category_name, cast_bar_text, UnkStr, parameter_0, parameter_1, parameter_2, "
-        //                                                                10           11          12           13           14            15           16           17           18
-                                                                    "parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9, parameter_10, parameter_11, "
-        //                                                                19            20            21            22           23            24            25            26
-                                                                    "parameter_12, parameter_13, parameter_14, parameter_15, parameter_16, parameter_17, parameter_18, parameter_19, "
-        //                                                                27            28            29            30        31        32          33          34         35
-                                                                    "parameter_20, parameter_21, parameter_22, parameter_23, size, QuestItem1, QuestItem2, QuestItem3, QuestItem4, "
-        //                                                                36          37
-                                                                    "QuestItem5, QuestItem6 FROM %s base "
-                                                                    "WHERE build=(SELECT MAX(build) FROM %s buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", table_name.c_str(), table_name.c_str(), VERSION_STRING);
+        sLogger.info("MySQLDataLoads : Table `gameobject_properties` is empty!");
+        return;
+    }
 
-        if (gameobject_properties_result == nullptr)
+    sLogger.info("MySQLDataLoads : Table `gameobject_properties` has %u columns", gameobject_properties_result->GetFieldCount());
+
+    _gameobjectPropertiesStore.rehash(gameobject_properties_result->GetRowCount());
+
+    do
+    {
+        Field* fields = gameobject_properties_result->Fetch();
+
+        uint32_t entry = fields[0].GetUInt32();
+
+        GameObjectProperties& gameobjecProperties = _gameobjectPropertiesStore[entry];
+
+        gameobjecProperties.entry = entry;
+        gameobjecProperties.type = fields[1].GetUInt32();
+        gameobjecProperties.display_id = fields[2].GetUInt32();
+        gameobjecProperties.name = fields[3].GetString();
+        gameobjecProperties.category_name = fields[4].GetString();
+        gameobjecProperties.cast_bar_text = fields[5].GetString();
+        gameobjecProperties.Unkstr = fields[6].GetString();
+
+        gameobjecProperties.raw.parameter_0 = fields[7].GetUInt32();
+        gameobjecProperties.raw.parameter_1 = fields[8].GetUInt32();
+        gameobjecProperties.raw.parameter_2 = fields[9].GetUInt32();
+        gameobjecProperties.raw.parameter_3 = fields[10].GetUInt32();
+        gameobjecProperties.raw.parameter_4 = fields[11].GetUInt32();
+        gameobjecProperties.raw.parameter_5 = fields[12].GetUInt32();
+        gameobjecProperties.raw.parameter_6 = fields[13].GetUInt32();
+        gameobjecProperties.raw.parameter_7 = fields[14].GetUInt32();
+        gameobjecProperties.raw.parameter_8 = fields[15].GetUInt32();
+        gameobjecProperties.raw.parameter_9 = fields[16].GetUInt32();
+        gameobjecProperties.raw.parameter_10 = fields[17].GetUInt32();
+        gameobjecProperties.raw.parameter_11 = fields[18].GetUInt32();
+        gameobjecProperties.raw.parameter_12 = fields[19].GetUInt32();
+        gameobjecProperties.raw.parameter_13 = fields[20].GetUInt32();
+        gameobjecProperties.raw.parameter_14 = fields[21].GetUInt32();
+        gameobjecProperties.raw.parameter_15 = fields[22].GetUInt32();
+        gameobjecProperties.raw.parameter_16 = fields[23].GetUInt32();
+        gameobjecProperties.raw.parameter_17 = fields[24].GetUInt32();
+        gameobjecProperties.raw.parameter_18 = fields[25].GetUInt32();
+        gameobjecProperties.raw.parameter_19 = fields[26].GetUInt32();
+        gameobjecProperties.raw.parameter_20 = fields[27].GetUInt32();
+        gameobjecProperties.raw.parameter_21 = fields[28].GetUInt32();
+        gameobjecProperties.raw.parameter_22 = fields[29].GetUInt32();
+        gameobjecProperties.raw.parameter_23 = fields[30].GetUInt32();
+
+        gameobjecProperties.size = fields[31].GetFloat();
+
+        for (uint8_t i = 0; i < 6; ++i)
         {
-            sLogger.info("MySQLDataLoads : Table `%s` is empty!", table_name.c_str());
-            return;
-        }
-
-        uint32_t row_count = 0;
-        if (table_name.compare("gameobject_properties") == 0)
-        {
-            basic_field_count = gameobject_properties_result->GetFieldCount();
-        }
-        else
-        {
-            row_count = static_cast<uint32_t>(_gameobjectPropertiesStore.size());
-        }
-
-        if (basic_field_count != gameobject_properties_result->GetFieldCount())
-        {
-            sLogger.failure("Additional gameobject_properties table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), gameobject_properties_result->GetFieldCount());
-            delete gameobject_properties_result;
-            continue;
-        }
-
-        sLogger.info("MySQLDataLoads : Table `%s` has %u columns", table_name.c_str(), gameobject_properties_result->GetFieldCount());
-
-        _gameobjectPropertiesStore.rehash(row_count + gameobject_properties_result->GetRowCount());
-
-        do
-        {
-            Field* fields = gameobject_properties_result->Fetch();
-
-            uint32_t entry = fields[0].GetUInt32();
-
-            GameObjectProperties& gameobjecProperties = _gameobjectPropertiesStore[entry];
-
-            gameobjecProperties.entry = entry;
-            gameobjecProperties.type = fields[1].GetUInt32();
-            gameobjecProperties.display_id = fields[2].GetUInt32();
-            gameobjecProperties.name = fields[3].GetString();
-            gameobjecProperties.category_name = fields[4].GetString();
-            gameobjecProperties.cast_bar_text = fields[5].GetString();
-            gameobjecProperties.Unkstr = fields[6].GetString();
-
-            gameobjecProperties.raw.parameter_0 = fields[7].GetUInt32();
-            gameobjecProperties.raw.parameter_1 = fields[8].GetUInt32();
-            gameobjecProperties.raw.parameter_2 = fields[9].GetUInt32();
-            gameobjecProperties.raw.parameter_3 = fields[10].GetUInt32();
-            gameobjecProperties.raw.parameter_4 = fields[11].GetUInt32();
-            gameobjecProperties.raw.parameter_5 = fields[12].GetUInt32();
-            gameobjecProperties.raw.parameter_6 = fields[13].GetUInt32();
-            gameobjecProperties.raw.parameter_7 = fields[14].GetUInt32();
-            gameobjecProperties.raw.parameter_8 = fields[15].GetUInt32();
-            gameobjecProperties.raw.parameter_9 = fields[16].GetUInt32();
-            gameobjecProperties.raw.parameter_10 = fields[17].GetUInt32();
-            gameobjecProperties.raw.parameter_11 = fields[18].GetUInt32();
-            gameobjecProperties.raw.parameter_12 = fields[19].GetUInt32();
-            gameobjecProperties.raw.parameter_13 = fields[20].GetUInt32();
-            gameobjecProperties.raw.parameter_14 = fields[21].GetUInt32();
-            gameobjecProperties.raw.parameter_15 = fields[22].GetUInt32();
-            gameobjecProperties.raw.parameter_16 = fields[23].GetUInt32();
-            gameobjecProperties.raw.parameter_17 = fields[24].GetUInt32();
-            gameobjecProperties.raw.parameter_18 = fields[25].GetUInt32();
-            gameobjecProperties.raw.parameter_19 = fields[26].GetUInt32();
-            gameobjecProperties.raw.parameter_20 = fields[27].GetUInt32();
-            gameobjecProperties.raw.parameter_21 = fields[28].GetUInt32();
-            gameobjecProperties.raw.parameter_22 = fields[29].GetUInt32();
-            gameobjecProperties.raw.parameter_23 = fields[30].GetUInt32();
-
-            gameobjecProperties.size = fields[31].GetFloat();
-
-            for (uint8_t i = 0; i < 6; ++i)
+            uint32_t quest_item_entry = fields[32 + i].GetUInt32();
+            if (quest_item_entry != 0)
             {
-                uint32_t quest_item_entry = fields[32 + i].GetUInt32();
-                if (quest_item_entry != 0)
+                auto quest_item_proto = getItemProperties(quest_item_entry);
+                if (quest_item_proto == nullptr)
                 {
-                    auto quest_item_proto = getItemProperties(quest_item_entry);
-                    if (quest_item_proto == nullptr)
-                    {
-                        sLogger.failure("Table `%s` questitem%u : %u is not a valid item! Default set to 0 for entry: %u.", table_name.c_str(), i, quest_item_entry, entry);
-                        gameobjecProperties.QuestItems[i] = 0;
-                    }
-                    else
-                    {
-                        gameobjecProperties.QuestItems[i] = quest_item_entry;
-                    }
+                    sLogger.failure("Table `gameobject_properties` questitem%u : %u is not a valid item! Default set to 0 for entry: %u.", i, quest_item_entry, entry);
+                    gameobjecProperties.QuestItems[i] = 0;
+                }
+                else
+                {
+                    gameobjecProperties.QuestItems[i] = quest_item_entry;
                 }
             }
+        }
 
 
-            ++gameobject_properties_count;
-        } while (gameobject_properties_result->NextRow());
+        ++gameobject_properties_count;
+    } while (gameobject_properties_result->NextRow());
 
-        delete gameobject_properties_result;
-    }
+    delete gameobject_properties_result;
 
     sLogger.info("MySQLDataLoads : Loaded %u gameobject data in %u ms!", gameobject_properties_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -1053,233 +989,229 @@ void MySQLDataStore::loadQuestPropertiesTable()
     auto startTime = Util::TimeNow();
     uint32_t quest_count = 0;
 
-    std::set<std::string>::iterator tableiterator;
-    for (tableiterator = QuestPropertiesTables.begin(); tableiterator != QuestPropertiesTables.end(); ++tableiterator)
-    {
-        std::string table_name = *tableiterator;
-        //                                                        0       1     2      3       4          5        6          7              8                 9
-        QueryResult* quest_result = WorldDatabase.Query("SELECT entry, ZoneId, sort, flags, MinLevel, questlevel, Type, RequiredRaces, RequiredClass, RequiredTradeskill, "
-        //                                                          10                    11                 12             13          14            15           16         17
-                                                        "RequiredTradeskillValue, RequiredRepFaction, RequiredRepValue, LimitTime, SpecialFlags, PrevQuestId, NextQuestId, srcItem, "
-        //                                                     18        19     20         21            22              23          24          25               26
-                                                        "SrcItemCount, Title, Details, Objectives, CompletionText, IncompleteText, EndText, ObjectiveText1, ObjectiveText2, "
-        //                                                     27               28           29          30           31          32         33           34         35
-                                                        "ObjectiveText3, ObjectiveText4, ReqItemId1, ReqItemId2, ReqItemId3, ReqItemId4, ReqItemId5, ReqItemId6, ReqItemCount1, "
-        //                                                     36             37            38              39             40              41                 42
-                                                        "ReqItemCount2, ReqItemCount3, ReqItemCount4, ReqItemCount5, ReqItemCount6, ReqKillMobOrGOId1, ReqKillMobOrGOId2, "
-        //                                                     43                   44                    45                  46                      47                  48
-                                                        "ReqKillMobOrGOId3, ReqKillMobOrGOId4, ReqKillMobOrGOCount1, ReqKillMobOrGOCount2, ReqKillMobOrGOCount3, ReqKillMobOrGOCount4, "
-        //                                                     49                 50              51              52              53           54           55           56
-                                                        "ReqCastSpellId1, ReqCastSpellId2, ReqCastSpellId3, ReqCastSpellId4, ReqEmoteId1, ReqEmoteId2, ReqEmoteId3, ReqEmoteId4, "
-        //                                                     57                  58                59               60                61                 62                63
-                                                        "RewChoiceItemId1, RewChoiceItemId2, RewChoiceItemId3, RewChoiceItemId4, RewChoiceItemId5, RewChoiceItemId6, RewChoiceItemCount1, "
-        //                                                         64                   65                  66                   67                   68              69          70
-                                                        "RewChoiceItemCount2, RewChoiceItemCount3, RewChoiceItemCount4, RewChoiceItemCount5, RewChoiceItemCount6, RewItemId1, RewItemId2, "
-        //                                                    71          72           73              74            75             76              77             78             79
-                                                        "RewItemId3, RewItemId4, RewItemCount1, RewItemCount2, RewItemCount3, RewItemCount4, RewRepFaction1, RewRepFaction2, RewRepFaction3, "
-        //                                                    80               81               82            83           84             85          86              87            88
-                                                        "RewRepFaction4, RewRepFaction5, RewRepFaction6, RewRepValue1, RewRepValue2, RewRepValue3, RewRepValue4, RewRepValue5, RewRepValue6, "
-        //                                                    89         90       91       92       93            94             95             96           97        98      99      100
-                                                        "RewRepLimit, RewMoney, RewXP, RewSpell, CastSpell, MailTemplateId, MailDelaySecs, MailSendItem, PointMapId, PointX, PointY, PointOpt, "
-        //                                                         101                  102             103             104              105              106                107
-                                                        "RewardMoneyAtMaxLevel, ExploreTrigger1, ExploreTrigger2, ExploreTrigger3, ExploreTrigger4, RequiredOneOfQuest, RequiredQuest1, "
-        //                                                    108              109            110             111           112             113            114              115
-                                                        "RequiredQuest2, RequiredQuest3, RequiredQuest4, RemoveQuests, ReceiveItemId1, ReceiveItemId2, ReceiveItemId3, ReceiveItemId4, "
-        //                                                      116                117                  118               119             120          121            122             123
-                                                        "ReceiveItemCount1, ReceiveItemCount2, ReceiveItemCount3, ReceiveItemCount4, IsRepeatable, bonushonor, bonusarenapoints, rewardtitleid, "
-        //                                                    124              125               126             127           128           129           130            131
-                                                        "rewardtalents, suggestedplayers, detailemotecount, detailemote1, detailemote2, detailemote3, detailemote4, detailemotedelay1, "
-        //                                                       132                133                134                135                136               137               138
-                                                        "detailemotedelay2, detailemotedelay3, detailemotedelay4, completionemotecnt, completionemote1, completionemote2, completionemote3, "
-        //                                                      139                 140                     141                   142                    143                 144
-                                                        "completionemote4, completionemotedelay1, completionemotedelay2, completionemotedelay3, completionemotedelay4, completeemote, "
-        //                                                     145                   146              147
-                                                        "incompleteemote, iscompletedbyspelleffect, RewXPId FROM %s base "
-                                                        "WHERE build=(SELECT MAX(build) FROM %s buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", table_name.c_str(), table_name.c_str(), VERSION_STRING);
 
-        if (quest_result == nullptr)
+              //                                                        0       1     2      3       4          5        6          7              8                 9
+    QueryResult* quest_result = sMySQLStore.getWorldDBQuery("SELECT entry, ZoneId, sort, flags, MinLevel, questlevel, Type, RequiredRaces, RequiredClass, RequiredTradeskill, "
+        //           10                    11                 12             13          14            15           16         17
+        "RequiredTradeskillValue, RequiredRepFaction, RequiredRepValue, LimitTime, SpecialFlags, PrevQuestId, NextQuestId, srcItem, "
+        //     18        19     20         21            22              23          24          25               26
+        "SrcItemCount, Title, Details, Objectives, CompletionText, IncompleteText, EndText, ObjectiveText1, ObjectiveText2, "
+        //     27               28           29          30           31          32         33           34         35
+        "ObjectiveText3, ObjectiveText4, ReqItemId1, ReqItemId2, ReqItemId3, ReqItemId4, ReqItemId5, ReqItemId6, ReqItemCount1, "
+        //     36             37            38              39             40              41                 42
+        "ReqItemCount2, ReqItemCount3, ReqItemCount4, ReqItemCount5, ReqItemCount6, ReqKillMobOrGOId1, ReqKillMobOrGOId2, "
+        //     43                   44                    45                  46                      47                  48
+        "ReqKillMobOrGOId3, ReqKillMobOrGOId4, ReqKillMobOrGOCount1, ReqKillMobOrGOCount2, ReqKillMobOrGOCount3, ReqKillMobOrGOCount4, "
+        //     49                 50              51              52              53           54           55           56
+        "ReqCastSpellId1, ReqCastSpellId2, ReqCastSpellId3, ReqCastSpellId4, ReqEmoteId1, ReqEmoteId2, ReqEmoteId3, ReqEmoteId4, "
+        //     57                  58                59               60                61                 62                63
+        "RewChoiceItemId1, RewChoiceItemId2, RewChoiceItemId3, RewChoiceItemId4, RewChoiceItemId5, RewChoiceItemId6, RewChoiceItemCount1, "
+        //     64                   65                  66                   67                   68              69          70
+        "RewChoiceItemCount2, RewChoiceItemCount3, RewChoiceItemCount4, RewChoiceItemCount5, RewChoiceItemCount6, RewItemId1, RewItemId2, "
+        //     71          72           73              74            75             76              77             78             79
+        "RewItemId3, RewItemId4, RewItemCount1, RewItemCount2, RewItemCount3, RewItemCount4, RewRepFaction1, RewRepFaction2, RewRepFaction3, "
+        //     80               81               82            83           84             85          86              87            88
+        "RewRepFaction4, RewRepFaction5, RewRepFaction6, RewRepValue1, RewRepValue2, RewRepValue3, RewRepValue4, RewRepValue5, RewRepValue6, "
+        //     89         90       91       92       93            94             95             96           97        98      99      100
+        "RewRepLimit, RewMoney, RewXP, RewSpell, CastSpell, MailTemplateId, MailDelaySecs, MailSendItem, PointMapId, PointX, PointY, PointOpt, "
+        //      101                  102             103             104              105              106                107
+        "RewardMoneyAtMaxLevel, ExploreTrigger1, ExploreTrigger2, ExploreTrigger3, ExploreTrigger4, RequiredOneOfQuest, RequiredQuest1, "
+        //     108              109            110             111           112             113            114              115
+        "RequiredQuest2, RequiredQuest3, RequiredQuest4, RemoveQuests, ReceiveItemId1, ReceiveItemId2, ReceiveItemId3, ReceiveItemId4, "
+        //     116                117                  118               119             120          121            122             123
+        "ReceiveItemCount1, ReceiveItemCount2, ReceiveItemCount3, ReceiveItemCount4, IsRepeatable, bonushonor, bonusarenapoints, rewardtitleid, "
+        //     124              125               126             127           128           129           130            131
+        "rewardtalents, suggestedplayers, detailemotecount, detailemote1, detailemote2, detailemote3, detailemote4, detailemotedelay1, "
+        //     132                133                134                135                136               137               138
+        "detailemotedelay2, detailemotedelay3, detailemotedelay4, completionemotecnt, completionemote1, completionemote2, completionemote3, "
+        //     139                 140                     141                   142                    143                 144
+        "completionemote4, completionemotedelay1, completionemotedelay2, completionemotedelay3, completionemotedelay4, completeemote, "
+        //      145                   146              147
+        "incompleteemote, iscompletedbyspelleffect, RewXPId FROM quest_properties base "
+        "WHERE build=(SELECT MAX(build) FROM quest_properties buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", VERSION_STRING);
+
+    if (quest_result == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `quest_properties` is empty!");
+        return;
+    }
+
+    uint32_t row_count = 0;
+
+    sLogger.info("MySQLDataLoads : Table `quest_properties` has %u columns", quest_result->GetFieldCount());
+
+    _questPropertiesStore.rehash(row_count + quest_result->GetRowCount());
+
+    do
+    {
+        Field* fields = quest_result->Fetch();
+
+        uint32_t entry = fields[0].GetUInt32();
+
+        QuestProperties& questInfo = _questPropertiesStore[entry];
+
+        questInfo.id = entry;
+        questInfo.zone_id = fields[1].GetUInt32();
+        questInfo.quest_sort = fields[2].GetUInt32();
+        questInfo.quest_flags = fields[3].GetUInt32();
+        questInfo.min_level = fields[4].GetUInt32();
+        questInfo.questlevel = fields[5].GetInt32();
+        questInfo.type = fields[6].GetUInt32();
+        questInfo.required_races = fields[7].GetUInt32();
+        questInfo.required_class = fields[8].GetUInt32();
+        questInfo.required_tradeskill = fields[9].GetUInt16();
+        questInfo.required_tradeskill_value = fields[10].GetUInt32();
+        questInfo.required_rep_faction = fields[11].GetUInt32();
+        questInfo.required_rep_value = fields[12].GetUInt32();
+
+        questInfo.time = fields[13].GetUInt32();
+        questInfo.special_flags = fields[14].GetUInt32();
+
+        questInfo.previous_quest_id = fields[15].GetUInt32();
+        questInfo.next_quest_id = fields[16].GetUInt32();
+
+        questInfo.srcitem = fields[17].GetUInt32();
+        questInfo.srcitemcount = fields[18].GetUInt32();
+
+        questInfo.title = fields[19].GetString();
+        questInfo.details = fields[20].GetString();
+        questInfo.objectives = fields[21].GetString();
+        questInfo.completiontext = fields[22].GetString();
+        questInfo.incompletetext = fields[23].GetString();
+        questInfo.endtext = fields[24].GetString();
+
+        for (uint8_t i = 0; i < 4; ++i)
         {
-            sLogger.info("MySQLDataLoads : Table `%s` is empty!", table_name.c_str());
-            return;
+            questInfo.objectivetexts[i] = fields[25 + i].GetString();
         }
 
-        uint32_t row_count = 0;
-
-        sLogger.info("MySQLDataLoads : Table `%s` has %u columns", table_name.c_str(), quest_result->GetFieldCount());
-
-        _questPropertiesStore.rehash(row_count + quest_result->GetRowCount());
-
-        do
+        for (uint8_t i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
         {
-            Field* fields = quest_result->Fetch();
+            questInfo.required_item[i] = fields[29 + i].GetUInt32();
+            questInfo.required_itemcount[i] = fields[35 + i].GetUInt32();
+        }
 
-            uint32_t entry = fields[0].GetUInt32();
-
-            QuestProperties& questInfo = _questPropertiesStore[entry];
-
-            questInfo.id = entry;
-            questInfo.zone_id = fields[1].GetUInt32();
-            questInfo.quest_sort = fields[2].GetUInt32();
-            questInfo.quest_flags = fields[3].GetUInt32();
-            questInfo.min_level = fields[4].GetUInt32();
-            questInfo.questlevel = fields[5].GetInt32();
-            questInfo.type = fields[6].GetUInt32();
-            questInfo.required_races = fields[7].GetUInt32();
-            questInfo.required_class = fields[8].GetUInt32();
-            questInfo.required_tradeskill = fields[9].GetUInt16();
-            questInfo.required_tradeskill_value = fields[10].GetUInt32();
-            questInfo.required_rep_faction = fields[11].GetUInt32();
-            questInfo.required_rep_value = fields[12].GetUInt32();
-
-            questInfo.time = fields[13].GetUInt32();
-            questInfo.special_flags = fields[14].GetUInt32();
-
-            questInfo.previous_quest_id = fields[15].GetUInt32();
-            questInfo.next_quest_id = fields[16].GetUInt32();
-
-            questInfo.srcitem = fields[17].GetUInt32();
-            questInfo.srcitemcount = fields[18].GetUInt32();
-
-            questInfo.title = fields[19].GetString();
-            questInfo.details = fields[20].GetString();
-            questInfo.objectives = fields[21].GetString();
-            questInfo.completiontext = fields[22].GetString();
-            questInfo.incompletetext = fields[23].GetString();
-            questInfo.endtext = fields[24].GetString();
-
-            for (uint8_t i = 0; i < 4; ++i)
+        for (uint8_t i = 0; i < 4; ++i)
+        {
+            questInfo.required_mob_or_go[i] = fields[41 + i].GetInt32();
+            if (questInfo.required_mob_or_go[i] != 0)
             {
-                questInfo.objectivetexts[i] = fields[25 + i].GetString();
-            }
-
-            for (uint8_t i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
-            {
-                questInfo.required_item[i] = fields[29 + i].GetUInt32();
-                questInfo.required_itemcount[i] = fields[35 + i].GetUInt32();
-            }
-
-            for (uint8_t i = 0; i < 4; ++i)
-            {
-                questInfo.required_mob_or_go[i] = fields[41 + i].GetInt32();
-                if (questInfo.required_mob_or_go[i] != 0)
+                if (questInfo.required_mob_or_go[i] > 0)
                 {
-                    if (questInfo.required_mob_or_go[i] > 0)
+                    if (!getCreatureProperties(questInfo.required_mob_or_go[i]))
                     {
-                        if (!getCreatureProperties(questInfo.required_mob_or_go[i]))
-                        {
-                            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Quest %u has `ReqCreatureOrGOId%d` = %i but creature with entry %u does not exist in creature_properties table!",
-                                     entry, i, questInfo.required_mob_or_go[i], questInfo.required_mob_or_go[i]);
-                        }
-                    }
-                    else
-                    {
-                        if (!getGameObjectProperties(-questInfo.required_mob_or_go[i]))
-                        {
-                            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Quest %u has `ReqCreatureOrGOId%d` = %i but gameobject %u does not exist in gameobject_properties table!",
-                                     entry, i, questInfo.required_mob_or_go[i], -questInfo.required_mob_or_go[i]);
-                        }
+                        sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Quest %u has `ReqCreatureOrGOId%d` = %i but creature with entry %u does not exist in creature_properties table!",
+                            entry, i, questInfo.required_mob_or_go[i], questInfo.required_mob_or_go[i]);
                     }
                 }
-
-                questInfo.required_mob_or_go_count[i] = fields[45 + i].GetUInt32();
+                else
+                {
+                    if (!getGameObjectProperties(-questInfo.required_mob_or_go[i]))
+                    {
+                        sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Quest %u has `ReqCreatureOrGOId%d` = %i but gameobject %u does not exist in gameobject_properties table!",
+                            entry, i, questInfo.required_mob_or_go[i], -questInfo.required_mob_or_go[i]);
+                    }
+                }
             }
 
-            for (uint8_t i = 0; i < 4; ++i)
-            {
-                questInfo.required_spell[i] = fields[49 + i].GetUInt32();
-                questInfo.required_emote[i] = fields[53 + i].GetUInt32();
-            }
+            questInfo.required_mob_or_go_count[i] = fields[45 + i].GetUInt32();
+        }
 
-            for (uint8_t i = 0; i < 6; ++i)
-            {
-                questInfo.reward_choiceitem[i] = fields[57 + i].GetUInt32();
-                questInfo.reward_choiceitemcount[i] = fields[63 + i].GetUInt32();
-            }
+        for (uint8_t i = 0; i < 4; ++i)
+        {
+            questInfo.required_spell[i] = fields[49 + i].GetUInt32();
+            questInfo.required_emote[i] = fields[53 + i].GetUInt32();
+        }
 
-            for (uint8_t i = 0; i < 4; ++i)
-            {
-                questInfo.reward_item[i] = fields[69 + i].GetUInt32();
-                questInfo.reward_itemcount[i] = fields[73 + i].GetUInt32();
-            }
+        for (uint8_t i = 0; i < 6; ++i)
+        {
+            questInfo.reward_choiceitem[i] = fields[57 + i].GetUInt32();
+            questInfo.reward_choiceitemcount[i] = fields[63 + i].GetUInt32();
+        }
 
-            for (uint8_t i = 0; i < 6; ++i)
-            {
-                questInfo.reward_repfaction[i] = fields[77 + i].GetUInt32();
-                questInfo.reward_repvalue[i] = fields[83 + i].GetInt32();
-            }
+        for (uint8_t i = 0; i < 4; ++i)
+        {
+            questInfo.reward_item[i] = fields[69 + i].GetUInt32();
+            questInfo.reward_itemcount[i] = fields[73 + i].GetUInt32();
+        }
 
-            questInfo.reward_replimit = fields[89].GetUInt32();
+        for (uint8_t i = 0; i < 6; ++i)
+        {
+            questInfo.reward_repfaction[i] = fields[77 + i].GetUInt32();
+            questInfo.reward_repvalue[i] = fields[83 + i].GetInt32();
+        }
 
-            questInfo.reward_money = fields[90].GetInt32();
-            questInfo.reward_xp = fields[91].GetUInt32();
-            questInfo.reward_spell = fields[92].GetUInt32();
-            questInfo.effect_on_player = fields[93].GetUInt32();
+        questInfo.reward_replimit = fields[89].GetUInt32();
 
-            questInfo.MailTemplateId = fields[94].GetUInt32();
-            questInfo.MailDelaySecs = fields[95].GetUInt32();
-            questInfo.MailSendItem = fields[96].GetUInt32();
+        questInfo.reward_money = fields[90].GetInt32();
+        questInfo.reward_xp = fields[91].GetUInt32();
+        questInfo.reward_spell = fields[92].GetUInt32();
+        questInfo.effect_on_player = fields[93].GetUInt32();
 
-            questInfo.point_mapid = fields[97].GetUInt32();
-            questInfo.point_x = fields[98].GetUInt32();
-            questInfo.point_y = fields[99].GetUInt32();
-            questInfo.point_opt = fields[100].GetUInt32();
+        questInfo.MailTemplateId = fields[94].GetUInt32();
+        questInfo.MailDelaySecs = fields[95].GetUInt32();
+        questInfo.MailSendItem = fields[96].GetUInt32();
 
-            questInfo.rew_money_at_max_level = fields[101].GetUInt32();
+        questInfo.point_mapid = fields[97].GetUInt32();
+        questInfo.point_x = fields[98].GetUInt32();
+        questInfo.point_y = fields[99].GetUInt32();
+        questInfo.point_opt = fields[100].GetUInt32();
 
-            for (uint8_t i = 0; i < 4; ++i)
-            {
-                questInfo.required_triggers[i] = fields[102 + i].GetUInt32();
-            }
+        questInfo.rew_money_at_max_level = fields[101].GetUInt32();
 
-            questInfo.x_or_y_quest_string = fields[106].GetString();
+        for (uint8_t i = 0; i < 4; ++i)
+        {
+            questInfo.required_triggers[i] = fields[102 + i].GetUInt32();
+        }
 
-            for (uint8_t i = 0; i < 4; ++i)
-            {
-                questInfo.required_quests[i] = fields[107 + i].GetUInt32();
-            }
+        questInfo.x_or_y_quest_string = fields[106].GetString();
 
-            questInfo.remove_quests = fields[111].GetString();
+        for (uint8_t i = 0; i < 4; ++i)
+        {
+            questInfo.required_quests[i] = fields[107 + i].GetUInt32();
+        }
 
-            for (uint8_t i = 0; i < 4; ++i)
-            {
-                questInfo.receive_items[i] = fields[112 + i].GetUInt32();
-                questInfo.receive_itemcount[i] = fields[116 + i].GetUInt32();
-            }
+        questInfo.remove_quests = fields[111].GetString();
 
-            questInfo.is_repeatable = fields[120].GetInt32();
-            questInfo.bonushonor = fields[121].GetUInt32();
-            questInfo.bonusarenapoints = fields[122].GetUInt32();
-            questInfo.rewardtitleid = fields[123].GetUInt32();
-            questInfo.rewardtalents = fields[124].GetUInt32();
-            questInfo.suggestedplayers = fields[125].GetUInt32();
+        for (uint8_t i = 0; i < 4; ++i)
+        {
+            questInfo.receive_items[i] = fields[112 + i].GetUInt32();
+            questInfo.receive_itemcount[i] = fields[116 + i].GetUInt32();
+        }
 
-            // emotes
-            questInfo.detailemotecount = fields[126].GetUInt32();
+        questInfo.is_repeatable = fields[120].GetInt32();
+        questInfo.bonushonor = fields[121].GetUInt32();
+        questInfo.bonusarenapoints = fields[122].GetUInt32();
+        questInfo.rewardtitleid = fields[123].GetUInt32();
+        questInfo.rewardtalents = fields[124].GetUInt32();
+        questInfo.suggestedplayers = fields[125].GetUInt32();
 
-            for (uint8_t i = 0; i < 4; ++i)
-            {
-                questInfo.detailemote[i] = fields[127 + i].GetUInt32();
-                questInfo.detailemotedelay[i] = fields[131 + i].GetUInt32();
-            }
+        // emotes
+        questInfo.detailemotecount = fields[126].GetUInt32();
 
-            questInfo.completionemotecount = fields[135].GetUInt32();
+        for (uint8_t i = 0; i < 4; ++i)
+        {
+            questInfo.detailemote[i] = fields[127 + i].GetUInt32();
+            questInfo.detailemotedelay[i] = fields[131 + i].GetUInt32();
+        }
 
-            for (uint8_t i = 0; i < 4; ++i)
-            {
-                questInfo.completionemote[i] = fields[136 + i].GetUInt32();
-                questInfo.completionemotedelay[i] = fields[140 + i].GetUInt32();
-            }
+        questInfo.completionemotecount = fields[135].GetUInt32();
 
-            questInfo.completeemote = fields[144].GetUInt32();
-            questInfo.incompleteemote = fields[145].GetUInt32();
-            questInfo.iscompletedbyspelleffect = fields[146].GetUInt32();
-            questInfo.RewXPId = fields[147].GetUInt32();
+        for (uint8_t i = 0; i < 4; ++i)
+        {
+            questInfo.completionemote[i] = fields[136 + i].GetUInt32();
+            questInfo.completionemotedelay[i] = fields[140 + i].GetUInt32();
+        }
 
-            ++quest_count;
-        } while (quest_result->NextRow());
+        questInfo.completeemote = fields[144].GetUInt32();
+        questInfo.incompleteemote = fields[145].GetUInt32();
+        questInfo.iscompletedbyspelleffect = fields[146].GetUInt32();
+        questInfo.RewXPId = fields[147].GetUInt32();
 
-        delete quest_result;
-    }
+        ++quest_count;
+    } while (quest_result->NextRow());
+
+    delete quest_result;
 
     sLogger.info("MySQLDataLoads : Loaded %u quest_properties data in %u ms!", quest_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -4445,30 +4377,27 @@ void MySQLDataStore::loadRecallTable()
 
     _recallStore.clear();
 
-    for (std::set<std::string>::iterator tableiterator = RecallTables.begin(); tableiterator != RecallTables.end(); ++tableiterator)
+    QueryResult* recall_result = sMySQLStore.getWorldDBQuery("SELECT id, name, MapId, positionX, positionY, positionZ, Orientation FROM recall WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
+    if (recall_result)
     {
-        QueryResult* recall_result = WorldDatabase.Query("SELECT id, name, MapId, positionX, positionY, positionZ, Orientation FROM %s WHERE min_build <= %u AND max_build >= %u", (*tableiterator).c_str(), VERSION_STRING, VERSION_STRING);
-        if (recall_result)
+        do
         {
-            do
-            {
-                Field* fields = recall_result->Fetch();
-                MySQLStructure::RecallStruct* teleCoords = new MySQLStructure::RecallStruct;
+            Field* fields = recall_result->Fetch();
+            MySQLStructure::RecallStruct* teleCoords = new MySQLStructure::RecallStruct;
 
-                teleCoords->name = fields[1].GetString();
-                teleCoords->mapId = fields[2].GetUInt32();
-                teleCoords->location.x = fields[3].GetFloat();
-                teleCoords->location.y = fields[4].GetFloat();
-                teleCoords->location.z= fields[5].GetFloat();
-                teleCoords->location.o = fields[6].GetFloat();
+            teleCoords->name = fields[1].GetString();
+            teleCoords->mapId = fields[2].GetUInt32();
+            teleCoords->location.x = fields[3].GetFloat();
+            teleCoords->location.y = fields[4].GetFloat();
+            teleCoords->location.z = fields[5].GetFloat();
+            teleCoords->location.o = fields[6].GetFloat();
 
-                _recallStore.push_back(teleCoords);
+            _recallStore.push_back(teleCoords);
 
-                ++count;
-            } while (recall_result->NextRow());
+            ++count;
+        } while (recall_result->NextRow());
 
-            delete recall_result;
-        }
+        delete recall_result;
     }
 
     sLogger.info("MySQLDataLoads : Loaded %u rows from `recall` table in %u ms!", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));

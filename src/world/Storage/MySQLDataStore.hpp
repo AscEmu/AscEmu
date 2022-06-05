@@ -14,10 +14,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 extern SERVER_DECL std::set<std::string> CreatureSpawnsTables;
 extern SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
-extern SERVER_DECL std::set<std::string> GameObjectPropertiesTables;
-extern SERVER_DECL std::set<std::string> ItemPropertiesTables;
-extern SERVER_DECL std::set<std::string> QuestPropertiesTables;
-extern SERVER_DECL std::set<std::string> RecallTables;
 
 //Zyres: Define base tables
 struct MySQLAdditionalTable
