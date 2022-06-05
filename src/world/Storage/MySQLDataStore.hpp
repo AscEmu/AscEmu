@@ -12,9 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 
 
-extern SERVER_DECL std::set<std::string> CreatureSpawnsTables;
-extern SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
-
 //Zyres: Define base tables
 struct MySQLAdditionalTable
 {
@@ -23,7 +20,6 @@ struct MySQLAdditionalTable
 };
 
 extern SERVER_DECL std::vector<MySQLAdditionalTable> MySQLAdditionalTables;
-
 
 class SERVER_DECL MySQLDataStore
 {
