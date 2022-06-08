@@ -62,8 +62,8 @@ HowTo install (detailed guides on our wiki)
 * [Terms of use](TERMS_OF_USE_AGREEMENT.md)
 
 <!-- Undercover:start:status -->
-[MasterCircleBadge]: https://circleci.com/gh/AscEmu/AscEmu.svg?branch=master&style=shield
-[DevelopCircleBadge]: https://circleci.com/gh/AscEmu/AscEmu.svg?branch=develop&style=shield
+[MasterCircleBadge]: https://circleci.com/gh/AscEmu/AscEmu/tree/master.svg?style=shield
+[DevelopCircleBadge]: https://circleci.com/gh/AscEmu/AscEmu/tree/develop.svg?style=shield
 [MasterAppYeyorBadge]: https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true
 [DevelopAppYeyorBadge]: https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/develop?svg=true
 
