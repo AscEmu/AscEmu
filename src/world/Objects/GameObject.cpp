@@ -1183,13 +1183,6 @@ void GameObject::OnPushToWorld()
     CALL_GO_SCRIPT_EVENT(this, OnCreate)();
     CALL_GO_SCRIPT_EVENT(this, OnSpawn)();
     CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnGameObjectPushToWorld)(this);
-
-    if (gameobject_properties->type == GAMEOBJECT_TYPE_CHEST)
-    {
-        //close if open (happenes after respawn)
-        if (this->getState() == GO_STATE_OPEN)
-            this->setState(GO_STATE_CLOSED);
-    }
 }
 
 void GameObject::onRemoveInRangeObject(Object* pObj)
