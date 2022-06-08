@@ -379,7 +379,7 @@ void GameObject::saveToDB()
         << getParentRotation(2) << ","
         << getParentRotation(3) << ","
         << int32_t(m_respawnDelayTime) << ","
-        << getState() << ","
+        << int32_t(getState()) << ","
         << "0,"            // event
         << VERSION_STRING << ","
         << VERSION_STRING << ")";
