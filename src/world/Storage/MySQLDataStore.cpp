@@ -61,15 +61,14 @@ void MySQLDataStore::loadAdditionalTableConfig()
     }
 }
 
-QueryResult* MySQLDataStore::getWorldDBQuery(std::string query, ...)
+QueryResult* MySQLDataStore::getWorldDBQuery(const char* query, ...)
 {
     // fill in values
-    const char* rawQuery = query.c_str();
     char finalizedQuery[16384];
 
     va_list vlist;
-    va_start(vlist, rawQuery);
-    vsnprintf(finalizedQuery, 16384, rawQuery, vlist);
+    va_start(vlist, query);
+    vsnprintf(finalizedQuery, 16384, query, vlist);
     va_end(vlist);
 
     // save query as prepared
@@ -81,6 +80,14 @@ QueryResult* MySQLDataStore::getWorldDBQuery(std::string query, ...)
         // query includes table which has additional tables
         if (AscEmu::Util::Strings::contains(additionalTable.mainTable, preparedQuery))
         {
+            // add origigin table name to query, replace first occurence of "FROM"
+            std::string originName = ", '" + additionalTable.mainTable + "' as origin FROM";
+            std::string bar = " FROM";
+            size_t pos = preparedQuery.find(bar);
+            size_t len = bar.length();
+            preparedQuery.replace(pos, len, originName);
+            //preparedQuery = std::regex_replace(preparedQuery, std::regex("FROM"), originName);
+
             // set up new query including the original one
             std::string completeQuery = preparedQuery;
 
@@ -109,6 +116,7 @@ QueryResult* MySQLDataStore::getWorldDBQuery(std::string query, ...)
         }
     }
 
+    sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_DB_TABLES, "MySQLDataLoads : Query: '%s'", preparedQuery.c_str());
     // no additional tables defined, just send our query
     return WorldDatabase.Query(preparedQuery.c_str());
 }
@@ -165,7 +173,7 @@ void MySQLDataStore::loadItemPropertiesTable()
 
     uint32_t item_count = 0;
 
-    QueryResult* item_result = sMySQLStore.getWorldDBQuery("SELECT * FROM item_properties base "
+    QueryResult* item_result = getWorldDBQuery("SELECT * FROM item_properties base "
         "WHERE build=(SELECT MAX(build) FROM item_properties spec WHERE base.entry = spec.entry AND build <= %u)", VERSION_STRING);
 
     //                                                         0      1       2        3       4        5         6       7       8       9          10
@@ -530,7 +538,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
     auto startTime = Util::TimeNow();
     uint32_t creature_properties_count = 0;
 
-    //                                                                    0          1           2             3                 4               5                  6
+    //                                                                  0          1           2             3                 4               5                  6
     QueryResult* creature_properties_result = getWorldDBQuery("SELECT entry, killcredit1, killcredit2, male_displayid, female_displayid, male_displayid2, female_displayid2, "
         //7      8         9         10       11     12     13       14            15              16           17
         "name, subname, info_str, type_flags, type, family, `rank`, encounter, base_attack_mod, range_attack_mod, leader, "
@@ -869,8 +877,8 @@ void MySQLDataStore::loadGameObjectPropertiesTable()
     auto startTime = Util::TimeNow();
     uint32_t gameobject_properties_count = 0;
 
-    //                                                                                  0      1        2        3         4              5          6          7            8             9
-    QueryResult* gameobject_properties_result = sMySQLStore.getWorldDBQuery("SELECT entry, type, display_id, name, category_name, cast_bar_text, UnkStr, parameter_0, parameter_1, parameter_2, "
+    //                                                                    0      1        2        3         4              5          6          7            8             9
+    QueryResult* gameobject_properties_result = getWorldDBQuery("SELECT entry, type, display_id, name, category_name, cast_bar_text, UnkStr, parameter_0, parameter_1, parameter_2, "
         //     10           11          12           13           14            15           16           17           18
         "parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9, parameter_10, parameter_11, "
         //     19            20            21            22           23            24            25            26
@@ -977,8 +985,8 @@ void MySQLDataStore::loadQuestPropertiesTable()
     uint32_t quest_count = 0;
 
 
-              //                                                        0       1     2      3       4          5        6          7              8                 9
-    QueryResult* quest_result = sMySQLStore.getWorldDBQuery("SELECT entry, ZoneId, sort, flags, MinLevel, questlevel, Type, RequiredRaces, RequiredClass, RequiredTradeskill, "
+              //                                          0       1     2      3       4          5        6          7              8                 9
+    QueryResult* quest_result = getWorldDBQuery("SELECT entry, ZoneId, sort, flags, MinLevel, questlevel, Type, RequiredRaces, RequiredClass, RequiredTradeskill, "
         //           10                    11                 12             13          14            15           16         17
         "RequiredTradeskillValue, RequiredRepFaction, RequiredRepValue, LimitTime, SpecialFlags, PrevQuestId, NextQuestId, srcItem, "
         //     18        19     20         21            22              23          24          25               26
@@ -4175,7 +4183,7 @@ void MySQLDataStore::loadCreatureSpawns()
     auto startTime = Util::TimeNow();
     uint32_t count = 0;
 
-    QueryResult* creature_spawn_result = sMySQLStore.getWorldDBQuery("SELECT * FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", getAEVersion(), getAEVersion());
+    QueryResult* creature_spawn_result = getWorldDBQuery("SELECT * FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", getAEVersion(), getAEVersion());
     if (creature_spawn_result)
     {
         uint32 creature_spawn_fields = creature_spawn_result->GetFieldCount();
@@ -4277,7 +4285,7 @@ void MySQLDataStore::loadGameobjectSpawns()
     auto startTime = Util::TimeNow();
     uint32_t count = 0;
 
-    QueryResult* gobject_spawn_result = sMySQLStore.getWorldDBQuery("SELECT * FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", VERSION_STRING, VERSION_STRING);
+    QueryResult* gobject_spawn_result = getWorldDBQuery("SELECT * FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", VERSION_STRING, VERSION_STRING);
     if (gobject_spawn_result)
     {
         uint32 gobject_spawn_fields = gobject_spawn_result->GetFieldCount();
@@ -4356,7 +4364,7 @@ void MySQLDataStore::loadRecallTable()
 
     _recallStore.clear();
 
-    QueryResult* recall_result = sMySQLStore.getWorldDBQuery("SELECT id, name, MapId, positionX, positionY, positionZ, Orientation FROM recall WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
+    QueryResult* recall_result = getWorldDBQuery("SELECT id, name, MapId, positionX, positionY, positionZ, Orientation FROM recall WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
     if (recall_result)
     {
         do

@@ -832,7 +832,7 @@ static const uint32_t ClassRaceCombinations[91][3] =
 
 inline uint32_t getAEVersion()
 {
-    return BUILD_VERSION;
+    return static_cast<uint32_t>(BUILD_VERSION);
 }
 
 inline bool isClassRaceCombinationPossible(uint8_t _class, uint8_t _race)

@@ -248,7 +248,7 @@ public:
     void loadAdditionalTableConfig();
 
     //helpers
-    QueryResult* getWorldDBQuery(std::string query, ...);
+    QueryResult* getWorldDBQuery(const char* query, ...);
 
     //Loads
     void loadItemPagesTable();
