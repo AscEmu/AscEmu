@@ -604,14 +604,15 @@ void GameObject::setLootState(LootState state, Unit* unit)
             chest->setRestockTime(Util::getTimeNow() + GetGameObjectProperties()->chest.restock_time);
     }
 
-    if (getGoType() == GAMEOBJECT_TYPE_DOOR) // only set collision for doors on SetGoState
+    if (getGoType() == GAMEOBJECT_TYPE_DOOR)
         return;
 
     if (m_model)
     {
         bool collision = false;
         // Use the current go state
-        if ((getGoType() != GO_STATE_CLOSED && (state == GO_ACTIVATED || state == GO_JUST_DEACTIVATED)) || state == GO_READY)
+        // only set collision for doors on setState
+        if ((getState() != GO_STATE_CLOSED && (state == GO_ACTIVATED || state == GO_JUST_DEACTIVATED)) || state == GO_READY)
             collision = !collision;
 
         enableCollision(collision);
