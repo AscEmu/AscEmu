@@ -356,7 +356,7 @@ void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (ObjectGuid lguid = GetPlayer()->getLootGuid())
+    if (uint64_t lguid = GetPlayer()->getLootGuid())
         if (lguid == srlPacket.guid)
             doLootRelease(srlPacket.guid);
 }
