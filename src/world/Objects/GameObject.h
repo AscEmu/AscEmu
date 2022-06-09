@@ -107,6 +107,7 @@ class GameObjectModel;
 //\todo check this enum - do we (ae) really handle this stuff this way?
 enum GameObjectOverrides
 {
+    GAMEOBJECT_NORMAL_DISTANCE = 0x00,
     GAMEOBJECT_INFVIS = 0x01,                   // Makes the gameobject forever visible on the map after you saw it at least once - for various transports; actually it just doesn't erase it while you're on the same map.
     GAMEOBJECT_MAPWIDE = 0x02,                  // When you enter its map, the gameobject gets pushed to you no matter how far it is (but only for players), especially for Deeprun and Ulduar Trams.
     GAMEOBJECT_AREAWIDE = 0x04,                 //\todo UNIMPLEMENTED, but will work like this: the Map will get marked that it contains an object like this, and on player movement these objects will get distance-checked to spawn them from a greater distance than normal if needed - for few objects on smaller maps, like on battlegrounds; maybe they'll get area-triggered, haven't decided yet.
@@ -596,6 +597,7 @@ struct GameObjectProperties
             case GAMEOBJECT_TYPE_FLAGSTAND:             return true;
             case GAMEOBJECT_TYPE_FLAGDROP:              return true;
             case GAMEOBJECT_TYPE_TRAPDOOR:              return true;
+            case GAMEOBJECT_TYPE_TRANSPORT:             return true;
             default: return false;
         }
     }

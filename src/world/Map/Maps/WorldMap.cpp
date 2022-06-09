@@ -62,15 +62,15 @@ void WorldMap::initialize()
     // Create Instance script
     loadInstanceScript();
 
-    // create static objects
-    for (auto& GameobjectSpawn : _map->staticSpawns.GameobjectSpawns)
+    // create Map Wide objects
+    for (auto& GameobjectSpawn : _map->mapWideSpawns.GameobjectSpawns)
     {
         GameObject* obj = createGameObject(GameobjectSpawn->entry);
         obj->loadFromDB(GameobjectSpawn->id, this, false);
         PushStaticObject(obj);
     }
 
-    for (auto& CreatureSpawn : _map->staticSpawns.CreatureSpawns)
+    for (auto& CreatureSpawn : _map->mapWideSpawns.CreatureSpawns)
     {
         Creature* obj = createCreature(CreatureSpawn->entry);
         obj->Load(CreatureSpawn, 0, getBaseMap()->getMapInfo());
@@ -733,11 +733,6 @@ void WorldMap::PushObject(Object* obj)
         }
 
         delete buf;
-
-        // todo aaron02
-        /*
-        if (plObj != nullptr && InactiveMoveTime && !forced_expire)
-            InactiveMoveTime = 0;*/
     }
     else
     {

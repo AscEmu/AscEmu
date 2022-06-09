@@ -57,7 +57,8 @@ public:
     uint32_t CreatureSpawnCount;
     uint32_t GameObjectSpawnCount;
 
-    CellSpawns staticSpawns;
+    CellSpawns mapWideSpawns;
+    CellSpawns areaWideSpawns;
 
 private:
     DBC::Structures::MapEntry const* _mapEntry = nullptr;

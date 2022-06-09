@@ -54,9 +54,13 @@ BaseMap::~BaseMap()
         }
     }
 
-    for (CreatureSpawnList::iterator i = staticSpawns.CreatureSpawns.begin(); i != staticSpawns.CreatureSpawns.end(); ++i)
+    for (CreatureSpawnList::iterator i = mapWideSpawns.CreatureSpawns.begin(); i != mapWideSpawns.CreatureSpawns.end(); ++i)
         delete* i;
-    for (GameobjectSpawnList::iterator i = staticSpawns.GameobjectSpawns.begin(); i != staticSpawns.GameobjectSpawns.end(); ++i)
+    for (GameobjectSpawnList::iterator i = mapWideSpawns.GameobjectSpawns.begin(); i != mapWideSpawns.GameobjectSpawns.end(); ++i)
+        delete* i;
+    for (CreatureSpawnList::iterator i = areaWideSpawns.CreatureSpawns.begin(); i != areaWideSpawns.CreatureSpawns.end(); ++i)
+        delete* i;
+    for (GameobjectSpawnList::iterator i = areaWideSpawns.GameobjectSpawns.begin(); i != areaWideSpawns.GameobjectSpawns.end(); ++i)
         delete* i;
 }
 
@@ -167,19 +171,22 @@ void BaseMap::loadSpawns(bool reload)
     GameObjectSpawnCount = 0;
     for (auto go_spawn : sMySQLStore._gameobjectSpawnsStore[this->_mapId])
     {
-        /*if (go_spawn->overrides & GAMEOBJECT_MAPWIDE)
+        GameObjectOverrides m_overrides = GAMEOBJECT_NORMAL_DISTANCE;
+        if (GameObjectProperties const* gameobject_properties = sMySQLStore.getGameObjectProperties(go_spawn->entry))
         {
-            staticSpawns.GameobjectSpawns.push_back(go_spawn); //We already have a staticSpawns in the Map class, and it does just the right thing
-            ++GameObjectSpawnCount;
+            
+            // Check if GameObject is Large
+            if (gameobject_properties->isLargeGameObject())
+                m_overrides = GAMEOBJECT_AREAWIDE;  // not implemented yet
+
+            // Check if GameObject is Infinite
+            if (gameobject_properties->isInfiniteGameObject())
+                m_overrides = GAMEOBJECT_MAPWIDE;
         }
-        else*/
+
+        switch (m_overrides)
         {
-            // Zyres: transporter stuff
-            if (sMySQLStore.getGameObjectProperties(go_spawn->entry)->type == 11 || sMySQLStore.getGameObjectProperties(go_spawn->entry)->type == 15)
-            {
-                staticSpawns.GameobjectSpawns.push_back(go_spawn);
-            }
-            else
+            case GAMEOBJECT_NORMAL_DISTANCE:
             {
                 uint32_t cellx = CellHandler<MapMgr>::getPosX(go_spawn->spawnPoint.x);
                 uint32_t celly = CellHandler<MapMgr>::getPosY(go_spawn->spawnPoint.y);
@@ -193,9 +200,19 @@ void BaseMap::loadSpawns(bool reload)
                     spawns[cellx][celly] = new CellSpawns;
 
                 spawns[cellx][celly]->GameobjectSpawns.push_back(go_spawn);
-            }
 
-            ++GameObjectSpawnCount;
+                ++GameObjectSpawnCount;
+            } break;
+            case GAMEOBJECT_MAPWIDE:
+            {
+                mapWideSpawns.GameobjectSpawns.push_back(go_spawn);
+                ++GameObjectSpawnCount;
+            } break;
+            case GAMEOBJECT_AREAWIDE:
+            {
+                areaWideSpawns.GameobjectSpawns.push_back(go_spawn);
+                ++GameObjectSpawnCount;
+            } break;
         }
     }
     sLogger.info("MapMgr : %u creatures / %u gobjects on map %u cached.", CreatureSpawnCount, GameObjectSpawnCount, _mapId);
