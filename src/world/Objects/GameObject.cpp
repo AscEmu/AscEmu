@@ -706,6 +706,9 @@ void GameObject::Update(unsigned long time_passed)
     if (!IsInWorld() || m_deleted)
         return;
 
+    // Update Spells
+    _UpdateSpells(time_passed);
+
     // Respawn Handling
     if (m_despawnDelay)
     {
@@ -906,8 +909,6 @@ void GameObject::Update(unsigned long time_passed)
             despawn(0, 0);
         } break;
     }
-
-    _UpdateSpells(time_passed);
 }
 
 void GameObject::despawn(uint32_t delay, uint32_t forceRespawntime)
@@ -979,8 +980,14 @@ void GameObject::saveRespawnTime(uint32_t forceDelay)
             return;
         }
 
-        time_t thisRespawnTime = forceDelay ? Util::getTimeNow() + forceDelay / IN_MILLISECONDS : m_respawnTime;
-        getWorldMap()->saveRespawnTime(SPAWN_TYPE_GAMEOBJECT, m_spawnId, getEntry(), thisRespawnTime, m_respawnCell->getPositionX(), m_respawnCell->getPositionY());
+        /* Get our originating mapcell */
+        if (MapCell* pCell = GetMapCell())
+        {
+            m_respawnCell = pCell;
+
+            time_t thisRespawnTime = forceDelay ? Util::getTimeNow() + forceDelay / IN_MILLISECONDS : m_respawnTime;
+            getWorldMap()->saveRespawnTime(SPAWN_TYPE_GAMEOBJECT, m_spawnId, getEntry(), thisRespawnTime, m_respawnCell->getPositionX(), m_respawnCell->getPositionY());
+        }
     }
 }
 
