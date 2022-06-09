@@ -4692,7 +4692,7 @@ void Spell::SpellEffectSummonObjectWild(uint8_t effectIndex)
         return;
     }
 
-    int32_t duration = GetDuration();
+    int32_t duration = getDuration();
 
     GoSummon->setRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
 
