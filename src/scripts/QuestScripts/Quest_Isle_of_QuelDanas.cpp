@@ -31,11 +31,7 @@ public:
     {
         if (auto* questLog = pPlayer->getQuestLogByQuestId(11490))
         {
-            float SSX = pPlayer->GetPositionX();
-            float SSY = pPlayer->GetPositionY();
-            float SSZ = pPlayer->GetPositionZ();
-
-            GameObject* pOrb = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(SSX, SSY, SSZ, 187578);
+            GameObject* pOrb = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 187578);
             if (pOrb)
             {
                 pOrb->setState(GO_STATE_OPEN);

@@ -494,8 +494,7 @@ public:
     {
         if (player->hasQuestInQuestLog(5902) || player->hasQuestInQuestLog(5904))
         {
-            LocationVector pos = player->GetPosition();
-            GameObject* go = player->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 177491);
+            GameObject* go = player->getWorldMap()->getInterface()->getGameObjectNearestCoords(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), 177491);
             if (go == nullptr)
             {
                 GameObject* barel = player->getWorldMap()->createAndSpawnGameObject(177491, LocationVector(2449.51f, -1662.32f, 104.38f, 1.0f), 1);
@@ -761,10 +760,8 @@ public:
         if (!player->hasQuestInQuestLog(10526))
             return;
 
-        LocationVector pos = player->GetPosition();
-
         // Wth is that ? To remove ?
-        GameObject* gobj = player->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 184729);
+        GameObject* gobj = player->getWorldMap()->getInterface()->getGameObjectNearestCoords(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), 184729);
         if (gobj != nullptr)
             gobj->Despawn(6 * 60 * 1000, 0);
 

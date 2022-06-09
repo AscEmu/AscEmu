@@ -117,7 +117,7 @@ void AccountMgr::updateAccount(std::shared_ptr<Account> account, Field* field)
 
     if (id != account->AccountId)
     {
-        sLogger.failure(" >> deleting duplicate account %u [%s]...", id, accountName.c_str());
+        sLogger.failure("AccountMgr : deleting duplicate account %u [%s]...", id, accountName.c_str());
         sLogonSQL->Execute("DELETE FROM accounts WHERE id = %u", id);
         return;
     }

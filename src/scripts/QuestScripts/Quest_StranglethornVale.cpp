@@ -153,15 +153,11 @@ class BloodscalpClanHeads : public QuestScript
 public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        float SSX = mTarget->GetPositionX();
-        float SSY = mTarget->GetPositionY();
-        float SSZ = mTarget->GetPositionZ();
-
-        GameObject* skull1 = mTarget->getWorldMap()->getInterface()->getGameObjectNearestCoords(SSX, SSY, SSZ, 2551);
+        GameObject* skull1 = mTarget->getWorldMap()->getInterface()->getGameObjectNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ(), 2551);
         if (skull1 == nullptr)
             return;
 
-        Creature* Kin_weelay = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(SSX, SSY, SSZ, 2519);
+        Creature* Kin_weelay = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ(), 2519);
         if (Kin_weelay == nullptr)
             return;
 
@@ -171,7 +167,7 @@ public:
         Kin_weelay->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg1.c_str());
         Kin_weelay->castSpell(Kin_weelay, sSpellMgr.getSpellInfo(3644), false);
         skull1->Despawn(5000, 0);
-        GameObject* skull2 = mTarget->getWorldMap()->getInterface()->getGameObjectNearestCoords(SSX, SSY, SSZ, 2551);
+        GameObject* skull2 = mTarget->getWorldMap()->getInterface()->getGameObjectNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ(), 2551);
         if (skull2)
             skull2->Despawn(5000, 0);
 
@@ -187,11 +183,7 @@ class BacktoBootyBay : public QuestScript
 public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        float X = mTarget->GetPositionX();
-        float Y = mTarget->GetPositionY();
-        float Z = mTarget->GetPositionZ();
-
-        Creature* Crank = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(X, Y, Z, 2498);
+        Creature* Crank = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ(), 2498);
         if (Crank)
         {
             std::string say = "Hm... if you're looking to adle wits. ";
@@ -207,11 +199,7 @@ class VoodooDues : public QuestScript
 public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        float X = mTarget->GetPositionX();
-        float Y = mTarget->GetPositionY();
-        float Z = mTarget->GetPositionZ();
-
-        Creature* MacKinley = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(X, Y, Z, 2501);
+        Creature* MacKinley = mTarget->getWorldMap()->getInterface()->getCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ(), 2501);
         if (MacKinley)
         {
             std::string say = "Bah! ";

@@ -2837,7 +2837,7 @@ void ObjectMgr::loadCreatureMovementOverrides()
 
     if (!result)
     {
-        sLogger.info(">> Loaded 0 creature movement overrides. DB table `creature_movement_override` is empty!");
+        sLogger.info("loadCreatureMovementOverrides : Loaded 0 creature movement overrides. DB table `creature_movement_override` is empty!");
         return;
     }
 

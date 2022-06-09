@@ -21,7 +21,7 @@ void WaypointMgr::load()
 
     if (!result)
     {
-        sLogger.info("WaypointMgr >> Loaded 0 waypoints. DB table `creature_waypoints` is empty!");
+        sLogger.info("WaypointMgr : Loaded 0 waypoints. DB table `creature_waypoints` is empty!");
         return;
     }
 
@@ -64,7 +64,7 @@ void WaypointMgr::load()
     }
     while (result->NextRow());
 
-    sLogger.info("WaypointMgr >> Loaded %u waypoints in %u ms", count, Util::GetTimeDifferenceToNow(oldMSTime));
+    sLogger.info("WaypointMgr : Loaded %u waypoints in %u ms", count, Util::GetTimeDifferenceToNow(oldMSTime));
 }
 
 void WaypointMgr::loadCustomWaypoints()
@@ -76,7 +76,7 @@ void WaypointMgr::loadCustomWaypoints()
 
     if (!result)
     {
-        sLogger.info("WaypointMgr >> Loaded 0 waypoints. DB table `creature_script_waypoints` is empty!");
+        sLogger.info("WaypointMgr : Loaded 0 waypoints. DB table `creature_script_waypoints` is empty!");
         return;
     }
 
@@ -118,7 +118,7 @@ void WaypointMgr::loadCustomWaypoints()
         ++count;
     } while (result->NextRow());
 
-    sLogger.info("WaypointMgr >> Loaded %u custom waypoints in %u ms", count, Util::GetTimeDifferenceToNow(oldMSTime));
+    sLogger.info("WaypointMgr : Loaded %u custom waypoints in %u ms", count, Util::GetTimeDifferenceToNow(oldMSTime));
 }
 
 WaypointMgr* WaypointMgr::getInstance()

@@ -606,7 +606,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     if (forcedPermissions != nullptr)
         GMFlags.assign(*forcedPermissions);
 
-    sLogger.debug(" >> got information packet from logon: `%s` ID %u (request %u)", AccountName.c_str(), AccountID, mRequestID);
+    sLogger.debug("InformationRetreiveCallback : got information packet from logon: `%s` ID %u (request %u)", AccountName.c_str(), AccountID, mRequestID);
 
     mRequestID = 0;
 

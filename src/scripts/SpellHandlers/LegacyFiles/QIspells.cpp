@@ -1400,15 +1400,13 @@ bool ArcaneDisruption(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (plr == nullptr)
         return true;
 
-    const LocationVector pos = plr->GetPosition();
-
     if (auto* questLog = plr->getQuestLogByQuestId(13149))
     {
-        GameObject* crate = plr->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 190094);
+        GameObject* crate = plr->getWorldMap()->getInterface()->getGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 190094);
         if (crate != nullptr)
         {
             GameObject* go = plr->getWorldMap()->createGameObject(190095);
-            go->CreateFromProto(190095, crate->getWorldMap()->getBaseMap()->getMapId(), pos.x, pos.y, pos.z, pos.o, 0.0f, 0.0f, 0.0f, 0.0f);
+            go->CreateFromProto(190095, crate->getWorldMap()->getBaseMap()->getMapId(), plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetOrientation(), 0.0f, 0.0f, 0.0f, 0.0f);
             go->PushToWorld(crate->getWorldMap());
             crate->Despawn(0, 0);
 
@@ -1445,8 +1443,6 @@ bool ToLegionHold(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (pPlayer == nullptr)
         return true;
 
-    LocationVector pos = pPlayer->GetPosition();
-
     Creature* pJovaanCheck = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(-3310.743896f, 2951.929199f, 171.132538f, 21633);
     if (pJovaanCheck != nullptr)
         return true;
@@ -1464,7 +1460,7 @@ bool ToLegionHold(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
                 pJovaan->getAIInterface()->setAllowedToEnterCombat(false);
             }
         }
-        GameObject* pGameObject = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 184834);
+        GameObject* pGameObject = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 184834);
         if (pGameObject != nullptr)
         {
             pGameObject->Despawn(60000, 0);
@@ -1764,12 +1760,10 @@ bool NeutralizingTheCauldrons(uint8_t /*effectIndex*/, Spell* pSpell)
 
     Player* pPlayer = pSpell->getPlayerCaster();
 
-    const LocationVector pos = pPlayer->GetPosition();
-
     if (!pPlayer->hasQuestInQuestLog(11647))
         return true;
 
-    GameObject* pCauldron = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 187690);
+    GameObject* pCauldron = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 187690);
     if (pCauldron == nullptr)
         return true;
 
@@ -1825,17 +1819,15 @@ bool CompleteAncestorRitual(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pPlayer->hasQuestInQuestLog(11610))
         return true;
 
-    const LocationVector pos = pPlayer->GetPosition();
-
-    GameObject* pElderObj = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 191088);
+    GameObject* pElderObj = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 191088);
     if (pElderObj != nullptr && pPlayer->GetDistance2dSq(pElderObj) < 8.0f)
         pPlayer->addQuestKill(11610, 0, 0);
 
-    pElderObj = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 191089);
+    pElderObj = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 191089);
     if (pElderObj != nullptr && pPlayer->GetDistance2dSq(pElderObj) < 8.0f)
         pPlayer->addQuestKill(11610, 1, 0);
 
-    pElderObj = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 191090);
+    pElderObj = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 191090);
     if (pElderObj != nullptr && pPlayer->GetDistance2dSq(pElderObj) < 8.0f)
         pPlayer->addQuestKill(11610, 2, 0);
 
@@ -2733,15 +2725,13 @@ bool Carcass(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a Shadoweave Ta
 
     Player* pPlayer = pSpell->getPlayerCaster();
 
-    LocationVector pos = pPlayer->GetPosition();
-
     QuestLogEntry* pQuest = pPlayer->getQuestLogByQuestId(10804);
-    Creature* NetherDrake = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pos.x, pos.y, pos.z, 21648);
-    GameObject* FlayerCarcass = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 185155);
+    Creature* NetherDrake = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21648);
+    GameObject* FlayerCarcass = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 185155);
 
     if (FlayerCarcass == nullptr)
     {
-        FlayerCarcass = pPlayer->getWorldMap()->createAndSpawnGameObject(185155, LocationVector(pos.x, pos.y, pos.z, 0), 1);
+        FlayerCarcass = pPlayer->getWorldMap()->createAndSpawnGameObject(185155, pPlayer->GetPosition(), 1);
         FlayerCarcass->Despawn(60000, 0);
     }
     if (NetherDrake == nullptr)
@@ -2753,7 +2743,7 @@ bool Carcass(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a Shadoweave Ta
     if (pQuest != nullptr && pQuest->getMobCountByIndex(0) < pQuest->getQuestProperties()->required_mob_or_go_count[0])
     {
         NetherDrake->castSpell(NetherDrake, sSpellMgr.getSpellInfo(38502), true);
-        NetherDrake->getMovementManager()->moveTakeoff(0, pos);
+        NetherDrake->getMovementManager()->moveTakeoff(0, pPlayer->GetPosition());
         pPlayer->addQuestKill(10804, 0, 0);
     }
     return true;

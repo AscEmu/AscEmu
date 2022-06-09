@@ -65,9 +65,7 @@ public:
     {
         if (auto* questLog = pPlayer->getQuestLogByQuestId(10895))
         {
-            LocationVector pos = pPlayer->GetPosition();
-
-            GameObject* pBeacon = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 184661);
+            GameObject* pBeacon = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 184661);
             if (pBeacon != nullptr && pBeacon->getFlags() > 0)
             {
                 pBeacon->removeFlags(GO_FLAG_NONSELECTABLE);

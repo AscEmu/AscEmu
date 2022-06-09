@@ -307,13 +307,13 @@ bool WinterWondervolt(uint8_t /*effectIndex*/, Spell* pSpell)
 bool ScryingCrystal(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* player = pSpell->getPlayerCaster();
-    LocationVector pos = player->GetPosition();
-    if (player->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 300078))
+
+    if (player->getWorldMap()->getInterface()->getGameObjectNearestCoords(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), 300078))
     {
         player->addQuestKill(9824, 0, 0);
         return false;
     }
-    else if (player->getWorldMap()->getInterface()->getGameObjectNearestCoords(pos.x, pos.y, pos.z, 300142))
+    else if (player->getWorldMap()->getInterface()->getGameObjectNearestCoords(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), 300142))
     {
         player->addQuestKill(9824, 1, 0);
         return false;
