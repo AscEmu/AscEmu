@@ -4399,7 +4399,6 @@ void MySQLDataStore::loadGameobjectSpawns()
                     case GAMEOBJECT_TYPE_MAP_OBJECT:
                     case GAMEOBJECT_TYPE_MO_TRANSPORT:
                     {
-                        delete go_spawn;
                         continue;
                     }
                 }
