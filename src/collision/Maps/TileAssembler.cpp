@@ -25,11 +25,14 @@
 #include <set>
 #include <iomanip>
 #include <sstream>
+#include <filesystem>
 
 using G3D::Vector3;
 using G3D::AABox;
 using G3D::inf;
 using std::pair;
+
+namespace fs = std::filesystem;
 
 template<> struct BoundsTrait<VMAP::ModelSpawn*>
 {
@@ -60,8 +63,7 @@ namespace VMAP
     TileAssembler::TileAssembler(const std::string& pSrcDirName, const std::string& pDestDirName)
         : iDestDir(pDestDirName), iSrcDir(pSrcDirName), iFilterMethod(NULL), iCurrentUniqueNameId(0)
     {
-        //mkdir(iDestDir);
-        //init();
+        fs::create_directory(iDestDir);
     }
 
     TileAssembler::~TileAssembler()
