@@ -905,7 +905,6 @@ void GameObject::Update(unsigned long time_passed)
 
             // if option not set then object will be saved at grid unload
             // Otherwise just save respawn time to map object memory
-            saveRespawnTime();
             despawn(0, 0);
         } break;
     }
@@ -985,8 +984,8 @@ void GameObject::saveRespawnTime(uint32_t forceDelay)
         {
             m_respawnCell = pCell;
 
-            time_t thisRespawnTime = forceDelay ? Util::getTimeNow() + forceDelay / IN_MILLISECONDS : m_respawnTime;
-            getWorldMap()->saveRespawnTime(SPAWN_TYPE_GAMEOBJECT, m_spawnId, getEntry(), thisRespawnTime, m_respawnCell->getPositionX(), m_respawnCell->getPositionY());
+            time_t thisRespawnTime = forceDelay ? Util::getTimeNow() + forceDelay : m_respawnTime;
+            getWorldMap()->saveRespawnTime(SPAWN_TYPE_GAMEOBJECT, m_spawnId, getEntry(), thisRespawnTime, m_spawnLocation.x, m_spawnLocation.y);
         }
     }
 }

@@ -2186,22 +2186,25 @@ void WorldMap::doRespawn(SpawnObjectType type, Object* object, uint32_t spawnId,
     deleteRespawnFromDB(type, spawnId);
     
     MapCell* cell = getCellByCoords(cellX, cellY);
-    if (cell == nullptr || object == nullptr)    //cell or object got deleted while waiting for respawn.
+    if (cell == nullptr) //cell got deleted while waiting for respawn.
         return;
 
     switch (type)
     {
         case SPAWN_TYPE_CREATURE:
         {
-            Creature* obj = object->ToCreature();
-            if (obj)
+            if (object)
             {
-                auto itr = cell->_respawnObjects.find(obj);
-                if (itr != cell->_respawnObjects.end())
+                Creature* obj = object->ToCreature();
+                if (obj)
                 {
-                    obj->m_respawnCell = nullptr;
-                    cell->_respawnObjects.erase(itr);
-                    obj->OnRespawn(this);
+                    auto itr = cell->_respawnObjects.find(obj);
+                    if (itr != cell->_respawnObjects.end())
+                    {
+                        obj->m_respawnCell = nullptr;
+                        cell->_respawnObjects.erase(itr);
+                        obj->OnRespawn(this);
+                    }
                 }
             }
             break;
