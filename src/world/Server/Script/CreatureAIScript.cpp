@@ -947,12 +947,12 @@ void CreatureAIScript::_applyAura(uint32_t spellId)
 
 void CreatureAIScript::_removeAura(uint32_t spellId)
 {
-    _creature->RemoveAura(spellId);
+    _creature->removeAllAurasById(spellId);
 }
 
 void CreatureAIScript::_removeAllAuras()
 {
-    _creature->RemoveAllAuras();
+    _creature->removeAllAuras();
 }
 
 void CreatureAIScript::_removeAuraOnPlayers(uint32_t spellId)
@@ -960,7 +960,7 @@ void CreatureAIScript::_removeAuraOnPlayers(uint32_t spellId)
     for (auto object : _creature->getInRangePlayersSet())
     {
         if (object != nullptr)
-            static_cast<Player*>(object)->RemoveAura(spellId);
+            static_cast<Player*>(object)->removeAllAurasById(spellId);
     }
 }
 

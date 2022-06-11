@@ -660,7 +660,7 @@ bool DemonicCircleSummon(uint8_t /*effectIndex*/, Aura* a, bool apply)
                 m_target->castSpell(m_target, 62388, true);
         }
         else
-            m_target->RemoveAura(62388);
+            m_target->removeAllAurasById(62388);
     }
     else
     {

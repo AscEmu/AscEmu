@@ -12,17 +12,24 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Object.h"
 #include "Objects/Units/Creatures/Summons/SummonHandler.h"
 #include "Spell/Definitions/AuraEffects.hpp"
+#include "Spell/Definitions/AuraSlots.hpp"
 #include "Spell/Definitions/AuraStates.hpp"
+#include "Spell/Definitions/DispelType.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/School.hpp"
+#include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/Definitions/SpellModifierType.hpp"
+#include "Spell/Definitions/SpellTypes.hpp"
 #include "Spell/SpellCastTargets.hpp"
 #include "Spell/SpellDefines.hpp"
 #include "Spell/SpellProc.hpp"
 #include "Storage/MySQLStructures.h"
 #include "ThreatHandler.h"
 #include "UnitDefines.hpp"
+
+#include <array>
+#include <list>
 #include <optional>
 
 struct DamageSplitTarget;
@@ -174,6 +181,11 @@ struct AuraCheckResponse
 };
 
 typedef std::list<struct ProcTriggerSpellOnSpell> ProcTriggerSpellOnSpellList;
+
+typedef std::array<Aura*, AuraSlots::TOTAL_SLOT_END> AuraArray;
+typedef std::list<AuraEffectModifier const*> AuraEffectList;
+typedef std::array<AuraEffectList, TOTAL_SPELL_AURAS> AuraEffectListArray;
+typedef std::array<uint32_t /*spellId*/, AuraSlots::NEGATIVE_VISUAL_SLOT_END> VisualAuraArray;
 
 struct WoWUnit;
 
@@ -799,34 +811,54 @@ public:
     uint8_t findVisualSlotForAura(Aura const* aur) const;
 
     Aura* getAuraWithId(uint32_t spell_id);
-    Aura* getAuraWithId(uint32_t* auraId);
-    Aura* getAuraWithIdForGuid(uint32_t* auraId, uint64 guid);
-    Aura* getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid);
+    Aura* getAuraWithId(uint32_t const* auraId);
+    Aura* getAuraWithIdForGuid(uint32_t const* auraId, uint64_t guid);
+    Aura* getAuraWithIdForGuid(uint32_t spell_id, uint64_t guid);
     Aura* getAuraWithAuraEffect(AuraEffect aura_effect);
+    Aura* getAuraWithVisualSlot(uint8_t visualSlot);
+    // Note; this is internal serverside aura slot, not the slot in client
+    // For clientside slot use getAuraWithVisualSlot
+    Aura* getAuraWithAuraSlot(uint16_t auraSlot);
 
     bool hasAurasWithId(uint32_t auraId) const;
-    bool hasAurasWithId(uint32_t* auraId) const;
+    bool hasAurasWithId(uint32_t const* auraId) const;
     bool hasAuraWithAuraEffect(AuraEffect type) const;
-    bool hasAuraState(AuraState state, SpellInfo const* spellInfo = nullptr, Unit const* caster = nullptr) const;
+    bool hasAuraWithMechanic(SpellMechanic mechanic) const;
+    bool hasAuraWithSpellType(SpellTypes type, uint64_t casterGuid = 0, uint32_t skipSpellId = 0) const;
 
+    bool hasAuraState(AuraState state, SpellInfo const* spellInfo = nullptr, Unit const* caster = nullptr) const;
     void addAuraStateAndAuras(AuraState state);
     void removeAuraStateAndAuras(AuraState state);
 
     uint32_t getAuraCountForId(uint32_t auraId) const;
     uint32_t getAuraCountForEffect(AuraEffect aura_effect) const;
+    uint32_t getAuraCountWithDispelType(DispelType type, uint64_t casterGuid = 0) const;
 
-    void removeAllAurasById(uint32_t auraId);
-    void removeAllAurasById(uint32_t* auraId);
-    void removeAllAurasByIdForGuid(uint32_t auraId, uint64_t guid);
-    uint32_t removeAllAurasByIdReturnCount(uint32_t auraId) const;
+    void removeAllAuras();
+    void removeAllAurasById(uint32_t auraId, AuraRemoveMode mode = AURA_REMOVE_BY_SERVER);
+    void removeAllAurasById(uint32_t const* auraId, AuraRemoveMode mode = AURA_REMOVE_BY_SERVER);
+    void removeAllAurasByIdForGuid(uint32_t auraId, uint64_t guid, AuraRemoveMode mode = AURA_REMOVE_BY_SERVER);
+    void removeAllAurasByAuraInterruptFlag(uint32_t auraInterruptFlag, uint32_t skipSpellId = 0);
     // Can remove only the effect from aura, or (by default) entire aura
-    void removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell = 0, bool removeOnlyEffect = false, uint64_t casterGuid = 0);
+    void removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell = 0, bool removeOnlyEffect = false, uint64_t casterGuid = 0, AuraRemoveMode mode = AURA_REMOVE_BY_SERVER);
+    void removeAllAurasBySpellMechanic(SpellMechanic mechanic, bool negativeOnly = true);
+    void removeAllAurasBySpellMechanic(SpellMechanic const* mechanic, bool negativeOnly = true);
+    void removeAllAurasBySpellType(SpellTypes type, uint64_t casterGuid = 0, uint32_t skipSpellId = 0);
+    void removeAllAurasBySchoolMask(SchoolMask schoolMask, bool negativeOnly = true, bool isImmune = false);
+    void removeAllNegativeAuras();
+    // Does not remove passive auras
+    void removeAllPositiveAuras();
+    void removeAllNonPersistentAuras();
+    void removeAuraByItemGuid(uint32_t auraId, uint64_t itemguid);
+    uint32_t removeAllAurasByIdReturnCount(uint32_t auraId, AuraRemoveMode mode = AURA_REMOVE_BY_SERVER);
 
     uint64_t getSingleTargetGuidForAura(uint32_t spellId);
-    uint64_t getSingleTargetGuidForAura(uint32_t* spellIds, uint32_t* index);
-
+    uint64_t getSingleTargetGuidForAura(uint32_t const* spellIds, uint32_t* index);
     void setSingleTargetGuidForAura(uint32_t spellId, uint64_t guid);
     void removeSingleTargetGuidForAura(uint32_t spellId);
+
+    void clearAllAreaAuraTargets();
+    void removeAllAreaAurasCastedByOther();
 
     uint32_t getTransformAura() const;
     void setTransformAura(uint32_t auraId);
@@ -838,10 +870,26 @@ public:
     // Returns true if packet could be sent
     bool sendPeriodicAuraLog(const WoWGuid& casterGuid, const WoWGuid& targetGuid, SpellInfo const* spellInfo, uint32_t amount, uint32_t overKillOrOverHeal, uint32_t absorbed, uint32_t resisted, AuraEffect auraEffect, bool isCritical, uint32_t miscValue = 0, float gainMultiplier = 0.0f);
 
+    AuraArray const& getAuraList() const;
+    AuraEffectList const& getAuraEffectList(AuraEffect effect) const;
+    VisualAuraArray const& getVisualAuraList() const;
+
 private:
+    // Inserts aura into aura containers
+    void _addAura(Aura* aur);
+    // Inserts aura effect into aura effect list
+    void _addAuraEffect(AuraEffectModifier const* aurEff);
+    // Erases aura from aura containers
+    void _removeAura(Aura* aur);
+    // Erases aura effect from aura effect list
+    void _removeAuraEffect(AuraEffectModifier const* aurEff);
     void _updateAuras(unsigned long diff);
 
     uint32_t m_transformAura = 0;
+
+    AuraArray m_auraList = { nullptr };
+    AuraEffectListArray m_auraEffectList;
+    VisualAuraArray m_auraVisualList = { 0 };
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -1166,27 +1214,6 @@ public:
     // AURAS
     //////////////////////////////////////////////////////////////////////////////////////////
 
-    //\todo: used in 1xUnitFunctions.h and 2xObject.cpp - is this really needed?
-    bool HasAuraWithMechanics(uint32 mechanic);     //this checks passive auras too
-
-    //\todo: checks custom fiel filled by "assign_on_target_flag" from table "spell_custom_override" - there should be another way
-    bool HasAurasOfBuffType(uint32 buff_type, const uint64 & guid, uint32 skip);
-
-    //\todo: user for DeathStrike and BloodStrike calculation
-    uint32 GetAuraCountWithDispelType(uint32 dispel_type, uint64 guid);
-
-    //\todo: user for SMSG_PARTY_MEMBER_STATS_FULL iterating through 64 aura slots
-    Aura * GetAuraWithSlot(uint32 slot);
-
-    //\todo: removing a specific aura (charges/queue related?)
-    bool RemoveAura(Aura* aur);
-
-    //\todo: removing first aura with spellid (charges/queue related?)
-    bool RemoveAura(uint32 spellId, uint64 guid = 0);
-
-    //\todo: used once
-    bool RemoveAuraByItemGUID(uint32 spellId, uint64 guid);
-
     //\todo: isn't the aura timed or triggered after healing?
     bool RemoveAurasByHeal();
 
@@ -1198,38 +1225,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     bool AuraActionIf(AuraAction* action, AuraCondition* condition);
 
-    void RemoveAurasByInterruptFlag(uint32 flag);
-    void RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip);
-    void RemoveAurasByBuffType(uint32 buff_type, const uint64 & guid, uint32 skip);
-    void RemoveAurasOfSchool(uint32 School, bool Positive, bool Immune);
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Removes all area auras casted by us from the targets, and clears the target sets.
-    /// \param none        \return none
-    //////////////////////////////////////////////////////////////////////////////////////////
-    void ClearAllAreaAuraTargets();
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Removes all Area Auras that are from other Units.
-    /// \param none        \return none
-    //////////////////////////////////////////////////////////////////////////////////////////
-    void RemoveAllAreaAuraByOther();
-
-    void EventRemoveAura(uint32 SpellId) { RemoveAura(SpellId); }
-
-    //! Remove all auras
-    void RemoveAllAuras();
-    void RemoveAllNonPersistentAuras();
-    void RemoveAllAuraType(uint32 auratype); // ex:to remove morph spells
-    bool RemoveAllAurasByMechanic(uint32 MechanicType, uint32 MaxDispel, bool HostileOnly); // Removes all (de)buffs on unit of a specific mechanic type.
-    void RemoveAllMovementImpairing();
-
-    void RemoveNegativeAuras();
-    // Temporary remove all auras
-
-    bool SetAurDuration(uint32 spellId, Unit* caster, uint32 duration);
-    bool SetAurDuration(uint32 spellId, uint32 duration);
-    void DropAurasOnDeath();
+    void EventRemoveAura(uint32 SpellId) { removeAllAurasById(SpellId); }
 
     bool IsPoisoned();
 
@@ -1409,8 +1405,6 @@ public:
     uint64 m_detectRangeGUID[5] = {0};
     int32  m_detectRangeMOD[5] = {0};
 
-    Aura* m_auras[MAX_TOTAL_AURAS_END] = {nullptr};
-
     uint32 GetCharmTempVal() { return m_charmtemp; }
     void SetCharmTempVal(uint32 val) { m_charmtemp = val; }
 
@@ -1429,8 +1423,6 @@ public:
 
     DynamicObject* dynObj = nullptr;
 
-    uint32 m_auravisuals[MAX_NEGATIVE_VISUAL_AURAS_END] = {0};
-
     bool bProcInUse = false;
     bool bInvincible = false;
     Player* m_redirectSpellPackets = nullptr;
@@ -1441,8 +1433,6 @@ public:
         int32 amt = 0;
         int32 max = 0;
     } m_soulSiphon;
-
-    void DispelAll(bool positive);
 
     void EventModelChange();
     inline float GetModelHalfSize() { return m_modelhalfsize * getScale(); }

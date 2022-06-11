@@ -66,9 +66,9 @@ public:
         Aura const* improvedUnholyPresence = nullptr;
 
         // Get all auras in single loop
-        for (uint16_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+        for (uint16_t i = AuraSlots::PASSIVE_SLOT_START; i < AuraSlots::PASSIVE_SLOT_END; ++i)
         {
-            const auto* const unitAura = aur->getOwner()->m_auras[i];
+            const auto* const unitAura = aur->getOwner()->getAuraWithAuraSlot(i);
             if (unitAura == nullptr)
                 continue;
 

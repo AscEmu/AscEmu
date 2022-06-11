@@ -193,7 +193,7 @@ public:
         setScriptPhase(PHASE_TO_EQUIP);
 
         getCreature()->setStandState(STANDSTATE_STAND);
-        getCreature()->RemoveAura(SPELL_SOUL_PRISON_CHAIN);
+        getCreature()->removeAllAurasById(SPELL_SOUL_PRISON_CHAIN);
 
         float z;
         if (Creature* anchor = getCreature()->getWorldMapCreature(anchorGUID))

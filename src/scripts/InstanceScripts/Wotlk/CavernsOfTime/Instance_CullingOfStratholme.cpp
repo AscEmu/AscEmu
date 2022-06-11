@@ -49,7 +49,7 @@ public:
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        getCreature()->RemoveAllAuras();
+        getCreature()->removeAllAuras();
     }
 };
 
@@ -97,7 +97,7 @@ public:
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        getCreature()->RemoveAllAuras();
+        getCreature()->removeAllAuras();
     }
 };
 
@@ -134,7 +134,7 @@ public:
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        getCreature()->RemoveAllAuras();
+        getCreature()->removeAllAuras();
     }
 };
 
@@ -156,7 +156,7 @@ public:
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        getCreature()->RemoveAllAuras();
+        getCreature()->removeAllAuras();
     }
 };
 
@@ -198,7 +198,7 @@ public:
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        getCreature()->RemoveAllAuras();
+        getCreature()->removeAllAuras();
     }
 
     void OnDamageTaken(Unit* /*mAttacker*/, uint32_t fAmount) override

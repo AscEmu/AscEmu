@@ -263,10 +263,10 @@ bool ChatHandler::HandleCharRemoveAurasCommand(const char* /*args*/, WorldSessio
         return true;
 
     BlueSystemMessage(m_session, "Removing all auras...");
-    for (uint32 i = MAX_REMOVABLE_AURAS_START; i < MAX_REMOVABLE_AURAS_END; ++i)
+    for (uint16_t i = AuraSlots::REMOVABLE_SLOT_START; i < AuraSlots::REMOVABLE_SLOT_END; ++i)
     {
-        if (player_target->m_auras[i] != 0)
-            player_target->m_auras[i]->removeAura();
+        if (auto* const aur = player_target->getAuraWithAuraSlot(i))
+            aur->removeAura();
     }
 
     if (player_target != m_session->GetPlayer())
@@ -282,7 +282,7 @@ bool ChatHandler::HandleCharRemoveSickessCommand(const char* /*args*/, WorldSess
     if (player_target == nullptr)
         return true;
 
-    player_target->RemoveAura(15007);
+    player_target->removeAllAurasById(15007);
 
     if (player_target != m_session->GetPlayer())
     {

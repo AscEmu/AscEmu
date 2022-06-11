@@ -58,6 +58,29 @@ bool AuraEffectModifier::isEffectDamageStatic() const { return mEffectDamageStat
 void AuraEffectModifier::setEffectIndex(uint8_t _effIndex) { effIndex = _effIndex; }
 uint8_t AuraEffectModifier::getEffectIndex() const { return effIndex; }
 
+void AuraEffectModifier::setEffectActive(bool set) { mActive = set; }
+bool AuraEffectModifier::isActive() const { return mActive; }
+
+void AuraEffectModifier::applyEffect(bool apply, bool skipScriptCheck/* = false*/)
+{
+    // Do not apply or remove effect multiple times
+    if (mActive == apply)
+        return;
+
+    mActive = apply;
+
+    if (skipScriptCheck)
+    {
+        (*getAura().*SpellAuraHandler[getAuraEffectType()])(this, apply);
+    }
+    else
+    {
+        const auto scriptResult = sScriptMgr.callScriptedAuraBeforeAuraEffect(getAura(), this, apply);
+        if (scriptResult != SpellScriptExecuteState::EXECUTE_PREVENT)
+            (*getAura().*SpellAuraHandler[getAuraEffectType()])(this, apply);
+    }
+}
+
 void AuraEffectModifier::setAura(Aura* aur) { mAura = aur; }
 Aura* AuraEffectModifier::getAura() const { return mAura; }
 
@@ -93,6 +116,12 @@ void Aura::addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValu
         return;
     }
 
+    if (m_auraEffects[effIndex].getAuraEffectType() != SPELL_AURA_NONE)
+    {
+        sLogger.failure("Aura::addAuraEffect : Tried to add effect to index %u but effect already exists", effIndex);
+        return;
+    }
+
     m_auraEffects[effIndex].setAuraEffectType(auraEffect);
     m_auraEffects[effIndex].setEffectDamage(reapplying ? damage * getStackCount() : damage);
     m_auraEffects[effIndex].setEffectBaseDamage(damage);
@@ -102,6 +131,10 @@ void Aura::addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValu
     m_auraEffects[effIndex].setEffectIndex(effIndex);
     m_auraEffects[effIndex].setAura(this);
     ++m_auraEffectCount;
+
+    // Add aura effect to unit only if aura has a slot
+    if (m_auraSlot != 0xFFFF)
+        getOwner()->_addAuraEffect(&m_auraEffects[effIndex]);
 
     if (!reapplying)
     {
@@ -124,12 +157,13 @@ void Aura::removeAuraEffect(uint8_t effIndex, bool reapplying/* = false*/)
     if (effIndex >= MAX_SPELL_EFFECTS)
         return;
 
+    // Remove aura effect from unit
+    getOwner()->_removeAuraEffect(&m_auraEffects[effIndex]);
+
     if (!reapplying)
     {
         // Unapply the modifier
-        const auto scriptResult = sScriptMgr.callScriptedAuraBeforeAuraEffect(this, &m_auraEffects[effIndex], false);
-        if (scriptResult != SpellScriptExecuteState::EXECUTE_PREVENT)
-            (*this.*SpellAuraHandler[m_auraEffects[effIndex].getAuraEffectType()])(&m_auraEffects[effIndex], false);
+        m_auraEffects[effIndex].applyEffect(false);
     }
 
     m_auraEffects[effIndex].setAuraEffectType(SPELL_AURA_NONE);
@@ -152,9 +186,30 @@ void Aura::removeAuraEffect(uint8_t effIndex, bool reapplying/* = false*/)
     }
 }
 
+void Aura::removeAllAuraEffects()
+{
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        if (m_auraEffects[i].getAuraEffectType() == SPELL_AURA_NONE)
+            continue;
+
+        removeAuraEffect(i);
+    }
+}
+
 uint8_t Aura::getAppliedEffectCount() const
 {
     return m_auraEffectCount;
+}
+
+uint16_t Aura::getAuraSlot() const
+{
+    return m_auraSlot;
+}
+
+void Aura::setAuraSlot(uint16_t slot)
+{
+    m_auraSlot = slot;
 }
 
 int32_t Aura::getEffectDamage(uint8_t effIndex) const
@@ -242,26 +297,13 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
         }
     }
 
-    // Remove aura from unit before removing modifiers
-    getOwner()->m_auras[m_auraSlot] = nullptr;
-
-    // Remove all modifiers
-    applyModifiers(false);
-
     // Clear area aura targets
     if (IsAreaAura() && getCasterGuid() == getOwner()->getGuid())
         ClearAATargets();
 
-    // Remove aurastates
-    if (getSpellInfo()->getMechanicsType() == MECHANIC_ENRAGED && !--m_target->asc_enraged)
-        getOwner()->removeAuraStateAndAuras(AURASTATE_FLAG_ENRAGED);
-    else if (getSpellInfo()->getMechanicsType() == MECHANIC_BLEEDING && !--m_target->asc_bleed)
-        getOwner()->removeAuraStateAndAuras(AURASTATE_FLAG_BLEED);
-    if (getSpellInfo()->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !--m_target->asc_seal)
-        getOwner()->removeAuraStateAndAuras(AURASTATE_FLAG_JUDGEMENT);
-
-    // Send packet
-    if (m_visualSlot < MAX_NEGATIVE_VISUAL_AURAS_END)
+    // Send packet before removing modifiers
+    // Otherwise shapeshift spells can still appear active on stance bar -Appled
+    if (m_visualSlot < AuraSlots::NEGATIVE_VISUAL_SLOT_END)
     {
 #if VERSION_STRING < WotLK
         getOwner()->setAura(this, false);
@@ -270,10 +312,24 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
         getOwner()->setAuraApplication(this);
 #endif
 
-        getOwner()->m_auravisuals[m_visualSlot] = 0;
+        getOwner()->m_auraVisualList[m_visualSlot] = 0;
         getOwner()->sendAuraUpdate(this, true);
         getOwner()->UpdateAuraForGroup(m_visualSlot);
     }
+
+    // Remove aura from unit before removing modifiers
+    getOwner()->_removeAura(this);
+
+    // Remove all modifiers
+    removeAllAuraEffects();
+
+    // Remove aurastates
+    if (getSpellInfo()->getMechanicsType() == MECHANIC_ENRAGED && !--m_target->asc_enraged)
+        getOwner()->removeAuraStateAndAuras(AURASTATE_FLAG_ENRAGED);
+    else if (getSpellInfo()->getMechanicsType() == MECHANIC_BLEEDING && !--m_target->asc_bleed)
+        getOwner()->removeAuraStateAndAuras(AURASTATE_FLAG_BLEED);
+    if (getSpellInfo()->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !--m_target->asc_seal)
+        getOwner()->removeAuraStateAndAuras(AURASTATE_FLAG_JUDGEMENT);
 
     getOwner()->AddGarbageAura(this);
 }
@@ -302,13 +358,9 @@ bool Aura::canPeriodicEffectCrit()
             return true;
     }
 
-    for (auto i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+    for (const auto& aurEff : caster->getAuraEffectList(SPELL_AURA_ALLOW_DOT_TO_CRIT))
     {
-        Aura* aur = caster->m_auras[i];
-        if (aur == nullptr || !aur->hasAuraEffect(SPELL_AURA_ALLOW_DOT_TO_CRIT))
-            continue;
-
-        if (aur->getSpellInfo()->isAuraEffectAffectingSpell(SPELL_AURA_ALLOW_DOT_TO_CRIT, spellInfo))
+        if (aurEff->getAura()->getSpellInfo()->isAuraEffectAffectingSpell(SPELL_AURA_ALLOW_DOT_TO_CRIT, spellInfo))
             return true;
     }
 
@@ -333,16 +385,7 @@ void Aura::applyModifiers(bool apply, AuraEffect applyOnlyFor/* = SPELL_AURA_NON
         if (applyOnlyFor != SPELL_AURA_NONE && m_auraEffects[i].getAuraEffectType() != applyOnlyFor)
             continue;
 
-        if (apply)
-        {
-            const auto scriptResult = sScriptMgr.callScriptedAuraBeforeAuraEffect(this, &m_auraEffects[i], apply);
-            if (scriptResult != SpellScriptExecuteState::EXECUTE_PREVENT)
-                (*this.*SpellAuraHandler[m_auraEffects[i].getAuraEffectType()])(&m_auraEffects[i], true);
-        }
-        else
-        {
-            removeAuraEffect(i);
-        }
+        m_auraEffects[i].applyEffect(apply);
 
         sLogger.debugFlag(AscEmu::Logging::LF_AURA, "Aura::applyModifiers : Spell Id %u, Aura Effect %u (%s), Target GUID %u, EffectIndex %u, Duration %u, Damage %d, MiscValue %d",
             getSpellInfo()->getId(), m_auraEffects[i].getAuraEffectType(), SpellAuraNames[m_auraEffects[i].getAuraEffectType()], getOwner()->getGuid(), i, getTimeLeft(), m_auraEffects[i].getEffectDamage(), m_auraEffects[i].getEffectMiscValue());
@@ -362,11 +405,15 @@ void Aura::updateModifiers()
             case SPELL_AURA_MOD_DECREASE_SPEED:
                 UpdateAuraModDecreaseSpeed(&m_auraEffects[i]);
                 break;
+#if VERSION_STRING >= TBC
+#if VERSION_STRING >= WotLK
             case SPELL_AURA_MOD_ATTACK_POWER_BY_STAT_PCT:
+#endif
             case SPELL_AURA_MOD_RANGED_ATTACK_POWER_BY_STAT_PCT:
-                (*this.*SpellAuraHandler[m_auraEffects[i].getAuraEffectType()])(&m_auraEffects[i], false);
-                (*this.*SpellAuraHandler[m_auraEffects[i].getAuraEffectType()])(&m_auraEffects[i], true);
+                m_auraEffects[i].applyEffect(false);
+                m_auraEffects[i].applyEffect(true);
                 break;
+#endif
             default:
                 break;
         }
@@ -408,6 +455,22 @@ int32_t Aura::getOriginalDuration() const
 void Aura::setOriginalDuration(int32_t dur)
 {
     m_originalDuration = dur;
+}
+
+void Aura::setNewMaxDuration(int32_t dur, bool refreshDuration/* = true*/)
+{
+    m_originalDuration = dur;
+
+    if (refreshDuration)
+    {
+        refreshOrModifyStack();
+    }
+    else
+    {
+        const auto newDur = static_cast<int32_t>(dur * m_spellHaste);
+        setMaxDuration(newDur);
+        setTimeLeft(newDur);
+    }
 }
 
 uint16_t Aura::getPeriodicTickCountForEffect(uint8_t effIndex) const
@@ -490,9 +553,9 @@ void Aura::refreshOrModifyStack([[maybe_unused]]bool saveMods/* = false*/, int16
     {
         if (m_auraEffects[i].getAuraEffectType() != SPELL_AURA_NONE)
         {
-            (*this.*SpellAuraHandler[m_auraEffects[i].getAuraEffectType()])(&m_auraEffects[i], false);
+            m_auraEffects[i].applyEffect(false, true);
             m_auraEffects[i].setEffectDamage(m_auraEffects[i].getEffectBaseDamage() * m_stackCount);
-            (*this.*SpellAuraHandler[m_auraEffects[i].getAuraEffectType()])(&m_auraEffects[i], true);
+            m_auraEffects[i].applyEffect(true, true);
         }
     }
 
@@ -847,20 +910,18 @@ bool Aura::_canHasteAffectDuration()
     if (getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HASTE_AFFECTS_DURATION)
         return true;
 
+#if VERSION_STRING >= WotLK
     const auto caster = GetUnitCaster();
     if (caster == nullptr)
         return false;
 
-    for (auto i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+    for (const auto& aurEff : caster->getAuraEffectList(SPELL_AURA_ALLOW_HASTE_AFFECT_DURATION))
     {
-        Aura* aur = caster->m_auras[i];
-        if (aur == nullptr || !aur->hasAuraEffect(SPELL_AURA_ALLOW_HASTE_AFFECT_DURATION))
-            continue;
-
         // Check if caster has an aura which allows haste to modify duration
-        if (aur->getSpellInfo()->isAuraEffectAffectingSpell(SPELL_AURA_ALLOW_HASTE_AFFECT_DURATION, getSpellInfo()))
+        if (aurEff->getAura()->getSpellInfo()->isAuraEffectAffectingSpell(SPELL_AURA_ALLOW_HASTE_AFFECT_DURATION, getSpellInfo()))
             return true;
     }
+#endif
 
     return false;
 }
@@ -963,10 +1024,12 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             else
                 getOwner()->energize(getOwner(), spellId, unsignedValue, powerType, false);
         } break;
+#if VERSION_STRING >= TBC
         case SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE:
         {
             customDamage = effectIntValue;
-        } // no break here
+        } [[fallthrough]];
+#endif
         case SPELL_AURA_PERIODIC_TRIGGER_SPELL:
         {
             const auto triggerId = getSpellInfo()->getEffectTriggerSpell(aurEff->getEffectIndex());
@@ -999,11 +1062,13 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             if (casterUnit != nullptr)
             {
                 Spell* triggerSpell = sSpellMgr.newSpell(casterUnit, triggerInfo, true, this);
+#if VERSION_STRING >= TBC
                 if (aurEff->getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
                 {
                     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
                         triggerSpell->forced_basepoints.set(i, customDamage);
                 }
+#endif
 
                 SpellCastTargets spellTargets(0);
                 spellTargets.addTargetMask(TARGET_FLAG_UNIT);
@@ -1120,9 +1185,9 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             else
                 getOwner()->doSpellDamage(getOwner(), getSpellId(), damage, aurEff->getEffectIndex(), pSpellId != 0, true, false, false, nullptr, this, aurEff);
         } break;
+#if VERSION_STRING >= TBC
         case SPELL_AURA_PERIODIC_TRIGGER_DUMMY:
         {
-#if VERSION_STRING != Classic
             // Drink spells use periodic dummy trigger since TBC
             const auto effIndex = aurEff->getEffectIndex();
             if (effIndex > 0 && getAuraEffect(effIndex - 1U)->getAuraEffectType() == SPELL_AURA_MOD_POWER_REGEN)
@@ -1140,7 +1205,6 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 aurEff->setEffectAmplitude(0);
                 return;
             }
-#endif
 
             // Check that the dummy effect is handled properly in spell script
             // In case it's not, generate warning to debug log
@@ -1153,6 +1217,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
 
             sLogger.debugFlag(AscEmu::Logging::LF_AURA_EFF, "Spell aura %u has a periodic trigger dummy effect but no handler for it", getSpellId());
         } break;
+#endif
         default:
             break;
     }

@@ -91,7 +91,7 @@ void LadyDeathwhisperAI::OnCombatStart(Unit* /*pTarget*/)
     _setMeleeDisabled(true);
     setRooted(true);
 
-    getCreature()->RemoveAura(SPELL_SHADOW_CHANNELING);
+    getCreature()->removeAllAurasById(SPELL_SHADOW_CHANNELING);
     _castAISpell(manaBarrierSpell);
 }
 
@@ -145,7 +145,7 @@ void LadyDeathwhisperAI::Reset()
     DeleteSummons();
 
     _castAISpell(shadowChannelingSpell);
-    getCreature()->RemoveAllAuras();
+    getCreature()->removeAllAuras();
 }
 
 void LadyDeathwhisperAI::AIUpdate(unsigned long time_passed)

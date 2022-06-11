@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "WorldConf.h"
+
 #include <cstdint>
 
 enum AuraEffect : uint32_t
@@ -195,6 +197,8 @@ enum AuraEffect : uint32_t
     SPELL_AURA_DECREASE_ATTACKER_CHANGE_TO_CRIT_RANGED = 188,           // Reduces Attacker Chance to Crit with Ranged (Melee?)
     SPELL_AURA_INCREASE_REPUTATION = 190,                               // Increases reputation from killed creatures
     SPELL_AURA_SPEED_LIMIT = 191,                                       // speed limit
+    // TBC begins
+#if VERSION_STRING >= TBC
     SPELL_AURA_MELEE_SLOW_PCT = 192,
     SPELL_AURA_INCREASE_TIME_BETWEEN_ATTACKS = 193,
     SPELL_AURA_INREASE_SPELL_DAMAGE_PCT_OF_INTELLECT = 194,             // NOT USED ANYMORE - 174 used instead
@@ -248,6 +252,9 @@ enum AuraEffect : uint32_t
     SPELL_AURA_259 = 259,
     SPELL_AURA_260 = 260,
     SPELL_AURA_PHASE = 261,
+#endif
+    // Wotlk begins
+#if VERSION_STRING >= WotLK
     SPELL_AURA_IGNORE_TARGET_AURA_STATE = 262,
     SPELL_AURA_ALLOW_ONLY_ABILITY = 263,
     SPELL_AURA_264 = 264,
@@ -303,6 +310,9 @@ enum AuraEffect : uint32_t
     SPELL_AURA_PREVENT_RESURRECTION = 314,
     SPELL_AURA_315 = 315,
     SPELL_AURA_ALLOW_HASTE_AFFECT_DURATION = 316,
+#endif
+    // Cata begins
+#if VERSION_STRING >= Cata
     SPELL_AURA_317 = 317,
     SPELL_AURA_318 = 318,
     SPELL_AURA_319 = 319,
@@ -357,6 +367,9 @@ enum AuraEffect : uint32_t
     SPELL_AURA_368 = 368,
     SPELL_AURA_369 = 369,
     SPELL_AURA_370 = 370,
+#endif
+    // Mop begins
+#if VERSION_STRING >= Mop
     SPELL_AURA_371 = 371,
     SPELL_AURA_372 = 372,
     SPELL_AURA_373 = 373,
@@ -424,5 +437,6 @@ enum AuraEffect : uint32_t
     SPELL_AURA_435 = 435,
     SPELL_AURA_436 = 436,
     SPELL_AURA_437 = 437,
+#endif
     TOTAL_SPELL_AURAS
 };

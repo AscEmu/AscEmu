@@ -198,7 +198,7 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32_t id)
         plr->setHasBgFlag(false);
 
         // remove flag aura from player
-        plr->RemoveAura(23333 + (plr->getTeam() * 2));
+        plr->removeAllAurasById(23333 + (plr->getTeam() * 2));
 
         // capture flag points
         plr->m_bgScore.MiscData[BG_SCORE_WSG_FLAGS_CAPTURED]++;
@@ -272,7 +272,7 @@ void WarsongGulch::HookOnFlagDrop(Player* plr)
 
     m_flagHolders[plr->getTeam()] = 0;
     plr->setHasBgFlag(false);
-    plr->RemoveAura(23333 + (plr->getTeam() * 2));
+    plr->removeAllAurasById(23333 + (plr->getTeam() * 2));
 
     SetWorldState(plr->isTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 1);
 
@@ -445,7 +445,7 @@ void WarsongGulch::OnRemovePlayer(Player* plr)
     if (plr->hasBgFlag())
         HookOnMount(plr);
 
-    plr->RemoveAura(BG_PREPARATION);
+    plr->removeAllAurasById(BG_PREPARATION);
 }
 
 LocationVector WarsongGulch::GetStartingCoords(uint32_t Team)
@@ -462,7 +462,7 @@ void WarsongGulch::HookOnPlayerDeath(Player* plr)
 
     // do we have the flag?
     if (plr->hasBgFlag())
-        plr->RemoveAura(23333 + (plr->getTeam() * 2));
+        plr->removeAllAurasById(23333 + (plr->getTeam() * 2));
 
     UpdatePvPData();
 }
@@ -586,7 +586,7 @@ void WarsongGulch::OnStart()
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
-            (*itr)->RemoveAura(BG_PREPARATION);
+            (*itr)->removeAllAurasById(BG_PREPARATION);
         }
     }
 

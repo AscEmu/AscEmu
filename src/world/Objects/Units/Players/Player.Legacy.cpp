@@ -826,7 +826,7 @@ void Player::EventDeath()
     if (!IS_INSTANCE(GetMapId()) && !sEventMgr.HasEvent(this, EVENT_PLAYER_FORCED_RESURRECT)) //Should never be true
         sEventMgr.AddEvent(this, &Player::repopRequest, EVENT_PLAYER_FORCED_RESURRECT, forcedResurrectInterval, 1, 0); //in case he forgets to release spirit (afk or something)
 
-    RemoveNegativeAuras();
+    removeAllNegativeAuras();
 
     setServersideDrunkValue(0);
 }
@@ -2442,7 +2442,7 @@ void Player::OnPushToWorld()
     // can only fly in outlands or northrend (northrend requires cold weather flying)
     if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
     {
-        RemoveAura(flying_aura);
+        removeAllAurasById(flying_aura);
         flying_aura = 0;
     }
 
@@ -3062,16 +3062,18 @@ void Player::UpdateStats()
     }
 
     // Dynamic aura application, auras 212, 268
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
+#if VERSION_STRING >= WotLK
+    for (const auto& aurEff : getAuraEffectList(SPELL_AURA_MOD_ATTACK_POWER_BY_STAT_PCT))
     {
-        if (m_auras[x] != nullptr)
-        {
-            if (m_auras[x]->hasAuraEffect(SPELL_AURA_MOD_ATTACK_POWER_BY_STAT_PCT) || m_auras[x]->hasAuraEffect(SPELL_AURA_MOD_RANGED_ATTACK_POWER_BY_STAT_PCT))
-                m_auras[x]->updateModifiers();
-        }
+        aurEff->getAura()->updateModifiers();
+    }
+#endif
+#if VERSION_STRING >= TBC
+    for (const auto& aurEff : getAuraEffectList(SPELL_AURA_MOD_RANGED_ATTACK_POWER_BY_STAT_PCT))
+    {
+        aurEff->getAura()->updateModifiers();
     }
 
-#if VERSION_STRING >= TBC // support classic
     UpdateChances();
 #endif
 
@@ -3184,7 +3186,7 @@ bool Player::removeSpell(uint32 SpellID, bool MoveToDeleted, bool SupercededSpel
     if (iter != mSpells.end())
     {
         mSpells.erase(iter);
-        RemoveAura(SpellID, getGuid());
+        removeAllAurasByIdForGuid(SpellID, getGuid());
     }
     else
     {
@@ -3212,8 +3214,10 @@ bool Player::removeSpell(uint32 SpellID, bool MoveToDeleted, bool SupercededSpel
     if (spellInfo->hasEffect(SPELL_EFFECT_DUAL_WIELD))
         setDualWield(false);
 
+#if VERSION_STRING >= WotLK
     if (spellInfo->hasEffect(SPELL_EFFECT_DUAL_WIELD_2H))
         setDualWield2H(false);
+#endif
 
     if (spellInfo->hasEffect(SPELL_EFFECT_PROFICIENCY))
         applyItemProficienciesFromSpell(spellInfo, false);
@@ -3279,19 +3283,14 @@ void Player::CalcResistance(uint8_t type)
         if (type == 0)
             res += getStat(STAT_AGILITY) * 2; //fix armor from agi
 
+#if VERSION_STRING >= WotLK
         // Dynamic aura 285 application, removing bonus
-        for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
+        for (const auto& aurEff : getAuraEffectList(SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR))
         {
-            if (m_auras[x] != nullptr)
-            {
-                for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                {
-                    auto aurEff = m_auras[x]->getModifiableAuraEffect(i);
-                    if (aurEff->getAuraEffectType() == SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR)
-                        m_auras[x]->SpellAuraModAttackPowerOfArmor(aurEff, false);
-                }
-            }
+            auto modifiableAurEff = aurEff->getAura()->getModifiableAuraEffect(aurEff->getEffectIndex());
+            aurEff->getAura()->SpellAuraModAttackPowerOfArmor(modifiableAurEff, false);
         }
+#endif
 
         if (res < 0)
             res = 1;
@@ -3306,19 +3305,14 @@ void Player::CalcResistance(uint8_t type)
         for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
             (*itr)->CalcResistance(type);  //Re-calculate pet's too.
 
+#if VERSION_STRING >= WotLK
         // Dynamic aura 285 application, adding bonus
-        for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
+        for (const auto& aurEff : getAuraEffectList(SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR))
         {
-            if (m_auras[x] != nullptr)
-            {
-                for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                {
-                    auto aurEff = m_auras[x]->getModifiableAuraEffect(i);
-                    if (aurEff->getAuraEffectType() == SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR)
-                        m_auras[x]->SpellAuraModAttackPowerOfArmor(aurEff, true);
-                }
-            }
+            auto modifiableAurEff = aurEff->getAura()->getModifiableAuraEffect(aurEff->getEffectIndex());
+            aurEff->getAura()->SpellAuraModAttackPowerOfArmor(modifiableAurEff, true);
         }
+#endif
     }
 }
 
@@ -3397,20 +3391,10 @@ void Player::RegenerateHealth(bool inCombat)
 #endif
 
     // Food buffs
-    for (const auto& aur : m_auras)
+    for (const auto& aurEff : getAuraEffectList(SPELL_AURA_MOD_REGEN))
     {
-        if (aur == nullptr)
-            continue;
-
-        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-        {
-            const auto aurEff = aur->getAuraEffect(i);
-            if (aurEff->getAuraEffectType() != SPELL_AURA_MOD_REGEN)
-                continue;
-
-            // The value is stored as per 5 seconds
-            amt += aurEff->getEffectDamage() * (static_cast<float_t>(m_healthRegenerateTimer / 1000) / 5.0f);
-        }
+        // The value is stored as per 5 seconds
+        amt += aurEff->getEffectDamage() * (static_cast<float_t>(m_healthRegenerateTimer / 1000) / 5.0f);
     }
 
     if (PctRegenModifier)
@@ -4092,11 +4076,11 @@ void Player::SaveAuras(std::stringstream & ss)
     ss << "'";
     uint32 charges = 0, prevX = 0;
     //cebernic: save all auras why only just positive?
-    for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; x++)
+    for (uint16_t x = AuraSlots::REMOVABLE_SLOT_START; x < AuraSlots::REMOVABLE_SLOT_END; x++)
     {
-        if (m_auras[x] != nullptr && m_auras[x]->getTimeLeft() > 3000)
+        auto* const aur = getAuraWithAuraSlot(x);
+        if (aur != nullptr && aur->getTimeLeft() > 3000)
         {
-            Aura* aur = m_auras[x];
             for (uint8 i = 0; i < 3; ++i)
             {
                 if (aur->getSpellInfo()->getEffect(i) == SPELL_EFFECT_APPLY_GROUP_AREA_AURA || aur->getSpellInfo()->getEffect(i) == SPELL_EFFECT_APPLY_RAID_AREA_AURA || aur->getSpellInfo()->getEffect(i) == SPELL_EFFECT_ADD_FARSIGHT)
@@ -4115,9 +4099,10 @@ void Player::SaveAuras(std::stringstream & ss)
             if (aur->IsPassive() && !(aur->getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
                 continue;
 
-            if (charges > 0 && aur->getSpellId() != m_auras[prevX]->getSpellId())
+            auto* const prevAura = getAuraWithAuraSlot(prevX);
+            if (charges > 0 && aur->getSpellId() != prevAura->getSpellId())
             {
-                ss << m_auras[prevX]->getSpellId() << "," << m_auras[prevX]->getTimeLeft() << "," << !m_auras[prevX]->isNegative() << "," << charges << ",";
+                ss << prevAura->getSpellId() << "," << prevAura->getTimeLeft() << "," << !prevAura->isNegative() << "," << charges << ",";
                 charges = 0;
             }
 
@@ -4130,9 +4115,10 @@ void Player::SaveAuras(std::stringstream & ss)
         }
     }
 
-    if (charges > 0 && m_auras[prevX] != nullptr)
+    auto* const prevAura = getAuraWithAuraSlot(prevX);
+    if (charges > 0 && prevAura != nullptr)
     {
-        ss << m_auras[prevX]->getSpellId() << "," << m_auras[prevX]->getTimeLeft() << "," << !m_auras[prevX]->isNegative() << "," << charges << ",";
+        ss << prevAura->getSpellId() << "," << prevAura->getTimeLeft() << "," << !prevAura->isNegative() << "," << charges << ",";
     }
 
     ss << "'";
@@ -4471,7 +4457,7 @@ void Player::AddShapeShiftSpell(uint32 id)
 void Player::RemoveShapeShiftSpell(uint32 id)
 {
     mShapeShiftSpells.erase(id);
-    RemoveAura(id);
+    removeAllAurasById(id);
 }
 
 // COOLDOWNS
@@ -4767,36 +4753,31 @@ void Player::CalcExpertise()
 #if VERSION_STRING != Classic
     setExpertise(0);
     setOffHandExpertise(0);
-#endif
 
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+    for (const auto& aurEff : getAuraEffectList(SPELL_AURA_EXPERTISE))
     {
-        if (m_auras[x] != nullptr && m_auras[x]->hasAuraEffect(SPELL_AURA_EXPERTISE))
+        SpellInfo const* entry = aurEff->getAura()->getSpellInfo();
+        int32 val = aurEff->getEffectDamage();
+
+        if (entry->getEquippedItemSubClass() != 0)
         {
-            SpellInfo const* entry = m_auras[x]->getSpellInfo();
-            int32 val = m_auras[x]->getEffectDamageByEffect(SPELL_AURA_EXPERTISE);
+            auto item_mainhand = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+            auto item_offhand = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+            uint32 reqskillMH = 0;
+            uint32 reqskillOH = 0;
 
-            if (entry->getEquippedItemSubClass() != 0)
-            {
-                auto item_mainhand = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                auto item_offhand = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-                uint32 reqskillMH = 0;
-                uint32 reqskillOH = 0;
+            if (item_mainhand)
+                reqskillMH = entry->getEquippedItemSubClass() & (((uint32)1) << item_mainhand->getItemProperties()->SubClass);
+            if (item_offhand)
+                reqskillOH = entry->getEquippedItemSubClass() & (((uint32)1) << item_offhand->getItemProperties()->SubClass);
 
-                if (item_mainhand)
-                    reqskillMH = entry->getEquippedItemSubClass() & (((uint32)1) << item_mainhand->getItemProperties()->SubClass);
-                if (item_offhand)
-                    reqskillOH = entry->getEquippedItemSubClass() & (((uint32)1) << item_offhand->getItemProperties()->SubClass);
-
-                if (reqskillMH != 0 || reqskillOH != 0)
-                    modifier = +val;
-            }
-            else
-                modifier += val;
+            if (reqskillMH != 0 || reqskillOH != 0)
+                modifier = +val;
         }
+        else
+            modifier += val;
     }
 
-#if VERSION_STRING != Classic
     modExpertise((int32_t)CalcRating(CR_EXPERTISE) + modifier);
     modOffHandExpertise((int32_t)CalcRating(CR_EXPERTISE) + modifier);
 #endif
@@ -5187,15 +5168,15 @@ void Player::CastSpellArea()
 
 
     //Remove of Spells
-    for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+    for (uint16_t i = AuraSlots::TOTAL_SLOT_START; i < AuraSlots::TOTAL_SLOT_END; ++i)
     {
-        if (m_auras[i] != nullptr)
+        if (auto* const aur = getAuraWithAuraSlot(i))
         {
-            if (sSpellMgr.checkLocation(m_auras[i]->getSpellInfo(), ZoneId, AreaId, this) == false)
+            if (sSpellMgr.checkLocation(aur->getSpellInfo(), ZoneId, AreaId, this) == false)
             {
-                SpellAreaMapBounds sab = sSpellMgr.getSpellAreaMapBounds(m_auras[i]->getSpellId());
+                SpellAreaMapBounds sab = sSpellMgr.getSpellAreaMapBounds(aur->getSpellId());
                 if (sab.first != sab.second)
-                    RemoveAura(m_auras[i]->getSpellId());
+                    removeAllAurasById(aur->getSpellId());
             }
         }
     }

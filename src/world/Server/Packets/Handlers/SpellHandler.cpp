@@ -48,7 +48,7 @@ void WorldSession::handleSpellClick(WorldPacket& recvPacket)
 
     // Commented this out for now, it's not even working -Appled
     /*const uint32_t lightWellCharges = 59907;
-    if (creatureTarget->RemoveAura(lightWellCharges))
+    if (creatureTarget->removeAllAurasById(lightWellCharges))
     {
         uint32_t lightWellRenew[] =
         {
@@ -227,7 +227,7 @@ void WorldSession::handleCancelAuraOpcode(WorldPacket& recvPacket)
     if (spellAura->isNegative())
         return;
 
-    _player->removeAllAurasById(spellId);
+    spellAura->removeAura();
 }
 
 void WorldSession::handleCancelChannellingOpcode(WorldPacket& recvPacket)

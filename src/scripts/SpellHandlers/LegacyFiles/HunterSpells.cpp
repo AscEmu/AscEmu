@@ -81,22 +81,17 @@ bool TheBeastWithin(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* m_target = a->getOwner();
 
-    uint32_t mechanics[15] = { MECHANIC_CHARMED, MECHANIC_DISORIENTED,    MECHANIC_DISTRACED, MECHANIC_FLEEING,
-                             MECHANIC_ROOTED, MECHANIC_ASLEEP, MECHANIC_ENSNARED, MECHANIC_STUNNED,
-                             MECHANIC_FROZEN, MECHANIC_INCAPACIPATED, MECHANIC_POLYMORPHED, MECHANIC_BANISHED,
-                             MECHANIC_SEDUCED, MECHANIC_HORRIFIED, MECHANIC_SAPPED
-    };
-
-    for (uint32_t x = 0; x < 15; x++)
+    const auto mechanics = sSpellMgr.getCrowdControlMechanicList(false);
+    for (int x = 0; mechanics[x] != MECHANIC_NONE; ++x)
     {
         if (apply)
-        {
             m_target->MechanicsDispels[mechanics[x]]++;
-            m_target->RemoveAllAurasByMechanic(mechanics[x], 0, false);
-        }
         else
             m_target->MechanicsDispels[mechanics[x]]--;
     }
+
+    if (apply)
+        m_target->removeAllAurasBySpellMechanic(mechanics);
 
     return true;
 }
@@ -106,22 +101,18 @@ bool BestialWrath(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* m_target = a->getOwner();
 
-    uint32_t mechanics[15] = { MECHANIC_CHARMED, MECHANIC_DISORIENTED, MECHANIC_DISTRACED, MECHANIC_FLEEING,
-                             MECHANIC_ROOTED, MECHANIC_ASLEEP, MECHANIC_ENSNARED, MECHANIC_STUNNED,
-                             MECHANIC_FROZEN, MECHANIC_INCAPACIPATED, MECHANIC_POLYMORPHED, MECHANIC_BANISHED,
-                             MECHANIC_SEDUCED, MECHANIC_HORRIFIED, MECHANIC_SAPPED
-    };
-
-    for (uint32_t x = 0; x < 15; x++)
+    const auto mechanics = sSpellMgr.getCrowdControlMechanicList(false);
+    for (int x = 0; mechanics[x] != MECHANIC_NONE; ++x)
     {
         if (apply)
-        {
             m_target->MechanicsDispels[mechanics[x]]++;
-            m_target->RemoveAllAurasByMechanic(mechanics[x], 0, false);
-        }
         else
             m_target->MechanicsDispels[mechanics[x]]--;
     }
+
+    if (apply)
+        m_target->removeAllAurasBySpellMechanic(mechanics);
+
     return true;
 }
 

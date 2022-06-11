@@ -1259,7 +1259,7 @@ void Pet::DelayedRemove(bool bTime, bool dismiss, uint32 delay)
 
 void Pet::PrepareForRemove(bool bUpdate, bool bSetOffline)
 {
-    RemoveAllAuras();           // Prevent pet overbuffing
+    removeAllAuras();           // Prevent pet overbuffing
     m_Owner->eventDismissPet();
 
     if (bUpdate)
@@ -1861,7 +1861,7 @@ void Pet::ApplyPetLevelAbilities()
     };
 
     if (pet_family < 47)
-        RemoveAura(family_aura[pet_family]);  //If the pet gained a level, we need to remove the auras to re-calculate everything.
+        removeAllAurasById(family_aura[pet_family]);  //If the pet gained a level, we need to remove the auras to re-calculate everything.
 
     LoadPetAuras(-1);//These too
 
@@ -1945,7 +1945,7 @@ void Pet::LoadPetAuras(int32 id)
     if (id == -1)           //unload all
     {
         for (uint32 x = 0; x < 9; ++x)
-            RemoveAura(mod_auras[x]);
+            removeAllAurasById(mod_auras[x]);
     }
     else if (id == -2)      //load all
     {
@@ -1954,7 +1954,7 @@ void Pet::LoadPetAuras(int32 id)
     }
     else if (mod_auras[id])  //reload one
     {
-        RemoveAura(mod_auras[id]);
+        removeAllAurasById(mod_auras[id]);
         castSpell(this, mod_auras[id], true);
     }
 

@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Definitions/SpellMechanics.hpp"
 #include "Spell.h"
 #include "SpellAuras.h"
 #include "SpellInfo.hpp"
@@ -83,6 +84,8 @@ public:
     void addSpellById(uint32_t spellId, SpellScriptLinker spellScript);
     // Registering legacy aura scripts (DO NOT USE, use ScriptMgr and SpellScript instead!)
     void addAuraById(uint32_t spellId, AuraScriptLinker auraScript);
+
+    SpellMechanic const* getCrowdControlMechanicList(bool includeSilence) const;
 
     // Spell required
     SpellRequiredMapBounds getSpellsRequiredForSpellBounds(uint32_t spellId) const;

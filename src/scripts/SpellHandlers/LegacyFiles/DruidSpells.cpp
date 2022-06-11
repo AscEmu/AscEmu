@@ -93,16 +93,16 @@ bool LifeBloom(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
     // Remove other Lifeblooms - but do NOT handle unapply again
     bool expired = true;
-    for (uint32_t x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
+    for (uint16_t x = AuraSlots::POSITIVE_SLOT_START; x < AuraSlots::POSITIVE_SLOT_END; ++x)
     {
-        if (m_target->m_auras[x])
+        if (auto* const aur = m_target->getAuraWithAuraSlot(x))
         {
-            if (m_target->m_auras[x]->getSpellId() == a->getSpellId())
+            if (aur->getSpellId() == a->getSpellId())
             {
-                m_target->m_auras[x]->m_ignoreunapply = true;
-                if (m_target->m_auras[x]->getTimeLeft())
+                aur->m_ignoreunapply = true;
+                if (aur->getTimeLeft())
                     expired = false;
-                m_target->m_auras[x]->removeAura();
+                aur->removeAura();
             }
         }
     }

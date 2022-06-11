@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <cstdint>
+
 enum SpellMechanic : uint8_t
 {
     MECHANIC_NONE          = 0,

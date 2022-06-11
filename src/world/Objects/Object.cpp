@@ -814,11 +814,11 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     if (isCreatureOrPlayer())
     {
         const auto casterUnit = static_cast<Unit*>(this);
-        casterUnit->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);
+        casterUnit->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);
     }
 
     // Mage talent - Torment the Weak
-    if (isPlayer() && (victim->HasAuraWithMechanics(MECHANIC_ENSNARED) || victim->HasAuraWithMechanics(MECHANIC_DAZED)))
+    if (isPlayer() && (victim->hasAuraWithMechanic(MECHANIC_ENSNARED) || victim->hasAuraWithMechanic(MECHANIC_DAZED)))
     {
         const auto pct = static_cast<float_t>(static_cast<Player*>(this)->m_IncreaseDmgSnaredSlowed);
         damage = damage * (1.0f + (pct / 100.0f));
@@ -1217,7 +1217,7 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
             case 75382:
             {
                 //Tidal Waves
-                casterUnit->RemoveAura(53390, casterUnit->getGuid());
+                casterUnit->removeAllAurasByIdForGuid(53390, casterUnit->getGuid());
             }
             //SPELL_HASH_CHAIN_HEAL
             case 1064:

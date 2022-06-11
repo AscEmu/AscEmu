@@ -92,7 +92,7 @@ void Summon::OnPreRemoveFromWorld()
         return;
 
     if (getCreatedBySpellId() != 0)
-        m_unitOwner->RemoveAura(getCreatedBySpellId());
+        m_unitOwner->removeAllAurasById(getCreatedBySpellId());
 
     if (!isTotem())
         m_unitOwner->getSummonInterface()->removeGuardian(this, false);
@@ -269,7 +269,7 @@ void TotemSummon::unSummon()
         setDeathState(DEAD);*/
 
     interruptSpell();
-    RemoveAllAuras();
+    removeAllAuras();
 
     Summon::unSummon();
 }

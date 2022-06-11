@@ -6,6 +6,7 @@ set(SRC_SPELL_DEFINITIONS_FILES
     ${PATH_PREFIX}/AuraEffects.hpp
     ${PATH_PREFIX}/AuraInterruptFlags.hpp
     ${PATH_PREFIX}/AuraRemoveMode.hpp
+    ${PATH_PREFIX}/AuraSlots.hpp
     ${PATH_PREFIX}/AuraStates.hpp
     ${PATH_PREFIX}/CastInterruptFlags.hpp
     ${PATH_PREFIX}/ChannelInterruptFlags.hpp

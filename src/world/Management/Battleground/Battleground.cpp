@@ -347,7 +347,7 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
     if (!plr->isPvpFlagSet())
         plr->setPvpFlag();
 
-    plr->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_PVP_ENTER);
+    plr->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_PVP_ENTER);
 
     /* Reset the score */
     memset(&plr->m_bgScore, 0, sizeof(BGScore));
@@ -548,7 +548,7 @@ void CBattleground::RemoveAuraFromTeam(uint32 team, uint32 aura)
     for (std::set< Player* >::iterator itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
     {
         Player* p = *itr;
-        p->RemoveAura(aura);
+        p->removeAllAurasById(aura);
     }
 }
 
@@ -645,10 +645,10 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
     }
 
     /* remove buffs */
-    plr->RemoveAura(32727); // Arena preparation
-    plr->RemoveAura(44521); // BG preparation
-    plr->RemoveAura(44535);
-    plr->RemoveAura(21074);
+    plr->removeAllAurasById(32727); // Arena preparation
+    plr->removeAllAurasById(44521); // BG preparation
+    plr->removeAllAurasById(44535);
+    plr->removeAllAurasById(21074);
 
     plr->setMoveRoot(false);
 

@@ -184,14 +184,14 @@ namespace LuaAura
     {
         if (!aura)
             RET_NIL();
-        RET_INT(aura->GetAuraSlot());
+        RET_INT(aura->getAuraSlot());
     }
 
     int SetAuraSlot(lua_State* L, Aura* aura)
     {
         if (!aura) return 0;
         uint16_t slot = CHECK_USHORT(L, 1);
-        aura->SetAuraSlot(slot);
+        aura->setAuraSlot(slot);
         return 0;
     }
 };

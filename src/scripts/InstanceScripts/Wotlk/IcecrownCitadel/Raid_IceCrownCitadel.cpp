@@ -805,16 +805,16 @@ void IceCrownCitadelScript::TransportBoarded(Unit* pUnit, Transporter* transport
 void IceCrownCitadelScript::TransportUnboarded(Unit* pUnit, Transporter* transport)
 {
     if (transport->getEntry() == GO_THE_SKYBREAKER_ALLIANCE_ICC)
-        pUnit->RemoveAura(SPELL_ON_SKYBREAKER_DECK);
+        pUnit->removeAllAurasById(SPELL_ON_SKYBREAKER_DECK);
 
     if (transport->getEntry() == GO_THE_SKYBREAKER_HORDE_ICC)
-        pUnit->RemoveAura(SPELL_ON_SKYBREAKER_DECK);
+        pUnit->removeAllAurasById(SPELL_ON_SKYBREAKER_DECK);
 
     if (transport->getEntry() == GO_ORGRIM_S_HAMMER_HORDE_ICC)
-        pUnit->RemoveAura(SPELL_ON_ORGRIMS_HAMMER_DECK);
+        pUnit->removeAllAurasById(SPELL_ON_ORGRIMS_HAMMER_DECK);
 
     if (transport->getEntry() == GO_ORGRIM_S_HAMMER_ALLIANCE_ICC)
-        pUnit->RemoveAura(SPELL_ON_ORGRIMS_HAMMER_DECK);
+        pUnit->removeAllAurasById(SPELL_ON_ORGRIMS_HAMMER_DECK);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

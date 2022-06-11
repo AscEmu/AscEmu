@@ -961,7 +961,7 @@ void Player::dismount()
 {
     if (m_mountSpellId != 0)
     {
-        RemoveAura(m_mountSpellId);
+        removeAllAurasById(m_mountSpellId);
         m_mountSpellId = 0;
     }
 }
@@ -981,7 +981,7 @@ void Player::handleAuraInterruptForMovementFlags(MovementInfo const& movementInf
     if ((movementInfo.hasMovementFlag(MOVEFLAG_TURNING_MASK)) || m_isTurning)
         auraInterruptFlags |= AURA_INTERRUPT_ON_TURNING;
 
-    RemoveAurasByInterruptFlag(auraInterruptFlags);
+    removeAllAurasByAuraInterruptFlag(auraInterruptFlags);
 }
 
 uint32_t Player::getAreaId() const { return m_areaId; }
@@ -1021,7 +1021,7 @@ void Player::handleBreathing(MovementInfo const& movementInfo, WorldSession* ses
         {
             if (movementInfo.getPosition()->z + m_noseLevel > session->m_wLevel)
             {
-                RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
+                removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
                 session->m_bIsWLevelSet = false;
             }
         }
@@ -1031,7 +1031,7 @@ void Player::handleBreathing(MovementInfo const& movementInfo, WorldSession* ses
 
     if (movementInfo.hasMovementFlag(MOVEFLAG_SWIMMING) && !(m_underwaterState & UNDERWATERSTATE_SWIMMING))
     {
-        RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ENTER_WATER);
+        removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_ENTER_WATER);
 
         if (!session->m_bIsWLevelSet)
         {
@@ -1050,7 +1050,7 @@ void Player::handleBreathing(MovementInfo const& movementInfo, WorldSession* ses
     {
         if (movementInfo.getPosition()->z + m_noseLevel > session->m_wLevel)
         {
-            RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
+            removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
             session->m_bIsWLevelSet = false;
 
             m_underwaterState &= ~UNDERWATERSTATE_SWIMMING;
@@ -1294,7 +1294,7 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
     // can only fly in outlands or northrend (northrend requires cold weather flying)
     if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
     {
-        RemoveAura(flying_aura);
+        removeAllAurasById(flying_aura);
         flying_aura = 0;
     }
 
@@ -1325,7 +1325,7 @@ void Player::safeTeleport(WorldMap* mgr, const LocationVector& vec)
         // can only fly in outlands or northrend (northrend requires cold weather flying)
         if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
         {
-            RemoveAura(flying_aura);
+            removeAllAurasById(flying_aura);
             flying_aura = 0;
         }
 
@@ -1487,10 +1487,11 @@ void Player::indoorCheckUpdate(uint32_t time)
                 // this is duplicated check, but some mount auras comes w/o this flag set, maybe due to spellfixes.cpp line:663
                 dismount();
 
-                for (uint32_t x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; ++x)
+                for (uint32_t x = AuraSlots::POSITIVE_SLOT_START; x < AuraSlots::POSITIVE_SLOT_END; ++x)
                 {
-                    if (m_auras[x] && m_auras[x]->getSpellInfo()->getAttributes() & ATTRIBUTES_ONLY_OUTDOORS)
-                        RemoveAura(m_auras[x]);
+                    auto* const aur = getAuraWithAuraSlot(x);
+                    if (aur && aur->getSpellInfo()->getAttributes() & ATTRIBUTES_ONLY_OUTDOORS)
+                        aur->removeAura();
                 }
             }
             m_indoorCheckTimer = time + COLLISION_INDOOR_CHECK_INTERVAL;
@@ -1556,7 +1557,7 @@ void Player::zoneUpdate(uint32_t zoneId)
     if (m_zoneId != zoneId)
     {
         SetZoneId(zoneId);
-        RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_AREA);
+        removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_LEAVE_AREA);
     }
 
     if (m_playerInfo)
@@ -2704,8 +2705,9 @@ void Player::regeneratePlayerPowers(uint16_t diff)
     {
         // Find food/drink aura
         auto foundFood = false, foundDrink = false;
-        for (const auto& aur : m_auras)
+        for (uint16_t i = AuraSlots::POSITIVE_SLOT_START; i < AuraSlots::POSITIVE_SLOT_END; ++i)
         {
+            const auto* aur = getAuraWithAuraSlot(i);
             if (aur == nullptr)
                 continue;
 
@@ -3269,7 +3271,7 @@ void Player::addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t ma
             modFreePrimaryProfessionPoints(-1);
 
         // Reapply skill passive auras
-        for (const auto& aura : m_auras)
+        for (const auto& aura : getAuraList())
         {
             if (aura == nullptr)
                 continue;
@@ -3281,8 +3283,11 @@ void Player::addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t ma
                     continue;
 
                 if (aurEff->getAuraEffectType() != SPELL_AURA_MOD_SKILL &&
-                    aurEff->getAuraEffectType() != SPELL_AURA_MOD_SKILL_TALENT &&
-                    aurEff->getAuraEffectType() != SPELL_AURA_MOD_ALL_WEAPON_SKILLS)
+                    aurEff->getAuraEffectType() != SPELL_AURA_MOD_SKILL_TALENT
+#if VERSION_STRING >= TBC
+                    && aurEff->getAuraEffectType() != SPELL_AURA_MOD_ALL_WEAPON_SKILLS
+#endif
+                    )
                     continue;
 
                 const auto effType = aurEff->getAuraEffectType();
@@ -3647,6 +3652,26 @@ void Player::removeSkillLine(uint16_t skillLine)
 #endif
     // field 2
     _updateSkillBonusFields(fieldPosition, 0, 0);
+
+    // Deactivate passive skill bonus auras
+    for (const auto& aurEff : getAuraEffectList(SPELL_AURA_MOD_SKILL))
+    {
+        if (aurEff->getEffectMiscValue() == skillLine)
+        {
+            auto modifiableAurEff = aurEff->getAura()->getModifiableAuraEffect(aurEff->getEffectIndex());
+            modifiableAurEff->setEffectActive(false);
+        }
+    }
+
+    // Deactivate passive skill bonus auras
+    for (const auto& aurEff : getAuraEffectList(SPELL_AURA_MOD_SKILL_TALENT))
+    {
+        if (aurEff->getEffectMiscValue() == skillLine)
+        {
+            auto modifiableAurEff = aurEff->getAura()->getModifiableAuraEffect(aurEff->getEffectIndex());
+            modifiableAurEff->setEffectActive(false);
+        }
+    }
 
     // Remove skill spells
     removeSkillSpells(skillLine);
@@ -4217,21 +4242,21 @@ void Player::removeTalent(uint32_t spellId, bool onSpecChange /*= false*/)
                         {
                             auto taughtSpell2Id = taughtSpell->getEffectTriggerSpell(u);
                             removeSpell(taughtSpell2Id, false, false, 0);
-                            RemoveAura(taughtSpell2Id);
+                            removeAllAurasById(taughtSpell2Id);
                         }
                     }
                 }
                 removeSpell(taughtSpellId, false, false, 0);
-                RemoveAura(taughtSpellId);
+                removeAllAurasById(taughtSpellId);
             }
 
             // If talent triggers another spell, remove it (but only self-applied auras)
             if (spellInfo->getEffect(i) == SPELL_EFFECT_TRIGGER_SPELL && spellInfo->getEffectTriggerSpell(i) > 0)
-                RemoveAura(spellInfo->getEffectTriggerSpell(i), getGuid());
+                removeAllAurasByIdForGuid(spellInfo->getEffectTriggerSpell(i), getGuid());
         }
     }
     removeSpell(spellId, onSpecChange, false, 0);
-    RemoveAura(spellId);
+    removeAllAurasById(spellId);
 }
 
 void Player::resetTalents()
@@ -4528,7 +4553,7 @@ void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
     {
         auto glyphProperties = sGlyphPropertiesStore.LookupEntry(m_specs[oldSpec].glyphs[i]);
         if (glyphProperties != nullptr)
-            RemoveAura(glyphProperties->SpellID);
+            removeAllAurasById(glyphProperties->SpellID);
     }
 
     // Remove old talents and move them to deleted spells
@@ -5303,7 +5328,7 @@ void Player::applyItemMods(Item* item, int16 slot, bool apply, bool justBrokedow
                 {
                     for (uint8 itemIndex = 0; itemIndex < 8; ++itemIndex)
                         if (itemSet->itemscount == itemSetEntry->itemscount[itemIndex])
-                            this->RemoveAura(itemSetEntry->SpellID[itemIndex], getGuid());
+                            removeAllAurasByIdForGuid(itemSetEntry->SpellID[itemIndex], getGuid());
 
                     if (!(--itemSet->itemscount))
                         m_itemSets.erase(itemSetListMember);
@@ -5483,7 +5508,7 @@ void Player::applyItemMods(Item* item, int16 slot, bool apply, bool justBrokedow
                     if (spellInfo->getRequiredShapeShift())
                         RemoveShapeShiftSpell(spellInfo->getId());
                     else
-                        RemoveAura(itemSpell.Id);
+                        removeAllAurasById(itemSpell.Id);
                 }
             }
             else if (itemSpell.Trigger == CHANCE_ON_HIT)
@@ -5495,9 +5520,9 @@ void Player::applyItemMods(Item* item, int16 slot, bool apply, bool justBrokedow
 
     if (!apply)
     {
-        for (uint32_t posIndex = MAX_POSITIVE_AURAS_EXTEDED_START; posIndex < MAX_POSITIVE_AURAS_EXTEDED_END; ++posIndex)
+        for (uint32_t posIndex = AuraSlots::POSITIVE_SLOT_START; posIndex < AuraSlots::POSITIVE_SLOT_END; ++posIndex)
         {
-            if (auto m_aura = this->m_auras[posIndex])
+            if (auto* const m_aura = this->getAuraWithAuraSlot(posIndex))
                 if (m_aura->m_castedItemId && m_aura->m_castedItemId == itemProperties->ItemId)
                     m_aura->removeAura();
         }
@@ -5903,8 +5928,10 @@ void Player::repopRequest()
 
 void Player::repopAtGraveyard(float ox, float oy, float oz, uint32_t mapId)
 {
+#if VERSION_STRING >= WotLK
     if (hasAuraWithAuraEffect(SPELL_AURA_PREVENT_RESURRECTION))
         return;
+#endif
 
     bool first = true;
 
@@ -5965,7 +5992,7 @@ void Player::resurrect()
 
     spawnCorpseBones();
 
-    RemoveNegativeAuras();
+    removeAllNegativeAuras();
 
     uint32_t AuraIds[] = { 20584, 9036, 8326, 55164, 0 };
     removeAllAurasById(AuraIds);
@@ -8780,8 +8807,8 @@ void Player::startTaxiPath(TaxiPath* path, uint32_t modelid, uint32_t start_node
     //also remove morph spells
     if (getDisplayId() != getNativeDisplayId())
     {
-        RemoveAllAuraType(SPELL_AURA_TRANSFORM);
-        RemoveAllAuraType(SPELL_AURA_MOD_SHAPESHIFT);
+        removeAllAurasByAuraEffect(SPELL_AURA_TRANSFORM);
+        removeAllAurasByAuraEffect(SPELL_AURA_MOD_SHAPESHIFT);
     }
 
     dismissActivePets();
@@ -10168,13 +10195,14 @@ void Player::endDuel(uint8_t condition)
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_DUEL_COUNTDOWN);
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_DUEL_BOUNDARY_CHECK);
 
-    for (uint32_t x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; ++x)
+    for (uint16_t x = AuraSlots::NEGATIVE_SLOT_START; x < AuraSlots::NEGATIVE_SLOT_END; ++x)
     {
-        if (m_auras[x] == nullptr)
+        auto* const aur = getAuraWithAuraSlot(x);
+        if (aur == nullptr)
             continue;
 
-        if (m_auras[x]->WasCastInDuel())
-            m_auras[x]->removeAura();
+        if (aur->WasCastInDuel())
+            aur->removeAura();
     }
 
     m_duelState = DUEL_STATE_FINISHED;
@@ -10185,12 +10213,13 @@ void Player::endDuel(uint8_t condition)
     sEventMgr.RemoveEvents(m_duelPlayer, EVENT_PLAYER_DUEL_BOUNDARY_CHECK);
     sEventMgr.RemoveEvents(m_duelPlayer, EVENT_PLAYER_DUEL_COUNTDOWN);
 
-    for (uint32_t x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; ++x)
+    for (uint16_t x = AuraSlots::NEGATIVE_SLOT_START; x < AuraSlots::NEGATIVE_SLOT_END; ++x)
     {
-        if (m_duelPlayer->m_auras[x] == nullptr)
+        auto* const aur = m_duelPlayer->getAuraWithAuraSlot(x);
+        if (aur == nullptr)
             continue;
-        if (m_duelPlayer->m_auras[x]->WasCastInDuel())
-            m_duelPlayer->m_auras[x]->removeAura();
+        if (aur->WasCastInDuel())
+            aur->removeAura();
     }
 
     m_duelPlayer->m_duelState = DUEL_STATE_FINISHED;
@@ -10237,21 +10266,6 @@ void Player::endDuel(uint8_t condition)
         duelingWithSummon->getThreatManager().removeMeFromThreatLists();
     }
 
-    for (uint32_t x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_REMOVABLE_AURAS_END; x++)
-    {
-        if (m_duelPlayer->m_auras[x])
-        {
-            if (m_duelPlayer->m_auras[x]->WasCastInDuel())
-                m_duelPlayer->m_auras[x]->removeAura();
-        }
-
-        if (m_auras[x])
-        {
-            if (m_auras[x]->WasCastInDuel())
-                m_auras[x]->removeAura();
-        }
-    }
-
     m_session->SendPacket(SmsgCancelCombat().serialise().get());
     m_duelPlayer->m_session->SendPacket(SmsgCancelCombat().serialise().get());
 
@@ -10288,12 +10302,6 @@ void Player::cancelDuel()
 
     m_duelPlayer->m_duelCountdownTimer = 0;
     m_duelCountdownTimer = 0;
-
-    for (auto i = MAX_NEGATIVE_AURAS_EXTEDED_START; i < MAX_NEGATIVE_AURAS_EXTEDED_END; ++i)
-    {
-        if (m_auras[i])
-            m_auras[i]->removeAura();
-    }
 
     for (const auto& summonedPet : getSummons())
     {
@@ -10566,11 +10574,11 @@ void Player::spawnPet(uint32_t petId)
 
     if (itr->second->spellid)
     {
-        RemoveAura(18789);
-        RemoveAura(18790);
-        RemoveAura(18791);
-        RemoveAura(18792);
-        RemoveAura(35701);
+        removeAllAurasById(18789);
+        removeAllAurasById(18790);
+        removeAllAurasById(18791);
+        removeAllAurasById(18792);
+        removeAllAurasById(35701);
     }
 }
 
@@ -10646,7 +10654,7 @@ void Player::eventSummonPet(Pet* summonPet)
             }
         }
 
-        for (const auto& aura : m_auras)
+        for (const auto& aura : getAuraList())
             if (aura && aura->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_ON_PET)
                 aura->removeAura();
     }
@@ -10654,7 +10662,7 @@ void Player::eventSummonPet(Pet* summonPet)
 
 void Player::eventDismissPet()
 {
-    for (const auto& aura : m_auras)
+    for (const auto& aura : getAuraList())
         if (aura && aura->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
             aura->removeAura();
 }

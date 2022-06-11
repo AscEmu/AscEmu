@@ -177,8 +177,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
         if (m_triggeredByAura != nullptr)
         {
             sendChannelUpdate(0);
-            if (u_caster != nullptr)
-                u_caster->RemoveAura(m_triggeredByAura);
+            m_triggeredByAura->removeAura();
         }
 
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::prepare : canCast result %u for spell id %u (refer to SpellFailure.hpp to work out why)", cancastresult, getSpellInfo()->getId());
@@ -393,8 +392,8 @@ void Spell::castMe(const bool doReCheck)
             {
                 // we're much better to remove this here, because otherwise spells that change powers etc,
                 // don't get applied.
-                u_caster->RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_CAST_SPELL, getSpellInfo()->getId());
-                u_caster->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_CAST);
+                u_caster->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_CAST_SPELL, getSpellInfo()->getId());
+                u_caster->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_CAST);
             }
 
             u_caster->SetOnMeleeSpell(getSpellInfo()->getId(), extra_cast_number);
@@ -491,8 +490,8 @@ void Spell::castMe(const bool doReCheck)
     // don't get applied.
     if (u_caster != nullptr && !m_triggeredSpell && m_triggeredByAura == nullptr && !(m_spellInfo->getAttributesEx() & ATTRIBUTESEX_NOT_BREAK_STEALTH))
     {
-        u_caster->RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_CAST_SPELL, getSpellInfo()->getId());
-        u_caster->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_CAST);
+        u_caster->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_CAST_SPELL, getSpellInfo()->getId());
+        u_caster->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_CAST);
     }
 
     // Prepare proc flags for caster and targets
@@ -967,7 +966,7 @@ void Spell::finish(bool successful)
                 target = getPlayerCaster()->getWorldMapUnit(getPlayerCaster()->getTargetGuid());
 
             if (target != nullptr)
-                target->RemoveAura(getSpellInfo()->getId(), getCaster()->getGuid());
+                target->removeAllAurasByIdForGuid(getSpellInfo()->getId(), getCaster()->getGuid());
         }
 
         if (getSpellInfo()->hasEffect(SPELL_EFFECT_SUMMON_OBJECT))
@@ -1238,7 +1237,7 @@ void Spell::cancel()
                         channelTarget = getPlayerCaster()->getWorldMapUnit(getPlayerCaster()->getTargetGuid());
 
                     if (channelTarget != nullptr)
-                        channelTarget->RemoveAura(getSpellInfo()->getId(), getCaster()->getGuid());
+                        channelTarget->removeAllAurasByIdForGuid(getSpellInfo()->getId(), getCaster()->getGuid());
 
                     // Remove dynamic objects (area aura effects from Blizzard, Rain of Fire etc)
                     if (m_AreaAura)
@@ -1262,7 +1261,7 @@ void Spell::cancel()
                         removeCastItem();
                 }
 
-                getUnitCaster()->RemoveAura(getSpellInfo()->getId(), getCaster()->getGuid());
+                getUnitCaster()->removeAllAurasByIdForGuid(getSpellInfo()->getId(), getCaster()->getGuid());
             }
         } break;
         case SPELL_STATE_CASTED:
@@ -1475,15 +1474,12 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             return SPELL_FAILED_CASTER_AURASTATE;
 
         auto requireCombat = true;
+#if VERSION_STRING >= WotLK
         if (u_caster->hasAuraWithAuraEffect(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
         {
-            for (const auto& aura : u_caster->m_auras)
+            for (const auto& aurEff : getUnitCaster()->getAuraEffectList(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
             {
-                if (aura == nullptr)
-                    continue;
-                if (!aura->getSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
-                    continue;
-                if (aura->getSpellInfo()->isAuraEffectAffectingSpell(SPELL_AURA_IGNORE_TARGET_AURA_STATE, getSpellInfo()))
+                if (aurEff->getAura()->getSpellInfo()->isAuraEffectAffectingSpell(aurEff->getAuraEffectType(), getSpellInfo()))
                 {
                     // Warrior's Overpower uses "combo points" based on dbc data
                     // This allows usage of Overpower if we have an affecting aura (i.e. Taste for Blood)
@@ -1491,15 +1487,15 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 
                     // All these aura effects use effect index 0
                     // Allow Warrior's Charge to be casted on combat if caster has Juggernaut or Warbringer talent
-                    if (aura->getSpellInfo()->getEffectMiscValue(0) == 1)
+                    if (aurEff->getAura()->getSpellInfo()->getEffectMiscValue(0) == 1)
                     {
-                        // TODO: currently not working, serverside everything was OK but client still gives "You are in combat" error
                         requireCombat = false;
                         break;
                     }
                 }
             }
         }
+#endif
 
         // Caster's aura state requirements
         if (getSpellInfo()->getCasterAuraState() > 0 && !u_caster->hasAuraState(static_cast<AuraState>(getSpellInfo()->getCasterAuraState()), getSpellInfo(), u_caster))
@@ -1534,16 +1530,13 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             if (!secondCheck)
             {
                 // Shapeshift check
+#if VERSION_STRING >= WotLK
                 auto hasIgnoreShapeshiftAura = false;
-                for (const auto& aura : u_caster->m_auras)
+                for (const auto& aurEff : getUnitCaster()->getAuraEffectList(SPELL_AURA_IGNORE_SHAPESHIFT))
                 {
-                    if (aura == nullptr)
-                        continue;
                     // If aura has ignore shapeshift type, you can use spells regardless of stance / form
                     // Auras with this type: Shadow Dance, Metamorphosis, Warbringer (in 3.3.5a)
-                    if (!aura->getSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_IGNORE_SHAPESHIFT))
-                        continue;
-                    if (aura->getSpellInfo()->isAuraEffectAffectingSpell(SPELL_AURA_IGNORE_SHAPESHIFT, getSpellInfo()))
+                    if (aurEff->getAura()->getSpellInfo()->isAuraEffectAffectingSpell(SPELL_AURA_IGNORE_SHAPESHIFT, getSpellInfo()))
                     {
                         hasIgnoreShapeshiftAura = true;
                         break;
@@ -1551,6 +1544,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 }
 
                 if (!hasIgnoreShapeshiftAura)
+#endif
                 {
                     SpellCastResult shapeError = checkShapeshift(getSpellInfo(), u_caster->getShapeShiftForm());
                     if (shapeError != SPELL_CAST_SUCCESS)
@@ -2945,6 +2939,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (petTarget->getCharmedByGuid() != 0)
                     return SPELL_FAILED_ALREADY_HAVE_CHARM;
             } break;
+#if VERSION_STRING >= TBC
             case SPELL_AURA_FLY:
             case SPELL_AURA_ENABLE_FLIGHT2:
             {
@@ -2967,6 +2962,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (target->hasAuraWithAuraEffect(SPELL_AURA_MIRROR_IMAGE))
                     return SPELL_FAILED_BAD_TARGETS;
             } break;
+#endif
             default:
                 break;
         }
@@ -3486,7 +3482,9 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
         switch (getSpellInfo()->getEffect(i))
         {
             case SPELL_EFFECT_CREATE_ITEM:
+#if VERSION_STRING >= WotLK
             case SPELL_EFFECT_CREATE_ITEM2:
+#endif
                 if (getSpellInfo()->getEffectItemType(i) != 0)
                 {
                     const auto itemProperties = sMySQLStore.getItemProperties(getSpellInfo()->getEffectItemType(i));
@@ -3512,6 +3510,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                     }
                 } break;
             case SPELL_EFFECT_ENCHANT_ITEM:
+            {
                 // Check only for vellums here, normal checks are done in the next case
                 if (getSpellInfo()->getEffectItemType(i) != 0 && m_targets.getItemTarget() != 0 && vellumTarget)
                 {
@@ -3551,9 +3550,12 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                         return SPELL_FAILED_DONT_REPORT;
                     }
                 }
+#if VERSION_STRING >= WotLK
+            }
             [[fallthrough]];
             case SPELL_EFFECT_ADD_SOCKET:
             {
+#endif
                 if (m_targets.getItemTarget() == 0)
                     return SPELL_FAILED_ITEM_NOT_FOUND;
 
@@ -3931,13 +3933,9 @@ SpellCastResult Spell::checkCasterState() const
         if (getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_STUNNED)
         {
             // Spell is usable while stunned, but there are some spells with stun effect which are not classified as normal stun spells
-            for (const auto& stunAura : u_caster->m_auras)
+            for (const auto& aurEff : getUnitCaster()->getAuraEffectList(SPELL_AURA_MOD_STUN))
             {
-                if (stunAura == nullptr)
-                    continue;
-                if (!stunAura->getSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_MOD_STUN))
-                    continue;
-
+                const auto* stunAura = aurEff->getAura();
                 // Frozen mechanic acts like stunned mechanic
                 if (!hasSpellMechanic(stunAura->getSpellInfo(), MECHANIC_STUNNED)
                     && !hasSpellMechanic(stunAura->getSpellInfo(), MECHANIC_FROZEN))
@@ -3976,7 +3974,7 @@ SpellCastResult Spell::checkCasterState() const
         if (schoolImmunityMask > 0 || dispelImmunityMask > 0 || mechanicImmunityMask > 0)
         {
             // The spell cast is prevented by some state but check if the spell is unaffected by those states or grants immunity to those states
-            for (const auto& aur : u_caster->m_auras)
+            for (const auto& aur : getUnitCaster()->getAuraList())
             {
                 if (aur == nullptr)
                     continue;
@@ -4368,7 +4366,7 @@ void Spell::sendChannelUpdate(const uint32_t time, const uint32_t diff/* = 0*/)
 
             // Channel ended, remove the aura
             //\ todo: if aura is stackable, need to remove only one stack from aura instead of whole aura!
-            u_caster->RemoveAura(getSpellInfo()->getId(), u_caster->getGuid());
+            u_caster->removeAllAurasByIdForGuid(getSpellInfo()->getId(), u_caster->getGuid());
         }
     }
 
@@ -5889,8 +5887,11 @@ void Spell::_prepareProcFlags()
         // Procs for these effects are handled when the real spell is casted
         if (getSpellInfo()->getEffect(i) == SPELL_EFFECT_DUMMY ||
             getSpellInfo()->getEffect(i) == SPELL_EFFECT_SCRIPT_EFFECT ||
-            getSpellInfo()->getEffect(i) == SPELL_EFFECT_TRIGGER_SPELL ||
-            getSpellInfo()->getEffect(i) == SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE)
+            getSpellInfo()->getEffect(i) == SPELL_EFFECT_TRIGGER_SPELL
+#if VERSION_STRING >= TBC
+            || getSpellInfo()->getEffect(i) == SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE
+#endif
+            )
             continue;
 
         spellTargetMask |= getSpellInfo()->getRequiredTargetMaskForEffect(i);

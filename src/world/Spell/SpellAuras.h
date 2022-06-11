@@ -132,6 +132,11 @@ public:
     void setEffectIndex(uint8_t effIndex);
     uint8_t getEffectIndex() const;
 
+    void setEffectActive(bool set);
+    bool isActive() const;
+
+    void applyEffect(bool apply, bool skipScriptCheck = false);
+
     void setAura(Aura* aur);
     Aura* getAura() const;
 
@@ -146,6 +151,7 @@ private:
     float_t mDamageFraction = 0.0f;             // Leftover damage from previous tick which will be added to next tick
     float_t mEffectPctModifier = 1.0f;          // Effect percent modifier
     bool mEffectDamageStatic = false;           // If effect damage is set to static, effect will not gain spell power bonuses
+    bool mActive = false;                       // Is effect active
     uint8_t effIndex = 0;
 
     Aura* mAura = nullptr;
@@ -162,8 +168,12 @@ class SERVER_DECL Aura : public EventableObject
         void addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValue, float_t effectPctModifier, bool isStaticDamage, uint8_t effIndex, bool reapplying = false);
         void addAuraEffect(AuraEffectModifier const* auraEffect, bool reapplying = false);
         void removeAuraEffect(uint8_t effIndex, bool reapplying = false);
+        void removeAllAuraEffects();
         // Returns how many active aura effects the aura has
         uint8_t getAppliedEffectCount() const;
+
+        uint16_t getAuraSlot() const;
+        void setAuraSlot(uint16_t slot);
 
         int32_t getEffectDamage(uint8_t effIndex) const;
         int32_t getEffectDamageByEffect(AuraEffect auraEffect) const;
@@ -181,8 +191,9 @@ class SERVER_DECL Aura : public EventableObject
         int32_t getMaxDuration() const;
         void setMaxDuration(int32_t dur);
         int32_t getOriginalDuration() const;
-        // Overrides original duration
         void setOriginalDuration(int32_t dur);
+        // Overrides original duration
+        void setNewMaxDuration(int32_t dur, bool refreshDuration = true);
 
         // Does not return 0 to avoid division by zero
         // Returns 1 with permanent auras or with invalid effindex
@@ -190,7 +201,7 @@ class SERVER_DECL Aura : public EventableObject
 
         // Refresh resets aura's duration and charges to max and recalculates modifiers
         // Mods are saved only in special situations
-        void refreshOrModifyStack([[maybe_unused]]bool saveMods = false, int16_t modifyStackAmount = 0);
+        void refreshOrModifyStack(bool saveMods = false, int16_t modifyStackAmount = 0);
 
         uint8_t getStackCount() const;
         uint16_t getCharges() const;
@@ -452,6 +463,8 @@ class SERVER_DECL Aura : public EventableObject
         // Do not update aura while updating modifiers
         bool m_updatingModifiers = false;
 
+        uint16_t m_auraSlot = 0xFFFF;
+
         // Time left
         int32_t m_duration = 0;
         // Maximum duration
@@ -500,9 +513,6 @@ class SERVER_DECL Aura : public EventableObject
         ~Aura();
 
         inline bool IsPassive() const { if (!m_spellInfo) return false; return (m_spellInfo->isPassive() && !m_areaAura); }
-
-        inline uint16 GetAuraSlot() const { return m_auraSlot; }
-        void SetAuraSlot(uint16 slot) { m_auraSlot = slot; }
 
         Unit* GetUnitCaster();
         Player* GetPlayerCaster();
@@ -746,7 +756,6 @@ class SERVER_DECL Aura : public EventableObject
         uint32 GetAuraFlags() { return m_flags; }
 
         AreaAuraList targets; // This is only used for AA
-        uint16 m_auraSlot;
         uint32 m_castedItemId;
         uint64 itemCasterGUID;
         bool m_areaAura; // Area aura stuff -> never passive.

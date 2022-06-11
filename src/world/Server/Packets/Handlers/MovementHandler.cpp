@@ -388,7 +388,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
             {
                 if (movementInfo.position.getOrientation() != mover->GetOrientation())
                 {
-                    mover->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_TURNING);
+                    mover->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_TURNING);
                     mover->SetOrientation(movementInfo.position.getOrientation());
                 }
             }

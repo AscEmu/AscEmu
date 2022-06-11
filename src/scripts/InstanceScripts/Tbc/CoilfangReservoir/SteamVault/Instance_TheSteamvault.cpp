@@ -307,9 +307,9 @@ public:
         getCreature()->getMovementManager()->clear();
 
         if (getCreature()->getAuraWithId(37076))
-            getCreature()->RemoveAura(37076);
+            getCreature()->removeAllAurasById(37076);
         if (getCreature()->getAuraWithId(36453))
-            getCreature()->RemoveAura(36453);
+            getCreature()->removeAllAurasById(36453);
 
         Unit* pDistiller = NULL;
         pDistiller = GetClosestDistiller();
@@ -344,9 +344,9 @@ public:
                 RagePhase = 0;
 
                 if (getCreature()->getAuraWithId(31543))
-                    getCreature()->RemoveAura(31543);
+                    getCreature()->removeAllAurasById(31543);
                 if (getCreature()->getAuraWithId(37076))
-                    getCreature()->RemoveAura(37076);
+                    getCreature()->removeAllAurasById(37076);
             }
 
             else

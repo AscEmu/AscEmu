@@ -102,7 +102,7 @@ public:
 
     void AIUpdate() override
     {
-        getCreature()->RemoveNegativeAuras();
+        getCreature()->removeAllNegativeAuras();
         getCreature()->setFaction(11);
         getCreature()->SetHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();

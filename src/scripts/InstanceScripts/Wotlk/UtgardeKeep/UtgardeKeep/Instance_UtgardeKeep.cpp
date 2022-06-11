@@ -615,7 +615,7 @@ public:
     {
         if (plr != nullptr && plr->hasAurasWithId(FROST_TOMB_SPELL))
         {
-            plr->RemoveAura(FROST_TOMB_SPELL);
+            plr->removeAllAurasById(FROST_TOMB_SPELL);
         }
 
         despawn(1);

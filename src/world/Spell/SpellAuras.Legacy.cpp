@@ -233,7 +233,7 @@ void Aura::EventUpdateGroupAA(AuraEffectModifier* /*aurEff*/, float r)
                 if (owner->hasAurasWithId(m_spellInfo->getId()))
                 {
                     targets.erase(owner->getGuidLow());
-                    owner->RemoveAura(m_spellInfo->getId());
+                    owner->removeAllAurasById(m_spellInfo->getId());
                 }
             }
         }
@@ -308,7 +308,7 @@ void Aura::EventUpdateGroupAA(AuraEffectModifier* /*aurEff*/, float r)
         if (removable)
         {
             targets.erase(itr2);
-            tp->RemoveAura(m_spellInfo->getId());
+            tp->removeAllAurasById(m_spellInfo->getId());
         }
     }
 }
@@ -336,7 +336,7 @@ void Aura::EventUpdateRaidAA(AuraEffectModifier* /*aurEff*/, float r)
                 if (owner->hasAurasWithId(m_spellInfo->getId()))
                 {
                     targets.erase(owner->getGuidLow());
-                    owner->RemoveAura(m_spellInfo->getId());
+                    owner->removeAllAurasById(m_spellInfo->getId());
                 }
             }
         }
@@ -410,7 +410,7 @@ void Aura::EventUpdateRaidAA(AuraEffectModifier* /*aurEff*/, float r)
         if (removable)
         {
             targets.erase(itr2);
-            tp->RemoveAura(m_spellInfo->getId());
+            tp->removeAllAurasById(m_spellInfo->getId());
         }
     }
 }
@@ -456,7 +456,7 @@ void Aura::EventUpdatePetAA(AuraEffectModifier* aurEff, float r)
         if (p->getDistanceSq(pet) <= r)
             continue;
 
-        pet->RemoveAura(m_spellInfo->getId());
+        pet->removeAllAurasById(m_spellInfo->getId());
     }
 }
 
@@ -524,7 +524,7 @@ void Aura::EventUpdateFriendAA(AuraEffectModifier* /*aurEff*/, float r)
 
         if (removable)
         {
-            tu->RemoveAura(m_spellInfo->getId());
+            tu->removeAllAurasById(m_spellInfo->getId());
             targets.erase(itr2);
         }
     }
@@ -591,7 +591,7 @@ void Aura::EventUpdateEnemyAA(AuraEffectModifier* /*aurEff*/, float r)
 
         if (removable)
         {
-            tu->RemoveAura(m_spellInfo->getId());
+            tu->removeAllAurasById(m_spellInfo->getId());
             targets.erase(itr2);
         }
     }
@@ -626,7 +626,7 @@ void Aura::EventUpdateOwnerAA(AuraEffectModifier* aurEff, float r)
 
 
     if (!ou->isAlive() || (c->getDistanceSq(ou) > r))
-        ou->RemoveAura(m_spellInfo->getId());
+        ou->removeAllAurasById(m_spellInfo->getId());
 }
 
 void Aura::EventUpdateAreaAura(uint8_t effIndex, float r)
@@ -677,9 +677,11 @@ void Aura::EventUpdateAreaAura(uint8_t effIndex, float r)
             EventUpdateEnemyAA(&m_auraEffects[effIndex], r);
             break;
 
+#if VERSION_STRING >= TBC
         case SPELL_EFFECT_APPLY_OWNER_AREA_AURA:
             EventUpdateOwnerAA(&m_auraEffects[effIndex], r);
             break;
+#endif
 
         default:
             sLogger.failure("Spell %u (%s) has tried to update Area Aura targets but Spell has no valid Area Aura effect %u.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), AreaAuraEffectId);
@@ -714,7 +716,7 @@ void Aura::ClearAATargets()
         if (tu == nullptr)
             continue;
 
-        tu->RemoveAura(spellid);
+        tu->removeAllAurasById(spellid);
     }
     targets.clear();
 
@@ -727,18 +729,20 @@ void Aura::ClearAATargets()
         {
             Pet* pet = *itr;
 
-            pet->RemoveAura(spellid);
+            pet->removeAllAurasById(spellid);
         }
     }
 
+#if VERSION_STRING >= TBC
     if (m_spellInfo->hasEffect(SPELL_EFFECT_APPLY_OWNER_AREA_AURA))
     {
         Unit* u = m_target->getWorldMap()->getUnit(m_target->getCreatedByGuid());
 
         if (u != nullptr)
-            u->RemoveAura(spellid);
+            u->removeAllAurasById(spellid);
 
     }
+#endif
 }
 
 //------------------------- Aura Effects -----------------------------
@@ -818,7 +822,7 @@ void Aura::SpellAuraModPossess(AuraEffectModifier* /*aurEff*/, bool apply)
         if (caster != nullptr && caster->IsInWorld())
         {
             caster->UnPossess();
-            m_target->RemoveAura(getSpellId());
+            m_target->removeAllAurasById(getSpellId());
         }
 
         // make sure Player::UnPossess() didn't fail, if it did we will just free the target here
@@ -1216,7 +1220,7 @@ void Aura::SpellAuraModStun(AuraEffectModifier* aurEff, bool apply)
         // sap
         Unit* c = GetUnitCaster();
         if (c)
-        c->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);  // remove stealth
+        c->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);  // remove stealth
         }break;
         case 1776:
         case 1777:
@@ -1240,7 +1244,7 @@ void Aura::SpellAuraModStun(AuraEffectModifier* aurEff, bool apply)
         //TO< Player* >(c)->CombatModeDelay = 10;
         TO< Player* >(c)->EventAttackStop();
         c->smsg_AttackStop(m_target);
-        c->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);  // remove stealth
+        c->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);  // remove stealth
         }
         }
         }
@@ -1430,7 +1434,7 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
                 player->setPlayerFieldBytes2(0x2000);
 #endif
 
-        m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_STEALTH | AURA_INTERRUPT_ON_INVINCIBLE);
+        m_target->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_STEALTH | AURA_INTERRUPT_ON_INVINCIBLE);
         m_target->modStealthLevel(StealthFlag(aurEff->getEffectMiscValue()), aurEff->getEffectDamage());
 
         // hack fix for vanish stuff
@@ -1491,28 +1495,13 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
 
                     m_target->getCombatHandler().clearCombat();
 
-                    for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
+                    SpellMechanic mechanicList[] =
                     {
-                        if (m_target->m_auras[x] != nullptr)
-                        {
-                            if (m_target->m_auras[x]->getSpellInfo()->getMechanicsType() == MECHANIC_ROOTED || m_target->m_auras[x]->getSpellInfo()->getMechanicsType() == MECHANIC_ENSNARED)   // Remove roots and slow spells
-                            {
-                                m_target->m_auras[x]->removeAura();
-                            }
-                            else // if got immunity for slow, remove some that are not in the mechanics
-                            {
-                                for (uint8 i = 0; i < 3; i++)
-                                {
-                                    uint32 AuraEntry = m_target->m_auras[x]->getSpellInfo()->getEffectApplyAuraName(i);
-                                    if (AuraEntry == SPELL_AURA_MOD_DECREASE_SPEED || AuraEntry == SPELL_AURA_MOD_ROOT || AuraEntry == SPELL_AURA_MOD_STALKED)
-                                    {
-                                        m_target->m_auras[x]->removeAura();
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                        MECHANIC_ROOTED,
+                        MECHANIC_ENSNARED,
+                        MECHANIC_NONE,
+                    };
+                    m_target->removeAllAurasBySpellMechanic(mechanicList, true);
 
                     // Cast stealth spell/dismount/drop BG flag
                     if (p_target != nullptr)
@@ -1603,13 +1592,17 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
             case 52188:
             case 58506:
             {
-                for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
+                for (uint16_t x = AuraSlots::POSITIVE_SLOT_START; x < AuraSlots::POSITIVE_SLOT_END; ++x)
                 {
-                    if (m_target->m_auras[x] && m_target->m_auras[x]->getSpellInfo()->getEffectApplyAuraName(0) != SPELL_AURA_DUMMY)
+                    auto* const aur = m_target->getAuraWithAuraSlot(x);
+                    if (aur == nullptr)
+                        continue;
+
+                    if (aur->getSpellInfo()->getEffectApplyAuraName(0) != SPELL_AURA_DUMMY)
                     {
                         uint32 tmp_duration = 0;
 
-                        switch (m_target->m_auras[x]->getSpellInfo()->getId())
+                        switch (aur->getSpellInfo()->getId())
                         {
                             //SPELL_HASH_MASTER_OF_SUBTLETY
                             case 31221:
@@ -1631,11 +1624,11 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
 
                         if (tmp_duration != 0)
                         {
-                            m_target->m_auras[x]->setTimeLeft(tmp_duration);
-                            m_target->m_auras[x]->refreshOrModifyStack();
+                            aur->setTimeLeft(tmp_duration);
+                            aur->refreshOrModifyStack();
 
-                            sEventMgr.ModifyEventTimeLeft(m_target->m_auras[x], EVENT_AURA_REMOVE, tmp_duration);
-                            sEventMgr.AddEvent(m_target->m_auras[x], &Aura::removeAura, AURA_REMOVE_ON_EXPIRE, EVENT_AURA_REMOVE, tmp_duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
+                            sEventMgr.ModifyEventTimeLeft(aur, EVENT_AURA_REMOVE, tmp_duration);
+                            sEventMgr.AddEvent(aur, &Aura::removeAura, AURA_REMOVE_ON_EXPIRE, EVENT_AURA_REMOVE, tmp_duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
                         }
                     }
                 }
@@ -1672,7 +1665,7 @@ void Aura::SpellAuraModInvisibility(AuraEffectModifier* aurEff, bool apply)
 #endif
         }
 
-        m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_INVINCIBLE);
+        m_target->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_INVINCIBLE);
     }
     else
     {
@@ -1989,6 +1982,12 @@ void Aura::SpellAuraModSkill(AuraEffectModifier* aurEff, bool apply)
         const auto amount = static_cast<int16_t>(aurEff->getEffectDamage());
         if (apply)
         {
+            if (!p_target->hasSkillLine(skillLine))
+            {
+                aurEff->setEffectActive(false);
+                return;
+            }
+
             mPositive = true;
             static_cast< Player* >(m_target)->modifySkillBonus(skillLine, amount, false);
         }
@@ -2293,10 +2292,9 @@ void Aura::SpellAuraModSchoolImmunity(AuraEffectModifier* aurEff, bool apply)
                 if (!m_target->isAlive())
                     return;
 
-                Aura* pAura;
-                for (uint32 i = MAX_NEGATIVE_AURAS_EXTEDED_START; i < MAX_NEGATIVE_AURAS_EXTEDED_END; ++i)
+                for (uint16_t i = AuraSlots::NEGATIVE_SLOT_START; i < AuraSlots::NEGATIVE_SLOT_END; ++i)
                 {
-                    pAura = m_target->m_auras[i];
+                    auto* const pAura = m_target->getAuraWithAuraSlot(i);
                     if (pAura != this &&
                         pAura != nullptr &&
                         !pAura->IsPassive() &&
@@ -2341,7 +2339,7 @@ void Aura::SpellAuraModSchoolImmunity(AuraEffectModifier* aurEff, bool apply)
         case 69924:
         {
             if (apply)
-                m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_INVINCIBLE);
+                m_target->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_INVINCIBLE);
         } break;
     }
 
@@ -2359,12 +2357,12 @@ void Aura::SpellAuraModSchoolImmunity(AuraEffectModifier* aurEff, bool apply)
             mPositive = true;
 
         sLogger.debug("SpellAuraModSchoolImmunity called with misValue = %x", aurEff->getEffectMiscValue());
+        m_target->removeAllAurasBySchoolMask(static_cast<SchoolMask>(getSpellInfo()->getSchoolMask()), true, true);
         for (uint8 i = 0; i < TOTAL_SPELL_SCHOOLS; i++)
         {
             if (aurEff->getEffectMiscValue() & (1 << i))
             {
                 m_target->SchoolImmunityList[i]++;
-                m_target->RemoveAurasOfSchool(i, false, true);
             }
         }
         m_target->getThreatManager().evaluateSuppressed();
@@ -2399,12 +2397,13 @@ void Aura::SpellAuraModDispelImmunity(AuraEffectModifier* aurEff, bool apply)
 
         if (apply)
         {
-            for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
+            for (uint16_t x = AuraSlots::POSITIVE_SLOT_START; x < AuraSlots::POSITIVE_SLOT_END; ++x)
             {
+                auto* const aur = m_target->getAuraWithAuraSlot(x);
                 // HACK FIX FOR: 41425 and 25771
-                if (m_target->m_auras[x] && m_target->m_auras[x]->getSpellId() != 41425 && m_target->m_auras[x]->getSpellId() != 25771)
-                    if (m_target->m_auras[x]->getSpellInfo()->getDispelType() == (uint32)aurEff->getEffectMiscValue())
-                        m_target->m_auras[x]->removeAura();
+                if (aur && aur->getSpellId() != 41425 && aur->getSpellId() != 25771)
+                    if (aur->getSpellInfo()->getDispelType() == (uint32)aurEff->getEffectMiscValue())
+                        aur->removeAura();
             }
         }
     }
@@ -2486,7 +2485,7 @@ void Aura::SpellAuraTrackCreatures(AuraEffectModifier* aurEff, bool apply)
         if (apply)
         {
             if (p_target->TrackingSpell != 0)
-                p_target->RemoveAura(p_target->TrackingSpell);
+                p_target->removeAllAurasById(p_target->TrackingSpell);
 
             p_target->setTrackCreature((uint32)1 << (aurEff->getEffectMiscValue() - 1));
             p_target->TrackingSpell = getSpellId();
@@ -2506,7 +2505,7 @@ void Aura::SpellAuraTrackResources(AuraEffectModifier* aurEff, bool apply)
         if (apply)
         {
             if (p_target->TrackingSpell != 0)
-                p_target->RemoveAura(p_target->TrackingSpell);
+                p_target->removeAllAurasById(p_target->TrackingSpell);
 
             p_target->setTrackResource((uint32)1 << (aurEff->getEffectMiscValue() - 1));
             p_target->TrackingSpell = getSpellId();
@@ -2906,10 +2905,12 @@ void Aura::SpellAuraModDisarm(AuraEffectModifier* aurEff, bool apply)
             field = UnitFlag2;
             flag = UNIT_FLAG2_DISARM_OFFHAND;
             break;
+#if VERSION_STRING > TBC
         case SPELL_AURA_MOD_DISARM_RANGED:
             field = UnitFlag2;
             flag = UNIT_FLAG2_DISARM_RANGED;
             break;
+#endif
 #endif
         default:
             return;
@@ -3081,36 +3082,13 @@ void Aura::SpellAuraMechanicImmunity(AuraEffectModifier* aurEff, bool apply)
 
         if (aurEff->getEffectMiscValue() != 16 && aurEff->getEffectMiscValue() != 25 && aurEff->getEffectMiscValue() != 19) // don't remove bandages, Power Word and protection effect
         {
-            /* Supa's test run of Unit::RemoveAllAurasByMechanic */
-            m_target->RemoveAllAurasByMechanic((uint32)aurEff->getEffectMiscValue(), 0, false);
+            /* Supa's test run of Unit::removeAllAurasBySpellMechanic */
+            m_target->removeAllAurasBySpellMechanic(static_cast<SpellMechanic>(aurEff->getEffectMiscValue()), false);
 
             //Insignia/Medallion of A/H //Every Man for Himself
             if (m_spellInfo->getId() == 42292 || m_spellInfo->getId() == 59752)
             {
-                for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
-                {
-                    if (m_target->m_auras[x])
-                    {
-                        for (uint8_t y = 0; y < 3; ++y)
-                        {
-                            switch (m_target->m_auras[x]->getSpellInfo()->getEffectApplyAuraName(y))
-                            {
-                            case SPELL_AURA_MOD_STUN:
-                            case SPELL_AURA_MOD_CONFUSE:
-                            case SPELL_AURA_MOD_ROOT:
-                            case SPELL_AURA_MOD_FEAR:
-                            case SPELL_AURA_MOD_DECREASE_SPEED:
-                                m_target->m_auras[x]->removeAura();
-                                goto out;
-                                break;
-                            }
-                            continue;
-
-                        out:
-                            break;
-                        }
-                    }
-                }
+                m_target->removeAllAurasBySpellMechanic(sSpellMgr.getCrowdControlMechanicList(true));
             }
         }
         }
@@ -3144,7 +3122,7 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
     {
     uint32 id = m_target->m_stealth;
     m_target->m_stealth = 0;
-    m_target->RemoveAura(id);
+    m_target->removeAllAurasById(id);
     }*/
 
     if (apply)
@@ -3159,7 +3137,7 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
 
         p_target->dismount();
 
-        m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
+        m_target->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
 
         CreatureProperties const* ci = sMySQLStore.getCreatureProperties(aurEff->getEffectMiscValue());
         if (ci == nullptr)
@@ -3221,7 +3199,7 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
 
         //if we had pet then respawn
         p_target->spawnActivePet();
-        p_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_DISMOUNT);
+        p_target->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_DISMOUNT);
     }
 }
 
@@ -3365,7 +3343,10 @@ void Aura::SpellAuraSplitDamage(AuraEffectModifier* aurEff, bool apply)
     Object* caster = getCaster();
 
     // We don't want to split our damage with the owner
-    if ((m_spellInfo->getEffect(aurEff->getEffectIndex()) == SPELL_EFFECT_APPLY_OWNER_AREA_AURA) &&
+    if (
+#if VERSION_STRING >= TBC
+        (m_spellInfo->getEffect(aurEff->getEffectIndex()) == SPELL_EFFECT_APPLY_OWNER_AREA_AURA) &&
+#endif
         (caster != nullptr) &&
         (m_target != nullptr) &&
         caster->isPet() &&
@@ -3652,6 +3633,12 @@ void Aura::SpellAuraSkillTalent(AuraEffectModifier* aurEff, bool apply)
 
         if (apply)
         {
+            if (!p_target->hasSkillLine(skillLine))
+            {
+                aurEff->setEffectActive(false);
+                return;
+            }
+
             mPositive = true;
             p_target->modifySkillBonus(skillLine, amount, true);
         }
@@ -5611,7 +5598,7 @@ void Aura::SpellAuraSpiritOfRedemption(AuraEffectModifier* /*aurEff*/, bool appl
     else
     {
         m_target->setScale(1);
-        m_target->RemoveAura(27792);
+        m_target->removeAllAurasById(27792);
         m_target->setHealth(0);
     }
 }
@@ -5992,6 +5979,7 @@ void Aura::SpellAuraConsumeNoAmmo(AuraEffectModifier* /*aurEff*/, bool apply)
 
         switch (m_spellInfo->getId())
         {
+#if VERSION_STRING >= WotLK
             //SPELL_HASH_REQUIRES_NO_AMMO
             case 46699:
             {
@@ -5999,6 +5987,7 @@ void Aura::SpellAuraConsumeNoAmmo(AuraEffectModifier* /*aurEff*/, bool apply)
                 if (p_target->hasAuraWithAuraEffect(SPELL_AURA_CONSUMES_NO_AMMO))
                     other = true;
             } break;
+#endif
             default:
             {
                 // we have Thori'dal too
@@ -6007,9 +5996,11 @@ void Aura::SpellAuraConsumeNoAmmo(AuraEffectModifier* /*aurEff*/, bool apply)
             }
         }
 
+#if VERSION_STRING >= WotLK
         // We have more than 1 aura with no ammo consumption effect
         if (p_target->getAuraCountForEffect(SPELL_AURA_CONSUMES_NO_AMMO) >= 2)
             other = true;
+#endif
 
         p_target->m_requiresNoAmmo = other;
     }
@@ -6100,6 +6091,7 @@ void Aura::SpellAuraDeflectSpells(AuraEffectModifier* /*aurEff*/, bool /*apply*/
 
 void Aura::SpellAuraPhase(AuraEffectModifier* aurEff, bool apply)
 {
+#if VERSION_STRING >= TBC
     if (m_target->getAuraCountForId(SPELL_AURA_PHASE) > 1)
     {
         if (m_target->isPlayer())
@@ -6107,6 +6099,7 @@ void Aura::SpellAuraPhase(AuraEffectModifier* aurEff, bool apply)
         removeAura();
         return;
     }
+#endif
 
     if (apply)
     {
@@ -6156,8 +6149,11 @@ bool Aura::IsAreaAura() const
         sp->hasEffect(SPELL_EFFECT_APPLY_RAID_AREA_AURA) ||
         sp->hasEffect(SPELL_EFFECT_APPLY_PET_AREA_AURA) ||
         sp->hasEffect(SPELL_EFFECT_APPLY_FRIEND_AREA_AURA) ||
-        sp->hasEffect(SPELL_EFFECT_APPLY_ENEMY_AREA_AURA) ||
-        sp->hasEffect(SPELL_EFFECT_APPLY_OWNER_AREA_AURA))
+        sp->hasEffect(SPELL_EFFECT_APPLY_ENEMY_AREA_AURA)
+#if VERSION_STRING >= TBC
+        || sp->hasEffect(SPELL_EFFECT_APPLY_OWNER_AREA_AURA)
+#endif
+        )
         return true;
 
     return false;

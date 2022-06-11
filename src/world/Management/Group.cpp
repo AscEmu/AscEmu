@@ -493,13 +493,14 @@ void Group::RemovePlayer(CachedCharacterInfo* info)
         }
 
         //Remove some party auras.
-        for (uint32 i = MAX_POSITIVE_AURAS_EXTEDED_START; i < MAX_POSITIVE_AURAS_EXTEDED_END; i++)
+        for (uint32 i = AuraSlots::POSITIVE_SLOT_START; i < AuraSlots::POSITIVE_SLOT_END; i++)
         {
-            if (pPlayer->m_auras[i] && pPlayer->m_auras[i]->m_areaAura)
+            auto* const aur = pPlayer->getAuraWithAuraSlot(i);
+            if (aur && aur->m_areaAura)
             {
-                Object* caster = pPlayer->m_auras[i]->getCaster();
+                Object* caster = aur->getCaster();
                 if (caster && pPlayer->getGuid() != caster->getGuid())
-                    pPlayer->m_auras[i]->removeAura();
+                    aur->removeAura();
             }
         }
     }
@@ -921,7 +922,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
         {
             if (auramask & (uint64(1) << i))
             {
-                Aura * aurApp = pPlayer->GetAuraWithSlot(i);
+                Aura * aurApp = pPlayer->getAuraWithVisualSlot(i);
                 *data << uint32(aurApp ? aurApp->getSpellId() : 0);
                 *data << uint8(1);
             }
@@ -1013,7 +1014,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
             {
                 if (auramask & (uint64(1) << i))
                 {
-                    Aura * aurApp = pet->GetAuraWithSlot(i);
+                    Aura * aurApp = pet->getAuraWithVisualSlot(i);
                     *data << uint32(aurApp ? aurApp->getSpellId() : 0);
                     *data << uint8(1);
                 }

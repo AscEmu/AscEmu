@@ -399,7 +399,7 @@ public:
         if (!LeotherasEventGreyheartToKill[getCreature()->GetInstanceID()])
         {
             //remove banish & blocks
-            getCreature()->RemoveAllAuras();
+            getCreature()->removeAllAuras();
             getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
             getCreature()->setControlled(false, UNIT_STATE_ROOTED);
@@ -687,7 +687,7 @@ public:
             if (Leotheras)
             {
                 //remove banish & blocks
-                Leotheras->RemoveAllAuras();
+                Leotheras->removeAllAuras();
                 Leotheras->getAIInterface()->setAllowedToEnterCombat(true);
                 Leotheras->setControlled(false, UNIT_STATE_ROOTED);
                 Leotheras->setStandState(STANDSTATE_STAND);
@@ -904,7 +904,7 @@ public:
             FLK->SendScriptTextChatMessage(4743);     // I am more powerful than ever!
             if (static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft > 0)
                 static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft--;
-            FLK->RemoveAura(BLESSING_OF_THE_TIDES);
+            FLK->removeAllAurasById(BLESSING_OF_THE_TIDES);
         }
     }
 
@@ -960,7 +960,7 @@ public:
             FLK->SendScriptTextChatMessage(4742);     // Go on, kill them! I'll be the better for it!
             if (static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft > 0)
                 static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft--;
-            FLK->RemoveAura(BLESSING_OF_THE_TIDES);
+            FLK->removeAllAurasById(BLESSING_OF_THE_TIDES);
         }
     }
 };
@@ -990,7 +990,7 @@ public:
             FLK->SendScriptTextChatMessage(4744); // More knowledge, more power!
             if (static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft > 0)
                 static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft--;
-            FLK->RemoveAura(BLESSING_OF_THE_TIDES);
+            FLK->removeAllAurasById(BLESSING_OF_THE_TIDES);
         }
     }
 
@@ -1214,7 +1214,7 @@ public:
             }
         }
 
-        getCreature()->RemoveAura(VASHJ_SHIELD);
+        getCreature()->removeAllAurasById(VASHJ_SHIELD);
         getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
         getCreature()->setControlled(false, UNIT_STATE_ROOTED);
         RemoveAIUpdateEvent();
@@ -1258,7 +1258,7 @@ public:
         {
             if (getCreature()->getHealthPct() <= 70)
             {
-                getCreature()->RemoveAllAuras();
+                getCreature()->removeAllAuras();
                 getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
                 getCreature()->stopMoving();
                 getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
@@ -1383,7 +1383,7 @@ public:
 
             //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
             getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-            getCreature()->RemoveAura(VASHJ_SHIELD);
+            getCreature()->removeAllAurasById(VASHJ_SHIELD);
             sendDBChatMessage(4765);     // You may want to take cover.
             getCreature()->setControlled(false, UNIT_STATE_ROOTED);
             Phase = 3;

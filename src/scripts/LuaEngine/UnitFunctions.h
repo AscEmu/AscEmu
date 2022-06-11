@@ -1056,7 +1056,7 @@ public:
     {
         TEST_UNITPLAYER()
         uint32_t auraid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        ptr->RemoveAura(auraid);
+        ptr->removeAllAurasById(auraid);
         return 0;
     }
 
@@ -1988,7 +1988,7 @@ public:
     {
         if (!ptr)
             return 0;
-        ptr->RemoveAllAuras();
+        ptr->removeAllAuras();
         return 0;
     }
 
@@ -3534,19 +3534,19 @@ public:
     static int RemoveAurasByMechanic(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER()
-        uint32_t mechanic = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        auto mechanic = static_cast<SpellMechanic>(luaL_checkinteger(L, 1));
         bool hostileonly = CHECK_BOOL(L, 2);
         if (mechanic)
-            ptr->RemoveAllAurasByMechanic(mechanic, 0, hostileonly);
+            ptr->removeAllAurasBySpellMechanic(mechanic, hostileonly);
         return 0;
     }
 
     static int RemoveAurasType(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER()
-        uint32_t type = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        auto type = static_cast<AuraEffect>(luaL_checkinteger(L, 1));
         if (type)
-            ptr->RemoveAllAuraType(type);
+            ptr->removeAllAurasByAuraEffect(type);
         return 0;
     }
 
@@ -4037,7 +4037,7 @@ public:
     {
         if (!ptr)
             return 0;
-        ptr->RemoveNegativeAuras();
+        ptr->removeAllNegativeAuras();
         return 0;
     }
 
@@ -4292,7 +4292,7 @@ public:
         if (ptr->isPlayer())
         {
             Player* plr = static_cast<Player*>(ptr);
-            plr->RemoveAura(plr->getMountSpellId());
+            plr->removeAllAurasById(plr->getMountSpellId());
             plr->setMountDisplayId(0);
         }
         else
@@ -5289,8 +5289,8 @@ public:
     static int HasAuraWithMechanic(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET()
-        uint32_t mechanic = CHECK_ULONG(L, 1);
-        if (mechanic && ptr->HasAuraWithMechanics(mechanic))
+        auto mechanic = static_cast<SpellMechanic>(CHECK_ULONG(L, 1));
+        if (mechanic && ptr->hasAuraWithMechanic(mechanic))
             RET_BOOL(true)
             RET_BOOL(false)
     }
@@ -5298,9 +5298,9 @@ public:
     static int HasNegativeAura(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET()
-        for (uint32_t x = MAX_NEGATIVE_VISUAL_AURAS_START; x < MAX_NEGATIVE_VISUAL_AURAS_END; ++x)
+        for (uint16_t x = AuraSlots::NEGATIVE_SLOT_START; x < AuraSlots::NEGATIVE_SLOT_END; ++x)
         {
-            if (ptr->m_auras[x])
+            if (ptr->getAuraWithAuraSlot(x))
                 RET_BOOL(true)
         }
         RET_BOOL(false)
@@ -5309,9 +5309,9 @@ public:
     static int HasPositiveAura(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER()
-        for (uint32_t x = MAX_POSITIVE_VISUAL_AURAS_START; x < MAX_POSITIVE_VISUAL_AURAS_END; ++x)
+        for (uint16_t x = AuraSlots::POSITIVE_SLOT_START; x < AuraSlots::POSITIVE_SLOT_END; ++x)
         {
-            if (ptr->m_auras[x])
+            if (ptr->getAuraWithAuraSlot(x))
                 RET_BOOL(true)
         }
         RET_BOOL(false)
@@ -5711,7 +5711,7 @@ public:
         Unit* o = v->getBase();
 
         if (o->isPlayer())
-            o->RemoveAllAuraType(SPELL_AURA_MOUNTED);
+            o->removeAllAurasByAuraEffect(SPELL_AURA_MOUNTED);
         else
             o->Delete();
 #endif
@@ -5807,7 +5807,7 @@ public:
         else
         {
             if (ptr->isPlayer() && ptr->getVehicle() != nullptr)
-                ptr->RemoveAllAuraType(SPELL_AURA_MOUNTED);
+                ptr->removeAllAurasByAuraEffect(SPELL_AURA_MOUNTED);
         }
 #endif
         return 0;

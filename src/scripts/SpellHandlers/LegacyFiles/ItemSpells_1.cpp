@@ -211,7 +211,7 @@ bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
         target->stopMoving();
 
     // Remove Zzz aura
-    c_target->RemoveAllAuras();
+    c_target->removeAllAuras();
 
     pSpell->getPlayerCaster()->sendPlayObjectSoundPacket(c_target->getGuid(), 6197);
 
@@ -881,9 +881,11 @@ bool X53Mount(uint8_t /*effectIndex*/, Aura *a, bool apply)
                 {
                     if (skill == 300)
                     {
+#if VERSION_STRING >= TBC
                         if (p->HasSpellWithAuraNameAndBasePoints(SPELL_AURA_ENABLE_FLIGHT2, 310))
                             newspell = 76154;
                         else
+#endif
                             newspell = 75972;
                     }
                     else

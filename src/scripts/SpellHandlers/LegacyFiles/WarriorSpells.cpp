@@ -100,22 +100,14 @@ bool HeroicFury(uint8_t /*effectIndex*/, Spell* s)
         p_caster->clearCooldownForSpell(20252);
     }
 
-    for (uint32_t x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
+    SpellMechanic mechanics[3] =
     {
-        if (p_caster->m_auras[x])
-        {
-            for (uint8_t y = 0; y < 3; ++y)
-            {
-                switch (p_caster->m_auras[x]->getSpellInfo()->getEffectApplyAuraName(y))
-                {
-                    case SPELL_AURA_MOD_ROOT:
-                    case SPELL_AURA_MOD_DECREASE_SPEED:
-                        p_caster->m_auras[x]->removeAura();
-                        break;
-                }
-            }
-        }
-    }
+        MECHANIC_ENSNARED,
+        MECHANIC_ROOTED,
+        MECHANIC_NONE
+    };
+
+    p_caster->removeAllAurasBySpellMechanic(mechanics);
 
     return true;
 }
@@ -192,18 +184,22 @@ bool BerserkerRage(uint8_t /*effectIndex*/, Aura* a, bool apply)
         p_target->rageFromDamageTaken -= 100;
     }
 
+    SpellMechanic mechanics[4] = { MECHANIC_NONE };
     for (uint8_t i = 0; i < 3; i++)
     {
         if (apply)
         {
             p_target->MechanicsDispels[a->getSpellInfo()->getEffectMiscValue(i)]++;
-            p_target->RemoveAllAurasByMechanic(a->getSpellInfo()->getEffectMiscValue(i), 0, false);
+            mechanics[i] = static_cast<SpellMechanic>(a->getSpellInfo()->getEffectMiscValue(i));
         }
         else
         {
             p_target->MechanicsDispels[a->getSpellInfo()->getEffectMiscValue(i)]--;
         }
     }
+
+    if (apply)
+        p_target->removeAllAurasBySpellMechanic(mechanics);
 
     return true;
 }

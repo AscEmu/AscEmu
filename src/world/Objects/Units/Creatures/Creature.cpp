@@ -1110,7 +1110,7 @@ void Creature::SetEnslaveSpell(uint32 spellId)
 
 bool Creature::RemoveEnslave()
 {
-    return RemoveAura(m_enslaveSpell);
+    return removeAllAurasByIdReturnCount(m_enslaveSpell) > 0;
 }
 
 void Creature::CalcResistance(uint8_t type)
@@ -2387,7 +2387,7 @@ void Creature::RemoveVendorItem(uint32 itemid)
 
 void Creature::PrepareForRemove()
 {
-    RemoveAllAuras();
+    removeAllAuras();
 
     getSummonInterface()->removeAllSummons();
 
@@ -2406,7 +2406,7 @@ void Creature::PrepareForRemove()
 #endif
 
             if (getCreatedBySpellId() != 0)
-                summoner->RemoveAura(getCreatedBySpellId());
+                summoner->removeAllAurasById(getCreatedBySpellId());
         }
     }
 
@@ -2501,7 +2501,7 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     smsg_AttackStop(this);
     setHealth(0);
 
-    RemoveAllNonPersistentAuras();
+    removeAllNonPersistentAuras();
 
     CALL_SCRIPT_EVENT(pAttacker, _internalOnTargetDied)(this);
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);

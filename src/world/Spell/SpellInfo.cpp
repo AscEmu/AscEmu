@@ -86,7 +86,10 @@ bool SpellInfo::hasEffectApplyAuraName(uint32_t auraType) const
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (Effect[i] != SPELL_EFFECT_APPLY_AURA && Effect[i] != SPELL_EFFECT_PERSISTENT_AREA_AURA && Effect[i] != SPELL_EFFECT_APPLY_ENEMY_AREA_AURA &&
-            Effect[i] != SPELL_EFFECT_APPLY_FRIEND_AREA_AURA && Effect[i] != SPELL_EFFECT_APPLY_GROUP_AREA_AURA && Effect[i] != SPELL_EFFECT_APPLY_OWNER_AREA_AURA &&
+            Effect[i] != SPELL_EFFECT_APPLY_FRIEND_AREA_AURA && Effect[i] != SPELL_EFFECT_APPLY_GROUP_AREA_AURA &&
+#if VERSION_STRING >= TBC
+            Effect[i] != SPELL_EFFECT_APPLY_OWNER_AREA_AURA &&
+#endif
             Effect[i] != SPELL_EFFECT_APPLY_PET_AREA_AURA && Effect[i] != SPELL_EFFECT_APPLY_RAID_AREA_AURA)
             continue;
 
@@ -463,11 +466,15 @@ bool SpellInfo::isNegativeAura() const
             case SPELL_AURA_GHOST:
             case SPELL_AURA_PERIODIC_POWER_BURN:
             case SPELL_AURA_AREA_CHARM:
+#if VERSION_STRING >= TBC
             case SPELL_AURA_MOD_DISARM_OFFHAND:
+#endif
+#if VERSION_STRING >= WotLK
             case SPELL_AURA_MOD_DISARM_RANGED:
             case SPELL_AURA_298:
             case SPELL_AURA_301:
             case SPELL_AURA_PREVENT_RESURRECTION:
+#endif
                 // No need to do other checks, definitely negative
                 return true;
             case SPELL_AURA_MOD_ATTACKSPEED:
@@ -501,11 +508,13 @@ bool SpellInfo::isNegativeAura() const
             case SPELL_AURA_MOD_HASTE:
             case SPELL_AURA_MOD_RANGED_HASTE:
             case SPELL_AURA_MOD_ATTACK_POWER_PCT:
+#if VERSION_STRING >= TBC
             case SPELL_AURA_MELEE_SLOW_PCT:
             case SPELL_AURA_INCREASE_TIME_BETWEEN_ATTACKS:
             case SPELL_AURA_INCREASE_CASTING_TIME_PCT:
             case SPELL_AURA_252:
             case SPELL_AURA_259:
+#endif
                 // Negative if effect value is negative
                 if (effValue < 0)
                     return true;
@@ -513,8 +522,12 @@ bool SpellInfo::isNegativeAura() const
             case SPELL_AURA_MOD_DAMAGE_TAKEN:
             case SPELL_AURA_MOD_POWER_COST:
             case SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN:
+#if VERSION_STRING >= TBC
             case SPELL_AURA_MOD_MECHANIC_DAMAGE_TAKEN_PERCENT:
+#endif
+#if VERSION_STRING >= WotLK
             case SPELL_AURA_INCREASE_SPELL_DOT_DAMAGE_PCT:
+#endif
                 // Negative if effect value is positive
                 if (effValue > 0)
                     return true;
@@ -1090,7 +1103,9 @@ bool SpellInfo::isAreaAuraEffect(uint8_t effIndex) const
         case SPELL_EFFECT_APPLY_PET_AREA_AURA:
         case SPELL_EFFECT_APPLY_FRIEND_AREA_AURA:
         case SPELL_EFFECT_APPLY_ENEMY_AREA_AURA:
+#if VERSION_STRING >= TBC
         case SPELL_EFFECT_APPLY_OWNER_AREA_AURA:
+#endif
             return true;
         default:
             break;

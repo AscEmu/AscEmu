@@ -92,8 +92,14 @@ bool ImprovedSprint(uint8_t effectIndex, Spell* pSpell)
         if (target == NULL)
             return true;
 
-        target->RemoveAllAurasByMechanic(MECHANIC_ENSNARED, 0, true);
-        target->RemoveAllAurasByMechanic(MECHANIC_ROOTED, 0, true);
+        SpellMechanic mechanics[3] =
+        {
+            MECHANIC_ENSNARED,
+            MECHANIC_ROOTED,
+            MECHANIC_NONE
+        };
+
+        target->removeAllAurasBySpellMechanic(mechanics);
     }
 
     return true;
@@ -106,12 +112,10 @@ bool CloakOfShadows(uint8_t /*effectIndex*/, Spell* s)
     if (!unitTarget || !unitTarget->isAlive())
         return false;
 
-    Aura* pAura;
-    for (uint32_t j = MAX_NEGATIVE_AURAS_EXTEDED_START; j < MAX_NEGATIVE_AURAS_EXTEDED_END; ++j)
+    for (uint16_t j = AuraSlots::NEGATIVE_SLOT_START; j < AuraSlots::NEGATIVE_SLOT_END; ++j)
     {
-        pAura = unitTarget->m_auras[j];
-        if (pAura != NULL && !pAura->IsPassive()
-            && pAura->isNegative()
+        auto pAura = unitTarget->getAuraWithAuraSlot(j);
+        if (pAura != NULL
             && !(pAura->getSpellInfo()->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY)
             && pAura->getSpellInfo()->getFirstSchoolFromSchoolMask() != 0
             )

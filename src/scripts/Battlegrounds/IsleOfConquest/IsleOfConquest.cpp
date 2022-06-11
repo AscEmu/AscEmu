@@ -449,7 +449,7 @@ void IsleOfConquest::OnStart()
     {
         for (std::set<Player* >::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
-            (*itr)->RemoveAura(BG_PREPARATION);
+            (*itr)->removeAllAurasById(BG_PREPARATION);
         }
     }
 
@@ -758,9 +758,9 @@ void IsleOfConquest::OnAddPlayer(Player *plr)
 
 void IsleOfConquest::OnRemovePlayer(Player *plr)
 {
-    plr->RemoveAura(BG_PREPARATION);
-    plr->RemoveAura(IOC_REFINERY_BONUS);
-    plr->RemoveAura(IOC_QUARRY_BONUS);
+    plr->removeAllAurasById(BG_PREPARATION);
+    plr->removeAllAurasById(IOC_REFINERY_BONUS);
+    plr->removeAllAurasById(IOC_QUARRY_BONUS);
 }
 
 void IsleOfConquest::HookOnShadowSight()

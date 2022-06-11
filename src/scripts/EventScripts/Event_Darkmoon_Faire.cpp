@@ -148,7 +148,7 @@ void AIUpdate()
         // Kill then Despawn Tonk after 10 seconds
         Plr->castSpell(Tonk, 5, false); // Kill spell
         Plr->castSpell(Plr, 2880, false); // Stun Player
-        Plr->RemoveAura(33849);
+        Plr->removeAllAurasById(33849);
         Tonk->Despawn(10000,0);
 
         // Close the console so others can access it
