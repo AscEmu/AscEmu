@@ -982,7 +982,7 @@ void MySQLDataStore::loadGameObjectSpawnsExtraTable()
 {
     auto startTime = Util::TimeNow();
 
-    QueryResult* result = WorldDatabase.Query("SELECT id, parent_rotation0, parent_rotation1, parent_rotation2, parent_rotation3 FROM gameobject_spawns_extra");
+    QueryResult* result = WorldDatabase.Query("SELECT id, parent_rotation0, parent_rotation1, parent_rotation2, parent_rotation3 FROM gameobject_spawns_extra WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
     if (!result)
     {
         sLogger.info("Loaded 0 gameobjectSpawnsExtra definitions. DB table `gameobject_spawns_extra` is empty.");
@@ -1024,7 +1024,7 @@ void MySQLDataStore::loadGameObjectSpawnsOverrideTable()
 {
     auto startTime = Util::TimeNow();
 
-    QueryResult* result = WorldDatabase.Query("SELECT id, scale, faction, flags FROM gameobject_spawns_overrides");
+    QueryResult* result = WorldDatabase.Query("SELECT id, scale, faction, flags FROM gameobject_spawns_overrides WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
     if (!result)
     {
         sLogger.info("Loaded 0 gameobject overrides. DB table `gameobject_spawn_overrides` is empty.");
@@ -1045,6 +1045,18 @@ void MySQLDataStore::loadGameObjectSpawnsOverrideTable()
 
         if (gameObjectOverride.faction && !sFactionTemplateStore.LookupEntry(gameObjectOverride.faction))
             sLogger.failure("GameObject (SpawnId: %u) has invalid faction (%u) defined in `gameobject_spawns_overrides`.", spawnId, gameObjectOverride.faction);
+
+        // Delete Spawn Overrides Which are Identical to GamoebjectProto Table
+        if (auto spawn = getGameObjectSpawn(spawnId))
+        {
+            if (auto proto = getGameObjectProperties(spawn->entry))
+            {
+                if (proto->size == gameObjectOverride.scale && gameObjectOverride.faction == 0 && gameObjectOverride.flags == 0)
+                {
+                    WorldDatabase.Execute("DELETE FROM gameobject_spawns_overrides WHERE id = %u", spawnId);
+                }
+            }
+        }
 
         ++count;
     } while (result->NextRow());
@@ -4380,7 +4392,7 @@ void MySQLDataStore::loadGameobjectSpawns()
             {
                 Field* fields = gobject_spawn_result->Fetch();
                 uint32_t spawnId = fields[0].GetUInt32();
-                uint32 gameobject_entry = fields[1].GetUInt32();
+                uint32 gameobject_entry = fields[3].GetUInt32();
 
                 MySQLStructure::GameobjectSpawn& spawndata = _gameObjectSpawnStore[spawnId];
 
@@ -4405,17 +4417,19 @@ void MySQLDataStore::loadGameobjectSpawns()
 #endif
                 MySQLStructure::GameobjectSpawn* go_spawn = new MySQLStructure::GameobjectSpawn;
                 go_spawn->id = spawnId;
+                uint32_t min = fields[1].GetUInt32();
+                uint32_t max = fields[2].GetUInt32();
                 go_spawn->entry = gameobject_entry;
-                go_spawn->map = fields[2].GetUInt32();
-                go_spawn->phase = fields[3].GetUInt32();
-                go_spawn->spawnPoint = LocationVector(fields[4].GetFloat(), fields[5].GetFloat(), fields[6].GetFloat(), fields[7].GetFloat());
-                go_spawn->rotation.x = fields[8].GetFloat();
-                go_spawn->rotation.y = fields[9].GetFloat();
-                go_spawn->rotation.z = fields[10].GetFloat();
-                go_spawn->rotation.w = fields[11].GetFloat();
-                go_spawn->spawntimesecs = fields[12].GetUInt32();
-                go_spawn->state = GameObject_State(fields[13].GetUInt32());
-                //gspawn->stateNpcLink = fields[14].GetUInt32();
+                go_spawn->map = fields[4].GetUInt32();
+                go_spawn->phase = fields[5].GetUInt32();
+                go_spawn->spawnPoint = LocationVector(fields[6].GetFloat(), fields[7].GetFloat(), fields[8].GetFloat(), fields[9].GetFloat());
+                go_spawn->rotation.x = fields[10].GetFloat();
+                go_spawn->rotation.y = fields[11].GetFloat();
+                go_spawn->rotation.z = fields[12].GetFloat();
+                go_spawn->rotation.w = fields[13].GetFloat();
+                go_spawn->spawntimesecs = fields[14].GetUInt32();
+                go_spawn->state = GameObject_State(fields[15].GetUInt32());
+                //gspawn->stateNpcLink = fields[16].GetUInt32();
 
                 if (go_spawn->phase == 0)
                     go_spawn->phase = 0xFFFFFFFF;

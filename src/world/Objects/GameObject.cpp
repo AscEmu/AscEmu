@@ -326,7 +326,11 @@ bool GameObject::loadFromDB(uint32_t spawnId, WorldMap* map, bool addToWorld)
 void GameObject::deleteFromDB()
 {
     if (m_spawn != nullptr)
+    {
         WorldDatabase.Execute("DELETE FROM gameobject_spawns WHERE id = %u AND min_build <= %u AND max_build >= %u ", m_spawn->id, VERSION_STRING, VERSION_STRING);
+        WorldDatabase.Execute("DELETE FROM gameobject_spawns_extra WHERE id = %u AND min_build <= %u AND max_build >= %u ", m_spawn->id, VERSION_STRING, VERSION_STRING);
+        WorldDatabase.Execute("DELETE FROM gameobject_spawns_overrides WHERE id = %u AND min_build <= %u AND max_build >= %u ", m_spawn->id, VERSION_STRING, VERSION_STRING);
+    }
 }
 
 void GameObject::saveToDB()
@@ -418,10 +422,13 @@ bool GameObject::create(uint32_t entry, WorldMap* map, uint32_t phase, LocationV
     setParentRotation(parentRotation);
 
     setScale(gameobject_properties->size);
+    SetFaction(0);
+    setFlags(0);
 
     // Spawn Overrides
     if (MySQLStructure::GameObjectSpawnOverrides const* goOverride = sMySQLStore.getGameObjectOverride(getSpawnId()))
     {
+        setScale(goOverride->scale);
         SetFaction(goOverride->faction);
         setFlags(goOverride->flags);
     }
