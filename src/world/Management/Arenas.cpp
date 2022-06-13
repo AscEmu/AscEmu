@@ -201,14 +201,14 @@ void Arena::OnAddPlayer(Player* plr)
     plr->m_deathVision = true;
 
     // remove all buffs (exclude talents, include flasks)
-    for (uint32 x = MAX_REMOVABLE_AURAS_START; x < MAX_REMOVABLE_AURAS_END; x++)
+    for (uint32 x = AuraSlots::REMOVABLE_SLOT_START; x < AuraSlots::REMOVABLE_SLOT_END; x++)
     {
-        if (plr->m_auras[x])
+        if (auto* const aur = plr->getAuraWithAuraSlot(x))
         {
-            if (!plr->m_auras[x]->getSpellInfo()->getDurationIndex() && plr->m_auras[x]->getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD)
+            if (!aur->getSpellInfo()->getDurationIndex() && aur->getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD)
                 continue;
 
-            plr->m_auras[x]->removeAura();
+            aur->removeAura();
         }
     }
     // On arena start all conjured items are removed
@@ -248,12 +248,12 @@ void Arena::OnRemovePlayer(Player* plr)
     // remove arena readiness buff
     plr->m_deathVision = false;
 
-    plr->RemoveAllAuras();
+    plr->removeAllAuras();
 
     // Player has left arena, call HookOnPlayerDeath as if he died
     HookOnPlayerDeath(plr);
 
-    plr->RemoveAura(plr->getInitialTeam() ? 35775 - plr->getBgTeam() : 32725 - plr->getBgTeam());
+    plr->removeAllAurasById(plr->getInitialTeam() ? 35775 - plr->getBgTeam() : 32725 - plr->getBgTeam());
     plr->removeFfaPvpFlag();
 
     // Reset all their cooldowns and restore their HP/Mana/Energy to max
@@ -319,7 +319,7 @@ void Arena::OnStart()
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
             Player* plr = *itr;
-            plr->RemoveAura(ARENA_PREPARATION);
+            plr->removeAllAurasById(ARENA_PREPARATION);
             m_players2[i].insert(plr->getGuidLow());
 
             // update arena team stats

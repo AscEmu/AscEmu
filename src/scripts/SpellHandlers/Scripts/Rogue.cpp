@@ -42,9 +42,10 @@ public:
     bool canProc(SpellProc* spellProc, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo /*damageInfo*/) override
     {
         // Find Slice and Dice aura
-        for (const auto& aur : spellProc->getProcOwner()->m_auras)
+        for (const auto& aurEff : spellProc->getProcOwner()->getAuraEffectList(SPELL_AURA_MOD_HASTE))
         {
-            if (aur == nullptr || aur->getCasterGuid() != spellProc->getCasterGuid())
+            auto* const aur = aurEff->getAura();
+            if (aur->getCasterGuid() != spellProc->getCasterGuid())
                 continue;
 
             const auto spinfo = aur->getSpellInfo();
@@ -61,10 +62,7 @@ public:
             }
         }
 
-        if (sliceAura == nullptr)
-            return false;
-
-        return true;
+        return sliceAura != nullptr;
     }
 
     SpellScriptExecuteState onDoProcEffect(SpellProc* /*spellProc*/, Unit* victim, SpellInfo const* /*castingSpell*/, DamageInfo /*damageInfo*/) override
@@ -79,8 +77,7 @@ public:
             maxDuration = durEntry->Duration3;
 
         // Override the original duration and refresh aura
-        sliceAura->setOriginalDuration(maxDuration);
-        sliceAura->refreshOrModifyStack();
+        sliceAura->setNewMaxDuration(maxDuration);
 
         sliceAura = nullptr;
         return SpellScriptExecuteState::EXECUTE_PREVENT;

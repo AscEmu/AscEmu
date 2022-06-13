@@ -161,7 +161,7 @@ public:
         }
         getCreature()->setMoveRoot(true);
         getCreature()->interruptSpell();
-        getCreature()->RemoveAllAuras();
+        getCreature()->removeAllAuras();
     }
 
     void AIUpdate() override
@@ -194,7 +194,7 @@ public:
             if (new_phase)
             {
                 getCreature()->interruptSpell();
-                getCreature()->RemoveAllAuras();
+                getCreature()->removeAllAuras();
                 getCreature()->setMoveRoot(false);
                 _setMeleeDisabled(false);
                 setScriptPhase(2);
@@ -471,7 +471,7 @@ public:
             setScriptPhase(2);
             phase_length = Util::getMSTime() + WINDSERPENT_PHASE_LENGTH;
             getCreature()->setDisplayId(27073);
-            getCreature()->RemoveAllAuras();
+            getCreature()->removeAllAuras();
             getCreature()->castSpell(getCreature(), 49356, false);
         }
         if (getScriptPhase() == 2 && phase_length <Util::getMSTime())
@@ -479,7 +479,7 @@ public:
             setScriptPhase(1);
             phase_timer = Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
             getCreature()->setDisplayId(getCreature()->getNativeDisplayId());
-            getCreature()->RemoveAllAuras();
+            getCreature()->removeAllAuras();
             getCreature()->castSpell(getCreature(), 53463, false);
         }
     }

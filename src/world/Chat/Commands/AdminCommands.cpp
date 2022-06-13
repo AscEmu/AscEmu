@@ -81,11 +81,17 @@ bool ChatHandler::HandleAdminDispelAllCommand(const char* args, WorldSession* m_
         {
             if (player->getWorldMap() != m_session->GetPlayer()->getWorldMap())
             {
-                sEventMgr.AddEvent(static_cast< Unit* >(player), &Unit::DispelAll, pos ? true : false, EVENT_PLAYER_CHECKFORCHEATS, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                if (pos)
+                    sEventMgr.AddEvent(static_cast<Unit*>(player), &Unit::removeAllPositiveAuras, EVENT_PLAYER_CHECKFORCHEATS, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                else
+                    sEventMgr.AddEvent(static_cast<Unit*>(player), &Unit::removeAllNegativeAuras, EVENT_PLAYER_CHECKFORCHEATS, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             }
             else
             {
-                player->DispelAll(pos ? true : false);
+                if (pos)
+                    player->removeAllPositiveAuras();
+                else
+                    player->removeAllNegativeAuras();
             }
         }
     }

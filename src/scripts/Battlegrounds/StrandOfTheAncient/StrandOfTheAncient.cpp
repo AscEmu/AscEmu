@@ -384,7 +384,7 @@ void StrandOfTheAncient::OnRemovePlayer(Player* plr)
 {
     if (!m_started)
     {
-        plr->RemoveAura(BG_PREPARATION);
+        plr->removeAllAurasById(BG_PREPARATION);
     }
 }
 
@@ -796,7 +796,7 @@ void StrandOfTheAncient::StartRound()
         Player* p = *itr;
 
         p->safeTeleport(p->GetMapId(), p->GetInstanceID(), sotaAttackerStartingPosition[SOTA_ROUND_STARTED]);
-        p->RemoveAura(BG_PREPARATION);
+        p->removeAllAurasById(BG_PREPARATION);
     }
 
     RemoveAuraFromTeam(Defenders, BG_PREPARATION);

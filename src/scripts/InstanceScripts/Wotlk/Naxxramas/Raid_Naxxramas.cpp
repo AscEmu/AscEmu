@@ -196,7 +196,7 @@ void WebWrapAI::OnDied(Unit* /*pKiller*/)
         Player* PlayerPtr = sObjectMgr.GetPlayer(static_cast<uint32_t>(mPlayerGuid));
         if (PlayerPtr != NULL && PlayerPtr->hasAurasWithId(MAEXXNA_WEB_WRAP))
         {
-            PlayerPtr->RemoveAura(MAEXXNA_WEB_WRAP);
+            PlayerPtr->removeAllAurasById(MAEXXNA_WEB_WRAP);
             PlayerPtr->setMoveRoot(false);
         }
 
@@ -225,7 +225,7 @@ void WebWrapAI::Destroy()
         Player* PlayerPtr = sObjectMgr.GetPlayer(static_cast<uint32_t>(mPlayerGuid));
         if (PlayerPtr != NULL && PlayerPtr->hasAurasWithId(MAEXXNA_WEB_WRAP))
         {
-            PlayerPtr->RemoveAura(MAEXXNA_WEB_WRAP);
+            PlayerPtr->removeAllAurasById(MAEXXNA_WEB_WRAP);
             PlayerPtr->setMoveRoot(false);
         }
 
@@ -410,9 +410,9 @@ void NaxxramasWorshipperAI::OnDied(Unit* /*pKiller*/)
             // Not sure about new Frenzy Timer
             mGrandWidow->_resetTimer(mGrandWidow->mFrenzyTimer, 60000 + Util::getRandomUInt(20) * 1000);
             if (mGrandWidow->getCreature()->hasAurasWithId(GRAND_WIDOW_FAERLINA_FRENZY_NORMAL))
-                mGrandWidow->getCreature()->RemoveAura(GRAND_WIDOW_FAERLINA_FRENZY_NORMAL);    // Really needed ?
+                mGrandWidow->getCreature()->removeAllAurasById(GRAND_WIDOW_FAERLINA_FRENZY_NORMAL);    // Really needed ?
             else if (mGrandWidow->getCreature()->hasAurasWithId(GRAND_WIDOW_FAERLINA_FRENZY_HEROIC))
-                mGrandWidow->getCreature()->RemoveAura(GRAND_WIDOW_FAERLINA_FRENZY_HEROIC);    // Really needed ?
+                mGrandWidow->getCreature()->removeAllAurasById(GRAND_WIDOW_FAERLINA_FRENZY_HEROIC);    // Really needed ?
             else
             {
                 mGrandWidow->_resetTimer(mGrandWidow->mPoisonVolleyBoltTimer, 30000);

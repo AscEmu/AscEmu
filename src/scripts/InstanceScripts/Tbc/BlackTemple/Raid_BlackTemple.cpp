@@ -254,7 +254,7 @@ enum
 
     // Other spells
     ILLIDAN_SHADOW_PRISON = 40647, // +
-    ILLIDAN_SKULL_INTRO = 39656, // + Works with RemoveAura
+    ILLIDAN_SKULL_INTRO = 39656, // + Works with removeAllAurasById
     //ILLIDAN_SUMMON_PARASITIC_SHADOWFIENDS = 41915, // ? Haven't Tried
     //ILLIDAN_PARASITIC_SHADOWFIEND_WITH_SE = 41914,
     ILLIDAN_BERSERK = 45078,
@@ -2861,7 +2861,7 @@ public:
         if (_getTargetToChannel() != NULL)
         {
             Unit* pUnit = _getTargetToChannel();
-            pUnit->RemoveAura(SHADOW_DEMON_PARALYZE);
+            pUnit->removeAllAurasById(SHADOW_DEMON_PARALYZE);
         }
     }
 
@@ -2878,7 +2878,7 @@ public:
         {
             if (getRangeToObject(pTarget) <= 8.0f)
             {
-                pTarget->RemoveAura(SHADOW_DEMON_PARALYZE);
+                pTarget->removeAllAurasById(SHADOW_DEMON_PARALYZE);
                 _castAISpell(mConsumeSoul);
 
                 RemoveAIUpdateEvent();

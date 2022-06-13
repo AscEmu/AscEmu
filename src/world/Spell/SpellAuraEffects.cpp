@@ -210,6 +210,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraIncreaseRating,                                         // 189 SPELL_AURA_INCREASE_RATING
     &Aura::SpellAuraIncreaseRepGainPct,                                     // 190 SPELL_AURA_INCREASE_REP_GAIN_PCT
     &Aura::SpellAuraLimitSpeed,                                             // 191 SPELL_AURA_LIMIT_SPEED
+#if VERSION_STRING >= TBC
     &Aura::SpellAuraMeleeHaste,                                             // 192 SPELL_AURA_MELEE_HASTE
     &Aura::SpellAuraIncreaseTimeBetweenAttacksPCT,                          // 193 SPELL_AURA_INCREASE_TIME_BETWEEN_ATTACKS_PCT
     &Aura::spellAuraEffectNotImplemented,                                   // 194 SPELL_AURA_194
@@ -280,6 +281,8 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::spellAuraEffectNotImplemented,                                   // 259 SPELL_AURA_259
     &Aura::spellAuraEffectNotImplemented,                                   // 260 SPELL_AURA_260
     &Aura::SpellAuraPhase,                                                  // 261 SPELL_AURA_PHASE
+#endif
+#if VERSION_STRING >= WotLK
     &Aura::spellAuraEffectNotImplemented,                                   // 262 SPELL_AURA_262
     &Aura::SpellAuraAllowOnlyAbility,                                       // 263 SPELL_AURA_ALLOW_ONLY_ABILITY
     &Aura::spellAuraEffectNotImplemented,                                   // 264 SPELL_AURA_264
@@ -335,6 +338,8 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::spellAuraEffectNotImplemented,                                   // 314 SPELL_AURA_314
     &Aura::spellAuraEffectNotImplemented,                                   // 315 SPELL_AURA_315
     &Aura::spellAuraEffectNotImplemented,                                   // 316 SPELL_AURA_ALLOW_HASTE_AFFECT_DURATION
+#endif
+#if VERSION_STRING >= Cata
     &Aura::spellAuraEffectNotImplemented,                                   // 317 SPELL_AURA_317
     &Aura::spellAuraEffectNotImplemented,                                   // 318 SPELL_AURA_318
     &Aura::spellAuraEffectNotImplemented,                                   // 319 SPELL_AURA_319
@@ -389,6 +394,8 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::spellAuraEffectNotImplemented,                                   // 368 SPELL_AURA_368
     &Aura::spellAuraEffectNotImplemented,                                   // 369 SPELL_AURA_369
     &Aura::spellAuraEffectNotImplemented,                                   // 370 SPELL_AURA_370
+#endif
+#if VERSION_STRING >= Mop
     &Aura::spellAuraEffectNotImplemented,                                   // 371 SPELL_AURA_371
     &Aura::spellAuraEffectNotImplemented,                                   // 372 SPELL_AURA_372
     &Aura::spellAuraEffectNotImplemented,                                   // 373 SPELL_AURA_373
@@ -456,6 +463,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::spellAuraEffectNotImplemented,                                   // 435 SPELL_AURA_435
     &Aura::spellAuraEffectNotImplemented,                                   // 436 SPELL_AURA_436
     &Aura::spellAuraEffectNotImplemented,                                   // 437 SPELL_AURA_437
+#endif
 };
 
 const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
@@ -652,6 +660,7 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "SPELL_AURA_INCREASE_RATING",                                           // 189 missing // Apply Aura: Increases Rating
     "SPELL_AURA_INCREASE_REP_GAIN_PCT",                                     // 190 // used // Apply Aura: Increases Reputation Gained by % // https://classic.wowhead.com/spell=30754/ (SPELL_AURA_MOD_FACTION_REPUTATION_GAIN)
     "SPELL_AURA_LIMIT_SPEED",                                               // 191 speed limit // https://classic.wowhead.com/spell=29894/
+#if VERSION_STRING >= TBC
     "SPELL_AURA_MELEE_HASTE",                                               // 192 Apply Aura: Melee Slow %
     "SPELL_AURA_INCREASE_TIME_BETWEEN_ATTACKS_PCT",                         // 193 Apply Aura: Increase Time Between Attacks (Melee, Ranged and Spell) by %
     "SPELL_AURA_194",                                                       // 194 NOT USED ANYMORE - 174 used instead // Apply Aura: Increase Spell Damage by % of Intellect (All)
@@ -722,6 +731,8 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "SPELL_AURA_259",                                                       // 259 Mod Periodic Damage Taken Pct - Periodic Shadow damage taken increased by 3% // http://thottbot.com/s60448
     "SPELL_AURA_260",                                                       // 260 Screen Effect
     "SPELL_AURA_PHASE",                                                     // 261
+#endif
+#if VERSION_STRING >= WotLK
     "SPELL_AURA_262",                                                       // 262
     "SPELL_AURA_ALLOW_ONLY_ABILITY",                                        // 263
     "SPELL_AURA_264",                                                       // 264
@@ -777,6 +788,8 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "SPELL_AURA_314",                                                       // 314
     "SPELL_AURA_315",                                                       // 315
     "SPELL_AURA_ALLOW_HASTE_AFFECT_DURATION",                               // 316
+#endif
+#if VERSION_STRING >= Cata
     "SPELL_AURA_317",                                                       // 317
     "SPELL_AURA_318",                                                       // 318
     "SPELL_AURA_319",                                                       // 319
@@ -831,6 +844,8 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "SPELL_AURA_368",                                                       // 368
     "SPELL_AURA_369",                                                       // 369
     "SPELL_AURA_370",                                                       // 370
+#endif
+#if VERSION_STRING >= Mop
     "SPELL_AURA_371",                                                       // 371
     "SPELL_AURA_372",                                                       // 372
     "SPELL_AURA_373",                                                       // 373
@@ -898,6 +913,7 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "SPELL_AURA_435",                                                       // 435
     "SPELL_AURA_436",                                                       // 436
     "SPELL_AURA_437",                                                       // 437
+#endif
 };
 
 void Aura::spellAuraEffectNotImplemented(AuraEffectModifier* aurEff, bool /*apply*/)
@@ -1359,9 +1375,9 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
             }
             else
             {
-                getOwner()->RemoveAura(54817);
-                getOwner()->RemoveAura(54879);
-                getOwner()->RemoveAura(61610);
+                getOwner()->removeAllAurasById(54817);
+                getOwner()->removeAllAurasById(54879);
+                getOwner()->removeAllAurasById(61610);
             }
         } break;
 #endif
@@ -1422,7 +1438,7 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
     if (apply)
     {
         if (removePolymorph && getOwner()->hasUnitStateFlag(UNIT_STATE_POLYMORPHED))
-            getOwner()->RemoveAura(getOwner()->getTransformAura());
+            getOwner()->removeAllAurasById(getOwner()->getTransformAura());
 
         if (modelId != 0)
         {
@@ -1466,15 +1482,16 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
         getOwner()->restoreDisplayId();
 
         if (passiveSpellId != 0)
-            getOwner()->RemoveAura(passiveSpellId);
+            getOwner()->removeAllAurasById(passiveSpellId);
         if (secondaryPassiveSpell != 0)
-            getOwner()->RemoveAura(secondaryPassiveSpell);
+            getOwner()->removeAllAurasById(secondaryPassiveSpell);
     }
 
     // Remove auras which unit should not have anymore
-    for (auto& aur : getOwner()->m_auras)
+    for (uint16_t i = AuraSlots::PASSIVE_SLOT_START; i < AuraSlots::POSITIVE_SLOT_END; ++i)
     {
-        if (aur == nullptr || aur->isNegative())
+        auto* const aur = getOwner()->getAuraWithAuraSlot(i);
+        if (aur == nullptr)
             continue;
 
         const auto requiredForm = aur->getSpellInfo()->getRequiredShapeShift();
@@ -1569,9 +1586,9 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
                 int32_t count = 0;
 
                 auras.clear();
-                for (auto i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+                for (uint16_t i = AuraSlots::TOTAL_SLOT_START; i < AuraSlots::TOTAL_SLOT_END; ++i)
                 {
-                    Aura* aura = m_target->m_auras[i];
+                    Aura* aura = m_target->getAuraWithAuraSlot(i);
                     if (aura == nullptr)
                         continue;
 

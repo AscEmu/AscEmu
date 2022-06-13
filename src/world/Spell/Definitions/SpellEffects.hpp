@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "WorldConf.h"
+
 enum SpellEffect
 {
     SPELL_EFFECT_NULL = 0,
@@ -137,6 +139,8 @@ enum SpellEffect
     SPELL_EFFECT_PROSPECTING,               //    127
     SPELL_EFFECT_APPLY_FRIEND_AREA_AURA,    //    128
     SPELL_EFFECT_APPLY_ENEMY_AREA_AURA,     //    129
+    // TBC begins
+#if VERSION_STRING >= TBC
     SPELL_EFFECT_UNKNOWN_130,               //    130
     SPELL_EFFECT_UNKNOWN_131,               //    131
     SPELL_EFFECT_PLAY_MUSIC,                //    132
@@ -161,6 +165,9 @@ enum SpellEffect
     SPELL_EFFECT_UNKNOWN_151,               //    151
     SPELL_EFFECT_UNKNOWN_152,               //    152
     SPELL_EFFECT_SUMMON_TARGET,             //    153
+#endif
+    // Wotlk begins
+#if VERSION_STRING >= WotLK
     SPELL_EFFECT_SUMMON_REFER_A_FRIEND,     //    154
     SPELL_EFFECT_DUAL_WIELD_2H,             //    155
     SPELL_EFFECT_ADD_SOCKET,                //    156
@@ -172,6 +179,9 @@ enum SpellEffect
     SPELL_EFFECT_ACTIVATE_SPEC,             //    162
     SPELL_EFFECT_UNKNOWN_163,               //    163
     SPELL_EFFECT_UNKNOWN_164,               //    164
+#endif
+    // Cata begins
+#if VERSION_STRING >= Cata
     SPELL_EFFECT_UNKNOWN_165,               //    165
     SPELL_EFFECT_UNKNOWN_166,               //    166
     SPELL_EFFECT_UNKNOWN_167,               //    167
@@ -190,5 +200,7 @@ enum SpellEffect
     SPELL_EFFECT_UNKNOWN_180,               //    180
     SPELL_EFFECT_UNKNOWN_181,               //    181
     SPELL_EFFECT_UNKNOWN_182,               //    182
-    TOTAL_SPELL_EFFECTS                     //    183
+#endif
+    // TODO: mop
+    TOTAL_SPELL_EFFECTS
 };

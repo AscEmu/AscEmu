@@ -1609,7 +1609,7 @@ public:
             {
                 ReSummon = false;
                 getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(S_KILREK), true);
-                getCreature()->RemoveAura(BROKEN_PACT);
+                getCreature()->removeAllAurasById(BROKEN_PACT);
             }
         }
     }
@@ -1792,7 +1792,7 @@ public:
         Unit* uIllhoof = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(),
             getCreature()->GetPositionZ(), CN_ILLHOOF);
         if (uIllhoof != NULL && uIllhoof->isAlive())
-            uIllhoof->RemoveAura(SACRIFICE);
+            uIllhoof->removeAllAurasById(SACRIFICE);
 
         getCreature()->Despawn(10000, 0);
     }
@@ -2131,8 +2131,8 @@ public:
 
             getCreature()->castSpell(getCreature(), spells[8].info, spells[8].instant);
 */
-            getCreature()->RemoveAura(THRASH_AURA);
-            getCreature()->RemoveAura(WIELD_AXES);
+            getCreature()->removeAllAurasById(THRASH_AURA);
+            getCreature()->removeAllAurasById(WIELD_AXES);
 
             // Main hand weapon
             getCreature()->setVirtualItemSlotId(MELEE, 0);
@@ -2379,7 +2379,7 @@ public:
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        getCreature()->RemoveAura(NETHERBURN);
+        getCreature()->removeAllAurasById(NETHERBURN);
 
         GameObject* NDoor = getNearestGameObject(-11186.2f, -1665.14f, 281.398f, 185521);
         if (NDoor)
@@ -3339,7 +3339,7 @@ public:
                 break;
         }
 
-        //_unit->RemoveAllAuras();
+        //_unit->removeAllAuras();
         //_unit->setEmoteState(EMOTE_ONESHOT_EAT);
         //_unit->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         spawnCreature(17533, -10891.582f, -1755.5177f, 90.476f, 4.61f);

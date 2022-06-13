@@ -491,7 +491,11 @@ void Item::setItemProperties(ItemProperties const* itemProperties) { m_itemPrope
 bool Item::fitsToSpellRequirements(SpellInfo const* spellInfo) const
 {
     const auto itemProperties = getItemProperties();
+#if VERSION_STRING < WotLK
+    const auto isEnchantSpell = spellInfo->hasEffect(SPELL_EFFECT_ENCHANT_ITEM) || spellInfo->hasEffect(SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY);
+#else
     const auto isEnchantSpell = spellInfo->hasEffect(SPELL_EFFECT_ENCHANT_ITEM) || spellInfo->hasEffect(SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY) || spellInfo->hasEffect(SPELL_EFFECT_ADD_SOCKET);
+#endif
 
     if (spellInfo->getEquippedItemClass() != -1)
     {

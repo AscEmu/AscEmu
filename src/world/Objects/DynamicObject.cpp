@@ -278,7 +278,7 @@ void DynamicObject::UpdateTargets()
 
             if ((target != nullptr) && (getDistanceSq(target) > radius))
             {
-                target->RemoveAura(m_spellProto->getId());
+                target->removeAllAurasById(m_spellProto->getId());
                 targets.erase(jtr2);
             }
         }
@@ -315,7 +315,7 @@ void DynamicObject::Remove()
         target = m_WorldMap->getUnit(TargetGUID);
 
         if (target != nullptr)
-            target->RemoveAura(m_spellProto->getId());
+            target->removeAllAurasById(m_spellProto->getId());
     }
 
     //\todo: Despawn animation only for GOs? Zyres.

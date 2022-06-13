@@ -670,8 +670,10 @@ void ScriptMgr::register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback
         return;
     }
 
+#if VERSION_STRING >= TBC
     if (!sp->hasEffectApplyAuraName(SPELL_AURA_DUMMY) && !sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_DUMMY))
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr registered a dummy aura handler for Spell ID: %u (%s), but spell has no dummy aura!", entry, sp->getName().c_str());
+#endif
 
     _auras.insert(HandleDummyAuraMap::value_type(entry, callback));
 }

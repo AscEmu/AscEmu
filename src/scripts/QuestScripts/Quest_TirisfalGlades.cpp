@@ -138,7 +138,7 @@ public:
     {
         getCreature()->getThreatManager().clearAllThreat();
         getCreature()->getThreatManager().removeMeFromThreatLists();
-        getCreature()->RemoveNegativeAuras();
+        getCreature()->removeAllNegativeAuras();
         getCreature()->setFaction(68);
         _setMeleeDisabled(true);
         getCreature()->getAIInterface()->setAllowedToEnterCombat(false);

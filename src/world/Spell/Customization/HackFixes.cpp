@@ -756,11 +756,13 @@ void SpellMgr::applyHackFixes()
                 sp->removeAttributes(ATTRIBUTES_ONLY_OUTDOORS);
             }
 
+#if VERSION_STRING >= WotLK
             if (sp->getEffectApplyAuraName(b) == SPELL_AURA_PREVENT_RESURRECTION)
             {
                 sp->addAttributes(ATTRIBUTES_NEGATIVE);
                 sp->addAttributesExC(ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD);
             }
+#endif
         }
 
         // DankoDJ: Refactoring session 16/02/2016 new functions
@@ -2795,6 +2797,7 @@ void SpellMgr::applyHackFixes()
         sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
     }
 
+#if VERSION_STRING >= TBC
     //    Empower Rune Weapon
     sp = getMutableSpellInfo(47568);
     if (sp != nullptr)
@@ -2803,6 +2806,7 @@ void SpellMgr::applyHackFixes()
         sp->setEffectBasePoints(1, 2);
         sp->setEffectMiscValue(RUNE_UNHOLY, 2);
     }
+#endif
 
     // DEATH AND DECAY
     sp = getMutableSpellInfo(49937);

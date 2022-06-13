@@ -121,7 +121,7 @@ bool ShatterEffect(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!target)
         return true;
 
-    target->RemoveAura(SPELL_STONED);
+    target->removeAllAurasById(SPELL_STONED);
     target->castSpell(target, SPELL_SHATTER_EFFECT, true);
 
     return true;

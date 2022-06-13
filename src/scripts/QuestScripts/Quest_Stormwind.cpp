@@ -51,7 +51,7 @@ public:
     void AIUpdate() override
     {
         getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting. No one else needs to get hurt.");
-        getCreature()->RemoveNegativeAuras();
+        getCreature()->removeAllNegativeAuras();
         getCreature()->setFaction(12);
         getCreature()->SetHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();

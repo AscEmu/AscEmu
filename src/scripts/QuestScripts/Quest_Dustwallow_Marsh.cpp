@@ -54,7 +54,7 @@ public:
         if (friendlyTimer == BALOS_FRIENDLY_TIMER)
         {
             // set Balos Jacken friendly and start friendlyTimer cooldown
-            getCreature()->RemoveNegativeAuras();
+            getCreature()->removeAllNegativeAuras();
             getCreature()->setFaction(35);
             getCreature()->SetHealthPct(100);
             getCreature()->getThreatManager().clearAllThreat();
@@ -125,7 +125,7 @@ public:
 
     void AIUpdate() override
     {
-        getCreature()->RemoveNegativeAuras();
+        getCreature()->removeAllNegativeAuras();
         getCreature()->setFaction(29);
         getCreature()->SetHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();
@@ -191,7 +191,7 @@ public:
     void AIUpdate() override
     {
         getCreature()->emote(EMOTE_STATE_KNEEL);
-        getCreature()->RemoveNegativeAuras();
+        getCreature()->removeAllNegativeAuras();
         getCreature()->setFaction(12);
         getCreature()->SetHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();

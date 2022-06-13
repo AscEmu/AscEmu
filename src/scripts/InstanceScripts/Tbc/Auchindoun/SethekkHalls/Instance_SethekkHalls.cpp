@@ -478,7 +478,7 @@ public:
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        getCreature()->RemoveAura(SP_ANZU_BANISH);
+        getCreature()->removeAllAurasById(SP_ANZU_BANISH);
 
         Banished = false;
     }
@@ -493,7 +493,7 @@ public:
 
         if (Banished)
         {
-            getCreature()->RemoveAura(SP_ANZU_BANISH);
+            getCreature()->removeAllAurasById(SP_ANZU_BANISH);
             Banished = false;
         }
     }

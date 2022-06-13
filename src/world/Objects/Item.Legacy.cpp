@@ -545,7 +545,7 @@ void Item::ApplyEnchantmentBonus(EnchantmentSlot Slot, bool Apply)
                     else
                     {
                         if (Entry->spell[c] != 0)
-                            m_owner->RemoveAuraByItemGUID(Entry->spell[c], getGuid());
+                            m_owner->removeAuraByItemGuid(Entry->spell[c], getGuid());
                     }
                 }
                 break;

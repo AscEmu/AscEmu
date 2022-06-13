@@ -390,7 +390,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32_t id)
     DropFlag2(plr, id);
     SetWorldState(EOTS_NETHERWING_FLAG_READY, 1);
 
-    plr->RemoveAura(EOTS_NETHERWING_FLAG_SPELL);
+    plr->removeAllAurasById(EOTS_NETHERWING_FLAG_SPELL);
     plr->m_bgScore.MiscData[BG_SCORE_EOTS_FLAGS_CAPTURED]++;
     UpdatePvPData();
 }
@@ -478,7 +478,7 @@ void EyeOfTheStorm::OnRemovePlayer(Player* plr)
     }
 
     if (!m_started)
-        plr->RemoveAura(BG_PREPARATION);
+        plr->removeAllAurasById(BG_PREPARATION);
 }
 
 void EyeOfTheStorm::DropFlag2(Player* plr, uint32_t id)
@@ -518,7 +518,7 @@ void EyeOfTheStorm::HookOnFlagDrop(Player* plr)
     if (m_flagHolder != plr->getGuidLow())
         return;
 
-    plr->RemoveAura(EOTS_NETHERWING_FLAG_SPELL);
+    plr->removeAllAurasById(EOTS_NETHERWING_FLAG_SPELL);
     plr->castSpell(plr, EOTS_RECENTLY_DROPPED_FLAG, true);
 
     m_dropFlag->SetPosition(plr->GetPosition());
@@ -927,7 +927,7 @@ void EyeOfTheStorm::OnStart()
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
-            (*itr)->RemoveAura(BG_PREPARATION);
+            (*itr)->removeAllAurasById(BG_PREPARATION);
         }
     }
 

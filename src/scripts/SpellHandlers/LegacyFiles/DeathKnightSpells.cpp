@@ -76,7 +76,7 @@ bool DeathStrike(uint8_t /*effectIndex*/, Spell* pSpell)
     Unit* Target = pSpell->GetUnitTarget();
 
     // Get count of diseases on target which were casted by caster
-    uint32_t count = Target->GetAuraCountWithDispelType(DISPEL_DISEASE, pSpell->getPlayerCaster()->getGuid());
+    uint32_t count = Target->getAuraCountWithDispelType(DISPEL_DISEASE, pSpell->getPlayerCaster()->getGuid());
 
     // Not a logical error, Death Strike should heal only when diseases are presented on its target
     if (count)

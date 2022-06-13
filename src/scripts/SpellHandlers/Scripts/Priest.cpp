@@ -67,7 +67,7 @@ public:
     void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
     {
         // Remove Body and Soul poison proc
-        aur->getOwner()->RemoveAura(SPELL_BODY_AND_SOUL_POISON);
+        aur->getOwner()->removeAllAurasById(SPELL_BODY_AND_SOUL_POISON);
     }
 };
 #endif

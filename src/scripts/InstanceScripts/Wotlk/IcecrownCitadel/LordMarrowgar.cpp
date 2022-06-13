@@ -74,8 +74,8 @@ void LordMarrowgarAI::Reset()
     scriptEvents.resetEvents();
 
     getCreature()->setSpeedRate(TYPE_RUN, baseSpeed, true);
-    getCreature()->RemoveAura(SPELL_BONE_STORM);
-    getCreature()->RemoveAura(SPELL_BERSERK);
+    getCreature()->removeAllAurasById(SPELL_BONE_STORM);
+    getCreature()->removeAllAurasById(SPELL_BERSERK);
 
     boneSlice = false;
     boneSpikeImmune.clear();
@@ -388,13 +388,13 @@ void BoneSpikeAI::OnSummon(Unit* summoner)
 void BoneSpikeAI::OnTargetDied(Unit* pTarget)
 {
     getCreature()->Despawn(100, 0);
-    pTarget->RemoveAura(SPELL_IMPALED);
+    pTarget->removeAllAurasById(SPELL_IMPALED);
 }
 
 void BoneSpikeAI::OnDied(Unit* /*pTarget*/)
 {       
     if (summon)
-        summon->RemoveAura(SPELL_IMPALED);
+        summon->removeAllAurasById(SPELL_IMPALED);
      
     getCreature()->Despawn(100, 0);
 }
@@ -420,9 +420,7 @@ void BoneStorm::onAuraCreate(Aura* aur)
     if (aur->GetUnitCaster()->isCreature())
         duration = static_cast<Creature*>(aur->GetUnitCaster())->GetScript()->RAID_MODE<uint32_t>(20000, 30000, 20000, 30000);
 
-    aur->setOriginalDuration(duration);
-    aur->setMaxDuration(duration);
-    aur->setTimeLeft(duration);
+    aur->setNewMaxDuration(duration, false);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

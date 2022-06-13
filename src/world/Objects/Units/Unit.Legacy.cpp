@@ -1010,6 +1010,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
         // MIT End
         // APGL Start
 
+#if VERSION_STRING >= TBC
         // SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE
         for (uint8 i = 0; i < 3; ++i)
         {
@@ -1020,6 +1021,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                 spell_proc->doEffect(victim, CastingSpell, flag, damageInfo.realDamage, damageInfo.absorbedDamage, damageInfo.weaponType);
             }
         }
+#endif
 
         // give spell_proc a chance to handle the effect
         const auto scriptResult = sScriptMgr.callScriptedSpellProcDoEffect(spell_proc, victim, CastingSpell, damageInfo);
@@ -5786,7 +5788,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                 case 16886: // druid - Nature's Grace
                 {
                     // Remove aura if it exists so it gets reapplied
-                    RemoveAura(16886);
+                    removeAllAurasById(16886);
                 }
                 break;
                 case 38395:
@@ -5900,7 +5902,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
 
         if (origId == 39805)
         {
-            RemoveAura(39805);          // Remove lightning overload aura after procing
+            removeAllAurasById(39805);          // Remove lightning overload aura after procing
         }
 
         if (spell_proc->getCreatedByAura() != nullptr)
@@ -7687,7 +7689,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             modPower(POWER_TYPE_RAGE, 1000 - getPower(POWER_TYPE_RAGE));
     }
 
-    RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);
+    removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);
     //////////////////////////////////////////////////////////////////////////////////////////
     //extra strikes processing
     if (!m_extraAttackCounter)
@@ -7749,30 +7751,21 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     return dmg;
 }
 
-bool Unit::RemoveAura(Aura* aur)
-{
-    if (aur == NULL)
-        return false;
-
-    aur->removeAura();
-    return true;
-}
-
 bool Unit::RemoveAurasByHeal()
 {
     bool res = false;
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
+    for (uint16_t x = AuraSlots::TOTAL_SLOT_START; x < AuraSlots::TOTAL_SLOT_END; x++)
     {
-        if (m_auras[x])
+        if (auto* const aur = getAuraWithAuraSlot(x))
         {
-            switch (m_auras[x]->getSpellId())
+            switch (aur->getSpellId())
             {
                 // remove after heal
                 case 35321:
                 case 38363:
                 case 39215:
                 {
-                    m_auras[x]->removeAura();
+                    aur->removeAura();
                     res = true;
                 }
                 break;
@@ -7783,7 +7776,7 @@ bool Unit::RemoveAurasByHeal()
                 {
                     if (getHealth() == getMaxHealth())
                     {
-                        m_auras[x]->removeAura();
+                        aur->removeAura();
                         res = true;
                     }
                 }
@@ -7791,10 +7784,10 @@ bool Unit::RemoveAurasByHeal()
                 // remove at p% health
                 case 38772:
                 {
-                    uint32 p = m_auras[x]->getSpellInfo()->getEffectBasePoints(1);
+                    uint32 p = aur->getSpellInfo()->getEffectBasePoints(1);
                     if (getMaxHealth() * p <= getHealth() * 100)
                     {
-                        m_auras[x]->removeAura();
+                        aur->removeAura();
                         res = true;
                     }
                 }
@@ -7810,9 +7803,9 @@ bool Unit::AuraActionIf(AuraAction* action, AuraCondition* condition)
 {
     bool done = false;
 
-    for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; i++)
+    for (uint16_t i = AuraSlots::TOTAL_SLOT_START; i < AuraSlots::TOTAL_SLOT_END; i++)
     {
-        Aura* aura = m_auras[i];
+        Aura* aura = getAuraWithAuraSlot(i);
         if (aura == NULL)
             continue;
 
@@ -7824,142 +7817,6 @@ bool Unit::AuraActionIf(AuraAction* action, AuraCondition* condition)
     }
 
     return done;
-}
-
-void Unit::ClearAllAreaAuraTargets()
-{
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        Aura* a = m_auras[x];
-        if (a == NULL)
-            continue;
-
-        if (a->m_areaAura)   // This was not casted by us, so no removal
-            continue;
-
-        if (a->IsAreaAura())
-            a->ClearAATargets();
-    }
-}
-
-void Unit::RemoveAllAreaAuraByOther()
-{
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        Aura* a = m_auras[x];
-        if (a == NULL)   // empty slot
-            continue;
-
-        if (!a->m_areaAura)   // not area aura, or we casted it
-            continue;
-
-        a->removeAura();
-    }
-}
-
-bool Unit::RemoveAura(uint32 spellId, uint64 guid /* = 0*/)
-{
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        if (m_auras[x])
-        {
-            if (m_auras[x]->getSpellId() == spellId)
-            {
-                if (guid && m_auras[x]->getCasterGuid() != guid)
-                    continue;
-
-                m_auras[x]->removeAura();
-                return true;                // sky: yes, only one, see bug charges/auras queues
-            }
-        }
-    }
-    return false;
-}
-
-bool Unit::RemoveAuraByItemGUID(uint32 spellId, uint64 guid)
-{
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        if (m_auras[x])
-        {
-            if (m_auras[x]->getSpellId() == spellId && m_auras[x]->itemCasterGUID == guid)
-            {
-                m_auras[x]->removeAura();
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-void Unit::RemoveNegativeAuras()
-{
-    for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_REMOVABLE_AURAS_END; x++)
-    {
-        if (m_auras[x])
-        {
-            if (m_auras[x]->getSpellInfo()->isDeathPersistent())
-                continue;
-            else
-                m_auras[x]->removeAura();
-        }
-    }
-}
-
-void Unit::RemoveAllAuras()
-{
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        if (m_auras[x])
-            m_auras[x]->removeAura();
-    }
-}
-
-void Unit::RemoveAllNonPersistentAuras()
-{
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        if (m_auras[x])
-        {
-            if (m_auras[x]->getSpellInfo()->isDeathPersistent())
-                continue;
-
-            m_auras[x]->removeAura();
-        }
-    }
-}
-
-//ex:to remove morph spells
-void Unit::RemoveAllAuraType(uint32 auratype)
-{
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-        if (m_auras[x] && m_auras[x]->hasAuraEffect(static_cast<AuraEffect>(auratype)))
-            m_auras[x]->removeAura();//remove all morph auras containing to this spell (like wolf morph also gives speed)
-}
-
-bool Unit::SetAurDuration(uint32 spellId, Unit* caster, uint32 duration)
-{
-    sLogger.debug("setAurDuration2");
-    Aura* aur = getAuraWithIdForGuid(spellId, caster->getGuid());
-    if (!aur)
-        return false;
-    aur->setTimeLeft(duration);
-    sEventMgr.ModifyEventTimeLeft(aur, EVENT_AURA_REMOVE, duration);
-
-    return true;
-}
-
-bool Unit::SetAurDuration(uint32 spellId, uint32 duration)
-{
-    Aura* aur = getAuraWithId(spellId);
-    if (!aur)
-        return false;
-
-    sLogger.debug("setAurDuration2");
-    aur->setTimeLeft(duration);
-    sEventMgr.ModifyEventTimeLeft(aur, EVENT_AURA_REMOVE, duration);
-
-    return true;
 }
 
 void Unit::DeMorph()
@@ -8017,79 +7874,8 @@ uint32 Unit::ManaShieldAbsorb(uint32 dmg)
     setPower(POWER_TYPE_MANA, mana - cost);
     m_manashieldamt -= potential;
     if (!m_manashieldamt)
-        RemoveAura(m_manaShieldId);
+        removeAllAurasById(m_manaShieldId);
     return potential;
-}
-
-void Unit::RemoveAurasByInterruptFlag(uint32 flag)
-{
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        Aura* a = m_auras[x];
-        if (a == NULL)
-            continue;
-
-        //some spells do not get removed all the time only at specific intervals
-        if (a->getSpellInfo()->getAuraInterruptFlags() & flag)
-        {
-            a->removeAura();
-            m_auras[x] = NULL;
-        }
-    }
-}
-
-Aura* Unit::GetAuraWithSlot(uint32 slot)
-{
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-        if (m_auras[x] && m_auras[x]->m_visualSlot == (uint16)slot)
-            return m_auras[x];
-
-    return NULL;
-}
-
-void Unit::DropAurasOnDeath()
-{
-    for (uint32 x = MAX_REMOVABLE_AURAS_START; x < MAX_REMOVABLE_AURAS_END; x++)
-    {
-        if (m_auras[x])
-        {
-            if (m_auras[x]->getSpellInfo()->isDeathPersistent())
-                continue;
-
-            m_auras[x]->removeAura();
-        }
-    }
-}
-
-void Unit::RemoveAurasByBuffType(uint32 buff_type, const uint64 & guid, uint32 skip)
-{
-    uint64 sguid = buff_type >= SPELL_TYPE_BLESSING ? guid : 0;
-
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        if (m_auras[x]  //have aura
-            && (m_auras[x]->getSpellInfo()->custom_BGR_one_buff_on_target & buff_type) // aura is in same group
-            && m_auras[x]->getSpellId() != skip // make sure to not do self removes in case aura will stack
-            && (!sguid || (sguid && m_auras[x]->getCasterGuid() == sguid)) // we either remove everything or just buffs from us
-            )
-        {
-            m_auras[x]->removeAura();
-        }
-    }
-}
-
-bool Unit::HasAurasOfBuffType(uint32 buff_type, const uint64 & guid, uint32 skip)
-{
-    uint64 sguid = (buff_type == SPELL_TYPE_BLESSING || buff_type == SPELL_TYPE_WARRIOR_SHOUT) ? guid : 0;
-
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        if (m_auras[x] && m_auras[x]->getSpellInfo()->custom_BGR_one_buff_on_target & buff_type && m_auras[x]->getSpellId() != skip)
-            if (!sguid || (m_auras[x]->getCasterGuid() == sguid))
-                return true;
-    }
-
-    return false;
 }
 
 AuraCheckResponse Unit::AuraCheck(SpellInfo const* proto, Object* /*caster*/)
@@ -8103,9 +7889,9 @@ AuraCheckResponse Unit::AuraCheck(SpellInfo const* proto, Object* /*caster*/)
     uint32 rank = proto->custom_RankNumber;
 
     // look for spells with same namehash
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
+    for (uint16_t x = AuraSlots::TOTAL_SLOT_START; x < AuraSlots::TOTAL_SLOT_END; x++)
     {
-        Aura* aura = m_auras[x];
+        Aura* aura = getAuraWithAuraSlot(x);
         if (aura != NULL)
         {
             // Very hacky way to check if spell is same but different rank
@@ -8200,10 +7986,10 @@ AuraCheckResponse Unit::AuraCheck(SpellInfo const* proto, Aura* aur, Object* /*c
 void Unit::OnPushToWorld()
 {
     //Zack : we already relocated events on aura add ?
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+    for (const auto& aur : getAuraList())
     {
-        if (m_auras[x] != 0)
-            m_auras[x]->RelocateEvents();
+        if (aur != nullptr)
+            aur->RelocateEvents();
     }
 
 #if VERSION_STRING >= WotLK
@@ -8255,8 +8041,8 @@ void Unit::RemoveFromWorld(bool free_guid)
         }
     }
 
-    ClearAllAreaAuraTargets();
-    RemoveAllAreaAuraByOther();
+    clearAllAreaAuraTargets();
+    removeAllAreaAurasCastedByOther();
 
     // Attempt to prevent memory corruption
     for (auto& obj : getInRangeObjectsSet())
@@ -8270,16 +8056,16 @@ void Unit::RemoveFromWorld(bool free_guid)
     Object::RemoveFromWorld(free_guid);
 
     //zack: should relocate new events to new eventmanager and not to -1
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+    for (uint16_t x = AuraSlots::TOTAL_SLOT_START; x < AuraSlots::TOTAL_SLOT_END; ++x)
     {
-        if (m_auras[x] != 0)
+        if (auto* const aur = getAuraWithAuraSlot(x))
         {
-            if (m_auras[x]->m_deleted)
+            if (aur->m_deleted)
             {
-                m_auras[x] = NULL;
+                m_auraList[x] = nullptr;
                 continue;
             }
-            m_auras[x]->RelocateEvents();
+            aur->RelocateEvents();
         }
     }
     getThreatManager().removeMeFromThreatLists();
@@ -8294,67 +8080,29 @@ void Unit::Deactivate(WorldMap* mgr)
     Object::Deactivate(mgr);
 }
 
-void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
-{
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        Aura* a = m_auras[x];
-        if (a == nullptr)
-            continue;
-
-        //some spells do not get removed all the time only at specific intervals
-        if ((a->getSpellInfo()->getAuraInterruptFlags() & flag) && (a->getSpellInfo()->getId() != skip))
-        {
-            a->removeAura();
-        }
-    }
-}
-
-bool Unit::HasAuraWithMechanics(uint32 mechanic)
-{
-    for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
-        if (m_auras[x] && m_auras[x]->getSpellInfo())
-            if (Spell::GetMechanic(m_auras[x]->getSpellInfo()) == mechanic)
-                return true;
-
-    return false;
-}
-
 bool Unit::IsPoisoned()
 {
-    for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
-        if (m_auras[x] && m_auras[x]->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_POISON)
+    for (uint16_t x = AuraSlots::NEGATIVE_SLOT_START; x < AuraSlots::NEGATIVE_SLOT_END; ++x)
+    {
+        const auto* aur = getAuraWithAuraSlot(x);
+        if (aur && aur->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_POISON)
             return true;
+    }
 
     return false;
-}
-
-void Unit::RemoveAurasOfSchool(uint32 School, bool Positive, bool Immune)
-{
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
-    {
-        if (m_auras[x]
-            && m_auras[x]->getSpellInfo()->getFirstSchoolFromSchoolMask() == School
-            && (m_auras[x]->isNegative() || Positive)
-            && (!Immune && m_auras[x]->getSpellInfo()->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY)
-            )
-        {
-            m_auras[x]->removeAura();
-        }
-    }
 }
 
 bool Unit::IsDazed()
 {
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+    for (const auto& aur : getAuraList())
     {
-        if (m_auras[x])
+        if (aur)
         {
-            if (m_auras[x]->getSpellInfo()->getMechanicsType() == MECHANIC_ENSNARED)
+            if (aur->getSpellInfo()->getMechanicsType() == MECHANIC_ENSNARED)
                 return true;
 
             for (uint8_t y = 0; y < 3; y++)
-                if (m_auras[x]->getSpellInfo()->getEffectMechanic(y) == MECHANIC_ENSNARED)
+                if (aur->getSpellInfo()->getEffectMechanic(y) == MECHANIC_ENSNARED)
                     return true;
         }
     }
@@ -8514,92 +8262,6 @@ float Unit::get_chance_to_daze(Unit* target)
         return 40.0f;
     else
         return chance_to_daze;
-}
-
-void Unit::DispelAll(bool positive)
-{
-    for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
-    {
-        if (m_auras[i] != NULL)
-            if (!m_auras[i]->isNegative() && positive || m_auras[i]->isNegative())
-                m_auras[i]->removeAura();
-    }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// bool Unit::RemoveAllAurasByMechanic (renamed from MechanicImmunityMassDispel)
-// Removes all auras on this unit that are of a specific mechanic.
-// Useful for things like.. Apply Aura: Immune Mechanic, where existing (de)buffs are *always supposed* to be removed.
-// I'm not sure if this goes here under unit.
-//
-// \param uint32 MechanicType
-// \return False if no buffs were dispelled, true if more than 0 were dispelled.
-//////////////////////////////////////////////////////////////////////////////////////////
-
-// MaxDispel was set to -1 which will led to a uint32 of 4294967295
-bool Unit::RemoveAllAurasByMechanic(uint32 MechanicType, uint32 /*MaxDispel = 0*/, bool HostileOnly = true)
-{
-    sLogger.debug("Unit::MechanicImmunityMassDispel called, mechanic: %u" , MechanicType);
-    uint32 DispelCount = 0;
-    for (uint32 x = (HostileOnly ? MAX_NEGATIVE_AURAS_EXTEDED_START : MAX_POSITIVE_AURAS_EXTEDED_START); x < MAX_REMOVABLE_AURAS_END; x++)    // If HostileOnly = 1, then we use aura slots 40-56 (hostile). Otherwise, we use 0-56 (all)
-    {
-        // This check is will never be true since DispelCount is 0 and MaxDispel was 4294967295!
-        /*if (DispelCount >= MaxDispel && MaxDispel > 0)
-            return true;*/
-
-        if (m_auras[x])
-        {
-            if (m_auras[x]->getSpellInfo()->getMechanicsType() == MechanicType)   // Remove all mechanics of type MechanicType (my english goen boom)
-            {
-                sLogger.debug("Removed aura. [AuraSlot %u, SpellId %u]", x, m_auras[x]->getSpellId());
-                ///\todo Stop moving if fear was removed.
-                m_auras[x]->removeAura(); // EZ-Remove
-                DispelCount++;
-            }
-            else if (MechanicType == MECHANIC_ENSNARED)   // if got immunity for slow, remove some that are not in the mechanics
-            {
-                for (uint8 i = 0; i < 3; i++)
-                {
-                    // SNARE + ROOT
-                    if (m_auras[x]->getSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_MOD_DECREASE_SPEED || m_auras[x]->getSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_MOD_ROOT)
-                    {
-                        m_auras[x]->removeAura();
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    return (DispelCount == 0);
-}
-
-void Unit::RemoveAllMovementImpairing()
-{
-    for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_REMOVABLE_AURAS_END; x++)
-    {
-        if (m_auras[x] != NULL)
-        {
-            if (m_auras[x]->getSpellInfo()->getMechanicsType() == MECHANIC_ROOTED
-                || m_auras[x]->getSpellInfo()->getMechanicsType() == MECHANIC_ENSNARED
-                || m_auras[x]->getSpellInfo()->getMechanicsType() == MECHANIC_DAZED)
-
-            {
-                m_auras[x]->removeAura();
-            }
-            else
-            {
-                for (uint8 i = 0; i < 3; i++)
-                {
-                    if (m_auras[x]->getSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_MOD_DECREASE_SPEED
-                        || m_auras[x]->getSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_MOD_ROOT)
-                    {
-                        m_auras[x]->removeAura();
-                        break;
-                    }
-                }
-            }
-        }
-    }
 }
 
 void Unit::EventModelChange()
@@ -8879,7 +8541,7 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
                     if (member == NULL)
                         continue;
 
-                    member->RemoveAura(59725);
+                    member->removeAllAurasById(59725);
                 }
             }
             pGroup->Unlock();
@@ -8918,23 +8580,6 @@ void Unit::RemoveGarbage()
 
 void Unit::die(Unit* /*pAttacker*/, uint32 /*damage*/, uint32 /*spellid*/)
 {}
-
-
-uint32 Unit::GetAuraCountWithDispelType(uint32 dispel_type, uint64 guid)
-{
-    uint32 result = 0;
-
-    for (auto& m_aura : m_auras)
-    {
-        if (m_aura == nullptr)
-            continue;
-
-        if (m_aura->getSpellInfo()->getDispelType() == dispel_type && (guid == 0 || m_aura->getCasterGuid() == guid))
-            result++;
-    }
-
-    return result;
-}
 
 void Unit::BuildPetSpellList(WorldPacket& data)
 {

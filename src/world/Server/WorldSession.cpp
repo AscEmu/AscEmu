@@ -374,7 +374,7 @@ void WorldSession::LogoutPlayer(bool Save)
         if (Save)
             _player->SaveToDB(false);
 
-        // Dismounting with RemoveAllAuras may in certain cases add a player
+        // Dismounting with removeAllAuras may in certain cases add a player
         // aura,
         // which can result in a nice crash during shutdown. Therefore let's
         // dismount on logout.
@@ -382,7 +382,7 @@ void WorldSession::LogoutPlayer(bool Save)
         // ;)
         _player->dismount();
 
-        _player->RemoveAllAuras();
+        _player->removeAllAuras();
         if (_player->IsInWorld())
             _player->RemoveFromWorld();
 

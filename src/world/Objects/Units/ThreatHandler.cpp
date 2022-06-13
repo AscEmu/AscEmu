@@ -92,31 +92,16 @@ bool ThreatReference::shouldBeSuppressed() const
             return true;
     
     // check if we have any aura that suppresses us
-    for (uint32_t x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
-    {
-        if (_victim->m_auras[x])
-        {
-            for (uint8_t y = 0; y < 3; ++y)
-            {
-                switch (_victim->m_auras[x]->getSpellInfo()->getEffectApplyAuraName(y))
-                {
-                case SPELL_AURA_MOD_STUN:
-                case SPELL_AURA_MOD_CONFUSE:
-                    return true;
-                    break;
-                }
-            }
-        }
-    }
-
-    return false;
+    return _victim->hasAuraWithAuraEffect(SPELL_AURA_MOD_STUN) || _victim->hasAuraWithAuraEffect(SPELL_AURA_MOD_CONFUSE);
 }
 
 void ThreatReference::updateTauntState(TauntState state)
 {
+#if VERSION_STRING >= TBC
     // Check for SPELL_AURA_MOD_DETAUNT
     if (state < TAUNT_STATE_TAUNT && _victim->hasAuraWithAuraEffect(SPELL_AURA_MOD_DETAUNT))
         state = TAUNT_STATE_DETAUNT;
+#endif
 
     if (state == _taunted)
         return;
@@ -641,21 +626,12 @@ void ThreatManager::matchUnitThreatToHighestThreat(Unit* target)
 
 void ThreatManager::tauntUpdate()
 {
-     _tauntEffects.clear();
+    _tauntEffects.clear();
 
     // check if we have any aura that taunts us
-    for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+    for (const auto& aurEff : _owner->getAuraEffectList(SPELL_AURA_MOD_TAUNT))
     {
-        if (_owner->m_auras[x])
-        {
-            for (uint8_t y = 0; y < MAX_SPELL_EFFECTS; ++y)
-            {
-                if (_owner->m_auras[x]->getSpellInfo()->getEffectApplyAuraName(y) == SPELL_AURA_MOD_TAUNT)
-                {
-                    _tauntEffects.push_back(_owner->m_auras[x]->getCasterGuid());
-                }
-            }
-        }
+        _tauntEffects.push_back(aurEff->getAura()->getCasterGuid());
     }
 
     uint32_t state = ThreatReference::TAUNT_STATE_TAUNT;

@@ -211,6 +211,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectProspecting,             // 127 SPELL_EFFECT_PROSPECTING
     &Spell::SpellEffectApplyFriendAA,           // 128 SPELL_EFFECT_APPLY_FRIEND_AA
     &Spell::SpellEffectApplyEnemyAA,            // 129 SPELL_EFFECT_APPLY_ENEMY_AA
+#if VERSION_STRING >= TBC
     &Spell::SpellEffectRedirectThreat,          // 130 SPELL_EFFECT_REDIRECT_THREAT
     &Spell::spellEffectNotImplemented,          // 131 SPELL_EFFECT_NULL_131
     &Spell::SpellEffectPlayMusic,               // 132 SPELL_EFFECT_PLAY_MUSIC
@@ -235,6 +236,8 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::spellEffectTriggerSpell,            // 151 SPELL_EFFECT_TRIGGER_SPELL
     &Spell::spellEffectNotImplemented,          // 152 SPELL_EFFECT_NULL_152
     &Spell::SpellEffectCreatePet,               // 153 SPELL_EFFECT_CREATE_PET
+#endif
+#if VERSION_STRING >= WotLK
     &Spell::SpellEffectTeachTaxiPath,           // 154 SPELL_EFFECT_TEACH_TAXI_PATH
     &Spell::SpellEffectDualWield2H,             // 155 SPELL_EFFECT_DUAL_WIELD_2H
     &Spell::SpellEffectEnchantItemPrismatic,    // 156 SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC
@@ -245,7 +248,9 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectLearnSpec,               // 161 SPELL_EFFECT_LEARN_SPEC
     &Spell::SpellEffectActivateSpec,            // 162 SPELL_EFFECT_ACTIVATE_SPEC
     &Spell::spellEffectNotImplemented,          // 163 SPELL_EFFECT_NULL_163
-    &Spell::spellEffectNotImplemented,          // 164 SPELL_EFFECT_NULL_154
+    &Spell::spellEffectNotImplemented,          // 164 SPELL_EFFECT_NULL_164
+#endif
+#if VERSION_STRING >= Cata
     &Spell::spellEffectNotImplemented,          // 165 SPELL_EFFECT_NULL_165
     &Spell::spellEffectNotImplemented,          // 166 SPELL_EFFECT_NULL_166
     &Spell::spellEffectNotImplemented,          // 167 SPELL_EFFECT_NULL_167
@@ -264,6 +269,8 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::spellEffectNotImplemented,          // 180 SPELL_EFFECT_NULL_180
     &Spell::spellEffectNotImplemented,          // 181 SPELL_EFFECT_NULL_181
     &Spell::spellEffectNotImplemented           // 182 SPELL_EFFECT_NULL_182
+#endif
+    // TODO: mop
 };
 
 const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =
@@ -398,6 +405,7 @@ const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =
     "SPELL_EFFECT_PROSPECTING",                 //    127 Search 5 ore of a base metal for precious gems.  This will destroy the ore in the process.
     "SPELL_EFFECT_APPLY_FRIEND_AA",             //    128 Apply Aura friendly
     "SPELL_EFFECT_APPLY_ENEMY_AA",              //    129 Apply Aura enemy
+#if VERSION_STRING >= TBC
     "SPELL_EFFECT_REDIRECT_THREAT",             //    130 unknown // https://www.wowhead.com/spell=34477
     "SPELL_EFFECT_NULL_131",                    //    131 unknown // test spell
     "SPELL_EFFECT_PLAY_MUSIC",                  //    132 Play Music // https://www.wowhead.com/spell=46852
@@ -422,6 +430,8 @@ const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =
     "SPELL_EFFECT_TRIGGER_SPELL",               //    151
     "SPELL_EFFECT_NULL_152",                    //    152 Summon Refer-a-Friend
     "SPELL_EFFECT_CREATE_PET",                  //    153 Create tamed pet
+#endif
+#if VERSION_STRING >= WotLK
     "SPELL_EFFECT_TEACH_TAXI_PATH",             //    154 "Teach" a taxi path
     "SPELL_EFFECT_DUAL_WIELD_2H",               //    155
     "SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC",      //    156
@@ -433,6 +443,8 @@ const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =
     "SPELL_EFFECT_ACTIVATE_SPEC"                //    162
     "SPELL_EFFECT_NULL_163"                     //    163
     "SPELL_EFFECT_NULL_154"                     //    164
+#endif
+#if VERSION_STRING >= Cata
     "SPELL_EFFECT_NULL_165"                     //    165
     "SPELL_EFFECT_NULL_166"                     //    166
     "SPELL_EFFECT_NULL_167"                     //    167
@@ -451,6 +463,7 @@ const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =
     "SPELL_EFFECT_NULL_180"                     //    180
     "SPELL_EFFECT_NULL_181"                     //    181
     "SPELL_EFFECT_NULL_182"                     //    182
+#endif
 };
 
 // APGL End
@@ -718,8 +731,10 @@ void Spell::ApplyAreaAura(uint8_t effectIndex)
             case SPELL_EFFECT_APPLY_ENEMY_AREA_AURA:
                 eventtype = EVENT_ENEMY_AREA_AURA_UPDATE;
                 break;
+#if VERSION_STRING >= TBC
             case SPELL_EFFECT_APPLY_OWNER_AREA_AURA:
                 eventtype = EVENT_ENEMY_AREA_AURA_UPDATE; //Zyres: The same event as SPELL_EFFECT_APPLY_ENEMY_AREA_AURA? @Appled o.O
+#endif
                 break;
         }
 
@@ -1906,7 +1921,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
 
             if (unitTarget->getEntry() == 16483)
             {
-                unitTarget->RemoveAura(29152);
+                unitTarget->removeAllAurasById(29152);
                 unitTarget->setStandState(STANDSTATE_STAND);
                 static const char* testo[12] = { "None", "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "Death Knight", "Shaman", "Mage", "Warlock", "None", "Druid" };
                 char msg[150];
@@ -2210,7 +2225,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                         spell = nullptr;
                         new_dmg = healamount * 18.0f / amplitude;
 
-                        unitTarget->RemoveAura(taura);
+                        taura->removeAura();
 
                         //do not remove flag if we still can cast it again
                         uint32 rejuvenation[] =
@@ -2322,7 +2337,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                             spell = nullptr;
                             new_dmg = healamount * 12.0f / amplitude;
 
-                            unitTarget->RemoveAura(taura);
+                            taura->removeAura();
 
                             unitTarget->removeAuraStateAndAuras(AURASTATE_FLAG_SWIFTMEND);
                             sEventMgr.RemoveEvents(unitTarget, EVENT_REJUVENATION_FLAG_EXPIRE);
@@ -3179,7 +3194,7 @@ void Spell::SpellEffectLeap(uint8_t effectIndex) // Leap
         return;
 
     float radius = getEffectRadius(effectIndex);
-    unitTarget->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN);
+    unitTarget->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN);
 
     MMAP::MMapManager* mmap = MMAP::MMapFactory::createOrGetMMapManager();
     dtNavMesh* nav = const_cast<dtNavMesh*>(mmap->GetNavMesh(m_caster->GetMapId()));
@@ -3804,31 +3819,30 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
     if (u_caster == nullptr || unitTarget == nullptr)
         return;
 
-    uint32 start, end;
+    uint16_t start, end;
 
     if (isAttackable(u_caster, unitTarget) || getSpellInfo()->getEffectMiscValue(effectIndex) == DISPEL_STEALTH)    // IsAttackable returns false for stealthed
     {
-        start = MAX_POSITIVE_AURAS_EXTEDED_START;
-        end = MAX_POSITIVE_AURAS_EXTEDED_END;
+        start = AuraSlots::POSITIVE_SLOT_START;
+        end = AuraSlots::POSITIVE_SLOT_END;
         if (unitTarget->SchoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()])
             return;
     }
     else
     {
-        start = MAX_NEGATIVE_AURAS_EXTEDED_START;
-        end = MAX_NEGATIVE_AURAS_EXTEDED_END;
+        start = AuraSlots::NEGATIVE_SLOT_START;
+        end = AuraSlots::NEGATIVE_SLOT_END;
     }
 
-    Aura* aur;
     SpellInfo const* aursp;
     std::list< uint32 > dispelledSpells;
     bool finish = false;
 
     for (uint32 x = start; x < end; x++)
-        if (unitTarget->m_auras[x] != nullptr)
+    {
+        if (auto* const aur = unitTarget->getAuraWithAuraSlot(x))
         {
             bool AuraRemoved = false;
-            aur = unitTarget->m_auras[x];
             aursp = aur->getSpellInfo();
 
             //Nothing can dispel resurrection sickness;
@@ -3894,6 +3908,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
             if (finish)
                 break;
         }
+    }
 
     // send spell dispell log packet
     if (!dispelledSpells.empty())
@@ -4199,11 +4214,11 @@ void Spell::SpellEffectSummonPet(uint8_t effectIndex) //summon - pet
         if (p_caster->getClass() == WARLOCK)
         {
             //if demonic sacrifice auras are still active, remove them
-            p_caster->RemoveAura(18789);
-            p_caster->RemoveAura(18790);
-            p_caster->RemoveAura(18791);
-            p_caster->RemoveAura(18792);
-            p_caster->RemoveAura(35701);
+            p_caster->removeAllAurasById(18789);
+            p_caster->removeAllAurasById(18790);
+            p_caster->removeAllAurasById(18791);
+            p_caster->removeAllAurasById(18792);
+            p_caster->removeAllAurasById(35701);
         }
 
         Pet* summon = sObjectMgr.CreatePet(getSpellInfo()->getEffectMiscValue(effectIndex));
@@ -4573,7 +4588,7 @@ void Spell::SpellEffectUseGlyph(uint8_t effectIndex)
         {
             auto glyph_prop_old = sGlyphPropertiesStore.LookupEntry(glyph_old);
             if (glyph_prop_old)
-                p_caster->RemoveAura(glyph_prop_old->SpellID);
+                p_caster->removeAllAurasById(glyph_prop_old->SpellID);
         }
     }
 
@@ -4628,7 +4643,7 @@ void Spell::SpellEffectSanctuary(uint8_t /*effectIndex*/) // Stop all attacks ma
         return;
 
     if (p_caster != nullptr)
-        p_caster->RemoveAllAuraType(SPELL_AURA_MOD_ROOT);
+        p_caster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_ROOT);
 
     for (const auto& itr : u_caster->getInRangeObjectsSet())
     {
@@ -4940,6 +4955,7 @@ void Spell::SpellEffectKnockBack(uint8_t effectIndex)
         return;
 
     float x, y;
+#if VERSION_STRING >= TBC
     if (m_spellInfo->getEffect(effectIndex) == SPELL_EFFECT_KNOCK_BACK_DEST)
     {
         if (m_targets.hasDestination())
@@ -4952,7 +4968,10 @@ void Spell::SpellEffectKnockBack(uint8_t effectIndex)
             return;
     }
     else
+#endif
+    {
         m_caster->getPosition(x, y);
+    }
 
     unitTarget->knockbackFrom(x, y, speedxy, speedz);
 }
@@ -5175,7 +5194,7 @@ void Spell::SpellEffectDispelMechanic(uint8_t effectIndex)
     if (!unitTarget || !unitTarget->isAlive())
         return;
 
-    unitTarget->RemoveAllAurasByMechanic(getSpellInfo()->getEffectMiscValue(effectIndex), getSpellInfo()->getEffectBasePoints(effectIndex), false);
+    unitTarget->removeAllAurasBySpellMechanic(static_cast<SpellMechanic>(getSpellInfo()->getEffectMiscValue(effectIndex)), false);
 }
 
 void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
@@ -5452,11 +5471,11 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
             //count the number of sunder armors on target
             uint32 sunder_count = 0;
             SpellInfo const* spellInfo = nullptr;
-            for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
+            for (uint16_t x = AuraSlots::NEGATIVE_SLOT_START; x < AuraSlots::NEGATIVE_SLOT_END; ++x)
             {
-                if (unitTarget->m_auras[x])
+                if (const auto* aur = unitTarget->getAuraWithAuraSlot(x))
                 {
-                    switch (unitTarget->m_auras[x]->getSpellInfo()->getId())
+                    switch (aur->getSpellInfo()->getId())
                     {
                         //SPELL_HASH_SUNDER_ARMOR
                         case 7386:
@@ -5490,7 +5509,7 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
                         case 71554:
                         {
                             sunder_count++;
-                            spellInfo = unitTarget->m_auras[x]->getSpellInfo();
+                            spellInfo = aur->getSpellInfo();
                         } break;
                         default:
                             spellInfo = sSpellMgr.getSpellInfo(7386);
@@ -5779,11 +5798,11 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
             p_caster->togglePvP();
     }
 
-    uint32 start, end;
+    uint16_t start, end;
     if (isAttackable(u_caster, unitTarget))
     {
-        start = MAX_POSITIVE_AURAS_EXTEDED_START;
-        end = MAX_POSITIVE_AURAS_EXTEDED_END;
+        start = AuraSlots::POSITIVE_SLOT_START;
+        end = AuraSlots::POSITIVE_SLOT_END;
     }
     else
         return;
@@ -5792,9 +5811,8 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
 
     for (uint32 x = start; x < end; x++)
     {
-        if (unitTarget->m_auras[x] != nullptr)
+        if (auto* const aur = unitTarget->getAuraWithAuraSlot(x))
         {
-            Aura* aur = unitTarget->m_auras[x];
             SpellInfo const* aursp = aur->getSpellInfo();
 
             if (aursp->getId() != 15007 && !aur->IsPassive()

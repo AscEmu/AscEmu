@@ -75,7 +75,7 @@ public:
             return;
 
         pSartharion->castSpell(pSartharion, pSpellEntry, true);
-        pSartharion->RemoveAura(pSpellEntry);   // unproper hackfix
+        pSartharion->removeAllAurasById(pSpellEntry);   // unproper hackfix
     }
 
     Creature* getCreature(uint8_t pData)

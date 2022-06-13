@@ -333,7 +333,7 @@ void ArathiBasin::OnStart()
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
-            (*itr)->RemoveAura(BG_PREPARATION);
+            (*itr)->removeAllAurasById(BG_PREPARATION);
         }
     }
 
@@ -558,7 +558,7 @@ void ArathiBasin::OnAddPlayer(Player* plr)
 
 void ArathiBasin::OnRemovePlayer(Player* plr)
 {
-    plr->RemoveAura(BG_PREPARATION);
+    plr->removeAllAurasById(BG_PREPARATION);
 }
 
 void ArathiBasin::HookFlagDrop(Player* /*plr*/, GameObject* /*obj*/)

@@ -810,7 +810,7 @@ bool ChatHandler::HandleAuraUpdateRemove(const char* args, WorldSession* m_sessi
         return false;
     uint8 VisualSlot = (uint8)atoi(pArgs);
     Player* Pl = m_session->GetPlayer();
-    Aura* AuraPtr = Pl->getAuraWithId(Pl->m_auravisuals[VisualSlot]);
+    Aura* AuraPtr = Pl->getAuraWithId(Pl->getVisualAuraList().at(VisualSlot));
     if (!AuraPtr)
     {
         SystemMessage(m_session, "No auraid found in slot %u", VisualSlot);

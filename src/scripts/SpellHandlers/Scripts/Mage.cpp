@@ -276,8 +276,12 @@ public:
                 if (aurEff->getAuraEffectType() == SPELL_AURA_NONE)
                     continue;
 
+#if VERSION_STRING == Classic
+                if (aurEff->getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL)
+#else
                 if (aurEff->getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
                     aurEff->getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
+#endif
                 {
                     ticks = originalAura->getPeriodicTickCountForEffect(aurEff->getEffectIndex());
                     break;

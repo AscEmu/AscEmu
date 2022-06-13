@@ -628,10 +628,12 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     /* Check if the player target is able to deflect spells                 */
     /* Currently (3.3.5a) there is only spell doing that: Deterrence        */
     /************************************************************************/
+#if VERSION_STRING >= WotLK
     if (p_victim && p_victim->hasAuraWithAuraEffect(SPELL_AURA_DEFLECT_SPELLS))
     {
         return SPELL_DID_HIT_DEFLECT;
     }
+#endif
 
     // APGL End
     // MIT Start
@@ -742,11 +744,13 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
                 return SPELL_DID_HIT_IMMUNE;
         }
 
+#if VERSION_STRING >= TBC
         if (target->hasSpellImmunity(SPELL_IMMUNITY_SPELL_HASTE))
         {
             if (getSpellInfo()->getEffectApplyAuraName(effindex) == SPELL_AURA_INCREASE_CASTING_TIME_PCT)
                 return SPELL_DID_HIT_IMMUNE;
         }
+#endif
 
         if (target->hasSpellImmunity(SPELL_IMMUNITY_INTERRUPT_CAST))
         {
@@ -779,8 +783,11 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
 
         if (target->hasSpellImmunity(SPELL_IMMUNITY_KNOCKBACK))
         {
-            if (getSpellInfo()->getEffect(effindex) == SPELL_EFFECT_KNOCK_BACK ||
-                getSpellInfo()->getEffect(effindex) == SPELL_EFFECT_KNOCK_BACK_DEST)
+            if (getSpellInfo()->getEffect(effindex) == SPELL_EFFECT_KNOCK_BACK
+#if VERSION_STRING >= TBC
+                || getSpellInfo()->getEffect(effindex) == SPELL_EFFECT_KNOCK_BACK_DEST
+#endif
+                )
                 return SPELL_DID_HIT_IMMUNE;
         }
 
@@ -844,11 +851,15 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
                     if (reflectAura->charges <= 0)
                     {
                         // should delete + erase RSS too, if unit hasn't such an aura...
-                        if (!u_victim->RemoveAura(reflectAura->spellId))
+                        if (!u_victim->hasAurasWithId(reflectAura->spellId))
                         {
                             // ...do it manually
                             delete reflectAura;
                             u_victim->m_reflectSpellSchool.remove(reflectAura);
+                        }
+                        else
+                        {
+                            u_victim->removeAllAurasById(reflectAura->spellId);
                         }
                     }
                 }
@@ -1112,8 +1123,8 @@ void Spell::castMeOld()
             case 68010:
             case 71930:
             {
-                p_caster->RemoveAura(53672);
-                p_caster->RemoveAura(54149);
+                p_caster->removeAllAurasById(53672);
+                p_caster->removeAllAurasById(54149);
             } break;
         }
 
@@ -1133,8 +1144,8 @@ void Spell::castMeOld()
             };
             if (p_caster->hasAurasWithId(arcanePotency))
             {
-                p_caster->RemoveAura(57529);
-                p_caster->RemoveAura(57531);
+                p_caster->removeAllAurasById(57529);
+                p_caster->removeAllAurasById(57531);
             }
         }
 
@@ -1259,13 +1270,13 @@ void Spell::castMeOld()
                     if (p_caster->getBattleground()->GetType() == BATTLEGROUND_WARSONG_GULCH)
                     {
                         if (p_caster->getTeam() == 0)
-                            p_caster->RemoveAura(23333);    // ally player drop horde flag if they have it
+                            p_caster->removeAllAurasById(23333);    // ally player drop horde flag if they have it
                         else
-                            p_caster->RemoveAura(23335);    // horde player drop ally flag if they have it
+                            p_caster->removeAllAurasById(23335);    // horde player drop ally flag if they have it
                     }
                     if (p_caster->getBattleground()->GetType() == BATTLEGROUND_EYE_OF_THE_STORM)
 
-                        p_caster->RemoveAura(34976);        // drop the flag
+                        p_caster->removeAllAurasById(34976);        // drop the flag
                     break;
             }
         }
@@ -1478,7 +1489,7 @@ void Spell::HandleAddAura(uint64 guid)
     // remove any auras with same type
     if (getSpellInfo()->custom_BGR_one_buff_on_target > 0)
     {
-        Target->RemoveAurasByBuffType(getSpellInfo()->custom_BGR_one_buff_on_target, m_caster->getGuid(), getSpellInfo()->getId());
+        Target->removeAllAurasBySpellType(static_cast<SpellTypes>(getSpellInfo()->custom_BGR_one_buff_on_target), m_caster->getGuid(), getSpellInfo()->getId());
     }
 
     uint32 spellid = 0;

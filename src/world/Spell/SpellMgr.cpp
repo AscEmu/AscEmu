@@ -63,8 +63,10 @@ bool SpellArea::fitsToRequirements(Player* player, uint32_t newZone, uint32_t ne
             if (player == nullptr)
                 return false;
 
+#if VERSION_STRING >= TBC
             if (!player->hasAuraWithAuraEffect(SPELL_AURA_ENABLE_FLIGHT2) && !player->hasAuraWithAuraEffect(SPELL_AURA_FLY))
                 return false;
+#endif
             break;
         }
     }
@@ -194,6 +196,63 @@ void SpellMgr::addAuraById(const uint32_t spellId, AuraScriptLinker auraScript)
         return;
     }
     addAuraBySpellInfo(spellInfo, auraScript);
+}
+
+SpellMechanic const* SpellMgr::getCrowdControlMechanicList([[maybe_unused]]bool includeSilence) const
+{
+#if VERSION_STRING >= Cata
+    if (includeSilence)
+    {
+        static SpellMechanic mechanicListWithSilence[18] =
+        {
+            MECHANIC_CHARMED,
+            MECHANIC_DISORIENTED,
+            MECHANIC_FLEEING,
+            MECHANIC_ROOTED,
+            MECHANIC_SILENCED,
+            MECHANIC_ASLEEP,
+            MECHANIC_ENSNARED,
+            MECHANIC_STUNNED,
+            MECHANIC_FROZEN,
+            MECHANIC_INCAPACIPATED,
+            MECHANIC_POLYMORPHED,
+            MECHANIC_BANISHED,
+            MECHANIC_SHACKLED,
+            MECHANIC_SEDUCED,
+            MECHANIC_TURNED,
+            MECHANIC_HORRIFIED,
+            MECHANIC_SAPPED,
+            MECHANIC_NONE
+        };
+
+        return mechanicListWithSilence;
+    }
+    else
+#endif
+    {
+        static SpellMechanic mechanicListWithoutSilence[17] =
+        {
+            MECHANIC_CHARMED,
+            MECHANIC_DISORIENTED,
+            MECHANIC_FLEEING,
+            MECHANIC_ROOTED,
+            MECHANIC_ASLEEP,
+            MECHANIC_ENSNARED,
+            MECHANIC_STUNNED,
+            MECHANIC_FROZEN,
+            MECHANIC_INCAPACIPATED,
+            MECHANIC_POLYMORPHED,
+            MECHANIC_BANISHED,
+            MECHANIC_SHACKLED,
+            MECHANIC_SEDUCED,
+            MECHANIC_TURNED,
+            MECHANIC_HORRIFIED,
+            MECHANIC_SAPPED,
+            MECHANIC_NONE
+        };
+
+        return mechanicListWithoutSilence;
+    }
 }
 
 SpellRequiredMapBounds SpellMgr::getSpellsRequiredForSpellBounds(uint32_t spellId) const
@@ -1557,7 +1616,9 @@ void SpellMgr::setSpellCoefficient(SpellInfo* sp)
             for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
             {
                 if (sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
+#if VERSION_STRING >= TBC
                     sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE ||
+#endif
                     sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_DAMAGE ||
                     sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_HEAL ||
                     sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_LEECH)
@@ -1686,7 +1747,9 @@ void SpellMgr::setSpellCoefficient(SpellInfo* sp)
             return false;
 
         if (sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_SPELL) ||
+#if VERSION_STRING >= TBC
             sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE) ||
+#endif
             sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE) ||
             sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_HEAL) ||
             sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_LEECH))
@@ -1763,15 +1826,21 @@ void SpellMgr::setSpellCoefficient(SpellInfo* sp)
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
             if (sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
+#if VERSION_STRING >= TBC
                 sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE ||
+#endif
                 sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_DAMAGE ||
                 sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_HEAL ||
                 sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_LEECH)
             {
                 sp->spell_coeff_direct /= baseDuration / sp->getEffectAmplitude(i);
                 // For channeled spells which trigger another spell on each "missile", set triggered spell's coeff to match master spell's coeff
+#if VERSION_STRING == Classic
+                if (sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL)
+#else
                 if (sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
                     sp->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
+#endif
                 {
                     auto triggeredSpell = sSpellMgr.getMutableSpellInfo(sp->getEffectTriggerSpell(i));
                     // But do not alter its coefficient if it's already overridden in database

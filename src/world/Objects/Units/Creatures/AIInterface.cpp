@@ -2375,7 +2375,7 @@ void AIInterface::eventDamageTaken(Unit* pUnit, uint32_t misc1)
         sendStoredText(mEmotesOnDamageTaken, pUnit);
     }
 
-    pUnit->RemoveAura(24575);
+    pUnit->removeAllAurasById(24575);
 
     CALL_SCRIPT_EVENT(m_Unit, OnDamageTaken)(pUnit, misc1);
 }
@@ -2520,9 +2520,9 @@ void AIInterface::eventLeaveCombat(Unit* /*pUnit*/, uint32_t /*misc1*/)
     if (m_Unit->isCreature())
     {
         if (m_Unit->isDead())
-            m_Unit->RemoveAllAuras();
+            m_Unit->removeAllAuras();
         else
-            m_Unit->RemoveNegativeAuras();
+            m_Unit->removeAllNegativeAuras();
     }
 
     // restart emote
@@ -2608,7 +2608,7 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
     if (pUnit == nullptr)
         return;
 
-     pUnit->RemoveNegativeAuras();
+     pUnit->removeAllNegativeAuras();
 
     CALL_SCRIPT_EVENT(m_Unit, _internalOnDied)(pUnit);
     CALL_SCRIPT_EVENT(m_Unit, OnDied)(pUnit);
@@ -3599,7 +3599,7 @@ void AIInterface::UpdateAISpells()
             if (AISpell->mDurationTimer.isTimePassed() && AISpell->mForceRemoveAura)
             {
                 getUnit()->interruptSpell();
-                getUnit()->RemoveAura(AISpell->mSpellInfo->getId());
+                getUnit()->removeAllAurasById(AISpell->mSpellInfo->getId());
             }
         }
     }

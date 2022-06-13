@@ -228,7 +228,7 @@ void WorldSession::handleGossipHelloOpcode(WorldPacket& recvPacket)
         creature->SetSpawnLocation(creature->GetPosition());
 
         if (_player->isStealthed())
-            _player->RemoveAllAuraType(SPELL_AURA_MOD_STEALTH);
+            _player->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
 
         _player->onTalkReputation(creature->m_factionEntry);
 
@@ -554,7 +554,8 @@ void WorldSession::handleSpiritHealerActivateOpcode(WorldPacket& /*recvPacket*/)
         if (_player->getLevel() < 20)
             duration = (_player->getLevel() - 10) * 60000;
 
-        _player->SetAurDuration(15007, duration);
+        if (const auto aur = _player->getAuraWithId(15007))
+            aur->setNewMaxDuration(duration);
     }
 
     _player->setHealth(_player->getMaxHealth() / 2);

@@ -1085,7 +1085,7 @@ void AlteracValley::OnStart()
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
-            (*itr)->RemoveAura(BG_PREPARATION);
+            (*itr)->removeAllAurasById(BG_PREPARATION);
         }
     }
 
@@ -1122,7 +1122,7 @@ void AlteracValley::OnAddPlayer(Player* plr)
 
 void AlteracValley::OnRemovePlayer(Player* plr)
 {
-    plr->RemoveAura(BG_PREPARATION);
+    plr->removeAllAurasById(BG_PREPARATION);
 }
 
 LocationVector AlteracValley::GetStartingCoords(uint32_t Team)

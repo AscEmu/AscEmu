@@ -331,7 +331,7 @@ public:
     {
         if (target != NULL)
         {
-            uint32 count = target->GetAuraCountWithDispelType(DISPEL_DISEASE, m_caster->getGuid());
+            uint32 count = target->getAuraCountWithDispelType(DISPEL_DISEASE, m_caster->getGuid());
             if (count)
                 value += value * count * (getSpellInfo()->calculateEffectValue(2)) / 200;
         }
@@ -402,7 +402,7 @@ public:
     void DoAfterHandleEffect(Unit* /*target*/, uint32 /*i*/)
     {
         if (u_caster != NULL)
-            u_caster->RemoveAura(56817);
+            u_caster->removeAllAurasById(56817);
     }
 };
 

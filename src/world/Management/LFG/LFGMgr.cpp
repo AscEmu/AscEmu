@@ -1781,7 +1781,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
     sLogger.debug("%u is being teleported %s", player->getGuid(), out ? "out" : "in");
     if (out)
     {
-        player->RemoveAura(LFG_SPELL_LUCK_OF_THE_DRAW);
+        player->removeAllAurasById(LFG_SPELL_LUCK_OF_THE_DRAW);
         player->safeTeleport(player->getBGEntryMapId(), player->getBGEntryInstanceId(), player->getBGEntryPosition());
         return;
     }
