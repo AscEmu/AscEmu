@@ -371,6 +371,8 @@ void GameObject::saveToDB()
 
     ss << "INSERT INTO gameobject_spawns VALUES("
         << m_spawn->id << ","
+        << VERSION_STRING << ","
+        << VERSION_STRING << ","
         << getEntry() << ","
         << GetMapId() << ","
         << GetPhase() << ","
@@ -384,9 +386,8 @@ void GameObject::saveToDB()
         << getParentRotation(3) << ","
         << int32_t(m_respawnDelayTime) << ","
         << int32_t(getState()) << ","
-        << "0,"            // event
-        << VERSION_STRING << ","
-        << VERSION_STRING << ")";
+        << "0)";           // event
+
     WorldDatabase.Execute(ss.str().c_str());
 }
 
