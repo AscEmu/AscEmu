@@ -51,8 +51,6 @@
 
 #include "vmapexport.h"
 
-#include "../../src/world/WorldConf.h"
-
 //------------------------------------------------------------------------------
 // Defines
 
