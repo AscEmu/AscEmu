@@ -261,11 +261,9 @@ void GameObject::setAnimationProgress(uint8_t progress)
 bool GameObject::isQuestGiver() const { return getGoType() == GAMEOBJECT_TYPE_QUESTGIVER; }
 bool GameObject::isFishingNode() const { return getGoType() == GAMEOBJECT_TYPE_FISHINGNODE; }
 
-bool GameObject::loadFromDB(uint32_t spawnId, WorldMap* map, bool addToWorld)
+bool GameObject::loadFromDB(MySQLStructure::GameobjectSpawn* spawn, WorldMap* map, bool addToWorld)
 {
-    MySQLStructure::GameobjectSpawn* data = sMySQLStore.getGameObjectSpawn(spawnId);
-
-    if (!data)
+    if (!spawn)
     {
         sLogger.failure("Gameobject (spawnId: %u) not found in table gameobject_spawns, cant load.");
         return false;
@@ -277,14 +275,14 @@ bool GameObject::loadFromDB(uint32_t spawnId, WorldMap* map, bool addToWorld)
         return false;
     }
 
-    uint32_t entry = data->entry;
-    GameObject_State gameobjectState = data->state;
+    uint32_t entry = spawn->entry;
+    GameObject_State gameobjectState = spawn->state;
 
-    m_spawnId = spawnId;
-    if (!create(entry, map, data->phase, data->spawnPoint, data->rotation, data->state))
+    m_spawnId = spawn->id;
+    if (!create(entry, map, spawn->phase, spawn->spawnPoint, spawn->rotation, spawn->state))
         return false;
 
-    if (data->spawntimesecs >= 0)
+    if (spawn->spawntimesecs >= 0)
     {
         m_spawnedByDefault = true;
 
@@ -296,25 +294,25 @@ bool GameObject::loadFromDB(uint32_t spawnId, WorldMap* map, bool addToWorld)
         }
         else
         {
-            m_respawnDelayTime = data->spawntimesecs;
-            m_respawnTime = map->getGORespawnTime(data->id);
+            m_respawnDelayTime = spawn->spawntimesecs;
+            m_respawnTime = map->getGORespawnTime(spawn->id);
 
             // ready to respawn
             if (m_respawnTime && m_respawnTime <= Util::getTimeNow())
             {
                 m_respawnTime = 0;
-                map->removeRespawnTime(SPAWN_TYPE_GAMEOBJECT, data->id);
+                map->removeRespawnTime(SPAWN_TYPE_GAMEOBJECT, spawn->id);
             }
         }
     }
     else
     {
         m_spawnedByDefault = false;
-        m_respawnDelayTime = -data->spawntimesecs;
+        m_respawnDelayTime = -spawn->spawntimesecs;
         m_respawnTime = 0;
     }
 
-    m_spawn = data;
+    m_spawn = spawn;
 
     // add to insert Pool
     if (addToWorld)

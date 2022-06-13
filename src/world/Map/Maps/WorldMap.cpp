@@ -66,7 +66,7 @@ void WorldMap::initialize()
     for (auto& GameobjectSpawn : _map->mapWideSpawns.GameobjectSpawns)
     {
         GameObject* obj = createGameObject(GameobjectSpawn->entry);
-        obj->loadFromDB(GameobjectSpawn->id, this, false);
+        obj->loadFromDB(GameobjectSpawn, this, false);
         PushStaticObject(obj);
     }
 
@@ -2227,10 +2227,15 @@ void WorldMap::doRespawn(SpawnObjectType type, Object* object, uint32_t spawnId,
             }
             else
             {
-                MySQLStructure::GameobjectSpawn const* data = sMySQLStore.getGameObjectSpawn(spawnId);
-                GameObject* obj = createGameObject(data->entry);
-                if (!obj->loadFromDB(spawnId, this, true))
-                    delete obj;
+                for (auto GameobjectSpawn : sMySQLStore._gameobjectSpawnsStore[getBaseMap()->getMapId()])
+                {
+                    if (GameobjectSpawn && GameobjectSpawn->id == spawnId)
+                    {
+                        GameObject* obj = createGameObject(GameobjectSpawn->entry);
+                        if (!obj->loadFromDB(GameobjectSpawn, this, true))
+                            delete obj;
+                    }
+                }
             }
             break;
         }

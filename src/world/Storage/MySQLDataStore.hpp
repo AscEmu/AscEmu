@@ -118,7 +118,6 @@ public:
 
     typedef std::vector<MySQLStructure::CreatureSpawn*> CreatureSpawnsMap;
     typedef std::vector<MySQLStructure::GameobjectSpawn*> GameobjectSpawnsMap;
-    typedef std::unordered_map<uint32_t, MySQLStructure::GameobjectSpawn> GameObjectSpawnContainer;
 
     typedef std::vector<MySQLStructure::RecallStruct*> RecallMap;
 
@@ -137,7 +136,6 @@ public:
     GameObjectProperties const* getGameObjectProperties(uint32_t entry);
     GameObjectPropertiesContainer const* getGameObjectPropertiesStore() { return &_gameobjectPropertiesStore; }
 
-    MySQLStructure::GameobjectSpawn* getGameObjectSpawn(uint32_t spawnId);
     MySQLStructure::GameObjectSpawnExtra const* getGameObjectExtra(uint32_t lowguid) const;
     MySQLStructure::GameObjectSpawnOverrides const* getGameObjectOverride(uint32_t lowguid) const;
 
@@ -432,7 +430,6 @@ public:
 
     CreatureSpawnsMap _creatureSpawnsStore[MAX_NUM_MAPS + 1];
     GameobjectSpawnsMap _gameobjectSpawnsStore[MAX_NUM_MAPS + 1];
-    GameObjectSpawnContainer _gameObjectSpawnStore;
 
     RecallMap _recallStore;
 };

@@ -275,7 +275,7 @@ void MapCell::loadObjects(CellSpawns* sp)
             GameObject* go = _map->createGameObject((*i)->entry);
             bool onRespawn = false;
             
-            if (go->loadFromDB((*i)->id, _map, false))
+            if (go->loadFromDB(*i, _map, false))
             {
                 go->m_loadedFromDB = true;
 

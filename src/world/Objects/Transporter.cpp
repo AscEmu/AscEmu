@@ -333,7 +333,7 @@ GameObject* Transporter::createGOPassenger(MySQLStructure::GameobjectSpawn* data
 
     GameObject* pGameobject = map->createGameObject(data->entry);
 
-    if (!pGameobject->loadFromDB(data->id, map, false))
+    if (!pGameobject->loadFromDB(data, map, false))
     {
         delete pGameobject;
         return nullptr;

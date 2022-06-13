@@ -71,15 +71,13 @@ GameObject* MapScriptInterface::spawnGameObject(uint32_t Entry, LocationVector p
     return pGameObject;
 }
 
-GameObject* MapScriptInterface::spawnGameObject(uint32_t spawnId, bool AddToWorld)
+GameObject* MapScriptInterface::spawnGameObject(MySQLStructure::GameobjectSpawn* gs, bool AddToWorld)
 {
-    if (!spawnId)
+    if (!gs)
         return nullptr;
 
-    MySQLStructure::GameobjectSpawn const* data = sMySQLStore.getGameObjectSpawn(spawnId);
-
-    GameObject* pGameObject = m_worldMap.createGameObject(data->entry);
-    if (!pGameObject->loadFromDB(spawnId, &m_worldMap, false))
+    GameObject* pGameObject = m_worldMap.createGameObject(gs->entry);
+    if (!pGameObject->loadFromDB(gs, &m_worldMap, false))
     {
         delete pGameObject;
         return nullptr;

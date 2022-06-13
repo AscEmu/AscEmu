@@ -1046,18 +1046,6 @@ void MySQLDataStore::loadGameObjectSpawnsOverrideTable()
         if (gameObjectOverride.faction && !sFactionTemplateStore.LookupEntry(gameObjectOverride.faction))
             sLogger.failure("GameObject (SpawnId: %u) has invalid faction (%u) defined in `gameobject_spawns_overrides`.", spawnId, gameObjectOverride.faction);
 
-        // Delete Spawn Overrides Which are Identical to GamoebjectProto Table
-        if (auto spawn = getGameObjectSpawn(spawnId))
-        {
-            if (auto proto = getGameObjectProperties(spawn->entry))
-            {
-                if (proto->size == gameObjectOverride.scale && gameObjectOverride.faction == 0 && gameObjectOverride.flags == 0)
-                {
-                    WorldDatabase.Execute("DELETE FROM gameobject_spawns_overrides WHERE id = %u", spawnId);
-                }
-            }
-        }
-
         ++count;
     } while (result->NextRow());
 
@@ -4394,8 +4382,6 @@ void MySQLDataStore::loadGameobjectSpawns()
                 uint32_t spawnId = fields[0].GetUInt32();
                 uint32 gameobject_entry = fields[3].GetUInt32();
 
-                MySQLStructure::GameobjectSpawn& spawndata = _gameObjectSpawnStore[spawnId];
-
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(gameobject_entry);
                 if (gameobject_info == nullptr)
                 {
@@ -4434,8 +4420,6 @@ void MySQLDataStore::loadGameobjectSpawns()
                 if (go_spawn->phase == 0)
                     go_spawn->phase = 0xFFFFFFFF;
 
-                spawndata = *go_spawn;
-
                 _gameobjectSpawnsStore[go_spawn->map].push_back(go_spawn);
                 ++count;
             } while (gobject_spawn_result->NextRow());
@@ -4445,13 +4429,6 @@ void MySQLDataStore::loadGameobjectSpawns()
     }
 
     sLogger.info("MySQLDataLoads : Loaded %u rows from `gameobject_spawns` table in %u ms!", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-}
-
-MySQLStructure::GameobjectSpawn* MySQLDataStore::getGameObjectSpawn(uint32_t spawnId)
-{
-    GameObjectSpawnContainer::iterator itr = _gameObjectSpawnStore.find(spawnId);
-    if (itr == _gameObjectSpawnStore.end()) return nullptr;
-    return &itr->second;
 }
 
 void MySQLDataStore::loadRecallTable()
