@@ -407,7 +407,9 @@ void WorldSession::doLootRelease(WoWGuid lguid)
                         go->setLootState(GO_READY);
                 }
                 else
+                {
                     go->setLootState(GO_JUST_DEACTIVATED);
+                }
 
                 loot->clear();
             }

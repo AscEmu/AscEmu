@@ -2227,7 +2227,7 @@ void WorldMap::doRespawn(SpawnObjectType type, Object* object, uint32_t spawnId,
             }
             else
             {
-                for (auto GameobjectSpawn : sMySQLStore._gameobjectSpawnsStore[getBaseMap()->getMapId()])
+                for (auto& GameobjectSpawn : sMySQLStore._gameobjectSpawnsStore[getBaseMap()->getMapId()])
                 {
                     if (GameobjectSpawn && GameobjectSpawn->id == spawnId)
                     {

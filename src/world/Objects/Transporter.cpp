@@ -71,7 +71,7 @@ bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float
     setParentRotation(QuaternionData());
     SetPosition(LocationVector(x, y, z, ang));
     setDisplayId(gameobject_properties->display_id);
-    setGoType(static_cast<uint8>(gameobject_properties->type));
+    setGoType(static_cast<uint8_t>(gameobject_properties->type));
 
     m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
     setFlags(GO_FLAG_TRANSPORT | GO_FLAG_NEVER_DESPAWN);

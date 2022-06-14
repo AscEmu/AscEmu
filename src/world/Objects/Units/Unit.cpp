@@ -7784,7 +7784,7 @@ void Unit::removeGameObject(GameObject* gameObj, bool del)
 
     gameObj->setOwnerGuid(0);
 
-    for (uint8 i = 0; i < 4; ++i)
+    for (uint8_t i = 0; i < 4; ++i)
     {
         if (m_ObjectSlots[i] == gameObj->GetUIdFromGUID())
         {
@@ -7794,7 +7794,7 @@ void Unit::removeGameObject(GameObject* gameObj, bool del)
     }
 
     // GO created by some spell
-    if (uint32 spellid = gameObj->getSpellId())
+    if (uint32_t spellid = gameObj->getSpellId())
         removeAllAurasById(spellid);
 
     m_gameObj.remove(gameObj);
@@ -7806,7 +7806,7 @@ void Unit::removeGameObject(GameObject* gameObj, bool del)
     }
 }
 
-void Unit::removeGameObject(uint32 spellid, bool del)
+void Unit::removeGameObject(uint32_t spellid, bool del)
 {
     if (m_gameObj.empty())
         return;
@@ -7827,7 +7827,9 @@ void Unit::removeGameObject(uint32 spellid, bool del)
             next = m_gameObj.erase(i);
         }
         else
+        {
             ++next;
+        }
     }
 }
 

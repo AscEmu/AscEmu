@@ -343,7 +343,7 @@ void GameObject::saveToDB()
         m_spawnTemp->spawnPoint = GetPosition();
         m_spawnTemp->phase = GetPhase();
         m_spawnTemp->rotation = m_localRotation;
-        m_spawnTemp->spawntimesecs = m_spawnedByDefault ? m_respawnDelayTime : -(int32)m_respawnDelayTime;
+        m_spawnTemp->spawntimesecs = m_spawnedByDefault ? m_respawnDelayTime : -(int32_t)m_respawnDelayTime;
         m_spawnTemp->state = GameObject_State(getState());
 
         uint32_t cx = getWorldMap()->getPosX(GetPositionX());
@@ -581,16 +581,16 @@ QuaternionData GameObject::getWorldRotation() const
 
 void GameObject::updatePackedRotation()
 {
-    static const int32 PACK_YZ = 1 << 20;
-    static const int32 PACK_X = PACK_YZ << 1;
+    static const int32_t PACK_YZ = 1 << 20;
+    static const int32_t PACK_X = PACK_YZ << 1;
 
-    static const int32 PACK_YZ_MASK = (PACK_YZ << 1) - 1;
-    static const int32 PACK_X_MASK = (PACK_X << 1) - 1;
+    static const int32_t PACK_YZ_MASK = (PACK_YZ << 1) - 1;
+    static const int32_t PACK_X_MASK = (PACK_X << 1) - 1;
 
-    int8 w_sign = (m_localRotation.w >= 0.f ? 1 : -1);
-    int64 x = int32(m_localRotation.x * PACK_X) * w_sign & PACK_X_MASK;
-    int64 y = int32(m_localRotation.y * PACK_YZ) * w_sign & PACK_YZ_MASK;
-    int64 z = int32(m_localRotation.z * PACK_YZ) * w_sign & PACK_YZ_MASK;
+    int8_t w_sign = (m_localRotation.w >= 0.f ? 1 : -1);
+    int64_t x = int32_t(m_localRotation.x * PACK_X) * w_sign & PACK_X_MASK;
+    int64_t y = int32_t(m_localRotation.y * PACK_YZ) * w_sign & PACK_YZ_MASK;
+    int64_t z = int32_t(m_localRotation.z * PACK_YZ) * w_sign & PACK_YZ_MASK;
     m_packedRotation = z | (y << 21) | (x << 42);
 }
 
@@ -650,8 +650,8 @@ public:
     explicit GameObjectModelOwnerImpl(GameObject const* owner) : _owner(owner) { }
 
     bool IsSpawned() const override { return _owner->isSpawned(); }
-    uint32 GetDisplayId() const override { return _owner->getDisplayId(); }
-    uint32 GetPhaseMask() const override { return _owner->GetPhase(); }
+    uint32_t GetDisplayId() const override { return _owner->getDisplayId(); }
+    uint32_t GetPhaseMask() const override { return _owner->GetPhase(); }
     G3D::Vector3 GetPosition() const override { return G3D::Vector3(_owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ()); }
     float GetOrientation() const override { return _owner->GetOrientation(); }
     float GetScale() const override { return _owner->getScale(); }
@@ -719,7 +719,9 @@ void GameObject::Update(unsigned long time_passed)
     if (m_despawnDelay)
     {
         if (m_despawnDelay > time_passed)
+        {
             m_despawnDelay -= time_passed;
+        }
         else
         {
             m_despawnDelay = 0;
@@ -1592,7 +1594,7 @@ void GameObject_Trap::onUse(Player* player)
     if (goInfo->trap.spell_id)
         CastSpell(player->getGuid(), goInfo->trap.spell_id);
 
-    m_cooldownTime = Util::getMSTime() + (goInfo->trap.cooldown ? goInfo->trap.cooldown : uint32(4)) * IN_MILLISECONDS;   // template or 4 seconds
+    m_cooldownTime = Util::getMSTime() + (goInfo->trap.cooldown ? goInfo->trap.cooldown : uint32_t(4)) * IN_MILLISECONDS;   // template or 4 seconds
 
     if (goInfo->trap.charges == 1)         // Deactivate after trigger
         setLootState(GO_JUST_DEACTIVATED);
@@ -1631,7 +1633,7 @@ void GameObject_Trap::_internalUpdateOnState(unsigned long /*timeDiff*/)
                     CastSpell(target->getGuid(), goInfo->trap.spell_id);
 
                 // Template value or 4 seconds
-                m_cooldownTime = Util::getMSTime() + (goInfo->trap.cooldown ? goInfo->trap.cooldown : uint32(4)) * IN_MILLISECONDS;
+                m_cooldownTime = Util::getMSTime() + (goInfo->trap.cooldown ? goInfo->trap.cooldown : uint32_t(4)) * IN_MILLISECONDS;
 
                 if (goInfo->trap.charges == 1)
                     setLootState(GO_JUST_DEACTIVATED);
@@ -1853,10 +1855,10 @@ void GameObject_FishingNode::onUse(Player* player)
 
             int32_t skill = player->getSkillLineCurrent(SKILL_FISHING, false);
 
-            int32 chance = 100;
+            int32_t chance = 100;
             if (skill < zone_skill->maxSkill)
             {
-                chance = int32(pow((double)skill / zone_skill->maxSkill, 2) * 100);
+                chance = static_cast<int32_t>(pow((double)skill / zone_skill->maxSkill, 2) * 100);
                 if (chance < 1)
                     chance = 1;
             }
@@ -2354,7 +2356,7 @@ void GameObject_Destructible::Damage(uint32_t damage, uint64_t AttackerGUID, uin
         CALL_GO_SCRIPT_EVENT(this, OnDamaged)(damage);
     }
 
-    uint8_t animprogress = static_cast<uint8>(std::round(hitpoints / float(maxhitpoints)) * 255);
+    uint8_t animprogress = static_cast<uint8_t>(std::round(hitpoints / float(maxhitpoints)) * 255);
     setAnimationProgress(animprogress);
     SendDamagePacket(damage, AttackerGUID, ControllerGUID, SpellID);
 }

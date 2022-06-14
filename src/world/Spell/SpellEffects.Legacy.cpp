@@ -3970,8 +3970,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
     float orient = m_caster->GetOrientation();
     float posx = 0, posy = 0, posz = 0;
 
-
-    int32_t duration = ::GetDuration(sSpellDurationStore.LookupEntry(m_spellInfo->getDurationIndex()));
+    int32_t duration = getDuration();
     GameObject* go = nullptr;
 
     if (info->type == GAMEOBJECT_TYPE_FISHINGNODE)

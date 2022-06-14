@@ -162,17 +162,17 @@ struct GameObjectProperties
         // 2 GAMEOBJECT_TYPE_QUESTGIVER
         struct
         {
-            uint32 lockId;                      //0 -> Lock.dbc
-            uint32 questList;                   //1
-            uint32 pageMaterial;                //2
-            uint32 gossipID;                    //3
-            uint32 customAnim;                  //4
-            uint32 noDamageImmune;              //5
-            uint32 openTextID;                  //6 can be used to replace castBarCaption?
-            uint32 losOK;                       //7
-            uint32 allowMounted;                //8 Is usable while on mount/vehicle. (0/1)
-            uint32 large;                       //9
-            uint32 conditionID1;                //10
+            uint32_t lockId;                    // parameter_0 -> Lock.dbc
+            uint32_t questList;                 // parameter_1
+            uint32_t pageMaterial;              // parameter_2
+            uint32_t gossipID;                  // parameter_3
+            uint32_t customAnim;                // parameter_4
+            uint32_t noDamageImmune;            // parameter_5
+            uint32_t openTextID;                // parameter_6 can be used to replace castBarCaption?
+            uint32_t losOK;                     // parameter_7
+            uint32_t allowMounted;              // parameter_8 Is usable while on mount/vehicle. (0/1)
+            uint32_t large;                     // parameter_9
+            uint32_t conditionID1;              // parameter_10
         } questgiver;
         // 3 GAMEOBJECT_TYPE_CHEST
         struct
@@ -199,13 +199,13 @@ struct GameObjectProperties
         // 5 GAMEOBJECT_TYPE_GENERIC
         struct
         {
-            uint32 floatingTooltip;             // parameter_0
-            uint32 highlight;                   // parameter_1
-            uint32 serverOnly;                  // parameter_2
-            uint32 large;                       // parameter_3
-            uint32 floatOnWater;                // parameter_4
-            int32 questID;                      // parameter_5
-            uint32 conditionID1;                // parameter_6
+            uint32_t floatingTooltip;           // parameter_0
+            uint32_t highlight;                 // parameter_1
+            uint32_t serverOnly;                // parameter_2
+            uint32_t large;                     // parameter_3
+            uint32_t floatOnWater;              // parameter_4
+            int32_t questID;                    // parameter_5
+            uint32_t conditionID1;              // parameter_6
         } _generic;
         // 6 GAMEOBJECT_TYPE_TRAP
         struct
@@ -277,14 +277,14 @@ struct GameObjectProperties
         // 12 GAMEOBJECT_TYPE_AREADAMAGE
         struct
         {
-            uint32 lockId;                      // parameter_0
-            uint32 radius;                      // parameter_1
-            uint32 damageMin;                   // parameter_2
-            uint32 damageMax;                   // parameter_3
-            uint32 damageSchool;                // parameter_4
-            uint32 autoCloseTime;               // parameter_5 secs till autoclose = autoCloseTime / 0x10000
-            uint32 openTextID;                  // parameter_6
-            uint32 closeTextID;                 // parameter_7
+            uint32_t lockId;                    // parameter_0
+            uint32_t radius;                    // parameter_1
+            uint32_t damageMin;                 // parameter_2
+            uint32_t damageMax;                 // parameter_3
+            uint32_t damageSchool;              // parameter_4
+            uint32_t autoCloseTime;             // parameter_5 secs till autoclose = autoCloseTime / 0x10000
+            uint32_t openTextID;                // parameter_6
+            uint32_t closeTextID;               // parameter_7
         } areadamage;
         // 13 GAMEOBJECT_TYPE_CAMERA
         struct
@@ -327,8 +327,8 @@ struct GameObjectProperties
         // 21 GAMEOBJECT_TYPE_GUARDPOST
         struct
         {
-            uint32 creatureID;                              //0
-            uint32 charges;                                 //1
+            uint32_t creatureID;                // parameter_0
+            uint32_t charges;                   // parameter_1
         } guardpost;
         // 22 GAMEOBJECT_TYPE_SPELLCASTER
         struct
@@ -376,28 +376,28 @@ struct GameObjectProperties
         // 29 GAMEOBJECT_TYPE_CAPTURE_POINT
         struct
         {
-            uint32 radius;                      // parameter_0
-            uint32 spell;                       // parameter_1
-            uint32 worldState1;                 // parameter_2
-            uint32 worldstate2;                 // parameter_3
-            uint32 winEventID1;                 // parameter_4
-            uint32 winEventID2;                 // parameter_5
-            uint32 contestedEventID1;           // parameter_6
-            uint32 contestedEventID2;           // parameter_7
-            uint32 progressEventID1;            // parameter_8
-            uint32 progressEventID2;            // parameter_9
-            uint32 neutralEventID1;             // parameter_10
-            uint32 neutralEventID2;             // parameter_11
-            uint32 neutralPercent;              // parameter_12
-            uint32 worldstate3;                 // parameter_13
-            uint32 minSuperiority;              // parameter_14
-            uint32 maxSuperiority;              // parameter_15
-            uint32 minTime;                     // parameter_16
-            uint32 maxTime;                     // parameter_17
-            uint32 large;                       // parameter_18
-            uint32 highlight;                   // parameter_19
-            uint32 startingValue;               // parameter_20
-            uint32 unidirectional;              // parameter_21
+            uint32_t radius;                    // parameter_0
+            uint32_t spell;                     // parameter_1
+            uint32_t worldState1;               // parameter_2
+            uint32_t worldstate2;               // parameter_3
+            uint32_t winEventID1;               // parameter_4
+            uint32_t winEventID2;               // parameter_5
+            uint32_t contestedEventID1;         // parameter_6
+            uint32_t contestedEventID2;         // parameter_7
+            uint32_t progressEventID1;          // parameter_8
+            uint32_t progressEventID2;          // parameter_9
+            uint32_t neutralEventID1;           // parameter_10
+            uint32_t neutralEventID2;           // parameter_11
+            uint32_t neutralPercent;            // parameter_12
+            uint32_t worldstate3;               // parameter_13
+            uint32_t minSuperiority;            // parameter_14
+            uint32_t maxSuperiority;            // parameter_15
+            uint32_t minTime;                   // parameter_16
+            uint32_t maxTime;                   // parameter_17
+            uint32_t large;                     // parameter_18
+            uint32_t highlight;                 // parameter_19
+            uint32_t startingValue;             // parameter_20
+            uint32_t unidirectional;            // parameter_21
         } capturePoint;
         // 30 GAMEOBJECT_TYPE_AURA_GENERATOR
         // 31 GAMEOBJECT_TYPE_DUNGEON_DIFFICULTY
@@ -647,7 +647,7 @@ public:
     bool isSpawnedByDefault() const { return m_spawnedByDefault; }
     void setSpawnedByDefault(bool b) { m_spawnedByDefault = b; }
 
-    void setSpellId(uint32 id)
+    void setSpellId(uint32_t id)
     {
         m_spawnedByDefault = false;                     // all summoned object is despawned after delay
         m_spellId = id;
@@ -867,10 +867,10 @@ class GameObject_Lootable : public GameObject
         virtual bool HasLoot() = 0;
 
         uint16_t getLootMode() const { return m_LootMode; }
-        bool hasLootMode(uint16 lootMode) const { return (m_LootMode & lootMode) != 0; }
-        void setLootMode(uint16 lootMode) { m_LootMode = lootMode; }
-        void addLootMode(uint16 lootMode) { m_LootMode |= lootMode; }
-        void removeLootMode(uint16 lootMode) { m_LootMode &= ~lootMode; }
+        bool hasLootMode(uint16_t lootMode) const { return (m_LootMode & lootMode) != 0; }
+        void setLootMode(uint16_t lootMode) { m_LootMode = lootMode; }
+        void addLootMode(uint16_t lootMode) { m_LootMode |= lootMode; }
+        void removeLootMode(uint16_t lootMode) { m_LootMode &= ~lootMode; }
         void resetLootMode() { m_LootMode = LOOT_MODE_DEFAULT; }
         void setLootGenerationTime() { m_lootGenerationTime = Util::getTimeNow(); }
         uint32_t getLootGenerationTime() const { return m_lootGenerationTime; }
