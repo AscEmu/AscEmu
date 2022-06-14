@@ -1146,7 +1146,7 @@ class GameObject_FishingNode : public GameObject_Lootable
 
         bool HasLoot();
 
-        bool IsLootable() { return true; }
+        bool IsLootable() override { return true; }
 
     protected:
         void _internalUpdateOnState(unsigned long timeDiff) override;
