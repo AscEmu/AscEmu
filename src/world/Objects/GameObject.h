@@ -343,15 +343,15 @@ struct GameObjectProperties
         // 24 GAMEOBJECT_TYPE_FLAGSTAND
         struct
         {
-            uint32 lockId;                      // parameter_0
-            uint32 pickupSpell;                 // parameter_1
-            uint32 radius;                      // parameter_2
-            uint32 returnAura;                  // parameter_3
-            uint32 returnSpell;                 // parameter_4
-            uint32 noDamageImmune;              // parameter_5
-            uint32 openTextID;                  // parameter_6
-            uint32 losOK;                       // parameter_7
-            uint32 conditionID1;                // parameter_8
+            uint32_t lockId;                    // parameter_0
+            uint32_t pickupSpell;               // parameter_1
+            uint32_t radius;                    // parameter_2
+            uint32_t returnAura;                // parameter_3
+            uint32_t returnSpell;               // parameter_4
+            uint32_t noDamageImmune;            // parameter_5
+            uint32_t openTextID;                // parameter_6
+            uint32_t losOK;                     // parameter_7
+            uint32_t conditionID1;              // parameter_8
         } flagstand;
         // 25 GAMEOBJECT_TYPE_FISHINGHOLE
         struct
@@ -365,11 +365,11 @@ struct GameObjectProperties
         // 26 GAMEOBJECT_TYPE_FLAGDROP
         struct
         {
-            uint32 lockId;                      // parameter_0
-            uint32 eventID;                     // parameter_1
-            uint32 pickupSpell;                 // parameter_2
-            uint32 noDamageImmune;              // parameter_3
-            uint32 openTextID;                  // parameter_4
+            uint32_t lockId;                    // parameter_0
+            uint32_t eventID;                   // parameter_1
+            uint32_t pickupSpell;               // parameter_2
+            uint32_t noDamageImmune;            // parameter_3
+            uint32_t openTextID;                // parameter_4
         } flagdrop;
         // 27 GAMEOBJECT_TYPE_MINI_GAME
         // 28 GAMEOBJECT_TYPE_LOTTERY_KIOSK
