@@ -7694,7 +7694,8 @@ void Unit::handleSpellClick(Unit* clicker)
 
         Unit* caster = (clickPair.castFlags & NPC_CLICK_CAST_CASTER_CLICKER) ? clicker : this;
         Unit* target = (clickPair.castFlags & NPC_CLICK_CAST_TARGET_CLICKER) ? clicker : this;
-        uint64_t origCasterGUID = (clickPair.castFlags & NPC_CLICK_CAST_ORIG_CASTER_OWNER) ? getOwnerGUID() : clicker->getGuid();
+        auto* const unitOwner = getUnitOwner();
+        uint64_t origCasterGUID = (unitOwner && clickPair.castFlags & NPC_CLICK_CAST_ORIG_CASTER_OWNER) ? unitOwner->getGuid() : clicker->getGuid();
 
         SpellInfo const* spellEntry = sSpellMgr.getSpellInfo(clickPair.spellId);
 
