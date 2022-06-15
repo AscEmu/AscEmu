@@ -257,14 +257,26 @@ void Creature::removeSanctuaryFlag()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Owner
+Unit* Creature::getUnitOwner()
+{
+    if (getCharmedByGuid() != 0)
+        return getWorldMapUnit(getCharmedByGuid());
+
+    return nullptr;
+}
+
+Unit* Creature::getUnitOwnerOrSelf()
+{
+    if (auto* const unitOwner = getUnitOwner())
+        return unitOwner;
+
+    return this;
+}
+
 Player* Creature::getPlayerOwner()
 {
     if (getCharmedByGuid() != 0)
-    {
-        const auto charmerUnit = getWorldMapUnit(getCharmedByGuid());
-        if (charmerUnit != nullptr && charmerUnit->isPlayer())
-            return dynamic_cast<Player*>(charmerUnit);
-    }
+        return getWorldMapPlayer(getCharmedByGuid());
 
     return nullptr;
 }
@@ -496,7 +508,7 @@ void Creature::immediateMovementFlagsUpdate()
 void Creature::updateMovementFlags()
 {
     // Do not update movement flags if creature is controlled by a player (charm/vehicle)
-    if (getCharmerOrOwnerGUID())
+    if (getUnitOwner())
         return;
 
     // Set the movement flags if the creature is in that mode. (Only fly if actually in air, only swim if in water, etc)

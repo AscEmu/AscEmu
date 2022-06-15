@@ -559,7 +559,7 @@ void MovementManager::moveTargetedHome()
 
     clear();
 
-    Unit* target = owner->getWorldMapUnit(owner->getCharmerOrOwnerGUID());
+    Unit* target = owner->getUnitOwner();
     if (!target)
     {
         add(new HomeMovementGenerator<Creature>());

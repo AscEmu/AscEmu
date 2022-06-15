@@ -863,11 +863,11 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
             //TO< Pet* >(u_caster)->Dismiss(true);
 
             SpellInfo const* se = sSpellMgr.getSpellInfo(5);
-            if (static_cast< Pet* >(u_caster)->getPlayerOwner() == nullptr)
+            if (static_cast< Pet* >(u_caster)->getUnitOwner() == nullptr)
                 return;
 
             SpellCastTargets targets(u_caster->getGuid());
-            Spell* sp = sSpellMgr.newSpell(static_cast< Pet* >(u_caster)->getPlayerOwner(), se, true, nullptr);
+            Spell* sp = sSpellMgr.newSpell(static_cast< Pet* >(u_caster)->getUnitOwner(), se, true, nullptr);
             sp->prepare(&targets);
             return;
         } break;
@@ -1879,8 +1879,8 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
             return;
         }
 
-        if (g_caster && g_caster->getCreatedByGuid() && g_caster->getOwner())
-            pAura = sSpellMgr.newAura(getSpellInfo(), Duration, g_caster->getOwner(), unitTarget, m_triggeredSpell, i_caster);
+        if (g_caster && g_caster->getCreatedByGuid() && g_caster->getUnitOwner())
+            pAura = sSpellMgr.newAura(getSpellInfo(), Duration, g_caster->getUnitOwner(), unitTarget, m_triggeredSpell, i_caster);
         else
             pAura = sSpellMgr.newAura(getSpellInfo(), Duration, m_caster, unitTarget, m_triggeredSpell, i_caster);
 
@@ -2749,9 +2749,9 @@ void Spell::SpellEffectPersistentAA(uint8_t effectIndex) // Persistent Area Aura
     // kinda have 2 summoners for traps that apply AA.
     DynamicObject* dynObj = m_caster->getWorldMap()->createDynamicObject();
 
-    if (g_caster != nullptr && g_caster->getOwner() && !unitTarget)
+    if (g_caster != nullptr && g_caster->getUnitOwner() && !unitTarget)
     {
-        Unit* caster = g_caster->getOwner();
+        Unit* caster = g_caster->getUnitOwner();
         dynObj->Create(caster, this, g_caster->GetPositionX(), g_caster->GetPositionY(),
                        g_caster->GetPositionZ(), dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         m_AreaAura = true;
@@ -2802,7 +2802,7 @@ void Spell::SpellEffectPersistentAA(uint8_t effectIndex) // Persistent Area Aura
             if (u_caster != nullptr)
                 dynObj->Create(u_caster, this, destination.x, destination.y, destination.z, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
             else if (g_caster != nullptr)
-                dynObj->Create(g_caster->getOwner(), this, destination.x, destination.y, destination.z, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
+                dynObj->Create(g_caster->getUnitOwner(), this, destination.x, destination.y, destination.z, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         }
         break;
         default:

@@ -133,7 +133,8 @@ bool FollowMovementGenerator::update(Unit* owner, uint32_t diff)
             bool allowShortcut = false;
             if (Unit* oPet = owner)
             {
-                if (target->getGuid() == oPet->getOwnerGUID())
+                auto* const petOwner = oPet->getUnitOwner();
+                if (petOwner && target->getGuid() == petOwner->getGuid())
                     allowShortcut = true;
             }
 
@@ -178,7 +179,8 @@ void FollowMovementGenerator::updatePetSpeed(Unit* owner)
 {
     if (Unit* oPet = owner)
     {
-        if (!getTarget() || getTarget()->getGuid() == owner->getOwnerGUID())
+        auto* const petOwner = owner->getUnitOwner();
+        if (!getTarget() || (petOwner && getTarget()->getGuid() == petOwner->getGuid()))
         {
             oPet->updateSpeed();
         }

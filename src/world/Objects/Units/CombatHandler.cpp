@@ -309,7 +309,7 @@ void CombatHandler::_combatAction(Unit* target, uint32_t msTime, bool friendlyAc
 
 void CombatHandler::_initiateCombatWith(Unit* enteringCombatWith)
 {
-    if (enteringCombatWith->isPlayer() || enteringCombatWith->getPlayerOwner() != nullptr)
+    if (enteringCombatWith->getPlayerOwnerOrSelf() != nullptr)
         return;
 
     m_combatInitiatedWith.insert(std::make_pair(enteringCombatWith->getGuid(), 0U));
@@ -317,7 +317,7 @@ void CombatHandler::_initiateCombatWith(Unit* enteringCombatWith)
 
 void CombatHandler::_notifyOnCombatInitiated(Unit* initiatedCombatWith)
 {
-    if (initiatedCombatWith->isPlayer() || initiatedCombatWith->getPlayerOwner() != nullptr)
+    if (initiatedCombatWith->getPlayerOwnerOrSelf() != nullptr)
         return;
 
     m_combatInitiatedWith.erase(initiatedCombatWith->getGuid());
@@ -326,8 +326,7 @@ void CombatHandler::_notifyOnCombatInitiated(Unit* initiatedCombatWith)
 void CombatHandler::_notifyOwner(bool friendlyAction, Unit* enteringCombatWith, bool initiatingCombat)
 {
     // If unit has an owner, the owner should also get in combat
-    // TODO: owner can be creature too
-    auto* const owner = getOwner()->getPlayerOwner();
+    auto* const owner = getOwner()->getUnitOwner();
     if (owner == nullptr || owner == getOwner())
         return;
 
@@ -347,7 +346,7 @@ void CombatHandler::_notifyOwner(bool friendlyAction, Unit* enteringCombatWith, 
 
 void CombatHandler::_checkPvpFlags(Unit* target, bool friendlyAction)
 {
-    const auto playerOwner = getOwner()->getPlayerOwner();
+    const auto playerOwner = getOwner()->getPlayerOwnerOrSelf();
     if (playerOwner == nullptr)
         return;
 
@@ -396,7 +395,7 @@ void CombatHandler::_updatePvpCombat(uint32_t msTime)
 void CombatHandler::_resetPvpCombatTimer(uint32_t msTime, Unit* victim)
 {
     // No need to check if unit is also creature
-    if (!victim->isPlayer() && victim->getPlayerOwner() == nullptr)
+    if (victim->getPlayerOwnerOrSelf() == nullptr)
         return;
 
     std::lock_guard<std::mutex> guard(m_mutexPlayerCombat);

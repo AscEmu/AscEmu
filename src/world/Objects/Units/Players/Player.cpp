@@ -1999,14 +1999,34 @@ void Player::resetTeam()
 bool Player::isTeamHorde() const { return getTeam() == TEAM_HORDE; }
 bool Player::isTeamAlliance() const { return getTeam() == TEAM_ALLIANCE; }
 
+Unit* Player::getUnitOwner()
+{
+    if (getCharmedByGuid() != 0)
+        return getWorldMapUnit(getCharmedByGuid());
+
+    return nullptr;
+}
+
+Unit* Player::getUnitOwnerOrSelf()
+{
+    if (auto* const unitOwner = getUnitOwner())
+        return unitOwner;
+
+    return this;
+}
+
 Player* Player::getPlayerOwner()
 {
     if (getCharmedByGuid() != 0)
-    {
-        const auto charmerUnit = getWorldMapUnit(getCharmedByGuid());
-        if (charmerUnit != nullptr && charmerUnit->isPlayer())
-            return dynamic_cast<Player*>(charmerUnit);
-    }
+        return getWorldMapPlayer(getCharmedByGuid());
+
+    return nullptr;
+}
+
+Player* Player::getPlayerOwnerOrSelf()
+{
+    if (auto* const plrOwner = getPlayerOwner())
+        return plrOwner;
 
     return this;
 }
@@ -9113,7 +9133,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
         }
         else
         {
-            if (loot_type != LOOT_FISHINGHOLE && ((loot_type != LOOT_FISHING && loot_type != LOOT_FISHING_JUNK) || go->getOwnerGUID() != getGuid()) && !go->IsWithinDistInMap(this, 30.0f))
+            if (loot_type != LOOT_FISHINGHOLE && ((loot_type != LOOT_FISHING && loot_type != LOOT_FISHING_JUNK) || go->getCreatedByGuid() != getGuid()) && !go->IsWithinDistInMap(this, 30.0f))
             {
                 SmsgLootReleaseResponse(guid, 1);
                 return;

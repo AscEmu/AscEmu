@@ -149,7 +149,7 @@ void Spell::FillTargetMap(uint32 i)
         {
             Pet* p = m_caster->getWorldMap()->getPet(wowGuid.getGuidLowPart());
             if (p != nullptr)
-                AddTarget(i, TargetType, p->getPlayerOwner());
+                AddTarget(i, TargetType, p->getUnitOwner());
         }
     }
     //targets party, not raid
@@ -246,8 +246,8 @@ void Spell::AddChainTargets(uint32 i, uint32 targetType, float /*r*/, uint32 /*m
     range *= range;
 
     //is this party only?
-    Player* casterFrom = u_caster->getPlayerOwner();
-    Player* pfirstTargetFrom = firstTarget->getPlayerOwner();
+    Player* casterFrom = u_caster->getPlayerOwnerOrSelf();
+    Player* pfirstTargetFrom = firstTarget->getPlayerOwnerOrSelf();
     if (casterFrom != nullptr && pfirstTargetFrom != nullptr && casterFrom->getGroup() == pfirstTargetFrom->getGroup())
         RaidOnly = true;
 
@@ -300,7 +300,7 @@ void Spell::AddPartyTargets(uint32 i, uint32 targetType, float r, uint32 /*maxta
         return;
     }
 
-    Player* p = u->getPlayerOwner();
+    Player* p = u->getPlayerOwnerOrSelf();
     if (p == nullptr || u_caster == nullptr)
         return;
 
@@ -339,7 +339,7 @@ void Spell::AddRaidTargets(uint32 i, uint32 targetType, float r, uint32 /*maxtar
         return;
     }
 
-    Player* p = u->getPlayerOwner();
+    Player* p = u->getPlayerOwnerOrSelf();
     if (p == nullptr || u_caster == nullptr)
         return;
 

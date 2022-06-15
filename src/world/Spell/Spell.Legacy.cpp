@@ -144,7 +144,7 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
     {
         case TYPEID_PLAYER:
         case TYPEID_UNIT:
-            if (u_caster && u_caster->getPlayerOwner() != nullptr && u_caster->getPlayerOwner()->getDuelState() == DUEL_STATE_STARTED)
+            if (u_caster && u_caster->getPlayerOwnerOrSelf() != nullptr && u_caster->getPlayerOwnerOrSelf()->getDuelState() == DUEL_STATE_STARTED)
                 duelSpell = true;
             break;
         case TYPEID_ITEM:
@@ -153,7 +153,7 @@ Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
                 duelSpell = true;
             break;
         case TYPEID_GAMEOBJECT:
-            if (g_caster->getOwner() != nullptr && g_caster->getOwner()->ToPlayer()->getDuelState() == DUEL_STATE_STARTED)
+            if (g_caster->getPlayerOwner() != nullptr && g_caster->getPlayerOwner()->getDuelState() == DUEL_STATE_STARTED)
                 duelSpell = true;
             break;
         default:
@@ -327,10 +327,10 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
             }
             else //cast from GO
             {
-                if (g_caster && g_caster->getCreatedByGuid() && g_caster->getOwner())
+                if (g_caster && g_caster->getCreatedByGuid() && g_caster->getUnitOwner())
                 {
                     //trap, check not to attack owner and friendly
-                    if (isAttackable(g_caster->getOwner(), itr, !(getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                    if (isAttackable(g_caster->getUnitOwner(), itr, !(getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
                         SafeAddTarget(tmpMap, itr->getGuid());
                 }
                 else
@@ -408,10 +408,10 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
                 }
                 else //cast from GO
                 {
-                    if (g_caster != nullptr && g_caster->getCreatedByGuid() && g_caster->getOwner() != nullptr)
+                    if (g_caster != nullptr && g_caster->getCreatedByGuid() && g_caster->getUnitOwner() != nullptr)
                     {
                         //trap, check not to attack owner and friendly
-                        if (isAttackable(g_caster->getOwner(), itr, !(getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                        if (isAttackable(g_caster->getUnitOwner(), itr, !(getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
                             SafeAddTarget(tmpMap, itr->getGuid());
                     }
                     else
@@ -474,10 +474,10 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
                 }
                 else //cast from GO
                 {
-                    if (g_caster != nullptr && g_caster->getCreatedByGuid() && g_caster->getOwner() != nullptr)
+                    if (g_caster != nullptr && g_caster->getCreatedByGuid() && g_caster->getUnitOwner() != nullptr)
                     {
                         //trap, check not to attack owner and friendly
-                        if (isFriendly(g_caster->getOwner(), itr))
+                        if (isFriendly(g_caster->getUnitOwner(), itr))
                             SafeAddTarget(tmpMap, itr->getGuid());
                     }
                     else
@@ -531,10 +531,10 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
             }
             else //cast from GO
             {
-                if (g_caster && g_caster->getCreatedByGuid() && g_caster->getOwner())
+                if (g_caster && g_caster->getCreatedByGuid() && g_caster->getUnitOwner())
                 {
                     //trap, check not to attack owner and friendly
-                    if (isAttackable(g_caster->getOwner(), itr, !(getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                    if (isAttackable(g_caster->getUnitOwner(), itr, !(getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
                     {
                         return itr->getGuid();
                     }
@@ -584,10 +584,10 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
             }
             else //cast from GO
             {
-                if (g_caster && g_caster->getCreatedByGuid() && g_caster->getOwner())
+                if (g_caster && g_caster->getCreatedByGuid() && g_caster->getUnitOwner())
                 {
                     //trap, check not to attack owner and friendly
-                    if (isFriendly(g_caster->getOwner(), itr))
+                    if (isFriendly(g_caster->getUnitOwner(), itr))
                     {
                         return itr->getGuid();
                     }

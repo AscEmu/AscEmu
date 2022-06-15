@@ -261,6 +261,22 @@ void GameObject::setAnimationProgress(uint8_t progress)
 bool GameObject::isQuestGiver() const { return getGoType() == GAMEOBJECT_TYPE_QUESTGIVER; }
 bool GameObject::isFishingNode() const { return getGoType() == GAMEOBJECT_TYPE_FISHINGNODE; }
 
+Unit* GameObject::getUnitOwner()
+{
+    if (getCreatedByGuid() != 0)
+        return getWorldMapUnit(getCreatedByGuid());
+
+    return nullptr;
+}
+
+Player* GameObject::getPlayerOwner()
+{
+    if (getCreatedByGuid() != 0)
+        return getWorldMapPlayer(getCreatedByGuid());
+
+    return nullptr;
+}
+
 bool GameObject::loadFromDB(MySQLStructure::GameobjectSpawn* spawn, WorldMap* map, bool addToWorld)
 {
     if (!spawn)
@@ -809,14 +825,14 @@ void GameObject::Update(unsigned long time_passed)
                     Unit* target = nullptr;
 
                     /// @todo this hack with search required until GO casting not implemented
-                    if (getOwner())
+                    if (getUnitOwner())
                     {
                         // Hunter trap: Search units which are unfriendly to the trap's owner
                         for (auto itr : getInRangeObjectsSet())
                         {
                             if (radius > itr->getDistance(this->GetPosition()))
                             {
-                                if (itr->isCreatureOrPlayer() && isHostile(this, itr))
+                                if (itr->isCreatureOrPlayer() && isAttackable(this, itr, false))
                                     target = itr->ToUnit();
                             }
                         }
@@ -859,7 +875,7 @@ void GameObject::Update(unsigned long time_passed)
             _internalUpdateOnState(time_passed);
 
             // Do not delete chests or goobers that are not consumed on loot, while still allowing them to despawn when they expire if summoned
-            bool isSummonedAndExpired = (getOwner() || getSpellId()) && m_respawnTime == 0;
+            bool isSummonedAndExpired = (getUnitOwner() || getSpellId()) && m_respawnTime == 0;
             if ((getGoType() == GAMEOBJECT_TYPE_CHEST || getGoType() == GAMEOBJECT_TYPE_GOOBER) && !GetGameObjectProperties()->isDespawnAtAction() && !isSummonedAndExpired)
             {
                 if (getGoType() == GAMEOBJECT_TYPE_CHEST && GetGameObjectProperties()->chest.restock_time > 0)
@@ -875,7 +891,7 @@ void GameObject::Update(unsigned long time_passed)
 
                 return;
             }
-            else if (getOwnerGUID() || getSpellId())
+            else if (getCreatedByGuid() || getSpellId())
             {
                 setRespawnTime(0);
                 Delete();
@@ -1203,11 +1219,12 @@ void GameObject::OnPushToWorld()
 void GameObject::onRemoveInRangeObject(Object* pObj)
 {
     Object::onRemoveInRangeObject(pObj);
-    if (m_summonedGo && getOwner() == pObj)
+    auto* const owner = getUnitOwner();
+    if (m_summonedGo && owner == pObj)
     {
         for (uint8_t i = 0; i < 4; i++)
-            if (getOwner()->m_ObjectSlots[i] == getGuidLow())
-                getOwner()->m_ObjectSlots[i] = 0;
+            if (owner->m_ObjectSlots[i] == getGuidLow())
+                owner->m_ObjectSlots[i] = 0;
 
         expireAndDelete();
     }
@@ -1611,7 +1628,7 @@ void GameObject_Trap::_internalUpdateOnState(unsigned long /*timeDiff*/)
             if (goInfo->trap.charges == 2)
                 // Hardcoded tooltip value
                 m_cooldownTime = Util::getMSTime() + 10 * IN_MILLISECONDS;
-            else if (Unit* owner = getOwner())
+            else if (Unit* owner = getUnitOwner())
                 if (owner->isInCombat())
                     m_cooldownTime = Util::getMSTime() + goInfo->trap.start_delay * IN_MILLISECONDS;
 
@@ -1835,7 +1852,7 @@ void GameObject_FishingNode::onUse(Player* player)
     if (!isUseable())
         return;
 
-    if (player->getGuid() != getOwnerGUID())
+    if (player->getGuid() != getCreatedByGuid())
         return;
 
     switch (getLootState())
@@ -1933,8 +1950,8 @@ void GameObject_FishingNode::_internalUpdateOnState(unsigned long timeDiff)
             if (Util::getTimeNow() > m_respawnTime - 5)
             {
                 // splash bobber (bobber ready now)
-                Unit* caster = getOwner();
-                if (caster && caster->isPlayer())
+                auto* const caster = getPlayerOwner();
+                if (caster)
                 {
                     setFlags(GO_FLAG_NEVER_DESPAWN);
                     sendGameobjectCustomAnim();
@@ -1945,8 +1962,8 @@ void GameObject_FishingNode::_internalUpdateOnState(unsigned long timeDiff)
         } break;
         case GO_READY:
         {
-            Unit* caster = getOwner();
-            if (caster && caster->isPlayer())
+            auto* const caster = getPlayerOwner();
+            if (caster)
             {
                 caster->removeGameObject(this, false);
                 caster->sendPacket(SmsgFishEscaped().serialise().get());
@@ -2130,9 +2147,8 @@ void GameObject_SpellCaster::onUse(Player* player)
 
     if (GetGameObjectProperties()->spell_caster.party_only != 0)
     {
-        if (getOwner() != nullptr && getOwner()->isPlayer())
+        if (auto* const summoner = getPlayerOwner())
         {
-            Player* summoner = static_cast<Player*>(getOwner());
             if (summoner->getGuid() != player->getGuid())
             {
                 if (!player->isInGroup())

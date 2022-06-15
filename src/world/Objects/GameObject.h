@@ -670,13 +670,12 @@ public:
     void setOwnerGuid(uint64_t owner)
     {
         // Owner already found and different than expected owner - remove object from old owner
-        if (owner && getOwnerGUID() && getOwnerGUID() != owner)
+        if (owner && getCreatedByGuid() && getCreatedByGuid() != owner)
             return;
 
         m_spawnedByDefault = false; // all object with owner is despawned after delay
         setCreatedByGuid(owner);
     }
-    uint64_t getOwnerGUID() const override { return getCreatedByGuid(); }
 
     LootState getLootState() const { return m_lootState; }
     void setLootState(LootState state, Unit* unit = nullptr);
@@ -767,6 +766,10 @@ public:
     bool inStealth = false;
     uint8_t invisibilityFlag = INVIS_FLAG_NORMAL;
     uint8_t stealthFlag = STEALTH_FLAG_NORMAL;
+
+    // Owner
+    Unit* getUnitOwner() override;
+    Player* getPlayerOwner() override;
 
     // MIT End
 

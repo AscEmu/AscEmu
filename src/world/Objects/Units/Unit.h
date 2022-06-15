@@ -236,9 +236,6 @@ public:
     uint64_t getSummonedByGuid() const;
     void setSummonedByGuid(uint64_t guid);
 
-    // helper
-    uint64_t getCharmerOrOwnerGUID() const override { return isCharmed() ? getCharmedByGuid() : getSummonedByGuid(); }
-
     uint64_t getCreatedByGuid() const;
     void setCreatedByGuid(uint64_t guid);
 

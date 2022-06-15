@@ -1413,7 +1413,7 @@ void AIInterface::doFleeToGetAssistance()
 
 void AIInterface::callAssistance()
 {
-    if (!m_AlreadyCallAssistance && getCurrentTarget() && !getUnit()->isPet() && !getUnit()->getCharmerOrOwnerGUID())
+    if (!m_AlreadyCallAssistance && getCurrentTarget() && !getUnit()->isPet() && !getUnit()->getUnitOwner())
     {
         setNoCallAssistance(true);
 
@@ -1508,7 +1508,7 @@ bool AIInterface::canAssistTo(Unit* u, Unit* enemy, bool checkfaction /*= true*/
         return false;
 
     // only free creature
-    if (getUnit()->getCharmerOrOwnerGUID())
+    if (getUnit()->getUnitOwner())
         return false;
 
     // only from same creature faction
@@ -1954,8 +1954,7 @@ Unit* AIInterface::findTarget()
     {
         onHostileAction(target);
 
-        // Appled todo: creatures can be owners too
-        if (const auto targetOwner = target->getPlayerOwner())
+        if (const auto targetOwner = target->getUnitOwner())
             onHostileAction(targetOwner);
     }
     return target;
@@ -2174,7 +2173,7 @@ void AIInterface::onHostileAction(Unit* pUnit, SpellInfo const* spellInfo/* = nu
 
     // Let players know that creature has aggroed them
     // Pure creature targets do not need this
-    if (pUnit->isPlayer() || pUnit->getPlayerOwner() != nullptr)
+    if (pUnit->getPlayerOwnerOrSelf() != nullptr)
         pUnit->getCombatHandler().takeCombatAction(getUnit());
 
     // Send hostile action event if unit was already engaged

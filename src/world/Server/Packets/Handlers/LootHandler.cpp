@@ -386,7 +386,7 @@ void WorldSession::doLootRelease(WoWGuid lguid)
             // Remove roundrobin and make Lootable for evryone in our group
             gameObjectLootable->loot.roundRobinPlayer = 0;
             // not check distance for GO in case owned GO (fishing bobber case, for example) or Fishing hole GO
-            if (!go || ((go->getOwnerGUID() != _player->getGuid() && go->getGoType() != GAMEOBJECT_TYPE_FISHINGHOLE) && !go->IsWithinDistInMap(_player, 30.0f)))
+            if (!go || ((go->getCreatedByGuid() != _player->getGuid() && go->getGoType() != GAMEOBJECT_TYPE_FISHINGHOLE) && !go->IsWithinDistInMap(_player, 30.0f)))
                 return;
 
             loot = &gameObjectLootable->loot;

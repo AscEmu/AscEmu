@@ -42,7 +42,8 @@ protected:
 public:
     bool isSummonedToSlot() const;
 
-    Unit* getUnitOwner() const { return m_unitOwner; }
+    Unit* getUnitOwner() override;
+    Unit* getUnitOwnerOrSelf() override;        // override creature function
     Player* getPlayerOwner() override;
 };
 

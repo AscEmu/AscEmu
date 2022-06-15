@@ -446,7 +446,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
         case TYPEID_GAMEOBJECT:
         {
             // Only player gameobjects
-            if (static_cast<GameObject*>(this)->getOwner() != nullptr)
+            if (static_cast<GameObject*>(this)->getPlayerOwner() != nullptr)
                 updateType = UPDATETYPE_CREATE_OBJECT2;
         } break;
         default:
@@ -478,7 +478,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
                     break;
                 default:
                     // Set update type for other gameobjects only if it's created by a player
-                    if (gameObj->getOwner() != nullptr)
+                    if (gameObj->getPlayerOwner() != nullptr)
                         updateType = UPDATETYPE_CREATE_OBJECT2;
                     break;
             }
@@ -1018,7 +1018,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     victim->addHealthBatchEvent(healthBatch);
 
     // Tagging should happen when damage packets are sent
-    const auto plrOwner = getPlayerOwner();
+    const auto plrOwner = getPlayerOwnerOrSelf();
     if (plrOwner != nullptr && victim->isCreature() && victim->isTaggable())
     {
         victim->setTaggerGuid(getGuid());
@@ -1721,7 +1721,10 @@ void Object::removeObjectFromInRangeSameFactionSet(Object* obj)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Owner
+Unit* Object::getUnitOwner() { return nullptr; }
+Unit* Object::getUnitOwnerOrSelf() { return getUnitOwner(); }
 Player* Object::getPlayerOwner() { return nullptr; }
+Player* Object::getPlayerOwnerOrSelf() { return getPlayerOwner(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
@@ -4550,11 +4553,6 @@ float Object::getDistance2d(float x, float y) const
 {
     float d = getExactDist2d(x, y) - getCombatReach();
     return d > 0.0f ? d : 0.0f;
-}
-
-Unit* Object::getOwner()
-{
-    return getWorldMapUnit(getOwnerGUID());
 }
 
 GameObject* Object::summonGameObject(uint32_t entryID, LocationVector pos, QuaternionData const& rot, uint32_t spawnTime, GOSummonType summonType)
