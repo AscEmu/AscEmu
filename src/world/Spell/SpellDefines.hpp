@@ -151,7 +151,7 @@ enum SpellAttributesExC
     ATTRIBUTESEXC_IGNORE_RESURRECTION_TIMER         = 0x00000010,   // ignor resurrection
     ATTRIBUTESEXC_UNK7                              = 0x00000020,
     ATTRIBUTESEXC_UNK8                              = 0x00000040,
-    ATTRIBUTESEXC_UNK9                              = 0x00000080,
+    ATTRIBUTESEXC_APPLY_OWN_STACK_FOR_EACH_CASTER   = 0x00000080,   // Applies separate aura stack for each caster
     ATTRIBUTESEXC_TARGET_ONLY_PLAYERS               = 0x00000100,   // Requires player target
     ATTRIBUTESEXC_UNK11                             = 0x00000200,
     ATTRIBUTESEXC_REQUIRES_MAIN_HAND_WEAPON         = 0x00000400,   // Requires main hand weapon

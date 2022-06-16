@@ -114,6 +114,8 @@ public:
     bool isChanneled() const;
     bool isRangedAutoRepeat() const;
     bool isOnNextMeleeAttack() const;
+    // If spell stacks from different casters (i.e. Sunder Armor)
+    bool isStackableFromMultipleCasters() const;
 
     int32_t calculateEffectValue(uint8_t effIndex, Unit* unitCaster = nullptr, Item* itemCaster = nullptr, SpellForcedBasePoints forcedBasePoints = SpellForcedBasePoints()) const;
 
