@@ -992,6 +992,11 @@ bool SpellInfo::isOnNextMeleeAttack() const
     return (Attributes & (ATTRIBUTES_ON_NEXT_ATTACK | ATTRIBUTES_ON_NEXT_SWING_2)) != 0;
 }
 
+bool SpellInfo::isStackableFromMultipleCasters() const
+{
+    return getMaxstack() > 1 && !isChanneled() && !(getAttributesExC() & ATTRIBUTESEXC_APPLY_OWN_STACK_FOR_EACH_CASTER);
+}
+
 int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = nullptr*/, Item* itemCaster/* = nullptr*/, SpellForcedBasePoints forcedBasePoints/* = SpellForcedBasePoints()*/) const
 {
     if (effIndex >= MAX_SPELL_EFFECTS)

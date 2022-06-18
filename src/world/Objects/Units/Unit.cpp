@@ -4065,13 +4065,14 @@ void Unit::addAura(Aura* aur)
                 continue;
             }
 
-            // Check if unit has same aura by same caster
+            // Check if unit has same aura by same caster or is stackable from multiple casters
             if (_aura->getSpellId() == aur->getSpellId())
             {
-                if (_aura->getCasterGuid() != aur->getCasterGuid())
+                if (_aura->getCasterGuid() != aur->getCasterGuid() &&
+                    !aur->getSpellInfo()->isStackableFromMultipleCasters())
                     continue;
 
-                // The auras are casted by same unit, reapply all effects
+                // The auras are casted by same unit or aura is stackable from multiple units, reapply all effects
                 // Old aura will never have more effects than new aura and all effects have same indexes
                 // but old aura can have less effects if certain effects have been removed by i.e. pvp trinket
                 for (uint8_t x = 0; x < MAX_SPELL_EFFECTS; ++x)
