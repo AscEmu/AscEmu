@@ -808,7 +808,7 @@ void GameObject::Update(unsigned long time_passed)
                     }
 
                     // Type 0 despawns after being triggered, type 1 does not.
-                    /// @todo This is activation radius. Casting radius must be selected from spell data.
+                    // Trap Activasion Radius, Casting Radius comes from the Uses Spell
                     float radius;
                     if (!goInfo->trap.radius)
                     {
@@ -824,10 +824,10 @@ void GameObject::Update(unsigned long time_passed)
                     // Pointer to appropriate target if found any
                     Unit* target = nullptr;
 
-                    /// @todo this hack with search required until GO casting not implemented
+                    // Proper Gameobject Casting is not implemented yet, so lets search for targets
                     if (getUnitOwner())
                     {
-                        // Hunter trap: Search units which are unfriendly to the trap's owner
+                        // Hunter trap: Units which are Unfriendly Gameobject owner
                         for (auto itr : getInRangeObjectsSet())
                         {
                             if (radius > itr->getDistance(this->GetPosition()))
@@ -839,7 +839,7 @@ void GameObject::Update(unsigned long time_passed)
                     }
                     else
                     {
-                        // Environmental trap: Any player
+                        // Environmental trap: Target Here can be any Player in Distance
                         Player* player = nullptr;
                         for (auto itr : getInRangePlayersSet())
                         {
