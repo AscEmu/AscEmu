@@ -1,6 +1,6 @@
 # Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 
-set(CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 
 # set RPATH-handing (CMake parameters)
@@ -23,7 +23,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/Modules/AEConfigureArch.cmake)
 
 # default definitions
 # -DPREFIX=\"${ASCEMU_SCRIPTLIB_PATH}\"
-add_definitions(-DHAVE_CONFIG_H  )
+add_definitions(-DHAVE_CONFIG_H)
 
 mark_as_advanced(
     ZLIB_LIBRARIES
@@ -37,20 +37,3 @@ mark_as_advanced(
     BZIP2_LIBRARIES
     BZIP2_INCLUDE_DIRS
 )
-
-# apply system settings
-if (WIN32)
-    include(${CMAKE_SOURCE_DIR}/cmake/Systems/Windows.cmake)
-elseif (UNIX)
-    if (APPLE)
-        include(${CMAKE_SOURCE_DIR}/cmake/Systems/Apple.cmake) 
-    elseif (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD") 
-        include(${CMAKE_SOURCE_DIR}/cmake/Systems/FreeBSD.cmake) 
-    elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux") 
-        include(${CMAKE_SOURCE_DIR}/cmake/Systems/Linux.cmake) 
-    else ()
-        message(FATAL_ERROR "System is not supported." ) 
-    endif ()
-else ()
-    message(FATAL_ERROR "System is not supported." )
-endif ()

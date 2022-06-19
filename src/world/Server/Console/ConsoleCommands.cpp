@@ -3,8 +3,6 @@ Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
-
 #include "ConsoleCommands.h"
 #include <git_version.h>
 #include "Server/LogonCommClient/LogonCommHandler.h"
@@ -15,7 +13,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Management/ObjectMgr.h"
 #include "Server/Script/ScriptMgr.h"
-
 
 bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {
@@ -142,7 +139,8 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
         baseConsole->Write("======================================================================\r\n");
         baseConsole->Write("Server Information: \r\n");
         baseConsole->Write("======================================================================\r\n");
-        baseConsole->Write("Server Revision: AscEmu %s/%s-%s-%s (www.ascemu.org)\r\n", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+        baseConsole->Write("Server Revision: AscEmu %s-%s-%s (www.ascemu.org)\r\n", CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
+        baseConsole->Write("Build hash: %s\r\n", BUILD_HASH_STR);
         baseConsole->Write("Server Uptime: %s\r\n", sWorld.getWorldUptimeString().c_str());
         baseConsole->Write("Current Players: %d (%d GMs, %d queued)\r\n", clientsNum, gmCount, 0);
         baseConsole->Write("Active Thread Count: %u\r\n", ThreadPool.GetActiveThreadCount());
@@ -162,9 +160,9 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
 bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool /*isWebClient*/)
 {
     baseConsole->Write("There are the following GM's online on this server: \r\n");
-    baseConsole->Write("======================================================\r\n");
-    baseConsole->Write("| %21s | %15s | % 03s  |\r\n", "Name", "Permissions", "Latency");
-    baseConsole->Write("======================================================\r\n");
+    baseConsole->Write("======================================================================\r\n");
+    baseConsole->Write("| %21s | %15s | % 03s                                                |\r\n", "Name", "Permissions", "Latency");
+    baseConsole->Write("======================================================================\r\n");
 
     sObjectMgr._playerslock.lock();
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
@@ -177,7 +175,7 @@ bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std
     }
     sObjectMgr._playerslock.unlock();
 
-    baseConsole->Write("======================================================\r\n\r\n");
+    baseConsole->Write("======================================================================\r\n\r\n");
 
     return true;
 }
@@ -236,19 +234,19 @@ bool handleMotdCommand(BaseConsole* baseConsole, int argumentCount, std::string 
 bool handleListOnlinePlayersCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool /*isWebClient*/)
 {
     baseConsole->Write("There following players online on this server: \r\n");
-    baseConsole->Write("======================================================\r\n");
-    baseConsole->Write("| %21s | %15s | % 03s  |\r\n", "Name", "Level", "Latency");
-    baseConsole->Write("======================================================\r\n");
+    baseConsole->Write("======================================================================\r\n");
+    baseConsole->Write("| %21s | %15s | % 03s                  |\r\n", "Name", "Level", "Latency");
+    baseConsole->Write("======================================================================\r\n");
 
     sObjectMgr._playerslock.lock();
     for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
     {
-        baseConsole->Write("| %21s | %15u | %03u ms |\r\n", itr->second->getName().c_str(), itr->second->getSession()->GetPlayer()->getLevel(),
+        baseConsole->Write("| %21s | %15u | %03u ms                   |\r\n", itr->second->getName().c_str(), itr->second->getSession()->GetPlayer()->getLevel(),
             itr->second->getSession()->GetLatency());
     }
     sObjectMgr._playerslock.unlock();
 
-    baseConsole->Write("======================================================\r\n\r\n");
+    baseConsole->Write("======================================================================\r\n\r\n");
     return true;
 }
 

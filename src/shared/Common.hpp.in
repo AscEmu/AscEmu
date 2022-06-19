@@ -10,15 +10,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace fs = std::filesystem;
 
-#ifdef WIN32
-    #define LIBMASK ".dll";
-#else
-    #ifndef __APPLE__
-        #define LIBMASK ".so";
-    #else
-        #define LIBMASK ".dylib";
-    #endif
-#endif
+// Banner information
+#define AE_PLATFORM     "@AE_PLATFORM@"
+#define AE_ARCHITECTURE "@AE_ARCHITECTURE@"
 
 // Time Variables
 namespace TimeVars

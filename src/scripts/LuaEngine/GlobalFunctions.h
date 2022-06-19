@@ -578,7 +578,7 @@ namespace luaGlobalFunctions
     }
     int GetPlatform(lua_State* L)
     {
-        lua_pushliteral(L, PLATFORM_TEXT);
+        lua_pushliteral(L, AE_PLATFORM);
         return 1;
     }
     int NumberToGUID(lua_State* L)

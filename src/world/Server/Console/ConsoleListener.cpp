@@ -19,19 +19,14 @@
  *
  */
 
-
-
 #include <cstdint>
 #include <Network/Network.h>
 #include <Config/Config.h>
-
 #include "BaseConsole.h"
 #include "ConsoleCommands.h"
 #include "Server/World.h"
-
 #include "ConsoleSocket.h"
 #include "ConsoleAuthMgr.h"
-
 #include "Threading/LegacyThreadBase.h"
 
 ListenSocket<ConsoleSocket>* g_pListenSocket = nullptr;
@@ -176,7 +171,7 @@ void processConsoleInput(BaseConsole* baseConsole, std::string consoleInput, boo
         if (commandName.empty())
             break;
 
-        if (commandName.compare("help") == 0 || commandName.compare("?") == 0)
+        if (commandName.compare("Help") == 0 || commandName.compare("help") == 0 || commandName.compare("?") == 0)
         {
             isHelpCommand = true;
             break;
@@ -194,20 +189,20 @@ void processConsoleInput(BaseConsole* baseConsole, std::string consoleInput, boo
     {
         if (isWebClient == false)
         {
-            baseConsole->Write("Show Command list with ----- :%s\r\n", commandName.c_str());
-
-            baseConsole->Write("===============================================================================\r\n");
-            baseConsole->Write("| %15s | %57s |\r\n", "Name", "Arguments");
-            baseConsole->Write("===============================================================================\r\n");
+            baseConsole->Write("================================================================================\r\n");
+            baseConsole->Write("| Console::Help                                                                |\r\n");
+            baseConsole->Write("================================================================================\r\n");
+            baseConsole->Write("| %20s | %53s |\r\n", "Name", "Arguments");
+            baseConsole->Write("================================================================================\r\n");
 
             for (int j = 0; Commands[j].consoleCommand.empty() == false; ++j)
             {
-                baseConsole->Write("| %15s | %57s |\r\n", Commands[j].consoleCommand.c_str(), Commands[j].argumentFormat.c_str());
+                baseConsole->Write("| %20s | %53s |\r\n", Commands[j].consoleCommand.c_str(), Commands[j].argumentFormat.c_str());
             }
 
-            baseConsole->Write("===============================================================================\r\n");
-            baseConsole->Write("| type 'quit' to terminate a Remote Console Session                           |\r\n");
-            baseConsole->Write("===============================================================================\r\n");
+            baseConsole->Write("================================================================================\r\n");
+            baseConsole->Write("| type 'quit' to terminate a Remote Console Session                            |\r\n");
+            baseConsole->Write("================================================================================\r\n");
         }
     }
     else
