@@ -34,7 +34,6 @@ set(sources
 )
 
 set(headers
-    AscemuServerDefines.hpp
     AuthCodes.h
     ByteBuffer.h
     ByteConverter.h

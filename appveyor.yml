@@ -22,7 +22,7 @@ init:
 
 install:
   - git submodule update --init --recursive
-  
+
 before_build:
   - cmd: echo %Image%
   - cmd: echo %Configuration%

@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "LogonServerDefines.hpp"
-#include <AscemuServerDefines.hpp>
+#include <Common.Legacy.h>
 #include "Database/Database.h"
 
 extern Database* sLogonSQL;
@@ -19,44 +19,42 @@ extern Mutex _authSocketLock;
 class MasterLogon;
 class MasterLogon
 {
-    private:
-        MasterLogon() = default;
-        ~MasterLogon() = default;
+private:
+    MasterLogon() = default;
+    ~MasterLogon() = default;
 
-    public:
+public:
+    static MasterLogon& getInstance();
 
-        static MasterLogon& getInstance();
+    MasterLogon(MasterLogon&&) = delete;
+    MasterLogon(MasterLogon const&) = delete;
+    MasterLogon& operator=(MasterLogon&&) = delete;
+    MasterLogon& operator=(MasterLogon const&) = delete;
 
-        MasterLogon(MasterLogon&&) = delete;
-        MasterLogon(MasterLogon const&) = delete;
-        MasterLogon& operator=(MasterLogon&&) = delete;
-        MasterLogon& operator=(MasterLogon const&) = delete;
+    bool LoadLogonConfiguration();
+    void CheckForDeadSockets();
+    void Run(int argc, char** argv);
+    void Stop();
 
-        bool LoadLogonConfiguration();
-        void CheckForDeadSockets();
-        void Run(int argc, char** argv);
-        void Stop();
+    bool StartDb();
+    bool CheckDBVersion();
+    bool SetLogonConfiguration();
 
-        bool StartDb();
-        bool CheckDBVersion();
-        bool SetLogonConfiguration();
+    bool IsServerAllowed(unsigned int IP);
+    bool IsServerAllowedMod(unsigned int IP);
 
-        bool IsServerAllowed(unsigned int IP);
-        bool IsServerAllowedMod(unsigned int IP);
+    void PrintBanner();
+    void WritePidFile();
 
-        void PrintBanner();
-        void WritePidFile();
+    uint32 clientMinBuild;
+    uint32 clientMaxBuild;
 
-        uint32 clientMinBuild;
-        uint32 clientMaxBuild;
+private:
+    void _HookSignals();
+    void _UnhookSignals();
 
-    private:
-
-        void _HookSignals();
-        void _UnhookSignals();
-
-        static void _OnSignal(int s);
-        bool m_stopEvent;
+    static void _OnSignal(int s);
+    bool m_stopEvent;
 };
 
 #define sMasterLogon MasterLogon::getInstance()

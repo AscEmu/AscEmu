@@ -2587,7 +2587,7 @@ GossipScript* CreateLuaGOGossipScript(uint32_t id)
 
 void LuaEngine::Startup()
 {
-    DLLLogDetail("LuaEngineMgr : AscEmu Lua Engine ( ALE ) %s: Loaded", ARCH);
+    DLLLogDetail("LuaEngineMgr : Loaded ALE (AscEmu Lua Engine)");
     //Create a new global state that will server as the lua universe.
     lu = luaL_newstate();
 

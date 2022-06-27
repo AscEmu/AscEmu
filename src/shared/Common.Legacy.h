@@ -20,20 +20,25 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-#include "AscemuServerDefines.hpp"
+#define MAX_PATH 1024
+
+#include "git_version.h"
+#include <signal.h>
+
+#ifndef WIN32
+#include <sched.h>
+#include <sys/resource.h>
+#endif
+
 #include "DynLib.hpp"
 #include "SysInfo.hpp"
 #include "PerformanceCounter.hpp"
 
-#include <cstdlib>
 #include <cstdio>
-
 #include <cstdarg>
 #include <ctime>
 #include <cmath>
 #include <cerrno>
-
-#define MAX_PATH 1024
 
 #include "Network/NetworkIncludes.hpp"
 
@@ -72,16 +77,14 @@
 #  pragma error "FATAL ERROR: Unknown compiler."
 #endif
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// banner info
-#if _WIN32
-    #define PLATFORM_TEXT "Win32"
-#elif __APPLE__
-    #define PLATFORM_TEXT "OSX"
-#elif defined(__FreeBSD__)
-    #define PLATFORM_TEXT "FreeBSD"
-#elif defined(__linux__)
-    #define PLATFORM_TEXT "Linux"
+#ifdef WIN32
+    #define LIBMASK ".dll";
+#else
+    #ifndef __APPLE__
+        #define LIBMASK ".so";
+    #else
+        #define LIBMASK ".dylib";
+    #endif
 #endif
 
 #ifdef _DEBUG
@@ -89,13 +92,6 @@
 #else
     #define CONFIG "Release"
 #endif
-
-#if defined(__x86_64__) || defined(__x86_64) || defined(__amd64__) || defined(_WIN64)
-    #define ARCH "X64"
-#else
-    #define ARCH "X86"
-#endif
-//////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef USE_EPOLL
     #define CONFIG_USE_EPOLL

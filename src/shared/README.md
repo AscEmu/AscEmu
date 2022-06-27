@@ -21,7 +21,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2014 | CommonTypes.hpp
 * 2014 | CommonHelpers.hpp
 * 2014 | CommonDefines.hpp
-* 2014 | AscemuServerDefines.hpp
 * 2008 | WoWGuid.h
 * 2008 | WorldPacket.h
 * 2008 | Threading/ThreadStarter.h
@@ -157,6 +156,9 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 
 ### Removed on 10 May 2022
 * 2008 | TLSObject.h
+
+### Removed on 07 Jun 2022
+* 2014 | AscemuServerDefines.hpp
 
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp

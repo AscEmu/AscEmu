@@ -49,6 +49,10 @@ This file is released under the MIT license. See README-MIT for more information
     #define BUILD_VERSION 18414
 #endif
 
+#if VERSION_STRING >= Classic
+    #define GM_TICKET_MY_MASTER_COMPATIBLE
+#endif
+
 #if VERSION_STRING >= TBC
     #define FT_FLYING
 #endif

@@ -574,17 +574,11 @@ void WorldSession::sendServerStats()
 {
     if (worldConfig.server.sendStatsOnJoin)
     {
-#ifdef WIN32
-        _player->broadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);
-#else
-        _player->broadcastMessage("Server: %sAscEmu - %s-%s", MSG_COLOR_WHITE, PLATFORM_TEXT, ARCH);
-#endif
-
-        _player->broadcastMessage("Build hash: %s%s", MSG_COLOR_CYAN, BUILD_HASH_STR);
-        _player->broadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u",
-            MSG_COLOR_SEXGREEN, static_cast<uint32_t>(sWorld.getSessionCount()), MSG_COLOR_SEXBLUE, sWorld.getPeakSessionCount(),
-            MSG_COLOR_SEXBLUE, sWorld.getAcceptedConnections());
-
+        _player->broadcastMessage("Server Revision: %sAscEmu-%s-%s %s(www.ascemu.org)", MSG_COLOR_WHITE, AE_PLATFORM, AE_ARCHITECTURE, MSG_COLOR_SEXBLUE);
+        _player->broadcastMessage("Build hash: %s%s", MSG_COLOR_SEXBLUE, BUILD_HASH_STR);
+        _player->broadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u", MSG_COLOR_SEXBLUE, 
+                                   static_cast<uint32_t>(sWorld.getSessionCount()), MSG_COLOR_SEXBLUE, sWorld.getPeakSessionCount(), MSG_COLOR_SEXBLUE, sWorld.getAcceptedConnections());
+        
         _player->broadcastMessage("Server Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
     }
 }
