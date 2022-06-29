@@ -596,7 +596,7 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
     if (save_to_db)
     {
         GreenSystemMessage(m_session, "Spawning GameObject by entry '%u'. Added to gameobject_spawns table.", gameobject->getSpawnId());
-        gameobject->saveToDB();
+        gameobject->saveToDB(true);
         sGMLog.writefromsession(m_session, "spawned gameobject %s, entry %u at %u %f %f %f%s", gameobject_prop->name.c_str(), gameobject->getEntry(), player->GetMapId(), gameobject->GetPositionX(), gameobject->GetPositionY(), gameobject->GetPositionZ(), save == 1 ? ", saved in DB" : "");
     }
     else

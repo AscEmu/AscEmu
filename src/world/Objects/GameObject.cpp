@@ -347,60 +347,70 @@ void GameObject::deleteFromDB()
     }
 }
 
-void GameObject::saveToDB()
+void GameObject::saveToDB(bool newSpawn)
 {
     if (m_spawn == nullptr)
     {
-        // Create spawn instance
-        MySQLStructure::GameobjectSpawn* m_spawnTemp = new MySQLStructure::GameobjectSpawn;
-        m_spawnTemp->entry = getEntry();
-        m_spawnTemp->id = sObjectMgr.GenerateGameObjectSpawnID();
-        m_spawnTemp->map = GetMapId();
-        m_spawnTemp->spawnPoint = GetPosition();
-        m_spawnTemp->phase = GetPhase();
-        m_spawnTemp->rotation = m_localRotation;
-        m_spawnTemp->spawntimesecs = m_spawnedByDefault ? m_respawnDelayTime : -(int32_t)m_respawnDelayTime;
-        m_spawnTemp->state = GameObject_State(getState());
-
-        uint32_t cx = getWorldMap()->getPosX(GetPositionX());
-        uint32_t cy = getWorldMap()->getPosY(GetPositionY());
-
-        getWorldMap()->getBaseMap()->getSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(m_spawnTemp);
-
-        m_spawn = m_spawnTemp;
+        sLogger.failure("Saving to Database failed for GameObject with entry %u spawnId %u, no SpawnData available", getEntry(), getSpawnId());
+        return;
     }
     std::stringstream ss;
 
-    ss << "DELETE FROM gameobject_spawns WHERE id = ";
-    ss << m_spawn->id;
-    ss << " AND min_build <= ";
-    ss << VERSION_STRING;
-    ss << " AND max_build >= ";
-    ss << VERSION_STRING;
-    ss << ";";
-
-    WorldDatabase.ExecuteNA(ss.str().c_str());
-
-    ss.rdbuf()->str("");
-
-    ss << "INSERT INTO gameobject_spawns VALUES("
-        << m_spawn->id << ","
-        << VERSION_STRING << ","
-        << VERSION_STRING << ","
-        << getEntry() << ","
-        << GetMapId() << ","
-        << GetPhase() << ","
-        << GetPositionX() << ","
-        << GetPositionY() << ","
-        << GetPositionZ() << ","
-        << GetOrientation() << ","
-        << getParentRotation(0) << ","
-        << getParentRotation(1) << ","
-        << getParentRotation(2) << ","
-        << getParentRotation(3) << ","
-        << int32_t(m_respawnDelayTime) << ","
-        << int32_t(getState()) << ","
-        << "0)";           // event
+    if (newSpawn)
+    {
+        ss << "INSERT INTO gameobject_spawns VALUES("
+           << m_spawn->id << ","
+           << VERSION_STRING << ","
+           << VERSION_STRING << ","
+           << getEntry() << ","
+           << GetMapId() << ","
+           << GetPhase() << ","
+           << GetPositionX() << ","
+           << GetPositionY() << ","
+           << GetPositionZ() << ","
+           << GetOrientation() << ","
+           << getParentRotation(0) << ","
+           << getParentRotation(1) << ","
+           << getParentRotation(2) << ","
+           << getParentRotation(3) << ","
+           << int32_t(m_respawnDelayTime) << ","
+           << int32_t(getState()) << ","
+           << "0)";           // event
+    }
+    else
+    {
+        ss << "UPDATE gameobject_spawns SET "
+            << "phase = "
+            << GetPhase() << ","
+            << "position_x = "
+            << GetPositionX() << ","
+            << "position_y = "
+            << GetPositionY() << ","
+            << "position_z = "
+            << GetPositionZ() << ","
+            << "orientation = "
+            << GetOrientation() << ","
+            << "rotation0 = "
+            << getParentRotation(0) << ","
+            << "rotation1 = "
+            << getParentRotation(1) << ","
+            << "rotation2 = "
+            << getParentRotation(2) << ","
+            << "rotation3 = "
+            << getParentRotation(3) << ","
+            << "spawntimesecs = "
+            << int32_t(m_respawnDelayTime) << ","
+            << "state = "
+            << int32_t(getState()) << ","
+            << "event_entry = "
+            << "0 " // event
+            << "WHERE id = "
+            << m_spawn->id << " AND "
+            << "min_build <= "
+            << VERSION_STRING << " AND "
+            << "max_build >= "
+            << VERSION_STRING;
+    }
 
     WorldDatabase.Execute(ss.str().c_str());
 }

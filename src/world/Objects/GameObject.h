@@ -621,7 +621,7 @@ public:
     ~GameObject();
 
     bool loadFromDB(MySQLStructure::GameobjectSpawn* spawn, WorldMap* map, bool addToWorld);
-    void saveToDB();
+    void saveToDB(bool newSpawn = false);
     void deleteFromDB();
     bool create(uint32_t entry, WorldMap* map, uint32_t phase, LocationVector const& position, QuaternionData const&  rotation, GameObject_State state, uint32_t spawnId = 0);
 

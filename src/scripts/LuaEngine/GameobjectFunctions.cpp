@@ -349,7 +349,7 @@ int LuaGameObject::SpawnGameObject(lua_State* L, GameObject* ptr)
     if (duration)
         go->despawn( duration, 0);
     if (save)
-        go->saveToDB();
+        go->saveToDB(true);
     PUSH_GO(L, go);
     return 1;
 }
