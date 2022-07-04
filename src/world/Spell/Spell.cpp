@@ -1835,17 +1835,23 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 const auto targetPlayer = dynamic_cast<Player*>(target);
                 if (targetPlayer->getDuelState() == DUEL_STATE_STARTED)
                 {
-                    if (m_caster->getPlayerOwner() != nullptr && targetPlayer->getDuelPlayer() != m_caster->getPlayerOwner() && isFriendly(m_caster->getPlayerOwner(), targetPlayer))
-                        return SPELL_FAILED_TARGET_DUELING;
+                    if (auto* const playerOwner = getCaster()->getPlayerOwnerOrSelf())
+                    {
+                        if (targetPlayer->getDuelPlayer() != playerOwner && isFriendly(playerOwner, targetPlayer))
+                            return SPELL_FAILED_TARGET_DUELING;
+                    }
                 }
 
                 // Check if caster or target is in a sanctuary area
                 // but allow spell casting in duels
-                if (m_caster->getPlayerOwner() != nullptr && targetPlayer->getDuelPlayer() != m_caster->getPlayerOwner() && !isFriendly(m_caster->getPlayerOwner(), targetPlayer))
+                if (auto* const playerOwner = getCaster()->getPlayerOwnerOrSelf())
                 {
-                    if ((m_caster->GetArea() != nullptr && m_caster->GetArea()->flags & MapManagement::AreaManagement::AREA_SANCTUARY) ||
-                        (targetPlayer->GetArea() != nullptr && targetPlayer->GetArea()->flags & MapManagement::AreaManagement::AREA_SANCTUARY))
-                        return SPELL_FAILED_BAD_TARGETS;
+                    if (targetPlayer->getDuelPlayer() != playerOwner && !isFriendly(playerOwner, targetPlayer))
+                    {
+                        if ((m_caster->GetArea() != nullptr && m_caster->GetArea()->flags & MapManagement::AreaManagement::AREA_SANCTUARY) ||
+                            (targetPlayer->GetArea() != nullptr && targetPlayer->GetArea()->flags & MapManagement::AreaManagement::AREA_SANCTUARY))
+                            return SPELL_FAILED_BAD_TARGETS;
+                    }
                 }
 
                 // Do not allow spell casts on players when they are on a taxi

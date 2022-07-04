@@ -388,7 +388,7 @@ GameObject* CBattleground::SpawnGameObject(uint32 entry, uint32 MapId, float x, 
 {
     if (GameObject* go = m_mapMgr->createGameObject(entry))
     {
-        go->CreateFromProto(entry, MapId, x, y, z, o);
+        go->create(entry, m_mapMgr, 0, LocationVector(x, y, z, o), QuaternionData(), GO_STATE_CLOSED);
 
         go->SetFaction(faction);
         go->setScale(scale);

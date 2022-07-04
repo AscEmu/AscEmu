@@ -81,7 +81,7 @@ public:
 
                     GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-819.77f, 2029.09f, 55.6082f, 0), 4);
                     if (pGameobject != nullptr)
-                        pGameobject->Despawn(1 * 60 * 1000, 0);
+                        pGameobject->despawn(1 * 60 * 1000, 0);
 
                     return;
                 }
@@ -97,7 +97,7 @@ public:
 
                     GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-1150.53f, 2109.92f, 84.4204f, 0), 4);
                     if (pGameobject != nullptr)
-                        pGameobject->Despawn(1 * 60 * 1000, 0);
+                        pGameobject->despawn(1 * 60 * 1000, 0);
 
                     return;
                 }
@@ -113,7 +113,7 @@ public:
 
                     GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-893.499f, 1919.27f, 81.6449f, 0), 4);
                     if (pGameobject != nullptr)
-                        pGameobject->Despawn(1 * 60 * 1000, 0);
+                        pGameobject->despawn(1 * 60 * 1000, 0);
 
                     return;
                 }
@@ -129,7 +129,7 @@ public:
 
                     GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-977.713f, 1879.500f, 110.892f, 0), 4);
                     if (pGameobject != nullptr)
-                        pGameobject->Despawn(1 * 60 * 1000, 0);
+                        pGameobject->despawn(1 * 60 * 1000, 0);
 
                     return;
                 }

@@ -5107,7 +5107,7 @@ public:
                 GameObject* pGameObject = getNearestGameObject(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), GO_CAGE_TRAP);
                 if (pGameObject != NULL)
                 {
-                    pGameObject->Despawn(0, 0);
+                    pGameObject->despawn(0, 0);
                 }
 
                 despawn(0);
@@ -5161,7 +5161,7 @@ public:
                 GameObject* pGameObject = getNearestGameObject(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), GO_CAGE_TRAP);
                 if (pGameObject != NULL)
                 {
-                    pGameObject->Despawn(0, 0);
+                    pGameObject->despawn(0, 0);
                 }
 
                 // Immediatly Illidan, after trap expires, becomes Demon
@@ -5197,7 +5197,7 @@ public:
             GameObject* pGameObject = getNearestGameObject(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), GO_CAGE_TRAP);
             if (pGameObject != NULL)
             {
-                pGameObject->Despawn(0, 0);
+                pGameObject->despawn(0, 0);
             }
 
             for (size_t i = 0; i < mTriggerAIList.size(); ++i)

@@ -1018,7 +1018,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     victim->addHealthBatchEvent(healthBatch);
 
     // Tagging should happen when damage packets are sent
-    const auto plrOwner = getPlayerOwner();
+    const auto plrOwner = getPlayerOwnerOrSelf();
     if (plrOwner != nullptr && victim->isCreature() && victim->isTaggable())
     {
         victim->setTaggerGuid(getGuid());
@@ -1721,7 +1721,10 @@ void Object::removeObjectFromInRangeSameFactionSet(Object* obj)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Owner
+Unit* Object::getUnitOwner() { return nullptr; }
+Unit* Object::getUnitOwnerOrSelf() { return getUnitOwner(); }
 Player* Object::getPlayerOwner() { return nullptr; }
+Player* Object::getPlayerOwnerOrSelf() { return getPlayerOwner(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
@@ -1954,7 +1957,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
     {
         GameObject const* go = static_cast<GameObject*>(this);
         if (go && go->ToTransport())
-            *data << uint32_t(go->GetTransValues()->PathProgress);
+            *data << uint32_t(go->getGOValue()->PathProgress);
         else
             *data << Util::getMSTime();
     }
@@ -2115,7 +2118,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
     {
         GameObject const* go = static_cast<GameObject*>(this);
         if (go && go->ToTransport())
-            *data << uint32_t(go->GetTransValues()->PathProgress);
+            *data << uint32_t(go->getGOValue()->PathProgress);
         else
             *data << Util::getMSTime();
     }
@@ -2291,7 +2294,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     {
         GameObject const* go = static_cast<GameObject*>(this);
         if (go && go->ToTransport())
-            *data << uint32_t(go->GetTransValues()->PathProgress);
+            *data << uint32_t(go->getGOValue()->PathProgress);
         else
             *data << Util::getMSTime();
     }
@@ -2313,7 +2316,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     if (updateFlags & UPDATEFLAG_ROTATION)   //0x0200
     {
         if (isGameObject())
-            *data << static_cast<GameObject*>(this)->GetRotation();
+            *data << static_cast<GameObject*>(this)->getPackedLocalRotation();
     }
 }
 #endif
@@ -2619,7 +2622,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     if (updateFlags & UPDATEFLAG_ROTATION)
     {
         if (isGameObject())
-            *data << int64_t(static_cast<GameObject*>(this)->GetRotation());
+            *data << int64_t(static_cast<GameObject*>(this)->getPackedLocalRotation());
     }
 
     if (updateFlags & UPDATEFLAG_AREATRIGGER)
@@ -2689,7 +2692,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     {
         GameObject const* go = static_cast<GameObject*>(this);
         if (go && go->ToTransport())
-            *data << uint32_t(go->GetTransValues()->PathProgress);
+            *data << uint32_t(go->getGOValue()->PathProgress);
         else
             *data << uint32_t(Util::getMSTime());
     }
@@ -3041,7 +3044,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     if (updateFlags & UPDATEFLAG_ROTATION)
     {
         if (isGameObject())
-            *data << uint64_t(static_cast<GameObject*>(this)->GetRotation());
+            *data << uint64_t(static_cast<GameObject*>(this)->getPackedLocalRotation());
     }
 }
 #endif
@@ -3847,19 +3850,18 @@ bool Object::CanActivate()
 {
     switch (m_objectTypeId)
     {
-    case TYPEID_UNIT:
-    {
-        if (!isPet())
-            return true;
-    }
-    break;
+        case TYPEID_UNIT:
+        {
+            if (!isPet())
+                return true;
+        }
+        break;
 
-    case TYPEID_GAMEOBJECT:
-    {
-        if (static_cast<GameObject*>(this)->getGoType() != GAMEOBJECT_TYPE_TRAP)
+        case TYPEID_GAMEOBJECT:
+        {
             return true;
-    }
-    break;
+        }
+        break;
     }
 
     return false;
@@ -4551,6 +4553,38 @@ float Object::getDistance2d(float x, float y) const
 {
     float d = getExactDist2d(x, y) - getCombatReach();
     return d > 0.0f ? d : 0.0f;
+}
+
+GameObject* Object::summonGameObject(uint32_t entryID, LocationVector pos, QuaternionData const& rot, uint32_t spawnTime, GOSummonType summonType)
+{
+    auto gameobject_info = sMySQLStore.getGameObjectProperties(entryID);
+    if (gameobject_info == nullptr)
+    {
+        sLogger.debug("Error looking up entry in CreateAndSpawnGameObject");
+        return nullptr;
+    }
+
+    sLogger.debug("CreateAndSpawnGameObject: By Entry '%u'", entryID);
+
+    WorldMap* map = getWorldMap();
+    if (!map)
+        return nullptr;
+
+    GameObject* go = map->createGameObject(entryID);
+    if (!go->create(entryID, map, GetPhase(), pos, rot, GO_STATE_CLOSED, sObjectMgr.GenerateGameObjectSpawnID()))
+    {
+        delete go;
+        return nullptr;
+    }
+
+    go->setRespawnTime(spawnTime);
+    if (isPlayer() || (getObjectTypeId() == TYPEID_UNIT && summonType == GO_SUMMON_TIMED_OR_CORPSE_DESPAWN)) //not sure how to handle this
+        ToUnit()->addGameObject(go);
+    else
+        go->setSpawnedByDefault(false);
+
+    map->PushObject(go);
+    return go;
 }
 
 #if VERSION_STRING < Cata

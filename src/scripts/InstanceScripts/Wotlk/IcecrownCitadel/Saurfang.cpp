@@ -174,7 +174,7 @@ void MuradinSaurfangEvent::AIUpdate(unsigned long time_passed)
                 // Spawn Portal and Jaina with Wryn
                 GameObject* Portal = mInstance->spawnGameObject(GO_PORTAL_TO_STORMWIND, portalSpawn.x, portalSpawn.y, portalSpawn.z, portalSpawn.o);
                 Portal->setScale(2);
-                Portal->Despawn(6000, 0);
+                Portal->despawn(6000, 0);
 
                 scriptEvents.addEvent(EVENT_OUTRO_ALLIANCE_11_SE, 6000);
                 break;

@@ -661,7 +661,7 @@ void StrandOfTheAncient::PrepareRound()
         }
         if (m_boats[i] != nullptr)
         {
-            m_boats[i]->Despawn(0, 0);
+            m_boats[i]->despawn(0, 0);
         }
 
         m_boats[i] = m_mapMgr->createAndSpawnGameObject(boatId, LocationVector(sotaBoats[i][0], sotaBoats[i][1], sotaBoats[i][2], sotaBoats[i][3]), 1.0f);

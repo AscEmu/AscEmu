@@ -49,6 +49,9 @@ public:
     typedef std::unordered_map<uint32_t, GameObjectProperties> GameObjectPropertiesContainer;
     typedef std::unordered_map<uint32_t, QuestProperties> QuestPropertiesContainer;
 
+    typedef std::unordered_map<uint32_t, MySQLStructure::GameObjectSpawnExtra> GameObjectSpawnExtraContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::GameObjectSpawnOverrides> GameObjectSpawnOverrideContainer;
+
     typedef std::unordered_map<uint32_t, SpawnGroupTemplateData> SpawnGroupDataContainer;
     typedef std::multimap<uint32_t, SpawnGroupTemplateData*> SpawnGroupLinkContainer;
 
@@ -132,6 +135,9 @@ public:
 
     GameObjectProperties const* getGameObjectProperties(uint32_t entry);
     GameObjectPropertiesContainer const* getGameObjectPropertiesStore() { return &_gameobjectPropertiesStore; }
+
+    MySQLStructure::GameObjectSpawnExtra const* getGameObjectExtra(uint32_t lowguid) const;
+    MySQLStructure::GameObjectSpawnOverrides const* getGameObjectOverride(uint32_t lowguid) const;
 
     QuestProperties const* getQuestProperties(uint32_t entry);
     QuestPropertiesContainer const* getQuestPropertiesStore() { return &_questPropertiesStore; }
@@ -258,6 +264,8 @@ public:
     void loadCreaturePropertiesTable();
 
     void loadGameObjectPropertiesTable();
+    void loadGameObjectSpawnsExtraTable();
+    void loadGameObjectSpawnsOverrideTable();
 
     void loadQuestPropertiesTable();
     void loadGameObjectQuestItemBindingTable();
@@ -348,6 +356,9 @@ public:
     CreaturePropertiesMovementContainer _creaturePropertiesMovementStore;
     GameObjectPropertiesContainer _gameobjectPropertiesStore;
     QuestPropertiesContainer _questPropertiesStore;
+
+    GameObjectSpawnExtraContainer _gameObjectSpawnExtraStore;
+    GameObjectSpawnOverrideContainer _gameObjectSpawnOverrideStore;
 
     // Spawn Groups
     SpawnGroupDataContainer _spawnGroupDataStore;

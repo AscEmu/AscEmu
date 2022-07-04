@@ -269,7 +269,7 @@ public:
     // GameObject
     uint32_t m_GOHighGuid = 0;
     GameObject* createGameObject(uint32_t entry);
-    GameObject* createAndSpawnGameObject(uint32_t entryID, LocationVector pos, float scale);
+    GameObject* createAndSpawnGameObject(uint32_t entryID, LocationVector pos, float scale = 1.0f, uint32_t spawnTime = 0);
 
     uint32_t generateGameobjectGuid() { return ++m_GOHighGuid; }
 
@@ -363,6 +363,10 @@ public:
 
     RespawnInfoMap& getRespawnMapForType(SpawnObjectType type);
     RespawnInfoMap const& getRespawnMapForType(SpawnObjectType type) const;
+
+    time_t getRespawnTime(SpawnObjectType type, uint32_t spawnId) const;
+    time_t getCreatureRespawnTime(uint32_t spawnId) const { return getRespawnTime(SPAWN_TYPE_CREATURE, spawnId); }
+    time_t getGORespawnTime(uint32_t spawnId) const { return getRespawnTime(SPAWN_TYPE_GAMEOBJECT, spawnId); }
 
     void respawnBossLinkedGroups(uint32_t bossId);
     void spawnManualGroup(uint32_t groupId);

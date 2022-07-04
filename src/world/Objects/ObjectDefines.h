@@ -94,3 +94,28 @@ enum GameObjectDynamicFlags : uint8_t
     GO_DYN_FLAG_SPARKLE             = 0x08,
     GO_DYN_FLAG_TRANSPORT_STOPPED   = 0x10,
 };
+
+enum GameObject_State : uint8_t
+{
+    GO_STATE_OPEN                   = 0,
+    GO_STATE_CLOSED                 = 1,
+    GO_STATE_ALTERNATIVE_OPEN       = 2
+};
+
+struct QuaternionData
+{
+    float x, y, z, w;
+
+    QuaternionData() : x(0.0f), y(0.0f), z(0.0f), w(1.0f) { }
+    QuaternionData(float X, float Y, float Z, float W) : x(X), y(Y), z(Z), w(W) { }
+
+    bool isUnit() const;
+    void toEulerAnglesZYX(float& Z, float& Y, float& X) const;
+    static QuaternionData fromEulerAnglesZYX(float Z, float Y, float X);
+};
+
+enum GOSummonType : uint8_t
+{
+    GO_SUMMON_TIMED_OR_CORPSE_DESPAWN = 0,    // despawns after a specified time OR when the summoner dies
+    GO_SUMMON_TIMED_DESPAWN = 1     // despawns after a specified time
+};

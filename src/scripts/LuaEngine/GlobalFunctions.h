@@ -90,16 +90,16 @@ namespace luaGlobalFunctions
                     return 0;
 
                 GameObject* go = mapMgr->createGameObject(entry);
-                go->CreateFromProto(entry, map, x, y, z, o);
+                go->create(entry, mapMgr, 0, LocationVector(x, y, z, o), QuaternionData(), GO_STATE_CLOSED);
                 go->Phase(PHASE_SET, 1);
                 go->setScale(((float)faction) / 100.0f);
 
                 go->AddToWorld(mapMgr);
 
                 if (duration)
-                    sEventMgr.AddEvent(go, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_UPDATE, duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                    go->despawn(duration, 0);
                 if (save)
-                    go->SaveToDB();
+                    go->saveToDB();
                 PUSH_GO(L, go);
             }
             else

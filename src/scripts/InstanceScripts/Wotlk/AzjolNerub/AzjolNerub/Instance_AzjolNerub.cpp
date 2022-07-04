@@ -60,7 +60,7 @@ public:
     {
         GameObject* Doors = getNearestGameObject(192395);
         if (Doors != nullptr)
-            Doors->Despawn(0, 0);
+            Doors->despawn(0, 0);
     }
     bool mEnraged;
 };

@@ -134,10 +134,20 @@ void Summon::die(Unit* pAttacker, uint32 damage, uint32 spellid)
 // Misc
 bool Summon::isSummonedToSlot() const{ return m_summonSlot != -1; }
 
+Unit* Summon::getUnitOwner()
+{
+    return m_unitOwner;
+}
+
+Unit* Summon::getUnitOwnerOrSelf()
+{
+    return getUnitOwner();
+}
+
 Player* Summon::getPlayerOwner()
 {
-    if (m_unitOwner != nullptr && m_unitOwner->isPlayer())
-        return dynamic_cast<Player*>(m_unitOwner);
+    if (getUnitOwner() != nullptr && getUnitOwner()->isPlayer())
+        return dynamic_cast<Player*>(getUnitOwner());
 
     return nullptr;
 }

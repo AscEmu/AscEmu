@@ -31,6 +31,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/School.hpp"
 #include "Units/UnitDefines.hpp"
+#include "ObjectDefines.h"
 
 struct WoWObject;
 class SpellInfo;
@@ -340,8 +341,14 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Owner
 
-    // Returns player charmer, player owner or self
+    // Returns unit charmer or unit owner
+    virtual Unit* getUnitOwner();
+    // Returns unit charmer, unit owner or self
+    virtual Unit* getUnitOwnerOrSelf();
+    // Returns player charmer and player owner
     virtual Player* getPlayerOwner();
+    // Returns player charmer, player owner or self
+    virtual Player* getPlayerOwnerOrSelf();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
@@ -556,8 +563,8 @@ public:
         LocationVector getFirstCollisionPosition(float dist, float angle);
 
         virtual float getCombatReach() const { return 0.0f; } // overridden (only) in Unit
-        virtual uint64_t getOwnerGUID() const { return 0; }
-        virtual uint64_t getCharmerOrOwnerGUID() const { return getOwnerGUID(); }
+
+        GameObject* summonGameObject(uint32_t entryID, LocationVector pos, QuaternionData const& rot, uint32_t spawnTime = 0, GOSummonType summonType = GO_SUMMON_TIMED_OR_CORPSE_DESPAWN);
 
         float getDistanceSq(Object* obj)
         {

@@ -641,7 +641,10 @@ public:
     bool isTeamHorde() const;
     bool isTeamAlliance() const;
 
+    Unit* getUnitOwner() override;
+    Unit* getUnitOwnerOrSelf() override;
     Player* getPlayerOwner() override;
+    Player* getPlayerOwnerOrSelf() override;
 
     void toggleAfk();
     void toggleDnd();

@@ -220,7 +220,7 @@ public:
 
             //spawn a chest and go
             GameObject* go = getCreature()->getWorldMap()->createGameObject(190663);
-            go->CreateFromProto(190663, getCreature()->getWorldMap()->getBaseMap()->getMapId(), getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), 0.0f, 0.0f, 0.0f, 0.0f);
+            go->create(190663, getCreature()->getWorldMap(), 0, getCreature()->GetPosition(), QuaternionData(), GO_STATE_CLOSED);
             go->PushToWorld(getCreature()->getWorldMap());
             getCreature()->Despawn(1, 0);
         }
@@ -285,10 +285,10 @@ public:
         }
         GameObject* crate = pMapMgr->getInterface()->getGameObjectNearestCoords(x, y, z, 190094);
         if (crate)
-            crate->Despawn(0, 0);
+            crate->despawn(0, 0);
 
         GameObject* go = pMapMgr->createGameObject(entry);
-        go->CreateFromProto(entry, pMapMgr->getBaseMap()->getMapId(), x, y, z, o, 0.0f, 0.0f, 0.0f, 0.0f);
+        go->create(entry, pMapMgr, 0, LocationVector(x, y, z, o), QuaternionData(), GO_STATE_CLOSED);
         go->PushToWorld(pMapMgr);
     }
 };

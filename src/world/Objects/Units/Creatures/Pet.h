@@ -143,6 +143,8 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Owner
+    Unit* getUnitOwner() override;
+    Unit* getUnitOwnerOrSelf() override;                // override creature function
     Player* getPlayerOwner() override;
 
 protected:

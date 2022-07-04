@@ -166,10 +166,10 @@ public:
         msg1 += ". Now let us see what tale these heads tell...";
         Kin_weelay->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg1.c_str());
         Kin_weelay->castSpell(Kin_weelay, sSpellMgr.getSpellInfo(3644), false);
-        skull1->Despawn(5000, 0);
+        skull1->despawn(5000, 0);
         GameObject* skull2 = mTarget->getWorldMap()->getInterface()->getGameObjectNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ(), 2551);
         if (skull2)
-            skull2->Despawn(5000, 0);
+            skull2->despawn(5000, 0);
 
         std::string msg = "There, ";
         msg += mTarget->getName();
@@ -247,21 +247,21 @@ class FacingNegolash : public QuestScript
         {
             obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_MEAT, LocationVector(MeatSpawnPoints[i].x, MeatSpawnPoints[i].y, MeatSpawnPoints[i].z, MeatSpawnPoints[i].orientation), 1);
             if (obj != nullptr)
-                obj->Despawn(2 * 60 * 1000, 0);
+                obj->despawn(2 * 60 * 1000, 0);
         }
 
         for (uint8_t i = 0; i < 5; ++i)
         {
             obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_BOTTLE, LocationVector(BottleSpawnPoints[i].x, BottleSpawnPoints[i].y, BottleSpawnPoints[i].z, BottleSpawnPoints[i].orientation), 1);
             if (obj != nullptr)
-                obj->Despawn(2 * 60 * 1000, 0);
+                obj->despawn(2 * 60 * 1000, 0);
         }
 
         for (uint8_t i = 0; i < 3; ++i)
         {
             obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_BREAD, LocationVector(BreadSpawnPoints[i].x, BreadSpawnPoints[i].y, BreadSpawnPoints[i].z, BreadSpawnPoints[i].orientation), 1);
             if (obj != nullptr)
-                obj->Despawn(2 * 60 * 1000, 0);
+                obj->despawn(2 * 60 * 1000, 0);
         }
 
         Creature* Negolash = pPlayer->getWorldMap()->createAndSpawnCreature(1494, LocationVector(-14657.400391f, 155.115997f, 4.081050f, 0.353429f));

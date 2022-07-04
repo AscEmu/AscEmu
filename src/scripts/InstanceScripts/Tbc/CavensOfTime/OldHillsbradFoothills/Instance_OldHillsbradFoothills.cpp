@@ -65,7 +65,7 @@ public:
         if (pGameObject->getEntry() != GO_LODGE_ABLAZE || GetData(OHF_PHASE_1) == OHF_DATA_DONE)
             return;
 
-        pGameObject->Despawn(1000, 0);
+        pGameObject->despawn(1000, 0);
         m_numBarrel++;
         pGameObject->getWorldMap()->getWorldStatesHandler().SetWorldStateForZone(2367, 0, WORLDSTATE_OLD_HILLSBRAD_BARRELS, m_numBarrel);
         if (m_numBarrel != 5)
@@ -90,7 +90,7 @@ public:
         {
             GameObject* pGO = spawnGameObject(GO_FIRE, Fires[i].x, Fires[i].y, Fires[i].z, Fires[i].o);
             if (pGO != nullptr)
-                pGO->Despawn(10 * 60 * 1000, 0);
+                pGO->despawn(10 * 60 * 1000, 0);
         }
 
         spawnCreature(CN_LIEUTENANT_DRAKE, 2118.310303f, 89.565969f, 52.453037f, 2.027089f);

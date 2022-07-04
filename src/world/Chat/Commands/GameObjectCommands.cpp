@@ -74,8 +74,8 @@ bool ChatHandler::HandleGODeleteCommand(const char* /*args*/, WorldSession* m_se
 
     if (selected_gobject->m_spawn != nullptr && selected_gobject->m_spawn->entry == selected_gobject->getEntry())
     {
-        uint32 cellx = uint32(((Map::Terrain::_maxX - selected_gobject->m_spawn->position_x) / Map::Cell::cellSize));
-        uint32 celly = uint32(((Map::Terrain::_maxY - selected_gobject->m_spawn->position_y) / Map::Cell::cellSize));
+        uint32 cellx = uint32(((Map::Terrain::_maxX - selected_gobject->m_spawn->spawnPoint.x) / Map::Cell::cellSize));
+        uint32 celly = uint32(((Map::Terrain::_maxY - selected_gobject->m_spawn->spawnPoint.y) / Map::Cell::cellSize));
 
         if (cellx < Map::Cell::_sizeX && celly < Map::Cell::_sizeY)
         {
@@ -92,7 +92,7 @@ bool ChatHandler::HandleGODeleteCommand(const char* /*args*/, WorldSession* m_se
                 }
             }
 
-            selected_gobject->DeleteFromDB();
+            selected_gobject->deleteFromDB();
 
             delete selected_gobject->m_spawn;
             selected_gobject->m_spawn = nullptr;
@@ -101,7 +101,7 @@ bool ChatHandler::HandleGODeleteCommand(const char* /*args*/, WorldSession* m_se
     sGMLog.writefromsession(m_session, "deleted game object entry %u on map %u at X:%f Y:%f Z:%f Name %s", selected_gobject->getEntry(),
         selected_gobject->GetMapId(), selected_gobject->GetPositionX(), selected_gobject->GetPositionY(), selected_gobject->GetPositionZ(),
         sMySQLStore.getGameObjectProperties(selected_gobject->getEntry())->name.c_str());
-    selected_gobject->Despawn(0, 0);
+    selected_gobject->despawn(0, 0);
 
     m_session->GetPlayer()->setSelectedGo(0);
 
@@ -442,16 +442,16 @@ bool ChatHandler::HandleGORotateCommand(const char* args, WorldSession* m_sessio
     switch (tolower(Axis))
     {
         case 'x':
-            go->SetRotationAngles(orientation, rotation_y, deg);
+            go->setLocalRotationAngles(orientation, rotation_y, deg);
             m_session->GetPlayer()->m_goLastXRotation = deg;
             break;
         case 'y':
-            go->SetRotationAngles(orientation, deg, rotation_x);
+            go->setLocalRotationAngles(orientation, deg, rotation_x);
             m_session->GetPlayer()->m_goLastYRotation = deg;
             break;
         case 'o':
             go->SetOrientation(m_session->GetPlayer()->GetOrientation());
-            go->SetRotationAngles(go->GetOrientation(), rotation_y, rotation_x);
+            go->setLocalRotationAngles(go->GetOrientation(), rotation_y, rotation_x);
             break;
         default:
             RedSystemMessage(m_session, "Invalid Axis, Please use x, y, or o.");
@@ -464,7 +464,7 @@ bool ChatHandler::HandleGORotateCommand(const char* args, WorldSession* m_sessio
     go->RemoveFromWorld(true);
     go->SetNewGuid(NewGuid);
     go->PushToWorld(m_session->GetPlayer()->getWorldMap());
-    go->SaveToDB();
+    go->saveToDB();
 
     m_session->GetPlayer()->setSelectedGo(NewGuid);
     return true;
@@ -587,47 +587,7 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
     }
 
     auto player = m_session->GetPlayer();
-    auto gameobject = player->getWorldMap()->createGameObject(go_entry);
-
-    uint32 mapid = player->GetMapId();
-    float x = player->GetPositionX();
-    float y = player->GetPositionY();
-    float z = player->GetPositionZ();
-    float o = player->GetOrientation();
-
-    gameobject->CreateFromProto(go_entry, mapid, x, y, z, o);
-    gameobject->PushToWorld(player->getWorldMap());
-    gameobject->Phase(PHASE_SET, player->GetPhase());
-
-    // Create spawn instance
-    MySQLStructure::GameobjectSpawn* go_spawn = new MySQLStructure::GameobjectSpawn;
-    go_spawn->entry = gameobject->getEntry();
-    go_spawn->id = sObjectMgr.GenerateGameObjectSpawnID();
-    go_spawn->map = gameobject->GetMapId();
-    go_spawn->position_x = gameobject->GetPositionX();
-    go_spawn->position_y = gameobject->GetPositionY();
-    go_spawn->position_z = gameobject->GetPositionZ();
-    go_spawn->orientation = gameobject->GetOrientation();
-    go_spawn->rotation_0 = gameobject->getParentRotation(0);
-    go_spawn->rotation_1 = gameobject->getParentRotation(1);
-    go_spawn->rotation_2 = gameobject->getParentRotation(2);
-    go_spawn->rotation_3 = gameobject->getParentRotation(3);
-    go_spawn->state = gameobject->getState();
-    go_spawn->flags = gameobject->getFlags();
-    go_spawn->faction = gameobject->getFactionTemplate();
-    go_spawn->scale = gameobject->getScale();
-    //go_spawn->npclink = 0;
-    go_spawn->phase = gameobject->GetPhase();
-    go_spawn->overrides = gameobject->GetOverrides();
-
-    uint32 cx = player->getWorldMap()->getPosX(player->GetPositionX());
-    uint32 cy = player->getWorldMap()->getPosY(player->GetPositionY());
-    player->getWorldMap()->getBaseMap()->getSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(go_spawn);
-    gameobject->m_spawn = go_spawn;
-
-    MapCell* mCell = player->getWorldMap()->getCell(cx, cy);
-    if (mCell != nullptr)
-        mCell->setLoaded();
+    auto gameobject = player->getWorldMap()->createAndSpawnGameObject(go_entry, player->GetPosition());
 
     bool save_to_db = false;
     if (m_session->GetPlayer()->m_saveAllChangesCommand || save > 0)
@@ -635,13 +595,13 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
 
     if (save_to_db)
     {
-        GreenSystemMessage(m_session, "Spawning GameObject by entry '%u'. Added to gameobject_spawns table.", go_spawn->id);
-        gameobject->SaveToDB();
-        sGMLog.writefromsession(m_session, "spawned gameobject %s, entry %u at %u %f %f %f%s", sMySQLStore.getGameObjectProperties(go_spawn->entry)->name.c_str(), go_spawn->entry, player->GetMapId(), go_spawn->position_x, go_spawn->position_y, go_spawn->position_z, save == 1 ? ", saved in DB" : "");
+        GreenSystemMessage(m_session, "Spawning GameObject by entry '%u'. Added to gameobject_spawns table.", gameobject->getSpawnId());
+        gameobject->saveToDB(true);
+        sGMLog.writefromsession(m_session, "spawned gameobject %s, entry %u at %u %f %f %f%s", gameobject_prop->name.c_str(), gameobject->getEntry(), player->GetMapId(), gameobject->GetPositionX(), gameobject->GetPositionY(), gameobject->GetPositionZ(), save == 1 ? ", saved in DB" : "");
     }
     else
     {
-        GreenSystemMessage(m_session, "Spawning temporarily GameObject with entry '%u'", go_spawn->entry);
+        GreenSystemMessage(m_session, "Spawning temporarily GameObject with entry '%u'", gameobject->getEntry());
     }
 
     m_session->GetPlayer()->setSelectedGo(gameobject->getGuid());
@@ -718,7 +678,7 @@ bool ChatHandler::HandleGOSetFactionCommand(const char* args, WorldSession* m_se
         else
         {
             GreenSystemMessage(m_session, "Faction changed in gameobject_spawns table for spawn ID: %u.", go_spawn->id);
-            WorldDatabase.Execute("UPDATE gameobject_spawns SET faction = %u WHERE id = %u min_build <= %u AND max_build >= %u", go_faction, go_spawn->id, VERSION_STRING, VERSION_STRING);
+            WorldDatabase.Execute("REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)", go_spawn->id, VERSION_STRING, VERSION_STRING, gameobject->getScale(), go_faction, gameobject->getFlags());
             sGMLog.writefromsession(m_session, "changed gameobject faction of gameobject_spawns ID: %u.", go_spawn->id);
         }
     }
@@ -766,7 +726,7 @@ bool ChatHandler::HandleGOSetFlagsCommand(const char* args, WorldSession* m_sess
         else
         {
             GreenSystemMessage(m_session, "Flags changed in gameobject_spawns table for spawn ID: %u.", go_spawn->id);
-            WorldDatabase.Execute("UPDATE gameobject_spawns SET flags = %u WHERE id = %u AND min_build <= %u AND max_build >= %u", go_flags, go_spawn->id, VERSION_STRING, VERSION_STRING);
+            WorldDatabase.Execute("REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)", go_spawn->id, VERSION_STRING, VERSION_STRING, gameobject->getScale(), gameobject->getFactionTemplate(), go_flags);
             sGMLog.writefromsession(m_session, "changed gameobject flags of gameobject_spawns ID: %u.", go_spawn->id);
         }
     }
@@ -920,8 +880,8 @@ bool ChatHandler::HandleGOSetScaleCommand(const char* args, WorldSession* m_sess
         }
         else
         {
-            GreenSystemMessage(m_session, "Scale changed in gameobject_spawns table to %3.3lf for spawn ID: %u.", scale, go_spawn->id);
-            WorldDatabase.Execute("UPDATE gameobject_spawns SET scale = %3.3lf WHERE id = %u AND min_build <= %u AND max_build >= %u", scale, go_spawn->id, VERSION_STRING, VERSION_STRING);
+            GreenSystemMessage(m_session, "Scale changed in gameobject_spawns_overrides table to %3.3lf for spawn ID: %u.", scale, go_spawn->id);
+            WorldDatabase.Execute("REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)", go_spawn->id, VERSION_STRING, VERSION_STRING, scale, gameobject->getFactionTemplate(), gameobject->getFlags());
             sGMLog.writefromsession(m_session, "changed gameobject scale of gameobject_spawns ID: %u to %3.3lf", go_spawn->id, scale);
         }
     }

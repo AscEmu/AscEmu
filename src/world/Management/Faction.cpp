@@ -104,10 +104,10 @@ SERVER_DECL bool isHostile(Object* objA, Object* objB)
     // PvP Flag System Checks
     // We check this after the normal isHostile test, that way if we're
     // on the opposite team we'll already know :p
-    if ((objA->getPlayerOwner() != NULL) && (objB->getPlayerOwner() != NULL))
+    if ((objA->getPlayerOwnerOrSelf() != NULL) && (objB->getPlayerOwnerOrSelf() != NULL))
     {
-        Player* a = objA->getPlayerOwner();
-        Player* b = objB->getPlayerOwner();
+        Player* a = objA->getPlayerOwnerOrSelf();
+        Player* b = objB->getPlayerOwnerOrSelf();
 
         auto atA = a->GetArea();
         auto atB = b->GetArea();
@@ -164,10 +164,10 @@ SERVER_DECL bool isAttackable(Object* objA, Object* objB, bool CheckStealth)
             return false;
     }
 
-    if ((objA->getPlayerOwner() != NULL) && (objB->getPlayerOwner() != NULL))
+    if ((objA->getPlayerOwnerOrSelf() != NULL) && (objB->getPlayerOwnerOrSelf() != NULL))
     {
-        Player* a = objA->getPlayerOwner();
-        Player* b = objB->getPlayerOwner();
+        Player* a = objA->getPlayerOwnerOrSelf();
+        Player* b = objB->getPlayerOwnerOrSelf();
 
         if ((a->getDuelPlayer() == b) && (a->getDuelState() == DUEL_STATE_STARTED))
             return true;

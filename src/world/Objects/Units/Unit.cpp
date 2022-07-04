@@ -243,7 +243,7 @@ void Unit::setPowerType(uint8_t powerType)
 #endif
 
     // Update power type also to group
-    const auto plr = getPlayerOwner();
+    const auto plr = getPlayerOwnerOrSelf();
     if (plr == nullptr || !plr->IsInWorld() || plr->getGroup() == nullptr)
         return;
 
@@ -266,7 +266,7 @@ void Unit::setHealth(uint32_t health)
 #endif
 
     // Update health also to group
-    const auto plr = getPlayerOwner();
+    const auto plr = getPlayerOwnerOrSelf();
     if (plr == nullptr || !plr->IsInWorld() || plr->getGroup() == nullptr)
         return;
 
@@ -422,7 +422,7 @@ void Unit::setPower(PowerType type, uint32_t value, bool sendPacket/* = true*/)
         sendPowerUpdate(isPlayer());
 
     // Update power also to group
-    const auto plr = getPlayerOwner();
+    const auto plr = getPlayerOwnerOrSelf();
     if (plr == nullptr || !plr->IsInWorld() || plr->getGroup() == nullptr)
         return;
 
@@ -451,7 +451,7 @@ void Unit::setMaxHealth(uint32_t maxHealth)
 #endif
 
     // Update health also to group
-    const auto plr = getPlayerOwner();
+    const auto plr = getPlayerOwnerOrSelf();
     if (plr != nullptr && plr->IsInWorld() && plr->getGroup() != nullptr)
         plr->addGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_MAX_HP : GROUP_UPDATE_FLAG_PET_MAX_HP);
 
@@ -546,7 +546,7 @@ void Unit::setMaxPower(PowerType type, uint32_t value)
 #endif
 
     // Update power also to group
-    const auto plr = getPlayerOwner();
+    const auto plr = getPlayerOwnerOrSelf();
     if (plr != nullptr && plr->IsInWorld() && plr->getGroup() != nullptr)
         plr->addGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_MAX_POWER : GROUP_UPDATE_FLAG_PET_MAX_POWER);
 
@@ -680,7 +680,7 @@ void Unit::setLevel(uint32_t level)
 #endif
 
     // Update level also to group
-    const auto plr = getPlayerOwner();
+    const auto plr = getPlayerOwnerOrSelf();
     if (plr == nullptr || !plr->IsInWorld() || plr->getGroup() == nullptr)
         return;
 
@@ -851,7 +851,7 @@ void Unit::setDisplayId(uint32_t id)
 #endif
 
     // Update display id also to group
-    const auto plr = getPlayerOwner();
+    const auto plr = getPlayerOwnerOrSelf();
     if (plr == nullptr || !plr->IsInWorld() || plr->getGroup() == nullptr)
         return;
 
@@ -1069,7 +1069,7 @@ void Unit::setPvpFlags(uint8_t pvpFlags)
 #endif
 
     // Update pvp flags also to group
-    const auto plr = getPlayerOwner();
+    const auto plr = getPlayerOwnerOrSelf();
     if (plr == nullptr || !plr->IsInWorld() || !plr->getGroup())
         return;
 
@@ -2497,10 +2497,10 @@ void Unit::setFeared(bool apply)
     }
 
     // block / allow control to real player in control (eg charmer)
-    if (getObjectTypeId() == TYPEID_PLAYER)
+    if (isPlayer())
     {
-        if (getPlayerOwner())
-            getPlayerOwner()->sendClientControlPacket(this, !apply);
+        if (auto* const plrOwner = getPlayerOwnerOrSelf())
+            plrOwner->sendClientControlPacket(this, !apply);
     }
 }
 
@@ -2522,10 +2522,10 @@ void Unit::setConfused(bool apply)
     }
 
     // block / allow control to real player in control (eg charmer)
-    if (getObjectTypeId() == TYPEID_PLAYER)
+    if (isPlayer())
     {
-        if (getPlayerOwner())
-            getPlayerOwner()->sendClientControlPacket(this, !apply);
+        if (auto* const plrOwner = getPlayerOwnerOrSelf())
+            plrOwner->sendClientControlPacket(this, !apply);
     }
 }
 
@@ -2543,11 +2543,10 @@ void Unit::setStunned(bool apply)
         addUnitMovementFlag(MOVEFLAG_ROOTED);
         stopMoving();
 
-        if (getObjectTypeId() == TYPEID_PLAYER)
+        if (isPlayer())
+        {
             setStandState(STANDSTATE_STAND);
 
-        if (getObjectTypeId() == TYPEID_PLAYER)
-        {
             WorldPacket data(SMSG_FORCE_MOVE_ROOT, 10);
             data << GetNewGUID();
             data << 0;
@@ -2566,13 +2565,13 @@ void Unit::setStunned(bool apply)
             setTargetGuid(getThreatManager().getCurrentVictim()->getGuid());
 
         // don't remove UNIT_FLAG_STUNNED for pet when owner is mounted (disabled pet's interface)
-        Unit* owner = getWorldMapUnit(getCharmerOrOwnerGUID());
-        if (!owner || owner->getObjectTypeId() != TYPEID_PLAYER || !owner->ToPlayer()->isMounted())
+        Player* owner = getPlayerOwner();
+        if (!owner || !owner->isMounted())
             removeUnitFlags(UNIT_FLAG_STUNNED);
 
         if (!hasUnitStateFlag(UNIT_STATE_ROOTED))         // prevent moving if it also has root effect
         {
-            if (getObjectTypeId() == TYPEID_PLAYER)
+            if (isPlayer())
             {
                 WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 10);
                 data << GetNewGUID();
@@ -5579,7 +5578,7 @@ void Unit::regenerateHealthAndPowers(uint16_t timePassed)
 
     // Mana and Energy
     m_manaEnergyRegenerateTimer += timePassed;
-    if (isPlayer() || getPlayerOwner() != nullptr)
+    if (getPlayerOwnerOrSelf() != nullptr)
     {
         // Player and player owned creatures regen in real time since wotlk
         if (m_manaEnergyRegenerateTimer >= REGENERATION_INTERVAL_MANA_ENERGY)
@@ -5756,7 +5755,7 @@ void Unit::regeneratePower(PowerType type)
 
 #if VERSION_STRING >= WotLK
             // Do not send update packet for players or player owned creatures after wotlk
-            if (!isPlayer() && getPlayerOwner() == nullptr)
+            if (getPlayerOwnerOrSelf() == nullptr)
 #endif
             {
                 sendUpdatePacket = true;
@@ -6266,7 +6265,7 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
                 damage = plr->CheckDamageLimits(damage, spellId);
         }
 
-        const auto plrOwner = getPlayerOwner();
+        const auto plrOwner = getPlayerOwnerOrSelf();
         if (plrOwner != nullptr)
         {
             // Battleground damage score
@@ -6297,7 +6296,7 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
     victim->setStandState(STANDSTATE_STAND);
 
     // Tagging should happen when damage packets are sent
-    const auto plrOwner = getPlayerOwner();
+    const auto plrOwner = getPlayerOwnerOrSelf();
     if (plrOwner != nullptr && victim->isCreature() && victim->isTaggable())
     {
         victim->setTaggerGuid(getGuid());
@@ -6358,54 +6357,54 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
         if (attacker == nullptr)
             return;
 
-        if (attacker->getPlayerOwner() != nullptr)
+        if (auto* const plrOwner = attacker->getPlayerOwnerOrSelf())
         {
-            if (attacker->getPlayerOwner()->getBattleground())
+            if (plrOwner->getBattleground())
             {
-                attacker->getPlayerOwner()->getBattleground()->HookOnUnitKill(attacker->getPlayerOwner(), this);
+                plrOwner->getBattleground()->HookOnUnitKill(plrOwner, this);
 
                 if (isPlayer())
-                    attacker->getPlayerOwner()->getBattleground()->HookOnPlayerKill(attacker->getPlayerOwner(), dynamic_cast<Player*>(this));
+                    plrOwner->getBattleground()->HookOnPlayerKill(plrOwner, dynamic_cast<Player*>(this));
             }
 
             if (isPlayer())
             {
-                sHookInterface.OnKillPlayer(attacker->getPlayerOwner(), dynamic_cast<Player*>(this));
+                sHookInterface.OnKillPlayer(plrOwner, dynamic_cast<Player*>(this));
             }
             else if (isCreature())
             {
-                attacker->getPlayerOwner()->onKillUnitReputation(this, false);
+                plrOwner->onKillUnitReputation(this, false);
 #ifdef FT_ACHIEVEMENTS
-                attacker->getPlayerOwner()->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLING_BLOW, attacker->GetMapId(), 0, 0);
+                plrOwner->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLING_BLOW, attacker->GetMapId(), 0, 0);
 #endif
             }
 
             // Check is the unit gray level for attacker
-            if (!isGrayLevel(attacker->getPlayerOwner()->getLevel(), getLevel()) && (getGuid() != attacker->getGuid()))
+            if (!isGrayLevel(plrOwner->getLevel(), getLevel()) && (getGuid() != attacker->getGuid()))
             {
                 if (isPlayer())
                 {
 #ifdef FT_ACHIEVEMENTS
-                    attacker->getPlayerOwner()->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, attacker->getPlayerOwner()->getAreaId(), 1, 0);
-                    attacker->getPlayerOwner()->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL, 1, 0, 0);
+                    plrOwner->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, plrOwner->getAreaId(), 1, 0);
+                    plrOwner->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL, 1, 0, 0);
 #endif
-                    HonorHandler::OnPlayerKilled(attacker->getPlayerOwner(), dynamic_cast<Player*>(this));
+                    HonorHandler::OnPlayerKilled(plrOwner, dynamic_cast<Player*>(this));
                 }
 
-                attacker->getPlayerOwner()->addAuraStateAndAuras(AURASTATE_FLAG_LASTKILLWITHHONOR);
+                plrOwner->addAuraStateAndAuras(AURASTATE_FLAG_LASTKILLWITHHONOR);
 
-                if (!sEventMgr.HasEvent(attacker->getPlayerOwner(), EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE))
-                    sEventMgr.AddEvent(dynamic_cast<Unit*>(attacker->getPlayerOwner()), &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_LASTKILLWITHHONOR, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, 0);
+                if (!sEventMgr.HasEvent(plrOwner, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE))
+                    sEventMgr.AddEvent(dynamic_cast<Unit*>(plrOwner), &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_LASTKILLWITHHONOR, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, 0);
                 else
-                    sEventMgr.ModifyEventTimeLeft(attacker->getPlayerOwner(), EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000);
+                    sEventMgr.ModifyEventTimeLeft(plrOwner, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000);
 
-                attacker->getPlayerOwner()->HandleProc(PROC_ON_KILL, this, nullptr, DamageInfo(), false);
+                plrOwner->HandleProc(PROC_ON_KILL, this, nullptr, DamageInfo(), false);
             }
 
             // Send zone under attack message
             if (isPvpFlagSet())
             {
-                auto team = attacker->getPlayerOwner()->getTeam();
+                auto team = plrOwner->getTeam();
                 if (team == TEAM_ALLIANCE)
                     team = TEAM_HORDE;
                 else
@@ -6466,7 +6465,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
             if (isTagged())
             {
                 const auto taggerUnit = getWorldMapUnit(getTaggerGuid());
-                const auto tagger = taggerUnit != nullptr ? taggerUnit->getPlayerOwner() : nullptr;
+                const auto tagger = taggerUnit != nullptr ? taggerUnit->getPlayerOwnerOrSelf() : nullptr;
                 if (tagger != nullptr)
                 {
                     if (tagger->isInGroup())
@@ -6510,10 +6509,13 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                 }
             }
 #ifdef FT_ACHIEVEMENTS
-            else if (attacker->getPlayerOwner() != nullptr && isCritter())
+            else if (isCritter())
             {
-                attacker->getPlayerOwner()->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
-                attacker->getPlayerOwner()->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
+                if (auto* const plrOwner = attacker->getPlayerOwnerOrSelf())
+                {
+                    plrOwner->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
+                    plrOwner->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
+                }
             }
 #endif
         }
@@ -6977,7 +6979,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
             *rageGenerated = float2int32(val);
         }
 
-        const auto plrOwner = attacker->getPlayerOwner();
+        const auto plrOwner = attacker->getPlayerOwnerOrSelf();
         if (plrOwner != nullptr)
         {
             // Battleground damage score
@@ -7053,7 +7055,7 @@ uint32_t Unit::_handleBatchHealing(HealthBatchEvent const* batch, uint32_t* abso
     const auto healer = batch->caster;
     if (healer )
     {
-        const auto plrOwner = healer->getPlayerOwner();
+        const auto plrOwner = healer->getPlayerOwnerOrSelf();
 
         // Update battleground score
         if (plrOwner && plrOwner->getBattleground() && plrOwner->getWorldMap() == getWorldMap())
@@ -7147,8 +7149,8 @@ bool Unit::isUnitOwnerInParty(Unit* unit)
 {
     if (unit)
     {
-        Player* playOwner = getPlayerOwner();
-        Player* playerOwnerFromUnit = unit->getPlayerOwner();
+        Player* playOwner = getPlayerOwnerOrSelf();
+        Player* playerOwnerFromUnit = unit->getPlayerOwnerOrSelf();
         if (playOwner == nullptr || playerOwnerFromUnit == nullptr)
             return false;
 
@@ -7169,8 +7171,8 @@ bool Unit::isUnitOwnerInRaid(Unit* unit)
 {
     if (unit)
     {
-        Player* playerOwner = getPlayerOwner();
-        Player* playerOwnerFromUnit = unit->getPlayerOwner();
+        Player* playerOwner = getPlayerOwnerOrSelf();
+        Player* playerOwnerFromUnit = unit->getPlayerOwnerOrSelf();
         if (playerOwner == nullptr || playerOwnerFromUnit == nullptr)
             return false;
 
@@ -7437,7 +7439,8 @@ void Unit::handleSpellClick(Unit* clicker, int8_t seatId /*= -1*/)
 
             Unit* caster = (clickPair.castFlags & NPC_CLICK_CAST_CASTER_CLICKER) ? clicker : this;
             Unit* target = (clickPair.castFlags & NPC_CLICK_CAST_TARGET_CLICKER) ? clicker : this;
-            uint64_t origCasterGUID = (clickPair.castFlags & NPC_CLICK_CAST_ORIG_CASTER_OWNER) ? getOwnerGUID() : clicker->getGuid();
+            auto* const unitOwner = getUnitOwner();
+            uint64_t origCasterGUID = (unitOwner && clickPair.castFlags & NPC_CLICK_CAST_ORIG_CASTER_OWNER) ? unitOwner->getGuid() : clicker->getGuid();
 
             SpellInfo const* spellEntry = sSpellMgr.getSpellInfo(clickPair.spellId);
 
@@ -7692,7 +7695,8 @@ void Unit::handleSpellClick(Unit* clicker)
 
         Unit* caster = (clickPair.castFlags & NPC_CLICK_CAST_CASTER_CLICKER) ? clicker : this;
         Unit* target = (clickPair.castFlags & NPC_CLICK_CAST_TARGET_CLICKER) ? clicker : this;
-        uint64_t origCasterGUID = (clickPair.castFlags & NPC_CLICK_CAST_ORIG_CASTER_OWNER) ? getOwnerGUID() : clicker->getGuid();
+        auto* const unitOwner = getUnitOwner();
+        uint64_t origCasterGUID = (unitOwner && clickPair.castFlags & NPC_CLICK_CAST_ORIG_CASTER_OWNER) ? unitOwner->getGuid() : clicker->getGuid();
 
         SpellInfo const* spellEntry = sSpellMgr.getSpellInfo(clickPair.spellId);
 
@@ -7755,4 +7759,94 @@ float Unit::getCollisionHeight() const
 
     float const collisionHeight = scaleMod * modelData->CollisionHeight * displayInfo->creatureModelScale;
     return collisionHeight == 0.0f ? DEFAULT_COLLISION_HEIGHT : collisionHeight;
+}
+
+GameObject* Unit::getGameObject(uint32_t spellId) const
+{
+    for (GameObjectList::const_iterator i = m_gameObj.begin(); i != m_gameObj.end(); ++i)
+        if ((*i)->getSpellId() == spellId)
+            return *i;
+
+    return nullptr;
+}
+
+void Unit::addGameObject(GameObject* gameObj)
+{
+    if (!gameObj || gameObj->getCreatedByGuid())
+        return;
+
+    m_gameObj.push_back(gameObj);
+    gameObj->setOwnerGuid(getGuid());
+}
+
+void Unit::removeGameObject(GameObject* gameObj, bool del)
+{
+    if (!gameObj || gameObj->getCreatedByGuid() != getGuid())
+        return;
+
+    if (isPlayer())
+        ToPlayer()->setSummonedObject(0);
+
+    gameObj->setOwnerGuid(0);
+
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        if (m_ObjectSlots[i] == gameObj->GetUIdFromGUID())
+        {
+            m_ObjectSlots[i] = 0;
+            break;
+        }
+    }
+
+    // GO created by some spell
+    if (uint32_t spellid = gameObj->getSpellId())
+        removeAllAurasById(spellid);
+
+    m_gameObj.remove(gameObj);
+
+    if (del)
+    {
+        gameObj->setRespawnTime(0);
+        gameObj->Delete();
+    }
+}
+
+void Unit::removeGameObject(uint32_t spellid, bool del)
+{
+    if (m_gameObj.empty())
+        return;
+
+    GameObjectList::iterator i, next;
+    for (i = m_gameObj.begin(); i != m_gameObj.end(); i = next)
+    {
+        next = i;
+        if (spellid == 0 || (*i)->getSpellId() == spellid)
+        {
+            (*i)->setOwnerGuid(0);
+            if (del)
+            {
+                (*i)->setRespawnTime(0);
+                (*i)->Delete();
+            }
+
+            next = m_gameObj.erase(i);
+        }
+        else
+        {
+            ++next;
+        }
+    }
+}
+
+void Unit::removeAllGameObjects()
+{
+    // remove references to unit
+    while (!m_gameObj.empty())
+    {
+        GameObjectList::iterator i = m_gameObj.begin();
+        (*i)->setOwnerGuid(0);
+        (*i)->setRespawnTime(0);
+        (*i)->Delete();
+        m_gameObj.erase(i);
+    }
 }

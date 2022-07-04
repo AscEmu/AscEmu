@@ -155,7 +155,7 @@ public:
 
     void OnDied(Unit* pKiller) override
     {
-        Player* QuestHolder = pKiller->getPlayerOwner();
+        Player* QuestHolder = pKiller->getPlayerOwnerOrSelf();
         if (QuestHolder == nullptr)
             return;
 

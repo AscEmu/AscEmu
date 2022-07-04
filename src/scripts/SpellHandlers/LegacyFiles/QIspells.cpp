@@ -141,7 +141,7 @@ bool LayWreath(uint8_t /*effectIndex*/, Spell* pSpell)  //Peace at Last quest
 
         GameObject* pWreath = pPlayer->getWorldMap()->createAndSpawnGameObject(501541, pos, 1);
         if (pWreath != nullptr)
-            pWreath->Despawn(2 * 60 * 1000, 0);
+            pWreath->despawn(2 * 60 * 1000, 0);
     }
 
     return true;
@@ -517,7 +517,7 @@ bool TheBaitforLarkorwi1(uint8_t /*effectIndex*/, Spell* pSpell)
 
     GameObject* obj = pPlayer->getWorldMap()->createAndSpawnGameObject(169216, pos, 1);
     if (obj != nullptr)
-        obj->Despawn(1 * 60 * 1000, 0);
+        obj->despawn(1 * 60 * 1000, 0);
 
     return true;
 }
@@ -1406,9 +1406,9 @@ bool ArcaneDisruption(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
         if (crate != nullptr)
         {
             GameObject* go = plr->getWorldMap()->createGameObject(190095);
-            go->CreateFromProto(190095, crate->getWorldMap()->getBaseMap()->getMapId(), plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetOrientation(), 0.0f, 0.0f, 0.0f, 0.0f);
+            go->create(190095, crate->getWorldMap(), 0, plr->GetPosition(), QuaternionData(), GO_STATE_CLOSED);
             go->PushToWorld(crate->getWorldMap());
-            crate->Despawn(0, 0);
+            crate->despawn(0, 0);
 
             questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
             questLog->SendUpdateAddKill(0);
@@ -1463,7 +1463,7 @@ bool ToLegionHold(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
         GameObject* pGameObject = pPlayer->getWorldMap()->getInterface()->getGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 184834);
         if (pGameObject != nullptr)
         {
-            pGameObject->Despawn(60000, 0);
+            pGameObject->despawn(60000, 0);
             pPlayer->updateNearbyQuestGameObjects();
         }
     }
@@ -1890,27 +1890,27 @@ bool ZethGorMustBurnHorde(uint8_t /*effectIndex*/, Spell* pSpell)
 
                 GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-1129.08f, 1921.77f, 94.0074f, 0), 4);
                 if (pGameobject != nullptr)
-                    pGameobject->Despawn(1 * 60 * 1000, 0);
+                    pGameobject->despawn(1 * 60 * 1000, 0);
 
                 pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-1135.00f, 1944.05f, 84.7084f, 0), 4);
                 if (pGameobject != nullptr)
-                    pGameobject->Despawn(1 * 60 * 1000, 0);
+                    pGameobject->despawn(1 * 60 * 1000, 0);
 
                 pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-1152.01f, 1945.00f, 102.901f, 0), 4);
                 if (pGameobject != nullptr)
-                    pGameobject->Despawn(1 * 60 * 1000, 0);
+                    pGameobject->despawn(1 * 60 * 1000, 0);
 
                 pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-1159.60f, 1958.76f, 83.0412f, 0), 4);
                 if (pGameobject != nullptr)
-                    pGameobject->Despawn(1 * 60 * 1000, 0);
+                    pGameobject->despawn(1 * 60 * 1000, 0);
 
                 pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-1126.17f, 1880.96f, 95.065f, 0), 4);
                 if (pGameobject != nullptr)
-                    pGameobject->Despawn(1 * 60 * 1000, 0);
+                    pGameobject->despawn(1 * 60 * 1000, 0);
 
                 pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-1185.79f, 1968.29f, 90.931f, 0), 4);
                 if (pGameobject != nullptr)
-                    pGameobject->Despawn(1 * 60 * 1000, 0);
+                    pGameobject->despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -1926,7 +1926,7 @@ bool ZethGorMustBurnHorde(uint8_t /*effectIndex*/, Spell* pSpell)
 
                 GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-938.034f, 1924.153f, 73.590f, 0), 4);
                 if (pGameobject != nullptr)
-                    pGameobject->Despawn(1 * 60 * 1000, 0);
+                    pGameobject->despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -1942,7 +1942,7 @@ bool ZethGorMustBurnHorde(uint8_t /*effectIndex*/, Spell* pSpell)
 
                 GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-1152.10f, 2066.20f, 72.959f, 0), 4);
                 if (pGameobject != nullptr)
-                    pGameobject->Despawn(1 * 60 * 1000, 0);
+                    pGameobject->despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -1958,7 +1958,7 @@ bool ZethGorMustBurnHorde(uint8_t /*effectIndex*/, Spell* pSpell)
 
                 GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-1058.85f, 2010.95f, 68.776f, 0), 4);
                 if (pGameobject != nullptr)
-                    pGameobject->Despawn(1 * 60 * 1000, 0);
+                    pGameobject->despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -1992,7 +1992,7 @@ bool LayingWasteToTheUnwantedAlliance(uint8_t /*effectIndex*/, Spell* pSpell)
 
                 GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-157.916f, 2517.71f, 58.5508f, 0), 4);
                 if (pGameobject != nullptr)
-                    pGameobject->Despawn(1 * 60 * 1000, 0);
+                    pGameobject->despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -2008,7 +2008,7 @@ bool LayingWasteToTheUnwantedAlliance(uint8_t /*effectIndex*/, Spell* pSpell)
 
                 GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-152.527f, 2661.99f, 60.8123f, 0), 4);
                 if (pGameobject != nullptr)
-                    pGameobject->Despawn(1 * 60 * 1000, 0);
+                    pGameobject->despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -2024,7 +2024,7 @@ bool LayingWasteToTheUnwantedAlliance(uint8_t /*effectIndex*/, Spell* pSpell)
 
                 GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-177.916f, 2773.75f, 48.636f, 0), 4);
                 if (pGameobject != nullptr)
-                    pGameobject->Despawn(1 * 60 * 1000, 0);
+                    pGameobject->despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -2040,7 +2040,7 @@ bool LayingWasteToTheUnwantedAlliance(uint8_t /*effectIndex*/, Spell* pSpell)
 
                 GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-166.0f, 2818.0f, 29.0f, 0), 4);
                 if (pGameobject != nullptr)
-                    pGameobject->Despawn(1 * 60 * 1000, 0);
+                    pGameobject->despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -2078,7 +2078,7 @@ bool BurnItUp(uint8_t /*effectIndex*/, Spell* pSpell)
 
                 GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-300.0f, 2407.0f, 50.0f, 0), 4);
                 if (pGameobject != nullptr)
-                    pGameobject->Despawn(1 * 60 * 1000, 0);
+                    pGameobject->despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -2096,7 +2096,7 @@ bool BurnItUp(uint8_t /*effectIndex*/, Spell* pSpell)
 
                 GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-350.0f, 2708.0f, 35.0f, 0), 4);
                 if (pGameobject != nullptr)
-                    pGameobject->Despawn(1 * 60 * 1000, 0);
+                    pGameobject->despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -2252,7 +2252,7 @@ bool WarIsHell(uint8_t /*effectIndex*/, Spell* pSpell)
 
     GameObject* obj = plr->getWorldMap()->createAndSpawnGameObject(183816, targetPos, 1);
     if (obj != nullptr)
-        obj->Despawn(1 * 60 * 1000, 0);
+        obj->despawn(1 * 60 * 1000, 0);
 
     target->Despawn(2000, 60 * 1000);
     plr->updateNearbyQuestGameObjects();
@@ -2403,11 +2403,11 @@ bool ShipBombing(uint8_t /*effectIndex*/, Spell* pSpell)
 
                 obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_FIRE, LocationVector(13214.3f, -7059.19f, 17.5717f, 1.58573f), 1);
                 if (obj != nullptr)
-                    obj->Despawn(2 * 60 * 1000, 0);
+                    obj->despawn(2 * 60 * 1000, 0);
 
                 obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_FIRE, LocationVector(13204.2f, -7059.38f, 17.5717f, 1.57787f), 1);
                 if (obj != nullptr)
-                    obj->Despawn(2 * 60 * 1000, 0);
+                    obj->despawn(2 * 60 * 1000, 0);
             }
         }
     }
@@ -2423,11 +2423,11 @@ bool ShipBombing(uint8_t /*effectIndex*/, Spell* pSpell)
 
                 obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_FIRE, LocationVector(13329.4f, -6994.70f, 14.5219f, 1.38938f), 1);
                 if (obj != nullptr)
-                    obj->Despawn(2 * 60 * 1000, 0);
+                    obj->despawn(2 * 60 * 1000, 0);
 
                 obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_FIRE, LocationVector(13315.4f, -6990.72f, 14.7647f, 1.25979f), 1);
                 if (obj != nullptr)
-                    obj->Despawn(2 * 60 * 1000, 0);
+                    obj->despawn(2 * 60 * 1000, 0);
             }
         }
     }
@@ -2443,11 +2443,11 @@ bool ShipBombing(uint8_t /*effectIndex*/, Spell* pSpell)
 
                 obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_FIRE, LocationVector(13284.1f, -7152.65f, 15.9774f, 1.44828f), 1);
                 if (obj != nullptr)
-                    obj->Despawn(2 * 60 * 1000, 0);
+                    obj->despawn(2 * 60 * 1000, 0);
 
                 obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_FIRE, LocationVector(13273.0f, -7151.21f, 15.9774f, 1.39723f), 1);
                 if (obj != nullptr)
-                    obj->Despawn(2 * 60 * 1000, 0);
+                    obj->despawn(2 * 60 * 1000, 0);
             }
         }
     }
@@ -2570,7 +2570,7 @@ bool StoppingTheSpread(uint8_t /*effectIndex*/, Spell* pSpell)
 
             GameObject* obj = plr->getWorldMap()->createAndSpawnGameObject(183816, targetPos, 1);
             if (obj != nullptr)
-                obj->Despawn(1 * 30 * 1000, 0);
+                obj->despawn(1 * 30 * 1000, 0);
         }
 
         target->Despawn(2000, 60 * 1000);
@@ -2640,7 +2640,7 @@ bool TheFleshLies(uint8_t /*effectIndex*/, Spell* pSpell)
 
             GameObject* obj = plr->getWorldMap()->createAndSpawnGameObject(183816, tyrgetPos, 1);
             if (obj != nullptr)
-                obj->Despawn(1 * 30 * 1000, 0);
+                obj->despawn(1 * 30 * 1000, 0);
         }
         target->Despawn(2000, 60 * 1000);
         plr->updateNearbyQuestGameObjects();
@@ -2732,7 +2732,7 @@ bool Carcass(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a Shadoweave Ta
     if (FlayerCarcass == nullptr)
     {
         FlayerCarcass = pPlayer->getWorldMap()->createAndSpawnGameObject(185155, pPlayer->GetPosition(), 1);
-        FlayerCarcass->Despawn(60000, 0);
+        FlayerCarcass->despawn(60000, 0);
     }
     if (NetherDrake == nullptr)
         return true;
@@ -2826,7 +2826,7 @@ bool ShatariTorch(uint8_t /*effectIndex*/, Spell* pSpell)
 
         obj = plr->getWorldMap()->createAndSpawnGameObject(183816, pos, 1);
         if (obj != nullptr)
-            obj->Despawn(1 * 60 * 1000, 0);
+            obj->despawn(1 * 60 * 1000, 0);
     }
     else if (target->getEntry() == 21846)
     {
@@ -2837,7 +2837,7 @@ bool ShatariTorch(uint8_t /*effectIndex*/, Spell* pSpell)
 
         obj = plr->getWorldMap()->createAndSpawnGameObject(183816, pos, 1);
         if (obj != nullptr)
-            obj->Despawn(1 * 60 * 1000, 0);
+            obj->despawn(1 * 60 * 1000, 0);
     }
     else
         return true;
@@ -3009,7 +3009,7 @@ bool CastFishingNet(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pQuest == nullptr)
         return true;
 
-    pSpell->GetGameObjectTarget()->Despawn(600, 20000);
+    pSpell->GetGameObjectTarget()->despawn(600, 20000);
 
     LocationVector pos = pPlayer->GetPosition();
 

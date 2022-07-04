@@ -236,9 +236,6 @@ public:
     uint64_t getSummonedByGuid() const;
     void setSummonedByGuid(uint64_t guid);
 
-    // helper
-    uint64_t getCharmerOrOwnerGUID() const override { return isCharmed() ? getCharmedByGuid() : getSummonedByGuid(); }
-
     uint64_t getCreatedByGuid() const;
     void setCreatedByGuid(uint64_t guid);
 
@@ -1052,6 +1049,12 @@ public:
 
     virtual bool isTrainingDummy() { return false; }
 
+    GameObject* getGameObject(uint32_t spellId) const;
+    void addGameObject(GameObject* gameObj);
+    void removeGameObject(GameObject* gameObj, bool del);
+    void removeGameObject(uint32_t spellid, bool del);
+    void removeAllGameObjects();
+
 private:
     uint32_t m_attackTimer[TOTAL_WEAPON_DAMAGE_TYPES] = {0};
     //\ todo: there seems to be new haste update fields in playerdata in cata, and moved to unitdata in mop
@@ -1069,6 +1072,10 @@ private:
     uint32_t m_lastSummonUpdateTime = 0;
 
     uint32_t m_oldEmote = 0;
+
+protected:
+    typedef std::list<GameObject*> GameObjectList;
+    GameObjectList m_gameObj;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////

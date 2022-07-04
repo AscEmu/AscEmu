@@ -325,6 +325,9 @@ GameObject* ObjectMgr::createGameObjectByGuid(uint32_t id, uint32_t guid)
         case GAMEOBJECT_TYPE_GOOBER:
             gameObject = new GameObject_Goober(createdGuid);
             break;
+        case GAMEOBJECT_TYPE_TRANSPORT:
+            gameObject = new GameObject_Transport(createdGuid);
+            break;
         case GAMEOBJECT_TYPE_CAMERA:
             gameObject = new GameObject_Camera(createdGuid);
             break;
@@ -2642,7 +2645,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                 if (target == nullptr)
                     return;
 
-                static_cast<GameObject*>(target)->Despawn(1000, itr->second.data_2);
+                static_cast<GameObject*>(target)->despawn(1000, itr->second.data_2);
 
                 break;
             }

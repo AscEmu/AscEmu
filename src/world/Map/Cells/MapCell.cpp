@@ -273,11 +273,34 @@ void MapCell::loadObjects(CellSpawns* sp)
         for (GameobjectSpawnList::iterator i = sp->GameobjectSpawns.begin(); i != sp->GameobjectSpawns.end(); ++i)
         {
             GameObject* go = _map->createGameObject((*i)->entry);
-
-            if (go->Load(*i))
+            bool onRespawn = false;
+            
+            if (go->loadFromDB(*i, _map, false))
             {
                 go->m_loadedFromDB = true;
-                go->PushToWorld(_map);
+
+                // Respawn Handling
+                if (auto info = _map->getRespawnInfo(SPAWN_TYPE_GAMEOBJECT, go->getSpawnId()))
+                {
+                    onRespawn = true;
+                    RespawnInfo ri;
+                    ri.type = SPAWN_TYPE_GAMEOBJECT;
+                    ri.spawnId = go->getSpawnId();
+                    ri.entry = go->getEntry();
+                    ri.time = info->time;
+                    ri.cellX = go->GetSpawnX();
+                    ri.cellY = go->GetSpawnY();
+                    ri.obj = nullptr;
+
+                    bool success = _map->addRespawn(ri);
+                    if (success)
+                        _map->saveRespawnDB(ri);
+
+                    go->expireAndDelete();
+                }
+
+                if (!onRespawn)
+                    go->PushToWorld(_map);
             }
             else
             {

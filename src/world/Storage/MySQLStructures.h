@@ -8,9 +8,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/CreatureMacros.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/SpawnGroups.hpp"
+#include "Objects/ObjectDefines.h"
 #include <cstdint>
 #include <string>
 #include "LocationVector.h"
+#include <G3D/Box.h>
+#include <G3D/CoordinateFrame.h>
+#include <G3D/Quat.h>
 
 // related to table areatriggers
 enum AreaTriggerType
@@ -215,29 +219,27 @@ namespace MySQLStructure
     struct GameobjectSpawn
     {
         uint32_t id;
-        //min_build
-        //max_build
         uint32_t entry;
         uint32_t map;
-        float position_x;
-        float position_y;
-        float position_z;
-        float orientation;  // column facing
-        float rotation_0;   // column orientation1
-        float rotation_1;   // column orientation2
-        float rotation_2;   // column orientation3
-        float rotation_3;   // column orientation4
-        //float facing;
-        //uint32_t flags;
-        uint32_t state;
-        uint32_t flags;
-        uint32_t faction;
-        //uint32_t level;
-        float scale;
-        //uint32_t stateNpcLink;
         uint32_t phase;
-        uint32_t overrides;
-        //event_entry
+        LocationVector spawnPoint;
+        QuaternionData rotation;
+        uint32_t spawntimesecs;
+        GameObject_State state;
+        //uint32_t event_entry
+    };
+
+    struct GameObjectSpawnExtra
+    {
+        QuaternionData parentRotation;
+    };
+
+    struct GameObjectSpawnOverrides
+    {
+        uint32_t id;
+        float scale;
+        uint32_t faction;
+        uint32_t flags;
     };
 
     //gameobject_teleports

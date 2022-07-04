@@ -212,7 +212,7 @@ Aura::~Aura()
 
 void Aura::EventUpdateGroupAA(AuraEffectModifier* /*aurEff*/, float r)
 {
-    Player* owner = m_target->getPlayerOwner();
+    Player* owner = m_target->getPlayerOwnerOrSelf();
     if (owner == nullptr)
     {
         targets.clear();
@@ -315,7 +315,7 @@ void Aura::EventUpdateGroupAA(AuraEffectModifier* /*aurEff*/, float r)
 
 void Aura::EventUpdateRaidAA(AuraEffectModifier* /*aurEff*/, float r)
 {
-    Player* owner = m_target->getPlayerOwner();
+    Player* owner = m_target->getPlayerOwnerOrSelf();
     if (owner == nullptr)
     {
         targets.clear();

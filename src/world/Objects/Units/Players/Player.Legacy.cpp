@@ -1101,7 +1101,7 @@ void Player::addSpell(uint32 spell_id, uint16_t fromSkill/* = 0*/)
     // Add spell's skill line to player
     if (fromSkill == 0)
     {
-        const auto teachesProfession = spell->hasEffect(SPELL_EFFECT_SKILL);
+        const auto teachesProfession = spell->hasEffect(SPELL_EFFECT_SKILL) || spell->hasEffect(SPELL_EFFECT_TRADE_SKILL);
 
         const auto spellSkillBounds = sSpellMgr.getSkillEntryForSpellBounds(spell_id);
         for (auto spellSkillItr = spellSkillBounds.first; spellSkillItr != spellSkillBounds.second; ++spellSkillItr)
@@ -2578,7 +2578,7 @@ void Player::RemoveFromWorld()
     {
         if (m_summonedObject->GetInstanceID() != GetInstanceID())
         {
-            sEventMgr.AddEvent(m_summonedObject, &Object::Delete, EVENT_GAMEOBJECT_EXPIRE, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
+            m_summonedObject->ToGameObject()->despawn(100, 0);
         }
         else
         {

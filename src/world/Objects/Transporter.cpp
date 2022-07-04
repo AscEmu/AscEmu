@@ -65,12 +65,28 @@ bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float
         return false;
     }
 
-    if (!CreateFromProto(entry, mapid, x, y, z, ang))
-        return false;
+    Object::_Create(mapid, x, y, z, ang);
+    setEntry(entry);
+    setLocalRotation(0.0f, 0.0f, 0.0f, 1.0f);
+    setParentRotation(QuaternionData());
+    SetPosition(LocationVector(x, y, z, ang));
+    setDisplayId(gameobject_properties->display_id);
+    setGoType(static_cast<uint8_t>(gameobject_properties->type));
+
+    m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
+    setFlags(GO_FLAG_TRANSPORT | GO_FLAG_NEVER_DESPAWN);
+    setState(gameobject_properties->mo_transport.can_be_stopped ? GO_STATE_CLOSED : GO_STATE_OPEN);
+    m_goValue.PathProgress = 0;
+
+    setScale(gameobject_properties->size);
+
+    InitAI();
 
     // Set Pathtime
     setLevel(tInfo->pathTime);
     setAnimationProgress(animprogress);
+
+    m_model = createModel();
 
     updatePathProgress();
 
@@ -113,9 +129,9 @@ void Transporter::Update(unsigned long time_passed)
         return;
 
     if (IsMoving() || !_pendingStop)
-        mTransValues.PathProgress += time_passed;
+        m_goValue.PathProgress += time_passed;
 
-    uint32_t timer = mTransValues.PathProgress % getTransportPeriod();
+    uint32_t timer = m_goValue.PathProgress % getTransportPeriod();
     bool justStopped = false;
 
     //sLogger.debug("Transporter: current node %u and pathprogress %u \n", _currentFrame->Index, GetTimer());
@@ -142,9 +158,9 @@ void Transporter::Update(unsigned long time_passed)
                 if (_pendingStop && getState() != GO_STATE_CLOSED)
                 {
                     setState(GO_STATE_CLOSED);
-                    mTransValues.PathProgress = (mTransValues.PathProgress / getTransportPeriod());
-                    mTransValues.PathProgress *= getTransportPeriod();
-                    mTransValues.PathProgress += _currentFrame->ArriveTime;
+                    m_goValue.PathProgress = (m_goValue.PathProgress / getTransportPeriod());
+                    m_goValue.PathProgress *= getTransportPeriod();
+                    m_goValue.PathProgress += _currentFrame->ArriveTime;
                 }
                 break; // its a stop frame and we are waiting
             }
@@ -313,19 +329,18 @@ GameObject* Transporter::createGOPassenger(MySQLStructure::GameobjectSpawn* data
 
     const auto properties = sMySQLStore.getGameObjectProperties(data->entry);
     if (properties == nullptr || map == nullptr)
-        return 0;
-
-    float x, y, z, o;
-
-    x = data->position_x;
-    y = data->position_y;
-    z = data->position_z;
-    o = data->rotation_0;
+        return nullptr;
 
     GameObject* pGameobject = map->createGameObject(data->entry);
 
-    if (!pGameobject->CreateFromProto(data->entry, map->getBaseMap()->getMapId(), x, y, z, o))
-        return 0;
+    if (!pGameobject->loadFromDB(data, map, false))
+    {
+        delete pGameobject;
+        return nullptr;
+    }
+
+    float x, y, z, o;
+    data->spawnPoint.getPosition(x, y, z, o);
 
     pGameobject->SetTransport(this);
     pGameobject->obj_movement_info.setTransportData(this->getGuid(), x, y, z, o, 0, 0);
@@ -389,7 +404,7 @@ void Transporter::UnloadStaticPassengers()
                 obj->ToCreature()->Despawn(0, 0);
                 break;
             case TYPEID_GAMEOBJECT:
-                obj->ToGameObject()->Despawn(0, 0);
+                obj->ToGameObject()->despawn(0, 0);
                 break;
             default:
                 if (obj->IsInWorld())
@@ -714,7 +729,7 @@ void Transporter::updatePathProgress()
 
     if (uint32_t transportPeriod = getTransportPeriod())
     {
-        float timer = float(GetTransValues()->PathProgress % transportPeriod);
+        float timer = float(getGOValue()->PathProgress % transportPeriod);
         pathProgress = int16_t(timer / float(transportPeriod) * 65535.0f);
     }
 

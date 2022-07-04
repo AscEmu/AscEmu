@@ -62,15 +62,15 @@ void WorldMap::initialize()
     // Create Instance script
     loadInstanceScript();
 
-    // create static objects
-    for (auto& GameobjectSpawn : _map->staticSpawns.GameobjectSpawns)
+    // create Map Wide objects
+    for (auto& GameobjectSpawn : _map->mapWideSpawns.GameobjectSpawns)
     {
         GameObject* obj = createGameObject(GameobjectSpawn->entry);
-        obj->Load(GameobjectSpawn);
+        obj->loadFromDB(GameobjectSpawn, this, false);
         PushStaticObject(obj);
     }
 
-    for (auto& CreatureSpawn : _map->staticSpawns.CreatureSpawns)
+    for (auto& CreatureSpawn : _map->mapWideSpawns.CreatureSpawns)
     {
         Creature* obj = createCreature(CreatureSpawn->entry);
         obj->Load(CreatureSpawn, 0, getBaseMap()->getMapInfo());
@@ -733,11 +733,6 @@ void WorldMap::PushObject(Object* obj)
         }
 
         delete buf;
-
-        // todo aaron02
-        /*
-        if (plObj != nullptr && InactiveMoveTime && !forced_expire)
-            InactiveMoveTime = 0;*/
     }
     else
     {
@@ -1717,7 +1712,7 @@ GameObject* WorldMap::createGameObject(uint32_t entry)
     return gameobject;
 }
 
-GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector pos, float scale)
+GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector pos, float scale, uint32_t respawnTime)
 {
     auto gameobject_info = sMySQLStore.getGameObjectProperties(entryID);
     if (gameobject_info == nullptr)
@@ -1732,7 +1727,7 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
 
     uint32_t mapid = getBaseMap()->getMapId();
     // Setup game object
-    go->CreateFromProto(entryID, mapid, pos.x, pos.y, pos.z, pos.o);
+    go->create(entryID, this, go->GetPhase(), pos, QuaternionData(), GO_STATE_CLOSED, sObjectMgr.GenerateGameObjectSpawnID());
     go->setScale(scale);
     go->InitAI();
     go->PushToWorld(this);
@@ -1740,29 +1735,22 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
     // Create spawn instance
     auto go_spawn = new MySQLStructure::GameobjectSpawn;
     go_spawn->entry = go->getEntry();
-    go_spawn->id = sObjectMgr.GenerateGameObjectSpawnID();
+    go_spawn->id = go->getSpawnId();
     go_spawn->map = go->GetMapId();
-    go_spawn->position_x = go->GetPositionX();
-    go_spawn->position_y = go->GetPositionY();
-    go_spawn->position_z = go->GetPositionZ();
-    go_spawn->orientation = go->GetOrientation();
-    go_spawn->rotation_0 = go->getParentRotation(0);
-    go_spawn->rotation_1 = go->getParentRotation(1);
-    go_spawn->rotation_2 = go->getParentRotation(2);
-    go_spawn->rotation_3 = go->getParentRotation(3);
-    go_spawn->state = go->getState();
-    go_spawn->flags = go->getFlags();
-    go_spawn->faction = go->getFactionTemplate();
-    go_spawn->scale = go->getScale();
-    //go_spawn->stateNpcLink = 0;
+    go_spawn->spawnPoint = go->GetPosition();
+    go_spawn->rotation = go->getLocalRotation();
+    go_spawn->state = GameObject_State(go->getState());
     go_spawn->phase = go->GetPhase();
-    go_spawn->overrides = go->GetOverrides();
+    go_spawn->spawntimesecs = respawnTime;
+    go->m_spawn = go_spawn;
 
     uint32_t cx = getPosX(pos.x);
     uint32_t cy = getPosY(pos.y);
 
     getBaseMap()->getSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(go_spawn);
-    go->m_spawn = go_spawn;
+
+    if (respawnTime)
+        go->setRespawnTime(respawnTime);
 
     MapCell* mCell = getCell(cx, cy);
 
@@ -1976,7 +1964,7 @@ void WorldMap::loadRespawnTimes()
                 for (auto const& spawn : gameobject_spawns)
                 {
                     if (spawn->id == spawnId)
-                        saveRespawnTime(type, spawnId, spawn->entry, time_t(respawnTime), spawn->position_x, spawn->position_y, true);
+                        saveRespawnTime(type, spawnId, spawn->entry, time_t(respawnTime), spawn->spawnPoint.x, spawn->spawnPoint.y, true);
                 }
             }
         }
@@ -2013,6 +2001,13 @@ RespawnInfoMap const& WorldMap::getRespawnMapForType(SpawnObjectType type) const
     }
 }
 
+time_t WorldMap::getRespawnTime(SpawnObjectType type, uint32_t spawnId) const
+{
+    auto const& map = getRespawnMapForType(type);
+    auto it = map.find(spawnId);
+    return (it == map.end()) ? 0 : it->second->time;
+}
+
 void WorldMap::saveRespawnTime(SpawnObjectType type, uint32_t spawnId, uint32_t entry, time_t respawnTime, float cellX, float cellY, bool startup)
 {
     if (!respawnTime)
@@ -2030,8 +2025,8 @@ void WorldMap::saveRespawnTime(SpawnObjectType type, uint32_t spawnId, uint32_t 
     ri.obj = nullptr;
     ri.cellX = cellX;
     ri.cellY = cellY;
-    bool success = addRespawn(ri);
 
+    bool success = addRespawn(ri);
     if (startup)
     {
         if (!success)
@@ -2191,37 +2186,55 @@ void WorldMap::doRespawn(SpawnObjectType type, Object* object, uint32_t spawnId,
     deleteRespawnFromDB(type, spawnId);
     
     MapCell* cell = getCellByCoords(cellX, cellY);
-    if (cell == nullptr || object == nullptr)    //cell or object got deleted while waiting for respawn.
+    if (cell == nullptr) //cell got deleted while waiting for respawn.
         return;
 
     switch (type)
     {
         case SPAWN_TYPE_CREATURE:
         {
-            Creature* obj = object->ToCreature();
-            if (obj)
+            if (object)
             {
-                auto itr = cell->_respawnObjects.find(obj);
-                if (itr != cell->_respawnObjects.end())
+                Creature* obj = object->ToCreature();
+                if (obj)
                 {
-                    obj->m_respawnCell = nullptr;
-                    cell->_respawnObjects.erase(itr);
-                    obj->OnRespawn(this);
+                    auto itr = cell->_respawnObjects.find(obj);
+                    if (itr != cell->_respawnObjects.end())
+                    {
+                        obj->m_respawnCell = nullptr;
+                        cell->_respawnObjects.erase(itr);
+                        obj->OnRespawn(this);
+                    }
                 }
             }
             break;
         }
         case SPAWN_TYPE_GAMEOBJECT:
         {
-            GameObject* obj = object->ToGameObject();
-            if (obj)
+            if (object)
             {
-                auto itr = cell->_respawnObjects.find(obj);
-                if (itr != cell->_respawnObjects.end())
+                GameObject* obj = object->ToGameObject();
+                if (obj)
                 {
-                    obj->m_respawnCell = nullptr;
-                    cell->_respawnObjects.erase(itr);
-                    obj->Spawn(this);
+                    auto itr = cell->_respawnObjects.find(obj);
+                    if (itr != cell->_respawnObjects.end())
+                    {
+                        obj->m_respawnCell = nullptr;
+                        cell->_respawnObjects.erase(itr);
+                        obj->PushToWorld(this);
+                    }
+                }
+            }
+            else
+            {
+                for (auto& GameobjectSpawn : sMySQLStore._gameobjectSpawnsStore[getBaseMap()->getMapId()])
+                {
+                    if (GameobjectSpawn && GameobjectSpawn->id == spawnId)
+                    {
+                        GameObject* obj = createGameObject(GameobjectSpawn->entry);
+                        if (!obj->loadFromDB(GameobjectSpawn, this, true))
+                            delete obj;
+                    }
                 }
             }
             break;

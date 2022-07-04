@@ -39,7 +39,7 @@ public:
         {
             GameObject* generalsbox = mTarget->getWorldMap()->createAndSpawnGameObject(141980, LocationVector(-10622, -2994, 28.6f, 4), 4);
             if (generalsbox != nullptr)
-                generalsbox->Despawn(3 * 60 * 1000, 0);
+                generalsbox->despawn(3 * 60 * 1000, 0);
         }
     }
 };
@@ -89,7 +89,7 @@ public:
                 {
                     GameObject* generalsbox = plr->getWorldMap()->createAndSpawnGameObject(141980, LocationVector(-10622, -2994, 28.6f, 4), 4);
                     if (generalsbox != nullptr)
-                        generalsbox->Despawn(3 * 60 * 1000, 0);
+                        generalsbox->despawn(3 * 60 * 1000, 0);
                 }
             }
         }

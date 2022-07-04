@@ -607,15 +607,15 @@ public:
 
             GameObject* go = ptr->getWorldMap()->createGameObject(entry_id);
             uint32_t mapid = ptr->GetMapId();
-            go->CreateFromProto(entry_id, mapid, x, y, z, o);
+            go->create(entry_id, ptr->getWorldMap(), ptr->GetPhase(), LocationVector(x, y, z, o), QuaternionData(), GO_STATE_CLOSED);
             go->Phase(PHASE_SET, phase);
             go->setScale(scale);
             go->AddToWorld(ptr->getWorldMap());
 
             if (duration)
-                sEventMgr.AddEvent(go, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_UPDATE, duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                go->despawn(duration, 0);
             if (save)
-                go->SaveToDB();
+                go->saveToDB();
             PUSH_GO(L, go);
         }
         else
