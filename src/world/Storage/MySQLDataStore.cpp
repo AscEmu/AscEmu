@@ -757,6 +757,10 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         creatureProperties.waypointid = fields[74].GetUInt32();
 
         creatureProperties.gossipId = fields[75].GetUInt32();
+        std::string origin = fields[76].GetString();
+
+        if (origin == "creature_properties_copy")
+            sLogger.info("MySQLDataLoads : Loaded %u creature proto from table %s", creatureProperties.Id, origin.c_str());
 
         auto movement = getCreaturePropertiesMovement(entry);
         if (movement)
