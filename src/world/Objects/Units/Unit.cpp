@@ -75,7 +75,7 @@ Unit::Unit() :
 #endif
 
     // Zyres: initialise here because multiversion differences
-    std::fill_n(PctPowerRegenModifier, TOTAL_PLAYER_POWER_TYPES, 1);
+    std::fill_n(PctPowerRegenModifier, TOTAL_PLAYER_POWER_TYPES, 1.0f);
 
     m_aiInterface->Init(this, AI_SCRIPT_AGRO);
     getThreatManager().initialize();
