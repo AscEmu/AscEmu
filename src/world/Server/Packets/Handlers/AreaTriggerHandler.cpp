@@ -42,7 +42,9 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
     }
 
     sHookInterface.OnAreaTrigger(_player, srlPacket.triggerId);
-    CALL_INSTANCE_SCRIPT_EVENT(_player->getWorldMap(), OnAreaTrigger)(_player, srlPacket.triggerId);
+
+    if (_player->getWorldMap() && _player->getWorldMap()->getScript())
+        _player->getWorldMap()->getScript()->OnAreaTrigger(_player, srlPacket.triggerId);
 
     if (_player->m_bg)
     {

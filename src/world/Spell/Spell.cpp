@@ -896,7 +896,8 @@ void Spell::finish(bool successful)
     // Unit spell script hooks
     if (getUnitCaster() != nullptr)
     {
-        CALL_SCRIPT_EVENT(getUnitCaster(), OnCastSpell)(getSpellInfo()->getId());
+        if (getUnitCaster()->IsInWorld() && getUnitCaster()->isCreature() && dynamic_cast<Creature*>(getUnitCaster())->GetScript())
+            dynamic_cast<Creature*>(getUnitCaster())->GetScript()->OnCastSpell(getSpellInfo()->getId());
 
         if (!sEventMgr.HasEvent(getUnitCaster(), EVENT_CREATURE_RESPAWN))
         {
@@ -906,14 +907,15 @@ void Spell::finish(bool successful)
                 if (targetUnit == nullptr)
                     continue;
 
-                CALL_SCRIPT_EVENT(getUnitCaster(), OnSpellHitTarget)(targetUnit, getSpellInfo());
+                if (getUnitCaster()->IsInWorld() && getUnitCaster()->isCreature() && dynamic_cast<Creature*>(getUnitCaster())->GetScript())
+                    dynamic_cast<Creature*>(getUnitCaster())->GetScript()->OnSpellHitTarget(targetUnit, getSpellInfo());
 
                 if (!targetUnit->isCreature())
                     continue;
 
                 auto* const targetCreature = dynamic_cast<Creature*>(targetUnit);
-                if (targetCreature->GetScript())
-                    CALL_SCRIPT_EVENT(targetCreature, OnHitBySpell)(getSpellInfo()->getId(), getUnitCaster());
+                if (targetCreature->IsInWorld() && targetCreature->isCreature() && targetCreature->GetScript())
+                    targetCreature->GetScript()->OnHitBySpell(getSpellInfo()->getId(), getUnitCaster());
             }
         }
 

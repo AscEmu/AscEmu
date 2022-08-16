@@ -5,14 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-/// -
-#define CALL_SCRIPT_EVENT(obj, func) if (obj->IsInWorld() && obj->isCreature() && static_cast<Creature*>(obj)->GetScript() != nullptr) static_cast<Creature*>(obj)->GetScript()->func
-
-/// -
-#define CALL_INSTANCE_SCRIPT_EVENT(Mgr, Func) if (Mgr != nullptr && Mgr->getScript() != nullptr) Mgr->getScript()->Func
-
-/// -
-#define CALL_GO_SCRIPT_EVENT(obj, func) if (obj->isGameObject() && static_cast<GameObject*>(obj)->GetScript() != nullptr) static_cast< GameObject* >(obj)->GetScript()->func
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pre-made TargetTypes

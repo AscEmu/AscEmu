@@ -2217,7 +2217,9 @@ void Pet::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     smsg_AttackStop(this);
     setHealth(0);
 
-    CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
+    if (pAttacker->IsInWorld() && pAttacker->isCreature() && static_cast<Creature*>(pAttacker)->GetScript())
+        static_cast<Creature*>(pAttacker)->GetScript()->OnTargetDied(this);
+
     pAttacker->getAIInterface()->eventOnTargetDied(this);
     pAttacker->smsg_AttackStop(this);
 

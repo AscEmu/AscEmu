@@ -78,7 +78,8 @@ void WorldMap::initialize()
     }
 
     // Call script OnLoad virtual procedure
-    CALL_INSTANCE_SCRIPT_EVENT(this, OnLoad)();
+    if (getScript())
+        getScript()->OnLoad();
 
     // load corpses
     sObjectMgr.LoadCorpses(this);

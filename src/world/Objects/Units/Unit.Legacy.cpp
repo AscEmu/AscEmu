@@ -6959,8 +6959,12 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             vstate = VisualState::MISS;
             break;
         case 1:     //dodge
-            CALL_SCRIPT_EVENT(pVictim, OnTargetDodged)(this);
-            CALL_SCRIPT_EVENT(this, OnDodged)(this);
+            if (pVictim->IsInWorld() && pVictim->isCreature() && static_cast<Creature*>(pVictim)->GetScript())
+                static_cast<Creature*>(pVictim)->GetScript()->OnTargetDodged(this);
+
+            if (IsInWorld() && isCreature() && static_cast<Creature*>(this)->GetScript())
+                static_cast<Creature*>(this)->GetScript()->OnDodged(this);
+
             targetEvent = 1;
             vstate = VisualState::DODGE;
             pVictim->emote(EMOTE_ONESHOT_PARRYUNARMED); // Animation
@@ -6985,11 +6989,16 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             pVictim->addAuraStateAndAuras(AURASTATE_FLAG_DODGE_BLOCK_PARRY);
             if (!sEventMgr.HasEvent(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE))
                 sEventMgr.AddEvent(pVictim, &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_DODGE_BLOCK_PARRY, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 1, 0);
-            else sEventMgr.ModifyEventTimeLeft(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 0);
+            else
+                sEventMgr.ModifyEventTimeLeft(pVictim, EVENT_DODGE_BLOCK_FLAG_EXPIRE, 5000, 0);
             break;
         case 2:     //parry
-            CALL_SCRIPT_EVENT(pVictim, OnTargetParried)(this);
-            CALL_SCRIPT_EVENT(this, OnParried)(this);
+            if (pVictim->IsInWorld() && pVictim->isCreature() && static_cast<Creature*>(pVictim)->GetScript())
+                static_cast<Creature*>(pVictim)->GetScript()->OnTargetParried(this);
+
+            if (IsInWorld() && isCreature() && static_cast<Creature*>(this)->GetScript())
+                static_cast<Creature*>(this)->GetScript()->OnParried(this);
+
             targetEvent = 3;
             vstate = VisualState::PARRY;
             pVictim->emote(EMOTE_ONESHOT_PARRYUNARMED); // Animation
@@ -7221,8 +7230,11 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                                 vstate = VisualState::BLOCK;
                             if (dmg.blockedDamage)
                             {
-                                CALL_SCRIPT_EVENT(pVictim, OnTargetBlocked)(this, dmg.blockedDamage);
-                                CALL_SCRIPT_EVENT(this, OnBlocked)(pVictim, dmg.blockedDamage);
+                                if (pVictim->IsInWorld() && pVictim->isCreature() && static_cast<Creature*>(pVictim)->GetScript())
+                                    static_cast<Creature*>(pVictim)->GetScript()->OnTargetBlocked(this, dmg.blockedDamage);
+
+                                if (IsInWorld() && isCreature() && static_cast<Creature*>(this)->GetScript())
+                                    static_cast<Creature*>(this)->GetScript()->OnBlocked(pVictim, dmg.blockedDamage);
                             }
                             if (pVictim->isPlayer())  //not necessary now but we'll have blocking mobs in future
                             {
@@ -7280,8 +7292,11 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                         if (pVictim->isCreature() && static_cast<Creature*>(pVictim)->GetCreatureProperties()->Rank != ELITE_WORLDBOSS)
                             pVictim->emote(EMOTE_ONESHOT_WOUNDCRITICAL);
 
-                        CALL_SCRIPT_EVENT(pVictim, OnTargetCritHit)(this, dmg.fullDamage);
-                        CALL_SCRIPT_EVENT(this, OnCritHit)(pVictim, dmg.fullDamage);
+                        if (pVictim->IsInWorld() && pVictim->isCreature() && static_cast<Creature*>(pVictim)->GetScript())
+                            static_cast<Creature*>(pVictim)->GetScript()->OnTargetCritHit(this, dmg.fullDamage);
+
+                        if (IsInWorld() && isCreature() && static_cast<Creature*>(this)->GetScript())
+                            static_cast<Creature*>(this)->GetScript()->OnCritHit(pVictim, dmg.fullDamage);
                     }
                     break;
                     //////////////////////////////////////////////////////////////////////////////////////////
@@ -7335,7 +7350,8 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                         hit_status |= HITSTATUS_BLOCK;
                 }
                 dmg.realDamage = realdamage;
-                CALL_SCRIPT_EVENT(this, OnHit)(pVictim, float(realdamage));
+                if (IsInWorld() && isCreature() && static_cast<Creature*>(this)->GetScript())
+                    static_cast<Creature*>(this)->GetScript()->OnHit(pVictim, float(realdamage));
             }
             break;
     }

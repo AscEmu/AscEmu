@@ -1564,7 +1564,9 @@ void Player::zoneUpdate(uint32_t zoneId)
     {
         m_playerInfo->lastZone = zoneId;
         sHookInterface.OnZone(this, zoneId, oldzone);
-        CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnZoneChange)(this, zoneId, oldzone);
+
+        if (m_WorldMap && m_WorldMap->getScript())
+            m_WorldMap->getScript()->OnZoneChange(this, zoneId, oldzone);
 
         auto at = GetArea();
         if (at && (at->team == AREAC_SANCTUARY || at->flags & AREA_SANCTUARY))
@@ -5644,7 +5646,8 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t spellId)
     smsg_AttackStop(unitAttacker);
     EventAttackStop();
 
-    CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnPlayerDeath)(this, unitAttacker);
+    if (m_WorldMap && m_WorldMap->getScript())
+        m_WorldMap->getScript()->OnPlayerDeath(this, unitAttacker);
 
     uint32_t selfResSpellId = 0;
     if (!m_bg || m_bg && !isArena(m_bg->GetType()))
@@ -5666,7 +5669,9 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t spellId)
     setSelfResurrectSpell(selfResSpellId);
     setMountDisplayId(0);
 
-    CALL_SCRIPT_EVENT(unitAttacker, OnTargetDied)(this);
+    if (unitAttacker->IsInWorld() && unitAttacker->isCreature() && static_cast<Creature*>(unitAttacker)->GetScript())
+        static_cast<Creature*>(unitAttacker)->GetScript()->OnTargetDied(this);
+
     unitAttacker->getAIInterface()->eventOnTargetDied(this);
     unitAttacker->smsg_AttackStop(this);
 

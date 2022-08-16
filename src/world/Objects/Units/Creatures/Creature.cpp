@@ -1992,7 +1992,9 @@ void Creature::OnPushToWorld()
             mEvent->mEventScript->OnCreaturePushToWorld(mEvent, this);
         }
     }
-    CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnCreaturePushToWorld)(this);
+
+    if (m_WorldMap && m_WorldMap->getScript())
+        m_WorldMap->getScript()->OnCreaturePushToWorld(this);
 }
 
 void Creature::respawn(bool force)
@@ -2515,8 +2517,11 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     removeAllNonPersistentAuras();
 
-    CALL_SCRIPT_EVENT(pAttacker, _internalOnTargetDied)(this);
-    CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
+    if (pAttacker->IsInWorld() && pAttacker->isCreature() && dynamic_cast<Creature*>(pAttacker)->GetScript())
+    {
+        dynamic_cast<Creature*>(pAttacker)->GetScript()->_internalOnTargetDied(this);
+        dynamic_cast<Creature*>(pAttacker)->GetScript()->OnTargetDied(this);
+    }
     pAttacker->getAIInterface()->eventOnTargetDied(this);
 
     pAttacker->smsg_AttackStop(this);
@@ -2727,10 +2732,12 @@ CreatureMovementData const& Creature::getMovementTemplate()
 
 void Creature::InitSummon(Object* summoner)
 {
-    CALL_SCRIPT_EVENT(summoner, onSummonedCreature)(this);
+    if (summoner)
+    {
+        if (summoner->IsInWorld() && summoner->isCreature() && static_cast<Creature*>(summoner)->GetScript())
+            static_cast<Creature*>(summoner)->GetScript()->onSummonedCreature(this);
 
-    if (GetScript() != nullptr)
-        GetScript()->OnSummon(static_cast<Unit*>(summoner));
+        if (GetScript() != nullptr)
+            GetScript()->OnSummon(static_cast<Unit*>(summoner));
+    }
 }
-
-

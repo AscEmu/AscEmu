@@ -423,12 +423,14 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
         nameLength = static_cast<uint32_t>(unitName.length() + 1);
     }
 
-    auto emoteTextEntry = sEmotesTextStore.LookupEntry(srlPacket.text_emote);
-    if (emoteTextEntry)
+    if (const auto emoteTextEntry = sEmotesTextStore.LookupEntry(srlPacket.text_emote))
     {
         sHookInterface.OnEmote(_player, emoteTextEntry->textid, unit);
         if (unit)
-            CALL_SCRIPT_EVENT(unit, OnEmote)(_player, static_cast<EmoteType>(emoteTextEntry->textid));
+        {
+            if (unit->IsInWorld() && unit->isCreature() && dynamic_cast<Creature*>(unit)->GetScript())
+                dynamic_cast<Creature*>(unit)->GetScript()->OnEmote(_player, static_cast<EmoteType>(emoteTextEntry->textid));
+        }
 
         switch (emoteTextEntry->textid)
         {
@@ -496,7 +498,10 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
 
     sHookInterface.OnEmote(_player, static_cast<EmoteType>(emoteTextEntry->textid), unit);
     if (unit)
-        CALL_SCRIPT_EVENT(unit, OnEmote)(_player, static_cast<EmoteType>(emoteTextEntry->textid));
+    {
+        if (unit->IsInWorld() && unit->isCreature() && static_cast<Creature*>(unit)->GetScript())
+            static_cast<Creature*>(unit)->GetScript()->OnEmote(_player, static_cast<EmoteType>(emoteTextEntry->textid));
+    }
 
     switch (emoteTextEntry->textid)
     {

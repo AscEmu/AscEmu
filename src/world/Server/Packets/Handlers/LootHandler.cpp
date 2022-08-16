@@ -122,9 +122,15 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
     ItemProperties const* proto = sMySQLStore.getItemProperties(item->getEntry());
 
     if (lootGameObject)
-        CALL_GO_SCRIPT_EVENT(lootGameObject, OnLootTaken)(_player, proto);
+    {
+        if (lootGameObject->GetScript())
+            lootGameObject->GetScript()->OnLootTaken(_player, proto);
+    }
     else if (lootCreature)
-        CALL_SCRIPT_EVENT(lootCreature, OnLootTaken)(_player, proto);
+    {
+        if (lootCreature->IsInWorld() && lootCreature->isCreature() && lootCreature->GetScript())
+            lootCreature->GetScript()->OnLootTaken(_player, proto);
+    }
 
     sHookInterface.OnLoot(_player, lootCreature, 0, item->getEntry());
 
@@ -572,7 +578,10 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
         return;
 
     if (creature)
-        CALL_SCRIPT_EVENT(creature, OnLootTaken)(player, item.itemproto);
+    {
+        if (creature->IsInWorld() && creature->isCreature() && creature->GetScript())
+            creature->GetScript()->OnLootTaken(player, item.itemproto);
+    }
 
     // mark as looted
     item.count = 0;

@@ -959,7 +959,8 @@ void GameObject::despawn(uint32_t delay, uint32_t forceRespawntime)
         if (!IsInWorld())
             return;
 
-        CALL_GO_SCRIPT_EVENT(this, OnDespawn)();
+        if (GetScript())
+            GetScript()->OnDespawn();
 
         if (m_spawn && m_loadedFromDB)
         {
@@ -1221,9 +1222,11 @@ void GameObject::OnPushToWorld()
         }
     }
 
-    CALL_GO_SCRIPT_EVENT(this, OnCreate)();
-    CALL_GO_SCRIPT_EVENT(this, OnSpawn)();
-    CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnGameObjectPushToWorld)(this);
+    if (GetScript())
+    {
+        GetScript()->OnCreate();
+        GetScript()->OnSpawn();
+    }
 }
 
 void GameObject::onRemoveInRangeObject(Object* pObj)
@@ -2350,8 +2353,8 @@ void GameObject_Destructible::Damage(uint32_t damage, uint64_t AttackerGUID, uin
         removeFlags(GO_FLAG_DAMAGED);
         setDisplayId(gameobject_properties->destructible_building.destroyed_display_id);   // destroyed display id
 
-        CALL_GO_SCRIPT_EVENT(this, OnDestroyed)();
-
+        if (GetScript())
+            GetScript()->OnDestroyed();
     }
     else
     {
@@ -2379,7 +2382,8 @@ void GameObject_Destructible::Damage(uint32_t damage, uint64_t AttackerGUID, uin
             }
         }
 
-        CALL_GO_SCRIPT_EVENT(this, OnDamaged)(damage);
+        if (GetScript())
+            GetScript()->OnDamaged(damage);
     }
 
     uint8_t animprogress = static_cast<uint8_t>(std::round(hitpoints / float(maxhitpoints)) * 255);

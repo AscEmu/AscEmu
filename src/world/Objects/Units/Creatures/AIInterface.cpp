@@ -1341,7 +1341,9 @@ void AIInterface::updateCombat(uint32_t p_time)
 
         m_fleeTimer.resetInterval(m_FleeDuration);
 
-        CALL_SCRIPT_EVENT(m_Unit, OnFlee)(getCurrentTarget());
+        if (m_Unit->IsInWorld() && m_Unit->isCreature() && static_cast<Creature*>(m_Unit)->GetScript())
+            static_cast<Creature*>(m_Unit)->GetScript()->OnFlee(getCurrentTarget());
+
         getUnit()->setControlled(true, UNIT_STATE_FLEEING);
 
         std::string msg = "%s attempts to run away in fear!";
@@ -1382,7 +1384,8 @@ void AIInterface::updateCombat(uint32_t p_time)
             sendStoredText(mEmotesOnCallForHelp, nullptr);
         }
 
-        CALL_SCRIPT_EVENT(m_Unit, OnCallForHelp)();
+        if (m_Unit->IsInWorld() && m_Unit->isCreature() && static_cast<Creature*>(m_Unit)->GetScript())
+            static_cast<Creature*>(m_Unit)->GetScript()->OnCallForHelp();
     }
     break;
     }
@@ -2328,7 +2331,8 @@ void AIInterface::eventFear(Unit* pUnit, uint32_t /*misc1*/)
     if (pUnit == nullptr)
         return;
 
-    CALL_SCRIPT_EVENT(m_Unit, OnFear)(pUnit, 0);
+    if (m_Unit->IsInWorld() && m_Unit->isCreature() && static_cast<Creature*>(m_Unit)->GetScript() != nullptr)
+        static_cast<Creature*>(m_Unit)->GetScript()->OnFear(pUnit, 0);
 
     getUnit()->setControlled(true, UNIT_STATE_FLEEING);
 
@@ -2376,7 +2380,8 @@ void AIInterface::eventDamageTaken(Unit* pUnit, uint32_t misc1)
 
     pUnit->removeAllAurasById(24575);
 
-    CALL_SCRIPT_EVENT(m_Unit, OnDamageTaken)(pUnit, misc1);
+    if (m_Unit->IsInWorld() && m_Unit->isCreature() && static_cast<Creature*>(m_Unit)->GetScript() != nullptr)
+        static_cast<Creature*>(m_Unit)->GetScript()->OnDamageTaken(pUnit, misc1);
 }
 
 void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
@@ -2387,28 +2392,33 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
     /* send the message */
     if (m_Unit->isCreature())
     {
-        Creature* creature = static_cast<Creature*>(m_Unit);
-
-        CALL_SCRIPT_EVENT(m_Unit, _internalOnCombatStart)(pUnit);
-        CALL_SCRIPT_EVENT(m_Unit, OnCombatStart)(pUnit);
-
-        if (m_Unit->getWorldMap() && m_Unit->getWorldMap()->getScript())
+        if (const auto creature = dynamic_cast<Creature*>(m_Unit))
         {
-            // set encounter state = InProgress
-            uint32_t i = 0;
-            for (const auto& boss : m_Unit->getWorldMap()->getScript()->getBosses())
+            if (creature->IsInWorld() && m_Unit->isCreature() && creature->GetScript())
             {
-                if (m_Unit->getEntry() == boss.entry)
-                    CALL_INSTANCE_SCRIPT_EVENT(m_Unit->getWorldMap(), setBossState)(i, InProgress);
-
-                i++;
+                creature->GetScript()->_internalOnCombatStart(pUnit);
+                creature->GetScript()->OnCombatStart(pUnit);
             }
-        }
 
-        if (creature->m_spawn && (creature->m_spawn->channel_target_go || creature->m_spawn->channel_target_creature))
-        {
-            m_Unit->setChannelSpellId(0);
-            m_Unit->setChannelObjectGuid(0);
+            if (m_Unit->getWorldMap() && m_Unit->getWorldMap()->getScript())
+            {
+                // set encounter state = InProgress
+                uint32_t i = 0;
+                for (const auto& boss : m_Unit->getWorldMap()->getScript()->getBosses())
+                {
+                    if (m_Unit->getEntry() == boss.entry)
+                        if (m_Unit->getWorldMap() && m_Unit->getWorldMap()->getScript())
+                            m_Unit->getWorldMap()->getScript()->setBossState(i, InProgress);
+
+                    i++;
+                }
+            }
+
+            if (creature->m_spawn && (creature->m_spawn->channel_target_go || creature->m_spawn->channel_target_creature))
+            {
+                m_Unit->setChannelSpellId(0);
+                m_Unit->setChannelObjectGuid(0);
+            }
         }
 
         // Enter Combat Scripts
@@ -2566,7 +2576,8 @@ void AIInterface::eventLeaveCombat(Unit* /*pUnit*/, uint32_t /*misc1*/)
             for (const auto boss : m_Unit->getWorldMap()->getScript()->getBosses())
             {
                 if (m_Unit->getEntry() == boss.entry)
-                    CALL_INSTANCE_SCRIPT_EVENT(m_Unit->getWorldMap(), setBossState)(i, NotStarted);
+                    if (m_Unit->getWorldMap() && m_Unit->getWorldMap()->getScript())
+                        m_Unit->getWorldMap()->getScript()->setBossState(i, NotStarted);
 
                 i++;
             }
@@ -2598,8 +2609,11 @@ void AIInterface::eventLeaveCombat(Unit* /*pUnit*/, uint32_t /*misc1*/)
     if (m_Unit->getWorldMap() && m_Unit->getWorldMap()->isUnloadPending())
         return;
 
-    CALL_SCRIPT_EVENT(m_Unit, _internalOnCombatStop)();
-    CALL_SCRIPT_EVENT(m_Unit, OnCombatStop)(getUnit());
+    if (m_Unit->IsInWorld() && m_Unit->isCreature() && dynamic_cast<Creature*>(m_Unit)->GetScript())
+    {
+        dynamic_cast<Creature*>(m_Unit)->GetScript()->_internalOnCombatStop();
+        dynamic_cast<Creature*>(m_Unit)->GetScript()->OnCombatStop(getUnit());
+    }
 }
 
 void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
@@ -2609,8 +2623,11 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
 
      pUnit->removeAllNegativeAuras();
 
-    CALL_SCRIPT_EVENT(m_Unit, _internalOnDied)(pUnit);
-    CALL_SCRIPT_EVENT(m_Unit, OnDied)(pUnit);
+    if (m_Unit->IsInWorld() && m_Unit->isCreature() && dynamic_cast<Creature*>(m_Unit)->GetScript())
+    {
+        dynamic_cast<Creature*>(m_Unit)->GetScript()->_internalOnDied(pUnit);
+        dynamic_cast<Creature*>(m_Unit)->GetScript()->OnDied(pUnit);
+    }
 
     if (m_Unit->isCreature())
     {
@@ -2627,13 +2644,15 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
 
         if (getUnit()->getSummonedByGuid())
         {
-            Unit* summoner = getUnit()->getWorldMapUnit(getUnit()->getSummonedByGuid());
-
-            if (summoner)
-                CALL_SCRIPT_EVENT(summoner, OnSummonDies)(m_Unit->ToCreature(), pUnit);
+            if (Unit* summoner = getUnit()->getWorldMapUnit(getUnit()->getSummonedByGuid()))
+            {
+                if (summoner->IsInWorld() && summoner->isCreature() && dynamic_cast<Creature*>(summoner)->GetScript())
+                    dynamic_cast<Creature*>(summoner)->GetScript()->OnSummonDies(m_Unit->ToCreature(), pUnit);
+            }
         }
 
-        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->getWorldMap(), OnCreatureDeath)(static_cast<Creature*>(m_Unit), pUnit);
+        if (m_Unit->getWorldMap() && m_Unit->getWorldMap()->getScript())
+            m_Unit->getWorldMap()->getScript()->OnCreatureDeath(dynamic_cast<Creature*>(m_Unit), pUnit);
     }
 
     setAiState(AI_STATE_IDLE);
@@ -2677,7 +2696,8 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
             {
                 if (m_Unit->getEntry() == boss.entry)
                 {
-                    CALL_INSTANCE_SCRIPT_EVENT(m_Unit->getWorldMap(), setBossState)(i, Performed);
+                    if (m_Unit->getWorldMap() && m_Unit->getWorldMap()->getScript())
+                        m_Unit->getWorldMap()->getScript()->setBossState(i, Performed);
                 }
                 i++;
             }
@@ -2697,7 +2717,10 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
             }
 
             if (killed)
-                CALL_INSTANCE_SCRIPT_EVENT(unitMapMgr, OnSpawnGroupKilled)(spawnGroupData->groupId);
+            {
+                if (unitMapMgr && unitMapMgr->getScript())
+                    unitMapMgr->getScript()->OnSpawnGroupKilled(spawnGroupData->groupId);
+            }
         }
     }
 
@@ -2880,7 +2903,8 @@ void AIInterface::clearBoundary()
 void AIInterface::movementInform(uint32_t type, uint32_t id)
 {
     sendStoredText(mEmotesOnRandomWaypoint, nullptr);
-    CALL_SCRIPT_EVENT(m_Unit, OnReachWP)(type, id);
+    if (m_Unit->IsInWorld() && m_Unit->isCreature() && static_cast<Creature*>(m_Unit)->GetScript())
+        static_cast<Creature*>(m_Unit)->GetScript()->OnReachWP(type, id);
 }
 
 void AIInterface::eventChangeFaction(Unit* ForceAttackersToHateThisInstead)

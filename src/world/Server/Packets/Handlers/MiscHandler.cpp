@@ -1855,8 +1855,11 @@ void WorldSession::handleGameObjectUse(WorldPacket& recvPacket)
 
     sObjectMgr.CheckforScripts(_player, gameObjectProperties->raw.parameter_9);
 
-    CALL_GO_SCRIPT_EVENT(gameObject, OnActivate)(_player);
-    CALL_INSTANCE_SCRIPT_EVENT(_player->getWorldMap(), OnGameObjectActivate)(gameObject, _player);
+    if (gameObject->GetScript())
+        gameObject->GetScript()->OnActivate(_player);
+
+    if (_player->getWorldMap() && _player->getWorldMap()->getScript())
+        _player->getWorldMap()->getScript()->OnGameObjectActivate(gameObject, _player);
 
     _player->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
 

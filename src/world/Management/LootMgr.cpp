@@ -503,10 +503,15 @@ void LootRoll::finalize()
         return;
 
     if (creature)
-        CALL_SCRIPT_EVENT(creature, OnLootTaken)(_player, item.itemproto);
+    {
+        if (creature->IsInWorld() && creature->isCreature() && creature->GetScript())
+            creature->GetScript()->OnLootTaken(_player, item.itemproto);
+    }
     else if (gameObject)
-        CALL_GO_SCRIPT_EVENT(gameObject, OnLootTaken)(_player, item.itemproto);
-
+    {
+        if (gameObject->GetScript())
+            gameObject->GetScript()->OnLootTaken(_player, item.itemproto);
+    }
     // mark as looted
     pLoot->items.at(_slotid).count = 0;
     pLoot->items.at(_slotid).is_looted = true;

@@ -3604,8 +3604,11 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
 
             gameObjTarget->Use(m_caster->getGuid());
 
-            CALL_GO_SCRIPT_EVENT(gameObjTarget, OnActivate)(p_caster);
-            CALL_INSTANCE_SCRIPT_EVENT(gameObjTarget->getWorldMap(), OnGameObjectActivate)(gameObjTarget, p_caster);
+            if (gameObjTarget->GetScript())
+                gameObjTarget->GetScript()->OnActivate(p_caster);
+
+            if (gameObjTarget->getWorldMap() && gameObjTarget->getWorldMap()->getScript())
+                gameObjTarget->getWorldMap()->getScript()->OnGameObjectActivate(gameObjTarget, p_caster);
 
             if (sQuestMgr.OnActivateQuestGiver(gameObjTarget, p_caster))
                 return;
@@ -4817,7 +4820,8 @@ void Spell::SpellEffectActivateObject(uint8_t effectIndex) // Activate Object
         return;
     }
 
-    CALL_GO_SCRIPT_EVENT(gameObjTarget, OnActivate)(p_caster);
+    if (gameObjTarget->GetScript())
+        gameObjTarget->GetScript()->OnActivate(p_caster);
 
     gameObjTarget->setDynamicFlags(GO_DYN_FLAG_INTERACTABLE);
 

@@ -45,7 +45,8 @@ void Vehicle::initialize()
     applyAllImmunities();
     
     // Script Hooks
-    CALL_SCRIPT_EVENT(getBase(), OnVehicleInitialize());
+    if (getBase()->IsInWorld() && getBase()->isCreature() && static_cast<Creature*>(getBase())->GetScript() != nullptr)
+        static_cast<Creature*>(getBase())->GetScript()->OnVehicleInitialize();
 
     _status = STATUS_INITALIZED;
 }
@@ -62,7 +63,8 @@ void Vehicle::deactivate()
     removeAllPassengers();
 
     // Script Hooks
-    CALL_SCRIPT_EVENT(getBase(), OnVehicleDeactivate());
+    if (getBase()->IsInWorld() && getBase()->isCreature() && static_cast<Creature*>(getBase())->GetScript())
+        static_cast<Creature*>(getBase())->GetScript()->OnVehicleDeactivate();
 }
 
 void Vehicle::initSeats()
@@ -417,7 +419,8 @@ Vehicle* Vehicle::removePassenger(Unit* unit)
         getBase()->castSpell(unit, VEHICLE_SPELL_PARACHUTE, true);
 
     // Script Hooks
-    CALL_SCRIPT_EVENT(getBase(), OnRemovePassenger(unit));
+    if (getBase()->IsInWorld() && getBase()->isCreature() && static_cast<Creature*>(getBase())->GetScript())
+        static_cast<Creature*>(getBase())->GetScript()->OnRemovePassenger(unit);
 
     unit->setVehicle(nullptr);
     return this;
@@ -615,10 +618,14 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
         threatRef->getOwner()->getThreatManager().addThreat(getBase(), threatRef->getThreat(), nullptr, true, true);
 
     // Script Hooks
-    CALL_SCRIPT_EVENT(getBase(), OnAddPassenger(passenger, Seat->first));
+    if (getBase()->IsInWorld() && getBase()->isCreature() && dynamic_cast<Creature*>(getBase())->GetScript())
+        dynamic_cast<Creature*>(getBase())->GetScript()->OnAddPassenger(passenger, Seat->first);
 
     if (passenger->hasUnitStateFlag(UNIT_STATE_ACCESSORY))
-        CALL_SCRIPT_EVENT(getBase(), OnInstallAccessory(passenger->ToCreature()));
+    {
+        if (getBase()->IsInWorld() && getBase()->isCreature() && dynamic_cast<Creature*>(getBase())->GetScript())
+            dynamic_cast<Creature*>(getBase())->GetScript()->OnInstallAccessory(passenger->ToCreature());
+    }
 
     return true;
 }

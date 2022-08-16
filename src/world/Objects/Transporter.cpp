@@ -239,8 +239,11 @@ void Transporter::AddPassenger(Player* passenger)
         passenger->SetTransport(this);
         passenger->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
         passenger->obj_movement_info.transport_guid = getGuid();
-        if(passenger->isPlayer())
-            CALL_INSTANCE_SCRIPT_EVENT(getWorldMap(), TransportBoarded)(passenger, this);
+        if (passenger->isPlayer())
+        {
+            if (getWorldMap() && getWorldMap()->getScript())
+                getWorldMap()->getScript()->TransportBoarded(passenger, this);
+        }
     }
 }
 
@@ -269,7 +272,10 @@ void Transporter::RemovePassenger(Object* passenger)
         passenger->obj_movement_info.removeMovementFlag(MOVEFLAG_TRANSPORT);
         passenger->obj_movement_info.clearTransportData();
         if (passenger->isPlayer())
-            CALL_INSTANCE_SCRIPT_EVENT(getWorldMap(), TransportUnboarded)(passenger->ToPlayer(), this);
+        {
+            if (getWorldMap() && getWorldMap()->getScript())
+                getWorldMap()->getScript()->TransportUnboarded(passenger->ToPlayer(), this);
+        }
     }
 }
 
@@ -696,7 +702,8 @@ void Transporter::DoEventIfAny(KeyFrame const& node, bool departure)
         sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Taxi %s event %u", departure ? "departure" : "arrival", eventid);
 
         // Use MapScript Interface to Handle these if not handle it here
-        CALL_INSTANCE_SCRIPT_EVENT(getWorldMap(), TransporterEvents)(this, eventid);
+        if (getWorldMap() && getWorldMap()->getScript())
+            getWorldMap()->getScript()->TransporterEvents(this, eventid);
 
         // TODO Sort out ships and zeppelins
         switch (eventid)

@@ -2418,10 +2418,13 @@ void Player::OnPushToWorld()
 
     Unit::OnPushToWorld();
 
-
     sHookInterface.OnEnterWorld(this);
-    CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnZoneChange)(this, m_zoneId, 0);
-    CALL_INSTANCE_SCRIPT_EVENT(m_WorldMap, OnPlayerEnter)(this);
+
+    if (m_WorldMap && m_WorldMap->getScript())
+    {
+        m_WorldMap->getScript()->OnZoneChange(this, m_zoneId, 0);
+        m_WorldMap->getScript()->OnPlayerEnter(this);
+    }
 
     if (m_teleportState == 1 || m_enteringWorld)        // First world enter
         CompleteLoading();
