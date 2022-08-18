@@ -249,6 +249,7 @@ public:
 
     uint32_t getXp() const;
     void setXp(uint32_t xp);
+    void addXP(uint32_t xp);
 
     uint32_t getNextLevelXp() const;
     void setNextLevelXp(uint32_t xp);

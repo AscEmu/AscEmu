@@ -443,6 +443,7 @@ void Player::setKnownCurrencies(uint64_t currencies) { write(playerData()->field
 
 uint32_t Player::getXp() const { return playerData()->xp; }
 void Player::setXp(uint32_t xp) { write(playerData()->xp, xp); }
+void Player::addXP(uint32_t xp) { write(playerData()->xp, getXp() + xp); }
 
 uint32_t Player::getNextLevelXp() const { return playerData()->next_level_xp; }
 void Player::setNextLevelXp(uint32_t xp) { write(playerData()->next_level_xp, xp); }
