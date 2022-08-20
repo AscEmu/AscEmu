@@ -1227,6 +1227,9 @@ void GameObject::OnPushToWorld()
         GetScript()->OnCreate();
         GetScript()->OnSpawn();
     }
+
+    if (m_WorldMap && m_WorldMap->getScript())
+        m_WorldMap->getScript()->OnGameObjectPushToWorld(this);
 }
 
 void GameObject::onRemoveInRangeObject(Object* pObj)
