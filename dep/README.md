@@ -3,7 +3,7 @@
 # Opensource software in this folder:
 
 ## Folder: bzip2
-- Web: http://www.bzip.org
+- Web: https://www.sourceware.org/bzip2/
 - Version: 1.0.8 (2019/07/13)
 
 ## Folder: g3dlite
@@ -28,7 +28,7 @@
 
 ## Folder: utf8cpp
 - Web: https://github.com/nemtrif/utfcpp
-- Version: 944ef0561ddcd33eb4fd94934538458b2b2de252 (2020/03/15)
+- Version: d8b92208fddde08d628004563a1a3614a32cf8c8 (2021/12/27)
 
 ## Folder: zlib
 - Web: http://www.zlib.net
