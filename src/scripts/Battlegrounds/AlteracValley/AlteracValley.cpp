@@ -523,9 +523,9 @@ void AlteracValley::AVNode::Assault(Player* plr)
 
         // pvp data
         if (m_template->m_isGraveyard)
-            plr->m_bgScore.MiscData[BG_SCORE_AV_GRAVEYARDS_DEFENDED]++;
+            plr->m_bgScore.MiscData[BattlegroundDef::AV_GRAVEYARDS_DEFENDED]++;
         else
-            plr->m_bgScore.MiscData[BG_SCORE_AV_TOWERS_DEFENDED]++;
+            plr->m_bgScore.MiscData[BattlegroundDef::AV_TOWERS_DEFENDED]++;
 
         return;
     }
@@ -545,12 +545,12 @@ void AlteracValley::AVNode::Assault(Player* plr)
         m_bg->SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->getTeam(), 0, "%s claims the %s! If left unchallenged, the %s will control it!", plr->getName().c_str(), m_template->m_name,
             plr->isTeamHorde() ? "Horde" : "Alliance");
 
-        plr->m_bgScore.MiscData[BG_SCORE_AV_GRAVEYARDS_ASSAULTED]++;
+        plr->m_bgScore.MiscData[BattlegroundDef::AV_GRAVEYARDS_ASSAULTED]++;
     }
     else
     {
         m_bg->Herald("%s is under attack! If left unchecked the %s will destroy it!", m_template->m_name, plr->isTeamHorde() ? "Horde" : "Alliance");
-        plr->m_bgScore.MiscData[BG_SCORE_AV_TOWERS_ASSAULTED]++;
+        plr->m_bgScore.MiscData[BattlegroundDef::AV_TOWERS_ASSAULTED]++;
     }
 }
 
@@ -1085,7 +1085,7 @@ void AlteracValley::OnStart()
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
-            (*itr)->removeAllAurasById(BG_PREPARATION);
+            (*itr)->removeAllAurasById(BattlegroundDef::PREPARATION);
         }
     }
 
@@ -1096,7 +1096,7 @@ void AlteracValley::OnStart()
         (*itr)->setState(GO_STATE_OPEN);
     }
 
-    PlaySoundToAll(SOUND_BATTLEGROUND_BEGIN);
+    PlaySoundToAll(BattlegroundDef::BATTLEGROUND_BEGIN);
 
     m_started = true;
 
@@ -1106,7 +1106,7 @@ void AlteracValley::OnStart()
 void AlteracValley::OnAddPlayer(Player* plr)
 {
     if (!m_started)
-        plr->castSpell(plr, BG_PREPARATION, true);
+        plr->castSpell(plr, BattlegroundDef::PREPARATION, true);
 
     if (plr->isTeamHorde())
     {
@@ -1122,7 +1122,7 @@ void AlteracValley::OnAddPlayer(Player* plr)
 
 void AlteracValley::OnRemovePlayer(Player* plr)
 {
-    plr->removeAllAurasById(BG_PREPARATION);
+    plr->removeAllAurasById(BattlegroundDef::PREPARATION);
 }
 
 LocationVector AlteracValley::GetStartingCoords(uint32_t Team)

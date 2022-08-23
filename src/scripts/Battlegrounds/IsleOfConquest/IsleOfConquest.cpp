@@ -449,12 +449,12 @@ void IsleOfConquest::OnStart()
     {
         for (std::set<Player* >::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
-            (*itr)->removeAllAurasById(BG_PREPARATION);
+            (*itr)->removeAllAurasById(BattlegroundDef::PREPARATION);
         }
     }
 
     OpenGates();
-    PlaySoundToAll(SOUND_BATTLEGROUND_BEGIN);
+    PlaySoundToAll(BattlegroundDef::BATTLEGROUND_BEGIN);
     sEventMgr.AddEvent(this, &IsleOfConquest::UpdateResources, EVENT_IOC_RESOURCES_UPDATE, 10 * 1000, 0, 0);
 }
 
@@ -734,7 +734,7 @@ bool IsleOfConquest::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* /
 void IsleOfConquest::OnAddPlayer(Player *plr)
 {
     if (!m_started)
-        plr->castSpell(plr, BG_PREPARATION, true);
+        plr->castSpell(plr, BattlegroundDef::PREPARATION, true);
 
     ControlPointTypes refinerystate = controlpoint[IOC_CONTROL_POINT_REFINERY].state;
     ControlPointTypes quarrystate = controlpoint[IOC_CONTROL_POINT_QUARRY].state;
@@ -758,7 +758,7 @@ void IsleOfConquest::OnAddPlayer(Player *plr)
 
 void IsleOfConquest::OnRemovePlayer(Player *plr)
 {
-    plr->removeAllAurasById(BG_PREPARATION);
+    plr->removeAllAurasById(BattlegroundDef::PREPARATION);
     plr->removeAllAurasById(IOC_REFINERY_BONUS);
     plr->removeAllAurasById(IOC_QUARRY_BONUS);
 }
@@ -930,12 +930,12 @@ void IsleOfConquest::AssaultControlPoint(Player *player, uint32_t id)
         case IOC_SPAWN_TYPE_NEUTRAL:
         case IOC_SPAWN_TYPE_ALLIANCE_CONTROLLED:
         case IOC_SPAWN_TYPE_HORDE_CONTROLLED:
-            player->m_bgScore.MiscData[BG_SCORE_IOC_BASES_ASSAULTED]++;
+            player->m_bgScore.MiscData[BattlegroundDef::IOC_BASES_ASSAULTED]++;
             break;
 
         case IOC_SPAWN_TYPE_ALLIANCE_ASSAULT:
         case IOC_SPAWN_TYPE_HORDE_ASSAULT:
-            player->m_bgScore.MiscData[BG_SCORE_IOC_BASES_DEFENDED]++;
+            player->m_bgScore.MiscData[BattlegroundDef::IOC_BASES_DEFENDED]++;
             break;
     }
 
@@ -956,14 +956,14 @@ void IsleOfConquest::CaptureControlPoint(uint32_t id)
     {
         case IOC_SPAWN_TYPE_ALLIANCE_ASSAULT:
             SpawnControlPoint(id, IOC_SPAWN_TYPE_ALLIANCE_CONTROLLED);
-            PlaySoundToAll(SOUND_ALLIANCE_CAPTURE);
+            PlaySoundToAll(BattlegroundDef::ALLIANCE_CAPTURE);
             SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The Alliance has taken the %s!", ControlPointNames[id]);
             CALL_CAPTURE_EVENT_FOR(this, id);
             break;
 
         case IOC_SPAWN_TYPE_HORDE_ASSAULT:
             SpawnControlPoint(id, IOC_SPAWN_TYPE_HORDE_CONTROLLED);
-            PlaySoundToAll(SOUND_HORDE_CAPTURE);
+            PlaySoundToAll(BattlegroundDef::HORDE_CAPTURE);
             SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "The Horde has taken the %s!", ControlPointNames[id]);
             CALL_CAPTURE_EVENT_FOR(this, id);
             break;

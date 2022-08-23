@@ -55,13 +55,13 @@ Arena::Arena(WorldMap* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_p
 
     switch (t)
     {
-        case BATTLEGROUND_ARENA_5V5:
+        case BattlegroundDef::TYPE_ARENA_5V5:
             m_arenateamtype = 2;
             break;
-        case BATTLEGROUND_ARENA_3V3:
+        case BattlegroundDef::TYPE_ARENA_3V3:
             m_arenateamtype = 1;
             break;
-        case BATTLEGROUND_ARENA_2V2:
+        case BattlegroundDef::TYPE_ARENA_2V2:
             m_arenateamtype = 0;
             break;
         default:
@@ -169,7 +169,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
 
     m_nextPvPUpdateTime = 0;
     UpdatePvPData();
-    PlaySoundToAll(winningTeam ? SOUND_ALLIANCEWINS : SOUND_HORDEWINS);
+    PlaySoundToAll(winningTeam ? BattlegroundDef::ALLIANCEWINS : BattlegroundDef::HORDEWINS);
 
     sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
     sEventMgr.AddEvent(static_cast< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -263,13 +263,12 @@ void Arena::OnRemovePlayer(Player* plr)
 
 void Arena::HookOnPlayerKill(Player* plr, Player* pVictim)
 {
-#ifdef ANTI_CHEAT
     if (!m_started)
     {
         plr->kill(); //cheater.
         return;
     }
-#endif
+
     if (pVictim->isPlayer())
     {
         plr->m_bgScore.KillingBlows++;
@@ -359,7 +358,7 @@ void Arena::OnStart()
     UpdatePlayerCounts();
 
     // WHEEEE
-    PlaySoundToAll(SOUND_BATTLEGROUND_BEGIN);
+    PlaySoundToAll(BattlegroundDef::BATTLEGROUND_BEGIN);
 
     sEventMgr.RemoveEvents(this, EVENT_ARENA_SHADOW_SIGHT);
     sEventMgr.AddEvent(static_cast< CBattleground* >(this), &CBattleground::HookOnShadowSight, EVENT_ARENA_SHADOW_SIGHT, 90000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);

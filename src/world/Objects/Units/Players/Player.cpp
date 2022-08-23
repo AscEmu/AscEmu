@@ -5651,7 +5651,7 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t spellId)
         m_WorldMap->getScript()->OnPlayerDeath(this, unitAttacker);
 
     uint32_t selfResSpellId = 0;
-    if (!m_bg || m_bg && !isArena(m_bg->GetType()))
+    if (!m_bg || m_bg && !m_bg->isArena())
     {
         selfResSpellId = getSelfResurrectSpell();
 
@@ -6920,6 +6920,30 @@ void Player::applyRandomBattlegroundReward(bool wonBattleground)
     this->addHonor(honorPoints, false);
     this->addArenaPoints(arenaPoints, false);
     this->updatePvPCurrencies();
+}
+
+uint32_t Player::getLevelGrouping()
+{
+    uint32_t level = getLevel();
+
+    if (level < 10)
+        return 0;
+    if (level < 20)
+        return 1;
+    if (level < 30)
+        return 2;
+    if (level < 40)
+        return 3;
+    if (level < 50)
+        return 4;
+    if (level < 60)
+        return 5;
+    if (level < 70)
+        return 6;
+    if (level < 80)
+        return 7;
+
+    return 8;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

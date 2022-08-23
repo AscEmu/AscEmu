@@ -101,7 +101,7 @@ bool ChatHandler::HandleBGSendStatusCommand(const char* args, WorldSession* m_se
         return false;
 
     uint32 type = atoi(args);
-    sBattlegroundManager.SendBattlefieldStatus(m_session->GetPlayer(), BGSTATUS_INQUEUE, type, 0, 0, m_session->GetPlayer()->GetMapId(), 0);
+    sBattlegroundManager.SendBattlefieldStatus(m_session->GetPlayer(), BattlegroundDef::STATUS_INQUEUE, type, 0, 0, m_session->GetPlayer()->GetMapId(), 0);
     return true;
 }
 

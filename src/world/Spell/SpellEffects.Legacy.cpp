@@ -76,6 +76,7 @@
 #include "Server/Script/CreatureAIScript.h"
 #include "VMapFactory.h"
 #include "VMapManager2.h"
+#include "Server/Definitions.h"
 
 using namespace AscEmu::Packets;
 
@@ -6218,8 +6219,7 @@ void Spell::SpellEffectActivateSpec(uint8_t /*effectIndex*/)
     }
     else if (p_caster->getBattleground())
     {
-        uint32 Type = p_caster->getBattleground()->GetType();
-        if (isArena(Type))
+        if (p_caster->getBattleground()->isArena())
         {
             sendCastResult(SPELL_FAILED_AFFECTING_COMBAT); // does the job
             return;

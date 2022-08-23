@@ -376,7 +376,7 @@ void StrandOfTheAncient::OnAddPlayer(Player* plr)
 {
     if (!m_started)
     {
-        plr->castSpell(plr, BG_PREPARATION, true);
+        plr->castSpell(plr, BattlegroundDef::PREPARATION, true);
     }
 }
 
@@ -384,7 +384,7 @@ void StrandOfTheAncient::OnRemovePlayer(Player* plr)
 {
     if (!m_started)
     {
-        plr->removeAllAurasById(BG_PREPARATION);
+        plr->removeAllAurasById(BattlegroundDef::PREPARATION);
     }
 }
 
@@ -771,14 +771,14 @@ void StrandOfTheAncient::PrepareRound()
         {
             Player* p = *itr;
             p->safeTeleport(p->GetMapId(), p->GetInstanceID(), sotaAttackerStartingPosition[0]);
-            p->castSpell(p, BG_PREPARATION, true);
+            p->castSpell(p, BattlegroundDef::PREPARATION, true);
         }
 
         for (std::set<Player*>::iterator itr = m_players[Defenders].begin(); itr != m_players[Defenders].end(); ++itr)
         {
             Player* p = *itr;
             p->safeTeleport(p->GetMapId(), p->GetInstanceID(), sotaDefenderStartingPosition);
-            p->castSpell(p, BG_PREPARATION, true);
+            p->castSpell(p, BattlegroundDef::PREPARATION, true);
         }
 
         sEventMgr.AddEvent(this, &StrandOfTheAncient::StartRound, EVENT_SOTA_START_ROUND, TimeVarsMs::Second * 10, 1, 0);
@@ -796,10 +796,10 @@ void StrandOfTheAncient::StartRound()
         Player* p = *itr;
 
         p->safeTeleport(p->GetMapId(), p->GetInstanceID(), sotaAttackerStartingPosition[SOTA_ROUND_STARTED]);
-        p->removeAllAurasById(BG_PREPARATION);
+        p->removeAllAurasById(BattlegroundDef::PREPARATION);
     }
 
-    RemoveAuraFromTeam(Defenders, BG_PREPARATION);
+    RemoveAuraFromTeam(Defenders, BattlegroundDef::PREPARATION);
 
     SetWorldState(WORLDSTATE_SOTA_TIMER_MINS, 10); 
     SetTime(ROUND_LENGTH);
@@ -926,13 +926,13 @@ void StrandOfTheAncient::CaptureControlPoint(SOTAControlPoints point)
     {
         case SOTA_CP_STATE_ALLY_CONTROL:
             SpawnControlPoint(point, SOTA_CP_STATE_HORDE_CONTROL);
-            PlaySoundToAll(SOUND_HORDE_CAPTURE);
+            PlaySoundToAll(BattlegroundDef::HORDE_CAPTURE);
             SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "The horde has captured the %s!", ControlPointNames[point]);
             break;
 
         case SOTA_CP_STATE_HORDE_CONTROL:
             SpawnControlPoint(point, SOTA_CP_STATE_ALLY_CONTROL);
-            PlaySoundToAll(SOUND_ALLIANCE_CAPTURE);
+            PlaySoundToAll(BattlegroundDef::ALLIANCE_CAPTURE);
             SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The alliance has captured the %s!", ControlPointNames[point]);
             break;
     }

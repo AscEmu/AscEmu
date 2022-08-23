@@ -1169,3 +1169,14 @@ enum GlyphSlotMask
     GS_MASK_LEVEL_75 = GS_MASK_7 | GS_MASK_8 | GS_MASK_9
 #endif
 };
+
+struct BGScore
+{
+    uint32_t KillingBlows = 0;
+    uint32_t HonorableKills = 0;
+    uint32_t Deaths = 0;
+    uint32_t BonusHonor = 0;
+    uint32_t DamageDone = 0;
+    uint32_t HealingDone = 0;
+    uint32_t MiscData[5] = { 0 };
+};

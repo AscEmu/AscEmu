@@ -231,6 +231,33 @@ class SERVER_DECL CBattleground : public EventableObject
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
         virtual uint64 GetFlagHolderGUID(uint32 faction) const;
+
+        static bool isArena(uint32_t x)
+        {
+            return (x >= BattlegroundDef::TYPE_ARENA_2V2 && x <= BattlegroundDef::TYPE_ARENA_5V5);
+        }
+        bool isArena()
+        {
+            return (m_type >= BattlegroundDef::TYPE_ARENA_2V2 && m_type <= BattlegroundDef::TYPE_ARENA_5V5);
+        }
+
+        uint32_t GetFieldCount(uint32_t BGType)
+        {
+            switch (BGType)
+            {
+            case BattlegroundDef::TYPE_ALTERAC_VALLEY:
+                return 5;
+            case BattlegroundDef::TYPE_ARATHI_BASIN:
+            case BattlegroundDef::TYPE_WARSONG_GULCH:
+            case BattlegroundDef::TYPE_STRAND_OF_THE_ANCIENT:
+            case BattlegroundDef::TYPE_ISLE_OF_CONQUEST:
+                return 2;
+            case BattlegroundDef::TYPE_EYE_OF_THE_STORM:
+                return 1;
+            default:
+                return 0;
+            }
+        }
 };
 
 

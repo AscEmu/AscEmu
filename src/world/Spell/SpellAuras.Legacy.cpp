@@ -1394,10 +1394,10 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
         {
             if (const auto battleground = p_target->getBattleground())
             {
-                if (battleground->GetType() == BATTLEGROUND_WARSONG_GULCH)
+                if (battleground->GetType() == BattlegroundDef::TYPE_WARSONG_GULCH)
                     battleground->HookOnFlagDrop(p_target);
 
-                if (battleground->GetType() == BATTLEGROUND_EYE_OF_THE_STORM)
+                if (battleground->GetType() == BattlegroundDef::TYPE_EYE_OF_THE_STORM)
                     battleground->HookOnFlagDrop(p_target);
             }
         }
@@ -1512,7 +1512,7 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
 
                         if (p_target->getBattleground() && p_target->hasBgFlag())
                         {
-                            if (p_target->getBattleground()->GetType() == BATTLEGROUND_WARSONG_GULCH || p_target->getBattleground()->GetType() == BATTLEGROUND_EYE_OF_THE_STORM)
+                            if (p_target->getBattleground()->GetType() == BattlegroundDef::TYPE_WARSONG_GULCH || p_target->getBattleground()->GetType() == BattlegroundDef::TYPE_EYE_OF_THE_STORM)
                             {
                                 p_target->getBattleground()->HookOnFlagDrop(p_target);
                             }

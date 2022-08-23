@@ -266,7 +266,7 @@ void CBattleground::AddPlayer(Player* plr, uint32 team)
 
     /* Send a packet telling them that they can enter */
     plr->setPendingBattleground(this);
-    sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_READY, m_type, m_id, 80000, m_mapMgr->getBaseMap()->getMapId(), Rated());        // You will be removed from the queue in 2 minutes.
+    sBattlegroundManager.SendBattlefieldStatus(plr, BattlegroundDef::STATUS_READY, m_type, m_id, 80000, m_mapMgr->getBaseMap()->getMapId(), Rated());        // You will be removed from the queue in 2 minutes.
 
     /* Add an event to remove them in 1 minute 20 seconds time. */
     sEventMgr.AddEvent(plr, &Player::removeFromBgQueue, EVENT_BATTLEGROUND_QUEUE_UPDATE, 80000, 1, 0);
@@ -279,7 +279,7 @@ void CBattleground::RemovePendingPlayer(Player* plr)
     m_pendPlayers[plr->getBgTeam()].erase(plr->getGuidLow());
 
     /* send a null bg update (so they don't join) */
-    sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
+    sBattlegroundManager.SendBattlefieldStatus(plr, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
     plr->setPendingBattleground(nullptr);
     plr->setBgTeam(plr->getTeam());
 }
@@ -310,7 +310,7 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
     if (m_ended)
     {
         sChatHandler.SystemMessage(plr->getSession(), plr->getSession()->LocalizedWorldSrv(ServerString::SS_YOU_CANNOT_JOIN_BG_AS_IT_HAS_ALREADY_ENDED));
-        sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
+        sBattlegroundManager.SendBattlefieldStatus(plr, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
         plr->setPendingBattleground(nullptr);
         return;
     }
@@ -375,7 +375,7 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
     {
         /* This is where we actually teleport the player to the battleground. */
         plr->safeTeleport(m_mapMgr, GetStartingCoords(plr->getBgTeam()));
-        sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_TIME, m_type, m_id, static_cast<uint32>(UNIXTIME) - m_startTime, m_mapMgr->getBaseMap()->getMapId(), Rated());     // Elapsed time is the last argument
+        sBattlegroundManager.SendBattlefieldStatus(plr, BattlegroundDef::STATUS_TIME, m_type, m_id, static_cast<uint32>(UNIXTIME) - m_startTime, m_mapMgr->getBaseMap()->getMapId(), Rated());     // Elapsed time is the last argument
     }
     else
     {
@@ -500,7 +500,7 @@ void CBattleground::EndBattleground(PlayerTeam winningTeam)
         this->AddHonorToTeam(losingTeam, 1 * 185);
     }
 
-    this->PlaySoundToAll(winningTeam == TEAM_ALLIANCE ? SOUND_ALLIANCEWINS : SOUND_HORDEWINS);
+    this->PlaySoundToAll(winningTeam == TEAM_ALLIANCE ? BattlegroundDef::ALLIANCEWINS : BattlegroundDef::HORDEWINS);
 
     this->UpdatePvPData();
 }
@@ -658,7 +658,7 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
         if (!m_ended)
         {
             if(!plr->getSession()->HasGMPermissions())
-                plr->castSpell(plr, BG_DESERTER, true);
+                plr->castSpell(plr, BattlegroundDef::DESERTER, true);
         }
 
         if (!IS_INSTANCE(plr->getBGEntryMapId()))
@@ -666,7 +666,7 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
         else
             plr->safeTeleport(plr->getBindMapId(), 0, plr->getBindPosition());
 
-        sBattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
+        sBattlegroundManager.SendBattlefieldStatus(plr, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
     }
 
     if (/*!m_ended && */m_players[0].size() == 0 && m_players[1].size() == 0)
@@ -945,7 +945,7 @@ void CBattleground::EventResurrectPlayers()
                 WorldPacket data(SMSG_SPELL_START, 50);
                 data << plr->GetNewGUID();
                 data << plr->GetNewGUID();
-                data << uint32(RESURRECT_SPELL);
+                data << uint32(BattlegroundDef::RESURRECT);
                 data << uint8(0);
                 data << uint16(0);
                 data << uint32(0);
@@ -956,7 +956,7 @@ void CBattleground::EventResurrectPlayers()
                 data.Initialize(SMSG_SPELL_GO);
                 data << plr->GetNewGUID();
                 data << plr->GetNewGUID();
-                data << uint32(RESURRECT_SPELL);
+                data << uint32(BattlegroundDef::RESURRECT);
                 data << uint8(0);
                 data << uint8(1);
                 data << uint8(1);
@@ -970,7 +970,7 @@ void CBattleground::EventResurrectPlayers()
                 plr->setHealth(plr->getMaxHealth());
                 plr->setPower(POWER_TYPE_MANA, plr->getMaxPower(POWER_TYPE_MANA));
                 plr->setPower(POWER_TYPE_ENERGY, plr->getMaxPower(POWER_TYPE_ENERGY));
-                plr->castSpell(plr, BG_REVIVE_PREPARATION, true);
+                plr->castSpell(plr, BattlegroundDef::REVIVE_PREPARATION, true);
             }
         }
         i->second.clear();
@@ -980,7 +980,7 @@ void CBattleground::EventResurrectPlayers()
 
 bool CBattleground::CanPlayerJoin(Player* plr, uint32 type)
 {
-    return HasFreeSlots(plr->getBgTeam(), type) && (GetLevelGrouping(plr->getLevel()) == GetLevelGroup()) && (!plr->hasAurasWithId(BG_DESERTER));
+    return HasFreeSlots(plr->getBgTeam(), type) && (plr->getLevelGrouping() == GetLevelGroup()) && (!plr->hasAurasWithId(BattlegroundDef::DESERTER));
 }
 
 bool CBattleground::CreateCorpse(Player* /*plr*/)

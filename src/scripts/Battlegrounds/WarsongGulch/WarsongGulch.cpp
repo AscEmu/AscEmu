@@ -201,9 +201,9 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32_t id)
         plr->removeAllAurasById(23333 + (plr->getTeam() * 2));
 
         // capture flag points
-        plr->m_bgScore.MiscData[BG_SCORE_WSG_FLAGS_CAPTURED]++;
+        plr->m_bgScore.MiscData[BattlegroundDef::WSG_FLAGS_CAPTURED]++;
 
-        PlaySoundToAll(plr->isTeamHorde() ? SOUND_HORDE_SCORES : SOUND_ALLIANCE_SCORES);
+        PlaySoundToAll(plr->isTeamHorde() ? BattlegroundDef::HORDE_SCORES : BattlegroundDef::ALLIANCE_SCORES);
 
         if (plr->isTeamHorde())
             SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "%s captured the Alliance flag!", plr->getName().c_str());
@@ -253,7 +253,7 @@ void WarsongGulch::EventReturnFlags()
         if (m_homeFlags[x] != nullptr)
             m_homeFlags[x]->PushToWorld(m_mapMgr);
     }
-    PlaySoundToAll(SOUND_FLAG_RESPAWN);
+    PlaySoundToAll(BattlegroundDef::FLAG_RESPAWN);
     SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The flags are now placed at their bases.");
 }
 
@@ -278,7 +278,7 @@ void WarsongGulch::HookOnFlagDrop(Player* plr)
 
     sEventMgr.AddEvent(this, &WarsongGulch::ReturnFlag, plr->getTeam(), EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + plr->getTeam(), 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-    PlaySoundToAll(SOUND_FLAG_RETURNED);
+    PlaySoundToAll(BattlegroundDef::FLAG_RETURNED);
 
     if (plr->isTeamHorde())
         SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Alliance flag was dropped by %s!", plr->getName().c_str());
@@ -303,10 +303,10 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
             if (m_homeFlags[x]->IsInWorld() == false)
                 m_homeFlags[x]->PushToWorld(m_mapMgr);
 
-            plr->m_bgScore.MiscData[BG_SCORE_WSG_FLAGS_RETURNED]++;
+            plr->m_bgScore.MiscData[BattlegroundDef::WSG_FLAGS_RETURNED]++;
             UpdatePvPData();
 
-            PlaySoundToAll(SOUND_FLAG_RETURNED);
+            PlaySoundToAll(BattlegroundDef::FLAG_RETURNED);
 
             if (plr->isTeamHorde())
                 SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Horde flag was returned to its base by %s!", plr->getName().c_str());
@@ -347,7 +347,7 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
     SpellCastTargets targets(plr->getGuid());
     sp->prepare(&targets);
     SetWorldState(plr->isTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 2);
-    PlaySoundToAll(plr->isTeamHorde() ? SOUND_HORDE_CAPTURE : SOUND_ALLIANCE_CAPTURE);
+    PlaySoundToAll(plr->isTeamHorde() ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
 
     if (plr->isTeamHorde())
         SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Alliance's flag has been taken by %s !", plr->getName().c_str());
@@ -363,7 +363,7 @@ void WarsongGulch::ReturnFlag(PlayerTeam team)
     if (!m_homeFlags[team]->IsInWorld())
         m_homeFlags[team]->PushToWorld(m_mapMgr);
 
-    PlaySoundToAll(SOUND_FLAG_RESPAWN);
+    PlaySoundToAll(BattlegroundDef::FLAG_RESPAWN);
 
     if (team)
         SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The Alliance flag was returned to its base!");
@@ -373,7 +373,6 @@ void WarsongGulch::ReturnFlag(PlayerTeam team)
 
 void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
 {
-#ifdef ANTI_CHEAT
     if (!m_started)
     {
         Anticheat_Log->writefromsession(plr->getSession(), "%s tryed to hook the flag in warsong gluch before battleground (ID %u) started.", plr->getName().c_str(), this->m_id);
@@ -384,7 +383,7 @@ void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
         plr->kickFromServer(6000);
         return;
     }
-#endif
+
     if (m_flagHolders[plr->getTeam()] || m_homeFlags[plr->getTeam()] != obj || m_dropFlags[plr->getTeam()]->IsInWorld())
     {
         // cheater!
@@ -408,7 +407,7 @@ void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
     if (m_homeFlags[plr->getTeam()]->IsInWorld())
         m_homeFlags[plr->getTeam()]->RemoveFromWorld(false);
 
-    PlaySoundToAll(plr->isTeamHorde() ? SOUND_HORDE_CAPTURE : SOUND_ALLIANCE_CAPTURE);
+    PlaySoundToAll(plr->isTeamHorde() ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
     SetWorldState(plr->isTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 2);
     if (plr->isTeamHorde())
         SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Alliance's flag has been taken by %s !", plr->getName().c_str());
@@ -432,9 +431,9 @@ void WarsongGulch::OnAddPlayer(Player* plr)
 {
     if (!m_started && plr->IsInWorld())
     {
-        plr->castSpell(plr, BG_PREPARATION, true);
-        plr->m_bgScore.MiscData[BG_SCORE_WSG_FLAGS_CAPTURED] = 0;
-        plr->m_bgScore.MiscData[BG_SCORE_WSG_FLAGS_RETURNED] = 0;
+        plr->castSpell(plr, BattlegroundDef::PREPARATION, true);
+        plr->m_bgScore.MiscData[BattlegroundDef::WSG_FLAGS_CAPTURED] = 0;
+        plr->m_bgScore.MiscData[BattlegroundDef::WSG_FLAGS_RETURNED] = 0;
     }
     UpdatePvPData();
 }
@@ -445,7 +444,7 @@ void WarsongGulch::OnRemovePlayer(Player* plr)
     if (plr->hasBgFlag())
         HookOnMount(plr);
 
-    plr->removeAllAurasById(BG_PREPARATION);
+    plr->removeAllAurasById(BattlegroundDef::PREPARATION);
 }
 
 LocationVector WarsongGulch::GetStartingCoords(uint32_t Team)
@@ -586,7 +585,7 @@ void WarsongGulch::OnStart()
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
-            (*itr)->removeAllAurasById(BG_PREPARATION);
+            (*itr)->removeAllAurasById(BattlegroundDef::PREPARATION);
         }
     }
 
@@ -606,7 +605,7 @@ void WarsongGulch::OnStart()
             m_homeFlags[i]->PushToWorld(m_mapMgr);
     }
 
-    PlaySoundToAll(SOUND_BATTLEGROUND_BEGIN);
+    PlaySoundToAll(BattlegroundDef::BATTLEGROUND_BEGIN);
     SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The flags are now placed at their bases.");
 
     sEventMgr.AddEvent(this, &WarsongGulch::TimeLeft, EVENT_UNK, 60000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);

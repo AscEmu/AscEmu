@@ -92,13 +92,13 @@ void WorldSession::handleArenaJoinOpcode(WorldPacket& recvPacket)
     switch (srlPacket.category)
     {
         case 0:
-            battlegroundType = BATTLEGROUND_ARENA_2V2;
+            battlegroundType = BattlegroundDef::TYPE_ARENA_2V2;
             break;
         case 1:
-            battlegroundType = BATTLEGROUND_ARENA_3V3;
+            battlegroundType = BattlegroundDef::TYPE_ARENA_3V3;
             break;
         case 2:
-            battlegroundType = BATTLEGROUND_ARENA_5V5;
+            battlegroundType = BattlegroundDef::TYPE_ARENA_5V5;
             break;
         default:
             sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BATTLEMASTER_JOIN_ARENA: with invalid category (%u)", srlPacket.category);
@@ -229,16 +229,16 @@ void WorldSession::handleBattlefieldStatusOpcode(WorldPacket& /*recvPacket*/)
     const auto cBattleground = _player->m_bg;
 
     if (cBattleground)
-        sBattlegroundManager.SendBattlefieldStatus(_player, BGSTATUS_TIME, cBattleground->GetType(), cBattleground->GetId(), static_cast<uint32_t>(UNIXTIME) - cBattleground->GetStartTime(), _player->GetMapId(), cBattleground->Rated());
+        sBattlegroundManager.SendBattlefieldStatus(_player, BattlegroundDef::STATUS_TIME, cBattleground->GetType(), cBattleground->GetId(), static_cast<uint32_t>(UNIXTIME) - cBattleground->GetStartTime(), _player->GetMapId(), cBattleground->Rated());
     else if (pendingBattleground)
-        sBattlegroundManager.SendBattlefieldStatus(_player, BGSTATUS_READY, pendingBattleground->GetType(), pendingBattleground->GetId(), 120000, 0, pendingBattleground->Rated());
+        sBattlegroundManager.SendBattlefieldStatus(_player, BattlegroundDef::STATUS_READY, pendingBattleground->GetType(), pendingBattleground->GetId(), 120000, 0, pendingBattleground->Rated());
     else
-        sBattlegroundManager.SendBattlefieldStatus(_player, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
+        sBattlegroundManager.SendBattlefieldStatus(_player, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
 }
 
 void WorldSession::handleBattleMasterJoinOpcode(WorldPacket& recvPacket)
 {
-    if (_player->hasAurasWithId(BG_DESERTER))
+    if (_player->hasAurasWithId(BattlegroundDef::DESERTER))
     {
         WorldPacket data(SMSG_GROUP_JOINED_BATTLEGROUND, 4);
         data << uint32_t(0xFFFFFFFE);
@@ -264,12 +264,12 @@ void WorldSession::sendBattlegroundList(Creature* creature, uint32_t mapId)
     if (creature == nullptr)
         return;
 
-    uint32_t battlegroundType = BATTLEGROUND_WARSONG_GULCH;
+    uint32_t battlegroundType = BattlegroundDef::TYPE_WARSONG_GULCH;
     if (mapId == 0)
     {
         if (creature->GetCreatureProperties()->SubName != "Arena")
         {
-            battlegroundType = BATTLEGROUND_ARENA_2V2;
+            battlegroundType = BattlegroundDef::TYPE_ARENA_2V2;
         }
         else
         {

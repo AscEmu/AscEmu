@@ -333,7 +333,7 @@ void ArathiBasin::OnStart()
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
-            (*itr)->removeAllAurasById(BG_PREPARATION);
+            (*itr)->removeAllAurasById(BattlegroundDef::PREPARATION);
         }
     }
 
@@ -344,7 +344,7 @@ void ArathiBasin::OnStart()
         (*itr)->setState(GO_STATE_OPEN);
     }
 
-    PlaySoundToAll(SOUND_BATTLEGROUND_BEGIN);
+    PlaySoundToAll(BattlegroundDef::BATTLEGROUND_BEGIN);
 
     m_started = true;
 }
@@ -507,7 +507,7 @@ void ArathiBasin::EventUpdateResources(uint32_t Team)
     {
         m_nearingVictory[Team] = true;
         SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, static_cast<uint64_t>(0), "The %s has gathered %u resources and is nearing victory!", Team ? "Horde" : "Alliance", current_resources);
-        uint32_t sound = SOUND_ALLIANCE_BGALMOSTEND - Team;
+        uint32_t sound = BattlegroundDef::ALLIANCE_BGALMOSTEND - Team;
         PlaySoundToAll(sound);
     }
 
@@ -549,16 +549,16 @@ void ArathiBasin::OnAddPlayer(Player* plr)
 {
     if (!m_started && plr->IsInWorld())
     {
-        plr->castSpell(plr, BG_PREPARATION, true);
-        plr->m_bgScore.MiscData[BG_SCORE_AB_BASES_ASSAULTED] = 0;
-        plr->m_bgScore.MiscData[BG_SCORE_AB_BASES_CAPTURED] = 0;
+        plr->castSpell(plr, BattlegroundDef::PREPARATION, true);
+        plr->m_bgScore.MiscData[BattlegroundDef::AB_BASES_ASSAULTED] = 0;
+        plr->m_bgScore.MiscData[BattlegroundDef::AB_BASES_CAPTURED] = 0;
     }
     UpdatePvPData();
 }
 
 void ArathiBasin::OnRemovePlayer(Player* plr)
 {
-    plr->removeAllAurasById(BG_PREPARATION);
+    plr->removeAllAurasById(BattlegroundDef::PREPARATION);
 }
 
 void ArathiBasin::HookFlagDrop(Player* /*plr*/, GameObject* /*obj*/)
@@ -710,7 +710,7 @@ void ArathiBasin::CaptureControlPoint(uint32_t Id, uint32_t Team)
     AddSpiritGuide(m_spiritGuides[Id]);
 
     // send the chat message/sounds out
-    PlaySoundToAll(Team ? SOUND_HORDE_CAPTURE : SOUND_ALLIANCE_CAPTURE);
+    PlaySoundToAll(Team ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
     SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The %s has taken the %s!", Team ? "Horde" : "Alliance", ControlPointNames[Id]);
     DefFlag[Id][0] = false;
     DefFlag[Id][1] = false;
@@ -765,7 +765,6 @@ void ArathiBasin::CaptureControlPoint(uint32_t Id, uint32_t Team)
 
 void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
 {
-#ifdef ANTI_CHEAT
     if (!m_started)
     {
         Anticheat_Log->writefromsession(pPlayer->getSession(), "%s tried to assault control point in arathi basin before battleground (ID %u) started.", pPlayer->getName().c_str(), this->m_id);
@@ -776,12 +775,11 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
         pPlayer->kickFromServer(6000);
         return;
     }
-#endif
 
     uint32_t Team = pPlayer->getBgTeam();
     uint32_t Owner;
 
-    pPlayer->m_bgScore.MiscData[BG_SCORE_AB_BASES_ASSAULTED]++;
+    pPlayer->m_bgScore.MiscData[BattlegroundDef::AB_BASES_ASSAULTED]++;
 
     if (m_basesOwnedBy[Id] == -1 && m_basesAssaultedBy[Id] == -1)
     {
@@ -864,7 +862,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
         DefFlag[Id][0] = false;
         SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "%s defend %s", pPlayer->getName().c_str(), ControlPointNames[Id]);
         sEventMgr.AddEvent(this, &ArathiBasin::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        pPlayer->m_bgScore.MiscData[BG_SCORE_AB_BASES_CAPTURED]++;
+        pPlayer->m_bgScore.MiscData[BattlegroundDef::AB_BASES_CAPTURED]++;
         UpdatePvPData();
     }
     else if (!DefFlag[Id][0] && !DefFlag[Id][1])
@@ -921,7 +919,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
             }
         }
         sEventMgr.AddEvent(this, &ArathiBasin::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, TimeVarsMs::Minute, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        pPlayer->m_bgScore.MiscData[BG_SCORE_AB_BASES_ASSAULTED]++;
+        pPlayer->m_bgScore.MiscData[BattlegroundDef::AB_BASES_ASSAULTED]++;
         UpdatePvPData();
     }
     else

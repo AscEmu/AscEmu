@@ -338,7 +338,6 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32_t id)
     if (tid < 0)
         return;
 
-#ifdef ANTI_CHEAT
     if (!m_started)
     {
         Anticheat_Log->writefromsession(plr->getSession(), "%s tried to hook the flag in eye of the storm before battleground (ID %u) started.", plr->getName().c_str(), this->m_id);
@@ -349,7 +348,6 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32_t id)
         plr->kickFromServer(TimeVarsMs::Second * 6);
         return;
     }
-#endif
 
     const auto team = plr->getTeam();
     if (plr->getGuidLow() != m_flagHolder)
@@ -391,7 +389,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32_t id)
     SetWorldState(EOTS_NETHERWING_FLAG_READY, 1);
 
     plr->removeAllAurasById(EOTS_NETHERWING_FLAG_SPELL);
-    plr->m_bgScore.MiscData[BG_SCORE_EOTS_FLAGS_CAPTURED]++;
+    plr->m_bgScore.MiscData[BattlegroundDef::EOTS_FLAGS_CAPTURED]++;
     UpdatePvPData();
 }
 
@@ -420,7 +418,7 @@ void EyeOfTheStorm::HookFlagDrop(Player* plr, GameObject* /*obj*/)
     plr->castSpell(plr->getGuid(), EOTS_NETHERWING_FLAG_SPELL, true);
 
     SetWorldState(EOTS_NETHERWING_FLAG_READY, 0);
-    PlaySoundToAll(plr->isTeamHorde() ? SOUND_HORDE_CAPTURE : SOUND_ALLIANCE_CAPTURE);
+    PlaySoundToAll(plr->isTeamHorde() ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
     SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->getTeam(), plr->getGuid(), "%s has taken the flag!", plr->getName().c_str());
     m_flagHolder = plr->getGuidLow();
 
@@ -441,7 +439,7 @@ bool EyeOfTheStorm::HookSlowLockOpen(GameObject* /*pGo*/, Player* pPlayer, Spell
     pPlayer->castSpell(pPlayer->getGuid(), EOTS_NETHERWING_FLAG_SPELL, true);
 
     SetWorldState(EOTS_NETHERWING_FLAG_READY, 0);
-    PlaySoundToAll(pPlayer->isTeamHorde() ? SOUND_HORDE_CAPTURE : SOUND_ALLIANCE_CAPTURE);
+    PlaySoundToAll(pPlayer->isTeamHorde() ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
     SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + pPlayer->getTeam(), pPlayer->getGuid(), "%s has taken the flag!", pPlayer->getName().c_str());
     m_flagHolder = pPlayer->getGuidLow();
     return true;
@@ -459,8 +457,8 @@ void EyeOfTheStorm::OnAddPlayer(Player* plr)
 {
     if (!m_started && plr->IsInWorld())
     {
-        plr->castSpell(plr, BG_PREPARATION, true);
-        plr->m_bgScore.MiscData[BG_SCORE_EOTS_FLAGS_CAPTURED] = 0;
+        plr->castSpell(plr, BattlegroundDef::PREPARATION, true);
+        plr->m_bgScore.MiscData[BattlegroundDef::EOTS_FLAGS_CAPTURED] = 0;
     }
     UpdatePvPData();
 }
@@ -478,7 +476,7 @@ void EyeOfTheStorm::OnRemovePlayer(Player* plr)
     }
 
     if (!m_started)
-        plr->removeAllAurasById(BG_PREPARATION);
+        plr->removeAllAurasById(BattlegroundDef::PREPARATION);
 }
 
 void EyeOfTheStorm::DropFlag2(Player* plr, uint32_t id)
@@ -506,7 +504,7 @@ void EyeOfTheStorm::DropFlag2(Player* plr, uint32_t id)
     }
 
     plr->castSpell(plr, EOTS_RECENTLY_DROPPED_FLAG, true);
-    PlaySoundToAll(plr->isTeamHorde() ? SOUND_HORDE_SCORES : SOUND_ALLIANCE_SCORES);
+    PlaySoundToAll(plr->isTeamHorde() ? BattlegroundDef::HORDE_SCORES : BattlegroundDef::ALLIANCE_SCORES);
     m_dropFlag->setFlags(GO_FLAG_NONSELECTABLE);
     m_dropFlag->PushToWorld(m_mapMgr);
     m_flagHolder = 0;
@@ -524,7 +522,7 @@ void EyeOfTheStorm::HookOnFlagDrop(Player* plr)
     m_dropFlag->SetPosition(plr->GetPosition());
     m_dropFlag->PushToWorld(m_mapMgr);
     m_flagHolder = 0;
-    PlaySoundToAll(SOUND_FLAG_RETURNED);
+    PlaySoundToAll(BattlegroundDef::FLAG_RETURNED);
     SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->getTeam(), plr->getGuid(), "%s has dropped the flag!", plr->getName().c_str());
 
     sEventMgr.AddEvent(this, &EyeOfTheStorm::EventResetFlag, EVENT_EOTS_RESET_FLAG, 10000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -540,7 +538,7 @@ void EyeOfTheStorm::EventResetFlag()
     m_standFlag->PushToWorld(m_mapMgr);
 
     SetWorldState(EOTS_NETHERWING_FLAG_READY, 1);
-    PlaySoundToAll(SOUND_FLAG_RESPAWN);
+    PlaySoundToAll(BattlegroundDef::FLAG_RESPAWN);
     SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The flag has been reset.");
     m_flagHolder = 0;
 }
@@ -709,7 +707,7 @@ void EyeOfTheStorm::UpdateCPs()
                     SetWorldState(m_iconsStates[i][1], 0);
                     SetWorldState(m_iconsStates[i][2], 1);
                     SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "The Horde has taken the %s !", EOTSControlPointNames[i]);
-                    PlaySoundToAll(SOUND_HORDE_CAPTURE);
+                    PlaySoundToAll(BattlegroundDef::HORDE_CAPTURE);
                 }
             }
             else if (m_CPStatus[i] >= 70)
@@ -732,7 +730,7 @@ void EyeOfTheStorm::UpdateCPs()
                     SetWorldState(m_iconsStates[i][1], 1);
                     SetWorldState(m_iconsStates[i][2], 0);
                     SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The Alliance has taken the %s", EOTSControlPointNames[i]);
-                    PlaySoundToAll(SOUND_ALLIANCE_CAPTURE);
+                    PlaySoundToAll(BattlegroundDef::ALLIANCE_CAPTURE);
                 }
             }
             else
@@ -927,7 +925,7 @@ void EyeOfTheStorm::OnStart()
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
-            (*itr)->removeAllAurasById(BG_PREPARATION);
+            (*itr)->removeAllAurasById(BattlegroundDef::PREPARATION);
         }
     }
 
@@ -947,7 +945,7 @@ void EyeOfTheStorm::OnStart()
         m_bubbles[i] = nullptr;
     }
 
-    PlaySoundToAll(SOUND_BATTLEGROUND_BEGIN);
+    PlaySoundToAll(BattlegroundDef::BATTLEGROUND_BEGIN);
     m_started = true;
 }
 

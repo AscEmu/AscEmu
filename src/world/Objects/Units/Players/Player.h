@@ -1302,6 +1302,8 @@ public:
     void fillRandomBattlegroundReward(bool wonBattleground, uint32_t& honorPoints, uint32_t& arenaPoints);
     void applyRandomBattlegroundReward(bool wonBattleground);
 
+    uint32_t getLevelGrouping();
+
     BGScore m_bgScore;
 
 private:

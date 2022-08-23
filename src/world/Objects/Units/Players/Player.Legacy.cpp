@@ -1152,7 +1152,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     if (!bNewCharacter)
         buf = new QueryBuffer;
 
-    if (m_bg != nullptr && isArena(m_bg->GetType()))
+    if (m_bg != nullptr && m_bg->isArena())
         in_arena = true;
 
     //Calc played times

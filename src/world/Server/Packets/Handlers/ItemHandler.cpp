@@ -155,7 +155,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     }
 
     // Arena cases
-    if (_player->m_bg != nullptr && isArena(_player->m_bg->GetType()))
+    if (_player->m_bg != nullptr && _player->m_bg->isArena())
     {
         // Not all consumables are usable in arena
         if (itemProto->Class == ITEM_CLASS_CONSUMABLE && !itemProto->HasFlag(ITEM_FLAG_USEABLE_IN_ARENA))

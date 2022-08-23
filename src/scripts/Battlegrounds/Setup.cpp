@@ -45,12 +45,12 @@ extern "C" SCRIPT_DECL uint32_t _exp_get_script_type()
 extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* /*mgr*/)
 {
     // Mapping Battleground type to map Id
-    sBattlegroundManager.RegisterMapForBgType(BATTLEGROUND_ALTERAC_VALLEY, 30);
-    sBattlegroundManager.RegisterMapForBgType(BATTLEGROUND_WARSONG_GULCH, 489);
-    sBattlegroundManager.RegisterMapForBgType(BATTLEGROUND_ARATHI_BASIN, 529);
-    sBattlegroundManager.RegisterMapForBgType(BATTLEGROUND_EYE_OF_THE_STORM, 566);
-    sBattlegroundManager.RegisterMapForBgType(BATTLEGROUND_STRAND_OF_THE_ANCIENT, 607);
-    sBattlegroundManager.RegisterMapForBgType(BATTLEGROUND_ISLE_OF_CONQUEST, 628);
+    sBattlegroundManager.RegisterMapForBgType(BattlegroundDef::TYPE_ALTERAC_VALLEY, 30);
+    sBattlegroundManager.RegisterMapForBgType(BattlegroundDef::TYPE_WARSONG_GULCH, 489);
+    sBattlegroundManager.RegisterMapForBgType(BattlegroundDef::TYPE_ARATHI_BASIN, 529);
+    sBattlegroundManager.RegisterMapForBgType(BattlegroundDef::TYPE_EYE_OF_THE_STORM, 566);
+    sBattlegroundManager.RegisterMapForBgType(BattlegroundDef::TYPE_STRAND_OF_THE_ANCIENT, 607);
+    sBattlegroundManager.RegisterMapForBgType(BattlegroundDef::TYPE_ISLE_OF_CONQUEST, 628);
 
     // Registering factory methods
     sBattlegroundManager.RegisterBgFactory(30, &AlteracValley::Create);
