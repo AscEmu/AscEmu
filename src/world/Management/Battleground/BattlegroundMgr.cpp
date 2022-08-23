@@ -122,7 +122,7 @@ void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session,
     data << uint32(0);                                     // 3.3.3 winArena
     data << uint32(0);                                     // 3.3.3 lossHonor
 
-    uint8 isRandom = BattlegroundType == BATTLEGROUND_RANDOM;
+    uint8 isRandom = BattlegroundType == BattlegroundDef::TYPE_RANDOM;
     data << uint8(isRandom);                               // 3.3.3 isRandom
 
     // Random bgs
@@ -141,7 +141,7 @@ void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session,
         data << uint32(honorPointsForLosing);
     }
 
-    if (isArena(BattlegroundType))
+    if (CBattleground::isArena(BattlegroundType))
     {
         data << uint32(0);
         m_session->SendPacket(&data);
