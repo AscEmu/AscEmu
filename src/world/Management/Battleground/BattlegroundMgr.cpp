@@ -92,10 +92,9 @@ void CBattlegroundManager::RegisterMapForBgType(uint32 type, uint32 map)
 
 void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session, uint32 BattlegroundType, uint8 from)
 {
-#if VERSION_STRING == Cata
-    //todo: correct packet 
+    //todo: Zyres correct packet - Serialise
     WorldPacket data(SMSG_BATTLEFIELD_LIST, 18);
-
+#if VERSION_STRING > WotLK
     ObjectGuid guid;
 
     // Send 0 instead of GUID when using the BG UI instead of Battlemaster
@@ -111,70 +110,7 @@ void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session,
     data << uint32_t(0);
     data << uint32_t(0);
     data << uint32_t(0);
-    data << uint8(0);                                      // unk
-    data << uint8(0);                                      // unk
-
-    // new
-
-    // Rewards
-    data << uint8(0);                                      // 3.3.3 hasWin
-    data << uint32(0);                                     // 3.3.3 winHonor
-    data << uint32(0);                                     // 3.3.3 winArena
-    data << uint32(0);                                     // 3.3.3 lossHonor
-
-    uint8 isRandom = BattlegroundType == BattlegroundDef::TYPE_RANDOM;
-    data << uint8(isRandom);                               // 3.3.3 isRandom
-
-    // Random bgs
-    if (isRandom == 1)
-    {
-        auto hasWonRbgToday = m_session->GetPlayer()->hasWonRbgToday();
-        uint32 honorPointsForWinning, honorPointsForLosing, arenaPointsForWinning, arenaPointsForLosing;
-
-        m_session->GetPlayer()->fillRandomBattlegroundReward(true, honorPointsForWinning, arenaPointsForWinning);
-        m_session->GetPlayer()->fillRandomBattlegroundReward(false, honorPointsForLosing, arenaPointsForLosing);
-
-        // rewards
-        data << uint8(hasWonRbgToday);
-        data << uint32(honorPointsForWinning);
-        data << uint32(arenaPointsForWinning);
-        data << uint32(honorPointsForLosing);
-    }
-
-    if (CBattleground::isArena(BattlegroundType))
-    {
-        data << uint32(0);
-        m_session->SendPacket(&data);
-        return;
-    }
-
-    if (BattlegroundType >= BATTLEGROUND_NUM_TYPES)     //VLack: Nasty hackers might try to abuse this packet to crash us...
-        return;
-
-    uint32 Count = 0;
-    size_t pos = data.wpos();
-
-    data << uint32(0);      // Count
-
-    // Append the battlegrounds
-    m_instanceLock.Acquire();
-    for (std::map<uint32, CBattleground*>::iterator itr = m_instances[BattlegroundType].begin(); itr != m_instances[BattlegroundType].end(); ++itr)
-    {
-        if (itr->second->CanPlayerJoin(m_session->GetPlayer(), BattlegroundType) && !itr->second->HasEnded())
-        {
-            data << uint32(itr->first);
-            ++Count;
-        }
-    }
-    m_instanceLock.Release();
-
-    data.put< uint32 >(pos, Count);
-
-    m_session->SendPacket(&data);
-
-#endif
-#if VERSION_STRING == WotLK
-    WorldPacket data(SMSG_BATTLEFIELD_LIST, 18);
+#else
 
     // Send 0 instead of GUID when using the BG UI instead of Battlemaster
     if (from == 0)
@@ -184,6 +120,7 @@ void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session,
 
     data << from;
     data << uint32(BattlegroundType);   // typeid
+#endif
     data << uint8(0);                                      // unk
     data << uint8(0);                                      // unk
 
@@ -242,7 +179,6 @@ void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session,
     data.put< uint32 >(pos, Count);
 
     m_session->SendPacket(&data);
-#endif
 }
 
 void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, WorldPacket& pck)
