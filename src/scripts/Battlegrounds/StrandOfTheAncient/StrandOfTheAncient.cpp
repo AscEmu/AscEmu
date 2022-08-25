@@ -304,7 +304,7 @@ static const uint32_t TeamFactions[MAX_PLAYER_TEAMS] =
 
 StrandOfTheAncient::StrandOfTheAncient(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t):CBattleground(mgr, id, lgroup, t)
 {
-    m_zoneid = 4384;
+    m_zoneId = 4384;
     std::fill(&npc[0], &npc[SOTA_NPCS], nullptr);
     std::fill(&canon[0], &canon[SOTA_NUM_CANONS], nullptr);
     std::fill(&demolisher[0], &demolisher[SOTA_NUM_DEMOLISHERS], nullptr);
@@ -374,7 +374,7 @@ void StrandOfTheAncient::OnPlatformTeleport(Player* /*plr*/)
 
 void StrandOfTheAncient::OnAddPlayer(Player* plr)
 {
-    if (!m_started)
+    if (!m_hasStarted)
     {
         plr->castSpell(plr, BattlegroundDef::PREPARATION, true);
     }
@@ -382,7 +382,7 @@ void StrandOfTheAncient::OnAddPlayer(Player* plr)
 
 void StrandOfTheAncient::OnRemovePlayer(Player* plr)
 {
-    if (!m_started)
+    if (!m_hasStarted)
     {
         plr->removeAllAurasById(BattlegroundDef::PREPARATION);
     }
@@ -488,7 +488,7 @@ void StrandOfTheAncient::OnCreate()
 
 void StrandOfTheAncient::OnStart()
 {
-    m_started = true;
+    m_hasStarted = true;
 
     StartRound();
 }

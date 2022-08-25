@@ -32,30 +32,38 @@
 /// \brief Base class for battleground scripts (see: AlteracValley, ArathiBasin, EyeOfTheStorm, IsleOfConquest, WarsongGulch)
 class SERVER_DECL CBattleground : public EventableObject
 {
+    // MIT start
+private:
+    WorldMap* m_mapMgr;
+    uint32_t m_id;
+    uint32_t m_type;
+    uint32_t m_levelGroup;
+    std::atomic<uint32_t> m_invisGMs = 0;
+
+    bool m_hasEnded = false;
+    bool m_hasStarted = false;
+
+    uint8_t m_winningTeam = 0;
+
+    time_t m_nextPvPUpdateTime = 0;
+    uint32_t m_countdownStage = 0;
+
+    uint32_t m_startTime = static_cast<uint32_t>(UNIXTIME);
+    uint32_t m_lastResurrectTime = static_cast<uint32_t>(UNIXTIME);
+
+    uint32 m_zoneId = 0;
+
+    // MIT end
     friend class AVNode;
 
-    /// True if battleground has ended
-    bool m_ended;
-    /// Team that won the battleground, set when m_ended is set
-    uint8 m_winningteam;
 
     protected:
 
         Group* m_groups[2];
 
-        time_t m_nextPvPUpdateTime;
-
-        WorldMap* m_mapMgr;
-
-        uint32 m_id;
-        uint32 m_type;
-        uint32 m_levelGroup;
         uint32 m_deltaRating[2];
 
-        std::atomic<uint32> m_invisGMs;
-
         uint32 m_honorPerKill;
-        uint32 m_zoneid;
 
         std::recursive_mutex m_mutex;
 
@@ -68,17 +76,7 @@ class SERVER_DECL CBattleground : public EventableObject
         // "pending" players
         std::set<uint32> m_pendPlayers[2];
 
-        // starting time
-        uint32 m_startTime;
-        bool m_started;
-
-        // countdown stuff
-        uint32 m_countdownStage;
-
-        // resurrect queue
-
         std::map<Creature*, std::set<uint32> > m_resurrectMap;
-        uint32 m_lastResurrect;
 
         bool m_isWeekend;
 

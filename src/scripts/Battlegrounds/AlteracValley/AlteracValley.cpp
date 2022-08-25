@@ -917,7 +917,7 @@ AlteracValley::AlteracValley(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup,
     m_playerCountPerTeam = 40;
     m_reinforcements[0] = AV_NUM_REINFORCEMENTS;
     m_reinforcements[1] = AV_NUM_REINFORCEMENTS;
-    m_zoneid = 2597;
+    m_zoneId = 2597;
 
     memset(m_nodes, 0, sizeof(m_nodes));
 }
@@ -1010,7 +1010,7 @@ bool AlteracValley::HookHandleRepop(Player* plr)
     else
         dest_pos.ChangeCoords({ 876.434448f, -489.599579f, 96.517174f });
 
-    if (m_started)
+    if (m_hasStarted)
     {
         for (uint8_t x = 0; x < AV_NUM_CONTROL_POINTS; ++x)
         {
@@ -1098,14 +1098,14 @@ void AlteracValley::OnStart()
 
     PlaySoundToAll(BattlegroundDef::BATTLEGROUND_BEGIN);
 
-    m_started = true;
+    m_hasStarted = true;
 
     sEventMgr.AddEvent(this, &AlteracValley::EventUpdateResources, EVENT_BATTLEGROUND_RESOURCEUPDATE, AV_REINFORCEMENT_ADD_INTERVAL, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void AlteracValley::OnAddPlayer(Player* plr)
 {
-    if (!m_started)
+    if (!m_hasStarted)
         plr->castSpell(plr, BattlegroundDef::PREPARATION, true);
 
     if (plr->isTeamHorde())

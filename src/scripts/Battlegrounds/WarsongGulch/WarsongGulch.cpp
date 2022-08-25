@@ -31,7 +31,7 @@
 WarsongGulch::WarsongGulch(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : CBattleground(mgr, id, lgroup, t)
 {
 
-    m_zoneid = 3277;
+    m_zoneId = 3277;
     m_scores[0] = m_scores[1] = 0;
     m_time_left = TIME_LEFT;
 
@@ -373,7 +373,7 @@ void WarsongGulch::ReturnFlag(PlayerTeam team)
 
 void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
 {
-    if (!m_started)
+    if (!m_hasStarted)
     {
         Anticheat_Log->writefromsession(plr->getSession(), "%s tryed to hook the flag in warsong gluch before battleground (ID %u) started.", plr->getName().c_str(), this->m_id);
         SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "%s will be removed from the game for cheating.", plr->getName().c_str());
@@ -429,7 +429,7 @@ void WarsongGulch::HookOnHK(Player* plr)
 
 void WarsongGulch::OnAddPlayer(Player* plr)
 {
-    if (!m_started && plr->IsInWorld())
+    if (!m_hasStarted && plr->IsInWorld())
     {
         plr->castSpell(plr, BattlegroundDef::PREPARATION, true);
         plr->m_bgScore.MiscData[BattlegroundDef::WSG_FLAGS_CAPTURED] = 0;
@@ -610,7 +610,7 @@ void WarsongGulch::OnStart()
 
     sEventMgr.AddEvent(this, &WarsongGulch::TimeLeft, EVENT_UNK, 60000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-    m_started = true;
+    m_hasStarted = true;
 }
 
 void WarsongGulch::TimeLeft()

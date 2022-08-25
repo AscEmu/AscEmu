@@ -346,7 +346,7 @@ void ArathiBasin::OnStart()
 
     PlaySoundToAll(BattlegroundDef::BATTLEGROUND_BEGIN);
 
-    m_started = true;
+    m_hasStarted = true;
 }
 
 ArathiBasin::ArathiBasin(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : CBattleground(mgr, id, lgroup, t)
@@ -388,7 +388,7 @@ ArathiBasin::ArathiBasin(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uin
         DefFlag[i][1] = true;
     }
 
-    m_zoneid = 3358;
+    m_zoneId = 3358;
 }
 
 ArathiBasin::~ArathiBasin()
@@ -547,7 +547,7 @@ void ArathiBasin::HookOnHK(Player* plr)
 
 void ArathiBasin::OnAddPlayer(Player* plr)
 {
-    if (!m_started && plr->IsInWorld())
+    if (!m_hasStarted && plr->IsInWorld())
     {
         plr->castSpell(plr, BattlegroundDef::PREPARATION, true);
         plr->m_bgScore.MiscData[BattlegroundDef::AB_BASES_ASSAULTED] = 0;
@@ -765,7 +765,7 @@ void ArathiBasin::CaptureControlPoint(uint32_t Id, uint32_t Team)
 
 void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
 {
-    if (!m_started)
+    if (!m_hasStarted)
     {
         Anticheat_Log->writefromsession(pPlayer->getSession(), "%s tried to assault control point in arathi basin before battleground (ID %u) started.", pPlayer->getName().c_str(), this->m_id);
         SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, pPlayer->getGuid(), "%s will be removed from the game for cheating.", pPlayer->getName().c_str());

@@ -151,7 +151,7 @@ EyeOfTheStorm::EyeOfTheStorm(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup,
     m_standFlag = nullptr;
     m_dropFlag = nullptr;
 
-    m_zoneid = 3820;
+    m_zoneId = 3820;
     for (uint8_t i = 0; i < 2; ++i)
         m_bubbles[i] = nullptr;
 }
@@ -338,7 +338,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32_t id)
     if (tid < 0)
         return;
 
-    if (!m_started)
+    if (!m_hasStarted)
     {
         Anticheat_Log->writefromsession(plr->getSession(), "%s tried to hook the flag in eye of the storm before battleground (ID %u) started.", plr->getName().c_str(), this->m_id);
         SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "%s will be removed from the game for cheating.", plr->getName().c_str());
@@ -455,7 +455,7 @@ void EyeOfTheStorm::HookOnMount(Player* plr)
 
 void EyeOfTheStorm::OnAddPlayer(Player* plr)
 {
-    if (!m_started && plr->IsInWorld())
+    if (!m_hasStarted && plr->IsInWorld())
     {
         plr->castSpell(plr, BattlegroundDef::PREPARATION, true);
         plr->m_bgScore.MiscData[BattlegroundDef::EOTS_FLAGS_CAPTURED] = 0;
@@ -475,7 +475,7 @@ void EyeOfTheStorm::OnRemovePlayer(Player* plr)
         HookOnFlagDrop(plr);
     }
 
-    if (!m_started)
+    if (!m_hasStarted)
         plr->removeAllAurasById(BattlegroundDef::PREPARATION);
 }
 
@@ -946,7 +946,7 @@ void EyeOfTheStorm::OnStart()
     }
 
     PlaySoundToAll(BattlegroundDef::BATTLEGROUND_BEGIN);
-    m_started = true;
+    m_hasStarted = true;
 }
 
 void EyeOfTheStorm::HookOnShadowSight()

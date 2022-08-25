@@ -50,16 +50,8 @@ WorldMap* CBattleground::getWorldMap()
     return m_mapMgr;
 }
 
-CBattleground::CBattleground(WorldMap* mgr, uint32 id, uint32 levelgroup, uint32 type) : m_mapMgr(mgr), m_id(id), m_type(type), m_levelGroup(levelgroup), m_invisGMs(0)
+CBattleground::CBattleground(WorldMap* mgr, uint32 id, uint32 levelgroup, uint32 type) : m_mapMgr(mgr), m_id(id), m_type(type), m_levelGroup(levelgroup)
 {
-    m_nextPvPUpdateTime = 0;
-    m_countdownStage = 0;
-    m_ended = false;
-    m_started = false;
-    m_winningteam = 0;
-    m_startTime = static_cast<uint32>(UNIXTIME);
-    m_lastResurrect = static_cast<uint32>(UNIXTIME);
-    m_zoneid = 0;
     sEventMgr.AddEvent(this, &CBattleground::EventResurrectPlayers, EVENT_BATTLEGROUND_QUEUE_UPDATE, 30000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     /* create raid groups */
@@ -98,7 +90,7 @@ void CBattleground::UpdatePvPData()
 {
     if (isArena(m_type))
     {
-        if (!m_ended)
+        if (!m_hasEnded)
         {
             return;
         }
@@ -134,7 +126,7 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
     BGScore* bs;
     if (isArena(m_type))
     {
-        if (!m_ended)
+        if (!m_hasEnded)
         {
             return;
         }
@@ -189,7 +181,7 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
         }
 
         *data << uint8(1);
-        *data << uint8(m_winningteam);
+        *data << uint8(m_winningTeam);
 
         *data << uint32((m_players[0].size() + m_players[1].size()) - m_invisGMs);
         for (uint8 i = 0; i < 2; ++i)
@@ -213,10 +205,10 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
     else
     {
         *data << uint8(0);
-        if (m_ended)
+        if (m_hasEnded)
         {
             *data << uint8(1);
-            *data << uint8(m_winningteam ? 0 : 1);
+            *data << uint8(m_winningTeam ? 0 : 1);
         }
         else
             *data << uint8(0);      // If the game has ended - this will be 1
@@ -307,7 +299,7 @@ void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    if (m_ended)
+    if (m_hasEnded)
     {
         sChatHandler.SystemMessage(plr->getSession(), plr->getSession()->LocalizedWorldSrv(ServerString::SS_YOU_CANNOT_JOIN_BG_AS_IT_HAS_ALREADY_ENDED));
         sBattlegroundManager.SendBattlefieldStatus(plr, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
@@ -467,8 +459,8 @@ void CBattleground::EndBattleground(PlayerTeam winningTeam)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    this->m_ended = true;
-    this->m_winningteam = winningTeam;
+    this->m_hasEnded = true;
+    this->m_winningTeam = winningTeam;
     this->m_nextPvPUpdateTime = 0;
 
     auto losingTeam = winningTeam == TEAM_ALLIANCE ? TEAM_HORDE : TEAM_ALLIANCE;
@@ -509,14 +501,14 @@ void CBattleground::EndBattleground(PlayerTeam winningTeam)
  *  \sa CBattleground::HasEnded */
 bool CBattleground::HasStarted()
 {
-    return this->m_started;
+    return this->m_hasStarted;
 }
 
 /*! \returns True if battleground has ended
  *  \sa CBattleground::HasStarted */
 bool CBattleground::HasEnded()
 {
-    return this->m_ended;
+    return this->m_hasEnded;
 }
 
 void CBattleground::AddHonorToTeam(uint32 team, uint32 amount)
@@ -655,7 +647,7 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
     /* teleport out */
     if (!logout)
     {
-        if (!m_ended)
+        if (!m_hasEnded)
         {
             if(!plr->getSession()->HasGMPermissions())
                 plr->castSpell(plr, BattlegroundDef::DESERTER, true);
@@ -669,7 +661,7 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
         sBattlegroundManager.SendBattlefieldStatus(plr, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
     }
 
-    if (/*!m_ended && */m_players[0].size() == 0 && m_players[1].size() == 0)
+    if (/*!m_hasEnded && */m_players[0].size() == 0 && m_players[1].size() == 0)
     {
         /* create an inactive event */
         sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);                  // 10mins
@@ -774,10 +766,10 @@ void CBattleground::OnStart()
 
 void CBattleground::SetWorldState(uint32 Index, uint32 Value)
 {
-    if (m_zoneid == 0)
+    if (m_zoneId == 0)
         return;
 
-    m_mapMgr->getWorldStatesHandler().SetWorldStateForZone(m_zoneid, 0, Index, Value);
+    m_mapMgr->getWorldStatesHandler().SetWorldStateForZone(m_zoneId, 0, Index, Value);
 }
 
 void CBattleground::Close()
@@ -785,7 +777,7 @@ void CBattleground::Close()
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
     /* remove all players from the battleground */
-    m_ended = true;
+    m_hasEnded = true;
     for (uint8 i = 0; i < 2; ++i)
     {
         std::set<Player*>::iterator itr;
@@ -889,7 +881,7 @@ Creature* CBattleground::SpawnSpiritGuide(LocationVector &v, uint32 faction)
 
 uint32 CBattleground::GetLastResurrect()
 {
-    return m_lastResurrect;
+    return m_lastResurrectTime;
 }
 
 void CBattleground::QueuePlayerForResurrect(Player* plr, Creature* spirit_healer)
@@ -975,7 +967,7 @@ void CBattleground::EventResurrectPlayers()
         }
         i->second.clear();
     }
-    m_lastResurrect = static_cast<uint32>(UNIXTIME);
+    m_lastResurrectTime = static_cast<uint32>(UNIXTIME);
 }
 
 bool CBattleground::CanPlayerJoin(Player* plr, uint32 type)

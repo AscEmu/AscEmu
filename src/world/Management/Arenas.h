@@ -61,7 +61,7 @@ class SERVER_DECL Arena : public CBattleground
         void OnStart() override;
         bool CanPlayerJoin(Player* plr, uint32 type) override
         {
-            if (m_started)
+            if (m_hasStarted)
                 return false;
 
             return CBattleground::CanPlayerJoin(plr, type);
@@ -79,7 +79,7 @@ class SERVER_DECL Arena : public CBattleground
         {
             size_t c0 = m_players[0].size() + m_pendPlayers[0].size();
             size_t c1 = m_players[1].size() + m_pendPlayers[1].size();
-            if (m_started)
+            if (m_hasStarted)
                 return -1;
 
             // Check if there is free room, if yes, return team with less members

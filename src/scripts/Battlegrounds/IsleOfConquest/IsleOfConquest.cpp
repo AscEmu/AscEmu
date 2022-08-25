@@ -290,7 +290,7 @@ static uint32_t cptogy[IOC_NUM_CONTROL_POINTS] =
 
 IsleOfConquest::IsleOfConquest(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : CBattleground(mgr, id, lgroup, t)
 {
-    m_zoneid = 4710;
+    m_zoneId = 4710;
     m_reinforcements[0] = IOC_NUM_REINFORCEMENTS;
     m_reinforcements[1] = IOC_NUM_REINFORCEMENTS;
     std::fill(&generals[0], &generals[MAX_PLAYER_TEAMS], nullptr);
@@ -440,10 +440,10 @@ void IsleOfConquest::OnStart()
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    if (m_started)
+    if (m_hasStarted)
         return;
 
-    m_started = true;
+    m_hasStarted = true;
 
     for (uint8_t i = 0; i < 2; ++i)
     {
@@ -733,7 +733,7 @@ bool IsleOfConquest::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* /
 
 void IsleOfConquest::OnAddPlayer(Player *plr)
 {
-    if (!m_started)
+    if (!m_hasStarted)
         plr->castSpell(plr, BattlegroundDef::PREPARATION, true);
 
     ControlPointTypes refinerystate = controlpoint[IOC_CONTROL_POINT_REFINERY].state;

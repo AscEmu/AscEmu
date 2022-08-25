@@ -47,7 +47,7 @@ Arena::Arena(WorldMap* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_p
     m_pvpData.clear();
     m_resurrectMap.clear();
 
-    m_started = false;
+    m_hasStarted = false;
     m_playerCountPerTeam = players_per_side;
     m_buffs[0] = m_buffs[1] = NULL;
     m_playersCount[0] = m_playersCount[1] = 0;
@@ -73,19 +73,19 @@ Arena::Arena(WorldMap* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_p
     switch (m_mapMgr->getBaseMap()->getMapId())
     {
         case 559:
-            m_zoneid = 3698;
+            m_zoneId = 3698;
             break;
         case 562:
-            m_zoneid = 3702;
+            m_zoneId = 3702;
             break;
         case 572:
-            m_zoneid = 3968;
+            m_zoneId = 3968;
             break;
         case 617:
-            m_zoneid = 4378;
+            m_zoneId = 4378;
             break;
         case 618:
-            m_zoneid = 4408;
+            m_zoneId = 4408;
             break;
         default:
             break;
@@ -217,14 +217,14 @@ void Arena::OnAddPlayer(Player* plr)
     plr->removeTempItemEnchantsOnArena();
 
     // Before the arena starts all your cooldowns are reset
-    if (!m_started  && plr->IsInWorld())
+    if (!m_hasStarted  && plr->IsInWorld())
         plr->resetAllCooldowns();
 
     // if (plr->m_isGmInvisible == false)
     // Make sure the player isn't a GM an isn't invisible (monitoring?)
     if (!plr->m_isGmInvisible)
     {
-        if (!m_started  && plr->IsInWorld())
+        if (!m_hasStarted  && plr->IsInWorld())
             plr->castSpell(plr, ARENA_PREPARATION, true);
 
         m_playersCount[plr->getTeam()]++;
@@ -263,7 +263,7 @@ void Arena::OnRemovePlayer(Player* plr)
 
 void Arena::HookOnPlayerKill(Player* plr, Player* pVictim)
 {
-    if (!m_started)
+    if (!m_hasStarted)
     {
         plr->kill(); //cheater.
         return;
@@ -352,7 +352,7 @@ void Arena::OnStart()
         (*itr)->setState(GO_STATE_CLOSED);
     }
 
-    m_started = true;
+    m_hasStarted = true;
 
     // Incase all players left
     UpdatePlayerCounts();
@@ -372,7 +372,7 @@ void Arena::UpdatePlayerCounts()
     SetWorldState(WORLDSTATE_ARENA__GREEN_PLAYER_COUNT, m_playersCount[0]);
     SetWorldState(WORLDSTATE_ARENA__GOLD_PLAYER_COUNT, m_playersCount[1]);
 
-    if (!m_started)
+    if (!m_hasStarted)
         return;
 
     //    return;
