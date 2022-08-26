@@ -33,7 +33,7 @@
 class SERVER_DECL CBattleground : public EventableObject
 {
     // MIT start
-private:
+protected:
     WorldMap* m_mapMgr;
     uint32_t m_id;
     uint32_t m_type;
