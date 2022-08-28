@@ -269,22 +269,30 @@ namespace LuaSpell
     int GetTarget(lua_State* L, Spell* sp)
     {
         if (!sp || !sp->getCaster()->IsInWorld())
-            RET_NIL()
+        {
+            lua_pushnil(L);
+            return 1;
+        }
 
-            if (sp->m_targets.getUnitTarget())
+        if (sp->m_targets.getUnitTarget())
+        {
+            PUSH_UNIT(L, sp->getCaster()->getWorldMap()->getUnit(sp->m_targets.getUnitTarget()));
+            return 1;
+        }
+        else if (sp->m_targets.getItemTarget())
+        {
+            if (!sp->getPlayerCaster())
             {
-                PUSH_UNIT(L, sp->getCaster()->getWorldMap()->getUnit(sp->m_targets.getUnitTarget()));
+                lua_pushnil(L);
+                PUSH_ITEM(L, sp->getPlayerCaster()->getItemInterface()->GetItemByGUID(sp->m_targets.getItemTarget()));
                 return 1;
             }
-            else if (sp->m_targets.getItemTarget())
-            {
-                if (!sp->getPlayerCaster())
-                    RET_NIL()
-                    PUSH_ITEM(L, sp->getPlayerCaster()->getItemInterface()->GetItemByGUID(sp->m_targets.getItemTarget()));
-                return 1;
-            }
-            else
-                RET_NIL()
+        }
+        else
+        {
+            lua_pushnil(L);
+            return 1;
+        }
     }
 
     int IsStealthSpell(lua_State* L, Spell* sp)
@@ -403,7 +411,10 @@ namespace LuaSpell
         SpellInfo const* proto = sp->getSpellInfo();
         LuaSpellEntry l = GetLuaSpellEntryByName(var);
         if (!l.name)
-            RET_NIL();
+        {
+            lua_pushnil(L);
+            return 1;
+        }
         switch (l.typeId)  //0: int, 1: char*, 2: bool, 3: float
         {
             case 0:

@@ -5,19 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#define TEST_UNIT() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature()) { return 0; }
-#define TEST_UNIT_RET() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature()) { lua_pushboolean(L,0); return 1; }
-
-#define TEST_PLAYER() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer()) { return 0; }
-#define TEST_PLAYER_RET() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer()) { lua_pushboolean(L,0); return 1; }
-
-#define TEST_UNITPLAYER() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer()) { return 0; }
-#define TEST_UNITPLAYER_RET() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer()) { lua_pushboolean(L,0); return 1; }
-
-#define TEST_GO() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject()) { return 0; }
-#define TEST_GO_RET() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject()) { lua_pushboolean(L,0); return 1; }
-
-#define RET_NIL( ){ lua_pushnil(L); return 1; }
 #define RET_BOOL(exp) { (exp) ? lua_pushboolean(L,1) : lua_pushboolean(L,0); return 1; }
 #define RET_STRING(str) { lua_pushstring(L,(str)); return 1; }
 #define RET_NUMBER(number) { lua_pushnumber(L,(number)); return 1; }
@@ -68,4 +55,3 @@ This file is released under the MIT license. See README-MIT for more information
 #define GET_LOCK LuaGlobal::instance()->luaEngine()->getLock().Acquire();
 #define RELEASE_LOCK LuaGlobal::instance()->luaEngine()->getLock().Release();
 #define CHECK_BINDING_ACQUIRELOCK GET_LOCK if(m_binding == NULL) { RELEASE_LOCK return; }
-#define sLuaEventMgr LuaGlobal::instance()->luaEngine()->LuaEventMgr

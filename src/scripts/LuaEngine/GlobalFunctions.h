@@ -416,7 +416,10 @@ namespace luaGlobalFunctions
         }
         LuaSpellEntry l = GetLuaSpellEntryByName(var);
         if (!l.name)
-            RET_NIL();
+        {
+            lua_pushnil(L);
+            return 1;
+        }
         switch (l.typeId)  //0: int, 1: char*, 2: bool, 3: float
         {
             case 0:
@@ -452,7 +455,10 @@ namespace luaGlobalFunctions
         }
         LuaSpellEntry l = GetLuaSpellEntryByName(var);
         if (!l.name)
-            RET_NIL();
+        {
+            lua_pushnil(L);
+            return 1;
+        }
         switch (l.typeId)  //0: int, 1: char*, 2: bool, 3: float
         {
             case 0:
@@ -532,48 +538,48 @@ namespace luaGlobalFunctions
     }
     int RemoveTimedEvents(lua_State* /*L*/)
     {
-        sLuaEventMgr.RemoveEvents();
+        LuaGlobal::instance()->luaEngine()->LuaEventMgr.RemoveEvents();
         return 0;
     }
     int RemoveTimedEventsWithName(lua_State* L)
     {
         const char* name = luaL_checkstring(L, 1);
-        sLuaEventMgr.RemoveEventsByName(name);
+        LuaGlobal::instance()->luaEngine()->LuaEventMgr.RemoveEventsByName(name);
         return 0;
     }
     int RemoveTimedEvent(lua_State* L)
     {
         int ref = static_cast<int>(luaL_checkinteger(L, 1));
-        sLuaEventMgr.RemoveEventByRef(ref);
+        LuaGlobal::instance()->luaEngine()->LuaEventMgr.RemoveEventByRef(ref);
         return 0;
     }
     int RemoveTimedEventsInTable(lua_State* L)
     {
         const char* table = luaL_checkstring(L, 1);
-        sLuaEventMgr.RemoveEventsInTable(table);
+        LuaGlobal::instance()->luaEngine()->LuaEventMgr.RemoveEventsInTable(table);
         return 0;
     }
     int HasTimedEvents(lua_State* L)
     {
-        lua_pushboolean(L, sLuaEventMgr.event_HasEvents() ? 1 : 0);
+        lua_pushboolean(L, LuaGlobal::instance()->luaEngine()->LuaEventMgr.event_HasEvents() ? 1 : 0);
         return 1;
     }
     int HasTimedEvent(lua_State* L)
     {
         int ref = static_cast<int>(luaL_checkinteger(L, 1));
-        lua_pushboolean(L, sLuaEventMgr.HasEvent(ref) ? 1 : 0);
+        lua_pushboolean(L, LuaGlobal::instance()->luaEngine()->LuaEventMgr.HasEvent(ref) ? 1 : 0);
         return 1;
     }
     int HasTimedEventWithName(lua_State* L)
     {
         const char* name = luaL_checkstring(L, 1);
-        lua_pushboolean(L, sLuaEventMgr.HasEventWithName(name) ? 1 : 0);
+        lua_pushboolean(L, LuaGlobal::instance()->luaEngine()->LuaEventMgr.HasEventWithName(name) ? 1 : 0);
         return 1;
     }
     int HasTimedEventInTable(lua_State* L)
     {
         const char* table = luaL_checkstring(L, 1);
-        lua_pushboolean(L, sLuaEventMgr.HasEventInTable(table) ? 1 : 0);
+        lua_pushboolean(L, LuaGlobal::instance()->luaEngine()->LuaEventMgr.HasEventInTable(table) ? 1 : 0);
         return 1;
     }
     int GetPlatform(lua_State* L)
@@ -641,7 +647,10 @@ namespace luaGlobalFunctions
 
         WorldMap* pInstance = sMapMgr.findWorldMap(map, iid);
         if (pInstance == NULL || (!guid && !spawnId))
-            RET_NIL();
+        {
+            lua_pushnil(L);
+            return 1;
+        }
 
         Creature* pCreature = NULL;
         if (guid)
@@ -664,7 +673,10 @@ namespace luaGlobalFunctions
 
         WorldMap* pInstance = sMapMgr.findWorldMap(map, iid);
         if (pInstance == NULL)
-            RET_NIL();
+        {
+            lua_pushnil(L);
+            return 1;
+        }
 
         lua_pushnumber(L, pInstance->getPlayerCount());
         return 1;
@@ -677,7 +689,10 @@ namespace luaGlobalFunctions
 
         WorldMap* pInstance = sMapMgr.findWorldMap(map, iid);
         if (pInstance == NULL)
-            RET_NIL();
+        {
+            lua_pushnil(L);
+            return 1;
+        }
 
         Player* ret = NULL;
         uint32_t count = 0;
