@@ -115,7 +115,11 @@ public:
 
     static int GossipSendPOI(lua_State * L, Unit * ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
@@ -171,7 +175,11 @@ public:
 
     static int GossipComplete(lua_State * /*L*/, Unit * ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         if (LuaGlobal::instance()->m_menu == nullptr)
         {
@@ -389,7 +397,11 @@ public:
 
     static int PlayerSendChatMessage(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint8_t type = CHECK_UINT8(L, 1);
         uint32_t lang = CHECK_ULONG(L, 2);
         const char* msg = luaL_checklstring(L, 3, nullptr);
@@ -847,7 +859,11 @@ public:
 
     static int RemoveItem(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         uint32_t count = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 
@@ -857,7 +873,11 @@ public:
 
     static int AddItem(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         uint32_t count = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 
@@ -883,7 +903,7 @@ public:
         {
             item_add->modStackCount(count);
             item_add->SetDirty();
-            player->sendItemPushResultPacket(false, true, false, 
+            player->sendItemPushResultPacket(false, true, false,
                                        static_cast<uint8_t>(player->getItemInterface()->GetBagSlotByGuid(item_add->getGuid())), 0,
                                        count, item_add->getEntry(), item_add->getPropertySeed(), item_add->getRandomPropertiesId(), item_add->getStackCount());
         }
@@ -1150,7 +1170,11 @@ public:
 
     static int PlaySoundToPlayer(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t soundid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
         plr->sendPlayObjectSoundPacket(plr->getGuid(), soundid);
@@ -1168,7 +1192,11 @@ public:
 
     static int GetInventoryItem(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         int8_t containerslot = static_cast<int8_t>(luaL_checkinteger(L, 1));
         int16_t slot = static_cast<int16_t>(luaL_checkinteger(L, 2));
         Player* plr = static_cast<Player*>(ptr);
@@ -1178,7 +1206,11 @@ public:
 
     static int GetInventoryItemById(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t entry = CHECK_ULONG(L, 1);
         Player* plr = static_cast<Player*>(ptr);
         int16_t slot = plr->getItemInterface()->GetInventorySlotById(entry);
@@ -1217,7 +1249,11 @@ public:
 
     static int SetPlayerWeather(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         const auto player = dynamic_cast<Player*>(ptr);
         const uint32_t type = CHECK_ULONG(L, 1);
         const float density = CHECK_FLOAT(L, 2);
@@ -1318,7 +1354,11 @@ public:
 
     static int GetItemCount(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t itemid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         lua_pushinteger(L, static_cast<Player*>(ptr)->getItemInterface()->GetItemCount(itemid, false));
         return 1;
@@ -1527,7 +1567,11 @@ public:
 
     static int UnlearnSpell(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t spellid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         static_cast<Player*>(ptr)->removeSpell(spellid, false, false, 0);
         return 0;
@@ -1535,7 +1579,11 @@ public:
 
     static int LearnSpell(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t spellid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         static_cast<Player*>(ptr)->addSpell(spellid);
         return 0;
@@ -1571,7 +1619,11 @@ public:
 
     static int MarkQuestObjectiveAsComplete(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t questid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         uint8_t objective = static_cast<uint8_t>(luaL_checkinteger(L, 2));
         Player* player = static_cast<Player*>(ptr);
@@ -1594,7 +1646,11 @@ public:
 
     static int SendAreaTriggerMessage(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         const char* msg = luaL_checkstring(L, 1);
         if (!msg)
             return 0;
@@ -1604,7 +1660,11 @@ public:
 
     static int SendBroadcastMessage(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         const char* msg = luaL_checkstring(L, 1);
         if (!msg)
             return 0;
@@ -1614,7 +1674,11 @@ public:
 
     static int TeleportUnit(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t mapId = CHECK_ULONG(L, 1);
         float posX = CHECK_FLOAT(L, 2);
         float posY = CHECK_FLOAT(L, 3);
@@ -1747,7 +1811,7 @@ public:
             case 9:
                 lua_pushstring(L, "Warlock");
                 break;
-                //case 10: 
+                //case 10:
             case 11:
                 lua_pushstring(L, "Druid");
                 break;
@@ -1890,7 +1954,11 @@ public:
 
     static int GetDuelState(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         lua_pushnumber(L, plr->getDuelState());
         /*Returns
@@ -2370,7 +2438,11 @@ public:
     static int SendPacketToGroup(lua_State* L, Unit* ptr)
     {
         WorldPacket* data = CHECK_PACKET(L, 1);
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         if (!data)
             return 0;
@@ -2383,7 +2455,11 @@ public:
     static int SendPacketToPlayer(lua_State* L, Unit* ptr)
     {
         WorldPacket* data = CHECK_PACKET(L, 1);
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         if (data)
             plr->getSession()->SendPacket(data);
@@ -2471,7 +2547,11 @@ public:
 
     static int AdvanceQuestObjective(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t questid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         uint8_t objective = static_cast<uint8_t>(luaL_checkinteger(L, 2));
         Player* player = static_cast<Player*>(ptr);
@@ -2932,7 +3012,10 @@ public:
 
     static int IsInWater(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
 
         if (static_cast<Player*>(ptr)->m_underwaterState)
             lua_pushboolean(L, 1);
@@ -3008,7 +3091,11 @@ public:
 
     static int GetGroupPlayers(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* _player = dynamic_cast<Player*>(ptr);
         Group* party = _player->getGroup();
         uint32_t count = 0;
@@ -3080,7 +3167,11 @@ public:
 
     static int IsGroupFull(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         if (plr->getGroup())
             lua_pushboolean(L, plr->getGroup()->IsFull() ? 1 : 0);
@@ -3089,7 +3180,11 @@ public:
 
     static int GetGroupLeader(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         if (plr->getGroup())
             PUSH_UNIT(L, sObjectMgr.GetPlayer(plr->getGroup()->GetLeader()->guid));
@@ -3098,7 +3193,11 @@ public:
 
     static int SetGroupLeader(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* _plr = CHECK_PLAYER(L, 1);
         bool silent = CHECK_BOOL(L, 2);
         Player* plr = static_cast<Player*>(ptr);
@@ -3109,7 +3208,11 @@ public:
 
     static int AddGroupMember(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         Player* _plr = CHECK_PLAYER(L, 1);
         int32_t subgroup = static_cast<int32_t>(luaL_optinteger(L, 2, -1));
@@ -3153,7 +3256,11 @@ public:
 
     static int ExpandToRaid(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         if (plr->getGroup())
             plr->getGroup()->ExpandToRaid();
@@ -3271,14 +3378,22 @@ public:
 
     static int ResurrectPlayer(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         static_cast<Player*>(ptr)->setResurrect();
         return 0;
     }
 
     static int KickPlayer(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t delay = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         static_cast<Player*>(ptr)->kickFromServer(delay);
         return 0;
@@ -3341,7 +3456,11 @@ public:
 
     static int SetBindPoint(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
@@ -3357,14 +3476,22 @@ public:
 
     static int SoftDisconnect(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         static_cast<Player*>(ptr)->softDisconnect();
         return 0;
     }
 
     static int Possess(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Unit* target = CHECK_UNIT(L, 1);
         if (target)
             static_cast<Player*>(ptr)->Possess(target);
@@ -3373,7 +3500,11 @@ public:
 
     static int Unpossess(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         static_cast<Player*>(ptr)->UnPossess();
         return 0;
     }
@@ -3520,7 +3651,11 @@ public:
 
     static int GetFactionStanding(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t faction = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (faction)
         {
@@ -3573,7 +3708,11 @@ public:
 
     static int SetPlayerStanding(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t faction = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         int32_t value = static_cast<int32_t>(luaL_checkinteger(L, 2));
         if (faction && value)
@@ -3583,7 +3722,11 @@ public:
 
     static int SetPlayerSpeed(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         float Speed = CHECK_FLOAT(L, 1);
         if (Speed < 1 || Speed > 255)
@@ -3597,7 +3740,11 @@ public:
 
     static int GiveHonor(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         uint32_t honor = CHECK_ULONG(L, 1);
         plr->addHonor(honor, true);
@@ -3606,7 +3753,11 @@ public:
 
     static int TakeHonor(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         uint32_t honor = CHECK_ULONG(L, 1);
         plr->removeHonor(honor, true);
@@ -3615,7 +3766,11 @@ public:
 
     static int GetStanding(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t faction = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (faction)
             lua_pushinteger(L, static_cast<Player*>(ptr)->getFactionStanding(faction));
@@ -3636,7 +3791,11 @@ public:
 
     static int HasItem(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t itemid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (itemid)
         {
@@ -3684,7 +3843,11 @@ public:
 
     static int AddSkill(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         uint32_t current = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         uint32_t max = static_cast<uint32_t>(luaL_checkinteger(L, 3));
@@ -3700,7 +3863,11 @@ public:
 
     static int RemoveSkill(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (!skill)
             return 0;
@@ -3711,7 +3878,11 @@ public:
 
     static int FlyCheat(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         bool enabled = CHECK_BOOL(L, 1);
         static_cast<Player*>(ptr)->m_cheats.hasFlyCheat = enabled;
         return 0;
@@ -3719,7 +3890,11 @@ public:
 
     static int AdvanceSkill(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         uint32_t count = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         Player* plr = static_cast<Player*>(ptr);
@@ -3909,7 +4084,11 @@ public:
 
     static int DealGoldCost(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         uint32_t debt = static_cast<uint32_t>(luaL_checkinteger(L, 1));
 
@@ -3927,7 +4106,11 @@ public:
 
     static int DealGoldMerit(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t profit = CHECK_ULONG(L, 1);
         static_cast<Player*>(ptr)->modCoinage(profit);
         return 0;
@@ -3974,7 +4157,11 @@ public:
 
     static int CanUseCommand(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         char cmdlevel = (char)luaL_checkstring(L, 1)[0];
         Player* plr = static_cast<Player*>(ptr);
         if (plr->getSession()->CanUseCommand(cmdlevel))
@@ -3986,7 +4173,11 @@ public:
 
     static int GetSelection(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         Unit* selection = plr->getWorldMap()->getUnit(plr->getTargetGuid());
         if (selection)
@@ -3998,7 +4189,11 @@ public:
 
     static int GetSelectedGO(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         PUSH_GO(L, plr->getSelectedGo());
         return 1;
@@ -4006,7 +4201,11 @@ public:
 
     static int SetSelectedGO(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         GameObject* newsel = CHECK_GO(L, 1);
         if (!newsel)
@@ -4064,7 +4263,11 @@ public:
 
     static int SetKnownTitle(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         int title = static_cast<int>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
         plr->setKnownPvPTitle(RankTitles(title), true);
@@ -4074,7 +4277,11 @@ public:
 
     static int UnsetKnownTitle(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         int title = static_cast<int>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
         plr->setKnownPvPTitle(RankTitles(title), false);
@@ -4084,7 +4291,11 @@ public:
 
     static int LifeTimeKills(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         int kills = static_cast<int>(luaL_checkinteger(L, 1));
         const char* check = luaL_checklstring(L, 2, nullptr);
         Player* plr = static_cast<Player*>(ptr);
@@ -4117,7 +4328,11 @@ public:
 
     static int HasTitle(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         int title = static_cast<int>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
         if (plr->hasPvPTitle(RankTitles(title)))
@@ -4129,7 +4344,11 @@ public:
 
     static int GetMaxSkill(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         lua_pushinteger(L, static_cast<Player*>(ptr)->getSkillLineMax(skill));
         return 1;
@@ -4137,7 +4356,11 @@ public:
 
     static int GetCurrentSkill(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         lua_pushinteger(L, static_cast<Player*>(ptr)->getSkillLineCurrent(skill));
         return 1;
@@ -4145,7 +4368,11 @@ public:
 
     static int HasSkill(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         lua_pushboolean(L, (static_cast<Player*>(ptr)->hasSkillLine(skill)) ? 1 : 0);
         return 1;
@@ -4153,7 +4380,11 @@ public:
 
     static int GetGuildName(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Guild* pGuild = sGuildMgr.getGuildById(static_cast<Player*>(ptr)->getGuildId());
         if (pGuild != nullptr)
             lua_pushstring(L, pGuild->getNameChar());
@@ -4164,7 +4395,11 @@ public:
 
     static int ClearCooldownForSpell(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         plr->clearCooldownForSpell(static_cast<uint32_t>(luaL_checkinteger(L, 1)));
         return 0;
@@ -4172,7 +4407,11 @@ public:
 
     static int HasSpell(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t sp = CHECK_ULONG(L, 1);
         lua_pushboolean(L, (sp && static_cast<Player*>(ptr)->HasSpell(sp)) ? 1 : 0);
         return 1;
@@ -4180,21 +4419,33 @@ public:
 
     static int ClearAllCooldowns(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         static_cast<Player*>(ptr)->resetAllCooldowns();
         return 0;
     }
 
     static int ResetAllTalents(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         static_cast<Player*>(ptr)->resetAllTalents();
         return 0;
     }
 
     static int GetAccountName(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         const char* aName = static_cast<Player*>(ptr)->getSession()->GetAccountNameS();
         lua_pushstring(L, aName);
         return 1;
@@ -4202,7 +4453,11 @@ public:
 
     static int GetGmRank(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         const char* level = static_cast<Player*>(ptr)->getSession()->GetPermissions();
         if (level != nullptr)
             lua_pushstring(L, level);
@@ -4213,7 +4468,11 @@ public:
 
     static int IsGm(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         if (static_cast<Player*>(ptr)->getSession()->HasGMPermissions())
             lua_pushboolean(L, 1);
         else
@@ -4223,14 +4482,22 @@ public:
 
     static int SavePlayer(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         static_cast<Player*>(ptr)->SaveToDB(false);
         return 0;
     }
 
     static int HasQuest(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t quest_id = CHECK_ULONG(L, 1);
         if (quest_id && static_cast<Player*>(ptr)->hasQuestInQuestLog(quest_id))
             lua_pushboolean(L, 1);
@@ -4257,7 +4524,11 @@ public:
 
     static int RemovePvPFlag(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         if (plr->isPvpFlagSet())
             plr->removePvpFlag();
@@ -4298,9 +4569,13 @@ public:
 
     static int SendVendorWindow(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
-        Creature* object = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
+        Creature* object = static_cast<Creature*>(CHECK_UNIT(L, 1)); // NOT entry. The unit pointer.
         if (object != nullptr)
             plr->getSession()->sendInventoryList(object);
         return 0;
@@ -4308,9 +4583,13 @@ public:
 
     static int SendTrainerWindow(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
-        Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
+        Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1)); // NOT entry. The unit pointer.
         if (crc != nullptr)
             plr->getSession()->sendTrainerList(crc);
         return 0;
@@ -4318,9 +4597,13 @@ public:
 
     static int SendInnkeeperWindow(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
-        Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
+        Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1)); // NOT entry. The unit pointer.
         if (crc != nullptr)
             plr->getSession()->sendInnkeeperBind(crc);
         return 0;
@@ -4328,9 +4611,13 @@ public:
 
     static int SendBankWindow(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
-        Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
+        Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1)); // NOT entry. The unit pointer.
         if (crc != nullptr)
             plr->getSession()->sendBankerList(crc);
         return 0;
@@ -4338,9 +4625,13 @@ public:
 
     static int SendAuctionWindow(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
-        Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));  //NOT entry. The unit pointer.
+        Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1)); // NOT entry. The unit pointer.
         if (crc != nullptr)
             plr->getSession()->sendAuctionList(crc);
         return 0;
@@ -4348,18 +4639,26 @@ public:
 
     static int SendBattlegroundWindow(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         Creature* crc = static_cast<Creature*>(CHECK_UNIT(L, 1));
         uint32_t bgid = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         if (bgid && crc != nullptr)
-            plr->getSession()->sendBattlegroundList(crc, bgid); //player filler ftw
+            plr->getSession()->sendBattlegroundList(crc, bgid); // player filler ftw
         return 0;
     }
 
     static int SendLootWindow(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint64_t guid = CHECK_GUID(L, 1);
         uint8_t loot_type = (uint8_t)luaL_checkinteger(L, 2);
         uint8_t loot_type2 = 1;
@@ -4548,7 +4847,11 @@ public:
 
     static int GiveXp(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* pl = static_cast<Player*>(ptr);
         uint32_t exp = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         pl->GiveXP(exp, pl->getGuid(), true);
@@ -4557,7 +4860,11 @@ public:
 
     static int AdvanceAllSkills(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         uint32_t skillvalue = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         plr->advanceAllSkills(skillvalue);
@@ -4566,7 +4873,11 @@ public:
 
     static int GetTeam(lua_State* L, Unit* ptr) // returns 0 for alliance, 1 for horde.
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         lua_pushinteger(L, plr->getTeam());
         return 1;
@@ -4574,7 +4885,11 @@ public:
 
     static int StartTaxi(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         TaxiPath* tp = CHECK_TAXIPATH(L, 1);
         uint32_t mount_id = static_cast<uint32_t>(luaL_checkinteger(L, 2));
@@ -4584,21 +4899,33 @@ public:
 
     static int IsOnTaxi(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         lua_pushboolean(L, static_cast<Player*>(ptr)->isOnTaxi() ? 1 : 0);
         return 1;
     }
 
     static int GetTaxi(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         PUSH_TAXIPATH(L, static_cast<Player*>(ptr)->getTaxiPath());
         return 1;
     }
 
     static int SetPlayerLock(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         bool lock = CHECK_BOOL(L, 1);
         if (lock)
         {
@@ -4617,7 +4944,11 @@ public:
 
     static int MovePlayerTo(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
@@ -4696,7 +5027,11 @@ public:
 
     static int EnableFlight(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         bool enable_fly = CHECK_BOOL(L, 1);
         ptr->setMoveCanFly(enable_fly);
         return 0;
@@ -4704,7 +5039,11 @@ public:
 
     static int GetCoinage(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         lua_pushinteger(L, plr->getCoinage());
         return 1;
@@ -4712,7 +5051,11 @@ public:
 
     static int FlagPvP(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         plr->setPvpFlag();
         return 0;
@@ -4741,7 +5084,11 @@ public:
     // credits to alvanaar for the following 9 functions:
     static int IsGroupedWith(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* target = CHECK_PLAYER(L, 1);
         Player* plr = static_cast<Player*>(ptr);
         if (plr->getGroup() && plr->getGroup()->HasMember(target))
@@ -4753,7 +5100,11 @@ public:
 
     static int GetGroupType(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         if (Group* group = plr->getGroup())
             lua_pushinteger(L, group->getGroupType());
@@ -4762,37 +5113,57 @@ public:
         return 1;
     }
 
-    static int GetTotalHonor(lua_State* L, Unit* ptr)   // I loathe typing "honour" like "honor".
+    static int GetTotalHonor(lua_State* L, Unit* ptr) // I loathe typing "honour" like "honor".
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         lua_pushinteger(L, static_cast<Player*>(ptr)->getHonor());
         return 1;
     }
 
     static int GetHonorToday(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         lua_pushinteger(L, static_cast<Player*>(ptr)->getHonorToday());
         return 1;
     }
 
     static int GetHonorYesterday(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         lua_pushinteger(L, static_cast<Player*>(ptr)->getHonorYesterday());
         return 1;
     }
 
     static int GetArenaPoints(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         lua_pushinteger(L, static_cast<Player*>(ptr)->getArenaPoints());
         return 1;
     }
 
     static int AddArenaPoints(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t pnts = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
         if (pnts > 0)
@@ -4804,7 +5175,11 @@ public:
 
     static int RemoveArenaPoints(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t pnts = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
 
@@ -4816,7 +5191,11 @@ public:
 
     static int AddLifetimeKills(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t pnts = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
         plr->incrementKills(pnts);
@@ -4843,7 +5222,11 @@ public:
 
     static int SendPacketToGuild(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         WorldPacket* data = CHECK_PACKET(L, 1);
         Player* plr = static_cast<Player*>(ptr);
         Guild* guild = nullptr;
@@ -4862,7 +5245,11 @@ public:
 
     static int GetGuildId(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         if (plr->isInGuild())
             lua_pushinteger(L, plr->getGuildId());
@@ -4873,7 +5260,11 @@ public:
 
     static int GetGuildRank(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         if (plr->isInGuild())
             lua_pushinteger(L, plr->getGuildRankFromDB());
@@ -4884,7 +5275,11 @@ public:
 
     static int SetGuildRank(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         uint32_t rank = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (plr->isInGuild())
@@ -4894,7 +5289,11 @@ public:
 
     static int IsInGuild(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         if (plr->isInGuild())
             lua_pushboolean(L, 1);
@@ -4905,7 +5304,11 @@ public:
 
     static int SendGuildInvite(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         const auto sender = static_cast<Player*>(ptr);
         const auto invitedPlayer = CHECK_PLAYER(L, 1);
         if (invitedPlayer != nullptr)
@@ -4916,7 +5319,11 @@ public:
 
     static int DemoteGuildMember(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         if (target && plr->getGuild())
@@ -4927,7 +5334,11 @@ public:
 
     static int PromoteGuildMember(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         if (target && plr->getGuild())
@@ -4938,7 +5349,11 @@ public:
 
     static int SetGuildMotd(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         const char* szNewMotd = luaL_checkstring(L, 1);
         if (plr->getGuild() && szNewMotd != nullptr)
@@ -4948,7 +5363,11 @@ public:
 
     static int GetGuildMotd(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         Guild* guild = nullptr;
         if (luaL_optinteger(L, 1, -1) >= 0)
@@ -4965,7 +5384,11 @@ public:
 
     static int SetGuildInformation(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         const char* gi = luaL_checkstring(L, 1);
         if (gi && plr->getGuild())
@@ -4975,7 +5398,11 @@ public:
 
     static int AddGuildMember(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         uint32_t g_id = CHECK_ULONG(L, 1);
         uint8_t rank = static_cast<uint8_t>(luaL_optinteger(L, 2, -1));
@@ -4987,7 +5414,11 @@ public:
 
     static int RemoveGuildMember(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         if (target && plr->getGuild())
@@ -4998,7 +5429,11 @@ public:
 
     static int SetPublicNote(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         const char* note = luaL_checkstring(L, 2);
@@ -5010,7 +5445,11 @@ public:
 
     static int SetOfficerNote(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         const char* note = luaL_checkstring(L, 2);
@@ -5022,7 +5461,11 @@ public:
 
     static int DisbandGuild(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         Guild* guild = nullptr;
         if (luaL_optinteger(L, 1, -1) >= 0)
@@ -5037,7 +5480,11 @@ public:
 
     static int ChangeGuildMaster(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         if (target)
@@ -5047,7 +5494,11 @@ public:
 
     static int SendGuildChatMessage(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         const char* message = luaL_checkstring(L, 1);
         bool officer = CHECK_BOOL(L, 2);
@@ -5059,7 +5510,11 @@ public:
 
     static int SendGuildLog(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         if (plr->getGuild() != nullptr)
             plr->getGuild()->sendLoginInfo(plr->getSession());
@@ -5069,7 +5524,11 @@ public:
 
     static int GuildBankDepositMoney(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         uint32_t amount = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (plr->getGuild() != nullptr)
@@ -5080,7 +5539,11 @@ public:
 
     static int GuildBankWithdrawMoney(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         uint32_t amount = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (plr->getGuild() != nullptr)
@@ -5114,21 +5577,33 @@ public:
 
     static int IsPvPFlagged(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         lua_pushboolean(L, static_cast<Player*>(ptr)->isPvpFlagSet() ? 1 : 0);
         return 1;
     }
 
     static int IsFFAPvPFlagged(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         lua_pushboolean(L, static_cast<Player*>(ptr)->isFfaPvpFlagSet() ? 1 : 0);
         return 1;
     }
 
     static int GetGuildLeader(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Guild* pGuild = static_cast<Player*>(ptr)->getGuild();
         if (pGuild != nullptr)
         {
@@ -5146,7 +5621,11 @@ public:
 
     static int GetGuildMemberCount(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Guild* pGuild = static_cast<Player*>(ptr)->getGuild();
         (pGuild != nullptr) ? lua_pushinteger(L, pGuild->getMembersCount()) : lua_pushnil(L);
 
@@ -5167,7 +5646,11 @@ public:
 
     static int IsInChannel(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         const char* channelName = luaL_checkstring(L, 1);
         if (!channelName)
             return 0;
@@ -5184,7 +5667,10 @@ public:
 
     static int JoinChannel(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
 
         const char* channelName = luaL_checkstring(L, 1);
         Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
@@ -5203,7 +5689,10 @@ public:
 
     static int LeaveChannel(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
 
         const char* channelName = luaL_checkstring(L, 1);
         Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
@@ -5217,7 +5706,10 @@ public:
 
     static int SetChannelName(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
 
         const char* currentName = luaL_checkstring(L, 1);
         const char* newName = luaL_checkstring(L, 2);
@@ -5231,7 +5723,10 @@ public:
 
     static int SetChannelPassword(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
 
         const char* channelName = luaL_checkstring(L, 1);
         const char* password = luaL_checkstring(L, 2);
@@ -5245,7 +5740,11 @@ public:
 
     static int GetChannelPassword(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         const char* channelName = luaL_checkstring(L, 1);
         Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
         if (!channel)
@@ -5258,7 +5757,11 @@ public:
 
     static int KickFromChannel(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         const char* channelName = luaL_checkstring(L, 1);
         Player* player = dynamic_cast<Player*>(ptr);
         Channel* channel = sChannelMgr.getChannel(channelName, player);
@@ -5271,7 +5774,11 @@ public:
 
     static int BanFromChannel(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         const char* channelName = luaL_checkstring(L, 1);
         Player* player = dynamic_cast<Player*>(ptr);
         Channel* channel = sChannelMgr.getChannel(channelName, player);
@@ -5284,7 +5791,11 @@ public:
 
     static int UnbanFromChannel(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         const char* channelName = luaL_checkstring(L, 1);
         Player* player = dynamic_cast<Player*>(ptr);
         Channel* channel = sChannelMgr.getChannel(channelName, player);
@@ -5297,7 +5808,11 @@ public:
 
     static int GetChannelMemberCount(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         const char* channelName = luaL_checkstring(L, 1);
         if (!channelName)
             return 0;
@@ -5308,7 +5823,10 @@ public:
 
     static int GetPlayerMovementVector(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
 
         Player* plr = static_cast<Player*>(ptr);
         MovementInfo* movement_info = plr->getMovementInfo();
@@ -5336,7 +5854,11 @@ public:
 
     static int GetPlayerMovementFlags(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         MovementInfo* move_info = static_cast<Player*>(ptr)->getMovementInfo();
         if (move_info != nullptr)
         {
@@ -5351,7 +5873,11 @@ public:
 
     static int Repop(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         if (plr->isDead())
             plr->repopRequest();
@@ -5393,7 +5919,11 @@ public:
 
     static int ResetTalents(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         plr->resetTalents();
         return 0;
@@ -5401,7 +5931,11 @@ public:
 
     static int SetTalentPoints(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         const auto forBothSpecs = CHECK_BOOL(L, 1);
         const auto points = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         static_cast<Player*>(ptr)->setTalentPoints(points, forBothSpecs);
@@ -5410,7 +5944,11 @@ public:
 
     static int GetTalentPoints(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t spec = static_cast<uint32_t>(luaL_checkinteger(L, 1)); //0 or 1
 #ifdef FT_DUAL_SPEC
         PlayerSpec plrSpec = static_cast<Player*>(ptr)->m_specs[spec];
@@ -5441,7 +5979,11 @@ public:
 
     static int GetEquippedItemBySlot(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         int16_t slot = static_cast<int16_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
         Item* pItem = plr->getItemInterface()->GetInventoryItem(slot);
@@ -5454,7 +5996,11 @@ public:
 
     static int GetGuildMembers(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Player* plr = static_cast<Player*>(ptr);
         Guild* pGuild = plr->getGuild();
         uint32_t count = 0;
@@ -5481,7 +6027,11 @@ public:
 
     static int AddAchievement(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
 #if VERSION_STRING > TBC
         int32_t achievementID = static_cast<int32_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
@@ -5495,7 +6045,11 @@ public:
 
     static int RemoveAchievement(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
 #if VERSION_STRING > TBC
         int32_t achievementID = static_cast<int32_t>(luaL_checkinteger(L, 1));
         static_cast<Player*>(ptr)->getAchievementMgr().GMResetAchievement(achievementID);
@@ -5505,7 +6059,11 @@ public:
 
     static int HasAchievement(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
 #if VERSION_STRING > TBC
         uint32_t achievementID = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         lua_pushboolean(L, static_cast<Player*>(ptr)->getAchievementMgr().HasCompleted(achievementID) ? 1 : 0);
@@ -5525,7 +6083,11 @@ public:
 
     static int ResetPetTalents(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         Pet* pet = static_cast<Player*>(ptr)->getFirstPetFromSummons();
         if (pet != nullptr)
         {
@@ -5924,7 +6486,11 @@ public:
 
     static int GetQuestLogSlot(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t entry = CHECK_ULONG(L, 1);
 
         if (auto* questLog = static_cast<Player*>(ptr)->getQuestLogByQuestId(entry))
@@ -5973,7 +6539,11 @@ public:
 
     static int StopPlayerAttack(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         ptr->smsg_AttackStop(ptr->getWorldMap()->getUnit(static_cast<Player*>(ptr)->getTargetGuid()));
         return 0;
     }
@@ -6294,7 +6864,11 @@ public:
 
     static int SendCinematic(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         uint32_t id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         static_cast<Player*>(ptr)->sendCinematicCamera(id);
         return 0;
@@ -6364,7 +6938,11 @@ public:
 
     static int SetWorldStateForPlayer(lua_State *L, Unit *ptr)
     {
-        TEST_PLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            return 0;
+        }
+
         if (lua_gettop(L) != 2)
             return 0;
 
