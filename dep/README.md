@@ -8,7 +8,7 @@
 
 ## Folder: g3dlite
 - Web: http://g3d.cs.williams.edu
-- Version: 9 (2013/03/24)
+- Version: 9 (2013/06/11)
 
 ## Folder: libmpq
 - Web: https://github.com/mbroemme/libmpq

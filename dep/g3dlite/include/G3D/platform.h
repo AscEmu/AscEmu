@@ -50,7 +50,7 @@ These control the version of Winsock used by G3D.
 #define G3D_WINSOCK_MAJOR_VERSION 2
 #define G3D_WINSOCK_MINOR_VERSION 0
 
-#if !defined(_MSC_VER) && !defined(__fastcall)
+#ifndef _MSC_VER
 /// Fast call is a register-based optimized calling convention supported only by Visual C++
 #define __fastcall
 #endif
@@ -368,13 +368,18 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw) {\
 #endif
 #if (!defined(_LIBCPP_VERSION) && defined(__APPLE__)) || (!defined(_LIBCPP_VERSION) && defined(__linux__))
 #   include <tr1/memory>
+#else
+#   include <memory>
+#endif
+
+namespace G3D {
+#if (!defined(_LIBCPP_VERSION) && defined(__APPLE__)) || (!defined(_LIBCPP_VERSION) && defined(__linux__))
     using std::tr1::shared_ptr;
     using std::tr1::weak_ptr;
     using std::tr1::dynamic_pointer_cast;
     using std::tr1::static_pointer_cast;
     using std::tr1::enable_shared_from_this;
 #else
-#   include <memory>
     using std::shared_ptr;
     using std::weak_ptr;
     using std::dynamic_pointer_cast;
@@ -382,7 +387,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw) {\
     using std::enable_shared_from_this;
 #endif
 
-namespace G3D {
     /** Options for initG3D and initGLG3D. */
     class G3DSpecification {
     public:
