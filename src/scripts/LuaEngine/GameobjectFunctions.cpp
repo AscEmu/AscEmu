@@ -197,7 +197,7 @@ int LuaGameObject::GetName(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::GetCreatureNearestCoords(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;
@@ -221,7 +221,7 @@ int LuaGameObject::GetCreatureNearestCoords(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::GetGameObjectNearestCoords(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;
@@ -271,7 +271,7 @@ int LuaGameObject::GetClosestPlayer(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::GetDistance(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;
@@ -298,7 +298,7 @@ int LuaGameObject::IsInWorld(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::GetZoneId(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;
@@ -539,7 +539,7 @@ int LuaGameObject::CalcRadAngle(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::GetInstanceID(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;
@@ -554,7 +554,7 @@ int LuaGameObject::GetInstanceID(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::GetInRangePlayers(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;
@@ -577,7 +577,7 @@ int LuaGameObject::GetInRangePlayers(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::GetInRangeGameObjects(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;
@@ -622,7 +622,7 @@ int LuaGameObject::GetInRangeUnits(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::IsInFront(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;
@@ -643,7 +643,7 @@ int LuaGameObject::IsInFront(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::IsInBack(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;
@@ -909,7 +909,7 @@ int LuaGameObject::SendPacket(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::GetGUID(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;
@@ -921,7 +921,7 @@ int LuaGameObject::GetGUID(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::IsActive(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;
@@ -934,7 +934,7 @@ int LuaGameObject::IsActive(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::Activate(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;
@@ -1043,7 +1043,7 @@ int LuaGameObject::SetDungeonDifficulty(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::HasFlag(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;
@@ -1057,7 +1057,7 @@ int LuaGameObject::HasFlag(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::IsInPhase(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;
@@ -1081,7 +1081,7 @@ int LuaGameObject::GetSpawnId(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::GetAreaId(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;
@@ -1094,7 +1094,7 @@ int LuaGameObject::GetAreaId(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::SetPosition(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;
@@ -1128,7 +1128,7 @@ int LuaGameObject::GetObjectType(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::ChangeScale(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;
@@ -1165,7 +1165,7 @@ int LuaGameObject::GetByte(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::SetByte(lua_State* L, GameObject* ptr)
 {
-    if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
+    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isGameObject())
     {
         lua_pushboolean(L, 0);
         return 1;

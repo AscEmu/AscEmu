@@ -116,10 +116,10 @@ enum GossipEvents
 {
     //////////////////////////////////////////////////////////////////////////////////////////
     //RegisterUnitGossipEvent
-    // Gossip Event callbacks can be made using any of the following functions. Note that the pUnit in the arguments of these functions variate depending on the register you use. 
+    // Gossip Event callbacks can be made using any of the following functions. Note that the pUnit in the arguments of these functions variate depending on the register you use.
 
-    // RegisterUnitGossipEvent(UnitId, EventId, function) (Applies to Creatures only) 
-    // RegisterGOGossipEvent(GameObjectId, EventId, function) 
+    // RegisterUnitGossipEvent(UnitId, EventId, function) (Applies to Creatures only)
+    // RegisterGOGossipEvent(GameObjectId, EventId, function)
     // RegisterItemGossipEvent(ItemId, EventId, function)
 
     GOSSIP_EVENT_ON_TALK                        = 1,  // -- (pUnit, event, pPlayer)
@@ -146,7 +146,7 @@ enum InstanceHooks
     //////////////////////////////////////////////////////////////////////////////////////////
     //RegisterInstanceEvent
     // Instance Hook callbacks can be made by using the function RegisterInstanceEvent(MapId, EventId, function)
-    
+
     INSTANCE_EVENT_ON_PLAYER_DEATH              = 1,  // -- (InstanceID, pPlayer, pKiller)
     INSTANCE_EVENT_ON_PLAYER_ENTER              = 2,  // -- (InstanceID, pPlayer)
     INSTANCE_EVENT_ON_AREA_TRIGGER              = 3,  // -- (InstanceID, pPlayer, nAreaId)
@@ -722,7 +722,7 @@ public:
             }
             else
                 lua_pushnil(L);
-        
+
             lua_insert(L, 1);
             lua_settop(L, 1);
             return 1;

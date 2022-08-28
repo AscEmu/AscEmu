@@ -747,7 +747,7 @@ static int RegisterTimedEvent(lua_State* L)  //in this case, L == lu
         free((void*)funcName);
         return luaL_error(L, "Error in RegisterTimedEvent! Failed to create a valid reference.");
     }
-   
+
     TimedEvent* te = TimedEvent::Allocate(LuaGlobal::instance()->luaEngine().get(), new CallbackP2<LuaEngine, const char*, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::HyperCallFunction, funcName, ref), EVENT_LUA_TIMED, delay, repeats);
     EventInfoHolder* ek = new EventInfoHolder;
     ek->funcName = funcName;
@@ -1762,7 +1762,7 @@ public:
         LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
         LuaGlobal::instance()->luaEngine()->PushUnit(passenger);
         LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
-        
+
         RELEASE_LOCK;
     }
 
