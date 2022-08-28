@@ -236,7 +236,7 @@ namespace luaItem
 
     int AddLoot(lua_State* L, Item* ptr)
     {
-        //TEST_UNIT()
+        //if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature()) { return 0; }
         if ((lua_gettop(L) != 3) || (lua_gettop(L) != 5))
             return 0;
         uint32_t itemid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
@@ -451,7 +451,10 @@ namespace luaItem
         uint32_t stackcount = CHECK_ULONG(L, 2);
         Item* pItem = sObjectMgr.CreateItem(id, NULL);
         if (!pItem)
-            RET_NIL();
+        {
+            lua_pushnil(L);
+            return 1;
+        }
         pItem->setStackCount(stackcount);
         pItem->SaveToDB(0, 0, true, NULL);
         PUSH_ITEM(L, pItem);

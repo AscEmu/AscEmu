@@ -26,7 +26,8 @@ namespace LuaAura
     {
         if (!aura)
         {
-            RET_NIL();
+            lua_pushnil(L);
+            return 1;
         }
         lua_pushstring(L, "Aura");
         return 1;
@@ -35,7 +36,10 @@ namespace LuaAura
     int GetSpellId(lua_State* L, Aura* aura)
     {
         if (!aura)
-            RET_NIL();
+        {
+            lua_pushnil(L);
+            return 1;
+        }
         lua_pushnumber(L, aura->getSpellId());
         return 1;
     }
@@ -43,7 +47,10 @@ namespace LuaAura
     int GetCaster(lua_State* L, Aura* aura)
     {
         if (!aura)
-            RET_NIL();
+        {
+            lua_pushnil(L);
+            return 1;
+        }
         Object* caster = aura->getCaster();
         if (caster->isCreatureOrPlayer())  //unit caster
         {
@@ -62,14 +69,19 @@ namespace LuaAura
         }
         else
         {
-            RET_NIL();
+            lua_pushnil(L);
+            return 1;
         }
     }
 
     int GetTarget(lua_State* L, Aura* aura)
     {
         if (!aura)
-            RET_NIL();
+        {
+            lua_pushnil(L);
+            return 1;
+        }
+
         PUSH_UNIT(L, aura->getOwner());
         return 1;
     }
@@ -77,7 +89,10 @@ namespace LuaAura
     int GetDuration(lua_State* L, Aura* aura)
     {
         if (!aura)
-            RET_NIL();
+        {
+            lua_pushnil(L);
+            return 1;
+        }
         RET_NUMBER(aura->getMaxDuration()); //in milliseconds
     }
 
@@ -95,7 +110,10 @@ namespace LuaAura
     int GetTimeLeft(lua_State* L, Aura* aura)
     {
         if (!aura)
-            RET_NIL();
+        {
+            lua_pushnil(L);
+            return 1;
+        }
         RET_NUMBER(aura->getTimeLeft()); //in milliseconds
     }
 
@@ -161,7 +179,10 @@ namespace LuaAura
         SpellInfo const* proto = aura->getSpellInfo();
         LuaSpellEntry l = GetLuaSpellEntryByName(var);
         if (!l.name)
-            RET_NIL();
+        {
+            lua_pushnil(L);
+            return 1;
+        }
         switch (l.typeId)  //0: int, 1: char*, 2: bool, 3: float
         {
             case 0:
@@ -183,7 +204,10 @@ namespace LuaAura
     int GetAuraSlot(lua_State* L, Aura* aura)
     {
         if (!aura)
-            RET_NIL();
+        {
+            lua_pushnil(L);
+            return 1;
+        }
         RET_INT(aura->getAuraSlot());
     }
 

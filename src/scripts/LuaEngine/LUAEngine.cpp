@@ -753,7 +753,7 @@ static int RegisterTimedEvent(lua_State* L)  //in this case, L == lu
     ek->funcName = funcName;
     ek->te = te;
     LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.insert(std::pair<int, EventInfoHolder*>(ref, ek));
-    sLuaEventMgr.event_AddEvent(te);
+    LuaGlobal::instance()->luaEngine()->LuaEventMgr.event_AddEvent(te);
     lua_settop(L, 0);
     lua_pushnumber(L, ref);
     delete ek;
@@ -763,7 +763,7 @@ static int RegisterTimedEvent(lua_State* L)  //in this case, L == lu
 
 static int RemoveTimedEvents(lua_State* /*L*/)  //in this case, L == lu
 {
-    sLuaEventMgr.RemoveEvents();
+    LuaGlobal::instance()->luaEngine()->LuaEventMgr.RemoveEvents();
     return 0;
 }
 
@@ -1711,7 +1711,7 @@ public:
 
     void OnEnterVehicle()
     {
-        CHECK_BINDING_ACQUIRELOCK;
+        CHECK_BINDING_ACQUIRELOCK
 
         LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ENTER_VEHICLE]);
         LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
@@ -1722,7 +1722,7 @@ public:
 
     void OnExitVehicle()
     {
-        CHECK_BINDING_ACQUIRELOCK;
+        CHECK_BINDING_ACQUIRELOCK
 
         LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_EXIT_VEHICLE]);
         LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
@@ -1733,7 +1733,7 @@ public:
 
     void OnFirstPassengerEntered(Unit* passenger)
     {
-        CHECK_BINDING_ACQUIRELOCK;
+        CHECK_BINDING_ACQUIRELOCK
 
         LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FIRST_PASSENGER_ENTERED]);
         LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
@@ -1745,7 +1745,7 @@ public:
 
     void OnVehicleFull()
     {
-        CHECK_BINDING_ACQUIRELOCK;
+        CHECK_BINDING_ACQUIRELOCK
 
         LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_VEHICLE_FULL]);
         LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
@@ -1756,7 +1756,7 @@ public:
 
     void OnLastPassengerLeft(Unit* passenger)
     {
-        CHECK_BINDING_ACQUIRELOCK;
+        CHECK_BINDING_ACQUIRELOCK
 
         LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LAST_PASSENGER_LEFT]);
         LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
@@ -1897,7 +1897,7 @@ public:
 
     void OnDamaged(uint32_t damage)
     {
-        CHECK_BINDING_ACQUIRELOCK;
+        CHECK_BINDING_ACQUIRELOCK
 
         LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DAMAGED]);
         LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
@@ -1909,7 +1909,7 @@ public:
 
     void OnDestroyed()
     {
-        CHECK_BINDING_ACQUIRELOCK;
+        CHECK_BINDING_ACQUIRELOCK
 
         LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DESTROYED]);
         LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);

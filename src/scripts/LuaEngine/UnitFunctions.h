@@ -131,7 +131,10 @@ public:
 
     static int GossipSendQuickMenu(lua_State *L, Unit *ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         uint32_t text_id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Player* player = CHECK_PLAYER(L, 2);
         uint32_t itemid = static_cast<uint32_t>(luaL_checkinteger(L, 3));
@@ -151,7 +154,10 @@ public:
 
     static int GossipAddQuests(lua_State *L, Unit *ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         if (LuaGlobal::instance()->m_menu == nullptr)
         {
             DLLLogDetail("There's no menu to fill quests into.");
@@ -367,7 +373,10 @@ public:
 
     static int SendChatMessage(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         uint8_t typ = static_cast<uint8_t>(CHECK_ULONG(L, 1));
         uint32_t lang = CHECK_ULONG(L, 2);
         const char* message = luaL_checklstring(L, 3, nullptr);
@@ -399,7 +408,10 @@ public:
 
     static int AggroWithInRangeFriends(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         // If Pointer isn't in combat skip everything
         if (!ptr->getCombatHandler().isInCombat())
             return 0;
@@ -434,7 +446,10 @@ public:
 
     static int MoveTo(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
@@ -446,7 +461,10 @@ public:
 
     static int MoveRandomArea(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         float x1 = CHECK_FLOAT(L, 1);
         float y1 = CHECK_FLOAT(L, 2);
         float z1 = CHECK_FLOAT(L, 3);
@@ -624,7 +642,10 @@ public:
     }
     static int RegisterEvent(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         const char* typeName = luaL_typename(L, 1);
         int delay = static_cast<int>(luaL_checkinteger(L, 2));
         int repeats = static_cast<int>(luaL_checkinteger(L, 3));
@@ -661,7 +682,10 @@ public:
     calls the wanted function  with the wanted arguments */
     static int CreateLuaEvent(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         const char* typeName = luaL_typename(L, 1);
         int delay = static_cast<int>(luaL_checkinteger(L, 2));
         int repeats = static_cast<int>(luaL_checkinteger(L, 3));
@@ -696,7 +720,11 @@ public:
 
     static int RemoveEvents(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         sEventMgr.RemoveEvents(ptr, EVENT_LUA_CREATURE_EVENTS);
         //Unref all contained references
         std::map< uint64_t, std::set<int> > & objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
@@ -713,7 +741,10 @@ public:
 
     static int SetFaction(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         int faction = static_cast<int>(luaL_checkinteger(L, 1));
         if (!faction)
             return 0;
@@ -724,7 +755,10 @@ public:
 
     static int GetNativeFaction(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         if (ptr->isPlayer())
         {
             RET_INT(static_cast<Player*>(ptr)->getInitialFactionId());
@@ -755,11 +789,19 @@ public:
     static int IsInCombat(lua_State* L, Unit* ptr)
     {
         if (ptr == nullptr || !ptr->IsInWorld())
-            RET_NIL()
-            if (ptr->getCombatHandler().isInCombat())
-                lua_pushboolean(L, 1);
-            else
-                lua_pushboolean(L, 0);
+        {
+            lua_pushnil(L);
+            return 1;
+        }
+
+        if (ptr->getCombatHandler().isInCombat())
+        {
+            lua_pushboolean(L, 1);
+        }
+        else
+        {
+            lua_pushboolean(L, 0);
+        }
         return 1;
     }
 
@@ -785,7 +827,10 @@ public:
 
     static int SetNPCFlags(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         uint32_t flags = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         ptr->setNpcFlags(flags);
         return 0;
@@ -848,7 +893,7 @@ public:
 
     static int GetInstanceID(lua_State* L, Unit* ptr)
     {
-        //TEST_UNIT()
+        //if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature()) { return 0; }
         if (!ptr || ptr->getWorldMap() == nullptr || ptr->getWorldMap()->getBaseMap()->getMapInfo()->isNonInstanceMap())
             lua_pushnil(L);
         else
@@ -1010,7 +1055,11 @@ public:
 
     static int GetRandomFriend(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         std::vector<Object*> allies;
 
         for (const auto& itr : ptr->getInRangeObjectsSet())
@@ -1028,7 +1077,11 @@ public:
 
     static int GetRandomEnemy(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         std::vector<Object*> enemies;
 
         for (const auto& itr : ptr->getInRangeObjectsSet())
@@ -1046,7 +1099,10 @@ public:
 
     static int StopMovement(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         uint32_t tim = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         ptr->pauseMovement(tim);
         return 0;
@@ -1054,7 +1110,11 @@ public:
 
     static int RemoveAura(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         uint32_t auraid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         ptr->removeAllAurasById(auraid);
         return 0;
@@ -1062,7 +1122,10 @@ public:
 
     static int CanAttack(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         Unit* target = CHECK_UNIT(L, 1);
         if (!target)
             return 0;
@@ -1075,7 +1138,11 @@ public:
 
     static int PlaySoundToSet(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         uint32_t soundid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         ptr->PlaySoundToSet(soundid);
         return 0;
@@ -1162,7 +1229,10 @@ public:
 
     static int Despawn(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         uint32_t delay = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         uint32_t respawntime = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         static_cast<Creature*>(ptr)->Despawn(delay, respawntime);
@@ -1256,7 +1326,10 @@ public:
 
     static int GetMainTank(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Unit* ret = ptr->getAIInterface()->getCurrentTarget();
         if (!ret)
             lua_pushnil(L);
@@ -1267,7 +1340,10 @@ public:
 
     static int GetAddTank(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Unit* ret = ptr->getThreatManager().getSecondMostHated();
         if (ret == nullptr)
             lua_pushnil(L);
@@ -1278,14 +1354,20 @@ public:
 
     static int ClearThreatList(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         ptr->clearHateList();
         return 0;
     }
 
     static int SetTauntedBy(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Unit* target = CHECK_UNIT(L, 1);
         if (!target || target == ptr)
             return 0;
@@ -1313,7 +1395,10 @@ public:
 
     static int ChangeTarget(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Unit* target = CHECK_UNIT(L, 1);
         if (!target || !isHostile(ptr, target) || ptr == target)
             return 0;
@@ -1324,7 +1409,11 @@ public:
 
     static int HasFinishedQuest(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            lua_pushboolean(L, 0);
+            return 1;
+        }
         uint32_t questid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (static_cast<Player*>(ptr)->hasQuestFinished(questid))
             lua_pushboolean(L, 1);
@@ -1335,7 +1424,11 @@ public:
 
     static int FinishQuest(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            lua_pushboolean(L, 0);
+            return 1;
+        }
         uint32_t quest_id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
 
@@ -1367,7 +1460,11 @@ public:
 
     static int StartQuest(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            lua_pushboolean(L, 0);
+            return 1;
+        }
         uint32_t quest_id = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         Player* player = static_cast<Player*>(ptr);
 
@@ -1445,7 +1542,11 @@ public:
     }
     static int LearnSpells(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            lua_pushboolean(L, 0);
+            return 1;
+        }
         if (!strcmp("table", luaL_typename(L, 1)))
         {
             int table = lua_gettop(L);
@@ -1577,7 +1678,10 @@ public:
 
     static int WipeHateList(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         ptr->wipeHateList();
         ptr->getThreatManager().clearAllThreat();
         ptr->getThreatManager().removeMeFromThreatLists();
@@ -1586,7 +1690,10 @@ public:
 
     static int WipeTargetList(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         ptr->getThreatManager().clearAllThreat();
         ptr->getThreatManager().removeMeFromThreatLists();
         return 0;
@@ -1594,7 +1701,10 @@ public:
 
     static int WipeCurrentTarget(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         ptr->getThreatManager().clearThreat(ptr->getAIInterface()->getCurrentTarget());
         return 0;
     }
@@ -1652,7 +1762,10 @@ public:
 
     static int ClearHateList(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         ptr->clearHateList();
         return 0;
     }
@@ -1679,7 +1792,11 @@ public:
 
     static int GetPlayerRace(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            lua_pushboolean(L, 0);
+            return 1;
+        }
         lua_pushinteger(L, static_cast<Player*>(ptr)->getRace());
         return 1;
     }
@@ -1856,7 +1973,10 @@ public:
 
     static int HasFlag(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         /*uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint32_t flag = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         lua_pushboolean(L, ptr->HasFlag(index, flag) ? 1 : 0);*/
@@ -1865,7 +1985,10 @@ public:
 
     static int QuestAddStarter(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Creature* unit = static_cast<Creature*>(ptr);
         uint32_t quest_id = (uint32_t)luaL_checknumber(L, 1);
         if (!(unit->getNpcFlags() & UNIT_NPC_FLAG_QUESTGIVER))
@@ -1908,7 +2031,10 @@ public:
 
     static int QuestAddFinisher(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Creature* unit = static_cast<Creature*>(ptr);
         uint32_t quest_id = CHECK_ULONG(L, 1);
         if (!(unit->getNpcFlags() & UNIT_NPC_FLAG_QUESTGIVER))
@@ -2060,7 +2186,10 @@ public:
 
     static int SetOutOfCombatRange(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         auto range = static_cast<float>(luaL_checkinteger(L, 1));
         if (range)
             ptr->getAIInterface()->addBoundary(new CircleBoundary(ptr->GetPosition(), range), true);
@@ -2093,7 +2222,10 @@ public:
 
     static int isFlying(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         if (ptr->IsFlying())
             lua_pushboolean(L, 1);
         else
@@ -2159,7 +2291,10 @@ public:
 
     static int HandleEvent(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Unit* target = CHECK_UNIT(L, 1);
         uint32_t event_id = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         uint32_t misc_1 = static_cast<uint32_t>(luaL_checkinteger(L, 3));
@@ -2207,7 +2342,10 @@ public:
 
     static int GetAIState(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         lua_pushnumber(L, ptr->getAIInterface()->getAiState());
         return 1;
     }
@@ -2560,7 +2698,10 @@ public:
 
     static int Strike(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         Unit* target = CHECK_UNIT(L, 1);
         WeaponDamageType weapon_damage_type = static_cast<WeaponDamageType>(luaL_checkinteger(L, 2));
         uint32_t sp = CHECK_ULONG(L, 3);
@@ -2617,14 +2758,20 @@ public:
 
     static int getCurrentTarget(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         PUSH_UNIT(L, ptr->getAIInterface()->getCurrentTarget());
         return 1;
     }
 
     static int SetPetOwner(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Unit* owner = CHECK_UNIT(L, 1);
         if (owner)
             ptr->getAIInterface()->setPetOwner(owner);
@@ -2633,7 +2780,10 @@ public:
 
     static int DismissPet(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         // DissmissPet in AIInterface got deleted
         return 0;
     }
@@ -2652,14 +2802,20 @@ public:
 
     static int GetPetOwner(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         PUSH_UNIT(L, ptr->getAIInterface()->getPetOwner());
         return 1;
     }
 
     static int SetUnitToFollow(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Unit* target = CHECK_UNIT(L, 1);
         float dist = CHECK_FLOAT(L, 2);
         float angle = CHECK_FLOAT(L, 3);
@@ -2788,7 +2944,10 @@ public:
 
     static int GetAITargetsCount(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         lua_pushnumber(L, static_cast<lua_Number>(ptr->getThreatManager().getThreatListSize()));
         return 1;
     }
@@ -2803,7 +2962,10 @@ public:
 
     static int GetAITargets(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Unit* ret = nullptr;
         lua_newtable(L);
         int count = 0;
@@ -3090,7 +3252,10 @@ public:
 
     static int MoveFly(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         bool enabled = CHECK_BOOL(L, 1);
         ptr->setMoveCanFly(enabled);
         return 0;
@@ -3121,7 +3286,10 @@ public:
 
     static int CanCallForHelp(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         bool enabled = CHECK_BOOL(L, 1);
         ptr->getAIInterface()->m_canCallForHelp = enabled;
         return 0;
@@ -3129,7 +3297,10 @@ public:
 
     static int CallForHelpHp(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         float hp = CHECK_FLOAT(L, 1);
         ptr->getAIInterface()->m_CallForHelpHealth = hp;
         return 0;
@@ -3161,7 +3332,10 @@ public:
 
     static int SetCreatureName(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         return 0;
     }
 
@@ -3206,7 +3380,10 @@ public:
 
     static int RemoveFromWorld(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Creature* unit = static_cast<Creature*>(ptr);
         if (unit->IsInWorld())
         {
@@ -3259,7 +3436,10 @@ public:
 
     static int NoRespawn(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         bool enabled = CHECK_BOOL(L, 1);
         static_cast<Creature*>(ptr)->m_noRespawn = enabled;
         return 0;
@@ -3288,7 +3468,11 @@ public:
 
     static int eventCastSpell(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         Unit* target = CHECK_UNIT(L, 1);
         uint32_t sp = CHECK_ULONG(L, 2);
         uint32_t delay = CHECK_ULONG(L, 3);
@@ -3310,18 +3494,27 @@ public:
 
     static int IsPlayerMoving(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            lua_pushboolean(L, 0);
+            return 1;
+        }
         lua_pushboolean(L, (static_cast<Player*>(ptr)->isMoving()) ? 1 : 0);
         return 1;
     }
 
     static int IsPlayerAttacking(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER_RET()
-            if (static_cast<Player*>(ptr)->IsAttacking())
-                lua_pushboolean(L, 1);
-            else
-                lua_pushboolean(L, 0);
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            lua_pushboolean(L, 0);
+            return 1;
+        }
+
+        if (static_cast<Player*>(ptr)->IsAttacking())
+            lua_pushboolean(L, 1);
+        else
+            lua_pushboolean(L, 0);
         return 1;
     }
 
@@ -3364,7 +3557,11 @@ public:
 
     static int SetPlayerAtWar(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            lua_pushboolean(L, 0);
+            return 1;
+        }
         uint32_t faction = CHECK_ULONG(L, 1);
         bool set = CHECK_BOOL(L, 3);
         if (faction)
@@ -3427,7 +3624,10 @@ public:
 
     static int RemoveThreatByPtr(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Unit* target = CHECK_UNIT(L, 1);
         if (target)
             ptr->getThreatManager().clearThreat(target);
@@ -3533,7 +3733,11 @@ public:
 
     static int RemoveAurasByMechanic(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         auto mechanic = static_cast<SpellMechanic>(luaL_checkinteger(L, 1));
         bool hostileonly = CHECK_BOOL(L, 2);
         if (mechanic)
@@ -3543,7 +3747,11 @@ public:
 
     static int RemoveAurasType(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         auto type = static_cast<AuraEffect>(luaL_checkinteger(L, 1));
         if (type)
             ptr->removeAllAurasByAuraEffect(type);
@@ -3552,7 +3760,11 @@ public:
 
     static int AddAura(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         uint32_t spellid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         int32_t duration = static_cast<int32_t>(luaL_checkinteger(L, 2));
         bool temp = CHECK_BOOL(L, 3);
@@ -3569,7 +3781,10 @@ public:
 
     static int SetAIState(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         uint32_t state = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (state)
         {
@@ -3673,7 +3888,10 @@ public:
 
     static int ModifyAIUpdateEvent(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         time_t newtime = static_cast<time_t>(luaL_checkinteger(L, 1));
         sEventMgr.ModifyEventTimeAndTimeLeft(ptr, EVENT_SCRIPT_UPDATE_EVENT, newtime);
         return 0;
@@ -3681,7 +3899,10 @@ public:
 
     static int RemoveAIUpdateEvent(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         sEventMgr.RemoveEvents(ptr, EVENT_SCRIPT_UPDATE_EVENT);
         return 0;
     }
@@ -3722,7 +3943,10 @@ public:
 
     static int Attack(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Unit* target = CHECK_UNIT(L, 1);
         if (target && ptr->getThreatManager().canHaveThreatList())
         {
@@ -3793,7 +4017,11 @@ public:
 
     static int RepairAllPlayerItems(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            lua_pushboolean(L, 0);
+            return 1;
+        }
         Player* plr = static_cast<Player*>(ptr);
         Item* pItem = nullptr;
         Container* pContainer = nullptr;
@@ -4013,7 +4241,10 @@ public:
 
     static int CreatureHasQuest(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Creature* ctr = static_cast<Creature*>(ptr);
         uint32_t questid = CHECK_ULONG(L, 1);
         QuestProperties const* qst = sMySQLStore.getQuestProperties(questid);
@@ -4199,7 +4430,10 @@ public:
 
     static int AddLoot(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         if ((lua_gettop(L) != 3) || (lua_gettop(L) != 5))
             return 0;
 
@@ -4227,7 +4461,10 @@ public:
 
     static int VendorAddItem(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Creature* ctr = static_cast<Creature*>(ptr);
         uint32_t itemid = (uint32_t)luaL_checknumber(L, 1);
         uint32_t amount = (uint32_t)luaL_checknumber(L, 2);
@@ -4242,7 +4479,10 @@ public:
 
     static int VendorRemoveItem(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Creature* ctr = static_cast<Creature*>(ptr);
         uint32_t itemid = (uint32_t)luaL_checknumber(L, 1);
         int slot = ctr->GetSlotByItemId(itemid);
@@ -4253,7 +4493,10 @@ public:
 
     static int VendorRemoveAllItems(lua_State* /*L*/, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Creature* ctr = static_cast<Creature*>(ptr);
         uint32_t i = 0;
         if (ctr->HasItems())
@@ -4275,7 +4518,10 @@ public:
 
     static int EquipWeapons(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         uint32_t equip1 = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         uint32_t equip2 = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         uint32_t equip3 = static_cast<uint32_t>(luaL_checkinteger(L, 3));
@@ -4474,7 +4720,10 @@ public:
 
     static int IsMounted(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
 
         if (ptr->isPlayer())
         {
@@ -5090,10 +5339,14 @@ public:
         TEST_PLAYER()
         MovementInfo* move_info = static_cast<Player*>(ptr)->getMovementInfo();
         if (move_info != nullptr)
+        {
             lua_pushnumber(L, move_info->flags);
+        }
         else
-            RET_NIL()
+        {
+            lua_pushnil(L);
             return 1;
+        }
     }
 
     static int Repop(lua_State* /*L*/, Unit* ptr)
@@ -5107,7 +5360,10 @@ public:
 
     static int SetMovementFlags(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         int movetype = static_cast<int>(luaL_checkinteger(L, 1)); //0: walk, 1: run, 2: fly.
         if (movetype == 2)
         {
@@ -5126,7 +5382,10 @@ public:
 
     static int GetSpawnId(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         Creature* cre = static_cast<Creature*>(ptr);
         lua_pushnumber(L, cre->GetSQL_id());
         return 1;
@@ -5167,7 +5426,10 @@ public:
 
     static int EventChat(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         uint8_t typ = static_cast<uint8_t>(luaL_checkinteger(L, 1));
         uint32_t lang = static_cast<uint32_t>(luaL_checkinteger(L, 2));
         const char* message = luaL_checkstring(L, 3);
@@ -5253,7 +5515,10 @@ public:
 
     static int GetAreaId(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         auto area = ptr->GetArea();
         RET_NUMBER(area ? area->id : -1);
     }
@@ -5273,14 +5538,20 @@ public:
 
     static int IsDazed(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         lua_pushboolean(L, (ptr->IsDazed()) ? 1 : 0);
         return 1;
     }
 
     static int IsRooted(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         if (ptr->isRooted())
             RET_BOOL(true)
             RET_BOOL(false)
@@ -5288,7 +5559,10 @@ public:
 
     static int HasAuraWithMechanic(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         auto mechanic = static_cast<SpellMechanic>(CHECK_ULONG(L, 1));
         if (mechanic && ptr->hasAuraWithMechanic(mechanic))
             RET_BOOL(true)
@@ -5297,7 +5571,10 @@ public:
 
     static int HasNegativeAura(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         for (uint16_t x = AuraSlots::NEGATIVE_SLOT_START; x < AuraSlots::NEGATIVE_SLOT_END; ++x)
         {
             if (ptr->getAuraWithAuraSlot(x))
@@ -5308,7 +5585,11 @@ public:
 
     static int HasPositiveAura(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         for (uint16_t x = AuraSlots::POSITIVE_SLOT_START; x < AuraSlots::POSITIVE_SLOT_END; ++x)
         {
             if (ptr->getAuraWithAuraSlot(x))
@@ -5319,7 +5600,11 @@ public:
 
     static int GetClosestEnemy(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         float closest_dist = 99999.99f;
         float current_dist = 0;
         Unit* ret = nullptr;
@@ -5341,7 +5626,11 @@ public:
 
     static int GetClosestFriend(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         float closest_dist = 99999.99f;
         float current_dist = 0.0f;
         Unit* ret = nullptr;
@@ -5363,7 +5652,11 @@ public:
 
     static int GetClosestUnit(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         float closest_dist = 99999.99f;
         float current_dist = 0;
         Unit* ret = nullptr;
@@ -5385,7 +5678,11 @@ public:
 
     static int GetObjectType(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         if (ptr->isPlayer())
             lua_pushstring(L, "Player");
         else
@@ -5395,49 +5692,72 @@ public:
 
     static int DisableMelee(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         bool disable = CHECK_BOOL(L, 1);
         static_cast<Creature*>(ptr)->getAIInterface()->setMeleeDisabled(disable);
         RET_BOOL(true)
     }
     static int DisableSpells(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         bool disable = CHECK_BOOL(L, 1);
         static_cast<Creature*>(ptr)->getAIInterface()->setCastDisabled(disable);
         RET_BOOL(true)
     }
     static int DisableRanged(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         bool disable = CHECK_BOOL(L, 1);
         static_cast<Creature*>(ptr)->getAIInterface()->setRangedDisabled(disable);
         RET_BOOL(true)
     }
     static int DisableCombat(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         bool disable = CHECK_BOOL(L, 1);
         static_cast<Creature*>(ptr)->getAIInterface()->setCombatDisabled(disable);
         RET_BOOL(true)
     }
     static int DisableTargeting(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         bool disable = CHECK_BOOL(L, 1);
         static_cast<Creature*>(ptr)->getAIInterface()->setTargetingDisabled(disable);
         RET_BOOL(true)
     }
     static int IsInGroup(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            lua_pushboolean(L, 0);
+            return 1;
+        }
         if (static_cast<Player*>(ptr)->isInGroup())
             RET_BOOL(true)
             RET_BOOL(false)
     }
     static int GetLocation(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         lua_pushnumber(L, ptr->GetPositionX());
         lua_pushnumber(L, ptr->GetPositionY());
         lua_pushnumber(L, ptr->GetPositionZ());
@@ -5447,7 +5767,11 @@ public:
 
     static int GetByte(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         /*uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint8_t index2 = static_cast<uint8_t>(luaL_checkinteger(L, 2));
         uint8_t value = ptr->getByteValue(index, index2);
@@ -5457,7 +5781,10 @@ public:
 
     static int SetByte(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         /*uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         uint8_t index2 = static_cast<uint8_t>(luaL_checkinteger(L, 2));
         uint8_t value = static_cast<uint8_t>(luaL_checkinteger(L, 3));
@@ -5467,7 +5794,10 @@ public:
 
     static int GetSpawnLocation(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         lua_pushnumber(L, ptr->GetSpawnX());
         lua_pushnumber(L, ptr->GetSpawnY());
         lua_pushnumber(L, ptr->GetSpawnZ());
@@ -5477,7 +5807,10 @@ public:
 
     static int GetObject(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         uint64_t guid = CHECK_GUID(L, 1);
         Object* obj = ptr->getWorldMap()->getObject(guid);
         if (obj != nullptr && obj->isCreatureOrPlayer())
@@ -5491,7 +5824,10 @@ public:
 
     static int GetSecondHated(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         PUSH_UNIT(L, ptr->getThreatManager().getSecondMostHated());
         return 1;
     }
@@ -5505,7 +5841,11 @@ public:
 
     static int FlagFFA(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         bool set = CHECK_BOOL(L, 1);
         if (set)
             ptr->setFfaPvpFlag();
@@ -5516,7 +5856,10 @@ public:
 
     static int TeleportCreature(lua_State* L, Unit* ptr)
     {
-        TEST_UNIT()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
+        {
+            return 0;
+        }
         float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
@@ -5541,7 +5884,10 @@ public:
 
     static int IsInDungeon(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         if (ptr->getWorldMap()->getBaseMap()->getMapInfo() && ptr->getWorldMap()->getBaseMap()->getMapInfo()->isMultimodeDungeon())
             lua_pushboolean(L, 1);
         else
@@ -5551,7 +5897,10 @@ public:
 
     static int IsInRaid(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         if (ptr->getWorldMap()->getBaseMap()->getMapInfo() && ptr->getWorldMap()->getBaseMap()->getMapInfo()->isRaid())
             lua_pushboolean(L, 1);
         else
@@ -5588,14 +5937,21 @@ public:
 
     static int GetAuraStackCount(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            lua_pushboolean(L, 0); return 1;
+        }
         uint32_t id = CHECK_ULONG(L, 1);
         RET_NUMBER(ptr->getAuraCountForId(id));
     }
 
     static int AddAuraObject(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         Aura* aura = CHECK_AURA(L, 1);
         if (!aura)
             return 0;
@@ -5605,7 +5961,11 @@ public:
 
     static int GetAuraObjectById(lua_State* L, Unit* ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         uint32_t id = CHECK_ULONG(L, 1);
         PUSH_AURA(L, ptr->getAuraWithId(id));
         return 1;
@@ -5620,7 +5980,11 @@ public:
 
     static int GetQuestObjectiveCompletion(lua_State* L, Unit* ptr)
     {
-        TEST_PLAYER_RET()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+        {
+            lua_pushboolean(L, 0);
+            return 1;
+        }
         uint32_t questid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         uint8_t objective = static_cast<uint8_t>(luaL_checkinteger(L, 2));
         Player* player = static_cast<Player*>(ptr);
@@ -5635,7 +5999,11 @@ public:
     static int IsOnVehicle(lua_State *L, Unit *ptr)
     {
 #ifdef FT_VEHICLES
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         if ((ptr->getVehicleKit() != nullptr) || (ptr->isPlayer() && ptr->isVehicle()))
             lua_pushboolean(L, 1);
         else
@@ -5647,7 +6015,11 @@ public:
     static int SpawnAndEnterVehicle(lua_State *L, Unit *ptr)
     {
 #ifdef FT_VEHICLES
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         uint32_t creature_entry = 0;
         uint32_t delay = 0;
 
@@ -5691,7 +6063,11 @@ public:
     static int DismissVehicle(lua_State* /*L*/, Unit* ptr)
     {
 #ifdef FT_VEHICLES
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         Vehicle* v = nullptr;
         if (ptr->getVehicleKit() != nullptr)
         {
@@ -5721,7 +6097,11 @@ public:
     static int AddVehiclePassenger(lua_State *L, Unit *ptr)
     {
 #ifdef FT_VEHICLES
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         Vehicle *v = nullptr;
 
         if (ptr->getVehicleKit() != nullptr)
@@ -5758,7 +6138,11 @@ public:
     static int HasEmptyVehicleSeat(lua_State *L, Unit *ptr)
     {
 #ifdef FT_VEHICLES
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         Vehicle *v = nullptr;
 
         if (ptr->getVehicleKit() != nullptr)
@@ -5781,7 +6165,11 @@ public:
     static int EnterVehicle(lua_State *L, Unit *ptr)
     {
 #ifdef FT_VEHICLES
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         if (lua_gettop(L) != 2)
             return 0;
 
@@ -5799,7 +6187,11 @@ public:
     static int ExitVehicle(lua_State* /*L*/, Unit* ptr)
     {
 #ifdef FT_VEHICLES
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         if (ptr->getVehicleKit() != nullptr)
         {
             ptr->callExitVehicle();
@@ -5816,7 +6208,11 @@ public:
     static int GetVehicleBase(lua_State *L, Unit *ptr)
     {
 #ifdef FT_VEHICLES
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         Unit *u = ptr->getVehicleBase();
 
         if (u != nullptr)
@@ -5830,7 +6226,11 @@ public:
     static int EjectAllVehiclePassengers(lua_State* /*L*/, Unit* ptr)
     {
 #ifdef FT_VEHICLES
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         Unit* u = ptr->getVehicleBase();
         if (u == nullptr)
             return 0;
@@ -5843,7 +6243,11 @@ public:
     static int EjectVehiclePassengerFromSeat(lua_State *L, Unit *ptr)
     {
 #ifdef FT_VEHICLES
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         Unit *u = ptr->getVehicleBase();
         if (u == nullptr)
             return 0;
@@ -5865,7 +6269,11 @@ public:
     static int MoveVehiclePassengerToSeat(lua_State *L, Unit *ptr)
     {
 #ifdef FT_VEHICLES
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         Unit *u = ptr->getVehicleBase();
         if (u == nullptr)
             return 0;
@@ -5894,7 +6302,11 @@ public:
 
     static int GetWorldStateForZone(lua_State *L, Unit *ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         if (lua_gettop(L) != 1)
             return 0;
 
@@ -5921,7 +6333,11 @@ public:
 
     static int SetWorldStateForZone(lua_State *L, Unit *ptr)
     {
-        TEST_UNITPLAYER()
+        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+        {
+            return 0;
+        }
+
         if (lua_gettop(L) != 2)
             return 0;
 
