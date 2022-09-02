@@ -443,7 +443,7 @@ public:
         }
     } HookInfo;
 
-    class luEventMgr : public EventableObject
+    class _luaEventMgr : public EventableObject
     {
     public:
         bool HasEvent(int ref)
