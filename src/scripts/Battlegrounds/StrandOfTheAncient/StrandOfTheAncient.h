@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "StrandOfTheAncientDefinitions.h"
 
-class StrandOfTheAncient : public CBattleground
+class StrandOfTheAncient : public Battleground
 {
 private:
     uint32_t Attackers;   // 0 - horde / 1 - alliance
@@ -35,7 +35,7 @@ private:
     SOTAGraveyard graveyard[NUM_SOTA_GRAVEYARDS];
 
 public:
-    static CBattleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new StrandOfTheAncient(m, i, l, t); }
+    static Battleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new StrandOfTheAncient(m, i, l, t); }
 
     StrandOfTheAncient(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
     ~StrandOfTheAncient();

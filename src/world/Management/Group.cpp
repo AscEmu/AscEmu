@@ -135,7 +135,7 @@ bool Group::AddMember(CachedCharacterInfo* info, int32 subgroupid/* =-1 */)
         if (m_isqueued)
         {
             m_isqueued = false;
-            sBattlegroundManager.RemoveGroupFromQueues(this);
+            sBattlegroundManager.removeGroupFromQueues(this);
         }
 
         if (!IsFull())
@@ -357,7 +357,7 @@ void Group::Disband()
 
         SendPacketToAll(SmsgMessageChat(SystemMessagePacket("A change was made to your group. Removing the arena queue.")).serialise().get());
 
-        sBattlegroundManager.RemoveGroupFromQueues(this);
+        sBattlegroundManager.removeGroupFromQueues(this);
     }
 
     for (uint8 i = 0; i < m_SubGroupCount; i++)
@@ -440,7 +440,7 @@ void Group::RemovePlayer(CachedCharacterInfo* info)
     if (m_isqueued)
     {
         m_isqueued = false;
-        sBattlegroundManager.RemoveGroupFromQueues(this);
+        sBattlegroundManager.removeGroupFromQueues(this);
     }
 
     SubGroup* sg = nullptr;
@@ -549,7 +549,7 @@ void Group::ExpandToRaid()
 
         SendPacketToAll(SmsgMessageChat(SystemMessagePacket("A change was made to your group. Removing the arena queue.")).serialise().get());
 
-        sBattlegroundManager.RemoveGroupFromQueues(this);
+        sBattlegroundManager.removeGroupFromQueues(this);
     }
 
     // Very simple ;)

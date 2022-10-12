@@ -23,7 +23,7 @@
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/Stats.h"
 #include "Management/QuestDefines.hpp"
-#include "Management/Battleground/BattlegroundMgr.h"
+#include "Management/Battleground/BattlegroundMgr.hpp"
 #include "Management/MailMgr.h"
 #include "Management/ItemPrototype.h"
 #include "Management/AchievementMgr.h"
@@ -65,7 +65,7 @@ struct GuildMember;
 class QueryBuffer;
 struct QuestProperties;
 struct SpellShapeshiftForm;
-class CBattleground;
+class Battleground;
 class Instance;
 class InstanceSaved;
 struct CharRaceEntry;
@@ -1269,11 +1269,11 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Battleground
 public:
-    CBattleground* getBattleground() const;
-    void setBattleground(CBattleground* bg);
+    Battleground* getBattleground() const;
+    void setBattleground(Battleground* bg);
 
-    CBattleground* getPendingBattleground() const;
-    void setPendingBattleground(CBattleground* bg);
+    Battleground* getPendingBattleground() const;
+    void setPendingBattleground(Battleground* bg);
 
     bool isQueuedForBg() const;
     void setIsQueuedForBg(bool set);
@@ -1307,8 +1307,8 @@ public:
     BGScore m_bgScore;
 
 private:
-    CBattleground* m_bg = nullptr;
-    CBattleground* m_pendingBattleground = nullptr;
+    Battleground* m_bg = nullptr;
+    Battleground* m_pendingBattleground = nullptr;
 
     bool m_isQueuedForBg = false;
     uint32_t m_queuedBgInstanceId = 0;

@@ -39,7 +39,7 @@
 #include "Management/ItemInterface.h"
 #include "Objects/Units/Stats.h"
 #include "Chat/Channel.hpp"
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Management/ArenaTeam.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -2506,13 +2506,13 @@ void Player::OnPushToWorld()
     if (m_WorldMap->getBaseMap()->isBattlegroundOrArena())
     {
         if (m_WorldMap && reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground() != nullptr && m_bg != reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground())
-            reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground()->PortPlayer(this, true);
+            reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground()->portPlayer(this, true);
     }
 
     if (m_bg != nullptr)
     {
         m_bg->OnAddPlayer(this);   // add buffs and so, must be after zone update and related aura removal
-        m_bg->OnPlayerPushed(this);
+        m_bg->onPlayerPushed(this);
     }
 
     m_changingMaps = false;
@@ -2560,7 +2560,7 @@ void Player::RemoveFromWorld()
     m_loadMana = getPower(POWER_TYPE_MANA);
 
     if (m_bg)
-        m_bg->RemovePlayer(this, true);
+        m_bg->removePlayer(this, true);
 
     // Cancel trade if it's active.
     if (m_TradeData != nullptr)

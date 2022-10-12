@@ -5,17 +5,17 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Objects/Units/Creatures/Vehicle.h"
 #include "IsleOfConquestDefinitions.h"
 
-class IsleOfConquest : public CBattleground
+class IsleOfConquest : public Battleground
 {
 public:
     IsleOfConquest(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
     ~IsleOfConquest();
 
-    static CBattleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new IsleOfConquest(m, i, l, t); }
+    static Battleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new IsleOfConquest(m, i, l, t); }
 
     void Init();
     void OnCreate() override;

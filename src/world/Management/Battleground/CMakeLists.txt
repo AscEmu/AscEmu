@@ -4,10 +4,10 @@ set(PATH_PREFIX Management/Battleground)
 
 set(SRC_MANAGEMENT_BATTLEGROUND_FILES
     ${PATH_PREFIX}/Battleground.cpp
-    ${PATH_PREFIX}/Battleground.h
+    ${PATH_PREFIX}/Battleground.hpp
 	${PATH_PREFIX}/BattlegroundDefines.hpp
     ${PATH_PREFIX}/BattlegroundMgr.cpp
-    ${PATH_PREFIX}/BattlegroundMgr.h
+    ${PATH_PREFIX}/BattlegroundMgr.hpp
 )
 
 source_group(Management\\Battleground FILES ${SRC_MANAGEMENT_BATTLEGROUND_FILES})

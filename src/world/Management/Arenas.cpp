@@ -35,7 +35,7 @@ const uint32 ARENA_PREPARATION = 32727;
 const uint32 GREEN_TEAM = 0;
 const uint32 GOLD_TEAM = 1;
 
-Arena::Arena(WorldMap* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) : CBattleground(mgr, id, lgroup, t)
+Arena::Arena(WorldMap* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) : Battleground(mgr, id, lgroup, t)
 {
 
     for (uint8 i = 0; i < 2; i++)
@@ -168,11 +168,11 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
     sObjectMgr.UpdateArenaTeamRankings();
 
     m_nextPvPUpdateTime = 0;
-    UpdatePvPData();
-    PlaySoundToAll(winningTeam ? BattlegroundDef::ALLIANCEWINS : BattlegroundDef::HORDEWINS);
+    updatePvPData();
+    playSoundToAll(winningTeam ? BattlegroundDef::ALLIANCEWINS : BattlegroundDef::HORDEWINS);
 
     sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
-    sEventMgr.AddEvent(static_cast< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(static_cast< Battleground* >(this), &Battleground::close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     for (uint8 i = 0; i < 2; i++)
     {
@@ -358,19 +358,19 @@ void Arena::OnStart()
     UpdatePlayerCounts();
 
     // WHEEEE
-    PlaySoundToAll(BattlegroundDef::BATTLEGROUND_BEGIN);
+    playSoundToAll(BattlegroundDef::BATTLEGROUND_BEGIN);
 
     sEventMgr.RemoveEvents(this, EVENT_ARENA_SHADOW_SIGHT);
-    sEventMgr.AddEvent(static_cast< CBattleground* >(this), &CBattleground::HookOnShadowSight, EVENT_ARENA_SHADOW_SIGHT, 90000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(static_cast< Battleground* >(this), &Battleground::HookOnShadowSight, EVENT_ARENA_SHADOW_SIGHT, 90000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void Arena::UpdatePlayerCounts()
 {
-    if (this->HasEnded())
+    if (this->hasEnded())
         return;
 
-    SetWorldState(WORLDSTATE_ARENA__GREEN_PLAYER_COUNT, m_playersCount[0]);
-    SetWorldState(WORLDSTATE_ARENA__GOLD_PLAYER_COUNT, m_playersCount[1]);
+    setWorldState(WORLDSTATE_ARENA__GREEN_PLAYER_COUNT, m_playersCount[0]);
+    setWorldState(WORLDSTATE_ARENA__GOLD_PLAYER_COUNT, m_playersCount[1]);
 
     if (!m_hasStarted)
         return;
@@ -378,9 +378,9 @@ void Arena::UpdatePlayerCounts()
     //    return;
 
     if (m_playersCount[TEAM_HORDE] == 0)
-        this->EndBattleground(TEAM_ALLIANCE);
+        this->endBattleground(TEAM_ALLIANCE);
     else if (m_playersCount[TEAM_ALLIANCE] == 0)
-        this->EndBattleground(TEAM_HORDE);
+        this->endBattleground(TEAM_HORDE);
 }
 
 uint32 Arena::CalcDeltaRating(uint32 oldRating, uint32 opponentRating, bool outcome)

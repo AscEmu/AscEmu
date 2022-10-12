@@ -481,12 +481,12 @@ AlteracValley::AVNode::AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint3
         // spawn alliance npcs if its a horde tower
         if (m_template->m_defaultState == AV_NODE_STATE_ALLIANCE_CONTROLLED)
         {
-            m_homeNPC = m_bg->SpawnCreature(g_HomeNpcInfo[m_nodeId].id_a, g_HomeNpcInfo[m_nodeId].a_x, g_HomeNpcInfo[m_nodeId].a_y,
+            m_homeNPC = m_bg->spawnCreature(g_HomeNpcInfo[m_nodeId].id_a, g_HomeNpcInfo[m_nodeId].a_x, g_HomeNpcInfo[m_nodeId].a_y,
                 g_HomeNpcInfo[m_nodeId].a_z, g_HomeNpcInfo[m_nodeId].a_o);
         }
         else
         {
-            m_homeNPC = m_bg->SpawnCreature(g_HomeNpcInfo[m_nodeId].id_h, g_HomeNpcInfo[m_nodeId].h_x, g_HomeNpcInfo[m_nodeId].h_y,
+            m_homeNPC = m_bg->spawnCreature(g_HomeNpcInfo[m_nodeId].id_h, g_HomeNpcInfo[m_nodeId].h_x, g_HomeNpcInfo[m_nodeId].h_y,
                 g_HomeNpcInfo[m_nodeId].h_z, g_HomeNpcInfo[m_nodeId].h_o);
         }
     }
@@ -542,7 +542,7 @@ void AlteracValley::AVNode::Assault(Player* plr)
     if (m_template->m_isGraveyard)
     {
         // send message
-        m_bg->SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->getTeam(), 0, "%s claims the %s! If left unchallenged, the %s will control it!", plr->getName().c_str(), m_template->m_name,
+        m_bg->sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->getTeam(), 0, "%s claims the %s! If left unchallenged, the %s will control it!", plr->getName().c_str(), m_template->m_name,
             plr->isTeamHorde() ? "Horde" : "Alliance");
 
         plr->m_bgScore.MiscData[BattlegroundDef::AV_GRAVEYARDS_ASSAULTED]++;
@@ -576,7 +576,7 @@ void AlteracValley::AVNode::Spawn()
         if (m_flag == nullptr)
         {
             // initial spawn
-            m_flag = m_bg->SpawnGameObject(g->id[m_state], m_bg->getWorldMap()->getBaseMap()->getMapId(), g->x, g->y, g->z, g->o, 0, 0, 1.0f);
+            m_flag = m_bg->spawnGameObject(g->id[m_state], LocationVector(g->x, g->y, g->z, g->o), 0, 0, 1.0f);
             m_flag->SetFaction(g_gameObjectFactions[m_state]);
             m_flag->setAnimationProgress(100);
             m_flag->setDynamicFlags(GO_DYN_FLAG_INTERACTABLE);
@@ -621,7 +621,7 @@ void AlteracValley::AVNode::Spawn()
         if (m_aura == nullptr)
         {
             // initial spawn
-            m_aura = m_bg->SpawnGameObject(g->id[m_state], m_bg->getWorldMap()->getBaseMap()->getMapId(), g->x, g->y, g->z, g->o, 0, 0, 3.0f);
+            m_aura = m_bg->spawnGameObject(g->id[m_state], LocationVector(g->x, g->y, g->z, g->o), 0, 0, 3.0f);
             m_aura->SetFaction(g_gameObjectFactions[m_state]);
             m_aura->setAnimationProgress(100);
             m_aura->setFlags(GO_FLAG_NONSELECTABLE);
@@ -668,7 +668,7 @@ void AlteracValley::AVNode::Spawn()
         if (m_glow == nullptr)
         {
             // initial spawn
-            m_glow = m_bg->SpawnGameObject(g->id[m_state], m_bg->getWorldMap()->getBaseMap()->getMapId(), g->x, g->y, g->z, g->o, 0, 0, 1.0f);
+            m_glow = m_bg->spawnGameObject(g->id[m_state], LocationVector(g->x, g->y, g->z, g->o), 0, 0, 1.0f);
             m_glow->SetFaction(g_gameObjectFactions[m_state]);
             m_glow->setAnimationProgress(100);
             m_glow->setFlags(GO_FLAG_NONSELECTABLE);
@@ -706,10 +706,10 @@ void AlteracValley::AVNode::Spawn()
 
     // update field states :O
     if (m_template->m_worldStateFields[m_lastState] != 0)
-        m_bg->SetWorldState(m_template->m_worldStateFields[m_lastState], 0);
+        m_bg->setWorldState(m_template->m_worldStateFields[m_lastState], 0);
 
     if (m_template->m_worldStateFields[m_state] != 0)
-        m_bg->SetWorldState(m_template->m_worldStateFields[m_state], 1);
+        m_bg->setWorldState(m_template->m_worldStateFields[m_state], 1);
 
     // despawn/spawn guards
     if (m_state == AV_NODE_STATE_ALLIANCE_CONTROLLED || m_state == AV_NODE_STATE_HORDE_CONTROLLED)
@@ -730,7 +730,7 @@ void AlteracValley::AVNode::Spawn()
                 float x = Util::getRandomInt(10) * cos(Util::getRandomFloat(6.28f)) + m_template->m_flagLocation.x;
                 float y = Util::getRandomInt(10) * cos(Util::getRandomFloat(6.28f)) + m_template->m_flagLocation.y;
                 float z = m_bg->getWorldMap()->getHeight(LocationVector(x, y, m_template->m_flagLocation.z));
-                m_guards.push_back(m_bg->SpawnCreature(m_template->m_guardId[t], x, y, z, 0.0f));
+                m_guards.push_back(m_bg->spawnCreature(m_template->m_guardId[t], x, y, z, 0.0f));
             }
         }
     }
@@ -756,12 +756,12 @@ void AlteracValley::AVNode::Spawn()
                     if (plr_tmp != nullptr)
                     {
                         m_bg->HookHandleRepop(plr_tmp);
-                        m_bg->QueueAtNearestSpiritGuide(plr_tmp, m_spiritGuide);
+                        m_bg->queueAtNearestSpiritGuide(plr_tmp, m_spiritGuide);
                     }
                 }
                 itr->second.clear();
             }
-            m_bg->RemoveSpiritGuide(m_spiritGuide);
+            m_bg->removeSpiritGuide(m_spiritGuide);
             m_spiritGuide->Despawn(0, 0);
             m_spiritGuide = nullptr;
         }
@@ -771,22 +771,22 @@ void AlteracValley::AVNode::Spawn()
             DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : spawning spirit guide", m_template->m_name);
 
             // spawn new spirit guide
-            m_spiritGuide = m_bg->SpawnSpiritGuide(m_template->m_graveyardLocation.x, m_template->m_graveyardLocation.y,
+            m_spiritGuide = m_bg->spawnSpiritGuide(m_template->m_graveyardLocation.x, m_template->m_graveyardLocation.y,
                 m_template->m_graveyardLocation.z, m_template->m_graveyardLocation.z, 0);
 
             // add
-            m_bg->AddSpiritGuide(m_spiritGuide);
+            m_bg->addSpiritGuide(m_spiritGuide);
         }
         else if (m_state == AV_NODE_STATE_HORDE_CONTROLLED)
         {
             DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : spawning spirit guide", m_template->m_name);
 
             // spawn new spirit guide
-            m_spiritGuide = m_bg->SpawnSpiritGuide(m_template->m_graveyardLocation.x, m_template->m_graveyardLocation.y,
+            m_spiritGuide = m_bg->spawnSpiritGuide(m_template->m_graveyardLocation.x, m_template->m_graveyardLocation.y,
                 m_template->m_graveyardLocation.z, m_template->m_graveyardLocation.z, 1);
 
             // add
-            m_bg->AddSpiritGuide(m_spiritGuide);
+            m_bg->addSpiritGuide(m_spiritGuide);
         }
     }
     DLLLogDetail("AlteracValley : AVNode::Spawn(%s) : completed for state %u %s", m_template->m_name, m_state, g_stateNames[m_state]);
@@ -833,7 +833,7 @@ void AlteracValley::AVNode::Capture()
             DLLLogDetail("AlteracValley : spawning fires at bunker %s", m_template->m_name);
             while (spi->x != 0.0f)
             {
-                go = m_bg->SpawnGameObject(AV_GAMEOBJECT_FIRE, m_bg->getWorldMap()->getBaseMap()->getMapId(), spi->x, spi->y, spi->z, spi->o, 0, 35, 1.0f);
+                go = m_bg->spawnGameObject(AV_GAMEOBJECT_FIRE, LocationVector(spi->x, spi->y, spi->z, spi->o), 0, 35, 1.0f);
                 go->PushToWorld(m_bg->getWorldMap());
                 ++spi;
             }
@@ -883,12 +883,12 @@ void AlteracValley::AVNode::Capture()
                 // spawn alliance npcs if its a horde tower
                 if (m_template->m_defaultState == AV_NODE_STATE_HORDE_CONTROLLED)
                 {
-                    m_homeNPC = m_bg->SpawnCreature(g_HomeNpcInfo[m_nodeId].id_a, g_HomeNpcInfo[m_nodeId].a_x, g_HomeNpcInfo[m_nodeId].a_y,
+                    m_homeNPC = m_bg->spawnCreature(g_HomeNpcInfo[m_nodeId].id_a, g_HomeNpcInfo[m_nodeId].a_x, g_HomeNpcInfo[m_nodeId].a_y,
                         g_HomeNpcInfo[m_nodeId].a_z, g_HomeNpcInfo[m_nodeId].a_o);
                 }
                 else
                 {
-                    m_homeNPC = m_bg->SpawnCreature(g_HomeNpcInfo[m_nodeId].id_h, g_HomeNpcInfo[m_nodeId].h_x, g_HomeNpcInfo[m_nodeId].h_y,
+                    m_homeNPC = m_bg->spawnCreature(g_HomeNpcInfo[m_nodeId].id_h, g_HomeNpcInfo[m_nodeId].h_x, g_HomeNpcInfo[m_nodeId].h_y,
                         g_HomeNpcInfo[m_nodeId].h_z, g_HomeNpcInfo[m_nodeId].h_o);
                 }
             }
@@ -912,7 +912,7 @@ void AlteracValley::AVNode::Capture()
     }
 }
 
-AlteracValley::AlteracValley(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : CBattleground(mgr, id, lgroup, t)
+AlteracValley::AlteracValley(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : Battleground(mgr, id, lgroup, t)
 {
     m_playerCountPerTeam = 40;
     m_reinforcements[0] = AV_NUM_REINFORCEMENTS;
@@ -977,14 +977,14 @@ void AlteracValley::HookOnAreaTrigger(Player* plr, uint32_t trigger)
             if (plr->getTeam() != TEAM_ALLIANCE)
                 plr->sendAreaTriggerMessage("Only The Alliance can use that portal");
             else
-                RemovePlayer(plr, false);
+                removePlayer(plr, false);
         }break;
         case 2606: // horde exits
         {
             if (plr->getTeam() != TEAM_HORDE)
                 plr->sendAreaTriggerMessage("Only The Horde can use that portal");
             else
-                RemovePlayer(plr, false);
+                removePlayer(plr, false);
         }break;
         case 3326:
         case 3327:
@@ -1041,7 +1041,7 @@ bool AlteracValley::HookHandleRepop(Player* plr)
 void AlteracValley::HookOnHK(Player* plr)
 {
     plr->m_bgScore.HonorableKills++;
-    UpdatePvPData();
+    updatePvPData();
 }
 
 void AlteracValley::DropFlag(Player* /*plr*/)
@@ -1052,13 +1052,13 @@ void AlteracValley::DropFlag(Player* /*plr*/)
 void AlteracValley::OnCreate()
 {
     // Alliance Gate
-    GameObject* gate = SpawnGameObject(AV_GAMEOBJECT_GATE, getWorldMap()->getBaseMap()->getMapId(), 780.487f, -493.024f, 99.9553f, 3.0976f, 32, 114, 3.000000f);
+    GameObject* gate = spawnGameObject(AV_GAMEOBJECT_GATE, LocationVector(780.487f, -493.024f, 99.9553f, 3.0976f), 32, 114, 3.000000f);
     gate->setLocalRotation(0.f, 0.f, 0.0129570f, -0.0602880f);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 
     // Horde gate
-    gate = SpawnGameObject(AV_GAMEOBJECT_GATE, getWorldMap()->getBaseMap()->getMapId(), -1375.73f, -538.966f, 55.3006f, 0.791198f, 32, 114, 3.000000f);
+    gate = spawnGameObject(AV_GAMEOBJECT_GATE, LocationVector(-1375.73f, -538.966f, 55.3006f, 0.791198f), 32, 114, 3.000000f);
     gate->setLocalRotation(0.f, 0.f, 0.36f, 0.922766f);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
@@ -1067,16 +1067,16 @@ void AlteracValley::OnCreate()
         m_nodes[x] = new AVNode(this, &g_nodeTemplates[x], x);
 
     // generals/leaders!
-    SpawnCreature(AV_NPC_GENERAL_VANNDAR_STORMPIKE, 726.969604f, -9.716300f, 50.621391f, 3.377580f);
-    SpawnCreature(AV_NPC_GENERAL_DREK_THAR, -1367.080933f, -229.453140f, 98.421570f, 2.023553f);
+    spawnCreature(AV_NPC_GENERAL_VANNDAR_STORMPIKE, 726.969604f, -9.716300f, 50.621391f, 3.377580f);
+    spawnCreature(AV_NPC_GENERAL_DREK_THAR, -1367.080933f, -229.453140f, 98.421570f, 2.023553f);
 
     // some captains
-    SpawnCreature(AV_NPC_CAPTAIN_BALINDA_STONEHEARTH, -57.368469f, -286.770966f, 15.564562f, 6.068771f);
-    SpawnCreature(AV_NPC_CAPTAIN_GALVANGAR, -537.177429f, -168.004944f, 57.008938f, 2.749793f);
+    spawnCreature(AV_NPC_CAPTAIN_BALINDA_STONEHEARTH, -57.368469f, -286.770966f, 15.564562f, 6.068771f);
+    spawnCreature(AV_NPC_CAPTAIN_GALVANGAR, -537.177429f, -168.004944f, 57.008938f, 2.749793f);
 
     // home spirit guides
-    AddSpiritGuide(SpawnSpiritGuide(876.434448f, -489.599579f, 96.517174f, 0.0f, 0));
-    AddSpiritGuide(SpawnSpiritGuide(-1433.550903f, -608.329529f, 51.149689f, 0.0f, 1));
+    addSpiritGuide(spawnSpiritGuide(876.434448f, -489.599579f, 96.517174f, 0.0f, 0));
+    addSpiritGuide(spawnSpiritGuide(-1433.550903f, -608.329529f, 51.149689f, 0.0f, 1));
 }
 
 void AlteracValley::OnStart()
@@ -1096,7 +1096,7 @@ void AlteracValley::OnStart()
         (*itr)->setState(GO_STATE_OPEN);
     }
 
-    PlaySoundToAll(BattlegroundDef::BATTLEGROUND_BEGIN);
+    playSoundToAll(BattlegroundDef::BATTLEGROUND_BEGIN);
 
     m_hasStarted = true;
 
@@ -1145,7 +1145,7 @@ void AlteracValley::AddReinforcements(uint32_t teamId, uint32_t amt)
     else
         m_reinforcements[teamId] += amt;
 
-    SetWorldState(WORLDSTATE_AV_ALLIANCE_SCORE + teamId, m_reinforcements[teamId]);
+    setWorldState(WORLDSTATE_AV_ALLIANCE_SCORE + teamId, m_reinforcements[teamId]);
 }
 
 void AlteracValley::RemoveReinforcements(uint32_t teamId, uint32_t amt)
@@ -1155,7 +1155,7 @@ void AlteracValley::RemoveReinforcements(uint32_t teamId, uint32_t amt)
     else
         m_reinforcements[teamId] -= amt;
 
-    SetWorldState(WORLDSTATE_AV_ALLIANCE_SCORE + teamId, m_reinforcements[teamId]);
+    setWorldState(WORLDSTATE_AV_ALLIANCE_SCORE + teamId, m_reinforcements[teamId]);
 
     // We've lost. :(
     if (m_reinforcements[teamId] == 0)
@@ -1169,7 +1169,7 @@ void AlteracValley::HookOnPlayerKill(Player* plr, Player* pVictim)
     if (pVictim->isPlayer())
     {
         plr->m_bgScore.KillingBlows++;
-        UpdatePvPData();
+        updatePvPData();
     }
 }
 
@@ -1231,12 +1231,12 @@ void AlteracValley::HookOnUnitKill(Player* /*plr*/, Unit* pVictim)
 
 void AlteracValley::Finish(uint32_t losingTeam)
 {
-    if (this->HasEnded()) return;
+    if (this->hasEnded()) return;
 
     sEventMgr.RemoveEvents(this);
-    sEventMgr.AddEvent(static_cast<CBattleground*>(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(static_cast<Battleground*>(this), &Battleground::close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-    this->EndBattleground(losingTeam == TEAM_ALLIANCE ? TEAM_HORDE : TEAM_ALLIANCE);
+    this->endBattleground(losingTeam == TEAM_ALLIANCE ? TEAM_HORDE : TEAM_ALLIANCE);
 }
 
 // Static AV Loot Table
@@ -1331,9 +1331,9 @@ void AlteracValley::EventAssaultControlPoint(uint32_t x)
 
 bool AlteracValley::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
 {
-    CastSpellOnTeam(winningTeam, 43475);
-    CastSpellOnTeam(winningTeam, 69160);
-    CastSpellOnTeam(winningTeam, 69501);
+    castSpellOnTeam(winningTeam, 43475);
+    castSpellOnTeam(winningTeam, 69160);
+    castSpellOnTeam(winningTeam, 69501);
     return true;
 }
 
@@ -1346,7 +1346,7 @@ void AlteracValley::Herald(const char* format, ...)
     vsnprintf(msgbuf, 100, format, ap);
     va_end(ap);
 
-    DistributePacketToAll(AscEmu::Packets::SmsgMessageChat(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, 0, msgbuf, 0, "Herald").serialise().get());
+    distributePacketToAll(AscEmu::Packets::SmsgMessageChat(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, 0, msgbuf, 0, "Herald").serialise().get());
 }
 
 void AlteracValley::HookOnFlagDrop(Player* /*plr*/)

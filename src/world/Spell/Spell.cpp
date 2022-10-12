@@ -27,7 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellRanged.hpp"
 
 #include "Macros/ScriptMacros.hpp"
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Management/ItemInterface.h"
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
@@ -1438,7 +1438,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 #endif
 
             // If battleground has ended, don't allow spell casting
-            if (!m_triggeredSpell && p_caster->getBattleground()->HasEnded())
+            if (!m_triggeredSpell && p_caster->getBattleground()->hasEnded())
                 return SPELL_FAILED_DONT_REPORT;
         }
         else if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_BG_ONLY)
@@ -2248,7 +2248,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     break;
 
                 // Don't allow these effects in battlegrounds if the battleground hasn't yet started
-                if (p_caster->getBattleground() && !p_caster->getBattleground()->HasStarted())
+                if (p_caster->getBattleground() && !p_caster->getBattleground()->hasStarted())
                     return SPELL_FAILED_TRY_AGAIN;
             } break;
             case SPELL_EFFECT_SUMMON_PET:

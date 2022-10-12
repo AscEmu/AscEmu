@@ -20,11 +20,10 @@
  */
 
 
-#include "Config/Config.h"
 #include "Management/HonorHandler.h"
 #include "Objects/Item.h"
 #include "Management/ItemInterface.h"
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Server/World.h"
 #include "Management/ObjectMgr.h"
 #include "Server/Script/ScriptMgr.h"

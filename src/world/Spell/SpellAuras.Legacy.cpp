@@ -25,7 +25,7 @@
 #include "Objects/Item.h"
 #include "Management/ItemInterface.h"
 #include "Objects/Units/Stats.h"
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Map/Management/MapMgr.hpp"
@@ -1394,10 +1394,10 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
         {
             if (const auto battleground = p_target->getBattleground())
             {
-                if (battleground->GetType() == BattlegroundDef::TYPE_WARSONG_GULCH)
+                if (battleground->getType() == BattlegroundDef::TYPE_WARSONG_GULCH)
                     battleground->HookOnFlagDrop(p_target);
 
-                if (battleground->GetType() == BattlegroundDef::TYPE_EYE_OF_THE_STORM)
+                if (battleground->getType() == BattlegroundDef::TYPE_EYE_OF_THE_STORM)
                     battleground->HookOnFlagDrop(p_target);
             }
         }
@@ -1512,7 +1512,7 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
 
                         if (p_target->getBattleground() && p_target->hasBgFlag())
                         {
-                            if (p_target->getBattleground()->GetType() == BattlegroundDef::TYPE_WARSONG_GULCH || p_target->getBattleground()->GetType() == BattlegroundDef::TYPE_EYE_OF_THE_STORM)
+                            if (p_target->getBattleground()->getType() == BattlegroundDef::TYPE_WARSONG_GULCH || p_target->getBattleground()->getType() == BattlegroundDef::TYPE_EYE_OF_THE_STORM)
                             {
                                 p_target->getBattleground()->HookOnFlagDrop(p_target);
                             }

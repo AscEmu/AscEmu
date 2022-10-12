@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 
-class WarsongGulch : public CBattleground
+class WarsongGulch : public Battleground
 {
     GameObject* m_buffs[6];
     GameObject* m_homeFlags[2];
@@ -46,7 +46,7 @@ public:
 
     void EventReturnFlags();
 
-    static CBattleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new WarsongGulch(m, i, l, t); }
+    static Battleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new WarsongGulch(m, i, l, t); }
 
     uint32_t GetNameID() override { return 39; }
     uint64_t GetFlagHolderGUID(uint32_t faction) const override { return m_flagHolders[faction]; }

@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Chat/ChatHandler.hpp"
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
@@ -649,7 +649,7 @@ bool ChatHandler::HandleInvisibleCommand(const char* /*args*/, WorldSession* m_s
         selected_player->sendFriendStatus(true);
 
         if (selected_player->getBattleground())
-            selected_player->getBattleground()->RemoveInvisGM();
+            selected_player->getBattleground()->removeInvisGM();
 
         if (selected_player != m_session->GetPlayer())
         {
@@ -669,7 +669,7 @@ bool ChatHandler::HandleInvisibleCommand(const char* /*args*/, WorldSession* m_s
         selected_player->sendFriendStatus(false);
 
         if (selected_player->getBattleground())
-            selected_player->getBattleground()->AddInvisGM();
+            selected_player->getBattleground()->addInvisGM();
 
         if (selected_player != m_session->GetPlayer())
         {

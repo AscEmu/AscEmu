@@ -21,7 +21,7 @@
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Skill.hpp"
 #include "Management/ItemInterface.h"
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
@@ -299,7 +299,7 @@ bool WaitingToResurrect(uint8_t /*effectIndex*/, Aura* a, bool apply)
     if (pCreature == nullptr || p_target->getBattleground() == nullptr)
         return true;
 
-    p_target->getBattleground()->RemovePlayerFromResurrect(p_target, pCreature);
+    p_target->getBattleground()->removePlayerFromResurrect(p_target, pCreature);
 
     return true;
 }
@@ -529,7 +529,7 @@ bool IOCTeleporterIn(uint8_t /*effectIndex*/, Spell* s)
         return true;
 
     // Let's not teleport in/out before the battle starts
-    if (p->getBattleground() && !p->getBattleground()->HasStarted())
+    if (p->getBattleground() && !p->getBattleground()->hasStarted())
         return true;
 
     uint32_t j;
@@ -560,7 +560,7 @@ bool IOCTeleporterOut(uint8_t /*effectIndex*/, Spell* s)
         return true;
 
     // Let's not teleport in/out before the battle starts
-    if (p->getBattleground() && !p->getBattleground()->HasStarted())
+    if (p->getBattleground() && !p->getBattleground()->hasStarted())
         return true;
 
     uint32_t j;

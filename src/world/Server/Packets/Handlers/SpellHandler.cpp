@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Objects/Item.h"
 #include "Management/ItemInterface.h"
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Server/MainServerDefines.h"
 #include "Spell/SpellMgr.hpp"

@@ -15,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/CorpseMacros.hpp"
 #include "Macros/ScriptMacros.hpp"
 #include "Management/HonorHandler.h"
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/QuestLogEntry.hpp"
@@ -1305,7 +1305,7 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
 
     if (m_bg && m_bg->getWorldMap() && getWorldMap() && getWorldMap()->getBaseMap()->getMapInfo()->mapid != mapId)
     {
-        m_bg->RemovePlayer(this, false);
+        m_bg->removePlayer(this, false);
     }
 
     _Relocate(mapId, vec, true, instance, instanceId);
@@ -2047,7 +2047,7 @@ void Player::toggleAfk()
         addPlayerFlags(PLAYER_FLAG_AFK);
 
         if (m_bg)
-            m_bg->RemovePlayer(this, false);
+            m_bg->removePlayer(this, false);
 
         if (worldConfig.getKickAFKPlayerTime())
             sEventMgr.AddEvent(this, &Player::softDisconnect, EVENT_PLAYER_SOFT_DISCONNECT,
@@ -5913,7 +5913,7 @@ void Player::repopRequest()
 
     buildRepop();
 
-    if (!m_bg || m_bg && m_bg->HasStarted())
+    if (!m_bg || m_bg && m_bg->hasStarted())
     {
         if (const auto mapInfo = sMySQLStore.getWorldMapInfo(GetMapId()))
         {
@@ -6852,11 +6852,11 @@ void Player::setKnownPvPTitle(RankTitles title, bool set)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Battleground
-CBattleground* Player::getBattleground() const { return m_bg; }
-void Player::setBattleground(CBattleground* bg) { m_bg = bg; }
+Battleground* Player::getBattleground() const { return m_bg; }
+void Player::setBattleground(Battleground* bg) { m_bg = bg; }
 
-CBattleground* Player::getPendingBattleground() const { return m_pendingBattleground; }
-void Player::setPendingBattleground(CBattleground* bg) { m_pendingBattleground = bg; }
+Battleground* Player::getPendingBattleground() const { return m_pendingBattleground; }
+void Player::setPendingBattleground(Battleground* bg) { m_pendingBattleground = bg; }
 
 bool Player::isQueuedForBg() const { return m_isQueuedForBg; }
 void Player::setIsQueuedForBg(bool set) { m_isQueuedForBg = set; }
@@ -6873,7 +6873,7 @@ void Player::removeFromBgQueue()
     if (!m_pendingBattleground)
         return;
 
-    m_pendingBattleground->RemovePendingPlayer(this);
+    m_pendingBattleground->removePendingPlayer(this);
     sChatHandler.SystemMessage(m_session, getSession()->LocalizedWorldSrv(ServerString::SS_BG_REMOVE_QUEUE_INF));
 }
 
@@ -7713,7 +7713,7 @@ void Player::logIntoBattleground()
     if (mapMgr && mapMgr->getBaseMap()->isBattlegroundOrArena())
     {
         const auto battleground = reinterpret_cast<BattlegroundMap*>(mapMgr)->getBattleground();
-        if (battleground->HasEnded() && battleground->HasFreeSlots(getInitialTeam(), battleground->GetType()))
+        if (battleground->hasEnded() && battleground->hasFreeSlots(getInitialTeam(), battleground->getType()))
         {
             if (!IS_INSTANCE(getBGEntryMapId()))
             {

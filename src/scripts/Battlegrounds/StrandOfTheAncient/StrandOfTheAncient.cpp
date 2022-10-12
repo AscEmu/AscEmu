@@ -35,7 +35,7 @@
  * Doodad_WG_Keep_Door01_collision01, 194162 (Not implemented atm)
 
  * Revive everyone after round one
- * bg->EventResurrectPlayers()
+ * bg->eventResurrectPlayers()
 
  * Setup index 34 in worldstring_tables to equal "Strand of the Ancients"
 
@@ -302,7 +302,7 @@ static const uint32_t TeamFactions[MAX_PLAYER_TEAMS] =
     2
 };
 
-StrandOfTheAncient::StrandOfTheAncient(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t):CBattleground(mgr, id, lgroup, t)
+StrandOfTheAncient::StrandOfTheAncient(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t):Battleground(mgr, id, lgroup, t)
 {
     m_zoneId = 4384;
     std::fill(&npc[0], &npc[SOTA_NPCS], nullptr);
@@ -360,13 +360,13 @@ void StrandOfTheAncient::HookOnAreaTrigger(Player* /*plr*/, uint32_t /*id*/)
 void StrandOfTheAncient::HookOnPlayerKill(Player* plr, Player* /*pVictim*/)
 {
     plr->m_bgScore.KillingBlows++;
-    UpdatePvPData();
+    updatePvPData();
 }
 
 void StrandOfTheAncient::HookOnHK(Player* plr)
 {
     plr->m_bgScore.HonorableKills++;
-    UpdatePvPData();
+    updatePvPData();
 }
 
 void StrandOfTheAncient::OnPlatformTeleport(Player* /*plr*/)
@@ -402,17 +402,17 @@ LocationVector StrandOfTheAncient::GetStartingCoords(uint32_t team)
 
 /*! Handles end of battleground rewards (marks etc)
 *  \param winningTeam Team that won the battleground
-*  \returns True if CBattleground class should finish applying rewards, false if we handled it fully */
+*  \returns True if Battleground class should finish applying rewards, false if we handled it fully */
 bool StrandOfTheAncient::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
 {
-    CastSpellOnTeam(winningTeam, 61213);
+    castSpellOnTeam(winningTeam, 61213);
     return true;
 }
 
 void StrandOfTheAncient::HookOnPlayerDeath(Player* plr)
 {
     plr->m_bgScore.Deaths++;
-    UpdatePvPData();
+    updatePvPData();
 }
 
 void StrandOfTheAncient::HookOnMount(Player* /*plr*/)
@@ -449,7 +449,7 @@ bool StrandOfTheAncient::HookHandleRepop(Player* plr)
 
     // port to it and queue for auto-resurrect
     plr->safeTeleport(plr->GetMapId(), plr->GetInstanceID(), dest_pos);
-    QueuePlayerForResurrect(plr, graveyard[id].spiritguide);
+    queuePlayerForResurrect(plr, graveyard[id].spiritguide);
 
     return true;
 }
@@ -518,7 +518,7 @@ void StrandOfTheAncient::HookOnUnitDied(Unit* victim)
                 continue;
             }
 
-            demolisher[i] = SpawnCreature(SOTA_DEMOLISHER, DemolisherLocations[i], TeamFactions[Attackers]);
+            demolisher[i] = spawnCreature(SOTA_DEMOLISHER, DemolisherLocations[i], TeamFactions[Attackers]);
             c->Despawn(1, 0);
         }
 
@@ -583,7 +583,7 @@ bool StrandOfTheAncient::HookQuickLockOpen(GameObject* go, Player* /*player*/, S
     uint32_t entry = go->getEntry();
     if (entry == GO_RELIC)
     {
-        PlaySoundToAll(Attackers == TEAM_ALLIANCE ? SOTA_SOUND_VICTORY_ALLIANCE : SOTA_SOUND_VICTORY_HORDE);
+        playSoundToAll(Attackers == TEAM_ALLIANCE ? SOTA_SOUND_VICTORY_ALLIANCE : SOTA_SOUND_VICTORY_HORDE);
         FinishRound();
     }
 
@@ -604,9 +604,9 @@ void StrandOfTheAncient::SetTime(uint32_t secs)
     digits[1] = seconds / 10;
     digits[2] = seconds % 10;
 
-    SetWorldState(WORLDSTATE_SOTA_TIMER_MINS, digits[0]);
-    SetWorldState(WORLDSTATE_SOTA_TIMER_SEC_TENS, digits[1]);
-    SetWorldState(WORLDSTATE_SOTA_TIMER_SEC_DECS, digits[2]);
+    setWorldState(WORLDSTATE_SOTA_TIMER_MINS, digits[0]);
+    setWorldState(WORLDSTATE_SOTA_TIMER_SEC_TENS, digits[1]);
+    setWorldState(WORLDSTATE_SOTA_TIMER_SEC_DECS, digits[2]);
     SetRoundTime(secs);
 }
 
@@ -620,14 +620,14 @@ void StrandOfTheAncient::PrepareRound()
         if (Attackers == TEAM_ALLIANCE)
         { 
             Defenders = TEAM_HORDE;
-            CastSpellOnTeam(Defenders, SOTA_SPELL_HORDE_CONTROL_PHASE_SHIFT);
-            PlaySoundToTeam(Attackers, SOTA_SOUND_DEFEAT_HORDE);
+            castSpellOnTeam(Defenders, SOTA_SPELL_HORDE_CONTROL_PHASE_SHIFT);
+            playSoundToTeam(Attackers, SOTA_SOUND_DEFEAT_HORDE);
         }
         else
         { 
             Defenders = TEAM_ALLIANCE;
-            CastSpellOnTeam(Defenders, SOTA_SPELL_ALLIANCE_CONTROL_PHASE_SHIFT);
-            PlaySoundToTeam(Attackers, SOTA_SOUND_DEFEAT_ALLIANCE);
+            castSpellOnTeam(Defenders, SOTA_SPELL_ALLIANCE_CONTROL_PHASE_SHIFT);
+            playSoundToTeam(Attackers, SOTA_SOUND_DEFEAT_ALLIANCE);
         }
     }
     else
@@ -684,13 +684,13 @@ void StrandOfTheAncient::PrepareRound()
             canon[i]->Despawn(0, 0);
         }
 
-        canon[i] = SpawnCreature(SOTA_ANTI_PERSONNAL_CANNON, CanonLocations[i], TeamFactions[Defenders]);
+        canon[i] = spawnCreature(SOTA_ANTI_PERSONNAL_CANNON, CanonLocations[i], TeamFactions[Defenders]);
     }
 
     for (uint8_t i = 0; i < SOTA_NORTH_DEMOLISHERS; ++i)
     {
         Creature* c = demolisher[i];
-        demolisher[i] = SpawnCreature(SOTA_DEMOLISHER, DemolisherLocations[i], TeamFactions[Attackers]);
+        demolisher[i] = spawnCreature(SOTA_DEMOLISHER, DemolisherLocations[i], TeamFactions[Attackers]);
         if (c != nullptr)
         {
             c->Despawn(0, 0);
@@ -729,30 +729,30 @@ void StrandOfTheAncient::PrepareRound()
     if (Attackers == TEAM_ALLIANCE)
     {
         state = SOTA_CP_STATE_HORDE_CONTROL;
-        SetWorldState(WORLDSTATE_SOTA_HORDE_ATTACKER, 0);
-        SetWorldState(WORLDSTATE_SOTA_ALLIANCE_ATTACKER, 1);
-        SetWorldState(WORLDSTATE_SOTA_SHOW_ALLY_ROUND, 1);
-        SetWorldState(WORLDSTATE_SOTA_SHOW_HORDE_ROUND, 0);
-        SetWorldState(WORLDSTATE_SOTA_SHOW_ALLY_DEFENSE, 0);
-        SetWorldState(WORLDSTATE_SOTA_SHOW_HORDE_DEFENSE, 1);
-        SetWorldState(WORLDSTATE_SOTA_SHOW_ALLY_BEACHHEAD1, 1);
-        SetWorldState(WORLDSTATE_SOTA_SHOW_ALLY_BEACHHEAD2, 1);
-        SetWorldState(WORLDSTATE_SOTA_SHOW_HORDE_BEACHHEAD1, 0);
-        SetWorldState(WORLDSTATE_SOTA_SHOW_HORDE_BEACHHEAD2, 0);
+        setWorldState(WORLDSTATE_SOTA_HORDE_ATTACKER, 0);
+        setWorldState(WORLDSTATE_SOTA_ALLIANCE_ATTACKER, 1);
+        setWorldState(WORLDSTATE_SOTA_SHOW_ALLY_ROUND, 1);
+        setWorldState(WORLDSTATE_SOTA_SHOW_HORDE_ROUND, 0);
+        setWorldState(WORLDSTATE_SOTA_SHOW_ALLY_DEFENSE, 0);
+        setWorldState(WORLDSTATE_SOTA_SHOW_HORDE_DEFENSE, 1);
+        setWorldState(WORLDSTATE_SOTA_SHOW_ALLY_BEACHHEAD1, 1);
+        setWorldState(WORLDSTATE_SOTA_SHOW_ALLY_BEACHHEAD2, 1);
+        setWorldState(WORLDSTATE_SOTA_SHOW_HORDE_BEACHHEAD1, 0);
+        setWorldState(WORLDSTATE_SOTA_SHOW_HORDE_BEACHHEAD2, 0);
     }
     else
     {
         state = SOTA_CP_STATE_ALLY_CONTROL;
-        SetWorldState(WORLDSTATE_SOTA_HORDE_ATTACKER, 1);
-        SetWorldState(WORLDSTATE_SOTA_ALLIANCE_ATTACKER, 0);
-        SetWorldState(WORLDSTATE_SOTA_SHOW_ALLY_ROUND, 0);
-        SetWorldState(WORLDSTATE_SOTA_SHOW_HORDE_ROUND, 1);
-        SetWorldState(WORLDSTATE_SOTA_SHOW_ALLY_DEFENSE, 1);
-        SetWorldState(WORLDSTATE_SOTA_SHOW_HORDE_DEFENSE, 0);
-        SetWorldState(WORLDSTATE_SOTA_SHOW_ALLY_BEACHHEAD1, 0);
-        SetWorldState(WORLDSTATE_SOTA_SHOW_ALLY_BEACHHEAD2, 0);
-        SetWorldState(WORLDSTATE_SOTA_SHOW_HORDE_BEACHHEAD1, 1);
-        SetWorldState(WORLDSTATE_SOTA_SHOW_HORDE_BEACHHEAD2, 1);
+        setWorldState(WORLDSTATE_SOTA_HORDE_ATTACKER, 1);
+        setWorldState(WORLDSTATE_SOTA_ALLIANCE_ATTACKER, 0);
+        setWorldState(WORLDSTATE_SOTA_SHOW_ALLY_ROUND, 0);
+        setWorldState(WORLDSTATE_SOTA_SHOW_HORDE_ROUND, 1);
+        setWorldState(WORLDSTATE_SOTA_SHOW_ALLY_DEFENSE, 1);
+        setWorldState(WORLDSTATE_SOTA_SHOW_HORDE_DEFENSE, 0);
+        setWorldState(WORLDSTATE_SOTA_SHOW_ALLY_BEACHHEAD1, 0);
+        setWorldState(WORLDSTATE_SOTA_SHOW_ALLY_BEACHHEAD2, 0);
+        setWorldState(WORLDSTATE_SOTA_SHOW_HORDE_BEACHHEAD1, 1);
+        setWorldState(WORLDSTATE_SOTA_SHOW_HORDE_BEACHHEAD2, 1);
     }
 
     SpawnControlPoint(SOTA_CONTROL_POINT_EAST_GY, state);
@@ -799,21 +799,21 @@ void StrandOfTheAncient::StartRound()
         p->removeAllAurasById(BattlegroundDef::PREPARATION);
     }
 
-    RemoveAuraFromTeam(Defenders, BattlegroundDef::PREPARATION);
+    removeAuraFromTeam(Defenders, BattlegroundDef::PREPARATION);
 
-    SetWorldState(WORLDSTATE_SOTA_TIMER_MINS, 10); 
+    setWorldState(WORLDSTATE_SOTA_TIMER_MINS, 10); 
     SetTime(ROUND_LENGTH);
     sEventMgr.AddEvent(this, &StrandOfTheAncient::TimeTick, EVENT_SOTA_TIMER, TimeVarsMs::Second * 1, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    UpdatePvPData();
+    updatePvPData();
 }
 
 void StrandOfTheAncient::FinishRound()
 {
-    CastSpellOnTeam(Attackers, SOTA_SPELL_END_OF_ROUND);
-    CastSpellOnTeam(Defenders, SOTA_SPELL_END_OF_ROUND);
+    castSpellOnTeam(Attackers, SOTA_SPELL_END_OF_ROUND);
+    castSpellOnTeam(Defenders, SOTA_SPELL_END_OF_ROUND);
 
     sEventMgr.RemoveEvents(this, EVENT_SOTA_TIMER);
-    EventResurrectPlayers();
+    eventResurrectPlayers();
 
     RoundFinishTime[BattleRound - 1] = RoundTime;
 
@@ -834,8 +834,8 @@ void StrandOfTheAncient::FinishRound()
 void StrandOfTheAncient::Finish(uint32_t winningteam)
 {
     sEventMgr.RemoveEvents(this);
-    sEventMgr.AddEvent(static_cast< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, TimeVarsMs::Second * 120, 1, 0);
-    this->EndBattleground(winningteam == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE);
+    sEventMgr.AddEvent(static_cast< Battleground* >(this), &Battleground::close, EVENT_BATTLEGROUND_CLOSE, TimeVarsMs::Second * 120, 1, 0);
+    this->endBattleground(winningteam == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE);
 }
 
 void StrandOfTheAncient::TimeTick()
@@ -867,7 +867,7 @@ void StrandOfTheAncient::SpawnControlPoint(SOTAControlPoints point, SOTACPStates
     SOTAControlPoint &cp = controlpoint[point];
 
     if (cp.worldstate != 0)
-        SetWorldState(cp.worldstate, 0);
+        setWorldState(cp.worldstate, 0);
 
     uint32_t team = TEAM_ALLIANCE;
     uint32_t faction = 0;
@@ -892,7 +892,7 @@ void StrandOfTheAncient::SpawnControlPoint(SOTAControlPoints point, SOTACPStates
     // First time spawning
     if (cp.pole == nullptr)
     {
-        cp.pole = SpawnGameObject(SOTA_FLAGPOLE_ID, FlagPolePositions[point], 0, 35, 1.0f);
+        cp.pole = spawnGameObject(SOTA_FLAGPOLE_ID, FlagPolePositions[point], 0, 35, 1.0f);
         cp.pole->PushToWorld(m_mapMgr);
     }
     else
@@ -901,12 +901,12 @@ void StrandOfTheAncient::SpawnControlPoint(SOTAControlPoints point, SOTACPStates
             cp.banner->RemoveFromWorld(false);
     }
 
-    cp.banner = SpawnGameObject(FlagIDs[point][team], FlagPositions[point], 0, faction, 1.0f);
+    cp.banner = spawnGameObject(FlagIDs[point][team], FlagPositions[point], 0, faction, 1.0f);
     cp.banner->PushToWorld(m_mapMgr);
 
     cp.state = state;
     cp.worldstate = CPWorldstates[point][team];
-    SetWorldState(cp.worldstate, 1);
+    setWorldState(cp.worldstate, 1);
 
     //Spawn graveyard
     SpawnGraveyard(SOTAGraveyards(uint32_t(point)), team);
@@ -926,14 +926,14 @@ void StrandOfTheAncient::CaptureControlPoint(SOTAControlPoints point)
     {
         case SOTA_CP_STATE_ALLY_CONTROL:
             SpawnControlPoint(point, SOTA_CP_STATE_HORDE_CONTROL);
-            PlaySoundToAll(BattlegroundDef::HORDE_CAPTURE);
-            SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "The horde has captured the %s!", ControlPointNames[point]);
+            playSoundToAll(BattlegroundDef::HORDE_CAPTURE);
+            sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "The horde has captured the %s!", ControlPointNames[point]);
             break;
 
         case SOTA_CP_STATE_HORDE_CONTROL:
             SpawnControlPoint(point, SOTA_CP_STATE_ALLY_CONTROL);
-            PlaySoundToAll(BattlegroundDef::ALLIANCE_CAPTURE);
-            SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The alliance has captured the %s!", ControlPointNames[point]);
+            playSoundToAll(BattlegroundDef::ALLIANCE_CAPTURE);
+            sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The alliance has captured the %s!", ControlPointNames[point]);
             break;
     }
 
@@ -945,24 +945,24 @@ void StrandOfTheAncient::CaptureControlPoint(SOTAControlPoints point)
         case SOTA_CONTROL_POINT_EAST_GY:
             for (uint8_t i = SOTA_EAST_WS_DEMOLISHER_INDEX; i < SOTA_NUM_DEMOLISHERS; i++)
             {
-                demolisher[i] = SpawnCreature(SOTA_DEMOLISHER, DemolisherLocations[i], TeamFactions[Attackers]);
+                demolisher[i] = spawnCreature(SOTA_DEMOLISHER, DemolisherLocations[i], TeamFactions[Attackers]);
             }
             for (uint8_t i = SOTA_EAST_BOMBS_INDEX; i < SOTA_WEST_BOMBS_INDEX; i++)
             {
                 m_bomb[i] = m_mapMgr->createAndSpawnGameObject(SOTA_BOMBS, LocationVector(sotaBombsLocations[i][0], sotaBombsLocations[i][1], sotaBombsLocations[i][2], sotaBombsLocations[i][3]), 1.5f);
             }
-            npc[TEAM_ALLIANCE] = SpawnCreature(SOTA_RIGGER_SPARKLIGHT, sotaNPCSLocations[0], TeamFactions[Attackers]);
+            npc[TEAM_ALLIANCE] = spawnCreature(SOTA_RIGGER_SPARKLIGHT, sotaNPCSLocations[0], TeamFactions[Attackers]);
             break;
         case SOTA_CONTROL_POINT_WEST_GY:
             for (uint8_t i = SOTA_WEST_WS_DEMOLISHER_INDEX; i < SOTA_EAST_WS_DEMOLISHER_INDEX; i++)
             {
-                demolisher[i] = SpawnCreature(SOTA_DEMOLISHER, DemolisherLocations[i], TeamFactions[Attackers]);
+                demolisher[i] = spawnCreature(SOTA_DEMOLISHER, DemolisherLocations[i], TeamFactions[Attackers]);
             }
             for (uint8_t i = SOTA_WEST_BOMBS_INDEX; i < SOTA_NUM_BOMBS; i++)
             {
                 m_bomb[i] = m_mapMgr->createAndSpawnGameObject(SOTA_BOMBS, LocationVector(sotaBombsLocations[i][0], sotaBombsLocations[i][1], sotaBombsLocations[i][2], sotaBombsLocations[i][3]), 1.5f);
             }
-            npc[TEAM_HORDE] = SpawnCreature(SOTA_GORGRIL_RIGSPARK, sotaNPCSLocations[1], TeamFactions[Attackers]);
+            npc[TEAM_HORDE] = spawnCreature(SOTA_GORGRIL_RIGSPARK, sotaNPCSLocations[1], TeamFactions[Attackers]);
             break;
     }
 }
@@ -979,6 +979,6 @@ void StrandOfTheAncient::SpawnGraveyard(SOTAGraveyards gyid, uint32_t team)
     if (gy.spiritguide != nullptr)
         gy.spiritguide->Despawn(0, 0);
 
-    gy.spiritguide = SpawnSpiritGuide(GraveyardLocations[gyid], team);
-    AddSpiritGuide(gy.spiritguide);
+    gy.spiritguide = spawnSpiritGuide(GraveyardLocations[gyid], team);
+    addSpiritGuide(gy.spiritguide);
 }

@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "AlteracValleyDefinitions.h"
 
-class AlteracValley : public CBattleground
+class AlteracValley : public Battleground
 {
 protected:
     std::list<GameObject*> m_gates;
@@ -38,7 +38,7 @@ public:
     LocationVector GetStartingCoords(uint32_t Team) override;
     void DropFlag(Player* plr);
 
-    static CBattleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new AlteracValley(m, i, l, t); }
+    static Battleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new AlteracValley(m, i, l, t); }
 
     const char* GetName() { return "Alterac Valley"; }
     void OnStart() override;

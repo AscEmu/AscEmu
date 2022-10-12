@@ -27,7 +27,7 @@ class Player;
 class Pet;
 class Transporter;
 class Corpse;
-class CBattleground;
+class Battleground;
 class InstanceScript;
 class Summon;
 class InstanceMap;

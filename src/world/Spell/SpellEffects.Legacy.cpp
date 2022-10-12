@@ -34,7 +34,7 @@
 #include "Management/ItemPrototype.h"
 #include "Management/Skill.hpp"
 #include "Objects/Units/Stats.h"
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Server/MainServerDefines.h"
@@ -6226,7 +6226,7 @@ void Spell::SpellEffectActivateSpec(uint8_t /*effectIndex*/)
         }
         else
         {
-            if (p_caster->getBattleground()->HasStarted())
+            if (p_caster->getBattleground()->hasStarted())
                 sendCastResult(SPELL_FAILED_AFFECTING_COMBAT); // does the job
         }
     }

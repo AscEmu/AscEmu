@@ -6,9 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Unit.h"
 
 #include "Data/WoWUnit.hpp"
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Management/HonorHandler.h"
-#include "Map/Management/MapMgr.hpp"
 #include "Movement/Spline/MovementPacketBuilder.h"
 #include "Objects/GameObject.h"
 #include "Server/Packets/SmsgAuraUpdate.h"
@@ -17,7 +16,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgEmote.h"
 #include "Server/Packets/SmsgSpellEnergizeLog.h"
 #include "Server/Packets/SmsgEnvironmentalDamageLog.h"
-#include "Server/Packets/SmsgMonsterMoveTransport.h"
 #include "Server/Packets/SmsgPeriodicAuraLog.h"
 #include "Server/Packets/SmsgPlaySpellVisual.h"
 #include "Server/Packets/SmsgPowerUpdate.h"
@@ -6272,7 +6270,7 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
             if (plrOwner->getBattleground() && getWorldMap() == victim->getWorldMap())
             {
                 plrOwner->m_bgScore.DamageDone += damage;
-                plrOwner->getBattleground()->UpdatePvPData();
+                plrOwner->getBattleground()->updatePvPData();
             }
         }
 
@@ -6986,7 +6984,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
             if (plrOwner->getBattleground() && getWorldMap() == attacker->getWorldMap())
             {
                 plrOwner->m_bgScore.DamageDone += damage;
-                plrOwner->getBattleground()->UpdatePvPData();
+                plrOwner->getBattleground()->updatePvPData();
             }
         }
 
@@ -7061,7 +7059,7 @@ uint32_t Unit::_handleBatchHealing(HealthBatchEvent const* batch, uint32_t* abso
         if (plrOwner && plrOwner->getBattleground() && plrOwner->getWorldMap() == getWorldMap())
         {
             plrOwner->m_bgScore.HealingDone += healing;
-            plrOwner->getBattleground()->UpdatePvPData();
+            plrOwner->getBattleground()->updatePvPData();
         }
     }
 

@@ -19,17 +19,17 @@ void DalaranSewers::OnCreate()
 {
     GameObject* obj = nullptr;
 
-    obj = SpawnGameObject(192643, 617, 1232.11f, 764.699f, 20.3f, 0.0f, 32, 1375, 2.0f);
+    obj = spawnGameObject(192643, LocationVector(1232.11f, 764.699f, 20.3f, 0.0f), 32, 1375, 2.0f);
     obj->setState(GO_STATE_CLOSED);
     obj->setAnimationProgress(100);
     m_gates.insert(obj);
 
-    obj = SpawnGameObject(192642, 617, 1350.02f, 817.502f, 19.1398f, 0.0f, 32, 1375, 2.0f);
+    obj = spawnGameObject(192642, LocationVector(1350.02f, 817.502f, 19.1398f, 0.0f), 32, 1375, 2.0f);
     obj->setState(GO_STATE_CLOSED);
     obj->setAnimationProgress(100);
     m_gates.insert(obj);
 
-    obj = SpawnGameObject(191877, 617, 1291.974487f, 791.844666f, 9.339742f, 3.116816f, 32, 1375, 1.0f);
+    obj = spawnGameObject(191877, LocationVector(1291.974487f, 791.844666f, 9.339742f, 3.116816f), 32, 1375, 1.0f);
     obj->PushToWorld(m_mapMgr);
 
     Arena::OnCreate();

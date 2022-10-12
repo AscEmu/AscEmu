@@ -12,7 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "VMapFactory.h"
 #include "VMapManager2.h"
 #include "MMapFactory.h"
-#include "Management/Battleground/Battleground.h"
 #include "Management/ItemInterface.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"

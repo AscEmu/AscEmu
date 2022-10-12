@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "EyeOfTheStormDefinitions.h"
 
-class EyeOfTheStorm : public CBattleground
+class EyeOfTheStorm : public Battleground
 {
 public:
     EyeOfTheStorm(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t);
@@ -31,7 +31,7 @@ public:
     void HookGenerateLoot(Player* plr, Object* pCorpse) override;
     void SpawnBuff(uint32_t x);
     LocationVector GetStartingCoords(uint32_t Team) override;
-    static CBattleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new EyeOfTheStorm(m, i, l, t); }
+    static Battleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new EyeOfTheStorm(m, i, l, t); }
     uint64_t GetFlagHolderGUID(uint32_t /*faction*/) const override { return m_flagHolder; }
 
     uint32_t GetNameID() override { return 44; }

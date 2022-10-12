@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/WordFilter.h"
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Chat/ChatDefines.hpp"
@@ -372,7 +372,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                     srlPacket.type = CHAT_MSG_BATTLEGROUND_LEADER;
 #endif
 
-            _player->m_bg->DistributePacketToTeam(SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), _player->getTeam());
+            _player->m_bg->distributePacketToTeam(SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), _player->getTeam());
         } break;
         default: 
             break;

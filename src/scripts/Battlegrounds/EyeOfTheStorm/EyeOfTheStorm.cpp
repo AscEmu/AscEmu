@@ -122,7 +122,7 @@ const uint32_t m_iconsStates[EOTS_TOWER_COUNT][3] =
     {2731, 2732, 2733}
 };
 
-EyeOfTheStorm::EyeOfTheStorm(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : CBattleground(mgr, id, lgroup, t)
+EyeOfTheStorm::EyeOfTheStorm(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : Battleground(mgr, id, lgroup, t)
 {
     for (uint8_t i = 0; i < 2; i++)
     {
@@ -220,11 +220,11 @@ EyeOfTheStorm::~EyeOfTheStorm()
 
 /*! Handles end of battleground rewards (marks etc)
 *  \param winningTeam Team that won the battleground
-*  \returns True if CBattleground class should finish applying rewards, false if we handled it fully */
+*  \returns True if Battleground class should finish applying rewards, false if we handled it fully */
 bool EyeOfTheStorm::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
 {
-    CastSpellOnTeam(winningTeam, 43477);
-    CastSpellOnTeam(winningTeam, 69156);
+    castSpellOnTeam(winningTeam, 43477);
+    castSpellOnTeam(winningTeam, 69156);
     return true;
 }
 
@@ -341,9 +341,9 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32_t id)
     if (!m_hasStarted)
     {
         Anticheat_Log->writefromsession(plr->getSession(), "%s tried to hook the flag in eye of the storm before battleground (ID %u) started.", plr->getName().c_str(), this->m_id);
-        SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "%s will be removed from the game for cheating.", plr->getName().c_str());
+        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "%s will be removed from the game for cheating.", plr->getName().c_str());
         // Remove player from battleground.
-        this->RemovePlayer(plr, false);
+        this->removePlayer(plr, false);
         // Kick    player from server.
         plr->kickFromServer(TimeVarsMs::Second * 6);
         return;
@@ -382,15 +382,15 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32_t id)
     const static uint32_t points[5] = { 25, 75, 85, 100, 500 };
     const char* msgs[2] = { "The Alliance have captured the flag.", "The Horde have captured the flag." };
 
-    SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + team, 0, msgs[team]);
+    sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + team, 0, msgs[team]);
     GivePoints(team, points[towers]);
 
     DropFlag2(plr, id);
-    SetWorldState(EOTS_NETHERWING_FLAG_READY, 1);
+    setWorldState(EOTS_NETHERWING_FLAG_READY, 1);
 
     plr->removeAllAurasById(EOTS_NETHERWING_FLAG_SPELL);
     plr->m_bgScore.MiscData[BattlegroundDef::EOTS_FLAGS_CAPTURED]++;
-    UpdatePvPData();
+    updatePvPData();
 }
 
 void EyeOfTheStorm::HookOnPlayerDeath(Player* plr)
@@ -400,7 +400,7 @@ void EyeOfTheStorm::HookOnPlayerDeath(Player* plr)
     if (m_flagHolder == plr->getGuidLow())
         HookOnFlagDrop(plr);
 
-    UpdatePvPData();
+    updatePvPData();
 }
 
 void EyeOfTheStorm::HookFlagDrop(Player* plr, GameObject* /*obj*/)
@@ -417,9 +417,9 @@ void EyeOfTheStorm::HookFlagDrop(Player* plr, GameObject* /*obj*/)
     m_dropFlag->RemoveFromWorld(false);
     plr->castSpell(plr->getGuid(), EOTS_NETHERWING_FLAG_SPELL, true);
 
-    SetWorldState(EOTS_NETHERWING_FLAG_READY, 0);
-    PlaySoundToAll(plr->isTeamHorde() ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
-    SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->getTeam(), plr->getGuid(), "%s has taken the flag!", plr->getName().c_str());
+    setWorldState(EOTS_NETHERWING_FLAG_READY, 0);
+    playSoundToAll(plr->isTeamHorde() ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
+    sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->getTeam(), plr->getGuid(), "%s has taken the flag!", plr->getName().c_str());
     m_flagHolder = plr->getGuidLow();
 
     event_RemoveEvents(EVENT_EOTS_RESET_FLAG);
@@ -438,9 +438,9 @@ bool EyeOfTheStorm::HookSlowLockOpen(GameObject* /*pGo*/, Player* pPlayer, Spell
     m_standFlag->RemoveFromWorld(false);
     pPlayer->castSpell(pPlayer->getGuid(), EOTS_NETHERWING_FLAG_SPELL, true);
 
-    SetWorldState(EOTS_NETHERWING_FLAG_READY, 0);
-    PlaySoundToAll(pPlayer->isTeamHorde() ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
-    SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + pPlayer->getTeam(), pPlayer->getGuid(), "%s has taken the flag!", pPlayer->getName().c_str());
+    setWorldState(EOTS_NETHERWING_FLAG_READY, 0);
+    playSoundToAll(pPlayer->isTeamHorde() ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
+    sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + pPlayer->getTeam(), pPlayer->getGuid(), "%s has taken the flag!", pPlayer->getName().c_str());
     m_flagHolder = pPlayer->getGuidLow();
     return true;
 }
@@ -460,7 +460,7 @@ void EyeOfTheStorm::OnAddPlayer(Player* plr)
         plr->castSpell(plr, BattlegroundDef::PREPARATION, true);
         plr->m_bgScore.MiscData[BattlegroundDef::EOTS_FLAGS_CAPTURED] = 0;
     }
-    UpdatePvPData();
+    updatePvPData();
 }
 
 void EyeOfTheStorm::OnRemovePlayer(Player* plr)
@@ -504,7 +504,7 @@ void EyeOfTheStorm::DropFlag2(Player* plr, uint32_t id)
     }
 
     plr->castSpell(plr, EOTS_RECENTLY_DROPPED_FLAG, true);
-    PlaySoundToAll(plr->isTeamHorde() ? BattlegroundDef::HORDE_SCORES : BattlegroundDef::ALLIANCE_SCORES);
+    playSoundToAll(plr->isTeamHorde() ? BattlegroundDef::HORDE_SCORES : BattlegroundDef::ALLIANCE_SCORES);
     m_dropFlag->setFlags(GO_FLAG_NONSELECTABLE);
     m_dropFlag->PushToWorld(m_mapMgr);
     m_flagHolder = 0;
@@ -522,8 +522,8 @@ void EyeOfTheStorm::HookOnFlagDrop(Player* plr)
     m_dropFlag->SetPosition(plr->GetPosition());
     m_dropFlag->PushToWorld(m_mapMgr);
     m_flagHolder = 0;
-    PlaySoundToAll(BattlegroundDef::FLAG_RETURNED);
-    SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->getTeam(), plr->getGuid(), "%s has dropped the flag!", plr->getName().c_str());
+    playSoundToAll(BattlegroundDef::FLAG_RETURNED);
+    sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->getTeam(), plr->getGuid(), "%s has dropped the flag!", plr->getName().c_str());
 
     sEventMgr.AddEvent(this, &EyeOfTheStorm::EventResetFlag, EVENT_EOTS_RESET_FLAG, 10000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
@@ -537,9 +537,9 @@ void EyeOfTheStorm::EventResetFlag()
     m_dropFlag->setFlags(GO_FLAG_NONE);
     m_standFlag->PushToWorld(m_mapMgr);
 
-    SetWorldState(EOTS_NETHERWING_FLAG_READY, 1);
-    PlaySoundToAll(BattlegroundDef::FLAG_RESPAWN);
-    SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The flag has been reset.");
+    setWorldState(EOTS_NETHERWING_FLAG_READY, 1);
+    playSoundToAll(BattlegroundDef::FLAG_RESPAWN);
+    sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The flag has been reset.");
     m_flagHolder = 0;
 }
 
@@ -697,17 +697,17 @@ void EyeOfTheStorm::UpdateCPs()
                     {
                         RepopPlayersOfTeam(0, m_spiritGuides[i]);
                         m_spiritGuides[i]->Despawn(0, 0);
-                        RemoveSpiritGuide(m_spiritGuides[i]);
+                        removeSpiritGuide(m_spiritGuides[i]);
                         m_spiritGuides[i] = nullptr;
                     }
-                    m_spiritGuides[i] = SpawnSpiritGuide(EOTSGraveyardLocations[i][0], EOTSGraveyardLocations[i][1], EOTSGraveyardLocations[i][2], 0, 1);
-                    AddSpiritGuide(m_spiritGuides[i]);
+                    m_spiritGuides[i] = spawnSpiritGuide(EOTSGraveyardLocations[i][0], EOTSGraveyardLocations[i][1], EOTSGraveyardLocations[i][2], 0, 1);
+                    addSpiritGuide(m_spiritGuides[i]);
 
-                    SetWorldState(m_iconsStates[i][0], 0);
-                    SetWorldState(m_iconsStates[i][1], 0);
-                    SetWorldState(m_iconsStates[i][2], 1);
-                    SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "The Horde has taken the %s !", EOTSControlPointNames[i]);
-                    PlaySoundToAll(BattlegroundDef::HORDE_CAPTURE);
+                    setWorldState(m_iconsStates[i][0], 0);
+                    setWorldState(m_iconsStates[i][1], 0);
+                    setWorldState(m_iconsStates[i][2], 1);
+                    sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "The Horde has taken the %s !", EOTSControlPointNames[i]);
+                    playSoundToAll(BattlegroundDef::HORDE_CAPTURE);
                 }
             }
             else if (m_CPStatus[i] >= 70)
@@ -719,18 +719,18 @@ void EyeOfTheStorm::UpdateCPs()
                     {
                         RepopPlayersOfTeam(1, m_spiritGuides[i]);
                         m_spiritGuides[i]->Despawn(0, 0);
-                        RemoveSpiritGuide(m_spiritGuides[i]);
+                        removeSpiritGuide(m_spiritGuides[i]);
                         m_spiritGuides[i] = nullptr;
                     }
 
-                    m_spiritGuides[i] = SpawnSpiritGuide(EOTSGraveyardLocations[i][0], EOTSGraveyardLocations[i][1], EOTSGraveyardLocations[i][2], 0, 0);
-                    AddSpiritGuide(m_spiritGuides[i]);
+                    m_spiritGuides[i] = spawnSpiritGuide(EOTSGraveyardLocations[i][0], EOTSGraveyardLocations[i][1], EOTSGraveyardLocations[i][2], 0, 0);
+                    addSpiritGuide(m_spiritGuides[i]);
 
-                    SetWorldState(m_iconsStates[i][0], 0);
-                    SetWorldState(m_iconsStates[i][1], 1);
-                    SetWorldState(m_iconsStates[i][2], 0);
-                    SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The Alliance has taken the %s", EOTSControlPointNames[i]);
-                    PlaySoundToAll(BattlegroundDef::ALLIANCE_CAPTURE);
+                    setWorldState(m_iconsStates[i][0], 0);
+                    setWorldState(m_iconsStates[i][1], 1);
+                    setWorldState(m_iconsStates[i][2], 0);
+                    sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The Alliance has taken the %s", EOTSControlPointNames[i]);
+                    playSoundToAll(BattlegroundDef::ALLIANCE_CAPTURE);
                 }
             }
             else
@@ -739,23 +739,23 @@ void EyeOfTheStorm::UpdateCPs()
                 {
                     if (m_CPBanner[i]->getEntry() == EOTS_BANNER_ALLIANCE)
                     {
-                        SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The Alliance has lost the control of the %s.", EOTSControlPointNames[i]);
+                        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The Alliance has lost the control of the %s.", EOTSControlPointNames[i]);
                     }
                     else if (m_CPBanner[i]->getEntry() == EOTS_BANNER_HORDE)
                     {
-                        SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The Horde has lost the control of the %s.", EOTSControlPointNames[i]);
+                        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The Horde has lost the control of the %s.", EOTSControlPointNames[i]);
                     }
                     RespawnCPFlag(i, EOTS_BANNER_NEUTRAL);
                     if (m_spiritGuides[i] != nullptr)
                     {
                         RepopPlayersOfTeam(-1, m_spiritGuides[i]);
                         m_spiritGuides[i]->Despawn(0, 0);
-                        RemoveSpiritGuide(m_spiritGuides[i]);
+                        removeSpiritGuide(m_spiritGuides[i]);
                         m_spiritGuides[i] = nullptr;
                     }
-                    SetWorldState(m_iconsStates[i][0], 1);
-                    SetWorldState(m_iconsStates[i][1], 0);
-                    SetWorldState(m_iconsStates[i][2], 0);
+                    setWorldState(m_iconsStates[i][0], 1);
+                    setWorldState(m_iconsStates[i][1], 0);
+                    setWorldState(m_iconsStates[i][2], 0);
                 }
             }
         }
@@ -788,8 +788,8 @@ void EyeOfTheStorm::UpdateCPs()
             towers[1]++;
     }
 
-    SetWorldState(WORLDSTATE_EOTS_ALLIANCE_BASES, towers[0]);
-    SetWorldState(WORLDSTATE_EOTS_HORDE_BASES, towers[1]);
+    setWorldState(WORLDSTATE_EOTS_ALLIANCE_BASES, towers[0]);
+    setWorldState(WORLDSTATE_EOTS_HORDE_BASES, towers[1]);
 }
 
 void EyeOfTheStorm::GeneratePoints()
@@ -845,7 +845,7 @@ bool EyeOfTheStorm::GivePoints(uint32_t team, uint32_t points)
             HonorHandler::AddHonorPointsToPlayer((*itr), honorToAdd);
         }
 
-        UpdatePvPData();
+        updatePvPData();
         m_lastHonorGainPoints[team] += resourcesToGainBH;
     }
 
@@ -854,28 +854,28 @@ bool EyeOfTheStorm::GivePoints(uint32_t team, uint32_t points)
         m_points[team] = 1600;
 
         sEventMgr.RemoveEvents(this);
-        sEventMgr.AddEvent(static_cast<CBattleground*>(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(static_cast<Battleground*>(this), &Battleground::close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-        SetWorldState(WORLDSTATE_EOTS_ALLIANCE_VICTORYPOINTS + team, m_points[team]);
+        setWorldState(WORLDSTATE_EOTS_ALLIANCE_VICTORYPOINTS + team, m_points[team]);
 
-        this->EndBattleground(team == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE);
+        this->endBattleground(team == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE);
         return true;
     }
 
-    SetWorldState(WORLDSTATE_EOTS_ALLIANCE_VICTORYPOINTS + team, m_points[team]);
+    setWorldState(WORLDSTATE_EOTS_ALLIANCE_VICTORYPOINTS + team, m_points[team]);
     return false;
 }
 
 void EyeOfTheStorm::HookOnPlayerKill(Player* plr, Player* /*pVictim*/)
 {
     plr->m_bgScore.KillingBlows++;
-    UpdatePvPData();
+    updatePvPData();
 }
 
 void EyeOfTheStorm::HookOnHK(Player* plr)
 {
     plr->m_bgScore.HonorableKills++;
-    UpdatePvPData();
+    updatePvPData();
 }
 
 void EyeOfTheStorm::SpawnBuff(uint32_t x)
@@ -887,7 +887,7 @@ void EyeOfTheStorm::SpawnBuff(uint32_t x)
 
     if (EOTSm_buffs[x] == nullptr)
     {
-        EOTSm_buffs[x] = SpawnGameObject(chosen_buffid, m_mapMgr->getBaseMap()->getMapId(), EOTSBuffCoordinates[x][0], EOTSBuffCoordinates[x][1], EOTSBuffCoordinates[x][2], EOTSBuffCoordinates[x][3], 0, 114, 1);
+        EOTSm_buffs[x] = spawnGameObject(chosen_buffid, LocationVector(EOTSBuffCoordinates[x][0], EOTSBuffCoordinates[x][1], EOTSBuffCoordinates[x][2], EOTSBuffCoordinates[x][3]), 0, 114, 1);
 
         EOTSm_buffs[x]->setLocalRotation(0.f, 0.f, EOTSBuffRotations[x][0], EOTSBuffRotations[x][1]);
         EOTSm_buffs[x]->setState(GO_STATE_CLOSED);
@@ -934,8 +934,8 @@ void EyeOfTheStorm::OnStart()
     sEventMgr.AddEvent(this, &EyeOfTheStorm::UpdateCPs, EVENT_EOTS_CHECK_CAPTURE_POINT_STATUS, 5000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     // spirit guides
-    AddSpiritGuide(SpawnSpiritGuide(EOTSStartLocations[0][0], EOTSStartLocations[0][1], EOTSStartLocations[0][2], 0, 0));
-    AddSpiritGuide(SpawnSpiritGuide(EOTSStartLocations[1][0], EOTSStartLocations[1][1], EOTSStartLocations[1][2], 0, 1));
+    addSpiritGuide(spawnSpiritGuide(EOTSStartLocations[0][0], EOTSStartLocations[0][1], EOTSStartLocations[0][2], 0, 0));
+    addSpiritGuide(spawnSpiritGuide(EOTSStartLocations[1][0], EOTSStartLocations[1][1], EOTSStartLocations[1][2], 0, 1));
 
     // remove the bubbles
     for (uint8_t i = 0; i < 2; ++i)
@@ -945,7 +945,7 @@ void EyeOfTheStorm::OnStart()
         m_bubbles[i] = nullptr;
     }
 
-    PlaySoundToAll(BattlegroundDef::BATTLEGROUND_BEGIN);
+    playSoundToAll(BattlegroundDef::BATTLEGROUND_BEGIN);
     m_hasStarted = true;
 }
 

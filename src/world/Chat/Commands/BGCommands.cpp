@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Server/WorldSession.h"
 #include "Storage/WorldStrings.h"
@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 //.battleground forceinitqueue
 bool ChatHandler::HandleBGForceInitQueueCommand(const char* /*args*/, WorldSession* m_session)
 {
-    sBattlegroundManager.EventQueueUpdate(true);
+    sBattlegroundManager.eventQueueUpdate(true);
 
     SystemMessage(m_session, "Forcing initialization of all battlegrounds. Done.");
 
@@ -22,7 +22,7 @@ bool ChatHandler::HandleBGForceInitQueueCommand(const char* /*args*/, WorldSessi
 //.battleground getqueue
 bool ChatHandler::HandleBGGetQueueCommand(const char* /*args*/, WorldSession* m_session)
 {
-    sBattlegroundManager.HandleGetBattlegroundQueueCommand(m_session);
+    sBattlegroundManager.handleGetBattlegroundQueueCommand(m_session);
 
     SystemMessage(m_session, "Getting battleground queue. Done.");
 
@@ -46,7 +46,7 @@ bool ChatHandler::HandleBGLeaveCommand(const char* /*args*/, WorldSession* m_ses
         return true;
     }
 
-    m_session->GetPlayer()->getBattleground()->Close();
+    m_session->GetPlayer()->getBattleground()->close();
 
     return true;
 }
@@ -65,7 +65,7 @@ bool ChatHandler::HandleBGMenuCommand(const char* args, WorldSession* m_session)
     if (selected_player == nullptr)
         return true;
 
-    sBattlegroundManager.HandleBattlegroundListPacket(selected_player->getSession(), type);
+    sBattlegroundManager.handleBattlegroundListPacket(selected_player->getSession(), type);
 
     return true;
 }
@@ -90,7 +90,7 @@ bool ChatHandler::HandleBGPlaySoundCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
-    m_session->GetPlayer()->getBattleground()->PlaySoundToAll(atoi(args));
+    m_session->GetPlayer()->getBattleground()->playSoundToAll(atoi(args));
     return true;
 }
 
@@ -101,7 +101,7 @@ bool ChatHandler::HandleBGSendStatusCommand(const char* args, WorldSession* m_se
         return false;
 
     uint32 type = atoi(args);
-    sBattlegroundManager.SendBattlefieldStatus(m_session->GetPlayer(), BattlegroundDef::STATUS_INQUEUE, type, 0, 0, m_session->GetPlayer()->GetMapId(), 0);
+    sBattlegroundManager.sendBattlefieldStatus(m_session->GetPlayer(), BattlegroundDef::STATUS_INQUEUE, type, 0, 0, m_session->GetPlayer()->GetMapId(), 0);
     return true;
 }
 
@@ -125,7 +125,7 @@ bool ChatHandler::HandleBGSetWorldStateCommand(const char* args, WorldSession* m
     }
 
     if (m_session->GetPlayer()->getBattleground())
-        m_session->GetPlayer()->getBattleground()->SetWorldState(id, val);
+        m_session->GetPlayer()->getBattleground()->setWorldState(id, val);
 
     return true;
 }
@@ -143,7 +143,7 @@ bool ChatHandler::HandleBGSetWorldStatesCommand(const char* args, WorldSession* 
 
     if (m_session->GetPlayer()->getBattleground())
         for (uint32 i = first; i < last; i++)
-            m_session->GetPlayer()->getBattleground()->SetWorldState(i, val);
+            m_session->GetPlayer()->getBattleground()->setWorldState(i, val);
 
     return true;
 }
@@ -157,13 +157,13 @@ bool ChatHandler::HandleBGStartCommand(const char* /*args*/, WorldSession* m_ses
         return true;
     }
 
-    m_session->GetPlayer()->getBattleground()->SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0,
+    m_session->GetPlayer()->getBattleground()->sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0,
         m_session->LocalizedWorldSrv(SS_THE_BATTLE_FOR_HAS_BEGUN),
         m_session->LocalizedWorldSrv(m_session->GetPlayer()->getBattleground()->GetNameID()));
 
     sEventMgr.RemoveEvents(m_session->GetPlayer()->getBattleground(), EVENT_BATTLEGROUND_COUNTDOWN);
 
-    m_session->GetPlayer()->getBattleground()->StartBattleground();
+    m_session->GetPlayer()->getBattleground()->startBattleground();
 
     return true;
 }

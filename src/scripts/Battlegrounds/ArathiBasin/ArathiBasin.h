@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "ArathiBasinDefinitions.h"
 
-class ArathiBasin : public CBattleground
+class ArathiBasin : public Battleground
 {
 public:
     GameObject* m_buffs[AB_NUM_BUFFS];
@@ -53,7 +53,7 @@ public:
     LocationVector GetStartingCoords(uint32_t Team) override;
     void HookOnFlagDrop(Player* plr) override;
 
-    static CBattleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new ArathiBasin(m, i, l, t); }
+    static Battleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new ArathiBasin(m, i, l, t); }
 
     uint32_t GetNameID() override { return 40; }
     void OnStart() override;

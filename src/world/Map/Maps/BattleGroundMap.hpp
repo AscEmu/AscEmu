@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "InstanceDefines.hpp"
 #include "WorldMap.hpp"
 
-class CBattleground;
+class Battleground;
 
 class SERVER_DECL BattlegroundMap : public WorldMap
 {
@@ -27,9 +27,9 @@ public:
 
     virtual void initVisibilityDistance() override;
 
-    CBattleground* getBattleground() { return m_battleground; }
-    void setBattleground(CBattleground* bg) { m_battleground = bg; }
+    Battleground* getBattleground() { return m_battleground; }
+    void setBattleground(Battleground* bg) { m_battleground = bg; }
 
 private:
-    CBattleground* m_battleground;
+    Battleground* m_battleground;
 };

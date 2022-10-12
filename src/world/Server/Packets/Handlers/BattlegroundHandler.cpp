@@ -15,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAreaSpiritHealerTime.h"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Players/Player.h"
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Management/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -32,7 +32,7 @@ using namespace AscEmu::Packets;
 void WorldSession::handlePVPLogDataOpcode(WorldPacket& /*recvPacket*/)
 {
     if (_player->m_bg != nullptr)
-        _player->m_bg->SendPVPData(_player);
+        _player->m_bg->sendPVPData(_player);
 }
 
 void WorldSession::handleInspectHonorStatsOpcode(WorldPacket& recvPacket)
@@ -81,7 +81,7 @@ void WorldSession::handleArenaJoinOpcode(WorldPacket& recvPacket)
     }
 
     if (_player->m_isQueuedForBg)
-        sBattlegroundManager.RemovePlayerFromQueues(_player);
+        sBattlegroundManager.removePlayerFromQueues(_player);
 
     CmsgBattlemasterJoinArena srlPacket;
     if (!srlPacket.deserialise(recvPacket))
@@ -107,7 +107,7 @@ void WorldSession::handleArenaJoinOpcode(WorldPacket& recvPacket)
     }
 
     if (battlegroundType != 0)
-        sBattlegroundManager.HandleArenaJoin(this, battlegroundType, srlPacket.asGroup, srlPacket.ratedMatch);
+        sBattlegroundManager.handleArenaJoin(this, battlegroundType, srlPacket.asGroup, srlPacket.ratedMatch);
 }
 
 void WorldSession::handleBattlefieldPortOpcode(WorldPacket& recvPacket)
@@ -119,18 +119,18 @@ void WorldSession::handleBattlefieldPortOpcode(WorldPacket& recvPacket)
     if (srlPacket.action != 0)
     {
         if (_player->m_pendingBattleground)
-            _player->m_pendingBattleground->PortPlayer(_player);
+            _player->m_pendingBattleground->portPlayer(_player);
     }
     else
     {
-        sBattlegroundManager.RemovePlayerFromQueues(_player);
+        sBattlegroundManager.removePlayerFromQueues(_player);
     }
 }
 
 void WorldSession::handleLeaveBattlefieldOpcode(WorldPacket& /*recvPacket*/)
 {
     if (_player->m_bg && _player->IsInWorld())
-        _player->m_bg->RemovePlayer(_player, false);
+        _player->m_bg->removePlayer(_player, false);
 }
 
 void WorldSession::handleBattlefieldListOpcode(WorldPacket& recvPacket)
@@ -141,7 +141,7 @@ void WorldSession::handleBattlefieldListOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BATTLEFIELD_LIST: %u (bgType), %u (fromType)", srlPacket.bgType, srlPacket.fromType);
 
-    sBattlegroundManager.HandleBattlegroundListPacket(this, srlPacket.bgType, srlPacket.fromType);
+    sBattlegroundManager.handleBattlegroundListPacket(this, srlPacket.bgType, srlPacket.fromType);
 }
 
 void WorldSession::handleBattleMasterHelloOpcode(WorldPacket& recvPacket)
@@ -161,17 +161,17 @@ void WorldSession::handleBattleMasterHelloOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleBattlegroundPlayerPositionsOpcode(WorldPacket& /*recvPacket*/)
 {
-    const auto cBattleground = _player->m_bg;
-    if (cBattleground == nullptr)
+    const auto Battleground = _player->m_bg;
+    if (Battleground == nullptr)
         return;
 
     uint32_t flagHolders = 0;
 
-    const auto alliancePlayer = sObjectMgr.GetPlayer(static_cast<uint32_t>(cBattleground->GetFlagHolderGUID(TEAM_ALLIANCE)));
+    const auto alliancePlayer = sObjectMgr.GetPlayer(static_cast<uint32_t>(Battleground->GetFlagHolderGUID(TEAM_ALLIANCE)));
     if (alliancePlayer)
         ++flagHolders;
 
-    const auto hordePlayer = sObjectMgr.GetPlayer(static_cast<uint32_t>(cBattleground->GetFlagHolderGUID(TEAM_HORDE)));
+    const auto hordePlayer = sObjectMgr.GetPlayer(static_cast<uint32_t>(Battleground->GetFlagHolderGUID(TEAM_HORDE)));
     if (hordePlayer)
         ++flagHolders;
 
@@ -180,8 +180,8 @@ void WorldSession::handleBattlegroundPlayerPositionsOpcode(WorldPacket& /*recvPa
 
 void WorldSession::handleAreaSpiritHealerQueueOpcode(WorldPacket& recvPacket)
 {
-    const auto cBattleground = _player->m_bg;
-    if (cBattleground == nullptr)
+    const auto Battleground = _player->m_bg;
+    if (Battleground == nullptr)
         return;
 
     CmsgAreaSpiritHealerQueue srlPacket;
@@ -194,14 +194,14 @@ void WorldSession::handleAreaSpiritHealerQueueOpcode(WorldPacket& recvPacket)
     if (spiritHealer == nullptr)
         return;
 
-    cBattleground->QueuePlayerForResurrect(_player, spiritHealer);
+    Battleground->queuePlayerForResurrect(_player, spiritHealer);
     _player->castSpell(_player, 2584, true);
 }
 
 void WorldSession::handleAreaSpiritHealerQueryOpcode(WorldPacket& recvPacket)
 {
-    const auto cBattleground = _player->m_bg;
-    if (cBattleground == nullptr)
+    const auto Battleground = _player->m_bg;
+    if (Battleground == nullptr)
         return;
 
     CmsgAreaSpiritHealerQuery srlPacket;
@@ -214,7 +214,7 @@ void WorldSession::handleAreaSpiritHealerQueryOpcode(WorldPacket& recvPacket)
     if (spiritHealer == nullptr)
         return;
 
-    uint32_t restTime = cBattleground->GetLastResurrect() + 30;
+    uint32_t restTime = Battleground->getLastResurrect() + 30;
     if (static_cast<uint32_t>(UNIXTIME) > restTime)
         restTime = 1000;
     else
@@ -226,14 +226,14 @@ void WorldSession::handleAreaSpiritHealerQueryOpcode(WorldPacket& recvPacket)
 void WorldSession::handleBattlefieldStatusOpcode(WorldPacket& /*recvPacket*/)
 {
     const auto pendingBattleground = _player->m_pendingBattleground;
-    const auto cBattleground = _player->m_bg;
+    const auto Battleground = _player->m_bg;
 
-    if (cBattleground)
-        sBattlegroundManager.SendBattlefieldStatus(_player, BattlegroundDef::STATUS_TIME, cBattleground->GetType(), cBattleground->GetId(), static_cast<uint32_t>(UNIXTIME) - cBattleground->GetStartTime(), _player->GetMapId(), cBattleground->Rated());
+    if (Battleground)
+        sBattlegroundManager.sendBattlefieldStatus(_player, BattlegroundDef::STATUS_TIME, Battleground->getType(), Battleground->getId(), static_cast<uint32_t>(UNIXTIME) - Battleground->getStartTime(), _player->GetMapId(), Battleground->Rated());
     else if (pendingBattleground)
-        sBattlegroundManager.SendBattlefieldStatus(_player, BattlegroundDef::STATUS_READY, pendingBattleground->GetType(), pendingBattleground->GetId(), 120000, 0, pendingBattleground->Rated());
+        sBattlegroundManager.sendBattlefieldStatus(_player, BattlegroundDef::STATUS_READY, pendingBattleground->getType(), pendingBattleground->getId(), 120000, 0, pendingBattleground->Rated());
     else
-        sBattlegroundManager.SendBattlefieldStatus(_player, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
+        sBattlegroundManager.sendBattlefieldStatus(_player, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
 }
 
 void WorldSession::handleBattleMasterJoinOpcode(WorldPacket& recvPacket)
@@ -253,10 +253,10 @@ void WorldSession::handleBattleMasterJoinOpcode(WorldPacket& recvPacket)
     }
 
     if (_player->m_isQueuedForBg)
-        sBattlegroundManager.RemovePlayerFromQueues(_player);
+        sBattlegroundManager.removePlayerFromQueues(_player);
 
     if (_player->IsInWorld())
-        sBattlegroundManager.HandleBattlegroundJoin(this, recvPacket);
+        sBattlegroundManager.handleBattlegroundJoin(this, recvPacket);
 }
 
 void WorldSession::sendBattlegroundList(Creature* creature, uint32_t mapId)
@@ -282,7 +282,7 @@ void WorldSession::sendBattlegroundList(Creature* creature, uint32_t mapId)
         battlegroundType = mapId;
     }
 
-    sBattlegroundManager.HandleBattlegroundListPacket(this, battlegroundType);
+    sBattlegroundManager.handleBattlegroundListPacket(this, battlegroundType);
 }
 
 #if VERSION_STRING >= Cata

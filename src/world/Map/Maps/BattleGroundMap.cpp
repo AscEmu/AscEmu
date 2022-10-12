@@ -18,7 +18,7 @@ BattlegroundMap::~BattlegroundMap()
 {
     if (m_battleground)
     {
-        sBattlegroundManager.DeleteBattleground(m_battleground);
+        sBattlegroundManager.deleteBattleground(m_battleground);
         m_battleground = nullptr;
     }
 }

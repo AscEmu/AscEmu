@@ -25,7 +25,7 @@
 #include "Objects/Item.h"
 #include "Exceptions/PlayerExceptions.hpp"
 #include "Management/ItemInterface.h"
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
@@ -340,7 +340,7 @@ void WorldSession::LogoutPlayer(bool Save)
         sWorld.decrementPlayerCount(_player->getTeam());
 
         if (_player->m_isQueuedForBg)
-            sBattlegroundManager.RemovePlayerFromQueues(_player);
+            sBattlegroundManager.removePlayerFromQueues(_player);
 
         // Repop or Resurrect and remove from battlegrounds
         if (_player->m_bg)
@@ -349,7 +349,7 @@ void WorldSession::LogoutPlayer(bool Save)
                 pPlayer->setResurrect();
             if (pPlayer->getDeathState() != ALIVE)
                 pPlayer->resurrect();
-            _player->m_bg->RemovePlayer(_player, true);
+            _player->m_bg->removePlayer(_player, true);
         }
         else if (_player->isDead() && _player->getDeathState() == JUST_DIED)
             _player->repopRequest();

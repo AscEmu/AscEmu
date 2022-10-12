@@ -4,13 +4,12 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Objects/DynamicObject.h"
-#include "Macros/ScriptMacros.hpp"
 #include "Management/AuctionMgr.h"
 #include "Management/QuestMgr.h"
 #include "Management/Quest.h"
 #include "Management/GameEvent.h"
 #include "Management/Skill.hpp"
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Objects/Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"

@@ -41,7 +41,7 @@
 #include "Management/ItemInterface.h"
 #include "Objects/Units/Stats.h"
 #include "Macros/ScriptMacros.hpp"
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Players/PlayerClasses.hpp"
@@ -1267,14 +1267,14 @@ void Spell::castMeOld()
                 case 58984:     // Shadowmeld
                 case 17624:     // Petrification-> http://www.wowhead.com/?spell=17624
                 case 66:        // Invisibility
-                    if (p_caster->getBattleground()->GetType() == BattlegroundDef::TYPE_WARSONG_GULCH)
+                    if (p_caster->getBattleground()->getType() == BattlegroundDef::TYPE_WARSONG_GULCH)
                     {
                         if (p_caster->getTeam() == 0)
                             p_caster->removeAllAurasById(23333);    // ally player drop horde flag if they have it
                         else
                             p_caster->removeAllAurasById(23335);    // horde player drop ally flag if they have it
                     }
-                    if (p_caster->getBattleground()->GetType() == BattlegroundDef::TYPE_EYE_OF_THE_STORM)
+                    if (p_caster->getBattleground()->getType() == BattlegroundDef::TYPE_EYE_OF_THE_STORM)
 
                         p_caster->removeAllAurasById(34976);        // drop the flag
                     break;
@@ -1992,9 +1992,9 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                 {
                     if (const auto battleground = p_caster->getBattleground())
                     {
-                        if (battleground->GetType() == BattlegroundDef::TYPE_WARSONG_GULCH)
+                        if (battleground->getType() == BattlegroundDef::TYPE_WARSONG_GULCH)
                             battleground->HookOnFlagDrop(p_caster);
-                        else if (battleground->GetType() == BattlegroundDef::TYPE_EYE_OF_THE_STORM)
+                        else if (battleground->getType() == BattlegroundDef::TYPE_EYE_OF_THE_STORM)
                             battleground->HookOnFlagDrop(p_caster);
                     }
                     break;

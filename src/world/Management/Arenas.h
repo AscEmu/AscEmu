@@ -21,11 +21,11 @@
 #ifndef ARENAS_H
 #define ARENAS_H
 
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 
 class ArenaTeam;
 
-class SERVER_DECL Arena : public CBattleground
+class SERVER_DECL Arena : public Battleground
 {
     protected:
 
@@ -64,7 +64,7 @@ class SERVER_DECL Arena : public CBattleground
             if (m_hasStarted)
                 return false;
 
-            return CBattleground::CanPlayerJoin(plr, type);
+            return Battleground::CanPlayerJoin(plr, type);
         }
 
         bool CreateCorpse(Player* /*plr*/) override { return false; }

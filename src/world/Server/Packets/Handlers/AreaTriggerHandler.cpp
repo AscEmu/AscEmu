@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Server/Packets/CmsgAreatrigger.h"
 #include "Server/WorldSession.h"
-#include "Server/Packets/SmsgAreaTriggerMessage.h"
-#include "Macros/ScriptMacros.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Management/Group.h"
 #include "Management/ItemInterface.h"
@@ -14,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Storage/WorldStrings.h"
-#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/Battleground.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Server/Packets/SmsgTransferAborted.h"
 #include "Server/Packets/SmsgRaidGroupOnly.h"
