@@ -46,7 +46,7 @@ void BattlegroundManager::registerBgFactory(uint32_t map, BattlegroundFactoryMet
 
 void BattlegroundManager::registerArenaFactory(uint32_t map, ArenaFactoryMethod method)
 {
-    const auto itr = std::ranges::find(m_arenaMaps, map);
+    const auto itr = std::find(m_arenaMaps.begin(), m_arenaMaps.end(), map);
     if (itr != m_arenaMaps.end())
         return;
 
