@@ -184,6 +184,8 @@ target_link_libraries(${PROJECT_NAME} shared g3dlite Detour Recast ${PCRE_LIBRAR
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
 
 if (USE_PCH)
+	message(STATUS "Generate PCH for ${PROJECT_NAME}")
+	
     target_precompile_headers(${PROJECT_NAME}
     PRIVATE
     <string>
