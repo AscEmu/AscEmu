@@ -58,7 +58,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20220415-00_account_instance_times";
-static const char* REQUIRED_WORLD_DB_VERSION = "20220612-02_gameobject_spawns_extras";
+static const char* REQUIRED_WORLD_DB_VERSION = "20221015_00_startup_missing_data_wotlk";
 
 void Master::_OnSignal(int s)
 {
