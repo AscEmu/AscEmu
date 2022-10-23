@@ -59,8 +59,8 @@ This file is released under the MIT license. See README-MIT for more information
     #define MAX_NUM_MAPS 975
 #endif
 
-#define CREATURE_SPAWNS_FIELDCOUNT 28
-#define GO_SPAWNS_FIELDCOUNT 14
+#define CREATURE_SPAWNS_FIELDCOUNT 32
+#define GO_SPAWNS_FIELDCOUNT 17
 
 #define MAP_CELL_DEFAULT_UNLOAD_TIME 300
 #define MAKE_CELL_EVENT(x, y) (((x) * 1000) + 200 + y)
