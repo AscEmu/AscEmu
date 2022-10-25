@@ -184,7 +184,7 @@ target_link_libraries(${PROJECT_NAME} shared g3dlite Detour Recast ${PCRE_LIBRAR
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
 
 if (USE_PCH)
-	message(STATUS "Generate PCH for ${PROJECT_NAME}")
+    message(STATUS "Generate PCH for ${PROJECT_NAME}")
 	
     target_precompile_headers(${PROJECT_NAME}
     PRIVATE
@@ -222,7 +222,7 @@ if (USE_PCH)
     Storage/MySQLDataStore.hpp
     Objects/Units/Players/Player.h
     Objects/Units/Unit.h
-	Management/ObjectMgr.h
+    Management/ObjectMgr.h
 )
 
 endif ()

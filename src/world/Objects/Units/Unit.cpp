@@ -1998,7 +1998,7 @@ void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
         {SMSG_SPLINE_SET_SWIM_BACK_SPEED,   SMSG_FORCE_SWIM_BACK_SPEED_CHANGE,      MSG_MOVE_SET_SWIM_BACK_SPEED    },
         {SMSG_SPLINE_SET_TURN_RATE,         SMSG_FORCE_TURN_RATE_CHANGE,            MSG_MOVE_SET_TURN_RATE          },
     };
-#endif;
+#endif
 
 #if VERSION_STRING == TBC
     static Opcodes const moveTypeToOpcode[MAX_SPEED_TYPE][3] =
