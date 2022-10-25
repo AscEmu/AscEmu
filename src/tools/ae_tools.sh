@@ -5,12 +5,12 @@ ae_logo() {
     ENDCOLOR="\e[0m"
 
     echo ""
-    echo -e "${GREEN}       .####.   #### .####. ##### ##   ## ##  ##  ${ENDCOLOR}"
-    echo -e "${GREEN}       ##  ## ##.    ##  ## ##    ### ### ##  ##  ${ENDCOLOR}"
-    echo -e "${GREEN}       ###### '####  ##     ####  ## # ## ##  ##  ${ENDCOLOR}"
-    echo -e "${GREEN}       ##  ##    '## ##  ## ##    ##   ## ##  ##  ${ENDCOLOR}"
-    echo -e "${GREEN}       ##  ## .org#  '####' ##### ##   ##  ####   ${ENDCOLOR}"
-    echo -e "${GREEN}                    A never ending place to work. ${ENDCOLOR}"
+    echo "${GREEN}       .####.   #### .####. ##### ##   ## ##  ##  ${ENDCOLOR}"
+    echo "${GREEN}       ##  ## ##.    ##  ## ##    ### ### ##  ##  ${ENDCOLOR}"
+    echo "${GREEN}       ###### '####  ##     ####  ## # ## ##  ##  ${ENDCOLOR}"
+    echo "${GREEN}       ##  ##    '## ##  ## ##    ##   ## ##  ##  ${ENDCOLOR}"
+    echo "${GREEN}       ##  ## .org#  '####' ##### ##   ##  ####   ${ENDCOLOR}"
+    echo "${GREEN}                    A never ending place to work. ${ENDCOLOR}"
 }
 until [ "${option}" = "x" ]; do
     ae_logo
