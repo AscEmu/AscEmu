@@ -22,13 +22,6 @@
 
 #include "CommonTypes.hpp"
 
-#ifndef WIN32
-#include <pthread.h>
-#else
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
-
 class SERVER_DECL Mutex
 {
     public:

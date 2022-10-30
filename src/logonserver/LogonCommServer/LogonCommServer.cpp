@@ -30,7 +30,6 @@
 #include <Util/Strings.hpp>
 #include <Server/IpBanMgr.h>
 
-
 LogonCommServerSocket::LogonCommServerSocket(SOCKET fd) : Socket(fd, 65536, 524288)
 {
     // do nothing
@@ -280,14 +279,8 @@ void LogonCommServerSocket::SendPacket(WorldPacket* data)
     header.opcode = data->GetOpcode();
     //header.size   = ntohl((u_long)data->size());
     header.size = (uint32)data->size();
-#ifdef _MSC_VER
-#   pragma warning (push)
-#   pragma warning (disable : 4366)
-#endif
+
     byteSwapUInt32(&header.size);
-#ifdef _MSC_VER
-#pragma warning (pop)
-#endif
 
     if (use_crypto)
         sendCrypto.Process((unsigned char*)&header, (unsigned char*)&header, 6);

@@ -214,14 +214,7 @@ void LogonCommClientSocket::SendPacket(WorldPacket* data, bool no_crypto)
     //header.size   = ntohl((u_long)data->size());
     header.size = (uint32)data->size();
 
-#ifdef _MSC_VER
-#   pragma warning (push)
-#   pragma warning (disable : 4366)
-#endif
     byteSwapUInt32(&header.size);
-#ifdef _MSC_VER
-#pragma warning (pop)
-#endif
 
     if (use_crypto && !no_crypto)
         _sendCrypto.Process((unsigned char*)&header, (unsigned char*)&header, 6);

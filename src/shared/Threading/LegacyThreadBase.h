@@ -7,24 +7,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 
-#ifdef WIN32
-    #define WIN32_LEAN_AND_MEAN
-    #include <windows.h>
-#else
-    #include <pthread.h>
-#endif
-
 class SERVER_DECL ThreadBase
 {
-    public:
-
-        ThreadBase() {}
-        virtual ~ThreadBase() {}
-        virtual bool runThread() = 0;
-        virtual void onShutdown() {}
+public:
+    ThreadBase() {}
+    virtual ~ThreadBase() {}
+    virtual bool runThread() = 0;
+    virtual void onShutdown() {}
 #ifdef WIN32
-        HANDLE THREAD_HANDLE;
+    HANDLE THREAD_HANDLE;
 #else
-        pthread_t THREAD_HANDLE;
+    pthread_t THREAD_HANDLE;
 #endif
 };
