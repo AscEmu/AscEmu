@@ -19,11 +19,6 @@
 #include <map>
 #include <set>
 
-#ifdef _MSC_VER
-#   pragma warning (push)
-#   pragma warning (disable : 4996)
-#endif
-
 class SERVER_DECL Socket
 {
     public:
