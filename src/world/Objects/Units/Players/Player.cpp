@@ -8593,7 +8593,7 @@ void Player::setMover(Unit* target)
     m_session->m_MoverWoWGuid.Init(target->getGuid());
     mControledUnit = target;
 
-#if VERSION_STRING > WotLk
+#if VERSION_STRING > WotLK
     ObjectGuid guid = target->getGuid();
 
     WorldPacket data(SMSG_MOVE_SET_ACTIVE_MOVER, 9);

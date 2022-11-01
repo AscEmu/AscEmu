@@ -57,7 +57,7 @@ void PacketBuilder::WriteCommonMonsterMovePart(MoveSpline const& move_spline, By
         break;
     }
 
-#if VERSION_STRING > WotLk
+#if VERSION_STRING > WotLK
     // add fake Enter_Cycle flag - needed for client-side cyclic movement (client will erase first spline vertex after first cycle done)
     splineflags.enter_cycle = move_spline.isCyclic();
 #endif
@@ -124,7 +124,7 @@ void WriteCatmullRomPath(Spline<int32_t> const& spline, ByteBuffer& data)
 
 void WriteCatmullRomCyclicPath(Spline<int32_t> const& spline, ByteBuffer& data)
 {
-#if VERSION_STRING <= WotLk
+#if VERSION_STRING <= WotLK
     if (spline.getPointCount() < 4)
         sLogger.failure("WriteCatmullRomCyclicPath: size of points is < 3, this will lead to issues!");
 
