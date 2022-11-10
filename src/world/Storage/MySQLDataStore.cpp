@@ -4284,7 +4284,7 @@ void MySQLDataStore::loadCreatureSpawns()
     if (creature_spawn_result)
     {
         uint32 creature_spawn_fields = creature_spawn_result->GetFieldCount();
-        if (creature_spawn_fields != CREATURE_SPAWNS_FIELDCOUNT + 5)
+        if (creature_spawn_fields != CREATURE_SPAWNS_FIELDCOUNT + 1) // + 1 for additional table loading 'origin'
         {
             sLogger.failure("Table `creature_spawns` has %u columns, but needs %u columns! Skipped!", creature_spawn_fields, CREATURE_SPAWNS_FIELDCOUNT);
             return;
@@ -4386,7 +4386,7 @@ void MySQLDataStore::loadGameobjectSpawns()
     if (gobject_spawn_result)
     {
         uint32 gobject_spawn_fields = gobject_spawn_result->GetFieldCount();
-        if (gobject_spawn_fields != GO_SPAWNS_FIELDCOUNT + 4)
+        if (gobject_spawn_fields != GO_SPAWNS_FIELDCOUNT + 1) // + 1 for additional table loading 'origin'
         {
             sLogger.failure("Table `gameobject_spawns` has %u columns, but needs %u columns! Skipped!", gobject_spawn_fields, GO_SPAWNS_FIELDCOUNT);
             return;
