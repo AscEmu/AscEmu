@@ -368,35 +368,6 @@ GameObject* ObjectMgr::createGameObjectByGuid(uint32_t id, uint32_t guid)
     return gameObject;
 }
 
-Summon* ObjectMgr::createSummonByGuid(uint64_t guid, SummonType type, uint32_t duration)
-{
-    Summon* summon;
-
-    switch (type)
-    {
-        case SUMMONTYPE_GUARDIAN:
-            summon = new GuardianSummon(guid, duration);
-            break;
-        case SUMMONTYPE_WILD:
-            summon = new WildSummon(guid, duration);
-            break;
-        case SUMMONTYPE_TOTEM:
-            summon = new TotemSummon(guid, duration);
-            break;
-        case SUMMONTYPE_COMPANION:
-            summon = new CompanionSummon(guid, duration);
-            break;
-        case SUMMONTYPE_POSSESSED:
-            summon = new PossessedSummon(guid, duration);
-            break;
-        default:
-            summon = new Summon(guid, duration);
-            break;
-    }
-
-    return summon;
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Groups
 Group* ObjectMgr::GetGroupByLeader(Player* pPlayer)

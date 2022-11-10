@@ -395,6 +395,7 @@ public:
     bool HandleNpcYellCommand(const char* args, WorldSession* m_session);
     bool HandleNpcVendorAddItemCommand(const char* args, WorldSession* m_session);
     bool HandleNpcVendorRemoveItemCommand(const char* args, WorldSession* m_session);
+    bool HandleNpcChangeEntry(const char* args, WorldSession* m_session);
     //Zyres: not only for selected creature... players too!
     bool HandlePossessCommand(const char* /*args*/, WorldSession* m_session);
     bool HandleUnPossessCommand(const char* /*args*/, WorldSession* m_session);

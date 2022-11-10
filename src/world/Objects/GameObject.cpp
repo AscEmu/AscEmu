@@ -1048,6 +1048,21 @@ bool GameObject::isUseable()
     return true;
 }
 
+void GameObject::onUse(Player* user)
+{
+    if (user)
+    {
+        if (GetGameObjectProperties()->cannotBeUsedUnderImmunity() && user->hasUnitFlags(UNIT_FLAG_ALIVE))
+            return;
+
+        if (!GetGameObjectProperties()->isUsableMounted())
+            user->removeAllAurasByAuraEffect(SPELL_AURA_MOUNTED);
+
+        if (const auto script = GossipScript::getInterface(this))
+            script->onHello(this, user);
+    }
+}
+
 void GameObject::useDoorOrButton(uint32_t time_to_restore, bool alternative /* = false */, Unit* user /*=nullptr*/)
 {
     if (m_lootState != GO_READY)
@@ -1226,7 +1241,10 @@ void GameObject::OnPushToWorld()
     }
 
     if (m_WorldMap && m_WorldMap->getScript())
+    {
         m_WorldMap->getScript()->OnGameObjectPushToWorld(this);
+        m_WorldMap->getScript()->addObject(this);
+    }
 }
 
 void GameObject::onRemoveInRangeObject(Object* pObj)
@@ -1327,6 +1345,8 @@ void GameObject_Door::InitAI()
 
 void GameObject_Door::onUse(Player* player)
 {
+    GameObject::onUse(player);
+
     if (!isUseable())
         return;
 
@@ -1379,6 +1399,8 @@ void GameObject_Button::InitAI()
 
 void GameObject_Button::onUse(Player* player)
 {
+    GameObject::onUse(player);
+
     if (!isUseable())
         return;
 
@@ -1427,6 +1449,8 @@ void GameObject_QuestGiver::InitAI()
 
 void GameObject_QuestGiver::onUse(Player* player)
 {
+    GameObject::onUse(player);
+
     if (!isUseable())
         return;
 
@@ -1524,6 +1548,8 @@ void GameObject_Chest::Close()
 
 void GameObject_Chest::onUse(Player* player)
 {
+    GameObject::onUse(player);
+
     if (!isUseable())
         return;
 
@@ -1617,6 +1643,8 @@ void GameObject_Trap::InitAI()
 
 void GameObject_Trap::onUse(Player* player)
 {
+    GameObject::onUse(player);
+
     if (!isUseable())
         return;
 
@@ -1681,6 +1709,8 @@ void GameObject_Trap::_internalUpdateOnState(unsigned long /*timeDiff*/)
 
 void GameObject_Chair::onUse(Player* player)
 {
+    GameObject::onUse(player);
+
     if (!isUseable())
         return;
 
@@ -1732,6 +1762,8 @@ void GameObject_Goober::InitAI()
 
 void GameObject_Goober::onUse(Player* player)
 {
+    GameObject::onUse(player);
+
     if (!isUseable())
         return;
 
@@ -1844,6 +1876,8 @@ void GameObject_Transport::_internalUpdateOnState(unsigned long timeDiff)
 // Class functions for GameObject_Camera
 void GameObject_Camera::onUse(Player* player)
 {
+    GameObject::onUse(player);
+
     if (!isUseable())
         return;
 
@@ -1862,6 +1896,8 @@ GameObject_FishingNode::~GameObject_FishingNode()
 
 void GameObject_FishingNode::onUse(Player* player)
 {
+    GameObject::onUse(player);
+
     if (!isUseable())
         return;
 
@@ -2020,6 +2056,8 @@ void GameObject_Ritual::InitAI()
 
 void GameObject_Ritual::onUse(Player* player)
 {
+    GameObject::onUse(player);
+
     if (!isUseable())
         return;
 
@@ -2155,6 +2193,8 @@ void GameObject_SpellCaster::InitAI()
 
 void GameObject_SpellCaster::onUse(Player* player)
 {
+    GameObject::onUse(player);
+
     if (!isUseable())
         return;
 
@@ -2188,6 +2228,8 @@ void GameObject_SpellCaster::onUse(Player* player)
 // Class functions for GameObject_Meetingstone
 void GameObject_Meetingstone::onUse(Player* player)
 {
+    GameObject::onUse(player);
+
     if (!isUseable())
         return;
 
@@ -2232,6 +2274,8 @@ void GameObject_Meetingstone::onUse(Player* player)
 // Class functions for GameObject_FlagStand
 void GameObject_FlagStand::onUse(Player* player)
 {
+    GameObject::onUse(player);
+
     if (!isUseable())
         return;
 
@@ -2256,6 +2300,8 @@ void GameObject_FishingHole::InitAI()
 
 void GameObject_FishingHole::onUse(Player* player)
 {
+    GameObject::onUse(player);
+
     if (!isUseable())
         return;
 
@@ -2295,6 +2341,8 @@ void GameObject_FishingHole::_internalUpdateOnState(unsigned long /*timeDiff*/)
 // Class functions for GameObject_FlagDrop
 void GameObject_FlagDrop::onUse(Player* player)
 {
+    GameObject::onUse(player);
+
     if (!isUseable())
         return;
 
@@ -2306,6 +2354,8 @@ void GameObject_FlagDrop::onUse(Player* player)
 // Class functions for GameObject_BarberChair
 void GameObject_BarberChair::onUse(Player* player)
 {
+    GameObject::onUse(player);
+
     if (!isUseable())
         return;
 

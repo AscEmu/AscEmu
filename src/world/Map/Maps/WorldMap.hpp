@@ -282,7 +282,7 @@ public:
     DynamicObject* getDynamicObject(uint32_t guid);
 
     // Summons
-    Summon* createSummon(uint32_t entry, SummonType type, uint32_t duration);
+    Summon* summonCreature(uint32_t entry, LocationVector pos, DBC::Structures::SummonPropertiesEntry const* = nullptr, uint32_t duration = 0, Object* summoner = nullptr, uint32_t spellId = 0);
 
     // Transports
     bool addToMapMgr(Transporter* obj);

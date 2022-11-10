@@ -9,10 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 SummonHandler::SummonHandler()
 {
-    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
-        _totems[i] = nullptr;
-
-    _guardianPets.clear();
+    for (uint8_t i = 0; i < MAX_SUMMON_SLOT; ++i)
+        m_SummonSlot[i] = 0;
 }
 
 SummonHandler::~SummonHandler()
@@ -20,168 +18,114 @@ SummonHandler::~SummonHandler()
     removeAllSummons();
 }
 
-void SummonHandler::addGuardian(Summon* summon)
+void SummonHandler::Init(Unit* owner)
 {
-    _guardianPets.insert(summon);
-}
-
-void SummonHandler::removeGuardian(Summon* summon, bool deleteObject)
-{
-    auto itr = _guardianPets.find(summon);
-    if (itr == _guardianPets.end())
-        return;
-
-    if (deleteObject)
-        (*itr)->Delete();
-
-    _guardianPets.erase(itr);
-}
-
-void SummonHandler::addTotem(TotemSummon* totem, TotemSlots slot)
-{
-    if (slot >= MAX_TOTEM_SLOT)
-        return;
-
-    _totems[slot] = totem;
-}
-
-void SummonHandler::removeTotem(TotemSummon* totem, bool deleteObject)
-{
-    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
-    {
-        if (_totems[i] == totem)
-        {
-            if (deleteObject)
-                totem->Delete();
-
-            _totems[i] = nullptr;
-            break;
-        }
-    }
+    m_Owner = owner;
 }
 
 void SummonHandler::removeAllSummons(bool totemsOnly/* = false*/)
 {
-    if (!totemsOnly)
+    if (!m_Owner || !m_Owner->getWorldMap())
+        return;
+
+    for (uint8 i = 0; i < MAX_SUMMON_SLOT; ++i)
     {
-        for (auto itr = _guardianPets.begin(); itr != _guardianPets.end();)
+        if (m_SummonSlot[i])
         {
-            auto guardian = *itr;
-            ++itr;
-            guardian->Delete();
+            if (!totemsOnly)
+                if (Creature* summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
+                    if (!summon->isTotem())
+                        static_cast<Summon*>(summon)->unSummon();
+
+            if (Creature* OldTotem = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
+                if (OldTotem->isTotem())
+                    static_cast<TotemSummon*>(OldTotem)->unSummon();
         }
-
-        _guardianPets.clear();
-    }
-
-    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
-    {
-        if (_totems[i] == nullptr)
-            continue;
-
-        _totems[i]->Delete();
-        _totems[i] = nullptr;
     }
 }
 
 void SummonHandler::setPvPFlags(bool set)
 {
-    for (const auto& guardian : _guardianPets)
-    {
-        if (set)
-            guardian->setPvpFlag();
-        else
-            guardian->removePvpFlag();
-    }
-        
-    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
-    {
-        if (_totems[i] == nullptr)
-            continue;
+    if (!m_Owner || !m_Owner->getWorldMap())
+        return;
 
-        if (set)
-            _totems[i]->setPvpFlag();
-        else
-            _totems[i]->removePvpFlag();
+    for (uint8_t i = 0; i < MAX_SUMMON_SLOT; ++i)
+    {
+        if (Creature* summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
+        {
+            if (set)
+                summon->setPvpFlag();
+            else
+                summon->removePvpFlag();
+        }
     }
 }
 
 void SummonHandler::setFFAPvPFlags(bool set)
 {
-    for (const auto& guardian : _guardianPets)
-    {
-        if (set)
-            guardian->setFfaPvpFlag();
-        else
-            guardian->removeFfaPvpFlag();
-    }
+    if (!m_Owner || !m_Owner->getWorldMap())
+        return;
 
-    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
+    for (uint8_t i = 0; i < MAX_SUMMON_SLOT; ++i)
     {
-        if (_totems[i] == nullptr)
-            continue;
-
-        if (set)
-            _totems[i]->setFfaPvpFlag();
-        else
-            _totems[i]->removeFfaPvpFlag();
+        if (Creature* summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
+        {
+            if (set)
+                summon->setFfaPvpFlag();
+            else
+                summon->removeFfaPvpFlag();
+        }
     }
 }
 
 void SummonHandler::setSanctuaryFlags(bool set)
 {
-    for (const auto& guardian : _guardianPets)
-    {
-        if (set)
-            guardian->setSanctuaryFlag();
-        else
-            guardian->removeSanctuaryFlag();
-    }
+    if (!m_Owner || !m_Owner->getWorldMap())
+        return;
 
-    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
+    for (uint8_t i = 0; i < MAX_SUMMON_SLOT; ++i)
     {
-        if (_totems[i] == nullptr)
-            continue;
-
-        if (set)
-            _totems[i]->setSanctuaryFlag();
-        else
-            _totems[i]->removeSanctuaryFlag();
+        if (Creature* summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
+        {
+            if (set)
+                summon->setSanctuaryFlag();
+            else
+                summon->removeSanctuaryFlag();
+        }
     }
 }
 
-bool SummonHandler::hasTotemInSlot(TotemSlots slot) const
+bool SummonHandler::hasTotemInSlot(SummonSlot slot) const
 {
-    if (slot >= MAX_TOTEM_SLOT)
+    if (slot >= SUMMON_SLOT_TOTEM_FIRE)
         return false;
 
-    return _totems[slot] != nullptr ? true : false;
+    return m_SummonSlot[slot] != 0 ? true : false;
 }
 
-TotemSummon* SummonHandler::getTotemInSlot(TotemSlots slot) const
+TotemSummon* SummonHandler::getTotemInSlot(SummonSlot slot) const
 {
-    if (slot >= MAX_TOTEM_SLOT)
+    if (!m_Owner || !m_Owner->getWorldMap())
         return nullptr;
 
-    return _totems[slot];
+    if (slot >= SUMMON_SLOT_TOTEM_FIRE)
+        return nullptr;
+
+    return static_cast<TotemSummon*>(m_Owner->getWorldMap()->getCreature(m_SummonSlot[slot]));
 }
 
 Summon* SummonHandler::getSummonWithEntry(uint32_t entry) const
 {
-    for (const auto& guardian : _guardianPets)
-    {
-        if (guardian->getEntry() == entry)
-            return guardian;
-    }
+    if (!m_Owner || !m_Owner->getWorldMap())
+        return nullptr;
 
-    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
+    for (uint8_t i = 0; i < MAX_SUMMON_SLOT; ++i)
     {
-        const auto totem = _totems[i];
-        if (totem == nullptr)
-            continue;
-
-        if (totem->getEntry() == entry)
-            return totem;
+        if (Creature* summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
+        {
+            if (entry == summon->getEntry())
+                return static_cast<Summon*>(summon);
+        }
     }
 
     return nullptr;
@@ -189,46 +133,17 @@ Summon* SummonHandler::getSummonWithEntry(uint32_t entry) const
 
 void SummonHandler::getTotemSpellIds(std::vector<uint32_t>& spellIds)
 {
-    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
+    if (!m_Owner || !m_Owner->getWorldMap())
+        return;
+
+    for (uint8_t i = 0; i < MAX_SUMMON_SLOT; ++i)
     {
-        const auto totem = _totems[i];
-        if (totem == nullptr)
-            continue;
-        if (totem->getCreatedBySpellId() == 0)
-            continue;
-
-        spellIds.push_back(totem->getCreatedBySpellId());
-    }
-}
-
-void SummonHandler::update(uint16_t diff)
-{
-    // Update the duration of summons
-    for (const auto& guardian : _guardianPets)
-    {
-        const auto timeLeft = guardian->getTimeLeft();
-        if (timeLeft == 0)
-            continue;
-
-        if (diff >= timeLeft)
-            guardian->unSummon();
-        else
-            guardian->setTimeLeft(timeLeft - diff);
-    }
-
-    for (uint8_t i = 0; i < MAX_TOTEM_SLOT; ++i)
-    {
-        const auto totem = _totems[i];
-        if (totem == nullptr)
-            continue;
-
-        const auto timeLeft = totem->getTimeLeft();
-        if (timeLeft == 0)
-            continue;
-
-        if (diff >= timeLeft)
-            totem->unSummon();
-        else
-            totem->setTimeLeft(timeLeft - diff);
+        if (Creature* summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
+        {
+            if (summon->isTotem() && summon->getCreatedBySpellId())
+            {
+                spellIds.push_back(summon->getCreatedBySpellId());
+            }
+        }
     }
 }

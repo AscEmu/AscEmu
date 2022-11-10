@@ -506,15 +506,15 @@ void Spell::spellEffectHealthLeech(uint8_t effIndex)
     isTargetDamageInfoSet = true;
 }
 
-void Spell::spellEffectSummonTotem(uint8_t summonSlot, CreatureProperties const* properties, LocationVector& v)
+void Spell::spellEffectSummonTotem(uint8_t effIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties, LocationVector& v)
 {
     if (u_caster == nullptr)
         return;
 
-    const auto totemSlot = summonSlot > 0 ? static_cast<TotemSlots>(summonSlot - 1) : TOTEM_SLOT_NONE;
+    const auto totemSlot = spe->Slot > 0 ? static_cast<SummonSlot>(spe->Slot - 1) : SUMMON_SLOT_PET;
 
     // Generate spawn point
-    const float_t angle = totemSlot < MAX_TOTEM_SLOT ? M_PI_FLOAT / MAX_TOTEM_SLOT - (totemSlot * 2 * M_PI_FLOAT / MAX_TOTEM_SLOT) : 0.0f;
+    const float_t angle = totemSlot < SUMMON_SLOT_MINIPET ? M_PI_FLOAT / SUMMON_SLOT_MINIPET - (totemSlot * 2 * M_PI_FLOAT / SUMMON_SLOT_MINIPET) : 0.0f;
     u_caster->GetPoint(u_caster->GetOrientation() + angle, 3.5f, v.x, v.y, v.z, false);
 
     // Correct Z position
@@ -529,23 +529,12 @@ void Spell::spellEffectSummonTotem(uint8_t summonSlot, CreatureProperties const*
         summonDuration = 10 * 60 * 1000; // 10 min if duration does not exist
 
     // Create totem
-    const auto totem = u_caster->getWorldMap()->createSummon(properties->Id, SUMMONTYPE_TOTEM, summonDuration);
+    const auto totem = u_caster->getWorldMap()->summonCreature(properties->Id, v, spe, summonDuration, u_caster, getSpellInfo()->getId());
     if (totem == nullptr)
         return;
 
-    // Remove current totem from slot if one exists
-    if (totemSlot < MAX_TOTEM_SLOT)
-    {
-        const auto curTotem = u_caster->getTotem(totemSlot);
-        if (curTotem != nullptr)
-            curTotem->unSummon();
-    }
-
-    totem->Load(properties, u_caster, v, m_spellInfo->getId(), totemSlot);
     totem->setMaxHealth(damage);
     totem->setHealth(damage);
-
-    totem->PushToWorld(u_caster->getWorldMap());
 }
 
 void Spell::spellEffectWeapon(uint8_t /*effectIndex*/)
@@ -2865,7 +2854,7 @@ void Spell::SpellEffectSummon(uint8_t effectIndex)
         case SUMMON_CONTROL_TYPE_GUARDIAN:
             if (summon_properties->ID == 121)
             {
-                spellEffectSummonTotem(static_cast<uint8_t>(summon_properties->Slot), cp, v);
+                spellEffectSummonTotem(effectIndex, summon_properties, cp, v);
                 return;
             }
             break;
@@ -2913,7 +2902,7 @@ void Spell::SpellEffectSummon(uint8_t effectIndex)
             return;
 
         case SUMMON_TYPE_TOTEM:
-            spellEffectSummonTotem(static_cast<uint8_t>(summon_properties->Slot), cp, v);
+            spellEffectSummonTotem(effectIndex, summon_properties, cp, v);
             return;
 
         case SUMMON_TYPE_COMPANION:
@@ -3026,15 +3015,9 @@ void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPrope
         v.x += x;
         v.y += y;
 
-        Summon* s = u_caster->getWorldMap()->createSummon(properties_->Id, SUMMONTYPE_GUARDIAN, static_cast<uint32_t>(getDuration()));
+        Summon* s = u_caster->getWorldMap()->summonCreature(properties_->Id, v, spe, static_cast<uint32_t>(getDuration()), u_caster, getSpellInfo()->getId());
         if (s == nullptr)
             return;
-
-        s->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
-        s->PushToWorld(u_caster->getWorldMap());
-
-        // Delay this a bit to make sure its Spawned
-        sEventMgr.AddEvent(s->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
         if ((p_caster != nullptr) && (spe->Slot != 0))
             p_caster->sendTotemCreatedPacket(static_cast<uint8_t>(spe->Slot - 1), s->getGuid(), static_cast<uint32_t>(getDuration()), m_spellInfo->getId());
@@ -3101,19 +3084,12 @@ void Spell::SpellEffectSummonPossessed(uint32 /*i*/, DBC::Structures::SummonProp
     p_caster->dismissActivePets();
     p_caster->RemoveFieldSummon();
 
-    Summon* s = p_caster->getWorldMap()->createSummon(properties_->Id, SUMMONTYPE_POSSESSED, static_cast<uint32_t>(getDuration()));
-    if (s == nullptr)
-        return;
-
     v.x += (3 * cos(M_PI_FLOAT / 2 + v.o));
     v.y += (3 * cos(M_PI_FLOAT / 2 + v.o));
 
-    s->Load(properties_, p_caster, v, m_spellInfo->getId(), spe->Slot - 1);
-    s->setCreatedBySpellId(m_spellInfo->getId());
-    s->PushToWorld(p_caster->getWorldMap());
-
-    // Delay this a bit to make sure its Spawned
-    sEventMgr.AddEvent(s->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    Summon* s = p_caster->getWorldMap()->summonCreature(properties_->Id, v, spe, static_cast<uint32_t>(getDuration()), p_caster, m_spellInfo->getId());
+    if (s == nullptr)
+        return;
 
     p_caster->Possess(s, 1000);
 }
@@ -3143,16 +3119,9 @@ void Spell::SpellEffectSummonCompanion(uint32 /*i*/, DBC::Structures::SummonProp
             return;
     }
 
-    auto summon = u_caster->getWorldMap()->createSummon(properties_->Id, SUMMONTYPE_COMPANION, static_cast<uint32_t>(getDuration()));
+    auto summon = u_caster->getWorldMap()->summonCreature(properties_->Id, v, spe, static_cast<uint32_t>(getDuration()), u_caster, m_spellInfo->getId());
     if (summon == nullptr)
         return;
-
-    summon->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
-    summon->setCreatedBySpellId(m_spellInfo->getId());
-    summon->PushToWorld(u_caster->getWorldMap());
-
-    // Delay this a bit to make sure its Spawned
-    sEventMgr.AddEvent(summon->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     u_caster->setCritterGuid(summon->getGuid());
 #endif
@@ -3603,6 +3572,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
             if (gameObjTarget == nullptr)
                 return;
 
+            gameObjTarget->onUse(m_caster->ToPlayer());
             gameObjTarget->Use(m_caster->getGuid());
 
             if (gameObjTarget->GetScript())

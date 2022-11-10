@@ -493,14 +493,6 @@ void Unit::Update(unsigned long time_passed)
         m_lastSpellUpdateTime = msTime;
     }
 
-    // Update summon interface every 100ms to check summon durations
-    diff = msTime - m_lastSummonUpdateTime;
-    if (diff >= 100)
-    {
-        getSummonInterface()->update(static_cast<uint16_t>(diff));
-        m_lastSummonUpdateTime = msTime;
-    }
-
     if (isAlive())
     {
         // Update health batch
@@ -578,7 +570,7 @@ void Unit::Update(unsigned long time_passed)
         }
 #endif
 
-        if (m_aiInterface != NULL && m_useAI)
+        if (m_aiInterface != nullptr)
         {
             diff = msTime - m_lastAiInterfaceUpdateTime;
             if (diff >= 100)

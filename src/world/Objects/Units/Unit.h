@@ -612,7 +612,7 @@ public:
     void setMoveDisableGravity(bool disable_gravity);
     void setMoveWalk(bool set_walk);
     void setFacing(float newo);     //only working if creature is idle
-    void setAnimationTier(uint8_t tier);
+    void setAnimationTier(AnimationTier  tier);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // used for handling fall
@@ -933,6 +933,7 @@ public:
     void sendSpellEnergizeLog(Unit* target, uint32_t spellId, uint32_t amount, PowerType type);
 
     uint8_t getHealthPct() const;
+    uint8_t getPctFromMaxHealth(uint8_t pct) const;
     uint8_t getPowerPct(PowerType powerType) const;
 
     void sendPowerUpdate(bool self);
@@ -1069,7 +1070,6 @@ private:
     uint16_t m_healthBatchTime = HEALTH_BATCH_INTERVAL;
 
     uint32_t m_lastSpellUpdateTime = 0;
-    uint32_t m_lastSummonUpdateTime = 0;
 
     uint32_t m_oldEmote = 0;
 
@@ -1093,7 +1093,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Summons
 
-    TotemSummon* getTotem(TotemSlots slot) const;
+    TotemSummon* getTotem(SummonSlot slot) const;
 
     SummonHandler* getSummonInterface() const;
 

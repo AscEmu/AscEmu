@@ -4284,7 +4284,7 @@ void MySQLDataStore::loadCreatureSpawns()
     if (creature_spawn_result)
     {
         uint32 creature_spawn_fields = creature_spawn_result->GetFieldCount();
-        if (creature_spawn_fields != CREATURE_SPAWNS_FIELDCOUNT + 2 + 2)
+        if (creature_spawn_fields != CREATURE_SPAWNS_FIELDCOUNT + 5)
         {
             sLogger.failure("Table `creature_spawns` has %u columns, but needs %u columns! Skipped!", creature_spawn_fields, CREATURE_SPAWNS_FIELDCOUNT);
             return;
@@ -4386,7 +4386,7 @@ void MySQLDataStore::loadGameobjectSpawns()
     if (gobject_spawn_result)
     {
         uint32 gobject_spawn_fields = gobject_spawn_result->GetFieldCount();
-        if (gobject_spawn_fields != GO_SPAWNS_FIELDCOUNT + 1 + 2)
+        if (gobject_spawn_fields != GO_SPAWNS_FIELDCOUNT + 4)
         {
             sLogger.failure("Table `gameobject_spawns` has %u columns, but needs %u columns! Skipped!", gobject_spawn_fields, GO_SPAWNS_FIELDCOUNT);
             return;
@@ -4398,7 +4398,7 @@ void MySQLDataStore::loadGameobjectSpawns()
                 Field* fields = gobject_spawn_result->Fetch();
                 uint32_t spawnId = fields[0].GetUInt32();
                 uint32 gameobject_entry = fields[3].GetUInt32();
-
+                
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(gameobject_entry);
                 if (gameobject_info == nullptr)
                 {

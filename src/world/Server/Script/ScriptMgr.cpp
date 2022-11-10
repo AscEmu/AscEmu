@@ -908,6 +908,23 @@ void GameObjectAIScript::RegisterAIUpdateEvent(uint32_t frequency)
     sEventMgr.AddEvent(_gameobject, &GameObject::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, frequency, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// instance
+InstanceScript* GameObjectAIScript::getInstanceScript()
+{
+    WorldMap* mapMgr = _gameobject->getWorldMap();
+    return (mapMgr) ? mapMgr->getScript() : nullptr;
+}
+
+bool GameObjectAIScript::_isHeroic()
+{
+    WorldMap* mapMgr = _gameobject->getWorldMap();
+    if (mapMgr == nullptr || mapMgr->getDifficulty() != InstanceDifficulty::DUNGEON_HEROIC)
+        return false;
+
+    return true;
+}
+
 /* InstanceAI Stuff */
 
 InstanceScript::InstanceScript(WorldMap* pMapMgr) : mInstance(pMapMgr), mSpawnsCreated(false), mTimerCount(0), mUpdateFrequency(defaultUpdateFrequency)
@@ -939,6 +956,90 @@ std::string InstanceScript::getDataStateString(uint8_t state)
             return "Invalid";
     }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Instance Script Data Fast Access
+void InstanceScript::setupInstanceData(ObjectData const* creatureData, ObjectData const* gameObjectData)
+{
+    if (creatureData)
+        setupObjectData(creatureData, _creatureInfo);
+
+    if (gameObjectData)
+        setupObjectData(gameObjectData, _gameObjectInfo);
+}
+
+void InstanceScript::setupObjectData(ObjectData const* data, ObjectInfoMap& objectInfo)
+{
+    while (data->entry)
+    {
+        ASSERT(objectInfo.find(data->entry) == objectInfo.end());
+        objectInfo[data->entry] = data->type;
+        ++data;
+    }
+}
+void InstanceScript::addObject(Object* obj)
+{
+    WoWGuid guid = obj->getGuid();
+
+    if (obj->isCreature())
+    {
+        ObjectInfoMap::const_iterator j = _creatureInfo.find(obj->getEntry());
+        if (j != _creatureInfo.end())
+            _objectGuids[j->second] = guid.getGuidLowPart();
+    }
+    else if (obj->isGameObject())
+    {
+        ObjectInfoMap::const_iterator j = _gameObjectInfo.find(obj->getEntry());
+        if (j != _gameObjectInfo.end())
+            _objectGuids[j->second] = guid.getGuidLowPart();
+    }
+}
+
+void InstanceScript::removeObject(Object* obj)
+{
+    WoWGuid guid = obj->getGuid();
+
+    if (obj->isCreature())
+    {
+        ObjectInfoMap::const_iterator j = _creatureInfo.find(obj->getEntry());
+        if (j != _creatureInfo.end())
+        {
+            ObjectGuidMap::iterator i = _objectGuids.find(j->second);
+            if (i != _objectGuids.end() && i->second == guid.getGuidLowPart())
+                _objectGuids.erase(i);
+        }
+    }
+    else if (obj->isGameObject())
+    {
+        ObjectInfoMap::const_iterator j = _gameObjectInfo.find(obj->getEntry());
+        if (j != _gameObjectInfo.end())
+        {
+            ObjectGuidMap::iterator i = _objectGuids.find(j->second);
+            if (i != _objectGuids.end() && i->second == guid.getGuidLowPart())
+                _objectGuids.erase(i);
+        }
+    }
+}
+
+uint32_t InstanceScript::getGuidFromData(uint32_t type)
+{
+    ObjectGuidMap::const_iterator i = _objectGuids.find(type);
+    if (i != _objectGuids.end())
+        return i->second;
+
+    return 0;
+}
+
+Creature* InstanceScript::getCreatureFromData(uint32_t type)
+{
+    return GetCreatureByGuid(getGuidFromData(type));
+}
+
+GameObject* InstanceScript::getGameObjectFromData(uint32_t type)
+{
+    return GetGameObjectByGuid(getGuidFromData(type));
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // encounters
@@ -1015,6 +1116,7 @@ void InstanceScript::loadSavedInstanceData(char const* data)
     std::istringstream loadStream(data);
 
     readSaveDataBossStates(loadStream);
+    readSaveDataExtended(loadStream);
 
     sLogger.debug("Saved Instance Data Loaded for Instance %s (Map %d, Instance Id: %d) is complete.", mInstance->getBaseMap()->getMapName().c_str(), mInstance->getBaseMap()->getMapId(), mInstance->getInstanceId());
 }
@@ -1058,6 +1160,7 @@ std::string InstanceScript::getSaveData()
     std::ostringstream saveStream;
 
     writeSaveDataBossStates(saveStream);
+    writeSaveDataExtended(saveStream);
 
     return saveStream.str();
 }

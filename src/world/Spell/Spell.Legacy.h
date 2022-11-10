@@ -327,7 +327,7 @@ class SERVER_DECL Spell
         void spellEffectSummonWild(uint8_t effectIndex);
         void spellEffectSummonGuardian(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
         void spellEffectSummonTemporaryPet(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
-        void spellEffectSummonTotem(uint8_t summonSlot, CreatureProperties const* properties, LocationVector& v);
+        void spellEffectSummonTotem(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties, LocationVector& v);
         void spellEffectSummonPossessed(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
         void spellEffectSummonCompanion(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
         void spellEffectSummonVehicle(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);

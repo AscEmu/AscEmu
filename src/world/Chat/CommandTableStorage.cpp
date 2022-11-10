@@ -539,6 +539,7 @@ void CommandTableStorage::Init()
         { "formationclear",     'm', &ChatHandler::HandleNpcSetFormationClearCommand,   "Removes formation from creature",                  nullptr },
         { "phase",              'n', &ChatHandler::HandleNpcSetPhaseCommand,            "Sets phase for selected creature",                 nullptr },
         { "standstate",         'm', &ChatHandler::HandleNpcSetStandstateCommand,       "Sets standstate for selected creature",            nullptr },
+        { "entry",              'm', &ChatHandler::HandleNpcChangeEntry,                "Sets a New Entry for selected creature",           nullptr },
         { nullptr,              '0', nullptr,                                           "",                                                 nullptr }
     };
     dupe_command_table(NPCSetCommandTable, _NPCSetCommandTable);

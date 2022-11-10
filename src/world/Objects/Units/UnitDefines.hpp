@@ -140,17 +140,6 @@ enum PowerFieldIndexes : uint8_t
 #endif
 };
 
-enum TotemSlots : uint8_t
-{
-    TOTEM_SLOT_FIRE     = 0,
-    TOTEM_SLOT_EARTH    = 1,
-    TOTEM_SLOT_WATER    = 2,
-    TOTEM_SLOT_AIR      = 3,
-    MAX_TOTEM_SLOT,
-
-    TOTEM_SLOT_NONE     = 255 // custom value for invalid slot
-};
-
 enum class VisualState : uint8_t
 {
     MISS                = 0,
@@ -850,14 +839,13 @@ enum UnitStandFlags
 };
 
 // byte flags value (UNIT_FIELD_BYTES_1,3)
-enum UnitBytes1_AnimationFlags
+enum AnimationTier : uint8_t
 {
-    UNIT_BYTE1_FLAG_GROUND       = 0x00,
-    UNIT_BYTE1_FLAG_ALWAYS_STAND = 0x01,
-    UNIT_BYTE1_FLAG_HOVER        = 0x02,    // It is called hover
-    UNIT_BYTE1_FLAG_FLY          = 0x03,
-    UNIT_BYTE1_FLAG_UNTRACKABLE  = 0x04,
-    UNIT_BYTE1_FLAG_ALL          = 0xFF
+    Ground                  = 0, // plays ground tier animations
+    Swim                    = 1, // falls back to ground tier animations, not handled by the client, should never appear in sniffs, will prevent tier change animations from playing correctly if used
+    Hover                   = 2, // plays flying tier animations or falls back to ground tier animations, automatically enables hover clientside when entering visibility with this value
+    Fly                     = 3, // plays flying tier animations
+    Submerged               = 4
 };
 
 // byte value (UNIT_FIELD_BYTES_2,0)
@@ -961,7 +949,7 @@ enum UnitFieldFlags : uint32_t // UNIT_FIELD_FLAGS #46 - these are client flags
     UNIT_FLAG_UNKNOWN_29                        = 0x10000000, // 29   268435456
     UNIT_FLAG_FEIGN_DEATH                       = 0x20000000, // 30   536870912
     UNIT_FLAG_UNKNOWN_31                        = 0x40000000, // 31  1073741824  ? was WEAPON_OFF and being used for disarm
-    UNIT_FLAG_UNKNOWN_32                        = 0x80000000  // 32  2147483648
+    UNIT_FLAG_IMMUNE                            = 0x80000000  // 32  2147483648
 };
 
 enum UnitFieldFlags2
@@ -1088,7 +1076,7 @@ static const UnitFlagNames UnitFlagToName[] =
     { UNIT_FLAG_UNKNOWN_29, "UNIT_FLAG_UNKNOWN_29" },
     { UNIT_FLAG_FEIGN_DEATH, "UNIT_FLAG_FEIGN_DEATH" },
     { UNIT_FLAG_UNKNOWN_31, "UNIT_FLAG_UNKNOWN_31" },
-    { UNIT_FLAG_UNKNOWN_32, "UNIT_FLAG_UNKNOWN_32" }
+    { UNIT_FLAG_IMMUNE, "UNIT_FLAG_IMMUNE" }
 };
 
 static uint32 numflags = sizeof(UnitFlagToName) / sizeof(UnitFlagNames);

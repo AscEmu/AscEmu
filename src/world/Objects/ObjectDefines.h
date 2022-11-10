@@ -119,3 +119,15 @@ enum GOSummonType : uint8_t
     GO_SUMMON_TIMED_OR_CORPSE_DESPAWN = 0,    // despawns after a specified time OR when the summoner dies
     GO_SUMMON_TIMED_DESPAWN = 1     // despawns after a specified time
 };
+
+enum CreatureSummonDespawnType : uint8_t
+{
+    TIMED_OR_DEAD_DESPAWN               = 1,
+    TIMED_OR_CORPSE_DESPAWN             = 2,
+    TIMED_DESPAWN                       = 3,
+    TIMED_DESPAWN_OUT_OF_COMBAT         = 4,
+    CORPSE_DESPAWN                      = 5,
+    CORPSE_TIMED_DESPAWN                = 6,
+    DEAD_DESPAWN                        = 7,
+    MANUAL_DESPAWN                      = 8
+};

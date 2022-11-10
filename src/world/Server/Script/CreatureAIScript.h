@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatDefines.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
+#include "Objects/Units/Creatures/Summons/Summon.h"
 #include "ScriptMgr.h"
 #include "ScriptEvent.hpp"
 #include "Map/Management/MapMgr.hpp"
@@ -120,14 +121,18 @@ public:
     virtual void OnLoad() {}
     virtual void OnDespawn() {}
     virtual void OnReachWP(uint32_t /*type*/, uint32_t /*id*/) {}
+    virtual void justReachedSpawn() {}
     virtual void OnLootTaken(Player* /*player*/, ItemProperties const* /*_itemProperties*/) {}
     virtual void AIUpdate() {}
     virtual void AIUpdate(unsigned long /*time_passed*/) {}
     virtual void OnEmote(Player* /*_player*/, EmoteType /*_emote*/) {}
     virtual void StringFunctionCall(int) {}
-    virtual void onSummonedCreature(Creature* /*summon*/) {}
-    virtual void OnSummon(Unit* /*summoner*/) {}
-    virtual void OnSummonDies(Creature* /*summon*/, Unit* /*killer*/) {}
+
+    // Summon
+    virtual void onSummonedCreature(Creature* /*summon*/) {}    // We summoned a Creature
+    virtual void OnSummon(Unit* /*summoner*/) {}    // We got Summoned by Summoner
+    virtual void OnSummonDies(Creature* /*summon*/, Unit* /*killer*/) {}    // One of our Summoned Creatures died
+    virtual void OnSummonDespawn(Creature* /*summon*/) {}   // Summoned Creature got UnSummoned
 
     // Quests
     virtual void onQuestAccept(Player* /*player*/, QuestProperties const* /*qst*/) {}
@@ -181,6 +186,9 @@ public:
 
     float getRangeToObject(Object* object);
 
+    Creature* summonCreature(uint32_t entry, float posX, float posY, float posZ, float posO, CreatureSummonDespawnType despawnType = MANUAL_DESPAWN, uint32_t duration = 0);
+    Creature* summonCreature(uint32_t entry, LocationVector position, CreatureSummonDespawnType despawnType = MANUAL_DESPAWN, uint32_t duration = 0);
+
     CreatureAIScript* spawnCreatureAndGetAIScript(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0, uint32_t phase = 1);
 
     Creature* spawnCreature(uint32_t entry, LocationVector pos, uint32_t factionId = 0, uint32_t phase = 1);
@@ -217,6 +225,10 @@ public:
 
     void setWaypointToMove(uint32_t pathid, uint32_t pWaypointId);
     void stopWaypointMovement();
+
+    virtual void waypointStarted(uint32_t /*nodeId*/, uint32_t /*pathId*/) { }
+    virtual void waypointReached(uint32_t /*nodeId*/, uint32_t /*pathId*/) { }
+    virtual void waypointPathEnded(uint32_t /*nodeId*/, uint32_t /*pathId*/) { }
 
     // loads waypoints from database and initialise them
     void loadCustomWaypoins(uint32_t pathId);
@@ -342,7 +354,9 @@ public:
 
 public:
     //addAISpell(spellID, Chance, TargetType, Duration (s), waitBeforeNextCast (s))
-    CreatureAISpells* addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration = 0, uint32_t cooldown = 0, bool forceRemove = false, bool isTriggered = false);
+    CreatureAISpells* addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration = 0, uint32_t cooldown = 0, bool forceRemove = false, bool isTriggered = false, bool heroicOnly = false);
+    
+    CreatureAISpells* addAISpell(uint32_t spellId, float castChance, uint32_t cooldown, std::function<Unit* ()> func, bool isTriggered = false, bool heroicOnly = false);
 
     void _applyAura(uint32_t spellId);
     void _removeAura(uint32_t spellId);
@@ -469,5 +483,6 @@ public:
     Unit* getBestTargetInArray(UnitArray& pTargetArray, TargetFilter pFilter);
     Unit* getNearestTargetInArray(UnitArray& pTargetArray);
     Unit* getSecondMostHatedTargetInArray(UnitArray& pTargetArray);
+    Unit* getLowestHealthTargetInArray(UnitArray& pTargetArray);
     bool isValidUnitTarget(Object* pObject, TargetFilter pFilter, float pMinRange = 0.0f, float pMaxRange = 0.0f, int32_t auraId = 0);
 };
