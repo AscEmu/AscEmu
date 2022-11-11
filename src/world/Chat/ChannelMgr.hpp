@@ -45,7 +45,7 @@ private:
     typedef std::map<std::string, Channel*> ChannelList;
     ChannelList m_channelList[2];
 
-    bool m_seperateChannels;
+    bool m_seperateChannels = false;
 
     mutable std::mutex m_mutexConfig;
     mutable std::mutex m_mutexChannels;

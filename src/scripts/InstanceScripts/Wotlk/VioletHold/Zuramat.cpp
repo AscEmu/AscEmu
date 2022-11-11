@@ -38,18 +38,18 @@ void ZuramatAI::OnLoad()
     getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
 }
 
-void ZuramatAI::OnCombatStop(Unit* _target)
+void ZuramatAI::OnCombatStop(Unit* /*_target*/)
 {
     mVoidDance = true;
 }
 
-void ZuramatAI::OnDied(Unit* _killer)
+void ZuramatAI::OnDied(Unit* /*_killer*/)
 {
     if (mInstance)
         mInstance->setBossState(DATA_ZURAMAT, Performed);
 }
 
-void ZuramatAI::OnSummonDies(Creature* summon, Unit* killer)
+void ZuramatAI::OnSummonDies(Creature* summon, Unit* /*killer*/)
 {
     if (summon->getEntry() == NPC_VOID_SENTRY)
         mVoidDance = false;
@@ -91,7 +91,7 @@ void VoidSentryAI::DoAction(int32_t actionId)
         summons.despawnAll();
 }
 
-void VoidSentryAI::OnSummon(Unit* summoner)
+void VoidSentryAI::OnSummon(Unit* /*summoner*/)
 {
     getCreature()->castSpell(getCreature(), Zuramat::SPELL_SUMMON_VOID_SENTRY_BALL, true);
 }
@@ -102,7 +102,7 @@ void VoidSentryAI::onSummonedCreature(Creature* summon)
     summon->getAIInterface()->setReactState(REACT_PASSIVE);
 }
 
-void VoidSentryAI::OnDied(Unit* _killer)
+void VoidSentryAI::OnDied(Unit* /*_killer*/)
 {
     DoAction(Zuramat::ACTION_DESPAWN_VOID_SENTRY_BALL);
 }
@@ -114,7 +114,7 @@ void VoidSentryAI::OnSummonDespawn(Creature* summon)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //  Void Sentry Achievement
-bool achievement_void_dance::canCompleteCriteria(uint32_t criteriaID, Player* /*pPlayer*/, Object* target)
+bool achievement_void_dance::canCompleteCriteria(uint32_t /*criteriaID*/, Player* /*pPlayer*/, Object* target)
 {
     if (!target)
         return false;

@@ -57,7 +57,7 @@ public:
         getCreature()->setStandState(STANDSTATE_STAND);
     }
 
-    void DamageTaken(Unit* _attacker, uint32_t* damage) override
+    void DamageTaken(Unit* /*_attacker*/, uint32_t* damage) override
     {
         if (getCreature()->getHealthPct() < 15 || *damage > getCreature()->getHealth())
         {

@@ -506,7 +506,7 @@ void Spell::spellEffectHealthLeech(uint8_t effIndex)
     isTargetDamageInfoSet = true;
 }
 
-void Spell::spellEffectSummonTotem(uint8_t effIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties, LocationVector& v)
+void Spell::spellEffectSummonTotem(uint8_t /*effIndex*/, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties, LocationVector& v)
 {
     if (u_caster == nullptr)
         return;
@@ -3937,12 +3937,9 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
     }
 
     WorldMap* map = m_caster->getWorldMap();
-    uint32 mapid = u_caster->GetMapId();
     float px = u_caster->GetPositionX();
     float py = u_caster->GetPositionY();
     float pz = u_caster->GetPositionZ();
-    float orient = m_caster->GetOrientation();
-    float posx = 0, posy = 0, posz = 0;
 
     int32_t duration = getDuration();
     GameObject* go = nullptr;
@@ -3960,7 +3957,6 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         float angle = Util::getRandomFloat(0.0f, 1.0f) * static_cast<float>(M_PI * 35.0f / 180.0f) - static_cast<float>(M_PI * 17.5f / 180.0f);
         m_caster->getClosePoint(posx, posy, posz, 0.388999998569489f, dist, angle);
 
-        float ground = m_caster->getMapHeight(LocationVector(posx, posy, posz));
         float liquidLevel = VMAP_INVALID_HEIGHT_VALUE;
 
         LiquidData liquidData;
@@ -3988,8 +3984,8 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
     }
     else
     {
-        posx = px;
-        posy = py;
+        float posx = px;
+        float posy = py;
         auto destination = m_targets.getDestination();
 
         if ((m_targets.hasDestination()) && destination.isSet())

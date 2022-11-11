@@ -43,7 +43,7 @@ void HellfireRampartsInstanceScript::OnGameObjectPushToWorld(GameObject* pGameOb
     }
 }
 
-void HellfireRampartsInstanceScript::OnEncounterStateChange(uint32_t entry, uint32_t state)
+void HellfireRampartsInstanceScript::OnEncounterStateChange(uint32_t entry, uint32_t /*state*/)
 {
     switch (entry)
     {

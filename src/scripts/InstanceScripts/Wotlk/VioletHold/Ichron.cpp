@@ -126,13 +126,13 @@ void IchronAI::onSummonedCreature(Creature* summon)
         getCreature()->castSpell(summon, Ichron::SPELL_WATER_GLOBULE_VISUAL);
 }
 
-void IchronAI::OnSummonDespawn(Creature* summon)
+void IchronAI::OnSummonDespawn(Creature* /*summon*/)
 {
     if (summons.empty())
         getCreature()->removeAllAurasById(Ichron::SPELL_DRAINED);
 }
 
-void IchronAI::AIUpdate(unsigned long time_passed)
+void IchronAI::AIUpdate(unsigned long /*time_passed*/)
 {
     if (!mIsFrenzy && getCreature()->getHealthPct() < 25 && !getCreature()->hasAurasWithId(Ichron::SPELL_DRAINED))
     {
@@ -168,7 +168,7 @@ void IchronGlobuleAI::OnHitBySpell(uint32_t spellId, Unit* caster)
     }
 }
 
-void IchronGlobuleAI::OnReachWP(uint32_t type, uint32_t pointId)
+void IchronGlobuleAI::OnReachWP(uint32_t type, uint32_t /*pointId*/)
 {
     if (type != FOLLOW_MOTION_TYPE)
         return;
@@ -196,7 +196,7 @@ void IchronGlobuleAI::DamageTaken(Unit* /*attacker*/, uint32_t* damage)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Spell: 54269 - Merge
-SpellScriptCheckDummy IchronMerge::onDummyOrScriptedEffect(Spell* spell, uint8_t effIndex)
+SpellScriptCheckDummy IchronMerge::onDummyOrScriptedEffect(Spell* spell, uint8_t /*effIndex*/)
 {
     if (spell->GetUnitTarget() == nullptr)
         return SpellScriptCheckDummy::DUMMY_OK;
@@ -215,7 +215,7 @@ SpellScriptCheckDummy IchronMerge::onDummyOrScriptedEffect(Spell* spell, uint8_t
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Spell: 54306 - Protective Bubble
-SpellScriptCheckDummy IchronBubble::onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply)
+SpellScriptCheckDummy IchronBubble::onAuraDummyEffect(Aura* aur, AuraEffectModifier* /*aurEff*/, bool /*apply*/)
 {
     if (aur->getCharges() <= 1)
     {
@@ -235,7 +235,7 @@ SpellScriptCheckDummy IchronBubble::onAuraDummyEffect(Aura* aur, AuraEffectModif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //  Dehydration Achievement
-bool achievement_Dehydration::canCompleteCriteria(uint32_t criteriaID, Player* /*pPlayer*/, Object* target)
+bool achievement_Dehydration::canCompleteCriteria(uint32_t /*criteriaID*/, Player* /*pPlayer*/, Object* target)
 {
     if (!target)
         return false;

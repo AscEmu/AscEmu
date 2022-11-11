@@ -41,7 +41,7 @@ void WatchkeeperGargolmarAI::OnCombatStop(Unit* /*mTarget*/)
     reset();
 }
 
-void WatchkeeperGargolmarAI::AIUpdate(unsigned long time_passed)
+void WatchkeeperGargolmarAI::AIUpdate(unsigned long /*time_passed*/)
 {
     if (getCreature()->getHealthPct() <= 40 && !mCalledForHelp)
     {

@@ -120,8 +120,6 @@ public:
                     getCreature()->setMaxPower(POWER_TYPE_MANA, unitOwner->getMaxPower(POWER_TYPE_MANA));
                     getCreature()->setPower(POWER_TYPE_MANA, unitOwner->getPower(POWER_TYPE_MANA));
 
-                    DBC::Structures::SpellRangeEntry const* range = nullptr;
-
                     AI_Spell sp1{};
                     sp1.entryId = 59638;
                     sp1.spell = sSpellMgr.getSpellInfo(sp1.entryId);

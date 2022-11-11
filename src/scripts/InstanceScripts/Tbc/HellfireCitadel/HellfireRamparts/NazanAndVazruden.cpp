@@ -162,7 +162,7 @@ void VazrudenTheHeraldAI::OnCombatStop(Unit* /*pTarget*/)
     despawnAdds();
 }
 
-void VazrudenTheHeraldAI::AIUpdate(unsigned long time_passed)
+void VazrudenTheHeraldAI::AIUpdate(unsigned long /*time_passed*/)
 {
     switch (getScriptPhase())
     {

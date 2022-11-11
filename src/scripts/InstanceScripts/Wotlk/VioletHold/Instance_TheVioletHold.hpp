@@ -752,7 +752,7 @@ public:
     SpellScriptExecuteState onAuraPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, float_t* damage) override;
 
 protected:
-    InstanceScript* mInstance;
+    InstanceScript* mInstance = nullptr;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -1814,7 +1814,6 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
 
     GameObject* go = createGameObject(entryID);
 
-    uint32_t mapid = getBaseMap()->getMapId();
     // Setup game object
     go->create(entryID, this, go->GetPhase(), pos, QuaternionData(), GO_STATE_CLOSED, sObjectMgr.GenerateGameObjectSpawnID());
     go->setScale(scale);

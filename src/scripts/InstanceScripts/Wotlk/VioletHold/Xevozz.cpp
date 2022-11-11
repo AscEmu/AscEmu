@@ -37,7 +37,7 @@ void XevozzAI::OnLoad()
     getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
 }
 
-void XevozzAI::OnCombatStart(Unit* _target)
+void XevozzAI::OnCombatStart(Unit* /*_target*/)
 {
     scriptEvents.addEvent(1, 5000);
 }

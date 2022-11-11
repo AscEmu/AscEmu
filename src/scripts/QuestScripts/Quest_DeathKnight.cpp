@@ -396,7 +396,7 @@ bool PreparationForBattleEffect(uint8_t /*effectIndex*/, Spell* pSpell)
 class DK_INITIATE_VISUAL : public SpellScript
 {
 public:
-    SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* spell, uint8_t effIndex) override
+    SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* spell, uint8_t /*effIndex*/) override
     {
         if (!spell->getCaster())
             return SpellScriptCheckDummy::DUMMY_NOT_HANDLED;

@@ -289,7 +289,6 @@ bool GameObject::loadFromDB(MySQLStructure::GameobjectSpawn* spawn, WorldMap* ma
     }
 
     uint32_t entry = spawn->entry;
-    GameObject_State gameobjectState = spawn->state;
 
     m_spawnId = spawn->id;
     if (!create(entry, map, spawn->phase, spawn->spawnPoint, spawn->rotation, spawn->state))
@@ -1989,7 +1988,7 @@ bool GameObject_FishingNode::HasLoot()
     return false;
 }
 
-void GameObject_FishingNode::_internalUpdateOnState(unsigned long timeDiff)
+void GameObject_FishingNode::_internalUpdateOnState(unsigned long /*timeDiff*/)
 {
     switch (m_lootState)
     {

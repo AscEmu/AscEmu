@@ -73,7 +73,7 @@ private:
     bool _unloadpending;
     bool _idlepending = false;
 
-    uint16_t _playerCount;
+    uint16_t _playerCount = 0;
     uint16_t _transportCount = 0;
 
     // checks if the MapCell can be unloaded, based on _corpses and if it's in a battleground

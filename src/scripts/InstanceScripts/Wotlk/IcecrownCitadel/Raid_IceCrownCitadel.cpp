@@ -474,7 +474,7 @@ void IceCrownCitadelScript::SpawnEnemyGunship()
        skybreaker = sTransportHandler.createTransport(GO_THE_SKYBREAKER_HORDE_ICC, mInstance);
 }
 
-void IceCrownCitadelScript::OnPlayerEnter(Player* player)
+void IceCrownCitadelScript::OnPlayerEnter(Player* /*player*/)
 {
     if (!spawnsCreated())
     {

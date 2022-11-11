@@ -4420,8 +4420,6 @@ void MySQLDataStore::loadGameobjectSpawns()
 #endif
                 MySQLStructure::GameobjectSpawn* go_spawn = new MySQLStructure::GameobjectSpawn;
                 go_spawn->id = spawnId;
-                uint32_t min = fields[1].GetUInt32();
-                uint32_t max = fields[2].GetUInt32();
                 go_spawn->entry = gameobject_entry;
                 go_spawn->map = fields[4].GetUInt32();
                 go_spawn->phase = fields[5].GetUInt32();
@@ -4638,7 +4636,6 @@ void MySQLDataStore::loadCreatureGroupSpawns()
         Field* fields = result->Fetch();
         uint32_t groupId = fields[0].GetUInt8();
         uint32_t spawnId = fields[1].GetUInt32();
-        MySQLStructure::CreatureSpawn spawn;
         bool data = false;
 
         auto it = _spawnGroupDataStore.find(groupId);

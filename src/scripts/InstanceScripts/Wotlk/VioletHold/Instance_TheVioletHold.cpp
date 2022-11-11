@@ -1023,7 +1023,7 @@ TrashAI::TrashAI(Creature* pCreature) : CreatureAIScript(pCreature)
 
 CreatureAIScript* TrashAI::Create(Creature* pCreature) { return new TrashAI(pCreature); }
 
-void TrashAI::AIUpdate(unsigned long time_passed)
+void TrashAI::AIUpdate(unsigned long /*time_passed*/)
 {
     if (!_isInCombat())
     {
@@ -1162,7 +1162,7 @@ void ActivationCrystalAI::OnSpawn()
     _gameobject->addFlags(GO_FLAG_NOT_SELECTABLE);
 }
 
-void ActivationCrystalGossip::onHello(Object* object, Player* player)
+void ActivationCrystalGossip::onHello(Object* /*object*/, Player* player)
 {
     player->castSpell(player, SPELL_CRYSTAL_ACTIVATION, true);
 }
@@ -1175,7 +1175,7 @@ void DestroyDoorSeal::onAuraCreate(Aura* aur)
         mInstance = aur->GetUnitCaster()->getWorldMap()->getScript();
 }
 
-SpellScriptExecuteState DestroyDoorSeal::onAuraPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, float_t* damage)
+SpellScriptExecuteState DestroyDoorSeal::onAuraPeriodicTick(Aura* aur, AuraEffectModifier* /*aurEff*/, float_t* /*damage*/)
 {
     if (aur->GetUnitCaster() && aur->GetUnitCaster()->isAlive())
     {
@@ -1190,7 +1190,7 @@ SpellScriptExecuteState DestroyDoorSeal::onAuraPeriodicTick(Aura* aur, AuraEffec
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Spell: 57912,58152,57930 Arcane Lightning Targetting
-void ArcaneLightning::filterEffectTargets(Spell* spell, uint8_t effIndex, std::vector<uint64_t>* effectTargets)
+void ArcaneLightning::filterEffectTargets(Spell* spell, uint8_t /*effIndex*/, std::vector<uint64_t>* effectTargets)
 {
     effectTargets->clear();
 

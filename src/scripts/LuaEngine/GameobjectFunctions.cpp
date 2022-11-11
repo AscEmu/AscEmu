@@ -391,7 +391,6 @@ int LuaGameObject::SpawnGameObject(lua_State* L, GameObject* ptr)
         return 0;
 
     GameObject* go = ptr->getWorldMap()->createGameObject(entry_id);
-    uint32_t mapid = ptr->GetMapId();
     go->create(entry_id, ptr->getWorldMap(), ptr->GetPhase(), LocationVector(x, y, z, o), QuaternionData(), GO_STATE_CLOSED);
     go->Phase(PHASE_SET, phase);
     go->setScale(scale);

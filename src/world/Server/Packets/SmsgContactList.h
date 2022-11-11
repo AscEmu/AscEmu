@@ -12,14 +12,14 @@ namespace AscEmu::Packets
 {
     struct SmsgContactListMember
     {
-        uint64_t guid;
-        uint32_t flag;
+        uint64_t guid = 0;
+        uint32_t flag = 0;
         std::string note;
 
-        uint8_t isOnline;
-        uint32_t zoneId;
-        uint32_t level;
-        uint32_t playerClass;
+        uint8_t isOnline = 0;
+        uint32_t zoneId = 0;
+        uint32_t level = 0;
+        uint32_t playerClass = 0;
     };
 
     class SmsgContactList : public ManagedPacket

@@ -5581,7 +5581,7 @@ uint8_t Player::getRaidDifficulty()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Die, Kill, Corpse & Repop
-void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t spellId)
+void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
 {
 #ifdef FT_VEHICLES
     callExitVehicle();

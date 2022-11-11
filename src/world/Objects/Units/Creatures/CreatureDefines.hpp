@@ -282,7 +282,7 @@ enum UNIT_TYPE
     UNIT_TYPE_NUM               = 14
 };
 
-enum NPCFlags
+enum NPCFlags : uint32_t
 {
     UNIT_NPC_FLAG_NONE                  = 0x00000000,
     UNIT_NPC_FLAG_GOSSIP                = 0x00000001,       // 100%
@@ -452,10 +452,10 @@ struct GossipOptions
 struct GossipNpc
 {
     GossipNpc() { pOptions = NULL; }
-    uint32 ID;
-    uint32 EntryId;
-    uint32 TextID;
-    uint32 OptionCount;
+    uint32 ID = 0;
+    uint32 EntryId = 0;
+    uint32 TextID = 0;
+    uint32 OptionCount = 0;
     GossipOptions* pOptions;
 };
 

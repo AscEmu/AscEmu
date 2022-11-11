@@ -21,7 +21,7 @@ AzureSaboteurAI::AzureSaboteurAI(Creature* pCreature) : CreatureAIScript(pCreatu
 
 CreatureAIScript* AzureSaboteurAI::Create(Creature* pCreature) { return new AzureSaboteurAI(pCreature); }
 
-void AzureSaboteurAI::OnSummon(Unit* summoner)
+void AzureSaboteurAI::OnSummon(Unit* /*summoner*/)
 {
     if (mInstance->getLocalData(DATA_WAVE_COUNT) == 6)
         mbossId = mInstance->getLocalData(DATA_1ST_BOSS);

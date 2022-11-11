@@ -87,7 +87,7 @@ void CommonPortalAI::SetCreatureData(uint32_t type, uint32_t data)
         portalLocation = uint8_t(data);
 }
 
-void CommonPortalAI::OnSummon(Unit* summoner)
+void CommonPortalAI::OnSummon(Unit* /*summoner*/)
 {
     scriptEvents.addEvent(1, 15 * TimeVarsMs::Second);
 }
@@ -101,7 +101,7 @@ void CommonPortalAI::onSummonedCreature(Creature* summon)
         summon->GetScript()->SetCreatureData(DATA_PORTAL_LOCATION, portalLocation);
 }
 
-void CommonPortalAI::OnSummonDies(Creature* summon, Unit* killer)
+void CommonPortalAI::OnSummonDies(Creature* summon, Unit* /*killer*/)
 {
     summons.despawn(summon);
 

@@ -67,7 +67,7 @@ void IntroPortalAI::SetCreatureData(uint32_t type, uint32_t data)
         portalLocation = uint8_t(data);
 }
 
-void IntroPortalAI::OnSummon(Unit* summoner)
+void IntroPortalAI::OnSummon(Unit* /*summoner*/)
 {
     scriptEvents.addEvent(1, 15 * TimeVarsMs::Second);
 }

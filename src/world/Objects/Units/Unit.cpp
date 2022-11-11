@@ -4625,7 +4625,7 @@ void Unit::removeAllAurasByAuraInterruptFlag(uint32_t auraInterruptFlag, uint32_
     }
 }
 
-void Unit::removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell/* = 0*/, bool removeOnlyEffect/* = false*/, uint64_t casterGuid/* = 0*/, AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
+void Unit::removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell/* = 0*/, bool removeOnlyEffect/* = false*/, uint64_t casterGuid/* = 0*/, AuraRemoveMode /*mode*//* = AURA_REMOVE_BY_SERVER*/)
 {
     if (!hasAuraWithAuraEffect(effect))
         return;
@@ -6936,7 +6936,6 @@ void Unit::_updateHealth()
 uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageGenerated)
 {
     const auto spellId = batch->spellInfo != nullptr ? batch->spellInfo->getId() : 0;
-    const uint8_t absSchool = batch->spellInfo != nullptr ? batch->spellInfo->getFirstSchoolFromSchoolMask() : 0;
     auto damage = batch->damageInfo.realDamage;
 
     const auto attacker = batch->caster;
@@ -7427,7 +7426,6 @@ void Unit::handleSpellClick(Unit* clicker, int8_t seatId /*= -1*/)
             Unit* caster = (clickPair.castFlags & NPC_CLICK_CAST_CASTER_CLICKER) ? clicker : this;
             Unit* target = (clickPair.castFlags & NPC_CLICK_CAST_TARGET_CLICKER) ? clicker : this;
             auto* const unitOwner = getUnitOwner();
-            uint64_t origCasterGUID = (unitOwner && clickPair.castFlags & NPC_CLICK_CAST_ORIG_CASTER_OWNER) ? unitOwner->getGuid() : clicker->getGuid();
 
             SpellInfo const* spellEntry = sSpellMgr.getSpellInfo(clickPair.spellId);
 

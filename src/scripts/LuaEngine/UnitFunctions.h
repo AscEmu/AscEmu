@@ -636,7 +636,6 @@ public:
             }
 
             GameObject* go = ptr->getWorldMap()->createGameObject(entry_id);
-            uint32_t mapid = ptr->GetMapId();
             go->create(entry_id, ptr->getWorldMap(), ptr->GetPhase(), LocationVector(x, y, z, o), QuaternionData(), GO_STATE_CLOSED);
             go->Phase(PHASE_SET, phase);
             go->setScale(scale);
@@ -6744,10 +6743,8 @@ public:
             return 0;
 
         uint64_t guid = CHECK_GUID(L, 1);
-        uint32_t delay = static_cast<uint32_t>(luaL_checkinteger(L, 2));
 
         Unit* _unit = ptr->getWorldMapUnit(guid);
-
         if (_unit)
             _unit->callEnterVehicle(ptr);
 #endif
