@@ -239,6 +239,14 @@ struct GameObjectProperties
             uint32 floating_tooltip;            // parameter_6
         } spell_focus;
         // 9 GAMEOBJECT_TYPE_TEXT
+        struct
+        {
+            uint32_t pageID;                    // parameter_0
+            uint32_t language;                  // parameter_1
+            uint32_t pageMaterial;              // parameter_2
+            uint32_t allowMounted;              // parameter_3 Is usable while on mount/vehicle. (0/1)
+            uint32_t conditionID1;              // parameter_4
+        } text;
         // 10 GAMEOBJECT_TYPE_GOOBER
         struct
         {
@@ -575,6 +583,8 @@ struct GameObjectProperties
 
     bool isLargeGameObject() const
     {
+        // disable for now Gameobjects wont Update in WorldMap
+        return false;
         switch (type)
         {
             case GAMEOBJECT_TYPE_BUTTON:            return button.large != 0;
@@ -591,6 +601,8 @@ struct GameObjectProperties
 
     bool isInfiniteGameObject() const
     {
+        // disable for now Gameobjects wont Update in WorldMap
+        return false;
         switch (type)
         {
             case GAMEOBJECT_TYPE_DOOR:                  return true;
@@ -598,6 +610,35 @@ struct GameObjectProperties
             case GAMEOBJECT_TYPE_FLAGDROP:              return true;
             case GAMEOBJECT_TYPE_TRAPDOOR:              return true;
             case GAMEOBJECT_TYPE_TRANSPORT:             return true;
+            default: return false;
+        }
+    }
+
+    bool cannotBeUsedUnderImmunity() const // Cannot be used/activated/looted by players under immunity effects (example: Divine Shield)
+    {
+        switch (type)
+        {
+            case GAMEOBJECT_TYPE_DOOR:       return door.no_damage_immune != 0;
+            case GAMEOBJECT_TYPE_BUTTON:     return button.no_damage_immune != 0;
+            case GAMEOBJECT_TYPE_QUESTGIVER: return questgiver.noDamageImmune != 0;
+            case GAMEOBJECT_TYPE_CHEST:      return true;                           // All chests cannot be opened while immune on 3.3.5a
+            case GAMEOBJECT_TYPE_GOOBER:     return goober.no_damage_immune != 0;
+            case GAMEOBJECT_TYPE_FLAGSTAND:  return flagstand.noDamageImmune != 0;
+            case GAMEOBJECT_TYPE_FLAGDROP:   return flagdrop.noDamageImmune != 0;
+            default: return false;
+        }
+    }
+
+    bool isUsableMounted() const
+    {
+        switch (type)
+        {
+            case GAMEOBJECT_TYPE_MAILBOX: return true;
+            case GAMEOBJECT_TYPE_BARBER_CHAIR: return false;
+            case GAMEOBJECT_TYPE_QUESTGIVER: return questgiver.allowMounted != 0;
+            case GAMEOBJECT_TYPE_TEXT: return text.allowMounted != 0;
+            case GAMEOBJECT_TYPE_GOOBER: return goober.allow_mounted != 0;
+            case GAMEOBJECT_TYPE_SPELLCASTER: return spell_caster.allow_mounted != 0;
             default: return false;
         }
     }
@@ -827,7 +868,7 @@ public:
     public:
 
         void sendGameobjectCustomAnim(uint32_t anim = 0);
-        virtual void onUse(Player* /*player*/) {}
+        virtual void onUse(Player* /*player*/);
 
     protected:
         GameObjectModel* createModel();

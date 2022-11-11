@@ -221,7 +221,6 @@ public:
 
     GameObject* createGameObjectByGuid(uint32_t id, uint32_t guid);
 
-    Summon* createSummonByGuid(uint64_t guid, SummonType type, uint32_t duration);
     //MIT END
 
         void LoadCreatureTimedEmotes();

@@ -4554,6 +4554,20 @@ float Object::getDistance2d(float x, float y) const
     return d > 0.0f ? d : 0.0f;
 }
 
+Creature* Object::summonCreature(uint32_t entry, LocationVector position, CreatureSummonDespawnType despawnType, uint32_t duration, uint32_t spellId)
+{
+    if (WorldMap* map = getWorldMap())
+    {
+        if (Summon* summon = map->summonCreature(entry, position, nullptr, duration, this, spellId))
+        {
+            summon->setDespawnType(despawnType);
+            return summon;
+        }
+    }
+
+    return nullptr;
+}
+
 GameObject* Object::summonGameObject(uint32_t entryID, LocationVector pos, QuaternionData const& rot, uint32_t spawnTime, GOSummonType summonType)
 {
     auto gameobject_info = sMySQLStore.getGameObjectProperties(entryID);

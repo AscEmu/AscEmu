@@ -521,6 +521,35 @@ class SERVER_DECL GameObjectAIScript
         void ModifyAIUpdateEvent(uint32 newfrequency);
         void RemoveAIUpdateEvent();
 
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // instance
+        InstanceScript* getInstanceScript();
+
+        bool _isHeroic();
+
+        template<class T> inline
+        const T& RAID_MODE(const T& normal10, const T& normal25, const T& heroic10, const T& heroic25) const
+        {
+            if (_gameobject->getWorldMap()->getInstance())
+            {
+                switch (_gameobject->getWorldMap()->getDifficulty())
+                {
+                case InstanceDifficulty::RAID_10MAN_NORMAL:
+                    return normal10;
+                case InstanceDifficulty::RAID_25MAN_NORMAL:
+                    return normal25;
+                case InstanceDifficulty::RAID_10MAN_HEROIC:
+                    return heroic10;
+                case InstanceDifficulty::RAID_25MAN_HEROIC:
+                    return heroic25;
+                default:
+                    break;
+                }
+            }
+
+            return normal10;
+        }
+
     protected:
 
         GameObject* _gameobject;
@@ -582,8 +611,16 @@ struct BossInfo
     EncounterStates state;
 };
 
+struct ObjectData
+{
+    uint32_t entry;
+    uint32_t type;
+};
+
 typedef std::set<Creature*> CreatureSet;
 typedef std::set<GameObject*> GameObjectSet;
+typedef std::map<uint32_t, uint32_t> ObjectInfoMap;
+typedef std::map<uint32_t, uint32_t> ObjectGuidMap;
 
 typedef std::pair<uint32_t, uint32_t> InstanceTimerPair;
 typedef std::vector<InstanceTimerPair> InstanceTimerArray;
@@ -642,8 +679,15 @@ class SERVER_DECL InstanceScript
         // MIT start
         //////////////////////////////////////////////////////////////////////////////////////////
         // data
+        void addObject(Object* obj);
+        void removeObject(Object* obj);
+
+        uint32_t getGuidFromData(uint32_t type);
+        Creature* getCreatureFromData(uint32_t type);
+        GameObject* getGameObjectFromData(uint32_t type);
 
         // not saved to database, only for scripting
+        virtual void setupInstanceData(ObjectData const* creatureData, ObjectData const* gameObjectData);
         virtual void setLocalData(uint32_t /*type*/, uint32_t /*data*/) {}
         virtual void setLocalData64(uint32_t /*type*/, uint64_t /*data*/) {}
         virtual uint32_t getLocalData(uint32_t /*type*/) const { return 0; }
@@ -668,7 +712,7 @@ class SERVER_DECL InstanceScript
         void loadSavedInstanceData(char const* data);
         void sendUnitEncounter(uint32_t type, Unit* unit = nullptr, uint8_t value_a = 0, uint8_t value_b = 0);
 
-        bool setBossState(uint32_t id, EncounterStates state);
+        virtual bool setBossState(uint32_t id, EncounterStates state);
         std::vector<BossInfo> getBosses() { return bosses; }
         EncounterStates getBossState(uint32_t id) const { return id < bosses.size() ? bosses[id].state : InvalidState; }
         //used for debug
@@ -690,7 +734,9 @@ class SERVER_DECL InstanceScript
         uint32_t getCompletedEncounterMask() const { return completedEncounters; }
 
         void readSaveDataBossStates(std::istringstream& data);
+        virtual void readSaveDataExtended(std::istringstream& /*data*/) {}
         void writeSaveDataBossStates(std::ostringstream& data);
+        virtual void writeSaveDataExtended(std::ostringstream& /*data*/) {}
         virtual std::string getSaveData();
 
         //used for debug
@@ -705,6 +751,12 @@ class SERVER_DECL InstanceScript
 
         InstanceTimerArray mTimers;
         uint32_t mTimerCount;
+
+        // FaST Acess Instance Data
+        static void setupObjectData(ObjectData const* creatureData, ObjectInfoMap& objectInfo);
+        ObjectInfoMap _creatureInfo;
+        ObjectInfoMap _gameObjectInfo;
+        ObjectGuidMap _objectGuids;
 
     public:
 

@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "HomeMovementGenerator.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/AIInterface.h"
+#include "Server/Script/CreatureAIScript.h"
 #include "Management/G3DPosition.hpp"
 #include "Movement/MovementManager.h"
 #include "Movement/MovementDefines.h"
@@ -122,5 +123,7 @@ void HomeMovementGenerator<Creature>::doFinalize(Creature* owner, bool active, b
     if (movementInform && hasFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED))
     {
         // todo handle healt regen and other stuff here ( basically combat reset )?
+        if (owner->GetScript())
+            owner->GetScript()->justReachedSpawn();
     }
 }

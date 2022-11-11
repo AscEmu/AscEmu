@@ -50,7 +50,7 @@ public:
 
     // Plays animation after movement done
     // can't be combined with parabolic movement
-    void SetAnimation(UnitBytes1_AnimationFlags anim);
+    void SetAnimation(AnimationTier anim);
 
     // Adds final facing animation
     // sets unit's facing to specified point/angle after all path done
@@ -149,10 +149,10 @@ inline void MoveSplineInit::SetParabolic(float amplitude, float time_shift)
     args.flags.EnableParabolic();
 }
 
-inline void MoveSplineInit::SetAnimation(UnitBytes1_AnimationFlags anim)
+inline void MoveSplineInit::SetAnimation(AnimationTier anim)
 {
     args.time_perc = 0.f;
-    args.flags.EnableAnimation((uint8_t)anim);
+    args.flags.EnableAnimation(static_cast<uint8_t>(anim));
 }
 
 inline void MoveSplineInit::DisableTransportPathTransformations() { args.TransformForTransport = false; }

@@ -763,6 +763,9 @@ void WorldMap::PushStaticObject(Object* obj)
             sLogger.debug("WorldMap::PushStaticObject called for invalid type %u.", obj->GetTypeFromGUID());
             break;
     }
+
+    if (getScript())
+        getScript()->addObject(obj);
 }
 
 void WorldMap::RemoveObject(Object* obj, bool free_guid)
@@ -785,6 +788,10 @@ void WorldMap::RemoveObject(Object* obj, bool free_guid)
         sLogger.failure("WorldMap::RemoveObject tried to remove invalid cells (nullptr)");
         return;
     }
+
+    // Call Script Object Got Removed
+    if (getScript())
+        getScript()->removeObject(obj);
 
     if (obj->IsActive())
         obj->Deactivate(this);
@@ -1675,12 +1682,93 @@ Pet* WorldMap::getPet(uint32_t guid)
     return itr != m_PetStorage.end() ? itr->second : nullptr;
 }
 
-Summon* WorldMap::createSummon(uint32_t entry, SummonType type, uint32_t duration)
+Summon* WorldMap::summonCreature(uint32_t entry, LocationVector pos, DBC::Structures::SummonPropertiesEntry const* properties /*= nullptr*/, uint32_t duration /*= 0*/, Object* summoner /*= nullptr*/, uint32_t spellId /*= 0*/)
 {
-    // Generate always a new guid for totems, otherwise the totem timer bar will get messed up
-    uint64_t guid = generateCreatureGuid(entry, type != SUMMONTYPE_TOTEM);
+    // Generate a new Guid
+    uint64_t guid = generateCreatureGuid(entry, false);
 
-    return sObjectMgr.createSummonByGuid(guid, type, duration);
+    // Phase
+    uint32_t phase = 1;
+    if (summoner)
+        phase = summoner->GetPhase();
+
+    Unit* summonerUnit = summoner ? summoner->ToUnit() : nullptr;
+
+    Summon* summon = nullptr;
+    if (properties)
+    {
+        switch (properties->ControlType)
+        {
+            case SUMMON_CONTROL_TYPE_PET: // Guardians
+            {
+                summon = new WildSummon(guid, properties);
+            } break;
+            case SUMMON_CONTROL_TYPE_POSSESSED:
+            {
+                summon = new PossessedSummon(guid, properties);
+            } break;
+            case SUMMON_CONTROL_TYPE_VEHICLE:
+            {
+                summon = new CompanionSummon(guid, properties);
+            } break;
+            case SUMMON_CONTROL_TYPE_WILD:
+            case SUMMON_CONTROL_TYPE_GUARDIAN:
+            case SUMMON_CATEGORY_UNK:
+            {
+                switch (properties->Type)
+                {
+                    case SUMMONTYPE_MINION:
+                    case SUMMONTYPE_GUARDIAN:
+                    case SUMMONTYPE_GUARDIAN2:
+                    {
+                        summon = new WildSummon(guid, properties);
+                    } break;
+                    case SUMMONTYPE_TOTEM:
+                    case SUMMONTYPE_LIGHTWELL:
+                    {
+                        summon = new TotemSummon(guid, properties);
+                    } break;
+                    case SUMMONTYPE_VEHICLE:
+                    case SUMMONTYPE_VEHICLE2:
+                    {
+                        summon = new Summon(guid, properties);
+                    } break;
+                    case SUMMONTYPE_MINIPET:
+                    {
+                        summon = new CompanionSummon(guid, properties);
+                    } break;
+                    default:
+                    {
+                        if (properties->Flags & 512) // Mirror Image, Summon Gargoyle
+                            summon = new WildSummon(guid, properties);
+                    } break;
+                }
+            } break;
+            default:
+                summon = new Summon(guid, properties);
+                break;
+        }
+    }
+    else
+    {
+        summon = new Summon(guid, properties);
+    }
+
+    const auto* cp = sMySQLStore.getCreatureProperties(entry);
+    if (cp == nullptr)
+    {
+        delete summon;
+        return nullptr;
+    }
+
+    summon->Load(cp, summonerUnit, pos, duration, spellId);
+    summon->setPhase(phase);
+    summon->PushToWorld(this);
+
+    // Delay this a bit to make sure its Spawned
+    sEventMgr.AddEvent(static_cast<Creature*>(summon), &Creature::InitSummon, static_cast<Object*>(summonerUnit), EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+
+    return summon;
 }
 
 GameObject* WorldMap::createGameObject(uint32_t entry)

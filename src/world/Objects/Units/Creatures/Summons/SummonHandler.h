@@ -31,12 +31,6 @@ public:
     SummonHandler();
     ~SummonHandler();
 
-    void addGuardian(Summon* summon);
-    void removeGuardian(Summon* summon, bool deleteObject);
-
-    void addTotem(TotemSummon* totem, TotemSlots slot);
-    void removeTotem(TotemSummon* totem, bool deleteObject);
-
     // Removes all guardians and totems, but not permanent pet
     void removeAllSummons(bool totemsOnly = false);
 
@@ -44,15 +38,16 @@ public:
     void setFFAPvPFlags(bool set);
     void setSanctuaryFlags(bool set);
 
-    bool hasTotemInSlot(TotemSlots slot) const;
-    TotemSummon* getTotemInSlot(TotemSlots slot) const;
+    bool hasTotemInSlot(SummonSlot slot) const;
+    TotemSummon* getTotemInSlot(SummonSlot slot) const;
     Summon* getSummonWithEntry(uint32_t entry) const;
 
     void getTotemSpellIds(std::vector<uint32_t> &spellIds);
 
-    void update(uint16_t diff);
+    void Init(Unit* owner);
 
-private:
-    std::set<Summon*> _guardianPets;
-    TotemSummon* _totems[MAX_TOTEM_SLOT];
+    uint32_t m_SummonSlot[MAX_SUMMON_SLOT];
+
+protected:
+    Unit* m_Owner = nullptr;
 };

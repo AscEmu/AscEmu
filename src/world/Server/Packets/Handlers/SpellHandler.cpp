@@ -377,13 +377,13 @@ void WorldSession::handleCancelTotem(WorldPacket& recvPacket)
     uint8_t totemSlot;
     recvPacket >> totemSlot;
 
-    if (totemSlot >= MAX_TOTEM_SLOT)
+    if (totemSlot >= SUMMON_SLOT_MINIPET)
     {
         sLogger.failure("Player %u tried to cancel totem from out of range slot %u, ignored.", _player->getGuidLow(), totemSlot);
         return;
     }
 
-    const auto totem = _player->getTotem(TotemSlots(totemSlot));
+    const auto totem = _player->getTotem(SummonSlot(totemSlot));
     if (totem != nullptr)
         totem->unSummon();
 }

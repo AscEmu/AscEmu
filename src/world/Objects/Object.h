@@ -31,6 +31,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/School.hpp"
 #include "Units/UnitDefines.hpp"
+#include "Units/Creatures/Summons/SummonDefines.hpp"
 #include "ObjectDefines.h"
 
 struct WoWObject;
@@ -52,6 +53,7 @@ class ObjectContainer;
 class DynamicObject;
 class Creature;
 class GameObject;
+class Summon;
 class Pet;
 class Spell;
 class Aura;
@@ -418,7 +420,8 @@ public:
         Player const* ToPlayer() const { if (isPlayer()) return (Player*)this; else return nullptr; }
         Creature* ToCreature() { if (isCreature()) return reinterpret_cast<Creature*>(this); else return nullptr; }
         Creature const* ToCreature() const { if (isCreature()) return (Creature*)this; else return nullptr; }
-
+        Summon* ToSummon() { if (isSummon()) return reinterpret_cast<Summon*>(this); else return nullptr; }
+        Summon const* ToSummon() const { if (isSummon()) return (Summon*)this; else return nullptr; }
         Unit* ToUnit() { if (isCreatureOrPlayer()) return reinterpret_cast<Unit*>(this); else return nullptr; }
         Unit const* ToUnit() const { if (isCreatureOrPlayer()) return (Unit*)this; else return nullptr; }
         GameObject* ToGameObject() { if (isGameObject()) return reinterpret_cast<GameObject*>(this); else return nullptr; }
@@ -565,6 +568,7 @@ public:
         virtual float getCombatReach() const { return 0.0f; } // overridden (only) in Unit
 
         GameObject* summonGameObject(uint32_t entryID, LocationVector pos, QuaternionData const& rot, uint32_t spawnTime = 0, GOSummonType summonType = GO_SUMMON_TIMED_OR_CORPSE_DESPAWN);
+        Creature* summonCreature(uint32_t entry, LocationVector position, CreatureSummonDespawnType despawnType = MANUAL_DESPAWN, uint32_t duration = 0, uint32_t spellId = 0);
 
         float getDistanceSq(Object* obj)
         {

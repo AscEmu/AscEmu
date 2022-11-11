@@ -599,6 +599,10 @@ void Creature::Update(unsigned long time_passed)
 {
     Unit::Update(time_passed);
 
+    // When we are a Summon handle its Update
+    if (isSummon())
+        ToSummon()->Update(time_passed);
+
     // Update Movement
     if (time_passed >= m_movementFlagUpdateTimer)
     {
@@ -1599,23 +1603,33 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     BaseAttackType = creature_properties->attackSchool;
 
     setModCastSpeed(1.0f);   // better set this one
+
+    // Bytes 0
     setBytes0(spawn->bytes0);
-    setBytes1(spawn->bytes1);
+
+    // Bytes 1
+    setStandState(static_cast<uint8_t>((spawn->bytes1) & 0xFF));
+    setPetTalentPoints(static_cast<uint8_t>((spawn->bytes1 >> 8) & 0xFF));
+    setStandStateFlags(static_cast<uint8_t>((spawn->bytes1 >> 16) & 0xFF));
+    setAnimationTier(static_cast<AnimationTier>((spawn->bytes1 >> 24) & 0xFF));
+
+    // Bytes 2
     setBytes2(spawn->bytes2);
 
     ////////////AI
-    getAIInterface()->initialiseScripts(getEntry());
-    getAIInterface()->eventOnLoad();
+    sEventMgr.AddEvent(this, &Creature::OnLoaded, 0, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     if (!creature_properties->isTrainingDummy && !isVehicle())
     {
-        getAIInterface()->setAllowedToEnterCombat(isattackable(spawn));
+        // aaron02 disabled this, AIInterface should take Care of this
+        //getAIInterface()->setAllowedToEnterCombat(isattackable(spawn));
     }
     else
     {
         if (!isattackable(spawn))
         {
-            getAIInterface()->setAllowedToEnterCombat(false);
+            // aaron02 disabled this, AIInterface should take Care of this
+            //getAIInterface()->setAllowedToEnterCombat(false);
             getAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
         }
         else
@@ -1736,7 +1750,8 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     }
     else
     {
-        getAIInterface()->setAllowedToEnterCombat(false);
+        // aaron02 disabled this, AIInterface should take Care of this
+        //getAIInterface()->setAllowedToEnterCombat(false);
         getAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
     }
 
@@ -1920,6 +1935,14 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     }
 }
 
+void Creature::OnLoaded()
+{
+    getAIInterface()->initialiseScripts(getEntry());
+    getAIInterface()->eventOnLoad();
+
+    immediateMovementFlagsUpdate();
+}
+
 void Creature::OnPushToWorld()
 {
     if (creature_properties == nullptr)
@@ -1993,7 +2016,10 @@ void Creature::OnPushToWorld()
     }
 
     if (m_WorldMap && m_WorldMap->getScript())
+    {
         m_WorldMap->getScript()->OnCreaturePushToWorld(this);
+        m_WorldMap->getScript()->addObject(this);
+    }
 }
 
 void Creature::respawn(bool force)
@@ -2739,4 +2765,31 @@ void Creature::InitSummon(Object* summoner)
         if (GetScript() != nullptr)
             GetScript()->OnSummon(static_cast<Unit*>(summoner));
     }
+}
+
+bool Creature::updateEntry(uint32 entry)
+{
+    CreatureProperties const* cInfo = sMySQLStore.getCreatureProperties(entry);
+    if (!cInfo)
+        return false;
+
+    if (_myScriptClass)
+    {
+        _myScriptClass->Destroy();
+        _myScriptClass = nullptr;
+    }
+
+    Load(cInfo, GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
+    LoadScript();
+
+    motion_Initialize();
+
+    // When we are Still Alive call OnLoad for new CreatureAIScript
+    if (isAlive())
+    {
+        if (_myScriptClass)
+            _myScriptClass->OnLoad();
+    }
+
+    return true;
 }

@@ -491,6 +491,9 @@ void ThreatManager::addThreat(Unit* target, float amount, SpellInfo const* spell
     if (!canHaveThreatList())
         return;
 
+    if (!_owner->getAIInterface()->getAllowedToEnterCombat())
+        return;
+
     if (!getOwner()->isAlive())
         return;
 

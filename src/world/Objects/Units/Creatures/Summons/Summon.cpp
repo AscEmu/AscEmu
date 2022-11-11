@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Objects/Units/Creatures/Creature.h"
+#include "Server/Script/CreatureAIScript.h"
 #include "Objects/Units/Creatures/Summons/Summon.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
@@ -14,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 
-Summon::Summon(uint64_t guid, uint32_t duration) : Creature(guid), m_duration(duration)
+Summon::Summon(uint64_t guid, DBC::Structures::SummonPropertiesEntry const* properties) : Creature(guid), m_Properties(properties)
 {
     // Override initialization from Creature class
     getThreatManager().initialize();
@@ -22,93 +23,235 @@ Summon::Summon(uint64_t guid, uint32_t duration) : Creature(guid), m_duration(du
 
 Summon::~Summon() {}
 
-void Summon::Load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t spellId, int32_t summonSlot)
+void Summon::Load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellId)
 {
-    if (unitOwner != nullptr)
+    Creature::Load(creatureProperties, position.x, position.y, position.z, position.o);
+
+    setTimeLeft(duration);
+    setLifeTime(duration);
+
+    // Despawn Type
+    if (m_despawnType == MANUAL_DESPAWN)
+        m_despawnType = (duration == 0) ? DEAD_DESPAWN : TIMED_DESPAWN;
+
+    setCreatedBySpellId(spellId);
+    SetSpawnLocation(position);
+
+    if (unitOwner)
     {
-        Creature::Load(creatureProperties, position.x, position.y, position.z, position.o);
+        m_summonerGuid = unitOwner->getGuid();
 
-        setFaction(unitOwner->getFactionTemplate());
-        setPhase(PHASE_SET, unitOwner->GetPhase());
-        SetZoneId(unitOwner->GetZoneId());
-        setCreatedBySpellId(spellId);
-        this->m_summonSlot = summonSlot;
+        if (!m_Properties)
+            return;
 
-        if (unitOwner->isPvpFlagSet())
-            setPvpFlag();
-        else
-            removePvpFlag();
+        if (uint32_t slot = m_Properties->Slot)
+        {
+            WoWGuid guid = getGuid();
 
-        if (unitOwner->isFfaPvpFlagSet())
-            setFfaPvpFlag();
-        else
-            removeFfaPvpFlag();
+            if (SummonHandler* summonHandler = unitOwner->getSummonInterface())
+            {
+                // Unsummon Summon in old Slot
+                if (summonHandler->m_SummonSlot[slot] && summonHandler->m_SummonSlot[slot] != guid.getGuidLowPart())
+                {
+                    Creature* oldSummon = unitOwner->getWorldMap()->getCreature(summonHandler->m_SummonSlot[slot]);
+                    if (oldSummon && oldSummon->isSummon())
+                        static_cast<Summon*>(oldSummon)->unSummon();
+                }
+                summonHandler->m_SummonSlot[slot] = guid.getGuidLowPart();
+            }
+        }
 
-        if (unitOwner->isSanctuaryFlagSet())
-            setSanctuaryFlag();
-        else
-            removeSanctuaryFlag();
+        if (m_Properties->FactionID)
+            setFaction(m_Properties->FactionID);
+        else if (isVehicle() && unitOwner) // properties should be vehicle
+            setFaction(unitOwner->getFactionTemplate());
+    }
+}
 
-        setCreatedByGuid(unitOwner->getGuid());
+void Summon::Update(unsigned long time_passed)
+{
+    if (getDeathState() == DEAD)
+    {
+        unSummon();
+        return;
+    }
 
-        if (unitOwner->getSummonedByGuid() == 0)
-            setSummonedByGuid(unitOwner->getGuid());
-        else
-            setSummonedByGuid(unitOwner->getSummonedByGuid());
+    switch (getDespawnType())
+    {
+        case MANUAL_DESPAWN:
+        case DEAD_DESPAWN:
+            break;
+        case TIMED_DESPAWN:
+        {
+            if (getTimeLeft() <= time_passed)
+            {
+                unSummon();
+                return;
+            }
 
-        this->m_unitOwner = unitOwner;
+            setTimeLeft(getTimeLeft() - time_passed);
+        } break;
+        case TIMED_DESPAWN_OUT_OF_COMBAT:
+        {
+            if (!isInCombat())
+            {
+                if (getTimeLeft() <= time_passed)
+                {
+                    unSummon();
+                    return;
+                }
 
-        if (unitOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
-            addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
+                setTimeLeft(getTimeLeft() - time_passed);
+            }
+            else if (getTimeLeft() != getLifeTime())
+            {
+                setTimeLeft(getLifeTime());
+            }
+        } break;
+        case CORPSE_TIMED_DESPAWN:
+        {
+            if (getDeathState() == CORPSE)
+            {
+                if (getTimeLeft() <= time_passed)
+                {
+                    unSummon();
+                    return;
+                }
+
+                setTimeLeft(getTimeLeft() - time_passed);
+            }
+        } break;
+        case CORPSE_DESPAWN:
+        {
+            if (getDeathState() == CORPSE)
+            {
+                unSummon();
+                return;
+            }
+        } break;
+        case TIMED_OR_CORPSE_DESPAWN:
+        {
+            if (getDeathState() == CORPSE)
+            {
+                unSummon();
+                return;
+            }
+
+            if (!isInCombat())
+            {
+                if (getTimeLeft() <= time_passed)
+                {
+                    unSummon();
+                    return;
+                }
+                else
+                {
+                    setTimeLeft(getTimeLeft() - time_passed);
+                }
+            }
+            else if (getTimeLeft() != getLifeTime())
+            {
+                setTimeLeft(getLifeTime());
+            }
+        } break;
+        case TIMED_OR_DEAD_DESPAWN:
+        {
+            if (!isInCombat() && isAlive())
+            {
+                if (getTimeLeft() <= time_passed)
+                {
+                    unSummon();
+                    return;
+                }
+                else
+                {
+                    setTimeLeft(getTimeLeft() - time_passed);
+                }
+            }
+            else if (getTimeLeft() != getLifeTime())
+            {
+                setTimeLeft(getLifeTime());
+            }
+
+        } break;
+        default:
+            unSummon();
     }
 }
 
 void Summon::unSummon()
-{
+{   
     // If this summon is summoned by a totem, unsummon the totem also
-    if (m_unitOwner->isTotem())
-        dynamic_cast<TotemSummon*>(m_unitOwner)->unSummon();
+    if (getUnitOwnerOrSelf() && getUnitOwnerOrSelf()->isTotem())
+        dynamic_cast<TotemSummon*>(getUnitOwnerOrSelf())->unSummon();
 
+    // Script Call
+    if (Unit* owner = getUnitOwnerOrSelf())
+    {
+        if (owner->ToCreature() && owner->IsInWorld() && owner->ToCreature()->GetScript())
+            owner->ToCreature()->GetScript()->OnSummonDespawn(this);
+    }
+
+    // Remove us
     Despawn(10, 0);
+
+    // Clear Owner
+    m_summonerGuid = 0;
 }
 
-uint32_t Summon::getTimeLeft() const { return m_duration; }
+CreatureSummonDespawnType Summon::getDespawnType() const { return m_despawnType; }
+void Summon::setDespawnType(CreatureSummonDespawnType type) { m_despawnType = type; }
 
+uint32_t Summon::getTimeLeft() const { return m_duration; }
 void Summon::setTimeLeft(uint32_t time) { m_duration = time; }
+
+uint32_t Summon::getLifeTime() const { return m_lifetime; }
+void Summon::setLifeTime(uint32_t time) { m_lifetime = time; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Override Object functions
 void Summon::OnPushToWorld()
 {
-    if (!isTotem())
-        m_unitOwner->getSummonInterface()->addGuardian(this);
-
     Creature::OnPushToWorld();
 }
 
 void Summon::OnPreRemoveFromWorld()
 {
-    if (m_unitOwner == nullptr)
-        return;
+    if (getUnitOwnerOrSelf())
+    {
+        if (getCreatedBySpellId() != 0)
+            getUnitOwnerOrSelf()->removeAllAurasById(getCreatedBySpellId());
 
-    if (getCreatedBySpellId() != 0)
-        m_unitOwner->removeAllAurasById(getCreatedBySpellId());
+        if (getPlayerOwner() != nullptr)
+            getPlayerOwner()->sendDestroyObjectPacket(getGuid());
 
-    if (!isTotem())
-        m_unitOwner->getSummonInterface()->removeGuardian(this, false);
+        // Clear Our Summon Slot
+        if (m_Properties)
+        {
+            if (uint32_t slot = m_Properties->Slot)
+            {
+                WoWGuid guid = getGuid();
+                if (Unit* owner = getUnitOwnerOrSelf())
+                {
+                    if (SummonHandler* summonHandler = owner->getSummonInterface())
+                    {
+                        if (summonHandler->m_SummonSlot[slot] == guid.getGuidLowPart())
+                            summonHandler->m_SummonSlot[slot] = 0;
+                    }
+                }
+            }
+        }
+    }
 
-    if (getPlayerOwner() != nullptr)
-        getPlayerOwner()->sendDestroyObjectPacket(getGuid());
-
-    m_summonSlot = -1;
-    m_unitOwner = nullptr;
+    m_summonerGuid = 0;
 }
 
 bool Summon::isSummon() const { return true; }
 
 void Summon::onRemoveInRangeObject(Object* object)
 {
-    if (m_unitOwner != nullptr && object->getGuid() == m_unitOwner->getGuid())
+    // Remove us when we are Summoned by the Object which got removed
+    if (object->getGuid() == m_summonerGuid && object->isTotem())
         unSummon();
 
     Creature::onRemoveInRangeObject(object);
@@ -119,24 +262,15 @@ void Summon::onRemoveInRangeObject(Object* object)
 void Summon::die(Unit* pAttacker, uint32 damage, uint32 spellid)
 {
     // If this summon is summoned by a totem, unsummon the totem on death
-    if (m_unitOwner->isTotem())
-        static_cast<TotemSummon*>(m_unitOwner)->unSummon();
+    if (getUnitOwnerOrSelf() && getUnitOwnerOrSelf()->isTotem())
+        static_cast<TotemSummon*>(getUnitOwnerOrSelf())->unSummon();
 
     Creature::die(pAttacker, damage, spellid);
-
-    m_unitOwner->getSummonInterface()->removeGuardian(this, false);
-
-    m_summonSlot = -1;
-    m_unitOwner = nullptr;
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Misc
-bool Summon::isSummonedToSlot() const{ return m_summonSlot != -1; }
 
 Unit* Summon::getUnitOwner()
 {
-    return m_unitOwner;
+    return m_summonerGuid ? getWorldMapUnit(m_summonerGuid) : nullptr;
 }
 
 Unit* Summon::getUnitOwnerOrSelf()
@@ -154,13 +288,22 @@ Player* Summon::getPlayerOwner()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-GuardianSummon::GuardianSummon(uint64_t GUID, uint32_t duration) : Summon(GUID, duration) {}
+GuardianSummon::GuardianSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties) : Summon(GUID, properties) {}
 GuardianSummon::~GuardianSummon() {}
 
-void GuardianSummon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector& position, uint32_t spellid, int32_t pSummonslot)
+void GuardianSummon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector& position, uint32_t duration, uint32_t spellid)
 {
-    Summon::Load(properties_, pOwner, position, spellid, pSummonslot);
+    Summon::Load(properties_, pOwner, position, duration, spellid);
 
+    // Summoner
+    if (pOwner)
+    {
+        setCreatedByGuid(pOwner->getGuid());
+        setSummonedByGuid(pOwner->getGuid());
+        setFaction(pOwner->getFactionTemplate());
+    }
+
+    // Stats
     setPowerType(POWER_TYPE_MANA);
     setMaxPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA) + 28 + 10 * getLevel());
     setPower(POWER_TYPE_MANA, getPower(POWER_TYPE_MANA) + 28 + 10 * getLevel());
@@ -177,12 +320,20 @@ void GuardianSummon::Load(CreatureProperties const* properties_, Unit* pOwner, L
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-CompanionSummon::CompanionSummon(uint64_t GUID, uint32_t duration) : Summon(GUID, duration) {}
+CompanionSummon::CompanionSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties) : Summon(GUID, properties) {}
 CompanionSummon::~CompanionSummon() {}
 
-void CompanionSummon::Load(CreatureProperties const* properties_, Unit* companionOwner, LocationVector& position, uint32_t spellid, int32_t summonSlot)
+void CompanionSummon::Load(CreatureProperties const* properties_, Unit* companionOwner, LocationVector& position, uint32_t duration, uint32_t spellid)
 {
-    Summon::Load(properties_, companionOwner, position, spellid, summonSlot);
+    Summon::Load(properties_, companionOwner, position, duration, spellid);
+
+    // Summoner
+    if (companionOwner)
+    {
+        setCreatedByGuid(companionOwner->getGuid());
+        setSummonedByGuid(companionOwner->getGuid());
+        setFaction(companionOwner->getFactionTemplate());
+    }
 
     setFaction(35);
     setLevel(1);
@@ -199,12 +350,20 @@ void CompanionSummon::Load(CreatureProperties const* properties_, Unit* companio
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-PossessedSummon::PossessedSummon(uint64_t GUID, uint32_t duration) : Summon(GUID, duration) {}
+PossessedSummon::PossessedSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties) : Summon(GUID, properties) {}
 PossessedSummon::~PossessedSummon() {}
 
-void PossessedSummon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector& position, uint32_t spellid, int32_t pSummonslot)
+void PossessedSummon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector& position, uint32_t duration, uint32_t spellid)
 {
-    Summon::Load(properties_, pOwner, position, spellid, pSummonslot);
+    Summon::Load(properties_, pOwner, position, duration, spellid);
+
+    // Summoner
+    if (pOwner)
+    {
+        setCreatedByGuid(pOwner->getGuid());
+        setSummonedByGuid(pOwner->getGuid());
+        setFaction(pOwner->getFactionTemplate());
+    }
 
     setLevel(pOwner->getLevel());
     setAItoUse(false);
@@ -213,19 +372,27 @@ void PossessedSummon::Load(CreatureProperties const* properties_, Unit* pOwner, 
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-WildSummon::WildSummon(uint64_t GUID, uint32_t duration) : Summon(GUID, duration) {}
+WildSummon::WildSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties) : Summon(GUID, properties) {}
 WildSummon::~WildSummon() {}
 
-void WildSummon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector& position, uint32_t spellid, int32_t pSummonslot)
+void WildSummon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector& position, uint32_t duration, uint32_t spellid)
 {
-    Summon::Load(properties_, pOwner, position, spellid, pSummonslot);
+    Summon::Load(properties_, pOwner, position, duration, spellid);
+
+    // Summoner
+    if (pOwner)
+    {
+        setCreatedByGuid(pOwner->getGuid());
+        setSummonedByGuid(pOwner->getGuid());
+        setFaction(pOwner->getFactionTemplate());
+    }
 
     setLevel(pOwner->getLevel());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-TotemSummon::TotemSummon(uint64_t guid, uint32_t duration) : Summon(guid, duration)
+TotemSummon::TotemSummon(uint64_t guid, DBC::Structures::SummonPropertiesEntry const* properties) : Summon(guid, properties)
 {
     // Override initialization from Summon class
     getThreatManager().initialize();
@@ -233,9 +400,17 @@ TotemSummon::TotemSummon(uint64_t guid, uint32_t duration) : Summon(guid, durati
 
 TotemSummon::~TotemSummon() {}
 
-void TotemSummon::Load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t spellId, int32_t summonSlot)
+void TotemSummon::Load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellId)
 {
-    Summon::Load(creatureProperties, unitOwner, position, spellId, summonSlot);
+    Summon::Load(creatureProperties, unitOwner, position, duration, spellId);
+
+    // Summoner
+    if (unitOwner)
+    {
+        setCreatedByGuid(unitOwner->getGuid());
+        setSummonedByGuid(unitOwner->getGuid());
+        setFaction(unitOwner->getFactionTemplate());
+    }
 
     uint32_t displayId;
     const auto displayIds = sMySQLStore.getTotemDisplayId(unitOwner->getRace(), creature_properties->Male_DisplayID);
@@ -269,7 +444,11 @@ void TotemSummon::Load(CreatureProperties const* creatureProperties, Unit* unitO
     setAItoUse(false);
 
     if (getPlayerOwner() != nullptr)
-        getPlayerOwner()->sendTotemCreatedPacket(static_cast<uint8_t>(m_summonSlot), getGuid(), getTimeLeft(), getCreatedBySpellId());
+    {
+        uint32_t slot = m_Properties->Slot;
+        if (slot >= SUMMON_SLOT_TOTEM_FIRE && slot < SUMMON_SLOT_MINIPET)
+            getPlayerOwner()->sendTotemCreatedPacket(static_cast<uint8_t>(slot - SUMMON_SLOT_TOTEM_FIRE), getGuid(), getTimeLeft(), getCreatedBySpellId());
+    }
 }
 
 void TotemSummon::unSummon()
@@ -288,16 +467,9 @@ void TotemSummon::unSummon()
 // Override Object functions
 void TotemSummon::OnPushToWorld()
 {
-    getUnitOwner()->getSummonInterface()->addTotem(this, TotemSlots(m_summonSlot));
     Summon::OnPushToWorld();
 
     SetupSpells();
-}
-
-void TotemSummon::OnPreRemoveFromWorld()
-{
-    getUnitOwner()->getSummonInterface()->removeTotem(this, false);
-    Summon::OnPreRemoveFromWorld();
 }
 
 bool TotemSummon::isTotem() const { return true; }

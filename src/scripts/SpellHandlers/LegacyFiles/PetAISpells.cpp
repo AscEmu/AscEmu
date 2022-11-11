@@ -315,7 +315,7 @@ public:
 
     void OnLoad() override
     {
-        getCreature()->setAnimationFlags(UNIT_BYTE1_FLAG_HOVER);
+        getCreature()->setAnimationTier(AnimationTier::Hover);
     }
 
     void OnRemovePassenger(Unit* _passenger) override

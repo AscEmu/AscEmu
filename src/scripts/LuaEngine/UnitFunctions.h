@@ -2982,11 +2982,11 @@ public:
         v.x += (3 * (cosf(angle + v.o)));
         v.y += (3 * (sinf(angle + v.o)));
 
-        Summon* guardian = ptr->getWorldMap()->createSummon(entry, SUMMONTYPE_GUARDIAN, 0);
+        Summon* guardian = ptr->getWorldMap()->summonCreature(entry, v);
         if (guardian == nullptr)
             return 0;
 
-        guardian->Load(cp, ptr, v, 0, -1);
+        guardian->Load(cp, ptr, v, 0, 0);
         guardian->PushToWorld(ptr->getWorldMap());
 
         PUSH_UNIT(L, guardian);

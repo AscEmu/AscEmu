@@ -1290,3 +1290,27 @@ bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* 
 
     return true;
 }
+
+//.npc set entry
+bool ChatHandler::HandleNpcChangeEntry(const char* args, WorldSession* m_session)
+{
+    uint32_t entry;
+
+    if (sscanf(args, "%u", &entry) < 1)
+    {
+        RedSystemMessage(m_session, "You must specify a entry value.");
+        RedSystemMessage(m_session, ".npc set entry <entry>");
+        return true;
+    }
+
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    uint32_t old_entry = creature_target->getEntry();
+    creature_target->updateEntry(entry);
+
+    GreenSystemMessage(m_session, "CreatureEntry temporarily set from %u to %u for spawn ID: %u.", old_entry, entry, creature_target->spawnid);
+
+    return true;
+}

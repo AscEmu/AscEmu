@@ -671,7 +671,7 @@ void AIInterface::Update(unsigned long time_passed)
     // Call AIUpdate
     m_Unit->ToCreature()->CallScriptUpdate(time_passed);
 
-    if (getAiState() == AI_STATE_FEAR)
+    if (getAiState() == AI_STATE_FEAR || !m_Unit->isAIEnabled())
         return;
 
     UpdateAgent(time_passed);
@@ -846,6 +846,15 @@ void AIInterface::castAISpell(CreatureAISpells* aiSpell)
             getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
         }
     } break;
+    case TARGET_FUNCTION:
+    {
+        if (aiSpell->getTargetFunction() != nullptr)
+        {
+            mCurrentSpellTarget = aiSpell->getTargetFunction();
+            mLastCastedSpell = aiSpell;
+            getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        }
+    }
     default:
         break;
     }
@@ -1726,10 +1735,16 @@ SpellCastTargets AIInterface::setSpellTargets(SpellInfo const* /*spellInfo*/, Un
 }
 
 //function is designed to make a quick check on target to decide if we can attack it
-bool AIInterface::canOwnerAttackUnit(Unit* pUnit)
+bool AIInterface::canOwnerAttackUnit(Unit* pUnit, bool ignoreFlying = false)
 {
     // Creature should not attack permanently invisible units
     if (pUnit->getInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE) > 0)
+        return false;
+
+    if (pUnit->isCreature() && isImmuneToNPC())
+        return false;
+
+    if (pUnit->isCreatureOrPlayer() && isImmuneToPC())
         return false;
 
     if (!isHostile(m_Unit, pUnit))
@@ -1750,7 +1765,7 @@ bool AIInterface::canOwnerAttackUnit(Unit* pUnit)
         return false;
 
     //make sure we do not agro flying stuff
-    if (abs(pUnit->GetPositionZ() - m_Unit->GetPositionZ()) > calcCombatRange(pUnit, false))
+    if (abs(pUnit->GetPositionZ() - m_Unit->GetPositionZ()) > calcCombatRange(pUnit, false) && !ignoreFlying)
         return false; //blizz has this set to 250 but uses pathfinding
 
     return true;
@@ -2164,6 +2179,20 @@ void AIInterface::onHostileAction(Unit* pUnit, SpellInfo const* spellInfo/* = nu
 {
     const auto wasEngaged = isEngaged();
 
+    if (!getAllowedToEnterCombat())
+        return;
+
+    if (pUnit->isCreature() && isImmuneToNPC())
+        return;
+
+    if (pUnit->isCreatureOrPlayer() && isImmuneToPC())
+        return;
+
+    // target is immune to all form of attacks, cant attack either.
+    // not attackable creatures sometimes fight enemies in scripted fights though
+    if (m_Unit->hasUnitFlags(UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE))
+        return;
+
     // Start combat
     justEnteredCombat(pUnit);
     // Add initial threat
@@ -2200,7 +2229,8 @@ void AIInterface::setCreatureProtoDifficulty(uint32_t entry)
             }
             else
             {
-                getUnit()->getAIInterface()->setAllowedToEnterCombat(false);
+                // aaron02 disabled this, AIInterface should take Care of this
+                //getUnit()->getAIInterface()->setAllowedToEnterCombat(false);
                 getUnit()->getAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
             }
 
@@ -2642,11 +2672,12 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
 
         initialiseScripts(getUnit()->getEntry());
 
-        if (getUnit()->getSummonedByGuid())
+        // Script Hook for Summon Died
+        if (Summon* summon = getUnit()->ToSummon())
         {
-            if (Unit* summoner = getUnit()->getWorldMapUnit(getUnit()->getSummonedByGuid()))
+            if (Unit* summoner = summon->getUnitOwner())
             {
-                if (summoner->IsInWorld() && summoner->isCreature() && dynamic_cast<Creature*>(summoner)->GetScript())
+                if (summoner->ToCreature() && summoner->IsInWorld() && summoner->ToCreature()->GetScript())
                     dynamic_cast<Creature*>(summoner)->GetScript()->OnSummonDies(m_Unit->ToCreature(), pUnit);
             }
         }
@@ -3050,10 +3081,10 @@ void AIInterface::setWayPointToMove(uint32_t waypointId)
     switch (waypoint.moveType)
     {
     case WAYPOINT_MOVE_TYPE_LAND:
-        init.SetAnimation(UnitBytes1_AnimationFlags::UNIT_BYTE1_FLAG_GROUND);
+        init.SetAnimation(AnimationTier::Ground);
         break;
     case WAYPOINT_MOVE_TYPE_TAKEOFF:
-        init.SetAnimation(UnitBytes1_AnimationFlags::UNIT_BYTE1_FLAG_HOVER);
+        init.SetAnimation(AnimationTier::Hover);
         break;
     case WAYPOINT_MOVE_TYPE_RUN:
         init.SetWalk(false);
@@ -3135,6 +3166,24 @@ bool AIInterface::hideWayPoints(Player* player)
         player->getUpdateMgr().pushOutOfRangeGuid(wowguid);
     }
     return true;
+}
+
+void AIInterface::waypointStarted(uint32_t nodeId, uint32_t pathId)
+{
+    if (getUnit()->ToCreature() && getUnit()->ToCreature()->GetScript())
+        getUnit()->ToCreature()->GetScript()->waypointStarted(nodeId, pathId);
+}
+
+void AIInterface::waypointReached(uint32_t nodeId, uint32_t pathId)
+{
+    if (getUnit()->ToCreature() && getUnit()->ToCreature()->GetScript())
+        getUnit()->ToCreature()->GetScript()->waypointReached(nodeId, pathId);
+}
+
+void AIInterface::waypointPathEnded(uint32_t nodeId, uint32_t pathId)
+{
+    if (getUnit()->ToCreature() && getUnit()->ToCreature()->GetScript())
+        getUnit()->ToCreature()->GetScript()->waypointPathEnded(nodeId, pathId);
 }
 
 bool AIInterface::canCreatePath(float x, float y, float z)
@@ -3766,6 +3815,15 @@ void AIInterface::UpdateAISpells()
                         getUnit()->castSpell(mCurrentSpellTarget, usedSpell->mSpellInfo, usedSpell->mIsTriggered);
                     }
                 } break;
+                case TARGET_FUNCTION:
+                {
+                    if (usedSpell->getTargetFunction() != nullptr)
+                    {
+                        mCurrentSpellTarget = usedSpell->getTargetFunction();
+                        mLastCastedSpell = usedSpell;
+                        getUnit()->castSpell(mCurrentSpellTarget, usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+                    }
+                }
                 default:
                     break;
             }

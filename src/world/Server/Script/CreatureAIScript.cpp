@@ -284,6 +284,16 @@ float CreatureAIScript::getRangeToObject(Object* object)
     return _creature->CalcDistance(object);
 }
 
+Creature* CreatureAIScript::summonCreature(uint32_t entry, LocationVector position, CreatureSummonDespawnType despawnType, uint32_t duration)
+{
+    return getCreature()->summonCreature(entry, position, despawnType, duration);
+}
+
+Creature* CreatureAIScript::summonCreature(uint32_t entry, float posX, float posY, float posZ, float posO, CreatureSummonDespawnType despawnType, uint32_t duration)
+{
+    return summonCreature(entry, LocationVector(posX, posY, posZ, posO), despawnType, duration);
+}
+
 CreatureAIScript* CreatureAIScript::spawnCreatureAndGetAIScript(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId /* = 0*/, uint32_t phase /*= 1*/)
 {
     Creature* creature = spawnCreature(entry, posX, posY, posZ, posO, factionId, phase);
@@ -505,10 +515,10 @@ void CreatureAIScript::setWaypointToMove(uint32_t pathId, uint32_t pWaypointId)
     switch (waypoint.moveType)
     {
     case WAYPOINT_MOVE_TYPE_LAND:
-        init.SetAnimation(UnitBytes1_AnimationFlags::UNIT_BYTE1_FLAG_GROUND);
+        init.SetAnimation(AnimationTier::Ground);
         break;
     case WAYPOINT_MOVE_TYPE_TAKEOFF:
-        init.SetAnimation(UnitBytes1_AnimationFlags::UNIT_BYTE1_FLAG_HOVER);
+        init.SetAnimation(AnimationTier::Hover);
         break;
     case WAYPOINT_MOVE_TYPE_RUN:
         init.SetWalk(false);
@@ -930,12 +940,37 @@ void CreatureAIScript::_setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2)
 //////////////////////////////////////////////////////////////////////////////////////////
 // spell
 
-CreatureAISpells* CreatureAIScript::addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration /*= 0*/, uint32_t cooldown /*= 0*/, bool forceRemove /*= false*/, bool isTriggered /*= false*/)
+CreatureAISpells* CreatureAIScript::addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration /*= 0*/, uint32_t cooldown /*= 0*/, bool forceRemove /*= false*/, bool isTriggered /*= false*/, bool heroicOnly /*=false*/)
 {
+    if (heroicOnly && !_isHeroic())
+        return nullptr;
+
     auto aiSpell = getCreature()->getAIInterface()->addAISpell(spellId, castChance, targetType, duration, cooldown, forceRemove, isTriggered);
 
     if (aiSpell)
         return aiSpell;
+
+    return nullptr;
+}
+
+// Example [this]() { return getBestPlayerTarget(TargetFilter_Closest); }
+CreatureAISpells* CreatureAIScript::addAISpell(uint32_t spellId, float castChance, uint32_t cooldown, std::function<Unit* ()> func, bool isTriggered /*= false*/, bool heroicOnly /*= false*/)
+{
+    if (heroicOnly && !_isHeroic())
+        return nullptr;
+
+    auto aiSpell = getCreature()->getAIInterface()->addAISpell(spellId, castChance, TARGET_FUNCTION, 0, cooldown, false, isTriggered);
+
+    if (aiSpell)
+    {
+        // Default Targeting Function
+        if (func)
+            aiSpell->getTargetFunction = func;
+        else
+            aiSpell->getTargetFunction = [this]() { return getBestUnitTarget(TargetFilter_Current); };
+
+        return aiSpell;
+    }
 
     return nullptr;
 }
@@ -1245,17 +1280,23 @@ Unit* CreatureAIScript::getBestUnitTarget(TargetFilter pTargetFilter, float pMin
 
 Unit* CreatureAIScript::getBestTargetInArray(UnitArray & pTargetArray, TargetFilter pTargetFilter)
 {
-    //only one possible target, return it
+    // only one possible target, return it
     if (pTargetArray.size() == 1)
         return pTargetArray[0];
 
-    //closest unit if requested
+    // closest unit if requested
     if (pTargetFilter & TargetFilter_Closest)
         return getNearestTargetInArray(pTargetArray);
 
-    //second most hated if requested
+    // second most hated if requested
     if (pTargetFilter & TargetFilter_SecondMostHated)
         return getSecondMostHatedTargetInArray(pTargetArray);
+
+    // Lowest Health
+    if (pTargetFilter & TargetFilter_LowestHealth)
+    {
+        return getLowestHealthTargetInArray(pTargetArray);
+    }
 
     //random unit in array
     return (pTargetArray.size() > 1) ? pTargetArray[Util::getRandomUInt((uint32_t)pTargetArray.size() - 1)] : nullptr;
@@ -1308,6 +1349,32 @@ Unit* CreatureAIScript::getSecondMostHatedTargetInArray(UnitArray & pTargetArray
     }
 
     return MostHatedUnit;
+}
+
+Unit* CreatureAIScript::getLowestHealthTargetInArray(UnitArray& pTargetArray)
+{
+    Unit* lowestUnit = nullptr;
+    Unit* TargetUnit = nullptr;
+
+    uint32_t health = 0;
+    uint32_t lowestHealth = 0;
+
+    for (const auto& UnitIter : pTargetArray)
+    {
+        if (UnitIter != nullptr)
+        {
+            TargetUnit = static_cast<Unit*>(UnitIter);
+
+            health = static_cast<uint32_t>(getCreature()->getHealth());
+            if (health < lowestHealth)
+            {
+                lowestUnit = TargetUnit;
+                lowestHealth = health;
+            }
+        }
+    }
+
+    return lowestUnit;
 }
 
 bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, float pMinRange, float pMaxRange, int32_t auraId)

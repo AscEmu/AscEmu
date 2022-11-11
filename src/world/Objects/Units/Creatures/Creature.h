@@ -48,6 +48,8 @@ public:
     // void OnPreRemoveFromWorld();                     // not used
     // void OnRemoveFromWorld();                        // not used
 
+    void OnLoaded();
+
     GameEvent * mEvent = nullptr;
 
     // npc flag helper
@@ -165,6 +167,9 @@ public:
 
         bool HasItems();
         void InitSummon(Object* summoner);
+
+        bool updateEntry(uint32 entry);
+
         void SummonExpire()
         {
             DeleteMe();

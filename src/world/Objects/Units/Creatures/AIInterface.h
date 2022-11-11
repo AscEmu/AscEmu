@@ -151,7 +151,8 @@ enum AISpellTargetType
     TARGET_RANDOM_DESTINATION,
     TARGET_CLOSEST,
     TARGET_FURTHEST,
-    TARGET_CUSTOM
+    TARGET_CUSTOM,
+    TARGET_FUNCTION
 };
 
 class SERVER_DECL CreatureAISpells
@@ -199,6 +200,8 @@ public:
     float mCastChance;
     uint32_t mTargetType;
     uint8_t scriptType;
+
+    std::function<Unit* ()> getTargetFunction = nullptr;
 
     SmallTimeTracker mDurationTimer;
     SmallTimeTracker mCooldownTimer;
@@ -293,26 +296,29 @@ typedef std::vector<Unit*> UnitArray;
 enum TargetFilter
 {
     // Standard filters
-    TargetFilter_None = 0,            // 0
-    TargetFilter_Closest = 1 << 0,       // 1
-    TargetFilter_Friendly = 1 << 1,       // 2
-    TargetFilter_NotCurrent = 1 << 2,       // 4
-    TargetFilter_Wounded = 1 << 3,       // 8
-    TargetFilter_SecondMostHated = 1 << 4,       // 16
-    TargetFilter_Aggroed = 1 << 5,       // 32
-    TargetFilter_Corpse = 1 << 6,       // 64
-    TargetFilter_InMeleeRange = 1 << 7,       // 128
-    TargetFilter_InRangeOnly = 1 << 8,       // 256
-    TargetFilter_IgnoreSpecialStates = 1 << 9,       // 512 - not really a TargetFilter, more like requirement for spell
-    TargetFilter_IgnoreLineOfSight = 1 << 10,      // 1024
-    TargetFilter_Current = 1 << 11,     // 2048
+    TargetFilter_None = 0,                              // 0
+    TargetFilter_Closest = 1 << 0,                      // 1
+    TargetFilter_Friendly = 1 << 1,                     // 2
+    TargetFilter_NotCurrent = 1 << 2,                   // 4
+    TargetFilter_Wounded = 1 << 3,                      // 8
+    TargetFilter_SecondMostHated = 1 << 4,              // 16
+    TargetFilter_Aggroed = 1 << 5,                      // 32
+    TargetFilter_Corpse = 1 << 6,                       // 64
+    TargetFilter_InMeleeRange = 1 << 7,                 // 128
+    TargetFilter_InRangeOnly = 1 << 8,                  // 256
+    TargetFilter_IgnoreSpecialStates = 1 << 9,          // 512 - not really a TargetFilter, more like requirement for spell
+    TargetFilter_IgnoreLineOfSight = 1 << 10,           // 1024
+    TargetFilter_Current = 1 << 11,                     // 2048
+    TargetFilter_LowestHealth = 1 << 12,                // 4096
 
     // Predefined filters
-    TargetFilter_ClosestFriendly = TargetFilter_Closest | TargetFilter_Friendly,         // 3
-    TargetFilter_ClosestNotCurrent = TargetFilter_Closest | TargetFilter_NotCurrent,       // 5
-    TargetFilter_WoundedFriendly = TargetFilter_Wounded | TargetFilter_Friendly,         // 10
-    TargetFilter_FriendlyCorpse = TargetFilter_Corpse | TargetFilter_Friendly,          // 66
-    TargetFilter_ClosestFriendlyCorpse = TargetFilter_Closest | TargetFilter_FriendlyCorpse    // 67
+    TargetFilter_ClosestFriendly = TargetFilter_Closest | TargetFilter_Friendly,                // 3
+    TargetFilter_ClosestNotCurrent = TargetFilter_Closest | TargetFilter_NotCurrent,            // 5
+    TargetFilter_WoundedFriendly = TargetFilter_Wounded | TargetFilter_Friendly,                // 10
+    TargetFilter_FriendlyCorpse = TargetFilter_Corpse | TargetFilter_Friendly,                  // 66
+    TargetFilter_ClosestFriendlyCorpse = TargetFilter_Closest | TargetFilter_FriendlyCorpse,    // 67
+    TargetFilter_WoundedFriendlyLowestHealth = TargetFilter_Wounded | TargetFilter_Friendly | TargetFilter_LowestHealth, // 4106
+    TargetFilter_WoundedFriendlyLowestHealthInRange = TargetFilter_Wounded | TargetFilter_Friendly | TargetFilter_LowestHealth | TargetFilter_InRangeOnly // 4362
 };
 
 struct AI_Spell
@@ -419,7 +425,12 @@ public:
     // Called when unit takes damage or get hits by spell
     void onHostileAction(Unit* pUnit, SpellInfo const* spellInfo = nullptr, bool ignoreThreatRedirects = false);
 
-    void setAllowedToEnterCombat(bool val) { canEnterCombat = val; }
+    void setAllowedToEnterCombat(bool val) 
+    {
+        setImmuneToNPC(!val);
+        setImmuneToPC(!val);
+        canEnterCombat = val;
+    }
     inline bool getAllowedToEnterCombat(void) { return canEnterCombat; }
 
     void setReactState(ReactStates st) { m_reactState = st; }
@@ -524,7 +535,7 @@ public:
     void updateVictim(Unit* victim);
 
     float calcAggroRange(Unit* target);
-    bool canOwnerAttackUnit(Unit* pUnit);        /// this is designed for internal use only
+    bool canOwnerAttackUnit(Unit* pUnit, bool ignoreFlying /*=false*/);        /// this is designed for internal use only
     Unit* findTarget();
     void updateCombat(uint32_t p_time);
     void updateTotem(uint32_t p_time);
@@ -642,9 +653,9 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Waypoint functions
 public:
-    virtual void waypointStarted(uint32_t /*nodeId*/, uint32_t /*pathId*/) { }
-    virtual void waypointReached(uint32_t /*nodeId*/, uint32_t /*pathId*/) { }
-    virtual void waypointPathEnded(uint32_t /*nodeId*/, uint32_t /*pathId*/) { }
+    virtual void waypointStarted(uint32_t /*nodeId*/, uint32_t /*pathId*/);
+    virtual void waypointReached(uint32_t /*nodeId*/, uint32_t /*pathId*/);
+    virtual void waypointPathEnded(uint32_t /*nodeId*/, uint32_t /*pathId*/);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spell functions

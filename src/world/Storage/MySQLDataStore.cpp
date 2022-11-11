@@ -4398,7 +4398,7 @@ void MySQLDataStore::loadGameobjectSpawns()
                 Field* fields = gobject_spawn_result->Fetch();
                 uint32_t spawnId = fields[0].GetUInt32();
                 uint32 gameobject_entry = fields[3].GetUInt32();
-
+                
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(gameobject_entry);
                 if (gameobject_info == nullptr)
                 {
