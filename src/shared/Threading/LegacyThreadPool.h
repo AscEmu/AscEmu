@@ -81,7 +81,7 @@ class SERVER_DECL ThreadController
             if(ResumeThread(hThread) == DWORD(-1))
             {
                 DWORD le = GetLastError();
-                printf("lasterror: %u\n", le);
+                printf("lasterror: %lu\n", le);
             }
         }
 

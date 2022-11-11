@@ -302,10 +302,10 @@ int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs)
     // Create the date/time string
     time_t curtime = time(NULL);
     tm* pTime = localtime(&curtime);
-    char filename[MAX_PATH];
-    TCHAR modname[MAX_PATH * 2];
+    char filename[AE_MAX_PATH];
+    TCHAR modname[AE_MAX_PATH * 2];
     ZeroMemory(modname, sizeof(modname));
-    if(GetModuleFileName(0, modname, MAX_PATH * 2 - 2) <= 0)
+    if(GetModuleFileName(0, modname, AE_MAX_PATH * 2 - 2) <= 0)
         strcpy(modname, "UNKNOWN");
 
     char* mname = strrchr(modname, '\\');
