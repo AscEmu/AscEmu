@@ -701,7 +701,7 @@ public:
     void addUniqueUse(Player* player);
     void addUse() { ++m_usetimes; }
     uint32_t getUseCount() const { return m_usetimes; }
-    uint32_t getUniqueUseCount() const { return m_unique_users.size(); }
+    uint32_t getUniqueUseCount() const { return static_cast<uint32_t>(m_unique_users.size()); }
     bool isUseable();
     void switchDoorOrButton(bool activate, bool alternative = false);
     void useDoorOrButton(uint32_t time_to_restore = 0, bool alternative = false, Unit* user = nullptr);

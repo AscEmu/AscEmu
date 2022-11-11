@@ -745,7 +745,7 @@ bool LootTemplate::hasQuestDropForPlayer(LootTemplateMap const& /*store*/, Playe
 uint32_t Loot::getMaxSlotInLootFor(Player* player) const
 {
     PersonaltemMap::const_iterator itr = PlayerQuestItems.find(player->getGuidLow());
-    return items.size() + (itr != PlayerQuestItems.end() ? itr->second->size() : 0);
+    return static_cast<uint32_t>(items.size() + (itr != PlayerQuestItems.end() ? itr->second->size() : 0));
 }
 
 bool Loot::fillLoot(uint32_t lootId, LootTemplateMap const& tempelateStore, Player* lootOwner, bool personal, uint8_t lootMode /*= InstanceDifficulty::DUNGEON_NORMAL*/)
@@ -976,7 +976,7 @@ LootItem* Loot::lootItemInSlot(uint32_t lootSlot, Player* player, Personaltem* *
     bool is_looted = true;
     if (lootSlot >= items.size())
     {
-        uint32_t questSlot = lootSlot - items.size();
+        uint32_t questSlot = lootSlot - static_cast<uint32_t>(items.size());
         PersonaltemMap::const_iterator itr = PlayerQuestItems.find(player->getGuidLow());
         if (itr != PlayerQuestItems.end() && questSlot < itr->second->size())
         {
@@ -1020,7 +1020,7 @@ LootItem* Loot::getlootItemInSlot(uint32_t lootSlot, Player* player)
     LootItem* item = nullptr;
     if (lootSlot >= items.size())
     {
-        uint32_t questSlot = lootSlot - items.size();
+        uint32_t questSlot = lootSlot - static_cast<uint32_t>(items.size());
         PersonaltemMap::const_iterator itr = PlayerQuestItems.find(player->getGuidLow());
         if (itr != PlayerQuestItems.end() && questSlot < itr->second->size())
         {

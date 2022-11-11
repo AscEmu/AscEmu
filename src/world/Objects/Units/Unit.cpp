@@ -4536,7 +4536,7 @@ uint32_t Unit::getAuraCountForEffect(AuraEffect aura_effect) const
     if (aura_effect >= TOTAL_SPELL_AURAS)
         return 0;
 
-    return getAuraEffectList(aura_effect).size();
+    return static_cast<uint32_t>(getAuraEffectList(aura_effect).size());
 }
 
 uint32_t Unit::getAuraCountWithDispelType(DispelType type, uint64_t casterGuid/* = 0*/) const

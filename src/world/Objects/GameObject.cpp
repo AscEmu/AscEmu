@@ -294,6 +294,7 @@ bool GameObject::loadFromDB(MySQLStructure::GameobjectSpawn* spawn, WorldMap* ma
     if (!create(entry, map, spawn->phase, spawn->spawnPoint, spawn->rotation, spawn->state))
         return false;
 
+    //\todo: Zyres always true XD
     if (spawn->spawntimesecs >= 0)
     {
         m_spawnedByDefault = true;
