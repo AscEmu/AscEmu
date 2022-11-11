@@ -3282,23 +3282,23 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
     if (m_pItems[(int)dstslot] != nullptr)
     {
         //sLogger.debug("(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now %u" , dstslot , m_pItems[(int)dstslot]->getGuid());
-        m_pOwner->setInventorySlotItemGuid(dstslot, m_pItems[(int)dstslot]->getGuid());
+        m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(dstslot), m_pItems[(int)dstslot]->getGuid());
     }
     else
     {
         //sLogger.debug("(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now 0" , dstslot);
-        m_pOwner->setInventorySlotItemGuid(dstslot, 0);
+        m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(dstslot), 0);
     }
 
     if (m_pItems[(int)srcslot] != nullptr)
     {
         //sLogger.debug("(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now %u" , dstslot , m_pItems[(int)srcslot]->getGuid());
-        m_pOwner->setInventorySlotItemGuid(srcslot, m_pItems[(int)srcslot]->getGuid());
+        m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(srcslot), m_pItems[(int)srcslot]->getGuid());
     }
     else
     {
         //sLogger.debug("(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now 0" , dstslot);
-        m_pOwner->setInventorySlotItemGuid(srcslot, 0);
+        m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(srcslot), 0);
     }
 
     if (srcslot < INVENTORY_SLOT_BAG_END)    // source item is equipped
@@ -3308,7 +3308,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             // Bags aren't considered "visible".
             if (srcslot < EQUIPMENT_SLOT_END)
             {
-                m_pOwner->setVisibleItemFields(srcslot, m_pItems[srcslot]);
+                m_pOwner->setVisibleItemFields(static_cast<uint32_t>(srcslot), m_pItems[srcslot]);
             }
 
             // handle bind on equip
@@ -3320,7 +3320,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             // Bags aren't considered "visible".
             if (srcslot < EQUIPMENT_SLOT_END)
             {
-                m_pOwner->setVisibleItemFields(srcslot, nullptr);
+                m_pOwner->setVisibleItemFields(static_cast<uint32_t>(srcslot), nullptr);
             }
         }
     }
@@ -3332,7 +3332,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             // Bags aren't considered "visible".
             if (dstslot < EQUIPMENT_SLOT_END)
             {
-                m_pOwner->setVisibleItemFields(dstslot, m_pItems[dstslot]);
+                m_pOwner->setVisibleItemFields(static_cast<uint32_t>(dstslot), m_pItems[dstslot]);
             }
 
             // handle bind on equip
@@ -3346,7 +3346,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             // bags aren't considered visible
             if (dstslot < EQUIPMENT_SLOT_END)
             {
-                m_pOwner->setVisibleItemFields(dstslot, nullptr);
+                m_pOwner->setVisibleItemFields(static_cast<uint32_t>(dstslot), nullptr);
             }
         }
     }
@@ -3521,7 +3521,7 @@ int8 ItemInterface::FindSpecialBag(Item* item)
         {
             if (m_pItems[i]->getItemProperties()->BagFamily & item->getItemProperties()->BagFamily)
             {
-                return i;
+                return static_cast<int8_t>(i);
             }
         }
     }
@@ -3534,7 +3534,7 @@ int8 ItemInterface::FindFreeKeyringSlot()
     {
         if (m_pItems[i] == nullptr)
         {
-            return i;
+            return static_cast<int8_t>(i);
         }
     }
     return ITEM_NO_SLOT_AVAILABLE;
@@ -3546,7 +3546,7 @@ int16 ItemInterface::FindFreeCurrencySlot()
     {
         if (m_pItems[i] == nullptr)
         {
-            return i;
+            return static_cast<int16_t>(i);
         }
     }
     return ITEM_NO_SLOT_AVAILABLE;
@@ -3741,7 +3741,7 @@ void ItemInterface::ReduceItemDurability()
     uint32 f = Util::getRandomUInt(100);
     if (f <= 10)   //10% chance to loose 1 dur from a random valid item.
     {
-        int32 slot = Util::getRandomUInt(EQUIPMENT_SLOT_END);
+        int32 slot = static_cast<int32_t>(Util::getRandomUInt(EQUIPMENT_SLOT_END));
         Item* pItem = GetInventoryItem(INVENTORY_SLOT_NOT_SET, static_cast<int16>(slot));
         if (pItem != nullptr)
         {
@@ -3954,7 +3954,7 @@ void ItemInterface::HandleItemDurations()
 
     for (uint16_t i = EQUIPMENT_SLOT_START; i <= CURRENCYTOKEN_SLOT_END; ++i)
     {
-        Item* item1 = this->GetInventoryItem(i);
+        Item* item1 = this->GetInventoryItem(static_cast<int16_t>(i));
         Item* realitem = nullptr;
 
         if (item1 != nullptr && item1->isContainer())
@@ -3962,7 +3962,7 @@ void ItemInterface::HandleItemDurations()
 
             for (uint32 j = 0; j < item1->getItemProperties()->ContainerSlots; ++j)
             {
-                Item* item2 = static_cast<Container*>(item1)->GetItem(static_cast<int16>(j));
+                Item* item2 = dynamic_cast<Container*>(item1)->GetItem(static_cast<int16>(j));
 
                 if (item2 != nullptr && item2->getItemProperties()->ExistingDuration > 0)
                     realitem = item2;
@@ -4079,7 +4079,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
     if (it == nullptr)
         return false;
 
-    uint8 error = CanReceiveItem(it, count);
+    int8 error = CanReceiveItem(it, count);
     if (error != 0)
     {
         return false;
@@ -4098,7 +4098,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
             if (free_stack_item != nullptr)
             {
                 // increase stack by new amount
-                free_stack_item->modStackCount(count);
+                free_stack_item->modStackCount(static_cast<int32_t>(count));
                 free_stack_item->m_isDirty = true;
 
                 sQuestMgr.OnPlayerItemPickup(m_pOwner, free_stack_item);
@@ -4135,7 +4135,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
 
                 if (item_random_properties != nullptr)
                 {
-                    randomprop = item_random_properties->ID;
+                    randomprop = static_cast<int32_t>(item_random_properties->ID);
                 }
                 else
                 {
@@ -4149,7 +4149,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
 
                 if (item_random_suffix != nullptr)
                 {
-                    randomprop = -1 * item_random_suffix->id;
+                    randomprop = -1 * static_cast<int32_t>(item_random_suffix->id);
                 }
                 else
                 {
@@ -4161,9 +4161,9 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
         if (randomprop != 0)
         {
             if (randomprop < 0)
-                item->SetRandomSuffix(-randomprop);
+                item->SetRandomSuffix(static_cast<uint32_t>(-randomprop));
             else
-                item->setRandomPropertiesId(randomprop);
+                item->setRandomPropertiesId(static_cast<uint32_t>(randomprop));
 
             item->ApplyRandomProperties(false);
         }
@@ -4248,7 +4248,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
             {
                 if ((error = CanEquipItemInSlot2(SrcInvSlot, SrcSlot, DstItem)) != 0)
                 {
-                    buildInventoryChangeError(SrcItem, DstItem, error);
+                    buildInventoryChangeError(SrcItem, DstItem, static_cast<uint8_t>(error));
                     return false;
                 }
             }
@@ -4266,7 +4266,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
 
             if ((error = CanEquipItemInSlot2(SrcInvSlot, SrcInvSlot, DstItem)) != 0)
             {
-                buildInventoryChangeError(SrcItem, DstItem, error);
+                buildInventoryChangeError(SrcItem, DstItem, static_cast<uint8_t>(error));
                 return false;
             }
         }
@@ -4290,7 +4290,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
         {
             if ((error = CanEquipItemInSlot2(DstInvSlot, DstSlot, SrcItem)) != 0)
             {
-                buildInventoryChangeError(SrcItem, DstItem, error);
+                buildInventoryChangeError(SrcItem, DstItem, static_cast<uint8_t>(error));
                 return false;
             }
         }
@@ -4308,7 +4308,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
 
         if ((error = CanEquipItemInSlot2(DstInvSlot, DstInvSlot, SrcItem)) != 0)
         {
-            buildInventoryChangeError(SrcItem, DstItem, error);
+            buildInventoryChangeError(SrcItem, DstItem, static_cast<uint8_t>(error));
             return false;
         }
     }
