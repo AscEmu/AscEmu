@@ -1605,7 +1605,9 @@ void SpellMgr::loadSpellDisabled()
 void SpellMgr::setSpellCoefficient(SpellInfo* sp)
 {
     const auto baseDuration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->getDurationIndex())));
-
+#if VERSION_STRING <= TBC
+    const auto isOverTimeSpell = sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE) || sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_HEAL);
+#endif
     // Check if coefficient is overriden from database
     if (sp->spell_coeff_direct != -1)
     {
