@@ -294,35 +294,25 @@ bool GameObject::loadFromDB(MySQLStructure::GameobjectSpawn* spawn, WorldMap* ma
     if (!create(entry, map, spawn->phase, spawn->spawnPoint, spawn->rotation, spawn->state))
         return false;
 
-    //\todo: Zyres always true XD
-    if (spawn->spawntimesecs >= 0)
+    m_spawnedByDefault = true;
+
+    if (!GetGameObjectProperties()->getDespawnPossibility() && !GetGameObjectProperties()->isDespawnAtAction())
     {
-        m_spawnedByDefault = true;
-
-        if (!GetGameObjectProperties()->getDespawnPossibility() && !GetGameObjectProperties()->isDespawnAtAction())
-        {
-            setFlags(GO_FLAG_NEVER_DESPAWN);
-            m_respawnDelayTime = 0;
-            m_respawnTime = 0;
-        }
-        else
-        {
-            m_respawnDelayTime = spawn->spawntimesecs;
-            m_respawnTime = map->getGORespawnTime(spawn->id);
-
-            // ready to respawn
-            if (m_respawnTime && m_respawnTime <= Util::getTimeNow())
-            {
-                m_respawnTime = 0;
-                map->removeRespawnTime(SPAWN_TYPE_GAMEOBJECT, spawn->id);
-            }
-        }
+        setFlags(GO_FLAG_NEVER_DESPAWN);
+        m_respawnDelayTime = 0;
+        m_respawnTime = 0;
     }
     else
     {
-        m_spawnedByDefault = false;
-        m_respawnDelayTime = -spawn->spawntimesecs;
-        m_respawnTime = 0;
+        m_respawnDelayTime = spawn->spawntimesecs;
+        m_respawnTime = map->getGORespawnTime(spawn->id);
+
+        // ready to respawn
+        if (m_respawnTime && m_respawnTime <= Util::getTimeNow())
+        {
+            m_respawnTime = 0;
+            map->removeRespawnTime(SPAWN_TYPE_GAMEOBJECT, spawn->id);
+        }
     }
 
     m_spawn = spawn;
@@ -1769,35 +1759,20 @@ void GameObject_Goober::onUse(Player* player)
 
     GameObjectProperties const* info = GetGameObjectProperties();
 
-    if (player)
+    if (info->goober.page_id)    // show page...
     {
-        if (info->goober.page_id)    // show page...
-        {
-            player->sendPacket(SmsgGameobjectPagetext(getGuid()).serialise().get());
-        }
-        else if (info->goober.gossip_id)
-        {
-            // todo
-        }
+        player->sendPacket(SmsgGameobjectPagetext(getGuid()).serialise().get());
+    }
 
-        // possible quest objective for active quests
-        if (info->goober.quest_id && sMySQLStore.getQuestProperties(info->goober.quest_id))
+    // possible quest objective for active quests
+    if (info->goober.quest_id && sMySQLStore.getQuestProperties(info->goober.quest_id))
+    {
+        //Quest require to be active for GO using
+        if (QuestLogEntry* quest = player->getQuestLogByQuestId(info->goober.quest_id))
         {
-            //Quest require to be active for GO using
-            if (QuestLogEntry* quest = player->getQuestLogByQuestId(info->goober.quest_id))
-            {
-                if (quest->getQuestState() != QUEST_INCOMPLETE)
-                    return;
-            }
+            if (quest->getQuestState() != QUEST_INCOMPLETE)
+                return;
         }
-
-        // Quest Completion
-        if (Group* group = player->getGroup())
-        {
-            // todo
-        }
-        //else
-
     }
 
     if (uint32_t trapEntry = info->goober.linked_trap_id)
@@ -1917,12 +1892,15 @@ void GameObject_FishingNode::onUse(Player* player)
 
             //provide error, no fishable zone or area should be 0
             if (!zone_skill)
+            {
                 sLogger.failure("Fishable areaId %u are not found in `fishing` table.", subzone);
+                break;
+            }
 
             int32_t skill = player->getSkillLineCurrent(SKILL_FISHING, false);
 
             int32_t chance = 100;
-            if (skill < zone_skill->maxSkill)
+            if (static_cast<uint32_t>(skill) < zone_skill->maxSkill)
             {
                 chance = static_cast<int32_t>(pow((double)skill / zone_skill->maxSkill, 2) * 100);
                 if (chance < 1)
@@ -2109,7 +2087,7 @@ void GameObject_Ritual::onUse(Player* player)
             if (info == nullptr)
                 return;
 
-            Player* target = sObjectMgr.GetPlayer(GetRitual()->GetTargetGUID());
+            Player* target = sObjectMgr.GetPlayer(static_cast<uint32_t>(GetRitual()->GetTargetGUID()));
             if (target == nullptr || !target->IsInWorld())
                 return;
 
@@ -2259,7 +2237,7 @@ void GameObject_Meetingstone::onUse(Player* player)
 
     QuaternionData rot = QuaternionData::fromEulerAnglesZYX(player->GetOrientation(), 0.f, 0.f);
 
-    rGo->create(179944, player->getWorldMap(), player->GetPositionX(), player->GetPosition(), rot, GO_STATE_CLOSED);
+    rGo->create(179944, player->getWorldMap(), player->GetPhase(), player->GetPosition(), rot, GO_STATE_CLOSED);
     rGo->GetRitual()->Setup(player->getGuidLow(), pPlayer->getGuidLow(), 18540);
     rGo->PushToWorld(player->getWorldMap());
 

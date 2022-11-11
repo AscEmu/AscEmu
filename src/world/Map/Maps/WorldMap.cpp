@@ -411,7 +411,7 @@ void WorldMap::update(uint32_t t_diff)
                 break;
 
             _corpseDespawnTimes.pop();
-            if (Corpse* pCorpse = sObjectMgr.GetCorpse(next.guid))
+            if (Corpse* pCorpse = sObjectMgr.GetCorpse(static_cast<uint32_t>(next.guid)))
             {
                 if (pCorpse->getWorldMap() != this)
                     break;
@@ -1585,6 +1585,11 @@ Player* WorldMap::getPlayer(uint32_t guid)
 {
     auto itr = m_PlayerStorage.find(guid);
     return itr != m_PlayerStorage.end() ? itr->second : nullptr;
+}
+
+Player* WorldMap::getPlayer(uint64_t guid)
+{
+    return getPlayer(static_cast<uint32_t>(guid));
 }
 
 uint32_t WorldMap::getPlayerCount()

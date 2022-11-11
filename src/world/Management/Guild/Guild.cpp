@@ -301,7 +301,7 @@ void Guild::handleRoster(WorldSession* session)
             << uint32_t(itr->second->getZoneId());
 
         if (!itr->second->getFlags())
-            data << float(float(::time(nullptr) - itr->second->getLogoutTime()) / DAY);
+            data << float(float(::time(nullptr) - itr->second->getLogoutTime()) / static_cast<uint64_t>(DAY));
 
         data << itr->second->getPublicNote();
 

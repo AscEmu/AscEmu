@@ -227,7 +227,7 @@ bool MoveSplineInitArgs::_checkPathBounds() const
         for (uint32_t i = 1; i < path.size()-1; ++i)
         {
             offset = path[i] - middle;
-            if (std::fabs(offset.x) >= MAX_OFFSET || std::fabs(offset.y) >= MAX_OFFSET || std::fabs(offset.z) >= MAX_OFFSET)
+            if (std::fabs(offset.x) >= static_cast<float>(MAX_OFFSET) || std::fabs(offset.y) >= static_cast<float>(MAX_OFFSET) || std::fabs(offset.z) >= static_cast<float>(MAX_OFFSET))
             {
                 sLogger.failure("MoveSplineInitArgs::_checkPathBounds check failed");
                 return false;

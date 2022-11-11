@@ -958,23 +958,23 @@ public:
 
     ~CachedCharacterInfo();
 
-    uint32_t guid;
-    uint32_t acct;
+    uint32_t guid = 0;
+    uint32_t acct = 0;
     std::string name;
-    uint8_t race;
-    uint8_t gender;
-    uint8_t cl;
-    uint32_t team;
-    uint8_t role;
+    uint8_t race = 0;
+    uint8_t gender = 0;
+    uint8_t cl = 0;
+    uint32_t team = 0;
+    uint8_t role = 0;
 
-    time_t lastOnline;
-    uint32_t lastZone;
-    uint32_t lastLevel;
-    Group* m_Group;
-    int8_t subGroup;
+    time_t lastOnline = 0;
+    uint32_t lastZone = 0;
+    uint32_t lastLevel = 0;
+    Group* m_Group = nullptr;
+    int8_t subGroup = 0;
 
-    uint32_t m_guild;
-    uint32_t guildRank;
+    uint32_t m_guild = 0;
+    uint32_t guildRank = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -999,25 +999,25 @@ struct FactionReputation
 struct PlayerPet
 {
     std::string name;
-    uint32_t entry;
-    uint32_t xp;
-    bool active;
-    bool alive;
-    char stablestate;
-    uint32_t number;
-    uint32_t level;
-    uint32_t happinessupdate;
+    uint32_t entry = 0;
+    uint32_t xp = 0;
+    bool active = false;
+    bool alive = false;
+    char stablestate = 0;
+    uint32_t number = 0;
+    uint32_t level = 0;
+    uint32_t happinessupdate = 0;
     std::string actionbar;
-    time_t reset_time;
-    uint32_t reset_cost;
-    uint32_t spellid;
-    uint32_t petstate;
-    uint32_t talentpoints;
-    uint32_t current_power;
-    uint32_t current_hp;
-    uint32_t current_happiness;
-    uint32_t renamable;
-    uint32_t type;
+    time_t reset_time = 0;
+    uint32_t reset_cost = 0;
+    uint32_t spellid = 0;
+    uint32_t petstate = 0;
+    uint32_t talentpoints = 0;
+    uint32_t current_power = 0;
+    uint32_t current_hp = 0;
+    uint32_t current_happiness = 0;
+    uint32_t renamable = 0;
+    uint32_t type = 0;
 };
 
 struct WeaponModifier

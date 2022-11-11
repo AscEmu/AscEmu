@@ -56,8 +56,8 @@ public:
 class UniqueNumberPool
 {
 private:
-    int32_t min;
-    int32_t max;
+    int32_t min = 0;
+    int32_t max = 0;
 
     custom_priority_queue_ascend<int32_t> freeIds;
     std::vector<int32_t> usedIds;

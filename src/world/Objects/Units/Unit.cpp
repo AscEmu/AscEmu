@@ -5900,7 +5900,7 @@ uint8_t Unit::getHealthPct() const
 
 uint8_t Unit::getPctFromMaxHealth(uint8_t pct) const
 {
-    return getMaxHealth() * static_cast<float>(pct) / 100.0f;
+    return static_cast<uint8_t>(getMaxHealth() * static_cast<float>(pct) / 100.0f);
 }
 
 uint8_t Unit::getPowerPct(PowerType powerType) const

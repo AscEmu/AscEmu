@@ -555,14 +555,14 @@ bool SpellInfo::isNegativeAura() const
 
 uint32_t SpellInfo::getSpellDefaultDuration(Unit const* caster) const
 {
-    auto spell_duration = sSpellDurationStore.LookupEntry(DurationIndex);
+    const auto spell_duration = sSpellDurationStore.LookupEntry(DurationIndex);
     if (spell_duration == nullptr)
         return 0;
 
     if (caster == nullptr)
         return spell_duration->Duration1;
 
-    auto ret = spell_duration->Duration1 + (spell_duration->Duration2 * caster->getLevel());
+    const int32_t ret = spell_duration->Duration1 + (spell_duration->Duration2 * caster->getLevel());
     if (ret > spell_duration->Duration3)
         return spell_duration->Duration3;
 

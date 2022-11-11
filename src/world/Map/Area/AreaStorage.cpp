@@ -104,7 +104,7 @@ namespace MapManagement::AreaManagement
             tileMapHeight = tile->m_map.getHeight(pos.x, pos.y);
         }
 
-        const auto area_flag = MapManagement::AreaManagement::AreaStorage::GetFlagByPosition(area_flag_without_adt_id, tileMapHeight, hasAreaInfo, mogp_flags, adt_id, root_id, group_id, worldMap->getBaseMap()->getMapId(), pos.x, pos.y, pos.z, nullptr);
+        const auto area_flag = MapManagement::AreaManagement::AreaStorage::GetFlagByPosition(area_flag_without_adt_id, static_cast<uint32_t>(tileMapHeight), hasAreaInfo, mogp_flags, adt_id, root_id, group_id, worldMap->getBaseMap()->getMapId(), pos.x, pos.y, pos.z, nullptr);
         const auto* areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaByFlag(area_flag);
 
         if (areaEntry == nullptr)

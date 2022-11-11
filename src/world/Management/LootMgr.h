@@ -269,7 +269,7 @@ class SERVER_DECL LootMgr
         LootTemplateMap ItemLoot;
         LootTemplateMap PickpocketingLoot;
 
-        bool is_loading;
+        bool is_loading = false;
 
     private:
         std::map<uint32_t, RandomPropertyVector> _randomprops;

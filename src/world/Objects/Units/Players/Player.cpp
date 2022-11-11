@@ -9199,7 +9199,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
                 if (groupRules)
                     group->updateLooterGuid(go);
 
-                pLoot->fillLoot(lootid, sLootMgr.GOLoot, this, false, pLGO->getLootMode());
+                pLoot->fillLoot(lootid, sLootMgr.GOLoot, this, false, static_cast<uint8_t>(pLGO->getLootMode()));
                 pLGO->setLootGenerationTime();
 
                 // get next RR player (for next loot)

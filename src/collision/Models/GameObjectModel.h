@@ -51,7 +51,10 @@ public:
 
 class GameObjectModel /*, public Intersectable*/
 {
-    GameObjectModel() : phasemask(0), iInvScale(0), iScale(0), iModel(nullptr), isWmo(false) { }
+    GameObjectModel() : phasemask(0), iInvRot(), iInvScale(0), iScale(0), iModel(nullptr), isWmo(false)
+    {
+    }
+
 public:
     std::string name;
 

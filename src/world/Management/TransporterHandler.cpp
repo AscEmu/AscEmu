@@ -453,7 +453,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     if (keyFrames[0].isStopFrame())
     {
         curPathTime = float(keyFrames[0].Node.delay);
-        keyFrames[0].DepartureTime = uint32_t(curPathTime * IN_MILLISECONDS);
+        keyFrames[0].DepartureTime = uint32_t(curPathTime * static_cast<float>(IN_MILLISECONDS));
     }
 
     for (size_t i = 1; i < keyFrames.size(); ++i)
@@ -461,15 +461,15 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
         curPathTime += keyFrames[i - 1].TimeTo;
         if (keyFrames[i].isStopFrame())
         {
-            keyFrames[i].ArriveTime = uint32_t(curPathTime * IN_MILLISECONDS);
+            keyFrames[i].ArriveTime = uint32_t(curPathTime * static_cast<float>(IN_MILLISECONDS));
             keyFrames[i - 1].NextArriveTime = keyFrames[i].ArriveTime;
             curPathTime += float(keyFrames[i].Node.delay);
-            keyFrames[i].DepartureTime = uint32_t(curPathTime * IN_MILLISECONDS);
+            keyFrames[i].DepartureTime = uint32_t(curPathTime * static_cast<float>(IN_MILLISECONDS));
         }
         else
         {
             curPathTime -= keyFrames[i].TimeTo;
-            keyFrames[i].ArriveTime = uint32_t(curPathTime * IN_MILLISECONDS);
+            keyFrames[i].ArriveTime = uint32_t(curPathTime * static_cast<float>(IN_MILLISECONDS));
             keyFrames[i - 1].NextArriveTime = keyFrames[i].ArriveTime;
             keyFrames[i].DepartureTime = keyFrames[i].ArriveTime;
         }

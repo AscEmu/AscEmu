@@ -247,6 +247,7 @@ public:
 
     // Player
     Player* getPlayer(uint32_t guid);
+    Player* getPlayer(uint64_t guid);
     uint32_t getPlayerCount();
     bool hasPlayers();
     virtual void removeAllPlayers();

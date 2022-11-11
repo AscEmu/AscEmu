@@ -514,7 +514,7 @@ void Spell::spellEffectSummonTotem(uint8_t /*effIndex*/, DBC::Structures::Summon
     const auto totemSlot = spe->Slot > 0 ? static_cast<SummonSlot>(spe->Slot - 1) : SUMMON_SLOT_PET;
 
     // Generate spawn point
-    const float_t angle = totemSlot < SUMMON_SLOT_MINIPET ? M_PI_FLOAT / SUMMON_SLOT_MINIPET - (totemSlot * 2 * M_PI_FLOAT / SUMMON_SLOT_MINIPET) : 0.0f;
+    const float_t angle = totemSlot < SUMMON_SLOT_MINIPET ? M_PI_FLOAT / static_cast<float>(SUMMON_SLOT_MINIPET) - (totemSlot * 2 * M_PI_FLOAT / static_cast<float>(SUMMON_SLOT_MINIPET)) : 0.0f;
     u_caster->GetPoint(u_caster->GetOrientation() + angle, 3.5f, v.x, v.y, v.z, false);
 
     // Correct Z position
@@ -4026,7 +4026,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
             }
 
             // Duration of the fishing bobber can't be higher than the Fishing channeling duration
-            duration = std::min(duration, duration - lastSec * IN_MILLISECONDS + 5 * IN_MILLISECONDS);
+            duration = std::min(duration, (duration - lastSec * IN_MILLISECONDS + 5 * IN_MILLISECONDS));
         } break;
         case GAMEOBJECT_TYPE_RITUAL:
         {

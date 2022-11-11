@@ -72,8 +72,8 @@ class SERVER_DECL World : public EventableObject
     // Player statistic
     private:
     
-        uint32_t mHordePlayersCount;
-        uint32_t mAlliancePlayersCount;
+        uint32_t mHordePlayersCount = 0;
+        uint32_t mAlliancePlayersCount = 0;
 
     public:
 
@@ -86,7 +86,7 @@ class SERVER_DECL World : public EventableObject
     // Uptime
     private:
 
-        uint32_t mStartTime;
+        uint32_t mStartTime = 0;
 
     public:
 
@@ -101,16 +101,16 @@ class SERVER_DECL World : public EventableObject
 
         Arcemu::PerformanceCounter perfcounter;
 
-        double mTotalTrafficInKB;
-        double mTotalTrafficOutKB;
-        double mLastTotalTrafficInKB;
-        double mLastTotalTrafficOutKB;
-        time_t mLastTrafficQuery;
+        double mTotalTrafficInKB = 0;
+        double mTotalTrafficOutKB = 0;
+        double mLastTotalTrafficInKB = 0;
+        double mLastTotalTrafficOutKB = 0;
+        time_t mLastTrafficQuery = 0;
 
         void updateAllTrafficTotals();
 
-        uint32_t mAcceptedConnections;
-        uint32_t mPeakSessionCount;
+        uint32_t mAcceptedConnections = 0;
+        uint32_t mPeakSessionCount = 0;
 
     public:
 
@@ -175,7 +175,7 @@ class SERVER_DECL World : public EventableObject
 
         Mutex queueMutex;
 
-        uint32_t mQueueUpdateTimer;
+        uint32_t mQueueUpdateTimer = 0;
 
     public:
 
@@ -244,7 +244,7 @@ class SERVER_DECL World : public EventableObject
     // GM Ticket System
     private:
 
-        bool mGmTicketSystemEnabled;
+        bool mGmTicketSystemEnabled = false;
 
     public:
 

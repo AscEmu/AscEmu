@@ -268,7 +268,7 @@ public:
         AI_Spell* HandleAutoCastEvent();
         void SetPetSpellState(uint32 spell, uint16 state);
         void SetAutoCast(AI_Spell* sp, bool on);
-        float GetHappinessDmgMod() { return 0.25f * GetHappinessState() + 0.5f; };
+        float GetHappinessDmgMod() { return 0.25f * static_cast<float>(GetHappinessState()) + 0.5f; };
         bool IsBeingDeleted() { return ScheduledForDeletion; }
 
         Group* getGroup();

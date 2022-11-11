@@ -916,7 +916,7 @@ class GameObject_Lootable : public GameObject
         void addLootMode(uint16_t lootMode) { m_LootMode |= lootMode; }
         void removeLootMode(uint16_t lootMode) { m_LootMode &= ~lootMode; }
         void resetLootMode() { m_LootMode = LOOT_MODE_DEFAULT; }
-        void setLootGenerationTime() { m_lootGenerationTime = Util::getTimeNow(); }
+        void setLootGenerationTime() { m_lootGenerationTime = static_cast<uint32_t>(Util::getTimeNow()); }
         uint32_t getLootGenerationTime() const { return m_lootGenerationTime; }
 
         time_t getRestockTime() const { return m_restockTime; }

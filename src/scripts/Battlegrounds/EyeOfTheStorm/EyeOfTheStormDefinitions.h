@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-enum
+enum EyeOfTheStormDefs
 {
     EOTS_GO_BE_TOWER = 184080, // 184080 - Blood Elf Tower Cap Pt
     EOTS_GO_FELREAVER = 184081, // 184081 - Fel Reaver Cap Pt
@@ -21,8 +21,6 @@ enum
     EOTS_BANNER_ALLIANCE = 184381,
     EOTS_BANNER_HORDE = 184380,
 
-    EOTS_CAPTURE_DISTANCE = 900, /*30*/
-
     EOTS_CAPTURE_RATE = 4,
     EOTS_TOWER_COUNT = 4,
     EOTS_RECENTLY_DROPPED_FLAG = 50327,
@@ -30,3 +28,5 @@ enum
     EOTS_NETHERWING_FLAG_SPELL = 34976,
     EOTS_NETHERWING_FLAG_READY = 2757,
 };
+
+const float EOTS_CAPTURE_DISTANCE = 900.00; /*30*/
