@@ -28,14 +28,14 @@ bool ChatHandler::HandleAchievementCompleteCommand(const char* args, WorldSessio
 
     uint32 achievement_id = atol(args);
     if (achievement_id == 0)
-    {
-            return false;
-    }
-    else if (selected_player->getAchievementMgr().GMCompleteAchievement(m_session, achievement_id))
+        return false;
+
+    if (selected_player->getAchievementMgr().GMCompleteAchievement(m_session, achievement_id))
     {
         SystemMessage(m_session, "The achievement has now been completed for that player.");
         sGMLog.writefromsession(m_session, "completed achievement %u for player %s", achievement_id, selected_player->getName().c_str());
     }
+
     return true;
 }
 
@@ -61,11 +61,13 @@ bool ChatHandler::HandleAchievementCriteriaCommand(const char* args, WorldSessio
         }
         return false;
     }
-    else if (selected_player->getAchievementMgr().GMCompleteCriteria(m_session, criteria_id))
+    
+    if (selected_player->getAchievementMgr().GMCompleteCriteria(m_session, criteria_id))
     {
         SystemMessage(m_session, "The achievement criteria has now been completed for that player.");
         sGMLog.writefromsession(m_session, "completed achievement criteria %u for player %s", criteria_id, selected_player->getName().c_str());
     }
+
     return true;
 }
 

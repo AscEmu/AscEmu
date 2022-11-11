@@ -1238,15 +1238,11 @@ bool ashrombeTeleportDummyAura(uint8_t /*effectIndex*/, Aura* pAura, bool /*appl
 {
     Unit* target = pAura->GetUnitCaster();
     if (!target || !target->isCreature())
-    {
         return false;
-    }
-    else
-    {
-        Creature* creatureCaster = static_cast<Creature*>(target);
-        creatureCaster->Despawn(3000, 0);
-        return true;
-    }
+
+    Creature* creatureCaster = static_cast<Creature*>(target);
+    creatureCaster->Despawn(3000, 0);
+    return true;
 }
 
 void SetupShadowfangKeep(ScriptMgr* mgr)

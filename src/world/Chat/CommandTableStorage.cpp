@@ -19,61 +19,61 @@ ChatCommand* CommandTableStorage::GetSubCommandTable(const char* name)
 {
     if (!stricmp(name, "modify"))
         return _modifyCommandTable;
-    else if (!stricmp(name, "waypoint"))
+    if (!stricmp(name, "waypoint"))
         return _waypointCommandTable;
-    else if (!stricmp(name, "event"))
+    if (!stricmp(name, "event"))
         return _eventCommandTable;
-    else if (!stricmp(name, "debug"))
+    if (!stricmp(name, "debug"))
         return _debugCommandTable;
-    else if (!stricmp(name, "gmTicket"))
+    if (!stricmp(name, "gmTicket"))
         return _GMTicketCommandTable;
-    else if (!stricmp(name, "ticket"))
+    if (!stricmp(name, "ticket"))
         return _TicketCommandTable;
-    else if (!stricmp(name, "gobject"))
+    if (!stricmp(name, "gobject"))
         return _GameObjectCommandTable;
-    else if (!stricmp(name, "battleground"))
+    if (!stricmp(name, "battleground"))
         return _BattlegroundCommandTable;
-    else if (!stricmp(name, "npc"))
+    if (!stricmp(name, "npc"))
         return _NPCCommandTable;
-    else if (!stricmp(name, "cheat"))
+    if (!stricmp(name, "cheat"))
         return _CheatCommandTable;
-    else if (!stricmp(name, "account"))
+    if (!stricmp(name, "account"))
         return _accountCommandTable;
-    else if (!stricmp(name, "quest"))
+    if (!stricmp(name, "quest"))
         return _questCommandTable;
-    else if (!stricmp(name, "pet"))
+    if (!stricmp(name, "pet"))
         return _petCommandTable;
-    else if (!stricmp(name, "recall"))
+    if (!stricmp(name, "recall"))
         return _recallCommandTable;
-    else if (!stricmp(name, "guild"))
+    if (!stricmp(name, "guild"))
         return _GuildCommandTable;
-    else if (!stricmp(name, "gm"))
+    if (!stricmp(name, "gm"))
         return _gmCommandTable;
-    else if (!stricmp(name, "server"))
+    if (!stricmp(name, "server"))
         return _serverCommandTable;
-    else if (!stricmp(name, "character"))
+    if (!stricmp(name, "character"))
         return _characterCommandTable;
-    else if (!stricmp(name, "lookup"))
+    if (!stricmp(name, "lookup"))
         return _lookupCommandTable;
-    else if (!stricmp(name, "admin"))
+    if (!stricmp(name, "admin"))
         return _adminCommandTable;
-    else if (!stricmp(name, "kick"))
+    if (!stricmp(name, "kick"))
         return _kickCommandTable;
-    else if (!stricmp(name, "ban"))
+    if (!stricmp(name, "ban"))
         return _banCommandTable;
-    else if (!stricmp(name, "unban"))
+    if (!stricmp(name, "unban"))
         return _unbanCommandTable;
-    else if (!stricmp(name, "instance"))
+    if (!stricmp(name, "instance"))
         return _instanceCommandTable;
-    else if (!stricmp(name, "arena"))
+    if (!stricmp(name, "arena"))
         return _arenaCommandTable;
-    else if (!stricmp(name, "achieve"))
+    if (!stricmp(name, "achieve"))
         return _achievementCommandTable;
-    else if (!stricmp(name, "vehicle"))
+    if (!stricmp(name, "vehicle"))
         return _vehicleCommandTable;
-    else if (!stricmp(name, "transport"))
+    if (!stricmp(name, "transport"))
         return _transportCommandTable;
-    return 0;
+    return nullptr;
 }
 
 ChatCommand* CommandTableStorage::GetCharSubCommandTable(const char* name)

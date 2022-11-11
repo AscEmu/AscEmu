@@ -137,10 +137,7 @@ bool ChatHandler::HandleGuildJoinCommand(const char* args, WorldSession* m_sessi
         sGMLog.writefromsession(m_session, "Force joined guild '%s'", guild->getName().c_str());
         return true;
     }
-    else
-    {
-        RedSystemMessage(m_session, "Guild %s is not a valid guildname!", args);
-    }
+    RedSystemMessage(m_session, "Guild %s is not a valid guildname!", args);
 
     return false;
 }
@@ -184,12 +181,9 @@ bool ChatHandler::HandleRenameGuildCommand(const char* args, WorldSession* m_ses
         RedSystemMessage(m_session, "Guild name %s is already taken.", args);
         return true;
     }
-    else
-    {
-        GreenSystemMessage(m_session, "Changed guild name of %s to %s. This will take effect next restart.", selected_player->getGuild()->getName().c_str(), args);
-        CharacterDatabase.Execute("UPDATE guilds SET `guildName` = \'%s\' WHERE `guildId` = '%u'", CharacterDatabase.EscapeString(std::string(args)).c_str(), selected_player->getGuild()->getId());
-        sGMLog.writefromsession(m_session, "Changed guild name of '%s' to '%s'", selected_player->getGuild()->getName().c_str(), args);
-    }
+    GreenSystemMessage(m_session, "Changed guild name of %s to %s. This will take effect next restart.", selected_player->getGuild()->getName().c_str(), args);
+    CharacterDatabase.Execute("UPDATE guilds SET `guildName` = \'%s\' WHERE `guildId` = '%u'", CharacterDatabase.EscapeString(std::string(args)).c_str(), selected_player->getGuild()->getId());
+    sGMLog.writefromsession(m_session, "Changed guild name of '%s' to '%s'", selected_player->getGuild()->getName().c_str(), args);
 
     return true;
 }

@@ -57,21 +57,21 @@ namespace LuaAura
             PUSH_UNIT(L, caster);
             return 1;
         }
-        else if (caster->isGameObject())  //gameobject
+        
+        if (caster->isGameObject())  //gameobject
         {
             PUSH_GO(L, caster);
             return 1;
         }
-        else if (caster->getObjectTypeId() == TYPEID_ITEM)  //item
+        
+        if (caster->getObjectTypeId() == TYPEID_ITEM)  //item
         {
             PUSH_ITEM(L, caster);
             return 1;
         }
-        else
-        {
-            lua_pushnil(L);
-            return 1;
-        }
+
+        lua_pushnil(L);
+        return 1;
     }
 
     int GetTarget(lua_State* L, Aura* aura)

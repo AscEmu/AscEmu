@@ -69,10 +69,7 @@ bool ChatHandler::HandlePetDismissCommand(const char* /*args*/, WorldSession* m_
             RedSystemMessage(m_session, "Player has no pet.");
             return true;
         }
-        else
-        {
-            selected_player->dismissActivePets();
-        }
+        selected_player->dismissActivePets();
     }
     else
     {

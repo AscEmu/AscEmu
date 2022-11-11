@@ -169,8 +169,8 @@ public:
                     despawn();
                     return;
                 }
-                else
-                    moveToUnit(attumen->getCreature());
+
+                moveToUnit(attumen->getCreature());
             }
         }
     }
@@ -1253,11 +1253,11 @@ public:
             enraged = true;
             return;
         }
-        else if (!m_time_special)
+        
+        if (!m_time_special)
         {
             CastSpecial();
             m_time_special = (uint32_t)Util::getRandomUInt(5) + 25;
-            return;
         }
     }
 

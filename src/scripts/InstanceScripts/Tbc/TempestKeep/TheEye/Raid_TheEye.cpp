@@ -928,7 +928,8 @@ public:
                 mEventTimer = -2;
                 return;
             }
-            else if (mEventTimer == -2)
+
+            if (mEventTimer == -2)
             {
                 for (uint8_t i = 0; i < 7; ++i)
                 {
@@ -939,7 +940,8 @@ public:
                 mEventTimer = _addTimer(125000);
                 return;
             }
-            else if (_isTimerFinished(mEventTimer))
+            
+            if (_isTimerFinished(mEventTimer))
             {
                 for (uint8_t i = 0; i < 4; ++i)
                 {
@@ -948,15 +950,11 @@ public:
 
                     Creature* pCreature = getNearestCreature(mAdvCoords[i].x, mAdvCoords[i].y, mAdvCoords[i].z, mAdvCoords[i].addition);
                     if (pCreature != NULL && !pCreature->isAlive())
-                    {
                         pCreature->Despawn(0, 0);
-                    }
 
                     CreatureAIScript* pAI = spawnCreatureAndGetAIScript(mAdvCoords[i].addition, mAdvCoords[i].x, mAdvCoords[i].y, mAdvCoords[i].z, 0);
                     if (pAI != nullptr)
-                    {
                         pCreature = pAI->getCreature();
-                    }
                     else
                         continue;
 
@@ -1006,21 +1004,14 @@ public:
                     setAIAgent(AGENT_NULL);
                     setRooted(false);
                 }
+
                 if (_isTimerFinished(mShockBarrierTimer))
                 {
                     _castAISpell(mShockBarrier);
                     _resetTimer(mShockBarrierTimer, 70000);
                 }
-                /*else if (_isTimerFinished(mArcaneDisruptionTimer))
-                {
-                    CastSpellNowNoScheduling(mArcaneDisruptionFunc);
-                    _resetTimer(mArcaneDisruptionTimer, 30000);
-                }
-                else if (_isTimerFinished(mFlameStrikeTimer))
-                {
-                    CastSpellNowNoScheduling(mFlameStrikeFunc);
-                }*/
             }
+
             if (getCreature()->hasAurasWithId(KAELTHAS_SHOCK_BARRIER))
             {
                 _castAISpell(mPyroblast);

@@ -523,46 +523,43 @@ bool ChatHandler::HandleQuestItemCommand(const char* args, WorldSession* m_sessi
         SendMultilineMessage(m_session, recout.c_str());
         return true;
     }
-    else
+    recout = "|cff00ff00Quest item matches: itemid: count -> Name\n\n";
+    SendMultilineMessage(m_session, recout.c_str());
+
+    uint32 count = 0;
+    do
     {
-        recout = "|cff00ff00Quest item matches: itemid: count -> Name\n\n";
+        Field* fields = result->Fetch();
+        uint32 id = fields[0].GetUInt32();
+        std::string itemid = MyConvertIntToString(id);
+        std::string itemcnt = MyConvertIntToString(fields[1].GetUInt32());
+        auto tmpItem = sMySQLStore.getItemProperties(id);
+        if (tmpItem != nullptr)
+        {
+            recout = "|cff00ccff";
+            recout += itemid;
+            recout += ": ";
+            recout += itemcnt;
+            recout += " -> ";
+            recout += tmpItem->Name;
+            recout += "\n";
+        }
+        else
+            recout = "|cffff0000Invalid Item!\n";
+
+
         SendMultilineMessage(m_session, recout.c_str());
 
-        uint32 count = 0;
-        do
+        ++count;
+
+        if (count == 25)
         {
-            Field* fields = result->Fetch();
-            uint32 id = fields[0].GetUInt32();
-            std::string itemid = MyConvertIntToString(id);
-            std::string itemcnt = MyConvertIntToString(fields[1].GetUInt32());
-            auto tmpItem = sMySQLStore.getItemProperties(id);
-            if (tmpItem != nullptr)
-            {
-                recout = "|cff00ccff";
-                recout += itemid;
-                recout += ": ";
-                recout += itemcnt;
-                recout += " -> ";
-                recout += tmpItem->Name;
-                recout += "\n";
-            }
-            else
-                recout = "|cffff0000Invalid Item!\n";
-
-
-            SendMultilineMessage(m_session, recout.c_str());
-
-            ++count;
-
-            if (count == 25)
-            {
-                RedSystemMessage(m_session, "More than 25 results returned. aborting.");
-                break;
-            }
+            RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+            break;
         }
-        while (result->NextRow());
-        delete result;
     }
+    while (result->NextRow());
+    delete result;
 
     return true;
 }

@@ -243,14 +243,11 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
             RedSystemMessage(m_session, "Player %s is not online or does not exist!", args);
             return true;
         }
-        else
-        {
-            named_player->setHealth(0);
-            named_player->kill();
-            RedSystemMessage(named_player->getSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->getName().c_str());
-            GreenSystemMessage(m_session, "Killed player %s.", args);
-            sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid:  " I64FMT " ", named_player->getName().c_str(), named_player->getGuid());
-        }
+        named_player->setHealth(0);
+        named_player->kill();
+        RedSystemMessage(named_player->getSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->getName().c_str());
+        GreenSystemMessage(m_session, "Killed player %s.", args);
+        sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid:  " I64FMT " ", named_player->getName().c_str(), named_player->getGuid());
     }
     else
     {
@@ -448,10 +445,7 @@ bool ChatHandler::HandleKickByNameCommand(const char* args, WorldSession* m_sess
         player_target->kickFromServer(6000);
         return true;
     }
-    else
-    {
-        RedSystemMessage(m_session, "Player is not online at the moment.");
-    }
+    RedSystemMessage(m_session, "Player is not online at the moment.");
 
     return true;
 }
@@ -899,17 +893,14 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
             SystemMessage(m_session, buf);
             return true;
         }
-        else
-        {
-            Player* pPlayer = m_session->GetPlayer();
-            char query[512];
-            snprintf((char*)&query, 512, "UPDATE characters SET mapId = %u, positionX = %f, positionY = %f, positionZ = %f, zoneId = %u WHERE guid = %u;", pPlayer->GetMapId(), pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetZoneId(), pinfo->guid);
-            CharacterDatabase.Execute(query);
-            char buf[256];
-            snprintf((char*)buf, 256, "(Offline) %s has been summoned.", pinfo->name.c_str());
-            SystemMessage(m_session, buf);
-            return true;
-        }
+        Player* pPlayer = m_session->GetPlayer();
+        char query[512];
+        snprintf((char*)&query, 512, "UPDATE characters SET mapId = %u, positionX = %f, positionY = %f, positionZ = %f, zoneId = %u WHERE guid = %u;", pPlayer->GetMapId(), pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetZoneId(), pinfo->guid);
+        CharacterDatabase.Execute(query);
+        char buf[256];
+        snprintf((char*)buf, 256, "(Offline) %s has been summoned.", pinfo->name.c_str());
+        SystemMessage(m_session, buf);
+        return true;
     }
     sGMLog.writefromsession(m_session, "summoned %s on map %u, %f %f %f", args, m_session->GetPlayer()->GetMapId(), m_session->GetPlayer()->GetPositionX(), m_session->GetPlayer()->GetPositionY(), m_session->GetPlayer()->GetPositionZ());
     return true;

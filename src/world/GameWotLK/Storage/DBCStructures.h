@@ -1782,24 +1782,21 @@ namespace DBC::Structures
         {
             if ((flags & VEHICLE_SEAT_FLAG_USABLE) != 0)
                 return true;
-            else
-                return false;
+            return false;
         }
 
         bool IsController() const
         {
             if ((flags & VEHICLE_SEAT_FLAG_CAN_CONTROL) != 0)
                 return true;
-            else
-                return false;
+            return false;
         }
 
         bool HidesPassenger() const
         {
             if ((flags & VEHICLE_SEAT_FLAG_HIDE_PASSENGER) != 0)
                 return true;
-            else
-                return false;
+            return false;
         }
 
         bool canEnterOrExit() const { return hasFlag(VehicleSeatFlags(VEHICLE_SEAT_FLAG_USABLE | VEHICLE_SEAT_FLAG_CAN_CONTROL | VEHICLE_SEAT_FLAG_SHOULD_USE_VEH_SEAT_EXIT_ANIM_ON_VOLUNTARY_EXIT)); }

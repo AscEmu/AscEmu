@@ -543,17 +543,14 @@ bool ChatHandler::HandleNpcListAIAgentCommand(const char* /*args*/, WorldSession
         RedSystemMessage(m_session, "Selected Creature %s (%u) has no entries in ai_agents table!", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
         return true;
     }
-    else
+    SystemMessage(m_session, "Agent list for Creature %s (%u)", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
+    do
     {
-        SystemMessage(m_session, "Agent list for Creature %s (%u)", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
-        do
-        {
-            Field* fields = result->Fetch();
-            SystemMessage(m_session, "-- agent: %u | spellId: %u | event: %u | chance: %u | maxcount: %u", fields[1].GetUInt32(), fields[5].GetUInt32(), fields[2].GetUInt32(), fields[3].GetUInt32(), fields[4].GetUInt32());
-        } while (result->NextRow());
+        Field* fields = result->Fetch();
+        SystemMessage(m_session, "-- agent: %u | spellId: %u | event: %u | chance: %u | maxcount: %u", fields[1].GetUInt32(), fields[5].GetUInt32(), fields[2].GetUInt32(), fields[3].GetUInt32(), fields[4].GetUInt32());
+    } while (result->NextRow());
 
-        delete result;
-    }
+    delete result;
 
     return true;
 }
@@ -813,7 +810,7 @@ bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_ses
             RedSystemMessage(m_session, "You can not possess a pet!");
             return false;
         }
-        else if (unit_target->isPlayer())
+        if (unit_target->isPlayer())
         {
             auto player = static_cast<Player*>(unit_target);
             BlueSystemMessage(m_session, "Player %s selected.", player->getName().c_str());

@@ -669,11 +669,9 @@ bool ChatHandler::HandleCharAddItemCommand(const char* args, WorldSession* m_ses
         }
         return true;
     }
-    else
-    {
-        RedSystemMessage(m_session, "Item %u is not a valid item!", itemid);
-        return true;
-    }
+
+    RedSystemMessage(m_session, "Item %u is not a valid item!", itemid);
+    return true;
 }
 
 //.character add itemset
@@ -710,38 +708,31 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
             continue;
 
         if (it->ItemSet != setid)
-        {
             continue;
-        }
-        else
+
+        auto item = sObjectMgr.CreateItem(it->ItemId, m_session->GetPlayer());
+        if (item == nullptr)
+            continue;
+
+        if (it->Bonding == ITEM_BIND_ON_PICKUP)
         {
-            auto item = sObjectMgr.CreateItem(it->ItemId, m_session->GetPlayer());
-            if (item == nullptr)
-                continue;
-
-            if (it->Bonding == ITEM_BIND_ON_PICKUP)
-            {
-                if (it->Flags & ITEM_FLAG_ACCOUNTBOUND)
-                    item->addFlags(ITEM_FLAG_ACCOUNTBOUND);
-                else
-                    item->addFlags(ITEM_FLAG_SOULBOUND);
-            }
-
-            if (!player->getItemInterface()->AddItemToFreeSlot(item))
-            {
-                m_session->SendNotification("No free slots left!");
-                item->DeleteMe();
-                return true;
-            }
+            if (it->Flags & ITEM_FLAG_ACCOUNTBOUND)
+                item->addFlags(ITEM_FLAG_ACCOUNTBOUND);
             else
-            {
-                SystemMessage(m_session, "Added item: %s [%u]", it->Name.c_str(), it->ItemId);
-                SlotResult* le = player->getItemInterface()->LastSearchResult();
-                player->sendItemPushResultPacket(false, true, false, le->ContainerSlot, le->Slot, 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
-                ++itemset_items_count;
-            }
-
+                item->addFlags(ITEM_FLAG_SOULBOUND);
         }
+
+        if (!player->getItemInterface()->AddItemToFreeSlot(item))
+        {
+            m_session->SendNotification("No free slots left!");
+            item->DeleteMe();
+            return true;
+        }
+
+        SystemMessage(m_session, "Added item: %s [%u]", it->Name.c_str(), it->ItemId);
+        SlotResult* le = player->getItemInterface()->LastSearchResult();
+        player->sendItemPushResultPacket(false, true, false, le->ContainerSlot, le->Slot, 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
+        ++itemset_items_count;
     }
 
     if (itemset_items_count > 0)
@@ -1290,11 +1281,9 @@ bool ChatHandler::HandleCharSetGenderCommand(const char* args, WorldSession* m_s
         SystemMessage(m_session, "%s's gender is already set to %s(%u).", player_target->getName().c_str(), gender ? "Female" : "Male", gender);
         return true;
     }
-    else
-    {
-        player_target->setGender(gender);
-        SystemMessage(m_session, "Set %s's gender to %s(%u).", player_target->getName().c_str(), gender ? "Female" : "Male", gender);
-    }
+
+    player_target->setGender(gender);
+    SystemMessage(m_session, "Set %s's gender to %s(%u).", player_target->getName().c_str(), gender ? "Female" : "Male", gender);
 
 #if VERSION_STRING > Classic
     if (player_target->getGender() == 0)

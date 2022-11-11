@@ -40,10 +40,13 @@ bool ChatHandler::hasStringAbbr(const char* s1, const char* s2)
     {
         if (!*s2)
             return true;
-        else if (!*s1)
+        
+        if (!*s1)
             return false;
-        else if (tolower(*s1) != tolower(*s2))
+        
+        if (tolower(*s1) != tolower(*s2))
             return false;
+
         s1++;
         s2++;
     }
@@ -620,30 +623,34 @@ uint16_t GetItemIDFromLink(const char* itemlink, uint32* itemid)
 /// DGM: Get skill level command for getting information about a skill
 bool ChatHandler::HandleGetSkillLevelCommand(const char* args, WorldSession* m_session)
 {
-    uint16_t skill = 0;
     char* pSkill = strtok((char*)args, " ");
     if (!pSkill)
         return false;
-    else
-        skill = static_cast<uint16_t>(std::stoul(pSkill));
+
+    uint16_t skill = static_cast<uint16_t>(std::stoul(pSkill));
     Player* plr = GetSelectedPlayer(m_session, true, true);
-    if (!plr) return false;
+    if (!plr)
+        return false;
+
     if (skill > SkillNameManager->maxskill)
     {
         BlueSystemMessage(m_session, "Skill: %u does not exists", skill);
         return false;
     }
+
     char* SkillName = SkillNameManager->SkillNames[skill];
-    if (SkillName == 0)
+    if (SkillName == nullptr)
     {
         BlueSystemMessage(m_session, "Skill: %u does not exists", skill);
         return false;
     }
+
     if (!plr->hasSkillLine(skill))
     {
         BlueSystemMessage(m_session, "Player does not have %s skill.", SkillName);
         return false;
     }
+
     uint32 nobonus = plr->getSkillLineCurrent(skill, false);
     uint32 bonus = plr->getSkillLineCurrent(skill, true) - nobonus;
     uint32 max = plr->getSkillLineMax(skill);

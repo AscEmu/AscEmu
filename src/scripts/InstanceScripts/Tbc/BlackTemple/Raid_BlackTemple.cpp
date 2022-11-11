@@ -1605,7 +1605,7 @@ public:
                 return;
             }
 
-            else if (m_HurtfulStrike)
+            if (m_HurtfulStrike)
             {
                 getCreature()->castSpell(getCreature(), infoHurtfulStrike, false);
                 m_HurtfulStrike = false;
@@ -1617,7 +1617,6 @@ public:
                 getCreature()->setAttackTimer(MELEE, 6000);//6000
                 m_MoltenFlame = true;
             }
-
             else
             {
                 getCreature()->setAttackTimer(MELEE, 4000);//2000
@@ -1648,7 +1647,7 @@ public:
                 return;
             }
 
-            else if (m_VolcanicGazer)
+            if (m_VolcanicGazer)
             {
                 sendDBChatMessage(4690);     // The ground begins to crack open"
                 getCreature()->castSpell(getCreature(), infoVolcanicGazer, false);
@@ -1662,7 +1661,6 @@ public:
                 getCreature()->setAttackTimer(MELEE, 6000);//6000
                 m_MoltenPunch = true;
             }
-
             else
             {
                 getCreature()->setAttackTimer(MELEE, 4000);//2000
@@ -3296,27 +3294,24 @@ public:
     void FightWithIllidan()
     {
         if (_getHealthPercent() <= 15 && !_isCasting())
-        {
             _castAISpell(mHealingPotion);
-        }
-        if (mIllidanAI != NULL && !mIllidanAI->isAlive())
-        {
-            mIllidanAI = NULL;
-        }
+
+        if (mIllidanAI != nullptr && !mIllidanAI->isAlive())
+            mIllidanAI = nullptr;
+
         if (mScenePart <= 2)
         {
-            if (mIllidanAI == NULL)
+            if (mIllidanAI == nullptr)
             {
                 sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "Not this time my friends.");
                 if (!_isCasting())
-                {
                     _castAISpell(mDespawn);
-                }
 
                 despawn(0);
                 return;
             }
-            else if (mIllidanAI->getCreature()->IsFlying())
+
+            if (mIllidanAI->getCreature()->IsFlying())
             {
                 setCanEnterCombat(false);
                 getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
@@ -3613,7 +3608,8 @@ public:
                 FightWithDemon();
                 return;
             }
-            else if (mSummonTrap)
+
+            if (mSummonTrap)
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 11495, "There shall be no prison for you this time!");
                 _castAISpell(mTrapSummon);
@@ -3621,7 +3617,8 @@ public:
                 mSummonTrap = false;
                 return;
             }
-            else if (_isTimerFinished(mTrapTimer))
+
+            if (_isTimerFinished(mTrapTimer))
             {
                 Unit* pTarget = getBestPlayerTarget();
                 if (pTarget != NULL)
@@ -3635,7 +3632,8 @@ public:
                 mSummonTrap = true;
                 return;
             }
-            else if (_isTimerFinished(mYellTimer))
+
+            if (_isTimerFinished(mYellTimer))
             {
                 switch (Util::getRandomUInt(2))
                 {
@@ -3692,13 +3690,13 @@ public:
 
             return;
         }
-        else if (getRangeToObject(mIllidanAI->getCreature()) < 15.0f)
+        if (getRangeToObject(mIllidanAI->getCreature()) < 15.0f)
         {
             getCreature()->getAIInterface()->calcDestinationAndMove(mIllidanAI->getCreature(), 20.0f);
             setAIAgent(AGENT_SPELL);
             return;
         }
-        else if (getRangeToObject(mIllidanAI->getCreature()) > 35.0f)
+        if (getRangeToObject(mIllidanAI->getCreature()) > 35.0f)
         {
             getCreature()->getAIInterface()->calcDestinationAndMove(mIllidanAI->getCreature(), 30.0f);
             setAIAgent(AGENT_SPELL);
@@ -3706,17 +3704,11 @@ public:
         }
 
         _setDisplayWeapon(false, false);
-        if (mIllidanAI->getCreature()->getEmoteState() == 0)        // dunno if it's really needed
-        {
-            
-        }
 
         // Ugly -.-'
         float Facing = getCreature()->calcRadAngle(getCreature()->GetPositionX(), getCreature()->GetPositionY(), mIllidanAI->getCreature()->GetPositionX(), mIllidanAI->getCreature()->GetPositionY());
         if (getCreature()->GetOrientation() != Facing)
-        {
             getCreature()->setFacing(Facing);
-        }
 
         setAIAgent(AGENT_SPELL);
     }
@@ -4162,7 +4154,7 @@ public:
             mAllow = false;
             return;
         }
-        else if (_getHealthPercent() <= 65 && !_isCasting())
+        if (_getHealthPercent() <= 65 && !_isCasting())
         {
             Creature* pAkama = getNearestCreature(CN_AKAMA);
             if (pAkama != NULL && pAkama->GetScript() != NULL)
@@ -4381,7 +4373,7 @@ public:
                     mAllow = false;
                     return;
                 }
-                else if (mMovementTimer <= 0)
+                if (mMovementTimer <= 0)
                 {
                     if (Util::getRandomUInt(1) == 1)    // Move right
                     {
@@ -4439,7 +4431,7 @@ public:
 
                     return;
                 }
-                else if (mMiscEventPart == 2 && mFireWallTimer <= 0)
+                if (mMiscEventPart == 2 && mFireWallTimer <= 0)
                 {
                     _unsetTargetToChannel();
                     _removeAura(ILLIDAN_EYE_BLAST1);
@@ -4729,12 +4721,12 @@ public:
             Transform(Ascend, 6);
             return;
         }
-        else if (mScenePart != 0)
+        if (mScenePart != 0)
         {
             MaievScene();
             return;
         }
-        else if (getCreature()->getHealthPct() <= 30 && !_isCasting())
+        if (getCreature()->getHealthPct() <= 30 && !_isCasting())
         {
 #ifdef USE_SHADOW_PRISON
             stopMovement();
@@ -5139,7 +5131,7 @@ public:
                 SetAIUpdateFreq(2500);
                 return;
             }
-            else if (pIllidan->isAlive() && !mHasTrapped && mTriggerAIList.size() != 0)
+            if (pIllidan->isAlive() && !mHasTrapped && mTriggerAIList.size() != 0)
             {
                 pAI->_removeAura(ILLIDAN_ENRAGE);
                 pAI->_applyAura(CAGED1);
@@ -5156,13 +5148,11 @@ public:
                 mHasTrapped = true;
                 return;
             }
-            else if (mHasTrapped || !pIllidan->isAlive())
+            if (mHasTrapped || !pIllidan->isAlive())
             {
                 GameObject* pGameObject = getNearestGameObject(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), GO_CAGE_TRAP);
                 if (pGameObject != NULL)
-                {
                     pGameObject->despawn(0, 0);
-                }
 
                 // Immediatly Illidan, after trap expires, becomes Demon
                 if (pIllidan->isAlive())
@@ -5179,6 +5169,7 @@ public:
                     pAI->mMiscEventPart = 1;
                     pAI->mTimeLeft = 250;
                 }
+
                 for (size_t i = 0; i < mTriggerAIList.size(); ++i)
                 {
                     CreatureAIScript* pTriggerAI = mTriggerAIList[i];

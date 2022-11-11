@@ -61,10 +61,8 @@ void NazanAI::AIUpdate(unsigned long time_passed)
             setScriptPhase(GROUND_PHASE);
             return;
         }
-        else
-        {
-            Fly_Timer -= time_passed;
-        }
+
+        Fly_Timer -= time_passed;
     }
 }
 

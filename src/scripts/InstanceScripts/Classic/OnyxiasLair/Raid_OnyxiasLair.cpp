@@ -361,19 +361,19 @@ public:
                 m_fBreath = false;
                 return;
             }
-            else if (m_kAway)
+            if (m_kAway)
             {
                 getCreature()->castSpell(getCreature()->getThreatManager().getCurrentVictim(), infoKAway, false);
                 m_kAway = false;
                 return;
             }
-            else if (m_wBuffet)
+            if (m_wBuffet)
             {
                 getCreature()->castSpell(getCreature(), infoWBuffet, false);
                 m_wBuffet = false;
                 return;
             }
-            else if (m_Cleave)
+            if (m_Cleave)
             {
                 getCreature()->castSpell(getCreature()->getThreatManager().getCurrentVictim(), infoCleave, false);
                 m_Cleave = false;

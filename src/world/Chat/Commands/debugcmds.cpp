@@ -921,11 +921,9 @@ bool ChatHandler::HandleCollisionTestIndoor(const char* /*args*/, WorldSession* 
         SystemMessage(m_session, "Result was: %s.", res ? "indoors" : "outside");
         return true;
     }
-    else
-    {
-        SystemMessage(m_session, "Collision is not enabled.");
-        return true;
-    }
+
+    SystemMessage(m_session, "Collision is not enabled.");
+    return true;
 }
 
 bool ChatHandler::HandleCollisionTestLOS(const char* /*args*/, WorldSession* m_session)
@@ -951,11 +949,9 @@ bool ChatHandler::HandleCollisionTestLOS(const char* /*args*/, WorldSession* m_s
         SystemMessage(m_session, "Result was: %s.", res ? "in LOS" : "not in LOS");
         return true;
     }
-    else
-    {
-        SystemMessage(m_session, "Collision is not enabled.");
-        return true;
-    }
+
+    SystemMessage(m_session, "Collision is not enabled.");
+    return true;
 }
 
 bool ChatHandler::HandleCollisionGetHeight(const char* /*args*/, WorldSession* m_session)
@@ -985,11 +981,9 @@ bool ChatHandler::HandleCollisionGetHeight(const char* /*args*/, WorldSession* m
         SystemMessage(m_session, "Results were: %f(offset2.0f) | %f(offset5.0f) | %f(org) | landheight:%f | target radius5 FP:%d", z, z2, z3, z4, fp);
         return true;
     }
-    else
-    {
-        SystemMessage(m_session, "Collision is not enabled.");
-        return true;
-    }
+
+    SystemMessage(m_session, "Collision is not enabled.");
+    return true;
 }
 
 bool ChatHandler::HandleGetDeathState(const char* /*args*/, WorldSession* m_session)

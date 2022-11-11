@@ -177,21 +177,21 @@ namespace LuaSpell
             PUSH_UNIT(L, sp->getUnitCaster());
             return 1;
         }
-        else if (sp->getGameObjectCaster())  //gameobject
+
+        if (sp->getGameObjectCaster())  //gameobject
         {
             PUSH_GO(L, sp->getGameObjectCaster());
             return 1;
         }
-        else if (sp->getItemCaster())  //item
+        
+        if (sp->getItemCaster())  //item
         {
             PUSH_ITEM(L, sp->getItemCaster());
             return 1;
         }
-        else
-        {
-            lua_pushnil(L);
-            return 1;
-        }
+
+        lua_pushnil(L);
+        return 1;
     }
 
     int GetEntry(lua_State* L, Spell* sp)
@@ -279,7 +279,8 @@ namespace LuaSpell
             PUSH_UNIT(L, sp->getCaster()->getWorldMap()->getUnit(sp->m_targets.getUnitTarget()));
             return 1;
         }
-        else if (sp->m_targets.getItemTarget())
+        
+        if (sp->m_targets.getItemTarget())
         {
             if (!sp->getPlayerCaster())
             {
@@ -288,11 +289,9 @@ namespace LuaSpell
                 return 1;
             }
         }
-        else
-        {
-            lua_pushnil(L);
-            return 1;
-        }
+
+        lua_pushnil(L);
+        return 1;
     }
 
     int IsStealthSpell(lua_State* L, Spell* sp)
