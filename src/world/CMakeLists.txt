@@ -206,16 +206,33 @@ if (USE_PCH)
     <LocationVector.h>
     <Util/Strings.hpp>
     <Util.hpp>
+    <Auth/BigNumber.h>
+    <Auth/WowCrypt.hpp>
+    <VMapManager2.h>
+    <IVMapManager.h>
+    <VMapFactory.h>
+    <GameObjectModel.h>
+    <LogonCommDefines.h>
     WorldConf.h
     Chat/ChatHandler.hpp
     Macros/ScriptMacros.hpp
+    Management/Faction.h
     Management/ItemInterface.h
     Management/QuestLogEntry.hpp
+    Map/Area/AreaStorage.hpp
     Map/Management/MapMgr.hpp
+    Movement/Spline/Spline.h
+    Movement/Spline/SplineImpl.h
+    Movement/Spline/MoveSpline.h
+    Movement/Spline/MoveSplineInit.h
     Objects/GameObject.h
     Server/Definitions.h
+    Server/LogonCommClient/LogonCommHandler.h
+    Server/LogonCommClient/LogonCommClient.h
     Server/Opcodes.hpp
+    Server/Packets/SmsgMessageChat.h
     Server/Script/ScriptMgr.h
+    Server/WorldSocket.h
     Spell/Definitions/SpellEffects.hpp
     Spell/Spell.h
     Spell/SpellAuras.h
