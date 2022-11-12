@@ -38,9 +38,9 @@ void PatchMgr::initialize()
     // load patches
 #ifdef WIN32
     sLogger.info("PatchMgr : Loading Patches...");
-    char Buffer[MAX_PATH * 10];
-    char Buffer2[MAX_PATH * 10];
-    char Buffer3[MAX_PATH * 10];
+    char Buffer[maxPathLength * 10];
+    char Buffer2[maxPathLength * 10];
+    char Buffer3[maxPathLength * 10];
 
     WIN32_FIND_DATA fd;
     HANDLE fHandle;
@@ -52,7 +52,7 @@ void PatchMgr::initialize()
     char locality[5];
     uint32 i;
 
-    if (!GetCurrentDirectory(MAX_PATH * 10, Buffer))
+    if (!GetCurrentDirectory(maxPathLength * 10, Buffer))
         return;
 
     strcpy(Buffer2, Buffer);
@@ -63,7 +63,7 @@ void PatchMgr::initialize()
 
     do
     {
-        snprintf(Buffer3, MAX_PATH * 10, "%s\\ClientPatches\\%s", Buffer2, fd.cFileName);
+        snprintf(Buffer3, maxPathLength * 10, "%s\\ClientPatches\\%s", Buffer2, fd.cFileName);
         if (sscanf(fd.cFileName, "%4s%u.", locality, &srcversion) != 2)
             continue;
 
@@ -113,9 +113,9 @@ void PatchMgr::initialize()
      *nix patch loader
      */
     sLogger.info("PatchMgr : Loading Patches...");
-    char Buffer[MAX_PATH * 10];
-    char Buffer2[MAX_PATH * 10];
-    char Buffer3[MAX_PATH * 10];
+    char Buffer[maxPathLength * 10];
+    char Buffer2[maxPathLength * 10];
+    char Buffer3[maxPathLength * 10];
 
     struct dirent** list;
     int filecount;
@@ -140,7 +140,7 @@ void PatchMgr::initialize()
 
     while (filecount--)
     {
-        snprintf(Buffer3, MAX_PATH * 10, "./ClientPatches/%s", list[filecount]->d_name);
+        snprintf(Buffer3, maxPathLength * 10, "./ClientPatches/%s", list[filecount]->d_name);
         if (sscanf(list[filecount]->d_name, "%4s%u.", locality, &srcversion) != 2)
             continue;
 
