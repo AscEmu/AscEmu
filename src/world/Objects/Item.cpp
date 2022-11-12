@@ -265,9 +265,10 @@ bool Item::addEnchantment(uint32_t enchantmentId, EnchantmentSlot slot, uint32_t
     m_isDirty = true;
 
     DBC::Structures::SpellItemEnchantmentEntry const* Enchantment = nullptr;
+#if VERSION_STRING >= Cata
     switch (slot)
     {
-#if VERSION_STRING >= Cata
+
         case TRANSMOGRIFY_ENCHANTMENT_SLOT:
         case REFORGE_ENCHANTMENT_SLOT:
         {
@@ -276,16 +277,19 @@ bool Item::addEnchantment(uint32_t enchantmentId, EnchantmentSlot slot, uint32_t
 
             Enchantment = custom_enchant;
         } break;
-#endif
+
         default:
         {
+#endif
             const auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchantmentId);
             if (spell_item_enchant == nullptr)
                 return false;
 
             Enchantment = spell_item_enchant;
+#if VERSION_STRING >= Cata
         } break;
     }
+#endif
 
     EnchantmentInstance enchantInstance;
     enchantInstance.BonusApplied = false;

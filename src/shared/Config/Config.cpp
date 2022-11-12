@@ -141,7 +141,7 @@ bool ConfigFile::parseConfigValues(std::string fileBufferString)
                     continue;
 
                 // looking for variable '=' is our seperator
-                lineOffset = currentLine.find(' = ');
+                lineOffset = currentLine.find('=');
                 if (lineOffset != std::string::npos)
                 {
                     ASSERT(currentSettingVariable.empty());

@@ -14,6 +14,9 @@
 
 #include <Threading/LegacyThreadPool.h>
 
+//ignore warning for deprecated function gethostbyname
+#pragma warning ( disable: 4996 )
+
 template<class T>
 class SERVER_DECL ListenSocket : public ThreadBase
 {

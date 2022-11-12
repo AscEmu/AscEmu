@@ -5805,20 +5805,15 @@ public:
     static int GetPlayerMovementFlags(lua_State* L, Unit* ptr)
     {
         if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
-        {
             return 0;
-        }
 
         MovementInfo* move_info = dynamic_cast<Player*>(ptr)->getMovementInfo();
         if (move_info != nullptr)
-        {
             lua_pushnumber(L, move_info->flags);
-        }
         else
-        {
             lua_pushnil(L);
-            return 1;
-        }
+
+        return 1;
     }
 
     static int Repop(lua_State* /*L*/, Unit* ptr)

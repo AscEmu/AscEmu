@@ -2071,27 +2071,18 @@ void WorldMap::loadRespawnTimes()
 
 RespawnInfoMap& WorldMap::getRespawnMapForType(SpawnObjectType type)
 {
-    switch (type)
-    {
-        case SPAWN_TYPE_CREATURE:
-            return _creatureRespawnTimesBySpawnId;
-        case SPAWN_TYPE_GAMEOBJECT:
-            return _gameObjectRespawnTimesBySpawnId;
-        default:
-            break;
-    }
+    if (type == SPAWN_TYPE_CREATURE)
+        return _creatureRespawnTimesBySpawnId;
+
+    return _gameObjectRespawnTimesBySpawnId;
 }
+
 RespawnInfoMap const& WorldMap::getRespawnMapForType(SpawnObjectType type) const
 {
-    switch (type)
-    {
-        case SPAWN_TYPE_CREATURE:
-            return _creatureRespawnTimesBySpawnId;
-        case SPAWN_TYPE_GAMEOBJECT:
-            return _gameObjectRespawnTimesBySpawnId;
-        default:
-            break;
-    }
+    if (type == SPAWN_TYPE_CREATURE)
+        return _creatureRespawnTimesBySpawnId;
+
+    return _gameObjectRespawnTimesBySpawnId;
 }
 
 time_t WorldMap::getRespawnTime(SpawnObjectType type, uint32_t spawnId) const

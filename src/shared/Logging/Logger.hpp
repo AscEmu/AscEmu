@@ -17,10 +17,10 @@ namespace AscEmu::Logging
         FILE* normalLogFile = nullptr;
         FILE* errorLogFile = nullptr;
         MessageType minimumMessageType = MessageType::MINOR;
-        uint32_t aelog_debug_flags;
+        uint32_t aelog_debug_flags = 0;
 
 #ifdef _WIN32
-        HANDLE handle_stdout;
+        HANDLE handle_stdout = nullptr;
 #endif
 
     public:

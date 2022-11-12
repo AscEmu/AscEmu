@@ -15,7 +15,7 @@ enum SpawnObjectType
 {
     SPAWN_TYPE_CREATURE                     = 0,
     SPAWN_TYPE_GAMEOBJECT                   = 1,
-    NUM_SPAWN_TYPES_WITH_DATA                  ,
+    NUM_SPAWN_TYPES_WITH_DATA
 };
 
 enum SpawnObjectTypeMask
@@ -23,7 +23,7 @@ enum SpawnObjectTypeMask
     SPAWN_TYPEMASK_CREATURE = (1 << SPAWN_TYPE_CREATURE),
     SPAWN_TYPEMASK_GAMEOBJECT = (1 << SPAWN_TYPE_GAMEOBJECT),
 
-    SPAWN_TYPEMASK_WITH_DATA = (1 << NUM_SPAWN_TYPES_WITH_DATA) - 1,
+    SPAWN_TYPEMASK_WITH_DATA = (1 << NUM_SPAWN_TYPES_WITH_DATA) - 1
 };
 
 enum SpawnFlags

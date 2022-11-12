@@ -128,12 +128,16 @@ void Vehicle::initVehiclePowerTypes()
 
     // Disable Power Regen by Default
     // when there will be exceptions add them here
+#ifdef ENABLE_WHEN_POWER_REGEN_NEEDS_IT
     switch (getEntry())
     {
         default:
+#endif
             getBase()->addNpcFlags(UNIT_NPC_FLAG_DISABLE_PWREGEN);
+#ifdef ENABLE_WHEN_POWER_REGEN_NEEDS_IT
             break;
     }
+#endif
 }
 
 void Vehicle::applyAllImmunities()

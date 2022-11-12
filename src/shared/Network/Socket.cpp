@@ -8,6 +8,9 @@
 
 #include "Network.h"
 
+//ignore warning for deprecated function gethostbyname
+#pragma warning ( disable: 4996 )
+
 Socket::Socket(SOCKET fd, uint32 sendbuffersize, uint32 recvbuffersize) : m_fd(fd), m_connected(false),    m_deleted(false), m_writeLock(0)
 {
     // Allocate Buffers
@@ -19,14 +22,12 @@ Socket::Socket(SOCKET fd, uint32 sendbuffersize, uint32 recvbuffersize) : m_fd(f
 
     // IOCP Member Variables
 #ifdef CONFIG_USE_IOCP
-    m_completionPort = 0;
+    m_completionPort = nullptr;
 #endif
 
     // Check for needed fd allocation.
     if(m_fd == 0)
-    {
         m_fd = SocketOps::CreateTCPFileDescriptor();
-    }
 
     sLogger.debug("Created Socket %u", m_fd);
 }

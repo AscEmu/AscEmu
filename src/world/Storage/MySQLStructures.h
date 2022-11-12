@@ -218,14 +218,14 @@ namespace MySQLStructure
     //gameobject_spawns
     struct GameobjectSpawn
     {
-        uint32_t id;
-        uint32_t entry;
-        uint32_t map;
-        uint32_t phase;
-        LocationVector spawnPoint;
-        QuaternionData rotation;
-        uint32_t spawntimesecs;
-        GameObject_State state;
+        uint32_t id = 0;
+        uint32_t entry = 0;
+        uint32_t map = 0;
+        uint32_t phase = 0;
+        LocationVector spawnPoint = {0,0,0, 0};
+        QuaternionData rotation = { 0,0,0, 0 };
+        uint32_t spawntimesecs = 0;
+        GameObject_State state = GO_STATE_OPEN;
         //uint32_t event_entry
     };
 
