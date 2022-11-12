@@ -64,3 +64,5 @@ namespace TimeShiftmask
         Year = 24
     };
 }
+
+unsigned const maxPathLength = 1024;
