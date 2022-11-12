@@ -197,7 +197,9 @@ if (USE_PCH)
     <cstdlib>
     <cstring>
     <CommonDefines.hpp>
+    <CommonTypes.hpp>
     <Common.hpp>
+    <Config/Config.h>
     <WorldPacket.h>
     <Log.hpp>
     <Logging/Logger.hpp>
@@ -214,6 +216,8 @@ if (USE_PCH)
     <GameObjectModel.h>
     <LogonCommDefines.h>
     WorldConf.h
+    Chat/ChatDefines.hpp
+    Chat/CommandTableStorage.hpp
     Chat/ChatHandler.hpp
     Macros/ScriptMacros.hpp
     Management/Faction.h
@@ -226,16 +230,35 @@ if (USE_PCH)
     Movement/Spline/MoveSpline.h
     Movement/Spline/MoveSplineInit.h
     Objects/GameObject.h
+    Objects/Item.h
+    Objects/ItemDefines.hpp
+    Objects/MovementDefines.h
+    Objects/MovementInfo.h
+    Objects/Object.h
+    Objects/ObjectDefines.h
+    Objects/Units/Creatures/Creature.h
+    Objects/Units/Creatures/CreatureDefines.hpp
+    Objects/Units/Players/Player.h
+    Objects/Units/Unit.h
+    Objects/Units/UnitDefines.hpp
     Server/Definitions.h
+    Server/EventableObject.h
     Server/LogonCommClient/LogonCommHandler.h
     Server/LogonCommClient/LogonCommClient.h
     Server/Opcodes.hpp
     Server/Packets/SmsgMessageChat.h
     Server/Script/ScriptMgr.h
+    Server/WorldConfig.h
+    Server/WorldSession.h
     Server/WorldSocket.h
     Spell/Definitions/SpellEffects.hpp
     Spell/Spell.h
     Spell/SpellAuras.h
+    Spell/SpellInfo.hpp
+    Spell/SpellMgr.hpp
+    Spell/SpellProc.hpp
+    Spell/SpellScript.hpp
+    Spell/SpellTarget.h
     Storage/MySQLDataStore.hpp
     Objects/Units/Players/Player.h
     Objects/Units/Unit.h
