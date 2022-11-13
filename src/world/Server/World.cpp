@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/AddonMgr.h"
 #include "Management/AuctionMgr.h"
 #include "Management/CalendarMgr.h"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Management/WordFilter.h"
 #include "Management/WeatherMgr.h"

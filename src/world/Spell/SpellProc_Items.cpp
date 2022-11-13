@@ -20,7 +20,7 @@
  */
 
 
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "SpellProc.hpp"
 #include "Objects/Units/Unit.h"

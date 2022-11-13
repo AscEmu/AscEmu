@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Management/AuctionHouse.h"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Server/MainServerDefines.h"
 #include "Map/Management/MapMgr.hpp"
@@ -53,7 +53,7 @@ AuctionPacketList Auction::getListMember()
     auctionList.propertiesId = auctionItem->getRandomPropertiesId();
     auctionList.propertySeed = auctionItem->getPropertySeed();
     auctionList.stackCount = auctionItem->getStackCount();
-    auctionList.chargesLeft = auctionItem->GetChargesLeft();
+    auctionList.chargesLeft = auctionItem->getChargesLeft();
     auctionList.unknown = 0;
 
     auctionList.ownerGuid = ownerGuid;
@@ -272,7 +272,7 @@ void AuctionHouse::removeAuction(Auction* auction)
 
     // Destroy the item from memory (it still remains in the db)
     if (auction->auctionItem)
-        auction->auctionItem->DeleteMe();
+        auction->auctionItem->deleteMe();
 
     // Finally destroy the auction instance.
     auction->deleteFromDB();

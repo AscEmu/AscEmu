@@ -18,7 +18,7 @@
  */
 
 #include "Setup.h"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"

@@ -52,7 +52,7 @@ Container::~Container()
     for (uint32_t i = 0; i < m_itemProperties->ContainerSlots; ++i)
     {
         if (m_Slot[i] && m_Slot[i]->getOwner() == m_owner)
-            m_Slot[i]->DeleteMe();
+            m_Slot[i]->deleteMe();
     }
 
     delete[] m_Slot;
@@ -209,7 +209,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
         return;
 
     uint32 destMaxCount = (m_owner->m_cheats.hasItemStackCheat) ? 0x7fffffff : ((m_Slot[DstSlot]) ? m_Slot[DstSlot]->getItemProperties()->MaxCount : 0);
-    if (m_Slot[DstSlot] && m_Slot[SrcSlot] && m_Slot[DstSlot]->getEntry() == m_Slot[SrcSlot]->getEntry() && m_Slot[SrcSlot]->wrapped_item_id == 0 && m_Slot[DstSlot]->wrapped_item_id == 0 && destMaxCount > 1)
+    if (m_Slot[DstSlot] && m_Slot[SrcSlot] && m_Slot[DstSlot]->getEntry() == m_Slot[SrcSlot]->getEntry() && m_Slot[SrcSlot]->m_wrappedItemId == 0 && m_Slot[DstSlot]->m_wrappedItemId == 0 && destMaxCount > 1)
     {
         uint32 total = m_Slot[SrcSlot]->getStackCount() + m_Slot[DstSlot]->getStackCount();
         m_Slot[DstSlot]->m_isDirty = m_Slot[SrcSlot]->m_isDirty = true;
@@ -281,9 +281,9 @@ Item* Container::SafeRemoveAndRetreiveItemFromSlot(int16 slot, bool destroy)
         {
             if (pItem->IsInWorld())
             {
-                pItem->RemoveFromWorld();
+                pItem->removeFromWorld();
             }
-            pItem->DeleteFromDB();
+            pItem->deleteFromDB();
         }
     }
     else
@@ -309,10 +309,10 @@ bool Container::SafeFullRemoveItemFromSlot(int16 slot)
 
     if (pItem->IsInWorld())
     {
-        pItem->RemoveFromWorld();
+        pItem->removeFromWorld();
     }
-    pItem->DeleteFromDB();
-    pItem->DeleteMe();
+    pItem->deleteFromDB();
+    pItem->deleteMe();
 
     return true;
 }
@@ -361,13 +361,13 @@ Item* Container::GetItem(int16 slot)
 
 void Container::SaveBagToDB(int8 slot, bool first, QueryBuffer* buf)
 {
-    SaveToDB(INVENTORY_SLOT_NOT_SET, slot, first, buf);
+    saveToDB(INVENTORY_SLOT_NOT_SET, slot, first, buf);
 
     for (uint32 i = 0; i < m_itemProperties->ContainerSlots; ++i)
     {
         if (m_Slot[i] && !((m_Slot[i]->getItemProperties()->Flags) & 2))
         {
-            m_Slot[i]->SaveToDB(slot, static_cast<int8>(i), first, buf);
+            m_Slot[i]->saveToDB(slot, static_cast<int8>(i), first, buf);
         }
     }
 }

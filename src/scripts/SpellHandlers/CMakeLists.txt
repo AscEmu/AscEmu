@@ -51,7 +51,7 @@ if (USE_PCH)
     target_precompile_headers(${PROJECT_NAME}
     PRIVATE
     Setup.h
-    <Objects/Item.h>
+    <Objects/Item.hpp>
     <Management/ItemInterface.h>
     <Map/Management/MapMgr.hpp>
     <Management/Faction.h>

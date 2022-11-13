@@ -827,7 +827,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             if (!_player->getItemInterface()->AddItemToFreeSlot(item))
             {
                 charter->Destroy();
-                item->DeleteMe();
+                item->deleteMe();
                 return;
             }
 
@@ -901,7 +901,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             if (!_player->getItemInterface()->AddItemToFreeSlot(item))
             {
                 guildCharter->Destroy();
-                item->DeleteMe();
+                item->deleteMe();
                 return;
             }
 

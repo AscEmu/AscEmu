@@ -22,7 +22,7 @@
 
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/Summons/Summon.h"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Objects/Units/Stats.h"
 #include "Management/Battleground/Battleground.hpp"
@@ -3472,7 +3472,7 @@ void Aura::SpellAuraChannelDeathItem(AuraEffectModifier* aurEff, bool apply)
                     if (!pCaster->getItemInterface()->AddItemToFreeSlot(item))
                     {
                         pCaster->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
-                        item->DeleteMe();
+                        item->deleteMe();
                         return;
                     }
                     SlotResult* lr = pCaster->getItemInterface()->LastSearchResult();
@@ -5977,9 +5977,9 @@ void Aura::SpellAuraConsumeNoAmmo(AuraEffectModifier* /*aurEff*/, bool apply)
     {
         bool other = false;
 
+#if VERSION_STRING >= WotLK
         switch (m_spellInfo->getId())
         {
-#if VERSION_STRING >= WotLK
             //SPELL_HASH_REQUIRES_NO_AMMO
             case 46699:
             {
@@ -5987,14 +5987,17 @@ void Aura::SpellAuraConsumeNoAmmo(AuraEffectModifier* /*aurEff*/, bool apply)
                 if (p_target->hasAuraWithAuraEffect(SPELL_AURA_CONSUMES_NO_AMMO))
                     other = true;
             } break;
-#endif
+
             default:
             {
+#endif
                 // we have Thori'dal too
                 if (m_spellInfo->getId() != 46699 && p_target->getAuraWithId(46699))
                     other = true;
+#if VERSION_STRING >= WotLK
             }
         }
+#endif
 
 #if VERSION_STRING >= WotLK
         // We have more than 1 aura with no ammo consumption effect

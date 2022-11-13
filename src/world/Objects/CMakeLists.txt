@@ -10,8 +10,7 @@ set(SRC_OBJECTS_FILES
     ${PATH_PREFIX}/GameObject.cpp
     ${PATH_PREFIX}/GameObject.h
     ${PATH_PREFIX}/Item.cpp
-    ${PATH_PREFIX}/Item.Legacy.cpp
-    ${PATH_PREFIX}/Item.h
+    ${PATH_PREFIX}/Item.hpp
     ${PATH_PREFIX}/ItemDefines.hpp
     ${PATH_PREFIX}/MovementDefines.h
     ${PATH_PREFIX}/MovementInfo.h

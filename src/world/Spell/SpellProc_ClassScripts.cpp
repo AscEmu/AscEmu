@@ -20,7 +20,7 @@
  */
 
 
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Map/Management/MapMgr.hpp"

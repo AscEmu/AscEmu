@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "AchievementMgr.h"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Objects/Units/Stats.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -2011,12 +2011,12 @@ void AchievementMgr::GiveAchievementReward(DBC::Structures::AchievementEntry con
         }
         else if (pItem != nullptr)
         {
-            pItem->SaveToDB(-1, -1, true, nullptr);
+            pItem->saveToDB(-1, -1, true, nullptr);
             //Sending mail
             sMailSystem.SendCreatureGameobjectMail(MAIL_TYPE_CREATURE, Sender, receiver, messageheader, messagebody, 0, 0, pItem->getGuid(), 0, MAIL_CHECK_MASK_HAS_BODY, MAIL_DEFAULT_EXPIRATION_TIME);
 
             //removing pItem
-            pItem->DeleteMe();
+            pItem->deleteMe();
             pItem = nullptr;
 
             //removing sender

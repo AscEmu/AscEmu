@@ -4920,17 +4920,17 @@ void Player::unEquipOffHandIfRequired()
     if (!result.Result)
     {
         // Player has no free slots in inventory, send it by mail
-        offHandWeapon->RemoveFromWorld();
+        offHandWeapon->removeFromWorld();
         offHandWeapon->setOwner(nullptr);
-        offHandWeapon->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
+        offHandWeapon->saveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
         sMailSystem.SendAutomatedMessage(MAIL_TYPE_NORMAL, getGuid(), getGuid(), "There were troubles with your item.", "There were troubles storing your item into your inventory.", 0, 0, offHandWeapon->getGuidLow(), MAIL_STATIONERY_GM);
-        offHandWeapon->DeleteMe();
+        offHandWeapon->deleteMe();
         offHandWeapon = nullptr;
     }
     else if (!getItemInterface()->SafeAddItem(offHandWeapon, result.ContainerSlot, result.Slot) && !getItemInterface()->AddItemToFreeSlot(offHandWeapon))
     {
         // shouldn't happen
-        offHandWeapon->DeleteMe();
+        offHandWeapon->deleteMe();
         offHandWeapon = nullptr;
     }
 }
@@ -5282,7 +5282,7 @@ void Player::applyItemMods(Item* item, int16 slot, bool apply, bool justBrokedow
     if (!item->isContainer() && !item->getDurability() && item->getMaxDurability() && justBrokedown == false)
         return;
 
-    item->ApplyRandomProperties(true);
+    item->applyRandomProperties(true);
 
     int32_t setId = 0;
     if (itemProperties->ItemSet < 0)
@@ -7079,7 +7079,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
             {
                 if (!getItemInterface()->AddItemToFreeSlot(item))
                 {
-                    item->DeleteMe();
+                    item->deleteMe();
                 }
                 else
                 {
@@ -7099,7 +7099,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
             {
                 item->setStackCount(questProperties->srcitemcount ? questProperties->srcitemcount : 1);
                 if (!getItemInterface()->AddItemToFreeSlot(item))
-                    item->DeleteMe();
+                    item->deleteMe();
             }
         }
     }
@@ -9239,7 +9239,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
         Item* pItem = getItemInterface()->GetItemByGUID(guid);
         if (!pItem)
             return;
-        pLoot = pItem->loot;
+        pLoot = pItem->m_loot;
         m_currentLoot = pItem->getGuid();
     }
 
@@ -9352,7 +9352,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
 
         if (item->iRandomSuffix)
         {
-            data << uint32_t(Item::GenerateRandomSuffixFactor(item->itemproto));
+            data << uint32_t(Item::generateRandomSuffixFactor(item->itemproto));
             data << uint32_t(-int32_t(item->iRandomSuffix->id));
         }
         else if (item->iRandomProperty)
@@ -9393,7 +9393,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
 
                 if (item.iRandomSuffix)
                 {
-                    data << uint32_t(Item::GenerateRandomSuffixFactor(item.itemproto));
+                    data << uint32_t(Item::generateRandomSuffixFactor(item.itemproto));
                     data << uint32_t(-int32_t(item.iRandomSuffix->id));
                 }
                 else if (item.iRandomProperty)
@@ -9435,7 +9435,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
 
                 if (item.iRandomSuffix)
                 {
-                    data << uint32_t(Item::GenerateRandomSuffixFactor(item.itemproto));
+                    data << uint32_t(Item::generateRandomSuffixFactor(item.itemproto));
                     data << uint32_t(-int32(item.iRandomSuffix->id));
                 }
                 else if (item.iRandomProperty)
@@ -9589,12 +9589,12 @@ Item* Player::storeItem(LootItem const* lootItem)
         if (lootItem->iRandomProperty != nullptr)
         {
             newItem->setRandomPropertiesId(lootItem->iRandomProperty->ID);
-            newItem->ApplyRandomProperties(false);
+            newItem->applyRandomProperties(false);
         }
         else if (lootItem->iRandomSuffix != nullptr)
         {
-            newItem->SetRandomSuffix(lootItem->iRandomSuffix->id);
-            newItem->ApplyRandomProperties(false);
+            newItem->setRandomSuffix(lootItem->iRandomSuffix->id);
+            newItem->applyRandomProperties(false);
         }
 
         if (getItemInterface()->SafeAddItem(newItem, slotResult.ContainerSlot, slotResult.Slot))
@@ -9607,7 +9607,7 @@ Item* Player::storeItem(LootItem const* lootItem)
         }
         else
         {
-            newItem->DeleteMe();
+            newItem->deleteMe();
             return nullptr;
         }
 

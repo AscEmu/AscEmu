@@ -24,7 +24,7 @@
 #include "Server/EventableObject.h"
 #include "Objects/DynamicObject.h"
 #include "Macros/ScriptMacros.hpp"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Objects/Units/Stats.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -1266,14 +1266,14 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     //sword specialization
                     Item* item_mainhand = static_cast<Player*>(this)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                     Item* item_offhand = static_cast<Player*>(this)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-                    uint32 reqskillMH = 0;
-                    uint32 reqskillOH = 0;
+                    uint16_t reqskillMH = 0;
+                    uint16_t reqskillOH = 0;
 
                     if (item_mainhand != nullptr)
-                        reqskillMH = GetSkillByProto(item_mainhand->getItemProperties()->Class, item_mainhand->getItemProperties()->SubClass);
+                        reqskillMH = item_mainhand->getRequiredSkill();
 
                     if (item_offhand != nullptr)
-                        reqskillOH = GetSkillByProto(item_offhand->getItemProperties()->Class, item_offhand->getItemProperties()->SubClass);
+                        reqskillOH = item_offhand->getRequiredSkill();
 
                     if (reqskillMH != SKILL_SWORDS && reqskillMH != SKILL_2H_SWORDS && reqskillOH != SKILL_SWORDS && reqskillOH != SKILL_2H_SWORDS)
                         continue;
@@ -6376,7 +6376,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
         }
 
         if (it)
-            SubClassSkill = GetSkillByProto(it->getItemProperties()->Class, it->getItemProperties()->SubClass);
+            SubClassSkill = it->getRequiredSkill();
         else
             SubClassSkill = SKILL_UNARMED;
 
@@ -6537,7 +6537,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     float hitmodifier = 0;
     float ArmorPctReduce = m_ignoreArmorPct;
     int32 self_skill;
-    int32 victim_skill;
+    int32 victim_skill = 0;
     uint16_t SubClassSkill = SKILL_UNARMED;
 
     bool backAttack = !pVictim->isInFront(this);
@@ -6676,7 +6676,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
 
         if (it)
         {
-            SubClassSkill = GetSkillByProto(it->getItemProperties()->Class, it->getItemProperties()->SubClass);
+            SubClassSkill = it->getRequiredSkill();
             if (SubClassSkill == SKILL_FIST_WEAPONS)
                 SubClassSkill = SKILL_UNARMED;
         }

@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <Objects/Units/Unit.h>
-#include <Objects/Item.h>
+#include <Objects/Item.hpp>
 #include <Management/TaxiMgr.h>
 
 extern "C"

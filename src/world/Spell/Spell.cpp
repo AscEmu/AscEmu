@@ -2339,7 +2339,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                         return SPELL_FAILED_ITEM_GONE;
 
                     // Check if item is already unlocked
-                    if (targetItem->getItemProperties()->LockId == 0 || !targetItem->locked)
+                    if (targetItem->getItemProperties()->LockId == 0 || !targetItem->m_isLocked)
                         return SPELL_FAILED_ALREADY_OPEN;
 
                     lockId = targetItem->getItemProperties()->LockId;

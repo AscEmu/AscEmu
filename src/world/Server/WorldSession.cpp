@@ -22,7 +22,7 @@
 #include "FastQueue.h"
 #include "Threading/Mutex.h"
 #include "WorldPacket.h"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Exceptions/PlayerExceptions.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.hpp"

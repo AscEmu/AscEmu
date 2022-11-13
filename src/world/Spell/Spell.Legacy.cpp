@@ -36,7 +36,7 @@
 
 #include "VMapFactory.h"
 #include "VMapManager2.h"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Objects/DynamicObject.h"
 #include "Management/ItemInterface.h"
 #include "Objects/Units/Stats.h"

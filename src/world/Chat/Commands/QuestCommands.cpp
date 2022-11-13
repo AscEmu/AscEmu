@@ -21,7 +21,7 @@
 
 
 #include "Chat/ChatHandler.hpp"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -191,7 +191,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                                 return false;
 
                             if (!player->getItemInterface()->AddItemToFreeSlot(item))
-                                item->DeleteMe();
+                                item->deleteMe();
                         }
                     }
 
@@ -202,7 +202,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                         {
                             item->setStackCount(questProperties->srcitemcount ? questProperties->srcitemcount : 1);
                             if (!player->getItemInterface()->AddItemToFreeSlot(item))
-                                item->DeleteMe();
+                                item->deleteMe();
                         }
                     }
 
@@ -386,7 +386,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                                     item->setStackCount(uint32(qst->reward_itemcount[i]));
                                     if (!plr->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                     {
-                                        item->DeleteMe();
+                                        item->deleteMe();
                                     }
                                 }
                             }
@@ -425,7 +425,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                                 item->setStackCount(uint32(qst->reward_choiceitemcount[reward_slot]));
                                 if (!plr->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                 {
-                                    item->DeleteMe();
+                                    item->deleteMe();
                                 }
                             }
                         }
@@ -1495,7 +1495,7 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
             }
             else
             {
-                recout << "Reward (" << itemid << "): " << GetItemLinkByProto(itemProto, m_session->language);
+                recout << "Reward (" << itemid << "): " << sMySQLStore.getItemLinkByProto(itemProto, m_session->language);
                 if (q->reward_itemcount[r] == 1)
                     recout << "\n";
                 else
@@ -1513,7 +1513,7 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
             }
             else
             {
-                recout << "Reward choice (" << itemid << "): " << GetItemLinkByProto(itemProto, m_session->language);
+                recout << "Reward choice (" << itemid << "): " << sMySQLStore.getItemLinkByProto(itemProto, m_session->language);
                 if (q->reward_choiceitemcount[r] == 1)
                     recout << "\n";
                 else

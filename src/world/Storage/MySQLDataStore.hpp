@@ -127,6 +127,7 @@ public:
     ItemProperties const* getItemProperties(uint32_t entry);
     ItemPropertiesContainer const* getItemPropertiesStore() { return &_itemPropertiesStore; }
     uint32_t const getItemDisplayIdForEntry(uint32_t entry);
+    std::string getItemLinkByProto(ItemProperties const* iProto, uint32_t language = 0);
 
     CreatureProperties const* getCreatureProperties(uint32_t entry);
     CreaturePropertiesContainer const* getCreaturePropertiesStore() { return &_creaturePropertiesStore; }
@@ -222,6 +223,7 @@ public:
     MySQLStructure::LocalesGameobject const* getLocalizedGameobject(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesGossipMenuOption const* getLocalizedGossipMenuOption(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesItem const* getLocalizedItem(uint32_t entry, uint32_t sessionLocale);
+    char* getLocalizedItemName(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesItemPages const* getLocalizedItemPages(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesNpcScriptText const* getLocalizedNpcScriptText(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesNpcGossipText const* getLocalizedNpcGossipText(uint32_t entry, uint32_t sessionLocale) const;

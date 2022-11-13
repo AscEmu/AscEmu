@@ -241,7 +241,7 @@ public:
                 if (!result)
                 {
                     DLLLogDetail("Error while adding item %u to player %s", itm->getEntry(), pPlayer->getName().c_str());
-                    itm->DeleteMe();
+                    itm->deleteMe();
                 }
             }
             else

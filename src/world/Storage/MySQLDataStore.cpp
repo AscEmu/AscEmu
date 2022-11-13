@@ -546,6 +546,49 @@ uint32_t const MySQLDataStore::getItemDisplayIdForEntry(uint32_t entry)
     return 0;
 }
 
+std::string MySQLDataStore::getItemLinkByProto(ItemProperties const* iProto, uint32_t language/* = 0*/)
+{
+    char buffer[256];
+    std::string colour;
+
+    switch (iProto->Quality)
+    {
+    case ITEM_QUALITY_NORMAL: // white
+        colour = "cffffffff";
+        break;
+    case ITEM_QUALITY_UNCOMMON: // green
+        colour = "cff1eff00";
+        break;
+    case ITEM_QUALITY_RARE: // blue
+        colour = "cff0070dd";
+        break;
+    case ITEM_QUALITY_EPIC: // purple
+        colour = "cffa335ee";
+        break;
+    case ITEM_QUALITY_LEGENDARY: // orange
+        colour = "cffff8000";
+        break;
+    case ITEM_QUALITY_ARTIFACT:
+    case ITEM_QUALITY_HEIRLOOM: // gold
+        colour = "c00fce080";
+        break;
+    case ITEM_QUALITY_POOR: // gray
+    default:
+        colour = "cff9d9d9d";
+    }
+
+    // try to get localized version
+    char* lit = (language > 0) ? sMySQLStore.getLocalizedItemName(iProto->ItemId, language) : nullptr;
+    if (lit)
+        snprintf(buffer, 256, "|%s|Hitem:%u:0:0:0:0:0:0:0|h[%s]|h|r", colour.c_str(), iProto->ItemId, lit);
+    else
+        snprintf(buffer, 256, "|%s|Hitem:%u:0:0:0:0:0:0:0|h[%s]|h|r", colour.c_str(), iProto->ItemId, iProto->Name.c_str());
+
+    const char* ItemLink = buffer;
+
+    return ItemLink;
+}
+
 void MySQLDataStore::loadCreaturePropertiesTable()
 {
     auto startTime = Util::TimeNow();
@@ -3579,6 +3622,11 @@ MySQLStructure::LocalesItem const* MySQLDataStore::getLocalizedItem(uint32_t ent
         }
     }
     return nullptr;
+}
+
+char* MySQLDataStore::getLocalizedItemName(uint32_t entry, uint32_t sessionLocale)
+{
+    return getLocalizedItem(entry, sessionLocale)->name;
 }
 
 MySQLStructure::RecallStruct const* MySQLDataStore::getRecallByName(const std::string name)

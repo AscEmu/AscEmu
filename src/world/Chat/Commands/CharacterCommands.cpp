@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Management/HonorHandler.h"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Objects/Container.h"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -660,8 +660,8 @@ bool ChatHandler::HandleCharAddItemCommand(const char* args, WorldSession* m_ses
                 sGMLog.writefromsession(m_session, "used add item command, item id %u [%s], quantity %u (only %i added due to full inventory), to %s", item_proto->ItemId, item_proto->Name.c_str(), count, numadded, player_target->getName().c_str());
             }
 
-            SystemMessage(m_session, "Added item %s (id: %u), quantity %u, to %s's inventory.", GetItemLinkByProto(item_proto, m_session->language).c_str(), item_proto->ItemId, numadded, player_target->getName().c_str());
-            SystemMessage(player_target->getSession(), "%s added item %s, quantity %u, to your inventory.", m_session->GetPlayer()->getName().c_str(), GetItemLinkByProto(item_proto, player_target->getSession()->language).c_str(), numadded);
+            SystemMessage(m_session, "Added item %s (id: %u), quantity %u, to %s's inventory.", sMySQLStore.getItemLinkByProto(item_proto, m_session->language).c_str(), item_proto->ItemId, numadded, player_target->getName().c_str());
+            SystemMessage(player_target->getSession(), "%s added item %s, quantity %u, to your inventory.", m_session->GetPlayer()->getName().c_str(), sMySQLStore.getItemLinkByProto(item_proto, player_target->getSession()->language).c_str(), numadded);
         }
         else
         {
@@ -725,7 +725,7 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
         if (!player->getItemInterface()->AddItemToFreeSlot(item))
         {
             m_session->SendNotification("No free slots left!");
-            item->DeleteMe();
+            item->deleteMe();
             return true;
         }
 
@@ -991,12 +991,12 @@ bool ChatHandler::HandleCharRemoveItemCommand(const char* args, WorldSession* m_
         if (selected_player != m_session->GetPlayer())
         {
             sGMLog.writefromsession(m_session, "used remove item %s (id: %u) count %u from %s", item_properties->Name.c_str(), item_id, ocount, selected_player->getName().c_str());
-            BlueSystemMessage(m_session, "Removing %u copies of item %s (id: %u) from %s's inventory.", ocount, GetItemLinkByProto(item_properties, m_session->language).c_str(), item_id, selected_player->getName().c_str());
-            BlueSystemMessage(selected_player->getSession(), "%s removed %u copies of item %s from your inventory.", m_session->GetPlayer()->getName().c_str(), ocount, GetItemLinkByProto(item_properties, selected_player->getSession()->language).c_str());
+            BlueSystemMessage(m_session, "Removing %u copies of item %s (id: %u) from %s's inventory.", ocount, sMySQLStore.getItemLinkByProto(item_properties, m_session->language).c_str(), item_id, selected_player->getName().c_str());
+            BlueSystemMessage(selected_player->getSession(), "%s removed %u copies of item %s from your inventory.", m_session->GetPlayer()->getName().c_str(), ocount, sMySQLStore.getItemLinkByProto(item_properties, selected_player->getSession()->language).c_str());
         }
         else
         {
-            BlueSystemMessage(m_session, "Removing %u copies of item %s (id: %u) from your inventory.", ocount, GetItemLinkByProto(item_properties, m_session->language).c_str(), item_id);
+            BlueSystemMessage(m_session, "Removing %u copies of item %s (id: %u) from your inventory.", ocount, sMySQLStore.getItemLinkByProto(item_properties, m_session->language).c_str(), item_id);
         }
     }
     else

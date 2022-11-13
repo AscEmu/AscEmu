@@ -25,7 +25,7 @@
 #include <zlib.h>
 
 #include "Management/QuestLogEntry.hpp"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Objects/Container.h"
 #include "Server/Opcodes.hpp"
 #include "Objects/DynamicObject.h"
@@ -401,7 +401,7 @@ bool Player::Create(CharCreate& charCreateContent)
                     if (!getItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, itemSlot))
                     {
                         sLogger.debug("StartOutfit - Item with entry %u can not be added safe to slot %u!", itemId, static_cast<uint32_t>(itemSlot));
-                        item->DeleteMe();
+                        item->deleteMe();
                     }
                 }
                 else
@@ -410,7 +410,7 @@ bool Player::Create(CharCreate& charCreateContent)
                     if (!getItemInterface()->AddItemToFreeSlot(item))
                     {
                         sLogger.debug("StartOutfit - Item with entry %u can not be added to a free slot!", itemId);
-                        item->DeleteMe();
+                        item->deleteMe();
                     }
                 }
             }
@@ -428,12 +428,12 @@ bool Player::Create(CharCreate& charCreateContent)
                 if ((*is).slot < INVENTORY_SLOT_BAG_END)
                 {
                     if (!getItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, (*is).slot))
-                        item->DeleteMe();
+                        item->deleteMe();
                 }
                 else
                 {
                     if (!getItemInterface()->AddItemToFreeSlot(item))
-                        item->DeleteMe();
+                        item->deleteMe();
                 }
             }
         }
@@ -3605,7 +3605,7 @@ void Player::RemoveItemsFromWorld()
                 if (i < INVENTORY_SLOT_BAG_END)      // only equipment+bags slots get mods.
                     applyItemMods(pItem, static_cast<int16>(i), false, false, true);
 
-                pItem->RemoveFromWorld();
+                pItem->removeFromWorld();
             }
 
             if (pItem->isContainer() && getItemInterface()->IsBagSlot(static_cast<int16>(i)))
@@ -3614,7 +3614,7 @@ void Player::RemoveItemsFromWorld()
                 {
                     Item* item = (static_cast< Container* >(pItem))->GetItem(static_cast<int16>(e));
                     if (item && item->IsInWorld())
-                        item->RemoveFromWorld();
+                        item->removeFromWorld();
                 }
             }
         }

@@ -94,7 +94,7 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
             if (!item_add_result)
             {
                 DLLLogDetail("Error while adding item %u to player %s", item->getEntry(), pPlayer->getName().c_str());
-                item->DeleteMe();
+                item->deleteMe();
             }
             else
             {

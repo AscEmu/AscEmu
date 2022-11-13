@@ -25,7 +25,7 @@
 #include "Management/QuestDefines.hpp"
 #include "Management/Battleground/BattlegroundMgr.hpp"
 #include "Management/MailMgr.h"
-#include "Management/ItemPrototype.h"
+#include "Management/ItemProperties.hpp"
 #include "Management/AchievementMgr.h"
 #include "Map/Maps/InstanceMgr.hpp"
 #include "Objects/Units/Unit.h" 

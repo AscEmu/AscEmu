@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 #include "PlayerDefines.hpp"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 
 class Player;
 

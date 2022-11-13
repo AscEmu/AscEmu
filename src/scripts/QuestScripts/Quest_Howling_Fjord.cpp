@@ -97,7 +97,7 @@ public:
                 if (!plr->getItemInterface()->AddItemToFreeSlot(item))
                 {
                     plr->getSession()->SendNotification("No free slots were found in your inventory!");
-                    item->DeleteMe();
+                    item->deleteMe();
                 }
                 else
                 {

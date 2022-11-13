@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GossipMenu.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "GossipScript.hpp"
 
 #include "Server/Script/ScriptMgr.h"

@@ -159,12 +159,12 @@ void WorldSession::handleMailCreateTextItemOpcode(WorldPacket& recvPacket)
         return;
 
     item->setFlags(ITEM_FLAG_WRAP_GIFT);
-    item->SetText(message->body);
+    item->setText(message->body);
 
     if (_player->getItemInterface()->AddItemToFreeSlot(item))
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_MADE_PERMANENT, MAIL_OK).serialise().get());
     else
-        item->DeleteMe();
+        item->deleteMe();
 }
 
 void WorldSession::handleItemTextQueryOpcode(WorldPacket& recvPacket)
@@ -176,7 +176,7 @@ void WorldSession::handleItemTextQueryOpcode(WorldPacket& recvPacket)
         return;
   
     if (const auto item = _player->getItemInterface()->GetItemByGUID(srlPacket.itemGuid))
-        SendPacket(SmsgItemTextQueryResponse(0, srlPacket.itemGuid, item->GetText()).serialise().get());
+        SendPacket(SmsgItemTextQueryResponse(0, srlPacket.itemGuid, item->getText()).serialise().get());
     else
         SendPacket(SmsgItemTextQueryResponse(1, 0, "").serialise().get());
 }
@@ -318,10 +318,10 @@ void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
                 data << uint32_t(item->getRandomPropertiesId());
                 data << uint32_t(item->getPropertySeed());
                 data << uint32_t(item->getStackCount());
-                data << uint32_t(item->GetChargesLeft());
+                data << uint32_t(item->getChargesLeft());
                 data << uint32_t(item->getMaxDurability());
                 data << uint32_t(item->getDurability());
-                data << uint8_t(item->locked ? 1 : 0);
+                data << uint8_t(item->m_isLocked ? 1 : 0);
 
                 delete item;
             }
@@ -382,7 +382,7 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
     {
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_BAG_FULL, INV_ERR_INVENTORY_FULL).serialise().get());
 
-        item->DeleteMe();
+        item->deleteMe();
         return;
     }
     item->m_isDirty = true;
@@ -392,13 +392,13 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
         if (!_player->getItemInterface()->AddItemToFreeSlot(item))
         {
             SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_BAG_FULL, INV_ERR_INVENTORY_FULL).serialise().get());
-            item->DeleteMe();
+            item->deleteMe();
             return;
         }
     }
     else
     {
-        item->SaveToDB(slotResult.ContainerSlot, slotResult.Slot, true, nullptr);
+        item->saveToDB(slotResult.ContainerSlot, slotResult.Slot, true, nullptr);
     }
 
     // Remove taken items and update message.
@@ -515,15 +515,15 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
             if (_player->getItemInterface()->SafeRemoveAndRetreiveItemByGuid(item->getGuid(), false) != pItem)
                 continue;
 
-            pItem->RemoveFromWorld();
+            pItem->removeFromWorld();
             pItem->setOwner(nullptr);
-            pItem->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
+            pItem->saveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
             msg.items.push_back(pItem->getGuidLow());
 
             if (GetPermissionCount() > 0)
                 sGMLog.writefromsession(this, "sent mail with item entry %u to %s", pItem->getEntry(), playerReceiverInfo->name.c_str());
 
-            pItem->DeleteMe();
+            pItem->deleteMe();
         }
     }
 

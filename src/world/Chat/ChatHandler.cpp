@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Exceptions/PlayerExceptions.hpp"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "ChatHandler.hpp"
 #include "Server/WorldSession.h"
@@ -685,22 +685,22 @@ void ChatHandler::SendItemLinkToPlayer(ItemProperties const* iProto, WorldSessio
         //int8 slot = owner->getItemInterface()->GetInventorySlotById(iProto->ItemId); //DISABLED due to being a retarded concept
         if (iProto->ContainerSlots > 0)
         {
-            SystemMessage(pSession, "Item %u %s Count %u ContainerSlots %u", iProto->ItemId, GetItemLinkByProto(iProto, language).c_str(), count, iProto->ContainerSlots);
+            SystemMessage(pSession, "Item %u %s Count %u ContainerSlots %u", iProto->ItemId, sMySQLStore.getItemLinkByProto(iProto, language).c_str(), count, iProto->ContainerSlots);
         }
         else
         {
-            SystemMessage(pSession, "Item %u %s Count %u", iProto->ItemId, GetItemLinkByProto(iProto, language).c_str(), count);
+            SystemMessage(pSession, "Item %u %s Count %u", iProto->ItemId, sMySQLStore.getItemLinkByProto(iProto, language).c_str(), count);
         }
     }
     else
     {
         if (iProto->ContainerSlots > 0)
         {
-            SystemMessage(pSession, "Item %u %s ContainerSlots %u", iProto->ItemId, GetItemLinkByProto(iProto, language).c_str(), iProto->ContainerSlots);
+            SystemMessage(pSession, "Item %u %s ContainerSlots %u", iProto->ItemId, sMySQLStore.getItemLinkByProto(iProto, language).c_str(), iProto->ContainerSlots);
         }
         else
         {
-            SystemMessage(pSession, "Item %u %s", iProto->ItemId, GetItemLinkByProto(iProto, language).c_str());
+            SystemMessage(pSession, "Item %u %s", iProto->ItemId, sMySQLStore.getItemLinkByProto(iProto, language).c_str());
         }
     }
 }

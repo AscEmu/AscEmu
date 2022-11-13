@@ -242,7 +242,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     }
 #endif
 
-    if (tmpItem->HasOnUseSpellID(spellId))
+    if (tmpItem->hasOnUseSpellIid(spellId))
         found = true;
 
     // Item doesn't have this spell, either player is cheating or player's itemcache.wdb doesn't match with database
@@ -390,7 +390,7 @@ void WorldSession::sendRefundInfo(uint64_t GUID)
     if (item == nullptr)
         return;
 
-    if (item->IsEligibleForRefund())
+    if (item->isEligibleForRefund())
     {
         std::pair<time_t, uint32_t> RefundEntry = _player->getItemInterface()->LookupRefundable(GUID);
 
@@ -439,7 +439,7 @@ void WorldSession::sendRefundInfo(uint64_t guid)
     if (item == nullptr)
         return;
 
-    if (item->IsEligibleForRefund())
+    if (item->isEligibleForRefund())
     {
         std::pair<time_t, uint32_t> refundEntryPair = _player->getItemInterface()->LookupRefundable(guid);
 
@@ -643,7 +643,7 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
             player->setVisibleItemFields(slots[i], itemTransmogrified);
 
             itemTransmogrified->setOwnerGuid(player->getGuid());
-            itemTransmogrified->RemoveFromRefundableMap();
+            itemTransmogrified->removeFromRefundableMap();
             itemTransmogrified->removeFlags(ITEM_FLAG_BOP_TRADEABLE);   // todo implement this properly
 
             if (itemTransmogrifier->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP || itemTransmogrifier->getItemProperties()->Bonding == ITEM_BIND_ON_USE)
@@ -790,7 +790,7 @@ void WorldSession::handleItemRefundRequestOpcode(WorldPacket& recvPacket)
 
     if (item != nullptr)
     {
-        if (item->IsEligibleForRefund())
+        if (item->isEligibleForRefund())
         {
             const auto refundEntry = _player->getItemInterface()->LookupRefundable(srlPacket.itemGuid);
 
@@ -889,7 +889,7 @@ void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
     const uint32_t itemMaxStack1 = inventoryItem1->getOwner()->m_cheats.hasItemStackCheat ? 0x7fffffff : inventoryItem1->getItemProperties()->MaxCount;
     const uint32_t itemMaxStack2 = inventoryItem2 ? (inventoryItem2->getOwner()->m_cheats.hasItemStackCheat
         ? 0x7fffffff : inventoryItem2->getItemProperties()->MaxCount) : 0;
-    if (inventoryItem1->wrapped_item_id || inventoryItem2 && inventoryItem2->wrapped_item_id || count > itemMaxStack1)
+    if (inventoryItem1->m_wrappedItemId || inventoryItem2 && inventoryItem2->m_wrappedItemId || count > itemMaxStack1)
     {
         _player->getItemInterface()->buildInventoryChangeError(inventoryItem1, inventoryItem2, INV_ERR_ITEM_CANT_STACK);
         return;
@@ -966,8 +966,8 @@ void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
                 if (DstSlot == ITEM_NO_SLOT_AVAILABLE)
                 {
                     _player->getItemInterface()->buildInventoryChangeError(inventoryItem1, inventoryItem2, INV_ERR_COULDNT_SPLIT_ITEMS);
-                    inventoryItem2->DeleteFromDB();
-                    inventoryItem2->DeleteMe();
+                    inventoryItem2->deleteFromDB();
+                    inventoryItem2->deleteMe();
                     inventoryItem2 = nullptr;
                 }
             }
@@ -978,8 +978,8 @@ void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
                 sLogger.failure("Error while adding item to dstslot");
                 if (inventoryItem2 != nullptr)
                 {
-                    inventoryItem2->DeleteFromDB();
-                    inventoryItem2->DeleteMe();
+                    inventoryItem2->deleteFromDB();
+                    inventoryItem2->deleteMe();
                     inventoryItem2 = nullptr;
                 };
             }
@@ -1221,8 +1221,8 @@ void WorldSession::handleDestroyItemOpcode(WorldPacket& recvPacket)
             }
         }
 
-        pItem->DeleteFromDB();
-        pItem->DeleteMe();
+        pItem->deleteFromDB();
+        pItem->deleteMe();
     }
 }
 
@@ -1304,7 +1304,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
                 if (!_player->getItemInterface()->SafeAddItem(offhandweapon, result.ContainerSlot, result.Slot)
                     && !_player->getItemInterface()->AddItemToFreeSlot(offhandweapon))
                 {
-                    offhandweapon->DeleteMe();
+                    offhandweapon->deleteMe();
                     offhandweapon = nullptr;
                 }
             }
@@ -1333,7 +1333,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
                 if (!_player->getItemInterface()->SafeAddItem(mainhandweapon, result.ContainerSlot, result.Slot)
                     && !_player->getItemInterface()->AddItemToFreeSlot(mainhandweapon))
                 {
-                    mainhandweapon->DeleteMe();
+                    mainhandweapon->deleteMe();
                     mainhandweapon = nullptr;
                 }
             }
@@ -1376,7 +1376,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
             if (!result)
             {
                 sLogger.failure("Error while adding item to SrcSlot");
-                oitem->DeleteMe();
+                oitem->deleteMe();
                 oitem = nullptr;
             }
         }
@@ -1386,7 +1386,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
             if (!result)
             {
                 sLogger.failure("Error while adding item to Slot");
-                eitem->DeleteMe();
+                eitem->deleteMe();
                 eitem = nullptr;
                 return;
             }
@@ -1831,7 +1831,7 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
             if (!result)
             {
                 sLogger.failure("Error while adding item to free slot");
-                it->DeleteMe();
+                it->deleteMe();
             }
         }
         else
@@ -1840,8 +1840,8 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
             add->m_isDirty = true;
 
             // delete the item
-            it->DeleteFromDB();
-            it->DeleteMe();
+            it->deleteFromDB();
+            it->deleteMe();
         }
 
 #if VERSION_STRING < Cata
@@ -1904,7 +1904,7 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
     }
 
     // Check if item can be sold
-    if (it->SellPrice == 0 || item->wrapped_item_id != 0)
+    if (it->SellPrice == 0 || item->m_wrappedItemId != 0)
     {
         sendSellItem(srlPacket.vendorGuid.getRawGuid(), srlPacket.itemGuid, 2);
         return;
@@ -1921,7 +1921,7 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
     if (quantity > stackcount)
         quantity = stackcount; //make sure we don't over do it
 
-    uint32_t price = GetSellPriceForItem(it, quantity);
+    uint32_t price = item->getSellPrice(quantity);
 
     // Check they don't have more than the max gold
     if (worldConfig.player.isGoldCapEnabled)
@@ -1948,7 +1948,7 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
         if (item)
         {
             _player->getItemInterface()->AddBuyBackItem(item, it->SellPrice * quantity);
-            item->DeleteFromDB();
+            item->deleteFromDB();
         }
     }
 
@@ -2097,7 +2097,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
             pItem->m_isDirty = true;
             if (!_player->getItemInterface()->SafeAddItem(pItem, bagslot, slot))
             {
-                pItem->DeleteMe();
+                pItem->deleteMe();
                 return;
             }
         }
@@ -2229,11 +2229,11 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
             const auto addItemResult = _player->getItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, slotResult.Slot);
             if (!addItemResult)
             {
-                item->DeleteMe();
+                item->deleteMe();
             }
             else
             {
-                if (item->IsEligibleForRefund() && item_extended_cost != nullptr)
+                if (item->isEligibleForRefund() && item_extended_cost != nullptr)
                 {
                     item->getOwner()->getItemInterface()->AddRefundable(item->getGuid(), item_extended_cost->costid);
                 }
@@ -2248,11 +2248,11 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
             {
                 if (!dynamic_cast<Container*>(bag)->AddItem(slotResult.Slot, item))
                 {
-                    item->DeleteMe();
+                    item->deleteMe();
                 }
                 else
                 {
-                    if (item->IsEligibleForRefund() && item_extended_cost != nullptr)
+                    if (item->isEligibleForRefund() && item_extended_cost != nullptr)
                     {
                         item->getOwner()->getItemInterface()->AddRefundable(item->getGuid(), item_extended_cost->costid);
                     }
@@ -2373,7 +2373,10 @@ void WorldSession::sendInventoryList(Creature* unit)
                 uint32_t av_am = sellItem.max_amount > 0 ? sellItem.available_amount : 0xFFFFFFFF;
                 uint32_t price = 0;
                 if (sellItem.extended_cost == nullptr || curItem->HasFlag2(ITEM_FLAG2_EXT_COST_REQUIRES_GOLD))
-                    price = GetBuyPriceForItem(curItem, 1, _player, unit);
+                {
+                    uint32_t factionStanding = _player->getFactionStandingRank(unit->m_factionTemplate->Faction);
+                    price = curItem->getBuyPriceForItem(1, factionStanding);
+                }
 
 #if VERSION_STRING < Cata
                 data << uint32_t(counter + 1);    // we start from 0 but client starts from 1
@@ -2506,7 +2509,7 @@ void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
                     if (!result)
                     {
                         sLogger.failure("Error while adding item to newslot");
-                        srcitem->DeleteMe();
+                        srcitem->deleteMe();
                         return;
                     }
                 }
@@ -2547,7 +2550,7 @@ void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
                             if (!result)
                             {
                                 sLogger.failure("Error while adding item to newslot");
-                                srcitem->DeleteMe();
+                                srcitem->deleteMe();
                             }
                         }
                     }
@@ -2621,7 +2624,7 @@ void WorldSession::handleRepairItemOpcode(WorldPacket& recvPacket)
                         {
                             pItem = pContainer->GetItem(static_cast<int16_t>(j));
                             if (pItem != nullptr)
-                                pItem->RepairItem(_player, srlPacket.isInGuild, &totalcost);
+                                pItem->repairItem(_player, srlPacket.isInGuild, &totalcost);
                         }   
                     }
                 }
@@ -2629,10 +2632,10 @@ void WorldSession::handleRepairItemOpcode(WorldPacket& recvPacket)
                 {
                     if (i < INVENTORY_SLOT_BAG_END)
                     {
-                        if (pItem->getDurability() == 0 && pItem->RepairItem(_player, srlPacket.isInGuild, &totalcost))
+                        if (pItem->getDurability() == 0 && pItem->repairItem(_player, srlPacket.isInGuild, &totalcost))
                             _player->applyItemMods(pItem, static_cast<int16_t>(i), true);
                         else
-                            pItem->RepairItem(_player, srlPacket.isInGuild, &totalcost);
+                            pItem->repairItem(_player, srlPacket.isInGuild, &totalcost);
                     }
                 }
             }
@@ -2651,7 +2654,7 @@ void WorldSession::handleRepairItemOpcode(WorldPacket& recvPacket)
             {
                 uint32_t cDurability = item->getDurability();
                 //only apply item mods if they are on char equipped
-                if (item->RepairItem(_player) && cDurability == 0
+                if (item->repairItem(_player) && cDurability == 0
                     && searchres->ContainerSlot == static_cast<int8_t>(INVALID_BACKPACK_SLOT)
                     && searchres->Slot < static_cast<int8_t>(INVENTORY_SLOT_BAG_END))
                     _player->applyItemMods(item, searchres->Slot, true);
@@ -2693,7 +2696,7 @@ void WorldSession::handleAutoBankItemOpcode(WorldPacket& recvPacket)
         {
             sLogger.failure("Error while adding item to bank bag!");
             if (!_player->getItemInterface()->SafeAddItem(eitem, srlPacket.srcInventorySlot, srlPacket.srcSlot))
-                eitem->DeleteMe();
+                eitem->deleteMe();
         }
     }
 }
@@ -2730,7 +2733,7 @@ void WorldSession::handleAutoStoreBankItemOpcode(WorldPacket& recvPacket)
         {
             sLogger.failure("Error while adding item from one of the bank bags to the player bag!");
             if (!_player->getItemInterface()->SafeAddItem(eitem, srlPacket.srcInventorySlot, srlPacket.srcSlot))
-                eitem->DeleteMe();
+                eitem->deleteMe();
         }
     }
 }
@@ -2874,7 +2877,7 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
                 return; //someone sending hacked packets to crash server
 
             gem_properties = sGemPropertiesStore.LookupEntry(it->getItemProperties()->GemProperties);
-            it->DeleteMe();
+            it->deleteMe();
 
             if (!gem_properties)
                 continue;
@@ -2971,7 +2974,7 @@ void WorldSession::handleWrapItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (dst->wrapped_item_id || src->wrapped_item_id)
+    if (dst->m_wrappedItemId || src->m_wrappedItemId)
     {
         _player->getItemInterface()->buildInventoryChangeError(src, dst, INV_ERR_WRAPPED_CANT_BE_WRAPPED);
         return;
@@ -2989,7 +2992,7 @@ void WorldSession::handleWrapItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (dst->HasEnchantments())
+    if (dst->hasEnchantments())
     {
         _player->getItemInterface()->buildInventoryChangeError(src, dst, INV_ERR_ITEM_LOCKED);
         return;
@@ -3045,7 +3048,7 @@ void WorldSession::handleWrapItemOpcode(WorldPacket& recvPacket)
     }
 
     // change the dest item's entry
-    dst->wrapped_item_id = dst->getEntry();
+    dst->m_wrappedItemId = dst->getEntry();
     dst->setEntry(itemid);
 
     // set the giftwrapper fields
@@ -3056,7 +3059,7 @@ void WorldSession::handleWrapItemOpcode(WorldPacket& recvPacket)
 
     // save it
     dst->m_isDirty = true;
-    dst->SaveToDB(srlPacket.destBagSlot, srlPacket.destSlot, false, nullptr);
+    dst->saveToDB(srlPacket.destBagSlot, srlPacket.destSlot, false, nullptr);
 }
 
 #if VERSION_STRING > TBC

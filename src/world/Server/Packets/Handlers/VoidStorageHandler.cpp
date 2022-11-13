@@ -349,7 +349,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
         depositItems[depositCount++] = std::make_pair(itemVS, slot);
 
         player->getItemInterface()->SafeFullRemoveItemByGuid(*itr);
-        item->DeleteFromDB();
+        item->deleteFromDB();
     }
 
     int64_t cost = depositCount * VOID_STORAGE_STORE_ITEM;

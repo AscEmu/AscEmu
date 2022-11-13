@@ -20,7 +20,7 @@
 #include "Macros/LFGMacros.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Management/LFG/LFGGroupData.hpp"
 #include "Management/LFG/LFGPlayerData.hpp"
@@ -1970,7 +1970,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                                 item->setStackCount(uint32(qReward->reward_itemcount[i]));
                                 if (!player->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                 {
-                                    item->DeleteMe();
+                                    item->deleteMe();
                                 }
                             }
                         }
@@ -2064,7 +2064,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                                 item->setStackCount(uint32(qReward->reward_itemcount[i]));
                                 if (!player->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                 {
-                                    item->DeleteMe();
+                                    item->deleteMe();
                                 }
                             }
                         }

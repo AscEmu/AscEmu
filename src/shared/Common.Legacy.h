@@ -20,8 +20,6 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-#define AE_MAX_PATH 1024
-
 #include "git_version.h"
 #include <signal.h>
 

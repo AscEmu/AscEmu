@@ -101,7 +101,7 @@ if (USE_PCH)
     <Management/TaxiMgr.h>
     <Server/Script/CreatureAIScript.h>
     <Objects/Units/Creatures/AIInterface.h>
-    <Objects/Item.h>
+    <Objects/Item.hpp>
     <Map/Management/MapMgr.hpp>
     <Map/Maps/MapScriptInterface.h>
     <Management/ItemInterface.h>

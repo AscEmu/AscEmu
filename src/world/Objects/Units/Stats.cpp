@@ -20,7 +20,7 @@
  */
 
 
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Objects/Units/Stats.h"
 #include "Creatures/Creature.h"
 #include "Creatures/Pet.h"

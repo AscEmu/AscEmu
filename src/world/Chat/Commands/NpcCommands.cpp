@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Chat/ChatHandler.hpp"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/Summons/Summon.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -581,7 +581,7 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
             if (item_proto == nullptr || item_proto->Quality < minQuality)
                 continue;
 
-            RedSystemMessage(m_session, "ItemID: %u %s", item_proto->ItemId, GetItemLinkByProto(item_proto, m_session->language).c_str());
+            RedSystemMessage(m_session, "ItemID: %u %s", item_proto->ItemId, sMySQLStore.getItemLinkByProto(item_proto, m_session->language).c_str());
             SystemMessage(m_session, "-- N10 (%3.2lf) N25 (%3.2lf) H10 (%3.2lf) H25 (%3.2lf) min/max (%u/%u)", field[1].GetFloat(), field[3].GetFloat(), field[2].GetFloat(), field[4].GetFloat(), field[5].GetUInt32(), field[6].GetUInt32());
 
             ++numFound;

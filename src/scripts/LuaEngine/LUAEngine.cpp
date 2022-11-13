@@ -20,7 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <dirent.h>
 #endif
 #include "Management/QuestLogEntry.hpp"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Management/ArenaTeam.h"
 #include "LuaMacros.h"
 #include "LuaHelpers.h"

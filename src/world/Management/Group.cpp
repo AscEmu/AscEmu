@@ -1481,7 +1481,7 @@ void Group::sendGroupLoot(Loot* loot, Object* object, Player* /*plr*/, uint32_t 
             else if (item->iRandomSuffix)
             {
                 ipid = -int32_t(item->iRandomSuffix->id);
-                factor = Item::GenerateRandomSuffixFactor(item->itemproto);
+                factor = Item::generateRandomSuffixFactor(item->itemproto);
             }
 
             // Block the Item

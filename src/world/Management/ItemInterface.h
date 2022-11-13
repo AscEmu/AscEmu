@@ -20,7 +20,7 @@
 #pragma once
 
 #include "EquipmentSetMgr.h"
-#include "ItemPrototype.h"
+#include "ItemProperties.hpp"
 #include "Objects/ItemDefines.hpp"
 #include "Common.hpp"
 

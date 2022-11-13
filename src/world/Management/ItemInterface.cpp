@@ -19,9 +19,9 @@
  */
 
 
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Objects/Container.h"
-#include "ItemPrototype.h"
+#include "ItemProperties.hpp"
 #include "Objects/Units/Players/Player.h"
 #include "Management/ItemInterface.h"
 
@@ -158,7 +158,7 @@ void ItemInterface::sendEnchantDurations(Item const* forItem/* = nullptr*/)
             continue;
 
         itr.item->setEnchantmentDuration(itr.slot, itr.timeLeft);
-        itr.item->SendEnchantTimeUpdate(itr.slot, itr.timeLeft / 1000);
+        itr.item->sendEnchantTimeUpdate(itr.slot, itr.timeLeft / 1000);
         itr.item->m_isDirty = true;
     }
 }
@@ -292,7 +292,7 @@ ItemInterface::~ItemInterface()
     {
         if (m_pItems[i] != nullptr && m_pItems[i]->getOwner() == m_pOwner)
         {
-            m_pItems[i]->DeleteMe();
+            m_pItems[i]->deleteMe();
         }
     }
     this->m_refundableitems.clear();
@@ -384,7 +384,7 @@ Item* ItemInterface::SafeAddItem(uint32 ItemId, int8 ContainerSlot, int16 slot)
         }
         else
         {
-            pItem->DeleteMe();
+            pItem->deleteMe();
             return nullptr;
         }
     }
@@ -522,7 +522,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
         }
         else
         {
-            item->DeleteFromDB(); //wpe dupefix ..we don't want it reappearing on the next relog now do we?
+            item->deleteFromDB(); //wpe dupefix ..we don't want it reappearing on the next relog now do we?
             return ADD_ITEM_RESULT_ERROR;
         }
     }
@@ -563,22 +563,22 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
     ////////////////////////////////////////////////////// existingduration stuff /////////////////////////////////////////////////////
     if (item->getItemProperties()->ExistingDuration != 0)
     {
-        if (item->GetItemExpireTime() == 0)
+        if (item->getItemExpireTime() == 0)
         {
-            item->SetItemExpireTime(UNIXTIME + item->getItemProperties()->ExistingDuration);
+            item->setItemExpireTime(UNIXTIME + item->getItemProperties()->ExistingDuration);
             item->setDuration(item->getItemProperties()->ExistingDuration);
-            sEventMgr.AddEvent(item, &Item::EventRemoveItem, EVENT_REMOVE_ITEM, item->getItemProperties()->ExistingDuration * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
+            sEventMgr.AddEvent(item, &Item::eventRemoveItem, EVENT_REMOVE_ITEM, item->getItemProperties()->ExistingDuration * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
         }
         else
         {
-            item->setDuration(static_cast<uint32>(item->GetItemExpireTime() - UNIXTIME));
-            sEventMgr.AddEvent(item, &Item::EventRemoveItem, EVENT_REMOVE_ITEM, (item->GetItemExpireTime() - UNIXTIME) * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
+            item->setDuration(static_cast<uint32>(item->getItemExpireTime() - UNIXTIME));
+            sEventMgr.AddEvent(item, &Item::eventRemoveItem, EVENT_REMOVE_ITEM, (item->getItemExpireTime() - UNIXTIME) * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
         }
 
         // if we are already in the world we will send the durationupdate now, so we can see the remaining duration in the client
         // otherwise we will send the updates in Player::Onpushtoworld anyways
         if (m_pOwner->IsInWorld())
-            sEventMgr.AddEvent(item, &Item::SendDurationUpdate, EVENT_SEND_PACKET_TO_PLAYER_AFTER_LOGIN, 0, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(item, &Item::sendDurationUpdate, EVENT_SEND_PACKET_TO_PLAYER_AFTER_LOGIN, 0, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 
     return ADD_ITEM_RESULT_OK;
@@ -623,7 +623,7 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16
         if (pItem->getItemProperties()->ContainerSlots > 0 && pItem->isContainer() && static_cast<Container*>(pItem)->HasItems())
         {
             // sounds weird? no. this will trigger a callstack display due to my other debug code.
-            pItem->DeleteFromDB();
+            pItem->deleteFromDB();
             return nullptr;
         }
 
@@ -650,9 +650,9 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16
             {
                 if (pItem->IsInWorld())
                 {
-                    pItem->RemoveFromWorld();
+                    pItem->removeFromWorld();
                 }
-                pItem->DeleteFromDB();
+                pItem->deleteFromDB();
             }
         }
         else
@@ -795,7 +795,7 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot)
         if (pItem->getItemProperties()->ContainerSlots > 0 && pItem->isContainer() && static_cast<Container*>(pItem)->HasItems())
         {
             // sounds weird? no. this will trigger a callstack display due to my other debug code.
-            pItem->DeleteFromDB();
+            pItem->deleteFromDB();
             return false;
         }
 
@@ -819,10 +819,10 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot)
 
             if (pItem->IsInWorld())
             {
-                pItem->RemoveFromWorld();
+                pItem->removeFromWorld();
             }
 
-            pItem->DeleteFromDB();
+            pItem->deleteFromDB();
 
             sQuestMgr.onPlayerItemRemove(GetOwner(), pItem);
 
@@ -995,7 +995,7 @@ Item* ItemInterface::FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank)
         if (item)
         {
             uint32 itemMaxStack = (item->getOwner()->m_cheats.hasItemStackCheat) ? 0x7fffffff : item->getItemProperties()->MaxCount;
-            if ((item->getEntry() == itemid && item->wrapped_item_id == 0) && (itemMaxStack >= (item->getStackCount() + cnt)))
+            if ((item->getEntry() == itemid && item->m_wrappedItemId == 0) && (itemMaxStack >= (item->getStackCount() + cnt)))
             {
                 return item;
             }
@@ -1013,7 +1013,7 @@ Item* ItemInterface::FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank)
                 if (item2)
                 {
                     uint32 itemMaxStack = (item2->getOwner()->m_cheats.hasItemStackCheat) ? 0x7fffffff : item2->getItemProperties()->MaxCount;
-                    if ((item2->getItemProperties()->ItemId == itemid && item2->wrapped_item_id == 0) && (itemMaxStack >= (item2->getStackCount() + cnt)))
+                    if ((item2->getItemProperties()->ItemId == itemid && item2->m_wrappedItemId == 0) && (itemMaxStack >= (item2->getStackCount() + cnt)))
                     {
                         return item2;
                     }
@@ -1029,7 +1029,7 @@ Item* ItemInterface::FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank)
         if (item)
         {
             uint32 itemMaxStack = (item->getOwner()->m_cheats.hasItemStackCheat) ? 0x7fffffff : item->getItemProperties()->MaxCount;
-            if ((item->getEntry() == itemid && item->wrapped_item_id == 0) && (itemMaxStack >= (item->getStackCount() + cnt)))
+            if ((item->getEntry() == itemid && item->m_wrappedItemId == 0) && (itemMaxStack >= (item->getStackCount() + cnt)))
             {
                 return item;
             }
@@ -1044,7 +1044,7 @@ Item* ItemInterface::FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank)
             if (item)
             {
                 uint32 itemMaxStack = (item->getOwner()->m_cheats.hasItemStackCheat) ? 0x7fffffff : item->getItemProperties()->MaxCount;
-                if ((item->getEntry() == itemid && item->wrapped_item_id == 0) && (itemMaxStack >= (item->getStackCount() + cnt)))
+                if ((item->getEntry() == itemid && item->m_wrappedItemId == 0) && (itemMaxStack >= (item->getStackCount() + cnt)))
                 {
                     return item;
                 }
@@ -1063,7 +1063,7 @@ Item* ItemInterface::FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank)
                     if (item2)
                     {
                         uint32 itemMaxStack = (item2->getOwner()->m_cheats.hasItemStackCheat) ? 0x7fffffff : item2->getItemProperties()->MaxCount;
-                        if ((item2->getItemProperties()->ItemId == itemid && item2->wrapped_item_id == 0) && (itemMaxStack >= (item2->getStackCount() + cnt)))
+                        if ((item2->getItemProperties()->ItemId == itemid && item2->m_wrappedItemId == 0) && (itemMaxStack >= (item2->getStackCount() + cnt)))
                         {
                             return item2;
                         }
@@ -1088,7 +1088,7 @@ uint32 ItemInterface::GetItemCount(uint32 itemid, bool IncBank)
 
         if (item)
         {
-            if (item->getEntry() == itemid && item->wrapped_item_id == 0)
+            if (item->getEntry() == itemid && item->m_wrappedItemId == 0)
             {
                 cnt += item->getStackCount() ? item->getStackCount() : 1;
             }
@@ -1105,7 +1105,7 @@ uint32 ItemInterface::GetItemCount(uint32 itemid, bool IncBank)
                 Item* item2 = static_cast<Container*>(item)->GetItem(static_cast<int16>(j));
                 if (item2)
                 {
-                    if (item2->getEntry() == itemid && item->wrapped_item_id == 0)
+                    if (item2->getEntry() == itemid && item->m_wrappedItemId == 0)
                     {
                         cnt += item2->getStackCount() ? item2->getStackCount() : 1;
                     }
@@ -1121,7 +1121,7 @@ uint32 ItemInterface::GetItemCount(uint32 itemid, bool IncBank)
 
         if (item)
         {
-            if (item->getItemProperties()->ItemId == itemid && item->wrapped_item_id == 0)
+            if (item->getItemProperties()->ItemId == itemid && item->m_wrappedItemId == 0)
             {
                 cnt += item->getStackCount() ? item->getStackCount() : 1;
             }
@@ -1134,7 +1134,7 @@ uint32 ItemInterface::GetItemCount(uint32 itemid, bool IncBank)
 
         if (item)
         {
-            if (item->getItemProperties()->ItemId == itemid && item->wrapped_item_id == 0)
+            if (item->getItemProperties()->ItemId == itemid && item->m_wrappedItemId == 0)
             {
                 cnt += item->getStackCount() ? item->getStackCount() : 1;
             }
@@ -1148,7 +1148,7 @@ uint32 ItemInterface::GetItemCount(uint32 itemid, bool IncBank)
             Item* item = GetInventoryItem(static_cast<int16>(i));
             if (item)
             {
-                if (item->getItemProperties()->ItemId == itemid && item->wrapped_item_id == 0)
+                if (item->getItemProperties()->ItemId == itemid && item->m_wrappedItemId == 0)
                 {
                     cnt += item->getStackCount() ? item->getStackCount() : 1;
                 }
@@ -1167,7 +1167,7 @@ uint32 ItemInterface::GetItemCount(uint32 itemid, bool IncBank)
                         Item* item2 = static_cast<Container*>(item)->GetItem(static_cast<int16>(j));
                         if (item2)
                         {
-                            if (item2->getItemProperties()->ItemId == itemid && item->wrapped_item_id == 0)
+                            if (item2->getItemProperties()->ItemId == itemid && item->m_wrappedItemId == 0)
                             {
                                 cnt += item2->getStackCount() ? item2->getStackCount() : 1;
                             }
@@ -1190,12 +1190,12 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
         Item* item = GetInventoryItem(static_cast<int16>(i));
         if (item)
         {
-            if (item->getEntry() == id && item->wrapped_item_id == 0)
+            if (item->getEntry() == id && item->m_wrappedItemId == 0)
             {
                 if (item->getItemProperties()->ContainerSlots > 0 && item->isContainer() && ((Container*)item)->HasItems())
                 {
                     // sounds weird? no. this will trigger a callstack display due to my other debug code.
-                    item->DeleteFromDB();
+                    item->deleteFromDB();
                     continue;
                 }
 
@@ -1237,7 +1237,7 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
                 Item* item2 = ((Container*)item)->GetItem(static_cast<int16>(j));
                 if (item2)
                 {
-                    if (item2->getItemProperties()->ItemId == id && item->wrapped_item_id == 0)
+                    if (item2->getItemProperties()->ItemId == id && item->m_wrappedItemId == 0)
                     {
                         if (item2->getStackCount() > amt)
                         {
@@ -1275,7 +1275,7 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
         Item* item = GetInventoryItem(static_cast<int16>(i));
         if (item)
         {
-            if (item->getItemProperties()->ItemId == id && item->wrapped_item_id == 0)
+            if (item->getItemProperties()->ItemId == id && item->m_wrappedItemId == 0)
             {
                 if (item->getStackCount() > amt)
                 {
@@ -1310,7 +1310,7 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
         Item* item = GetInventoryItem(static_cast<int16>(i));
         if (item)
         {
-            if (item->getItemProperties()->ItemId == id && item->wrapped_item_id == 0)
+            if (item->getItemProperties()->ItemId == id && item->m_wrappedItemId == 0)
             {
                 if (item->getStackCount() > amt)
                 {
@@ -1356,12 +1356,12 @@ uint32 ItemInterface::RemoveItemAmt_ProtectPointer(uint32 id, uint32 amt, Item**
         Item* item = GetInventoryItem(static_cast<int16>(i));
         if (item)
         {
-            if (item->getEntry() == id && item->wrapped_item_id == 0)
+            if (item->getEntry() == id && item->m_wrappedItemId == 0)
             {
                 if (item->getItemProperties()->ContainerSlots > 0 && item->isContainer() && ((Container*)item)->HasItems())
                 {
                     // sounds weird? no. this will trigger a callstack display due to my other debug code.
-                    item->DeleteFromDB();
+                    item->deleteFromDB();
                     continue;
                 }
 
@@ -1412,7 +1412,7 @@ uint32 ItemInterface::RemoveItemAmt_ProtectPointer(uint32 id, uint32 amt, Item**
                 Item* item2 = static_cast<Container*>(item)->GetItem(static_cast<int16>(j));
                 if (item2)
                 {
-                    if (item2->getItemProperties()->ItemId == id && item->wrapped_item_id == 0)
+                    if (item2->getItemProperties()->ItemId == id && item->m_wrappedItemId == 0)
                     {
                         if (item2->getStackCount() > amt)
                         {
@@ -1455,7 +1455,7 @@ uint32 ItemInterface::RemoveItemAmt_ProtectPointer(uint32 id, uint32 amt, Item**
         Item* item = GetInventoryItem(static_cast<int16>(i));
         if (item)
         {
-            if (item->getItemProperties()->ItemId == id && item->wrapped_item_id == 0)
+            if (item->getItemProperties()->ItemId == id && item->m_wrappedItemId == 0)
             {
                 if (item->getStackCount() > amt)
                 {
@@ -1496,7 +1496,7 @@ uint32 ItemInterface::RemoveItemAmt_ProtectPointer(uint32 id, uint32 amt, Item**
         Item* item = GetInventoryItem(static_cast<int16>(i));
         if (item)
         {
-            if (item->getItemProperties()->ItemId == id && item->wrapped_item_id == 0)
+            if (item->getItemProperties()->ItemId == id && item->m_wrappedItemId == 0)
             {
                 if (item->getStackCount() > amt)
                 {
@@ -1544,12 +1544,12 @@ uint32 ItemInterface::RemoveItemAmtByGuid(uint64 guid, uint32 amt)
         Item* item = GetInventoryItem(i);
         if (item)
         {
-            if (item->getGuid() == guid && item->wrapped_item_id == 0)
+            if (item->getGuid() == guid && item->m_wrappedItemId == 0)
             {
                 if (item->getItemProperties()->ContainerSlots > 0 && item->isContainer() && static_cast<Container*>(item)->HasItems())
                 {
                     // sounds weird? no. this will trigger a callstack display due to my other debug code.
-                    item->DeleteFromDB();
+                    item->deleteFromDB();
                     continue;
                 }
 
@@ -1592,7 +1592,7 @@ uint32 ItemInterface::RemoveItemAmtByGuid(uint64 guid, uint32 amt)
                 Item* item2 = static_cast<Container*>(item)->GetItem(static_cast<int16>(j));
                 if (item2)
                 {
-                    if (item2->getGuid() == guid && item->wrapped_item_id == 0)
+                    if (item2->getGuid() == guid && item->m_wrappedItemId == 0)
                     {
                         if (item2->getStackCount() > amt)
                         {
@@ -1630,7 +1630,7 @@ uint32 ItemInterface::RemoveItemAmtByGuid(uint64 guid, uint32 amt)
         Item* item = GetInventoryItem(i);
         if (item)
         {
-            if (item->getGuid() == guid && item->wrapped_item_id == 0)
+            if (item->getGuid() == guid && item->m_wrappedItemId == 0)
             {
                 if (item->getStackCount() > amt)
                 {
@@ -1666,7 +1666,7 @@ uint32 ItemInterface::RemoveItemAmtByGuid(uint64 guid, uint32 amt)
         Item* item = GetInventoryItem(i);
         if (item)
         {
-            if (item->getGuid() == guid && item->wrapped_item_id == 0)
+            if (item->getGuid() == guid && item->m_wrappedItemId == 0)
             {
                 if (item->getStackCount() > amt)
                 {
@@ -1959,7 +1959,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
             m_result.Result = true;
 
             // delete the item because we added the stacks to another one
-            item->DeleteFromDB();
+            item->deleteFromDB();
             // We make it a garbage item, so if it's used after calling this method, it gets deleted in the next Player update
             // otherwise we get a nice crash
             m_pOwner->addGarbageItem(item);
@@ -2000,7 +2000,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
                     m_result.Result = true;
 
                     // delete the item because we added the stacks to another one
-                    item->DeleteFromDB();
+                    item->deleteFromDB();
                     // We make it a garbage item, so if it's used after calling this method, it gets deleted in the next Player update
                     // otherwise we get a nice crash
                     m_pOwner->addGarbageItem(item);
@@ -2193,7 +2193,7 @@ int8 ItemInterface::CanEquipItemInSlot2(int8 DstInvSlot, int8 slot, Item* item, 
                         {
                             uint32 gemCount = 0;
                             if ((item_limit_category->equippedFlag & ILFLAG_EQUIP_ONLY  && slot < EQUIPMENT_SLOT_END) || (!(item_limit_category->equippedFlag & ILFLAG_EQUIP_ONLY) && slot > EQUIPMENT_SLOT_END))
-                                gemCount = item->CountGemsWithLimitId(item_limit_category->Id);
+                                gemCount = item->countGemsWithLimitId(item_limit_category->Id);
 
                             uint32 gCount = GetEquippedCountByItemLimit(item_limit_category->Id);
                             if ((gCount + gemCount) > item_limit_category->maxAmount)
@@ -2719,7 +2719,8 @@ void ItemInterface::BuyItem(ItemProperties const* item, uint32 total_amount, Cre
 {
     if (item->BuyPrice)
     {
-        uint32 itemprice = GetBuyPriceForItem(item, total_amount, m_pOwner, pVendor);
+        uint32_t factionStanding = m_pOwner->getFactionStandingRank(pVendor->m_factionTemplate->Faction);
+        uint32 itemprice = item->getBuyPriceForItem(total_amount, factionStanding);
         if (!m_pOwner->hasEnoughCoinage(itemprice))
             m_pOwner->setCoinage(0);
         else
@@ -2781,7 +2782,8 @@ int8 ItemInterface::CanAffordItem(ItemProperties const* item, uint32 amount, Cre
 
     if (item->BuyPrice)
     {
-        uint32 price = GetBuyPriceForItem(item, amount, m_pOwner, pVendor) * amount;
+        uint32_t factionStanding = m_pOwner->getFactionStandingRank(pVendor->m_factionTemplate->Faction);
+        uint32 price = item->getBuyPriceForItem(amount, factionStanding) * amount;
         if (!m_pOwner->hasEnoughCoinage(price))
         {
             return INV_ERR_NOT_ENOUGH_MONEY;
@@ -2991,19 +2993,19 @@ void ItemInterface::EmptyBuyBack()
         if (m_pBuyBack[j] != nullptr)
         {
             m_pOwner->sendDestroyObjectPacket(m_pBuyBack[j]->getGuid());
-            m_pBuyBack[j]->DeleteFromDB();
+            m_pBuyBack[j]->deleteFromDB();
 
             if (m_pBuyBack[j]->isContainer())
             {
                 if (m_pBuyBack[j]->IsInWorld())
-                    m_pBuyBack[j]->RemoveFromWorld();
+                    m_pBuyBack[j]->removeFromWorld();
 
                 delete static_cast<Container*>(m_pBuyBack[j]);
             }
             else
             {
                 if (m_pBuyBack[j]->IsInWorld())
-                    m_pBuyBack[j]->RemoveFromWorld();
+                    m_pBuyBack[j]->removeFromWorld();
                 delete m_pBuyBack[j];
                 m_pBuyBack[j] = nullptr;
             }
@@ -3026,19 +3028,19 @@ void ItemInterface::AddBuyBackItem(Item* it, uint32 price)
         if (m_pBuyBack[0] != nullptr)
         {
             m_pOwner->sendDestroyObjectPacket(m_pBuyBack[0]->getGuid());
-            m_pBuyBack[0]->DeleteFromDB();
+            m_pBuyBack[0]->deleteFromDB();
 
             if (m_pBuyBack[0]->isContainer())
             {
                 if (m_pBuyBack[0]->IsInWorld())
-                    m_pBuyBack[0]->RemoveFromWorld();
+                    m_pBuyBack[0]->removeFromWorld();
 
                 delete static_cast<Container*>(m_pBuyBack[0]);
             }
             else
             {
                 if (m_pBuyBack[0]->IsInWorld())
-                    m_pBuyBack[0]->RemoveFromWorld();
+                    m_pBuyBack[0]->removeFromWorld();
                 delete m_pBuyBack[0];
             }
 
@@ -3170,7 +3172,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
         dstItemMaxStack = 0;
     }
 
-    if (SrcItem != nullptr && DstItem != nullptr && SrcItem->getEntry() == DstItem->getEntry() && srcItemMaxStack > 1 && SrcItem->wrapped_item_id == 0 && DstItem->wrapped_item_id == 0)
+    if (SrcItem != nullptr && DstItem != nullptr && SrcItem->getEntry() == DstItem->getEntry() && srcItemMaxStack > 1 && SrcItem->m_wrappedItemId == 0 && DstItem->m_wrappedItemId == 0)
     {
         uint32 total = SrcItem->getStackCount() + DstItem->getStackCount();
         if (total <= dstItemMaxStack)
@@ -3421,15 +3423,15 @@ void ItemInterface::mLoadItemsFromDatabase(QueryResult* result)
                 {
                     item = new Item;
                     item->init(HIGHGUID_TYPE_ITEM, fields[1].GetUInt32());
-                    item->LoadFromDB(fields, m_pOwner, false);
+                    item->loadFromDB(fields, m_pOwner, false);
 
                 }
 
                 // if we encounter an item that expired, we remove it from db
-                if (item->GetItemExpireTime() > 0 && UNIXTIME > item->GetItemExpireTime())
+                if (item->getItemExpireTime() > 0 && UNIXTIME > item->getItemExpireTime())
                 {
-                    item->DeleteFromDB();
-                    item->DeleteMe();
+                    item->deleteFromDB();
+                    item->deleteMe();
                     continue;
                 }
 
@@ -3463,7 +3465,7 @@ void ItemInterface::mSaveItemsToDatabase(bool first, QueryBuffer* buf)
             }
             else
             {
-                GetInventoryItem(x)->SaveToDB(INVENTORY_SLOT_NOT_SET, static_cast<int8>(x), first, buf);
+                GetInventoryItem(x)->saveToDB(INVENTORY_SLOT_NOT_SET, static_cast<int8>(x), first, buf);
             }
         }
     }
@@ -3721,7 +3723,7 @@ SlotResult ItemInterface::FindFreeBankSlot(ItemProperties const* proto)
 SlotResult ItemInterface::FindAmmoBag()
 {
     for (uint32 i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; ++i)
-        if (m_pItems[i] != nullptr && m_pItems[i]->IsAmmoBag())
+        if (m_pItems[i] != nullptr && m_pItems[i]->isAmmoBag())
         {
             m_result.ContainerSlot = ITEM_NO_SLOT_AVAILABLE;
             m_result.Slot = static_cast<int8>(i);
@@ -3852,7 +3854,7 @@ uint32 ItemInterface::GetItemCountByLimitId(uint32 LimitId, bool IncBank)
         if (item != nullptr)
         {
             if (item->getItemProperties()->ItemLimitCategory == LimitId
-                && item->wrapped_item_id == 0)
+                && item->m_wrappedItemId == 0)
             {
                 cnt += item->getStackCount() ? item->getStackCount() : 1;
             }
@@ -3870,7 +3872,7 @@ uint32 ItemInterface::GetItemCountByLimitId(uint32 LimitId, bool IncBank)
                 if (item2 != nullptr)
                 {
                     if (item2->getItemProperties()->ItemLimitCategory == LimitId
-                        && item2->wrapped_item_id == 0)
+                        && item2->m_wrappedItemId == 0)
                     {
                         cnt += item2->getStackCount() ? item2->getStackCount() : 1;
                     }
@@ -3885,7 +3887,7 @@ uint32 ItemInterface::GetItemCountByLimitId(uint32 LimitId, bool IncBank)
         if (item != nullptr)
         {
             if (item->getItemProperties()->ItemLimitCategory == LimitId
-                && item->wrapped_item_id == 0)
+                && item->m_wrappedItemId == 0)
             {
                 cnt += item->getStackCount() ? item->getStackCount() : 1;
             }
@@ -3898,7 +3900,7 @@ uint32 ItemInterface::GetItemCountByLimitId(uint32 LimitId, bool IncBank)
         if (item != nullptr)
         {
             if (item->getItemProperties()->ItemLimitCategory == LimitId
-                && item->wrapped_item_id == 0)
+                && item->m_wrappedItemId == 0)
             {
                 cnt += item->getStackCount() ? item->getStackCount() : 1;
             }
@@ -3913,7 +3915,7 @@ uint32 ItemInterface::GetItemCountByLimitId(uint32 LimitId, bool IncBank)
             if (item != nullptr)
             {
                 if (item->getItemProperties()->ItemLimitCategory == LimitId
-                    && item->wrapped_item_id == 0)
+                    && item->m_wrappedItemId == 0)
                 {
                     cnt += item->getStackCount() ? item->getStackCount() : 1;
                 }
@@ -3933,7 +3935,7 @@ uint32 ItemInterface::GetItemCountByLimitId(uint32 LimitId, bool IncBank)
                         if (item2 != nullptr)
                         {
                             if (item2->getItemProperties()->ItemLimitCategory == LimitId
-                                && item2->wrapped_item_id == 0)
+                                && item2->m_wrappedItemId == 0)
                             {
                                 cnt += item2->getStackCount() ? item2->getStackCount() : 1;
                             }
@@ -3976,7 +3978,7 @@ void ItemInterface::HandleItemDurations()
         }
 
         if (realitem != nullptr)
-            sEventMgr.AddEvent(realitem, &Item::SendDurationUpdate, EVENT_SEND_PACKET_TO_PLAYER_AFTER_LOGIN, 0, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(realitem, &Item::sendDurationUpdate, EVENT_SEND_PACKET_TO_PLAYER_AFTER_LOGIN, 0, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
 
@@ -4000,7 +4002,7 @@ void ItemInterface::AddRefundable(uint64 GUID, uint32 extendedcost)
 
     this->m_refundableitems.insert(insertpair);
 
-    sEventMgr.AddEvent(item, &Item::RemoveFromRefundableMap, EVENT_REMOVE_ITEM_FROM_REFUNDABLE_MAP, (UNIXTIME + 60 * 60 * 2), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(item, &Item::removeFromRefundableMap, EVENT_REMOVE_ITEM_FROM_REFUNDABLE_MAP, (UNIXTIME + 60 * 60 * 2), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void ItemInterface::AddRefundable(uint64 GUID, uint32 extendedcost, time_t buytime)
@@ -4020,7 +4022,7 @@ void ItemInterface::AddRefundable(uint64 GUID, uint32 extendedcost, time_t buyti
 
     this->m_refundableitems.insert(insertpair);
 
-    sEventMgr.AddEvent(item, &Item::RemoveFromRefundableMap, EVENT_REMOVE_ITEM_FROM_REFUNDABLE_MAP, buytime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(item, &Item::removeFromRefundableMap, EVENT_REMOVE_ITEM_FROM_REFUNDABLE_MAP, buytime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void ItemInterface::AddRefundable(Item* item, uint32 extendedcost, time_t buytime)
@@ -4039,7 +4041,7 @@ void ItemInterface::AddRefundable(Item* item, uint32 extendedcost, time_t buytim
 
     this->m_refundableitems.insert(insertpair);
 
-    sEventMgr.AddEvent(item, &Item::RemoveFromRefundableMap, EVENT_REMOVE_ITEM_FROM_REFUNDABLE_MAP, (buytime + 60 * 60 * 2), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(item, &Item::removeFromRefundableMap, EVENT_REMOVE_ITEM_FROM_REFUNDABLE_MAP, (buytime + 60 * 60 * 2), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 /// Removes an entry from the RefundableMap
@@ -4161,11 +4163,11 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
         if (randomprop != 0)
         {
             if (randomprop < 0)
-                item->SetRandomSuffix(static_cast<uint32_t>(-randomprop));
+                item->setRandomSuffix(static_cast<uint32_t>(-randomprop));
             else
                 item->setRandomPropertiesId(static_cast<uint32_t>(randomprop));
 
-            item->ApplyRandomProperties(false);
+            item->applyRandomProperties(false);
         }
 
         if (maxStack != 0)
@@ -4195,7 +4197,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
         {
             freeslots = false;
             chr->getSession()->SendNotification("No free slots were found in your inventory!");
-            item->DeleteMe();
+            item->deleteMe();
         }
     }
     return true;
@@ -4365,7 +4367,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
         //Check for stacking
         uint32 srcItemMaxStack = (SrcItem->getOwner()->m_cheats.hasItemStackCheat) ? 0x7fffffff : SrcItem->getItemProperties()->MaxCount;
         uint32 dstItemMaxStack = (DstItem) ? ((DstItem->getOwner()->m_cheats.hasItemStackCheat) ? 0x7fffffff : DstItem->getItemProperties()->MaxCount) : 0;
-        if (DstItem && SrcItem->getEntry() == DstItem->getEntry() && srcItemMaxStack > 1 && SrcItem->wrapped_item_id == 0 && DstItem->wrapped_item_id == 0)
+        if (DstItem && SrcItem->getEntry() == DstItem->getEntry() && srcItemMaxStack > 1 && SrcItem->m_wrappedItemId == 0 && DstItem->m_wrappedItemId == 0)
         {
             uint32 total = SrcItem->getStackCount() + DstItem->getStackCount();
             if (total <= dstItemMaxStack)
@@ -4408,8 +4410,8 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
             if (!result)
             {
                 sLogger.failure("HandleSwapItem: Error while adding item to dstslot");
-                SrcItem->DeleteFromDB();
-                SrcItem->DeleteMe();
+                SrcItem->deleteFromDB();
+                SrcItem->deleteMe();
                 SrcItem = nullptr;
                 adderror = true;
             }
@@ -4421,8 +4423,8 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
             if (!result)
             {
                 sLogger.failure("HandleSwapItem: Error while adding item to srcslot");
-                DstItem->DeleteFromDB();
-                DstItem->DeleteMe();
+                DstItem->deleteFromDB();
+                DstItem->deleteMe();
                 DstItem = nullptr;
                 adderror = true;
             }
@@ -4446,7 +4448,7 @@ void ItemInterface::removeLootableItems()
         if (item == nullptr)
             continue;
 
-        if (item->loot != nullptr)
+        if (item->m_loot != nullptr)
             SafeFullRemoveItemFromSlot(-1, i);
     }
 
@@ -4456,7 +4458,7 @@ void ItemInterface::removeLootableItems()
         if (item == nullptr)
             continue;
 
-        if (item->loot != nullptr)
+        if (item->m_loot != nullptr)
             SafeFullRemoveItemFromSlot(-1, i);
     }
 
@@ -4473,7 +4475,7 @@ void ItemInterface::removeLootableItems()
             if (item == nullptr)
                 continue;
 
-            if (item->loot != nullptr)
+            if (item->m_loot != nullptr)
                 container->SafeFullRemoveItemFromSlot(j);
         }
     }
@@ -4491,7 +4493,7 @@ void ItemInterface::removeLootableItems()
             if (item == nullptr)
                 continue;
 
-            if (item->loot != nullptr)
+            if (item->m_loot != nullptr)
                 container->SafeFullRemoveItemFromSlot(j);
         }
     }

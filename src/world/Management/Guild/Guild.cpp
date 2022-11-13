@@ -2291,7 +2291,7 @@ void Guild::swapItems(Player* player, uint8_t tabId, uint8_t slotId, uint8_t des
 
         pItem2->modStackCount(-static_cast<int32_t>(splitedAmount));
         pItem2->setCreatorGuid(0);
-        pItem2->SaveToDB(0, 0, true, nullptr);
+        pItem2->saveToDB(0, 0, true, nullptr);
 
         pItem = sObjectMgr.CreateItem(pItem2->getEntry(), player);
         if (pItem == nullptr)
@@ -2299,7 +2299,7 @@ void Guild::swapItems(Player* player, uint8_t tabId, uint8_t slotId, uint8_t des
 
         pItem->setStackCount(splitedAmount);
         pItem->setCreatorGuid(0);
-        pItem->SaveToDB(0, 0, true, nullptr);
+        pItem->saveToDB(0, 0, true, nullptr);
     }
     else
     {
@@ -2356,7 +2356,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
             if (player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(playerBag, playerSlotId, false) == nullptr)
                 return;
 
-            pSourceItem->RemoveFromWorld();
+            pSourceItem->removeFromWorld();
         }
 
         if (pSourceItem == nullptr)
@@ -2366,7 +2366,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
                 pSourceItem2 = pDestItem;
 
                 pSourceItem2->modStackCount(-static_cast<int32_t>(splitedAmount));
-                pSourceItem2->SaveToDB(0, 0, true, nullptr);
+                pSourceItem2->saveToDB(0, 0, true, nullptr);
 
                 pDestItem = sObjectMgr.CreateItem(pSourceItem2->getEntry(), player);
                 if (pDestItem == nullptr)
@@ -2385,7 +2385,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
             getBankTab(tabId)->setItem(slotId, pSourceItem);
 
             pSourceItem->setOwner(nullptr);
-            pSourceItem->SaveToDB(0, 0, true, nullptr);
+            pSourceItem->saveToDB(0, 0, true, nullptr);
         }
     }
     else
@@ -2396,12 +2396,12 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
                 return;
 
             pDestItem->setOwner(player);
-            pDestItem->SaveToDB(playerBag, playerSlotId, true, nullptr);
+            pDestItem->saveToDB(playerBag, playerSlotId, true, nullptr);
 
             if (!player->getItemInterface()->SafeAddItem(pDestItem, 0, 0))
             {
                 if (!player->getItemInterface()->AddItemToFreeSlot(pDestItem))
-                    pDestItem->DeleteMe();
+                    pDestItem->deleteMe();
             }
 
             logBankEvent(GB_LOG_WITHDRAW_ITEM, tabId, player->getGuidLow(),

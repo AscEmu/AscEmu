@@ -21,7 +21,7 @@
 
 
 #include "Management/HonorHandler.h"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.hpp"
 #include "Server/World.h"
@@ -191,7 +191,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                         {
                             PvPTokenItem->addFlags(ITEM_FLAG_SOULBOUND);
                             if (!pAffectedPlayer->getItemInterface()->AddItemToFreeSlot(PvPTokenItem))
-                                PvPTokenItem->DeleteMe();
+                                PvPTokenItem->deleteMe();
                         }
                     }
                 }

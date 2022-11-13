@@ -1022,7 +1022,7 @@ Item* ObjectMgr::LoadItem(uint32 lowguid)
         {
             Item* pItem = new Item;
             pItem->init(HIGHGUID_TYPE_ITEM, lowguid);
-            pItem->LoadFromDB(result->Fetch(), nullptr, false);
+            pItem->loadFromDB(result->Fetch(), nullptr, false);
             pReturn = pItem;
         }
         delete result;

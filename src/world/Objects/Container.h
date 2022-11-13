@@ -21,7 +21,7 @@
 #ifndef CONTAINER_H
 #define CONTAINER_H
 
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Data/WoWContainer.hpp"
 
 struct WoWContainer;

@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/DynamicObject.h"
 #include "Map/Cells/CellHandler.hpp"
 #include "Management/WorldStatesHandler.h"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Objects/Units/Creatures/Summons/Summon.h"
 #include "Objects/Units/Unit.h"

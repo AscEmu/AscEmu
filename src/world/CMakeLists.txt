@@ -230,7 +230,7 @@ if (USE_PCH)
     Movement/Spline/MoveSpline.h
     Movement/Spline/MoveSplineInit.h
     Objects/GameObject.h
-    Objects/Item.h
+    Objects/Item.hpp
     Objects/ItemDefines.hpp
     Objects/MovementDefines.h
     Objects/MovementInfo.h

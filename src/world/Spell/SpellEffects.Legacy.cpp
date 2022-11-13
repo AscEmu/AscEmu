@@ -27,11 +27,11 @@
 #include "Objects/DynamicObject.h"
 #include "Macros/ScriptMacros.hpp"
 #include "Management/HonorHandler.h"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Objects/Container.h"
 #include "Management/TaxiMgr.h"
 #include "Management/ItemInterface.h"
-#include "Management/ItemPrototype.h"
+#include "Management/ItemProperties.hpp"
 #include "Management/Skill.hpp"
 #include "Objects/Units/Stats.h"
 #include "Management/Battleground/Battleground.hpp"
@@ -3401,7 +3401,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
 
             if (itemTarget)
             {
-                if (!itemTarget->locked)
+                if (!itemTarget->m_isLocked)
                     return;
 
                 auto lock = sLockStore.LookupEntry(itemTarget->getItemProperties()->LockId);
@@ -3413,7 +3413,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
                     if (lock->locktype[j] == 2 && lock->minlockskill[j] && lockskill >= lock->minlockskill[j])
                     {
                         v = lock->minlockskill[j];
-                        itemTarget->locked = false;
+                        itemTarget->m_isLocked = false;
                         itemTarget->addFlags(ITEM_FLAG_LOOTABLE);
                         DetermineSkillUp(SKILL_LOCKPICKING, v / 5);
                         break;
@@ -3643,7 +3643,7 @@ void Spell::SpellEffectTransformItem(uint8_t effectIndex)
     if (!result2) //should never get here
     {
         owner->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_BAG_FULL);
-        it->DeleteMe();
+        it->deleteMe();
     }
 }
 
@@ -4090,7 +4090,7 @@ void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanen
 
         p_caster->getItemInterface()->RemoveItemAmt(itemTarget->getEntry(), 1);
         if (!p_caster->getItemInterface()->AddItemToFreeSlot(pItem))
-            pItem->DeleteMe();
+            pItem->deleteMe();
 
         return;
     }
@@ -5071,10 +5071,10 @@ void Spell::SpellEffectDisenchant(uint8_t /*effectIndex*/)
 
     //Fill disenchanting loot
     p_caster->setLootGuid(it->getGuid());
-    if (!it->loot)
+    if (!it->m_loot)
     {
-        it->loot = new Loot;
-        sLootMgr.fillItemLoot(p_caster, it->loot, it->getEntry(), 0);
+        it->m_loot = new Loot;
+        sLootMgr.fillItemLoot(p_caster, it->m_loot, it->getEntry(), 0);
     }
 
     sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Successfully disenchanted item %d", uint32(it->getEntry()));
@@ -5900,13 +5900,13 @@ void Spell::SpellEffectProspecting(uint8_t /*effectIndex*/)
 
     //Fill Prospecting loot
     p_caster->setLootGuid(itemTarget->getGuid());
-    if (!itemTarget->loot)
+    if (!itemTarget->m_loot)
     {
-        itemTarget->loot = new Loot;
-        sLootMgr.fillItemLoot(p_caster, itemTarget->loot, itemTarget->getEntry(), 0);
+        itemTarget->m_loot = new Loot;
+        sLootMgr.fillItemLoot(p_caster, itemTarget->m_loot, itemTarget->getEntry(), 0);
     }
 
-    if (itemTarget->loot->items.size() > 0)
+    if (itemTarget->m_loot->items.size() > 0)
     {
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Successfully prospected item %d", uint32(itemTarget->getEntry()));
         p_caster->sendLoot(itemTarget->getGuid(), LOOT_PROSPECTING, p_caster->GetMapId());
@@ -6126,13 +6126,13 @@ void Spell::SpellEffectMilling(uint8_t /*effectIndex*/)
 
     //Fill Prospecting loot
     p_caster->setLootGuid(itemTarget->getGuid());
-    if (!itemTarget->loot)
+    if (!itemTarget->m_loot)
     {
-        itemTarget->loot = new Loot;
-        sLootMgr.fillItemLoot(p_caster, itemTarget->loot, itemTarget->getEntry(), 0);
+        itemTarget->m_loot = new Loot;
+        sLootMgr.fillItemLoot(p_caster, itemTarget->m_loot, itemTarget->getEntry(), 0);
     }
 
-    if (itemTarget->loot->items.size() > 0)
+    if (itemTarget->m_loot->items.size() > 0)
     {
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Successfully milled item %d", uint32(itemTarget->getEntry()));
         p_caster->sendLoot(itemTarget->getGuid(), LOOT_MILLING, p_caster->GetMapId());

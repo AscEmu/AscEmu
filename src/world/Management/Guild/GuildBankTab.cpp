@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Guild.hpp"
 #include "GuildBankTab.hpp"
 #include "Server/MainServerDefines.h"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Management/ObjectMgr.h"
 
 #if VERSION_STRING < Cata
@@ -50,9 +50,9 @@ void GuildBankTab::removeBankTabItemFromDB(bool removeItemsFromDB)
     {
         if (Item* pItem = mItems[slotId])
         {
-            pItem->RemoveFromWorld();
+            pItem->removeFromWorld();
             if (removeItemsFromDB)
-                pItem->DeleteFromDB();
+                pItem->deleteFromDB();
 
             delete pItem;
             pItem = nullptr;
@@ -97,7 +97,7 @@ bool GuildBankTab::writeSlotPacket(WorldPacket& data, uint8_t slotId, bool ignor
         if (uint32_t random = pItem->getRandomPropertiesId())
         {
             data << uint32_t(random);
-            data << uint32_t(pItem->GenerateRandomSuffixFactor(pItem->getItemProperties()));
+            data << uint32_t(pItem->generateRandomSuffixFactor(pItem->getItemProperties()));
         }
         else
         {

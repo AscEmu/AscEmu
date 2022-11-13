@@ -190,11 +190,11 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
         };
 
         if (item->IsInWorld())
-            item->RemoveFromWorld();
+            item->removeFromWorld();
 
         item->setOwner(nullptr);
         item->m_isDirty = true;
-        item->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
+        item->saveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
 
         const auto auction = new Auction;
         auction->buyoutPrice = srlPacket.buyoutPrice;

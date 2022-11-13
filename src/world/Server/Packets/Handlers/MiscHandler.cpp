@@ -3,7 +3,7 @@ Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Management/WeatherMgr.h"
 #include "Management/ItemInterface.h"
 #include "Macros/CorpseMacros.hpp"
@@ -609,15 +609,15 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
     if (item == nullptr)
         return;
 
-    if (item->getGiftCreatorGuid() && item->wrapped_item_id)
+    if (item->getGiftCreatorGuid() && item->m_wrappedItemId)
     {
-        const auto wrappedItem = sMySQLStore.getItemProperties(item->wrapped_item_id);
+        const auto wrappedItem = sMySQLStore.getItemProperties(item->m_wrappedItemId);
         if (wrappedItem == nullptr)
             return;
 
         item->setGiftCreatorGuid(0);
-        item->setEntry(item->wrapped_item_id);
-        item->wrapped_item_id = 0;
+        item->setEntry(item->m_wrappedItemId);
+        item->m_wrappedItemId = 0;
         item->setItemProperties(wrappedItem);
 
         if (wrappedItem->Bonding == ITEM_BIND_ON_PICKUP)
@@ -632,7 +632,7 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
         }
 
         item->m_isDirty = true;
-        item->SaveToDB(srlPacket.containerSlot, srlPacket.slot, false, nullptr);
+        item->saveToDB(srlPacket.containerSlot, srlPacket.slot, false, nullptr);
         return;
     }
 
@@ -655,7 +655,7 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
                     return;
                 }
             }
-            else if (lockEntry->locktype[lockCase] == 2 && item->locked)
+            else if (lockEntry->locktype[lockCase] == 2 && item->m_isLocked)
             {
                 _player->getItemInterface()->buildInventoryChangeError(item, nullptr, INV_ERR_ITEM_LOCKED);
                 return;
@@ -670,10 +670,10 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
     }
 
     _player->setLootGuid(item->getGuid());
-    if (item->loot == nullptr)
+    if (item->m_loot == nullptr)
     {
-        item->loot = new Loot; //eeeeeek
-        sLootMgr.fillItemLoot(_player, item->loot, item->getEntry(), 0);
+        item->m_loot = new Loot; //eeeeeek
+        sLootMgr.fillItemLoot(_player, item->m_loot, item->getEntry(), 0);
     }
     _player->sendLoot(item->getGuid(), LOOT_DISENCHANTING, _player->GetMapId());
 }

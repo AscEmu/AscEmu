@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Vehicle.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/Summons/Summon.h"
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Objects/Container.h"
 #include "Map/AreaBoundary.hpp"
 #include "Map/Management/MapMgr.hpp"
@@ -888,7 +888,7 @@ public:
         else
         {
             item_add->modStackCount(count);
-            item_add->SetDirty();
+            item_add->setDirty();
             player->sendItemPushResultPacket(false, true, false,
                                        static_cast<uint8_t>(player->getItemInterface()->GetBagSlotByGuid(item_add->getGuid())), 0,
                                        count, item_add->getEntry(), item_add->getPropertySeed(), item_add->getRandomPropertiesId(), item_add->getStackCount());
@@ -1513,7 +1513,7 @@ public:
                         return false;
 
                     if (!player->getItemInterface()->AddItemToFreeSlot(item))
-                        item->DeleteMe();
+                        item->deleteMe();
                 }
             }
 
@@ -1524,7 +1524,7 @@ public:
                 {
                     item->setStackCount(questProperties->srcitemcount ? questProperties->srcitemcount : 1);
                     if (!player->getItemInterface()->AddItemToFreeSlot(item))
-                        item->DeleteMe();
+                        item->deleteMe();
                 }
             }
 
@@ -4666,7 +4666,7 @@ public:
             switch (loot_type)
             {
                 case 6:
-                    sLootMgr.fillItemLoot(plr, pItem->loot, pItem->getEntry(), plr->getWorldMap() ? (plr->getWorldMap()->getDifficulty() ? true : false) : false);
+                    sLootMgr.fillItemLoot(plr, pItem->m_loot, pItem->getEntry(), plr->getWorldMap() ? (plr->getWorldMap()->getDifficulty() ? true : false) : false);
                     loot_type2 = 1;
                     break;
                 default:

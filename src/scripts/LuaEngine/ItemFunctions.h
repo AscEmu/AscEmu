@@ -20,7 +20,7 @@
 #ifndef ITEMFUNCTIONS_H
 #define ITEMFUNCTIONS_H
 
-#include "Objects/Item.h"
+#include "Objects/Item.hpp"
 #include "Objects/Container.h"
 #include "Management/ItemInterface.h"
 #include "Server/MainServerDefines.h"
@@ -257,7 +257,7 @@ namespace luaItem
                 WorldDatabase.Execute("REPLACE INTO loot_items VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
             delete result;
         }
-        sLootMgr.addLoot(ptr->loot, itemid, ichance, mincount, maxcount, ptr->getWorldMap()->getDifficulty());
+        sLootMgr.addLoot(ptr->m_loot, itemid, ichance, mincount, maxcount, ptr->getWorldMap()->getDifficulty());
         return 1;
     }
 
@@ -267,7 +267,7 @@ namespace luaItem
             return 0;
 
         uint32_t lang = static_cast<uint32_t>(luaL_optinteger(L, 1, LANG_UNIVERSAL));
-        lua_pushstring(L, ptr->GetItemLink(lang).c_str());
+        lua_pushstring(L, sMySQLStore.getItemLinkByProto(ptr->getItemProperties(), lang).c_str());
         return 1;
     }
     int SetByteValue(lua_State* /*L*/, Item* /*ptr*/)
@@ -339,7 +339,7 @@ namespace luaItem
     {
         if (!ptr)
             return 0;
-        if (ptr->HasEnchantments())
+        if (ptr->hasEnchantments())
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -411,7 +411,7 @@ namespace luaItem
             Item* item = pCont->GetItem(i);
             if (item)
             {
-                if (item->getEntry() == itemid && item->wrapped_item_id == 0)
+                if (item->getEntry() == itemid && item->m_wrappedItemId == 0)
                 {
                     cnt += item->getStackCount() ? item->getStackCount() : 1;
                 }
@@ -441,7 +441,7 @@ namespace luaItem
         {
             return 0;
         }
-        ptr->RemoveFromWorld();
+        ptr->removeFromWorld();
         return 0;
     }
 
@@ -456,7 +456,7 @@ namespace luaItem
             return 1;
         }
         pItem->setStackCount(stackcount);
-        pItem->SaveToDB(0, 0, true, NULL);
+        pItem->saveToDB(0, 0, true, NULL);
         PUSH_ITEM(L, pItem);
         return 1;
     }

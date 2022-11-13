@@ -366,7 +366,7 @@ void FlanisSwiftwing_Gossip::onSelectOption(Object* /*pObject*/, Player* Plr, ui
     if (!Plr->getItemInterface()->AddItemToFreeSlot(item))
     {
         Plr->getSession()->SendNotification("No free slots were found in your inventory!");
-        item->DeleteMe();
+        item->deleteMe();
     }
     else
     {

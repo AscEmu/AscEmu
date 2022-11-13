@@ -51,7 +51,7 @@ Loot* WorldSession::getItemLootFromHighGuidType(WoWGuid wowGuid)
         case HighGuid::Item:
         {
             if (const auto item = _player->getItemInterface()->GetItemByGUID(wowGuid.getRawGuid()))
-                return item->loot;
+                return item->m_loot;
 
             return nullptr;
         }
@@ -172,7 +172,7 @@ Loot* WorldSession::getMoneyLootFromHighGuidType(WoWGuid wowGuid)
         case HighGuid::Item:
         {
             if (const auto item = _player->getItemInterface()->GetItemByGUID(wowGuid.getRawGuid()))
-                return item->loot;
+                return item->m_loot;
 
             return nullptr;
         }
@@ -448,16 +448,16 @@ void WorldSession::doLootRelease(WoWGuid lguid)
     {
         if (auto item = _player->getItemInterface()->GetItemByGUID(lguid.getRawGuid()))
         {
-            if (item->loot != nullptr)
+            if (item->m_loot != nullptr)
             {
-                if (item->loot->isLooted())
+                if (item->m_loot->isLooted())
                 {
-                    delete item->loot;
-                    item->loot = nullptr;
+                    delete item->m_loot;
+                    item->m_loot = nullptr;
                 }
             }
 
-            if (item->loot == nullptr)
+            if (item->m_loot == nullptr)
                 _player->getItemInterface()->RemoveItemAmtByGuid(lguid.getRawGuid(), 1);
         }
         return;                                             // item can be looted only single player

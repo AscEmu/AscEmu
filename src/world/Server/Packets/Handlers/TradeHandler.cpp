@@ -419,7 +419,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
         {
             tradeItems[i]->setOwner(tradeTarget);
             if (!tradeTarget->getItemInterface()->AddItemToFreeSlot(tradeItems[i]))
-                tradeItems[i]->DeleteMe();
+                tradeItems[i]->deleteMe();
 
 #if VERSION_STRING >= WotLK
             if (tradeItems[i]->hasFlags(ITEM_FLAG_BOP_TRADEABLE))
@@ -430,7 +430,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
         {
             targetTradeItems[i]->setOwner(_player);
             if (!_player->getItemInterface()->AddItemToFreeSlot(targetTradeItems[i]))
-                targetTradeItems[i]->DeleteMe();
+                targetTradeItems[i]->deleteMe();
 
 #if VERSION_STRING >= WotLK
             if (targetTradeItems[i]->hasFlags(ITEM_FLAG_BOP_TRADEABLE))
