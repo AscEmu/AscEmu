@@ -1,29 +1,13 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #pragma once
 
 #include "CommonTypes.hpp"
 #include "LocationVector.h"
 #include "WorldConf.h"
-
-// APGL Ends
-// MIT Start
 
 // Do NOT extend the list, simply replace an unused value
 enum SpellImmunityMask : uint32_t
@@ -215,9 +199,6 @@ enum EnviromentalDamage : uint8_t
     DAMAGE_SLIME        = 4,
     DAMAGE_FIRE         = 5
 };
-
-// MIT End
-// APGL Start
 
 enum DeathState
 {
@@ -753,7 +734,6 @@ enum EmoteType
     EMOTE_STATE_READ_CHRISTMAS          = 518
 };
 
-
 enum UnitStates
 {
     UNIT_STATE_DIED                     = 0x00000001, // player has fake death aura
@@ -913,7 +893,6 @@ enum ShapeshiftForm : uint8_t
     FORM_SPIRITOFREDEMPTION = 0x20
 };
 
-
 enum UnitFieldFlags : uint32_t // UNIT_FIELD_FLAGS #46 - these are client flags
 {
     //                                                   Hex     Bit    Decimal  Comments
@@ -1014,7 +993,7 @@ enum AURA_CHECK_RESULT
 
 struct TransportData
 {
-    uint64 transportGuid;
+    uint64_t transportGuid;
     LocationVector relativePosition;
 };
 
@@ -1022,13 +1001,13 @@ struct TransportData
 // values used in .npc info command
 struct UnitFlagNames
 {
-    uint32 Flag;
+    uint32_t Flag;
     const char* Name;
 };
 
 struct UnitDynFlagNames
 {
-    uint32 Flag;
+    uint32_t Flag;
     const char* Name;
 };
 
@@ -1079,7 +1058,7 @@ static const UnitFlagNames UnitFlagToName[] =
     { UNIT_FLAG_IMMUNE, "UNIT_FLAG_IMMUNE" }
 };
 
-static uint32 numflags = sizeof(UnitFlagToName) / sizeof(UnitFlagNames);
+static uint32_t numflags = sizeof(UnitFlagToName) / sizeof(UnitFlagNames);
 
 static const UnitFlagNames UnitFlagToName2[] =
 {
@@ -1104,7 +1083,7 @@ static const UnitFlagNames UnitFlagToName2[] =
     { UNIT_FLAG2_ALLOW_CHEAT_SPELLS, "UNIT_FLAG2_ALLOW_CHEAT_SPELLS" }
 };
 
-static uint32 numflags2 = sizeof(UnitFlagToName2) / sizeof(UnitFlagNames);
+static uint32_t numflags2 = sizeof(UnitFlagToName2) / sizeof(UnitFlagNames);
 
 static const UnitDynFlagNames UnitDynFlagToName[] =
 {
@@ -1116,7 +1095,7 @@ static const UnitDynFlagNames UnitDynFlagToName[] =
     { U_DYN_FLAG_DEAD, "U_DYN_FLAG_DEAD" }
 };
 
-static uint32 numdynflags = sizeof(UnitDynFlagToName) / sizeof(UnitDynFlagNames);
+static uint32_t numdynflags = sizeof(UnitDynFlagToName) / sizeof(UnitDynFlagNames);
 
 static const char* GENDER[] =
 {
@@ -1150,7 +1129,7 @@ static const char* SHEATSTATE[] =
 
 struct UnitPvPFlagNames
 {
-    uint32 Flag;
+    uint32_t Flag;
     const char* Name;
 };
 
@@ -1161,11 +1140,11 @@ static const UnitPvPFlagNames UnitPvPFlagToName[] =
     { U_FIELD_BYTES_FLAG_SANCTUARY, "U_FIELD_BYTES_FLAG_SANCTUARY" }
 };
 
-static const uint32 numpvpflags = sizeof(UnitPvPFlagToName) / sizeof(UnitPvPFlagNames);
+static const uint32_t numpvpflags = sizeof(UnitPvPFlagToName) / sizeof(UnitPvPFlagNames);
 
 struct PetFlagNames
 {
-    uint32 Flag;
+    uint32_t Flag;
     const char* Name;
 };
 
@@ -1175,4 +1154,4 @@ static const PetFlagNames PetFlagToName[] =
     { UNIT_CAN_BE_ABANDONED, "UNIT_CAN_BE_ABANDONED" }
 };
 
-static const uint32 numpetflags = sizeof(PetFlagToName) / sizeof(PetFlagNames);
+static const uint32_t numpetflags = sizeof(PetFlagToName) / sizeof(PetFlagNames);

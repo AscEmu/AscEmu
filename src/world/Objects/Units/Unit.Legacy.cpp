@@ -586,8 +586,8 @@ void Unit::Update(unsigned long time_passed)
 
         if (m_diminishActive)
         {
-            uint32 count = 0;
-            for (uint32 x = 0; x < DIMINISHING_GROUP_COUNT; ++x)
+            uint32_t count = 0;
+            for (uint32_t x = 0; x < DIMINISHING_GROUP_COUNT; ++x)
             {
                 // diminishing return stuff
                 if (m_diminishTimer[x] && !m_diminishAuraCount[x])
@@ -601,7 +601,7 @@ void Unit::Update(unsigned long time_passed)
                     else
                     {
                         // reducing, still.
-                        m_diminishTimer[x] -= static_cast<uint16>(time_passed);
+                        m_diminishTimer[x] -= static_cast<uint16_t>(time_passed);
                         ++count;
                     }
                 }
@@ -657,7 +657,7 @@ bool Unit::canReachWithAttack(Unit* pVictim)
         if (pVictim->isPlayer() && static_cast<Player*>(pVictim)->isMoving())
         {
             // this only applies to PvP.
-            uint32 lat = static_cast<Player*>(pVictim)->getSession() ? static_cast<Player*>(pVictim)->getSession()->GetLatency() : 0;
+            uint32_t lat = static_cast<Player*>(pVictim)->getSession() ? static_cast<Player*>(pVictim)->getSession()->GetLatency() : 0;
 
             // if we're over 500 get fucked anyway.. your gonna lag! and this stops cheaters too
             lat = (lat > 500) ? 500 : lat;
@@ -669,7 +669,7 @@ bool Unit::canReachWithAttack(Unit* pVictim)
         if (static_cast<Player*>(this)->isMoving())
         {
             // this only applies to PvP.
-            uint32 lat = static_cast<Player*>(this)->getSession() ? static_cast<Player*>(this)->getSession()->GetLatency() : 0;
+            uint32_t lat = static_cast<Player*>(this)->getSession() ? static_cast<Player*>(this)->getSession()->GetLatency() : 0;
 
             // if we're over 500 get fucked anyway.. your gonna lag! and this stops cheaters too
             lat = (lat > 500) ? 500 : lat;
@@ -683,30 +683,22 @@ bool Unit::canReachWithAttack(Unit* pVictim)
 
 void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
 {
-    if (!PlayerInGroup)
-        return;
-
-    if (!pVictim)
-        return;
-
-    if (!PlayerInGroup->isInGroup())
+    if (!PlayerInGroup || !pVictim || !PlayerInGroup->isInGroup())
         return;
 
     Group* pGroup = PlayerInGroup->getGroup();
-    uint32 xp;
     if (!pGroup)
         return;
 
-    //Get Highest Level Player, Calc Xp and give it to each group member
-    Player* pHighLvlPlayer = NULL;
-    Player* pGroupGuy = NULL;
-    int active_player_count = 0;
+    Player* pHighLvlPlayer = nullptr;
+    Player* pGroupGuy = nullptr;
+    uint8_t active_player_count = 0;
     Player* active_player_list[MAX_GROUP_SIZE_RAID];            //since group is small we can afford to do this ratehr then recheck again the whole active player set
-    int total_level = 0;
+    uint32_t total_level = 0;
     float xp_mod = 1.0f;
 
     pGroup->Lock();
-    for (uint32 i = 0; i < pGroup->GetSubGroupCount(); i++)
+    for (uint32_t i = 0; i < pGroup->GetSubGroupCount(); ++i)
     {
         for (GroupMembersSet::iterator itr = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
         {
@@ -724,22 +716,17 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
                         pHighLvlPlayer = pGroupGuy;
                 }
                 else
+                {
                     pHighLvlPlayer = pGroupGuy;
+                }
             }
         }
     }
     pGroup->Unlock();
-    if (active_player_count < 1) //killer is always close to the victim. This should never execute
+
+    uint32_t xp;
+    if (active_player_count < 1)
     {
-        /*if (PlayerInGroup == 0) This cannot be true CID 52876
-        {
-            CachedCharacterInfo* pleaderinfo = pGroup->GetLeader();
-            if (!pleaderinfo->m_loggedInPlayer)
-                return;
-
-            PlayerInGroup = pleaderinfo->m_loggedInPlayer;
-        }*/
-
         xp = CalculateXpToGive(pVictim, PlayerInGroup);
         PlayerInGroup->GiveXP(xp, pVictim->getGuid(), true);
     }
@@ -756,20 +743,14 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
             else xp_mod = 1; //in case we have only 2 members ;)
         }
         else if (pGroup->getGroupType() == GROUP_TYPE_RAID)
-            xp_mod = 0.5f;
-
-        /*if (pHighLvlPlayer == 0) This cannot be true CID 52744
         {
-            CachedCharacterInfo* pleaderinfo = pGroup->GetLeader();
-            if (!pleaderinfo->m_loggedInPlayer)
-                return;
-
-            pHighLvlPlayer = pleaderinfo->m_loggedInPlayer;
-        }*/
+            xp_mod = 0.5f;
+        }
 
         xp = CalculateXpToGive(pVictim, pHighLvlPlayer);
+
         //I'm not sure about this formula is correct or not. Maybe some brackets are wrong placed ?
-        for (int i = 0; i < active_player_count; i++)
+        for (uint8_t i = 0; i < active_player_count; i++)
         {
             Player* plr = active_player_list[i];
             plr->GiveXP(float2int32(((xp * plr->getLevel()) / total_level) * xp_mod), pVictim->getGuid(), true);
@@ -777,7 +758,8 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
             active_player_list[i]->addAuraStateAndAuras(AURASTATE_FLAG_LASTKILLWITHHONOR);
             if (!sEventMgr.HasEvent(active_player_list[i], EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE))
             {
-                sEventMgr.AddEvent(static_cast<Unit*>(active_player_list[i]), &Unit::removeAuraStateAndAuras, AURASTATE_FLAG_LASTKILLWITHHONOR, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(static_cast<Unit*>(active_player_list[i]), &Unit::removeAuraStateAndAuras, 
+                    AURASTATE_FLAG_LASTKILLWITHHONOR, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             }
             else
             {
@@ -786,20 +768,20 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
 
             if (plr->getFirstPetFromSummons() && plr->getFirstPetFromSummons()->CanGainXP())
             {
-                uint32 pet_xp = (uint32)(CalculateXpToGive(pVictim, plr->getFirstPetFromSummons()) * xp_mod);   // vojta: this isn't blizzlike probably but i have no idea, feel free to correct it
-                if (pet_xp> 0)
+                uint32_t pet_xp = static_cast<uint32_t>(CalculateXpToGive(pVictim, plr->getFirstPetFromSummons()) * xp_mod);
+                if (pet_xp > 0)
                     plr->getFirstPetFromSummons()->giveXp(pet_xp);
             }
         }
     }
 }
 
-uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell, DamageInfo damageInfo, bool isSpellTriggered, ProcEvents procEvent/* = PROC_EVENT_DO_ALL*/, Aura* triggeredFromAura/* = nullptr*/)
+uint32_t Unit::HandleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingSpell, DamageInfo damageInfo, bool isSpellTriggered, ProcEvents procEvent/* = PROC_EVENT_DO_ALL*/, Aura* triggeredFromAura/* = nullptr*/)
 {
     if (flag == 0)
         return 0;
 
-    uint32 resisted_dmg = 0;
+    uint32_t resisted_dmg = 0;
     bool can_delete = !bProcInUse; //if this is a nested proc then we should have this set to TRUE by the father proc
     bProcInUse = true; //locking the proc list
 
@@ -1004,7 +986,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
 
 #if VERSION_STRING >= TBC
         // SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE
-        for (uint8 i = 0; i < 3; ++i)
+        for (uint8_t i = 0; i < 3; ++i)
         {
             if (ospinfo && ospinfo->getEffectApplyAuraName(i) == SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE)
             {
@@ -1025,7 +1007,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
         //these are player talents. Fuckem they pull the emu speed down
         if (isPlayer())
         {
-            uint32 talentlevel = 0;
+            uint32_t talentlevel = 0;
             switch (origId)
             {
                 //mace specialization
@@ -1422,8 +1404,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     if (it == nullptr)
                         continue; //no weapon no joy
                     //float chance=float(it->GetProto()->Delay)*float(talentlevel)/600.0f;
-                    uint32 chance = it->getItemProperties()->Delay * talentlevel / 300; //zack this had a very low proc rate. Kinda like a wasted talent
-                    uint32 myroll = Util::getRandomUInt(100);
+                    uint32_t chance = it->getItemProperties()->Delay * talentlevel / 300; //zack this had a very low proc rate. Kinda like a wasted talent
+                    uint32_t myroll = Util::getRandomUInt(100);
                     if (myroll > chance)
                         continue;
                 }
@@ -1603,7 +1585,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                         continue;
                     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);   //we already modified this spell on server loading so it must exist
                     auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->getDurationIndex());
-                    uint32 tickcount = GetDuration(spell_duration) / spellInfo->getEffectAmplitude(0);
+                    uint32_t tickcount = GetDuration(spell_duration) / spellInfo->getEffectAmplitude(0);
 
                     if (ospinfo)
                         spell_proc->setOverrideEffectDamage(0, ospinfo->getEffectBasePoints(0) * damageInfo.realDamage / (100 * tickcount));
@@ -2308,7 +2290,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
                     //only trigger effect for specified spells
-                    uint32 amount;
+                    uint32_t amount;
 
                     switch (CastingSpell->getId())
                     {
@@ -3063,7 +3045,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                         procAura->setCharges(procAura->getCharges() + 1);
                         if (procAura->getCharges() >= 3)   //whatch that number cause it depends on original stack count !
                         {
-                            uint32 combastion[] =
+                            uint32_t combastion[] =
                             {
                                 //SPELL_HASH_COMBUSTION
                                 11129,
@@ -3176,7 +3158,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
                     if (!parentproc || !spellInfo)
                         continue;
-                    int32 val = parentproc->calculateEffectValue(0);
+                    int32_t val = parentproc->calculateEffectValue(0);
                     Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, NULL);
                     spell->forced_basepoints.set(0, (val * damageInfo.realDamage) / 300); //per tick
                     SpellCastTargets targets(getGuid());
@@ -3858,8 +3840,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                     //!! The weird thing is that we need the spell that triggered this enchant spell in order to output logs ..we are using oldspell info too
                     //we have to recalc the value of this spell
                     const auto spellInfo = sSpellMgr.getSpellInfo(origId);
-                    uint32 AP_owerride = spellInfo->calculateEffectValue(0);
-                    uint32 dmg2 = static_cast<Player*>(this)->GetMainMeleeDamage(AP_owerride);
+                    uint32_t AP_owerride = spellInfo->calculateEffectValue(0);
+                    uint32_t dmg2 = static_cast<Player*>(this)->GetMainMeleeDamage(AP_owerride);
                     SpellInfo const* sp_for_the_logs = sSpellMgr.getSpellInfo(spellId);
                     Strike(victim, MELEE, sp_for_the_logs, dmg2, 0, 0, true, false);
                     Strike(victim, MELEE, sp_for_the_logs, dmg2, 0, 0, true, false);
@@ -4018,7 +4000,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
                         continue;
 
                     //requires Power Word: Shield active
-                    uint32 powerWordShield[] =
+                    uint32_t powerWordShield[] =
                     {
                         //SPELL_HASH_POWER_WORD__SHIELD
                         17,
@@ -4278,7 +4260,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
 
                     const auto spellInfo = sSpellMgr.getSpellInfo(54203);
                     auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->getDurationIndex());
-                    uint32 tickcount = GetDuration(spell_duration) / spellInfo->getEffectAmplitude(0);
+                    uint32_t tickcount = GetDuration(spell_duration) / spellInfo->getEffectAmplitude(0);
                     if (ospinfo)
                         spell_proc->setOverrideEffectDamage(0, ospinfo->getEffectBasePoints(0) * damageInfo.realDamage / (100 * tickcount));
                 }
@@ -6170,7 +6152,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo const* CastingSpell
 }
 
 //damage shield is a triggered spell by owner to atacker
-void Unit::HandleProcDmgShield(uint32 flag, Unit* attacker)
+void Unit::HandleProcDmgShield(uint32_t flag, Unit* attacker)
 {
     //make sure we do not loop dmg procs
     if (this == attacker || !attacker)
@@ -6223,12 +6205,12 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, DamageInfo* dmg, SpellInf
         // dmg reduction formula from xinef
         double Reduction = 0;
         if (getLevel() < 60)
-            Reduction = double(pVictim->getResistance(0) - ArmorReduce) / double(pVictim->getResistance(0) + 400 + (85 * getLevel()));
+            Reduction = static_cast<double>(pVictim->getResistance(0) - ArmorReduce) / static_cast<double>(pVictim->getResistance(0) + 400 + (85 * getLevel()));
         else if (getLevel() > 59 && getLevel() < DBC_PLAYER_LEVEL_CAP)
-            Reduction = double(pVictim->getResistance(0) - ArmorReduce) / double(pVictim->getResistance(0) - 22167.5 + (467.5 * getLevel()));
+            Reduction = static_cast<double>(pVictim->getResistance(0) - ArmorReduce) / static_cast<double>(pVictim->getResistance(0) - 22167.5 + (467.5 * getLevel()));
         //
         else
-            Reduction = double(pVictim->getResistance(0) - ArmorReduce) / double(pVictim->getResistance(0) + 10557.5);
+            Reduction = static_cast<double>(pVictim->getResistance(0) - ArmorReduce) / static_cast<double>(pVictim->getResistance(0) + 10557.5);
 
         if (Reduction > 0.75f)
             Reduction = 0.75f;
@@ -6236,35 +6218,35 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, DamageInfo* dmg, SpellInf
             Reduction = 0;
 
         if (Reduction)
-            (*dmg).fullDamage = (uint32)((*dmg).fullDamage * (1 - Reduction)); // no multiply by 0
+            (*dmg).fullDamage = static_cast<uint32_t>((*dmg).fullDamage * (1 - Reduction)); // no multiply by 0
     }
     else
     {
         // applying resistance to other type of damage
-        int32 RResist = float2int32((pVictim->getResistance((*dmg).getSchoolTypeFromMask()) + ((pVictim->getLevel() > getLevel()) ? (pVictim->getLevel() - this->getLevel()) * 5 : 0)) - PowerCostPctMod[(*dmg).getSchoolTypeFromMask()]);
+        int32_t RResist = float2int32((pVictim->getResistance((*dmg).getSchoolTypeFromMask()) + ((pVictim->getLevel() > getLevel()) ? (pVictim->getLevel() - this->getLevel()) * 5 : 0)) - PowerCostPctMod[(*dmg).getSchoolTypeFromMask()]);
         if (RResist < 0)
             RResist = 0;
-        AverageResistance = ((float)(RResist) / (float)(getLevel() * 5) * 0.75f);
+        AverageResistance = (static_cast<float>(RResist) / static_cast<float>(getLevel() * 5) * 0.75f);
         if (AverageResistance > 0.75f)
             AverageResistance = 0.75f;
 
         // NOT WOWWIKILIKE but i think it's actually to add some fullresist chance from resistances
         if (!ability || !(ability->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY))
         {
-            float Resistchance = (float)pVictim->getResistance((*dmg).getSchoolTypeFromMask()) / (float)pVictim->getLevel();
+            float Resistchance = static_cast<float>(pVictim->getResistance((*dmg).getSchoolTypeFromMask())) / static_cast<float>(pVictim->getLevel());
             Resistchance *= Resistchance;
             if (Util::checkChance(Resistchance))
                 AverageResistance = 1.0f;
         }
 
         if (AverageResistance > 0)
-            (*dmg).resistedDamage = (uint32)(((*dmg).fullDamage) * AverageResistance);
+            (*dmg).resistedDamage = static_cast<uint32_t>(((*dmg).fullDamage) * AverageResistance);
         else
             (*dmg).resistedDamage = 0;
     }
 }
 
-uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spell* castingSpell)
+uint32_t Unit::GetSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, Spell* castingSpell)
 {
     Item* it = NULL;
     float hitchance = 0.0f;
@@ -6273,13 +6255,13 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
     float block = 0.0f;
 
     float hitmodifier = 0;
-    int32 self_skill;
-    int32 victim_skill;
+    int32_t self_skill;
+    int32_t victim_skill;
     uint16_t SubClassSkill = SKILL_UNARMED;
     const auto ability = castingSpell->getSpellInfo();
 
     bool backAttack = !pVictim->isInFront(this);   // isInBack is bugged!
-    uint32 vskill = 0;
+    uint32_t vskill = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     //Victim Skill Base Calculation
@@ -6316,7 +6298,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
             Creature* c = static_cast<Creature*>(pVictim);
             if (c->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
             {
-                victim_skill = std::max(victim_skill, ((int32)this->getLevel() + 3) * 5);       //used max to avoid situation when lowlvl hits boss.
+                victim_skill = std::max(victim_skill, (static_cast<int32_t>(this->getLevel()) + 3) * 5);       //used max to avoid situation when lowlvl hits boss.
             }
         }
     }
@@ -6386,7 +6368,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
         //chances in feral form don't depend on weapon skill
         if (static_cast<Player*>(this)->IsInFeralForm())
         {
-            uint8 form = this->getShapeShiftForm();
+            uint8_t form = this->getShapeShiftForm();
             if (form == FORM_CAT || form == FORM_BEAR || form == FORM_DIREBEAR)
             {
 #if VERSION_STRING <= Cata
@@ -6406,23 +6388,23 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
         {
             Creature* c = static_cast<Creature*>(this);
             if (c->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
-                self_skill = std::max(self_skill, ((int32)pVictim->getLevel() + 3) * 5);        //used max to avoid situation when lowlvl hits boss.
+                self_skill = std::max(self_skill, (static_cast<int32_t>(pVictim->getLevel()) + 3) * 5);        //used max to avoid situation when lowlvl hits boss.
         }
     }
     //////////////////////////////////////////////////////////////////////////////////////////
     //Special Chances Base Calculation
     //<THE SHIT> to avoid Linux bug.
-    float diffVcapped = (float)self_skill;
-    if (int32(pVictim->getLevel() * 5) > victim_skill)
-        diffVcapped -= (float)victim_skill;
+    float diffVcapped = static_cast<float>(self_skill);
+    if (static_cast<int32_t>(pVictim->getLevel() * 5) > victim_skill)
+        diffVcapped -= static_cast<float>(victim_skill);
     else
-        diffVcapped -= (float)(pVictim->getLevel() * 5);
+        diffVcapped -= static_cast<float>(pVictim->getLevel() * 5);
 
-    float diffAcapped = (float)victim_skill;
-    if (int32(this->getLevel() * 5) > self_skill)
-        diffAcapped -= (float)self_skill;
+    float diffAcapped = static_cast<float>(victim_skill);
+    if (static_cast<int32_t>(this->getLevel() * 5) > self_skill)
+        diffAcapped -= static_cast<float>(self_skill);
     else
-        diffAcapped -= (float)(getLevel() * 5);
+        diffAcapped -= static_cast<float>(getLevel() * 5);
     //<SHIT END>
 
     // by victim state
@@ -6439,7 +6421,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
     }
 
     // by skill difference
-    float vsk = (float)self_skill - (float)victim_skill;
+    float vsk = static_cast<float>(self_skill) - static_cast<float>(victim_skill);
     dodge = std::max(0.0f, dodge - vsk * 0.04f);
 
     if (parry)
@@ -6482,18 +6464,18 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
 
     // roll
     float Roll = Util::getRandomFloat(100.0f);
-    uint32 r = 0;
+    uint32_t r = 0;
 
     while (r < 4 && Roll > chances[r])
     {
         r++;
     }
 
-    uint32 roll_results[5] = { SPELL_DID_HIT_MISS, SPELL_DID_HIT_DODGE, SPELL_DID_HIT_PARRY, SPELL_DID_HIT_BLOCK, SPELL_DID_HIT_SUCCESS };
+    uint32_t roll_results[5] = { SPELL_DID_HIT_MISS, SPELL_DID_HIT_DODGE, SPELL_DID_HIT_PARRY, SPELL_DID_HIT_BLOCK, SPELL_DID_HIT_SUCCESS };
     return roll_results[r];
 }
 
-DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo const* ability, int32 add_damage, int32 pct_dmg_mod, uint32 exclusive_damage, bool isSpellTriggered, bool skip_hit_check, bool force_crit, Spell* castingSpell)
+DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo const* ability, int32_t add_damage, int32_t pct_dmg_mod, uint32_t exclusive_damage, bool isSpellTriggered, bool skip_hit_check, bool force_crit, Spell* castingSpell)
 {
     //////////////////////////////////////////////////////////////////////////////////////////
     //Unacceptable Cases Processing
@@ -6529,27 +6511,27 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     float crit = 0.0f;
     float crush = 0.0f;
 
-    uint32 targetEvent = 0;
+    uint32_t targetEvent = 0;
     uint32_t hit_status = HITSTATUS_NORMALSWING;
 
     VisualState vstate = VisualState::ATTACK;
 
     float hitmodifier = 0;
     float ArmorPctReduce = m_ignoreArmorPct;
-    int32 self_skill;
-    int32 victim_skill = 0;
+    int32_t self_skill;
+    int32_t victim_skill = 0;
     uint16_t SubClassSkill = SKILL_UNARMED;
 
     bool backAttack = !pVictim->isInFront(this);
-    uint32 vskill = 0;
+    uint32_t vskill = 0;
     bool disable_dR = false;
 
     if (ability)
-        dmg.schoolMask = SchoolMask(ability->getSchoolMask());
+        dmg.schoolMask = static_cast<SchoolMask>(ability->getSchoolMask());
     else
     {
         if (isCreature())
-            dmg.schoolMask = SchoolMask(g_spellSchoolConversionTable[static_cast<Creature*>(this)->BaseAttackType]);
+            dmg.schoolMask = static_cast<SchoolMask>(g_spellSchoolConversionTable[static_cast<Creature*>(this)->BaseAttackType]);
         else
             dmg.schoolMask = SCHOOL_MASK_NORMAL;
     }
@@ -6566,8 +6548,8 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         {
             // not an attack from behind so we may dodge/parry/block
 
-            //uint32 pClass = plr->getClass();
-            //uint32 pLevel = (getLevel()> DBC_PLAYER_LEVEL_CAP) ? DBC_PLAYER_LEVEL_CAP : getLevel();
+            //uint32_t pClass = plr->getClass();
+            //uint32_t pLevel = (getLevel()> DBC_PLAYER_LEVEL_CAP) ? DBC_PLAYER_LEVEL_CAP : getLevel();
 
             if (dmg.weaponType != RANGED)
             {
@@ -6629,7 +6611,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         {
             if (c->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
             {
-                victim_skill = std::max(victim_skill, ((int32)getLevel() + 3) * 5);     //used max to avoid situation when lowlvl hits boss.
+                victim_skill = std::max(victim_skill, (static_cast<int32_t>(getLevel()) + 3) * 5);     //used max to avoid situation when lowlvl hits boss.
             }
         }
     }
@@ -6650,7 +6632,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_MAINHAND));
                 if (it)
                 {
-                    dmg.schoolMask = SchoolMask(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
+                    dmg.schoolMask = static_cast<SchoolMask>(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
                     if (it->getItemProperties()->SubClass == ITEM_SUBCLASS_WEAPON_MACE)
                         ArmorPctReduce += m_ignoreArmorPctMaceSpec;
                 }
@@ -6661,7 +6643,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 hit_status |= HITSTATUS_DUALWIELD;//animation
                 if (it)
                 {
-                    dmg.schoolMask = SchoolMask(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
+                    dmg.schoolMask = static_cast<SchoolMask>(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
                     if (it->getItemProperties()->SubClass == ITEM_SUBCLASS_WEAPON_MACE)
                         ArmorPctReduce += m_ignoreArmorPctMaceSpec;
                 }
@@ -6670,7 +6652,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_RANGED));
                 if (it)
-                    dmg.schoolMask = SchoolMask(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
+                    dmg.schoolMask = static_cast<SchoolMask>(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
                 break;
         }
 
@@ -6687,7 +6669,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         //chances in feral form don't depend on weapon skill
         if (pr->IsInFeralForm())
         {
-            uint8 form = pr->getShapeShiftForm();
+            uint8_t form = pr->getShapeShiftForm();
             if (form == FORM_CAT || form == FORM_BEAR || form == FORM_DIREBEAR)
             {
 #if VERSION_STRING <= Cata
@@ -6707,7 +6689,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         {
             Creature* c = static_cast<Creature*>(this);
             if (c->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
-                self_skill = std::max(self_skill, ((int32)pVictim->getLevel() + 3) * 5);    //used max to avoid situation when lowlvl hits boss.
+                self_skill = std::max(self_skill, (static_cast<int32_t>(pVictim->getLevel()) + 3) * 5);    //used max to avoid situation when lowlvl hits boss.
         }
         crit = 5.0f;        //will be modified later
     }
@@ -6718,8 +6700,8 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     //http://www.wowwiki.com/Crushing_blow
     if (pVictim->isPlayer() && !this->isPlayer() && !ability && dmg.schoolMask == SCHOOL_MASK_NORMAL)
     {
-        int32 baseDefense = static_cast<Player*>(pVictim)->getSkillLineCurrent(SKILL_DEFENSE, false);
-        int32 skillDiff = self_skill - baseDefense;
+        int32_t baseDefense = static_cast<Player*>(pVictim)->getSkillLineCurrent(SKILL_DEFENSE, false);
+        int32_t skillDiff = self_skill - baseDefense;
         if (skillDiff >= 15)
             crush = -15.0f + 2.0f * skillDiff;
         else
@@ -6730,7 +6712,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     //http://www.wowwiki.com/Glancing_blow
     // did my own quick research here, seems base glancing against equal level mob is about 5%
     // and goes up 5% each level. Need to check this further.
-    float diffAcapped = victim_skill - std::min((float)self_skill, getLevel() * 5.0f);
+    float diffAcapped = victim_skill - std::min(static_cast<float>(self_skill), getLevel() * 5.0f);
 
     if (this->isPlayer() && !pVictim->isPlayer() && !ability)
     {
@@ -6756,10 +6738,10 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             hitmodifier += static_cast<Player*>(pVictim)->m_resist_hit[MOD_RANGED];
         }
     }
-    crit += (float)(pVictim->AttackerCritChanceMod[0]);
+    crit += static_cast<float>(pVictim->AttackerCritChanceMod[0]);
 
     // by skill difference
-    float vsk = (float)(self_skill - victim_skill);
+    float vsk = static_cast<float>(self_skill - victim_skill);
     dodge = std::max(0.0f, dodge - vsk * 0.04f);
 
     if (parry)
@@ -6932,7 +6914,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
 
     // roll
     float Roll = Util::getRandomFloat(100.0f);
-    uint32 r = 0;
+    uint32_t r = 0;
     while (r < 7 && Roll> chances[r])
     {
         r++;
@@ -6967,7 +6949,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 playerMe->addComboPoints(pVictim->getGuid(), 1);
 
                 if (!sEventMgr.HasEvent(playerMe, EVENT_COMBO_POINT_CLEAR_FOR_TARGET))
-                    sEventMgr.AddEvent(playerMe, &Player::clearComboPoints, (uint32)EVENT_COMBO_POINT_CLEAR_FOR_TARGET, (uint32)5000, (uint32)1, (uint32)0);
+                    sEventMgr.AddEvent(playerMe, &Player::clearComboPoints, (uint32_t)EVENT_COMBO_POINT_CLEAR_FOR_TARGET, static_cast<uint32_t>(5000), static_cast<uint32_t>(1), static_cast<uint32_t>(0));
                 else
                     sEventMgr.ModifyEventTimeLeft(playerMe, EVENT_COMBO_POINT_CLEAR_FOR_TARGET, 5000, 0);
             }
@@ -7086,8 +7068,8 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 //  }
                 //  else
                 //  {
-                //      spellModFlatIntValue(((Unit*)this)->SM_FMiscEffect,&dmg.full_damage,(uint64)1<<63);
-                //      spellModPercentageIntValue(((Unit*)this)->SM_PMiscEffect,&dmg.full_damage,(uint64)1<<63);
+                //      spellModFlatIntValue(((Unit*)this)->SM_FMiscEffect,&dmg.full_damage,(uint64_t)1<<63);
+                //      spellModPercentageIntValue(((Unit*)this)->SM_PMiscEffect,&dmg.full_damage,(uint64_t)1<<63);
                 //  }
 
                 dmg.fullDamage += pVictim->DamageTakenMod[dmg.getSchoolTypeFromMask()];
@@ -7218,7 +7200,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                                 dmg.blockedDamage = 0;
                             }
 
-                            if (dmg.fullDamage <= (int32)dmg.blockedDamage)
+                            if (dmg.fullDamage <= static_cast<int32_t>(dmg.blockedDamage))
                                 vstate = VisualState::BLOCK;
                             if (dmg.blockedDamage)
                             {
@@ -7306,12 +7288,12 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 //Post Roll Damage Processing
                 //////////////////////////////////////////////////////////////////////////////////////////
                 //absorption
-                uint32 dm = dmg.fullDamage;
+                uint32_t dm = dmg.fullDamage;
                 dmg.absorbedDamage = pVictim->absorbDamage(dmg.schoolMask, &dm);
 
-                if (dmg.fullDamage > (int32)dmg.blockedDamage)
+                if (dmg.fullDamage > static_cast<int32_t>(dmg.blockedDamage))
                 {
-                    uint32 sh = pVictim->ManaShieldAbsorb(dmg.fullDamage);
+                    uint32_t sh = pVictim->ManaShieldAbsorb(dmg.fullDamage);
                     //////////////////////////////////////////////////////////////////////////////////////////
                     //armor reducing
                     if (sh)
@@ -7343,7 +7325,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 }
                 dmg.realDamage = realdamage;
                 if (IsInWorld() && isCreature() && static_cast<Creature*>(this)->GetScript())
-                    static_cast<Creature*>(this)->GetScript()->OnHit(pVictim, float(realdamage));
+                    static_cast<Creature*>(this)->GetScript()->OnHit(pVictim, static_cast<float>(realdamage));
             }
             break;
     }
@@ -7405,13 +7387,13 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             Spell* cspell;
 
             // Loop on hit spells, and strike with those.
-            for (std::map<SpellInfo const*, std::pair<uint32, uint32>>::iterator itr = static_cast<Player*>(this)->m_onStrikeSpells.begin();
+            for (std::map<SpellInfo const*, std::pair<uint32_t, uint32_t>>::iterator itr = static_cast<Player*>(this)->m_onStrikeSpells.begin();
                  itr != static_cast<Player*>(this)->m_onStrikeSpells.end(); ++itr)
             {
                 if (itr->second.first)
                 {
                     // We have a *periodic* delayed spell.
-                    uint32 t = Util::getMSTime();
+                    uint32_t t = Util::getMSTime();
                     if (t > itr->second.second)    // Time expired
                     {
                         // Set new time
@@ -7432,13 +7414,13 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
 
         if (isPlayer() && static_cast<Player*>(this)->m_onStrikeSpellDmg.size())
         {
-            for (std::map<uint32, OnHitSpell>::iterator it2 = static_cast<Player*>(this)->m_onStrikeSpellDmg.begin(); it2 != static_cast<Player*>(this)->m_onStrikeSpellDmg.end();)
+            for (std::map<uint32_t, OnHitSpell>::iterator it2 = static_cast<Player*>(this)->m_onStrikeSpellDmg.begin(); it2 != static_cast<Player*>(this)->m_onStrikeSpellDmg.end();)
             {
-                std::map<uint32, OnHitSpell>::iterator itr = it2;
+                std::map<uint32_t, OnHitSpell>::iterator itr = it2;
                 ++it2;
 
-                uint32 dmg2 = itr->second.mindmg;
-                uint32 range = itr->second.maxdmg - itr->second.mindmg;
+                uint32_t dmg2 = itr->second.mindmg;
+                uint32_t range = itr->second.maxdmg - itr->second.mindmg;
                 if (range != 0)
                     dmg2 += Util::getRandomUInt(range);
 
@@ -7449,17 +7431,17 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         //ugly hack for shadowfiend restoring mana
         if (getSummonedByGuid() != 0 && getEntry() == 19668)
         {
-            Player* owner = getWorldMap()->getPlayer((uint32)getSummonedByGuid());
+            Player* owner = getWorldMap()->getPlayer(static_cast<uint32_t>(getSummonedByGuid()));
             if (owner)
             {
-                uint32 amount = static_cast<uint32>(owner->getMaxPower(POWER_TYPE_MANA) * 0.05f);
+                uint32_t amount = static_cast<uint32_t>(owner->getMaxPower(POWER_TYPE_MANA) * 0.05f);
                 this->energize(owner, 34650, amount, POWER_TYPE_MANA);
             }
         }
         //ugly hack for Bloodsworm restoring hp
         if (getSummonedByGuid() != 0 && getEntry() == 28017)
         {
-            Player* owner = getWorldMap()->getPlayer((uint32)getSummonedByGuid());
+            Player* owner = getWorldMap()->getPlayer(static_cast<uint32_t>(getSummonedByGuid()));
             if (owner != NULL)
                 owner->addSimpleHealingBatchEvent(float2int32(1.5f * dmg.realDamage), owner, sSpellMgr.getSpellInfo(50452));
         }
@@ -7472,7 +7454,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         if (dmg.fullDamage > 0)
         {
 #if VERSION_STRING >= WotLK
-            if (dmg.fullDamage == (int32)dmg.absorbedDamage)
+            if (dmg.fullDamage == (int32_t)dmg.absorbedDamage)
                 hit_status |= HITSTATUS_ABSORB_FULL;
             else if (dmg.absorbedDamage > 0)
                 hit_status |= HITSTATUS_ABSORB_PARTIAL;
@@ -7481,7 +7463,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 hit_status |= HITSTATUS_ABSORBED;
 #endif
 
-            if (dmg.fullDamage <= (int32)dmg.resistedDamage)
+            if (dmg.fullDamage <= static_cast<int32_t>(dmg.resistedDamage))
             {
                 hit_status |= HITSTATUS_RESIST;
                 dmg.resistedDamage = dmg.fullDamage;
@@ -7606,7 +7588,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     // Calculate estimated overkill based on current health and current health events in health batch
     const auto overKill = pVictim->calculateEstimatedOverKillForCombatLog(dmg.realDamage);
     if (ability == nullptr)
-        sendAttackerStateUpdate(GetNewGUID(), pVictim->GetNewGUID(), HitStatus(hit_status), dmg.realDamage, overKill, dmg, dmg.absorbedDamage, vstate, dmg.blockedDamage, rageGenerated);
+        sendAttackerStateUpdate(GetNewGUID(), pVictim->GetNewGUID(), static_cast<HitStatus>(hit_status), dmg.realDamage, overKill, dmg, dmg.absorbedDamage, vstate, dmg.blockedDamage, rageGenerated);
     else if (dmg.fullDamage > 0)
         pVictim->sendSpellNonMeleeDamageLog(this, pVictim, ability, dmg.realDamage, dmg.absorbedDamage, dmg.resistedDamage, dmg.blockedDamage, overKill, false, hit_status & HITSTATUS_CRICTICAL);
 
@@ -7702,7 +7684,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     //extra strikes processing
     if (!m_extraAttackCounter)
     {
-        int32 extra_attacks = m_extraattacks;
+        int32_t extra_attacks = m_extraattacks;
         m_extraAttackCounter = true;
         m_extraattacks = 0;
 
@@ -7792,7 +7774,7 @@ bool Unit::RemoveAurasByHeal()
                 // remove at p% health
                 case 38772:
                 {
-                    uint32 p = aur->getSpellInfo()->getEffectBasePoints(1);
+                    uint32_t p = aur->getSpellInfo()->getEffectBasePoints(1);
                     if (getMaxHealth() * p <= getHealth() * 100)
                     {
                         aur->removeAura();
@@ -7830,7 +7812,7 @@ bool Unit::AuraActionIf(AuraAction* action, AuraCondition* condition)
 void Unit::DeMorph()
 {
     // hope it solves it :)
-    uint32 displayid = this->getNativeDisplayId();
+    uint32_t displayid = this->getNativeDisplayId();
     this->setDisplayId(displayid);
     EventModelChange();
 }
@@ -7848,8 +7830,8 @@ void Unit::CalcDamage()
 
         float bonus = ap_bonus * (getBaseAttackTime(MELEE) + static_cast<Creature*>(this)->m_speedFromHaste);
 
-        float delta = float(static_cast<Creature*>(this)->ModDamageDone[0]);
-        float mult = float(static_cast<Creature*>(this)->ModDamageDonePct[0]);
+        float delta = static_cast<float>(static_cast<Creature*>(this)->ModDamageDone[0]);
+        float mult = static_cast<float>(static_cast<Creature*>(this)->ModDamageDonePct[0]);
         float r = (BaseDamage[0] + bonus) * mult + delta;
         // give some diversity to pet damage instead of having a 77-78 damage range (as an example)
         setMinDamage(r > 0 ? (isPet() ? r * 0.9f : r) : 0);
@@ -7862,22 +7844,22 @@ void Unit::CalcDamage()
 }
 
 // returns absorbed dmg
-uint32 Unit::ManaShieldAbsorb(uint32 dmg)
+uint32_t Unit::ManaShieldAbsorb(uint32_t dmg)
 {
     if (!m_manashieldamt)
         return 0;
     //mana shield group->16. the only
 
-    uint32 mana = getPower(POWER_TYPE_MANA);
+    uint32_t mana = getPower(POWER_TYPE_MANA);
 
-    int32 potential = (mana * 50) / 100;
+    int32_t potential = (mana * 50) / 100;
     if (potential > m_manashieldamt)
         potential = m_manashieldamt;
 
-    if ((int32)dmg < potential)
+    if (static_cast<int32_t>(dmg) < potential)
         potential = dmg;
 
-    uint32 cost = (potential * 100) / 50;
+    uint32_t cost = (potential * 100) / 50;
 
     setPower(POWER_TYPE_MANA, mana - cost);
     m_manashieldamt -= potential;
@@ -7894,7 +7876,7 @@ AuraCheckResponse Unit::AuraCheck(SpellInfo const* proto, Object* /*caster*/)
     resp.Error = AURA_CHECK_RESULT_NONE;
     resp.Misc = 0;
 
-    uint32 rank = proto->custom_RankNumber;
+    uint32_t rank = proto->custom_RankNumber;
 
     // look for spells with same namehash
     for (uint16_t x = AuraSlots::TOTAL_SLOT_START; x < AuraSlots::TOTAL_SLOT_END; x++)
@@ -8038,7 +8020,7 @@ void Unit::RemoveFromWorld(bool free_guid)
     if (dynObj != 0)
         dynObj->Remove();
 
-    for (uint8 i = 0; i < 4; ++i)
+    for (uint8_t i = 0; i < 4; ++i)
     {
         if (m_ObjectSlots[i] != 0)
         {
@@ -8121,7 +8103,7 @@ bool Unit::IsDazed()
 void Unit::UpdateVisibility()
 {
     ByteBuffer buf(3000);
-    uint32 count;
+    uint32_t count;
     bool can_see;
     bool is_visible;
 
@@ -8233,18 +8215,18 @@ void Unit::UpdateVisibility()
     }
 }
 
-int32 Unit::GetAP()
+int32_t Unit::GetAP()
 {
-    int32 baseap = getAttackPower() + getAttackPowerMods();
+    int32_t baseap = getAttackPower() + getAttackPowerMods();
     float totalap = baseap * (getAttackPowerMultiplier() + 1);
     if (totalap >= 0)
         return float2int32(totalap);
     return 0;
 }
 
-int32 Unit::GetRAP()
+int32_t Unit::GetRAP()
 {
-    int32 baseap = getRangedAttackPower() + getRangedAttackPowerMods();
+    int32_t baseap = getRangedAttackPower() + getRangedAttackPowerMods();
     float totalap = baseap * (getRangedAttackPowerMultiplier() + 1);
     if (totalap >= 0)
         return float2int32(totalap);
@@ -8258,7 +8240,7 @@ float Unit::get_chance_to_daze(Unit* target)
     float attack_skill = getLevel() * 5.0f;
     float defense_skill;
     if (target->isPlayer())
-        defense_skill = float(static_cast<Player*>(target)->getSkillLineCurrent(SKILL_DEFENSE, false));
+        defense_skill = static_cast<float>(static_cast<Player*>(target)->getSkillLineCurrent(SKILL_DEFENSE, false));
     else
         defense_skill = target->getLevel() * 5.0f;
 
@@ -8285,7 +8267,7 @@ void Unit::EventModelChange()
 
 void Unit::RemoveFieldSummon()
 {
-    uint64 guid = getSummonGuid();
+    uint64_t guid = getSummonGuid();
     if (guid && getWorldMap())
     {
         Creature* summon = static_cast<Creature*>(getWorldMap()->getUnit(guid));
@@ -8316,7 +8298,7 @@ void Unit::EventStunOrImmobilize(Unit* proc_target, bool is_victim)
     if (this == proc_target)
         return; //how and why would we stun ourselves
 
-    int32 t_trigger_on_stun, t_trigger_on_stun_chance;
+    int32_t t_trigger_on_stun, t_trigger_on_stun_chance;
     if (is_victim == false)
     {
         t_trigger_on_stun = trigger_on_stun;
@@ -8356,7 +8338,7 @@ void Unit::EventChill(Unit* proc_target, bool is_victim)
     if (this == proc_target)
         return; //how and why would we chill ourselves
 
-    int32 t_trigger_on_chill, t_trigger_on_chill_chance;
+    int32_t t_trigger_on_chill, t_trigger_on_chill_chance;
     if (is_victim == false)
     {
         t_trigger_on_chill = trigger_on_chill;
@@ -8404,7 +8386,7 @@ void Unit::RemoveExtraStrikeTarget(SpellInfo const* spell_info)
     }
 }
 
-void Unit::AddExtraStrikeTarget(SpellInfo const* spell_info, uint32 charges)
+void Unit::AddExtraStrikeTarget(SpellInfo const* spell_info, uint32_t charges)
 {
     for (std::list<ExtraStrike*>::iterator i = m_extraStrikeTargets.begin(); i != m_extraStrikeTargets.end(); ++i)
     {
@@ -8423,7 +8405,7 @@ void Unit::AddExtraStrikeTarget(SpellInfo const* spell_info, uint32 charges)
     m_extrastriketargetc++;
 }
 
-uint32 Unit::DoDamageSplitTarget(uint32 res, SchoolMask schoolMask, bool melee_dmg)
+uint32_t Unit::DoDamageSplitTarget(uint32_t res, SchoolMask schoolMask, bool melee_dmg)
 {
     DamageSplitTarget* ds = m_damageSplitTarget;
 
@@ -8431,11 +8413,11 @@ uint32 Unit::DoDamageSplitTarget(uint32 res, SchoolMask schoolMask, bool melee_d
     if (splittarget != NULL && res > 0)
     {
         // calculate damage
-        uint32 tmpsplit = ds->m_flatDamageSplit;
+        uint32_t tmpsplit = ds->m_flatDamageSplit;
         if (tmpsplit > res)
             tmpsplit = res; // prevent <0 damage
 
-        uint32 splitdamage = tmpsplit;
+        uint32_t splitdamage = tmpsplit;
         res -= tmpsplit;
         tmpsplit = float2int32(ds->m_pctDamageSplit * res);
         if (tmpsplit > res)
@@ -8474,7 +8456,7 @@ uint32 Unit::DoDamageSplitTarget(uint32 res, SchoolMask schoolMask, bool melee_d
 ///Removes and deletes reflects from unit by spell id, does not remove aura which created it
 ///In specific cases reflects can be created by a dummy spelleffect (eg. spell 28332 or 13043), then we need to remove it in ~unit
 //////////////////////////////////////////////////////////////////////////////////////////
-void Unit::RemoveReflect(uint32 spellid, bool apply)
+void Unit::RemoveReflect(uint32_t spellid, bool apply)
 {
     for (std::list<struct ReflectSpellSchool*>::iterator i = m_reflectSpellSchool.begin(); i != m_reflectSpellSchool.end();)
     {
@@ -8493,7 +8475,7 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
 
     if (apply && spellid == 23920 && isPlayer())
     {
-        uint32 improvedSpellReflection[] =
+        uint32_t improvedSpellReflection[] =
         {
             //SPELL_HASH_IMPROVED_SPELL_REFLECTION
             59088,
@@ -8507,14 +8489,14 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
             Group* pGroup = pPlayer->getGroup();
             if (pGroup != NULL)
             {
-                int32 targets = 0;
+                int32_t targets = 0;
                 if (pPlayer->hasAurasWithId(59088))
                     targets = 2;
                 else if (pPlayer->hasAurasWithId(59089))
                     targets = 4;
 
                 pGroup->Lock();
-                for (uint32 i = 0; i < pGroup->GetSubGroupCount(); ++i)
+                for (uint32_t i = 0; i < pGroup->GetSubGroupCount(); ++i)
                 {
                     SubGroup* subGroup = pGroup->GetSubGroup(i);
                     for (GroupMembersSet::iterator itr = subGroup->GetGroupMembersBegin(); itr != subGroup->GetGroupMembersEnd() && targets > 0; ++itr)
@@ -8541,7 +8523,7 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
         if (pGroup != NULL)
         {
             pGroup->Lock();
-            for (uint32 i = 0; i < pGroup->GetSubGroupCount(); ++i)
+            for (uint32_t i = 0; i < pGroup->GetSubGroupCount(); ++i)
             {
                 for (GroupMembersSet::iterator itr = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
                 {
@@ -8586,12 +8568,12 @@ void Unit::RemoveGarbage()
     m_GarbagePets.clear();
 }
 
-void Unit::die(Unit* /*pAttacker*/, uint32 /*damage*/, uint32 /*spellid*/)
+void Unit::die(Unit* /*pAttacker*/, uint32_t /*damage*/, uint32_t /*spellid*/)
 {}
 
 void Unit::BuildPetSpellList(WorldPacket& data)
 {
-    data << uint64(0);
+    data << static_cast<uint64_t>(0);
 }
 
 void Unit::CastOnMeleeSpell()
@@ -8606,13 +8588,13 @@ void Unit::CastOnMeleeSpell()
 
 void Unit::BuildMovementPacket(ByteBuffer* data)
 {
-    *data << uint32(getUnitMovementFlags());            // movement flags
+    *data << static_cast<uint32_t>(getUnitMovementFlags());            // movement flags
 #if VERSION_STRING == TBC
-    *data << uint8(getExtraUnitMovementFlags());        // 2.3.0
+    *data << static_cast<uint8_t>(getExtraUnitMovementFlags());        // 2.3.0
 #elif VERSION_STRING >= WotLK
-    *data << uint16(getExtraUnitMovementFlags());       // 3.x.x
+    *data << uint16_t(getExtraUnitMovementFlags());       // 3.x.x
 #endif
-    *data << uint32(Util::getMSTime());                 // time / counter
+    *data << static_cast<uint32_t>(Util::getMSTime());                 // time / counter
     *data << GetPositionX();
     *data << GetPositionY();
     *data << GetPositionZ();
@@ -8676,13 +8658,13 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
 
 void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, float o)
 {
-    *data << uint32(getUnitMovementFlags());            // movement flags
+    *data << static_cast<uint32_t>(getUnitMovementFlags());            // movement flags
 #if VERSION_STRING == TBC
-    *data << uint8(getExtraUnitMovementFlags());        // 2.3.0
+    *data << static_cast<uint8_t>(getExtraUnitMovementFlags());        // 2.3.0
 #elif VERSION_STRING >= WotLK
-    *data << uint16(getExtraUnitMovementFlags());       // 3.x.x
+    *data << uint16_t(getExtraUnitMovementFlags());       // 3.x.x
 #endif
-    *data << uint32(Util::getMSTime());                 // time / counter
+    *data << static_cast<uint32_t>(Util::getMSTime());                 // time / counter
     *data << x;
     *data << y;
     *data << z;
@@ -8735,7 +8717,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
 #endif
 }
 
-void Unit::UpdateAuraForGroup(uint8 slot)
+void Unit::UpdateAuraForGroup(uint8_t slot)
 {
     if (slot >= 64)
         return;
@@ -8759,7 +8741,7 @@ void Unit::UpdateAuraForGroup(uint8 slot)
     }
 }
 
-void Unit::Possess(Unit* pTarget, uint32 delay)
+void Unit::Possess(Unit* pTarget, uint32_t delay)
 {
     Player* pThis = nullptr;
     if (isPlayer())
@@ -8776,7 +8758,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
 
     if (delay != 0)
     {
-        sEventMgr.AddEvent(this, &Unit::Possess, pTarget, uint32(0), 0, delay, 1, 0);
+        sEventMgr.AddEvent(this, &Unit::Possess, pTarget, static_cast<uint32_t>(0), 0, delay, 1, 0);
         return;
     }
     if (pTarget == NULL)

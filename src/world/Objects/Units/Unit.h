@@ -129,7 +129,7 @@ struct HealthBatchEvent
     SpellInfo const* spellInfo = nullptr;
 };
 
-typedef std::unordered_map<uint32, uint64> UniqueAuraTargetMap;
+typedef std::unordered_map<uint32_t, uint64_t> UniqueAuraTargetMap;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Checks for conditions specified in subclasses on Auras. When calling operator()
@@ -679,7 +679,7 @@ protected:
     void setStunned(bool apply);
 
 private:
-    void updateSplineMovement(uint32 t_diff);
+    void updateSplineMovement(uint32_t t_diff);
     void updateSplinePosition();
 
     int32_t m_splineSyncTimer = 5000;
@@ -1010,7 +1010,7 @@ public:
 
     bool isSitting() const;
     void emote(EmoteType emote);
-    void eventAddEmote(EmoteType emote, uint32 time);
+    void eventAddEmote(EmoteType emote, uint32_t time);
     void emoteExpire();
     uint32_t getOldEmote() const;
 
@@ -1197,21 +1197,21 @@ public:
     bool  canReachWithAttack(Unit* pVictim);
 
     //// Combat
-    uint32 GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spell* castingSpell);
-    DamageInfo Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo const* ability, int32 add_damage, int32 pct_dmg_mod, uint32 exclusive_damage, bool disable_proc, bool skip_hit_check, bool force_crit = false, Spell* castingSpell = nullptr);
+    uint32_t GetSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, Spell* castingSpell);
+    DamageInfo Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo const* ability, int32_t add_damage, int32_t pct_dmg_mod, uint32_t exclusive_damage, bool disable_proc, bool skip_hit_check, bool force_crit = false, Spell* castingSpell = nullptr);
     // triggeredFromAura is set if castingSpell has been triggered from aura, not if the proc is triggered from aura
-    uint32 HandleProc(uint32 flag, Unit* Victim, SpellInfo const* CastingSpell, DamageInfo damageInfo, bool isSpellTriggered, ProcEvents procEvent = PROC_EVENT_DO_ALL, Aura* triggeredFromAura = nullptr);
-    void HandleProcDmgShield(uint32 flag, Unit* attacker);//almost the same as handleproc :P
+    uint32_t HandleProc(uint32_t flag, Unit* Victim, SpellInfo const* CastingSpell, DamageInfo damageInfo, bool isSpellTriggered, ProcEvents procEvent = PROC_EVENT_DO_ALL, Aura* triggeredFromAura = nullptr);
+    void HandleProcDmgShield(uint32_t flag, Unit* attacker);//almost the same as handleproc :P
 
     void RemoveExtraStrikeTarget(SpellInfo const* spell_info);
-    void AddExtraStrikeTarget(SpellInfo const* spell_info, uint32 charges);
+    void AddExtraStrikeTarget(SpellInfo const* spell_info, uint32_t charges);
 
-    int32 GetAP();
-    int32 GetRAP();
+    int32_t GetAP();
+    int32_t GetRAP();
 
     void CalculateResistanceReduction(Unit* pVictim, DamageInfo* dmg, SpellInfo const* ability, float ArmorPctReduce);
     void DeMorph();
-    uint32 ManaShieldAbsorb(uint32 dmg);
+    uint32_t ManaShieldAbsorb(uint32_t dmg);
 
     bool IsDazed();
     //this function is used for creatures to get chance to daze for another unit
@@ -1232,7 +1232,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     bool AuraActionIf(AuraAction* action, AuraCondition* condition);
 
-    void EventRemoveAura(uint32 SpellId) { removeAllAurasById(SpellId); }
+    void EventRemoveAura(uint32_t SpellId) { removeAllAurasById(SpellId); }
 
     bool IsPoisoned();
 
@@ -1240,16 +1240,16 @@ public:
 
     void OnDamageTaken();
 
-    uint32 m_addDmgOnce = 0;
-    uint32 m_ObjectSlots[4] = {0};
-    uint32 m_triggerSpell = 0;
-    uint32 m_triggerDamage = 0;
-    uint32 m_canMove = 0;
-    void Possess(Unit* pTarget, uint32 delay = 0);
+    uint32_t m_addDmgOnce = 0;
+    uint32_t m_ObjectSlots[4] = {0};
+    uint32_t m_triggerSpell = 0;
+    uint32_t m_triggerDamage = 0;
+    uint32_t m_canMove = 0;
+    void Possess(Unit* pTarget, uint32_t delay = 0);
     void UnPossess();
 
     // Spell Effect Variables
-    int32 m_silenced = 0;
+    int32_t m_silenced = 0;
     bool m_damgeShieldsInUse = false;
 #if VERSION_STRING == Cata
     DBC::Structures::MountCapabilityEntry const* getMountCapability(uint32_t mountType);
@@ -1257,16 +1257,16 @@ public:
     std::list<struct DamageProc> m_damageShields;
     std::list<struct ReflectSpellSchool*> m_reflectSpellSchool;
 
-    void RemoveReflect(uint32 spellid, bool apply);
+    void RemoveReflect(uint32_t spellid, bool apply);
 
     DamageSplitTarget* m_damageSplitTarget = nullptr;
 
-    void SetOnMeleeSpell(uint32 spell, uint8 ecn = 0) { m_meleespell = spell; m_meleespell_ecn = ecn; }
-    uint32 GetOnMeleeSpell() { return m_meleespell; }
-    uint8 GetOnMeleeSpellEcn() { return m_meleespell_ecn; }
+    void SetOnMeleeSpell(uint32_t spell, uint8_t ecn = 0) { m_meleespell = spell; m_meleespell_ecn = ecn; }
+    uint32_t GetOnMeleeSpell() { return m_meleespell; }
+    uint8_t GetOnMeleeSpellEcn() { return m_meleespell_ecn; }
     void CastOnMeleeSpell();
 
-    uint32 DoDamageSplitTarget(uint32 res, SchoolMask schoolMask, bool melee_dmg);
+    uint32_t DoDamageSplitTarget(uint32_t res, SchoolMask schoolMask, bool melee_dmg);
 
     // Spell Crit
     float spellcritperc = 0.0f;
@@ -1277,51 +1277,51 @@ public:
 
     // DK:Affect
     //\todo: these local vars can be replaced by proper aura effect handling.
-    uint32 IsPacified() { return m_pacified; }
-    uint32 IsStunned() { return m_stunned; }
-    uint32 IsFeared() { return m_fearmodifiers; }
+    uint32_t IsPacified() { return m_pacified; }
+    uint32_t IsStunned() { return m_stunned; }
+    uint32_t IsFeared() { return m_fearmodifiers; }
 
-    uint32 GetResistChanceMod() { return m_resistChance; }
-    void SetResistChanceMod(uint32 amount) { m_resistChance = amount; }
+    uint32_t GetResistChanceMod() { return m_resistChance; }
+    void SetResistChanceMod(uint32_t amount) { m_resistChance = amount; }
 
-    uint16 HasNoInterrupt() { return m_noInterrupt; }
+    uint16_t HasNoInterrupt() { return m_noInterrupt; }
 
-    uint32 SchoolCastPrevent[TOTAL_SPELL_SCHOOLS] = {0};
-    int32 MechanicDurationPctMod[28] = {0};
+    uint32_t SchoolCastPrevent[TOTAL_SPELL_SCHOOLS] = {0};
+    int32_t MechanicDurationPctMod[28] = {0};
 
-    virtual int32 GetDamageDoneMod(uint16_t /*school*/) { return 0; }
+    virtual int32_t GetDamageDoneMod(uint16_t /*school*/) { return 0; }
     virtual float GetDamageDonePctMod(uint16_t /*school*/) { return 0; }
 
-    int32 DamageTakenMod[TOTAL_SPELL_SCHOOLS] = {0};
+    int32_t DamageTakenMod[TOTAL_SPELL_SCHOOLS] = {0};
     float DamageTakenPctMod[TOTAL_SPELL_SCHOOLS] = {0};
     float DamageTakenPctModOnHP35 = 1;
     float CritMeleeDamageTakenPctMod[TOTAL_SPELL_SCHOOLS] = {0};
     float CritRangedDamageTakenPctMod[TOTAL_SPELL_SCHOOLS] = {0};
-    int32 RangedDamageTaken = 0;
+    int32_t RangedDamageTaken = 0;
     void CalcDamage();
     float BaseDamage[2] = {0};
     float BaseOffhandDamage[2] = {0};
     float BaseRangedDamage[2] = {0};
-    int32 RAPvModifier = 0;
-    int32 APvModifier = 0;
-    uint64 stalkedby = 0;
-    uint32 dispels[10] = {0};
+    int32_t RAPvModifier = 0;
+    int32_t APvModifier = 0;
+    uint64_t stalkedby = 0;
+    uint32_t dispels[10] = {0};
     bool trackStealth = false;
-    uint32 MechanicsDispels[32] = {0};
+    uint32_t MechanicsDispels[32] = {0};
     float MechanicsResistancesPCT[32] = {0};
     float ModDamageTakenByMechPCT[32] = {0};
-    int32 DoTPctIncrease[TOTAL_SPELL_SCHOOLS] = {0};
+    int32_t DoTPctIncrease[TOTAL_SPELL_SCHOOLS] = {0};
     float AOEDmgMod = 1.0f;
     float m_ignoreArmorPctMaceSpec = 0.0f;
     float m_ignoreArmorPct = 0.0f;
 
     // Stun Immobilize
-    uint32 trigger_on_stun = 0; // bah, warrior talent but this will not get triggered on triggered spells if used on proc so I'm forced to used a special variable
-    uint32 trigger_on_stun_chance = 100;
-    uint32 trigger_on_stun_victim = 0;
-    uint32 trigger_on_stun_chance_victim = 100;
+    uint32_t trigger_on_stun = 0; // bah, warrior talent but this will not get triggered on triggered spells if used on proc so I'm forced to used a special variable
+    uint32_t trigger_on_stun_chance = 100;
+    uint32_t trigger_on_stun_victim = 0;
+    uint32_t trigger_on_stun_chance_victim = 100;
 
-    void SetTriggerStunOrImmobilize(uint32 newtrigger, uint32 new_chance, bool is_victim = false)
+    void SetTriggerStunOrImmobilize(uint32_t newtrigger, uint32_t new_chance, bool is_victim = false)
     {
         if (is_victim == false)
         {
@@ -1338,12 +1338,12 @@ public:
 
     ///\todo Remove this hack
     // Chill
-    uint32 trigger_on_chill = 0;         //mage "Frostbite" talent chill
-    uint32 trigger_on_chill_chance = 100;
-    uint32 trigger_on_chill_victim = 0;
-    uint32 trigger_on_chill_chance_victim = 100;
+    uint32_t trigger_on_chill = 0;         //mage "Frostbite" talent chill
+    uint32_t trigger_on_chill_chance = 100;
+    uint32_t trigger_on_chill_victim = 0;
+    uint32_t trigger_on_chill_chance_victim = 100;
 
-    void SetTriggerChill(uint32 newtrigger, uint32 new_chance, bool is_victim = false)
+    void SetTriggerChill(uint32_t newtrigger, uint32_t new_chance, bool is_victim = false)
     {
         if (is_victim == false)
         {
@@ -1358,72 +1358,72 @@ public:
     }
     void EventChill(Unit* proc_target, bool is_victim = false);
 
-    void SetHealthPct(uint32 val) { if (val > 0) setHealth(float2int32(val * 0.01f * getMaxHealth())); };
+    void SetHealthPct(uint32_t val) { if (val > 0) setHealth(float2int32(val * 0.01f * getMaxHealth())); };
 
     void setcanparry(bool newstatus) { can_parry = newstatus; }
 
-    std::map<uint32, Aura*> tmpAura;
+    std::map<uint32_t, Aura*> tmpAura;
 
-    uint32 BaseResistance[TOTAL_SPELL_SCHOOLS] = {0};        // there are resistances for silence, fear, mechanics ....
-    uint32 BaseStats[5] = {0};
+    uint32_t BaseResistance[TOTAL_SPELL_SCHOOLS] = {0};        // there are resistances for silence, fear, mechanics ....
+    uint32_t BaseStats[5] = {0};
 
-    int32 HealDoneMod[TOTAL_SPELL_SCHOOLS] = {0};
+    int32_t HealDoneMod[TOTAL_SPELL_SCHOOLS] = {0};
     float HealDonePctMod[TOTAL_SPELL_SCHOOLS] = {0};
 
-    int32 HealTakenMod[TOTAL_SPELL_SCHOOLS] = {0};
+    int32_t HealTakenMod[TOTAL_SPELL_SCHOOLS] = {0};
     float HealTakenPctMod[TOTAL_SPELL_SCHOOLS] = {0};
 
-    uint32 SchoolImmunityList[TOTAL_SPELL_SCHOOLS] = {0};
+    uint32_t SchoolImmunityList[TOTAL_SPELL_SCHOOLS] = {0};
     float SpellCritChanceSchool[TOTAL_SPELL_SCHOOLS] = {0};
 
     float PowerCostPctMod[TOTAL_SPELL_SCHOOLS] = {0};        // armor penetration & spell penetration
 
-    int32 AttackerCritChanceMod[TOTAL_SPELL_SCHOOLS] = {0};
-    uint32 SpellDelayResist[TOTAL_SPELL_SCHOOLS] = {0};
+    int32_t AttackerCritChanceMod[TOTAL_SPELL_SCHOOLS] = {0};
+    uint32_t SpellDelayResist[TOTAL_SPELL_SCHOOLS] = {0};
 
-    int32 CreatureAttackPowerMod[12] = {0};
-    int32 CreatureRangedAttackPowerMod[12] = {0};
+    int32_t CreatureAttackPowerMod[12] = {0};
+    int32_t CreatureRangedAttackPowerMod[12] = {0};
 
-    int32 PctRegenModifier = 0;
+    int32_t PctRegenModifier = 0;
     // SPELL_AURA_MOD_POWER_REGEN_PERCENT
     float PctPowerRegenModifier[TOTAL_PLAYER_POWER_TYPES];
 
     // Auras Modifiers
-    int32 m_pacified = 0;
-    int32 m_interruptRegen = 0;
-    int32 m_resistChance = 0;
-    int32 m_powerRegenPCT = 0;
-    int32 m_stunned = 0;
-    int32 m_extraattacks = 0;
+    int32_t m_pacified = 0;
+    int32_t m_interruptRegen = 0;
+    int32_t m_resistChance = 0;
+    int32_t m_powerRegenPCT = 0;
+    int32_t m_stunned = 0;
+    int32_t m_extraattacks = 0;
     bool m_extrastriketarget = false;
-    int32 m_extrastriketargetc = 0;
+    int32_t m_extrastriketargetc = 0;
     std::list<ExtraStrike*> m_extraStrikeTargets;
-    int32 m_fearmodifiers = 0;
-    int64 m_magnetcaster = 0;   // Unit who acts as a magnet for this unit
+    int32_t m_fearmodifiers = 0;
+    int64_t m_magnetcaster = 0;   // Unit who acts as a magnet for this unit
 
     // aurastate counters
-    int8 asc_frozen = 0;
-    int8 asc_enraged = 0;
-    int8 asc_seal = 0;
-    int8 asc_bleed = 0;
+    int8_t asc_frozen = 0;
+    int8_t asc_enraged = 0;
+    int8_t asc_seal = 0;
+    int8_t asc_bleed = 0;
 
-    uint16 m_noInterrupt = 0;
+    uint16_t m_noInterrupt = 0;
     bool disarmed = false;
-    uint64 m_detectRangeGUID[5] = {0};
-    int32  m_detectRangeMOD[5] = {0};
+    uint64_t m_detectRangeGUID[5] = {0};
+    int32_t  m_detectRangeMOD[5] = {0};
 
-    uint32 GetCharmTempVal() { return m_charmtemp; }
-    void SetCharmTempVal(uint32 val) { m_charmtemp = val; }
+    uint32_t GetCharmTempVal() { return m_charmtemp; }
+    void SetCharmTempVal(uint32_t val) { m_charmtemp = val; }
 
     AuraCheckResponse AuraCheck(SpellInfo const* proto, Object* caster = nullptr);
     AuraCheckResponse AuraCheck(SpellInfo const* proto, Aura* aur, Object* caster = nullptr);
 
-    uint16 m_diminishCount[DIMINISHING_GROUP_COUNT] = {0};
-    uint8 m_diminishAuraCount[DIMINISHING_GROUP_COUNT] = {0};
-    uint16 m_diminishTimer[DIMINISHING_GROUP_COUNT] = {0};
+    uint16_t m_diminishCount[DIMINISHING_GROUP_COUNT] = {0};
+    uint8_t m_diminishAuraCount[DIMINISHING_GROUP_COUNT] = {0};
+    uint16_t m_diminishTimer[DIMINISHING_GROUP_COUNT] = {0};
     bool m_diminishActive = false;
 
-    void SetDiminishTimer(uint32 index)
+    void SetDiminishTimer(uint32_t index)
     {
         m_diminishTimer[index] = 15000;
     }
@@ -1437,8 +1437,8 @@ public:
 
     struct
     {
-        int32 amt = 0;
-        int32 max = 0;
+        int32_t amt = 0;
+        int32_t max = 0;
     } m_soulSiphon;
 
     void EventModelChange();
@@ -1458,24 +1458,24 @@ public:
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void die(Unit* pAttacker, uint32 damage, uint32 spellid);
+    virtual void die(Unit* pAttacker, uint32_t damage, uint32_t spellid);
     
     void AddGarbagePet(Pet* pet);
 
     virtual void BuildPetSpellList(WorldPacket & data);
 
-    uint64 GetAuraUpdateMaskForRaid() const { return m_auraRaidUpdateMask; }
+    uint64_t GetAuraUpdateMaskForRaid() const { return m_auraRaidUpdateMask; }
     void ResetAuraUpdateMaskForRaid() { m_auraRaidUpdateMask = 0; }
-    void SetAuraUpdateMaskForRaid(uint8 slot) { m_auraRaidUpdateMask |= (uint64(1) << slot); }
-    void UpdateAuraForGroup(uint8 slot);
+    void SetAuraUpdateMaskForRaid(uint8_t slot) { m_auraRaidUpdateMask |= (uint64_t(1) << slot); }
+    void UpdateAuraForGroup(uint8_t slot);
 
 protected:
     
     void RemoveGarbage();
     void AddGarbageAura(Aura* aur);
 
-    uint32 m_meleespell = 0;
-    uint8 m_meleespell_ecn = 0;         // extra_cast_number
+    uint32_t m_meleespell = 0;
+    uint8_t m_meleespell_ecn = 0;         // extra_cast_number
 
     std::list<Aura*> m_GarbageAuras;
     std::list<Pet*> m_GarbagePets;
@@ -1484,14 +1484,14 @@ protected:
     
     bool can_parry = false;         //will be enabled by block spell
 
-    int32 m_manashieldamt = 0;
-    uint32 m_manaShieldId = 0;
+    int32_t m_manashieldamt = 0;
+    uint32_t m_manaShieldId = 0;
 
     // Some auras can only be cast on one target at a time
     // This will map aura spell id to target guid
     UniqueAuraTargetMap m_singleTargetAura;
 
-    uint32 m_charmtemp = 0;
+    uint32_t m_charmtemp = 0;
 
     bool m_extraAttackCounter = false;
 
@@ -1500,10 +1500,10 @@ protected:
     float m_blockfromspell = 0.0f;
     float m_dodgefromspell = 0.0f;
     float m_parryfromspell = 0.0f;
-    uint32 m_BlockModPct = 0;       // is % but does not need float and does not need /100!
+    uint32_t m_BlockModPct = 0;       // is % but does not need float and does not need /100!
 
     
-    uint64 m_auraRaidUpdateMask = 0;
+    uint64_t m_auraRaidUpdateMask = 0;
 
 public:
     

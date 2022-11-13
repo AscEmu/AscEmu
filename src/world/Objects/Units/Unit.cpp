@@ -1391,7 +1391,7 @@ void Unit::setMoveWaterWalk()
         WorldPacket data(SMSG_MOVE_WATER_WALK, 12);
 #if VERSION_STRING < Cata
         data << GetNewGUID();
-        data << uint32(0);
+        data << uint32_t(0);
 #else
         obj_movement_info.writeMovementInfo(data, SMSG_MOVE_WATER_WALK);
 #endif
@@ -1419,7 +1419,7 @@ void Unit::setMoveLandWalk()
         WorldPacket data(SMSG_MOVE_LAND_WALK, 12);
 #if VERSION_STRING < Cata
         data << GetNewGUID();
-        data << uint32(0);
+        data << uint32_t(0);
 #else
         obj_movement_info.writeMovementInfo(data, SMSG_MOVE_LAND_WALK);
 #endif
@@ -1447,7 +1447,7 @@ void Unit::setMoveFeatherFall()
         WorldPacket data(SMSG_MOVE_FEATHER_FALL, 12);
 #if VERSION_STRING < Cata
         data << GetNewGUID();
-        data << uint32(0);
+        data << uint32_t(0);
 #else
         obj_movement_info.writeMovementInfo(data, SMSG_MOVE_FEATHER_FALL);
 #endif
@@ -1475,7 +1475,7 @@ void Unit::setMoveNormalFall()
         WorldPacket data(SMSG_MOVE_NORMAL_FALL, 12);
 #if VERSION_STRING < Cata
         data << GetNewGUID();
-        data << uint32(0);
+        data << uint32_t(0);
 #else
         obj_movement_info.writeMovementInfo(data, SMSG_MOVE_NORMAL_FALL);
 #endif
@@ -1505,7 +1505,7 @@ void Unit::setMoveHover(bool set_hover)
             WorldPacket data(SMSG_MOVE_SET_HOVER, 13);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32_t(0);
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_MOVE_SET_HOVER);
 #endif
@@ -1518,7 +1518,7 @@ void Unit::setMoveHover(bool set_hover)
             WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32_t(0);
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_MOVE_UNSET_HOVER);
 #endif
@@ -1577,7 +1577,7 @@ void Unit::setMoveCanFly(bool set_fly)
             WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 13);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
-            data << uint32(2);
+            data << uint32_t(2);
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_MOVE_SET_CAN_FLY);
 #endif
@@ -1596,7 +1596,7 @@ void Unit::setMoveCanFly(bool set_fly)
             WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
-            data << uint32(5);
+            data << uint32_t(5);
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_MOVE_UNSET_CAN_FLY);
 #endif
@@ -1645,7 +1645,7 @@ void Unit::setMoveRoot(bool set_root)
             WorldPacket data(SMSG_FORCE_MOVE_ROOT, 12);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32_t(0);
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_FORCE_MOVE_ROOT);
 #endif
@@ -1659,7 +1659,7 @@ void Unit::setMoveRoot(bool set_root)
             WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 12);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32_t(0);
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_FORCE_MOVE_UNROOT);
 #endif
@@ -1740,7 +1740,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
             WorldPacket data(SMSG_MOVE_GRAVITY_DISABLE, 13);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32_t(0);
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_MOVE_GRAVITY_DISABLE);
 #endif
@@ -1753,7 +1753,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
             WorldPacket data(SMSG_MOVE_GRAVITY_ENABLE, 13);
 #if VERSION_STRING < Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32_t(0);
 #else
             obj_movement_info.writeMovementInfo(data, SMSG_MOVE_GRAVITY_ENABLE);
 #endif
@@ -1893,7 +1893,7 @@ void Unit::handleFall(MovementInfo const& movementInfo)
     if (!m_zAxisPosition)
         m_zAxisPosition = movementInfo.getPosition()->z;
 
-    uint32 falldistance = float2int32(m_zAxisPosition - movementInfo.getPosition()->z);
+    uint32_t falldistance = float2int32(m_zAxisPosition - movementInfo.getPosition()->z);
     if (m_zAxisPosition <= movementInfo.getPosition()->z)
         falldistance = 1;
 
@@ -2046,9 +2046,9 @@ void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
         WorldPacket self;
         self.Initialize(moveTypeToOpcode[mtype][1], mtype != TYPE_RUN ? 8 + 4 + 4 : 8 + 4 + 1 + 4);
         self << GetNewGUID();
-        self << (uint32)0;                                  // Movement counter.
+        self << (uint32_t)0;                                  // Movement counter.
         if (mtype == TYPE_RUN)
-            self << uint8(1);                               // unknown byte added in 2.1.0
+            self << uint8_t(1);                               // unknown byte added in 2.1.0
         self << float(rate);
 
         player_mover->sendPacket(&self);
@@ -2350,12 +2350,12 @@ UnitSpeedType Unit::getFastestSpeedType() const
 
 bool Unit::getSpeedDecrease()
 {
-    int32 before = m_speedModifier;
+    int32_t before = m_speedModifier;
     m_speedModifier -= m_slowdown;
     m_slowdown = 0;
 
     for (auto& itr : speedReductionMap)
-        m_slowdown = static_cast<int32>(std::min(m_slowdown, itr.second));
+        m_slowdown = static_cast<int32_t>(std::min(m_slowdown, itr.second));
 
     if (m_slowdown < -100)
         m_slowdown = 100;
@@ -2572,7 +2572,7 @@ void Unit::setStunned(bool apply)
     }
 }
 
-void Unit::updateSplineMovement(uint32 t_diff)
+void Unit::updateSplineMovement(uint32_t t_diff)
 {
     if (movespline->Finalized())
         return;
@@ -4818,7 +4818,7 @@ uint64_t Unit::getSingleTargetGuidForAura(uint32_t spell)
 
 uint64_t Unit::getSingleTargetGuidForAura(uint32_t const* spellIds, uint32_t* index)
 {
-    for (uint8 i = 0; ; i++)
+    for (uint8_t i = 0; ; i++)
     {
         if (!spellIds[i])
             return 0;
@@ -6216,7 +6216,7 @@ void Unit::emote(EmoteType emote)
     sendMessageToSet(SmsgEmote(emote, this->getGuid()).serialise().get(), true);
 }
 
-void Unit::eventAddEmote(EmoteType emote, uint32 time)
+void Unit::eventAddEmote(EmoteType emote, uint32_t time)
 {
     m_oldEmote = getEmoteState();
     setEmoteState(emote);
