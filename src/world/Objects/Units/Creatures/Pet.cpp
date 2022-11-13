@@ -1971,7 +1971,7 @@ void Pet::UpdateAP()
     uint32 str = getStat(STAT_STRENGTH);
     uint32 AP = (str * 2 - 20);
     if (m_Owner)
-        AP += m_Owner->GetRAP() * 22 / 100;
+        AP += m_Owner->getCalculatedRangedAttackPower() * 22 / 100;
 
     if (static_cast<int32>(AP) < 0)
         AP = 0;

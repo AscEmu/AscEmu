@@ -563,6 +563,11 @@ public:
     CombatHandler& getCombatHandler();
     CombatHandler const& getCombatHandler() const;
 
+    int32_t getCalculatedAttackPower();
+    int32_t getCalculatedRangedAttackPower();
+
+    bool canReachWithAttack(Unit* unitTarget);
+
 private:
     CombatHandler m_combatHandler;
 
@@ -871,6 +876,9 @@ public:
     AuraEffectList const& getAuraEffectList(AuraEffect effect) const;
     VisualAuraArray const& getVisualAuraList() const;
 
+    bool isPoisoned();
+    bool isDazed() const;
+
 private:
     // Inserts aura into aura containers
     void _addAura(Aura* aur);
@@ -1056,6 +1064,8 @@ public:
     void removeGameObject(uint32_t spellid, bool del);
     void removeAllGameObjects();
 
+    void deMorph();
+
 private:
     uint32_t m_attackTimer[TOTAL_WEAPON_DAMAGE_TYPES] = {0};
     //\ todo: there seems to be new haste update fields in playerdata in cata, and moved to unitdata in mop
@@ -1194,7 +1204,7 @@ public:
 
     virtual void Deactivate(WorldMap* mgr);
 
-    bool  canReachWithAttack(Unit* pVictim);
+    
 
     //// Combat
     uint32_t GetSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, Spell* castingSpell);
@@ -1206,14 +1216,10 @@ public:
     void RemoveExtraStrikeTarget(SpellInfo const* spell_info);
     void AddExtraStrikeTarget(SpellInfo const* spell_info, uint32_t charges);
 
-    int32_t GetAP();
-    int32_t GetRAP();
-
     void CalculateResistanceReduction(Unit* pVictim, DamageInfo* dmg, SpellInfo const* ability, float ArmorPctReduce);
-    void DeMorph();
+    
     uint32_t ManaShieldAbsorb(uint32_t dmg);
 
-    bool IsDazed();
     //this function is used for creatures to get chance to daze for another unit
     float get_chance_to_daze(Unit* target);
 
@@ -1233,8 +1239,6 @@ public:
     bool AuraActionIf(AuraAction* action, AuraCondition* condition);
 
     void EventRemoveAura(uint32_t SpellId) { removeAllAurasById(SpellId); }
-
-    bool IsPoisoned();
 
     void GiveGroupXP(Unit* pVictim, Player* PlayerInGroup);
 

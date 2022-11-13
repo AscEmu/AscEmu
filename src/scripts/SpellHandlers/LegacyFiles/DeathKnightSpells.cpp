@@ -298,7 +298,7 @@ bool DeathAndDecay(uint8_t effectIndex, Aura* pAura, bool apply)
             return true;
 
         SpellForcedBasePoints forcedBasePoints;
-        forcedBasePoints.set(EFF_INDEX_0, static_cast<uint32_t>(pAura->getEffectDamage(effectIndex) + caster->GetAP() * 0.064));
+        forcedBasePoints.set(EFF_INDEX_0, static_cast<uint32_t>(pAura->getEffectDamage(effectIndex) + caster->getCalculatedAttackPower() * 0.064));
 
         caster->castSpell(pAura->getOwner(), 52212, forcedBasePoints, true);
     }

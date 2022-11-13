@@ -4132,7 +4132,7 @@ void Player::CalcDamage()
     float r;
     int ss = getShapeShiftForm();
     /////////////////MAIN HAND
-    float ap_bonus = GetAP() / 14000.0f;
+    float ap_bonus = getCalculatedAttackPower() / 14000.0f;
     float delta = (float)getModDamageDonePositive(SCHOOL_NORMAL) - (float)getModDamageDoneNegative(SCHOOL_NORMAL);
 
     if (IsInFeralForm())
@@ -4311,7 +4311,7 @@ void Player::CalcDamage()
         {
             //                ap_bonus = (getRangedAttackPower()+(int32)getRangedAttackPowerMods())/14000.0;
             //modified by Zack : please try to use premade functions if possible to avoid forgetting stuff
-            ap_bonus = GetRAP() / 14000.0f;
+            ap_bonus = getCalculatedRangedAttackPower() / 14000.0f;
             bonus = ap_bonus * it->getItemProperties()->Delay;
 
             if (getAmmoId() && !m_requiresNoAmmo)
@@ -4365,7 +4365,7 @@ uint32 Player::GetMainMeleeDamage(uint32 AP_owerride)
     if (AP_owerride)
         ap_bonus = AP_owerride / 14000.0f;
     else
-        ap_bonus = GetAP() / 14000.0f;
+        ap_bonus = getCalculatedAttackPower() / 14000.0f;
 
     if (IsInFeralForm())
     {

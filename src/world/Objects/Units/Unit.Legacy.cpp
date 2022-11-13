@@ -43,13 +43,11 @@
 #include "Spell/Definitions/SpellDidHitResult.hpp"
 #include "Creatures/Pet.h"
 #include "Management/ItemInterface.h"
-#include "Server/Packets/SmsgUpdateAuraDuration.h"
-#include "Server/Packets/SmsgSpellDamageShield.h"
-#include "Server/Packets/SmsgAttackSwingBadFacing.h"
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Movement/Spline/MovementPacketBuilder.h"
-#include "Server/Packets/SmsgMessageChat.h"
+#include "Server/Packets/SmsgAttackSwingBadFacing.h"
+#include "Server/Packets/SmsgSpellDamageShield.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 
@@ -465,221 +463,6 @@ static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
     0.0136512559131f    // 85
 };
 #endif
-
-void Unit::Update(unsigned long time_passed)
-{
-    const auto msTime = Util::getMSTime();
-    
-    auto diff = msTime - m_lastSpellUpdateTime;
-    if (diff >= 100)
-    {
-        // Spells and auras are updated every 100ms
-        _UpdateSpells(diff);
-        _updateAuras(diff);
-
-        // Update spell school lockout timer
-        // TODO: Moved here from Spell::CanCast, figure out a better way to handle this... -Appled
-        for (uint8_t i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
-        {
-            if (SchoolCastPrevent[i] == 0)
-                continue;
-
-            if (msTime >= SchoolCastPrevent[i])
-                SchoolCastPrevent[i] = 0;
-        }
-
-        RemoveGarbage();
-
-        m_lastSpellUpdateTime = msTime;
-    }
-
-    if (isAlive())
-    {
-        // Update health batch
-        if (time_passed >= m_healthBatchTime)
-        {
-            _updateHealth();
-            m_healthBatchTime = HEALTH_BATCH_INTERVAL;
-        }
-        else
-        {
-            m_healthBatchTime -= static_cast<uint16_t>(time_passed);
-        }
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        //POWER & HP REGENERATION
-        regenerateHealthAndPowers(static_cast<uint16_t>(time_passed));
-
-#if VERSION_STRING >= WotLK
-        // Send power amount to nearby players
-        if (time_passed >= m_powerUpdatePacketTime)
-        {
-            m_powerUpdatePacketTime = REGENERATION_PACKET_UPDATE_INTERVAL;
-
-            switch (getPowerType())
-            {
-                case POWER_TYPE_MANA:
-                    setPower(POWER_TYPE_MANA, m_manaAmount);
-                    break;
-                case POWER_TYPE_RAGE:
-                    setPower(POWER_TYPE_RAGE, m_rageAmount);
-                    break;
-                case POWER_TYPE_FOCUS:
-                    setPower(POWER_TYPE_FOCUS, m_focusAmount);
-                    break;
-                case POWER_TYPE_ENERGY:
-                    setPower(POWER_TYPE_ENERGY, m_energyAmount);
-                    break;
-                case POWER_TYPE_RUNIC_POWER:
-                    setPower(POWER_TYPE_RUNIC_POWER, m_runicPowerAmount);
-                    break;
-                default:
-                    break;
-            }
-        }
-        else
-        {
-            m_powerUpdatePacketTime -= static_cast<uint16_t>(time_passed);
-        }
-#endif
-
-        if (m_healthRegenerationInterruptTime > 0)
-        {
-            if (time_passed >= m_healthRegenerationInterruptTime)
-                m_healthRegenerationInterruptTime = 0;
-            else
-                m_healthRegenerationInterruptTime -= time_passed;
-        }
-
-#if VERSION_STRING < Cata
-        if (m_powerRegenerationInterruptTime > 0)
-        {
-            if (time_passed >= m_powerRegenerationInterruptTime)
-            {
-                m_powerRegenerationInterruptTime = 0;
-
-#if VERSION_STRING != Classic
-                if (isPlayer())
-                    setUnitFlags2(UNIT_FLAG2_ENABLE_POWER_REGEN);
-#endif
-            }
-            else
-            {
-                m_powerRegenerationInterruptTime -= time_passed;
-            }
-        }
-#endif
-
-        if (m_aiInterface != nullptr)
-        {
-            diff = msTime - m_lastAiInterfaceUpdateTime;
-            if (diff >= 100)
-            {
-                m_aiInterface->Update(diff);
-                m_lastAiInterfaceUpdateTime = msTime;
-            }
-        }
-        getThreatManager().update(time_passed);
-        getCombatHandler().updateCombat(msTime);
-        updateSplineMovement(time_passed);
-        getMovementManager()->update(time_passed);
-
-        if (m_diminishActive)
-        {
-            uint32_t count = 0;
-            for (uint32_t x = 0; x < DIMINISHING_GROUP_COUNT; ++x)
-            {
-                // diminishing return stuff
-                if (m_diminishTimer[x] && !m_diminishAuraCount[x])
-                {
-                    if (time_passed >= m_diminishTimer[x])
-                    {
-                        // resetting after 15 sec
-                        m_diminishTimer[x] = 0;
-                        m_diminishCount[x] = 0;
-                    }
-                    else
-                    {
-                        // reducing, still.
-                        m_diminishTimer[x] -= static_cast<uint16_t>(time_passed);
-                        ++count;
-                    }
-                }
-            }
-            if (!count)
-                m_diminishActive = false;
-        }
-    }
-    else
-    {
-        // Small chance that aura states are readded after they have been cleared in ::Die
-        // so make sure they are removed when unit is dead
-        if (getAuraState() != 0)
-            setAuraState(0);
-    }
-}
-
-bool Unit::canReachWithAttack(Unit* pVictim)
-{
-    if (GetMapId() != pVictim->GetMapId())
-        return false;
-
-    // float targetreach = pVictim->getCombatReach();
-    float selfreach;
-    if (isPlayer())
-        selfreach = 5.0f; // minimum melee range, getCombatReach() is too small and used eg. in melee spells
-    else
-        selfreach = getCombatReach();
-
-    float targetradius;
-    // targetradius = pVictim->getBoundingRadius(); //this is plain wrong. Represents i have no idea what :)
-    targetradius = pVictim->GetModelHalfSize();
-    float selfradius;
-    // selfradius = getBoundingRadius();
-    selfradius = GetModelHalfSize();
-    // float targetscale = pVictim->getScale();
-    // float selfscale = getScale();
-
-    //float distance = std::sqrt(getDistanceSq(pVictim));
-    float delta_x = pVictim->GetPositionX() - GetPositionX();
-    float delta_y = pVictim->GetPositionY() - GetPositionY();
-    float distance = std::sqrt(delta_x * delta_x + delta_y * delta_y);
-
-
-    // float attackreach = (((targetradius*targetscale) + selfreach) + (((selfradius*selfradius)*selfscale)+1.50f));
-    float attackreach = targetradius + selfreach + selfradius;
-
-    //formula adjustment for player side.
-    if (isPlayer())
-    {
-        // latency compensation!!
-        // figure out how much extra distance we need to allow for based on our movespeed and latency.
-        if (pVictim->isPlayer() && static_cast<Player*>(pVictim)->isMoving())
-        {
-            // this only applies to PvP.
-            uint32_t lat = static_cast<Player*>(pVictim)->getSession() ? static_cast<Player*>(pVictim)->getSession()->GetLatency() : 0;
-
-            // if we're over 500 get fucked anyway.. your gonna lag! and this stops cheaters too
-            lat = (lat > 500) ? 500 : lat;
-
-            // calculate the added distance
-            attackreach += getSpeedRate(TYPE_RUN, true) * 0.001f * lat;
-        }
-
-        if (static_cast<Player*>(this)->isMoving())
-        {
-            // this only applies to PvP.
-            uint32_t lat = static_cast<Player*>(this)->getSession() ? static_cast<Player*>(this)->getSession()->GetLatency() : 0;
-
-            // if we're over 500 get fucked anyway.. your gonna lag! and this stops cheaters too
-            lat = (lat > 500) ? 500 : lat;
-
-            // calculate the added distance
-            attackreach += getSpeedRate(TYPE_RUN, true) * 0.001f * lat;
-        }
-    }
-    return (distance <= attackreach);
-}
 
 void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
 {
@@ -7809,14 +7592,6 @@ bool Unit::AuraActionIf(AuraAction* action, AuraCondition* condition)
     return done;
 }
 
-void Unit::DeMorph()
-{
-    // hope it solves it :)
-    uint32_t displayid = this->getNativeDisplayId();
-    this->setDisplayId(displayid);
-    EventModelChange();
-}
-
 void Unit::CalcDamage()
 {
     if (isPlayer())
@@ -7826,7 +7601,7 @@ void Unit::CalcDamage()
         if (isPet())
             static_cast<Pet*>(this)->UpdateAP();
 
-        float ap_bonus = GetAP() / 14000.0f;
+        float ap_bonus = getCalculatedAttackPower() / 14000.0f;
 
         float bonus = ap_bonus * (getBaseAttackTime(MELEE) + static_cast<Creature*>(this)->m_speedFromHaste);
 
@@ -7973,94 +7748,6 @@ AuraCheckResponse Unit::AuraCheck(SpellInfo const* proto, Aura* aur, Object* /*c
     return resp;
 }
 
-void Unit::OnPushToWorld()
-{
-    //Zack : we already relocated events on aura add ?
-    for (const auto& aur : getAuraList())
-    {
-        if (aur != nullptr)
-            aur->RelocateEvents();
-    }
-
-#if VERSION_STRING >= WotLK
-    if (isVehicle())
-    {
-        if (getVehicleKit() != nullptr)
-        {
-            getVehicleKit()->initialize();
-            getVehicleKit()->loadAllAccessories(false);
-        }
-    }
-
-    m_zAxisPosition = 0.0f;
-#endif
-
-    getMovementManager()->addToWorld();
-}
-
-//! Remove Unit from world
-void Unit::RemoveFromWorld(bool free_guid)
-{
-#ifdef FT_VEHICLES
-    removeVehicleKit();
-#endif
-    removeAllFollowers();
-
-    getCombatHandler().onRemoveFromWorld();
-#if VERSION_STRING > TBC
-    if (getCritterGuid() != 0)
-    {
-        setCritterGuid(0);
-
-        if (Unit* u = m_WorldMap->getUnit(getCritterGuid()))
-            u->Delete();
-    }
-#endif
-
-    if (dynObj != 0)
-        dynObj->Remove();
-
-    for (uint8_t i = 0; i < 4; ++i)
-    {
-        if (m_ObjectSlots[i] != 0)
-        {
-            if (GameObject* obj = m_WorldMap->getGameObject(m_ObjectSlots[i]))
-                obj->expireAndDelete();
-
-            m_ObjectSlots[i] = 0;
-        }
-    }
-
-    clearAllAreaAuraTargets();
-    removeAllAreaAurasCastedByOther();
-
-    // Attempt to prevent memory corruption
-    for (auto& obj : getInRangeObjectsSet())
-    {
-        if (!obj->isCreatureOrPlayer())
-            continue;
-
-        static_cast<Unit*>(obj)->clearCasterFromHealthBatch(this);
-    }
-
-    Object::RemoveFromWorld(free_guid);
-
-    //zack: should relocate new events to new eventmanager and not to -1
-    for (uint16_t x = AuraSlots::TOTAL_SLOT_START; x < AuraSlots::TOTAL_SLOT_END; ++x)
-    {
-        if (auto* const aur = getAuraWithAuraSlot(x))
-        {
-            if (aur->m_deleted)
-            {
-                m_auraList[x] = nullptr;
-                continue;
-            }
-            aur->RelocateEvents();
-        }
-    }
-    getThreatManager().removeMeFromThreatLists();
-}
-
 void Unit::Deactivate(WorldMap* mgr)
 {
     if (m_useAI)
@@ -8068,36 +7755,6 @@ void Unit::Deactivate(WorldMap* mgr)
 
     getCombatHandler().clearCombat();
     Object::Deactivate(mgr);
-}
-
-bool Unit::IsPoisoned()
-{
-    for (uint16_t x = AuraSlots::NEGATIVE_SLOT_START; x < AuraSlots::NEGATIVE_SLOT_END; ++x)
-    {
-        const auto* aur = getAuraWithAuraSlot(x);
-        if (aur && aur->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_POISON)
-            return true;
-    }
-
-    return false;
-}
-
-bool Unit::IsDazed()
-{
-    for (const auto& aur : getAuraList())
-    {
-        if (aur)
-        {
-            if (aur->getSpellInfo()->getMechanicsType() == MECHANIC_ENSNARED)
-                return true;
-
-            for (uint8_t y = 0; y < 3; y++)
-                if (aur->getSpellInfo()->getEffectMechanic(y) == MECHANIC_ENSNARED)
-                    return true;
-        }
-    }
-
-    return false;
 }
 
 void Unit::UpdateVisibility()
@@ -8213,24 +7870,6 @@ void Unit::UpdateVisibility()
             }
         }
     }
-}
-
-int32_t Unit::GetAP()
-{
-    int32_t baseap = getAttackPower() + getAttackPowerMods();
-    float totalap = baseap * (getAttackPowerMultiplier() + 1);
-    if (totalap >= 0)
-        return float2int32(totalap);
-    return 0;
-}
-
-int32_t Unit::GetRAP()
-{
-    int32_t baseap = getRangedAttackPower() + getRangedAttackPowerMods();
-    float totalap = baseap * (getRangedAttackPowerMultiplier() + 1);
-    if (totalap >= 0)
-        return float2int32(totalap);
-    return 0;
 }
 
 float Unit::get_chance_to_daze(Unit* target)

@@ -2280,9 +2280,9 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                         value += float2int32(getSpellInfo()->getEffectBasePoints(0) + weapondmg / (it->getItemProperties()->Delay / 1000.0f) * 2.8f);
                     }
                 }
-                if (target && target->IsDazed())
+                if (target && target->isDazed())
                     value += getSpellInfo()->getEffectBasePoints(1);
-                value += (uint32)(u_caster->GetRAP() * 0.1);
+                value += (uint32)(u_caster->getCalculatedRangedAttackPower() * 0.1);
             }
         } break;
 
@@ -2342,7 +2342,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     {
                         float avgwepdmg = (it->getItemProperties()->Damage[0].Min + it->getItemProperties()->Damage[0].Max) * 0.5f;
                         float wepspd = (it->getItemProperties()->Delay * 0.001f);
-                        int32 dmg = float2int32((avgwepdmg)+p_caster->GetAP() / 14 * wepspd);
+                        int32 dmg = float2int32((avgwepdmg)+p_caster->getCalculatedAttackPower() / 14 * wepspd);
 
                         if (target && target->getHealthPct() > 75)
                         {
@@ -2411,7 +2411,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 71933:
         {
             if (p_caster != nullptr)
-                value += (uint32)(p_caster->GetAP() * 0.03f * p_caster->getComboPoints());
+                value += (uint32)(p_caster->getCalculatedAttackPower() * 0.03f * p_caster->getComboPoints());
         } break;
 
         // SPELL_HASH_FEROCIOUS_BITE:
@@ -2427,7 +2427,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         {
             if (p_caster != nullptr)
             {
-                value += (uint32)((p_caster->GetAP() * 0.1526f) + (p_caster->getPower(POWER_TYPE_ENERGY) * getSpellInfo()->getEffectDamageMultiplier(static_cast<uint8_t>(i))));
+                value += (uint32)((p_caster->getCalculatedAttackPower() * 0.1526f) + (p_caster->getPower(POWER_TYPE_ENERGY) * getSpellInfo()->getEffectDamageMultiplier(static_cast<uint8_t>(i))));
                 p_caster->setPower(POWER_TYPE_ENERGY, 0);
             }
         } break;
@@ -2437,7 +2437,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         {
             //causing ${$AP*$m1/100} damage
             if (u_caster != nullptr && i == 0)
-                value = (value * u_caster->GetAP()) / 100;
+                value = (value * u_caster->getCalculatedAttackPower()) / 100;
         } break;
 
         // SPELL_HASH_RAKE:
@@ -2465,7 +2465,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             //Rake the target for ${$AP/100+$m1} bleed damage and an additional ${$m2*3+$AP*0.06} damage over $d.
             if (u_caster != nullptr)
             {
-                float ap = float(u_caster->GetAP());
+                float ap = float(u_caster->getCalculatedAttackPower());
                 if (i == 0)
                     value += float2int32(ceilf(ap * 0.01f)); // / 100
                 else if (i == 1)
@@ -2490,7 +2490,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             // WoWWiki says +(0.18 * attack power / number of ticks)
             // Tooltip gives no specific reading, but says ", increased by your attack power.".
             if (u_caster != nullptr && i == 0)
-                value += (uint32)ceilf((u_caster->GetAP() * 0.07f) / 6);
+                value += (uint32)ceilf((u_caster->getCalculatedAttackPower() * 0.07f) / 6);
         } break;
 
         // SPELL_HASH_RUPTURE:
@@ -2517,7 +2517,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             if (p_caster != nullptr && i == 0)
             {
                 int8 cp = p_caster->getComboPoints();
-                value += (uint32)ceilf((u_caster->GetAP() * 0.04f * cp) / ((6 + (cp << 1)) >> 1));
+                value += (uint32)ceilf((u_caster->getCalculatedAttackPower() * 0.04f * cp) / ((6 + (cp << 1)) >> 1));
             }
         } break;
 
@@ -2538,7 +2538,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 71926:
         {
             if (p_caster != nullptr)
-                value += float2int32(p_caster->GetAP() * 0.01f * p_caster->getComboPoints());
+                value += float2int32(p_caster->getCalculatedAttackPower() * 0.01f * p_caster->getComboPoints());
         } break;
 
         // SPELL_HASH_MONGOOSE_BITE:
@@ -2551,7 +2551,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         {
             // ${$AP*0.2+$m1} damage.
             if (u_caster != nullptr)
-                value += u_caster->GetAP() / 5;
+                value += u_caster->getCalculatedAttackPower() / 5;
         } break;
 
         // SPELL_HASH_SWIPE:
@@ -2567,7 +2567,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         {
             // ${$AP*0.06+$m1} damage.
             if (u_caster != nullptr)
-                value += float2int32(u_caster->GetAP() * 0.06f);
+                value += float2int32(u_caster->getCalculatedAttackPower() * 0.06f);
         } break;
 
         // SPELL_HASH_HAMMER_OF_THE_RIGHTEOUS:
@@ -2654,7 +2654,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             {
                 Item* mit = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                 if (mit != nullptr)
-                    value = (p_caster->GetAP() * 22 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 44) * mit->getItemProperties()->Delay / 1000000;
+                    value = (p_caster->getCalculatedAttackPower() * 22 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 44) * mit->getItemProperties()->Delay / 1000000;
             }
         } break;
 
@@ -2664,7 +2664,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 31803:
         {
             if (p_caster != nullptr)
-                value = (p_caster->GetAP() * 25 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 13) / 1000;
+                value = (p_caster->getCalculatedAttackPower() * 25 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 13) / 1000;
         } break;
 
         // SPELL_HASH_JUDGEMENT:
@@ -2677,14 +2677,14 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 54158:
         {
             if (p_caster != nullptr)
-                value += (p_caster->GetAP() * 16 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 25) / 100;
+                value += (p_caster->getCalculatedAttackPower() * 16 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 25) / 100;
         } break;
 
         // SPELL_HASH_JUDGEMENT_OF_RIGHTEOUSNESS:
         case 20187:
         {
             if (p_caster != nullptr)
-                value += (p_caster->GetAP() * 2 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 32) / 100;
+                value += (p_caster->getCalculatedAttackPower() * 2 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 32) / 100;
         } break;
 
         // SPELL_HASH_JUDGEMENT_OF_VENGEANCE:
@@ -2693,7 +2693,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 53733:
         {
             if (p_caster != nullptr)
-                value += (p_caster->GetAP() * 14 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 22) / 100;
+                value += (p_caster->getCalculatedAttackPower() * 14 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 22) / 100;
         } break;
 
         // SPELL_HASH_ENVENOM:
@@ -2709,7 +2709,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             if (p_caster != nullptr && i == 0)
             {
                 value *= p_caster->getComboPoints();
-                value += (uint32)(p_caster->GetAP() * (0.09f * p_caster->getComboPoints()));
+                value += (uint32)(p_caster->getCalculatedAttackPower() * (0.09f * p_caster->getComboPoints()));
             }
         } break;
 
@@ -2730,7 +2730,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 38863:
         {
             if (u_caster != nullptr && i == 0)
-                value += (uint32)ceilf(u_caster->GetAP() * 0.21f);
+                value += (uint32)ceilf(u_caster->getCalculatedAttackPower() * 0.21f);
         } break;
         default:
         {
@@ -2829,7 +2829,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     case 72329:
                     case 72330:
                         if (getSpellInfo()->getEffectApplyAuraName(static_cast<uint8_t>(i)) == SPELL_AURA_PERIODIC_DAMAGE)
-                            value += float2int32(u_caster->GetAP() * 0.03f);
+                            value += float2int32(u_caster->getCalculatedAttackPower() * 0.03f);
                         break;
                     // SPELL_HASH_INSTANT_POISON_IX:
                     case 57965:
@@ -2862,7 +2862,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     case 41189:
                     case 59242:
                         if (getSpellInfo()->getEffect(static_cast<uint8_t>(i)) == SPELL_EFFECT_SCHOOL_DAMAGE)
-                            value += float2int32(u_caster->GetAP() * 0.10f);
+                            value += float2int32(u_caster->getCalculatedAttackPower() * 0.10f);
                         break;
                     // SPELL_HASH_WOUND_POISON_VII:
                     case 57975:
@@ -2892,7 +2892,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     case 54074:
                     case 65962:
                         if (getSpellInfo()->getEffect(static_cast<uint8_t>(i)) == SPELL_EFFECT_SCHOOL_DAMAGE)
-                            value += float2int32(u_caster->GetAP() * 0.04f);
+                            value += float2int32(u_caster->getCalculatedAttackPower() * 0.04f);
                         break;
                 }
             }

@@ -1037,12 +1037,12 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 71116:
             {
                 if (u_caster)
-                    dmg += float2int32(u_caster->GetRAP() * 0.15f);
+                    dmg += float2int32(u_caster->getCalculatedRangedAttackPower() * 0.15f);
                 dmg = float2int32(dmg * (0.9f + Util::getRandomFloat(0.2f)));      // randomized damage
 
                 if (p_caster != nullptr)
                 {
-                    dmg = static_cast<uint32>(std::round((p_caster->GetRAP() * 0.15) + m_spellInfo->getEffectBasePoints(effectIndex)));
+                    dmg = static_cast<uint32>(std::round((p_caster->getCalculatedRangedAttackPower() * 0.15) + m_spellInfo->getEffectBasePoints(effectIndex)));
                 }
             } break;
 
@@ -1086,7 +1086,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 60019:
             {
                 if (u_caster)
-                    dmg = (getSpellInfo()->calculateEffectValue(0)) + float2int32(u_caster->GetAP() * 0.12f);
+                    dmg = (getSpellInfo()->calculateEffectValue(0)) + float2int32(u_caster->getCalculatedAttackPower() * 0.12f);
             } break;
 
             // SPELL_HASH_SHOCKWAVE:      // Shockwave
@@ -1111,7 +1111,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 75418:
             {
                 if (u_caster)
-                    dmg = u_caster->GetAP() * (getSpellInfo()->calculateEffectValue(2)) / 100;
+                    dmg = u_caster->getCalculatedAttackPower() * (getSpellInfo()->calculateEffectValue(2)) / 100;
             } break;
 
             // SPELL_HASH_JUDGEMENT_OF_COMMAND:
@@ -1193,7 +1193,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 if (p_caster != nullptr)
                 {
                     uint32 sph = p_caster->getModDamageDonePositive(SCHOOL_HOLY);
-                    int32 ap = p_caster->GetAP();
+                    int32 ap = p_caster->getCalculatedAttackPower();
                     dmg += float2int32((0.15f * sph) + (0.15f * ap));
                     if (unitTarget && unitTarget->isCreature())
                     {
@@ -1247,9 +1247,9 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 57755:
             {
                 if (u_caster)
-                    dmg = u_caster->GetAP() / 2 + 12;
+                    dmg = u_caster->getCalculatedAttackPower() / 2 + 12;
                 if (p_caster != nullptr)
-                    dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.5));
+                    dmg = static_cast<uint32>(std::round(p_caster->getCalculatedAttackPower() * 0.5));
             } break;
 
             //SPELL_HASH_SHIELD_SLAM
@@ -1306,7 +1306,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             {
                 if (p_caster != nullptr)
                 {
-                    dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.5));
+                    dmg = static_cast<uint32>(std::round(p_caster->getCalculatedAttackPower() * 0.5));
                     break;
                 }
             }
@@ -1341,7 +1341,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 60017:
             case 71938:
             {
-                dmg = u_caster->GetAP() * (getSpellInfo()->calculateEffectValue(0)) / 100;
+                dmg = u_caster->getCalculatedAttackPower() * (getSpellInfo()->calculateEffectValue(0)) / 100;
             } break;
 
             //SPELL_HASH_CONCUSSION_BLOW
@@ -1354,7 +1354,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 //3.2.2
                 //[Concussion Blow]: The damage done by this ability has been reduced by 50%,
                 //but its threat generation will remain approximately the same.
-                dmg = u_caster->GetAP() * (getSpellInfo()->calculateEffectValue(2)) / 100;
+                dmg = u_caster->getCalculatedAttackPower() * (getSpellInfo()->calculateEffectValue(2)) / 100;
             } break;
 
             // SPELL_HASH_INTERCEPT
@@ -1362,7 +1362,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             {
                 if (p_caster != nullptr)
                 {
-                    dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.12));
+                    dmg = static_cast<uint32>(std::round(p_caster->getCalculatedAttackPower() * 0.12));
                     break;
                 }
             }
@@ -1398,7 +1398,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 67573:
             {
                 if (u_caster)
-                    dmg = float2int32(u_caster->GetAP() * 0.12f);
+                    dmg = float2int32(u_caster->getCalculatedAttackPower() * 0.12f);
             } break;
 
             case 5308:
@@ -1412,7 +1412,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 47471:
             {
                 if (p_caster != nullptr)
-                    dmg = p_caster->GetAP() * ((m_spellInfo->calculateEffectValue(0)) / 100);
+                    dmg = p_caster->getCalculatedAttackPower() * ((m_spellInfo->calculateEffectValue(0)) / 100);
             }break;
 
             //SPELL_HASH_SHIELD_SLAM
@@ -1440,7 +1440,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 if (p_caster != nullptr)
                 {
                     p_caster->removeAuraStateAndAuras(AURASTATE_FLAG_SWIFTMEND);
-                    dmg = (p_caster->GetAP()*(m_spellInfo->getEffectBasePoints(effectIndex) + 1)) / 100;
+                    dmg = (p_caster->getCalculatedAttackPower()*(m_spellInfo->getEffectBasePoints(effectIndex) + 1)) / 100;
                 }
             }break;
             case 6572:
@@ -1454,12 +1454,12 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 57823:
             {
                 if (p_caster != nullptr)
-                    dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.207));
+                    dmg = static_cast<uint32>(std::round(p_caster->getCalculatedAttackPower() * 0.207));
             }break;
 
             case 64382:
                 if (p_caster != nullptr)
-                    dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.5));
+                    dmg = static_cast<uint32>(std::round(p_caster->getCalculatedAttackPower() * 0.5));
                 break;
 
             case 29707:
@@ -1470,7 +1470,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 /* Possibly broken (infinity loop) -- ask Zyres
                 if (p_caster != nullptr)
                 {
-                    if (unitTarget->IsDazed())
+                    if (unitTarget->isDazed())
                         for (uint32 i = UNIT_FIELD_AURASTATE; i < AURASTATE_FLAG_SWIFTMEND; i)
                         {
                             switch (m_spellInfo->getId())
@@ -1557,7 +1557,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 25742:
             {
                 if (p_caster != nullptr)
-                    dmg = static_cast<uint32>(std::round(p_caster->getBaseAttackTime(MELEE) / 1000 * ((0.022 * (p_caster->GetAP()) + (0.044 * (p_caster->GetDamageDoneMod(1))))) + m_spellInfo->getEffectBasePoints(effectIndex)));
+                    dmg = static_cast<uint32>(std::round(p_caster->getBaseAttackTime(MELEE) / 1000 * ((0.022 * (p_caster->getCalculatedAttackPower()) + (0.044 * (p_caster->GetDamageDoneMod(1))))) + m_spellInfo->getEffectBasePoints(effectIndex)));
             }break;
             case 19434:
             case 20900:
@@ -1599,10 +1599,10 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                     uint32 stundmg;
                     float bowdmg;
                     float ammodmg;
-                    if (unitTarget->IsDazed())
-                        stundmg = p_caster->GetRAP() / 10 + m_spellInfo->getEffectBasePoints(effectIndex) + m_spellInfo->getEffectBasePoints(effectIndex + 1);
+                    if (unitTarget->isDazed())
+                        stundmg = p_caster->getCalculatedRangedAttackPower() / 10 + m_spellInfo->getEffectBasePoints(effectIndex) + m_spellInfo->getEffectBasePoints(effectIndex + 1);
                     else
-                        stundmg = p_caster->GetRAP() / 10 + m_spellInfo->getEffectBasePoints(effectIndex);
+                        stundmg = p_caster->getCalculatedRangedAttackPower() / 10 + m_spellInfo->getEffectBasePoints(effectIndex);
                     if (pItem)
                         bowdmg = (pItem->getItemProperties()->Damage[0].Min + pItem->getItemProperties()->Damage[0].Max) * 0.2f;
                     else
@@ -3198,7 +3198,7 @@ void Spell::SpellEffectEnergize(uint8_t effectIndex) // Energize
     switch (getSpellInfo()->getId())
     {
         case 30824: // Shamanistic Rage
-            modEnergy = damage * GetUnitTarget()->GetAP() / 100;
+            modEnergy = damage * GetUnitTarget()->getCalculatedAttackPower() / 100;
             break;
         case 31786: // Paladin - Spiritual Attunement
             if (ProcedOnSpell)
@@ -5696,7 +5696,7 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
 
     //rogue - mutilate ads dmg if target is poisoned
     uint32 pct_dmg_mod = 100;
-    if (unitTarget->IsPoisoned())
+    if (unitTarget->isPoisoned())
     {
         switch (getSpellInfo()->getId())
         {

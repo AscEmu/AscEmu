@@ -4821,7 +4821,7 @@ void Aura::SpellAuraModSpellDamageByAP(AuraEffectModifier* aurEff, bool apply)
         if (pCaster == nullptr)
             return;
 
-        val = aurEff->getEffectDamage() * pCaster->GetAP() / 100;
+        val = aurEff->getEffectDamage() * pCaster->getCalculatedAttackPower() / 100;
         if (val < 0)
             mPositive = false;
         else
@@ -4898,7 +4898,7 @@ void Aura::SpellAuraModHealingByAP(AuraEffectModifier* aurEff, bool apply)
         if (pCaster == nullptr)
             return;
 
-        val = aurEff->getEffectDamage() * pCaster->GetAP() / 100;
+        val = aurEff->getEffectDamage() * pCaster->getCalculatedAttackPower() / 100;
         if (val < 0)
             mPositive = false;
         else

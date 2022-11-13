@@ -48,6 +48,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMoveKnockBack.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Creatures/CreatureGroups.h"
+#include "Objects/DynamicObject.h"
 #include "Server/Script/CreatureAIScript.h"
 
 #if VERSION_STRING <= TBC
@@ -144,6 +145,241 @@ Unit::~Unit()
 
     getThreatManager().clearAllThreat();
     getThreatManager().removeMeFromThreatLists();
+}
+
+void Unit::Update(unsigned long time_passed)
+{
+    const auto msTime = Util::getMSTime();
+
+    auto diff = msTime - m_lastSpellUpdateTime;
+    if (diff >= 100)
+    {
+        // Spells and auras are updated every 100ms
+        _UpdateSpells(diff);
+        _updateAuras(diff);
+
+        // Update spell school lockout timer
+        // TODO: Moved here from Spell::CanCast, figure out a better way to handle this... -Appled
+        for (uint8_t i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
+        {
+            if (SchoolCastPrevent[i] == 0)
+                continue;
+
+            if (msTime >= SchoolCastPrevent[i])
+                SchoolCastPrevent[i] = 0;
+        }
+
+        RemoveGarbage();
+
+        m_lastSpellUpdateTime = msTime;
+    }
+
+    if (isAlive())
+    {
+        // Update health batch
+        if (time_passed >= m_healthBatchTime)
+        {
+            _updateHealth();
+            m_healthBatchTime = HEALTH_BATCH_INTERVAL;
+        }
+        else
+        {
+            m_healthBatchTime -= static_cast<uint16_t>(time_passed);
+        }
+
+        // POWER & HP REGENERATION
+        regenerateHealthAndPowers(static_cast<uint16_t>(time_passed));
+
+#if VERSION_STRING >= WotLK
+        // Send power amount to nearby players
+        if (time_passed >= m_powerUpdatePacketTime)
+        {
+            m_powerUpdatePacketTime = REGENERATION_PACKET_UPDATE_INTERVAL;
+
+            switch (getPowerType())
+            {
+                case POWER_TYPE_MANA:
+                    setPower(POWER_TYPE_MANA, m_manaAmount);
+                    break;
+                case POWER_TYPE_RAGE:
+                    setPower(POWER_TYPE_RAGE, m_rageAmount);
+                    break;
+                case POWER_TYPE_FOCUS:
+                    setPower(POWER_TYPE_FOCUS, m_focusAmount);
+                    break;
+                case POWER_TYPE_ENERGY:
+                    setPower(POWER_TYPE_ENERGY, m_energyAmount);
+                    break;
+                case POWER_TYPE_RUNIC_POWER:
+                    setPower(POWER_TYPE_RUNIC_POWER, m_runicPowerAmount);
+                    break;
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            m_powerUpdatePacketTime -= static_cast<uint16_t>(time_passed);
+        }
+#endif
+
+        if (m_healthRegenerationInterruptTime > 0)
+        {
+            if (time_passed >= m_healthRegenerationInterruptTime)
+                m_healthRegenerationInterruptTime = 0;
+            else
+                m_healthRegenerationInterruptTime -= time_passed;
+        }
+
+#if VERSION_STRING < Cata
+        if (m_powerRegenerationInterruptTime > 0)
+        {
+            if (time_passed >= m_powerRegenerationInterruptTime)
+            {
+                m_powerRegenerationInterruptTime = 0;
+
+#if VERSION_STRING != Classic
+                if (isPlayer())
+                    setUnitFlags2(UNIT_FLAG2_ENABLE_POWER_REGEN);
+#endif
+            }
+            else
+            {
+                m_powerRegenerationInterruptTime -= time_passed;
+            }
+        }
+#endif
+
+        if (m_aiInterface != nullptr)
+        {
+            diff = msTime - m_lastAiInterfaceUpdateTime;
+            if (diff >= 100)
+            {
+                m_aiInterface->Update(diff);
+                m_lastAiInterfaceUpdateTime = msTime;
+            }
+        }
+        getThreatManager().update(time_passed);
+        getCombatHandler().updateCombat(msTime);
+        updateSplineMovement(time_passed);
+        getMovementManager()->update(time_passed);
+
+        if (m_diminishActive)
+        {
+            uint32_t count = 0;
+            for (uint32_t x = 0; x < DIMINISHING_GROUP_COUNT; ++x)
+            {
+                // diminishing return stuff
+                if (m_diminishTimer[x] && !m_diminishAuraCount[x])
+                {
+                    if (time_passed >= m_diminishTimer[x])
+                    {
+                        // resetting after 15 sec
+                        m_diminishTimer[x] = 0;
+                        m_diminishCount[x] = 0;
+                    }
+                    else
+                    {
+                        // reducing, still.
+                        m_diminishTimer[x] -= static_cast<uint16_t>(time_passed);
+                        ++count;
+                    }
+                }
+            }
+            if (!count)
+                m_diminishActive = false;
+        }
+    }
+    else
+    {
+        // Small chance that aura states are readded after they have been cleared in ::Die
+        // so make sure they are removed when unit is dead
+        if (getAuraState() != 0)
+            setAuraState(0);
+    }
+}
+
+void Unit::RemoveFromWorld(bool free_guid)
+{
+#ifdef FT_VEHICLES
+    removeVehicleKit();
+#endif
+    removeAllFollowers();
+
+    getCombatHandler().onRemoveFromWorld();
+
+#if VERSION_STRING > TBC
+    if (getCritterGuid() != 0)
+    {
+        setCritterGuid(0);
+
+        if (Unit* unit = m_WorldMap->getUnit(getCritterGuid()))
+            unit->Delete();
+    }
+#endif
+
+    if (dynObj != nullptr)
+        dynObj->Remove();
+
+    for (unsigned int& m_ObjectSlot : m_ObjectSlots)
+    {
+        if (m_ObjectSlot != 0)
+        {
+            if (GameObject* game_object = m_WorldMap->getGameObject(m_ObjectSlot))
+                game_object->expireAndDelete();
+
+            m_ObjectSlot = 0;
+        }
+    }
+
+    clearAllAreaAuraTargets();
+    removeAllAreaAurasCastedByOther();
+
+    // Attempt to prevent memory corruption
+    for (const auto& object : getInRangeObjectsSet())
+    {
+        if (!object->isCreatureOrPlayer())
+            continue;
+
+        dynamic_cast<Unit*>(object)->clearCasterFromHealthBatch(this);
+    }
+
+    Object::RemoveFromWorld(free_guid);
+
+    for (uint16_t x = AuraSlots::TOTAL_SLOT_START; x < AuraSlots::TOTAL_SLOT_END; ++x)
+    {
+        if (auto* const aura = getAuraWithAuraSlot(x))
+        {
+            if (aura->m_deleted)
+            {
+                m_auraList[x] = nullptr;
+                continue;
+            }
+            aura->RelocateEvents();
+        }
+    }
+    getThreatManager().removeMeFromThreatLists();
+}
+
+void Unit::OnPushToWorld()
+{
+    for (const auto& aura : getAuraList())
+    {
+        if (aura != nullptr)
+            aura->RelocateEvents();
+    }
+
+#if VERSION_STRING >= WotLK
+    if (isVehicle() && getVehicleKit())
+    {
+        getVehicleKit()->initialize();
+        getVehicleKit()->loadAllAccessories(false);
+    }
+
+    m_zAxisPosition = 0.0f;
+#endif
+
+    getMovementManager()->addToWorld();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1316,6 +1552,57 @@ CombatHandler& Unit::getCombatHandler()
 CombatHandler const& Unit::getCombatHandler() const
 {
     return m_combatHandler;
+}
+
+int32_t Unit::getCalculatedAttackPower()
+{
+    int32_t baseap = getAttackPower() + getAttackPowerMods();
+    float totalap = baseap * (getAttackPowerMultiplier() + 1);
+    if (totalap >= 0)
+        return float2int32(totalap);
+    return 0;
+}
+
+int32_t Unit::getCalculatedRangedAttackPower()
+{
+    int32_t baseap = getRangedAttackPower() + getRangedAttackPowerMods();
+    float totalap = baseap * (getRangedAttackPowerMultiplier() + 1);
+    if (totalap >= 0)
+        return float2int32(totalap);
+    return 0;
+}
+
+bool Unit::canReachWithAttack(Unit* unitTarget)
+{
+    if (GetMapId() != unitTarget->GetMapId())
+        return false;
+
+    float selfreach = getCombatReach();
+    if (isPlayer())
+        selfreach = 5.0f;
+
+    float targetradius = unitTarget->GetModelHalfSize();
+    float selfradius = GetModelHalfSize();
+
+    float delta_x = unitTarget->GetPositionX() - GetPositionX();
+    float delta_y = unitTarget->GetPositionY() - GetPositionY();
+    float distance = std::sqrt(delta_x * delta_x + delta_y * delta_y);
+
+    float attackreach = targetradius + selfreach + selfradius;
+
+    if (isPlayer())
+    {
+        if (dynamic_cast<Player*>(this)->isMoving() || unitTarget->isPlayer() && dynamic_cast<Player*>(unitTarget)->isMoving())
+        {
+            uint32_t latency = dynamic_cast<Player*>(unitTarget)->getSession() ? dynamic_cast<Player*>(unitTarget)->getSession()->GetLatency() : 0;
+
+            latency = latency > 500 ? 500 : latency;
+
+            attackreach += getSpeedRate(TYPE_RUN, true) * 0.001f * static_cast<float>(latency);
+        }
+    }
+
+    return (distance <= attackreach);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -5080,6 +5367,36 @@ VisualAuraArray const& Unit::getVisualAuraList() const
     return m_auraVisualList;
 }
 
+bool Unit::isPoisoned()
+{
+    for (uint16_t x = AuraSlots::NEGATIVE_SLOT_START; x < AuraSlots::NEGATIVE_SLOT_END; ++x)
+    {
+        const auto* aur = getAuraWithAuraSlot(x);
+        if (aur && aur->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_POISON)
+            return true;
+    }
+
+    return false;
+}
+
+bool Unit::isDazed() const
+{
+    for (const auto& aur : getAuraList())
+    {
+        if (aur)
+        {
+            if (aur->getSpellInfo()->getMechanicsType() == MECHANIC_ENSNARED)
+                return true;
+
+            for (uint8_t y = 0; y < 3;++y)
+                if (aur->getSpellInfo()->getEffectMechanic(y) == MECHANIC_ENSNARED)
+                    return true;
+        }
+    }
+
+    return false;
+}
+
 void Unit::_addAura(Aura* aur)
 {
     if (aur == nullptr)
@@ -7834,4 +8151,11 @@ void Unit::removeAllGameObjects()
         (*i)->Delete();
         m_gameObj.erase(i);
     }
+}
+
+void Unit::deMorph()
+{
+    uint32_t displayid = this->getNativeDisplayId();
+    this->setDisplayId(displayid);
+    EventModelChange();
 }

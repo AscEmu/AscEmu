@@ -691,7 +691,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
     if (offset == getOffsetForStructuredField(WoWUnit, minimum_ranged_damage))
     {
         //starting from base attack power then we apply mods on it
-        //ap += pAttacker->GetRAP();
+        //ap += pAttacker->getCalculatedRangedAttackPower();
         ap += pVictim->RAPvModifier;
 
         if (!pVictim->isPlayer())
@@ -755,7 +755,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
     {
         //MinD = AP(28AS-(WS/7))-MaxD
         //starting from base attack power then we apply mods on it
-        //ap += pAttacker->GetAP();
+        //ap += pAttacker->getCalculatedAttackPower();
         ap += pVictim->APvModifier;
 
         if (!pVictim->isPlayer())

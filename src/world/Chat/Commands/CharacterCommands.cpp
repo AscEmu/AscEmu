@@ -49,7 +49,7 @@ bool ChatHandler::HandleCharDeMorphCommand(const char* /*args*/, WorldSession* m
     if (player_target == nullptr)
         return true;
 
-    player_target->DeMorph();
+    player_target->deMorph();
 
     return true;
 }

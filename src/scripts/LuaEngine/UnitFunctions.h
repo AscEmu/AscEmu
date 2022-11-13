@@ -4004,7 +4004,7 @@ public:
     {
         if (!ptr)
             return 0;
-        if (ptr->IsPoisoned())
+        if (ptr->isPoisoned())
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -4070,7 +4070,7 @@ public:
     {
         if (!ptr)
             return 0;
-        ptr->DeMorph();
+        ptr->deMorph();
         return 0;
     }
 
@@ -6049,7 +6049,7 @@ public:
         {
             lua_pushboolean(L, 0); return 1;
         }
-        lua_pushboolean(L, (ptr->IsDazed()) ? 1 : 0);
+        lua_pushboolean(L, (ptr->isDazed()) ? 1 : 0);
         return 1;
     }
 

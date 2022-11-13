@@ -254,7 +254,7 @@ public:
     int32 DoCalculateEffect(uint32 i, Unit* /*target*/, int32 value)
     {
         if (p_caster != NULL && i == 0)
-            value += (uint32)(p_caster->GetAP() * 0.055 * 1.15);
+            value += (uint32)(p_caster->getCalculatedAttackPower() * 0.055 * 1.15);
 
         return value;
     }
@@ -271,7 +271,7 @@ public:
     int32 DoCalculateEffect(uint32 i, Unit* /*target*/, int32 value) override
     {
         if (p_caster != NULL && i == 0)
-            value += (uint32)(p_caster->GetAP() * 0.1);
+            value += (uint32)(p_caster->getCalculatedAttackPower() * 0.1);
 
         return value;
     }
@@ -288,7 +288,7 @@ public:
     int32 DoCalculateEffect(uint32 i, Unit* /*target*/, int32 value) override
     {
         if (p_caster != NULL && i == 0)
-            value += (uint32)(p_caster->GetAP() * 0.055 * 1.15);
+            value += (uint32)(p_caster->getCalculatedAttackPower() * 0.055 * 1.15);
 
         return value;
     }
@@ -306,7 +306,7 @@ public:
     {
         if (p_caster != NULL && i == 0)
         {
-            int32 ap = p_caster->GetAP();
+            int32 ap = p_caster->getCalculatedAttackPower();
 
             value += (uint32)(ap * 0.08);
 
