@@ -13,7 +13,7 @@ enum AuraEffect : uint32_t
 {
     SPELL_AURA_NONE = 0,                                                // None
     SPELL_AURA_BIND_SIGHT = 1,                                          // Bind Sight
-    SPELL_AURA_MOD_POSSESS = 2,                                         // Mod Possess
+    SPELL_AURA_MOD_POSSESS = 2,                                         // Mod possess
     SPELL_AURA_PERIODIC_DAMAGE = 3,                                     // Periodic Damage
     SPELL_AURA_DUMMY = 4,                                               // Script Aura
     SPELL_AURA_MOD_CONFUSE = 5,                                         // Mod Confuse
@@ -139,7 +139,7 @@ enum AuraEffect : uint32_t
     SPELL_AURA_MOD_MELEE_DAMAGE_TAKEN = 125,                            // Mod Melee Dmg Taken
     SPELL_AURA_MOD_MELEE_DAMAGE_TAKEN_PCT = 126,                        // Mod Melee % Dmg Taken
     SPELL_AURA_RANGED_ATTACK_POWER_ATTACKER_BONUS = 127,                // Rngd Atk Pwr Attckr Bonus
-    SPELL_AURA_MOD_POSSESS_PET = 128,                                   // Mod Possess Pet
+    SPELL_AURA_MOD_POSSESS_PET = 128,                                   // Mod possess Pet
     SPELL_AURA_MOD_INCREASE_SPEED_ALWAYS = 129,                         // Mod Speed Always
     SPELL_AURA_MOD_MOUNTED_SPEED_ALWAYS = 130,                          // Mod Mounted Speed Always
     SPELL_AURA_MOD_CREATURE_RANGED_ATTACK_POWER = 131,                  // Mod Creature Ranged Attack Power

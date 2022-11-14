@@ -1886,7 +1886,7 @@ public:
             return (s == FORM_BEAR || s == FORM_DIREBEAR || s == FORM_CAT);     //Shady: actually ghostwolf form doesn't use weapon too.
         }
 
-        void CalcDamage();
+        void calculateDamage() override;
         float offhand_dmg_mod = 0.5f;
 
         int32 GetDamageDoneMod(uint16_t school)

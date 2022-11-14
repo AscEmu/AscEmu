@@ -1216,7 +1216,7 @@ void Creature::CalcStat(uint8_t type)
                 if (AP < 0) AP = 0;
                 setAttackPower(AP);
             }
-            CalcDamage();
+            calculateDamage();
         }
         break;
         case STAT_AGILITY:
@@ -2667,7 +2667,7 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     {
         Unit* charmer = m_WorldMap->getUnit(getCharmedByGuid());
         if (charmer != NULL)
-            charmer->UnPossess();
+            charmer->unPossess();
     }
 
     // Clear health batch on death

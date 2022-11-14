@@ -3379,7 +3379,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
         if (m_pItems[(int)srcslot] != nullptr)
             m_pOwner->applyItemMods(m_pItems[(int)srcslot], srcslot, true);
         else if (srcslot == EQUIPMENT_SLOT_MAINHAND || srcslot == EQUIPMENT_SLOT_OFFHAND)
-            m_pOwner->CalcDamage();
+            m_pOwner->calculateDamage();
     }
 
     //dst item is equipped now
@@ -3388,7 +3388,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
         if (m_pItems[(int)dstslot] != nullptr)
             m_pOwner->applyItemMods(m_pItems[(int)dstslot], dstslot, true);
         else if (dstslot == EQUIPMENT_SLOT_MAINHAND || dstslot == EQUIPMENT_SLOT_OFFHAND)
-            m_pOwner->CalcDamage();
+            m_pOwner->calculateDamage();
     }
 
     //Recalculate Expertise (for Weapon specs)

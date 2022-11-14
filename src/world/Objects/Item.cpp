@@ -513,7 +513,7 @@ void Item::applyEnchantmentBonus(EnchantmentSlot slot, bool apply)
                     else
                         m_owner->modModDamageDonePositive(SCHOOL_NORMAL, -val);
 
-                    m_owner->CalcDamage();
+                    m_owner->calculateDamage();
                 }
                 break;
 
@@ -588,7 +588,7 @@ void Item::applyEnchantmentBonus(EnchantmentSlot slot, bool apply)
                         int32_t value = -static_cast<int32_t>(getItemProperties()->Delay * val / 1000);
                         m_owner->modModDamageDonePositive(SCHOOL_NORMAL, value);
                     }
-                    m_owner->CalcDamage();
+                    m_owner->calculateDamage();
                 }
                 break;
 

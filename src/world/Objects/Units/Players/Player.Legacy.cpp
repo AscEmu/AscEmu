@@ -3080,7 +3080,7 @@ void Player::UpdateStats()
     UpdateChances();
 #endif
 
-    CalcDamage();
+    calculateDamage();
 }
 
 void Player::addToInRangeObjects(Object* pObj)
@@ -3119,7 +3119,7 @@ void Player::onRemoveInRangeObject(Object* pObj)
         if (!p)
             return;
 
-        UnPossess();
+        unPossess();
         if (isCastingSpell())
             interruptSpell();       // cancel the spell
         setCharmGuid(0);
@@ -4127,7 +4127,7 @@ void Player::SaveAuras(std::stringstream & ss)
     ss << "'";
 }
 
-void Player::CalcDamage()
+void Player::calculateDamage()
 {
     float r;
     int ss = getShapeShiftForm();
@@ -4352,7 +4352,7 @@ void Player::CalcDamage()
     std::list<Pet*> summons = getSummons();
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
     {
-        (*itr)->CalcDamage();//Re-calculate pet's too
+        (*itr)->calculateDamage();//Re-calculate pet's too
     }
 }
 

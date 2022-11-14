@@ -141,7 +141,7 @@ Unit::~Unit()
 
     clearHealthBatch();
 
-    RemoveGarbage();
+    removeGarbage();
 
     getThreatManager().clearAllThreat();
     getThreatManager().removeMeFromThreatLists();
@@ -169,7 +169,7 @@ void Unit::Update(unsigned long time_passed)
                 SchoolCastPrevent[i] = 0;
         }
 
-        RemoveGarbage();
+        removeGarbage();
 
         m_lastSpellUpdateTime = msTime;
     }
@@ -380,6 +380,14 @@ void Unit::OnPushToWorld()
 #endif
 
     getMovementManager()->addToWorld();
+}
+
+void Unit::die(Unit* /*pAttacker*/, uint32_t /*damage*/, uint32_t /*spellid*/)
+{}
+
+void Unit::BuildPetSpellList(WorldPacket& data)
+{
+    data << static_cast<uint64_t>(0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1554,7 +1562,7 @@ CombatHandler const& Unit::getCombatHandler() const
     return m_combatHandler;
 }
 
-int32_t Unit::getCalculatedAttackPower()
+int32_t Unit::getCalculatedAttackPower() const
 {
     int32_t baseap = getAttackPower() + getAttackPowerMods();
     float totalap = baseap * (getAttackPowerMultiplier() + 1);
@@ -1563,7 +1571,7 @@ int32_t Unit::getCalculatedAttackPower()
     return 0;
 }
 
-int32_t Unit::getCalculatedRangedAttackPower()
+int32_t Unit::getCalculatedRangedAttackPower() const
 {
     int32_t baseap = getRangedAttackPower() + getRangedAttackPowerMods();
     float totalap = baseap * (getRangedAttackPowerMultiplier() + 1);
@@ -1584,9 +1592,9 @@ bool Unit::canReachWithAttack(Unit* unitTarget)
     float targetradius = unitTarget->GetModelHalfSize();
     float selfradius = GetModelHalfSize();
 
-    float delta_x = unitTarget->GetPositionX() - GetPositionX();
-    float delta_y = unitTarget->GetPositionY() - GetPositionY();
-    float distance = std::sqrt(delta_x * delta_x + delta_y * delta_y);
+    const float delta_x = unitTarget->GetPositionX() - GetPositionX();
+    const float delta_y = unitTarget->GetPositionY() - GetPositionY();
+    const float distance = std::sqrt(delta_x * delta_x + delta_y * delta_y);
 
     float attackreach = targetradius + selfreach + selfradius;
 
@@ -1603,6 +1611,24 @@ bool Unit::canReachWithAttack(Unit* unitTarget)
     }
 
     return (distance <= attackreach);
+}
+
+void Unit::calculateDamage()
+{
+    if (isPet())
+        dynamic_cast<Pet*>(this)->UpdateAP();
+
+    const float ap_bonus = static_cast<float>(getCalculatedAttackPower()) / 14000.0f;
+
+    const float bonus = ap_bonus * static_cast<float>(getBaseAttackTime(MELEE) + dynamic_cast<Creature*>(this)->m_speedFromHaste);
+
+    const float delta = static_cast<float>(dynamic_cast<Creature*>(this)->ModDamageDone[0]);
+    const float mult = dynamic_cast<Creature*>(this)->ModDamageDonePct[0];
+    float r = (BaseDamage[0] + bonus) * mult + delta;
+    setMinDamage(r > 0 ? (isPet() ? r * 0.9f : r) : 0);
+
+    r = (BaseDamage[1] + bonus) * mult + delta;
+    setMaxDamage(r > 0 ? (isPet() ? r * 1.1f : r) : 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2344,7 +2370,7 @@ void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
         WorldPacket data;
         data.Initialize(moveTypeToOpcode[mtype][2], 8 + 30 + 4);
         data << GetNewGUID();
-        BuildMovementPacket(&data);
+        buildMovementPacket(&data);
         data << float(rate);
 
         player_mover->sendMessageToSet(&data, false);
@@ -8158,4 +8184,267 @@ void Unit::deMorph()
     uint32_t displayid = this->getNativeDisplayId();
     this->setDisplayId(displayid);
     EventModelChange();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Misc
+void Unit::buildMovementPacket(ByteBuffer* data)
+{
+    *data << static_cast<uint32_t>(getUnitMovementFlags());            // movement flags
+#if VERSION_STRING == TBC
+    * data << static_cast<uint8_t>(getExtraUnitMovementFlags());        // 2.3.0
+#elif VERSION_STRING >= WotLK
+    * data << uint16_t(getExtraUnitMovementFlags());       // 3.x.x
+#endif
+    * data << static_cast<uint32_t>(Util::getMSTime());                 // time / counter
+    *data << GetPositionX();
+    *data << GetPositionY();
+    *data << GetPositionZ();
+    *data << GetOrientation();
+
+#if VERSION_STRING < Cata
+    // 0x00000200
+    if (hasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+    {
+        if (isPlayer())
+        {
+            const auto plr = dynamic_cast<Player*>(this);
+            if (plr->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
+            {
+                obj_movement_info.transport_guid = plr->obj_movement_info.transport_guid;
+            }
+        }
+#ifdef FT_VEHICLES
+        if (Unit* u = getVehicleBase())
+            obj_movement_info.transport_guid = u->getGuid();
+#endif
+        * data << obj_movement_info.transport_guid;
+        *data << obj_movement_info.transport_guid;
+        *data << GetTransOffsetX();
+        *data << GetTransOffsetY();
+        *data << GetTransOffsetZ();
+        *data << GetTransOffsetO();
+        *data << GetTransTime();
+#ifdef FT_VEHICLES
+        * data << GetTransSeat();
+
+        // TODO what is this in BC?
+        if (getExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
+            *data << getMovementInfo()->transport_time2;
+#endif
+    }
+
+    // 0x02200000
+    if ((getUnitMovementFlags() & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING))
+        || (getExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
+        *data << getMovementInfo()->pitch_rate;
+
+    *data << getMovementInfo()->fall_time;
+#endif
+    // 0x00001000
+#if VERSION_STRING < Cata
+    if (getUnitMovementFlags() & MOVEFLAG_FALLING)
+    {
+        *data << getMovementInfo()->jump_info.velocity;
+        *data << getMovementInfo()->jump_info.sinAngle;
+        *data << getMovementInfo()->jump_info.cosAngle;
+        *data << getMovementInfo()->jump_info.xyspeed;
+    }
+
+    // 0x04000000
+    if (getUnitMovementFlags() & MOVEFLAG_SPLINE_ELEVATION)
+        *data << getMovementInfo()->spline_elevation;
+#endif
+}
+
+
+void Unit::buildMovementPacket(ByteBuffer* data, float x, float y, float z, float o)
+{
+    *data << getUnitMovementFlags();            // movement flags
+#if VERSION_STRING == TBC
+    * data << static_cast<uint8_t>(getExtraUnitMovementFlags());        // 2.3.0
+#elif VERSION_STRING >= WotLK
+    * data << getExtraUnitMovementFlags();      // 3.x.x
+#endif
+    * data << Util::getMSTime();                // time / counter
+    *data << x;
+    *data << y;
+    *data << z;
+    *data << o;
+
+#if VERSION_STRING < Cata
+    // 0x00000200
+    if (hasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+    {
+        *data << obj_movement_info.transport_guid;
+        *data << GetTransOffsetX();
+        *data << GetTransOffsetY();
+        *data << GetTransOffsetZ();
+        *data << GetTransOffsetO();
+        *data << GetTransTime();
+#ifdef FT_VEHICLES
+        * data << GetTransSeat();
+
+        if (getExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
+            *data << getMovementInfo()->transport_time2;
+#endif
+    }
+
+    // 0x02200000
+    if ((getUnitMovementFlags() & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING))
+        || (getExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
+        *data << getMovementInfo()->pitch_rate;
+
+    *data << getMovementInfo()->fall_time;
+#endif
+    // 0x00001000
+#if VERSION_STRING < Cata
+    if (getUnitMovementFlags() & MOVEFLAG_FALLING)
+    {
+        *data << getMovementInfo()->jump_info.velocity;
+        *data << getMovementInfo()->jump_info.sinAngle;
+        *data << getMovementInfo()->jump_info.cosAngle;
+        *data << getMovementInfo()->jump_info.xyspeed;
+    }
+
+    // 0x04000000
+    if (getUnitMovementFlags() & MOVEFLAG_SPLINE_ELEVATION)
+        *data << getMovementInfo()->spline_elevation;
+#endif
+}
+
+void Unit::removeGarbage()
+{
+    for (auto aur : m_GarbageAuras)
+        delete aur;
+
+    for (auto pet : m_GarbagePets)
+        delete pet;
+
+    m_GarbageAuras.clear();
+    m_GarbagePets.clear();
+}
+
+void Unit::addGarbageAura(Aura* aur)
+{
+    m_GarbageAuras.push_back(aur);
+}
+
+void Unit::addGarbagePet(Pet* pet)
+{
+    if (pet->getPlayerOwner()->getGuid() == getGuid() && !pet->IsInWorld())
+        m_GarbagePets.push_back(pet);
+}
+
+void Unit::possess(Unit* unitTarget, uint32_t delay)
+{
+    Player* playerController;
+    if (isPlayer())
+        playerController = dynamic_cast<Player*>(this);
+    else // do not support creatures just yet
+        return;
+
+    if (!playerController)
+        return;
+
+    if (getCharmGuid())
+        return;
+
+    setMoveRoot(true);
+
+    if (delay != 0)
+    {
+        sEventMgr.AddEvent(this, &Unit::possess, unitTarget, static_cast<uint32_t>(0), 0, delay, 1, 0);
+        return;
+    }
+    if (unitTarget == nullptr)
+    {
+        setMoveRoot(false);
+        return;
+    }
+
+    playerController->setCharmGuid(unitTarget->getGuid());
+    if (unitTarget->isCreature())
+    {
+        unitTarget->setAItoUse(false);
+        unitTarget->stopMoving();
+        unitTarget->m_redirectSpellPackets = playerController;
+        unitTarget->mPlayerControler = playerController;
+    }
+
+    m_noInterrupt++;
+
+    setCharmGuid(unitTarget->getGuid());
+    unitTarget->setCharmedByGuid(getGuid());
+    unitTarget->SetCharmTempVal(unitTarget->getFactionTemplate());
+
+    playerController->setFarsightGuid(unitTarget->getGuid());
+    playerController->mControledUnit = unitTarget;
+
+    unitTarget->setFaction(getFactionTemplate());
+    unitTarget->addUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
+
+    addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
+
+    playerController->sendClientControlPacket(unitTarget, 1);
+
+    unitTarget->updateInRangeOppositeFactionSet();
+
+    if (!(unitTarget->isPet() && dynamic_cast<Pet*>(unitTarget) == playerController->getFirstPetFromSummons()))
+    {
+        WorldPacket data(SMSG_PET_SPELLS, 4 * 4 + 20);
+        unitTarget->BuildPetSpellList(data);
+        playerController->getSession()->SendPacket(&data);
+    }
+}
+
+void Unit::unPossess()
+{
+    Player* playerController;
+    if (isPlayer())
+        playerController = dynamic_cast<Player*>(this);
+    else // creatures no support yet
+        return;
+
+    if (!playerController)
+        return;
+
+    if (!getCharmGuid())
+        return;
+
+    Unit* unitTarget = getWorldMap()->getUnit(getCharmGuid());
+    if (!unitTarget)
+        return;
+
+    playerController->speedCheatReset();
+
+    if (unitTarget->isCreature())
+    {
+        unitTarget->setAItoUse(true);
+        unitTarget->m_redirectSpellPackets = nullptr;
+        unitTarget->mPlayerControler = nullptr;
+    }
+
+    m_noInterrupt--;
+    playerController->setFarsightGuid(0);
+    playerController->mControledUnit = this;
+
+    setCharmGuid(0);
+    unitTarget->setCharmedByGuid(0);
+
+    removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
+
+    unitTarget->removeUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
+    unitTarget->setFaction(unitTarget->GetCharmTempVal());
+    unitTarget->updateInRangeOppositeFactionSet();
+
+    playerController->sendClientControlPacket(unitTarget, 0);
+
+    if (!(unitTarget->isPet() && dynamic_cast<Pet*>(unitTarget) == playerController->getFirstPetFromSummons()))
+        playerController->sendEmptyPetSpellList();
+
+    setMoveRoot(false);
+
+    if (!unitTarget->isPet() && (unitTarget->getCreatedByGuid() == getGuid()))
+        sEventMgr.AddEvent(static_cast<Object*>(unitTarget), &Object::Delete, 0, 1, 1, 0);
 }

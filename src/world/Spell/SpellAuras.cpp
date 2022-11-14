@@ -293,7 +293,7 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
         {
             const auto charm = caster->getWorldMapUnit(caster->getCharmGuid());
             if (charm != nullptr && charm->getCreatedBySpellId() == getSpellInfo()->getId())
-                caster->UnPossess();
+                caster->unPossess();
         }
     }
 
@@ -331,7 +331,7 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
     if (getSpellInfo()->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !--m_target->asc_seal)
         getOwner()->removeAuraStateAndAuras(AURASTATE_FLAG_JUDGEMENT);
 
-    getOwner()->AddGarbageAura(this);
+    getOwner()->addGarbageAura(this);
 }
 
 bool Aura::isDeleted() const

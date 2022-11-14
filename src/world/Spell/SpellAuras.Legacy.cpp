@@ -815,13 +815,13 @@ void Aura::SpellAuraModPossess(AuraEffectModifier* /*aurEff*/, bool apply)
     if (apply)
     {
         if (caster != nullptr && caster->IsInWorld())
-            caster->Possess(m_target);
+            caster->possess(m_target);
     }
     else
     {
         if (caster != nullptr && caster->IsInWorld())
         {
-            caster->UnPossess();
+            caster->unPossess();
             m_target->removeAllAurasById(getSpellId());
         }
 
@@ -1331,7 +1331,7 @@ void Aura::SpellAuraModDamageDone(AuraEffectModifier* aurEff, bool apply)
     }
 
     if (aurEff->getEffectMiscValue() & 1)
-        m_target->CalcDamage();
+        m_target->calculateDamage();
 }
 
 void Aura::SpellAuraModDamageTaken(AuraEffectModifier* aurEff, bool apply)
@@ -2054,7 +2054,7 @@ void Aura::SpellAuraModCreatureRangedAttackPower(AuraEffectModifier* aurEff, boo
             }
         }
     }
-    m_target->CalcDamage();
+    m_target->calculateDamage();
 }
 
 void Aura::SpellAuraModDecreaseSpeed(AuraEffectModifier* aurEff, bool apply)
@@ -3265,7 +3265,7 @@ void Aura::SpellAuraModDamagePercDone(AuraEffectModifier* aurEff, bool apply)
             }
         }
     }
-    m_target->CalcDamage();
+    m_target->calculateDamage();
 }
 
 void Aura::SpellAuraModPercStat(AuraEffectModifier* aurEff, bool apply)
@@ -3656,7 +3656,7 @@ void Aura::SpellAuraModAttackPower(AuraEffectModifier* aurEff, bool apply)
     else
         mPositive = true;
     m_target->modAttackPowerMods(apply ? aurEff->getEffectDamage() : -aurEff->getEffectDamage());
-    m_target->CalcDamage();
+    m_target->calculateDamage();
 }
 
 void Aura::SpellAuraVisible(AuraEffectModifier* /*aurEff*/, bool apply)
@@ -3730,7 +3730,7 @@ void Aura::SpellAuraModCreatureAttackPower(AuraEffectModifier* aurEff, bool appl
             }
         }
     }
-    m_target->CalcDamage();
+    m_target->calculateDamage();
 }
 
 void Aura::SpellAuraModTotalThreat(AuraEffectModifier* aurEff, bool apply)
@@ -4152,7 +4152,7 @@ void Aura::SpellAuraModRangedAttackPower(AuraEffectModifier* aurEff, bool apply)
     }
     else
         m_target->modRangedAttackPowerMods(-aurEff->getEffectDamage());
-    m_target->CalcDamage();
+    m_target->calculateDamage();
 }
 
 void Aura::SpellAuraModMeleeDamageTaken(AuraEffectModifier* aurEff, bool apply)
@@ -4682,7 +4682,7 @@ void Aura::SpellAuraModPAttackPower(AuraEffectModifier* aurEff, bool apply)
         }
         else
             p_target->modAttackPowerMultiplier(-(float)aurEff->getEffectDamage() / 100.0f);
-        p_target->CalcDamage();
+        p_target->calculateDamage();
     }
 }
 
@@ -4691,7 +4691,7 @@ void Aura::SpellAuraModRangedAttackPowerPct(AuraEffectModifier* aurEff, bool app
     if (m_target->isPlayer())
     {
         m_target->modRangedAttackPowerMultiplier(((apply) ? 1 : -1) * (float)aurEff->getEffectDamage() / 100);
-        m_target->CalcDamage();
+        m_target->calculateDamage();
     }
 }
 
@@ -5016,7 +5016,7 @@ void Aura::SpellAuraModOffhandDamagePCT(AuraEffectModifier* aurEff, bool apply)
         else
             p_target->offhand_dmg_mod /= (100 + aurEff->getEffectDamage()) / 100.0f;
 
-        p_target->CalcDamage();
+        p_target->calculateDamage();
     }
 }
 
@@ -5652,7 +5652,7 @@ void Aura::SpellAuraIncreaseRAPbyStatPct(AuraEffectModifier* aurEff, bool apply)
     else
         m_target->modRangedAttackPowerMods(-aurEff->getEffectFixedDamage());
 
-    m_target->CalcDamage();
+    m_target->calculateDamage();
 }
 
 /* not used
@@ -5735,12 +5735,12 @@ void Aura::SpellAuraModPossessPet(AuraEffectModifier* /*aurEff*/, bool apply)
         {
             if (apply)
             {
-                pCaster->Possess(m_target);
+                pCaster->possess(m_target);
                 pCaster->speedCheatDelay(getTimeLeft());
             }
             else
             {
-                pCaster->UnPossess();
+                pCaster->unPossess();
             }
             break;
         }
@@ -5932,7 +5932,7 @@ void Aura::SpellAuraIncreaseAPbyStatPct(AuraEffectModifier* aurEff, bool apply)
     else
         m_target->modAttackPowerMods(-aurEff->getEffectFixedDamage());
 
-    m_target->CalcDamage();
+    m_target->calculateDamage();
 }
 
 void Aura::SpellAuraModSpellDamageDOTPct(AuraEffectModifier* aurEff, bool apply)
@@ -6084,7 +6084,7 @@ void Aura::SpellAuraModAttackPowerOfArmor(AuraEffectModifier* aurEff, bool apply
     else
         m_target->modAttackPowerMods(-aurEff->getEffectFixedDamage());
 
-    m_target->CalcDamage();
+    m_target->calculateDamage();
 }
 
 void Aura::SpellAuraDeflectSpells(AuraEffectModifier* /*aurEff*/, bool /*apply*/)

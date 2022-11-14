@@ -209,6 +209,8 @@ public: //\todo Zyres: public fpr LuaEngine, sort out why
     virtual void OnPushToWorld();                       // hides virtual function Object::OnPushToWorld
     // void OnPreRemoveFromWorld();                     // not used
     // void OnRemoveFromWorld();                        // not used
+    virtual void die(Unit* pAttacker, uint32_t damage, uint32_t spellid);
+    virtual void BuildPetSpellList(WorldPacket& data);
 
 private:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -563,10 +565,12 @@ public:
     CombatHandler& getCombatHandler();
     CombatHandler const& getCombatHandler() const;
 
-    int32_t getCalculatedAttackPower();
-    int32_t getCalculatedRangedAttackPower();
+    int32_t getCalculatedAttackPower() const;
+    int32_t getCalculatedRangedAttackPower() const;
 
     bool canReachWithAttack(Unit* unitTarget);
+
+    virtual void calculateDamage();
 
 private:
     CombatHandler m_combatHandler;
@@ -1187,10 +1191,26 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Loot
-    //\todo Zyres: you can loot only creatures, maybe this is the wrong place for member
     Loot loot;
 
     bool isLootable();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Misc
+public:
+    void buildMovementPacket(ByteBuffer* data);
+    void buildMovementPacket(ByteBuffer* data, float x, float y, float z, float o);
+
+    void possess(Unit* unitTarget, uint32_t delay = 0);
+    void unPossess();
+
+protected:
+    void removeGarbage();
+    void addGarbageAura(Aura* aur);
+    void addGarbagePet(Pet* pet);
+
+    std::list<Aura*> m_GarbageAuras;
+    std::list<Pet*> m_GarbagePets;
 
     // Do not alter anything below this line
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -1242,15 +1262,13 @@ public:
 
     void GiveGroupXP(Unit* pVictim, Player* PlayerInGroup);
 
-    void OnDamageTaken();
+    //void OnDamageTaken();
 
     uint32_t m_addDmgOnce = 0;
     uint32_t m_ObjectSlots[4] = {0};
     uint32_t m_triggerSpell = 0;
     uint32_t m_triggerDamage = 0;
     uint32_t m_canMove = 0;
-    void Possess(Unit* pTarget, uint32_t delay = 0);
-    void UnPossess();
 
     // Spell Effect Variables
     int32_t m_silenced = 0;
@@ -1302,7 +1320,7 @@ public:
     float CritMeleeDamageTakenPctMod[TOTAL_SPELL_SCHOOLS] = {0};
     float CritRangedDamageTakenPctMod[TOTAL_SPELL_SCHOOLS] = {0};
     int32_t RangedDamageTaken = 0;
-    void CalcDamage();
+
     float BaseDamage[2] = {0};
     float BaseOffhandDamage[2] = {0};
     float BaseRangedDamage[2] = {0};
@@ -1462,27 +1480,15 @@ public:
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void die(Unit* pAttacker, uint32_t damage, uint32_t spellid);
-    
-    void AddGarbagePet(Pet* pet);
-
-    virtual void BuildPetSpellList(WorldPacket & data);
-
     uint64_t GetAuraUpdateMaskForRaid() const { return m_auraRaidUpdateMask; }
     void ResetAuraUpdateMaskForRaid() { m_auraRaidUpdateMask = 0; }
     void SetAuraUpdateMaskForRaid(uint8_t slot) { m_auraRaidUpdateMask |= (uint64_t(1) << slot); }
     void UpdateAuraForGroup(uint8_t slot);
 
 protected:
-    
-    void RemoveGarbage();
-    void AddGarbageAura(Aura* aur);
 
     uint32_t m_meleespell = 0;
     uint8_t m_meleespell_ecn = 0;         // extra_cast_number
-
-    std::list<Aura*> m_GarbageAuras;
-    std::list<Pet*> m_GarbagePets;
 
     // DK:pet
     
@@ -1508,11 +1514,5 @@ protected:
 
     
     uint64_t m_auraRaidUpdateMask = 0;
-
-public:
-    
-    void BuildMovementPacket(ByteBuffer* data);
-    void BuildMovementPacket(ByteBuffer* data, float x, float y, float z, float o);
-
     // AGPL End
 };

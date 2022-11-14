@@ -829,7 +829,7 @@ bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_ses
         return false;
     }
 
-    m_session->GetPlayer()->Possess(unit_target);
+    m_session->GetPlayer()->possess(unit_target);
 
     return true;
 }
@@ -990,7 +990,7 @@ bool ChatHandler::HandleUnPossessCommand(const char* /*args*/, WorldSession* m_s
         return false;
     }
 
-    m_session->GetPlayer()->UnPossess();
+    m_session->GetPlayer()->unPossess();
 
     return true;
 }

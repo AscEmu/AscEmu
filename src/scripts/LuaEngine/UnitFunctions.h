@@ -3443,7 +3443,7 @@ public:
 
         Unit* target = CHECK_UNIT(L, 1);
         if (target)
-            dynamic_cast<Player*>(ptr)->Possess(target);
+            dynamic_cast<Player*>(ptr)->possess(target);
 
         return 0;
     }
@@ -3455,7 +3455,7 @@ public:
             return 0;
         }
 
-        dynamic_cast<Player*>(ptr)->UnPossess();
+        dynamic_cast<Player*>(ptr)->unPossess();
         return 0;
     }
 

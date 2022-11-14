@@ -1238,7 +1238,7 @@ void Pet::SafeDelete()
 {
     sEventMgr.RemoveEvents(this);
 
-    m_Owner->AddGarbagePet(this);
+    m_Owner->addGarbagePet(this);
 }
 
 void Pet::DelayedRemove(bool bTime, bool dismiss, uint32 delay)

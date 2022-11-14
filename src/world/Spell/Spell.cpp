@@ -4369,7 +4369,7 @@ void Spell::sendChannelUpdate(const uint32_t time, const uint32_t diff/* = 0*/)
             {
                 const auto charmedUnit = p_caster->getWorldMapUnit(p_caster->getCharmGuid());
                 if (charmedUnit != nullptr && charmedUnit->getCreatedBySpellId() == getSpellInfo()->getId())
-                    p_caster->UnPossess();
+                    p_caster->unPossess();
             }
 
             // Channel ended, remove the aura

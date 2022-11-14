@@ -1359,7 +1359,7 @@ void Player::sendTeleportPacket(LocationVector position)
 #if VERSION_STRING < Cata
     WorldPacket data2(MSG_MOVE_TELEPORT, 38);
     data2.append(GetNewGUID());
-    BuildMovementPacket(&data2, position.x, position.y, position.z, position.o);
+    buildMovementPacket(&data2, position.x, position.y, position.z, position.o);
     sendMessageToSet(&data2, false);
     SetPosition(position);
 #else
@@ -1438,7 +1438,7 @@ void Player::sendTeleportAckPacket(LocationVector position)
     WorldPacket data(MSG_MOVE_TELEPORT_ACK, 41);
     data << GetNewGUID();
     data << uint32_t(0);
-    BuildMovementPacket(&data, position.x, position.y, position.z, position.o);
+    buildMovementPacket(&data, position.x, position.y, position.z, position.o);
 #endif
     getSession()->SendPacket(&data);
 }

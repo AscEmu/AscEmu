@@ -61,7 +61,7 @@ bool PredatoryStrikes(uint8_t effectIndex, Aura* a, bool apply)
     else
         m_target->modAttackPowerMods(-realamount);
 
-    m_target->CalcDamage();
+    m_target->calculateDamage();
 
     return true;
 }

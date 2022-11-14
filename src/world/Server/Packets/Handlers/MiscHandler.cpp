@@ -1779,7 +1779,7 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
 #if VERSION_STRING < Cata
             _player->setAmmoId(0);
 #endif
-            _player->CalcDamage();
+            _player->calculateDamage();
             return;
         }
     }
@@ -1791,7 +1791,7 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
 #if VERSION_STRING < Cata
             _player->setAmmoId(0);
 #endif
-            _player->CalcDamage();
+            _player->calculateDamage();
             return;
         }
 
@@ -1803,7 +1803,7 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
 #if VERSION_STRING < Cata
                 _player->setAmmoId(0);
 #endif
-                _player->CalcDamage();
+                _player->calculateDamage();
                 return;
             }
         }
@@ -1823,13 +1823,13 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
 #if VERSION_STRING < Cata
             _player->setAmmoId(0);
 #endif
-            _player->CalcDamage();
+            _player->calculateDamage();
             return;
         default:
 #if VERSION_STRING < Cata
             _player->setAmmoId(ammoId);
 #endif
-            _player->CalcDamage();
+            _player->calculateDamage();
             break;
     }
 }

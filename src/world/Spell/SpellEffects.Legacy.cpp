@@ -3091,7 +3091,7 @@ void Spell::SpellEffectSummonPossessed(uint32 /*i*/, DBC::Structures::SummonProp
     if (s == nullptr)
         return;
 
-    p_caster->Possess(s, 1000);
+    p_caster->possess(s, 1000);
 }
 
 void Spell::SpellEffectSummonCompanion(uint32 /*i*/, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
