@@ -903,7 +903,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
     if (!unitTarget || !unitTarget->isAlive())
         return;
 
-    if (unitTarget->SchoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()])
+    if (unitTarget->m_schoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()])
     {
         sendCastResult(SPELL_FAILED_IMMUNE);
         return;
@@ -1951,7 +1951,7 @@ void Spell::SpellEffectEnvironmentalDamage(uint8_t effectIndex)
 {
     if (!playerTarget) return;
 
-    if (playerTarget->SchoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()])
+    if (playerTarget->m_schoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()])
     {
         sendCastResult(SPELL_FAILED_IMMUNE);
         return;
@@ -2460,7 +2460,7 @@ void Spell::SpellEffectAddExtraAttacks(uint8_t /*effectIndex*/) // Add Extra Att
 {
     if (!u_caster)
         return;
-    u_caster->m_extraattacks += damage;
+    u_caster->m_extraAttacks += damage;
 }
 
 void Spell::SpellEffectDodge(uint8_t /*effectIndex*/)
@@ -3795,7 +3795,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
     {
         start = AuraSlots::POSITIVE_SLOT_START;
         end = AuraSlots::POSITIVE_SLOT_END;
-        if (unitTarget->SchoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()])
+        if (unitTarget->m_schoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()])
             return;
     }
     else
@@ -4486,7 +4486,7 @@ void Spell::SpellEffectInterruptCast(uint8_t /*effectIndex*/) // Interrupt Cast
                 if (unitTarget->isPlayer())
                 {
                     // Check for interruption reducing talents
-                    int32 DurationModifier = unitTarget->MechanicDurationPctMod[MECHANIC_INTERRUPTED];
+                    int32 DurationModifier = unitTarget->m_mechanicDurationPctMod[MECHANIC_INTERRUPTED];
                     if (DurationModifier >= -100)
                         duration = (duration * (100 + DurationModifier)) / 100;
 
@@ -4495,7 +4495,7 @@ void Spell::SpellEffectInterruptCast(uint8_t /*effectIndex*/) // Interrupt Cast
                 }
                 else
                     // Prevent unit from casting in that school
-                    unitTarget->SchoolCastPrevent[school] = duration + Util::getMSTime();
+                    unitTarget->m_schoolCastPrevent[school] = duration + Util::getMSTime();
 
                 // Interrupt the spell cast
                 unitTarget->interruptSpell(TargetSpell->getSpellInfo()->getId(), false);
@@ -5174,10 +5174,10 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
     GameObject* GoSummon = nullptr;
 
     uint32 slot = getSpellInfo()->getEffect(effectIndex) - SPELL_EFFECT_SUMMON_OBJECT_SLOT1;
-    GoSummon = u_caster->m_ObjectSlots[slot] ? u_caster->getWorldMap()->getGameObject(u_caster->m_ObjectSlots[slot]) : 0;
-    u_caster->m_ObjectSlots[slot] = 0;
+    GoSummon = u_caster->m_objectSlots[slot] ? u_caster->getWorldMap()->getGameObject(u_caster->m_objectSlots[slot]) : 0;
+    u_caster->m_objectSlots[slot] = 0;
 
-    if (uint32_t guid = u_caster->m_ObjectSlots[slot])
+    if (uint32_t guid = u_caster->m_objectSlots[slot])
     {
         if (GameObject* obj = u_caster->getWorldMapGameObject(guid))
         {
@@ -5186,7 +5186,7 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
                 obj->setSpellId(0);
             u_caster->removeGameObject(obj, true);
         }
-        u_caster->m_ObjectSlots[slot] = 0;
+        u_caster->m_objectSlots[slot] = 0;
     }
 
     // spawn a new one
@@ -5228,7 +5228,7 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
     GoSummon->setRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
     GoSummon->setSpellId(m_spellInfo->getId());
     u_caster->addGameObject(GoSummon);
-    u_caster->m_ObjectSlots[slot] = GoSummon->GetUIdFromGUID();
+    u_caster->m_objectSlots[slot] = GoSummon->GetUIdFromGUID();
 }
 
 void Spell::SpellEffectDispelMechanic(uint8_t effectIndex)

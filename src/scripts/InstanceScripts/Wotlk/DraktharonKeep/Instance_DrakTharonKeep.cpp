@@ -136,7 +136,7 @@ public:
         _setMeleeDisabled(true);
 
         for (uint8_t i = 0; i < 7; i++)
-            getCreature()->SchoolImmunityList[i] = 1;
+            getCreature()->m_schoolImmunityList[i] = 1;
         sendDBChatMessage(SAY_NOVOS_SUMMONER_05);
         sendDBChatMessage(SAY_NOVOS_SUMMONER_06);
     }
@@ -152,9 +152,9 @@ public:
     {
         for (uint8_t i = 0; i < 4; i++)
         {
-            if (getCreature()->m_ObjectSlots[i])
+            if (getCreature()->m_objectSlots[i])
             {
-                GameObject* Crystal = getCreature()->getWorldMap()->getGameObject(getCreature()->m_ObjectSlots[i]);
+                GameObject* Crystal = getCreature()->getWorldMap()->getGameObject(getCreature()->m_objectSlots[i]);
                 if (Crystal && Crystal->IsInWorld())
                     Crystal->despawn(0, 0);
             }
@@ -183,9 +183,9 @@ public:
             bool new_phase = true;
             for (uint8_t i = 0; i < 4; i++)
             {
-                if (getCreature()->m_ObjectSlots[i])
+                if (getCreature()->m_objectSlots[i])
                 {
-                    GameObject* Crystal = getCreature()->getWorldMap()->getGameObject(getCreature()->m_ObjectSlots[i]);
+                    GameObject* Crystal = getCreature()->getWorldMap()->getGameObject(getCreature()->m_objectSlots[i]);
                     if (Crystal && Crystal->IsInWorld())
                         new_phase = false;
                 }
@@ -200,7 +200,7 @@ public:
                 setScriptPhase(2);
 
                 for (uint8_t i = 0; i < 7; i++)
-                    getCreature()->SchoolImmunityList[i] = 0;
+                    getCreature()->m_schoolImmunityList[i] = 0;
             }
         }
     }
@@ -335,7 +335,7 @@ public:
         GameObject* go = getCreature()->getWorldMap()->createGameObject(entry);
         go->create(entry, getCreature()->getWorldMap(), 0, LocationVector(x, y, z, o), QuaternionData(), GO_STATE_CLOSED);
         go->PushToWorld(getCreature()->getWorldMap());
-        getCreature()->m_ObjectSlots[id] = go->GetUIdFromGUID();
+        getCreature()->m_objectSlots[id] = go->GetUIdFromGUID();
     }
 
 protected:
@@ -362,9 +362,9 @@ public:
         {
             for (uint8_t i = 0; i < 4; i++)
             {
-                if (Novos->m_ObjectSlots[i])
+                if (Novos->m_objectSlots[i])
                 {
-                    GameObject* Crystal = Novos->getWorldMap()->getGameObject(Novos->m_ObjectSlots[i]);
+                    GameObject* Crystal = Novos->getWorldMap()->getGameObject(Novos->m_objectSlots[i]);
                     if (Crystal && Crystal->IsInWorld())
                     {
                         Crystal->despawn(0, 0);

@@ -1238,7 +1238,7 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    //_player->UpdateVisibility();
+    //_player->updateVisibility();
 }
 
 #if VERSION_STRING >= Cata

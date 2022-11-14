@@ -654,7 +654,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
     float min_damage = .0f;
     float max_damage = .0f;
 
-    if (pAttacker->disarmed && pAttacker->isPlayer())
+    if (pAttacker->m_isDisarmed && pAttacker->isPlayer())
     {
         offset = getOffsetForStructuredField(WoWUnit, minimum_damage);
         it = static_cast< Player* >(pAttacker)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
@@ -692,12 +692,12 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
     {
         //starting from base attack power then we apply mods on it
         //ap += pAttacker->getCalculatedRangedAttackPower();
-        ap += pVictim->RAPvModifier;
+        ap += pVictim->m_rangeAttackPowerModifier;
 
         if (!pVictim->isPlayer())
         {
             uint32 creatType = static_cast<Creature*>(pVictim)->GetCreatureProperties()->Type;
-            ap += (float)pAttacker->CreatureRangedAttackPowerMod[creatType];
+            ap += (float)pAttacker->m_creatureRangedAttackPowerMod[creatType];
 
             if (pAttacker->isPlayer())
             {
@@ -708,7 +708,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
 
         if (pAttacker->isPlayer())
         {
-            if (!pAttacker->disarmed)
+            if (!pAttacker->m_isDisarmed)
             {
                 it = static_cast< Player* >(pAttacker)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 if (it)
@@ -756,12 +756,12 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         //MinD = AP(28AS-(WS/7))-MaxD
         //starting from base attack power then we apply mods on it
         //ap += pAttacker->getCalculatedAttackPower();
-        ap += pVictim->APvModifier;
+        ap += pVictim->m_attackPowerModifier;
 
         if (!pVictim->isPlayer())
         {
             uint32 creatType = static_cast<Creature*>(pVictim)->GetCreatureProperties()->Type;
-            ap += (float)pAttacker->CreatureAttackPowerMod[creatType];
+            ap += (float)pAttacker->m_creatureAttackPowerMod[creatType];
 
             if (pAttacker->isPlayer())
             {
@@ -772,7 +772,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
 
         if (pAttacker->isPlayer())
         {
-            if (!pAttacker->disarmed)
+            if (!pAttacker->m_isDisarmed)
             {
                 it = static_cast< Player* >(pAttacker)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 

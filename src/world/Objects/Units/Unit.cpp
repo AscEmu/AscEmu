@@ -74,7 +74,7 @@ Unit::Unit() :
 #endif
 
     // Zyres: initialise here because multiversion differences
-    std::fill_n(PctPowerRegenModifier, TOTAL_PLAYER_POWER_TYPES, 1.0f);
+    std::fill_n(m_pctPowerRegenModifier, TOTAL_PLAYER_POWER_TYPES, 1.0f);
 
     m_summonInterface->Init(this);
     m_aiInterface->Init(this, AI_SCRIPT_AGRO);
@@ -124,10 +124,10 @@ Unit::~Unit()
     m_extraStrikeTargets.clear();
 
     // delete auras which did not get added to unit yet
-    for (auto tempAura = tmpAura.begin(); tempAura != tmpAura.end(); ++tempAura)
+    for (auto tempAura = m_tempAuraMap.begin(); tempAura != m_tempAuraMap.end(); ++tempAura)
         delete tempAura->second;
 
-    tmpAura.clear();
+    m_tempAuraMap.clear();
 
     for (auto procSpell = m_procSpells.begin(); procSpell != m_procSpells.end(); ++procSpell)
         delete* procSpell;
@@ -162,11 +162,11 @@ void Unit::Update(unsigned long time_passed)
         // TODO: Moved here from Spell::CanCast, figure out a better way to handle this... -Appled
         for (uint8_t i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
         {
-            if (SchoolCastPrevent[i] == 0)
+            if (m_schoolCastPrevent[i] == 0)
                 continue;
 
-            if (msTime >= SchoolCastPrevent[i])
-                SchoolCastPrevent[i] = 0;
+            if (msTime >= m_schoolCastPrevent[i])
+                m_schoolCastPrevent[i] = 0;
         }
 
         removeGarbage();
@@ -318,10 +318,10 @@ void Unit::RemoveFromWorld(bool free_guid)
     }
 #endif
 
-    if (dynObj != nullptr)
-        dynObj->Remove();
+    if (m_dynamicObject != nullptr)
+        m_dynamicObject->Remove();
 
-    for (unsigned int& m_ObjectSlot : m_ObjectSlots)
+    for (unsigned int& m_ObjectSlot : m_objectSlots)
     {
         if (m_ObjectSlot != 0)
         {
@@ -1468,10 +1468,10 @@ void Unit::setPhase(uint8_t command/* = PHASE_SET*/, uint32_t newPhase/* = 1*/)
     for (const auto& itr : getInRangeObjectsSet())
     {
         if (itr && itr->isCreatureOrPlayer())
-            dynamic_cast<Unit*>(itr)->UpdateVisibility();
+            dynamic_cast<Unit*>(itr)->updateVisibility();
     }
 
-    UpdateVisibility();
+    updateVisibility();
 }
 
 bool Unit::isWithinCombatRange(Unit* obj, float dist2compare)
@@ -1624,10 +1624,10 @@ void Unit::calculateDamage()
 
     const float delta = static_cast<float>(dynamic_cast<Creature*>(this)->ModDamageDone[0]);
     const float mult = dynamic_cast<Creature*>(this)->ModDamageDonePct[0];
-    float r = (BaseDamage[0] + bonus) * mult + delta;
+    float r = (m_baseDamage[0] + bonus) * mult + delta;
     setMinDamage(r > 0 ? (isPet() ? r * 0.9f : r) : 0);
 
-    r = (BaseDamage[1] + bonus) * mult + delta;
+    r = (m_baseDamage[1] + bonus) * mult + delta;
     setMaxDamage(r > 0 ? (isPet() ? r * 1.1f : r) : 0);
 }
 
@@ -2219,7 +2219,7 @@ void Unit::handleFall(MovementInfo const& movementInfo)
     if (isPlayer())
         disabledUntil = !dynamic_cast<Player*>(this)->m_cheats.hasGodModeCheat && UNIXTIME >= dynamic_cast<Player*>(this)->getFallDisabledUntil();
 
-    if (isAlive() && !bInvincible && (falldistance > 12) && !m_noFallDamage && disabledUntil)
+    if (isAlive() && !m_isInvincible && (falldistance > 12) && !m_noFallDamage && disabledUntil)
     {
         auto health_loss = static_cast<uint32_t>(getHealth() * (falldistance - 12) * 0.017f);
         if (health_loss >= getHealth())
@@ -3560,7 +3560,7 @@ float_t Unit::applySpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHea
     }
     else
     {
-        bonusHeal = static_cast<float_t>(HealDoneMod[school]);
+        bonusHeal = static_cast<float_t>(m_healDoneMod[school]);
         bonusAp = static_cast<float_t>(getAttackPower());
     }
 
@@ -3633,7 +3633,7 @@ float_t Unit::applySpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHea
         applySpellModifiers(SPELLMOD_DAMAGE_DONE, &heal, spellInfo, castingSpell, nullptr);
 
     // Apply pct healing modifiers
-    heal += heal * HealDonePctMod[school];
+    heal += heal * m_healDonePctMod[school];
 
     return heal;
 }
@@ -3794,7 +3794,7 @@ float_t Unit::getCriticalChanceForDamageSpell(Spell* spell, Aura* aura, Unit* ta
             if (target->isPlayer())
                 critChance += static_cast<Player*>(target)->res_R_crit_get();
 
-            critChance += static_cast<float_t>(target->AttackerCritChanceMod[school]);
+            critChance += static_cast<float_t>(target->m_attackerCritChanceMod[school]);
         }
         else
         {
@@ -3827,13 +3827,13 @@ float_t Unit::getCriticalChanceForDamageSpell(Spell* spell, Aura* aura, Unit* ta
         }
 
         // Victim's (!) crit chance mod for physical attacks?
-        critChance += static_cast<float_t>(target->AttackerCritChanceMod[0]);
+        critChance += static_cast<float_t>(target->m_attackerCritChanceMod[0]);
     }
     else
     {
-        critChance = spellcritperc + SpellCritChanceSchool[school];
+        critChance = m_spellCritPercentage + m_spellCritChanceSchool[school];
 
-        critChance += static_cast<float_t>(target->AttackerCritChanceMod[school]);
+        critChance += static_cast<float_t>(target->m_attackerCritChanceMod[school]);
 
         //\todo Zyres: is tis relly the way this should work?
         if (isPlayer() && (target->m_rootCounter - target->m_stunned))
@@ -3869,7 +3869,7 @@ float_t Unit::getCriticalChanceForHealSpell(Spell* spell, Aura* aura, Unit* /*ta
 
     const auto school = spellInfo->getFirstSchoolFromSchoolMask();
 
-    float_t critChance = spellcritperc + SpellCritChanceSchool[school];
+    float_t critChance = m_spellCritPercentage + m_spellCritChanceSchool[school];
     applySpellModifiers(SPELLMOD_CRITICAL, &critChance, spellInfo, spell, aura);
 
     if (critChance < 0.0f)
@@ -4276,7 +4276,7 @@ void Unit::addAura(Aura* aur)
 
     // Check school immunity
     const auto school = aur->getSpellInfo()->getFirstSchoolFromSchoolMask();
-    if (school != SCHOOL_NORMAL && SchoolImmunityList[school] && aur->getCasterGuid() != getGuid())
+    if (school != SCHOOL_NORMAL && m_schoolImmunityList[school] && aur->getCasterGuid() != getGuid())
     {
         ///\ todo: notify client that aura did not apply
         delete aur;
@@ -4541,11 +4541,11 @@ void Unit::addAura(Aura* aur)
     }
 
     // Hackfix from legacy method
-    if (aur->getSpellInfo()->getMechanicsType() == MECHANIC_ENRAGED && !asc_enraged++)
+    if (aur->getSpellInfo()->getMechanicsType() == MECHANIC_ENRAGED && !m_ascEnraged++)
         addAuraStateAndAuras(AURASTATE_FLAG_ENRAGED);
-    else if (aur->getSpellInfo()->getMechanicsType() == MECHANIC_BLEEDING && !asc_bleed++)
+    else if (aur->getSpellInfo()->getMechanicsType() == MECHANIC_BLEEDING && !m_ascBleed++)
         addAuraStateAndAuras(AURASTATE_FLAG_BLEED);
-    if (aur->getSpellInfo()->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !asc_seal++)
+    if (aur->getSpellInfo()->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !m_ascSeal++)
         addAuraStateAndAuras(AURASTATE_FLAG_JUDGEMENT);
 
 }
@@ -5677,7 +5677,7 @@ bool Unit::canSee(Object* const obj)
         return true;
 
     // Hunter Marked units are always visible to caster
-    if (obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->stalkedby == getGuid())
+    if (obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->m_stalkedByGuid == getGuid())
         return true;
 
     // Pets and summoned units don't have detection, they rely on their master's detection
@@ -5871,7 +5871,119 @@ void Unit::setVisible(const bool visible)
         modInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE, 1);
     else
         modInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE, -getInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE));
-    UpdateVisibility();
+    updateVisibility();
+}
+
+void Unit::updateVisibility()
+{
+    ByteBuffer buf(3000);
+    uint32_t count;
+    bool canSee;
+    bool isVisible;
+
+    if (isPlayer())
+    {
+        Player* player = dynamic_cast<Player*>(this);
+        for (const auto& inRangeObject : getInRangeObjectsSet())
+        {
+            if (inRangeObject)
+            {
+                canSee = player->canSee(inRangeObject);
+                isVisible = player->isVisibleObject(inRangeObject->getGuid());
+                if (canSee)
+                {
+                    if (!isVisible)
+                    {
+                        buf.clear();
+                        count = inRangeObject->buildCreateUpdateBlockForPlayer(&buf, player);
+                        player->getUpdateMgr().pushCreationData(&buf, count);
+                        player->addVisibleObject(inRangeObject->getGuid());
+                    }
+                }
+                else
+                {
+                    if (isVisible)
+                    {
+                        player->sendDestroyObjectPacket(inRangeObject->getGuid());
+                        player->removeVisibleObject(inRangeObject->getGuid());
+                    }
+                }
+
+                if (inRangeObject->isPlayer())
+                {
+                    Player* inRangePlayer = dynamic_cast<Player*>(inRangeObject);
+                    canSee = inRangePlayer->canSee(player);
+                    isVisible = inRangePlayer->isVisibleObject(player->getGuid());
+                    if (canSee)
+                    {
+                        if (!isVisible)
+                        {
+                            buf.clear();
+                            count = player->buildCreateUpdateBlockForPlayer(&buf, inRangePlayer);
+                            inRangePlayer->getUpdateMgr().pushCreationData(&buf, count);
+                            inRangePlayer->addVisibleObject(player->getGuid());
+                        }
+                    }
+                    else
+                    {
+                        if (isVisible)
+                        {
+                            inRangePlayer->sendDestroyObjectPacket(player->getGuid());
+                            inRangePlayer->removeVisibleObject(player->getGuid());
+                        }
+                    }
+                }
+                else if (inRangeObject->isCreature() && player->getSession() && player->getSession()->HasGMPermissions())
+                {
+                    auto* const inRangeCreature = dynamic_cast<Creature*>(inRangeObject);
+
+                    uint32_t fieldIds[] =
+                    {
+                        // Update unit flags to remove not selectable flag
+                        getOffsetForStructuredField(WoWUnit, unit_flags),
+                        // Placeholder if creature is a trigger npc
+                        0,
+                        0
+                    };
+
+                    // Update trigger model
+                    if (inRangeCreature->GetCreatureProperties()->isTriggerNpc)
+                        fieldIds[1] = getOffsetForStructuredField(WoWUnit, display_id);
+
+                    inRangeCreature->forceBuildUpdateValueForFields(fieldIds, player);
+                }
+            }
+        }
+    }
+    else // For units we can save a lot of work
+    {
+        for (const auto& inRangeObject : getInRangePlayersSet())
+        {
+            if (Player* inRangePlayer = dynamic_cast<Player*>(inRangeObject))
+            {
+                canSee = inRangePlayer->canSee(this);
+                isVisible = inRangePlayer->isVisibleObject(this->getGuid());
+                if (!canSee)
+                {
+                    if (isVisible)
+                    {
+                        inRangePlayer->sendDestroyObjectPacket(getGuid());
+                        inRangePlayer->removeVisibleObject(getGuid());
+                    }
+                }
+                else
+                {
+                    if (!isVisible)
+                    {
+                        buf.clear();
+                        count = buildCreateUpdateBlockForPlayer(&buf, inRangePlayer);
+                        inRangePlayer->getUpdateMgr().pushCreationData(&buf, count);
+                        inRangePlayer->addVisibleObject(this->getGuid());
+                    }
+                }
+            }
+        }
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -6002,7 +6114,7 @@ void Unit::regeneratePower(PowerType type)
                 //\ todo: this creature mana regeneration is not correct, rewrite it
                 if (getCombatHandler().isInCombat())
                 {
-                    amount = (getLevel() + 10) * PctPowerRegenModifier[POWER_TYPE_MANA];
+                    amount = (getLevel() + 10) * m_pctPowerRegenModifier[POWER_TYPE_MANA];
                 }
                 else
                 {
@@ -6068,7 +6180,7 @@ void Unit::regeneratePower(PowerType type)
             // Focus regens 1 point per 200ms as of 3.0.2
             amount = 1.0f;
 #endif
-            amount *= focusRate * PctPowerRegenModifier[POWER_TYPE_FOCUS];
+            amount *= focusRate * m_pctPowerRegenModifier[POWER_TYPE_FOCUS];
         } break;
         case POWER_TYPE_ENERGY:
         {
@@ -6086,7 +6198,7 @@ void Unit::regeneratePower(PowerType type)
                 sendUpdatePacket = true;
             }
 
-            amount *= energyRate * PctPowerRegenModifier[POWER_TYPE_ENERGY];
+            amount *= energyRate * m_pctPowerRegenModifier[POWER_TYPE_ENERGY];
         } break;
 #if VERSION_STRING >= Cata
         case POWER_TYPE_HOLY_POWER:
@@ -6581,7 +6693,7 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
         return;
     if (victim->isPlayer() && static_cast<Player*>(victim)->m_cheats.hasGodModeCheat)
         return;
-    if (victim->bInvincible)
+    if (victim->m_isInvincible)
         return;
     if (victim->isCreature() && static_cast<Creature*>(victim)->isSpiritHealer())
         return;
@@ -6663,8 +6775,8 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
         sScriptMgr.DamageTaken(dynamic_cast<Creature*>(this), attacker, &damage);
 
     // Hackfix - Ardent Defender
-    if (DamageTakenPctModOnHP35 && hasAuraState(AURASTATE_FLAG_HEALTH35))
-        damage = damage - float2int32(damage * DamageTakenPctModOnHP35) / 100;
+    if (m_damageTakenPctModOnHP35 && hasAuraState(AURASTATE_FLAG_HEALTH35))
+        damage = damage - float2int32(damage * m_damageTakenPctModOnHP35) / 100;
 
     if (damage >= getHealth())
     {
@@ -6910,7 +7022,7 @@ void Unit::addHealthBatchEvent(HealthBatchEvent* batch)
     if (batch != nullptr)
     {
         // Do some checks before adding the health event into batch list
-        if (!isAlive() || !IsInWorld() || bInvincible)
+        if (!isAlive() || !IsInWorld() || m_isInvincible)
         {
             delete batch;
             return;
@@ -7110,20 +7222,20 @@ bool Unit::setDetectRangeMod(uint64_t guid, int32_t amount)
     int next_free_slot = -1;
     for (uint8_t i = 0; i < 5; i++)
     {
-        if (m_detectRangeGUID[i] == 0 && next_free_slot == -1)
+        if (m_detectRangeGuids[i] == 0 && next_free_slot == -1)
         {
             next_free_slot = i;
         }
-        if (m_detectRangeGUID[i] == guid)
+        if (m_detectRangeGuids[i] == guid)
         {
-            m_detectRangeMOD[i] = amount;
+            m_detectRangeMods[i] = amount;
             return true;
         }
     }
     if (next_free_slot != -1)
     {
-        m_detectRangeGUID[next_free_slot] = guid;
-        m_detectRangeMOD[next_free_slot] = amount;
+        m_detectRangeGuids[next_free_slot] = guid;
+        m_detectRangeMods[next_free_slot] = amount;
         return true;
     }
     return false;
@@ -7133,10 +7245,10 @@ void Unit::unsetDetectRangeMod(uint64_t guid)
 {
     for (uint8_t i = 0; i < 5; i++)
     {
-        if (m_detectRangeGUID[i] == guid)
+        if (m_detectRangeGuids[i] == guid)
         {
-            m_detectRangeGUID[i] = 0;
-            m_detectRangeMOD[i] = 0;
+            m_detectRangeGuids[i] = 0;
+            m_detectRangeMods[i] = 0;
         }
     }
 }
@@ -7145,8 +7257,8 @@ int32_t Unit::getDetectRangeMod(uint64_t guid) const
 {
     for (uint8_t i = 0; i < 5; i++)
     {
-        if (m_detectRangeGUID[i] == guid)
-            return m_detectRangeMOD[i];
+        if (m_detectRangeGuids[i] == guid)
+            return m_detectRangeMods[i];
     }
     return 0;
 }
@@ -8119,9 +8231,9 @@ void Unit::removeGameObject(GameObject* gameObj, bool del)
 
     for (uint8_t i = 0; i < 4; ++i)
     {
-        if (m_ObjectSlots[i] == gameObj->GetUIdFromGUID())
+        if (m_objectSlots[i] == gameObj->GetUIdFromGUID())
         {
-            m_ObjectSlots[i] = 0;
+            m_objectSlots[i] = 0;
             break;
         }
     }
@@ -8369,7 +8481,7 @@ void Unit::possess(Unit* unitTarget, uint32_t delay)
         unitTarget->setAItoUse(false);
         unitTarget->stopMoving();
         unitTarget->m_redirectSpellPackets = playerController;
-        unitTarget->mPlayerControler = playerController;
+        unitTarget->m_playerControler = playerController;
     }
 
     m_noInterrupt++;
@@ -8379,7 +8491,7 @@ void Unit::possess(Unit* unitTarget, uint32_t delay)
     unitTarget->SetCharmTempVal(unitTarget->getFactionTemplate());
 
     playerController->setFarsightGuid(unitTarget->getGuid());
-    playerController->mControledUnit = unitTarget;
+    playerController->m_controledUnit = unitTarget;
 
     unitTarget->setFaction(getFactionTemplate());
     unitTarget->addUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
@@ -8422,12 +8534,12 @@ void Unit::unPossess()
     {
         unitTarget->setAItoUse(true);
         unitTarget->m_redirectSpellPackets = nullptr;
-        unitTarget->mPlayerControler = nullptr;
+        unitTarget->m_playerControler = nullptr;
     }
 
     m_noInterrupt--;
     playerController->setFarsightGuid(0);
-    playerController->mControledUnit = this;
+    playerController->m_controledUnit = this;
 
     setCharmGuid(0);
     unitTarget->setCharmedByGuid(0);

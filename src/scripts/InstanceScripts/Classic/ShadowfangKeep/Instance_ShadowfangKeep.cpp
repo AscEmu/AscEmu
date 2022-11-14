@@ -1068,7 +1068,7 @@ public:
         setAIAgent(AGENT_SPELL);
 
         aiUpdateOriginal = GetAIUpdateFreq();
-        originalRegen = getCreature()->PctPowerRegenModifier[POWER_TYPE_MANA];
+        originalRegen = getCreature()->m_pctPowerRegenModifier[POWER_TYPE_MANA];
     }
 
     void OnCastSpell(uint32_t spellId) override
@@ -1083,15 +1083,15 @@ public:
     {
         setAIAgent(AGENT_SPELL);
         getCreature()->getAIInterface()->setMeleeDisabled(true);
-        getCreature()->PctPowerRegenModifier[POWER_TYPE_MANA] = originalRegen;
+        getCreature()->m_pctPowerRegenModifier[POWER_TYPE_MANA] = originalRegen;
     }
 
     void OnCombatStart(Unit* /*pEnemy*/) override
     {
         // do not regen mana
-        getCreature()->PctPowerRegenModifier[POWER_TYPE_MANA] = 0.3f;
+        getCreature()->m_pctPowerRegenModifier[POWER_TYPE_MANA] = 0.3f;
         aiUpdateOriginal = GetAIUpdateFreq();
-        originalRegen = getCreature()->PctPowerRegenModifier[POWER_TYPE_MANA];
+        originalRegen = getCreature()->m_pctPowerRegenModifier[POWER_TYPE_MANA];
 
         // Do not do melee attacks
         getCreature()->getAIInterface()->setMeleeDisabled(true);

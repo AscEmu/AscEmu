@@ -910,7 +910,7 @@ void WorldMap::RemoveObject(Object* obj, bool free_guid)
         }
         m_PlayerStorage.erase(obj->getGuidLow());
     }
-    else if (obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->mPlayerControler != nullptr)
+    else if (obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->m_playerControler != nullptr)
     {
         if (obj->GetPositionX() < Map::Terrain::_maxX || obj->GetPositionX() > Map::Terrain::_minY || obj->GetPositionY() < Map::Terrain::_maxY || obj->GetPositionY() > Map::Terrain::_minY)
         {
@@ -921,7 +921,7 @@ void WorldMap::RemoveObject(Object* obj, bool free_guid)
     }
 
     // Remove the session from our set if it is a player.
-    if (obj->isPlayer() || obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->mPlayerControler != nullptr)
+    if (obj->isPlayer() || obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->m_playerControler != nullptr)
     {
         for (auto _mapWideStaticObject : _mapWideStaticObjects)
         {
@@ -1274,9 +1274,9 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
                         (*buf)->clear();
                     }
                 }
-                else if (curObj->isCreatureOrPlayer() && static_cast<Unit*>(curObj)->mPlayerControler != nullptr)
+                else if (curObj->isCreatureOrPlayer() && static_cast<Unit*>(curObj)->m_playerControler != nullptr)
                 {
-                    plObj2 = static_cast<Unit*>(curObj)->mPlayerControler;
+                    plObj2 = static_cast<Unit*>(curObj)->m_playerControler;
 
                     if (plObj2->canSee(obj) && !plObj2->isVisibleObject(obj->getGuid()))
                     {
@@ -1328,9 +1328,9 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
                         (*buf)->clear();
                     }
                 }
-                else if (curObj->isCreatureOrPlayer() && static_cast<Unit*>(curObj)->mPlayerControler != nullptr)
+                else if (curObj->isCreatureOrPlayer() && static_cast<Unit*>(curObj)->m_playerControler != nullptr)
                 {
-                    plObj2 = static_cast<Unit*>(curObj)->mPlayerControler;
+                    plObj2 = static_cast<Unit*>(curObj)->m_playerControler;
                     cansee = plObj2->canSee(obj);
                     isvisible = plObj2->isVisibleObject(obj->getGuid());
                     if (!cansee && isvisible)
@@ -1389,8 +1389,8 @@ void WorldMap::changeObjectLocation(Object* obj)
 
     if (obj->isPlayer())
         plObj = static_cast<Player*>(obj);
-    if (obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->mPlayerControler != nullptr)
-        plObj = static_cast<Unit*>(obj)->mPlayerControler;
+    if (obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->m_playerControler != nullptr)
+        plObj = static_cast<Unit*>(obj)->m_playerControler;
 
     float fRange = 0.0f;
 
@@ -1416,8 +1416,8 @@ void WorldMap::changeObjectLocation(Object* obj)
                     if (curObj->isPlayer())
                         static_cast<Player*>(curObj)->removeIfVisiblePushOutOfRange(obj->getGuid());
 
-                    if (curObj->isCreatureOrPlayer() && static_cast<Unit*>(curObj)->mPlayerControler != nullptr)
-                        static_cast<Unit*>(curObj)->mPlayerControler->removeIfVisiblePushOutOfRange(obj->getGuid());
+                    if (curObj->isCreatureOrPlayer() && static_cast<Unit*>(curObj)->m_playerControler != nullptr)
+                        static_cast<Unit*>(curObj)->m_playerControler->removeIfVisiblePushOutOfRange(obj->getGuid());
 
                     curObj->removeObjectFromInRangeObjectsSet(obj);
 
@@ -1485,7 +1485,7 @@ void WorldMap::changeObjectLocation(Object* obj)
 
         // if player we need to update cell activity radius = 2 is used in order to update
         // both old and new cells
-        if (obj->isPlayer() || obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->mPlayerControler != nullptr)
+        if (obj->isPlayer() || obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->m_playerControler != nullptr)
         {
             // have to unlock/lock here to avoid a deadlock situation.
             updateCellActivity(cellX, cellY, 2U + cellNumber);
@@ -2384,12 +2384,12 @@ void WorldMap::updateObjects()
                             update.clear();
                         }
                     }
-                    else if (pObj->isCreatureOrPlayer() && static_cast<Unit*>(pObj)->mPlayerControler != nullptr)
+                    else if (pObj->isCreatureOrPlayer() && static_cast<Unit*>(pObj)->m_playerControler != nullptr)
                     {
-                        count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Unit*>(pObj)->mPlayerControler);
+                        count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Unit*>(pObj)->m_playerControler);
                         if (count)
                         {
-                            static_cast<Unit*>(pObj)->mPlayerControler->getUpdateMgr().pushUpdateData(&update, count);
+                            static_cast<Unit*>(pObj)->m_playerControler->getUpdateMgr().pushUpdateData(&update, count);
                             update.clear();
                         }
                     }

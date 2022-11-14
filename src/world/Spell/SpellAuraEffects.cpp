@@ -1577,7 +1577,7 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
 #if VERSION_STRING <= Cata
             // Hackfix from legacy method
             // Apply bonus from [Warlock] Soul Siphon
-            if (casterUnit->m_soulSiphon.amt)
+            if (casterUnit->m_soulSiphon.m_amount)
             {
                 // Use std::map to prevent counting duplicate auras (stacked ones, from the same unit)
                 std::map<uint64_t, std::set<uint32_t> *> auras;
@@ -1636,9 +1636,9 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
                     }
                 }
 
-                pct = count * casterUnit->m_soulSiphon.amt;
-                if (pct > casterUnit->m_soulSiphon.max)
-                    pct = casterUnit->m_soulSiphon.max;
+                pct = count * casterUnit->m_soulSiphon.m_amount;
+                if (pct > casterUnit->m_soulSiphon.m_max)
+                    pct = casterUnit->m_soulSiphon.m_max;
                 damage += aurEff->getEffectFloatDamage() * pct / 100;
             }
 #endif

@@ -1244,8 +1244,8 @@ void GameObject::onRemoveInRangeObject(Object* pObj)
     if (m_summonedGo && owner == pObj)
     {
         for (uint8_t i = 0; i < 4; i++)
-            if (owner->m_ObjectSlots[i] == getGuidLow())
-                owner->m_ObjectSlots[i] = 0;
+            if (owner->m_objectSlots[i] == getGuidLow())
+                owner->m_objectSlots[i] = 0;
 
         expireAndDelete();
     }

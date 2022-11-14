@@ -142,8 +142,8 @@ DynamicObject::DynamicObject(uint32 high, uint32 low)
 
 DynamicObject::~DynamicObject()
 {
-    if (u_caster != nullptr && u_caster->dynObj == this)
-        u_caster->dynObj = nullptr;
+    if (u_caster != nullptr && u_caster->m_dynamicObject == this)
+        u_caster->m_dynamicObject = nullptr;
 }
 
 void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float z, uint32 duration, float radius, uint32 type)
@@ -193,12 +193,12 @@ void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float 
     else
         PushToWorld(caster->getWorldMap());
 
-    if (caster->dynObj != nullptr)
+    if (caster->m_dynamicObject != nullptr)
     {
         //expires
-        caster->dynObj->Remove();
+        caster->m_dynamicObject->Remove();
     }
-    caster->dynObj = this;
+    caster->m_dynamicObject = this;
 
     //sEventMgr.AddEvent(this, &DynamicObject::UpdateTargets, EVENT_DYNAMICOBJECT_UPDATE, 100, 0,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     UpdateTargets();

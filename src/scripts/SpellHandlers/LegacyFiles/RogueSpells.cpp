@@ -151,7 +151,7 @@ bool CheatDeath(uint8_t /*effectIndex*/, Aura* a, bool apply)
         }
 
         for (uint32_t x = 0; x < 7; x++)
-            p_target->DamageTakenPctMod[x] += val;
+            p_target->m_damageTakenPctMod[x] += val;
     }
 
     return true;

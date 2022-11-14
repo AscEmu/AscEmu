@@ -565,8 +565,8 @@ uint32_t Unit::HandleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
         return 0;
 
     uint32_t resisted_dmg = 0;
-    bool can_delete = !bProcInUse; //if this is a nested proc then we should have this set to TRUE by the father proc
-    bProcInUse = true; //locking the proc list
+    bool can_delete = !m_isProcInUse; //if this is a nested proc then we should have this set to TRUE by the father proc
+    m_isProcInUse = true; //locking the proc list
 
     std::list<SpellProc*> happenedProcs;
 
@@ -5929,7 +5929,7 @@ uint32_t Unit::HandleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
     }*/
 
     if (can_delete)   //are we the upper level of nested procs ? If yes then we can remove the lock
-        bProcInUse = false;
+        m_isProcInUse = false;
 
     return resisted_dmg;
 }
@@ -5971,12 +5971,12 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, DamageInfo* dmg, SpellInf
     {
 #if VERSION_STRING > TBC
         if (this->isPlayer())
-            ArmorReduce = PowerCostPctMod[0] + ((float)pVictim->getResistance(0) * (ArmorPctReduce + static_cast<Player*>(this)->CalcRating(CR_ARMOR_PENETRATION)) / 100.0f);
+            ArmorReduce = m_powerCostPctMod[0] + ((float)pVictim->getResistance(0) * (ArmorPctReduce + static_cast<Player*>(this)->CalcRating(CR_ARMOR_PENETRATION)) / 100.0f);
         else
             ArmorReduce = 0.0f;
 #else
         if (this->isPlayer())
-            ArmorReduce = PowerCostPctMod[0];
+            ArmorReduce = m_powerCostPctMod[0];
         else
             ArmorReduce = 0.0f;
 #endif
@@ -6006,7 +6006,7 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, DamageInfo* dmg, SpellInf
     else
     {
         // applying resistance to other type of damage
-        int32_t RResist = float2int32((pVictim->getResistance((*dmg).getSchoolTypeFromMask()) + ((pVictim->getLevel() > getLevel()) ? (pVictim->getLevel() - this->getLevel()) * 5 : 0)) - PowerCostPctMod[(*dmg).getSchoolTypeFromMask()]);
+        int32_t RResist = float2int32((pVictim->getResistance((*dmg).getSchoolTypeFromMask()) + ((pVictim->getLevel() > getLevel()) ? (pVictim->getLevel() - this->getLevel()) * 5 : 0)) - m_powerCostPctMod[(*dmg).getSchoolTypeFromMask()]);
         if (RResist < 0)
             RResist = 0;
         AverageResistance = (static_cast<float>(RResist) / static_cast<float>(getLevel() * 5) * 0.75f);
@@ -6060,7 +6060,7 @@ uint32_t Unit::GetSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
                 dodge = static_cast<Player*>(pVictim)->getDodgePercentage();
             }
 
-            if (pVictim->can_parry && !pVictim->disarmed)               // parry chance
+            if (pVictim->m_canParry && !pVictim->m_isDisarmed)               // parry chance
             {
                 if (static_cast<Player*>(pVictim)->HasSpell(3127) || static_cast<Player*>(pVictim)->HasSpell(18848))
                 {
@@ -6096,17 +6096,17 @@ uint32_t Unit::GetSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
         switch (weapon_damage_type)
         {
             case MELEE:   // melee main hand weapon
-                it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                 hitmodifier += pr->CalcRating(CR_HIT_MELEE);
                 self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_MAINHAND));
                 break;
             case OFFHAND: // melee offhand weapon (dualwield)
-                it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+                it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                 hitmodifier += pr->CalcRating(CR_HIT_MELEE);
                 self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_OFFHAND));
                 break;
             case RANGED:  // ranged weapon
-                it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+                it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 hitmodifier += pr->CalcRating(CR_HIT_RANGED);
                 self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_RANGED));
                 break;
@@ -6344,7 +6344,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                     dodge = plr->GetDodgeChance();
                 }
 
-                if (pVictim->can_parry && !disarmed)
+                if (pVictim->m_canParry && !m_isDisarmed)
                 {
                     // can parry as long as we're not disarmed
                     parry = plr->GetParryChance();
@@ -6380,7 +6380,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         {
             // can parry attacks from the front
             ///\todo different bosses have different parry rates (db patch?)
-            if (!disarmed)    ///\todo this is wrong
+            if (!m_isDisarmed)    ///\todo this is wrong
             {
                 parry = c->GetBaseParry();
                 parry += pVictim->GetParryFromSpell();
@@ -6411,7 +6411,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         switch (dmg.weaponType)
         {
             case MELEE:   // melee main hand weapon
-                it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                 self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_MAINHAND));
                 if (it)
                 {
@@ -6421,7 +6421,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 }
                 break;
             case OFFHAND: // melee offhand weapon (dualwield)
-                it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+                it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                 self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_OFFHAND));
                 hit_status |= HITSTATUS_DUALWIELD;//animation
                 if (it)
@@ -6432,7 +6432,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 }
                 break;
             case RANGED:  // ranged weapon
-                it = disarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+                it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_RANGED));
                 if (it)
                     dmg.schoolMask = static_cast<SchoolMask>(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
@@ -6521,7 +6521,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             hitmodifier += static_cast<Player*>(pVictim)->m_resist_hit[MOD_RANGED];
         }
     }
-    crit += static_cast<float>(pVictim->AttackerCritChanceMod[0]);
+    crit += static_cast<float>(pVictim->m_attackerCritChanceMod[0]);
 
     // by skill difference
     float vsk = static_cast<float>(self_skill - victim_skill);
@@ -6787,7 +6787,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             //not miss,dodge or parry
         default:
             hit_status |= HITSTATUS_HITANIMATION;//hit animation on victim
-            if (pVictim->SchoolImmunityList[0])
+            if (pVictim->m_schoolImmunityList[0])
                 vstate = VisualState::IMMUNE;
             else
             {
@@ -6855,17 +6855,17 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 //      spellModPercentageIntValue(((Unit*)this)->SM_PMiscEffect,&dmg.full_damage,(uint64_t)1<<63);
                 //  }
 
-                dmg.fullDamage += pVictim->DamageTakenMod[dmg.getSchoolTypeFromMask()];
+                dmg.fullDamage += pVictim->m_damageTakenMod[dmg.getSchoolTypeFromMask()];
                 if (dmg.weaponType == RANGED)
                 {
-                    dmg.fullDamage += pVictim->RangedDamageTaken;
+                    dmg.fullDamage += pVictim->m_rangedDamageTaken;
                 }
 
                 if (ability && ability->getMechanicsType() == MECHANIC_BLEEDING)
                     disable_dR = true;
 
 
-                dmg.fullDamage += float2int32(dmg.fullDamage * pVictim->DamageTakenPctMod[dmg.getSchoolTypeFromMask()]);
+                dmg.fullDamage += float2int32(dmg.fullDamage * pVictim->m_damageTakenPctMod[dmg.getSchoolTypeFromMask()]);
 
                 if (dmg.schoolMask != SCHOOL_MASK_NORMAL)
                     dmg.fullDamage += float2int32(dmg.fullDamage * (GetDamageDonePctMod(dmg.getSchoolTypeFromMask()) - 1));
@@ -6890,7 +6890,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                         case 49165:
                         case 61548:
                         case 61549:
-                            dmg.fullDamage += float2int32(dmg.fullDamage * pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING]);
+                            dmg.fullDamage += float2int32(dmg.fullDamage * pVictim->m_modDamageTakenByMechPct[MECHANIC_BLEEDING]);
                             break;
                     }
                 }
@@ -6920,7 +6920,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                         case 51875:
                         case 52506:
                         case 54459:
-                            dmg.fullDamage += float2int32(dmg.fullDamage * pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING]);
+                            dmg.fullDamage += float2int32(dmg.fullDamage * pVictim->m_modDamageTakenByMechPct[MECHANIC_BLEEDING]);
                             break;
                     }
                 }
@@ -6975,7 +6975,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
 
                                 dmg.blockedDamage = float2int32((shield->getItemProperties()->Block + ((static_cast<Player*>(pVictim)->m_modblockvaluefromspells + static_cast<Player*>(pVictim)->getCombatRating(CR_BLOCK))) + ((pVictim->getStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
 
-                                if (Util::checkChance(m_BlockModPct))
+                                if (Util::checkChance(m_blockModPct))
                                     dmg.blockedDamage *= 2;
                             }
                             else
@@ -7015,7 +7015,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                             applySpellModifiers(SPELLMOD_CRITICAL_DAMAGE, &dmg.fullDamage, ability, castingSpell);
                         }
 
-                        //LogDebug("DEBUG: After CritMeleeDamageTakenPctMod: %u" , dmg.full_damage);
+                        //LogDebug("DEBUG: After m_critMeleeDamageTakenPctMod: %u" , dmg.full_damage);
                         if (isPlayer())
                         {
                             if (dmg.weaponType != RANGED)
@@ -7028,9 +7028,9 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                         }
 
                         if (dmg.weaponType == RANGED)
-                            dmg.fullDamage = dmg.fullDamage - float2int32(dmg.fullDamage * CritRangedDamageTakenPctMod[dmg.getSchoolTypeFromMask()]);
+                            dmg.fullDamage = dmg.fullDamage - float2int32(dmg.fullDamage * m_critRangedDamageTakenPctMod[dmg.getSchoolTypeFromMask()]);
                         else
-                            dmg.fullDamage = dmg.fullDamage - float2int32(dmg.fullDamage * CritMeleeDamageTakenPctMod[dmg.getSchoolTypeFromMask()]);
+                            dmg.fullDamage = dmg.fullDamage - float2int32(dmg.fullDamage * m_critMeleeDamageTakenPctMod[dmg.getSchoolTypeFromMask()]);
 
                         if (pVictim->isPlayer())
                         {
@@ -7376,7 +7376,7 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         pVictim->sendSpellNonMeleeDamageLog(this, pVictim, ability, dmg.realDamage, dmg.absorbedDamage, dmg.resistedDamage, dmg.blockedDamage, overKill, false, hit_status & HITSTATUS_CRICTICAL);
 
     // invincible people don't take damage
-    if (pVictim->bInvincible == false)
+    if (pVictim->m_isInvincible == false)
     {
         if (dmg.realDamage)
         {
@@ -7467,9 +7467,9 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     //extra strikes processing
     if (!m_extraAttackCounter)
     {
-        int32_t extra_attacks = m_extraattacks;
+        int32_t extra_attacks = m_extraAttacks;
         m_extraAttackCounter = true;
-        m_extraattacks = 0;
+        m_extraAttacks = 0;
 
         while (extra_attacks > 0)
         {
@@ -7480,9 +7480,9 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         m_extraAttackCounter = false;
     }
 
-    if (m_extrastriketargetc > 0 && !m_extrastriketarget)
+    if (m_extraStrikeTargetC > 0 && !m_extraStrikeTarget)
     {
-        m_extrastriketarget = true;
+        m_extraStrikeTarget = true;
 
         for (std::list<ExtraStrike*>::iterator itx = m_extraStrikeTargets.begin(); itx != m_extraStrikeTargets.end();)
         {
@@ -7511,14 +7511,14 @@ DamageInfo Unit::Strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 ex->charges--;
                 if (ex->charges <= 0)
                 {
-                    m_extrastriketargetc--;
+                    m_extraStrikeTargetC--;
                     m_extraStrikeTargets.erase(itx2);
                     delete ex;
                 }
             }
         }
 
-        m_extrastriketarget = false;
+        m_extraStrikeTarget = false;
     }
 
     return dmg;
@@ -7595,15 +7595,15 @@ bool Unit::AuraActionIf(AuraAction* action, AuraCondition* condition)
 // returns absorbed dmg
 uint32_t Unit::ManaShieldAbsorb(uint32_t dmg)
 {
-    if (!m_manashieldamt)
+    if (!m_manashieldAmount)
         return 0;
     //mana shield group->16. the only
 
     uint32_t mana = getPower(POWER_TYPE_MANA);
 
     int32_t potential = (mana * 50) / 100;
-    if (potential > m_manashieldamt)
-        potential = m_manashieldamt;
+    if (potential > m_manashieldAmount)
+        potential = m_manashieldAmount;
 
     if (static_cast<int32_t>(dmg) < potential)
         potential = dmg;
@@ -7611,8 +7611,8 @@ uint32_t Unit::ManaShieldAbsorb(uint32_t dmg)
     uint32_t cost = (potential * 100) / 50;
 
     setPower(POWER_TYPE_MANA, mana - cost);
-    m_manashieldamt -= potential;
-    if (!m_manashieldamt)
+    m_manashieldAmount -= potential;
+    if (!m_manashieldAmount)
         removeAllAurasById(m_manaShieldId);
     return potential;
 }
@@ -7731,121 +7731,6 @@ void Unit::Deactivate(WorldMap* mgr)
     Object::Deactivate(mgr);
 }
 
-void Unit::UpdateVisibility()
-{
-    ByteBuffer buf(3000);
-    uint32_t count;
-    bool can_see;
-    bool is_visible;
-
-    if (isPlayer())
-    {
-        Player* plr = static_cast<Player*>(this);
-        for (const auto& itr2 : getInRangeObjectsSet())
-        {
-            if (itr2)
-            {
-                Object* pObj = itr2;
-
-                can_see = plr->canSee(pObj);
-                is_visible = plr->isVisibleObject(pObj->getGuid());
-                if (can_see)
-                {
-                    if (!is_visible)
-                    {
-                        buf.clear();
-                        count = pObj->buildCreateUpdateBlockForPlayer(&buf, plr);
-                        plr->getUpdateMgr().pushCreationData(&buf, count);
-                        plr->addVisibleObject(pObj->getGuid());
-                    }
-                }
-                else
-                {
-                    if (is_visible)
-                    {
-                        plr->sendDestroyObjectPacket(pObj->getGuid());
-                        plr->removeVisibleObject(pObj->getGuid());
-                    }
-                }
-
-                if (pObj->isPlayer())
-                {
-                    Player* pl = static_cast<Player*>(pObj);
-                    can_see = pl->canSee(plr);
-                    is_visible = pl->isVisibleObject(plr->getGuid());
-                    if (can_see)
-                    {
-                        if (!is_visible)
-                        {
-                            buf.clear();
-                            count = plr->buildCreateUpdateBlockForPlayer(&buf, pl);
-                            pl->getUpdateMgr().pushCreationData(&buf, count);
-                            pl->addVisibleObject(plr->getGuid());
-                        }
-                    }
-                    else
-                    {
-                        if (is_visible)
-                        {
-                            pl->sendDestroyObjectPacket(plr->getGuid());
-                            pl->removeVisibleObject(plr->getGuid());
-                        }
-                    }
-                }
-                else if (pObj->isCreature() && plr->getSession() && plr->getSession()->HasGMPermissions())
-                {
-                    auto* const creature = dynamic_cast<Creature*>(pObj);
-
-                    uint32_t fieldIds[] =
-                    {
-                        // Update unit flags to remove not selectable flag
-                        getOffsetForStructuredField(WoWUnit, unit_flags),
-                        // Placeholder if creature is a trigger npc
-                        0,
-                        0
-                    };
-
-                    // Update trigger model
-                    if (creature->GetCreatureProperties()->isTriggerNpc)
-                        fieldIds[1] = getOffsetForStructuredField(WoWUnit, display_id);
-
-                    creature->forceBuildUpdateValueForFields(fieldIds, plr);
-                }
-            }
-        }
-    }
-    else // For units we can save a lot of work
-    {
-        for (const auto& it2 : getInRangePlayersSet())
-        {
-            Player* p = static_cast<Player*>(it2);
-            if (p)
-            {
-                can_see = p->canSee(this);
-                is_visible = p->isVisibleObject(this->getGuid());
-                if (!can_see)
-                {
-                    if (is_visible)
-                    {
-                        p->sendDestroyObjectPacket(getGuid());
-                        p->removeVisibleObject(getGuid());
-                    }
-                }
-                else
-                {
-                    if (!is_visible)
-                    {
-                        buf.clear();
-                        count = buildCreateUpdateBlockForPlayer(&buf, p);
-                        p->getUpdateMgr().pushCreationData(&buf, count);
-                        p->addVisibleObject(this->getGuid());
-                    }
-                }
-            }
-        }
-    }
-}
-
 float Unit::get_chance_to_daze(Unit* target)
 {
     if (target->getLevel() < CREATURE_DAZE_MIN_LEVEL) // since 3.3.0
@@ -7873,9 +7758,9 @@ void Unit::EventModelChange()
 
     //\todo if has mount, grab mount model and add the z value of attachment 0
     if (displayBoundingBox != nullptr)
-        m_modelhalfsize = displayBoundingBox->high[2] / 2;
+        m_modelHalfsize = displayBoundingBox->high[2] / 2;
     else
-        m_modelhalfsize = 1.0f;
+        m_modelHalfsize = 1.0f;
 }
 
 void Unit::RemoveFieldSummon()
@@ -7914,13 +7799,13 @@ void Unit::EventStunOrImmobilize(Unit* proc_target, bool is_victim)
     int32_t t_trigger_on_stun, t_trigger_on_stun_chance;
     if (is_victim == false)
     {
-        t_trigger_on_stun = trigger_on_stun;
-        t_trigger_on_stun_chance = trigger_on_stun_chance;
+        t_trigger_on_stun = m_triggerOnStun;
+        t_trigger_on_stun_chance = m_triggerOnStunChance;
     }
     else
     {
-        t_trigger_on_stun = trigger_on_stun_victim;
-        t_trigger_on_stun_chance = trigger_on_stun_chance_victim;
+        t_trigger_on_stun = m_triggerOnStunVictim;
+        t_trigger_on_stun_chance = m_triggerOnStunChanceVictim;
     }
 
     if (t_trigger_on_stun)
@@ -7954,13 +7839,13 @@ void Unit::EventChill(Unit* proc_target, bool is_victim)
     int32_t t_trigger_on_chill, t_trigger_on_chill_chance;
     if (is_victim == false)
     {
-        t_trigger_on_chill = trigger_on_chill;
-        t_trigger_on_chill_chance = trigger_on_chill_chance;
+        t_trigger_on_chill = m_triggerOnChill;
+        t_trigger_on_chill_chance = m_triggerOnChillChance;
     }
     else
     {
-        t_trigger_on_chill = trigger_on_chill_victim;
-        t_trigger_on_chill_chance = trigger_on_chill_chance_victim;
+        t_trigger_on_chill = m_triggerOnChillVictim;
+        t_trigger_on_chill_chance = m_triggerOnChillChanceVictim;
     }
 
     if (t_trigger_on_chill)
@@ -7991,7 +7876,7 @@ void Unit::RemoveExtraStrikeTarget(SpellInfo const* spell_info)
         ExtraStrike* es = *i;
         if (spell_info == es->spell_info)
         {
-            m_extrastriketargetc--;
+            m_extraStrikeTargetC--;
             m_extraStrikeTargets.erase(i);
             delete es;
             break;
@@ -8015,7 +7900,7 @@ void Unit::AddExtraStrikeTarget(SpellInfo const* spell_info, uint32_t charges)
     es->spell_info = spell_info;
     es->charges = charges;
     m_extraStrikeTargets.push_back(es);
-    m_extrastriketargetc++;
+    m_extraStrikeTargetC++;
 }
 
 uint32_t Unit::DoDamageSplitTarget(uint32_t res, SchoolMask schoolMask, bool melee_dmg)

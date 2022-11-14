@@ -1134,9 +1134,9 @@ void Creature::CalcResistance(uint8_t type)
     int32 neg = 0;
 
     if (BaseResistanceModPct[type] < 0)
-        neg = (BaseResistance[type] * abs(BaseResistanceModPct[type]) / 100);
+        neg = (m_baseResistance[type] * abs(BaseResistanceModPct[type]) / 100);
     else
-        pos = (BaseResistance[type] * BaseResistanceModPct[type]) / 100;
+        pos = (m_baseResistance[type] * BaseResistanceModPct[type]) / 100;
 
     if (isPet() && isAlive() && IsInWorld())
     {
@@ -1148,9 +1148,9 @@ void Creature::CalcResistance(uint8_t type)
     }
 
     if (ResistanceModPct[type] < 0)
-        neg += (BaseResistance[type] + pos - neg) * abs(ResistanceModPct[type]) / 100;
+        neg += (m_baseResistance[type] + pos - neg) * abs(ResistanceModPct[type]) / 100;
     else
-        pos += (BaseResistance[type] + pos - neg) * ResistanceModPct[type] / 100;
+        pos += (m_baseResistance[type] + pos - neg) * ResistanceModPct[type] / 100;
 
     if (FlatResistanceMod[type] < 0)
         neg += abs(FlatResistanceMod[type]);
@@ -1162,7 +1162,7 @@ void Creature::CalcResistance(uint8_t type)
     setResistanceBuffModNegative(type, neg);
 #endif
 
-    int32 tot = BaseResistance[type] + pos - neg;
+    int32 tot = m_baseResistance[type] + pos - neg;
 
     setResistance(type, tot > 0 ? tot : 0);
 }
@@ -1173,9 +1173,9 @@ void Creature::CalcStat(uint8_t type)
     int32 neg = 0;
 
     if (StatModPct[type] < 0)
-        neg = (BaseStats[type] * abs(StatModPct[type]) / 100);
+        neg = (m_baseStats[type] * abs(StatModPct[type]) / 100);
     else
-        pos = (BaseStats[type] * StatModPct[type]) / 100;
+        pos = (m_baseStats[type] * StatModPct[type]) / 100;
 
     if (isPet())
     {
@@ -1187,9 +1187,9 @@ void Creature::CalcStat(uint8_t type)
     }
 
     if (TotalStatModPct[type] < 0)
-        neg += (BaseStats[type] + pos - neg) * abs(TotalStatModPct[type]) / 100;
+        neg += (m_baseStats[type] + pos - neg) * abs(TotalStatModPct[type]) / 100;
     else
-        pos += (BaseStats[type] + pos - neg) * TotalStatModPct[type] / 100;
+        pos += (m_baseStats[type] + pos - neg) * TotalStatModPct[type] / 100;
 
     if (FlatStatMod[type] < 0)
         neg += abs(FlatStatMod[type]);
@@ -1201,7 +1201,7 @@ void Creature::CalcStat(uint8_t type)
     setNegStat(type, neg);
 #endif
 
-    int32 tot = BaseStats[type] + pos - neg;
+    int32 tot = m_baseStats[type] + pos - neg;
     setStat(type, tot > 0 ? tot : 0);
 
     switch (type)
@@ -1291,8 +1291,8 @@ void Creature::RegenerateHealth()
         // 25% of max health per tick
         amt = getMaxHealth() * 0.25f;
 
-        if (PctRegenModifier)
-            amt += (amt * PctRegenModifier) / 100;
+        if (m_pctRegenModifier)
+            amt += (amt * m_pctRegenModifier) / 100;
 
         //Apply shit from conf file
         amt *= worldConfig.getFloatRate(RATE_HEALTH);
@@ -1590,16 +1590,16 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
 
     //load resistances
     for (uint8 x = 0; x < TOTAL_SPELL_SCHOOLS; ++x)
-        BaseResistance[x] = getResistance(x);
+        m_baseResistance[x] = getResistance(x);
     for (uint8 x = 0; x < STAT_COUNT; ++x)
-        BaseStats[x] = getStat(x);
+        m_baseStats[x] = getStat(x);
 
-    BaseDamage[0] = getMinDamage();
-    BaseDamage[1] = getMaxDamage();
-    BaseOffhandDamage[0] = getMinOffhandDamage();
-    BaseOffhandDamage[1] = getMaxOffhandDamage();
-    BaseRangedDamage[0] = getMinRangedDamage();
-    BaseRangedDamage[1] = getMaxRangedDamage();
+    m_baseDamage[0] = getMinDamage();
+    m_baseDamage[1] = getMaxDamage();
+    m_baseOffhandDamage[0] = getMinOffhandDamage();
+    m_baseOffhandDamage[1] = getMaxOffhandDamage();
+    m_baseRangedDamage[0] = getMinRangedDamage();
+    m_baseRangedDamage[1] = getMaxRangedDamage();
     BaseAttackType = creature_properties->attackSchool;
 
     setModCastSpeed(1.0f);   // better set this one
@@ -1845,16 +1845,16 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 
     //load resistances
     for (uint8 j = 0; j < TOTAL_SPELL_SCHOOLS; ++j)
-        BaseResistance[j] = getResistance(j);
+        m_baseResistance[j] = getResistance(j);
     for (uint8 j = 0; j < STAT_COUNT; ++j)
-        BaseStats[j] = getStat(j);
+        m_baseStats[j] = getStat(j);
 
-    BaseDamage[0] = getMinDamage();
-    BaseDamage[1] = getMaxDamage();
-    BaseOffhandDamage[0] = getMinOffhandDamage();
-    BaseOffhandDamage[1] = getMaxOffhandDamage();
-    BaseRangedDamage[0] = getMinRangedDamage();
-    BaseRangedDamage[1] = getMaxRangedDamage();
+    m_baseDamage[0] = getMinDamage();
+    m_baseDamage[1] = getMaxDamage();
+    m_baseOffhandDamage[0] = getMinOffhandDamage();
+    m_baseOffhandDamage[1] = getMaxOffhandDamage();
+    m_baseRangedDamage[0] = getMinRangedDamage();
+    m_baseRangedDamage[1] = getMaxRangedDamage();
     BaseAttackType = creature_properties->attackSchool;
 
     setModCastSpeed(1.0f);   // better set this one
@@ -2232,7 +2232,7 @@ void Creature::RemoveLimboState(Unit* /*healer*/)
     m_limbostate = false;
     setEmoteState(m_spawn ? m_spawn->emote_state : EMOTE_ONESHOT_NONE);
     setHealth(getMaxHealth());
-    bInvincible = false;
+    m_isInvincible = false;
 }
 
 uint32 Creature::GetNpcTextId()

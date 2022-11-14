@@ -153,7 +153,7 @@ Player::Player(uint32_t guid) :
     setRuneRegen(3, 0.100000f);
 #endif
 
-    mPlayerControler = this;
+    m_playerControler = this;
 
     setAttackPowerMultiplier(0.f);
     setRangedAttackPowerMultiplier(0.f);
@@ -1908,7 +1908,7 @@ void Player::applyLevelInfo(uint32_t newLevel)
 
         for (uint8_t i = 0; i < STAT_COUNT; ++i)
         {
-            BaseStats[i] = m_levelInfo->Stat[i];
+            m_baseStats[i] = m_levelInfo->Stat[i];
             CalcStat(i);
         }
 
@@ -2665,7 +2665,7 @@ void Player::setInitialPlayerData()
 
     for (uint8_t i = 0; i < STAT_COUNT; ++i)
     {
-        BaseStats[i] = m_levelInfo->Stat[i];
+        m_baseStats[i] = m_levelInfo->Stat[i];
         CalcStat(i);
     }
 
@@ -5141,9 +5141,9 @@ void Player::calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, b
     if (armor)
     {
         if (apply)
-            BaseResistance[0] += armor;
+            m_baseResistance[0] += armor;
         else
-            BaseResistance[0] -= armor;
+            m_baseResistance[0] -= armor;
     }
 
     /* Calculating the damages correct for our level and applying it */
@@ -5167,20 +5167,20 @@ void Player::calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, b
 
                 if (proto->InventoryType == INVTYPE_RANGED || proto->InventoryType == INVTYPE_RANGEDRIGHT || proto->InventoryType == INVTYPE_THROWN)
                 {
-                    BaseRangedDamage[0] += apply ? minDamage : -minDamage;
-                    BaseRangedDamage[1] += apply ? maxDamage : -maxDamage;
+                    m_baseRangedDamage[0] += apply ? minDamage : -minDamage;
+                    m_baseRangedDamage[1] += apply ? maxDamage : -maxDamage;
                 }
                 else
                 {
                     if (slot == EQUIPMENT_SLOT_OFFHAND)
                     {
-                        BaseOffhandDamage[0] = apply ? minDamage : 0;
-                        BaseOffhandDamage[1] = apply ? maxDamage : 0;
+                        m_baseOffhandDamage[0] = apply ? minDamage : 0;
+                        m_baseOffhandDamage[1] = apply ? maxDamage : 0;
                     }
                     else
                     {
-                        BaseDamage[0] = apply ? minDamage : 0;
-                        BaseDamage[1] = apply ? maxDamage : 0;
+                        m_baseDamage[0] = apply ? minDamage : 0;
+                        m_baseDamage[1] = apply ? maxDamage : 0;
                     }
                 }
             }
@@ -5432,9 +5432,9 @@ void Player::applyItemMods(Item* item, int16 slot, bool apply, bool justBrokedow
         if (itemProperties->Armor)
         {
             if (apply)
-                BaseResistance[0] += itemProperties->Armor;
+                m_baseResistance[0] += itemProperties->Armor;
             else
-                BaseResistance[0] -= itemProperties->Armor;
+                m_baseResistance[0] -= itemProperties->Armor;
             CalcResistance(0);
         }
 
@@ -5442,20 +5442,20 @@ void Player::applyItemMods(Item* item, int16 slot, bool apply, bool justBrokedow
         {
             if (itemProperties->InventoryType == INVTYPE_RANGED || itemProperties->InventoryType == INVTYPE_RANGEDRIGHT || itemProperties->InventoryType == INVTYPE_THROWN)
             {
-                BaseRangedDamage[0] += apply ? itemProperties->Damage[0].Min : -itemProperties->Damage[0].Min;
-                BaseRangedDamage[1] += apply ? itemProperties->Damage[0].Max : -itemProperties->Damage[0].Max;
+                m_baseRangedDamage[0] += apply ? itemProperties->Damage[0].Min : -itemProperties->Damage[0].Min;
+                m_baseRangedDamage[1] += apply ? itemProperties->Damage[0].Max : -itemProperties->Damage[0].Max;
             }
             else
             {
                 if (slot == EQUIPMENT_SLOT_OFFHAND)
                 {
-                    BaseOffhandDamage[0] = apply ? itemProperties->Damage[0].Min : 0;
-                    BaseOffhandDamage[1] = apply ? itemProperties->Damage[0].Max : 0;
+                    m_baseOffhandDamage[0] = apply ? itemProperties->Damage[0].Min : 0;
+                    m_baseOffhandDamage[1] = apply ? itemProperties->Damage[0].Max : 0;
                 }
                 else
                 {
-                    BaseDamage[0] = apply ? itemProperties->Damage[0].Min : 0;
-                    BaseDamage[1] = apply ? itemProperties->Damage[0].Max : 0;
+                    m_baseDamage[0] = apply ? itemProperties->Damage[0].Min : 0;
+                    m_baseDamage[1] = apply ? itemProperties->Damage[0].Max : 0;
                 }
             }
         }
@@ -5903,7 +5903,7 @@ void Player::repopRequest()
 
     setDeathState(CORPSE);
 
-    UpdateVisibility();
+    updateVisibility();
 
     removeUnitFlags(UNIT_FLAG_SKINNABLE);
 
@@ -6028,7 +6028,7 @@ void Player::resurrect()
     removePlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE);
     setDeathState(ALIVE);
 
-    UpdateVisibility();
+    updateVisibility();
 
     if (m_resurrecter && IsInWorld() && m_resurrectInstanceID == static_cast<uint32>(GetInstanceID()))
         safeTeleport(m_resurrectMapId, m_resurrectInstanceID, m_resurrectPosition);
@@ -6037,7 +6037,7 @@ void Player::resurrect()
     setMoveLandWalk();
 
     for (uint8_t i = 0; i < 7; ++i)
-        SchoolImmunityList[i] = 0;
+        m_schoolImmunityList[i] = 0;
 
     spawnActivePet();
 
@@ -8591,7 +8591,7 @@ void Player::sendCinematicCamera(uint32_t id)
 void Player::setMover(Unit* target)
 {
     m_session->m_MoverWoWGuid.Init(target->getGuid());
-    mControledUnit = target;
+    m_controledUnit = target;
 
 #if VERSION_STRING > WotLK
     ObjectGuid guid = target->getGuid();
@@ -10165,7 +10165,7 @@ void Player::setServersideDrunkValue(uint16_t newDrunkenValue, uint32_t itemId)
     else
         modInvisibilityDetection(INVIS_FLAG_DRUNK, -getInvisibilityDetection(INVIS_FLAG_DRUNK));
 
-    UpdateVisibility();
+    updateVisibility();
 
     sendNewDrunkStatePacket(newDrunkenState, itemId);
 }

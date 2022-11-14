@@ -164,7 +164,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
     // Zyres: We (the player) controles the movement of us or another player/unit.
     // this is always initialise with the player, can be changed to any other unit.
-    Unit* mover = _player->mControledUnit;
+    Unit* mover = _player->m_controledUnit;
 
     // Zyres: Clear standing state to stand... investigate further if this is really needed
     if (mover->getStandState() != STANDSTATE_STAND && opcode == MSG_MOVE_START_FORWARD)
@@ -412,7 +412,7 @@ void WorldSession::handleForceSpeedChangeAck(WorldPacket& recvPacket)
     /* extract packet */
     uint32 unk1;
     float  newspeed;
-    Unit* mover = _player->mControledUnit;
+    Unit* mover = _player->m_controledUnit;
 
     // continue parse packet
 

@@ -19,7 +19,7 @@ bool ChatHandler::HandleCheatListCommand(const char* /*args*/, WorldSession* m_s
         player_target->m_cheats.hasGodModeCheat || player_target->m_cheats.hasPowerCheat ||
         player_target->m_cheats.hasFlyCheat || player_target->m_cheats.hasAuraStackCheat ||
         player_target->m_cheats.hasItemStackCheat || player_target->m_cheats.hasTriggerpassCheat ||
-        player_target->m_isGmInvisible || player_target->bInvincible
+        player_target->m_isGmInvisible || player_target->m_isInvincible
         )
     {
         SystemMessage(m_session, "Player %s has the following cheats activated:", player_target->getName().c_str());
@@ -44,7 +44,7 @@ bool ChatHandler::HandleCheatListCommand(const char* /*args*/, WorldSession* m_s
             SystemMessage(m_session, "-- TaxiCheat is active.");
         if (player_target->m_isGmInvisible)
             SystemMessage(m_session, "-- Invisibility is active.");
-        if (player_target->bInvincible)
+        if (player_target->m_isInvincible)
             SystemMessage(m_session, "-- Invincibility is active.");
     }
     else

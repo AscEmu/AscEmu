@@ -271,7 +271,7 @@ bool DeadlyThrowInterrupt(uint8_t /*effectIndex*/, Aura* a, bool apply)
             m_target->interruptSpellWithSpellType(CURRENT_GENERIC_SPELL);
         }
 
-        m_target->SchoolCastPrevent[school] = 3000 + Util::getMSTime();
+        m_target->m_schoolCastPrevent[school] = 3000 + Util::getMSTime();
     }
 
     return true;

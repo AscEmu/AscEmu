@@ -342,7 +342,7 @@ void CompanionSummon::Load(CreatureProperties const* properties_, Unit* companio
     m_aiInterface->setPetOwner(companionOwner);
     m_aiInterface->setMeleeDisabled(true);
 
-    bInvincible = true;
+    m_isInvincible = true;
 
     removePvpFlag();
     removeFfaPvpFlag();
@@ -436,7 +436,7 @@ void TotemSummon::Load(CreatureProperties const* creatureProperties, Unit* unitO
     for (uint8_t school = 0; school < TOTAL_SPELL_SCHOOLS; school++)
     {
         ModDamageDone[school] = unitOwner->GetDamageDoneMod(school);
-        HealDoneMod[school] = unitOwner->HealDoneMod[school];
+        m_healDoneMod[school] = unitOwner->m_healDoneMod[school];
     }
 
     m_aiInterface->Init(this, AI_SCRIPT_TOTEM, unitOwner);

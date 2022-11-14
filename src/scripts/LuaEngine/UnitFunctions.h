@@ -3333,7 +3333,7 @@ public:
     {
         bool enabled = CHECK_BOOL(L, 1);
         if (ptr)
-            ptr->bInvincible = enabled;
+            ptr->m_isInvincible = enabled;
         return 0;
     }
 

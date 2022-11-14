@@ -2530,7 +2530,7 @@ void Player::OnPushToWorld()
         m_resetTalents = false;
     }
 #if VERSION_STRING == Mop
-    UpdateVisibility();
+    updateVisibility();
 
     WorldPacket data(SMSG_LOAD_CUF_PROFILES, 1);
     data.writeBits(0, 20);
@@ -2780,7 +2780,7 @@ void Player::UpdateChances()
     if (SpellCritPerInt == nullptr)
         SpellCritPerInt = sGtChanceToSpellCritStore.LookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (pClass - 1) * 100);
 
-    spellcritperc = 100 * (SpellCritBase->val + getStat(STAT_INTELLECT) * SpellCritPerInt->val) +
+    m_spellCritPercentage = 100 * (SpellCritBase->val + getStat(STAT_INTELLECT) * SpellCritPerInt->val) +
         this->GetSpellCritFromSpell() +
         this->CalcRating(CR_CRIT_SPELL);
     UpdateChanceFields();
@@ -2792,7 +2792,7 @@ void Player::UpdateChanceFields()
 #if VERSION_STRING != Classic
     // Update spell crit values in fields
     for (uint8 i = 0; i < 7; ++i)
-        setSpellCritPercentage(i, SpellCritChanceSchool[i] + spellcritperc);
+        setSpellCritPercentage(i, m_spellCritChanceSchool[i] + m_spellCritPercentage);
 #endif
 }
 
@@ -2809,7 +2809,7 @@ void Player::UpdateAttackSpeed()
     {
         speed = 2500;
     }
-    else if (!disarmed)  // Regular
+    else if (!m_isDisarmed)  // Regular
     {
         weap = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
         if (weap != nullptr)
@@ -3270,19 +3270,19 @@ void Player::CalcResistance(uint8_t type)
 {
     if (type < 7)
     {
-        int32 pos = (BaseResistance[type] * BaseResistanceModPctPos[type]) / 100;
-        int32 neg = (BaseResistance[type] * BaseResistanceModPctNeg[type]) / 100;
+        int32 pos = (m_baseResistance[type] * BaseResistanceModPctPos[type]) / 100;
+        int32 neg = (m_baseResistance[type] * BaseResistanceModPctNeg[type]) / 100;
 
         pos += FlatResistanceModifierPos[type];
         neg += FlatResistanceModifierNeg[type];
-        int32 res = BaseResistance[type] + pos - neg;
+        int32 res = m_baseResistance[type] + pos - neg;
         if (type == 0)
             res += getStat(STAT_AGILITY) * 2; //fix armor from agi
         if (res < 0)
             res = 0;
         pos += (res * ResistanceModPctPos[type]) / 100;
         neg += (res * ResistanceModPctNeg[type]) / 100;
-        res = pos - neg + BaseResistance[type];
+        res = pos - neg + m_baseResistance[type];
         if (type == 0)
             res += getStat(STAT_AGILITY) * 2; //fix armor from agi
 
@@ -3323,15 +3323,15 @@ void Player::CalcStat(uint8_t type)
 {
     if (type < 5)
     {
-        int32 pos = (int32)BaseStats[type] * (int32)StatModPctPos[type] / 100 + (int32)FlatStatModPos[type];
-        int32 neg = (int32)BaseStats[type] * (int32)StatModPctNeg[type] / 100 + (int32)FlatStatModNeg[type];
-        int32 res = pos + (int32)BaseStats[type] - neg;
+        int32 pos = (int32)m_baseStats[type] * (int32)StatModPctPos[type] / 100 + (int32)FlatStatModPos[type];
+        int32 neg = (int32)m_baseStats[type] * (int32)StatModPctNeg[type] / 100 + (int32)FlatStatModNeg[type];
+        int32 res = pos + (int32)m_baseStats[type] - neg;
         if (res <= 0)
             res = 1;
 
         pos += (res * (int32)this->TotalStatModPctPos[type]) / 100;
         neg += (res * (int32)this->TotalStatModPctNeg[type]) / 100;
-        res = pos + BaseStats[type] - neg;
+        res = pos + m_baseStats[type] - neg;
         if (res <= 0)
             res = 1;
 
@@ -3400,8 +3400,8 @@ void Player::RegenerateHealth(bool inCombat)
         amt += aurEff->getEffectDamage() * (static_cast<float_t>(m_healthRegenerateTimer / 1000) / 5.0f);
     }
 
-    if (PctRegenModifier)
-        amt += (amt * PctRegenModifier) / 100;
+    if (m_pctRegenModifier)
+        amt += (amt * m_pctRegenModifier) / 100;
 
     amt *= worldConfig.getFloatRate(RATE_HEALTH);//Apply conf file rate
     //Near values from official
@@ -4035,7 +4035,7 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
         {
             for (uint8 school = 1; school < TOTAL_SPELL_SCHOOLS; ++school)
             {
-                HealDoneMod[school] += val;
+                m_healDoneMod[school] += val;
             }
             modModHealingDone(val);
         }
@@ -4064,7 +4064,7 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
             for (uint8 school = 1; school < 7; ++school)
             {
                 modModDamageDonePositive(school, val);
-                HealDoneMod[school] += val;
+                m_healDoneMod[school] += val;
             }
 #if VERSION_STRING > Classic
             modModHealingDone(val);
@@ -4213,7 +4213,7 @@ void Player::calculateDamage()
     uint32 speed = 2000;
     Item* it = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
-    if (!disarmed)
+    if (!m_isDisarmed)
     {
         if (it)
             speed = it->getItemProperties()->Delay;
@@ -4228,11 +4228,11 @@ void Player::calculateDamage()
             tmp += i->second.value;
     }
 
-    r = BaseDamage[0] + delta + bonus;
+    r = m_baseDamage[0] + delta + bonus;
     r *= tmp;
     setMinDamage(r > 0 ? r : 0);
 
-    r = BaseDamage[1] + delta + bonus;
+    r = m_baseDamage[1] + delta + bonus;
     r *= tmp;
     setMaxDamage(r > 0 ? r : 0);
 
@@ -4257,7 +4257,7 @@ void Player::calculateDamage()
     it = this->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (it)
     {
-        if (!disarmed)
+        if (!m_isDisarmed)
         {
             speed = it->getItemProperties()->Delay;
         }
@@ -4274,10 +4274,10 @@ void Player::calculateDamage()
                 tmp += i->second.value;
         }
 
-        r = (BaseOffhandDamage[0] + delta + bonus) * offhand_dmg_mod;
+        r = (m_baseOffhandDamage[0] + delta + bonus) * offhand_dmg_mod;
         r *= tmp;
         setMinOffhandDamage(r > 0 ? r : 0);
-        r = (BaseOffhandDamage[1] + delta + bonus) * offhand_dmg_mod;
+        r = (m_baseOffhandDamage[1] + delta + bonus) * offhand_dmg_mod;
         r *= tmp;
         setMaxOffhandDamage(r > 0 ? r : 0);
         if (m_wratings.size())
@@ -4327,11 +4327,11 @@ void Player::calculateDamage()
 #endif
             bonus = 0;
 
-        r = BaseRangedDamage[0] + delta + bonus;
+        r = m_baseRangedDamage[0] + delta + bonus;
         r *= tmp;
         setMinRangedDamage(r > 0 ? r : 0);
 
-        r = BaseRangedDamage[1] + delta + bonus;
+        r = m_baseRangedDamage[1] + delta + bonus;
         r *= tmp;
         setMaxRangedDamage(r > 0 ? r : 0);
 
@@ -4379,7 +4379,7 @@ uint32 Player::GetMainMeleeDamage(uint32 AP_owerride)
     //////no druid ss
     uint32 speed = 2000;
     Item* it = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-    if (!disarmed)
+    if (!m_isDisarmed)
     {
         if (it)
             speed = it->getItemProperties()->Delay;

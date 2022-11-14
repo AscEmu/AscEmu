@@ -596,9 +596,9 @@ bool ChatHandler::HandleInvincibleCommand(const char* /*args*/, WorldSession* m_
     if (selected_player == nullptr)
         return true;
 
-    if (selected_player->bInvincible)
+    if (selected_player->m_isInvincible)
     {
-        selected_player->bInvincible = false;
+        selected_player->m_isInvincible = false;
 
         if (selected_player != m_session->GetPlayer())
         {
@@ -612,7 +612,7 @@ bool ChatHandler::HandleInvincibleCommand(const char* /*args*/, WorldSession* m_
     }
     else
     {
-        selected_player->bInvincible = true;
+        selected_player->m_isInvincible = true;
 
         if (selected_player != m_session->GetPlayer())
         {
@@ -638,7 +638,7 @@ bool ChatHandler::HandleInvisibleCommand(const char* /*args*/, WorldSession* m_s
     if (selected_player->m_isGmInvisible)
     {
         selected_player->m_isGmInvisible = false;
-        selected_player->bInvincible = false;
+        selected_player->m_isInvincible = false;
 
         selected_player->sendFriendStatus(true);
 
@@ -658,7 +658,7 @@ bool ChatHandler::HandleInvisibleCommand(const char* /*args*/, WorldSession* m_s
     else
     {
         selected_player->m_isGmInvisible = true;
-        selected_player->bInvincible = true;
+        selected_player->m_isInvincible = true;
 
         selected_player->sendFriendStatus(false);
 
@@ -676,7 +676,7 @@ bool ChatHandler::HandleInvisibleCommand(const char* /*args*/, WorldSession* m_s
         }
     }
 
-    selected_player->UpdateVisibility();
+    selected_player->updateVisibility();
 
     return true;
 }

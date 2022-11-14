@@ -1876,7 +1876,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 
             // Check if target is immune to this dispel type
             //\ TODO: fix me (move to DidHit?) -Appled
-            if (target->dispels[getSpellInfo()->getDispelType()])
+            if (target->m_dispels[getSpellInfo()->getDispelType()])
                 return SPELL_FAILED_IMMUNE;
         }
     }

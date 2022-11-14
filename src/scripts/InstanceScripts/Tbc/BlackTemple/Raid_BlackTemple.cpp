@@ -3451,7 +3451,7 @@ public:
                 break;
             case 19:
                 //_unit->m_auracount[SPELL_AURA_MOD_INVISIBILITY] = true;                        // Arc's
-                getCreature()->UpdateVisibility();
+                getCreature()->updateVisibility();
                 break;
             case 20:
                 RegisterAIUpdateEvent(1000);
@@ -3776,7 +3776,7 @@ public:
                         {
                             AkamaAI* pAkamaAI = static_cast< AkamaAI* >(pAkama->GetScript());
                             //pAkama->m_auracount[SPELL_AURA_MOD_INVISIBILITY] = true;                        // Arc's
-                            pAkama->UpdateVisibility();
+                            pAkama->updateVisibility();
                             if (pAkamaAI->isRooted())
                             {
                                 pAkamaAI->setRooted(false);

@@ -81,8 +81,8 @@ public:
                 pet->setBaseAttackTime(MELEE, 1500); // Shadowfiend is supposed to do 10 attacks, sometimes it can be 11
                 pet->setMinDamage(pet->getMinDamage() + ownerBonus);
                 pet->setMaxDamage(pet->getMaxDamage() + ownerBonus);
-                pet->BaseDamage[0] += ownerBonus;
-                pet->BaseDamage[1] += ownerBonus;
+                pet->m_baseDamage[0] += ownerBonus;
+                pet->m_baseDamage[1] += ownerBonus;
 
                 const auto unitTarget = pet->getWorldMap()->getUnit(playerOwner->getTargetGuid());
                 if (unitTarget != nullptr && isAttackable(playerOwner, unitTarget))

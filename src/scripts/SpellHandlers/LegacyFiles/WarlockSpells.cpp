@@ -613,9 +613,9 @@ bool SoulSiphon(uint8_t effectIndex, Aura* a, bool apply)
     if (caster)
     {
         if (apply)
-            caster->m_soulSiphon.amt += amount;
+            caster->m_soulSiphon.m_amount += amount;
         else
-            caster->m_soulSiphon.amt -= amount;
+            caster->m_soulSiphon.m_amount -= amount;
     }
 
     return true;
@@ -651,7 +651,7 @@ bool DemonicCircleSummon(uint8_t /*effectIndex*/, Aura* a, bool apply)
     if (apply)
     {
 
-        GameObject* circle = m_target->getWorldMap()->getGameObject(a->getOwner()->m_ObjectSlots[0]);
+        GameObject* circle = m_target->getWorldMap()->getGameObject(a->getOwner()->m_objectSlots[0]);
         SpellInfo const* sp = sSpellMgr.getSpellInfo(48020);
 
         if (circle != NULL && sp != NULL && m_target->CalcDistance(circle) <= sp->getMaxRange())

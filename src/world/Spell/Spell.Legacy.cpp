@@ -880,7 +880,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     /* Unless the spell would actually dispel invulnerabilities             */
     /************************************************************************/
     int dispelMechanic = getSpellInfo()->getEffect(0) == SPELL_EFFECT_DISPEL_MECHANIC && getSpellInfo()->getEffectMiscValue(0) == MECHANIC_INVULNERABLE;
-    if (u_victim->SchoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()] && !dispelMechanic)
+    if (u_victim->m_schoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()] && !dispelMechanic)
         return SPELL_DID_HIT_IMMUNE;
 
     /* Check if player target has god mode */
@@ -892,7 +892,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     /*************************************************************************/
     /* Check if the target is immune to this mechanic                        */
     /*************************************************************************/
-    if (getSpellInfo()->getMechanicsType() < TOTAL_SPELL_MECHANICS && u_victim->MechanicsDispels[getSpellInfo()->getMechanicsType()])
+    if (getSpellInfo()->getMechanicsType() < TOTAL_SPELL_MECHANICS && u_victim->m_mechanicsDispels[getSpellInfo()->getMechanicsType()])
 
     {
         // Immune - IF, and ONLY IF, there is no damage component!
@@ -922,7 +922,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     /************************************************************************/
     if (getSpellInfo()->getMechanicsType() < TOTAL_SPELL_MECHANICS)
     {
-        float res = u_victim->MechanicsResistancesPCT[getSpellInfo()->getMechanicsType()];
+        float res = u_victim->m_mechanicsResistancesPct[getSpellInfo()->getMechanicsType()];
         if (Util::checkChance(res))
             return SPELL_DID_HIT_RESIST;
     }
@@ -982,7 +982,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     ///\todo SB@L - This mechanic resist chance is handled twice, once several lines above, then as part of resistchance here check mechanical resistance i have no idea what is the best pace for this code
     if (getSpellInfo()->getMechanicsType() < TOTAL_SPELL_MECHANICS)
     {
-        resistchance += u_victim->MechanicsResistancesPCT[getSpellInfo()->getMechanicsType()];
+        resistchance += u_victim->m_mechanicsResistancesPct[getSpellInfo()->getMechanicsType()];
     }
     //rating bonus
     if (p_caster != nullptr)
@@ -1300,7 +1300,7 @@ void Spell::AddTime(uint32 type)
 
         if (p_caster != nullptr)
         {
-            if (Util::checkChance(p_caster->SpellDelayResist[type]))
+            if (Util::checkChance(p_caster->m_spellDelayResist[type]))
                 return;
         }
         if (m_DelayStep == 2)

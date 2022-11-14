@@ -768,7 +768,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
 
     // Check if victim is immune to this school
     // or if victim has god mode cheat
-    if (victim->SchoolImmunityList[school] != 0 ||
+    if (victim->m_schoolImmunityList[school] != 0 ||
         (victim->isPlayer() && static_cast<Player*>(victim)->m_cheats.hasGodModeCheat))
     {
         if (isCreatureOrPlayer())
@@ -866,16 +866,16 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     }
 
     // Calculate damage reduction
-    damage += damage * victim->DamageTakenPctMod[school];
-    damage += damage * victim->ModDamageTakenByMechPCT[spellInfo->getMechanicsType()];
+    damage += damage * victim->m_damageTakenPctMod[school];
+    damage += damage * victim->m_modDamageTakenByMechPct[spellInfo->getMechanicsType()];
     if (isPeriodic)
     {
         if (aur != nullptr && aurEff != nullptr)
-            damage += static_cast<float_t>(victim->DamageTakenMod[school] / aur->getPeriodicTickCountForEffect(aurEff->getEffectIndex()));
+            damage += static_cast<float_t>(victim->m_damageTakenMod[school] / aur->getPeriodicTickCountForEffect(aurEff->getEffectIndex()));
     }
     else
     {
-        damage += static_cast<float_t>(victim->DamageTakenMod[school]);
+        damage += static_cast<float_t>(victim->m_damageTakenMod[school]);
     }
 
     // Resilience
@@ -1299,15 +1299,15 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
     }
 
     // Get target's heal taken mod
-    heal += heal * victim->HealTakenPctMod[school];
+    heal += heal * victim->m_healTakenPctMod[school];
     if (isPeriodic)
     {
         if (aur != nullptr && aurEff != nullptr)
-            heal += static_cast<float_t>(victim->HealTakenMod[school] / aur->getPeriodicTickCountForEffect(aurEff->getEffectIndex()));
+            heal += static_cast<float_t>(victim->m_healTakenMod[school] / aur->getPeriodicTickCountForEffect(aurEff->getEffectIndex()));
     }
     else
     {
-        heal += static_cast<float_t>(victim->HealTakenMod[school]);
+        heal += static_cast<float_t>(victim->m_healTakenMod[school]);
     }
 
     if (heal < 0.0f)

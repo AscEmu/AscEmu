@@ -85,9 +85,9 @@ bool TheBeastWithin(uint8_t /*effectIndex*/, Aura* a, bool apply)
     for (int x = 0; mechanics[x] != MECHANIC_NONE; ++x)
     {
         if (apply)
-            m_target->MechanicsDispels[mechanics[x]]++;
+            m_target->m_mechanicsDispels[mechanics[x]]++;
         else
-            m_target->MechanicsDispels[mechanics[x]]--;
+            m_target->m_mechanicsDispels[mechanics[x]]--;
     }
 
     if (apply)
@@ -105,9 +105,9 @@ bool BestialWrath(uint8_t /*effectIndex*/, Aura* a, bool apply)
     for (int x = 0; mechanics[x] != MECHANIC_NONE; ++x)
     {
         if (apply)
-            m_target->MechanicsDispels[mechanics[x]]++;
+            m_target->m_mechanicsDispels[mechanics[x]]++;
         else
-            m_target->MechanicsDispels[mechanics[x]]--;
+            m_target->m_mechanicsDispels[mechanics[x]]--;
     }
 
     if (apply)

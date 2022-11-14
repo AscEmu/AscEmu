@@ -213,7 +213,7 @@ public:
             getCreature()->setMoveRoot(true);
             getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
             for (uint8_t i = 0; i < 7; ++i)
-                getCreature()->SchoolImmunityList[i] = 1;
+                getCreature()->m_schoolImmunityList[i] = 1;
 
             RemoveAIUpdateEvent();
             sendDBChatMessage(SAY_MALGANIS_17);
@@ -489,11 +489,11 @@ public:
                 }
                 if (c)
                 {
-                    c->bInvincible = true;
+                    c->m_isInvincible = true;
                     c->setControlled(true, UNIT_STATE_ROOTED);
                     c->getAIInterface()->setAllowedToEnterCombat(false);
                     for (uint8_t i = 0; i < 7; i++)
-                        c->SchoolImmunityList[i] = 1;
+                        c->m_schoolImmunityList[i] = 1;
                     c->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                     //1 = 0s
                     c->SendScriptTextChatMessage(SAY_MALGANIS_01);

@@ -324,11 +324,11 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
     removeAllAuraEffects();
 
     // Remove aurastates
-    if (getSpellInfo()->getMechanicsType() == MECHANIC_ENRAGED && !--m_target->asc_enraged)
+    if (getSpellInfo()->getMechanicsType() == MECHANIC_ENRAGED && !--m_target->m_ascEnraged)
         getOwner()->removeAuraStateAndAuras(AURASTATE_FLAG_ENRAGED);
-    else if (getSpellInfo()->getMechanicsType() == MECHANIC_BLEEDING && !--m_target->asc_bleed)
+    else if (getSpellInfo()->getMechanicsType() == MECHANIC_BLEEDING && !--m_target->m_ascBleed)
         getOwner()->removeAuraStateAndAuras(AURASTATE_FLAG_BLEED);
-    if (getSpellInfo()->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !--m_target->asc_seal)
+    if (getSpellInfo()->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !--m_target->m_ascSeal)
         getOwner()->removeAuraStateAndAuras(AURASTATE_FLAG_JUDGEMENT);
 
     getOwner()->addGarbageAura(this);
@@ -864,7 +864,7 @@ void Aura::_calculateSpellPowerBonus()
 
     // Get snapshot of caster's current spell power
     m_spellPowerBonus = casterUnit->GetDamageDoneMod(getSpellInfo()->getFirstSchoolFromSchoolMask());
-    m_healPowerBonus = casterUnit->HealDoneMod[getSpellInfo()->getFirstSchoolFromSchoolMask()];
+    m_healPowerBonus = casterUnit->m_healDoneMod[getSpellInfo()->getFirstSchoolFromSchoolMask()];
 }
 
 void Aura::_calculateAttackPowerBonus()
@@ -1117,7 +1117,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 return;
 
             const auto casterUnit = GetUnitCaster();
-            if (getOwner()->SchoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()] != 0)
+            if (getOwner()->m_schoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()] != 0)
             {
                 if (casterUnit != nullptr)
                     casterUnit->sendSpellOrDamageImmune(getCasterGuid(), getOwner(), getSpellId());
@@ -1161,7 +1161,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
 
             const auto casterUnit = GetUnitCaster();
 
-            if (getOwner()->SchoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()] != 0)
+            if (getOwner()->m_schoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()] != 0)
             {
                 if (casterUnit != nullptr)
                     casterUnit->sendSpellOrDamageImmune(getCasterGuid(), getOwner(), getSpellId());

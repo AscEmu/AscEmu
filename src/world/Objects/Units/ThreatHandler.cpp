@@ -88,7 +88,7 @@ bool ThreatReference::shouldBeSuppressed() const
         return false;
     
     if (_owner->isCreature())
-        if (_victim->SchoolImmunityList[_owner->BaseAttackType] != 0)
+        if (_victim->m_schoolImmunityList[_owner->BaseAttackType] != 0)
             return true;
     
     // check if we have any aura that suppresses us

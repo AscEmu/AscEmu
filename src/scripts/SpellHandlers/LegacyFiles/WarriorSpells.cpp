@@ -189,12 +189,12 @@ bool BerserkerRage(uint8_t /*effectIndex*/, Aura* a, bool apply)
     {
         if (apply)
         {
-            p_target->MechanicsDispels[a->getSpellInfo()->getEffectMiscValue(i)]++;
+            p_target->m_mechanicsDispels[a->getSpellInfo()->getEffectMiscValue(i)]++;
             mechanics[i] = static_cast<SpellMechanic>(a->getSpellInfo()->getEffectMiscValue(i));
         }
         else
         {
-            p_target->MechanicsDispels[a->getSpellInfo()->getEffectMiscValue(i)]--;
+            p_target->m_mechanicsDispels[a->getSpellInfo()->getEffectMiscValue(i)]--;
         }
     }
 

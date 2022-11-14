@@ -2288,20 +2288,20 @@ void AIInterface::setCreatureProtoDifficulty(uint32_t entry)
             // resistances
             for (uint8_t j = 0; j < TOTAL_SPELL_SCHOOLS; ++j)
             {
-                getUnit()->BaseResistance[j] = getUnit()->getResistance(j);
+                getUnit()->m_baseResistance[j] = getUnit()->getResistance(j);
             }
 
             for (uint8_t j = 0; j < STAT_COUNT; ++j)
             {
-                getUnit()->BaseStats[j] = getUnit()->getStat(j);
+                getUnit()->m_baseStats[j] = getUnit()->getStat(j);
             }
 
-            getUnit()->BaseDamage[0] = getUnit()->getMinDamage();
-            getUnit()->BaseDamage[1] = getUnit()->getMaxDamage();
-            getUnit()->BaseOffhandDamage[0] = getUnit()->getMinOffhandDamage();
-            getUnit()->BaseOffhandDamage[1] = getUnit()->getMaxOffhandDamage();
-            getUnit()->BaseRangedDamage[0] = getUnit()->getMinRangedDamage();
-            getUnit()->BaseRangedDamage[1] = getUnit()->getMaxRangedDamage();
+            getUnit()->m_baseDamage[0] = getUnit()->getMinDamage();
+            getUnit()->m_baseDamage[1] = getUnit()->getMaxDamage();
+            getUnit()->m_baseOffhandDamage[0] = getUnit()->getMinOffhandDamage();
+            getUnit()->m_baseOffhandDamage[1] = getUnit()->getMaxOffhandDamage();
+            getUnit()->m_baseRangedDamage[0] = getUnit()->getMinRangedDamage();
+            getUnit()->m_baseRangedDamage[1] = getUnit()->getMaxRangedDamage();
 
             creature->BaseAttackType = properties_difficulty->attackSchool;
 

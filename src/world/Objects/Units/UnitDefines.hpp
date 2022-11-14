@@ -1155,3 +1155,58 @@ static const PetFlagNames PetFlagToName[] =
 };
 
 static const uint32_t numpetflags = sizeof(PetFlagToName) / sizeof(PetFlagNames);
+
+enum UnitSpeedType : uint8_t
+{
+    TYPE_WALK = 0,
+    TYPE_RUN = 1,
+    TYPE_RUN_BACK = 2,
+    TYPE_SWIM = 3,
+    TYPE_SWIM_BACK = 4,
+    TYPE_TURN_RATE = 5,
+    TYPE_FLY = 6,
+    TYPE_FLY_BACK = 7,
+    TYPE_PITCH_RATE = 8,
+    MAX_SPEED_TYPE = 9
+};
+
+struct UnitSpeedInfo
+{
+    UnitSpeedInfo()
+    {
+        // Current speed
+        m_currentSpeedRate[TYPE_WALK] = 2.5f;
+        m_currentSpeedRate[TYPE_RUN] = 7.0f;
+        m_currentSpeedRate[TYPE_RUN_BACK] = 4.5f;
+        m_currentSpeedRate[TYPE_SWIM] = 4.722222f;
+        m_currentSpeedRate[TYPE_SWIM_BACK] = 2.5f;
+        m_currentSpeedRate[TYPE_TURN_RATE] = 3.141594f;
+        m_currentSpeedRate[TYPE_FLY] = 7.0f;
+        m_currentSpeedRate[TYPE_FLY_BACK] = 4.5f;
+        m_currentSpeedRate[TYPE_PITCH_RATE] = 3.14f;
+
+        // Basic speeds
+        m_basicSpeedRate[TYPE_WALK] = 2.5f;
+        m_basicSpeedRate[TYPE_RUN] = 7.0f;
+        m_basicSpeedRate[TYPE_RUN_BACK] = 4.5f;
+        m_basicSpeedRate[TYPE_SWIM] = 4.722222f;
+        m_basicSpeedRate[TYPE_SWIM_BACK] = 2.5f;
+        m_basicSpeedRate[TYPE_TURN_RATE] = 3.141594f;
+        m_basicSpeedRate[TYPE_FLY] = 7.0f;
+        m_basicSpeedRate[TYPE_FLY_BACK] = 4.5f;
+        m_basicSpeedRate[TYPE_PITCH_RATE] = 3.14f;
+    }
+
+    UnitSpeedInfo(UnitSpeedInfo const& speedInfo)
+    {
+        // Current speed
+        for (uint8_t i = 0; i < MAX_SPEED_TYPE; ++i)
+        {
+            m_currentSpeedRate[i] = speedInfo.m_currentSpeedRate[i];
+            m_basicSpeedRate[i] = speedInfo.m_basicSpeedRate[i];
+        }
+    }
+
+    float m_currentSpeedRate[MAX_SPEED_TYPE];
+    float m_basicSpeedRate[MAX_SPEED_TYPE];
+};

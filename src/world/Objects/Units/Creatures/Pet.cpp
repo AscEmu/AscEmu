@@ -548,12 +548,12 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
     else
         this->removeSanctuaryFlag();
 
-    BaseDamage[0] = 0;
-    BaseDamage[1] = 0;
-    BaseOffhandDamage[0] = 0;
-    BaseOffhandDamage[1] = 0;
-    BaseRangedDamage[0] = 0;
-    BaseRangedDamage[1] = 0;
+    m_baseDamage[0] = 0;
+    m_baseDamage[1] = 0;
+    m_baseOffhandDamage[0] = 0;
+    m_baseOffhandDamage[1] = 0;
+    m_baseRangedDamage[0] = 0;
+    m_baseRangedDamage[1] = 0;
 
     resetCurrentSpeeds();
     ApplyStatsForLevel();
@@ -985,12 +985,12 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
         setPowerType(POWER_TYPE_FOCUS);
     }
 
-    BaseDamage[0] = 0;
-    BaseDamage[1] = 0;
-    BaseOffhandDamage[0] = 0;
-    BaseOffhandDamage[1] = 0;
-    BaseRangedDamage[0] = 0;
-    BaseRangedDamage[1] = 0;
+    m_baseDamage[0] = 0;
+    m_baseDamage[1] = 0;
+    m_baseOffhandDamage[0] = 0;
+    m_baseOffhandDamage[1] = 0;
+    m_baseRangedDamage[0] = 0;
+    m_baseRangedDamage[1] = 0;
 
     resetCurrentSpeeds();
 
@@ -1809,21 +1809,21 @@ void Pet::ApplySummonLevelAbilities()
     double pet_arm = base_armor + pet_level * mod_armor;
 
     // Calculate values
-    BaseStats[STAT_STRENGTH] = (uint32)(pet_str);
-    BaseStats[STAT_AGILITY] = (uint32)(pet_agi);
-    BaseStats[STAT_STAMINA] = (uint32)(pet_sta);
-    BaseStats[STAT_INTELLECT] = (uint32)(pet_int);
-    BaseStats[STAT_SPIRIT] = (uint32)(pet_spr);
+    m_baseStats[STAT_STRENGTH] = (uint32)(pet_str);
+    m_baseStats[STAT_AGILITY] = (uint32)(pet_agi);
+    m_baseStats[STAT_STAMINA] = (uint32)(pet_sta);
+    m_baseStats[STAT_INTELLECT] = (uint32)(pet_int);
+    m_baseStats[STAT_SPIRIT] = (uint32)(pet_spr);
 
     double pet_min_dmg = base_min_dmg + pet_level * mod_min_dmg;
     double pet_max_dmg = base_max_dmg + pet_level * mod_max_dmg;
-    BaseDamage[0] = float(pet_min_dmg);
-    BaseDamage[1] = float(pet_max_dmg);
+    m_baseDamage[0] = float(pet_min_dmg);
+    m_baseDamage[1] = float(pet_max_dmg);
 
     // Apply attack power.
     setAttackPower((uint32)(pet_pwr));
 
-    BaseResistance[0] = (uint32)(pet_arm);
+    m_baseResistance[0] = (uint32)(pet_arm);
     CalcResistance(0);
 
     // Calculate health / mana
@@ -1873,12 +1873,12 @@ void Pet::ApplyPetLevelAbilities()
         pet_abilities = sMySQLStore.getPetLevelAbilities(DBC_PLAYER_LEVEL_CAP);
     }
 
-    BaseResistance[0] = pet_abilities->armor;
-    BaseStats[0] = pet_abilities->strength;
-    BaseStats[1] = pet_abilities->agility;
-    BaseStats[2] = pet_abilities->stamina;
-    BaseStats[3] = pet_abilities->intellect;
-    BaseStats[4] = pet_abilities->spirit;
+    m_baseResistance[0] = pet_abilities->armor;
+    m_baseStats[0] = pet_abilities->strength;
+    m_baseStats[1] = pet_abilities->agility;
+    m_baseStats[2] = pet_abilities->stamina;
+    m_baseStats[3] = pet_abilities->intellect;
+    m_baseStats[4] = pet_abilities->spirit;
 
     setBaseHealth(pet_abilities->health);
     setMaxHealth(pet_abilities->health);

@@ -32,7 +32,7 @@ public:
         //frost attack type
         const_cast<CreatureProperties*>(getCreature()->GetCreatureProperties())->attackSchool = 4;
         //frost immunity
-        getCreature()->SchoolImmunityList[SCHOOL_FROST] = 1;
+        getCreature()->m_schoolImmunityList[SCHOOL_FROST] = 1;
 
         MarkCount = 0;
         form = false;
@@ -61,8 +61,8 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         getCreature()->setDisplayId(20162);
-        getCreature()->SchoolImmunityList[SCHOOL_FROST] = 1;
-        getCreature()->SchoolImmunityList[SCHOOL_NATURE] = 0;
+        getCreature()->m_schoolImmunityList[SCHOOL_FROST] = 1;
+        getCreature()->m_schoolImmunityList[SCHOOL_NATURE] = 0;
     }
 
     void OnTargetDied(Unit* /*mTarget*/) override
@@ -162,8 +162,8 @@ public:
                 sendDBChatMessage(4754);     // Aaghh, the poison...
                 getCreature()->PlaySoundToSet(11297);
                 const_cast<CreatureProperties*>(getCreature()->GetCreatureProperties())->attackSchool = 3;
-                getCreature()->SchoolImmunityList[SCHOOL_FROST] = 0;
-                getCreature()->SchoolImmunityList[SCHOOL_NATURE] = 1;
+                getCreature()->m_schoolImmunityList[SCHOOL_FROST] = 0;
+                getCreature()->m_schoolImmunityList[SCHOOL_NATURE] = 1;
 
                 //Summon 4 elementals
                 Creature* summon;
@@ -174,19 +174,19 @@ public:
 
                 summon = spawnCreature(CN_TAINTED_SPAWN_OF_HYDROSS, posx + 6.93f, posy - 11.25f, posz, orientation);
                 if (summon)
-                    summon->SchoolImmunityList[SCHOOL_NATURE] = 1;
+                    summon->m_schoolImmunityList[SCHOOL_NATURE] = 1;
 
                 summon = spawnCreature(CN_TAINTED_SPAWN_OF_HYDROSS, posx - 6.93f, posy + 11.25f, posz, orientation);
                 if (summon)
-                    summon->SchoolImmunityList[SCHOOL_NATURE] = 1;
+                    summon->m_schoolImmunityList[SCHOOL_NATURE] = 1;
 
                 summon = spawnCreature(CN_TAINTED_SPAWN_OF_HYDROSS, posx - 12.57f, posy - 4.72f, posz, orientation);
                 if (summon)
-                    summon->SchoolImmunityList[SCHOOL_NATURE] = 1;
+                    summon->m_schoolImmunityList[SCHOOL_NATURE] = 1;
 
                 summon = spawnCreature(CN_TAINTED_SPAWN_OF_HYDROSS, posx + 12.57f, posy + 4.72f, posz, orientation);
                 if (summon)
-                    summon->SchoolImmunityList[SCHOOL_NATURE] = 1;
+                    summon->m_schoolImmunityList[SCHOOL_NATURE] = 1;
             }
         }
         else //poison form
@@ -246,8 +246,8 @@ public:
                 sendDBChatMessage(4750);     // Better, much better.
                 getCreature()->PlaySoundToSet(11290);
                 const_cast<CreatureProperties*>(getCreature()->GetCreatureProperties())->attackSchool = 4;
-                getCreature()->SchoolImmunityList[SCHOOL_FROST] = 1;
-                getCreature()->SchoolImmunityList[SCHOOL_NATURE] = 0;
+                getCreature()->m_schoolImmunityList[SCHOOL_FROST] = 1;
+                getCreature()->m_schoolImmunityList[SCHOOL_NATURE] = 0;
 
                 //Summon 4 elementals
                 Creature* summon;
@@ -258,19 +258,19 @@ public:
 
                 summon = spawnCreature(CN_PURE_SPAWN_OF_HYDROSS, posx + 6.93f, posy - 11.25f, posz, orientation);
                 if (summon)
-                    summon->SchoolImmunityList[SCHOOL_FROST] = 1;
+                    summon->m_schoolImmunityList[SCHOOL_FROST] = 1;
 
                 summon = spawnCreature(CN_PURE_SPAWN_OF_HYDROSS, posx - 6.93f, posy + 11.25f, posz, orientation);
                 if (summon)
-                    summon->SchoolImmunityList[SCHOOL_FROST] = 1;
+                    summon->m_schoolImmunityList[SCHOOL_FROST] = 1;
 
                 summon = spawnCreature(CN_PURE_SPAWN_OF_HYDROSS, posx - 12.57f, posy - 4.72f, posz, orientation);
                 if (summon)
-                    summon->SchoolImmunityList[SCHOOL_FROST] = 1;
+                    summon->m_schoolImmunityList[SCHOOL_FROST] = 1;
 
                 summon = spawnCreature(CN_PURE_SPAWN_OF_HYDROSS, posx + 12.57f, posy + 4.72f, posz, orientation);
                 if (summon)
-                    summon->SchoolImmunityList[SCHOOL_FROST] = 1;
+                    summon->m_schoolImmunityList[SCHOOL_FROST] = 1;
             }
         }
 
