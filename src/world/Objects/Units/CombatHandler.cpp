@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CombatHandler.hpp"
 #include "Players/Player.h"
 #include "Server/Script/ScriptMgr.h"
-#include "Unit.h"
+#include "Unit.hpp"
 #include "UnitDefines.hpp"
 
 CombatHandler::CombatHandler(Unit* owner) : m_owner(owner)
@@ -358,7 +358,7 @@ void CombatHandler::_checkPvpFlags(Unit* target, bool friendlyAction)
                 playerOwner->togglePvP();
 
             if (!friendlyAction)
-                playerOwner->AggroPvPGuards();
+                playerOwner->aggroPvPGuards();
         }
         else
         {
@@ -366,7 +366,7 @@ void CombatHandler::_checkPvpFlags(Unit* target, bool friendlyAction)
                 playerOwner->togglePvP();
 
             if (!friendlyAction)
-                playerOwner->AggroPvPGuards();
+                playerOwner->aggroPvPGuards();
         }
     }
 }

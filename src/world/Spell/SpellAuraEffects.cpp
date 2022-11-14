@@ -1462,7 +1462,7 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
             if (overWriteDisplay)
             {
                 getOwner()->setDisplayId(modelId);
-                getOwner()->EventModelChange();
+                getOwner()->eventModelChange();
             }
 
             // Save model id for later use
@@ -1699,7 +1699,7 @@ void Aura::spellAuraEffectTransform(AuraEffectModifier* aurEff, bool apply)
             if (getSpellInfo()->isNegativeAura() || !(transformAura != nullptr && takePriority))
             {
                 getOwner()->setDisplayId(displayId);
-                getOwner()->EventModelChange();
+                getOwner()->eventModelChange();
 
                 getOwner()->setTransformAura(getSpellId());
             }

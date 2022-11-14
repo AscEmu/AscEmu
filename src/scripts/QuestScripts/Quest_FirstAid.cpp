@@ -56,15 +56,15 @@ public:
         {
             case 12923: // not in db
             case 12938:
-                getCreature()->SetHealthPct(75);
+                getCreature()->setHealthPct(75);
                 break;
             case 12924: // not in db
             case 12936:
-                getCreature()->SetHealthPct(50);
+                getCreature()->setHealthPct(50);
                 break;
             case 12925: // not in db
             case 12937:
-                getCreature()->SetHealthPct(25);
+                getCreature()->setHealthPct(25);
                 break;
         }
     }

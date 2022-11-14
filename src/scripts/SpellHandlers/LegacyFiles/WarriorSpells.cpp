@@ -57,7 +57,7 @@ bool Execute(uint8_t effectIndex, Spell* pSpell)
     dmg += Caster->getAttackPower() / 5;
     dmg += toadd;
 
-    Caster->Strike(Target, MELEE, pSpell->getSpellInfo(), 0, 0, dmg, false, false);
+    Caster->strike(Target, MELEE, pSpell->getSpellInfo(), 0, 0, dmg, false, false);
 
     return true;
 }
@@ -209,9 +209,9 @@ bool SweepingStrikes(uint8_t /*effectIndex*/, Aura* a, bool apply)
     Unit* m_target = a->getOwner();
 
     if (apply)
-        m_target->AddExtraStrikeTarget(a->getSpellInfo(), 10);
+        m_target->addExtraStrikeTarget(a->getSpellInfo(), 10);
     else
-        m_target->RemoveExtraStrikeTarget(a->getSpellInfo());
+        m_target->removeExtraStrikeTarget(a->getSpellInfo());
 
     return true;
 }
@@ -244,9 +244,9 @@ bool SecondWind(uint8_t /*effectIndex*/, Aura* a, bool apply)
         return true;
 
     if (apply)
-        caster->SetTriggerStunOrImmobilize(29841, 100, true);  //fixed 100% chance
+        caster->setTriggerStunOrImmobilize(29841, 100, true);  //fixed 100% chance
     else
-        caster->SetTriggerStunOrImmobilize(0, 0, true);
+        caster->setTriggerStunOrImmobilize(0, 0, true);
 
     return true;
 }
@@ -259,9 +259,9 @@ bool SecondWind2(uint8_t /*effectIndex*/, Aura* a, bool apply)
         return true;
 
     if (apply)
-        caster->SetTriggerStunOrImmobilize(29842, 100, true);  //fixed 100% chance
+        caster->setTriggerStunOrImmobilize(29842, 100, true);  //fixed 100% chance
     else
-        caster->SetTriggerStunOrImmobilize(0, 0, true);
+        caster->setTriggerStunOrImmobilize(0, 0, true);
 
     return true;
 }

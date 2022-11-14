@@ -1507,7 +1507,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     setNativeDisplayId(spawn->displayid);
     setMountDisplayId(spawn->MountedDisplayID);
 
-    EventModelChange();
+    eventModelChange();
 
     setLevel(creature_properties->MinLevel + (Util::getRandomUInt(creature_properties->MaxLevel - creature_properties->MinLevel)));
 
@@ -1786,7 +1786,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setNativeDisplayId(model);
     setMountDisplayId(0);
 
-    EventModelChange();
+    eventModelChange();
 
     setLevel(creature_properties->MinLevel + (Util::getRandomUInt(creature_properties->MaxLevel - creature_properties->MinLevel)));
 

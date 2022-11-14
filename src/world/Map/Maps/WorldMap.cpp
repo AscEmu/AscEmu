@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/DynamicObject.h"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Creatures/Summons/Summon.h"
-#include "Objects/Units/Unit.h"
+#include "Objects/Units/Unit.hpp"
 #include "VMapFactory.h"
 #include "MMapFactory.h"
 #include "Map/Cells/CellHandler.hpp"
@@ -794,7 +794,7 @@ void WorldMap::RemoveObject(Object* obj, bool free_guid)
         getScript()->removeObject(obj);
 
     if (obj->IsActive())
-        obj->Deactivate(this);
+        obj->deactivate(this);
 
     //there is a very small chance that on double player ports on same update player is added to multiple insertpools but not removed
     //one clear example was the double port proc when exploiting double resurrect
@@ -1475,7 +1475,7 @@ void WorldMap::changeObjectLocation(Object* obj)
         // This is to prevent cpu leaks. I will think of a better solution very soon :P
 
         if (!objCell->isActive() && !plObj && obj->IsActive())
-            obj->Deactivate(this);
+            obj->deactivate(this);
 
         if (pOldCell != nullptr)
             pOldCell->removeObject(obj);

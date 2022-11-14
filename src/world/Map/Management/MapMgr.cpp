@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Item.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Objects/Units/Creatures/Summons/Summon.h"
-#include "Objects/Units/Unit.h"
+#include "Objects/Units/Unit.hpp"
 #include "VMapFactory.h"
 #include "MMapFactory.h"
 #include "Storage/MySQLDataStore.hpp"

@@ -123,7 +123,7 @@ public:
     void AIUpdate() override
     {
         // case for scriptphase
-        if (getCreature()->getHealthPct() <= 25 && !Avatar && !getCreature()->IsStunned())
+        if (getCreature()->getHealthPct() <= 25 && !Avatar && !getCreature()->isStunned())
         {
             sendDBChatMessage(SAY_MALADAAR_07);
 

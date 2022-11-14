@@ -22,7 +22,7 @@
 #ifndef STATS_H
 #define STATS_H
 
-#include "Objects/Units/Unit.h"
+#include "Objects/Units/Unit.hpp"
 
 enum Stats
 {

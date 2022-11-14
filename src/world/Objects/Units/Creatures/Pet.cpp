@@ -20,7 +20,7 @@
  */
 
 #include "Creature.h"
-#include "Objects/Units/Unit.h"
+#include "Objects/Units/Unit.hpp"
 #include "Objects/DynamicObject.h"
 #include "Management/HonorHandler.h"
 #include "Objects/Units/Stats.h"
@@ -470,7 +470,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
     setLevel(level);
     setDisplayId(ci->Male_DisplayID);
     setNativeDisplayId(ci->Male_DisplayID);
-    EventModelChange();
+    eventModelChange();
     setSummonedByGuid(owner->getGuid());
     setCreatedByGuid(owner->getGuid());
 
@@ -999,7 +999,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     setDisplayId(creature_properties->Male_DisplayID);
     setNativeDisplayId(creature_properties->Male_DisplayID);
 
-    EventModelChange();
+    eventModelChange();
 
     setSummonedByGuid(owner->getGuid());
     setCreatedByGuid(owner->getGuid());
@@ -1287,7 +1287,7 @@ void Pet::PrepareForRemove(bool bUpdate, bool bSetOffline)
     }
 
     if (IsInWorld() && IsActive())
-        Deactivate(m_WorldMap);
+        deactivate(m_WorldMap);
 }
 
 void Pet::setDeathState(DeathState s)

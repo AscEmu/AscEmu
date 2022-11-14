@@ -53,7 +53,7 @@ public:
         getCreature()->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting. No one else needs to get hurt.");
         getCreature()->removeAllNegativeAuras();
         getCreature()->setFaction(12);
-        getCreature()->SetHealthPct(100);
+        getCreature()->setHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();
         getCreature()->getThreatManager().removeMeFromThreatLists();
         getCreature()->getAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);

@@ -916,7 +916,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
 
     if (mask & GROUP_UPDATE_FLAG_AURAS)
     {
-        uint64 auramask = pPlayer->GetAuraUpdateMaskForRaid();
+        uint64 auramask = pPlayer->getAuraUpdateMaskForRaid();
         *data << uint64(auramask);
         for (uint32 i = 0; i < 64; ++i)
         {
@@ -1008,7 +1008,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     {
         if (pet)
         {
-            uint64 auramask = pet->GetAuraUpdateMaskForRaid();
+            uint64 auramask = pet->getAuraUpdateMaskForRaid();
             *data << uint64(auramask);
             for (uint32 i = 0; i < 64; ++i)
             {

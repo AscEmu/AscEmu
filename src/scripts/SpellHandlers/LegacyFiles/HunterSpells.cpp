@@ -315,7 +315,7 @@ bool ChimeraShot(uint8_t /*effectIndex*/, Spell *spell)
     condition.AddSpellIdToCheck(67992);
     condition.AddSpellIdToCheck(67993);
 
-    target->AuraActionIf(&action, &condition);
+    target->auraActionIf(&action, &condition);
 
     return true;
 }

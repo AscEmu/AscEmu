@@ -73,9 +73,9 @@ bool FingersOfFrost(uint8_t effectIndex, Aura* a, bool apply) // Should be visib
         return true;
 
     if (apply)
-        caster->SetTriggerChill(44544, a->getEffectDamage(effectIndex), false);
+        caster->setTriggerChill(44544, a->getEffectDamage(effectIndex), false);
     else
-        caster->SetTriggerChill(0, 0, false);
+        caster->setTriggerChill(0, 0, false);
 
     return true;
 }
@@ -88,9 +88,9 @@ bool BrainFreeze(uint8_t effectIndex, Aura* a, bool apply)
         return true;
 
     if (apply)
-        caster->SetTriggerChill(57761, a->getEffectDamage(effectIndex), false);
+        caster->setTriggerChill(57761, a->getEffectDamage(effectIndex), false);
     else
-        caster->SetTriggerChill(0, 0, false);
+        caster->setTriggerChill(0, 0, false);
 
     return true;
 }

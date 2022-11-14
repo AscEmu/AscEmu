@@ -1298,7 +1298,7 @@ bool ChatHandler::HandleCharSetGenderCommand(const char* args, WorldSession* m_s
     }
 #endif
 
-    player_target->EventModelChange();
+    player_target->eventModelChange();
 
     return true;
 }

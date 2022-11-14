@@ -408,7 +408,7 @@ enum ELITE
     // ELITE_UNKNOWN = 5
 };
 
-// THIS IS NOT SAME AS DEATH STATE IN Unit.h
+// THIS IS NOT SAME AS DEATH STATE IN Unit.hpp
 enum CREATURE_DEATH_STATE
 {
     CREATURE_STATE_ALIVE        = 0,    /// no special death state

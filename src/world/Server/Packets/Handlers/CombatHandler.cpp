@@ -20,7 +20,7 @@ void WorldSession::handleAttackSwingOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ATTACKSWING: %u (guidLow)", srlPacket.guid.getGuidLow());
 
-    if (_player->IsFeared() || _player->IsStunned() || _player->IsPacified() || _player->isDead())
+    if (_player->isFeared() || _player->isStunned() || _player->isPacified() || _player->isDead())
         return;
 
     const auto unitTarget = _player->getWorldMap()->getUnit(srlPacket.guid.getRawGuid());

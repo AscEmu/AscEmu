@@ -56,7 +56,7 @@ public:
             // set Balos Jacken friendly and start friendlyTimer cooldown
             getCreature()->removeAllNegativeAuras();
             getCreature()->setFaction(35);
-            getCreature()->SetHealthPct(100);
+            getCreature()->setHealthPct(100);
             getCreature()->getThreatManager().clearAllThreat();
             getCreature()->getThreatManager().removeMeFromThreatLists();
             getCreature()->getAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
@@ -127,7 +127,7 @@ public:
     {
         getCreature()->removeAllNegativeAuras();
         getCreature()->setFaction(29);
-        getCreature()->SetHealthPct(100);
+        getCreature()->setHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();
         getCreature()->getThreatManager().removeMeFromThreatLists();
         getCreature()->getAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
@@ -193,7 +193,7 @@ public:
         getCreature()->emote(EMOTE_STATE_KNEEL);
         getCreature()->removeAllNegativeAuras();
         getCreature()->setFaction(12);
-        getCreature()->SetHealthPct(100);
+        getCreature()->setHealthPct(100);
         getCreature()->getThreatManager().clearAllThreat();
         getCreature()->getThreatManager().removeMeFromThreatLists();
         getCreature()->getAIInterface()->handleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);

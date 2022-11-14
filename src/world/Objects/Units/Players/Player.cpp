@@ -6278,7 +6278,7 @@ void Player::sendUpdateToOutOfRangeGroupMembers()
     m_groupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
 
     if (Pet* pet = getFirstPetFromSummons())
-        pet->ResetAuraUpdateMaskForRaid();
+        pet->resetAuraUpdateMaskForRaid();
 }
 
 void Player::eventGroupFullUpdate()

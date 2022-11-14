@@ -314,7 +314,7 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
 
         getOwner()->m_auraVisualList[m_visualSlot] = 0;
         getOwner()->sendAuraUpdate(this, true);
-        getOwner()->UpdateAuraForGroup(m_visualSlot);
+        getOwner()->updateAuraForGroup(m_visualSlot);
     }
 
     // Remove aura from unit before removing modifiers
@@ -571,7 +571,7 @@ void Aura::refreshOrModifyStack([[maybe_unused]]bool saveMods/* = false*/, int16
 
     // Send aura update
     getOwner()->sendAuraUpdate(this, false);
-    getOwner()->UpdateAuraForGroup(m_visualSlot);
+    getOwner()->updateAuraForGroup(m_visualSlot);
 }
 
 uint8_t Aura::getStackCount() const

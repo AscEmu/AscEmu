@@ -1789,7 +1789,7 @@ public:
     {
         if (_getHealthPercent() <= 1)
         {
-            getCreature()->SetHealthPct(1);
+            getCreature()->setHealthPct(1);
             setCanEnterCombat(false);
             _setMeleeDisabled(false);
             _setCastDisabled(true);
@@ -1834,7 +1834,7 @@ public:
     {
         if (_getHealthPercent() <= 1)
         {
-            getCreature()->SetHealthPct(1);
+            getCreature()->setHealthPct(1);
 
             setCanEnterCombat(false);
             _setMeleeDisabled(false);

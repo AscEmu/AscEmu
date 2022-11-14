@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementDefines.h"
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
-#include "Objects/Units/Unit.h"
+#include "Objects/Units/Unit.hpp"
 
 SplineChainMovementGenerator::SplineChainMovementGenerator(uint32_t id, std::vector<SplineChainLink> const& chain, bool walk) : _id(id), _chain(chain), _chainSize(static_cast<uint8_t>(chain.size())), _walk(walk), _nextIndex(0), _nextFirstWP(0), _msToNext(0)
 {

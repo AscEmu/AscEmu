@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Objects/Units/Creatures/Vehicle.h>
 #include "MoveSpline.h"
 #include "MovementPacketBuilder.h"
-#include <Objects/Units/Unit.h>
+#include <Objects/Units/Unit.hpp>
 #include <Objects/Transporter.h>
 #include "WorldPacket.h"
 #include "Movement/PathGenerator.h"

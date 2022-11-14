@@ -944,7 +944,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
                 _type = MELEE;
         }
 
-        melee_test_result = u_caster->GetSpellDidHitResult(u_victim, _type, this);
+        melee_test_result = u_caster->getSpellDidHitResult(u_victim, _type, this);
         if (melee_test_result != SPELL_DID_HIT_SUCCESS)
             return (uint8)melee_test_result;
     }

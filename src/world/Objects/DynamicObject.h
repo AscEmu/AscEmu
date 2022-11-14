@@ -22,7 +22,7 @@
 #define WOWSERVER_DYNAMICOBJECT_H
 
 #include "Object.h"
-#include "Units/Unit.h"
+#include "Units/Unit.hpp"
 #include "Data/WoWDynamicObject.hpp"
 #include "Server/UpdateFieldInclude.h"
 

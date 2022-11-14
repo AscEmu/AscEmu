@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Faction.h"
 #include "Management/Group.h"
 #include "Objects/Units/Players/Player.h"
-#include "Objects/Units/Unit.h"
+#include "Objects/Units/Unit.hpp"
 
 bool SpellClickInfo::isFitToRequirements(Unit* clicker, Unit* clickee) const
 {

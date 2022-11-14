@@ -119,7 +119,7 @@ void MapCell::setActivity(bool state)
         for (ObjectSet::iterator itr = _objects.begin(); itr != _objects.end(); ++itr)
         {
             if ((*itr)->IsActive())
-                (*itr)->Deactivate(_map);
+                (*itr)->deactivate(_map);
         }
 
         if (!_unloadpending && canUnload())
@@ -185,7 +185,7 @@ void MapCell::removeObjects()
             continue;
 
         if (obj->IsActive())
-            obj->Deactivate(_map);
+            obj->deactivate(_map);
 
         if (obj->IsInWorld())
             obj->RemoveFromWorld(true);

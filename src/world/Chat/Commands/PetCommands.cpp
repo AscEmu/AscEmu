@@ -28,7 +28,7 @@ bool ChatHandler::HandlePetCreateCommand(const char* args, WorldSession* m_sessi
     }
 
     selected_player->dismissActivePets();
-    selected_player->RemoveFieldSummon();
+    selected_player->removeFieldSummon();
 
     float followangle = -M_PI_FLOAT * 2;
     LocationVector vector(selected_player->GetPosition());

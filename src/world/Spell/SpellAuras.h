@@ -25,7 +25,7 @@
 #include "Objects/Item.hpp"
 #include "Objects/Object.h"
 #include "Server/EventableObject.h"
-#include "Objects/Units/Unit.h"
+#include "Objects/Units/Unit.hpp"
 
 #include <cstdint>
 #include <set>

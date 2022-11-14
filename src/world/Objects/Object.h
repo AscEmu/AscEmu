@@ -678,7 +678,7 @@ public:
         bool IsActive() { return Active; }
         virtual bool CanActivate();
         virtual void Activate(WorldMap* mgr);
-        virtual void Deactivate(WorldMap* mgr);
+        virtual void deactivate(WorldMap* mgr);
         // Player is in pvp queue.
         bool m_inQueue = false;
         void SetMapMgr(WorldMap* mgr) { m_WorldMap = mgr; }

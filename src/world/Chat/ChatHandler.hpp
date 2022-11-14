@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/SkillNameMgr.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.h"
-#include "Objects/Units/Unit.h"
+#include "Objects/Units/Unit.hpp"
 
 class WorldSession;
 class Player;

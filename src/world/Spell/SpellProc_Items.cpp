@@ -23,7 +23,7 @@
 #include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "SpellProc.hpp"
-#include "Objects/Units/Unit.h"
+#include "Objects/Units/Unit.hpp"
 #include "Objects/Units/Players/Player.h"
 
 class TwinBladesOfAzzinothSpellProc : public SpellProc

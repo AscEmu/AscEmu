@@ -28,7 +28,7 @@
 #include "Management/ItemProperties.hpp"
 #include "Management/AchievementMgr.h"
 #include "Map/Maps/InstanceMgr.hpp"
-#include "Objects/Units/Unit.h" 
+#include "Objects/Units/Unit.hpp" 
 #include "Storage/MySQLStructures.h"
 #include "Macros/PlayerMacros.hpp"
 #include "Objects/Units/Creatures/AIInterface.h" //?? what?
@@ -1889,7 +1889,7 @@ public:
         void calculateDamage() override;
         float offhand_dmg_mod = 0.5f;
 
-        int32 GetDamageDoneMod(uint16_t school)
+        int32 GetDamageDoneMod(uint16_t school) override
         {
             if (school >= TOTAL_SPELL_SCHOOLS)
                 return 0;
@@ -1897,7 +1897,7 @@ public:
             return static_cast<int32>(getModDamageDonePositive(school)) - static_cast<int32>(getModDamageDoneNegative(school));
         }
 
-        float GetDamageDonePctMod(uint16_t school)
+        float GetDamageDonePctMod(uint16_t school) override
         {
             if (school >= TOTAL_SPELL_SCHOOLS)
                 return 0;

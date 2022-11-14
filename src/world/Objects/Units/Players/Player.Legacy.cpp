@@ -325,7 +325,7 @@ bool Player::Create(CharCreate& charCreateContent)
     initialiseNoseLevel();
     setInitialDisplayIds(charCreateContent.gender, charCreateContent._race);
 
-    EventModelChange();
+    eventModelChange();
 
     // PLAYER_BYTES
     setSkinColor(charCreateContent.skin);
@@ -634,7 +634,7 @@ void Player::_EventAttack(bool offhand)
         return;
     }
 
-    if (IsFeared() || IsStunned())
+    if (isFeared() || isStunned())
         return;
 
     Unit* pVictim = nullptr;
@@ -704,10 +704,10 @@ void Player::_EventAttack(bool offhand)
         if (this->isStealthed())
             removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
 
-        if (GetOnMeleeSpell() == 0 || offhand)
-            Strike(pVictim, (offhand ? OFFHAND : MELEE), nullptr, 0, 0, 0, false, false);
+        if (getOnMeleeSpell() == 0 || offhand)
+            strike(pVictim, (offhand ? OFFHAND : MELEE), nullptr, 0, 0, 0, false, false);
         else
-            CastOnMeleeSpell();
+            castOnMeleeSpell();
     }
 }
 
@@ -783,14 +783,14 @@ void Player::_EventCharmAttack()
             PvPTimeoutUpdate(false); //update casters timer
             }*/
 
-            if (!currentCharm->GetOnMeleeSpell())
+            if (!currentCharm->getOnMeleeSpell())
             {
-                currentCharm->Strike(pVictim, MELEE, nullptr, 0, 0, 0, false, false);
+                currentCharm->strike(pVictim, MELEE, nullptr, 0, 0, 0, false, false);
             }
             else
             {
-                const auto spellInfo = sSpellMgr.getSpellInfo(currentCharm->GetOnMeleeSpell());
-                currentCharm->SetOnMeleeSpell(0);
+                const auto spellInfo = sSpellMgr.getSpellInfo(currentCharm->getOnMeleeSpell());
+                currentCharm->setOnMeleeSpell(0);
                 Spell* spell = sSpellMgr.newSpell(currentCharm, spellInfo, true, nullptr);
                 SpellCastTargets targets(getTargetGuid());
                 spell->prepare(&targets);
@@ -1747,7 +1747,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     setInitialDisplayIds(getGender(), getRace());
 
-    EventModelChange();
+    eventModelChange();
 
     if (const auto raceEntry = sChrRacesStore.LookupEntry(getRace()))
         setFaction(raceEntry->faction_id);
@@ -2465,7 +2465,7 @@ void Player::OnPushToWorld()
 
         applyLevelInfo(startlevel);
 
-        SetHealthPct(100);
+        setHealthPct(100);
 
         // Sometimes power types aren't initialized - so initialize it again
         switch (getClass())
@@ -2575,7 +2575,7 @@ void Player::RemoveFromWorld()
 
     getSummonInterface()->removeAllSummons();
     dismissActivePets();
-    RemoveFieldSummon();
+    removeFieldSummon();
 
     if (m_summonedObject)
     {
@@ -2656,7 +2656,7 @@ float Player::GetDodgeChance()
     chance += CalcRating(CR_DODGE);
 
     // Dodge from spells
-    chance += GetDodgeFromSpell();
+    chance += getDodgeFromSpell();
 
     return std::max(chance, 0.0f); // Make sure we don't have a negative chance
 }
@@ -2674,7 +2674,7 @@ float Player::GetBlockChance()
     chance += CalcRating(CR_BLOCK);
 
     // Block chance from spells
-    chance += GetBlockFromSpell();
+    chance += getBlockFromSpell();
 
     return std::max(chance, 0.0f);   // Make sure we don't have a negative chance
 }
@@ -2691,7 +2691,7 @@ float Player::GetParryChance()
     chance += CalcRating(CR_PARRY);
 
     // Parry chance from spells
-    chance += GetParryFromSpell();
+    chance += getParryFromSpell();
 
     return std::max(chance, 0.0f);   // Make sure we don't have a negative chance
 }
@@ -3139,7 +3139,7 @@ void Player::onRemoveInRangeObject(Object* pObj)
     }
 
     if (pObj->getGuid() == getSummonGuid())
-        sEventMgr.AddEvent(static_cast<Unit*>(this), &Unit::RemoveFieldSummon, EVENT_SUMMON_EXPIRE, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);//otherwise Creature::Update() will access free'd memory
+        sEventMgr.AddEvent(static_cast<Unit*>(this), &Unit::removeFieldSummon, EVENT_SUMMON_EXPIRE, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);//otherwise Creature::Update() will access free'd memory
 }
 
 void Player::clearInRangeSets()

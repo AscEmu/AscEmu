@@ -1120,7 +1120,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             {
                 if (p_caster != nullptr)
                 {
-                    if (!unitTarget->IsStunned())
+                    if (!unitTarget->isStunned())
                         dmg = dmg >> 1;
                     if (p_caster->hasAurasWithId(34258))
                         p_caster->castSpell(p_caster, 34260, true);
@@ -1141,7 +1141,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 68019:
             case 71551:
             {
-                if (!unitTarget->IsStunned())
+                if (!unitTarget->isStunned())
                     dmg = dmg >> 1;
             } break;
 
@@ -1690,7 +1690,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                         _type = MELEE;
                 }
 
-                m_targetDamageInfo = u_caster->Strike(unitTarget, _type, getSpellInfo(), 0, 0, dmg, m_triggeredSpell, true, (force_crit || isForcedCrit), this);
+                m_targetDamageInfo = u_caster->strike(unitTarget, _type, getSpellInfo(), 0, 0, dmg, m_triggeredSpell, true, (force_crit || isForcedCrit), this);
                 isTargetDamageInfoSet = true;
             }
         }
@@ -2397,7 +2397,7 @@ void Spell::SpellEffectWeapondamageNoschool(uint8_t /*effectIndex*/) // Weapon d
     if (!unitTarget || !u_caster)
         return;
 
-    m_targetDamageInfo = u_caster->Strike(unitTarget, (GetType() == SPELL_DMG_TYPE_RANGED ? RANGED : MELEE), getSpellInfo(), damage, 0, 0, m_triggeredSpell, true, isForcedCrit, this);
+    m_targetDamageInfo = u_caster->strike(unitTarget, (GetType() == SPELL_DMG_TYPE_RANGED ? RANGED : MELEE), getSpellInfo(), damage, 0, 0, m_triggeredSpell, true, isForcedCrit, this);
     isTargetDamageInfoSet = true;
 }
 
@@ -3037,7 +3037,7 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 /*i*/, DBC::Structures::SummonP
         return;
 
     p_caster->dismissActivePets();
-    p_caster->RemoveFieldSummon();
+    p_caster->removeFieldSummon();
 
     int32 count = 0;
 
@@ -3082,7 +3082,7 @@ void Spell::SpellEffectSummonPossessed(uint32 /*i*/, DBC::Structures::SummonProp
         return;
 
     p_caster->dismissActivePets();
-    p_caster->RemoveFieldSummon();
+    p_caster->removeFieldSummon();
 
     v.x += (3 * cos(M_PI_FLOAT / 2 + v.o));
     v.y += (3 * cos(M_PI_FLOAT / 2 + v.o));
@@ -3281,7 +3281,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent dama
                 _type = MELEE;
         }
 
-        m_targetDamageInfo = u_caster->Strike(unitTarget, _type, getSpellInfo(), add_damage, damage, 0, m_triggeredSpell, true, isForcedCrit, this);
+        m_targetDamageInfo = u_caster->strike(unitTarget, _type, getSpellInfo(), add_damage, damage, 0, m_triggeredSpell, true, isForcedCrit, this);
         isTargetDamageInfoSet = true;
 
         if (p_caster != nullptr)   // rogue - fan of knives
@@ -3318,7 +3318,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent dama
                             else
                                 damage = getSpellInfo()->getEffectBasePoints(effectIndex) + 1;// and 70% weapon damage with all other weapons.
 
-                            u_caster->Strike(unitTarget, OFFHAND, getSpellInfo(), add_damage, damage, 0, m_triggeredSpell, true, isForcedCrit, this);
+                            u_caster->strike(unitTarget, OFFHAND, getSpellInfo(), add_damage, damage, 0, m_triggeredSpell, true, isForcedCrit, this);
                         }
                     }
                 } break;
@@ -4307,7 +4307,7 @@ void Spell::SpellEffectWeapondamage(uint8_t /*effectIndex*/)   // Weapon damage 
         else
             _type = MELEE;
     }
-    m_targetDamageInfo = u_caster->Strike(unitTarget, _type, getSpellInfo(), damage, 0, 0, m_triggeredSpell, true, isForcedCrit, this);
+    m_targetDamageInfo = u_caster->strike(unitTarget, _type, getSpellInfo(), damage, 0, 0, m_triggeredSpell, true, isForcedCrit, this);
     isTargetDamageInfoSet = true;
 }
 
@@ -4494,8 +4494,10 @@ void Spell::SpellEffectInterruptCast(uint8_t /*effectIndex*/) // Interrupt Cast
                     static_cast<Player*>(unitTarget)->SendPreventSchoolCast(school, duration);
                 }
                 else
+                {
                     // Prevent unit from casting in that school
                     unitTarget->m_schoolCastPrevent[school] = duration + Util::getMSTime();
+                }
 
                 // Interrupt the spell cast
                 unitTarget->interruptSpell(TargetSpell->getSpellInfo()->getId(), false);
@@ -5739,7 +5741,7 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
         else
             _type = MELEE;
     }
-    m_targetDamageInfo = u_caster->Strike(unitTarget, _type, getSpellInfo(), damage, pct_dmg_mod, 0, m_triggeredSpell, true, isForcedCrit, this);
+    m_targetDamageInfo = u_caster->strike(unitTarget, _type, getSpellInfo(), damage, pct_dmg_mod, 0, m_triggeredSpell, true, isForcedCrit, this);
     isTargetDamageInfoSet = true;
 }
 

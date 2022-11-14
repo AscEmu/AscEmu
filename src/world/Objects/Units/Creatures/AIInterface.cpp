@@ -1186,7 +1186,7 @@ void AIInterface::updateCombat(uint32_t p_time)
                 if (!infront) // set InFront
                 {
                     //prevent mob from rotating while stunned
-                    if (!getUnit()->IsStunned())
+                    if (!getUnit()->isStunned())
                     {
                         getUnit()->setFacingToObject(getCurrentTarget());
                         infront = true;
@@ -1195,12 +1195,12 @@ void AIInterface::updateCombat(uint32_t p_time)
                 if (infront)
                 {
                     getUnit()->setAttackTimer(MELEE, m_Unit->getBaseAttackTime(MELEE));
-                    if (getUnit()->GetOnMeleeSpell() != 0)
+                    if (getUnit()->getOnMeleeSpell() != 0)
                     {
-                        getUnit()->CastOnMeleeSpell();
+                        getUnit()->castOnMeleeSpell();
                     }
                     else
-                        getUnit()->Strike(getCurrentTarget(), MELEE, NULL, 0, 0, 0, false, false);
+                        getUnit()->strike(getCurrentTarget(), MELEE, NULL, 0, 0, 0, false, false);
                 }
             }
             /* Not Fully Supportet atm
@@ -1231,7 +1231,7 @@ void AIInterface::updateCombat(uint32_t p_time)
                 if (!infront) // set InFront
                 {
                     //prevent mob from rotating while stunned
-                    if (!m_Unit->IsStunned())
+                    if (!m_Unit->isStunned())
                     {
                         getUnit()->setFacingToObject(getCurrentTarget());
                         infront = true;
@@ -1781,8 +1781,8 @@ float AIInterface::calcCombatRange(Unit* target, bool ranged)
         rang = 5.0f;
 
     float selfreach = m_Unit->getCombatReach();
-    float targetradius = target->GetModelHalfSize();
-    float selfradius = m_Unit->GetModelHalfSize();
+    float targetradius = target->getModelHalfSize();
+    float selfradius = m_Unit->getModelHalfSize();
 
     float range = targetradius + selfreach + selfradius + rang;
 
@@ -2973,7 +2973,7 @@ void AIInterface::eventChangeFaction(Unit* ForceAttackersToHateThisInstead)
 
 bool AIInterface::moveTo(float x, float y, float z, float /*o = 0.0f*/, bool running/*= false*/)
 {
-    if (m_Unit->isRooted() || m_Unit->IsStunned())
+    if (m_Unit->isRooted() || m_Unit->isStunned())
     {
         m_Unit->stopMoving() ; //Just Stop
         return false;
@@ -2993,7 +2993,7 @@ bool AIInterface::moveTo(float x, float y, float z, float /*o = 0.0f*/, bool run
 
 void AIInterface::calcDestinationAndMove(Unit* target, float dist)
 {
-    if (m_Unit->isRooted() || m_Unit->IsStunned())
+    if (m_Unit->isRooted() || m_Unit->isStunned())
     {
         m_Unit->stopMoving(); //Just Stop
         return;

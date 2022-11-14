@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Movement/PathGenerator.h"
 #include "Objects/Units/Players/Player.h"
-#include "Objects/Units/Unit.h"
+#include "Objects/Units/Unit.hpp"
 
 #define MIN_QUIET_DISTANCE 28.0f
 #define MAX_QUIET_DISTANCE 43.0f

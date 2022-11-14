@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Map/RecastIncludes.hpp"
 #include "Objects/Units/Creatures/AIEvents.h"
-#include "Objects/Units/Unit.h"
+#include "Objects/Units/Unit.hpp"
 #include "Macros/AIInterfaceMacros.hpp"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Server/Script/ScriptEvent.hpp"

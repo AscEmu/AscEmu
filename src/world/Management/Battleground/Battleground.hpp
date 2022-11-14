@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Objects/Units/Players/PlayerDefines.hpp"
-#include "Objects/Units/Unit.h"
+#include "Objects/Units/Unit.hpp"
 #include "Spell/Spell.h"
 #include "Objects/Object.h"
 #include <mutex>

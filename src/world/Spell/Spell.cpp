@@ -396,7 +396,7 @@ void Spell::castMe(const bool doReCheck)
                 u_caster->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_CAST);
             }
 
-            u_caster->SetOnMeleeSpell(getSpellInfo()->getId(), extra_cast_number);
+            u_caster->setOnMeleeSpell(getSpellInfo()->getId(), extra_cast_number);
         }
 
         finish();
@@ -1000,7 +1000,7 @@ void Spell::finish(bool successful)
                 continue;
 
             const auto targetProcFlags = m_targetProcFlags | m_casterDamageInfo.victimProcFlags;
-            targetUnit->HandleProc(targetProcFlags, getUnitCaster(), getSpellInfo(), uniqueTarget.second, m_triggeredSpell, PROC_EVENT_DO_ALL, m_triggeredByAura);
+            targetUnit->handleProc(targetProcFlags, getUnitCaster(), getSpellInfo(), uniqueTarget.second, m_triggeredSpell, PROC_EVENT_DO_ALL, m_triggeredByAura);
         }
     }
 
@@ -1020,7 +1020,7 @@ void Spell::finish(bool successful)
             if (targetUnit == nullptr)
                 continue;
 
-            getUnitCaster()->HandleProc(casterProcFlags, targetUnit, getSpellInfo(), uniqueTarget.second, m_triggeredSpell, PROC_EVENT_DO_TARGET_PROCS_ONLY, m_triggeredByAura);
+            getUnitCaster()->handleProc(casterProcFlags, targetUnit, getSpellInfo(), uniqueTarget.second, m_triggeredSpell, PROC_EVENT_DO_TARGET_PROCS_ONLY, m_triggeredByAura);
         }
 
         // Use victim only if there was one target
@@ -1031,7 +1031,7 @@ void Spell::finish(bool successful)
 
         // Handle caster's self procs
         const auto casterProcFlags = m_casterProcFlags | m_casterDamageInfo.attackerProcFlags;
-        getUnitCaster()->HandleProc(casterProcFlags, targetUnit, getSpellInfo(), m_casterDamageInfo, m_triggeredSpell, PROC_EVENT_DO_CASTER_PROCS_ONLY, m_triggeredByAura);
+        getUnitCaster()->handleProc(casterProcFlags, targetUnit, getSpellInfo(), m_casterDamageInfo, m_triggeredSpell, PROC_EVENT_DO_CASTER_PROCS_ONLY, m_triggeredByAura);
     }
 
     // QuestMgr spell hooks and achievement calls
@@ -1114,7 +1114,7 @@ void Spell::update(unsigned long timePassed)
             else if (getSpellInfo()->getInterruptFlags() & CAST_INTERRUPT_ON_MOVEMENT)
             {
                 // Don't cancel on next melee, autorepeat or triggered spells
-                if (!u_caster->HasNoInterrupt() && !m_triggeredSpell && !getSpellInfo()->isOnNextMeleeAttack() && !getSpellInfo()->isRangedAutoRepeat())
+                if (!u_caster->hasNoInterrupt() && !m_triggeredSpell && !getSpellInfo()->isOnNextMeleeAttack() && !getSpellInfo()->isRangedAutoRepeat())
                 {
                     cancel();
                     return;
@@ -1870,7 +1870,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             }
 
             // Check if target has stronger aura active
-            const AuraCheckResponse auraCheckResponse = target->AuraCheck(getSpellInfo(), m_caster);
+            const AuraCheckResponse auraCheckResponse = target->auraCheck(getSpellInfo(), m_caster);
             if (auraCheckResponse.Error == AURA_CHECK_RESULT_HIGHER_BUFF_PRESENT)
                 return SPELL_FAILED_AURA_BOUNCED;
 
@@ -5864,7 +5864,7 @@ float_t Spell::_getSpellTravelTimeForTarget(uint64_t guid) const
             destY = obj->GetPositionY();
             //\todo this should be destz = obj->GetPositionZ() + (obj->GetModelHighBoundZ() / 2 * obj->getScale())
             if (obj->isCreatureOrPlayer())
-                destZ = obj->GetPositionZ() + static_cast<Unit*>(obj)->GetModelHalfSize();
+                destZ = obj->GetPositionZ() + static_cast<Unit*>(obj)->getModelHalfSize();
             else
                 destZ = obj->GetPositionZ();
 

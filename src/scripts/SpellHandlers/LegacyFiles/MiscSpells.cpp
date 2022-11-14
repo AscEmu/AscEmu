@@ -45,7 +45,7 @@ bool FrostWarding(uint8_t /*effectIndex*/, Spell* s)
 
     uint32_t spellId = s->getSpellInfo()->getId();
 
-    unitTarget->RemoveReflect(spellId, true);
+    unitTarget->removeReflect(spellId, true);
 
     ReflectSpellSchool* rss = new ReflectSpellSchool;
 
@@ -67,7 +67,7 @@ bool MoltenShields(uint8_t /*effectIndex*/, Spell* s)
     if (!unitTarget)
         return false;
 
-    unitTarget->RemoveReflect(s->getSpellInfo()->getId(), true);
+    unitTarget->removeReflect(s->getSpellInfo()->getId(), true);
 
     ReflectSpellSchool* rss = new ReflectSpellSchool;
 

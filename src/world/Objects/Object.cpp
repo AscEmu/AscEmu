@@ -3,7 +3,7 @@ Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Units/Unit.h"
+#include "Units/Unit.hpp"
 #include "Units/Creatures/Summons/Summon.h"
 #include "Storage/DBC/DBCStores.h"
 #include "Management/QuestLogEntry.hpp"
@@ -919,7 +919,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     // Calculate resistance reduction
     if (dmgInfo.realDamage > 0 && isCreatureOrPlayer() && !(isPeriodic && school == SCHOOL_NORMAL))
     {
-        static_cast<Unit*>(this)->CalculateResistanceReduction(victim, &dmgInfo, spellInfo, 0.0f);
+        static_cast<Unit*>(this)->calculateResistanceReduction(victim, &dmgInfo, spellInfo, 0.0f);
         if (dmgInfo.resistedDamage > static_cast<uint32_t>(dmgInfo.fullDamage))
             dmgInfo.realDamage = 0;
         else
@@ -928,7 +928,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
 
     // Check for absorb effects
     dmgInfo.absorbedDamage = victim->absorbDamage(SchoolMask(spellInfo->getSchoolMask()), &dmgInfo.realDamage);
-    const auto manaShieldAbsorb = victim->ManaShieldAbsorb(dmgInfo.realDamage);
+    const auto manaShieldAbsorb = victim->getManaShieldAbsorbedDamage(dmgInfo.realDamage);
     if (manaShieldAbsorb > 0)
     {
         if (manaShieldAbsorb > dmgInfo.realDamage)
@@ -980,7 +980,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
 
     // Check for damage split target
     if (victim->m_damageSplitTarget != nullptr)
-        dmgInfo.realDamage = victim->DoDamageSplitTarget(dmgInfo.realDamage, dmgInfo.schoolMask, false);
+        dmgInfo.realDamage = victim->doDamageSplitTarget(dmgInfo.realDamage, dmgInfo.schoolMask, false);
 
     // Get estimated overkill amount
     const auto overKill = victim->calculateEstimatedOverKillForCombatLog(dmgInfo.realDamage);
@@ -1050,10 +1050,10 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
         }
 
         // Handle procs
-        victim->HandleProc(dmgInfo.victimProcFlags, casterUnit, spellInfo, dmgInfo, isTriggered);
+        victim->handleProc(dmgInfo.victimProcFlags, casterUnit, spellInfo, dmgInfo, isTriggered);
         // If called from spell class, handle caster's procs when spell has finished all targets
         if (spell == nullptr)
-            casterUnit->HandleProc(dmgInfo.attackerProcFlags, victim, spellInfo, dmgInfo, isTriggered);
+            casterUnit->handleProc(dmgInfo.attackerProcFlags, victim, spellInfo, dmgInfo, isTriggered);
     }
 
     if (isPlayer())
@@ -1387,10 +1387,10 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
         }
 
         // Handle procs
-        victim->HandleProc(dmgInfo.victimProcFlags, casterUnit, spellInfo, dmgInfo, isTriggered);
+        victim->handleProc(dmgInfo.victimProcFlags, casterUnit, spellInfo, dmgInfo, isTriggered);
         // If called from spell class, handle caster's procs when spell has finished all targets
         if (spell == nullptr)
-            casterUnit->HandleProc(dmgInfo.attackerProcFlags, victim, spellInfo, dmgInfo, isTriggered);
+            casterUnit->handleProc(dmgInfo.attackerProcFlags, victim, spellInfo, dmgInfo, isTriggered);
     }
 
     if (isPlayer())
@@ -1401,7 +1401,7 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
         plr->m_casted_amount[school] = dmgInfo.realDamage;
     }
 
-    victim->RemoveAurasByHeal();
+    victim->removeAurasByHeal();
     return dmgInfo;
 }
 
@@ -3874,7 +3874,7 @@ void Object::Activate(WorldMap* mgr)
     Active = true;
 }
 
-void Object::Deactivate(WorldMap* mgr)
+void Object::deactivate(WorldMap* mgr)
 {
     if (mgr == nullptr)
         return;

@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AbstractFollower.h"
 
-#include "Objects/Units/Unit.h"
+#include "Objects/Units/Unit.hpp"
 
 void AbstractFollower::setTarget(Unit* unit)
 {

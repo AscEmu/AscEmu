@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Objects/Units/Unit.h"
+#include "Objects/Units/Unit.hpp"
 #include "Objects/Units/Creatures/Summons/SummonHandler.h"
 #include "Objects/Units/Creatures/Vehicle.h"
 #include "Objects/Units/Creatures/Creature.h"
@@ -1326,7 +1326,7 @@ public:
     {
         uint32_t val = static_cast<uint32_t>(luaL_checkinteger(L, 1));
         if (val && ptr)
-            ptr->SetHealthPct(val);
+            ptr->setHealthPct(val);
         return 0;
     }
 
@@ -2757,7 +2757,7 @@ public:
 
         if (!target)
             return 0;
-        ptr->Strike(target, weapon_damage_type, sSpellMgr.getSpellInfo(sp), adddmg, pct_dmg_mod, exclusive_damage, false, false);
+        ptr->strike(target, weapon_damage_type, sSpellMgr.getSpellInfo(sp), adddmg, pct_dmg_mod, exclusive_damage, false, false);
         return 0;
     }
 
@@ -2899,7 +2899,7 @@ public:
     static int IsPacified(lua_State* L, Unit* ptr)
     {
         if (ptr)
-            lua_pushboolean(L, (ptr->IsPacified()) ? 1 : 0);
+            lua_pushboolean(L, (ptr->isPacified()) ? 1 : 0);
         return 1;
     }
 
@@ -2919,14 +2919,14 @@ public:
     static int IsFeared(lua_State* L, Unit* ptr)
     {
         if (ptr)
-            lua_pushboolean(L, (ptr->IsFeared()) ? 1 : 0);
+            lua_pushboolean(L, (ptr->isFeared()) ? 1 : 0);
         return 1;
     }
 
     static int IsStunned(lua_State* L, Unit* ptr)
     {
         if (ptr)
-            lua_pushboolean(L, (ptr->IsStunned()) ? 1 : 0);
+            lua_pushboolean(L, (ptr->isStunned()) ? 1 : 0);
         return 1;
     }
 

@@ -374,7 +374,7 @@ public:
 
         if (getCreature()->getWorldMap() != NULL && !_isHeroic() && getCreature()->getHealthPct() >= 41)
         {
-            getCreature()->SetHealthPct(40);
+            getCreature()->setHealthPct(40);
         }
 
         SonicBoomTimerId = 0;
@@ -386,7 +386,7 @@ public:
 
         if (getCreature()->getWorldMap() != NULL && !_isHeroic() && getCreature()->getHealthPct() >= 41)
         {
-            getCreature()->SetHealthPct(40);
+            getCreature()->setHealthPct(40);
         }
         getCreature()->setMoveRoot(true);
     }
@@ -395,7 +395,7 @@ public:
     {
         if (getCreature()->getWorldMap() != NULL && !_isHeroic() && getCreature()->getHealthPct() >= 41)
         {
-            getCreature()->SetHealthPct(40);
+            getCreature()->setHealthPct(40);
         }
 
         _removeTimer(SonicBoomTimerId);
