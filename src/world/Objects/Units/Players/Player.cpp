@@ -1278,7 +1278,7 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
     }
 
     bool instance = false;
-    if (instanceId && static_cast<uint32>(m_instanceId) != instanceId)
+    if (instanceId && static_cast<uint32_t>(m_instanceId) != instanceId)
     {
         instance = true;
         this->SetInstanceID(instanceId);
@@ -2489,7 +2489,7 @@ void Player::setCreateBits(UpdateMask* updateMask, Player* target) const
     }
     else
     {
-        for (uint32 index = 0; index < m_valuesCount; index++)
+        for (uint32_t index = 0; index < m_valuesCount; index++)
         {
             if (m_uint32Values[index] != 0 && Player::m_visibleUpdateMask.GetBit(index))
                 updateMask->SetBit(index);
@@ -4543,14 +4543,14 @@ void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
         for (uint8_t i = 0; i < 6; ++i)
             data << uint16_t(GetGlyph(specId, i));
 
-        int32 talentCount = 0;
+        int32_t talentCount = 0;
         for (const auto talent : spec.talents)
         {
             data << uint16_t(talent.first);
             talentCount++;
         }
         data.PutBits(wpos[specId], talentCount, 23);
-        data << uint32(spec.GetTP());
+        data << uint32_t(spec.GetTP());
     }
 
     getSession()->SendPacket(&data);
@@ -5267,7 +5267,7 @@ void Player::removeGarbageItems()
     m_GarbageItems.clear();
 }
 
-void Player::applyItemMods(Item* item, int16 slot, bool apply, bool justBrokedown /* = false */, bool skipStatApply /* = false  */)
+void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBrokedown /* = false */, bool skipStatApply /* = false  */)
 {
     if (slot >= INVENTORY_SLOT_BAG_END)
         return;
@@ -5351,7 +5351,7 @@ void Player::applyItemMods(Item* item, int16 slot, bool apply, bool justBrokedow
             {
                 if (itemSet)
                 {
-                    for (uint8 itemIndex = 0; itemIndex < 8; ++itemIndex)
+                    for (uint8_t itemIndex = 0; itemIndex < 8; ++itemIndex)
                         if (itemSet->itemscount == itemSetEntry->itemscount[itemIndex])
                             removeAllAurasByIdForGuid(itemSetEntry->SpellID[itemIndex], getGuid());
 
@@ -6030,7 +6030,7 @@ void Player::resurrect()
 
     updateVisibility();
 
-    if (m_resurrecter && IsInWorld() && m_resurrectInstanceID == static_cast<uint32>(GetInstanceID()))
+    if (m_resurrecter && IsInWorld() && m_resurrectInstanceID == static_cast<uint32_t>(GetInstanceID()))
         safeTeleport(m_resurrectMapId, m_resurrectInstanceID, m_resurrectPosition);
 
     m_resurrecter = 0;
@@ -6101,7 +6101,7 @@ void Player::calcDeathDurabilityLoss(double percent)
                 if (newDurability <= 0)
                     applyItemMods(item, i, false, true);
 
-                item->setDurability(static_cast<uint32>(newDurability));
+                item->setDurability(static_cast<uint32_t>(newDurability));
                 item->m_isDirty = true;
             }
         }
@@ -6915,7 +6915,7 @@ void Player::fillRandomBattlegroundReward(bool wonBattleground, uint32_t& honorP
 
 void Player::applyRandomBattlegroundReward(bool wonBattleground)
 {
-    uint32 honorPoints, arenaPoints;
+    uint32_t honorPoints, arenaPoints;
     this->fillRandomBattlegroundReward(wonBattleground, honorPoints, arenaPoints);
     this->addHonor(honorPoints, false);
     this->addArenaPoints(arenaPoints, false);
@@ -7323,7 +7323,7 @@ void Player::addQuestKill(uint32_t questId, uint8_t reqId, uint32_t delay)
 
     if (delay)
     {
-        sEventMgr.AddEvent(this, &Player::addQuestKill, questId, reqId, static_cast<uint32>(0), EVENT_PLAYER_UPDATE, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(this, &Player::addQuestKill, questId, reqId, static_cast<uint32_t>(0), EVENT_PLAYER_UPDATE, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         return;
     }
 
@@ -8874,7 +8874,7 @@ void Player::startTaxiPath(TaxiPath* path, uint32_t modelid, uint32_t start_node
     setOnTaxi(true);
     m_taxiRideTime = Util::getMSTime();
 
-    //uint32 traveltime = uint32(path->getLength() * TAXI_TRAVEL_SPEED); // 36.7407
+    //uint32_t traveltime = uint32_t(path->getLength() * TAXI_TRAVEL_SPEED); // 36.7407
     float traveldist = 0;
 
     float lastx = 0, lasty = 0, lastz = 0;
@@ -9436,7 +9436,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
                 if (item.iRandomSuffix)
                 {
                     data << uint32_t(Item::generateRandomSuffixFactor(item.itemproto));
-                    data << uint32_t(-int32(item.iRandomSuffix->id));
+                    data << uint32_t(-int32_t(item.iRandomSuffix->id));
                 }
                 else if (item.iRandomProperty)
                 {
@@ -10551,7 +10551,7 @@ uint32_t Player::subtractRestXp(uint32_t amount)
 
 void Player::addCalculatedRestXp(uint32_t seconds)
 {
-    const uint32 nextLevelXp = getNextLevelXp();
+    const uint32_t nextLevelXp = getNextLevelXp();
 
     const float restXpRate = worldConfig.getFloatRate(RATE_RESTXP);
 
