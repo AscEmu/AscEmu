@@ -1343,7 +1343,7 @@ void AIInterface::handleAgentMelee()
         if (!infront) // set InFront
         {
             //prevent mob from rotating while stunned
-            if (!getUnit()->IsStunned())
+            if (!getUnit()->isStunned())
             {
                 getUnit()->setFacingToObject(getCurrentTarget());
                 infront = true;
@@ -1355,19 +1355,19 @@ void AIInterface::handleAgentMelee()
             if (getUnit()->isAttackReady(MELEE))
             {
                 getUnit()->resetAttackTimer(MELEE);
-                if (getUnit()->GetOnMeleeSpell() != 0)
+                if (getUnit()->getOnMeleeSpell() != 0)
                 {
-                    getUnit()->CastOnMeleeSpell();
+                    getUnit()->castOnMeleeSpell();
                 }
                 else
-                    getUnit()->Strike(getCurrentTarget(), MELEE, NULL, 0, 0, 0, false, false);
+                    getUnit()->strike(getCurrentTarget(), MELEE, NULL, 0, 0, 0, false, false);
             }
 
             // Offhand
             if (getUnit()->canDualWield() && getUnit()->isAttackReady(OFFHAND))
             {
                 getUnit()->resetAttackTimer(OFFHAND);
-                getUnit()->Strike(getCurrentTarget(), OFFHAND, NULL, 0, 0, 0, false, false);
+                getUnit()->strike(getCurrentTarget(), OFFHAND, NULL, 0, 0, 0, false, false);
             }
         }
     }
@@ -1390,7 +1390,7 @@ void AIInterface::handleAgentRanged()
             if (!infront) // set InFront
             {
                 //prevent mob from rotating while stunned
-                if (!m_Unit->IsStunned())
+                if (!m_Unit->isStunned())
                 {
                     getUnit()->setFacingToObject(getCurrentTarget());
                     infront = true;
