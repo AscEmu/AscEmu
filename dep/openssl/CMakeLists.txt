@@ -1,8 +1,6 @@
 # Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 
-set(OPENSSL_EXPECTED_VERSION 1.1.0)
-
-find_package(OpenSSL REQUIRED COMPONENTS Crypto SSL)
+find_package(OpenSSL 1.0 REQUIRED COMPONENTS Crypto SSL)
 
 add_library(openssl INTERFACE)
 
