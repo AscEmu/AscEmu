@@ -2376,15 +2376,6 @@ public:
         return 1;
     }
 
-    static int GetAIState(lua_State* L, Unit* ptr)
-    {
-        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
-            return 0;
-
-        lua_pushnumber(L, ptr->getAIInterface()->getAiState());
-        return 1;
-    }
-
     static int GetFloatValue(lua_State* /*L*/, Unit* /*ptr*/)
     {
         /*uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
@@ -3902,58 +3893,6 @@ public:
         else
             lua_pushboolean(L, 0);
         return 1;
-    }
-
-    static int SetAIState(lua_State* L, Unit* ptr)
-    {
-        if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
-        {
-            return 0;
-        }
-        uint32_t state = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        if (state)
-        {
-            switch (state)
-            {
-                case 0:
-                    ptr->getAIInterface()->setAiState(AI_STATE_IDLE);
-                    break;
-                case 1:
-                    ptr->getAIInterface()->setAiState(AI_STATE_ATTACKING);
-                    break;
-                case 2:
-                    ptr->getAIInterface()->setAiState(AI_STATE_CASTING);
-                    break;
-                case 3:
-                    ptr->getAIInterface()->setAiState(AI_STATE_FLEEING);
-                    break;
-                case 4:
-                    ptr->getAIInterface()->setAiState(AI_STATE_FOLLOWING);
-                    break;
-                case 5:
-                    ptr->getAIInterface()->setAiState(AI_STATE_EVADE);
-                    break;
-                case 6:
-                    ptr->getAIInterface()->setAiState(AI_STATE_MOVEWP);
-                    break;
-                case 7:
-                    ptr->getAIInterface()->setAiState(AI_STATE_FEAR);
-                    break;
-                case 8:
-                    ptr->getAIInterface()->setAiState(AI_STATE_WANDER);
-                    break;
-                case 9:
-                    ptr->getAIInterface()->setAiState(AI_STATE_STOPPED);
-                    break;
-                case 10:
-                    ptr->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-                    break;
-                case 11:
-                    ptr->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                    break;
-            }
-        }
-        return 0;
     }
 
     static int SetStealth(lua_State* /*L*/, Unit* ptr)

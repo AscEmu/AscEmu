@@ -170,10 +170,8 @@ public:
         {
             if (NearChest())
                 SwitchWeapons();
-            else if (getCreature()->getAIInterface()->isAiState(AI_STATE_SCRIPTMOVE) == false)
-            {
+            else
                 MoveToChest();
-            }
         }
 
         if (_isTimerFinished(mWaitAtChest))
@@ -203,14 +201,12 @@ public:
             getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
 
         stopMovement();
-        getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
         moveTo(1.100060f, -780.026367f, 9.811194f);
     }
 
     void MoveToPlayer()
     {
         getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
     }
 
     bool NearChest()
@@ -218,14 +214,11 @@ public:
         if (getCreature()->GetPositionX() == 1.100060f && getCreature()->GetPositionY() == -780.026367f)
             return true;
 
-        if (getCreature()->getAIInterface()->isAiState(AI_STATE_SCRIPTMOVE) == false)
-        {
-            float XDiff = getCreature()->GetPositionX() - 1.100060f;
-            float YDiff = getCreature()->GetPositionY() + 780.026367f;
-            float Distance = std::sqrt(XDiff * XDiff + YDiff * YDiff);
-            if (Distance <= 5.0f)
-                return true;
-        }
+        float XDiff = getCreature()->GetPositionX() - 1.100060f;
+        float YDiff = getCreature()->GetPositionY() + 780.026367f;
+        float Distance = std::sqrt(XDiff * XDiff + YDiff * YDiff);
+        if (Distance <= 5.0f)
+            return true;
 
         return false;
     }

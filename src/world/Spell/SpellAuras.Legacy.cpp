@@ -936,7 +936,7 @@ void Aura::SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply)
         m_target->setCharmTempVal(m_target->getFactionTemplate());
         m_target->setFaction(caster->getFactionTemplate());
         m_target->updateInRangeOppositeFactionSet();
-        m_target->getAIInterface()->Init(m_target, AI_SCRIPT_PET, caster);
+        m_target->getAIInterface()->Init(m_target, caster);
         m_target->setCharmedByGuid(caster->getGuid());
         caster->setCharmGuid(target->getGuid());
         //damn it, the other effects of enslave demon will agro him on us anyway :S
@@ -969,7 +969,7 @@ void Aura::SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply)
         m_target->setFaction(m_target->getCharmTempVal());
         m_target->getThreatManager().clearAllThreat();
         m_target->updateInRangeOppositeFactionSet();
-        m_target->getAIInterface()->Init(m_target, AI_SCRIPT_AGRO);
+        m_target->getAIInterface()->Init(m_target);
         m_target->setCharmedByGuid(0);
 
         if (caster->getSession() != nullptr)   // crashfix

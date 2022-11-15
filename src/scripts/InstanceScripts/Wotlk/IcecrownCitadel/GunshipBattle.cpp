@@ -61,7 +61,7 @@ CreatureAIScript* MuradinAI::Create(Creature* pCreature) { return new MuradinAI(
 
 void MuradinAI::AIUpdate(unsigned long time_passed)
 {
-    if (getCreature()->getAIInterface()->getAiState() == AI_STATE_CASTING)
+    if (_isCasting())
         return;
 
     scriptEvents.updateEvents(time_passed, getScriptPhase());
@@ -241,7 +241,7 @@ CreatureAIScript* SaurfangAI::Create(Creature* pCreature) { return new SaurfangA
 
 void SaurfangAI::AIUpdate(unsigned long time_passed)
 {
-    if (getCreature()->getAIInterface()->getAiState() == AI_STATE_CASTING)
+    if (_isCasting())
         return;
 
     scriptEvents.updateEvents(time_passed, getScriptPhase());

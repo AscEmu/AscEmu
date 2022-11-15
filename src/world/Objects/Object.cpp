@@ -3824,6 +3824,19 @@ uint32 Object::getServersideFaction()
     return m_factionTemplate->Faction;
 }
 
+bool Object::isNeutralToAll() const
+{
+    DBC::Structures::FactionTemplateEntry const* my_faction = m_factionTemplate;
+    if (!my_faction->Faction)
+        return true;
+
+    DBC::Structures::FactionEntry const* raw_faction = sFactionStore.LookupEntry(my_faction->Faction);
+    if (raw_faction && raw_faction->RepListId >= 0)
+        return false;
+
+    return my_faction->isNeutralToAll();
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 /// SpellLog packets just to keep the code cleaner and better to read
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -4552,6 +4565,14 @@ float Object::getDistance2d(float x, float y) const
 {
     float d = getExactDist2d(x, y) - getCombatReach();
     return d > 0.0f ? d : 0.0f;
+}
+
+float Object::getDistanceZ(Object const* obj) const
+{
+    float dz = std::fabs(GetPositionZ() - obj->GetPositionZ());
+    float sizefactor = getCombatReach() + obj->getCombatReach();
+    float dist = dz - sizefactor;
+    return (dist > 0 ? dist : 0);
 }
 
 Creature* Object::summonCreature(uint32_t entry, LocationVector position, CreatureSummonDespawnType despawnType, uint32_t duration, uint32_t spellId)

@@ -35,17 +35,7 @@ class Player;
 class WorldSession;
 class SpellCastTargets;
 class CreatureAIScript;
-
-enum AiScriptTypes
-{
-    AI_SCRIPT_LONER,
-    AI_SCRIPT_AGRO,
-    AI_SCRIPT_SOCIAL,
-    AI_SCRIPT_PET,
-    AI_SCRIPT_TOTEM,
-    AI_SCRIPT_GUARDIAN, //we got a master but he cannot control us, we follow and battle opposite factions
-    AI_SCRIPT_PASSIVE
-};
+class CreatureGroup;
 
 enum AI_SCRIPT_EVENT_TYPES
 {
@@ -120,23 +110,6 @@ enum AI_SpellTargetType
     TTYPE_SOURCE,
     TTYPE_CASTER,
     TTYPE_OWNER
-};
-
-enum AiState : uint8_t
-{
-    AI_STATE_IDLE = 0,
-    AI_STATE_ATTACKING = 1,
-    AI_STATE_CASTING = 2,
-    AI_STATE_FLEEING = 3,
-    AI_STATE_FOLLOWING = 4,
-    AI_STATE_EVADE = 5,
-    AI_STATE_MOVEWP = 6,
-    AI_STATE_FEAR = 7,
-    AI_STATE_UNFEARED = 8,
-    AI_STATE_WANDER = 9,
-    AI_STATE_STOPPED = 10,
-    AI_STATE_SCRIPTMOVE = 11,
-    AI_STATE_SCRIPTIDLE = 12,
 };
 
 enum AISpellTargetType
@@ -391,31 +364,17 @@ protected:
     bool m_AlreadySearchedAssistance;
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // AI Script functions
-private:
-    AiScriptTypes m_AiScriptType;
-
-public:
-    void setAiScriptType(AiScriptTypes ai_type) { m_AiScriptType = ai_type; }
-    AiScriptTypes getAiScriptType() const { return m_AiScriptType; }
-    bool isAiScriptType(AiScriptTypes ai_type) const { return ai_type == m_AiScriptType; }
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // AI State functions
-public:
-    void setAiState(AiState ai_state) { m_AiState = ai_state; }
-    void removeAiState(AiState ai_state) { m_AiState &= ~ai_state; }
-    uint32_t getAiState() const { return m_AiState; }
-    bool isAiState(AiState ai_state) const { return ai_state == m_AiState; }
-
-private:
-    uint32_t m_AiState;
-
-    //////////////////////////////////////////////////////////////////////////////////////////
     // Combat functions
 public:
     void justEnteredCombat(Unit* pUnit);
+    void engagementStart(Unit* target);
+    void atEngagementStart(Unit* target);
+
+    void engagementOver();
+    void atEngagementOver();
+
     bool isEngaged() { return m_isEngaged; }
+    bool isEngagedBy(Unit* who) const { return getUnit()->getThreatManager().canHaveThreatList() ? getUnit()->getThreatManager().isThreatenedBy(who) : getUnit()->getCombatHandler().isInPreCombatWithUnit(who); }
 
     bool isImmuneToNPC() { return m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT); }
     bool isImmuneToPC() { return m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT); }
@@ -471,8 +430,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc functions
-    void Init(Unit* un, AiScriptTypes at);
-    void Init(Unit* un, AiScriptTypes at, Unit* owner);   // used for pets
+    void Init(Unit* un, Unit* owner = nullptr);   // used for pets
     Unit* getUnit() const;
     Unit* getPetOwner() const;
     Unit* getCurrentTarget() const;
@@ -504,7 +462,6 @@ public:
     bool canUnitEvade(unsigned long time_passed);
     void enterEvadeMode();
     bool _enterEvadeMode();
-    void engagementOver();
 
     void initGroupThreat(Unit* target);
     void instanceCombatProgress(bool activate);
@@ -530,15 +487,36 @@ public:
     // Update
     void Update(unsigned long time_passed);
     void UpdateAgent(unsigned long time_passed);
-    //void UpdateAgent(unsigned long time_passed, std::vector<MySQLStructure::CreatureAIScripts>* eventId);
     void updateTargets(unsigned long time_passed);
-    void updateVictim(Unit* victim);
+
+    // Attacking
+    void attackStart(Unit* target);
+    void attackStop();
+    bool doInitialAttack(Unit* target, bool isMelee);
+
+    // Called Eacht AIUpdate Tick to select a new Target
+    bool updateTarget();
+    Unit* selectTarget();
+    bool isTargetAcceptable(Unit* target);
+    bool isTargetableForAttack(bool checkFakeDeath);
+    Unit* getTargetForPet();
 
     float calcAggroRange(Unit* target);
-    bool canOwnerAttackUnit(Unit* pUnit, bool ignoreFlying /*=false*/);        /// this is designed for internal use only
+
+    bool canStartAttack(Unit* target, bool force);
+    bool canOwnerAttackUnit(Unit* pUnit);
+    bool isValidTarget(Unit* target);       // used for findTarget
+    bool isValidAssistTarget(Unit* target); // used for Escorts
+    
     Unit* findTarget();
-    void updateCombat(uint32_t p_time);
+    void updateAgent(uint32_t p_time);
     void updateTotem(uint32_t p_time);
+
+    void handleAgentMelee();
+    void handleAgentRanged();
+    void handleAgentSpell(uint32_t spellId);
+    void handleAgentFlee(uint32_t p_time);
+    void handleAgentCallForHelp();
 
     Unit* m_Unit;
     Unit* m_PetOwner;
@@ -706,5 +684,4 @@ protected:
     SmallTimeTracker m_noTargetTimer;
     SmallTimeTracker m_cannotReachTimer;
     SmallTimeTracker m_updateTargetTimer;
-    SmallTimeTracker m_updateCreatureTargetTimer;
 };

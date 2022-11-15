@@ -470,7 +470,6 @@ public:
                 pCreature->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Splendid. I'm going to get the audience ready. Break a leg!");
                 pCreature->castSpell(pCreature, 32616, false);
                 pCreature->stopMoving();
-                pCreature->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 pCreature->GetScript()->DoAction(0);
                 pCreature->setNpcFlags(UNIT_NPC_FLAG_NONE);
                 pCreature->PlaySoundToSet(9357);
@@ -531,7 +530,6 @@ public:
 
         getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
 
         WayStartBBW[getCreature()->GetInstanceID()] = 1;
 
@@ -2600,14 +2598,12 @@ public:
             {
                 getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                 getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
-                getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                 m_currentWP = 1;
             }
             break;
             case 4: //ground point
             {
                 getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
-                getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                 Land();
                 m_currentWP = 4;
             }
@@ -2635,7 +2631,6 @@ public:
             getCreature()->setControlled(false, UNIT_STATE_ROOTED);
             getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
             getCreature()->stopMoving();
-            getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             setWaypointToMove(1, 2);
             m_phase++;
             return;
@@ -2695,7 +2690,6 @@ public:
 
             getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
             getCreature()->stopMoving();
-            getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             setWaypointToMove(1, 1);
             Fly();
             m_FlyPhaseTimer = 17;

@@ -357,7 +357,6 @@ public:
                     getCreature()->getMovementManager()->moveFollow(pDistiller, 10.0f, 2.0f);
 
                     getCreature()->stopMoving();
-                    getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                     getCreature()->getAIInterface()->moveTo(DistillerMoveTo[DistillerNumber].x, DistillerMoveTo[DistillerNumber].y, DistillerMoveTo[DistillerNumber].z);
 
                     if (getCreature()->GetDistance2dSq(pDistiller) <= 100.0f)
@@ -367,7 +366,6 @@ public:
                         pDistiller->setChannelSpellId(31543);
 
                         getCreature()->stopMoving();
-                        getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                         getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                         sendDBChatMessage(SAY_WARLORD_KALITRESH_02);
 

@@ -81,7 +81,7 @@ Unit::Unit() :
     std::fill_n(m_pctPowerRegenModifier, TOTAL_PLAYER_POWER_TYPES, 1.0f);
 
     m_summonInterface->Init(this);
-    m_aiInterface->Init(this, AI_SCRIPT_AGRO);
+    m_aiInterface->Init(this);
     getThreatManager().initialize();
 }
 
@@ -6729,7 +6729,7 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
             const auto summons = dynamic_cast<Player*>(victim)->getSummons();
             for (const auto& pet : summons)
             {
-                if (pet->GetPetState() != PET_STATE_PASSIVE)
+                if (pet->getAIInterface()->getReactState() != PET_STATE_PASSIVE)
                 {
                     // Start Combat
                     pet->getAIInterface()->onHostileAction(this);
@@ -7442,7 +7442,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
             const auto summons = dynamic_cast<Player*>(this)->getSummons();
             for (const auto& pet : summons)
             {
-                if (pet->GetPetState() != PET_STATE_PASSIVE)
+                if (pet->getAIInterface()->getReactState() != PET_STATE_PASSIVE)
                 {
                     // Start Combat
                     // todo: handle this in pet system

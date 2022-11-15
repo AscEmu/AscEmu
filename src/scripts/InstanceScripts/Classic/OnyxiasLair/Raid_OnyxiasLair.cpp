@@ -124,7 +124,6 @@ public:
                     getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
                     setAIAgent(AGENT_SPELL);
                     //_unit->m_pacified--;
-                    getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                     stopMovement();
                     setWaypointToMove(1, 0);
 
@@ -136,7 +135,6 @@ public:
                 {
                     getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
                     setAIAgent(AGENT_NULL);
-                    getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                     stopMovement();
                     setWaypointToMove(1, 0);
                     /*_unit->m_pacified--;
@@ -150,7 +148,6 @@ public:
                 {
                     getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                     getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
-                    getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                     stopMovement();
                     setWaypointToMove(1, 0);
 
@@ -199,7 +196,6 @@ public:
             getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
             //_unit->m_pacified++;
             getCreature()->stopMoving();
-            getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             setWaypointToMove(1, 1);
 
             return;
@@ -220,7 +216,6 @@ public:
             getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
             //_unit->m_pacified++;
             getCreature()->stopMoving();
-            getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             setWaypointToMove(1, 8);
 
             return;
@@ -244,7 +239,6 @@ public:
                 getCreature()->setControlled(false, UNIT_STATE_ROOTED);
                 getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
                 //_unit->m_pacified++;
-                getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 setWaypointToMove(1, m_currentWP);
                 m_fCastCount = 5;
             }
@@ -257,7 +251,6 @@ public:
                 getCreature()->setControlled(false, UNIT_STATE_ROOTED);
                 getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
                 //_unit->m_pacified++;
-                getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 setWaypointToMove(1, m_currentWP);
                 m_fCastCount = 5;
             }

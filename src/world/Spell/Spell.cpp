@@ -66,10 +66,9 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
     }
 
     //\ todo: handle this in creature AI...
-    if (u_caster != nullptr && u_caster->isCreature())
+    if (u_caster != nullptr && u_caster->isCreature() || u_caster->isMoving())
     {
-        const auto aiInterface = u_caster->getAIInterface();
-        if (aiInterface->isAiState(AI_STATE_FEAR) || aiInterface->isAiState(AI_STATE_WANDER))
+        if (u_caster->hasUnitStateFlag(UNIT_STATE_FLEEING))
         {
             u_caster->addGarbageSpell(this);
             return SPELL_FAILED_NOT_READY;

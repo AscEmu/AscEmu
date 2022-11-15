@@ -158,6 +158,25 @@ namespace Util
     template <class T>
     inline T square(T x) { return x * x; }
 
+    // Percentage calculation
+    template <class T, class U>
+    inline T calculatePct(T base, U pct)
+    {
+        return T(base * static_cast<float>(pct) / 100.0f);
+    }
+
+    template <class T, class U>
+    inline T addPct(T& base, U pct)
+    {
+        return base += calculatePct(base, pct);
+    }
+
+    template <class T, class U>
+    inline T applyPct(T& base, U pct)
+    {
+        return base = calculatePct(base, pct);
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Container helper functions
 

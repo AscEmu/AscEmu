@@ -2795,7 +2795,6 @@ public:
     explicit EyeBeamTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->addUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
         getCreature()->m_noRespawn = true;
 
         _setMeleeDisabled(false);
@@ -3251,7 +3250,6 @@ public:
                 stopMovement();
                 setWaypointToMove(1, 0);
                 RemoveAIUpdateEvent();
-                getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
 
                 getCreature()->getAIInterface()->onHostileAction(mIllidanAI->getCreature());
 
@@ -3314,7 +3312,6 @@ public:
             if (mIllidanAI->getCreature()->IsFlying())
             {
                 setCanEnterCombat(false);
-                getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
                 getCreature()->getAIInterface()->setCurrentTarget(nullptr);
                 getCreature()->getThreatManager().clearAllThreat();
                 getCreature()->getThreatManager().removeMeFromThreatLists();
@@ -3348,7 +3345,6 @@ public:
                     if (canEnterCombat())
                     {
                         setCanEnterCombat(false);
-                        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
                         getCreature()->getAIInterface()->setCurrentTarget(nullptr);
                         getCreature()->getThreatManager().clearAllThreat();
                         getCreature()->getThreatManager().removeMeFromThreatLists();
@@ -4019,7 +4015,6 @@ public:
             _applyAura(ILLIDAN_DEATH2);
 
             pMaiev->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-            pMaiev->getAIInterface()->setAiState(AI_STATE_IDLE);
             pMaiev->getThreatManager().clearAllThreat();
             pMaiev->getThreatManager().removeMeFromThreatLists();
         }
@@ -4163,7 +4158,6 @@ public:
                 if (pAkamaAI->mScenePart <= 2 && pAkamaAI->canEnterCombat())
                 {
                     pAkamaAI->setCanEnterCombat(false);
-                    pAkamaAI->getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
                     pAkamaAI->getCreature()->getAIInterface()->setCurrentTarget(nullptr);
                     pAkama->getThreatManager().clearAllThreat();
                     pAkama->getThreatManager().removeMeFromThreatLists();
@@ -4685,7 +4679,6 @@ public:
                 pMaievAI->getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);
                 pMaievAI->setCanEnterCombat(true);
                 pMaievAI->getCreature()->getAIInterface()->setCurrentAgent(AGENT_NULL);
-                pMaievAI->getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
                 pMaievAI->setRooted(false);
                 pMaievAI->getCreature()->getAIInterface()->onHostileAction(getCreature());
                 pMaievAI->getCreature()->setEmoteState(EMOTE_ONESHOT_READY1H);

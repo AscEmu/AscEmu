@@ -280,7 +280,6 @@ ColdflameAI::ColdflameAI(Creature* pCreature) : CreatureAIScript(pCreature)
     // Instance Script
     mInstance = getInstanceScript();
     getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
-    getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
     coldflameTriggerSpell = addAISpell(SPELL_COLDFLAME_SUMMON, 0.0f, TARGET_SOURCE);
     coldflameTriggerSpell->mIsTriggered = true;
 }
@@ -376,8 +375,6 @@ CreatureAIScript* BoneSpikeAI::Create(Creature* pCreature) { return new BoneSpik
 void BoneSpikeAI::OnSummon(Unit* summoner)
 {
     summon = summoner;
-    // Make our Creature in Combat otherwise on Died Script wont trigger
-    getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_AGRO);
 
     getCreature()->castSpell(summoner, SPELL_IMPALED);
     summoner->castSpell(getCreature(), SPELL_RIDE_VEHICLE_SE, true);

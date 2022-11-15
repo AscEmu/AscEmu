@@ -412,7 +412,6 @@ OverlordSaurfangEvent::OverlordSaurfangEvent(Creature* pCreature) : CreatureAISc
     mInstance = (IceCrownCitadelScript*)getInstanceScript();
     getCreature()->setAItoUse(true);
     getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
-    getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
 }
 
 CreatureAIScript* OverlordSaurfangEvent::Create(Creature* pCreature) { return new OverlordSaurfangEvent(pCreature); }
@@ -750,7 +749,6 @@ DeathbringerSaurfangAI::DeathbringerSaurfangAI(Creature* pCreature) : CreatureAI
     // Instance Script
     mInstance = (IceCrownCitadelScript*)getInstanceScript();
     getCreature()->setAItoUse(true);
-    getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     getCreature()->setPower(POWER_TYPE_ENERGY, 0);
 
     // disable Power regen
@@ -870,7 +868,7 @@ void DeathbringerSaurfangAI::Reset()
 
 void DeathbringerSaurfangAI::AIUpdate(unsigned long time_passed)
 {
-    if (getCreature()->getAIInterface()->getAiState() == AI_STATE_CASTING)
+    if (_isCasting())
         return;
 
     scriptEvents.updateEvents(time_passed, getScriptPhase());
@@ -898,7 +896,6 @@ void DeathbringerSaurfangAI::AIUpdate(unsigned long time_passed)
                 _castAISpell(GripOfAgonySpell);
                 setCanEnterCombat(true);
                 getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
-                getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_LONER);
                 break;
             }
             case EVENT_INTRO_HORDE_2_SE:
@@ -919,7 +916,6 @@ void DeathbringerSaurfangAI::AIUpdate(unsigned long time_passed)
                 _castAISpell(GripOfAgonySpell);
                 setCanEnterCombat(true);
                 getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
-                getCreature()->getAIInterface()->setAiScriptType(AI_SCRIPT_LONER);
                 break;
             }
             case EVENT_INTRO_FINISH_SE:
@@ -1140,7 +1136,6 @@ NpcSaurfangEventAI::NpcSaurfangEventAI(Creature* pCreature) : CreatureAIScript(p
 {
     // Instance Script
     mInstance = (IceCrownCitadelScript*)getInstanceScript();
-    getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     _index = 0;
 }
 

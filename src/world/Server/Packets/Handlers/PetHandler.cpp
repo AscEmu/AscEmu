@@ -107,10 +107,8 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
                         }
 
                         summonedPet->getAIInterface()->setPetOwner(_player);
-
                         summonedPet->getMovementManager()->remove(FOLLOW_MOTION_TYPE);
                         summonedPet->getAIInterface()->onHostileAction(unitTarget, nullptr, true);
-                        summonedPet->getAIInterface()->updateVictim(unitTarget);
                     }
                     break;
                     case PET_ACTION_FOLLOW:
@@ -192,7 +190,7 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
                     summonedPet->getAIInterface()->setPetOwner(_player);
                     summonedPet->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, summonedPet, 0);
                 }
-                summonedPet->SetPetState(srlPacket.misc);
+                summonedPet->getAIInterface()->setReactState(ReactStates(srlPacket.misc));
 
             }
             break;

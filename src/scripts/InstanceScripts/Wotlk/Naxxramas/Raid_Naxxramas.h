@@ -1298,7 +1298,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 };
@@ -1328,7 +1327,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 };
@@ -1362,7 +1360,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 };
@@ -1403,7 +1400,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
@@ -1439,7 +1435,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     }
 };
 
@@ -1466,7 +1461,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     }
 };
 
@@ -1489,7 +1483,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     }
 };
 
@@ -1516,7 +1509,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     }
 
     void OnTargetDied(Unit* /*mTarget*/) override
@@ -1573,7 +1565,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     }
 
     void OnDied(Unit* /*mKiller*/) override
@@ -1667,7 +1658,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     }
 
     void OnDied(Unit* /*mKiller*/) override
@@ -1757,7 +1747,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     }
 
     void OnDied(Unit* /*mKiller*/) override
@@ -1872,7 +1861,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     }
 
     void AIUpdate() override
@@ -1912,7 +1900,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     }
 };
 
@@ -1934,7 +1921,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     }
 
     void AIUpdate() override
@@ -1960,7 +1946,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     }
 };
 
@@ -2086,7 +2071,6 @@ public:
         getCreature()->setMoveHover(false);
 
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
 
         RemoveAIUpdateEvent();
     }
@@ -2126,7 +2110,6 @@ public:
 
                 getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
                 getCreature()->stopMoving();
-                getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 setWaypointToMove(1, 1);
 
                 return;
@@ -2155,7 +2138,6 @@ public:
             getCreature()->setControlled(true, UNIT_STATE_ROOTED);
             getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
             setAIAgent(AGENT_SPELL);
-            getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
             stopMovement();
             setWaypointToMove(1, 0);
         }
@@ -2282,7 +2264,6 @@ public:
                 getCreature()->setControlled(false, UNIT_STATE_ROOTED);
                 getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
                 setAIAgent(AGENT_NULL);
-                getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                 stopMovement();
                 setWaypointToMove(1, 0);
 
@@ -2600,7 +2581,6 @@ public:
         getCreature()->setChannelObjectGuid(0);
         getCreature()->setChannelSpellId(0);
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
         _setMeleeDisabled(false);
 
         getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
@@ -2959,7 +2939,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     }
 
     void AIUpdate() override
@@ -3061,7 +3040,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     }
 
     void AIUpdate() override
@@ -3154,7 +3132,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     }
 
     void AIUpdate() override
@@ -3254,7 +3231,6 @@ public:
     void OnCombatStop(Unit* /*mTarget*/) override
     {
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     }
 
     void AIUpdate() override

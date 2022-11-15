@@ -1196,7 +1196,7 @@ void ArcaneLightning::filterEffectTargets(Spell* spell, uint8_t /*effIndex*/, st
 
     for (const auto& itr : spell->getUnitCaster()->getInRangeObjectsSet())
     {
-        if (itr->isCreature() && itr->getEntry() != NPC_PRISON_SEAL && itr->ToCreature()->getAIInterface()->canOwnerAttackUnit(spell->getUnitCaster(), true))
+        if (itr->isCreature() && itr->getEntry() != NPC_PRISON_SEAL && itr->ToCreature()->getAIInterface()->canOwnerAttackUnit(spell->getUnitCaster()))
         {
             effectTargets->push_back(itr->getGuid());
         }

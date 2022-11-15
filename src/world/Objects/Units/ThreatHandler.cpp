@@ -242,10 +242,6 @@ void ThreatManager::updateVictim()
         sendThreatListToClients(newHighest);
         _needClientUpdate = false;  
     }
-
-    // Tell the AIInterface to chase our target because our Victim has changed
-    if (newHighest)
-        _owner->getAIInterface()->updateVictim(_currentVictimRef->getVictim());
 }
 
 ThreatReference const* ThreatManager::reselectVictim()

@@ -87,7 +87,6 @@ void LadyDeathwhisperAI::OnCombatStart(Unit* /*pTarget*/)
     if (mInstance->GetDifficulty() != InstanceDifficulty::RAID_10MAN_NORMAL)
         scriptEvents.addEvent(EVENT_DOMINATE_MIND_H, 27000);
 
-    getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
     _setMeleeDisabled(true);
     setRooted(true);
 
@@ -155,7 +154,7 @@ void LadyDeathwhisperAI::AIUpdate(unsigned long time_passed)
 
     scriptEvents.updateEvents(time_passed, getScriptPhase());
 
-    if (getCreature()->getAIInterface()->getAiState() == AI_STATE_CASTING)
+    if (_isCasting())
         return;
 
     while (uint32_t eventId = scriptEvents.getFinishedEvent())

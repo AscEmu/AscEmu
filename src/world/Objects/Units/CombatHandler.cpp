@@ -278,6 +278,9 @@ void CombatHandler::_enterCombat(bool initiatingCombat, Unit* enteringCombatWith
     if (getOwner()->isPlayer())
         sHookInterface.OnEnterCombat(dynamic_cast<Player*>(getOwner()), enteringCombatWith);
 
+    if (getOwner()->isCreature() && getOwner()->getAIInterface())
+        getOwner()->getAIInterface()->justEnteredCombat(enteringCombatWith);
+
     // If summons get in combat master will also get in combat
     // However if master gets in combat summons won't get in combat if kept on passive
     _notifyOwner(friendlyTarget, enteringCombatWith, initiatingCombat);

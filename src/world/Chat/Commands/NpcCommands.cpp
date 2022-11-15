@@ -657,8 +657,6 @@ bool ChatHandler::HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_s
     if (creature_target == nullptr)
         return true;
 
-    creature_target->getAIInterface()->setAiState(AI_STATE_IDLE);
-
     creature_target->getMovementManager()->moveTargetedHome();
 
     sGMLog.writefromsession(m_session, "returned NPC %s (%u)", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);

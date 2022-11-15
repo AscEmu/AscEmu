@@ -68,12 +68,15 @@ void SummonHandler::setFFAPvPFlags(bool set)
 
     for (uint8_t i = 0; i < MAX_SUMMON_SLOT; ++i)
     {
-        if (Creature* summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
+        if (m_SummonSlot[i])
         {
-            if (set)
-                summon->setFfaPvpFlag();
-            else
-                summon->removeFfaPvpFlag();
+            if (Creature* summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
+            {
+                if (set)
+                    summon->setFfaPvpFlag();
+                else
+                    summon->removeFfaPvpFlag();
+            }
         }
     }
 }
@@ -85,12 +88,15 @@ void SummonHandler::setSanctuaryFlags(bool set)
 
     for (uint8_t i = 0; i < MAX_SUMMON_SLOT; ++i)
     {
-        if (Creature* summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
+        if (m_SummonSlot[i])
         {
-            if (set)
-                summon->setSanctuaryFlag();
-            else
-                summon->removeSanctuaryFlag();
+            if (Creature* summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
+            {
+                if (set)
+                    summon->setSanctuaryFlag();
+                else
+                    summon->removeSanctuaryFlag();
+            }
         }
     }
 }

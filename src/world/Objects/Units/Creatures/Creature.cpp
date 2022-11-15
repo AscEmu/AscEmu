@@ -1097,7 +1097,7 @@ void Creature::EnslaveExpire()
             break;
     };
 
-    getAIInterface()->Init(this, AI_SCRIPT_AGRO);
+    getAIInterface()->Init(this);
 
     updateInRangeOppositeFactionSet();
     updateInRangeSameFactionSet();
@@ -1558,6 +1558,8 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         getAIInterface()->setCanCallForHelp(true);
     }
 
+    getAIInterface()->initializeReactState();
+
     // set if creature can shoot or not.
     if (creature_properties->CanRanged == 1)
         getAIInterface()->m_canRangedAttack = true;
@@ -1619,24 +1621,8 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     ////////////AI
     sEventMgr.AddEvent(this, &Creature::OnLoaded, 0, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-    if (!creature_properties->isTrainingDummy && !isVehicle())
-    {
-        // aaron02 disabled this, AIInterface should take Care of this
-        //getAIInterface()->setAllowedToEnterCombat(isattackable(spawn));
-    }
-    else
-    {
-        if (!isattackable(spawn))
-        {
-            // aaron02 disabled this, AIInterface should take Care of this
-            //getAIInterface()->setAllowedToEnterCombat(false);
-            getAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
-        }
-        else
-        {
-            getAIInterface()->setAllowedToEnterCombat(true);
-        }
-    }
+    if (isattackable(spawn))
+        getAIInterface()->setAllowedToEnterCombat(true);
 
     //////////////AI
 
@@ -1748,12 +1734,6 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     {
         getAIInterface()->setAllowedToEnterCombat(true);
     }
-    else
-    {
-        // aaron02 disabled this, AIInterface should take Care of this
-        //getAIInterface()->setAllowedToEnterCombat(false);
-        getAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
-    }
 
     setSpeedRate(TYPE_WALK, creature_properties->walk_speed, false);
     setSpeedRate(TYPE_RUN, creature_properties->run_speed, false);
@@ -1813,6 +1793,8 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     {
         getAIInterface()->setCanCallForHelp(true);
     }
+
+    getAIInterface()->initializeReactState();
 
     // set if creature can shoot or not.
     if (creature_properties->CanRanged == 1)
@@ -2575,7 +2557,8 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     Player* looter = nullptr;
     if (getTaggerGuid())
     {
-        looter = m_WorldMap->getUnit(getTaggerGuid())->ToPlayer();
+        if (Unit* tagger = m_WorldMap->getUnit(getTaggerGuid()))
+            looter = tagger->ToPlayer();
     }
     else if (pAttacker->isPlayer())
     {

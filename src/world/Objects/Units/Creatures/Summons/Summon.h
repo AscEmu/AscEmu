@@ -44,11 +44,13 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Override Unit functions
     void die(Unit* pAttacker, uint32 damage, uint32 spellid) override;
-
     Unit* getUnitOwner() override;          // override creature function
     Unit* getUnitOwnerOrSelf() override;    // override creature function
     Player* getPlayerOwner() override;      // override creature function
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Summoner Unit functions
+    Unit* getSummonerUnit();
     uint64_t getSummonerGuid() const { return m_summonerGuid; }
 
     // Summon Information from DBC, when this is nullptr its mostly an Scripted Summon
