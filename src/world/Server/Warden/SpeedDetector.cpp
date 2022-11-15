@@ -107,7 +107,7 @@ void SpeedCheatDetector::ReportCheater(Player* _player)
         return;
     }
 
-    float speed = (_player->flying_aura) ? _player->getSpeedRate(TYPE_FLY, true) : (_player->getSpeedRate(TYPE_SWIM, true) > _player->getSpeedRate(TYPE_RUN, true)) ? _player->getSpeedRate(TYPE_SWIM, true) : _player->getSpeedRate(TYPE_RUN, true);
+    float speed = (_player->m_flyingAura) ? _player->getSpeedRate(TYPE_FLY, true) : (_player->getSpeedRate(TYPE_SWIM, true) > _player->getSpeedRate(TYPE_RUN, true)) ? _player->getSpeedRate(TYPE_SWIM, true) : _player->getSpeedRate(TYPE_RUN, true);
     _player->broadcastMessage("Speedhack detected. In case server was wrong then make a report how to reproduce this case. You will be logged out in 7 seconds.");
     sCheatLog.writefromsession(_player->getSession(), "Caught %s speed hacking last occurrence with speed: %f instead of %f", _player->getName().c_str(), speed + bigest_hacked_speed_dif, speed);
     sEventMgr.AddEvent(_player, &Player::eventKickFromServer, EVENT_PLAYER_KICK, 7000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);

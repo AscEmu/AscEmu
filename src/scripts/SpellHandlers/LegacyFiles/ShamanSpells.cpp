@@ -88,9 +88,9 @@ bool Reincarnation(uint8_t /*effectIndex*/, Aura* a, bool apply)
     Player* p_target = static_cast<Player*>(u_target);
 
     if (apply)
-        p_target->bReincarnation = true;
+        p_target->m_reincarnation = true;
     else
-        p_target->bReincarnation = false;
+        p_target->m_reincarnation = false;
 
     return true;
 }

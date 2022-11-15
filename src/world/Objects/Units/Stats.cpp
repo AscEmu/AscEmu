@@ -701,8 +701,8 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
 
             if (pAttacker->isPlayer())
             {
-                min_damage = (min_damage + static_cast< Player* >(pAttacker)->IncreaseDamageByType[creatType]) * (1 + static_cast< Player* >(pAttacker)->IncreaseDamageByTypePCT[creatType]);
-                max_damage = (max_damage + static_cast< Player* >(pAttacker)->IncreaseDamageByType[creatType]) * (1 + static_cast< Player* >(pAttacker)->IncreaseDamageByTypePCT[creatType]);
+                min_damage = (min_damage + static_cast< Player* >(pAttacker)->m_increaseDamageByType[creatType]) * (1 + static_cast< Player* >(pAttacker)->m_increaseDamageByTypePct[creatType]);
+                max_damage = (max_damage + static_cast< Player* >(pAttacker)->m_increaseDamageByType[creatType]) * (1 + static_cast< Player* >(pAttacker)->m_increaseDamageByTypePct[creatType]);
             }
         }
 
@@ -765,8 +765,8 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
 
             if (pAttacker->isPlayer())
             {
-                min_damage = (min_damage + static_cast< Player* >(pAttacker)->IncreaseDamageByType[creatType]) * (1 + static_cast< Player* >(pAttacker)->IncreaseDamageByTypePCT[creatType]);
-                max_damage = (max_damage + static_cast< Player* >(pAttacker)->IncreaseDamageByType[creatType]) * (1 + static_cast< Player* >(pAttacker)->IncreaseDamageByTypePCT[creatType]);
+                min_damage = (min_damage + static_cast< Player* >(pAttacker)->m_increaseDamageByType[creatType]) * (1 + static_cast< Player* >(pAttacker)->m_increaseDamageByTypePct[creatType]);
+                max_damage = (max_damage + static_cast< Player* >(pAttacker)->m_increaseDamageByType[creatType]) * (1 + static_cast< Player* >(pAttacker)->m_increaseDamageByTypePct[creatType]);
             }
         }
 

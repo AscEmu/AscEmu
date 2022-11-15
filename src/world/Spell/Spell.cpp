@@ -86,11 +86,11 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
         }
 
         //\ todo: convert this hack to spell script
-        if (p_caster->cannibalize)
+        if (p_caster->m_cannibalize)
         {
             sEventMgr.RemoveEvents(p_caster, EVENT_CANNIBALIZE);
             p_caster->setEmoteState(EMOTE_ONESHOT_NONE);
-            p_caster->cannibalize = false;
+            p_caster->m_cannibalize = false;
         }
     }
 
@@ -1304,8 +1304,8 @@ int32_t Spell::calculateEffect(uint8_t effIndex)
 
     if (getPlayerCaster() != nullptr)
     {
-        const auto itr = getPlayerCaster()->mSpellOverrideMap.find(getSpellInfo()->getId());
-        if (itr != getPlayerCaster()->mSpellOverrideMap.end())
+        const auto itr = getPlayerCaster()->m_spellOverrideMap.find(getSpellInfo()->getId());
+        if (itr != getPlayerCaster()->m_spellOverrideMap.end())
         {
             for (auto scriptOverride = itr->second->begin(); scriptOverride != itr->second->end(); ++scriptOverride)
             {

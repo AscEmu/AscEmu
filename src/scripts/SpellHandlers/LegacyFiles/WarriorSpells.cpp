@@ -122,7 +122,7 @@ bool Charge(uint8_t effectIndex, Spell* s)
     uint32_t rage_to_gen = s->getSpellInfo()->getEffectBasePoints(effectIndex) + 1;
     if (s->getPlayerCaster())
     {
-        for (std::set<uint32_t>::iterator itr = s->getPlayerCaster()->mSpells.begin(); itr != s->getPlayerCaster()->mSpells.end(); ++itr)
+        for (std::set<uint32_t>::iterator itr = s->getPlayerCaster()->m_spells.begin(); itr != s->getPlayerCaster()->m_spells.end(); ++itr)
         {
             if (*itr == 12697)
             {
@@ -177,11 +177,11 @@ bool BerserkerRage(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
     if (apply)
     {
-        p_target->rageFromDamageTaken += 100;
+        p_target->m_rageFromDamageTaken += 100;
     }
     else
     {
-        p_target->rageFromDamageTaken -= 100;
+        p_target->m_rageFromDamageTaken -= 100;
     }
 
     SpellMechanic mechanics[4] = { MECHANIC_NONE };
@@ -229,9 +229,9 @@ bool TacticalAndStanceMastery(uint8_t effectIndex, Aura* a, bool apply)
         return true;
 
     if (apply)
-        p_target->m_retainedrage += (a->getEffectDamage(effectIndex) * 10);     //don't really know if value is all value or needs to be multiplied with 10
+        p_target->m_retaineDrage += (a->getEffectDamage(effectIndex) * 10);     //don't really know if value is all value or needs to be multiplied with 10
     else
-        p_target->m_retainedrage -= (a->getEffectDamage(effectIndex) * 10);
+        p_target->m_retaineDrage -= (a->getEffectDamage(effectIndex) * 10);
 
     return true;
 }

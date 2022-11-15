@@ -84,7 +84,7 @@ bool LifeTap(uint8_t effectIndex, Spell* s)
         return false;
 
     s->getPlayerCaster()->dealDamage(playerTarget, damage, s->getSpellInfo()->getId());
-    damage = damage * (100 + playerTarget->m_lifetapbonus) / 100;    // Apply improved life tap
+    damage = damage * (100 + playerTarget->m_lifeTapBonus) / 100;    // Apply improved life tap
     s->getPlayerCaster()->energize(playerTarget, s->getSpellInfo()->getId(), damage, POWER_TYPE_MANA);
 
     return true;
@@ -598,9 +598,9 @@ bool ImprovedLifeTap(uint8_t effectIndex, Aura* a, bool apply)
 
 
     if (apply)
-        p_target->m_lifetapbonus = amount;
+        p_target->m_lifeTapBonus = amount;
     else
-        p_target->m_lifetapbonus = 0;
+        p_target->m_lifeTapBonus = 0;
 
     return true;
 }

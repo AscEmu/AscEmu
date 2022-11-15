@@ -169,7 +169,7 @@ Player::Player(uint32_t guid) :
 
 Player::~Player()
 {
-    if (!ok_to_remove)
+    if (!m_isReadyToBeRemoved)
     {
         sLogger.failure("Player deleted from non-logout player!");
         sObjectMgr.RemovePlayer(this);
@@ -178,7 +178,7 @@ Player::~Player()
     if (m_session)
     {
         m_session->SetPlayer(nullptr);
-        if (!ok_to_remove)
+        if (!m_isReadyToBeRemoved)
             m_session->Disconnect();
     }
 
@@ -229,11 +229,11 @@ Player::~Player()
 
 void Player::resendSpeed()
 {
-    if (resend_speed)
+    if (m_resendSpeed)
     {
         setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
         setSpeedRate(TYPE_FLY, getSpeedRate(TYPE_FLY, true), true);
-        resend_speed = false;
+        m_resendSpeed = false;
     }
 }
 
@@ -1189,7 +1189,7 @@ void Player::handleKnockback(Object* object, float horizontal, float vertical)
 
     getSession()->SendPacket(SmsgMoveKnockBack(GetNewGUID(), Util::getMSTime(), cos, sin, horizontal, -vertical).serialise().get());
 
-    blinked = true;
+    m_blinked = true;
     speedCheatDelay(10000);
 }
 
@@ -1293,10 +1293,10 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
         m_underwaterState &= ~UNDERWATERSTATE_UNDERWATER;
 
     // can only fly in outlands or northrend (northrend requires cold weather flying)
-    if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
+    if (m_flyingAura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
     {
-        removeAllAurasById(flying_aura);
-        flying_aura = 0;
+        removeAllAurasById(m_flyingAura);
+        m_flyingAura = 0;
     }
 
 #ifdef FT_VEHICLES
@@ -1324,10 +1324,10 @@ void Player::safeTeleport(WorldMap* mgr, const LocationVector& vec)
         speedCheatDelay(10000);
 
         // can only fly in outlands or northrend (northrend requires cold weather flying)
-        if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
+        if (m_flyingAura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
         {
-            removeAllAurasById(flying_aura);
-            flying_aura = 0;
+            removeAllAurasById(m_flyingAura);
+            m_flyingAura = 0;
         }
 
         if (IsInWorld())
@@ -1890,7 +1890,7 @@ void Player::applyLevelInfo(uint32_t newLevel)
 {
     const auto previousLevel = getLevel();
 
-    if (!m_FirstLogin)
+    if (!m_firstLogin)
     {
         const auto previousLevelInfo = m_levelInfo;
 
@@ -1941,7 +1941,7 @@ void Player::applyLevelInfo(uint32_t newLevel)
 
     updateSkillMaximumValues();
 
-    if (newLevel > previousLevel || m_FirstLogin)
+    if (newLevel > previousLevel || m_firstLogin)
         setInitialTalentPoints();
     else if (newLevel != previousLevel)
         resetAllTalents();
@@ -1953,7 +1953,7 @@ void Player::applyLevelInfo(uint32_t newLevel)
     getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
 #endif
 
-    if (m_FirstLogin)
+    if (m_firstLogin)
         sHookInterface.OnFirstEnterWorld(this);
     else
         sHookInterface.OnPostLevelUp(this);
@@ -2081,7 +2081,7 @@ void Player::removePendingPlayer()
         m_session->m_loggingInPlayer = nullptr;
     }
 
-    ok_to_remove = true;
+    m_isReadyToBeRemoved = true;
     delete this;
 }
 
@@ -2776,7 +2776,7 @@ void Player::resetHolyPowerTimer()
 bool Player::loadSpells(QueryResult* result)
 {
     // Add initial spells on first login
-    if (m_FirstLogin)
+    if (m_firstLogin)
     {
         for (const auto& spellId : m_playerCreateInfo->spell_list)
             addSpell(spellId);
@@ -2824,7 +2824,7 @@ bool Player::loadSkills(QueryResult* result)
 bool Player::loadReputations(QueryResult* result)
 {
     // Add initial reputations on first login
-    if (m_FirstLogin)
+    if (m_firstLogin)
     {
         initialiseReputation();
         return true;
@@ -3185,7 +3185,7 @@ void Player::clearGlobalCooldown()
 void Player::resetAllCooldowns()
 {
     // Clear spell cooldowns
-    for (const auto& spell : mSpells)
+    for (const auto& spell : m_spells)
         clearCooldownForSpell(spell);
 
     // Clear global cooldown
@@ -3512,7 +3512,7 @@ void Player::learnSkillSpells(uint16_t skillLine, uint16_t currentValue)
         // Add automatically acquired spells
         // Player is able to learn this spell; check if they already have it, or a higher rank (shouldn't, but just in case)
         auto learnThisSpell = true;
-        for (const auto& plrSpell : mSpells)
+        for (const auto& plrSpell : m_spells)
         {
             const auto oldSpell = sSpellMgr.getSpellInfo(plrSpell);
             // Very hacky way to check if spell is same but different rank
@@ -5373,45 +5373,45 @@ void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBroked
     if (itemProperties->FireRes)
     {
         if (apply)
-            FlatResistanceModifierPos[2] += itemProperties->FireRes;
+            m_flatResistanceModifierPos[2] += itemProperties->FireRes;
         else
-            FlatResistanceModifierPos[2] -= itemProperties->FireRes;
+            m_flatResistanceModifierPos[2] -= itemProperties->FireRes;
         CalcResistance(2);
     }
 
     if (itemProperties->NatureRes)
     {
         if (apply)
-            FlatResistanceModifierPos[3] += itemProperties->NatureRes;
+            m_flatResistanceModifierPos[3] += itemProperties->NatureRes;
         else
-            FlatResistanceModifierPos[3] -= itemProperties->NatureRes;
+            m_flatResistanceModifierPos[3] -= itemProperties->NatureRes;
         CalcResistance(3);
     }
 
     if (itemProperties->FrostRes)
     {
         if (apply)
-            FlatResistanceModifierPos[4] += itemProperties->FrostRes;
+            m_flatResistanceModifierPos[4] += itemProperties->FrostRes;
         else
-            FlatResistanceModifierPos[4] -= itemProperties->FrostRes;
+            m_flatResistanceModifierPos[4] -= itemProperties->FrostRes;
         CalcResistance(4);
     }
 
     if (itemProperties->ShadowRes)
     {
         if (apply)
-            FlatResistanceModifierPos[5] += itemProperties->ShadowRes;
+            m_flatResistanceModifierPos[5] += itemProperties->ShadowRes;
         else
-            FlatResistanceModifierPos[5] -= itemProperties->ShadowRes;
+            m_flatResistanceModifierPos[5] -= itemProperties->ShadowRes;
         CalcResistance(5);
     }
 
     if (itemProperties->ArcaneRes)
     {
         if (apply)
-            FlatResistanceModifierPos[6] += itemProperties->ArcaneRes;
+            m_flatResistanceModifierPos[6] += itemProperties->ArcaneRes;
         else
-            FlatResistanceModifierPos[6] -= itemProperties->ArcaneRes;
+            m_flatResistanceModifierPos[6] -= itemProperties->ArcaneRes;
         CalcResistance(6);
     }
 
@@ -5655,7 +5655,7 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
     {
         selfResSpellId = getSelfResurrectSpell();
 
-        if (selfResSpellId == 0 && bReincarnation)
+        if (selfResSpellId == 0 && m_reincarnation)
         {
             SpellInfo const* m_reincarnSpellInfo = sSpellMgr.getSpellInfo(20608);
             if (!hasSpellOnCooldown(m_reincarnSpellInfo))
@@ -7769,7 +7769,7 @@ bool Player::logOntoTransport()
 void Player::setLoginPosition()
 {
     bool startOnGMIsland = false;
-    if (m_session->HasGMPermissions() && m_FirstLogin && sWorld.settings.gm.isStartOnGmIslandEnabled)
+    if (m_session->HasGMPermissions() && m_firstLogin && sWorld.settings.gm.isStartOnGmIslandEnabled)
         startOnGMIsland = true;
 
     uint32_t mapId = 1;
@@ -7845,7 +7845,7 @@ void Player::setGuildAndGroupInfo()
 
 void Player::sendCinematicOnFirstLogin()
 {
-    if (m_FirstLogin && !worldConfig.player.skipCinematics)
+    if (m_firstLogin && !worldConfig.player.skipCinematics)
     {
 #if VERSION_STRING > TBC
         if (const auto charEntry = sChrClassesStore.LookupEntry(getClass()))
@@ -10746,7 +10746,7 @@ void Player::eventSummonPet(Pet* summonPet)
 {
     if (summonPet)
     {
-        for (auto spellId : mSpells)
+        for (auto spellId : m_spells)
         {
             if (const auto spellInfo = sSpellMgr.getSpellInfo(spellId))
             {
@@ -10958,7 +10958,7 @@ InstancePlayerBind* Player::bindToInstance(InstanceSaved* save, bool permanent, 
 
 void Player::bindToInstance()
 {
-    InstanceSaved* mapSave = sInstanceMgr.getInstanceSave(_pendingBindId);
+    InstanceSaved* mapSave = sInstanceMgr.getInstanceSave(m_pendingBindId);
     if (!mapSave)
         return;
 
@@ -10976,8 +10976,8 @@ void Player::bindToInstance()
 
 void Player::setPendingBind(uint32_t instanceId, uint32_t bindTimer)
 {
-    _pendingBindId = instanceId;
-    _pendingBindTimer = bindTimer;
+    m_pendingBindId = instanceId;
+    m_pendingBindTimer = bindTimer;
 }
 
 void Player::sendRaidInfo()
@@ -11155,33 +11155,33 @@ void Player::loadInstanceTimeRestrictions()
     do
     {
         Field* fields = result->Fetch();
-        _instanceResetTimes.insert(InstanceTimeMap::value_type(fields[0].GetUInt32(), fields[1].GetUInt64()));
+        m_instanceResetTimes.insert(InstanceTimeMap::value_type(fields[0].GetUInt32(), fields[1].GetUInt64()));
     } while (result->NextRow());
 }
 
 bool Player::checkInstanceCount(uint32_t instanceId) const
 {
     // Max Instances Per Hour is per Default 5 add these to Configs
-    if (_instanceResetTimes.size() < 5)
+    if (m_instanceResetTimes.size() < 5)
         return true;
 
-    return _instanceResetTimes.find(instanceId) != _instanceResetTimes.end();
+    return m_instanceResetTimes.find(instanceId) != m_instanceResetTimes.end();
 }
 
 void Player::addInstanceEnterTime(uint32_t instanceId, time_t enterTime)
 {
-    if (_instanceResetTimes.find(instanceId) == _instanceResetTimes.end())
-        _instanceResetTimes.insert(InstanceTimeMap::value_type(instanceId, enterTime + HOUR));
+    if (m_instanceResetTimes.find(instanceId) == m_instanceResetTimes.end())
+        m_instanceResetTimes.insert(InstanceTimeMap::value_type(instanceId, enterTime + HOUR));
 }
 
 void Player::saveInstanceTimeRestrictions()
 {
-    if (_instanceResetTimes.empty())
+    if (m_instanceResetTimes.empty())
         return;
 
     CharacterDatabase.Execute("DELETE FROM account_instance_times WHERE accountId = %u", getSession()->GetAccountId());
 
-    for (InstanceTimeMap::const_iterator itr = _instanceResetTimes.begin(); itr != _instanceResetTimes.end(); ++itr)
+    for (InstanceTimeMap::const_iterator itr = m_instanceResetTimes.begin(); itr != m_instanceResetTimes.end(); ++itr)
     {
         CharacterDatabase.Execute("INSERT INTO account_instance_times (accountId, instanceId, releaseTime) VALUES (%u, %u, %u)", getSession()->GetAccountId(), itr->first, itr->second);
     }

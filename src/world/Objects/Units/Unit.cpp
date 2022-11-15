@@ -2707,7 +2707,7 @@ void Unit::updateSpeed()
 
     if (isPlayer() && dynamic_cast<Player*>(this)->m_changingMaps)
     {
-        dynamic_cast<Player*>(this)->resend_speed = true;
+        dynamic_cast<Player*>(this)->m_resendSpeed = true;
     }
     else
     {
@@ -3841,7 +3841,7 @@ float_t Unit::getCriticalChanceForDamageSpell(Spell* spell, Aura* aura, Unit* ta
 
         //\todo Zyres: is tis relly the way this should work?
         if (isPlayer() && (target->m_rootCounter - target->m_stunned))
-            critChance += static_cast<float_t>(dynamic_cast<Player const*>(this)->m_RootedCritChanceBonus);
+            critChance += static_cast<float_t>(dynamic_cast<Player const*>(this)->m_rootedCritChanceBonus);
 
         if (target->isPlayer())
             resilienceType = CR_CRIT_TAKEN_SPELL;
@@ -4787,12 +4787,12 @@ void Unit::addAuraStateAndAuras(AuraState state)
         {
             // Activate passive spells which require this aurastate
             const auto player = dynamic_cast<Player*>(this);
-            const auto& playerSpellMap = player->mSpells;
+            const auto& playerSpellMap = player->m_spells;
             for (const auto& spellId : playerSpellMap)
             {
                 // Skip deleted spells, i.e. spells with lower rank than the current rank
-                auto deletedSpell = player->mDeletedSpells.find(spellId);
-                if ((deletedSpell != player->mDeletedSpells.end()))
+                auto deletedSpell = player->m_deletedSpells.find(spellId);
+                if ((deletedSpell != player->m_deletedSpells.end()))
                     continue;
                 SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(spellId);
                 if (spellInfo == nullptr || !spellInfo->isPassive())
@@ -6974,11 +6974,11 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
     {
         const auto plr = dynamic_cast<Player*>(this);
         // todo: remove this hackfix...
-        if (plr->cannibalize)
+        if (plr->m_cannibalize)
         {
             sEventMgr.RemoveEvents(plr, EVENT_CANNIBALIZE);
             setEmoteState(EMOTE_ONESHOT_NONE);
-            plr->cannibalize = false;
+            plr->m_cannibalize = false;
         }
     }
 
@@ -7181,11 +7181,11 @@ void Unit::smsg_AttackStart(Unit* pVictim)
     if (isPlayer())
     {
         Player* player = dynamic_cast<Player*>(this);
-        if (player->cannibalize)
+        if (player->m_cannibalize)
         {
             sEventMgr.RemoveEvents(player, EVENT_CANNIBALIZE);
             player->setEmoteState(EMOTE_ONESHOT_NONE);
-            player->cannibalize = false;
+            player->m_cannibalize = false;
         }
     }
 }
@@ -10200,12 +10200,12 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         if (dmg.weaponType != RANGED)
         {
             crit += static_cast<Player*>(pVictim)->res_M_crit_get();
-            hitmodifier += static_cast<Player*>(pVictim)->m_resist_hit[MOD_MELEE];
+            hitmodifier += static_cast<Player*>(pVictim)->m_resistHit[MOD_MELEE];
         }
         else
         {
             crit += static_cast<Player*>(pVictim)->res_R_crit_get();                 //this could be ability but in that case we overwrite the value
-            hitmodifier += static_cast<Player*>(pVictim)->m_resist_hit[MOD_RANGED];
+            hitmodifier += static_cast<Player*>(pVictim)->m_resistHit[MOD_RANGED];
         }
     }
     crit += static_cast<float>(pVictim->m_attackerCritChanceMod[0]);
@@ -10317,7 +10317,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     hitchance += hitmodifier;
 
     //Hackfix for Surprise Attacks
-    if (this->isPlayer() && ability && static_cast<Player*>(this)->m_finishingmovesdodge && ability->custom_c_is_flags & SPELL_FLAG_IS_FINISHING_MOVE)
+    if (this->isPlayer() && ability && static_cast<Player*>(this)->m_finishingMovesDodge && ability->custom_c_is_flags & SPELL_FLAG_IS_FINISHING_MOVE)
         dodge = 0.0f;
 
     if (skip_hit_check)
@@ -10633,10 +10633,10 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
 
                     if (shield->getItemProperties()->InventoryType == INVTYPE_SHIELD)
                     {
-                        float block_multiplier = (100.0f + static_cast<Player*>(pVictim)->m_modblockabsorbvalue) / 100.0f;
+                        float block_multiplier = (100.0f + static_cast<Player*>(pVictim)->m_modBlockAbsorbValue) / 100.0f;
                         if (block_multiplier < 1.0f)block_multiplier = 1.0f;
 
-                        dmg.blockedDamage = float2int32((shield->getItemProperties()->Block + ((static_cast<Player*>(pVictim)->m_modblockvaluefromspells + static_cast<Player*>(pVictim)->getCombatRating(CR_BLOCK))) + ((pVictim->getStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
+                        dmg.blockedDamage = float2int32((shield->getItemProperties()->Block + ((static_cast<Player*>(pVictim)->m_modBlockValueFromSpells + static_cast<Player*>(pVictim)->getCombatRating(CR_BLOCK))) + ((pVictim->getStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
 
                         if (Util::checkChance(m_blockModPct))
                             dmg.blockedDamage *= 2;
@@ -10683,10 +10683,10 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 {
                     if (dmg.weaponType != RANGED)
                     {
-                        dmg.fullDamage += dmg.fullDamage * static_cast<Player*>(this)->m_modphyscritdmgPCT / 100;
+                        dmg.fullDamage += dmg.fullDamage * static_cast<Player*>(this)->m_modPhysCritDmgPct / 100;
                     }
                     if (!pVictim->isPlayer())
-                        dmg.fullDamage += float2int32(dmg.fullDamage * static_cast<Player*>(this)->IncreaseCricticalByTypePCT[static_cast<Creature*>(pVictim)->GetCreatureProperties()->Type]);
+                        dmg.fullDamage += float2int32(dmg.fullDamage * static_cast<Player*>(this)->m_increaseCricticalByTypePct[static_cast<Creature*>(pVictim)->GetCreatureProperties()->Type]);
                     //LogDebug("DEBUG: After IncreaseCricticalByTypePCT: %u" , dmg.full_damage);
                 }
 
@@ -10975,7 +10975,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     //Damage Dealing
 
     if (this->isPlayer() && ability)
-        static_cast<Player*>(this)->m_casted_amount[dmg.getSchoolTypeFromMask()] = dmg.realDamage + dmg.absorbedDamage;
+        static_cast<Player*>(this)->m_castedAmount[dmg.getSchoolTypeFromMask()] = dmg.realDamage + dmg.absorbedDamage;
 
     // Generate rage on damage done
     ///\ todo: this is inaccurate and almost directly copied here from few lines below
@@ -11018,7 +11018,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         }
 
         val = conv * dmg.fullDamage + f * s / 2.0f;
-        val *= (1 + (static_cast<Player*>(this)->rageFromDamageDealt / 100.0f));
+        val *= (1 + (static_cast<Player*>(this)->m_rageFromDamageDealt / 100.0f));
         const auto ragerate = worldConfig.getFloatRate(RATE_POWER2);
         val *= 10 * ragerate;
 

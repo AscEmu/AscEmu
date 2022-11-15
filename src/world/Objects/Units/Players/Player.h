@@ -1784,12 +1784,7 @@ private:
     Object* m_summonedObject = nullptr;
 
 public:
-    //MIT End
-    /////////////////////////////////////////////////////////////////////////////////////////
-    // After this point we have to deal with legacy code -.-
-    // Keep the code above this line clean and structured (encapsulating)
-    /////////////////////////////////////////////////////////////////////////////////////////
-    //AGPL Start
+
 
     protected:
 
@@ -1815,8 +1810,7 @@ public:
         // END COOLDOWNS
     public:
 
-        //! Okay to remove from world
-        bool ok_to_remove = false;
+        bool m_isReadyToBeRemoved = false;
 
         static void CharChange_Looks(uint64_t GUID, uint8_t gender, uint8_t skin, uint8_t face, uint8_t hairStyle, uint8_t hairColor, uint8_t facialHair);
         static void CharChange_Language(uint64_t GUID, uint8_t race);
@@ -1867,9 +1861,9 @@ public:
         //Spells variables
         StrikeSpellMap m_onStrikeSpells;
         StrikeSpellDmgMap m_onStrikeSpellDmg;
-        SpellOverrideMap mSpellOverrideMap;
-        SpellSet mSpells;
-        SpellSet mDeletedSpells;
+        SpellOverrideMap m_spellOverrideMap;
+        SpellSet m_spells;
+        SpellSet m_deletedSpells;
         SpellSet mShapeShiftSpells;
 
         void AddShapeShiftSpell(uint32_t id);
@@ -1887,7 +1881,7 @@ public:
         }
 
         void calculateDamage() override;
-        float offhand_dmg_mod = 0.5f;
+        float m_offhandDmgMod = 0.5f;
 
         int32_t GetDamageDoneMod(uint16_t school) override
         {
@@ -1912,10 +1906,10 @@ public:
 public:
 
         // Talents
-        void SetTalentHearthOfWildPCT(int value) { hearth_of_wild_pct = value; }
+        void SetTalentHearthOfWildPCT(int value) { m_hearthOfWildPct = value; }
         void EventTalentHearthOfWildChange(bool apply);
 
-        std::list<LoginAura> loginauras;
+        std::list<LoginAura> m_loginAuras;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Player loading and savings Serialize character to db
@@ -1933,7 +1927,7 @@ public:
         bool SaveReputations(bool NewCharacter, QueryBuffer *buf);
         bool SaveSkills(bool NewCharacter, QueryBuffer* buf);
 
-        bool m_FirstLogin = false;
+        bool m_firstLogin = false;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Talent Specs
@@ -1982,7 +1976,7 @@ public:
         //Note:ModSkillLine -> value+=amt;ModSkillMax -->value=amt; --weird
         float GetSkillUpChance(uint16_t id);
 
-        float SpellHasteRatingBonus = 1.0f;
+        float m_spellHasteRatingBonus = 1.0f;
         void UpdateAttackSpeed();
 
 #if VERSION_STRING >= TBC // support classic
@@ -1996,92 +1990,92 @@ public:
         uint32_t GetBlockDamageReduction();
         void ApplyFeralAttackPower(bool apply, Item* item = NULL);
 
-        float GetSpellCritFromSpell() { return m_spellcritfromspell; }
-        float GetHitFromSpell() { return m_hitfromspell; }
-        void SetSpellCritFromSpell(float value) { m_spellcritfromspell = value; }
-        void SetHitFromSpell(float value) { m_hitfromspell = value; }
+        float GetSpellCritFromSpell() { return m_spellCritFromSpell; }
+        float GetHitFromSpell() { return m_hitFromSpell; }
+        void SetSpellCritFromSpell(float value) { m_spellCritFromSpell = value; }
+        void SetHitFromSpell(float value) { m_hitFromSpell = value; }
 
-        uint32_t GetHealthFromSpell() { return m_healthfromspell; }
-        uint32_t GetManaFromSpell() { return m_manafromspell; }
-        void SetHealthFromSpell(uint32_t value) { m_healthfromspell = value;}
-        void SetManaFromSpell(uint32_t value) { m_manafromspell = value;}
+        uint32_t GetHealthFromSpell() { return m_healthFromSpell; }
+        uint32_t GetManaFromSpell() { return m_manaFromSpell; }
+        void SetHealthFromSpell(uint32_t value) { m_healthFromSpell = value;}
+        void SetManaFromSpell(uint32_t value) { m_manaFromSpell = value;}
 
         uint32_t m_nextSave;
 
-        int m_lifetapbonus = 0;         //warlock spell related
+        int m_lifeTapBonus = 0;         //warlock spell related
         bool m_requiresNoAmmo = false;      //warlock spell related
 
         // Misc
         void EventCannibalize(uint32_t amount);
 
-        uint32_t m_modblockabsorbvalue = 0;
-        uint32_t m_modblockvaluefromspells = 0;
+        uint32_t m_modBlockAbsorbValue = 0;
+        uint32_t m_modBlockValueFromSpells = 0;
         void SendInitialLogonPackets();
         void Reset_Spells();
 
         void CalcResistance(uint8_t type);
-        float res_M_crit_get() { return m_resist_critical[0]; }
-        void res_M_crit_set(float newvalue) { m_resist_critical[0] = newvalue; }
-        float res_R_crit_get() { return m_resist_critical[1]; }
-        void res_R_crit_set(float newvalue) { m_resist_critical[1] = newvalue; }
-        uint32_t FlatResistanceModifierPos[TOTAL_SPELL_SCHOOLS] = {0};
-        uint32_t FlatResistanceModifierNeg[TOTAL_SPELL_SCHOOLS] = {0};
-        uint32_t BaseResistanceModPctPos[TOTAL_SPELL_SCHOOLS] = {0};
-        uint32_t BaseResistanceModPctNeg[TOTAL_SPELL_SCHOOLS] = {0};
-        uint32_t ResistanceModPctPos[TOTAL_SPELL_SCHOOLS] = {0};
-        uint32_t ResistanceModPctNeg[TOTAL_SPELL_SCHOOLS] = {0};
-        float m_resist_critical[2] = {0};             // when we are a victim we can have talents to decrease chance for critical hit. This is a negative value and it's added to critchances
-        float m_resist_hit[2] = {0};                  // 0 = melee; 1= ranged;
-        int32_t m_resist_hit_spell[TOTAL_SPELL_SCHOOLS] = {0}; // spell resist per school
-        uint32_t m_modphyscritdmgPCT = 0;
-        uint32_t m_RootedCritChanceBonus = 0;         // Class Script Override: Shatter
-        uint32_t m_IncreaseDmgSnaredSlowed = 0;
+        float res_M_crit_get() { return m_resistCritical[0]; }
+        void res_M_crit_set(float newvalue) { m_resistCritical[0] = newvalue; }
+        float res_R_crit_get() { return m_resistCritical[1]; }
+        void res_R_crit_set(float newvalue) { m_resistCritical[1] = newvalue; }
+        uint32_t m_flatResistanceModifierPos[TOTAL_SPELL_SCHOOLS] = {0};
+        uint32_t m_flatResistanceModifierNeg[TOTAL_SPELL_SCHOOLS] = {0};
+        uint32_t m_baseResistanceModPctPos[TOTAL_SPELL_SCHOOLS] = {0};
+        uint32_t m_baseResistanceModPctNeg[TOTAL_SPELL_SCHOOLS] = {0};
+        uint32_t m_resistanceModPctPos[TOTAL_SPELL_SCHOOLS] = {0};
+        uint32_t m_resistanceModPctNeg[TOTAL_SPELL_SCHOOLS] = {0};
+        float m_resistCritical[2] = {0};             // when we are a victim we can have talents to decrease chance for critical hit. This is a negative value and it's added to critchances
+        float m_resistHit[2] = {0};                  // 0 = melee; 1= ranged;
+        int32_t m_resistHitSpell[TOTAL_SPELL_SCHOOLS] = {0}; // spell resist per school
+        uint32_t m_modPhysCritDmgPct = 0;
+        uint32_t m_rootedCritChanceBonus = 0;         // Class Script Override: Shatter
+        uint32_t m_increaseDmgSnaredSlowed = 0;
 
         // SPELL_AURA_MOD_MANA_REGEN_INTERRUPT
-        uint32_t m_ModInterrMRegenPCT = 0;
+        uint32_t m_modInterrManaRegenPct = 0;
         // SPELL_AURA_MOD_POWER_REGEN
-        int32_t m_ModInterrMRegen = 0;
+        int32_t m_modInterrManaRegen = 0;
         // SPELL_AURA_REGEN_MANA_STAT_PCT
         int32_t m_modManaRegenFromStat[STAT_COUNT] = {0};
         float m_RegenManaOnSpellResist = 0.0f;
-        uint32_t m_casted_amount[TOTAL_SPELL_SCHOOLS] = {0};   // Last casted spells amounts. Need for some spells. Like Ignite etc. DOesn't count HoTs and DoTs. Only directs
+        uint32_t m_castedAmount[TOTAL_SPELL_SCHOOLS] = {0};   // Last casted spells amounts. Need for some spells. Like Ignite etc. DOesn't count HoTs and DoTs. Only directs
 
-        uint32_t FlatStatModPos[5] = {0};
-        uint32_t FlatStatModNeg[5] = {0};
-        uint32_t StatModPctPos[5] = {0};
-        uint32_t StatModPctNeg[5] = {0};
-        uint32_t TotalStatModPctPos[5] = {0};
-        uint32_t TotalStatModPctNeg[5] = {0};
-        int32_t IncreaseDamageByType[12] = {0};         // mod dmg by creature type
-        float IncreaseDamageByTypePCT[12] = {0};
-        float IncreaseCricticalByTypePCT[12] = {0};
-        int32_t DetectedRange = 0;
-        float PctIgnoreRegenModifier = 0.0f;
-        uint32_t m_retainedrage = 0;                  // Warrior spell related
+        uint32_t m_flatStatModPos[5] = {0};
+        uint32_t m_flatStatModNeg[5] = {0};
+        uint32_t m_statModPctPos[5] = {0};
+        uint32_t m_statModPctNeg[5] = {0};
+        uint32_t m_totalStatModPctPos[5] = {0};
+        uint32_t m_totalStatModPctNeg[5] = {0};
+        int32_t m_increaseDamageByType[12] = {0};         // mod dmg by creature type
+        float m_increaseDamageByTypePct[12] = {0};
+        float m_increaseCricticalByTypePct[12] = {0};
+        int32_t m_detectedRange = 0;
+        float m_pctIgnoreRegenModifier = 0.0f;
+        uint32_t m_retaineDrage = 0;                  // Warrior spell related
 
         void CalcStat(uint8_t t);
         float CalcRating(PlayerCombatRating t);
         void RegenerateHealth(bool inCombat);
 
-        uint64_t misdirectionTarget = 0;              // Hunter spell related
+        uint64_t m_misdirectionTarget = 0;              // Hunter spell related
 
-        uint64_t GetMisdirectionTarget() { return misdirectionTarget; }
-        void SetMisdirectionTarget(uint64_t PlayerGUID) { misdirectionTarget = PlayerGUID; }
+        uint64_t GetMisdirectionTarget() { return m_misdirectionTarget; }
+        void SetMisdirectionTarget(uint64_t PlayerGUID) { m_misdirectionTarget = PlayerGUID; }
 
-        bool bReincarnation = false;                    // Shaman spell related
+        bool m_reincarnation = false;                    // Shaman spell related
 
-        std::map<uint32_t, WeaponModifier> damagedone;
-        std::map<uint32_t, WeaponModifier> tocritchance;
-        bool cannibalize = false;
-        uint8_t cannibalizeCount = 0;
-        int32_t rageFromDamageDealt = 0;
-        int32_t rageFromDamageTaken = 0;
+        std::map<uint32_t, WeaponModifier> m_damageDone;
+        std::map<uint32_t, WeaponModifier> m_toCritChance;
+        bool m_cannibalize = false;
+        uint8_t m_cannibalizeCount = 0;
+        int32_t m_rageFromDamageDealt = 0;
+        int32_t m_rageFromDamageTaken = 0;
 
         void AddItemsToWorld();
         void RemoveItemsFromWorld();
         void UpdateKnownCurrencies(uint32_t itemId, bool apply);
 
-        uint32_t TrackingSpell = 0;
+        uint32_t m_trackingSpell = 0;
         void _EventCharmAttack();
 
         void ClearCooldownsOnLine(uint32_t skill_line, uint32_t called_from);
@@ -2115,7 +2109,7 @@ public:
         void bindToInstance();
 
         void setPendingBind(uint32_t instanceId, uint32_t bindTimer);
-        bool hasPendingBind() const { return _pendingBindId > 0; }
+        bool hasPendingBind() const { return m_pendingBindId > 0; }
 
         void sendRaidInfo();
         void sendSavedInstances();
@@ -2130,18 +2124,18 @@ public:
         bool checkInstanceCount(uint32_t instanceId) const;
         void addInstanceEnterTime(uint32_t instanceId, time_t enterTime);
         void saveInstanceTimeRestrictions();
-        InstanceTimeMap _instanceResetTimes;
+        InstanceTimeMap m_instanceResetTimes;
 
     private:
-        uint32_t _pendingBindId = 0;
-        uint32_t _pendingBindTimer = 0;
+        uint32_t m_pendingBindId = 0;
+        uint32_t m_pendingBindTimer = 0;
 
     public:
     //movement/position
         void _Relocate(uint32_t mapid, const LocationVector& v, bool sendpending, bool force_new_world, uint32_t instance_id);
 
-        std::map<uint32_t, std::set<uint32_t> > SummonSpells;
-        std::map<uint32_t, std::map<SpellInfo const*, uint16_t>*> PetSpells;
+        std::map<uint32_t, std::set<uint32_t> > m_summonSpells;
+        std::map<uint32_t, std::map<SpellInfo const*, uint16_t>*> m_petSpells;
 
         void AddSummonSpell(uint32_t Entry, uint32_t SpellID);
         void RemoveSummonSpell(uint32_t Entry, uint32_t SpellID);
@@ -2151,22 +2145,22 @@ public:
 
         void CompleteLoading();
         
-        bool blinked = false;
+        bool m_blinked = false;
         bool m_beingPushed = false;
         
-        uint32_t flying_aura = 0;
+        uint32_t m_flyingAura = 0;
 
         bool m_changingMaps = true;
-        bool resend_speed = false; // set to true if m_changingMaps is true.
+        bool m_resendSpeed = false; // set to true if m_changingMaps is true.
 
-        int32_t m_rap_mod_pct = 0;
+        int32_t m_rapModPct = 0;
 
         bool m_deathVision = false;
     // paladin related
-        SpellInfo const* last_heal_spell = nullptr;
+        SpellInfo const* m_lastHealSpell = nullptr;
 
         Mailbox m_mailBox;
-        bool m_finishingmovesdodge = false;
+        bool m_finishingMovesDodge = false;
 
         bool IsAttacking() { return m_attacking; }
 
@@ -2191,25 +2185,25 @@ public:
         bool m_attacking = false;
 
         //combat mods
-        float m_blockfromspellPCT = 0.0f;
-        float m_critfromspell = 0.0f;
-        float m_spellcritfromspell = 0.0f;
-        float m_hitfromspell = 0.0f;
+        float m_blockFromSpellPct = 0.0f;
+        float m_critFromSpell = 0.0f;
+        float m_spellCritFromSpell = 0.0f;
+        float m_hitFromSpell = 0.0f;
         //stats mods
-        uint32_t m_healthfromspell = 0;
-        uint32_t m_manafromspell = 0;
-        uint32_t m_healthfromitems = 0;
-        uint32_t m_manafromitems = 0;
+        uint32_t m_healthFromSpell = 0;
+        uint32_t m_manaFromSpell = 0;
+        uint32_t m_healthFromItems = 0;
+        uint32_t m_manaFromItems = 0;
 
         // Raid
         uint8_t m_targetIcon = 0;
 
         uint32_t _fields[getSizeOfStructure(WoWPlayer)];
-        int hearth_of_wild_pct = 0;        // druid hearth of wild talent used on shapeshifting. We either know what is last talent level or memo on learn
+        int m_hearthOfWildPct = 0;        // druid hearth of wild talent used on shapeshifting. We either know what is last talent level or memo on learn
 
     public:
 
-        void addDeletedSpell(uint32_t id) { mDeletedSpells.insert(id); }
+        void addDeletedSpell(uint32_t id) { m_deletedSpells.insert(id); }
 
         std::map<uint32_t, uint32_t> m_forcedReactions;
 
@@ -2226,8 +2220,6 @@ public:
         void LoadFieldsFromString(const char* string, uint16_t firstField, uint32_t fieldsNum);
 
         // Avenging Wrath
-        void AvengingWrath() { mAvengingWrath = true; }
-        bool mAvengingWrath = true;
-
-        // AGPL End
+        void AvengingWrath() { m_avengingWrath = true; }
+        bool m_avengingWrath = true;
 };

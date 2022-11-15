@@ -358,7 +358,7 @@ bool Player::Create(CharCreate& charCreateContent)
 
     m_stableSlotCount = 0;
 
-    m_FirstLogin = true;
+    m_firstLogin = true;
 
     // add dbc items
     if (const auto charStartOutfitEntry = getStartOutfitByRaceClass(charCreateContent._race, charCreateContent._class, charCreateContent.gender))
@@ -563,13 +563,13 @@ void Player::Update(unsigned long time_passed)
     }
     
     // Instance Hourly Limit
-    if (!_instanceResetTimes.empty())
+    if (!m_instanceResetTimes.empty())
     {
         time_t now = Util::getTimeNow();
-        for (InstanceTimeMap::iterator itr = _instanceResetTimes.begin(); itr != _instanceResetTimes.end();)
+        for (InstanceTimeMap::iterator itr = m_instanceResetTimes.begin(); itr != m_instanceResetTimes.end();)
         {
             if (itr->second < now)
-                _instanceResetTimes.erase(itr++);
+                m_instanceResetTimes.erase(itr++);
             else
                 ++itr;
         }
@@ -578,16 +578,16 @@ void Player::Update(unsigned long time_passed)
     // Instance Binds
     if (hasPendingBind())
     {
-        if (_pendingBindTimer <= time_passed)
+        if (m_pendingBindTimer <= time_passed)
         {
             // Player left the instance
-            if (_pendingBindId == static_cast<uint32_t>(GetInstanceID()))
+            if (m_pendingBindId == static_cast<uint32_t>(GetInstanceID()))
                 bindToInstance();
             setPendingBind(0, 0);
         }
         else
         {
-            _pendingBindTimer -= time_passed;
+            m_pendingBindTimer -= time_passed;
         }
     }
 
@@ -693,11 +693,11 @@ void Player::_EventAttack(bool offhand)
         //pvp timeout reset
         if (pVictim->isPlayer())
         {
-            if (static_cast< Player* >(pVictim)->cannibalize)
+            if (static_cast< Player* >(pVictim)->m_cannibalize)
             {
                 sEventMgr.RemoveEvents(pVictim, EVENT_CANNIBALIZE);
                 pVictim->setEmoteState(EMOTE_ONESHOT_NONE);
-                static_cast< Player* >(pVictim)->cannibalize = false;
+                static_cast< Player* >(pVictim)->m_cannibalize = false;
             }
         }
 
@@ -837,7 +837,7 @@ void Player::smsg_InitialSpells()
 
     uint32_t mstime = Util::getMSTime();
 
-    for (auto sitr = mSpells.begin(); sitr != mSpells.end(); ++sitr)
+    for (auto sitr = m_spells.begin(); sitr != m_spells.end(); ++sitr)
     {
         smsgInitialSpells.addSpellIds(*sitr);
     }
@@ -957,7 +957,7 @@ void Player::_SavePetSpells(QueryBuffer* buf)
         buf->AddQuery("DELETE FROM playersummonspells WHERE ownerguid=%u", getGuidLow());
 
     // Save summon spells
-    for (std::map<uint32_t, std::set<uint32_t> >::iterator itr = SummonSpells.begin(); itr != SummonSpells.end(); ++itr)
+    for (std::map<uint32_t, std::set<uint32_t> >::iterator itr = m_summonSpells.begin(); itr != m_summonSpells.end(); ++itr)
     {
         for (std::set<uint32_t>::iterator it = itr->second.begin(); it != itr->second.end(); ++it)
         {
@@ -972,10 +972,10 @@ void Player::_SavePetSpells(QueryBuffer* buf)
 void Player::AddSummonSpell(uint32_t Entry, uint32_t SpellID)
 {
     SpellInfo const* sp = sSpellMgr.getSpellInfo(SpellID);
-    std::map<uint32_t, std::set<uint32_t> >::iterator itr = SummonSpells.find(Entry);
-    if (itr == SummonSpells.end())
+    std::map<uint32_t, std::set<uint32_t> >::iterator itr = m_summonSpells.find(Entry);
+    if (itr == m_summonSpells.end())
     {
-        SummonSpells[Entry].insert(SpellID);
+        m_summonSpells[Entry].insert(SpellID);
     }
     else
     {
@@ -1003,19 +1003,19 @@ void Player::AddSummonSpell(uint32_t Entry, uint32_t SpellID)
 
 void Player::RemoveSummonSpell(uint32_t Entry, uint32_t SpellID)
 {
-    std::map<uint32_t, std::set<uint32_t> >::iterator itr = SummonSpells.find(Entry);
-    if (itr != SummonSpells.end())
+    std::map<uint32_t, std::set<uint32_t> >::iterator itr = m_summonSpells.find(Entry);
+    if (itr != m_summonSpells.end())
     {
         itr->second.erase(SpellID);
         if (itr->second.size() == 0)
-            SummonSpells.erase(itr);
+            m_summonSpells.erase(itr);
     }
 }
 
 std::set<uint32_t>* Player::GetSummonSpells(uint32_t Entry)
 {
-    std::map<uint32_t, std::set<uint32_t> >::iterator itr = SummonSpells.find(Entry);
-    if (itr != SummonSpells.end())
+    std::map<uint32_t, std::set<uint32_t> >::iterator itr = m_summonSpells.find(Entry);
+    if (itr != m_summonSpells.end())
         return &itr->second;
 
     return nullptr;
@@ -1079,18 +1079,18 @@ void Player::_LoadPetSpells(QueryResult* result)
 
 void Player::addSpell(uint32_t spell_id, uint16_t fromSkill/* = 0*/)
 {
-    SpellSet::iterator iter = mSpells.find(spell_id);
-    if (iter != mSpells.end())
+    SpellSet::iterator iter = m_spells.find(spell_id);
+    if (iter != m_spells.end())
         return;
 
-    mSpells.insert(spell_id);
+    m_spells.insert(spell_id);
     if (IsInWorld())
         m_session->SendPacket(SmsgLearnedSpell(spell_id).serialise().get());
 
     // Check if we're a deleted spell
-    iter = mDeletedSpells.find(spell_id);
-    if (iter != mDeletedSpells.end())
-        mDeletedSpells.erase(iter);
+    iter = m_deletedSpells.find(spell_id);
+    if (iter != m_deletedSpells.end())
+        m_deletedSpells.erase(iter);
 
     SpellInfo const* spell = sSpellMgr.getSpellInfo(spell_id);
 
@@ -1279,7 +1279,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     ss << "'" << uint32_t(m_playedTime[0]) << " " << uint32_t(m_playedTime[1]) << " " << uint32_t(playedt) << "', ";
 
-    ss << uint32_t(m_deathState) << ", " << m_talentResetsCount << ", "  << m_FirstLogin << ", " << m_loginFlag << ", " << m_arenaPoints << ", " << (uint32_t)m_stableSlotCount << ", ";
+    ss << uint32_t(m_deathState) << ", " << m_talentResetsCount << ", "  << m_firstLogin << ", " << m_loginFlag << ", " << m_arenaPoints << ", " << (uint32_t)m_stableSlotCount << ", ";
 
     // instances
     if (in_arena)
@@ -1681,7 +1681,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     loadSkills(results[PlayerQuery::Skills].result);
 
-    if (m_FirstLogin || m_skills.empty())
+    if (m_firstLogin || m_skills.empty())
     {
         /* no skills - reset to defaults */
         learnInitialSkills();
@@ -1797,7 +1797,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     m_deathState = (DeathState)field[47].GetUInt32();
     m_talentResetsCount = field[48].GetUInt32();
-    m_FirstLogin = field[49].GetBool();
+    m_firstLogin = field[49].GetBool();
     m_loginFlag = field[50].GetUInt32();
     m_arenaPoints = field[51].GetUInt32();
     if (m_arenaPoints > worldConfig.limit.maxArenaPoints)
@@ -1927,7 +1927,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
 #endif
 
-    if (m_FirstLogin)
+    if (m_firstLogin)
     {
         for (const auto itr : m_playerCreateInfo->actionbars)
             setActionButton(itr.button, itr.action, itr.type, itr.misc);
@@ -1952,7 +1952,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         std::getline(savedPlayerBuffsStream, auraCharges, ',');
         la.charges = atol(auraCharges.c_str());
 
-        loginauras.push_back(la);
+        m_loginAuras.push_back(la);
     }
 
     // Load saved finished quests
@@ -2443,10 +2443,10 @@ void Player::OnPushToWorld()
     }
 
     // can only fly in outlands or northrend (northrend requires cold weather flying)
-    if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
+    if (m_flyingAura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
     {
-        removeAllAurasById(flying_aura);
-        flying_aura = 0;
+        removeAllAurasById(m_flyingAura);
+        m_flyingAura = 0;
     }
 
     // send weather
@@ -2456,7 +2456,7 @@ void Player::OnPushToWorld()
     if (getPowerType() == POWER_TYPE_MANA)
         setPower(POWER_TYPE_MANA, (m_loadMana > getMaxPower(POWER_TYPE_MANA) ? getMaxPower(POWER_TYPE_MANA) : m_loadMana));
 
-    if (m_FirstLogin)
+    if (m_firstLogin)
     {
         if (class_ == DEATHKNIGHT)
             startlevel = static_cast<uint8_t>(std::max(55, worldConfig.player.playerStartingLevel));
@@ -2494,7 +2494,7 @@ void Player::OnPushToWorld()
             setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
             break;
         }
-        m_FirstLogin = false;
+        m_firstLogin = false;
 
         for (uint32_t spellId : m_playerCreateInfo->spell_cast_list)
             castSpell(this, spellId, true);
@@ -2751,14 +2751,14 @@ void Player::UpdateChances()
     float melee_bonus = 0;
     float ranged_bonus = 0;
 
-    if (tocritchance.size() > 0)    // Crashfix by Cebernic
+    if (m_toCritChance.size() > 0)    // Crashfix by Cebernic
     {
         Item* tItemMelee = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
         Item* tItemRanged = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
 
         //-1 = any weapon
 
-        for (std::map< uint32_t, WeaponModifier >::iterator itr = tocritchance.begin(); itr != tocritchance.end(); ++itr)
+        for (std::map< uint32_t, WeaponModifier >::iterator itr = m_toCritChance.begin(); itr != m_toCritChance.end(); ++itr)
         {
             if (itr->second.wclass == (uint32_t)-1 || (tItemMelee != nullptr && (1 << tItemMelee->getItemProperties()->SubClass & itr->second.subclass)))
                 melee_bonus += itr->second.value;
@@ -2924,7 +2924,7 @@ void Player::UpdateStats()
     }
 
     /* modifiers */
-    RAP += m_rap_mod_pct * getStat(STAT_INTELLECT) / 100;
+    RAP += m_rapModPct * getStat(STAT_INTELLECT) / 100;
 
     if (RAP < 0)
         RAP = 0;
@@ -2958,7 +2958,7 @@ void Player::UpdateStats()
 #endif
     if (stat_bonus < 0)
         stat_bonus = 0; // Avoid of having negative health
-    int32_t bonus = stat_bonus * 10 + m_healthfromspell + m_healthfromitems;
+    int32_t bonus = stat_bonus * 10 + m_healthFromSpell + m_healthFromItems;
 
     uint32_t res = hp + bonus + hpdelta;
     uint32_t oldmaxhp = getMaxHealth();
@@ -3006,7 +3006,7 @@ void Player::UpdateStats()
 #endif
         if (stat_bonus < 0)
             stat_bonus = 0; // Avoid of having negative mana
-        bonus = stat_bonus * 15 + m_manafromspell + m_manafromitems;
+        bonus = stat_bonus * 15 + m_manaFromSpell + m_manaFromItems;
 
         res = mana + bonus + manadelta;
         if (res < mana)
@@ -3036,23 +3036,23 @@ void Player::UpdateStats()
 
     // Spell haste rating
     float haste = 1.0f + CalcRating(CR_HASTE_SPELL) / 100.0f;
-    if (haste != SpellHasteRatingBonus)
+    if (haste != m_spellHasteRatingBonus)
     {
-        float value = getModCastSpeed() * SpellHasteRatingBonus / haste; // remove previous mod and apply current
+        float value = getModCastSpeed() * m_spellHasteRatingBonus / haste; // remove previous mod and apply current
 
         setModCastSpeed(value);
-        SpellHasteRatingBonus = haste;    // keep value for next run
+        m_spellHasteRatingBonus = haste;    // keep value for next run
     }
 
     // Shield Block
     Item* shield = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (shield != nullptr && shield->getItemProperties()->InventoryType == INVTYPE_SHIELD)
     {
-        float block_multiplier = (100.0f + m_modblockabsorbvalue) / 100.0f;
+        float block_multiplier = (100.0f + m_modBlockAbsorbValue) / 100.0f;
         if (block_multiplier < 1.0f)
             block_multiplier = 1.0f;
 
-        int32_t blockable_damage = float2int32((shield->getItemProperties()->Block + m_modblockvaluefromspells + getCombatRating(CR_BLOCK) + (str / 2.0f) - 1.0f) * block_multiplier);
+        int32_t blockable_damage = float2int32((shield->getItemProperties()->Block + m_modBlockValueFromSpells + getCombatRating(CR_BLOCK) + (str / 2.0f) - 1.0f) * block_multiplier);
 #if VERSION_STRING != Classic
         setShieldBlock(blockable_damage);
 #endif
@@ -3153,8 +3153,8 @@ void Player::EventCannibalize(uint32_t amount)
     if (getChannelSpellId() != 20577)
     {
         sEventMgr.RemoveEvents(this, EVENT_CANNIBALIZE);
-        cannibalize = false;
-        cannibalizeCount = 0;
+        m_cannibalize = false;
+        m_cannibalizeCount = 0;
         return;
     }
 
@@ -3166,8 +3166,8 @@ void Player::EventCannibalize(uint32_t amount)
     else
         setHealth(getMaxHealth());
 
-    cannibalizeCount++;
-    if (cannibalizeCount == 5)
+    m_cannibalizeCount++;
+    if (m_cannibalizeCount == 5)
         setEmoteState(EMOTE_ONESHOT_NONE);
 
     sendPeriodicAuraLog(GetNewGUID(), GetNewGUID(), sSpellMgr.getSpellInfo(20577), amt, 0, 0, 0, SPELL_AURA_PERIODIC_HEAL_PCT, false);
@@ -3175,28 +3175,28 @@ void Player::EventCannibalize(uint32_t amount)
 
 bool Player::HasSpell(uint32_t spell)
 {
-    return mSpells.find(spell) != mSpells.end();
+    return m_spells.find(spell) != m_spells.end();
 }
 
 bool Player::HasDeletedSpell(uint32_t spell)
 {
-    return (mDeletedSpells.count(spell) > 0);
+    return (m_deletedSpells.count(spell) > 0);
 }
 
 bool Player::removeSpell(uint32_t SpellID, bool MoveToDeleted, bool SupercededSpell, uint32_t SupercededSpellID)
 {
-    SpellSet::iterator iter = mSpells.find(SpellID);
-    if (iter != mSpells.end())
+    SpellSet::iterator iter = m_spells.find(SpellID);
+    if (iter != m_spells.end())
     {
-        mSpells.erase(iter);
+        m_spells.erase(iter);
         removeAllAurasByIdForGuid(SpellID, getGuid());
     }
     else
     {
-        iter = mDeletedSpells.find(SpellID);
-        if (iter != mDeletedSpells.end())
+        iter = m_deletedSpells.find(SpellID);
+        if (iter != m_deletedSpells.end())
         {
-            mDeletedSpells.erase(iter);
+            m_deletedSpells.erase(iter);
         }
         else
         {
@@ -3205,7 +3205,7 @@ bool Player::removeSpell(uint32_t SpellID, bool MoveToDeleted, bool SupercededSp
     }
 
     if (MoveToDeleted)
-        mDeletedSpells.insert(SpellID);
+        m_deletedSpells.insert(SpellID);
 
     if (!IsInWorld())
         return true;
@@ -3235,11 +3235,11 @@ bool Player::removeSpell(uint32_t SpellID, bool MoveToDeleted, bool SupercededSp
 
 bool Player::removeDeletedSpell(uint32_t SpellID)
 {
-    SpellSet::iterator it = mDeletedSpells.find(SpellID);
-    if (it == mDeletedSpells.end())
+    SpellSet::iterator it = m_deletedSpells.find(SpellID);
+    if (it == m_deletedSpells.end())
         return false;
 
-    mDeletedSpells.erase(it);
+    m_deletedSpells.erase(it);
     return true;
 }
 
@@ -3249,7 +3249,7 @@ void Player::Reset_Spells()
     {
         std::list<uint32_t> spelllist;
 
-        for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+        for (SpellSet::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
             spelllist.push_back((*itr));
 
         for (std::list<uint32_t>::iterator itr = spelllist.begin(); itr != spelllist.end(); ++itr)
@@ -3262,7 +3262,7 @@ void Player::Reset_Spells()
         }
 
         // cebernic ResetAll ? don't forget DeletedSpells
-        mDeletedSpells.clear();
+        m_deletedSpells.clear();
     }
 }
 
@@ -3270,18 +3270,18 @@ void Player::CalcResistance(uint8_t type)
 {
     if (type < 7)
     {
-        int32_t pos = (m_baseResistance[type] * BaseResistanceModPctPos[type]) / 100;
-        int32_t neg = (m_baseResistance[type] * BaseResistanceModPctNeg[type]) / 100;
+        int32_t pos = (m_baseResistance[type] * m_baseResistanceModPctPos[type]) / 100;
+        int32_t neg = (m_baseResistance[type] * m_baseResistanceModPctNeg[type]) / 100;
 
-        pos += FlatResistanceModifierPos[type];
-        neg += FlatResistanceModifierNeg[type];
+        pos += m_flatResistanceModifierPos[type];
+        neg += m_flatResistanceModifierNeg[type];
         int32_t res = m_baseResistance[type] + pos - neg;
         if (type == 0)
             res += getStat(STAT_AGILITY) * 2; //fix armor from agi
         if (res < 0)
             res = 0;
-        pos += (res * ResistanceModPctPos[type]) / 100;
-        neg += (res * ResistanceModPctNeg[type]) / 100;
+        pos += (res * m_resistanceModPctPos[type]) / 100;
+        neg += (res * m_resistanceModPctNeg[type]) / 100;
         res = pos - neg + m_baseResistance[type];
         if (type == 0)
             res += getStat(STAT_AGILITY) * 2; //fix armor from agi
@@ -3323,14 +3323,14 @@ void Player::CalcStat(uint8_t type)
 {
     if (type < 5)
     {
-        int32_t pos = (int32_t)m_baseStats[type] * (int32_t)StatModPctPos[type] / 100 + (int32_t)FlatStatModPos[type];
-        int32_t neg = (int32_t)m_baseStats[type] * (int32_t)StatModPctNeg[type] / 100 + (int32_t)FlatStatModNeg[type];
+        int32_t pos = (int32_t)m_baseStats[type] * (int32_t)m_statModPctPos[type] / 100 + (int32_t)m_flatStatModPos[type];
+        int32_t neg = (int32_t)m_baseStats[type] * (int32_t)m_statModPctNeg[type] / 100 + (int32_t)m_flatStatModNeg[type];
         int32_t res = pos + (int32_t)m_baseStats[type] - neg;
         if (res <= 0)
             res = 1;
 
-        pos += (res * (int32_t)this->TotalStatModPctPos[type]) / 100;
-        neg += (res * (int32_t)this->TotalStatModPctNeg[type]) / 100;
+        pos += (res * (int32_t)this->m_totalStatModPctPos[type]) / 100;
+        neg += (res * (int32_t)this->m_totalStatModPctNeg[type]) / 100;
         res = pos + m_baseStats[type] - neg;
         if (res <= 0)
             res = 1;
@@ -3410,7 +3410,7 @@ void Player::RegenerateHealth(bool inCombat)
         amt = amt * 1.33f;
 
     if (inCombat)
-        amt *= PctIgnoreRegenModifier;
+        amt *= m_pctIgnoreRegenModifier;
 
     // While polymorphed health is regenerated rapidly
     // Exact value is yet unknown but it's roughly 10% of health per sec
@@ -3626,7 +3626,7 @@ void Player::RemoveItemsFromWorld()
 void Player::ClearCooldownsOnLine(uint32_t skill_line, uint32_t called_from)
 {
     // found an easier way.. loop spells, check skill line
-    for (SpellSet::const_iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+    for (SpellSet::const_iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
     {
         if ((*itr) == called_from)       // skip calling spell.. otherwise spammies! :D
             continue;
@@ -3702,7 +3702,7 @@ void Player::CompleteLoading()
         castSpell(this, sSpellMgr.getSpellInfo(2457), true);
     }
 
-    for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+    for (SpellSet::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
     {
         const auto spellInfo = sSpellMgr.getSpellInfo(*itr);
 
@@ -3725,7 +3725,7 @@ void Player::CompleteLoading()
         }
     }
 
-    for (auto& loginaura : loginauras)
+    for (auto& loginaura : m_loginAuras)
     {
         if (SpellInfo const* sp = sSpellMgr.getSpellInfo(loginaura.id))
         {
@@ -3843,13 +3843,13 @@ void Player::ModifyBonuses(uint32_t type, int32_t val, bool apply)
         case ITEM_MOD_MANA:
         {
             modMaxPower(POWER_TYPE_MANA, val);
-            m_manafromitems += val;
+            m_manaFromItems += val;
         }
         break;
         case ITEM_MOD_HEALTH:
         {
             modMaxHealth(val);
-            m_healthfromitems += val;
+            m_healthFromItems += val;
         }
         break;
         case ITEM_MOD_AGILITY:       // modify agility
@@ -3860,9 +3860,9 @@ void Player::ModifyBonuses(uint32_t type, int32_t val, bool apply)
         {
             uint8_t convert[] = { 1, 0, 3, 4, 2 };
             if (_val > 0)
-                FlatStatModPos[convert[type - 3]] += val;
+                m_flatStatModPos[convert[type - 3]] += val;
             else
-                FlatStatModNeg[convert[type - 3]] -= val;
+                m_flatStatModNeg[convert[type - 3]] -= val;
             CalcStat(convert[type - 3]);
         }
         break;
@@ -4051,7 +4051,7 @@ void Player::ModifyBonuses(uint32_t type, int32_t val, bool apply)
         break;
         case ITEM_MOD_MANA_REGENERATION:
         {
-            m_ModInterrMRegen += val;
+            m_modInterrManaRegen += val;
         }
         break;
         case ITEM_MOD_ARMOR_PENETRATION_RATING:
@@ -4138,7 +4138,7 @@ void Player::calculateDamage()
     if (IsInFeralForm())
     {
         float tmp = 1; // multiplicative damage modifier
-        for (std::map<uint32_t, WeaponModifier>::iterator i = damagedone.begin(); i != damagedone.end(); ++i)
+        for (std::map<uint32_t, WeaponModifier>::iterator i = m_damageDone.begin(); i != m_damageDone.end(); ++i)
         {
             if (i->second.wclass == (uint32_t)-1)  // applying only "any weapon" modifiers
                 tmp += i->second.value;
@@ -4221,7 +4221,7 @@ void Player::calculateDamage()
 
     float bonus = ap_bonus * speed;
     float tmp = 1;
-    for (std::map<uint32_t, WeaponModifier>::iterator i = damagedone.begin(); i != damagedone.end(); ++i)
+    for (std::map<uint32_t, WeaponModifier>::iterator i = m_damageDone.begin(); i != m_damageDone.end(); ++i)
     {
         if ((i->second.wclass == (uint32_t)-1) || //any weapon
             (it && ((1 << it->getItemProperties()->SubClass) & i->second.subclass)))
@@ -4266,7 +4266,7 @@ void Player::calculateDamage()
         bonus = ap_bonus * speed;
         
         tmp = 1;
-        for (std::map<uint32_t, WeaponModifier>::iterator i = damagedone.begin(); i != damagedone.end(); ++i)
+        for (std::map<uint32_t, WeaponModifier>::iterator i = m_damageDone.begin(); i != m_damageDone.end(); ++i)
         {
             if ((i->second.wclass == (uint32_t)-1) || //any weapon
                 (((1 << it->getItemProperties()->SubClass) & i->second.subclass))
@@ -4274,10 +4274,10 @@ void Player::calculateDamage()
                 tmp += i->second.value;
         }
 
-        r = (m_baseOffhandDamage[0] + delta + bonus) * offhand_dmg_mod;
+        r = (m_baseOffhandDamage[0] + delta + bonus) * m_offhandDmgMod;
         r *= tmp;
         setMinOffhandDamage(r > 0 ? r : 0);
-        r = (m_baseOffhandDamage[1] + delta + bonus) * offhand_dmg_mod;
+        r = (m_baseOffhandDamage[1] + delta + bonus) * m_offhandDmgMod;
         r *= tmp;
         setMaxOffhandDamage(r > 0 ? r : 0);
         if (m_wratings.size())
@@ -4297,7 +4297,7 @@ void Player::calculateDamage()
     if ((it = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)) != nullptr)
     {
         tmp = 1;
-        for (std::map<uint32_t, WeaponModifier>::iterator i = damagedone.begin(); i != damagedone.end(); ++i)
+        for (std::map<uint32_t, WeaponModifier>::iterator i = m_damageDone.begin(); i != m_damageDone.end(); ++i)
         {
             if ((i->second.wclass == (uint32_t)-1) || //any weapon
                 (((1 << it->getItemProperties()->SubClass) & i->second.subclass)))
@@ -4407,21 +4407,21 @@ float Player::GetSkillUpChance(uint16_t id)
 //wooot, crappy code rulez.....NOT
 void Player::EventTalentHearthOfWildChange(bool apply)
 {
-    if (!hearth_of_wild_pct)
+    if (!m_hearthOfWildPct)
         return;
 
     //druid hearth of the wild should add more features based on form
     int tval;
     if (apply)
-        tval = hearth_of_wild_pct;
-    else tval = -hearth_of_wild_pct;
+        tval = m_hearthOfWildPct;
+    else tval = -m_hearthOfWildPct;
 
     uint32_t SS = getShapeShiftForm();
 
     //increase stamina if :
     if (SS == FORM_BEAR || SS == FORM_DIREBEAR)
     {
-        TotalStatModPctPos[STAT_STAMINA] += tval;
+        m_totalStatModPctPos[STAT_STAMINA] += tval;
         CalcStat(STAT_STAMINA);
         UpdateStats();
 
@@ -4490,7 +4490,7 @@ void Player::UpdatePotionCooldown()
 
 bool Player::HasSpellWithAuraNameAndBasePoints(uint32_t auraname, uint32_t basepoints)
 {
-    for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+    for (SpellSet::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
     {
         SpellInfo const *sp = sSpellMgr.getSpellInfo(*itr);
 
@@ -4865,7 +4865,7 @@ void Player::SendPreventSchoolCast(uint32_t SpellSchool, uint32_t unTimeMs)
 {
     std::vector<SmsgSpellCooldownMap> spellMap;
 
-    for (SpellSet::iterator sitr = mSpells.begin(); sitr != mSpells.end(); ++sitr)
+    for (SpellSet::iterator sitr = m_spells.begin(); sitr != m_spells.end(); ++sitr)
     {
         uint32_t SpellId = (*sitr);
 
@@ -4930,11 +4930,11 @@ uint32_t Player::GetBlockDamageReduction()
     if (it == nullptr || it->getItemProperties()->InventoryType != INVTYPE_SHIELD)
         return 0;
 
-    float block_multiplier = (100.0f + this->m_modblockabsorbvalue) / 100.0f;
+    float block_multiplier = (100.0f + this->m_modBlockAbsorbValue) / 100.0f;
     if (block_multiplier < 1.0f)
         block_multiplier = 1.0f;
 
-    return float2int32((it->getItemProperties()->Block + this->m_modblockvaluefromspells + this->getCombatRating(CR_BLOCK) + this->getStat(STAT_STRENGTH) / 2.0f - 1.0f) * block_multiplier);
+    return float2int32((it->getItemProperties()->Block + this->m_modBlockValueFromSpells + this->getCombatRating(CR_BLOCK) + this->getStat(STAT_STRENGTH) / 2.0f - 1.0f) * block_multiplier);
 }
 
 void Player::ApplyFeralAttackPower(bool apply, Item* item)
@@ -5010,7 +5010,7 @@ bool Player::SaveSpells(bool NewCharacter, QueryBuffer* buf)
     else
         CharacterDatabase.ExecuteNA(ds.str().c_str());
 
-    for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+    for (SpellSet::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
     {
         uint32_t spellid = *itr;
 
@@ -5041,7 +5041,7 @@ bool Player::LoadDeletedSpells(QueryResult* result)
 
         SpellInfo const* sp = sSpellMgr.getSpellInfo(spellid);
         if (sp != nullptr)
-            mDeletedSpells.insert(spellid);
+            m_deletedSpells.insert(spellid);
 
     }
     while (result->NextRow());
@@ -5066,7 +5066,7 @@ bool Player::SaveDeletedSpells(bool NewCharacter, QueryBuffer* buf)
     else
         CharacterDatabase.ExecuteNA(ds.str().c_str());
 
-    for (SpellSet::iterator itr = mDeletedSpells.begin(); itr != mDeletedSpells.end(); ++itr)
+    for (SpellSet::iterator itr = m_deletedSpells.begin(); itr != m_deletedSpells.end(); ++itr)
     {
         uint32_t spellid = *itr;
 

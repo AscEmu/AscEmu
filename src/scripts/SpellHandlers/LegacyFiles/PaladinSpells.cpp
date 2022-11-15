@@ -301,7 +301,7 @@ bool Illumination(uint8_t /*effectIndex*/, Spell* s)
         {
             if (s->getPlayerCaster() == NULL)
                 return false;
-            SpellInfo const* sp = s->getPlayerCaster()->last_heal_spell ? s->getPlayerCaster()->last_heal_spell : s->getSpellInfo();
+            SpellInfo const* sp = s->getPlayerCaster()->m_lastHealSpell ? s->getPlayerCaster()->m_lastHealSpell : s->getSpellInfo();
             s->getPlayerCaster()->energize(s->getPlayerCaster(), 20272, 60 * s->getPlayerCaster()->getBaseMana() * sp->getManaCostPercentage() / 10000, POWER_TYPE_MANA);
         }
         break;

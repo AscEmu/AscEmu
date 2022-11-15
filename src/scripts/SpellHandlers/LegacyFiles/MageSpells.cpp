@@ -59,7 +59,7 @@ bool TormentOfTheWeak(uint8_t effectIndex, Aura* a, bool apply)
 
     if (m_target->isPlayer())
     {
-        static_cast<Player*>(m_target)->m_IncreaseDmgSnaredSlowed += ((apply) ? 1 : -1) * (uint32_t)(((float)a->getEffectDamage(effectIndex)) / 100);
+        static_cast<Player*>(m_target)->m_increaseDmgSnaredSlowed += ((apply) ? 1 : -1) * (uint32_t)(((float)a->getEffectDamage(effectIndex)) / 100);
     }
 
     return true;

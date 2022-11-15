@@ -2039,7 +2039,7 @@ float AIInterface::calcAggroRange(Unit* target)
     AggroRange += modDetectRange;
     if (target->isPlayer())
     {
-        AggroRange += static_cast<float_t>(dynamic_cast<Player*>(target)->DetectedRange);
+        AggroRange += static_cast<float_t>(dynamic_cast<Player*>(target)->m_detectedRange);
     }
 
     // Re-check if aggro range exceeds Minimum/Maximum caps

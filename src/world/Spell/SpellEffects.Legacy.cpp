@@ -1276,10 +1276,10 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                     Item* it = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                     if (it && it->getItemProperties()->InventoryType == INVTYPE_SHIELD)
                     {
-                        float block_multiplier = (100.0f + p_caster->m_modblockabsorbvalue) / 100.0f;
+                        float block_multiplier = (100.0f + p_caster->m_modBlockAbsorbValue) / 100.0f;
                         if (block_multiplier < 1.0f)block_multiplier = 1.0f;
 
-                        int32 blockable_damage = float2int32((it->getItemProperties()->Block + p_caster->m_modblockvaluefromspells + p_caster->getCombatRating(CR_BLOCK) + ((p_caster->getStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
+                        int32 blockable_damage = float2int32((it->getItemProperties()->Block + p_caster->m_modBlockValueFromSpells + p_caster->getCombatRating(CR_BLOCK) + ((p_caster->getStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
 
                         /*
                         3.2.0:
@@ -3234,9 +3234,9 @@ void Spell::SpellEffectEnergize(uint8_t effectIndex) // Energize
             modEnergy = damage;
             if (p_caster)
             {
-                if (p_caster->mSpells.find(12818) != p_caster->mSpells.end())
+                if (p_caster->m_spells.find(12818) != p_caster->m_spells.end())
                     modEnergy += 110; //60
-                if (p_caster->mSpells.find(12301) != p_caster->mSpells.end())
+                if (p_caster->m_spells.find(12301) != p_caster->m_spells.end())
                     modEnergy += 60; //30
             }
         }

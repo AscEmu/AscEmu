@@ -997,8 +997,8 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
         int32 min = 100;
         for (uint8 i = 0; i < TOTAL_SPELL_SCHOOLS; i++)
         {
-            if (getSpellInfo()->getSchoolMask() & (1 << i) && min > p_victim->m_resist_hit_spell[i])
-                min = p_victim->m_resist_hit_spell[i];
+            if (getSpellInfo()->getSchoolMask() & (1 << i) && min > p_victim->m_resistHitSpell[i])
+                min = p_victim->m_resistHitSpell[i];
         }
         resistchance += min;
     }
@@ -1502,7 +1502,7 @@ void Spell::HandleAddAura(uint64 guid)
         if (Target->isPlayer())
         {
             sEventMgr.AddEvent(static_cast<Player*>(Target), &Player::AvengingWrath, EVENT_PLAYER_AVENGING_WRATH, 30000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-            static_cast<Player*>(Target)->mAvengingWrath = false;
+            static_cast<Player*>(Target)->m_avengingWrath = false;
         }
     }
     else if (getSpellInfo()->getMechanicsType() == MECHANIC_HEALING && getSpellInfo()->getId() != 11196)  // Cast spell Recently Bandaged

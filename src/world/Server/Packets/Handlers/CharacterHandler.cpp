@@ -434,7 +434,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
 
     if (!newPlayer->Create(srlPacket.createStruct))
     {
-        newPlayer->ok_to_remove = true;
+        newPlayer->m_isReadyToBeRemoved = true;
         delete newPlayer;
 
         SendPacket(SmsgCharCreate(E_CHAR_CREATE_FAILED).serialise().get());
@@ -446,7 +446,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     {
         if ((newPlayer->isTeamAlliance() && _side == 1) || (newPlayer->isTeamHorde() && _side == 0))
         {
-            newPlayer->ok_to_remove = true;
+            newPlayer->m_isReadyToBeRemoved = true;
             delete newPlayer;
 
             SendPacket(SmsgCharCreate(E_CHAR_CREATE_PVP_TEAMS_VIOLATION).serialise().get());
@@ -495,7 +495,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
 
     sObjectMgr.AddPlayerInfo(playerInfo);
 
-    newPlayer->ok_to_remove = true;
+    newPlayer->m_isReadyToBeRemoved = true;
     delete newPlayer;
 
     SendPacket(SmsgCharCreate(E_CHAR_CREATE_SUCCESS).serialise().get());

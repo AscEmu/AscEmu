@@ -819,7 +819,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     // Mage talent - Torment the Weak
     if (isPlayer() && (victim->hasAuraWithMechanic(MECHANIC_ENSNARED) || victim->hasAuraWithMechanic(MECHANIC_DAZED)))
     {
-        const auto pct = static_cast<float_t>(static_cast<Player*>(this)->m_IncreaseDmgSnaredSlowed);
+        const auto pct = static_cast<float_t>(static_cast<Player*>(this)->m_increaseDmgSnaredSlowed);
         damage = damage * (1.0f + (pct / 100.0f));
     }
 
@@ -830,15 +830,15 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
         const auto cre = static_cast<Creature*>(victim);
         const auto type = cre->GetCreatureProperties()->Type;
 
-        damage += damage * plr->IncreaseDamageByTypePCT[type];
+        damage += damage * plr->m_increaseDamageByTypePct[type];
         if (isPeriodic)
         {
             if (aur != nullptr && aurEff != nullptr)
-                damage += static_cast<float_t>(plr->IncreaseDamageByType[type] / aur->getPeriodicTickCountForEffect(aurEff->getEffectIndex()));
+                damage += static_cast<float_t>(plr->m_increaseDamageByType[type] / aur->getPeriodicTickCountForEffect(aurEff->getEffectIndex()));
         }
         else
         {
-            damage += static_cast<float_t>(plr->IncreaseDamageByType[type]);
+            damage += static_cast<float_t>(plr->m_increaseDamageByType[type]);
         }
     }
 
@@ -1057,7 +1057,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     }
 
     if (isPlayer())
-        static_cast<Player*>(this)->m_casted_amount[school] = dmgInfo.realDamage;
+        static_cast<Player*>(this)->m_castedAmount[school] = dmgInfo.realDamage;
 
     // Cause push back to victim's spell casting if damage was not fully absorbed
     if (!(dmgInfo.realDamage == 0 && dmgInfo.absorbedDamage > 0) && !isPeriodic)
@@ -1397,8 +1397,8 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
     {
         const auto plr = static_cast<Player*>(this);
 
-        plr->last_heal_spell = spellInfo;
-        plr->m_casted_amount[school] = dmgInfo.realDamage;
+        plr->m_lastHealSpell = spellInfo;
+        plr->m_castedAmount[school] = dmgInfo.realDamage;
     }
 
     victim->removeAurasByHeal();

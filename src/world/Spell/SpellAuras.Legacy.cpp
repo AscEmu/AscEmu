@@ -776,11 +776,11 @@ void Aura::SpellAuraModBaseResistancePerc(AuraEffectModifier* aurEff, bool apply
             {
                 if (aurEff->getEffectDamage() > 0)
                 {
-                    static_cast< Player* >(m_target)->BaseResistanceModPctPos[x] += amt;
+                    static_cast< Player* >(m_target)->m_baseResistanceModPctPos[x] += amt;
                 }
                 else
                 {
-                    static_cast< Player* >(m_target)->BaseResistanceModPctNeg[x] -= amt;
+                    static_cast< Player* >(m_target)->m_baseResistanceModPctNeg[x] -= amt;
                 }
                 static_cast< Player* >(m_target)->CalcResistance(x);
 
@@ -1761,9 +1761,9 @@ void Aura::SpellAuraModResistance(AuraEffectModifier* aurEff, bool apply)
             if (Flag & (((uint32)1) << x))
             {
                 if (aurEff->getEffectDamage() > 0)
-                    static_cast< Player* >(m_target)->FlatResistanceModifierPos[x] += amt;
+                    static_cast< Player* >(m_target)->m_flatResistanceModifierPos[x] += amt;
                 else
-                    static_cast< Player* >(m_target)->FlatResistanceModifierNeg[x] -= amt;
+                    static_cast< Player* >(m_target)->m_flatResistanceModifierNeg[x] -= amt;
                 static_cast< Player* >(m_target)->CalcResistance(x);
             }
         }
@@ -2484,15 +2484,15 @@ void Aura::SpellAuraTrackCreatures(AuraEffectModifier* aurEff, bool apply)
     {
         if (apply)
         {
-            if (p_target->TrackingSpell != 0)
-                p_target->removeAllAurasById(p_target->TrackingSpell);
+            if (p_target->m_trackingSpell != 0)
+                p_target->removeAllAurasById(p_target->m_trackingSpell);
 
             p_target->setTrackCreature((uint32)1 << (aurEff->getEffectMiscValue() - 1));
-            p_target->TrackingSpell = getSpellId();
+            p_target->m_trackingSpell = getSpellId();
         }
         else
         {
-            p_target->TrackingSpell = 0;
+            p_target->m_trackingSpell = 0;
             p_target->setTrackCreature(0);
         }
     }
@@ -2504,15 +2504,15 @@ void Aura::SpellAuraTrackResources(AuraEffectModifier* aurEff, bool apply)
     {
         if (apply)
         {
-            if (p_target->TrackingSpell != 0)
-                p_target->removeAllAurasById(p_target->TrackingSpell);
+            if (p_target->m_trackingSpell != 0)
+                p_target->removeAllAurasById(p_target->m_trackingSpell);
 
             p_target->setTrackResource((uint32)1 << (aurEff->getEffectMiscValue() - 1));
-            p_target->TrackingSpell = getSpellId();
+            p_target->m_trackingSpell = getSpellId();
         }
         else
         {
-            p_target->TrackingSpell = 0;
+            p_target->m_trackingSpell = 0;
             p_target->setTrackResource(0);
         }
     }
@@ -2606,7 +2606,7 @@ void Aura::SpellAuraModCritPerc(AuraEffectModifier* aurEff, bool apply)
             md.value = float(aurEff->getEffectDamage());
             md.wclass = getSpellInfo()->getEquippedItemClass();
             md.subclass = getSpellInfo()->getEquippedItemSubClass();
-            p_target->tocritchance.insert(std::make_pair(getSpellId(), md));
+            p_target->m_toCritChance.insert(std::make_pair(getSpellId(), md));
         }
         else
         {
@@ -2620,7 +2620,7 @@ void Aura::SpellAuraModCritPerc(AuraEffectModifier* aurEff, bool apply)
             break;
             }
             }*/
-            p_target->tocritchance.erase(getSpellId());
+            p_target->m_toCritChance.erase(getSpellId());
         }
         p_target->UpdateChances();
     }
@@ -2726,14 +2726,14 @@ void Aura::SpellAuraModCratureDmgDone(AuraEffectModifier* aurEff, bool apply)
         {
             for (uint8 x = 0; x < 11; x++)
                 if (aurEff->getEffectMiscValue() & ((uint32)1 << x))
-                    p_target->IncreaseDamageByType[x + 1] += aurEff->getEffectDamage();
+                    p_target->m_increaseDamageByType[x + 1] += aurEff->getEffectDamage();
 
             aurEff->getEffectDamage() < 0 ? mPositive = false : mPositive = true;
         }
         else
             for (uint8 x = 0; x < 11; x++)
                 if (aurEff->getEffectMiscValue() & (((uint32)1) << x))
-                    p_target->IncreaseDamageByType[x + 1] -= aurEff->getEffectDamage();
+                    p_target->m_increaseDamageByType[x + 1] -= aurEff->getEffectDamage();
     }
 }
 
@@ -3148,7 +3148,7 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
             return;
 
         p_target->setMountSpellId(m_spellInfo->getId());
-        p_target->flying_aura = 0;
+        p_target->m_flyingAura = 0;
         m_target->setMountDisplayId(displayId);
         //m_target->addUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
 
@@ -3193,7 +3193,7 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
 
         p_target->setMountVehicleId(0);
         p_target->setMountSpellId(0);
-        p_target->flying_aura = 0;
+        p_target->m_flyingAura = 0;
         m_target->setMountDisplayId(0);
         //m_target->removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
 
@@ -3237,21 +3237,21 @@ void Aura::SpellAuraModDamagePercDone(AuraEffectModifier* aurEff, bool apply)
                 md.value = val;
                 md.wclass = getSpellInfo()->getEquippedItemClass();
                 md.subclass = getSpellInfo()->getEquippedItemSubClass();
-                p_target->damagedone.insert(std::make_pair(getSpellId(), md));
+                p_target->m_damageDone.insert(std::make_pair(getSpellId(), md));
             }
             else
             {
-                std::map< uint32, WeaponModifier >::iterator i = p_target->damagedone.begin();
+                std::map< uint32, WeaponModifier >::iterator i = p_target->m_damageDone.begin();
 
-                for (; i != p_target->damagedone.end(); ++i)
+                for (; i != p_target->m_damageDone.end(); ++i)
                 {
                     if ((*i).first == getSpellId())
                     {
-                        p_target->damagedone.erase(i);
+                        p_target->m_damageDone.erase(i);
                         break;
                     }
                 }
-                p_target->damagedone.erase(getSpellId());
+                p_target->m_damageDone.erase(getSpellId());
             }
         }
     }
@@ -3290,9 +3290,9 @@ void Aura::SpellAuraModPercStat(AuraEffectModifier* aurEff, bool apply)
             for (uint8 x = 0; x < 5; x++)
             {
                 if (aurEff->getEffectDamage() > 0)
-                    p_target->StatModPctPos[x] += val;
+                    p_target->m_statModPctPos[x] += val;
                 else
-                    p_target->StatModPctNeg[x] -= val;
+                    p_target->m_statModPctNeg[x] -= val;
 
                 p_target->CalcStat(x);
             }
@@ -3317,9 +3317,9 @@ void Aura::SpellAuraModPercStat(AuraEffectModifier* aurEff, bool apply)
             if (p_target != nullptr)
             {
                 if (aurEff->getEffectDamage() > 0)
-                    p_target->StatModPctPos[modValue] += val;
+                    p_target->m_statModPctPos[modValue] += val;
                 else
-                    p_target->StatModPctNeg[modValue] -= val;
+                    p_target->m_statModPctNeg[modValue] -= val;
 
                 p_target->CalcStat(modValue);
 
@@ -3689,11 +3689,11 @@ void Aura::SpellAuraModResistancePCT(AuraEffectModifier* aurEff, bool apply)
             {
                 if (aurEff->getEffectDamage() > 0)
                 {
-                    p_target->ResistanceModPctPos[x] += amt;
+                    p_target->m_resistanceModPctPos[x] += amt;
                 }
                 else
                 {
-                    p_target->ResistanceModPctNeg[x] -= amt;
+                    p_target->m_resistanceModPctNeg[x] -= amt;
                 }
                 p_target->CalcResistance(x);
 
@@ -3926,7 +3926,7 @@ void Aura::SpellAuraOverrideClassScripts(AuraEffectModifier* aurEff, bool apply)
                 int32 val = (apply) ? (aurEff->getEffectMiscValue() - 908) * 10 : -(aurEff->getEffectMiscValue() - 908) * 10;
                 if (aurEff->getEffectMiscValue() == 849)
                     val = (apply) ? 10 : -10;
-                p_target->m_RootedCritChanceBonus += val;
+                p_target->m_rootedCritChanceBonus += val;
             }
             break;
             // ?
@@ -3952,9 +3952,9 @@ void Aura::SpellAuraOverrideClassScripts(AuraEffectModifier* aurEff, bool apply)
 
                 std::list<SpellInfo const*>::iterator itrSE = itermap->second->begin();
 
-                SpellOverrideMap::iterator itr = plr->mSpellOverrideMap.find((*itrSE)->getId());
+                SpellOverrideMap::iterator itr = plr->m_spellOverrideMap.find((*itrSE)->getId());
 
-                if (itr != plr->mSpellOverrideMap.end())
+                if (itr != plr->m_spellOverrideMap.end())
                 {
                     ScriptOverrideList::iterator itrSO;
                     for (itrSO = itr->second->begin(); itrSO != itr->second->end(); ++itrSO)
@@ -3987,7 +3987,7 @@ void Aura::SpellAuraOverrideClassScripts(AuraEffectModifier* aurEff, bool apply)
 
                     for (; itrSE != itermap->second->end(); ++itrSE)
                     {
-                        plr->mSpellOverrideMap.insert(SpellOverrideMap::value_type((*itrSE)->getId(), lst));
+                        plr->m_spellOverrideMap.insert(SpellOverrideMap::value_type((*itrSE)->getId(), lst));
                     }
 
                     delete lst;
@@ -3996,8 +3996,8 @@ void Aura::SpellAuraOverrideClassScripts(AuraEffectModifier* aurEff, bool apply)
             else
             {
                 MySQLDataStore::SpellOverrideIdMap::iterator itermap = sMySQLStore._spellOverrideIdStore.find(aurEff->getEffectMiscValue());
-                SpellOverrideMap::iterator itr = plr->mSpellOverrideMap.begin(), itr2;
-                while (itr != plr->mSpellOverrideMap.end())
+                SpellOverrideMap::iterator itr = plr->m_spellOverrideMap.begin(), itr2;
+                while (itr != plr->m_spellOverrideMap.end())
                 {
                     std::list<SpellInfo const*>::iterator itrSE = itermap->second->begin();
                     for (; itrSE != itermap->second->end(); ++itrSE)
@@ -4005,7 +4005,7 @@ void Aura::SpellAuraOverrideClassScripts(AuraEffectModifier* aurEff, bool apply)
                         if (itr->first == (*itrSE)->getId())
                         {
                             itr2 = itr++;
-                            plr->mSpellOverrideMap.erase(itr2);
+                            plr->m_spellOverrideMap.erase(itr2);
                             break;
                         }
                     }
@@ -4080,9 +4080,9 @@ void Aura::SpellAuraIgnoreRegenInterrupt(AuraEffectModifier* aurEff, bool apply)
         return;
 
     if (apply)
-        p_target->PctIgnoreRegenModifier += ((float)(aurEff->getEffectDamage())) / 100;
+        p_target->m_pctIgnoreRegenModifier += ((float)(aurEff->getEffectDamage())) / 100;
     else
-        p_target->PctIgnoreRegenModifier -= ((float)(aurEff->getEffectDamage())) / 100;
+        p_target->m_pctIgnoreRegenModifier -= ((float)(aurEff->getEffectDamage())) / 100;
 }
 
 void Aura::SpellAuraModMechanicResistance(AuraEffectModifier* aurEff, bool apply)
@@ -4253,9 +4253,9 @@ void Aura::SpellAuraModManaRegInterrupt(AuraEffectModifier* aurEff, bool apply)
     if (p_target != nullptr)
     {
         if (apply)
-            p_target->m_ModInterrMRegenPCT += aurEff->getEffectDamage();
+            p_target->m_modInterrManaRegenPct += aurEff->getEffectDamage();
         else
-            p_target->m_ModInterrMRegenPCT -= aurEff->getEffectDamage();
+            p_target->m_modInterrManaRegenPct -= aurEff->getEffectDamage();
 
         p_target->UpdateStats();
     }
@@ -4279,9 +4279,9 @@ void Aura::SpellAuraModTotalStatPerc(AuraEffectModifier* aurEff, bool apply)
             for (uint8 x = 0; x < 5; x++)
             {
                 if (aurEff->getEffectDamage() > 0)
-                    p_target->TotalStatModPctPos[x] += val;
+                    p_target->m_totalStatModPctPos[x] += val;
                 else
-                    p_target->TotalStatModPctNeg[x] -= val;
+                    p_target->m_totalStatModPctNeg[x] -= val;
                 p_target->CalcStat(x);
             }
 
@@ -4328,9 +4328,9 @@ void Aura::SpellAuraModTotalStatPerc(AuraEffectModifier* aurEff, bool apply)
                 uint8_t modValue = static_cast<uint8_t>(aurEff->getEffectMiscValue());
 
                 if (aurEff->getEffectDamage() > 0)
-                    p_target->TotalStatModPctPos[modValue] += val;
+                    p_target->m_totalStatModPctPos[modValue] += val;
                 else
-                    p_target->TotalStatModPctNeg[modValue] -= val;
+                    p_target->m_totalStatModPctNeg[modValue] -= val;
 
                 p_target->CalcStat(modValue);
                 p_target->UpdateStats();
@@ -4483,11 +4483,11 @@ void Aura::SpellAuraModShieldBlockPCT(AuraEffectModifier* aurEff, bool apply)
     {
         if (apply)
         {
-            p_target->m_modblockabsorbvalue += (uint32)aurEff->getEffectDamage();
+            p_target->m_modBlockAbsorbValue += (uint32)aurEff->getEffectDamage();
         }
         else
         {
-            p_target->m_modblockabsorbvalue -= (uint32)aurEff->getEffectDamage();
+            p_target->m_modBlockAbsorbValue -= (uint32)aurEff->getEffectDamage();
         }
         p_target->UpdateStats();
     }
@@ -4509,11 +4509,11 @@ void Aura::SpellAuraModDetectedRange(AuraEffectModifier* aurEff, bool apply)
     if (apply)
     {
         mPositive = true;
-        p_target->DetectedRange += aurEff->getEffectDamage();
+        p_target->m_detectedRange += aurEff->getEffectDamage();
     }
     else
     {
-        p_target->DetectedRange -= aurEff->getEffectDamage();
+        p_target->m_detectedRange -= aurEff->getEffectDamage();
     }
 }
 
@@ -4633,11 +4633,11 @@ void Aura::SpellAuraModCritDmgPhysical(AuraEffectModifier* aurEff, bool apply)
     {
         if (apply)
         {
-            p_target->m_modphyscritdmgPCT += (uint32)aurEff->getEffectDamage();
+            p_target->m_modPhysCritDmgPct += (uint32)aurEff->getEffectDamage();
         }
         else
         {
-            p_target->m_modphyscritdmgPCT -= (uint32)aurEff->getEffectDamage();
+            p_target->m_modPhysCritDmgPct -= (uint32)aurEff->getEffectDamage();
         }
     }
 }
@@ -4699,7 +4699,7 @@ void Aura::SpellAuraIncreaseDamageTypePCT(AuraEffectModifier* aurEff, bool apply
         {
             for (uint32 x = 0; x < 11; x++)
                 if (aurEff->getEffectMiscValue() & (((uint32)1) << x))
-                    static_cast< Player* >(m_target)->IncreaseDamageByTypePCT[x + 1] += ((float)(aurEff->getEffectDamage())) / 100;
+                    static_cast< Player* >(m_target)->m_increaseDamageByTypePct[x + 1] += ((float)(aurEff->getEffectDamage())) / 100;
             if (aurEff->getEffectDamage() < 0)
                 mPositive = false;
             else
@@ -4710,7 +4710,7 @@ void Aura::SpellAuraIncreaseDamageTypePCT(AuraEffectModifier* aurEff, bool apply
             for (uint32 x = 0; x < 11; x++)
             {
                 if (aurEff->getEffectMiscValue() & (((uint32)1) << x))
-                    static_cast< Player* >(m_target)->IncreaseDamageByTypePCT[x + 1] -= ((float)(aurEff->getEffectDamage())) / 100;
+                    static_cast< Player* >(m_target)->m_increaseDamageByTypePct[x + 1] -= ((float)(aurEff->getEffectDamage())) / 100;
             }
         }
     }
@@ -4724,7 +4724,7 @@ void Aura::SpellAuraIncreaseCricticalTypePCT(AuraEffectModifier* aurEff, bool ap
         {
             for (uint32 x = 0; x < 11; x++)
                 if (aurEff->getEffectMiscValue() & (((uint32)1) << x))
-                    static_cast< Player* >(m_target)->IncreaseCricticalByTypePCT[x + 1] += ((float)(aurEff->getEffectDamage())) / 100;
+                    static_cast< Player* >(m_target)->m_increaseCricticalByTypePct[x + 1] += ((float)(aurEff->getEffectDamage())) / 100;
             if (aurEff->getEffectDamage() < 0)
                 mPositive = false;
             else
@@ -4735,7 +4735,7 @@ void Aura::SpellAuraIncreaseCricticalTypePCT(AuraEffectModifier* aurEff, bool ap
             for (uint32 x = 0; x < 11; x++)
             {
                 if (aurEff->getEffectMiscValue() & (((uint32)1) << x))
-                    static_cast< Player* >(m_target)->IncreaseCricticalByTypePCT[x + 1] -= ((float)(aurEff->getEffectDamage())) / 100;
+                    static_cast< Player* >(m_target)->m_increaseCricticalByTypePct[x + 1] -= ((float)(aurEff->getEffectDamage())) / 100;
             }
         }
     }
@@ -5007,10 +5007,10 @@ void Aura::SpellAuraModOffhandDamagePCT(AuraEffectModifier* aurEff, bool apply)
         if (apply)
         {
             mPositive = true;
-            p_target->offhand_dmg_mod *= (100 + aurEff->getEffectDamage()) / 100.0f;
+            p_target->m_offhandDmgMod *= (100 + aurEff->getEffectDamage()) / 100.0f;
         }
         else
-            p_target->offhand_dmg_mod /= (100 + aurEff->getEffectDamage()) / 100.0f;
+            p_target->m_offhandDmgMod /= (100 + aurEff->getEffectDamage()) / 100.0f;
 
         p_target->calculateDamage();
     }
@@ -5100,7 +5100,7 @@ void Aura::SpellAuraIncreaseArmorByPctInt(AuraEffectModifier* aurEff, bool apply
         {
             if (p_target != nullptr)
             {
-                p_target->FlatResistanceModifierPos[x] += amt;
+                p_target->m_flatResistanceModifierPos[x] += amt;
                 p_target->CalcResistance(x);
             }
             else if (m_target->isCreature())
@@ -5117,9 +5117,9 @@ void Aura::SpellAuraReduceAttackerMHitChance(AuraEffectModifier* aurEff, bool ap
     if (p_target == nullptr)
         return;
     if (apply)
-        p_target->m_resist_hit[MOD_MELEE] += aurEff->getEffectDamage();
+        p_target->m_resistHit[MOD_MELEE] += aurEff->getEffectDamage();
     else
-        p_target->m_resist_hit[MOD_MELEE] -= aurEff->getEffectDamage();
+        p_target->m_resistHit[MOD_MELEE] -= aurEff->getEffectDamage();
 }
 
 void Aura::SpellAuraReduceAttackerRHitChance(AuraEffectModifier* aurEff, bool apply)
@@ -5127,9 +5127,9 @@ void Aura::SpellAuraReduceAttackerRHitChance(AuraEffectModifier* aurEff, bool ap
     if (p_target == nullptr)
         return;
     if (apply)
-        p_target->m_resist_hit[MOD_RANGED] += aurEff->getEffectDamage();
+        p_target->m_resistHit[MOD_RANGED] += aurEff->getEffectDamage();
     else
-        p_target->m_resist_hit[MOD_RANGED] -= aurEff->getEffectDamage();
+        p_target->m_resistHit[MOD_RANGED] -= aurEff->getEffectDamage();
 }
 
 void Aura::SpellAuraReduceAttackerSHitChance(AuraEffectModifier* aurEff, bool apply)
@@ -5142,9 +5142,9 @@ void Aura::SpellAuraReduceAttackerSHitChance(AuraEffectModifier* aurEff, bool ap
         {
             // signs reversed intentionally
             if (apply)
-                p_target->m_resist_hit_spell[i] -= aurEff->getEffectDamage();
+                p_target->m_resistHitSpell[i] -= aurEff->getEffectDamage();
             else
-                p_target->m_resist_hit_spell[i] += aurEff->getEffectDamage();
+                p_target->m_resistHitSpell[i] += aurEff->getEffectDamage();
         }
     }
 }
@@ -5335,7 +5335,7 @@ void Aura::SpellAuraIncreaseRageFromDamageDealtPCT(AuraEffectModifier* aurEff, b
     if (!m_target->isPlayer())
         return;
 
-    static_cast< Player* >(m_target)->rageFromDamageDealt += (apply) ? aurEff->getEffectDamage() : -aurEff->getEffectDamage();
+    static_cast< Player* >(m_target)->m_rageFromDamageDealt += (apply) ? aurEff->getEffectDamage() : -aurEff->getEffectDamage();
 }
 
 int32 Aura::event_GetInstanceID()
@@ -5383,7 +5383,7 @@ void Aura::SpellAuraEnableFlight(AuraEffectModifier* aurEff, bool apply)
         m_target->updateSpeed();
         if (m_target->isPlayer())
         {
-            static_cast< Player* >(m_target)->flying_aura = m_spellInfo->getId();
+            static_cast< Player* >(m_target)->m_flyingAura = m_spellInfo->getId();
         }
     }
     else
@@ -5393,7 +5393,7 @@ void Aura::SpellAuraEnableFlight(AuraEffectModifier* aurEff, bool apply)
         m_target->updateSpeed();
         if (m_target->isPlayer())
         {
-            static_cast< Player* >(m_target)->flying_aura = 0;
+            static_cast< Player* >(m_target)->m_flyingAura = 0;
         }
     }
 }
@@ -5408,7 +5408,7 @@ void Aura::SpellAuraEnableFlightWithUnmountedSpeed(AuraEffectModifier* aurEff, b
         m_target->updateSpeed();
         if (m_target->isPlayer())
         {
-            static_cast< Player* >(m_target)->flying_aura = m_spellInfo->getId();
+            static_cast< Player* >(m_target)->m_flyingAura = m_spellInfo->getId();
         }
     }
     else
@@ -5418,7 +5418,7 @@ void Aura::SpellAuraEnableFlightWithUnmountedSpeed(AuraEffectModifier* aurEff, b
         m_target->updateSpeed();
         if (m_target->isPlayer())
         {
-            static_cast< Player* >(m_target)->flying_aura = 0;
+            static_cast< Player* >(m_target)->m_flyingAura = 0;
         }
     }
 }
@@ -5537,14 +5537,14 @@ void Aura::SpellAuraFinishingMovesCannotBeDodged(AuraEffectModifier* /*aurEff*/,
         if (!m_target->isPlayer())
             return;
 
-        static_cast< Player* >(m_target)->m_finishingmovesdodge = true;
+        static_cast< Player* >(m_target)->m_finishingMovesDodge = true;
     }
     else
     {
         if (!m_target->isPlayer())
             return;
 
-        static_cast< Player* >(m_target)->m_finishingmovesdodge = false;
+        static_cast< Player* >(m_target)->m_finishingMovesDodge = false;
     }
 }
 
@@ -5679,7 +5679,7 @@ void Aura::SpellAuraModBlockValue(AuraEffectModifier* aurEff, bool apply)
         {
             amt = -aurEff->getEffectDamage();
         }
-        p_target->m_modblockvaluefromspells += amt;
+        p_target->m_modBlockValueFromSpells += amt;
         p_target->UpdateStats();
     }
 }

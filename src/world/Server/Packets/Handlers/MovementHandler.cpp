@@ -134,7 +134,7 @@ bool WorldSession::isHackDetectedInMovementData(uint16_t opcode)
     {
         // simplified: just take the fastest speed. less chance of fuckups too
         // get the "normal speeds" not the changed ones!
-        float speed = (_player->flying_aura) ? _player->getSpeedRate(TYPE_FLY, false) : (_player->getSpeedRate(TYPE_SWIM, false) > _player->getSpeedRate(TYPE_RUN, false)) ? _player->getSpeedRate(TYPE_SWIM, false) : _player->getSpeedRate(TYPE_RUN, false);
+        float speed = (_player->m_flyingAura) ? _player->getSpeedRate(TYPE_FLY, false) : (_player->getSpeedRate(TYPE_SWIM, false) > _player->getSpeedRate(TYPE_RUN, false)) ? _player->getSpeedRate(TYPE_SWIM, false) : _player->getSpeedRate(TYPE_RUN, false);
 
         _player->m_speedCheatDetector->AddSample(sessionMovementInfo.position.x, sessionMovementInfo.position.y, Util::getMSTime(), speed);
 
@@ -239,9 +239,9 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     /// Falling damage
 
     // Zyres: Spell realted "blinking"
-    if (_player->blinked)
+    if (_player->m_blinked)
     {
-        _player->blinked = false;
+        _player->m_blinked = false;
         _player->m_fallDisabledUntil = UNIXTIME + 5;
         _player->speedCheatDelay(2000);
     }

@@ -1198,7 +1198,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 // Set this effect's value to the mana regen effect, so it will be removed when aura is removed
                 m_auraEffects[effIndex - 1].setEffectDamage(aurEff->getEffectDamage());
 
-                getPlayerOwner()->m_ModInterrMRegen += aurEff->getEffectDamage();
+                getPlayerOwner()->m_modInterrManaRegen += aurEff->getEffectDamage();
                 getPlayerOwner()->UpdateStats();
 
                 // Disable this periodic effect

@@ -945,7 +945,7 @@ void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)
                 auto c = GetUnitCaster();
                 if (c != nullptr && c->isPlayer())
                 {
-                    aurEff->setEffectDamage(float2int32(static_cast<Player*>(c)->m_casted_amount[SCHOOL_FIRE] * parentsp->getEffectBasePoints(0) / 100.0f));
+                    aurEff->setEffectDamage(float2int32(static_cast<Player*>(c)->m_castedAmount[SCHOOL_FIRE] * parentsp->getEffectBasePoints(0) / 100.0f));
                 }
                 else if (c != nullptr)
                 {
@@ -1354,8 +1354,8 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
             // Check retained rage
             if (apply && getPlayerOwner() != nullptr && getPlayerOwner()->isClassWarrior())
             {
-                if (getPlayerOwner()->getPower(POWER_TYPE_RAGE) > getPlayerOwner()->m_retainedrage)
-                    getPlayerOwner()->setPower(POWER_TYPE_RAGE, getPlayerOwner()->m_retainedrage);
+                if (getPlayerOwner()->getPower(POWER_TYPE_RAGE) > getPlayerOwner()->m_retaineDrage)
+                    getPlayerOwner()->setPower(POWER_TYPE_RAGE, getPlayerOwner()->m_retaineDrage);
             }
         } break;
 #if VERSION_STRING >= WotLK
@@ -1514,7 +1514,7 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
     if (getPlayerOwner() != nullptr)
     {
         // Apply talents and spells that require this form
-        for (const auto& spell : getPlayerOwner()->mSpells)
+        for (const auto& spell : getPlayerOwner()->m_spells)
         {
             const auto spellInfo = sSpellMgr.getSpellInfo(spell);
             if (spellInfo == nullptr)
@@ -1771,7 +1771,7 @@ void Aura::spellAuraEffectModPowerRegen(AuraEffectModifier* aurEff, bool apply)
         return;
 
     const auto value = apply ? aurEff->getEffectDamage() : -aurEff->getEffectDamage();
-    getPlayerOwner()->m_ModInterrMRegen += value;
+    getPlayerOwner()->m_modInterrManaRegen += value;
     getPlayerOwner()->UpdateStats();
 }
 

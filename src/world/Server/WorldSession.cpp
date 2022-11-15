@@ -268,7 +268,7 @@ void WorldSession::LogoutPlayer(bool Save)
         _player->setFaction(_player->getInitialFactionId());
 
         sObjectMgr.RemovePlayer(_player);
-        _player->ok_to_remove = true;
+        _player->m_isReadyToBeRemoved = true;
 
         sHookInterface.OnLogout(pPlayer);
         if (_player->m_duelPlayer)

@@ -1357,8 +1357,8 @@ void Pet::UpdateSpellList(bool showLearnSpells)
 
     if (GetCreatureProperties()->Family == 0 && Summon)
     {
-        std::map<uint32, std::set<uint32>>::iterator it1 = m_Owner->SummonSpells.find(getEntry());       // Get spells from the owner
-        if (it1 != m_Owner->SummonSpells.end())
+        std::map<uint32, std::set<uint32>>::iterator it1 = m_Owner->m_summonSpells.find(getEntry());       // Get spells from the owner
+        if (it1 != m_Owner->m_summonSpells.end())
         {
             std::set<uint32>::iterator it2 = it1->second.begin();
             for (; it2 != it1->second.end(); ++it2)
