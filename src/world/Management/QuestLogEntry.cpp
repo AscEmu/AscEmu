@@ -51,7 +51,8 @@ void QuestLogEntry::initPlayerData()
     m_player->setQuestLogInSlot(this, m_slot);
 
     if (!m_player->getSession()->m_loggingInPlayer)
-        CALL_QUESTSCRIPT_EVENT(this, OnQuestStart)(m_player, this);
+        if (const auto questScript = getQuestScript())
+            questScript->OnQuestStart(m_player, this);
 }
 
 void QuestLogEntry::loadFromDB(Field* fields)
@@ -64,7 +65,8 @@ void QuestLogEntry::loadFromDB(Field* fields)
     for (uint8_t i = 0; i < 4; ++i)
     {
         m_explored_areas[i] = fields[4 + i].GetUInt32();
-        CALL_QUESTSCRIPT_EVENT(this, OnExploreArea)(m_explored_areas[i], m_player, this);
+        if (const auto questScript = getQuestScript())
+            questScript->OnExploreArea(m_explored_areas[i], m_player, this);
     }
 
     for (uint8_t i = 0; i < 4; ++i)
@@ -72,9 +74,15 @@ void QuestLogEntry::loadFromDB(Field* fields)
         m_mobcount[i] = fields[8 + i].GetUInt32();
 
         if (getQuestProperties()->required_mobtype[i] == QUEST_MOB_TYPE_CREATURE)
-            CALL_QUESTSCRIPT_EVENT(this, OnCreatureKill)(getQuestProperties()->required_mob_or_go[i], m_player, this);
+        {
+            if (const auto questScript = getQuestScript())
+                questScript->OnCreatureKill(getQuestProperties()->required_mob_or_go[i], m_player, this);
+        }
         else
-            CALL_QUESTSCRIPT_EVENT(this, OnGameObjectActivate)(getQuestProperties()->required_mob_or_go[i], m_player, this);
+        {
+            if (const auto questScript = getQuestScript())
+                questScript->OnGameObjectActivate(getQuestProperties()->required_mob_or_go[i], m_player, this);
+        }
     }
 
     m_state = fields[12].GetUInt32();
@@ -399,10 +407,11 @@ void QuestLogEntry::sendQuestComplete()
 
     m_player->updateNearbyQuestGameObjects();
 
-    CALL_QUESTSCRIPT_EVENT(this, OnQuestComplete)(m_player, this);
+    if (const auto questScript = getQuestScript())
+        questScript->OnQuestComplete(m_player, this);
 }
 
-void QuestLogEntry::SendUpdateAddKill(uint8_t index)
+void QuestLogEntry::sendUpdateAddKill(uint8_t index)
 {
     if (index >= 4)
     {
@@ -412,4 +421,11 @@ void QuestLogEntry::SendUpdateAddKill(uint8_t index)
 
     sQuestMgr.SendQuestUpdateAddKill(m_player, m_questProperties->id, m_questProperties->required_mob_or_go[index], 
         m_mobcount[index], m_questProperties->required_mob_or_go_count[index], 0);
+}
+
+QuestScript* QuestLogEntry::getQuestScript() const
+{
+    if (getQuestProperties()->pQuestScript)
+        return getQuestProperties()->pQuestScript;
+    return nullptr;
 }

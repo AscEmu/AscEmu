@@ -457,7 +457,7 @@ public:
                     if (questLog->getMobCountByIndex(0) < 6)
                     {
                         questLog->incrementMobCountForIndex(0);
-                        questLog->SendUpdateAddKill(0);
+                        questLog->sendUpdateAddKill(0);
                         questLog->updatePlayerFields();
 
                         RegisterAIUpdateEvent(240000);  // update after 4 mins

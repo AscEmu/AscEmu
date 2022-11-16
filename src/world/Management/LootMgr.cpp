@@ -595,7 +595,7 @@ LootItem::LootItem(LootStoreItem const& li)
     is_passed = false;
     is_looted = false;
     is_blocked = false;
-    is_ffa = itemproto && (itemproto->Flags & ITEM_FLAG_FREE_FOR_ALL);
+    is_ffa = itemproto && itemproto->Flags & ITEM_FLAG_FREE_FOR_ALL;
     is_underthreshold = false;
     needs_quest = li.needs_quest;
 }

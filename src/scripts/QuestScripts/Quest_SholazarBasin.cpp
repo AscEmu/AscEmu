@@ -101,7 +101,7 @@ public:
                 return;
 
             questLog->setMobCountForIndex(0, 1);
-            questLog->SendUpdateAddKill(0);
+            questLog->sendUpdateAddKill(0);
             questLog->updatePlayerFields();
         }
     }
@@ -137,7 +137,7 @@ public:
                 return;
 
             questLog->setMobCountForIndex(1, 1);
-            questLog->SendUpdateAddKill(1);
+            questLog->sendUpdateAddKill(1);
             questLog->updatePlayerFields();
         }
     }
@@ -173,7 +173,7 @@ public:
                 return;
 
             questLog->setMobCountForIndex(2, 1);
-            questLog->SendUpdateAddKill(2);
+            questLog->sendUpdateAddKill(2);
             questLog->updatePlayerFields();
         }
     }

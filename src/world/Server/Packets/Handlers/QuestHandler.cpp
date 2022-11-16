@@ -610,7 +610,10 @@ void WorldSession::handleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
         return;
     }
     QuestProperties const* qPtr = qEntry->getQuestProperties();
-    CALL_QUESTSCRIPT_EVENT(qEntry, OnQuestCancel)(_player);
+
+    if (const auto questScript = qEntry->getQuestScript())
+        questScript->OnQuestCancel(_player);
+
     qEntry->finishAndRemove();
 
     for (uint8_t i = 0; i < 4; ++i)

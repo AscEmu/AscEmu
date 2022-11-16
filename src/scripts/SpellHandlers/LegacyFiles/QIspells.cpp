@@ -1411,7 +1411,7 @@ bool ArcaneDisruption(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
             crate->despawn(0, 0);
 
             questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
-            questLog->SendUpdateAddKill(0);
+            questLog->sendUpdateAddKill(0);
             questLog->updatePlayerFields();
 
             if (questLog->getMobCountByIndex(0) == 5)
@@ -1677,7 +1677,7 @@ bool SymbolOfLife(uint8_t /*effectIndex*/, Spell* pSpell) // Alliance ress. ques
     target->Despawn(10 * 1000, 1 * 60 * 1000);
 
     questLog->setMobCountForIndex(0, 1);
-    questLog->SendUpdateAddKill(0);
+    questLog->sendUpdateAddKill(0);
     questLog->updatePlayerFields();
 
     return true;
@@ -1707,7 +1707,7 @@ bool FilledShimmeringVessel(uint8_t /*effectIndex*/, Spell* pSpell) // Blood Elf
         target->Despawn(30 * 1000, 1 * 60 * 1000);
 
         questLog->setMobCountForIndex(0, 1);
-        questLog->SendUpdateAddKill(0);
+        questLog->sendUpdateAddKill(0);
         questLog->updatePlayerFields();
     }
 
@@ -2566,7 +2566,7 @@ bool StoppingTheSpread(uint8_t /*effectIndex*/, Spell* pSpell)
         if (questLog->getMobCountByIndex(0) < questLog->getQuestProperties()->required_mob_or_go_count[0])
         {
             questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
-            questLog->SendUpdateAddKill(0);
+            questLog->sendUpdateAddKill(0);
 
             GameObject* obj = plr->getWorldMap()->createAndSpawnGameObject(183816, targetPos, 1);
             if (obj != nullptr)
@@ -2711,7 +2711,7 @@ bool CrystalOfDeepShadows(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a 
     if (auto* questLog = plr->getQuestLogByQuestId(10833))
     {
         questLog->setMobCountForIndex(0, 1);
-        questLog->SendUpdateAddKill(0);
+        questLog->sendUpdateAddKill(0);
         questLog->updatePlayerFields();
     }
 
@@ -2877,7 +2877,7 @@ bool SpragglesCanteen(uint8_t /*effectIndex*/, Spell* pSpell)
     target->Despawn(30 * 1000, 1 * 60 * 1000);
 
     qle->setMobCountForIndex(0, 1);
-    qle->SendUpdateAddKill(0);
+    qle->sendUpdateAddKill(0);
     qle->updatePlayerFields();
 
     return true;

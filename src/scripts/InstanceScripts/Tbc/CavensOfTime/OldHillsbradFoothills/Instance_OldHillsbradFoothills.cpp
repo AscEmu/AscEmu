@@ -80,7 +80,7 @@ public:
                 if (auto* questLog = player->getQuestLogByQuestId(10283))
                 {
                     questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
-                    questLog->SendUpdateAddKill(0);
+                    questLog->sendUpdateAddKill(0);
                     questLog->updatePlayerFields();
                 }
             }

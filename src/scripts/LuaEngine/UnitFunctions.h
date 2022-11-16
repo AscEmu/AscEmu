@@ -1600,7 +1600,7 @@ public:
             if (auto questLog = player->getQuestLogByQuestId(questid))
             {
                 questLog->setMobCountForIndex(objective, questLog->getQuestProperties()->required_mob_or_go[objective]);
-                questLog->SendUpdateAddKill(objective);
+                questLog->sendUpdateAddKill(objective);
                 if (questLog->canBeFinished())
                 {
                     questLog->sendQuestComplete();
@@ -2520,7 +2520,7 @@ public:
         if (auto* questLog = player->getQuestLogByQuestId(questid))
         {
             questLog->setMobCountForIndex(objective, questLog->getMobCountByIndex(objective) + 1);
-            questLog->SendUpdateAddKill(objective);
+            questLog->sendUpdateAddKill(objective);
             if (questLog->canBeFinished())
                 questLog->sendQuestComplete();
 

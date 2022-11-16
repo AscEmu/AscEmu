@@ -58,7 +58,9 @@ std::string RemoveQuestFromPlayer(Player* plr, QuestProperties const* qst)
         {
             if (auto* questLog = plr->getQuestLogByQuestId(qst->id))
             {
-                CALL_QUESTSCRIPT_EVENT(questLog, OnQuestCancel)(plr);
+                if (const auto questScript = questLog->getQuestScript())
+                    questScript->OnQuestCancel(plr);
+
                 questLog->finishAndRemove();
 
                 // Remove all items given by the questgiver at the beginning

@@ -1192,8 +1192,10 @@ bool QuestMgr::OnGameObjectActivate(Player* plr, GameObject* go)
                     // add another kill.
                     // (auto-dirty's it)
                     questLog->incrementMobCountForIndex(j);
-                    questLog->SendUpdateAddKill(j);
-                    CALL_QUESTSCRIPT_EVENT(questLog, OnGameObjectActivate)(entry, plr, questLog);
+                    questLog->sendUpdateAddKill(j);
+
+                    if (const auto questScript = questLog->getQuestScript())
+                        questScript->OnGameObjectActivate(entry, plr, questLog);
 
                     if (questLog->canBeFinished())
                         questLog->sendQuestComplete();
@@ -1251,8 +1253,11 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
                     {
                         // add another kill.(auto-dirty's it)
                         questLog->incrementMobCountForIndex(j);
-                        questLog->SendUpdateAddKill(j);
-                        CALL_QUESTSCRIPT_EVENT(questLog, OnCreatureKill)(entry, plr, questLog);
+                        questLog->sendUpdateAddKill(j);
+
+                        if (const auto questScript = questLog->getQuestScript())
+                            questScript->OnCreatureKill(entry, plr, questLog);
+
                         questLog->updatePlayerFields();
 
                         if (questLog->canBeFinished())
@@ -1292,8 +1297,11 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
                                         if (qst->required_mob_or_go[j] == static_cast<int32>(entry) && qst->required_mobtype[j] == QUEST_MOB_TYPE_CREATURE && questLog->m_mobcount[j] < qst->required_mob_or_go_count[j])
                                         {
                                             questLog->incrementMobCountForIndex(j);
-                                            questLog->SendUpdateAddKill(j);
-                                            CALL_QUESTSCRIPT_EVENT(questLog, OnCreatureKill)(entry, gplr, questLog);
+                                            questLog->sendUpdateAddKill(j);
+
+                                            if (const auto questScript = questLog->getQuestScript())
+                                                questScript->OnCreatureKill(entry, gplr, questLog);
+
                                             questLog->updatePlayerFields();
 
                                             if (questLog->canBeFinished())
@@ -1339,7 +1347,7 @@ void QuestMgr::OnPlayerCast(Player* plr, uint32 spellid, uint64 & victimguid)
                     {
                         questLog->addAffectedUnit(victim);
                         questLog->incrementMobCountForIndex(j);
-                        questLog->SendUpdateAddKill(j);
+                        questLog->sendUpdateAddKill(j);
                         questLog->updatePlayerFields();
 
                         if (questLog->canBeFinished())
@@ -1383,7 +1391,10 @@ void QuestMgr::OnPlayerItemPickup(Player* plr, Item* item)
                 if (questLog->getQuestProperties()->required_item[j] == entry)
                 {
                     uint32 pcount = plr->getItemInterface()->GetItemCount(entry, true);
-                    CALL_QUESTSCRIPT_EVENT(questLog, OnPlayerItemPickup)(entry, pcount, plr, questLog);
+
+                    if (const auto questScript = questLog->getQuestScript())
+                        questScript->OnPlayerItemPickup(entry, pcount, plr, questLog);
+
                     if (pcount < questLog->getQuestProperties()->required_itemcount[j])
                     {
                         WorldPacket data(8);
@@ -1425,7 +1436,10 @@ void QuestMgr::OnPlayerExploreArea(Player* plr, uint32 AreaID)
                 if (questLog->getQuestProperties()->required_triggers[j] == AreaID && !questLog->m_explored_areas[j])
                 {
                     questLog->setExploredAreaForIndex(j);
-                    CALL_QUESTSCRIPT_EVENT(questLog, OnExploreArea)(questLog->m_explored_areas[j], plr, questLog);
+
+                    if (const auto questScript = questLog->getQuestScript())
+                        questScript->OnExploreArea(questLog->m_explored_areas[j], plr, questLog);
+
                     questLog->updatePlayerFields();
 
                     if (questLog->canBeFinished())
@@ -1452,7 +1466,10 @@ void QuestMgr::AreaExplored(Player* plr, uint32 QuestID)
                     if (questLog->getQuestProperties()->required_triggers[j] && !questLog->m_explored_areas[j])
                     {
                         questLog->setExploredAreaForIndex(j);
-                        CALL_QUESTSCRIPT_EVENT(questLog, OnExploreArea)(questLog->m_explored_areas[j], plr, questLog);
+
+                        if (const auto questScript = questLog->getQuestScript())
+                            questScript->OnExploreArea(questLog->m_explored_areas[j], plr, questLog);
+
                         questLog->updatePlayerFields();
 
                         if (questLog->canBeFinished())
@@ -1522,7 +1539,10 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         return;
 
     BuildQuestComplete(plr, qst);
-    CALL_QUESTSCRIPT_EVENT(questLog, OnQuestComplete)(plr, questLog);
+
+    if (const auto questScript = questLog->getQuestScript())
+        questScript->OnQuestComplete(plr, questLog);
+
     for (uint8 x = 0; x < 4; x++)
     {
         if (qst->required_spell[x] != 0)
@@ -2776,7 +2796,7 @@ void QuestMgr::OnPlayerEmote(Player* plr, uint32 emoteid, uint64 & victimguid)
                         questLog->incrementMobCountForIndex(j);
 
                         if (qst->id == 11224)   // Show progress for quest "Send Them Packing"
-                            questLog->SendUpdateAddKill(j);
+                            questLog->sendUpdateAddKill(j);
 
                         questLog->updatePlayerFields();
 

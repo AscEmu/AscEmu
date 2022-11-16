@@ -233,7 +233,7 @@ void InnkeeperFlex(Player* pPlayer, Unit* pUnit)
         if (auto* questLog = pPlayer->getQuestLogByQuestId(8356))
         {
             questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
-            questLog->SendUpdateAddKill(0);
+            questLog->sendUpdateAddKill(0);
             questLog->updatePlayerFields();
         }
     }
@@ -242,7 +242,7 @@ void InnkeeperFlex(Player* pPlayer, Unit* pUnit)
         if (auto* questLog = pPlayer->getQuestLogByQuestId(8359))
         {
             questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
-            questLog->SendUpdateAddKill(0);
+            questLog->sendUpdateAddKill(0);
             questLog->updatePlayerFields();
         }
     }
@@ -255,7 +255,7 @@ void InnkeeperDance(Player* pPlayer, Unit* pUnit)
         if (auto* questLog = pPlayer->getQuestLogByQuestId(8357))
         {
             questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
-            questLog->SendUpdateAddKill(0);
+            questLog->sendUpdateAddKill(0);
             questLog->updatePlayerFields();
         }
     }
@@ -264,7 +264,7 @@ void InnkeeperDance(Player* pPlayer, Unit* pUnit)
         if (auto* questLog = pPlayer->getQuestLogByQuestId(8360))
         {
             questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
-            questLog->SendUpdateAddKill(0);
+            questLog->sendUpdateAddKill(0);
             questLog->updatePlayerFields();
         }
     }
@@ -277,7 +277,7 @@ void InnkeeperTrain(Player* pPlayer, Unit* pUnit)
         if (auto* questLog = pPlayer->getQuestLogByQuestId(8355))
         {
             questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
-            questLog->SendUpdateAddKill(0);
+            questLog->sendUpdateAddKill(0);
             questLog->updatePlayerFields();
         }
     }
@@ -286,7 +286,7 @@ void InnkeeperTrain(Player* pPlayer, Unit* pUnit)
         if (auto* questLog = pPlayer->getQuestLogByQuestId(8358))
         {
             questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
-            questLog->SendUpdateAddKill(0);
+            questLog->sendUpdateAddKill(0);
             questLog->updatePlayerFields();
         }
     }
@@ -299,7 +299,7 @@ void InnkeeperChicken(Player* pPlayer, Unit* pUnit)
         if (auto* questLog = pPlayer->getQuestLogByQuestId(8353))
         {
             questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
-            questLog->SendUpdateAddKill(0);
+            questLog->sendUpdateAddKill(0);
             questLog->updatePlayerFields();
         }
     }
@@ -308,7 +308,7 @@ void InnkeeperChicken(Player* pPlayer, Unit* pUnit)
         if (auto* questLog = pPlayer->getQuestLogByQuestId(8354))
         {
             questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
-            questLog->SendUpdateAddKill(0);
+            questLog->sendUpdateAddKill(0);
             questLog->updatePlayerFields();
         }
     }
@@ -372,7 +372,7 @@ void Scratches(Player* pPlayer, uint32_t /*AreaTrigger*/)
 
         Kaliri->Despawn(0, 0);
         questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
-        questLog->SendUpdateAddKill(0);
+        questLog->sendUpdateAddKill(0);
         questLog->updatePlayerFields();
     }
 }

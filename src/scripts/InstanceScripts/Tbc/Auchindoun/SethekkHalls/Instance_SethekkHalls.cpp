@@ -242,7 +242,7 @@ public:
                             if (pQuest != nullptr && pQuest->getMobCountByIndex(1) < 1)
                             {
                                 pQuest->setMobCountForIndex(1, 1);
-                                pQuest->SendUpdateAddKill(1);
+                                pQuest->sendUpdateAddKill(1);
                                 pQuest->updatePlayerFields();
                             }
                         }

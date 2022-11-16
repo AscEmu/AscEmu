@@ -36,7 +36,7 @@ public:
             {
                 pOrb->setState(GO_STATE_OPEN);
                 questLog->setMobCountForIndex(0, 1);
-                questLog->SendUpdateAddKill(0);
+                questLog->sendUpdateAddKill(0);
                 questLog->updatePlayerFields();
             }
         }

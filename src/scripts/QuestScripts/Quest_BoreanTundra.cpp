@@ -462,7 +462,7 @@ public:
         if (questLog->getMobCountByIndex(0) == 0)
         {
             questLog->setMobCountForIndex(0, 1);
-            questLog->SendUpdateAddKill(0);
+            questLog->sendUpdateAddKill(0);
             questLog->updatePlayerFields();
         }
 

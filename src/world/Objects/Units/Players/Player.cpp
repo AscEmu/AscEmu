@@ -8738,7 +8738,10 @@ void Player::eventTimedQuestExpire(uint32_t questId)
         QuestProperties const* qst = questLogEntry->getQuestProperties();
 
         sQuestMgr.SendQuestUpdateFailedTimer(qst, this);
-        CALL_QUESTSCRIPT_EVENT(questLogEntry, OnQuestCancel)(this);
+
+        if (const auto questScript = questLogEntry->getQuestScript())
+            questScript->OnQuestCancel(this);
+
         questLogEntry->sendQuestFailed(true);
     }
 }
@@ -8857,7 +8860,7 @@ void Player::addQuestKill(uint32_t questId, uint8_t reqId, uint32_t delay)
                 return;
 
             questLogEntry->incrementMobCountForIndex(reqId);
-            questLogEntry->SendUpdateAddKill(reqId);
+            questLogEntry->sendUpdateAddKill(reqId);
             questLogEntry->updatePlayerFields();
 
             if (questLogEntry->canBeFinished())

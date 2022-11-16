@@ -60,7 +60,9 @@ public:
 
     void updatePlayerFields();
     void sendQuestComplete();
-    void SendUpdateAddKill(uint8_t index);
+    void sendUpdateAddKill(uint8_t index);
+
+    QuestScript* getQuestScript() const;
 
 private:
 
@@ -78,5 +80,3 @@ private:
 
     std::set<uint64_t> m_affected_units;
 };
-
-#define CALL_QUESTSCRIPT_EVENT(obj, func) if (static_cast<QuestLogEntry*>(obj)->getQuestProperties()->pQuestScript != NULL) static_cast<QuestLogEntry*>(obj)->getQuestProperties()->pQuestScript->func

@@ -2632,7 +2632,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                         if (questLog->getMobCountByIndex(index) < required_mob)
                         {
                             questLog->setMobCountForIndex(index, questLog->getMobCountByIndex(index) + 1);
-                            questLog->SendUpdateAddKill(index);
+                            questLog->sendUpdateAddKill(index);
                             questLog->updatePlayerFields();
                         }
                     }

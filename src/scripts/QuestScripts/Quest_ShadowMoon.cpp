@@ -332,7 +332,7 @@ public:
         if (auto* questLog = pPlayer->getQuestLogByQuestId(10872))
         {
             questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
-            questLog->SendUpdateAddKill(0);
+            questLog->sendUpdateAddKill(0);
             questLog->updatePlayerFields();
         }
     }
