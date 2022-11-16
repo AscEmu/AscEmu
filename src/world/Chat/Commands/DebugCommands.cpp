@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellFailure.hpp"
 #include "Server/ServerState.h"
 #include "Management/ObjectMgr.h"
-#include "Management/WeatherMgr.h"
+#include "Management/WeatherMgr.hpp"
 #include "Server/Script/CreatureAIScript.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/ThreatHandler.h"

@@ -31,7 +31,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Management/ItemInterface.h"
 #include "Management/Guild/GuildMgr.hpp"
-#include "Management/WeatherMgr.h"
+#include "Management/WeatherMgr.hpp"
 #include "Server/Packets/SmsgMessageChat.h"
 
 class LuaUnit

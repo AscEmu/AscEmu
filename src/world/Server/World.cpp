@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Item.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Management/WordFilter.h"
-#include "Management/WeatherMgr.h"
+#include "Management/WeatherMgr.hpp"
 #include "Management/TaxiMgr.h"
 #include "Management/ItemInterface.h"
 #include "Chat/Channel.hpp"
@@ -971,7 +971,7 @@ void World::loadMySQLTablesByTask()
 
     sQuestMgr.LoadExtraQuestStuff();
     sObjectMgr.LoadEventScripts();
-    sWeatherMgr.LoadFromDB();
+    sWeatherMgr.loadFromDB();
     sAddonMgr.LoadFromDB();
     sGameEventMgr.LoadFromDB();
     sCalendarMgr.LoadFromDB();

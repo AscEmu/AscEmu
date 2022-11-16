@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Objects/Item.hpp"
-#include "Management/WeatherMgr.h"
+#include "Management/WeatherMgr.hpp"
 #include "Management/ItemInterface.h"
 #include "Macros/CorpseMacros.hpp"
 #include "Macros/ScriptMacros.hpp"
@@ -742,7 +742,7 @@ void WorldSession::handleZoneupdate(WorldPacket& recvPacket)
     if (_player->GetZoneId() == srlPacket.zoneId)
         return;
 
-    sWeatherMgr.SendWeather(_player);
+    sWeatherMgr.sendWeather(_player);
     _player->zoneUpdate(srlPacket.zoneId);
     _player->getItemInterface()->EmptyBuyBack();
 }

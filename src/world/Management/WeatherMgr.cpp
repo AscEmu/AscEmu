@@ -1,41 +1,23 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-
-#include "Management/WeatherMgr.h"
+#include "Management/WeatherMgr.hpp"
 #include "Server/MainServerDefines.h"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Packets/SmsgWeather.h"
 
-/// Weather defines
 enum WeatherTypes
 {
-    WEATHER_TYPE_NORMAL         = 0, // NORMAL
-    WEATHER_TYPE_FOG            = 1, // FOG --> current value irrelevant
-    WEATHER_TYPE_RAIN           = 2, // RAIN
-    WEATHER_TYPE_HEAVY_RAIN     = 4, // HEAVY_RAIN
-    WEATHER_TYPE_SNOW           = 8, // SNOW
-    WEATHER_TYPE_SANDSTORM      = 16 // SANDSTORM
+    WEATHER_TYPE_NORMAL         = 0,
+    WEATHER_TYPE_FOG            = 1,
+    WEATHER_TYPE_RAIN           = 2,
+    WEATHER_TYPE_HEAVY_RAIN     = 4,
+    WEATHER_TYPE_SNOW           = 8,
+    WEATHER_TYPE_SANDSTORM      = 16
 };
 
 enum WeatherSounds
@@ -52,40 +34,44 @@ enum WeatherSounds
     WEATHER_SANDSTORMHEAVY      = 8558
 };
 
-uint32 GetSound(uint32 Effect, float Density)
+uint32 WeatherMgr::getSound(uint32 effect, float density)
 {
-    uint32 sound;
-    if (Density <= 0.30f)
+    if (density <= 0.30f)
         return WEATHER_NOSOUND;
 
-    switch (Effect)
+    uint32 sound;
+
+    switch (effect)
     {
-        case 2:                                     //rain
-        case 4:
-            if (Density < 0.40f)
+        case WEATHER_TYPE_RAIN:
+        case WEATHER_TYPE_HEAVY_RAIN:
+        {
+            if (density < 0.40f)
                 sound = WEATHER_RAINLIGHT;
-            else if (Density < 0.70f)
+            else if (density < 0.70f)
                 sound = WEATHER_RAINMEDIUM;
             else
                 sound = WEATHER_RAINHEAVY;
-            break;
-        case 8:                                     //snow
-            if (Density < 0.40f)
+        } break;
+        case WEATHER_TYPE_SNOW:
+        {
+            if (density < 0.40f)
                 sound = WEATHER_SNOWLIGHT;
-            else if (Density < 0.70f)
+            else if (density < 0.70f)
                 sound = WEATHER_SNOWMEDIUM;
             else
                 sound = WEATHER_SNOWHEAVY;
-            break;
-        case 16:                                    //storm
-            if (Density < 0.40f)
+        } break;
+        case WEATHER_TYPE_SANDSTORM:
+        {
+            if (density < 0.40f)
                 sound = WEATHER_SANDSTORMLIGHT;
-            else if (Density < 0.70f)
+            else if (density < 0.70f)
                 sound = WEATHER_SANDSTORMMEDIUM;
             else
                 sound = WEATHER_SANDSTORMHEAVY;
-            break;
-        default:                                    //no sound
+        } break;
+        default:
             sound = WEATHER_NOSOUND;
             break;
     }
@@ -100,37 +86,33 @@ WeatherMgr& WeatherMgr::getInstance()
 
 void WeatherMgr::finalize()
 {
-    std::map<uint32, WeatherInfo*>::iterator itr;
-    for (itr = m_zoneWeathers.begin(); itr != m_zoneWeathers.end(); ++itr)
-    {
-        delete itr->second;
-    }
+    for (auto& m_zoneWeather : m_zoneWeathers)
+        delete m_zoneWeather.second;
 
     m_zoneWeathers.clear();
 }
 
-void WeatherMgr::LoadFromDB()
+void WeatherMgr::loadFromDB()
 {
-    sLogger.info("Loading Weather..."); // weather type 0= sunny / 1= fog / 2 = light_rain / 4 = rain / 8 = snow / ?? = sandstorm
+    sLogger.info("Loading Weather...");
     QueryResult* result = WorldDatabase.Query("SELECT zoneId,high_chance,high_type,med_chance,med_type,low_chance,low_type FROM weather");
-
     if (!result)
         return;
 
     do
     {
         Field* fields = result->Fetch();
-        WeatherInfo* wi = new WeatherInfo;
-        wi->m_zoneId = fields[0].GetUInt32();
-        wi->m_effectValues[0] = fields[1].GetUInt32();  // high_chance
-        wi->m_effectValues[1] = fields[2].GetUInt32();  // high_type
-        wi->m_effectValues[2] = fields[3].GetUInt32();  // med_chance
-        wi->m_effectValues[3] = fields[4].GetUInt32();  // med_type
-        wi->m_effectValues[4] = fields[5].GetUInt32();  // low_chance
-        wi->m_effectValues[5] = fields[6].GetUInt32();  // low_type
-        m_zoneWeathers[wi->m_zoneId] = wi;
+        WeatherInfo* weatherInfo = new WeatherInfo;
+        weatherInfo->m_zoneId = fields[0].GetUInt32();
+        weatherInfo->m_effectValues[0] = fields[1].GetUInt32();  // high_chance
+        weatherInfo->m_effectValues[1] = fields[2].GetUInt32();  // high_type
+        weatherInfo->m_effectValues[2] = fields[3].GetUInt32();  // med_chance
+        weatherInfo->m_effectValues[3] = fields[4].GetUInt32();  // med_type
+        weatherInfo->m_effectValues[4] = fields[5].GetUInt32();  // low_chance
+        weatherInfo->m_effectValues[5] = fields[6].GetUInt32();  // low_type
+        m_zoneWeathers[weatherInfo->m_zoneId] = weatherInfo;
 
-        wi->_GenerateWeather();
+        weatherInfo->_generateWeather();
     }
     while (result->NextRow());
     sLogger.info("WeatherMgr : Loaded weather information for %u zones.", result->GetRowCount());
@@ -138,25 +120,23 @@ void WeatherMgr::LoadFromDB()
     delete result;
 }
 
-void WeatherMgr::SendWeather(Player* plr)  //Update weather when player has changed zone (WorldSession::handleZoneupdate)
+void WeatherMgr::sendWeather(Player* plr)
 {
-    std::map<uint32, WeatherInfo*>::iterator itr = m_zoneWeathers.find(plr->GetZoneId());
-
-    if (itr == m_zoneWeathers.end())
+    auto zoneWeatherItr = m_zoneWeathers.find(plr->GetZoneId());
+    if (zoneWeatherItr == m_zoneWeathers.end())
     {
         plr->getSession()->SendPacket(AscEmu::Packets::SmsgWeather(0, 0, 0).serialise().get());
         plr->m_lastSeenWeather = 0;
     }
     else
     {
-        itr->second->SendUpdate(plr);
+        zoneWeatherItr->second->sendUpdate(plr);
     }
 }
 
-//MIT
 void WeatherMgr::sendWeatherForZone(uint32_t type, float density, uint32_t zoneId)
 {
-    const uint32_t sound = GetSound(type, density);
+    const uint32_t sound = getSound(type, density);
     sWorld.sendZoneMessage(AscEmu::Packets::SmsgWeather(type, density, sound).serialise().get(), zoneId);
 }
 
@@ -164,7 +144,7 @@ void WeatherMgr::sendWeatherForPlayer(uint32_t type, float density, Player* play
 {
     if (player != nullptr)
     {
-        const uint32_t sound = GetSound(type, density);
+        const uint32_t sound = getSound(type, density);
         player->sendPacket(AscEmu::Packets::SmsgWeather(type, density, sound).serialise().get());
     }
 }
@@ -178,103 +158,90 @@ WeatherInfo::WeatherInfo()
     m_totalTime = 0;
     m_zoneId = 0;
 
-    // Weather updates run in WorldRunnable thread
     m_holder = sEventMgr.GetEventHolder(WORLD_INSTANCE);
 }
 
 WeatherInfo::~WeatherInfo()
 {}
 
-void WeatherInfo::_GenerateWeather()
+void WeatherInfo::_generateWeather()
 {
     m_currentTime = 0;
     m_currentEffect = 0;
-    m_currentDensity = 0.30f;//Starting Offset (don't go below, it's annoying fog)
-    float fd = Util::getRandomFloat(1);
-    m_maxDensity = fd + 1; //1 - 2
-    m_totalTime = (Util::getRandomUInt(11) + 5) * 1000 * 120; //update approx. every 1-2 minutes
+    m_currentDensity = 0.30f;
 
-    uint32 rv = Util::getRandomUInt(100);
+    const float randomFloat = Util::getRandomFloat(1);
+    m_maxDensity = randomFloat + 1;
+    m_totalTime = (Util::getRandomUInt(11) + 5) * 1000 * 120;
 
-    std::map<uint32, uint32>::iterator itr;
+    const uint32 randomUInt = Util::getRandomUInt(100);
 
-    if (rv <= m_effectValues[4])  // %chance on changing weather from sunny to m_effectValues[5]
-    {
-        m_currentEffect = m_effectValues[5];
-    }
-    else if (rv <= m_effectValues[2])  // %chance on changing weather from sunny to m_effectValues[3]
-    {
-        m_currentEffect = m_effectValues[3];
-    }
-    else if (rv <= m_effectValues[0])  // %chance on changing weather from sunny to m_effectValues[1]
-    {
-        m_currentEffect = m_effectValues[1];
-    }
+    if (randomUInt <= m_effectValues[4])        // low chance
+        m_currentEffect = m_effectValues[5];    // low type
+    else if (randomUInt <= m_effectValues[2])   // med chance
+        m_currentEffect = m_effectValues[3];    // med type
+    else if (randomUInt <= m_effectValues[0])   // high chance
+        m_currentEffect = m_effectValues[1];    // high type
 
-    SendUpdate();
+    sendUpdate();
 
-    sEventMgr.AddEvent(this, &WeatherInfo::BuildUp, EVENT_WEATHER_UPDATE, (uint32)(m_totalTime / ceil(m_maxDensity / WEATHER_DENSITY_UPDATE) * 2), 0, 0);
-    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Forecast for zone:%d new type:%d new interval:%d ms", m_zoneId, m_currentEffect, (uint32)(m_totalTime / ceil(m_maxDensity / WEATHER_DENSITY_UPDATE) * 2));
+    sEventMgr.AddEvent(this, &WeatherInfo::buildUp, EVENT_WEATHER_UPDATE, static_cast<uint32>(m_totalTime / ceil(m_maxDensity / m_densityUpdate) * 2), 0, 0);
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Forecast for zone:%d new type:%d new interval:%d ms", m_zoneId, m_currentEffect, static_cast<uint32>(m_totalTime / ceil(m_maxDensity / m_densityUpdate) * 2));
 }
 
-void WeatherInfo::BuildUp()
+void WeatherInfo::buildUp()
 {
-    // Increase until 0.5, start random counter when reached
     if (m_currentDensity >= 0.50f)
     {
         sEventMgr.RemoveEvents(this, EVENT_WEATHER_UPDATE);
-        sEventMgr.AddEvent(this, &WeatherInfo::Update, EVENT_WEATHER_UPDATE, (uint32)(m_totalTime / ceil(m_maxDensity / WEATHER_DENSITY_UPDATE) * 4), 0, 0);
-        //        sLogger.debug("Weather starting random for zone:%d type:%d new interval:%d ms",m_zoneId,m_currentEffect,(uint32)(m_totalTime/ceil(m_maxDensity/WEATHER_DENSITY_UPDATE)*4));
+        sEventMgr.AddEvent(this, &WeatherInfo::update, EVENT_WEATHER_UPDATE, static_cast<uint32>(m_totalTime / ceil(m_maxDensity / m_densityUpdate) * 4), 0, 0);
     }
     else
     {
-        m_currentDensity += WEATHER_DENSITY_UPDATE;
-        //        sLogger.debug("Weather increased for zone:%d type:%d density:%f",m_zoneId,m_currentEffect,m_currentDensity);
-        SendUpdate();
+        m_currentDensity += m_densityUpdate;
+        sendUpdate();
     }
 }
 
-void WeatherInfo::Update()
+void WeatherInfo::update()
 {
-    // There will be a 66% the weather density decreases. If Sunny, use as currentDensity as countdown
     if (m_currentEffect == 0 || Util::getRandomUInt(100) < 66)
     {
-        m_currentDensity -= WEATHER_DENSITY_UPDATE;
-        if (m_currentDensity < 0.30f)  //0.20 is considered fog, lower values are annoying
+        m_currentDensity -= m_densityUpdate;
+        if (m_currentDensity < 0.30f)
         {
             m_currentDensity = 0.0f;
             m_currentEffect = 0;
             sEventMgr.RemoveEvents(this, EVENT_WEATHER_UPDATE);
-            _GenerateWeather();
+            _generateWeather();
             return;
         }
     }
     else
     {
-        m_currentDensity += WEATHER_DENSITY_UPDATE;
+        m_currentDensity += m_densityUpdate;
         if (m_currentDensity >= m_maxDensity)
         {
             m_currentDensity = m_maxDensity;
             return;
         }
     }
-    SendUpdate();
-    //    sLogger.debug("Weather Updated,zoneId:%d type:%d density:%f", m_zoneId, m_currentEffect, m_currentDensity);
+    sendUpdate();
 }
 
-void WeatherInfo::SendUpdate()
+void WeatherInfo::sendUpdate() const
 {
-    const uint32_t sound = GetSound(m_currentEffect, m_currentDensity);
+    const uint32_t sound = sWeatherMgr.getSound(m_currentEffect, m_currentDensity);
     sWorld.sendZoneMessage(AscEmu::Packets::SmsgWeather(m_currentEffect, m_currentDensity, sound).serialise().get(), m_zoneId);
 }
 
-void WeatherInfo::SendUpdate(Player* plr) //Updates weather for player's zone-change only if new zone weather differs
+void WeatherInfo::sendUpdate(Player* player) const
 {
-    if (plr->m_lastSeenWeather == m_currentEffect) //return if weather is same as previous zone
+    if (player->m_lastSeenWeather == m_currentEffect)
         return;
 
-    plr->m_lastSeenWeather = m_currentEffect;
+    player->m_lastSeenWeather = m_currentEffect;
 
-    const uint32_t sound = GetSound(m_currentEffect, m_currentDensity);
-    plr->getSession()->SendPacket(AscEmu::Packets::SmsgWeather(m_currentEffect, m_currentDensity, sound).serialise().get());
+    const uint32_t sound = sWeatherMgr.getSound(m_currentEffect, m_currentDensity);
+    player->getSession()->SendPacket(AscEmu::Packets::SmsgWeather(m_currentEffect, m_currentDensity, sound).serialise().get());
 }

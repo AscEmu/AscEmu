@@ -15,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Spell/SpellMgr.hpp>
 #include <Server/MainServerDefines.h>
 #include "LuaHelpers.h"
-#include "Management/WeatherMgr.h"
+#include "Management/WeatherMgr.hpp"
 
 extern "C"
 {

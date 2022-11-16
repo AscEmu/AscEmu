@@ -26,7 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.h"
 #include "Management/TaxiMgr.h"
-#include "Management/WeatherMgr.h"
+#include "Management/WeatherMgr.hpp"
 #include "Objects/Container.h"
 #include "Objects/DynamicObject.h"
 #include "Server/Opcodes.hpp"
@@ -562,7 +562,7 @@ void Player::OnPushToWorld()
     }
 
     // send weather
-    sWeatherMgr.SendWeather(this);
+    sWeatherMgr.sendWeather(this);
 
     setHealth(m_loadHealth > getMaxHealth() ? getMaxHealth() : m_loadHealth);
     if (getPowerType() == POWER_TYPE_MANA)

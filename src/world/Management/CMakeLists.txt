@@ -55,7 +55,7 @@ set(SRC_MANAGEMENT_FILES
     ${PATH_PREFIX}/TransporterHandler.cpp
     ${PATH_PREFIX}/TransporterHandler.h
     ${PATH_PREFIX}/WeatherMgr.cpp
-    ${PATH_PREFIX}/WeatherMgr.h
+    ${PATH_PREFIX}/WeatherMgr.hpp
     ${PATH_PREFIX}/WordFilter.cpp
     ${PATH_PREFIX}/WordFilter.h
     ${PATH_PREFIX}/WorldStates.h
