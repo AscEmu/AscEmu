@@ -4,7 +4,7 @@
  * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU General Public License as published by //-V1042
  * the Free Software Foundation, either version 3 of the License, or
  * any later version.
  *

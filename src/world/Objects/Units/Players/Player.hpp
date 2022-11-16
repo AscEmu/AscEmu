@@ -20,7 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldConf.h"
 #include "Management/AuctionHouse.h"
 #include "Management/Guild/Guild.hpp"
-#include "Management/ObjectUpdates/UpdateManager.h"
+#include "Management/ObjectUpdates/UpdateManager.hpp"
 #include "Data/WoWPlayer.hpp"
 #include <mutex>
 

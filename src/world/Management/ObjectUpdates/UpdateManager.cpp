@@ -3,82 +3,78 @@ Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "UpdateManager.h"
-
+#include "UpdateManager.hpp"
 #include <cstdint>
 #include <vector>
-#include "Map/Management/MapMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
-
-using namespace std;
 
 UpdateManager::UpdateManager(Player* owner, size_t compressionThreshold, size_t creationBufferInitialSize, size_t updateBufferInitialSize, size_t outOfRangeIdsInitialSize)
     : 
     m_owner(owner),
     m_compressionThreshold(compressionThreshold),
-    mUpdateCount(0),
-    mCreationCount(0),
-    mOutOfRangeIdCount(0),
-    bProcessPending(false),
-    bCreationBuffer(creationBufferInitialSize),
-    bUpdateBuffer(updateBufferInitialSize),
-    mOutOfRangeIds(outOfRangeIdsInitialSize)
+    m_updateCount(0),
+    m_creationCount(0),
+    m_outOfRangeIdCount(0),
+    m_processPending(false),
+    m_creationBuffer(creationBufferInitialSize),
+    m_updateBuffer(updateBufferInitialSize),
+    m_outOfRangeIds(outOfRangeIdsInitialSize)
 {
 }
 
 void UpdateManager::clearPendingUpdates()
 {
-    lock_guard<mutex> update_guard(mtx_updateBuffer);
-    lock_guard<mutex> packet_guard(mtx_delayedPacketsLock);
+    std::lock_guard update_guard(m_mutexUpdateBuffer);
+    std::lock_guard packet_guard(m_mutexDelayedPackets);
 
-    bProcessPending = false;
-    mUpdateCount = 0;
-    bUpdateBuffer.clear();
+    m_processPending = false;
+    m_updateCount = 0;
+    m_updateBuffer.clear();
 }
 
 void UpdateManager::pushCreationData(ByteBuffer* data, uint32_t updateCount)
 {
-    lock_guard<mutex> update_guard(mtx_updateBuffer);
-    lock_guard<mutex> packet_guard(mtx_delayedPacketsLock);
+    std::lock_guard update_guard(m_mutexUpdateBuffer);
+    std::lock_guard packet_guard(m_mutexDelayedPackets);
 
     internalPushUpdatesIfBufferIsFull(data->size());
 
-    mCreationCount += updateCount;
-    bCreationBuffer.append(*data);
+    m_creationCount += updateCount;
+    m_creationBuffer.append(*data);
 
     internalUpdateMapMgr();
 }
 
-void UpdateManager::pushOutOfRangeGuid(const WoWGuid & guid)
+void UpdateManager::pushOutOfRangeGuid(const WoWGuid& guid)
 {
-    lock_guard<mutex> update_guard(mtx_updateBuffer);
-    lock_guard<mutex> packet_guard(mtx_delayedPacketsLock);
+    std::lock_guard update_guard(m_mutexUpdateBuffer);
+    std::lock_guard packet_guard(m_mutexDelayedPackets);
 
-    internalPushUpdatesIfBufferIsFull(size_t(8));
+    internalPushUpdatesIfBufferIsFull(static_cast<size_t>(8));
 
-    mOutOfRangeIds << guid;
-    ++mOutOfRangeIdCount;
+    m_outOfRangeIds << guid;
+    ++m_outOfRangeIdCount;
 
     internalUpdateMapMgr();
 }
 
-void UpdateManager::pushUpdateData(ByteBuffer * data, uint32_t updateCount)
+void UpdateManager::pushUpdateData(ByteBuffer* data, uint32_t updateCount)
 {
-    lock_guard<mutex> update_guard(mtx_updateBuffer);
-    lock_guard<mutex> packet_guard(mtx_delayedPacketsLock);
+    std::lock_guard update_guard(m_mutexUpdateBuffer);
+    std::lock_guard packet_guard(m_mutexDelayedPackets);
     
     internalPushUpdatesIfBufferIsFull(data->size());
 
-    mUpdateCount += updateCount;
-    bUpdateBuffer.append(*data);
+    m_updateCount += updateCount;
+    m_updateBuffer.append(*data);
 
     internalUpdateMapMgr();
 }
 
 void UpdateManager::processPendingUpdates()
 {
-    lock_guard<mutex> update_guard(mtx_updateBuffer);
-    lock_guard<mutex> packet_guard(mtx_delayedPacketsLock);
+    std::lock_guard update_guard(m_mutexUpdateBuffer);
+    std::lock_guard packet_guard(m_mutexDelayedPackets);
 
     internalProcessPendingUpdates();
 
@@ -90,90 +86,76 @@ void UpdateManager::processPendingUpdates()
 
 void UpdateManager::queueDelayedPacket(WorldPacket * packet)
 {
-    lock_guard<mutex> packet_guard(mtx_delayedPacketsLock);
+    std::lock_guard packet_guard(m_mutexDelayedPackets);
 
-    m_delayedPackets.emplace_back(unique_ptr<WorldPacket>(packet));
+    m_delayedPackets.emplace_back(std::unique_ptr<WorldPacket>(packet));
 }
 
 size_t UpdateManager::calculateBufferSize() const
 {
-    const size_t base_size = 10 + (mOutOfRangeIds.size() * 9);
+    const size_t base_size = 10 + (m_outOfRangeIds.size() * 9);
 
-    if (bCreationBuffer.size() > bUpdateBuffer.size())
-    {
-        return bCreationBuffer.size() + base_size;
-    }
+    if (m_creationBuffer.size() > m_updateBuffer.size())
+        return m_creationBuffer.size() + base_size;
 
-    return bUpdateBuffer.size() + base_size;
+    return m_updateBuffer.size() + base_size;
 }
 
 bool UpdateManager::readyForUpdate() const
 {
-    return bCreationBuffer.size() != 0
-        || bUpdateBuffer.size() != 0
-        || mOutOfRangeIds.size() != 0;
+    return m_creationBuffer.size() != 0 || m_updateBuffer.size() != 0 || m_outOfRangeIds.size() != 0;
 }
 
 void UpdateManager::internalProcessPendingUpdates()
 {
     if (!readyForUpdate())
-    {
         return;
-    }
 
     ByteBuffer buffer(calculateBufferSize());
 
-    if (bCreationBuffer.size() > 0 || mOutOfRangeIdCount > 0)
+    if (m_creationBuffer.size() > 0 || m_outOfRangeIdCount > 0)
     {
 #if VERSION_STRING >= Cata
         buffer << uint16_t(m_owner->GetMapId());
 #endif
 
-        if (mOutOfRangeIds.size() > 0)
-        {
-            buffer << uint32_t(mCreationCount + 1);
-        }
+        if (m_outOfRangeIds.size() > 0)
+            buffer << uint32_t(m_creationCount + 1);
         else
-        {
-            buffer << uint32_t(mCreationCount);
-        }
+            buffer << uint32_t(m_creationCount);
 
 
 #if VERSION_STRING <= TBC
         buffer << uint8_t(1);
 #endif
 
-        if (mOutOfRangeIdCount > 0)
+        if (m_outOfRangeIdCount > 0)
         {
             buffer << uint8_t(UPDATETYPE_OUT_OF_RANGE_OBJECTS);
-            buffer << uint32_t(mOutOfRangeIdCount);
-            buffer.append(mOutOfRangeIds);
-            mOutOfRangeIds.clear();
-            mOutOfRangeIdCount = 0;
+            buffer << uint32_t(m_outOfRangeIdCount);
+            buffer.append(m_outOfRangeIds);
+            m_outOfRangeIds.clear();
+            m_outOfRangeIdCount = 0;
         }
 
-        if (bCreationBuffer.size() > 0)
+        if (m_creationBuffer.size() > 0)
         {
-            buffer.append(bCreationBuffer);
-            bCreationBuffer.clear();
-            mCreationCount = 0;
+            buffer.append(m_creationBuffer);
+            m_creationBuffer.clear();
+            m_creationCount = 0;
         }
 
         auto sent_packet = false;
 #if VERSION_STRING < Cata
         if (buffer.wpos() > m_compressionThreshold)
-        {
             sent_packet = m_owner->compressAndSendUpdateBuffer(uint32_t(buffer.wpos()), buffer.contents());
-        }
 #endif
 
         if (!sent_packet)
-        {
             m_owner->getSession()->OutPacket(SMSG_UPDATE_OBJECT, uint16_t(buffer.wpos()), buffer.contents());
-        }
 }
 
-    if (bUpdateBuffer.size() > 0)
+    if (m_updateBuffer.size() > 0)
     {
         buffer.clear();
 
@@ -181,38 +163,30 @@ void UpdateManager::internalProcessPendingUpdates()
         buffer << uint16_t(m_owner->GetMapId());
 #endif
 
-        if (mOutOfRangeIds.size() > 0)
-        {
-            buffer << uint32_t(mUpdateCount + 1);
-        }
+        if (m_outOfRangeIds.size() > 0)
+            buffer << uint32_t(m_updateCount + 1);
         else
-        {
-            buffer << uint32_t(mUpdateCount);
-        }
+            buffer << uint32_t(m_updateCount);
 
 #if VERSION_STRING <= TBC
         buffer << uint8_t(1);
 #endif
 
-        buffer.append(bUpdateBuffer);
-        bUpdateBuffer.clear();
-        mUpdateCount = 0;
+        buffer.append(m_updateBuffer);
+        m_updateBuffer.clear();
+        m_updateCount = 0;
 
         auto sent_packet = false;
 #if VERSION_STRING < Cata
         if (buffer.wpos() > m_compressionThreshold)
-        {
             sent_packet = m_owner->compressAndSendUpdateBuffer(uint32_t(buffer.wpos()), buffer.contents());
-        }
 #endif
 
         if (!sent_packet)
-        {
             m_owner->getSession()->OutPacket(SMSG_UPDATE_OBJECT, uint16_t(buffer.wpos()), buffer.contents());
-        }
     }
 
-    bProcessPending = false;
+    m_processPending = false;
     internalSendDelayedPackets();
 }
 
@@ -220,27 +194,23 @@ void UpdateManager::internalSendDelayedPackets()
 {
     const auto session = m_owner->getSession();
     for (const auto& packet : m_delayedPackets)
-    {
         session->SendPacket(packet.get());
-    }
 
     m_delayedPackets.clear();
 }
 
 void UpdateManager::internalPushUpdatesIfBufferIsFull(size_t additionalDataSize)
 {
-    if (additionalDataSize + calculateBufferSize() >= MAX_UPDATE_SIZE)
-    {
+    if (additionalDataSize + calculateBufferSize() >= m_maxUpdateSize)
         internalProcessPendingUpdates();
-    }
 }
 
 void UpdateManager::internalUpdateMapMgr()
 {
     const auto mapMgr = m_owner->getWorldMap();
-    if (mapMgr != nullptr && !bProcessPending)
+    if (mapMgr != nullptr && !m_processPending)
     {
-        bProcessPending = true;
+        m_processPending = true;
         mapMgr->pushToProcessed(m_owner);
     }
 }

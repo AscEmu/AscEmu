@@ -19,20 +19,20 @@ typedef std::map<uint64_t, ByteBuffer*> SplineMap;
 
 class UpdateManager
 {
-    const size_t MAX_UPDATE_SIZE = 63000;
+    const size_t m_maxUpdateSize = 63000;
 
-    std::mutex mtx_updateBuffer;
-    std::mutex mtx_delayedPacketsLock;
+    std::mutex m_mutexUpdateBuffer;
+    std::mutex m_mutexDelayedPackets;
 
     size_t m_compressionThreshold;
 
-    ByteBuffer bCreationBuffer;
-    uint32_t mCreationCount;
-    ByteBuffer bUpdateBuffer;
-    bool bProcessPending;
-    ByteBuffer mOutOfRangeIds;
-    uint32_t mUpdateCount;
-    uint32_t mOutOfRangeIdCount;
+    ByteBuffer m_creationBuffer;
+    uint32_t m_creationCount;
+    ByteBuffer m_updateBuffer;
+    bool m_processPending;
+    ByteBuffer m_outOfRangeIds;
+    uint32_t m_updateCount;
+    uint32_t m_outOfRangeIdCount;
 
     std::vector<std::unique_ptr<WorldPacket>> m_delayedPackets;
     Player* m_owner;

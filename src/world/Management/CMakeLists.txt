@@ -16,7 +16,7 @@ set(SRC_MANAGEMENT_FILES
     ${PATH_PREFIX}/AuctionMgr.cpp
     ${PATH_PREFIX}/AuctionMgr.h
     ${PATH_PREFIX}/CalendarMgr.cpp
-    ${PATH_PREFIX}/CalendarMgr.h
+    ${PATH_PREFIX}/CalendarMgr.hpp
     ${PATH_PREFIX}/Charter.cpp
     ${PATH_PREFIX}/Charter.hpp
     ${PATH_PREFIX}/EquipmentSetMgr.cpp

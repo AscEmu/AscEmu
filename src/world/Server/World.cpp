@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldConf.h"
 #include "Management/AddonMgr.h"
 #include "Management/AuctionMgr.h"
-#include "Management/CalendarMgr.h"
+#include "Management/CalendarMgr.hpp"
 #include "Objects/Item.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Management/WordFilter.h"
@@ -974,7 +974,7 @@ void World::loadMySQLTablesByTask()
     sWeatherMgr.loadFromDB();
     sAddonMgr.LoadFromDB();
     sGameEventMgr.LoadFromDB();
-    sCalendarMgr.LoadFromDB();
+    sCalendarMgr.loadFromDB();
 
     sCommandTableStorage.Load();
     sLogger.info("WordFilter : Loading...");
