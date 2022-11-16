@@ -1604,9 +1604,18 @@ bool Unit::canReachWithAttack(Unit* unitTarget)
 
     if (isPlayer())
     {
-        if (dynamic_cast<Player*>(this)->isMoving() || unitTarget->isPlayer() && dynamic_cast<Player*>(unitTarget)->isMoving())
+        if (unitTarget->isPlayer() && dynamic_cast<Player*>(unitTarget)->isMoving())
         {
             uint32_t latency = dynamic_cast<Player*>(unitTarget)->getSession() ? dynamic_cast<Player*>(unitTarget)->getSession()->GetLatency() : 0;
+
+            latency = latency > 500 ? 500 : latency;
+
+            attackreach += getSpeedRate(TYPE_RUN, true) * 0.001f * static_cast<float>(latency);
+        }
+
+        if (dynamic_cast<Player*>(this)->isMoving())
+        {
+            uint32_t latency = dynamic_cast<Player*>(this)->getSession() ? dynamic_cast<Player*>(this)->getSession()->GetLatency() : 0;
 
             latency = latency > 500 ? 500 : latency;
 
