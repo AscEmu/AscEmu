@@ -583,9 +583,9 @@ struct GameObjectProperties
 
     bool isLargeGameObject() const
     {
-        // disable for now Gameobjects wont Update in WorldMap
+        //todo disable for now Gameobjects wont Update in WorldMap
         return false;
-        switch (type)
+        /*switch (type)
         {
             case GAMEOBJECT_TYPE_BUTTON:            return button.large != 0;
             case GAMEOBJECT_TYPE_QUESTGIVER:        return questgiver.large != 0;
@@ -596,14 +596,14 @@ struct GameObjectProperties
             case GAMEOBJECT_TYPE_SPELLCASTER:       return spell_caster.large != 0;
             case GAMEOBJECT_TYPE_CAPTURE_POINT:     return capturePoint.large != 0;
             default: return false;
-        }
+        }*/
     }
 
     bool isInfiniteGameObject() const
     {
-        // disable for now Gameobjects wont Update in WorldMap
+        //todo disable for now Gameobjects wont Update in WorldMap
         return false;
-        switch (type)
+        /*switch (type)
         {
             case GAMEOBJECT_TYPE_DOOR:                  return true;
             case GAMEOBJECT_TYPE_FLAGSTAND:             return true;
@@ -611,7 +611,7 @@ struct GameObjectProperties
             case GAMEOBJECT_TYPE_TRAPDOOR:              return true;
             case GAMEOBJECT_TYPE_TRANSPORT:             return true;
             default: return false;
-        }
+        }*/
     }
 
     bool cannotBeUsedUnderImmunity() const // Cannot be used/activated/looted by players under immunity effects (example: Divine Shield)

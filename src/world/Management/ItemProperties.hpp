@@ -132,7 +132,7 @@ struct ItemProperties
 
         int32_t cost = BuyPrice;
 
-        if (factionStanding && factionStanding <= 9)
+        if (factionStanding && factionStanding <= 8)
             cost = float2int32(ceilf(BuyPrice * pricemod[factionStanding]));
 
         return cost * count;
