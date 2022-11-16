@@ -15479,21 +15479,21 @@ void Player::addItemsToWorld()
 {
     for (uint8_t slotIndex = 0; slotIndex < INVENTORY_KEYRING_END; ++slotIndex)
     {
-        if (const auto pItem = getItemInterface()->GetInventoryItem(slotIndex))
+        if (const auto inventoryItem = getItemInterface()->GetInventoryItem(slotIndex))
         {
-            pItem->PushToWorld(m_WorldMap);
+            inventoryItem->PushToWorld(m_WorldMap);
 
-            if (i < INVENTORY_SLOT_BAG_END)      // only equipment slots get mods.
-                applyItemMods(pItem, slotIndex, true, false, true);
+            if (slotIndex < INVENTORY_SLOT_BAG_END)      // only equipment slots get mods.
+                applyItemMods(inventoryItem, slotIndex, true, false, true);
 
-            if (i >= CURRENCYTOKEN_SLOT_START && slotIndex < CURRENCYTOKEN_SLOT_END)
-                updateKnownCurrencies(pItem->getEntry(), true);
+            if (slotIndex >= CURRENCYTOKEN_SLOT_START && slotIndex < CURRENCYTOKEN_SLOT_END)
+                updateKnownCurrencies(inventoryItem->getEntry(), true);
 
-            if (pItem->isContainer() && getItemInterface()->IsBagSlot(slotIndex))
+            if (inventoryItem->isContainer() && getItemInterface()->IsBagSlot(slotIndex))
             {
-                for (uint32_t containerSlot = 0; containerSlot < pItem->getItemProperties()->ContainerSlots; ++containerSlot)
+                for (uint32_t containerSlot = 0; containerSlot < inventoryItem->getItemProperties()->ContainerSlots; ++containerSlot)
                 {
-                    if (Item* item = (static_cast<Container*>(pItem))->GetItem(static_cast<int16_t>(containerSlot)))
+                    if (Item* item = (static_cast<Container*>(inventoryItem))->GetItem(static_cast<int16_t>(containerSlot)))
                         item->PushToWorld(m_WorldMap);
                 }
             }
