@@ -12,30 +12,28 @@ class WeatherInfo;
 class SERVER_DECL WeatherMgr
 {
 private:
-
-        WeatherMgr() = default;
-        ~WeatherMgr() = default;
+    WeatherMgr() = default;
+    ~WeatherMgr() = default;
 
 public:
+    static WeatherMgr& getInstance();
+    void finalize();
 
-        static WeatherMgr& getInstance();
-        void finalize();
+    WeatherMgr(WeatherMgr&&) = delete;
+    WeatherMgr(WeatherMgr const&) = delete;
+    WeatherMgr& operator=(WeatherMgr&&) = delete;
+    WeatherMgr& operator=(WeatherMgr const&) = delete;
 
-        WeatherMgr(WeatherMgr&&) = delete;
-        WeatherMgr(WeatherMgr const&) = delete;
-        WeatherMgr& operator=(WeatherMgr&&) = delete;
-        WeatherMgr& operator=(WeatherMgr const&) = delete;
+    void loadFromDB();
+    void sendWeather(Player* plr);
 
-        void loadFromDB();
-        void sendWeather(Player* plr);
+    void sendWeatherForZone(uint32_t type, float density, uint32_t zoneId);
+    void sendWeatherForPlayer(uint32_t type, float density, Player* player);
 
-        void sendWeatherForZone(uint32_t type, float density, uint32_t zoneId);
-        void sendWeatherForPlayer(uint32_t type, float density, Player* player);
-
-        uint32 getSound(uint32 effect, float density);
+    uint32_t getSound(uint32_t effect, float density);
 
 private:
-        std::map<uint32, WeatherInfo*> m_zoneWeathers;
+    std::map<uint32_t, WeatherInfo*> m_zoneWeathers;
 };
 
 class WeatherInfo : public EventableObject
@@ -43,30 +41,28 @@ class WeatherInfo : public EventableObject
     friend class WeatherMgr;
 
 public:
+    WeatherInfo();
+    ~WeatherInfo();
 
-        WeatherInfo();
-        ~WeatherInfo();
-
-        void buildUp();
-        void update();
-        void sendUpdate() const;
-        void sendUpdate(Player* player) const;
+    void buildUp();
+    void update();
+    void sendUpdate() const;
+    void sendUpdate(Player* player) const;
 
 protected:
+    void _generateWeather();
 
-        void _generateWeather();
+    uint32_t m_zoneId;
 
-        uint32 m_zoneId;
+    uint32_t m_totalTime;
+    uint32_t m_currentTime;
 
-        uint32 m_totalTime;
-        uint32 m_currentTime;
+    float m_maxDensity;
+    float m_currentDensity;
 
-        float m_maxDensity;
-        float m_currentDensity;
-
-        uint32 m_currentEffect;
-        std::map<uint32, uint32> m_effectValues;
-        const float m_densityUpdate = 0.05f;
+    uint32_t m_currentEffect;
+    std::map<uint32_t, uint32_t> m_effectValues;
+    const float m_densityUpdate = 0.05f;
 };
 
 #define sWeatherMgr WeatherMgr::getInstance()

@@ -34,12 +34,12 @@ enum WeatherSounds
     WEATHER_SANDSTORMHEAVY      = 8558
 };
 
-uint32 WeatherMgr::getSound(uint32 effect, float density)
+uint32_t WeatherMgr::getSound(uint32_t effect, float density)
 {
     if (density <= 0.30f)
         return WEATHER_NOSOUND;
 
-    uint32 sound;
+    uint32_t sound;
 
     switch (effect)
     {
@@ -174,7 +174,7 @@ void WeatherInfo::_generateWeather()
     m_maxDensity = randomFloat + 1;
     m_totalTime = (Util::getRandomUInt(11) + 5) * 1000 * 120;
 
-    const uint32 randomUInt = Util::getRandomUInt(100);
+    const uint32_t randomUInt = Util::getRandomUInt(100);
 
     if (randomUInt <= m_effectValues[4])        // low chance
         m_currentEffect = m_effectValues[5];    // low type
@@ -185,8 +185,8 @@ void WeatherInfo::_generateWeather()
 
     sendUpdate();
 
-    sEventMgr.AddEvent(this, &WeatherInfo::buildUp, EVENT_WEATHER_UPDATE, static_cast<uint32>(m_totalTime / ceil(m_maxDensity / m_densityUpdate) * 2), 0, 0);
-    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Forecast for zone:%d new type:%d new interval:%d ms", m_zoneId, m_currentEffect, static_cast<uint32>(m_totalTime / ceil(m_maxDensity / m_densityUpdate) * 2));
+    sEventMgr.AddEvent(this, &WeatherInfo::buildUp, EVENT_WEATHER_UPDATE, static_cast<uint32_t>(m_totalTime / ceil(m_maxDensity / m_densityUpdate) * 2), 0, 0);
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Forecast for zone:%d new type:%d new interval:%d ms", m_zoneId, m_currentEffect, static_cast<uint32_t>(m_totalTime / ceil(m_maxDensity / m_densityUpdate) * 2));
 }
 
 void WeatherInfo::buildUp()
@@ -194,7 +194,7 @@ void WeatherInfo::buildUp()
     if (m_currentDensity >= 0.50f)
     {
         sEventMgr.RemoveEvents(this, EVENT_WEATHER_UPDATE);
-        sEventMgr.AddEvent(this, &WeatherInfo::update, EVENT_WEATHER_UPDATE, static_cast<uint32>(m_totalTime / ceil(m_maxDensity / m_densityUpdate) * 4), 0, 0);
+        sEventMgr.AddEvent(this, &WeatherInfo::update, EVENT_WEATHER_UPDATE, static_cast<uint32_t>(m_totalTime / ceil(m_maxDensity / m_densityUpdate) * 4), 0, 0);
     }
     else
     {
