@@ -134,70 +134,89 @@ void CombatHandler::updateCombat(uint32_t msTime)
     auto diff = msTime - m_lastCombatUpdateTime;
     if (diff >= COMBAT_BATCH_INTERVAL)
     {
-        std::lock_guard<std::mutex> guard(m_mutexCombat);
         m_lastCombatUpdateTime = msTime;
 
         // Make sure unit cannot leave combat in the same update tick he got it
         auto hadCombatAction = false;
 
-        // Unit is attacking or healing these targets
-        if (!m_combatBatchAttackingTargets.empty())
         {
-            for (auto itr = m_combatBatchAttackingTargets.cbegin(); itr != m_combatBatchAttackingTargets.cend();)
+            std::lock_guard<std::mutex> guard(m_mutexCombat);
+
+            // Unit is attacking or healing these targets
+            if (!m_combatBatchAttackingTargets.empty())
             {
-                // Make sure target still exists
-                auto* const target = itr->second.unit;
-                if (target == nullptr || !target->IsInWorld())
+                for (auto itr = m_combatBatchAttackingTargets.cbegin(); itr != m_combatBatchAttackingTargets.cend();)
                 {
+                    // Make sure target still exists
+                    auto* const target = itr->second.unit;
+                    if (target == nullptr || !target->IsInWorld())
+                    {
+                        itr = m_combatBatchAttackingTargets.erase(itr);
+                        continue;
+                    }
+
+                    _checkPvpFlags(target, itr->second.isFriendly);
+                    _combatAction(target, msTime, itr->second.isFriendly, true);
+                    hadCombatAction = true;
+
                     itr = m_combatBatchAttackingTargets.erase(itr);
-                    continue;
                 }
-
-                _checkPvpFlags(target, itr->second.isFriendly);
-                _combatAction(target, msTime, itr->second.isFriendly, true);
-                hadCombatAction = true;
-
-                itr = m_combatBatchAttackingTargets.erase(itr);
             }
-        }
 
-        // Unit is being attacked or healed by these targets
-        if (!m_combatBatchAttackedByTargets.empty())
-        {
-            for (auto itr = m_combatBatchAttackedByTargets.cbegin(); itr != m_combatBatchAttackedByTargets.cend();)
+            // Unit is being attacked or healed by these targets
+            if (!m_combatBatchAttackedByTargets.empty())
             {
-                // Make sure attacker still exists
-                auto* const attacker = itr->second.unit;
-                if (attacker == nullptr || !attacker->IsInWorld())
+                for (auto itr = m_combatBatchAttackedByTargets.cbegin(); itr != m_combatBatchAttackedByTargets.cend();)
                 {
-                    itr = m_combatBatchAttackedByTargets.erase(itr);
-                    continue;
-                }
-
-                if (getOwner()->isPlayer() && attacker->isPlayer())
-                {
-                    // Special pvp case - neither attacker or victim should enter in combat
-                    // if attacker managed to clear combat right after attack
-                    // i.e. if rogue casts vanish right after ambush but before combat batch,
-                    // neither rogue or victim should enter in combat and rogue should be able to sap target
-                    if (!attacker->getCombatHandler().isInPreCombatWithUnit(getOwner()) &&
-                        !attacker->getCombatHandler().isInCombatWithPlayer(dynamic_cast<Player*>(getOwner())))
+                    // Make sure attacker still exists
+                    auto* const attacker = itr->second.unit;
+                    if (attacker == nullptr || !attacker->IsInWorld())
                     {
                         itr = m_combatBatchAttackedByTargets.erase(itr);
                         continue;
                     }
+
+                    if (getOwner()->isPlayer() && attacker->isPlayer())
+                    {
+                        // Special pvp case - neither attacker or victim should enter in combat
+                        // if attacker managed to clear combat right after attack
+                        // i.e. if rogue casts vanish right after ambush but before combat batch,
+                        // neither rogue or victim should enter in combat and rogue should be able to sap target
+                        if (!attacker->getCombatHandler().isInPreCombatWithUnit(getOwner()) &&
+                            !attacker->getCombatHandler().isInCombatWithPlayer(dynamic_cast<Player*>(getOwner())))
+                        {
+                            itr = m_combatBatchAttackedByTargets.erase(itr);
+                            continue;
+                        }
+                    }
+
+                    _combatAction(attacker, msTime, false, false);
+                    hadCombatAction = true;
+
+                    itr = m_combatBatchAttackedByTargets.erase(itr);
                 }
-
-                _combatAction(attacker, msTime, false, false);
-                hadCombatAction = true;
-
-                itr = m_combatBatchAttackedByTargets.erase(itr);
             }
+        }
+
+        if (m_justEnteredInCombat)
+        {
+            m_justEnteredInCombat = false;
+
+            if (getOwner()->isPlayer())
+                sHookInterface.OnEnterCombat(dynamic_cast<Player*>(getOwner()), m_enterCombatInfo.enteringCombatWith);
+
+            if (getOwner()->isCreature() && getOwner()->getAIInterface())
+                getOwner()->getAIInterface()->justEnteredCombat(m_enterCombatInfo.enteringCombatWith);
+
+            // If summons get in combat master will also get in combat
+            // However if master gets in combat summons won't get in combat if kept on passive
+            _notifyOwner(m_enterCombatInfo.isFriendly, m_enterCombatInfo.enteringCombatWith, m_enterCombatInfo.initiatingCombat);
         }
 
         if (!isInCombat() || hadCombatAction)
             return;
 
+        std::lock_guard<std::mutex> guard(m_mutexCombat);
         if (!m_combatInitiatedWith.empty())
         {
             for (auto itr = m_combatInitiatedWith.begin(); itr != m_combatInitiatedWith.end();)
@@ -275,15 +294,10 @@ void CombatHandler::_enterCombat(bool initiatingCombat, Unit* enteringCombatWith
     getOwner()->addUnitFlags(UNIT_FLAG_COMBAT);
     m_inCombat = true;
 
-    if (getOwner()->isPlayer())
-        sHookInterface.OnEnterCombat(dynamic_cast<Player*>(getOwner()), enteringCombatWith);
-
-    if (getOwner()->isCreature() && getOwner()->getAIInterface())
-        getOwner()->getAIInterface()->justEnteredCombat(enteringCombatWith);
-
-    // If summons get in combat master will also get in combat
-    // However if master gets in combat summons won't get in combat if kept on passive
-    _notifyOwner(friendlyTarget, enteringCombatWith, initiatingCombat);
+    m_enterCombatInfo.enteringCombatWith = enteringCombatWith;
+    m_enterCombatInfo.isFriendly = friendlyTarget;
+    m_enterCombatInfo.initiatingCombat = initiatingCombat;
+    m_justEnteredInCombat = true;
 }
 
 void CombatHandler::_leaveCombat()

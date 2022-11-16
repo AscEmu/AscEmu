@@ -50,6 +50,13 @@ private:
         bool isFriendly = false;
     };
 
+    struct EnterCombatInfo
+    {
+        Unit* enteringCombatWith = nullptr;
+        bool isFriendly = false;
+        bool initiatingCombat = false;
+    };
+
     // <Guid, BatchTargetInfo>
     typedef std::map<uint64_t, BatchTargetInfo> BatchTargetMap;
     // <Guid, last hostile action>
@@ -59,6 +66,10 @@ private:
 
     void _enterCombat(bool initiatingCombat, Unit* enteringCombatWith, bool friendlyTarget);
     void _leaveCombat();
+
+    // Delay enter combat script calls abit
+    EnterCombatInfo m_enterCombatInfo;
+    bool m_justEnteredInCombat = false;
 
     void _combatAction(Unit* target, uint32_t msTime, bool friendlyAction, bool initiatingCombat);
 
