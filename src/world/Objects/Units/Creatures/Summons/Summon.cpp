@@ -182,11 +182,11 @@ void Summon::Update(unsigned long time_passed)
 void Summon::unSummon()
 {   
     // If this summon is summoned by a totem, unsummon the totem also
-    if (getSummonerUnit() && getSummonerUnit()->isTotem())
-        dynamic_cast<TotemSummon*>(getSummonerUnit())->unSummon();
+    if (getUnitOwnerOrSelf() && getUnitOwnerOrSelf()->isTotem())
+        dynamic_cast<TotemSummon*>(getUnitOwnerOrSelf())->unSummon();
 
     // Script Call
-    if (Unit* owner = getSummonerUnit())
+    if (Unit* owner = getUnitOwnerOrSelf())
     {
         if (owner->ToCreature() && owner->IsInWorld() && owner->ToCreature()->GetScript())
             owner->ToCreature()->GetScript()->OnSummonDespawn(this);
@@ -217,10 +217,10 @@ void Summon::OnPushToWorld()
 
 void Summon::OnPreRemoveFromWorld()
 {
-    if (getSummonerUnit())
+    if (getUnitOwnerOrSelf())
     {
         if (getCreatedBySpellId() != 0)
-            getSummonerUnit()->removeAllAurasById(getCreatedBySpellId());
+            getUnitOwnerOrSelf()->removeAllAurasById(getCreatedBySpellId());
 
         if (getPlayerOwner() != nullptr)
             getPlayerOwner()->sendDestroyObjectPacket(getGuid());
@@ -231,7 +231,7 @@ void Summon::OnPreRemoveFromWorld()
             if (uint32_t slot = m_Properties->Slot)
             {
                 WoWGuid guid = getGuid();
-                if (Unit* owner = getSummonerUnit())
+                if (Unit* owner = getUnitOwnerOrSelf())
                 {
                     if (SummonHandler* summonHandler = owner->getSummonInterface())
                     {
@@ -257,25 +257,20 @@ void Summon::onRemoveInRangeObject(Object* object)
     Creature::onRemoveInRangeObject(object);
 }
 
-Unit* Summon::getSummonerUnit()
-{
-    return m_summonerGuid ? getWorldMapUnit(m_summonerGuid) : nullptr;
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Override Unit functions
 void Summon::die(Unit* pAttacker, uint32 damage, uint32 spellid)
 {
     // If this summon is summoned by a totem, unsummon the totem on death
-    if (getSummonerUnit() && getSummonerUnit()->isTotem())
-        static_cast<TotemSummon*>(getSummonerUnit())->unSummon();
+    if (getUnitOwnerOrSelf() && getUnitOwnerOrSelf()->isTotem())
+        static_cast<TotemSummon*>(getUnitOwnerOrSelf())->unSummon();
 
     Creature::die(pAttacker, damage, spellid);
 }
 
 Unit* Summon::getUnitOwner()
 {
-    return getCreatedByGuid() ? getWorldMapUnit(getCreatedByGuid()) : nullptr;
+    return m_summonerGuid ? getWorldMapUnit(m_summonerGuid) : nullptr;
 }
 
 Unit* Summon::getUnitOwnerOrSelf()
@@ -493,7 +488,7 @@ void TotemSummon::die(Unit* /*pAttacker*/, uint32_t /*damage*/, uint32_t /*spell
 // Misc
 void TotemSummon::SetupSpells()
 {
-    if (getSummonerUnit() == nullptr)
+    if (getUnitOwner() == nullptr)
         return;
 
     const auto creatorSpell = sSpellMgr.getSpellInfo(getCreatedBySpellId());
