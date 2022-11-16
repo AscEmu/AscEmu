@@ -107,9 +107,9 @@ bool MinorHealthStone(uint8_t /*effectIndex*/, Spell* s)
     if (s->getPlayerCaster() == nullptr)
         return false;
 
-    if (s->getPlayerCaster()->HasSpell(18692))
+    if (s->getPlayerCaster()->hasSpell(18692))
         s->CreateItem(19004);
-    else if (s->getPlayerCaster()->HasSpell(18693))
+    else if (s->getPlayerCaster()->hasSpell(18693))
         s->CreateItem(19005);
     else
         s->CreateItem(5512);
@@ -122,9 +122,9 @@ bool LesserHealthStone(uint8_t /*effectIndex*/, Spell* s)
     if (s->getPlayerCaster() == nullptr)
         return false;
 
-    if (s->getPlayerCaster()->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->getPlayerCaster()->hasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(19007);
-    else if (s->getPlayerCaster()->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->getPlayerCaster()->hasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(19006);
     else
         s->getPlayerCaster()->getItemInterface()->AddItemById(5511, 1, 0);
@@ -136,9 +136,9 @@ bool HealthStone(uint8_t /*effectIndex*/, Spell* s)
     if (s->getPlayerCaster() == nullptr)
         return false;
 
-    if (s->getPlayerCaster()->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->getPlayerCaster()->hasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(19009);
-    else if (s->getPlayerCaster()->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->getPlayerCaster()->hasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(19008);
     else
         s->CreateItem(5509);
@@ -151,9 +151,9 @@ bool GreaterHealthStone(uint8_t /*effectIndex*/, Spell* s)
     if (s->getPlayerCaster() == nullptr)
         return false;
 
-    if (s->getPlayerCaster()->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->getPlayerCaster()->hasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(19011);
-    else if (s->getPlayerCaster()->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->getPlayerCaster()->hasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(19010);
     else
         s->CreateItem(5510);
@@ -166,9 +166,9 @@ bool MajorHealthStone(uint8_t /*effectIndex*/, Spell* s)
     if (s->getPlayerCaster() == nullptr)
         return false;
 
-    if (s->getPlayerCaster()->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->getPlayerCaster()->hasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(19013);
-    else if (s->getPlayerCaster()->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->getPlayerCaster()->hasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(19012);
     else
         s->CreateItem(9421);
@@ -181,9 +181,9 @@ bool MasterHealthStone(uint8_t /*effectIndex*/, Spell* s)
     if (s->getPlayerCaster() == nullptr)
         return false;
 
-    if (s->getPlayerCaster()->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->getPlayerCaster()->hasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(22105);
-    else if (s->getPlayerCaster()->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->getPlayerCaster()->hasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(22104);
     else
         s->CreateItem(22103);
@@ -196,9 +196,9 @@ bool DemonicHealthStone(uint8_t /*effectIndex*/, Spell* s)
     if (s->getPlayerCaster() == nullptr)
         return false;
 
-    if (s->getPlayerCaster()->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->getPlayerCaster()->hasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(36891);
-    else if (s->getPlayerCaster()->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->getPlayerCaster()->hasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(36890);
     else
         s->CreateItem(36889);
@@ -211,9 +211,9 @@ bool FelHealthStone(uint8_t /*effectIndex*/, Spell* s)
     if (s->getPlayerCaster() == nullptr)
         return false;
 
-    if (s->getPlayerCaster()->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->getPlayerCaster()->hasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(36894);
-    else if (s->getPlayerCaster()->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->getPlayerCaster()->hasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(36893);
     else
         s->CreateItem(36892);

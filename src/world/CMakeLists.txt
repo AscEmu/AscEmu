@@ -238,7 +238,7 @@ if (USE_PCH)
     Objects/ObjectDefines.h
     Objects/Units/Creatures/Creature.h
     Objects/Units/Creatures/CreatureDefines.hpp
-    Objects/Units/Players/Player.h
+    Objects/Units/Players/Player.hpp
     Objects/Units/Unit.hpp
     Objects/Units/UnitDefines.hpp
     Server/Definitions.h
@@ -260,7 +260,7 @@ if (USE_PCH)
     Spell/SpellScript.hpp
     Spell/SpellTarget.h
     Storage/MySQLDataStore.hpp
-    Objects/Units/Players/Player.h
+    Objects/Units/Players/Player.hpp
     Objects/Units/Unit.hpp
     Management/ObjectMgr.h
 )

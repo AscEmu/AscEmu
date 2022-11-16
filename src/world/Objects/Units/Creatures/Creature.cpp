@@ -2711,7 +2711,7 @@ void Creature::SetType(uint32 t)
     m_Creature_type = t;
 }
 
-void Creature::BuildPetSpellList(WorldPacket& data)
+void Creature::buildPetSpellList(WorldPacket& data)
 {
     data << uint64_t(getGuid());
     data << uint16_t(creature_properties->Family);

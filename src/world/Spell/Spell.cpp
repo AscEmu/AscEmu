@@ -941,22 +941,22 @@ void Spell::finish(bool successful)
         // Potion cooldown starts after leaving combat
         if (getItemCaster()->getItemProperties()->Class == ITEM_CLASS_CONSUMABLE && getItemCaster()->getItemProperties()->SubClass == 1)
         {
-            getItemCaster()->getOwner()->SetLastPotion(getItemCaster()->getItemProperties()->ItemId);
+            getItemCaster()->getOwner()->setLastPotion(getItemCaster()->getItemProperties()->ItemId);
             if (!getItemCaster()->getOwner()->getCombatHandler().isInCombat())
-                getItemCaster()->getOwner()->UpdatePotionCooldown();
+                getItemCaster()->getOwner()->updatePotionCooldown();
         }
         else
         {
             if (i < MAX_ITEM_PROTO_SPELLS)
-                getItemCaster()->getOwner()->Cooldown_AddItem(getItemCaster()->getItemProperties(), i);
+                getItemCaster()->getOwner()->cooldownAddItem(getItemCaster()->getItemProperties(), i);
         }
     }
 
     if (getPlayerCaster() != nullptr)
     {
-        if (getSpellInfo()->getAttributes() & ATTRIBUTES_STOP_ATTACK && getPlayerCaster()->IsAttacking())
+        if (getSpellInfo()->getAttributes() & ATTRIBUTES_STOP_ATTACK && getPlayerCaster()->isAttacking())
         {
-            getPlayerCaster()->EventAttackStop();
+            getPlayerCaster()->eventAttackStop();
             getPlayerCaster()->smsg_AttackStop(getPlayerCaster()->getWorldMapUnit(getPlayerCaster()->getTargetGuid()));
             getPlayerCaster()->sendPacket(SmsgCancelCombat().serialise().get());
         }
@@ -1758,7 +1758,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 
                     // Check for Beast Mastery spell with exotic creatures
                     ///\ todo: move this to spell script
-                    if (!p_caster->HasSpell(53270) && creatureTarget->IsExotic())
+                    if (!p_caster->hasSpell(53270) && creatureTarget->IsExotic())
                     {
                         SendTameFailure(PETTAME_CANTCONTROLEXOTIC);
                         return SPELL_FAILED_DONT_REPORT;

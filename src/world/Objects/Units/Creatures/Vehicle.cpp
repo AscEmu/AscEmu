@@ -593,7 +593,7 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
         getBase()->addUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE);
 
         WorldPacket spells(SMSG_PET_SPELLS, 100);
-        getBase()->BuildPetSpellList(spells);
+        getBase()->buildPetSpellList(spells);
         passenger->sendPacket(&spells);
 
         static_cast<Player*>(passenger)->setMover(getBase());

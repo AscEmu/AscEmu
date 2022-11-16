@@ -553,7 +553,7 @@ void Item::applyEnchantmentBonus(EnchantmentSlot slot, bool apply)
                     else
                         m_owner->m_flatResistanceModifierPos[Entry->spell[c]] -= val;
 
-                    m_owner->CalcResistance(static_cast<uint8_t>(Entry->spell[c]));
+                    m_owner->calcResistance(static_cast<uint8_t>(Entry->spell[c]));
                 }
                 break;
 
@@ -563,8 +563,8 @@ void Item::applyEnchantmentBonus(EnchantmentSlot slot, bool apply)
                     if (RandomSuffixAmount)
                         val = RANDOM_SUFFIX_MAGIC_CALCULATION(RandomSuffixAmount, getPropertySeed());
 
-                    m_owner->ModifyBonuses(Entry->spell[c], val, apply);
-                    m_owner->UpdateStats();
+                    m_owner->modifyBonuses(Entry->spell[c], val, apply);
+                    m_owner->updateStats();
                 }
                 break;
 

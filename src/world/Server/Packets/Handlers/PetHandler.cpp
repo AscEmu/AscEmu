@@ -56,8 +56,8 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
                         if (timer == 0)
                             timer = 2000;
 
-                        sEventMgr.AddEvent(_player, &Player::_EventCharmAttack, EVENT_PLAYER_CHARM_ATTACK, timer, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-                        _player->_EventCharmAttack();
+                        sEventMgr.AddEvent(_player, &Player::eventCharmAttack, EVENT_PLAYER_CHARM_ATTACK, timer, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                        _player->eventCharmAttack();
                     }
                 } break;
                 default:

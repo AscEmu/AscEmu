@@ -372,7 +372,7 @@ void WorldSession::LogoutPlayer(bool Save)
         // _player->SaveAuras();
 
         if (Save)
-            _player->SaveToDB(false);
+            _player->saveToDB(false);
 
         // Dismounting with removeAllAuras may in certain cases add a player
         // aura,
@@ -384,7 +384,7 @@ void WorldSession::LogoutPlayer(bool Save)
 
         _player->removeAllAuras();
         if (_player->IsInWorld())
-            _player->RemoveFromWorld();
+            _player->removeFromWorld();
 
         if (_player->m_playerInfo->m_Group != nullptr)
             _player->m_playerInfo->m_Group->Update();

@@ -123,12 +123,12 @@ public:
         if (apply)
         {
             if (aur->getPlayerOwner() != nullptr)
-                aur->getPlayerOwner()->AddShapeShiftSpell(SPELL_LEADER_OF_THE_PACK_AURA);
+                aur->getPlayerOwner()->addShapeShiftSpell(SPELL_LEADER_OF_THE_PACK_AURA);
         }
         else
         {
             if (aur->getPlayerOwner() != nullptr)
-                aur->getPlayerOwner()->RemoveShapeShiftSpell(SPELL_LEADER_OF_THE_PACK_AURA);
+                aur->getPlayerOwner()->removeShapeShiftSpell(SPELL_LEADER_OF_THE_PACK_AURA);
         }
 
         return SpellScriptCheckDummy::DUMMY_OK;

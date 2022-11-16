@@ -47,9 +47,9 @@ bool Readiness(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (!pSpell->getPlayerCaster())
         return true;
-    pSpell->getPlayerCaster()->ClearCooldownsOnLine(50, pSpell->getSpellInfo()->getId());//Beast Mastery
-    pSpell->getPlayerCaster()->ClearCooldownsOnLine(163, pSpell->getSpellInfo()->getId());//Marksmanship
-    pSpell->getPlayerCaster()->ClearCooldownsOnLine(51, pSpell->getSpellInfo()->getId());//Survival
+    pSpell->getPlayerCaster()->clearCooldownsOnLine(50, pSpell->getSpellInfo()->getId());//Beast Mastery
+    pSpell->getPlayerCaster()->clearCooldownsOnLine(163, pSpell->getSpellInfo()->getId());//Marksmanship
+    pSpell->getPlayerCaster()->clearCooldownsOnLine(51, pSpell->getSpellInfo()->getId());//Survival
     return true;
 }
 
@@ -124,7 +124,7 @@ bool Misdirection(uint8_t /*effectIndex*/, Aura* a, bool apply)
         return true;
 
     if (!apply)
-        sEventMgr.AddEvent(caster, &Player::SetMisdirectionTarget, (uint64_t)0, EVENT_UNK, 250, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(caster, &Player::setMisdirectionTarget, (uint64_t)0, EVENT_UNK, 250, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     return true;
 }

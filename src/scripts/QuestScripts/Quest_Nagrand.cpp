@@ -288,7 +288,7 @@ public:
         {
             Unit* pUnit = getCreature()->getAIInterface()->getCurrentTarget();
             if (pUnit != nullptr && pUnit->isPlayer())
-                static_cast<Player*>(pUnit)->EventAttackStop();
+                static_cast<Player*>(pUnit)->eventAttackStop();
 
             getCreature()->setFaction(35);
             getCreature()->getThreatManager().clearAllThreat();

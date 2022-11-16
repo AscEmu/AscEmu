@@ -263,7 +263,7 @@ public:
         void OnRemoveCorpse();
         void OnRespawn(WorldMap* m);
 
-        void BuildPetSpellList(WorldPacket & data);
+        void buildPetSpellList(WorldPacket & data);
 
     private:
         // Waypoint path

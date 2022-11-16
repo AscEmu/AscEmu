@@ -24,7 +24,7 @@
 #include "Management/ItemInterface.h"
 #include "SpellProc.hpp"
 #include "Objects/Units/Unit.hpp"
-#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/Player.hpp"
 
 class TwinBladesOfAzzinothSpellProc : public SpellProc
 {

@@ -3,7 +3,7 @@ Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Player.h"
+#include "Player.hpp"
 
 #include "Objects/Units/Stats.h"
 
@@ -38,11 +38,11 @@ void Player::updateManaRegeneration()
     regenerateValue = (regenerateValue / 2) * m_pctPowerRegenModifier[POWER_TYPE_MANA];
 
     // This is per 5 seconds
-    float_t mp5 = m_ModInterrMRegen / 5.0f;
+    float_t mp5 = m_modInterrManaRegen / 5.0f;
     for (uint8_t i = 0; i < STAT_COUNT; ++i)
         mp5 += (m_modManaRegenFromStat[i] * getStat(i)) / 500.0f;
 
-    auto manaWhileCastingPct = m_ModInterrMRegenPCT;
+    auto manaWhileCastingPct = m_modInterrManaRegenPct;
     // Cap at 100%
     if (manaWhileCastingPct > 100)
         manaWhileCastingPct = 100;
@@ -129,11 +129,11 @@ void Player::updateManaRegeneration()
     float_t regenerateValue = 0.001f + std::sqrt(static_cast<float_t>(intellect)) * spirit * baseRegen * m_pctPowerRegenModifier[POWER_TYPE_MANA];
 
     // This is per 5 seconds
-    float_t mp5 = m_ModInterrMRegen / 5.0f;
+    float_t mp5 = m_modInterrManaRegen / 5.0f;
     for (uint8_t i = 0; i < STAT_COUNT; ++i)
         mp5 += (m_modManaRegenFromStat[i] * getStat(i)) / 500.0f;
 
-    auto manaWhileCastingPct = m_ModInterrMRegenPCT;
+    auto manaWhileCastingPct = m_modInterrManaRegenPct;
     // Cap at 100%
     if (manaWhileCastingPct > 100)
         manaWhileCastingPct = 100;
@@ -170,9 +170,9 @@ void Player::updateManaRegeneration()
     // In cata 5 second rule no longer exists
     // Instead you regen 5% of your base mana without modifiers while in combat
     float_t baseCombatRegen = getBaseMana() * 0.05f;
-    baseCombatRegen = (baseCombatRegen + m_ModInterrMRegen) / 5.0f;
+    baseCombatRegen = (baseCombatRegen + m_modInterrManaRegen) / 5.0f;
 
-    auto manaWhileInCombatPct = m_ModInterrMRegenPCT;
+    auto manaWhileInCombatPct = m_modInterrManaRegenPct;
     // Cap at 100%
     if (manaWhileInCombatPct > 100)
         manaWhileInCombatPct = 100;
@@ -200,9 +200,9 @@ void Player::updateManaRegeneration()
 
     // Combat Regen = Total Mana * 0.02 + (1.1287 * SPI * Meditation%)
     float_t regenerateValue = baseRegen * spirit * m_pctPowerRegenModifier[POWER_TYPE_MANA];
-    regenerateValue = (regenerateValue + m_ModInterrMRegen) / 5.0f;
+    regenerateValue = (regenerateValue + m_modInterrManaRegen) / 5.0f;
 
-    auto manaWhileInCombatPct = m_ModInterrMRegenPCT;
+    auto manaWhileInCombatPct = m_modInterrManaRegenPct;
     // Cap at 100%
     if (manaWhileInCombatPct > 100)
         manaWhileInCombatPct = 100;

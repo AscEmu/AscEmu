@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/G3DPosition.hpp"
 #include "Spline/MoveSpline.h"
 #include "Spline/MoveSplineInit.h"
-#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "PathGenerator.h"
 #include "WaypointDefines.h"
 #include <algorithm>

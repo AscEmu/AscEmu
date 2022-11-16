@@ -48,7 +48,7 @@ public:
     {
         Player* plr = static_cast<Player*>(getProcOwner());
 
-        setOverrideEffectDamage(0, plr->GetBlockDamageReduction() * (getOriginalSpell()->calculateEffectValue(0)) / 100);
+        setOverrideEffectDamage(0, plr->getBlockDamageReduction() * (getOriginalSpell()->calculateEffectValue(0)) / 100);
 
         // plr->GetBlockDamageReduction() returns ZERO if player has no shield equipped
         if (getOverrideEffectDamage(0) == 0)

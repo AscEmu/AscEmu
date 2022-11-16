@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "PointMovementGenerator.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/AIInterface.h"
-#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Movement/MovementManager.h"
 #include "Movement/MovementDefines.h"
 #include "Movement/Spline/MoveSpline.h"

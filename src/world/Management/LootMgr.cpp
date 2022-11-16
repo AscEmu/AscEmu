@@ -606,7 +606,7 @@ bool LootItem::allowedForPlayer(Player* player) const
         return false;
 
     // not show loot for players without profession or those who already know the recipe
-    if ((itemproto->Flags & ITEM_FLAG_SMART_LOOT) && (!player->hasSkillLine(itemproto->RequiredSkill) || player->HasSpell(itemproto->Spells[1].Id)))
+    if ((itemproto->Flags & ITEM_FLAG_SMART_LOOT) && (!player->hasSkillLine(itemproto->RequiredSkill) || player->hasSpell(itemproto->Spells[1].Id)))
         return false;
 
     // not show loot for not own team

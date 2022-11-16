@@ -456,7 +456,7 @@ public:
         if (caster == NULL)
             return 0;
 
-        if (!Util::checkChance(caster->GetParryChance()))
+        if (!Util::checkChance(caster->getParryChance()))
             return 0;
 
         uint32 dmg_absorbed = *dmg * getEffectDamage(0) / 100;

@@ -286,7 +286,7 @@ bool handleShutDownServerCommand(BaseConsole* baseConsole, int /*argumentCount*/
         for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
         {
             if (itr->second->getSession())
-                itr->second->SaveToDB(false);
+                itr->second->saveToDB(false);
         }
         sObjectMgr._playerslock.unlock();
 

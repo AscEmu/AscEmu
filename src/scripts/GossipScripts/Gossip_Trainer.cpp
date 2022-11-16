@@ -29,11 +29,11 @@ public:
         {
             if (!plr->hasSkillLine(164) || plr->getSkillLineCurrent(164, false) < 300)
                 textid = 20001;
-            else if (!plr->HasSpell(9787))
+            else if (!plr->hasSpell(9787))
                 textid = 20002;
-            else if (plr->HasSpell(17040))
+            else if (plr->hasSpell(17040))
                 textid = 20003;
-            else if (plr->HasSpell(17041) || plr->HasSpell(17039) || plr->HasSpell(9788))
+            else if (plr->hasSpell(17041) || plr->hasSpell(17039) || plr->hasSpell(9788))
                 textid = 20004;
             else
             {
@@ -50,7 +50,7 @@ public:
         }
         else
         {
-            if (!plr->HasSpell(17040))
+            if (!plr->hasSpell(17040))
                 textid = 20007;
             else if (!plr->hasEnoughCoinage(250000) && plr->getLevel() <= 50 || !plr->hasEnoughCoinage(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65
                 || !plr->hasEnoughCoinage(1000000) && plr->getLevel() > 65)
@@ -95,11 +95,11 @@ public:
         {
             if (!plr->hasSkillLine(164) || plr->getSkillLineCurrent(164, false) < 300)
                 textid = 20001;
-            else if (!plr->HasSpell(9787))
+            else if (!plr->hasSpell(9787))
                 textid = 20002;
-            else if (plr->HasSpell(17039))
+            else if (plr->hasSpell(17039))
                 textid = 20003;
-            else if (plr->HasSpell(17041) || plr->HasSpell(17040) || plr->HasSpell(9788))
+            else if (plr->hasSpell(17041) || plr->hasSpell(17040) || plr->hasSpell(9788))
                 textid = 20004;
             else
             {
@@ -116,7 +116,7 @@ public:
         }
         else
         {
-            if (!plr->HasSpell(17039))
+            if (!plr->hasSpell(17039))
                 textid = 20007;
             else if (!plr->hasEnoughCoinage(250000) && plr->getLevel() <= 50 || !plr->hasEnoughCoinage(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65
                 || !plr->hasEnoughCoinage(1000000) && plr->getLevel() > 65)
@@ -158,11 +158,11 @@ public:
         {
             if (!plr->hasSkillLine(164) || plr->getSkillLineCurrent(164, false) < 300)
                 textid = 20001;
-            else if (!plr->HasSpell(9787))
+            else if (!plr->hasSpell(9787))
                 textid = 20002;
-            else if (plr->HasSpell(17041))
+            else if (plr->hasSpell(17041))
                 textid = 20003;
-            else if (plr->HasSpell(17039) || plr->HasSpell(17040) || plr->HasSpell(9788))
+            else if (plr->hasSpell(17039) || plr->hasSpell(17040) || plr->hasSpell(9788))
                 textid = 20004;
             else
             {
@@ -179,7 +179,7 @@ public:
         }
         else
         {
-            if (!plr->HasSpell(17041))
+            if (!plr->hasSpell(17041))
                 textid = 20007;
             else if (!plr->hasEnoughCoinage(250000) && plr->getLevel() <= 50 || !plr->hasEnoughCoinage(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65
                 || !plr->hasEnoughCoinage(1000000) && plr->getLevel() > 65)

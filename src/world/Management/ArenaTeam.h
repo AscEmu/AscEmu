@@ -21,7 +21,7 @@
 #ifndef ARENATEAMS_H
 #define ARENATEAMS_H
 
-#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/Player.hpp"
 
 //MIT
 class CachedCharacterInfo;

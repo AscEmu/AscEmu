@@ -660,7 +660,7 @@ void Pet::Update(unsigned long time_passed)
     }
 }
 
-void Pet::BuildPetSpellList(WorldPacket& data)
+void Pet::buildPetSpellList(WorldPacket& data)
 {
     data << uint64(getGuid());
 
@@ -723,7 +723,7 @@ void Pet::SendSpellsToOwner()
 
     WorldPacket data(SMSG_PET_SPELLS, packetsize);
 
-    BuildPetSpellList(data);
+    buildPetSpellList(data);
 
     m_Owner->sendPacket(&data);
 }
@@ -1269,7 +1269,7 @@ void Pet::PrepareForRemove(bool bUpdate, bool bSetOffline)
             UpdatePetInfo(bSetOffline);
 
         if (!IsSummonedPet())
-            m_Owner->_SavePet(NULL);
+            m_Owner->_savePet(NULL);
     }
 
     bool main_summon = m_Owner->getFirstPetFromSummons() == this;

@@ -528,7 +528,7 @@ void GossipClassTrainer::onSelectOption(Object* object, Player* player, uint32_t
                 player->castSpell(player, 63624, true); // Show activate spec buttons
                 player->castSpell(player, 63706, true); // Allow primary spec to be activated
                 player->castSpell(player, 63707, true); // Allow secondary spec to be activated
-                player->SaveToDB(false);
+                player->saveToDB(false);
             }
         } break;
         default:

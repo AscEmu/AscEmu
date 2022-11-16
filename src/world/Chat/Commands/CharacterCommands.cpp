@@ -121,7 +121,7 @@ bool ChatHandler::HandleCharUnlearnCommand(const char* args, WorldSession* m_ses
     }
 
     sGMLog.writefromsession(m_session, "removed spell %u from %s", spell_id, player_target->getName().c_str());
-    if (player_target->HasSpell(spell_id))
+    if (player_target->hasSpell(spell_id))
     {
         GreenSystemMessage(player_target->getSession(), "Removed spell %u.", spell_id);
         GreenSystemMessage(m_session, "Removed spell %u from %s.", spell_id, player_target->getName().c_str());
@@ -353,7 +353,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
             if (spell_entry == nullptr)
                 continue;
 
-            if (selected_player->HasSpell(spellarray[player_class][i]))
+            if (selected_player->hasSpell(spellarray[player_class][i]))
                 continue;
 
             selected_player->addSpell(spellarray[player_class][i]);
@@ -503,7 +503,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
                     if (spell_entry == nullptr)
                         continue;
 
-                    if (selected_player->HasSpell(paladinspellarray[player_race][i]))
+                    if (selected_player->hasSpell(paladinspellarray[player_race][i]))
                         continue;
 
                     selected_player->addSpell(paladinspellarray[player_race][i]);
@@ -516,7 +516,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
                     if (spell_entry == nullptr)
                         continue;
 
-                    if (selected_player->HasSpell(magespellarray[player_race][i]))
+                    if (selected_player->hasSpell(magespellarray[player_race][i]))
                         continue;
 
                     selected_player->addSpell(magespellarray[player_race][i]);
@@ -529,7 +529,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
                     if (spell_entry == nullptr)
                         continue;
 
-                    if (selected_player->HasSpell(shamanspellarray[player_race][i]))
+                    if (selected_player->hasSpell(shamanspellarray[player_race][i]))
                         continue;
 
                     selected_player->addSpell(shamanspellarray[player_race][i]);
@@ -559,7 +559,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
         return true;
     }
 
-    if (selected_player->HasSpell(spell))
+    if (selected_player->hasSpell(spell))
     {
         SystemMessage(m_session, "%s already knows that spell.", selected_player->getName().c_str());
         return true;
@@ -934,8 +934,8 @@ bool ChatHandler::HandleCharResetSkillsCommand(const char* /*args*/, WorldSessio
     selected_player->removeAllSkills();
     selected_player->learnInitialSkills();
 
-    selected_player->UpdateStats();
-    selected_player->UpdateChances();
+    selected_player->updateStats();
+    selected_player->updateChances();
     selected_player->updateSkillMaximumValues();
 
     if (selected_player != m_session->GetPlayer())
@@ -1216,7 +1216,7 @@ bool ChatHandler::HandleCharResetSpellsCommand(const char* /*args*/, WorldSessio
     if (selected_player == nullptr)
         return true;
 
-    selected_player->Reset_Spells();
+    selected_player->resetSpells();
 
     if (selected_player != m_session->GetPlayer())
     {
@@ -1465,7 +1465,7 @@ bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_ses
     {
         plr->setName(new_name);
         BlueSystemMessage(plr->getSession(), "%s changed your name to '%s'.", m_session->GetPlayer()->getName().c_str(), new_name.c_str());
-        plr->SaveToDB(false);
+        plr->saveToDB(false);
     }
     else
     {
@@ -1708,7 +1708,7 @@ bool ChatHandler::HandleCharSetForceRenameCommand(const char* args, WorldSession
     else
     {
         plr->setLoginFlag(LOGIN_FORCED_RENAME);
-        plr->SaveToDB(false);
+        plr->saveToDB(false);
         BlueSystemMessage(plr->getSession(), "%s forced your character to be renamed next logon.", m_session->GetPlayer()->getName().c_str());
     }
 
@@ -1741,7 +1741,7 @@ bool ChatHandler::HandleCharSetCustomizeCommand(const char* args, WorldSession* 
     else
     {
         plr->setLoginFlag(LOGIN_CUSTOMIZE_LOOKS);
-        plr->SaveToDB(false);
+        plr->saveToDB(false);
         BlueSystemMessage(plr->getSession(), "%s flagged your character for customization at next login.", m_session->GetPlayer()->getName().c_str());
     }
 
@@ -1773,7 +1773,7 @@ bool ChatHandler::HandleCharSetFactionChangeCommand(const char* args, WorldSessi
     else
     {
         plr->setLoginFlag(LOGIN_CUSTOMIZE_FACTION);
-        plr->SaveToDB(false);
+        plr->saveToDB(false);
         BlueSystemMessage(plr->getSession(), "%s flagged your character for a faction change at next login.", m_session->GetPlayer()->getName().c_str());
     }
 
@@ -1805,7 +1805,7 @@ bool ChatHandler::HandleCharSetRaceChangeCommand(const char* args, WorldSession*
     else
     {
         plr->setLoginFlag(LOGIN_CUSTOMIZE_RACE);
-        plr->SaveToDB(false);
+        plr->saveToDB(false);
         BlueSystemMessage(plr->getSession(), "%s flagged your character for a race change at next login.", m_session->GetPlayer()->getName().c_str());
     }
 

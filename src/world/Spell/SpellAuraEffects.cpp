@@ -1315,7 +1315,7 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
         case FORM_ZOMBIE:
         {
             if (getPlayerOwner() != nullptr)
-                getPlayerOwner()->SendAvailSpells(shapeshiftForm, apply);
+                getPlayerOwner()->sendAvailSpells(shapeshiftForm, apply);
         } break;
         case FORM_DIREBEAR:
         {
@@ -1534,11 +1534,11 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
             // Change from normal form to feral form
             if (!(oldForm == FORM_MOONKIN || oldForm == FORM_CAT || oldForm == FORM_BEAR || oldForm == FORM_DIREBEAR) &&
                 (newForm == FORM_MOONKIN || newForm == FORM_CAT || newForm == FORM_BEAR || newForm == FORM_DIREBEAR))
-                getPlayerOwner()->ApplyFeralAttackPower(true);
+                getPlayerOwner()->applyFeralAttackPower(true);
             // Change from feral form to normal form
             else if ((oldForm == FORM_MOONKIN || oldForm == FORM_CAT || oldForm == FORM_BEAR || oldForm == FORM_DIREBEAR) &&
                 !(newForm == FORM_MOONKIN || newForm == FORM_CAT || newForm == FORM_BEAR || newForm == FORM_DIREBEAR))
-                getPlayerOwner()->ApplyFeralAttackPower(false);
+                getPlayerOwner()->applyFeralAttackPower(false);
         }
 
         // Apply dummy shapeshift spells
@@ -1554,10 +1554,10 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
         }
 
         // Hackfix - Heart of the Wild talent
-        getPlayerOwner()->EventTalentHearthOfWildChange(apply);
+        getPlayerOwner()->eventTalentHearthOfWildChange(apply);
 
-        getPlayerOwner()->UpdateStats();
-        getPlayerOwner()->UpdateAttackSpeed();
+        getPlayerOwner()->updateStats();
+        getPlayerOwner()->updateAttackSpeed();
     }
 }
 
@@ -1772,7 +1772,7 @@ void Aura::spellAuraEffectModPowerRegen(AuraEffectModifier* aurEff, bool apply)
 
     const auto value = apply ? aurEff->getEffectDamage() : -aurEff->getEffectDamage();
     getPlayerOwner()->m_modInterrManaRegen += value;
-    getPlayerOwner()->UpdateStats();
+    getPlayerOwner()->updateStats();
 }
 
 void Aura::spellAuraEffectPeriodicDamagePercent(AuraEffectModifier* aurEff, bool apply)

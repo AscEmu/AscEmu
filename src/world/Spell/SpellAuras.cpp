@@ -1199,7 +1199,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 m_auraEffects[effIndex - 1].setEffectDamage(aurEff->getEffectDamage());
 
                 getPlayerOwner()->m_modInterrManaRegen += aurEff->getEffectDamage();
-                getPlayerOwner()->UpdateStats();
+                getPlayerOwner()->updateStats();
 
                 // Disable this periodic effect
                 aurEff->setEffectAmplitude(0);

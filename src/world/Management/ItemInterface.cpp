@@ -22,7 +22,7 @@
 #include "Objects/Item.hpp"
 #include "Objects/Container.h"
 #include "ItemProperties.hpp"
-#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Management/ItemInterface.h"
 
 #include "Chat/ChatHandler.hpp"
@@ -541,7 +541,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
 
     if (slot >= CURRENCYTOKEN_SLOT_START && slot < CURRENCYTOKEN_SLOT_END)
     {
-        m_pOwner->UpdateKnownCurrencies(item->getEntry(), true);
+        m_pOwner->updateKnownCurrencies(item->getEntry(), true);
     }
 
     if (ContainerSlot == INVENTORY_SLOT_NOT_SET && slot == EQUIPMENT_SLOT_OFFHAND && item->getItemProperties()->Class == ITEM_CLASS_WEAPON)
@@ -1890,7 +1890,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
                         m_result.ContainerSlot = INVENTORY_SLOT_NOT_SET;
                         m_result.Slot = static_cast<int8>(i);
                         m_result.Result = true;
-                        p->UpdateKnownCurrencies(m_pItems[i]->getEntry(), true);
+                        p->updateKnownCurrencies(m_pItems[i]->getEntry(), true);
                         return ADD_ITEM_RESULT_OK;
                     }
                 }
@@ -1901,7 +1901,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
                     m_pItems[i]->setStackCount(m_pItems[i]->getStackCount() + item->getStackCount());
                     m_result.Slot = static_cast<int8>(i);
                     m_result.Result = true;
-                    p->UpdateKnownCurrencies(m_pItems[i]->getEntry(), true);
+                    p->updateKnownCurrencies(m_pItems[i]->getEntry(), true);
                     return ADD_ITEM_RESULT_OK;
                 }
             }
@@ -2281,7 +2281,7 @@ int8 ItemInterface::CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemPropertie
                 return INV_ERR_SKILL_ISNT_HIGH_ENOUGH;
 
         if (proto->RequiredSkillSubRank)
-            if (!m_pOwner->HasSpell(proto->RequiredSkillSubRank))
+            if (!m_pOwner->hasSpell(proto->RequiredSkillSubRank))
                 return INV_ERR_NO_REQUIRED_PROFICIENCY;
 
         // You are dead !
@@ -2776,7 +2776,7 @@ int8 ItemInterface::CanAffordItem(ItemProperties const* item, uint32 amount, Cre
             return INV_ERR_NOT_ENOUGH_ARENA_POINTS;
 #endif
 #endif
-        if (m_pOwner->GetMaxPersonalRating() < item_extended_cost->personalrating)
+        if (m_pOwner->getMaxPersonalRating() < item_extended_cost->personalrating)
             return INV_ERR_PERSONAL_ARENA_RATING_TOO_LOW;
     }
 
@@ -3392,7 +3392,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
     }
 
     //Recalculate Expertise (for Weapon specs)
-    m_pOwner->CalcExpertise();
+    m_pOwner->calcExpertise();
 }
 
 /// Item Loading
@@ -4432,7 +4432,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
     }
 
     //Recalculate Expertise (for Weapon specs)
-    m_pOwner->CalcExpertise();
+    m_pOwner->calcExpertise();
 
     if (adderror)
         return false;

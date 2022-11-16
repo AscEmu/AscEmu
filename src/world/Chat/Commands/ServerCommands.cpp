@@ -104,7 +104,7 @@ bool ChatHandler::HandleServerSaveCommand(const char* args, WorldSession* m_sess
 
     if (player_target->m_nextSave < 180000)
     {
-        player_target->SaveToDB(false);
+        player_target->saveToDB(false);
         GreenSystemMessage(m_session, "Player %s saved to DB", player_target->getName().c_str());
     }
     else
@@ -126,7 +126,7 @@ bool ChatHandler::HandleServerSaveAllCommand(const char* /*args*/, WorldSession*
     {
         if (itr->second->getSession())
         {
-            itr->second->SaveToDB(false);
+            itr->second->saveToDB(false);
             online_count++;
         }
     }

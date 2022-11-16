@@ -23,7 +23,7 @@
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/Unit.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
-#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/Player.hpp"
 
 bool isNeutral(Object* a, Object* b)
 {

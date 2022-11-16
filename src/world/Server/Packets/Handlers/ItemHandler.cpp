@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Server/Packets/CmsgSwapItem.h"
 #include "Server/WorldSession.h"
-#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Management/ItemInterface.h"
 #include "Server/Packets/CmsgItemrefundinfo.h"
 #include "Server/Packets/CmsgItemrefundrequest.h"
@@ -128,7 +128,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         }
     }
 
-    if (itemProto->RequiredSkillSubRank != 0 && !_player->HasSpell(itemProto->RequiredSkillSubRank))
+    if (itemProto->RequiredSkillSubRank != 0 && !_player->hasSpell(itemProto->RequiredSkillSubRank))
     {
         _player->getItemInterface()->buildInventoryChangeError(tmpItem, nullptr, INV_ERR_NO_REQUIRED_PROFICIENCY);
         return;
@@ -143,7 +143,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     // Learning spells (mounts, companion pets etc)
     if (itemProto->Spells[0].Id == 483 || itemProto->Spells[0].Id == 55884)
     {
-        if (_player->HasSpell(itemProto->Spells[1].Id))
+        if (_player->hasSpell(itemProto->Spells[1].Id))
             // No error message, handled elsewhere
             return;
     }
@@ -258,7 +258,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     }
 
     // Cooldown check
-    if (!_player->Cooldown_CanCast(itemProto, spellIndex))
+    if (!_player->cooldownCanCast(itemProto, spellIndex))
     {
         _player->sendCastFailedPacket(spellId, SPELL_FAILED_NOT_READY, srlPacket.castCount, 0);
         return;
@@ -1412,7 +1412,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
 #endif
     }
     //Recalculate Expertise (for Weapon specs)
-    _player->CalcExpertise();
+    _player->calcExpertise();
 }
 
 void WorldSession::handleAutoEquipItemSlotOpcode(WorldPacket& recvPacket)

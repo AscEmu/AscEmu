@@ -114,7 +114,7 @@ bool Cannibalize(uint8_t effectIndex, Spell* s)
     {
         s->getPlayerCaster()->m_cannibalize = true;
         s->getPlayerCaster()->m_cannibalizeCount = 0;
-        sEventMgr.AddEvent(s->getPlayerCaster(), &Player::EventCannibalize, uint32_t(7), EVENT_CANNIBALIZE, 2000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(s->getPlayerCaster(), &Player::eventCannibalize, uint32_t(7), EVENT_CANNIBALIZE, 2000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         s->getPlayerCaster()->setEmoteState(EMOTE_STATE_CANNIBALIZE);
     }
 
@@ -222,7 +222,7 @@ bool NorthRendInscriptionResearch(uint8_t /*effectIndex*/, Spell* s)
                             {
                                 if (glyph_properties->Type == glyphType)
                                 {
-                                    if (!s->getPlayerCaster()->HasSpell(skill_line_ability->spell))
+                                    if (!s->getPlayerCaster()->hasSpell(skill_line_ability->spell))
                                     {
                                         discoverableGlyphs.push_back(skill_line_ability->spell);
                                     }

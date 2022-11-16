@@ -28,7 +28,7 @@
 #include "SpellTargetConstraint.hpp"
 
 #include "Objects/Units/Creatures/Creature.h"
-#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Unit.hpp"
 
 #include "Movement/Spline/MovementTypedefs.h"

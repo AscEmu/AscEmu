@@ -1058,7 +1058,11 @@ struct PlayerSkill
     // the skill position in skill fields in player data
     PlayerSkillFieldPosition FieldPosition;
 
-    float GetSkillUpChance();
+    float GetSkillUpChance()
+    {
+        float diff = float(MaximumValue - CurrentValue);
+        return (diff * 100.0f / MaximumValue);
+    }
 };
 
 struct PlayerCooldown

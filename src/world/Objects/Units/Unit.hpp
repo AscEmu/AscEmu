@@ -155,7 +155,7 @@ public: //\todo Zyres: public fpr LuaEngine, sort out why
     // void OnPreRemoveFromWorld();                     // not used
     // void OnRemoveFromWorld();                        // not used
     virtual void die(Unit* pAttacker, uint32_t damage, uint32_t spellid);
-    virtual void BuildPetSpellList(WorldPacket& data);
+    virtual void buildPetSpellList(WorldPacket& data);
 
 private:
     //////////////////////////////////////////////////////////////////////////////////////////

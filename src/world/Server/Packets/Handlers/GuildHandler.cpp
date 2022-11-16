@@ -573,7 +573,7 @@ void WorldSession::handleCharterSign(WorldPacket& recvPacket)
         charter->AddSignature(_player->getGuidLow());
         charter->SaveToDB();
         _player->m_charters[charter->CharterType] = charter;
-        _player->SaveToDB(false);
+        _player->saveToDB(false);
 
         Player* player = _player->getWorldMap()->getPlayer(charter->GetLeader());
         if (player == nullptr)
@@ -838,7 +838,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
 
             _player->modCoinage(-static_cast<int32_t>(costs[arena_type]));
             _player->m_charters[srlPacket.arenaIndex] = charter;
-            _player->SaveToDB(false);
+            _player->saveToDB(false);
         }
     }
     else
@@ -912,7 +912,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
 
             _player->m_charters[CHARTER_TYPE_GUILD] = guildCharter;
             _player->modCoinage(-1000);
-            _player->SaveToDB(false);
+            _player->saveToDB(false);
         }
     }
 }

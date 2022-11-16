@@ -99,7 +99,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     }
 
     // Check does player have the spell
-    if (!_player->HasSpell(srlPacket.spell_id))
+    if (!_player->hasSpell(srlPacket.spell_id))
     {
         sCheatLog.writefromsession(this, "WORLD: Player %u tried to cast spell %u but player does not have it.", _player->getGuidLow(), srlPacket.spell_id);
         sLogger.info("WORLD: Player %u tried to cast spell %u but player does not have it.", _player->getGuidLow(), srlPacket.spell_id);

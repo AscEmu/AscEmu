@@ -53,7 +53,7 @@ bool AchievementMgr::canCompleteCriteria(DBC::Structures::AchievementCriteriaEnt
         case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_ACHIEVEMENT:
             return m_completedAchievements.find(achievementCriteria->complete_achievement.linkedAchievement) != m_completedAchievements.end();
         case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SPELL:
-            return player->HasSpell(achievementCriteria->learn_spell.spellID);
+            return player->hasSpell(achievementCriteria->learn_spell.spellID);
         default:
             break;
     }
@@ -1296,9 +1296,9 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
             case ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS:
             {
                 // achievementCriteria field4 = 777 for mounts, 778 for companion pets
-                SpellSet::iterator sl = GetPlayer()->mSpells.begin();
+                SpellSet::iterator sl = GetPlayer()->m_spells.begin();
                 uint32_t nm = 0;
-                while (sl != GetPlayer()->mSpells.end())
+                while (sl != GetPlayer()->m_spells.end())
                 {
                     SpellInfo const* sp = sSpellMgr.getSpellInfo(*sl);
                     if (achievementCriteria->number_of_mounts.unknown == 777 && sp && sp->getMechanicsType() == MECHANIC_MOUNTED)

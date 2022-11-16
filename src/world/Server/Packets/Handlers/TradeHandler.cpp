@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Spell/Definitions/SpellCastTargetFlags.hpp"
-#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/UnitDefines.hpp"
 #include "Map/Management/MapMgr.hpp"
@@ -478,8 +478,8 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
     _player->getSession()->sendTradeResult(TRADE_STATUS_COMPLETE);
     tradeTarget->getSession()->sendTradeResult(TRADE_STATUS_COMPLETE);
 
-    _player->SaveToDB(false);
-    tradeTarget->SaveToDB(false);
+    _player->saveToDB(false);
+    tradeTarget->saveToDB(false);
 }
 
 void WorldSession::handleCancelTrade(WorldPacket& /*recvPacket*/)

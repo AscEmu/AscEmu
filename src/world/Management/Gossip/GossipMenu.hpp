@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <string>
 #include "GossipDefines.hpp"
 #include "Management/Quest.h"
-#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/Player.hpp"
 
 class SERVER_DECL GossipMenu
 {

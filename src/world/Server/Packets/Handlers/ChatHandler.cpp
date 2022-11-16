@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.h"
 #include "Chat/ChatHandler.hpp"
 
-#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Management/ObjectMgr.h"
 #include "Server/Packets/CmsgMessageChat.h"
 #include "Server/Packets/SmsgMessageChat.h"

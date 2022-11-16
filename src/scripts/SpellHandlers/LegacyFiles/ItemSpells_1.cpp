@@ -49,7 +49,7 @@ bool GnomishTransporter(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pSpell->getPlayerCaster())
         return true;
 
-    pSpell->getPlayerCaster()->EventAttackStop();
+    pSpell->getPlayerCaster()->eventAttackStop();
     pSpell->getPlayerCaster()->safeTeleport(1, 0, LocationVector(-7169.41f, -3838.63f, 8.72f));
     return true;
 }
@@ -431,7 +431,7 @@ bool HeadlessHorsemanMount(uint8_t /*effectIndex*/, Spell* pSpell)
         uint32_t newspell = 51621;
         auto pArea = plr->GetArea();
         if (pArea && (plr->getSkillLineCurrent(SKILL_RIDING, true) >= 225 && ((pArea->flags & 1024 && plr->GetMapId() != 571) ||
-            (pArea->flags & 1024 && plr->GetMapId() == 571 && plr->HasSpell(54197)))))
+            (pArea->flags & 1024 && plr->GetMapId() == 571 && plr->hasSpell(54197)))))
 
         {
             if (plr->getSkillLineCurrent(SKILL_RIDING, true) == 300)
@@ -455,7 +455,7 @@ bool MagicBroomMount(uint8_t /*effectIndex*/, Spell* pSpell)
         auto pArea = plr->GetArea();
         if (pArea && (plr->getSkillLineCurrent(SKILL_RIDING, true) >= 225 &&
             ((pArea->flags & 1024 && plr->GetMapId() != 571) ||
-            (pArea->flags & 1024 && plr->GetMapId() == 571 && plr->HasSpell(54197)))))
+            (pArea->flags & 1024 && plr->GetMapId() == 571 && plr->hasSpell(54197)))))
         {
             if (plr->getSkillLineCurrent(SKILL_RIDING, true) == 300)
                 newspell = 42668;
@@ -486,7 +486,7 @@ bool Invincible(uint8_t /*effectIndex*/, Spell* pSpell)
         uint32_t newspell = 72281;
         auto pArea = plr->GetArea();
         if (pArea && (plr->getSkillLineCurrent(SKILL_RIDING, true) >= 225 && ((pArea->flags & 1024 && plr->GetMapId() != 571) ||
-            (pArea->flags & 1024 && plr->GetMapId() == 571 && plr->HasSpell(54197)))))
+            (pArea->flags & 1024 && plr->GetMapId() == 571 && plr->hasSpell(54197)))))
         {
             if (plr->getSkillLineCurrent(SKILL_RIDING, true) == 300)
                 newspell = 72284;
@@ -877,12 +877,12 @@ bool X53Mount(uint8_t /*effectIndex*/, Aura *a, bool apply)
                 uint32_t skill = p->getSkillLineCurrent(SKILL_RIDING, true);
 
                 if (skill >= 225 && (((area->flags & 1024) && p->GetMapId() != 571) ||
-                    ((area->flags & 1024) && p->GetMapId() == 571 && p->HasSpell(54197))))
+                    ((area->flags & 1024) && p->GetMapId() == 571 && p->hasSpell(54197))))
                 {
                     if (skill == 300)
                     {
 #if VERSION_STRING >= TBC
-                        if (p->HasSpellWithAuraNameAndBasePoints(SPELL_AURA_ENABLE_FLIGHT2, 310))
+                        if (p->hasSpellWithAuraNameAndBasePoints(SPELL_AURA_ENABLE_FLIGHT2, 310))
                             newspell = 76154;
                         else
 #endif

@@ -736,7 +736,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         //Weapon speed constant in feral forms
         if (pAttacker->isPlayer())
         {
-            if (static_cast< Player* >(pAttacker)->IsInFeralForm())
+            if (static_cast< Player* >(pAttacker)->isInFeralForm())
             {
                 uint8 ss = pAttacker->getShapeShiftForm();
 
@@ -813,7 +813,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         //Weapon speed constant in feral forms
         if (pAttacker->isPlayer())
         {
-            if (static_cast< Player* >(pAttacker)->IsInFeralForm())
+            if (static_cast< Player* >(pAttacker)->isInFeralForm())
             {
                 uint8 ss = pAttacker->getShapeShiftForm();
 

@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "TradeData.hpp"
 
-#include "Player.h"
+#include "Player.hpp"
 #include "Management/ItemInterface.h"
 
 TradeData::TradeData(Player* player, Player* trader)

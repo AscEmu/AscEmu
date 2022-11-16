@@ -24,7 +24,7 @@
 #include "Server/MainServerDefines.h"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
-#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Packets/SmsgWeather.h"
 
 /// Weather defines

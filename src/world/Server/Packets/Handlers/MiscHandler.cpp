@@ -1946,7 +1946,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
                 int32_t talentMaxRank = -1;
                 for (int32_t k = 4; k > -1; --k)
                 {
-                    if (talentInfo->RankID[k] != 0 && inspectedPlayer->HasSpell(talentInfo->RankID[k]))
+                    if (talentInfo->RankID[k] != 0 && inspectedPlayer->hasSpell(talentInfo->RankID[k]))
                     {
                         talentMaxRank = k;
                         break;

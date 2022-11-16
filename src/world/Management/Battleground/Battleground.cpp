@@ -327,7 +327,7 @@ void Battleground::portPlayer(Player* plr, bool skip_teleport /* = false*/)
 
     if (!skip_teleport)
         if (plr->IsInWorld())
-            plr->RemoveFromWorld();
+            plr->removeFromWorld();
 
     plr->setPendingBattleground(nullptr);
     plr->setBattleground(this);
@@ -485,7 +485,7 @@ void Battleground::endBattleground(PlayerTeam winningTeam)
                 winningPlr->setHasWonRbgToday(true);
             }
 
-            winningPlr->SaveToDB(false);
+            winningPlr->saveToDB(false);
         }
         for (const auto losingPlr : m_players[losingTeam])
         {
@@ -494,7 +494,7 @@ void Battleground::endBattleground(PlayerTeam winningTeam)
                 losingPlr->applyRandomBattlegroundReward(false);
             }
 
-            losingPlr->SaveToDB(false);
+            losingPlr->saveToDB(false);
         }
 
         this->addHonorToTeam(winningTeam, 3 * 185);

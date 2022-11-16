@@ -169,7 +169,7 @@ public:
         void SendSpellsToOwner();
         void SendCastFailed(uint32 spellid, uint8 fail);
         void SendActionFeedback(PetActionFeedback value);
-        void BuildPetSpellList(WorldPacket& data);
+        void buildPetSpellList(WorldPacket& data);
 
         inline void SetPetAction(uint32 act) { m_Action = act; }
         inline uint32 GetPetAction(void) { return m_Action; }

@@ -493,13 +493,13 @@ TrainerSpellState WorldSession::trainerGetSpellStatus(TrainerSpell const* traine
     if (trainerSpell->castSpell == nullptr && trainerSpell->learnSpell == nullptr)
         return TRAINER_SPELL_RED;
 
-    if (trainerSpell->learnSpell != nullptr && (_player->HasSpell(trainerSpell->learnSpell->getId()) || _player->HasDeletedSpell(trainerSpell->learnSpell->getId())))
+    if (trainerSpell->learnSpell != nullptr && (_player->hasSpell(trainerSpell->learnSpell->getId()) || _player->hasDeletedSpell(trainerSpell->learnSpell->getId())))
         return TRAINER_SPELL_GRAY;
 
-    if (trainerSpell->castRealSpell != nullptr && (_player->HasSpell(trainerSpell->castRealSpell->getId()) || _player->HasDeletedSpell(trainerSpell->castRealSpell->getId())))
+    if (trainerSpell->castRealSpell != nullptr && (_player->hasSpell(trainerSpell->castRealSpell->getId()) || _player->hasDeletedSpell(trainerSpell->castRealSpell->getId())))
         return TRAINER_SPELL_GRAY;
 
-    if (trainerSpell->deleteSpell != 0 && _player->HasDeletedSpell(trainerSpell->deleteSpell))
+    if (trainerSpell->deleteSpell != 0 && _player->hasDeletedSpell(trainerSpell->deleteSpell))
         return TRAINER_SPELL_GRAY;
 
     if (trainerSpell->requiredLevel && _player->getLevel() < trainerSpell->requiredLevel)
@@ -516,13 +516,13 @@ TrainerSpellState WorldSession::trainerGetSpellStatus(TrainerSpell const* traine
         if (spellId == 0)
             continue;
 
-        if (!_player->HasSpell(spellId))
+        if (!_player->hasSpell(spellId))
             return TRAINER_SPELL_RED;
 
         const auto spellsRequired = sSpellMgr.getSpellsRequiredForSpellBounds(spellId);
         for (auto itr = spellsRequired.first; itr != spellsRequired.second; ++itr)
         {
-            if (!_player->HasSpell(itr->second))
+            if (!_player->hasSpell(itr->second))
                 return TRAINER_SPELL_RED;
         }
     }

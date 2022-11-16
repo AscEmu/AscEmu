@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Server/Packets/CmsgSetFactionAtWar.h"
 #include "Server/Packets/CmsgSetFactionInactive.h"
-#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Packets/CmsgCharDelete.h"
 #include "Server/Packets/SmsgCharDelete.h"
 #include "Server/Packets/CmsgCharFactionChange.h"
@@ -163,7 +163,7 @@ void WorldSession::handleCharFactionOrRaceChange(WorldPacket& recvPacket)
         return;
     }
 
-    Player::CharChange_Looks(srlPacket.guid, srlPacket.charCreate.gender, srlPacket.charCreate.skin,
+    Player::changeLooks(srlPacket.guid, srlPacket.charCreate.gender, srlPacket.charCreate.skin,
         srlPacket.charCreate.face, srlPacket.charCreate.hairStyle, srlPacket.charCreate.hairColor, srlPacket.charCreate.facialHair);
 
     std::string newname = srlPacket.charCreate.name;
@@ -286,7 +286,7 @@ void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
 
     sLogger.debug("Async loading player %u", static_cast<uint32_t>(playerGuid));
     m_loggingInPlayer = player;
-    player->LoadFromDB(playerGuid);
+    player->loadFromDB(playerGuid);
 }
 
 uint8_t WorldSession::deleteCharacter(WoWGuid guid)
@@ -432,7 +432,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     const auto newPlayer = sObjectMgr.CreatePlayer(srlPacket.createStruct._class);
     newPlayer->setSession(this);
 
-    if (!newPlayer->Create(srlPacket.createStruct))
+    if (!newPlayer->create(srlPacket.createStruct))
     {
         newPlayer->m_isReadyToBeRemoved = true;
         delete newPlayer;
@@ -457,7 +457,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
 #if VERSION_STRING > TBC
     if (worldConfig.player.deathKnightPreReq && !has_level_55_char && srlPacket.createStruct._class == DEATHKNIGHT)
     {
-        newPlayer->ok_to_remove = true;
+        newPlayer->m_isReadyToBeRemoved = true;
         delete newPlayer;
 
         SendPacket(SmsgCharCreate(E_CHAR_CREATE_LEVEL_REQUIREMENT).serialise().get());
@@ -469,13 +469,13 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
 
     if (newPlayer->getClass() == WARLOCK)
     {
-        newPlayer->AddSummonSpell(416, 3110);
-        newPlayer->AddSummonSpell(417, 19505);
-        newPlayer->AddSummonSpell(1860, 3716);
-        newPlayer->AddSummonSpell(1863, 7814);
+        newPlayer->addSummonSpell(416, 3110);
+        newPlayer->addSummonSpell(417, 19505);
+        newPlayer->addSummonSpell(1860, 3716);
+        newPlayer->addSummonSpell(1863, 7814);
     }
 
-    newPlayer->SaveToDB(true);
+    newPlayer->saveToDB(true);
 
     const auto playerInfo = new CachedCharacterInfo;
     playerInfo->guid = newPlayer->getGuidLow();
@@ -542,7 +542,7 @@ void WorldSession::handleCharCustomizeLooksOpcode(WorldPacket& recvPacket)
     CharacterDatabase.WaitExecute("UPDATE `characters` SET login_flags = %u WHERE guid = %u",
         static_cast<uint32_t>(LOGIN_NO_FLAG), srlPacket.guid.getGuidLow());
 
-    Player::CharChange_Looks(srlPacket.guid, srlPacket.createStruct.gender, srlPacket.createStruct.skin,
+    Player::changeLooks(srlPacket.guid, srlPacket.createStruct.gender, srlPacket.createStruct.skin,
         srlPacket.createStruct.face, srlPacket.createStruct.hairStyle, srlPacket.createStruct.hairColor,
         srlPacket.createStruct.facialHair);
 
@@ -627,7 +627,7 @@ void WorldSession::fullLogin(Player* player)
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // update/set attack speed - mostly 0 on login
-    player->UpdateAttackSpeed();
+    player->updateAttackSpeed();
     //////////////////////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////////////

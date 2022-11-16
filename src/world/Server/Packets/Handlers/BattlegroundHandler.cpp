@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgAreaSpiritHealerQuery.h"
 #include "Server/Packets/SmsgAreaSpiritHealerTime.h"
 #include "Server/WorldSession.h"
-#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Management/ObjectMgr.h"

@@ -209,7 +209,7 @@ class MoongladeQuest : public QuestScript
 public:
     void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        if (!mTarget->HasSpell(19027))
+        if (!mTarget->hasSpell(19027))
             mTarget->castSpell(mTarget, sSpellMgr.getSpellInfo(19027), true);
     }
 };

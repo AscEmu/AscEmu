@@ -95,7 +95,7 @@ bool HeroicFury(uint8_t /*effectIndex*/, Spell* s)
         return false;
     }
 
-    if (p_caster->HasSpell(20252))
+    if (p_caster->hasSpell(20252))
     {
         p_caster->clearCooldownForSpell(20252);
     }

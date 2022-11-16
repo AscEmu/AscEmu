@@ -33,7 +33,7 @@ bool SpellProc::checkExtraProcFlags([[maybe_unused]]Unit* procOwner, DamageInfo 
 
 #if VERSION_STRING < WotLK
     // In Classic and TBC weapon enchantments never proc while in feral forms
-    if (procOwner->isPlayer() && static_cast<Player*>(procOwner)->IsInFeralForm() &&
+    if (procOwner->isPlayer() && static_cast<Player*>(procOwner)->isInFeralForm() &&
         (mExtraProcFlags & EXTRA_PROC_ON_MAIN_HAND_HIT_ONLY ||
         mExtraProcFlags & EXTRA_PROC_ON_OFF_HAND_HIT_ONLY))
         return false;

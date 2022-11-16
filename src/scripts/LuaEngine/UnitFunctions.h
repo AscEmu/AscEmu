@@ -3592,7 +3592,7 @@ public:
             return 1;
         }
 
-        if (dynamic_cast<Player*>(ptr)->IsAttacking())
+        if (dynamic_cast<Player*>(ptr)->isAttacking())
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -4221,7 +4221,7 @@ public:
         int title = static_cast<int>(luaL_checkinteger(L, 1));
         Player* plr = dynamic_cast<Player*>(ptr);
         plr->setKnownPvPTitle(RankTitles(title), true);
-        plr->SaveToDB(false);
+        plr->saveToDB(false);
         return 0;
     }
 
@@ -4235,7 +4235,7 @@ public:
         int title = static_cast<int>(luaL_checkinteger(L, 1));
         Player* plr = dynamic_cast<Player*>(ptr);
         plr->setKnownPvPTitle(RankTitles(title), false);
-        plr->SaveToDB(false);
+        plr->saveToDB(false);
         return 0;
     }
 
@@ -4253,19 +4253,19 @@ public:
         if (check && strncmp(check, "add", 4) == 0 && kills > 0)
         {
             plr->setLifetimeHonorableKills(killscheck + kills);
-            plr->SaveToDB(false);
+            plr->saveToDB(false);
             return 0;
         }
         if (check && strncmp(check, "del", 4) == 0 && killscheck >= kills)
         {
             plr->setLifetimeHonorableKills(killscheck - kills);
-            plr->SaveToDB(false);
+            plr->saveToDB(false);
             return 0;
         }
         if (check && strncmp(check, "set", 4) == 0 && kills >= 0)
         {
             plr->setLifetimeHonorableKills(kills);
-            plr->SaveToDB(false);
+            plr->saveToDB(false);
             return 0;
         }
         if (check == nullptr || kills == 0)
@@ -4363,7 +4363,7 @@ public:
         }
 
         uint32_t sp = CHECK_ULONG(L, 1);
-        lua_pushboolean(L, (sp && dynamic_cast<Player*>(ptr)->HasSpell(sp)) ? 1 : 0);
+        lua_pushboolean(L, (sp && dynamic_cast<Player*>(ptr)->hasSpell(sp)) ? 1 : 0);
         return 1;
     }
 
@@ -4437,7 +4437,7 @@ public:
             return 0;
         }
 
-        dynamic_cast<Player*>(ptr)->SaveToDB(false);
+        dynamic_cast<Player*>(ptr)->saveToDB(false);
         return 0;
     }
 
@@ -4804,7 +4804,7 @@ public:
 
         Player* pl = dynamic_cast<Player*>(ptr);
         uint32_t exp = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        pl->GiveXP(exp, pl->getGuid(), true);
+        pl->giveXp(exp, pl->getGuid(), true);
         return 0;
     }
 

@@ -1973,11 +1973,11 @@ void Spell::SpellEffectPowerDrain(uint8_t effectIndex)  // Power Drain
     if (powerField == POWER_TYPE_MANA && unitTarget->isPlayer())
     {
         Player* mPlayer = static_cast< Player* >(unitTarget);
-        if (mPlayer->IsInFeralForm())
+        if (mPlayer->isInFeralForm())
             return;
 
         // Resilience - reduces the effect of mana drains by (CalcRating*2)%.
-        damage = float2int32(damage * (1 - ((static_cast< Player* >(unitTarget)->CalcRating(CR_CRIT_TAKEN_SPELL) * 2) / 100.0f)));
+        damage = float2int32(damage * (1 - ((static_cast< Player* >(unitTarget)->calcRating(CR_CRIT_TAKEN_SPELL) * 2) / 100.0f)));
     }
     uint32 amt = damage + ((u_caster->GetDamageDoneMod(getSpellInfo()->getFirstSchoolFromSchoolMask()) * 80) / 100);
     if (amt > curPower)
@@ -2066,15 +2066,15 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
             unitTarget->hasAurasWithId(19746) || unitTarget->hasAurasWithId(32223) || unitTarget->hasAurasWithId(fireResistanceAura) ||
             unitTarget->hasAurasWithId(frostResistanceAura) || unitTarget->hasAurasWithId(shadowResistanceAura)))
         {
-            if (p_caster->HasSpell(20140))     // Improved Devotion Aura Rank 3
+            if (p_caster->hasSpell(20140))     // Improved Devotion Aura Rank 3
                 damage = (int32)(damage * 1.06);
-            else if (p_caster->HasSpell(20139))     // Improved Devotion Aura Rank 2
+            else if (p_caster->hasSpell(20139))     // Improved Devotion Aura Rank 2
                 damage = (int32)(damage * 1.04);
-            else if (p_caster->HasSpell(20138))     // Improved Devotion Aura Rank 1
+            else if (p_caster->hasSpell(20138))     // Improved Devotion Aura Rank 1
                 damage = (int32)(damage * 1.02);
         }
 
-        if (p_caster->HasSpell(54943) && p_caster->hasAurasWithId(20165))       // Glyph of Seal of Light
+        if (p_caster->hasSpell(54943) && p_caster->hasAurasWithId(20165))       // Glyph of Seal of Light
             damage = (int32)(damage * 1.05);
     }
 
@@ -2147,7 +2147,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                     break;
 
                 Player* mPlayer = static_cast< Player* >(unitTarget);
-                if (!mPlayer->IsInFeralForm() ||
+                if (!mPlayer->isInFeralForm() ||
                     (mPlayer->getShapeShiftForm() != FORM_BEAR &&
                     mPlayer->getShapeShiftForm() != FORM_DIREBEAR))
                     break;
@@ -2555,15 +2555,15 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
         switch (spellid)
         {
             case 36686: //Shadowcloth
-                if (p_caster->HasSpell(26801)) count++;
+                if (p_caster->hasSpell(26801)) count++;
                 break;
 
             case 26751: // Primal Mooncloth
-                if (p_caster->HasSpell(26798)) count++;
+                if (p_caster->hasSpell(26798)) count++;
                 break;
 
             case 31373: //Spellcloth
-                if (p_caster->HasSpell(26797)) count++;
+                if (p_caster->hasSpell(26797)) count++;
                 break;
         }
 
@@ -2572,7 +2572,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
             //Potion Master
             if (m_itemProto->Name.compare("Potion"))
             {
-                if (p_caster->HasSpell(28675))
+                if (p_caster->hasSpell(28675))
                     while (Util::checkChance(20) && (count < 5))
                         count++;
 
@@ -2584,7 +2584,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
             //Elixir Master
             if (m_itemProto->Name.compare("Elixir") || m_itemProto->Name.compare("Flask"))
             {
-                if (p_caster->HasSpell(28677))
+                if (p_caster->hasSpell(28677))
                     while (Util::checkChance(20) && (count < 5))
                         count++;
 
@@ -2600,13 +2600,13 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
                 //rate for primal might is lower than for anything else
                 if (m_spellInfo->getId() == 29688)
                 {
-                    if (p_caster->HasSpell(28672))
+                    if (p_caster->hasSpell(28672))
                         while (Util::checkChance(40) && (count < 5))
                             count++;
                 }
                 else
                 {
-                    if (p_caster->HasSpell(28672))
+                    if (p_caster->hasSpell(28672))
                         while (Util::checkChance(20) && (count < 5))
                             count++;
                 }
@@ -2658,7 +2658,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
                     break;
             }
 
-            if ((learn_spell != 0) && (p_caster->getLevel() > 60) && !p_caster->HasSpell(learn_spell) && Util::checkChance(cast_chance))
+            if ((learn_spell != 0) && (p_caster->getLevel() > 60) && !p_caster->hasSpell(learn_spell) && Util::checkChance(cast_chance))
             {
                 SpellInfo const* dspellproto = sSpellMgr.getSpellInfo(learn_spell);
 
@@ -2684,7 +2684,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
             for (std::set<MySQLStructure::ProfessionDiscovery*>::iterator itr = sMySQLStore._professionDiscoveryStore.begin(); itr != sMySQLStore._professionDiscoveryStore.end(); ++itr)
             {
                 MySQLStructure::ProfessionDiscovery* pf = *itr;
-                if (spellid == pf->SpellId && p_caster->getSkillLineCurrent(skillLine) >= pf->SkillValue && !p_caster->HasSpell(pf->SpellToDiscover) && Util::checkChance(pf->Chance))
+                if (spellid == pf->SpellId && p_caster->getSkillLineCurrent(skillLine) >= pf->SkillValue && !p_caster->hasSpell(pf->SpellToDiscover) && Util::checkChance(pf->Chance))
                 {
                     discovered_recipe = pf->SpellToDiscover;
                     break;
@@ -4259,7 +4259,7 @@ void Spell::SpellEffectLearnPetSpell(uint8_t effectIndex)
     {
         Pet* pPet = static_cast< Pet* >(unitTarget);
         if (pPet->IsSummonedPet())
-            p_caster->AddSummonSpell(unitTarget->getEntry(), getSpellInfo()->getEffectTriggerSpell(effectIndex));
+            p_caster->addSummonSpell(unitTarget->getEntry(), getSpellInfo()->getEffectTriggerSpell(effectIndex));
 
         pPet->AddSpell(sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex)), true);
 
@@ -4316,7 +4316,7 @@ void Spell::SpellEffectOpenLockItem(uint8_t /*effectIndex*/)
     if (p_caster == nullptr || i_caster == nullptr)
         return;
 
-    p_caster->HandleSpellLoot(i_caster->getItemProperties()->ItemId);
+    p_caster->handleSpellLoot(i_caster->getItemProperties()->ItemId);
 }
 
 void Spell::SpellEffectSendEvent(uint8_t effectIndex) //Send Event
@@ -4341,11 +4341,11 @@ void Spell::SpellEffectPowerBurn(uint8_t effectIndex) // power burn
     if (unitTarget->isPlayer())
     {
         Player* mPlayer = static_cast< Player* >(unitTarget);
-        if (mPlayer->IsInFeralForm())
+        if (mPlayer->isInFeralForm())
             return;
 
         // Resilience - reduces the effect of mana drains by (CalcRating*2)%.
-        damage = float2int32(damage * (1 - ((static_cast< Player* >(unitTarget)->CalcRating(CR_CRIT_TAKEN_SPELL) * 2) / 100.0f)));
+        damage = float2int32(damage * (1 - ((static_cast< Player* >(unitTarget)->calcRating(CR_CRIT_TAKEN_SPELL) * 2) / 100.0f)));
     }
     int32 mult = damage;
     damage = mult * unitTarget->getMaxPower(POWER_TYPE_MANA) / 100;
@@ -4491,7 +4491,7 @@ void Spell::SpellEffectInterruptCast(uint8_t /*effectIndex*/) // Interrupt Cast
                         duration = (duration * (100 + DurationModifier)) / 100;
 
                     // Prevent player from casting in that school
-                    static_cast<Player*>(unitTarget)->SendPreventSchoolCast(school, duration);
+                    static_cast<Player*>(unitTarget)->sendPreventSchoolCast(school, duration);
                 }
                 else
                 {
@@ -5938,7 +5938,7 @@ void Spell::SpellEffectRedirectThreat(uint8_t /*effectIndex*/)
     if ((unitTarget->isPlayer() && p_caster->getGroup() != static_cast< Player* >(unitTarget)->getGroup()) || (unitTarget->isCreature() && !unitTarget->isPet()))
         return;
 
-    p_caster->SetMisdirectionTarget(unitTarget->getGuid());
+    p_caster->setMisdirectionTarget(unitTarget->getGuid());
 
     // Threat Management
     p_caster->getThreatManager().registerRedirectThreat(m_spellInfo->getId(), unitTarget->getGuid(), uint32(damage));

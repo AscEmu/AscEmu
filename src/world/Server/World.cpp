@@ -1018,7 +1018,7 @@ void World::saveAllPlayersToDb()
         if (player->getSession())
         {
             const auto startTime = Util::TimeNow();
-            player->SaveToDB(false);
+            player->saveToDB(false);
             sLogger.info("Saved player `%s` (level %u) in %u ms.", player->getName().c_str(), player->getLevel(), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
             ++count;
         }

@@ -1004,7 +1004,7 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
     else
     {
         xp = float2int32(GenerateQuestXP(plr, qst) * worldConfig.getFloatRate(RATE_QUESTXP));
-        plr->GiveXP(xp, 0, false);
+        plr->giveXp(xp, 0, false);
     }
 
     // Bonus talents
@@ -1757,7 +1757,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         // cast learning spell
         if (qst->reward_spell && !qst->effect_on_player) // qst->reward_spell is the spell the quest finisher teaches you, OR the icon of the spell if effect_on_player is not 0
         {
-            if (!plr->HasSpell(qst->reward_spell))
+            if (!plr->hasSpell(qst->reward_spell))
             {
                 // "Teaching" effect
                 WorldPacket data(SMSG_SPELL_START, 42);

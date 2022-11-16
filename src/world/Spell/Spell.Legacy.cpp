@@ -987,8 +987,8 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     //rating bonus
     if (p_caster != nullptr)
     {
-        resistchance -= p_caster->CalcRating(CR_HIT_SPELL);
-        resistchance -= p_caster->GetHitFromSpell();
+        resistchance -= p_caster->calcRating(CR_HIT_SPELL);
+        resistchance -= p_caster->getHitFromSpell();
     }
 
     // school hit resistance: check all schools and take the minimal
@@ -1501,7 +1501,7 @@ void Spell::HandleAddAura(uint64 guid)
 
         if (Target->isPlayer())
         {
-            sEventMgr.AddEvent(static_cast<Player*>(Target), &Player::AvengingWrath, EVENT_PLAYER_AVENGING_WRATH, 30000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(static_cast<Player*>(Target), &Player::avengingWrath, EVENT_PLAYER_AVENGING_WRATH, 30000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             static_cast<Player*>(Target)->m_avengingWrath = false;
         }
     }
@@ -2911,7 +2911,7 @@ void Spell::HandleTeleport(LocationVector pos, uint32 mapid, Unit* Target)
     if (Target->isPlayer())
     {
         Player* pTarget = static_cast<Player*>(Target);
-        pTarget->EventAttackStop();
+        pTarget->eventAttackStop();
         pTarget->setTargetGuid(0);
 
         // We use a teleport event on this one. Reason being because of UpdateCellActivity,
@@ -2993,7 +2993,7 @@ void Spell::DetermineSkillUp(uint16_t skillid, uint32 targetlevel, uint32 multip
     if (p_caster == nullptr)
         return;
 
-    if (p_caster->GetSkillUpChance(skillid) < 0.01)
+    if (p_caster->getSkillUpChance(skillid) < 0.01)
         return;//to prevent getting higher skill than max
 
     int32 diff = p_caster->getSkillLineCurrent(skillid, false) / 5 - targetlevel;

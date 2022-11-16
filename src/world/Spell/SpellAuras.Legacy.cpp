@@ -782,7 +782,7 @@ void Aura::SpellAuraModBaseResistancePerc(AuraEffectModifier* aurEff, bool apply
                 {
                     static_cast< Player* >(m_target)->m_baseResistanceModPctNeg[x] -= amt;
                 }
-                static_cast< Player* >(m_target)->CalcResistance(x);
+                static_cast< Player* >(m_target)->calcResistance(x);
 
             }
             else if (m_target->isCreature())
@@ -1066,7 +1066,7 @@ void Aura::SpellAuraModAttackSpeed(AuraEffectModifier* aurEff, bool apply)
     }
 
     if (m_target->isPlayer())
-        static_cast<Player*>(m_target)->UpdateStats();
+        static_cast<Player*>(m_target)->updateStats();
 }
 
 void Aura::SpellAuraModThreatGenerated(AuraEffectModifier* aurEff, bool apply)
@@ -1744,11 +1744,11 @@ void Aura::SpellAuraModResistance(AuraEffectModifier* aurEff, bool apply)
             case 58944:
             {
                 // Increases the armor bonus of your Devotion Aura by %u - HACKY
-                if (plr->HasSpell(20140))     // Improved Devotion Aura Rank 3
+                if (plr->hasSpell(20140))     // Improved Devotion Aura Rank 3
                     amt = (int32)(amt * 1.5);
-                else if (plr->HasSpell(20139))     // Improved Devotion Aura Rank 2
+                else if (plr->hasSpell(20139))     // Improved Devotion Aura Rank 2
                     amt = (int32)(amt * 1.34);
-                else if (plr->HasSpell(20138))     // Improved Devotion Aura Rank 1
+                else if (plr->hasSpell(20138))     // Improved Devotion Aura Rank 1
                     amt = (int32)(amt * 1.17);
             } break;
         }
@@ -1764,7 +1764,7 @@ void Aura::SpellAuraModResistance(AuraEffectModifier* aurEff, bool apply)
                     static_cast< Player* >(m_target)->m_flatResistanceModifierPos[x] += amt;
                 else
                     static_cast< Player* >(m_target)->m_flatResistanceModifierNeg[x] -= amt;
-                static_cast< Player* >(m_target)->CalcResistance(x);
+                static_cast< Player* >(m_target)->calcResistance(x);
             }
         }
     }
@@ -1928,22 +1928,22 @@ void Aura::SpellAuraModStat(AuraEffectModifier* aurEff, bool apply)
             for (uint8 x = 0; x < 5; x++)
             {
                 if (aurEff->getEffectDamage() > 0)
-                    static_cast< Player* >(m_target)->FlatStatModPos[x] += val;
+                    dynamic_cast< Player* >(m_target)->m_flatStatModPos[x] += val;
                 else
-                    static_cast< Player* >(m_target)->FlatStatModNeg[x] -= val;
+                    dynamic_cast< Player* >(m_target)->m_flatStatModNeg[x] -= val;
 
-                static_cast< Player* >(m_target)->CalcStat(x);
+                dynamic_cast< Player* >(m_target)->calcStat(x);
             }
 
-            static_cast< Player* >(m_target)->UpdateStats();
-            static_cast< Player* >(m_target)->UpdateChances();
+            dynamic_cast< Player* >(m_target)->updateStats();
+            dynamic_cast< Player* >(m_target)->updateChances();
         }
         else if (m_target->isCreature())
         {
             for (uint8 x = 0; x < 5; x++)
             {
-                static_cast< Creature* >(m_target)->FlatStatMod[x] += val;
-                static_cast< Creature* >(m_target)->CalcStat(x);
+                dynamic_cast< Creature* >(m_target)->FlatStatMod[x] += val;
+                dynamic_cast< Creature* >(m_target)->CalcStat(x);
             }
         }
     }
@@ -1955,19 +1955,19 @@ void Aura::SpellAuraModStat(AuraEffectModifier* aurEff, bool apply)
             if (m_target->isPlayer())
             {
                 if (aurEff->getEffectDamage() > 0)
-                    static_cast<Player*>(m_target)->FlatStatModPos[modValue] += val;
+                    dynamic_cast<Player*>(m_target)->m_flatStatModPos[modValue] += val;
                 else
-                    static_cast<Player*>(m_target)->FlatStatModNeg[modValue] -= val;
+                    dynamic_cast<Player*>(m_target)->m_flatStatModNeg[modValue] -= val;
 
-                static_cast<Player*>(m_target)->CalcStat(modValue);
+                dynamic_cast<Player*>(m_target)->calcStat(modValue);
 
-                static_cast<Player*>(m_target)->UpdateStats();
-                static_cast<Player*>(m_target)->UpdateChances();
+                dynamic_cast<Player*>(m_target)->updateStats();
+                dynamic_cast<Player*>(m_target)->updateChances();
             }
             else if (m_target->isCreature())
             {
-                static_cast<Creature*>(m_target)->FlatStatMod[modValue] += val;
-                static_cast<Creature*>(m_target)->CalcStat(modValue);
+                dynamic_cast<Creature*>(m_target)->FlatStatMod[modValue] += val;
+                dynamic_cast<Creature*>(m_target)->CalcStat(modValue);
             }
         }
     }
@@ -1994,7 +1994,7 @@ void Aura::SpellAuraModSkill(AuraEffectModifier* aurEff, bool apply)
         else
             static_cast< Player* >(m_target)->modifySkillBonus(skillLine, -amount, false);
 
-        static_cast< Player* >(m_target)->UpdateStats();
+        static_cast< Player* >(m_target)->updateStats();
     }
 }
 
@@ -2182,8 +2182,8 @@ void Aura::SpellAuraModIncreaseHealth(AuraEffectModifier* aurEff, bool apply)
     if (m_target->isPlayer())
     {
         //maybe we should not adjust hitpoints too but only maximum health
-        static_cast< Player* >(m_target)->SetHealthFromSpell(static_cast< Player* >(m_target)->GetHealthFromSpell() + amt);
-        static_cast< Player* >(m_target)->UpdateStats();
+        static_cast< Player* >(m_target)->setHealthFromSpell(static_cast< Player* >(m_target)->getHealthFromSpell() + amt);
+        static_cast< Player* >(m_target)->updateStats();
         if (apply)
             m_target->modHealth(amt);
         else
@@ -2228,7 +2228,7 @@ void Aura::SpellAuraModIncreaseEnergy(AuraEffectModifier* aurEff, bool apply)
 
     if (modValue == 0 && m_target->isPlayer())
     {
-        static_cast< Player* >(m_target)->SetManaFromSpell(static_cast< Player* >(m_target)->GetManaFromSpell() + amount);
+        static_cast< Player* >(m_target)->setManaFromSpell(static_cast< Player* >(m_target)->getManaFromSpell() + amount);
     }
 }
 
@@ -2539,7 +2539,7 @@ void Aura::SpellAuraModParryPerc(AuraEffectModifier* aurEff, bool apply)
         m_target->setParryFromSpell(m_target->getParryFromSpell() + amt);
         if (p_target != nullptr)
         {
-            p_target->UpdateChances();
+            p_target->updateChances();
         }
     }
 #endif
@@ -2565,7 +2565,7 @@ void Aura::SpellAuraModDodgePerc(AuraEffectModifier* aurEff, bool apply)
         m_target->setDodgeFromSpell(m_target->getDodgeFromSpell() + amt);
         if (p_target != nullptr)
         {
-            p_target->UpdateChances();
+            p_target->updateChances();
         }
     }
 #endif
@@ -2590,7 +2590,7 @@ void Aura::SpellAuraModBlockPerc(AuraEffectModifier* aurEff, bool apply)
         m_target->setBlockFromSpell(m_target->getBlockFromSpell() + amt);
         if (p_target != nullptr)
         {
-            p_target->UpdateStats();
+            p_target->updateStats();
         }
     }
 }
@@ -2622,7 +2622,7 @@ void Aura::SpellAuraModCritPerc(AuraEffectModifier* aurEff, bool apply)
             }*/
             p_target->m_toCritChance.erase(getSpellId());
         }
-        p_target->UpdateChances();
+        p_target->updateChances();
     }
 #endif
 }
@@ -2657,7 +2657,7 @@ void Aura::SpellAuraModSpellHitChance(AuraEffectModifier* aurEff, bool apply)
     {
         if (apply)
         {
-            p_target->SetHitFromSpell(p_target->GetHitFromSpell() + aurEff->getEffectDamage());
+            p_target->setHitFromSpell(p_target->getHitFromSpell() + aurEff->getEffectDamage());
             if (aurEff->getEffectDamage() < 0)
                 mPositive = false;
             else
@@ -2665,10 +2665,10 @@ void Aura::SpellAuraModSpellHitChance(AuraEffectModifier* aurEff, bool apply)
         }
         else
         {
-            p_target->SetHitFromSpell(p_target->GetHitFromSpell() - aurEff->getEffectDamage());
-            if (p_target->GetHitFromSpell() < 0)
+            p_target->setHitFromSpell(p_target->getHitFromSpell() - aurEff->getEffectDamage());
+            if (p_target->getHitFromSpell() < 0)
             {
-                p_target->SetHitFromSpell(0);
+                p_target->setHitFromSpell(0);
             }
         }
     }
@@ -2691,8 +2691,8 @@ void Aura::SpellAuraModSpellCritChance(AuraEffectModifier* aurEff, bool apply)
             amt = -aurEff->getEffectDamage();
 
         p_target->m_spellCritPercentage += amt;
-        p_target->SetSpellCritFromSpell(p_target->GetSpellCritFromSpell() + amt);
-        p_target->UpdateChanceFields();
+        p_target->setSpellCritFromSpell(p_target->getSpellCritFromSpell() + amt);
+        p_target->updateChanceFields();
     }
 }
 
@@ -2823,7 +2823,7 @@ void Aura::SpellAuraFeignDeath(AuraEffectModifier* /*aurEff*/, bool apply)
     {
         if (apply)
         {
-            p_target->EventAttackStop();
+            p_target->eventAttackStop();
             p_target->setDeathState(ALIVE);
 
 #if VERSION_STRING != Classic
@@ -2857,7 +2857,7 @@ void Aura::SpellAuraFeignDeath(AuraEffectModifier* /*aurEff*/, bool apply)
             }
 
             // this looks awkward!
-            p_target->SendMirrorTimer(MIRROR_TYPE_FIRE, getTimeLeft(), getTimeLeft(), 0xFFFFFFFF);
+            p_target->sendMirrorTimer(MIRROR_TYPE_FIRE, getTimeLeft(), getTimeLeft(), 0xFFFFFFFF);
 
             p_target->removeUnitFlags(UNIT_FLAG_COMBAT);
 
@@ -2918,7 +2918,7 @@ void Aura::SpellAuraModDisarm(AuraEffectModifier* aurEff, bool apply)
 
     if (apply)
     {
-        if (p_target != nullptr && p_target->IsInFeralForm())
+        if (p_target != nullptr && p_target->isInFeralForm())
             return;
 
         mPositive = false;
@@ -2983,7 +2983,7 @@ void Aura::SpellAuraModSpellCritChanceSchool(AuraEffectModifier* aurEff, bool ap
         }
     }
     if (p_target != nullptr)
-        p_target->UpdateChanceFields();
+        p_target->updateChanceFields();
 }
 
 void Aura::SpellAuraModPowerCost(AuraEffectModifier* aurEff, bool apply)
@@ -3294,11 +3294,11 @@ void Aura::SpellAuraModPercStat(AuraEffectModifier* aurEff, bool apply)
                 else
                     p_target->m_statModPctNeg[x] -= val;
 
-                p_target->CalcStat(x);
+                p_target->calcStat(x);
             }
 
-            p_target->UpdateStats();
-            p_target->UpdateChances();
+            p_target->updateStats();
+            p_target->updateChances();
         }
         else
         {
@@ -3321,10 +3321,10 @@ void Aura::SpellAuraModPercStat(AuraEffectModifier* aurEff, bool apply)
                 else
                     p_target->m_statModPctNeg[modValue] -= val;
 
-                p_target->CalcStat(modValue);
+                p_target->calcStat(modValue);
 
-                p_target->UpdateStats();
-                p_target->UpdateChances();
+                p_target->updateStats();
+                p_target->updateChances();
             }
             else if (m_target->isCreature())
             {
@@ -3645,7 +3645,7 @@ void Aura::SpellAuraSkillTalent(AuraEffectModifier* aurEff, bool apply)
         else
             p_target->modifySkillBonus(skillLine, -amount, true);
 
-        p_target->UpdateStats();
+        p_target->updateStats();
     }
 }
 
@@ -3695,7 +3695,7 @@ void Aura::SpellAuraModResistancePCT(AuraEffectModifier* aurEff, bool apply)
                 {
                     p_target->m_resistanceModPctNeg[x] -= amt;
                 }
-                p_target->CalcResistance(x);
+                p_target->calcResistance(x);
 
             }
             else if (m_target->isCreature())
@@ -3899,7 +3899,7 @@ void Aura::SpellAuraModPowerRegPerc(AuraEffectModifier* aurEff, bool apply)
     else
         m_target->m_pctPowerRegenModifier[aurEff->getEffectMiscValue()] -= ((float)(aurEff->getEffectDamage())) / 100.0f;
     if (p_target != nullptr)
-        p_target->UpdateStats();
+        p_target->updateStats();
 }
 
 void Aura::SpellAuraOverrideClassScripts(AuraEffectModifier* aurEff, bool apply)
@@ -4214,13 +4214,13 @@ void Aura::SpellAuraModIncreaseEnergyPerc(AuraEffectModifier* aurEff, bool apply
         aurEff->setEffectFixedDamage((m_target->getMaxPower(modValue) * aurEff->getEffectDamage()) / 100);
         m_target->modMaxPower(modValue, aurEff->getEffectFixedDamage());
         if (p_target != nullptr && aurEff->getEffectMiscValue() == POWER_TYPE_MANA)
-            p_target->SetManaFromSpell(p_target->GetManaFromSpell() + aurEff->getEffectFixedDamage());
+            p_target->setManaFromSpell(p_target->getManaFromSpell() + aurEff->getEffectFixedDamage());
     }
     else
     {
         m_target->modMaxPower(modValue, -aurEff->getEffectFixedDamage());
         if (p_target != nullptr && aurEff->getEffectMiscValue() == POWER_TYPE_MANA)
-            p_target->SetManaFromSpell(p_target->GetManaFromSpell() - aurEff->getEffectFixedDamage());
+            p_target->setManaFromSpell(p_target->getManaFromSpell() - aurEff->getEffectFixedDamage());
     }
 }
 
@@ -4232,7 +4232,7 @@ void Aura::SpellAuraModIncreaseHealthPerc(AuraEffectModifier* aurEff, bool apply
         aurEff->setEffectFixedDamage((m_target->getMaxHealth() * aurEff->getEffectDamage()) / 100);
         m_target->modMaxHealth(aurEff->getEffectFixedDamage());
         if (p_target != nullptr)
-            p_target->SetHealthFromSpell(p_target->GetHealthFromSpell() + aurEff->getEffectFixedDamage());
+            p_target->setHealthFromSpell(p_target->getHealthFromSpell() + aurEff->getEffectFixedDamage());
         //  else if (m_target->isPet())
         //      TO< Pet* >(m_target)->SetHealthFromSpell(((Pet*)m_target)->GetHealthFromSpell() + aurEff->getEffectFixedDamage());
     }
@@ -4242,7 +4242,7 @@ void Aura::SpellAuraModIncreaseHealthPerc(AuraEffectModifier* aurEff, bool apply
         if (m_target->getHealth() > m_target->getMaxHealth())
             m_target->setHealth(m_target->getMaxHealth());
         if (p_target != nullptr)
-            p_target->SetHealthFromSpell(static_cast<Player*>(m_target)->GetHealthFromSpell() - aurEff->getEffectFixedDamage());
+            p_target->setHealthFromSpell(static_cast<Player*>(m_target)->getHealthFromSpell() - aurEff->getEffectFixedDamage());
         //  else if (m_target->isPet())
         //      TO< Pet* >(m_target)->SetHealthFromSpell(((Pet*)m_target)->GetHealthFromSpell() - aurEff->getEffectFixedDamage());
     }
@@ -4257,7 +4257,7 @@ void Aura::SpellAuraModManaRegInterrupt(AuraEffectModifier* aurEff, bool apply)
         else
             p_target->m_modInterrManaRegenPct -= aurEff->getEffectDamage();
 
-        p_target->UpdateStats();
+        p_target->updateStats();
     }
 }
 
@@ -4282,11 +4282,11 @@ void Aura::SpellAuraModTotalStatPerc(AuraEffectModifier* aurEff, bool apply)
                     p_target->m_totalStatModPctPos[x] += val;
                 else
                     p_target->m_totalStatModPctNeg[x] -= val;
-                p_target->CalcStat(x);
+                p_target->calcStat(x);
             }
 
-            p_target->UpdateStats();
-            p_target->UpdateChances();
+            p_target->updateStats();
+            p_target->updateChances();
         }
         else if (m_target->isCreature())
         {
@@ -4314,14 +4314,14 @@ void Aura::SpellAuraModTotalStatPerc(AuraEffectModifier* aurEff, bool apply)
                 case 24894:
                 {
                     //we should remove effect first
-                    p_target->EventTalentHearthOfWildChange(false);
+                    p_target->eventTalentHearthOfWildChange(false);
                     //set new value
                     if (apply)
-                        p_target->SetTalentHearthOfWildPCT(val);
+                        p_target->setTalentHearthOfWildPCT(val);
                     else
-                        p_target->SetTalentHearthOfWildPCT(0);   //this happens on a talent reset
+                        p_target->setTalentHearthOfWildPCT(0);   //this happens on a talent reset
                                                                  //reapply
-                    p_target->EventTalentHearthOfWildChange(true);
+                    p_target->eventTalentHearthOfWildChange(true);
                 } break;
                 }
 
@@ -4332,9 +4332,9 @@ void Aura::SpellAuraModTotalStatPerc(AuraEffectModifier* aurEff, bool apply)
                 else
                     p_target->m_totalStatModPctNeg[modValue] -= val;
 
-                p_target->CalcStat(modValue);
-                p_target->UpdateStats();
-                p_target->UpdateChances();
+                p_target->calcStat(modValue);
+                p_target->updateStats();
+                p_target->updateChances();
             }
             else if (m_target->isCreature())
             {
@@ -4394,7 +4394,7 @@ void Aura::SpellAuraModHaste(AuraEffectModifier* aurEff, bool apply)
     }
 
     if (m_target->isPlayer())
-        static_cast<Player*>(m_target)->UpdateAttackSpeed();
+        static_cast<Player*>(m_target)->updateAttackSpeed();
 }
 
 void Aura::SpellAuraForceReaction(AuraEffectModifier* aurEff, bool apply)
@@ -4429,7 +4429,7 @@ void Aura::SpellAuraModRangedHaste(AuraEffectModifier* aurEff, bool apply)
         m_target->modAttackSpeedModifier(RANGED, -aurEff->getEffectDamage());
 
     if (m_target->isPlayer())
-        static_cast<Player*>(m_target)->UpdateAttackSpeed();
+        static_cast<Player*>(m_target)->updateAttackSpeed();
 }
 
 void Aura::SpellAuraModRangedAmmoHaste(AuraEffectModifier* aurEff, bool apply)
@@ -4443,7 +4443,7 @@ void Aura::SpellAuraModRangedAmmoHaste(AuraEffectModifier* aurEff, bool apply)
     else
         p_target->modAttackSpeedModifier(RANGED, -aurEff->getEffectDamage());
 
-    p_target->UpdateAttackSpeed();
+    p_target->updateAttackSpeed();
 }
 
 void Aura::SpellAuraModResistanceExclusive(AuraEffectModifier* aurEff, bool apply)
@@ -4489,7 +4489,7 @@ void Aura::SpellAuraModShieldBlockPCT(AuraEffectModifier* aurEff, bool apply)
         {
             p_target->m_modBlockAbsorbValue -= (uint32)aurEff->getEffectDamage();
         }
-        p_target->UpdateStats();
+        p_target->updateStats();
     }
 }
 
@@ -4802,7 +4802,7 @@ void Aura::SpellAuraIncreaseSpellDamageByAttribute(AuraEffectModifier* aurEff, b
                     p_target->modModDamageDonePositive(x, -aurEff->getEffectFixedDamage());
             }
         }
-        p_target->UpdateChanceFields();
+        p_target->updateChanceFields();
     }
 }
 
@@ -4834,7 +4834,7 @@ void Aura::SpellAuraModSpellDamageByAP(AuraEffectModifier* aurEff, bool apply)
             if (aurEff->getEffectMiscValue() & (((uint32)1) << x))
                 p_target->modModDamageDonePositive(x, val);
 
-        p_target->UpdateChanceFields();
+        p_target->updateChanceFields();
     }
 }
 
@@ -4862,7 +4862,7 @@ void Aura::SpellAuraIncreaseHealingByAttribute(AuraEffectModifier* aurEff, bool 
 
     if (p_target != nullptr)
     {
-        p_target->UpdateChanceFields();
+        p_target->updateChanceFields();
         if (apply)
         {
             aurEff->setEffectFixedDamage(float2int32(((float)val / 100.0f) * p_target->getStat(stat)));
@@ -4918,7 +4918,7 @@ void Aura::SpellAuraModHealingByAP(AuraEffectModifier* aurEff, bool apply)
     if (p_target != nullptr)
     {
         p_target->modModHealingDone(val);
-        p_target->UpdateChanceFields();
+        p_target->updateChanceFields();
     }
 #endif
 }
@@ -4951,7 +4951,7 @@ void Aura::SpellAuraModHealingDone(AuraEffectModifier* aurEff, bool apply)
     }
     if (p_target != nullptr)
     {
-        p_target->UpdateChanceFields();
+        p_target->updateChanceFields();
         p_target->modModHealingDone(val);
     }
 #endif
@@ -5101,7 +5101,7 @@ void Aura::SpellAuraIncreaseArmorByPctInt(AuraEffectModifier* aurEff, bool apply
             if (p_target != nullptr)
             {
                 p_target->m_flatResistanceModifierPos[x] += amt;
-                p_target->CalcResistance(x);
+                p_target->calcResistance(x);
             }
             else if (m_target->isCreature())
             {
@@ -5153,14 +5153,14 @@ void Aura::SpellAuraReduceEnemyMCritChance(AuraEffectModifier* aurEff, bool appl
 {
     if (!m_target->isPlayer())
         return;
-    if (apply)
+
+    if (const auto targetPlayer = dynamic_cast<Player*>(m_target))
     {
         //value is negative percent
-        static_cast< Player* >(m_target)->res_M_crit_set(static_cast< Player* >(m_target)->res_M_crit_get() + aurEff->getEffectDamage());
-    }
-    else
-    {
-        static_cast< Player* >(m_target)->res_M_crit_set(static_cast< Player* >(m_target)->res_M_crit_get() - aurEff->getEffectDamage());
+        if (apply)
+            targetPlayer->setResistMCrit(targetPlayer->getResistMCrit() + static_cast<float>(aurEff->getEffectDamage()));
+        else
+            targetPlayer->setResistMCrit(targetPlayer->getResistMCrit() - static_cast<float>(aurEff->getEffectDamage()));
     }
 }
 
@@ -5168,14 +5168,14 @@ void Aura::SpellAuraReduceEnemyRCritChance(AuraEffectModifier* aurEff, bool appl
 {
     if (!m_target->isPlayer())
         return;
-    if (apply)
+
+    if (const auto targetPlayer = dynamic_cast<Player*>(m_target))
     {
         //value is negative percent
-        static_cast< Player* >(m_target)->res_R_crit_set(static_cast< Player* >(m_target)->res_R_crit_get() + aurEff->getEffectDamage());
-    }
-    else
-    {
-        static_cast< Player* >(m_target)->res_R_crit_set(static_cast< Player* >(m_target)->res_R_crit_get() - aurEff->getEffectDamage());
+        if (apply)
+            targetPlayer->setResistRCrit(targetPlayer->getResistRCrit() + static_cast<float>(aurEff->getEffectDamage()));
+        else
+            targetPlayer->setResistRCrit(targetPlayer->getResistRCrit() - static_cast<float>(aurEff->getEffectDamage()));
     }
 }
 
@@ -5213,7 +5213,7 @@ void Aura::SpellAuraMeleeHaste(AuraEffectModifier* aurEff, bool apply)
     }
 
     if (m_target->isPlayer())
-        static_cast<Player*>(m_target)->UpdateAttackSpeed();
+        static_cast<Player*>(m_target)->updateAttackSpeed();
 }
 
 /*
@@ -5317,7 +5317,7 @@ void Aura::SpellAuraIncreaseAllWeaponSkill(AuraEffectModifier* aurEff, bool appl
             static_cast< Player* >(m_target)->modifySkillBonus(SKILL_POLEARMS, -amount, true);
         }
 
-        static_cast< Player* >(m_target)->UpdateStats();
+        static_cast< Player* >(m_target)->updateStats();
     }
 }
 
@@ -5326,8 +5326,8 @@ void Aura::SpellAuraIncreaseHitRate(AuraEffectModifier* aurEff, bool apply)
     if (!m_target->isPlayer())
         return;
 
-    static_cast< Player* >(m_target)->ModifyBonuses(ITEM_MOD_SPELL_HIT_RATING, aurEff->getEffectDamage(), apply);
-    static_cast< Player* >(m_target)->UpdateStats();
+    static_cast< Player* >(m_target)->modifyBonuses(ITEM_MOD_SPELL_HIT_RATING, aurEff->getEffectDamage(), apply);
+    static_cast< Player* >(m_target)->updateStats();
 }
 
 void Aura::SpellAuraIncreaseRageFromDamageDealtPCT(AuraEffectModifier* aurEff, bool apply)
@@ -5452,12 +5452,12 @@ void Aura::SpellAuraIncreaseRating(AuraEffectModifier* aurEff, bool apply)
     Player* plr = static_cast< Player* >(m_target);
     for (uint32 x = 1; x < 24; x++)  //skip x= 0
         if ((((uint32)1) << x) & aurEff->getEffectMiscValue())
-            plr->ModifyBonuses(11 + x, aurEff->getEffectDamage(), apply);
+            plr->modifyBonuses(11 + x, aurEff->getEffectDamage(), apply);
 
     //MELEE_CRITICAL_AVOIDANCE_RATING + RANGED_CRITICAL_AVOIDANCE_RATING + SPELL_CRITICAL_AVOIDANCE_RATING
     //comes only as combination of them  - ModifyBonuses() not adding them individually anyhow
     if (aurEff->getEffectMiscValue() & (0x0004000 | 0x0008000 | 0x0010000))
-        plr->ModifyBonuses(ITEM_MOD_RESILIENCE_RATING, aurEff->getEffectDamage(), apply);
+        plr->modifyBonuses(ITEM_MOD_RESILIENCE_RATING, aurEff->getEffectDamage(), apply);
 
     if (aurEff->getEffectMiscValue() & 1)  //weapon skill
     {
@@ -5479,7 +5479,7 @@ void Aura::SpellAuraIncreaseRating(AuraEffectModifier* aurEff, bool apply)
             }
     }
 
-    plr->UpdateStats();
+    plr->updateStats();
 }
 
 void Aura::SpellAuraRegenManaStatPCT(AuraEffectModifier* aurEff, bool apply)
@@ -5492,7 +5492,7 @@ void Aura::SpellAuraRegenManaStatPCT(AuraEffectModifier* aurEff, bool apply)
     else
         static_cast<Player*>(m_target)->m_modManaRegenFromStat[aurEff->getEffectMiscValue()] -= aurEff->getEffectDamage();
 
-    static_cast<Player*>(m_target)->UpdateStats();
+    static_cast<Player*>(m_target)->updateStats();
 }
 
 void Aura::SpellAuraSpellHealingStatPCT(AuraEffectModifier* aurEff, bool apply)
@@ -5511,16 +5511,16 @@ void Aura::SpellAuraSpellHealingStatPCT(AuraEffectModifier* aurEff, bool apply)
 
         aurEff->setEffectFixedDamage(((m_target->getStat(STAT_SPIRIT) * aurEff->getEffectDamage()) / 100));
 
-        static_cast<Player*>(m_target)->ModifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, aurEff->getEffectFixedDamage(), true);
-        static_cast<Player*>(m_target)->UpdateChances();
+        static_cast<Player*>(m_target)->modifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, aurEff->getEffectFixedDamage(), true);
+        static_cast<Player*>(m_target)->updateChances();
     }
     else
     {
         /*for (uint32 x = 1; x < 7; x++)
             m_target->m_healDoneMod[x] -= aurEff->getEffectFixedDamage();*/
 
-        static_cast<Player*>(m_target)->ModifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, aurEff->getEffectFixedDamage(), false);
-        static_cast<Player*>(m_target)->UpdateChances();
+        static_cast<Player*>(m_target)->modifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, aurEff->getEffectFixedDamage(), false);
+        static_cast<Player*>(m_target)->updateChances();
     }
 #endif
 }
@@ -5575,8 +5575,8 @@ void Aura::SpellAuraIncreaseMaxHealth(AuraEffectModifier* aurEff, bool apply)
     else
         amount = -aurEff->getEffectDamage();
 
-    static_cast< Player* >(m_target)->SetHealthFromSpell(static_cast< Player* >(m_target)->GetHealthFromSpell() + amount);
-    static_cast< Player* >(m_target)->UpdateStats();
+    static_cast< Player* >(m_target)->setHealthFromSpell(static_cast< Player* >(m_target)->getHealthFromSpell() + amount);
+    static_cast< Player* >(m_target)->updateStats();
 }
 
 void Aura::SpellAuraSpiritOfRedemption(AuraEffectModifier* /*aurEff*/, bool apply)
@@ -5680,7 +5680,7 @@ void Aura::SpellAuraModBlockValue(AuraEffectModifier* aurEff, bool apply)
             amt = -aurEff->getEffectDamage();
         }
         p_target->m_modBlockValueFromSpells += amt;
-        p_target->UpdateStats();
+        p_target->updateStats();
     }
 }
 
@@ -5694,7 +5694,7 @@ void Aura::SpellAuraExpertise(AuraEffectModifier* /*aurEff*/, bool /*apply*/)
     if (p_target == nullptr)
         return;
 
-    p_target->CalcExpertise();
+    p_target->calcExpertise();
 }
 
 void Aura::SpellAuraForceMoveForward(AuraEffectModifier* /*aurEff*/, bool apply)
@@ -6045,8 +6045,8 @@ void Aura::SpellAuraModBaseHealth(AuraEffectModifier* aurEff, bool apply)
     if (!apply)
         amt *= -1;
 
-    p_target->SetHealthFromSpell(p_target->GetHealthFromSpell() + amt);
-    p_target->UpdateStats();
+    p_target->setHealthFromSpell(p_target->getHealthFromSpell() + amt);
+    p_target->updateStats();
 }
 
 void Aura::SpellAuraModAttackPowerOfArmor(AuraEffectModifier* aurEff, bool apply)

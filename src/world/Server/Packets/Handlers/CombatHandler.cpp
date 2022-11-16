@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Server/Packets/CmsgAttackSwing.h"
 #include "Server/WorldSession.h"
-#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 
@@ -31,7 +31,7 @@ void WorldSession::handleAttackSwingOpcode(WorldPacket& recvPacket)
         return;
 
     _player->smsg_AttackStart(unitTarget);
-    _player->EventAttackStart();
+    _player->eventAttackStart();
 }
 
 void WorldSession::handleAttackStopOpcode(WorldPacket& /*recvPacket*/)
@@ -40,6 +40,6 @@ void WorldSession::handleAttackStopOpcode(WorldPacket& /*recvPacket*/)
     if (unitTarget == nullptr)
         return;
 
-    _player->EventAttackStop();
+    _player->eventAttackStop();
     _player->smsg_AttackStop(unitTarget);
 }

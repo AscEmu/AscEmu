@@ -38,7 +38,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Creatures/Vehicle.h"
-#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Management/Faction.h"
@@ -389,7 +389,7 @@ void Unit::OnPushToWorld()
 void Unit::die(Unit* /*pAttacker*/, uint32_t /*damage*/, uint32_t /*spellid*/)
 {}
 
-void Unit::BuildPetSpellList(WorldPacket& data)
+void Unit::buildPetSpellList(WorldPacket& data)
 {
     data << static_cast<uint64_t>(0);
 }
@@ -3796,7 +3796,7 @@ float_t Unit::getCriticalChanceForDamageSpell(Spell* spell, Aura* aura, Unit* ta
         {
             critChance = dynamic_cast<Player const*>(this)->getRangedCritPercentage();
             if (target->isPlayer())
-                critChance += dynamic_cast<Player*>(target)->res_R_crit_get();
+                critChance += dynamic_cast<Player*>(target)->getResistRCrit();
 
             critChance += static_cast<float_t>(target->m_attackerCritChanceMod[school]);
         }
@@ -3822,7 +3822,7 @@ float_t Unit::getCriticalChanceForDamageSpell(Spell* spell, Aura* aura, Unit* ta
         if (target->isPlayer())
         {
             //this could be ability but in that case we overwrite the value
-            critChance += dynamic_cast<Player*>(target)->res_M_crit_get();
+            critChance += dynamic_cast<Player*>(target)->getResistMCrit();
 #if VERSION_STRING >= Cata
             resilienceType = CR_RESILIENCE_CRIT_TAKEN;
 #else
@@ -3850,7 +3850,7 @@ float_t Unit::getCriticalChanceForDamageSpell(Spell* spell, Aura* aura, Unit* ta
     applySpellModifiers(SPELLMOD_CRITICAL, &critChance, spellInfo, spell, aura);
 
     if (resilienceType != CR_WEAPON_SKILL)
-        critChance -= dynamic_cast<Player*>(target)->CalcRating(resilienceType);
+        critChance -= dynamic_cast<Player*>(target)->calcRating(resilienceType);
 
     if (critChance < 0.0f)
         critChance = 0.0f;
@@ -3927,9 +3927,9 @@ float_t Unit::getCriticalDamageBonusForSpell(float_t damage, Unit* target, Spell
     if (target != nullptr && target->isPlayer())
     {
 #if VERSION_STRING >= Cata
-        float_t dmgReductionPct = 2.0f * dynamic_cast<Player*>(target)->CalcRating(CR_RESILIENCE_CRIT_TAKEN) / 100.0f;
+        float_t dmgReductionPct = 2.0f * dynamic_cast<Player*>(target)->calcRating(CR_RESILIENCE_CRIT_TAKEN) / 100.0f;
 #else
-        float_t dmgReductionPct = 2.0f * static_cast<Player*>(target)->CalcRating(CR_CRIT_TAKEN_MELEE) / 100.0f;
+        float_t dmgReductionPct = 2.0f * static_cast<Player*>(target)->calcRating(CR_CRIT_TAKEN_MELEE) / 100.0f;
 #endif
         if (dmgReductionPct > 1.0f)
             dmgReductionPct = 1.0f;
@@ -6004,7 +6004,7 @@ void Unit::regenerateHealthAndPowers(uint16_t timePassed)
     {
         if (isPlayer())
         {
-            dynamic_cast<Player*>(this)->RegenerateHealth(getCombatHandler().isInCombat());
+            dynamic_cast<Player*>(this)->regenerateHealth(getCombatHandler().isInCombat());
             m_healthRegenerateTimer = 0;
         }
         else
@@ -6708,7 +6708,7 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
         {
             const auto plr = dynamic_cast<Player*>(this);
             if (!plr->getSession()->HasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
-                damage = plr->CheckDamageLimits(damage, spellId);
+                damage = plr->checkDamageLimits(damage, spellId);
         }
 
         const auto plrOwner = getPlayerOwnerOrSelf();
@@ -6865,7 +6865,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
         {
             const auto plr = dynamic_cast<Player*>(attacker);
 
-            plr->EventAttackStop();
+            plr->eventAttackStop();
 
             plr->sendPartyKillLogPacket(getGuid());
         }
@@ -6923,7 +6923,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                         auto xp = CalculateXpToGive(this, tagger);
                         if (xp > 0)
                         {
-                            tagger->GiveXP(xp, getGuid(), true);
+                            tagger->giveXp(xp, getGuid(), true);
 
                             // Give XP to pets also
                             if (tagger->getFirstPetFromSummons() != nullptr && tagger->getFirstPetFromSummons()->CanGainXP())
@@ -7404,7 +7404,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
         {
             const auto plr = dynamic_cast<Player*>(attacker);
             if (!plr->getSession()->HasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
-                damage = plr->CheckDamageLimits(damage, spellId);
+                damage = plr->checkDamageLimits(damage, spellId);
         }
 
         // Rage generation for victim
@@ -7707,7 +7707,7 @@ DBC::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t m
         if (mountCapability->reqAura && !hasAurasWithId(mountCapability->reqAura))
             continue;
 
-        if (mountCapability->reqSpell && (GetTypeFromGUID() != TYPEID_PLAYER || !ToPlayer()->HasSpell(mountCapability->reqSpell)))
+        if (mountCapability->reqSpell && (GetTypeFromGUID() != TYPEID_PLAYER || !ToPlayer()->hasSpell(mountCapability->reqSpell)))
             continue;
 
         return mountCapability;
@@ -8509,7 +8509,7 @@ void Unit::possess(Unit* unitTarget, uint32_t delay)
     if (!(unitTarget->isPet() && dynamic_cast<Pet*>(unitTarget) == playerController->getFirstPetFromSummons()))
     {
         WorldPacket data(SMSG_PET_SPELLS, 4 * 4 + 20);
-        unitTarget->BuildPetSpellList(data);
+        unitTarget->buildPetSpellList(data);
         playerController->getSession()->SendPacket(&data);
     }
 }
@@ -8992,7 +8992,7 @@ void Unit::giveGroupXP(Unit* unitVictim, Player* playerInGroup)
     if (activePlayerCount < 1)
     {
         xp = CalculateXpToGive(unitVictim, playerInGroup);
-        playerInGroup->GiveXP(xp, unitVictim->getGuid(), true);
+        playerInGroup->giveXp(xp, unitVictim->getGuid(), true);
     }
     else
     {
@@ -9018,7 +9018,7 @@ void Unit::giveGroupXP(Unit* unitVictim, Player* playerInGroup)
         for (uint8_t i = 0; i < activePlayerCount; i++)
         {
             Player* plr = activePlayerList[i];
-            plr->GiveXP(float2int32(static_cast<float>(xp) * static_cast<float>(plr->getLevel()) / static_cast<float>(totalLevel) * xpMod), unitVictim->getGuid(), true);
+            plr->giveXp(float2int32(static_cast<float>(xp) * static_cast<float>(plr->getLevel()) / static_cast<float>(totalLevel) * xpMod), unitVictim->getGuid(), true);
 
             activePlayerList[i]->addAuraStateAndAuras(AURASTATE_FLAG_LASTKILLWITHHONOR);
             if (!sEventMgr.HasEvent(activePlayerList[i], EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE))
@@ -9051,7 +9051,7 @@ void Unit::calculateResistanceReduction(Unit* unitVictim, DamageInfo* damageInfo
 
 #if VERSION_STRING > TBC
         if (this->isPlayer())
-            armorReduction = m_powerCostPctMod[0] + ((float)unitVictim->getResistance(0) * (armorPctReduce + static_cast<Player*>(this)->CalcRating(CR_ARMOR_PENETRATION)) / 100.0f);
+            armorReduction = m_powerCostPctMod[0] + ((float)unitVictim->getResistance(0) * (armorPctReduce + static_cast<Player*>(this)->calcRating(CR_ARMOR_PENETRATION)) / 100.0f);
         else
             armorReduction = 0.0f;
 #else
@@ -9749,13 +9749,13 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
 
             if (pVictim->m_canParry && !pVictim->m_isDisarmed)               // parry chance
             {
-                if (static_cast<Player*>(pVictim)->HasSpell(3127) || static_cast<Player*>(pVictim)->HasSpell(18848))
+                if (static_cast<Player*>(pVictim)->hasSpell(3127) || static_cast<Player*>(pVictim)->hasSpell(18848))
                 {
                     parry = static_cast<Player*>(pVictim)->getParryPercentage();
                 }
             }
         }
-        victim_skill = float2int32(vskill + static_cast<Player*>(pVictim)->CalcRating(CR_DEFENSE_SKILL));
+        victim_skill = float2int32(vskill + static_cast<Player*>(pVictim)->calcRating(CR_DEFENSE_SKILL));
     }
     else                                                                // mob defensive chances
     {
@@ -9784,18 +9784,18 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
         {
         case MELEE:   // melee main hand weapon
             it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-            hitmodifier += pr->CalcRating(CR_HIT_MELEE);
-            self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_MAINHAND));
+            hitmodifier += pr->calcRating(CR_HIT_MELEE);
+            self_skill = float2int32(pr->calcRating(CR_WEAPON_SKILL_MAINHAND));
             break;
         case OFFHAND: // melee offhand weapon (dualwield)
             it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-            hitmodifier += pr->CalcRating(CR_HIT_MELEE);
-            self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_OFFHAND));
+            hitmodifier += pr->calcRating(CR_HIT_MELEE);
+            self_skill = float2int32(pr->calcRating(CR_WEAPON_SKILL_OFFHAND));
             break;
         case RANGED:  // ranged weapon
             it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-            hitmodifier += pr->CalcRating(CR_HIT_RANGED);
-            self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_RANGED));
+            hitmodifier += pr->calcRating(CR_HIT_RANGED);
+            self_skill = float2int32(pr->calcRating(CR_WEAPON_SKILL_RANGED));
             break;
         }
 
@@ -9819,8 +9819,8 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
             case 51384:
             {
                 it = pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                hitmodifier += pr->CalcRating(CR_HIT_MELEE);
-                self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_MAINHAND));
+                hitmodifier += pr->calcRating(CR_HIT_MELEE);
+                self_skill = float2int32(pr->calcRating(CR_WEAPON_SKILL_MAINHAND));
             } break;
             default:
                 break;
@@ -9836,7 +9836,7 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
             SubClassSkill = SKILL_UNARMED;
 
         //chances in feral form don't depend on weapon skill
-        if (static_cast<Player*>(this)->IsInFeralForm())
+        if (static_cast<Player*>(this)->isInFeralForm())
         {
             uint8_t form = this->getShapeShiftForm();
             if (form == FORM_CAT || form == FORM_BEAR || form == FORM_DIREBEAR)
@@ -10028,13 +10028,13 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 if (pVictim->m_stunned <= 0)
                 {
                     // can dodge as long as we're not stunned
-                    dodge = plr->GetDodgeChance();
+                    dodge = plr->getDodgeChance();
                 }
 
                 if (pVictim->m_canParry && !m_isDisarmed)
                 {
                     // can parry as long as we're not disarmed
-                    parry = plr->GetParryChance();
+                    parry = plr->getParryChance();
                 }
             }
             // can block ranged attacks
@@ -10043,10 +10043,10 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             Item* it2 = plr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
             if (it2 != nullptr && it2->getItemProperties()->InventoryType == INVTYPE_SHIELD)
             {
-                block = plr->GetBlockChance();
+                block = plr->getBlockChance();
             }
         }
-        victim_skill = float2int32(vskill + floorf(plr->CalcRating(CR_DEFENSE_SKILL)));
+        victim_skill = float2int32(vskill + floorf(plr->calcRating(CR_DEFENSE_SKILL)));
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -10099,7 +10099,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         {
         case MELEE:   // melee main hand weapon
             it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-            self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_MAINHAND));
+            self_skill = float2int32(pr->calcRating(CR_WEAPON_SKILL_MAINHAND));
             if (it)
             {
                 dmg.schoolMask = static_cast<SchoolMask>(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
@@ -10109,7 +10109,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             break;
         case OFFHAND: // melee offhand weapon (dualwield)
             it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-            self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_OFFHAND));
+            self_skill = float2int32(pr->calcRating(CR_WEAPON_SKILL_OFFHAND));
             hit_status |= HITSTATUS_DUALWIELD;//animation
             if (it)
             {
@@ -10120,7 +10120,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             break;
         case RANGED:  // ranged weapon
             it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-            self_skill = float2int32(pr->CalcRating(CR_WEAPON_SKILL_RANGED));
+            self_skill = float2int32(pr->calcRating(CR_WEAPON_SKILL_RANGED));
             if (it)
                 dmg.schoolMask = static_cast<SchoolMask>(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
             break;
@@ -10137,7 +10137,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
 
 
         //chances in feral form don't depend on weapon skill
-        if (pr->IsInFeralForm())
+        if (pr->isInFeralForm())
         {
             uint8_t form = pr->getShapeShiftForm();
             if (form == FORM_CAT || form == FORM_BEAR || form == FORM_DIREBEAR)
@@ -10199,12 +10199,12 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     {
         if (dmg.weaponType != RANGED)
         {
-            crit += static_cast<Player*>(pVictim)->res_M_crit_get();
+            crit += static_cast<Player*>(pVictim)->getResistMCrit();
             hitmodifier += static_cast<Player*>(pVictim)->m_resistHit[MOD_MELEE];
         }
         else
         {
-            crit += static_cast<Player*>(pVictim)->res_R_crit_get();                 //this could be ability but in that case we overwrite the value
+            crit += static_cast<Player*>(pVictim)->getResistRCrit();                 //this could be ability but in that case we overwrite the value
             hitmodifier += static_cast<Player*>(pVictim)->m_resistHit[MOD_RANGED];
         }
     }
@@ -10251,9 +10251,9 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
 
     // by ratings
 #if VERSION_STRING >= Cata
-    crit -= pVictim->isPlayer() ? static_cast<Player*>(pVictim)->CalcRating(CR_RESILIENCE_CRIT_TAKEN) : 0.0f;
+    crit -= pVictim->isPlayer() ? static_cast<Player*>(pVictim)->calcRating(CR_RESILIENCE_CRIT_TAKEN) : 0.0f;
 #else
-    crit -= pVictim->isPlayer() ? static_cast<Player*>(pVictim)->CalcRating(CR_CRIT_TAKEN_MELEE) : 0.0f;
+    crit -= pVictim->isPlayer() ? static_cast<Player*>(pVictim)->calcRating(CR_CRIT_TAKEN_MELEE) : 0.0f;
 #endif
 
     if (crit < 0)
@@ -10262,9 +10262,9 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     if (this->isPlayer())
     {
         Player* plr = static_cast<Player*>(this);
-        hitmodifier += (dmg.weaponType == RANGED) ? plr->CalcRating(CR_HIT_RANGED) : plr->CalcRating(CR_HIT_MELEE);
+        hitmodifier += (dmg.weaponType == RANGED) ? plr->calcRating(CR_HIT_RANGED) : plr->calcRating(CR_HIT_MELEE);
 
-        float expertise_bonus = plr->CalcRating(CR_EXPERTISE);
+        float expertise_bonus = plr->calcRating(CR_EXPERTISE);
 #if VERSION_STRING != Classic
         if (dmg.weaponType == MELEE)
             expertise_bonus += plr->getExpertise();
@@ -10699,9 +10699,9 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 {
                     //Resilience is a special new rating which was created to reduce the effects of critical hits against your character.
 #if VERSION_STRING >= Cata
-                    float dmg_reduction_pct = 2.0f * static_cast<Player*>(pVictim)->CalcRating(CR_RESILIENCE_CRIT_TAKEN) / 100.0f;
+                    float dmg_reduction_pct = 2.0f * static_cast<Player*>(pVictim)->calcRating(CR_RESILIENCE_CRIT_TAKEN) / 100.0f;
 #else
-                    float dmg_reduction_pct = 2.0f * static_cast<Player*>(pVictim)->CalcRating(CR_CRIT_TAKEN_MELEE) / 100.0f;
+                    float dmg_reduction_pct = 2.0f * static_cast<Player*>(pVictim)->calcRating(CR_CRIT_TAKEN_MELEE) / 100.0f;
 #endif
                     if (dmg_reduction_pct > 1.0f)
                         dmg_reduction_pct = 1.0f; //we cannot resist more then he is criticalling us, there is no point of the critical then :P
@@ -11088,11 +11088,11 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         if (!this->isPlayer())
         {
             Player* pr = static_cast<Player*>(pVictim);
-            if (Util::checkChance(pr->GetSkillUpChance(SKILL_DEFENSE) * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
+            if (Util::checkChance(pr->getSkillUpChance(SKILL_DEFENSE) * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
             {
                 pr->advanceSkillLine(SKILL_DEFENSE, static_cast<uint16_t>(float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
 #if VERSION_STRING >= TBC // support classic
-                pr->UpdateChances();
+                pr->updateChances();
 #endif
             }
         }
@@ -11107,7 +11107,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         {
             static_cast<Player*>(this)->getItemInterface()->ReduceItemDurability();
             Player* pr = static_cast<Player*>(this);
-            if (Util::checkChance(pr->GetSkillUpChance(SubClassSkill) * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
+            if (Util::checkChance(pr->getSkillUpChance(SubClassSkill) * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
             {
                 pr->advanceSkillLine(SubClassSkill, static_cast<uint16_t>(float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
                 //pr->UpdateChances();
@@ -11331,7 +11331,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
             {
                 // Unarmed speed is 2 sec
                 uint32_t weaponSpeed = 2000;
-                if (plr->IsInFeralForm())
+                if (plr->isInFeralForm())
                 {
 #if VERSION_STRING > Classic
                     // Get shapeshift form's attack speed
@@ -12009,7 +12009,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
                 if (!this->isPlayer())
                     continue;
                 Player* mPlayer = static_cast<Player*>(this);
-                if (!mPlayer->IsInFeralForm() ||
+                if (!mPlayer->isInFeralForm() ||
                     (mPlayer->getShapeShiftForm() != FORM_CAT &&
                         mPlayer->getShapeShiftForm() != FORM_BEAR &&
                         mPlayer->getShapeShiftForm() != FORM_DIREBEAR))
@@ -14252,7 +14252,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
                 //we have to recalc the value of this spell
                 const auto spellInfo = sSpellMgr.getSpellInfo(origId);
                 uint32_t AP_owerride = spellInfo->calculateEffectValue(0);
-                uint32_t dmg2 = static_cast<Player*>(this)->GetMainMeleeDamage(AP_owerride);
+                uint32_t dmg2 = static_cast<Player*>(this)->getMainMeleeDamage(AP_owerride);
                 SpellInfo const* sp_for_the_logs = sSpellMgr.getSpellInfo(spellId);
                 strike(victim, MELEE, sp_for_the_logs, dmg2, 0, 0, true, false);
                 strike(victim, MELEE, sp_for_the_logs, dmg2, 0, 0, true, false);

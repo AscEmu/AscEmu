@@ -29,7 +29,7 @@
 #include "Objects/Units/Creatures/Corpse.h"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
-#include "Objects/Units/Players/Player.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/Creatures/Vehicle.h"
 #include "Server/Script/SimpleEventScript.hpp"
