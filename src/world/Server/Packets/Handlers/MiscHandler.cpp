@@ -259,8 +259,6 @@ void WorldSession::handleTutorialReset(WorldPacket& /*recvPacket*/)
 void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING >= TBC // support classic
-    CHECK_INWORLD_RETURN
-
     if (!sHookInterface.OnLogoutRequest(_player))
     {
         SendPacket(SmsgLogoutResponse(true).serialise().get());
@@ -916,8 +914,6 @@ void WorldSession::handleRequestAccountData(WorldPacket& recvPacket)
 #if VERSION_STRING < Cata
 void WorldSession::handleBugOpcode(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgBug srlPacket;
     if (!srlPacket.deserialise(recv_data))
         return;
@@ -1045,7 +1041,6 @@ void WorldSession::handleCompleteCinematic(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleNextCinematic(WorldPacket& /*recvPacket*/)
 {
-    CHECK_INWORLD_RETURN
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_NEXT_CINEMATIC_CAMERA");
 
     _player->SetPosition(float(_player->GetPositionX() + 0.01), float(_player->GetPositionY() + 0.01),
@@ -1061,8 +1056,6 @@ void WorldSession::handleReadyForAccountDataTimes(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleSummonResponseOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgSummonResponse srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -1086,8 +1079,6 @@ void WorldSession::handleSummonResponseOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/)
 {
-    CHECK_INWORLD_RETURN
-
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LOGOUT_CANCEL");
 
     if (!LoggingOut)
@@ -1110,8 +1101,6 @@ void WorldSession::handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handlePlayerLogoutOpcode(WorldPacket& /*recvPacket*/)
 {
-    CHECK_INWORLD_RETURN
-
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_PLAYER_LOGOUT");
     if (!HasGMPermissions())
         SendNotification("You do not have permission to perform that function.");
@@ -1121,8 +1110,6 @@ void WorldSession::handlePlayerLogoutOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgReclaimCorpse srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -1547,8 +1534,6 @@ void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
 #if VERSION_STRING > TBC
 void WorldSession::handleRemoveGlyph(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgRemoveGlyph srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -1584,8 +1569,6 @@ namespace BarberShopResult
 
 void WorldSession::handleBarberShopResult(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     // todo: Here was SMSG_BARBER_SHOP:RESULT... maybe itr is MSG or it was just wrong. Check it!
     CmsgAlterAppearance srlPacket;
     if (!srlPacket.deserialise(recvPacket))
@@ -1657,8 +1640,6 @@ void WorldSession::handleBarberShopResult(WorldPacket& recvPacket)
 
 void WorldSession::handleRepopRequestOpcode(WorldPacket& /*recvPacket*/)
 {
-    CHECK_INWORLD_RETURN
-
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REPOP_REQUEST");
 
     if (_player->getDeathState() != JUST_DIED)
@@ -1752,8 +1733,6 @@ void WorldSession::handleWhoIsOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     uint32_t ammoId;
     recvPacket >> ammoId;
 
@@ -1890,8 +1869,6 @@ void WorldSession::handleGameObjectUse(WorldPacket& recvPacket)
 void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
 {
 #if VERSION_STRING < Mop
-    CHECK_INWORLD_RETURN;
-
     CmsgInspect srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;

@@ -165,10 +165,15 @@ uint8 WorldSession::Update(uint32 InstanceID)
             else
             {
                 OpcodeHandler* handler = &WorldPacketHandlers[sOpcodeTables.getInternalIdForHex(packet->GetOpcode())];
-                if (handler->status == STATUS_LOGGEDIN && !_player && handler->handler != 0)
+                if (handler->status == STATUS_LOGGEDIN)
                 {
-                    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)",
-                        sOpcodeTables.getNameForOpcode(packet->GetOpcode()).c_str(), packet->GetOpcode());
+                    if (!_player && handler->handler != 0)
+                        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)",
+                            sOpcodeTables.getNameForOpcode(packet->GetOpcode()).c_str(), packet->GetOpcode());
+
+                    if (!_player || !_player->IsInWorld())
+                        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received packet with opcode %s (0x%.4X) but player is not in World",
+                            sOpcodeTables.getNameForOpcode(packet->GetOpcode()).c_str(), packet->GetOpcode());
                 }
                 else
                 {
@@ -526,10 +531,10 @@ void WorldSession::SendNotification(const char* message, ...)
 void WorldSession::InitPacketHandlerTable()
 {
     // Nullify Everything, default to STATUS_LOGGEDIN
-    for (uint32 i = 0; i < NUM_OPCODES; ++i)
+    for (auto& WorldPacketHandler : WorldPacketHandlers)
     {
-        WorldPacketHandlers[i].status = STATUS_LOGGEDIN;
-        WorldPacketHandlers[i].handler = nullptr;
+        WorldPacketHandler.status = STATUS_LOGGEDIN;
+        WorldPacketHandler.handler = nullptr;
     }
     loadHandlers();
 }

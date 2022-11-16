@@ -65,8 +65,6 @@ class WoWGuid;
 class Query;
 class QueryResult;
 
-#define CHECK_INWORLD_RETURN if (_player == NULL || !_player->IsInWorld()) { return; }
-
 // Worldsocket related
 #define WORLDSOCKET_TIMEOUT 120
 #define PLAYER_LOGOUT_DELAY (20 * 1000) // 20 seconds should be more than enough.

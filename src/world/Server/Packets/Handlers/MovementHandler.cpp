@@ -28,8 +28,6 @@ using namespace AscEmu::Packets;
 #if VERSION_STRING < Cata
 void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgSetActiveMover srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -150,10 +148,6 @@ bool WorldSession::isHackDetectedInMovementData(uint16_t opcode)
 
 void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 {
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Check before reading movementinfo packet
-    CHECK_INWORLD_RETURN
-
     if (_player->isTransferPending() || _player->isOnTaxi() || _player->justDied())
         return;
 
@@ -484,8 +478,6 @@ void WorldSession::handleForceSpeedChangeAck(WorldPacket& recvPacket)
 
 void WorldSession::handleWorldTeleportOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgWorldTeleport srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -501,8 +493,6 @@ void WorldSession::handleWorldTeleportOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleMountSpecialAnimOpcode(WorldPacket& /*recvPacket*/)
 {
-    CHECK_INWORLD_RETURN
-
     _player->sendMessageToSet(SmsgMountspecialAnim(_player->getGuid()).serialise().get(), true);
 }
 
@@ -582,8 +572,6 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleMoveNotActiveMoverOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     WoWGuid guid;
     recvPacket >> guid;
 

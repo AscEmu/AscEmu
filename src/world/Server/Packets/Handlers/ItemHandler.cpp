@@ -50,8 +50,6 @@ using namespace AscEmu::Packets;
 
 void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgUseItem srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -769,7 +767,6 @@ void WorldSession::handleItemRefundInfoOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleItemRefundRequestOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
     CmsgItemrefundrequest srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -2740,8 +2737,6 @@ void WorldSession::handleAutoStoreBankItemOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgCancelTempEnchantment srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -2756,8 +2751,6 @@ void WorldSession::handleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacke
 #if VERSION_STRING > Classic
 void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgSocketGems srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -2937,8 +2930,6 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleWrapItemOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgWrapItem srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -3065,8 +3056,6 @@ void WorldSession::handleWrapItemOpcode(WorldPacket& recvPacket)
 #if VERSION_STRING > TBC
 void WorldSession::handleEquipmentSetUse(WorldPacket& data)
 {
-    CHECK_INWORLD_RETURN
-    
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_EQUIPMENT_SET_USE");
 
     WoWGuid guid;
@@ -3137,8 +3126,6 @@ void WorldSession::handleEquipmentSetUse(WorldPacket& data)
 
 void WorldSession::handleEquipmentSetSave(WorldPacket& data)
 {
-    CHECK_INWORLD_RETURN
-    
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_EQUIPMENT_SET_SAVE");
 
     WoWGuid guid;
@@ -3178,8 +3165,6 @@ void WorldSession::handleEquipmentSetSave(WorldPacket& data)
 
 void WorldSession::handleEquipmentSetDelete(WorldPacket& data)
 {
-    CHECK_INWORLD_RETURN
-    
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_EQUIPMENT_SET_DELETE");
 
     WoWGuid guid;

@@ -323,8 +323,6 @@ WorldPacket* WorldSession::buildQuestQueryResponse(QuestProperties const* qst)
 
 void WorldSession::handleQuestPushResultOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     MsgQuestPushResult srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -354,8 +352,6 @@ void WorldSession::handleQuestgiverAcceptQuestOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleQuestQueryOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgQuestQuery srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -375,8 +371,6 @@ void WorldSession::handleQuestQueryOpcode(WorldPacket& recvPacket)
 #if VERSION_STRING > TBC
 void WorldSession::handleQuestPOIQueryOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgQuestPoiQuery srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -401,8 +395,6 @@ void WorldSession::handleQuestPOIQueryOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleQuestgiverCancelOpcode(WorldPacket& /*recvPacket*/)
 {
-    CHECK_INWORLD_RETURN
-
     SendPacket(SmsgGossipComplete().serialise().get());
 
     sLogger.debug("Sent SMSG_GOSSIP_COMPLETE");
@@ -412,8 +404,6 @@ void WorldSession::handleQuestgiverCancelOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleQuestgiverHelloOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgQuestgiverHello srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -436,8 +426,6 @@ void WorldSession::handleQuestgiverHelloOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgQuestgiverStatusQuery srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -594,8 +582,6 @@ void WorldSession::handleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgQuestlogRemoveQuest srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -647,8 +633,6 @@ void WorldSession::handleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgQuestgiverRequestReward srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -727,8 +711,6 @@ void WorldSession::handleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgQuestgiverCompleteQuest srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -813,8 +795,6 @@ void WorldSession::handleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgQuestgiverChooseReward srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -897,8 +877,6 @@ void WorldSession::handleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgPushquesttoparty srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;

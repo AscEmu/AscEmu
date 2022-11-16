@@ -307,8 +307,6 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleLootOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgLoot srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -356,8 +354,6 @@ void WorldSession::handleLootOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgLootRelease srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;

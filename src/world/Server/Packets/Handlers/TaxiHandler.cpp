@@ -68,8 +68,6 @@ uint8_t isTaximaskKnown(Player* player, uint32_t nearestNode)
 
 void WorldSession::handleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgTaxinodeStatusQuery srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -86,8 +84,6 @@ void WorldSession::handleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgTaxiQueryAvailableNodes srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -101,8 +97,6 @@ void WorldSession::handleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket)
 void WorldSession::handleEnabletaxiOpcode(WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
-    CHECK_INWORLD_RETURN
-
     CmsgEnabletaxi srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -134,8 +128,6 @@ uint32_t getMountForNode(Player* player, TaxiNode* taxiNode)
 
 void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgActivatetaxi srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -187,8 +179,6 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgActivatetaxiexpress srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;

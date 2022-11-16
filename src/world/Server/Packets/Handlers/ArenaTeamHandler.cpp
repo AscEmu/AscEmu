@@ -40,8 +40,6 @@ void WorldSession::handleArenaTeamQueryOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgArenaTeamInvite srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -100,8 +98,6 @@ void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgArenaTeamRemove srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -153,8 +149,6 @@ void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleArenaTeamInviteAcceptOpcode(WorldPacket& /*recvPacket*/)
 {
-    CHECK_INWORLD_RETURN
-
     if (_player->getInviteArenaTeamId() == 0)
     {
         SystemMessage("You have not been invited into another arena team.");
@@ -195,8 +189,6 @@ void WorldSession::handleArenaTeamInviteAcceptOpcode(WorldPacket& /*recvPacket*/
 
 void WorldSession::handleArenaTeamInviteDenyOpcode(WorldPacket& /*recvPacket*/)
 {
-    CHECK_INWORLD_RETURN
-
     if (_player->getInviteArenaTeamId() == 0)
     {
         SystemMessage("You were not invited.");
@@ -213,8 +205,6 @@ void WorldSession::handleArenaTeamInviteDenyOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgArenaTeamLeave srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -257,8 +247,6 @@ void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleArenaTeamDisbandOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgArenaTeamDisband srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -287,8 +275,6 @@ void WorldSession::handleArenaTeamDisbandOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleArenaTeamPromoteOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgArenaTeamLeader srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;

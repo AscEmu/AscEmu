@@ -24,8 +24,6 @@ using namespace AscEmu::Packets;
 
 void WorldSession::handleSpellClick(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     if (!_player->isAlive())
         return;
 
@@ -85,8 +83,6 @@ void WorldSession::handleSpellClick(WorldPacket& recvPacket)
 
 void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgCastSpell srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -175,8 +171,6 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleCancelCastOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     uint32_t spellId;
 #if VERSION_STRING > TBC
     recvPacket.read_skip<uint8_t>(); // Increments with every HandleCancelCast packet, unused
@@ -191,8 +185,6 @@ void WorldSession::handleCancelCastOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleCancelAuraOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     uint32_t spellId;
     recvPacket >> spellId;
 
@@ -232,8 +224,6 @@ void WorldSession::handleCancelAuraOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleCancelChannellingOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     recvPacket.read_skip<uint32_t>(); // Spell Id, unused
 
     _player->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
@@ -241,15 +231,11 @@ void WorldSession::handleCancelChannellingOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleCancelAutoRepeatSpellOpcode(WorldPacket& /*recvPacket*/)
 {
-    CHECK_INWORLD_RETURN
-
     _player->interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
 }
 
 void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgPetCastSpell srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -372,8 +358,6 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
 
 void WorldSession::handleCancelTotem(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     uint8_t totemSlot;
     recvPacket >> totemSlot;
 
@@ -390,8 +374,6 @@ void WorldSession::handleCancelTotem(WorldPacket& recvPacket)
 
 void WorldSession::handleUpdateProjectilePosition(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     uint64_t casterGuid;
     uint32_t spellId;
     uint8_t castCount;

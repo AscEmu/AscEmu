@@ -26,8 +26,6 @@ using namespace AscEmu::Packets;
 
 void WorldSession::handleMarkAsReadOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgMailMarkAsRead srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -47,8 +45,6 @@ void WorldSession::handleMarkAsReadOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleMailDeleteOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgMailDelete srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -67,8 +63,6 @@ void WorldSession::handleMailDeleteOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleTakeMoneyOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgMailTakeMoney srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -99,8 +93,6 @@ void WorldSession::handleTakeMoneyOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleReturnToSenderOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgMailReturnToSender srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -133,8 +125,6 @@ void WorldSession::handleReturnToSenderOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleMailCreateTextItemOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgMailCreateTextItem srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -169,8 +159,6 @@ void WorldSession::handleMailCreateTextItemOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleItemTextQueryOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgItemTextQuery srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -183,8 +171,6 @@ void WorldSession::handleItemTextQueryOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleMailTimeOpcode(WorldPacket& /*recvPacket*/)
 {
-    CHECK_INWORLD_RETURN
-
     WorldPacket data(MSG_QUERY_NEXT_MAIL_TIME, 32);
     {
         uint32_t unreadMessageCount = 0;
@@ -218,8 +204,6 @@ void WorldSession::handleMailTimeOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
 {
-    CHECK_INWORLD_RETURN
-
     WorldPacket data(SMSG_MAIL_LIST_RESULT, 200);
     uint32_t realCount = 0;
     uint8_t count = 0;
@@ -341,8 +325,6 @@ void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgMailTakeItem srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -426,8 +408,6 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgSendMail srlPacket;
     if (!srlPacket.deserialise(recvPacket))
     {

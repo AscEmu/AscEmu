@@ -123,8 +123,6 @@ static const uint16_t LanguageSkills[NUM_LANGUAGES] =
 
 void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
     CmsgMessageChat srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;

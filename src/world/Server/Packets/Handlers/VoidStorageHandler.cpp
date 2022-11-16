@@ -25,8 +25,6 @@ void WorldSession::sendVoidStorageTransferResult(VoidTransferError result)
 
 void WorldSession::handleVoidStorageUnlock(WorldPacket& recvData)
 {
-    CHECK_INWORLD_RETURN
-
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_VOID_STORAGE_UNLOCK");
 
     Player* player = GetPlayer();
