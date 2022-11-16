@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "Chat/ChatHandler.hpp"
-#include "Management/ArenaTeam.h"
+#include "Management/ArenaTeam.hpp"
 #include "Management/ObjectMgr.h"
 
 uint8 ChatHandler::GetArenaTeamInternalType(uint32 type, WorldSession* m_session)
@@ -68,7 +68,7 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
     arena_team->m_emblem.backgroundColour = 4284906803UL;
     arena_team->m_leader = player->getGuidLow();
     arena_team->m_name = std::string(team_name);
-    arena_team->AddMember(player->getPlayerInfo());
+    arena_team->addMember(player->getPlayerInfo());
 
     sObjectMgr.AddArenaTeam(arena_team);
 
@@ -105,7 +105,7 @@ bool ChatHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_ses
     }
 
     auto arena_team = player->getArenaTeam(internal_type);
-    arena_team->SetLeader(player->getPlayerInfo());
+    arena_team->setLeader(player->getPlayerInfo());
 
     GreenSystemMessage(m_session, "Player: %s is now arena team leader for type: %u", player->getName().c_str(), team_type);
 

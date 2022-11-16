@@ -327,7 +327,7 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
                 return E_CHAR_DELETE_FAILED_ARENA_CAPTAIN;
 
             if (arenaTeam != nullptr)
-                arenaTeam->RemoveMember(playerInfo);
+                arenaTeam->removeMember(playerInfo);
         }
 
         sPlrLog.writefromsession(this, "deleted character %s %u (guidLow))", name.c_str(), guid.getGuidLow());

@@ -32,7 +32,7 @@ void WorldSession::handleArenaTeamQueryOpcode(WorldPacket& recvPacket)
     if (auto arenaTeam = sObjectMgr.GetArenaTeamById(srlPacket.teamId))
     {
         SendPacket(SmsgArenaTeamQueryResponse(arenaTeam->m_id, arenaTeam->m_name,
-            arenaTeam->GetPlayersPerTeam(), arenaTeam->m_emblem).serialise().get());
+            arenaTeam->getPlayersPerTeam(), arenaTeam->m_emblem).serialise().get());
 
         SendPacket(SmsgArenaTeamStats(arenaTeam->m_id, arenaTeam->m_stats).serialise().get());
     }
@@ -140,12 +140,12 @@ void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (arenaTeam->RemoveMember(playerInfo))
+    if (arenaTeam->removeMember(playerInfo))
     {
         char buffer[1024];
         snprintf(buffer, 1024, "%s was removed from the arena team '%s'.", playerInfo->name.c_str(), arenaTeam->m_name.c_str());
 
-        arenaTeam->SendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
+        arenaTeam->sendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
 
         SystemMessage("Removed %s from the arena team '%s'.", playerInfo->name.c_str(), arenaTeam->m_name.c_str());
     }
@@ -180,12 +180,12 @@ void WorldSession::handleArenaTeamInviteAcceptOpcode(WorldPacket& /*recvPacket*/
         return;
     }
 
-    if (arenaTeam->AddMember(_player->m_playerInfo))
+    if (arenaTeam->addMember(_player->m_playerInfo))
     {
         char buffer[1024];
         snprintf(buffer, 1024, "%s joined the arena team, '%s'.", _player->getName().c_str(), arenaTeam->m_name.c_str());
 
-        arenaTeam->SendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
+        arenaTeam->sendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
     }
     else
     {
@@ -234,7 +234,7 @@ void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
 
     if (arenaTeam->m_leader == _player->getGuidLow() && arenaTeam->m_memberCount == 1)
     {
-        arenaTeam->Destroy();
+        arenaTeam->destroy();
         return;
     }
 
@@ -244,12 +244,12 @@ void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (arenaTeam->RemoveMember(_player->m_playerInfo))
+    if (arenaTeam->removeMember(_player->m_playerInfo))
     {
         char buffer[1024];
         snprintf(buffer, 1024, "%s left the arena team, '%s'.", _player->getName().c_str(), arenaTeam->m_name.c_str());
 
-        arenaTeam->SendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
+        arenaTeam->sendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
 
         SystemMessage("You have left the arena team, '%s'.", arenaTeam->m_name.c_str());
     }
@@ -282,7 +282,7 @@ void WorldSession::handleArenaTeamDisbandOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    arenaTeam->Destroy();
+    arenaTeam->destroy();
 }
 
 void WorldSession::handleArenaTeamPromoteOpcode(WorldPacket& recvPacket)
@@ -330,7 +330,7 @@ void WorldSession::handleArenaTeamPromoteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    arenaTeam->SetLeader(playerInfo);
+    arenaTeam->setLeader(playerInfo);
 }
 
 void WorldSession::handleArenaTeamRosterOpcode(WorldPacket& recvPacket)
@@ -342,7 +342,7 @@ void WorldSession::handleArenaTeamRosterOpcode(WorldPacket& recvPacket)
     if (auto arenaTeam = sObjectMgr.GetArenaTeamById(srlPacket.teamId))
     {
         const auto memberList = arenaTeam->getRoosterMembers();
-        SendPacket(SmsgArenaTeamRooster(arenaTeam->m_id, static_cast<uint32_t>(memberList.size()), arenaTeam->GetPlayersPerTeam(), memberList).serialise().get());
+        SendPacket(SmsgArenaTeamRooster(arenaTeam->m_id, static_cast<uint32_t>(memberList.size()), arenaTeam->getPlayersPerTeam(), memberList).serialise().get());
     }
 }
 

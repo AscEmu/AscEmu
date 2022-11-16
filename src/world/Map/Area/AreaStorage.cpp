@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "VMapFactory.h"
 #include "VMapManager2.h"
 #include "MMapFactory.h"
-#include "Management/ArenaTeam.h"
+#include "Management/ArenaTeam.hpp"
 #include "Macros/MapsMacros.hpp"
 #include "AreaManagementGlobals.hpp"
 

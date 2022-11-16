@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/Battleground/BattlegroundMgr.hpp"
 #include "Management/Arenas.h"
-#include "Management/ArenaTeam.h"
+#include "Management/ArenaTeam.hpp"
 #include "Server/MainServerDefines.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Chat/ChatHandler.hpp"
@@ -368,7 +368,7 @@ uint32_t BattlegroundManager::getArenaGroupQInfo(Group* group, uint8_t type, uin
         {
             if (arenaTeam == member->getArenaTeam(type - BattlegroundDef::TYPE_ARENA_2V2))
             {
-                if (const auto arenaTeamMember = arenaTeam->GetMemberByGuid(member->getGuidLow()))
+                if (const auto arenaTeamMember = arenaTeam->getMemberByGuid(member->getGuidLow()))
                 {
                     rating += arenaTeamMember->PersonalRating;
                     count++;

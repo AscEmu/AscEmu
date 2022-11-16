@@ -10,7 +10,7 @@ set(SRC_MANAGEMENT_FILES
     ${PATH_PREFIX}/Arenas.cpp
     ${PATH_PREFIX}/Arenas.h
     ${PATH_PREFIX}/ArenaTeam.cpp
-    ${PATH_PREFIX}/ArenaTeam.h
+    ${PATH_PREFIX}/ArenaTeam.hpp
     ${PATH_PREFIX}/AuctionHouse.cpp
     ${PATH_PREFIX}/AuctionHouse.h
     ${PATH_PREFIX}/AuctionMgr.cpp

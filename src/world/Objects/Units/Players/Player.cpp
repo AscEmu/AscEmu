@@ -12685,7 +12685,7 @@ uint32_t Player::getMaxPersonalRating()
         {
             if (m_arenaTeams[index] != nullptr)
             {
-                if (ArenaTeamMember* arenaTeamMember = m_arenaTeams[index]->GetMemberByGuid(m_playerInfo->guid))
+                if (ArenaTeamMember* arenaTeamMember = m_arenaTeams[index]->getMemberByGuid(m_playerInfo->guid))
                 {
                     if (arenaTeamMember->PersonalRating > maxRating)
                         maxRating = arenaTeamMember->PersonalRating;

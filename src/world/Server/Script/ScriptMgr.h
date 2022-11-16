@@ -24,7 +24,7 @@
 #include "Management/Gossip/GossipScript.hpp"
 #include "Management/GameEventMgr.h"
 #include "Objects/Units/Unit.hpp"
-#include "Management/ArenaTeam.h"
+#include "Management/ArenaTeam.hpp"
 #include "Map/Maps/InstanceMap.hpp"
 #include "Server/Script/AchievementScript.hpp"
 #include "Server/ServerState.h"

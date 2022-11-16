@@ -21,7 +21,7 @@
 #ifndef OBJECTMGR_H
 #define OBJECTMGR_H
 
-#include "Management/ArenaTeam.h"
+#include "Management/ArenaTeam.hpp"
 #include "Management/Charter.hpp"
 #include "Management/Group.h"
 #include "Management/Tickets/TicketMgr.hpp"

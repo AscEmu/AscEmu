@@ -21,7 +21,7 @@
 
 #include "Management/ItemInterface.h"
 #include "Management/Arenas.h"
-#include "Management/ArenaTeam.h"
+#include "Management/ArenaTeam.hpp"
 #include "Management/WorldStates.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
@@ -144,7 +144,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
                 CachedCharacterInfo* info = sObjectMgr.GetPlayerInfo(*itr);
                 if (info)
                 {
-                    ArenaTeamMember* tp = m_teams[i]->GetMember(info);
+                    ArenaTeamMember* tp = m_teams[i]->getMember(info);
 
                     if (tp != NULL)
                     {
@@ -161,7 +161,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
                 }
             }
 
-            m_teams[i]->SaveToDB();
+            m_teams[i]->saveToDB();
         }
     }
 
@@ -325,7 +325,7 @@ void Arena::OnStart()
             if (rated_match && plr->isInArenaTeam(m_arenateamtype))
             {
                 m_teams[i] = plr->getArenaTeam(m_arenateamtype);
-                ArenaTeamMember* tp = m_teams[i]->GetMember(plr->getPlayerInfo());
+                ArenaTeamMember* tp = m_teams[i]->getMember(plr->getPlayerInfo());
                 if (tp != NULL)
                 {
                     tp->Played_ThisWeek++;
@@ -342,7 +342,7 @@ void Arena::OnStart()
 
         m_teams[i]->m_stats.played_season++;
         m_teams[i]->m_stats.played_week++;
-        m_teams[i]->SaveToDB();
+        m_teams[i]->saveToDB();
     }
 
     // open gates

@@ -24,7 +24,7 @@
 #include "Objects/Container.h"
 #include "Exceptions/Exceptions.hpp"
 #include "Objects/Units/Stats.h"
-#include "Management/ArenaTeam.h"
+#include "Management/ArenaTeam.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Objects/Units/Players/PlayerClasses.hpp"
@@ -2241,7 +2241,7 @@ void ObjectMgr::UpdateArenaTeamRankings()
             if ((*itr)->m_stats.ranking != rank)
             {
                 (*itr)->m_stats.ranking = rank;
-                (*itr)->SaveToDB();
+                (*itr)->saveToDB();
             }
             ++rank;
         }
@@ -2272,7 +2272,7 @@ void ObjectMgr::ResetArenaTeamRatings()
                     team->m_members[j].Won_ThisWeek = 0;
                     team->m_members[j].PersonalRating = 1500;
                 }
-                team->SaveToDB();
+                team->saveToDB();
             }
         }
     }
@@ -2299,7 +2299,7 @@ void ObjectMgr::UpdateArenaTeamWeekly()
                     team->m_members[j].Played_ThisWeek = 0;
                     team->m_members[j].Won_ThisWeek = 0;
                 }
-                team->SaveToDB();
+                team->saveToDB();
             }
         }
     }

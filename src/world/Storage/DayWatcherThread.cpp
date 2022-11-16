@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 
-#include "Management/ArenaTeam.h"
+#include "Management/ArenaTeam.hpp"
 #include "Server/MainServerDefines.h"
 #include "Management/ObjectMgr.h"
 #include "DayWatcherThread.h"
@@ -213,7 +213,7 @@ void DayWatcherThread::update_arena()
                 ArenaTeam* team = sObjectMgr.GetArenaTeamByGuid(guid, i);
                 if (team != nullptr)
                 {
-                    const auto arenaTeamMember = team->GetMemberByGuid(guid);
+                    const auto arenaTeamMember = team->getMemberByGuid(guid);
                     if (arenaTeamMember == nullptr || team->m_stats.played_week < 10 || arenaTeamMember->Played_ThisWeek * 100 / team->m_stats.played_week < 30)
                         continue;
 

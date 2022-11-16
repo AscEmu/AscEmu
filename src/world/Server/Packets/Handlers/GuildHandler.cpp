@@ -707,11 +707,11 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
 
         sObjectMgr.AddArenaTeam(arenaTeam);
         sObjectMgr.UpdateArenaTeamRankings();
-        arenaTeam->AddMember(_player->m_playerInfo);
+        arenaTeam->addMember(_player->m_playerInfo);
 
         for (uint32_t i = 0; i < charter->SignatureCount; ++i)
             if (CachedCharacterInfo* info = sObjectMgr.GetPlayerInfo(charter->Signatures[i]))
-                arenaTeam->AddMember(info);
+                arenaTeam->addMember(info);
 
         _player->getItemInterface()->SafeFullRemoveItemByGuid(srlPacket.itemGuid);
         _player->m_charters[charter->CharterType] = nullptr;

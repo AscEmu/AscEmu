@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <utility>
 
 #include "ManagedPacket.h"
-#include "Management/ArenaTeam.h"
+#include "Management/ArenaTeam.hpp"
 
 namespace AscEmu::Packets
 {

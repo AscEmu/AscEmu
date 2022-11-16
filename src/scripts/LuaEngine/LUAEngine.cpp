@@ -21,7 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #endif
 #include "Management/QuestLogEntry.hpp"
 #include "Objects/Item.hpp"
-#include "Management/ArenaTeam.h"
+#include "Management/ArenaTeam.hpp"
 #include "LuaMacros.h"
 #include "LuaHelpers.h"
 #include "Server/Script/CreatureAIScript.h"
