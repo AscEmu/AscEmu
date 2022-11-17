@@ -387,14 +387,6 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Base.h stuff
-struct LocationExtra
-{
-    float x;
-    float y;
-    float z;
-    float o;
-    uint32_t addition;
-};
 
 enum TargetGenerator
 {

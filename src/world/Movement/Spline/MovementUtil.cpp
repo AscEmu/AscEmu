@@ -71,6 +71,7 @@ float computeFallElevation(float t_passed, bool isSafeFall, float start_velocity
     return result;
 }
 
+//\todo: Zyres: this is new to me and it is highly weird since we are working on multiversion. Beside that "Hover" is represented as a enum value -.- it is unused...
 #define STR(x) #x
 
 char const* g_MovementFlag_names[] =

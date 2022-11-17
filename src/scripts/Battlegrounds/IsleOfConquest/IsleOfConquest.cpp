@@ -264,6 +264,7 @@ static IOCCaptureEvent IOCCaptureEvents[IOC_NUM_CONTROL_POINTS] =
     &IsleOfConquest::EventHordeKeepCaptured
 };
 
+//\todo: Zyres: ever heard of a function? switch statement will do the job and is better to debug ;)
 #define CALL_CAPTURE_EVENT_FOR( object, id ) (*( object ).*( IOCCaptureEvents[ ( id ) ] ) )();
 
 static uint32_t ResourceUpdateIntervals[6] =

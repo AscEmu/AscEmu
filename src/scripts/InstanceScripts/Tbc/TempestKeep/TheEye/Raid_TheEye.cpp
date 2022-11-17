@@ -661,6 +661,16 @@ const LocationVector Triggers[] =
     { 791.931152f, -24.925735f, 52.728550f },
 };
 
+//\todo: Zyres: We know our spawns why do we try to find our spawns... additional information in spawntable to sort them out?
+struct LocationExtra
+{
+    float x;
+    float y;
+    float z;
+    float o;
+    uint32_t addition;
+};
+
 const LocationExtra Advisors[] =
 {
     { 785.807007f,  19.486200f, 48.911800f, 3.979350f, 20064 },

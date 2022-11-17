@@ -19,13 +19,13 @@ public:
 };
 
 // Fel Crystal Spawn Locations
-static LocationExtra FelCrystals[] =
+static LocationVector FelCrystals[] =
 {
-    { 225.969f, -20.0775f, -2.9731f, 0.942478f, CN_TRASH_FELCRYSTALS },
-    { 226.314f, 20.2183f, -2.98127f, 5.32325f, CN_TRASH_FELCRYSTALS },
-    { 247.888f, -14.6252f, 3.80777f, 2.33874f, CN_TRASH_FELCRYSTALS },
-    { 248.053f, 14.592f, 3.74882f, 3.94444f, CN_TRASH_FELCRYSTALS },
-    { 263.149f, 0.309245f, 1.32057f, 3.15905f, CN_TRASH_FELCRYSTALS }
+    { 225.969f, -20.0775f, -2.9731f, 0.942478f },
+    { 226.314f, 20.2183f, -2.98127f, 5.32325f },
+    { 247.888f, -14.6252f, 3.80777f, 2.33874f },
+    { 248.053f, 14.592f, 3.74882f, 3.94444f },
+    { 263.149f, 0.309245f, 1.32057f, 3.15905f }
 };
 
 class SelinFireheartAI : public CreatureAIScript
@@ -122,7 +122,7 @@ public:
         Unit* FC = nullptr;
         for (uint8_t x = 0; x < 5; x++)
         {
-            FC = getNearestCreature(FelCrystals[x].x, FelCrystals[x].y, FelCrystals[x].z, FelCrystals[x].addition);
+            FC = getNearestCreature(FelCrystals[x].x, FelCrystals[x].y, FelCrystals[x].z, CN_TRASH_FELCRYSTALS);
             if (!FC || !FC->isAlive() || FC->GetInstanceID() != getCreature()->GetInstanceID())
                 FC = nullptr;
             else
