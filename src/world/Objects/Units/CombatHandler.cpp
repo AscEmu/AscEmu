@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "CombatHandler.hpp"
-#include "Creatures/Summons/Summon.h"
 #include "Players/Player.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Unit.hpp"
@@ -359,14 +358,6 @@ void CombatHandler::_notifyOwner(bool friendlyAction, Unit* enteringCombatWith, 
 
     if (owner->hasUnitFlags(UNIT_FLAG_NON_ATTACKABLE))
         return;
-
-    // If unit is a summoned via a script do not notify owner
-    if (getOwner()->isSummon())
-    {
-        auto* const summonUnit = dynamic_cast<Summon*>(getOwner());
-        if (summonUnit->m_Properties == nullptr)
-            return;
-    }
 
     // Skip combat delay for owner as it was already delayed for this unit
     if (initiatingCombat)
