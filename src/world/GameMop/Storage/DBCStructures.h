@@ -1086,6 +1086,14 @@ namespace DBC::Structures
         uint32_t HostileMask;                                       // 5
         uint32_t EnemyFactions[4];                                  // 6-9
         uint32_t FriendlyFactions[4];                               // 10-13
+
+        bool isNeutralToAll() const
+        {
+            for (int i = 0; i < 4; ++i)
+                if (EnemyFactions[i] != 0)
+                    return false;
+            return HostileMask == 0 && FriendlyMask == 0;
+        }
     };
 
     struct GameObjectDisplayInfoEntry

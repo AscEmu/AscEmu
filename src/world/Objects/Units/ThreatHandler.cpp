@@ -508,6 +508,7 @@ void ThreatManager::addThreat(Unit* target, float amount, SpellInfo const* spell
             return;
     }
 
+#ifdef FT_VEHICLES
     // while riding a vehicle, all threat goes to the vehicle, not the pilot
     if (Unit* vehicle = target->getVehicleBase())
     {
@@ -516,6 +517,7 @@ void ThreatManager::addThreat(Unit* target, float amount, SpellInfo const* spell
             return;
         amount = 0.0f;
     }
+#endif
 
     // apply threat modifiers to the amount
     if (!ignoreModifiers)

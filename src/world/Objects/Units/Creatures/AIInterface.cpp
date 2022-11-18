@@ -1224,17 +1224,24 @@ bool AIInterface::isTargetAcceptable(Unit* target)
         return false;
 
     // if the target cannot be attacked, the target is not acceptable
+#ifdef FT_VEHICLES
     if (isFriendly(getUnit(), target)
         || !target->getAIInterface()->isTargetableForAttack(false)
         || (getUnit()->getVehicle() && (getUnit()->isOnVehicle(target) || getUnit()->getVehicle()->getBase()->isOnVehicle(target))))
         return false;
+#else
+    if (isFriendly(getUnit(), target) || !target->getAIInterface()->isTargetableForAttack(false))
+        return false;
+#endif
 
     if (target->hasUnitStateFlag(UNIT_STATE_DIED))
     {
+#if VERSION_STRING > Classic
         // guards can detect fake death
         if (isGuard() && target->hasUnitFlags2(UNIT_FLAG2_FEIGN_DEATH))
             return true;
         else
+#endif
             return false;
     }
 
@@ -2095,6 +2102,7 @@ bool AIInterface::isValidAssistTarget(Unit* target)
     if (!getUnit()->canSee(target))
         return false;
 
+#ifdef FT_VEHICLES
     // can't assist own vehicle or passenger
     if (target && getUnit()->getVehicle())
     {
@@ -2104,6 +2112,7 @@ bool AIInterface::isValidAssistTarget(Unit* target)
         if (getUnit()->getVehicleBase()->isOnVehicle(target))
             return false;
     }
+#endif
 
     // can't attack dead
     if (!target->isAlive())
