@@ -2271,7 +2271,7 @@ float AIInterface::calcAggroRange(Unit* target)
     aggroRadius += modDetectRange;
     if (target->isPlayer())
     {
-        aggroRadius += static_cast<float_t>(dynamic_cast<Player*>(target)->DetectedRange);
+        aggroRadius += static_cast<float_t>(dynamic_cast<Player*>(target)->m_detectedRange);
     }
 
     // Check to see if the target is a player mining a node
