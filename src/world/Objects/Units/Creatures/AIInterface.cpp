@@ -1904,7 +1904,8 @@ bool AIInterface::canStartAttack(Unit* target, bool force)
     if (target->ToCreature() && target->ToCreature()->GetCreatureProperties()->Type == UNIT_TYPE_NONCOMBAT_PET)
         return false;
 
-    if (!getUnit()->canFly() && (getUnit()->getDistanceZ(target) > 3 + calcAggroRange(target)))
+    // Dont Aggro Flying stuff we cannot reach
+    if (!getUnit()->canFly() && (getUnit()->getDistanceZ(target) > 3 + getUnit()->getMeleeRange(target)))
         return false;
 
     if (!force)
