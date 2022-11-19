@@ -32,14 +32,13 @@ void SummonHandler::removeAllSummons(bool totemsOnly/* = false*/)
     {
         if (m_SummonSlot[i])
         {
-            if (!totemsOnly)
-                if (Creature* summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
-                    if (!summon->isTotem())
-                        static_cast<Summon*>(summon)->unSummon();
-
-            if (Creature* OldTotem = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
-                if (OldTotem->isTotem())
-                    static_cast<TotemSummon*>(OldTotem)->unSummon();
+            if (auto* const summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
+            {
+                if (summon->isTotem())
+                    dynamic_cast<TotemSummon*>(summon)->unSummon();
+                else if (!totemsOnly)
+                    dynamic_cast<Summon*>(summon)->unSummon();
+            }
         }
     }
 }

@@ -192,31 +192,6 @@ void Summon::unSummon()
             owner->ToCreature()->GetScript()->OnSummonDespawn(this);
     }
 
-    // Remove us
-    Despawn(10, 0);
-
-    // Clear Owner
-    m_summonerGuid = 0;
-}
-
-CreatureSummonDespawnType Summon::getDespawnType() const { return m_despawnType; }
-void Summon::setDespawnType(CreatureSummonDespawnType type) { m_despawnType = type; }
-
-uint32_t Summon::getTimeLeft() const { return m_duration; }
-void Summon::setTimeLeft(uint32_t time) { m_duration = time; }
-
-uint32_t Summon::getLifeTime() const { return m_lifetime; }
-void Summon::setLifeTime(uint32_t time) { m_lifetime = time; }
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Override Object functions
-void Summon::OnPushToWorld()
-{
-    Creature::OnPushToWorld();
-}
-
-void Summon::OnPreRemoveFromWorld()
-{
     if (getSummonerUnit())
     {
         if (getCreatedBySpellId() != 0)
@@ -243,7 +218,34 @@ void Summon::OnPreRemoveFromWorld()
         }
     }
 
+    // Clear Owner
     m_summonerGuid = 0;
+
+    // Remove us
+    Despawn(10, 0);
+}
+
+CreatureSummonDespawnType Summon::getDespawnType() const { return m_despawnType; }
+void Summon::setDespawnType(CreatureSummonDespawnType type) { m_despawnType = type; }
+
+uint32_t Summon::getTimeLeft() const { return m_duration; }
+void Summon::setTimeLeft(uint32_t time) { m_duration = time; }
+
+uint32_t Summon::getLifeTime() const { return m_lifetime; }
+void Summon::setLifeTime(uint32_t time) { m_lifetime = time; }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Override Object functions
+void Summon::OnPushToWorld()
+{
+    Creature::OnPushToWorld();
+}
+
+void Summon::OnPreRemoveFromWorld()
+{
+    // Make sure unit is unsummoned properly before removing from world
+    if (m_summonerGuid)
+        unSummon();
 }
 
 bool Summon::isSummon() const { return true; }

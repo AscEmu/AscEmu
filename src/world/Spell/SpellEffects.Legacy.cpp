@@ -3021,9 +3021,6 @@ void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPrope
         if (s == nullptr)
             return;
 
-        if ((p_caster != nullptr) && (spe->Slot != 0))
-            p_caster->sendTotemCreatedPacket(static_cast<uint8_t>(spe->Slot - 1), s->getGuid(), static_cast<uint32_t>(getDuration()), m_spellInfo->getId());
-
         // Lightwell
         if (spe->Type == SUMMON_TYPE_LIGHTWELL)
         {
