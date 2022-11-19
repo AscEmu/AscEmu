@@ -103,7 +103,7 @@ void SummonHandler::setSanctuaryFlags(bool set)
 
 bool SummonHandler::hasTotemInSlot(SummonSlot slot) const
 {
-    if (slot >= SUMMON_SLOT_TOTEM_FIRE)
+    if (slot < SUMMON_SLOT_TOTEM_FIRE || slot > SUMMON_SLOT_TOTEM_AIR)
         return false;
 
     return m_SummonSlot[slot] != 0 ? true : false;
@@ -114,7 +114,7 @@ TotemSummon* SummonHandler::getTotemInSlot(SummonSlot slot) const
     if (!m_Owner || !m_Owner->getWorldMap())
         return nullptr;
 
-    if (slot >= SUMMON_SLOT_TOTEM_FIRE)
+    if (slot < SUMMON_SLOT_TOTEM_FIRE || slot > SUMMON_SLOT_TOTEM_AIR)
         return nullptr;
 
     return static_cast<TotemSummon*>(m_Owner->getWorldMap()->getCreature(m_SummonSlot[slot]));

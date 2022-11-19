@@ -251,7 +251,7 @@ bool Summon::isSummon() const { return true; }
 void Summon::onRemoveInRangeObject(Object* object)
 {
     // Remove us when we are Summoned by the Object which got removed
-    if (object->getGuid() == m_summonerGuid && object->isTotem())
+    if (object->getGuid() == m_summonerGuid && m_Properties != nullptr)
         unSummon();
 
     Creature::onRemoveInRangeObject(object);
@@ -262,8 +262,8 @@ void Summon::onRemoveInRangeObject(Object* object)
 void Summon::die(Unit* pAttacker, uint32 damage, uint32 spellid)
 {
     // If this summon is summoned by a totem, unsummon the totem on death
-    if (getUnitOwnerOrSelf() && getUnitOwnerOrSelf()->isTotem())
-        static_cast<TotemSummon*>(getUnitOwnerOrSelf())->unSummon();
+    if (getUnitOwner() && getUnitOwner()->isTotem())
+        static_cast<TotemSummon*>(getUnitOwner())->unSummon();
 
     Creature::die(pAttacker, damage, spellid);
 }
@@ -280,13 +280,19 @@ Unit* Summon::getUnitOwner()
 
 Unit* Summon::getUnitOwnerOrSelf()
 {
-    return getUnitOwner();
+    if (auto* const unitOwner = getUnitOwner())
+        return unitOwner;
+
+    return this;
 }
 
 Player* Summon::getPlayerOwner()
 {
-    if (getUnitOwner() != nullptr && getUnitOwner()->isPlayer())
-        return dynamic_cast<Player*>(getUnitOwner());
+    if (auto* const unitOwner = getUnitOwner())
+    {
+        if (unitOwner->isPlayer())
+            return dynamic_cast<Player*>(unitOwner);
+    }
 
     return nullptr;
 }
@@ -448,11 +454,11 @@ void TotemSummon::Load(CreatureProperties const* creatureProperties, Unit* unitO
 
     setAItoUse(false);
 
-    if (getPlayerOwner() != nullptr)
+    if (unitOwner != nullptr && unitOwner->isPlayer())
     {
         uint32_t slot = m_Properties->Slot;
         if (slot >= SUMMON_SLOT_TOTEM_FIRE && slot < SUMMON_SLOT_MINIPET)
-            getPlayerOwner()->sendTotemCreatedPacket(static_cast<uint8_t>(slot - SUMMON_SLOT_TOTEM_FIRE), getGuid(), getTimeLeft(), getCreatedBySpellId());
+            dynamic_cast<Player*>(unitOwner)->sendTotemCreatedPacket(static_cast<uint8_t>(slot - SUMMON_SLOT_TOTEM_FIRE), getGuid(), getTimeLeft(), getCreatedBySpellId());
     }
 }
 

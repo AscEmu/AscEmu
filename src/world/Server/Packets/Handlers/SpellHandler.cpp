@@ -367,7 +367,7 @@ void WorldSession::handleCancelTotem(WorldPacket& recvPacket)
         return;
     }
 
-    const auto totem = _player->getTotem(SummonSlot(totemSlot));
+    const auto totem = _player->getTotem(SummonSlot(totemSlot + 1));
     if (totem != nullptr)
         totem->unSummon();
 }
