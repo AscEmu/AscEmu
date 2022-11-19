@@ -279,6 +279,8 @@ public:
 
     // helper
     bool isInCombat() const { return getCombatHandler().isInCombat(); }
+    bool isInCombatWith(Unit const* victim) const { return victim && getCombatHandler().isInPreCombatWithUnit(victim); }
+
     virtual bool canSwim();
 
 #if VERSION_STRING > Classic

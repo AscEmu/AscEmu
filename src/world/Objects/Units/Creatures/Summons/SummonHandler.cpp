@@ -32,14 +32,13 @@ void SummonHandler::removeAllSummons(bool totemsOnly/* = false*/)
     {
         if (m_SummonSlot[i])
         {
-            if (!totemsOnly)
-                if (Creature* summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
-                    if (!summon->isTotem())
-                        static_cast<Summon*>(summon)->unSummon();
-
-            if (Creature* OldTotem = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
-                if (OldTotem->isTotem())
-                    static_cast<TotemSummon*>(OldTotem)->unSummon();
+            if (auto* const summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
+            {
+                if (summon->isTotem())
+                    dynamic_cast<TotemSummon*>(summon)->unSummon();
+                else if (!totemsOnly)
+                    dynamic_cast<Summon*>(summon)->unSummon();
+            }
         }
     }
 }
@@ -68,12 +67,15 @@ void SummonHandler::setFFAPvPFlags(bool set)
 
     for (uint8_t i = 0; i < MAX_SUMMON_SLOT; ++i)
     {
-        if (Creature* summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
+        if (m_SummonSlot[i])
         {
-            if (set)
-                summon->setFfaPvpFlag();
-            else
-                summon->removeFfaPvpFlag();
+            if (Creature* summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
+            {
+                if (set)
+                    summon->setFfaPvpFlag();
+                else
+                    summon->removeFfaPvpFlag();
+            }
         }
     }
 }
@@ -85,19 +87,22 @@ void SummonHandler::setSanctuaryFlags(bool set)
 
     for (uint8_t i = 0; i < MAX_SUMMON_SLOT; ++i)
     {
-        if (Creature* summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
+        if (m_SummonSlot[i])
         {
-            if (set)
-                summon->setSanctuaryFlag();
-            else
-                summon->removeSanctuaryFlag();
+            if (Creature* summon = m_Owner->getWorldMap()->getCreature(m_SummonSlot[i]))
+            {
+                if (set)
+                    summon->setSanctuaryFlag();
+                else
+                    summon->removeSanctuaryFlag();
+            }
         }
     }
 }
 
 bool SummonHandler::hasTotemInSlot(SummonSlot slot) const
 {
-    if (slot >= SUMMON_SLOT_TOTEM_FIRE)
+    if (slot < SUMMON_SLOT_TOTEM_FIRE || slot > SUMMON_SLOT_TOTEM_AIR)
         return false;
 
     return m_SummonSlot[slot] != 0 ? true : false;
@@ -108,7 +113,7 @@ TotemSummon* SummonHandler::getTotemInSlot(SummonSlot slot) const
     if (!m_Owner || !m_Owner->getWorldMap())
         return nullptr;
 
-    if (slot >= SUMMON_SLOT_TOTEM_FIRE)
+    if (slot < SUMMON_SLOT_TOTEM_FIRE || slot > SUMMON_SLOT_TOTEM_AIR)
         return nullptr;
 
     return static_cast<TotemSummon*>(m_Owner->getWorldMap()->getCreature(m_SummonSlot[slot]));

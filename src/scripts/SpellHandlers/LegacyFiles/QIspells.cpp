@@ -658,7 +658,7 @@ bool FloraoftheEcoDomes(uint8_t /*effectIndex*/, Spell* pSpell)
     normal->Despawn(1, 6 * 60 * 1000);
     mutant->Despawn(5 * 60 * 1000, 0);
 
-    mutant->getAIInterface()->Init(mutant, AI_SCRIPT_AGRO);
+    mutant->getAIInterface()->Init(mutant);
     mutant->getThreatManager().tauntUpdate();
 
     pPlayer->addQuestKill(10426, 0, 0);

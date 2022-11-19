@@ -1113,7 +1113,6 @@ public:
         Vashj = getNearestCreature(29.798161f, -923.358276f, 42.900517f, CN_LADY_VASHJ);
         if (Vashj)
         {
-            getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             setWaypointToMove(1, 1);
         }
     }
@@ -1261,7 +1260,6 @@ public:
                 getCreature()->removeAllAuras();
                 getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
                 getCreature()->stopMoving();
-                getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 setWaypointToMove(1, 1);
                 sendDBChatMessage(4764);     // The time is now! Leave none standing!
                 getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
@@ -1423,7 +1421,6 @@ public:
         switch (iWaypointId)
         {
             case 1:
-                getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                 getCreature()->setControlled(true, UNIT_STATE_ROOTED);
 
                 //setup shield
@@ -1572,7 +1569,6 @@ public:
         PhoenixSummon = Util::getRandomUInt(17, 23);
         getCreature()->setMoveCanFly(true);
         getCreature()->stopMoving();
-        getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
         setWaypointToMove(1, 1);
         RegisterAIUpdateEvent(getCreature()->getBaseAttackTime(MELEE));
 
@@ -1585,7 +1581,6 @@ public:
     {
         //_unit->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Phase 1 Test!");
         getCreature()->PlaySoundToSet(11243);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
         stopMovement();
 
         Phase = 1;
@@ -1614,7 +1609,6 @@ public:
         PhoenixSummon = Util::getRandomUInt(17, 23);
         PositionChange = Util::getRandomUInt(15, 23);
         getCreature()->stopMoving();
-        getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
         setWaypointToMove(1, 1);
     }
 
@@ -1743,7 +1737,6 @@ public:
 
             case 6:
                 {
-                    getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                     stopMovement();
                     getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                     switch (FlyWay)
@@ -1761,7 +1754,6 @@ public:
 
             case 7:
                 {
-                    getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                     stopMovement();
                     getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                     switch (FlyWay)
@@ -1780,7 +1772,6 @@ public:
             case 8:
                 {
                     getCreature()->setControlled(true, UNIT_STATE_ROOTED);
-                    getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                     stopMovement();
                     switch (FlyWay)
                     {
@@ -1798,7 +1789,6 @@ public:
             case 9:
                 {
                     getCreature()->setControlled(true, UNIT_STATE_ROOTED);
-                    getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                     stopMovement();
                     switch (FlyWay)
                     {
@@ -1815,7 +1805,6 @@ public:
 
             case 10:
                 {
-                    getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                     stopMovement();
                     if (Phase == 1)
                     {

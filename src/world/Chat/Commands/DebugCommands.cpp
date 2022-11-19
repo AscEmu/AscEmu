@@ -297,8 +297,6 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
     bool in_front_of_creature = m_session->GetPlayer()->isInFront(selected_unit);
     float distance_to_creature = m_session->GetPlayer()->CalcDistance(selected_unit);
 
-    uint32 ai_state = selected_unit->getAIInterface()->getAiState();
-    uint32 ai_type = selected_unit->getAIInterface()->getAiScriptType();
     uint32 ai_agent = selected_unit->getAIInterface()->getCurrentAgent();
 
     uint32 attackerscount = static_cast<uint32>(selected_unit->getThreatManager().getThreatListSize());
@@ -313,7 +311,7 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
     SystemMessage(m_session, "In front of the target: %u", in_front_of_creature);
     SystemMessage(m_session, "Current distance to target: %f", distance_to_creature);
     SystemMessage(m_session, "=== States ===");
-    SystemMessage(m_session, "Current AI state: %u | AIType: %u | AIAgent: %u", ai_state, ai_type, ai_agent);
+    SystemMessage(m_session, "AIAgent: %u", ai_agent);
     SystemMessage(m_session, "=== Misc ===");
     SystemMessage(m_session, "Attackers count: %u", attackerscount);
     SystemMessage(m_session, "=== UnitMovementFlags ===");

@@ -182,21 +182,47 @@ void Summon::Update(unsigned long time_passed)
 void Summon::unSummon()
 {   
     // If this summon is summoned by a totem, unsummon the totem also
-    if (getUnitOwnerOrSelf() && getUnitOwnerOrSelf()->isTotem())
-        dynamic_cast<TotemSummon*>(getUnitOwnerOrSelf())->unSummon();
+    if (getSummonerUnit() && getSummonerUnit()->isTotem())
+        dynamic_cast<TotemSummon*>(getSummonerUnit())->unSummon();
 
     // Script Call
-    if (Unit* owner = getUnitOwnerOrSelf())
+    if (Unit* owner = getSummonerUnit())
     {
         if (owner->ToCreature() && owner->IsInWorld() && owner->ToCreature()->GetScript())
             owner->ToCreature()->GetScript()->OnSummonDespawn(this);
     }
 
-    // Remove us
-    Despawn(10, 0);
+    if (getSummonerUnit())
+    {
+        if (getCreatedBySpellId() != 0)
+            getSummonerUnit()->removeAllAurasById(getCreatedBySpellId());
+
+        if (getPlayerOwner() != nullptr)
+            getPlayerOwner()->sendDestroyObjectPacket(getGuid());
+
+        // Clear Our Summon Slot
+        if (m_Properties)
+        {
+            if (uint32_t slot = m_Properties->Slot)
+            {
+                WoWGuid guid = getGuid();
+                if (Unit* owner = getSummonerUnit())
+                {
+                    if (SummonHandler* summonHandler = owner->getSummonInterface())
+                    {
+                        if (summonHandler->m_SummonSlot[slot] == guid.getGuidLowPart())
+                            summonHandler->m_SummonSlot[slot] = 0;
+                    }
+                }
+            }
+        }
+    }
 
     // Clear Owner
     m_summonerGuid = 0;
+
+    // Remove us
+    Despawn(10, 0);
 }
 
 CreatureSummonDespawnType Summon::getDespawnType() const { return m_despawnType; }
@@ -217,33 +243,9 @@ void Summon::OnPushToWorld()
 
 void Summon::OnPreRemoveFromWorld()
 {
-    if (getUnitOwnerOrSelf())
-    {
-        if (getCreatedBySpellId() != 0)
-            getUnitOwnerOrSelf()->removeAllAurasById(getCreatedBySpellId());
-
-        if (getPlayerOwner() != nullptr)
-            getPlayerOwner()->sendDestroyObjectPacket(getGuid());
-
-        // Clear Our Summon Slot
-        if (m_Properties)
-        {
-            if (uint32_t slot = m_Properties->Slot)
-            {
-                WoWGuid guid = getGuid();
-                if (Unit* owner = getUnitOwnerOrSelf())
-                {
-                    if (SummonHandler* summonHandler = owner->getSummonInterface())
-                    {
-                        if (summonHandler->m_SummonSlot[slot] == guid.getGuidLowPart())
-                            summonHandler->m_SummonSlot[slot] = 0;
-                    }
-                }
-            }
-        }
-    }
-
-    m_summonerGuid = 0;
+    // Make sure unit is unsummoned properly before removing from world
+    if (m_summonerGuid)
+        unSummon();
 }
 
 bool Summon::isSummon() const { return true; }
@@ -251,7 +253,7 @@ bool Summon::isSummon() const { return true; }
 void Summon::onRemoveInRangeObject(Object* object)
 {
     // Remove us when we are Summoned by the Object which got removed
-    if (object->getGuid() == m_summonerGuid && object->isTotem())
+    if (object->getGuid() == m_summonerGuid && m_Properties != nullptr)
         unSummon();
 
     Creature::onRemoveInRangeObject(object);
@@ -262,26 +264,37 @@ void Summon::onRemoveInRangeObject(Object* object)
 void Summon::die(Unit* pAttacker, uint32 damage, uint32 spellid)
 {
     // If this summon is summoned by a totem, unsummon the totem on death
-    if (getUnitOwnerOrSelf() && getUnitOwnerOrSelf()->isTotem())
-        static_cast<TotemSummon*>(getUnitOwnerOrSelf())->unSummon();
+    if (getUnitOwner() && getUnitOwner()->isTotem())
+        static_cast<TotemSummon*>(getUnitOwner())->unSummon();
 
     Creature::die(pAttacker, damage, spellid);
 }
 
-Unit* Summon::getUnitOwner()
+Unit* Summon::getSummonerUnit()
 {
     return m_summonerGuid ? getWorldMapUnit(m_summonerGuid) : nullptr;
 }
 
+Unit* Summon::getUnitOwner()
+{
+    return getCreatedByGuid() ? getWorldMapUnit(getCreatedByGuid()) : nullptr;
+}
+
 Unit* Summon::getUnitOwnerOrSelf()
 {
-    return getUnitOwner();
+    if (auto* const unitOwner = getUnitOwner())
+        return unitOwner;
+
+    return this;
 }
 
 Player* Summon::getPlayerOwner()
 {
-    if (getUnitOwner() != nullptr && getUnitOwner()->isPlayer())
-        return dynamic_cast<Player*>(getUnitOwner());
+    if (auto* const unitOwner = getUnitOwner())
+    {
+        if (unitOwner->isPlayer())
+            return dynamic_cast<Player*>(unitOwner);
+    }
 
     return nullptr;
 }
@@ -312,7 +325,7 @@ void GuardianSummon::Load(CreatureProperties const* properties_, Unit* pOwner, L
     setHealth(getMaxHealth());
     SetType(CREATURE_TYPE_GUARDIAN);
 
-    m_aiInterface->Init(this, AI_SCRIPT_PET, pOwner);
+    m_aiInterface->Init(this, pOwner);
     m_aiInterface->setPetOwner(pOwner);
 
     m_noRespawn = true;
@@ -338,7 +351,7 @@ void CompanionSummon::Load(CreatureProperties const* properties_, Unit* companio
     setFaction(35);
     setLevel(1);
 
-    m_aiInterface->Init(this, AI_SCRIPT_PET, companionOwner);
+    m_aiInterface->Init(this, companionOwner);
     m_aiInterface->setPetOwner(companionOwner);
     m_aiInterface->setMeleeDisabled(true);
 
@@ -439,15 +452,15 @@ void TotemSummon::Load(CreatureProperties const* creatureProperties, Unit* unitO
         m_healDoneMod[school] = unitOwner->m_healDoneMod[school];
     }
 
-    m_aiInterface->Init(this, AI_SCRIPT_TOTEM, unitOwner);
+    m_aiInterface->Init(this, unitOwner);
 
     setAItoUse(false);
 
-    if (getPlayerOwner() != nullptr)
+    if (unitOwner != nullptr && unitOwner->isPlayer())
     {
         uint32_t slot = m_Properties->Slot;
         if (slot >= SUMMON_SLOT_TOTEM_FIRE && slot < SUMMON_SLOT_MINIPET)
-            getPlayerOwner()->sendTotemCreatedPacket(static_cast<uint8_t>(slot - SUMMON_SLOT_TOTEM_FIRE), getGuid(), getTimeLeft(), getCreatedBySpellId());
+            dynamic_cast<Player*>(unitOwner)->sendTotemCreatedPacket(static_cast<uint8_t>(slot - SUMMON_SLOT_TOTEM_FIRE), getGuid(), getTimeLeft(), getCreatedBySpellId());
     }
 }
 

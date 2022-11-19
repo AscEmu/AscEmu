@@ -670,7 +670,7 @@ void Pet::buildPetSpellList(WorldPacket& data)
         data << uint16(0);
 
     data << uint32(0);
-    data << uint8(GetPetState());       // 0x0 = passive, 0x1 = defensive, 0x2 = aggressive
+    data << uint8(getAIInterface()->getReactState());       // 0x0 = passive, 0x1 = defensive, 0x2 = aggressive
     data << uint8(GetPetAction());      // 0x0 = stay, 0x1 = follow, 0x2 = attack
     data << uint16(0);                  // flags: 0xFF = disabled pet bar (eg. when pet stunned)
 
@@ -914,7 +914,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     m_HappinessTimer = mPi->happinessupdate;
     reset_time = mPi->reset_time;
     reset_cost = mPi->reset_cost;
-    m_State = mPi->petstate;
+    getAIInterface()->setReactState(ReactStates(mPi->petstate));
 
     bExpires = false;
 
@@ -1048,7 +1048,7 @@ void Pet::OnPushToWorld()
 
 void Pet::InitializeMe(bool first)
 {
-    getAIInterface()->Init(this, AI_SCRIPT_PET, m_Owner);
+    getAIInterface()->Init(this, m_Owner);
     getAIInterface()->setPetOwner(m_Owner);
     getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, this, 0);
 
@@ -1170,7 +1170,7 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
     player_pet->actionbar = ss.str();
     player_pet->reset_cost = reset_cost;
     player_pet->reset_time = reset_time;
-    player_pet->petstate = m_State;
+    player_pet->petstate = getAIInterface()->getReactState();
     player_pet->alive = isAlive();
     player_pet->current_power = getPower(getPowerType());
     player_pet->talentpoints = getPetTalentPoints();

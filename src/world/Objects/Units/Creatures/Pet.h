@@ -174,9 +174,6 @@ public:
         inline void SetPetAction(uint32 act) { m_Action = act; }
         inline uint32 GetPetAction(void) { return m_Action; }
 
-        inline void SetPetState(uint32 state) { m_State = state; }
-        inline uint32 GetPetState(void) { return m_State; }
-
         inline void SetPetDiet(uint32 diet) { m_Diet = diet; }
         inline void SetPetDiet()
         { 
@@ -288,7 +285,6 @@ public:
         uint32 m_HappinessTimer = PET_HAPPINESS_UPDATE_TIMER;
         uint32 m_PetNumber = 0;
         uint32 m_Action = PET_ACTION_FOLLOW;
-        uint32 m_State = PET_STATE_DEFENSIVE;
         uint32 m_ExpireTime = 0;
         uint32 m_Diet = 0;
         time_t reset_time = 0;

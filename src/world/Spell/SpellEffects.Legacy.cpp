@@ -511,10 +511,12 @@ void Spell::spellEffectSummonTotem(uint8_t /*effIndex*/, DBC::Structures::Summon
     if (u_caster == nullptr)
         return;
 
-    const auto totemSlot = spe->Slot > 0 ? static_cast<SummonSlot>(spe->Slot - 1) : SUMMON_SLOT_PET;
+    const auto totemSlot = static_cast<SummonSlot>(spe->Slot);
 
     // Generate spawn point
-    const float_t angle = totemSlot < SUMMON_SLOT_MINIPET ? M_PI_FLOAT / static_cast<float>(SUMMON_SLOT_MINIPET) - (totemSlot * 2 * M_PI_FLOAT / static_cast<float>(SUMMON_SLOT_MINIPET)) : 0.0f;
+    const float_t angle = totemSlot > SUMMON_SLOT_PET && totemSlot < SUMMON_SLOT_MINIPET
+        ? M_PI_FLOAT / static_cast<float>(SUMMON_SLOT_TOTEM_AIR) - (totemSlot * 2 * M_PI_FLOAT / static_cast<float>(SUMMON_SLOT_TOTEM_AIR))
+        : 0.0f;
     u_caster->GetPoint(u_caster->GetOrientation() + angle, 3.5f, v.x, v.y, v.z, false);
 
     // Correct Z position
@@ -3018,9 +3020,6 @@ void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPrope
         Summon* s = u_caster->getWorldMap()->summonCreature(properties_->Id, v, spe, static_cast<uint32_t>(getDuration()), u_caster, getSpellInfo()->getId());
         if (s == nullptr)
             return;
-
-        if ((p_caster != nullptr) && (spe->Slot != 0))
-            p_caster->sendTotemCreatedPacket(static_cast<uint8_t>(spe->Slot - 1), s->getGuid(), static_cast<uint32_t>(getDuration()), m_spellInfo->getId());
 
         // Lightwell
         if (spe->Type == SUMMON_TYPE_LIGHTWELL)

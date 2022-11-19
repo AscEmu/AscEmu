@@ -458,6 +458,8 @@ public:
         float getDistance2d(Object const* obj) const;
         float getDistance2d(float x, float y) const;
 
+        float getDistanceZ(Object const* obj) const;
+
         // Distance Calculation
         float CalcDistance(Object* Ob);
         float CalcDistance(float ObX, float ObY, float ObZ);
@@ -549,7 +551,9 @@ public:
         float getRelativeAngle(LocationVector const& pos) const { return toRelativeAngle(getAbsoluteAngle(pos.x, pos.y)); }
         float getRelativeAngle(LocationVector const* pos) const { return toRelativeAngle(getAbsoluteAngle(pos)); }
 
+        bool isInDist2d(LocationVector const& pos, float dist) const { return pos.getExactDist2dSq(pos) < dist * dist; }
         bool isInDist(Object* pos, float dist) { return GetPosition().getExactDistSq(pos->GetPositionX(), pos->GetPositionY(), pos->GetPositionZ()) < dist * dist; }
+        bool isInDist(LocationVector const& pos, float dist) { return pos.getExactDistSq(pos) < dist * dist; }
 
         void getNearPoint2D(Object* searcher, float& x, float& y, float distance, float absAngle);
         void getNearPoint(Object* searcher, float& x, float& y, float& z, float distance2d, float absAngle);
@@ -663,6 +667,8 @@ public:
 
         DBC::Structures::FactionTemplateEntry const* m_factionTemplate = nullptr;
         DBC::Structures::FactionEntry const* m_factionEntry = nullptr;
+
+        bool isNeutralToAll() const;
 
         void SetInstanceID(int32 instance) { m_instanceId = instance; }
         int32 GetInstanceID() { return m_instanceId; }

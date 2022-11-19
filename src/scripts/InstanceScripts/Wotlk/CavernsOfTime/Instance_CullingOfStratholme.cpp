@@ -399,7 +399,6 @@ public:
         addWaypoint(1, createWaypoint(7, 0, WAYPOINT_MOVE_TYPE_RUN, ArthasWalk[7]));
 
         setAIAgent(AGENT_NULL);
-        getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
         phase = 0;
     }
 
@@ -419,7 +418,6 @@ public:
             case 7:
             {
                 stopMovement();
-                getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                 getCreature()->setControlled(true, UNIT_STATE_ROOTED);
                 getCreature()->setNpcFlags(UNIT_NPC_FLAG_GOSSIP);
             }
@@ -448,7 +446,6 @@ public:
             case 0:
             {
                 getCreature()->stopMoving();
-                getCreature()->getAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 setWaypointToMove(1, 1);
             }
             break;

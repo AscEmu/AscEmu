@@ -56,6 +56,9 @@ bool ThreatReference::shouldBeOffline() const
     if (!_owner->canSee(_victim))
         return true;
 
+    if (!_owner->getAIInterface()->isTargetAcceptable(_victim) || !_owner->getAIInterface()->canOwnerAttackUnit(_victim))
+        return true;
+
     if (!_victim)
         return true;
 
@@ -242,10 +245,6 @@ void ThreatManager::updateVictim()
         sendThreatListToClients(newHighest);
         _needClientUpdate = false;  
     }
-
-    // Tell the AIInterface to chase our target because our Victim has changed
-    if (newHighest)
-        _owner->getAIInterface()->updateVictim(_currentVictimRef->getVictim());
 }
 
 ThreatReference const* ThreatManager::reselectVictim()
@@ -509,11 +508,16 @@ void ThreatManager::addThreat(Unit* target, float amount, SpellInfo const* spell
             return;
     }
 
+#ifdef FT_VEHICLES
     // while riding a vehicle, all threat goes to the vehicle, not the pilot
-    if (target->isVehicle())
+    if (Unit* vehicle = target->getVehicleBase())
     {
-        // \ ToDo
+        addThreat(vehicle, amount, spell, ignoreModifiers, ignoreRedirects);
+        if (target->hasUnitStateFlag(UNIT_STATE_ACCESSORY)) // accessories are fully treated as components of the parent and cannot have threat
+            return;
+        amount = 0.0f;
     }
+#endif
 
     // apply threat modifiers to the amount
     if (!ignoreModifiers)

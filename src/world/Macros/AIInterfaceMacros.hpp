@@ -32,9 +32,6 @@ typedef std::vector<AreaBoundary const*> CreatureBoundary;
 /// we most likely will have to kill players and only then check mobs
 #define TARGET_UPDATE_INTERVAL_ON_PLAYER 1000
 
-/// this is a multiple of PLAYER_TARGET_UPDATE_INTERVAL
-#define TARGET_UPDATE_INTERVAL 4500
-
 /// -
 // #define PLAYER_SIZE 1.5f
 

@@ -44,17 +44,20 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Override Unit functions
     void die(Unit* pAttacker, uint32 damage, uint32 spellid) override;
-
     Unit* getUnitOwner() override;          // override creature function
     Unit* getUnitOwnerOrSelf() override;    // override creature function
     Player* getPlayerOwner() override;      // override creature function
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Summoner Unit functions
     uint64_t getSummonerGuid() const { return m_summonerGuid; }
 
     // Summon Information from DBC, when this is nullptr its mostly an Scripted Summon
     DBC::Structures::SummonPropertiesEntry const* const m_Properties;
 
 private:
+    Unit* getSummonerUnit();
+
     // This determines how Despawning of our Summon is Handled
     CreatureSummonDespawnType m_despawnType = MANUAL_DESPAWN;
     uint32_t m_duration = 0;    // Duration Left

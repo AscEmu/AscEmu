@@ -558,7 +558,6 @@ public:
             case 281:
             {
                 setAIAgent(AGENT_NULL);
-                getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
                 RemoveAIUpdateEvent();
                 getCreature()->Despawn(1000, 301000); break;
             }

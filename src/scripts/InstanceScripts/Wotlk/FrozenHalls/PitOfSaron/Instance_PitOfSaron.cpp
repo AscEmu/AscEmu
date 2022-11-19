@@ -413,7 +413,6 @@ public:
 
             // Clear Hatelist dont allow Combat and root the Unit
             getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-            getCreature()->getAIInterface()->setAiState(AI_STATE_IDLE);
             getCreature()->getThreatManager().clearAllThreat();
             getCreature()->getThreatManager().removeMeFromThreatLists();
 
