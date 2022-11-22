@@ -1,0 +1,15 @@
+/*
+Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#pragma once
+
+/*! \brief VERSION_STRING is defined by cmake option (dropdown)*/
+#define Classic 5875
+#define TBC 8606
+#define WotLK 12340
+#define Cata 15595
+#define Mop 18414
+
+#define VERSION_STRING @ASCEMU_VERSION@

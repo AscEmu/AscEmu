@@ -28,7 +28,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "../../../world/WorldConf.h"
+#include "AEVersion.hpp"
 
 #ifdef PLATFORM_WINDOWS
 #undef PLATFORM_WINDOWS

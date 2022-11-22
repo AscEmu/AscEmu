@@ -11,6 +11,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/dep/libmpq/libmpq
     ${CMAKE_SOURCE_DIR}/dep/dbcfile 
     ${CMAKE_SOURCE_DIR}/dep/loadlib
+    ${CMAKE_SOURCE_DIR}/src/shared
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 

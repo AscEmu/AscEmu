@@ -18,6 +18,7 @@
  */
 
 #define _CRT_SECURE_NO_DEPRECATE
+#include "AEVersion.hpp"
 #include <cstdio>
 #include <iostream>
 #include <vector>

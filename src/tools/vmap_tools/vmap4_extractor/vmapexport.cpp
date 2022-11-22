@@ -19,6 +19,8 @@
 
 #define _CRT_SECURE_NO_DEPRECATE
 
+#include "AEVersion.hpp"
+
 #include "adtfile.h"
 #include "wdtfile.h"
 #include "dbcfile.h"
@@ -289,6 +291,8 @@ bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames)
 
     char path[512];
     std::string in_path(input_path);
+
+#if VERSION_STRING >= TBC
     std::vector<std::string> locales, searchLocales;
 
     searchLocales.push_back("enGB");
@@ -324,14 +328,28 @@ bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames)
     {
         pArchiveNames.push_back(in_path + *i + "/locale-" + *i + ".MPQ");
         pArchiveNames.push_back(in_path + *i + "/expansion-locale-" + *i + ".MPQ");
+#if VERSION_STRING >= WotLK
         pArchiveNames.push_back(in_path + *i + "/lichking-locale-" + *i + ".MPQ");
+#endif
     }
+#endif
 
     // open expansion and common files
+#if VERSION_STRING == Classic
+    pArchiveNames.push_back(input_path + std::string("terrain.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("model.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("texture.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("wmo.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("base.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("misc.MPQ"));
+#else
     pArchiveNames.push_back(input_path + std::string("common.MPQ"));
-    pArchiveNames.push_back(input_path + std::string("common-2.MPQ"));
     pArchiveNames.push_back(input_path + std::string("expansion.MPQ"));
+#if VERSION_STRING >= WotLK
+    pArchiveNames.push_back(input_path + std::string("common-2.MPQ"));
     pArchiveNames.push_back(input_path + std::string("lichking.MPQ"));
+#endif
+#endif
 
     // now, scan for the patch levels in the core dir
     printf("Scanning patch levels from data directory.\n");
@@ -339,6 +357,9 @@ bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames)
     if (!scan_patches(path, pArchiveNames))
         return(false);
 
+#if VERSION_STRING == Classic
+    printf("\n");
+#else
     // now, scan for the patch levels in locale dirs
     printf("Scanning patch levels from locale directories.\n");
     bool foundOne = false;
@@ -357,6 +378,7 @@ bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames)
         printf("no locale found\n");
         return false;
     }
+#endif
 
     return true;
 }

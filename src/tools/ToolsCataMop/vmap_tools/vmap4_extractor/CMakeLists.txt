@@ -14,6 +14,7 @@ endif ()
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/dep/StormLib/src
+    ${CMAKE_SOURCE_DIR}/src/shared
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${BZIP2_INCLUDE_DIRS}
     ${ZLIB_INCLUDE_DIRS}

@@ -25,7 +25,7 @@
 #include <Server/AccountMgr.h>
 #include <Server/IpBanMgr.h>
 #include <Network/Network.h>
-#include <LogonConf.h>
+#include <LogonConf.hpp>
 #include <Util/Strings.cpp>
 
 LogonConsole& LogonConsole::getInstance()
