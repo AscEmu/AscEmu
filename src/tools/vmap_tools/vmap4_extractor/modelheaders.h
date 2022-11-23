@@ -22,6 +22,8 @@
 
 #pragma pack(push,1)
 
+#include "AEVersion.hpp"
+
 struct ModelHeader
 {
     char id[4];
@@ -35,6 +37,10 @@ struct ModelHeader
     uint32 ofsAnimations;
     uint32 nAnimationLookup;
     uint32 ofsAnimationLookup;
+#if VERSION_STRING < WotLK
+    uint32_t nD;
+    uint32_t ofsD;
+#endif
     uint32 nBones;
     uint32 ofsBones;
     uint32 nKeyBoneLookup;
@@ -42,12 +48,19 @@ struct ModelHeader
     uint32 nVertices;
     uint32 ofsVertices;
     uint32 nViews;
+#if VERSION_STRING < WotLK
+    uint32_t ofsViews;
+#endif
     uint32 nColors;
     uint32 ofsColors;
     uint32 nTextures;
     uint32 ofsTextures;
     uint32 nTransparency;
     uint32 ofsTransparency;
+#if VERSION_STRING < WotLK
+    uint32_t nI;
+    uint32_t ofsI;
+#endif
     uint32 nTextureanimations;
     uint32 ofsTextureanimations;
     uint32 nTexReplace;

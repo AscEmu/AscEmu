@@ -1,5 +1,11 @@
-#ifndef LOGON_CONF_HPP
-#define LOGON_CONF_HPP
+/*
+Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#pragma once
+
+#include "AEVersion.hpp"
 
 #define CONFDIR "@ASCEMU_CONFIGSFILE_PATH@"
 
@@ -20,5 +26,3 @@
 #elif VERSION_STRING == Legion
     #define AE_EXPANSION_VERSION 256  // Legion (untested)
 #endif
-
-#endif // LOGON_CONF_HPP

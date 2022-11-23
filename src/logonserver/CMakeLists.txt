@@ -44,7 +44,7 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFre
     target_link_libraries(${PROJECT_NAME} c++experimental)
 endif ()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.hpp.in ${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.hpp)
 
 # link our shared lib.
 target_link_libraries(${PROJECT_NAME} shared ${MYSQL_LIBRARIES} ${ZLIB_LIBRARIES} ${PCRE_LIBRARIES})
@@ -75,7 +75,7 @@ if (USE_PCH)
     <Auth/WowCrypt.hpp>
     <Database/Database.h>
     <Network/Network.h>
-    LogonConf.h
+    LogonConf.hpp
     Console/LogonConsole.h
     Realm/RealmManager.hpp
     Server/IpBanMgr.h

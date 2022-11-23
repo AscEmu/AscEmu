@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Auth/AutoPatcher.h"
 #include <Network/Network.h>
 #include "Console/LogonConsole.h"
-#include "LogonConf.h"
+#include "LogonConf.hpp"
 #include <Util/Strings.hpp>
 
 using std::chrono::milliseconds;

@@ -19,7 +19,7 @@
 
 #define _CRT_SECURE_NO_DEPRECATE
 
-#include "../../src/world/WorldConf.h"
+#include "AEVersion.hpp"
 
 #include <stdio.h>
 #include <deque>
