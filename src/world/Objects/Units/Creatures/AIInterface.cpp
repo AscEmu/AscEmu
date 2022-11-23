@@ -3316,7 +3316,7 @@ uint32_t AIInterface::getCurrentWayPointId()
 
 uint32_t AIInterface::getWayPointsCount()
 {
-    if (hasWayPoints())
+    if (hasWayPoints() && sWaypointMgr->getPath(getUnit()->ToCreature()->getWaypointPath()))
         return static_cast<uint32_t>(sWaypointMgr->getPath(getUnit()->ToCreature()->getWaypointPath())->nodes.size());
     else
         return 0;

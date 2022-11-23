@@ -23,7 +23,8 @@ public:
     WaypointPath* getPath(uint32_t id);
     WaypointPath* getCustomScriptWaypointPath(uint32_t id);
 
-    void addWayPoint(uint32_t pathid, WaypointNode waypoint);
+    uint32_t generateWaypointPathId();
+    void addWayPoint(uint32_t pathid, WaypointNode waypoint, bool saveToDB = false);
     void deleteWayPointById(uint32_t pathid, uint32_t waypointId);
     void deleteAllWayPoints(uint32_t pathid);
 

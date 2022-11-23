@@ -12,7 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 //.waypoint add
 bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_session)
 {
-
     AIInterface* ai = nullptr;
     Creature* creature_target = nullptr;
     Player* player = m_session->GetPlayer();
@@ -43,6 +42,8 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
         ai = creature_target->getAIInterface();
     }
 
+    uint32_t pathId = creature_target->getWaypointPath();
+
     char* pWaitTime = strtok((char*)args, " ");
     uint32 WaitTime = (pWaitTime) ? atoi(pWaitTime) : 10000;
 
@@ -50,6 +51,19 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
     uint32 Flags = (pFlags) ? atoi(pFlags) : 0;
 
     bool showing = ai->isShowWayPointsActive();
+
+    if (!pathId)
+    {
+        pathId = sWaypointMgr->generateWaypointPathId();
+        creature_target->loadPath(pathId);
+        sLogger.debug("New Waypoint Path %u Startet for Creature %u.", pathId, creature_target->getSpawnId());
+
+        // Start Movement
+        creature_target->setDefaultMovementType(WAYPOINT_MOTION_TYPE);
+        creature_target->getMovementManager()->movePath(pathId, true);
+
+        WorldDatabase.Execute("UPDATE creature_spawns SET movetype = %u, waypoint_group = %u WHERE id = %u AND min_build <= %u AND max_build >= %u", WAYPOINT_MOTION_TYPE, pathId, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+    }
 
     WaypointNode waypoint;
     waypoint.id = uint32(ai->getWayPointsCount() + 1);
@@ -72,9 +86,9 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
     if (showing)
         ai->hideWayPoints(player);
 
-    sWaypointMgr->addWayPoint(creature_target->getWaypointPath() ,waypoint);
+    // Save Our New Waypoint
+    sWaypointMgr->addWayPoint(pathId, waypoint, true);
     SystemMessage(m_session, "Waypoint %u added to Creature %s.", waypoint.id, creature_target->GetCreatureProperties()->Name.c_str());
-
 
     if (showing)
         ai->activateShowWayPoints(player, false);
