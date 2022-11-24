@@ -145,11 +145,31 @@ WaypointPath* WaypointMgr::getCustomScriptWaypointPath(uint32_t id)
     return nullptr;
 }
 
-void WaypointMgr::addWayPoint(uint32_t pathid, WaypointNode waypoint)
+uint32_t WaypointMgr::generateWaypointPathId()
+{
+    QueryResult* result = WorldDatabase.Query("SELECT MAX(id) FROM creature_waypoints");
+    if (result)
+    {
+        uint32_t maxPathId = result->Fetch()[0].GetUInt32();
+
+        WaypointPath& path = _waypointStore[maxPathId];
+        path.id = maxPathId;
+        path.nodes.clear();
+
+        return maxPathId + 1;
+    }
+
+    return 0;
+}
+
+void WaypointMgr::addWayPoint(uint32_t pathid, WaypointNode waypoint, bool saveToDB /*=false*/)
 {
     WaypointPath& path = _waypointStore[pathid];
     path.id = pathid;
     path.nodes.push_back(std::move(waypoint));
+
+    if (saveToDB)
+        WorldDatabase.Execute("INSERT INTO creature_waypoints VALUES(%u, %u, %f, %f, %f, %f, %u, %u, %u, %u, %u)", pathid, waypoint.id, waypoint.x, waypoint.y, waypoint.z, waypoint.orientation, waypoint.delay, waypoint.moveType, waypoint.eventId, waypoint.eventChance, 0);
 }
 
 void WaypointMgr::deleteWayPointById(uint32_t pathid, uint32_t waypointId)

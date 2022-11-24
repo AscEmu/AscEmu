@@ -753,6 +753,7 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
     creature_spawn->Item3SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_spawn->Item3SlotEntry);
     creature_spawn->CanFly = 0;
     creature_spawn->phase = m_session->GetPlayer()->GetPhase();
+    creature_spawn->waypoint_id = 0;
 
     if (auto creature = m_session->GetPlayer()->getWorldMap()->createCreature(entry))
     {
