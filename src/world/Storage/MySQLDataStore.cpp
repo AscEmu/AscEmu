@@ -2408,9 +2408,20 @@ void MySQLDataStore::loadCreatureInitialEquipmentTable()
             continue;
         }
 
-        const_cast<CreatureProperties*>(creature_properties)->itemslot_1 = sMySQLStore.getItemDisplayIdForEntry(fields[1].GetUInt32());
-        const_cast<CreatureProperties*>(creature_properties)->itemslot_2 = sMySQLStore.getItemDisplayIdForEntry(fields[2].GetUInt32());
-        const_cast<CreatureProperties*>(creature_properties)->itemslot_3 = sMySQLStore.getItemDisplayIdForEntry(fields[3].GetUInt32());
+        if (sMySQLStore.getItemProperties(fields[1].GetUInt32()))
+            const_cast<CreatureProperties*>(creature_properties)->itemslot_1 = sMySQLStore.getItemDisplayIdForEntry(fields[1].GetUInt32());
+        else
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_1 %u for creature %u", fields[1].GetUInt32(), entry);
+
+        if (sMySQLStore.getItemProperties(fields[2].GetUInt32()))
+            const_cast<CreatureProperties*>(creature_properties)->itemslot_2 = sMySQLStore.getItemDisplayIdForEntry(fields[2].GetUInt32());
+        else
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_2 %u for creature %u", fields[2].GetUInt32(), entry);
+
+        if (sMySQLStore.getItemProperties(fields[3].GetUInt32()))
+            const_cast<CreatureProperties*>(creature_properties)->itemslot_3 = sMySQLStore.getItemDisplayIdForEntry(fields[3].GetUInt32());
+        else
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_3 %u for creature %u", fields[3].GetUInt32(), entry);
 
         ++initial_equipment_count;
 
