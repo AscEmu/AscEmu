@@ -46,7 +46,7 @@ Be patient with us and give us details.
  3. Images will help us a lot
 
 ## Install
-HowTo install (detailed guides on our wiki)
+HowTo install - detailed guides on our wiki.
 * [Linux](https://ascemu.github.io/Wiki/docs/installation/linux/)
 * [Windows](https://ascemu.github.io/Wiki/docs/installation/windows/)
 
@@ -56,7 +56,7 @@ HowTo install (detailed guides on our wiki)
 * [Wiki](https://ascemu.github.io/Wiki/)
 * [World DB](https://github.com/AscEmu/OneDB)
 
-### Copyright and other stuff
+## Copyright and other stuff
 * [License](LICENSE.md)
 * [Thanks to all](THANKS.md)
 * [Terms of use](TERMS_OF_USE_AGREEMENT.md)
