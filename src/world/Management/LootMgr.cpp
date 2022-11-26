@@ -316,7 +316,7 @@ void LootMgr::loadLootTables(const char* szTableName, LootTemplateMap* LootTable
         ItemProperties const* itemProto = sMySQLStore.getItemProperties(itemId);
         if (!itemProto)
         {
-            sLogger.debug("Invalid Item with entry %u set in loot_%s", itemId, szTableName);
+            sLogger.debug("Invalid Item with entry %u set in %s", itemId, szTableName);
             continue;
         }
 
