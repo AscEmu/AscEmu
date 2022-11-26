@@ -1,6 +1,9 @@
 .idea
 .TMP
 .DS_Store
+.vcxproj
+.vcxproj.filters
+.sln
 src/logonserver/logon_conf.h
 src/shared/git_version.h
 src/shared/Common.hpp
