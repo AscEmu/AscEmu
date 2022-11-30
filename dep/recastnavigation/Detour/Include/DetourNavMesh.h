@@ -31,19 +31,7 @@
 // TODO: figure out a multiplatform version of uint64_t
 // - maybe: https://code.google.com/p/msinttypes/
 // - or: http://www.azillionmonkeys.com/qed/pstdint.h
-#if defined(WIN32) && !defined(__MINGW32__)
-/// Do not rename back to uint64. Otherwise mac complains about typedef redefinition
-typedef unsigned __int64    uint64_d;
-#else
 #include <stdint.h>
-#ifndef uint64_t
-#ifdef __linux__
-#include <linux/types.h>
-#endif
-#endif
-/// Do not rename back to uint64. Otherwise mac complains about typedef redefinition
-typedef uint64_t            uint64_d;
-#endif 
 #endif
 
 // Note: If you want to use 64-bit refs, change the types of both dtPolyRef & dtTileRef.
@@ -55,7 +43,7 @@ typedef uint64_t            uint64_d;
 static const unsigned int DT_SALT_BITS = 12;
 static const unsigned int DT_TILE_BITS = 21;
 static const unsigned int DT_POLY_BITS = 31;
-typedef uint64_d dtPolyRef;
+typedef uint64_t dtPolyRef;
 #else
 typedef unsigned int dtPolyRef;
 #endif
@@ -63,7 +51,7 @@ typedef unsigned int dtPolyRef;
 /// A handle to a tile within a navigation mesh.
 /// @ingroup detour
 #ifdef DT_POLYREF64
-typedef uint64_d dtTileRef;
+typedef uint64_t dtTileRef;
 #else
 typedef unsigned int dtTileRef;
 #endif
@@ -111,7 +99,7 @@ static const int DT_MAX_AREAS = 64;
 enum dtTileFlags
 {
 	/// The navigation mesh owns the tile memory and is responsible for freeing it.
-	DT_TILE_FREE_DATA = 0x01,
+	DT_TILE_FREE_DATA = 0x01
 };
 
 /// Vertex flags returned by dtNavMeshQuery::findStraightPath.
@@ -119,27 +107,32 @@ enum dtStraightPathFlags
 {
 	DT_STRAIGHTPATH_START = 0x01,				///< The vertex is the start position in the path.
 	DT_STRAIGHTPATH_END = 0x02,					///< The vertex is the end position in the path.
-	DT_STRAIGHTPATH_OFFMESH_CONNECTION = 0x04,	///< The vertex is the start of an off-mesh connection.
+	DT_STRAIGHTPATH_OFFMESH_CONNECTION = 0x04	///< The vertex is the start of an off-mesh connection.
 };
 
 /// Options for dtNavMeshQuery::findStraightPath.
 enum dtStraightPathOptions
 {
 	DT_STRAIGHTPATH_AREA_CROSSINGS = 0x01,	///< Add a vertex at every polygon edge crossing where area changes.
-	DT_STRAIGHTPATH_ALL_CROSSINGS = 0x02,	///< Add a vertex at every polygon edge crossing.
+	DT_STRAIGHTPATH_ALL_CROSSINGS = 0x02	///< Add a vertex at every polygon edge crossing.
 };
 
 
 /// Options for dtNavMeshQuery::initSlicedFindPath and updateSlicedFindPath
 enum dtFindPathOptions
 {
-	DT_FINDPATH_ANY_ANGLE	= 0x02,		///< use raycasts during pathfind to "shortcut" (raycast still consider costs)
+	DT_FINDPATH_ANY_ANGLE	= 0x02		///< use raycasts during pathfind to "shortcut" (raycast still consider costs)
 };
 
 /// Options for dtNavMeshQuery::raycast
 enum dtRaycastOptions
 {
-	DT_RAYCAST_USE_COSTS = 0x01,		///< Raycast should calculate movement cost along the ray and fill RaycastHit::cost
+	DT_RAYCAST_USE_COSTS = 0x01		///< Raycast should calculate movement cost along the ray and fill RaycastHit::cost
+};
+
+enum dtDetailTriEdgeFlags
+{
+	DT_DETAIL_EDGE_BOUNDARY = 0x01		///< Detail triangle edge is part of the poly boundary
 };
 
 
@@ -153,7 +146,7 @@ enum dtPolyTypes
 	/// The polygon is a standard convex polygon that is part of the surface of the mesh.
 	DT_POLYTYPE_GROUND = 0,
 	/// The polygon is an off-mesh connection consisting of two vertices.
-	DT_POLYTYPE_OFFMESH_CONNECTION = 1,
+	DT_POLYTYPE_OFFMESH_CONNECTION = 1
 };
 
 
@@ -292,14 +285,15 @@ struct dtMeshTile
 	unsigned int linksFreeList;			///< Index to the next free link.
 	dtMeshHeader* header;				///< The tile header.
 	dtPoly* polys;						///< The tile polygons. [Size: dtMeshHeader::polyCount]
-	float* verts;						///< The tile vertices. [Size: dtMeshHeader::vertCount]
+	float* verts;						///< The tile vertices. [(x, y, z) * dtMeshHeader::vertCount]
 	dtLink* links;						///< The tile links. [Size: dtMeshHeader::maxLinkCount]
 	dtPolyDetail* detailMeshes;			///< The tile's detail sub-meshes. [Size: dtMeshHeader::detailMeshCount]
 	
 	/// The detail mesh's unique vertices. [(x, y, z) * dtMeshHeader::detailVertCount]
 	float* detailVerts;	
 
-	/// The detail mesh's triangles. [(vertA, vertB, vertC) * dtMeshHeader::detailTriCount]
+	/// The detail mesh's triangles. [(vertA, vertB, vertC, triFlags) * dtMeshHeader::detailTriCount].
+	/// See dtDetailTriEdgeFlags and dtGetDetailTriEdgeFlags.
 	unsigned char* detailTris;	
 
 	/// The tile bounding volume nodes. [Size: dtMeshHeader::bvNodeCount]
@@ -317,6 +311,15 @@ private:
 	dtMeshTile& operator=(const dtMeshTile&);
 };
 
+/// Get flags for edge in detail triangle.
+/// @param[in]	triFlags		The flags for the triangle (last component of detail vertices above).
+/// @param[in]	edgeIndex		The index of the first vertex of the edge. For instance, if 0,
+///								returns flags for edge AB.
+inline int dtGetDetailTriEdgeFlags(unsigned char triFlags, int edgeIndex)
+{
+	return (triFlags >> (edgeIndex * 2)) & 0x3;
+}
+
 /// Configuration parameters used to define multi-tile navigation meshes.
 /// The values are used to allocate space during the initialization of a navigation mesh.
 /// @see dtNavMesh::init()
@@ -326,8 +329,8 @@ struct dtNavMeshParams
 	float orig[3];					///< The world space origin of the navigation mesh's tile space. [(x, y, z)]
 	float tileWidth;				///< The width of each tile. (Along the x-axis.)
 	float tileHeight;				///< The height of each tile. (Along the z-axis.)
-	int maxTiles;					///< The maximum number of tiles the navigation mesh can contain.
-	int maxPolys;					///< The maximum number of polygons each tile can contain.
+	int maxTiles;					///< The maximum number of tiles the navigation mesh can contain. This and maxPolys are used to calculate how many bits are needed to identify tiles and polygons uniquely.
+	int maxPolys;					///< The maximum number of polygons each tile can contain. This and maxTiles are used to calculate how many bits are needed to identify tiles and polygons uniquely.
 };
 
 /// A navigation mesh based on tiles of convex polygons.
@@ -647,7 +650,9 @@ private:
 							dtPolyRef* polys, const int maxPolys) const;
 	/// Find nearest polygon within a tile.
 	dtPolyRef findNearestPolyInTile(const dtMeshTile* tile, const float* center,
-									const float* extents, float* nearestPt) const;
+									const float* halfExtents, float* nearestPt) const;
+	/// Returns whether position is over the poly and the height at the position if so.
+	bool getPolyHeight(const dtMeshTile* tile, const dtPoly* poly, const float* pos, float* height) const;
 	/// Returns closest point on polygon.
 	void closestPointOnPoly(dtPolyRef ref, const float* pos, float* closest, bool* posOverPoly) const;
 	
@@ -667,6 +672,8 @@ private:
 	unsigned int m_tileBits;			///< Number of tile bits in the tile ID.
 	unsigned int m_polyBits;			///< Number of poly bits in the tile ID.
 #endif
+
+	friend class dtNavMeshQuery;
 };
 
 /// Allocates a navigation mesh object using the Detour allocator.

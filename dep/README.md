@@ -19,8 +19,8 @@
 - Version: 5.4.4 (2022/01/26)
 
 ## Folder: recastnavigation
-- Web: https://github.com/memononen/recastnavigation
-- Version: 64385e9ed0822427bca5814d03a3f4c4d7a6db9f (2016/08/17)  
+- Web: https://github.com/recastnavigation/recastnavigation
+- Version: d0b2ed8ff5d371f375cf49dad7ca96e8b22142d0 (2022/11/28)
 
 ## Folder: StormLib
 - Web: https://github.com/ladislav-zezula/StormLib

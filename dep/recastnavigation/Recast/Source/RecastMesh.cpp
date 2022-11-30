@@ -379,7 +379,7 @@ static int triangulate(int n, const int* verts, int* indices, int* tris)
 			// We might get here because the contour has overlapping segments, like this:
 			//
 			//  A o-o=====o---o B
-			//   /  |C   D|    \
+			//   /  |C   D|    \.
 			//  o   o     o     o
 			//  :   :     :     :
 			// We'll try to recover by loosing up the inCone test a bit so that a diagonal
@@ -566,7 +566,6 @@ static bool canRemoveVertex(rcContext* ctx, rcPolyMesh& mesh, const unsigned sho
 	const int nvp = mesh.nvp;
 	
 	// Count number of polygons to remove.
-	int numRemovedVerts = 0;
 	int numTouchedVerts = 0;
 	int numRemainingEdges = 0;
 	for (int i = 0; i < mesh.npolys; ++i)
@@ -586,7 +585,6 @@ static bool canRemoveVertex(rcContext* ctx, rcPolyMesh& mesh, const unsigned sho
 		}
 		if (numRemoved)
 		{
-			numRemovedVerts += numRemoved;
 			numRemainingEdges += numVerts-(numRemoved+1);
 		}
 	}
