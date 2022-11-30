@@ -19,10 +19,8 @@ set(EXTRA_LIBS
     dbghelp.lib
 )
 
-# install libmysql.dll required for our core to run.
-set(INSTALLED_DEPENDENCIES
-    ${MYSQL_DLL}
-)
+# install libraries for windows build (libmysql.dll)
+install(FILES ${INSTALLED_DEPENDENCIES} DESTINATION .)
 
 # check for db update files
 set(PATH_DB_FILES ${CMAKE_SOURCE_DIR}/sql/)

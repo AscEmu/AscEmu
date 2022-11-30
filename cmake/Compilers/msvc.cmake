@@ -43,6 +43,3 @@ else ()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W0")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
 endif ()
-
-# install libraries for windows build (libmysql.dll)
-install(FILES ${INSTALLED_DEPENDENCIES} DESTINATION .)
