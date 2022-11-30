@@ -73,6 +73,7 @@
 /* 18.09.15  9.20  Lad  Release 9.20                                         */
 /* 12.12.16  9.21  Lad  Release 9.21                                         */
 /* 10.11.17  9.22  Lad  Release 9.22                                         */
+/* 28.09.22  9.24  Lad  lcLocale -> lcFileLocale, also contains platform     */
 /*****************************************************************************/
 
 #ifndef __STORMLIB_H__
@@ -142,8 +143,8 @@ extern "C" {
 //-----------------------------------------------------------------------------
 // Defines
 
-#define STORMLIB_VERSION                0x0917  // Current version of StormLib (9.23)
-#define STORMLIB_VERSION_STRING         "9.23"  // String version of StormLib version
+#define STORMLIB_VERSION                0x0918  // Current version of StormLib (9.24)
+#define STORMLIB_VERSION_STRING         "9.24"  // String version of StormLib version
 
 #define ID_MPQ                      0x1A51504D  // MPQ archive header ID ('MPQ\x1A')
 #define ID_MPQ_USERDATA             0x1B51504D  // MPQ userdata entry ('MPQ\x1B')
@@ -192,13 +193,14 @@ extern "C" {
 #define MPQ_FLAG_SAVING_TABLES      0x00000040  // If set, we are saving MPQ internal files and MPQ tables
 #define MPQ_FLAG_PATCH              0x00000080  // If set, this MPQ is a patch archive
 #define MPQ_FLAG_WAR3_MAP           0x00000100  // If set, this MPQ is a Warcraft III map
-#define MPQ_FLAG_LISTFILE_NONE      0x00000200  // Set when no (listfile) was found in InvalidateInternalFiles
-#define MPQ_FLAG_LISTFILE_NEW       0x00000400  // Set when (listfile) invalidated by InvalidateInternalFiles
-#define MPQ_FLAG_LISTFILE_FORCE     0x00000800  // Save updated listfile on exit
-#define MPQ_FLAG_ATTRIBUTES_NONE    0x00001000  // Set when no (attributes) was found in InvalidateInternalFiles
-#define MPQ_FLAG_ATTRIBUTES_NEW     0x00002000  // Set when (attributes) invalidated by InvalidateInternalFiles
-#define MPQ_FLAG_SIGNATURE_NONE     0x00004000  // Set when no (signature) was found in InvalidateInternalFiles
-#define MPQ_FLAG_SIGNATURE_NEW      0x00008000  // Set when (signature) invalidated by InvalidateInternalFiles
+#define MPQ_FLAG_STARCRAFT_BETA     0x00000200  // If set, this MPQ is StarDat.mpq from Starcraft I BETA
+#define MPQ_FLAG_LISTFILE_NONE      0x00000400  // Set when no (listfile) was found in InvalidateInternalFiles
+#define MPQ_FLAG_LISTFILE_NEW       0x00000800  // Set when (listfile) invalidated by InvalidateInternalFiles
+#define MPQ_FLAG_LISTFILE_FORCE     0x00001000  // Save updated listfile on exit
+#define MPQ_FLAG_ATTRIBUTES_NONE    0x00002000  // Set when no (attributes) was found in InvalidateInternalFiles
+#define MPQ_FLAG_ATTRIBUTES_NEW     0x00004000  // Set when (attributes) invalidated by InvalidateInternalFiles
+#define MPQ_FLAG_SIGNATURE_NONE     0x00008000  // Set when no (signature) was found in InvalidateInternalFiles
+#define MPQ_FLAG_SIGNATURE_NEW      0x00010000  // Set when (signature) invalidated by InvalidateInternalFiles
 
 // Values for TMPQArchive::dwSubType
 #define MPQ_SUBTYPE_MPQ             0x00000000  // The file is a MPQ file (Blizzard games)
@@ -626,7 +628,7 @@ typedef struct _TMPQHash
 
     // The language of the file. This is a Windows LANGID data type, and uses the same values.
     // 0 indicates the default language (American English), or that the file is language-neutral.
-    USHORT lcLocale;
+    USHORT Locale;
 
     // The platform the file is used for. 0 indicates the default platform.
     // No other values have been observed.
@@ -635,9 +637,9 @@ typedef struct _TMPQHash
 
 #else
 
-    BYTE   Platform;
     BYTE   Reserved;
-    USHORT lcLocale;
+    BYTE   Platform;
+    USHORT Locale;
 
 #endif
 
@@ -909,7 +911,7 @@ typedef struct _SFILE_FIND_DATA
     DWORD  dwCompSize;                          // Compressed file size
     DWORD  dwFileTimeLo;                        // Low 32-bits of the file time (0 if not present)
     DWORD  dwFileTimeHi;                        // High 32-bits of the file time (0 if not present)
-    LCID   lcLocale;                            // Locale version
+    LCID   lcLocale;                            // Compound of file locale (16 bits) and platform (8 bits)
 
 } SFILE_FIND_DATA, *PSFILE_FIND_DATA;
 
@@ -993,13 +995,18 @@ typedef bool  (WINAPI * SFILEREADFILE)(HANDLE, void *, DWORD, LPDWORD, LPOVERLAP
 //-----------------------------------------------------------------------------
 // Functions for manipulation with StormLib global flags
 
+// Macros for making LCID from Locale and Platform
+#define SFILE_MAKE_LCID(locale, platform)   ((LCID)(USHORT)locale | (LCID)(BYTE)platform << 0x10)
+#define SFILE_LOCALE(lcFileLocale)          (USHORT)(lcFileLocale & 0xFFFF)
+#define SFILE_PLATFORM(lcFileLocale)        (BYTE)(lcFileLocale >> 0x10)
+
 // Alternate marker support. This is for MPQs masked as DLLs (*.asi), which
 // patch Storm.dll at runtime. Call before SFileOpenArchive
 bool   WINAPI SFileSetArchiveMarkers(PSFILE_MARKERS pMarkers);
 
 // Call before SFileOpenFileEx
 LCID   WINAPI SFileGetLocale();
-LCID   WINAPI SFileSetLocale(LCID lcNewLocale);
+LCID   WINAPI SFileSetLocale(LCID lcFileLocale);
 
 //-----------------------------------------------------------------------------
 // Functions for archive manipulation
@@ -1084,12 +1091,12 @@ bool   WINAPI SListFileFindNextFile(HANDLE hFind, SFILE_FIND_DATA * lpFindFileDa
 bool   WINAPI SListFileFindClose(HANDLE hFind);
 
 // Locale support
-DWORD  WINAPI SFileEnumLocales(HANDLE hMpq, const char * szFileName, LCID * plcLocales, LPDWORD pdwMaxLocales, DWORD dwSearchScope);
+DWORD  WINAPI SFileEnumLocales(HANDLE hMpq, const char * szFileName, LCID * PtrFileLocales, LPDWORD PtrMaxLocales, DWORD dwSearchScope);
 
 //-----------------------------------------------------------------------------
 // Support for adding files to the MPQ
 
-bool   WINAPI SFileCreateFile(HANDLE hMpq, const char * szArchivedName, ULONGLONG FileTime, DWORD dwFileSize, LCID lcLocale, DWORD dwFlags, HANDLE * phFile);
+bool   WINAPI SFileCreateFile(HANDLE hMpq, const char * szArchivedName, ULONGLONG FileTime, DWORD dwFileSize, LCID lcFileLocale, DWORD dwFlags, HANDLE * phFile);
 bool   WINAPI SFileWriteFile(HANDLE hFile, const void * pvData, DWORD dwSize, DWORD dwCompression);
 bool   WINAPI SFileFinishFile(HANDLE hFile);
 
@@ -1111,6 +1118,7 @@ int    WINAPI SCompExplode    (void * pvOutBuffer, int * pcbOutBuffer, void * pv
 int    WINAPI SCompCompress   (void * pvOutBuffer, int * pcbOutBuffer, void * pvInBuffer, int cbInBuffer, unsigned uCompressionMask, int nCmpType, int nCmpLevel);
 int    WINAPI SCompDecompress (void * pvOutBuffer, int * pcbOutBuffer, void * pvInBuffer, int cbInBuffer);
 int    WINAPI SCompDecompress2(void * pvOutBuffer, int * pcbOutBuffer, void * pvInBuffer, int cbInBuffer);
+int    WINAPI SCompDecompress_SC1B(void * pvOutBuffer, int * pcbOutBuffer, void * pvInBuffer, int cbInBuffer);
 
 //-----------------------------------------------------------------------------
 // Non-Windows support for SetLastError/GetLastError

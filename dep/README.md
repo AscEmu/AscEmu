@@ -24,7 +24,7 @@
 
 ## Folder: StormLib
 - Web: https://github.com/ladislav-zezula/StormLib
-- Version: e51472f (2022/02/13)
+- Version: 3235d01eab95af50c589a615bd8d492f911369f7 (2022/11/10)
 
 ## Folder: utf8cpp
 - Web: https://github.com/nemtrif/utfcpp
