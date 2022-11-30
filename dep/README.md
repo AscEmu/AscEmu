@@ -28,7 +28,7 @@
 
 ## Folder: utf8cpp
 - Web: https://github.com/nemtrif/utfcpp
-- Version: d8b92208fddde08d628004563a1a3614a32cf8c8 (2021/12/27)
+- Version: 780bd57d6341b3291a11a546bf69358277b724bc (2022/11/27)
 
 ## Folder: zlib
 - Web: http://www.zlib.net
