@@ -35,7 +35,7 @@ public:
 
 private:
     void sendSplineFor(Unit* owner, uint32_t index, uint32_t& duration);
-    uint32_t sendPathSpline(Unit* owner, float velocity, MovementNew::PointsArray const& path) const;
+    uint32_t sendPathSpline(Unit* owner, float velocity, MovementMgr::PointsArray const& path) const;
 
     uint32_t const _id;
     std::vector<SplineChainLink> const& _chain;

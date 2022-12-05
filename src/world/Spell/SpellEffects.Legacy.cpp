@@ -5047,7 +5047,7 @@ void Spell::SpellEffectPullTowardsDest(uint8_t effIndex)
     float distZ = pos.getPositionZ() - unitTarget->GetPositionZ();
 
     float speedXY = m_spellInfo->getEffectMiscValue(effIndex) ? m_spellInfo->getEffectMiscValue(effIndex) / 10.0f : 30.0f;
-    float speedZ = (2 * speedXY * speedXY * distZ + MovementNew::gravity * distXY * distXY) / (2 * speedXY * distXY);
+    float speedZ = (2 * speedXY * speedXY * distZ + MovementMgr::gravity * distXY * distXY) / (2 * speedXY * distXY);
 
     if (!std::isfinite(speedZ))
     {

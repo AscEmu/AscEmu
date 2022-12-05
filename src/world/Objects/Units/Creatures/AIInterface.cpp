@@ -3235,7 +3235,7 @@ bool AIInterface::moveTo(float x, float y, float z, float /*o = 0.0f*/, bool run
         return false;
     }
 
-    MovementNew::MoveSplineInit init(m_Unit);
+    MovementMgr::MoveSplineInit init(m_Unit);
     init.MoveTo(x, y, z);
     if (running)
         init.SetWalk(false);
@@ -3293,7 +3293,7 @@ void AIInterface::calcDestinationAndMove(Unit* target, float dist)
         newz = m_Unit->GetPositionZ();
     }
 
-    MovementNew::MoveSplineInit init(m_Unit);
+    MovementMgr::MoveSplineInit init(m_Unit);
     init.MoveTo(newx, newy, newz);
     init.SetWalk(true);
     m_Unit->getMovementManager()->launchMoveSpline(std::move(init));
@@ -3327,7 +3327,7 @@ void AIInterface::setWayPointToMove(uint32_t waypointId)
     auto _path = sWaypointMgr->getPath(getUnit()->ToCreature()->getWaypointPath());
     WaypointNode const &waypoint = _path->nodes[waypointId];
 
-    MovementNew::MoveSplineInit init(getUnit());
+    MovementMgr::MoveSplineInit init(getUnit());
     init.MoveTo(waypoint.x, waypoint.y, waypoint.z);
 
     //! Accepts angles such as 0.00001 and -0.00001, 0 must be ignored, default value in waypoint table

@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldPacket.h"
 #include "Movement/PathGenerator.h"
 
-namespace MovementNew {
+namespace MovementMgr {
 
 UnitSpeedType SelectSpeedType(uint32_t moveFlags)
 {
@@ -299,4 +299,4 @@ Vector3 TransportPathTransform::operator()(Vector3 input)
     }
     return input;
 }
-} // namespace MovementNew
+} // namespace MovementMgr

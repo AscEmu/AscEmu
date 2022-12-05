@@ -51,7 +51,7 @@ public:
     G3D::Vector3 const& getEndPosition() const { return _endPosition; }
     G3D::Vector3 const& getActualEndPosition() const { return _actualEndPosition; }
 
-    MovementNew::PointsArray const& getPath() const { return _pathPoints; }
+    MovementMgr::PointsArray const& getPath() const { return _pathPoints; }
 
     PathType getPathType() const { return _type; }
 
@@ -62,7 +62,7 @@ private:
     dtPolyRef _pathPolyRefs[MAX_PATH_LENGTH];   // array of detour polygon references
     uint32_t _polyLength;                       // number of polygons in the path
 
-    MovementNew::PointsArray _pathPoints;       // our actual (x,y,z) path to the target
+    MovementMgr::PointsArray _pathPoints;       // our actual (x,y,z) path to the target
     PathType _type;                             // tells what kind of path this is
 
     bool _useStraightPath;                      // type of path will be generated

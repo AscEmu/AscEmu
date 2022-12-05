@@ -1914,7 +1914,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
         if (obj_movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ENABLED))   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
         {
             if (Unit* unit = static_cast<Unit*>(this))
-                MovementNew::PacketBuilder::WriteCreate(*unit->movespline, *data);
+                MovementMgr::PacketBuilder::WriteCreate(*unit->movespline, *data);
         }
     }
     else        // No UPDATEFLAG_LIVING
@@ -2036,7 +2036,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
         if (obj_movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ENABLED))   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
         {
             if (Unit* unit = static_cast<Unit*>(this))
-                MovementNew::PacketBuilder::WriteCreate(*unit->movespline, *data);
+                MovementMgr::PacketBuilder::WriteCreate(*unit->movespline, *data);
         }
     }
     else        // No UPDATEFLAG_LIVING
@@ -2203,7 +2203,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         if (obj_movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ENABLED))   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
         {
             if (Unit* unit = static_cast<Unit*>(this))
-                MovementNew::PacketBuilder::WriteCreate(*unit->movespline, *data);
+                MovementMgr::PacketBuilder::WriteCreate(*unit->movespline, *data);
         }
 
     }
@@ -2406,7 +2406,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         data->writeBit(Guid[4]);
 
         if (unit->isSplineEnabled())
-            MovementNew::PacketBuilder::WriteCreateBits(*unit->movespline, *data);
+            MovementMgr::PacketBuilder::WriteCreateBits(*unit->movespline, *data);
 
         data->writeBit(Guid[6]);
 
@@ -2495,7 +2495,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
         if (unit->isSplineEnabled())
         {
-            MovementNew::PacketBuilder::WriteCreateData(*unit->movespline, *data);
+            MovementMgr::PacketBuilder::WriteCreateData(*unit->movespline, *data);
         }
 
         *data << float(unit->GetPositionZ());

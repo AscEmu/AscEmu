@@ -154,7 +154,7 @@ void RandomMovementGenerator<Creature>::setRandomLocation(Creature* owner)
             break;
     }
 
-    MovementNew::MoveSplineInit init(owner);
+    MovementMgr::MoveSplineInit init(owner);
     init.MovebyPath(_path->getPath());
     init.SetWalk(walk);
     int32_t splineDuration = init.Launch();

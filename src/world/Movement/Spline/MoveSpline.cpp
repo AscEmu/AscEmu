@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonDefines.hpp"
 #include "Logging/Logger.hpp"
 
-namespace MovementNew {
+namespace MovementMgr {
 
 Location MoveSpline::ComputePosition() const
 {
@@ -75,7 +75,7 @@ void MoveSpline::computeParabolicElevation(float& el) const
 
 void MoveSpline::computeFallElevation(float& el) const
 {
-    float z_now = spline.getPoint(spline.first()).z - MovementNew::computeFallElevation(MSToSec(time_passed), false);
+    float z_now = spline.getPoint(spline.first()).z - MovementMgr::computeFallElevation(MSToSec(time_passed), false);
     float final_z = FinalDestination().z;
     el = std::max(z_now, final_z);
 }
@@ -91,7 +91,7 @@ struct FallInitializer
     float start_elevation;
     inline int32_t operator()(Spline<int32>& s, int32_t i)
     {
-        return static_cast<int32_t>(MovementNew::computeFallTime(start_elevation - s.getPoint(i + 1).z, false) * 1000.f);
+        return static_cast<int32_t>(MovementMgr::computeFallTime(start_elevation - s.getPoint(i + 1).z, false) * 1000.f);
     }
 };
 
@@ -361,4 +361,4 @@ int32_t MoveSpline::currentPathIdx() const
         point = point % (spline.last()-spline.first());
     return point;
 }
-} // namespace MovementNew
+} // namespace MovementMgr

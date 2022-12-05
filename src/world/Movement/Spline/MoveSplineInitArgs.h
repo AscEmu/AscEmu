@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 class Unit;
 
-namespace MovementNew {
+namespace MovementMgr {
 
 typedef std::vector<Vector3> PointsArray;
 
@@ -53,4 +53,4 @@ struct MoveSplineInitArgs
 private:
     bool _checkPathBounds() const;
 };
-} // namespace MovementNew
+} // namespace MovementMgr

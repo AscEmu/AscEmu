@@ -51,7 +51,7 @@ class MovementManager;
 struct FactionDBC;
 struct SpellForcedBasePoints;
 
-namespace MovementNew {
+namespace MovementMgr {
 class MoveSpline;
 }
 
@@ -609,7 +609,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement spline
-    MovementNew::MoveSpline* movespline;
+    MovementMgr::MoveSpline* movespline;
 
     void followerAdded(AbstractFollower* f) { m_followingMe.insert(f); }
     void followerRemoved(AbstractFollower* f) { m_followingMe.erase(f); }

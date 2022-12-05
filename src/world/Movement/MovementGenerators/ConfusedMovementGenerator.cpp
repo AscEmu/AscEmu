@@ -104,7 +104,7 @@ bool ConfusedMovementGenerator<T>::doUpdate(T* owner, uint32_t diff)
 
         owner->addUnitStateFlag(UNIT_STATE_CONFUSED_MOVE);
 
-        MovementNew::MoveSplineInit init(owner);
+        MovementMgr::MoveSplineInit init(owner);
         init.MovebyPath(_path->getPath());
         init.SetWalk(true);
         int32 traveltime = init.Launch();

@@ -222,7 +222,7 @@ bool ChaseMovementGenerator::update(Unit* owner, uint32_t diff)
             owner->addUnitStateFlag(UNIT_STATE_CHASE_MOVE);
             addFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED);
 
-            MovementNew::MoveSplineInit init(owner);
+            MovementMgr::MoveSplineInit init(owner);
             init.MovebyPath(_path->getPath());
             init.SetWalk(walk);
             init.SetFacing(target);

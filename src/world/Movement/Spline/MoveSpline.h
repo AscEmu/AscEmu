@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "LocationVector.h"
 
-namespace MovementNew {
+namespace MovementMgr {
 
 struct Location : public Vector3
 {
@@ -128,4 +128,4 @@ public:
         return time_passed > 0;
     }
 };
-} // namespace MovementNew
+} // namespace MovementMgr

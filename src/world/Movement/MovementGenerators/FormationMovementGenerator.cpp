@@ -179,7 +179,7 @@ void FormationMovementGenerator::launchMovement(Creature* owner, Unit* target)
     if (velocity == 0.f)
         velocity = target->getSpeedRate(TYPE_WALK, true);
 
-    MovementNew::MoveSplineInit init(owner);
+    MovementMgr::MoveSplineInit init(owner);
     init.MoveTo(positionToVector3(dest));
     init.SetVelocity(velocity);
     init.Launch();

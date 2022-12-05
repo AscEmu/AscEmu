@@ -24,7 +24,7 @@ struct SplineChainLink;
 struct SplineChainResumeInfo;
 struct WaypointPath;
 
-namespace MovementNew
+namespace MovementMgr
 {
     class MoveSplineInit;
 }
@@ -178,7 +178,7 @@ public:
     void moveRotate(uint32_t id, uint32_t time, RotateDirection direction);
     void moveFormation(Unit* leader, float range, float angle, uint32_t point1, uint32_t point2);
 
-    void launchMoveSpline(MovementNew::MoveSplineInit&& init, uint32_t id = 0, MovementGeneratorPriority priority = MOTION_PRIORITY_NORMAL, MovementGeneratorType type = EFFECT_MOTION_TYPE);
+    void launchMoveSpline(MovementMgr::MoveSplineInit&& init, uint32_t id = 0, MovementGeneratorPriority priority = MOTION_PRIORITY_NORMAL, MovementGeneratorType type = EFFECT_MOTION_TYPE);
 private:
     typedef std::unique_ptr<MovementGenerator, MovementGeneratorDeleter> MovementGeneratorPointer;
     typedef std::multiset<MovementGenerator*, MovementGeneratorComparator> MovementManagerContainer;

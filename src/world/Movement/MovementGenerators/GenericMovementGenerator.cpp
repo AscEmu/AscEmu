@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MoveSpline.h"
 #include "Objects/Units/Unit.hpp"
 
-GenericMovementGenerator::GenericMovementGenerator(MovementNew::MoveSplineInit&& splineInit, MovementGeneratorType type, uint32_t id) : _splineInit(std::move(splineInit)), _type(type), _pointId(id), _duration(0)
+GenericMovementGenerator::GenericMovementGenerator(MovementMgr::MoveSplineInit&& splineInit, MovementGeneratorType type, uint32_t id) : _splineInit(std::move(splineInit)), _type(type), _pointId(id), _duration(0)
 {
     Mode = MOTION_MODE_DEFAULT;
     Priority = MOTION_PRIORITY_NORMAL;

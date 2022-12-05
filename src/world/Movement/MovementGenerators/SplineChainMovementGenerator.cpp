@@ -33,12 +33,12 @@ SplineChainMovementGenerator::SplineChainMovementGenerator(SplineChainResumeInfo
     BaseUnitState = UNIT_STATE_ROAMING;
 }
 
-uint32_t SplineChainMovementGenerator::sendPathSpline(Unit* owner, float velocity, MovementNew::PointsArray const& path) const
+uint32_t SplineChainMovementGenerator::sendPathSpline(Unit* owner, float velocity, MovementMgr::PointsArray const& path) const
 {
     const auto nodeCount = path.size();
     ASSERT(nodeCount > 1 && "SplineChainMovementGenerator::SendPathSpline: Every path must have source & destination (size > 1)!");
 
-    MovementNew::MoveSplineInit init(owner);
+    MovementMgr::MoveSplineInit init(owner);
     if (nodeCount > 2)
         init.MovebyPath(path);
     else
@@ -90,7 +90,7 @@ void SplineChainMovementGenerator::initialize(Unit* owner)
         }
 
         owner->addUnitStateFlag(UNIT_STATE_ROAMING_MOVE);
-        MovementNew::PointsArray partial(thisLink.Points.begin() + (_nextFirstWP-1), thisLink.Points.end());
+        MovementMgr::PointsArray partial(thisLink.Points.begin() + (_nextFirstWP-1), thisLink.Points.end());
         sendPathSpline(owner, thisLink.Velocity, partial);
 
         ++_nextIndex;

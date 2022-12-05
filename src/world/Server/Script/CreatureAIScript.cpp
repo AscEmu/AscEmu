@@ -504,7 +504,7 @@ void CreatureAIScript::setWaypointToMove(uint32_t pathId, uint32_t pWaypointId)
     auto _path = getCustomPath(pathId);
     WaypointNode const &waypoint = _path->nodes[pWaypointId];
 
-    MovementNew::MoveSplineInit init(getCreature());
+    MovementMgr::MoveSplineInit init(getCreature());
     init.MoveTo(waypoint.x, waypoint.y, waypoint.z);
 
     //! Accepts angles such as 0.00001 and -0.00001, 0 must be ignored, default value in waypoint table

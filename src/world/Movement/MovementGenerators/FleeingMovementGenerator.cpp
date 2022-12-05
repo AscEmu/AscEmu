@@ -161,7 +161,7 @@ void FleeingMovementGenerator<T>::setTargetLocation(T* owner)
 
     owner->addUnitStateFlag(UNIT_STATE_FLEEING_MOVE);
 
-    MovementNew::MoveSplineInit init(owner);
+    MovementMgr::MoveSplineInit init(owner);
     init.MovebyPath(_path->getPath());
     init.SetWalk(false);
     int32_t traveltime = init.Launch();
