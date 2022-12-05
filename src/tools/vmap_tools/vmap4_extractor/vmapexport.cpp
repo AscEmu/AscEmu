@@ -245,11 +245,7 @@ void ParsMapFiles()
 
 void getGamePath()
 {
-#ifdef _WIN32
-    strcpy(input_path,"Data\\");
-#else
-    strcpy(input_path,"Data/");
-#endif
+    strcpy(input_path, "Data/");
 }
 
 bool scan_patches(char* scanmatch, std::vector<std::string>& pArchiveNames)
@@ -326,29 +322,53 @@ bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames)
     printf("Adding data files from locale directories.\n");
     for (std::vector<std::string>::iterator i = locales.begin(); i != locales.end(); ++i)
     {
+#if VERSION_STRING == TBC
+        pArchiveNames.push_back(in_path + *i + "/patch-" + *i + ".MPQ");
+        pArchiveNames.push_back(in_path + *i + "/patch-" + *i + "-2" ".MPQ");
         pArchiveNames.push_back(in_path + *i + "/locale-" + *i + ".MPQ");
+        pArchiveNames.push_back(in_path + *i + "/speech-" + *i + ".MPQ");
         pArchiveNames.push_back(in_path + *i + "/expansion-locale-" + *i + ".MPQ");
-#if VERSION_STRING >= WotLK
+        pArchiveNames.push_back(in_path + *i + "/expansion-speech-" + *i + ".MPQ");
+#elif VERSION_STRING == WotLK
+        pArchiveNames.push_back(in_path + *i + "/patch-" + *i + ".MPQ");
+        pArchiveNames.push_back(in_path + *i + "/patch-" + *i + "-2" ".MPQ");
+        pArchiveNames.push_back(in_path + *i + "/patch-" + *i + "-3" ".MPQ");
+        pArchiveNames.push_back(in_path + *i + "/locale-" + *i + ".MPQ");
+        pArchiveNames.push_back(in_path + *i + "/speech-" + *i + ".MPQ");
+        pArchiveNames.push_back(in_path + *i + "/expansion-locale-" + *i + ".MPQ");
+        pArchiveNames.push_back(in_path + *i + "/expansion-speech-" + *i + ".MPQ");
         pArchiveNames.push_back(in_path + *i + "/lichking-locale-" + *i + ".MPQ");
+        pArchiveNames.push_back(in_path + *i + "/lichking-speech-" + *i + ".MPQ");
 #endif
     }
 #endif
 
     // open expansion and common files
 #if VERSION_STRING == Classic
-    pArchiveNames.push_back(input_path + std::string("terrain.MPQ"));
-    pArchiveNames.push_back(input_path + std::string("model.MPQ"));
-    pArchiveNames.push_back(input_path + std::string("texture.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("patch.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("patch-2.MPQ"));
     pArchiveNames.push_back(input_path + std::string("wmo.MPQ"));
-    pArchiveNames.push_back(input_path + std::string("base.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("texture.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("terrain.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("speech.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("sound.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("model.MPQ"));
     pArchiveNames.push_back(input_path + std::string("misc.MPQ"));
-#else
-    pArchiveNames.push_back(input_path + std::string("common.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("dbc.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("base.MPQ"));
+#elif VERSION_STRING == TBC
+    pArchiveNames.push_back(input_path + std::string("patch.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("patch-2.MPQ"));
     pArchiveNames.push_back(input_path + std::string("expansion.MPQ"));
-#if VERSION_STRING >= WotLK
-    pArchiveNames.push_back(input_path + std::string("common-2.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("common.MPQ"));
+#elif VERSION_STRING == WotLK
+    pArchiveNames.push_back(input_path + std::string("patch.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("patch-2.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("patch-3.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("expansion.MPQ"));
     pArchiveNames.push_back(input_path + std::string("lichking.MPQ"));
-#endif
+    pArchiveNames.push_back(input_path + std::string("common.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("common-2.MPQ"));
 #endif
 
     // now, scan for the patch levels in the core dir
@@ -375,7 +395,7 @@ bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames)
 
     if(!foundOne)
     {
-        printf("no locale found\n");
+        printf("No locale found\n");
         return false;
     }
 #endif
