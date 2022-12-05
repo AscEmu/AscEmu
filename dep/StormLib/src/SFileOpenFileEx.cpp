@@ -5,7 +5,7 @@
 /*---------------------------------------------------------------------------*/
 /*   Date    Ver   Who  Comment                                              */
 /* --------  ----  ---  -------                                              */
-/* xx.xx.99  1.00  Lad  The first version of SFileOpenFileEx.cpp             */
+/* xx.xx.99  1.00  Lad  Created                                              */
 /*****************************************************************************/
 
 #define __STORMLIB_SELF__
@@ -170,13 +170,13 @@ bool OpenPatchedFile(HANDLE hMpq, const char * szFileName, HANDLE * PtrFile)
 //-----------------------------------------------------------------------------
 // SFileEnumLocales enums all locale versions within MPQ.
 // Functions fills all available language identifiers on a file into the buffer
-// pointed by plcLocales. There must be enough entries to copy the localed,
+// pointed by PtrFileLocales. There must be enough entries to copy the localed,
 // otherwise the function returns ERROR_INSUFFICIENT_BUFFER.
 
 DWORD WINAPI SFileEnumLocales(
     HANDLE hMpq,
     const char * szFileName,
-    LCID * PtrLocales,
+    LCID * PtrFileLocales,
     LPDWORD PtrMaxLocales,
     DWORD dwSearchScope)
 {
@@ -208,8 +208,8 @@ DWORD WINAPI SFileEnumLocales(
     while(pHash != NULL)
     {
         // Put the locales to the buffer
-        if(PtrLocales != NULL && dwLocales < dwMaxLocales)
-            *PtrLocales++ = pHash->lcLocale;
+        if(PtrFileLocales != NULL && dwLocales < dwMaxLocales)
+            *PtrFileLocales++ = SFILE_MAKE_LCID(pHash->Locale, pHash->Platform);
         dwLocales++;
 
         // Get the next locale
@@ -263,7 +263,7 @@ bool WINAPI SFileOpenFileEx(HANDLE hMpq, const char * szFileName, DWORD dwSearch
                 // If this MPQ has no patches, open the file from this MPQ directly
                 if(ha->haPatch == NULL || dwSearchScope == SFILE_OPEN_BASE_FILE)
                 {
-                    pFileEntry = GetFileEntryLocale2(ha, szFileName, g_lcFileLocale, &dwHashIndex);
+                    pFileEntry = GetFileEntryLocale(ha, szFileName, g_lcFileLocale, &dwHashIndex);
                 }
 
                 // If this MPQ is a patched archive, open the file as patched
@@ -278,7 +278,7 @@ bool WINAPI SFileOpenFileEx(HANDLE hMpq, const char * szFileName, DWORD dwSearch
                 // This open option is reserved for opening MPQ internal listfile.
                 // No argument validation. Tries to open file with neutral locale first,
                 // then any other available.
-                pFileEntry = GetFileEntryLocale2(ha, szFileName, 0, &dwHashIndex);
+                pFileEntry = GetFileEntryLocale(ha, szFileName, 0, &dwHashIndex);
                 break;
 
             case SFILE_OPEN_LOCAL_FILE:

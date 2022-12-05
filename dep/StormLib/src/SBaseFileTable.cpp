@@ -765,11 +765,13 @@ static bool IsValidHashEntry1(TMPQArchive * ha, TMPQHash * pHash, TMPQBlock * pB
 // 2) A hash table entry with the neutral|matching locale and neutral|matching platform
 // 3) NULL
 // Storm_2016.dll: 15020940
-static TMPQHash * GetHashEntryLocale(TMPQArchive * ha, const char * szFileName, LCID lcLocale, BYTE Platform)
+static TMPQHash * GetHashEntryLocale(TMPQArchive * ha, const char * szFileName, LCID lcFileLocale)
 {
     TMPQHash * pFirstHash = GetFirstHashEntry(ha, szFileName);
     TMPQHash * pBestEntry = NULL;
     TMPQHash * pHash = pFirstHash;
+    USHORT Locale = SFILE_LOCALE(lcFileLocale);
+    BYTE Platform = SFILE_PLATFORM(lcFileLocale);
 
     // Parse the found hashes
     while(pHash != NULL)
@@ -778,13 +780,13 @@ static TMPQHash * GetHashEntryLocale(TMPQArchive * ha, const char * szFileName, 
         // If the hash entry matches both locale and platform, return it immediately
         // Only do that for non-0 locale&platform, because for loc&plat=0, there's different
         // processing in Warcraft III vs. Starcraft, which is abused by some protectors.
-        if((lcLocale || Platform) && pHash->lcLocale == lcLocale && pHash->Platform == Platform)
+        if((Locale || Platform) && pHash->Locale == Locale && pHash->Platform == Platform)
             return pHash;
 
         // Storm_2016.dll: 150209D9
-        // If (locale matches or is neutral) OR (platform matches or is neutral), remember this as the best entry
+        // If (locale matches or is neutral) AND (platform matches or is neutral), remember this as the best entry
         // Also remember the first matching entry for Starcraft maps
-        if(pHash->lcLocale == 0 || pHash->lcLocale == lcLocale)
+        if(pHash->Locale == 0 || pHash->Locale == Locale)
         {
             if(pHash->Platform == 0 || pHash->Platform == Platform)
             {
@@ -801,26 +803,31 @@ static TMPQHash * GetHashEntryLocale(TMPQArchive * ha, const char * szFileName, 
 }
 
 // Returns a hash table entry in the following order:
-// 1) A hash table entry with the preferred locale
+// 1) A hash table entry with the preferred locale&platform
 // 2) NULL
-static TMPQHash * GetHashEntryExact(TMPQArchive * ha, const char * szFileName, LCID lcLocale)
+// In case there are multiple items with the same locale&platform,
+// we need to return the last one. This is because it must correspond to SFileOpenFileEx
+static TMPQHash * GetHashEntryExact(TMPQArchive * ha, const char * szFileName, LCID lcFileLocale)
 {
     TMPQHash * pFirstHash = GetFirstHashEntry(ha, szFileName);
+    TMPQHash * pBestHash = NULL;
     TMPQHash * pHash = pFirstHash;
+    USHORT Locale = SFILE_LOCALE(lcFileLocale);
+    BYTE Platform = SFILE_PLATFORM(lcFileLocale);
 
     // Parse the found hashes
     while(pHash != NULL)
     {
-        // If the locales match, return it
-        if(pHash->lcLocale == lcLocale)
-            return pHash;
+        // If the locales match, we remember this one as the best one
+        if(pHash->Locale == Locale && pHash->Platform == Platform)
+            pBestHash = pHash;
 
         // Get the next hash entry for that file
         pHash = GetNextHashEntry(ha, pFirstHash, pHash);
     }
 
-    // Not found
-    return NULL;
+    // Return the best hash or NULL
+    return pBestHash;
 }
 
 // Defragment the file table so it does not contain any gaps
@@ -925,7 +932,6 @@ static DWORD BuildFileTableFromBlockTable(
     if(ha->dwFlags & (MPQ_FLAG_HASH_TABLE_CUT | MPQ_FLAG_BLOCK_TABLE_CUT))
     {
         // Sanity checks
-        assert(pHeader->wFormatVersion == MPQ_FORMAT_VERSION_1);
         assert(pHeader->HiBlockTablePos64 == 0);
 
         // Allocate the translation table
@@ -1480,31 +1486,32 @@ static TMPQHetTable * TranslateHetTable(TMPQHetHeader * pHetHeader)
         if(pHetHeader->ExtHdr.dwDataSize >= pHetHeader->dwTableSize)
         {
             // The size of the HET table must be sum of header, hash and index table size
-            assert((sizeof(TMPQHetHeader) - sizeof(TMPQExtHeader) + pHetHeader->dwTotalCount + pHetHeader->dwIndexTableSize) == pHetHeader->dwTableSize);
-
-            // So far, all MPQs with HET Table have had total number of entries equal to 4/3 of file count
-            // Exception: "2010 - Starcraft II\!maps\Tya's Zerg Defense (unprotected).SC2Map"
-//          assert(((pHetHeader->dwEntryCount * 4) / 3) == pHetHeader->dwTotalCount);
-
-            // The size of one index is predictable as well
-            assert(GetNecessaryBitCount(pHetHeader->dwEntryCount) == pHetHeader->dwIndexSizeTotal);
-
-            // The size of index table (in entries) is expected
-            // to be the same like the hash table size (in bytes)
-            assert(((pHetHeader->dwTotalCount * pHetHeader->dwIndexSizeTotal) + 7) / 8 == pHetHeader->dwIndexTableSize);
-
-            // Create translated table
-            pHetTable = CreateHetTable(pHetHeader->dwEntryCount, pHetHeader->dwTotalCount, pHetHeader->dwNameHashBitSize, pbSrcData);
-            if(pHetTable != NULL)
+            if((sizeof(TMPQHetHeader) - sizeof(TMPQExtHeader) + pHetHeader->dwTotalCount + pHetHeader->dwIndexTableSize) == pHetHeader->dwTableSize)
             {
-                // Now the sizes in the hash table should be already set
-                assert(pHetTable->dwEntryCount     == pHetHeader->dwEntryCount);
-                assert(pHetTable->dwTotalCount     == pHetHeader->dwTotalCount);
-                assert(pHetTable->dwIndexSizeTotal == pHetHeader->dwIndexSizeTotal);
+                // So far, all MPQs with HET Table have had total number of entries equal to 4/3 of file count
+                // Exception: "2010 - Starcraft II\!maps\Tya's Zerg Defense (unprotected).SC2Map"
+//              assert(((pHetHeader->dwEntryCount * 4) / 3) == pHetHeader->dwTotalCount);
 
-                // Copy the missing variables
-                pHetTable->dwIndexSizeExtra = pHetHeader->dwIndexSizeExtra;
-                pHetTable->dwIndexSize      = pHetHeader->dwIndexSize;
+                // The size of one index is predictable as well
+                assert(GetNecessaryBitCount(pHetHeader->dwEntryCount) == pHetHeader->dwIndexSizeTotal);
+
+                // The size of index table (in entries) is expected
+                // to be the same like the hash table size (in bytes)
+                assert(((pHetHeader->dwTotalCount * pHetHeader->dwIndexSizeTotal) + 7) / 8 == pHetHeader->dwIndexTableSize);
+
+                // Create translated table
+                pHetTable = CreateHetTable(pHetHeader->dwEntryCount, pHetHeader->dwTotalCount, pHetHeader->dwNameHashBitSize, pbSrcData);
+                if(pHetTable != NULL)
+                {
+                    // Now the sizes in the hash table should be already set
+                    assert(pHetTable->dwEntryCount     == pHetHeader->dwEntryCount);
+                    assert(pHetTable->dwTotalCount     == pHetHeader->dwTotalCount);
+                    assert(pHetTable->dwIndexSizeTotal == pHetHeader->dwIndexSizeTotal);
+
+                    // Copy the missing variables
+                    pHetTable->dwIndexSizeExtra = pHetHeader->dwIndexSizeExtra;
+                    pHetTable->dwIndexSize      = pHetHeader->dwIndexSize;
+                }
             }
         }
     }
@@ -1966,7 +1973,7 @@ void FreeBetTable(TMPQBetTable * pBetTable)
 //-----------------------------------------------------------------------------
 // Support for file table
 
-TFileEntry * GetFileEntryLocale2(TMPQArchive * ha, const char * szFileName, LCID lcLocale, LPDWORD PtrHashIndex)
+TFileEntry * GetFileEntryLocale(TMPQArchive * ha, const char * szFileName, LCID lcFileLocale, LPDWORD PtrHashIndex)
 {
     TMPQHash * pHash;
     DWORD dwFileIndex;
@@ -1976,7 +1983,7 @@ TFileEntry * GetFileEntryLocale2(TMPQArchive * ha, const char * szFileName, LCID
     // we will need the pointer to hash table entry
     if(ha->pHashTable != NULL)
     {
-        pHash = GetHashEntryLocale(ha, szFileName, lcLocale, 0);
+        pHash = GetHashEntryLocale(ha, szFileName, lcFileLocale);
         if(pHash != NULL && MPQ_BLOCK_INDEX(pHash) < ha->dwFileTableSize)
         {
             if(PtrHashIndex != NULL)
@@ -1997,12 +2004,7 @@ TFileEntry * GetFileEntryLocale2(TMPQArchive * ha, const char * szFileName, LCID
     return NULL;
 }
 
-TFileEntry * GetFileEntryLocale(TMPQArchive * ha, const char * szFileName, LCID lcLocale)
-{
-    return GetFileEntryLocale2(ha, szFileName, lcLocale, NULL);
-}
-
-TFileEntry * GetFileEntryExact(TMPQArchive * ha, const char * szFileName, LCID lcLocale, LPDWORD PtrHashIndex)
+TFileEntry * GetFileEntryExact(TMPQArchive * ha, const char * szFileName, LCID lcFileLocale, LPDWORD PtrHashIndex)
 {
     TMPQHash * pHash;
     DWORD dwFileIndex;
@@ -2010,7 +2012,7 @@ TFileEntry * GetFileEntryExact(TMPQArchive * ha, const char * szFileName, LCID l
     // If the hash table is present, find the entry from hash table
     if(ha->pHashTable != NULL)
     {
-        pHash = GetHashEntryExact(ha, szFileName, lcLocale);
+        pHash = GetHashEntryExact(ha, szFileName, lcFileLocale);
         if(pHash != NULL && MPQ_BLOCK_INDEX(pHash) < ha->dwFileTableSize)
         {
             if(PtrHashIndex != NULL)
@@ -2066,7 +2068,7 @@ void AllocateFileName(TMPQArchive * ha, TFileEntry * pFileEntry, const char * sz
     }
 }
 
-TFileEntry * AllocateFileEntry(TMPQArchive * ha, const char * szFileName, LCID lcLocale, LPDWORD PtrHashIndex)
+TFileEntry * AllocateFileEntry(TMPQArchive * ha, const char * szFileName, LCID lcFileLocale, LPDWORD PtrHashIndex)
 {
     TFileEntry * pFileTableEnd = ha->pFileTable + ha->dwFileTableSize;
     TFileEntry * pFreeEntry = NULL;
@@ -2113,10 +2115,10 @@ TFileEntry * AllocateFileEntry(TMPQArchive * ha, const char * szFileName, LCID l
     if(ha->pHashTable != NULL)
     {
         // Make sure that the entry is not there yet
-        assert(GetHashEntryExact(ha, szFileName, lcLocale) == NULL);
+        assert(GetHashEntryExact(ha, szFileName, lcFileLocale) == NULL);
 
         // Find a free hash table entry for the name
-        pHash = AllocateHashEntry(ha, pFreeEntry, lcLocale);
+        pHash = AllocateHashEntry(ha, pFreeEntry, lcFileLocale);
         if(pHash == NULL)
             return NULL;
 
@@ -2143,7 +2145,7 @@ DWORD RenameFileEntry(
 {
     TFileEntry * pFileEntry = hf->pFileEntry;
     TMPQHash * pHashEntry = hf->pHashEntry;
-    LCID lcLocale = 0;
+    LCID lcFileLocale = 0;
 
     // If the archive hash hash table, we need to free the hash table entry
     if(ha->pHashTable != NULL)
@@ -2154,12 +2156,12 @@ DWORD RenameFileEntry(
             return ERROR_NOT_SUPPORTED;
 
         // Save the locale
-        lcLocale = pHashEntry->lcLocale;
+        lcFileLocale = SFILE_MAKE_LCID(pHashEntry->Locale, pHashEntry->Platform);
 
         // Mark the hash table entry as deleted
         pHashEntry->dwName1      = 0xFFFFFFFF;
         pHashEntry->dwName2      = 0xFFFFFFFF;
-        pHashEntry->lcLocale     = 0xFFFF;
+        pHashEntry->Locale       = 0xFFFF;
         pHashEntry->Platform     = 0xFF;
         pHashEntry->Reserved     = 0xFF;
         pHashEntry->dwBlockIndex = HASH_ENTRY_DELETED;
@@ -2177,7 +2179,7 @@ DWORD RenameFileEntry(
     if(ha->pHashTable != NULL)
     {
         // Since we freed one hash entry before, this must succeed
-        hf->pHashEntry = AllocateHashEntry(ha, pFileEntry, lcLocale);
+        hf->pHashEntry = AllocateHashEntry(ha, pFileEntry, lcFileLocale);
         assert(hf->pHashEntry != NULL);
     }
 
@@ -2200,7 +2202,7 @@ DWORD DeleteFileEntry(TMPQArchive * ha, TMPQFile * hf)
         // Mark the hash table entry as deleted
         pHashEntry->dwName1      = 0xFFFFFFFF;
         pHashEntry->dwName2      = 0xFFFFFFFF;
-        pHashEntry->lcLocale     = 0xFFFF;
+        pHashEntry->Locale       = 0xFFFF;
         pHashEntry->Platform     = 0xFF;
         pHashEntry->Reserved     = 0xFF;
         pHashEntry->dwBlockIndex = HASH_ENTRY_DELETED;
@@ -2449,7 +2451,7 @@ TMPQHetTable * LoadHetTable(TMPQArchive * ha)
         pExtTable = LoadExtTable(ha, pHeader->HetTablePos64, (size_t)pHeader->HetTableSize64, HET_TABLE_SIGNATURE, MPQ_KEY_HASH_TABLE);
         if(pExtTable != NULL)
         {
-            // If loading HET table fails, we ignore the result.
+            // Translate the loaded table into HET table.
             pHetTable = TranslateHetTable((TMPQHetHeader *)pExtTable);
             STORM_FREE(pExtTable);
         }
@@ -2932,7 +2934,7 @@ DWORD RebuildFileTable(TMPQArchive * ha, DWORD dwNewHashTableSize)
             if(IsValidHashEntry(ha, pHash))
             {
                 pFileEntry = ha->pFileTable + MPQ_BLOCK_INDEX(pHash);
-                AllocateHashEntry(ha, pFileEntry, pHash->lcLocale);
+                AllocateHashEntry(ha, pFileEntry, SFILE_MAKE_LCID(pHash->Locale, pHash->Platform));
             }
         }
 

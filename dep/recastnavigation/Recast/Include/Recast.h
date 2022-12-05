@@ -22,13 +22,16 @@
 /// The value of PI used by Recast.
 static const float RC_PI = 3.14159265f;
 
+/// Used to ignore unused function parameters and silence any compiler warnings.
+template<class T> void rcIgnoreUnused(const T&) { }
+
 /// Recast log categories.
 /// @see rcContext
 enum rcLogCategory
 {
 	RC_LOG_PROGRESS = 1,	///< A progress log entry.
 	RC_LOG_WARNING,			///< A warning log entry.
-	RC_LOG_ERROR,			///< An error log entry.
+	RC_LOG_ERROR			///< An error log entry.
 };
 
 /// Recast performance timer categories.
@@ -101,7 +104,6 @@ enum rcTimerLabel
 class rcContext
 {
 public:
-
 	/// Contructor.
 	///  @param[in]		state	TRUE if the logging and performance timers should be enabled.  [Default: true]
 	inline rcContext(bool state = true) : m_logEnabled(state), m_timerEnabled(state) {}
@@ -140,31 +142,30 @@ public:
 	inline int getAccumulatedTime(const rcTimerLabel label) const { return m_timerEnabled ? doGetAccumulatedTime(label) : -1; }
 
 protected:
-
 	/// Clears all log entries.
-	virtual void doResetLog() {}
+	virtual void doResetLog();
 
 	/// Logs a message.
 	///  @param[in]		category	The category of the message.
 	///  @param[in]		msg			The formatted message.
 	///  @param[in]		len			The length of the formatted message.
-	virtual void doLog(const rcLogCategory /*category*/, const char* /*msg*/, const int /*len*/) {}
+	virtual void doLog(const rcLogCategory category, const char* msg, const int len) { rcIgnoreUnused(category); rcIgnoreUnused(msg); rcIgnoreUnused(len); }
 
 	/// Clears all timers. (Resets all to unused.)
 	virtual void doResetTimers() {}
 
 	/// Starts the specified performance timer.
 	///  @param[in]		label	The category of timer.
-	virtual void doStartTimer(const rcTimerLabel /*label*/) {}
+	virtual void doStartTimer(const rcTimerLabel label) { rcIgnoreUnused(label); }
 
 	/// Stops the specified performance timer.
 	///  @param[in]		label	The category of the timer.
-	virtual void doStopTimer(const rcTimerLabel /*label*/) {}
+	virtual void doStopTimer(const rcTimerLabel label) { rcIgnoreUnused(label); }
 
 	/// Returns the total accumulated time of the specified performance timer.
 	///  @param[in]		label	The category of the timer.
 	///  @return The accumulated time of the timer, or -1 if timers are disabled or the timer has never been started.
-	virtual int doGetAccumulatedTime(const rcTimerLabel /*label*/) const { return -1; }
+	virtual int doGetAccumulatedTime(const rcTimerLabel label) const { rcIgnoreUnused(label); return -1; }
 	
 	/// True if logging is enabled.
 	bool m_logEnabled;
@@ -263,7 +264,7 @@ struct rcConfig
 };
 
 /// Defines the number of bits allocated to rcSpan::smin and rcSpan::smax.
-static const int RC_SPAN_HEIGHT_BITS = 16;
+static const int RC_SPAN_HEIGHT_BITS = 13;
 /// Defines the maximum value for rcSpan::smin and rcSpan::smax.
 static const int RC_SPAN_MAX_HEIGHT = (1 << RC_SPAN_HEIGHT_BITS) - 1;
 
@@ -277,7 +278,7 @@ struct rcSpan
 {
 	unsigned int smin : RC_SPAN_HEIGHT_BITS; ///< The lower limit of the span. [Limit: < #smax]
 	unsigned int smax : RC_SPAN_HEIGHT_BITS; ///< The upper limit of the span. [Limit: <= #RC_SPAN_MAX_HEIGHT]
-	unsigned char area;                      ///< The area id assigned to the span.
+	unsigned int area : 6;                   ///< The area id assigned to the span.
 	rcSpan* next;                            ///< The next span higher up in column.
 };
 
@@ -332,6 +333,8 @@ struct rcCompactSpan
 /// @ingroup recast
 struct rcCompactHeightfield
 {
+	rcCompactHeightfield();
+	~rcCompactHeightfield();
 	int width;					///< The width of the heightfield. (Along the x-axis in cell units.)
 	int height;					///< The height of the heightfield. (Along the z-axis in cell units.)
 	int spanCount;				///< The number of spans in the heightfield.
@@ -376,6 +379,8 @@ struct rcHeightfieldLayer
 /// @see rcAllocHeightfieldLayerSet, rcFreeHeightfieldLayerSet 
 struct rcHeightfieldLayerSet
 {
+	rcHeightfieldLayerSet();
+	~rcHeightfieldLayerSet();
 	rcHeightfieldLayer* layers;			///< The layers in the set. [Size: #nlayers]
 	int nlayers;						///< The number of layers in the set.
 };
@@ -395,6 +400,8 @@ struct rcContour
 /// @ingroup recast
 struct rcContourSet
 {
+	rcContourSet();
+	~rcContourSet();
 	rcContour* conts;	///< An array of the contours in the set. [Size: #nconts]
 	int nconts;			///< The number of contours in the set.
 	float bmin[3];  	///< The minimum bounds in world space. [(x, y, z)]
@@ -411,6 +418,8 @@ struct rcContourSet
 /// @ingroup recast
 struct rcPolyMesh
 {
+	rcPolyMesh();
+	~rcPolyMesh();
 	unsigned short* verts;	///< The mesh vertices. [Form: (x, y, z) * #nverts]
 	unsigned short* polys;	///< Polygon and neighbor data. [Length: #maxpolys * 2 * #nvp]
 	unsigned short* regs;	///< The region id assigned to each polygon. [Length: #maxpolys]
@@ -556,7 +565,7 @@ static const int RC_AREA_BORDER = 0x20000;
 enum rcBuildContoursFlags
 {
 	RC_CONTOUR_TESS_WALL_EDGES = 0x01,	///< Tessellate solid (impassable) edges during contour simplification.
-	RC_CONTOUR_TESS_AREA_EDGES = 0x02,	///< Tessellate edges between areas during contour simplification.
+	RC_CONTOUR_TESS_AREA_EDGES = 0x02	///< Tessellate edges between areas during contour simplification.
 };
 
 /// Applied to the region id field of contour vertices in order to extract the region id.
@@ -586,11 +595,6 @@ static const int RC_NOT_CONNECTED = 0x3f;
 
 /// @name General helper functions
 /// @{
-
-/// Used to ignore a function parameter.  VS complains about unused parameters
-/// and this silences the warning.
-///  @param [in] _ Unused parameter
-template<class T> void rcIgnoreUnused(const T&) { }
 
 /// Swaps the values of the two parameters.
 ///  @param[in,out]	a	Value A
@@ -988,6 +992,7 @@ void rcMarkConvexPolyArea(rcContext* ctx, const float* verts, const int nverts,
 ///  @ingroup recast
 ///  @param[in]		verts		The vertices of the polygon [Form: (x, y, z) * @p nverts]
 ///  @param[in]		nverts		The number of vertices in the polygon.
+///  @param[in]		offset		How much to offset the polygon by. [Units: wu]
 ///  @param[out]	outVerts	The offset vertices (should hold up to 2 * @p nverts) [Form: (x, y, z) * return value]
 ///  @param[in]		maxOutVerts	The max number of vertices that can be stored to @p outVerts.
 ///  @returns Number of vertices in the offset polygon or 0 if too few vertices in @p outVerts.
