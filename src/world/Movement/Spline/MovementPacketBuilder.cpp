@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ByteBuffer.h"
 #include "MoveSpline.h"
 
-namespace MovementNew {
+namespace MovementMgr {
 
 inline void operator<<(ByteBuffer& b, Vector3 const& v)
 {
@@ -320,4 +320,4 @@ void PacketBuilder::WriteSplineSync(MoveSpline const& move_spline, ByteBuffer& d
 {
     data << (float)move_spline.timePassed() / move_spline.Duration();
 }
-} // namespace MovementNew
+} // namespace MovementMgr

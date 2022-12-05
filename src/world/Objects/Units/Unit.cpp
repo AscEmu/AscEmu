@@ -63,7 +63,7 @@ This file is released under the MIT license. See README-MIT for more information
 using namespace AscEmu::Packets;
 
 Unit::Unit() :
-    movespline(new MovementNew::MoveSpline()),
+    movespline(new MovementMgr::MoveSpline()),
     i_movementManager(new MovementManager(this)),
     m_summonInterface(new SummonHandler),
     m_combatHandler(this),
@@ -1685,7 +1685,7 @@ void Unit::setFacingTo(float ori, bool force)
     if (!force && (/*!IsStopped() ||*/ !movespline->Finalized()))
         return;
 
-    MovementNew::MoveSplineInit init(this);
+    MovementMgr::MoveSplineInit init(this);
     init.MoveTo(GetPositionX(), GetPositionY(), GetPositionZ(), false);
 
     if (hasUnitMovementFlag(MOVEFLAG_TRANSPORT) /*&& GetTransGUID()*/)
@@ -1701,7 +1701,7 @@ void Unit::setFacingToObject(Object* object, bool force)
     if (!force && (/*!IsStopped() ||*/ !movespline->Finalized()))
         return;
 
-    MovementNew::MoveSplineInit init(this);
+    MovementMgr::MoveSplineInit init(this);
     init.MoveTo(GetPositionX(), GetPositionY(), GetPositionZ(), false);
     init.SetFacing(getAbsoluteAngle(object));   // when on transport, GetAbsoluteAngle will still return global coordinates (and angle) that needs transforming
 
@@ -2749,7 +2749,7 @@ void Unit::stopMoving()
     // Update position now since Stop does not start a new movement that can be updated later
     if (movespline->HasStarted())
         updateSplinePosition();
-    MovementNew::MoveSplineInit init(this);
+    MovementMgr::MoveSplineInit init(this);
     init.Stop();
 }
 
@@ -2917,7 +2917,7 @@ void Unit::updateSplineMovement(uint32_t t_diff)
             packedGuid.appendPackGUID(getGuid());
 
             WorldPacket data(SMSG_FLIGHT_SPLINE_SYNC, 4 + packedGuid.size());
-            MovementNew::PacketBuilder::WriteSplineSync(*movespline, data);
+            MovementMgr::PacketBuilder::WriteSplineSync(*movespline, data);
             data.append(packedGuid);
             sendMessageToSet(&data, true);
         }
@@ -2936,7 +2936,7 @@ void Unit::updateSplineMovement(uint32_t t_diff)
 
 void Unit::updateSplinePosition()
 {
-    MovementNew::Location loc = movespline->ComputePosition();
+    MovementMgr::Location loc = movespline->ComputePosition();
 
     if (movespline->onTransport)
     {
@@ -8103,7 +8103,7 @@ void Unit::exitVehicle(LocationVector const* exitPosition)
     }
 
     // Send movement Spline
-    MovementNew::MoveSplineInit init(this);
+    MovementMgr::MoveSplineInit init(this);
     init.MoveTo(pos.getPositionX(), pos.getPositionY(), pos.getPositionZ(), false);
     init.SetFacing(pos.getOrientation());
     init.SetTransportExit();

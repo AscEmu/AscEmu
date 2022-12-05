@@ -3301,14 +3301,14 @@ void Spell::calculateJumpSpeeds(Unit* unitCaster, SpellInfo const* spellInfo, ui
     float maxHeight = spellInfo->getEffectMiscValueB(i) ? spellInfo->getEffectMiscValueB(i) / 10.0f : 1000.0f; // Upper bound is unknown
     float height;
 
-    if (durationSqr < minHeight * 8 / MovementNew::gravity)
+    if (durationSqr < minHeight * 8 / MovementMgr::gravity)
         height = minHeight;
-    else if (durationSqr > maxHeight * 8 / MovementNew::gravity)
+    else if (durationSqr > maxHeight * 8 / MovementMgr::gravity)
         height = maxHeight;
     else
-        height = MovementNew::gravity * durationSqr / 8;
+        height = MovementMgr::gravity * durationSqr / 8;
 
-    speedZ = std::sqrt(2 * MovementNew::gravity * height);
+    speedZ = std::sqrt(2 * MovementMgr::gravity * height);
 }
 
 void Spell::SpellEffectJumpBehindTarget(uint8_t effectIndex)

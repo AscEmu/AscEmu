@@ -184,7 +184,7 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
     float z = player->GetPositionZ();
     //float o = m_session->GetPlayer()->GetOrientation();
 
-    MovementNew::MoveSplineInit init(creature);
+    MovementMgr::MoveSplineInit init(creature);
 
     float distance = creature->CalcDistance(x, y, z);
     if (Move == 1)

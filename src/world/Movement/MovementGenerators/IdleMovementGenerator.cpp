@@ -90,7 +90,7 @@ bool RotateMovementGenerator::update(Unit* owner, uint32_t diff)
             angle += float(M_PI) * 2.f;
     }
 
-    MovementNew::MoveSplineInit init(owner);
+    MovementMgr::MoveSplineInit init(owner);
     init.MoveTo(positionToVector3(owner->GetPosition()), false);
     if (owner->hasUnitMovementFlag(MOVEFLAG_TRANSPORT) && owner->getTransGuid())
         init.DisableTransportPathTransformations();
@@ -145,7 +145,7 @@ void DistractMovementGenerator::initialize(Unit* owner)
     if (!owner->getStandState())
         owner->setStandState(STANDSTATE_STAND);
 
-    MovementNew::MoveSplineInit init(owner);
+    MovementMgr::MoveSplineInit init(owner);
     init.MoveTo(positionToVector3(owner->GetPosition()), false);
     if (owner->hasUnitMovementFlag(MOVEFLAG_TRANSPORT) && owner->getTransGuid())
         init.DisableTransportPathTransformations();

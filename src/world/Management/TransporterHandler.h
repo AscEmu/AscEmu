@@ -10,12 +10,12 @@ struct TransportTemplate;
 struct GameObjectProperties;
 class Transporter;
 
-namespace MovementNew
+namespace MovementMgr
 {
     template <typename length_type> class Spline;
 }
 
-typedef MovementNew::Spline<double>                         TransportSpline;
+typedef MovementMgr::Spline<double>                         TransportSpline;
 typedef std::vector<KeyFrame>                               KeyFrameVec;
 typedef std::unordered_map<uint32_t, TransportTemplate>     TransportTemplates;
 typedef std::set<Transporter*>                              TransporterSet;

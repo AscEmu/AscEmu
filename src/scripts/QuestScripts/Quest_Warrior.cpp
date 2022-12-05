@@ -43,13 +43,13 @@ public:
         {
             windwatcher->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Follow me");
 
-            MovementNew::PointsArray path;
+            MovementMgr::PointsArray path;
             path.reserve(pathSize);
             std::transform(std::begin(WaypointTheSummoning), std::end(WaypointTheSummoning), std::back_inserter(path), [](LocationVector const& pos)
             {
                 return G3D::Vector3(pos.x, pos.y, pos.z);
             });
-            MovementNew::MoveSplineInit init(windwatcher);
+            MovementMgr::MoveSplineInit init(windwatcher);
             init.SetWalk(true);
             init.MovebyPath(path);
             windwatcher->getMovementManager()->launchMoveSpline(std::move(init), 0, MOTION_PRIORITY_NORMAL, POINT_MOTION_TYPE);

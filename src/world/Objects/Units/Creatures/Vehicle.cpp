@@ -610,7 +610,7 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
     passenger->setControlled(true, UNIT_STATE_ROOTED);
     
     // Send movement Spline
-    MovementNew::MoveSplineInit init(passenger);
+    MovementMgr::MoveSplineInit init(passenger);
     init.DisableTransportPathTransformations();
     init.MoveTo(x, y, z, false, true);
     init.SetFacing(o);

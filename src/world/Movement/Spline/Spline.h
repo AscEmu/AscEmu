@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <limits>
 #include <vector>
 
-namespace MovementNew {
+namespace MovementMgr {
 
 class SplineBase
 {
@@ -198,6 +198,6 @@ public:
     void set_length(index_type i, length_type length) { lengths[i] = length;}
     void clear();
 };
-} // namespace MovementNew
+} // namespace MovementMgr
 
 #include "SplineImpl.h"

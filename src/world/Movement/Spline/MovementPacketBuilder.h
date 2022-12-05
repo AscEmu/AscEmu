@@ -14,7 +14,7 @@ namespace G3D
     class Vector3;
 }
 
-namespace MovementNew {
+namespace MovementMgr {
 
 class MoveSpline;
 class PacketBuilder
@@ -30,4 +30,4 @@ public:
 #endif
     static void WriteSplineSync(MoveSpline const& mov, ByteBuffer& data);
 };
-} // namespace MovementNew
+} // namespace MovementMgr

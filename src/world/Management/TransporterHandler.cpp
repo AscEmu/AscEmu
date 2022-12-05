@@ -200,18 +200,18 @@ bool FillTransporterPathVector(uint32_t PathID, TransportPath & Path)
 class SplineRawInitializer
 {
 public:
-    SplineRawInitializer(MovementNew::PointsArray& points) : _points(points) { }
+    SplineRawInitializer(MovementMgr::PointsArray& points) : _points(points) { }
 
-    void operator()(uint8_t& mode, bool& cyclic, MovementNew::PointsArray& points, int& lo, int& hi) const
+    void operator()(uint8_t& mode, bool& cyclic, MovementMgr::PointsArray& points, int& lo, int& hi) const
     {
-        mode = MovementNew::SplineBase::ModeCatmullrom;
+        mode = MovementMgr::SplineBase::ModeCatmullrom;
         cyclic = false;
         points.assign(_points.begin(), _points.end());
         lo = 1;
         hi = static_cast<int32_t>(points.size() - 2);
     }
 
-    MovementNew::PointsArray& _points;
+    MovementMgr::PointsArray& _points;
 };
 
 void TransportHandler::generatePath(GameObjectProperties const* goInfo, TransportTemplate* transport)
@@ -224,7 +224,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
         return;
 
     std::vector<KeyFrame>& keyFrames = transport->keyFrames;
-    MovementNew::PointsArray splinePath, allPoints;
+    MovementMgr::PointsArray splinePath, allPoints;
     bool mapChange = false;
 
     for (uint16_t i = 0; i < path.size(); ++i)
@@ -343,7 +343,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
         {
             auto extra = !keyFrames[i - 1].Teleport ? 1 : 0;
             std::shared_ptr<TransportSpline> spline = std::make_shared<TransportSpline>();
-            spline->init_spline(&splinePath[start], i - start + extra, MovementNew::SplineBase::ModeCatmullrom);
+            spline->init_spline(&splinePath[start], i - start + extra, MovementMgr::SplineBase::ModeCatmullrom);
             spline->initLengths();
             for (auto j = start; j < i + extra; ++j)
             {

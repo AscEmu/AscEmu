@@ -16,7 +16,7 @@ enum MovementGeneratorType : uint8_t;
 class GenericMovementGenerator : public MovementGenerator
 {
 public:
-    explicit GenericMovementGenerator(MovementNew::MoveSplineInit&& splineInit, MovementGeneratorType type, uint32_t id);
+    explicit GenericMovementGenerator(MovementMgr::MoveSplineInit&& splineInit, MovementGeneratorType type, uint32_t id);
 
     void initialize(Unit*) override;
     void reset(Unit*) override;
@@ -28,7 +28,7 @@ public:
 private:
     void movementInform(Unit*);
 
-    MovementNew::MoveSplineInit _splineInit;
+    MovementMgr::MoveSplineInit _splineInit;
     MovementGeneratorType _type;
     uint32_t _pointId;
     SmallTimeTracker _duration;

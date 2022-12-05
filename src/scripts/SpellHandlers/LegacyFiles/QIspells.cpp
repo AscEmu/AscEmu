@@ -3068,8 +3068,8 @@ bool InducingVision(uint8_t /*effectIndex*/, Spell* pSpell)
 
     Creature* creature = mTarget->getWorldMap()->getInterface()->spawnCreature(2983, LocationVector(-2238.994873f, -408.009552f, -9.424423f, 5.753043f), true, false, 0, 0);
 
-    MovementNew::PointsArray path(InducingVisionPath, InducingVisionPath + pathSize);
-    MovementNew::MoveSplineInit init(creature);
+    MovementMgr::PointsArray path(InducingVisionPath, InducingVisionPath + pathSize);
+    MovementMgr::MoveSplineInit init(creature);
     init.MovebyPath(path, 0);
     init.SetWalk(true);
     creature->getMovementManager()->launchMoveSpline(std::move(init), 0, MOTION_PRIORITY_NORMAL, POINT_MOTION_TYPE);

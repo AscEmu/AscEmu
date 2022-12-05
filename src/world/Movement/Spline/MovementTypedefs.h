@@ -16,7 +16,7 @@ namespace G3D
     class Vector4;
 }
 
-namespace MovementNew {
+namespace MovementMgr {
 
 using G3D::Vector3;
 using G3D::Vector4;
@@ -61,4 +61,4 @@ typedef counter<uint32_t, 0xFFFFFFFF> UInt32Counter;
 SERVER_DECL extern float gravity;
 SERVER_DECL extern UInt32Counter splineIdGen;
 
-} // namespace MovementNew
+} // namespace MovementMgr

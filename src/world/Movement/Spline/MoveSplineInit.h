@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 class Unit;
 
-namespace MovementNew {
+namespace MovementMgr {
 
 // Transforms coordinates from global to transport offsets
 class SERVER_DECL TransportPathTransform
@@ -157,4 +157,4 @@ inline void MoveSplineInit::SetAnimation(AnimationTier anim)
 
 inline void MoveSplineInit::DisableTransportPathTransformations() { args.TransformForTransport = false; }
 
-} // namespace MovementNew
+} // namespace MovementMgr

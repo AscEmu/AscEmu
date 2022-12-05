@@ -655,7 +655,7 @@ void MovementManager::moveCloserAndStop(uint32_t id, Unit* target, float distanc
     else
     {
         // We are already close enough. We just need to turn toward the target without changing position.
-        MovementNew::MoveSplineInit init(_owner);
+        MovementMgr::MoveSplineInit init(_owner);
         init.MoveTo(_owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ());
         init.SetFacing(target);
         add(new GenericMovementGenerator(std::move(init), EFFECT_MOTION_TYPE, id));
@@ -664,7 +664,7 @@ void MovementManager::moveCloserAndStop(uint32_t id, Unit* target, float distanc
 
 void MovementManager::moveLand(uint32_t id, LocationVector const& pos, Optional<float> velocity /*= {}*/)
 {
-    MovementNew::MoveSplineInit init(_owner);
+    MovementMgr::MoveSplineInit init(_owner);
     init.MoveTo(positionToVector3(pos), false);
     init.SetAnimation(AnimationTier::Ground);
     if (velocity)
@@ -674,7 +674,7 @@ void MovementManager::moveLand(uint32_t id, LocationVector const& pos, Optional<
 
 void MovementManager::moveTakeoff(uint32_t id, LocationVector const& pos, Optional<float> velocity /*= {}*/)
 {
-    MovementNew::MoveSplineInit init(_owner);
+    MovementMgr::MoveSplineInit init(_owner);
     init.MoveTo(positionToVector3(pos), false);
     init.SetAnimation(AnimationTier::Hover);
     if (velocity)
@@ -707,7 +707,7 @@ void MovementManager::moveCharge(PathGenerator const& path, float speed /*= SPEE
     moveCharge(dest.x, dest.y, dest.z, speed, EVENT_CHARGE_PREPATH);
 
     // Charge movement is not started when using EVENT_CHARGE_PREPATH
-    MovementNew::MoveSplineInit init(_owner);
+    MovementMgr::MoveSplineInit init(_owner);
     init.MovebyPath(path.getPath());
     init.SetVelocity(speed);
     init.Launch();
@@ -723,14 +723,14 @@ void MovementManager::moveKnockbackFrom(float srcX, float srcY, float speedXY, f
         return;
 
     LocationVector dest = _owner->GetPosition();
-    float moveTimeHalf = speedZ / MovementNew::gravity;
+    float moveTimeHalf = speedZ / MovementMgr::gravity;
     float dist = 2 * moveTimeHalf * speedXY;
-    float max_height = -MovementNew::computeFallElevation(moveTimeHalf, false, -speedZ);
+    float max_height = -MovementMgr::computeFallElevation(moveTimeHalf, false, -speedZ);
 
     // Use a mmap raycast to get a valid destination.
     _owner->movePositionToFirstCollision(dest, dist, _owner->getRelativeAngle(srcX, srcY) + float(M_PI));
 
-    MovementNew::MoveSplineInit init(_owner);
+    MovementMgr::MoveSplineInit init(_owner);
     init.MoveTo(dest.getPositionX(), dest.getPositionY(), dest.getPositionZ(), false);
     init.SetParabolic(max_height, 0);
     init.SetOrientationFixed(true);
@@ -749,7 +749,7 @@ void MovementManager::moveJumpTo(float angle, float speedXY, float speedZ)
 
     float x, y, z = _owner->GetPositionZ();
 
-    float moveTimeHalf = speedZ / MovementNew::gravity;
+    float moveTimeHalf = speedZ / MovementMgr::gravity;
     float dist = 2 * moveTimeHalf * speedXY;
 
     _owner->getNearPoint2D(nullptr, x, y, dist, _owner->GetOrientation() + angle);
@@ -768,10 +768,10 @@ void MovementManager::moveJump(float x, float y, float z, float o, float speedXY
     if (speedXY < 0.01f)
         return;
 
-    float moveTimeHalf = speedZ / MovementNew::gravity;
-    float max_height = -MovementNew::computeFallElevation(moveTimeHalf, false, -speedZ);
+    float moveTimeHalf = speedZ / MovementMgr::gravity;
+    float max_height = -MovementMgr::computeFallElevation(moveTimeHalf, false, -speedZ);
 
-    MovementNew::MoveSplineInit init(_owner);
+    MovementMgr::MoveSplineInit init(_owner);
     init.MoveTo(x, y, z, false);
     init.SetParabolic(max_height, 0);
     init.SetVelocity(speedXY);
@@ -790,7 +790,7 @@ void MovementManager::moveCirclePath(float x, float y, float z, float radius, bo
     LocationVector const& pos = { x, y, z, 0.0f };
     float angle = pos.getAbsoluteAngle(_owner->GetPositionX(), _owner->GetPositionY());
 
-    MovementNew::MoveSplineInit init(_owner);
+    MovementMgr::MoveSplineInit init(_owner);
 
     // add the owner's current position as starting point as it gets removed after entering the cycle
     init.Path().push_back(G3D::Vector3(_owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ()));
@@ -833,8 +833,8 @@ void MovementManager::moveCirclePath(float x, float y, float z, float radius, bo
 
 void MovementManager::moveSmoothPath(uint32_t pointId, LocationVector const* pathPoints, size_t pathSize, bool walk)
 {
-    MovementNew::MoveSplineInit init(_owner);
-    MovementNew::PointsArray path;
+    MovementMgr::MoveSplineInit init(_owner);
+    MovementMgr::PointsArray path;
     path.reserve(pathSize);
     std::transform(pathPoints, pathPoints + pathSize, std::back_inserter(path), [](LocationVector const& point)
         {
@@ -909,7 +909,7 @@ void MovementManager::moveFall(uint32_t id/* = 0*/)
     posY += _owner->getHoverHeight();
 #endif
 
-    MovementNew::MoveSplineInit init(_owner);
+    MovementMgr::MoveSplineInit init(_owner);
     init.MoveTo(_owner->GetPositionX(), posY, _owner->GetPositionZ(), false);
     init.SetFall();
 
@@ -973,7 +973,7 @@ void MovementManager::moveFormation(Unit* leader, float range, float angle, uint
     }
 }
 
-void MovementManager::launchMoveSpline(MovementNew::MoveSplineInit&& init, uint32_t id/*= 0*/, MovementGeneratorPriority priority/* = MOTION_PRIORITY_NORMAL*/, MovementGeneratorType type/*= EFFECT_MOTION_TYPE*/)
+void MovementManager::launchMoveSpline(MovementMgr::MoveSplineInit&& init, uint32_t id/*= 0*/, MovementGeneratorPriority priority/* = MOTION_PRIORITY_NORMAL*/, MovementGeneratorType type/*= EFFECT_MOTION_TYPE*/)
 {
     if (isInvalidMovementGeneratorType(type))
     {

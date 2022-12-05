@@ -310,7 +310,7 @@ void WaypointMovementGenerator<Creature>::startMove(Creature* owner, bool relaun
 
     owner->addUnitStateFlag(UNIT_STATE_ROAMING_MOVE);
 
-    MovementNew::MoveSplineInit init(owner);
+    MovementMgr::MoveSplineInit init(owner);
 
     //! If creature is on transport, we assume waypoints set in DB are already transport offsets
     if (transportPath)

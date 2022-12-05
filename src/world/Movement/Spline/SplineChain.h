@@ -10,10 +10,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 struct SERVER_DECL SplineChainLink
 {
-    SplineChainLink(MovementNew::PointsArray const& points, uint32_t expectedDuration, uint32_t msToNext, float velocity) : Points(points), ExpectedDuration(expectedDuration), TimeToNext(msToNext), Velocity(velocity) { }
+    SplineChainLink(MovementMgr::PointsArray const& points, uint32_t expectedDuration, uint32_t msToNext, float velocity) : Points(points), ExpectedDuration(expectedDuration), TimeToNext(msToNext), Velocity(velocity) { }
     template <typename iteratorType> SplineChainLink(iteratorType begin, iteratorType end, uint32_t expectedDuration, uint32_t msToNext, float velocity) : Points(begin, end), ExpectedDuration(expectedDuration), TimeToNext(msToNext), Velocity(velocity) { }
     SplineChainLink(uint32_t expectedDuration, uint32_t msToNext, float velocity) : Points(), ExpectedDuration(expectedDuration), TimeToNext(msToNext), Velocity(velocity) { }
-    MovementNew::PointsArray Points;
+    MovementMgr::PointsArray Points;
     uint32_t ExpectedDuration;
     uint32_t TimeToNext;
     float Velocity;

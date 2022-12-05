@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "MovementTypedefs.h"
 
-namespace MovementNew {
+namespace MovementMgr {
 #pragma pack(push, 1)
 class MoveSplineFlag
 {
@@ -230,4 +230,4 @@ public:
 #endif
 };
 #pragma pack(pop)
-} // namespace MovementNew
+} // namespace MovementMgr

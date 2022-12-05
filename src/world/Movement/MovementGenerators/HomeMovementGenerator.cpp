@@ -49,7 +49,7 @@ void HomeMovementGenerator<Creature>::setTargetLocation(Creature* owner)
     owner->addUnitStateFlag(UNIT_STATE_ROAMING_MOVE);
 
     LocationVector destination = owner->GetSpawnPosition();
-    MovementNew::MoveSplineInit init(owner);
+    MovementMgr::MoveSplineInit init(owner);
 
     owner->updateAllowedPositionZ(destination.x, destination.y, destination.z);
     init.MoveTo(positionToVector3(destination));

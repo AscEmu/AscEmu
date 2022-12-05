@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <sstream>
 #include <G3D/Matrix4.h>
 
-namespace MovementNew {
+namespace MovementMgr {
 
 SplineBase::EvaluationMethtod SplineBase::evaluators[SplineBase::ModesEnd] =
 {
@@ -266,4 +266,4 @@ std::string SplineBase::ToString() const
 
     return str.str();
 }
-} // namespace MovementNew
+} // namespace MovementMgr
