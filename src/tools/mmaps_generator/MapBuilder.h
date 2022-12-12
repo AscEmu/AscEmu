@@ -45,8 +45,7 @@ private:
     std::atomic<bool> _shutdown;
 
 public:
-
-    ProducerConsumerQueue<T>() : _shutdown(false) { }
+    ProducerConsumerQueue() : _shutdown(false) { }
 
     void Push(const T& value)
     {
@@ -231,7 +230,7 @@ namespace MMAP
             rcContext* m_rcContext;
 
             std::vector<std::thread> _workerThreads;
-            ProducerConsumerQueue<uint32> _queue;
+            ProducerConsumerQueue<uint32_t> _queue;
             std::atomic<bool> _cancelationToken;
     };
 }

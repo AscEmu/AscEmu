@@ -24,7 +24,7 @@ jobs:
         gcc --version
         cmake --version
         mkdir ascemu_build_сlassic
-        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DASCEMU_VERSION=Classic
+        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=1 -DASCEMU_VERSION=Classic
         make -j 4 && make install
 
   TBC:
@@ -44,7 +44,7 @@ jobs:
         gcc --version
         cmake --version
         mkdir ascemu_build_tbc
-        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DASCEMU_VERSION=TBC
+        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=1 -DASCEMU_VERSION=TBC
         make -j 4 && make install
   WotLK:
     runs-on: ubuntu-latest
@@ -63,7 +63,7 @@ jobs:
         gcc --version
         cmake --version
         mkdir ascemu_build_wotlk
-        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DASCEMU_VERSION=WotLK
+        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=1 -DASCEMU_VERSION=WotLK
         make -j 4 && make install
   Cata:
     runs-on: ubuntu-latest
@@ -82,7 +82,7 @@ jobs:
         gcc --version
         cmake --version
         mkdir ascemu_build_cata
-        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DASCEMU_VERSION=Cata
+        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=1 -DASCEMU_VERSION=Cata
         make -j 4 && make install
   Mop:
     runs-on: ubuntu-latest
@@ -101,5 +101,5 @@ jobs:
         gcc --version
         cmake --version
         mkdir ascemu_build_mop
-        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DASCEMU_VERSION=Mop
+        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=1 -DASCEMU_VERSION=Mop
         make -j 4 && make install
