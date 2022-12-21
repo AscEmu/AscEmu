@@ -1015,8 +1015,6 @@ public:
     float m_goLastXRotation = 0.0f;
     float m_goLastYRotation = 0.0f;
 
-    bool m_saveAllChangesCommand = false;
-
     AIInterface* m_aiInterfaceWaypoint = nullptr;
 
     bool m_isGmInvisible = false;

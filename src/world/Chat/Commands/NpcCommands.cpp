@@ -218,7 +218,6 @@ bool ChatHandler::HandleNpcDeleteCommand(const char* args, WorldSession* m_sessi
         return true;
     }
 
-    bool save_to_db = atoi(args) == 1 ? true : false;
     if (creature_target->isSummon())
     {
         creature_target->Delete();
@@ -228,20 +227,11 @@ bool ChatHandler::HandleNpcDeleteCommand(const char* args, WorldSession* m_sessi
         //creature_target->getAIInterface()->hideWayPoints(m_session->GetPlayer());
 
         uint32 spawn_id = creature_target->spawnid;
-
-        if (m_session->GetPlayer()->m_saveAllChangesCommand)
-            save_to_db = true;
-
-        if (save_to_db && spawn_id != 0)
+        if (spawn_id != 0)
         {
             BlueSystemMessage(m_session, "Creature %s (%u) deleted from creature_spawn table.", creature_target->GetCreatureProperties()->Name.c_str(), spawn_id);
             sGMLog.writefromsession(m_session, "used npc delete on creature %s (%u), pos %f %f %f", creature_target->GetCreatureProperties()->Name.c_str(), spawn_id, creature_target->GetPositionX(), creature_target->GetPositionY(), creature_target->GetPositionZ());
             creature_target->DeleteFromDB();
-        }
-
-        if (!save_to_db)
-        {
-            BlueSystemMessage(m_session, "Creature %s temporarily deleted from world.", creature_target->GetCreatureProperties()->Name.c_str());
         }
 
         if (creature_target->m_spawn)
@@ -1016,39 +1006,22 @@ bool ChatHandler::HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_se
     if (creature_target == nullptr)
         return true;
 
-    bool save_to_db = atoi(args) == 1 ? true : false;
-
-    if (m_session->GetPlayer()->m_saveAllChangesCommand)
-        save_to_db = true;
-
     if (creature_target->IsFlying())
     {
         creature_target->setMoveCanFly(false);
 
-        if (save_to_db)
-        {
-            WorldDatabase.Execute("UPDATE creature_spawns SET CanFly = 1 WHERE id = %u AND min_build <= %u AND max_build >= %u", creature_target->spawnid, VERSION_STRING, VERSION_STRING);
-            GreenSystemMessage(m_session, "CanFly permanent set from 0 to 1 for Creature %s (%u).", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
-            sGMLog.writefromsession(m_session, "changed npc CanFly for creature_spawns ID: %u [%s] from 0 to 1", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str());
-        }
-        else
-        {
-            GreenSystemMessage(m_session, "CanFly temporarily set from 0 to 1 for Creature %s (%u).", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
-        }
+        WorldDatabase.Execute("UPDATE creature_spawns SET CanFly = 1 WHERE id = %u AND min_build <= %u AND max_build >= %u", creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+        GreenSystemMessage(m_session, "CanFly permanent set from 0 to 1 for Creature %s (%u).", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
+        sGMLog.writefromsession(m_session, "changed npc CanFly for creature_spawns ID: %u [%s] from 0 to 1", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str());
     }
     else
     {
         creature_target->setMoveCanFly(true);
-        if (save_to_db)
-        {
-            WorldDatabase.Execute("UPDATE creature_spawns SET CanFly = 0 WHERE id = %u AND min_build <= %u AND max_build >= %u", creature_target->spawnid, VERSION_STRING, VERSION_STRING);
-            GreenSystemMessage(m_session, "CanFly permanent set from 1 to 0 for Creature %s (%u).", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
-            sGMLog.writefromsession(m_session, "changed npc CanFly for creature_spawns ID: %u [%s] from 1 to 0", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str());
-        }
-        else
-        {
-            GreenSystemMessage(m_session, "CanFly temporarily set from 1 to 0 for Creature %s (%u).", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
-        }
+
+        WorldDatabase.Execute("UPDATE creature_spawns SET CanFly = 0 WHERE id = %u AND min_build <= %u AND max_build >= %u", creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+        GreenSystemMessage(m_session, "CanFly permanent set from 1 to 0 for Creature %s (%u).", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
+        sGMLog.writefromsession(m_session, "changed npc CanFly for creature_spawns ID: %u [%s] from 1 to 0", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str());
+
     }
     return true;
 }
@@ -1116,16 +1089,12 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
 bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_session)
 {
     uint32 emote;
-    uint32 save = 0;
 
-    if (sscanf(args, "%u %u", &emote, &save) != 2)
+    if (sscanf(args, "%u", &emote) != 1)
     {
-        if (sscanf(args, "%u", &emote) != 1)
-        {
-            RedSystemMessage(m_session, "Command must be at least in format: .npc set emote <emote>.");
-            RedSystemMessage(m_session, "Use the following format to save the emote: .npc set emote <emote> 1.");
-            return true;
-        }
+        RedSystemMessage(m_session, "Command must be at least in format: .npc set emote <emote>.");
+        RedSystemMessage(m_session, "Use the following format to save the emote: .npc set emote <emote> 1.");
+        return true;
     }
 
     auto creature_target = GetSelectedCreature(m_session, true);
@@ -1135,19 +1104,9 @@ bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_ses
     uint32 old_emote = creature_target->getEmoteState();
     creature_target->setEmoteState(emote);
 
-    if (m_session->GetPlayer()->m_saveAllChangesCommand)
-        save = 1;
-
-    if (save == 1)
-    {
-        WorldDatabase.Execute("UPDATE creature_spawns SET emote_state = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", emote, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
-        GreenSystemMessage(m_session, "Emote permanent set from %u to %u for spawn ID: %u.", old_emote, emote, creature_target->spawnid);
-        sGMLog.writefromsession(m_session, "changed npc emote of creature_spawns ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_emote, emote);
-    }
-    else
-    {
-        GreenSystemMessage(m_session, "Emote temporarily set from %u to %u for spawn ID: %u.", old_emote, emote, creature_target->spawnid);
-    }
+    WorldDatabase.Execute("UPDATE creature_spawns SET emote_state = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", emote, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+    GreenSystemMessage(m_session, "Emote permanent set from %u to %u for spawn ID: %u.", old_emote, emote, creature_target->spawnid);
+    sGMLog.writefromsession(m_session, "changed npc emote of creature_spawns ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_emote, emote);
 
     return true;
 }
@@ -1180,9 +1139,7 @@ bool ChatHandler::HandleNpcSetFormationClearCommand(const char* /*args*/, WorldS
 bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_session)
 {
     uint32 npc_flags;
-    uint32 save = 0;
-
-    if (sscanf(args, "%u %u", &npc_flags, &save) < 1)
+    if (sscanf(args, "%u", &npc_flags) < 1)
     {
         RedSystemMessage(m_session, "You need to define the flag value!");
         RedSystemMessage(m_session, ".npc set flags <npc_flag>");
@@ -1196,19 +1153,9 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
     uint32 old_npc_flags = creature_target->getNpcFlags();
     creature_target->addNpcFlags(npc_flags);
 
-    if (m_session->GetPlayer()->m_saveAllChangesCommand)
-        save = 1;
-
-    if (save == 1)
-    {
-        GreenSystemMessage(m_session, "Flags changed in spawns table from %u to %u for spawn ID: %u. You may need to clean your client cache.", old_npc_flags, npc_flags, creature_target->spawnid);
-        WorldDatabase.Execute("UPDATE creature_spawns SET flags = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", npc_flags, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
-        sGMLog.writefromsession(m_session, "changed npc flags of creature_spawns ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_npc_flags, npc_flags);
-    }
-    else
-    {
-        GreenSystemMessage(m_session, "Flags temporarily set from %u to %u for spawn ID: %u. You may need to clean your client cache.", old_npc_flags, npc_flags, creature_target->spawnid);
-    }
+    GreenSystemMessage(m_session, "Flags changed in spawns table from %u to %u for spawn ID: %u. You may need to clean your client cache.", old_npc_flags, npc_flags, creature_target->spawnid);
+    WorldDatabase.Execute("UPDATE creature_spawns SET flags = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", npc_flags, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+    sGMLog.writefromsession(m_session, "changed npc flags of creature_spawns ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_npc_flags, npc_flags);
 
     return true;
 }
@@ -1217,9 +1164,8 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
 bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_session)
 {
     uint32 npc_phase;
-    uint32 save = 0;
 
-    if (sscanf(args, "%u %u", &npc_phase, &save) < 1)
+    if (sscanf(args, "%u", &npc_phase) < 1)
     {
         RedSystemMessage(m_session, "You need to define the phase!");
         RedSystemMessage(m_session, ".npc set phase <npc_phase>");
@@ -1233,19 +1179,9 @@ bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_ses
     uint32 old_npc_phase = creature_target->m_spawn->phase;
     creature_target->setPhase(PHASE_SET, npc_phase);
 
-    if (m_session->GetPlayer()->m_saveAllChangesCommand)
-        save = 1;
-
-    if (save == 1)
-    {
-        GreenSystemMessage(m_session, "Phase changed in spawns table from %u to %u for spawn ID: %u.", old_npc_phase, npc_phase, creature_target->spawnid);
-        WorldDatabase.Execute("UPDATE creature_spawns SET phase = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", npc_phase, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
-        sGMLog.writefromsession(m_session, "changed npc phase of creature_spawns ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_npc_phase, npc_phase);
-    }
-    else
-    {
-        GreenSystemMessage(m_session, "Phase temporarily set from %u to %u for spawn ID: %u.", old_npc_phase, npc_phase, creature_target->spawnid);
-    }
+    GreenSystemMessage(m_session, "Phase changed in spawns table from %u to %u for spawn ID: %u.", old_npc_phase, npc_phase, creature_target->spawnid);
+    WorldDatabase.Execute("UPDATE creature_spawns SET phase = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", npc_phase, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+    sGMLog.writefromsession(m_session, "changed npc phase of creature_spawns ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_npc_phase, npc_phase);
 
     return true;
 }
@@ -1254,9 +1190,8 @@ bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_ses
 bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* m_session)
 {
     uint8_t standstate;
-    uint32 save = 0;
 
-    if (sscanf(args, "%hhu %u", &standstate, &save) < 1)
+    if (sscanf(args, "%hhu", &standstate) < 1)
     {
         RedSystemMessage(m_session, "You must specify a standstate value.");
         RedSystemMessage(m_session, ".npc set standstate <standstate>");
@@ -1270,19 +1205,9 @@ bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* 
     uint8 old_standstate = creature_target->getStandState();
     creature_target->setStandState(standstate);
 
-    if (m_session->GetPlayer()->m_saveAllChangesCommand)
-        save = 1;
-
-    if (save == 1)
-    {
-        GreenSystemMessage(m_session, "Standstate changed in spawns table from %u to %u for spawn ID: %u.", old_standstate, standstate, creature_target->spawnid);
-        WorldDatabase.Execute("UPDATE creature_spawns SET standstate = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", standstate, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
-        sGMLog.writefromsession(m_session, "changed npc standstate of creature_spawns ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_standstate, standstate);
-    }
-    else
-    {
-        GreenSystemMessage(m_session, "Standstate temporarily set from %u to %u for spawn ID: %u.", old_standstate, standstate, creature_target->spawnid);
-    }
+    GreenSystemMessage(m_session, "Standstate changed in spawns table from %u to %u for spawn ID: %u.", old_standstate, standstate, creature_target->spawnid);
+    WorldDatabase.Execute("UPDATE creature_spawns SET standstate = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", standstate, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+    sGMLog.writefromsession(m_session, "changed npc standstate of creature_spawns ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_standstate, standstate);
 
     return true;
 }

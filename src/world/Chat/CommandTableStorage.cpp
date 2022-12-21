@@ -880,7 +880,6 @@ void CommandTableStorage::Init()
     {
         { "commands",           '0', &ChatHandler::HandleCommandsCommand,               "Shows commands",                                           nullptr },
         { "help",               '0', &ChatHandler::HandleHelpCommand,                   "Shows help for command",                                   nullptr },
-        { "autosavechanges",    '1', &ChatHandler::HandleAutoSaveChangesCommand,        "Toggles auto save for db table related commands.",         nullptr },
         { "event",              '0', nullptr,                                           "",                                               eventCommandTable},
         { "announce",           'u', &ChatHandler::HandleAnnounceCommand,               "Sends a normal chat message to all players.",              nullptr },
         { "wannounce",          'u', &ChatHandler::HandleWAnnounceCommand,              "Sends a widescreen announcement to all players.",          nullptr },

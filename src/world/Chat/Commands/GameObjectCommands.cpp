@@ -316,9 +316,6 @@ bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_sess
 //.gobject movehere
 bool ChatHandler::HandleGOMoveHereCommand(const char* args, WorldSession* m_session)
 {
-    uint32 save = 0;
-    sscanf(args, "%u", &save);
-
     auto gameobject = m_session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
     {
@@ -334,27 +331,15 @@ bool ChatHandler::HandleGOMoveHereCommand(const char* args, WorldSession* m_sess
     gameobject->SetPosition(position_x, position_y, position_z, position_o);
     auto go_spawn = gameobject->m_spawn;
 
-    if (m_session->GetPlayer()->m_saveAllChangesCommand)
+    if (go_spawn == nullptr)
     {
-        save = 1;
+        RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
+        return true;
     }
 
-    if (save == 1)
-    {
-        if (go_spawn == nullptr)
-        {
-            RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
-            return true;
-        }
-
-        GreenSystemMessage(m_session, "Position changed in gameobject_spawns table for spawn ID: %u.", go_spawn->id);
-        WorldDatabase.Execute("UPDATE gameobject_spawns SET position_x = %f, position_y = %f, position_z = %f WHERE id = %u AND min_build <= %u AND max_build >= %u", position_x, position_y, position_z, go_spawn->id, VERSION_STRING, VERSION_STRING);
-        sGMLog.writefromsession(m_session, "changed gameobject position of gameobject_spawns ID: %u.", go_spawn->id);
-    }
-    else
-    {
-        GreenSystemMessage(m_session, "GameObject position temporarily set to your current position.");
-    }
+    GreenSystemMessage(m_session, "Position changed in gameobject_spawns table for spawn ID: %u.", go_spawn->id);
+    WorldDatabase.Execute("UPDATE gameobject_spawns SET position_x = %f, position_y = %f, position_z = %f WHERE id = %u AND min_build <= %u AND max_build >= %u", position_x, position_y, position_z, go_spawn->id, VERSION_STRING, VERSION_STRING);
+    sGMLog.writefromsession(m_session, "changed gameobject position of gameobject_spawns ID: %u.", go_spawn->id);
 
     uint32 new_go_guid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
     gameobject->RemoveFromWorld(true);
@@ -567,11 +552,10 @@ bool ChatHandler::HandleGOSelectGuidCommand(const char* args, WorldSession* m_se
 bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session)
 {
     uint32 go_entry = 0;
-    uint32 save = 0;
-    if (sscanf(args, "%u %u", &go_entry, &save) < 1)
+    if (sscanf(args, "%u", &go_entry) < 1)
     {
         RedSystemMessage(m_session, "Wrong Syntax! Use: .gobject spawn <entry>");
-        RedSystemMessage(m_session, "Use: .gobject spawn <entry> 1 to save it in gameobject_spawns table.");
+        RedSystemMessage(m_session, "Use: .gobject spawn <entry>");
         return true;
     }
 
@@ -585,20 +569,9 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
     auto player = m_session->GetPlayer();
     auto gameobject = player->getWorldMap()->createAndSpawnGameObject(go_entry, player->GetPosition());
 
-    bool save_to_db = false;
-    if (m_session->GetPlayer()->m_saveAllChangesCommand || save > 0)
-        save_to_db = true;
-
-    if (save_to_db)
-    {
-        GreenSystemMessage(m_session, "Spawning GameObject by entry '%u'. Added to gameobject_spawns table.", gameobject->getSpawnId());
-        gameobject->saveToDB(true);
-        sGMLog.writefromsession(m_session, "spawned gameobject %s, entry %u at %u %f %f %f%s", gameobject_prop->name.c_str(), gameobject->getEntry(), player->GetMapId(), gameobject->GetPositionX(), gameobject->GetPositionY(), gameobject->GetPositionZ(), save == 1 ? ", saved in DB" : "");
-    }
-    else
-    {
-        GreenSystemMessage(m_session, "Spawning temporarily GameObject with entry '%u'", gameobject->getEntry());
-    }
+    GreenSystemMessage(m_session, "Spawning GameObject by entry '%u'. Added to gameobject_spawns table.", gameobject->getSpawnId());
+    gameobject->saveToDB(true);
+    sGMLog.writefromsession(m_session, "spawned gameobject %s, entry %u at %u %f %f %f", gameobject_prop->name.c_str(), gameobject->getEntry(), player->GetMapId(), gameobject->GetPositionX(), gameobject->GetPositionY(), gameobject->GetPositionZ());
 
     m_session->GetPlayer()->setSelectedGo(gameobject->getGuid());
 
@@ -636,8 +609,7 @@ bool ChatHandler::HandleGOSetAnimProgressCommand(const char* args, WorldSession*
 bool ChatHandler::HandleGOSetFactionCommand(const char* args, WorldSession* m_session)
 {
     uint32 go_faction = 0;
-    uint32 save = 0;
-    if (sscanf(args, "%u %u", &go_faction, &save) < 1)
+    if (sscanf(args, "%u", &go_faction) < 1)
     {
         RedSystemMessage(m_session, "Wrong Syntax! Use: .gobject setfaction <faction>");
         return true;
@@ -661,25 +633,15 @@ bool ChatHandler::HandleGOSetFactionCommand(const char* args, WorldSession* m_se
 
     auto go_spawn = gameobject->m_spawn;
 
-    if (m_session->GetPlayer()->m_saveAllChangesCommand)
-        save = 1;
-
-    if (save == 1)
+    if (go_spawn == nullptr)
     {
-        if (go_spawn == nullptr)
-        {
-            RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
-            return true;
-        }
+        RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
+        return true;
+    }
 
-        GreenSystemMessage(m_session, "Faction changed in gameobject_spawns table for spawn ID: %u.", go_spawn->id);
-        WorldDatabase.Execute("REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)", go_spawn->id, VERSION_STRING, VERSION_STRING, gameobject->getScale(), go_faction, gameobject->getFlags());
-        sGMLog.writefromsession(m_session, "changed gameobject faction of gameobject_spawns ID: %u.", go_spawn->id);
-    }
-    else
-    {
-        GreenSystemMessage(m_session, "GameObject faction temporarily set to %u.", go_faction);
-    }
+    GreenSystemMessage(m_session, "Faction changed in gameobject_spawns table for spawn ID: %u.", go_spawn->id);
+    WorldDatabase.Execute("REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)", go_spawn->id, VERSION_STRING, VERSION_STRING, gameobject->getScale(), go_faction, gameobject->getFlags());
+    sGMLog.writefromsession(m_session, "changed gameobject faction of gameobject_spawns ID: %u.", go_spawn->id);
 
     return true;
 }
@@ -688,9 +650,8 @@ bool ChatHandler::HandleGOSetFactionCommand(const char* args, WorldSession* m_se
 bool ChatHandler::HandleGOSetFlagsCommand(const char* args, WorldSession* m_session)
 {
     uint32 go_flags;
-    uint32 save = 0;
 
-    if (sscanf(args, "%u %u", &go_flags, &save) < 1)
+    if (sscanf(args, "%u", &go_flags) < 1)
     {
         RedSystemMessage(m_session, "Wrong Syntax! Use: .gobject setflags <flags>");
         return true;
@@ -707,24 +668,14 @@ bool ChatHandler::HandleGOSetFlagsCommand(const char* args, WorldSession* m_sess
 
     auto go_spawn = gameobject->m_spawn;
 
-    if (m_session->GetPlayer()->m_saveAllChangesCommand)
-        save = 1;
-
-    if (save == 1)
+    if (go_spawn == nullptr)
     {
-        if (go_spawn == nullptr)
-        {
-            RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
-            return true;
-        }
-        GreenSystemMessage(m_session, "Flags changed in gameobject_spawns table for spawn ID: %u.", go_spawn->id);
-        WorldDatabase.Execute("REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)", go_spawn->id, VERSION_STRING, VERSION_STRING, gameobject->getScale(), gameobject->getFactionTemplate(), go_flags);
-        sGMLog.writefromsession(m_session, "changed gameobject flags of gameobject_spawns ID: %u.", go_spawn->id);
+        RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
+        return true;
     }
-    else
-    {
-        GreenSystemMessage(m_session, "GameObject flags temporarily set to %u.", go_flags);
-    }
+    GreenSystemMessage(m_session, "Flags changed in gameobject_spawns table for spawn ID: %u.", go_spawn->id);
+    WorldDatabase.Execute("REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)", go_spawn->id, VERSION_STRING, VERSION_STRING, gameobject->getScale(), gameobject->getFactionTemplate(), go_flags);
+    sGMLog.writefromsession(m_session, "changed gameobject flags of gameobject_spawns ID: %u.", go_spawn->id);
 
     return true;
 }
@@ -733,8 +684,7 @@ bool ChatHandler::HandleGOSetFlagsCommand(const char* args, WorldSession* m_sess
 bool ChatHandler::HandleGOSetOverridesCommand(const char* args, WorldSession* m_session)
 {
     uint32 go_override;
-    uint32 save = 0;
-    if (sscanf(args, "%u %u", &go_override, &save) < 1)
+    if (sscanf(args, "%u", &go_override) < 1)
     {
         RedSystemMessage(m_session, "Wrong Syntax! Use: .gobject setoverride <value>");
         return true;
@@ -750,24 +700,14 @@ bool ChatHandler::HandleGOSetOverridesCommand(const char* args, WorldSession* m_
     gameobject->SetOverrides(go_override);
     auto go_spawn = gameobject->m_spawn;
 
-    if (m_session->GetPlayer()->m_saveAllChangesCommand)
-        save = 1;
-
-    if (save == 1)
+    if (go_spawn == nullptr)
     {
-        if (go_spawn == nullptr)
-        {
-            RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
-            return true;
-        }
-        GreenSystemMessage(m_session, "Overrides changed in gameobject_spawns table to %u for spawn ID: %u.", go_override, go_spawn->id);
-        WorldDatabase.Execute("UPDATE gameobject_spawns SET overrides = %u WHERE id = %u AND min_build <= %u AND max_build >= %u", go_override, go_spawn->id, VERSION_STRING, VERSION_STRING);
-        sGMLog.writefromsession(m_session, "changed gameobject scale of gameobject_spawns ID: %u to %u", go_spawn->id, go_override);
+        RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
+        return true;
     }
-    else
-    {
-        GreenSystemMessage(m_session, "Gameobject overrides temporarily set to %u for spawn ID: %u.", go_override, go_spawn->id);
-    }
+    GreenSystemMessage(m_session, "Overrides changed in gameobject_spawns table to %u for spawn ID: %u.", go_override, go_spawn->id);
+    WorldDatabase.Execute("UPDATE gameobject_spawns SET overrides = %u WHERE id = %u AND min_build <= %u AND max_build >= %u", go_override, go_spawn->id, VERSION_STRING, VERSION_STRING);
+    sGMLog.writefromsession(m_session, "changed gameobject scale of gameobject_spawns ID: %u to %u", go_spawn->id, go_override);
 
     uint32 new_go_guid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
     gameobject->RemoveFromWorld(true);
@@ -784,9 +724,8 @@ bool ChatHandler::HandleGOSetOverridesCommand(const char* args, WorldSession* m_
 bool ChatHandler::HandleGOSetPhaseCommand(const char* args, WorldSession* m_session)
 {
     uint32 phase;
-    uint32 save = 0;
 
-    if (sscanf(args, "%u %u", &phase, &save) < 1)
+    if (sscanf(args, "%u", &phase) < 1)
     {
         RedSystemMessage(m_session, "You need to define the phase value!");
         RedSystemMessage(m_session, ".gobject setphase <phase>");
@@ -803,24 +742,14 @@ bool ChatHandler::HandleGOSetPhaseCommand(const char* args, WorldSession* m_sess
     auto go_spawn = gameobject->m_spawn;
     gameobject->Phase(PHASE_SET, phase);
 
-    if (m_session->GetPlayer()->m_saveAllChangesCommand)
-        save = 1;
-
-    if (save == 1)
+    if (go_spawn == nullptr)
     {
-        if (go_spawn == nullptr)
-        {
-            RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
-            return true;
-        }
-        GreenSystemMessage(m_session, "Phase changed in gameobject_spawns table to %u for spawn ID: %u.", phase, go_spawn->id);
-        WorldDatabase.Execute("UPDATE gameobject_spawns SET phase = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", phase, go_spawn->id, VERSION_STRING, VERSION_STRING);
-        sGMLog.writefromsession(m_session, "changed gameobject phase of gameobject_spawns ID: %u to %u", go_spawn->id, phase);
+        RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
+        return true;
     }
-    else
-    {
-        GreenSystemMessage(m_session, "GameObject phase temporarily set to %u.", phase);
-    }
+    GreenSystemMessage(m_session, "Phase changed in gameobject_spawns table to %u for spawn ID: %u.", phase, go_spawn->id);
+    WorldDatabase.Execute("UPDATE gameobject_spawns SET phase = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", phase, go_spawn->id, VERSION_STRING, VERSION_STRING);
+    sGMLog.writefromsession(m_session, "changed gameobject phase of gameobject_spawns ID: %u to %u", go_spawn->id, phase);
 
     uint32 new_go_guid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
     gameobject->RemoveFromWorld(true);
@@ -836,8 +765,7 @@ bool ChatHandler::HandleGOSetPhaseCommand(const char* args, WorldSession* m_sess
 bool ChatHandler::HandleGOSetScaleCommand(const char* args, WorldSession* m_session)
 {
     float scale = 0.0f;
-    uint32 save = 0;
-    if (sscanf(args, "%f %u", &scale, &save) < 1)
+    if (sscanf(args, "%f", &scale) < 1)
     {
         RedSystemMessage(m_session, "Wrong Syntax! Use: .gobject setscale <scale>");
         return true;
@@ -853,24 +781,14 @@ bool ChatHandler::HandleGOSetScaleCommand(const char* args, WorldSession* m_sess
     gameobject->setScale(scale);
     auto go_spawn = gameobject->m_spawn;
 
-    if (m_session->GetPlayer()->m_saveAllChangesCommand)
-        save = 1;
-
-    if (save == 1)
+    if (go_spawn == nullptr)
     {
-        if (go_spawn == nullptr)
-        {
-            RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
-            return true;
-        }
-        GreenSystemMessage(m_session, "Scale changed in gameobject_spawns_overrides table to %3.3lf for spawn ID: %u.", scale, go_spawn->id);
-        WorldDatabase.Execute("REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)", go_spawn->id, VERSION_STRING, VERSION_STRING, scale, gameobject->getFactionTemplate(), gameobject->getFlags());
-        sGMLog.writefromsession(m_session, "changed gameobject scale of gameobject_spawns ID: %u to %3.3lf", go_spawn->id, scale);
+        RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
+        return true;
     }
-    else
-    {
-        GreenSystemMessage(m_session, "Gameobject scale temporarily set to %3.3lf for spawn ID: %u.", scale, go_spawn->id);
-    }
+    GreenSystemMessage(m_session, "Scale changed in gameobject_spawns_overrides table to %3.3lf for spawn ID: %u.", scale, go_spawn->id);
+    WorldDatabase.Execute("REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)", go_spawn->id, VERSION_STRING, VERSION_STRING, scale, gameobject->getFactionTemplate(), gameobject->getFlags());
+    sGMLog.writefromsession(m_session, "changed gameobject scale of gameobject_spawns ID: %u to %3.3lf", go_spawn->id, scale);
 
     uint32 new_go_guid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
     gameobject->RemoveFromWorld(true);
@@ -886,9 +804,8 @@ bool ChatHandler::HandleGOSetScaleCommand(const char* args, WorldSession* m_sess
 bool ChatHandler::HandleGOSetStateCommand(const char* args, WorldSession* m_session)
 {
     uint32 go_state;
-    uint32 save = 0;
 
-    if (sscanf(args, "%u %u", &go_state, &save) < 1)
+    if (sscanf(args, "%u", &go_state) < 1)
     {
         RedSystemMessage(m_session, "Wrong Syntax! Use: .gobject setstate <state>");
         return true;
@@ -905,24 +822,14 @@ bool ChatHandler::HandleGOSetStateCommand(const char* args, WorldSession* m_sess
 
     auto go_spawn = gameobject->m_spawn;
 
-    if (m_session->GetPlayer()->m_saveAllChangesCommand)
-        save = 1;
-
-    if (save == 1)
+    if (go_spawn == nullptr)
     {
-        if (go_spawn == nullptr)
-        {
-            RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
-            return true;
-        }
-        GreenSystemMessage(m_session, "State changed in gameobject_spawns table for spawn ID: %u.", go_spawn->id);
-        WorldDatabase.Execute("UPDATE gameobject_spawns SET state = %u WHERE id = %u AND min_build <= %u AND max_build >= %u", go_state, go_spawn->id, VERSION_STRING, VERSION_STRING);
-        sGMLog.writefromsession(m_session, "changed gameobject state of gameobject_spawns ID: %u.", go_spawn->id);
+        RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
+        return true;
     }
-    else
-    {
-        GreenSystemMessage(m_session, "GameObject state temporarily set to %u.", go_state);
-    }
+    GreenSystemMessage(m_session, "State changed in gameobject_spawns table for spawn ID: %u.", go_spawn->id);
+    WorldDatabase.Execute("UPDATE gameobject_spawns SET state = %u WHERE id = %u AND min_build <= %u AND max_build >= %u", go_state, go_spawn->id, VERSION_STRING, VERSION_STRING);
+    sGMLog.writefromsession(m_session, "changed gameobject state of gameobject_spawns ID: %u.", go_spawn->id);
 
     return true;
 }
