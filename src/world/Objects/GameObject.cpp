@@ -424,6 +424,8 @@ bool GameObject::create(uint32_t entry, WorldMap* map, uint32_t phase, LocationV
     m_phase = phase;
 
     setLocalRotation(rotation.x, rotation.y, rotation.z, rotation.w);
+
+#if VERSION_STRING > TBC
     MySQLStructure::GameObjectSpawnExtra const* gameObjectAddon = sMySQLStore.getGameObjectExtra(getSpawnId());
 
     // For most of gameobjects is (0, 0, 0, 1) quaternion, there are only some transports with not standard rotation
@@ -432,6 +434,24 @@ bool GameObject::create(uint32_t entry, WorldMap* map, uint32_t phase, LocationV
         parentRotation = gameObjectAddon->parentRotation;
 
     setParentRotation(parentRotation);
+#else
+    write(gameObjectData()->rotation[0], rotation.x);
+    write(gameObjectData()->rotation[1], rotation.y);
+
+    write(gameObjectData()->o, position.o);
+
+    float rotationZ = rotation.z;
+    float rotationW = rotation.w;
+    if (rotationZ == 0.0f && rotationW == 0.0f)
+    {
+        rotationZ = sin(position.o / 2);
+        rotationW = cos(position.o / 2);
+    }
+
+    write(gameObjectData()->rotation[2], rotationZ);
+    write(gameObjectData()->rotation[3], rotationW);
+
+#endif
 
     setScale(gameobject_properties->size);
     SetFaction(0);
