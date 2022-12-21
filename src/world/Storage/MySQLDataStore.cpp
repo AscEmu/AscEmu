@@ -4417,6 +4417,8 @@ void MySQLDataStore::loadCreatureSpawns()
                 cspawn->wander_distance = fields[30].GetUInt32();
                 cspawn->waypoint_id = fields[31].GetUInt32();
 
+                cspawn->origine = fields[32].GetString();
+
                 //\todo add flag to declare a spawn as static. E.g. gameobject_spawns
                 /*if (!stricmp((*tableiterator).c_str(), "creature_staticspawns"))
                 {

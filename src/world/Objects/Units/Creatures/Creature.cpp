@@ -815,7 +815,7 @@ void Creature::SaveToDB()
 
     std::stringstream ss;
 
-    ss << "DELETE FROM creature_spawns WHERE id = ";
+    ss << "DELETE FROM " << m_spawn->origine << " WHERE id = ";
     ss << spawnid;
     ss << " AND min_build <= ";
     ss << VERSION_STRING;
@@ -827,7 +827,7 @@ void Creature::SaveToDB()
 
     ss.rdbuf()->str("");
 
-    ss << "INSERT INTO creature_spawns VALUES("
+    ss << "INSERT INTO " << m_spawn->origine << " VALUES("
         << spawnid << ","
         << VERSION_STRING << ","
         << VERSION_STRING << ","
@@ -883,7 +883,7 @@ void Creature::DeleteFromDB()
     if (!GetSQL_id())
         return;
 
-    WorldDatabase.Execute("DELETE FROM creature_spawns WHERE id = %u AND min_build <= %u AND max_build >= %u", GetSQL_id(), VERSION_STRING, VERSION_STRING);
+    WorldDatabase.Execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u", m_spawn->origine.c_str(), GetSQL_id(), VERSION_STRING, VERSION_STRING);
 }
 
 
