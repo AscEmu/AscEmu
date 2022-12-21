@@ -166,7 +166,6 @@ bool ChatHandler::HandleGOExportCommand(const char* args, WorldSession* m_sessio
 //.gobject info
 bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_session)
 {
-    GameObjectProperties const* gameobject_info = nullptr;
     auto gameobject = m_session->GetPlayer()->getSelectedGo();
     if (!gameobject)
     {
@@ -280,7 +279,7 @@ bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_sess
 
     SystemMessage(m_session, "%s Distance:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->CalcDistance(m_session->GetPlayer()));
 
-    gameobject_info = sMySQLStore.getGameObjectProperties(gameobject->getEntry());
+    GameObjectProperties const* gameobject_info = sMySQLStore.getGameObjectProperties(gameobject->getEntry());
     if (!gameobject_info)
     {
         RedSystemMessage(m_session, "This GameObject doesn't have template, you won't be able to get some information nor to spawn a GO with this entry.");
@@ -297,7 +296,7 @@ bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_sess
     SystemMessage(m_session, "%s Rotation 2:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getParentRotation(2));
     SystemMessage(m_session, "%s Rotation 3:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getParentRotation(3));
 
-    GameObject_Destructible* dgo = static_cast<GameObject_Destructible*>(gameobject);
+    GameObject_Destructible* dgo = dynamic_cast<GameObject_Destructible*>(gameobject);
     if (gameobject_info->type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
     {
         SystemMessage(m_session, "%s HP:%s%u/%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, dgo->GetHP(), dgo->GetMaxHP());
@@ -306,7 +305,7 @@ bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_sess
     SystemMessage(m_session, "=================================");
 
     if (gameobject->m_spawn != nullptr)
-        SystemMessage(m_session, "Is part of table: gameobject_spawns");
+        SystemMessage(m_session, "Is part of table: %s", gameobject->m_spawn->origine.c_str());
     else
         SystemMessage(m_session, "Is spawnd by an internal script");
 

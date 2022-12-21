@@ -4489,7 +4489,8 @@ void MySQLDataStore::loadGameobjectSpawns()
                 go_spawn->rotation.w = fields[13].GetFloat();
                 go_spawn->spawntimesecs = fields[14].GetUInt32();
                 go_spawn->state = GameObject_State(fields[15].GetUInt32());
-                //gspawn->stateNpcLink = fields[16].GetUInt32();
+                //event_entry = 16
+                go_spawn->origine = fields[17].GetString();
 
                 if (go_spawn->phase == 0)
                     go_spawn->phase = 0xFFFFFFFF;

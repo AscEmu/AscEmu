@@ -328,9 +328,13 @@ void GameObject::deleteFromDB()
 {
     if (m_spawn != nullptr)
     {
-        WorldDatabase.Execute("DELETE FROM gameobject_spawns WHERE id = %u AND min_build <= %u AND max_build >= %u ", m_spawn->id, VERSION_STRING, VERSION_STRING);
-        WorldDatabase.Execute("DELETE FROM gameobject_spawns_extra WHERE id = %u AND min_build <= %u AND max_build >= %u ", m_spawn->id, VERSION_STRING, VERSION_STRING);
-        WorldDatabase.Execute("DELETE FROM gameobject_spawns_overrides WHERE id = %u AND min_build <= %u AND max_build >= %u ", m_spawn->id, VERSION_STRING, VERSION_STRING);
+        std::string tableOrigine = m_spawn->origine;
+        std::string tableExtra = tableOrigine + "_extra";
+        std::string tableOverrides = tableOrigine + "_overrides";
+
+        WorldDatabase.Execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u ", tableOrigine.c_str(), m_spawn->id, VERSION_STRING, VERSION_STRING);
+        WorldDatabase.Execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u ", tableExtra.c_str(), m_spawn->id, VERSION_STRING, VERSION_STRING);
+        WorldDatabase.Execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u ", tableOverrides.c_str(), m_spawn->id, VERSION_STRING, VERSION_STRING);
     }
 }
 
@@ -345,7 +349,7 @@ void GameObject::saveToDB(bool newSpawn)
 
     if (newSpawn)
     {
-        ss << "INSERT INTO gameobject_spawns VALUES("
+        ss << "INSERT INTO " << m_spawn->origine << " VALUES("
            << m_spawn->id << ","
            << VERSION_STRING << ","
            << VERSION_STRING << ","
@@ -366,7 +370,7 @@ void GameObject::saveToDB(bool newSpawn)
     }
     else
     {
-        ss << "UPDATE gameobject_spawns SET "
+        ss << "UPDATE  " << m_spawn->origine << " SET "
             << "phase = "
             << GetPhase() << ","
             << "position_x = "

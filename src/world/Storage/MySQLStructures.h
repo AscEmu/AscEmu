@@ -226,6 +226,7 @@ namespace MySQLStructure
         QuaternionData rotation = { 0,0,0, 0 };
         uint32_t spawntimesecs = 0;
         GameObject_State state = GO_STATE_OPEN;
+        std::string origine;
         //uint32_t event_entry
     };
 
