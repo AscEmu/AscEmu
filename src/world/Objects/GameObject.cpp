@@ -580,6 +580,7 @@ void GameObject::respawn()
 
 void GameObject::setLocalRotation(float qx, float qy, float qz, float qw)
 {
+#if VERSION_STRING > TBC
     G3D::Quat rotation(qx, qy, qz, qw);
     rotation.unitize();
     m_localRotation.x = rotation.x;
@@ -587,6 +588,19 @@ void GameObject::setLocalRotation(float qx, float qy, float qz, float qw)
     m_localRotation.z = rotation.z;
     m_localRotation.w = rotation.w;
     updatePackedRotation();
+#else
+    G3D::Quat rotation(qx, qy, qz, qw);
+
+    if (qz == 0 && qw == 0)
+        rotation = G3D::Quat::fromAxisAngleRotation(G3D::Vector3::unitZ(), GetOrientation());
+
+    rotation.unitize();
+    m_localRotation.x = rotation.x;
+    m_localRotation.y = rotation.y;
+    m_localRotation.z = rotation.z;
+    m_localRotation.w = rotation.w;
+    updatePackedRotation();
+#endif
 }
 
 void GameObject::setLocalRotationAngles(float z_rot, float y_rot, float x_rot)
@@ -625,6 +639,13 @@ void GameObject::updatePackedRotation()
     int64_t y = int32_t(m_localRotation.y * PACK_YZ) * w_sign & PACK_YZ_MASK;
     int64_t z = int32_t(m_localRotation.z * PACK_YZ) * w_sign & PACK_YZ_MASK;
     m_packedRotation = z | (y << 21) | (x << 42);
+
+#if VERSION_STRING <= TBC
+    write(gameObjectData()->rotation[0], m_localRotation.x);
+    write(gameObjectData()->rotation[1], m_localRotation.y);
+    write(gameObjectData()->rotation[2], m_localRotation.z);
+    write(gameObjectData()->rotation[3], m_localRotation.w);
+#endif
 }
 
 void GameObject::setLootState(LootState state, Unit* unit)
