@@ -3123,7 +3123,7 @@ void MySQLDataStore::loadBroadcastTable()
 {
     auto startTime = Util::TimeNow();
 
-    QueryResult* broadcast_result = WorldDatabase.Query("SELECT * FROM worldbroadcast");
+    QueryResult* broadcast_result = getWorldDBQuery("SELECT * FROM worldbroadcast");
     if (broadcast_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `worldbroadcast` is empty!");

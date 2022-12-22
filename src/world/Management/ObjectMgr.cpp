@@ -740,14 +740,14 @@ void ObjectMgr::SetHighestGuids()
         delete result;
     }
 
-    result = WorldDatabase.Query("SELECT MAX(id) FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0;", VERSION_STRING, VERSION_STRING);
+    result = sMySQLStore.getWorldDBQuery("SELECT MAX(id) FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0;", VERSION_STRING, VERSION_STRING);
     if (result)
     {
         m_hiCreatureSpawnId = result->Fetch()[0].GetUInt32();
         delete result;
     }
 
-    result = WorldDatabase.Query("SELECT MAX(id) FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0;", VERSION_STRING, VERSION_STRING);
+    result = sMySQLStore.getWorldDBQuery("SELECT MAX(id) FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0;", VERSION_STRING, VERSION_STRING);
     if (result)
     {
         m_hiGameObjectSpawnId = result->Fetch()[0].GetUInt32();
@@ -895,7 +895,7 @@ Player* ObjectMgr::GetPlayer(uint32 guid)
 
 void ObjectMgr::LoadVendors()
 {
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM vendors");
+    QueryResult* result = sMySQLStore.getWorldDBQuery("SELECT * FROM vendors");
     if (result != nullptr)
     {
         std::unordered_map<uint32, std::vector<CreatureItem>*>::const_iterator itr;
@@ -1266,7 +1266,7 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* p
 void ObjectMgr::loadTrainers()
 {
 #if VERSION_STRING > TBC    //todo: tbc
-    auto* const result = WorldDatabase.Query("SELECT * FROM trainer_defs");
+    auto* const result = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_defs");
 
     if (result == nullptr)
         return;
@@ -1308,7 +1308,7 @@ void ObjectMgr::loadTrainers()
         }
 
         // Now load the spells
-        auto* const result2 = WorldDatabase.Query("SELECT * FROM trainer_spells where entry='%u'", entry);
+        auto* const result2 = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_spells where entry='%u'", entry);
         if (result2 == nullptr)
         {
             sLogger.debug("LoadTrainers : Trainer with no spells, entry %u.", entry);

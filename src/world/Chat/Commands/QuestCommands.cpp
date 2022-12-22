@@ -281,7 +281,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
             if (auto* questLog = plr->getQuestLogByQuestId(quest_id))
             {
                 uint32 giver_id = 0;
-                QueryResult* creatureResult = WorldDatabase.Query("SELECT id FROM creature_quest_starter WHERE quest = %u AND min_build <= %u AND max_build >= %u", quest_id, VERSION_STRING, VERSION_STRING);
+                QueryResult* creatureResult = sMySQLStore.getWorldDBQuery("SELECT id FROM creature_quest_starter WHERE quest = %u AND min_build <= %u AND max_build >= %u", quest_id, VERSION_STRING, VERSION_STRING);
 
                 if (creatureResult)
                 {
@@ -291,7 +291,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                 }
                 else
                 {
-                    QueryResult* objectResult = WorldDatabase.Query("SELECT id FROM gameobject_quest_starter WHERE quest = %u AND min_build <= %u AND max_build >= %u", quest_id, VERSION_STRING, VERSION_STRING);
+                    QueryResult* objectResult = sMySQLStore.getWorldDBQuery("SELECT id FROM gameobject_quest_starter WHERE quest = %u AND min_build <= %u AND max_build >= %u", quest_id, VERSION_STRING, VERSION_STRING);
                     if (objectResult)
                     {
                         Field* objectFields = objectResult->Fetch();

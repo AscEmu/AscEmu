@@ -288,7 +288,7 @@ void LootMgr::loadLootProp()
 
 void LootMgr::loadLootTables(const char* szTableName, LootTemplateMap* LootTable)
 {
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM %s ORDER BY entryid ASC", szTableName);
+    QueryResult* result = sMySQLStore.getWorldDBQuery("SELECT * FROM %s ORDER BY entryid ASC", szTableName);
     if (!result)
     {
         sLogger.failure("Loading loot from table %s failed.", szTableName);

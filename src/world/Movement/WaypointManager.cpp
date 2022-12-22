@@ -16,8 +16,8 @@ void WaypointMgr::load()
     auto oldMSTime = Util::TimeNow();
     _waypointStore.clear();
 
-    //                                                0    1         2           3          4            5           6        7      8           9
-    QueryResult* result = WorldDatabase.Query("SELECT id, point, position_x, position_y, position_z, orientation, move_type, delay, action, action_chance FROM creature_waypoints ORDER BY id, point");
+    //                                                         0    1         2           3          4            5           6        7      8           9
+    QueryResult* result = sMySQLStore.getWorldDBQuery("SELECT id, point, position_x, position_y, position_z, orientation, move_type, delay, action, action_chance FROM creature_waypoints ORDER BY id, point");
 
     if (!result)
     {
@@ -147,7 +147,7 @@ WaypointPath* WaypointMgr::getCustomScriptWaypointPath(uint32_t id)
 
 uint32_t WaypointMgr::generateWaypointPathId()
 {
-    QueryResult* result = WorldDatabase.Query("SELECT MAX(id) FROM creature_waypoints");
+    QueryResult* result = sMySQLStore.getWorldDBQuery("SELECT MAX(id) FROM creature_waypoints");
     if (result)
     {
         uint32_t maxPathId = result->Fetch()[0].GetUInt32();
