@@ -943,7 +943,7 @@ void ObjectMgr::LoadVendors()
             {
                 item_extended_cost = sItemExtendedCostStore.LookupEntry(fields[5].GetUInt32());
                 if (item_extended_cost == nullptr)
-                    sLogger.debug("LoadVendors : Extendedcost for item %u references nonexistent EC %u", fields[1].GetUInt32(), fields[5].GetUInt32());
+                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "LoadVendors : Extendedcost for item %u references nonexistent EC %u", fields[1].GetUInt32(), fields[5].GetUInt32());
             }
             else
                 item_extended_cost = nullptr;

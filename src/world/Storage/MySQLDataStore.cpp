@@ -37,40 +37,38 @@ void MySQLDataStore::loadAdditionalTableConfig()
         MySQLAdditionalTable myTable;
         myTable.mainTable = ascTables;
         myTable.tableVector.push_back(ascTables);
-        myTable.tableVector.push_back(ascTables);
+
+        // get config
+        const std::string strData = worldConfig.startup.additionalTableLoads;
+        if (!strData.empty())
+        {
+            const std::vector<std::string> strs = AscEmu::Util::Strings::split(strData, ",");
+            if (!strs.empty())
+            {
+                for (auto& str : strs)
+                {
+                    std::stringstream additionTableStream(str);
+                    std::string additional_table;
+                    std::string target_table;
+
+                    additionTableStream >> additional_table;
+                    additionTableStream >> target_table;
+
+                    if (!additional_table.empty() || !target_table.empty())
+                        if (myTable.mainTable == target_table)
+                            myTable.tableVector.push_back(additional_table);
+                }
+            }
+        }
 
         MySQLAdditionalTables.push_back(myTable);
     }
 
-    // get config
-    const std::string strData = worldConfig.startup.additionalTableLoads;
-    if (strData.empty())
-        return;
-
-    const std::vector<std::string> strs = AscEmu::Util::Strings::split(strData, ",");
-    if (strs.empty())
-        return;
-
-    for (auto& str : strs)
+    for (auto additionalTable : MySQLAdditionalTables)
     {
-        std::stringstream additionTableStream(str);
-        std::string additional_table;
-        std::string target_table;
-
-        additionTableStream >> additional_table;
-        additionTableStream >> target_table;
-
-        if (additional_table.empty() || target_table.empty())
-            continue;
-
-        // Zyres: new way for general additional tables
-        MySQLAdditionalTable myTable;
-        myTable.mainTable = target_table;
-        myTable.tableVector.push_back(target_table);
-        myTable.tableVector.push_back(additional_table);
-
-        MySQLAdditionalTables.push_back(myTable);
-        sLogger.info("MySQLDataLoads : Table %s added as additional table for %s", additional_table.c_str(), target_table.c_str());
+        sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_DB_TABLES, "MySQLDataLoads : Table %s has additional tables:", additionalTable.mainTable.c_str());
+        for (auto additionalTableList : additionalTable.tableVector)
+            sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_DB_TABLES, "MySQLDataLoads : - %s ", additionalTableList.c_str());
     }
 }
 
@@ -533,11 +531,11 @@ uint32_t const MySQLDataStore::getItemDisplayIdForEntry(uint32_t entry)
 
         if (dbcDisplay != 0)
         {
-            sLogger.debug("Item entry %u not available in item_properties or has an invalid displayId! Using dbcDisplayId %u!", entry, dbcDisplay);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Item entry %u not available in item_properties or has an invalid displayId! Using dbcDisplayId %u!", entry, dbcDisplay);
             return dbcDisplay;
         }
 
-        sLogger.debug("Invalid item entry %u is not in item_properties table or in Item.dbc! Please create a item_properties entry to return a valid displayId", entry);
+        sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Invalid item entry %u is not in item_properties table or in Item.dbc! Please create a item_properties entry to return a valid displayId", entry);
 #else
         return entry;
 #endif
@@ -1042,7 +1040,7 @@ void MySQLDataStore::loadGameObjectSpawnsExtraTable()
 {
     auto startTime = Util::TimeNow();
 
-    QueryResult* result = WorldDatabase.Query("SELECT id, parent_rotation0, parent_rotation1, parent_rotation2, parent_rotation3 FROM gameobject_spawns_extra WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
+    QueryResult* result = getWorldDBQuery("SELECT id, parent_rotation0, parent_rotation1, parent_rotation2, parent_rotation3 FROM gameobject_spawns_extra WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
     if (!result)
     {
         sLogger.info("Loaded 0 gameobjectSpawnsExtra definitions. DB table `gameobject_spawns_extra` is empty.");
@@ -1084,7 +1082,7 @@ void MySQLDataStore::loadGameObjectSpawnsOverrideTable()
 {
     auto startTime = Util::TimeNow();
 
-    QueryResult* result = WorldDatabase.Query("SELECT id, scale, faction, flags FROM gameobject_spawns_overrides WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
+    QueryResult* result = getWorldDBQuery("SELECT id, scale, faction, flags FROM gameobject_spawns_overrides WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
     if (!result)
     {
         sLogger.info("Loaded 0 gameobject overrides. DB table `gameobject_spawn_overrides` is empty.");
@@ -1379,7 +1377,7 @@ void MySQLDataStore::loadGameObjectQuestItemBindingTable()
             GameObjectProperties const* gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
             if (gameobject_properties == nullptr)
             {
-                sLogger.debug("Table `gameobject_quest_item_binding` includes data for invalid gameobject_properties entry: %u. Skipped!", entry);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `gameobject_quest_item_binding` includes data for invalid gameobject_properties entry: %u. Skipped!", entry);
                 continue;
             }
 
@@ -1387,7 +1385,7 @@ void MySQLDataStore::loadGameObjectQuestItemBindingTable()
             QuestProperties const* quest = sMySQLStore.getQuestProperties(quest_entry);
             if (quest == nullptr)
             {
-                sLogger.debug("Table `gameobject_quest_item_binding` includes data for invalid quest_properties : %u. Skipped!", quest_entry);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `gameobject_quest_item_binding` includes data for invalid quest_properties : %u. Skipped!", quest_entry);
                 continue;
             }
             else
@@ -1423,7 +1421,7 @@ void MySQLDataStore::loadGameObjectQuestPickupBindingTable()
             GameObjectProperties const* gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
             if (gameobject_properties == nullptr)
             {
-                sLogger.debug("Table `gameobject_quest_pickup_binding` includes data for invalid gameobject_properties entry: %u. Skipped!", entry);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `gameobject_quest_pickup_binding` includes data for invalid gameobject_properties entry: %u. Skipped!", entry);
                 continue;
             }
 
@@ -1431,7 +1429,7 @@ void MySQLDataStore::loadGameObjectQuestPickupBindingTable()
             QuestProperties const* quest = sMySQLStore.getQuestProperties(quest_entry);
             if (quest == nullptr)
             {
-                sLogger.debug("Table `gameobject_quest_pickup_binding` includes data for invalid quest_properties : %u. Skipped!", quest_entry);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `gameobject_quest_pickup_binding` includes data for invalid quest_properties : %u. Skipped!", quest_entry);
                 continue;
             }
             else
@@ -2195,7 +2193,7 @@ void MySQLDataStore::loadSpellClickSpellsTable()
         CreatureProperties const* cInfo = sMySQLStore.getCreatureProperties(npc_entry);
         if (!cInfo)
         {
-            sLogger.failure("Table npc_spellclick_spells references unknown creature_properties %u. Skipping entry.", npc_entry);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table npc_spellclick_spells references unknown creature_properties %u. Skipping entry.", npc_entry);
             continue;
         }
 
@@ -2203,14 +2201,16 @@ void MySQLDataStore::loadSpellClickSpellsTable()
         SpellInfo const* spellinfo = sSpellMgr.getSpellInfo(spellid);
         if (!spellinfo)
         {
-            sLogger.failure("Table npc_spellclick_spells creature: %u references unknown spellid %u. Skipping entry.", npc_entry, spellid);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table npc_spellclick_spells creature: %u references unknown spellid %u. Skipping entry.", npc_entry, spellid);
             continue;
         }
 
         uint8_t userType = fields[3].GetUInt8();
         if (userType >= SPELL_CLICK_USER_MAX)
-            sLogger.failure("Table npc_spellclick_spells creature: %u references unknown user type %u. Skipping entry.", npc_entry, uint32(userType));
-
+        {
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table npc_spellclick_spells creature: %u references unknown user type %u. Skipping entry.", npc_entry, uint32(userType));
+            continue;
+        }
         uint8_t castFlags = fields[2].GetUInt8();
 
         SpellClickInfo info;
@@ -2802,7 +2802,7 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
             {
                 if (info->level_stats[level].strength == 0)
                 {
-                    sLogger.info("Race %i Class %i Level %i does not have stats data. Using stats data of level % i.", _race, _class, level + 1, level);
+                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Race %i Class %i Level %i does not have stats data. Using stats data of level % i.", _race, _class, level + 1, level);
                     info->level_stats[level] = info->level_stats[level - 1U];
                 }
             }
@@ -4721,7 +4721,7 @@ void MySQLDataStore::loadCreatureGroupSpawns()
 
                     else if (groupTemplate.mapId != creatureSpawn->mapId && !(groupTemplate.groupFlags & SPAWNGROUP_FLAG_SYSTEM))
                     {
-                        sLogger.failure("Spawn group %u has map ID %u, but spawn (%u) has map id %u - spawn NOT added to group!", groupId, groupTemplate.mapId, spawnId, creatureSpawn->mapId);
+                        sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Spawn group %u has map ID %u, but spawn (%u) has map id %u - spawn NOT added to group!", groupId, groupTemplate.mapId, spawnId, creatureSpawn->mapId);
                         continue;
                     }
 
@@ -4735,7 +4735,7 @@ void MySQLDataStore::loadCreatureGroupSpawns()
 
         if (!data)
         {
-            sLogger.failure("Spawn data with ID (%u) not found, but is listed as a member of spawn group %u!", spawnId, groupId);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Spawn data with ID (%u) not found, but is listed as a member of spawn group %u!", spawnId, groupId);
             continue;
         } 
     } while (result->NextRow());

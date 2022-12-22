@@ -2519,7 +2519,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
-                sLogger.debug("Tried to add starter to npc %d for non-existent quest %u in table creature_quest_starter.", creature, quest);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add starter to npc %d for non-existent quest %u in table creature_quest_starter.", creature, quest);
             }
             else
             {
@@ -2541,7 +2541,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
-                sLogger.debug("Tried to add finisher to npc %d for non-existent quest %u in table creature_quest_finisher.", creature, quest);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add finisher to npc %d for non-existent quest %u in table creature_quest_finisher.", creature, quest);
             }
             else
             {
@@ -2563,7 +2563,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
-                sLogger.debug("Tried to add starter to go %d for non-existent quest %u in table gameobject_quest_starter.", creature, quest);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add starter to go %d for non-existent quest %u in table gameobject_quest_starter.", creature, quest);
             }
             else
             {
@@ -2585,7 +2585,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
-                sLogger.debug("Tried to add finisher to go %d for non-existent quest %u in table gameobject_quest_finisher.", creature, quest);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add finisher to go %d for non-existent quest %u in table gameobject_quest_finisher.", creature, quest);
             }
             else
             {
@@ -2614,7 +2614,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
-                sLogger.debug("Tried to add association to item %d for non-existent quest %d.", item, quest);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add association to item %d for non-existent quest %d.", item, quest);
             }
             else
             {
