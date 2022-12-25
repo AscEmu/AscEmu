@@ -908,13 +908,13 @@ void ObjectMgr::LoadVendors()
         std::unordered_map<uint32, std::vector<CreatureItem>*>::const_iterator itr;
         std::vector<CreatureItem> *items;
 
-        if (result->GetFieldCount() < 6)
+        if (result->GetFieldCount() < 6 + 1)
         {
             sLogger.failure("Invalid format in vendors (%u/6) columns, not enough data to proceed.", result->GetFieldCount());
             delete result;
             return;
         }
-        else if (result->GetFieldCount() > 6)
+        else if (result->GetFieldCount() > 6 + 1)
         {
             sLogger.failure("Invalid format in vendors (%u/6) columns, loading anyway because we have enough data", result->GetFieldCount());
         }
@@ -1272,7 +1272,6 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* p
 //MIT
 void ObjectMgr::loadTrainers()
 {
-#if VERSION_STRING > TBC    //todo: tbc
     auto* const result = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_defs");
 
     if (result == nullptr)
@@ -1326,7 +1325,7 @@ void ObjectMgr::loadTrainers()
             continue;
         }
 
-        if (result2->GetFieldCount() != 9)
+        if (result2->GetFieldCount() != 9 + 1)
         {
             sLogger.failure("trainer_spells table format is invalid. Please update your database.");
             delete tr;
@@ -1431,7 +1430,6 @@ void ObjectMgr::loadTrainers()
 
     delete result;
     sLogger.info("ObjectMgr : %u trainers loaded.", static_cast<uint32_t>(mTrainers.size()));
-#endif
 }
 
 Trainer* ObjectMgr::GetTrainer(uint32 Entry)
