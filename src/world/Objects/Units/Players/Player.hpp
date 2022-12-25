@@ -50,7 +50,6 @@ struct GuildMember;
 class QueryBuffer;
 struct QuestProperties;
 struct SpellShapeshiftForm;
-class Battleground;
 class Instance;
 class InstanceSaved;
 struct CharRaceEntry;

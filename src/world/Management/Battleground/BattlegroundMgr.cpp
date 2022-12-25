@@ -67,7 +67,7 @@ void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, ui
 {
     //todo: Zyres correct packet - Serialise
     WorldPacket data(SMSG_BATTLEFIELD_LIST, 18);
-#if VERSION_STRING > WotLK
+#if VERSION_STRING >= Cata
     ObjectGuid guid;
 
     // Send 0 instead of GUID when using the BG UI instead of Battlemaster
@@ -83,8 +83,9 @@ void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, ui
     data << uint32_t(0);
     data << uint32_t(0);
     data << uint32_t(0);
-#else
+#endif
 
+#if VERSION_STRING == WotLK
     // Send 0 instead of GUID when using the BG UI instead of Battlemaster
     if (from == 0)
         data << uint64_t(session->GetPlayer()->getGuid());
@@ -94,6 +95,8 @@ void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, ui
     data << from;
     data << uint32_t(battlegroundType);   // typeid
 #endif
+
+#if VERSION_STRING >= WotLK
     data << uint8_t(0);                                      // unk
     data << uint8_t(0);                                      // unk
 
@@ -150,6 +153,42 @@ void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, ui
     
 
     data.put<uint32_t>(pos, Count);
+#else
+
+    data << uint64_t(session->GetPlayer()->getGuid());
+    data << uint32_t(battlegroundType);
+
+    if (Battleground::isTypeArena(battlegroundType))
+    {
+        data << uint8_t(5);
+        data << uint32_t(0);
+    }
+    else
+    {
+        data << uint8(0);
+
+        if (battlegroundType >= BATTLEGROUND_NUM_TYPES)     //VLack: Nasty hackers might try to abuse this packet to crash us...
+            return;
+
+        uint32_t Count = 0;
+        const size_t pos = data.wpos();
+
+        data << uint32_t(0);      // Count
+
+        // Append the battlegrounds
+        std::lock_guard instanceLock(m_instanceLock);
+        for (auto itr : m_instances[battlegroundType])
+        {
+            if (itr.second->CanPlayerJoin(session->GetPlayer(), battlegroundType) && !itr.second->hasEnded())
+            {
+                data << uint32_t(itr.first);
+                ++Count;
+            }
+        }
+
+        data.put<uint32_t>(pos, Count);
+    }
+#endif
 
     session->SendPacket(&data);
 }
@@ -172,7 +211,7 @@ void BattlegroundManager::handleBattlegroundJoin(WorldSession* session, WorldPac
     if (srlPacket.bgType >= BATTLEGROUND_NUM_TYPES || srlPacket.bgType == 0 || m_bgMaps.find(srlPacket.bgType) == m_bgMaps.end() && srlPacket.bgType != BattlegroundDef::TYPE_RANDOM)
     {
         sCheatLog.writefromsession(session, "tried to crash the server by joining battleground that does not exist (0)");
-        session->Disconnect();
+        plr->softDisconnect();
         return;
     }
 
