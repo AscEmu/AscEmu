@@ -1669,7 +1669,7 @@ Creature* WorldMap::createAndSpawnCreature(uint32_t pEntry, LocationVector pos)
 
 Creature* WorldMap::getCreature(uint32_t guid)
 {
-    if (guid > m_CreatureHighGuid)
+    if (guid == 0 || guid > m_CreatureHighGuid)
         return nullptr;
 
     return m_CreatureStorage[guid];
