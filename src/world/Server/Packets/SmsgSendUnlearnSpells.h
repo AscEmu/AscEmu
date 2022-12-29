@@ -12,7 +12,6 @@ namespace AscEmu::Packets
 {
     class SmsgSendUnlearnSpells : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         uint32_t count;
         
@@ -42,6 +41,5 @@ namespace AscEmu::Packets
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
-#endif
     };
 }

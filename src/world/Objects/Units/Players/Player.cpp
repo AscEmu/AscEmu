@@ -3010,9 +3010,7 @@ void Player::sendInitialLogonPackets()
 
     sendSmsgInitialSpells();
 
-#if VERSION_STRING > TBC
     m_session->SendPacket(SmsgSendUnlearnSpells().serialise().get());
-#endif
 
     sendActionBars(false);
     sendSmsgInitialFactions();
@@ -3331,6 +3329,7 @@ void Player::initVisibleUpdateBits()
 #else
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, raw_parts));
 #endif
+
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, entry));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, scale_x));
 
@@ -3393,6 +3392,11 @@ void Player::initVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, npc_flags));
 #if VERSION_STRING > TBC
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, hover_height));
+#endif
+
+#if VERSION_STRING == TBC
+    for (uint8_t i = 0; i <= WOWUNIT_AURA_COUNT; ++i)
+        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, aura[i]));
 #endif
 
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_flags));
@@ -12488,6 +12492,7 @@ void Player::sendRaidInfo()
             {
                 InstanceSaved* save = bind.save;
                 data << uint32_t(save->getMapId());
+#if VERSION_STRING > TBC
                 data << uint32_t(save->getDifficulty());
                 data << uint64_t(save->getInstanceId());
                 data << uint8_t(bind.extendState != EXTEND_STATE_EXPIRED);
@@ -12498,6 +12503,15 @@ void Player::sendRaidInfo()
                     nextReset = sInstanceMgr.getSubsequentResetTime(save->getMapId(), save->getDifficulty(), save->getResetTime());
 
                 data << uint32_t(nextReset - now);
+#else
+                time_t nextReset = save->getResetTime();
+                if (bind.extendState == EXTEND_STATE_EXTENDED)
+                    nextReset = sInstanceMgr.getSubsequentResetTime(save->getMapId(), save->getDifficulty(), save->getResetTime());
+
+                data << uint32_t(nextReset - now);
+
+                data << uint32_t(save->getInstanceId());
+#endif
 
                 ++counter;
             }

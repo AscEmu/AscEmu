@@ -60,9 +60,19 @@ namespace AscEmu::Packets
 #if VERSION_STRING > WotLK
                 packet << uint32_t(0);
 #endif
-                packet << info.Type << info.Family << info.Rank << info.killcredit[0]
-                    << info.killcredit[1] << info.Male_DisplayID << info.Female_DisplayID << info.Male_DisplayID2
-                    << info.Female_DisplayID2 << info.baseAttackMod << info.rangeAttackMod << info.Leader;
+                packet << info.Type << info.Family << info.Rank;
+#if VERSION_STRING > TBC
+                packet << info.killcredit[0] << info.killcredit[1];
+#else
+                packet << uint32_t(0) << info.spelldataid;
+#endif
+                packet << info.Male_DisplayID << info.Female_DisplayID << info.Male_DisplayID2 << info.Female_DisplayID2;
+#if VERSION_STRING > TBC
+                packet << info.baseAttackMod << info.rangeAttackMod;
+#else
+                packet << float(0) << float(0); //health and power multiplier.
+#endif
+                packet << info.Leader;
 
 #if VERSION_STRING >= WotLK
                 for (uint8_t i = 0; i < 6; ++i)
