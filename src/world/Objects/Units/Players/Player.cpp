@@ -129,6 +129,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/WorldStrings.h"
 #include "Util/Strings.hpp"
+#include "Data/WoWUnit.hpp"
 
 using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;
