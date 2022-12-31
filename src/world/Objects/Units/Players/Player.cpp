@@ -129,7 +129,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/WorldStrings.h"
 #include "Util/Strings.hpp"
-#include "Data/WoWUnit.hpp"
 
 using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;
@@ -3393,11 +3392,6 @@ void Player::initVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, npc_flags));
 #if VERSION_STRING > TBC
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, hover_height));
-#endif
-
-#if VERSION_STRING == TBC
-    for (uint8_t i = 0; i <= WOWUNIT_AURA_COUNT; ++i)
-        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, aura[i]));
 #endif
 
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_flags));
