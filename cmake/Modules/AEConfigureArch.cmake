@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
 # get architecture type and set architecture identifier
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)

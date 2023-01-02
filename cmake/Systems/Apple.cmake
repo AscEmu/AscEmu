@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
 message(STATUS "Applying settings for macOS system")
 

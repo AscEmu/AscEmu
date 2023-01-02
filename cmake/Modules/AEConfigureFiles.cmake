@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
 # ASCEMU_NUMBER - for including scripts
 # ASC_VERSION_MAX_LEVEL - for setting the maximum level
