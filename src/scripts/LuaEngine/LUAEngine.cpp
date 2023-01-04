@@ -756,8 +756,6 @@ static int RegisterTimedEvent(lua_State* L)  //in this case, L == lu
     LuaGlobal::instance()->luaEngine()->LuaEventMgr.event_AddEvent(te);
     lua_settop(L, 0);
     lua_pushnumber(L, ref);
-    delete ek;
-    free((void*)funcName);
     return 1;
 }
 

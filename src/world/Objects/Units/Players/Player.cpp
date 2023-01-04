@@ -3050,10 +3050,7 @@ void Player::softDisconnect()
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_SOFT_DISCONNECT);
 
     if (m_session)
-    {
         m_session->LogoutPlayer(true);
-        m_session->Disconnect();
-    }
 }
 
 void Player::outPacket(uint16_t opcode, uint16_t length, const void* data)
