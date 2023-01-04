@@ -73,7 +73,7 @@ namespace DBC::Structures
         char const gt_regen_hp_per_spt_format[] = "f";
         char const gt_regen_mp_per_spt_format[] = "f";
         char const item_entry_format[] = "niii";
-        char const item_display_info[] = "ni";
+        char const item_display_info[] = "nxxxxxxxxxxixxxxxxxxxxxxx";
         char const item_extended_cost_format[] = "niiiiiiiiiiiii";
         char const item_random_properties_format[] = "nxiiixxssssssssssssssssx";
         char const item_random_suffix_format[] = "nssssssssssssssssxxiiiiii";
