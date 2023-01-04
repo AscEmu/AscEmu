@@ -3414,8 +3414,9 @@ void Player::initVisibleUpdateBits()
 #else
         uint32_t offset = i * 16;
 #endif
-        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + offset);
-        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + 1 + offset);
+        // visible_items includes creator guid, so add + 2 since we are not sending that as update field
+        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + 2 + offset);
+        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + 2 + 1 + offset);
     }
 
 #if VERSION_STRING == Classic
