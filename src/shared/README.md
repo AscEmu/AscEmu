@@ -54,7 +54,7 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Common.Legacy.h
 * 2008 | Utilities/CallBack.h
 * 2008 | ByteBuffer.h
-* 2008 | AuthCodes.h
+* 2008 | Cryptography/AuthCodes.h
 * 2008 | Cryptography/Sha1.cpp
 * 2008 | Cryptography/MD5.cpp
 * 2008 | Cryptography/BigNumber.cpp
