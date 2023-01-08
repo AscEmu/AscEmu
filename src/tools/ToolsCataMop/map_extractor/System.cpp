@@ -30,10 +30,6 @@
 
 #include "AEVersion.hpp"
 
-#ifdef PLATFORM_WINDOWS
-#undef PLATFORM_WINDOWS
-#endif
-
 #ifdef _WIN32
 #include "direct.h"
 #else
